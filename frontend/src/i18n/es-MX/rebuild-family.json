@@ -160,6 +160,8 @@
     "usernameFlagged": "Este usuario podría ayudar a extraños a encontrarle. Elige otro.",
     "saveUsername": "Guardar usuario",
     "usernameSaved": "Guardado. {name} ahora entra como {username}.",
+    "usernameSignInAgain": "Debe volver a entrar con el nuevo nombre.",
+    "usernameStillSignedIn": "Una sesión anterior puede seguir abierta hasta que salga.",
     "usernameFixed": "Solo cambia un usuario marcado.",
     "newPassphrase": "Nueva contraseña",
     "savePassphrase": "Guardar contraseña",
@@ -179,6 +181,7 @@
   "familyChildConsent": {
     "insights": "Compartir datos de uso",
     "insightsHelp": "Nos ayuda a mejorar las lecciones. Apagado, no se envía nada.",
+    "insightsExperiment": "Esto también deja que el Mentor pruebe dos estilos de pistas con {name}.",
     "on": "Activado",
     "off": "Apagado",
     "insightsFailed": "No se guardó. Intenta de nuevo.",
@@ -542,5 +545,20 @@
     "refusedTitle": "Aquí no hay cartera personal",
     "refusedBody": "La cartera personal es para adolescentes de 13 a 17 años.",
     "refusedAction": "Ir a Aprender"
+  },
+  "familyCoopGoals": {
+    "title": "Metas en equipo",
+    "body": "{name} puede crear metas de lecciones con hasta 4 amigos mutuos.",
+    "rules": "Sin chat, sin puntajes, sin rankings. Puedes apagarlo cuando quieras.",
+    "label": "Permitir metas en equipo",
+    "on": "Activado",
+    "off": "Apagado",
+    "notTeen": "Solo para 13 a 17 años, según la fecha de nacimiento que diste.",
+    "active": "{name} está en {count} metas.",
+    "offNote": "Al apagarlo, {name} sale de todas sus metas.",
+    "loading": "Cargando metas en equipo",
+    "failed": "No se pudo cargar. Inténtalo de nuevo.",
+    "retry": "Reintentar",
+    "saveFailed": "No se pudo guardar. Inténtalo de nuevo."
   }
 }

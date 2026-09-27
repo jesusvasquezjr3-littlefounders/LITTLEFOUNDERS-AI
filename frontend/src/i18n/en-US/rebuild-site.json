@@ -11,7 +11,9 @@
     "day": "Day",
     "year": "Year",
     "loading": "Checking your account…",
-    "help": "We keep only the month and year."
+    "help": "We keep only the month and year.",
+    "locked": "You can't change this answer later.",
+    "teenMonth": "At 18, your account moves to adult settings."
   },
   "kidSuspended": {
     "title": "This account is paused",
@@ -343,6 +345,7 @@
     "lead": "Everyone starts free. No documents needed.",
     "name": "Your name",
     "birthHelp": "We keep only the month and year.",
+    "teenMonth": "At 18, your account moves to adult settings.",
     "tutorIntent": "I'm a parent or guardian",
     "tutorIntentHelp": "Tutors verify their ID later.",
     "submit": "Create account",

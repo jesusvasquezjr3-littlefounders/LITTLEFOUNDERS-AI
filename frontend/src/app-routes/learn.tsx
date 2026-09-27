@@ -7,6 +7,7 @@ import { CoursePathRedirect, CourseRoute } from '@/routes/app/learn/CourseRoute'
 import { TerritoryRoute } from '@/routes/app/learn/TerritoryRoute';
 import { DecisionJournalRoute } from '@/routes/app/learn/DecisionJournalRoute';
 import { LearningRhythmRoute } from '@/routes/app/learn/LearningRhythmRoute';
+import { TogetherRoute } from '@/routes/app/learn/TogetherRoute';
 import { PlacementRoute } from '@/routes/app/learn/PlacementRoute';
 import {
   COURSE_PATH_ROUTE_PATH,
@@ -16,6 +17,7 @@ import {
   LESSON_ROUTE_PATH,
   PLACEMENT_ROUTE_PATH,
   TERRITORY_ROUTE_PATH,
+  TOGETHER_ROUTE_PATH,
 } from '@/routes/app/learn/paths';
 import { LazyRoute } from './LazyRoute';
 
@@ -44,6 +46,8 @@ export const learnShellRoutes = (
     <Route path={COURSE_PATH_ROUTE_PATH} element={<CoursePathRedirect />} />
     <Route path={DECISION_JOURNAL_ROUTE_PATH} element={<DecisionJournalRoute />} />
     <Route path={LEARNING_RHYTHM_ROUTE_PATH} element={<LearningRhythmRoute />} />
+    {/* L-04 (OD-27 (1)): goals together, the one peer mechanic for 13 to 17 year olds. */}
+    <Route path={TOGETHER_ROUTE_PATH} element={<TogetherRoute />} />
   </>
 );
 

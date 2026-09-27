@@ -160,6 +160,8 @@
     "usernameFlagged": "Este usuário pode ajudar estranhos a achar a criança. Escolha outro.",
     "saveUsername": "Salvar usuário",
     "usernameSaved": "Salvo. {name} agora entra como {username}.",
+    "usernameSignInAgain": "Precisa entrar de novo com o novo nome.",
+    "usernameStillSignedIn": "Uma sessão antiga pode ficar aberta até sair.",
     "usernameFixed": "Só um usuário sinalizado pode mudar.",
     "newPassphrase": "Nova senha",
     "savePassphrase": "Salvar senha",
@@ -179,6 +181,7 @@
   "familyChildConsent": {
     "insights": "Compartilhar dados de uso",
     "insightsHelp": "Ajuda a melhorar as lições. Desligado, nada é enviado.",
+    "insightsExperiment": "Isso também deixa o Mentor testar dois estilos de dica com {name}.",
     "on": "Ligado",
     "off": "Desligado",
     "insightsFailed": "Não salvou. Tente de novo.",
@@ -542,5 +545,20 @@
     "refusedTitle": "Aqui não há carteira pessoal",
     "refusedBody": "A carteira pessoal é para adolescentes de 13 a 17 anos.",
     "refusedAction": "Ir para Aprender"
+  },
+  "familyCoopGoals": {
+    "title": "Metas em equipe",
+    "body": "{name} pode criar metas de lições com até 4 amigos em comum.",
+    "rules": "Sem chat, sem pontuação, sem ranking. Você pode desligar quando quiser.",
+    "label": "Permitir metas em equipe",
+    "on": "Ligado",
+    "off": "Desligado",
+    "notTeen": "Só para 13 a 17 anos, pela data de nascimento que você informou.",
+    "active": "{name} está em {count} metas.",
+    "offNote": "Ao desligar, {name} sai de todas as metas.",
+    "loading": "Carregando metas em equipe",
+    "failed": "Não foi possível carregar. Tente de novo.",
+    "retry": "Tentar de novo",
+    "saveFailed": "Não foi possível salvar. Tente de novo."
   }
 }

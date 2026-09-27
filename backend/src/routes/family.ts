@@ -1,5 +1,6 @@
 import { Router, type Request, type Response } from 'express';
 import { z } from 'zod';
+import { getConfig } from '../config.js';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { firstNameOnly, purgeBadgeImageIfUnreferenced, renderAchievementImage } from '../services/badges.js';
@@ -22,6 +23,7 @@ import { adminCreateUser, adminDeleteUser, adminRevokeUserSessions, adminUpdateU
 import { KID_USERNAME, renameFlaggedChild } from '../services/kidUsername.js';
 import { declaredBandForDate, readAgeScreen, recordAgeScreen } from '../services/ageScreen.js';
 import { requiresMinorMentorSafeguards } from '../services/mentorSafety.js';
+import { guardianConsentEnrols } from '../services/dialogueExperimentNotice.js';
 import { mayDiscoverProfile, profileAccess, visibleSocialUsers } from '../services/socialVisibility.js';
 import { profileFieldFlags, reviewProfileFields } from '../services/profileFieldSafety.js';
 import { getChildRoleHolders, selfIssuedInviteIds } from '../services/teenWallet.js';
@@ -181,6 +183,13 @@ export function familyRouter(): Router {
           walletTotal: balances ? balances.save + balances.spend + balances.share : null,
           taskStreakDays: streaks?.get(l.kid_user_id)?.current ?? 0,
           accountType: childRoleHolders === null ? null : childRoleHolders.has(l.kid_user_id) ? 'child' : 'teen',
+          // M-12 (OD-26): the usage-data consent above also admits this child to
+          // the C.17 dialogue-style experiment (a 10-12 child with a known birth
+          // date); the console says so only then. The resolver re-decides per session.
+          dialogueExperiment: childRoleHolders !== null && guardianConsentEnrols({
+            birthDate: byId.get(l.kid_user_id)?.birth_date ?? null,
+            childRole: childRoleHolders.has(l.kid_user_id),
+          }, getConfig().MENTOR_DIALOGUE_EXPERIMENT_BANDS),
         };
       }),
     });

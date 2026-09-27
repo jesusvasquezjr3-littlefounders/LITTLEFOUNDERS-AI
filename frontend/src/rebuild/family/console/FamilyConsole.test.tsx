@@ -134,6 +134,21 @@ describe('Usage-data consent', () => {
     expect(transport.calls.find((call) => call.path.endsWith('/analytics-consent'))?.method).toBe('POST');
   });
 
+  it('M-12: says the consent also enrols a 10-12 child in the hint-style test only when Core marks the child', async () => {
+    setup({ 'GET /family/kids': ok({ kids: [childWire({ dialogueExperiment: true }), FAMILY[1]] }) }, { selectedId: KID_A });
+    const line = await screen.findByText('This also lets the Mentor test two hint styles with Sofía.');
+    // Said beside the switch, before it is turned on.
+    expect(screen.getByRole('switch', { name: en.familyChildConsent.insights })).toHaveAttribute('aria-checked', 'false');
+    expect(line).toHaveAttribute('data-copy-role', 'body');
+    everyTextHasARole(document.body);
+  });
+
+  it('M-12: never mentions the test for a child Core does not mark (or an older Core that sends nothing)', async () => {
+    setup({ 'GET /family/kids': ok({ kids: [childWire({ dialogueExperiment: false }), FAMILY[1]] }) }, { selectedId: KID_A });
+    await screen.findByRole('switch', { name: en.familyChildConsent.insights });
+    expect(screen.queryByText(/hint styles/)).toBeNull();
+  });
+
   it('shows the new state once Core confirms it', async () => {
     setup({ 'GET /family/kids': ok({ kids: [FAMILY[0]] }), [`POST /family/kids/${KID_A}/analytics-consent`]: ok({ kidId: KID_A, analyticsConsent: true }) });
     const toggle = await screen.findByRole('switch', { name: en.familyChildConsent.insights });
@@ -222,7 +237,7 @@ describe('Managing a child', () => {
 
   it('S-06: changes a flagged username, then removal asks for the new one and the safety notice goes', async () => {
     const flagged = childWire({ profileReview: { flagged: true, fields: ['username'] } });
-    const { transport } = await openManage(flagged, { [`POST /family/kids/${KID_A}/username`]: ok({ kid: { userId: KID_A, username: 'sofia_stars' } }) });
+    const { transport } = await openManage(flagged, { [`POST /family/kids/${KID_A}/username`]: ok({ kid: { userId: KID_A, username: 'sofia_stars' }, sessionsEnded: true }) });
     expect(screen.getByText(en.familyChildAccount.usernameFlagged)).toBeInTheDocument();
     expect(screen.queryByText(en.familyChildAccount.renameHelp)).toBeNull();
     const save = screen.getByRole('button', { name: en.familyChildAccount.saveUsername });
@@ -232,12 +247,25 @@ describe('Managing a child', () => {
     expect(screen.getByText(en.familyChildAccount.usernameInvalid)).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText(en.familyChildAccount.newUsername), { target: { value: ' Sofia_Stars ' } });
     fireEvent.click(save);
-    await screen.findByText('Saved. Sofía now signs in as @sofia_stars.');
+    // The child's old sign-ins ended with the change, and the Tutor is told they sign in again.
+    await screen.findByText(`Saved. Sofía now signs in as @sofia_stars. ${en.familyChildAccount.usernameSignInAgain}`);
     expect(transport.calls.find((call) => call.path.endsWith('/username'))?.body).toEqual({ username: 'sofia_stars' });
     expect(screen.getByLabelText('Type sofia_stars to confirm')).toBeInTheDocument();
     expect(screen.queryByLabelText(en.familyChildAccount.newUsername)).toBeNull();
     expect(screen.queryByText(copyFor('en-US').profile.profileSafety.kidUsername)).toBeNull();
     everyTextHasARole(document.body);
+  });
+
+  it('S-06: says an older sign-in may stay open when Core could not end the child’s sessions', async () => {
+    for (const answer of [{ sessionsEnded: false }, {}]) {
+      const flagged = childWire({ profileReview: { flagged: true, fields: ['username'] } });
+      const { view } = await openManage(flagged, { [`POST /family/kids/${KID_A}/username`]: ok({ kid: { userId: KID_A, username: 'sofia_stars' }, ...answer }) });
+      fireEvent.change(screen.getByLabelText(en.familyChildAccount.newUsername), { target: { value: 'sofia_stars' } });
+      fireEvent.click(screen.getByRole('button', { name: en.familyChildAccount.saveUsername }));
+      await screen.findByText(`Saved. Sofía now signs in as @sofia_stars. ${en.familyChildAccount.usernameStillSignedIn}`);
+      expect(screen.queryByText(en.familyChildAccount.usernameSignInAgain, { exact: false })).toBeNull();
+      view.unmount();
+    }
   });
 
   it('S-06: says why Core refused a new username and keeps the old one', async () => {

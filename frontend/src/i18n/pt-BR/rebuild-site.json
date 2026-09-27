@@ -11,7 +11,9 @@
     "day": "Dia",
     "year": "Ano",
     "loading": "Verificando sua conta…",
-    "help": "Sua idade protege seu aprendizado. Guardamos no máximo o mês e o ano."
+    "help": "Sua idade protege seu aprendizado. Guardamos no máximo o mês e o ano.",
+    "locked": "Você não poderá mudar esta resposta depois.",
+    "teenMonth": "Aos 18, sua conta passa para ajustes de adulto."
   },
   "kidSuspended": {
     "title": "Esta conta está pausada",
@@ -343,6 +345,7 @@
     "lead": "Todo mundo começa grátis. Sem documentos.",
     "name": "Seu nome",
     "birthHelp": "Guardamos no máximo o mês e o ano.",
+    "teenMonth": "Aos 18, sua conta passa para ajustes de adulto.",
     "tutorIntent": "Sou mãe, pai ou responsável legal",
     "tutorIntentHelp": "Verifique sua identidade depois para ser Tutor.",
     "submit": "Criar conta",

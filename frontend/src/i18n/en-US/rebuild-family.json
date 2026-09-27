@@ -160,6 +160,8 @@
     "usernameFlagged": "This username could help strangers find them. Choose a new one.",
     "saveUsername": "Save username",
     "usernameSaved": "Saved. {name} now signs in as {username}.",
+    "usernameSignInAgain": "They sign in again with the new name.",
+    "usernameStillSignedIn": "An older sign-in may stay open until they sign out.",
     "usernameFixed": "Only a flagged username can change.",
     "newPassphrase": "New passphrase",
     "savePassphrase": "Save passphrase",
@@ -179,6 +181,7 @@
   "familyChildConsent": {
     "insights": "Share usage data",
     "insightsHelp": "Helps us improve lessons. Off means nothing is sent.",
+    "insightsExperiment": "This also lets the Mentor test two hint styles with {name}.",
     "on": "On",
     "off": "Off",
     "insightsFailed": "That did not save. Try again.",
@@ -542,5 +545,20 @@
     "refusedTitle": "No personal wallet here",
     "refusedBody": "A personal wallet is for teens aged 13 to 17.",
     "refusedAction": "Go to Learn"
+  },
+  "familyCoopGoals": {
+    "title": "Goals together",
+    "body": "{name} can set lesson goals with up to 4 mutual friends.",
+    "rules": "No chat, no scores, no rankings. You can turn it off anytime.",
+    "label": "Allow goals together",
+    "on": "On",
+    "off": "Off",
+    "notTeen": "Only for ages 13 to 17, by the birth date you gave.",
+    "active": "{name} is in {count} goals.",
+    "offNote": "Turning it off takes {name} out of every goal.",
+    "loading": "Loading goals together",
+    "failed": "Could not load this. Try again.",
+    "retry": "Try again",
+    "saveFailed": "Could not save. Try again."
   }
 }

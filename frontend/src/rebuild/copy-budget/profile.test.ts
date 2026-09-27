@@ -7,11 +7,13 @@ describe('rebuild-profile copy budget', () => {
   for (const [locale, strings] of namespaceCopy('profile')) {
     const group = (name: string) => Object.entries(strings[name] as Record<string, string>);
     it(`fits its budgets in ${locale}`, () => {
-      expectBudgetedGroups(strings, ['analyticsChoice', 'privateProfile', 'teenConnections', 'profileSafety', 'memorySelfReview', 'accountDeletion', 'ownProfile', 'lookEditor', 'settings', 'publicProfile', 'report', 'peopleList', 'discoverable']);
+      expectBudgetedGroups(strings, ['analyticsChoice', 'privateProfile', 'teenConnections', 'profileSafety', 'memorySelfReview', 'accountDeletion', 'ownProfile', 'lookEditor', 'settings', 'publicProfile', 'report', 'peopleList', 'discoverable', 'ageRecord']);
       for (const [key, text] of group('analyticsChoice')) {
         const role = key === 'title' ? 'heading' : key === 'label' ? 'option' : ['on', 'off', 'retry'].includes(key) ? 'action' : 'body';
         expectFits(text, role, locale, '13-17', `analyticsChoice.${key}`);
       }
+      // S-04 (OD-28, E.4): the locked age card is shown only to a self-managed teen (or one who moved to adult at 18).
+      for (const [key, text] of group('ageRecord')) expectFits(text, key === 'title' ? 'heading' : 'body', locale, '13-17', `ageRecord.${key}`);
       // E.8: a child can land on a private teen's card, so it is budgeted for the youngest band.
       for (const [key, text] of group('privateProfile')) {
         const role = key === 'title' ? 'heading' : key === 'request' || key === 'saving' ? 'action' : 'body';

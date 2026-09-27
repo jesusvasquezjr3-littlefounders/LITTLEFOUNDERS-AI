@@ -91,6 +91,8 @@ export const REGISTER_POLICY: Record<string, { policy: 'register' | 'neutral' | 
   DataPolicy: { policy: 'tutor', why: 'the retention periods the Tutor reads' },
   ReflectionStep: { policy: 'tutor', why: 'the Tutor\'s reflective prompt before a decision' },
   ResearchConsent: { policy: 'tutor', why: 'the Tutor\'s research answer for a child' },
+  // W3S.1 (L-04, OD-27 (1)).
+  CoopGoalsConsent: { policy: 'tutor', why: 'the Tutor\'s opt-in for a 13 to 17 child\'s goals together, adult copy' },
   // S10.3 (OD-9 4.2).
   DataPracticeConsent: { policy: 'tutor', why: 'the Tutor\'s specific consent to each new data practice for a migrated child' },
   MyDataPractices: { policy: 'neutral', why: 'the account\'s own no (and a teen\'s own yes to usage counts): no numbers, written to the youngest band' },

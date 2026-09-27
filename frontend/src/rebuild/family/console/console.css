@@ -58,3 +58,6 @@
    removal warning ran 81-117 characters wide on a tablet or desktop column. */
 .lf-family-console[data-screen='child-mentor'] .lf-console-item { max-inline-size: 36rem; }
 .lf-family-console .lf-console-danger .lf-notice { max-inline-size: 32rem; }
+/* L-04 (OD-27 (1)): the Tutor's goals-together card, a stack like every console group; each line keeps the 03 §3 measure. */
+.lf-coop-consent { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-coop-consent > p { max-inline-size: 36rem; }

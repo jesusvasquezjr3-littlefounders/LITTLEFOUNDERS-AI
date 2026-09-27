@@ -19,6 +19,7 @@ import { ProfileSafetyNotice } from '../social/ProfileSafetyNotice';
 import { AccountDeletion } from './AccountDeletion';
 import { OwnProfile, type OwnProfileData, type OwnProfileView } from './OwnProfile';
 import { LookEditor } from './LookEditor';
+import { AgeRecordCard } from './AgeRecordCard';
 import { BlockedCard, DetailsCard, GuestCard, SettingsPanels, SettingsScreen, SignInCard, type DetailsFormState } from './AccountSettings';
 import { resolveLook, type AvatarLook, type CoverId } from './avatar/avatarKit';
 
@@ -119,7 +120,8 @@ export function AccountSettingsPreview({ locale, theme, state }: { locale: Local
         users: name === 'adult' ? [{ userId: 'b1', displayName: 'Bartolomeo Alessandro Rodríguez', username: 'bartolomeo_2014' }] : [] }}
         onUnblock={noop} onRetry={noop} />
       <SettingsPanels>
-        {name === 'teen' ? <AnalyticsChoice copy={t.analyticsChoice} locale={locale} dark={dark} enabled={false} loading={false} saving={false} error={null} onToggle={noop} onRetry={noop} /> : null}
+        {name === 'teen' ? <AgeRecordCard copy={t.ageRecord} kind="teenMonth" /> : null}
+        {name === 'teen' ? <AnalyticsChoice copy={t.analyticsChoice} locale={locale} dark={dark} enabled={false} experiment loading={false} saving={false} error={null} onToggle={noop} onRetry={noop} /> : null}
         {name === 'teen' ? <MemorySelfReview copy={t.memorySelfReview} locale={locale} dark={dark} phase="ready" current={null}
           notes={[{ id: 'n1', proposed: 'Saving for a bike.', expectedBefore: null, sessionId: null, createdAt: '2026-09-20T10:00:00Z' }]}
           deciding={null} settled={{}} failedId={null} notice={null} noticeKind={null} onDecide={noop} onRetry={noop} /> : null}

@@ -48,6 +48,8 @@ export const COURSE_PATH_ROUTE_PATH = 'learn/:courseSlug/path' as const;
 export const DECISION_JOURNAL_ROUTE_PATH = 'learn/journal' as const;
 /** B.21 / B.24 (S05.3e): the learner's streak, pace and choices. A static segment, like the journal. */
 export const LEARNING_RHYTHM_ROUTE_PATH = 'learn/rhythm' as const;
+/** L-04 (OD-27 (1)): teen cooperative goals. A static segment, like the journal. */
+export const TOGETHER_ROUTE_PATH = 'learn/together' as const;
 
 export function coursePath(courseSlug: string): string {
   return `/${COURSE_ROUTE_PATH.replace(':courseSlug', courseSlug)}`;
@@ -77,6 +79,10 @@ export function decisionJournalPath(): string {
 
 export function learningRhythmPath(): string {
   return `/${LEARNING_RHYTHM_ROUTE_PATH}`;
+}
+
+export function togetherPath(): string {
+  return `/${TOGETHER_ROUTE_PATH}`;
 }
 
 /**

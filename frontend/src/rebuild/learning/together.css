@@ -1,0 +1,30 @@
+/* L-04 goals together. Tokens only; separation by fill, never by outline (Bible 02 §4.4). A dashboard page (rule 15). */
+.lf-together { min-block-size: 100dvh; padding: var(--spacing-4); background: var(--base); color: var(--content); }
+.lf-together-inner { display: grid; gap: var(--spacing-5); max-inline-size: 760px; margin-inline: auto; align-content: start; }
+.lf-together-inner > * { min-inline-size: 0; }
+.lf-together-top { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); }
+.lf-together-intro { font-weight: 700; }
+.lf-together-rules { color: var(--content-muted); font-weight: 700; }
+.lf-together-section { display: grid; gap: var(--spacing-3); }
+.lf-together-section h2 { font-size: 1.25rem; }
+.lf-together-list { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-together-list .lf-card { display: grid; gap: var(--spacing-3); }
+.lf-together-subhead { font-size: 1rem; }
+.lf-together-people { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-together-person { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2) var(--spacing-3); min-block-size: var(--target-min); }
+.lf-together-person > span[data-copy-role='data'] { font-weight: 800; overflow-wrap: anywhere; flex: 1 1 8rem; }
+.lf-together-goal-actions, .lf-together-ask .lf-actions, .lf-together-new .lf-actions { max-inline-size: 560px; }
+.lf-together-ask, .lf-together-new { display: grid; gap: var(--spacing-4); padding: var(--spacing-4) var(--spacing-5); border-radius: var(--rounded-lg); background: var(--sunken); }
+.lf-together-new h3 { font-size: 1.125rem; }
+.lf-together-pick { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; border: 0; min-inline-size: 0; }
+.lf-together-pick legend { font-weight: 800; padding: 0; margin-block-end: var(--spacing-1); }
+.lf-together-finished { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--spacing-2) var(--spacing-4); padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-lg); background: var(--surface); box-shadow: var(--shadow-control); }
+.lf-together-finished > span[data-copy-role='data'] { font-weight: 800; }
+.lf-together .lf-actions > .lf-button { min-block-size: var(--target-min); }
+
+@container app (min-width: 640px) {
+  .lf-together { padding: var(--spacing-8); }
+}
+
+/* The learner home's card for it. */
+.lf-learn-together { display: grid; gap: var(--spacing-3); }

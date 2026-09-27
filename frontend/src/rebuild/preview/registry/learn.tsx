@@ -37,6 +37,11 @@ import { SHELF_TITLES, childTree, coursePreviewStates, homePreviewShelf } from '
 import type { LearnLinks } from '../../learning/learnCopy';
 import { NarrativeRecallView } from '../../learning/NarrativeRecallView';
 import { DecisionJournalView } from '../../learning/DecisionJournalView';
+import { TogetherView } from '../../learning/TogetherView';
+import { togetherCandidatesFixture, togetherPreviewStates } from '../../learning/togetherFixtures';
+import enProfile from '../../../i18n/en-US/rebuild-profile.json';
+import esProfile from '../../../i18n/es-MX/rebuild-profile.json';
+import ptProfile from '../../../i18n/pt-BR/rebuild-profile.json';
 import { LearnerNarrativeShortcut } from '../../learning/LearnerNarrativeShortcut';
 import { childDecisionsFixture, journalPreviewStates, recallFixture, selfBridgesFixture } from '../../learning/narrativeFixtures';
 import { ChildDecisionsView } from '../../learning/ChildDecisionsPanel';
@@ -71,8 +76,9 @@ const LearnPreviewHost = ({ children }: { children: ReactNode }) => <main classN
 /* W2L.1: the learner pages' links, as preview screens (a plain press opens that screen in place). */
 const previewLinks: LearnLinks = {
   home: '?screen=learnhome', course: () => '?screen=course', lesson: () => '?screen=lesson', placement: () => '?screen=placement',
-  territory: () => '?screen=territory', rhythm: '?screen=rhythm', journal: '?screen=journal',
+  territory: () => '?screen=territory', rhythm: '?screen=rhythm', journal: '?screen=journal', together: '?screen=together',
 };
+const REPORT_COPY = { 'en-US': enProfile.report, 'es-MX': esProfile.report, 'pt-BR': ptProfile.report } as const;
 
 /*
  * W2L.2: the placement flow on the shared single-state screen, as its route
@@ -165,6 +171,7 @@ export const learnPreviewScreens: PreviewRegistry = {
     return <LearnPreviewHost><LearnHomeView key={`learnhome:${locale}:${home}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand} name={params.get('name') === '0' ? null : 'Sofía'}
       shelf={shelf} featured={featured} rhythm={rhythmPreviewStates[params.get('rhythm') ?? 'open'] ?? rhythmPreviewStates.open!}
       bridges={params.get('bridges') === '1' ? selfBridgesFixture() : []} links={previewLinks} onNavigate={previewNavigate(go)}
+      together={params.get('together') === '1' ? { eligible: true, asked: true } : null}
       onRetry={() => go('learnhome')} onBridge={async (_id, _answer, goal) => (goal ? 'goal' : 'done')} onOpenWallet={() => go('home')}
       graduation={params.get('graduation') === '1' ? <RegisterGraduationView fixture locale={locale} dark={theme === 'dark'} into="transition" onAcknowledge={async () => true} /> : null} /></LearnPreviewHost>;
   }),
@@ -174,6 +181,12 @@ export const learnPreviewScreens: PreviewRegistry = {
     state={journalPreviewStates(locale)[params.get('journal') ?? 'list'] ?? journalPreviewStates(locale).list!}
     onBack={() => go('home')} onRetry={() => go('journal')} onMore={() => {}}
     onClear={async () => true} onBridge={async (_id, _answer, goal) => (goal ? 'goal' : 'done')} onOpenWallet={() => go('home')} /></LearnPreviewHost>),
+  // L-04 (OD-27 (1)): goals together in every state (`?together=ready|empty|reached|closed|loading|error|offline`).
+  together: framed(({ locale, theme, params, go }) => <LearnPreviewHost><TogetherView key={`together:${locale}:${params.get('together')}`} fixture locale={locale}
+    dark={theme === 'dark'} state={togetherPreviewStates[params.get('together') ?? 'ready'] ?? togetherPreviewStates.ready!} candidates={togetherCandidatesFixture}
+    reportCopy={REPORT_COPY[locale]} onBack={() => go('learnhome')} onRetry={() => go('together')} onLoadCandidates={() => {}}
+    onStart={async () => 'done'} onAsk={async () => 'done'} onAnswer={async () => 'done'} onLeave={async () => 'done'} onRemove={async () => 'done'}
+    onReport={async () => 'done'} /></LearnPreviewHost>),
   // OD-27 (3): the Tutor's view of an under-13 child's story choices, as the Family Hub mounts it (open, one page).
   childdecisions: framed(({ locale, theme }) => <main className="lf-family-preview" data-surface="app" data-screen="child-decisions-host">
     <ChildDecisionsView key={`childdecisions:${locale}`} fixture locale={locale} dark={theme === 'dark'} state={childDecisionsFixture(locale)} open

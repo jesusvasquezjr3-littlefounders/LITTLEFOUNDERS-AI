@@ -56,7 +56,7 @@ Core `type-check`; `eslint` on the touched Core files; `learnPathway.test.ts` (3
 Merged `codex/spec-w3learn` into `codex/spec-migration-s02` (after the W3 design-system lane, `0efdf253`).
 
 - **Conflicts.** None; `REQUIREMENTS.md`, `LearningNarrative.tsx`, `CourseView.tsx` and `DecisionJournalView.tsx` auto-merged and keep both sides.
-- **Migration number.** Not renumbered: the integration branch's highest migration was `0187`, so `0188_mastery_offer_declines.sql` already follows it (2,379 bytes). The social lane's own `0188_teen_cooperative_goals.sql` takes the next free number when that lane merges.
+- **Migration number.** Not renumbered: the integration branch's highest migration was `0187`, so `0188_mastery_offer_declines.sql` already follows it (2,379 bytes). The social lane's own `0189_teen_cooperative_goals.sql` takes the next free number when that lane merges.
 - **Cross-lane gates.** The Wallet glossary gate (OD-28) holds on the lane's new strings ("Goal added to your Wallet", "See my Wallet"); the asset gate, copy-budget contracts and every `spec:check` gate are green on the merged tree. No integration defect was found.
 - **Checks on the merged tree.** `typecheck:all`, `lint:all`, Core unit suite (123 files, 3,037 passed, 1 skipped), frontend unit suite (300 files, 3,443 passed), `spec:check`, `secrets:check`, the full i18n gate (`agent/tools/check-i18n.sh`) and `database` `npm test`, all green.
 - **Still open.** Unchanged from W3L.2: the browser look of the three preview states, the on-stage mastery offer (Mentor lane), and keeping or deleting `ChildDecisionsPanel`.

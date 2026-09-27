@@ -58,6 +58,8 @@ export interface Child {
   accountType: 'child' | 'teen' | null;
   /** E.13: fields that keep the child hidden from every approved outside connection. */
   profileReview: { flagged: boolean; fields: ProfileField[] } | null;
+  /** M-12 (OD-26): the usage-data consent also enrols this child in the Mentor's hint-style test (a 10-12 child). Absent = false. */
+  dialogueExperiment: boolean;
 }
 
 const isField = (value: unknown): value is ProfileField => value === 'username' || value === 'displayName';
@@ -72,6 +74,7 @@ function toChild(value: unknown): Child | null {
     userId: value.userId, displayName: value.displayName, username: value.username, analyticsConsent: value.analyticsConsent,
     pendingApprovalCount: value.pendingApprovalCount, walletTotal: value.walletTotal as number | null, taskStreakDays: value.taskStreakDays, accountType,
     profileReview: isObject(review) && typeof review.flagged === 'boolean' && arrayOf(review.fields, isField) ? { flagged: review.flagged, fields: review.fields } : null,
+    dialogueExperiment: value.dialogueExperiment === true,
   };
 }
 
@@ -109,8 +112,10 @@ export function setChildPassphrase(transport: ConsoleTransport, kidId: string, p
 
 /** S-06: a new username for a child whose handle the E.13 review flags; Core moves the sign-in address with it. */
 export function changeChildUsername(transport: ConsoleTransport, kidId: string, username: string) {
-  return call(transport, `/family/kids/${kid(kidId)}/username`, (data): data is { kid: { userId: string; username: string } } =>
-    isObject(data) && isObject(data.kid) && data.kid.userId === kidId && isString(data.kid.username),
+  // `sessionsEnded` (S-06): Core signed the child out everywhere; false or absent = old sign-ins may still be open.
+  return call(transport, `/family/kids/${kid(kidId)}/username`, (data): data is { kid: { userId: string; username: string }; sessionsEnded?: boolean } =>
+    isObject(data) && isObject(data.kid) && data.kid.userId === kidId && isString(data.kid.username)
+      && (data.sessionsEnded === undefined || typeof data.sessionsEnded === 'boolean'),
   { method: 'POST', body: { username } });
 }
 

@@ -1,4 +1,5 @@
 import { afterEach, expect, it, vi } from 'vitest';
+import { resetConfigForTests } from '../config.js';
 import request from 'supertest';
 import { createApp } from '../app.js';
 import { jsonResponse, mintToken } from './helpers.js';
@@ -34,14 +35,14 @@ const auth = (req: request.Test, guest = false) => req.set('User-Agent', 'Mozill
 it('requires authentication and keeps an undisclosed teen off', async () => {
   fixture(); const app = createApp();
   expect((await request(app).get(route)).status).toBe(401);
-  expect((await auth(request(app).get(route))).body.data).toEqual({ canManage: true, enabled: false, disclosed: false });
+  expect((await auth(request(app).get(route))).body.data).toEqual({ canManage: true, enabled: false, disclosed: false, dialogueExperiment: true });
 });
 it('stores the authenticated subject, can revoke, and confirms each write', async () => {
   const writes = fixture(); const app = createApp();
   for (const enabled of [true, false]) {
     const res = await auth(request(app).put(route)).send({ enabled });
     expect(res.status).toBe(200);
-    expect(res.body.data).toEqual({ canManage: true, enabled, disclosed: true });
+    expect(res.body.data).toEqual({ canManage: true, enabled, disclosed: true, dialogueExperiment: true });
   }
   expect(writes.map(w => w.body)).toEqual([{ p_user_id: USER, p_enabled: true }, { p_user_id: USER, p_enabled: false }]);
 });
@@ -118,4 +119,22 @@ it('a teen whose birth month has not reached 18 stays on the teen rule', async (
   fixture({ birthMonth: '2011-05-01' });
   const me = await auth(request(createApp()).get('/api/v1/auth/me'));
   expect(me.body.data.analyticsEnabled).toBe(false);
+});
+
+// M-12 (OD-26): the toggle says it also enrols the account in C.17 only when it does.
+it('says the teen toggle also enrols in the dialogue-style experiment only while the teen band is open', async () => {
+  fixture(); const app = createApp();
+  expect((await auth(request(app).get(route))).body.data.dialogueExperiment).toBe(true);
+  vi.stubEnv('MENTOR_DIALOGUE_EXPERIMENT_BANDS', 'adult'); resetConfigForTests();
+  try {
+    expect((await auth(request(createApp()).get(route))).body.data).toEqual({ canManage: true, enabled: false, disclosed: false, dialogueExperiment: false });
+  } finally { vi.unstubAllEnvs(); resetConfigForTests(); }
+});
+it.each([
+  ['a kid-role teen', { roles: ['kid'] as const }],
+  ['an adult who never declared as a teen', { band: 'adult' }],
+  ['an under-13 origin', { origin: true }],
+])('never tells %s that this toggle enrols them', async (_label, options) => {
+  fixture(options);
+  expect((await auth(request(createApp()).get(route))).body.data).toEqual({ canManage: false, enabled: false, disclosed: false, dialogueExperiment: false });
 });

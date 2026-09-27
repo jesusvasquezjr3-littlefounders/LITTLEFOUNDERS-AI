@@ -85,8 +85,37 @@ describe('GET /api/v1/family/kids', () => {
         // S07.2: a display hint, never an access decision ('teen' = a
         // self-registered teen who linked this parent).
         accountType: 'child',
+        // M-12 (OD-26): whether the usage-data consent also enrols this child in
+        // the C.17 dialogue-style experiment (no birth date here, so no).
+        dialogueExperiment: false,
       },
     ]);
+  });
+
+  // M-12: only a parent-created child whose birth date proves 10 to 12 (or 18+) is enrolled by the Tutor's consent.
+  it.each([
+    ['an 11-year-old', 11, true],
+    ['a 10-year-old', 10, true],
+    ['a 12-year-old', 12, true],
+    ['an 8-year-old (6-9 never)', 8, false],
+    ['a 9-year-old', 9, false],
+    ['a 13-year-old (needs their own opt-in)', 13, false],
+    ['a 17-year-old', 17, false],
+  ])('marks the consent as enrolling %s: %s', async (_label, years, expected) => {
+    db.user_roles.push({ user_id: KID_ID, role: 'kid' });
+    const now = new Date();
+    // The first of this month, `years` ago: that birthday has already passed, so the exact age is `years`.
+    (db.profiles[0] as Record<string, unknown>).birth_date = `${now.getUTCFullYear() - years}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-01`;
+    const res = await auth(request(createApp()).get('/api/v1/family/kids'));
+    expect(res.status).toBe(200);
+    expect(res.body.data.kids[0].dialogueExperiment).toBe(expected);
+  });
+
+  it('never marks a self-registered teen who linked this Tutor', async () => {
+    (db.profiles[0] as Record<string, unknown>).birth_date = `${new Date().getUTCFullYear() - 12}-01-01`;
+    const res = await auth(request(createApp()).get('/api/v1/family/kids'));
+    expect(res.body.data.kids[0].accountType).toBe('teen');
+    expect(res.body.data.kids[0].dialogueExperiment).toBe(false);
   });
 
   it('rolls up the Family Hub card facts: tasks awaiting approval, wallet total, chore streak', async () => {

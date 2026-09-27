@@ -21,6 +21,17 @@ describe('Family console API layer', () => {
     expect(refused).toEqual({ ok: false, code: 'PARENT_VERIFICATION_REQUIRED' });
   });
 
+  it('M-12: reads the hint-style-test mark as true only when Core says true (absent or malformed = false)', async () => {
+    const read = async (value: unknown) => {
+      const result = await fetchChildren(fakeTransport({ 'GET /family/kids': ok({ kids: [{ ...FAMILY[0], dialogueExperiment: value }] }) }));
+      return result.ok ? result.data[0]!.dialogueExperiment : 'refused';
+    };
+    expect(await read(true)).toBe(true);
+    expect(await read(false)).toBe(false);
+    expect(await read(undefined)).toBe(false);
+    expect(await read('yes')).toBe(false);
+  });
+
   it('sends exactly the documented child fields and the consent verb for each direction', async () => {
     const transport = fakeTransport({
       'POST /family/kids': ok({ kid: { userId: KID_A, displayName: 'Ana', username: 'ana_2016' } }),

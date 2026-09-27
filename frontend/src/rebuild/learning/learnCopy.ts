@@ -28,6 +28,8 @@ export interface LearnLinks {
   territory: (slug: string) => string;
   rhythm: string;
   journal: string;
+  /** L-04: goals together (13 to 17). Optional so older hosts and previews still type-check. */
+  together?: string;
 }
 
 /** Client-side navigation; `courseSlug` tells the lesson player where "exit" returns. */

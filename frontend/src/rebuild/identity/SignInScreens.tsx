@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Button, ButtonGroup, Checkbox, InlineNotice, Sheet, TextField } from '../design/controls';
+import { Button, ButtonGroup, Checkbox, Copy, InlineNotice, Sheet, TextField } from '../design/controls';
 import type { Locale } from '../design/copyBudget';
 import {
   AuthError, AuthForm, AuthIntro, AuthLink, AuthOutcome, AuthSwitch, DateFields, EMPTY_DATE, GoogleSignIn, identityCopy, isoDate, PasswordField,
   type DateParts, type GoogleState, type Navigate,
 } from './authBlocks';
+import { ageFromParts } from './ageFromParts';
 
 /*
  * A1 Log in and A2 Sign up, rebuilt on the sign-in shell (W2S.2). Every
@@ -48,7 +49,8 @@ export function LoginScreen({ locale, google, pending, errorCode, onSubmit, onNa
   </div>;
 }
 
-export interface SignupValues { displayName: string; email: string; password: string; birthDate: string; parentIntent: boolean }
+/** `birthMonth` (`YYYY-MM`, S-04) only for a 13-17 date, after the form said what it is kept for. */
+export interface SignupValues { displayName: string; email: string; password: string; birthDate: string; birthMonth?: string; parentIntent: boolean }
 
 export type SignupView =
   | { kind: 'form'; pending: boolean; errorCode: string | null }
@@ -111,11 +113,15 @@ function SignupForm({ copy, google, view, initialParentIntent, onSubmit, onFirst
   const birthDate = isoDate(birth);
   const birthTyped = birth.year.length === 4 && birth.day !== '' && birth.month !== '';
   const ready = displayName.trim() !== '' && email.trim() !== '' && password.length >= 8 && birthDate !== null;
+  // S-04 (OD-28): a 13-17 date keeps its month so the account moves to adult at 18; the form says so first.
+  const age = birthDate === null ? null : ageFromParts(birth.day, birth.month, birth.year);
+  const teen = age !== null && age >= 13 && age <= 17;
   return <div className="lf-auth-page" data-screen="signup" data-surface="app">
     <AuthIntro title={copy.authSignup.title} />
     <GoogleSignIn copy={copy} google={google} />
     <AuthForm busy={view.pending} data-auth-form="signup"
-      onSubmit={() => { if (ready && !view.pending) onSubmit({ displayName: displayName.trim(), email: email.trim(), password, birthDate: birthDate!, parentIntent }); }}>
+      onSubmit={() => { if (ready && !view.pending) onSubmit({ displayName: displayName.trim(), email: email.trim(), password, birthDate: birthDate!,
+        ...(teen ? { birthMonth: birthDate!.slice(0, 7) } : {}), parentIntent }); }}>
       <div className="lf-auth-fields" onFocusCapture={onFirstEdit}>
         <AuthError copy={copy} code={view.errorCode} />
         <TextField label={copy.authSignup.name} value={displayName} onChange={(event) => setDisplayName(event.target.value)} autoComplete="name" maxLength={80} required />
@@ -123,6 +129,7 @@ function SignupForm({ copy, google, view, initialParentIntent, onSubmit, onFirst
         <PasswordField copy={copy} label={copy.authCommon.password} value={password} onChange={setPassword} autoComplete="new-password" showRule ruleHelp={false} />
         <DateFields copy={copy} legend={copy.authCommon.birthDate} help={copy.authSignup.birthHelp} value={birth} onChange={setBirth}
           error={birthTyped && birthDate === null ? copy.authCommon.dateInvalid : undefined} />
+        {teen ? <Copy role="body">{copy.authSignup.teenMonth}</Copy> : null}
         <Checkbox label={copy.authSignup.tutorIntent} help={copy.authSignup.tutorIntentHelp} checked={parentIntent}
           onChange={(event) => setParentIntent(event.target.checked)} data-auth="parent-intent" />
       </div>

@@ -38,6 +38,19 @@ test('blocks mystery-reward language in three languages, and allows a mystery-ma
   assert.deepEqual(checkFile('frontend/src/components/characters/x.tsx', "expression: 'surprised'"), []);
 });
 
+test('L-04: the cooperative-goal code names no reward or ranking, and other code is not held to it', () => {
+  for (const [path, text] of [
+    ['backend/src/routes/coopGoals.ts', 'return ok(res, { coins: 5 });'],
+    ['backend/src/services/coopGoals.ts', 'const bonusXp = 10; export const xp = bonusXp;'],
+    ['database/migrations/0999_teen_cooperative_goals.sql', 'SELECT rank() OVER (ORDER BY done) FROM x;'],
+    ['frontend/src/rebuild/learning/TogetherView.tsx', '<Celebration part="goal" />'],
+    ['frontend/src/rebuild/learning/together.ts', 'export const leaderboard = [];'],
+  ]) assert.ok(checkFile(path, text).some((f) => f.includes('cooperative-goal mechanic')), path);
+  // A comment that says what the mechanic never does is not the mechanic.
+  assert.deepEqual(checkFile('backend/src/routes/coopGoals.ts', '// no coins, no rank\nexport const x = 1;'), []);
+  assert.deepEqual(checkFile('backend/src/routes/learn.ts', 'const coins = 5;'), []);
+});
+
 test('the allowlist never names reward code, and the repository passes as a whole', () => {
   for (const path of Object.keys(RANDOMNESS_ALLOWLIST)) assert.ok(!REWARD_PATHS.some((p) => p.test(path)), path);
   const root = mkdtempSync(join(tmpdir(), 'lf-reward-'));

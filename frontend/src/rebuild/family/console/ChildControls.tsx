@@ -2,8 +2,9 @@ import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { Button, ButtonGroup, Copy, DestructiveAction, InlineNotice, LoadingState, Switch, TextField } from '../../design/controls';
 import {
   changeChildUsername, createChild, fetchMicrophone, grantMicrophone, PASSPHRASE_MIN, removeChild, renameChild, revokeMicrophone, setChildPassphrase, setInsightsConsent,
-  USERNAME_PATTERN, type Child, type ConsoleTransport, type MicrophoneState,
+  childName, USERNAME_PATTERN, type Child, type ConsoleTransport, type MicrophoneState,
 } from './consoleApi';
+import { ageFromParts } from '../../identity/ageFromParts';
 import { fill, type ChildAccountCopy, type ChildConsentCopy, type ConsoleLocale } from './consoleParts';
 
 /*
@@ -96,11 +97,15 @@ export function AddChild({ copy, locale, transport, startOpen = false, onAdded, 
     setBusy('idle');
     if (!result.ok) { setError(copy[CREATE_ERRORS[result.code] ?? 'failed']); return; }
     const created = result.data.kid;
+    // M-12: until the list is read again, a 10-12 birth date shows the hint-style-test line (over-telling is the safe side).
+    const [y, m, d] = birthDate.split('-');
+    const age = birthDate ? ageFromParts(d ?? '', m ?? '', y ?? '') : null;
     reset();
     setOpen(false);
     // A new child has no chores, coins or streak yet: known zeros by construction, not fetched.
     onAdded({ userId: created.userId, displayName: created.displayName ?? name.trim(), username: created.username ?? handle, analyticsConsent: false,
-      pendingApprovalCount: 0, walletTotal: 0, taskStreakDays: 0, accountType: 'child', profileReview: null });
+      pendingApprovalCount: 0, walletTotal: 0, taskStreakDays: 0, accountType: 'child', profileReview: null,
+      dialogueExperiment: age !== null && age >= 10 && age <= 12 });
   }
 
   if (!open) {
@@ -187,7 +192,9 @@ export function ManageChild({ child, copy, transport, onRenamed, onUsernameChang
     setBusy('idle');
     if (!result.ok) { const known = USERNAME_ERRORS[result.code]; setNotice({ tone: 'error', text: known ? copy[known] : refusal(result.code) }); return; }
     setHandle(''); setConfirm('');
-    setNotice({ tone: 'success', text: fill(copy.usernameSaved, { name: label, username: `@${result.data.kid.username}` }) });
+    // S-06: the child's old sign-ins end with the change; say so, or say that some may still be open.
+    const after = result.data.sessionsEnded === true ? copy.usernameSignInAgain : copy.usernameStillSignedIn;
+    setNotice({ tone: 'success', text: `${fill(copy.usernameSaved, { name: label, username: `@${result.data.kid.username}` })} ${after}` });
     onUsernameChanged?.(child.userId, result.data.kid.username);
   }
 
@@ -285,6 +292,10 @@ export function InsightsConsent({ child, copy, transport, onChanged }: {
   return <div className="lf-console-control" data-console-control="insights">
     <Switch label={copy.insights} help={copy.insightsHelp} checked={child.analyticsConsent} pending={pending}
       stateLabels={{ on: copy.on, off: copy.off }} onCheckedChange={(next) => void toggle(next)} />
+    {/* M-12 (OD-26): for a 10-12 child this same consent enrols them in the Mentor's hint-style test; said before it is turned on. */}
+    {child.dialogueExperiment
+      ? <Copy role="body">{fill(copy.insightsExperiment, { name: childName(child) })}</Copy>
+      : null}
     {failed ? <InlineNotice tone="error" live>{copy.insightsFailed}</InlineNotice> : null}
   </div>;
 }
