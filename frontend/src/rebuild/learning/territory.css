@@ -1,0 +1,57 @@
+/*
+ * W2L.2 (L3): the course world. A neutral page with coloured cards (02 rule
+ * 15, §4.5): each chapter is a neutral card led by its own scene art (B.8),
+ * separated by elevation, never by an outline (02 §4.4). Tokens only.
+ */
+.lf-rebuild.lf-territory { align-content: start; }
+.lf-territory-inner { display: grid; gap: var(--spacing-6); inline-size: 100%; max-inline-size: 1040px; margin-inline: auto; }
+.lf-territory-inner > * { min-inline-size: 0; }
+.lf-territory-top { display: flex; align-items: center; flex-wrap: wrap; gap: var(--spacing-3); }
+.lf-territory-summary { display: grid; gap: var(--spacing-3); justify-items: start; }
+.lf-territory-summary > .lf-course-path-progress { inline-size: 100%; max-inline-size: 560px; }
+
+.lf-territory-worlds { display: grid; gap: var(--spacing-5); align-items: start; margin: 0; padding: 0; list-style: none; }
+.lf-territory-world > article { display: grid; gap: var(--spacing-4); padding: var(--spacing-4); border-radius: var(--rounded-lg); background: var(--surface); color: var(--content); box-shadow: var(--elevation-card); }
+.lf-rebuild[data-theme='dark'] .lf-territory-world > article { background: var(--raised); box-shadow: none; }
+/* Where the learner is: the card itself takes the soft primary well, and its tag the solid fill (colour plus the words "You are here"). */
+.lf-territory-world--here > article, .lf-rebuild[data-theme='dark'] .lf-territory-world--here > article { background: var(--primary-soft); }
+.lf-territory-world--here .lf-territory-world-head > .lf-course-path-tag { background: var(--primary); color: var(--on-primary); }
+/* A world not reached yet: its name and "Later" only (the fog of war), on a sunken well. */
+.lf-territory-world--later > article { background: var(--sunken); box-shadow: none; }
+.lf-rebuild[data-theme='dark'] .lf-territory-world--later > article { background: var(--sunken); }
+.lf-territory-world--later h2 { color: var(--content-muted); }
+
+/* The scene: the whole card width at its own 10:3 aspect, never cropped, never behind text. */
+.lf-territory-scene { min-inline-size: 0; }
+.lf-rebuild .lf-territory-scene .lf-art { inline-size: 100%; block-size: auto; aspect-ratio: 10 / 3; border-radius: var(--rounded-md); }
+
+.lf-territory-world-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--spacing-2) var(--spacing-3); }
+.lf-territory-world-head h2 { font-size: 1.25rem; line-height: 1.25; overflow-wrap: break-word; }
+.lf-territory-count { grid-column: 2; grid-row: 1; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--content-muted); }
+.lf-territory-world-head > .lf-course-path-tag { grid-column: 1; justify-self: start; }
+.lf-territory-toggle { display: flex; flex-wrap: wrap; }
+
+.lf-territory-topics { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-territory-saga { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-territory-saga h3 { font-size: 1rem; color: var(--content-muted); overflow-wrap: break-word; }
+/* Topic rows sit on a sunken well inside the card, so a surface row keeps a boundary in both modes (02 §4.4). */
+.lf-rebuild .lf-territory-topics .lf-list-row { background: var(--sunken); }
+.lf-rebuild[data-theme='dark'] .lf-territory-topics .lf-list-row { background: var(--surface); }
+/* On the soft primary well of the world where the learner is, a sunken row would vanish: rows take the surface there. */
+.lf-rebuild .lf-territory-world--here .lf-territory-topics .lf-list-row { background: var(--surface); }
+.lf-rebuild .lf-territory-topics .lf-list-row-supporting { justify-self: start; }
+/* A finished topic carries a mark, its count and the chevron: a narrower text basis keeps the chevron on the row at phone width (it still wraps at 140% text). */
+.lf-rebuild .lf-territory-topics .lf-list-row-text { flex-basis: 8em; }
+.lf-rebuild[data-theme='dark'] .lf-territory-toggle .lf-button--secondary { background: var(--surface); }
+
+.lf-territory--state .lf-territory-inner { justify-items: start; }
+.lf-territory--state h1 { font-size: 2rem; }
+.lf-territory--state .lf-actions { inline-size: 100%; max-inline-size: 480px; }
+
+@container app (min-width: 640px) {
+  .lf-territory-world > article { padding: var(--spacing-5); }
+}
+/* Two worlds side by side from a wide container: the map reads as a territory, not a list (03 container layouts). */
+@container app (min-width: 960px) {
+  .lf-territory-worlds { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

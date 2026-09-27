@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CopyRole } from '../design/copyBudget';
+import { verdictWords } from '../learning/placementOutcome';
 import { expectBudgetedGroups, expectFits, flatten, namespaceCopy } from './budget';
 
 /* `rebuild-learn.json` (Lane 2): learner home, courses, placement, lessons and results. Youngest (6–9) budget. */
@@ -29,6 +30,24 @@ const course: Record<string, CopyRole> = {
   notFoundTitle: 'heading', notFoundBody: 'body', errorTitle: 'heading', errorBody: 'body', offlineTitle: 'heading', offlineBody: 'body',
   refusedTitle: 'heading', refusedBody: 'body', emptyTitle: 'heading', emptyBody: 'body', retry: 'action', retrying: 'action', preview: 'body',
 };
+/*
+ * W2L.2: the course world (L3, TerritoryMapView.tsx) and the placement flow
+ * (L4, PlacementFlowView.tsx). The flow's Mentor turns are budgeted as
+ * `mentor` (06 §3.1, 12 words for ages 6 to 9); the placeholder and the line
+ * sent to Core for Oracle's fallback are budgeted as what they read like.
+ */
+const territory: Record<string, CopyRole> = {
+  course: 'action', title: 'heading', loading: 'heading', progress: 'body', reviewsOne: 'body', reviewsOther: 'body', here: 'body', extra: 'body',
+  done: 'body', later: 'body', topics: 'action', topic: 'body', placementTitle: 'heading', placementAction: 'action', closedOne: 'body',
+  closedOther: 'body', errorTitle: 'heading', offlineBody: 'body', preview: 'body',
+};
+const placement: Record<string, CopyRole> = {
+  close: 'action', back: 'action', loading: 'heading', welcomeTitle: 'heading', welcomeMentor: 'mentor', start: 'action', fromBeginning: 'action',
+  intakeTitle: 'heading', intakeMentor: 'mentor', intakeLabel: 'body', intakePlaceholder: 'body', continue: 'action', reading: 'action',
+  askInstead: 'action', neutral: 'mentor', question: 'body', dontKnow: 'option', confirmMentor: 'mentor', stepError: 'body', saveError: 'body',
+  offlineError: 'body', retry: 'action', saving: 'action', capped: 'body', adjustTitle: 'heading', adjustMentor: 'mentor',
+  adjustEarlier: 'action', adjustKeep: 'action', errorTitle: 'heading', errorBody: 'body', offlineBody: 'body', courses: 'action',
+};
 
 const LONGEST_TITLE = { 'en-US': 'My first lemonade stand', 'es-MX': 'Mi primer puesto de limonada', 'pt-BR': 'Minha primeira barraca de limonada' } as const;
 const filled = (text: string, locale: keyof typeof LONGEST_TITLE) => text
@@ -38,9 +57,9 @@ const filled = (text: string, locale: keyof typeof LONGEST_TITLE) => text
 describe('rebuild-learn copy budget', () => {
   for (const [locale, strings] of namespaceCopy('learn')) {
     it(`fits the youngest copy budget in ${locale}`, () => {
-      expectBudgetedGroups(strings, [...Object.keys(flat), 'home', 'course']);
+      expectBudgetedGroups(strings, [...Object.keys(flat), 'home', 'course', 'territory', 'placement']);
       for (const [key, role] of Object.entries(flat)) expectFits(strings[key] as string, role, locale, '6-9', key);
-      for (const [group, roles] of [['home', home], ['course', course]] as const) {
+      for (const [group, roles] of [['home', home], ['course', course], ['territory', territory], ['placement', placement]] as const) {
         const entries = flatten(strings[group]!);
         // Exhaustive: every key of the group has a role here, and every role names a key.
         expect(new Set(entries.map(([key]) => key.split('.')[0]))).toEqual(new Set(Object.keys(roles)));
@@ -49,6 +68,8 @@ describe('rebuild-learn copy budget', () => {
           if (role !== 'data') expectFits(filled(text, locale), role, locale, '6-9', `${group}.${key}`);
           // One design system, one glossary (OD-6, 02 §1.2): the AI is the Mentor, coins are never money, no lives, no em dash.
           expect(text, `${group}.${key}`).not.toMatch(/\bTutor\b|\bbot\b|assistant|asistente|assistente|\blives?\b|\bvidas?\b|freeze|congel|—/i);
+          // B.15: nothing on the placement or the map reads as a verdict on ability, a rank or a failure.
+          if (group === 'placement' || group === 'territory') expect(verdictWords(text, locale), `${group}.${key}`).toEqual([]);
         }
       }
     });

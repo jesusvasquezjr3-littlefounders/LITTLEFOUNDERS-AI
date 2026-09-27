@@ -54,6 +54,11 @@ states.push(
   learner('/learn/:course@age-restricted', '/learn/investing', 'learn-home-young', '[data-screen="course-path-age-restricted"]'),
   learner('/learn/journal@teen', '/learn/journal', 'learn-home-teen', '[data-screen="journal"]'),
   learner('/learn/rhythm@child', '/learn/rhythm', 'learn-home-child', '[data-screen="rhythm"]'),
+  // W2L.2: the course world (L3) on its real route, both engines, the placement owed, the age safeguard.
+  learner('/learn/:course/territory@linear-child', '/learn/financial-education/territory', 'learn-home-child', '[data-screen="territory"] .lf-territory-world--here'),
+  learner('/learn/:course/territory@pathway-teen', '/learn/financial-education/territory', 'learn-home-teen', '[data-screen="territory"] .lf-course-path-note'),
+  learner('/learn/:course/territory@placement-teen', '/learn/entrepreneurship/territory', 'learn-home-teen', '[data-screen="territory"] [data-step="placement"]'),
+  learner('/learn/:course/territory@age-restricted', '/learn/investing/territory', 'learn-home-young', '[data-screen="territory-age-restricted"]'),
   preview('learnhome@6-9', { screen: 'learnhome', age: '6-9' }),
   preview('learnhome-teen@13-17', { screen: 'learnhome', home: 'teen', age: '13-17', bridges: '1', rhythm: 'resting' }),
   preview('learnhome-loading@6-9', { screen: 'learnhome', home: 'loading', age: '6-9' }),
@@ -66,6 +71,40 @@ states.push(
   preview('course-offline@6-9', { screen: 'course', course: 'offline', age: '6-9' }),
   preview('course-not-found@6-9', { screen: 'course', course: 'not-found', age: '6-9' }),
   preview('course-refused@adult', { screen: 'course', course: 'refused', age: 'adult' }),
+);
+
+/*
+ * W2L.2: the placement flow (L4) on its real route, a full-screen single-state layer outside the learner
+ * shell, reached step by step with real presses: welcome, the 12+ opener, a question, the outcome and the
+ * learner's own adjustment.
+ */
+const placementState = (id, scenario, ready, open) => app(`/learn/:course/placement@${id}`, '/learn/financial-education/placement', scenario,
+  '[data-shell="single-state"] [data-screen="placement-welcome"]', open ? { open, readyAlso: ready } : { readyAlso: ready });
+states.push(
+  placementState('welcome-child', 'learn-home-child', '[data-screen="placement-welcome"] [data-mentor-character="zara"] img'),
+  placementState('intake-teen', 'learn-home-teen', '[data-mentor-character="dina"] img', ['[data-screen="placement-welcome"] .lf-button--accent']),
+  placementState('question-child', 'learn-home-child', '[data-mentor-character="zara"] img', ['[data-screen="placement-welcome"] .lf-button--accent']),
+  placementState('outcome-child', 'learn-home-child', '[data-mentor-character="zara"] img', ['[data-screen="placement-welcome"] .lf-button--accent', '[data-screen="placement-question"] .lf-choice']),
+  placementState('adjust-adult', 'learn-course-adult', '[data-screen="placement-welcome"]', ['[data-screen="placement-welcome"] .lf-button--accent',
+    '[data-screen="placement-intake"] .lf-actions .lf-button--secondary', '[data-screen="placement-question"] .lf-choice',
+    '[data-screen="placement-outcome"] .lf-actions .lf-button--secondary']),
+  preview('territory@6-9', { screen: 'territory', map: 'linear', age: '6-9' }),
+  preview('territory-pathway@13-17', { screen: 'territory', map: 'pathway', age: '13-17' }),
+  preview('territory-placement@10-12', { screen: 'territory', map: 'placement', age: '10-12' }),
+  preview('territory-loading@6-9', { screen: 'territory', map: 'loading', age: '6-9' }),
+  preview('territory-offline@6-9', { screen: 'territory', map: 'offline', age: '6-9' }),
+  preview('territory-prerequisite@6-9', { screen: 'territory', map: 'prerequisite', age: '6-9' }),
+  preview('placement-welcome@6-9', { screen: 'placement', flow: 'welcome', age: '6-9' }),
+  preview('placement-intake@13-17', { screen: 'placement', flow: 'intake', age: '13-17', mentor: 'rho' }),
+  preview('placement-reflection@13-17', { screen: 'placement', flow: 'reflection', age: '13-17' }),
+  preview('placement-question@6-9', { screen: 'placement', flow: 'question', age: '6-9', mentor: 'none' }),
+  preview('placement-confirm@6-9', { screen: 'placement', flow: 'confirm', age: '6-9', mentor: 'liruf' }),
+  preview('placement-outcome@6-9', { screen: 'placement', flow: 'outcome', age: '6-9' }),
+  preview('placement-capped@10-12', { screen: 'placement', flow: 'capped', age: '10-12' }),
+  preview('placement-adjust@6-9', { screen: 'placement', flow: 'adjust', age: '6-9', mentor: 'dina' }),
+  preview('placement-save-error@6-9', { screen: 'placement', flow: 'save-error', age: '6-9' }),
+  preview('placement-step-offline@6-9', { screen: 'placement', flow: 'step-offline', age: '6-9' }),
+  preview('placement-age@6-9', { screen: 'placement', flow: 'age', age: '6-9' }),
 );
 
 export const scenarios = {
@@ -114,11 +153,23 @@ const SHELVES = {
   empty: () => ({ courses: [] }),
 };
 const lesson = (id, title, state, bestScore = 0, placementCredited = false) => ({ id, slug: id, title, position: 1, difficulty: 1, xp_total: 10, estimated_minutes: 5, state, bestScore, placementCredited });
-const topic = (id, title, position, lessons) => ({ id, slug: id, title, position, kind: 'teaching', reviewOf: [], state: 'in-progress', lessons });
-const tree = (slug) => ({
-  course: { id: `course-${slug}`, slug, title: TITLES[slug], description: {}, subject: 'money', badgeAsset: null, inProgress: false, progress: progress(6, 14), placementRequired: false },
+/** A topic's state as Core derives it (courseTree.ts): every lesson passed is completed, some is in progress. */
+const topicState = (lessons) => {
+  const passed = lessons.filter((entry) => entry.state === 'passed').length;
+  return lessons.length > 0 && passed === lessons.length ? 'completed' : passed > 0 ? 'in-progress' : 'not-started';
+};
+const topic = (id, title, position, lessons) => ({ id, slug: id, title, position, kind: 'teaching', reviewOf: [], state: topicState(lessons), lessons });
+/*
+ * GET /learn/courses/:slug/tree. W2L.2: the same tree the course world reads; under the pathway engine each
+ * chapter carries its `pathwayAccess` (the learner's own path, an extra, or closed by age), and the entry
+ * placement is owed on `entrepreneurship` (as the path answer says).
+ */
+const tree = (slug, engine = 'linear') => ({
+  course: { id: `course-${slug}`, slug, title: TITLES[slug], description: {}, subject: 'money', badgeAsset: null, inProgress: false, progress: progress(6, 14),
+    placementRequired: slug === 'entrepreneurship' },
   adventures: [
     { id: 'adv-coins', slug: 'coins', title: loc('Coins and counting', 'Monedas y conteo', 'Moedas e contagem'), description: {}, theme: 'archipelago', position: 1, state: 'available', progress: progress(6, 8),
+      ...(engine === 'pathway' ? { pathwayAccess: 'pathway' } : {}),
       sagas: [{ id: 'saga-coins', slug: 'coins', title: loc('Coins', 'Monedas', 'Moedas'), icon: 'savings', position: 1, progress: progress(6, 8), topics: [
         topic('t-count', loc('Counting coins', 'Contar monedas', 'Contar moedas'), 1, [
           lesson('l-count-1', loc('Coins in a jar', 'Monedas en un frasco', 'Moedas no pote'), 'passed', 90),
@@ -126,7 +177,8 @@ const tree = (slug) => ({
         topic('t-needs', loc('Needs and wants', 'Necesidades y deseos', 'Necessidades e desejos'), 2, [
           lesson('l-needs-1', loc('What do we need?', '¿Qué necesitamos?', 'Do que precisamos?'), 'current'),
           lesson('l-needs-2', loc('Wants can wait', 'Los deseos pueden esperar', 'Desejos podem esperar'), 'locked')])] }] },
-    { id: 'adv-save', slug: 'save', title: loc('Saving a little', 'Ahorrar un poco', 'Poupar um pouco'), description: {}, theme: 'meadow', position: 2, state: 'locked', progress: progress(0, 6),
+    { id: 'adv-save', slug: 'save', title: loc('Saving a little', 'Ahorrar un poco', 'Poupar um pouco'), description: {}, theme: 'forest', position: 2, state: 'locked', progress: progress(0, 6),
+      ...(engine === 'pathway' ? { pathwayAccess: 'closed' } : {}),
       sagas: [{ id: 'saga-save', slug: 'save', title: loc('Saving', 'Ahorro', 'Poupança'), icon: 'savings', position: 1, progress: progress(0, 6), topics: [
         topic('t-jar', loc('The piggy bank', 'La alcancía', 'O cofrinho'), 1, [lesson('l-jar-1', loc('A jar for later', 'Un frasco para después', 'Um pote para depois'), 'locked')])] }] },
   ],
@@ -164,7 +216,7 @@ const BAND = { young: '6-9', transition: '10-12', teen: '13-17', adult: 'adult' 
 const refuse = (status, code, extra = {}) => ({ status, body: { data: null, error: { code, message: 'Synthetic refusal', ...extra } } });
 
 /** W2L.1: what the learner home, the course screen, the journal and the rhythm read, per scenario. */
-function respondLearnerPages({ spec, scenario, path, request, ok }) {
+function respondLearnerPages({ spec, scenario, locale, path, request, ok }) {
   // Lane 0's shell scenarios land on the learner home too: they get the home's own reads (no other lane's scenario changes).
   if (!spec.shelf && scenario.startsWith('shell-')) {
     const register = { '6-9': 'young', '10-12': 'transition', '13-17': 'teen', adult: 'adult' }[spec.ageBand];
@@ -186,8 +238,10 @@ function respondLearnerPages({ spec, scenario, path, request, ok }) {
     if (slug === 'investing' && spec.shelf === 'young') return refuse(403, 'COURSE_AGE_RESTRICTED');
     if (kind === 'path' && spec.engine !== 'pathway') return refuse(409, 'PATHWAY_ENGINE_DISABLED');
     if (slug === 'investing') return refuse(409, 'COURSE_PREREQUISITE_REQUIRED', { missingPrerequisites: ['entrepreneurship'] });
-    return kind === 'path' ? ok(coursePathAnswer(slug, STAGE[spec.register], slug === 'entrepreneurship')) : ok(tree(slug));
+    return kind === 'path' ? ok(coursePathAnswer(slug, STAGE[spec.register], slug === 'entrepreneurship')) : ok(tree(slug, spec.engine));
   }
+  const placement = path.match(/^\/placement\/([^/]+)\/(intake|step|commit)$/);
+  if (placement) return respondPlacement({ spec, locale, kind: placement[2], request, ok });
   if (path === '/learn/rhythm') return ok({
     streak: { model: 'rest-days-v1', status: 'open', current: 4, best: 12, daysPracticed: 41, restDaysLeft: 1, lastActiveDate: '2026-09-22', pause: null },
     pace: { goal: 2, chosen: true, passedToday: 1, goalMet: false }, mentor: { character: spec.mentor ?? 'rho', chosen: Boolean(spec.mentor) }, levers: ['path', 'mentor', 'pace'],
@@ -202,9 +256,35 @@ function respondLearnerPages({ spec, scenario, path, request, ok }) {
   return undefined;
 }
 
+/*
+ * W2L.2: the placement flow (backend/src/routes/placement.ts), stateless as Core is: the first step asks, any
+ * step carrying an answer is done (a start further in, with B.15's closed frame), and the commit stores it.
+ * Core offers the conversational opener only from 12 (the teen and adult registers here).
+ */
+const PROBE = {
+  'en-US': { prompt: 'You save 10 coins a week. How many after 4 weeks?', options: ['14 coins', '40 coins', '100 coins'] },
+  'es-MX': { prompt: 'Ahorras 10 monedas por semana. ¿Cuántas tienes en 4 semanas?', options: ['14 monedas', '40 monedas', '100 monedas'] },
+  'pt-BR': { prompt: 'Você poupa 10 moedas por semana. Quantas terá em 4 semanas?', options: ['14 moedas', '40 moedas', '100 moedas'] },
+};
+const REFLECTION = { 'en-US': 'You already keep a budget. We start past that.', 'es-MX': 'Ya llevas un presupuesto. Empezamos después de eso.',
+  'pt-BR': 'Você já faz um orçamento. Começamos depois disso.' };
+const PLACED = { frontier: 4, startTopicId: 't-needs', startLessonId: 'l-needs-1', creditedLessonCount: 4, creditedTopicCount: 2, totalTopicCount: 8,
+  method: 'adaptive_quiz', cappedByPrerequisite: false, framing: { path: 'adaptive_quiz', start: 'further_in', basis: 'prior_exposure', learner_chosen: false } };
+function respondPlacement({ spec, locale, kind, request, ok }) {
+  if (!spec.shelf) return undefined;
+  const body = request.postData ? JSON.parse(request.postData) : {};
+  if (kind === 'intake') return request.method === 'POST'
+    ? ok({ available: true, priorFraction: 0.5, reflection: REFLECTION[locale] })
+    : ok({ ageAlreadyKnown: true, conversationalIntakeAvailable: spec.register === 'teen' || spec.register === 'adult' });
+  if (kind === 'step') return (body.answers ?? []).length === 0
+    ? ok({ kind: 'ask', probe: { topicId: '55555555-5555-4555-8555-555555555555', ...PROBE[locale] }, questionNumber: 1, questionsRemaining: 5, phase: 'search' })
+    : ok({ kind: 'done', result: PLACED });
+  return { status: 201, body: { data: PLACED, error: null } };
+}
+
 /** The lesson document and its server-graded run, from the product's own pilot fixtures. */
 export function respond({ spec, scenario, locale, fixtures, path, request, ok }) {
-  const learnerPage = respondLearnerPages({ spec, scenario, path, request, ok });
+  const learnerPage = respondLearnerPages({ spec, scenario, locale, path, request, ok });
   if (learnerPage !== undefined) return learnerPage;
   const lesson = path.match(/^\/learn\/lessons\/([^/]+)(\/v2-runs)?$/);
   if (lesson && !lesson[2]) {

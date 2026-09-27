@@ -1,16 +1,20 @@
-import { useEffect, useId, useState } from 'react';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams } from 'react-router-dom';
-import { useAuth } from '@/auth/AuthContext';
-import { api } from '@/lib/api';
-import { Card, Icon, LoadingOverlay, ProgressBar, SectionHeading } from '@/components/ui';
+import { Link } from 'react-router-dom';
+import { Card, Icon, ProgressBar, SectionHeading } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import { ErrorBanner } from '@/routes/auth/ErrorBanner';
-import { coursePath, lessonPath } from './paths';
+import { lessonPath } from './paths';
 import { localizedText, type CourseTree, type SagaNode, type TopicNode, type TopicState } from './types';
 
 /*
- * /learn/:courseSlug/territory — the skill-territory map (roadmap.sh's
+ * W2L.2: the learner's /learn/:courseSlug/territory is the rebuilt course
+ * world (TerritoryRoute, rebuild/learning/TerritoryMapView.tsx). What stays
+ * here is only the legacy renderer the Family Hub's kid view still imports
+ * (routes/app/family/KidTerritoryPage.tsx, Lane 4): TerritoryView and
+ * TerritoryProgressStrip. Removed at the S10 cutover once Lane 4 mounts a
+ * rebuilt view (the rebuilt map can serve it: links are the host's).
+ *
+ * Originally: the skill-territory map (roadmap.sh's
  * orientation insight, 2026-07-25 analysis: seeing the WHOLE territory plus
  * "you are here" is itself the product). A pure projection of the same
  * server-computed course tree the caminito uses — never a second source of
@@ -23,8 +27,6 @@ import { localizedText, type CourseTree, type SagaNode, type TopicNode, type Top
  * only) — a 6-year-old shown the full 4,000-node graph is overwhelmed, the
  * opposite of orientation.
  */
-
-type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; tree: CourseTree };
 
 const STATE_META: Record<TopicState, { icon: string; tone: string; labelKey: string }> = {
   completed: { icon: 'check_circle', tone: 'text-success-strong', labelKey: 'learn.territory.state.completed' },
@@ -129,77 +131,6 @@ function TopicChip({ topic, locale, courseSlug, fallbackLinkTo }: { topic: Topic
   );
 }
 
-export function TerritoryPage() {
-  const { t, i18n } = useTranslation();
-  const { courseSlug = '' } = useParams();
-  const { getToken } = useAuth();
-  const legendId = useId();
-  const [state, setState] = useState<LoadState>({ status: 'loading' });
-  const locale = i18n.resolvedLanguage ?? 'en-US';
-
-  useEffect(() => {
-    let cancelled = false;
-    setState({ status: 'loading' });
-    void (async () => {
-      const token = await getToken();
-      if (!token || cancelled) return;
-      const { data, error } = await api<CourseTree>(`/learn/courses/${courseSlug}/tree`, { token });
-      if (cancelled) return;
-      setState(error ? { status: 'error', code: error.code } : { status: 'ready', tree: data });
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [courseSlug, getToken]);
-
-  if (state.status === 'loading') return <LoadingOverlay label={t('learn.territory.loading')} />;
-  if (state.status === 'error') return <ErrorBanner code={state.code} />;
-
-  const topicStates = new Set(
-    state.tree.adventures
-      .filter((adventure) => adventure.state !== 'locked')
-      .flatMap((adventure) => adventure.sagas.flatMap((saga) => saga.topics.map((topic) => topic.state))),
-  );
-  const presentStates = (Object.keys(STATE_META) as TopicState[]).filter((key) => topicStates.has(key));
-
-  return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-      <header className="flex flex-col gap-4">
-        <Link to={coursePath(courseSlug)} className="lf-caption flex w-fit items-center gap-1 font-bold text-primary hover:underline">
-          <Icon name="arrow_back" className="text-[16px]" aria-hidden /> {t('learn.territory.back')}
-        </Link>
-        <h1 className="lf-display-lg text-content">{t('learn.territory.title')}</h1>
-        <TerritoryProgressStrip tree={state.tree} />
-        {/*
-          * A legend for a state nothing on this page is in explains a symbol
-          * the learner will not meet, which is the same cost as the symbol it
-          * was meant to save them.
-          */}
-        {/*
-         * The legend was a bare `<div aria-label>`, which names NOTHING — a
-         * div has no role, so the label is dropped and the group had no
-         * accessible name at all. The lockup gives it a real heading that both
-         * a reader and a screen reader get, from the same string.
-         */}
-        <section aria-labelledby={legendId}>
-          <SectionHeading id={legendId} as="h2" icon="legend_toggle" tone="muted">
-            {t('learn.territory.legendLabel')}
-          </SectionHeading>
-          <div className="flex flex-wrap gap-2">
-            {presentStates.map((stateKey) => (
-              <span key={stateKey} className="lf-caption inline-flex items-center gap-1.5 rounded-full bg-surface-sunken px-3 py-1 font-semibold text-content-muted">
-                <Icon name={STATE_META[stateKey].icon} className={cn('!text-[15px]', STATE_META[stateKey].tone)} aria-hidden />
-                {t(STATE_META[stateKey].labelKey)}
-              </span>
-            ))}
-          </div>
-        </section>
-      </header>
-      <TerritoryView tree={state.tree} locale={locale} courseSlug={courseSlug} />
-    </div>
-  );
-}
-
 /** Course progress + reviews-due rollup — shared by kid and parent views. */
 export function TerritoryProgressStrip({ tree }: { tree: CourseTree }) {
   const { t } = useTranslation();
@@ -263,4 +194,3 @@ export function TerritoryView({ tree, locale, courseSlug, chipLinkTo }: { tree: 
   );
 }
 
-export default TerritoryPage;

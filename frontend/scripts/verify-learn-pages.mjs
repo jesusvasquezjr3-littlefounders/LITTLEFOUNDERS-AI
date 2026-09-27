@@ -8,7 +8,10 @@ import { installSyntheticCore, SCENARIOS, sessionStorageScript } from './audits/
 /*
  * W2L.1: the rebuilt learner home (L1), the one course screen (L2) and the
  * journal and rhythm, on their REAL routes inside the learner shell, in real
- * Chrome.
+ * Chrome. W2L.2 adds the course world (L3, in the learner shell) and the
+ * placement flow (L4, its own full-hue single-state layer: `shell` and `root`
+ * name where each case's page lives, `steps` are the real presses that reach
+ * a later step of the flow before anything is checked).
  *
  *   REBUILD_URL=http://localhost:5420 npm run verify:learn-pages
  *
@@ -49,6 +52,8 @@ const READY_TRIES = Number(process.env.LEARN_READY_TRIES ?? 1200);
  * and must return an empty list of problems; `press` is the link a person
  * follows next and `to` where it must land.
  */
+const PLACEMENT = { shell: 'single-state', root: '.lf-placement-flow' };
+const START = '[data-screen="placement-welcome"] .lf-actions .lf-button--accent';
 const CASES = [
   { id: 'home-child', path: '/learn', scenario: 'learn-home-child', band: '6-9',
     ready: '[data-screen="learn-home"][data-state="ready"] .lf-learn-hero[data-step="lesson"]',
@@ -117,6 +122,76 @@ const CASES = [
     ready: '[data-screen="course-path"][data-engine="linear"]', expect: `[ location.pathname === '/learn/financial-education' || 'the old /path address redirects' ]`, redirected: true },
   { id: 'journal', path: '/learn/journal', scenario: 'learn-home-teen', band: null, ready: '[data-screen="journal"] .lf-journal-entry, [data-screen="journal"] article', expect: '[]' },
   { id: 'rhythm', path: '/learn/rhythm', scenario: 'learn-home-child', band: null, ready: '[data-screen="rhythm"] .lf-rhythm-streak', expect: '[]' },
+  // W2L.2 (L3): the course world.
+  { id: 'territory-linear', path: '/learn/financial-education/territory', scenario: 'learn-home-child', band: '6-9',
+    ready: '[data-screen="territory"] .lf-territory-world--here img',
+    expect: `(async () => {
+      const here = document.querySelector('.lf-territory-world--here');
+      const later = document.querySelector('.lf-territory-world--later');
+      const toggle = here?.querySelector('.lf-territory-toggle button');
+      toggle?.click();
+      for (let n = 0; n < 40 && !document.querySelector('.lf-territory-topics'); n++) await new Promise((done) => setTimeout(done, 50));
+      const rows = [...document.querySelectorAll('.lf-territory-topics .lf-list-row')];
+      return [
+        !!here?.querySelector('[data-asset-id="scene.archipelago.art"]') || 'the world where the learner is shows its own scene (B.8)',
+        !!later && !later.querySelector('img') && !later.querySelector('button') || 'a world not reached yet shows only its name (fog of war)',
+        toggle?.getAttribute('aria-expanded') === 'true' || 'the toggle says the world is open',
+        rows.length === 2 || 'the open world lists its topics',
+        rows.some((row) => row.classList.contains('lf-list-row--pressable') && /Next|Siguiente|Próximo/.test(row.textContent)) || 'the next lesson is one press away and said in words',
+      ];
+    })()`, press: '.lf-territory-top a', to: '/learn/financial-education' },
+  { id: 'territory-pathway', path: '/learn/financial-education/territory', scenario: 'learn-home-teen', band: '13-17',
+    ready: '[data-screen="territory"] .lf-course-path-note',
+    expect: `[
+      document.querySelectorAll('.lf-territory-world').length === 1 || 'a chapter closed by age is never listed (OD-16)',
+      /1/.test(document.querySelector('.lf-course-path-note')?.textContent ?? '') || 'the closed chapter is counted',
+      !!document.querySelector('[data-nav-id="wallet"]') && !document.querySelector('[data-nav-id="tasks"]') || 'OD-3 Option B: personal wallet, no Tasks',
+    ]` },
+  { id: 'territory-placement', path: '/learn/entrepreneurship/territory', scenario: 'learn-home-teen', band: '13-17',
+    ready: '[data-screen="territory"] [data-step="placement"]',
+    expect: `(async () => {
+      document.querySelector('.lf-territory-toggle button')?.click();
+      for (let n = 0; n < 40 && !document.querySelector('.lf-territory-topics'); n++) await new Promise((done) => setTimeout(done, 50));
+      return [
+        document.querySelector('[data-step="placement"] a')?.getAttribute('href') === '/learn/entrepreneurship/placement' || 'the placement is offered first',
+        !document.querySelector('.lf-territory-topics .lf-list-row--pressable') || 'no topic opens a lesson before the placement',
+        document.querySelectorAll('.lf-button--accent').length === 1 || 'one accent call to action',
+      ];
+    })()`, press: '[data-step="placement"] a', to: '/learn/entrepreneurship/placement' },
+  { id: 'territory-age', path: '/learn/investing/territory', scenario: 'learn-home-young', band: '6-9', ready: '[data-screen="territory-age-restricted"]',
+    expect: `[ !document.querySelector('.lf-territory-world') || 'nothing of a course closed by age is shown' ]`, press: '.lf-territory-inner .lf-actions a', to: '/learn' },
+  // W2L.2 (L4): the placement flow, step by step with real presses.
+  { id: 'placement-welcome', ...PLACEMENT, path: '/learn/financial-education/placement', scenario: 'learn-home-child', band: '6-9',
+    ready: '[data-screen="placement-welcome"] [data-mentor-character="zara"] img',
+    expect: `[
+      document.querySelector('[data-shell="single-state"]')?.dataset.hue === 'sky' || 'one state, one hue (02 rule 15)',
+      document.querySelectorAll('.lf-placement-flow .lf-actions button').length === 2 || 'start, or start from the beginning',
+      document.querySelectorAll('.lf-button--accent').length === 1 || 'one accent call to action',
+      !document.querySelector('[data-shell="learner"]') || 'no app navigation around the flow',
+      document.querySelector('.lf-placement-mentor-name')?.textContent === 'Zara' || 'the chosen Mentor says the turn',
+    ]`, press: '.lf-placement-bar .lf-icon-button', to: '/learn/financial-education' },
+  { id: 'placement-intake', ...PLACEMENT, path: '/learn/financial-education/placement', scenario: 'learn-home-teen', band: '13-17',
+    ready: '[data-screen="placement-welcome"] [data-mentor-character="dina"] img', steps: [[START, '[data-screen="placement-intake"] textarea']],
+    expect: `[ !!document.querySelector('.lf-placement-intake label') || 'the 12+ opener has its labelled field' ]` },
+  { id: 'placement-question', ...PLACEMENT, path: '/learn/financial-education/placement', scenario: 'learn-home-child', band: '6-9',
+    ready: '[data-screen="placement-welcome"] [data-mentor-character="zara"] img', steps: [[START, '[data-screen="placement-question"] .lf-choice']],
+    expect: `[
+      document.querySelectorAll('.lf-placement-options .lf-choice').length === 4 || 'three options and the not-yet answer',
+      !!document.querySelector('.lf-placement-flow [role="progressbar"][aria-valuetext]') || 'progress said to assistive technology',
+      document.activeElement?.tagName === 'H1' || 'focus moved to the question',
+    ]` },
+  { id: 'placement-outcome', ...PLACEMENT, path: '/learn/financial-education/placement', scenario: 'learn-home-child', band: '6-9',
+    ready: '[data-screen="placement-welcome"] [data-mentor-character="zara"] img',
+    steps: [[START, '[data-screen="placement-question"] .lf-choice'], ['[data-screen="placement-question"] .lf-choice', '[data-screen="placement-outcome"] .lf-placement-outcome-card']],
+    expect: `[
+      !/\\d/.test(document.querySelector('.lf-placement-outcome-card')?.textContent ?? '') || 'no score or count on the outcome (B.15)',
+      document.querySelectorAll('.lf-placement-outcome-body .lf-actions button').length === 2 || 'start here, or start earlier',
+    ]`, press: '.lf-placement-outcome-body .lf-button--accent', to: '/learn/lesson/l-needs-1', landing: 'lesson' },
+  { id: 'placement-adjust', ...PLACEMENT, path: '/learn/financial-education/placement', scenario: 'learn-course-adult', band: 'adult',
+    ready: '[data-screen="placement-welcome"]',
+    steps: [[START, '[data-screen="placement-intake"] textarea'], ['[data-screen="placement-intake"] .lf-actions .lf-button--secondary', '[data-screen="placement-question"] .lf-choice'],
+      ['[data-screen="placement-question"] .lf-choice', '[data-screen="placement-outcome"]'], ['.lf-placement-outcome-body .lf-button--secondary', '[data-screen="placement-adjust"]']],
+    expect: `[ document.querySelectorAll('.lf-placement-flow .lf-actions button').length === 3 || 'a bit earlier, from the beginning, or keep' ]` },
 ];
 
 const filter = process.env.LEARN_CASES?.split(',');
@@ -157,10 +232,10 @@ async function key(page, name, code, keyCode) {
 }
 
 /** Every per-page problem at the current text size: structure, fit, targets, roles and wording. */
-const INSPECT = `(() => {
+const INSPECT = (root) => `(() => {
   const problems = [];
-  const page = document.querySelector('[data-shell] main .lf-learner-page');
-  if (!page) return ['no rebuilt learner page in the shell'];
+  const page = document.querySelector('[data-shell] main ${root}');
+  if (!page) return ['no rebuilt page in the shell'];
   if (document.querySelectorAll('main').length !== 1) problems.push('main count ' + document.querySelectorAll('main').length);
   if (page.querySelectorAll('h1').length !== 1) problems.push('h1 count ' + page.querySelectorAll('h1').length);
   const over = document.documentElement.scrollWidth - innerWidth;
@@ -217,38 +292,66 @@ try {
       await page.evaluate(sessionStorageScript({ guest: spec.guest, locale, theme }));
       const url = new URL(entry.path, origin); url.searchParams.set('lng', locale);
       await page.send('Page.navigate', { url: url.toString() });
-      await waitFor(page, `document.querySelector('[data-shell="learner"]') && document.querySelector(${JSON.stringify(entry.ready)}) && document.documentElement.lang === ${JSON.stringify(locale)}`, `${where}: ready`, READY_TRIES);
+      const shell = entry.shell ?? 'learner';
+      const root = entry.root ?? '.lf-learner-page';
+      await waitFor(page, `document.querySelector('[data-shell="${shell}"]') && document.querySelector(${JSON.stringify(entry.ready)}) && document.documentElement.lang === ${JSON.stringify(locale)}`, `${where}: ready`, READY_TRIES);
       // The Mentor tab shows the chosen character's real-model render; before a choice, the word alone (OD-6).
-      await waitFor(page, spec.mentor
+      if (shell === 'learner') await waitFor(page, spec.mentor
         ? `(() => { const l = document.querySelector('.lf-shell-rail [data-nav-id="mentor"]'); return l && l.querySelector('img')?.complete; })()`
         : `!!document.querySelector('.lf-shell-rail [data-nav-id="mentor"]')`, `${where}: Mentor tab`);
+      // Keyboard: from the top of a freshly loaded document, the first Tab reaches the skip link, Enter moves focus to <main>.
+      const keyboard = async () => {
+        await page.evaluate('window.scrollTo(0, 0); document.activeElement?.blur()');
+        await key(page, 'Tab', 'Tab', 9);
+        const firstStop = await page.evaluate("document.activeElement?.classList.contains('lf-skip-link') ? 'skip' : (document.activeElement?.outerHTML ?? 'none').slice(0, 120)");
+        assert.equal(firstStop, 'skip', 'first Tab reaches the skip link');
+        await key(page, 'Enter', 'Enter', 13);
+        await waitFor(page, "document.activeElement?.tagName === 'MAIN'", `${where}: skip link moves focus to <main>`, 40);
+        // The next Tab stops inside the page, on a visible control.
+        await key(page, 'Tab', 'Tab', 9);
+        const inPage = await page.evaluate(`(() => { const a = document.activeElement; const r = a?.getBoundingClientRect(); return !!a?.closest('${root}') && r.width > 0; })()`);
+        assert.ok(inPage, 'Tab from <main> reaches a control of the page');
+      };
+      // A flow's later steps: the fresh-load keyboard path is checked on its first step, then each step is reached
+      // the way a person reaches it (a real press, then the next step's own marker), and focus follows to its heading.
+      if (entry.steps) {
+        await page.evaluate('document.fonts.ready');
+        await keyboard();
+        for (const [selector, next] of entry.steps) {
+          await press(page, selector);
+          await waitFor(page, `!!document.querySelector(${JSON.stringify(next)})`, `${where}: step ${next}`);
+          await waitFor(page, `document.activeElement?.tagName === 'H1' && !!document.activeElement.closest(${JSON.stringify(root)})`, `${where}: focus on the step heading`, 40);
+          await sleep(150);
+        }
+      }
       await page.evaluate('document.fonts.ready');
       await waitFor(page, "!document.documentElement.classList.contains('theme-transitioning')", `${where}: theme settled`);
       await sleep(120);
 
-      const base = await page.evaluate(`(() => { const p = document.querySelector('[data-shell] main .lf-learner-page');
+      const base = await page.evaluate(`(() => { const p = document.querySelector('[data-shell] main ${root}');
         return { lang: p?.getAttribute('lang'), theme: p?.dataset.theme, band: p?.dataset.ageBand ?? null,
           mentor: document.querySelector('.lf-shell-rail [data-nav-id="mentor"]')?.textContent.trim() }; })()`);
       assert.equal(base.lang, locale, 'page language');
       assert.equal(base.theme, theme, 'page mode');
       if (entry.band) assert.equal(base.band, entry.band, 'Copy Budget band from Core\'s register');
-      if (spec.mentor) assert.equal(base.mentor, MENTOR_NAMES[spec.mentor], 'the Mentor tab names the chosen character');
+      if (shell !== 'learner') assert.equal(base.mentor, undefined, 'no app navigation on a full-screen flow');
+      else if (spec.mentor) assert.equal(base.mentor, MENTOR_NAMES[spec.mentor], 'the Mentor tab names the chosen character');
       else assert.ok(!Object.values(MENTOR_NAMES).includes(base.mentor), 'no character named before one is chosen');
       assert.deepEqual(await page.evaluate(entry.expect).then((list) => list.filter((item) => item !== true)), [], 'population behaviour');
-      assert.deepEqual(await page.evaluate(INSPECT), [], 'page at 100% text');
+      assert.deepEqual(await page.evaluate(INSPECT(root)), [], 'page at 100% text');
       const shot = await page.send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
       writeFileSync(join(out, `${entry.id}-${locale}-${theme}-${width}.png`), Buffer.from(shot.data, 'base64'));
 
       // 140% text (WCAG 1.4.4 at the root size): nothing clips, overflows or shrinks below a target.
       await page.evaluate("document.documentElement.style.fontSize = '140%'");
       await sleep(80);
-      const large = await page.evaluate(INSPECT);
+      const large = await page.evaluate(INSPECT(root));
       await page.evaluate("document.documentElement.style.fontSize = ''");
       assert.deepEqual(large, [], 'page at 140% text');
 
       // Scoped axe: the rebuilt page.
       await page.evaluate(axeSource);
-      const axe = await page.evaluate("axe.run({ include: [['[data-shell] main .lf-learner-page']] }, { resultTypes: ['violations'] })");
+      const axe = await page.evaluate(`axe.run({ include: [['[data-shell] main ${root}']] }, { resultTypes: ['violations'] })`);
       assert.deepEqual(axe.violations.map((v) => `${v.id}: ${v.nodes.map((n) => `${n.target.join(' ')} (${n.any?.[0]?.message ?? ''})`).join(', ')}`), [], 'axe violations');
 
       // A redirect is a route change: the shell has already moved focus to the page's heading (02 rule 13).
@@ -260,16 +363,7 @@ try {
         await page.evaluate('document.fonts.ready');
         await sleep(300);
       }
-      await page.evaluate('window.scrollTo(0, 0); document.activeElement?.blur()');
-      await key(page, 'Tab', 'Tab', 9);
-      const firstStop = await page.evaluate("document.activeElement?.classList.contains('lf-skip-link') ? 'skip' : (document.activeElement?.outerHTML ?? 'none').slice(0, 120)");
-      assert.equal(firstStop, 'skip', 'first Tab reaches the skip link');
-      await key(page, 'Enter', 'Enter', 13);
-      await waitFor(page, "document.activeElement?.tagName === 'MAIN'", `${where}: skip link moves focus to <main>`, 40);
-      // The next Tab stops inside the page, on a visible control.
-      await key(page, 'Tab', 'Tab', 9);
-      const inPage = await page.evaluate("(() => { const a = document.activeElement; const r = a?.getBoundingClientRect(); return !!a?.closest('.lf-learner-page') && r.width > 0; })()");
-      assert.ok(inPage, 'Tab from <main> reaches a control of the page');
+      if (!entry.steps) await keyboard();
 
       // Route change by a real press: the new page is at the top with focus on its heading.
       let routeFocus = null;
@@ -277,10 +371,16 @@ try {
         await page.evaluate('window.scrollTo(0, document.documentElement.scrollHeight)');
         await press(page, entry.press);
         await waitFor(page, `location.pathname === ${JSON.stringify(entry.to)}`, `${where}: navigates to ${entry.to}`);
-        await waitFor(page, "(() => { const a = document.activeElement; const main = document.querySelector('main'); return a && main && (a === main || (main.contains(a) && a.tagName === 'H1')); })()", `${where}: focus on the new page`);
-        const after = await page.evaluate('({ scrollY, focus: document.activeElement.tagName })');
-        assert.equal(after.scrollY, 0, 'route change scrolls to the top');
-        routeFocus = after.focus;
+        if (entry.landing === 'lesson') {
+          // The lesson player (a later checkpoint) is its own layer: the handoff carries the course to return to.
+          assert.deepEqual(await page.evaluate('history.state?.usr ?? null'), { courseSlug: 'financial-education' }, 'the lesson knows its course');
+          routeFocus = 'lesson';
+        } else {
+          await waitFor(page, "(() => { const a = document.activeElement; const main = document.querySelector('main'); return a && main && (a === main || (main.contains(a) && a.tagName === 'H1')); })()", `${where}: focus on the new page`);
+          const after = await page.evaluate('({ scrollY, focus: document.activeElement.tagName })');
+          assert.equal(after.scrollY, 0, 'route change scrolls to the top');
+          routeFocus = after.focus;
+        }
       }
       assert.deepEqual(page.errors.filter((error) => !/Failed to load resource|net::ERR|synthetic core/i.test(error)), [], 'JS errors');
       evidence.push({ case: entry.id, population: spec.population, locale, theme, width, text: ['100%', '140%'], band: base.band, mentor: base.mentor, routeFocus, axe: 0 });

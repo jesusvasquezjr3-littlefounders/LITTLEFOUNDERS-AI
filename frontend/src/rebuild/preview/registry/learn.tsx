@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { allocationPilotDocument, donutPilotDocument, wafflePilotDocument } from '../../learning/AllocationBoard';
 import { growthPilotDocument } from '../../learning/GrowthBoard';
 import { learningFixtures } from '../../learning/allocationFixtures';
@@ -24,6 +24,11 @@ import { functionMachinePilotDocument } from '../../learning/FunctionMachineBoar
 import { cpaFadingPilotDocument } from '../../learning/CpaFadingBoard';
 import { DECIDE_JUSTIFY_PILOT_RUBRIC, decideJustifyPilotDocument } from '../../learning/DecisionReasonsBoard';
 import { PlacementOutcomeView } from '../../learning/PlacementOutcomeView';
+import { PlacementFlowView } from '../../learning/PlacementFlowView';
+import { placementPreviewFlow } from '../../learning/placementFixtures';
+import { TerritoryMapView } from '../../learning/TerritoryMapView';
+import { territoryPreviewStates } from '../../learning/territoryFixtures';
+import { SingleStateScreen, type MentorCharacter } from '../../design/controls';
 import { LessonTransportStateView } from '../../learning/LessonTransportStateView';
 import { CourseView } from '../../learning/CourseView';
 import { childPathFixture, coursePathPreviewStates } from '../../learning/coursePathFixtures';
@@ -64,9 +69,25 @@ const LearnPreviewHost = ({ children }: { children: ReactNode }) => <main classN
 
 /* W2L.1: the learner pages' links, as preview screens (a plain press opens that screen in place). */
 const previewLinks: LearnLinks = {
-  home: '?screen=learnhome', course: () => '?screen=course', lesson: () => '?screen=lesson', placement: () => '?screen=placementoutcome',
-  territory: () => '?screen=course', rhythm: '?screen=rhythm', journal: '?screen=journal',
+  home: '?screen=learnhome', course: () => '?screen=course', lesson: () => '?screen=lesson', placement: () => '?screen=placement',
+  territory: () => '?screen=territory', rhythm: '?screen=rhythm', journal: '?screen=journal',
 };
+
+/*
+ * W2L.2: the placement flow on the shared single-state screen, as its route
+ * mounts it (sky hue, no app navigation), in every state (`?flow=`); a press
+ * moves to the next fixture state in place. `?mentor=` is the chosen
+ * character (`none` before a choice).
+ */
+function PlacementPreview({ locale, theme, ageBand, params, go, t }: PreviewContext) {
+  const [state, setState] = useState(params.get('flow') ?? 'welcome');
+  const mentorParam = params.get('mentor') ?? 'zara';
+  const mentor: MentorCharacter | null = (['rho', 'zara', 'liruf', 'dina'] as const).find((name) => name === mentorParam) ?? null;
+  return <SingleStateScreen appName="LittleFounders" pageTitle={t.course.placementTitle} routeKey="placement" locale={locale} hue="sky" labels={{ skip: t.appShell.skip }}>
+    <PlacementFlowView key={`${locale}:${state}`} fixture flow={placementPreviewFlow(state, locale, setState)} slug="financial-education" locale={locale}
+      dark={theme === 'dark'} ageBand={ageBand} mentor={mentor} links={previewLinks} onNavigate={previewNavigate(go)} />
+  </SingleStateScreen>;
+}
 const previewNavigate = (go: PreviewContext['go']) => (href: string) => go(new URLSearchParams(href.replace(/^[^?]*\?/, '')).get('screen') ?? 'home');
 
 const transport = framed(({ screen, locale, go }) => <LessonTransportStateView state={screen === 'loaderror' ? 'load-error' : screen as 'opening' | 'offline'}
@@ -186,6 +207,14 @@ export const learnPreviewScreens: PreviewRegistry = {
     replay: { kind: 'replay', notice: 'best_kept', best_score_kept: true, xp_policy: 'improvement_only' },
     judgment: { assessed: 2, sound: 1, partial: 1, unsupported: 0 },
   }} />),
+  // W2L.2 (L3): the course world in every state (`?map=`), both course engines.
+  territory: framed(({ locale, theme, ageBand, params, go }) => <LearnPreviewHost><TerritoryMapView key={`territory:${locale}:${params.get('map')}`} fixture
+    locale={locale} dark={theme === 'dark'} ageBand={ageBand} slug="financial-education"
+    state={territoryPreviewStates[params.get('map') ?? 'linear'] ?? territoryPreviewStates.linear!}
+    courseTitles={Object.fromEntries(Object.entries(SHELF_TITLES).map(([slug, title]) => [slug, title[locale]]))}
+    links={previewLinks} onNavigate={previewNavigate(go)} onRetry={() => go('territory')} /></LearnPreviewHost>),
+  // W2L.2 (L4): the placement flow in every state.
+  placement: framed((context) => <PlacementPreview {...context} />),
   placementoutcome: framed(({ locale, theme, params, go }) => <PlacementOutcomeView key={`placement:${locale}:${params.get('start')}:${params.get('path')}`} fixture locale={locale}
     dark={theme === 'dark'} onStart={() => go('home')} onEarlier={() => go('home')} rawFrame={{
       path: params.get('path') ?? 'adaptive_quiz', start: params.get('start') === 'further_in' ? 'further_in' : 'beginning', basis: 'prior_exposure',

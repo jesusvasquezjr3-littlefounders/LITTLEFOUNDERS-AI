@@ -20,8 +20,8 @@ import { AuthProvider } from '@/auth/AuthContext'
 import { ThemeToggle } from '@/components/ui'
 import { LearnHomeRoute } from '../LearnHomeRoute'
 import { CourseRoute } from '../CourseRoute'
-import { TerritoryPage } from '../TerritoryPage'
-import { PlacementPage } from '../PlacementPage'
+import { TerritoryRoute } from '../TerritoryRoute'
+import { PlacementRoute } from '../PlacementRoute'
 import {
   FIXTURE_COURSES,
   FIXTURE_PLACEMENT_COMMIT,
@@ -73,7 +73,7 @@ function fixtureFor(path: string, method: string): unknown | undefined {
 /*
  * A session shaped exactly like AuthContext's stored one, far enough from
  * expiry that `getToken` never tries to refresh. It exists because
- * TerritoryPage refuses to fetch without a token, which is correct in the
+ * The learn hosts refuse to fetch without a token, which is correct in the
  * product and would leave the lab stuck on its spinner.
  */
 function installSession(): void {
@@ -146,13 +146,13 @@ export function LearnLabPage() {
 
       {/* Mirrors AppLayout's content box so widths here are the widths shipped. */}
       {view === 'placement' ? (
-        <PlacementPage />
+        <PlacementRoute />
       ) : (
         <main className="px-5 pb-24 pt-6 md:px-8 lg:pb-10 lg:pt-10">
           <div className="mx-auto max-w-container">
             {view === 'home' && <LearnHomeRoute />}
             {view === 'course' && <CourseRoute />}
-            {view === 'territory' && <TerritoryPage />}
+            {view === 'territory' && <TerritoryRoute />}
           </div>
         </main>
       )}

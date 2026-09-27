@@ -66,7 +66,8 @@ export type CourseState =
 
 type Reply = Awaited<ReturnType<LearnTransport>>;
 
-async function call(request: LearnTransport, path: string): Promise<Reply> {
+/** One read of Core; a thrown transport is a lost connection. */
+export async function call(request: LearnTransport, path: string): Promise<Reply> {
   try {
     return await request(path);
   } catch {
@@ -74,7 +75,8 @@ async function call(request: LearnTransport, path: string): Promise<Reply> {
   }
 }
 
-function refusal(error: NonNullable<Reply['error']>): CourseState {
+/** A course entry Core refused (shared by the course screen and the map, which read the same entry). */
+export function courseRefusal(error: NonNullable<Reply['error']>): Exclude<CourseState, { status: 'loading' } | { status: 'ready' }> {
   switch (error.code) {
     case 'COURSE_AGE_RESTRICTED': return { status: 'age-restricted' };
     case 'COURSE_PREREQUISITE_REQUIRED': return { status: 'prerequisite', missing: error.missingPrerequisites ?? [] };
@@ -91,9 +93,9 @@ export async function fetchCourse(slug: string, request: LearnTransport): Promis
     const parsed = parseCoursePath(path.data);
     return parsed ? { status: 'ready', detail: { engine: 'pathway', path: parsed } } : { status: 'error' };
   }
-  if (path.error.code !== 'PATHWAY_ENGINE_DISABLED') return refusal(path.error);
+  if (path.error.code !== 'PATHWAY_ENGINE_DISABLED') return courseRefusal(path.error);
   const tree = await call(request, `/learn/courses/${key}/tree`);
-  if (tree.error) return refusal(tree.error);
+  if (tree.error) return courseRefusal(tree.error);
   const parsed = parseCourseTree(tree.data);
   return parsed ? { status: 'ready', detail: { engine: 'linear', tree: parsed } } : { status: 'error' };
 }
