@@ -1,0 +1,2 @@
+/* A lazy route while its chunk downloads (LazyRoute.tsx): the rebuilt loading state, centred on the page, on the design system's base. */
+.lf-route-loading { display: grid; place-items: center; block-size: 100dvh; padding: var(--spacing-4); background: var(--base); }

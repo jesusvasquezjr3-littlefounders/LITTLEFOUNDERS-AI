@@ -316,7 +316,7 @@ export type ServerMessage =
        * from `audioUrl: null`, and opened the hands-free microphone in the gap
        * before a real clip's `turn_audio` arrived — silently discarding
        * whatever the learner said in that window. See
-       * `frontend/src/tutor/useHandsFreeTurn.ts`.
+       * `frontend/src/rebuild/mentor/session/useHandsFreeTurn.ts`.
        */
       audioPending: boolean;
       /** What the tutor intends next, so the UI can prepare the panel. */
@@ -365,7 +365,7 @@ export type ServerMessage =
       /**
        * Class III / S17 `roleplay` (TUTOR_INSTRUMENTS.md §3.4): a closed id
        * into the frontend's own pre-authored scene catalog
-       * (`frontend/src/tutor/roleplay/scenes.ts`). Unlike `savePlan`, this
+       * (`frontend/src/rebuild/mentor/session/roleplay.ts`). Unlike `savePlan`, this
        * IS on the wire — the frontend is what plays the scene, so it needs
        * to be told which one, verbatim from the model's own turn.
        */

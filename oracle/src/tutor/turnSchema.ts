@@ -47,7 +47,7 @@ export const ACTIONS = [
 /**
  * Class III / S17 `roleplay` (TUTOR_INSTRUMENTS.md §3.4): the closed set of
  * PRE-AUTHORED scene ids, hand-mirrored against the actual content catalog
- * at `frontend/src/tutor/roleplay/scenes.ts` — widen both together, never
+ * at `frontend/src/rebuild/mentor/session/roleplay.ts` — widen both together, never
  * one ahead of the other.
  */
 export const ROLEPLAY_SCENE_IDS = ['lemonade_change'] as const;
@@ -197,7 +197,7 @@ export function sanitizePreferredTypes(
  * acting on it, exactly the posture `denomination` already had — an injection
  * that reaches this field can move a piece already sitting in the widget, and
  * nothing else. A step whose verb does not match the segment on screen is a
- * silent no-op (`frontend/src/tutor/trayDemo.ts`'s per-family
+ * silent no-op (`frontend/src/rebuild/mentor/session/trayDemo.ts`'s per-family
  * adapters), never an error.
  *
  * `add`/`remove`/`pause` — the original three, unchanged, for `coin_count` /
@@ -1634,7 +1634,7 @@ export const TutorTurnSchema = z
      * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4): "two characters act a
      * transaction with their own cloned voices while the learner decides."
      * A closed id into a small, PRE-AUTHORED catalog
-     * (`frontend/src/tutor/roleplay/scenes.ts`) — the model NAMES a scene,
+     * (`frontend/src/rebuild/mentor/session/roleplay.ts`) — the model NAMES a scene,
      * it never composes either character's lines, the same "id names
      * content that exists" posture `skillKey` already has. One scene today
      * (`lemonade_change`); widen the enum alongside the frontend catalog,

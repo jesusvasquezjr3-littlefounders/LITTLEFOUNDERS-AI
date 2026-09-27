@@ -1,6 +1,6 @@
 # S10: legacy-data migration and cutover toolkit
 
-Status: in progress (S10.1, S10.2 and S10.3 implemented and locally verified on native PostgreSQL and in unit tests; no production run, sign-off, acceptance or release approval is recorded). Recorded 27 September 2026 on branch `codex/spec-s10data`. Owner: Engineering for implementation; the owner for the decisions listed at the end; an operator and a named reviewer for the section 4.5 sign-off.
+Status: in progress (S10L.1 legacy UI removal implemented and locally verified; S10.1, S10.2 and S10.3 implemented and locally verified on native PostgreSQL and in unit tests; no production run, sign-off, acceptance or release approval is recorded). Recorded 27 September 2026 on branch `codex/spec-s10data`. Owner: Engineering for implementation; the owner for the decisions listed at the end; an operator and a named reviewer for the section 4.5 sign-off.
 
 ## Binding acceptance sources
 
@@ -28,6 +28,9 @@ Risk classification: **data migration of every family's record**. A defect here 
 | S10.3a | Consent enforcement (4.2) | Every rebuild practice applies to a migrated child only with its specific, live consent; enforced for Core and Oracle alike | Implemented and locally verified |
 | S10.3b | Consent routes | A verified Tutor answers for their child; the account answers for itself (a no always; a yes only where allowed); the caller is the actor; every refusal named | Implemented and locally verified |
 | S10.3c | Consent surfaces | Rebuilt Family Hub panel for the Tutor and the account's own panel, EN/es-MX/pt-BR, Copy Budget, nothing preselected | Implemented and locally verified (unit level; no browser matrix in this checkpoint) |
+| S10L.1a | Legacy UI inventory (OD-2, OD-15, 02 rule 23) | Every legacy UI module classified reachable or not from a route, by an import graph (static and dynamic imports, TypeScript resolution) from both entries | Implemented and locally verified |
+| S10L.1b | Deletion | Every unreachable legacy module deleted, with its tests, CSS, i18n keys, dev labs, browser gates and scripts; routes still rendering a legacy body reported, not rebuilt | Implemented and locally verified |
+| S10L.1c | Freeze gate | `spec:check` refuses a new file under a legacy UI directory, an import of a removed module and a new legacy i18n namespace; mutation-tested | Implemented and locally verified |
 
 ## S10.1 what was built
 
@@ -121,6 +124,37 @@ The adversarial pass over S10.1 and S10.2 against OD-9 sections 1 to 5, the OD-2
 - `legacy_kc_credit_covers` is ready for the Forge phase's reviewed lesson equivalences; no new course content consumes it yet.
 - S10.2: the runbooks have not been executed against production or a Railway copy. The Supabase database swap by rename (rollback step 4) and the role-level freeze with the Supabase services restarted are unrehearsed. The daily backups' encryption at rest is unconfirmed (H.5). The product has no maintenance page, so writes fail with an error during the freeze. Legal sign-off of the consent carry-over and the family notice are outstanding.
 
+## S10L.1 legacy UI removal (27 September 2026, branch `codex/spec-s10legacy`)
+
+**Inventory.** An import graph of `frontend/src` (static imports, `import()`, `import.meta.glob`, TypeScript resolution with the `@/` alias) from both entries (`src/main.tsx`, `src/rebuild/preview/main.tsx`) plus the source files `frontend/scripts` import. Legacy UI directories: `src/routes`, `src/components`, `src/lesson-engine`, `src/tutor`, `src/guided-voice`, plus the legacy parts of `index.css` and the i18next-mounted namespaces. Almost every `src/routes/**` file is now a thin adapter onto a rebuilt screen; the legacy bodies were reachable only through two legacy dev labs.
+
+**Deleted (156 frontend source files; about 51,700 lines across the change):**
+- `src/tutor/**`, the whole legacy Tutor UI (stage shell, HUD, conversation view, whiteboard, replay, roleplay, map overlay, lab and fixtures). Its one live import, the `tutorApi` re-export shim, now points at `src/rebuild/mentor/session/tutorApi.ts`.
+- The legacy dev labs `/dev/tutor-lab` and `/dev/learn-lab` (`src/routes/app/learn/lab/`), and the browser gates and capture scripts that drove the Tutor lab (`verify-tutor-ui`, `verify-tutor-a11y`, `capture-{conversation-evidence,hud-space,instrument-evidence,tutor-report}`), their npm scripts and their two `frontend-ci.yml` steps. The rebuilt Mentor stage is verified by `scripts/verify-mentor-stage.mjs` and the rebuild audits.
+- `src/guided-voice/**` (the narrated onboarding/placement stage and its clip manifest) and Oracle's `voice:guided` pregeneration script, which wrote into it.
+- Dead legacy route bodies: `routes/app/learn/TerritoryPage.tsx`, `routes/app/learn/types.ts`, `routes/auth/ErrorBanner.tsx`, `routes/app/family/MemoryNotesPanel.tsx`; `components/Avatar.tsx`, `components/course/CourseBadgeArtwork.tsx`, `lib/courseBadges.ts`.
+- 15 of the 24 legacy controls in `components/ui` (Accordion, Checkbox, ConfirmButton, DateField, Dropdown, Field, FileField, IconChip, LocaleFlag, OptionGroup, ProgressBar, Reveal, StatCard, Table, TrendChart). The nine left serve only the lesson-player island and the badge page, and the index says so.
+- `LazyRoute`'s fallback was the legacy `LoadingOverlay` with a legacy key; it is now the rebuilt `LoadingState` in a bare design-system root, with a new `appShell.loading` string (EN/es-MX/pt-BR, budgeted in the core copy-budget test).
+- i18n: eight legacy namespaces no screen reads (`errors`, `auth`, `dashboard`, `profile`, `learn`, `admin`, `onboarding`, `placement`) and every unused key of `common`, `marketing`, `tutor` and `lesson`, found by a key-usage scan (literals, ancestor literals, template prefixes) over the frontend source, scripts and gates. `common` keeps not-found, theme, the 2D characters' greeting and `family.badge`; `marketing` keeps the badge page; `tutor` keeps the scene and microphone strings the rebuilt Mentor session and the scene lab read; `lesson` keeps the island's copy. The test setup's missing-key trap stays as the runtime backstop.
+- CSS: 72 `index.css` rules (44 classes: the legacy speech bubbles, config dialog, lumen plates, pick cards, switch, settle and reveal motion, scroll edges, course badge, stage ground, and the Tutor HUD's stage pill, live dot and orb ring) and 8 keyframes no remaining source uses, with the comments written for them (about 1,100 lines). `designClasses.test.ts` no longer requires the three HUD classes, and `celebrationBudget.test.ts` drops the legacy Mentor streak pill's consumers (nothing may mount it again).
+- Consequential edits: `check-roleplay-voice-parity` compares Oracle with the rebuilt scene table and captions only (its legacy leg is gone; tests rewritten, still mutation-tested); the family copy-tone gate's scope drops the deleted `errors.json` and `common` tasks/banking subtrees and one stale exception; `placementOutcome.ts` drops the pin that held the legacy narrated verdict lines (the screen and its clips are gone); `roleLabels.test.ts` (it guarded copy of the removed admin and dashboard namespaces) and two stale one-off browser scripts that asserted legacy copy (`verify-banking-freeze`, `verify-connection-withdrawal`) are deleted; `verify-teen-wallet` reads the rebuilt shell labels; Oracle comments point at the rebuilt Mentor files; README's testing table and CI description are updated.
+
+**The gate.** `agent/tools/check-legacy-ui.mjs` (in `spec:check`; list in `agent/tools/legacy-ui-freeze.json`): (1) no new non-test file under a legacy UI directory, (2) no stale freeze entry, (3) no import of a removed legacy module from the frontend source or scripts (alias, relative, dynamic, `vi.mock` and source-path reads), (4) `src/i18n/index.ts` loads only `common`, `marketing`, `lesson`, `tutor`. `check-legacy-ui.test.mjs` proves each red with a mutated copy of the tree, plus the green cases (a new test beside an adapter, the island's own imports). **Other lanes must not add or edit legacy files; deleting one means deleting its freeze line in the same change.**
+
+**Routes that still render a legacy body (for the gap audit and the wave-3 lanes; not rebuilt here):**
+- `/badge/:token` → `routes/marketing/BadgeLandingPage.tsx`: legacy `Button`/`Card`/`LoadingOverlay` and i18next `marketing.badgeShare.*` copy. Needs a rebuilt public badge page.
+- `/learn/:course/lesson/...` → `LessonRoute` → `LegacyLessonIsland` → the v1 lesson player: the sanctioned island (OD-24), which retires with the legacy lesson content.
+- `/admin` content review's lesson preview lazily renders the same v1 player (the island, staff only).
+- Dev only: `/dev/lesson-lab`, `/dev/lesson-view` (the island's QA surface, driven by the `verify:lesson-engine` CI gate); `/dev/scene-lab`, `/dev/pose-lab` (3D authoring in `tutor-scene`, not a legacy UI directory, still styled with legacy `lf-*` classes and `tutor.lab.*` copy).
+- The lesson island and `tutor-scene` still import `components/characters/**` (the 2D character fallback and the shared character types): frozen, not deleted.
+
+## S10L.1 verification (27 September 2026)
+
+- Reachability recomputed after the deletions: outside the island, the badge page and `components/characters`, no legacy UI module is reachable, and nothing unreachable remains in the legacy UI directories.
+- Frontend `type-check` and `lint` clean. Focused vitest over `src/__tests__` (including `designClasses`, which fails on a used-but-undefined or defined-but-unused `lf-*` class), `src/app-routes`, `src/app-shell`, `src/components`, `src/i18n`, `src/routes`, the copy-budget suites, the glossary, emails and celebration contracts, and `placementOutcome`.
+- `node --test` for `check-legacy-ui` (9 tests, 5 deliberate reds), `check-roleplay-voice-parity`, `check-family-copy-tone`, `check-achievement-sharing`, `check-reward-mechanics`; root `spec:check`, `secrets:check` and the i18n gate.
+- Not run (the orchestrator runs them once per merge): full suites, browser matrices, `audit:rebuild`.
+
 ## Owner questions (conservative defaults implemented)
 
 1. **Unjustified staff-granted parents (A.5).** Default: keep the role, mark it `staff-granted`, require a staff justification (review queue); never revoke automatically. Alternative: revoke roles still unjustified after a deadline.
@@ -133,6 +167,9 @@ The adversarial pass over S10.1 and S10.2 against OD-9 sections 1 to 5, the OD-2
 8. **What a no does to data already recorded (S10.3).** Default: a no (or a lapsed consent) stops the practice at once; records already written stay until their D.21 retention period. Alternative: delete that practice's records on a no, as research (D.22) does.
 9. **A teen's own yes when a Tutor later links (S10.3).** Default: it lapses and the Tutor decides from then on. Alternative: keep the teen's own answer.
 10. **Session heartbeats (S10.3).** Default: the registry lists visible-tab heartbeats as a rebuild practice (B.28), so they stop for a migrated child without the specific consent, even though a `session_heartbeat` event existed on the legacy platform. Alternative: treat heartbeats as covered by the legacy analytics consent.
+11. **CLAUDE.md / AGENTS.md name retired scripts (S10L.1).** Both still list `verify:tutor-ui` and `verify:tutor-a11y` among the frontend scripts; those scripts and the legacy Tutor lab they drove are deleted. An agent may not edit these files, so the owner (or the orchestrator with the owner's approval) should drop the two names from both, identically. Default: left untouched.
+12. **A browser gate for the rebuilt Mentor stage in CI (S10L.1).** The two removed CI steps are not replaced: `verify-mentor-stage.mjs` needs a running preview server and was never measured on a runner. Default: `browser-gates` runs `verify:lesson-engine` only. Alternative: wire the Mentor stage matrix into that job.
+13. **The `guided-voice-shared` Depot bucket (S10L.1).** The clips it holds are no longer played by anything. Default: left in place (no production action in this lane). Alternative: delete the bucket at cutover.
 
 ## Merge integration (into codex/spec-migration-s02)
 

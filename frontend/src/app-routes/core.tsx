@@ -23,11 +23,9 @@ const LessonViewPage = lazy(() => import('@/lesson-engine/lab/LessonViewPage'));
 const SceneLabPage = lazy(() => import('@/tutor-scene/lab/SceneLabPage'));
 const PoseLabPage = lazy(() => import('@/tutor-scene/lab/PoseLabPage'));
 
-/* Dev-only visual QA for the Tutor's product surfaces (personalize, offer,
- * conversation) against fixtures — the §1.11 both-breakpoints check without
- * needing a live session, a model key or a websocket. */
-const TutorLabPage = lazy(() => import('@/tutor/lab/TutorLabPage'));
-const LearnLabPage = lazy(() => import('@/routes/app/learn/lab/LearnLabPage'));
+/* The legacy Tutor lab (/dev/tutor-lab) and learn lab (/dev/learn-lab) were
+ * removed with the legacy UI (S10L.1, OD-2, 02 rule 23): the rebuilt screens
+ * are reviewed in the design-system preview entry and the rebuild audits. */
 
 /** DEV-only harnesses; an empty fragment in a production build. */
 export const devRoutes = import.meta.env.DEV ? (
@@ -38,8 +36,6 @@ export const devRoutes = import.meta.env.DEV ? (
     {/* The pose library, reviewed by LOOKING at it. DEV-only for the same
         reason scene-lab is: it is an authoring surface, not a product one. */}
     <Route path="dev/pose-lab" element={<DevRoute><PoseLabPage /></DevRoute>} />
-    <Route path="dev/learn-lab/:courseSlug" element={<DevRoute><LearnLabPage /></DevRoute>} />
-    <Route path="dev/tutor-lab" element={<DevRoute><TutorLabPage /></DevRoute>} />
   </>
 ) : null;
 

@@ -4,11 +4,15 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 /*
  * Locale resources are fragmented per route area (frontend/AGENTS.md §i18n):
- * <locale>/common.json    — app-wide chrome (app, theme, language)
- * <locale>/marketing.json — marketing site pages (mounted under "marketing")
- * <locale>/errors.json    — API error codes (mounted under "errors")
- * New product sections add a new file per locale (e.g. learn.json → "learn").
- * Key paths seen by t() are unchanged by the fragmentation.
+ * <locale>/common.json    — spread at the root: the not-found fallback, the
+ *                           theme labels, the legacy 2D characters' greeting
+ *                           and the family.badge share copy
+ * <locale>/marketing.json — the public badge page (mounted under "marketing")
+ * <locale>/lesson.json   — the v1 lesson player (the OD-24 legacy island)
+ * <locale>/tutor.json    — the Mentor stage's scene and microphone strings
+ * The legacy namespaces no screen reads any more (errors, auth, dashboard,
+ * profile, learn, admin, onboarding, placement) left with the legacy UI in
+ * S10L.1. New UI never adds a namespace here (Frontend Bible 02 rule 23).
  *
  * The REBUILT UI's copy is deliberately not loaded here: it is one
  * `<locale>/rebuild-<namespace>.json` per wave-2 lane (core, site, learn,
@@ -18,39 +22,15 @@ import LanguageDetector from 'i18next-browser-languagedetector';
  */
 import enCommon from './en-US/common.json';
 import enMarketing from './en-US/marketing.json';
-import enErrors from './en-US/errors.json';
-import enAuth from './en-US/auth.json';
-import enDashboard from './en-US/dashboard.json';
-import enProfile from './en-US/profile.json';
 import enLesson from './en-US/lesson.json';
-import enLearn from './en-US/learn.json';
-import enAdmin from './en-US/admin.json';
-import enOnboarding from './en-US/onboarding.json';
-import enPlacement from './en-US/placement.json';
 import enTutor from './en-US/tutor.json';
 import esCommon from './es-MX/common.json';
 import esMarketing from './es-MX/marketing.json';
-import esErrors from './es-MX/errors.json';
-import esAuth from './es-MX/auth.json';
-import esDashboard from './es-MX/dashboard.json';
-import esProfile from './es-MX/profile.json';
 import esLesson from './es-MX/lesson.json';
-import esLearn from './es-MX/learn.json';
-import esAdmin from './es-MX/admin.json';
-import esOnboarding from './es-MX/onboarding.json';
-import esPlacement from './es-MX/placement.json';
 import esTutor from './es-MX/tutor.json';
 import ptCommon from './pt-BR/common.json';
 import ptMarketing from './pt-BR/marketing.json';
-import ptErrors from './pt-BR/errors.json';
-import ptAuth from './pt-BR/auth.json';
-import ptDashboard from './pt-BR/dashboard.json';
-import ptProfile from './pt-BR/profile.json';
 import ptLesson from './pt-BR/lesson.json';
-import ptLearn from './pt-BR/learn.json';
-import ptAdmin from './pt-BR/admin.json';
-import ptOnboarding from './pt-BR/onboarding.json';
-import ptPlacement from './pt-BR/placement.json';
 import ptTutor from './pt-BR/tutor.json';
 
 export const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
@@ -62,9 +42,9 @@ export function isLocale(value: string): value is Locale {
 }
 
 const resources = {
-  'en-US': { translation: { ...enCommon, marketing: enMarketing, errors: enErrors, auth: enAuth, dashboard: enDashboard, profile: enProfile, lesson: enLesson, learn: enLearn, admin: enAdmin, onboarding: enOnboarding, placement: enPlacement, tutor: enTutor } },
-  'es-MX': { translation: { ...esCommon, marketing: esMarketing, errors: esErrors, auth: esAuth, dashboard: esDashboard, profile: esProfile, lesson: esLesson, learn: esLearn, admin: esAdmin, onboarding: esOnboarding, placement: esPlacement, tutor: esTutor } },
-  'pt-BR': { translation: { ...ptCommon, marketing: ptMarketing, errors: ptErrors, auth: ptAuth, dashboard: ptDashboard, profile: ptProfile, lesson: ptLesson, learn: ptLearn, admin: ptAdmin, onboarding: ptOnboarding, placement: ptPlacement, tutor: ptTutor } },
+  'en-US': { translation: { ...enCommon, marketing: enMarketing, lesson: enLesson, tutor: enTutor } },
+  'es-MX': { translation: { ...esCommon, marketing: esMarketing, lesson: esLesson, tutor: esTutor } },
+  'pt-BR': { translation: { ...ptCommon, marketing: ptMarketing, lesson: ptLesson, tutor: ptTutor } },
 };
 
 /**

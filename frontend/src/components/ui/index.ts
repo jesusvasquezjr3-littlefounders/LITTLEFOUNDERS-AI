@@ -1,29 +1,16 @@
+/*
+ * The legacy control set, frozen (S10L.1, OD-2, OD-24, Frontend Bible 02
+ * rule 23). What is left serves only the sanctioned legacy island, the v1
+ * lesson player and its lab (src/lesson-engine/), plus the public badge page
+ * until its rebuild lands. New UI never imports from here: `spec:check`
+ * (agent/tools/check-legacy-ui.mjs) refuses it.
+ */
 export { Button } from './Button';
-export { ConfirmButton } from './ConfirmButton';
 export { Icon } from './Icon';
-export { LocaleFlag } from './LocaleFlag';
-export { Dropdown } from './Dropdown';
-export { DateField } from './DateField';
-export type { DropdownOption } from './Dropdown';
-export { OptionGroup } from './OptionGroup';
-export type { OptionGroupOption } from './OptionGroup';
 export { ThemeToggle } from './ThemeToggle';
-export { Reveal } from './Reveal';
 export { Card } from './Card';
-export { IconChip } from './IconChip';
-export { ProgressBar } from './ProgressBar';
 export { Badge } from './Badge';
 export { LottieIcon } from './LottieIcon';
 export { LoadingOverlay } from './LoadingOverlay';
-export { StatCard } from './StatCard';
-export { Field } from './Field';
-export { Checkbox } from './Checkbox';
-export { FileField } from './FileField';
-export { Table } from './Table';
 export { SectionHeading } from './SectionHeading';
-export type { TableColumn } from './Table';
-export { TrendChart } from './TrendChart';
-export type { TrendPoint } from './TrendChart';
 export { CountUp } from './CountUp';
-export { Accordion } from './Accordion';
-export type { AccordionItem } from './Accordion';

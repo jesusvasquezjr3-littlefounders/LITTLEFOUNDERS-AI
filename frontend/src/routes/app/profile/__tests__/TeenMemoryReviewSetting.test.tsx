@@ -11,7 +11,7 @@ const mocks = vi.hoisted(() => ({
   getToken: vi.fn().mockResolvedValue('synthetic'),
   auth: { session: { user: { id: 'teen-1' } }, isGuest: false },
 }));
-vi.mock('@/tutor/tutorApi', () => ({ getOwnPendingMemoryNotes: mocks.getOwn, decideMemoryNote: mocks.decide }));
+vi.mock('@/rebuild/mentor/session/tutorApi', () => ({ getOwnPendingMemoryNotes: mocks.getOwn, decideMemoryNote: mocks.decide }));
 vi.mock('@/theme/useTheme', () => ({ useTheme: () => ({ isDark: false }) }));
 vi.mock('@/auth/AuthContext', () => ({ useAuth: () => ({ ...mocks.auth, getToken: mocks.getToken }) }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ i18n: { resolvedLanguage: 'en-US' } }) }));

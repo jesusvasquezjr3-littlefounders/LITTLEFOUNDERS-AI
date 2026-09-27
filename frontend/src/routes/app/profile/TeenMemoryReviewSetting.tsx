@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { useTheme } from '@/theme/useTheme';
-import { decideMemoryNote, getOwnPendingMemoryNotes, type PendingMemoryNote } from '@/tutor/tutorApi';
+import { decideMemoryNote, getOwnPendingMemoryNotes, type PendingMemoryNote } from '@/rebuild/mentor/session/tutorApi';
 import { MemorySelfReview, type SettledVerdict, type Verdict } from '@/rebuild/memory/MemorySelfReview';
 import en from '@/i18n/en-US/rebuild-profile.json';
 import es from '@/i18n/es-MX/rebuild-profile.json';

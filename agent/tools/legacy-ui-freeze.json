@@ -1,0 +1,296 @@
+{
+  "about": "S10L.1 (OD-2, OD-15, OD-24, Frontend Bible 02 rule 23): the legacy UI only shrinks. agent/tools/check-legacy-ui.mjs refuses a new non-test file under these directories, a stale entry, an import of a removed module and a new legacy i18n namespace. Deleting a legacy file means deleting its line here in the same change.",
+  "directories": [
+    "routes",
+    "components",
+    "lesson-engine",
+    "tutor",
+    "guided-voice"
+  ],
+  "i18nNamespaces": [
+    "common",
+    "marketing",
+    "lesson",
+    "tutor"
+  ],
+  "removed": [
+    {
+      "path": "tutor/",
+      "replacement": "the rebuilt Mentor screen and session: src/rebuild/mentor/ (08); API client src/rebuild/mentor/session/tutorApi.ts"
+    },
+    {
+      "path": "guided-voice/",
+      "replacement": "none: onboarding and placement are rebuilt without narration (src/rebuild/identity, src/rebuild/learning)"
+    },
+    {
+      "path": "routes/app/learn/lab/",
+      "replacement": "the preview entry (rebuild.html) and scripts/verify-learn-pages.mjs"
+    },
+    {
+      "path": "components/course/",
+      "replacement": "the rebuilt badge art: src/rebuild/social/ and src/rebuild/design/assets.ts"
+    },
+    {
+      "path": "components/Avatar",
+      "replacement": "MentorAvatar / the account avatar kit in src/rebuild/"
+    },
+    {
+      "path": "components/ui/Accordion",
+      "replacement": "the shared controls in src/rebuild/design/controls.tsx"
+    },
+    {
+      "path": "components/ui/Checkbox",
+      "replacement": "the shared controls in src/rebuild/design/controls.tsx"
+    },
+    {
+      "path": "components/ui/ConfirmButton",
+      "replacement": "the shared controls in src/rebuild/design/controls.tsx"
+    },
+    {
+      "path": "components/ui/DateField",
+      "replacement": "the shared controls in src/rebuild/design/controls.tsx"
+    },
+    {
+      "path": "components/ui/Dropdown",
+      "replacement": "the shared controls in src/rebuild/design/controls.tsx"
+    },
+    {
+      "path": "components/ui/Field",
+      "replacement": "the shared controls in src/rebuild/design/controls.tsx"
+    },
+    {
+      "path": "components/ui/FileField",
+      "replacement": "the shared controls in src/rebuild/design/controls.tsx"
+    },
+    {
+      "path": "components/ui/IconChip",
+      "replacement": "the shared controls in src/rebuild/design/controls.tsx"
+    },
+    {
+      "path": "components/ui/LocaleFlag",
+      "replacement": "the shared controls in src/rebuild/design/controls.tsx"
+    },
+    {
+      "path": "components/ui/OptionGroup",
+      "replacement": "the shared controls in src/rebuild/design/controls.tsx"
+    },
+    {
+      "path": "components/ui/ProgressBar",
+      "replacement": "the shared controls in src/rebuild/design/controls.tsx"
+    },
+    {
+      "path": "components/ui/Reveal",
+      "replacement": "the shared controls in src/rebuild/design/controls.tsx"
+    },
+    {
+      "path": "components/ui/StatCard",
+      "replacement": "the shared controls in src/rebuild/design/controls.tsx"
+    },
+    {
+      "path": "components/ui/Table",
+      "replacement": "the shared controls in src/rebuild/design/controls.tsx"
+    },
+    {
+      "path": "components/ui/TrendChart",
+      "replacement": "the shared controls in src/rebuild/design/controls.tsx"
+    },
+    {
+      "path": "routes/app/learn/TerritoryPage",
+      "replacement": "src/rebuild/learning (TerritoryRoute renders it)"
+    },
+    {
+      "path": "routes/app/learn/types",
+      "replacement": "the rebuilt learning wire types in src/rebuild/learning/"
+    },
+    {
+      "path": "routes/auth/ErrorBanner",
+      "replacement": "the rebuilt identity screens in src/rebuild/identity/"
+    },
+    {
+      "path": "routes/app/family/MemoryNotesPanel",
+      "replacement": "src/rebuild/memory/ and the Family console in src/rebuild/family/"
+    },
+    {
+      "path": "lib/courseBadges",
+      "replacement": "the rebuilt badge art: src/rebuild/social/"
+    }
+  ],
+  "files": [
+    "frontend/src/components/CookieConsentBanner.tsx",
+    "frontend/src/components/RouteErrorBoundary.tsx",
+    "frontend/src/components/characters/DinaCharacter.tsx",
+    "frontend/src/components/characters/DrRhoCharacter.tsx",
+    "frontend/src/components/characters/LirufCharacter.tsx",
+    "frontend/src/components/characters/ZaraVexCharacter.tsx",
+    "frontend/src/components/characters/control/CharacterActor.tsx",
+    "frontend/src/components/characters/control/CharacterActor3D.tsx",
+    "frontend/src/components/characters/control/rig.css",
+    "frontend/src/components/characters/control/types.ts",
+    "frontend/src/components/ui/Badge.tsx",
+    "frontend/src/components/ui/Button.tsx",
+    "frontend/src/components/ui/Card.tsx",
+    "frontend/src/components/ui/CountUp.tsx",
+    "frontend/src/components/ui/Icon.tsx",
+    "frontend/src/components/ui/LoadingOverlay.tsx",
+    "frontend/src/components/ui/LottieIcon.tsx",
+    "frontend/src/components/ui/SectionHeading.tsx",
+    "frontend/src/components/ui/ThemeToggle.tsx",
+    "frontend/src/components/ui/index.ts",
+    "frontend/src/lesson-engine/core/MarkdownLite.tsx",
+    "frontend/src/lesson-engine/core/combo.ts",
+    "frontend/src/lesson-engine/core/director.ts",
+    "frontend/src/lesson-engine/core/glowsGrows.ts",
+    "frontend/src/lesson-engine/core/primitives.tsx",
+    "frontend/src/lesson-engine/core/schemaBase.ts",
+    "frontend/src/lesson-engine/core/scoring.ts",
+    "frontend/src/lesson-engine/core/session.ts",
+    "frontend/src/lesson-engine/core/shuffle.ts",
+    "frontend/src/lesson-engine/core/strip.ts",
+    "frontend/src/lesson-engine/core/types.ts",
+    "frontend/src/lesson-engine/families/analyze/components.tsx",
+    "frontend/src/lesson-engine/families/analyze/fixtures.ts",
+    "frontend/src/lesson-engine/families/analyze/grade.ts",
+    "frontend/src/lesson-engine/families/analyze/register.ts",
+    "frontend/src/lesson-engine/families/analyze/schema.ts",
+    "frontend/src/lesson-engine/families/arrange/components.tsx",
+    "frontend/src/lesson-engine/families/arrange/fixtures.ts",
+    "frontend/src/lesson-engine/families/arrange/grade.ts",
+    "frontend/src/lesson-engine/families/arrange/register.ts",
+    "frontend/src/lesson-engine/families/arrange/schema.ts",
+    "frontend/src/lesson-engine/families/choice/components.tsx",
+    "frontend/src/lesson-engine/families/choice/fixtures.ts",
+    "frontend/src/lesson-engine/families/choice/grade.ts",
+    "frontend/src/lesson-engine/families/choice/register.ts",
+    "frontend/src/lesson-engine/families/choice/schema.ts",
+    "frontend/src/lesson-engine/families/input/components.tsx",
+    "frontend/src/lesson-engine/families/input/fixtures.ts",
+    "frontend/src/lesson-engine/families/input/grade.ts",
+    "frontend/src/lesson-engine/families/input/register.ts",
+    "frontend/src/lesson-engine/families/input/schema.ts",
+    "frontend/src/lesson-engine/families/maker/components.tsx",
+    "frontend/src/lesson-engine/families/maker/fixtures.ts",
+    "frontend/src/lesson-engine/families/maker/grade.ts",
+    "frontend/src/lesson-engine/families/maker/register.ts",
+    "frontend/src/lesson-engine/families/maker/schema.ts",
+    "frontend/src/lesson-engine/families/money/components.tsx",
+    "frontend/src/lesson-engine/families/money/fixtures.ts",
+    "frontend/src/lesson-engine/families/money/grade.ts",
+    "frontend/src/lesson-engine/families/money/register.ts",
+    "frontend/src/lesson-engine/families/money/schema.ts",
+    "frontend/src/lesson-engine/families/story/components.tsx",
+    "frontend/src/lesson-engine/families/story/fixtures.ts",
+    "frontend/src/lesson-engine/families/story/grade.ts",
+    "frontend/src/lesson-engine/families/story/register.ts",
+    "frontend/src/lesson-engine/families/story/schema.ts",
+    "frontend/src/lesson-engine/families/storyplay/components.tsx",
+    "frontend/src/lesson-engine/families/storyplay/fixtures.ts",
+    "frontend/src/lesson-engine/families/storyplay/grade.ts",
+    "frontend/src/lesson-engine/families/storyplay/register.ts",
+    "frontend/src/lesson-engine/families/storyplay/schema.ts",
+    "frontend/src/lesson-engine/lab/LessonLabPage.tsx",
+    "frontend/src/lesson-engine/lab/LessonViewPage.tsx",
+    "frontend/src/lesson-engine/lab/fixtureCopy.ts",
+    "frontend/src/lesson-engine/lab/fixtureSets.ts",
+    "frontend/src/lesson-engine/lab/localGrader.ts",
+    "frontend/src/lesson-engine/player/LessonPlayer.tsx",
+    "frontend/src/lesson-engine/player/StreakCelebration.tsx",
+    "frontend/src/lesson-engine/player/checkpoint.ts",
+    "frontend/src/lesson-engine/player/completion.ts",
+    "frontend/src/lesson-engine/player/narration.tsx",
+    "frontend/src/lesson-engine/player/sfx.ts",
+    "frontend/src/lesson-engine/player/useCompletion.ts",
+    "frontend/src/lesson-engine/registry.ts",
+    "frontend/src/lesson-engine/schema.ts",
+    "frontend/src/routes/NotFoundPage.tsx",
+    "frontend/src/routes/app/TutorPage.tsx",
+    "frontend/src/routes/app/banking/BankingPage.tsx",
+    "frontend/src/routes/app/banking/CoinAccountPanel.tsx",
+    "frontend/src/routes/app/banking/SavingsBonusPanel.tsx",
+    "frontend/src/routes/app/banking/SavingsBonusSettingsPanel.tsx",
+    "frontend/src/routes/app/banking/TutorFreezePanel.tsx",
+    "frontend/src/routes/app/family/AutonomyLadderPanel.tsx",
+    "frontend/src/routes/app/family/BadgeSharesPanel.tsx",
+    "frontend/src/routes/app/family/CoGuardiansPanel.tsx",
+    "frontend/src/routes/app/family/DataPracticePanels.tsx",
+    "frontend/src/routes/app/family/FamilyPage.tsx",
+    "frontend/src/routes/app/family/GovernancePanels.tsx",
+    "frontend/src/routes/app/family/GuardianInvitePanel.tsx",
+    "frontend/src/routes/app/family/KidTerritoryPage.tsx",
+    "frontend/src/routes/app/family/KidTutorPage.tsx",
+    "frontend/src/routes/app/family/LearningPanels.tsx",
+    "frontend/src/routes/app/family/ShareDestinationsPanel.tsx",
+    "frontend/src/routes/app/family/SocialGraphPanel.tsx",
+    "frontend/src/routes/app/family/SocialHistoryPanel.tsx",
+    "frontend/src/routes/app/family/SocialNoticesPanel.tsx",
+    "frontend/src/routes/app/family/SocialRequestsPanel.tsx",
+    "frontend/src/routes/app/family/StreakPausesPanel.tsx",
+    "frontend/src/routes/app/family/WalletCorrectionsPanel.tsx",
+    "frontend/src/routes/app/family/coinAccountCopy.ts",
+    "frontend/src/routes/app/family/consoleSession.ts",
+    "frontend/src/routes/app/family/familyAutonomyCopy.ts",
+    "frontend/src/routes/app/family/familyGovernanceCopy.ts",
+    "frontend/src/routes/app/family/familyHubSession.ts",
+    "frontend/src/routes/app/family/familyMoneyCopy.ts",
+    "frontend/src/routes/app/family/moneyHabitsCopy.ts",
+    "frontend/src/routes/app/family/socialUpdates.ts",
+    "frontend/src/routes/app/family/useMoneyRegister.ts",
+    "frontend/src/routes/app/learn/CourseRoute.tsx",
+    "frontend/src/routes/app/learn/DecisionJournalRoute.tsx",
+    "frontend/src/routes/app/learn/LearnHomeRoute.tsx",
+    "frontend/src/routes/app/learn/LearningRhythmRoute.tsx",
+    "frontend/src/routes/app/learn/LegacyLessonIsland.tsx",
+    "frontend/src/routes/app/learn/LessonRoute.tsx",
+    "frontend/src/routes/app/learn/PlacementRoute.tsx",
+    "frontend/src/routes/app/learn/TerritoryRoute.tsx",
+    "frontend/src/routes/app/learn/coreGrader.ts",
+    "frontend/src/routes/app/learn/coursesCache.ts",
+    "frontend/src/routes/app/learn/learnHost.ts",
+    "frontend/src/routes/app/learn/paths.ts",
+    "frontend/src/routes/app/profile/AccountDeletionSetting.tsx",
+    "frontend/src/routes/app/profile/DiscoverableSetting.tsx",
+    "frontend/src/routes/app/profile/DispositionSetting.tsx",
+    "frontend/src/routes/app/profile/LookEditorRoute.tsx",
+    "frontend/src/routes/app/profile/OwnProfileRoute.tsx",
+    "frontend/src/routes/app/profile/PeopleListRoute.tsx",
+    "frontend/src/routes/app/profile/PublicProfileRoute.tsx",
+    "frontend/src/routes/app/profile/SettingsRoute.tsx",
+    "frontend/src/routes/app/profile/SocialTierNotes.tsx",
+    "frontend/src/routes/app/profile/TeenAnalyticsSetting.tsx",
+    "frontend/src/routes/app/profile/TeenConnectionsPanel.tsx",
+    "frontend/src/routes/app/profile/TeenMemoryReviewSetting.tsx",
+    "frontend/src/routes/app/profile/profileRouteKit.ts",
+    "frontend/src/routes/app/tasks/AllocationPanel.tsx",
+    "frontend/src/routes/app/tasks/ChoreComposerPanel.tsx",
+    "frontend/src/routes/app/tasks/ChoreStreakPanel.tsx",
+    "frontend/src/routes/app/tasks/DecisionQueuePanel.tsx",
+    "frontend/src/routes/app/tasks/FamilyVoicePanels.tsx",
+    "frontend/src/routes/app/tasks/SavingsGoalsPanel.tsx",
+    "frontend/src/routes/app/tasks/ShareGivingPanel.tsx",
+    "frontend/src/routes/app/tasks/TasksPage.tsx",
+    "frontend/src/routes/app/tasks/UsualSplitPanel.tsx",
+    "frontend/src/routes/app/tasks/WalletActivityPanel.tsx",
+    "frontend/src/routes/app/tasks/photoPort.ts",
+    "frontend/src/routes/app/wallet/RequireWalletAccess.tsx",
+    "frontend/src/routes/app/wallet/TeenWalletPage.tsx",
+    "frontend/src/routes/app/wallet/useWalletAccess.ts",
+    "frontend/src/routes/auth/AccountDeletionStatus.tsx",
+    "frontend/src/routes/auth/AuthCallbackPage.tsx",
+    "frontend/src/routes/auth/ForgotPasswordPage.tsx",
+    "frontend/src/routes/auth/KidSuspended.tsx",
+    "frontend/src/routes/auth/LoginPage.tsx",
+    "frontend/src/routes/auth/ResetPasswordPage.tsx",
+    "frontend/src/routes/auth/SignupPage.tsx",
+    "frontend/src/routes/auth/UpgradeAccountPage.tsx",
+    "frontend/src/routes/auth/VerifyParentPage.tsx",
+    "frontend/src/routes/auth/failureCode.ts",
+    "frontend/src/routes/auth/useGoogleSignIn.ts",
+    "frontend/src/routes/marketing/BadgeLandingPage.tsx",
+    "frontend/src/routes/marketing/FAQ.tsx",
+    "frontend/src/routes/marketing/Families.tsx",
+    "frontend/src/routes/marketing/HowItWorks.tsx",
+    "frontend/src/routes/marketing/Landing.tsx",
+    "frontend/src/routes/marketing/LegalPage.tsx",
+    "frontend/src/routes/marketing/siteActions.ts",
+    "frontend/src/routes/onboarding/OnboardingPage.tsx"
+  ]
+}
