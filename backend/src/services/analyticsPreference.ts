@@ -19,6 +19,14 @@ export async function setAnalyticsPreference(userId: string, enabled: boolean): 
 /** Applied only after role/guardian checks; does not authorize safety-log changes. */
 export async function allowsSelfManagedAnalytics(userId: string, state: AgeScreenState): Promise<boolean> {
   if (state.required || state.protectedOrigin) return false;
+  // S-04 (OD-28): a teen who reached the adult tier by birth month keeps an
+  // explicit earlier "no" (the database gates 0090/0160 do the same, migration
+  // age_screen_birth_month). With no recorded preference, the adult rule.
+  if (state.ageBand === 'adult' && state.adultByBirthMonth === true) {
+    const preference = await readAnalyticsPreference(userId);
+    if (preference === null) return false;
+    return preference.disclosed ? preference.enabled : true;
+  }
   if (state.ageBand === 'adult') return true;
   if (state.ageBand !== '13_to_17') return false;
   return (await readAnalyticsPreference(userId))?.enabled === true;
