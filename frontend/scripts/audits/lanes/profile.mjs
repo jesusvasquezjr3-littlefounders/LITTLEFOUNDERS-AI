@@ -40,6 +40,9 @@ export const states = [
   app('/@rio_montes@adult', '/@rio_montes', 'profile-adult', '[data-screen="public-profile"] .lf-profile-connect .lf-button--accent'),
   app('/@rio_montes@kid-6-9', '/@rio_montes', 'profile-kid', '[data-screen="public-profile"][data-age-band="6-9"] .lf-profile-connect-note'),
   app('/@maria_fernanda_22@self', '/@maria_fernanda_22', 'profile-adult', '[data-screen="public-profile"] .lf-profile-actions a[href="/profile"]'),
+  // W2P.3, OD-6: one's own /@username as a verified parent (the pill is Core's verdict on the owner) and as a child (youngest budget, no pill).
+  app('/@maria_fernanda_22@self-tutor', '/@maria_fernanda_22', 'profile-tutor', '[data-screen="public-profile"] .lf-profile-names .lf-pill'),
+  app('/@vale_rocket@self-kid-6-9', '/@vale_rocket', 'profile-kid', '[data-screen="public-profile"][data-age-band="6-9"] .lf-profile-actions a[href="/profile"]'),
   app('/@vanished@adult', '/@vanished', 'profile-adult', '[data-screen="public-profile"] .lf-account-state a'),
   // P4, P5, P7, P8: the people lists.
   app('/profile/followers@adult', '/profile/followers', 'profile-adult', '[data-screen="people-list"] .lf-people-row'),
@@ -59,6 +62,8 @@ export const states = [
   preview('public-profile@report-dialog', { screen: 'public-profile', state: 'adult' }, { open: ['[data-screen="public-profile"] .lf-card button[aria-haspopup="dialog"]:not(.lf-button--danger)'] }),
   preview('public-profile@block-dialog', { screen: 'public-profile', state: 'adult' }, { open: ['[data-screen="public-profile"] .lf-button--danger'] }),
   preview('public-profile@leave-dialog', { screen: 'public-profile', state: 'childFollowed' }, { open: ['[data-screen="public-profile"] .lf-profile-actions .lf-button--secondary'] }),
+  // W2P.3, E.1: a child's own following list asks before an unfollow (opened by a real press on the first row's Unfollow).
+  preview('people-list@kid-leave-dialog', { screen: 'people-list', state: 'kidFollowing' }, { open: ['[data-screen="people-list"] .lf-people-row button'] }),
   ...['unfollowed', 'unfollowFailed', 'emptyOwn', 'emptyPublic', 'unavailable', 'loading', 'failed', 'offline']
     .map((state) => preview(`people-list@${state}`, { screen: 'people-list', state })),
 ];
@@ -73,10 +78,11 @@ const LOOK = { skinColor: ['d08b5b'], top: ['curly'], hairColor: ['2c1b18'], eye
 const BLOCKED = [{ userId: '66666666-6666-4666-8666-666666666666', displayName: 'Bartolomeo Alessandro Rodríguez', username: 'bartolomeo_2014', avatarOptions: {}, isTutor: false }];
 
 const profile = (extra) => ({ displayName: 'María Fernanda de la Cruz Villanueva', username: 'maria_fernanda_22', avatarOptions: LOOK, cover: { preset: 'ocean' },
-  learningStats: STATS, courseBadges: BADGES, social: { tier: 'adult', privateProfile: false }, profileReview: { flagged: false, fields: [] }, ...extra });
+  learningStats: STATS, courseBadges: BADGES, isTutor: false, social: { tier: 'adult', privateProfile: false }, profileReview: { flagged: false, fields: [] }, ...extra });
 
 /*
- * `profile` and `blocked` extend synthetic-core's default own profile; `deletion`
+ * `profile` and `blocked` extend synthetic-core's default own profile (`isTutor`
+ * is Core's OD-6 verdict on the owner, W2P.3); `deletion`
  * is what GET /account/deletion answers; `disposition` whether the learner has a
  * profile yet; `memory` whether GET /tutor/memory-proposals is theirs (OD-18).
  */
@@ -84,7 +90,7 @@ export const scenarios = {
   'settings-teen': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', memory: true,
     profile: profile({ displayName: 'Rio Montes', username: 'rio_montes', birthDate: '2010-06-02', social: { tier: 'teen', privateProfile: true } }), deletion: 'grace' },
   'profile-adult': { population: 'adult', guest: false, ageBand: 'adult', mentor: 'liruf', profile: profile({ birthDate: null }), blocked: BLOCKED, deletion: 'grace' },
-  'profile-tutor': { population: 'verified parent (Tutor)', guest: false, ageBand: 'adult', roles: ['parent'], profile: profile({ displayName: 'Jesús Vásquez' }), deletion: 'grace' },
+  'profile-tutor': { population: 'verified parent (Tutor)', guest: false, ageBand: 'adult', roles: ['parent'], profile: profile({ displayName: 'Jesús Vásquez', isTutor: true }), deletion: 'grace' },
   'profile-teen': { population: 'independent teen 13-17, E.13-flagged handle', guest: false, ageBand: '13-17', mentor: 'dina', teenRequests: true,
     profile: profile({ displayName: 'Rio Montes', username: 'rio_ig_2010', cover: { preset: 'grape' }, social: { tier: 'teen', privateProfile: true },
       profileReview: { flagged: true, fields: ['username'] } }), deletion: 'grace' },
@@ -158,7 +164,7 @@ export function respond({ spec, locale, path, request, ok }) {
     // A guest has no social layer, and a vanished handle is one NOT_FOUND, never saying why.
     if (viewerTier === 'closed' || !(self || handle in SUBJECTS)) return refuse(404, 'NOT_FOUND');
     if (list) return handle === 'rio_montes' ? refuse(404, 'NOT_FOUND') : ok({ users: list === 'followers' ? PEOPLE : PEOPLE.slice(1) });
-    if (self) return ok({ visibility: 'full', ...publicShape(spec.profile), isFollowing: false, requiresGuardianApproval: false, connection: 'none', isSelf: true, isTutor: false });
+    if (self) return ok({ visibility: 'full', ...publicShape(spec.profile), isFollowing: false, requiresGuardianApproval: false, connection: 'none', isSelf: true, isTutor: spec.profile.isTutor === true });
     return ok(SUBJECTS[handle](viewerTier, spec));
   }
   if (path === '/profile' && request.method === 'PATCH') return ok({ updated: true });

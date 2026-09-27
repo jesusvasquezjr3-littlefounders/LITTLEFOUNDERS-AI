@@ -20,6 +20,7 @@ interface WireProfile {
   learningStats: { xpPoints: unknown; minutesLearned: unknown; lessonsCompleted: unknown; streakDays: unknown } | null;
   courseBadges?: unknown;
   social?: { tier?: unknown } | null;
+  isTutor?: unknown;
   profileReview?: { flagged?: unknown; fields?: unknown } | null;
 }
 
@@ -28,8 +29,12 @@ const count = (value: unknown) => (typeof value === 'number' && Number.isFinite(
 
 export interface ParsedProfile { data: OwnProfileData; review: ('username' | 'displayName')[] }
 
-/** Core's answer, checked field by field. `null` when anything the screen relies on is missing. */
-export function parseOwnProfile(raw: unknown, locale: string, seed: string, tutor: boolean): ParsedProfile | null {
+/**
+ * Core's answer, checked field by field. `null` when anything the screen relies on is missing.
+ * `roleTutor` (the parent role) is only the fallback for an older Core that does not send its
+ * own `isTutor` verdict (OD-6: only a currently ID-verified parent is a Tutor).
+ */
+export function parseOwnProfile(raw: unknown, locale: string, seed: string, roleTutor: boolean): ParsedProfile | null {
   const wire = raw as WireProfile | null;
   if (!wire || typeof wire.displayName !== 'string' || typeof wire.memberSince !== 'string') return null;
   if (!(wire.username === null || typeof wire.username === 'string')) return null;
@@ -53,7 +58,8 @@ export function parseOwnProfile(raw: unknown, locale: string, seed: string, tuto
     data: {
       displayName: wire.displayName, username: wire.username, memberSince: wire.memberSince,
       look: resolveLook(avatar, seed), cover: resolveCover(wire.cover),
-      stats: { streakDays, lessonsCompleted, xpPoints, minutesLearned }, badges, tier, tutor,
+      stats: { streakDays, lessonsCompleted, xpPoints, minutesLearned }, badges, tier,
+      tutor: typeof wire.isTutor === 'boolean' ? wire.isTutor : roleTutor,
     },
     review,
   };

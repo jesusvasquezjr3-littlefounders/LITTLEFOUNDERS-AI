@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type enProfile from '../../i18n/en-US/rebuild-profile.json';
-import { Button, Card, EmptyState, ErrorState, InlineNotice, LoadingState, Pill } from '../design/controls';
+import { Button, Card, ConfirmDialog, EmptyState, ErrorState, InlineNotice, LoadingState, Pill } from '../design/controls';
 import { CartoonAvatar } from '../account/avatar/CartoonAvatar';
 import type { AvatarLook } from '../account/avatar/avatarKit';
 import { BackLink, followInApp } from '../account/navLink';
@@ -21,6 +21,8 @@ import './people.css';
  * Report and Block live (E.3).
  *
  *   - Who I follow (P5): each row can be unfollowed (the viewer's own edge).
+ *     A child whose connections its Tutor manages is asked first (W2P.3): it
+ *     may not be able to follow again on its own.
  *   - My followers (P4): read-only, except for an independent teen, who
  *     manages their own connections (E.8) and can remove a follower.
  *   - A child's own lists say who approves their connections (E.1).
@@ -45,7 +47,7 @@ export type PeopleView =
 export type RowAction = 'unfollow' | 'remove' | null;
 export interface PeopleNotice { tone: 'success' | 'error'; text: string }
 
-export function PeopleList({ copy, locale, dark, ageBand, list, owner, view, action, busyId, notice, onAct, onRetry, onNavigate }: {
+export function PeopleList({ copy, locale, dark, ageBand, list, owner, view, action, confirmUnfollow = false, busyId, notice, onAct, onRetry, onNavigate }: {
   copy: PeopleListCopy;
   locale: string;
   dark: boolean;
@@ -55,6 +57,8 @@ export function PeopleList({ copy, locale, dark, ageBand, list, owner, view, act
   owner: 'self' | string;
   view: PeopleView;
   action: RowAction;
+  /** Ask before an unfollow (a child whose connections its Tutor manages, E.1). */
+  confirmUnfollow?: boolean;
   busyId: string | null;
   notice: PeopleNotice | null;
   onAct: (person: PersonRow) => void;
@@ -70,6 +74,12 @@ export function PeopleList({ copy, locale, dark, ageBand, list, owner, view, act
 
   // A row that leaves the list takes the focused button with it: keep the keyboard on the next row, or on the heading.
   const lastActed = useRef<number | null>(null);
+  const [confirming, setConfirming] = useState<{ person: PersonRow; index: number } | null>(null);
+  const press = (person: PersonRow, index: number) => {
+    if (action === 'unfollow' && confirmUnfollow) { setConfirming({ person, index }); return; }
+    lastActed.current = index;
+    onAct(person);
+  };
   const rowCount = people?.length ?? 0;
   useEffect(() => {
     if (lastActed.current === null || (document.activeElement && document.activeElement !== document.body)) return;
@@ -110,12 +120,15 @@ export function PeopleList({ copy, locale, dark, ageBand, list, owner, view, act
                         <Person person={person} tutorLabel={copy.tutor} onNavigate={onNavigate} />
                         {action && person.username ? <Button size="sm" disabled={busyId !== null && busyId !== person.userId}
                           pending={busyId === person.userId} pendingLabel={action === 'unfollow' ? copy.unfollowing : copy.removing}
-                          onClick={() => { lastActed.current = index; onAct(person); }}>{action === 'unfollow' ? copy.unfollow : copy.remove}</Button> : null}
+                          onClick={() => press(person, index)}>{action === 'unfollow' ? copy.unfollow : copy.remove}</Button> : null}
                       </li>)}
                     </ul>
                   </Card>}
               </>}
     </div>
+    <ConfirmDialog open={confirming !== null} heading={copy.leaveTitle} consequence={copy.leaveBody} keepLabel={copy.leaveKeep} confirmLabel={copy.leaveConfirm}
+      onKeep={() => setConfirming(null)}
+      onConfirm={() => { if (confirming) { lastActed.current = confirming.index; onAct(confirming.person); } setConfirming(null); }} />
   </div>;
 }
 

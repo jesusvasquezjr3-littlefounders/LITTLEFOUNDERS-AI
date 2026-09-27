@@ -6,7 +6,7 @@ import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.
 import { installSyntheticCore, SCENARIOS, sessionStorageScript } from './audits/synthetic-core.mjs';
 
 /*
- * W2P.1 and W2P.2 (profile lane): the rebuilt own profile (P1), look editor
+ * W2P.1, W2P.2 and W2P.3 (profile lane): the rebuilt own profile (P1), look editor
  * (P2), Settings (P3), people lists (P4, P5, P7, P8) and other people's
  * profiles (P6) on their REAL routes, in real Chrome, for every population
  * each screen serves, signed in with a synthetic session and answered by the
@@ -38,6 +38,9 @@ import { installSyntheticCore, SCENARIOS, sessionStorageScript } from './audits/
  *     own); E.10 (no message or chat control anywhere); the list actions by
  *     population (P5 unfollow, the teen's remove, none on another person's
  *     lists); a guest's lists and a stranger's profile are not available;
+ *   - W2P.3: OD-6 on one's own /@username (the pill only for a verified
+ *     parent, never for a child) and E.1's confirmation before a child
+ *     unfollows from its own list (keep first, Escape sends nothing);
  *   - no axe-core violation inside the screen (normal text only);
  *
  * and once per locale and mode at 375 px, real presses: the profile's
@@ -87,12 +90,19 @@ const CASES = [
     expect: { kind: 'private', connect: 'managed', safety: true, tutorPill: false, young: true } },
   { id: 'p6-self', path: '/@maria_fernanda_22', scenario: 'profile-adult', screen: 'public-profile', ready: '.lf-profile-actions a[href="/profile"]',
     expect: { kind: 'full', connect: 'self', safety: false, tutorPill: false } },
+  // W2P.3, OD-6: on one's own /@username the Tutor pill is Core's verdict on the owner (a verified parent), never "self".
+  { id: 'p6-self-tutor', path: '/@maria_fernanda_22', scenario: 'profile-tutor', screen: 'public-profile', ready: '.lf-profile-names .lf-pill',
+    expect: { kind: 'full', connect: 'self', safety: false, tutorPill: true } },
+  { id: 'p6-self-kid', path: '/@vale_rocket', scenario: 'profile-kid', screen: 'public-profile', ready: '.lf-profile-actions a[href="/profile"]',
+    expect: { kind: 'full', connect: 'self', safety: false, tutorPill: false, young: true } },
   { id: 'p6-guest', path: '/@marta', scenario: 'profile-guest', screen: 'public-profile', ready: '.lf-account-state a', expect: { kind: 'unavailable', safety: false } },
   // W2P.2: the people lists (P4, P5, P7, P8), by viewer.
   { id: 'p4-adult', path: '/profile/followers', scenario: 'profile-adult', screen: 'people-list', ready: '.lf-people-row', expect: { rows: 3, actions: 0 } },
   { id: 'p4-teen', path: '/profile/followers', scenario: 'profile-teen', screen: 'people-list', ready: '.lf-people-row button', expect: { rows: 3, actions: 3 } },
   { id: 'p4-kid', path: '/profile/followers', scenario: 'profile-kid', screen: 'people-list', ready: '.lf-people-row', expect: { rows: 3, actions: 0, managed: true, young: true } },
   { id: 'p5-adult', path: '/profile/following', scenario: 'profile-adult', screen: 'people-list', ready: '.lf-people-row button', expect: { rows: 2, actions: 2 } },
+  // W2P.3, E.1: a child's own following list (its Tutor manages its connections): Unfollow asks first.
+  { id: 'p5-kid', path: '/profile/following', scenario: 'profile-kid', screen: 'people-list', ready: '.lf-people-row button', expect: { rows: 2, actions: 2, managed: true, young: true } },
   { id: 'p5-guest', path: '/profile/following', scenario: 'profile-guest', screen: 'people-list', ready: '.lf-state', expect: { rows: 0, actions: 0, closed: true } },
   { id: 'p7-adult', path: '/@marta/followers', scenario: 'profile-adult', screen: 'people-list', ready: '.lf-people-row', expect: { rows: 3, actions: 0, other: true } },
   { id: 'p8-kid', path: '/@marta/following', scenario: 'profile-kid', screen: 'people-list', ready: '.lf-people-row', expect: { rows: 2, actions: 0, other: true, young: true } },
@@ -106,7 +116,10 @@ const evidence = [];
 const failures = [];
 const unknownRequests = new Set();
 
-async function waitFor(page, expression, what, tries = 900) {
+// How many 50 ms polls a wait may take (default 900, about 45 s). A loaded machine can raise it; it never changes what is measured.
+const WAIT_TRIES = Number(process.env.PROFILE_WAIT_TRIES ?? 900);
+
+async function waitFor(page, expression, what, tries = WAIT_TRIES) {
   for (let n = 0; n < tries; n++) {
     try { if (await page.evaluate(`!!(${expression})`)) return; } catch (error) { if (!/context|navigat/i.test(String(error))) throw error; }
     await sleep(50);
@@ -326,6 +339,19 @@ try {
         await waitFor(page, "location.pathname === '/@marta/followers' && document.querySelector('[data-screen=\"people-list\"] .lf-people-row')", `${where}: navigates to P7`);
         await waitFor(page, "document.activeElement?.tagName === 'H1' && document.activeElement.closest('[data-screen=\"people-list\"]')", `${where}: focus on P7's heading`);
         routeFocus = 'h1 (P7), report dialog by keyboard';
+      }
+      if (entry.id === 'p5-kid' && width === 375) {
+        // W2P.3, E.1: the child's Unfollow opens the confirmation holding focus, keep first; Escape returns to the row's button and nothing is sent.
+        await page.evaluate(`document.querySelector(${JSON.stringify(`${root} .lf-people-row button`)}).focus()`);
+        await key(page, 'Enter', 'Enter', 13);
+        await waitFor(page, "document.querySelector('[role=alertdialog]') && document.querySelector('[role=alertdialog]').contains(document.activeElement)", `${where}: the confirmation holds focus`);
+        const order = await page.evaluate("[...document.querySelectorAll('[role=alertdialog] button[data-confirm]')].map((b) => b.dataset.confirm).join(',')");
+        assert.equal(order, 'keep,confirm', '02 §9.8: the keep option comes first');
+        assert.equal(await page.evaluate("document.activeElement?.dataset.confirm"), 'keep', 'focus lands on keep');
+        await key(page, 'Escape', 'Escape', 27);
+        await waitFor(page, `!document.querySelector('[role=alertdialog]') && document.activeElement?.matches(${JSON.stringify('.lf-people-row button')})`, `${where}: Escape returns focus to Unfollow`);
+        assert.equal(await page.evaluate("document.querySelectorAll('.lf-people-row').length"), 2, 'Escape unfollows nobody');
+        routeFocus = 'unfollow confirmation by keyboard';
       }
       if (entry.id === 'p4-adult' && width === 375) {
         await press(page, `${root} a.lf-account-back`);

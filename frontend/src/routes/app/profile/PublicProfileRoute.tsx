@@ -75,8 +75,12 @@ export function connectFor(parsed: ParsedPublicProfile): ConnectView {
     return parsed.mode === 'managed' ? { kind: 'managed' } : { kind: 'none' };
   }
   if (parsed.self) return { kind: 'self' };
-  // Unfollowing a child or a private teen ends what this viewer can see of them.
-  if (parsed.isFollowing) return { kind: 'follow', following: true, leaving: parsed.guardianTier || parsed.mode === 'teenRequest', busy: false, error: null };
+  // Unfollowing a child or a private teen ends what this viewer can see of them; a child viewer
+  // whose connections its Tutor manages cannot follow again on its own (W2P.3): both ask first.
+  if (parsed.isFollowing) {
+    const leaving = parsed.guardianTier || parsed.mode === 'teenRequest' || parsed.mode === 'managed';
+    return { kind: 'follow', following: true, leaving, busy: false, error: null };
+  }
   switch (parsed.mode) {
     case 'follow': return { kind: 'follow', following: false, leaving: false, busy: false, error: null };
     case 'guardianRequest': return { kind: 'request', decidedBy: 'guardian', status: 'idle' };

@@ -118,6 +118,8 @@ function PeopleListData({ list, owner }: { list: 'followers' | 'following'; owne
   }, [action, busyId, getToken, strings]);
 
   return <PeopleList copy={strings} locale={locale} dark={dark} ageBand={ageBand} list={list} owner={owner} view={view}
-    action={action} busyId={busyId} notice={notice} onAct={(person) => void act(person)} onNavigate={(href) => navigate(href)}
+    // E.1: a child's connections are its Tutor's to approve; an unfollow it might not undo on its own asks first (W2P.3).
+    // An unread tier might be a child's, so it asks too (the conservative side: one extra press for an adult).
+    action={action} confirmUnfollow={own && tier !== 'adult' && tier !== 'teen'} busyId={busyId} notice={notice} onAct={(person) => void act(person)} onNavigate={(href) => navigate(href)}
     onRetry={() => { setView({ kind: 'failed', offline: false, retrying: true }); setAttempt((value) => value + 1); }} />;
 }

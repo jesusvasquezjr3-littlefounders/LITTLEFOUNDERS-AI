@@ -486,6 +486,10 @@
     "remove": "Remove",
     "removing": "Removing",
     "removed": "Removed. They no longer see your profile.",
-    "removeFailed": "Could not remove. Try again."
+    "removeFailed": "Could not remove. Try again.",
+    "leaveTitle": "Stop following?",
+    "leaveBody": "To follow again, you might have to ask again.",
+    "leaveKeep": "Cancel",
+    "leaveConfirm": "Unfollow"
   }
 }

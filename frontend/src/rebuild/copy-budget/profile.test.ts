@@ -72,8 +72,9 @@ describe('rebuild-profile copy budget', () => {
         expectFits(text, role, locale, '6-9', `report.${path}`);
       }
       for (const [key, text] of group('peopleList')) {
-        const role = ['followersTitle', 'followingTitle', 'failedTitle', 'offlineTitle', 'unavailableTitle', 'emptyFollowers', 'emptyFollowing', 'emptyPublic', 'closedTitle'].includes(key) ? 'heading'
-          : ['back', 'retry', 'retrying', 'unfollow', 'unfollowing', 'remove', 'removing'].includes(key) ? 'action' : 'body';
+        const role = ['followersTitle', 'followingTitle', 'failedTitle', 'offlineTitle', 'unavailableTitle', 'emptyFollowers', 'emptyFollowing', 'emptyPublic', 'closedTitle',
+          'leaveTitle'].includes(key) ? 'heading'
+          : ['back', 'retry', 'retrying', 'unfollow', 'unfollowing', 'remove', 'removing', 'leaveKeep', 'leaveConfirm'].includes(key) ? 'action' : 'body';
         expectFits(text, role, locale, '6-9', `peopleList.${key}`);
       }
     });

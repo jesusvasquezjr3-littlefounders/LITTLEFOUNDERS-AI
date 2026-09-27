@@ -258,6 +258,8 @@ describe('parsePublicProfile and connectFor', () => {
     expect(mode({ connection: 'teenRequest', isFollowing: true })).toMatchObject({ kind: 'follow', following: true, leaving: true });
     expect(mode({ connection: 'teenRequest' })).toEqual({ kind: 'request', decidedBy: 'subject', status: 'idle' });
     expect(mode({ connection: 'managed' })).toEqual({ kind: 'managed' });
+    expect(mode({ connection: 'managed', isFollowing: true })).toMatchObject({ kind: 'follow', following: true, leaving: true });
+    expect(mode({ connection: 'follow', isFollowing: true })).toMatchObject({ kind: 'follow', following: true, leaving: false });
     expect(mode({ connection: 'none' })).toEqual({ kind: 'none' });
     expect(mode({ connection: undefined, requiresGuardianApproval: true })).toEqual({ kind: 'request', decidedBy: 'guardian', status: 'idle' });
     expect(mode({ connection: undefined })).toMatchObject({ kind: 'follow' });

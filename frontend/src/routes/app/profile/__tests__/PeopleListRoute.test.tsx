@@ -90,6 +90,32 @@ describe('people lists (P4, P5, P7, P8)', () => {
     expect(within(list).queryByRole('link', { name: /Omar/ })).toBeNull();
   });
 
+  it('P5 for a child: asks before an unfollow it might not undo on its own, and Cancel sends nothing (E.1, W2P.3)', async () => {
+    core({ 'GET /profile/following': ok({ users: PEOPLE }), 'GET /profile': me('guardian'), 'DELETE /profiles/omar/follow': ok({ following: false }) });
+    renderAt('/profile/following');
+    const list = await screen.findByRole('list', { name: 'Following' });
+    const omar = () => within(within(list).getByRole('link', { name: /Omar/ }).closest('li')!).getByRole('button', { name: 'Unfollow' });
+    fireEvent.click(omar());
+    const dialog = await screen.findByRole('alertdialog', { name: 'Stop following?' });
+    expect(dialog).toHaveTextContent('To follow again, you might have to ask again.');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+    expect(mocks.api).not.toHaveBeenCalledWith('/profiles/omar/follow', expect.anything());
+    fireEvent.click(omar());
+    fireEvent.click(within(await screen.findByRole('alertdialog', { name: 'Stop following?' })).getByRole('button', { name: 'Unfollow' }));
+    expect(await screen.findByText('Unfollowed.')).toBeInTheDocument();
+    expect(mocks.api).toHaveBeenCalledWith('/profiles/omar/follow', expect.objectContaining({ method: 'DELETE' }));
+    expect(within(list).queryByRole('link', { name: /Omar/ })).toBeNull();
+  });
+
+  it('P5 when the tier cannot be read: asks first, since the viewer might be a child (E.1, W2P.3)', async () => {
+    core({ 'GET /profile/following': ok({ users: PEOPLE }), 'GET /profile': refuse('INTERNAL') });
+    renderAt('/profile/following');
+    const list = await screen.findByRole('list', { name: 'Following' });
+    fireEvent.click(within(within(list).getByRole('link', { name: /Omar/ }).closest('li')!).getByRole('button', { name: 'Unfollow' }));
+    expect(await screen.findByRole('alertdialog', { name: 'Stop following?' })).toBeInTheDocument();
+    expect(mocks.api).not.toHaveBeenCalledWith('/profiles/omar/follow', expect.anything());
+  });
+
   it('P4 for an independent teen: removes a follower (E.8)', async () => {
     core({ 'GET /profile/followers': ok({ users: PEOPLE }), 'GET /profile': me('teen'), 'DELETE /profile/followers/luz_m': ok({ removed: true }) });
     renderAt('/profile/followers');

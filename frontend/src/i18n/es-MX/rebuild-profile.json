@@ -486,6 +486,10 @@
     "remove": "Quitar",
     "removing": "Quitando",
     "removed": "Quitado. Ya no ve tu perfil.",
-    "removeFailed": "No se quitó. Intenta de nuevo."
+    "removeFailed": "No se quitó. Intenta de nuevo.",
+    "leaveTitle": "¿Dejar de seguir?",
+    "leaveBody": "Para volver a seguir, quizá tengas que pedirlo otra vez.",
+    "leaveKeep": "Cancelar",
+    "leaveConfirm": "Dejar de seguir"
   }
 }

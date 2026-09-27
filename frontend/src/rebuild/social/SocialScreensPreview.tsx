@@ -96,6 +96,6 @@ export function PeopleListPreview({ locale, theme, state }: { locale: Locale; th
   const notice: PeopleNotice | null = name === 'unfollowed' ? { tone: 'success', text: t.unfollowed } : name === 'unfollowFailed' ? { tone: 'error', text: t.unfollowFailed } : null;
   return <Page locale={locale} theme={theme} screen="people-list">
     <PeopleList copy={t} locale={locale} dark={theme === 'dark'} ageBand={name === 'kidFollowing' ? '6-9' : undefined} list={list} owner={owner} view={view}
-      action={action} busyId={null} notice={notice} onAct={noop} onRetry={noop} onNavigate={noop} />
+      action={action} confirmUnfollow={name === 'kidFollowing'} busyId={null} notice={notice} onAct={noop} onRetry={noop} onNavigate={noop} />
   </Page>;
 }

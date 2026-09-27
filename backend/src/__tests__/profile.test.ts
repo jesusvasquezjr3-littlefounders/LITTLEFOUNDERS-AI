@@ -95,6 +95,10 @@ function stub(opts: StubOpts = {}) {
       if (url.includes('/rest/v1/user_roles')) {
         return Promise.resolve(jsonResponse(200, opts.targetRoles === null ? null : (opts.targetRoles ?? ['parent']).map(role => ({ role }))));
       }
+      // E.5, OD-6: the listed and viewed parents are currently ID-verified unless a case says otherwise.
+      if (url.includes('/rest/v1/parent_verifications')) {
+        return Promise.resolve(jsonResponse(200, [{ status: 'verified', method: 'local-ocr', birth_date: '1988-02-14' }]));
+      }
       if (url.includes('/rest/v1/learning_stats')) {
         return Promise.resolve(jsonResponse(200, opts.learningStats ?? [ZERO_STATS]));
       }

@@ -486,6 +486,10 @@
     "remove": "Remover",
     "removing": "Removendo",
     "removed": "Removido. A pessoa não vê mais seu perfil.",
-    "removeFailed": "Não removido. Tente de novo."
+    "removeFailed": "Não removido. Tente de novo.",
+    "leaveTitle": "Deixar de seguir?",
+    "leaveBody": "Para seguir de novo, talvez você tenha que pedir outra vez.",
+    "leaveKeep": "Cancelar",
+    "leaveConfirm": "Deixar de seguir"
   }
 }

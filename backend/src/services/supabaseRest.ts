@@ -1152,16 +1152,23 @@ export async function hasRole(userId: string, role: string): Promise<boolean> {
  * closed — an absence is safer than an unearned trust signal).
  */
 export async function tutorBadgeVisible(viewerId: string, subjectId: string): Promise<boolean> {
+  // OD-6: "Tutor" is only a currently ID-verified parent, for every viewer:
+  // the subject themself and staff included (W2P.3 found the self and staff
+  // shortcuts ran before this check, so anyone saw the badge on their own
+  // /@username).
+  const subjectVerification = await rest<unknown[]>(
+    `/parent_verifications?user_id=eq.${eu(subjectId)}&select=status,method,birth_date&order=created_at.desc,id.desc&limit=1`,
+    serviceToken(),
+  );
+  if (!Array.isArray(subjectVerification) || subjectVerification.length === 0) return false;
+  const latest = subjectVerification[0] as { status?: unknown; method?: unknown; birth_date?: unknown } | undefined;
+  if (!latest || latest.status !== 'verified' || latest.method !== 'local-ocr') return false;
   if (viewerId === subjectId) return true;
   const staffViewer = await hasRole(viewerId, 'admin') || await hasRole(viewerId, 'superadmin');
   if (staffViewer) return true;
-  const [linked, subjectVerification, mutualFollow] = await Promise.all([
+  const [linked, mutualFollow] = await Promise.all([
     rest<{ id: string }[]>(
       `/guardian_links?parent_user_id=eq.${eu(subjectId)}&kid_user_id=eq.${eu(viewerId)}&verification_status=eq.verified&select=id&limit=1`,
-      serviceToken(),
-    ),
-    rest<unknown[]>(
-      `/parent_verifications?user_id=eq.${eu(subjectId)}&select=status,method,birth_date&order=created_at.desc,id.desc&limit=1`,
       serviceToken(),
     ),
     (async () => {
@@ -1172,9 +1179,6 @@ export async function tutorBadgeVisible(viewerId: string, subjectId: string): Pr
       return Array.isArray(a) && a.length > 0 && Array.isArray(b) && b.length > 0;
     })(),
   ]);
-  if (!Array.isArray(subjectVerification) || subjectVerification.length === 0) return false;
-  const latest = subjectVerification[0] as { status?: unknown; method?: unknown; birth_date?: unknown } | undefined;
-  if (!latest || latest.status !== 'verified' || latest.method !== 'local-ocr') return false;
   if (!Array.isArray(linked)) return false;
   return linked.length > 0 || mutualFollow;
 }

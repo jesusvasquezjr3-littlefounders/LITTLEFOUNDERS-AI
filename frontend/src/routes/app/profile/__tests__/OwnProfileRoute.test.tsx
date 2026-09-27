@@ -86,10 +86,18 @@ describe('own profile (P1)', () => {
 
   it('shows the Tutor pill on a verified parent\'s own profile, and a way to choose a username when there is none', async () => {
     mocks.roles = ['parent'];
-    mocks.api.mockResolvedValue({ data: wire({ username: null }), error: null });
+    mocks.api.mockResolvedValue({ data: wire({ username: null, isTutor: true }), error: null });
     renderProfile();
     expect(await screen.findByText('Tutor')).toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: 'Choose a username' })[0]).toHaveAttribute('href', '/profile/settings');
+  });
+
+  it('OD-6: shows the Tutor pill only when Core says the owner is a verified parent, whatever the roles say (W2P.3)', async () => {
+    mocks.roles = ['parent'];
+    mocks.api.mockResolvedValue({ data: wire({ isTutor: false }), error: null });
+    renderProfile();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Ana Ruiz' })).toBeInTheDocument();
+    expect(screen.queryByText('Tutor')).toBeNull();
   });
 
   it('shows a retryable failure, and says so when the device is offline', async () => {
@@ -119,5 +127,9 @@ describe('parseOwnProfile', () => {
     expect(parseOwnProfile(wire(), 'pt-BR', 's', false)!.data.badges[0]!.title).toBe('Smart Investing');
     expect(parseOwnProfile(wire({ social: { tier: 'public' } }), 'en-US', 's', false)!.data.tier).toBeNull();
     expect(parseOwnProfile(wire({ cover: { preset: 'https://example.com/x.png' } }), 'en-US', 's', false)!.data.cover).toBe('aurora');
+    // OD-6: Core's verdict wins over the role; the role is only the fallback for an older Core.
+    expect(parseOwnProfile(wire({ isTutor: true }), 'en-US', 's', false)!.data.tutor).toBe(true);
+    expect(parseOwnProfile(wire({ isTutor: false }), 'en-US', 's', true)!.data.tutor).toBe(false);
+    expect(parseOwnProfile(wire(), 'en-US', 's', true)!.data.tutor).toBe(true);
   });
 });
