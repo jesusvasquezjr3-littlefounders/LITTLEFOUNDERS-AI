@@ -2,7 +2,9 @@ import type { AdventureNode, CourseTree, LessonNode, TopicNode } from '../course
 import type { LessonState } from '../unlockRules.js';
 import {
   chapterPolicy,
+  chapterPrerequisiteKcs,
   computeFrontier,
+  earlyStageCandidate,
   graphState,
   pathwayBadgeDecision,
   pathwayProgress,
@@ -67,6 +69,20 @@ export interface PathwayView {
   /** The skills the pathway teaches, in pathway order, with how each is currently shown. */
   skills: Array<{ key: string; shown: KcSatisfaction }>;
   /**
+   * OD-25: chapters one stage above the learner's own that mastery can open
+   * early. `eligible` = every prerequisite skill is shown and the learner may
+   * confirm; `opened` = confirmed, now an optional chapter.
+   */
+  earlyAccess: PathwayEarlyAccess[];
+  /**
+   * OD-25: topics whose every taught skill is shown, at least one with the
+   * Mentor, that the learner may accept to count as done ("You have shown
+   * mastery of X; unlock the next level?"). Never counted before they accept.
+   */
+  masteryOffers: Array<{ topicId: string; chapterId: string; skills: string[] }>;
+  /** OD-25: topics the learner accepted as done on Mentor mastery (read as credits, never as played or XP). */
+  masteryCredited: string[];
+  /**
    * Where earlier evidence (Mentor mastery, skills shown in another stage)
    * suggests the stage-entry placement should ask its first question: a prior,
    * never a verdict (P6). Null when there is no graph evidence to offer.
@@ -75,6 +91,14 @@ export interface PathwayView {
 }
 
 export type PathwayItemReason = FrontierItem['reason'] | 'known';
+
+export interface PathwayEarlyAccess {
+  chapterId: string;
+  stage: PathwayStage;
+  state: 'eligible' | 'opened';
+  /** The chapter's prerequisite skills, all shown (the evidence the learner confirms on). */
+  prerequisiteSkills: string[];
+}
 
 export interface PathwayFrontierItem {
   lessonId: string;
@@ -114,6 +138,10 @@ export interface CoursePathwayInputs {
   placedStages: ReadonlySet<PathwayStage>;
   /** A B.1 course_placements row exists for this course. */
   hasLegacyPlacement: boolean;
+  /** OD-25: chapters this learner confirmed opening early (course_chapter_early_access). */
+  earlyOpenedChapterIds?: ReadonlySet<string>;
+  /** OD-25: topics this learner accepted as done on Mentor mastery (course_topic_mastery_credits). Their lessons arrive as credits. */
+  masteryCreditedTopicIds?: ReadonlySet<string>;
 }
 
 const byPosition = <T extends { position: number }>(rows: readonly T[]): T[] => [...rows].sort((a, b) => a.position - b.position);
@@ -155,8 +183,10 @@ function chaptersFromTree(tree: CourseTree, inputs: CoursePathwayInputs): {
           topicIdByPath.set(path, topic.id);
           const kcs = inputs.topicKcs.get(topic.id);
           if (kcs) kcsByPath.set(path, kcs);
+          // OD-25: a topic the learner accepted as done on Mentor mastery reads as credited, like a placement credit.
+          const masteryCredited = inputs.masteryCreditedTopicIds?.has(topic.id) ?? false;
           for (const lesson of topic.lessons) {
-            if (lesson.placementCredited) credited.add(lesson.id);
+            if (lesson.placementCredited || (masteryCredited && lesson.state !== 'passed')) credited.add(lesson.id);
             else if (lesson.state === 'passed') passed.add(lesson.id);
           }
           return {
@@ -252,11 +282,74 @@ function graphPrior(chapters: readonly PathwayChapter[], access: ReadonlyMap<str
   return (firstUnshown === -1 ? topics.length : firstUnshown) / topics.length;
 }
 
+/**
+ * OD-25 — which closed chapters mastery can open one stage early, from the
+ * graph as the age safeguard alone leaves it (a closed chapter's own topics
+ * never count toward opening it). A confirmed chapter plays as optional.
+ */
+function earlyChapters(
+  chapters: readonly PathwayChapter[],
+  baseAccess: ReadonlyMap<string, ChapterAccess>,
+  kcsByPath: ReadonlyMap<string, TopicKcs>,
+  inputs: CoursePathwayInputs,
+  evidence: LearnerEvidence,
+): PathwayEarlyAccess[] {
+  const { satisfaction } = graphState(chapters, baseAccess, kcsByPath, evidence);
+  const out: PathwayEarlyAccess[] = [];
+  for (const chapter of byPosition(chapters)) {
+    if ((baseAccess.get(chapter.id) ?? 'closed') !== 'closed' || !chapter.policy || !earlyStageCandidate(inputs.age, chapter.policy)) continue;
+    const prerequisiteSkills = chapterPrerequisiteKcs(chapter, kcsByPath, inputs.kcPrerequisites);
+    if (inputs.earlyOpenedChapterIds?.has(chapter.id)) {
+      out.push({ chapterId: chapter.id, stage: chapter.policy.stage, state: 'opened', prerequisiteSkills });
+      continue;
+    }
+    // A chapter whose prerequisites the graph cannot name cannot be shown mastered: it stays closed (fail closed).
+    if (prerequisiteSkills.length > 0 && prerequisiteSkills.every((kc) => (satisfaction.get(kc) ?? 'none') !== 'none')) {
+      out.push({ chapterId: chapter.id, stage: chapter.policy.stage, state: 'eligible', prerequisiteSkills });
+    }
+  }
+  return out;
+}
+
+/**
+ * OD-25 — topics the learner may accept as done on Mentor mastery: in an open
+ * chapter, not complete, every taught skill shown and at least one shown with
+ * the Mentor (graded course evidence alone already completes topics its own
+ * way). Teaching topics only; a review keeps its graded practice.
+ */
+function masteryOffers(
+  chapters: readonly PathwayChapter[],
+  access: ReadonlyMap<string, ChapterAccess>,
+  kcsByPath: ReadonlyMap<string, TopicKcs>,
+  satisfaction: ReadonlyMap<string, KcSatisfaction>,
+  evidence: LearnerEvidence,
+): Array<{ topicId: string; chapterId: string; skills: string[] }> {
+  const out: Array<{ topicId: string; chapterId: string; skills: string[] }> = [];
+  for (const chapter of byPosition(chapters)) {
+    if ((access.get(chapter.id) ?? 'closed') === 'closed') continue;
+    for (const saga of byPosition(chapter.sagas)) {
+      for (const topic of byPosition(saga.topics)) {
+        if (topic.kind !== 'teaching' || topic.lessonIds.length === 0 || topicCompletion(topic, evidence).complete) continue;
+        const teaches = [...(kcsByPath.get(topic.path)?.teaches ?? [])];
+        const shown = teaches.map((kc) => satisfaction.get(kc) ?? 'none');
+        if (teaches.length > 0 && shown.every((how) => how !== 'none') && shown.includes('mentor')) {
+          out.push({ topicId: topic.id, chapterId: chapter.id, skills: teaches });
+        }
+      }
+    }
+  }
+  return out;
+}
+
 /** Apply the pathway engine to an assembled tree. The input tree is not mutated. */
 export function applyCoursePathway(tree: CourseTree, inputs: CoursePathwayInputs): PathwayCourseTree {
   const { chapters, kcsByPath, topicIdByPath, evidence } = chaptersFromTree(tree, inputs);
-  const resolution = resolvePathway(inputs.age, chapters.map((c) => ({ id: c.id, policy: c.policy })));
-  const { access } = resolution;
+  const baseResolution = resolvePathway(inputs.age, chapters.map((c) => ({ id: c.id, policy: c.policy })));
+  // OD-25: a chapter the learner confirmed opening early plays as optional; every other rule reads this access.
+  const earlyAccess = earlyChapters(chapters, baseResolution.access, kcsByPath, inputs, evidence);
+  const access = new Map(baseResolution.access);
+  for (const early of earlyAccess) if (early.state === 'opened') access.set(early.chapterId, 'optional');
+  const resolution = { ...baseResolution, access };
   const frontier: Frontier = computeFrontier(chapters, access, kcsByPath, inputs.kcPrerequisites, evidence);
   const optional = optionalFrontier(chapters, access, kcsByPath, inputs.kcPrerequisites, evidence);
   const { satisfaction } = graphState(chapters, access, kcsByPath, evidence);
@@ -274,7 +367,7 @@ export function applyCoursePathway(tree: CourseTree, inputs: CoursePathwayInputs
   const recommended = frontier.items.find((i) => i.access === 'pathway')?.lessonId ?? null;
   const openLessons = new Set([...frontier.items, ...optional, ...known].map((i) => i.lessonId));
   const lessonState = (lesson: LessonNode, chapterAccess: ChapterAccess): LessonState => {
-    if (lesson.state === 'passed') return 'passed';
+    if (lesson.state === 'passed' || evidence.creditedLessonIds.has(lesson.id)) return 'passed';
     if (chapterAccess === 'closed') return 'locked';
     if (lesson.id === recommended) return 'current';
     return openLessons.has(lesson.id) ? 'available' : 'locked';
@@ -289,7 +382,11 @@ export function applyCoursePathway(tree: CourseTree, inputs: CoursePathwayInputs
       topics: saga.topics.map((topic): PathwayTopicNode => {
         const teaches = [...(inputs.topicKcs.get(topic.id)?.teaches ?? [])];
         if (chapterAccess === 'pathway') for (const kc of teaches) if (!skillsOrder.includes(kc)) skillsOrder.push(kc);
-        return { ...topic, skills: teaches, lessons: topic.lessons.map((lesson) => ({ ...lesson, state: lessonState(lesson, chapterAccess) })) };
+        const masteryCredited = inputs.masteryCreditedTopicIds?.has(topic.id) ?? false;
+        return { ...topic, skills: teaches, lessons: topic.lessons.map((lesson) => ({
+          ...lesson, state: lessonState(lesson, chapterAccess),
+          ...(masteryCredited && lesson.state !== 'passed' && !lesson.placementCredited ? { masteryCredited: true } : {}),
+        })) };
       }),
     }));
     const lessonIds = sagas.flatMap((s) => s.topics.flatMap((t) => t.lessons));
@@ -327,6 +424,9 @@ export function applyCoursePathway(tree: CourseTree, inputs: CoursePathwayInputs
     badge: { earnedStages: [...inputs.earnedStages].sort(), eligible: badge.eligible, stage: badge.stage, contentGap: badge.contentGap },
     placement: { required: placementRequired, stage },
     skills: skillsOrder.map((key) => ({ key, shown: satisfaction.get(key) ?? 'none' })),
+    earlyAccess,
+    masteryOffers: masteryOffers(chapters, access, kcsByPath, satisfaction, evidence),
+    masteryCredited: [...(inputs.masteryCreditedTopicIds ?? [])].filter((id) => [...topicIdByPath.values()].includes(id)).sort(),
     graphPriorFraction: graphPrior(chapters, access, kcsByPath, satisfaction),
   };
 

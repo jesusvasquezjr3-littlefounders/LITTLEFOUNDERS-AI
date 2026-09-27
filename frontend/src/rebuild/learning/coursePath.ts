@@ -41,6 +41,16 @@ export const coursePathSchema = z.object({
   })),
   blocked: z.array(z.object({ topicId: z.string(), topicTitle: localized, chapterId: z.string(), missingSkills: z.array(skillRef), missingTopics: z.array(z.object({ id: z.string(), title: localized })) })),
   skills: z.array(skillRef.extend({ shown: z.enum(['course', 'mentor', 'none']) })),
+  /*
+   * OD-25: a chapter one stage above the learner's own that mastery can open
+   * (they confirm) or has opened, and topics the learner may accept as done on
+   * what they showed with the Mentor. Core re-derives both before any write.
+   * Absent from an older Core: nothing to offer.
+   */
+  earlyAccess: z.array(z.object({ chapterId: z.string().min(1), chapterTitle: localized, stage, state: z.enum(['eligible', 'opened']),
+    prerequisiteSkills: z.array(skillRef) })).default([]),
+  masteryOffers: z.array(z.object({ topicId: z.string().min(1), topicTitle: localized, chapterId: z.string(), skills: z.array(skillRef).min(1) })).default([]),
+  masteryCreditedTopicIds: z.array(z.string()).default([]),
 });
 
 export type CoursePath = z.infer<typeof coursePathSchema>;

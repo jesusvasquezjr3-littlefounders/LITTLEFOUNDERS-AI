@@ -31,6 +31,8 @@ export const shelfCourseSchema = z.object({
     pathwayStage: stage.nullable(),
     basis: z.enum(['own-stage', 'younger-bridge', 'older-early', 'unavailable']),
     recommendedLessonId: z.string().nullable(),
+    /** OD-25: mastery can open (or opened) a chapter one stage early, so a course with no chapter for this age is still offered. */
+    earlyAccess: z.boolean().optional(),
   }).optional(),
 });
 export type ShelfCourse = z.infer<typeof shelfCourseSchema>;
@@ -73,7 +75,7 @@ export async function fetchShelf(request: LearnTransport): Promise<ShelfState> {
 }
 
 /** A course the age safeguard closes for this learner: listed, never offered (OD-16, B.6). */
-export const isClosedByAge = (course: ShelfCourse) => course.pathway?.basis === 'unavailable';
+export const isClosedByAge = (course: ShelfCourse) => course.pathway?.basis === 'unavailable' && course.pathway.earlyAccess !== true;
 export const isStarted = (course: ShelfCourse) => course.progress.passed > 0;
 export const isDone = (course: ShelfCourse) => course.progress.total > 0 && course.progress.passed >= course.progress.total;
 

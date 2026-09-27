@@ -389,3 +389,89 @@ describe('B.24 path choice (S05.3e): opening a lesson from a path with a real ch
 
 // Keep the fake's row type honest for the fixture helpers above.
 export type { FakeRow };
+
+describe('OD-25 — mastery may open one stage early, and Mentor mastery may complete a topic with the learner\'s consent', () => {
+  const kcId = (key: string) => built.db.kc!.find((row) => row.key === key)!.id as string;
+  const master = (user: string, key: string, p = 0.9) =>
+    built.db.learner_kc_mastery!.push({ user_id: user, kc_id: kcId(key), p_known: p, attempts: 6, correct: 5, params_override: null });
+  const chapterId = (slug: string) => built.db.adventures!.find((row) => row.slug === slug)!.id as string;
+  // The teen chapter's skills build on the first children's skill; the adult chapter's on the teen ones.
+  const edges = () => {
+    built.db.kc_edge!.push({ prerequisite_kc_id: kcId('kc.k1'), dependent_kc_id: kcId('kc.t1') });
+    built.db.kc_edge!.push({ prerequisite_kc_id: kcId('kc.t1'), dependent_kc_id: kcId('kc.a1') });
+  };
+
+  it('a 12-year-old who mastered the teen chapter\'s prerequisites may open it after confirming; it plays as an extra', async () => {
+    edges();
+    place(AGE12, 'money', 'child');
+    const before = await get(AGE12, '/learn/courses/money/path');
+    expect(before.body.data.earlyAccess).toEqual([]);
+    expect((await post(AGE12, '/learn/courses/money/early-access', { chapterId: chapterId('teens') })).status).toBe(409);
+    master(AGE12, 'kc.k1');
+    const path = await get(AGE12, '/learn/courses/money/path');
+    expect(path.body.data.earlyAccess).toEqual([expect.objectContaining({ chapterId: chapterId('teens'), stage: 'teen', state: 'eligible',
+      prerequisiteSkills: [expect.objectContaining({ key: 'kc.k1' })] })]);
+    // Nothing opens before the learner confirms.
+    expect((await get(AGE12, `/learn/lessons/${built.lesson.t1}`)).body.error.code).toBe('LESSON_AGE_RESTRICTED');
+    const opened = await post(AGE12, '/learn/courses/money/early-access', { chapterId: chapterId('teens') });
+    expect(opened.status, JSON.stringify(opened.body)).toBe(200);
+    expect(opened.body.data).toEqual({ status: 'opened', replayed: false });
+    expect(built.db.course_chapter_early_access).toEqual([expect.objectContaining({ user_id: AGE12, adventure_id: chapterId('teens'), pathway_stage: 'teen', prerequisite_kcs: ['kc.k1'] })]);
+    expect(built.db.audit_logs).toEqual(expect.arrayContaining([expect.objectContaining({ actor_id: AGE12, action: 'learning_pathway.early_chapter_opened' })]));
+    const after = await get(AGE12, '/learn/courses/money/path');
+    expect(after.body.data.chapters.find((c: { id: string }) => c.id === chapterId('teens')).access).toBe('optional');
+    expect(after.body.data.earlyAccess[0].state).toBe('opened');
+    // Never counted: the progress denominator is still the child pathway.
+    expect(after.body.data.pathway.progress.total).toBe(before.body.data.pathway.progress.total);
+    expect((await get(AGE12, `/learn/lessons/${built.lesson.t1}`)).status).toBe(200);
+    expect((await post(AGE12, '/learn/courses/money/early-access', { chapterId: chapterId('teens') })).body.data.replayed).toBe(true);
+  });
+
+  it('never two stages up, never an adult chapter for a minor, never on an unknown age', async () => {
+    edges();
+    for (const key of ['kc.k1', 'kc.k2', 'kc.t1', 'kc.t2']) { master(KID7, key); master(TEEN15, key); master(GUEST, key); }
+    place(KID7, 'money', 'child');
+    place(TEEN15, 'money', 'teen');
+    expect((await get(KID7, '/learn/courses/money/path')).body.data.earlyAccess).toEqual([]);
+    expect((await post(KID7, '/learn/courses/money/early-access', { chapterId: chapterId('teens') })).status).toBe(409);
+    expect((await get(TEEN15, '/learn/courses/money/path')).body.data.earlyAccess).toEqual([]);
+    expect((await post(TEEN15, '/learn/courses/money/early-access', { chapterId: chapterId('adults') })).status).toBe(409);
+    expect((await post(GUEST, '/learn/courses/money/early-access', { chapterId: chapterId('teens') })).status).not.toBe(200);
+    expect(built.db.course_chapter_early_access ?? []).toEqual([]);
+    expect((await post(AGE12, '/learn/courses/money/early-access', { chapterId: 'not-a-uuid' })).status).toBe(400);
+  });
+
+  it('a topic shown with the Mentor counts as done only after the learner accepts, as a credit; a finished pathway earns its badge', async () => {
+    place(TEEN15, 'money', 'teen');
+    master(TEEN15, 'kc.t1');
+    const path = await get(TEEN15, '/learn/courses/money/path');
+    expect(path.body.data.masteryOffers).toEqual([expect.objectContaining({ topicId: built.topic.t1, skills: [expect.objectContaining({ key: 'kc.t1' })] })]);
+    // Before accepting, nothing is counted.
+    expect(path.body.data.pathway.progress.passed).toBe(0);
+    expect((await post(TEEN15, '/learn/courses/money/mastery-credit', { topicId: built.topic.t2 })).status).toBe(409);
+    const accepted = await post(TEEN15, '/learn/courses/money/mastery-credit', { topicId: built.topic.t1 });
+    expect(accepted.status, JSON.stringify(accepted.body)).toBe(200);
+    expect(built.db.course_topic_mastery_credits).toEqual([expect.objectContaining({ user_id: TEEN15, topic_id: built.topic.t1, kc_keys: ['kc.t1'], p_known: { 'kc.t1': 0.9 } })]);
+    const tree = await get(TEEN15, '/learn/courses/money/tree');
+    expect(stateOf(tree.body.data, built.lesson.t1!)).toBe('passed');
+    expect(tree.body.data.pathway.progress.passed).toBe(1);
+    expect(tree.body.data.pathway.masteryCredited).toEqual([built.topic.t1]);
+    // Credited, never played: no lesson_progress row and no XP.
+    expect((built.db.lesson_progress ?? []).filter((row) => row.user_id === TEEN15)).toEqual([]);
+    expect((await post(TEEN15, '/learn/courses/money/mastery-credit', { topicId: built.topic.t1 })).body.data.replayed).toBe(true);
+    master(TEEN15, 'kc.t2');
+    expect((await post(TEEN15, '/learn/courses/money/mastery-credit', { topicId: built.topic.t2 })).status).toBe(200);
+    expect(built.db.course_pathway_badges).toEqual([expect.objectContaining({ user_id: TEEN15, course_id: COURSE.money, award_key: 'teen', pathway_stage: 'teen' })]);
+  });
+
+  it('refuses a topic in a chapter the learner cannot open, and the linear engine refuses both writes', async () => {
+    master(KID7, 'kc.t1');
+    place(KID7, 'money', 'child');
+    expect((await post(KID7, '/learn/courses/money/mastery-credit', { topicId: built.topic.t1 })).status).toBe(409);
+    expect(built.db.course_topic_mastery_credits ?? []).toEqual([]);
+    process.env.COURSE_PATHWAY_ENGINE = 'linear';
+    resetConfigForTests();
+    expect((await post(TEEN15, '/learn/courses/money/mastery-credit', { topicId: built.topic.t1 })).body.error.code).toBe('PATHWAY_ENGINE_DISABLED');
+    expect((await post(AGE12, '/learn/courses/money/early-access', { chapterId: chapterId('teens') })).body.error.code).toBe('PATHWAY_ENGINE_DISABLED');
+  });
+});

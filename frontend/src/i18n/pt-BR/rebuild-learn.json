@@ -108,7 +108,17 @@
     "retry": "Tentar de novo",
     "retrying": "Tentando de novo",
     "preview": "Trilha de exemplo",
-    "lessons": "Lições"
+    "lessons": "Lições",
+    "earlyTitle": "Pronto para mais",
+    "earlyAsk": "Você dominou o que {chapter} precisa. Abrir antes?",
+    "earlyYes": "Abrir",
+    "earlyDone": "Aberto. É extra, no seu ritmo.",
+    "masteryTitle": "Mostrado com seu Mentor",
+    "masteryAsk": "Você mostrou {skill}. Desbloquear o próximo passo?",
+    "masteryYes": "Sim, desbloquear",
+    "notNow": "Agora não",
+    "masteryDone": "Pronto. O próximo passo está aberto.",
+    "saveFailed": "Não foi possível salvar. Tente de novo."
   },
   "territory": {
     "course": "Curso",

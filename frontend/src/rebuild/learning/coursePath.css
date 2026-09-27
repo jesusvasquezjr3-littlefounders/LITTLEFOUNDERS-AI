@@ -71,3 +71,8 @@
   .lf-course-path-hero, .lf-course-path-done { padding: var(--spacing-8); }
   .lf-course-path-hero h2, .lf-course-path-done h2 { font-size: 2rem; }
 }
+/* OD-25: an offer the learner answers (a chapter one stage early, a topic shown with the Mentor). */
+.lf-rebuild .lf-course-path-offer { display: grid; gap: var(--spacing-3); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--mint-soft); color: var(--content); }
+.lf-rebuild .lf-course-path-offer--early { background: var(--sky-soft); }
+.lf-course-path-offer-topic { justify-self: start; padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-full); background: var(--surface); font-weight: 800; overflow-wrap: anywhere; }
+.lf-rebuild .lf-course-path-offer .lf-actions { max-inline-size: 480px; }

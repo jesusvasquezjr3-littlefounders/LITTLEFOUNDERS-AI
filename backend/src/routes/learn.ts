@@ -29,7 +29,9 @@ import {
   freezeLegacyCourseBadge,
   loadLearnerPathwayContext,
   loadPathwayContent,
+  recordEarlyChapterAccess,
   recordPathwayBadge,
+  recordTopicMasteryCredit,
   type LearnerPathwayContext,
 } from '../services/pathway/pathwayData.js';
 import { chapterPolicy, coursePrerequisiteDecision, resolvePathway } from '../services/pathway/pathwayPolicy.js';
@@ -73,6 +75,7 @@ import {
   getPlacementCreditsForCourses,
   getPublishedCourseById,
   getPublishedCourseBySlug,
+  insertAuditLog,
   getPublishedCourseRows,
   recordCourseAssemblyIncident,
   getSagaById,
@@ -282,7 +285,8 @@ async function courseEntry(user: AuthedUser, course: CourseHierarchyRow, ageScre
 
   const load = await loadLearnerCourse(user.accessToken, user.id, course, ageScreen);
   if (!load || !load.tree.pathway || !load.pathway) return { kind: 'refused', status: 502, code: 'INTERNAL', message: 'Content service unreachable' };
-  if (load.tree.pathway.basis === 'unavailable') {
+  // OD-25: a course with no chapter for this age still opens when mastery can open (or opened) a chapter one stage early.
+  if (load.tree.pathway.basis === 'unavailable' && load.tree.pathway.earlyAccess.length === 0) {
     return { kind: 'refused', status: 403, code: 'COURSE_AGE_RESTRICTED', message: 'This course is not available for this age yet' };
   }
   const missing: string[] = [];
@@ -728,6 +732,8 @@ export function learnRouter(): Router {
             pathwayStage: tree.pathway.pathwayStage,
             basis: tree.pathway.basis,
             recommendedLessonId: tree.nextLessonId,
+            // OD-25: mastery can open (or opened) a chapter one stage early, so a course closed by age is still offered.
+            earlyAccess: tree.pathway.earlyAccess.length > 0,
           },
         } : {}),
       });
@@ -777,6 +783,83 @@ export function learnRouter(): Router {
     if (entry.kind === 'refused') return fail(res, entry.status, entry.code, entry.message, entry.details);
     if (!entry.load.tree.pathway || !entry.load.pathway) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
     return ok(res, projectCoursePath(entry.load.tree as PathwayCourseTree, entry.load.pathway.kcTitles));
+  });
+
+  /*
+   * 2c. OD-25 (27 September 2026), pathway engine only. Both writes re-derive
+   * the offer from the learner's own pathway on the server, the same tree the
+   * lesson gate uses; the body only names which offer. Nothing is stored for
+   * an offer the pathway does not make, and a replay changes nothing.
+   *
+   * POST /courses/:slug/early-access { chapterId } — the learner confirms
+   * opening a chapter one stage above their own, whose every prerequisite
+   * skill is mastered on the shared graph. Never an adult chapter for a minor,
+   * never two stages up (pathwayPolicy.earlyStageCandidate). The chapter then
+   * plays as optional: never required, never counted.
+   *
+   * POST /courses/:slug/mastery-credit { topicId } — the learner accepts
+   * counting a topic as done on the mastery they showed with the Mentor ("You
+   * have shown mastery of X; unlock the next level?"). Stored as a mastery
+   * credit with the skills and estimates it was accepted on; read as a credit
+   * (never played, never XP). A completed pathway then records its badge.
+   */
+  const EarlyAccessBody = z.object({ chapterId: z.string().uuid() }).strict();
+  const MasteryCreditBody = z.object({ topicId: z.string().uuid() }).strict();
+
+  /** The learner's pathway course for an OD-25 write, or answers the refusal itself. */
+  async function pathwayCourseFor(req: { params: Record<string, string | undefined> }, res: Parameters<typeof fail>[0]) {
+    if (courseEngine() !== 'pathway') {
+      fail(res, 409, 'PATHWAY_ENGINE_DISABLED', 'The course path is not enabled yet');
+      return null;
+    }
+    const user = authedUser(res);
+    const course = await getPublishedCourseBySlug(user.accessToken, req.params.slug as string);
+    if (!course) {
+      fail(res, 404, NOT_FOUND, 'No such course');
+      return null;
+    }
+    const entry = await courseEntry(user, course, res.locals.ageScreen as AgeScreenState);
+    if (entry.kind === 'refused') {
+      fail(res, entry.status, entry.code, entry.message, entry.details);
+      return null;
+    }
+    if (!entry.load.tree.pathway || !entry.load.pathway) {
+      fail(res, 502, 'INTERNAL', 'Content service unreachable');
+      return null;
+    }
+    return { user, course, load: entry.load, view: entry.load.tree.pathway as PathwayView };
+  }
+
+  router.post('/courses/:slug/early-access', async (req, res) => {
+    const body = EarlyAccessBody.safeParse(req.body ?? {});
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'chapterId must be a uuid');
+    const found = await pathwayCourseFor(req, res);
+    if (!found) return res;
+    const offer = found.view.earlyAccess.find((entry) => entry.chapterId === body.data.chapterId);
+    if (offer?.state === 'opened') return ok(res, { status: 'opened', replayed: true });
+    if (!offer) return fail(res, 409, 'EARLY_ACCESS_NOT_ELIGIBLE', 'This chapter cannot open early');
+    const stored = await recordEarlyChapterAccess({ userId: found.user.id, courseId: found.course.id, chapterId: offer.chapterId, stage: offer.stage, skills: offer.prerequisiteSkills });
+    if (!stored) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not open this chapter');
+    await insertAuditLog(found.user.id, 'learning_pathway.early_chapter_opened', offer.chapterId, { course_id: found.course.id, stage: offer.stage, skills: offer.prerequisiteSkills });
+    return ok(res, { status: 'opened', replayed: false });
+  });
+
+  router.post('/courses/:slug/mastery-credit', async (req, res) => {
+    const body = MasteryCreditBody.safeParse(req.body ?? {});
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'topicId must be a uuid');
+    const found = await pathwayCourseFor(req, res);
+    if (!found) return res;
+    if (found.view.masteryCredited.includes(body.data.topicId)) return ok(res, { status: 'credited', replayed: true });
+    const offer = found.view.masteryOffers.find((entry) => entry.topicId === body.data.topicId);
+    if (!offer) return fail(res, 409, 'MASTERY_CREDIT_NOT_ELIGIBLE', 'This topic is not shown with the Mentor yet');
+    const pKnown = Object.fromEntries(offer.skills.map((kc) => [kc, found.load.pathway!.mentorPKnown.get(kc) ?? null]).filter(([, p]) => p !== null)) as Record<string, number>;
+    const stored = await recordTopicMasteryCredit({ userId: found.user.id, courseId: found.course.id, topicId: offer.topicId, skills: offer.skills, pKnown });
+    if (!stored) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not save this');
+    await insertAuditLog(found.user.id, 'learning_pathway.mastery_credit_accepted', offer.topicId, { course_id: found.course.id, skills: offer.skills });
+    // A credit can complete the pathway: record the stage credential now, as a lesson completion would.
+    const refreshed = await loadLearnerCourse(found.user.accessToken, found.user.id, found.course, res.locals.ageScreen as AgeScreenState);
+    if (refreshed) await settleCourseBadges(found.user.id, found.course, refreshed);
+    return ok(res, { status: 'credited', replayed: false });
   });
 
   // 3. GET /lessons/:id — meta + client-safe document, locale-resolved.

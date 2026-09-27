@@ -55,6 +55,10 @@ export interface LearnerPathwayContext {
   completedCourseSlugs: Set<string>;
   /** course_pathway_placements stages, by course id. */
   placedStages: Map<string, Set<PathwayStage>>;
+  /** OD-25: chapters (adventure ids) the learner confirmed opening one stage early. */
+  earlyOpenedChapterIds: Set<string>;
+  /** OD-25: topics the learner accepted as done on Mentor mastery. */
+  masteryCreditedTopicIds: Set<string>;
 }
 
 const BadgeRows = z.array(z.object({
@@ -84,7 +88,7 @@ export async function readCompletedCourseSlugs(userId: string): Promise<Set<stri
  */
 export async function loadLearnerPathwayContext(userId: string, ageScreen: AgeScreenState, now = new Date()): Promise<LearnerPathwayContext | null> {
   if (!Uuid.safeParse(userId).success) return null;
-  const [kcs, edges, mastery, cards, badges, placements, profiles, completed] = await Promise.all([
+  const [kcs, edges, mastery, cards, badges, placements, profiles, completed, early, masteryCredits] = await Promise.all([
     getActiveKcs(),
     getKcEdges(),
     getLearnerMastery(userId),
@@ -93,8 +97,14 @@ export async function loadLearnerPathwayContext(userId: string, ageScreen: AgeSc
     serviceRest<unknown>(`/course_pathway_placements?user_id=eq.${eu(userId)}&select=course_id,pathway_stage&limit=1000`),
     serviceRest<unknown>(`/profiles?user_id=eq.${eu(userId)}&select=birth_date&limit=1`),
     readCompletedCourseSlugs(userId),
+    serviceRest<unknown>(`/course_chapter_early_access?user_id=eq.${eu(userId)}&select=adventure_id&limit=1000`),
+    serviceRest<unknown>(`/course_topic_mastery_credits?user_id=eq.${eu(userId)}&select=topic_id&limit=5000`),
   ]);
   if (!kcs || !edges || !mastery || !cards || !completed) return null;
+  const earlyRows = z.array(z.object({ adventure_id: z.string() }).passthrough()).safeParse(early);
+  const creditRows = z.array(z.object({ topic_id: z.string() }).passthrough()).safeParse(masteryCredits);
+  // A failed read is never "nothing opened" or "nothing credited" (that would re-lock shown work).
+  if (!earlyRows.success || !creditRows.success) return null;
   const badgeRows = BadgeRows.safeParse(badges);
   const placementRows = PlacementRows.safeParse(placements);
   const profileRows = ProfileRows.safeParse(profiles);
@@ -130,7 +140,11 @@ export async function loadLearnerPathwayContext(userId: string, ageScreen: AgeSc
     declaredBand: ageScreen.ageBand,
     protectedOrigin: ageScreen.protectedOrigin,
   }, now);
-  return { age, mentorPKnown, dueReviewKcs, kcPrerequisites, kcKeyById, kcTitles, storedBadges, completedCourseSlugs: completed, placedStages };
+  return {
+    age, mentorPKnown, dueReviewKcs, kcPrerequisites, kcKeyById, kcTitles, storedBadges, completedCourseSlugs: completed, placedStages,
+    earlyOpenedChapterIds: new Set(earlyRows.data.map((row) => row.adventure_id)),
+    masteryCreditedTopicIds: new Set(creditRows.data.map((row) => row.topic_id)),
+  };
 }
 
 const ChapterRows = z.array(z.object({
@@ -205,6 +219,8 @@ export function coursePathwayInputs(
     earnedStages,
     placedStages: ctx.placedStages.get(course.id) ?? new Set(),
     hasLegacyPlacement,
+    earlyOpenedChapterIds: ctx.earlyOpenedChapterIds,
+    masteryCreditedTopicIds: ctx.masteryCreditedTopicIds,
   };
 }
 
@@ -255,6 +271,40 @@ export async function freezeLegacyCourseBadge(userId: string, course: { id: stri
   const earnedAt = badge.completed_at ? new Date(badge.completed_at) : new Date();
   return recordPathwayBadge(userId, course.id, { award_key: 'legacy', pathway_stage: stage, basis: 'legacy_full_course' },
     Number.isFinite(earnedAt.getTime()) ? earnedAt : new Date());
+}
+
+/**
+ * OD-25 — the learner's confirmation that opens a chapter one stage early,
+ * with the prerequisite skills it was confirmed on. One row per learner and
+ * chapter; a replay is ignored by the key. Core checked eligibility first.
+ */
+export async function recordEarlyChapterAccess(row: { userId: string; courseId: string; chapterId: string; stage: PathwayStage; skills: readonly string[] }): Promise<boolean> {
+  const result = await serviceRest<unknown>('/course_chapter_early_access?on_conflict=user_id,adventure_id', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal,resolution=ignore-duplicates' },
+    body: JSON.stringify({
+      user_id: Uuid.parse(row.userId), course_id: Uuid.parse(row.courseId), adventure_id: Uuid.parse(row.chapterId),
+      pathway_stage: row.stage, prerequisite_kcs: [...row.skills],
+    }),
+  });
+  return result !== null;
+}
+
+/**
+ * OD-25 — the learner's acceptance that counts a topic as done on Mentor
+ * mastery, with the skills and the Mentor's estimates it was accepted on. One
+ * row per learner and topic; never updated, never deleted by the pathway.
+ */
+export async function recordTopicMasteryCredit(row: { userId: string; courseId: string; topicId: string; skills: readonly string[]; pKnown: Readonly<Record<string, number>> }): Promise<boolean> {
+  const result = await serviceRest<unknown>('/course_topic_mastery_credits?on_conflict=user_id,topic_id', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal,resolution=ignore-duplicates' },
+    body: JSON.stringify({
+      user_id: Uuid.parse(row.userId), course_id: Uuid.parse(row.courseId), topic_id: Uuid.parse(row.topicId),
+      kc_keys: [...row.skills], p_known: row.pKnown,
+    }),
+  });
+  return result !== null;
 }
 
 export type PathwayPlacementCommit = 'created' | 'replayed' | 'conflict';

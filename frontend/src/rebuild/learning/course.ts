@@ -100,6 +100,37 @@ export async function fetchCourse(slug: string, request: LearnTransport): Promis
   return parsed ? { status: 'ready', detail: { engine: 'linear', tree: parsed } } : { status: 'error' };
 }
 
+/** A write to Core (OD-25's two confirmations); the learner host's transport takes a method and a body. */
+export interface LearnWriteTransport {
+  (path: string, init: { method: 'POST'; body: unknown }): Promise<{ data: unknown; error: { code: string } | null }>;
+}
+
+export type CourseAnswer = 'done' | 'refused' | 'offline' | 'error';
+
+async function write(request: LearnWriteTransport, path: string, body: unknown): Promise<CourseAnswer> {
+  let reply: Awaited<ReturnType<LearnWriteTransport>>;
+  try {
+    reply = await request(path, { method: 'POST', body });
+  } catch {
+    return 'offline';
+  }
+  if (!reply.error) return 'done';
+  if (reply.error.code === 'NETWORK') return 'offline';
+  // Core re-derived the offer and it no longer stands (or the engine is off): refresh, never retry blindly.
+  return ['EARLY_ACCESS_NOT_ELIGIBLE', 'MASTERY_CREDIT_NOT_ELIGIBLE', 'PATHWAY_ENGINE_DISABLED', 'COURSE_AGE_RESTRICTED', 'NOT_FOUND'].includes(reply.error.code)
+    ? 'refused' : 'error';
+}
+
+/** OD-25: the learner confirms opening a chapter one stage early. */
+export function openChapterEarly(request: LearnWriteTransport, slug: string, chapterId: string): Promise<CourseAnswer> {
+  return write(request, `/learn/courses/${encodeURIComponent(slug)}/early-access`, { chapterId });
+}
+
+/** OD-25: the learner accepts counting a topic as done on what they showed with the Mentor. */
+export function acceptMasteryCredit(request: LearnWriteTransport, slug: string, topicId: string): Promise<CourseAnswer> {
+  return write(request, `/learn/courses/${encodeURIComponent(slug)}/mastery-credit`, { topicId });
+}
+
 /** What the course offers next: its entry placement, one lesson, a finished course, or nothing to start. */
 export type NextStep =
   | { kind: 'placement' }

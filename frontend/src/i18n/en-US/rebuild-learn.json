@@ -108,7 +108,17 @@
     "retry": "Try again",
     "retrying": "Trying again",
     "preview": "Sample path",
-    "lessons": "Lessons"
+    "lessons": "Lessons",
+    "earlyTitle": "Ready for more",
+    "earlyAsk": "You mastered what {chapter} needs. Open it early?",
+    "earlyYes": "Open it",
+    "earlyDone": "Open. It is an extra, at your pace.",
+    "masteryTitle": "Shown with your Mentor",
+    "masteryAsk": "You showed {skill}. Unlock the next step?",
+    "masteryYes": "Yes, unlock",
+    "notNow": "Not now",
+    "masteryDone": "Done. The next step is open.",
+    "saveFailed": "Could not save it. Try again."
   },
   "territory": {
     "course": "Course",

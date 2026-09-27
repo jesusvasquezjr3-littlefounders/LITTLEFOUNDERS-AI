@@ -50,6 +50,7 @@ export function childPathFixture(): CoursePath {
       skill('money.needs', loc('Needs and wants', 'Necesidades y deseos', 'Necessidades e desejos'), 'none'),
       skill('money.change', loc('Make change', 'Dar cambio', 'Dar troco'), 'none'),
     ],
+    earlyAccess: [], masteryOffers: [], masteryCreditedTopicIds: [],
   };
 }
 
@@ -81,6 +82,7 @@ export function adultPathFixture(): CoursePath {
       skill('life.cushion', loc('Keep a cushion', 'Tener un colchón', 'Ter uma reserva'), 'none'),
       skill('life.compare', loc('Compare prices', 'Comparar precios', 'Comparar preços'), 'none'),
     ],
+    earlyAccess: [], masteryOffers: [], masteryCreditedTopicIds: [],
   };
 }
 
@@ -114,6 +116,21 @@ export function bridgePathFixture(): CoursePath {
   return { ...base, pathway: { ...base.pathway, learnerStage: 'tween', basis: 'younger-bridge', badge: { ...base.pathway.badge, contentGap: true } } };
 }
 
+/**
+ * OD-25: a 10-year-old on the child chapters who mastered what the teen
+ * chapter needs (it may open one stage early, after they confirm) and showed
+ * a topic's skill with the Mentor (they may accept it as done).
+ */
+export function offersPathFixture(): CoursePath {
+  const base = bridgePathFixture();
+  const save = { key: 'money.save', title: loc('Save for later', 'Ahorrar para después', 'Poupar para depois') };
+  return {
+    ...base,
+    earlyAccess: [{ chapterId: chapters.teens.id, chapterTitle: chapters.teens.title, stage: 'teen', state: 'eligible', prerequisiteSkills: [save] }],
+    masteryOffers: [{ topicId: 'topic-l-4', topicTitle: loc('Saving a little', 'Ahorrar un poco', 'Poupar um pouco'), chapterId: chapters.kids.id, skills: [save] }],
+  };
+}
+
 const ready = (path: CoursePath): CourseState => ({ status: 'ready', detail: { engine: 'pathway', path } });
 
 /** The course screen under the pathway engine, one state per server population (W2L.1: the one course screen). */
@@ -123,6 +140,7 @@ export const coursePathPreviewStates: Record<string, CourseState> = {
   placement: ready(placementPathFixture()),
   complete: ready(completePathFixture()),
   bridge: ready(bridgePathFixture()),
+  offers: ready(offersPathFixture()),
   age: { status: 'age-restricted' },
   prerequisite: { status: 'prerequisite', missing: ['entrepreneurship'] },
   error: { status: 'error' },

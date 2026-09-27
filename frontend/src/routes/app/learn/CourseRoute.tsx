@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { trackInsight } from '@/lib/insights';
-import { fetchCourse, type CourseState } from '@/rebuild/learning/course';
+import { acceptMasteryCredit, fetchCourse, openChapterEarly, type CourseState } from '@/rebuild/learning/course';
 import { localizedText } from '@/rebuild/learning/coursePath';
 import { CourseView } from '@/rebuild/learning/CourseView';
 import { fetchShelf, type ShelfCourse } from '@/rebuild/learning/learnHome';
@@ -61,7 +61,10 @@ export function CourseRoute() {
   const inProgress = (state.status === 'ready' && state.detail.engine === 'linear' ? state.detail.tree.course.inProgress : fromShelf?.inProgress) ?? false;
   return <CourseView key={courseSlug} state={state} slug={courseSlug} locale={locale} dark={dark} ageBand={bandOf(register)}
     courseTitles={titles} inProgress={inProgress} links={links} onNavigate={onNavigate} retrying={retrying}
-    onRetry={() => { setRetrying(true); setRevision((n) => n + 1); }} />;
+    onRetry={() => { setRetrying(true); setRevision((n) => n + 1); }}
+    // OD-25: each confirmation is re-derived by Core; the course is read again after it, so what opened shows at once.
+    onOpenEarly={async (chapterId) => { const answer = await openChapterEarly(transport, courseSlug, chapterId); if (answer === 'done' || answer === 'refused') setRevision((n) => n + 1); return answer; }}
+    onAcceptMastery={async (topicId) => { const answer = await acceptMasteryCredit(transport, courseSlug, topicId); if (answer === 'done' || answer === 'refused') setRevision((n) => n + 1); return answer; }} />;
 }
 
 /** B.6's course path moved into the one course screen: the old address keeps working. */

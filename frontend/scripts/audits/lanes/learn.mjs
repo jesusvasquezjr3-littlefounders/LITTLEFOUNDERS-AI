@@ -77,6 +77,8 @@ states.push(
   preview('course-offline@6-9', { screen: 'course', course: 'offline', age: '6-9' }),
   preview('course-not-found@6-9', { screen: 'course', course: 'not-found', age: '6-9' }),
   preview('course-refused@adult', { screen: 'course', course: 'refused', age: 'adult' }),
+  // W2L.4 (OD-25): the one-stage-early chapter and the Mentor-mastery topic, each a question the learner answers.
+  preview('coursepath-offers@10-12', { screen: 'coursepath', path: 'offers', age: '10-12' }),
 );
 
 /*

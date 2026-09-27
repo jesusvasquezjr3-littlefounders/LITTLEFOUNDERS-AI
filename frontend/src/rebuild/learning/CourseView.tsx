@@ -7,7 +7,7 @@ import './learnerPage.css';
 import './coursePath.css';
 import { localizedText, type CoursePath, type CoursePathItem } from './coursePath';
 import { CourseBadge } from './CourseBadge';
-import { courseProgress, courseTitle, nextStep, type CourseDetail, type CourseState, type CourseTree, type TreeAdventure } from './course';
+import { courseProgress, courseTitle, nextStep, type CourseAnswer, type CourseDetail, type CourseState, type CourseTree, type TreeAdventure } from './course';
 import { fill, learnCopy, linkTo, plural, type LearnLinks, type LearnNavigate } from './learnCopy';
 
 /*
@@ -52,6 +52,10 @@ export interface CourseViewProps {
   onRetry?: () => void;
   retrying?: boolean;
   fixture?: boolean;
+  /** OD-25: the learner confirms opening a chapter one stage early; the host refreshes the course after it. */
+  onOpenEarly?: (chapterId: string) => Promise<CourseAnswer>;
+  /** OD-25: the learner accepts counting a topic as done on what they showed with the Mentor. */
+  onAcceptMastery?: (topicId: string) => Promise<CourseAnswer>;
 }
 
 type Copy = (typeof learnCopy)['en-US']['course'];
@@ -115,7 +119,7 @@ function RefusalState({ state, t, courseTitles, links, onNavigate, onRetry, retr
   </>;
 }
 
-function ReadyCourse({ detail, slug, locale, t, inProgress, links, onNavigate, fixture }: CourseViewProps & { detail: CourseDetail; t: Copy }) {
+function ReadyCourse({ detail, slug, locale, t, inProgress, links, onNavigate, fixture, onOpenEarly, onAcceptMastery }: CourseViewProps & { detail: CourseDetail; t: Copy }) {
   const progress = courseProgress(detail);
   const title = localizedText(courseTitle(detail), locale) || slug;
   const step = nextStep(detail);
@@ -152,14 +156,15 @@ function ReadyCourse({ detail, slug, locale, t, inProgress, links, onNavigate, f
         </div>
       </section> : null}
       {detail.engine === 'pathway'
-        ? <PathwaySections path={detail.path} slug={slug} locale={locale} t={t} links={links} onNavigate={onNavigate} />
+        ? <PathwaySections path={detail.path} slug={slug} locale={locale} t={t} links={links} onNavigate={onNavigate} onOpenEarly={onOpenEarly} onAcceptMastery={onAcceptMastery} />
         : <LinearChapters tree={detail.tree} slug={slug} locale={locale} t={t} links={links} onNavigate={onNavigate} />}
     </>}
     {fixture ? <p className="lf-course-path-chip" data-copy-role="body">{t.preview}</p> : null}
   </>;
 }
 
-function PathwaySections({ path, slug, locale, t, links, onNavigate }: { path: CoursePath; slug: string; locale: Locale; t: Copy; links: LearnLinks; onNavigate: LearnNavigate }) {
+function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly, onAcceptMastery }: { path: CoursePath; slug: string; locale: Locale; t: Copy; links: LearnLinks; onNavigate: LearnNavigate;
+  onOpenEarly?: (chapterId: string) => Promise<CourseAnswer>; onAcceptMastery?: (topicId: string) => Promise<CourseAnswer> }) {
   const [allItems, setAllItems] = useState(false);
   const [allSkills, setAllSkills] = useState(false);
   const ids = useId();
@@ -175,8 +180,16 @@ function PathwaySections({ path, slug, locale, t, links, onNavigate }: { path: C
   // A plain next step needs no tag; only a different reason is named (review, extra help, already known, extra chapter).
   const reasonLabel = (item: CoursePathItem) => item.access === 'optional' && item.reason === 'next' ? t.extra : item.reason === 'next' ? null : t.reasons[item.reason];
   const open = (lessonId: string) => onNavigate(links.lesson(lessonId), { courseSlug: slug });
+  const eligibleEarly = path.earlyAccess.filter((entry) => entry.state === 'eligible');
   return <>
     {pathway.badge.contentGap && pathway.basis !== 'unavailable' ? <p className="lf-course-path-note" data-copy-role="body">{t.contentGap}</p> : null}
+    {/* OD-25: each is a question the learner answers; nothing opens or counts until they say yes. */}
+    {onAcceptMastery ? path.masteryOffers.map((offer) => <OfferCard key={`mastery:${offer.topicId}`} kind="mastery" t={t}
+      question={fill(t.masteryAsk, { skill: text(offer.skills[0]!.title) || offer.skills[0]!.key })} detail={text(offer.topicTitle)}
+      onYes={() => onAcceptMastery(offer.topicId)} />) : null}
+    {onOpenEarly ? eligibleEarly.map((entry) => <OfferCard key={`early:${entry.chapterId}`} kind="early" t={t}
+      question={fill(t.earlyAsk, { chapter: text(entry.chapterTitle) || t.chaptersTitle })} detail={null}
+      onYes={() => onOpenEarly(entry.chapterId)} />) : null}
     {!pathway.placementRequired && others.length > 0 ? <section className="lf-course-path-section" aria-labelledby={`${ids}-more`}>
       <h2 id={`${ids}-more`} data-copy-role="heading">{t.moreTitle}</h2>
       <div className="lf-course-path-items"><List label={t.moreTitle}>
@@ -211,6 +224,35 @@ function PathwaySections({ path, slug, locale, t, links, onNavigate }: { path: C
       {path.skills.length > FIRST_SKILLS ? <Button aria-expanded={allSkills} onClick={() => setAllSkills(!allSkills)}>{allSkills ? t.showLess : t.showMore}</Button> : null}
     </section> : null}
   </>;
+}
+
+/**
+ * OD-25: one offer the learner answers. "Yes" is the confirmation Core records
+ * (the host refreshes the course after it); "Not now" only hides the question
+ * here. A refused answer means the offer no longer stands: the refresh drops it.
+ */
+function OfferCard({ kind, t, question, detail, onYes }: { kind: 'early' | 'mastery'; t: Copy; question: string; detail: string | null; onYes: () => Promise<CourseAnswer> }) {
+  const headingId = useId();
+  const [state, setState] = useState<'asking' | 'busy' | 'done' | 'failed' | 'hidden'>('asking');
+  if (state === 'hidden') return null;
+  async function yes() {
+    setState('busy');
+    const answer = await onYes();
+    setState(answer === 'done' ? 'done' : answer === 'refused' ? 'hidden' : 'failed');
+  }
+  return <section className={`lf-course-path-offer lf-course-path-offer--${kind}`} aria-labelledby={headingId} data-offer={kind}>
+    <h2 id={headingId} data-copy-role="heading">{kind === 'early' ? t.earlyTitle : t.masteryTitle}</h2>
+    {detail ? <span className="lf-course-path-offer-topic" data-copy-role="option">{detail}</span> : null}
+    <p data-copy-role="body">{question}</p>
+    {state === 'done' ? <InlineNotice tone="success" live>{kind === 'early' ? t.earlyDone : t.masteryDone}</InlineNotice> : <>
+      {state === 'failed' ? <InlineNotice tone="error" live>{t.saveFailed}</InlineNotice> : null}
+      <div className="lf-actions">
+        <Button variant="accent" pending={state === 'busy'} pendingLabel={kind === 'early' ? t.earlyYes : t.masteryYes} onClick={() => void yes()}>
+          {kind === 'early' ? t.earlyYes : t.masteryYes}</Button>
+        <Button disabled={state === 'busy'} onClick={() => setState('hidden')}>{t.notNow}</Button>
+      </div>
+    </>}
+  </section>;
 }
 
 function LinearChapters({ tree, slug, locale, t, links, onNavigate }: { tree: CourseTree; slug: string; locale: Locale; t: Copy; links: LearnLinks; onNavigate: LearnNavigate }) {

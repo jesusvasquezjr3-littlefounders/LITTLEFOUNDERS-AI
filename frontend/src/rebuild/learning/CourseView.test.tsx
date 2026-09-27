@@ -243,3 +243,60 @@ describe('course screen refusals', () => {
     }
   });
 });
+
+describe('OD-25: the learner answers the one-stage-early and the Mentor-mastery offers', () => {
+  const offers = coursePathPreviewStates.offers!;
+
+  it('asks both questions; nothing is sent until the learner says yes, and each yes names its offer', async () => {
+    const onOpenEarly = vi.fn(async () => 'done' as const);
+    const onAcceptMastery = vi.fn(async () => 'done' as const);
+    view(offers, { onOpenEarly, onAcceptMastery });
+    const early = screen.getByRole('region', { name: 'Ready for more' });
+    expect(within(early).getByText('You mastered what Budgets that work needs. Open it early?')).toBeTruthy();
+    const mastery = screen.getByRole('region', { name: 'Shown with your Mentor' });
+    expect(within(mastery).getByText('You showed Save for later. Unlock the next step?')).toBeTruthy();
+    expect(onOpenEarly).not.toHaveBeenCalled();
+    fireEvent.click(within(early).getByRole('button', { name: 'Open it' }));
+    expect(await within(early).findByText('Open. It is an extra, at your pace.')).toBeTruthy();
+    expect(onOpenEarly).toHaveBeenCalledWith('ch-teens');
+    fireEvent.click(within(mastery).getByRole('button', { name: 'Yes, unlock' }));
+    expect(await within(mastery).findByText('Done. The next step is open.')).toBeTruthy();
+    expect(onAcceptMastery).toHaveBeenCalledWith('topic-l-4');
+  });
+
+  it('"Not now" only hides the question; a failure is said and can be retried; a refused offer disappears', async () => {
+    const onOpenEarly = vi.fn(async () => 'error' as const);
+    const onAcceptMastery = vi.fn(async () => 'refused' as const);
+    view(offers, { onOpenEarly, onAcceptMastery });
+    const early = screen.getByRole('region', { name: 'Ready for more' });
+    fireEvent.click(within(early).getByRole('button', { name: 'Open it' }));
+    expect(await within(early).findByText('Could not save it. Try again.')).toBeTruthy();
+    fireEvent.click(within(early).getByRole('button', { name: 'Not now' }));
+    expect(screen.queryByRole('region', { name: 'Ready for more' })).toBeNull();
+    fireEvent.click(within(screen.getByRole('region', { name: 'Shown with your Mentor' })).getByRole('button', { name: 'Yes, unlock' }));
+    await vi.waitFor(() => expect(screen.queryByRole('region', { name: 'Shown with your Mentor' })).toBeNull());
+  });
+
+  it('without handlers (an older host) and without offers, nothing is asked', () => {
+    const { unmount } = view(offers);
+    expect(screen.queryByRole('region', { name: 'Ready for more' })).toBeNull();
+    unmount();
+    view(coursePathPreviewStates.child!, { onOpenEarly: vi.fn(), onAcceptMastery: vi.fn() });
+    expect(screen.queryByRole('region', { name: 'Shown with your Mentor' })).toBeNull();
+  });
+
+  it('posts each confirmation to Core and maps its answers', async () => {
+    const { acceptMasteryCredit, openChapterEarly } = await import('./course');
+    const ok = vi.fn(async () => ({ data: { status: 'opened' }, error: null }));
+    expect(await openChapterEarly(ok, 'money basics', 'ch-1')).toBe('done');
+    expect(ok).toHaveBeenLastCalledWith('/learn/courses/money%20basics/early-access', { method: 'POST', body: { chapterId: 'ch-1' } });
+    expect(await acceptMasteryCredit(ok, 'money', 't-1')).toBe('done');
+    expect(ok).toHaveBeenLastCalledWith('/learn/courses/money/mastery-credit', { method: 'POST', body: { topicId: 't-1' } });
+    const answer = (code: string) => vi.fn(async () => ({ data: null, error: { code } }));
+    expect(await openChapterEarly(answer('EARLY_ACCESS_NOT_ELIGIBLE'), 'money', 'c')).toBe('refused');
+    expect(await acceptMasteryCredit(answer('MASTERY_CREDIT_NOT_ELIGIBLE'), 'money', 't')).toBe('refused');
+    expect(await acceptMasteryCredit(answer('NETWORK'), 'money', 't')).toBe('offline');
+    expect(await acceptMasteryCredit(answer('DATA_UNAVAILABLE'), 'money', 't')).toBe('error');
+    expect(await openChapterEarly(vi.fn(async () => { throw new Error('offline'); }), 'money', 'c')).toBe('offline');
+  });
+});

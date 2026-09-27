@@ -173,3 +173,14 @@ describe('learner home', () => {
     }
   });
 });
+
+describe('OD-25 on the shelf', () => {
+  it('a course with no chapter for this age is still offered when mastery can open a chapter one stage early', async () => {
+    const { isClosedByAge } = await import('./learnHome');
+    const course = { id: 'c', slug: 'investing', title: {}, lessonCount: 3, progress: { passed: 0, total: 3, pct: 0 },
+      pathway: { learnerStage: 'tween' as const, pathwayStage: null, basis: 'unavailable' as const, recommendedLessonId: null } };
+    expect(isClosedByAge(course)).toBe(true);
+    expect(isClosedByAge({ ...course, pathway: { ...course.pathway, earlyAccess: true } })).toBe(false);
+    expect(isClosedByAge({ ...course, pathway: { ...course.pathway, basis: 'own-stage' as const } })).toBe(false);
+  });
+});

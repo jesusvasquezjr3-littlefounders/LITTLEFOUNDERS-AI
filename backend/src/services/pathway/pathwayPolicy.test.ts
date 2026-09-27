@@ -10,8 +10,10 @@ import {
   LEGACY_EVIDENCE_EQUIVALENCE,
   chapterOpensForAge,
   chapterPolicy,
+  chapterPrerequisiteKcs,
   computeFrontier,
   coursePrerequisiteDecision,
+  earlyStageCandidate,
   earnedStagesFromBadgeRows,
   learnerAgeEvidence,
   learnerStage,
@@ -399,5 +401,39 @@ describe('the real catalog on the real graph (S05.3a data, activated as if accep
     const r = resolvePathway(exact(10), fe.chapters.map((c) => ({ id: c.id, policy: c.policy })));
     expect(r).toMatchObject({ learnerStage: 'tween', pathwayStage: 'child', basis: 'younger-bridge' });
     expect([...r.access.values()].every((a) => a === 'pathway')).toBe(true);
+  });
+});
+
+describe('OD-25 — one stage early on mastery', () => {
+  const teen: ChapterPolicy = { stage: 'teen', minAge: 13, maxAge: 17, source: 'explicit' };
+  const tween: ChapterPolicy = { stage: 'tween', minAge: 10, maxAge: 12, source: 'explicit' };
+  const adult: ChapterPolicy = { stage: 'adult', minAge: 18, maxAge: null, source: 'explicit' };
+  const unknown: AgeEvidence = { lowerBound: null, upperBound: null, exact: false };
+
+  it('a closed chapter exactly one stage above a known age is a candidate', () => {
+    expect(earlyStageCandidate(exact(10), teen)).toBe(true);
+    expect(earlyStageCandidate(exact(12), teen)).toBe(true);
+    expect(earlyStageCandidate(exact(8), tween)).toBe(true);
+  });
+
+  it('never two stages up, never an adult chapter, never an open chapter, never an unknown age', () => {
+    expect(earlyStageCandidate(exact(8), teen)).toBe(false);
+    expect(earlyStageCandidate(exact(16), adult)).toBe(false);
+    expect(earlyStageCandidate(exact(12), adult)).toBe(false);
+    expect(earlyStageCandidate(exact(14), teen)).toBe(false); // already open by age
+    expect(earlyStageCandidate(unknown, tween)).toBe(false);
+    expect(earlyStageCandidate(learnerAgeEvidence({ birthDate: null, declaredBand: 'under_13', protectedOrigin: false }, NOW), tween)).toBe(false);
+    expect(earlyStageCandidate(exact(10), null)).toBe(false);
+  });
+
+  it('the prerequisite skills of a chapter are the graph prerequisites of what it teaches, minus what it teaches itself', () => {
+    const chapter: PathwayChapter = { id: 'c', position: 1, policy: teen, sagas: [{ id: 's', position: 1, topics: [
+      { id: 't1', path: 'c/s/t1', position: 1, kind: 'teaching', lessonIds: ['l1'], hardPrerequisites: [], reviewOf: [] },
+      { id: 't2', path: 'c/s/t2', position: 2, kind: 'teaching', lessonIds: ['l2'], hardPrerequisites: [], reviewOf: [] },
+    ] }] };
+    const kcs = new Map<string, TopicKcs>([['c/s/t1', { teaches: ['kc.a'], reviews: [] }], ['c/s/t2', { teaches: ['kc.b'], reviews: [] }]]);
+    const prereqs = new Map<string, string[]>([['kc.a', ['kc.z', 'kc.y']], ['kc.b', ['kc.a', 'kc.y']]]);
+    expect(chapterPrerequisiteKcs(chapter, kcs, prereqs)).toEqual(['kc.y', 'kc.z']);
+    expect(chapterPrerequisiteKcs(chapter, kcs, new Map())).toEqual([]);
   });
 });

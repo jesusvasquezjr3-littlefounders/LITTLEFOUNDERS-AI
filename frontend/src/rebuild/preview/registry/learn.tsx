@@ -147,7 +147,9 @@ export const learnPreviewScreens: PreviewRegistry = {
   // The S05.3b course path's fixtures, now on the one course screen (W2L.1) under the pathway engine.
   coursepath: framed(({ locale, theme, ageBand, params, go }) => <LearnPreviewHost><CourseView key={`coursepath:${locale}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand}
     slug="financial-education" state={coursePathPreviewStates[params.get('path') ?? 'child'] ?? coursePathPreviewStates.child!}
-    courseTitles={{ entre: 'Entrepreneurship' }} links={previewLinks} onNavigate={previewNavigate(go)} onRetry={() => go('coursepath')} /></LearnPreviewHost>),
+    courseTitles={{ entre: 'Entrepreneurship' }} links={previewLinks} onNavigate={previewNavigate(go)} onRetry={() => go('coursepath')}
+    // OD-25 (`?path=offers`): the preview answers yes without Core; the real route re-reads the course.
+    onOpenEarly={async () => 'done'} onAcceptMastery={async () => 'done'} /></LearnPreviewHost>),
   // W2L.1 (L2): the one course screen in every state, both course engines (`?course=`).
   course: framed(({ locale, theme, ageBand, params, go }) => <LearnPreviewHost><CourseView key={`course:${locale}:${params.get('course')}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand}
     slug="financial-education" state={coursePreviewStates[params.get('course') ?? 'linear'] ?? coursePreviewStates.linear!} inProgress={params.get('building') === '1'}

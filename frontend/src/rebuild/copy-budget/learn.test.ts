@@ -29,6 +29,9 @@ const course: Record<string, CopyRole> = {
   best: 'data', lessons: 'action', ageTitle: 'heading', ageBody: 'body', prereqTitle: 'heading', prereqBody: 'body',
   notFoundTitle: 'heading', notFoundBody: 'body', errorTitle: 'heading', errorBody: 'body', offlineTitle: 'heading', offlineBody: 'body',
   refusedTitle: 'heading', refusedBody: 'body', emptyTitle: 'heading', emptyBody: 'body', retry: 'action', retrying: 'action', preview: 'body',
+  // W2L.4 (OD-25): the one-stage-early chapter and the Mentor-mastery topic, each a question the learner answers.
+  earlyTitle: 'heading', earlyAsk: 'body', earlyYes: 'action', earlyDone: 'body', masteryTitle: 'heading', masteryAsk: 'body',
+  masteryYes: 'action', notNow: 'action', masteryDone: 'body', saveFailed: 'body',
 };
 /*
  * W2L.2: the course world (L3, TerritoryMapView.tsx) and the placement flow
@@ -55,8 +58,11 @@ const placement: Record<string, CopyRole> = {
 const lesson: Record<string, CopyRole> = { pageTitle: 'heading', resultTitle: 'heading', badgeEarned: 'body', courseComplete: 'body' };
 
 const LONGEST_TITLE = { 'en-US': 'My first lemonade stand', 'es-MX': 'Mi primer puesto de limonada', 'pt-BR': 'Minha primeira barraca de limonada' } as const;
+/* OD-25: a realistic chapter and skill title (the longest published ones are catalog content, budgeted in Forge). */
+const CHAPTER = { 'en-US': 'The market stall', 'es-MX': 'El puesto del mercado', 'pt-BR': 'A banca da feira' } as const;
+const SKILL = { 'en-US': 'Saving toward a goal', 'es-MX': 'Ahorrar para una meta', 'pt-BR': 'Poupar para uma meta' } as const;
 const filled = (text: string, locale: keyof typeof LONGEST_TITLE) => text
-  .replace('{name}', 'Sofía').replace('{course}', LONGEST_TITLE[locale])
+  .replace('{name}', 'Sofía').replace('{course}', LONGEST_TITLE[locale]).replace('{chapter}', CHAPTER[locale]).replace('{skill}', SKILL[locale])
   .replace(/\{(n|passed|total|done|goal)\}/g, '12');
 
 describe('rebuild-learn copy budget', () => {
