@@ -22,6 +22,7 @@ import { StreakPausesPanel } from './StreakPausesPanel';
 import { ShareDestinationsPanel } from './ShareDestinationsPanel';
 import { AutonomyLadderPanel } from './AutonomyLadderPanel';
 import { CoachingTipPanel, DataPolicyPanel, ResearchConsentPanel, ScopeStatementPanel } from './GovernancePanels';
+import { DataPracticeConsentPanel } from './DataPracticePanels';
 
 /*
  * /family — the parent dashboard's front door (parent-role gated in App.tsx;
@@ -260,6 +261,8 @@ export function FamilyPage() {
               <AutonomyLadderPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
               {/* S07.7 (D.22): research participation, the Tutor's own answer for this child. */}
               <ResearchConsentPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
+              {/* S10.3 (OD-9 4.2): a migrated child's specific consent to each practice the rebuild introduced. */}
+              <DataPracticeConsentPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
               <ManageKidPanel kid={kid} onRenamed={onKidRenamed} onRemoved={onKidRemoved} />
               <Link
                 to={`/family/${kid.userId}/tutor`}

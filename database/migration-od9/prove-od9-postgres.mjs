@@ -75,7 +75,8 @@ const productState = () => sql(`SELECT concat_ws('|',
   (SELECT count(*) FROM public.parent_verifications), (SELECT count(*) FROM public.account_age_declarations),
   (SELECT count(*) FROM public.account_safety_origins), (SELECT md5(string_agg(id || expires_at::text, ',' ORDER BY id)) FROM public.badge_shares),
   (SELECT count(*) FROM public.audit_logs), (SELECT count(*) FROM public.legacy_kc_credits),
-  (SELECT count(*) FROM public.course_pathway_badges), (SELECT count(*) FROM public.data_practice_consents))`, db);
+  (SELECT count(*) FROM public.course_pathway_badges), (SELECT count(*) FROM public.data_practice_consents),
+  (SELECT count(*) FROM public.legacy_consent_subjects))`, db);
 
 const fixture = generateLegacyFixture();
 const X = fixture.expectations;
@@ -197,6 +198,56 @@ try {
   assert.equal(sql(`SELECT public.has_data_practice_consent('${id.kid_a_one}', 'no.such-practice')`, db), 'f');
   check(`consent carry-over: ${PRACTICES.length} rebuild practices listed; ${X.consent.children} migrated children (unknown age counted as a child, adults excluded) lack ${X.consent.missing} specific consents, by grantor ${JSON.stringify(X.consent.byGrantor)}, exactly as computed independently; a granted consent resolves its gap and a revoked one no longer counts`);
 
+  // ── 4d. Consent enforcement (S10.3) ────────────────────────────────────
+  const setConsent = (subject, actor, practice, grant, version = 1) =>
+    sql(`SELECT public.data_practice_set_consent('${subject}', '${actor}', '${practice}', ${grant}, ${version})`, db);
+  const applies = (subject, practice) => sql(`SELECT public.data_practice_applies('${subject}', '${practice}')`, db);
+  const eventRows = (subject) => Number(sql(`SELECT count(*) FROM public.learning_events WHERE user_id = '${subject}'`, db));
+  assert.equal(sql(`SELECT count(*) FROM public.legacy_consent_subjects WHERE released_at IS NULL`, db), String(X.consent.children));
+  assert.equal(applies(id.kid_a_one, 'mentor.disposition_profile'), 'f');
+  assert.equal(applies(id.parent_a, 'mentor.disposition_profile'), 't');
+  assert.equal(applies(id.kid_a_one, 'no.such-practice'), 'f');
+  // The table trigger: kid_c (14) has the legacy analytics consent, which covered the legacy event classes only.
+  // A rebuild event class is skipped for this migrated child without its specific consent; a legacy class is kept.
+  sql(`INSERT INTO public.analytics_consents (kid_user_id, granted_by) VALUES ('${id.kid_c}', '${id.parent_c}')`, db);
+  const eventsBefore = eventRows(id.kid_c);
+  sql(`INSERT INTO public.learning_events (user_id, role, event, value) VALUES ('${id.kid_c}', 'kid', 'path_choice', 1), ('${id.kid_c}', 'kid', 'lesson_start', NULL)`, db);
+  assert.equal(eventRows(id.kid_c), eventsBefore + 1);
+  refused(() => setConsent(id.kid_a_one, id.parent_c, 'analytics.motivation_events', true), 'DATA_PRACTICE_NOT_ALLOWED');
+  refused(() => setConsent(id.kid_a_one, id.kid_a_one, 'analytics.motivation_events', true), 'DATA_PRACTICE_NOT_ALLOWED');
+  refused(() => setConsent(id.kid_a_one, id.parent_a, 'research.family_longitudinal', true), 'DATA_PRACTICE_OTHER_FLOW');
+  refused(() => setConsent(id.kid_a_one, id.parent_a, 'analytics.motivation_events', true, 2), 'DATA_PRACTICE_DISCLOSURE_STALE');
+  refused(() => setConsent(id.kid_a_one, id.parent_a, 'no.such-practice', true), 'DATA_PRACTICE_UNKNOWN');
+  setConsent(id.kid_c, id.parent_c, 'analytics.motivation_events', true);
+  setConsent(id.kid_c, id.parent_c, 'analytics.motivation_events', true);
+  assert.equal(sql(`SELECT count(*) FROM public.data_practice_consents WHERE subject_user_id = '${id.kid_c}' AND practice_key = 'analytics.motivation_events'`, db), '1');
+  sql(`INSERT INTO public.learning_events (user_id, role, event, value) VALUES ('${id.kid_c}', 'kid', 'path_choice', 1)`, db);
+  assert.equal(eventRows(id.kid_c), eventsBefore + 2);
+  const practiceState = JSON.parse(sql(`SELECT public.data_practice_state('${id.kid_c}')`, db));
+  assert.equal(practiceState.migrated, true);
+  assert.equal(practiceState.practices.length, PRACTICES.length);
+  assert.deepEqual(practiceState.practices.filter((p) => p.consented).map((p) => p.key), ['analytics.motivation_events']);
+  // A child's own no counts, and stops the practice.
+  setConsent(id.kid_c, id.kid_c, 'analytics.motivation_events', false);
+  assert.equal(applies(id.kid_c, 'analytics.motivation_events'), 'f');
+  assert.equal(sql(`SELECT count(*) FROM public.audit_logs WHERE subject = '${id.kid_c}' AND action IN ('data_practice.granted', 'data_practice.revoked')`, db), '2');
+  // A self-registered teen with no Tutor answers the analytics classes only.
+  setConsent(id.teen_indie, id.teen_indie, 'analytics.motivation_events', true);
+  assert.equal(applies(id.teen_indie, 'analytics.motivation_events'), 't');
+  refused(() => setConsent(id.teen_indie, id.teen_indie, 'mentor.disposition_profile', true), 'DATA_PRACTICE_NOT_ALLOWED');
+  // A Tutor's consent lapses with the link.
+  setConsent(id.kid_a_one, id.parent_a, 'learning.decision_journal', true);
+  assert.equal(applies(id.kid_a_one, 'learning.decision_journal'), 't');
+  sql(`SET session_replication_role = replica; UPDATE public.guardian_links SET verification_status = 'pending' WHERE kid_user_id = '${id.kid_a_one}' AND parent_user_id = '${id.parent_a}'`, db);
+  assert.equal(applies(id.kid_a_one, 'learning.decision_journal'), 'f');
+  sql(`SET session_replication_role = replica; UPDATE public.guardian_links SET verification_status = 'verified' WHERE kid_user_id = '${id.kid_a_one}' AND parent_user_id = '${id.parent_a}'`, db);
+  // Sharing is refused by name.
+  refused(() => sql(`INSERT INTO public.social_connection_requests (requester_id, kid_user_id) VALUES ('${id.kid_a_two}', '${id.kid_a_one}')`, db), 'SOCIAL_REQUEST_UNAVAILABLE');
+  // The functions and the marks are closed to browser roles.
+  refused(() => as('authenticated', id.parent_a, `SELECT public.data_practice_state('${id.kid_a_one}')`), 'permission denied');
+  refused(() => as('authenticated', id.parent_a, `SELECT count(*) FROM public.legacy_consent_subjects`), 'permission denied');
+  check('consent enforcement: every migrated child is marked; over the legacy analytics consent, a rebuild event class is skipped at the table without consent and kept with it, a legacy class always kept; an unrelated Tutor, the child for a Tutor-only practice, research (own flow), a stale disclosure and an unknown practice are refused; a grant is idempotent and audited; the child\'s own no stops it; a Tutor consent lapses with the link; a social request is refused by name; the state and the marks are closed to browser roles');
+
   // ── 5. Retire the legacy catalog (OD-24) and compare ───────────────────
   sql(`SET session_replication_role = replica;
        UPDATE public.lessons SET status = 'archived'; UPDATE public.topics SET status = 'archived';
@@ -241,7 +292,7 @@ try {
     VALUES ('${id.kid_a_one}', '${X.kcIdByKey[lemonKc.kc]}', gen_random_uuid(), 'x', 'x/y/z', 'teen', 'mixed', 1, 1)`), 'permission denied');
   refused(() => as('authenticated', id.parent_a, `INSERT INTO public.data_practice_consents (subject_user_id, practice_key, grantor_kind, granted_by, disclosure_version)
     VALUES ('${id.kid_a_one}', 'mentor.disposition_profile', 'tutor', '${id.parent_a}', 1)`), 'permission denied');
-  assert.equal(as('authenticated', id.parent_a, `SELECT count(*) FROM public.data_practice_consents WHERE subject_user_id = '${id.kid_a_one}'`), '1');
+  assert.equal(as('authenticated', id.parent_a, `SELECT count(*) FROM public.data_practice_consents WHERE subject_user_id = '${id.kid_a_one}'`), '2');
   assert.equal(as('authenticated', id.parent_c, `SELECT count(*) FROM public.data_practice_consents WHERE subject_user_id = '${id.kid_a_one}'`), '0');
   assert.equal(as('authenticated', id.kid_a_one, 'SELECT count(*) FROM public.data_practices'), String(PRACTICES.length));
   refused(() => as('authenticated', id.parent_a, `SELECT public.has_data_practice_consent('${id.kid_a_one}', 'mentor.disposition_profile')`), 'permission denied');

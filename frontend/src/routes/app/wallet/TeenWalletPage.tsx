@@ -6,6 +6,7 @@ import { useTheme } from '@/theme/useTheme';
 import { api } from '@/lib/api';
 import { TeenWallet } from '@/rebuild/wallet/TeenWallet';
 import { MoneyBridgePanel, MyResearchPanel, ScopeStatementPanel } from '../family/GovernancePanels';
+import { MyDataPracticesPanel } from '../family/DataPracticePanels';
 import { invalidateWalletAccess } from './useWalletAccess';
 import { moneyHabitsInRegister } from '../family/coinAccountCopy';
 import type { Session, Transport } from '@/rebuild/wallet/walletApi';
@@ -48,6 +49,8 @@ export function TeenWalletPage() {
     <MoneyBridgePanel session={session} />
     <ScopeStatementPanel />
     <MyResearchPanel session={session} />
+    {/* S10.3 (OD-9 4.2): the teen's own answers to the practices the rebuild introduced. */}
+    <MyDataPracticesPanel session={session} />
   </>;
 }
 

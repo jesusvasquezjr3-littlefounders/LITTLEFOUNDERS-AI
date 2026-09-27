@@ -111,6 +111,7 @@ Reads only; the freeze stays on.
 - Core, Oracle and every service `/health` green on the new release.
 - As a seeded QA family (never a real family): the learner's course map opens topics credited by the legacy record as known; the Family Hub shows the same balances and streaks as the spot-check sheet; a frozen legacy badge is visible on the profile.
 - `npm run od9 -- findings`: the counts match the dry runs (A.5 justifications, A.3/A.4 accounts awaiting the age screen, consent gaps).
+- Consent enforcement (section 4.2): `SELECT count(*) FROM public.legacy_consent_subjects WHERE released_at IS NULL` equals the consent step's `children`; for the QA child, `public.data_practice_applies(<child>, 'mentor.disposition_profile')` is false until the QA Tutor says yes in the Family Hub, then true.
 
 **Decision point D:** a smoke check failed. Fix forward if the cause is in a service (redeploy), otherwise restore.
 
@@ -133,5 +134,4 @@ Record the switch time. From here on, families write to the new platform, and a 
 ## What is not in this runbook
 
 - The Forge-phase retirement of legacy content (archive path) and the reviewed lesson equivalences.
-- Enforcement of the consent gaps (a Core route for the Tutor to grant, and consumers that ask `has_data_practice_consent`), which is open work in the S10 lane record.
 - A maintenance page: the product has none, so during the freeze writes fail with an error. The family notice sets that expectation.

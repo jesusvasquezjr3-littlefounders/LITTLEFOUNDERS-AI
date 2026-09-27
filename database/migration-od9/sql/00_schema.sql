@@ -117,7 +117,7 @@ BEGIN
     SELECT array_agg(t) INTO missing FROM unnest(ARRAY[
         'public.account_safety_origins', 'public.account_age_declarations', 'public.legacy_kc_credits',
         'public.data_practices', 'public.data_practice_consents', 'public.topic_knowledge_components',
-        'public.course_pathway_badges']) AS t
+        'public.course_pathway_badges', 'public.legacy_consent_subjects']) AS t
     WHERE to_regclass(t) IS NULL;
     IF missing IS NOT NULL THEN
         RAISE EXCEPTION 'OD9_REBUILD_SCHEMA_REQUIRED: apply the full migration chain first (missing %)', array_to_string(missing, ', ')

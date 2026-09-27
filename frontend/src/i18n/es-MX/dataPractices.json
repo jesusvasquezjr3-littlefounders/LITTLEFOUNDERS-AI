@@ -1,0 +1,53 @@
+{
+  "tutor": {
+    "heading": "Nuevos usos de datos",
+    "lead": "Tu consentimiento anterior no cubre esto. Elige cada uno para {name}.",
+    "open": "Elegir",
+    "close": "Ocultar",
+    "on": "Sí",
+    "off": "No",
+    "saved": "Guardado.",
+    "failed": "No se guardó. Intenta de nuevo.",
+    "loadFailed": "No se pudo cargar.",
+    "loading": "Cargando…"
+  },
+  "groups": {
+    "analytics_event_class": { "heading": "Conteos de uso", "body": "Nos ayudan a mejorar las lecciones. Nadie más los ve." },
+    "mentor_memory_type": { "heading": "Lo que guarda el Mentor", "body": "Notas que el Mentor usa para planear la siguiente sesión." },
+    "learner_record": { "heading": "Decisiones en historias", "body": "Se guardan para que lecciones futuras las recuerden." },
+    "sharing_surface": { "heading": "Compartido con otros", "body": "Solo con personas y lugares que tú apruebes." }
+  },
+  "practices": {
+    "analytics": {
+      "learning_quality_events": "Repeticiones y mejores puntajes",
+      "motivation_events": "Rachas y días de descanso",
+      "engagement_heartbeats": "Tiempo con la app abierta",
+      "family_money_events": "Uso de monedas",
+      "achievement_share_initiations": "Imágenes de logros creadas",
+      "mentor_behavioral_telemetry": "Chequeos del Mentor",
+      "mentor_integrity_evidence": "Revisiones de honestidad del Mentor"
+    },
+    "mentor": {
+      "disposition_profile": "Notas sobre su forma de aprender",
+      "alliance_record": "Metas acordadas en cada sesión",
+      "dialogue_calibration": "Cómo el Mentor ajusta su tono"
+    },
+    "learning": { "decision_journal": "Decisiones en historias, guardadas" },
+    "sharing": {
+      "social_connections": "Conexiones con amigos aprobados",
+      "learning_family_bridge": "Ideas de lecciones para la familia"
+    },
+    "research": { "family_longitudinal": "Investigación, en su propia sección" }
+  },
+  "self": {
+    "heading": "Tus datos",
+    "bodyOff": "Puedes apagar cualquiera de estos.",
+    "bodyChoose": "Tú eliges cada uno.",
+    "open": "Ver",
+    "close": "Ocultar",
+    "on": "Sí",
+    "off": "No",
+    "saved": "Guardado.",
+    "failed": "No se guardó."
+  }
+}

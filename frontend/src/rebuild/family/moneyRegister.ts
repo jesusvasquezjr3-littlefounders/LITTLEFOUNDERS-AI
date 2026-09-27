@@ -91,6 +91,9 @@ export const REGISTER_POLICY: Record<string, { policy: 'register' | 'neutral' | 
   DataPolicy: { policy: 'tutor', why: 'the retention periods the Tutor reads' },
   ReflectionStep: { policy: 'tutor', why: 'the Tutor\'s reflective prompt before a decision' },
   ResearchConsent: { policy: 'tutor', why: 'the Tutor\'s research answer for a child' },
+  // S10.3 (OD-9 4.2).
+  DataPracticeConsent: { policy: 'tutor', why: 'the Tutor\'s specific consent to each new data practice for a migrated child' },
+  MyDataPractices: { policy: 'neutral', why: 'the account\'s own no (and a teen\'s own yes to usage counts): no numbers, written to the youngest band' },
   ScopeStatement: { policy: 'tutor', why: 'the parent-facing scope statement, adult copy; a self-registered teen reads the same text about their own account' },
   AllocationStates: { policy: 'neutral', why: 'one payout waiting to be split: a whole-coin count, a loading line or a retry; no ratio' },
   // Family Hub surfaces the S05 and S08 lanes added, registered at the S07 merge. Each is a Tutor surface.

@@ -9,6 +9,7 @@ import { DATA_POLICY, runFamilyRetention } from '../services/familyRetention.js'
 import { deliverTip, markTip, reviewedTipIds, toWireTip } from '../services/parentCoaching.js';
 import { BRIDGE_MILESTONES, BRIDGE_STEPS, markBridge, readBridge, toWireBridge } from '../services/moneyBridge.js';
 import { readResearch, RESEARCH_DISCLOSURE_VERSION, setResearch, toWireResearch } from '../services/familyResearch.js';
+import { readDataPractices, setDataPractice, toWireDataPractices } from '../services/dataPractices.js';
 
 /*
  * /api/v1/family-hub — S07.7, the governance half of Block D:
@@ -23,6 +24,12 @@ import { readResearch, RESEARCH_DISCLOSURE_VERSION, setResearch, toWireResearch 
  *                                            counts); a yes only from an adult
  *   GET  /bridge                       D.19  the older-teen bridge (wallet holders)
  *   POST /bridge                       D.19  tick or untick one checklist entry
+ *   GET  /kids/:kidId/data-practices   OD-9 4.2  each rebuild data practice and a child's consent (their Tutor)
+ *   PUT  /kids/:kidId/data-practices/:key       the Tutor's specific yes or no
+ *   GET  /data-practices/me            OD-9 4.2  the account's own view
+ *   PUT  /data-practices/me/:key                 a no from the account itself (a child's own no counts);
+ *                                                a yes only from a self-registered teen with no Tutor,
+ *                                                for the analytics classes
  *   POST /internal/retention/run       D.21  the nightly sweep and photo purge
  *
  * The database decides every rule (eligibility by age evidence, who may say
@@ -42,6 +49,11 @@ const REFUSALS: Record<string, { status: number; message: string }> = {
   BRIDGE_ENTRY_INVALID: { status: 400, message: 'Check the moment and the step' },
   RESEARCH_CONSENT_NOT_ALLOWED: { status: 403, message: 'This account cannot give that answer' },
   RESEARCH_DISCLOSURE_STALE: { status: 409, message: 'Read the latest description first' },
+  DATA_PRACTICE_NOT_ALLOWED: { status: 403, message: 'This account cannot give that answer' },
+  DATA_PRACTICE_UNKNOWN: { status: 404, message: 'No such data practice' },
+  DATA_PRACTICE_OTHER_FLOW: { status: 409, message: 'This practice is answered in its own place' },
+  DATA_PRACTICE_DISCLOSURE_STALE: { status: 409, message: 'Read the latest description first' },
+  DATA_PRACTICE_NOT_NEEDED: { status: 409, message: 'An adult account needs no consent for this' },
 };
 
 function refuse(res: Parameters<typeof fail>[0], refused: string) {
@@ -150,6 +162,58 @@ export function familyGovernanceRouter(): Router {
     if (isRefusal(state)) return refuse(res, state.refused);
     await insertAuditLog(me.id, body.data.participate ? 'family.research_yes_self' : 'family.research_no_self', me.id, {});
     return ok(res, { research: toWireResearch(state), currentVersion: RESEARCH_DISCLOSURE_VERSION });
+  });
+
+  // ── OD-9 4.2: consent for the practices the rebuild introduced ──────────
+  const practiceKey = z.string().regex(/^[a-z][a-z0-9_.-]{2,63}$/);
+  const SetPractice = z.object({ grant: z.boolean(), disclosureVersion: z.number().int().min(1).optional() }).strict()
+    .refine((v) => !v.grant || v.disclosureVersion !== undefined, { message: 'A yes names the description it answers' });
+
+  router.get('/kids/:kidId/data-practices', requireRole(['parent']), async (req, res) => {
+    const tutor = authedUser(res);
+    const kidId = uuid.safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    const linked = await isTutorOf(tutor.id, kidId.data);
+    if (linked === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
+    if (!linked) return fail(res, 404, NOT_FOUND, 'No such child for this account');
+    const state = await readDataPractices(kidId.data);
+    if (state === UNAVAILABLE || isRefusal(state)) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load data practices');
+    return ok(res, toWireDataPractices(state));
+  });
+
+  router.put('/kids/:kidId/data-practices/:key', requireRole(['parent']), async (req, res) => {
+    const tutor = authedUser(res);
+    const kidId = uuid.safeParse(req.params.kidId);
+    const key = practiceKey.safeParse(req.params.key);
+    if (!kidId.success || !key.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid and key a practice key');
+    const body = SetPractice.safeParse(req.body ?? {});
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'grant must be a boolean; a yes names the description version');
+    const linked = await isTutorOf(tutor.id, kidId.data);
+    if (linked === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
+    if (!linked) return fail(res, 404, NOT_FOUND, 'No such child for this account');
+    const state = await setDataPractice(kidId.data, tutor.id, key.data, body.data.grant, body.data.disclosureVersion ?? 1);
+    if (state === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the answer');
+    if (isRefusal(state)) return refuse(res, state.refused);
+    return ok(res, toWireDataPractices(state));
+  });
+
+  router.get('/data-practices/me', async (_req, res) => {
+    const me = authedUser(res);
+    const state = await readDataPractices(me.id);
+    if (state === UNAVAILABLE || isRefusal(state)) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load data practices');
+    return ok(res, toWireDataPractices(state));
+  });
+
+  router.put('/data-practices/me/:key', async (req, res) => {
+    const me = authedUser(res);
+    const key = practiceKey.safeParse(req.params.key);
+    if (!key.success) return fail(res, 400, 'VALIDATION_ERROR', 'key must be a practice key');
+    const body = SetPractice.safeParse(req.body ?? {});
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'grant must be a boolean; a yes names the description version');
+    const state = await setDataPractice(me.id, me.id, key.data, body.data.grant, body.data.disclosureVersion ?? 1);
+    if (state === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the answer');
+    if (isRefusal(state)) return refuse(res, state.refused);
+    return ok(res, toWireDataPractices(state));
   });
 
   // ── D.19: the older-teen bridge ─────────────────────────────────────────

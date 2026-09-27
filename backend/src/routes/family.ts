@@ -25,6 +25,7 @@ import { mayDiscoverProfile, profileAccess, visibleSocialUsers } from '../servic
 import { profileFieldFlags, reviewProfileFields } from '../services/profileFieldSafety.js';
 import { getChildRoleHolders, selfIssuedInviteIds } from '../services/teenWallet.js';
 import { resolveLocalToday } from '../services/choreStreak.js';
+import { dataPracticeApplies } from '../services/dataPractices.js';
 import { readStreakStates } from '../services/choreStreakData.js';
 import {
   getConsentsForKids,
@@ -781,7 +782,10 @@ export function familyRouter(): Router {
     // Appendix L (OD-20): one "share initiated" per rendered image, by
     // hand-off and kind. Never blocks the parent; a failed write is logged
     // because an unrecorded share is a measurement gap, not a user error.
-    void insertAchievementShareInitiation({ achievement_kind: kind, handoff }).then((stored) => {
+    // OD-9 4.2: never counted for a migrated child without that specific consent.
+    void dataPracticeApplies(kidId, 'analytics.achievement_share_initiations').then(async (applies) => {
+      if (!applies) return;
+      const stored = await insertAchievementShareInitiation({ achievement_kind: kind, handoff });
       if (!stored) console.error('[achievement-sharing] share initiation was not recorded');
     });
 

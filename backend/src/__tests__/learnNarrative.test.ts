@@ -363,6 +363,24 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
     }
   });
 
+  it('OD-9 4.2: a migrated child is offered no bridge until the Tutor gives that specific consent', async () => {
+    built.db.legacy_consent_subjects = [{ user_id: KID7, age_class: 'under_13', released_at: null }];
+    built.db.data_practice_consents = [{ subject_user_id: KID7, practice_key: 'analytics.motivation_events', revoked_at: null }];
+    await grade(KID7, 'p5');
+    await walk(KID7, ['story', 'save1', 'save2']);
+    expect(built.db.learning_bridge_prompts ?? []).toEqual([]);
+    // The learning itself is untouched: the topic still completes and the journal still records (its own practice aside).
+    expect((built.db.lesson_progress ?? []).some((r) => r.user_id === KID7)).toBe(true);
+  });
+
+  it('OD-9 4.2: with the specific consent, a migrated child is offered the bridge as before', async () => {
+    built.db.legacy_consent_subjects = [{ user_id: KID7, age_class: 'under_13', released_at: null }];
+    built.db.data_practice_consents = [{ subject_user_id: KID7, practice_key: 'sharing.learning_family_bridge', revoked_at: null }];
+    await grade(KID7, 'p5');
+    await walk(KID7, ['story', 'save1', 'save2']);
+    expect(built.db.learning_bridge_prompts).toEqual([expect.objectContaining({ learner_id: KID7, action: 'savings_goal', audience: 'guardian' })]);
+  });
+
   it('one prompt per component and one open prompt per action: replaying a finished topic never prompts again', async () => {
     await grade(KID7, 'p5');
     await walk(KID7, ['story', 'save1', 'save2']);

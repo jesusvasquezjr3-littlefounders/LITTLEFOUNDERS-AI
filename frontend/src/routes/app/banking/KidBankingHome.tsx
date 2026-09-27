@@ -15,6 +15,7 @@ import { SavingsGoalsPanel } from '../tasks/SavingsGoalsPanel';
 import { UsualSplitPanel } from '../tasks/UsualSplitPanel';
 import { CoinAccountPanel } from './CoinAccountPanel';
 import { MoneyBridgePanel, MyResearchPanel, tokenSession } from '../family/GovernancePanels';
+import { MyDataPracticesPanel } from '../family/DataPracticePanels';
 
 /*
  * The kid's half of BANKING.md §7.1: the account/card, the wallet
@@ -182,6 +183,8 @@ export function KidBankingHome() {
       {/* S07.7 (D.19, D.22): "Beyond the app" from 15, and the child's own research no. */}
       {governanceSession && <MoneyBridgePanel session={governanceSession} />}
       {governanceSession && <MyResearchPanel session={governanceSession} />}
+      {/* S10.3 (OD-9 4.2): the child's own no to a practice the rebuild introduced. */}
+      {governanceSession && <MyDataPracticesPanel session={governanceSession} />}
       <button type="button" onClick={() => setCardDialogOpen(true)} className="lf-press flex items-center gap-1.5 self-start rounded-full px-3 py-1.5 lf-caption font-bold text-primary">
         <Icon name="tune" className="text-[16px]" aria-hidden />
         {t('banking.kid.cardDetails')}

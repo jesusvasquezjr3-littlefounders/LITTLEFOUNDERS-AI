@@ -13,9 +13,12 @@
 -- (data_practices.teen_self_consent); otherwise nobody yet ('none_available':
 -- the practice cannot apply to that child until a Tutor is linked).
 --
--- od9.run_consent(false) reports; od9.run_consent(true) records each gap in
--- od9.findings (kind consent_gap) and resolves gaps that have since been
--- consented. No product row is written by either.
+-- od9.run_consent(false) reports and writes nothing. od9.run_consent(true)
+-- records each gap in od9.findings (kind consent_gap), resolves gaps that
+-- have since been consented, and marks every migrated child in
+-- public.legacy_consent_subjects: from then on each rebuild practice applies
+-- to that child only with its specific consent (public.data_practice_applies,
+-- enforced by triggers at the tables). It never writes a consent.
 
 CREATE OR REPLACE FUNCTION od9.age_class(p_user uuid)
 RETURNS text LANGUAGE sql STABLE AS $$
@@ -75,12 +78,23 @@ BEGIN
         END LOOP;
         UPDATE od9.findings f SET status = 'resolved', updated_at = clock_timestamp(), run_id = run
         WHERE f.kind = 'consent_gap' AND f.status = 'flagged' AND NOT (f.subject_ref = ANY (seen));
+        -- Enforcement (S10.3): the migrated children the product gates every
+        -- rebuild practice on (public.data_practice_applies). A child keeps the
+        -- mark until later age evidence shows an adult; the mark is never
+        -- removed by a product path.
+        INSERT INTO public.legacy_consent_subjects AS m (user_id, age_class)
+            SELECT DISTINCT x.user_id, x.age_class FROM od9_consent x
+            ON CONFLICT (user_id) DO UPDATE SET age_class = EXCLUDED.age_class, released_at = NULL
+            WHERE m.age_class IS DISTINCT FROM EXCLUDED.age_class OR m.released_at IS NOT NULL;
+        UPDATE public.legacy_consent_subjects s SET released_at = clock_timestamp()
+        WHERE s.released_at IS NULL AND NOT EXISTS (SELECT 1 FROM od9_consent x WHERE x.user_id = s.user_id);
     END IF;
 
     UPDATE od9.runs SET summary = jsonb_build_object(
         'children', (SELECT count(DISTINCT x.user_id) FROM od9_consent x),
         'practices', (SELECT count(*) FROM public.data_practices),
         'missing', (SELECT count(*) FROM od9_consent x WHERE x.status = 'missing'),
+        'marked', (SELECT count(*) FROM public.legacy_consent_subjects s WHERE s.released_at IS NULL),
         'by_practice', (SELECT COALESCE(jsonb_object_agg(k, n), '{}'::jsonb) FROM (
             SELECT x.practice_key AS k, count(*) FILTER (WHERE x.status = 'missing') AS n FROM od9_consent x GROUP BY 1) s),
         'by_grantor', (SELECT COALESCE(jsonb_object_agg(k, n), '{}'::jsonb) FROM (
