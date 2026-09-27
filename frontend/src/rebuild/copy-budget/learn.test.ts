@@ -20,6 +20,8 @@ const home: Record<string, CopyRole> = {
   placementTitle: 'heading', doneTitle: 'heading', coursesTitle: 'heading', lessonsOne: 'body', lessonsOther: 'body', progress: 'body',
   older: 'body', building: 'body', streakTitle: 'heading', best: 'body', daysOne: 'body', daysOther: 'body', restLeft: 'body',
   rhythm: 'action', storyTitle: 'heading', journal: 'action',
+  // L-04 (OD-27 (1)): the goals-together card, shown only to a 13-to-17 participant.
+  togetherTitle: 'heading', together: 'action', togetherAsked: 'body',
 };
 const course: Record<string, CopyRole> = {
   allCourses: 'action', map: 'action', progress: 'body', loading: 'heading', start: 'action', minutes: 'data',
@@ -56,6 +58,24 @@ const placement: Record<string, CopyRole> = {
  * course moments (LessonLayer.tsx, LessonResultView.tsx).
  */
 const lesson: Record<string, CopyRole> = { pageTitle: 'heading', resultTitle: 'heading', badgeEarned: 'body', courseComplete: 'body' };
+/*
+ * L-04 (OD-27 (1)): goals together (TogetherView.tsx). Only a 13-to-17
+ * participant reaches it, so it is budgeted in the teen band; the Tutor it
+ * names is the verified parent (glossary), never the Mentor.
+ */
+const together: Record<string, CopyRole> = {
+  title: 'heading', intro: 'body', rules: 'body', back: 'action', loading: 'body', errorTitle: 'heading', errorBody: 'body', offlineBody: 'body',
+  retry: 'action', retrying: 'action', closedTitle: 'heading', closedBody: 'body', closedHint: 'body', invitationsTitle: 'heading',
+  invitedBy: 'body', goalLine: 'heading', withPeople: 'body', join: 'action', decline: 'action', goalsTitle: 'heading', progressLabel: 'body',
+  progressValue: 'data', reached: 'body', membersTitle: 'heading', you: 'data', waiting: 'body', invite: 'action', remove: 'action',
+  withdraw: 'action', leave: 'action', report: 'action', leaveTitle: 'heading', leaveBody: 'body', leaveYes: 'action', stay: 'action',
+  removeTitle: 'heading', removeBody: 'body', removeYes: 'action', newTitle: 'heading', newTarget: 'body', lessonsOption: 'option',
+  newDays: 'body', daysOption: 'option', newPeople: 'body', peopleHelp: 'body', noPeople: 'body', start: 'action', starting: 'action',
+  cancel: 'action', emptyTitle: 'heading', emptyBody: 'body', finishedTitle: 'heading', finishedLine: 'data', pickPeople: 'body',
+  started: 'body', joined: 'body', declined: 'body', left: 'body', removed: 'body', invited: 'body', memberUnavailable: 'body', full: 'body',
+  limit: 'body', alreadyAsked: 'body', saveFailed: 'body', reportLeave: 'body', reported: 'body',
+};
+const DATE = { 'en-US': 'Oct 12', 'es-MX': '12 oct', 'pt-BR': '12 de out.' } as const;
 
 const LONGEST_TITLE = { 'en-US': 'My first lemonade stand', 'es-MX': 'Mi primer puesto de limonada', 'pt-BR': 'Minha primeira barraca de limonada' } as const;
 /* OD-25: a realistic chapter and skill title (the longest published ones are catalog content, budgeted in Forge). */
@@ -63,12 +83,13 @@ const CHAPTER = { 'en-US': 'The market stall', 'es-MX': 'El puesto del mercado',
 const SKILL = { 'en-US': 'Saving toward a goal', 'es-MX': 'Ahorrar para una meta', 'pt-BR': 'Poupar para uma meta' } as const;
 const filled = (text: string, locale: keyof typeof LONGEST_TITLE) => text
   .replace('{name}', 'Sofía').replace('{course}', LONGEST_TITLE[locale]).replace('{chapter}', CHAPTER[locale]).replace('{skill}', SKILL[locale])
+  .replace('{date}', DATE[locale]).replace('{names}', 'Luz, Río y Sofía')
   .replace(/\{(n|passed|total|done|goal)\}/g, '12');
 
 describe('rebuild-learn copy budget', () => {
   for (const [locale, strings] of namespaceCopy('learn')) {
     it(`fits the youngest copy budget in ${locale}`, () => {
-      expectBudgetedGroups(strings, [...Object.keys(flat), 'home', 'course', 'territory', 'placement', 'lesson']);
+      expectBudgetedGroups(strings, [...Object.keys(flat), 'home', 'course', 'territory', 'placement', 'lesson', 'together']);
       for (const [key, role] of Object.entries(flat)) expectFits(strings[key] as string, role, locale, '6-9', key);
       for (const [group, roles] of [['home', home], ['course', course], ['territory', territory], ['placement', placement], ['lesson', lesson]] as const) {
         const entries = flatten(strings[group]!);
@@ -82,6 +103,14 @@ describe('rebuild-learn copy budget', () => {
           // B.15: nothing on the placement or the map reads as a verdict on ability, a rank or a failure.
           if (group === 'placement' || group === 'territory') expect(verdictWords(text, locale), `${group}.${key}`).toEqual([]);
         }
+      }
+      // L-04: goals together, in the teen band. No rank, score, reward or celebration word; no messaging word (E.10).
+      const entries = flatten(strings.together!);
+      expect(new Set(entries.map(([key]) => key))).toEqual(new Set(Object.keys(together)));
+      for (const [key, text] of entries) {
+        const role = together[key]!;
+        if (role !== 'data') expectFits(filled(text, locale), role, locale, '13-17', `together.${key}`);
+        expect(text, `together.${key}`).not.toMatch(/\bbot\b|assistant|asistente|assistente|\blives?\b|\bvidas?\b|—|\bcoins?\b|monedas|moedas|\bxp\b|leader|winner|ganador|vencedor|\bmessages?\b|mensaje|mensagem|congrat|felicidades|parabéns/i);
       }
     });
   }

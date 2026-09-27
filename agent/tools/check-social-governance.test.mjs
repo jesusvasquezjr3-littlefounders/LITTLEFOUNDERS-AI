@@ -166,6 +166,23 @@ test('E.12: the brand position must stay written', () => {
   expectFailure([['docs/product-audit/COSMIC_NARRATIVE.md', 'A small, safe way to say hello to people you already know', 'A fun place to meet new friends']], /the E\.12 position itself/);
 });
 
+test('L-04: a looser eligibility, a bigger group, a free-text column, a loose body, an unswept class or a missing policy note fails', () => {
+  // The orchestrator renumbers migrations at merge: find them by name, never by number.
+  const named = (suffix) => 'database/migrations/' + readdirSync(join(root, 'database/migrations')).find((f) => f.endsWith(suffix));
+  const tables = named('_teen_cooperative_goals.sql');
+  const actions = named('_teen_cooperative_goal_actions.sql');
+  const sweep = named('_cooperative_goals_retention.sql');
+  expectFailure([[tables, "WHEN 'teen' THEN true", "WHEN 'adult' THEN true"]], /coop_goal_eligible must admit only/);
+  expectFailure([[tables, "interval '13 years'", "interval '10 years'"]], /coop_goal_child_teen/);
+  expectFailure([[tables, 'AND public.social_edge_consented(p_from, p_to)', '']], /coop_goal_edge/);
+  expectFailure([[actions, 'cardinality(p_invitees) NOT BETWEEN 1 AND 4', 'cardinality(p_invitees) NOT BETWEEN 1 AND 9']], /create_coop_goal must cap/);
+  expectFailure([[actions, "'members', (SELECT jsonb_agg(x.user_id", "'rank', 1, 'members', (SELECT jsonb_agg(x.user_id"]], /group total only/);
+  expectFailure([[tables, '    closed_at     timestamptz,\n', '    title         text,\n    closed_at     timestamptz,\n']], /free-text column \(title\)/);
+  expectFailure([['backend/src/routes/coopGoals.ts', 'const InviteBody = z.object({ username: USERNAME }).strict();', 'const InviteBody = z.object({ username: USERNAME, note: z.string() });']], /bodies must stay strict/);
+  expectFailure([[sweep, 'PERFORM public.coop_goal_reconcile(item.id);', 'NULL;']], /no longer covers PERFORM public.coop_goal_reconcile/);
+  expectFailure([['docs/rebuild/policies/SOCIAL-GOVERNANCE.md', '**Cooperative goals (L-04).**', '**Goals.**']], /cover cooperative goals/);
+});
+
 test('E.7: a lapsed recalibration or a missing Appendix I adoption fails', () => {
   expectFailure([], /was due 2026-12-24/, { today: new Date('2027-01-02T00:00:00Z') });
   assert.deepEqual(checkSocialGovernance(root, { today: new Date('2026-12-24T12:00:00Z') }), []);

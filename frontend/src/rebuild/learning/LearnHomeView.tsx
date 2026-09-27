@@ -29,7 +29,8 @@ import type { BridgeAnswer, SelfBridge } from './narrative';
  *              course that could not load is said, never silently dropped.
  *   secondary  the habit streak with its rest days and the learner's own pace
  *              (B.21, B.24), then the learner's story (B.9: the decision
- *              journal; B.13: an independent teen's "try it for real" prompts).
+ *              journal; B.13: an independent teen's "try it for real" prompts), and
+ *              for a 13-to-17 participant, goals together (L-04, OD-27 (1)).
  *
  * Presentation only: the host (routes/app/learn/LearnHomeRoute.tsx, or the
  * preview) owns transport and navigation. Nothing here decides a lock or sees
@@ -53,6 +54,8 @@ export interface LearnHomeProps {
   featured: { slug: string; state: CourseState } | null;
   rhythm: RhythmState;
   bridges: SelfBridge[];
+  /** L-04 (OD-27 (1)): goals together, shown only when Core says this learner may take part. */
+  together?: { eligible: boolean; asked: boolean } | null;
   /** The one-time register graduation card (B.23), when Core says one is owed. */
   graduation?: ReactNode;
   links: LearnLinks;
@@ -86,6 +89,7 @@ export function LearnHomeView(props: LearnHomeProps) {
         <StreakCard {...props} />
         <SelfBridgeList bridges={props.bridges} locale={locale} onBridge={props.onBridge} />
         <StoryCard {...props} />
+        <TogetherCard {...props} />
       </>} />
   </div>;
 }
@@ -225,5 +229,17 @@ function StoryCard({ locale, links, onNavigate }: LearnHomeProps) {
   return <section className="lf-learn-story" aria-labelledby={headingId}>
     <h2 id={headingId} data-copy-role="heading">{t.storyTitle}</h2>
     <div className="lf-learn-card-action"><ButtonLink {...linkTo(links.journal, onNavigate)}>{t.journal}</ButtonLink></div>
+  </section>;
+}
+
+/** L-04 (OD-27 (1)): goals together, offered only to a learner Core lets take part. No count, no rank. */
+function TogetherCard({ locale, links, together, onNavigate }: LearnHomeProps) {
+  const t = learnCopy[locale].home;
+  const headingId = useId();
+  if (!together?.eligible || !links.together) return null;
+  return <section className="lf-learn-story lf-learn-together" aria-labelledby={headingId}>
+    <h2 id={headingId} data-copy-role="heading">{t.togetherTitle}</h2>
+    {together.asked ? <p data-copy-role="body">{t.togetherAsked}</p> : null}
+    <div className="lf-learn-card-action"><ButtonLink {...linkTo(links.together, onNavigate)}>{t.together}</ButtonLink></div>
   </section>;
 }

@@ -11,7 +11,7 @@ describe('rebuild-family copy budget', () => {
     it(`fits its budgets in ${locale}`, () => {
       expectBudgetedGroups(strings, ['socialGraph', 'socialHistory', 'socialRequests', 'socialNotices', 'badgeShares', 'achievementShare', 'guardianInvite',
         'familyConsole', 'familyChildAccount', 'familyChildConsent', 'familyChildProgress', 'familyChildMentor', 'familyMemoryNotes',
-        'familyTasks', 'childTasks', 'familyCoins', 'childCoins', 'coinCard', 'teenWalletScreen']);
+        'familyTasks', 'childTasks', 'familyCoins', 'childCoins', 'coinCard', 'teenWalletScreen', 'familyCoopGoals']);
       // W2F.1: the rebuilt Family console (F1), a child's progress (F2) and Mentor talks (F3). Adult Tutor copy;
       // placeholders take realistic values (a data value counts as its own words, 06 §3).
       const sample = (text: string) => text.replace('{name}', 'Ana').replace('{username}', '@ana_2016').replace('{count}', '12').replace('{date}', 'Sep 20')
@@ -32,6 +32,8 @@ describe('rebuild-family copy budget', () => {
         done: 'action', manage: 'action', close: 'action', saveName: 'action', saveUsername: 'action', savePassphrase: 'action', removeAction: 'action', removing: 'action', keep: 'action',
         show: 'action', hide: 'action', saving: 'action' });
       // The microphone consent is the stored, mandated disclosure (06 §3.3 `legal`): shown in full behind "Allow microphone", never shortened.
+      // L-04 (OD-27 (1)): the Tutor's opt-in for goals together, for a child aged 13 to 17. Adult Tutor copy.
+      budget('familyCoopGoals', { title: 'heading', on: 'option', off: 'option', retry: 'action' });
       budget('familyChildConsent', { micTitle: 'heading', micAllow: 'action', micTurnOff: 'action', micConfirm: 'action', micCancel: 'action', micSaving: 'action',
         on: 'option', off: 'option', micConsent: 'legal' });
       budget('familyChildProgress', { title: 'heading', titleFallback: 'heading', failedTitle: 'heading', forbiddenTitle: 'heading', noCourseTitle: 'heading',

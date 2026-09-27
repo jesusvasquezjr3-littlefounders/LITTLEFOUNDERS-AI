@@ -8,7 +8,7 @@ import type { AgeBand } from '@/rebuild/design/copyBudget';
 import type { LearnLinks, LearnNavigate } from '@/rebuild/learning/learnCopy';
 import type { LearnTransport } from '@/rebuild/learning/learnHome';
 import { fetchLearnerRegister, type RegisterState, type RegisterTransport } from '@/rebuild/learning/learnerRegister';
-import { coursePath, decisionJournalPath, learningRhythmPath, lessonPath, placementPath, territoryPath } from './paths';
+import { coursePath, decisionJournalPath, learningRhythmPath, lessonPath, placementPath, territoryPath, togetherPath } from './paths';
 
 /*
  * W2L: what every rebuilt learner page host needs from the application, in
@@ -27,6 +27,7 @@ export const LEARN_LINKS: LearnLinks = {
   territory: territoryPath,
   rhythm: learningRhythmPath(),
   journal: decisionJournalPath(),
+  together: togetherPath(),
 };
 
 type Reply = Awaited<ReturnType<LearnTransport>>;

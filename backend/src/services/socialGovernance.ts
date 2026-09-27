@@ -70,6 +70,11 @@ export const SocialRetentionRun = z.object({
   resolvedCasesDeleted: Count,
   noticesDeleted: Count,
   unconsentedEdgesRemoved: Count,
+  // L-04 (OD-27 (1)), migration cooperative_goals_retention. Optional so this
+  // Core still reads a database that has not applied it yet.
+  coopGoalsReconciled: Count.optional(),
+  coopGoalsDeleted: Count.optional(),
+  coopConsentsDeleted: Count.optional(),
   limit: z.number().int().min(1).max(SOCIAL_RETENTION_MAX_LIMIT),
   complete: z.boolean(),
 }).strict();

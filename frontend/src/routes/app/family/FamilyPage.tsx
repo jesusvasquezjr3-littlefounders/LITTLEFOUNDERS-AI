@@ -6,6 +6,7 @@ import { childName, type Child } from '@/rebuild/family/console/consoleApi';
 import { AutonomyLadderPanel } from './AutonomyLadderPanel';
 import { BadgeSharesPanel } from './BadgeSharesPanel';
 import { CoGuardiansPanel, GuardianRequestsPanel } from './CoGuardiansPanel';
+import { CoopGoalsConsentPanel } from './CoopGoalsConsentPanel';
 import { CoachingTipPanel, DataPolicyPanel, ResearchConsentPanel, ScopeStatementPanel } from './GovernancePanels';
 import { DataPracticeConsentPanel } from './DataPracticePanels';
 import { GuardianInviteJoin, GuardianInvitePanel } from './GuardianInvitePanel';
@@ -79,6 +80,8 @@ export function FamilyPage() {
         <SocialGraphPanel {...common} />
         <SocialHistoryPanel {...common} />
         <BadgeSharesPanel {...common} />
+        {/* L-04 (OD-27 (1)): goals together for a child aged 13 to 17, off until the Tutor turns it on. */}
+        <CoopGoalsConsentPanel {...common} kidName={name} />
       </>,
       // S07.7 (D.22): the Tutor's research answer for this child.
       // S10.3 (OD-9 4.2): a migrated child's specific consent to each practice the rebuild introduced (renders nothing otherwise).

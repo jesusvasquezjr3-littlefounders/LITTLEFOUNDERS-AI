@@ -10,6 +10,7 @@ import { socialRetentionSweepRouter } from './routes/socialRetention.js';
 import { bankingRouter } from './routes/banking.js';
 import { familyRouter } from './routes/family.js';
 import { familyLearningRouter } from './routes/familyLearning.js';
+import { coopGoalsRouter, familyCoopGoalsRouter } from './routes/coopGoals.js';
 import { authRouter } from './routes/auth.js';
 import { eventsRouter } from './routes/events.js';
 import { learnRouter } from './routes/learn.js';
@@ -84,6 +85,8 @@ export function createApp(): express.Express {
   app.use('/api/v1/tutor', tutorRouter());
   // S05.3c (B.10, B.13): mounted before /family so its own gate answers its paths.
   app.use('/api/v1/family/learning', familyLearningRouter());
+  // L-04 (OD-27 (1)): the Tutor's opt-in for a 13-to-17 child, before /family for the same reason.
+  app.use('/api/v1/family/coop-goals', familyCoopGoalsRouter());
   app.use('/api/v1/family', familyRouter());
   app.use('/api/v1/tasks', tasksRouter());
   app.use('/api/v1/banking', bankingRouter());
@@ -91,6 +94,8 @@ export function createApp(): express.Express {
   app.use('/api/v1/family-hub', familyGovernanceRouter());
   app.use('/api/v1/profile', ownProfileRouter());
   app.use('/api/v1/profiles', publicProfilesRouter());
+  // L-04 (OD-27 (1)): teen cooperative goals.
+  app.use('/api/v1/coop-goals', coopGoalsRouter());
   app.use('/api/v1/admin', adminRouter());
 
   app.use((_req, res) => {

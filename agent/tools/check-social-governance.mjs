@@ -28,6 +28,11 @@ import { fileURLToPath } from 'node:url';
  *      SQL, Core and the frontend; the write guards exist; every Core read
  *      projects; no upload surface exists beyond the reviewed ones; the brand
  *      position is written.
+ *   5. L-04 (OD-27 (1)): teen cooperative goals stay a 13-to-17, mutual,
+ *      small, text-free and reward-free mechanic: the eligibility rule, the
+ *      group size, the mutual-connection rule, no free-text column, a strict
+ *      Core body, the group total as the only progress, and the retention
+ *      sweep and the policy covering them.
  */
 
 const POLICY = 'docs/rebuild/policies/SOCIAL-GOVERNANCE.md';
@@ -254,7 +259,8 @@ export function checkSocialGovernance(root, { today = new Date() } = {}) {
     if (!sameList(keys, otherKeys) || keys.some((k) => sqlWindows[k] !== other[k])) failures.push(`E.11 retention-window drift between ${windowsSql?.file ?? 'the database'} ${JSON.stringify(sqlWindows)} and ${label} ${JSON.stringify(other)}`);
   }
   const sweepSql = latestDefinition(root, 'run_social_graph_retention');
-  for (const needle of ['social_consent_requests', 'social_connection_requests', 'social_reports', 'social_review_cases', 'social_safety_notices', 'public.follows', 'audit_logs', 'social_edge_consented', 'social_retention.sweep_ran', 'social_retention_windows']) {
+  for (const needle of ['social_consent_requests', 'social_connection_requests', 'social_reports', 'social_review_cases', 'social_safety_notices', 'public.follows', 'audit_logs', 'social_edge_consented', 'social_retention.sweep_ran', 'social_retention_windows',
+    'PERFORM public.coop_goal_reconcile(', 'public.coop_goals', 'public.coop_goal_guardian_consents']) {
     if (!sweepSql || !sweepSql.body.includes(needle)) failures.push(`${sweepSql?.file ?? 'database/migrations'}: the latest run_social_graph_retention no longer covers ${needle} (E.11)`);
   }
   // public.audit_logs is append-only (README non-negotiables): no migration deletes or updates it.
@@ -352,6 +358,43 @@ export function checkSocialGovernance(root, { today = new Date() } = {}) {
       ['law 5', 'the Law 5 grounding'],
     ]) if (!section.includes(needle)) failures.push(`COSMIC_NARRATIVE.md §6 must state ${why} ("${needle}")`);
   }
+
+  // ── 5. L-04 (OD-27 (1)): teen cooperative goals ─────────────────────────
+  const coopEligible = latestDefinition(root, 'coop_goal_eligible');
+  if (!coopEligible || !/WHEN 'teen' THEN true/.test(coopEligible.body) || !coopEligible.body.includes('coop_goal_guardian_allows')
+    || !coopEligible.body.includes('coop_goal_child_teen') || !coopEligible.body.includes('NOT public.profile_fields_flagged') || !/ELSE false/.test(coopEligible.body)) {
+    failures.push(`${coopEligible?.file ?? 'database/migrations'}: coop_goal_eligible must admit only the teen tier or a 13-to-17 child with a current Tutor opt-in, never a flagged profile (L-04)`);
+  }
+  const childTeen = latestDefinition(root, 'coop_goal_child_teen');
+  if (!childTeen || !childTeen.body.includes("interval '13 years'") || !childTeen.body.includes("interval '18 years'")) failures.push('database/migrations: coop_goal_child_teen must prove 13 to 17 from the birth date (L-04)');
+  const coopEdge = latestDefinition(root, 'coop_goal_edge');
+  if (!coopEdge || !coopEdge.body.includes('social_edge_consented') || !coopEdge.body.includes('has_current_teen_consent') || !coopEdge.body.includes('public.blocks')) failures.push('database/migrations: coop_goal_edge must require a consented, unblocked follow (L-04)');
+  const coopCreate = latestDefinition(root, 'create_coop_goal');
+  const coopInvite = latestDefinition(root, 'invite_coop_goal_member');
+  if (!coopCreate || !coopCreate.body.includes('cardinality(p_invitees) NOT BETWEEN 1 AND 4') || !coopCreate.body.includes('coop_goal_mutual')) failures.push('database/migrations: create_coop_goal must cap a new group at 2 to 5 people, all mutually connected (L-04)');
+  if (!coopInvite || !coopInvite.body.includes('>= 5') || !coopInvite.body.includes('coop_goal_mutual')) failures.push('database/migrations: invite_coop_goal_member must cap a group at 5 and ask only a mutual connection of every member (L-04)');
+  const coopOverview = latestDefinition(root, 'coop_goal_overview');
+  if (!coopOverview || /rank|position|\bxp\b|coin|reward/i.test(coopOverview.body) || (coopOverview.body.match(/coop_goal_done\(/g) ?? []).length !== 2) {
+    failures.push('database/migrations: coop_goal_overview must return the group total only: no per-member number, rank or reward (L-04)');
+  }
+  for (const file of migrationFiles(root)) {
+    const sql = read(root, `database/migrations/${file}`).replace(/--[^\n]*/g, '');
+    for (const m of sql.matchAll(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?public\.(coop_\w+)\s*\(([\s\S]*?)\n\);/gi)) {
+      for (const line of m[2].split('\n')) {
+        if (/^\s*\w+\s+(text|varchar|character varying|jsonb|json)\b/i.test(line) && !/CHECK\s*\(\w+\s+IN\s*\(/i.test(line)) {
+          failures.push(`database/migrations/${file}: ${m[1]} has a free-text column (${line.trim().split(/\s+/)[0]}); a cooperative goal carries codes only (E.10, L-04)`);
+        }
+      }
+    }
+  }
+  const coopRoute = tryRead(root, 'backend/src/routes/coopGoals.ts') ?? '';
+  if (!/const CreateBody = z\.object\(\{ target: TargetEnum, days: DaysEnum, invite: z\.array\(USERNAME\)[^;]*\}\)\.strict\(\);/.test(coopRoute)
+    || !/const InviteBody = z\.object\(\{ username: USERNAME \}\)\.strict\(\);/.test(coopRoute)
+    || !/const DecisionBody = z\.object\(\{ decision: z\.enum\(\['accept', 'decline'\]\) \}\)\.strict\(\);/.test(coopRoute)) {
+    failures.push('backend/src/routes/coopGoals.ts: the cooperative-goal bodies must stay strict, with presets and usernames only (no name, note or message; E.10, L-04)');
+  }
+  if (!/app\.use\('\/api\/v1\/coop-goals', coopGoalsRouter\(\)\)/.test(app)) failures.push('backend/src/app.ts: the L-04 cooperative-goal routes are not mounted at /api/v1/coop-goals');
+  if (!policy.includes('coop_goals') || !policy.includes('Cooperative goals (L-04)')) failures.push(`${POLICY} §3.2: the retention policy must cover cooperative goals (L-04, E.11)`);
 
   // Unused-name guard: a reviewed schema name that no migration creates is stale.
   for (const name of reviewedSchema) {

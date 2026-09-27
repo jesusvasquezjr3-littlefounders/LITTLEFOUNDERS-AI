@@ -23,10 +23,14 @@
 //   3. NO MYSTERY-REWARD LANGUAGE. No copy, key or identifier promises a
 //      mystery box, loot, gacha, spin, lucky draw, scratch card or random or
 //      surprise prize, in English, Spanish or Portuguese.
+//   4. THE PEER MECHANIC PAYS NOTHING AND RANKS NOBODY (L-04, OD-27 (1)).
+//      The code of teen cooperative goals (migrations, Core, the learner
+//      page) never names coins, XP, a reward, a badge, a streak, a
+//      celebration, a rank, a leaderboard or a winner, and those files exist.
 //
 //   node agent/tools/check-reward-mechanics.mjs        (repository root)
 
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -68,6 +72,15 @@ export const REWARD_PATHS = [
   /^frontend\/src\/rebuild\/learning\/(LessonResultView|LearningRhythmView|motivation)\.tsx?$/,
   /^frontend\/src\/tutor\/(useTutorLearningStats|hud\/GamificationCelebration)\.tsx?$/,
 ];
+
+/** L-04 (OD-27 (1)): the cooperative-goal code. It must exist, and it carries no reward or ranking. */
+export const PEER_MECHANIC_PATHS = [
+  /^backend\/src\/(routes|services)\/coopGoals\.ts$/,
+  /^database\/migrations\/\d{4}_teen_cooperative_goals?(_actions)?\.sql$/,
+  /^frontend\/src\/rebuild\/learning\/(together\.ts|TogetherView\.tsx)$/,
+];
+export const PEER_MECHANIC_FILES = ['backend/src/routes/coopGoals.ts', 'backend/src/services/coopGoals.ts', 'frontend/src/rebuild/learning/together.ts', 'frontend/src/rebuild/learning/TogetherView.tsx'];
+const PEER_FORBIDDEN = [/\bcoins?\b/i, /\bxp(_points)?\b/i, /reward/i, /\bbadges?\b/i, /\bstreaks?\b/i, /celebrat/i, /confetti/i, /\brank(s|ed|ing|ings)?\b/i, /leaderboard/i, /\bwinners?\b/i];
 
 const RANDOM_JS = [
   /\bMath\.random\s*\(/,
@@ -136,6 +149,12 @@ export function checkFile(path, text, allowlist = RANDOMNESS_ALLOWLIST, teaching
       findings.push(`${path}: undeclared randomness (${draws.map(String).join(', ')}); declare its non-reward purpose or remove it (B.22)`);
     }
   }
+  if (PEER_MECHANIC_PATHS.some((pattern) => pattern.test(path))) {
+    for (const pattern of PEER_FORBIDDEN) {
+      const match = code.match(pattern);
+      if (match) findings.push(`${path}: the cooperative-goal mechanic names "${match[0]}"; a peer goal pays no reward and ranks nobody (L-04, OD-27 (1))`);
+    }
+  }
   if (Object.hasOwn(teaching, path) && !REWARD_PATHS.some((pattern) => pattern.test(path))) return findings;
   // Comments describing the prohibition are not copy; JSON (i18n) is all copy.
   const copy = json ? text : code;
@@ -158,6 +177,9 @@ export function checkRepository(root = repo, roots = SCAN_ROOTS, allowlist = RAN
       const path = relative(root, file).split(sep).join('/');
       findings.push(...checkFile(path, readFileSync(file, 'utf8'), allowlist, teaching));
     }
+  }
+  if (roots === SCAN_ROOTS) {
+    for (const file of PEER_MECHANIC_FILES) if (!existsSync(join(root, file))) findings.push(`${file}: the L-04 cooperative-goal code is missing, so rule 4 checks nothing`);
   }
   return { files, findings };
 }

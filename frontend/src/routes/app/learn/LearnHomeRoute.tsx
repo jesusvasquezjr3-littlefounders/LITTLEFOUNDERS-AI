@@ -7,6 +7,7 @@ import { acknowledgeGraduation } from '@/rebuild/learning/learnerRegister';
 import { fetchRhythm, type RhythmState } from '@/rebuild/learning/motivation';
 import { answerSelfBridge, fetchSelfBridges, type SelfBridge } from '@/rebuild/learning/narrative';
 import { RegisterGraduationView } from '@/rebuild/learning/RegisterGraduationView';
+import { fetchTogetherTeaser } from '@/rebuild/learning/together';
 import { readCoursesCache, writeCoursesCache } from './coursesCache';
 import { bandOf, useLearnerRegister, useLearnHost } from './learnHost';
 
@@ -15,7 +16,8 @@ import { bandOf, useLearnerRegister, useLearnHost } from './learnHost';
  * learner shell. It reads, each on its own so one failure never blanks the
  * rest: the shelf (GET /learn/courses), the featured course's own entry (its
  * next step: the B.6 path or the tree), the learner's rhythm (B.21/B.24), an
- * independent teen's self prompts (B.13; Core sends none to anyone else) and
+ * independent teen's self prompts (B.13; Core sends none to anyone else), whether
+ * goals together are open to this learner (L-04, OD-27 (1)) and
  * the register (B.23: the Copy Budget band and a graduation owed).
  *
  * STALE-WHILE-REVALIDATE, kept from the legacy home: the shelf a learner
@@ -38,6 +40,7 @@ export function LearnHomeRoute() {
   const [featured, setFeatured] = useState<{ slug: string; state: CourseState } | null>(null);
   const [rhythm, setRhythm] = useState<RhythmState>({ status: 'loading' });
   const [bridges, setBridges] = useState<SelfBridge[]>([]);
+  const [together, setTogether] = useState<{ eligible: boolean; asked: boolean } | null>(null);
   const [register, setRegister] = useLearnerRegister(transport);
 
   useEffect(() => {
@@ -72,13 +75,15 @@ export function LearnHomeRoute() {
     let active = true;
     void fetchRhythm(transport).then((next) => { if (active) setRhythm(next); });
     void fetchSelfBridges(transport).then((next) => { if (active) setBridges(next); });
+    // L-04: quiet; a failure hides the card.
+    void fetchTogetherTeaser(transport).then((next) => { if (active) setTogether(next); });
     return () => { active = false; };
   }, [transport]);
 
   const firstName = (profile?.display_name ?? '').trim().split(/\s+/)[0] || null;
   const graduation = register.status === 'ready' ? register.value.graduation : null;
   return <LearnHomeView locale={locale} dark={dark} ageBand={bandOf(register)} name={firstName} shelf={shelf} featured={featured}
-    rhythm={rhythm} bridges={bridges} links={links} onNavigate={onNavigate} retrying={retrying}
+    rhythm={rhythm} bridges={bridges} together={together} links={links} onNavigate={onNavigate} retrying={retrying}
     onRetry={() => { setRetrying(true); setRevision((n) => n + 1); }}
     onBridge={(id, answer, goal) => answerSelfBridge(transport, id, answer, goal)}
     graduation={graduation && register.status === 'ready' ? <RegisterGraduationView into={graduation.to} locale={locale} dark={dark}
