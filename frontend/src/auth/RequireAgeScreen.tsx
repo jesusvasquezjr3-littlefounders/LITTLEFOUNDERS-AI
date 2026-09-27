@@ -47,7 +47,7 @@ export function RequireAgeScreen({ children }: { children: ReactNode }) {
   return <AgeScreen key={identity} locale={locale} dark={isDark} copy={({'en-US': en, 'es-MX': es, 'pt-BR': pt})[locale].ageScreen}
     state={!current ? 'loading' : !validState(current.state) ? 'error' : saving ? 'saving' : 'form'} error={error}
     onRetry={() => setAttempt(n => n + 1)} onExit={() => void logout()}
-    onSubmit={birthDate => {
+    onSubmit={(birthDate, birthMonth) => {
       const submissionGeneration = generation.current;
       const stale = () => currentIdentity.current !== identity || generation.current !== submissionGeneration;
       setSaving(true); setError(undefined);
@@ -55,7 +55,8 @@ export function RequireAgeScreen({ children }: { children: ReactNode }) {
         const token = await getToken();
         if (stale()) return;
         if (!token) { setSaving(false); setError('unavailable'); return; }
-        const response = await api<Screening>('/auth/age-screen', { token, body: { birthDate } });
+        // S-04 (OD-28): the month travels only for a 13-17 date, after the screen said why it is kept.
+        const response = await api<Screening>('/auth/age-screen', { token, body: birthMonth ? { birthDate, birthMonth } : { birthDate } });
         if (stale()) return;
         setSaving(false);
         if (response.error || !validState(response.data) || response.data.required) {

@@ -10,6 +10,7 @@ import { ForgotPasswordScreen, OAuthCallbackScreen, ResetPasswordScreen, Upgrade
 import { VerifyParentScreen } from './VerifyParentScreen';
 import { OnboardingFlow } from './OnboardingFlow';
 import { AgeScreen } from './AgeScreen';
+import { ageFromParts } from './ageFromParts';
 import { KidSuspendedScreen } from './KidSuspendedScreen';
 import { IdDocumentField } from './IdDocumentField';
 
@@ -117,6 +118,25 @@ describe('A2 Sign up', () => {
     fireEvent.click(screen.getByRole('button', { name: c.authSignup.submit }));
     expect(onSubmit).toHaveBeenCalledWith({ displayName: 'Ana', email: 'ana@example.test', password: 'long-enough', birthDate: '1990-02-28', parentIntent: true });
     expect(undeclaredText(container)).toEqual([]);
+  });
+
+  it('S-04: a 13-17 date says the account moves to adult at 18 and sends its month', () => {
+    const onSubmit = vi.fn();
+    inRoot(<SignupScreen locale="en-US" google={noGoogle} view={{ kind: 'form', pending: false, errorCode: null }} initialParentIntent={false}
+      onSubmit={onSubmit} onStartGuest={vi.fn()} />);
+    const c = copy();
+    const year = String(new Date().getUTCFullYear() - 14);
+    fireEvent.change(screen.getByLabelText(c.authSignup.name), { target: { value: 'Ana' } });
+    fireEvent.change(screen.getByLabelText(c.authCommon.email), { target: { value: 'ana@example.test' } });
+    fireEvent.change(screen.getByLabelText(c.authCommon.password), { target: { value: 'long-enough' } });
+    expect(screen.queryByText(c.authSignup.teenMonth)).toBeNull();
+    fireEvent.change(screen.getByLabelText(c.authCommon.day), { target: { value: '1' } });
+    fireEvent.change(screen.getByLabelText(c.authCommon.month), { target: { value: '1' } });
+    fireEvent.change(screen.getByLabelText(c.authCommon.year), { target: { value: year } });
+    expect(screen.getByText(c.authSignup.teenMonth)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: c.authSignup.submit }));
+    expect(onSubmit).toHaveBeenCalledWith({ displayName: 'Ana', email: 'ana@example.test', password: 'long-enough', birthDate: `${year}-01-01`,
+      birthMonth: `${year}-01`, parentIntent: false });
   });
 
   it('says where the confirmation went, the email as user data', () => {
@@ -314,6 +334,38 @@ describe('the age question (A.3) and the paused account (A.1)', () => {
     expect(container.querySelectorAll('main')).toHaveLength(1);
     expect(container.querySelector('[data-shell="single-state"]')).toBeNull();
     expect(container.querySelectorAll('.lf-age-date input')).toHaveLength(3);
+  });
+
+  it('E.4 and S-04: says the answer is kept, and names the move at 18 only for a 13-17 date', () => {
+    const onSubmit = vi.fn();
+    const { container } = render(<AgeScreen copy={ageCopy} locale="en-US" dark={false} state="form" {...handlers} onSubmit={onSubmit} />);
+    expect(screen.getByText(ageCopy.locked)).toBeInTheDocument();
+    const type = (day: string, month: string, year: string) => {
+      fireEvent.change(screen.getByLabelText(ageCopy.day), { target: { value: day } });
+      fireEvent.change(screen.getByLabelText(ageCopy.month), { target: { value: month } });
+      fireEvent.change(screen.getByLabelText(ageCopy.year), { target: { value: year } });
+    };
+    const thisYear = new Date().getUTCFullYear();
+    type('1', '1', String(thisYear - 8));
+    expect(screen.queryByText(ageCopy.teenMonth)).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: ageCopy.continue }));
+    expect(onSubmit).toHaveBeenLastCalledWith(`${thisYear - 8}-01-01`);
+    type('1', '1', String(thisYear - 30));
+    expect(screen.queryByText(ageCopy.teenMonth)).toBeNull();
+    type('1', '1', String(thisYear - 16));
+    expect(screen.getByText(ageCopy.teenMonth)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: ageCopy.continue }));
+    expect(onSubmit).toHaveBeenLastCalledWith(`${thisYear - 16}-01-01`, `${thisYear - 16}-01`);
+    expect(undeclaredText(container)).toEqual([]);
+  });
+
+  it('ageFromParts counts whole years and refuses a date that does not exist or has not happened', () => {
+    const now = new Date('2026-09-27T12:00:00Z');
+    expect(ageFromParts('27', '9', '2013', now)).toBe(13);
+    expect(ageFromParts('28', '9', '2013', now)).toBe(12);
+    expect(ageFromParts('31', '2', '2010', now)).toBeNull();
+    expect(ageFromParts('1', '1', '2030', now)).toBeNull();
+    expect(ageFromParts('', '1', '2010', now)).toBeNull();
   });
 
   it('the paused-account screen offers the support address as a link a parent can press', () => {

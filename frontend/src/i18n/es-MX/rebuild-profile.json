@@ -2,6 +2,7 @@
   "analyticsChoice": {
     "title": "Datos de uso opcionales",
     "purpose": "Nos ayudan a mejorar LittleFounders.",
+    "experiment": "También deja que el Mentor pruebe contigo dos estilos de pistas.",
     "events": "Registramos visitas, clics, actividad en lecciones y tiempo de uso.",
     "lessons": "La actividad incluye intentos, pistas y lecciones terminadas.",
     "excluded": "Estos eventos no incluyen mensajes, grabaciones de voz ni contraseñas.",
@@ -510,5 +511,12 @@
     "failed": "Este cambio no se guardó. Inténtalo de nuevo.",
     "offline": "No tienes conexión. No se guardó nada.",
     "notEligible": "Esta opción no está disponible para tu cuenta ahora."
+  },
+  "ageRecord": {
+    "title": "Tu grupo de edad",
+    "teenMonth": "Mes de nacimiento guardado. A los 18, tu cuenta pasa a ajustes de adulto.",
+    "teenBand": "Tu grupo de edad se guardó como 13 a 17.",
+    "adultByMonth": "Cumpliste 18, así que tu cuenta ya usa ajustes de adulto.",
+    "locked": "No puedes cambiar esto por tu cuenta."
   }
 }

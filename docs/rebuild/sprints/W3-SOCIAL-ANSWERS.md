@@ -52,3 +52,33 @@
 - Deploy order when shipped: Core (accepts the three new sweep counts) before `cooperative_goals_retention`; the two other migrations are expand.
 - Browser capture, text-fit, proportion and copy-budget audits of `/learn/together` and the Family card; human visual and copy review; Stage 3 Safety/Trust review of the mechanic; acceptance and release.
 - The owner questions above.
+
+## W3S.2: UI for the remaining owner answers (S-03, S-04, S-06, M-12)
+
+The server contracts are W3A's (see [W3-OWNER-ANSWERS.md](W3-OWNER-ANSWERS.md)); this checkpoint puts them on rebuilt screens and adds the two display hints Core needed for M-12. No migration.
+
+| Answer | What was built | Where |
+|---|---|---|
+| S-03 (OD-27 (2)) | Already on the tree from the W2 profile lane (`80ec5406`): the Settings switch "Let people find my profile" appears only when `GET /profile` says `social.discoverable.canChoose` (a 16-17-year-old with age proof and an unflagged profile) or while it is on; it states who can see the profile, that people still ask before following and nobody can message, and asks before turning it on. Re-read against the contract; nothing to change. | `frontend/src/rebuild/account/DiscoverableCard.tsx`, `frontend/src/routes/app/profile/DiscoverableSetting.tsx` |
+| S-04 (OD-28, E.4) | The age screen now says the answer cannot be changed later (every age) and, once the typed date reads 13 to 17, that the account moves to adult settings at 18; only then is `birthMonth` (`YYYY-MM` of the date) sent with `birthDate`. Sign-up does the same. Settings shows a read-only age card to a self-managed teen (month kept / age group kept / moved to adult at 18) with no control, from `GET /auth/age-screen`; nobody else sees it. | `frontend/src/rebuild/identity/{AgeScreen.tsx,ageFromParts.ts,SignInScreens.tsx}`, `frontend/src/auth/{RequireAgeScreen.tsx,AuthContext.tsx}`, `frontend/src/rebuild/account/AgeRecordCard.tsx`, `frontend/src/routes/app/profile/{AgeRecordSetting.tsx,SettingsRoute.tsx}`; copy `ageScreen.locked/teenMonth`, `authSignup.teenMonth`, `ageRecord.*` |
+| S-06 (OD-28) | The Family console's flagged-username change (built by W2F, server by W3A) now reads `sessionsEnded`: the Tutor is told the child signs in again with the new name, or that an older sign-in may stay open when Core could not end the sessions. | `frontend/src/rebuild/family/console/{ChildControls.tsx,consoleApi.ts}`; copy `familyChildAccount.usernameSignInAgain/usernameStillSignedIn` |
+| M-12 (OD-26) | OD-26 names the consent: the teen's own usage-data opt-in and, for a 10-12 child, the guardian's usage-data consent. Both switches now say, beside the switch and before it is turned on, that the same consent lets the Mentor test two hint styles with the learner. Core decides when that is true: `dialogueExperiment` on `GET/PUT /auth/analytics-preference` (the teen band, or a teen who moved to adult by birth month, is in `MENTOR_DIALOGUE_EXPERIMENT_BANDS`) and per child on `GET /family/kids` (a parent-created child whose profile birth date proves 10 to 12, or 18+, with that band configured; never 6-9 and never a parent-created teen, who also needs an own opt-in they do not have). A display hint only; `resolveDialogueCalibration` still re-decides every session. A child just added with a 10-12 birth date shows the line until the list is read again (over-telling is the safe side). | `backend/src/services/dialogueExperimentNotice.ts`, `backend/src/routes/{auth.ts,family.ts}`, `frontend/src/rebuild/privacy/AnalyticsChoice.tsx`, `frontend/src/routes/app/profile/TeenAnalyticsSetting.tsx`, `frontend/src/rebuild/family/console/{ChildControls.tsx,consoleApi.ts}`; copy `analyticsChoice.experiment`, `familyChildConsent.insightsExperiment` |
+
+All new UI uses the shared controls (`Card`, `Copy`, `Switch`), `data-copy-role` on every text, tokens only, and copy in EN, es-MX and pt-BR within the Copy Budget (age screen at 6-9, the age card and the teen switch at 13-17, the console at adult). The profile preview (`?screen=account-settings&state=teen`) shows the age card and the switch with the test line for the pre-merge audits.
+
+### Verification (lean, speed mode)
+
+- Core: `analyticsPreference.test.ts` (the hint is true for a teen while the teen band is open, false when an operator narrows the bands to `adult`, and false for a kid-role teen, an adult who declared as an adult and an under-13 origin) and `family.test.ts` (the exact-shape whitelist now includes `dialogueExperiment`; 10, 11 and 12 are marked, 8, 9, 13 and 17 are not, and a self-registered teen who linked the Tutor never is). `type-check` and `lint` green.
+- Frontend: `identity.test.tsx` (age screen lock line, teen line only for 13-17, `birthMonth` only then; `ageFromParts`; sign-up sends the month for a teen), `RequireAgeScreen.test.tsx` (the guard's body), `AgeRecordCard.test.tsx` (each state, nobody else, no control; the switch's test line only when marked), `FamilyConsole.test.tsx` (the test line only for a marked child; the rename notice for `sessionsEnded` true, false and absent), `consoleApi.test.ts`, `copy-budget/{site,profile,family}.test.ts`. `type-check` and `lint` green.
+- Root: `spec:check`, `secrets:check`, i18n gate.
+- Not run (orchestrator, per speed mode): browser matrices, `audit:rebuild`, full suites, a screenshot.
+
+### Conservative defaults taken (owner questions)
+
+8. **S-04 has no opt-out.** The merged server keeps a teen's birth month derived from the date whether or not `birthMonth` is sent (W2S's design stands, per the W3 merge note), so the screens disclose it instead of offering a choice. Offering "don't keep my month" would need a server change and would leave that teen in the teen tier after 18.
+9. **M-12 consent is the usage-data consent, disclosed.** OD-26 names the analytics consent; no separate experiment-only switch was added. A parent-created 13-17-year-old stays outside C.17 (their own opt-in does not exist).
+10. **The age card** shows no birth month itself (Core does not return it), only what was kept and when the move happens.
+
+### Remaining
+
+- Browser capture, text-fit, proportion and copy-budget audits of the changed age screen, sign-up, Settings (age card, switch line) and Family console lines; human visual and copy review; acceptance and release.

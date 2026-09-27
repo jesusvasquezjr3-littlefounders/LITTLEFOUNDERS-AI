@@ -10,7 +10,8 @@ import en from '@/i18n/en-US/rebuild-profile.json';
 import es from '@/i18n/es-MX/rebuild-profile.json';
 import pt from '@/i18n/pt-BR/rebuild-profile.json';
 
-interface Preference { canManage: boolean; enabled: boolean; disclosed: boolean }
+// `dialogueExperiment` (M-12, OD-26): this toggle is also the consent for the Mentor's hint-style test; absent = not said.
+interface Preference { canManage: boolean; enabled: boolean; disclosed: boolean; dialogueExperiment?: boolean }
 const valid = (value: Preference | null): value is Preference => !!value && typeof value.canManage === 'boolean' && typeof value.enabled === 'boolean' && typeof value.disclosed === 'boolean';
 export function TeenAnalyticsSetting() {
   const { session, isGuest } = useAuth();
@@ -84,6 +85,6 @@ function AccountAnalyticsSetting() {
   if (!loading && !error && preference?.canManage === false) return null;
   const locale = i18n.resolvedLanguage ?? 'en-US';
   return <AnalyticsChoice copy={(locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en).analyticsChoice}
-    locale={locale} dark={isDark} enabled={preference?.enabled ?? false} loading={loading} saving={saving} error={error}
+    locale={locale} dark={isDark} enabled={preference?.enabled ?? false} experiment={preference?.dialogueExperiment === true} loading={loading} saving={saving} error={error}
     onToggle={() => void toggle()} onRetry={() => setAttempt(value => value + 1)} />;
 }

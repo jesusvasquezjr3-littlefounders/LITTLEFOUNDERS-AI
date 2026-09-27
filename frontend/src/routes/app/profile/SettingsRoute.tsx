@@ -15,6 +15,7 @@ import { TeenMemoryReviewSetting } from './TeenMemoryReviewSetting';
 import { DispositionSetting } from './DispositionSetting';
 import { AccountDeletionSetting } from './AccountDeletionSetting';
 import { DiscoverableSetting, parseDiscoverable, type DiscoverableState } from './DiscoverableSetting';
+import { AgeRecordSetting } from './AgeRecordSetting';
 
 /*
  * /profile/settings (P3): the data plane of the rebuilt Settings page.
@@ -31,6 +32,8 @@ import { DiscoverableSetting, parseDiscoverable, type DiscoverableState } from '
  *   found      OD-27 (2): a 16-17-year-old's choice to be found, offered only
  *              where GET /profile's `social.discoverable.canChoose` says so
  *              (DiscoverableSetting writes PUT /profile/discoverable).
+ *   age        AgeRecordSetting reads GET /auth/age-screen and shows the
+ *              locked declaration (S-04, E.4) to a self-managed teen only.
  *   panels     the rebuilt panels with their own data planes: the analytics
  *              choice (H.1), the memory self-review (OD-18), how the Mentor
  *              adapts (C.7), the mode and sign-out (Lane 0), account deletion
@@ -212,6 +215,7 @@ function ScopedSettings() {
     <BlockedCard copy={copy.settings} view={blocked} onUnblock={(user) => void unblock(user)} onRetry={() => setBlockedAttempt((value) => value + 1)} />
     <SettingsPanels>
       {isGuest ? null : <DiscoverableSetting key={`${attempt}`} copy={copy.discoverable} initial={discoverable} />}
+      {isGuest ? null : <AgeRecordSetting copy={copy.ageRecord} />}
       <TeenAnalyticsSetting />
       <TeenMemoryReviewSetting />
       <DispositionSetting />

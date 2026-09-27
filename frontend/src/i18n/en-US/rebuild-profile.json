@@ -2,6 +2,7 @@
   "analyticsChoice": {
     "title": "Optional usage data",
     "purpose": "This helps us improve LittleFounders.",
+    "experiment": "It also lets the Mentor test two hint styles with you.",
     "events": "We record page visits, clicks, lesson activity, and time spent.",
     "lessons": "Lesson activity includes attempts, hints, and completions.",
     "excluded": "These events contain no message text, voice recordings, or passwords.",
@@ -510,5 +511,12 @@
     "failed": "This change was not saved. Try again.",
     "offline": "You are offline. Nothing was saved.",
     "notEligible": "This choice is not available for your account now."
+  },
+  "ageRecord": {
+    "title": "Your age group",
+    "teenMonth": "Birth month saved. At 18, your account moves to adult settings.",
+    "teenBand": "Your age group is saved as 13 to 17.",
+    "adultByMonth": "You turned 18, so your account uses adult settings now.",
+    "locked": "You can't change this yourself."
   }
 }

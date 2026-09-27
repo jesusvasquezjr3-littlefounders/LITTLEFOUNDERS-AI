@@ -53,6 +53,8 @@ export interface SignupInput {
   parentIntent: boolean;
   /** ISO date. Core SCREENS on it and discards it; it is never persisted. */
   birthDate: string;
+  /** S-04 (OD-28): `YYYY-MM` of `birthDate`, sent only for a 13-17 date; Core keeps it so the teen moves to adult at 18. */
+  birthMonth?: string;
 }
 
 interface SessionPayload {

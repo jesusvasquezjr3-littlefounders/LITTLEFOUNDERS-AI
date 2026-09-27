@@ -1,5 +1,6 @@
 import { allowsSelfManagedAnalytics, readAnalyticsPreference, setAnalyticsPreference } from '../services/analyticsPreference.js';
 import { getRolesForGate } from '../services/insights.js';
+import { ownOptInEnrols } from '../services/dialogueExperimentNotice.js';
 import { Router } from 'express';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
@@ -182,26 +183,31 @@ export function authRouter(): Router {
     // S-04 (OD-28): a teen who moved to the adult tier by birth month keeps the
     // toggle, because their teen choice still decides (allowsSelfManagedAnalytics).
     const teenChoiceApplies = age.ageBand === '13_to_17' || age.adultByBirthMonth === true;
-    return !user.isGuest && !age.required && !age.protectedOrigin && teenChoiceApplies && !roles.includes('kid');
+    const eligible = !user.isGuest && !age.required && !age.protectedOrigin && teenChoiceApplies && !roles.includes('kid');
+    // M-12 (OD-26): this toggle is also the consent that admits the account to
+    // the C.17 dialogue-style experiment; the screen says so only when it does.
+    return { eligible, dialogueExperiment: eligible && ownOptInEnrols(age, getConfig().MENTOR_DIALOGUE_EXPERIMENT_BANDS) };
   }
   router.get('/analytics-preference', requireAuth, async (_req, res) => {
-    const eligible = await analyticsManagement(res);
-    if (eligible === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve analytics eligibility');
-    if (!eligible) return ok(res, { canManage: false, enabled: false, disclosed: false });
+    const management = await analyticsManagement(res);
+    if (management === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve analytics eligibility');
+    if (!management.eligible) return ok(res, { canManage: false, enabled: false, disclosed: false, dialogueExperiment: false });
     const preference = await readAnalyticsPreference(authedUser(res).id);
-    return preference ? ok(res, { canManage: true, ...preference }) : fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read analytics preference');
+    return preference
+      ? ok(res, { canManage: true, ...preference, dialogueExperiment: management.dialogueExperiment })
+      : fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read analytics preference');
   });
   router.put('/analytics-preference', requireAuth, async (req, res) => {
     const body = z.object({ enabled: z.boolean() }).strict().safeParse(req.body);
     if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose whether to share optional analytics');
-    const eligible = await analyticsManagement(res);
-    if (eligible === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve analytics eligibility');
-    if (!eligible) return fail(res, 403, 'FORBIDDEN', 'This account cannot manage teen analytics');
+    const management = await analyticsManagement(res);
+    if (management === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve analytics eligibility');
+    if (!management.eligible) return fail(res, 403, 'FORBIDDEN', 'This account cannot manage teen analytics');
     const user = authedUser(res);
     if (await setAnalyticsPreference(user.id, body.data.enabled) !== body.data.enabled) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not save analytics preference');
     const confirmed = await readAnalyticsPreference(user.id);
     if (!confirmed?.disclosed || confirmed.enabled !== body.data.enabled) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not confirm analytics preference');
-    return ok(res, { canManage: true, ...confirmed });
+    return ok(res, { canManage: true, ...confirmed, dialogueExperiment: management.dialogueExperiment });
   });
 
   router.get('/age-screen', requireAuth, async (_req, res) => {

@@ -160,6 +160,8 @@
     "usernameFlagged": "Este usuario podría ayudar a extraños a encontrarle. Elige otro.",
     "saveUsername": "Guardar usuario",
     "usernameSaved": "Guardado. {name} ahora entra como {username}.",
+    "usernameSignInAgain": "Debe volver a entrar con el nuevo nombre.",
+    "usernameStillSignedIn": "Una sesión anterior puede seguir abierta hasta que salga.",
     "usernameFixed": "Solo cambia un usuario marcado.",
     "newPassphrase": "Nueva contraseña",
     "savePassphrase": "Guardar contraseña",
@@ -179,6 +181,7 @@
   "familyChildConsent": {
     "insights": "Compartir datos de uso",
     "insightsHelp": "Nos ayuda a mejorar las lecciones. Apagado, no se envía nada.",
+    "insightsExperiment": "Esto también deja que el Mentor pruebe dos estilos de pistas con {name}.",
     "on": "Activado",
     "off": "Apagado",
     "insightsFailed": "No se guardó. Intenta de nuevo.",

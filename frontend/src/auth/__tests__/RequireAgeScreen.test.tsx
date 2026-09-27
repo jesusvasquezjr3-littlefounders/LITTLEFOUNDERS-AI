@@ -85,6 +85,20 @@ describe('mandatory age screen', () => {
     expect(mocks.api).toHaveBeenLastCalledWith('/auth/age-screen', { token: 'synthetic', body: { birthDate: '2018-02-01' } });
     expect(mocks.refresh).toHaveBeenCalled();
   });
+  it('S-04: sends the birth month only for a 13-17 date, after saying what it is kept for', async () => {
+    const teenCleared = { data: { required: false, ageBand: '13_to_17', protectedOrigin: false }, error: null };
+    mocks.api.mockResolvedValueOnce(pending).mockResolvedValueOnce(teenCleared);
+    mount();
+    await screen.findByLabelText('Day');
+    const year = String(new Date().getUTCFullYear() - 15);
+    for (const [name, value] of [['Day', '1'], ['Month', '1'], ['Year', year]] as const) {
+      fireEvent.change(screen.getByLabelText(name), { target: { value } });
+    }
+    expect(screen.getByText('At 18, your account moves to adult settings.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    expect(await screen.findByText('Protected content')).toBeInTheDocument();
+    expect(mocks.api).toHaveBeenLastCalledWith('/auth/age-screen', { token: 'synthetic', body: { birthDate: `${year}-01-01`, birthMonth: `${year}-01` } });
+  });
   it('fails closed on malformed responses, offers retry and keeps sign-out reachable', async () => {
     mocks.api.mockResolvedValueOnce({ data: {}, error: null }).mockResolvedValueOnce(cleared);
     mount();

@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { Button, Copy, InlineNotice, LoadingState, SingleStateScreen, TextField } from '../design/controls';
 import type { Locale } from '../design/copyBudget';
 import { rebuildNamespaceCopy } from '../../i18n/rebuild';
+import { ageFromParts } from './ageFromParts';
 import '../design/tokens.css';
 import '../design/system.css';
 import './ageScreen.css';
@@ -24,21 +25,31 @@ export interface AgeScreenCopy {
   title: string; help: string; day: string; month: string; year: string;
   continue: string; exit: string; loading: string; saving: string;
   retry: string; unavailable: string; invalid: string;
+  /** E.4: the answer is kept once; no one changes it from their own account. */
+  locked: string;
+  /** S-04 (OD-28): shown once the date reads 13 to 17, before the month is sent. */
+  teenMonth: string;
 }
 
 type AgeScreenProps = {
   copy: AgeScreenCopy; locale: string; dark: boolean;
   state: 'loading' | 'error' | 'form' | 'saving'; error?: 'invalid' | 'unavailable';
-  onSubmit: (birthDate: string) => void; onRetry: () => void; onExit: () => void;
+  /** `birthMonth` (`YYYY-MM`) only for a date that reads 13 to 17, after the screen said what it is kept for. */
+  onSubmit: (birthDate: string, birthMonth?: string) => void; onRetry: () => void; onExit: () => void;
 };
 
 function AgeQuestion({ copy, state, error, onSubmit, onRetry, onExit }: Omit<AgeScreenProps, 'locale' | 'dark'>) {
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
+  const age = ageFromParts(day, month, year);
+  // S-04: a 13-17 date keeps its month and year so the account moves to adult at 18 (never the day).
+  const teen = age !== null && age >= 13 && age <= 17;
   function submit(event: FormEvent) {
     event.preventDefault();
-    onSubmit(`${year.padStart(4, '0')}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
+    const birthMonth = `${year.padStart(4, '0')}-${month.padStart(2, '0')}`;
+    const birthDate = `${birthMonth}-${day.padStart(2, '0')}`;
+    if (teen) onSubmit(birthDate, birthMonth); else onSubmit(birthDate);
   }
   return <div className="lf-age-screen" data-surface="app" data-screen="age-screen" data-age-band="6-9">
     <Copy role="heading" as="h1">{copy.title}</Copy>
@@ -48,11 +59,13 @@ function AgeQuestion({ copy, state, error, onSubmit, onRetry, onExit }: Omit<Age
         <Button variant="accent" onClick={onRetry}>{copy.retry}</Button>
       </> : <form onSubmit={submit} className="lf-age-form" aria-busy={state === 'saving'}>
         <Copy role="body">{copy.help}</Copy>
+        <Copy role="body">{copy.locked}</Copy>
         <div className="lf-age-date">
           <TextField label={copy.day} inputMode="numeric" pattern="[0-9]{1,2}" maxLength={2} required autoComplete="off" value={day} onChange={e => setDay(e.target.value)} disabled={state === 'saving'} />
           <TextField label={copy.month} inputMode="numeric" pattern="[0-9]{1,2}" maxLength={2} required autoComplete="off" value={month} onChange={e => setMonth(e.target.value)} disabled={state === 'saving'} />
           <TextField label={copy.year} inputMode="numeric" pattern="[0-9]{4}" maxLength={4} required autoComplete="off" value={year} onChange={e => setYear(e.target.value)} disabled={state === 'saving'} />
         </div>
+        {teen ? <Copy role="body">{copy.teenMonth}</Copy> : null}
         {error && <InlineNotice tone="error" live>{copy[error]}</InlineNotice>}
         <Button type="submit" variant="accent" pending={state === 'saving'} pendingLabel={copy.saving}>{copy.continue}</Button>
       </form>}
