@@ -401,6 +401,11 @@ describe('S7 Generation: run history, trends and the coach', () => {
     expect(table).toHaveTextContent(c.generation.option.stage_reviewing);
     expect(table).toHaveTextContent(c.generation.body.salvaged);
     expect(await screen.findByRole('heading', { name: c.generation.heading.timeline })).toBeInTheDocument();
+    // The series are the design-system TrendChart (named figure, written summary, Show as table); a stage's small multiple is a sparkline named in words.
+    const timeline = screen.getByRole('figure', { name: c.generation.heading.timeline });
+    expect(timeline).toHaveTextContent(/Latest .+, highest /);
+    expect(within(timeline).getByRole('button', { name: c.chart.action.table })).toBeInTheDocument();
+    expect(screen.getAllByRole('img', { name: /Latest .+, highest / }).length).toBeGreaterThan(0);
     fireEvent.click(within(within(table).getAllByRole('row')[3]!).getByRole('button', { name: c.common.action.open }));
     const details = await screen.findByRole('dialog', { name: c.generation.heading.slot });
     expect(await within(details).findByText(/kid_safety 2.1 below floor/)).toBeInTheDocument();

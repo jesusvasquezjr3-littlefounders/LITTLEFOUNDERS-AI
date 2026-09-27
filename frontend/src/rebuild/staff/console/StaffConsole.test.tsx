@@ -6,7 +6,7 @@ import type { Locale } from '../../design/copyBudget';
 import en from '@/i18n/en-US/rebuild-staff.json';
 import enCore from '@/i18n/en-US/rebuild-core.json';
 import { auditPath, reviewDue, staffViewer, type StaffApi, type StaffResult } from './staffConsoleApi';
-import { chartSlice } from './DailyChart';
+import { chartSlice, DailyChart } from './DailyChart';
 import { fixtureApi } from './staffConsoleFixtures';
 import { StaffOverview } from './StaffOverview';
 import { StaffUsers } from './StaffUsers';
@@ -473,6 +473,23 @@ describe('the daily chart figures', () => {
   it('cumulative: a running total over the chosen period only', () => {
     expect(chartSlice(points, '7d', 'cumulative').values).toEqual([1, 5, 7]);
     expect(chartSlice([...Array(40)].map((_, i) => ({ date: `d${i}`, count: 1 })), '30d', 'daily').visible).toHaveLength(30);
+  });
+  it('draws on the design-system TrendChart: series hue (never primary), the average as a named rule, keyboard reading and a table', () => {
+    const { container } = render(<Frame><DailyChart points={points} seriesLabel="Emails" defaultPeriod="all" /></Frame>);
+    const figure = screen.getByRole('figure', { name: 'Emails' });
+    expect(figure).toHaveTextContent('Peak 4 on');
+    expect(container.querySelectorAll('.lf-viz-column.lf-viz-series-1')).toHaveLength(3);
+    expect(container.querySelector('.lf-staff-plot-bar')).toBeNull();
+    expect(within(figure).getByText(/^Average: /)).toBeInTheDocument();
+    const readout = container.querySelector('.lf-viz-readout')!;
+    expect(readout).toHaveAttribute('data-readout', '2026-09-03');
+    fireEvent.keyDown(within(figure).getByRole('group'), { key: 'Home' });
+    expect(readout).toHaveAttribute('data-readout', '2026-09-01');
+    fireEvent.click(within(figure).getByRole('button', { name: c.chart.action.table }));
+    expect(within(figure).getByRole('table')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('radio', { name: c.chart.option.cumulative }));
+    expect(screen.getByRole('figure', { name: `Emails, ${c.chart.option.cumulative}` })).toHaveTextContent('7 in all');
+    expect(container.querySelector('.lf-viz-line')).not.toBeNull();
   });
   it('page titles are the staff navigation labels', () => {
     expect(nav.users).toBe('Users');

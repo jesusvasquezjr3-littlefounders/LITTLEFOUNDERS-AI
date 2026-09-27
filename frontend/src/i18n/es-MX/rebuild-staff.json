@@ -305,7 +305,12 @@
         "averageLine": "Promedio",
         "day": "Día",
         "missing": "Sin medición",
-        "keys": "Las flechas leen cada punto."
+        "keys": "Las flechas leen cada punto.",
+        "summaryDaily": "Columnas por día. Máximo {n} el {date}.",
+        "summaryCumulative": "Total acumulado como línea: {n} en total.",
+        "summarySeries": "Columnas. Último {latest}, máximo {peak}.",
+        "summaryLatest": "Último {latest}, máximo {peak}.",
+        "point_series": "Punto"
       },
       "action": {
         "table": "Ver como tabla",

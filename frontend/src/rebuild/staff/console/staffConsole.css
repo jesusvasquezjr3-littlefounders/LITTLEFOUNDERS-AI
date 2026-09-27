@@ -90,14 +90,10 @@
 /* The daily chart: one hue, thin bars, a recessive base, the average as a dashed rule. */
 .lf-rebuild .lf-staff-chart { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
 .lf-rebuild .lf-staff-chart-controls { display: grid; gap: var(--spacing-3); }
-.lf-rebuild .lf-staff-plot { display: grid; gap: var(--spacing-2); margin: 0; }
-.lf-rebuild .lf-staff-plot-svg { display: block; inline-size: 100%; block-size: calc(var(--spacing-32) + var(--spacing-12)); touch-action: pan-y; }
-.lf-rebuild .lf-staff-plot-bar { fill: var(--primary); }
-.lf-rebuild .lf-staff-plot-bar[data-active='true'] { fill: var(--primary-strong); }
-.lf-rebuild .lf-staff-plot-base { stroke: var(--outline); stroke-width: 1; vector-effect: non-scaling-stroke; }
-.lf-rebuild .lf-staff-plot-average { stroke: var(--content-muted); stroke-width: 1; stroke-dasharray: 4 4; vector-effect: non-scaling-stroke; }
-.lf-rebuild .lf-staff-plot-caption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--spacing-1) var(--spacing-3); font: var(--type-caption); color: var(--content-muted); }
-.lf-rebuild .lf-staff-plot-readout { font: var(--type-label); font-variant-numeric: tabular-nums; }
+.lf-rebuild .lf-staff-multiple { display: grid; gap: var(--spacing-1); min-inline-size: 0; }
+.lf-rebuild .lf-staff-multiple-caption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--spacing-1) var(--spacing-3); margin: 0; font: var(--type-caption); color: var(--content-muted); }
+.lf-rebuild .lf-staff-multiple-caption > [data-copy-role='data'] { color: var(--content); font-variant-numeric: tabular-nums; }
+.lf-rebuild .lf-staff-multiple .lf-viz-spark { display: block; inline-size: 100%; block-size: var(--spacing-12); }
 
 /* ---- W2T.2: Content, Generation and Mentor quality --------------------------------------------------- */
 
@@ -165,7 +161,6 @@
 .lf-rebuild .lf-staff-track-id { font: var(--type-label); }
 .lf-rebuild .lf-staff-tag { font: var(--type-caption); color: var(--content-muted); }
 .lf-rebuild .lf-staff-multiples { display: grid; gap: var(--spacing-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); }
-.lf-rebuild .lf-staff-plot[data-compact='true'] .lf-staff-plot-svg { block-size: var(--spacing-16); }
 .lf-rebuild .lf-staff-preview-loading { font: var(--type-body); color: var(--content-muted); }
 
 /* ---- W2T.3: Analytics & Health, Learning intel (with Insights) ------------------------------------ */

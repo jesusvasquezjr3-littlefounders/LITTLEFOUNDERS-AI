@@ -305,7 +305,12 @@
         "averageLine": "Média",
         "day": "Dia",
         "missing": "Sem medição",
-        "keys": "As setas leem cada ponto."
+        "keys": "As setas leem cada ponto.",
+        "summaryDaily": "Colunas por dia. Pico de {n} em {date}.",
+        "summaryCumulative": "Total acumulado em linha: {n} no total.",
+        "summarySeries": "Colunas. Último {latest}, maior {peak}.",
+        "summaryLatest": "Último {latest}, maior {peak}.",
+        "point_series": "Ponto"
       },
       "action": {
         "table": "Ver como tabela",

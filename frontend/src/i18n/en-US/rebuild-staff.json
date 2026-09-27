@@ -305,7 +305,12 @@
         "averageLine": "Average",
         "day": "Day",
         "missing": "Not measured",
-        "keys": "Arrow keys read each point."
+        "keys": "Arrow keys read each point.",
+        "summaryDaily": "Columns per day. Peak {n} on {date}.",
+        "summaryCumulative": "Running total as a line: {n} in all.",
+        "summarySeries": "Columns. Latest {latest}, highest {peak}.",
+        "summaryLatest": "Latest {latest}, highest {peak}.",
+        "point_series": "Point"
       },
       "action": {
         "table": "Show as table",
