@@ -247,7 +247,7 @@ export function AutonomyRollback({ api }: { api: StaffApi }) {
                   options={options.map((level) => ({ value: String(level), label: fill(t.body.levelN, { n: String(level) }) }))} />
                 <TextField label={t.body.reason} help={t.body.reasonHelp} value={reason} maxLength={LOWER_REASON_MAX}
                   error={reasonChecked ? reasonError : undefined} errorLive onChange={(event) => setReason(event.target.value)} />
-                <div className="lf-staff-actions"><Button type="submit" variant="danger" aria-haspopup="dialog">{t.action.lower}</Button></div>
+                <div className="lf-staff-actions"><Button type="submit" aria-haspopup="dialog">{t.action.lower}</Button></div>
               </form>}
             {outcome === 'done' ? <InlineNotice tone="success" live>{t.body.lowered}</InlineNotice> : null}
             {failure ? <InlineNotice tone="error" live>{failure}</InlineNotice> : null}
@@ -321,7 +321,7 @@ export function MentorOwners({ api, data, roleNames, onChanged }: {
             {named.length === 0 ? <p data-copy-role="body" className="lf-staff-muted">{t.body.nobody}</p>
               : named.map((owner) => <div key={owner.userId} className="lf-staff-actions">
                 <p data-copy-role="data" className="ugc">{owner.displayName ?? shortId(owner.userId)} · {format.date(owner.assignedAt, copy.common.body.notAvailable)}</p>
-                <Button size="sm" variant="danger" aria-haspopup="dialog"
+                <Button size="sm" aria-haspopup="dialog"
                   onClick={() => setRemoving({ role: ownerRole, userId: owner.userId, name: owner.displayName ?? shortId(owner.userId) })}>{t.action.remove}</Button>
               </div>)}
           </li>;
