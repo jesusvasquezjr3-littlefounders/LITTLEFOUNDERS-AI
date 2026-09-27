@@ -27,6 +27,9 @@ describe('the owner-run spend ceiling (OD-23)', () => {
   it.each([
     ['src/cli.ts', ['--course', 'first-lemonade-stand'], /--max-usd/],
     ['src/trackCli.ts', ['--course', 'first-lemonade-stand'], /--budget-usd/],
+    // OD-28 (D-03): the paid add-only backfill and a confirmed restyle.
+    ['src/scripts/backfill-images.ts', ['--course', 'first-lemonade-stand'], /images:backfill: a paid run needs .*--max-usd/],
+    ['src/scripts/backfill-images.ts', ['--course', 'first-lemonade-stand', '--restyle-scenes', '--confirm-spend'], /--max-usd/],
   ])('%s refuses a paid run without a ceiling and exits 1', (entry, args, message) => {
     const result = spawnSync(process.execPath, ['--import', 'tsx', entry, ...args], {
       cwd: PACKAGE_ROOT,

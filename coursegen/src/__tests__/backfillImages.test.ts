@@ -48,10 +48,11 @@ describe('backfillImages orchestration', () => {
 
     const summary = await backfillImages(
       { listDocuments: async () => rows, illustrate, writeDocument },
-      { courseSlug: 'financial-education' },
+      { courseSlug: 'financial-education', maxUsd: 10 },
     );
 
-    expect(summary).toEqual({ scanned: 3, patched: 2, imagesGenerated: 3, imagesInherited: 0, imagesPlaced: 3, skipped: 1, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0, usdSpent: 0, stoppedOnBudget: false });
+    // 3 generated images at the $0.075 default (COST_QWEN_IMAGE_PER_IMAGE).
+    expect(summary).toEqual({ scanned: 3, patched: 2, imagesGenerated: 3, imagesInherited: 0, imagesPlaced: 3, skipped: 1, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0, usdSpent: 0.225, stoppedOnBudget: false });
     // Only a and c were written — b (0 images) was not.
     expect(writeDocument).toHaveBeenCalledTimes(2);
     expect(writeDocument.mock.calls.map((call) => call[0].lessonId)).toEqual(['a', 'c']);
@@ -64,7 +65,7 @@ describe('backfillImages orchestration', () => {
 
     await backfillImages(
       { listDocuments: async () => [row('a', 'es-MX', doc('stored'))], illustrate, writeDocument },
-      { courseSlug: 'c' },
+      { courseSlug: 'c', maxUsd: 10 },
     );
 
     expect(writeDocument).toHaveBeenCalledTimes(1);
@@ -76,7 +77,7 @@ describe('backfillImages orchestration', () => {
     expect(body.document).toBe(illustratedDoc);
   });
 
-  it('dry-run illustrates and reports would-be patches but performs NO writes', async () => {
+  it('dry-run illustrates reuse-only (zero spend) and reports would-be patches but performs NO writes', async () => {
     const writeDocument = vi.fn<BackfillDeps['writeDocument']>().mockResolvedValue(undefined);
     const illustrate = vi
       .fn<BackfillDeps['illustrate']>()
@@ -93,6 +94,8 @@ describe('backfillImages orchestration', () => {
     );
 
     expect(illustrate).toHaveBeenCalledTimes(2);
+    // OD-23/OD-28: a dry-run never reaches Prism's paid path.
+    for (const call of illustrate.mock.calls) expect(call[1]).toMatchObject({ reuseOnly: true });
     expect(writeDocument).not.toHaveBeenCalled(); // dry-run: zero writes
     // patched still counts what WOULD be written, so the operator sees the impact.
     expect(summary).toEqual({ scanned: 2, patched: 2, imagesGenerated: 4, imagesInherited: 0, imagesPlaced: 4, skipped: 0, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0, usdSpent: 0, stoppedOnBudget: false });
@@ -112,7 +115,7 @@ describe('backfillImages orchestration', () => {
         illustrate,
         writeDocument,
       },
-      { courseSlug: 'c' },
+      { courseSlug: 'c', maxUsd: 10 },
     );
 
     expect(writeDocument).not.toHaveBeenCalled();
@@ -133,7 +136,7 @@ describe('backfillImages orchestration', () => {
         writeDocument,
         log,
       },
-      { courseSlug: 'c' },
+      { courseSlug: 'c', maxUsd: 10 },
     );
 
     // Stopped after the first doc's not-configured result: no writes, nothing scanned.
@@ -149,7 +152,7 @@ describe('backfillImages orchestration', () => {
 
     const summary = await backfillImages(
       { listDocuments: async () => [], illustrate, writeDocument },
-      { courseSlug: 'empty' },
+      { courseSlug: 'empty', maxUsd: 10 },
     );
 
     expect(illustrate).not.toHaveBeenCalled();
@@ -255,7 +258,7 @@ describe('backfillImages style-version handshake', () => {
     const writeDocument = vi.fn<BackfillDeps['writeDocument']>();
 
     await expect(
-      backfillImages({ listDocuments, illustrate, writeDocument, probeStyleVersion }, { courseSlug: 'c' }),
+      backfillImages({ listDocuments, illustrate, writeDocument, probeStyleVersion }, { courseSlug: 'c', maxUsd: 10 }),
     ).rejects.toThrow(/style-version mismatch/);
 
     // Hard-failed before ANY paid Prism generate call — or even the Vault listing.
@@ -273,7 +276,7 @@ describe('backfillImages style-version handshake', () => {
     await expect(
       backfillImages(
         { listDocuments: async () => [row('a', 'es-MX', doc('A'))], illustrate, writeDocument, probeStyleVersion },
-        { courseSlug: 'c' },
+        { courseSlug: 'c', maxUsd: 10 },
       ),
     ).rejects.toThrow(/could not verify/);
 
@@ -289,7 +292,7 @@ describe('backfillImages style-version handshake', () => {
 
     const summary = await backfillImages(
       { listDocuments: async () => [row('a', 'es-MX', doc('A'))], illustrate, writeDocument, probeStyleVersion },
-      { courseSlug: 'c' },
+      { courseSlug: 'c', maxUsd: 10 },
     );
 
     expect(probeStyleVersion).toHaveBeenCalledTimes(1);
@@ -513,6 +516,61 @@ describe('selectByIds — every id hop is bounded, not just the last one', () =>
  * to find out what a repair costs would have paid for the repair. Caught before
  * it billed anything; these tests keep it caught.
  */
+/*
+ * OD-28 (owner review D-03): every paid mode states the owner-approved USD
+ * ceiling, and the ceiling binds in the ordinary add-only pass too.
+ */
+describe('owner USD ceiling on every paid backfill (OD-28)', () => {
+  const rows = (n: number) => Array.from({ length: n }, (_, i) => row(`l${i}`, 'es-MX', doc(`D${i}`)));
+
+  it('refuses a paid add-only pass without --max-usd before the probe, the Vault read or any Prism call', async () => {
+    const listDocuments = vi.fn<BackfillDeps['listDocuments']>().mockResolvedValue(rows(1));
+    const illustrate = vi.fn<BackfillDeps['illustrate']>();
+    const writeDocument = vi.fn<BackfillDeps['writeDocument']>();
+    const probeStyleVersion = vi.fn<NonNullable<BackfillDeps['probeStyleVersion']>>();
+    for (const maxUsd of [undefined, 0, -5, Number.NaN, Number.POSITIVE_INFINITY]) {
+      await expect(
+        backfillImages({ listDocuments, illustrate, writeDocument, probeStyleVersion }, { courseSlug: 'c', maxUsd }),
+      ).rejects.toThrow(/images:backfill: a paid run needs the owner-approved USD ceiling \(--max-usd <n>\)/);
+    }
+    expect(probeStyleVersion).not.toHaveBeenCalled();
+    expect(listDocuments).not.toHaveBeenCalled();
+    expect(illustrate).not.toHaveBeenCalled();
+    expect(writeDocument).not.toHaveBeenCalled();
+  });
+
+  it('needs no ceiling for --dry-run or --reuse-only, which never reach the paid path', async () => {
+    const illustrate = vi.fn<BackfillDeps['illustrate']>().mockImplementation(async (document) => illustrated(0, document));
+    const deps = { listDocuments: async () => rows(2), illustrate, writeDocument: vi.fn().mockResolvedValue(undefined) };
+    await expect(backfillImages(deps, { courseSlug: 'c', dryRun: true })).resolves.toMatchObject({ scanned: 2, usdSpent: 0 });
+    await expect(backfillImages(deps, { courseSlug: 'c', reuseOnly: true })).resolves.toMatchObject({ scanned: 2, usdSpent: 0 });
+    for (const call of illustrate.mock.calls) expect(call[1]).toMatchObject({ reuseOnly: true });
+  });
+
+  it('stops the add-only pass once the drawn images reach the ceiling', async () => {
+    const writeDocument = vi.fn<BackfillDeps['writeDocument']>().mockResolvedValue(undefined);
+    const illustrate = vi.fn<BackfillDeps['illustrate']>().mockImplementation(async () => illustrated(2, doc('out')));
+    const summary = await backfillImages(
+      { listDocuments: async () => rows(10), illustrate, writeDocument },
+      { courseSlug: 'c', maxUsd: 0.3 },
+    );
+    // $0.075 × 2 per document → the ceiling of $0.30 is reached after the second document.
+    expect(illustrate).toHaveBeenCalledTimes(2);
+    expect(writeDocument).toHaveBeenCalledTimes(2);
+    expect(summary).toMatchObject({ stoppedOnBudget: true, imagesGenerated: 4, usdSpent: 0.3 });
+    for (const call of illustrate.mock.calls) expect(call[1]).toMatchObject({ reuseOnly: false });
+  });
+
+  it('runs to completion under a generous ceiling and reports the spend', async () => {
+    const illustrate = vi.fn<BackfillDeps['illustrate']>().mockImplementation(async () => illustrated(1, doc('out')));
+    const summary = await backfillImages(
+      { listDocuments: async () => rows(4), illustrate, writeDocument: vi.fn().mockResolvedValue(undefined) },
+      { courseSlug: 'c', maxUsd: 100 },
+    );
+    expect(summary).toMatchObject({ stoppedOnBudget: false, imagesGenerated: 4, usdSpent: 0.3 });
+  });
+});
+
 describe('spendAllowed — money is never on the table by default in restyle mode', () => {
   const base = { courseSlug: 'financial-education' };
 

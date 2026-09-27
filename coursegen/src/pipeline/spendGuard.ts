@@ -9,9 +9,15 @@
 // invocation of a spending entry point must state its approved USD ceiling on
 // the command line, where it is recorded with the run, and the ceiling only
 // ever lowers the scaled budget. Dry-runs need none: they spend nothing.
+//
+// OD-28 (owner review D-03, 27 September 2026) extends the rule to the two
+// remaining paid tools: `images:backfill` in any mode that can call Prism, and
+// Echo's `narrate:all`. Echo cannot import this package, so
+// `audiogen/src/spendGuard.ts` carries a verbatim copy of the function below;
+// `agent/tools/spend-guard-parity.test.mjs` (tools:test) keeps them identical.
 
 export interface SpendCeilingInput {
-  command: 'generate' | 'generate:track';
+  command: 'generate' | 'generate:track' | 'images:backfill' | 'narrate:all';
   flag: '--max-usd' | '--budget-usd';
   dryRun: boolean;
   ceilingUsd: number | undefined;
