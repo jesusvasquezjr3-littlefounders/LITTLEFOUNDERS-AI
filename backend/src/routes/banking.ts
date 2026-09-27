@@ -187,6 +187,18 @@ function monthRange(month?: string): { fromISO: string; toISO: string; label: st
   return { fromISO: from.toISOString(), toISO: to.toISOString(), label: `${year}-${String(mo).padStart(2, '0')}` };
 }
 
+/** How many months a child can page back through their own statement (this month included). */
+export const STATEMENT_MONTHS_BACK = 24;
+
+/** A real calendar month, not after this UTC month and not before the paging window. */
+export function statementMonthAllowed(month: string, now = new Date()): boolean {
+  const [year, mo] = month.split('-').map(Number) as [number, number];
+  if (!Number.isInteger(year) || !Number.isInteger(mo) || mo < 1 || mo > 12) return false;
+  const index = year * 12 + (mo - 1);
+  const current = now.getUTCFullYear() * 12 + now.getUTCMonth();
+  return index <= current && index > current - STATEMENT_MONTHS_BACK;
+}
+
 async function buildStatement(kidId: string, month?: string) {
   const { fromISO, toISO, label } = monthRange(month);
   const entries = await getWalletLedgerInRange(kidId, fromISO, toISO);
@@ -522,6 +534,26 @@ export function bankingRouter(): Router {
       spendLimit: presentSpendLimit(register, status),
       statement: presentStatement(register, statement),
     });
+  });
+
+  /*
+   * F5-K (W2F.3, OD-9): another month of the child's own statement, shaped by
+   * the same register as the overview (D.12). Never a month after this one,
+   * and at most STATEMENT_MONTHS_BACK months back; the month comes from the
+   * query, the child and the register from the session and the database.
+   */
+  router.get('/overview/month', familyChild, async (req, res) => {
+    const kid = authedUser(res);
+    const q = MonthQuery.safeParse(req.query);
+    if (!q.success || !q.data.month || !statementMonthAllowed(q.data.month)) {
+      return fail(res, 400, 'VALIDATION_ERROR', `month must be YYYY-MM, this month or up to ${STATEMENT_MONTHS_BACK - 1} months before it`);
+    }
+    const register = await readMoneyRegister(kid.id);
+    if (register === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the account');
+    if (register === null) return fail(res, 403, 'WALLET_UNAVAILABLE', 'This account has no wallet');
+    const statement = await buildStatement(kid.id, q.data.month);
+    if (!statement) return fail(res, 502, DATA_UNAVAILABLE, 'Could not build the statement');
+    return ok(res, { register, statement: presentStatement(register, statement) });
   });
 
   router.patch('/account', familyChild, async (req, res) => {

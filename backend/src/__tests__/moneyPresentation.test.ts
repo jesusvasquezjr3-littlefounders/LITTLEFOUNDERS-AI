@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
+import { STATEMENT_MONTHS_BACK, statementMonthAllowed } from '../routes/banking.js';
 import {
   FREEZE_HOLDS,
   freezeAuthor,
@@ -411,5 +412,67 @@ describe('Appendix H metrics (D.6, D.12)', () => {
   it('502s a malformed uptime answer rather than reporting one', async () => {
     stub({ uptime: [{ source: 'probe', checks: 1 }] });
     expect((await get('/admin/family/engagement-uptime', ANALYST)).status).toBe(502);
+  });
+});
+
+describe('GET /api/v1/banking/overview/month (F5-K, W2F.3)', () => {
+  const now = new Date();
+  const monthAt = (back: number) => {
+    const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - back, 1));
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+  };
+
+  it('pages back through whole calendar months only, never ahead', () => {
+    const at = new Date(Date.UTC(2026, 8, 27));
+    expect(statementMonthAllowed('2026-09', at)).toBe(true);
+    expect(statementMonthAllowed('2026-10', at)).toBe(false);
+    expect(statementMonthAllowed('2024-10', at)).toBe(true);
+    expect(statementMonthAllowed('2024-09', at)).toBe(false);
+    expect(STATEMENT_MONTHS_BACK).toBe(24);
+    for (const bad of ['2026-00', '2026-13', '20-09']) expect(statementMonthAllowed(bad, at), bad).toBe(false);
+  });
+
+  it.each([['an unlinked teen', TEEN, {}], ['an adult learner', ADULT, {}], ['a guest', GUEST, { is_anonymous: true }], ['a parent', PARENT, {}], ['staff', ANALYST, {}]])(
+    'refuses %s before any ledger read', async (_label, who, extra) => {
+      const calls = stub();
+      const res = await get(`/banking/overview/month?month=${monthAt(1)}`, who, extra);
+      expect(res.status).toBe(403);
+      expect(calls.filter((c) => c.url.includes('/wallet_ledger'))).toHaveLength(0);
+    });
+
+  it('refuses a missing, malformed, future or too-old month before any read', async () => {
+    for (const query of ['', '?month=abc', '?month=2026-13', `?month=${monthAt(-1)}`, `?month=${monthAt(STATEMENT_MONTHS_BACK)}`, `?month=${monthAt(1)}&kid=${TEEN}`]) {
+      const calls = stub();
+      const res = await get(`/banking/overview/month${query}`, KID);
+      expect(res.status, query).toBe(400);
+      expect(calls.filter((c) => c.url.includes('/wallet_ledger') || c.url.includes('family_money_register')), query).toHaveLength(0);
+    }
+  });
+
+  it('serves the requested month in the child\'s own register, read over that month only', async () => {
+    const calls = stub({ register: 'young' });
+    const month = monthAt(2);
+    const res = await get(`/banking/overview/month?month=${month}`, KID);
+    expect(res.status).toBe(200);
+    expect(res.body.data.register).toBe('young');
+    expect(Object.keys(res.body.data.statement).sort()).toEqual(['earned', 'month', 'saved', 'spent']);
+    expect(res.body.data.statement.month).toBe(month);
+    const read = calls.find((c) => c.url.includes('/wallet_ledger?') && !c.url.includes('select=bucket,amount'));
+    expect(read?.url).toContain(`kid_user_id=eq.${KID}`);
+    expect(decodeURIComponent(read!.url)).toContain(`${month}-01T00:00:00.000Z`);
+  });
+
+  it('teen register: the latest lines of that month', async () => {
+    stub({ register: 'teen' });
+    const res = await get(`/banking/overview/month?month=${monthAt(0)}`, LINKED_TEEN);
+    expect(res.status).toBe(200);
+    expect(res.body.data.statement.lines.length).toBeLessThanOrEqual(TEEN_STATEMENT_LINES);
+  });
+
+  it('502s, never a guessed register, when the register cannot be read', async () => {
+    stub({ register: 'down' });
+    const res = await get(`/banking/overview/month?month=${monthAt(1)}`, KID);
+    expect(res.status).toBe(502);
+    expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
   });
 });

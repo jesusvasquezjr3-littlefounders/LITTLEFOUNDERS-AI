@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import { Button, Copy, InlineNotice, LoadingState } from '../design/controls';
 import type { MoneyRegister } from '../family/moneyRegister';
-import type { CoinAccountView, FreezeHold, MonthLine } from './bankingApi';
+import { shiftMonth, STATEMENT_MONTHS_BACK, type CoinAccountView, type FreezeHold, type Month, type MonthLine } from './bankingApi';
 import '../design/tokens.css';
 import '../design/system.css';
 import '../family/familyHub.css';
@@ -34,7 +34,7 @@ export interface CoinAccountCopy {
   heading: string; practice: string; coinsOnly: string; frozen: string; notFrozen: string; byYou: string; byTutor: string; whileFrozen: string; whatHolds: string;
   holdRewards: string; holdSplits: string; holdCredits: string; holdShare: string; nothingLost: string; freeze: string; unfreeze: string; onlyTutor: string;
   pockets: string; save: string; spend: string; share: string; coins: string; pocketDetail?: string; limitHeading: string; limitWeekly: string;
-  limitMonthly: string; limitWhy: string; limitWhen: string; monthHeading: string; earned: string; spent: string; saved: string; given: string;
+  limitMonthly: string; limitWhy: string; limitWhen: string; monthHeading: string; prevMonth: string; nextMonth: string; monthFailed: string; earned: string; spent: string; saved: string; given: string;
   adjusted: string; waiting: string; waitingFrozen: string; noAccount: string; loading: string; failed: string; retry: string; frozenNotice: string;
   unfrozenNotice: string; changeFailed: string; lineTask: string; lineReward: string; lineAllowance: string; lineBonus: string; lineShared: string;
   lineReturned: string; lineFixed: string; lineGoal: string; lineOther: string;
@@ -69,7 +69,7 @@ export function lineLabel(copy: CoinAccountCopy, line: Pick<MonthLine, 'reason'>
   return copy[LINE_KEY[line.reason] ?? 'lineOther'] as string;
 }
 
-export function CoinAccount({ copy, register, locale, dark, view, loading, failed, busy, notice, onRetry, onFreeze }: {
+export function CoinAccount({ copy, register, locale, dark, view, loading, failed, busy, notice, onRetry, onFreeze, month = null, onMonth }: {
   copy: CoinAccountCopy;
   register: MoneyRegister;
   locale: string;
@@ -81,6 +81,10 @@ export function CoinAccount({ copy, register, locale, dark, view, loading, faile
   notice: { text: string; error: boolean } | null;
   onRetry: () => void;
   onFreeze: (frozen: boolean) => void;
+  /** F5-K (W2F.3): another month than the overview's, or its loading/failed state; null shows this month. */
+  month?: { statement: Month | null; loading: boolean; failed: boolean } | null;
+  /** Ask for another month; null returns to this month. Absent: no paging is offered. */
+  onMonth?: (month: string | null) => void;
 }) {
   const ids = { heading: useId(), holds: useId(), limit: useId(), month: useId(), list: useId() };
   const [holdsOpen, setHoldsOpen] = useState(false);
@@ -158,24 +162,50 @@ export function CoinAccount({ copy, register, locale, dark, view, loading, faile
         <Copy role="body">{copy.limitWhen}</Copy>
       </section>}
 
-      <section className="lf-coin-month" aria-labelledby={ids.month}>
-        <h3 id={ids.month} data-copy-role="heading">{copy.monthHeading}</h3>
+      <MonthStatement copy={copy} locale={locale} headingId={ids.month} current={view.statement} month={month} onMonth={onMonth} />
+    </>}
+  </section>;
+}
+
+/*
+ * The month (F5-K): this month from the overview, or another month Core
+ * shaped in the same register. Paging goes back STATEMENT_MONTHS_BACK months
+ * and never past this month (Core refuses both). "Next month" appears only
+ * when there is one, so this month's first view gains two words, not four.
+ */
+function MonthStatement({ copy, locale, headingId, current, month, onMonth }: {
+  copy: CoinAccountCopy; locale: string; headingId: string; current: Month;
+  month: { statement: Month | null; loading: boolean; failed: boolean } | null; onMonth?: (month: string | null) => void;
+}) {
+  const number = new Intl.NumberFormat(locale);
+  const statement = month?.statement ?? current;
+  const earliest = shiftMonth(current.month, -(STATEMENT_MONTHS_BACK - 1));
+  const shown = month?.statement ? month.statement.month : current.month;
+  const [year, mo] = shown.split('-').map(Number) as [number, number];
+  const label = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(year, mo - 1, 1)));
+  const previous = shiftMonth(shown, -1);
+  const next = shiftMonth(shown, 1);
+  return <section className="lf-coin-month" aria-labelledby={headingId} aria-busy={month?.loading === true} data-month={shown}>
+        <h3 id={headingId} data-copy-role="heading">{shown === current.month ? copy.monthHeading : label}</h3>
+        {month?.failed && <InlineNotice tone="error" live>{copy.monthFailed}</InlineNotice>}
         <dl className="lf-coin-totals">
-          <div><dt data-copy-role="body">{copy.earned}</dt><dd data-copy-role="data">{number.format(view.statement.earned)}</dd></div>
-          <div><dt data-copy-role="body">{copy.spent}</dt><dd data-copy-role="data">{number.format(view.statement.spent)}</dd></div>
-          <div><dt data-copy-role="body">{copy.saved}</dt><dd data-copy-role="data">{number.format(view.statement.saved)}</dd></div>
-          {view.statement.given !== undefined && <div><dt data-copy-role="body">{copy.given}</dt><dd data-copy-role="data">{number.format(view.statement.given)}</dd></div>}
-          {view.statement.adjusted !== undefined && view.statement.adjusted !== 0 && <div><dt data-copy-role="body">{copy.adjusted}</dt>
-            <dd data-copy-role="data">{number.format(view.statement.adjusted)}</dd></div>}
+          <div><dt data-copy-role="body">{copy.earned}</dt><dd data-copy-role="data">{number.format(statement.earned)}</dd></div>
+          <div><dt data-copy-role="body">{copy.spent}</dt><dd data-copy-role="data">{number.format(statement.spent)}</dd></div>
+          <div><dt data-copy-role="body">{copy.saved}</dt><dd data-copy-role="data">{number.format(statement.saved)}</dd></div>
+          {statement.given !== undefined && <div><dt data-copy-role="body">{copy.given}</dt><dd data-copy-role="data">{number.format(statement.given)}</dd></div>}
+          {statement.adjusted !== undefined && statement.adjusted !== 0 && <div><dt data-copy-role="body">{copy.adjusted}</dt>
+            <dd data-copy-role="data">{number.format(statement.adjusted)}</dd></div>}
         </dl>
-        {view.statement.lines && view.statement.lines.length > 0 && <ul className="lf-coin-lines">
-          {view.statement.lines.map((line) => <li key={line.id} data-pocket={line.bucket}>
+        {statement.lines && statement.lines.length > 0 && <ul className="lf-coin-lines">
+          {statement.lines.map((line) => <li key={line.id} data-pocket={line.bucket}>
             <span data-copy-role="body">{lineLabel(copy, line)}</span>
             <span data-copy-role="data" className={line.amount >= 0 ? 'lf-family-hub-amount lf-family-hub-amount--credit' : 'lf-family-hub-amount'}>
               {line.amount >= 0 ? '+' : ''}{number.format(line.amount)}</span>
           </li>)}
         </ul>}
-      </section>
-    </>}
-  </section>;
+        {onMonth && <div className="lf-family-hub-actions" data-coin-part="month-paging">
+          {previous >= earliest && <Button size="sm" disabled={month?.loading === true} onClick={() => onMonth(previous)}>{copy.prevMonth}</Button>}
+          {shown < current.month && <Button size="sm" disabled={month?.loading === true} onClick={() => onMonth(next >= current.month ? null : next)}>{copy.nextMonth}</Button>}
+        </div>}
+      </section>;
 }

@@ -101,6 +101,23 @@ export function fetchCoinAccount(session: Session) {
   return call('/banking/overview', session, isCoinAccountView);
 }
 
+/** F5-K (W2F.3): another month of the child's own statement, in the register Core declares with it. */
+export function fetchCoinMonth(month: string, session: Session) {
+  return call(`/banking/overview/month?month=${encodeURIComponent(month)}`, session,
+    (data): data is { register: MoneyRegister; statement: Month } => isObject(data) && keysAre(data, ['register', 'statement'])
+      && isMoneyRegister(data.register) && isMonth(data.statement, data.register));
+}
+
+/** 'YYYY-MM' shifted by whole months (UTC calendar arithmetic, like Core's statement). */
+export function shiftMonth(month: string, by: number): string {
+  const [year, mo] = month.split('-').map(Number) as [number, number];
+  const d = new Date(Date.UTC(year, mo - 1 + by, 1));
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+}
+
+/** How far back a child may page (Core's STATEMENT_MONTHS_BACK, this month included). */
+export const STATEMENT_MONTHS_BACK = 24;
+
 /** The child freezes or unfreezes their own account; the caller re-reads the account (never assumes the new state). */
 export function setOwnFreeze(frozen: boolean, session: Session) {
   return call('/banking/account/freeze', session,

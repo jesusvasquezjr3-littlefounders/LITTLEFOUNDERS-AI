@@ -122,6 +122,7 @@ describe('the child (F5-K)', () => {
         pockets: { save: 10, spend: 0, share: 0 }, pendingCredits: 1, spendLimit: { configured: false },
         statement: { month: '2026-09', earned: 10, spent: 0, saved: 10 },
       }
+        : path.startsWith('/banking/overview/month?month=') ? { register: 'young', statement: { month: path.slice(-7), earned: 3, spent: 1, saved: 2 } }
         : path === '/banking/register' ? { register: 'young' }
         : path === '/banking/account' ? { account: { nickname: 'Synthetic account', cardDesign: 'indigo', displayNumber: 'LF-9', frozen, frozenBy: frozen ? owner : null, frozenAt: null, openedAt: '2026-01-01T00:00:00Z' } }
         : path === '/banking/wallet/pending-credits' ? { credits: [{ id: 'credit', amount: 10, source: 'allowance', createdAt: '2026-09-20T00:00:00Z' }] }
@@ -156,5 +157,15 @@ describe('the child (F5-K)', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('That did not change. Try again.');
     expect(screen.getAllByText('Frozen').length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: 'Split' })).toBeDisabled();
+  });
+
+  it("reads the month before from Core in the child's register and comes back to this month (F5-K, W2F.3)", async () => {
+    fixture();
+    fireEvent.click(await screen.findByRole('button', { name: 'Month before' }));
+    expect(await screen.findByRole('heading', { name: 'August 2026' })).toBeInTheDocument();
+    expect(mocks.api).toHaveBeenCalledWith('/banking/overview/month?month=2026-08', expect.anything());
+    fireEvent.click(screen.getByRole('button', { name: 'Next month' }));
+    expect(await screen.findByRole('heading', { name: 'This month' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Next month' })).toBeNull();
   });
 });

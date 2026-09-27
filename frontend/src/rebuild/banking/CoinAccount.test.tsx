@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup as cleanupAll, fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import copyEn from '../../i18n/en-US/coinAccount.json';
 import regEn from '../../i18n/en-US/moneyRegister.json';
@@ -9,7 +9,7 @@ import habitsEn from '../../i18n/en-US/moneyHabits.json';
 import { CoinAccount, pocketPercents } from './CoinAccount';
 import { TutorFreeze } from './TutorFreeze';
 import {
-  FREEZE_HOLDS, fetchCoinAccount, fetchTutorFreeze, isCoinAccountView, isMonth, isSpendLimit, setOwnFreeze, type CoinAccountView,
+  FREEZE_HOLDS, fetchCoinAccount, fetchCoinMonth, fetchTutorFreeze, shiftMonth, isCoinAccountView, isMonth, isSpendLimit, setOwnFreeze, type CoinAccountView,
 } from './bankingApi';
 import { fetchMoneyRegister, REGISTER_POLICY, registerCopy, type MoneyRegister } from '../family/moneyRegister';
 import { GoalProgress } from '../family/GoalProgress';
@@ -156,6 +156,60 @@ describe('CoinAccount (D.7, D.12)', () => {
     renderAccount('young', { ...views.young, account: null });
     expect(screen.getByText('Your Tutor has not opened your card yet.')).toBeInTheDocument();
     expect(screen.getByText('20 coins')).toBeInTheDocument();
+  });
+});
+
+describe('Another month of the statement (F5-K, W2F.3)', () => {
+  const pageable = (month: Parameters<typeof CoinAccount>[0]['month'] = null) => {
+    const onMonth = vi.fn();
+    const view = render(<CoinAccount copy={copyEn.young} register="young" locale="en-US" dark={false} view={views.young} loading={false} failed={false}
+      busy={false} notice={null} onRetry={() => {}} onFreeze={() => {}} month={month} onMonth={onMonth} />);
+    return { onMonth, view };
+  };
+
+  it('this month offers only the month before (two words on the first view), never a month ahead', () => {
+    const { onMonth, view } = pageable();
+    expect(screen.getByRole('heading', { name: copyEn.young.monthHeading })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: copyEn.young.nextMonth })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: copyEn.young.prevMonth }));
+    expect(onMonth).toHaveBeenCalledWith('2026-08');
+    everyTextHasARole(view.container);
+  });
+
+  it('shows another month by name with its own totals, and "Next month" returns to this month', () => {
+    const { onMonth } = pageable({ statement: { month: '2026-08', earned: 7, spent: 3, saved: 4 }, loading: false, failed: false });
+    expect(screen.getByRole('heading', { name: 'August 2026' })).toBeInTheDocument();
+    const month = screen.getByRole('heading', { name: 'August 2026' }).closest('section')!;
+    expect(within(month).getByText('7')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: copyEn.young.nextMonth }));
+    expect(onMonth).toHaveBeenCalledWith(null);
+    fireEvent.click(screen.getByRole('button', { name: copyEn.young.prevMonth }));
+    expect(onMonth).toHaveBeenCalledWith('2026-07');
+  });
+
+  it('stops at the oldest month Core serves, and says a month failed without inventing one', () => {
+    pageable({ statement: { month: shiftMonth('2026-09', -23), earned: 0, spent: 0, saved: 0 }, loading: false, failed: false });
+    expect(screen.queryByRole('button', { name: copyEn.young.prevMonth })).toBeNull();
+    cleanupAll();
+    pageable({ statement: null, loading: false, failed: true });
+    expect(screen.getByText(copyEn.young.monthFailed)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: copyEn.young.monthHeading })).toBeInTheDocument();
+  });
+
+  it('offers no paging where the page gives no way to read a month', () => {
+    render(<CoinAccount copy={copyEn.young} register="young" locale="en-US" dark={false} view={views.young} loading={false} failed={false}
+      busy={false} notice={null} onRetry={() => {}} onFreeze={() => {}} />);
+    expect(screen.queryByRole('button', { name: copyEn.young.prevMonth })).toBeNull();
+  });
+
+  it('refuses a month whose numbers exceed the register Core declared with it', async () => {
+    const young = session(() => ({ data: { register: 'young', statement: { month: '2026-08', earned: 1, spent: 0, saved: 1 } }, error: null }));
+    expect(await fetchCoinMonth('2026-08', young.s)).toEqual({ ok: true, data: { register: 'young', statement: { month: '2026-08', earned: 1, spent: 0, saved: 1 } } });
+    expect(young.calls[0]!.path).toBe('/banking/overview/month?month=2026-08');
+    const leaky = session(() => ({ data: { register: 'young', statement: { month: '2026-08', earned: 1, spent: 0, saved: 1, given: 0, adjusted: 0 } }, error: null }));
+    expect((await fetchCoinMonth('2026-08', leaky.s)).ok).toBe(false);
+    expect(shiftMonth('2026-01', -1)).toBe('2025-12');
+    expect(shiftMonth('2025-12', 1)).toBe('2026-01');
   });
 });
 
