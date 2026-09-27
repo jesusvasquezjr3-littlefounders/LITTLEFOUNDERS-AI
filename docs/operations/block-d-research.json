@@ -148,7 +148,6 @@
   },
   "claims": {
     "namespaces": [
-      "marketing",
       "rebuild-site",
       "common",
       "familyHub",

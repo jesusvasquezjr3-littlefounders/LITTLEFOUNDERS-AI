@@ -485,5 +485,14 @@
     "accountBody": "An account keeps your streak on any device.",
     "create": "Create account",
     "later": "Later"
+  },
+  "badgeLanding": {
+    "loading": "Loading the achievement",
+    "title": "{name} earned {achievement}",
+    "body": "LittleFounders teaches kids money and business skills with stories, games and a Mentor who answers back.",
+    "imageAlt": "{name}'s achievement badge: {achievement}",
+    "expiredTitle": "This badge link has expired",
+    "expiredBody": "Shared badge links stop working after a while. You can still see how LittleFounders works.",
+    "howItWorks": "How it works"
   }
 }

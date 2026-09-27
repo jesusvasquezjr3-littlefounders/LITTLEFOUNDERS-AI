@@ -1937,7 +1937,7 @@ export const NEW_TO_SKILL_OPPORTUNITIES = 2;
  * (`/AGENTS.md` §2.7 — the streamed `learner_audio_begin`/`_chunk` frames
  * claim nothing; only `learner_audio_commit` "claims, transcribes and
  * pays"), and that commit is triggered BY the client's own amplitude-based
- * turn detector (`frontend/src/rebuild/mentor/session/turnDetector.ts`) deciding the turn
+ * turn detector (`frontend/src/tutor/turnDetector.ts`) deciding the turn
  * already ended. By the time any transcript — partial or final — could
  * exist, the cutoff this fix needs to prevent has already happened; there
  * is nothing upstream of it to read. `opportunities` is this file's own

@@ -77,12 +77,12 @@ test('catches a payment or bank-linking SDK', () => {
 
 test('catches a retired claim coming back in any string of its namespace (S07.8)', () => {
   const failures = mutate((live) => ({
-    locales: (locale, ns) => (locale === 'pt-BR' && ns === 'marketing'
+    locales: (locale, ns) => (locale === 'pt-BR' && ns === 'rebuild-site'
       ? { ...live.locales(locale, ns), extra: { note: 'Gastar precisa da sua aprovação antes, sempre.' } }
       : live.locales(locale, ns)),
   }));
   assert.equal(failures.length, 1, failures.join('\n'));
-  assert.match(failures[0], /^marketing:extra\.note \(pt-BR\) says "gastar precisa da sua aprovação antes"/);
+  assert.match(failures[0], /^rebuild-site:extra\.note \(pt-BR\) says "gastar precisa da sua aprovação antes"/);
 });
 
 test('holds the rebuilt public site to the same retired claims (W2 Lane 1)', () => {

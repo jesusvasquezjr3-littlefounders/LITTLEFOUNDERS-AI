@@ -9,7 +9,6 @@
   ],
   "i18nNamespaces": [
     "common",
-    "marketing",
     "lesson",
     "tutor"
   ],
@@ -113,6 +112,22 @@
     {
       "path": "lib/courseBadges",
       "replacement": "the rebuilt badge art: src/rebuild/social/"
+    },
+    {
+      "path": "components/ui/LoadingOverlay",
+      "replacement": "LoadingState in src/rebuild/design/controls.tsx (S10L.3)"
+    },
+    {
+      "path": "i18n/en-US/marketing.json",
+      "replacement": "the badgeLanding group of src/i18n/<locale>/rebuild-site.json (S10L.3)"
+    },
+    {
+      "path": "i18n/es-MX/marketing.json",
+      "replacement": "the badgeLanding group of src/i18n/<locale>/rebuild-site.json (S10L.3)"
+    },
+    {
+      "path": "i18n/pt-BR/marketing.json",
+      "replacement": "the badgeLanding group of src/i18n/<locale>/rebuild-site.json (S10L.3)"
     }
   ],
   "files": [
@@ -131,7 +146,6 @@
     "frontend/src/components/ui/Card.tsx",
     "frontend/src/components/ui/CountUp.tsx",
     "frontend/src/components/ui/Icon.tsx",
-    "frontend/src/components/ui/LoadingOverlay.tsx",
     "frontend/src/components/ui/LottieIcon.tsx",
     "frontend/src/components/ui/SectionHeading.tsx",
     "frontend/src/components/ui/ThemeToggle.tsx",

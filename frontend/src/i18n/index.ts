@@ -7,12 +7,12 @@ import LanguageDetector from 'i18next-browser-languagedetector';
  * <locale>/common.json    — spread at the root: the not-found fallback, the
  *                           theme labels, the legacy 2D characters' greeting
  *                           and the family.badge share copy
- * <locale>/marketing.json — the public badge page (mounted under "marketing")
  * <locale>/lesson.json   — the v1 lesson player (the OD-24 legacy island)
  * <locale>/tutor.json    — the Mentor stage's scene and microphone strings
  * The legacy namespaces no screen reads any more (errors, auth, dashboard,
  * profile, learn, admin, onboarding, placement) left with the legacy UI in
- * S10L.1. New UI never adds a namespace here (Frontend Bible 02 rule 23).
+ * S10L.1; marketing (the badge page's copy) left with its rebuild in S10L.3.
+ * New UI never adds a namespace here (Frontend Bible 02 rule 23).
  *
  * The REBUILT UI's copy is deliberately not loaded here: it is one
  * `<locale>/rebuild-<namespace>.json` per wave-2 lane (core, site, learn,
@@ -21,15 +21,12 @@ import LanguageDetector from 'i18next-browser-languagedetector';
  * missing from its namespace is then a type error, never a raw key on screen.
  */
 import enCommon from './en-US/common.json';
-import enMarketing from './en-US/marketing.json';
 import enLesson from './en-US/lesson.json';
 import enTutor from './en-US/tutor.json';
 import esCommon from './es-MX/common.json';
-import esMarketing from './es-MX/marketing.json';
 import esLesson from './es-MX/lesson.json';
 import esTutor from './es-MX/tutor.json';
 import ptCommon from './pt-BR/common.json';
-import ptMarketing from './pt-BR/marketing.json';
 import ptLesson from './pt-BR/lesson.json';
 import ptTutor from './pt-BR/tutor.json';
 
@@ -42,9 +39,9 @@ export function isLocale(value: string): value is Locale {
 }
 
 const resources = {
-  'en-US': { translation: { ...enCommon, marketing: enMarketing, lesson: enLesson, tutor: enTutor } },
-  'es-MX': { translation: { ...esCommon, marketing: esMarketing, lesson: esLesson, tutor: esTutor } },
-  'pt-BR': { translation: { ...ptCommon, marketing: ptMarketing, lesson: ptLesson, tutor: ptTutor } },
+  'en-US': { translation: { ...enCommon, lesson: enLesson, tutor: enTutor } },
+  'es-MX': { translation: { ...esCommon, lesson: esLesson, tutor: esTutor } },
+  'pt-BR': { translation: { ...ptCommon, lesson: ptLesson, tutor: ptTutor } },
 };
 
 /**

@@ -25,6 +25,8 @@ const SITE_GROUPS: Record<string, Rule> = {
   faq: (key) => key === 'title' || key === 'closingTitle' || key.endsWith('.question') ? 'heading'
     : key === 'all' || key.startsWith('categories.') ? 'option' : key === 'emailUs' ? 'action' : 'body',
   legalPage: (key) => ['contents', 'noResults'].includes(key) ? 'heading' : ['terms', 'privacy', 'cookieSettings'].includes(key) ? 'action' : 'body',
+  // M7, the public badge-link page (S10L.3): a stranger's view, on the site budget.
+  badgeLanding: (key) => ['title', 'expiredTitle'].includes(key) ? 'heading' : key === 'howItWorks' ? 'action' : 'body',
   cookies: (key) => ['title', 'sheetTitle'].includes(key) || (key.endsWith('Title')) ? 'heading'
     : ['accept', 'reject', 'preferences', 'privacyLink', 'close'].includes(key) ? 'action' : 'body',
 };

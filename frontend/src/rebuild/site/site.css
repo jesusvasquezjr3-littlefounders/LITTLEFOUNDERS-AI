@@ -129,6 +129,11 @@ body:has([data-consent-banner]) .lf-rebuild .lf-sticky-action { visibility: hidd
 .lf-rebuild .lf-route-error { display: grid; gap: var(--spacing-4); align-content: start; }
 .lf-rebuild.lf-route-error-root { min-block-size: 0; background: none; }
 
+/* ---- M7: the public badge-link page (OD-20, retiring) ---- */
+.lf-rebuild .lf-badge-landing { display: grid; gap: var(--spacing-4); justify-items: center; text-align: center; max-inline-size: 30em; margin-inline: auto; }
+.lf-rebuild .lf-badge-landing-image { inline-size: 100%; max-inline-size: 20rem; block-size: auto; border-radius: var(--rounded-lg); }
+.lf-rebuild .lf-badge-landing-title { overflow-wrap: anywhere; }
+
 /* ---- Wider containers ---- */
 @container app (min-width: 640px) {
   .lf-rebuild .lf-site-section--band, .lf-rebuild .lf-site-section--soft { padding: var(--spacing-8); }

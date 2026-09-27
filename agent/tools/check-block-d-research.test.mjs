@@ -60,7 +60,7 @@ test('catches a claim of proof in marketing or app copy, in any locale', () => {
     locales: (locale, ns) => {
       const copy = live.locales(locale, ns);
       if (locale === 'en-US' && ns === 'familyGovernance') return { ...copy, scope: { ...copy.scope, intro: 'Scientifically proven to build better savers.' } };
-      if (locale === 'pt-BR' && ns === 'marketing') return { ...copy, extra: 'Estudos comprovam que funciona.' };
+      if (locale === 'pt-BR' && ns === 'rebuild-site') return { ...copy, extra: 'Estudos comprovam que funciona.' };
       if (locale === 'es-MX' && ns === 'coinAccount') return { ...copy, extra: 'Está comprobado por expertos.' };
       return copy;
     },
@@ -71,7 +71,7 @@ test('catches a claim of proof in marketing or app copy, in any locale', () => {
 
 test('does not mistake an ordinary word for a claim', () => {
   const { failures } = run((live) => ({
-    locales: (locale, ns) => (locale === 'es-MX' && ns === 'marketing' ? { ...live.locales(locale, ns), extra: 'Comunicación que aparente provenir de la empresa.' } : live.locales(locale, ns)),
+    locales: (locale, ns) => (locale === 'es-MX' && ns === 'rebuild-site' ? { ...live.locales(locale, ns), extra: 'Comunicación que aparente provenir de la empresa.' } : live.locales(locale, ns)),
   }));
   assert.deepEqual(failures, []);
 });
