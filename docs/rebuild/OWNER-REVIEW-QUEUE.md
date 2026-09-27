@@ -1,5 +1,7 @@
 # Owner Review Queue: SPEC migration, wave 1 (24–25 September 2026)
 
+> **Answered on 27 September 2026.** Every item has an owner answer; see [OWNER-REVIEW-ANSWERS.md](OWNER-REVIEW-ANSWERS.md) and owner log OD-24 to OD-28. This file stays as the record of the questions as they were asked.
+
 ## What this is
 
 While building wave 1 of the LittleFounders SPEC migration, the implementation agents raised 150 questions that only the owner (or a lead the owner names) can settle. This document turns that raw list into one review queue. Duplicates and near-duplicates are merged, so there are fewer items than questions. Every item names the checkpoint(s) it came from.
