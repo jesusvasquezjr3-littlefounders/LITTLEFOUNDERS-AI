@@ -8,7 +8,7 @@ import { createFakeFetch, type FakeDb, type FakeRow } from './fakePostgrest.js';
  * it reproduces the refusals and state transitions Core relies on (lesson in
  * topic in course, audience vs guardian links, one prompt per component, one
  * open prompt per action, cooldown, expiry, replay, "a self prompt creates
- * nothing"), not PostgreSQL's locking. Physical-database evidence is open.
+ * no task, and a goal only in a teen's own wallet" (0179)), not PostgreSQL's locking. Physical-database evidence is open.
  *
  * `missing` simulates a deploy that ran before the migration: every narrative
  * RPC and table answers 404, as PostgREST does for an unknown relation.
@@ -113,13 +113,27 @@ export function createNarrativeFakeFetch(db: FakeDb, options: { missing?: boolea
     }
 
     // act_on_learning_bridge_prompt
-    if (prompt.status === 'acted') return reply(200, { status: 'acted', replayed: true, task_id: prompt.result_task_id, goal_id: prompt.result_goal_id });
+    if (prompt.status === 'acted') return reply(200, { status: 'acted', replayed: true, task_id: prompt.result_task_id, goal_id: prompt.result_goal_id ?? prompt.result_self_goal_id ?? null });
     if (prompt.status !== 'open' || Date.parse(String(prompt.expires_at)) <= Date.now()) return reply(200, { status: 'closed' });
     const title = String(p.p_title ?? '').trim();
     let taskId: string | null = null;
     let goalId: string | null = null;
+    let selfGoalId: string | null = null;
     if (prompt.audience === 'self') {
-      if (p.p_title !== null || p.p_amount !== null || p.p_icon !== null || p.p_recurrence !== null) return reply(400, { message: 'a self prompt creates nothing' });
+      // 0179 (OD-28, L-12): a savings-goal self prompt may create the teen's own goal; a task never.
+      const details = p.p_title !== null || p.p_amount !== null || p.p_icon !== null || p.p_recurrence !== null;
+      if (details) {
+        if (prompt.action !== 'savings_goal') return reply(400, { message: 'a self task prompt creates nothing' });
+        const amount = Number(p.p_amount);
+        if (title.length < 1 || title.length > 80 || !(amount >= 1 && amount <= 100000) || !GOAL_ICONS.includes(String(p.p_icon)) || p.p_recurrence !== null) return reply(400, { message: 'invalid savings goal' });
+        // public.teen_wallet_holder(): a screened 13-17 band, no protected origin, no kid, parent or staff role.
+        const band = (db.account_age_declarations ?? []).find((r) => r.user_id === prompt.learner_id)?.declared_age_band;
+        const holder = band === '13_to_17' && !(db.account_safety_origins ?? []).some((r) => r.user_id === prompt.learner_id)
+          && !(db.user_roles ?? []).some((r) => r.user_id === prompt.learner_id && ['kid', 'parent', 'admin', 'superadmin'].includes(String(r.role)));
+        if (!holder) return reply(200, { status: 'no_wallet' });
+        selfGoalId = randomUUID();
+        (db.savings_goals ??= []).push({ id: selfGoalId, kid_user_id: prompt.learner_id, title, target: amount, icon: p.p_icon, status: 'active', created_at: new Date().toISOString(), reached_at: null });
+      }
     } else if (prompt.action === 'savings_goal') {
       const amount = Number(p.p_amount);
       if (title.length < 1 || title.length > 80 || !(amount >= 1 && amount <= 100000) || !GOAL_ICONS.includes(String(p.p_icon)) || p.p_recurrence !== null) return reply(400, { message: 'invalid savings goal' });
@@ -134,7 +148,8 @@ export function createNarrativeFakeFetch(db: FakeDb, options: { missing?: boolea
     // The table's CHECKs: a task or goal only for an acted guardian prompt of the matching action.
     if (taskId && !(prompt.action === 'earning_task' && prompt.audience === 'guardian')) return reply(400, { message: 'learning_bridge_prompts_task_guardian' });
     if (goalId && !(prompt.action === 'savings_goal' && prompt.audience === 'guardian')) return reply(400, { message: 'learning_bridge_prompts_goal_guardian' });
-    Object.assign(prompt, { status: 'acted', closed_at: new Date().toISOString(), closed_by: p.p_actor_id, result_task_id: taskId, result_goal_id: goalId });
-    return reply(200, { status: 'acted', replayed: false, task_id: taskId, goal_id: goalId });
+    if (selfGoalId && !(prompt.action === 'savings_goal' && prompt.audience === 'self')) return reply(400, { message: 'learning_bridge_prompts_self_goal' });
+    Object.assign(prompt, { status: 'acted', closed_at: new Date().toISOString(), closed_by: p.p_actor_id, result_task_id: taskId, result_goal_id: goalId, result_self_goal_id: selfGoalId });
+    return reply(200, { status: 'acted', replayed: false, task_id: taskId, goal_id: goalId ?? selfGoalId });
   }) as typeof fetch;
 }

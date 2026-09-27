@@ -213,7 +213,7 @@ export async function getBridgePrompt(promptId: string): Promise<PromptRow | nul
 }
 
 const ActResult = z.object({
-  status: z.enum(['acted', 'closed', 'forbidden', 'not_found', 'dismissed']),
+  status: z.enum(['acted', 'closed', 'forbidden', 'not_found', 'dismissed', 'no_wallet']),
   replayed: z.boolean().optional(),
   task_id: z.string().nullable().optional(),
   goal_id: z.string().nullable().optional(),

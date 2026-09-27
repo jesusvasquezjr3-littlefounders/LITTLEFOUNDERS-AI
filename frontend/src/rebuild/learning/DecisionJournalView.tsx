@@ -1,12 +1,13 @@
 import { useId, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
 import { Button, IconButton, InlineNotice } from '../design/controls';
+import { TextField } from '../design/fields';
 import '../design/tokens.css';
 import '../design/system.css';
 import './learnerPage.css';
 import './narrative.css';
 import { localizedText } from './coursePath';
-import type { BridgeOutcome, JournalEntry, JournalState, SelfBridge } from './narrative';
+import type { BridgeAnswer, JournalEntry, JournalState, SelfBridge } from './narrative';
 
 /*
  * B.9 / S05.3c — the learner's decision journal: the story choices they made
@@ -16,7 +17,8 @@ import type { BridgeOutcome, JournalEntry, JournalState, SelfBridge } from './na
  *
  * B.13, Option B — an independent teen also sees "Try it for real": a
  * self-directed prompt after a topic that teaches a real-world money skill.
- * Answering it records their own plan and creates nothing. Core sends these
+ * Answering it records their own plan; on a savings prompt the teen may name a
+ * goal, which Core creates in their own Wallet (OD-28, L-12). Core sends these
  * only to an independent teen, so any other learner never sees the section.
  *
  * Layering (Bible 06): each entry shows the choice first; the situation, what
@@ -32,6 +34,8 @@ type Copy = {
   clear: string; clearBody: string; clearYes: string; clearNo: string; cleared: string; clearFailed: string;
   bridgeTitle: string; learned: string; bridge: Record<SelfBridge['action'], string>; tryIt: string; notNow: string;
   planned: string; bridgeClosed: string; bridgeFailed: string;
+  /** OD-28 (L-12): the teen's own savings goal from a savings prompt. */
+  goalName: string; goalTarget: string; createGoal: string; planOnly: string; goalCreated: string; noWallet: string;
 };
 
 export const decisionJournalCopy: Record<Locale, Copy> = {
@@ -41,6 +45,8 @@ export const decisionJournalCopy: Record<Locale, Copy> = {
     clear: 'Clear journal', clearBody: 'This removes your saved choices. Your progress stays.', clearYes: 'Yes, clear', clearNo: 'Keep it', cleared: 'Your journal is empty now.', clearFailed: 'Could not clear it. Try again.',
     bridgeTitle: 'Try it for real', learned: 'You learned', bridge: { savings_goal: 'Pick something real to save for this month.', earning_task: 'Keep track of what you earn this week.' },
     tryIt: 'I will try', notNow: 'Not now', planned: 'Saved as your plan.', bridgeClosed: 'This idea has closed.', bridgeFailed: 'Could not save it. Try again.',
+    goalName: 'What will you save for?', goalTarget: 'Coins to save', createGoal: 'Create goal', planOnly: 'Just a plan',
+    goalCreated: 'Goal added to your Wallet.', noWallet: 'Your Wallet is not open.',
   },
   'es-MX': {
     title: 'Mis decisiones', back: 'Volver', loading: 'Cargando tus decisiones', retry: 'Reintentar', errorTitle: 'Diario no disponible', errorBody: 'No pudimos cargarlo. Inténtalo de nuevo.',
@@ -48,6 +54,8 @@ export const decisionJournalCopy: Record<Locale, Copy> = {
     clear: 'Borrar diario', clearBody: 'Esto borra tus elecciones guardadas. Tu progreso se queda.', clearYes: 'Sí, borrar', clearNo: 'Conservarlo', cleared: 'Tu diario está vacío.', clearFailed: 'No se pudo borrar. Inténtalo de nuevo.',
     bridgeTitle: 'Pruébalo de verdad', learned: 'Aprendiste', bridge: { savings_goal: 'Elige algo real para ahorrar este mes.', earning_task: 'Anota lo que ganes esta semana.' },
     tryIt: 'Lo intentaré', notNow: 'Ahora no', planned: 'Guardado como tu plan.', bridgeClosed: 'Esta idea ya cerró.', bridgeFailed: 'No se pudo guardar. Inténtalo de nuevo.',
+    goalName: '¿Para qué vas a ahorrar?', goalTarget: 'Monedas por ahorrar', createGoal: 'Crear meta', planOnly: 'Solo un plan',
+    goalCreated: 'Meta agregada a tu Cartera.', noWallet: 'Tu Cartera no está abierta.',
   },
   'pt-BR': {
     title: 'Minhas decisões', back: 'Voltar', loading: 'Carregando suas decisões', retry: 'Tentar de novo', errorTitle: 'Diário indisponível', errorBody: 'Não foi possível carregar. Tente de novo.',
@@ -55,33 +63,58 @@ export const decisionJournalCopy: Record<Locale, Copy> = {
     clear: 'Apagar diário', clearBody: 'Isso apaga suas escolhas salvas. Seu progresso fica.', clearYes: 'Sim, apagar', clearNo: 'Manter', cleared: 'Seu diário está vazio.', clearFailed: 'Não foi possível apagar. Tente de novo.',
     bridgeTitle: 'Tente de verdade', learned: 'Você aprendeu', bridge: { savings_goal: 'Escolha algo real para poupar este mês.', earning_task: 'Anote o que você ganhar nesta semana.' },
     tryIt: 'Vou tentar', notNow: 'Agora não', planned: 'Salvo como seu plano.', bridgeClosed: 'Esta ideia já fechou.', bridgeFailed: 'Não foi possível salvar. Tente de novo.',
+    goalName: 'Para que você vai poupar?', goalTarget: 'Moedas para poupar', createGoal: 'Criar meta', planOnly: 'Só um plano',
+    goalCreated: 'Meta adicionada à sua Carteira.', noWallet: 'Sua Carteira não está aberta.',
   },
 };
 
+type BridgeState = 'planned' | 'goal' | 'dismissed' | 'closed' | 'failed' | 'no_wallet';
+
+/** The goal limits Core and the database enforce (a 1 to 80 character title, 1 to 100,000 coins). */
+export function selfGoalFrom(title: string, target: string): { title: string; target: number } | null {
+  const name = title.trim();
+  const coins = Number(target);
+  return name.length >= 1 && name.length <= 80 && Number.isInteger(coins) && coins >= 1 && coins <= 100000 ? { title: name, target: coins } : null;
+}
+
 /**
  * B.13, Option B: an independent teen's "try it for real" prompts. Shared by
- * the journal and the learner shortcut. Renders nothing when there are none
- * (Core sends none to any other learner). Answering "I will try" records the
- * teen's own plan and creates nothing.
+ * the journal, the learning home and the learner shortcut. Renders nothing
+ * when there are none (Core sends none to any other learner). On a savings
+ * prompt, "I will try" opens the teen's own goal (a name and the coins to
+ * save), created in their Wallet (OD-28, L-12), or kept as a plan alone; on an
+ * earning prompt it records the plan (tasks stay guardian-only, OD-3).
  */
 export function SelfBridgeList({ bridges, locale, onBridge }: {
   bridges: SelfBridge[];
   locale: Locale;
-  onBridge: (id: string, answer: 'act' | 'dismiss') => Promise<BridgeOutcome>;
+  onBridge: BridgeAnswer;
 }) {
   const t = decisionJournalCopy[locale];
   const headingId = useId();
   const [busy, setBusy] = useState(false);
-  const [answered, setAnswered] = useState<Record<string, 'planned' | 'dismissed' | 'closed' | 'failed'>>({});
+  const [answered, setAnswered] = useState<Record<string, BridgeState>>({});
+  const [composing, setComposing] = useState<string | null>(null);
+  const [draft, setDraft] = useState({ title: '', target: '' });
 
-  async function answer(id: string, choice: 'act' | 'dismiss') {
+  async function answer(id: string, choice: 'act' | 'dismiss', goal?: { title: string; target: number }) {
     if (busy) return;
     setBusy(true);
-    const outcome = await onBridge(id, choice);
+    const outcome = await onBridge(id, choice, goal);
     setBusy(false);
-    setAnswered((prev) => ({ ...prev, [id]: outcome === 'done' ? (choice === 'act' ? 'planned' : 'dismissed') : outcome === 'closed' ? 'closed' : 'failed' }));
+    const next: BridgeState = outcome === 'done' ? (choice === 'dismiss' ? 'dismissed' : goal ? 'goal' : 'planned')
+      : outcome === 'closed' ? 'closed' : outcome === 'no_wallet' ? 'no_wallet' : 'failed';
+    if (outcome === 'done' || outcome === 'closed') setComposing(null);
+    setAnswered((prev) => ({ ...prev, [id]: next }));
   }
 
+  function tryIt(b: SelfBridge) {
+    if (b.action !== 'savings_goal') return void answer(b.id, 'act');
+    setDraft({ title: '', target: '' });
+    setComposing(b.id);
+  }
+
+  const goal = selfGoalFrom(draft.title, draft.target);
   const visible = bridges.filter((b) => answered[b.id] !== 'dismissed');
   if (visible.length === 0) return null;
   return <section className="lf-journal-section" aria-labelledby={headingId}>
@@ -93,14 +126,27 @@ export function SelfBridgeList({ bridges, locale, onBridge }: {
         <span className="lf-bridge-self-skill" data-copy-role="data">{localizedText(b.skill, locale)}</span>
         <p data-copy-role="body">{t.bridge[b.action]}</p>
         {state === 'planned' ? <InlineNotice tone="success" live>{t.planned}</InlineNotice>
-          : state === 'closed' ? <InlineNotice tone="info" live>{t.bridgeClosed}</InlineNotice>
-            : <>
-              {state === 'failed' ? <InlineNotice tone="error" live>{t.bridgeFailed}</InlineNotice> : null}
-              <div className="lf-actions">
-                <Button variant="accent" disabled={busy} onClick={() => void answer(b.id, 'act')}>{t.tryIt}</Button>
-                <Button disabled={busy} onClick={() => void answer(b.id, 'dismiss')}>{t.notNow}</Button>
-              </div>
-            </>}
+          : state === 'goal' ? <InlineNotice tone="success" live>{t.goalCreated}</InlineNotice>
+            : state === 'closed' ? <InlineNotice tone="info" live>{t.bridgeClosed}</InlineNotice>
+              : composing === b.id ? <form className="lf-bridge-self-goal" onSubmit={(event) => { event.preventDefault(); if (goal) void answer(b.id, 'act', goal); }}>
+                {state === 'failed' ? <InlineNotice tone="error" live>{t.bridgeFailed}</InlineNotice> : null}
+                {state === 'no_wallet' ? <InlineNotice tone="info" live>{t.noWallet}</InlineNotice> : null}
+                <TextField label={t.goalName} value={draft.title} maxLength={80} autoComplete="off" disabled={busy}
+                  onChange={(event) => setDraft((prev) => ({ ...prev, title: event.target.value }))} />
+                <TextField label={t.goalTarget} type="number" inputMode="numeric" min={1} max={100000} step={1} value={draft.target} disabled={busy}
+                  onChange={(event) => setDraft((prev) => ({ ...prev, target: event.target.value }))} />
+                <div className="lf-actions">
+                  <Button type="submit" variant="accent" disabled={busy || !goal}>{t.createGoal}</Button>
+                  <Button type="button" disabled={busy} onClick={() => void answer(b.id, 'act')}>{t.planOnly}</Button>
+                </div>
+              </form>
+                : <>
+                  {state === 'failed' ? <InlineNotice tone="error" live>{t.bridgeFailed}</InlineNotice> : null}
+                  <div className="lf-actions">
+                    <Button variant="accent" disabled={busy} onClick={() => tryIt(b)}>{t.tryIt}</Button>
+                    <Button disabled={busy} onClick={() => void answer(b.id, 'dismiss')}>{t.notNow}</Button>
+                  </div>
+                </>}
       </article>;
     })}
   </section>;
@@ -115,7 +161,7 @@ export function DecisionJournalView({ state, locale, dark, onBack, onRetry, onMo
   onMore?: () => void;
   /** Resolves true when Core cleared the journal. */
   onClear: () => Promise<boolean>;
-  onBridge: (id: string, answer: 'act' | 'dismiss') => Promise<BridgeOutcome>;
+  onBridge: BridgeAnswer;
   loadingMore?: boolean;
   fixture?: boolean;
 }) {
@@ -146,7 +192,7 @@ export function DecisionJournalView({ state, locale, dark, onBack, onRetry, onMo
 
 function ReadyJournal({ state, locale, t, onMore, onClear, onBridge, loadingMore }: {
   state: Extract<JournalState, { status: 'ready' }>; locale: Locale; t: Copy; onMore?: () => void; onClear: () => Promise<boolean>;
-  onBridge: (id: string, answer: 'act' | 'dismiss') => Promise<BridgeOutcome>; loadingMore: boolean;
+  onBridge: BridgeAnswer; loadingMore: boolean;
 }) {
   const emptyId = useId();
   const [confirming, setConfirming] = useState(false);

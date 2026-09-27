@@ -109,11 +109,21 @@ export async function clearJournal(request: NarrativeTransport): Promise<boolean
   return response.error === null;
 }
 
-export type BridgeOutcome = 'done' | 'closed' | 'error';
+export type BridgeOutcome = 'done' | 'closed' | 'no_wallet' | 'error';
+/** OD-28 (L-12): the goal an independent teen names on a savings prompt; Core creates it in the teen's own wallet. */
+export type SelfGoalDetails = { title: string; target: number };
+export type BridgeAnswer = (id: string, answer: 'act' | 'dismiss', goal?: SelfGoalDetails) => Promise<BridgeOutcome>;
 
-/** Acting on a self prompt records the teen's own commitment; it creates nothing and takes no details. */
-export async function answerSelfBridge(request: NarrativeTransport, id: string, answer: 'act' | 'dismiss'): Promise<BridgeOutcome> {
-  const response = await call(request, `/learn/bridges/${encodeURIComponent(id)}/${answer}`, { method: 'POST', body: {} });
+/**
+ * Acting on a self prompt records the teen's own commitment. On a savings
+ * prompt the teen may name a goal (OD-28, L-12): Core creates it in the teen's
+ * own wallet, or answers WALLET_UNAVAILABLE when the wallet does not admit them.
+ * A task prompt never takes details (tasks stay guardian-only).
+ */
+export async function answerSelfBridge(request: NarrativeTransport, id: string, answer: 'act' | 'dismiss', goal?: SelfGoalDetails): Promise<BridgeOutcome> {
+  const body = answer === 'act' && goal ? { title: goal.title.trim(), target: goal.target } : {};
+  const response = await call(request, `/learn/bridges/${encodeURIComponent(id)}/${answer}`, { method: 'POST', body });
   if (!response.error) return 'done';
+  if (response.error.code === 'WALLET_UNAVAILABLE') return 'no_wallet';
   return response.error.code === 'BRIDGE_CLOSED' || response.error.code === 'NOT_FOUND' ? 'closed' : 'error';
 }

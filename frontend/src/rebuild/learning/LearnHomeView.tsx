@@ -12,7 +12,7 @@ import { learningRhythmCopy } from './LearningRhythmView';
 import { fill, learnCopy, linkTo, plural, type LearnLinks, type LearnNavigate } from './learnCopy';
 import { courseIdentity, featuredCourse, isClosedByAge, isDone, isStarted, shelfOrder, type ShelfCourse, type ShelfState } from './learnHome';
 import type { RhythmState } from './motivation';
-import type { BridgeOutcome, SelfBridge } from './narrative';
+import type { BridgeAnswer, SelfBridge } from './narrative';
 
 /*
  * W2L.1 — L1, the learner home at /learn, inside the learner shell.
@@ -59,7 +59,7 @@ export interface LearnHomeProps {
   onNavigate: LearnNavigate;
   onRetry: () => void;
   retrying?: boolean;
-  onBridge: (id: string, answer: 'act' | 'dismiss') => Promise<BridgeOutcome>;
+  onBridge: BridgeAnswer;
   fixture?: boolean;
 }
 

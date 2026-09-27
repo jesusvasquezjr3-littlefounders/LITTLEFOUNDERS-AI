@@ -5,7 +5,7 @@ import '../design/system.css';
 import './narrative.css';
 import { SelfBridgeList, decisionJournalCopy } from './DecisionJournalView';
 import { learningRhythmCopy } from './LearningRhythmView';
-import type { BridgeOutcome, SelfBridge } from './narrative';
+import type { BridgeAnswer, SelfBridge } from './narrative';
 
 /*
  * B.9 / B.13 (S05.3c) — the learner's way in to their own story, placed on
@@ -26,7 +26,7 @@ export function LearnerNarrativeShortcut({ bridges, locale, dark, onOpenJournal,
   dark: boolean;
   onOpenJournal: () => void;
   onOpenRhythm?: () => void;
-  onBridge: (id: string, answer: 'act' | 'dismiss') => Promise<BridgeOutcome>;
+  onBridge: BridgeAnswer;
   fixture?: boolean;
 }) {
   const t = decisionJournalCopy[locale];

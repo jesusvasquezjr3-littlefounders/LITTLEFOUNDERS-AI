@@ -51,7 +51,7 @@ export function DecisionJournalRoute() {
     onRetry={() => setRevision((n) => n + 1)}
     onMore={() => void more()}
     onClear={() => clearJournal(transport)}
-    onBridge={(id, answer) => answerSelfBridge(transport, id, answer)} />;
+    onBridge={(id, answer, goal) => answerSelfBridge(transport, id, answer, goal)} />;
 }
 
 export default DecisionJournalRoute;

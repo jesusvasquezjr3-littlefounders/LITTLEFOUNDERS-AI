@@ -62,3 +62,5 @@
 .lf-learner-shortcut .lf-journal-section h2 { font-size: 1.5rem; }
 .lf-learner-shortcut > * { min-inline-size: 0; }
 .lf-learner-shortcut-link { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--spacing-2); }
+/* OD-28 (L-12): the teen's own goal from a savings prompt, a short form in the same card. */
+.lf-bridge-self-goal { display: grid; gap: var(--spacing-3); }

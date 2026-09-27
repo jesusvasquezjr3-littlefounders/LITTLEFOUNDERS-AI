@@ -80,7 +80,7 @@ export function LearnHomeRoute() {
   return <LearnHomeView locale={locale} dark={dark} ageBand={bandOf(register)} name={firstName} shelf={shelf} featured={featured}
     rhythm={rhythm} bridges={bridges} links={links} onNavigate={onNavigate} retrying={retrying}
     onRetry={() => { setRetrying(true); setRevision((n) => n + 1); }}
-    onBridge={(id, answer) => answerSelfBridge(transport, id, answer)}
+    onBridge={(id, answer, goal) => answerSelfBridge(transport, id, answer, goal)}
     graduation={graduation && register.status === 'ready' ? <RegisterGraduationView into={graduation.to} locale={locale} dark={dark}
       onAcknowledge={async () => {
         const saved = await acknowledgeGraduation(transport, graduation.to);
