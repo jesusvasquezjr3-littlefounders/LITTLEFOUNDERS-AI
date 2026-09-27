@@ -1,6 +1,6 @@
 /* C.19 check-in reply chips (Frontend Bible 08 §2 response area, §4 repair).
    A panel on the page with a surface fill and a soft shadow, never an outline
-   (Bible 02 §4.4); dark mode steps the surface instead of shadowing. No
+   (Bible 02 §4.4); dark mode steps the surface and keeps a soft shadow (OD-28, V-04). No
    animation of its own, so reduced motion needs no override: nothing moves. */
 .lf-rebuild.lf-check-in {
   padding: var(--spacing-4);
@@ -15,7 +15,6 @@
   min-block-size: 0;
   align-content: start;
 }
-.lf-rebuild.lf-check-in[data-theme='dark'] { box-shadow: none; }
 
 /* Two EQUAL chips: one column each, the same size and the same control, side
    by side where they fit and stacked where they do not. */
@@ -25,7 +24,7 @@
   gap: var(--spacing-3);
 }
 /* Sunken fill in both themes: on the surface panel the chips need their own
-   boundary, and in dark mode the control shadow is off (Bible 02 §4.4). */
+   boundary, and a dark control shadow alone is faint (Bible 02 §4.4). */
 .lf-check-in-chip {
   inline-size: 100%;
   min-block-size: var(--target-base);

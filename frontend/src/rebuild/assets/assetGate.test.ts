@@ -204,11 +204,49 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     for (const result of [missing, heavy, notWav, loud, long, click]) expect(result.status).toBe(1);
   });
 
+  it('holds a Lottie motion asset to 07 §5: its static frame, no text or gradient, token colours, 3 s and its generator (OD-28 V-12)', async () => {
+    const id = 'celebration.lesson-complete.confetti';
+    const json = (dir: string) => join(dir, 'public/rebuild/motion/lesson-confetti.json');
+    const patch = (dir: string, change: Partial<Row>) => writeManifest(dir, readManifest(dir).map((row) => (row.id === id ? { ...row, ...change } : row)));
+    type Item = Record<string, unknown> & { c?: { k: number[] } };
+    type Anim = { op: number; fr: number; layers: Array<Record<string, unknown> & { shapes?: Array<{ it: Item[] }> }> };
+    const edit = (dir: string, change: (anim: Anim) => void) => {
+      const anim = JSON.parse(readFileSync(json(dir), 'utf8')) as Anim;
+      change(anim);
+      writeFileSync(json(dir), JSON.stringify(anim));
+    };
+    const noStill = await mutate((dir) => patch(dir, { staticFrame: undefined }));
+    expect(noStill.output).toContain('A Lottie needs its reduced-motion static frame (07 §5)');
+    const wrongStill = await mutate((dir) => patch(dir, { staticFrame: '/rebuild/art/lesson-medal.svg' }));
+    expect(wrongStill.output).toContain(`A Lottie's static frame is a registered, live SVG of the same slot (07 §5): ${id}`);
+    const text = await mutate((dir) => edit(dir, (anim) => { anim.layers.push({ ty: 5, nm: 'caption', t: { d: { k: [] } } }); }));
+    expect(text.output).toContain('A motion asset never carries text (07 §5)');
+    const gradient = await mutate((dir) => edit(dir, (anim) => { anim.layers[0]!.shapes![0]!.it.push({ ty: 'gf', nm: 'glow' }); }));
+    expect(gradient.output).toContain('Lottie gradient; token fills only');
+    const offToken = await mutate((dir) => edit(dir, (anim) => { anim.layers[0]!.shapes![0]!.it[1]!.c!.k = [0.1, 0.2, 0.3, 1]; }));
+    expect(offToken.output).toMatch(/Lottie colour #1a334d is not a token colour/);
+    const long = await mutate((dir) => edit(dir, (anim) => { anim.op = 60 * 4; }));
+    expect(long.output).toContain('Lottie longer than 3 s or empty');
+    const fast = await mutate((dir) => edit(dir, (anim) => { anim.fr = 120; }));
+    expect(fast.output).toContain('Lottie frame rate must be at most 60 fps');
+    const untimed = await mutate((dir) => patch(dir, { motionTokens: ['--dur-slow'] }));
+    expect(untimed.output).toContain(`A motion asset maps to the motion tokens (07 §5): ${id}`);
+    const unplayed = await mutate((dir) => {
+      const view = join(dir, 'src/rebuild/learning/LessonResultView.tsx');
+      writeFileSync(view, readFileSync(view, 'utf8').split(id).join('celebration.lesson-complete.other'));
+    });
+    expect(unplayed.output).toContain(`Registered asset is referenced nowhere: ${id}`);
+    expect(unplayed.output).toContain('Registered asset is referenced nowhere: celebration.lesson-complete.confetti-still');
+    // Every edit above also drifts the file from its zero-spend generator.
+    expect(text.output).toContain('Asset does not match its generator scripts/generate-lesson-confetti.mjs; rerun it: /rebuild/motion/lesson-confetti.json');
+    for (const result of [noStill, wrongStill, text, gradient, offToken, long, fast, untimed, unplayed]) expect(result.status).toBe(1);
+  }, 600_000); // nine gate runs in a row: longer than the suite's 90 s budget on a loaded machine
+
   it('holds a sound cue to its generator, its review status and the draft-only wiring exemption', async () => {
     const { dir, rows, extra, attempt, patchRow } = soundTree();
     // A valid, gentle WAV that is not what the checked-in generator makes.
     const drift = await attempt(() => writeFileSync(join(dir, 'public/sounds/edu/not_yet.wav'), tone(0.3, 0.2, 22_050)));
-    expect(drift.output).toContain('Sound does not match its generator scripts/synthesize-not-yet-sound.mjs');
+    expect(drift.output).toContain('Asset does not match its generator scripts/synthesize-not-yet-sound.mjs');
     expect(drift.output).not.toContain('Sound cue');
     const approvedWithoutReviewer = await attempt(() => patchRow({ reviewStatus: 'approved' }));
     expect(approvedWithoutReviewer.output).toContain(`approvedBy must be set exactly when approved: ${soundId}`);

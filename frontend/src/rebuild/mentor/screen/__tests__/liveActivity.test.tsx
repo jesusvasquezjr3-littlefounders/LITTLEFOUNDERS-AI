@@ -4,6 +4,9 @@ import type { LiveSegmentState } from '../../session/useTutorSocket';
 import { LiveActivity, type ActivityGrade } from '../LiveActivity';
 import { activityView, answerOf, emptyDraft, parseNumber, plainText, traySum, type ActivityDraft } from '../liveActivityModel';
 import { mentorCopy } from '../MentorRoute';
+import { playLessonCue } from '../../../learning/lessonCue';
+
+vi.mock('../../../learning/lessonCue', async (importOriginal) => ({ ...(await importOriginal<object>()), playLessonCue: vi.fn() }));
 
 /*
  * W2M.4 (T1c): the live activity on the Mentor screen. The model reads the
@@ -20,7 +23,7 @@ const live = (segment: Record<string, unknown>, overrides: Partial<LiveSegmentSt
 const grade = (overrides: Partial<ActivityGrade> = {}): ActivityGrade =>
   ({ correct: true, score: 100, feedback: null, xpAwarded: 10, scoresXp: true, pedagogy: { echo: 'signed' }, ...overrides });
 
-afterEach(() => { vi.useRealTimers(); });
+afterEach(() => { vi.useRealTimers(); vi.mocked(playLessonCue).mockClear(); });
 
 describe('the activity model reads what the Mentor serves, in the grader’s shapes', () => {
   const answer = (segment: Record<string, unknown>, draft: Partial<ActivityDraft>) => {
@@ -114,6 +117,28 @@ describe('the live activity on the stage (T1c)', () => {
     fireEvent.click(screen.getByRole('button', { name: copy.check }));
     await waitFor(() => expect(onDone).toHaveBeenCalledWith(expect.objectContaining({ attempt: 2, correct: false })));
     expect(check).toHaveBeenLastCalledWith('seg-1', { option_id: 'b' }, 2);
+  });
+
+  it('plays the gentle "not yet" cue on a miss and the success cue on a right answer, never on a failed check (OD-28 L-02)', async () => {
+    const miss = vi.fn(async () => grade({ correct: false, score: 0, feedback: null }));
+    const first = render(<LiveActivity live={live(quiz)} copy={copy} locale="en-US" headingId="h" grade={miss} onDone={vi.fn()} demo={null} />);
+    fireEvent.click(screen.getByRole('button', { name: /Spending money/u }));
+    fireEvent.click(screen.getByRole('button', { name: copy.check }));
+    await waitFor(() => expect(playLessonCue).toHaveBeenCalledWith('review'));
+    first.unmount();
+    vi.mocked(playLessonCue).mockClear();
+    const right = render(<LiveActivity live={live(quiz)} copy={copy} locale="en-US" headingId="h" grade={async () => grade()} onDone={vi.fn()} demo={null} />);
+    fireEvent.click(screen.getByRole('button', { name: /Keeping money/u }));
+    fireEvent.click(screen.getByRole('button', { name: copy.check }));
+    await waitFor(() => expect(playLessonCue).toHaveBeenCalledWith('met'));
+    expect(playLessonCue).not.toHaveBeenCalledWith('review');
+    right.unmount();
+    vi.mocked(playLessonCue).mockClear();
+    render(<LiveActivity live={live(quiz)} copy={copy} locale="en-US" headingId="h" grade={async () => null} onDone={vi.fn()} demo={null} />);
+    fireEvent.click(screen.getByRole('button', { name: /Keeping money/u }));
+    fireEvent.click(screen.getByRole('button', { name: copy.check }));
+    expect(await screen.findByText(copy.failed)).toBeInTheDocument();
+    expect(playLessonCue).not.toHaveBeenCalled();
   });
 
   it('a failed check keeps the answer and says so; it is never a wrong answer', async () => {

@@ -1,7 +1,7 @@
-import { useEffect, useRef, type CSSProperties } from 'react';
+import { useEffect, useRef } from 'react';
 import { z } from 'zod';
 import type { Locale } from '../design/copyBudget';
-import { Button, Celebration, celebrationPart, CountUp, InlineNotice } from '../design/controls';
+import { Button, Celebration, celebrationPart, CountUp, InlineNotice, MotionAsset } from '../design/controls';
 import { mayCelebrate, streakMilestone } from '../design/milestones';
 import { REGISTERS, type LearnerRegister } from '../design/learnerRegisterPolicy.generated';
 import { CourseBadge } from './CourseBadge';
@@ -86,29 +86,18 @@ const copy: Record<Locale, { done: string; preview: string; score: (correct: num
 
 /*
  * OD-28 (owner review item V-12): lesson completion gets a confetti burst. It is
- * part of the lesson-complete milestone moment (OD-7, B.20), so it is mounted
- * only inside the `Celebration` the screen opens when Core names that milestone:
- * a playing celebration bursts once (700 ms, the celebration budget), and reduced
- * motion, a revisit or a settled moment show the designated static frame (07 §5)
- * with every piece already landed. Decorative only: hidden from assistive tech,
- * no text, token colours, never interactive.
+ * the registered in-house motion asset `celebration.lesson-complete.confetti`
+ * (07 §5, scripts/generate-lesson-confetti.mjs), part of the lesson-complete
+ * milestone moment (OD-7, B.20): mounted only inside the `Celebration` the
+ * screen opens when Core names that milestone. `MotionAsset` plays it once
+ * while that celebration plays and shows its designated static frame for
+ * reduced motion, a revisit or a settled moment. Every piece lands above its
+ * anchor (the medal's centre, or the hero's top edge when the register shows no
+ * medal), so none sits on the heading. Decorative only.
  */
-const CONFETTI: ReadonlyArray<{ x: number; y: number; turn: number; tone: string; shape: 'dot' | 'bar' }> = [
-  { x: -150, y: -70, turn: -30, tone: 'mint', shape: 'bar' }, { x: -118, y: -26, turn: 40, tone: 'berry', shape: 'dot' },
-  { x: -92, y: -118, turn: 15, tone: 'sky', shape: 'bar' }, { x: -64, y: -34, turn: -55, tone: 'warning', shape: 'bar' },
-  { x: -40, y: -96, turn: 70, tone: 'on-accent', shape: 'dot' }, { x: -18, y: -140, turn: -20, tone: 'mint', shape: 'dot' },
-  { x: 20, y: -128, turn: 35, tone: 'berry', shape: 'bar' }, { x: 46, y: -84, turn: -65, tone: 'warning', shape: 'dot' },
-  { x: 70, y: -30, turn: 25, tone: 'sky', shape: 'dot' }, { x: 96, y: -112, turn: -40, tone: 'on-accent', shape: 'bar' },
-  { x: 124, y: -22, turn: 55, tone: 'mint', shape: 'bar' }, { x: 152, y: -62, turn: -15, tone: 'berry', shape: 'dot' },
-];
-
 function LessonConfetti({ medal }: { medal: boolean }) {
-  // Every piece lands above its anchor (the medal's centre, or the hero's top edge
-  // when the register shows no medal), so no piece ever sits on the heading.
   return <span className={`lf-result-confetti${medal ? ' lf-result-confetti--medal' : ''}`} aria-hidden="true" data-celebrate="lesson-complete">
-    {CONFETTI.map((piece, index) => <span key={index} className={`lf-result-confetti-piece lf-result-confetti-piece--${piece.shape}`}
-      style={{ '--lf-confetti-x': `${piece.x}px`, '--lf-confetti-y': `${piece.y}px`, '--lf-confetti-turn': `${piece.turn}deg`,
-        '--lf-confetti-tone': `var(--${piece.tone})`, '--lf-confetti-order': index % 4 } as CSSProperties} />)}
+    <MotionAsset assetId="celebration.lesson-complete.confetti" />
   </span>;
 }
 

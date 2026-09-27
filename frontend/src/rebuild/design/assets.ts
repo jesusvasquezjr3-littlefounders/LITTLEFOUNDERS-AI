@@ -4,6 +4,8 @@ import manifest from '../assets/manifest.json';
 export interface ManifestAsset {
   id: string; class: string; type: string; path: string; slot: string; aspect?: string; modes: string;
   character?: string; poseId?: string; sourceModel?: string; background?: string; altKey: string; reviewStatus: string;
+  /** A Lottie's reduced-motion still (07 §5): the path of a registered SVG of the same slot (the asset gate checks it). */
+  staticFrame?: string; reviewFamily?: string;
 }
 
 /** The slot every Mentor avatar fills: square, transparent, a real-model render (02 §9.7, 07 §4). */

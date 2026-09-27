@@ -27,6 +27,14 @@ import { inflateSync } from 'node:zlib';
  *   not `approved` (07 §6: "The build fails if a component references an
  *   asset that is not in the manifest, or one that is not approved").
  *
+ *   Motion assets (type `lottie`, 07 §5; first one: OD-28 V-12, the lesson-complete
+ *   confetti): the file parses as a Lottie, plays at most 60 fps for at most 3 s,
+ *   carries no text, raster, gradient or expression, fills only with token
+ *   colours under the same hue rules as SVG art, and names its reduced-motion
+ *   `staticFrame`, which must be a registered, live SVG of the same slot.
+ *   A row may name a checked-in `generator` (scripts/*.mjs exporting
+ *   `synthesize(path)`); the file must equal its output byte for byte.
+ *
  *   Sound cues (type `wav`) are class B rows too; 07 has no audio section, so
  *   how its §6 fields and §7 gate apply to a sound is written beside the
  *   SOUND_* constants below (first cue: OD-28 L-02, the gentle "not yet").
@@ -226,6 +234,8 @@ for (const [, name, hex] of tokenSheet.matchAll(/--([\w-]+):\s*(#[0-9a-f]{6})\b/
   if (!HUES.includes(family)) hueOf.set(value, null); // a neutral wins over a hue that shares its value (white)
   else if (!hueOf.has(value)) hueOf.set(value, family);
 }
+// The motion tokens a motion asset may name (04 §2): durations and easings from the generated sheet and system.css.
+const motionTokenNames = new Set([...(tokenSheet + readFileSync(resolve(root, 'src/rebuild/design/system.css'), 'utf8')).matchAll(/(--(?:dur|ease)-[\w-]+)\s*:/g)].map((m) => m[1]));
 const locales = ['en-US', 'es-MX', 'pt-BR'];
 // Every rebuilt namespace (`src/i18n/<locale>/rebuild-<lane>.json`, one per wave-2 lane), merged: an altKey names its full key path.
 const rebuildCopy = (locale) => Object.assign({}, ...readdirSync(resolve(root, `src/i18n/${locale}`)).filter((file) => /^rebuild-[a-z]+\.json$/.test(file)).sort()
@@ -362,6 +372,46 @@ for (const asset of classB) {
     if (hues.has('accent')) fail(`The accent is the call to action only, never art (02 §4.2): ${asset.path}`);
     if (hues.size > 3) fail(`More than 3 hues in one asset (07 §3): ${[...hues].join(', ')} in ${asset.path}`);
     if (/\brgba?\(|\bhsla?\(/i.test(svg)) fail(`SVG colour outside the token palette: ${asset.path}`);
+  } else if (asset.type === 'lottie') {
+    let anim = null;
+    try { anim = JSON.parse(bytes.toString('utf8')); } catch { fail(`Not a Lottie JSON: ${asset.path}`); }
+    if (anim) {
+      const frames = anim.op - anim.ip;
+      if (!(anim.fr > 0 && anim.fr <= 60)) fail(`Lottie frame rate must be at most 60 fps (07 §3.2): ${asset.path}`);
+      if (!(frames > 0) || frames / anim.fr > 3) fail(`Lottie longer than 3 s or empty (07 §3.2, §5): ${asset.path}`);
+      if (asset.aspect) {
+        const [w, h] = asset.aspect.split(':').map(Number);
+        if (!(anim.w > 0 && anim.h > 0) || Math.abs(anim.w / anim.h - w / h) > 0.01) fail(`Lottie aspect differs from the manifest: ${asset.path}`);
+      }
+      const layers = [...(anim.layers ?? []), ...(anim.assets ?? []).flatMap((entry) => entry.layers ?? [])];
+      if (layers.some((layer) => layer.ty === 5)) fail(`A motion asset never carries text (07 §5): ${asset.path}`);
+      if (layers.some((layer) => layer.ty === 2) || (anim.assets ?? []).some((entry) => typeof entry.p === 'string')) fail(`Lottie embeds a raster image; flat in-house shapes only: ${asset.path}`);
+      const colours = [];
+      const visit = (node) => {
+        if (Array.isArray(node)) { node.forEach(visit); return; }
+        if (!node || typeof node !== 'object') return;
+        if (typeof node.x === 'string') fail(`Lottie expression found; motion is keyframed only: ${asset.path}`);
+        if (node.ty === 'gf' || node.ty === 'gs') fail(`Lottie gradient; token fills only (02 rule 2, 07 §3): ${asset.path}`);
+        if ((node.ty === 'fl' || node.ty === 'st') && node.c) {
+          const values = node.c.a ? (node.c.k ?? []).map((key) => key.s) : [node.c.k];
+          for (const value of values) {
+            if (!Array.isArray(value) || value.length < 3) { fail(`Lottie colour is not an RGB value: ${asset.path}`); continue; }
+            colours.push(`#${value.slice(0, 3).map((channel) => Math.round(channel * 255).toString(16).padStart(2, '0')).join('')}`);
+          }
+        }
+        Object.values(node).forEach(visit);
+      };
+      visit(anim.layers ?? []);
+      if (!colours.length) fail(`Lottie fills nothing: ${asset.path}`);
+      for (const colour of colours) if (!tokenColours.has(colour)) fail(`Lottie colour ${colour} is not a token colour (07 §3, §7): ${asset.path}`);
+      const hues = new Set(colours.map((colour) => hueOf.get(colour)).filter(Boolean));
+      if (hues.has('error')) fail(`Error red never appears in our own art (07 §3, 02 §4.2): ${asset.path}`);
+      if (hues.has('accent')) fail(`The accent is the call to action only, never art (02 §4.2): ${asset.path}`);
+      if (hues.size > 3) fail(`More than 3 hues in one asset (07 §3): ${[...hues].join(', ')} in ${asset.path}`);
+    }
+    if (!asset.motionTokens.length || asset.motionTokens.some((token) => !motionTokenNames.has(token))) fail(`A motion asset maps to the motion tokens (07 §5): ${where}`);
+    const frame = classB.find((entry) => entry.path === asset.staticFrame);
+    if (!frame || frame.type !== 'svg' || frame.reviewStatus === 'retired' || frame.slot !== asset.slot) fail(`A Lottie's static frame is a registered, live SVG of the same slot (07 §5): ${where}`);
   } else if (sound) {
     const wav = readWav(bytes);
     if (!wav || wav.encoding !== 1 || wav.channels !== 1 || wav.bits !== 16 || !wav.samples?.length || wav.sampleRate < 8000 || wav.sampleRate > 48000) {
@@ -376,19 +426,22 @@ for (const asset of classB) {
       if (dbfs < SOUND_FLOOR_DBFS) fail(`Sound cue is silent (${dbfs.toFixed(1)} dBFS): ${asset.path}`);
       if (Math.max(Math.abs(wav.samples[0]), Math.abs(wav.samples[wav.samples.length - 1])) > SOUND_EDGE * 32768) fail(`Sound cue starts or ends on a click (no fade): ${asset.path}`);
     }
-    if ('generator' in asset) {
-      if (typeof asset.generator !== 'string' || !/^scripts\/[a-z0-9-]+\.mjs$/.test(asset.generator)) fail(`A generator is a script under scripts/: ${where}`);
-      else {
-        try {
-          const { synthesize } = await import(pathToFileURL(resolve(frontendRoot, asset.generator)).href);
-          if (!Buffer.from(synthesize()).equals(bytes)) fail(`Sound does not match its generator ${asset.generator}; rerun it: ${asset.path}`);
-        } catch (error) { fail(`Generator ${asset.generator} could not synthesize (${error.message}): ${where}`); }
-      }
+  }
+  // Any generated asset (a sound cue, the confetti and its still) must equal its zero-spend generator's output (OD-23).
+  if ('generator' in asset) {
+    if (typeof asset.generator !== 'string' || !/^scripts\/[a-z0-9-]+\.mjs$/.test(asset.generator)) fail(`A generator is a script under scripts/: ${where}`);
+    else {
+      try {
+        const { synthesize } = await import(pathToFileURL(resolve(frontendRoot, asset.generator)).href);
+        if (!Buffer.from(synthesize(asset.path)).equals(bytes)) fail(`Asset does not match its generator ${asset.generator}; rerun it: ${asset.path}`);
+      } catch (error) { fail(`Generator ${asset.generator} could not synthesize (${error.message}): ${where}`); }
     }
   }
   // Referenced somewhere, by path or id (an avatar is found by its slot; a sound by its /sounds/ path).
+  // A Lottie's static frame is shown by the component that shows the Lottie (07 §5), so it is referenced with it.
   const referenced = sound ? soundRefs.some((ref) => ref.literal === asset.path)
-    : asset.slot === AVATAR_SLOT || pathRefs.some((ref) => ref.re.test(asset.path)) || idRefs.some((ref) => ref.re.test(asset.id));
+    : asset.slot === AVATAR_SLOT || pathRefs.some((ref) => ref.re.test(asset.path)) || idRefs.some((ref) => ref.re.test(asset.id))
+      || classB.some((entry) => entry.type === 'lottie' && entry.reviewStatus !== 'retired' && entry.staticFrame === asset.path && idRefs.some((ref) => ref.re.test(entry.id)));
   const awaitingWiring = sound && asset.reviewStatus === 'draft' && typeof asset.wiring === 'string' && asset.wiring.trim().length > 0;
   if (asset.reviewStatus !== 'retired' && !referenced && !awaitingWiring) fail(`Registered asset is referenced nowhere: ${asset.id}`);
   if (release && asset.reviewStatus !== 'approved') fail(`Unapproved asset blocks the build (07 §6): ${asset.path}`);

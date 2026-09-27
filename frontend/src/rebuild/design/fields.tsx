@@ -181,11 +181,21 @@ export function PictureChoice<T extends string>({ legend, legendRole = 'body', n
  * technology only (no hidden text node) when a visible heading right above
  * already says it.
  */
-export function SegmentedControl<T extends string>({ legend, legendHidden = false, name, options, value, onValueChange, disabled, className }: {
+export function SegmentedControl<T extends string>({ legend, legendHidden = false, name, options, value, onValueChange, disabled, className, size = 'md' }: {
   legend: string; legendHidden?: boolean; name: string; options: readonly ChoiceOption<T>[]; value: T | null; onValueChange: (value: T) => void;
   disabled?: boolean; className?: string;
+  /**
+   * `compact` (OD-28, owner review item V-13): on a phone-width container the
+   * options take less padding, a smaller gap and a smaller check, so the control
+   * can share a row with the action beside it. The 48 px target floor, the check
+   * mark and the type step never change (02 §8).
+   */
+  size?: 'md' | 'compact';
 }) {
-  return <fieldset className={`lf-segmented${className ? ` ${className}` : ''}`} disabled={disabled} aria-label={legendHidden ? legend : undefined}>
+  const classes = ['lf-segmented'];
+  if (size === 'compact') classes.push('lf-segmented--compact');
+  if (className) classes.push(className);
+  return <fieldset className={classes.join(' ')} disabled={disabled} aria-label={legendHidden ? legend : undefined}>
     {legendHidden ? null : <legend className="lf-input-label" data-copy-role="body">{legend}</legend>}
     <div className="lf-segmented-options">
       {options.map((option) => <label key={option.value} className="lf-segmented-option">

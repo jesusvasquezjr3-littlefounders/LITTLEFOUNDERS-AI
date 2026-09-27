@@ -12,7 +12,7 @@
 
 .lf-territory-worlds { display: grid; gap: var(--spacing-5); align-items: start; margin: 0; padding: 0; list-style: none; }
 .lf-territory-world > article { display: grid; gap: var(--spacing-4); padding: var(--spacing-4); border-radius: var(--rounded-lg); background: var(--surface); color: var(--content); box-shadow: var(--elevation-card); }
-.lf-rebuild[data-theme='dark'] .lf-territory-world > article { background: var(--raised); box-shadow: none; }
+.lf-rebuild[data-theme='dark'] .lf-territory-world > article { background: var(--raised); }
 /* Where the learner is: the card itself takes the soft primary well, and its tag the solid fill (colour plus the words "You are here"). */
 .lf-territory-world--here > article, .lf-rebuild[data-theme='dark'] .lf-territory-world--here > article { background: var(--primary-soft); }
 .lf-territory-world--here .lf-territory-world-head > .lf-course-path-tag { background: var(--primary); color: var(--on-primary); }

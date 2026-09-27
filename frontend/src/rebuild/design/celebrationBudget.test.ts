@@ -53,6 +53,8 @@ const EFFECTS: Array<{ name: string; pattern: RegExp }> = [
   // S05.3g lane review: the fanfare and the cast's celebrate action were not scanned.
   { name: 'celebration sound', pattern: /playSfx\(\s*['"]celebration['"]/ },
   { name: 'character celebrate action', pattern: /action=\{[^}\n]*['"]celebrate['"]/ },
+  // OD-28 (V-12): a celebration motion asset (07 §5), e.g. the lesson-complete confetti.
+  { name: 'celebration motion asset', pattern: /<MotionAsset\b|celebration\.[a-z-]+\.[a-z-]+['"]/ },
 ];
 
 /*
@@ -98,6 +100,8 @@ const DEFINITIONS: Record<string, string> = {
 };
 
 const MOUNTS: Record<string, string[]> = {
+  // The component itself also refuses to show anything outside a closed-list Celebration (MotionAsset.test.tsx).
+  MotionAsset: ['rebuild/learning/LessonResultView.tsx'],
   StreakCelebration: ['lesson-engine/player/LessonPlayer.tsx'],
   GamificationCelebration: ['tutor/ConversationView.tsx'],
 };

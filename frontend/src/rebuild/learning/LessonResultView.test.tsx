@@ -116,10 +116,12 @@ describe('lesson result receipt boundary', () => {
         expect(confetti.getAttribute('data-celebrate')).toBe('lesson-complete');
         expect(confetti.textContent).toBe('');
         expect(confetti.closest('[data-milestone="lesson-complete"]')).toBeTruthy();
-        // The static frame lands every piece above its anchor, never on the heading.
-        for (const piece of confetti.querySelectorAll<HTMLElement>('.lf-result-confetti-piece')) {
-          expect(Number.parseFloat(piece.style.getPropertyValue('--lf-confetti-y'))).toBeLessThan(0);
-        }
+        // The registered motion asset (07 §5): without motion it shows its designated static frame, decorative.
+        const asset = confetti.querySelector('[data-asset-id="celebration.lesson-complete.confetti"]');
+        expect(asset).not.toBeNull();
+        const still = asset!.querySelector('img');
+        expect(still?.getAttribute('src')).toBe('/rebuild/motion/lesson-confetti-still.svg');
+        expect(still?.getAttribute('alt')).toBe('');
       }
       unmount();
     }

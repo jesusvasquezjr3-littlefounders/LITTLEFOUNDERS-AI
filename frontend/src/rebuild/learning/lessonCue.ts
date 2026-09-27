@@ -2,8 +2,9 @@
  * The v2 lesson's answer cues (OD-28, owner review item L-02; B.26).
  *
  * A correct answer plays the product's success cue; a "not yet" plays the
- * gentle rising not-yet cue (synthesised in-house by
- * `scripts/generate-not-yet-sound.mjs`, zero spend), never an error buzzer.
+ * gentle not-yet cue (synthesised in-house by
+ * `scripts/synthesize-not-yet-sound.mjs`, zero spend), never an error buzzer.
+ * The v2 lesson's feedback row and the Mentor's live activity both play it.
  * Only answer verdicts sound: an invalid or incomplete answer and a failed check
  * stay silent, and no cue is ever a celebration (D7).
  *

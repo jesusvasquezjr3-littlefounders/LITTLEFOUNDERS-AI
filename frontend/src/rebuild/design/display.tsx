@@ -146,11 +146,13 @@ export function ProgressBar({ label, value, max, valueText, tone = 'primary', la
 }
 
 /**
- * Static placeholder shapes. There is deliberately no shimmer: idle motion is
- * budgeted to three things per screen (02 §9.4) and a loading state is not one.
+ * Placeholder shapes while something loads. They shimmer (OD-28, owner review
+ * item V-04): busy motion, not one of the three idle slots (motion.tsx), it
+ * stops when the content arrives and is off under reduced motion, where the
+ * shapes stay still. Decorative: the status words beside them carry the meaning.
  */
 export function Skeleton({ lines = 3 }: { lines?: number }) {
-  return <span className="lf-skeleton" aria-hidden="true">
+  return <span className="lf-skeleton" aria-hidden="true" data-busy-motion="shimmer">
     {Array.from({ length: lines }, (_, index) => <span key={index} className="lf-skeleton-line" />)}
   </span>;
 }

@@ -1,7 +1,7 @@
 /* C.15 / C.7 surfaces: the goal chips, the end-of-session bond proxy and the
    learner disposition profile (Frontend Bible 08 §2 response area; Bible 02
    §4.4 panels). A panel on the page with a surface fill and a soft shadow,
-   never an outline; dark mode steps the surface instead of shadowing. No
+   never an outline; dark mode steps the surface and keeps a soft shadow (OD-28, V-04). No
    animation of its own, so reduced motion needs no override: nothing moves. */
 .lf-rebuild.lf-alliance-panel {
   padding: var(--spacing-4);
@@ -17,7 +17,6 @@
   min-block-size: 0;
   align-content: start;
 }
-.lf-rebuild.lf-alliance-panel[data-theme='dark'] { box-shadow: none; }
 
 .lf-alliance-question { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
 
@@ -36,7 +35,7 @@
   .lf-alliance-chips--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 /* Sunken fill in both themes: on the surface panel the chips need their own
-   boundary, and in dark mode the control shadow is off (Bible 02 §4.4). */
+   boundary, and a dark control shadow alone is faint (Bible 02 §4.4). */
 .lf-alliance-chip {
   inline-size: 100%;
   min-block-size: var(--target-base);

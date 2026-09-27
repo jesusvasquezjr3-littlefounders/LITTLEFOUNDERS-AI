@@ -25,6 +25,8 @@
 .lf-rebuild .lf-button--lg { min-block-size: var(--target-lg); padding: var(--spacing-3) var(--spacing-8); font: var(--type-button-lg); }
 .lf-rebuild .lf-button--pending { cursor: progress; }
 .lf-rebuild .lf-button.lf-button--pending:active { transform: none; }
+/* OD-28 (V-04): the pending spinner beside the changed label, a ring in the label's own colour; it turns only in motion.css. */
+.lf-rebuild .lf-button-spinner { display: inline-block; flex-shrink: 0; inline-size: 1em; block-size: 1em; margin-inline-end: var(--spacing-2); border: 2px solid currentColor; border-block-start-color: transparent; border-radius: var(--rounded-full); }
 .lf-rebuild .lf-button-group { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
 .lf-rebuild .lf-button-group > * { flex: 1 1 auto; }
 
@@ -173,6 +175,16 @@
 .lf-rebuild .lf-segmented-option > span { min-inline-size: calc(var(--target-min) - var(--spacing-4) * 2); text-align: center; }
 .lf-rebuild .lf-segmented-input { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; margin: 0; opacity: 0; cursor: pointer; }
 .lf-rebuild .lf-segmented-option:has(.lf-segmented-input:checked) { background: var(--primary); color: var(--on-primary); }
+/*
+ * OD-28 (V-13): the compact size, for a phone-width container only. Less padding, a smaller gap and a 16 px check,
+ * so the control shares a row with the action beside it; every option keeps the 48 px target in both directions.
+ */
+@container app (max-width: 639px) {
+  .lf-rebuild .lf-segmented--compact .lf-segmented-options { gap: var(--spacing-1); }
+  .lf-rebuild .lf-segmented--compact .lf-segmented-option { gap: var(--spacing-1); padding: var(--spacing-2); }
+  .lf-rebuild .lf-segmented--compact .lf-segmented-option > span { min-inline-size: calc(var(--target-min) - var(--spacing-2) * 2); }
+  .lf-rebuild .lf-segmented--compact .lf-segmented-option .lf-system-glyph { inline-size: var(--spacing-4); block-size: var(--spacing-4); }
+}
 .lf-rebuild .lf-segmented-option:has(.lf-segmented-input:disabled) { color: var(--content-disabled); cursor: default; }
 
 /* ---- Switch: thumb position, a check and the state word change together ---- */
@@ -366,7 +378,9 @@
 .lf-rebuild .lf-progress--bare { gap: 0; align-content: center; }
 
 .lf-rebuild .lf-skeleton { display: grid; gap: var(--spacing-2); }
-.lf-rebuild .lf-skeleton-line { display: block; block-size: var(--spacing-4); border-radius: var(--rounded-full); background: var(--sunken); }
+.lf-rebuild .lf-skeleton-line { position: relative; display: block; overflow: hidden; block-size: var(--spacing-4); border-radius: var(--rounded-full); background: var(--sunken); }
+/* OD-28 (V-04): the shimmer's soft band, invisible and still here; it sweeps only in motion.css (reduced motion keeps the shapes still). */
+.lf-rebuild .lf-skeleton-line::after { content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; inline-size: 40%; background: var(--surface); opacity: 0; }
 .lf-rebuild .lf-skeleton-line:nth-child(3n + 2) { inline-size: 85%; }
 .lf-rebuild .lf-skeleton-line:nth-child(3n) { inline-size: 60%; }
 .lf-rebuild .lf-loading { display: grid; gap: var(--spacing-3); min-inline-size: 0; }

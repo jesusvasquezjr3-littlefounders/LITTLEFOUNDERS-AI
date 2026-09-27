@@ -18,7 +18,7 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: ButtonSize;
   /** A request this button started is in flight: it stays focusable, refuses a second press and says so. */
   pending?: boolean;
-  /** Replaces the label while pending, e.g. "Saving…". The width may grow; text never truncates. */
+  /** Replaces the label while pending, e.g. "Saving…", with a spinner beside it (OD-28, V-04). The width may grow; text never truncates. */
   pendingLabel?: string;
   /**
    * The one emphasised call to action on the screen breathes: a slow halo in
@@ -47,7 +47,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   const motion = { onAnimationEnd: animationEnd, 'data-idle-motion': breathes ? 'breathing-cta' : undefined };
   if (!pending) return <button {...props} {...motion} ref={ref} type={props.type ?? 'button'} className={classes.join(' ')} data-copy-role="action">{children}</button>;
   return <button {...props} {...motion} ref={ref} type={props.type === 'submit' ? 'button' : props.type ?? 'button'} className={classes.join(' ')} data-copy-role="action"
-    aria-busy="true" aria-disabled="true" onClick={(event: MouseEvent<HTMLButtonElement>) => event.preventDefault()}>{pendingLabel ?? children}</button>;
+    aria-busy="true" aria-disabled="true" onClick={(event: MouseEvent<HTMLButtonElement>) => event.preventDefault()}>
+    {/* OD-28 (V-04): a spinner beside the changed label, busy motion (motion.tsx); still under reduced motion, never the only signal. */}
+    <span className="lf-button-spinner" aria-hidden="true" data-busy-motion="spinner" />{pendingLabel ?? children}</button>;
 });
 
 export type IconButtonVariant = 'secondary' | 'soft' | 'inverse';

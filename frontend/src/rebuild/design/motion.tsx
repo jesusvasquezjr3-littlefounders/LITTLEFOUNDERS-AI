@@ -37,6 +37,27 @@ export function releaseIdleMotion(kind: IdleMotionKind, holder: symbol) {
   for (const wake of [...waiting]) wake();
 }
 
+/**
+ * Busy motion (OD-28, owner review item V-04): the loading placeholder's
+ * shimmer and the pending button's spinner. They are progress indicators, not
+ * idle "the scene is alive" loops, so they take no slot of the three (02 §9.4)
+ * and are budgeted separately by this contract:
+ *
+ *   - they run only while work is in flight: a shimmer only on the shared
+ *     loading placeholder (`Skeleton`), a spinner only on a pending button
+ *     (`aria-busy="true"`, beside its changed label), and each is gone the
+ *     moment the request settles;
+ *   - every busy loop is marked `data-busy-motion` with its kind, so the audit
+ *     driver can tell it from an unbudgeted loop, and no other loop may carry
+ *     the mark;
+ *   - they are small and in place (no travel across the screen, 04 §3) and,
+ *     like every animation here, exist only under
+ *     `prefers-reduced-motion: no-preference`: with reduced motion the
+ *     placeholder is still and the spinner is a still ring beside the label.
+ */
+export type BusyMotionKind = 'shimmer' | 'spinner';
+export const BUSY_MOTION_KINDS: readonly BusyMotionKind[] = ['shimmer', 'spinner'];
+
 /** The slots in use right now (tests and the audit driver read this). */
 export function activeIdleMotion(): IdleMotionKind[] {
   return IDLE_MOTION_KINDS.filter((kind) => holders.has(kind));
@@ -110,7 +131,16 @@ export function resetCelebrationsForTest() {
 }
 
 export type CelebrationState = 'playing' | 'settled' | 'static' | 'refused';
-const CelebrationContext = createContext<CelebrationState>('static');
+const CelebrationContext = createContext<CelebrationState | null>(null);
+
+/**
+ * The state of the milestone celebration around a component, or null outside
+ * one. A celebration motion asset (`MotionAsset`) plays only while this is
+ * `playing` and is refused outside a closed-list milestone (07 §5, OD-7).
+ */
+export function useCelebrationState(): CelebrationState | null {
+  return useContext(CelebrationContext);
+}
 
 /**
  * The only celebration in the rebuilt frontend (02 §9.2, D7, OD-7): a milestone

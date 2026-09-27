@@ -50,6 +50,12 @@ test('structure red team: timers, autoplay, timed navigation, unclosable dialogs
   const tsx = (code) => structuralFindings('frontend/src/rebuild/x/Sample.tsx', code).map((finding) => finding.item);
   assert.deepEqual(tsx('<div role="timer">{secondsLeft}</div>'), ['DP-01']);
   assert.deepEqual(tsx('<video autoPlay />'), ['DP-03']);
+  // OD-28 V-12: only the shared celebration motion asset may autoplay, and only a one-shot (never a loop, never elsewhere).
+  const motion = (code) => structuralFindings('frontend/src/rebuild/design/MotionAsset.tsx', code).map((finding) => finding.item);
+  assert.deepEqual(motion('<DotLottieReact src={src} autoplay loop={false} />'), []);
+  assert.deepEqual(motion('<DotLottieReact src={src} autoplay loop />'), ['DP-03']);
+  assert.deepEqual(motion('<video autoPlay loop={false} />'), ['DP-03']);
+  assert.deepEqual(tsx('<DotLottieReact src={src} autoplay loop={false} />'), ['DP-03']);
   assert.deepEqual(tsx('useEffect(() => { setTimeout(() => navigate("/learn/next"), 3000); }, []);'), ['DP-03']);
   assert.deepEqual(tsx('setTimeout(sequence.onAdvance, 650);'), []);
   assert.deepEqual(tsx('<section role="dialog" aria-modal="true"><p>Stay</p></section>'), ['DP-03']);

@@ -171,7 +171,7 @@ describe('overlay and shell stylesheet contract (S03.2)', () => {
     for (const side of ['top', 'bottom', 'left', 'right']) expect(overlays, side).toContain(`env(safe-area-inset-${side})`);
   });
 
-  it('separates overlays by the raised surface step in dark mode, never by a shadow or an outline (02 §5)', () => {
+  it('separates overlays by the raised surface step in dark mode (plus the dark soft shadow, OD-28 V-04), never by an outline (02 §5)', () => {
     expect(overlays).toMatch(/\[data-theme='dark'\] :is\(\.lf-dialog, \.lf-sheet--bottom, \.lf-popover, \.lf-menu\) \{ background: var\(--raised\); \}/);
     for (const rule of rules(overlays + shells)) expect(rule.body, rule.selector).not.toMatch(/(?:^|;)\s*border(?:-[a-z-]+)?:\s*(?!0)[^;]*(?:outline|edge)/);
   });
@@ -183,15 +183,23 @@ describe('generated tokens', () => {
     expect(execFileSync(process.execPath, [script, '--check'], { encoding: 'utf8' })).toContain('match the binding specification');
   });
 
-  it('carry typography, elevation, focus and motion, with dark mode separating by surface step', () => {
+  it('carry typography, elevation, focus and motion, with dark mode keeping a soft shadow as well as its surface step (OD-28, V-04)', () => {
     for (const token of ['--type-button:', '--type-label:', '--type-caption:', '--type-numeral:', '--elevation-card:', '--elevation-control:',
       '--elevation-float:', '--focus-width: 3px', '--focus-offset: 3px', '--focus-color: var(--primary-strong)', '--dur-instant: 80ms',
       '--dur-micro: 150ms', '--dur-component: 250ms', '--dur-transition: 380ms', '--dur-celebration: 700ms', '--ease-standard:', '--press-scale: 0.97']) {
       expect(tokens).toContain(token);
     }
-    const dark = (tokens.split('.lf-rebuild[data-theme="dark"]')[1] ?? '').split('}')[0];
-    expect(dark).toContain('--elevation-card: none');
-    expect(dark).toContain('--elevation-control: none');
+    const dark = (tokens.split('.lf-rebuild[data-theme="dark"]')[1] ?? '').split('}')[0] ?? '';
+    // OD-28 (V-04) overrides 02 §5 "never a shadow": the same geometry, cast in the dark sunken colour, soft (alpha <= .6).
+    for (const name of ['card', 'control', 'float']) {
+      const value = dark.match(new RegExp(`--elevation-${name}: ([^;]+);`))?.[1] ?? 'none';
+      expect(value, name).not.toBe('none');
+      const alphas = [...value.matchAll(/rgba\(6,7,19,([\d.]+)\)/g)].map((match) => Number(match[1]));
+      expect(alphas.length, name).toBeGreaterThan(0);
+      for (const alpha of alphas) expect(alpha).toBeLessThanOrEqual(0.6);
+    }
+    expect(dark).toContain('--sunken: #060713');
+    expect(system).toMatch(/\.lf-rebuild\[data-theme='dark'\] \{ color-scheme: dark; --shadow-control: 0 1px 3px rgb\(6 7 19 \/ \.56\); \}/);
     // Captions and chips are the smallest type: never below the 14 px floor (02 rule 11).
     expect(tokens).toMatch(/--type-caption: 700 0\.875rem/);
     expect(tokens).toMatch(/@container app \(min-width: 640px\)[\s\S]*--type-display-lg: 700 32px/);
@@ -203,10 +211,21 @@ describe('motion budget across every rebuilt stylesheet (02 §9.4, D7, 04 §3; S
     .flatMap((entry) => (entry.isDirectory() ? walk(join(dir, entry.name)) : entry.name.endsWith('.css') ? [join(dir, entry.name)] : []));
   const sheets = walk(local('..')).map((file) => ({ file: file.slice(file.lastIndexOf('rebuild')).replace(/\\/g, '/'), css: withoutComments(readFileSync(file, 'utf8')) }));
 
-  it('loops only the one breathing call to action; every other idle loop is a component that claims a slot', () => {
+  it('loops only the one breathing call to action and the busy motion; every other idle loop is a component that claims a slot', () => {
     const loops = sheets.flatMap(({ file, css }) => rules(css).filter((rule) => /\binfinite\b/.test(rule.body)).map((rule) => `${file}: ${rule.selector}`));
     expect(loops.length).toBeGreaterThan(0);
-    expect(loops.filter((loop) => !/^rebuild\/design\/motion\.css: .*\.lf-button--breathing/.test(loop))).toEqual([]);
+    // OD-28 (V-04): the loading shimmer and the pending spinner are busy motion, bound to [data-busy-motion] (motion.tsx contract).
+    const busy = (loop: string) => /^rebuild\/design\/motion\.css: .*\[data-busy-motion='(?:shimmer|spinner)'\]/.test(loop);
+    expect(loops.filter((loop) => !/^rebuild\/design\/motion\.css: .*\.lf-button--breathing/.test(loop) && !busy(loop))).toEqual([]);
+    expect(loops.filter(busy)).toHaveLength(2);
+  });
+
+  it('keeps the busy motion off under reduced motion, as a still state (OD-28, V-04)', () => {
+    const still = outsideMotionQueries(withoutComments(motion + controls));
+    expect(still).not.toMatch(/lf-shimmer|lf-spin\b|data-busy-motion/);
+    // Outside the motion query the shimmer band is invisible and the spinner is a still ring beside the label.
+    expect(controls).toMatch(/\.lf-skeleton-line::after \{[^}]*opacity: 0;/);
+    expect(controls).toMatch(/\.lf-button-spinner \{[^}]*border-radius: var\(--rounded-full\);/);
   });
 
   it('keeps the spring curve and the celebration duration inside the motion sheet', () => {
