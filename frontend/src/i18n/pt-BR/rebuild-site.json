@@ -11,7 +11,7 @@
     "day": "Dia",
     "year": "Ano",
     "loading": "Verificando sua conta…",
-    "help": "Sua idade nos ajuda a proteger seu aprendizado."
+    "help": "Sua idade protege seu aprendizado. Guardamos no máximo o mês e o ano."
   },
   "kidSuspended": {
     "title": "Esta conta está pausada",
@@ -208,7 +208,7 @@
       },
       "dataCollected": {
         "question": "Quais dados vocês coletam do meu filho?",
-        "answer": "Só o que o produto precisa: para uma conta de filho, um apelido e uma faixa etária. Nada de nome completo, endereço ou contato."
+        "answer": "Só o que o produto precisa: para uma conta de filho, um apelido e, se você informar, uma data de nascimento. Nada de nome completo, endereço ou contato."
       },
       "moderation": {
         "question": "Tudo o que o Mentor diz é verificado antes?",
@@ -342,7 +342,7 @@
     "title": "Crie sua conta",
     "lead": "Todo mundo começa grátis. Sem documentos.",
     "name": "Seu nome",
-    "birthHelp": "Nós não guardamos.",
+    "birthHelp": "Guardamos no máximo o mês e o ano.",
     "tutorIntent": "Sou mãe, pai ou responsável legal",
     "tutorIntentHelp": "Verifique sua identidade depois para ser Tutor.",
     "submit": "Criar conta",

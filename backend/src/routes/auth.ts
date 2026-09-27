@@ -203,10 +203,12 @@ export function authRouter(): Router {
 
   router.post('/age-screen', requireAuth, authRateLimiter, async (req, res) => {
     const parsed = z.object({ birthDate: z.string() }).strict().safeParse(req.body);
-    const band = parsed.success ? declaredBandForDate(parsed.data.birthDate) : null;
+    const birthDate = parsed.success ? parsed.data.birthDate : '';
+    const band = parsed.success ? declaredBandForDate(birthDate) : null;
     if (!band) return fail(res, 400, 'VALIDATION_ERROR', 'Enter a valid birth date');
     const id = authedUser(res).id;
-    if (!await recordAgeScreen(id, band)) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record age screening');
+    // The band is kept; for a teen, also the birth month (OD-28), never the day.
+    if (!await recordAgeScreen(id, band, birthDate)) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record age screening');
     const state = await readAgeScreen(id);
     if (!state || state.required) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not confirm age screening');
     return ok(res, state);
@@ -228,11 +230,12 @@ export function authRouter(): Router {
     }
 
     // `birthDate` is deliberately NOT forwarded: signUp takes what it needs and
-    // Core derives and stores only its minimum age band below.
+    // Core derives and stores only its minimum age band below (for a teen,
+    // also the birth month so the band moves to adult at 18, OD-28).
     const { data, error } = await gotrue.signUp(parsed.data);
     if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
     const newUserId = data.user?.id ?? data.id;
-    if (!newUserId || !await recordAgeScreen(newUserId, declaredBand)) {
+    if (!newUserId || !await recordAgeScreen(newUserId, declaredBand, parsed.data.birthDate)) {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record age screening');
     }
 

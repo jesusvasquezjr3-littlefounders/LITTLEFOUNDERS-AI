@@ -11,7 +11,7 @@
     "day": "Día",
     "year": "Año",
     "loading": "Revisando tu cuenta…",
-    "help": "Tu edad nos ayuda a proteger tu aprendizaje."
+    "help": "Tu edad protege tu aprendizaje. Guardamos como máximo el mes y el año."
   },
   "kidSuspended": {
     "title": "Esta cuenta está en pausa",
@@ -208,7 +208,7 @@
       },
       "dataCollected": {
         "question": "¿Qué datos recogen de mi hijo?",
-        "answer": "Solo lo que el producto necesita: para una cuenta de hijo, un apodo y un rango de edad. Nada de nombre completo, dirección ni contacto."
+        "answer": "Solo lo que el producto necesita: para una cuenta de hijo, un apodo y, si la escribes, una fecha de nacimiento. Nada de nombre completo, dirección ni contacto."
       },
       "moderation": {
         "question": "¿Todo lo que dice el Mentor se revisa antes?",
@@ -342,7 +342,7 @@
     "title": "Crea tu cuenta",
     "lead": "Todos empiezan gratis. Sin documentos.",
     "name": "Tu nombre",
-    "birthHelp": "No la guardamos.",
+    "birthHelp": "Guardamos como máximo el mes y el año.",
     "tutorIntent": "Soy madre, padre o responsable legal",
     "tutorIntentHelp": "Verifica tu identidad después para ser Tutor.",
     "submit": "Crear cuenta",

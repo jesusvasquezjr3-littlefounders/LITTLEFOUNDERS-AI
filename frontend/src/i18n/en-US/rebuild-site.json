@@ -11,7 +11,7 @@
     "day": "Day",
     "year": "Year",
     "loading": "Checking your account…",
-    "help": "Your age helps us protect your learning."
+    "help": "It keeps learning safe. We keep at most the month and year."
   },
   "kidSuspended": {
     "title": "This account is paused",
@@ -208,7 +208,7 @@
       },
       "dataCollected": {
         "question": "What data do you collect about my child?",
-        "answer": "Only what the product needs: for a child account, a nickname and an age band. No full name, address or contact details."
+        "answer": "Only what the product needs: for a child account, a nickname and an optional birth date. No full name, address or contact details."
       },
       "moderation": {
         "question": "Is everything the Mentor says checked first?",
@@ -342,7 +342,7 @@
     "title": "Create your account",
     "lead": "Everyone starts free. No documents needed.",
     "name": "Your name",
-    "birthHelp": "We don't keep it.",
+    "birthHelp": "We keep at most the month and year.",
     "tutorIntent": "I'm a parent or guardian",
     "tutorIntentHelp": "Verify your ID later to become a Tutor.",
     "submit": "Create account",
