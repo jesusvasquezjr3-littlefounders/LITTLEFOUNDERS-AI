@@ -7,6 +7,7 @@ import type { LessonSequenceControl } from './lessonSequence';
 import { useSingleActiveGrade } from './useSingleActiveGrade';
 import './learning.css';
 import './decisionReasons.css';
+import { LessonStageSlot } from './lessonStage';
 
 /*
  * B.12 (Law 4, S05.3d): decide, then say why. The learner picks a decision
@@ -63,7 +64,7 @@ export function DecisionReasonsBoard({ document, segment, onBack, onGrade, seque
   const pick = (setter: (id: string) => void, id: string) => { setter(id); setResult(null); };
 
   return <main className="lf-learning lf-learning--reasoning" data-surface="app" data-screen="decision-reasons"><div className="lf-learning-inner">
-    <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button><span data-copy-role="data">{t.board}</span></header>
+    <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button><span data-copy-role="data">{t.board}</span></header><LessonStageSlot />
     <div className="lf-learning-content">
       <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
       <section className="lf-learning-board lf-reasoning-board" aria-labelledby="reasoning-choice-title">

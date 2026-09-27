@@ -2127,12 +2127,6 @@
     background: rgb(var(--lf-accent-soft));
     color: rgb(var(--lf-accent-strong));
   }
-  .lf-chip-success {
-    border-color: rgb(var(--lf-success) / 0.4);
-    background: rgb(var(--lf-success-soft));
-    color: rgb(var(--lf-success-strong));
-  }
-
   /*
    * A HIGHLIGHTED TERM inside prose — the study marks the numbers that matter
    * inside the mentor's own sentence instead of leaving a wall of one colour.
@@ -2178,52 +2172,7 @@
     content: '';
   }
 
-  /*
-   * THE CURRENT ROW — the one thing on a list screen that is happening NOW.
-   * The study gives it a three-stop gradient rather than a flat tint, so it
-   * reads as lit from the left instead of merely coloured, plus a live dot
-   * that pulses. Both are what stop "current" from looking like "selected".
-   */
-  .lf-now {
-    border-color: rgb(var(--lf-accent));
-    background: linear-gradient(
-      100deg,
-      rgb(var(--lf-accent-soft)) 0%,
-      rgb(var(--lf-surface)) 55%,
-      rgb(var(--lf-delight-soft) / 0.6) 100%
-    );
-  }
-  .dark .lf-now {
-    background: linear-gradient(
-      100deg,
-      rgb(var(--lf-accent-soft) / 0.55) 0%,
-      rgb(var(--lf-surface)) 55%,
-      rgb(var(--lf-delight-soft) / 0.18) 100%
-    );
-  }
-  /* A 6px dot that breathes — "live", not "selected". */
-  .lf-live-dot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 9999px;
-    background: currentColor;
-    animation: lf-live 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-  @keyframes lf-live {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.35;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .lf-live-dot {
-      animation: none;
-    }
-  }
+  /* The current-row gradient and its live dot left with the legacy chapter list they painted (W2L.1, OD-15). */
 
   /*
    * AN EYEBROW — small caps over a display line. The study's lockup, and the

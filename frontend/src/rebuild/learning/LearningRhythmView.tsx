@@ -3,6 +3,7 @@ import type { Locale } from '../design/copyBudget';
 import { Button, ErrorState, InlineNotice, LoadingState } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
+import './learnerPage.css';
 import './rhythm.css';
 import { MENTOR_NAMES, type Pace, type RhythmState, type StreakView } from './motivation';
 
@@ -130,7 +131,7 @@ export function LearningRhythmView({ state, locale, dark, onBack, onRetry, onSav
     document.getElementById(`${ids}-tab-${next}`)?.focus();
   }
 
-  return <main className="lf-rebuild lf-rhythm" data-theme={dark ? 'dark' : 'light'} lang={locale} data-surface="app"
+  return <div className="lf-rebuild lf-learner-page lf-rhythm" data-theme={dark ? 'dark' : 'light'} lang={locale} data-surface="app"
     data-screen={fixture ? 'rhythm-preview' : 'rhythm'}>
     <div className="lf-rhythm-inner">
       <div className="lf-rhythm-top">
@@ -172,5 +173,5 @@ export function LearningRhythmView({ state, locale, dark, onBack, onRetry, onSav
             </div>
           </>}
     </div>
-  </main>;
+  </div>;
 }

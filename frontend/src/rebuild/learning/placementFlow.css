@@ -1,0 +1,45 @@
+/*
+ * W2L.2 (L4): the placement flow on its single-state screen (02 rule 15: one
+ * state, one hue; the shell paints the sky and the `on-sky` ink). Answers and
+ * the Mentor's turn are surface cards on that hue, separated by fill, never by
+ * an outline (02 §4.4). Tokens only.
+ */
+/* The flow fills the screen's main from the top (the shell centres a lone child): the close control stays where a person looks for it. */
+.lf-placement-flow { display: grid; flex: 1 1 auto; align-content: start; gap: var(--spacing-5); inline-size: 100%; min-inline-size: 0; }
+.lf-placement-flow > * { min-inline-size: 0; }
+.lf-placement-flow h1 { font-size: 1.75rem; line-height: 1.2; overflow-wrap: break-word; }
+.lf-placement-flow h1:focus { outline: none; }
+.lf-placement-flow h1:focus-visible { outline: 3px solid var(--on-sky); outline-offset: 4px; border-radius: var(--rounded-sm); }
+.lf-placement-flow > p { font-weight: 700; }
+
+.lf-placement-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-3); }
+.lf-placement-bar .lf-icon-button--soft { background: var(--surface); color: var(--content); }
+
+/* The Mentor's one turn: the chosen character's render and the words, on a surface plate (08 §2 layer 3, compact). */
+.lf-placement-mentor { display: flex; align-items: center; gap: var(--spacing-3); padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-lg); background: var(--surface); color: var(--content); }
+.lf-placement-mentor .lf-avatar { flex: none; }
+.lf-placement-mentor-text { display: grid; gap: var(--spacing-1); min-inline-size: 0; }
+.lf-placement-mentor-name { font-size: .875rem; font-weight: 800; color: var(--content-muted); }
+.lf-placement-mentor-text p { font-weight: 700; line-height: 1.4; overflow-wrap: break-word; }
+
+/* Answers: surface cards on the sky, the chosen one ringed in the page's ink (02 answer-selected), never a verdict. */
+.lf-placement-options { display: grid; gap: var(--spacing-3); }
+.lf-rebuild .lf-placement-options .lf-choice { background: var(--surface); color: var(--content); overflow-wrap: break-word; }
+.lf-rebuild .lf-placement-options .lf-choice[aria-pressed='true'] { outline-color: var(--on-sky); }
+.lf-rebuild .lf-placement-options .lf-choice:focus-visible { outline: 3px solid var(--on-sky); outline-offset: 3px; }
+.lf-rebuild .lf-placement-options .lf-choice:disabled:not([aria-pressed='true']) { background: var(--sunken); color: var(--content-muted); }
+
+.lf-placement-intake { display: grid; gap: var(--spacing-4); }
+.lf-placement-intake .lf-input-label { color: var(--on-sky); }
+.lf-placement-issue { display: grid; gap: var(--spacing-3); justify-items: start; }
+.lf-placement-issue .lf-notice { inline-size: 100%; }
+
+/* The outcome keeps S05.3d's card; inside the flow it sits on the shell's sky instead of painting its own page. */
+.lf-placement-outcome-body { display: grid; gap: var(--spacing-5); min-inline-size: 0; }
+.lf-placement-outcome-body > * { min-inline-size: 0; }
+.lf-placement-outcome-body .lf-button { min-block-size: var(--target-lg); font-size: 1.125rem; }
+
+@container app (min-width: 640px) {
+  .lf-placement-flow h1 { font-size: 2.25rem; }
+  .lf-placement-flow { gap: var(--spacing-6); }
+}

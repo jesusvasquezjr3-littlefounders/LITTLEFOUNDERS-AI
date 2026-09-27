@@ -40,10 +40,17 @@ export interface CoursePathProjection {
   }>;
   blocked: Array<{ topicId: string; topicTitle: Json; chapterId: string; missingSkills: SkillRef[]; missingTopics: Array<{ id: string; title: Json }> }>;
   skills: Array<SkillRef & { shown: KcSatisfaction }>;
+  /** OD-25: a chapter one stage up that mastery can open (the learner confirms), or has opened. */
+  earlyAccess: Array<{ chapterId: string; chapterTitle: Json; stage: PathwayStage; state: 'eligible' | 'opened'; prerequisiteSkills: SkillRef[] }>;
+  /** OD-25: topics the learner may accept as done on what they showed with the Mentor. */
+  masteryOffers: Array<{ topicId: string; topicTitle: Json; chapterId: string; skills: SkillRef[] }>;
+  /** OD-25: topics already accepted as done on Mentor mastery. */
+  masteryCreditedTopicIds: string[];
 }
 
 export function projectCoursePath(tree: PathwayCourseTree, kcTitles: ReadonlyMap<string, Localized>): CoursePathProjection {
   const topicIndex = new Map<string, { title: Json; chapterId: string }>();
+  const chapterTitles = new Map(tree.adventures.map((adventure) => [adventure.id, adventure.title as Json]));
   const lessonIndex = new Map<string, { title: Json; minutes: number }>();
   for (const adventure of tree.adventures) {
     for (const saga of adventure.sagas) {
@@ -96,5 +103,9 @@ export function projectCoursePath(tree: PathwayCourseTree, kcTitles: ReadonlyMap
       missingTopics: b.missingTopicIds.map((id) => ({ id, title: topicIndex.get(id)?.title ?? {} })),
     })),
     skills: view.skills.map((s) => ({ ...skill(s.key), shown: s.shown })),
+    earlyAccess: view.earlyAccess.map((e) => ({ chapterId: e.chapterId, chapterTitle: chapterTitles.get(e.chapterId) ?? {}, stage: e.stage, state: e.state,
+      prerequisiteSkills: e.prerequisiteSkills.map(skill) })),
+    masteryOffers: view.masteryOffers.map((o) => ({ topicId: o.topicId, topicTitle: topicIndex.get(o.topicId)?.title ?? {}, chapterId: o.chapterId, skills: o.skills.map(skill) })),
+    masteryCreditedTopicIds: view.masteryCredited,
   };
 }

@@ -1,3 +1,4 @@
+import { useState, type ReactNode } from 'react';
 import { allocationPilotDocument, donutPilotDocument, wafflePilotDocument } from '../../learning/AllocationBoard';
 import { growthPilotDocument } from '../../learning/GrowthBoard';
 import { learningFixtures } from '../../learning/allocationFixtures';
@@ -23,13 +24,22 @@ import { functionMachinePilotDocument } from '../../learning/FunctionMachineBoar
 import { cpaFadingPilotDocument } from '../../learning/CpaFadingBoard';
 import { DECIDE_JUSTIFY_PILOT_RUBRIC, decideJustifyPilotDocument } from '../../learning/DecisionReasonsBoard';
 import { PlacementOutcomeView } from '../../learning/PlacementOutcomeView';
+import { PlacementFlowView } from '../../learning/PlacementFlowView';
+import { placementPreviewFlow } from '../../learning/placementFixtures';
+import { TerritoryMapView } from '../../learning/TerritoryMapView';
+import { territoryPreviewStates } from '../../learning/territoryFixtures';
+import { SingleStateScreen, type MentorCharacter } from '../../design/controls';
 import { LessonTransportStateView } from '../../learning/LessonTransportStateView';
-import { CoursePathView } from '../../learning/CoursePathView';
-import { coursePathPreviewStates } from '../../learning/coursePathFixtures';
+import { CourseView } from '../../learning/CourseView';
+import { childPathFixture, coursePathPreviewStates } from '../../learning/coursePathFixtures';
+import { LearnHomeView } from '../../learning/LearnHomeView';
+import { SHELF_TITLES, childTree, coursePreviewStates, homePreviewShelf } from '../../learning/learnHomeFixtures';
+import type { LearnLinks } from '../../learning/learnCopy';
 import { NarrativeRecallView } from '../../learning/NarrativeRecallView';
 import { DecisionJournalView } from '../../learning/DecisionJournalView';
 import { LearnerNarrativeShortcut } from '../../learning/LearnerNarrativeShortcut';
-import { journalPreviewStates, recallFixture, selfBridgesFixture } from '../../learning/narrativeFixtures';
+import { childDecisionsFixture, journalPreviewStates, recallFixture, selfBridgesFixture } from '../../learning/narrativeFixtures';
+import { ChildDecisionsView } from '../../learning/ChildDecisionsPanel';
 import type { LessonMentorStage } from '../../learning/lessonDocument';
 import { LearningRhythmView } from '../../learning/LearningRhythmView';
 import { milestoneReceipt, rhythmPreviewStates } from '../../learning/motivationFixtures';
@@ -51,6 +61,35 @@ export const PREVIEW_MENTOR_STAGE: LessonMentorStage = { character: 'dina', scen
 
 type Verdict = 'met' | 'review' | 'invalid';
 const verdict = (result: string): Verdict => result === 'met' || result === 'review' ? result : 'invalid';
+
+/*
+ * W2L.1: the learner pages render no <main> of their own (on a real route the
+ * learner shell's is the one landmark); the preview stands in for the shell.
+ */
+const LearnPreviewHost = ({ children }: { children: ReactNode }) => <main className="lf-learn-preview-host">{children}</main>;
+
+/* W2L.1: the learner pages' links, as preview screens (a plain press opens that screen in place). */
+const previewLinks: LearnLinks = {
+  home: '?screen=learnhome', course: () => '?screen=course', lesson: () => '?screen=lesson', placement: () => '?screen=placement',
+  territory: () => '?screen=territory', rhythm: '?screen=rhythm', journal: '?screen=journal',
+};
+
+/*
+ * W2L.2: the placement flow on the shared single-state screen, as its route
+ * mounts it (sky hue, no app navigation), in every state (`?flow=`); a press
+ * moves to the next fixture state in place. `?mentor=` is the chosen
+ * character (`none` before a choice).
+ */
+function PlacementPreview({ locale, theme, ageBand, params, go, t }: PreviewContext) {
+  const [state, setState] = useState(params.get('flow') ?? 'welcome');
+  const mentorParam = params.get('mentor') ?? 'zara';
+  const mentor: MentorCharacter | null = (['rho', 'zara', 'liruf', 'dina'] as const).find((name) => name === mentorParam) ?? null;
+  return <SingleStateScreen appName="LittleFounders" pageTitle={t.course.placementTitle} routeKey="placement" locale={locale} hue="sky" labels={{ skip: t.appShell.skip }}>
+    <PlacementFlowView key={`${locale}:${state}`} fixture flow={placementPreviewFlow(state, locale, setState)} slug="financial-education" locale={locale}
+      dark={theme === 'dark'} ageBand={ageBand} mentor={mentor} links={previewLinks} onNavigate={previewNavigate(go)} />
+  </SingleStateScreen>;
+}
+const previewNavigate = (go: PreviewContext['go']) => (href: string) => go(new URLSearchParams(href.replace(/^[^?]*\?/, '')).get('screen') ?? 'home');
 
 const transport = framed(({ screen, locale, go }) => <LessonTransportStateView state={screen === 'loaderror' ? 'load-error' : screen as 'opening' | 'offline'}
   locale={locale} onBack={() => go('home')} onRetry={() => go('lesson')} />);
@@ -105,15 +144,41 @@ export const learnPreviewScreens: PreviewRegistry = {
     raw={ageBand === '6-9' || ageBand === '10-12' ? numberLinePilotDocument(locale, ageBand) : null} locale={locale} ageBand={ageBand}
     onBack={() => go('home')} onGradeNumberLine={({ value }) => verdict(scoreV2Visual('math.number-line.whole.v2', { minimum: 0, maximum: ageBand === '6-9' ? 10 : 100, step: 1 },
       { value }, { target: ageBand === '6-9' ? 7 : 37 }))} />),
-  coursepath: framed(({ locale, theme, params, go }) => <CoursePathView key={`coursepath:${locale}`} fixture locale={locale} dark={theme === 'dark'}
-    state={coursePathPreviewStates[params.get('path') ?? 'child'] ?? coursePathPreviewStates.child!}
-    missingTitles={['Entrepreneurship']} onOpenLesson={() => go('lesson')} onPlacement={() => go('home')} onBack={() => go('home')} onRetry={() => go('coursepath')} />),
+  // The S05.3b course path's fixtures, now on the one course screen (W2L.1) under the pathway engine.
+  coursepath: framed(({ locale, theme, ageBand, params, go }) => <LearnPreviewHost><CourseView key={`coursepath:${locale}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand}
+    slug="financial-education" state={coursePathPreviewStates[params.get('path') ?? 'child'] ?? coursePathPreviewStates.child!}
+    courseTitles={{ entre: 'Entrepreneurship' }} links={previewLinks} onNavigate={previewNavigate(go)} onRetry={() => go('coursepath')}
+    // OD-25 (`?path=offers`): the preview answers yes without Core; the real route re-reads the course.
+    onOpenEarly={async () => 'done'} onAcceptMastery={async () => 'done'} /></LearnPreviewHost>),
+  // W2L.1 (L2): the one course screen in every state, both course engines (`?course=`).
+  course: framed(({ locale, theme, ageBand, params, go }) => <LearnPreviewHost><CourseView key={`course:${locale}:${params.get('course')}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand}
+    slug="financial-education" state={coursePreviewStates[params.get('course') ?? 'linear'] ?? coursePreviewStates.linear!} inProgress={params.get('building') === '1'}
+    courseTitles={Object.fromEntries(Object.entries(SHELF_TITLES).map(([slug, title]) => [slug, title[locale]]))}
+    links={previewLinks} onNavigate={previewNavigate(go)} onRetry={() => go('course')} /></LearnPreviewHost>),
+  // W2L.1 (L1): the learner home in every state (`?home=`, `?rhythm=`, `?bridges=1`, `?graduation=1`).
+  learnhome: framed(({ locale, theme, ageBand, params, go }) => {
+    const home = params.get('home') ?? 'child';
+    const shelf = homePreviewShelf(home);
+    const featured = { slug: 'financial-education', state: home === 'teen' || home === 'young'
+      ? { status: 'ready' as const, detail: { engine: 'pathway' as const, path: childPathFixture() } }
+      : { status: 'ready' as const, detail: { engine: 'linear' as const, tree: childTree(params.get('placement') === '1') } } };
+    return <LearnPreviewHost><LearnHomeView key={`learnhome:${locale}:${home}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand} name={params.get('name') === '0' ? null : 'Sofía'}
+      shelf={shelf} featured={featured} rhythm={rhythmPreviewStates[params.get('rhythm') ?? 'open'] ?? rhythmPreviewStates.open!}
+      bridges={params.get('bridges') === '1' ? selfBridgesFixture() : []} links={previewLinks} onNavigate={previewNavigate(go)}
+      onRetry={() => go('learnhome')} onBridge={async () => 'done'}
+      graduation={params.get('graduation') === '1' ? <RegisterGraduationView fixture locale={locale} dark={theme === 'dark'} into="transition" onAcknowledge={async () => true} /> : null} /></LearnPreviewHost>;
+  }),
   recall: framed(({ locale, theme, params, go }) => <NarrativeRecallView key={`recall:${locale}`} fixture locale={locale} dark={theme === 'dark'}
     recall={recallFixture(locale, params.get('changed') !== '0')} onContinue={() => go('home')} />),
-  journal: framed(({ locale, theme, params, go }) => <DecisionJournalView key={`journal:${locale}:${params.get('journal')}`} fixture locale={locale} dark={theme === 'dark'}
+  journal: framed(({ locale, theme, params, go }) => <LearnPreviewHost><DecisionJournalView key={`journal:${locale}:${params.get('journal')}`} fixture locale={locale} dark={theme === 'dark'}
     state={journalPreviewStates(locale)[params.get('journal') ?? 'list'] ?? journalPreviewStates(locale).list!}
     onBack={() => go('home')} onRetry={() => go('journal')} onMore={() => {}}
-    onClear={async () => true} onBridge={async () => 'done'} />),
+    onClear={async () => true} onBridge={async () => 'done'} /></LearnPreviewHost>),
+  // OD-27 (3): the Tutor's view of an under-13 child's story choices, as the Family Hub mounts it (open, one page).
+  childdecisions: framed(({ locale, theme }) => <main className="lf-family-preview" data-surface="app" data-screen="child-decisions-host">
+    <ChildDecisionsView key={`childdecisions:${locale}`} fixture locale={locale} dark={theme === 'dark'} state={childDecisionsFixture(locale)} open
+      onToggle={() => {}} onRetry={() => {}} />
+  </main>),
   learnershortcut: framed(({ locale, theme, params, go }) => <main className="lf-family-preview" data-surface="app" data-screen="learner-shortcut-host">
     <LearnerNarrativeShortcut key={`shortcut:${locale}:${params.get('bridges')}`} fixture locale={locale} dark={theme === 'dark'}
       bridges={params.get('bridges') === '1' ? selfBridgesFixture() : []}
@@ -127,11 +192,14 @@ export const learnPreviewScreens: PreviewRegistry = {
       const judgment = scoreV2Judgment('reasoning.decide-justify.v2', payload, answer, DECIDE_JUSTIFY_PILOT_RUBRIC);
       return { verdict: verdict(outcome), ...(judgment === 'invalid' ? {} : { judgment }) };
     }} />),
-  rhythm: framed(({ locale, theme, params, go }) => <LearningRhythmView key={`rhythm:${locale}:${params.get('rhythm')}`} fixture locale={locale} dark={theme === 'dark'}
+  rhythm: framed(({ locale, theme, params, go }) => <LearnPreviewHost><LearningRhythmView key={`rhythm:${locale}:${params.get('rhythm')}`} fixture locale={locale} dark={theme === 'dark'}
     state={rhythmPreviewStates[params.get('rhythm') ?? 'open'] ?? rhythmPreviewStates.open!}
     onBack={() => go('home')} onRetry={() => {}} onOpenPath={() => {}} onOpenMentor={() => {}}
-    onSavePace={async (goal) => ({ goal, chosen: true, passedToday: 1, goalMet: goal <= 1 })} />),
+    onSavePace={async (goal) => ({ goal, chosen: true, passedToday: 1, goalMet: goal <= 1 })} /></LearnPreviewHost>),
   resultmilestone: framed(({ locale, go }) => <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={milestoneReceipt(locale)} />),
+  // W2L.3: the course and badge milestones Core named, the badge showing the course it was earned in.
+  resultbadge: framed(({ locale, go }) => <LessonResultView locale={locale} onContinue={() => go('home')} fixture courseSlug="investing"
+    rawReceipt={{ ...milestoneReceipt(locale), celebrations: ['lesson-complete', 'course-complete', 'badge-earned'], streak: undefined, pace: undefined }} />),
   resultregister: framed(({ locale, register, go }) => <LessonResultView key={`resultregister:${register}`} locale={locale} onContinue={() => go('home')} fixture
     register={register} rawReceipt={{ ...milestoneReceipt(locale), celebrations: ['lesson-complete'], streak: undefined, pace: undefined }} />),
   graduation: framed(({ locale, theme, params }) => <main className="lf-family-preview" data-surface="app" data-screen="graduation-host">
@@ -150,6 +218,14 @@ export const learnPreviewScreens: PreviewRegistry = {
     replay: { kind: 'replay', notice: 'best_kept', best_score_kept: true, xp_policy: 'improvement_only' },
     judgment: { assessed: 2, sound: 1, partial: 1, unsupported: 0 },
   }} />),
+  // W2L.2 (L3): the course world in every state (`?map=`), both course engines.
+  territory: framed(({ locale, theme, ageBand, params, go }) => <LearnPreviewHost><TerritoryMapView key={`territory:${locale}:${params.get('map')}`} fixture
+    locale={locale} dark={theme === 'dark'} ageBand={ageBand} slug="financial-education"
+    state={territoryPreviewStates[params.get('map') ?? 'linear'] ?? territoryPreviewStates.linear!}
+    courseTitles={Object.fromEntries(Object.entries(SHELF_TITLES).map(([slug, title]) => [slug, title[locale]]))}
+    links={previewLinks} onNavigate={previewNavigate(go)} onRetry={() => go('territory')} /></LearnPreviewHost>),
+  // W2L.2 (L4): the placement flow in every state.
+  placement: framed((context) => <PlacementPreview {...context} />),
   placementoutcome: framed(({ locale, theme, params, go }) => <PlacementOutcomeView key={`placement:${locale}:${params.get('start')}:${params.get('path')}`} fixture locale={locale}
     dark={theme === 'dark'} onStart={() => go('home')} onEarlier={() => go('home')} rawFrame={{
       path: params.get('path') ?? 'adaptive_quiz', start: params.get('start') === 'further_in' ? 'further_in' : 'beginning', basis: 'prior_exposure',

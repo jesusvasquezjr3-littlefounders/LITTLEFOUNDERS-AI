@@ -1,0 +1,3 @@
+/* The lesson layer (LessonLayer.tsx): its skip link reads on the full-bleed hue, and a focused heading is a reading position. */
+.lf-rebuild .lf-lesson-layer .lf-skip-link { background: var(--surface); color: var(--content); }
+.lf-rebuild .lf-lesson-layer [tabindex='-1']:focus { outline: none; }

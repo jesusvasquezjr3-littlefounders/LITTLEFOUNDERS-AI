@@ -118,3 +118,18 @@ describe('yes_no_cases', () => {
     expect(grade('yes_no_cases', { ...segment, answer: undefined }, blanket(4, false)).score).toBe(0)
   })
 })
+
+describe('speed_tap timeout (OD-28, L-01)', () => {
+  const segment = seg(
+    'speed_tap',
+    { seconds: 20, items: ['a', 'b', 'c', 'd'].map((id) => ({ id, text_md: id })) },
+    { target_ids: ['a', 'b'] },
+  )
+
+  it('running out of time costs no points: the score is the answer own', () => {
+    const inTime = grade('speed_tap', segment, { selected_ids: ['a', 'b'], overtime: false })
+    const late = grade('speed_tap', segment, { selected_ids: ['a', 'b'], overtime: true })
+    expect(inTime.score).toBe(100)
+    expect(late.score).toBe(inTime.score)
+  })
+})

@@ -105,6 +105,26 @@ describe('lesson result receipt boundary', () => {
     unmount();
   });
 
+  it('OD-28 (V-12): the confetti burst is part of the lesson-complete moment only, decorative, and above the heading', () => {
+    const base = milestoneReceipt('en-US');
+    for (const [celebrations, shown] of [[['lesson-complete'], true], [['streak-7'], false], [[], false], [undefined, false]] as const) {
+      const { container, unmount } = render(<LessonResultView rawReceipt={{ ...base, celebrations }} locale="en-US" onContinue={() => {}} />);
+      const confetti = container.querySelector('.lf-result-confetti');
+      expect(Boolean(confetti)).toBe(shown);
+      if (confetti) {
+        expect(confetti.getAttribute('aria-hidden')).toBe('true');
+        expect(confetti.getAttribute('data-celebrate')).toBe('lesson-complete');
+        expect(confetti.textContent).toBe('');
+        expect(confetti.closest('[data-milestone="lesson-complete"]')).toBeTruthy();
+        // The static frame lands every piece above its anchor, never on the heading.
+        for (const piece of confetti.querySelectorAll<HTMLElement>('.lf-result-confetti-piece')) {
+          expect(Number.parseFloat(piece.style.getPropertyValue('--lf-confetti-y'))).toBeLessThan(0);
+        }
+      }
+      unmount();
+    }
+  });
+
   it("B.20: no celebration without Core's list; a milestone Core did not name, or an unknown value, moves nothing", () => {
     const base = milestoneReceipt('en-US');
     for (const celebrations of [undefined, [], ['lesson-complete'], ['correct-answer', 'coin-split', 'streak-8']]) {

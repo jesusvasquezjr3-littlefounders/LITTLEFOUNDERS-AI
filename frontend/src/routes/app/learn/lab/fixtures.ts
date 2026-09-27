@@ -252,8 +252,11 @@ export const FIXTURE_PLACEMENT_STEPS = [
       totalTopicCount: 216,
       method: 'adaptive_quiz',
       cappedByPrerequisite: false,
+      // B.15's closed frame, as Core describes every result (placementFraming.ts).
+      framing: { path: 'adaptive_quiz', start: 'further_in', basis: 'prior_exposure', learner_chosen: false },
     },
   },
 ]
 
-export const FIXTURE_PLACEMENT_COMMIT = { startLessonId: uuid(704) }
+export const FIXTURE_PLACEMENT_COMMIT = { frontier: 128, startLessonId: uuid(704), cappedByPrerequisite: false,
+  framing: { path: 'adaptive_quiz', start: 'further_in', basis: 'prior_exposure', learner_chosen: false } }

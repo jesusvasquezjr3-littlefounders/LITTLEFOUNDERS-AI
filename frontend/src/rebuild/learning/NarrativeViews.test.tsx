@@ -1,11 +1,11 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { checkCopy, type CopyRole, type Locale } from '../design/copyBudget';
-import { DecisionJournalView, decisionJournalCopy } from './DecisionJournalView';
+import { DecisionJournalView, SelfBridgeList, decisionJournalCopy, selfGoalFrom } from './DecisionJournalView';
 import { NarrativeRecallView, narrativeRecallCopy } from './NarrativeRecallView';
 import { LearnerNarrativeShortcut } from './LearnerNarrativeShortcut';
-import { answerSelfBridge, clearJournal, fetchJournal, fetchSelfBridges, parseNarrativeRecall, type NarrativeTransport } from './narrative';
-import { journalFixture, journalPreviewStates, recallFixture } from './narrativeFixtures';
+import { answerSelfBridge, clearJournal, fetchJournal, fetchSelfBridges, parseNarrativeRecall, type BridgeAnswer, type NarrativeTransport } from './narrative';
+import { journalFixture, journalPreviewStates, recallFixture, selfBridgesFixture } from './narrativeFixtures';
 
 const locales: Locale[] = ['en-US', 'es-MX', 'pt-BR'];
 const FORBIDDEN = /\bTutor\b|\bbot\b|assistant|asistente|assistente|\blives?\b|\bvidas?\b|\bmoney\b|\bdinero\b|\bdinheiro\b|streak freeze/i;
@@ -22,7 +22,7 @@ function strings(copy: Record<string, unknown>): Array<[string, string]> {
 describe('narrative copy (B.9, B.13)', () => {
   const recallRole = (key: string): CopyRole => (['next', 'happened', 'hide'].includes(key) ? 'action' : key === 'heading' ? 'heading' : key === 'reflect' ? 'prompt' : 'body');
   const journalRole = (key: string): CopyRole => {
-    if (['back', 'retry', 'more', 'clear', 'clearYes', 'clearNo', 'tryIt', 'notNow'].includes(key)) return 'action';
+    if (['back', 'retry', 'more', 'clear', 'clearYes', 'clearNo', 'tryIt', 'notNow', 'createGoal', 'planOnly'].includes(key)) return 'action';
     if (['title', 'loading', 'errorTitle', 'emptyTitle', 'bridgeTitle'].includes(key)) return 'heading';
     return 'body';
   };
@@ -34,7 +34,11 @@ describe('narrative copy (B.9, B.13)', () => {
     }
     for (const [key, text] of strings(decisionJournalCopy[locale])) {
       expect(checkCopy(text, journalRole(key.split('.')[0]!), { locale, ageBand: '6-9', surface: 'app' }), `${locale} ${key}: ${text}`).toEqual([]);
-      expect(text, key).not.toMatch(FORBIDDEN);
+      // OD-27 (3): `tutorSees` names the verified parent, the one thing the glossary calls Tutor; the AI never.
+      if (key === 'tutorSees') {
+        expect(text).toMatch(/\bTutor\b/);
+        expect(text.replace(/\bTutor\b/, '')).not.toMatch(FORBIDDEN);
+      } else expect(text, key).not.toMatch(FORBIDDEN);
     }
   });
 
@@ -79,6 +83,62 @@ describe('narrative client', () => {
     expect(ok).toHaveBeenLastCalledWith('/learn/bridges/a%20b/act', { method: 'POST', body: {} });
     expect(await answerSelfBridge(vi.fn<NarrativeTransport>(async () => ({ data: null, error: { code: 'BRIDGE_CLOSED' } })), 'x', 'dismiss')).toBe('closed');
     expect(await answerSelfBridge(vi.fn<NarrativeTransport>(async () => ({ data: null, error: { code: 'DATA_UNAVAILABLE' } })), 'x', 'act')).toBe('error');
+    // OD-28 (L-12): the teen's own goal travels on the act call; a wallet that does not admit them is its own outcome.
+    expect(await answerSelfBridge(ok, 'g', 'act', { title: '  Headphones ', target: 300 })).toBe('done');
+    expect(ok).toHaveBeenLastCalledWith('/learn/bridges/g/act', { method: 'POST', body: { title: 'Headphones', target: 300 } });
+    expect(await answerSelfBridge(ok, 'g', 'dismiss', { title: 'x', target: 1 })).toBe('done');
+    expect(ok).toHaveBeenLastCalledWith('/learn/bridges/g/dismiss', { method: 'POST', body: {} });
+    expect(await answerSelfBridge(vi.fn<NarrativeTransport>(async () => ({ data: null, error: { code: 'WALLET_UNAVAILABLE' } })), 'g', 'act', { title: 'x', target: 1 })).toBe('no_wallet');
+  });
+});
+
+describe('an independent teen turns a savings prompt into their own goal (OD-28, L-12)', () => {
+  const savings = selfBridgesFixture();
+  const earning = [{ ...savings[0]!, id: 'bridge-2', action: 'earning_task' as const }];
+
+  it('"I will try" opens the goal; a valid name and coins create it in the Wallet', async () => {
+    const onBridge = vi.fn(async () => 'done' as const);
+    render(<SelfBridgeList bridges={savings} locale="en-US" onBridge={onBridge} />);
+    fireEvent.click(screen.getByRole('button', { name: 'I will try' }));
+    expect(onBridge).not.toHaveBeenCalled();
+    const create = screen.getByRole('button', { name: 'Create goal' });
+    expect((create as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.change(screen.getByLabelText('What will you save for?'), { target: { value: 'Headphones' } });
+    fireEvent.change(screen.getByLabelText('Coins to save'), { target: { value: '0' } });
+    expect((create as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.change(screen.getByLabelText('Coins to save'), { target: { value: '300' } });
+    fireEvent.click(create);
+    expect(await screen.findByText('Goal added to your Wallet.')).toBeTruthy();
+    expect(onBridge).toHaveBeenCalledWith('bridge-1', 'act', { title: 'Headphones', target: 300 });
+  });
+
+  it('"Just a plan" keeps the commitment alone, and a closed Wallet is said with the form kept', async () => {
+    const onBridge = vi.fn<BridgeAnswer>(async (_id, _answer, goal) => (goal ? 'no_wallet' : 'done'));
+    render(<SelfBridgeList bridges={savings} locale="es-MX" onBridge={onBridge} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Lo intentaré' }));
+    fireEvent.change(screen.getByLabelText('¿Para qué vas a ahorrar?'), { target: { value: 'Bici' } });
+    fireEvent.change(screen.getByLabelText('Monedas por ahorrar'), { target: { value: '120' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Crear meta' }));
+    expect(await screen.findByText('Tu Cartera no está abierta.')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Solo un plan' }));
+    expect(await screen.findByText('Guardado como tu plan.')).toBeTruthy();
+    expect(onBridge).toHaveBeenLastCalledWith('bridge-1', 'act', undefined);
+  });
+
+  it('an earning prompt records the plan at once and never asks for a goal (tasks stay guardian-only)', async () => {
+    const onBridge = vi.fn(async () => 'done' as const);
+    render(<SelfBridgeList bridges={earning} locale="pt-BR" onBridge={onBridge} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Vou tentar' }));
+    expect(await screen.findByText('Salvo como seu plano.')).toBeTruthy();
+    expect(onBridge).toHaveBeenCalledWith('bridge-2', 'act', undefined);
+    expect(screen.queryByRole('textbox')).toBeNull();
+  });
+
+  it('refuses a goal outside the limits Core and the database enforce', () => {
+    expect(selfGoalFrom(' Bike ', '10')).toEqual({ title: 'Bike', target: 10 });
+    for (const [title, target] of [['', '10'], ['x'.repeat(81), '10'], ['Bike', '0'], ['Bike', '100001'], ['Bike', '2.5'], ['Bike', 'ten']]) {
+      expect(selfGoalFrom(title!, target!), `${title}/${target}`).toBeNull();
+    }
   });
 });
 
@@ -161,8 +221,10 @@ describe('the decision journal', () => {
     expect(within(card).getByText('Saving toward a goal')).toBeTruthy();
     expect(within(card).getByText('Pick something real to save for this month.')).toBeTruthy();
     fireEvent.click(within(card).getByRole('button', { name: 'I will try' }));
+    // A savings prompt offers the teen's own goal first (OD-28, L-12); the plan alone is one press away.
+    fireEvent.click(within(card).getByRole('button', { name: 'Just a plan' }));
     await screen.findByText('Saved as your plan.');
-    expect(onBridge).toHaveBeenCalledWith('bridge-1', 'act');
+    expect(onBridge).toHaveBeenCalledWith('bridge-1', 'act', undefined);
     unmount();
     render(<DecisionJournalView state={journalFixture('en-US', true)} locale="en-US" dark={false} onBack={() => {}} onClear={noopClear} onBridge={onBridge} />);
     fireEvent.click(screen.getByRole('button', { name: 'Not now' }));
@@ -208,13 +270,17 @@ describe('the learner shortcut (B.9 entry, B.13 Option B)', () => {
     expect(onOpen).toHaveBeenCalledOnce();
   });
 
-  it('an independent teen answers the prompt where they already are; the answer creates nothing on the client', async () => {
+  it('an independent teen answers the prompt where they already are; the client creates nothing itself', async () => {
     const onBridge = vi.fn(async () => 'done' as const);
     const { container } = render(<LearnerNarrativeShortcut bridges={teenBridges()} locale="pt-BR" dark onOpenJournal={() => {}} onBridge={onBridge} />);
     const card = screen.getByRole('article', { name: 'Tente de verdade' });
     fireEvent.click(within(card).getByRole('button', { name: 'Vou tentar' }));
+    for (const el of container.querySelectorAll('h2, p, span, button, label')) {
+      if (el.children.length === 0 && el.textContent?.trim()) expect(el.closest('[data-copy-role]'), el.textContent).not.toBeNull();
+    }
+    fireEvent.click(within(card).getByRole('button', { name: 'Só um plano' }));
     await screen.findByText('Salvo como seu plano.');
-    expect(onBridge).toHaveBeenCalledWith('bridge-1', 'act');
+    expect(onBridge).toHaveBeenCalledWith('bridge-1', 'act', undefined);
     for (const el of container.querySelectorAll('h2, p, span, button')) {
       if (el.children.length === 0 && el.textContent?.trim()) expect(el.closest('[data-copy-role]'), el.textContent).not.toBeNull();
     }

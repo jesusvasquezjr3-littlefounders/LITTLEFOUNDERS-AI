@@ -6,6 +6,7 @@ import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegm
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import './learning.css';
 import './numberLine.css';
+import { LessonStageSlot } from './lessonStage';
 
 type NumberLineSegment = Extract<LessonClientSegment, { type: 'math.number-line.whole.v2' }>;
 type Verdict = 'met' | 'review';
@@ -73,7 +74,7 @@ export function NumberLineBoard({ document, segment, onBack, onGrade, sequence }
   return <main className="lf-learning" data-surface="app" data-screen="numberline">
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
-        <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, verdict === 'met')} max={100} valueText={`${sequenceProgress(sequence, verdict === 'met')}%`} /><span data-copy-role="data">{sequence ? `${sequence.index + 1}/${sequence.total}` : t.practice}</span></header>
+        <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, verdict === 'met')} max={100} valueText={`${sequenceProgress(sequence, verdict === 'met')}%`} /><span data-copy-role="data">{sequence ? `${sequence.index + 1}/${sequence.total}` : t.practice}</span></header><LessonStageSlot verdict={verdict} />
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
         <div className="lf-learning-workspace">

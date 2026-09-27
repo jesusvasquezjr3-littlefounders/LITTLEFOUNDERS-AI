@@ -11,12 +11,14 @@ import {
   getBridgePrompt,
   journalCountsByLesson,
   kcRowsByIds,
+  listJournal,
   listOpenBridgePrompts,
   readKidAttempts,
   readKidLearningRecord,
   topicTeaches,
 } from '../services/narrative/narrativeData.js';
-import { cancelStreakPause, getFullOwnProfile, getVerifiedKidLinks, insertAuditLog, setStreakPause } from '../services/supabaseRest.js';
+import { readJournalSharing } from '../services/narrative/journalSharing.js';
+import { cancelStreakPause, getFullOwnProfile, getVerifiedKidLinks, insertAuditLog, serviceRest, setStreakPause } from '../services/supabaseRest.js';
 import { pauseRangeRefusal } from '../services/habitStreak.js';
 import { isCalendarDate } from '../services/streak.js';
 import { loadStreakView } from './learnMotivation.js';
@@ -32,6 +34,12 @@ import { loadStreakView } from './learnMotivation.js';
  * completed lesson (courseNarrative.ts), titles in the guardian's own locale,
  * plus the last seven days in two numbers. Counts story decisions, never shows
  * them.
+ *
+ * OD-27 (3), L-13 — GET /kids/:kidId/decisions: for a parent-created child
+ * under 13 only, the option the child chose in each story decision and the
+ * situation it answered (journalSharing.ts). A teen's journal stays private:
+ * 403 JOURNAL_PRIVATE, and the narrative above still counts only. Every read
+ * is audited.
  *
  * B.13 — the child's open bridge prompts and the two actions on them. Acting
  * creates a REAL savings goal or task in one database transaction that
@@ -55,6 +63,11 @@ function pick(title: Record<string, unknown> | undefined, locale: Locale): strin
   const value = title[locale] ?? title['es-MX'] ?? title['en-US'] ?? Object.values(title)[0];
   return typeof value === 'string' ? value : '';
 }
+
+const DecisionQuery = z.object({
+  limit: z.coerce.number().int().min(1).max(30).default(10),
+  offset: z.coerce.number().int().min(0).max(5000).default(0),
+}).strict();
 
 const NarrativeQuery = z.object({
   limit: z.coerce.number().int().min(1).max(30).default(10),
@@ -171,6 +184,43 @@ export function familyLearningRouter(): Router {
       topicComplete: topicComplete(record.lessons.get(c.lessonId)?.topic_id),
     })), now);
     return ok(res, { locale, week, entries, hasMore: query.data.offset + query.data.limit < record.completions.length });
+  });
+
+  // ── OD-27 (3): the under-13 child's story choices ─────────────────────────
+
+  router.get('/kids/:kidId/decisions', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const query = DecisionQuery.safeParse(req.query);
+    if (!query.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit must be 1-30 and offset 0-5000');
+    const shared = await readJournalSharing(kidId);
+    if (shared === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the child’s choices');
+    if (!shared) return fail(res, 403, 'JOURNAL_PRIVATE', 'This learner’s decisions are private');
+    const [journal, locale] = await Promise.all([listJournal(kidId, query.data.limit, query.data.offset), guardianLocale(res)]);
+    if (!journal) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the child’s choices');
+    const lessonIds = [...new Set(journal.rows.map((r) => r.lesson_id))];
+    const courseIds = [...new Set(journal.rows.map((r) => r.course_id))];
+    const [lessons, courses] = await Promise.all([
+      lessonIds.length ? serviceRest<Array<{ id: string; title: Record<string, unknown> }>>(`/lessons?id=in.(${lessonIds.join(',')})&select=id,title`) : Promise.resolve([]),
+      courseIds.length ? serviceRest<Array<{ id: string; title: Record<string, unknown> }>>(`/courses?id=in.(${courseIds.join(',')})&select=id,title`) : Promise.resolve([]),
+    ]);
+    if (!lessons || !courses) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the child’s choices');
+    const lessonById = new Map(lessons.map((l) => [l.id, l]));
+    const courseById = new Map(courses.map((c) => [c.id, c]));
+    await insertAuditLog(authedUser(res).id, 'learner_journal.guardian_read', kidId, { offset: query.data.offset, count: journal.rows.length });
+    // Minimised on purpose: the situation and the chosen option only; never the
+    // first choice, the outcome, a score or anything the child wrote.
+    return ok(res, {
+      locale,
+      entries: journal.rows.flatMap((r) => {
+        const lesson = lessonById.get(r.lesson_id);
+        const course = courseById.get(r.course_id);
+        if (!lesson || !course) return [];
+        return [{ id: r.id, courseTitle: pick(course.title, locale), lessonTitle: pick(lesson.title, locale),
+          situation: r.situation_text, choice: r.choice_text, recordedAt: r.recorded_at }];
+      }),
+      hasMore: journal.hasMore,
+    });
   });
 
   // ── B.13 ────────────────────────────────────────────────────────────────

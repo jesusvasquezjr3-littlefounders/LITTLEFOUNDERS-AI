@@ -1,6 +1,6 @@
 // `storyplay` family — grading tests (LESSON_ENGINE.md §5.7, §6).
 // Every type: best → 100 (or top quality), mixed → exact expected mean,
-// malformed → 0 without throwing. Plus flash_match overtime cap and
+// malformed → 0 without throwing. Plus flash_match's timeout (no penalty, OD-28) and
 // lightning_round null answers.
 
 import { describe, expect, it } from 'vitest'
@@ -290,7 +290,7 @@ describe('flash_match', () => {
     expect(out.score).toBe(50) // 2 of 4
   })
 
-  it('caps at ×0.8 when overtime', () => {
+  it('keeps the full score when time runs out (OD-28, L-01: no timeout penalty)', () => {
     const out = grade(segment, {
       pairs: [
         ['l1', 'r1'],
@@ -300,7 +300,7 @@ describe('flash_match', () => {
       ],
       overtime: true,
     })
-    expect(out.score).toBe(80)
+    expect(out.score).toBe(100)
   })
 
   it('reversed tuples and duplicates do not double-count', () => {

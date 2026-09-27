@@ -40,7 +40,7 @@
 .lf-journal-outcome { color: var(--content); }
 .lf-journal-outcome > span:first-child, .lf-journal-first > span:first-child { font-weight: 800; }
 .lf-journal-note { color: var(--content-muted); font-weight: 700; }
-.lf-journal-state { min-block-size: min(50dvh, 360px); display: grid; align-content: center; gap: var(--spacing-3); }
+.lf-journal-state { align-content: start; }
 .lf-journal-clear { display: grid; gap: var(--spacing-3); padding: var(--spacing-4) var(--spacing-5); border-radius: var(--rounded-lg); background: var(--sunken); }
 .lf-journal-clear .lf-actions { max-inline-size: 480px; }
 .lf-journal .lf-journal-section > .lf-button, .lf-journal-top > .lf-button { justify-self: start; }
@@ -62,3 +62,12 @@
 .lf-learner-shortcut .lf-journal-section h2 { font-size: 1.5rem; }
 .lf-learner-shortcut > * { min-inline-size: 0; }
 .lf-learner-shortcut-link { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--spacing-2); }
+/* OD-28 (L-12): the teen's own goal from a savings prompt, a short form in the same card. */
+.lf-bridge-self-goal { display: grid; gap: var(--spacing-3); }
+/* OD-27 (3): who else sees the choices, said plainly under the title. */
+.lf-journal-shared { font-weight: 700; color: var(--content); }
+/* OD-27 (3): the Tutor's panel of an under-13 child's story choices (mounted in the Family Hub). */
+.lf-child-decisions { display: grid; gap: var(--spacing-3); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--surface); color: var(--content); }
+.lf-child-decisions-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-2); }
+.lf-child-decisions .lf-journal-entry > * { grid-column: 1 / -1; }
+.lf-child-decisions .lf-journal-situation { padding-inline: var(--spacing-3); }

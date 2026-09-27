@@ -143,12 +143,33 @@ export function learnerStage(evidence: AgeEvidence): PathwayStage {
 /**
  * Rule P4 — the safeguard. Child chapters are open to everyone. Any other
  * chapter opens only when the youngest age the evidence allows meets the
- * chapter's minimum; unknown age opens nothing above child.
+ * chapter's minimum; unknown age opens nothing above child. OD-25's one
+ * exception (earlyStageCandidate, below) is applied by the course adapter on
+ * top of this rule, never inside it.
  */
 export function chapterOpensForAge(evidence: AgeEvidence, policy: ChapterPolicy | null): boolean {
   if (!policy) return false;
   if (policy.stage === 'child') return true;
   return evidence.lowerBound !== null && evidence.lowerBound >= policy.minAge;
+}
+
+/**
+ * OD-25 (27 September 2026) refines P4: mastery may open ONE stage early. A
+ * chapter the safeguard closes is a candidate for early entry only when
+ *   * the learner's age is known (unknown age still opens nothing above child),
+ *   * the chapter's stage is exactly one stage above the learner's own stage,
+ *   * and it is not an adult chapter: adult chapters never open to a minor.
+ * A candidate opens only after every prerequisite skill of the chapter is
+ * mastered on the shared graph (E2) AND the learner confirms; it then plays as
+ * an OPTIONAL chapter (never required, never in a denominator, B3), and it
+ * closes again if a corrected age removes the candidacy (T4). Two stages up,
+ * or any adult chapter for a minor, stays closed whatever the evidence.
+ */
+export function earlyStageCandidate(evidence: AgeEvidence, policy: ChapterPolicy | null): boolean {
+  if (!policy || chapterOpensForAge(evidence, policy) || evidence.lowerBound === null) return false;
+  const own = learnerStage(evidence);
+  if (own === 'adult' || policy.stage === 'adult') return false;
+  return rank(policy.stage) === rank(own) + 1;
 }
 
 export type ChapterAccess = 'pathway' | 'optional' | 'closed';
@@ -268,6 +289,23 @@ export interface LearnerEvidence {
   mentorPKnown: ReadonlyMap<string, number>;
   /** KC keys whose Mentor memory card is due now (memory_card). */
   dueReviewKcs: ReadonlySet<string>;
+}
+
+/**
+ * OD-25 — a chapter's prerequisite skills: the graph prerequisites of every
+ * skill its topics teach, minus the skills taught inside the chapter itself.
+ * Sorted, so the stored evidence of a confirmation is stable.
+ */
+export function chapterPrerequisiteKcs(
+  chapter: PathwayChapter,
+  kcsByTopicPath: ReadonlyMap<string, TopicKcs>,
+  kcPrerequisites: ReadonlyMap<string, readonly string[]>,
+): string[] {
+  const taught = new Set<string>();
+  for (const saga of chapter.sagas) for (const topic of saga.topics) for (const kc of kcsByTopicPath.get(topic.path)?.teaches ?? []) taught.add(kc);
+  const prerequisites = new Set<string>();
+  for (const kc of taught) for (const prereq of kcPrerequisites.get(kc) ?? []) if (!taught.has(prereq)) prerequisites.add(prereq);
+  return [...prerequisites].sort();
 }
 
 export interface TopicCompletion {
@@ -504,8 +542,9 @@ export interface PathwayProgress {
  *      migrated percentage moves (OD-9).
  *  B2  Graph completion = every topic of the pathway complete, i.e. every KC
  *      the pathway teaches demonstrated through its own graded topics or
- *      placement credits. Mentor mastery alone satisfies prerequisites but
- *      never completes a pathway topic: completion stays graded evidence.
+ *      placement credits. Mentor mastery alone satisfies prerequisites; it
+ *      completes a topic only when the learner accepts the offer to count it
+ *      (OD-25), which is stored as a mastery credit and read as a credit.
  *  B3  Optional and closed chapters never enter a denominator: an adult is
  *      never measured on childhood chapters, a minor never on adult ones.
  */

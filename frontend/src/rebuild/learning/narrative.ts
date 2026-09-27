@@ -52,7 +52,8 @@ export const journalEntrySchema = z.object({
   recordedAt: z.string().min(1),
 });
 export type JournalEntry = z.infer<typeof journalEntrySchema>;
-const journalSchema = z.object({ entries: z.array(journalEntrySchema), hasMore: z.boolean() });
+/* OD-27 (3): whether the verified Tutor can see the chosen options (a parent-created child under 13); null when Core could not tell. */
+const journalSchema = z.object({ entries: z.array(journalEntrySchema), hasMore: z.boolean(), sharedWithTutor: z.boolean().nullable().optional() });
 
 export const selfBridgeSchema = z.object({
   id: z.string().min(1),
@@ -78,7 +79,7 @@ async function call(request: NarrativeTransport, path: string, init?: Parameters
 
 export type JournalState =
   | { status: 'loading' }
-  | { status: 'ready'; entries: JournalEntry[]; hasMore: boolean; bridges: SelfBridge[] }
+  | { status: 'ready'; entries: JournalEntry[]; hasMore: boolean; bridges: SelfBridge[]; sharedWithTutor?: boolean }
   | { status: 'error' };
 
 export const JOURNAL_PAGE = 10;
@@ -93,7 +94,8 @@ export async function fetchJournal(request: NarrativeTransport, offset = 0): Pro
   const parsed = journalSchema.safeParse(journal.data);
   if (!parsed.success) return { status: 'error' };
   const prompts = bridges.error ? null : selfBridgesSchema.safeParse(bridges.data);
-  return { status: 'ready', entries: parsed.data.entries, hasMore: parsed.data.hasMore, bridges: prompts?.success ? prompts.data.prompts : [] };
+  return { status: 'ready', entries: parsed.data.entries, hasMore: parsed.data.hasMore, bridges: prompts?.success ? prompts.data.prompts : [],
+    sharedWithTutor: parsed.data.sharedWithTutor === true };
 }
 
 /** Only the self prompts, for the learner shortcut. Unavailable reads as none: a suggestion is never worth an error. */
@@ -109,11 +111,21 @@ export async function clearJournal(request: NarrativeTransport): Promise<boolean
   return response.error === null;
 }
 
-export type BridgeOutcome = 'done' | 'closed' | 'error';
+export type BridgeOutcome = 'done' | 'closed' | 'no_wallet' | 'error';
+/** OD-28 (L-12): the goal an independent teen names on a savings prompt; Core creates it in the teen's own wallet. */
+export type SelfGoalDetails = { title: string; target: number };
+export type BridgeAnswer = (id: string, answer: 'act' | 'dismiss', goal?: SelfGoalDetails) => Promise<BridgeOutcome>;
 
-/** Acting on a self prompt records the teen's own commitment; it creates nothing and takes no details. */
-export async function answerSelfBridge(request: NarrativeTransport, id: string, answer: 'act' | 'dismiss'): Promise<BridgeOutcome> {
-  const response = await call(request, `/learn/bridges/${encodeURIComponent(id)}/${answer}`, { method: 'POST', body: {} });
+/**
+ * Acting on a self prompt records the teen's own commitment. On a savings
+ * prompt the teen may name a goal (OD-28, L-12): Core creates it in the teen's
+ * own wallet, or answers WALLET_UNAVAILABLE when the wallet does not admit them.
+ * A task prompt never takes details (tasks stay guardian-only).
+ */
+export async function answerSelfBridge(request: NarrativeTransport, id: string, answer: 'act' | 'dismiss', goal?: SelfGoalDetails): Promise<BridgeOutcome> {
+  const body = answer === 'act' && goal ? { title: goal.title.trim(), target: goal.target } : {};
+  const response = await call(request, `/learn/bridges/${encodeURIComponent(id)}/${answer}`, { method: 'POST', body });
   if (!response.error) return 'done';
+  if (response.error.code === 'WALLET_UNAVAILABLE') return 'no_wallet';
   return response.error.code === 'BRIDGE_CLOSED' || response.error.code === 'NOT_FOUND' ? 'closed' : 'error';
 }

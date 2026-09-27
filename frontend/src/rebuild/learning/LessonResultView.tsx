@@ -1,9 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type CSSProperties } from 'react';
 import { z } from 'zod';
 import type { Locale } from '../design/copyBudget';
 import { Button, Celebration, celebrationPart, CountUp, InlineNotice } from '../design/controls';
 import { mayCelebrate, streakMilestone } from '../design/milestones';
 import { REGISTERS, type LearnerRegister } from '../design/learnerRegisterPolicy.generated';
+import { CourseBadge } from './CourseBadge';
+import { learnCopy } from './learnCopy';
 import './result.css';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/);
@@ -82,6 +84,34 @@ const copy: Record<Locale, { done: string; preview: string; score: (correct: num
     plainDone: 'Lição concluída', showed: (skill) => `Você mostrou: ${skill}.`, built: (skill) => `Habilidade construída: ${skill}.`, skillOnly: (skill) => `Habilidade: ${skill}.` },
 };
 
+/*
+ * OD-28 (owner review item V-12): lesson completion gets a confetti burst. It is
+ * part of the lesson-complete milestone moment (OD-7, B.20), so it is mounted
+ * only inside the `Celebration` the screen opens when Core names that milestone:
+ * a playing celebration bursts once (700 ms, the celebration budget), and reduced
+ * motion, a revisit or a settled moment show the designated static frame (07 §5)
+ * with every piece already landed. Decorative only: hidden from assistive tech,
+ * no text, token colours, never interactive.
+ */
+const CONFETTI: ReadonlyArray<{ x: number; y: number; turn: number; tone: string; shape: 'dot' | 'bar' }> = [
+  { x: -150, y: -70, turn: -30, tone: 'mint', shape: 'bar' }, { x: -118, y: -26, turn: 40, tone: 'berry', shape: 'dot' },
+  { x: -92, y: -118, turn: 15, tone: 'sky', shape: 'bar' }, { x: -64, y: -34, turn: -55, tone: 'warning', shape: 'bar' },
+  { x: -40, y: -96, turn: 70, tone: 'on-accent', shape: 'dot' }, { x: -18, y: -140, turn: -20, tone: 'mint', shape: 'dot' },
+  { x: 20, y: -128, turn: 35, tone: 'berry', shape: 'bar' }, { x: 46, y: -84, turn: -65, tone: 'warning', shape: 'dot' },
+  { x: 70, y: -30, turn: 25, tone: 'sky', shape: 'dot' }, { x: 96, y: -112, turn: -40, tone: 'on-accent', shape: 'bar' },
+  { x: 124, y: -22, turn: 55, tone: 'mint', shape: 'bar' }, { x: 152, y: -62, turn: -15, tone: 'berry', shape: 'dot' },
+];
+
+function LessonConfetti({ medal }: { medal: boolean }) {
+  // Every piece lands above its anchor (the medal's centre, or the hero's top edge
+  // when the register shows no medal), so no piece ever sits on the heading.
+  return <span className={`lf-result-confetti${medal ? ' lf-result-confetti--medal' : ''}`} aria-hidden="true" data-celebrate="lesson-complete">
+    {CONFETTI.map((piece, index) => <span key={index} className={`lf-result-confetti-piece lf-result-confetti-piece--${piece.shape}`}
+      style={{ '--lf-confetti-x': `${piece.x}px`, '--lf-confetti-y': `${piece.y}px`, '--lf-confetti-turn': `${piece.turn}deg`,
+        '--lf-confetti-tone': `var(--${piece.tone})`, '--lf-confetti-order': index % 4 } as CSSProperties} />)}
+  </span>;
+}
+
 /** Exported for the Copy Budget test: every string the result screen can show. */
 export const lessonResultCopy = copy;
 
@@ -91,8 +121,10 @@ export const lessonResultCopy = copy;
  * "saved best is still X" notice is actually on screen (the numerator of
  * Appendix C's replay-notice display rate); a fixture never reports it.
  */
-export function LessonResultView({ rawReceipt, locale, onContinue, fixture = false, dark, onNoticeShown, register = 'young' }: {
+export function LessonResultView({ rawReceipt, locale, onContinue, fixture = false, dark, onNoticeShown, register = 'young', courseSlug = null }: {
   rawReceipt: unknown; locale: Locale; onContinue: () => void; fixture?: boolean;
+  /** W2L.3: the course the lesson was opened from, so an earned badge shows that course's own icon. */
+  courseSlug?: string | null;
   /**
    * B.23 (S05.3f): the learner's register, from Core. It changes the reward
    * framing (the recognition line, whether the medal shows, whether XP leads
@@ -162,15 +194,28 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
     <p className={`lf-result-streak ${celebrationPart('pop').className}`} data-copy-role="body" data-celebrate={milestone}>
       <img src="/rebuild/art/streak-flame.svg" alt="" className="lf-result-streak-mark" />{t.streak(receipt.streak.days)}</p>
   </Celebration> : null;
+  // W2L.3 (OD-7, B.20): the course and badge milestones Core named for this completion. One moment on the result:
+  // the badge when one was earned (it is the course's), otherwise the finished course; nothing when Core named neither.
+  const celebrateBadge = mayCelebrate(receipt.celebrations, 'badge-earned');
+  const celebrateCourse = mayCelebrate(receipt.celebrations, 'course-complete');
+  const lessonCopy = learnCopy[locale].lesson;
+  const courseMoment = celebrateBadge || celebrateCourse
+    ? <Celebration milestone={celebrateBadge ? 'badge-earned' : 'course-complete'} momentId={`${receipt.completion_id}:course`}>
+      <p className={`lf-result-course ${celebrationPart('pop').className}`} data-copy-role="body" data-celebrate={celebrateBadge ? 'badge-earned' : 'course-complete'}>
+        {celebrateBadge ? <CourseBadge slug={courseSlug} size="sm" /> : null}
+        {celebrateBadge ? lessonCopy.badgeEarned : lessonCopy.courseComplete}</p>
+    </Celebration> : null;
   const inner = <div className="lf-result-inner">
       {fixture ? <p className="lf-result-preview-label" data-copy-role="body">{t.preview}</p> : null}
       <div className="lf-result-hero">
+        {celebrateLesson ? <LessonConfetti medal={reward.medal} /> : null}
         {reward.medal ? <img src="/rebuild/art/lesson-medal.svg" alt="" className={`lf-result-medal${pop.className ? ` ${pop.className}` : ''}`} {...(celebrateLesson ? { 'data-celebrate': 'lesson-complete' } : {})} /> : null}
         <h1 data-copy-role="heading">{heading}</h1>
         {/* B.20: the skill behind the XP leads; the first-try count lives in the accuracy tile. B.23: framed per register. */}
         {skill ? <p className="lf-result-figured" data-copy-role="body">{recognition(skill)}</p>
           : keptBest ? null
             : <p data-copy-role="body">{t.score(receipt.first_try_correct, receipt.graded_count)}</p>}
+        {courseMoment}
         {streakLine}
       </div>
       <div className="lf-result-sheet">

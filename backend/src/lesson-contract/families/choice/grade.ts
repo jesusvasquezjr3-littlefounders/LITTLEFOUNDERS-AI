@@ -117,10 +117,10 @@ const gradeSpeedTap: FamilyGrader = (segment, answer) => {
   const targets = key ? strArray(key.target_ids) : null
   if (!selected || !targets) return MALFORMED
   const items = Array.isArray(segment.payload.items) ? (segment.payload.items as unknown[]) : []
-  const raw = signalDetection(selected, targets, items.length)
-  const overtime = a?.overtime === true
+  // OD-28 (L-01): running out of time no longer costs points. The timer stays and
+  // the answer still reports `overtime`, but the score is the answer's own.
   return {
-    score: overtime ? Math.round(raw * 0.8) : raw,
+    score: signalDetection(selected, targets, items.length),
     reveal: { target_ids: targets },
   }
 }

@@ -85,7 +85,7 @@ A register is not a safeguard. Every minor safeguard keeps following age through
 
 | State | Where | Words | Colour | Character | Sound | Result |
 |---|---|---|---|---|---|---|
-| Wrong answer, retry allowed | live player | "Let's think it through!", "Mistakes help us learn!", "New clue unlocked, try again!" | warning and a cross (the P3 test) | director's retry, gentle or hint pose; never a celebration (director test) | was the "edu_error" buzzer | **Fixed**: the miss plays the neutral tap |
+| Wrong answer, retry allowed | live player | "Let's think it through!", "Mistakes help us learn!", "New clue unlocked, try again!" | warning and a cross (the P3 test) | director's retry, gentle or hint pose; never a celebration (director test) | was the "edu_error" buzzer | **Fixed**: the miss plays the gentle not-yet cue (OD-28; the neutral tap before W2L.4) |
 | Wrong answer, no retries left | live player | the correction names the right answer | warning | as above | as above | Pass |
 | Lives counter | live player | "{{count}} hearts left" | red heart | none | none | **Fixed**: removed from the session, the header, the lesson lab and all three locales; a migrated document's `scoring.hearts` is ignored; an old checkpoint's value is dropped |
 | Lesson ended by lives | live player | "Good effort!" | none | none | none | **Fixed**: no lesson can end early any more |
@@ -160,6 +160,6 @@ Implemented as the conservative default and recorded here, per the lane rules:
 3. **Teens and adults see no medal on the lesson result.** The lesson-complete milestone is still recorded; its motion is simply not shown without the medal.
 4. **The graduation shows only after a younger register was seen.** Learners who were already 10 or older before this release see no graduation.
 5. **The guided review repeats at 6, 9 and 12 misses**, and counts per skill key (v1) or per lesson version (v2).
-6. **The live player's wrong-answer sound** is the neutral tap. A softer dedicated "not yet" sound would need an audio asset (owner call, possible spend).
-7. **Timed drills** (choice and storyplay families) still reduce the score by 20 percent when time runs out. Proposed: remove the reduction or make timers opt-in. Recorded as audit item MN-02 for the Pedagogical Lead.
+6. **The wrong-answer sound**: decided by the owner (OD-28, L-02). A dedicated gentle "not yet" cue, synthesised in-house at zero spend (`frontend/scripts/generate-not-yet-sound.mjs`), plays on a miss in the live player and in the rebuilt lesson (W2L.4).
+7. **Timed drills** (choice and storyplay families): decided by the owner (OD-28, L-01). Running out of time no longer costs points; the timer stays. Built in W2L.4 in both graders; audit item MN-02 keeps its manual review.
 8. **Experiments may not win on events or sessions.** Retention stays allowed as a success metric; a learning-outcome metric in the analytics service is future work (H.7).

@@ -1,0 +1,7 @@
+/* W2L.3: the course badge. The rosette's round well sits at 50% x / 37% y of its 160 x 184 box; the icon fills it. */
+.lf-learn-badge { position: relative; display: inline-block; flex: none; aspect-ratio: 160 / 184; }
+.lf-learn-badge--sm { inline-size: 40px; }
+.lf-learn-badge--md { inline-size: 56px; }
+.lf-learn-badge--lg { inline-size: 104px; }
+.lf-learn-badge-frame { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; }
+.lf-learn-badge-icon { position: absolute; inset-inline-start: 50%; inset-block-start: 37%; inline-size: 52%; block-size: auto; translate: -50% -50%; }

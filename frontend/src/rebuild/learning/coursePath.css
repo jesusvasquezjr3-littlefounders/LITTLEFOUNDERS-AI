@@ -12,7 +12,7 @@
 .lf-course-path-hero { display: grid; gap: var(--spacing-4); padding: var(--spacing-6); border-radius: var(--rounded-xl); background: var(--primary); color: var(--on-primary); }
 .lf-course-path-hero h2 { font-size: 1.75rem; line-height: 1.15; }
 .lf-course-path-hero p { font-weight: 700; }
-.lf-course-path-hero :is(button):focus-visible { outline-color: var(--on-primary); }
+.lf-course-path-hero :is(a, button):focus-visible { outline-color: var(--on-primary); }
 .lf-course-path-kicker { justify-self: start; padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-full); background: var(--on-primary); color: var(--primary-ridge); font-weight: 800; }
 .lf-course-path-hero-action { display: flex; align-items: center; flex-wrap: wrap; gap: var(--spacing-4); }
 .lf-course-path-hero-action > span { font-weight: 800; font-variant-numeric: tabular-nums; }
@@ -21,7 +21,7 @@
 /* A finished path is a state, so it takes the first view on its own (rule 15); it is stated, never celebrated here. */
 .lf-course-path-done { display: grid; align-content: center; gap: var(--spacing-3); min-block-size: min(60dvh, 440px); padding: var(--spacing-6); border-radius: var(--rounded-xl); background: var(--success-soft); color: var(--content); }
 .lf-course-path-done h2 { font-size: 1.5rem; color: var(--success-strong); }
-.lf-course-path-earned { display: inline-flex; align-items: center; gap: var(--spacing-2); font-weight: 800; color: var(--success-strong); }
+.lf-course-path-earned { display: inline-flex; align-items: center; gap: var(--spacing-3); font-weight: 800; color: var(--success-strong); }
 .lf-course-path-earned .lf-system-glyph, .lf-course-path-skill-state .lf-system-glyph { inline-size: 20px; block-size: 20px; flex: none; }
 
 .lf-course-path-note { color: var(--content-muted); font-weight: 700; }
@@ -52,13 +52,27 @@
 .lf-course-path-chapter-count { grid-column: 2; grid-row: 1; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--content-muted); }
 .lf-course-path-chapter > .lf-course-path-tag { grid-column: 1; }
 
-.lf-course-path-state { min-block-size: calc(100dvh - var(--spacing-8)); align-content: center; justify-items: start; }
+.lf-course-path-state { justify-items: start; }
 .lf-course-path-state h1 { font-size: 2rem; }
-.lf-course-path-missing li { font-weight: 800; }
+.lf-course-path-missing { inline-size: 100%; max-inline-size: 480px; }
 .lf-course-path-state .lf-actions { inline-size: 100%; max-inline-size: 480px; }
 
+/* W2L.1: the linear engine's chapters open to their lessons (a disclosure on the shared Button and List). */
+/* A sunken well, so the disclosure (a surface button) and the lesson rows (surface) keep a boundary in both modes (02 §4.4). */
+.lf-course-path-chapter--linear { grid-template-columns: minmax(0, 1fr) auto; background: var(--sunken); }
+.lf-course-path-chapter-toggle { grid-column: 1 / -1; display: flex; flex-wrap: wrap; }
+.lf-course-path-lessons { grid-column: 1 / -1; min-inline-size: 0; }
+.lf-rebuild[data-theme='dark'] .lf-course-path-chapter--linear .lf-button--secondary, .lf-rebuild[data-theme='dark'] .lf-course-path-lessons .lf-list-row { background: var(--raised); }
+.lf-course-path-mark { display: inline-grid; place-items: center; inline-size: var(--spacing-8); block-size: var(--spacing-8); border-radius: var(--rounded-full); background: var(--success-soft); color: var(--success-strong); }
+.lf-course-path-mark .lf-system-glyph { inline-size: var(--spacing-5); block-size: var(--spacing-5); }
+.lf-rebuild .lf-course-path-lessons .lf-list-row-supporting { justify-self: start; }
+
 @container app (min-width: 640px) {
-  .lf-course-path { padding: var(--spacing-8); }
   .lf-course-path-hero, .lf-course-path-done { padding: var(--spacing-8); }
   .lf-course-path-hero h2, .lf-course-path-done h2 { font-size: 2rem; }
 }
+/* OD-25: an offer the learner answers (a chapter one stage early, a topic shown with the Mentor). */
+.lf-rebuild .lf-course-path-offer { display: grid; gap: var(--spacing-3); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--mint-soft); color: var(--content); }
+.lf-rebuild .lf-course-path-offer--early { background: var(--sky-soft); }
+.lf-course-path-offer-topic { justify-self: start; padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-full); background: var(--surface); font-weight: 800; overflow-wrap: anywhere; }
+.lf-rebuild .lf-course-path-offer .lf-actions { max-inline-size: 480px; }

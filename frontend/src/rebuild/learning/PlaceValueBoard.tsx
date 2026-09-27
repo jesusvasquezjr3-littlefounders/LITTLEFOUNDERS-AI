@@ -9,6 +9,7 @@ import { StepReplay } from './StepReplay';
 import './learning.css';
 import './placeValue.css';
 import './stepReplay.css';
+import { LessonStageSlot } from './lessonStage';
 
 type PlaceValueSegment = Extract<LessonClientSegment, { type: 'math.place-value.v2' }>;
 type Labels = { back: string; explore: string; progress: string; board: string; showTable: string; showChart: string;
@@ -63,7 +64,7 @@ export function PlaceValueBoard({ document, segment, onBack, sequence }: {
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
         {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={progress} max={100} valueText={`${progress}%`} /> : null}
-        <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header>
+        <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header><LessonStageSlot />
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1>
           <p data-copy-role="prompt">{segment.prompt}</p></div>

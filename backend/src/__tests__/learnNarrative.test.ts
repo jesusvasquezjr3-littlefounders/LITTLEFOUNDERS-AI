@@ -308,7 +308,7 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
     expect(built.db.savings_goals).toEqual([]);
   });
 
-  it('independent teen: a self-directed prompt that never creates a task or any wallet record', async () => {
+  it('independent teen: "I will try" alone is a commitment that creates no task and no wallet record', async () => {
     await grade(TEEN15, 'p5');
     await walk(TEEN15, ['story', 'save1']);
     const done = await complete(TEEN15, 'save2');
@@ -316,7 +316,10 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
     const list = await get(TEEN15, '/learn/bridges');
     expect(list.body.data.prompts).toEqual([expect.objectContaining({ action: 'savings_goal', skill: { 'en-US': 'Saving toward a goal', 'pt-BR': 'Poupar para uma meta' } })]);
     const id = list.body.data.prompts[0].id as string;
-    expect((await post(TEEN15, `/learn/bridges/${id}/act`, { title: 'Bike', target: 100 })).status).toBe(400);
+    // Malformed goal details are refused before anything is read or written.
+    for (const bad of [{ title: 'Bike' }, { title: '', target: 10 }, { title: 'Bike', target: 0 }, { title: 'Bike', target: 10, icon: 'car' }, { title: 'Bike', target: 10, recurrence: 'weekly' }]) {
+      expect((await post(TEEN15, `/learn/bridges/${id}/act`, bad)).status, JSON.stringify(bad)).toBe(400);
+    }
     const acted = await post(TEEN15, `/learn/bridges/${id}/act`);
     expect(acted.status).toBe(200);
     expect(acted.body.data).toEqual({ status: 'acted', replayed: false });
@@ -326,6 +329,46 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
     expect((await post(TEEN15, `/learn/bridges/${id}/act`)).body.data.replayed).toBe(true);
     // Family routes are guardian-only, whatever the teen sends.
     expect((await post(TEEN15, `/family/learning/kids/${TEEN15}/bridges/${id}/act`, { action: 'savings_goal', title: 'x', target: 1 })).status).toBe(403);
+  });
+
+  it('OD-28 (L-12): an independent teen names a goal and it is created in their own wallet, once; a task prompt still takes no details', async () => {
+    await grade(TEEN15, 'p5');
+    await walk(TEEN15, ['story', 'save1', 'save2', 'work1']);
+    const byAction = (a: string) => built.db.learning_bridge_prompts!.find((p) => p.action === a)!;
+    const goalPrompt = byAction('savings_goal');
+    const created = await post(TEEN15, `/learn/bridges/${goalPrompt.id}/act`, { title: 'New headphones', target: 300, icon: 'gift' });
+    expect(created.status, JSON.stringify(created.body)).toBe(200);
+    expect(built.db.savings_goals).toEqual([expect.objectContaining({ kid_user_id: TEEN15, title: 'New headphones', target: 300, icon: 'gift', status: 'active' })]);
+    const goalId = built.db.savings_goals![0]!.id;
+    expect(created.body.data).toEqual({ status: 'acted', replayed: false, goalId });
+    expect(byAction('savings_goal')).toMatchObject({ status: 'acted', result_goal_id: null, result_self_goal_id: goalId, result_task_id: null });
+    expect(built.db.audit_logs).toEqual(expect.arrayContaining([expect.objectContaining({ actor_id: TEEN15, action: 'learning_bridge.self_goal_created', subject: goalPrompt.id })]));
+    // A replay returns the same goal and creates nothing more.
+    const replay = await post(TEEN15, `/learn/bridges/${goalPrompt.id}/act`, { title: 'Again', target: 5 });
+    expect(replay.body.data).toEqual({ status: 'acted', replayed: true, goalId });
+    expect(built.db.savings_goals).toHaveLength(1);
+    // Tasks stay guardian-only (OD-3): the task prompt refuses details and creates nothing.
+    const taskPrompt = byAction('earning_task');
+    expect((await post(TEEN15, `/learn/bridges/${taskPrompt.id}/act`, { title: 'Mow', target: 10 })).status).toBe(400);
+    expect(built.db.tasks).toEqual([]);
+    // Nobody else can act on the teen's prompt, whatever they send.
+    for (const user of [ADULT, KID7, TUTOR]) {
+      expect((await post(user, `/learn/bridges/${taskPrompt.id}/act`, { title: 'x', target: 1 })).status).toBe(404);
+      expect((await post(user, `/learn/bridges/${taskPrompt.id}/act`)).status).toBe(404);
+    }
+  });
+
+  it('OD-28 (L-12): no wallet, no goal: the holder check at the moment of acting refuses and writes nothing', async () => {
+    await grade(TEEN15, 'p5');
+    await walk(TEEN15, ['story', 'save1', 'save2']);
+    const prompt = built.db.learning_bridge_prompts![0]!;
+    // Still a self audience for Core (no kid role, no guardian), but public.teen_wallet_holder() refuses a parent account.
+    built.db.user_roles!.push({ user_id: TEEN15, role: 'parent' });
+    const refused = await post(TEEN15, `/learn/bridges/${prompt.id}/act`, { title: 'Bike', target: 10 });
+    expect(refused.status, JSON.stringify(refused.body)).toBe(409);
+    expect(refused.body.error.code).toBe('WALLET_UNAVAILABLE');
+    expect(built.db.savings_goals).toEqual([]);
+    expect(prompt.status).toBe('open');
   });
 
   it('the database double refuses a task from a self prompt even if Core sent one', async () => {
@@ -422,5 +465,64 @@ describe('B.10 — the guardian narrative, through the verified-parent boundary'
     expect(second.body.data.hasMore).toBe(false);
     expect((await get(TUTOR, `/family/learning/kids/${KID7}/narrative?limit=99`)).status).toBe(400);
     expect((await get(TUTOR, `/family/learning/kids/not-a-uuid/narrative`)).status).toBe(400);
+  });
+});
+
+describe('OD-27 (3), L-13 — the verified Tutor sees an under-13 child\'s chosen options; a teen\'s journal stays private', () => {
+  const KID_TEEN = uid(109);
+  const KID_UNKNOWN = uid(110);
+  const addKid = (id: string, birth: string | null, band: string) => {
+    built.db.user_roles!.push({ user_id: id, role: 'kid' });
+    built.db.profiles!.push({ user_id: id, display_name: 'Kid', locale: 'en-US', birth_date: birth });
+    built.db.account_age_declarations!.push({ user_id: id, declared_age_band: band });
+    built.db.guardian_links!.push({ parent_user_id: TUTOR, kid_user_id: id, verification_status: 'verified' });
+    built.db.course_placements!.push({ user_id: id, course_id: COURSE.money });
+    built.db.learning_stats!.push({ user_id: id, xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0, longest_streak: 0, last_active_date: null });
+  };
+
+  it('the Tutor reads the chosen option and the situation, in the Tutor\'s locale, minimised and audited', async () => {
+    await grade(KID7, 'p10');
+    const res = await get(TUTOR, `/family/learning/kids/${KID7}/decisions`);
+    expect(res.status, JSON.stringify(res.body)).toBe(200);
+    expect(res.body.data).toEqual({
+      locale: 'pt-BR', hasMore: false,
+      entries: [{ id: expect.any(String), courseTitle: 'money (pt)', lessonTitle: 'Lição story', situation: 'What price brings me closer to the guitar?',
+        choice: '10 coins, double the price', recordedAt: expect.any(String) }],
+    });
+    // Never the outcome, the first choice or anything scored.
+    expect(JSON.stringify(res.body)).not.toMatch(/outcome|first|score|neighbors/i);
+    expect(built.db.audit_logs).toEqual(expect.arrayContaining([expect.objectContaining({ actor_id: TUTOR, action: 'learner_journal.guardian_read', subject: KID7 })]));
+    // The child is told on their own journal.
+    expect((await get(KID7, '/learn/journal')).body.data.sharedWithTutor).toBe(true);
+  });
+
+  it('a teen\'s journal stays private: a parent-created teen and a self-registered teen alike', async () => {
+    addKid(KID_TEEN, yearsAgo(14), '13_to_17');
+    const denied = await get(TUTOR, `/family/learning/kids/${KID_TEEN}/decisions`);
+    expect(denied.status).toBe(403);
+    expect(denied.body.error.code).toBe('JOURNAL_PRIVATE');
+    expect((await get(KID_TEEN, '/learn/journal')).body.data.sharedWithTutor).toBe(false);
+    expect((await get(TEEN15, '/learn/journal')).body.data.sharedWithTutor).toBe(false);
+    expect((await get(ADULT, '/learn/journal')).body.data.sharedWithTutor).toBe(false);
+  });
+
+  it('age follows age: without a birth date the screened band decides, and an unknown age stays private', async () => {
+    addKid(KID_UNKNOWN, null, 'under_13');
+    expect((await get(TUTOR, `/family/learning/kids/${KID_UNKNOWN}/decisions`)).status).toBe(200);
+    built.db.account_age_declarations = built.db.account_age_declarations!.filter((r) => r.user_id !== KID_UNKNOWN);
+    built.db.account_age_declarations.push({ user_id: KID_UNKNOWN, declared_age_band: '13_to_17' });
+    expect((await get(TUTOR, `/family/learning/kids/${KID_UNKNOWN}/decisions`)).status).toBe(403);
+  });
+
+  it('every other population is refused at the server', async () => {
+    await grade(KID7, 'p10');
+    expect((await get(OTHER_PARENT, `/family/learning/kids/${KID7}/decisions`)).status).toBe(404);
+    const unverified = await get(UNVERIFIED_PARENT, `/family/learning/kids/${KID7}/decisions`);
+    expect(unverified.status).toBe(403);
+    expect(unverified.body.error.code).toBe('PARENT_VERIFICATION_REQUIRED');
+    for (const user of [KID7, TEEN15, ADULT]) expect((await get(user, `/family/learning/kids/${KID7}/decisions`)).status).toBe(403);
+    expect((await get(TUTOR, `/family/learning/kids/${KID7}/decisions?limit=99`)).status).toBe(400);
+    expect((await get(TUTOR, '/family/learning/kids/not-a-uuid/decisions')).status).toBe(400);
+    expect(built.db.audit_logs!.filter((r) => r.action === 'learner_journal.guardian_read')).toEqual([]);
   });
 });

@@ -2,13 +2,12 @@ import { lazy } from 'react';
 import { Route } from 'react-router-dom';
 import { RequireAuth } from '@/auth/RequireAuth';
 import { RequireOnboarded } from '@/auth/RequireOnboarded';
-import { LearnPage } from '@/routes/app/LearnPage';
-import { CoursePage } from '@/routes/app/learn/CoursePage';
-import { TerritoryPage } from '@/routes/app/learn/TerritoryPage';
-import { CoursePathRoute } from '@/routes/app/learn/CoursePathRoute';
+import { LearnHomeRoute } from '@/routes/app/learn/LearnHomeRoute';
+import { CoursePathRedirect, CourseRoute } from '@/routes/app/learn/CourseRoute';
+import { TerritoryRoute } from '@/routes/app/learn/TerritoryRoute';
 import { DecisionJournalRoute } from '@/routes/app/learn/DecisionJournalRoute';
 import { LearningRhythmRoute } from '@/routes/app/learn/LearningRhythmRoute';
-import { PlacementPage } from '@/routes/app/learn/PlacementPage';
+import { PlacementRoute } from '@/routes/app/learn/PlacementRoute';
 import {
   COURSE_PATH_ROUTE_PATH,
   COURSE_ROUTE_PATH,
@@ -36,10 +35,13 @@ const LessonRoute = lazy(() => import('@/routes/app/learn/LessonRoute'));
 /** Pages inside the signed-in app shell (App.tsx wraps them in RequireAuth + RequireOnboarded). */
 export const learnShellRoutes = (
   <>
-    <Route path="learn" element={<LearnPage />} />
-    <Route path={COURSE_ROUTE_PATH} element={<CoursePage />} />
-    <Route path={TERRITORY_ROUTE_PATH} element={<TerritoryPage />} />
-    <Route path={COURSE_PATH_ROUTE_PATH} element={<CoursePathRoute />} />
+    {/* W2L.1: the rebuilt learner home (L1) and the one course screen (L2, both course engines). */}
+    <Route path="learn" element={<LearnHomeRoute />} />
+    <Route path={COURSE_ROUTE_PATH} element={<CourseRoute />} />
+    {/* W2L.2: the rebuilt course world (L3). */}
+    <Route path={TERRITORY_ROUTE_PATH} element={<TerritoryRoute />} />
+    {/* The S05.3b course path became the course screen; its old address redirects. */}
+    <Route path={COURSE_PATH_ROUTE_PATH} element={<CoursePathRedirect />} />
     <Route path={DECISION_JOURNAL_ROUTE_PATH} element={<DecisionJournalRoute />} />
     <Route path={LEARNING_RHYTHM_ROUTE_PATH} element={<LearningRhythmRoute />} />
   </>
@@ -48,11 +50,10 @@ export const learnShellRoutes = (
 /** Full-screen layers with no app navigation around them. */
 export const learnStandaloneRoutes = (
   <>
-    {/* Mandatory per-course placement quiz (0043) — its own fullscreen
-        layer like onboarding, but still funnels an unboarded guest to
-        /onboarding first (RequireOnboarded) so the two one-time flows
-        never interleave out of order. */}
-    <Route path={PLACEMENT_ROUTE_PATH} element={<RequireAuth><RequireOnboarded><PlacementPage /></RequireOnboarded></RequireAuth>} />
+    {/* W2L.2: the rebuilt placement flow (L4), the per-course entry placement (0043). Its own full-screen
+        layer like onboarding, but still funnels an unboarded guest to /onboarding first (RequireOnboarded)
+        so the two one-time flows never interleave out of order. */}
+    <Route path={PLACEMENT_ROUTE_PATH} element={<RequireAuth><RequireOnboarded><PlacementRoute /></RequireOnboarded></RequireAuth>} />
     {/* Lesson Player — its own fullscreen layer, no app chrome. RequireAuth
         only, deliberately outside the app-shell route group. home="/learn":
         a learner stranded here should land on the shelf, not on the
