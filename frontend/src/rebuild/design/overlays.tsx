@@ -18,7 +18,9 @@ import './overlays.css';
 /** Shared modal behaviour: host, stack, inert, scroll lock and focus trap. */
 function useModal(open: boolean, layer: LayerKind, onDismiss: (() => void) | undefined, panel: React.RefObject<HTMLElement>, initialFocus?: React.RefObject<HTMLElement>) {
   const host = useLayerHost(open, { layer });
-  const ready = open && host !== null;
+  // A host React already removed is not ready: under development double effects a render can still hold the first
+  // host after its cleanup, and a focus trap run there focuses nothing (W2T.1, found on the real staff routes).
+  const ready = open && host !== null && host.isConnected;
   useLayer(ready, host, true, onDismiss);
   useScrollLock(ready);
   useFocusTrap(ready, panel, initialFocus);

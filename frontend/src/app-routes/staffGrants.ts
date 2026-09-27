@@ -15,19 +15,29 @@ export interface StaffRouteGrant {
   grant: StaffGrant | readonly StaffGrant[] | 'superadmin';
   /** A compatibility path that only redirects to another section: kept for old bookmarks, never a menu entry. */
   redirectTo?: string;
+  /** The section is a rebuilt console screen (W2T.1-W2T.3): the staff shell renders it directly, not inside a legacy page body. */
+  rebuilt?: true;
 }
 
 export const STAFF_ROUTE_GRANTS: readonly StaffRouteGrant[] = [
-  { id: 'overview', path: 'admin', grant: ['manage_users', 'manage_content', 'view_analytics', 'manage_support'] },
-  { id: 'content', path: 'admin/content', grant: 'manage_content' },
-  { id: 'users', path: 'admin/users', grant: 'manage_users' },
-  { id: 'emails', path: 'admin/emails', grant: 'manage_support' },
-  // G.5: Insights now lives inside Learning intel (the page redirects to /admin/intel?focus=learning).
-  { id: 'insights', path: 'admin/insights', grant: 'view_analytics', redirectTo: 'intel' },
-  { id: 'intel', path: 'admin/intel', grant: 'view_analytics' },
-  { id: 'analytics', path: 'admin/analytics', grant: 'view_analytics' },
-  { id: 'generation', path: 'admin/generation', grant: 'manage_content' },
-  { id: 'audit', path: 'admin/audit', grant: 'manage_support' },
-  { id: 'reports', path: 'admin/reports', grant: 'manage_support' },
-  { id: 'roles', path: 'admin/roles', grant: 'superadmin' },
+  { id: 'overview', path: 'admin', grant: ['manage_users', 'manage_content', 'view_analytics', 'manage_support'], rebuilt: true },
+  { id: 'content', path: 'admin/content', grant: 'manage_content', rebuilt: true },
+  { id: 'users', path: 'admin/users', grant: 'manage_users', rebuilt: true },
+  { id: 'emails', path: 'admin/emails', grant: 'manage_support', rebuilt: true },
+  // G.5 (W2T.3): Insights (S8) is the Insights view of Learning intel, reached from its menu entry; this path opens that view.
+  { id: 'insights', path: 'admin/insights', grant: 'view_analytics', redirectTo: 'intel', rebuilt: true },
+  { id: 'intel', path: 'admin/intel', grant: 'view_analytics', rebuilt: true },
+  { id: 'analytics', path: 'admin/analytics', grant: 'view_analytics', rebuilt: true },
+  // C.24: the Mentor-quality dashboard. Core reads it behind view_analytics; naming owners needs manage_users (Core).
+  { id: 'mentorQuality', path: 'admin/mentor-quality', grant: 'view_analytics', rebuilt: true },
+  { id: 'generation', path: 'admin/generation', grant: 'manage_content', rebuilt: true },
+  { id: 'audit', path: 'admin/audit', grant: 'manage_support', rebuilt: true },
+  { id: 'reports', path: 'admin/reports', grant: 'manage_support', rebuilt: true },
+  { id: 'roles', path: 'admin/roles', grant: 'superadmin', rebuilt: true },
 ];
+
+/** Whether a console path shows a rebuilt screen (the staff shell then gives it the whole content area). */
+export function isRebuiltStaffPath(pathname: string): boolean {
+  const path = pathname.replace(/^\/+|\/+$/g, '');
+  return STAFF_ROUTE_GRANTS.some((route) => route.rebuilt === true && route.path === path);
+}

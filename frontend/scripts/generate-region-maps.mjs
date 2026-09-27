@@ -1,5 +1,5 @@
 /*
- * Generates src/routes/admin/analytics/regions/<CC>.ts — real state/province
+ * Generates src/rebuild/staff/console/geo/regions/<CC>.ts — real state/province
  * outlines, one module per country, loaded only when an operator zooms into
  * that country.
  *
@@ -49,7 +49,7 @@ const SOURCE =
 const RETAIN = 0.06;
 
 const here = dirname(fileURLToPath(import.meta.url));
-const outDir = resolve(here, '../src/routes/admin/analytics/regions');
+const outDir = resolve(here, '../src/rebuild/staff/console/geo/regions');
 const cachePath = resolve(here, '../.cache/admin1-10m.geojson');
 
 async function loadSource() {

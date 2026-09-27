@@ -28,8 +28,6 @@ const PoseLabPage = lazy(() => import('@/tutor-scene/lab/PoseLabPage'));
  * needing a live session, a model key or a websocket. */
 const TutorLabPage = lazy(() => import('@/tutor/lab/TutorLabPage'));
 const LearnLabPage = lazy(() => import('@/routes/app/learn/lab/LearnLabPage'));
-const AnalyticsNoticesLab = lazy(() => import('@/routes/admin/analytics/AnalyticsNoticesLab'));
-const AudienceLab = lazy(() => import('@/routes/admin/analytics/AudienceLab'));
 
 /** DEV-only harnesses; an empty fragment in a production build. */
 export const devRoutes = import.meta.env.DEV ? (
@@ -41,8 +39,6 @@ export const devRoutes = import.meta.env.DEV ? (
         reason scene-lab is: it is an authoring surface, not a product one. */}
     <Route path="dev/pose-lab" element={<DevRoute><PoseLabPage /></DevRoute>} />
     <Route path="dev/learn-lab/:courseSlug" element={<DevRoute><LearnLabPage /></DevRoute>} />
-    <Route path="dev/audience-lab" element={<DevRoute><AudienceLab /></DevRoute>} />
-    <Route path="dev/analytics-notices" element={<DevRoute><AnalyticsNoticesLab /></DevRoute>} />
     <Route path="dev/tutor-lab" element={<DevRoute><TutorLabPage /></DevRoute>} />
   </>
 ) : null;

@@ -2,10 +2,10 @@
  * THE `parent` ROLE'S LABEL MUST NOT COLLIDE WITH THE AI-TUTOR FEATURE'S OWN
  * LABEL, IN THE SAME LOCALE.
  *
- * `common.json`'s `roles.parent` is rendered verbatim by `RoleChip`
- * (`routes/admin/adminShared.tsx`) on `AdminRolesPage` and `AdminUsersPage` —
- * the admin console's role-distribution chart, filter chips, and per-user role
- * badges. GLOSSARY.md documents "Tutor" as the intended user-facing name for
+ * `common.json`'s `roles.parent` was rendered verbatim by the legacy admin
+ * console's role chips (removed in W2T.1/W2T.3; the rebuilt console reads its
+ * role names from `rebuild-staff.json` → `staffConsole.roleNames`). The rule
+ * still binds wherever `roles.parent` is shown. GLOSSARY.md documents "Tutor" as the intended user-facing name for
  * that role in all three locales, matching what the product's own Terms &
  * Conditions ("Cuenta TUTOR" / "TUTOR Account" / "Conta TUTOR"), identity
  * verification flow ("Become a Tutor"), and dashboard upgrade CTA already call

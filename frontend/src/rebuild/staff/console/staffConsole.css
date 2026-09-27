@@ -1,0 +1,230 @@
+/* The rebuilt staff console (W2T.1). A dashboard page (02 §4.5): neutral page, cards that separate by
+   elevation in light and by surface step in dark, no outlines. Tokens only, logical properties only,
+   layout by container width (02 §7 rule 9), no motion of its own (a staff surface; reduced motion
+   needs no override). Text never truncates: ids, names and addresses wrap anywhere (.ugc). */
+
+.lf-rebuild .lf-staff-page { container: lf-staff-page / inline-size; display: grid; gap: var(--spacing-6); min-inline-size: 0; }
+.lf-rebuild .lf-staff-page h2 { font: var(--type-title); }
+.lf-rebuild .lf-staff-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--spacing-4); }
+.lf-rebuild .lf-staff-head-text { display: grid; flex: 1 1 18em; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-rebuild .lf-staff-head-text p { color: var(--content-muted); }
+.lf-rebuild .lf-staff-head-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+
+/* Headline numbers: balanced rows by the space their own container has (no orphan tile), never narrower than a label's longest word. */
+.lf-rebuild .lf-staff-metrics-wrap { container: lf-staff-metrics / inline-size; min-inline-size: 0; }
+.lf-rebuild .lf-staff-metrics { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-3); margin: 0; }
+/* Two across only when a tile keeps room for its longest label word with WCAG 1.4.12 spacing (found at 320 px in Spanish). */
+@container lf-staff-metrics (min-width: 300px) {
+  .lf-rebuild .lf-staff-metrics:not([data-count='1']) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container lf-staff-metrics (min-width: 480px) {
+  .lf-rebuild .lf-staff-metrics:is([data-count='3'], [data-count='5'], [data-count='6']) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@container lf-staff-metrics (min-width: 640px) {
+  .lf-rebuild .lf-staff-metrics[data-count='4'] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@container lf-staff-metrics (min-width: 960px) {
+  .lf-rebuild .lf-staff-metrics[data-count='5'] { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .lf-rebuild .lf-staff-metrics[data-count='6'] { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+.lf-rebuild .lf-staff-metric {
+  display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: var(--spacing-1); min-inline-size: 0;
+  padding: var(--spacing-4); border-radius: var(--rounded-lg); background: var(--surface); box-shadow: var(--elevation-card);
+}
+.lf-rebuild .lf-staff-metric dt { font: var(--type-label); color: var(--content-muted); overflow-wrap: break-word; }
+.lf-rebuild .lf-staff-metric dd { margin: 0; font: var(--type-numeral); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+
+/* Label / value pairs (details sheets, the funnel). */
+.lf-rebuild .lf-staff-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--spacing-3) var(--spacing-5); margin: 0; }
+.lf-rebuild .lf-staff-fact { display: grid; gap: var(--spacing-1); min-inline-size: 0; }
+.lf-rebuild .lf-staff-fact dt { font: var(--type-label); color: var(--content-muted); }
+.lf-rebuild .lf-staff-fact dd { margin: 0; font: var(--type-body); min-inline-size: 0; }
+
+.lf-rebuild .lf-staff-section { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-rebuild .lf-staff-sheet { display: grid; gap: var(--spacing-5); min-inline-size: 0; }
+/* A notice in a wide sheet keeps a readable measure (03 §3: at most 75 characters a line). */
+.lf-rebuild .lf-staff-sheet > .lf-notice { max-inline-size: 34rem; }
+.lf-rebuild .lf-staff-subheading { margin: 0; font: var(--type-label); }
+.lf-rebuild .lf-staff-muted { color: var(--content-muted); }
+.lf-rebuild .lf-staff-form { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-rebuild .lf-staff-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-3); }
+/* A neutral button inside a card separates by fill (02 §4.4): the card is the surface, so the button takes the sunken step. */
+.lf-rebuild .lf-staff-page .lf-card .lf-button--secondary { background: var(--sunken); }
+.lf-rebuild .lf-staff-copy { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); }
+.lf-rebuild .lf-staff-switches { display: grid; gap: var(--spacing-3); }
+.lf-rebuild .lf-staff-result-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); }
+
+/* Filters: one column on a narrow page, then as many as fit side by side. */
+.lf-rebuild .lf-staff-filters { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+@container lf-staff-page (min-width: 640px) {
+  .lf-rebuild .lf-staff-filters { grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); align-items: end; }
+}
+
+.lf-rebuild .lf-staff-bars { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-staff-failure { display: grid; }
+
+/* The overview's section list: real links, a 56 px row each. */
+.lf-rebuild .lf-staff-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-staff-link {
+  display: grid; gap: var(--spacing-1); min-block-size: var(--target-base); padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--rounded-md); background: var(--sunken); color: var(--content); text-decoration: none;
+}
+.lf-rebuild[data-theme='dark'] .lf-staff-link { background: var(--raised); }
+.lf-rebuild .lf-staff-link:hover { background: var(--primary-soft); }
+.lf-rebuild .lf-staff-link-title { font: var(--type-label); color: var(--primary-strong); }
+.lf-rebuild .lf-staff-link-body { font: var(--type-caption); color: var(--content-muted); }
+
+/* Report records inside a case. */
+.lf-rebuild .lf-staff-reports { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-staff-reports > li { display: grid; gap: var(--spacing-1); padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-rebuild[data-theme='dark'] .lf-staff-reports > li { background: var(--raised); }
+.lf-rebuild .lf-staff-report-category { font: var(--type-label); }
+
+/* Machine detail (an audit row's or an email's JSON): wraps, never scrolls sideways. */
+.lf-rebuild .lf-staff-code {
+  margin: 0; padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); color: var(--content);
+  font: var(--type-caption); font-family: ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.lf-rebuild[data-theme='dark'] .lf-staff-code { background: var(--raised); }
+
+/* The daily chart: one hue, thin bars, a recessive base, the average as a dashed rule. */
+.lf-rebuild .lf-staff-chart { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-rebuild .lf-staff-chart-controls { display: grid; gap: var(--spacing-3); }
+.lf-rebuild .lf-staff-multiple { display: grid; gap: var(--spacing-1); min-inline-size: 0; }
+.lf-rebuild .lf-staff-multiple-caption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--spacing-1) var(--spacing-3); margin: 0; font: var(--type-caption); color: var(--content-muted); }
+.lf-rebuild .lf-staff-multiple-caption > [data-copy-role='data'] { color: var(--content); font-variant-numeric: tabular-nums; }
+.lf-rebuild .lf-staff-multiple .lf-viz-spark { display: block; inline-size: 100%; block-size: var(--spacing-12); }
+
+/* ---- W2T.2: Content, Generation and Mentor quality --------------------------------------------------- */
+
+/* The view switch of a section (Courses / Lesson review / Mentor activities / Learning quality; Live / Run history / Trends / Coach). */
+.lf-rebuild .lf-staff-views { min-inline-size: 0; }
+.lf-rebuild .lf-staff-stack { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-rebuild .lf-staff-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
+.lf-rebuild .lf-staff-emphasis { font: var(--type-title); }
+.lf-rebuild .lf-staff-chips { display: inline-flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-rebuild .lf-staff-error { color: var(--error-strong); }
+
+/* Two cards side by side once the page has room for both at a readable measure. */
+.lf-rebuild .lf-staff-pair { display: grid; gap: var(--spacing-6); min-inline-size: 0; }
+@container lf-staff-page (min-width: 840px) {
+  .lf-rebuild .lf-staff-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+}
+
+/* B.3: courses learners could not open. */
+.lf-rebuild .lf-staff-incidents { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+
+/* G.2: the release check's refusal, with its reason and next step. */
+.lf-rebuild .lf-staff-refusal { display: grid; gap: var(--spacing-2); }
+
+/* A lesson under review: its parts, audio and images. */
+.lf-rebuild .lf-staff-parts, .lf-rebuild .lf-staff-media, .lf-rebuild .lf-staff-alerts, .lf-rebuild .lf-staff-tracks, .lf-rebuild .lf-staff-proposals {
+  display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none;
+}
+.lf-rebuild .lf-staff-part, .lf-rebuild .lf-staff-audio, .lf-rebuild .lf-staff-track, .lf-rebuild .lf-staff-proposals > li {
+  display: grid; gap: var(--spacing-2); min-inline-size: 0; padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken);
+}
+.lf-rebuild[data-theme='dark'] :is(.lf-staff-part, .lf-staff-audio, .lf-staff-track, .lf-staff-proposals > li) { background: var(--raised); }
+.lf-rebuild .lf-staff-part-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-1) var(--spacing-3); }
+.lf-rebuild .lf-staff-part-title { flex: 1 1 14em; min-inline-size: 0; font: var(--type-label); }
+.lf-rebuild .lf-staff-part-body { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-rebuild .lf-staff-audio audio { inline-size: 100%; min-block-size: var(--target-base); }
+.lf-rebuild .lf-staff-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr)); gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-staff-images > li { display: grid; gap: var(--spacing-2); align-content: start; min-inline-size: 0; }
+.lf-rebuild .lf-staff-image { display: grid; gap: var(--spacing-1); margin: 0; }
+.lf-rebuild .lf-staff-image img { display: block; inline-size: 100%; aspect-ratio: 1; object-fit: contain; border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-rebuild .lf-staff-image figcaption { font: var(--type-caption); color: var(--content-muted); }
+/* A plain link that still meets the 48 px target (02 §8). */
+.lf-rebuild .lf-staff-inline-link {
+  display: inline-flex; align-items: center; min-block-size: var(--target-base); min-inline-size: var(--target-base); padding-inline: var(--spacing-2);
+  font: var(--type-label); color: var(--primary-strong); text-decoration: underline; text-underline-offset: 0.2em;
+}
+
+/* Live Mentor activities: what the learner saw, and three equal verdicts (C.5). */
+.lf-rebuild .lf-staff-quote { margin: 0; padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); font: var(--type-body); }
+.lf-rebuild[data-theme='dark'] .lf-staff-quote { background: var(--raised); }
+.lf-rebuild .lf-staff-decisions { display: grid; gap: var(--spacing-3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); }
+
+/* Generation: anomaly alerts (severity chip, what, and what it means), the transport line, the stages as an ordered list, small multiples and tags. */
+.lf-rebuild .lf-staff-alerts > li {
+  display: grid; justify-items: start; gap: var(--spacing-1); padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--surface); box-shadow: var(--elevation-card);
+}
+.lf-rebuild .lf-staff-alert-title { font: var(--type-label); }
+.lf-rebuild .lf-staff-transport { font: var(--type-label); color: var(--content-muted); }
+.lf-rebuild .lf-staff-stages { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-staff-stages > li {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-1) var(--spacing-3); min-block-size: var(--target-base);
+  padding: var(--spacing-2) var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken);
+}
+.lf-rebuild[data-theme='dark'] .lf-staff-stages > li { background: var(--raised); }
+.lf-rebuild .lf-staff-stage-name { flex: 1 1 8em; font: var(--type-label); }
+.lf-rebuild .lf-staff-track-id { font: var(--type-label); }
+.lf-rebuild .lf-staff-tag { font: var(--type-caption); color: var(--content-muted); }
+.lf-rebuild .lf-staff-multiples { display: grid; gap: var(--spacing-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); }
+.lf-rebuild .lf-staff-preview-loading { font: var(--type-body); color: var(--content-muted); }
+
+/* ---- W2T.3: Analytics & Health, Learning intel (with Insights) ------------------------------------ */
+
+/* The view switch and the period control, side by side once there is room. */
+.lf-rebuild .lf-staff-controls { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+@container lf-staff-page (min-width: 840px) {
+  .lf-rebuild .lf-staff-controls { grid-template-columns: minmax(0, 1fr) minmax(14rem, 20rem); align-items: end; }
+}
+.lf-rebuild .lf-staff-window { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-rebuild .lf-staff-window-text { font: var(--type-label); color: var(--content-muted); }
+
+/* Four ranked lists (landing page, source, device, language): as many across as fit a readable column. */
+.lf-rebuild .lf-staff-quad { display: grid; gap: var(--spacing-5); grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr)); min-inline-size: 0; }
+
+/* Event names (machine words) as a wrapping list of small sunken tags. */
+.lf-rebuild .lf-staff-codes { display: flex; flex-wrap: wrap; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-staff-codes > li {
+  padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-sm); background: var(--sunken);
+  font: var(--type-caption); font-family: ui-monospace, monospace; overflow-wrap: anywhere;
+}
+.lf-rebuild[data-theme='dark'] .lf-staff-codes > li { background: var(--raised); }
+
+/* A row with its facts and one action (an exclusion, a detected address, an active filter). */
+.lf-rebuild .lf-staff-rows { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-staff-row {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-3);
+  min-inline-size: 0; padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken);
+}
+.lf-rebuild[data-theme='dark'] .lf-staff-row { background: var(--raised); }
+.lf-rebuild .lf-staff-row > .lf-staff-stack, .lf-rebuild .lf-staff-row > p, .lf-rebuild .lf-staff-row > .lf-staff-facts { flex: 1 1 14em; min-inline-size: 0; }
+.lf-rebuild .lf-staff-emphasis-small { font: var(--type-label); }
+
+/* The map: the drawn picture, the readout under it, the legend with real ranges, then the ranked places. */
+.lf-rebuild .lf-staff-map { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-rebuild .lf-staff-map-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-rebuild .lf-staff-map-actions:empty { display: none; }
+.lf-rebuild .lf-staff-map-frame { overflow: hidden; border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-rebuild[data-theme='dark'] .lf-staff-map-frame { background: var(--raised); }
+.lf-rebuild .lf-staff-map-svg { display: block; inline-size: 100%; block-size: auto; aspect-ratio: 2; }
+.lf-rebuild .lf-staff-map-water { fill: var(--surface); }
+.lf-rebuild .lf-staff-map-graticule { fill: none; stroke: var(--outline); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-staff-map-land { fill: var(--outline); stroke: var(--surface); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-staff-map-region { fill: var(--sunken); stroke: var(--surface); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-staff-map-border { fill: none; stroke: var(--content-muted); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-staff-map-point { stroke: var(--surface); stroke-width: 2; vector-effect: non-scaling-stroke; }
+/* One data hue (sky), five steps from light to full; primary marks only the selected place (05 §2). */
+.lf-rebuild .lf-staff-map-step-0 { fill: color-mix(in srgb, var(--sky-strong) 20%, var(--surface)); }
+.lf-rebuild .lf-staff-map-step-1 { fill: color-mix(in srgb, var(--sky-strong) 38%, var(--surface)); }
+.lf-rebuild .lf-staff-map-step-2 { fill: color-mix(in srgb, var(--sky-strong) 56%, var(--surface)); }
+.lf-rebuild .lf-staff-map-step-3 { fill: color-mix(in srgb, var(--sky-strong) 78%, var(--surface)); }
+.lf-rebuild .lf-staff-map-step-4 { fill: var(--sky-strong); }
+.lf-rebuild .lf-staff-map-land[class*='lf-staff-map-step-'], .lf-rebuild .lf-staff-map-point { cursor: pointer; }
+.lf-rebuild .lf-staff-map-selected { stroke: var(--primary-strong); stroke-width: 3; }
+.lf-rebuild .lf-staff-map-readout { font: var(--type-label); font-variant-numeric: tabular-nums; }
+.lf-rebuild .lf-staff-map-legend { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2) var(--spacing-4); font: var(--type-caption); color: var(--content-muted); }
+.lf-rebuild .lf-staff-map-legend ul { display: flex; flex-wrap: wrap; gap: var(--spacing-2) var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-staff-map-legend li { display: inline-flex; align-items: center; gap: var(--spacing-2); font-variant-numeric: tabular-nums; }
+.lf-rebuild .lf-staff-map-swatch { display: inline-block; inline-size: var(--spacing-6); block-size: var(--spacing-3); border-radius: var(--rounded-sm); }
+.lf-rebuild .lf-staff-map-swatch.lf-staff-map-step-0 { background: color-mix(in srgb, var(--sky-strong) 20%, var(--surface)); }
+.lf-rebuild .lf-staff-map-swatch.lf-staff-map-step-1 { background: color-mix(in srgb, var(--sky-strong) 38%, var(--surface)); }
+.lf-rebuild .lf-staff-map-swatch.lf-staff-map-step-2 { background: color-mix(in srgb, var(--sky-strong) 56%, var(--surface)); }
+.lf-rebuild .lf-staff-map-swatch.lf-staff-map-step-3 { background: color-mix(in srgb, var(--sky-strong) 78%, var(--surface)); }
+.lf-rebuild .lf-staff-map-swatch.lf-staff-map-step-4 { background: var(--sky-strong); }
+
+/* Ranked places: the design system list rows (the keyboard and tap path into the map). */
+.lf-rebuild .lf-staff-place-rank { color: var(--content-muted); font-variant-numeric: tabular-nums; }

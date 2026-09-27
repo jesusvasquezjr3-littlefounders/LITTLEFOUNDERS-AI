@@ -1,0 +1,61 @@
+/* The shared chart primitives (W2T.3; Frontend Bible 05 §2 viz tokens, §5, §6). Series hues are sky, mint and
+   berry (strong tones) in that fixed order, with a second channel from the second series on; primary marks only
+   the point being read. Gridlines are decorative (outline); the base line is the 2 px edge. Words are HTML beside
+   the SVG. Tokens and logical properties only, layout by container width, no motion. */
+
+.lf-rebuild .lf-viz { container: lf-viz / inline-size; display: grid; gap: var(--spacing-3); min-inline-size: 0; margin: 0; }
+.lf-rebuild .lf-viz-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--spacing-2) var(--spacing-4); }
+.lf-rebuild .lf-viz-caption { display: grid; flex: 1 1 16em; gap: var(--spacing-1); min-inline-size: 0; }
+.lf-rebuild .lf-viz-name { font: var(--type-label); }
+.lf-rebuild .lf-viz-summary { font: var(--type-body); color: var(--content-muted); max-inline-size: 34rem; }
+
+/* Series: colour first, then the pattern or dash as a second channel; a fourth series is neutral. */
+.lf-rebuild .lf-viz-series-1 { --viz-ink: var(--sky-strong); }
+.lf-rebuild .lf-viz-series-2 { --viz-ink: var(--mint-strong); }
+.lf-rebuild .lf-viz-series-3 { --viz-ink: var(--berry-strong); }
+.lf-rebuild .lf-viz-series-overflow { --viz-ink: var(--content-muted); }
+
+.lf-rebuild .lf-viz-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-2) var(--spacing-4); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-viz-legend > li { display: inline-flex; align-items: center; gap: var(--spacing-2); font: var(--type-caption); color: var(--content-muted); }
+.lf-rebuild .lf-viz-key { inline-size: var(--spacing-8); block-size: var(--spacing-2); flex: none; overflow: visible; }
+.lf-rebuild .lf-viz-key-line { stroke: var(--viz-ink); stroke-width: 3; }
+.lf-rebuild .lf-viz-key-fill { fill: var(--viz-ink); }
+
+/* Plot frame: the scale's top and zero beside the plot, the first and last point under it. */
+.lf-rebuild .lf-viz-frame {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto auto; column-gap: var(--spacing-2); min-inline-size: 0;
+}
+.lf-rebuild .lf-viz-scale { grid-column: 1; grid-row: 1; align-self: start; font: var(--type-caption); color: var(--content-muted); font-variant-numeric: tabular-nums; text-align: end; }
+.lf-rebuild .lf-viz-scale--zero { grid-row: 2; align-self: end; }
+.lf-rebuild .lf-viz-plot { grid-column: 2; grid-row: 1 / span 2; min-inline-size: 0; border-radius: var(--rounded-sm); touch-action: pan-y; cursor: crosshair; }
+.lf-rebuild .lf-viz-plot:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }
+.lf-rebuild .lf-viz-axis { grid-column: 2; grid-row: 3; display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--spacing-1) var(--spacing-3); padding-block-start: var(--spacing-1); font: var(--type-caption); color: var(--content-muted); }
+.lf-rebuild .lf-viz-svg { display: block; inline-size: 100%; block-size: calc(var(--spacing-32) + var(--spacing-12)); overflow: visible; }
+@container lf-viz (min-width: 640px) {
+  .lf-rebuild .lf-viz-svg { block-size: calc(var(--spacing-32) + var(--spacing-24)); }
+}
+
+.lf-rebuild .lf-viz-grid { stroke: var(--outline); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-viz-base { stroke: var(--edge); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-viz-reference { stroke: var(--content-muted); stroke-width: 2; stroke-dasharray: 4 4; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-viz-line { fill: none; stroke: var(--viz-ink); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-viz-column { fill: var(--viz-ink); }
+.lf-rebuild .lf-viz-pattern-ground { fill: color-mix(in srgb, var(--viz-ink) 45%, var(--surface)); }
+.lf-rebuild .lf-viz-pattern-ink { fill: var(--viz-ink); }
+.lf-rebuild .lf-viz-cursor { stroke: var(--primary-strong); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-viz-readout { font: var(--type-label); font-variant-numeric: tabular-nums; }
+
+/* Bars: label and value on one line (wrapping), the bar under them on a sunken track. */
+.lf-rebuild .lf-viz-bars { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; min-inline-size: 0; }
+/* Label and value share a line while both fit whole; otherwise the value drops under the label, never squeezing a word. */
+.lf-rebuild .lf-viz-bar { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-1) var(--spacing-3); min-inline-size: 0; }
+.lf-rebuild .lf-viz-bar-label { flex: 1 1 10em; font: var(--type-body); min-inline-size: 0; overflow-wrap: break-word; }
+.lf-rebuild .lf-viz-bar-label.ugc { overflow-wrap: anywhere; }
+.lf-rebuild .lf-viz-bar-value { margin-inline-start: auto; font: var(--type-label); font-variant-numeric: tabular-nums; text-align: end; }
+.lf-rebuild .lf-viz-bar-track { flex: 1 0 100%; display: block; block-size: var(--spacing-3); border-radius: var(--rounded-full); background: var(--sunken); overflow: hidden; }
+.lf-rebuild[data-theme='dark'] .lf-viz-bar-track { background: var(--raised); }
+.lf-rebuild .lf-viz-bar-fill { display: block; block-size: 100%; border-radius: inherit; background: var(--sky-strong); }
+
+/* Sparkline: one series, no axes; named in words. */
+.lf-rebuild .lf-viz-spark { display: inline-block; inline-size: var(--spacing-24); block-size: var(--spacing-6); --viz-ink: var(--sky-strong); }
+.lf-rebuild .lf-viz-spark svg { display: block; inline-size: 100%; block-size: 100%; overflow: visible; }

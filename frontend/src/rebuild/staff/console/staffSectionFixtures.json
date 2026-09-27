@@ -1,0 +1,2258 @@
+{
+  "content": {
+    "courses": [
+      {
+        "id": "33333333-3333-4333-8333-333333333301",
+        "slug": "money-basics",
+        "title": "Money Basics",
+        "description": "A practical first look at earning, saving and choosing.",
+        "subject": "money",
+        "status": "published",
+        "position": 1,
+        "createdAt": "2026-07-12T10:00:00Z",
+        "adventureCount": 3,
+        "sagaCount": 9,
+        "topicCount": 27,
+        "lessonCount": 162,
+        "lessonsByStatus": {
+          "published": 150,
+          "review": 8,
+          "draft": 4
+        }
+      },
+      {
+        "id": "33333333-3333-4333-8333-333333333302",
+        "slug": "entrepreneurship-for-the-lemonade-stand-and-beyond-extended-edition",
+        "title": "Entrepreneurship for the Lemonade Stand and Beyond: Extended Edition",
+        "description": "From a first idea to a first customer, with the numbers that decide whether it works.",
+        "subject": "entrepreneurship",
+        "status": "draft",
+        "position": 2,
+        "createdAt": "2026-08-02T10:00:00Z",
+        "adventureCount": 2,
+        "sagaCount": 6,
+        "topicCount": 18,
+        "lessonCount": 108,
+        "lessonsByStatus": {
+          "review": 100,
+          "draft": 8
+        }
+      },
+      {
+        "id": "33333333-3333-4333-8333-333333333303",
+        "slug": "sharing-with-a-cause",
+        "title": "Sharing with a Cause",
+        "description": "Giving, and choosing where it goes.",
+        "subject": "money",
+        "status": "archived",
+        "position": 3,
+        "createdAt": "2026-06-01T10:00:00Z",
+        "adventureCount": 1,
+        "sagaCount": 2,
+        "topicCount": 4,
+        "lessonCount": 20,
+        "lessonsByStatus": {
+          "archived": 20
+        }
+      }
+    ],
+    "summary": {
+      "courses": {
+        "total": 3,
+        "published": 1,
+        "draft": 1,
+        "archived": 1
+      },
+      "lessons": {
+        "total": 290,
+        "published": 150,
+        "review": 108,
+        "draft": 12,
+        "archived": 20
+      }
+    },
+    "courseAssemblyIncidents": [
+      {
+        "courseId": "33333333-3333-4333-8333-333333333302",
+        "courseTitle": "Entrepreneurship for the Lemonade Stand and Beyond: Extended Edition",
+        "occurrenceCount": 14,
+        "firstSeenAt": "2026-09-22T12:00:00.000Z",
+        "lastSeenAt": "2026-09-26T08:05:00.000Z"
+      }
+    ]
+  },
+  "moderation": {
+    "lessons": [
+      {
+        "id": "44444444-4444-4444-8444-444444444401",
+        "slug": "needs-and-wants",
+        "title": "Needs and Wants",
+        "status": "review",
+        "courseTitle": "Money Basics",
+        "subject": "money",
+        "adventureTitle": "The Money Trail",
+        "sagaTitle": "First Steps",
+        "topicTitle": "Needs and Wants",
+        "difficulty": 2,
+        "xpTotal": 20,
+        "estimatedMinutes": 8,
+        "createdAt": "2026-09-20T09:00:00Z",
+        "locales": [
+          "en-US",
+          "es-MX",
+          "pt-BR"
+        ]
+      },
+      {
+        "id": "44444444-4444-4444-8444-444444444402",
+        "slug": "pricing-your-first-product-when-the-costs-keep-changing",
+        "title": "Pricing Your First Product When the Costs Keep Changing Every Week",
+        "status": "review",
+        "courseTitle": "Entrepreneurship for the Lemonade Stand and Beyond: Extended Edition",
+        "subject": "entrepreneurship",
+        "adventureTitle": "From Idea to Stand",
+        "sagaTitle": "Counting the Cost",
+        "topicTitle": "Setting a Price",
+        "difficulty": 3,
+        "xpTotal": 30,
+        "estimatedMinutes": 12,
+        "createdAt": "2026-09-21T09:00:00Z",
+        "locales": [
+          "en-US",
+          "es-MX"
+        ]
+      }
+    ],
+    "total": 2
+  },
+  "lessonDetail": {
+    "id": "44444444-4444-4444-8444-444444444401",
+    "slug": "needs-and-wants",
+    "title": "Needs and Wants",
+    "status": "review",
+    "courseTitle": "Money Basics",
+    "subject": "money",
+    "adventureTitle": "The Money Trail",
+    "sagaTitle": "First Steps",
+    "topicTitle": "Needs and Wants",
+    "difficulty": 2,
+    "xpTotal": 20,
+    "estimatedMinutes": 8,
+    "createdAt": "2026-09-20T09:00:00Z",
+    "locales": [
+      "en-US",
+      "es-MX",
+      "pt-BR"
+    ],
+    "documents": [
+      {
+        "locale": "en-US",
+        "schemaVersion": 1,
+        "audio": {
+          "units": {
+            "story-1.prompt": {
+              "url": "https://media.example.test/lesson-audio/en-US/story-1.mp3",
+              "duration_ms": 2400,
+              "voice": "Dina"
+            }
+          }
+        },
+        "document": {
+          "schema_version": 1,
+          "meta": {
+            "slug": "needs-and-wants",
+            "title": "Needs and Wants",
+            "locale": "en-US",
+            "subject": "money",
+            "estimated_minutes": 8,
+            "objectives": [],
+            "cast": []
+          },
+          "scoring": {
+            "pass_threshold": 70,
+            "hint_penalty_pct": 0,
+            "max_attempts": 3
+          },
+          "segments": [
+            {
+              "id": "story-1",
+              "type": "story_scene",
+              "prompt_md": "Think about the things you need each day.",
+              "difficulty": 1,
+              "xp": 0,
+              "audio_segment_id": "story-1.prompt",
+              "payload": {
+                "body_md": "Food and a home are needs.",
+                "art": {
+                  "image_url": "/course-badges/financial-education.png"
+                }
+              }
+            },
+            {
+              "id": "quiz-1",
+              "type": "quiz_mcq",
+              "prompt_md": "Which one is a need?",
+              "difficulty": 2,
+              "xp": 10,
+              "payload": {
+                "options": [
+                  {
+                    "id": "a",
+                    "label_md": "Food"
+                  },
+                  {
+                    "id": "b",
+                    "label_md": "A new game"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "locale": "es-MX",
+        "schemaVersion": 1,
+        "audio": {
+          "units": {
+            "story-1.prompt": {
+              "url": "https://media.example.test/lesson-audio/es-MX/story-1.mp3",
+              "duration_ms": 2400,
+              "voice": "Dina"
+            }
+          }
+        },
+        "document": {
+          "schema_version": 1,
+          "meta": {
+            "slug": "needs-and-wants",
+            "title": "Needs and Wants",
+            "locale": "es-MX",
+            "subject": "money",
+            "estimated_minutes": 8,
+            "objectives": [],
+            "cast": []
+          },
+          "scoring": {
+            "pass_threshold": 70,
+            "hint_penalty_pct": 0,
+            "max_attempts": 3
+          },
+          "segments": [
+            {
+              "id": "story-1",
+              "type": "story_scene",
+              "prompt_md": "Piensa en lo que necesitas cada día.",
+              "difficulty": 1,
+              "xp": 0,
+              "audio_segment_id": "story-1.prompt",
+              "payload": {
+                "body_md": "La comida y un hogar son necesidades.",
+                "art": {
+                  "image_url": "/course-badges/financial-education.png"
+                }
+              }
+            },
+            {
+              "id": "quiz-1",
+              "type": "quiz_mcq",
+              "prompt_md": "Which one is a need?",
+              "difficulty": 2,
+              "xp": 10,
+              "payload": {
+                "options": [
+                  {
+                    "id": "a",
+                    "label_md": "Food"
+                  },
+                  {
+                    "id": "b",
+                    "label_md": "A new game"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "locale": "pt-BR",
+        "schemaVersion": 1,
+        "audio": {
+          "units": {
+            "story-1.prompt": {
+              "url": "https://media.example.test/lesson-audio/pt-BR/story-1.mp3",
+              "duration_ms": 2400,
+              "voice": "Dina"
+            }
+          }
+        },
+        "document": {
+          "schema_version": 1,
+          "meta": {
+            "slug": "needs-and-wants",
+            "title": "Needs and Wants",
+            "locale": "pt-BR",
+            "subject": "money",
+            "estimated_minutes": 8,
+            "objectives": [],
+            "cast": []
+          },
+          "scoring": {
+            "pass_threshold": 70,
+            "hint_penalty_pct": 0,
+            "max_attempts": 3
+          },
+          "segments": [
+            {
+              "id": "story-1",
+              "type": "story_scene",
+              "prompt_md": "Pense no que você precisa todo dia.",
+              "difficulty": 1,
+              "xp": 0,
+              "audio_segment_id": "story-1.prompt",
+              "payload": {
+                "body_md": "Comida e uma casa são necessidades.",
+                "art": {
+                  "image_url": "/course-badges/financial-education.png"
+                }
+              }
+            },
+            {
+              "id": "quiz-1",
+              "type": "quiz_mcq",
+              "prompt_md": "Which one is a need?",
+              "difficulty": 2,
+              "xp": 10,
+              "payload": {
+                "options": [
+                  {
+                    "id": "a",
+                    "label_md": "Food"
+                  },
+                  {
+                    "id": "b",
+                    "label_md": "A new game"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "liveQueue": {
+    "segments": [
+      {
+        "id": "55555555-5555-4555-8555-555555555501",
+        "session_id": "66666666-6666-4666-8666-666666666601",
+        "seq": 4,
+        "origin": "live",
+        "segment_type": "number_input",
+        "payload": {
+          "prompt_md": "A notebook costs 7 coins. How many coins do 3 notebooks cost?",
+          "answer": {
+            "value": 21
+          }
+        },
+        "provenance": {
+          "tier": 3,
+          "risk_category": "standard",
+          "judge_model": "qwen3-max",
+          "sampling": {
+            "rate": 0.5,
+            "elevated": true
+          }
+        },
+        "score": 100,
+        "review_status": "pending",
+        "created_at": "2026-09-25T15:20:00Z"
+      },
+      {
+        "id": "55555555-5555-4555-8555-555555555502",
+        "session_id": "66666666-6666-4666-8666-666666666602",
+        "seq": 9,
+        "origin": "live",
+        "segment_type": "quiz_mcq",
+        "payload": {
+          "prompt_md": "Your family is moving and money is tight this month. Which choice helps most?",
+          "options": [
+            "Wait",
+            "Buy now"
+          ],
+          "answer": {
+            "correct": "Wait"
+          }
+        },
+        "provenance": {
+          "tier": 3,
+          "risk_category": "sensitive",
+          "judge_model": "qwen3-max",
+          "sampling": {
+            "rate": 1,
+            "elevated": true
+          }
+        },
+        "score": null,
+        "review_status": "pending",
+        "created_at": "2026-09-25T16:05:00Z"
+      },
+      {
+        "id": "55555555-5555-4555-8555-555555555503",
+        "session_id": "66666666-6666-4666-8666-666666666603",
+        "seq": 2,
+        "origin": "live",
+        "segment_type": "true_false",
+        "payload": {
+          "prompt_md": "Saving means spending later.",
+          "answer": {
+            "value": true
+          }
+        },
+        "provenance": {
+          "tier": 3
+        },
+        "score": 0,
+        "review_status": "pending",
+        "created_at": "2026-08-02T08:00:00Z"
+      }
+    ],
+    "total": 3
+  },
+  "liveStatus": {
+    "calibration": {
+      "state": "passed",
+      "ageDays": 12,
+      "judgeModel": "qwen3-max",
+      "recordedAt": "2026-09-12T00:00:00Z",
+      "maxAgeDays": 35
+    },
+    "categories": [
+      {
+        "category": "standard",
+        "suspended": false,
+        "reasons": [],
+        "rate": 0.5,
+        "baseline": 0.15,
+        "floor": 0.15,
+        "elevated": true,
+        "decisionsToRestore": 64,
+        "pending": 3,
+        "overdue": 0
+      },
+      {
+        "category": "sensitive",
+        "suspended": true,
+        "reasons": [
+          "concordance_below_floor"
+        ],
+        "rate": 1,
+        "baseline": 0.5,
+        "floor": 0.5,
+        "elevated": true,
+        "decisionsToRestore": 100,
+        "pending": 5,
+        "overdue": 2
+      }
+    ],
+    "reviewSlaDays": 7
+  },
+  "packs": {
+    "packs": [
+      {
+        "id": "77777777-7777-4777-8777-777777777701",
+        "skill_key": "kc:money.percent-intro",
+        "kc_key": "money.percent-intro",
+        "tier": 3,
+        "locale": "es-MX",
+        "status": "review",
+        "pack_version": 1,
+        "risk_category": "standard",
+        "source": "hand_authored",
+        "demand_pattern": "kc_without_catalog_content",
+        "pack": {
+          "segments": [
+            {
+              "id": "a",
+              "type": "number_input"
+            },
+            {
+              "id": "b",
+              "type": "number_input"
+            },
+            {
+              "id": "c",
+              "type": "quiz_mcq"
+            },
+            {
+              "id": "d",
+              "type": "number_input"
+            }
+          ]
+        }
+      },
+      {
+        "id": "77777777-7777-4777-8777-777777777702",
+        "skill_key": "kc:biz.goods-vs-services",
+        "kc_key": "biz.goods-vs-services",
+        "tier": 1,
+        "locale": "pt-BR",
+        "status": "review",
+        "pack_version": 2,
+        "risk_category": "standard",
+        "source": "hand_authored",
+        "demand_pattern": "kc_without_catalog_content",
+        "pack": {
+          "segments": [
+            {
+              "id": "a",
+              "type": "quiz_mcq"
+            },
+            {
+              "id": "b",
+              "type": "true_false"
+            },
+            {
+              "id": "c",
+              "type": "sort_buckets"
+            }
+          ]
+        }
+      }
+    ],
+    "total": 2
+  },
+  "learningQuality": {
+    "window": {
+      "since": "2026-08-27T12:00:00.000Z",
+      "until": "2026-09-24T12:00:00.000Z",
+      "days": 28
+    },
+    "defaultBand": {
+      "lower_pct": 70,
+      "upper_pct": 85,
+      "min_sample": 30,
+      "rationale": "Starting hypothesis from Product 10 B.19.",
+      "set_at": "2026-09-24T12:00:00.000Z",
+      "reviewDue": false
+    },
+    "lessons": [
+      {
+        "lesson_id": "aaaaaaaa-0000-4000-8000-000000000001",
+        "lesson_slug": "saving-first",
+        "lesson_title": {
+          "en-US": "Saving first",
+          "es-MX": "Ahorrar primero",
+          "pt-BR": "Poupar primeiro"
+        },
+        "first_attempts": 120,
+        "successes": 114,
+        "assisted": 3,
+        "success_pct": 95,
+        "lower_pct": 70,
+        "upper_pct": 85,
+        "min_sample": 30,
+        "band_scope": "default",
+        "status": "above_band",
+        "families": [
+          {
+            "family": "legacy",
+            "first_attempts": 120,
+            "successes": 114
+          }
+        ]
+      },
+      {
+        "lesson_id": "aaaaaaaa-0000-4000-8000-000000000002",
+        "lesson_slug": "needs-and-wants",
+        "lesson_title": {
+          "en-US": "Needs and wants",
+          "es-MX": "Necesidades y deseos",
+          "pt-BR": "Necessidades e desejos"
+        },
+        "first_attempts": 80,
+        "successes": 62,
+        "assisted": 5,
+        "success_pct": 77.5,
+        "lower_pct": 70,
+        "upper_pct": 85,
+        "min_sample": 30,
+        "band_scope": "default",
+        "status": "in_band",
+        "families": null
+      },
+      {
+        "lesson_id": "aaaaaaaa-0000-4000-8000-000000000003",
+        "lesson_slug": "growth-over-time",
+        "lesson_title": {
+          "en-US": "Growth over time",
+          "es-MX": "Crecer con el tiempo",
+          "pt-BR": "Crescer com o tempo"
+        },
+        "first_attempts": 12,
+        "successes": 5,
+        "assisted": 1,
+        "success_pct": 41.7,
+        "lower_pct": 65,
+        "upper_pct": 80,
+        "min_sample": 30,
+        "band_scope": "lesson",
+        "status": "insufficient_sample",
+        "families": null
+      }
+    ],
+    "reviews": [
+      {
+        "id": "bbbbbbbb-0000-4000-8000-000000000001",
+        "lesson_id": "aaaaaaaa-0000-4000-8000-000000000001",
+        "direction": "above_band",
+        "window_days": 28,
+        "evidence": {
+          "current": {
+            "success_pct": 95
+          },
+          "previous": {
+            "success_pct": 93.3
+          }
+        },
+        "status": "open",
+        "decision": null,
+        "decision_note": null,
+        "opened_at": "2026-09-24T12:00:00.000Z",
+        "resolved_at": null
+      }
+    ],
+    "bandLog": [],
+    "judgment": [
+      {
+        "lesson_id": "aaaaaaaa-0000-4000-8000-000000000001",
+        "attempts": 40,
+        "correct_sound": 36,
+        "correct_not_sound": 1,
+        "incorrect_sound": 1,
+        "incorrect_not_sound": 2,
+        "divergent_share": 0.05,
+        "correlation": 0.8,
+        "status": "tracks_correctness"
+      },
+      {
+        "lesson_id": "aaaaaaaa-0000-4000-8000-000000000002",
+        "attempts": 44,
+        "correct_sound": 20,
+        "correct_not_sound": 8,
+        "incorrect_sound": 6,
+        "incorrect_not_sound": 10,
+        "divergent_share": 0.318,
+        "correlation": 0.31,
+        "status": "distinct"
+      }
+    ],
+    "replayNotice": {
+      "below_best": 10,
+      "shown": 9,
+      "display_rate": 0.9,
+      "target": 1,
+      "belowTarget": true
+    },
+    "thresholds": {
+      "judgmentDivergenceFloor": 0.1,
+      "judgmentMinAttempts": 30,
+      "replayNoticeTarget": 1,
+      "bandReviewCadenceDays": 90
+    },
+    "motivation": {
+      "restDays": {
+        "learners_with_lapse": 40,
+        "kept_by_rest_days": 31,
+        "restarted": 12,
+        "utilization_rate": 0.775,
+        "rest_days_used": 52
+      },
+      "autonomy": [
+        {
+          "lever": "path",
+          "offered": 120,
+          "exercised": 34,
+          "adoption_rate": 0.2833
+        },
+        {
+          "lever": "pace",
+          "offered": 80,
+          "exercised": 22,
+          "adoption_rate": 0.275
+        },
+        {
+          "lever": "mentor",
+          "offered": 80,
+          "exercised": 51,
+          "adoption_rate": 0.6375
+        }
+      ]
+    }
+  },
+  "generation": {
+    "overview": {
+      "tracks": [
+        {
+          "trackId": "trk-2026-09-money-basics-full-catalog-regeneration-pilot",
+          "courseSlug": "money-basics",
+          "budgetUsd": 40,
+          "halted": null,
+          "totals": {
+            "published": 150,
+            "failed": 12,
+            "usd": 31.42
+          },
+          "failureHeatmap": {
+            "reviewed": 9,
+            "localized": 3
+          },
+          "mopUp": [
+            "money-basics/the-money-trail/first-steps/saving-first"
+          ],
+          "shards": 12,
+          "updatedAt": "2026-09-25T14:40:00Z"
+        },
+        {
+          "trackId": "trk-2026-08-lemonade",
+          "courseSlug": "entrepreneurship-for-the-lemonade-stand-and-beyond-extended-edition",
+          "budgetUsd": 25,
+          "halted": "budget ceiling reached: $25.00 of $25.00 after shard 7 of 9",
+          "totals": {
+            "published": 80,
+            "failed": 20,
+            "usd": 25
+          },
+          "failureHeatmap": {
+            "written": 20
+          },
+          "mopUp": [],
+          "shards": 9,
+          "updatedAt": "2026-08-30T10:00:00Z"
+        }
+      ],
+      "runs": [
+        {
+          "runId": "run-2026-09-25T14-02-11Z-money-basics-shard-03-of-12",
+          "trackId": "trk-2026-09-money-basics-full-catalog-regeneration-pilot",
+          "courseSlug": "money-basics",
+          "register": "kid",
+          "published": 3,
+          "failed": 1,
+          "slotsEnumerated": 5,
+          "tokensUsed": 1240000,
+          "usdUsed": 2.84,
+          "cachedTokens": 890000,
+          "imagesGenerated": 8,
+          "imagesBilled": 4,
+          "updatedAt": "2026-09-25T14:40:00Z"
+        },
+        {
+          "runId": "run-2026-09-18T09-40-00Z-money-basics-shard-01-of-12",
+          "trackId": "trk-2026-09-money-basics-full-catalog-regeneration-pilot",
+          "courseSlug": "money-basics",
+          "register": "kid",
+          "published": 12,
+          "failed": 2,
+          "slotsEnumerated": 14,
+          "tokensUsed": 3100000,
+          "usdUsed": 6.1,
+          "cachedTokens": 2400000,
+          "imagesGenerated": 20,
+          "imagesBilled": 9,
+          "updatedAt": "2026-09-18T10:20:00Z"
+        }
+      ]
+    },
+    "live": {
+      "activeRuns": [
+        {
+          "runId": "run-2026-09-26T09-00-00Z-money-basics-shard-04-of-12",
+          "trackId": "trk-2026-09-money-basics-full-catalog-regeneration-pilot",
+          "courseSlug": "money-basics",
+          "register": "kid",
+          "activeSlots": 3,
+          "completedSlots": 9,
+          "failedSlots": 5,
+          "skippedSlots": 1,
+          "totalSlots": 40,
+          "stageBreakdown": {
+            "pending": 22,
+            "planning": 1,
+            "writing": 1,
+            "reviewing": 1,
+            "localizing": 0,
+            "illustrating": 0,
+            "publishing": 0,
+            "published": 9,
+            "skipped": 1
+          },
+          "tokensUsed": 820000,
+          "usdUsed": 42.3,
+          "cachedTokens": 90000,
+          "imagesGenerated": 12,
+          "imagesBilled": 5,
+          "imagesInherited": 7,
+          "startedAt": "2026-09-26T09:00:00Z",
+          "updatedAt": "2026-09-26T09:40:00Z"
+        }
+      ]
+    },
+    "runDetail": {
+      "run": {
+        "runId": "run-2026-09-25T14-02-11Z-money-basics-shard-03-of-12",
+        "trackId": "trk-2026-09-money-basics-full-catalog-regeneration-pilot",
+        "courseSlug": "money-basics",
+        "register": "kid",
+        "published": 3,
+        "failed": 1,
+        "slotsEnumerated": 5,
+        "tokensUsed": 1240000,
+        "usdUsed": 2.84,
+        "cachedTokens": 890000,
+        "imagesGenerated": 8,
+        "imagesBilled": 4,
+        "updatedAt": "2026-09-25T14:40:00Z"
+      },
+      "slots": [
+        {
+          "slotId": "money-basics/the-money-trail/first-steps/needs-and-wants",
+          "state": "published",
+          "failedFrom": null,
+          "error": null,
+          "salvaged": false,
+          "droppedSegments": 0,
+          "imagesGenerated": 2,
+          "imagesBilled": 1,
+          "imagesInherited": 1,
+          "durationMs": 42000,
+          "reviewCycles": 1,
+          "earlyStopped": false,
+          "rubric": {
+            "kid_safety": 4.8,
+            "age_fit": 4.4,
+            "concreteness": 4.1,
+            "pedagogy": 4.2,
+            "cognitive_engagement": 3.9,
+            "feedback_quality": 4,
+            "distractor_quality": 3.6,
+            "narrative_quality": 4.3,
+            "naturalness": 4.5
+          }
+        },
+        {
+          "slotId": "money-basics/the-money-trail/first-steps/saving-first",
+          "state": "published",
+          "failedFrom": null,
+          "error": null,
+          "salvaged": false,
+          "droppedSegments": 0,
+          "imagesGenerated": 2,
+          "imagesBilled": 1,
+          "imagesInherited": 1,
+          "durationMs": 61000,
+          "reviewCycles": 2,
+          "earlyStopped": false,
+          "rubric": {
+            "kid_safety": 4.8,
+            "age_fit": 4.4,
+            "concreteness": 4.1,
+            "pedagogy": 4.2,
+            "cognitive_engagement": 3.9,
+            "feedback_quality": 4,
+            "distractor_quality": 3.6,
+            "narrative_quality": 4.3,
+            "naturalness": 4.5
+          }
+        },
+        {
+          "slotId": "money-basics/the-money-trail/first-steps/a-very-long-lesson-slug-about-comparing-prices-at-two-different-stores-before-buying",
+          "state": "failed",
+          "failedFrom": "reviewed",
+          "error": "judge: kid_safety 2.1 below floor 3.5 after 3 revise cycles; the scenario implied borrowing from a friend without asking a parent first",
+          "salvaged": false,
+          "droppedSegments": 0,
+          "imagesGenerated": 2,
+          "imagesBilled": 1,
+          "imagesInherited": 1,
+          "durationMs": 93000,
+          "reviewCycles": 3,
+          "earlyStopped": true,
+          "rubric": null
+        },
+        {
+          "slotId": "money-basics/the-money-trail/first-steps/growth-over-time",
+          "state": "skipped",
+          "failedFrom": null,
+          "error": null,
+          "salvaged": false,
+          "droppedSegments": 0,
+          "imagesGenerated": 0,
+          "imagesBilled": 0,
+          "imagesInherited": 0,
+          "durationMs": null,
+          "reviewCycles": null,
+          "earlyStopped": false,
+          "rubric": null
+        },
+        {
+          "slotId": "money-basics/the-money-trail/first-steps/sharing-plan",
+          "state": "published",
+          "failedFrom": null,
+          "error": null,
+          "salvaged": true,
+          "droppedSegments": 0,
+          "imagesGenerated": 2,
+          "imagesBilled": 1,
+          "imagesInherited": 1,
+          "durationMs": 38000,
+          "reviewCycles": 1,
+          "earlyStopped": false,
+          "rubric": {
+            "kid_safety": 4.8,
+            "age_fit": 4.4,
+            "concreteness": 4.1,
+            "pedagogy": 4.2,
+            "cognitive_engagement": 3.9,
+            "feedback_quality": 4,
+            "distractor_quality": 3.6,
+            "narrative_quality": 4.3,
+            "naturalness": 4.5
+          }
+        }
+      ]
+    },
+    "slotDetail": {
+      "slotId": "money-basics/the-money-trail/first-steps/a-very-long-lesson-slug-about-comparing-prices-at-two-different-stores-before-buying",
+      "state": "failed",
+      "failedFrom": "reviewed",
+      "error": "judge: kid_safety 2.1 below floor 3.5 after 3 revise cycles; the scenario implied borrowing from a friend without asking a parent first",
+      "salvaged": false,
+      "droppedSegments": 0,
+      "imagesGenerated": 2,
+      "imagesBilled": 1,
+      "imagesInherited": 1,
+      "durationMs": 93000,
+      "reviewCycles": 3,
+      "earlyStopped": true,
+      "rubric": null,
+      "runId": "run-2026-09-25T14-02-11Z-money-basics-shard-03-of-12",
+      "durationHuman": "1m 33s",
+      "updatedAt": "2026-09-25T14:31:00Z",
+      "run": {
+        "courseSlug": "money-basics",
+        "register": "kid",
+        "updatedAt": "2026-09-25T14:40:00Z"
+      }
+    },
+    "snapshots": {
+      "runId": "run-2026-09-25T14-02-11Z-money-basics-shard-03-of-12",
+      "snapshots": [
+        {
+          "id": 1,
+          "completedSlots": 0,
+          "failedSlots": 0,
+          "skippedSlots": 0,
+          "stageBreakdown": {
+            "planning": 2,
+            "writing": 2,
+            "reviewing": 0,
+            "localizing": 0,
+            "illustrating": 0,
+            "publishing": 0
+          },
+          "tokensUsed": 0,
+          "usdUsed": 0,
+          "imagesGenerated": 0,
+          "createdAt": "2026-09-25T14:02:00Z"
+        },
+        {
+          "id": 2,
+          "completedSlots": 1,
+          "failedSlots": 0,
+          "skippedSlots": 0,
+          "stageBreakdown": {
+            "planning": 2,
+            "writing": 1,
+            "reviewing": 0,
+            "localizing": 0,
+            "illustrating": 0,
+            "publishing": 0
+          },
+          "tokensUsed": 200000,
+          "usdUsed": 0.55,
+          "imagesGenerated": 1,
+          "createdAt": "2026-09-25T14:08:00Z"
+        },
+        {
+          "id": 3,
+          "completedSlots": 2,
+          "failedSlots": 0,
+          "skippedSlots": 0,
+          "stageBreakdown": {
+            "planning": 0,
+            "writing": 2,
+            "reviewing": 1,
+            "localizing": 0,
+            "illustrating": 0,
+            "publishing": 0
+          },
+          "tokensUsed": 400000,
+          "usdUsed": 1.1,
+          "imagesGenerated": 2,
+          "createdAt": "2026-09-25T14:14:00Z"
+        },
+        {
+          "id": 4,
+          "completedSlots": 3,
+          "failedSlots": 0,
+          "skippedSlots": 0,
+          "stageBreakdown": {
+            "planning": 0,
+            "writing": 1,
+            "reviewing": 1,
+            "localizing": 1,
+            "illustrating": 0,
+            "publishing": 0
+          },
+          "tokensUsed": 600000,
+          "usdUsed": 1.6500000000000001,
+          "imagesGenerated": 3,
+          "createdAt": "2026-09-25T14:20:00Z"
+        },
+        {
+          "id": 5,
+          "completedSlots": 3,
+          "failedSlots": 1,
+          "skippedSlots": 0,
+          "stageBreakdown": {
+            "planning": 0,
+            "writing": 0,
+            "reviewing": 1,
+            "localizing": 0,
+            "illustrating": 1,
+            "publishing": 0
+          },
+          "tokensUsed": 800000,
+          "usdUsed": 2.2,
+          "imagesGenerated": 4,
+          "createdAt": "2026-09-25T14:26:00Z"
+        },
+        {
+          "id": 6,
+          "completedSlots": 3,
+          "failedSlots": 1,
+          "skippedSlots": 1,
+          "stageBreakdown": {
+            "planning": 0,
+            "writing": 0,
+            "reviewing": 0,
+            "localizing": 0,
+            "illustrating": 0,
+            "publishing": 0
+          },
+          "tokensUsed": 1000000,
+          "usdUsed": 2.75,
+          "imagesGenerated": 5,
+          "createdAt": "2026-09-25T14:32:00Z"
+        }
+      ]
+    },
+    "compare": {
+      "runs": [
+        {
+          "runId": "run-2026-09-18T09-40-00Z-money-basics-shard-01-of-12",
+          "courseSlug": "money-basics",
+          "register": "kid",
+          "published": 12,
+          "failed": 2,
+          "slotsEnumerated": 14,
+          "usdUsed": 6.1,
+          "tokensUsed": 3100000,
+          "cachedTokens": 2400000,
+          "cacheHitPct": 77.4,
+          "imagesGenerated": 20,
+          "imagesBilled": 9,
+          "imagesInherited": 11,
+          "judgeMeans": {
+            "kid_safety": 4.7,
+            "age_fit": 4.3,
+            "concreteness": 4,
+            "pedagogy": 4.1,
+            "naturalness": 4.4
+          },
+          "failureHeatmap": {
+            "reviewed": 2
+          },
+          "updatedAt": "2026-09-18T10:20:00Z"
+        },
+        {
+          "runId": "run-2026-09-25T14-02-11Z-money-basics-shard-03-of-12",
+          "courseSlug": "money-basics",
+          "register": "kid",
+          "published": 3,
+          "failed": 1,
+          "slotsEnumerated": 5,
+          "usdUsed": 2.84,
+          "tokensUsed": 1240000,
+          "cachedTokens": 890000,
+          "cacheHitPct": 71.8,
+          "imagesGenerated": 8,
+          "imagesBilled": 4,
+          "imagesInherited": 4,
+          "judgeMeans": {
+            "kid_safety": 4.8,
+            "age_fit": 4.4,
+            "concreteness": 4.1,
+            "pedagogy": 4.2,
+            "naturalness": 4.5
+          },
+          "failureHeatmap": {
+            "reviewed": 1
+          },
+          "updatedAt": "2026-09-25T14:40:00Z"
+        }
+      ],
+      "deltas": {
+        "published": -9,
+        "failed": -1,
+        "usdUsed": -3.26,
+        "cacheHitPct": -5.6
+      }
+    },
+    "analytics": {
+      "courseSlug": null,
+      "runsAnalyzed": 4,
+      "costTrend": [
+        {
+          "runId": "run-2026-09-25T14-02-11Z-money-basics-shard-03-of-12",
+          "updatedAt": "2026-09-25T14:40:00Z",
+          "usdPerPublished": 0.95,
+          "tokensPerLesson": 248000
+        },
+        {
+          "runId": "run-2026-09-18T09-40-00Z-money-basics-shard-01-of-12",
+          "updatedAt": "2026-09-18T10:20:00Z",
+          "usdPerPublished": 0.51,
+          "tokensPerLesson": 221000
+        },
+        {
+          "runId": "run-c",
+          "updatedAt": "2026-09-10T10:20:00Z",
+          "usdPerPublished": 0.42,
+          "tokensPerLesson": 210000
+        },
+        {
+          "runId": "run-d",
+          "updatedAt": "2026-09-02T10:20:00Z",
+          "usdPerPublished": 0.39,
+          "tokensPerLesson": 205000
+        }
+      ],
+      "qualityTrend": [
+        {
+          "runId": "run-2026-09-25T14-02-11Z-money-basics-shard-03-of-12",
+          "updatedAt": "2026-09-25T14:40:00Z",
+          "dimMeans": {
+            "kid_safety": 3.7,
+            "age_fit": 4.4,
+            "concreteness": 4.1,
+            "pedagogy": 4.2,
+            "cognitive_engagement": 3.9,
+            "feedback_quality": 4,
+            "distractor_quality": 3.6,
+            "narrative_quality": 4.3,
+            "naturalness": 4.5
+          }
+        },
+        {
+          "runId": "run-2026-09-18T09-40-00Z-money-basics-shard-01-of-12",
+          "updatedAt": "2026-09-18T10:20:00Z",
+          "dimMeans": {
+            "kid_safety": 4.7,
+            "age_fit": 4.3,
+            "concreteness": 4,
+            "pedagogy": 4.1,
+            "cognitive_engagement": 3.8,
+            "feedback_quality": 3.9,
+            "distractor_quality": 3.5,
+            "narrative_quality": 4.2,
+            "naturalness": 4.4
+          }
+        }
+      ],
+      "cacheEfficiency": [
+        {
+          "runId": "run-2026-09-25T14-02-11Z-money-basics-shard-03-of-12",
+          "updatedAt": "2026-09-25T14:40:00Z",
+          "cacheHitPct": 71.8
+        },
+        {
+          "runId": "run-2026-09-18T09-40-00Z-money-basics-shard-01-of-12",
+          "updatedAt": "2026-09-18T10:20:00Z",
+          "cacheHitPct": 77.4
+        },
+        {
+          "runId": "run-c",
+          "updatedAt": "2026-09-10T10:20:00Z",
+          "cacheHitPct": 80.1
+        },
+        {
+          "runId": "run-d",
+          "updatedAt": "2026-09-02T10:20:00Z",
+          "cacheHitPct": 79.5
+        }
+      ],
+      "failureByStage": [
+        {
+          "stage": "reviewed",
+          "count": 9,
+          "pct": 60
+        },
+        {
+          "stage": "localized",
+          "count": 3,
+          "pct": 20
+        },
+        {
+          "stage": "written",
+          "count": 3,
+          "pct": 20
+        }
+      ],
+      "failureByLocale": [
+        {
+          "locale": "es-MX",
+          "count": 2,
+          "pct": 67
+        },
+        {
+          "locale": "pt-BR",
+          "count": 1,
+          "pct": 33
+        }
+      ],
+      "stageSuccessRate": {
+        "stage": "all",
+        "passed": 165,
+        "failed": 15,
+        "rate": 91.7
+      },
+      "costForecast": {
+        "perLesson": 0.57,
+        "perCourse": 285,
+        "basedOn": 165
+      },
+      "averages": {
+        "costPerPublished": 0.57,
+        "tokensPerLesson": 221000,
+        "cacheHitPct": 77.2
+      }
+    },
+    "coach": {
+      "courseSlug": "money-basics",
+      "trackId": null,
+      "runsAnalyzed": 4,
+      "outcomes": {
+        "published": 165,
+        "failed": 15,
+        "other": 2
+      },
+      "failureHeatmap": {
+        "reviewed": 9,
+        "localized": 3,
+        "written": 3
+      },
+      "topErrors": [
+        {
+          "sample": "judge: kid_safety below floor after 3 revise cycles; the scenario implied borrowing without asking a parent",
+          "count": 6
+        },
+        {
+          "sample": "localize: pt-BR amount kept a MXN symbol in a worked example",
+          "count": 3
+        }
+      ],
+      "judge": {
+        "judged": 160,
+        "dimensionMeans": {
+          "kid_safety": 4.6,
+          "age_fit": 4.3,
+          "concreteness": 4,
+          "pedagogy": 4.1,
+          "distractor_quality": 3.5
+        },
+        "dimensionMins": {
+          "kid_safety": 2.1,
+          "age_fit": 3.2,
+          "concreteness": 3,
+          "pedagogy": 3.1,
+          "distractor_quality": 2.4
+        },
+        "cyclesHistogram": {
+          "cycle1": 120,
+          "cycle2": 30,
+          "cycle3": 10,
+          "earlyStops": 4
+        },
+        "worstLessons": [
+          {
+            "slotId": "money-basics/the-money-trail/first-steps/comparing-prices",
+            "dims": [
+              "kid_safety",
+              "distractor_quality"
+            ]
+          }
+        ]
+      },
+      "cost": {
+        "totalUsd": 94.1,
+        "totalTokens": 36400000,
+        "cacheHitPct": 77.2
+      },
+      "images": {
+        "generated": 330,
+        "billed": 140,
+        "inherited": 190
+      },
+      "proposedActions": [
+        {
+          "tag": "judge:kid_safety",
+          "proposal": "Add a borrowing-without-permission counterexample to the safety rubric prompt.",
+          "evidence": "6 of 9 judging failures cite it (runs of 18 and 25 September)."
+        },
+        {
+          "tag": "cost:cache",
+          "proposal": "Move the localization glossary ahead of the lesson in the prompt.",
+          "evidence": "Cache hits fell from 80% to 72% over the last four runs."
+        }
+      ]
+    }
+  },
+  "mentorQuality": {
+    "generatedAt": "2026-09-25T12:00:00.000Z",
+    "snapshot": {
+      "computedAt": "2026-09-25T10:00:00.000Z",
+      "windowDays": 30,
+      "rubricHash": "c2b0afe50fba8e6690b65e67f05773e42f5f1cbd53a3c016e652679035dfe5ea"
+    },
+    "freshness": {
+      "ageHours": 2,
+      "stale": false,
+      "slaHours": 24
+    },
+    "lastRun": {
+      "startedAt": "2026-09-25T10:00:00.000Z",
+      "status": "ok",
+      "scored": 18,
+      "failed": 0,
+      "backlogBefore": 18,
+      "trigger": "schedule"
+    },
+    "signals": [
+      {
+        "id": "mastery.corroboration_compliance",
+        "category": "pedagogy",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "mastery.corroboration_compliance",
+          "status": "ok",
+          "value": 1,
+          "sample": 412,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "mastery.reversal_rate",
+        "category": "pedagogy",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "mastery.reversal_rate",
+          "status": "ok",
+          "value": 0.041,
+          "sample": 97,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "rubric.hint_repeat",
+        "category": "pedagogy",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "rubric.hint_repeat",
+          "status": "ok",
+          "value": 0,
+          "sample": 380,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "rubric.tell_honored",
+        "category": "pedagogy",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "not_instrumented",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "rubric.self_explanation",
+        "category": "pedagogy",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "rubric.self_explanation",
+          "status": "diagnostic",
+          "value": 0.58,
+          "sample": 214,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "spaced_review.routing",
+        "category": "pedagogy",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "spaced_review.routing",
+          "status": "ok",
+          "value": 1,
+          "sample": 133,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "disposition.completeness",
+        "category": "pedagogy",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "disposition.completeness",
+          "status": "diagnostic",
+          "value": 0.83,
+          "sample": 260,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "session_end.trigger_rate",
+        "category": "pedagogy",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "session_end.trigger_rate",
+          "status": "insufficient_data",
+          "value": 0.12,
+          "sample": 31,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "alliance.bond_proxy",
+        "category": "relational",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "alliance.bond_proxy",
+          "status": "breach",
+          "value": 0.64,
+          "sample": 188,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "rubric.goal_agreement",
+        "category": "relational",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "rubric.goal_agreement",
+          "status": "ok",
+          "value": 0.97,
+          "sample": 301,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "alliance.renegotiation",
+        "category": "relational",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "alliance.renegotiation",
+          "status": "diagnostic",
+          "value": 0.9,
+          "sample": 20,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "rubric.answer_reveal",
+        "category": "relational",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "rubric.answer_reveal",
+          "status": "ok",
+          "value": 0.062,
+          "sample": 1840,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "rubric.false_affirmation",
+        "category": "relational",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "rubric.false_affirmation",
+          "status": "ok",
+          "value": 0,
+          "sample": 390,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "rubric.praise_specificity",
+        "category": "relational",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "rubric.praise_specificity",
+          "status": "diagnostic",
+          "value": 0.71,
+          "sample": 902,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "rubric.check_in",
+        "category": "relational",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "rubric.check_in",
+          "status": "ok",
+          "value": 0,
+          "sample": 77,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "telemetry.default_to_inaction",
+        "category": "relational",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "telemetry.default_to_inaction",
+          "status": "ok",
+          "value": 0.93,
+          "sample": 5120,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "telemetry.friction_rate",
+        "category": "relational",
+        "ownerRole": "safety_trust_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "telemetry.friction_rate",
+          "status": "breach",
+          "value": 0.22,
+          "sample": 390,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "rubric.closing_script",
+        "category": "relational",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "rubric.closing_script",
+          "status": "ok",
+          "value": 0,
+          "sample": 390,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "dialogue.ab_outcome",
+        "category": "relational",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "dialogue.ab_outcome",
+          "status": "insufficient_data",
+          "value": 0,
+          "sample": 0,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "rubric.controlling_language",
+        "category": "relational",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "rubric.controlling_language",
+          "status": "ok",
+          "value": 0,
+          "sample": 88,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "rubric.emotion_label",
+        "category": "safety_governance",
+        "ownerRole": "safety_trust_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "rubric.emotion_label",
+          "status": "breach",
+          "value": 0.005,
+          "sample": 390,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "judge.content_calibration",
+        "category": "safety_governance",
+        "ownerRole": "safety_trust_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "judge.content_calibration",
+          "status": "breach",
+          "value": 0,
+          "sample": 1,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "kill_switch.open",
+        "category": "safety_governance",
+        "ownerRole": "safety_trust_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "kill_switch.open",
+          "status": "ok",
+          "value": 0,
+          "sample": 12,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "bias_audit.coverage",
+        "category": "safety_governance",
+        "ownerRole": "safety_trust_lead",
+        "instrumented": "external",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "transcript_judge.agreement",
+        "category": "safety_governance",
+        "ownerRole": "safety_trust_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "transcript_judge.agreement",
+          "status": "breach",
+          "value": 0,
+          "sample": 1,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "governance.tier_compliance",
+        "category": "safety_governance",
+        "ownerRole": "safety_trust_lead",
+        "instrumented": "external",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "evaluation.coverage",
+        "category": "pipeline",
+        "ownerRole": "engineering_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "evaluation.coverage",
+          "status": "ok",
+          "value": 0.996,
+          "sample": 390,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "content_ladder.distribution",
+        "category": "pipeline",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "content_ladder.distribution",
+          "status": "diagnostic",
+          "value": 0.08,
+          "sample": 1210,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "simulated_student.pass_rate",
+        "category": "pipeline",
+        "ownerRole": "engineering_lead",
+        "instrumented": "external",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "canary.regression_rate",
+        "category": "pipeline",
+        "ownerRole": "engineering_lead",
+        "instrumented": "external",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "learning.delayed_retention",
+        "category": "learning_outcome",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "learning.delayed_retention",
+          "status": "diagnostic",
+          "value": 0.74,
+          "sample": 640,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "learning.practice_success_band",
+        "category": "learning_outcome",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "learning.practice_success_band",
+          "status": "ok",
+          "value": 0.78,
+          "sample": 4410,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "learning.time_to_mastery",
+        "category": "learning_outcome",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "learning.time_to_mastery",
+          "status": "diagnostic",
+          "value": 5,
+          "sample": 212,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
+        "id": "learning.transfer_success",
+        "category": "learning_outcome",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "not_instrumented",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "learning.judgment_quality",
+        "category": "learning_outcome",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "not_instrumented",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "learning.bridge_conversion",
+        "category": "learning_outcome",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "not_instrumented",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "learning.decision_journal",
+        "category": "learning_outcome",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "not_instrumented",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "engagement.session_efficiency",
+        "category": "engagement_health",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "not_instrumented",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "engagement.mentor_resolution",
+        "category": "engagement_health",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "not_instrumented",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "engagement.streak_anxiety",
+        "category": "engagement_health",
+        "ownerRole": "safety_trust_lead",
+        "instrumented": "not_instrumented",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "engagement.rest_day_use",
+        "category": "engagement_health",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "not_instrumented",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "engagement.dark_pattern_audit",
+        "category": "engagement_health",
+        "ownerRole": "safety_trust_lead",
+        "instrumented": "not_instrumented",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "engagement.variable_ratio_audit",
+        "category": "engagement_health",
+        "ownerRole": "safety_trust_lead",
+        "instrumented": "not_instrumented",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "engagement.reward_framing",
+        "category": "engagement_health",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "not_instrumented",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "engagement.autonomy_adoption",
+        "category": "engagement_health",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "not_instrumented",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "engagement.parent_time_to_value",
+        "category": "engagement_health",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "not_instrumented",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      }
+    ],
+    "flags": {
+      "active": [
+        {
+          "id": "flag-emotion",
+          "signalId": "rubric.emotion_label",
+          "kind": "zero_tolerance",
+          "requirement": "C.9",
+          "ownerRole": "safety_trust_lead",
+          "severity": "urgent",
+          "scope": "all",
+          "value": 0.005,
+          "threshold": 0,
+          "status": "open",
+          "openedAt": "2026-09-24T10:17:00Z",
+          "lastSeenAt": "2026-09-25T10:17:00Z",
+          "seenCount": 25,
+          "resolutionNote": null
+        },
+        {
+          "id": "flag-bond",
+          "signalId": "alliance.bond_proxy",
+          "kind": "relative_drop",
+          "requirement": "C.15",
+          "ownerRole": "pedagogical_lead",
+          "severity": "review",
+          "scope": "persona:rho",
+          "value": 0.64,
+          "threshold": 0.81,
+          "status": "acknowledged",
+          "openedAt": "2026-09-22T10:17:00Z",
+          "lastSeenAt": "2026-09-25T10:17:00Z",
+          "seenCount": 73,
+          "resolutionNote": null
+        },
+        {
+          "id": "flag-friction",
+          "signalId": "telemetry.friction_rate",
+          "kind": "subgroup_disparity",
+          "requirement": "C.9",
+          "ownerRole": "safety_trust_lead",
+          "severity": "review",
+          "scope": "persona:dina/locale:es-MX",
+          "value": 0.31,
+          "threshold": 0.12,
+          "status": "open",
+          "openedAt": "2026-09-25T08:17:00Z",
+          "lastSeenAt": "2026-09-25T10:17:00Z",
+          "seenCount": 3,
+          "resolutionNote": null
+        }
+      ],
+      "recentlyResolved": []
+    },
+    "owners": [
+      {
+        "role": "pedagogical_lead",
+        "userId": "u-ped",
+        "displayName": "Ana",
+        "assignedAt": "2026-09-20T00:00:00Z"
+      },
+      {
+        "role": "safety_trust_lead",
+        "userId": "u-safe",
+        "displayName": "Luis",
+        "assignedAt": "2026-09-20T00:00:00Z"
+      }
+    ],
+    "viewerOwnerRoles": [
+      "safety_trust_lead",
+      "pedagogical_lead"
+    ],
+    "reviews": {
+      "week": "2026-09-21",
+      "previousWeek": "2026-09-14",
+      "named": 2,
+      "reviewedThisWeek": 1,
+      "reviewedPreviousWeek": 1,
+      "previousRate": 0.5,
+      "missingRoles": [
+        "engineering_lead"
+      ],
+      "thisWeek": [
+        {
+          "role": "pedagogical_lead",
+          "reviewerId": "u-ped",
+          "reviewedAt": "2026-09-22T09:00:00Z",
+          "openFlags": 2
+        }
+      ]
+    }
+  }
+}
