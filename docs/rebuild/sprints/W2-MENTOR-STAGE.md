@@ -1,8 +1,72 @@
 # W2 Lane 3: the Mentor stage
 
-Status: in progress (W2M.1, W2M.2 and W2M.3 implemented and locally verified; no acceptance or release approval is recorded). Recorded 26 September 2026 on branch `codex/spec-w2mentor` (worktree `C:/lf-wt/w2mentor`), branched from `5ab03efc`. Owner: Engineering (Lane 3) for implementation; the owner for the proposals below and for the character-render style review (07 §7, OD-14); Product for copy review.
+Status: in progress; the lane is finished for merge (W2M.1 to W2M.4 implemented and locally verified; no acceptance or release approval is recorded). Recorded 26 September 2026 on branch `codex/spec-w2mentor` (worktree `C:/lf-wt/w2mentor`), branched from `5ab03efc`. Owner: Engineering (Lane 3) for implementation; the owner for the proposals below and for the character-render style review (07 §7, OD-14); Product for copy review.
 
 This lane rebuilds the Mentor as Frontend Bible 08 defines it: one of the four real 3D characters standing on its Diorama, never a chat window. W2M.1 builds the piece everything else stands on: the one isolated stage component (08 §7), the state-to-pose table (08 §3), the lesson's compact stage as the compact size of that same component (08 §11), and the Mentor session logic moved out of the legacy `tutor/` folder into the rebuilt frontend. W2M.2 builds the Mentor screen on that stage (08 §2–§9: top bar, speech plate, board on demand, response area, transcript sheet, chooser, "what my grown-up sees") with the wave-1 Block C pieces composed on it, and switches `/tutor` to it: the legacy chat-era experience is no longer mounted on any product route. W2M.3 rebuilds the Mentor's remaining surfaces from the product architecture's screen inventory (`docs/product-audit/01-PRODUCT-ARCHITECTURE.md` T1a-T1g): the learner's own island and the chooser on the Diorama, the learning map, the plan and notebook, past talks replayed on the stage, roleplay scenes, and the verified Tutor's microphone permission; and it evidences the 08 §10 acceptance checklist item by item.
+
+## Final summary (lane finish, W2M.4, 27 September 2026)
+
+**Built (SPEC clause → where).**
+
+- One isolated Mentor stage (08 §3, §7, §11; B.8): `frontend/src/rebuild/mentor/MentorStage.tsx`, the only new file allowed to reach the 3D engine.
+  - It plays catalogue poses for each register.
+  - It shows a still of the character on its Diorama when there is no WebGL, on a low-power device, with data saver, or below the frame-rate floor.
+  - It holds poses under reduced motion.
+  - The lesson's compact band is the same component.
+- The Mentor screen on `/tutor` (08 §2-§9, D13, OD-15): `rebuild/mentor/screen/`.
+  - The top bar, then the stage as the dominant area.
+  - The speech plate: the current turn only, in caption pages within the Copy Budget.
+  - The board on demand, with all 45 whiteboard kinds.
+  - A response area with at most three reply chips, the field, and the microphone only where C.2 allows it.
+  - The legacy chat-era screen is mounted on no product route.
+- Block C on the stage (08 §4): the hint ladder, adaptation offers, stop-or-continue, the goal check, the check-in, the closing with one action, the bond proxy, and calibration first.
+- The menu:
+  - Change Mentor (T1a, 08 §8): the four real-model renders on the Diorama, offered once on the first visit.
+  - My island (T1a).
+  - The learning map (T1f).
+  - The notebook, and keeping a board (T1g, OD-9).
+  - Past talks replayed on the stage (T1e).
+  - The transcript sheet, in reading order.
+  - "What my grown-up sees", only with a guardian link.
+  - "Start over" during a talk (T1c).
+- Roleplay scenes play with the pre-generated voices (Class III).
+- W2M.4, the conversation layer (T1c) and the close (T1d):
+  - Live activities are drawn with the 02 controls, covering 24 of the 51 segment types Core grades (`liveActivityModel.ts`, `LiveActivity.tsx`):
+    - choices, true or false, numbers and words;
+    - estimates and the number line;
+    - ordering, sorting, matching, and yes-or-no cases;
+    - needs and budget picks, the money tray, and the jars;
+    - blanks and savings weeks.
+  - Core grades each activity, and the result goes to Oracle with Core's signed receipt.
+  - A first miss shows "not yet". XP, or "practice only", is said honestly.
+  - The Mentor's tray demonstration moves the open tray (`session/trayDemo.ts`).
+  - "Explain another way", "Change it" on the last message, and the lesson step in words.
+  - The close says the talk was saved to replay.
+- OD-28 (owner review M-04): pressing end asks the recap question first, and a second press leaves.
+  - Oracle takes `end_session` with `recapFirst`.
+  - The Tier 1 change is recorded.
+  - Details are in the W2M.4 section below.
+- C.2: the verified Tutor's microphone permission (`VoiceConsent.tsx`) is built. Lane 4 mounts it.
+
+**Verified (local only).**
+
+- Every checkpoint: type-check and lint clean, focused unit tests and root gates passing.
+- At the lane finish: the full Oracle and frontend unit suites.
+- The real-route and stage matrices, run in W2M.2 and W2M.3.
+- Screenshots read directly.
+- The 08 §10 checklist, evidenced item by item below.
+- Nothing is accepted or released.
+
+**Remains open.**
+
+- The rebuild audit on the W2M.3 and W2M.4 preview states and on the real `/tutor` and lesson routes. This is the orchestrator's merge gate.
+- A pass on a physical device, a real GPU and assistive technology (02 §11 item 15, 02 §12).
+- Per-state stills.
+- Diorama props that cross the character (engine placement).
+- The `VoiceConsent` mount (Lane 4).
+- The 27 segment types that are still answered in words. They include the memory, speed and story-play types, whose legacy renderers retire with the legacy catalog under OD-24.
+- The Tier 1 sign-offs for the OD-28 change.
+- Every owner question below.
 
 ## Binding acceptance sources
 
@@ -42,6 +106,11 @@ Risk classification: **child-facing presentation of the AI character, and the se
 | W2M.3i | Dina on her Diorama, not a head (08 §2) | The character stands on the Diorama at full size on every width | `defaultStageShot`: the wide close-up for Dina on `diorama-a` (found by looking at the W2M.2 captures) | In progress: implemented and locally verified |
 | W2M.3j | The full stage's still is the character on its Diorama (08 §7) | While the model loads, and on a device that gets stills, the learner sees the character standing on its island, not a large head | `findStageStills` prefers `mentor.chooserStill` at full size; the compact band keeps its band stills and the avatar | In progress: implemented and locally verified |
 | W2M.2g | The voice in the still fallback (08 §7) | A learner on a device that gets stills still hears the Mentor | `MentorStage.tsx` plays the clip itself in the still mode and reports its end and a blocked autoplay | In progress: implemented and locally verified |
+| W2M.4a | Live activities on the stage (T1c: activities with Check; "+XP" or "practice only" feedback) | Core grades and the key never reaches the browser. Two attempts; a first miss is "not yet" with Core's reason; a failed check is never a wrong answer. The result goes to Oracle with the signed receipt. No lives, and never the error hue | `screen/liveActivityModel.ts` (24 served types, each in its grader's answer shape) and `screen/LiveActivity.tsx` on the 02 controls. A type that is not drawn keeps its prompt and is answered in words | In progress: implemented and locally verified |
+| W2M.4b | Tray demonstrations (T1c "demonstration animations") | The Mentor moves the open tray while it speaks. A step naming a coin the tray does not offer is dropped. Input is locked until the Mentor hands the tray back | `session/trayDemo.ts`, moved from the legacy tree, which re-exports it | In progress: implemented and locally verified |
+| W2M.4c | The conversation controls (T1c) | "Explain another way", sent as the learner's own words. "Change it" on the last message, never while an activity or a board is open. "Start over" behind a confirmation. The lesson step in words. At most three chips (08 §2). No minutes-left clock (DP-01) | `MentorScreen.tsx`; `useMentorSession.ts` (`editLast`, `restart`, `gradeActivity`, `reportActivity`) | In progress: implemented and locally verified |
+| W2M.4d | Pressing end asks the recap question first (OD-28, M-04; C.16) | The first press asks the scripted recap question and keeps the talk open for one answer. A second press ("Finish now" or close) leaves with the completed close. Start over leaves at once. Never for a stopped session, a close under way or an ended budget | Oracle: `ws/protocol.ts`, `ws/server.ts` (`attemptRecapOnEnd`), `tutor/orchestrator.ts` (`recapOnEnd`). Client: `useTutorSocket.endSession(recapFirst)`. A Tier 1 change-record row, with sign-offs pending | In progress: implemented and locally verified |
+| W2M.4e | The close says the talk is kept (T1d) | "Saved. You can replay it any time.", never after a safety stop | The closing in `MentorScreen.tsx` | In progress: implemented and locally verified |
 
 ## Per-surface rationale
 
@@ -139,6 +208,8 @@ Before this change the engine honoured `prefers-reduced-motion` for the camera, 
 
 ### What the screen does not carry yet (see the limitations and owner question 7)
 
+(Superseded: W2M.3 and W2M.4 rebuilt most of this list. The final summary names what is left.)
+
 The legacy screen's personalisation beyond the character (companion, island, light, nickname, adaptation preferences), saved-conversation replay and the history list, the learning map, the plan and notebook ("keep" a board), roleplay scenes, tray demonstrations, the live activity renderers (a live activity is now its prompt, answered in the field; Oracle checks a spoken or typed number for five activity types), the streak and XP header, caption size and voice volume, "fix what I said", the minutes-left clock, "start over" and "start another". Each of these was a legacy component (rule 23 forbids importing it) and none is in 08's screen definition; each needs a rebuilt surface of its own.
 
 ## W2M.3: the remaining Mentor surfaces (T1a-T1g) and the 08 §10 checklist
@@ -196,6 +267,48 @@ The legacy screen's personalisation beyond the character (companion, island, lig
 
 **The 08 §7 budgets, measured here.** The performance family of `verify-mentor-stage.mjs` now measures each character in three profiles on this machine: `warm` (models in the HTTP cache), `cold` (the cache disabled: every model, texture and chunk fetched again from the local dev server) and `phone` (warm, with the CPU throttled 4x, Chrome's usual stand-in for a mid-range phone). The renderer is Chrome's software rasteriser (SwiftShader): no GPU is used, so the frame rate here says nothing about a real phone's GPU, and the first render only bounds it from above for the CPU-side work. Results are in the verification log. A real-GPU and physical-device pass stays open (02 §11 item 15).
 
+## W2M.4: lane finish
+
+The integration branch `codex/spec-migration-s02` was merged in, bringing the owner's answers OD-24 to OD-28. The merge had no conflicts.
+
+An adversarial pass then checked the lane's commits against its SPEC scope: T1 and T1a-g in the product inventory, the chooser, the transcript sheet, the grown-up view and the 08 §10 checklist. It found the conversation layer (T1c) half-built and one owner decision not yet implemented.
+
+- **T1c was half-built, and is now built (W2M.4a-c).**
+  - Before this checkpoint:
+    - a live activity showed only its prompt;
+    - the tray demonstrations were gone;
+    - "explain differently", "edit the last message" and "start over" had no rebuilt surface.
+  - The legacy screen drew activities with the legacy lesson engine's 57 renderers, which rule 23 forbids importing.
+  - The rebuilt model reads the types the Mentor serves into twelve interaction shapes.
+  - Each drawn type sends its answer in exactly the shape Core's grader reads (`backend/src/lesson-contract/families/*`).
+  - The types still answered in words are listed in the final summary. For five number types, Oracle checks a spoken or typed number.
+- **T1c "Minutes left" was deliberately not rebuilt.**
+  - A countdown on a learner surface is the DP-01 dark pattern ("No countdown, timer, expiry-urgency or hurry copy"), and DP-01 outranks the legacy inventory.
+  - The gentle "We're almost done for today" notice stays the only word about time.
+- **OD-28 (M-04) is implemented (W2M.4d).**
+  - It reverses the S06 proposal that leaving skips the recap. The decision is recorded in `docs/rebuild/mentor/SESSION-END-POLICY.md` §7.1.
+  - The wire change is additive: `recapFirst` is optional, and a plain `end_session` still closes at once (the legacy client, start over).
+  - Deploy Oracle before the frontend. An older Oracle refuses the unknown field with `VALIDATION_ERROR`, and the screen's four-second grace then closes the talk as "learner left".
+- **Authorization is enforced at the server; no new Core route was needed.**
+  - Grading uses Core's existing `POST /tutor/segments/:id/grade`, owned by the session's learner.
+  - `POST /tutor/notebook` refuses another learner's session with a 403.
+  - Oracle's strict schema refuses a forged `recapFirst` value (real-websocket test).
+
+### W2M.4 verification
+
+Executed 27 September 2026 on the same machine in speed mode, with the same unit-run limits. Commands are relative to the service folder.
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| Oracle focused | `npx vitest run src/__tests__/sessionEnd.test.ts src/__tests__/live-session.test.ts` | 87/87. The new tests cover: the recap asked on a first press, with no model call; a second press closes completed; no recap for a stopped session or an ended budget; a forged `recapFirst: 'yes'` refused over a real websocket |
+| Frontend focused | `npx vitest run src/rebuild/mentor src/rebuild/copy-budget/mentor.test.ts src/tutor/__tests__` | All green. New tests:<br>• `liveActivity.test.tsx` (14): every drawn type's answer shape, the grade flow, a first miss, a failed check, practice only, the tray, a demonstration with a dropped step, ordering, yes-or-no cases.<br>• `useMentorSession` (+5): recap on end, grade and report with the receipt, a failed grade is null, edit, start over.<br>• `MentorScreenMore` (+7): the three-chip cap, explain, finish now, edit from the transcript, start over after confirming, an activity reported with its XP and step, the saved line never after a safety stop |
+| Service gates | `npm run type-check`, `npm run lint` in `oracle/` and `frontend/` | Clean |
+| Full unit suites (lane finish) | `npm test` in `oracle/`; `npx vitest run` in `frontend/` | Oracle: 64 files, 1,690 tests, all green. Frontend: 295 files, 3,146 tests with 1 red, `designClasses.test.ts`, a real finding: three activity wrapper classes had no CSS. After defining them, the file and the Mentor screen suites (7 files, 134 tests) are green |
+| Root gates | `npm run spec:check`, `npm run secrets:check`, `bash agent/tools/check-i18n.sh`, `governance:check`, `session-end:check`, `demo-step:check`, `roleplay-voices:check` | All OK. The dark-pattern gate reports 0 findings. The Tier 1 change record matches the code; its sign-offs are pending |
+| Visual inspection | The preview `rebuild.html?screen=mentor-screen&state=activity`, captured on a phone (en-US, light) and a desktop (es-MX, dark) | On a phone the tray activity sits under the stage; on a desktop it sits beside the character, with the step line. The palm leaf over Dina on `diorama-b` is seen again (a known limitation) |
+
+Processes: the Vite server on port 5430 and the headless Chrome used for the two captures were stopped. Leftover Oracle `.boot-test-` processes were checked for and killed.
+
 ## Files outside the lane's own set (for the merge)
 
 - `agent/tools/check-{alliance,behavioral-telemetry,demo-step,instrument,session-end}-parity.mjs` and `check-{demo-step,instrument}-parity.test.mjs`: the client wire types' path.
@@ -206,6 +319,11 @@ The legacy screen's personalisation beyond the character (companion, island, lig
 - No Lane 0 file was changed. The stage-bridge allowlist was enough: the stage reaches the catalogue, clip library and lip sync through `TutorStage`, and names catalogue poses by id under a parity test.
 - W2M.2: `agent/tools/check-dark-patterns.mjs` and its test again: the DP-05 exemption for the Mentor whiteboard's ordering instrument now also covers the branch that draws it (`case 'ranking':` in `screen/boardModel.ts`); two new red-team assertions keep a `case 'ranking':` that draws a leaderboard failing. No Lane 0 file was changed in W2M.2: the route reads Lane 0's `useWalletAccess`, `ShellRoot`, `StandaloneState` and `guidedReviewSkillFrom` without modifying them. Lane 2's `learning/TeachingChartBoard.tsx`, `learning.css` and `learnerRegister.ts` are imported, unchanged.
 
+- W2M.4:
+  - `oracle/src/ws/{protocol,server}.ts`, `oracle/src/tutor/orchestrator.ts` and their tests. These are Tier 1 (`mentor.non_negotiables`), with a new row in `docs/rebuild/mentor/governance/tier1-change-record.json`.
+  - `docs/rebuild/mentor/SESSION-END-POLICY.md` §7.1.
+  - `frontend/src/tutor/trayDemo.ts`, now a re-export. Its test moved to `rebuild/mentor/session/__tests__/`.
+  - The C.16 row of `docs/rebuild/REQUIREMENTS.md`.
 - W2M.3: `agent/tools/check-roleplay-voice-parity.mjs` and its test (the rebuilt captions and speakers checked against Oracle's text); `agent/tools/generate-roleplay-voices.mjs` (writes the voice manifest to its new place, `rebuild/mentor/session/roleplayVoices.generated.json`); `frontend/src/rebuild/assets/manifest.json` (eight `mentor.chooserStill` rows, shared by every lane) and `public/rebuild/mentor-chooser/*.png`; `scripts/verify-mentor-stage.mjs` (performance profiles); `src/rebuild/assets/assetGate.test.ts` (shared: runs the gate as an asynchronous child so the worker's RPC does not time out; the assertions are unchanged). The legacy `tutor/roleplay/useRoleplayDirector.ts` imports the moved manifest (the lane's own legacy tree). **For Lane 4:** mount `VoiceConsent` in the rebuilt Family Hub for each child (`<VoiceConsent kidUserId kidName api={coreVoiceConsentApi(getToken)} copy={mentorCopy(locale).mentorVoiceConsent} locale />`); until then `routes/app/family/FamilyPage.tsx` keeps the legacy control (this lane did not edit it). No Lane 0 file was changed.
 
 ## Verification log
@@ -275,7 +393,13 @@ Processes: every Chrome this session's scripts started was closed by them (check
 - **Found by looking, not fixed: Diorama props can cross the character.** With the close-up, Dr. Rho's thinking pose tilts his head down behind the ammonite on `diorama-a`, and on `diorama-b` a bush can stand in front of Dina. 08 §2 forbids anything decorative covering the face or hands. The props and the standing spot are placed by the engine (`tutor-scene/Diorama.tsx`, `standingSpots.ts`, `culling.ts`) and the legacy screen shows the same; the fix (keep props out of the camera-to-character corridor for the stage's shots) belongs with the Mentor screen checkpoint and changes the legacy screen too.
 - **The full-size still (W2M.3).** Until W2M.3 the full stage's still was the avatar render, a head-and-shoulders crop made for the 96 px avatar slot, which read as a very large head on a full stage (seen again in the W2M.3 matrix captures, where the software renderer drops to the frame-rate still). The full stage now shows the character standing on its Diorama (the chooser renders), which is right on a phone; on a 1280 px desktop stage the 320 x 400 render is upscaled about 2.3x and looks soft, it shows the idle pose, and it shows the Diorama it was rendered on, not necessarily the learner's island. Per-state full-body stills remain the asset work named above.
 - **The idle slot claim cannot stop the engine's idle loop.** If another hero idle loop held the slot, the stage records that it did not get it (`data-idle-motion` absent) but the live model still breathes; the Mentor screen and the lesson have no other hero loop.
-- **Capabilities of the legacy Mentor screen the rebuilt one does not carry yet** (after W2M.3). W2M.3 rebuilt the island (friend, island, light, nickname, how the Mentor explains), the learning map, the plan and notebook with "keep board", past talks and their replay, and roleplay scenes. Still not rebuilt: tray demonstrations, the live activity renderers (a live activity shows its prompt and is answered in the field; Oracle checks a spoken or typed number only for `number_input`, `count_objects`, `estimate_slider`, `coin_count` and `make_change`), the streak and XP header, caption size and voice volume, "fix what I said", the minutes-left clock, "start over" and "start another". `/tutor` no longer mounts the legacy experience, so until each has a rebuilt surface these are unavailable to learners (owner question 7). The legacy files stay in the tree for the S10 cutover (`/dev/tutor-lab` still renders them for development).
+- **Capabilities of the legacy Mentor screen that the rebuilt one does not carry yet.** W2M.3 and W2M.4 rebuilt almost all of them. What is left:
+  - 27 segment types have no drawn renderer: the memory, speed and story-play types and some analysis and maker types. They show their prompt and are answered in words.
+  - The streak and XP header. Bible 08 has no place for it.
+  - Caption size and voice volume. Neither Bible 08 nor T1 asks for them.
+  - The minutes-left clock, which is omitted on purpose under DP-01 (owner question 14).
+
+  The legacy files stay in the tree until the S10 cutover. `/dev/tutor-lab` still renders them.
 - **The board is Oracle's data, drawn plainly.** Every whiteboard shape renders as rows and bars in the shared Pizarrón frame; the shape-specific drawings the legacy board had (a ten frame's dots, a number line's jumps, a balance scale, a Venn diagram) are not redrawn yet, and the class II instruments keep only their local interaction. The richer drawings belong with the B.7 visual catalogue (Lane 2 owns the lesson boards; sharing them with the Mentor is the unification B.7 asks for).
 - **Tap to talk, not hold to talk.** The microphone is a tap to start and a tap to stop and send (keyboard operable). The legacy orb's hold, its Space-bar hold and its recording-length ring are not rebuilt; hands-free listening between turns is kept.
 - **The chooser shows each character on its Diorama, one picture each, not the four together.** W2M.3 replaced the avatar head renders with eight renders of the real models standing on the Diorama (`mentor.chooserStill`, drafts awaiting the character-render family's style review, 07 §7). They are four separate pictures in a list, not one group scene: four live stages at once are not affordable on a phone, and a group render would need its own placement on the Diorama. Dina's picture is taken on `diorama-a` (on `diorama-b` a bush stands in front of her), and in it the ammonite reaches her hind feet (owner question 9).
@@ -308,3 +432,15 @@ Processes: every Chrome this session's scripts started was closed by them (check
 11. **An activity's score in a replayed talk.** The legacy replay showed each activity's question and its score; the rebuilt replay keeps it ("Score: 80 of 100", neutral tone, never red, scoped to the task; B.26) because OD-9 keeps what families were promised. The list of past talks never shows a score. Proposal: accept; the alternative is to show only the question.
 12. **The Tutor's microphone consent wording now names the Mentor.** The legacy wording said "the AI tutor", which OD-6 retires ("Tutor" is the verified parent). The exact rendered wording is what Core stores as the consent record, so parents who agree after this change agree to a new text. Proposal: have Legal and Trust confirm the new wording (three locales) before release; it is otherwise the same promise (voice sent to the speech provider, not stored by us; written conversation kept 90 days; revocable at any time).
 13. **Dina's default framing.** Implemented: the wide close-up on `diorama-a` (W2M.3i), because the close-up showed only her head. Proposal: accept; the lasting fix for `diorama-b` (a leaf over her face) is moving that prop in the engine, which changes the legacy screen too.
+14. **No minutes-left clock.**
+    - The product inventory lists "Minutes left" for T1c, but DP-01 forbids any countdown on a learner surface.
+    - Implemented: only the gentle "almost done" notice.
+    - Proposal: accept.
+15. **Activity types answered in words.**
+    - The rebuilt screen draws 24 of the 51 segment types Core grades.
+    - The rest show their prompt and are answered in words: the memory, speed and story-play types and some analysis and maker types. Most of them belong to the legacy catalog, which OD-24 retires.
+    - Proposal: accept for the legacy catalog, and have the v2 catalog's Mentor activities use only drawn types.
+    - Alternative: rebuild the remaining types on the 02 controls.
+16. **"Finish now" after the recap question (OD-28).**
+    - Once the recap question is asked, the only reply chip is "Finish now". The top bar's close does the same, so a learner is never held for the answer.
+    - Proposal: accept.

@@ -121,7 +121,7 @@
 .lf-mentor-activity-prompt { font: var(--type-body-lg); letter-spacing: var(--type-body-lg-tracking); }
 /* W2M.4 (T1c): the live activity's answer controls, one Check, and the verdict between them. */
 .lf-mentor-activity-form { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
-.lf-mentor-activity-options { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-mentor-activity-options, .lf-mentor-activity-order, .lf-mentor-activity-tray, .lf-mentor-activity-blanks { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
 .lf-mentor-activity-chips { display: flex; flex-wrap: wrap; gap: var(--spacing-2); min-inline-size: 0; }
 .lf-mentor-activity-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--spacing-2); }
 .lf-mentor-activity-verdict:empty { display: none; }
