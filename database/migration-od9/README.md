@@ -14,9 +14,12 @@ Lane record: [`docs/rebuild/sprints/S10-CUTOVER.md`](../../docs/rebuild/sprints/
 | `sql/20_defects.sql` | Section 4.3: A.5, A.2, A.3/A.4 and F.2, each with a dry run and an idempotent apply. |
 | `sql/30_kc_credit.sql` | OD-24: completed legacy topics credit the KCs they teach (`public.legacy_kc_credits`); legacy course badges are frozen (Rule B5). |
 | `sql/40_consent.sql` | Section 4.2: which migrated children lack a specific consent for each practice the rebuild introduced. |
+| `sql/50_spot_check.sql` | Section 4.5: readable values (balances per pocket, streaks, XP, badges, reached goals, lessons passed, usernames) of a deterministic family sample, and the side-by-side comparison a person signs. |
+| `backup-crypto.mjs` | H.5: encrypts a `pg_dump -Fc` file (AES-256-GCM, format LFBK1, manifest with digests and key fingerprint), decrypts and verifies it (`npm run od9:backup -- <keygen\|encrypt\|decrypt\|verify>`). |
+| `rehearse-cutover.mjs` | The full local cutover rehearsal (`npm run od9:rehearse`): freeze, inventory, encrypted backup, verification, plan, migrations, toolkit, reconcile, smoke, switch, post-release, restore; timed. |
 | `fixtures/generate-legacy-fixture.mjs` | Deterministic synthetic legacy dataset (no real data) with independently computed expectations. |
 | `prove-od9-postgres.mjs` | The end-to-end proof on native PostgreSQL (`npm run od9:prove`). |
-| `od9.test.mjs` | Unit tests of the runner and the generator (part of `npm test`). |
+| `od9.test.mjs`, `backup-crypto.test.mjs` | Unit tests of the runner, the plan, the spot-check sheet, the backup encryption and the generator (part of `npm test`). |
 
 The product side lives in the migration `*_od9_legacy_migration.sql`: `legacy_kc_credits`, the `data_practices` registry, `data_practice_consents`, `has_data_practice_consent`, `legacy_kc_credit_covers`, and a badge reader that keeps a frozen badge when its course is archived.
 
@@ -37,7 +40,10 @@ Each step is safe to repeat. Every correction step has a dry run (no product row
 7. `od9 kc-credit`, review, then `od9 kc-credit --apply`. Run it **before** any legacy lesson is retired: a topic whose lessons are gone can no longer be shown complete.
 8. `od9 consent`, review, then `od9 consent --apply`.
 9. `od9 inventory --label after`, then `od9 compare --before before --after after`. Exit code 1 means a promised record, a family or an identifier changed; the report names each one. Section 4.5 requires this comparison, and per-family spot checks on balances, streaks and badges, to be **signed off by a person before the legacy platform is switched off**.
-10. `od9 findings` lists what still needs a person (A.5 justifications, A.3/A.4 accounts that have not answered the age screen, consent gaps). Re-running a step resolves findings that no longer apply.
+10. `od9 spot-check --label before --families 10` (at step 3) and `od9 spot-check --label after --from before` (at step 9) give the reviewer the readable values of the same families before and after, as a sign-off sheet (`spot-check-after.md`); exit 1 on a changed or missing value.
+11. `od9 findings` lists what still needs a person (A.5 justifications, A.3/A.4 accounts that have not answered the age screen, consent gaps). Re-running a step resolves findings that no longer apply.
+
+`od9 plan --applied-through NNNN` needs no database: it lists the migrations above the production high-water mark in the order they will be applied, their phase and what each contract migration waits for, and exits 1 if a header states an order the filenames break or a file declares no phase. The production procedure around all of this (freeze, encrypted backup, verification, switch, rollback) is [`docs/operations/CUTOVER-RUNBOOK.md`](../../docs/operations/CUTOVER-RUNBOOK.md) and [`BACKUP-RESTORE-ROLLBACK.md`](../../docs/operations/BACKUP-RESTORE-ROLLBACK.md).
 
 `--cutover <ISO timestamp>` fixes the cutover instant for `defects` and `consent` (accounts created after it are not legacy). It defaults to now.
 
@@ -57,5 +63,7 @@ Each step is safe to repeat. Every correction step has a dry run (no product row
 cd database
 LF_PG_BIN=<psql dir> LF_PG_PORT=<port> LF_PG_USER=<superuser> LF_PG_DATA=<data dir> npm run od9:prove
 ```
+
+`npm run od9:rehearse` (same variables, plus `LF_OD9_FAMILIES` to scale the synthetic dataset) rehearses the whole cutover runbook on a disposable database and writes `audit-results/od9/rehearsal/<database>/rehearsal.json` with the timing of every phase.
 
 The proof refuses any cluster whose data directory is not `LF_PG_DATA`. It builds the legacy schema, loads the synthetic dataset, applies the rest of the chain over it, runs every step as dry run, apply and re-apply, retires the legacy catalog, and requires the before/after comparison to pass; a tampered copy must fail it. Report: `audit-results/od9/prove-od9-postgres.json`.

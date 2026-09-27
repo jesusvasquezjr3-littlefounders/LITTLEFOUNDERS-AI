@@ -91,6 +91,8 @@ to retain because an active guardian consent admitted them at the source.
   against the backup provider's configuration before the next release cycle;
   if any backup store is not encrypted at rest, enabling encryption is a
   release-blocking task. This line stays in this document until confirmed.
+  The cutover backup procedure (encrypted by the file itself) and the
+  current status of each backup: `BACKUP-RESTORE-ROLLBACK.md` section 1.
 - **Incident response baseline.** On discovery of a security incident:
   1. Contain: rotate the affected keys, revoke the affected sessions/grant.
   2. Triage: severity decided by Engineering + the Safety/Trust role within

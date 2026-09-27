@@ -3,7 +3,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
-import { commandSql, installSql, parseArgs, psqlCommand, runPsql, summarizeComparison, tally, UsageError } from './od9.mjs';
+import { commandSql, installSql, migrationPlan, parseArgs, planMarkdown, psqlCommand, runPsql, spotCheckMarkdown, summarizeComparison, tally, UsageError } from './od9.mjs';
 import { bandForAge, generateLegacyFixture, mulberry32, PRACTICES } from './fixtures/generate-legacy-fixture.mjs';
 
 test('parseArgs accepts every command and refuses malformed input', () => {
@@ -103,4 +103,70 @@ test('mulberry32 and bandForAge are stable', () => {
   const s = mulberry32(7);
   assert.deepEqual([s(), s(), s()], first);
   assert.deepEqual([null, 6, 12, 13, 17, 18].map(bandForAge), [null, 'under_13', 'under_13', '13_to_17', '13_to_17', 'adult']);
+});
+
+test('spot-check and plan arguments are validated and bound as literals', () => {
+  assert.deepEqual(parseArgs(['spot-check', '--label', 'before']), { command: 'spot-check', apply: false, label: 'before', families: 10 });
+  assert.equal(parseArgs(['spot-check', '--label', 'before', '--families', '25']).families, 25);
+  assert.match(commandSql(parseArgs(['spot-check', '--label', 'before', '--families', '3'])), /od9\.capture_spot_check\('before', 3, NULL\)/);
+  assert.match(commandSql(parseArgs(['spot-check', '--label', 'after', '--from', 'before'])), /od9\.capture_spot_check\('after', NULL, 'before'\)/);
+  assert.equal(parseArgs(['plan', '--applied-through', '0082']).appliedThrough, 82);
+  for (const bad of [
+    ['spot-check'], ['spot-check', '--label', 'a', '--families', '0'], ['spot-check', '--label', 'a', '--families', '501'],
+    ['spot-check', '--label', 'a', '--families', '2.5'], ['spot-check', '--label', 'a', '--from', "b'"],
+    ['spot-check', '--label', 'a', '--from', 'b', '--families', '3'], ['inventory', '--label', 'a', '--from', 'b'],
+    ['plan'], ['plan', '--applied-through', 'latest'], ['defects', '--applied-through', '10'], ['plan', '--applied-through', '10', '--apply'],
+  ]) assert.throws(() => parseArgs(bad), UsageError, bad.join(' '));
+});
+
+test('migrationPlan lists pending migrations in order and refuses an ordering the filenames break', () => {
+  const header = (phase, release) => `-- x\n-- @phase: ${phase}\n${release ? `-- @after-release: none — ${release[0]}\n${release.slice(1).map((l) => `--   ${l}\n`).join('')}` : ''}--\nSELECT 1;\n`;
+  const files = [
+    { file: '0001_family_hub_base.sql', sql: header('expand') },
+    { file: '0002_family_hub_more.sql', sql: header('expand') },
+    { file: '0003_wallet_guards.sql', sql: header('contract', ['narrows writes. Apply with the Core release that ships the S07.1', 'routes, after the S07.1 family_hub_* migrations and before wallet_flows.']) },
+    { file: '0004_wallet_flows.sql', sql: header('contract', ['narrows savings_bonus_rules writes; apply after wallet_guards.']) },
+    { file: '0005_undeclared.sql', sql: 'SELECT 1;' },
+    { file: 'README.md', sql: '' },
+  ];
+  const plan = migrationPlan(files, 1);
+  assert.deepEqual(plan.pending.map((p) => p.file), ['0002_family_hub_more.sql', '0003_wallet_guards.sql', '0004_wallet_flows.sql', '0005_undeclared.sql']);
+  assert.deepEqual(plan.counts, { pending: 4, expand: 1, contract: 2 });
+  const guards = plan.pending[1];
+  assert.deepEqual(guards.after, ['0001_family_hub_base.sql', '0002_family_hub_more.sql']);
+  assert.deepEqual(guards.before, ['0004_wallet_flows.sql']);
+  assert.match(guards.afterRelease, /S07\.1 routes, after the S07\.1 family_hub_\* migrations/);
+  assert.deepEqual(plan.pending[2].after, ['0003_wallet_guards.sql'], 'a table name that is no migration is ignored');
+  assert.deepEqual(plan.violations, []);
+  assert.deepEqual(plan.undeclared, ['0005_undeclared.sql']);
+  assert.equal(plan.ok, false);
+
+  const swapped = migrationPlan([...files.slice(0, 2), { file: '0003_wallet_flows.sql', sql: header('contract', ['after wallet_guards.']) },
+    { file: '0004_wallet_guards.sql', sql: header('contract', ['after family_hub_more and before wallet_flows.']) }], 0);
+  assert.deepEqual(swapped.violations, [
+    '0003_wallet_flows.sql states it applies after 0004_wallet_guards.sql, which sorts later',
+    '0004_wallet_guards.sql states it applies before 0003_wallet_flows.sql, which sorts earlier',
+  ]);
+  assert.match(planMarkdown(swapped), /\*\*Refused:\*\*[\s\S]*\| \[ \] \| 0004_wallet_guards\.sql \| contract \| none — after family_hub_more/);
+});
+
+test('the real migration chain states no ordering its filenames break', () => {
+  const dir = new URL('../migrations/', import.meta.url);
+  const files = readdirSync(dir).map((file) => ({ file, sql: readFileSync(new URL(file, dir), 'utf8') }));
+  const plan = migrationPlan(files, 0);
+  assert.deepEqual(plan.violations, []);
+  assert.ok(plan.pending.some((p) => p.after.length > 0), 'the headers do state orderings');
+});
+
+test('spotCheckMarkdown renders a sign-off sheet with every compared value', () => {
+  const rows = [
+    { family_key: 'aaaaaaaa-1', user_id: 'u1', username: 'kid|one', item: 'coins:save', before_value: '40', after_value: '40', verdict: 'same' },
+    { family_key: 'aaaaaaaa-1', user_id: 'u1', username: null, item: 'learning_streak (current/best)', before_value: '3 / 9', after_value: '3 / 10', verdict: 'changed' },
+  ];
+  const md = spotCheckMarkdown({ ok: false, families: 1, accounts: 1, same: 1, changed: 1, missing: 0, newAfter: 0, rows }, { label: 'after', from: 'before' });
+  assert.match(md, /before vs after/);
+  assert.match(md, /\*\*a promised value changed or disappeared\*\*/);
+  assert.match(md, /kid\\|one \| coins:save \| 40 \| 40 \| same/);
+  assert.match(md, /\| u1 \| learning_streak \(current\/best\) \| 3 \/ 9 \| 3 \/ 10 \| changed/);
+  assert.match(md, /Reviewed by \(name, role\)/);
 });

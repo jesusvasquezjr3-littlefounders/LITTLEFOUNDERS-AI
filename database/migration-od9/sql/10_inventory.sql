@@ -166,14 +166,22 @@ BEGIN
     FROM (SELECT x.category, count(*) AS accounts, sum(x.row_count) AS total_rows
           FROM od9.inventory x WHERE x.label = p_label GROUP BY x.category) i;
     INSERT INTO od9.runs (step, mode, label, summary) VALUES ('inventory', 'capture', p_label, COALESCE(summary, '{}'::jsonb));
+    -- Fresh statistics for the comparison that follows.
+    ANALYZE od9.inventory;
+    ANALYZE od9.identifiers;
 END $$;
 
 -- Section 4.5: the comparison a person signs off. Account rows whose
 -- checksum changed or that vanished are failures; accounts that appear only
 -- after (new sign-ups, new Mentor memory) are informational.
+-- Hash joins only: with a third label captured the planner once chose nested
+-- loops over the per-label scans, and a 5,000-account comparison went from
+-- two seconds to minutes (found in the S10.2 volume rehearsal).
 CREATE OR REPLACE FUNCTION od9.compare_inventory(p_before text, p_after text)
 RETURNS TABLE (scope text, category text, subject text, before_rows bigint, after_rows bigint, verdict text)
-LANGUAGE sql STABLE AS $$
+LANGUAGE sql STABLE
+SET enable_nestloop = off
+AS $$
     WITH b AS (SELECT * FROM od9.inventory WHERE label = p_before),
          a AS (SELECT * FROM od9.inventory WHERE label = p_after),
     accounts AS (

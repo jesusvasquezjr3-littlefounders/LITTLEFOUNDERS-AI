@@ -60,6 +60,19 @@ CREATE TABLE IF NOT EXISTS od9.identifiers (
     PRIMARY KEY (label, kind, key)
 );
 
+-- OD-9 section 4.5: the per-family spot check a person signs off. Readable
+-- values (balances, streaks, badges) of a deterministic family sample, so the
+-- reviewer compares numbers, not checksums.
+CREATE TABLE IF NOT EXISTS od9.spot_values (
+    label       text NOT NULL CHECK (label ~ '^[a-z0-9_-]{1,40}$'),
+    family_key  uuid NOT NULL,
+    user_id     uuid NOT NULL,
+    item        text NOT NULL,
+    value       text NOT NULL,
+    captured_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+    PRIMARY KEY (label, user_id, item)
+);
+
 -- Every flagged legacy record and what was done about it. subject_ref is the
 -- natural key of the finding (an account id, a share id, account:practice).
 CREATE TABLE IF NOT EXISTS od9.findings (
