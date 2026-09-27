@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
+import { ipKeyGenerator } from 'express-rate-limit';
 import { createApp } from '../app.js';
+import { globalRateLimiter } from '../middleware/rateLimit.js';
 import { resetConfigForTests } from '../config.js';
 import { mintToken } from './helpers.js';
 import type { FakeDb } from './fakePostgrest.js';
@@ -12,9 +14,15 @@ import { createNarrativeFakeFetch } from './narrativeFakeRpc.js';
  * every population. The UI never substitutes for any of these decisions.
  *
  * Populations: a parent-created 7-year-old (kid role, verified Tutor), the
- * under-13 refusal-path guest, an independent teen of 15, an adult learning for
- * themselves, the child's verified-parent Tutor, a second verified parent with
- * no link to the child, and a parent who never verified.
+ * under-13 refusal-path guest, an independent teen of 15, a second independent
+ * teen, a self-registered teen of 14 who later linked the same Tutor, an adult
+ * learning for themselves, the child's verified-parent Tutor, a second verified
+ * parent with no link to the child, and a parent who never verified.
+ *
+ * Owner answers (27 September 2026): L-12 (OD-28), an independent teen's "I
+ * will try" creates their own savings goal; L-13 (OD-27 (3)), the verified
+ * Tutor of a parent-created child under 13 sees which option the child chose in
+ * each story decision, and every teen's journal stays private.
  *
  * Catalog, linear engine (the default until the owner accepts B.6):
  *   money / chapter 1 / arc A   story  (a story_branch lesson, kc.story)
@@ -32,14 +40,24 @@ const yearsAgo = (years: number): string => {
   return d.toISOString().slice(0, 10);
 };
 
+/** An ISO date exactly `years` years before today (UTC), shifted by `days`. */
+const birthdayAgo = (years: number, days = 0): string => {
+  const d = new Date();
+  d.setUTCFullYear(d.getUTCFullYear() - years);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+};
+
 const KID7 = uid(101);
 const GUEST = uid(102);
 const TEEN15 = uid(103);
+const TEEN_B = uid(104);
 const ADULT = uid(105);
 const TUTOR = uid(106);
 const OTHER_PARENT = uid(107);
 const UNVERIFIED_PARENT = uid(108);
-const LEARNERS = [KID7, GUEST, TEEN15, ADULT, TUTOR];
+const LINKED_TEEN = uid(109);
+const LEARNERS = [KID7, GUEST, TEEN15, TEEN_B, LINKED_TEEN, ADULT, TUTOR];
 const COURSE = { money: uid(1), other: uid(2) };
 
 const storyDoc = (slug: string) => ({
@@ -81,6 +99,8 @@ function build(): Built {
     account_age_declarations: [
       { user_id: KID7, declared_age_band: 'under_13' },
       { user_id: TEEN15, declared_age_band: '13_to_17' },
+      { user_id: TEEN_B, declared_age_band: '13_to_17' },
+      { user_id: LINKED_TEEN, declared_age_band: '13_to_17' },
       { user_id: ADULT, declared_age_band: 'adult' },
       { user_id: TUTOR, declared_age_band: 'adult' },
       { user_id: OTHER_PARENT, declared_age_band: 'adult' },
@@ -91,6 +111,8 @@ function build(): Built {
       { user_id: KID7, display_name: 'Kid', locale: 'en-US', birth_date: yearsAgo(7) },
       { user_id: GUEST, display_name: 'Guest', locale: 'en-US', birth_date: null },
       { user_id: TEEN15, display_name: 'Teen', locale: 'en-US', birth_date: yearsAgo(15) },
+      { user_id: TEEN_B, display_name: 'Teen B', locale: 'es-MX', birth_date: null },
+      { user_id: LINKED_TEEN, display_name: 'Linked', locale: 'en-US', birth_date: yearsAgo(14) },
       { user_id: ADULT, display_name: 'Adult', locale: 'en-US', birth_date: null },
       { user_id: TUTOR, display_name: 'Tutor', locale: 'pt-BR', birth_date: '1985-05-05' },
       { user_id: OTHER_PARENT, display_name: 'Other', locale: 'en-US', birth_date: '1985-05-05' },
@@ -99,7 +121,11 @@ function build(): Built {
     learning_stats: LEARNERS.map((user_id) => ({ user_id, xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0, longest_streak: 0, last_active_date: null })),
     user_roles: [{ user_id: KID7, role: 'kid' }, { user_id: TUTOR, role: 'parent' }, { user_id: OTHER_PARENT, role: 'parent' }, { user_id: UNVERIFIED_PARENT, role: 'parent' }],
     parent_verifications: [verified(TUTOR), verified(OTHER_PARENT)],
-    guardian_links: [{ parent_user_id: TUTOR, kid_user_id: KID7, verification_status: 'verified' }],
+    guardian_links: [
+      { parent_user_id: TUTOR, kid_user_id: KID7, verification_status: 'verified' },
+      // A self-registered teen who invited the same Tutor later (no kid role).
+      { parent_user_id: TUTOR, kid_user_id: LINKED_TEEN, verification_status: 'verified' },
+    ],
   };
   const lesson: Record<string, string> = {};
   const topic: Record<string, string> = {};
@@ -164,6 +190,9 @@ async function walk(user: string, keys: string[]) {
 }
 
 beforeEach(() => {
+  // Each scenario is an independent journey; none may spend another's loopback rate budget.
+  globalRateLimiter.resetKey(ipKeyGenerator('::ffff:127.0.0.1'));
+  globalRateLimiter.resetKey('127.0.0.1');
   resetConfigForTests();
   built = build();
   vi.stubGlobal('fetch', createNarrativeFakeFetch(built.db));
@@ -415,7 +444,7 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
 });
 
 describe('B.10 — the guardian narrative, through the verified-parent boundary', () => {
-  it('names the lesson, the skills and the struggle in the guardian\'s locale, counts decisions, and never reveals a choice', async () => {
+  it('names the lesson, the skills and the struggle in the guardian\'s locale and counts decisions; for a child under 13 it adds the chosen option (L-13), minimized', async () => {
     await grade(KID7, 'p10');
     await walk(KID7, ['story', 'save1']);
     const res = await get(TUTOR, `/family/learning/kids/${KID7}/narrative`);
@@ -423,14 +452,92 @@ describe('B.10 — the guardian narrative, through the verified-parent boundary'
     expect(res.body.data.locale).toBe('pt-BR');
     expect(res.body.data.week).toEqual({ lessons: 2, topicsCompleted: 1 });
     const story = res.body.data.entries.find((e: { lessonId: string }) => e.lessonId === built.lesson.story);
+    // The per-entry shape is unchanged (the Family Hub client validates it strictly).
     expect(story).toEqual({
       lessonId: built.lesson.story, lessonTitle: 'Lição story', topicTitle: 'Tópico story', courseTitle: 'money (pt)', completedAt: expect.any(String),
       skills: ['Definir um preço'], struggle: 'none', usedHint: false, decisions: 1, topicComplete: true, conversation: 'decision',
     });
     const save1 = res.body.data.entries.find((e: { lessonId: string }) => e.lessonId === built.lesson.save1);
     expect(save1).toMatchObject({ struggle: null, decisions: 0, topicComplete: false, conversation: 'explain', skills: ['Poupar para uma meta'] });
-    // The child's own choice never crosses into the guardian's view.
-    expect(JSON.stringify(res.body)).not.toMatch(/10 coins|double the price|Two neighbors/);
+    // L-13: the question and the option chosen, in the LESSON's locale; nothing more.
+    expect(res.body.data.choicesVisible).toBe(true);
+    expect(res.body.data.choices).toEqual([{
+      lessonId: built.lesson.story, situation: 'What price brings me closer to the guitar?', choice: '10 coins, double the price', locale: 'en-US',
+    }]);
+    expect(JSON.stringify(res.body)).not.toMatch(/Two neighbors|timesDecided|firstChoice|resurfaced/);
+  });
+
+  it('L-13: after a changed replay the Tutor sees the latest option only, never the first one', async () => {
+    await grade(KID7, 'p10');
+    await grade(KID7, 'p5', 2);
+    await walk(KID7, ['story']);
+    const res = await get(TUTOR, `/family/learning/kids/${KID7}/narrative`);
+    expect(res.body.data.choices).toEqual([expect.objectContaining({ choice: '5 coins, the usual' })]);
+    expect(JSON.stringify(res.body)).not.toContain('double the price');
+  });
+
+  const expectCountsOnly = (body: { data: Record<string, unknown> }) => {
+    expect(body.data.choicesVisible).toBe(false);
+    expect(body.data).not.toHaveProperty('choices');
+    expect(JSON.stringify(body)).not.toMatch(/guitar|10 coins|double the price|Two neighbors/);
+  };
+
+  it.each([
+    ['a parent-created child who is 13 by birth date', () => { built.db.profiles!.find((r) => r.user_id === KID7)!.birth_date = birthdayAgo(13); }],
+    ['a parent-created child aged 13 by birth date even though the age screen said under 13', () => {
+      built.db.profiles!.find((r) => r.user_id === KID7)!.birth_date = yearsAgo(14);
+    }],
+    ['a parent-created child with no age evidence at all', () => {
+      built.db.profiles!.find((r) => r.user_id === KID7)!.birth_date = null;
+      built.db.account_age_declarations = built.db.account_age_declarations!.filter((r) => r.user_id !== KID7);
+    }],
+  ])('L-13, counts only: %s', async (_label, arrange) => {
+    await grade(KID7, 'p10');
+    await walk(KID7, ['story']);
+    arrange();
+    const res = await get(TUTOR, `/family/learning/kids/${KID7}/narrative`);
+    expect(res.status, JSON.stringify(res.body)).toBe(200);
+    expect(res.body.data.entries[0]).toMatchObject({ decisions: 1, conversation: 'decision' });
+    expectCountsOnly(res.body);
+  });
+
+  it('L-13 boundary: the choices are shown the day before the 13th birthday and private from that birthday on (computed at read time)', async () => {
+    await grade(KID7, 'p10');
+    await walk(KID7, ['story']);
+    const profile = built.db.profiles!.find((r) => r.user_id === KID7)!;
+    profile.birth_date = birthdayAgo(13, 1);
+    expect((await get(TUTOR, `/family/learning/kids/${KID7}/narrative`)).body.data.choicesVisible).toBe(true);
+    expect((await get(KID7, '/learn/journal')).body.data.sharedWithTutor).toBe(true);
+    profile.birth_date = birthdayAgo(13);
+    expectCountsOnly((await get(TUTOR, `/family/learning/kids/${KID7}/narrative`)).body);
+    expect((await get(KID7, '/learn/journal')).body.data.sharedWithTutor).toBe(false);
+  });
+
+  it('L-13: a parent-created child with no birth date but an under-13 age screen counts as under 13', async () => {
+    await grade(KID7, 'p10');
+    await walk(KID7, ['story']);
+    built.db.profiles!.find((r) => r.user_id === KID7)!.birth_date = null;
+    const res = await get(TUTOR, `/family/learning/kids/${KID7}/narrative`);
+    expect(res.body.data.choices).toEqual([expect.objectContaining({ choice: '10 coins, double the price' })]);
+  });
+
+  it('L-13: a self-registered teen who linked the same Tutor keeps a private journal (counts only)', async () => {
+    await grade(LINKED_TEEN, 'p10');
+    await walk(LINKED_TEEN, ['story']);
+    const res = await get(TUTOR, `/family/learning/kids/${LINKED_TEEN}/narrative`);
+    expect(res.status, JSON.stringify(res.body)).toBe(200);
+    expect(res.body.data.entries[0]).toMatchObject({ decisions: 1 });
+    expectCountsOnly(res.body);
+    expect((await get(LINKED_TEEN, '/learn/journal')).body.data.sharedWithTutor).toBe(false);
+  });
+
+  it('L-13: a cleared journal is gone for the Tutor too', async () => {
+    await grade(KID7, 'p10');
+    await walk(KID7, ['story']);
+    expect((await del(KID7, '/learn/journal')).status).toBe(200);
+    const res = await get(TUTOR, `/family/learning/kids/${KID7}/narrative`);
+    expect(res.body.data).toMatchObject({ choicesVisible: true, choices: [] });
+    expect(res.body.data.entries[0]).toMatchObject({ decisions: 0 });
   });
 
   it('reports a mistake worked through from the graded attempts', async () => {
@@ -447,11 +554,12 @@ describe('B.10 — the guardian narrative, through the verified-parent boundary'
     ['an independent teen', TEEN15, 403],
     ['a verified parent with no link to this child', OTHER_PARENT, 404],
     ['a parent who never verified', UNVERIFIED_PARENT, 403],
-  ])('%s cannot read it', async (_label, user, status) => {
-    await walk(KID7, []);
+  ])('%s cannot read it, nor the choices a child under 13 made', async (_label, user, status) => {
+    await grade(KID7, 'p10');
+    await walk(KID7, ['story']);
     const res = await get(user, `/family/learning/kids/${KID7}/narrative`);
     expect(res.status).toBe(status);
-    expect(JSON.stringify(res.body)).not.toContain('entries');
+    expect(JSON.stringify(res.body)).not.toMatch(/entries|choices|guitar|10 coins/);
   });
 
   it('pages through completions and refuses a malformed page', async () => {

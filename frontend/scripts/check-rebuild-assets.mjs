@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { inflateSync } from 'node:zlib';
 
 /*
@@ -26,6 +27,10 @@ import { inflateSync } from 'node:zlib';
  *   not `approved` (07 §6: "The build fails if a component references an
  *   asset that is not in the manifest, or one that is not approved").
  *
+ *   Sound cues (type `wav`) are class B rows too; 07 has no audio section, so
+ *   how its §6 fields and §7 gate apply to a sound is written beside the
+ *   SOUND_* constants below (first cue: OD-28 L-02, the gentle "not yet").
+ *
  * Not automated here (recorded open in the S03 sprint record): OCR for text
  * inside raster renders, and the human style review of the first asset of each
  * family (07 §7 item 2, OD-14).
@@ -48,9 +53,15 @@ function walk(dir) {
 }
 const sourceFiles = walk(rebuildRoot).filter((file) => /\.(tsx?|css)$/.test(file) && !/\.test\.tsx?$/.test(file));
 const sources = new Map(sourceFiles.map((file) => [relative(root, file).split(sep).join('/'), readFileSync(file, 'utf8')]));
+// Sound cues are played from anywhere in the app (the lesson player's `sfx.ts` is outside src/rebuild), so every
+// source file is scanned for a `/sounds/…wav` literal. Only WAV is registered: the legacy MP3 set predates the manifest.
+const soundRefs = [];
+const scanSounds = (file, text) => { for (const m of text.matchAll(/['"`](\/sounds\/[^'"`\s]+?\.wav)['"`]/g)) soundRefs.push({ file, literal: m[1] }); };
+for (const [file, text] of sources) scanSounds(file, text);
 // Everything else in the app that may reference a rebuilt asset path.
 for (const file of walk(resolve(root, 'src')).filter((f) => /\.tsx?$/.test(f) && !/\.test\.tsx?$/.test(f) && !f.startsWith(rebuildRoot))) {
   const text = readFileSync(file, 'utf8');
+  scanSounds(relative(root, file).split(sep).join('/'), text);
   if (text.includes('/rebuild/')) sources.set(relative(root, file).split(sep).join('/'), text);
 }
 
@@ -154,13 +165,49 @@ for (const [file, text] of sources) {
 }
 
 /* -------------------------------------------------- class B: own assets */
-const TYPES = new Set(['svg', 'webp', 'png', 'lottie', 'render']);
+const TYPES = new Set(['svg', 'webp', 'png', 'lottie', 'render', 'wav']);
 const MODES = new Set(['both', 'light', 'dark']);
 const REVIEW = new Set(['draft', 'approved', 'retired']);
-// 07 §7 item 2: the families whose first asset needs the owner's style approval.
+// 07 §7 item 2: the families whose first asset needs the owner's style approval. `sounds` is ours, not 07's (below).
 // W2 profile lane: the cartoon avatar parts and the profile covers (E.12) are two more families of our own, each with its first-asset style review.
-const FAMILIES = new Set(['character-renders', 'badges', 'course-icons', 'pockets', 'empty-states', 'scenes', 'task-categories', 'coins', 'celebration-motion', 'avatar-parts', 'profile-covers']);
-const BUDGET_KB = { svg: 6, webp: 120, png: 120, lottie: 150, render: 150 };
+const FAMILIES = new Set(['character-renders', 'badges', 'course-icons', 'pockets', 'empty-states', 'scenes', 'task-categories', 'coins', 'celebration-motion', 'avatar-parts', 'profile-covers', 'sounds']);
+const BUDGET_KB = { svg: 6, webp: 120, png: 120, lottie: 150, render: 150, wav: 32 };
+/*
+ * Sound cues (type `wav`, family `sounds`; first one: the gentle "not yet" cue, OD-28 L-02). Frontend 07 has no
+ * audio section, so its §6 fields and §7 review gate are applied as follows, and nothing in 07 is relaxed for images:
+ *   - They live under /sounds/ (public/sounds, beside the legacy cues), not /rebuild/, and are found by a
+ *     `/sounds/…wav` literal anywhere in src (above).
+ *   - `modes` is `both` (a sound has no colour mode) and `altKey` is `decorative`: a cue is never the only signal,
+ *     the visible state (cross mark, hint banner) carries the meaning (02 §8 "not yet"). No aspect or background.
+ *   - Budget 32 KB. The file is a 16-bit PCM mono WAV of at most SOUND_MAX_SECONDS, peaking at or below
+ *     SOUND_PEAK_DBFS (a gentle cue, B.26: no non-verbal shame signal, so nothing loud), not silent, and it starts
+ *     and ends near zero (no click).
+ *   - `generator` (optional) names a checked-in script under scripts/ that exports `synthesize()`; the file must
+ *     equal its output byte for byte, so the asset cannot drift from its zero-spend generator (OD-23).
+ *   - A `draft` sound that declares `wiring` (where the UI will play it once the owner approves it) is exempt from
+ *     "every live asset is referenced" while it awaits review. Nothing else is: an approved sound must be referenced,
+ *     and `--release` still refuses the draft.
+ */
+const SOUND_HOME = '/sounds/';
+const SOUND_MAX_SECONDS = 1;
+const SOUND_PEAK_DBFS = -9;
+const SOUND_FLOOR_DBFS = -40;
+const SOUND_EDGE = 0.01; // |first| and |last| sample, as a fraction of full scale
+const frontendRoot = resolve(import.meta.dirname, '..'); // generators are code: always this checkout's, never the tree under test
+
+/** Minimal RIFF/WAVE reader: format fields and 16-bit samples of the first `data` chunk; unknown chunks are skipped. */
+function readWav(bytes) {
+  if (bytes.length < 12 || bytes.toString('ascii', 0, 4) !== 'RIFF' || bytes.toString('ascii', 8, 12) !== 'WAVE') return null;
+  let offset = 12, format = null, data = null;
+  while (offset + 8 <= bytes.length) {
+    const id = bytes.toString('ascii', offset, offset + 4), size = bytes.readUInt32LE(offset + 4), body = bytes.subarray(offset + 8, offset + 8 + size);
+    if (id === 'fmt ' && body.length >= 16) format = { encoding: body.readUInt16LE(0), channels: body.readUInt16LE(2), sampleRate: body.readUInt32LE(4), bits: body.readUInt16LE(14) };
+    else if (id === 'data' && !data) data = body;
+    offset += 8 + size + (size % 2);
+  }
+  if (!format || !data) return null;
+  return { ...format, samples: format.bits === 16 ? new Int16Array(data.buffer.slice(data.byteOffset, data.byteOffset + data.length - (data.length % 2))) : null };
+}
 const MENTORS = ['rho', 'zara', 'liruf', 'dina'];
 const AVATAR_SLOT = 'mentor.avatar';
 const poseCatalogue = new Set([...readFileSync(resolve(root, 'src/tutor-scene/poseLibrary.ts'), 'utf8')
@@ -272,9 +319,16 @@ for (const asset of classB) {
   if (asset.slot === AVATAR_SLOT && (asset.type !== 'render' || asset.aspect !== '1:1' || asset.background !== 'transparent' || asset.altKey !== 'decorative')) {
     fail(`An avatar is a square, transparent, decorative real-model render (02 §9.7; the name beside it is the label): ${where}`);
   }
+  const sound = asset.type === 'wav';
+  if (sound !== (asset.reviewFamily === 'sounds')) fail(`A sound cue is a wav in the sounds family, and only a sound is: ${where}`);
+  if (sound && (asset.modes !== 'both' || asset.altKey !== 'decorative' || 'aspect' in asset || 'background' in asset)) {
+    fail(`A sound cue is decorative in both modes, with no aspect or background; the visible state carries the meaning: ${where}`);
+  }
+  if ('wiring' in asset && (!sound || typeof asset.wiring !== 'string' || !asset.wiring.trim())) fail(`wiring is a sound cue's planned call site: ${where}`);
   if (typeof asset.path !== 'string') continue;
+  const home = sound ? SOUND_HOME : '/rebuild/';
   const file = resolve(publicRoot, `.${asset.path}`);
-  if (!asset.path.startsWith('/rebuild/') || !file.startsWith(publicRoot + sep)) { fail(`Asset outside public/rebuild/: ${asset.path}`); continue; }
+  if (!asset.path.startsWith(home) || !file.startsWith(resolve(publicRoot, `.${home}`) + sep)) { fail(`Asset outside public${home}: ${asset.path}`); continue; }
   let bytes;
   try { bytes = readFileSync(file); } catch { fail(`Missing or unreadable asset: ${asset.path}`); continue; }
   const kb = Math.ceil(statSync(file).size / 1024);
@@ -308,16 +362,41 @@ for (const asset of classB) {
     if (hues.has('accent')) fail(`The accent is the call to action only, never art (02 §4.2): ${asset.path}`);
     if (hues.size > 3) fail(`More than 3 hues in one asset (07 §3): ${[...hues].join(', ')} in ${asset.path}`);
     if (/\brgba?\(|\bhsla?\(/i.test(svg)) fail(`SVG colour outside the token palette: ${asset.path}`);
+  } else if (sound) {
+    const wav = readWav(bytes);
+    if (!wav || wav.encoding !== 1 || wav.channels !== 1 || wav.bits !== 16 || !wav.samples?.length || wav.sampleRate < 8000 || wav.sampleRate > 48000) {
+      fail(`Not a 16-bit PCM mono WAV: ${asset.path}`);
+    } else {
+      const seconds = wav.samples.length / wav.sampleRate;
+      let peak = 0;
+      for (const value of wav.samples) peak = Math.max(peak, Math.abs(value));
+      const dbfs = 20 * Math.log10(Math.max(peak, 1) / 32768);
+      if (seconds > SOUND_MAX_SECONDS) fail(`Sound cue longer than ${SOUND_MAX_SECONDS} s (${seconds.toFixed(2)} s): ${asset.path}`);
+      if (dbfs > SOUND_PEAK_DBFS) fail(`Sound cue peaks above ${SOUND_PEAK_DBFS} dBFS (${dbfs.toFixed(1)} dBFS; a gentle cue, B.26): ${asset.path}`);
+      if (dbfs < SOUND_FLOOR_DBFS) fail(`Sound cue is silent (${dbfs.toFixed(1)} dBFS): ${asset.path}`);
+      if (Math.max(Math.abs(wav.samples[0]), Math.abs(wav.samples[wav.samples.length - 1])) > SOUND_EDGE * 32768) fail(`Sound cue starts or ends on a click (no fade): ${asset.path}`);
+    }
+    if ('generator' in asset) {
+      if (typeof asset.generator !== 'string' || !/^scripts\/[a-z0-9-]+\.mjs$/.test(asset.generator)) fail(`A generator is a script under scripts/: ${where}`);
+      else {
+        try {
+          const { synthesize } = await import(pathToFileURL(resolve(frontendRoot, asset.generator)).href);
+          if (!Buffer.from(synthesize()).equals(bytes)) fail(`Sound does not match its generator ${asset.generator}; rerun it: ${asset.path}`);
+        } catch (error) { fail(`Generator ${asset.generator} could not synthesize (${error.message}): ${where}`); }
+      }
+    }
   }
-  // Referenced somewhere, by path or id (an avatar is found by its slot).
-  if (asset.reviewStatus !== 'retired' && asset.slot !== AVATAR_SLOT && !pathRefs.some((ref) => ref.re.test(asset.path)) && !idRefs.some((ref) => ref.re.test(asset.id))) {
-    fail(`Registered asset is referenced nowhere: ${asset.id}`);
-  }
+  // Referenced somewhere, by path or id (an avatar is found by its slot; a sound by its /sounds/ path).
+  const referenced = sound ? soundRefs.some((ref) => ref.literal === asset.path)
+    : asset.slot === AVATAR_SLOT || pathRefs.some((ref) => ref.re.test(asset.path)) || idRefs.some((ref) => ref.re.test(asset.id));
+  const awaitingWiring = sound && asset.reviewStatus === 'draft' && typeof asset.wiring === 'string' && asset.wiring.trim().length > 0;
+  if (asset.reviewStatus !== 'retired' && !referenced && !awaitingWiring) fail(`Registered asset is referenced nowhere: ${asset.id}`);
   if (release && asset.reviewStatus !== 'approved') fail(`Unapproved asset blocks the build (07 §6): ${asset.path}`);
 }
 // Every referenced path is registered and live.
 const live = classB.filter((asset) => asset.reviewStatus !== 'retired');
 for (const ref of pathRefs) if (!live.some((asset) => ref.re.test(asset.path))) fail(`${ref.file} references an unregistered or retired asset: ${ref.literal}`);
+for (const ref of soundRefs) if (!live.some((asset) => asset.type === 'wav' && asset.path === ref.literal)) fail(`${ref.file} references an unregistered or retired sound: ${ref.literal}`);
 for (const ref of idRefs) if (ref.literal.includes('.') && /^(lesson|mentor)\.[a-z]+\.[a-z]/.test(ref.literal) && !live.some((asset) => ref.re.test(asset.id))) {
   fail(`${ref.file} references an unregistered or retired asset id: ${ref.literal}`);
 }

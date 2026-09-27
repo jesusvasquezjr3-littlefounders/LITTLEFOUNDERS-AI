@@ -117,10 +117,10 @@ describe('A.2(c): flagged guest keeps its safeguards through an in-place upgrade
     const app = createApp();
     const read = await auth(request(app).get('/api/v1/auth/age-screen'), false);
     expect(read.status).toBe(200);
-    expect(read.body.data).toEqual({ required: false, ageBand: 'under_13', protectedOrigin: true });
+    expect(read.body.data).toEqual({ required: false, ageBand: 'under_13', protectedOrigin: true, birthMonthRecorded: false, adultByBirthMonth: false });
     const claim = await auth(request(app).post('/api/v1/auth/age-screen'), false).send({ birthDate: '1990-01-01' });
     expect(claim.status).toBe(200);
-    expect(claim.body.data).toEqual({ required: false, ageBand: 'under_13', protectedOrigin: true });
+    expect(claim.body.data).toEqual({ required: false, ageBand: 'under_13', protectedOrigin: true, birthMonthRecorded: false, adultByBirthMonth: false });
     expect(writes).toEqual([{ url: expect.stringContaining('/rpc/record_age_declaration'), body: { p_user_id: USER, p_age_band: 'adult' } }]);
   });
 

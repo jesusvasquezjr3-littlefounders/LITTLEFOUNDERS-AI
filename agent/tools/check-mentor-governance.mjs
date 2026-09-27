@@ -34,6 +34,20 @@
  *   THE AUDIT. `--release` is the Appendix F §1.3 Tier-Compliance Audit: all
  *   of the above, plus every Tier 1 change and every decision signed off.
  *
+ *   FINER BOUNDARIES (OD-28, owner review M-19). A mixed file may be split at
+ *   the level of its top-level declarations: components claim it through
+ *   `symbols` ({ file, names, decision }) instead of `paths`. Exactly one
+ *   claimant, which must be the strictest, holds `"*"` (every declaration no
+ *   one else names, the module's imports and top-level statements, and any
+ *   declaration added later), so the default for anything new is the strict
+ *   tier. A less strict claim (a carve-out) cites a decision and takes effect
+ *   only once both leads have signed it; until then its declarations stay with
+ *   the strict claimant. Every named declaration must exist (no stale
+ *   classification), no declaration has two owners, a Tier 3 carve-out may not
+ *   be referenced by a stricter declaration of its file, and the Tier 1 hash,
+ *   the automated-origin fence and the Tier 2 bounds all follow the effective
+ *   owner of each declaration, not the file.
+ *
  * Usage:
  *   node agent/tools/check-mentor-governance.mjs                 static checks (CI)
  *   node agent/tools/check-mentor-governance.mjs --base=<ref>    + append-only / promotion vs base (CI)
@@ -124,7 +138,8 @@ export function governedFiles(registry, fsList = null) {
 
 export function componentFiles(component, registry, fsList = null) {
   const files = new Set();
-  for (const p of component.paths) for (const f of expand(p, fsList)) if (!matches(f, registry.ignore ?? [])) files.add(f);
+  for (const p of component.paths ?? []) for (const f of expand(p, fsList)) if (!matches(f, registry.ignore ?? [])) files.add(f);
+  for (const claim of component.symbols ?? []) for (const f of expand(claim.file, fsList)) files.add(f);
   return [...files].sort();
 }
 
@@ -148,15 +163,386 @@ const readText = (f) => {
   }
 };
 
+/**
+ * SHA-256 over the component's files. A split file the component owns only in
+ * part contributes `file#symbol` plus that declaration's text for each
+ * declaration it effectively owns; a split file it effectively owns whole is
+ * hashed exactly like any other file, so adopting a boundary changes no hash
+ * until a carve-out takes effect.
+ */
 export function componentHash(component, registry, read = readText, fsList = null) {
   const files = componentFiles(component, registry, fsList).filter((f) => !matches(f, component.hashExclude ?? []));
-  return { hash: hashFiles(files, read), files: files.length };
+  const whole = [];
+  const parts = [];
+  for (const f of files) {
+    if (!isSplit(f, registry)) {
+      whole.push(f);
+      continue;
+    }
+    const source = read(f);
+    const owners = effectiveSymbolOwners(f, source ?? '', registry);
+    const owned = [...owners].filter(([, id]) => id === component.id).map(([name]) => name);
+    if (owned.length === owners.size) whole.push(f);
+    else {
+      const symbols = topLevelSymbols(source ?? '');
+      for (const name of owned.sort()) parts.push([`${f}#${name}`, symbols.get(name) ?? '']);
+    }
+  }
+  const h = createHash('sha256');
+  if (parts.length === 0) return { hash: hashFiles(whole, read), files: files.length };
+  h.update(hashFiles(whole, read));
+  for (const [key, text] of parts) {
+    h.update(`${key}\n`);
+    h.update(text);
+    h.update('\n\u0000\n');
+  }
+  return { hash: h.digest('hex'), files: files.length };
+}
+
+// ── symbol-level claims (OD-28, M-19) ───────────────────────────────────────
+
+const SIGNED_BY_BOTH = (d) => Boolean(d) && SIGNED(d.pedagogicalReviewer) && SIGNED(d.safetyTrustLead);
+
+/** file → [{ component, names, decision }] for every symbol-level claim. */
+export function symbolClaims(registry) {
+  const byFile = new Map();
+  for (const c of registry.components ?? []) {
+    for (const claim of c.symbols ?? []) {
+      if (!byFile.has(claim.file)) byFile.set(claim.file, []);
+      byFile.get(claim.file).push({ component: c, names: claim.names ?? [], decision: claim.decision ?? null });
+    }
+  }
+  return byFile;
+}
+
+export const isSplit = (file, registry) => symbolClaims(registry).has(file);
+
+/** The claimant holding `"*"` for a split file (null when none or ambiguous: checkSymbols reports it). */
+function starClaimant(claims) {
+  const stars = claims.filter((c) => c.names.includes('*'));
+  return stars.length === 1 ? stars[0] : null;
+}
+
+/** Is this carve-out in effect? A claim as strict as the `*` claimant needs no decision; a less strict one needs a decision signed by both leads. */
+export function claimEffective(claim, star, registry) {
+  if (!star || claim === star) return true;
+  if (STRICTNESS[claim.component.tier] >= STRICTNESS[star.component.tier]) return true;
+  const decision = (registry.decisions ?? []).find((d) => d.id === claim.decision);
+  return SIGNED_BY_BOTH(decision);
+}
+
+/** The component that effectively owns one declaration of a split file, without reading the source. */
+export function symbolOwner(file, name, registry) {
+  const claims = symbolClaims(registry).get(file);
+  if (!claims) return null;
+  const star = starClaimant(claims);
+  const explicit = claims.find((c) => c.names.includes(name));
+  if (explicit && claimEffective(explicit, star, registry)) return explicit.component;
+  return star ? star.component : null;
+}
+
+/** name → owning component id, for every top-level declaration (and the module) of a split file. */
+export function effectiveSymbolOwners(file, source, registry) {
+  const owners = new Map();
+  for (const name of topLevelSymbols(source).keys()) {
+    const c = symbolOwner(file, name, registry);
+    if (c) owners.set(name, c.id);
+  }
+  return owners;
+}
+
+/** Stage 0 at declaration level, for every split file. */
+export function checkSymbols(registry, { read = readText, fsList = null } = {}) {
+  const problems = [];
+  const decisions = new Map((registry.decisions ?? []).map((d) => [d.id, d]));
+  for (const [file, claims] of symbolClaims(registry)) {
+    if (!/\.(ts|tsx|mts|js|mjs)$/.test(file)) problems.push(`${file}: only TypeScript/JavaScript files can be split by declaration`);
+    const whole = (registry.components ?? []).filter((c) => matches(file, c.paths ?? []));
+    if (whole.length > 0) problems.push(`${file}: split by declaration but also claimed whole by ${whole.map((c) => c.id).join(', ')}`);
+    const source = fsList ? (fsList.includes(file) ? read(file) : null) : read(file);
+    if (source === null) {
+      problems.push(`${file}: split by declaration, but the file does not exist (stale classification)`);
+      continue;
+    }
+    const stars = claims.filter((c) => c.names.includes('*'));
+    if (stars.length !== 1) {
+      problems.push(`${file}: exactly one component must claim "*" (claimed by ${stars.length})`);
+      continue;
+    }
+    const star = stars[0];
+    for (const c of claims) {
+      if (STRICTNESS[c.component.tier] > STRICTNESS[star.component.tier]) {
+        problems.push(`${file}: "*" belongs to ${star.component.id} (${star.component.tier}), but ${c.component.id} (${c.component.tier}) is stricter — the default for new declarations must be the strictest tier`);
+      }
+    }
+    const symbols = topLevelSymbols(source);
+    const seen = new Map();
+    for (const c of claims) {
+      if (c === star) continue;
+      if (c.names.includes('*')) continue;
+      if (c.names.length === 0) problems.push(`${file}: ${c.component.id} claims no declaration`);
+      const lessStrict = STRICTNESS[c.component.tier] < STRICTNESS[star.component.tier];
+      if (lessStrict) {
+        if (!c.decision || !decisions.has(c.decision)) problems.push(`${file}: the carve-out to ${c.component.id} must cite a recorded decision (it moves declarations to a less strict tier)`);
+        if (c.names.includes(MODULE_SYMBOL)) problems.push(`${file}: ${MODULE_SYMBOL} (imports and top-level statements) stays with the strictest claimant`);
+      }
+      for (const name of c.names) {
+        if (name !== MODULE_SYMBOL && !symbols.has(name)) problems.push(`${file}#${name}: named by ${c.component.id} but not a top-level declaration of the file (stale classification)`);
+        if (seen.has(name)) problems.push(`${file}#${name}: claimed by ${seen.get(name)} and ${c.component.id} — a declaration has exactly one tier`);
+        seen.set(name, c.component.id);
+      }
+    }
+    // A Tier 3 (reporting) carve-out that a stricter declaration uses, in this
+    // file or by import from another governed file, would make reporting a
+    // decision input: its behaviour is the stricter tier's.
+    const base = path.posix.basename(file).replace(/\.(ts|tsx|mts|js|mjs)$/, '');
+    for (const c of claims) {
+      if (c.component.tier !== 'tier_3' || c === star) continue;
+      for (const name of c.names) {
+        const escaped = name.replace(/[$]/g, '\\$');
+        const pattern = new RegExp(`(^|[^\\w$])${escaped}(?![\\w$])`);
+        for (const [other, text] of symbols) {
+          if (other === name) continue;
+          // The PROPOSED owner (signed or not), so a boundary is validated before anyone signs it.
+          const owner = (claims.find((x) => x.names.includes(other)) ?? star).component;
+          if (STRICTNESS[owner.tier] > STRICTNESS.tier_3 && pattern.test(text)) {
+            problems.push(`${file}#${name}: carved out to ${c.component.id} (tier_3) but used by ${other} (${owner.tier}); its behaviour is ${owner.tier}`);
+          }
+        }
+        const imported = new RegExp(`import\\s+(?:type\\s+)?\\{[^}]*(^|[^\\w$])${escaped}(?![\\w$])[^}]*\\}\\s*from\\s*['"][^'"]*/${base}(?:\\.js)?['"]`, 'm');
+        for (const g of governedFiles(registry, fsList)) {
+          if (g === file) continue;
+          const text = read(g);
+          if (text === null || !imported.test(text)) continue;
+          const owners = classify(g, registry);
+          const strictest = owners.reduce((t, o) => (t === null || STRICTNESS[o.tier] > STRICTNESS[t] ? o.tier : t), null);
+          if (strictest && STRICTNESS[strictest] > STRICTNESS.tier_3) {
+            problems.push(`${file}#${name}: carved out to ${c.component.id} (tier_3) but imported by ${g} (${strictest}); its behaviour is ${strictest}`);
+          }
+        }
+      }
+    }
+  }
+  return problems;
+}
+
+/** Which declarations of a file differ between two versions (added, removed or changed). */
+export function changedSymbols(before, after) {
+  const a = topLevelSymbols(before ?? '');
+  const b = topLevelSymbols(after ?? '');
+  const names = new Set([...a.keys(), ...b.keys()]);
+  return [...names].filter((n) => a.get(n) !== b.get(n)).sort();
+}
+
+// ── symbol-level boundaries (OD-28, owner review M-19) ──────────────────────
+
+/** The pseudo-symbol for everything at top level that is not a named declaration (imports, re-exports, statements). */
+export const MODULE_SYMBOL = '<module>';
+
+const DECLARATION =
+  /^(?:export\s+(?:default\s+)?)?(?:declare\s+)?(?:async\s+)?(?:function\s*\*?\s*([A-Za-z_$][\w$]*)|(?:const|let|var)\s+([A-Za-z_$][\w$]*)|(?:abstract\s+)?class\s+([A-Za-z_$][\w$]*)|interface\s+([A-Za-z_$][\w$]*)|type\s+([A-Za-z_$][\w$]*)\s*[=<]|(?:const\s+)?enum\s+([A-Za-z_$][\w$]*)|namespace\s+([A-Za-z_$][\w$]*))/;
+const REGEX_AFTER = new Set(['(', ',', '=', ':', '[', '!', '&', '|', '?', '{', '}', ';', '+', '-', '*', '%', '<', '>', '~', '^']);
+const REGEX_AFTER_WORD = new Set(['return', 'typeof', 'case', 'do', 'else', 'in', 'of', 'new', 'delete', 'void', 'throw', 'yield', 'await']);
+
+/**
+ * For each line of a TypeScript/JavaScript source, whether it STARTS at the top
+ * level of the module: outside any brace/paren/bracket, string, template
+ * literal or block comment. A small lexer (strings, templates with nested
+ * `${}`, comments and regex literals by the usual previous-token heuristic);
+ * it needs no compiler, and the gate's own tests pin it on the real files.
+ */
+export function topLevelLineStarts(source) {
+  const src = source.replace(/\r\n/g, '\n');
+  const starts = [true];
+  let depth = 0;
+  let mode = 'code'; // code | line | block | sq | dq | tpl | regex | regexClass
+  const tplStack = []; // brace depth at which each open `${` returns to its template
+  let lastSig = null;
+  let lastWord = '';
+  for (let i = 0; i < src.length; i++) {
+    const c = src[i];
+    const n = src[i + 1];
+    if (c === '\n') {
+      if (mode === 'line') mode = 'code';
+      starts.push(mode === 'code' && depth === 0 && tplStack.length === 0);
+      continue;
+    }
+    switch (mode) {
+      case 'line':
+        break;
+      case 'block':
+        if (c === '*' && n === '/') {
+          mode = 'code';
+          i += 1;
+        }
+        break;
+      case 'sq':
+      case 'dq':
+        if (c === '\\') i += 1;
+        else if ((mode === 'sq' && c === "'") || (mode === 'dq' && c === '"')) {
+          mode = 'code';
+          lastSig = c;
+        }
+        break;
+      case 'tpl':
+        if (c === '\\') i += 1;
+        else if (c === '`') {
+          mode = 'code';
+          lastSig = '`';
+        } else if (c === '$' && n === '{') {
+          tplStack.push(depth);
+          depth += 1;
+          mode = 'code';
+          i += 1;
+          lastSig = '{';
+        }
+        break;
+      case 'regex':
+        if (c === '\\') i += 1;
+        else if (c === '[') mode = 'regexClass';
+        else if (c === '/') {
+          mode = 'code';
+          lastSig = '/re';
+        }
+        break;
+      case 'regexClass':
+        if (c === '\\') i += 1;
+        else if (c === ']') mode = 'regex';
+        break;
+      default: {
+        if (c === '/' && n === '/') {
+          mode = 'line';
+          i += 1;
+        } else if (c === '/' && n === '*') {
+          mode = 'block';
+          i += 1;
+        } else if (c === "'") mode = 'sq';
+        else if (c === '"') mode = 'dq';
+        else if (c === '`') mode = 'tpl';
+        else if (c === '/') {
+          const regex = lastSig === null || REGEX_AFTER.has(lastSig) || (lastSig === 'w' && REGEX_AFTER_WORD.has(lastWord));
+          if (regex) mode = 'regex';
+          else lastSig = '/';
+        } else if (c === '{' || c === '(' || c === '[') {
+          depth += 1;
+          lastSig = c;
+        } else if (c === '}' || c === ')' || c === ']') {
+          depth = Math.max(0, depth - 1);
+          if (c === '}' && tplStack.length > 0 && tplStack[tplStack.length - 1] === depth) {
+            tplStack.pop();
+            mode = 'tpl';
+          } else lastSig = c;
+        } else if (/[A-Za-z0-9_$]/.test(c)) {
+          let j = i;
+          while (j < src.length && /[A-Za-z0-9_$]/.test(src[j])) j += 1;
+          lastWord = src.slice(i, j);
+          lastSig = 'w';
+          i = j - 1;
+        } else if (!/\s/.test(c)) lastSig = c;
+      }
+    }
+  }
+  return starts;
+}
+
+/**
+ * The module's top-level symbols and their source text: every named top-level
+ * declaration (function, const/let/var, class, interface, type, enum), with the
+ * comment block directly above it. Overloads and same-named declarations are
+ * joined. Everything else at top level (imports, re-exports, statements, stray
+ * comments) is the MODULE_SYMBOL. Text is LF-normalized, and blank lines
+ * between declarations belong to no symbol, so moving a declaration or
+ * re-spacing the file changes no symbol's text.
+ */
+export function topLevelSymbols(source) {
+  const lines = source.replace(/\r\n/g, '\n').split('\n');
+  const starts = topLevelLineStarts(source);
+  const symbols = new Map();
+  const add = (name, text) => symbols.set(name, symbols.has(name) ? `${symbols.get(name)}\n${text}` : text);
+  let current = MODULE_SYMBOL;
+  let buffer = [];
+  let pending = [];
+  const flush = () => {
+    while (buffer.length > 0 && buffer[buffer.length - 1].trim() === '') buffer.pop();
+    if (buffer.length > 0) add(current, buffer.map((l) => l.trimEnd()).join('\n'));
+    buffer = [];
+  };
+  let inTopComment = false;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const top = starts[i] === true;
+    const trimmed = line.trim();
+    if (!top && !inTopComment) {
+      if (pending.length > 0) {
+        buffer.push(...pending);
+        pending = [];
+      }
+      buffer.push(line);
+      continue;
+    }
+    // A top-level comment line (or the inside of a top-level block comment) waits for what follows it.
+    const opensComment = top && (trimmed.startsWith('//') || trimmed.startsWith('/*'));
+    if (inTopComment || opensComment) {
+      pending.push(line);
+      if (opensComment && trimmed.startsWith('/*')) inTopComment = !trimmed.includes('*/', 2);
+      else if (inTopComment && trimmed.includes('*/')) inTopComment = false;
+      continue;
+    }
+    if (trimmed === '') {
+      // A comment separated from what follows by a blank line documents the
+      // module, not the next declaration.
+      if (pending.length > 0) {
+        add(MODULE_SYMBOL, pending.map((l) => l.trimEnd()).join('\n'));
+        pending = [];
+      } else buffer.push(line);
+      continue;
+    }
+    const m = DECLARATION.exec(line);
+    if (m) {
+      flush();
+      current = m.slice(1).find(Boolean);
+      buffer = pending;
+      pending = [];
+      buffer.push(line);
+      continue;
+    }
+    if (/^[}\])]/.test(trimmed)) {
+      buffer.push(...pending, line);
+      pending = [];
+      continue;
+    }
+    flush();
+    current = MODULE_SYMBOL;
+    buffer = [...pending, line];
+    pending = [];
+  }
+  if (pending.length > 0) {
+    flush();
+    current = MODULE_SYMBOL;
+    buffer = pending;
+  }
+  flush();
+  return symbols;
 }
 
 // ── classification (Stage 0) ────────────────────────────────────────────────
 
+/**
+ * The components that own a path. `file#symbol` resolves to that declaration's
+ * effective owner; a split file named whole resolves to every claimant (the
+ * strictest decides, which is the safe reading of "some part of it").
+ */
 export function classify(file, registry) {
-  return registry.components.filter((c) => matches(file, c.paths));
+  const hash = file.indexOf('#');
+  if (hash > 0) {
+    const owner = symbolOwner(file.slice(0, hash), file.slice(hash + 1), registry);
+    if (owner) return [owner];
+    file = file.slice(0, hash);
+  }
+  const claims = symbolClaims(registry).get(file);
+  const whole = registry.components.filter((c) => matches(file, c.paths ?? []));
+  if (!claims) return whole;
+  return [...new Set([...whole, ...claims.map((c) => c.component)])];
 }
 
 /** The strictest tier among the components that own `files`; unowned governed files are reported. */
@@ -195,10 +581,14 @@ export function checkRegistry(registry, { fsList = null, read = readText } = {})
     ids.add(c.id);
     if (!TIERS.includes(c.tier)) problems.push(`component ${c.id}: unknown tier ${c.tier}`);
     if (!OWNER_ROLES.includes(c.owner)) problems.push(`component ${c.id}: owner must be one of ${OWNER_ROLES.join(', ')}`);
-    if (!Array.isArray(c.paths) || c.paths.length === 0) problems.push(`component ${c.id}: names its paths`);
+    const hasSymbols = Array.isArray(c.symbols) && c.symbols.length > 0;
+    if (!hasSymbols && (!Array.isArray(c.paths) || c.paths.length === 0)) problems.push(`component ${c.id}: names its paths`);
+    for (const claim of c.symbols ?? []) {
+      if (typeof claim.file !== 'string' || !Array.isArray(claim.names)) problems.push(`component ${c.id}: a symbol claim names its file and its declarations`);
+    }
     if (!Array.isArray(c.examples) || c.examples.length === 0) problems.push(`component ${c.id}: names at least one example (C.22 DoD a)`);
     if (!c.policy || read(c.policy) === null) problems.push(`component ${c.id}: its policy document ${c.policy} does not exist`);
-    if (Array.isArray(c.paths) && componentFiles(c, registry, fsList).length === 0) problems.push(`component ${c.id}: its paths match no file (stale classification)`);
+    if ((Array.isArray(c.paths) || hasSymbols) && componentFiles(c, registry, fsList).length === 0) problems.push(`component ${c.id}: its paths match no file (stale classification)`);
     const history = c.tierHistory ?? [];
     if (history.length === 0) problems.push(`component ${c.id}: has no tier history`);
     else if (history.at(-1).tier !== c.tier) problems.push(`component ${c.id}: its tier ${c.tier} is not the last entry of its tier history (${history.at(-1).tier})`);
@@ -221,13 +611,15 @@ export function checkRegistry(registry, { fsList = null, read = readText } = {})
 }
 
 /** Every governed file belongs to exactly one component. */
-export function checkCoverage(registry, fsList = null) {
+export function checkCoverage(registry, fsList = null, read = readText) {
   const problems = [];
   for (const f of governedFiles(registry, fsList)) {
+    if (isSplit(f, registry)) continue; // Stage 0 per declaration: checkSymbols
     const owners = classify(f, registry);
     if (owners.length === 0) problems.push(`${f}: unclassified Mentor file — add it to a component in ${REGISTRY} (Stage 0)`);
     else if (owners.length > 1) problems.push(`${f}: claimed by ${owners.map((c) => c.id).join(' and ')} — a file has exactly one tier`);
   }
+  problems.push(...checkSymbols(registry, { read, fsList }));
   return problems;
 }
 
@@ -321,8 +713,9 @@ export function numericField(source, objectName, field) {
 export function checkTier2Parameters(registry, read = readText) {
   const problems = [];
   for (const p of registry.tier2Parameters ?? []) {
-    const owners = classify(p.file, registry);
-    if (!owners.some((c) => c.tier === 'tier_2')) problems.push(`Tier 2 parameter ${p.id}: ${p.file} is not in a Tier 2 component`);
+    // In a split file the parameter's own declaration must be Tier 2, not merely some part of the file.
+    const owners = classify(isSplit(p.file, registry) ? `${p.file}#${p.object}` : p.file, registry);
+    if (!owners.some((c) => c.tier === 'tier_2')) problems.push(`Tier 2 parameter ${p.id}: ${p.file}${isSplit(p.file, registry) ? `#${p.object}` : ''} is not in a Tier 2 component`);
     const text = read(p.file);
     const value = text === null ? null : numericField(text, p.object, p.field);
     if (value === null) problems.push(`Tier 2 parameter ${p.id}: could not read ${p.object}.${p.field} in ${p.file}`);
@@ -489,8 +882,15 @@ function git(args) {
   return execFileSync('git', ['-C', ROOT, ...args], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
 }
 
-export function commitsIn(range) {
+export function commitsIn(range, registry = null) {
   const raw = git(['log', '--format=%H%x1f%an%x1f%ae%x1f%B%x1e', range]);
+  const show = (rev, f) => {
+    try {
+      return git(['show', `${rev}:${f}`]);
+    } catch {
+      return null;
+    }
+  };
   return raw
     .split('\x1e')
     .map((s) => s.trim())
@@ -498,8 +898,26 @@ export function commitsIn(range) {
     .map((s) => {
       const [sha, name, email, body] = s.split('\x1f');
       const files = git(['diff-tree', '--no-commit-id', '--name-only', '-r', '-m', sha]).split('\n').filter(Boolean);
-      return { sha, name, email, body: body ?? '', files: [...new Set(files)] };
+      const commit = { sha, name, email, body: body ?? '', files: [...new Set(files)] };
+      // OD-28 (M-19): for a split file, which declarations the commit changed.
+      if (registry) {
+        const symbolChanges = {};
+        for (const f of commit.files) if (isSplit(f, registry)) symbolChanges[f] = changedSymbols(show(`${sha}^`, f), show(sha, f));
+        if (Object.keys(symbolChanges).length > 0) commit.symbolChanges = symbolChanges;
+      }
+      return commit;
     });
+}
+
+/** A commit's governed paths, with each split file replaced by `file#symbol` for the declarations it changed (when known). */
+export function commitPaths(commit, registry) {
+  const out = [];
+  for (const f of commit.files) {
+    const changed = commit.symbolChanges?.[f];
+    if (isSplit(f, registry) && Array.isArray(changed)) out.push(...changed.map((n) => `${f}#${n}`));
+    else out.push(f);
+  }
+  return out;
 }
 
 export const isAutomated = (c) => /\[bot\]/i.test(`${c.name} ${c.email}`) || AUTOMATED_TRAILER.test(c.body);
@@ -509,8 +927,9 @@ export function checkCommits(commits, registry, proposals) {
   const byId = new Map(proposals.filter((p) => p.record).map((p) => [p.record.id, p.record]));
   for (const c of commits) {
     if (!isAutomated(c)) continue;
-    const { tier, components } = tierOf(c.files, registry);
-    const governed = c.files.filter((f) => classify(f, registry).length > 0);
+    const paths = commitPaths(c, registry);
+    const { tier, components } = tierOf(paths, registry);
+    const governed = paths.filter((f) => classify(f, registry).length > 0);
     if (tier && CONTROLLED.has(tier)) {
       problems.push(`${c.sha.slice(0, 10)} (automated: ${c.name}) touches ${tier} (${components.join(', ')}): never automated`);
       continue;
@@ -523,7 +942,8 @@ export function checkCommits(commits, registry, proposals) {
       continue;
     }
     if (proposal.origin !== 'automated') problems.push(`${c.sha.slice(0, 10)}: cites ${id}, which is not an automated proposal`);
-    const outside = governed.filter((f) => !(proposal.paths ?? []).includes(f));
+    const named = proposal.paths ?? [];
+    const outside = governed.filter((f) => !named.includes(f) && !named.includes(f.split('#')[0]));
     if (outside.length > 0) problems.push(`${c.sha.slice(0, 10)}: changes files its proposal ${id} does not name (${outside.join(', ')})`);
     const r = evaluateProposal(proposal, registry);
     if (!['canary', 'released'].includes(proposal.status) || r.violations.length > 0 || r.missing.length > 0) {
@@ -617,7 +1037,7 @@ function main() {
   const range = arg('range');
   let commits = [];
   if (range) {
-    commits = commitsIn(range);
+    commits = commitsIn(range, registry);
     sections.automatedOrigin = checkCommits(commits, registry, proposals);
   }
 
@@ -625,11 +1045,20 @@ function main() {
   const canary = canaryRegressionRate(proposals);
   const controlled = registry.components.filter((c) => CONTROLLED.has(c.tier));
   const latest = latestEntries(ledger);
+  const carveOuts = [];
+  for (const [file, claims] of symbolClaims(registry)) {
+    const star = starClaimant(claims);
+    for (const c of claims) {
+      if (c === star) continue;
+      carveOuts.push({ file, component: c.component.id, tier: c.component.tier, names: c.names, decision: c.decision, effective: claimEffective(c, star, registry) });
+    }
+  }
   const report = {
     kind: 'mentor-tier-compliance-audit',
     mode: release ? 'release' : 'check',
     generatedAt: new Date().toISOString(),
     components: registry.components.map((c) => ({ id: c.id, tier: c.tier, files: componentFiles(c, registry).length })),
+    carveOuts,
     controlledComponents: controlled.length,
     signedOff: controlled.filter((c) => SIGNED(latest.get(c.id)?.pedagogicalReviewer) && SIGNED(latest.get(c.id)?.safetyTrustLead)).length,
     automatedCommitsChecked: commits.filter(isAutomated).length,
@@ -647,7 +1076,7 @@ function main() {
     return 1;
   }
   console.log(
-    `governance:check OK — ${registry.components.length} components, ${governedFiles(registry).length} governed files classified, ${controlled.length} Tier 1 / live-content components match their change record${release ? ' and are signed off' : ''}; ${commits.length} commit(s) checked; canary regression rate ${canary.rate === null ? 'n/a (no canary yet)' : `${(canary.rate * 100).toFixed(1)}%`}`,
+    `governance:check OK — ${registry.components.length} components, ${governedFiles(registry).length} governed files classified (${symbolClaims(registry).size} split by declaration; ${carveOuts.filter((c) => c.effective).length} of ${carveOuts.length} carve-outs in effect, the rest wait for both leads' signatures), ${controlled.length} Tier 1 / live-content components match their change record${release ? ' and are signed off' : ''}; ${commits.length} commit(s) checked; canary regression rate ${canary.rate === null ? 'n/a (no canary yet)' : `${(canary.rate * 100).toFixed(1)}%`}`,
   );
   return 0;
 }

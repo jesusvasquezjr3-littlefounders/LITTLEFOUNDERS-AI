@@ -129,3 +129,48 @@ test('the policy must keep its sections and tier rows', () => {
   withFixture((root) => edit(root, 'docs/rebuild/policies/SOCIAL-TIERS.md', '## 2. No comparison count (E.9)', '## 2. Counts'), /missing section "## 2. No comparison count \(E.9\)"/);
   withFixture((root) => edit(root, 'docs/rebuild/policies/SOCIAL-TIERS.md', '| closed |', '| shut |'), /lacks the closed row/);
 });
+
+// S-03 (OD-27 (2)): the 16-17 discoverable-profile opt-in stays narrow.
+function laterMigration(root, sql) {
+  const next = String(Number(latestMigration(root).slice(0, 4)) + 1).padStart(4, '0');
+  writeFileSync(join(root, 'database/migrations', `${next}_regression.sql`), sql);
+}
+
+test('S-03: a later eligibility function that drops the 16+ proof, the teen tier or the flag check fails', () => {
+  for (const [body, expected] of [
+    ["SELECT public.social_tier(p_user) = 'teen' AND NOT public.profile_fields_flagged(p_user)", /no longer requires age_at_least_by_birth_month/],
+    ["SELECT public.age_at_least_by_birth_month(p_user, 16) OR interval '16 years' IS NOT NULL AND NOT public.profile_fields_flagged(p_user)", /no longer requires social_tier\(p_user\) = 'teen'/],
+    ["SELECT public.social_tier(p_user) = 'teen' AND public.age_at_least_by_birth_month(p_user, 16) OR interval '16 years' IS NOT NULL", /no longer requires NOT public\.profile_fields_flagged/],
+  ]) {
+    withFixture((root) => laterMigration(root, `-- @phase: contract\nCREATE OR REPLACE FUNCTION public.teen_discoverable_eligible(p_user uuid)\nRETURNS boolean LANGUAGE sql AS $$ ${body}; $$;\n`), expected);
+  }
+});
+
+test('S-03: a discoverable reader that stops re-checking eligibility, or an unaudited setter, fails', () => {
+  withFixture((root) => laterMigration(root, `-- @phase: contract\nCREATE OR REPLACE FUNCTION public.teen_profile_discoverable(p_user uuid)\nRETURNS boolean LANGUAGE sql AS $$ SELECT true; $$;\n`), /must re-check eligibility on every read/);
+  withFixture((root) => laterMigration(root, `-- @phase: contract\nCREATE OR REPLACE FUNCTION public.set_teen_profile_discoverable(p_user uuid, p_discoverable boolean)\nRETURNS boolean LANGUAGE sql AS $$ SELECT p_discoverable; $$;\n`), /must refuse an ineligible opt-in and audit every change/);
+});
+
+test('S-03: visibility that shows a discoverable teen outside the E.13 check fails', () => {
+  withFixture((root) => laterMigration(root, `-- @phase: contract
+CREATE OR REPLACE FUNCTION public.social_subject_visible(p_subject uuid)
+RETURNS boolean LANGUAGE sql AS $$ SELECT public.social_tier(p_subject) <> 'closed' AND (public.teen_profile_discoverable(p_subject)
+  OR (NOT public.profile_fields_flagged(p_subject) AND public.has_current_teen_consent(auth.uid(), p_subject))); $$;
+`), /must stay behind the E\.13 flag check/);
+});
+
+test('S-03: Core asking the opt-in before the flag check, or a route that takes more than a boolean, fails', () => {
+  withFixture((root) => {
+    const file = 'backend/src/services/socialVisibility.ts';
+    const path = join(root, file);
+    const source = readFileSync(path, 'utf8');
+    const probe = "      if (await isTeenProfileDiscoverable(subjectId)) return 'full';\n";
+    assert.ok(source.includes(probe));
+    writeFileSync(path, source.replace(probe, '').replace("      if (await isFlagged(subjectId, fields)) return 'none';\n      if (await hasCurrentTeenConsent", `${probe}      if (await isFlagged(subjectId, fields)) return 'none';\n      if (await hasCurrentTeenConsent`));
+  }, /discoverable check must come after the E\.13 flag check/);
+  withFixture((root) => edit(root, 'backend/src/routes/profile.ts', 'z.object({ discoverable: z.boolean() }).strict()', 'z.object({ discoverable: z.coerce.boolean() })'), /must take one literal boolean/);
+});
+
+test('S-03: the policy must keep the discoverable-profile section', () => {
+  withFixture((root) => edit(root, 'docs/rebuild/policies/SOCIAL-TIERS.md', '### 1.1 A discoverable profile at 16 or 17 (S-03, OD-27)', '### 1.1 Public teens'), /missing the 16-17 discoverable-profile section/);
+});

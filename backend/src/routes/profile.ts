@@ -1,4 +1,5 @@
 import { isSocialFamily, profileAccess, visibleSocialUsers, type ProfileAccess } from '../services/socialVisibility.js';
+import { readTeenDiscoverability, setTeenProfileDiscoverable } from '../services/teenDiscoverability.js';
 import { getRolesForGate } from '../services/insights.js';
 import { reviewProfileFields, profileFieldFlags } from '../services/profileFieldSafety.js';
 import { AvatarOptions, COVER_PRESETS, projectAvatarOptions, projectCover } from '../services/profileShape.js';
@@ -188,6 +189,11 @@ export function ownProfileRouter(): Router {
     ]);
     if (!profiles?.[0]) return fail(res, 502, 'INTERNAL', 'Profile unreachable');
     const minor = tier === null || MINOR_SOCIAL_TIERS.includes(tier);
+    // S-03 (OD-27): only a teen can have (or be offered) the discoverable
+    // choice; an unreadable answer reads as private and not offered.
+    const discoverability = tier === 'teen'
+      ? await readTeenDiscoverability(user.id) ?? { eligible: false, enabled: false }
+      : { eligible: false, enabled: false };
     return ok(res, {
       ...publicShape(profiles[0], avatars?.[0]?.options ?? {}),
       email: user.email,
@@ -201,12 +207,39 @@ export function ownProfileRouter(): Router {
       isTutor: tutor,
       // E.8: the account's own social tier, so the owner sees why their
       // profile is private and where their requests are. Unreadable = null.
-      social: { tier, privateProfile: tier !== 'adult' },
+      // S-03 (OD-27): `discoverable` is additive; `privateProfile` is false for
+      // an opted-in, still-eligible 16-17-year-old.
+      social: {
+        tier,
+        privateProfile: tier !== 'adult' && !discoverability.enabled,
+        discoverable: { canChoose: discoverability.eligible, enabled: discoverability.enabled },
+      },
       // E.13: the owner (a minor) learns which field hides their profile.
       profileReview: minor
         ? reviewProfileFields({ username: profiles[0].username, displayName: profiles[0].display_name })
         : { flagged: false, fields: [] },
     });
+  });
+
+  /*
+   * S-03 (OD-27 (2)): a 16- or 17-year-old opts in to (or out of) a
+   * discoverable profile. Explicit (a literal boolean), revocable (off always
+   * works), audited in the database transaction. Children, 13-to-15-year-olds,
+   * a teen whose age evidence cannot prove 16 (no birth month or birth date),
+   * a flagged profile and every adult are refused turning it on. Private is
+   * the default and nothing turns it on but this call.
+   */
+  router.put('/discoverable', async (req, res) => {
+    const parsed = z.object({ discoverable: z.boolean() }).strict().safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose whether your profile can be found');
+    const user = authedUser(res);
+    if (user.isGuest) return fail(res, 403, 'DISCOVERABLE_NOT_ELIGIBLE', 'Only 16 and 17 year olds can choose this');
+    const outcome = await setTeenProfileDiscoverable(user.id, parsed.data.discoverable);
+    if (outcome === 'not-eligible') return fail(res, 403, 'DISCOVERABLE_NOT_ELIGIBLE', 'Only 16 and 17 year olds can choose this');
+    if (outcome !== 'saved') return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not save the choice');
+    const state = await readTeenDiscoverability(user.id);
+    if (!state) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not confirm the choice');
+    return ok(res, { discoverable: { canChoose: state.eligible, enabled: state.enabled } });
   });
 
   router.patch('/', async (req, res) => {

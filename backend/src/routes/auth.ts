@@ -9,7 +9,7 @@ import { accountRateLimiter, authRateLimiter } from '../middleware/rateLimit.js'
 import { kidEmail } from './family.js';
 import * as gotrue from '../services/gotrue.js';
 import { markUnder13Origin } from '../services/ageOrigin.js';
-import { declaredBandForDate, readAgeScreen, recordAgeScreen } from '../services/ageScreen.js';
+import { birthMonthToKeep, declaredBandForDate, readAgeScreen, recordAgeScreen } from '../services/ageScreen.js';
 import { enforceKidSuspensionAtAdmission } from '../services/guardianLifecycle.js';
 import { readOpenDeletion } from '../services/accountDeletion.js';
 import { attributeSignup, hasActiveAnalyticsConsent } from '../services/insights.js';
@@ -103,6 +103,12 @@ const SignupBody = z.object({
   parentIntent: z.boolean().default(false),
   /** The date is discarded; its age band is persisted after account creation. */
   birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'A date of birth is required'),
+  /**
+   * S-04 (OD-28): optional `YYYY-MM`; when sent it must be the month of
+   * `birthDate`. For a 13-to-17 band Core keeps the month derived from the date
+   * either way, so the account moves to the adult tier at 18. Old clients never send it.
+   */
+  birthMonth: z.string().optional(),
   /** First-party visitor id (lf_aid) — links the signup to its acquisition source. */
   anonId: z.string().uuid().optional(),
 });
@@ -173,7 +179,10 @@ export function authRouter(): Router {
     const user = authedUser(res);
     const [age, roles] = await Promise.all([readAgeScreen(user.id), getRolesForGate(user.id)]);
     if (!age || !roles || roles.length === 0) return null;
-    return !user.isGuest && !age.required && !age.protectedOrigin && age.ageBand === '13_to_17' && !roles.includes('kid');
+    // S-04 (OD-28): a teen who moved to the adult tier by birth month keeps the
+    // toggle, because their teen choice still decides (allowsSelfManagedAnalytics).
+    const teenChoiceApplies = age.ageBand === '13_to_17' || age.adultByBirthMonth === true;
+    return !user.isGuest && !age.required && !age.protectedOrigin && teenChoiceApplies && !roles.includes('kid');
   }
   router.get('/analytics-preference', requireAuth, async (_req, res) => {
     const eligible = await analyticsManagement(res);
@@ -202,13 +211,17 @@ export function authRouter(): Router {
   });
 
   router.post('/age-screen', requireAuth, authRateLimiter, async (req, res) => {
-    const parsed = z.object({ birthDate: z.string() }).strict().safeParse(req.body);
-    const birthDate = parsed.success ? parsed.data.birthDate : '';
-    const band = parsed.success ? declaredBandForDate(birthDate) : null;
-    if (!band) return fail(res, 400, 'VALIDATION_ERROR', 'Enter a valid birth date');
+    // S-04 (OD-28): `birthMonth` is optional; old clients send `{ birthDate }` only.
+    // When sent it must be the month of the birth date. The band is kept; for a
+    // teen, also the birth month derived from the date, never the day.
+    const parsed = z.object({ birthDate: z.string(), birthMonth: z.string().optional() }).strict().safeParse(req.body);
+    const band = parsed.success ? declaredBandForDate(parsed.data.birthDate) : null;
+    if (!parsed.success || !band) return fail(res, 400, 'VALIDATION_ERROR', 'Enter a valid birth date');
+    if (birthMonthToKeep(parsed.data.birthDate, parsed.data.birthMonth, band) === 'invalid') {
+      return fail(res, 400, 'VALIDATION_ERROR', 'The birth month must be the month of the birth date');
+    }
     const id = authedUser(res).id;
-    // The band is kept; for a teen, also the birth month (OD-28), never the day.
-    if (!await recordAgeScreen(id, band, birthDate)) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record age screening');
+    if (!await recordAgeScreen(id, band, parsed.data.birthDate)) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record age screening');
     const state = await readAgeScreen(id);
     if (!state || state.required) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not confirm age screening');
     return ok(res, state);
@@ -222,6 +235,9 @@ export function authRouter(): Router {
     const declaredBand = declaredBandForDate(parsed.data.birthDate);
     if (!declaredBand) {
       return fail(res, 400, 'VALIDATION_ERROR', 'That date of birth is not valid');
+    }
+    if (birthMonthToKeep(parsed.data.birthDate, parsed.data.birthMonth, declaredBand) === 'invalid') {
+      return fail(res, 400, 'VALIDATION_ERROR', 'The birth month must be the month of the birth date');
     }
     if (declaredBand === 'under_13') {
       // A distinct code, because the frontend must explain the way OUT of this

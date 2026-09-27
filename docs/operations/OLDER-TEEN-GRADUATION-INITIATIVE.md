@@ -1,6 +1,6 @@
 # Older-teen graduation initiative ("Beyond the app")
 
-**Status:** Product 10 D.19. Scoped by Engineering as a named initiative with its first milestone built and measurable (S07.7, 2026-09-24), on the SPEC's conservative default. The SPEC asks Product to scope it within two quarters of approval and to keep it a tracked, owned open decision until then: **the owner must still name the Product owner of this initiative** (owner question), and Product may rescope every later milestone. Nothing here is accepted.
+**Status:** Product 10 D.19. Scoped by Engineering as a named initiative with its first milestone built and measurable (S07.7, 2026-09-24), on the SPEC's conservative default. The SPEC asks Product to scope it within two quarters of approval and to keep it a tracked, owned open decision until then: **the project leader is the interim owner of this initiative** (owner decision OD-28, owner review O-02, 27 September 2026) until a permanent Product owner is named, and Product may rescope every later milestone. Nothing here is accepted.
 
 ## The problem
 
@@ -38,6 +38,6 @@ Appendix H's Definition of Done for D.19 asks that (a) a documented, age-gated d
 
 ## Open
 
-- The owner names the Product owner of the initiative; Product confirms or rescopes milestones 2 to 4 within two quarters of approval.
+- Ownership: the project leader is the interim owner (OD-28, O-02). The interim owner confirms or rescopes milestones 2 to 4 within two quarters of approval, and names a permanent Product owner when one exists.
 - Product and Legal review of the eligibility age (15) per market, and of the checklist wording.
 - Appendix H Stage 5: family usability testing with real 15 to 17-year-olds.

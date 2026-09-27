@@ -18,6 +18,7 @@ import {
   topicTeaches,
 } from '../services/narrative/narrativeData.js';
 import { readJournalSharing } from '../services/narrative/journalSharing.js';
+import { readTutorChoices, readTutorSeesChoices, type TutorChoice } from '../services/narrative/tutorChoices.js';
 import { cancelStreakPause, getFullOwnProfile, getVerifiedKidLinks, insertAuditLog, serviceRest, setStreakPause } from '../services/supabaseRest.js';
 import { pauseRangeRefusal } from '../services/habitStreak.js';
 import { isCalendarDate } from '../services/streak.js';
@@ -32,8 +33,11 @@ import { loadStreakView } from './learnMotivation.js';
  *
  * B.10 — GET /kids/:kidId/narrative: one short, deterministic entry per
  * completed lesson (courseNarrative.ts), titles in the guardian's own locale,
- * plus the last seven days in two numbers. Counts story decisions, never shows
- * them.
+ * plus the last seven days in two numbers. Counts story decisions; shows them
+ * only under L-13 (OD-27 (3)): for a parent-created child under 13, the
+ * response adds, at the top level, which option the child chose in each story
+ * decision of the page's lessons (`choicesVisible`, `choices`); teens and
+ * self-registered accounts keep counts only (services/narrative/tutorChoices.ts).
  *
  * OD-27 (3), L-13 — GET /kids/:kidId/decisions: for a parent-created child
  * under 13 only, the option the child chose in each story decision and the
@@ -143,12 +147,21 @@ export function familyLearningRouter(): Router {
     const weekRows = record.completions.filter((c) => Date.parse(c.completedAt) >= since);
     const lessonIds = [...new Set(pageRows.map((c) => c.lessonId))];
     const topicIds = [...new Set(lessonIds.map((id) => record.lessons.get(id)?.topic_id).filter((id): id is string => Boolean(id)))];
-    const [attempts, decisions, teaches] = await Promise.all([
+    // L-13: decided on every read, from age evidence as of today. A failed
+    // read shows counts only (fail closed); the journal is never widened.
+    const choicesVisible = (await readTutorSeesChoices(kidId, undefined, now)) === true;
+    const [attempts, counts, choices, teaches] = await Promise.all([
       readKidAttempts(kidId, lessonIds),
-      journalCountsByLesson(kidId, lessonIds),
+      choicesVisible ? Promise.resolve(null) : journalCountsByLesson(kidId, lessonIds),
+      choicesVisible ? readTutorChoices(kidId, lessonIds) : Promise.resolve(null),
       topicTeaches(topicIds),
     ]);
     if (!attempts) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the child’s learning');
+    let decisions = counts;
+    if (choices) {
+      decisions = new Map<string, number>();
+      for (const c of choices) decisions.set(c.lessonId, (decisions.get(c.lessonId) ?? 0) + 1);
+    }
     // The journal and the skill map are enrichments: without them the entry
     // still names the lesson and topic, and says nothing it cannot back.
     const attemptsByLesson = new Map<string, NarrativeAttempt[]>();
@@ -183,7 +196,13 @@ export function familyLearningRouter(): Router {
       completedAt: c.completedAt,
       topicComplete: topicComplete(record.lessons.get(c.lessonId)?.topic_id),
     })), now);
-    return ok(res, { locale, week, entries, hasMore: query.data.offset + query.data.limit < record.completions.length });
+    const shown = new Set(entries.map((e) => e.lessonId));
+    // Additive and top-level: the per-entry shape stays exactly as before, so
+    // a client that validates entries strictly keeps working.
+    const visible: { choicesVisible: boolean; choices?: TutorChoice[] } = choicesVisible && choices
+      ? { choicesVisible: true, choices: choices.filter((c) => shown.has(c.lessonId)) }
+      : { choicesVisible: false };
+    return ok(res, { locale, week, entries, hasMore: query.data.offset + query.data.limit < record.completions.length, ...visible });
   });
 
   // ── OD-27 (3): the under-13 child's story choices ─────────────────────────

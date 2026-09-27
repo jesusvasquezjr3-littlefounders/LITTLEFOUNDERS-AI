@@ -1623,7 +1623,7 @@
         "withinSlaRate": "Done within the deadline",
         "statedTimelineRate": "Timeline stated",
         "requested": "Requested",
-        "bySelf": "By the account holder",
+        "bySelf": "By themselves",
         "byGuardian": "By a guardian",
         "bySuspension": "After a suspension",
         "cancelled": "Cancelled",

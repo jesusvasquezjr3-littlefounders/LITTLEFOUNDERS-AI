@@ -7,7 +7,7 @@ import { attributeSignup, insertLearningEvents } from '../services/insights.js';
 const USER = '22222222-2222-4222-8222-222222222222';
 const route = '/api/v1/auth/analytics-preference';
 afterEach(() => vi.unstubAllGlobals());
-function fixture(options: { enabled?: boolean; failRead?: boolean; failWrite?: boolean; staleRead?: boolean; band?: string; roles?: readonly string[]; origin?: boolean } = {}) {
+function fixture(options: { enabled?: boolean; failRead?: boolean; failWrite?: boolean; staleRead?: boolean; band?: string; roles?: readonly string[]; origin?: boolean; birthMonth?: string } = {}) {
   let enabled = options.enabled;
   const writes: { url: string; body: unknown }[] = [];
   vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
@@ -20,7 +20,8 @@ function fixture(options: { enabled?: boolean; failRead?: boolean; failWrite?: b
       return Promise.resolve(jsonResponse(200, choice));
     }
     if (url.includes('/teen_analytics_preferences?')) return Promise.resolve(jsonResponse(200, options.failRead ? null : enabled === undefined ? [] : [{ enabled, disclosure_version: 1 }]));
-    if (url.includes('/account_age_declarations?')) return Promise.resolve(jsonResponse(200, [{ declared_age_band: options.band ?? '13_to_17' }]));
+    if (url.includes('/rpc/promote_age_declaration')) return Promise.resolve(jsonResponse(200, 'adult'));
+    if (url.includes('/account_age_declarations?')) return Promise.resolve(jsonResponse(200, [{ declared_age_band: options.band ?? '13_to_17', ...(options.birthMonth ? { declared_birth_month: options.birthMonth } : {}) }]));
     if (url.includes('/account_safety_origins?')) return Promise.resolve(jsonResponse(200, options.origin ? [{ under13_origin: true }] : []));
     if (url.includes('/user_roles?')) return Promise.resolve(jsonResponse(200, (options.roles ?? ['universal']).map(role => ({ role }))));
     if (url.includes('/profiles?')) return Promise.resolve(jsonResponse(200, [{ user_id: USER, birth_date: null, locale: 'en-US', display_name: 'Synthetic' }]));
@@ -95,4 +96,26 @@ it('retains anonymous acquisition while suppressing an opted-out identified row 
   ])).toBe(1);
   const inserted = writes.find(write => write.url.includes('/learning_events'))!.body;
   expect(inserted).toEqual([expect.objectContaining({ anon_id: 'anonymous-fixture', event: 'page_view' })]);
+});
+
+// S-04 (OD-28): a declared teen whose birth month moved them to the adult tier
+// keeps an explicit earlier "no" and keeps the toggle; with no recorded choice
+// the adult rule applies.
+it.each([
+  [false, false],
+  [true, true],
+  [undefined, true],
+])('a teen who reached 18 by birth month with choice %s is admitted: %s', async (enabled, admitted) => {
+  const writes = fixture({ enabled, birthMonth: '2000-01-01' }); const app = createApp();
+  const me = await auth(request(app).get('/api/v1/auth/me'));
+  expect(me.body.data.analyticsEnabled).toBe(admitted);
+  const ingest = await auth(request(app).post('/api/v1/events')).send({ events: [{ event: 'nav_view', routeClass: 'learn' }] });
+  expect(ingest.status).toBe(202);
+  expect(writes.some(w => w.url.includes('/learning_events'))).toBe(admitted);
+  expect((await auth(request(app).get(route))).body.data.canManage).toBe(true);
+});
+it('a teen whose birth month has not reached 18 stays on the teen rule', async () => {
+  fixture({ birthMonth: '2011-05-01' });
+  const me = await auth(request(createApp()).get('/api/v1/auth/me'));
+  expect(me.body.data.analyticsEnabled).toBe(false);
 });

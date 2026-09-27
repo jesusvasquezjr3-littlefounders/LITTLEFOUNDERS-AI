@@ -2,7 +2,14 @@
 // images:backfill — an operator CLI that fills in missing illustrations on
 // ALREADY-PUBLISHED (or in-review) lessons, without regenerating any content.
 //
-//   npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>] [--reuse-only] [--dry-run]
+//   npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>] [--reuse-only] [--dry-run] [--max-usd <n>]
+//
+// OD-28 (owner review D-03): any invocation that can make a PAID Prism request
+// (neither --reuse-only nor --dry-run, and for a restyle also --confirm-spend)
+// refuses to start without the owner-approved USD ceiling `--max-usd <n>`
+// (pipeline/spendGuard.ts, shared with generate/generate:track). The ceiling
+// binds in every paid mode: the pass stops cleanly once the images it drew
+// reach it. --dry-run and --reuse-only never contact Prism and need none.
 //
 // For every lesson_document of a published-or-review lesson in the course, it
 // runs the EXISTING `illustrateSegments()` (pipeline/images.ts) over the STORED
@@ -45,6 +52,7 @@ import { buildImageInheritance, type ImageInheritance } from '../pipeline/imageI
 import { FORGE_ILLUSTRATION_STYLE_VERSION } from '../pipeline/illustrationStyle.js';
 import { fetchPrismStyleVersion, type PrismStyleProbe } from '../providers/picturegen.js';
 import { getConfig } from '../env.js';
+import { spendCeilingRefusal } from '../pipeline/spendGuard.js';
 import { vaultSelect, vaultPatch } from '../vault/restClient.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
 
@@ -187,9 +195,9 @@ export interface BackfillSummary {
   scenesCopiedToLocales: number;
   /** Restyle mode: lessons whose documents were already on the current style and left alone. */
   lessonsAlreadyCurrent: number;
-  /** Restyle mode: USD spent on freshly generated images, at COST_QWEN_IMAGE_PER_IMAGE. */
+  /** Paid modes: USD spent on freshly generated images, at COST_QWEN_IMAGE_PER_IMAGE. */
   usdSpent: number;
-  /** Restyle mode: true when --max-usd stopped the pass before every lesson was repaired. */
+  /** Paid modes: true when --max-usd stopped the pass before every document was processed. */
   stoppedOnBudget: boolean;
 }
 
@@ -211,6 +219,20 @@ export function spendAllowed(opts: BackfillOptions): boolean {
 export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions): Promise<BackfillSummary> {
   const log = deps.log ?? (() => undefined);
   const paid = spendAllowed(opts);
+
+  /*
+   * OD-28 (D-03): a pass that may pay states the owner-approved ceiling. This
+   * runs first, before the Prism probe, the Vault read or any config, so a
+   * refused invocation touches nothing. The CLI checks the same predicate
+   * before it even builds its dependencies.
+   */
+  const ceilingRefusal = spendCeilingRefusal({
+    command: 'images:backfill',
+    flag: '--max-usd',
+    dryRun: !paid,
+    ceilingUsd: opts.maxUsd,
+  });
+  if (ceilingRefusal) throw new Error(ceilingRefusal);
 
   /*
    * Style-version handshake — same preflight pipeline/run.ts enforces before a
@@ -250,15 +272,6 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
    */
   if (opts.restyleScenes && opts.locale) {
     throw new Error('images:backfill — --restyle-scenes covers all locales of a lesson at once; drop --locale.');
-  }
-  /*
-   * A confirmed restyle spends real money in an unattended loop over a live
-   * catalog, so it must carry its own ceiling. Refusing here — before the Vault
-   * read, before the Prism probe — means the operator states a number they are
-   * willing to lose, exactly like FORGE_MAX_USD_PER_RUN does for a generation.
-   */
-  if (paid && opts.restyleScenes && !(opts.maxUsd && opts.maxUsd > 0)) {
-    throw new Error('images:backfill — a confirmed --restyle-scenes needs an explicit --max-usd ceiling (e.g. --max-usd 400).');
   }
 
   const summary: BackfillSummary = {
@@ -327,10 +340,18 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
     return restyleScenes(deps, opts, { rows, inheritFor, summary, log, paid, usdPerImage: getConfig().COST_QWEN_IMAGE_PER_IMAGE });
   }
 
+  /*
+   * OD-23/OD-28: `paid` is the only thing that lets this loop reach Prism's
+   * paid path. A --dry-run used to run the full paid illustration pass here
+   * (it only skipped the Vault write), so previewing a backfill paid for it.
+   * It now runs reuse-only, exactly like a restyle dry-run: the preview shows
+   * what already-approved art can fill, and spends nothing.
+   */
+  const usdPerImage = paid ? getConfig().COST_QWEN_IMAGE_PER_IMAGE : 0;
   for (const row of rows) {
     const result = await deps.illustrate(row.document, {
       inherit: inheritFor(row),
-      reuseOnly: opts.reuseOnly,
+      reuseOnly: !paid,
       scope: `${opts.courseSlug}/${row.lessonSlug}`,
     });
 
@@ -360,6 +381,18 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
       // No-op write avoidance: nothing gained → nothing patched.
       summary.skipped++;
       log(`  · ${row.lessonSlug} [${row.locale}]: no new images`);
+    }
+
+    // The owner ceiling binds after each document (its write is complete, so
+    // stopping leaves nothing half-done). One document's images are the most
+    // the pass can overshoot by; re-running resumes, since filled slots are skipped.
+    if (paid) {
+      summary.usdSpent = Number((summary.imagesGenerated * usdPerImage).toFixed(4));
+      if (opts.maxUsd && summary.usdSpent >= opts.maxUsd) {
+        summary.stoppedOnBudget = true;
+        log(`  ! --max-usd ${opts.maxUsd} reached at $${summary.usdSpent} — stopping cleanly; re-run to resume where this left off`);
+        break;
+      }
     }
   }
 
@@ -738,8 +771,20 @@ async function main(): Promise<void> {
   if (!opts.course) {
     console.error(
       'Usage: npm run images:backfill -- --course <slug> [--adventure <slug>] [--locale <es-MX|en-US|pt-BR>]\n' +
-        '                                    [--restyle-scenes [--confirm-spend --max-usd <n>]] [--reuse-only] [--dry-run]',
+        '                                    [--max-usd <n>] [--restyle-scenes [--confirm-spend]] [--reuse-only] [--dry-run]\n' +
+        '    --max-usd is required whenever Prism may be paid: the owner-approved USD ceiling (OD-23, OD-28)',
     );
+    process.exit(1);
+  }
+  // OD-28 (D-03): refuse before any config, Vault or provider is touched.
+  const refusal = spendCeilingRefusal({
+    command: 'images:backfill',
+    flag: '--max-usd',
+    dryRun: !spendAllowed({ ...opts, courseSlug: opts.course }),
+    ceilingUsd: opts.maxUsd,
+  });
+  if (refusal) {
+    console.error(refusal);
     process.exit(1);
   }
   const courseSlug = opts.course;
@@ -789,10 +834,10 @@ async function main(): Promise<void> {
     console.log(`  stale scenes cleared:      ${summary.scenesCleared}`);
     console.log(`  scenes copied to locales:  ${summary.scenesCopiedToLocales} (free — one drawing serves 3 locales)`);
     console.log(`  lessons already current:   ${summary.lessonsAlreadyCurrent}`);
-    console.log(`  USD spent:                 $${summary.usdSpent.toFixed(2)}${opts.maxUsd ? ` of $${opts.maxUsd.toFixed(2)}` : ''}`);
-    if (summary.stoppedOnBudget) {
-      console.log('  STOPPED ON BUDGET — repaired lessons are complete and stamped; re-run to resume the rest');
-    }
+  }
+  console.log(`  USD spent:          $${summary.usdSpent.toFixed(2)}${opts.maxUsd ? ` of $${opts.maxUsd.toFixed(2)}` : ''}`);
+  if (summary.stoppedOnBudget) {
+    console.log('  STOPPED ON BUDGET — processed documents are complete; re-run to resume the rest');
   }
   if (summary.notConfigured) {
     console.log('  NOTE: Prism (PICTUREGEN_URL) not configured — images stage skipped entirely (icons remain the fallback)');

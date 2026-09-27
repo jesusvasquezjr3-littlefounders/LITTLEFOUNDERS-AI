@@ -131,7 +131,7 @@ export function AddChild({ copy, locale, transport, startOpen = false, onAdded, 
 }
 
 const USERNAME_ERRORS: Record<string, keyof ChildAccountCopy> = {
-  USERNAME_IN_USE: 'usernameTaken', PROFILE_FIELD_UNSAFE: 'unsafe', USERNAME_NOT_FLAGGED: 'usernameFixed', VALIDATION_ERROR: 'usernameInvalid',
+  USERNAME_IN_USE: 'usernameTaken', PROFILE_FIELD_UNSAFE: 'unsafe', USERNAME_NOT_FLAGGED: 'usernameFixed', USERNAME_UNCHANGED: 'usernameInvalid', VALIDATION_ERROR: 'usernameInvalid',
 };
 
 export function ManageChild({ child, copy, transport, onRenamed, onUsernameChanged, onRemoved }: {

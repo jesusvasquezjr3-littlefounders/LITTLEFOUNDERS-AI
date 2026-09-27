@@ -1275,7 +1275,7 @@
         "evidenceHint_sufficient": "Evidencia independiente suficiente para planear seguimiento.",
         "mastery": "Dominio",
         "supportSkills": "Habilidades que necesitan apoyo",
-        "noLearnerEvidence": "Sin intentos calificados de este estudiante en este periodo.",
+        "noLearnerEvidence": "Ninguna respuesta calificada de este estudiante en este periodo.",
         "attemptsChart": "Columnas de intentos calificados por día",
         "learnerChartSummary": "Intentos calificados por día en este periodo.",
         "skill": "Habilidad",

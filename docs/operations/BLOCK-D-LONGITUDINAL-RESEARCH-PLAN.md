@@ -1,6 +1,6 @@
 # Block D long-horizon research plan
 
-**Status:** Product 10 D.22 scope document, written by Engineering (S07.7, 2026-09-24) with the first phase of instrumentation built and locally verified. The SPEC asks for a named Product/Research owner within two quarters of approval: **the owner must name that person** (owner question). Legal must approve the research disclosure before any family is asked (OD-10). Nothing here is accepted.
+**Status:** Product 10 D.22 scope document, written by Engineering (S07.7, 2026-09-24) with the first phase of instrumentation built and locally verified. The SPEC asks for a named Product/Research owner within two quarters of approval: **the project leader is the interim owner of this plan** (owner decision OD-28, owner review O-02, 27 September 2026) until a permanent Product/Research owner is named. Legal must approve the research disclosure before any family is asked (OD-10). Nothing here is accepted.
 
 ## The question
 
@@ -34,7 +34,7 @@ Completeness is defined as: of the enrolled participants whose consent covers th
 
 | Phase | When | What | Exit |
 |---|---|---|---|
-| 1. Instrument | Built in S07.7; runs from the first release after Legal approves the disclosure | Consent, snapshots, completeness | Completeness reports real data for one release cycle; the Product/Research owner is named |
+| 1. Instrument | Built in S07.7; runs from the first release after Legal approves the disclosure | Consent, snapshots, completeness | Completeness reports real data for one release cycle; a permanent Product/Research owner is named (the project leader is interim owner, OD-28) |
 | 2. Baseline | The first 12 months after release | Quarterly completeness and coverage review; the snapshot's measures reviewed with the Pedagogical Lead; the graduation-at-18 re-consent flow (with D.19 milestone 3) | A stable, consented cohort and a written analysis plan, registered before any outcome data is looked at |
 | 3. Adult outcomes | From the first participants' 18th birthday | With the young adult's own yes: a short, voluntary self-report of adult money behaviour (saving, borrowing, budgeting), linked by research id only | A pre-registered comparison of childhood practice patterns with early-adult outcomes |
 | 4. External review | Once phase 3 has two cohorts | An independent researcher reviews the method and the data before any public claim | Findings published as findings, including null or adverse ones |
@@ -47,6 +47,6 @@ The plan is only honest if it can fail: no difference in early-adult outcomes be
 
 ## Open
 
-- The owner names the Product/Research owner (the SPEC's two-quarter deadline).
+- Ownership: the project leader is the interim owner (OD-28, O-02), which meets the SPEC's two-quarter requirement for a named owner; a permanent Product/Research owner replaces them when one exists.
 - Legal approves the disclosure text and the consent model, including whether an independent teen may ever enrol, before any family is asked.
 - The completeness metric has no production data yet; Phase 1's exit needs one release cycle.

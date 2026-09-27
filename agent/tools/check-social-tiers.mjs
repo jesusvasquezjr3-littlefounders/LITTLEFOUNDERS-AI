@@ -27,6 +27,12 @@ import { fileURLToPath } from 'node:url';
  *      write guard on profiles is in place.
  *   5. The written policy states the tier table, the E.9 decision and the
  *      E.13 field audit.
+ *   6. S-03 (OD-27 (2)): the 16-17 discoverable-profile opt-in stays narrow.
+ *      The latest eligibility function still requires the teen tier, proven
+ *      16+ age evidence and an unflagged profile; the latest visibility
+ *      function consults only the eligibility-checked reader; Core's teen case
+ *      asks it only after the E.13 flag check and keeps 'card' as the default;
+ *      the opt-in route takes one literal boolean; and the policy records it.
  */
 
 function read(root, path) {
@@ -123,6 +129,21 @@ export function checkSocialTiers(root) {
   const patchKeys = patchBody ? [...patchBody.matchAll(/^\s{4}(\w+):/gm)].map((m) => m[1]).sort().join(',') : null;
   if (patchKeys !== 'displayName,locale,username') failures.push(`backend/src/routes/profile.ts: the profile patch schema accepts ${patchKeys}; a new free-text field on a minor's profile needs the E.13 review first`);
 
+  // 6. S-03 (OD-27 (2)): the discoverable opt-in, only for a proven 16-17-year-old teen.
+  const eligibleSql = latestDefinition(root, 'teen_discoverable_eligible');
+  for (const needle of ["social_tier(p_user) = 'teen'", 'age_at_least_by_birth_month(p_user, 16)', "interval '16 years'", 'NOT public.profile_fields_flagged(p_user)']) {
+    if (!eligibleSql || !eligibleSql.body.includes(needle)) failures.push(`${eligibleSql?.file ?? 'database/migrations'}: the latest teen_discoverable_eligible no longer requires ${needle} (S-03, OD-27)`);
+  }
+  const discoverableSql = latestDefinition(root, 'teen_profile_discoverable');
+  if (!discoverableSql || !discoverableSql.body.includes('teen_discoverable_eligible(p_user)')) failures.push(`${discoverableSql?.file ?? 'database/migrations'}: teen_profile_discoverable must re-check eligibility on every read (S-03)`);
+  const setSql = latestDefinition(root, 'set_teen_profile_discoverable');
+  if (!setSql || !setSql.body.includes('DISCOVERABLE_NOT_ELIGIBLE') || !setSql.body.includes('audit_logs')) failures.push(`${setSql?.file ?? 'database/migrations'}: set_teen_profile_discoverable must refuse an ineligible opt-in and audit every change (S-03)`);
+  if (visible && /teen_profile_discoverable|teen_discoverable/.test(visible.body) && !/teen_profile_discoverable\(p_subject\)/.test(visible.body)) failures.push(`${visible.file}: social_subject_visible may consult only teen_profile_discoverable(p_subject) (S-03)`);
+  if (visible && /teen_profile_discoverable\(p_subject\)/.test(visible.body) && !/NOT public\.profile_fields_flagged\(p_subject\) AND \([\s\S]*teen_profile_discoverable\(p_subject\)/.test(visible.body)) failures.push(`${visible.file}: a discoverable teen must stay behind the E.13 flag check (S-03)`);
+  const teenCase = /case 'teen':([\s\S]*?)return 'card';/.exec(visibility)?.[1] ?? '';
+  if (/isTeenProfileDiscoverable/.test(visibility) && teenCase.indexOf('isFlagged') > teenCase.indexOf('isTeenProfileDiscoverable')) failures.push('backend/src/services/socialVisibility.ts: the discoverable check must come after the E.13 flag check (S-03)');
+  if (!/router\.put\('\/discoverable'[\s\S]*?z\.object\(\{ discoverable: z\.boolean\(\) \}\)\.strict\(\)/.test(route)) failures.push('backend/src/routes/profile.ts: the discoverable opt-in must take one literal boolean (S-03)');
+
   // 5. The written policy.
   let policy = '';
   try { policy = read(root, 'docs/rebuild/policies/SOCIAL-TIERS.md'); } catch { failures.push('docs/rebuild/policies/SOCIAL-TIERS.md: the social-tier policy is missing'); }
@@ -133,6 +154,7 @@ export function checkSocialTiers(root) {
     for (const tier of ['| guardian |', '| teen |', '| adult |', '| closed |']) {
       if (!policy.includes(tier)) failures.push(`docs/rebuild/policies/SOCIAL-TIERS.md: the tier table lacks the ${tier.replaceAll('|', '').trim()} row`);
     }
+    if (!policy.includes('### 1.1 A discoverable profile at 16 or 17 (S-03, OD-27)')) failures.push('docs/rebuild/policies/SOCIAL-TIERS.md: missing the 16-17 discoverable-profile section (S-03, OD-27)');
   }
 
   return failures;

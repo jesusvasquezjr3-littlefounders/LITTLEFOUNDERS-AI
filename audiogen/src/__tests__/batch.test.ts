@@ -115,7 +115,7 @@ describe('runBatchNarration TTS budget', () => {
       narrateLesson,
     };
 
-    const summary = await runBatchNarration(undefined, { maxTtsCalls: 1 }, injected);
+    const summary = await runBatchNarration(undefined, { maxTtsCalls: 1, maxUsd: 100, usdPer1kChars: 0.1 }, injected);
 
     // Row 1 consumed the whole budget; rows 2-3 must be left untouched — no
     // Vault read and no manifest PATCH, i.e. narrateLesson never runs for them.
@@ -126,5 +126,81 @@ describe('runBatchNarration TTS budget', () => {
     expect(summary.lessonsAttempted).toBe(1);
     expect(summary.generated).toBe(1);
     expect(summary.unitFailures).toBe(0);
+  });
+});
+
+/*
+ * OD-28 (owner review D-03): a paid batch states the owner-approved USD
+ * ceiling, and the ceiling binds per character.
+ */
+describe('runBatchNarration owner USD ceiling (OD-28)', () => {
+  const pendingRows = [
+    { lesson_id: 'lesson-1', locale: 'en-US' as const },
+    { lesson_id: 'lesson-2', locale: 'en-US' as const },
+    { lesson_id: 'lesson-3', locale: 'en-US' as const },
+  ];
+
+  it.each([undefined, 0, -1, Number.NaN, Number.POSITIVE_INFINITY])(
+    'refuses a paid batch with ceiling %s before the pending query',
+    async (maxUsd) => {
+      const injected = deps();
+      await expect(runBatchNarration(undefined, { maxUsd, usdPer1kChars: 0.1 }, injected)).rejects.toThrow(
+        /narrate:all: a paid run needs the owner-approved USD ceiling \(--max-usd <n>\)/,
+      );
+      expect(injected.listPendingLessonDocuments).not.toHaveBeenCalled();
+      expect(injected.narrateLesson).not.toHaveBeenCalled();
+    },
+  );
+
+  it('refuses a paid batch when no per-character price is configured', async () => {
+    const injected = deps();
+    const previous = process.env.AUDIOGEN_USD_PER_1K_CHARS;
+    delete process.env.AUDIOGEN_USD_PER_1K_CHARS;
+    const { resetConfigCache } = await import('../env.js');
+    resetConfigCache();
+    try {
+      await expect(runBatchNarration(undefined, { maxUsd: 5 }, injected)).rejects.toThrow(/AUDIOGEN_USD_PER_1K_CHARS/);
+      expect(injected.listPendingLessonDocuments).not.toHaveBeenCalled();
+    } finally {
+      if (previous !== undefined) process.env.AUDIOGEN_USD_PER_1K_CHARS = previous;
+      resetConfigCache();
+    }
+  });
+
+  it('needs no ceiling for a dry-run', async () => {
+    const summary = await runBatchNarration('financial-education', { dryRun: true }, deps());
+    expect(summary.dryRun).toBe(true);
+    expect(summary.estimatedTtsChars).toBeGreaterThan(0);
+  });
+
+  it('stops the batch once a reservation would pass the ceiling', async () => {
+    // 1,000 characters per synthesis at $0.10 per 1,000 → $0.10 each; $0.25 admits two.
+    const narrateLesson = vi.fn(
+      async (
+        _lessonId: string,
+        _locale: LessonLocale,
+        _overrides?: Partial<NarrateLessonDeps>,
+        options?: NarrateLessonOptions,
+      ): Promise<NarrateLessonSummary | null> => {
+        const admitted = options?.ttsBudget?.tryReserve(1000) ?? true;
+        return admitted
+          ? { units_total: 1, generated: 1, reused: 0, cached: 0, failed: [] }
+          : { units_total: 1, generated: 0, reused: 0, cached: 0, failed: [{ unit_id: 'u', reason: 'TTS budget exhausted before synthesis' }] };
+      },
+    );
+    const injected: BatchNarrationDeps = {
+      listPendingLessonDocuments: vi.fn().mockResolvedValue([...pendingRows, { lesson_id: 'lesson-4', locale: 'en-US' as const }]),
+      getLessonDocument: vi.fn(),
+      narrateLesson,
+    };
+
+    const summary = await runBatchNarration(undefined, { maxUsd: 0.25, usdPer1kChars: 0.1 }, injected);
+
+    expect(summary.generated).toBe(2);
+    expect(summary.usdReserved).toBeCloseTo(0.2, 6);
+    // The third lesson's reservation was refused; the fourth is never touched.
+    expect(narrateLesson).toHaveBeenCalledTimes(3);
+    expect(summary.budgetSkippedLessons).toBe(1);
+    expect(summary.unitFailures).toBe(1);
   });
 });

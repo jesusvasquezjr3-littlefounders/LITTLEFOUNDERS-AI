@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
-import { cpSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 /*
@@ -20,6 +20,12 @@ function tree() {
   const dir = mkdtempSync(join(base, 'case-'));
   cpSync(join(frontend, 'src/rebuild'), join(dir, 'src/rebuild'), { recursive: true });
   cpSync(join(frontend, 'public/rebuild'), join(dir, 'public/rebuild'), { recursive: true });
+  // Sound cues live under public/sounds (OD-28 L-02): copy only the registered files, not the legacy MP3 set.
+  for (const row of readManifest(frontend).filter((r) => r.type === 'wav')) {
+    const path = join(dir, 'public', String(row.path));
+    mkdirSync(dirname(path), { recursive: true });
+    cpSync(join(frontend, 'public', String(row.path)), path);
+  }
   mkdirSync(join(dir, 'src/tutor-scene'), { recursive: true });
   cpSync(join(frontend, 'src/tutor-scene/poseLibrary.ts'), join(dir, 'src/tutor-scene/poseLibrary.ts'));
   for (const locale of ['en-US', 'es-MX', 'pt-BR']) {
@@ -64,6 +70,7 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     const release = await run(dir, '--release');
     expect(release.status).toBe(1);
     expect(release.output).toContain('Unapproved asset blocks the build');
+    expect(release.output).toContain('Unapproved asset blocks the build (07 §6): /sounds/edu/not_yet.wav');
   });
 
   it('caps the glyph set at 24 families from one source, drawn to the live area', async () => {
@@ -139,5 +146,91 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
       '<circle cx="8" cy="8" r="4" fill="#4B94FF"/><circle cx="20" cy="8" r="4" fill="#05A893"/><circle cx="32" cy="8" r="4" fill="#5C55FD"/></svg>')));
     expect(four.output).toContain('More than 3 hues in one asset');
     for (const result of [error, accent, four]) expect(result.status).toBe(1);
+  });
+
+  // OD-28 L-02: the gentle "not yet" cue. Each case below breaks one thing in a shared tree, runs the gate
+  // asynchronously (13 synchronous runs would block the worker past Vitest's RPC timeout), then restores it.
+  const soundId = 'sound.lesson.not-yet';
+  function soundTree() {
+    const dir = tree();
+    const wavPath = join(dir, 'public/sounds/edu/not_yet.wav');
+    const original = readFileSync(wavPath);
+    const rows = readManifest(dir);
+    const extra = join(dir, 'src/rebuild/family/Sound.tsx');
+    const attempt = async (change: () => void) => {
+      change();
+      const result = await run(dir);
+      writeFileSync(wavPath, original);
+      writeManifest(dir, rows);
+      rmSync(extra, { force: true });
+      return result;
+    };
+    const patchRow = (patch: Record<string, unknown>) => writeManifest(dir, rows.map((row) => (row.id === soundId ? { ...row, ...patch } : row)));
+    return { dir, wavPath, original, rows, extra, attempt, patchRow };
+  }
+  /** A mono 16-bit PCM WAV of `seconds` of a sine at `level` (fraction of full scale); `fade` ramps both edges over 10 ms. */
+  function tone(seconds: number, level: number, rate: number, fade = true) {
+    const count = Math.round(seconds * rate), data = Buffer.alloc(44 + count * 2);
+    data.write('RIFF', 0, 'ascii'); data.writeUInt32LE(36 + count * 2, 4); data.write('WAVE', 8, 'ascii');
+    data.write('fmt ', 12, 'ascii'); data.writeUInt32LE(16, 16); data.writeUInt16LE(1, 20); data.writeUInt16LE(1, 22);
+    data.writeUInt32LE(rate, 24); data.writeUInt32LE(rate * 2, 28); data.writeUInt16LE(2, 32); data.writeUInt16LE(16, 34);
+    data.write('data', 36, 'ascii'); data.writeUInt32LE(count * 2, 40);
+    for (let i = 0; i < count; i++) {
+      const edge = fade ? Math.min(1, i / (0.01 * rate), (count - 1 - i) / (0.01 * rate)) : 1;
+      data.writeInt16LE(Math.round(32767 * level * edge * Math.cos(2 * Math.PI * 523.25 * i / rate)), 44 + i * 2);
+    }
+    return data;
+  }
+
+  it('holds a sound cue to a bounded, gentle 16-bit PCM WAV (missing, over budget, not WAV, loud, long, click)', async () => {
+    const { dir, wavPath, original, attempt, patchRow } = soundTree();
+    const missing = await attempt(() => rmSync(wavPath));
+    expect(missing.output).toContain('Missing or unreadable asset: /sounds/edu/not_yet.wav');
+    // A valid WAV padded with an unknown 40 KB chunk: over the 32 KB sound budget.
+    const heavy = await attempt(() => {
+      const pad = Buffer.alloc(8 + 40 * 1024); pad.write('pad ', 0, 'ascii'); pad.writeUInt32LE(40 * 1024, 4);
+      const bytes = Buffer.concat([original, pad]); bytes.writeUInt32LE(bytes.length - 8, 4);
+      writeFileSync(wavPath, bytes); patchRow({ sizesKb: 64 });
+    });
+    expect(heavy.output).toContain('Asset over the 07 §3.2 budget (59 KB > 32) without a reason: /sounds/edu/not_yet.wav');
+    const notWav = await attempt(() => writeFileSync(wavPath, readFileSync(join(dir, 'public/rebuild/art/lesson-medal.svg'))));
+    expect(notWav.output).toContain('Not a 16-bit PCM mono WAV: /sounds/edu/not_yet.wav');
+    const loud = await attempt(() => writeFileSync(wavPath, tone(0.3, 1, 22_050)));
+    expect(loud.output).toContain('Sound cue peaks above -9 dBFS (-0.0 dBFS');
+    const long = await attempt(() => writeFileSync(wavPath, tone(1.5, 0.2, 8000)));
+    expect(long.output).toContain('Sound cue longer than 1 s (1.50 s)');
+    const click = await attempt(() => writeFileSync(wavPath, tone(0.3, 0.2, 22_050, false)));
+    expect(click.output).toContain('Sound cue starts or ends on a click');
+    for (const result of [missing, heavy, notWav, loud, long, click]) expect(result.status).toBe(1);
+  });
+
+  it('holds a sound cue to its generator, its review status and the draft-only wiring exemption', async () => {
+    const { dir, rows, extra, attempt, patchRow } = soundTree();
+    // A valid, gentle WAV that is not what the checked-in generator makes.
+    const drift = await attempt(() => writeFileSync(join(dir, 'public/sounds/edu/not_yet.wav'), tone(0.3, 0.2, 22_050)));
+    expect(drift.output).toContain('Sound does not match its generator scripts/synthesize-not-yet-sound.mjs');
+    expect(drift.output).not.toContain('Sound cue');
+    const approvedWithoutReviewer = await attempt(() => patchRow({ reviewStatus: 'approved' }));
+    expect(approvedWithoutReviewer.output).toContain(`approvedBy must be set exactly when approved: ${soundId}`);
+    // The exemption is for a draft with a planned call site only: approved and unplayed, or a draft without one, fails.
+    // The W2 learner lane already plays the cue (sfx.ts, lessonCue.ts): unwire both call sites for these two cases.
+    const callSites = ['src/lesson-engine/player/sfx.ts', 'src/rebuild/learning/lessonCue.ts'].map((file) => join(dir, file)).filter((file) => existsSync(file));
+    const played = callSites.map((file) => readFileSync(file, 'utf8'));
+    const unwire = () => callSites.forEach((file, i) => writeFileSync(file, played[i]!.split('/sounds/edu/not_yet.wav').join('')));
+    const rewire = () => callSites.forEach((file, i) => writeFileSync(file, played[i]!));
+    const approvedUnwired = await attempt(() => { unwire(); patchRow({ reviewStatus: 'approved', approvedBy: 'owner' }); });
+    expect(approvedUnwired.output).toContain(`Registered asset is referenced nowhere: ${soundId}`);
+    const draftWithoutWiring = await attempt(() => { unwire(); writeManifest(dir, rows.map((row) => (row.id === soundId ? { ...row, wiring: undefined } : row))); });
+    expect(draftWithoutWiring.output).toContain(`Registered asset is referenced nowhere: ${soundId}`);
+    rewire();
+    const informative = await attempt(() => patchRow({ altKey: 'lesson.feedback.notYet', modes: 'light' }));
+    expect(informative.output).toContain('A sound cue is decorative in both modes');
+    const unregistered = await attempt(() => writeFileSync(extra, "export const cue = '/sounds/edu/unregistered.wav';\n"));
+    expect(unregistered.output).toContain('src/rebuild/family/Sound.tsx references an unregistered or retired sound: /sounds/edu/unregistered.wav');
+    for (const result of [drift, approvedWithoutReviewer, approvedUnwired, draftWithoutWiring, informative, unregistered]) expect(result.status).toBe(1);
+    // Restored, the tree passes again: a draft that plays is still a draft (--release refuses it).
+    const restored = await run(dir);
+    expect(restored.output).toContain('Rebuild asset integrity OK');
+    expect(restored.status).toBe(0);
   });
 });

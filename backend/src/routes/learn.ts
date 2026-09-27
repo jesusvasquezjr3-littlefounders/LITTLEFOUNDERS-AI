@@ -616,17 +616,26 @@ export function learnRouter(): Router {
     target: z.string().regex(/^[a-z0-9._-]{1,64}$/),
   });
 
-  // A treatment is recorded only after it rendered. Kid experimentation uses
-  // the same active guardian analytics consent as behavioural measurement.
+  // A treatment is recorded only after it rendered. OD-23 / OD-26 (owner
+  // review M-12): every experiment except C.17 is ADULTS ONLY, and C.17's
+  // exposure is recorded by Core itself when a Mentor session starts
+  // (services/pedagogy/dialogueCalibration.ts), never through this route. So
+  // this route records only for a self-managed adult (not a kid-role account,
+  // not a protected origin) whose analytics rule allows it; everyone else gets
+  // the same 202 `recorded: false`, which reveals nothing about why.
   router.post('/experiments/exposure', async (req, res) => {
     const parsed = ExperimentExposureBody.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid exposure');
     const user = authedUser(res);
     const roles = await getRolesForGate(user.id);
     if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve roles');
-    if (roles.includes('kid') && await hasActiveAnalyticsConsent(user.id) !== true) {
-      return ok(res, { recorded: false }, 202);
-    }
+    const screening = res.locals.ageScreen as AgeScreenState | undefined;
+    const adult = !roles.includes('kid')
+      && screening !== undefined
+      && screening.ageBand === 'adult'
+      && !screening.protectedOrigin
+      && await allowsSelfManagedAnalytics(user.id, screening);
+    if (!adult) return ok(res, { recorded: false }, 202);
     const exposure = await recordExperimentExposure({
       userId: user.id,
       experimentId: parsed.data.experiment_id,

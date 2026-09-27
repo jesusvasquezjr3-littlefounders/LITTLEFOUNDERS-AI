@@ -141,6 +141,26 @@
       "origin": "human",
       "pedagogicalReviewer": "pending",
       "safetyTrustLead": "pending"
+    },
+    {
+      "component": "governance.model",
+      "hash": "cdfe734d2fd15ae4c678125c9bfe700e66665c281769239036d6b376d9319036",
+      "files": 3,
+      "date": "2026-09-27",
+      "change": "OD-28 (owner review M-19): finer Tier 1 boundaries. The registry may split a mixed file by top-level declaration (symbols claims, the strictest component holds \"*\", carve-outs take effect only once both leads sign their decision), and governance:check classifies, hashes and fences each declaration; controller.ts, orchestrator.ts and seven Core kill-switch modules are split, with the carve-outs of D-2026-09-27-finer-tier1-boundaries pending",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "measurement.stage7_and_thresholds",
+      "hash": "802625220ac0e2a12bc21c2628c332782e05d4dd306ff4b98a2829dbf4b07f5f",
+      "files": 9,
+      "date": "2026-09-27",
+      "change": "OD-26 (owner review M-12): the C.17 dialogue-calibration experiment may enrol teens 13-17 (their own analytics opt-in) and tweens 10-12 (a verified guardian's analytics consent, exact age only); children 6-9 never. dialogueCalibration.ts gains DIALOGUE_EXPERIMENT_OPENABLE_BANDS and a per-band consent rule; no change to the Stage 7 rollback, the report or its thresholds",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
     }
   ]
 }

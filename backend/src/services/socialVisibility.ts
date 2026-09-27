@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { getVerifiedGuardiansOfKid, hasCurrentSocialApproval, isFollowing, serviceRest, tutorBadgeVisible, type ListedUser } from './supabaseRest.js';
 import { reviewProfileFields } from './profileFieldSafety.js';
 import { hasCurrentTeenConsent, readSocialTier, type SocialTier } from './socialTier.js';
+import { isTeenProfileDiscoverable } from './teenDiscoverability.js';
 
 /*
  * Who may see whom (E.1, E.8, E.13). Mirrors public.social_subject_visible
@@ -79,6 +80,9 @@ export async function profileAccess(viewerId: string, subjectId: string, fields?
       if (await isFlagged(subjectId, fields)) return 'none';
       if (await hasCurrentTeenConsent(viewerId, subjectId)) return 'full';
       if (await isFollowing(subjectId, viewerId)) return 'full';
+      // S-03 (OD-27): a 16- or 17-year-old who opted in, and is still eligible,
+      // is discoverable. The database re-checks eligibility on every read.
+      if (await isTeenProfileDiscoverable(subjectId)) return 'full';
       return 'card';
     }
     default:

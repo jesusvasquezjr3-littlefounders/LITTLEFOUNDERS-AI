@@ -1,11 +1,18 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
-import { birthMonthForBand, declaredBandForDate, promotionDue } from '../services/ageScreen.js';
+import { authRateLimiter } from '../middleware/rateLimit.js';
+import {
+  birthMonthForBand, birthMonthProvesAge, birthMonthToKeep, declaredBandForDate, effectiveAgeBand, promotionDue,
+} from '../services/ageScreen.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
 const USER = '22222222-2222-4222-8222-222222222222';
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  // POST /age-screen sits behind authRateLimiter (10 per window); each case is independent.
+  for (const key of ['127.0.0.1', '::1', '::ffff:127.0.0.1']) void authRateLimiter.resetKey(key);
+});
 
 describe('A.3/A.4 authoritative age-screen contract', () => {
   it.each(['/api/v1/learn/courses', '/api/v1/placement/course/start', '/api/v1/tutor/offers'])(
@@ -64,7 +71,112 @@ describe('A.3/A.4 authoritative age-screen contract', () => {
     const res = await request(createApp()).post('/api/v1/auth/age-screen')
       .set('Authorization', `Bearer ${mintToken({ sub: USER })}`).send({ birthDate: '2018-01-01' });
     expect(res.status).toBe(200);
-    expect(res.body.data).toEqual({ required: false, ageBand: 'under_13', protectedOrigin: true });
+    expect(res.body.data).toEqual({
+      required: false, ageBand: 'under_13', protectedOrigin: true, birthMonthRecorded: false, adultByBirthMonth: false,
+    });
+  });
+});
+
+/*
+ * S-04 (owner decision OD-28): the age screen keeps a declared teen's birth
+ * month (derived from the date) so the teen moves to the adult tier at 18. An
+ * optional `birthMonth` in the body must agree with the date.
+ */
+describe('S-04 the birth month moves a declared teen to the adult tier at 18', () => {
+  it('reads a teen as adult only after every day of the 18th-birthday month has passed', () => {
+    expect(effectiveAgeBand('13_to_17', '2008-10-01', new Date('2026-10-31T23:59:59Z'))).toBe('13_to_17');
+    expect(effectiveAgeBand('13_to_17', '2008-10-01', new Date('2026-11-01T00:00:00Z'))).toBe('adult');
+    // December rolls into January of the next year.
+    expect(effectiveAgeBand('13_to_17', '2008-12-01', new Date('2026-12-31T12:00:00Z'))).toBe('13_to_17');
+    expect(effectiveAgeBand('13_to_17', '2008-12-01', new Date('2027-01-01T00:00:00Z'))).toBe('adult');
+    // No month, another band, or a malformed month: the declaration stands.
+    expect(effectiveAgeBand('13_to_17', null, new Date('2040-01-01T00:00:00Z'))).toBe('13_to_17');
+    expect(effectiveAgeBand('under_13', '2008-10-01', new Date('2040-01-01T00:00:00Z'))).toBe('under_13');
+    expect(effectiveAgeBand('13_to_17', 'garbage', new Date('2040-01-01T00:00:00Z'))).toBe('13_to_17');
+    expect(birthMonthProvesAge('2010-03-01', 16, new Date('2026-03-31T00:00:00Z'))).toBe(false);
+    expect(birthMonthProvesAge('2010-03-01', 16, new Date('2026-04-01T00:00:00Z'))).toBe(true);
+  });
+
+
+  it('accepts a sent month only as the month of the date, and keeps it only for a teen', () => {
+    expect(birthMonthToKeep('2010-05-17', undefined, '13_to_17')).toBeNull();
+    expect(birthMonthToKeep('2010-05-17', '2010-05', '13_to_17')).toBe('2010-05');
+    expect(birthMonthToKeep('2010-05-17', '2010-06', '13_to_17')).toBe('invalid');
+    expect(birthMonthToKeep('2010-05-17', '2010-5', '13_to_17')).toBe('invalid');
+    expect(birthMonthToKeep('2018-05-17', '2018-05', 'under_13')).toBeNull();
+    expect(birthMonthToKeep('1990-05-17', '1990-05', 'adult')).toBeNull();
+  });
+
+  function recorder(stored: { declared_age_band: string; declared_birth_month?: string | null; promoted_to_adult_at?: string | null }[]) {
+    const writes: { url: string; body: unknown }[] = [];
+    const fetch = vi.fn((url: string, init?: RequestInit) => {
+      if (url.includes('/rpc/')) {
+        const body = JSON.parse(String(init?.body)) as { p_age_band: string };
+        writes.push({ url, body });
+        return Promise.resolve(jsonResponse(200, body.p_age_band));
+      }
+      return Promise.resolve(jsonResponse(200, url.includes('account_age_declarations') ? stored : []));
+    });
+    vi.stubGlobal('fetch', fetch);
+    return { fetch, writes };
+  }
+  const post = (body: object) => request(createApp()).post('/api/v1/auth/age-screen')
+    .set('Authorization', `Bearer ${mintToken({ sub: USER })}`).send(body);
+
+  it('a teen who also sends the matching month records the same month as an old client', async () => {
+    const { writes } = recorder([{ declared_age_band: '13_to_17', declared_birth_month: '2011-05-01' }]);
+    const res = await post({ birthDate: '2011-05-17', birthMonth: '2011-05' });
+    expect(res.status).toBe(200);
+    expect(writes).toEqual([{
+      url: expect.stringContaining('/rpc/record_age_declaration'),
+      body: { p_user_id: USER, p_age_band: '13_to_17', p_birth_month: '2011-05-01' },
+    }]);
+    expect(res.body.data).toMatchObject({ ageBand: '13_to_17', birthMonthRecorded: true, adultByBirthMonth: false });
+  });
+
+  it.each([
+    ['a month that is not the month of the date', { birthDate: '2011-05-17', birthMonth: '2011-06' }],
+    ['a malformed month', { birthDate: '2011-05-17', birthMonth: '2011-5' }],
+    ['a non-string month', { birthDate: '2011-05-17', birthMonth: 201105 }],
+    ['an unknown field', { birthDate: '2011-05-17', birthMonth: '2011-05', ageBand: 'adult' }],
+  ])('refuses %s before any write', async (_label, body) => {
+    const { fetch } = recorder([]);
+    const res = await post(body);
+    expect(res.status).toBe(400);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['an under-13 date, never retained', '2018-05-17', '2018-05', 'under_13'],
+    ['an adult date, no tier left to move to', '1990-05-17', '1990-05', 'adult'],
+  ])('does not keep the month for %s', async (_label, birthDate, birthMonth, band) => {
+    const { writes } = recorder([{ declared_age_band: band }]);
+    await post({ birthDate, birthMonth });
+    expect(writes).toEqual([{ url: expect.stringContaining('/rpc/record_age_declaration'), body: { p_user_id: USER, p_age_band: band } }]);
+  });
+
+  it('reads a declared teen whose 18th-birthday month has passed as an adult, and says why', async () => {
+    recorder([{ declared_age_band: 'adult', declared_birth_month: null, promoted_to_adult_at: '2018-02-01T00:00:00Z' }]);
+    const res = await request(createApp()).get('/api/v1/auth/age-screen').set('Authorization', `Bearer ${mintToken({ sub: USER })}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({
+      required: false, ageBand: 'adult', protectedOrigin: false, birthMonthRecorded: true, adultByBirthMonth: true,
+    });
+  });
+
+  it('an under-13 origin always wins over any stored month', async () => {
+    vi.stubGlobal('fetch', vi.fn((url: string) => Promise.resolve(jsonResponse(200, url.includes('account_age_declarations')
+      ? [{ declared_age_band: '13_to_17', declared_birth_month: '2000-01-01' }] : [{ under13_origin: true }]))));
+    const res = await request(createApp()).get('/api/v1/auth/age-screen').set('Authorization', `Bearer ${mintToken({ sub: USER })}`);
+    expect(res.body.data).toEqual({
+      required: false, ageBand: 'under_13', protectedOrigin: true, birthMonthRecorded: false, adultByBirthMonth: false,
+    });
+  });
+
+  it('fails closed on a stored month that is not a first-of-month date', async () => {
+    recorder([{ declared_age_band: '13_to_17', declared_birth_month: '2000-01-15' }]);
+    const res = await request(createApp()).get('/api/v1/auth/age-screen').set('Authorization', `Bearer ${mintToken({ sub: USER })}`);
+    expect(res.status).toBe(502);
   });
 });
 

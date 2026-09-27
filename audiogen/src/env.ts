@@ -82,6 +82,15 @@ const Env = z.object({
   // Optional hard ceiling for paid synthesis calls in one operator batch.
   // Cache hits and speech-guard refusals do not consume a reservation.
   AUDIOGEN_MAX_TTS_CALLS_PER_RUN: z.coerce.number().int().min(1).optional(),
+  // OD-28 (owner review D-03): the provider's price per 1,000 input characters,
+  // used to enforce the owner-approved USD ceiling of a paid batch. No default:
+  // a stale guessed price would make the ceiling lie, so a paid batch refuses
+  // to start until the operator sets the current one.
+  AUDIOGEN_USD_PER_1K_CHARS: z.coerce.number().positive().optional(),
+  // The owner-approved USD ceiling for the AUDIOGEN_RUN_ON_START batch (the
+  // command-line equivalent is `narrate:all --max-usd <n>`). Without it the
+  // start-up batch refuses to run.
+  AUDIOGEN_RUN_ON_START_MAX_USD: z.coerce.number().positive().optional(),
 });
 
 export type Config = Readonly<z.infer<typeof Env>>;

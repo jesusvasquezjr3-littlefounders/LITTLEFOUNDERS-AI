@@ -13,12 +13,15 @@
  *   2. THE VARIANT. C.17 requires the calibration to be A/B tested, not
  *      assumed correct. The experiment runs on the H.7 runtime (dataintel,
  *      surface `tutor`, target `mentor.dialogue-register`; variant A = the
- *      uniform `control` register, B = `calibrated`). OD-23 / H.7: enrolment
- *      is ADULTS ONLY until Product and Legal choose wider ages
- *      (`MENTOR_DIALOGUE_EXPERIMENT_BANDS`, default `adult`), and it follows
- *      the same analytics-consent rule as behavioural measurement (a kid needs
- *      a verified guardian's consent, a teen their own preference). Every
- *      learner not enrolled receives the SPEC's calibrated register. A runtime
+ *      uniform `control` register, B = `calibrated`). OD-26 (owner review
+ *      M-12, 27 September 2026) opens C.17, and only C.17, beyond OD-23's
+ *      adults-only rule: adults; teens 13–17 with their OWN analytics opt-in;
+ *      tweens 10–12 with a verified guardian's analytics consent, and only
+ *      on an exact age from a birth date (a tier guess could be a younger
+ *      child); young children 6–9 never, whatever the configuration says
+ *      (`MENTOR_DIALOGUE_EXPERIMENT_BANDS`, default `adult,teen,tween`, can
+ *      only narrow this). Every learner not enrolled receives the SPEC's
+ *      calibrated register. A runtime
  *      that cannot answer is never a guess: the calibrated default, recorded
  *      as `runtime_unavailable`. Exposure is recorded when the session starts
  *      with the treatment (the register applies from the first turn).
@@ -132,6 +135,43 @@ export function dialogueBandFor(input: {
 // ── 2. the variant ───────────────────────────────────────────────────────────
 
 /**
+ * OD-26 (owner review M-12): the only bands the C.17 experiment may ever
+ * enrol. young_child (6–9) is not here, so no configuration can enrol it.
+ */
+export const DIALOGUE_EXPERIMENT_OPENABLE_BANDS: readonly DialogueBand[] = ['adult', 'teen', 'tween'];
+
+/**
+ * OD-26: whose consent admits this learner to C.17, by band (not by role):
+ *   adult  the adult analytics rule (a parent-created adult still needs the
+ *          guardian's consent, as every kid-role account does under H.1);
+ *   teen   the teen's OWN analytics opt-in; a parent-created teen, who has no
+ *          opt-in of their own today, also needs the guardian's consent, so
+ *          in practice stays out until a teen-owned choice exists for them;
+ *   tween  a verified guardian's analytics consent (analytics_consents);
+ *   young_child  never.
+ */
+async function dialogueExperimentConsent(input: {
+  userId: string;
+  band: DialogueBand;
+  roles: readonly string[];
+  screening: AgeScreenState;
+}): Promise<boolean> {
+  const kid = input.roles.includes('kid');
+  const guardianConsent = async () => (await hasActiveAnalyticsConsent(input.userId)) === true;
+  switch (input.band) {
+    case 'adult':
+      return kid ? guardianConsent() : allowsSelfManagedAnalytics(input.userId, input.screening);
+    case 'teen':
+      if (!(await allowsSelfManagedAnalytics(input.userId, input.screening))) return false;
+      return kid ? guardianConsent() : true;
+    case 'tween':
+      return guardianConsent();
+    default:
+      return false;
+  }
+}
+
+/**
  * The variant this session runs. Never throws and never guesses: every path
  * that is not an enrolled, exposed assignment is the SPEC's calibrated
  * default with the reason recorded.
@@ -152,13 +192,14 @@ export async function resolveDialogueCalibration(input: {
     experimentId: null,
   });
   if (input.rollback) return { band: input.band, variant: 'control', assignment: 'rollback', experimentId: null };
-  // OD-23 / H.7: only the bands Product and Legal opened (adults by default).
-  if (!input.eligibleBands.includes(input.band)) return calibrated('not_eligible');
-  // Experiment participation follows the analytics-consent rule.
-  const consented = input.roles.includes('kid')
-    ? (await hasActiveAnalyticsConsent(input.userId)) === true
-    : await allowsSelfManagedAnalytics(input.userId, input.screening);
-  if (!consented) return calibrated('no_consent');
+  // OD-26 / H.7: only the configured bands, never outside the openable set
+  // (so never a young child), and a tween only on an exact age of 10 to 12.
+  if (!input.eligibleBands.includes(input.band) || !DIALOGUE_EXPERIMENT_OPENABLE_BANDS.includes(input.band)) {
+    return calibrated('not_eligible');
+  }
+  if (input.band === 'tween' && (input.age === null || input.age < 10 || input.age > 12)) return calibrated('not_eligible');
+  // Experiment participation follows the band's consent (OD-26).
+  if (!(await dialogueExperimentConsent(input))) return calibrated('no_consent');
   const assignments = await getExperimentAssignments({
     userId: input.userId,
     surface: 'tutor',

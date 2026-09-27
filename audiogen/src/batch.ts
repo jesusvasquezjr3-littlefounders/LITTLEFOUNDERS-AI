@@ -4,6 +4,7 @@ import { auditSpeechText, isBlocked } from './narrate/speechGuard.js';
 import { contentHash } from './narrate/types.js';
 import { narrateLesson } from './service/lessonAudio.js';
 import { getConfig, voiceFor } from './env.js';
+import { spendCeilingRefusal } from './spendGuard.js';
 import { TtsCallBudget } from './ttsBudget.js';
 
 /*
@@ -21,12 +22,22 @@ import { TtsCallBudget } from './ttsBudget.js';
  * `--dry-run` uses the same pending query and document extractor but never
  * calls TTS, Depot, speech_assets, or a PATCH; it is the audio equivalent of
  * Forge's free catalog dry-run.
+ *
+ * OD-28 (owner review D-03): a paid batch refuses to start without the
+ * owner-approved USD ceiling (`maxUsd`, `--max-usd <n>` on narrate:all,
+ * AUDIOGEN_RUN_ON_START_MAX_USD for the start-up batch) and a configured
+ * per-character price (AUDIOGEN_USD_PER_1K_CHARS) to enforce it with. The
+ * refusal happens before the pending query, so a refused run touches nothing.
  */
 
 export interface BatchNarrationOptions {
   dryRun?: boolean;
   /** Test/operator override; production uses AUDIOGEN_MAX_TTS_CALLS_PER_RUN. */
   maxTtsCalls?: number;
+  /** OD-28: the owner-approved USD ceiling. Required unless dryRun. */
+  maxUsd?: number;
+  /** Test/operator override; production uses AUDIOGEN_USD_PER_1K_CHARS. */
+  usdPer1kChars?: number;
 }
 
 export interface BatchNarrationDeps {
@@ -68,6 +79,25 @@ export interface BatchNarrationSummary {
   guardBlocked: number;
   /** Pending rows never touched (no Vault read, no manifest PATCH) because the TTS call budget ran out first. */
   budgetSkippedLessons: number;
+  /** Dry-run: input characters of the estimated TTS calls (what the per-character price applies to). */
+  estimatedTtsChars: number;
+  /** Paid run: USD reserved against the owner ceiling (reservations are consumed even when the provider then fails). */
+  usdReserved: number;
+}
+
+/** The refusal for a paid batch that cannot enforce an owner-approved USD ceiling, or null. */
+export function narrationSpendRefusal(options: BatchNarrationOptions, configuredUsdPer1kChars: number | undefined): string | null {
+  if (options.dryRun === true) return null;
+  const refusal = spendCeilingRefusal({ command: 'narrate:all', flag: '--max-usd', dryRun: false, ceilingUsd: options.maxUsd });
+  if (refusal) return refusal;
+  const price = options.usdPer1kChars ?? configuredUsdPer1kChars;
+  if (price === undefined || !Number.isFinite(price) || price <= 0) {
+    return (
+      'narrate:all: the USD ceiling cannot be enforced without the TTS price. Set AUDIOGEN_USD_PER_1K_CHARS ' +
+      "(the provider's current price per 1,000 input characters) in audiogen/.env, or add --dry-run."
+    );
+  }
+  return null;
 }
 
 export async function runBatchNarration(
@@ -75,9 +105,18 @@ export async function runBatchNarration(
   options: BatchNarrationOptions = {},
   deps: BatchNarrationDeps = DEFAULT_DEPS,
 ): Promise<BatchNarrationSummary> {
-  const pending = await deps.listPendingLessonDocuments(courseSlug);
   const dryRun = options.dryRun === true;
-  const ttsBudget = dryRun ? undefined : new TtsCallBudget(options.maxTtsCalls ?? getConfig().AUDIOGEN_MAX_TTS_CALLS_PER_RUN);
+  // OD-28 (D-03): refuse before the pending query, so a refused run touches nothing.
+  const configuredPrice = dryRun || options.usdPer1kChars !== undefined ? undefined : getConfig().AUDIOGEN_USD_PER_1K_CHARS;
+  const refusal = narrationSpendRefusal(options, configuredPrice);
+  if (refusal) throw new Error(refusal);
+  const ttsBudget = dryRun
+    ? undefined
+    : new TtsCallBudget(options.maxTtsCalls ?? getConfig().AUDIOGEN_MAX_TTS_CALLS_PER_RUN, {
+        maxUsd: options.maxUsd as number,
+        usdPer1kChars: (options.usdPer1kChars ?? configuredPrice) as number,
+      });
+  const pending = await deps.listPendingLessonDocuments(courseSlug);
   console.log(
     `[audiogen] ${dryRun ? 'audio preflight' : 'batch narration'}: ${pending.length} lesson_documents pending${courseSlug ? ` (course ${courseSlug})` : ' (ALL courses)'}`,
   );
@@ -96,6 +135,8 @@ export async function runBatchNarration(
     estimatedTtsCalls: 0,
     guardBlocked: 0,
     budgetSkippedLessons: 0,
+    estimatedTtsChars: 0,
+    usdReserved: 0,
   };
 
   for (const [index, row] of pending.entries()) {
@@ -120,11 +161,11 @@ export async function runBatchNarration(
     // the real failures). Untouched rows stay pending; the skip is tallied
     // once below so it is visible, never silent (§1.12). A row already inside
     // narrateLesson when the budget runs dry keeps the per-unit behavior.
-    if (ttsBudget && ttsBudget.remainingCalls === 0) {
+    if (ttsBudget && ttsBudget.exhausted) {
       summary.budgetSkippedLessons = pending.length - index;
       summary.lessonsAttempted -= summary.budgetSkippedLessons;
       console.warn(
-        `[audiogen] TTS call budget exhausted — leaving ${summary.budgetSkippedLessons} pending lesson(s) untouched (no Vault reads, no manifest writes); re-run narrate:all to continue.`,
+        `[audiogen] TTS budget exhausted (call cap or the owner USD ceiling) — leaving ${summary.budgetSkippedLessons} pending lesson(s) untouched (no Vault reads, no manifest writes); re-run narrate:all to continue.`,
       );
       break;
     }
@@ -150,11 +191,12 @@ export async function runBatchNarration(
     }
   }
 
+  if (ttsBudget) summary.usdReserved = ttsBudget.spentUsd;
   if (dryRun) {
     console.log(
       `[audiogen] preflight summary: ${summary.lessonsAttempted} pending lesson(s), ` +
         `${summary.unitsInspected} units inspected, ${summary.manifestEntriesPresent} reusable manifest entries (hash-checked), ` +
-        `${summary.estimatedTtsCalls} estimated TTS call(s), ${summary.guardBlocked} guard-blocked unit(s), ` +
+        `${summary.estimatedTtsCalls} estimated TTS call(s) over ${summary.estimatedTtsChars} characters, ${summary.guardBlocked} guard-blocked unit(s), ` +
         `${summary.lessonErrors} lesson error(s) — zero paid calls and zero writes`,
     );
   } else {
@@ -162,7 +204,8 @@ export async function runBatchNarration(
       `[audiogen] batch summary: ${summary.lessonsAttempted} attempted, ` +
         `${summary.generated} generated, ${summary.reused} reused, ${summary.cached} cache hits, ` +
         `${summary.unitFailures} unit failure(s), ${summary.incompleteLessons} lesson(s) left pending, ` +
-        `${summary.lessonErrors} lesson error(s), ${summary.budgetSkippedLessons} lesson(s) skipped for budget`,
+        `${summary.lessonErrors} lesson error(s), ${summary.budgetSkippedLessons} lesson(s) skipped for budget, ` +
+        `$${summary.usdReserved.toFixed(2)} reserved of the $${(options.maxUsd ?? 0).toFixed(2)} ceiling`,
     );
   }
   if (summary.incompleteLessons > 0) {
@@ -177,6 +220,7 @@ function inspectPendingRow(row: LessonDocumentRow, summary: BatchNarrationSummar
   const manifestUnits = row.audio?.units ?? {};
   let reusableEntries = 0;
   let guardBlocked = 0;
+  let paidChars = 0;
 
   for (const unit of units) {
     // Same reuse test as the live path (lessonAudio.ts): a manifest entry is
@@ -192,12 +236,14 @@ function inspectPendingRow(row: LessonDocumentRow, summary: BatchNarrationSummar
       continue;
     }
     if (isBlocked(auditSpeechText(unit.text, row.locale))) guardBlocked++;
+    else paidChars += unit.text.length;
   }
 
   summary.unitsInspected += units.length;
   summary.manifestEntriesPresent += reusableEntries;
   summary.guardBlocked += guardBlocked;
   summary.estimatedTtsCalls += units.length - reusableEntries - guardBlocked;
+  summary.estimatedTtsChars += paidChars;
   console.log(
     `[audiogen] preflight lesson=${row.lesson_id} locale=${row.locale} ` +
       `units=${units.length} reusable_manifest_entries=${reusableEntries} ` +

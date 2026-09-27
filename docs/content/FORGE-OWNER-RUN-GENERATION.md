@@ -12,13 +12,18 @@ Sources: owner log OD-17 and OD-23; Product B.11, B.14, B.16, B.17, B.18, G.2; A
 |---|---|---|---|
 | Lesson generation (v1 documents) | `npm --prefix coursegen run generate -- --course <slug> …` | DeepSeek (write), Qwen (judge, fallback), Prism images | `--dry-run` |
 | Whole-course track | `npm --prefix coursegen run generate:track -- --course <slug> …` | same, sharded | `--dry-run` |
-| Illustration backfill | `npm --prefix coursegen run images:backfill -- --course <slug>` | Prism images | `--dry-run` or `--reuse-only` |
-| Narration | `npm --prefix audiogen run narrate:all -- --course <slug>` | Inworld TTS | `--dry-run` |
+| Illustration backfill | `npm --prefix coursegen run images:backfill -- --course <slug> --max-usd <n>` | Prism images | `--dry-run` or `--reuse-only` |
+| Narration | `npm --prefix audiogen run narrate:all -- --course <slug> --max-usd <n>` | Qwen3-TTS (DashScope), priced per input character | `--dry-run` |
 | v2 lesson documents | `npm run forge:v2:dry-run` | none: no live v2 authoring stage exists yet | the command itself |
 
 Everything else in this runbook (content gates, verification, release) spends nothing.
 
 **Enforced ceiling.** A paid `generate` refuses to start without `--max-usd <n>`, and a paid `generate:track` refuses without `--budget-usd <n>` (`coursegen/src/pipeline/spendGuard.ts`). The value is the ceiling the owner approved for this invocation. It only ever lowers Forge's scaled run budget, whose floors (`FORGE_MAX_USD_PER_RUN`, default $50) would otherwise let even a one-lesson run spend the whole floor. The run's ledger (`coursegen/runs/<run-id>/ledger.jsonl`) is replayed on resume, so the ceiling holds across restarts of the same `--run-id`.
+
+Since OD-28 (owner review D-03, 27 September 2026) the same rule covers the two remaining paid tools, through the same refusal (`spendCeilingRefusal`; Echo carries a verbatim copy in `audiogen/src/spendGuard.ts`, kept identical by `agent/tools/spend-guard-parity.test.mjs`):
+
+- **`images:backfill`** refuses any invocation that can pay Prism (neither `--dry-run` nor `--reuse-only`; for `--restyle-scenes`, also `--confirm-spend`) without `--max-usd <n>`. The ceiling binds in the ordinary add-only pass as well as in a restyle: the pass stops cleanly after the document that reaches it, at `COST_QWEN_IMAGE_PER_IMAGE` per generated image (default $0.075). It can overshoot by at most one document's images; re-running resumes, because filled slots are skipped. A `--dry-run` now runs reuse-only and never contacts Prism (before OD-28 it still drew, and paid for, the art it previewed).
+- **`narrate:all`** refuses a paid run without `--max-usd <n>`. The ceiling is enforced per synthesis at `AUDIOGEN_USD_PER_1K_CHARS`, the provider's current price per 1,000 input characters, which the operator sets in `audiogen/.env`; there is no default, and a paid run refuses without it, because a guessed price would make the ceiling lie. A reservation that would pass the ceiling is refused and the batch stops, leaving the remaining lessons pending (exit 1, re-run to continue). `AUDIOGEN_MAX_TTS_CALLS_PER_RUN` still applies; whichever limit is reached first stops the run. The dry-run reports the estimated calls and their total characters, which is what the owner prices the ceiling from. The `AUDIOGEN_RUN_ON_START` batch needs `AUDIOGEN_RUN_ON_START_MAX_USD` for the same reason, or it refuses.
 
 Planning numbers from the last measured live run (July 2026, before the S05.4 gates): about 104,000 tokens and $0.07 per published lesson including retries, plus $0.075 per generated image. Gates 11–16 add corrective retries whose cost is not yet measured; budget at least 2× until the first owner-run pilot measures it.
 
@@ -39,6 +44,7 @@ npm run forge:release-gates:check
 npm --prefix coursegen run generate -- --course <slug> --slots <ids> --dry-run
 npm --prefix coursegen run generate:track -- --course <slug> --dry-run
 npm --prefix audiogen run narrate:all -- --course <slug> --dry-run
+npm --prefix coursegen run images:backfill -- --course <slug> --dry-run
 npm run forge:v2:dry-run
 ```
 
@@ -56,7 +62,7 @@ Lessons land as `review`. Nothing a run writes is visible to a learner.
 
 1. `npm run content:gates -- --course <slug> --documents runs/<run-id>/checkpoint.json` (the path is relative to `coursegen/`) writes the itemized report to `coursegen/runs/content-gates/`. Blocking findings go back to Stage 1; they are never overridden.
 2. The Pedagogical Reviewer works through every **review item**: tone items, concept counts above the target, every flagged mentor-misjudgment episode, and every market scenario, using the checklist in the [Regional Adaptation Gate](REGIONAL-ADAPTATION-GATE.md). The sign-off names the findings it addressed (Appendix C Part 2.1 "Reviewed").
-3. Narration (paid, `narrate:all … ` after its dry-run) and illustration backfill (paid) happen on `review` lessons, before verification.
+3. Narration (paid, `narrate:all … --max-usd <n>` after its dry-run) and illustration backfill (paid, `images:backfill … --max-usd <n>`) happen on `review` lessons, before verification.
 
 ## 6. Verification and release
 
@@ -89,4 +95,4 @@ The local `db:publish-course` shortcut calls the same `release_course` and is lo
 ## Known gaps (tracked in the sprint record)
 
 - No live v2 authoring stage exists: the v2 emitter's plans carry fixture copy. A model-authored v2 plan stage and the reviewed v2 publication transaction (0101) are later work.
-- `images:backfill` and Echo narration have their own spend controls (per-image cost accounting, the Echo TTS budget) but no command-line owner ceiling like `--max-usd`; both also update the documents of already-published lessons in place. The recorded proposal is to demote first and release again.
+- `images:backfill` and Echo narration update the documents of already-published lessons in place. The recorded proposal is to demote first and release again. (Their missing owner ceiling was closed by OD-28; see §1.)

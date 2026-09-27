@@ -197,6 +197,27 @@ describe('POST /api/v1/auth/signup', () => {
     expect(JSON.stringify(sent)).not.toContain('1990-05-14');
   });
 
+  // S-04 (OD-28): a teen's birth month is kept with the first declaration; a sent month must match the date.
+  it('keeps a teen birth month, never forwards it to GoTrue, and refuses a mismatched month first', async () => {
+    const calls: { url: string; body: Record<string, unknown> }[] = [];
+    vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body ?? '{}')) as Record<string, unknown>;
+      calls.push({ url: String(input), body });
+      if (String(input).includes('/rpc/record_age_declaration')) return Promise.resolve(jsonResponse(200, body.p_age_band));
+      return Promise.resolve(jsonResponse(200, SESSION));
+    }));
+    const teen = { email: 'teo@example.com', password: 'longenough1', displayName: 'Teo', birthDate: '2011-05-14' };
+    const bad = await request(createApp()).post('/api/v1/auth/signup').send({ ...teen, birthMonth: '2011-06' });
+    expect(bad.status).toBe(400);
+    expect(calls).toEqual([]);
+    const res = await request(createApp()).post('/api/v1/auth/signup').send({ ...teen, birthMonth: '2011-05' });
+    expect(res.status).toBe(201);
+    const signup = calls.find((c) => c.url.endsWith('/auth/v1/signup'));
+    expect(JSON.stringify(signup?.body)).not.toMatch(/2011-05/);
+    expect(calls.find((c) => c.url.includes('/rpc/record_age_declaration'))?.body)
+      .toEqual({ p_user_id: SESSION.user.id, p_age_band: '13_to_17', p_birth_month: '2011-05-01' });
+  });
+
   it('rejects a short password without calling GoTrue', async () => {
     const spy = vi.fn();
     stubFetch(spy as never);

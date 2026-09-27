@@ -66,9 +66,33 @@ test('RED when the report Oracle sends carries a field Core refuses', () => {
   assert.ok(problems.some((p) => p.includes('dialogue calibration report')));
 });
 
-test('RED (OD-23) when the experiment default would enrol a minor band', () => {
-  const problems = checkReviewCalibrationParity(patched(FILES.coreConfig, ".default('adult')", ".default('adult,teen')"), sql);
-  assert.ok(problems.some((p) => p.includes('OD-23')));
+// OD-26 (owner review M-12): C.17 may enrol adults, teens (own opt-in) and
+// tweens 10-12 (guardian consent); a young child never.
+test('the real default opens C.17 to adults, teens and tweens only', () => {
+  assert.deepEqual(checkReviewCalibrationParity(readReal, sql), []);
+});
+
+test('RED (OD-26) when the default, the config schema or the resolver would enrol a young child', () => {
+  const cases = [
+    [FILES.coreConfig, ".default('adult,teen,tween')", ".default('adult,teen,tween,young_child')", 'would enrol young_child by default'],
+    [FILES.coreConfig, "['tween', 'teen', 'adult'].includes(band)", "['young_child', 'tween', 'teen', 'adult'].includes(band)", 'must not accept young_child'],
+    [FILES.coreDialogue, "DIALOGUE_EXPERIMENT_OPENABLE_BANDS: readonly DialogueBand[] = ['adult', 'teen', 'tween'];", "DIALOGUE_EXPERIMENT_OPENABLE_BANDS: readonly DialogueBand[] = ['adult', 'teen', 'tween', 'young_child'];", 'must be exactly adult, teen, tween'],
+    [FILES.coreDialogue, ' || !DIALOGUE_EXPERIMENT_OPENABLE_BANDS.includes(input.band)', '', 'must refuse every band outside'],
+  ];
+  for (const [file, from, to, message] of cases) {
+    const problems = checkReviewCalibrationParity(patched(file, from, to), sql);
+    assert.ok(problems.some((p) => p.includes(message)), `${message}: ${problems.join(' | ')}`);
+  }
+});
+
+test('RED (OD-26) when a tween could be enrolled on a guess or without the guardian', () => {
+  for (const [from, to, message] of [
+    ["input.band === 'tween' && (input.age === null || input.age < 10 || input.age > 12)", "input.band === 'tween' && input.age !== null && input.age > 12", 'exact age of 10 to 12'],
+    ["case 'tween':\n      return guardianConsent();", "case 'tween':\n      return allowsSelfManagedAnalytics(input.userId, input.screening);", "verified guardian's analytics consent"],
+  ]) {
+    const problems = checkReviewCalibrationParity(patched(FILES.coreDialogue, from, to), sql);
+    assert.ok(problems.some((p) => p.includes(message)), `${message}: ${problems.join(' | ')}`);
+  }
 });
 
 test('RED when no migration exists at all', () => {

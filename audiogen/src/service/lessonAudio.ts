@@ -140,8 +140,8 @@ export async function narrateLesson(
       return;
     }
 
-    if (options.ttsBudget && !options.ttsBudget.tryReserve()) {
-      failed.push({ unit_id: unit.unit_id, reason: 'TTS call budget exhausted before synthesis' });
+    if (options.ttsBudget && !options.ttsBudget.tryReserve(unit.text.length)) {
+      failed.push({ unit_id: unit.unit_id, reason: 'TTS budget exhausted before synthesis (call cap or owner USD ceiling)' });
       if (prior) finalUnits[unit.unit_id] = prior;
       return;
     }
