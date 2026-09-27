@@ -4,6 +4,7 @@ import type { AgeScreenState } from '../ageScreen.js';
 import { getActiveKcs, getKcEdges, getLearnerMastery, getMemoryCards, type Localized } from '../pedagogy/kcData.js';
 import { restBatchedByIds, serviceRest, serviceRestRaw } from '../supabaseRest.js';
 import type { CoursePathwayInputs } from './coursePathway.js';
+import { readPathwayDecisions, type EarlyAccessRecord, type MasteryDecisionRecord } from './pathwayDecisionsData.js';
 import { legacyCourseStage } from './coursePathway.js';
 import {
   chapterPolicy,
@@ -55,6 +56,10 @@ export interface LearnerPathwayContext {
   completedCourseSlugs: Set<string>;
   /** course_pathway_placements stages, by course id. */
   placedStages: Map<string, Set<PathwayStage>>;
+  /** OD-25 / P-03 (Rule P8): the learner's early-access confirmations, by chapter id, across courses. */
+  earlyAccess: Map<string, EarlyAccessRecord>;
+  /** OD-25 / P-04 (Rule E3): the learner's mastery-offer decisions, by topic id, across courses. */
+  masteryDecisions: Map<string, MasteryDecisionRecord>;
 }
 
 const BadgeRows = z.array(z.object({
@@ -84,7 +89,7 @@ export async function readCompletedCourseSlugs(userId: string): Promise<Set<stri
  */
 export async function loadLearnerPathwayContext(userId: string, ageScreen: AgeScreenState, now = new Date()): Promise<LearnerPathwayContext | null> {
   if (!Uuid.safeParse(userId).success) return null;
-  const [kcs, edges, mastery, cards, badges, placements, profiles, completed] = await Promise.all([
+  const [kcs, edges, mastery, cards, badges, placements, profiles, completed, decisions] = await Promise.all([
     getActiveKcs(),
     getKcEdges(),
     getLearnerMastery(userId),
@@ -93,8 +98,9 @@ export async function loadLearnerPathwayContext(userId: string, ageScreen: AgeSc
     serviceRest<unknown>(`/course_pathway_placements?user_id=eq.${eu(userId)}&select=course_id,pathway_stage&limit=1000`),
     serviceRest<unknown>(`/profiles?user_id=eq.${eu(userId)}&select=birth_date&limit=1`),
     readCompletedCourseSlugs(userId),
+    readPathwayDecisions(userId),
   ]);
-  if (!kcs || !edges || !mastery || !cards || !completed) return null;
+  if (!kcs || !edges || !mastery || !cards || !completed || !decisions) return null;
   const badgeRows = BadgeRows.safeParse(badges);
   const placementRows = PlacementRows.safeParse(placements);
   const profileRows = ProfileRows.safeParse(profiles);
@@ -130,7 +136,10 @@ export async function loadLearnerPathwayContext(userId: string, ageScreen: AgeSc
     declaredBand: ageScreen.ageBand,
     protectedOrigin: ageScreen.protectedOrigin,
   }, now);
-  return { age, mentorPKnown, dueReviewKcs, kcPrerequisites, kcKeyById, kcTitles, storedBadges, completedCourseSlugs: completed, placedStages };
+  return {
+    age, mentorPKnown, dueReviewKcs, kcPrerequisites, kcKeyById, kcTitles, storedBadges, completedCourseSlugs: completed, placedStages,
+    earlyAccess: decisions.earlyAccess, masteryDecisions: decisions.masteryDecisions,
+  };
 }
 
 const ChapterRows = z.array(z.object({
@@ -205,6 +214,9 @@ export function coursePathwayInputs(
     earnedStages,
     placedStages: ctx.placedStages.get(course.id) ?? new Set(),
     hasLegacyPlacement,
+    // OD-25: only this course's own decisions, so a row for another course can never open or complete anything here.
+    earlyConfirmedChapterIds: new Set([...ctx.earlyAccess.values()].filter((r) => r.courseId === course.id && chapters.has(r.chapterId)).map((r) => r.chapterId)),
+    masteryDecisions: new Map([...ctx.masteryDecisions.values()].filter((r) => r.courseId === course.id).map((r) => [r.topicId, r.decision])),
   };
 }
 

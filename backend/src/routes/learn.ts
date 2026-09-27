@@ -22,7 +22,8 @@ import { getTutorPreferences } from '../services/tutorData.js';
 import { readAgeScreen, type AgeScreenState } from '../services/ageScreen.js';
 import { allowsSelfManagedAnalytics } from '../services/analyticsPreference.js';
 import { applyCoursePathway, lessonChapterAccess, pathwayBadgeAward, type PathwayCourseTree, type PathwayView } from '../services/pathway/coursePathway.js';
-import { projectCoursePath } from '../services/pathway/coursePathProjection.js';
+import { projectCoursePath, projectEarlyAccess } from '../services/pathway/coursePathProjection.js';
+import { confirmEarlyChapter, decideMasteryOffer } from '../services/pathway/pathwayDecisions.js';
 import {
   courseEngine,
   coursePathwayInputs,
@@ -283,7 +284,14 @@ async function courseEntry(user: AuthedUser, course: CourseHierarchyRow, ageScre
   const load = await loadLearnerCourse(user.accessToken, user.id, course, ageScreen);
   if (!load || !load.tree.pathway || !load.pathway) return { kind: 'refused', status: 502, code: 'INTERNAL', message: 'Content service unreachable' };
   if (load.tree.pathway.basis === 'unavailable') {
-    return { kind: 'refused', status: 403, code: 'COURSE_AGE_RESTRICTED', message: 'This course is not available for this age yet' };
+    // OD-25 / P-03: a course with nothing open by age can still hold a chapter one stage up that the learner
+    // may open early (Rule P8). Say so, additively, so the client can offer it; nothing opens without a confirmation.
+    const early = load.tree.pathway.earlyChapters;
+    const kcTitles = load.pathway.kcTitles;
+    const details = early.length > 0
+      ? { earlyAccessChapters: early.map((entry) => ({ chapterId: entry.chapterId, ...projectEarlyAccess(entry, kcTitles) })) }
+      : undefined;
+    return { kind: 'refused', status: 403, code: 'COURSE_AGE_RESTRICTED', message: 'This course is not available for this age yet', ...(details ? { details } : {}) };
   }
   const missing: string[] = [];
   for (const slug of requires) {
@@ -786,6 +794,54 @@ export function learnRouter(): Router {
     if (entry.kind === 'refused') return fail(res, entry.status, entry.code, entry.message, entry.details);
     if (!entry.load.tree.pathway || !entry.load.pathway) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
     return ok(res, projectCoursePath(entry.load.tree as PathwayCourseTree, entry.load.pathway.kcTitles));
+  });
+
+  /*
+   * 2c. POST /courses/:slug/chapters/:chapterId/early-access — OD-25 (owner
+   * review P-03), Rule P8. A minor confirms opening a chapter one stage above
+   * their own when every prerequisite skill is mastered. Core re-derives the
+   * whole decision from its own reads; the body only carries the learner's
+   * explicit {"confirm": true}. Reads the course WITHOUT the course-entry
+   * refusal, because the chapter can be the only way into a course that
+   * nothing else opens for this learner (the entry checks apply after).
+   */
+  const EarlyAccessRequest = z.object({ confirm: z.literal(true) }).strict();
+  router.post('/courses/:slug/chapters/:chapterId/early-access', async (req, res) => {
+    if (courseEngine() !== 'pathway') return fail(res, 409, 'PATHWAY_ENGINE_DISABLED', 'The course path is not enabled yet');
+    if (!EarlyAccessRequest.safeParse(req.body).success) return fail(res, 400, 'VALIDATION_ERROR', 'Send {"confirm": true} to confirm');
+    const user = authedUser(res);
+    const course = await getPublishedCourseBySlug(user.accessToken, req.params.slug as string);
+    if (!course) return fail(res, 404, NOT_FOUND, 'No such course');
+    if (!z.string().uuid().safeParse(req.params.chapterId).success) return fail(res, 404, NOT_FOUND, 'No such chapter in this course');
+    const load = await loadLearnerCourse(user.accessToken, user.id, course, res.locals.ageScreen as AgeScreenState);
+    if (!load || !load.tree.pathway || !load.pathway) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+    const outcome = await confirmEarlyChapter(user.id, course, load.tree as PathwayCourseTree, load.pathway, req.params.chapterId as string);
+    if (outcome.kind === 'refused') return fail(res, outcome.status, outcome.code, outcome.message, outcome.details);
+    return ok(res, outcome.body);
+  });
+
+  /*
+   * 2d. POST /courses/:slug/topics/:topicId/mastery-offer — OD-25 (owner
+   * review P-04), Rule E3. The learner accepts or declines completing a topic
+   * with the mastery they showed the Mentor. Core re-derives the offer; a GET
+   * never completes anything. Behind the ordinary course entry (age safeguard
+   * and course prerequisites first).
+   */
+  const MasteryOfferRequest = z.object({ decision: z.enum(['accept', 'decline']) }).strict();
+  router.post('/courses/:slug/topics/:topicId/mastery-offer', async (req, res) => {
+    if (courseEngine() !== 'pathway') return fail(res, 409, 'PATHWAY_ENGINE_DISABLED', 'The course path is not enabled yet');
+    const parsed = MasteryOfferRequest.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Send {"decision": "accept"} or {"decision": "decline"}');
+    const user = authedUser(res);
+    const course = await getPublishedCourseBySlug(user.accessToken, req.params.slug as string);
+    if (!course) return fail(res, 404, NOT_FOUND, 'No such course');
+    if (!z.string().uuid().safeParse(req.params.topicId).success) return fail(res, 404, NOT_FOUND, 'No such topic in this course');
+    const entry = await courseEntry(user, course, res.locals.ageScreen as AgeScreenState);
+    if (entry.kind === 'refused') return fail(res, entry.status, entry.code, entry.message, entry.details);
+    if (!entry.load.tree.pathway || !entry.load.pathway) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+    const outcome = await decideMasteryOffer(user.id, course, entry.load.tree as PathwayCourseTree, entry.load.pathway, req.params.topicId as string, parsed.data.decision);
+    if (outcome.kind === 'refused') return fail(res, outcome.status, outcome.code, outcome.message, outcome.details);
+    return ok(res, outcome.body);
   });
 
   // 3. GET /lessons/:id — meta + client-safe document, locale-resolved.

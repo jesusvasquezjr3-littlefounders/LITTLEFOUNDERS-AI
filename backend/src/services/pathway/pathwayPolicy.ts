@@ -142,13 +142,41 @@ export function learnerStage(evidence: AgeEvidence): PathwayStage {
 
 /**
  * Rule P4 — the safeguard. Child chapters are open to everyone. Any other
- * chapter opens only when the youngest age the evidence allows meets the
- * chapter's minimum; unknown age opens nothing above child.
+ * chapter opens BY AGE only when the youngest age the evidence allows meets
+ * the chapter's minimum; unknown age opens nothing above child. OD-25 (P-03)
+ * adds exactly one other way in, Rule P8 below: a minor's confirmed early
+ * access to a chapter ONE stage above their own, never an adult chapter and
+ * never two stages up. Nothing else opens a closed chapter.
  */
 export function chapterOpensForAge(evidence: AgeEvidence, policy: ChapterPolicy | null): boolean {
   if (!policy) return false;
   if (policy.stage === 'child') return true;
   return evidence.lowerBound !== null && evidence.lowerBound >= policy.minAge;
+}
+
+/** A learner whose age evidence allows any age under 18 is a minor (OD-25: "adult chapters never open to a minor"). */
+export function mayBeMinor(evidence: AgeEvidence): boolean {
+  return evidence.lowerBound === null || evidence.lowerBound < STAGE_AGE_BANDS.adult.min;
+}
+
+/**
+ * Rule P8, the age half (OD-25, owner review P-03). Early access can apply
+ * only to a chapter the age safeguard keeps closed, for a learner who may be
+ * a minor, whose stage is EXACTLY one stage above the learner's own stage
+ * (child to tween, tween to teen), and never to an adult chapter. Re-checked
+ * on every read, so a corrected birth date that makes the chapter two stages
+ * up closes it again (T4). Adults are never offered early access: a chapter
+ * their age does not open stays closed, as before.
+ */
+export function earlyStageAllows(evidence: AgeEvidence, policy: ChapterPolicy | null): boolean {
+  if (!policy || !mayBeMinor(evidence) || policy.stage === 'adult') return false;
+  if (chapterOpensForAge(evidence, policy)) return false;
+  return rank(policy.stage) === rank(learnerStage(evidence)) + 1;
+}
+
+/** P4 plus P8: a chapter opens by age, or by a confirmed early access whose age half still holds. */
+export function chapterOpens(evidence: AgeEvidence, policy: ChapterPolicy | null, earlyConfirmed: boolean): boolean {
+  return chapterOpensForAge(evidence, policy) || (earlyConfirmed && earlyStageAllows(evidence, policy));
 }
 
 export type ChapterAccess = 'pathway' | 'optional' | 'closed';
@@ -172,11 +200,21 @@ export interface PathwayResolution {
  *     ("older-early": a 12-year-old in the 12–18 legacy chapters).
  *  4. Else the course is unavailable to this learner.
  * Every other open chapter is optional: playable, never required, never in a
- * denominator. Closed chapters never open, whatever the evidence of mastery.
+ * denominator. Closed chapters never open, whatever the evidence of mastery,
+ * except through a confirmed early access (P8, OD-25), passed in as
+ * `earlyConfirmed` (chapter ids with a stored learner confirmation). Such a
+ * chapter is open like any other: optional next to an own-stage or younger
+ * pathway, and the "older-early" pathway only in a course with nothing else
+ * open to the learner.
  */
-export function resolvePathway(evidence: AgeEvidence, chapters: ReadonlyArray<{ id: string; policy: ChapterPolicy | null }>): PathwayResolution {
+export function resolvePathway(
+  evidence: AgeEvidence,
+  chapters: ReadonlyArray<{ id: string; policy: ChapterPolicy | null }>,
+  earlyConfirmed: ReadonlySet<string> = new Set(),
+): PathwayResolution {
   const stage = learnerStage(evidence);
-  const open = chapters.filter((c) => chapterOpensForAge(evidence, c.policy)) as Array<{ id: string; policy: ChapterPolicy }>;
+  const opens = (c: { id: string; policy: ChapterPolicy | null }): boolean => chapterOpens(evidence, c.policy, earlyConfirmed.has(c.id));
+  const open = chapters.filter(opens) as Array<{ id: string; policy: ChapterPolicy }>;
   const stagesWithOpen = new Set(open.map((c) => c.policy.stage));
   let pathwayStage: PathwayStage | null = null;
   let basis: PathwayBasis = 'unavailable';
@@ -196,8 +234,7 @@ export function resolvePathway(evidence: AgeEvidence, chapters: ReadonlyArray<{ 
   }
   const access = new Map<string, ChapterAccess>();
   for (const chapter of chapters) {
-    const opens = chapterOpensForAge(evidence, chapter.policy);
-    access.set(chapter.id, !opens ? 'closed' : chapter.policy!.stage === pathwayStage ? 'pathway' : 'optional');
+    access.set(chapter.id, !opens(chapter) ? 'closed' : chapter.policy!.stage === pathwayStage ? 'pathway' : 'optional');
   }
   return { learnerStage: stage, pathwayStage, basis, access };
 }
@@ -268,6 +305,11 @@ export interface LearnerEvidence {
   mentorPKnown: ReadonlyMap<string, number>;
   /** KC keys whose Mentor memory card is due now (memory_card). */
   dueReviewKcs: ReadonlySet<string>;
+  /**
+   * Topic ids whose Mentor-mastery completion offer the learner ACCEPTED
+   * (course_topic_mastery_decisions, OD-25 / P-04, Rule E3). Absent means none.
+   */
+  masteryCompletedTopicIds?: ReadonlySet<string>;
 }
 
 export interface TopicCompletion {
@@ -276,10 +318,111 @@ export interface TopicCompletion {
   complete: boolean;
 }
 
-/** Rule E1 — a topic is complete when every live lesson is passed or placement-credited. */
+/**
+ * Rule E1 — a topic is complete when every live lesson is passed or
+ * placement-credited, or (Rule E3, OD-25 / P-04) when the learner accepted
+ * the offer to complete it with the mastery they showed the Mentor. An
+ * accepted topic counts its lessons as done the way a placement credit does:
+ * toward completion and progress, never as played and never as XP.
+ */
 export function topicCompletion(topic: PathwayTopic, evidence: LearnerEvidence): TopicCompletion {
+  const total = topic.lessonIds.length;
+  if (total > 0 && evidence.masteryCompletedTopicIds?.has(topic.id)) return { done: total, total, complete: true };
   const done = topic.lessonIds.filter((id) => evidence.passedLessonIds.has(id) || evidence.creditedLessonIds.has(id)).length;
-  return { done, total: topic.lessonIds.length, complete: topic.lessonIds.length > 0 && done === topic.lessonIds.length };
+  return { done, total, complete: total > 0 && done === total };
+}
+
+/**
+ * Rule E3 (OD-25, owner review P-04) — the Mentor-mastery completion OFFER.
+ * Mentor mastery alone still never completes a topic (B2). A topic is OFFERED
+ * for completion when, in a chapter open to the learner, it has lessons, it is
+ * not complete, it teaches at least one KC, and the Mentor's own posterior
+ * holds EVERY KC it teaches at the Mentor's prerequisite bar
+ * (MASTERY_PREREQ_THRESHOLD, 0.80; no new threshold). A KC satisfied only by
+ * a completed topic elsewhere does not qualify: the offer is about mastery
+ * shown WITH THE MENTOR. A topic the learner already decided on (accepted or
+ * declined) is never offered again. The topic completes only when the learner
+ * accepts, through Core, which re-derives this offer at that moment; a read
+ * never completes anything.
+ */
+export function mentorMasteryOffers(
+  chapters: readonly PathwayChapter[],
+  access: ReadonlyMap<string, ChapterAccess>,
+  kcsByTopicPath: ReadonlyMap<string, TopicKcs>,
+  evidence: LearnerEvidence,
+  decidedTopicIds: ReadonlySet<string>,
+): Array<{ topicId: string; chapterId: string; kcs: string[] }> {
+  const offers: Array<{ topicId: string; chapterId: string; kcs: string[] }> = [];
+  for (const chapter of byPosition(chapters)) {
+    if ((access.get(chapter.id) ?? 'closed') === 'closed') continue;
+    for (const saga of byPosition(chapter.sagas)) {
+      for (const topic of byPosition(saga.topics)) {
+        if (decidedTopicIds.has(topic.id) || topic.lessonIds.length === 0 || topicCompletion(topic, evidence).complete) continue;
+        const teaches = [...(kcsByTopicPath.get(topic.path)?.teaches ?? [])].sort();
+        if (teaches.length === 0) continue;
+        if (teaches.every((kc) => (evidence.mentorPKnown.get(kc) ?? 0) >= MASTERY_PREREQ_THRESHOLD)) {
+          offers.push({ topicId: topic.id, chapterId: chapter.id, kcs: teaches });
+        }
+      }
+    }
+  }
+  return offers;
+}
+
+export type EarlyChapterStatus = 'offer' | 'missing-prerequisites' | 'no-prerequisites';
+
+export interface EarlyChapterDecision {
+  status: EarlyChapterStatus;
+  /** KCs the chapter needs from outside itself (sorted). */
+  prerequisiteKcs: string[];
+  /** The prerequisite KCs not yet satisfied on the shared graph (sorted). */
+  missingKcs: string[];
+}
+
+/**
+ * The prerequisite KCs of a whole chapter: the union of the Mentor-graph
+ * prerequisites of every KC its topics teach, minus the KCs the chapter
+ * itself teaches (the chapter-level form of F2).
+ */
+export function chapterPrerequisiteKcs(
+  chapter: PathwayChapter,
+  kcsByTopicPath: ReadonlyMap<string, TopicKcs>,
+  kcPrerequisites: ReadonlyMap<string, readonly string[]>,
+): string[] {
+  const teaches = new Set<string>();
+  for (const saga of chapter.sagas) for (const topic of saga.topics) (kcsByTopicPath.get(topic.path)?.teaches ?? []).forEach((kc) => teaches.add(kc));
+  const prerequisites = new Set<string>();
+  for (const kc of teaches) for (const prereq of kcPrerequisites.get(kc) ?? []) if (!teaches.has(prereq)) prerequisites.add(prereq);
+  return [...prerequisites].sort();
+}
+
+/**
+ * Rule P8 (OD-25, owner review P-03) — may a minor be OFFERED early access to
+ * a closed chapter? Null when the age half does not apply (earlyStageAllows:
+ * not closed, not exactly one stage up, an adult chapter, or an adult
+ * learner). Otherwise:
+ *   'no-prerequisites'       the chapter needs nothing from outside itself,
+ *                            so there is no mastery evidence to rely on:
+ *                            never offered;
+ *   'missing-prerequisites'  some prerequisite KC is not satisfied on the
+ *                            shared graph (E2: graded course evidence in an
+ *                            open chapter, or the Mentor's posterior at the
+ *                            0.80 bar);
+ *   'offer'                  every prerequisite KC is satisfied: the learner
+ *                            may confirm, and only the confirmation opens it.
+ */
+export function earlyChapterDecision(
+  evidence: AgeEvidence,
+  chapter: PathwayChapter,
+  kcsByTopicPath: ReadonlyMap<string, TopicKcs>,
+  kcPrerequisites: ReadonlyMap<string, readonly string[]>,
+  satisfaction: ReadonlyMap<string, KcSatisfaction>,
+): EarlyChapterDecision | null {
+  if (!earlyStageAllows(evidence, chapter.policy)) return null;
+  const prerequisiteKcs = chapterPrerequisiteKcs(chapter, kcsByTopicPath, kcPrerequisites);
+  if (prerequisiteKcs.length === 0) return { status: 'no-prerequisites', prerequisiteKcs, missingKcs: [] };
+  const missingKcs = prerequisiteKcs.filter((kc) => (satisfaction.get(kc) ?? 'none') === 'none');
+  return { status: missingKcs.length === 0 ? 'offer' : 'missing-prerequisites', prerequisiteKcs, missingKcs };
 }
 
 export type KcSatisfaction = 'course' | 'mentor' | 'none';
@@ -503,9 +646,12 @@ export interface PathwayProgress {
  *      are all the learner's pathway this is exactly today's formula, so no
  *      migrated percentage moves (OD-9).
  *  B2  Graph completion = every topic of the pathway complete, i.e. every KC
- *      the pathway teaches demonstrated through its own graded topics or
- *      placement credits. Mentor mastery alone satisfies prerequisites but
- *      never completes a pathway topic: completion stays graded evidence.
+ *      the pathway teaches demonstrated through its own graded topics,
+ *      placement credits or, since OD-25 (P-04), a Mentor-mastery completion
+ *      the learner ACCEPTED (E3). Mentor mastery alone satisfies prerequisites
+ *      but never completes a topic without that acceptance. The stage badge
+ *      (B4) does not count accepted Mentor completions: see
+ *      gradedPathwayProgress below.
  *  B3  Optional and closed chapters never enter a denominator: an adult is
  *      never measured on childhood chapters, a minor never on adult ones.
  */
@@ -545,6 +691,25 @@ export function pathwayProgress(
     kcsSatisfied,
     complete: topicCount > 0 && complete,
   };
+}
+
+/**
+ * Rule B6 (OD-25 / P-04 interaction with B4) — the progress a stage badge is
+ * decided on: the same pathway progress WITHOUT accepted Mentor-mastery
+ * completions. A badge is irreversible (B4, OD-9 forbids revoking one), while
+ * leaving it out is reversible: if the owner later decides accepted mastery
+ * earns the credential too, the next course read settles it. Until then a
+ * topic completed by accepted mastery still counts for completion, unlocking
+ * and the progress bar, and its lessons stay playable so the learner can earn
+ * the badge through graded lessons or placement credit, as B2 always required.
+ */
+export function gradedPathwayProgress(
+  chapters: readonly PathwayChapter[],
+  access: ReadonlyMap<string, ChapterAccess>,
+  kcsByTopicPath: ReadonlyMap<string, TopicKcs>,
+  evidence: LearnerEvidence,
+): PathwayProgress {
+  return pathwayProgress(chapters, access, kcsByTopicPath, { ...evidence, masteryCompletedTopicIds: new Set() });
 }
 
 /**
