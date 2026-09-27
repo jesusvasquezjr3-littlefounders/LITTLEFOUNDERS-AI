@@ -38,6 +38,8 @@ type Copy = {
   planned: string; bridgeClosed: string; bridgeFailed: string;
   /** OD-28 (L-12): the teen's own savings goal from a savings prompt. */
   goalName: string; goalTarget: string; createGoal: string; planOnly: string; goalCreated: string; noWallet: string;
+  /** W3L.1 (L-12): the created goal named back, and the way to it. `{n}` is the coins. */
+  goalCoins: string; openWallet: string;
   /** OD-27 (3): said on the journal of a parent-created child under 13, whose Tutor sees the chosen options. */
   tutorSees: string;
 };
@@ -50,7 +52,7 @@ export const decisionJournalCopy: Record<Locale, Copy> = {
     bridgeTitle: 'Try it for real', learned: 'You learned', bridge: { savings_goal: 'Pick something real to save for this month.', earning_task: 'Keep track of what you earn this week.' },
     tryIt: 'I will try', notNow: 'Not now', planned: 'Saved as your plan.', bridgeClosed: 'This idea has closed.', bridgeFailed: 'Could not save it. Try again.',
     goalName: 'What will you save for?', goalTarget: 'Coins to save', createGoal: 'Create goal', planOnly: 'Just a plan',
-    goalCreated: 'Goal added to your Wallet.', noWallet: 'Your Wallet is not open.',
+    goalCreated: 'Goal added to your Wallet.', noWallet: 'Your Wallet is not open.', goalCoins: '{n} coins to save', openWallet: 'See my Wallet',
     tutorSees: 'Your Tutor can see the choices you make.',
   },
   'es-MX': {
@@ -60,7 +62,7 @@ export const decisionJournalCopy: Record<Locale, Copy> = {
     bridgeTitle: 'Pruébalo de verdad', learned: 'Aprendiste', bridge: { savings_goal: 'Elige algo real para ahorrar este mes.', earning_task: 'Anota lo que ganes esta semana.' },
     tryIt: 'Lo intentaré', notNow: 'Ahora no', planned: 'Guardado como tu plan.', bridgeClosed: 'Esta idea ya cerró.', bridgeFailed: 'No se pudo guardar. Inténtalo de nuevo.',
     goalName: '¿Para qué vas a ahorrar?', goalTarget: 'Monedas por ahorrar', createGoal: 'Crear meta', planOnly: 'Solo un plan',
-    goalCreated: 'Meta agregada a tu Cartera.', noWallet: 'Tu Cartera no está abierta.',
+    goalCreated: 'Meta agregada a tu Cartera.', noWallet: 'Tu Cartera no está abierta.', goalCoins: '{n} monedas por ahorrar', openWallet: 'Ver mi Cartera',
     tutorSees: 'Tu Tutor puede ver las elecciones que haces.',
   },
   'pt-BR': {
@@ -70,7 +72,7 @@ export const decisionJournalCopy: Record<Locale, Copy> = {
     bridgeTitle: 'Tente de verdade', learned: 'Você aprendeu', bridge: { savings_goal: 'Escolha algo real para poupar este mês.', earning_task: 'Anote o que você ganhar nesta semana.' },
     tryIt: 'Vou tentar', notNow: 'Agora não', planned: 'Salvo como seu plano.', bridgeClosed: 'Esta ideia já fechou.', bridgeFailed: 'Não foi possível salvar. Tente de novo.',
     goalName: 'Para que você vai poupar?', goalTarget: 'Moedas para poupar', createGoal: 'Criar meta', planOnly: 'Só um plano',
-    goalCreated: 'Meta adicionada à sua Carteira.', noWallet: 'Sua Carteira não está aberta.',
+    goalCreated: 'Meta adicionada à sua Carteira.', noWallet: 'Sua Carteira não está aberta.', goalCoins: '{n} moedas para poupar', openWallet: 'Ver minha Carteira',
     tutorSees: 'Seu Tutor pode ver as escolhas que você faz.',
   },
 };
@@ -91,11 +93,17 @@ export function selfGoalFrom(title: string, target: string): { title: string; ta
  * prompt, "I will try" opens the teen's own goal (a name and the coins to
  * save), created in their Wallet (OD-28, L-12), or kept as a plan alone; on an
  * earning prompt it records the plan (tasks stay guardian-only, OD-3).
+ *
+ * W3L.1 (L-12): "Goal added" is said only when Core answered the goal it
+ * created (a replayed plan reads as the plan), with the goal named back and,
+ * when the host gives one, the way to the Wallet where it now lives.
  */
-export function SelfBridgeList({ bridges, locale, onBridge }: {
+export function SelfBridgeList({ bridges, locale, onBridge, onOpenWallet }: {
   bridges: SelfBridge[];
   locale: Locale;
   onBridge: BridgeAnswer;
+  /** Opens the teen's Wallet (the host knows the route). */
+  onOpenWallet?: () => void;
 }) {
   const t = decisionJournalCopy[locale];
   const headingId = useId();
@@ -103,15 +111,17 @@ export function SelfBridgeList({ bridges, locale, onBridge }: {
   const [answered, setAnswered] = useState<Record<string, BridgeState>>({});
   const [composing, setComposing] = useState<string | null>(null);
   const [draft, setDraft] = useState({ title: '', target: '' });
+  const [created, setCreated] = useState<Record<string, { title: string; target: number }>>({});
 
   async function answer(id: string, choice: 'act' | 'dismiss', goal?: { title: string; target: number }) {
     if (busy) return;
     setBusy(true);
     const outcome = await onBridge(id, choice, goal);
     setBusy(false);
-    const next: BridgeState = outcome === 'done' ? (choice === 'dismiss' ? 'dismissed' : goal ? 'goal' : 'planned')
+    const next: BridgeState = outcome === 'goal' ? 'goal' : outcome === 'done' ? (choice === 'dismiss' ? 'dismissed' : 'planned')
       : outcome === 'closed' ? 'closed' : outcome === 'no_wallet' ? 'no_wallet' : 'failed';
-    if (outcome === 'done' || outcome === 'closed') setComposing(null);
+    if (outcome === 'goal' && goal) setCreated((prev) => ({ ...prev, [id]: goal }));
+    if (outcome === 'done' || outcome === 'goal' || outcome === 'closed') setComposing(null);
     setAnswered((prev) => ({ ...prev, [id]: next }));
   }
 
@@ -133,7 +143,12 @@ export function SelfBridgeList({ bridges, locale, onBridge }: {
         <span className="lf-bridge-self-skill" data-copy-role="data">{localizedText(b.skill, locale)}</span>
         <p data-copy-role="body">{t.bridge[b.action]}</p>
         {state === 'planned' ? <InlineNotice tone="success" live>{t.planned}</InlineNotice>
-          : state === 'goal' ? <InlineNotice tone="success" live>{t.goalCreated}</InlineNotice>
+          : state === 'goal' ? <div className="lf-bridge-self-created">
+            <InlineNotice tone="success" live>{t.goalCreated}</InlineNotice>
+            {created[b.id] ? <p className="lf-bridge-self-goal-named"><span data-copy-role="data">{created[b.id]!.title}</span>{' '}
+              <span data-copy-role="body">{t.goalCoins.replace('{n}', new Intl.NumberFormat(locale).format(created[b.id]!.target))}</span></p> : null}
+            {onOpenWallet ? <div className="lf-actions"><Button onClick={onOpenWallet}>{t.openWallet}</Button></div> : null}
+          </div>
             : state === 'closed' ? <InlineNotice tone="info" live>{t.bridgeClosed}</InlineNotice>
               : composing === b.id ? <form className="lf-bridge-self-goal" onSubmit={(event) => { event.preventDefault(); if (goal) void answer(b.id, 'act', goal); }}>
                 {state === 'failed' ? <InlineNotice tone="error" live>{t.bridgeFailed}</InlineNotice> : null}
@@ -159,7 +174,7 @@ export function SelfBridgeList({ bridges, locale, onBridge }: {
   </section>;
 }
 
-export function DecisionJournalView({ state, locale, dark, onBack, onRetry, onMore, onClear, onBridge, loadingMore = false, fixture = false }: {
+export function DecisionJournalView({ state, locale, dark, onBack, onRetry, onMore, onClear, onBridge, onOpenWallet, loadingMore = false, fixture = false }: {
   state: JournalState;
   locale: Locale;
   dark: boolean;
@@ -169,6 +184,8 @@ export function DecisionJournalView({ state, locale, dark, onBack, onRetry, onMo
   /** Resolves true when Core cleared the journal. */
   onClear: () => Promise<boolean>;
   onBridge: BridgeAnswer;
+  /** W3L.1 (L-12): opens the teen's Wallet after a goal was created there. */
+  onOpenWallet?: () => void;
   loadingMore?: boolean;
   fixture?: boolean;
 }) {
@@ -188,7 +205,7 @@ export function DecisionJournalView({ state, locale, dark, onBack, onRetry, onMo
       <h1 data-copy-role="heading">{state.status === 'loading' ? t.loading : state.status === 'error' ? t.errorTitle : t.title}</h1>
       {state.status === 'ready'
         ? <ReadyJournal key={state.entries.length === 0 ? 'empty' : 'list'} state={state} locale={locale} t={t}
-          onMore={onMore} onClear={onClear} onBridge={onBridge} loadingMore={loadingMore} />
+          onMore={onMore} onClear={onClear} onBridge={onBridge} onOpenWallet={onOpenWallet} loadingMore={loadingMore} />
         : state.status === 'error' ? <>
           <p data-copy-role="body">{t.errorBody}</p>
           {onRetry ? <div className="lf-actions"><Button variant="accent" onClick={onRetry}>{t.retry}</Button></div> : null}
@@ -197,9 +214,9 @@ export function DecisionJournalView({ state, locale, dark, onBack, onRetry, onMo
   </div>;
 }
 
-function ReadyJournal({ state, locale, t, onMore, onClear, onBridge, loadingMore }: {
+function ReadyJournal({ state, locale, t, onMore, onClear, onBridge, onOpenWallet, loadingMore }: {
   state: Extract<JournalState, { status: 'ready' }>; locale: Locale; t: Copy; onMore?: () => void; onClear: () => Promise<boolean>;
-  onBridge: BridgeAnswer; loadingMore: boolean;
+  onBridge: BridgeAnswer; onOpenWallet?: () => void; loadingMore: boolean;
 }) {
   const emptyId = useId();
   const [confirming, setConfirming] = useState(false);
@@ -219,7 +236,7 @@ function ReadyJournal({ state, locale, t, onMore, onClear, onBridge, loadingMore
   return <>
       {/* OD-27 (3): the child knows who else sees their choices, before the list. */}
       {state.sharedWithTutor ? <p className="lf-journal-shared" data-copy-role="body">{t.tutorSees}</p> : null}
-      <SelfBridgeList bridges={state.bridges} locale={locale} onBridge={onBridge} />
+      <SelfBridgeList bridges={state.bridges} locale={locale} onBridge={onBridge} onOpenWallet={onOpenWallet} />
 
       {entries.length === 0 ? <section className="lf-journal-section" aria-labelledby={emptyId}>
         <h2 id={emptyId} data-copy-role="heading">{t.emptyTitle}</h2>

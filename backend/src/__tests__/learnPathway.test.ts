@@ -504,6 +504,38 @@ describe('OD-25 — mastery may open one stage early, and Mentor mastery may com
     expect(built.db.course_pathway_badges).toEqual([expect.objectContaining({ user_id: TEEN15, course_id: COURSE.money, award_key: 'teen', pathway_stage: 'teen' })]);
   });
 
+  it('W3L.1: a declined Mentor-mastery offer is remembered, never asked again, and the first answer is final', async () => {
+    place(TEEN15, 'money', 'teen');
+    master(TEEN15, 'kc.t1');
+    master(TEEN15, 'kc.t2');
+    // Nothing to decline that the pathway does not offer, and a bad decision is a 400.
+    expect((await post(KID7, '/learn/courses/money/mastery-credit', { topicId: built.topic.t1, decision: 'decline' })).status).toBe(409);
+    expect((await post(TEEN15, '/learn/courses/money/mastery-credit', { topicId: built.topic.t1, decision: 'maybe' })).status).toBe(400);
+    const declined = await post(TEEN15, '/learn/courses/money/mastery-credit', { topicId: built.topic.t1, decision: 'decline' });
+    expect(declined.status, JSON.stringify(declined.body)).toBe(200);
+    expect(declined.body.data).toEqual({ status: 'declined', replayed: false });
+    expect(built.db.course_topic_mastery_declines).toEqual([expect.objectContaining({ user_id: TEEN15, topic_id: built.topic.t1, kc_keys: ['kc.t1'] })]);
+    expect(built.db.course_topic_mastery_credits ?? []).toEqual([]);
+    expect(built.db.audit_logs).toEqual(expect.arrayContaining([expect.objectContaining({ actor_id: TEEN15, action: 'learning_pathway.mastery_credit_declined' })]));
+    // Never offered again; nothing counted; the other topic's offer stands.
+    const path = await get(TEEN15, '/learn/courses/money/path');
+    expect(path.body.data.masteryOffers.map((o: { topicId: string }) => o.topicId)).toEqual([built.topic.t2]);
+    expect(path.body.data.pathway.progress.passed).toBe(0);
+    // The same answer replays; the other answer is refused, both ways.
+    expect((await post(TEEN15, '/learn/courses/money/mastery-credit', { topicId: built.topic.t1, decision: 'decline' })).body.data).toEqual({ status: 'declined', replayed: true });
+    const late = await post(TEEN15, '/learn/courses/money/mastery-credit', { topicId: built.topic.t1 });
+    expect(late.status).toBe(409);
+    expect(late.body.error.code).toBe('MASTERY_OFFER_ANSWERED');
+    expect(built.db.course_topic_mastery_credits ?? []).toEqual([]);
+    expect((await post(TEEN15, '/learn/courses/money/mastery-credit', { topicId: built.topic.t2, decision: 'accept' })).status).toBe(200);
+    expect((await post(TEEN15, '/learn/courses/money/mastery-credit', { topicId: built.topic.t2, decision: 'decline' })).body.error.code).toBe('MASTERY_OFFER_ANSWERED');
+    expect(built.db.course_topic_mastery_declines).toHaveLength(1);
+    // Another learner's decline is not this learner's.
+    place(AGE12, 'money', 'child');
+    expect((await post(AGE12, '/learn/courses/money/mastery-credit', { topicId: built.topic.t1, decision: 'decline' })).status).toBe(409);
+    expect(built.db.course_topic_mastery_declines).toHaveLength(1);
+  });
+
   it('refuses a topic in a chapter the learner cannot open, and the linear engine refuses both writes', async () => {
     master(KID7, 'kc.t1');
     place(KID7, 'money', 'child');

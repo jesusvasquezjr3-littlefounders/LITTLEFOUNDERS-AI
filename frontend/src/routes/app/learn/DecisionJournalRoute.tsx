@@ -51,7 +51,9 @@ export function DecisionJournalRoute() {
     onRetry={() => setRevision((n) => n + 1)}
     onMore={() => void more()}
     onClear={() => clearJournal(transport)}
-    onBridge={(id, answer, goal) => answerSelfBridge(transport, id, answer, goal)} />;
+    onBridge={(id, answer, goal) => answerSelfBridge(transport, id, answer, goal)}
+    // W3L.1 (L-12): after a goal is created, the teen's own Wallet is one press away.
+    onOpenWallet={() => navigate('/wallet')} />;
 }
 
 export default DecisionJournalRoute;

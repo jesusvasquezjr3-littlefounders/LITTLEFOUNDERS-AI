@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { Button, ButtonLink, EmptyState, InlineNotice, List, ListRow, ProgressBar, Skeleton, StatusMark } from '../design/controls';
 import '../design/tokens.css';
@@ -56,6 +56,8 @@ export interface CourseViewProps {
   onOpenEarly?: (chapterId: string) => Promise<CourseAnswer>;
   /** OD-25: the learner accepts counting a topic as done on what they showed with the Mentor. */
   onAcceptMastery?: (topicId: string) => Promise<CourseAnswer>;
+  /** OD-25 (W3L.1): the learner says no; Core remembers it. Without it (an older host), "Not now" only hides the question. */
+  onDeclineMastery?: (topicId: string) => Promise<CourseAnswer>;
 }
 
 type Copy = (typeof learnCopy)['en-US']['course'];
@@ -119,7 +121,7 @@ function RefusalState({ state, t, courseTitles, links, onNavigate, onRetry, retr
   </>;
 }
 
-function ReadyCourse({ detail, slug, locale, t, inProgress, links, onNavigate, fixture, onOpenEarly, onAcceptMastery }: CourseViewProps & { detail: CourseDetail; t: Copy }) {
+function ReadyCourse({ detail, slug, locale, t, inProgress, links, onNavigate, fixture, onOpenEarly, onAcceptMastery, onDeclineMastery }: CourseViewProps & { detail: CourseDetail; t: Copy }) {
   const progress = courseProgress(detail);
   const title = localizedText(courseTitle(detail), locale) || slug;
   const step = nextStep(detail);
@@ -156,15 +158,17 @@ function ReadyCourse({ detail, slug, locale, t, inProgress, links, onNavigate, f
         </div>
       </section> : null}
       {detail.engine === 'pathway'
-        ? <PathwaySections path={detail.path} slug={slug} locale={locale} t={t} links={links} onNavigate={onNavigate} onOpenEarly={onOpenEarly} onAcceptMastery={onAcceptMastery} />
+        ? <PathwaySections path={detail.path} slug={slug} locale={locale} t={t} links={links} onNavigate={onNavigate} onOpenEarly={onOpenEarly}
+          onAcceptMastery={onAcceptMastery} onDeclineMastery={onDeclineMastery} />
         : <LinearChapters tree={detail.tree} slug={slug} locale={locale} t={t} links={links} onNavigate={onNavigate} />}
     </>}
     {fixture ? <p className="lf-course-path-chip" data-copy-role="body">{t.preview}</p> : null}
   </>;
 }
 
-function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly, onAcceptMastery }: { path: CoursePath; slug: string; locale: Locale; t: Copy; links: LearnLinks; onNavigate: LearnNavigate;
-  onOpenEarly?: (chapterId: string) => Promise<CourseAnswer>; onAcceptMastery?: (topicId: string) => Promise<CourseAnswer> }) {
+function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly, onAcceptMastery, onDeclineMastery }: { path: CoursePath; slug: string; locale: Locale; t: Copy; links: LearnLinks; onNavigate: LearnNavigate;
+  onOpenEarly?: (chapterId: string) => Promise<CourseAnswer>; onAcceptMastery?: (topicId: string) => Promise<CourseAnswer>;
+  onDeclineMastery?: (topicId: string) => Promise<CourseAnswer> }) {
   const [allItems, setAllItems] = useState(false);
   const [allSkills, setAllSkills] = useState(false);
   const ids = useId();
@@ -181,15 +185,31 @@ function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly
   const reasonLabel = (item: CoursePathItem) => item.access === 'optional' && item.reason === 'next' ? t.extra : item.reason === 'next' ? null : t.reasons[item.reason];
   const open = (lessonId: string) => onNavigate(links.lesson(lessonId), { courseSlug: slug });
   const eligibleEarly = path.earlyAccess.filter((entry) => entry.state === 'eligible');
+  /*
+   * OD-25: each offer is a question the learner answers; nothing opens or
+   * counts until they say yes. After an answer the host reads the course
+   * again and the offer leaves the payload, so an answered card is kept here
+   * for this visit: the learner sees what their answer did.
+   */
+  const offered: Offer[] = [
+    ...(onAcceptMastery ? path.masteryOffers.map((offer): Offer => ({
+      key: `mastery:${offer.topicId}`, kind: 'mastery', detail: text(offer.topicTitle), skills: [],
+      question: fill(t.masteryAsk, { skill: text(offer.skills[0]!.title) || offer.skills[0]!.key }),
+      onYes: () => onAcceptMastery(offer.topicId), onNo: onDeclineMastery ? () => onDeclineMastery(offer.topicId) : null,
+    })) : []),
+    ...(onOpenEarly ? eligibleEarly.map((entry): Offer => ({
+      key: `early:${entry.chapterId}`, kind: 'early', detail: null,
+      skills: entry.prerequisiteSkills.map((skill) => text(skill.title) || skill.key),
+      question: fill(t.earlyAsk, { chapter: text(entry.chapterTitle) || t.chaptersTitle }),
+      onYes: () => onOpenEarly(entry.chapterId), onNo: null,
+    })) : []),
+  ];
+  const [kept, setKept] = useState<Offer[]>([]);
+  const offers = [...offered, ...kept.filter((offer) => !offered.some((current) => current.key === offer.key))];
+  const keep = (offer: Offer) => setKept((prev) => (prev.some((entry) => entry.key === offer.key) ? prev : [...prev, offer]));
   return <>
     {pathway.badge.contentGap && pathway.basis !== 'unavailable' ? <p className="lf-course-path-note" data-copy-role="body">{t.contentGap}</p> : null}
-    {/* OD-25: each is a question the learner answers; nothing opens or counts until they say yes. */}
-    {onAcceptMastery ? path.masteryOffers.map((offer) => <OfferCard key={`mastery:${offer.topicId}`} kind="mastery" t={t}
-      question={fill(t.masteryAsk, { skill: text(offer.skills[0]!.title) || offer.skills[0]!.key })} detail={text(offer.topicTitle)}
-      onYes={() => onAcceptMastery(offer.topicId)} />) : null}
-    {onOpenEarly ? eligibleEarly.map((entry) => <OfferCard key={`early:${entry.chapterId}`} kind="early" t={t}
-      question={fill(t.earlyAsk, { chapter: text(entry.chapterTitle) || t.chaptersTitle })} detail={null}
-      onYes={() => onOpenEarly(entry.chapterId)} />) : null}
+    {offers.map((offer) => <OfferCard key={offer.key} offer={offer} t={t} onAnswer={() => keep(offer)} />)}
     {!pathway.placementRequired && others.length > 0 ? <section className="lf-course-path-section" aria-labelledby={`${ids}-more`}>
       <h2 id={`${ids}-more`} data-copy-role="heading">{t.moreTitle}</h2>
       <div className="lf-course-path-items"><List label={t.moreTitle}>
@@ -226,32 +246,66 @@ function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly
   </>;
 }
 
+/** One OD-25 question as the course screen asks it. */
+type Offer = {
+  key: string;
+  kind: 'early' | 'mastery';
+  question: string;
+  /** The topic the Mentor offer is about; null for a chapter (named in the question). */
+  detail: string | null;
+  /** The prerequisite skills an early chapter rests on (what the learner showed). */
+  skills: string[];
+  onYes: () => Promise<CourseAnswer>;
+  /** A recorded "no" (the Mentor offer); null = "Not now" only hides the question here. */
+  onNo: (() => Promise<CourseAnswer>) | null;
+};
+
+const SHOWN_SKILLS = 3;
+
 /**
- * OD-25: one offer the learner answers. "Yes" is the confirmation Core records
- * (the host refreshes the course after it); "Not now" only hides the question
- * here. A refused answer means the offer no longer stands: the refresh drops it.
+ * OD-25: one offer the learner answers, with what saying yes means. "Yes" is
+ * the confirmation Core records (the host refreshes the course after it). On
+ * the Mentor offer "No" is recorded too and the topic stays to be played; on
+ * the early chapter "Not now" only hides the question. A refused answer means
+ * the offer no longer stands: the refresh drops it. After an answer the card
+ * takes focus, so a keyboard learner hears what it did.
  */
-function OfferCard({ kind, t, question, detail, onYes }: { kind: 'early' | 'mastery'; t: Copy; question: string; detail: string | null; onYes: () => Promise<CourseAnswer> }) {
+function OfferCard({ offer, t, onAnswer }: { offer: Offer; t: Copy; onAnswer: () => void }) {
+  const { kind } = offer;
   const headingId = useId();
-  const [state, setState] = useState<'asking' | 'busy' | 'done' | 'failed' | 'hidden'>('asking');
+  const card = useRef<HTMLElement>(null);
+  const [state, setState] = useState<'asking' | 'busy-yes' | 'busy-no' | 'done' | 'declined' | 'failed' | 'hidden'>('asking');
+  const answered = state === 'done' || state === 'declined';
+  useEffect(() => { if (answered) card.current?.focus(); }, [answered]);
   if (state === 'hidden') return null;
-  async function yes() {
-    setState('busy');
-    const answer = await onYes();
-    setState(answer === 'done' ? 'done' : answer === 'refused' ? 'hidden' : 'failed');
+  const busy = state === 'busy-yes' || state === 'busy-no';
+  async function answer(yes: boolean) {
+    const send = yes ? offer.onYes : offer.onNo;
+    if (!send) return void setState('hidden');
+    setState(yes ? 'busy-yes' : 'busy-no');
+    onAnswer();
+    const result = await send();
+    setState(result === 'done' ? (yes ? 'done' : 'declined') : result === 'refused' ? 'hidden' : 'failed');
   }
-  return <section className={`lf-course-path-offer lf-course-path-offer--${kind}`} aria-labelledby={headingId} data-offer={kind}>
+  const yesLabel = kind === 'early' ? t.earlyYes : t.masteryYes;
+  const noLabel = kind === 'mastery' && offer.onNo ? t.masteryNo : t.notNow;
+  const skills = offer.skills.slice(0, SHOWN_SKILLS).join(', ') + (offer.skills.length > SHOWN_SKILLS ? '…' : '');
+  return <section ref={card} tabIndex={-1} className={`lf-course-path-offer lf-course-path-offer--${kind}`} aria-labelledby={headingId}
+    data-offer={kind} data-answer={answered ? state : undefined}>
     <h2 id={headingId} data-copy-role="heading">{kind === 'early' ? t.earlyTitle : t.masteryTitle}</h2>
-    {detail ? <span className="lf-course-path-offer-topic" data-copy-role="option">{detail}</span> : null}
-    <p data-copy-role="body">{question}</p>
-    {state === 'done' ? <InlineNotice tone="success" live>{kind === 'early' ? t.earlyDone : t.masteryDone}</InlineNotice> : <>
-      {state === 'failed' ? <InlineNotice tone="error" live>{t.saveFailed}</InlineNotice> : null}
-      <div className="lf-actions">
-        <Button variant="accent" pending={state === 'busy'} pendingLabel={kind === 'early' ? t.earlyYes : t.masteryYes} onClick={() => void yes()}>
-          {kind === 'early' ? t.earlyYes : t.masteryYes}</Button>
-        <Button disabled={state === 'busy'} onClick={() => setState('hidden')}>{t.notNow}</Button>
-      </div>
-    </>}
+    {offer.detail ? <span className="lf-course-path-offer-topic" data-copy-role="option">{offer.detail}</span> : null}
+    <p data-copy-role="body">{offer.question}</p>
+    {state === 'done' ? <InlineNotice tone="success" live>{kind === 'early' ? t.earlyDone : t.masteryDone}</InlineNotice>
+      : state === 'declined' ? <InlineNotice tone="info" live>{t.masteryDeclined}</InlineNotice> : <>
+        {/* What saying yes means: OD-25's confirmation is an informed one. */}
+        <p className="lf-course-path-offer-means" data-copy-role="body">{kind === 'early' ? t.earlyMeans : t.masteryMeans}</p>
+        {skills ? <p className="lf-course-path-offer-skills"><span data-copy-role="body">{t.earlyShowed}</span>{' '}<span data-copy-role="data">{skills}</span></p> : null}
+        {state === 'failed' ? <InlineNotice tone="error" live>{t.saveFailed}</InlineNotice> : null}
+        <div className="lf-actions">
+          <Button variant="accent" pending={state === 'busy-yes'} pendingLabel={yesLabel} disabled={busy} onClick={() => void answer(true)}>{yesLabel}</Button>
+          <Button pending={state === 'busy-no'} pendingLabel={noLabel} disabled={busy} onClick={() => void answer(false)}>{noLabel}</Button>
+        </div>
+      </>}
   </section>;
 }
 

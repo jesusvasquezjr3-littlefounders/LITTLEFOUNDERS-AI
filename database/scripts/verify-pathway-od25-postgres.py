@@ -1,10 +1,11 @@
-"""OD-25 (B.6): the two learner records of migration 0181, enforced by PostgreSQL.
+"""OD-25 (B.6): the learner records of migrations 0181 and mastery_offer_declines
+(W3L.1: a declined Mentor-mastery offer), enforced by PostgreSQL.
 
 Applies the ACTUAL migration chain to a fresh database on an owned native
 PostgreSQL cluster (the teen-wallet verifier's Supabase shim), then proves:
 an adult-stage early opening and an empty evidence list are refused by CHECK;
 a learner reads only their own rows (RLS); the browser role cannot write
-either table; account erasure cascades to both. Eligibility itself is Core's
+any of the three tables; account erasure cascades to all of them. Eligibility itself is Core's
 (coursePathway.ts, tested at the HTTP boundary in learnPathway.test.ts).
 
 Cluster selection (never the shared Docker stack):
@@ -50,9 +51,16 @@ INSERT INTO public.sagas (id, adventure_id, position, slug) VALUES ('{s_}', '{a}
 INSERT INTO public.topics (id, saga_id, position, slug) VALUES ('{t}', '{s_}', 1, 't');""", db)
 sql(f"SET ROLE service_role; INSERT INTO public.course_chapter_early_access (user_id, course_id, adventure_id, pathway_stage, prerequisite_kcs) VALUES ('{u}', '{c}', '{a}', 'teen', ARRAY['kc.a']);", db)
 sql(f"""SET ROLE service_role; INSERT INTO public.course_topic_mastery_credits (user_id, course_id, topic_id, kc_keys, p_known) VALUES ('{u}', '{c}', '{t}', ARRAY['kc.a'], '{{"kc.a":0.9}}');""", db)
+sql(f"SET ROLE service_role; INSERT INTO public.course_topic_mastery_declines (user_id, course_id, topic_id, kc_keys) VALUES ('{u}', '{c}', '{t}', ARRAY['kc.a']);", db)
 checks=[]
+try: sql(f"SET ROLE service_role; INSERT INTO public.course_topic_mastery_declines (user_id, course_id, topic_id, kc_keys) VALUES ('{o}', '{c}', '{t}', ARRAY[]::text[]);", db); raise SystemExit('expected CHECK refusal')
+except RuntimeError as e: assert 'check constraint' in str(e), e
+# The first answer is final: a second decline row for the same learner and topic is a key conflict.
+try: sql(f"SET ROLE service_role; INSERT INTO public.course_topic_mastery_declines (user_id, course_id, topic_id, kc_keys) VALUES ('{u}', '{c}', '{t}', ARRAY['kc.b']);", db); raise SystemExit('expected key refusal')
+except RuntimeError as e: assert 'duplicate key' in str(e), e
+checks.append('decline: empty evidence and a second answer refused')
 for bad in [f"INSERT INTO public.course_chapter_early_access (user_id, course_id, adventure_id, pathway_stage, prerequisite_kcs) VALUES ('{o}', '{c}', '{a}', 'adult', ARRAY['kc.a'])",
-            f"INSERT INTO public.course_chapter_early_access (user_id, course_id, adventure_id, pathway_stage, prerequisite_kcs) VALUES ('{o}', '{c}', '{a}', 'teen', ARRAY[]::text[])"]:
+          f"INSERT INTO public.course_chapter_early_access (user_id, course_id, adventure_id, pathway_stage, prerequisite_kcs) VALUES ('{o}', '{c}', '{a}', 'teen', ARRAY[]::text[])"]:
     try: sql("SET ROLE service_role; "+bad+";", db); raise SystemExit('expected CHECK refusal')
     except RuntimeError as e: assert 'check constraint' in str(e), e
 checks.append('adult stage and empty evidence refused')
@@ -61,16 +69,23 @@ def as_user(uid, q):
 assert as_user(u, 'SELECT count(*) FROM public.course_chapter_early_access;') == '1'
 assert as_user(o, 'SELECT count(*) FROM public.course_chapter_early_access;') == '0'
 assert as_user(o, 'SELECT count(*) FROM public.course_topic_mastery_credits;') == '0'
+assert as_user(u, 'SELECT count(*) FROM public.course_topic_mastery_declines;') == '1'
+assert as_user(o, 'SELECT count(*) FROM public.course_topic_mastery_declines;') == '0'
 checks.append('RLS: own rows only')
 for q in [f"INSERT INTO public.course_topic_mastery_credits (user_id, course_id, topic_id, kc_keys) VALUES ('{u}', '{c}', '{t}', ARRAY['kc.b'])",
+          f"INSERT INTO public.course_topic_mastery_declines (user_id, course_id, topic_id, kc_keys) VALUES ('{o}', '{c}', '{t}', ARRAY['kc.a'])",
           f"INSERT INTO public.course_chapter_early_access (user_id, course_id, adventure_id, pathway_stage, prerequisite_kcs) VALUES ('{u}', '{c}', '{a}', 'teen', ARRAY['kc.a'])"]:
     try: as_user(u, q+';'); raise SystemExit('expected RLS refusal')
-    except RuntimeError as e: assert 'row-level security' in str(e) or 'duplicate' in str(e), e
+    except RuntimeError as e: assert 'row-level security' in str(e) or 'permission denied' in str(e) or 'duplicate' in str(e), e
 assert as_user(u, f"WITH d AS (DELETE FROM public.course_topic_mastery_credits RETURNING 1) SELECT count(*) FROM d;") == '0'
+for q in ["DELETE FROM public.course_topic_mastery_declines", "UPDATE public.course_topic_mastery_declines SET kc_keys = ARRAY['kc.z']"]:
+    try: as_user(u, q+';'); raise SystemExit('expected a refused decline write')
+    except RuntimeError as e: assert 'permission denied' in str(e), e
 checks.append('browser writes refused (insert by RLS, delete matches nothing)')
 sql(f"DELETE FROM auth.users WHERE id = '{u}';", db)
 assert sql('SELECT count(*) FROM public.course_chapter_early_access;', db) == '0'
 assert sql('SELECT count(*) FROM public.course_topic_mastery_credits;', db) == '0'
+assert sql('SELECT count(*) FROM public.course_topic_mastery_declines;', db) == '0'
 checks.append('account erasure cascades')
 sql(f'DROP DATABASE {db} WITH (FORCE)')
 print(chr(10).join(checks))

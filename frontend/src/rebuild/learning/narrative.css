@@ -64,6 +64,9 @@
 .lf-learner-shortcut-link { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--spacing-2); }
 /* OD-28 (L-12): the teen's own goal from a savings prompt, a short form in the same card. */
 .lf-bridge-self-goal { display: grid; gap: var(--spacing-3); }
+/* W3L.1 (L-12): the created goal named back, with the way to the Wallet. */
+.lf-bridge-self-created { display: grid; gap: var(--spacing-3); }
+.lf-bridge-self-goal-named { display: grid; gap: var(--spacing-1); margin: 0; overflow-wrap: anywhere; }
 /* OD-27 (3): who else sees the choices, said plainly under the title. */
 .lf-journal-shared { font-weight: 700; color: var(--content); }
 /* OD-27 (3): the Tutor's panel of an under-13 child's story choices (mounted in the Family Hub). */

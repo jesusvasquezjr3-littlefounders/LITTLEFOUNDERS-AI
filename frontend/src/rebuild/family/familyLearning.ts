@@ -4,8 +4,9 @@ import { z } from 'zod';
  * B.10 / B.13 (S05.3c) — the guardian's side of course learning, the client of
  * /api/v1/family/learning. Core is the enforcing boundary: it checks the
  * verified parent and the verified link to this child on every request, picks
- * the guardian's locale for every title, and never sends the child's story
- * choices (only how many there were). This module validates shapes and maps
+ * the guardian's locale for every title, and sends the child's story choices
+ * only for a parent-created child under 13 (OD-27 (3), L-13; how many there
+ * were for everyone else). This module validates shapes and maps
  * refusals; it authorizes nothing. Transport is injected (Bible 02 rule 23).
  */
 
@@ -26,11 +27,29 @@ export const narrativeEntrySchema = z.object({
 }).strict();
 export type NarrativeEntry = z.infer<typeof narrativeEntrySchema>;
 
+/*
+ * OD-27 (3), L-13: for a parent-created child under 13 Core adds, per story
+ * decision of the page's lessons, the situation and the option the child
+ * chose (the latest one; no outcome, count, time or id), in the lesson's
+ * locale. Core decides eligibility on every read (`choicesVisible`); a teen,
+ * a self-registered account or an unknown age gets counts only. The client
+ * shows choices only when Core says they are visible, never on its own.
+ */
+export const tutorChoiceSchema = z.object({
+  lessonId: z.string().min(1),
+  situation: z.string().min(1).max(280),
+  choice: z.string().min(1).max(280),
+  locale: z.string().min(1),
+}).strict();
+export type TutorChoice = z.infer<typeof tutorChoiceSchema>;
+
 const narrativeSchema = z.object({
   locale: z.enum(['en-US', 'es-MX', 'pt-BR']),
   week: z.object({ lessons: z.number().int().min(0), topicsCompleted: z.number().int().min(0) }),
   entries: z.array(narrativeEntrySchema),
   hasMore: z.boolean(),
+  choicesVisible: z.boolean().optional(),
+  choices: z.array(tutorChoiceSchema).optional(),
 });
 
 export const guardianBridgeSchema = z.object({
@@ -60,7 +79,9 @@ export const NARRATIVE_PAGE = 5;
 
 export type NarrativeState =
   | { status: 'loading' }
-  | { status: 'ready'; week: { lessons: number; topicsCompleted: number }; entries: NarrativeEntry[]; hasMore: boolean }
+  | { status: 'ready'; week: { lessons: number; topicsCompleted: number }; entries: NarrativeEntry[]; hasMore: boolean;
+    /** L-13: the child's story choices, present only when Core said the Tutor sees them (an under-13 parent-created child). */
+    choices?: TutorChoice[] }
   | { status: 'no-access' }
   | { status: 'error' };
 
@@ -70,7 +91,12 @@ export async function fetchKidNarrative(request: FamilyLearningTransport, kidId:
   const response = await call(request, `${base(kidId)}/narrative?limit=${NARRATIVE_PAGE}&offset=${offset}`);
   if (response.error) return ACCESS_LOST.has(response.error.code) ? { status: 'no-access' } : { status: 'error' };
   const parsed = narrativeSchema.safeParse(response.data);
-  return parsed.success ? { status: 'ready', week: parsed.data.week, entries: parsed.data.entries, hasMore: parsed.data.hasMore } : { status: 'error' };
+  if (!parsed.success) return { status: 'error' };
+  const { week, entries, hasMore, choicesVisible, choices } = parsed.data;
+  // Choices only when Core said so, and only for lessons on this page; anything else is dropped, never guessed.
+  const shown = new Set(entries.map((entry) => entry.lessonId));
+  return { status: 'ready', week, entries, hasMore,
+    ...(choicesVisible === true ? { choices: (choices ?? []).filter((choice) => shown.has(choice.lessonId)) } : {}) };
 }
 
 export type BridgesState =

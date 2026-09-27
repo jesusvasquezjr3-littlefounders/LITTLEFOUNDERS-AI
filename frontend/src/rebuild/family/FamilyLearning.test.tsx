@@ -4,7 +4,7 @@ import { checkCopy, type CopyRole, type Locale } from '../design/copyBudget';
 import { LearningBridges, learningBridgesCopy } from './LearningBridges';
 import { LearningNarrative, learningNarrativeCopy } from './LearningNarrative';
 import { actOnKidBridge, dismissKidBridge, fetchKidBridges, fetchKidNarrative, narrativeEntrySchema, type BridgeResult, type FamilyLearningTransport } from './familyLearning';
-import { bridgesFixture, narrativeFixture, narrativePreviewStates } from './familyLearningFixtures';
+import { bridgesFixture, narrativeChoicesFixture, narrativeFixture, narrativePreviewStates } from './familyLearningFixtures';
 
 const locales: Locale[] = ['en-US', 'es-MX', 'pt-BR'];
 const FORBIDDEN = /\bbot\b|assistant|asistente|assistente|\blives?\b|\bvidas?\b|\bmoney\b|\bdinero\b|\bdinheiro\b|\bjob\b|streak freeze|\baccept/i;
@@ -62,6 +62,24 @@ describe('family learning client', () => {
     expect(await fetchKidBridges(vi.fn<FamilyLearningTransport>(async () => { throw new Error('offline'); }), 'k')).toEqual({ status: 'error' });
   });
 
+  it('L-13: keeps choices only when Core says the Tutor sees them, only for the page\'s lessons, and refuses a malformed choice', async () => {
+    const ready = narrativeFixture('en-US') as Extract<ReturnType<typeof narrativeFixture>, { status: 'ready' }>;
+    const page = { locale: 'en-US', week: ready.week, entries: ready.entries, hasMore: false };
+    const choice = { lessonId: 'l1', situation: 'What price?', choice: '2 coins', locale: 'en-US' };
+    const reply = (data: unknown) => vi.fn<FamilyLearningTransport>(async () => ({ data, error: null }));
+    expect(await fetchKidNarrative(reply({ ...page, choicesVisible: true, choices: [choice, { ...choice, lessonId: 'other-page' }] }), 'k'))
+      .toMatchObject({ status: 'ready', choices: [choice] });
+    expect(await fetchKidNarrative(reply({ ...page, choicesVisible: true, choices: [] }), 'k')).toMatchObject({ status: 'ready', choices: [] });
+    // A teen: Core says not visible; a stray choice is dropped, never shown.
+    const teen = await fetchKidNarrative(reply({ ...page, choicesVisible: false, choices: [choice] }), 'k');
+    expect(teen.status).toBe('ready');
+    expect('choices' in teen).toBe(false);
+    expect('choices' in await fetchKidNarrative(reply({ ...page, choices: [choice] }), 'k')).toBe(false);
+    // Anything beyond the minimized fields is a malformed page, never a partial one.
+    expect(await fetchKidNarrative(reply({ ...page, choicesVisible: true, choices: [{ ...choice, outcome: 'Sold out' }] }), 'k')).toEqual({ status: 'error' });
+    expect(await fetchKidNarrative(reply({ ...page, choicesVisible: true, choices: [{ ...choice, choice: '' }] }), 'k')).toEqual({ status: 'error' });
+  });
+
   it('sends exactly the details the existing goal and task flows take', async () => {
     const ok = vi.fn<FamilyLearningTransport>(async () => ({ data: { status: 'acted' }, error: null }));
     expect(await actOnKidBridge(ok, 'k', 'p', { action: 'savings_goal', title: 'Bike', target: 120, icon: 'bike' })).toBe('created');
@@ -92,6 +110,30 @@ describe('the guardian narrative', () => {
     expect(within(second).getByText('Ask them to explain it in their own words.')).toBeTruthy();
     expect(within(screen.getAllByRole('listitem')[2]!).getByText('Still working on it.')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Show more' })).toBeTruthy();
+  });
+
+  it('OD-27 (3), L-13: for an under-13 child, each lesson shows the situation and the chosen option, and says the child is told', () => {
+    render(<LearningNarrative state={narrativeChoicesFixture('en-US')} locale="en-US" dark={false} open onToggle={() => {}} onRetry={() => {}} />);
+    expect(screen.getByText('Under 13, you see each story choice. Your child is told.')).toBeTruthy();
+    const first = screen.getByRole('heading', { name: 'The lemonade stand' }).closest('li')!;
+    expect(within(first).getByText('It is hot and people walk by. What price do you set?')).toBeTruthy();
+    expect(within(first).getByText('2 coins a cup')).toBeTruthy();
+    expect(within(first).getByText('Save half, spend half')).toBeTruthy();
+    expect(within(first).getAllByText('Chose')).toHaveLength(2);
+    // The choices replace the count, and the starter asks why rather than what.
+    expect(within(first).queryByText('Made 2 story choices.')).toBeNull();
+    expect(within(first).getByText('Ask why they chose it.')).toBeTruthy();
+    // A lesson without a story keeps its own starter.
+    const second = screen.getByRole('heading', { name: 'Saving for a bike' }).closest('li')!;
+    expect(within(second).queryByText('Chose')).toBeNull();
+    expect(within(second).getByText('Ask them to explain it in their own words.')).toBeTruthy();
+  });
+
+  it('a teen (Core sends no choices) keeps counts only, with no notice', () => {
+    render(<LearningNarrative state={narrativeFixture('es-MX')} locale="es-MX" dark open onToggle={() => {}} onRetry={() => {}} />);
+    expect(screen.queryByText('Mientras tenga menos de 13, ves cada elección. Se le avisa.')).toBeNull();
+    expect(screen.getByText('Tomó 2 decisiones en la historia.')).toBeTruthy();
+    expect(screen.queryByText('Eligió')).toBeNull();
   });
 
   it('shows an empty week plainly, and a retry only on error', () => {

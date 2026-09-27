@@ -32,6 +32,7 @@ import {
   recordEarlyChapterAccess,
   recordPathwayBadge,
   recordTopicMasteryCredit,
+  recordTopicMasteryDecline,
   type LearnerPathwayContext,
 } from '../services/pathway/pathwayData.js';
 import { chapterPolicy, coursePrerequisiteDecision, resolvePathway } from '../services/pathway/pathwayPolicy.js';
@@ -811,9 +812,14 @@ export function learnRouter(): Router {
    * have shown mastery of X; unlock the next level?"). Stored as a mastery
    * credit with the skills and estimates it was accepted on; read as a credit
    * (never played, never XP). A completed pathway then records its badge.
+   * `decision: 'decline'` (W3L.1) records the learner's "no" instead: the
+   * topic is never offered again and stays to be played. The first answer is
+   * final: a declined topic cannot be accepted later and an accepted one
+   * cannot be declined (409 MASTERY_OFFER_ANSWERED); the same answer replays.
+   * An older client sends no decision, which is an acceptance.
    */
   const EarlyAccessBody = z.object({ chapterId: z.string().uuid() }).strict();
-  const MasteryCreditBody = z.object({ topicId: z.string().uuid() }).strict();
+  const MasteryCreditBody = z.object({ topicId: z.string().uuid(), decision: z.enum(['accept', 'decline']).optional() }).strict();
 
   /** The learner's pathway course for an OD-25 write, or answers the refusal itself. */
   async function pathwayCourseFor(req: { params: Record<string, string | undefined> }, res: Parameters<typeof fail>[0]) {
@@ -858,9 +864,21 @@ export function learnRouter(): Router {
     if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'topicId must be a uuid');
     const found = await pathwayCourseFor(req, res);
     if (!found) return res;
-    if (found.view.masteryCredited.includes(body.data.topicId)) return ok(res, { status: 'credited', replayed: true });
+    const decline = body.data.decision === 'decline';
+    const credited = found.view.masteryCredited.includes(body.data.topicId);
+    const declined = found.load.pathway!.masteryDeclinedTopicIds.has(body.data.topicId);
+    if (credited || declined) {
+      if (credited === !decline) return ok(res, { status: credited ? 'credited' : 'declined', replayed: true });
+      return fail(res, 409, 'MASTERY_OFFER_ANSWERED', 'This question was already answered');
+    }
     const offer = found.view.masteryOffers.find((entry) => entry.topicId === body.data.topicId);
     if (!offer) return fail(res, 409, 'MASTERY_CREDIT_NOT_ELIGIBLE', 'This topic is not shown with the Mentor yet');
+    if (decline) {
+      const stored = await recordTopicMasteryDecline({ userId: found.user.id, courseId: found.course.id, topicId: offer.topicId, skills: offer.skills });
+      if (!stored) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not save this');
+      await insertAuditLog(found.user.id, 'learning_pathway.mastery_credit_declined', offer.topicId, { course_id: found.course.id, skills: offer.skills });
+      return ok(res, { status: 'declined', replayed: false });
+    }
     const pKnown = Object.fromEntries(offer.skills.map((kc) => [kc, found.load.pathway!.mentorPKnown.get(kc) ?? null]).filter(([, p]) => p !== null)) as Record<string, number>;
     const stored = await recordTopicMasteryCredit({ userId: found.user.id, courseId: found.course.id, topicId: offer.topicId, skills: offer.skills, pKnown });
     if (!stored) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not save this');

@@ -44,8 +44,24 @@ export function bridgesFixture(locale: Locale): BridgesState {
   };
 }
 
+/** OD-27 (3), L-13: the same page for a parent-created child under 13, whose two story choices Core sends in the lesson's language. */
+export function narrativeChoicesFixture(locale: Locale): NarrativeState {
+  const ready = narrativeFixture(locale);
+  if (ready.status !== 'ready') return ready;
+  return {
+    ...ready,
+    choices: [
+      { lessonId: 'l1', locale, situation: pick(locale, 'It is hot and people walk by. What price do you set?', 'Hace calor y pasa gente. ¿Qué precio pones?', 'Está calor e passa gente. Que preço você coloca?'),
+        choice: pick(locale, '2 coins a cup', '2 monedas por vaso', '2 moedas por copo') },
+      { lessonId: 'l1', locale, situation: pick(locale, 'You earned 12 coins. What do you do with them?', 'Ganaste 12 monedas. ¿Qué haces con ellas?', 'Você ganhou 12 moedas. O que faz com elas?'),
+        choice: pick(locale, 'Save half, spend half', 'Ahorrar la mitad, gastar la mitad', 'Poupar metade, gastar metade') },
+    ],
+  };
+}
+
 export const narrativePreviewStates = (locale: Locale): Record<string, NarrativeState> => ({
   ready: narrativeFixture(locale),
+  choices: narrativeChoicesFixture(locale),
   empty: { status: 'ready', week: { lessons: 0, topicsCompleted: 0 }, entries: [], hasMore: false },
   error: { status: 'error' },
   loading: { status: 'loading' },
