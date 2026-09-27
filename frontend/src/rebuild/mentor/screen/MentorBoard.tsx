@@ -118,8 +118,13 @@ function YourTurnBoard({ board, model, copy }: { board: Extract<TutorWhiteboardW
   </div>;
 }
 
-export function MentorBoard({ board, copy, locale }: { board: TutorWhiteboardWire; copy: MentorBoardCopy; locale: Locale }) {
-  const model = useMemo(() => boardModel(board, copy.words, boardFormat(locale)), [board, copy.words, locale]);
+export function MentorBoard({ board, copy, locale, title }: {
+  board: TutorWhiteboardWire; copy: MentorBoardCopy; locale: Locale;
+  /** A title in place of the board's own, where several boards share a view and two would carry the same name. */
+  title?: string;
+}) {
+  const computed = useMemo(() => boardModel(board, copy.words, boardFormat(locale)), [board, copy.words, locale]);
+  const model = title ? { ...computed, title } : computed;
   if (model.interactive) {
     return <section className="lf-learning-board lf-mentor-board-frame" aria-label={model.title} data-board-kind={model.kind}>
       <div className="lf-learning-board-heading"><h2 data-copy-role="heading">{model.title}</h2></div>

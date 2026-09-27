@@ -8,6 +8,8 @@ import {
   checkRoleplayVoiceParity,
   oracleLemonadeBeats,
   frontendLemonadeBeats,
+  rebuiltLemonadeSpeakers,
+  spokenWords,
 } from './check-roleplay-voice-parity.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -17,6 +19,10 @@ const FILES = {
   enUS: 'frontend/src/i18n/en-US/tutor.json',
   esMX: 'frontend/src/i18n/es-MX/tutor.json',
   ptBR: 'frontend/src/i18n/pt-BR/tutor.json',
+  rebuiltScenes: 'frontend/src/rebuild/mentor/session/roleplay.ts',
+  rebuiltEnUS: 'frontend/src/i18n/en-US/rebuild-mentor.json',
+  rebuiltEsMX: 'frontend/src/i18n/es-MX/rebuild-mentor.json',
+  rebuiltPtBR: 'frontend/src/i18n/pt-BR/rebuild-mentor.json',
 };
 const real = Object.fromEntries(
   Object.entries(FILES).map(([k, f]) => [f, readFileSync(path.join(ROOT, f), 'utf8')]),
@@ -76,3 +82,20 @@ test('RED when the two sides disagree on how many beats the scene has', () => {
 });
 
 console.log('check-roleplay-voice-parity OK — 6 tests, 4 deliberately desynchronised');
+
+test('W2M.3: the rebuilt scene table and captions agree with oracle, word for word', () => {
+  assert.deepEqual(rebuiltLemonadeSpeakers(real[FILES.rebuiltScenes]), ['companion', 'lead', 'companion', 'lead']);
+  assert.equal(spokenWords('You help me figure out the change — go ahead!'), spokenWords('You help me figure out the change, go ahead!'));
+});
+
+test('RED when a rebuilt caption says a word the pre-generated clip does not', () => {
+  const read = (f) => (f === FILES.rebuiltEsMX ? real[f].replace('cinco pesos!', 'seis pesos!') : real[f]);
+  const problems = checkRoleplayVoiceParity(read);
+  assert.ok(problems.some((p) => p.includes('beat 0/es-MX') && p.includes("rebuilt caption's words disagree")), problems.join(' | '));
+});
+
+test('RED when a rebuilt beat changes speaker', () => {
+  const read = (f) => (f === FILES.rebuiltScenes ? real[f].replace("{ speaker: 'companion', emotion: 'happy'", "{ speaker: 'lead', emotion: 'happy'") : real[f]);
+  const problems = checkRoleplayVoiceParity(read);
+  assert.ok(problems.some((p) => p.startsWith('speakers disagree')), problems.join(' | '));
+});

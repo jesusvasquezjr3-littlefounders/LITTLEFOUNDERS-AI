@@ -11,7 +11,7 @@ import { startOfLocalDayIso, useMentorSession } from '../useMentorSession';
  */
 const api = vi.hoisted(() => ({
   getPreferences: vi.fn(), getOffers: vi.fn(), getAgeCalibration: vi.fn(), saveAgeCalibration: vi.fn(),
-  startSession: vi.fn(), resumeSession: vi.fn(), savePreferences: vi.fn(),
+  startSession: vi.fn(), resumeSession: vi.fn(), savePreferences: vi.fn(), keepBoard: vi.fn(),
 }));
 vi.mock('../../session/tutorApi', () => api);
 const core = vi.hoisted(() => ({ api: vi.fn() }));
@@ -266,5 +266,40 @@ describe('choosing the Mentor (08 §8)', () => {
     await waitFor(() => expect(result.current.phase).toBe('openings'));
     await act(async () => { await result.current.chooseCharacter('dina'); });
     expect(result.current.character).toBe('zara');
+  });
+});
+
+describe('the learner island and the notebook (W2M.3, T1a, T1g)', () => {
+  it('reads the first visit, the friend and the light, and never makes the Mentor its own friend', async () => {
+    api.getPreferences.mockResolvedValue(ok({ ...PREFS, companion: 'dina', backdrop: 'dusk', personalized: false }));
+    api.savePreferences.mockResolvedValue(ok({ ...PREFS, character: 'dina', companion: null }));
+    const { result } = mount();
+    await waitFor(() => expect(result.current.phase).toBe('openings'));
+    expect(result.current).toMatchObject({ personalized: false, companion: 'dina', light: 'dusk' });
+    await act(async () => { await result.current.chooseCharacter('dina'); });
+    expect(api.savePreferences).toHaveBeenCalledWith('token', { character: 'dina', companion: null });
+    expect(result.current).toMatchObject({ personalized: true, character: 'dina', companion: null });
+  });
+
+  it('keeps a board by naming the session and the turn, with one quiet retry', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    api.keepBoard.mockResolvedValueOnce(fail('INTERNAL')).mockResolvedValueOnce(ok({ kept: true }));
+    const { result } = mount();
+    await waitFor(() => expect(result.current.phase).toBe('openings'));
+    act(() => result.current.start({ intent: 'open' }));
+    await waitFor(() => expect(result.current.phase).toBe('conversing'));
+    let kept = false;
+    await act(async () => { const pending = result.current.keepBoard(4); await vi.advanceTimersByTimeAsync(700); kept = await pending; });
+    expect(kept).toBe(true);
+    expect(api.keepBoard).toHaveBeenNthCalledWith(2, 'token', 's1', 4);
+  });
+
+  it('says voice only for a session Core started with voice', async () => {
+    const { result } = mount();
+    await waitFor(() => expect(result.current.phase).toBe('openings'));
+    expect(result.current.voice).toBe(false);
+    act(() => result.current.start({ intent: 'open' }));
+    await waitFor(() => expect(result.current.phase).toBe('conversing'));
+    expect(result.current.voice).toBe(true);
   });
 });

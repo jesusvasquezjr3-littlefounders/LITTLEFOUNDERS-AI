@@ -263,5 +263,146 @@
         }
       }
     }
+  },
+  "mentorPersonalise": {
+    "menu": "My island",
+    "heading": "Make it yours",
+    "companion": "A friend on the island",
+    "companionNone": "Nobody",
+    "island": "Island",
+    "islands": {
+      "diorama-a": "Stone circle",
+      "diorama-b": "Oasis"
+    },
+    "light": "Light",
+    "lights": {
+      "auto": "Like my screen",
+      "dawn": "Dawn",
+      "day": "Day",
+      "dusk": "Dusk",
+      "night": "Night"
+    },
+    "nickname": "Nickname",
+    "nicknameHelp": "Not your real name. It's the only name I hear.",
+    "nicknameSave": "Save nickname",
+    "nicknameInvalid": "Use letters, numbers and spaces.",
+    "nicknameRejected": "That one didn't work. Try another.",
+    "adaptations": "How I explain",
+    "adaptation": {
+      "slower_pacing": "Go slower",
+      "more_examples": "More examples",
+      "less_text": "Less text",
+      "more_visual": "More pictures",
+      "repeat_before_advancing": "Repeat before moving on"
+    },
+    "on": "On",
+    "off": "Off",
+    "saving": "Saving…",
+    "failed": "Could not save. Try again."
+  },
+  "mentorMap": {
+    "menu": "Learning map",
+    "heading": "Your learning map",
+    "loading": "Loading your map…",
+    "failed": "Could not load the map.",
+    "retry": "Try again",
+    "empty": "Your map fills in as we learn.",
+    "upNext": "Up next",
+    "reviewCount": "To review today: {n}",
+    "step": "Step {n}",
+    "lockedBy": "Opens after {title}",
+    "readOnly": "Finish this talk to pick something new.",
+    "states": {
+      "locked": "Not open yet",
+      "available": "Ready to learn",
+      "in_progress": "In progress",
+      "mastered": "Mastered",
+      "needs_review": "Time to review"
+    }
+  },
+  "mentorNotebook": {
+    "menu": "My notebook",
+    "heading": "My notebook",
+    "loading": "Loading your notebook…",
+    "failed": "Could not load your notebook.",
+    "retry": "Try again",
+    "empty": "Keep a board and it shows up here.",
+    "lastTime": "Last time",
+    "recap": "{minutes} min · {xp} XP",
+    "recapMinutes": "{minutes} min",
+    "plan": "Your plan",
+    "planUpdated": "Updated {date}",
+    "kept": "Kept boards",
+    "keptOn": "Kept {date}",
+    "keep": "Keep board",
+    "keeping": "Keeping…",
+    "keptDone": "Kept",
+    "keepFailed": "Could not keep it. Try again."
+  },
+  "mentorHistory": {
+    "menu": "Past talks",
+    "heading": "Past talks",
+    "loading": "Loading your talks…",
+    "failed": "Could not load your talks.",
+    "retry": "Try again",
+    "empty": "No talks yet.",
+    "rowTitle": "{what} with {name}",
+    "intents": {
+      "course_topic": "A lesson topic",
+      "weak_skill": "Practice",
+      "faq": "A question",
+      "open": "A chat",
+      "diagnostic": "Getting started"
+    },
+    "detail": "{date} · {n} lines"
+  },
+  "mentorReplay": {
+    "loading": "Opening the talk…",
+    "failed": "Could not open that talk.",
+    "empty": "Nothing was saved from this talk.",
+    "notLive": "A recording. {name} can't hear you here.",
+    "noSound": "Saved without sound.",
+    "position": "Line {current} of {total}",
+    "play": "Play",
+    "pause": "Pause",
+    "previous": "Previous line",
+    "next": "Next line",
+    "fromStart": "From the start",
+    "talk": "Talk instead",
+    "ended": "That was the whole talk.",
+    "note": "Note",
+    "activity": "Activity",
+    "scored": "Score: {score} of 100",
+    "unanswered": "Not answered."
+  },
+  "mentorRoleplay": {
+    "customer": "Customer",
+    "scenes": {
+      "lemonade_change": {
+        "title": "The lemonade stand",
+        "beats": [
+          "Hi! I'd like a lemonade, please. Here's five dollars!",
+          "One lemonade is three dollars. Let's see how much change that is.",
+          "Hmm, five dollars minus three dollars… I'm not sure!",
+          "You help me figure out the change, go ahead!"
+        ]
+      }
+    }
+  },
+  "mentorVoiceConsent": {
+    "title": "Talking with the Mentor",
+    "body": "Your child can talk out loud with the Mentor instead of typing. Their voice is sent to our speech provider so it can be turned into text, and it is never stored by us. The Mentor's replies and the written conversation are saved for 90 days so you and your child can read or replay them. You can turn this off at any time.",
+    "grant": "Allow the microphone",
+    "revoke": "Turn microphone off",
+    "activeSince": "Allowed since {date}.",
+    "inactive": "Off. Your child can still type.",
+    "unavailable": "Not offered to children yet. Typing works.",
+    "pausedByPolicy": "You allowed it. It's paused for children for now.",
+    "saving": "Saving…",
+    "failed": "Could not save. Try again.",
+    "forChild": "For {name}",
+    "confirm": "I allow it",
+    "cancel": "Not now",
+    "loading": "Loading…"
   }
 }

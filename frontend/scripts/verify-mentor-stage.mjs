@@ -245,7 +245,7 @@ try {
           assert.equal(s.data.fallback, fallback);
           assert.ok(!s.canvas, 'the renderer is not loaded');
           assert.ok(s.still?.loaded, 'the still loaded');
-          assert.equal(s.still.src, `/rebuild/mentor-avatars/liruf-${theme}.png`, 'a render of the same character, in this mode');
+          assert.equal(s.still.src, `/rebuild/mentor-chooser/liruf-${theme}.png`, 'a render of the same character on its Diorama, in this mode (W2M.3)');
           assert.equal(s.still.alt, '');
           assert.equal(s.data.stillPose, 'ambient.idle', 'the stage says which pose the still shows');
           assert.equal(s.label, `Liruf, ${copy[locale].states.listening}`);
@@ -322,18 +322,34 @@ try {
      * asserted: a stage that cannot hold 30 fps at the renderer's lowest tier falls back to its still.
      * MENTOR_STAGE_STRICT_BUDGET=1 also asserts the 2.5 s first render (for a quiet, capable machine).
      */
-    for (const character of CHARACTERS) {
-      await check('performance', `${character} 375x740`, async () => {
+    /*
+     * W2M.3 (08 §10 evidence): each character is measured in three profiles on this machine: `warm` (the
+     * models already in the HTTP cache), `cold` (the cache disabled: every model, texture and chunk fetched
+     * again from the local dev server) and `phone` (warm, with the CPU throttled 4x, Chrome's usual stand-in
+     * for a mid-range phone; still software GL). MENTOR_STAGE_PROFILES narrows them.
+     */
+    const PROFILES = (process.env.MENTOR_STAGE_PROFILES ?? 'warm,cold,phone').split(',');
+    for (const profile of PROFILES) for (const character of CHARACTERS) {
+      await check('performance', `${character} 375x740 ${profile}`, async () => {
         await setView({ width: 375, theme: 'light' });
-        await openStage({ age: '6-9', character, state: 'idle' }, { locale: 'en-US', theme: 'light' });
-        const firstRenderMs = Number(await page.evaluate("document.querySelector('.lf-mentor-stage').dataset.firstRenderMs"));
-        await sleep(1500);
-        const fps = await page.evaluate('new Promise((done) => { let frames = 0; const start = performance.now(); const tick = (now) => { frames++; if (now - start < 3000) requestAnimationFrame(tick); else done(Math.round(frames * 1000 / (now - start))); }; requestAnimationFrame(tick); })');
-        if (fps < 30) await waitFor("document.querySelector('.lf-mentor-stage')?.dataset.renderMode === 'still' && document.querySelector('.lf-mentor-stage-still')?.naturalWidth > 0", `${character}: ${fps} fps, the stage never fell back to its still`, 600);
-        const after = await stageState();
-        if (process.env.MENTOR_STAGE_STRICT_BUDGET === '1') assert.ok(firstRenderMs <= 2500, `first render ${firstRenderMs} ms over the 2.5 s budget`);
-        assert.ok(fps >= 30 || (after.data.renderMode === 'still' && after.data.fallback === 'frame-rate' && after.still?.loaded), `${fps} fps and ${after.data.renderMode}`);
-        return { firstRenderMs, withinBudget: firstRenderMs <= 2500, fps, mode: after.data.renderMode, fallback: after.data.fallback ?? null };
+        await page.send('Network.enable').catch(() => {});
+        await page.send('Network.setCacheDisabled', { cacheDisabled: profile === 'cold' });
+        await page.send('Emulation.setCPUThrottlingRate', { rate: profile === 'phone' ? 4 : 1 });
+        try {
+          await openStage({ age: '6-9', character, state: 'idle' }, { locale: 'en-US', theme: 'light' });
+          const firstRenderMs = Number(await page.evaluate("document.querySelector('.lf-mentor-stage').dataset.firstRenderMs"));
+          const liveFirst = await page.evaluate("document.querySelector('.lf-mentor-stage').dataset.renderMode");
+          await sleep(1500);
+          const fps = await page.evaluate('new Promise((done) => { let frames = 0; const start = performance.now(); const tick = (now) => { frames++; if (now - start < 3000) requestAnimationFrame(tick); else done(Math.round(frames * 1000 / (now - start))); }; requestAnimationFrame(tick); })');
+          if (fps < 30) await waitFor("document.querySelector('.lf-mentor-stage')?.dataset.renderMode === 'still' && document.querySelector('.lf-mentor-stage-still')?.naturalWidth > 0", `${character}: ${fps} fps, the stage never fell back to its still`, 600);
+          const after = await stageState();
+          if (process.env.MENTOR_STAGE_STRICT_BUDGET === '1') assert.ok(firstRenderMs <= 2500, `first render ${firstRenderMs} ms over the 2.5 s budget`);
+          assert.ok(fps >= 30 || (after.data.renderMode === 'still' && after.data.fallback === 'frame-rate' && after.still?.loaded), `${fps} fps and ${after.data.renderMode}`);
+          return { profile, firstRenderMs, withinBudget: firstRenderMs <= 2500, firstMode: liveFirst, fps, mode: after.data.renderMode, fallback: after.data.fallback ?? null };
+        } finally {
+          await page.send('Emulation.setCPUThrottlingRate', { rate: 1 }).catch(() => {});
+          await page.send('Network.setCacheDisabled', { cacheDisabled: false }).catch(() => {});
+        }
       });
     }
   }

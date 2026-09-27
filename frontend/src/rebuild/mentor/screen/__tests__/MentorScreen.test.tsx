@@ -4,6 +4,7 @@ import type { MentorStageProps } from '../../MentorStage';
 import type { TutorOffers } from '../../session/types';
 import type { TutorTurnState } from '../../session/useTutorSocket';
 import { boardFixtures } from '../boardFixtures';
+import { fixtureData } from '../mentorFixtures';
 import { mentorCopy } from '../MentorRoute';
 import { MentorScreen, openingsFor, stageStateFor, type MentorLive, type MentorScreenSession } from '../MentorScreen';
 
@@ -44,7 +45,9 @@ function turn(overrides: Partial<TutorTurnState> = {}): TutorTurnState {
 
 function session(overrides: Partial<MentorScreenSession> = {}): MentorScreenSession {
   return {
-    phase: 'openings', known: true, ageBand: '6-9', character: 'dina', scene: 'diorama-b', nickname: null, offers: OFFERS,
+    phase: 'openings', known: true, ageBand: '6-9', character: 'dina', scene: 'diorama-b', voice: false, companion: null, light: 'auto', nickname: null, offers: OFFERS,
+    preferences: { character: 'dina', companion: null, diorama: 'diorama-b', backdrop: 'auto', nickname: null, adaptations: [] },
+    catalog: null, personalized: true, updatePreferences: vi.fn(async () => true), keepBoard: vi.fn(async () => true), data: fixtureData('en-US'),
     calibrationSaving: false, calibrationError: false, starting: false, startError: null, socket: live(), turn: null,
     speechUrl: null, audioKey: 0, speaking: false, awaitingReply: false, replyTimedOut: false, resuming: false, ending: false,
     history: [], closing: null,
@@ -294,6 +297,7 @@ describe('the menu: change Mentor, what we said, and the grown-up line only with
     const dialog = screen.getByRole('dialog', { name: t.chooser.heading });
     const rows = within(dialog).getAllByRole('button').filter((button) => button.classList.contains('lf-list-row--pressable'));
     expect(rows).toHaveLength(4);
+    expect(rows.filter((row) => row.textContent?.includes(t.chooser.chosen)).map((row) => row.querySelector('.lf-list-row-title')?.textContent)).toEqual(['Dina']);
     for (const img of dialog.querySelectorAll('img')) expect(img.getAttribute('data-asset-id')).toBeTruthy();
     await act(async () => { fireEvent.click(within(dialog).getByRole('button', { name: /Zara/ })); });
     expect(chooseCharacter).toHaveBeenCalledWith('zara');

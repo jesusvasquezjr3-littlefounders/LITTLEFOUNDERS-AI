@@ -7,10 +7,12 @@ import { api } from '../session/coreApi';
 import { micBlockedForOffers, micBlockedReason, narrowBlockedReason, primaryOpening } from '../session/mic';
 import type { MicBlockedReason } from '../session/micForPhase';
 import {
-  getAgeCalibration, getOffers, getPreferences, resumeSession, saveAgeCalibration, savePreferences, startSession,
+  getAgeCalibration, getOffers, getPreferences, keepBoard as keepBoardRequest, resumeSession, saveAgeCalibration, savePreferences, startSession,
   type AgeCalibration, type StartSessionInput,
 } from '../session/tutorApi';
-import type { ClosingScript, EffortAct, StartedSession, TutorOffers, TutorPreferences } from '../session/types';
+import type { ClosingScript, EffortAct, StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from '../session/types';
+import { MENTOR_STAGE_LIGHTS, type MentorStageLight } from '../MentorStage';
+import { coreMentorData } from './mentorData';
 import { useHandsFreeTurn } from '../session/useHandsFreeTurn';
 import { useMicrophone, type Microphone } from '../session/useMicrophone';
 import { useTutorSocket, type TutorSocket } from '../session/useTutorSocket';
@@ -40,9 +42,14 @@ import { useTutorSocket, type TutorSocket } from '../session/useTutorSocket';
  *   - how the session ended (C.16) is captured before the socket is released,
  *     so the closing state shows the server's own script.
  *
- * Personalisation beyond the character, saved-conversation replay, the
- * learning map and the live activity renderers are not carried by this screen
- * yet (docs/rebuild/sprints/W2-MENTOR-STAGE.md, W2M.2 limitations).
+ *   - W2M.3: the learner's own island (T1a: companion, island, light,
+ *     nickname, how the Mentor explains) is saved to Core before it is shown;
+ *     a board is kept in the notebook by naming its turn, never its content;
+ *     the learning map, the notebook and past conversations are read through
+ *     one small interface (`mentorData.ts`).
+ *
+ * The live activity renderers are not carried by this screen yet
+ * (docs/rebuild/sprints/W2-MENTOR-STAGE.md, limitations).
  */
 
 export type MentorPhase = 'loading' | 'unavailable' | 'calibration' | 'openings' | 'conversing' | 'closing';
@@ -110,6 +117,8 @@ export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessio
   const [attempt, setAttempt] = useState(0);
   const [token, setToken] = useState<string | null>(null);
   const [preferences, setPreferences] = useState<TutorPreferences | null>(null);
+  const [catalog, setCatalog] = useState<TutorCatalog | null>(null);
+  const [personalized, setPersonalized] = useState(true);
   const [offers, setOffers] = useState<TutorOffers | null>(null);
   const [calibration, setCalibration] = useState<AgeCalibration | null>(null);
   const [calibrationSaving, setCalibrationSaving] = useState(false);
@@ -150,8 +159,10 @@ export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessio
       // The youngest register is the most protective reading when Core's is unknown (B.23).
       setAgeBand(register.status === 'ready' ? register.value.copy_band : '6-9');
       if (!prefs.data || !offered.data) { setPhase('unavailable'); return; }
-      const { catalog: _catalog, personalized: _personalized, ...kept } = prefs.data;
+      const { catalog: offeredCatalog, personalized: chosen, ...kept } = prefs.data;
       setPreferences(kept);
+      setCatalog(offeredCatalog ?? null);
+      setPersonalized(chosen !== false);
       setOffers(offered.data);
       setCalibration(calibrated.data);
       setCalibrationError(!!calibrated.error);
@@ -376,15 +387,37 @@ export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessio
     setAwaitingReply(true);
   }, [phase, offers, startError, start, speaking, turnSeq, socket]);
 
-  /* 08 §8: the chosen character fills every Mentor slot; saved to Core before it is shown as chosen. */
-  const chooseCharacter = useCallback(async (character: MentorCharacter): Promise<boolean> => {
+  /*
+   * T1a / 08 §8: every choice is saved to Core first and only then shown (a
+   * refused save keeps what was there and the sheet says so). The chosen
+   * character fills every Mentor slot; a companion is never the Mentor itself.
+   */
+  const updatePreferences = useCallback(async (patch: Partial<TutorPreferences>): Promise<boolean> => {
     const auth = token ?? await getToken();
     if (!auth) return false;
-    const result = await savePreferences(auth, { character });
+    const next = patch.character && patch.character === preferences?.companion ? { ...patch, companion: null } : patch;
+    const result = await savePreferences(auth, next);
     if (!result.data) return false;
     setPreferences(result.data);
+    setPersonalized(true);
     return true;
+  }, [token, getToken, preferences?.companion]);
+  const chooseCharacter = useCallback((character: MentorCharacter) => updatePreferences({ character }), [updatePreferences]);
+
+  /* T1g: keep the current conversation's board in the notebook. One quiet retry: the request is idempotent. */
+  const keepBoard = useCallback(async (turnSeq: number): Promise<boolean> => {
+    const auth = token ?? await getToken();
+    const sessionId = sessionRef.current?.sessionId;
+    if (!auth || !sessionId) return false;
+    let result = await keepBoardRequest(auth, sessionId, turnSeq);
+    if (result.error) {
+      await new Promise((done) => { window.setTimeout(done, 600); });
+      result = await keepBoardRequest(auth, sessionId, turnSeq);
+    }
+    return !result.error;
   }, [token, getToken]);
+
+  const data = useMemo(() => coreMentorData(getToken), [getToken]);
 
   const answerAlliance = useCallback(async (answer: BondProxyAnswer) => {
     const auth = token ?? await getToken();
@@ -397,9 +430,15 @@ export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessio
     return isCharacter(value) ? value : 'rho';
   }, [session, preferences]);
   const scene = (session?.diorama ?? preferences?.diorama) === 'diorama-b' ? 'diorama-b' as const : 'diorama-a' as const;
+  const companionValue = session ? session.companion : preferences?.companion;
+  const companion = isCharacter(companionValue) && companionValue !== character ? companionValue : null;
+  const lightValue = session?.backdrop ?? preferences?.backdrop;
+  const light: MentorStageLight = (MENTOR_STAGE_LIGHTS as readonly unknown[]).includes(lightValue) ? lightValue as MentorStageLight : 'auto';
 
   return {
-    phase, ageBand, character, scene, known: preferences !== null,
+    phase, ageBand, character, scene, companion, light, known: preferences !== null,
+    voice: phase === 'conversing' && !!session?.voiceAvailable,
+    preferences, catalog, personalized, updatePreferences, keepBoard, data,
     nickname: preferences?.nickname ?? null,
     offers, calibration, calibrationSaving, calibrationError,
     starting, startError, session,

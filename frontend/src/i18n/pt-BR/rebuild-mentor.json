@@ -263,5 +263,146 @@
         }
       }
     }
+  },
+  "mentorPersonalise": {
+    "menu": "Minha ilha",
+    "heading": "Deixe do seu jeito",
+    "companion": "Um amigo na ilha",
+    "companionNone": "Ninguém",
+    "island": "Ilha",
+    "islands": {
+      "diorama-a": "Círculo de pedras",
+      "diorama-b": "Oásis"
+    },
+    "light": "Luz",
+    "lights": {
+      "auto": "Como minha tela",
+      "dawn": "Amanhecer",
+      "day": "Dia",
+      "dusk": "Entardecer",
+      "night": "Noite"
+    },
+    "nickname": "Apelido",
+    "nicknameHelp": "Não seu nome real. É o único nome que eu ouço.",
+    "nicknameSave": "Salvar apelido",
+    "nicknameInvalid": "Use letras, números e espaços.",
+    "nicknameRejected": "Esse não deu certo. Tente outro.",
+    "adaptations": "Como eu explico",
+    "adaptation": {
+      "slower_pacing": "Mais devagar",
+      "more_examples": "Mais exemplos",
+      "less_text": "Menos texto",
+      "more_visual": "Mais desenhos",
+      "repeat_before_advancing": "Repetir antes de seguir"
+    },
+    "on": "Sim",
+    "off": "Não",
+    "saving": "Salvando…",
+    "failed": "Não deu para salvar. Tente de novo."
+  },
+  "mentorMap": {
+    "menu": "Mapa de aprendizado",
+    "heading": "Seu mapa de aprendizado",
+    "loading": "Carregando seu mapa…",
+    "failed": "Não deu para carregar o mapa.",
+    "retry": "Tentar de novo",
+    "empty": "Seu mapa se completa enquanto aprendemos.",
+    "upNext": "O próximo",
+    "reviewCount": "Para revisar hoje: {n}",
+    "step": "Passo {n}",
+    "lockedBy": "Abre depois de {title}",
+    "readOnly": "Termine esta conversa para escolher algo novo.",
+    "states": {
+      "locked": "Ainda não abriu",
+      "available": "Pronto para aprender",
+      "in_progress": "Em andamento",
+      "mastered": "Dominado",
+      "needs_review": "Hora de revisar"
+    }
+  },
+  "mentorNotebook": {
+    "menu": "Meu caderno",
+    "heading": "Meu caderno",
+    "loading": "Carregando seu caderno…",
+    "failed": "Não deu para carregar seu caderno.",
+    "retry": "Tentar de novo",
+    "empty": "Guarde um quadro e ele aparece aqui.",
+    "lastTime": "Da última vez",
+    "recap": "{minutes} min · {xp} XP",
+    "recapMinutes": "{minutes} min",
+    "plan": "Seu plano",
+    "planUpdated": "Atualizado em {date}",
+    "kept": "Quadros guardados",
+    "keptOn": "Guardado em {date}",
+    "keep": "Guardar quadro",
+    "keeping": "Guardando…",
+    "keptDone": "Guardado",
+    "keepFailed": "Não deu para guardar. Tente de novo."
+  },
+  "mentorHistory": {
+    "menu": "Conversas passadas",
+    "heading": "Conversas passadas",
+    "loading": "Carregando suas conversas…",
+    "failed": "Não deu para carregar suas conversas.",
+    "retry": "Tentar de novo",
+    "empty": "Ainda não há conversas.",
+    "rowTitle": "{what} com {name}",
+    "intents": {
+      "course_topic": "Um tema de lição",
+      "weak_skill": "Prática",
+      "faq": "Uma pergunta",
+      "open": "Uma conversa",
+      "diagnostic": "Para começar"
+    },
+    "detail": "{date} · {n} linhas"
+  },
+  "mentorReplay": {
+    "loading": "Abrindo a conversa…",
+    "failed": "Não deu para abrir essa conversa.",
+    "empty": "Nada foi salvo desta conversa.",
+    "notLive": "É uma gravação. {name} não ouve você aqui.",
+    "noSound": "Salva sem som.",
+    "position": "Linha {current} de {total}",
+    "play": "Tocar",
+    "pause": "Pausar",
+    "previous": "Linha anterior",
+    "next": "Próxima linha",
+    "fromStart": "Do começo",
+    "talk": "Conversar agora",
+    "ended": "Essa foi a conversa inteira.",
+    "note": "Nota",
+    "activity": "Atividade",
+    "scored": "Pontos: {score} de 100",
+    "unanswered": "Sem resposta."
+  },
+  "mentorRoleplay": {
+    "customer": "Cliente",
+    "scenes": {
+      "lemonade_change": {
+        "title": "A barraca de limonada",
+        "beats": [
+          "Oi! Eu queria uma limonada, por favor. Aqui estão cinco reais!",
+          "Uma limonada custa três reais. Vamos ver quanto é o troco.",
+          "Hmm, cinco reais menos três reais… não tenho certeza!",
+          "Me ajude a descobrir o troco, pode ir."
+        ]
+      }
+    }
+  },
+  "mentorVoiceConsent": {
+    "title": "Falar com o Mentor",
+    "body": "Seu filho pode falar em voz alta com o Mentor em vez de digitar. A voz dele é enviada ao nosso provedor de voz para virar texto, e nunca é guardada por nós. As respostas do Mentor e a conversa escrita ficam salvas por 90 dias para que você e seu filho possam ler ou ouvir de novo. Você pode desligar isso a qualquer momento.",
+    "grant": "Permitir o microfone",
+    "revoke": "Desligar o microfone",
+    "activeSince": "Permitido desde {date}.",
+    "inactive": "Desligado. Seu filho ainda pode digitar.",
+    "unavailable": "Ainda não oferecido a crianças. Digitar funciona.",
+    "pausedByPolicy": "Você permitiu. Por enquanto está pausado para crianças.",
+    "saving": "Salvando…",
+    "failed": "Não deu para salvar. Tente de novo.",
+    "forChild": "Para {name}",
+    "confirm": "Eu permito",
+    "cancel": "Agora não",
+    "loading": "Carregando…"
   }
 }

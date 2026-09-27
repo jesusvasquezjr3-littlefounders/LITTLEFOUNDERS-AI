@@ -193,6 +193,53 @@
 .lf-mentor-transcript p { margin: 0; overflow-wrap: anywhere; }
 .lf-mentor-transcript-speaker { font: var(--type-label); letter-spacing: var(--type-label-tracking); color: var(--content-muted); }
 
+/* W2M.3: who speaks a line that is not the Mentor's live turn (a roleplay beat, a replayed line). */
+.lf-mentor-plate-speaker {
+  flex: 1 0 100%;
+  margin: 0;
+  font: var(--type-label);
+  letter-spacing: var(--type-label-tracking);
+  color: var(--content-muted);
+  overflow-wrap: anywhere;
+}
+
+/* "Keep board" under a live board (T1g). */
+.lf-mentor-keep { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2); padding-inline: var(--spacing-2); padding-block-end: var(--spacing-2); }
+
+/* A past talk on the stage (T1e): its transport in the response area. */
+.lf-mentor-replay { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-mentor-replay-position, .lf-mentor-replay-score { margin: 0; font: var(--type-label); letter-spacing: var(--type-label-tracking); }
+.lf-mentor-replay-transport { display: flex; justify-content: center; align-items: center; gap: var(--spacing-4); }
+.lf-mentor-replay-previous .lf-system-glyph { transform: scaleX(-1); }
+[dir='rtl'] .lf-mentor-replay-transport .lf-system-glyph { transform: scaleX(-1); }
+[dir='rtl'] .lf-mentor-replay-previous .lf-system-glyph { transform: none; }
+
+/* The chooser (08 §8): each character's picture on its Diorama leads its row, then the name and one line. */
+/* The picture takes the room a longer title would: the words wrap before the row's chevron drops to its own line. */
+.lf-mentor-chooser .lf-list-row-text { flex-basis: 7em; }
+.lf-mentor-chooser-still { display: block; inline-size: 5.5rem; aspect-ratio: 4 / 5; border-radius: var(--rounded-md); object-fit: cover; }
+
+/* The learning map's state mark: a shape of the state's hue beside the words (the words carry the meaning). */
+.lf-mentor-map-mark { display: block; inline-size: var(--spacing-3); block-size: var(--spacing-3); border-radius: var(--rounded-full); background: var(--sunken); }
+.lf-mentor-map-mark--success { background: var(--success); }
+.lf-mentor-map-mark--reward { background: var(--reward); }
+.lf-mentor-map-mark--primary { background: var(--primary); }
+.lf-mentor-map-mark--sky { background: var(--sky); }
+
+/* The secondary views in their sheets (T1a, T1e-T1g). */
+/* A comfortable measure (03): in the 640 px sheet of a tablet or desktop a row of past talks ran past 75 characters (the audit, W2M.3). */
+.lf-mentor-view { display: grid; gap: var(--spacing-4); min-inline-size: 0; inline-size: 100%; max-inline-size: 32rem; margin-inline: auto; }
+.lf-mentor-view-section { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-mentor-view-section > p { margin: 0; overflow-wrap: anywhere; }
+.lf-mentor-view-heading { margin: 0; font: var(--type-title); letter-spacing: var(--type-title-tracking); }
+.lf-mentor-view-form { display: grid; gap: var(--spacing-2); justify-items: start; min-inline-size: 0; }
+.lf-mentor-view-form > .lf-input-field { inline-size: 100%; }
+.lf-mentor-view-group { display: grid; gap: var(--spacing-2); min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.lf-mentor-view-status { margin: 0; color: var(--content-muted); }
+.lf-mentor-view-boards { display: grid; gap: var(--spacing-4); margin: 0; padding: 0; list-style: none; }
+.lf-mentor-view-boards > li { display: grid; gap: var(--spacing-1); min-inline-size: 0; }
+.lf-mentor-view-boards p { margin: 0; color: var(--content-muted); }
+
 .lf-mentor-route-loading { display: grid; place-items: center; block-size: 100dvh; padding: var(--spacing-4); background: var(--base); }
 
 @container app (min-width: 600px) {

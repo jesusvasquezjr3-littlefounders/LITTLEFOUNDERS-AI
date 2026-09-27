@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 import type { Locale } from '@/i18n';
 import { ROLEPLAY_SCENES, type RoleplayBeat, type RoleplaySceneId } from './scenes';
-import ROLEPLAY_VOICES from './voices.generated.json';
+import ROLEPLAY_VOICES from '@/rebuild/mentor/session/roleplayVoices.generated.json';
 
 /*
  * THE CLOCK OF A ROLEPLAY, the same job `useReplayDirector.ts` does for a

@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { MentorStage } from '../MentorStage';
+import { defaultStageShot, MentorStage } from '../MentorStage';
 import { CompactMentorStage } from '../../learning/CompactMentorStage';
 
 /*
@@ -53,11 +53,24 @@ describe('MentorStage: live 3D', () => {
     expect(stage().dataset.mentorState).toBe('thinking');
   });
 
+  it('frames Dina whole on diorama-a (the close-up is only her head there) and keeps every other default shot', async () => {
+    expect(defaultStageShot('dina', 'diorama-a', 'full')).toBe('closeup-wide');
+    expect(defaultStageShot('dina', 'diorama-b', 'full')).toBe('closeup');
+    for (const character of ['rho', 'zara', 'liruf'] as const) {
+      expect(defaultStageShot(character, 'diorama-a', 'full')).toBe('closeup');
+      expect(defaultStageShot(character, 'diorama-b', 'full')).toBe('closeup');
+    }
+    expect(defaultStageShot('dina', 'diorama-b', 'compact')).toBe('closeup-wide');
+    render(<MentorStage character="dina" state="idle" ageBand="6-9" theme="light" scene="diorama-a" />);
+    await screen.findByTestId('tutor-stage');
+    expect(harness.last?.shot).toBe('closeup-wide');
+  });
+
   it('shows the character still until the model is ready, then reports ready inside the budget', async () => {
     const onReady = vi.fn();
     render(<MentorStage character="rho" state="idle" ageBand="10-12" theme="dark" onReady={onReady} />);
     await screen.findByTestId('tutor-stage');
-    expect(document.querySelector('.lf-mentor-stage-still')?.getAttribute('src')).toBe('/rebuild/mentor-avatars/rho-dark.png');
+    expect(document.querySelector('.lf-mentor-stage-still')?.getAttribute('src')).toBe('/rebuild/mentor-chooser/rho-dark.png');
     expect(stage().dataset.ready).toBe('false');
     act(() => harness.last!.onReady!());
     expect(stage().dataset.ready).toBe('true');
@@ -122,7 +135,7 @@ describe('MentorStage: live 3D', () => {
     quiet.mockRestore();
     expect(stage().dataset.renderMode).toBe('still');
     expect(stage().dataset.fallback).toBe('render-error');
-    expect(document.querySelector('.lf-mentor-stage-still')?.getAttribute('src')).toBe('/rebuild/mentor-avatars/rho-light.png');
+    expect(document.querySelector('.lf-mentor-stage-still')?.getAttribute('src')).toBe('/rebuild/mentor-chooser/rho-light.png');
   });
 });
 
@@ -155,7 +168,7 @@ describe('MentorStage: stills fallback (08 §7)', () => {
     expect(stage().dataset.fallback).toBe('no-webgl');
     expect(screen.queryByTestId('tutor-stage')).toBeNull();
     const still = document.querySelector<HTMLImageElement>('.lf-mentor-stage-still')!;
-    expect(still.getAttribute('src')).toBe('/rebuild/mentor-avatars/liruf-dark.png');
+    expect(still.getAttribute('src')).toBe('/rebuild/mentor-chooser/liruf-dark.png');
     expect(still.getAttribute('alt')).toBe('');
     // The still shows the idle render, and the stage says so rather than claiming "listening".
     expect(stage().dataset.stillPose).toBe('ambient.idle');

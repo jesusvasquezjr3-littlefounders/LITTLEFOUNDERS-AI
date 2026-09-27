@@ -6,7 +6,10 @@ import type { Adaptation, TutorOffers, TutorWhiteboardWire } from '../session/ty
 import type { TutorTurnState } from '../session/useTutorSocket';
 import { boardFixtures } from './boardFixtures';
 import { mentorCopy } from './MentorRoute';
-import { MentorScreen, type MentorLive, type MentorScreenSession } from './MentorScreen';
+import { MentorScreen, type MentorLive, type MentorScreenSession, type MentorSheet } from './MentorScreen';
+import { fixtureData, sessionsFixture, transcriptFixture } from './mentorFixtures';
+import { replayBeats } from './replayModel';
+import type { TutorCatalog, TutorPreferences } from '../session/types';
 import type { MentorPhase } from './useMentorSession';
 
 /*
@@ -14,9 +17,19 @@ import type { MentorPhase } from './useMentorSession';
  * every state from fixtures, no Core and no Oracle:
  *
  *   ?state=  loading | unavailable | calibration | openings | limit | conversing | thinking | long | board |
- *            adaptation | session-end | goal | check-in | activity | recording | error | closing | closing-safety
- *   ?board=<whiteboard kind>  ?character=  ?guardian=1  ?mic=on|off|consent|policy  ?sheet=transcript|grown-up|chooser
+ *            adaptation | session-end | goal | check-in | activity | recording | error | closing | closing-safety |
+ *            replay | roleplay | first-visit
+ *   ?board=<whiteboard kind>  ?character=  ?companion=  ?light=  ?guardian=1  ?mic=on|off|consent|policy
+ *   ?sheet=transcript|grown-up|chooser|personalise|map|notebook|history  ?data=ready|empty|failed|loading
  */
+
+const CATALOG: TutorCatalog = {
+  characters: ['rho', 'zara', 'liruf', 'dina'], dioramas: ['diorama-a', 'diorama-b'], backdrops: ['auto', 'dawn', 'day', 'dusk', 'night'],
+  adaptations: ['slower_pacing', 'more_examples', 'less_text', 'more_visual', 'repeat_before_advancing'], articulates: ['rho', 'zara'],
+};
+const SHEETS: Record<string, MentorSheet> = {
+  transcript: 'transcript', 'grown-up': 'grownUp', chooser: 'chooser', personalise: 'personalise', map: 'map', notebook: 'notebook', history: 'history',
+};
 
 const TURNS: Record<Locale, { short: string; long: string; ask: string }> = {
   'en-US': {
@@ -54,14 +67,25 @@ export function MentorScreenPreview({ locale, theme, ageBand, params }: { locale
   const board = boardKind && boardKind in boards ? boards[boardKind] : null;
   const mic = params.get('mic') ?? 'on';
   const [recording] = useState(state === 'recording');
+  const companionParam = params.get('companion');
+  const companion = (MENTOR_CHARACTERS as readonly string[]).includes(companionParam ?? '') && companionParam !== character ? companionParam as MentorCharacter : null;
+  const dataMode = (['empty', 'failed', 'loading'] as const).find((mode) => mode === params.get('data')) ?? 'ready';
+  const [data] = useState(() => fixtureData(locale, dataMode));
+  const [preferences, setPreferences] = useState<TutorPreferences>({
+    character, companion, diorama: character === 'liruf' || character === 'dina' ? 'diorama-b' : 'diorama-a',
+    backdrop: params.get('light') ?? 'auto', nickname: params.get('nickname'), adaptations: ['more_examples'],
+  });
+  const [replay] = useState(() => (state === 'replay' ? { summary: { ...sessionsFixture()[0]!, character }, beats: replayBeats(transcriptFixture(locale, character)) } : null));
 
   const phase: MentorPhase = state === 'loading' || state === 'unavailable' || state === 'calibration' ? state
-    : state === 'openings' || state === 'limit' ? 'openings'
+    : state === 'openings' || state === 'limit' || state === 'replay' || state === 'first-visit' ? 'openings'
       : state.startsWith('closing') ? 'closing' : 'conversing';
   const text = state === 'long' || board ? TURNS[locale].long : state === 'adaptation' || state === 'session-end' || state === 'goal' || state === 'check-in' ? TURNS[locale].ask : TURNS[locale].short;
   const turn: TutorTurnState | null = phase === 'conversing' && state !== 'thinking' ? {
     seq: 3, text, emotion: state === 'error' ? 'encouraging' : 'happy', action: board ? 'point' : 'idle', audioUrl: null, audioPending: false, wordTimings: null,
-    next: 'ask', policy: null, demonstrate: null, whiteboard: board, roleplayScene: null, pointAt: null,
+    next: 'ask', policy: null, demonstrate: null, whiteboard: board, roleplayScene: state === 'roleplay' ? 'lemonade_change' : null, pointAt: null,
+    // A roleplay fixture starts its scene at once: the introducing line's voice is still "on its way".
+    ...(state === 'roleplay' ? { audioPending: true } : {}),
   } : null;
   const socket: MentorLive = {
     adaptationOffer: state === 'adaptation' ? 'more_examples' as Adaptation : null,
@@ -72,7 +96,12 @@ export function MentorScreenPreview({ locale, theme, ageBand, params }: { locale
     answerAdaptation: noop, answerSessionEnd: noop, answerCheckIn: noop, answerGoal: noop,
   };
   const session: MentorScreenSession = {
-    phase, known: phase !== 'loading' && phase !== 'unavailable', ageBand, character, scene: character === 'liruf' || character === 'dina' ? 'diorama-b' : 'diorama-a',
+    phase, known: phase !== 'loading' && phase !== 'unavailable', ageBand, character, scene: preferences.diorama === 'diorama-b' ? 'diorama-b' : 'diorama-a',
+    companion: preferences.companion && preferences.companion !== character ? preferences.companion as MentorCharacter : null,
+    light: (['auto', 'dawn', 'day', 'dusk', 'night'] as const).find((id) => id === preferences.backdrop) ?? 'auto',
+    preferences, catalog: CATALOG, personalized: state !== 'first-visit', voice: false,
+    updatePreferences: async (patch) => { setPreferences((current) => ({ ...current, ...patch })); return true; },
+    keepBoard: async () => true, data,
     nickname: params.get('nickname'), offers: phase === 'openings' ? { ...OFFERS, locale, canStart: true, startBlockedBy: state === 'limit' ? 'SESSION_LIMIT' : null } : null,
     calibrationSaving: false, calibrationError: false, starting: false, startError: state === 'limit' ? 'SESSION_LIMIT' : null,
     socket, turn, speechUrl: null, audioKey: 3, speaking: false, awaitingReply: state === 'thinking', replyTimedOut: false, resuming: false, ending: false,
@@ -86,7 +115,7 @@ export function MentorScreenPreview({ locale, theme, ageBand, params }: { locale
   return <div className="lf-rebuild" data-theme={theme} lang={locale} data-age-band={ageBand}>
     <RebuildProvider environment={{ theme, locale, ageBand }} labels={{ dismiss: copy.mentorScreen.sheetClose }}>
       <MentorScreen session={session} copy={copy} locale={locale} theme={theme} guardianLink={params.get('guardian') === '1'}
-        onLeave={noop} onPath={noop} initialSheet={(params.get('sheet') as 'transcript' | 'grownUp' | 'chooser' | null) ?? null} />
+        onLeave={noop} onPath={noop} initialSheet={SHEETS[params.get('sheet') ?? ''] ?? null} initialReplay={replay} roleplayFrozen={state === 'roleplay'} />
     </RebuildProvider>
   </div>;
 }

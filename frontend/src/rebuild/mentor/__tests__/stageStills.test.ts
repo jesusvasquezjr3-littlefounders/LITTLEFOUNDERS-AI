@@ -29,11 +29,20 @@ describe('Mentor stage stills (Frontend Bible 08 §7, 07 §4)', () => {
     expect(teen.base.path).toBe('/rebuild/mentor-stills/dina-teen-dark.png');
   });
 
-  it('falls back to the transparent avatar render, contained on the scene colour, and reports the pose it shows', () => {
-    const set = findStageStills({ character: 'rho', poseId: 'think.ponder', theme: 'dark', size: 'full', band: 'young' })!;
+  it('shows the full stage the character standing on its Diorama, and reports the pose it shows', () => {
+    for (const character of MENTOR_CHARACTERS) for (const theme of ['light', 'dark'] as const) {
+      const set = findStageStills({ character, poseId: 'think.ponder', theme, size: 'full', band: 'young' })!;
+      expect(set.base.path).toBe(`/rebuild/mentor-chooser/${character}-${theme}.png`);
+      expect(set.base.fit).toBe('cover');
+      // It shows the idle pose, not the requested one: the stage exposes that rather than claiming the state.
+      expect(set.base.poseId).toBe('ambient.idle');
+    }
+  });
+
+  it('falls back to the transparent avatar render in the compact band, contained on the scene colour', () => {
+    const set = findStageStills({ character: 'rho', poseId: 'think.ponder', theme: 'dark', size: 'compact', band: 'young' })!;
     expect(set.base.path).toBe('/rebuild/mentor-avatars/rho-dark.png');
     expect(set.base.fit).toBe('contain');
-    // It shows the idle pose, not the requested one: the stage exposes that rather than claiming the state.
     expect(set.base.poseId).toBe('ambient.idle');
   });
 

@@ -16,7 +16,7 @@
  * cheaper, more honest answer to "how does the client find the URL that
  * demonstrably already exists."
  *
- * WHAT IT WRITES. `frontend/src/tutor/roleplay/voices.generated.json`:
+ * WHAT IT WRITES. `frontend/src/rebuild/mentor/session/roleplayVoices.generated.json`:
  * `{ [sceneId]: { [beatIndex]: { [characterId]: { [locale]: url } } } }` —
  * shaped for the exact lookup `useRoleplayDirector.ts` needs (the resolved
  * speaker's id, the beat's own index, the session's locale), never the
@@ -34,7 +34,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const MANIFEST_PATH = path.join(ROOT, 'oracle/speech.pregenerated.json');
-const OUT_PATH = path.join(ROOT, 'frontend/src/tutor/roleplay/voices.generated.json');
+const OUT_PATH = path.join(ROOT, 'frontend/src/rebuild/mentor/session/roleplayVoices.generated.json');
 
 function main() {
   const manifest = JSON.parse(readFileSync(MANIFEST_PATH, 'utf8'));
@@ -64,7 +64,7 @@ function main() {
   };
 
   writeFileSync(OUT_PATH, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
-  console.log(`Wrote ${count} roleplay voice URL(s) to frontend/src/tutor/roleplay/voices.generated.json`);
+  console.log(`Wrote ${count} roleplay voice URL(s) to frontend/src/rebuild/mentor/session/roleplayVoices.generated.json`);
 }
 
 main();

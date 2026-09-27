@@ -14,7 +14,7 @@ import { installSyntheticCore, SCENARIOS, sessionStorageScript } from './audits/
  *
  *   REBUILD_URL=http://localhost:5430 node scripts/verify-mentor-screen.mjs
  *
- * Families (MENTOR_SCREEN_FAMILIES=layout,conversation,focus):
+ * Families (MENTOR_SCREEN_FAMILIES=layout,conversation,focus,more):
  *   layout        a child 6-9 in a family, an independent teen and an adult x 3 locales x 2 modes x
  *                 320/375/768/1280 px x normal and 140% text: one <h1>, the character's name; the stage
  *                 at least 55% of a phone's height, half a tablet's, the left 7 of 12 columns on a desktop,
@@ -28,16 +28,23 @@ import { installSyntheticCore, SCENARIOS, sessionStorageScript } from './audits/
  *                 stop-or-continue offer are answered; the server's closing script shows the closing
  *                 state, and the bond question is answered and recorded.
  *   focus         arriving from Learn by the navigation's Mentor tab moves focus into the Mentor screen.
+ *   more          W2M.3 (T1a-T1g), per locale and mode at 320, 375 and 1280 px with real presses: the menu's
+ *                 views; the learner's island (a friend invited is saved with PUT and then stands on the
+ *                 stage); the notebook's boards; a past talk replayed on the stage with its own character,
+ *                 its transport and the way back; the learning map in steps and a practice talk started
+ *                 from it; a board kept by naming its turn; a roleplay scene in the plate. Each sheet: no
+ *                 horizontal overflow, every control at least 48 px, 0 axe violations. Audio is stubbed:
+ *                 no clip is fetched (the roleplay clips live on the production CDN).
  *
  * Reports and screenshots: audit-results/mentor-screen/<families>/.
  */
 const origin = process.env.REBUILD_URL ?? 'http://localhost:5430';
-const FAMILIES = (process.env.MENTOR_SCREEN_FAMILIES ?? 'layout,conversation,focus').split(',');
+const FAMILIES = (process.env.MENTOR_SCREEN_FAMILIES ?? 'layout,conversation,focus,more').split(',');
 const out = resolve('../audit-results/mentor-screen', FAMILIES.join('-'));
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
 const LOCALES = (process.env.MENTOR_SCREEN_LOCALES ?? 'en-US,es-MX,pt-BR').split(',');
-const THEMES = ['light', 'dark'];
+const THEMES = (process.env.MENTOR_SCREEN_THEMES ?? 'light,dark').split(',');
 const WIDTHS = [320, 375, 768, 1280];
 const NAMES = { rho: 'Dr. Rho', zara: 'Zara', liruf: 'Liruf', dina: 'Dina' };
 const copy = Object.fromEntries(['en-US', 'es-MX', 'pt-BR'].map((locale) => [locale, JSON.parse(readFileSync(resolve(`src/i18n/${locale}/rebuild-mentor.json`), 'utf8'))]));
@@ -67,6 +74,15 @@ const FAKE_ORACLE = `(() => {
   window.WebSocket = Fake;
   log.push = (message) => log.sockets.at(-1)?.onmessage?.({ data: JSON.stringify(message) });
   log.end = (reason) => { const s = log.sockets.at(-1); if (!s) return; s.readyState = 3; s.onclose?.({ code: 1000, reason, wasClean: true }); };
+  window.__audio = [];
+  window.Audio = class { constructor(src) { this.src = src; window.__audio.push(String(src)); } play() { return Promise.resolve(); } pause() {} removeAttribute() {} };
+  window.__requests = [];
+  const realFetch = window.fetch.bind(window);
+  window.fetch = (input, init = {}) => {
+    const url = String(input?.url ?? input);
+    if (url.includes('/api/v1/')) window.__requests.push({ method: (init.method ?? 'GET').toUpperCase(), path: url.split('/api/v1')[1].split('?')[0], body: typeof init.body === 'string' ? init.body : null });
+    return realFetch(input, init);
+  };
   window.__errors = [];
   addEventListener('error', (e) => window.__errors.push(String(e.error?.stack || e.message)));
   addEventListener('unhandledrejection', (e) => window.__errors.push(String(e.reason?.stack || e.reason)));
@@ -109,16 +125,25 @@ async function signIn(scenario, locale, theme, path = '/tutor') {
 
 /* A real press: the element under the pointer at its centre must be the control itself. */
 async function press(selector, what = selector) {
+  // A sheet still sliding in moves its rows under the pointer: wait until the target stops moving (up to 3 s).
+  let last = null;
+  for (let n = 0; n < 30; n++) {
+    const rect = await page.evaluate(`(() => { const e = [...document.querySelectorAll(${JSON.stringify(selector)})].find((el) => el.getBoundingClientRect().width > 0); if (!e) return null; const r = e.getBoundingClientRect(); return [Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)].join(','); })()`);
+    if (rect && rect === last) break;
+    last = rect;
+    await sleep(100);
+  }
   const point = await page.evaluate(`(() => {
     const e = [...document.querySelectorAll(${JSON.stringify(selector)})].find((el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden'; });
     if (!e) return null;
     e.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     const r = e.getBoundingClientRect(), x = r.x + r.width / 2, y = r.y + r.height / 2;
     const hit = document.elementFromPoint(x, y);
-    return { x, y, hit: hit === e || e.contains(hit) };
+    return { x, y, hit: hit === e || e.contains(hit), by: hit ? (hit.className?.baseVal ?? hit.className ?? hit.tagName) + '' : null,
+      frame: [innerWidth, innerHeight, JSON.stringify(e.closest('[role=dialog]')?.getBoundingClientRect() ?? null)].join(' ') };
   })()`);
   assert.ok(point, `missing ${what}`);
-  assert.ok(point.hit, `${what} is covered at its centre`);
+  assert.ok(point.hit, `${what} is covered at its centre (by ${point.by} at ${Math.round(point.x)},${Math.round(point.y)}; ${point.frame})`);
   for (const type of ['mousePressed', 'mouseReleased']) await page.send('Input.dispatchMouseEvent', { type, x: point.x, y: point.y, button: 'left', clickCount: 1 });
 }
 
@@ -135,6 +160,8 @@ async function check(family, where, body) {
     const state = await page.evaluate(`(() => { const s = document.querySelector('.lf-mentor-screen'); return s ? { ...s.dataset, errors: window.__errors } : { url: location.href, body: document.body?.innerText.slice(0, 200) }; })()`).catch(() => null);
     const message = `${error.message ?? error} | screen: ${JSON.stringify(state)}`;
     failures.push({ family, where, error: message });
+    // What the screen looked like when the check failed: failures are looked at, not only read.
+    await shot(`failed-${family}-${where.replace(/[^A-Za-z0-9-]+/g, '-')}`).catch(() => {});
     results.push({ family, where, ok: false, error: message });
     process.stdout.write('F');
   }
@@ -178,7 +205,7 @@ try {
           await setView({ width, height, theme });
           if (!loaded) {
             await signIn(scenario, locale, theme);
-            await waitFor(`document.documentElement.lang === ${JSON.stringify(locale)} && document.querySelector('.lf-mentor-screen[data-phase="openings"]')`, `${where}: openings`);
+            await waitFor(`document.documentElement?.lang === ${JSON.stringify(locale)} && document.querySelector('.lf-mentor-screen[data-phase="openings"]')`, `${where}: openings`);
             loaded = true;
           }
           await page.evaluate(`document.documentElement.style.fontSize = '${text}%'`);
@@ -203,7 +230,8 @@ try {
             await press('.lf-mentor-top [aria-haspopup="menu"]', 'the menu');
             await waitFor("document.querySelector('[role=menu]')", 'menu open', 200);
             const items = await page.evaluate("[...document.querySelectorAll('[role=menuitem]')].map((i) => i.textContent.trim())");
-            assert.deepEqual(items, [t.changeMentor, t.transcript, ...(guardian ? [t.grownUp] : [])]);
+            const c = copy[locale];
+            assert.deepEqual(items, [t.changeMentor, c.mentorPersonalise.menu, c.mentorMap.menu, c.mentorNotebook.menu, c.mentorHistory.menu, t.transcript, ...(guardian ? [t.grownUp] : [])]);
             await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
             await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
             await waitFor("!document.querySelector('[role=menu]')", 'menu closed', 200);
@@ -242,7 +270,7 @@ try {
       await check('conversation', where, async () => {
         await setView({ width, height: width >= 1024 ? 800 : 740, theme });
         await signIn('mentor-screen-child', locale, theme);
-        await waitFor(`document.documentElement.lang === ${JSON.stringify(locale)} && document.querySelector('.lf-mentor-screen[data-phase="openings"] [data-opening]')`, 'openings');
+        await waitFor(`document.documentElement?.lang === ${JSON.stringify(locale)} && document.querySelector('.lf-mentor-screen[data-phase="openings"] [data-opening]')`, 'openings');
         await press('[data-opening]', 'the first opening');
         await waitFor("window.__oracle.sockets.length === 1 && window.__oracle.sockets[0].readyState === 1 && document.querySelector('.lf-mentor-screen[data-phase=\"conversing\"]')", 'a session and its socket');
         const say = 'You saved ten coins the first week. Then you added five coins each week, so the jar kept growing. How much is left for the bike?';
@@ -290,6 +318,117 @@ try {
         const focus = await page.evaluate("(() => { const a = document.activeElement; return { inScreen: !!a?.closest('.lf-mentor-screen'), tag: a?.tagName }; })()");
         assert.ok(focus.inScreen, `focus stayed at ${focus.tag}`);
         return focus;
+      });
+    }
+  }
+  if (FAMILIES.includes('more')) {
+    const SHEET_MEASURE = `(() => {
+      const dialog = document.querySelector('[role=dialog]');
+      const visible = (e) => { const r = e.getBoundingClientRect(); const st = getComputedStyle(e); return r.width > 0 && r.height > 0 && st.visibility !== 'hidden' && st.display !== 'none'; };
+      const small = [...dialog.querySelectorAll('button, a[href], input:not([type=radio]), select')].filter(visible)
+        .filter((c) => { const r = c.getBoundingClientRect(); return c.matches('input, textarea') ? r.height < 48 : Math.min(r.width, r.height) < 47.5; })
+        .map((c) => (c.getAttribute('aria-label') || c.textContent || c.tagName).trim().slice(0, 30));
+      const radios = [...dialog.querySelectorAll('input[type=radio]')].map((r) => r.closest('label')).filter((l) => l && visible(l))
+        .filter((l) => l.getBoundingClientRect().height < 47.5).map((l) => l.textContent.trim().slice(0, 30));
+      return { overflow: document.documentElement.scrollWidth - innerWidth, inner: dialog.scrollWidth - dialog.clientWidth, small: [...small, ...radios] };
+    })()`;
+    const openSheet = async (label, where) => {
+      await press('.lf-mentor-top [aria-haspopup="menu"]', 'the menu');
+      await waitFor("document.querySelector('[role=menu]')", 'menu open', 200);
+      const index = await page.evaluate(`[...document.querySelectorAll('[role=menuitem]')].findIndex((i) => i.textContent.trim() === ${JSON.stringify(label)})`);
+      assert.ok(index >= 0, `${where}: menu item ${label}`);
+      await page.evaluate(`document.querySelectorAll('[role=menuitem]')[${index}].setAttribute('data-probe', 'item')`);
+      await press('[data-probe="item"]', label);
+      await waitFor("!!document.querySelector('[role=dialog]')", `${where}: the ${label} sheet`, 400);
+      // The sheet slides in (overlays.css lf-sheet-enter); under software GL at 1280 px a frame can take long enough that
+      // the slide is still running when the harness measures. Presses and measurements wait for it to finish.
+      await waitFor("document.querySelector('[role=dialog]').getAnimations().every((a) => a.playState !== 'running')", `${where}: the ${label} sheet settled`, 400);
+    };
+    const checkSheet = async (what) => {
+      await sleep(250);
+      const m = await page.evaluate(SHEET_MEASURE);
+      assert.ok(m.overflow <= 1 && m.inner <= 1, `${what}: horizontal overflow ${m.overflow}/${m.inner}`);
+      assert.deepEqual(m.small, [], `${what}: controls under 48 px`);
+      await page.evaluate(axeSource);
+      const axe = await page.evaluate("axe.run(document.querySelector('[role=dialog]'), { resultTypes: ['violations'] }).then((r) => r.violations.map((v) => v.id + ': ' + v.nodes.length))");
+      assert.deepEqual(axe, [], `${what}: axe violations`);
+    };
+    const closeSheet = async () => {
+      await press('[role=dialog] .lf-sheet-close', 'close the sheet');
+      await waitFor("!document.querySelector('[role=dialog]')", 'the sheet closed', 200);
+    };
+    const GOAL = { kind: 'goal_bar', goal: { label: 'Bike', value: 120 }, saved: { label: 'Saved', value: 45 }, remaining: 75, savedFraction: 0.375, label: 'My goal', currency: 'USD' };
+    for (const locale of LOCALES) for (const theme of THEMES) for (const width of (process.env.MENTOR_SCREEN_MORE_WIDTHS ?? '320,375,1280').split(',').map(Number)) {
+      const where = `mentor-screen-child ${locale} ${theme} ${width}px`;
+      const c = copy[locale];
+      await check('more', where, async () => {
+        await setView({ width, height: width >= 1024 ? 800 : 740, theme });
+        await signIn('mentor-screen-child', locale, theme);
+        await waitFor(`document.documentElement?.lang === ${JSON.stringify(locale)} && document.querySelector('.lf-mentor-screen[data-phase="openings"] [data-opening]')`, 'openings');
+        await page.evaluate('window.__requests.length = 0');
+        // T1a: a friend on the island, saved with PUT, then standing beside the Mentor.
+        await openSheet(c.mentorPersonalise.menu, where);
+        await waitFor("document.querySelector('[data-view=personalise]')", 'the island view');
+        await checkSheet(`${where} island`);
+        if (width === 375) await shot(`more-island-${locale}-${theme}`);
+        await page.evaluate("document.querySelector('[data-view=personalise] input[value=zara]').closest('label').setAttribute('data-probe', 'friend')");
+        await press('[data-probe="friend"]', 'Zara as a friend');
+        await waitFor("window.__requests.some((r) => r.method === 'PUT' && r.path === '/tutor/preferences' && JSON.parse(r.body).companion === 'zara')", 'the friend was saved');
+        await closeSheet();
+        await waitFor("document.querySelector('.lf-mentor-stage')?.dataset.mentorCompanion === 'zara'", 'the friend on the stage');
+        // T1g: the notebook.
+        await openSheet(c.mentorNotebook.menu, where);
+        await waitFor("document.querySelectorAll('[data-view=notebook] [data-board-kind]').length === 2", 'the plan and the kept board (the recap board is the plan: shown once)');
+        await checkSheet(`${where} notebook`);
+        if (width === 375) await shot(`more-notebook-${locale}-${theme}`);
+        await closeSheet();
+        // T1e: a past talk, replayed on the stage with its own character, and the way back.
+        await openSheet(c.mentorHistory.menu, where);
+        await waitFor("document.querySelector('[data-view=history] .lf-list-row--pressable')", 'the past talks');
+        await checkSheet(`${where} history`);
+        await press('[data-view=history] .lf-list-row--pressable', 'a past talk');
+        await waitFor("document.querySelector('.lf-mentor-screen[data-replay=on] .lf-mentor-replay')", 'the replay');
+        await press('[data-transport="pause"]', 'pause');
+        const replay = await page.evaluate("({ h1: document.querySelector('h1').textContent, plate: document.querySelector('.lf-mentor-plate-text')?.textContent, speaker: document.querySelector('.lf-mentor-plate-speaker')?.textContent })");
+        assert.equal(replay.h1, 'Dina');
+        assert.equal(replay.plate, 'Shall we plan how to save for the bike?');
+        assert.equal(replay.speaker, 'Dina');
+        await press('.lf-mentor-replay-transport .lf-icon-button:last-child', 'the next line');
+        await waitFor("document.querySelector('.lf-mentor-plate-text')?.textContent === 'Yes!'", 'the learner line');
+        await press('.lf-mentor-replay-transport .lf-icon-button:last-child', 'the next line');
+        await waitFor("document.querySelector('.lf-mentor-screen[data-board=open] [data-board-kind=goal_bar]')", 'the board returns');
+        if (width !== 320) await shot(`more-replay-${locale}-${theme}-${width}`);
+        const m = await page.evaluate(MEASURE);
+        assert.deepEqual(m.small, [], 'replay controls under 48 px');
+        assert.ok(m.overflow <= 1, `replay overflow ${m.overflow}`);
+        await press('.lf-mentor-replay .lf-button--accent', 'talk instead');
+        await waitFor("!document.querySelector('[data-replay=on]') && document.querySelector('.lf-mentor-screen[data-phase=openings] [data-opening]')", 'back to the openings');
+        // T1f: the map in steps; a practice talk started from a skill.
+        await openSheet(c.mentorMap.menu, where);
+        await waitFor("document.querySelectorAll('[data-view=map] h3').length === 4", 'four steps');
+        await checkSheet(`${where} map`);
+        if (width === 375) await shot(`more-map-${locale}-${theme}`);
+        const rows = await page.evaluate("[...document.querySelectorAll('[data-view=map] .lf-list-row--pressable')].map((r) => r.querySelector('.lf-list-row-title').textContent)");
+        assert.ok(!rows.includes('Plan a budget'), 'a closed skill is not pressable');
+        await page.evaluate("[...document.querySelectorAll('[data-view=map] .lf-list-row--pressable')].find((r) => r.textContent.includes('Save for a goal')).setAttribute('data-probe', 'save')");
+        await press('[data-probe="save"]', 'Save for a goal');
+        await waitFor("window.__requests.some((r) => r.method === 'POST' && r.path === '/tutor/sessions' && JSON.parse(r.body).skillKey === 'money/save')", 'a practice talk for that skill');
+        await waitFor("window.__oracle.sockets.length === 1 && window.__oracle.sockets[0].readyState === 1 && document.querySelector('.lf-mentor-screen[data-phase=conversing]')", 'the conversation');
+        // T1g: keep a live board, by its turn.
+        await page.evaluate(`window.__oracle.push({ type: 'turn', seq: 2, say: 'Look at the board.', emotion: 'happy', action: 'point', audioUrl: null, audioPending: false, next: 'ask', whiteboard: ${JSON.stringify(GOAL)} })`);
+        await waitFor("document.querySelector('[data-keep]')", 'keep board');
+        await press('[data-keep]', 'keep board');
+        await waitFor("window.__requests.some((r) => r.method === 'POST' && r.path === '/tutor/notebook' && JSON.parse(r.body).turnSeq === 2 && !!JSON.parse(r.body).sessionId)", 'the board was kept by its turn');
+        await waitFor("document.querySelector('[data-keep=kept]')", 'kept');
+        // A roleplay scene: the friend speaks first, in the plate; no clip is fetched from the network.
+        await page.evaluate("window.__oracle.push({ type: 'turn', seq: 3, say: 'Watch this.', emotion: 'happy', action: 'idle', audioUrl: null, audioPending: true, next: 'ask', roleplayScene: 'lemonade_change' })");
+        await waitFor("document.querySelector('.lf-mentor-screen[data-roleplay=lemonade_change] .lf-mentor-plate-speaker')", 'the scene');
+        const scene = await page.evaluate("({ speaker: document.querySelector('.lf-mentor-plate-speaker').textContent, companion: document.querySelector('.lf-mentor-stage').dataset.mentorCompanion, board: document.querySelector('.lf-mentor-screen').dataset.board, audio: window.__audio.slice() })");
+        assert.equal(scene.board, 'closed', 'the earlier board steps aside while the scene plays');
+        assert.equal(scene.speaker, `${c.mentorRoleplay.scenes.lemonade_change.title} · Zara`);
+        assert.equal(scene.companion, 'zara');
+        if (width === 375 || width === 1280) await shot(`more-roleplay-${locale}-${theme}-${width}`);
+        return { requests: await page.evaluate("window.__requests.map((r) => r.method + ' ' + r.path)"), audioStubbed: scene.audio.length };
       });
     }
   }

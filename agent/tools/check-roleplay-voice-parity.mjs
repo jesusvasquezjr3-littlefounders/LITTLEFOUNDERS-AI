@@ -30,6 +30,27 @@ const LOCALES = ['en-US', 'es-MX', 'pt-BR'];
 const ORACLE_FILE = 'oracle/src/tutor/roleplayScenes.ts';
 const FRONTEND_SCENES_FILE = 'frontend/src/tutor/roleplay/scenes.ts';
 const FRONTEND_I18N_FILES = LOCALES.map((locale) => `frontend/src/i18n/${locale}/tutor.json`);
+/*
+ * The rebuilt Mentor screen (W2M.3) acts the same scene from its own table and
+ * captions it from its own namespace. Its captions follow the Copy Budget's
+ * style (no em dash), so they are compared to Oracle's text by their WORDS: the
+ * pre-generated clip must say exactly what the rebuilt plate shows.
+ */
+const REBUILT_SCENES_FILE = 'frontend/src/rebuild/mentor/session/roleplay.ts';
+const REBUILT_COPY_FILES = LOCALES.map((locale) => `frontend/src/i18n/${locale}/rebuild-mentor.json`);
+
+/** The words a voice says, without punctuation or case. */
+export function spokenWords(text) {
+  return (text.toLowerCase().match(/[\p{L}\p{N}]+(?:['’][\p{L}\p{N}]+)*/gu) ?? []).join(' ');
+}
+
+/** The rebuilt table's `LEMONADE_CHANGE` speakers, in order. */
+export function rebuiltLemonadeSpeakers(source) {
+  const block = /const LEMONADE_CHANGE:[^=]*=\s*\[[\s\S]*?\n\];/.exec(source);
+  if (!block) return null;
+  const speakers = [...block[0].matchAll(/speaker:\s*'(lead|companion)'/g)].map((m) => m[1]);
+  return speakers.length > 0 ? speakers : null;
+}
 
 /**
  * Oracle's `LEMONADE_CHANGE` beats: `{ speaker: 'x', text: { 'en-US': '...',
@@ -163,6 +184,33 @@ export function checkRoleplayVoiceParity(read) {
         );
       }
     }
+  }
+
+  const rebuiltSpeakers = rebuiltLemonadeSpeakers(read(REBUILT_SCENES_FILE));
+  if (rebuiltSpeakers === null) {
+    problems.push(`${REBUILT_SCENES_FILE}: could not parse LEMONADE_CHANGE's beats`);
+    return problems;
+  }
+  if (rebuiltSpeakers.join() !== oracleBeats.map((beat) => beat.speaker).join()) {
+    problems.push(`speakers disagree: ${ORACLE_FILE} says ${oracleBeats.map((b) => b.speaker).join(',')}, ${REBUILT_SCENES_FILE} says ${rebuiltSpeakers.join(',')}`);
+  }
+  for (const [locale, file] of LOCALES.map((l, i) => [l, REBUILT_COPY_FILES[i]])) {
+    let lines;
+    try {
+      lines = JSON.parse(read(file))?.mentorRoleplay?.scenes?.lemonade_change?.beats;
+    } catch (error) {
+      problems.push(`${file}: could not parse as JSON — ${error.message}`);
+      continue;
+    }
+    if (!Array.isArray(lines) || lines.length !== oracleBeats.length) {
+      problems.push(`${file}: mentorRoleplay.scenes.lemonade_change.beats must hold ${oracleBeats.length} captions`);
+      continue;
+    }
+    oracleBeats.forEach((beat, i) => {
+      if (spokenWords(lines[i]) !== spokenWords(beat.text[locale])) {
+        problems.push(`beat ${i}/${locale}: the rebuilt caption's words disagree — oracle says "${beat.text[locale]}", ${file} says "${lines[i]}"`);
+      }
+    });
   }
 
   return problems;

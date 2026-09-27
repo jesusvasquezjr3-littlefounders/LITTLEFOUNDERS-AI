@@ -359,6 +359,16 @@ export function getKidNotebook(
   return api<{ entries: TutorNotebookEntry[] }>(`/tutor/kids/${kidUserId}/notebook`, { token });
 }
 
+/**
+ * Keep one board in the learner's notebook (Class V, migration 0069). The
+ * request names only the turn; Core re-reads the real turn and refuses a
+ * session that is not the caller's own or a turn that drew no board, so the
+ * client never sends a board's content. Idempotent: a duplicate is refused.
+ */
+export function keepBoard(token: string, sessionId: string, turnSeq: number): Promise<ApiResult<unknown>> {
+  return api<unknown>('/tutor/notebook', { method: 'POST', token, body: { sessionId, turnSeq } });
+}
+
 export const ADAPTATION_KEYS: readonly Adaptation[] = [
   'slower_pacing',
   'more_examples',

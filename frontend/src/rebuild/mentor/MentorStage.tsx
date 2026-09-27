@@ -13,7 +13,8 @@ import {
   decideStageMode, FIRST_RENDER_BUDGET_MS, FRAME_RATE_STRIKES, frameRateStrikes,
   type MentorStageFailure, type MentorStageFallback, type MentorStageMode, type StageEnvironment,
 } from './stageMode';
-import type { MentorShot } from './session/vocabulary';
+import type { CharacterAction, CharacterEmotion, MentorShot } from './session/vocabulary';
+import type { TutorStageProps } from '../../tutor-scene/TutorStage';
 import '../design/tokens.css';
 import '../design/system.css';
 import './mentorStage.css';
@@ -29,8 +30,10 @@ import './mentorStage.css';
  *
  * Documented interface (08 §7; the future mobile wrapper shares it, OD-12):
  *   inputs   character, state, board open or closed, age band; plus the size,
- *            the colour mode, the Diorama, the D7 milestone a celebration is
- *            for, the closing script, the accessible name and the voice clip;
+ *            the colour mode, the Diorama and its light, the companion the
+ *            learner invited (and its pose while it speaks in a roleplay
+ *            scene), the D7 milestone a celebration is for, the closing
+ *            script, the accessible name and the voice clip;
  *   outputs  onReady (the stage is showing the character: which mode, why it
  *            is not live, how long the first render took against the 2.5 s
  *            budget) and onError (the renderer failed, or no still exists).
@@ -50,6 +53,31 @@ const TutorStage = lazy(() => import('../../tutor-scene/TutorStage').then((modul
 
 export type MentorStageSize = 'full' | 'compact';
 export type MentorStageScene = 'diorama-a' | 'diorama-b';
+/** The Diorama's light (T1a): Core's backdrop ids; `auto` follows the colour mode. */
+export type MentorStageLight = NonNullable<TutorStageProps['backdrop']>;
+export const MENTOR_STAGE_LIGHTS: readonly MentorStageLight[] = ['auto', 'dawn', 'day', 'dusk', 'night'];
+
+/**
+ * The shot the stage holds when the screen names none, chosen by looking at
+ * all four characters on both Dioramas at 375 and 1280 px (W2M.1, W2M.3):
+ *   - the compact lesson band keeps the wide close-up (its look before W2M.1);
+ *   - at full size the close-up, because the wide close-up on `diorama-a` puts
+ *     a rock in front of the legs and hands of the tall characters;
+ *   - except Dina on `diorama-a`: she is short and wide, and the engine's
+ *     close-up scales to height, so on a phone it filled the stage with her
+ *     head and lost the Diorama (08 §2: the character ON its Diorama). The wide
+ *     close-up shows all of her on the island, which is also the legacy
+ *     engine's rule for the two characters without a mouth card
+ *     (`shotForPhase`). On `diorama-b` the wide close-up buries her in a bush,
+ *     so the close-up stays there (a known limitation: a leaf still crosses).
+ */
+export function defaultStageShot(character: MentorCharacter, scene: MentorStageScene, size: MentorStageSize): MentorShot {
+  if (size === 'compact') return 'closeup-wide';
+  return character === 'dina' && scene === 'diorama-a' ? 'closeup-wide' : 'closeup';
+}
+
+/** The companion's pose while it speaks a roleplay line; otherwise it idles beside the Mentor. */
+export interface MentorCompanionPose { emotion: CharacterEmotion; action: CharacterAction; beat: number }
 
 export interface MentorStageReady {
   mode: MentorStageMode;
@@ -84,6 +112,16 @@ export interface MentorStageProps {
   size?: MentorStageSize;
   theme: 'light' | 'dark';
   scene?: MentorStageScene;
+  /** The Diorama's light (T1a). Default `auto`: it follows the colour mode. */
+  light?: MentorStageLight;
+  /**
+   * A second real character the learner invited to the island (T1a), standing
+   * beside the Mentor. Never the Mentor itself. The still fallback shows the
+   * Mentor alone.
+   */
+  companion?: MentorCharacter | null;
+  /** The companion's pose while it speaks in a roleplay scene (Class III `roleplay`). */
+  companionPose?: MentorCompanionPose | null;
   /** The D7 milestone a `celebrating` state is for. Without one the stage does not celebrate. */
   milestone?: Milestone | null;
   /** How the session ended, for `closing` (C.16). */
@@ -92,8 +130,8 @@ export interface MentorStageProps {
   beat?: number;
   /**
    * The camera shot, from the session's phase (`session/phases.ts` `shotForPhase`).
-   * Default: the close-up at full size (measured on both Dioramas: the face and
-   * hands clear of every prop), the wide close-up in the compact lesson band.
+   * Default: `defaultStageShot` (the close-up at full size, the wide close-up
+   * in the compact lesson band, and Dina's own framing on `diorama-a`).
    */
   shot?: MentorShot;
   /**
@@ -137,8 +175,8 @@ class RendererBoundary extends Component<{ onFailure: () => void; children: Reac
 }
 
 export function MentorStage({
-  character, state, board = false, ageBand, size = 'full', theme, scene = 'diorama-a', milestone = null, closing = null,
-  beat = 0, shot, copy, speechUrl = null, audioKey = 0, onSpeechEnd, onSpeechBlocked, onReady, onError, className,
+  character, state, board = false, ageBand, size = 'full', theme, scene = 'diorama-a', light = 'auto', companion = null, companionPose = null,
+  milestone = null, closing = null, beat = 0, shot, copy, speechUrl = null, audioKey = 0, onSpeechEnd, onSpeechBlocked, onReady, onError, className,
 }: MentorStageProps) {
   const [environment] = useState<StageEnvironment>(readEnvironment);
   const [failure, setFailure] = useState<MentorStageFailure | null>(null);
@@ -244,7 +282,8 @@ export function MentorStage({
     data-mentor-stage={size} data-render-mode={mode} data-fallback={fallback ?? undefined}
     data-mentor-state={shown} data-mentor-requested-state={state !== shown ? state : undefined}
     data-mentor-pose={pose.id} data-mentor-emotion={pose.emotion} data-mentor-action={pose.action}
-    data-mentor-character={character} data-mentor-scene={scene} data-mentor-presence={mentor.presence}
+    data-mentor-character={character} data-mentor-scene={scene} data-mentor-light={light}
+    data-mentor-companion={companion && companion !== character ? companion : undefined} data-mentor-presence={mentor.presence}
     data-board={board ? 'open' : 'closed'} data-idle-motion={idle ? 'hero' : undefined}
     data-ready={(mode === 'still' ? firstRenderMs !== null : liveReady) ? 'true' : 'false'}
     data-first-render-ms={firstRenderMs ?? undefined}
@@ -261,7 +300,10 @@ export function MentorStage({
           <StaticThemeProvider isDark={theme === 'dark'}>
             <Suspense fallback={null}>
               <TutorStage className="lf-mentor-stage-canvas" scene={scene}
-                character={character} companion={null} shot={shot ?? (compact ? 'closeup-wide' : 'closeup')} emotion={played.emotion} action={played.action} actionKey={beat}
+                character={character} companion={companion && companion !== character ? companion : null} backdrop={light}
+                perCharacter={companion && companionPose && companion !== character
+                  ? { [companion]: { emotion: companionPose.emotion, action: companionPose.action, actionKey: companionPose.beat } } : undefined}
+                shot={shot ?? defaultStageShot(character, scene, size)} emotion={played.emotion} action={played.action} actionKey={beat}
                 characterSpeaking={shown === 'speaking'} speechUrl={speechUrl} audioKey={audioKey}
                 onSpeechEnd={onSpeechEnd} onSpeechBlocked={onSpeechBlocked}
                 onReady={() => { setLiveReady(true); report(mode); }}
