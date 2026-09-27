@@ -1,3 +1,13 @@
 /* The content of the standalone suspended-account state (the single-state screen owns the page, its padding and hue). */
 .lf-kid-suspended { display: grid; gap: var(--spacing-4); }
 .lf-kid-suspended p { overflow-wrap: anywhere; }
+.lf-rebuild .lf-kid-suspended-email {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  min-block-size: var(--target-min);
+  color: inherit;
+  font: var(--type-label);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}

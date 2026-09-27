@@ -243,12 +243,10 @@ describe('Marketing site', () => {
    * the switch outright — this pins that the query param actually reaches
    * SignupPage's `parentIntent` initial state.
    */
-  it('signup pre-flips the Tutor intent switch when arriving with ?intent=tutor', () => {
+  it('signup pre-ticks the parent-or-guardian intent when arriving with ?intent=tutor', () => {
     renderApp('/signup?intent=tutor');
-    // No `name` filter: the switch carries no `aria-label` of its own, only
-    // visible label + help text as its accessible name, and it is the only
-    // switch on this page.
-    expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
+    // Intent only: the account still starts universal, and the Tutor role comes from verification (A.5).
+    expect(screen.getByRole('checkbox', { name: "I'm a parent or guardian" })).toBeChecked();
   });
 
   it('the language choice names each language in itself and switches locale', async () => {

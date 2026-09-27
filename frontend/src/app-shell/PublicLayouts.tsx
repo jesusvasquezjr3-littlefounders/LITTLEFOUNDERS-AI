@@ -6,7 +6,7 @@ import { openCookiePreferences } from '@/components/CookieConsentBanner';
 import { AuthShell, Button, SegmentedControl, SelectField, SiteShell, type ShellNavItem } from '@/rebuild/design/controls';
 import type { Locale } from '@/rebuild/design/copyBudget';
 import { APP_HOME } from './navigation';
-import { LegacyBody, ShellRoot, useShellCopy, useShellLocale, useShellNavigate } from './ShellRoot';
+import { ShellRoot, useShellCopy, useShellLocale, useShellNavigate } from './ShellRoot';
 import { sitePageTitle } from './siteTitles';
 
 /*
@@ -89,7 +89,7 @@ export function SiteLayout() {
 
 const AUTH_TITLES: Record<string, keyof ReturnType<typeof useShellCopy>['siteShell']['pageTitle']> = {
   '/login': 'login', '/signup': 'signup', '/forgot-password': 'forgotPassword', '/reset-password': 'resetPassword',
-  '/verify-parent': 'verifyParent', '/auth/callback': 'callback',
+  '/verify-parent': 'verifyParent', '/auth/callback': 'callback', '/upgrade-account': 'upgradeAccount',
 };
 
 /** Sign-up, log-in, recovery and verification. */
@@ -103,7 +103,8 @@ export function AuthLayout() {
   return <ShellRoot>
     <AuthShell appName={APP_NAME} pageTitle={title} routeKey={pathname} locale={locale} onNavigate={navigate} homeHref="/"
       back={session ? { label: copy.openApp, href: APP_HOME } : { label: copy.home, href: '/' }} labels={{ skip: shell.skip }} footer={<Preferences />}>
-      <LegacyBody frame="auth" routeKey={pathname}><Outlet /></LegacyBody>
+      {/* The sign-in screens are rebuilt (W2 Lane 1, W2S.2): no legacy body wrapper. */}
+      <Outlet />
     </AuthShell>
   </ShellRoot>;
 }

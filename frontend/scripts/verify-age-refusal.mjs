@@ -58,27 +58,28 @@ try {
     await page.send('Page.navigate', { url: origin + '/signup' });
     await wait("!!document.querySelector('input[type=password]')");
     if (await page.evaluate(`!!${button('Reject optional')}`)) await click(button('Reject optional'));
-    for (const [selector, value] of [['input[autocomplete=name]', 'Synthetic'], ['input[type=email]', 'synthetic@example.invalid'], ['input[type=password]', 'synthetic-password'], ['input[aria-label=Day]', '01'], ['input[aria-label=Month]', '01'], ['input[aria-label=Year]', '2018']]) {
+    for (const [selector, value] of [['input[autocomplete=name]', 'Synthetic'], ['input[type=email]', 'synthetic@example.invalid'], ['input[type=password]', 'synthetic-password'], ['[data-date-part=day]', '01'], ['[data-date-part=month]', '01'], ['[data-date-part=year]', '2018']]) {
       await click(`document.querySelector(${JSON.stringify(selector)})`);
       await page.send('Input.insertText', { text: value });
     }
     await click(button('Create account'));
-    await wait(`!!${button('Keep going without an account')}`);
-    await click(button('Keep going without an account'));
+    await wait(`!!${button('Try as guest')}`);
+    await click(button('Try as guest'));
     await wait("!!document.querySelector('[role=alert]')");
     assert.equal(await page.evaluate('location.pathname'), '/signup');
     assert.equal(await page.evaluate('document.documentElement.scrollWidth > innerWidth'), false);
     const shot = await page.send('Page.captureScreenshot', { format: 'png' });
     writeFileSync(join(out, `${width}-retry.png`), Buffer.from(shot.data, 'base64'));
-    await click(button('Keep going without an account'));
+    await click(button('Try as guest'));
     await wait("location.pathname === '/onboarding'");
     await wait("!document.querySelector('[data-screen=age-screen]') && document.querySelector('h1')?.textContent === 'Welcome to LittleFounders'");
     await click(button('Get started'));
-    await wait("!!document.querySelector('input[autocomplete=name]')");
-    await click("document.querySelector('input[autocomplete=name]')");
+    await wait("!!document.querySelector('input[autocomplete=given-name]')");
+    await click("document.querySelector('input[autocomplete=given-name]')");
     await page.send('Input.insertText', { text: 'Synthetic' });
     await click(button('Continue'));
-    await wait("document.querySelector('h1')?.textContent === 'Where did you hear about us?'");
+    // W2S.2: the rebuilt onboarding's next step after the name is the Mentor choice.
+    await wait("document.querySelector('h1')?.textContent === 'Choose your Mentor'");
     assert.equal(await page.evaluate("!!document.querySelector('input[type=date]')"), false);
     evidence.push({ width, blockedWriteStaysOnRefusal: true, retryReachesOnboarding: true, onboardingDoesNotRecollectDOB: true, horizontalOverflow: false });
   }

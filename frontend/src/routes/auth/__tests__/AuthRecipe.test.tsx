@@ -1,66 +1,70 @@
 import { describe, expect, it } from 'vitest';
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 /*
- * THE RECIPE, PINNED.
+ * THE SIGN-IN RECIPE, PINNED (W2S.2).
  *
- * /DESIGN.md §Screen Recipes → Auth specifies one composition for the whole
- * trust surface, and /DESIGN.md §0 calls deviating from a recipe without
- * sign-off a design bug. It drifted anyway: on 2026-08-01 four of the six auth
- * pages were moved onto a second shell - two columns over a full-bleed stock
- * photo - while /verify-parent and /upgrade-account stayed on the compliant
- * one. Every gate stayed green for weeks, because a rule written only in a
- * document is a rule nothing checks.
- *
- * These assertions read the SOURCE rather than a render, deliberately: what has
- * to hold is that no auth page can compose itself out of anything but the one
- * shell, and that is a property of the files, not of one mounted tree.
+ * The legacy rule this file used to pin (one legacy card shell for every auth
+ * page, because a second shell had taken over half of them once and every gate
+ * stayed green) is kept in its rebuilt form: every sign-in screen renders
+ * inside the ONE sign-in shell (the design system's AuthShell, mounted by
+ * app-shell AuthLayout), is a rebuilt surface from rebuild/identity, and
+ * imports no legacy UI (OD-15, 02 rules 22–23). These assertions read the
+ * SOURCE: what must hold is a property of the files, not of one mounted tree.
  */
 
-const AUTH_DIR = join(process.cwd(), 'src', 'routes', 'auth');
+const SRC = join(process.cwd(), 'src');
+const AUTH_DIR = join(SRC, 'routes', 'auth');
+const read = (...path: string[]) => readFileSync(join(SRC, ...path), 'utf8');
 
 function authPages(): { name: string; source: string }[] {
-  return readdirSync(AUTH_DIR)
-    .filter((f) => f.endsWith('Page.tsx'))
-    .map((name) => ({ name, source: readFileSync(join(AUTH_DIR, name), 'utf8') }));
+  return readdirSync(AUTH_DIR).filter((f) => f.endsWith('Page.tsx')).map((name) => ({ name, source: readFileSync(join(AUTH_DIR, name), 'utf8') }));
 }
 
-describe('Auth screen recipe', () => {
-  it('every auth page composes from AuthShell and nothing else', () => {
+describe('Sign-in recipe (A1–A7)', () => {
+  it('every sign-in page renders a rebuilt screen and no legacy component', () => {
     const pages = authPages();
-    expect(pages.length).toBeGreaterThanOrEqual(6);
+    expect(pages.map((page) => page.name).sort()).toEqual([
+      'AuthCallbackPage.tsx', 'ForgotPasswordPage.tsx', 'LoginPage.tsx', 'ResetPasswordPage.tsx', 'SignupPage.tsx', 'UpgradeAccountPage.tsx', 'VerifyParentPage.tsx',
+    ]);
     for (const { name, source } of pages) {
-      expect(source, `${name} must render <AuthShell>`).toMatch(/<AuthShell\b/);
-      // The specific regression: a second shell taking over the busiest pages.
-      expect(source, `${name} must not resurrect AuthSplit`).not.toMatch(/AuthSplit/);
+      expect(source, `${name} renders a rebuilt screen`).toMatch(/from '@\/rebuild\/identity\//);
+      expect(source, `${name} imports legacy UI`).not.toMatch(/@\/components\/(ui|characters)|\.\/AuthShell|\.\/ErrorBanner|\.\/SocialAuth|guided-voice/);
+      expect(source, `${name} draws its own shell`).not.toMatch(/<AuthShell\b|<SingleStateScreen\b|<main\b/);
     }
   });
 
-  it('no auth page names a colour — cross-links come from the shared token class', () => {
-    for (const { name, source } of authPages()) {
-      // Six copies of `text-[#ff775c]` lived here. frontend/AGENTS.md: design
-      // tokens are CHANNELS, not colours, and a component never spells one.
-      const arbitrary = source.match(/(?:text|bg|border|ring)-\[#[0-9a-fA-F]{3,8}\]/g);
+  it('no sign-in page or screen names a colour: tokens only', () => {
+    const identity = readdirSync(join(SRC, 'rebuild', 'identity')).filter((f) => /\.(tsx|css)$/.test(f)).map((name) => ({ name, source: read('rebuild', 'identity', name) }));
+    for (const { name, source } of [...authPages(), ...identity]) {
+      const arbitrary = source.match(/(?:text|bg|border|ring)-\[#[0-9a-fA-F]{3,8}\]|#[0-9a-fA-F]{6}\b/g);
       expect(arbitrary, `${name} carries an arbitrary colour: ${arbitrary?.join(', ')}`).toBeNull();
     }
   });
 
-  it('the shell keeps the recipe’s single centered column and its glow', () => {
-    const shell = readFileSync(join(AUTH_DIR, 'AuthShell.tsx'), 'utf8');
-    expect(shell).toMatch(/max-w-md/);
-    expect(shell).toMatch(/max-w-2xl/); // verification forms
-    expect(shell).toMatch(/bg-primary\/10/);
-    // A photograph behind the column is what the split shell did; the recipe
-    // puts the trust surface on `base`.
-    expect(shell).not.toMatch(/auth-bg/);
+  it('the legacy card shell and its Google button are gone', () => {
+    expect(existsSync(join(AUTH_DIR, 'AuthShell.tsx'))).toBe(false);
+    expect(existsSync(join(AUTH_DIR, 'SocialAuth.tsx'))).toBe(false);
+  });
+
+  it('every sign-in route mounts inside the one sign-in shell, with no legacy body around it', () => {
+    const routes = read('app-routes', 'site.tsx');
+    const inShell = routes.slice(routes.indexOf('export const siteAuthRoutes'), routes.indexOf('export const siteStandaloneRoutes'));
+    for (const path of ['login', 'signup', 'forgot-password', 'reset-password', 'auth/callback', 'verify-parent', 'upgrade-account']) {
+      expect(inShell, `${path} is a sign-in shell route`).toContain(`path="${path}"`);
+    }
+    const app = read('App.tsx');
+    expect(app).toMatch(/<Route element=\{<AuthLayout \/>\}>\s*\{siteAuthRoutes\}\s*\{siteAccountRoutes\}/);
+    const layout = read('app-shell', 'PublicLayouts.tsx');
+    const authLayout = layout.slice(layout.indexOf('export function AuthLayout'));
+    expect(authLayout).toMatch(/<AuthShell\b/);
+    expect(authLayout).not.toMatch(/LegacyBody/);
   });
 
   it('the sign-in shell carries the theme control at EVERY width', () => {
-    // W2: the auth chrome is the rebuilt AuthShell (app-shell/PublicLayouts.tsx); its footer holds the
-    // language and theme choices. The legacy row shipped `hidden sm:inline-flex`, so a phone lost the only
-    // theme control the rest of the product offers everywhere: nothing here may hide it by width.
-    const layout = readFileSync(join(process.cwd(), 'src', 'app-shell', 'PublicLayouts.tsx'), 'utf8');
+    // The legacy row shipped `hidden sm:inline-flex`, so a phone lost the only theme control: nothing may hide it by width.
+    const layout = read('app-shell', 'PublicLayouts.tsx');
     const authLayout = layout.slice(layout.indexOf('export function AuthLayout'));
     expect(authLayout).toMatch(/footer=\{<Preferences \/>\}/);
     const preferences = layout.slice(layout.indexOf('function Preferences'), layout.indexOf('function SiteFooter'));

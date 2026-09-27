@@ -34,6 +34,15 @@ const DIRECT_MANIPULATION: Record<string, RegExp> = {
   'rebuild/learning/RatioTableBoard.tsx': /<button className="lf-ratio-pair"/g,
 };
 
+/**
+ * The one governed upload surface (docs/rebuild/policies/SOCIAL-GOVERNANCE.md §4.2):
+ * the parent's ID photo for A.5 verification. It is kept out of the shared
+ * controls on purpose, so no other screen can render a file input by import.
+ */
+const REVIEWED_UPLOAD: Record<string, RegExp> = {
+  'rebuild/identity/IdDocumentField.tsx': /<input id=\{id\} type="file"/g,
+};
+
 describe('rebuilt surfaces use the shared controls (S03.6)', () => {
   it('has surfaces to check', () => {
     expect(surfaces.length).toBeGreaterThan(30);
@@ -52,7 +61,7 @@ describe('rebuilt surfaces use the shared controls (S03.6)', () => {
   it('renders no raw input or button except the direct-manipulation handles of a teaching visual', () => {
     const offences: string[] = [];
     for (const { file, source } of surfaces) {
-      const allowed = DIRECT_MANIPULATION[file];
+      const allowed = DIRECT_MANIPULATION[file] ?? REVIEWED_UPLOAD[file];
       const raw = (source.match(/<(?:input|button)\b/g) ?? []).length;
       const permitted = allowed ? (source.match(allowed) ?? []).length : 0;
       if (raw !== permitted) offences.push(`${file}: ${raw - permitted} raw control(s)`);

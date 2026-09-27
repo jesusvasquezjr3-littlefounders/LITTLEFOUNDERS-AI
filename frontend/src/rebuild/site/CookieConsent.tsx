@@ -57,7 +57,9 @@ export function CookieConsent({ locale, bannerVisible, choice, preferencesOpen, 
       <div className="lf-consent-inner">
         <div className="lf-consent-text">
           <h2 id={headingId} data-copy-role="heading">{copy.title}</h2>
-          <p data-copy-role="body">{copy.body}</p>
+          {/* The consent disclosure itself: `legal` (06 §3.3 lists consent among mandated disclosures), so it never
+              pushes a sign-in screen's own words past the first-view budget; the string still meets the site budget. */}
+          <p data-copy-role="legal">{copy.body}</p>
         </div>
         <div className="lf-consent-actions">
           {decisions}

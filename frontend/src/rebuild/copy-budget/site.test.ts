@@ -29,10 +29,43 @@ const SITE_GROUPS: Record<string, Rule> = {
     : ['accept', 'reject', 'preferences', 'privacyLink', 'close'].includes(key) ? 'action' : 'body',
 };
 
+/*
+ * Sign-in, recovery and verification (A1–A7, W2S.2) on the app budget (06 §3.1): the sign-in screens are read
+ * by adults, teens and children signing in with a username. `privacy` is Legal's disclosure on the ID form (06
+ * §3.3 `legal`), the support address is data. Onboarding (O1) is a guest's first screen, and a guest may be a child
+ * under 13 who was refused at sign-up (A.2): it takes the youngest band's budget (options 5 words).
+ */
+const ACTIONS: Record<string, readonly string[]> = {
+  authCommon: ['showPassword', 'hidePassword', 'google', 'backToLogin'],
+  authLogin: ['submit', 'submitting', 'forgot', 'signup'],
+  authSignup: ['submit', 'submitting', 'login', 'tryGuest', 'starting', 'why', 'close'],
+  authForgot: ['submit', 'submitting'],
+  authReset: ['submit', 'submitting', 'login', 'requestNew'],
+  authCallback: [],
+  authUpgrade: ['submit', 'submitting', 'later', 'login'],
+  authVerify: ['retry', 'retrying', 'home', 'openFamily', 'ready', 'notNow', 'choosePhoto', 'changePhoto', 'submit', 'submitting', 'writeToUs'],
+  onboardingFlow: ['back', 'continue', 'skip', 'saving', 'start', 'create', 'later'],
+};
+const IDENTITY_HEADINGS = new Set(['title', 'identity', 'document']);
+const identityRole = (group: string, key: string): CopyRole => {
+  if (group === 'authVerify' && key === 'privacy') return 'legal';
+  if (group === 'authVerify' && key === 'supportEmail') return 'data';
+  if (group === 'onboardingFlow' && key.startsWith('channels.')) return 'option';
+  if (ACTIONS[group]!.includes(key)) return 'action';
+  if (IDENTITY_HEADINGS.has(key) || key.endsWith('Title')) return 'heading';
+  return 'body';
+};
+
 describe('rebuild-site copy budget', () => {
   for (const [locale, strings] of namespaceCopy('site')) {
     it(`fits its budgets in ${locale}`, () => {
-      expectBudgetedGroups(strings, ['ageScreen', 'kidSuspended', ...Object.keys(SITE_GROUPS), 'routeError']);
+      expectBudgetedGroups(strings, ['ageScreen', 'kidSuspended', ...Object.keys(SITE_GROUPS), 'routeError', ...Object.keys(ACTIONS)]);
+      for (const group of Object.keys(ACTIONS)) {
+        const band = group === 'onboardingFlow' ? '6-9' : 'adult';
+        for (const [key, text] of flatten(strings[group]!)) {
+          expectFits(text.replace('{current}', '2').replace('{total}', '5'), identityRole(group, key), locale, band, `${group}.${key}`);
+        }
+      }
       for (const [key, text] of Object.entries(strings.ageScreen as Record<string, string>)) {
         const role = key === 'title' ? 'heading' : ['continue', 'exit', 'retry'].includes(key) ? 'action' : 'body';
         expectFits(text, role, locale, '6-9', `ageScreen.${key}`);

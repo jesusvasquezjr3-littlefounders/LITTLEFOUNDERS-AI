@@ -256,7 +256,8 @@
       "forgotPassword": "Reset your password",
       "resetPassword": "Choose a new password",
       "verifyParent": "Become a Tutor",
-      "callback": "Signing you in"
+      "callback": "Signing you in",
+      "upgradeAccount": "Save your progress"
     }
   },
   "notFound": {

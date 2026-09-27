@@ -38,14 +38,52 @@ export const states = [
   // X2: a lazily loaded screen that failed; standalone, as the lesson player shows it.
   preview('route-error', { screen: 'route-error' }),
   preview('route-error@stale', { screen: 'route-error', stale: '1' }),
+
+  // W2S.2: sign-in, recovery and verification (A1–A7) on the sign-in shell, and onboarding (O1). Signed out
+  // (a first visit, cookie banner docked) where the route is public; signed in as the population the route serves.
+  app('/login@login', '/login', null, '[data-shell="auth"] [data-screen="login"]'),
+  app('/signup@signup', '/signup', null, '[data-shell="auth"] [data-screen="signup"]'),
+  app('/signup@signup-tutor-intent', '/signup?intent=tutor', null, '[data-shell="auth"] [data-auth="parent-intent"]:checked'),
+  app('/forgot-password@forgot', '/forgot-password', null, '[data-shell="auth"] [data-screen="forgot-password"]'),
+  // A recovery link with no token in it: the expired state (the token-bearing form is previewed below).
+  app('/reset-password@reset-expired', '/reset-password', null, '[data-shell="auth"] [data-screen="reset-expired"]'),
+  // The provider returned an error: the way back (the success path navigates on to the age question).
+  app('/auth/callback@callback-failed', '/auth/callback#error=access_denied', null, '[data-shell="auth"] [data-screen="oauth-failed"]'),
+  app('/verify-parent@verify-intro', '/verify-parent', 'identity-adult', '[data-shell="auth"] [data-screen="verify-intro"]'),
+  app('/verify-parent@verify-form', '/verify-parent', 'identity-adult', '[data-shell="auth"] [data-screen="verify-intro"]', { open: ['[data-auth="start"]'] }),
+  app('/verify-parent@verify-already', '/verify-parent', 'identity-tutor', '[data-shell="auth"] [data-screen="verify-already"]'),
+  // An account Core has not screened opens verification: the age question inside the sign-in shell (one <main>).
+  app('/verify-parent@age-embedded', '/verify-parent', 'age-screen', '[data-shell="auth"] .lf-age-date'),
+  app('/upgrade-account@upgrade', '/upgrade-account', 'identity-guest', '[data-shell="auth"] [data-screen="upgrade-account"]'),
+  app('/onboarding@onboarding-welcome', '/onboarding', 'identity-new-guest', '[data-screen="onboarding"][data-step="welcome"]'),
+  app('/onboarding@onboarding-name', '/onboarding', 'identity-new-guest', '[data-screen="onboarding"][data-step="welcome"]', { open: ['[data-onboarding="start"]'] }),
+  // The states a real route cannot be made to show on demand, in the frame they have on the route.
+  ...['login-google', 'signup-refused', 'signup-refused-failed', 'signup-confirm', 'forgot-sent', 'reset-form', 'reset-done', 'upgrade-error',
+    'verify-failed', 'verify-success', 'verify-revoked', 'verify-ineligible', 'verify-status-error']
+    .map((view) => preview(`identity@${view}`, { screen: 'identity', view })),
+  ...['mentor', 'discovery', 'account'].map((step) => preview(`onboarding@${step}`, { screen: 'onboarding', step })),
+  preview('onboarding@mentor-chosen-failed', { screen: 'onboarding', step: 'mentor', chosen: 'liruf', failed: '1' }),
+  preview('onboarding@account-failed', { screen: 'onboarding', step: 'account', failed: '1' }),
 ];
 
 export const scenarios = {
   'age-screen': { population: 'guest', guest: true, ageBand: null },
+  // A signed-in adult who has not verified (the universal account a parent signs up with).
+  'identity-adult': { population: 'adult, not verified', guest: false, ageBand: 'adult', verification: { verified: false } },
+  // A verified parent: Core's status, not the role, says "already a Tutor".
+  'identity-tutor': { population: 'verified parent (Tutor)', guest: false, ageBand: 'adult', roles: ['parent'], verification: { verified: true } },
+  // A guest who finished onboarding and saves their progress (A6); screened as a teen.
+  'identity-guest': { population: 'guest (screened 13-17)', guest: true, ageBand: '13-17' },
+  // A guest refused at sign-up (A.2) on their first run: screened under 13, onboarding not done.
+  'identity-new-guest': { population: 'guest, under-13 origin, first run', guest: true, ageBand: '6-9', onboarding: false },
   // A verified parent on the public pages: "Continue" instead of "Start free", "Open your family" instead of the sign-up.
   'site-tutor': { population: 'verified parent (Tutor) on the public site', guest: false, ageBand: 'adult', roles: ['parent'] },
 };
 
-export function respond() {
+/** Parent verification's status (A.5) and the Mentor choice onboarding saves; the providers Google sign-in reads. */
+export function respond({ spec, path, request, ok }) {
+  if (path === '/verification/parent' && request.method === 'GET' && spec.verification) return ok(spec.verification);
+  if (path === '/auth/oauth/providers') return ok({ providers: [] });
+  if (path === '/tutor/preferences' && request.method === 'PUT') return ok({ character: 'rho', companion: null, diorama: 'diorama-a', backdrop: 'day', nickname: null, adaptations: [] });
   return undefined;
 }

@@ -22,9 +22,11 @@ describe('Auth pages (login/signup) — clean trust surface, no marketing chrome
   it('/login shows only the welcome text, the form card, and the utility row — no marketing nav or footer', () => {
     renderApp('/login');
 
-    expect(screen.getByRole('heading', { name: 'Welcome back' })).toBeInTheDocument();
-    expect(screen.getByText('Sign in to keep building')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Sign in' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Welcome back' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Log in' })).toBeInTheDocument();
+    // One <main>: the rebuilt screen is the sign-in shell's content, with no legacy body or card of its own.
+    expect(document.querySelectorAll('main')).toHaveLength(1);
+    expect(document.querySelector('[data-legacy-body]')).toBeNull();
 
     for (const name of ['How it works', 'Families', 'FAQ']) {
       expect(screen.queryByRole('link', { name })).not.toBeInTheDocument();
@@ -37,8 +39,8 @@ describe('Auth pages (login/signup) — clean trust surface, no marketing chrome
   it('/signup shows only the welcome text, the form card, and the utility row — no marketing nav or footer', () => {
     renderApp('/signup');
 
-    expect(screen.getByRole('heading', { name: 'Create your account' })).toBeInTheDocument();
-    expect(screen.getByText('One account for the whole adventure')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Create your account' })).toBeInTheDocument();
+    expect(screen.getByText('Everyone starts free. No documents needed.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Create account' })).toBeInTheDocument();
 
     for (const name of ['How it works', 'Families', 'FAQ']) {
@@ -58,7 +60,7 @@ describe('Auth pages (login/signup) — clean trust surface, no marketing chrome
 
     fireEvent.change(screen.getByRole('combobox', { name: 'Language' }), { target: { value: 'es-MX' } });
 
-    expect(await screen.findByRole('heading', { name: 'Hola de nuevo' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Qué bueno verte de nuevo' })).toBeInTheDocument();
   });
 
   it('offers the theme choice at every width and applies the stored theme on load', () => {

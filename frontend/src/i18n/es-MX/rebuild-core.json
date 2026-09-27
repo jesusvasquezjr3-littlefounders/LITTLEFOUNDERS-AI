@@ -256,7 +256,8 @@
       "forgotPassword": "Recupera tu contraseña",
       "resetPassword": "Elige una contraseña nueva",
       "verifyParent": "Hazte Tutor",
-      "callback": "Iniciando sesión"
+      "callback": "Iniciando sesión",
+      "upgradeAccount": "Guarda tu progreso"
     }
   },
   "notFound": {
