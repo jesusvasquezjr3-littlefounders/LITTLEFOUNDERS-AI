@@ -1,6 +1,7 @@
 import { useId } from 'react';
 import type enFamily from '../../i18n/en-US/rebuild-family.json';
 import { Button, Card, InlineNotice, LoadingState, Switch } from '../design/controls';
+import './console/console.css';
 
 /*
  * L-04 (owner decision OD-27 (1)): the verified Tutor's opt-in for goals

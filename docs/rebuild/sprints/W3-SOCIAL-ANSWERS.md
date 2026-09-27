@@ -82,3 +82,30 @@ All new UI uses the shared controls (`Card`, `Copy`, `Switch`), `data-copy-role`
 ### Remaining
 
 - Browser capture, text-fit, proportion and copy-budget audits of the changed age screen, sign-up, Settings (age card, switch line) and Family console lines; human visual and copy review; acceptance and release.
+
+## W3S.3: lane finish
+
+**Sync.** `codex/spec-migration-s02` was already an ancestor of the lane (no new integration commits since `cfe204d3`); the merge was a no-op.
+
+**Adversarial pass against the scope.**
+
+- L-04 (OD-27 (1)): Core refuses every ineligible population before a write and the SQL re-checks on every action and read; no learner leaderboard exists in the rebuilt UI or in any learner route (the only `leaderboard` reference left is the staff analytics pull in `backend/src/routes/admin.ts`). The full frontend suite found two defects in the Tutor's opt-in card, both fixed here: `CoopGoalsConsent` had no D.12 register policy (`frontend/src/rebuild/family/moneyRegister.ts`, now `tutor`) and used a class no stylesheet defined (`lf-coop-consent`, now a grid stack with the 03 §3 measure in `frontend/src/rebuild/family/console/console.css`).
+- S-03 (OD-27 (2)): server enforcement (`backend/src/services/teenDiscoverability.ts`) and the Settings switch from W2 stand; nothing missing.
+- S-04 (OD-28): Core keeps and validates `birthMonth` (`backend/src/routes/auth.ts`, `services/ageScreen.ts`); the screens disclose it (W3S.2).
+- S-06 (OD-28): Core's verified-Tutor rename returns `sessionsEnded` and audits a failure; the console reads it (W3S.2).
+- M-12 (OD-26): display flag in Core, the line on both usage-data switches (W3S.2).
+- Every new rebuilt screen imports only the shared controls (`../design/controls`), no legacy component; copy exists in EN, es-MX and pt-BR.
+
+**Verification (once, full).** Backend: `type-check`, `lint`, full unit suite (124 files passed, 1 skipped Postgres file; 3065 tests). Frontend: `type-check`, `lint`, full unit suite (the two failures above, then the failing files and all of `src/rebuild/family` rerun green: 23 files, 328 tests). Database: `check-migrations`, `check-migration-phase`, `check-family-lifecycle` and the node tests (44 passed); `railway-migrate.test.mjs` (unchanged by this lane, stub Railway binary) did not finish in 10 minutes under the other lanes' load and was stopped, left to the orchestrator's merge run. Root: `tools:test` (325 passed), `spec:check`, `secrets:check`, i18n gate.
+
+## Final summary
+
+| Item | Built | Status |
+|---|---|---|
+| L-04 teen cooperative goals (B.23, E.3, E.10, E.11) | migrations `*_teen_cooperative_goals.sql`, `*_teen_cooperative_goal_actions.sql`, `*_cooperative_goals_retention.sql`; Core `/api/v1/coop-goals` and the Tutor opt-in; `/learn/together`, the learner-home card, the Family opt-in card; guardrail and reward gates | Implemented, locally verified |
+| S-03 discoverable profile 16-17 (E.8) | W2 build re-read, unchanged | Implemented, locally verified |
+| S-04 birth month (E.4) | age screen, sign-up, Settings age card | Implemented, locally verified |
+| S-06 flagged-username change (E.13) | Family console reads `sessionsEnded` | Implemented, locally verified |
+| M-12 dialogue experiment for teens and tweens (C.17) | Core display flag, lines on both usage-data switches | Implemented, locally verified |
+
+**Still open for the lane.** Browser capture plus the text-fit, proportion and copy-budget audits of `/learn/together`, the learner-home card, the Family opt-in card, the age screen, sign-up, the Settings age card and usage-data line, and the Family console lines; human visual and copy review; a Stage 3 Safety/Trust review of the cooperative-goal mechanic; a Tier 1 sign-off on `dialogueCalibration.ts` (M-12, not edited here); deploy order (Core before the retention migration; the two expand migrations can go first); acceptance and release. Owner questions are listed under each checkpoint's conservative defaults.
