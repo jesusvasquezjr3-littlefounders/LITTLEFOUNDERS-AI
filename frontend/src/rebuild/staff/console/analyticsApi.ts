@@ -234,7 +234,7 @@ export function reportPath(format: ReportFormat, selection: PeriodSelection, fil
 
 /* ---- Views ----------------------------------------------------------------- */
 
-export const ANALYTICS_VIEWS = ['audience', 'web', 'behavior', 'health', 'tools'] as const;
+export const ANALYTICS_VIEWS = ['audience', 'web', 'behavior', 'health', 'trust', 'tools'] as const;
 export type AnalyticsView = (typeof ANALYTICS_VIEWS)[number];
 export function analyticsView(value: string | null): AnalyticsView {
   return (ANALYTICS_VIEWS as readonly string[]).includes(value ?? '') ? (value as AnalyticsView) : 'audience';

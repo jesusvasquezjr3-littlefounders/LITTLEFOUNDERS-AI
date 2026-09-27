@@ -230,7 +230,7 @@ export function rawExportPath(request: RawExportRequest): string {
 
 /* ---- Views ------------------------------------------------------------------------ */
 
-export const INTEL_VIEWS = ['overview', 'insights', 'retention', 'people', 'operations'] as const;
+export const INTEL_VIEWS = ['overview', 'insights', 'retention', 'people', 'families', 'operations'] as const;
 export type IntelView = (typeof INTEL_VIEWS)[number];
 /** `?view=`; the legacy `?focus=learning` (and /admin/insights, which redirects here) opens Insights. */
 export function intelView(view: string | null, focus: string | null = null): IntelView {

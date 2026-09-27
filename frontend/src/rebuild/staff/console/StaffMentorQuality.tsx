@@ -1,7 +1,8 @@
 import { Button, useRebuildEnvironment } from '../../design/controls';
 import { flagResultFrom, MentorQualityDashboard, reviewResultFrom, type MentorQualityCopy } from '../MentorQualityDashboard';
 import type { MentorQualityDashboardData, OwnerRole } from '../mentorQualityApi';
-import { useStaffRead, type StaffApi } from './staffConsoleApi';
+import { can, useStaffRead, type StaffApi, type StaffViewer } from './staffConsoleApi';
+import { MentorOwners } from './StaffProgramme';
 import { LoadFailure, StaffPage } from './ConsoleParts';
 import { useConsoleCopy } from './staffConsoleCopy';
 
@@ -16,6 +17,10 @@ import { useConsoleCopy } from './staffConsoleCopy';
  * keeps its heading as "Data status" so the page has one h1. A read Core
  * refuses (the grant withdrawn) or cannot answer uses the console's failure
  * state with a retry, instead of the panel's bare banner.
+ *
+ * W2T.4: a viewer who also holds manage_users (the grant Core's
+ * /admin/mentor-quality/owners requires) names and removes the owners here;
+ * no one else sees the roster form.
  */
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -24,7 +29,7 @@ export const isMentorQuality = (value: unknown): value is MentorQualityDashboard
   && Array.isArray(value.owners) && Array.isArray(value.viewerOwnerRoles) && isRecord(value.reviews)
   && Array.isArray(value.reviews.missingRoles) && Array.isArray(value.reviews.thisWeek);
 
-export function StaffMentorQuality({ api }: { api: StaffApi }) {
+export function StaffMentorQuality({ api, viewer }: { api: StaffApi; viewer?: StaffViewer }) {
   const { copy, sections, locale, quality } = useConsoleCopy();
   const { theme } = useRebuildEnvironment();
   const read = useStaffRead(api, '/admin/mentor-quality', isMentorQuality);
@@ -42,5 +47,7 @@ export function StaffMentorQuality({ api }: { api: StaffApi }) {
         onAcknowledge={async (id) => flagResultFrom(await act(`/admin/mentor-quality/flags/${encodeURIComponent(id)}/acknowledge`, {}))}
         onResolve={async (id, note) => flagResultFrom(await act(`/admin/mentor-quality/flags/${encodeURIComponent(id)}/resolve`, { note: note.trim() }))}
         onReview={async (role: OwnerRole) => reviewResultFrom(await act('/admin/mentor-quality/reviews', { role }))} />}
+    {viewer && can(viewer, 'manage_users') && read.load.state === 'ready'
+      ? <MentorOwners api={api} data={read.load.data} roleNames={quality.ownerRole} onChanged={read.reload} /> : null}
   </StaffPage>;
 }

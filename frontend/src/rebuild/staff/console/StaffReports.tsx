@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
-import { Button, Chip, ConfirmDialog, DataTable, EmptyState, InlineNotice, SelectField, Sheet, type TableColumn } from '../../design/controls';
+import { useId, useMemo, useState } from 'react';
+import { Button, Chip, ConfirmDialog, DataTable, EmptyState, InlineNotice, SegmentedControl, SelectField, Sheet, type TableColumn } from '../../design/controls';
 import { isCaseDetail, isCases, REPORTS_PATH, useStaffRead, type ReportCase, type StaffApi } from './staffConsoleApi';
 import { CopyId, Facts, LoadFailure, Loading, Metrics, shortId, StaffPage, useFormats } from './ConsoleParts';
 import { fill, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
+import { AutonomyRollback, RetentionSweepCard } from './StaffProgramme';
 
 /*
  * E.3's platform review queue (manage_support). Every social report routes
@@ -12,6 +13,10 @@ import { fill, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
  * each report, never free-form profile data. Resolving is a staff decision:
  * Core closes the case in a service-only transaction and records the deciding
  * staff member in the central audit log; guardian notices are Core's.
+ *
+ * W2T.4: the same grant (manage_support) opens the support tools as a second
+ * view: the D.17 product-team rollback of a child's independence level and
+ * the Mentor retention sweep's health. The queue is read only in its view.
  */
 
 function originChip(copy: ConsoleCopy, origin: ReportCase['origin']) {
@@ -73,7 +78,27 @@ function CaseDetails({ api, subjectId, onClose, onResolved }: { api: StaffApi; s
   </>;
 }
 
-export function StaffReports({ api }: { api: StaffApi }) {
+export type ReportsView = 'cases' | 'support';
+export const reportsView = (value: string | null): ReportsView => (value === 'support' ? 'support' : 'cases');
+
+export function StaffReports({ api, initialView = 'cases' }: { api: StaffApi; initialView?: ReportsView }) {
+  const { copy, sections } = useConsoleCopy();
+  const t = copy.reports;
+  const name = useId();
+  const [view, setView] = useState<ReportsView>(initialView);
+  const [generation, setGeneration] = useState(0);
+  return <StaffPage screen="staff-reports" title={sections.reports} intro={t.body.intro}
+    actions={<Button size="sm" onClick={() => setGeneration((value) => value + 1)}>{copy.common.action.refresh}</Button>}>
+    <SegmentedControl legend={t.body.view} name={`${name}-view`} value={view} onValueChange={setView} className="lf-staff-views"
+      options={[{ value: 'cases' as const, label: t.option.view_cases }, { value: 'support' as const, label: t.option.view_support }]} />
+    <div key={`${view}:${generation}`} className="lf-staff-section" data-view={view}>
+      {view === 'cases' ? <ReportQueue api={api} />
+        : <div className="lf-staff-pair"><AutonomyRollback api={api} /><RetentionSweepCard api={api} /></div>}
+    </div>
+  </StaffPage>;
+}
+
+function ReportQueue({ api }: { api: StaffApi }) {
   const { copy, sections, locale } = useConsoleCopy();
   const format = useFormats(locale);
   const t = copy.reports;
@@ -93,8 +118,7 @@ export function StaffReports({ api }: { api: StaffApi }) {
     { key: 'details', label: copy.common.body.details, value: (entry) => <Button size="sm" onClick={() => setSelected(entry.subjectId)}>{copy.common.action.open}</Button> },
   ];
 
-  return <StaffPage screen="staff-reports" title={sections.reports} intro={t.body.intro}
-    actions={<Button size="sm" onClick={cases.reload}>{copy.common.action.refresh}</Button>}>
+  return <>
     {cases.load.state === 'loading' ? <Loading />
       : cases.load.state === 'error' ? <LoadFailure code={cases.load.code} onRetry={cases.reload} />
         : <>
@@ -113,5 +137,5 @@ export function StaffReports({ api }: { api: StaffApi }) {
           </section>}
         </>}
     {selected ? <CaseDetails key={selected} api={api} subjectId={selected} onClose={() => setSelected(null)} onResolved={cases.reload} /> : null}
-  </StaffPage>;
+  </>;
 }

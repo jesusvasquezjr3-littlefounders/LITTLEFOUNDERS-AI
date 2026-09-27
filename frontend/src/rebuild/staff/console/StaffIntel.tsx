@@ -14,6 +14,7 @@ import { INSTRUMENTED_EVENTS } from './usageShared';
 import { can, useStaffRead, type StaffApi, type StaffViewer } from './staffConsoleApi';
 import { Facts, LoadFailure, Loading, Metrics, RangeSheet, saveDownload, shortId, StaffPage, today, useChartLabels, useDay, useFormats } from './ConsoleParts';
 import { fill, labelOf, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
+import { FamilyMetricsView } from './StaffProgramme';
 
 /*
  * S6 Learning intel, with S8 Insights as one of its views (view_analytics),
@@ -621,9 +622,10 @@ export function StaffIntel({ api, viewer, initialView = 'overview' }: { api: Sta
         : view === 'insights' ? <InsightsView api={api} viewer={viewer} span={span} />
           : view === 'retention' ? <RetentionView api={api} span={span} />
             : view === 'people' ? <PeopleView api={api} span={span} />
-              : <OperationsView api={api} />}
+              : view === 'families' ? <FamilyMetricsView api={api} days={summaryDays(span)} />
+                : <OperationsView api={api} />}
     </div>
-    {view === 'operations' ? null : <section className="lf-staff-section" aria-labelledby="staff-intel-export">
+    {view === 'operations' || view === 'families' ? null : <section className="lf-staff-section" aria-labelledby="staff-intel-export">
       <h2 id="staff-intel-export" data-copy-role="heading">{t.heading.export}</h2>
       <p data-copy-role="body" className="lf-staff-muted">{t.body.exportIntro}</p>
       <ExportButtons api={api} span={span} />

@@ -22,6 +22,8 @@ const fixtures = JSON.parse(readFileSync(new URL('../../../src/rebuild/staff/con
 const sections = JSON.parse(readFileSync(new URL('../../../src/rebuild/staff/console/staffSectionFixtures.json', import.meta.url), 'utf8'));
 // W2T.3: Analytics & Health and Learning intel (with Insights).
 const insight = JSON.parse(readFileSync(new URL('../../../src/rebuild/staff/console/staffInsightFixtures.json', import.meta.url), 'utf8'));
+// W2T.4: the programme metrics and support tools.
+const programme = JSON.parse(readFileSync(new URL('../../../src/rebuild/staff/console/staffProgrammeFixtures.json', import.meta.url), 'utf8'));
 
 const page = (screen) => `[data-screen="${screen}"]`;
 const ready = (screen, also) => `${page(screen)} ${also}`;
@@ -51,6 +53,11 @@ export const states = [
   app('/admin/users@unavailable', '/admin/users', 'staff-unavailable', ready('staff-users', '[data-failure="loadFailed"]')),
   app('/admin@refused', '/admin', 'staff-refused', ready('staff-overview', '[data-failure="refused"]')),
   app('/admin/reports@empty', '/admin/reports', 'staff-empty', ready('staff-reports', '.lf-state--empty')),
+  // W2T.4: the support tools, the family and trust metrics, and the C.24 owner roster (superadmin holds manage_users).
+  app('/admin/reports@support', '/admin/reports?view=support', 'staff-support', ready('staff-reports', '[data-tool="retention-sweep"] .lf-staff-facts')),
+  app('/admin/intel@families', '/admin/intel?view=families', 'staff-analytics', ready('staff-intel', '[data-metric-card="stateIntegrity"] .lf-table-row')),
+  app('/admin/analytics@trust', '/admin/analytics?view=trust', 'staff-analytics', ready('staff-analytics', '[data-metric-card="accountDeletions"] .lf-staff-facts')),
+  app('/admin/mentor-quality@owners', '/admin/mentor-quality', 'staff-super', ready('staff-mentor-quality', '[data-form="mentor-owner"]')),
   app('/admin/roles@empty', '/admin/roles', 'staff-empty', ready('staff-roles', '.lf-state--empty')),
   // W2T.2: Content (S2, B.3, G.2, C.5, C.6, S05.3d), Generation (S7) and Mentor quality (C.24).
   app('/admin/content@staff-super', '/admin/content', 'staff-super', ready('staff-content', '.lf-table-row'), { readyAlso: '[data-incidents]' }),
@@ -203,5 +210,8 @@ function insightRespond(route, query, empty, ok) {
   if (route === '/admin/intel/learning/overview') return ok(empty ? { ...i.learning, snapshot: { courses: 0, lessons: 0, attempts: 0, learners: 0, avgScore: null, firstTryAvgScore: null, hintRate: null, retryRate: null, avgSecondsPerAttempt: null, evidenceStatus: 'awaiting_evidence' }, courses: [], lessons: [], learners: [], trends: [] } : i.learning);
   if (route === '/admin/intel/learning/content-health') return ok(empty ? { skills: [] } : i.skills);
   if (route.startsWith('/admin/intel/learning/learners/')) return ok(i.learner);
+  // W2T.4 (mirrors staffConsoleFixtures.ts programmeAnswer).
+  if (empty && route in programme.empty) return ok(programme.empty[route]);
+  if (route in programme.routes) return ok(programme.routes[route]);
   return undefined;
 }

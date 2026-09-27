@@ -21,7 +21,7 @@ import { StaffOverview } from '@/rebuild/staff/console/StaffOverview';
 import { StaffUsers } from '@/rebuild/staff/console/StaffUsers';
 import { StaffAccess } from '@/rebuild/staff/console/StaffAccess';
 import { StaffAudit } from '@/rebuild/staff/console/StaffAudit';
-import { StaffReports } from '@/rebuild/staff/console/StaffReports';
+import { reportsView, StaffReports } from '@/rebuild/staff/console/StaffReports';
 import { StaffEmails } from '@/rebuild/staff/console/StaffEmails';
 
 /*
@@ -105,7 +105,8 @@ export function StaffAuditRoute() {
 }
 
 export function StaffReportsRoute() {
-  return <StaffReports api={useStaffConsole().api} />;
+  const [params] = useSearchParams();
+  return <StaffReports api={useStaffConsole().api} initialView={reportsView(params.get('view'))} />;
 }
 
 export function StaffEmailsRoute() {
@@ -146,7 +147,8 @@ export function StaffGenerationRoute() {
 }
 
 export function StaffMentorQualityRoute() {
-  return <StaffMentorQuality api={useStaffConsole().api} />;
+  const { api, viewer } = useStaffConsole();
+  return <StaffMentorQuality api={api} viewer={viewer} />;
 }
 
 /*

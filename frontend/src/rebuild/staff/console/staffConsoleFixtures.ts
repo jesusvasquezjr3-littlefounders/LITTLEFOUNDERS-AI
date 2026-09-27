@@ -1,6 +1,7 @@
 import fixtures from './staffConsoleFixtures.json';
 import sections from './staffSectionFixtures.json';
 import insight from './staffInsightFixtures.json';
+import programme from './staffProgrammeFixtures.json';
 import type { StaffApi, StaffResult } from './staffConsoleApi';
 
 /*
@@ -23,6 +24,10 @@ import type { StaffApi, StaffResult } from './staffConsoleApi';
  * regions with one label no outline matches, a shared staff address, an
  * instrumented event that never fired, a stress-length course, experiment and
  * skill, and a staff share above half.
+ *
+ * W2T.4 adds the programme metrics, the denial-reason sample, one child's
+ * independence level and the Mentor retention sweep from
+ * staffProgrammeFixtures.json (the empty state: no sample, a sweep that never ran).
  *
  * `?state=` picks a whole-page state: loading (never answers), error, refused
  * (Core's 403), empty, or ready (default). Writes succeed unless
@@ -61,7 +66,15 @@ export function fixtureAnswer(path: string, state: FixtureState): StaffResult<un
   }
   if (route === '/admin/emails/logs') return ok({ entries: empty ? [] : fixtures.emailLogs, total: empty ? 0 : 948 });
   if (route === '/admin/emails/summary') return ok(empty ? { total: 0, statuses: {}, templates: {}, locales: {}, trend: [] } : fixtures.emailSummary);
-  return sectionAnswer(route, query, empty) ?? insightAnswer(route, query, empty) ?? { ok: false, code: 'NOT_FOUND' };
+  return sectionAnswer(route, query, empty) ?? insightAnswer(route, query, empty) ?? programmeAnswer(route, empty) ?? { ok: false, code: 'NOT_FOUND' };
+}
+
+/** W2T.4: the programme metrics and support tools (staffProgrammeFixtures.json; the audit's synthetic Core answers from the same file). */
+export function programmeAnswer(route: string, empty: boolean): StaffResult<unknown> | null {
+  const emptyRoutes = programme.empty as Record<string, unknown>;
+  const routes = programme.routes as Record<string, unknown>;
+  if (empty && route in emptyRoutes) return { ok: true, data: emptyRoutes[route] };
+  return route in routes ? { ok: true, data: routes[route] } : null;
 }
 
 /** W2T.3: Analytics & Health and Learning intel (staffInsightFixtures.json; the audit's synthetic Core answers from the same file). */

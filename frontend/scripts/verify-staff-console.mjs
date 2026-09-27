@@ -102,6 +102,11 @@ const CASES = [
   { id: 'intel-retention', path: '/admin/intel?view=retention', scenario: 'staff-analytics', screen: 'staff-intel', section: 'intel', ready: '.lf-table-row' },
   { id: 'intel-people', path: '/admin/intel?view=people', scenario: 'staff-analytics', screen: 'staff-intel', section: 'intel', ready: '.lf-viz-bars', never: ['/admin/intel/engagement'] },
   { id: 'intel-operations', path: '/admin/intel?view=operations', scenario: 'staff-analytics', screen: 'staff-intel', section: 'intel', ready: '.lf-table-row' },
+  // W2T.4: family and trust metrics, the support tools, the owner roster.
+  { id: 'intel-families', path: '/admin/intel?view=families', scenario: 'staff-analytics', screen: 'staff-intel', section: 'intel', ready: '[data-metric-card="stateIntegrity"] .lf-table-row' },
+  { id: 'analytics-trust', path: '/admin/analytics?view=trust', scenario: 'staff-analytics', screen: 'staff-analytics', section: 'analytics', ready: '[data-metric-card="accountDeletions"] .lf-staff-facts' },
+  { id: 'reports-support', path: '/admin/reports?view=support', scenario: 'staff-support', screen: 'staff-reports', section: 'reports', ready: '[data-tool="retention-sweep"] .lf-staff-facts', never: ['/admin/reports?'] },
+  { id: 'mentor-quality-owners', path: '/admin/mentor-quality', scenario: 'staff-super', screen: 'staff-mentor-quality', section: 'mentorQuality', ready: '[data-form="mentor-owner"]' },
   { id: 'denied-intel', path: '/admin/intel', scenario: 'staff-support', denied: true },
 ];
 const filter = process.env.STAFF_CASES?.split(',');

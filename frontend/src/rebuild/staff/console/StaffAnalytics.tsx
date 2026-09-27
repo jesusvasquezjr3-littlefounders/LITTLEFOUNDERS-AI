@@ -15,6 +15,7 @@ import { bandOf, INSTRUMENTED_EVENTS } from './usageShared';
 import { can, useStaffRead, type StaffApi, type StaffViewer } from './staffConsoleApi';
 import { Facts, LoadFailure, Loading, Metrics, RangeSheet, saveDownload, StaffPage, today, useChartLabels, useDay, useDuration, useFormats } from './ConsoleParts';
 import { StaffWeb } from './StaffWeb';
+import { TrustMetricsView } from './StaffProgramme';
 import { fill, labelOf, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
 
 /*
@@ -536,7 +537,8 @@ export function StaffAnalytics({ api, viewer, device, initialView = 'audience' }
         : view === 'web' ? <StaffWeb api={api} viewer={viewer} selection={selection} filters={filters} onFilters={setFilters} />
           : view === 'behavior' ? <BehaviorView api={api} period={period} />
             : view === 'health' ? <HealthView api={api} />
-              : <ToolsView api={api} viewer={viewer} selection={selection} filters={filters} device={device} />}
+              : view === 'trust' ? <TrustMetricsView api={api} days={days} />
+                : <ToolsView api={api} viewer={viewer} selection={selection} filters={filters} device={device} />}
     </div>
   </StaffPage>;
 }
