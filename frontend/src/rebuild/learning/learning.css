@@ -122,8 +122,7 @@
 .lf-worked-example-prediction { display: grid; gap: var(--spacing-2); padding-block-start: var(--spacing-2); border-block-start: 1px solid var(--outline); }
 .lf-worked-example-prediction .lf-button { inline-size: min(100%, 360px); }
 .lf-function-machine { display: grid; grid-template-columns: 1fr auto minmax(56px, 1fr) auto 1fr; align-items: center; gap: var(--spacing-2); min-block-size: 112px; }
-/* On a phone the shared trial choice (segments with a check) and Run can take two rows; the machine gives up its spare height so Run stays in the first view. */
-@container app (max-width: 639px) { .lf-function-machine { min-block-size: var(--target-lg); } }
+/* OD-28 (V-13): the machine keeps its height on a phone; the trial choice uses the shared control's compact size, so it and Run share one row and Run stays in the first view. */
 .lf-function-machine-value, .lf-function-machine-core { display: grid; place-items: center; min-block-size: var(--target-base); border-radius: var(--rounded-md); background: var(--sunken); font-family: Fredoka, sans-serif; font-size: 1.25rem; font-weight: 800; }
 .lf-function-machine-core { background: var(--primary-soft); color: var(--primary-strong); }
 .lf-function-machine-arrow { font-size: 1.5rem; font-weight: 800; }

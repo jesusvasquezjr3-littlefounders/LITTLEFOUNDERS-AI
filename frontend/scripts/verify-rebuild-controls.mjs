@@ -189,7 +189,9 @@ try {
     await expectTrue('scroll-kept-on-rerender', `scrollY > 0`);
     await expectTrue('motion-on', `getComputedStyle(document.querySelector('.lf-toggle-thumb')).transitionDuration !== '0s'`);
     // S03.7 motion patterns (02 §9.1, §9.4; D7; 07 §5).
-    const loops = `document.getAnimations().filter(a => a.playState === 'running' && a.effect?.getTiming().iterations === Infinity)`;
+    // OD-28 (V-04): busy motion (the pending spinner, a loading shimmer) takes no idle slot; it is checked on its own.
+    const loops = `document.getAnimations().filter(a => a.playState === 'running' && a.effect?.getTiming().iterations === Infinity && !a.effect.target.closest('[data-busy-motion]'))`;
+    await expectTrue('pending-spinner-turns', `document.getAnimations().some(a => a.playState === 'running' && a.animationName === 'lf-spin' && a.effect.target.closest('.lf-button--pending[aria-busy="true"]'))`);
     await expectTrue('breathing-one-cta', `document.querySelectorAll('[data-idle-motion="breathing-cta"]').length === 1 && ${loops}.length === 1 && ${loops}[0].effect.target.dataset.idleMotion === 'breathing-cta'`);
     await page.evaluate(`window.__lfMotion = []; document.addEventListener('animationstart', (event) => window.__lfMotion.push(event.animationName), true)`);
     await click('section[aria-labelledby="system-motion"] .lf-check-label');

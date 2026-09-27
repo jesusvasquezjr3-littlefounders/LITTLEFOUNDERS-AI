@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
@@ -62,6 +64,16 @@ describe('buttons', () => {
     fireEvent.click(button);
     expect(onClick).not.toHaveBeenCalled();
     expect(onSubmit).not.toHaveBeenCalled();
+    // OD-28 (V-04): a spinner beside the changed label, decorative, marked as busy motion; the label stays the name.
+    const spinner = button.querySelector('.lf-button-spinner');
+    expect(spinner).toHaveAttribute('aria-hidden', 'true');
+    expect(spinner).toHaveAttribute('data-busy-motion', 'spinner');
+    expect(button.lastChild?.textContent).toBe('Saving…');
+  });
+
+  it('shows no spinner on a button that is not pending', () => {
+    const { container } = render(<Button variant="accent">Save</Button>);
+    expect(container.querySelector('.lf-button-spinner, [data-busy-motion]')).toBeNull();
   });
 
   it('requires an accessible name on icon buttons and renders a system glyph only', () => {
@@ -225,6 +237,21 @@ describe('numeric controls', () => {
     expect(screen.getByRole('button', { name: 'Place the point: Move left' })).toBeEnabled();
   });
 
+  it('offers a compact segmented size that keeps the check and the target floor (OD-28, V-13)', () => {
+    const { container, rerender } = render(<SegmentedControl legend="Week" name="week" value="2" onValueChange={vi.fn()}
+      options={[{ value: '1', label: '1' }, { value: '2', label: '2' }]} />);
+    expect(container.querySelector('.lf-segmented')).not.toHaveClass('lf-segmented--compact');
+    rerender(<SegmentedControl size="compact" legend="Week" name="week" value="2" onValueChange={vi.fn()}
+      options={[{ value: '1', label: '1' }, { value: '2', label: '2' }]} />);
+    expect(container.querySelector('.lf-segmented')).toHaveClass('lf-segmented', 'lf-segmented--compact');
+    expect(container.querySelectorAll('.lf-segmented-option .lf-system-glyph')).toHaveLength(1);
+    const css = readFileSync(join(process.cwd(), 'src/rebuild/design/controls.css'), 'utf8');
+    const compact = css.slice(css.indexOf('@container app (max-width: 639px) {\n  .lf-rebuild .lf-segmented--compact'));
+    // Phone width only; the option keeps its 48 px floor in both directions (min-block-size and the label floor).
+    expect(compact).toMatch(/\.lf-segmented--compact \.lf-segmented-option > span \{ min-inline-size: calc\(var\(--target-min\) - var\(--spacing-2\) \* 2\); \}/);
+    expect(compact.slice(0, compact.indexOf('\n}'))).not.toMatch(/min-block-size/);
+  });
+
   it('names a segmented choice by a hidden legend when a heading already says it', () => {
     render(<SegmentedControl legend="Choose the schema" legendHidden name="schema" value={null} onValueChange={vi.fn()}
       options={[{ value: 'change', label: 'Change' }, { value: 'compare', label: 'Compare' }]} />);
@@ -349,6 +376,8 @@ describe('display components', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Loading…');
     expect(container.querySelectorAll('.lf-skeleton-line')).toHaveLength(4);
     expect(container.querySelector('.lf-skeleton')).toHaveAttribute('aria-hidden', 'true');
+    // OD-28 (V-04): the placeholder shimmers as busy motion (motion.css, reduced motion keeps it still).
+    expect(container.querySelector('.lf-skeleton')).toHaveAttribute('data-busy-motion', 'shimmer');
   });
 
   it('gives empty and error states a heading, and a retry that holds while in flight', () => {

@@ -19,7 +19,8 @@ describe('SessionPreferences', () => {
     expect(onSignOut).toHaveBeenCalledTimes(1);
     rerender(<SessionPreferences copy={en.sessionPreferences} locale="en-US" dark={false} choice="auto"
       onChoice={onChoice} onSignOut={onSignOut} signingOut />);
-    expect(screen.getByRole('button', { name: 'Signing out' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Signing out' })).toHaveAttribute('aria-busy', 'true');
+    expect(screen.getByRole('button', { name: 'Signing out' }).querySelector('[data-busy-motion="spinner"]')).not.toBeNull();
   });
 
   it('renders on its own design-system root in the mode and language it is given, with every string role declared', () => {

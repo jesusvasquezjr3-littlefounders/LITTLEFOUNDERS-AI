@@ -1,6 +1,6 @@
 # Family Hub and banking tone gate
 
-Requirement D.8 extends B.14's "speak like a mentor, never like a bank" standard (Law 2) from lesson content to the system copy of Family Hub and Digital Banking. These are the moments of monetary friction where a product slips into bank language by default:
+Requirement D.8 extends B.14's "speak like a mentor, never like a bank" standard (Law 2) from lesson content to the system copy of Family Hub and the Wallet. These are the moments of monetary friction where a product slips into bank language by default:
 - a reward that is not approved yet;
 - a spending limit reached;
 - a freeze;

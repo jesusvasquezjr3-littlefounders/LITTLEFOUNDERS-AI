@@ -1,6 +1,6 @@
 /* C.8/C.12 stop-or-continue choice and C.16 closing state (Frontend Bible 08
    §3–4). Surface fill + soft shadow on the page, never an outline (Bible 02
-   §4.4); dark mode steps the surface instead of shadowing. No animation of
+   §4.4); dark mode steps the surface and keeps a soft shadow (OD-28, V-04). No animation of
    its own, so reduced motion needs no override: nothing here moves. */
 .lf-rebuild.lf-session-end-choice,
 .lf-rebuild.lf-session-closing {
@@ -17,8 +17,6 @@
   min-block-size: 0;
   align-content: start;
 }
-.lf-rebuild.lf-session-end-choice[data-theme='dark'],
-.lf-rebuild.lf-session-closing[data-theme='dark'] { box-shadow: none; }
 
 /* Two EQUAL choices: one column each, the same size and the same variant,
    side by side where they fit and stacked where they do not. */
@@ -28,7 +26,7 @@
   gap: var(--spacing-3);
 }
 /* Sunken fill in both themes: on the surface panel the chips need their own
-   boundary, and in dark mode the control shadow is off (Bible 02 §4.4). */
+   boundary, and a dark control shadow alone is faint (Bible 02 §4.4). */
 .lf-session-end-options > .lf-button { inline-size: 100%; min-block-size: var(--target-base); background: var(--sunken); }
 
 .lf-session-closing h2 { margin: 0; overflow-wrap: anywhere; }

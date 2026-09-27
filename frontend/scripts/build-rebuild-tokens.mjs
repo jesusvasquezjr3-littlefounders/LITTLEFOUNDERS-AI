@@ -19,6 +19,10 @@ function block(yaml, name) {
   return body;
 }
 
+/** OD-28 (V-04): dark-mode shadow strength relative to the light shadow, and its ceiling (soft, never a hard drop). */
+const DARK_SHADOW_GAIN = 4;
+const DARK_SHADOW_MAX = 0.6;
+
 export function generateTokens(markdown) {
   const yaml = markdown.match(/```yaml\r?\n([\s\S]+?)\r?\n```/)?.[1]?.replace(/\r/g, '');
   if (!yaml) throw new Error('Foundation token block missing');
@@ -59,11 +63,19 @@ export function generateTokens(markdown) {
   }
   if (typeCount < 16) throw new Error('Foundation typography extraction incomplete');
 
-  // Elevation is a light-mode ambient shadow; dark mode separates by surface step
-  // instead (02 §5: "Dark elevation is a lighter surface step, never a shadow").
+  // Elevation is the Bible's ambient shadow in light mode. OD-28 (owner review
+  // item V-04) overrides 02 §5's "never a shadow" in dark mode: dark keeps its
+  // lighter surface step AND gets a soft shadow of the same geometry, cast in
+  // the dark `sunken` colour (the darkest dark step, so it reads on every dark
+  // surface) at DARK_SHADOW_GAIN times the light opacity, capped so it stays soft.
+  const [sr, sg, sb] = [1, 3, 5].map((i) => Number.parseInt(colors['dark-sunken'].slice(i, i + 2), 16));
+  const darkShadow = (value) => value.replace(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/g, (_, _r, _g, _b, alpha) => {
+    const a = Math.min(DARK_SHADOW_MAX, Number(alpha) * DARK_SHADOW_GAIN);
+    return `rgba(${sr},${sg},${sb},${String(Number(a.toFixed(2))).replace(/^0\./, '.')})`;
+  });
   for (const match of block(yaml, 'elevation').matchAll(/^  ([\w-]+):\s*"([^"]+)"/gm)) {
     light.push(`  --elevation-${match[1]}: ${match[2]};`);
-    dark.push(`  --elevation-${match[1]}: none;`);
+    dark.push(`  --elevation-${match[1]}: ${darkShadow(match[2])};`);
   }
 
   // Focus colour stays a reference so it follows the mode's primary-strong.

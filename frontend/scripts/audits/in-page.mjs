@@ -244,7 +244,15 @@ export function installAudit() {
     // and one breathing call to action. CSS loops are read from the running animations; the Mentor's WebGL idle
     // loop is not a CSS animation, so its claimed element counts instead.
     // A legacy page body inside a rebuilt shell is not measured (its lane replaces it), like every rule above.
-    const loops = document.getAnimations().filter((a) => a.playState === 'running' && a.effect?.getTiming().iterations === Infinity && !legacy(a.effect?.target));
+    const running = document.getAnimations().filter((a) => a.playState === 'running' && a.effect?.getTiming().iterations === Infinity && !legacy(a.effect?.target));
+    // Busy motion (OD-28, V-04; design/motion.tsx): the loading shimmer and a pending button's spinner are progress
+    // indicators, not idle loops, so they take no slot; each must be the shared control's own (a loading placeholder,
+    // or the spinner of a button that is pending), or it is reported as a stray busy loop.
+    const busyRoot = (t) => t?.closest?.('[data-busy-motion]');
+    const inWork = (root) => (root.dataset.busyMotion === 'shimmer' && root.matches('.lf-skeleton'))
+      || (root.dataset.busyMotion === 'spinner' && !!root.closest('.lf-button--pending[aria-busy="true"]'));
+    const loops = running.filter((a) => !busyRoot(a.effect?.target));
+    const strayBusy = running.filter((a) => busyRoot(a.effect?.target) && !inWork(busyRoot(a.effect?.target))).map((a) => label(a.effect.target));
     const loopTargets = new Set(loops.map((a) => a.effect?.target).filter(Boolean));
     const claimed = [...document.querySelectorAll('[data-idle-motion]')];
     const idleThings = new Set([...claimed, ...[...loopTargets].map((t) => t.closest('[data-idle-motion]') ?? t)]);
@@ -256,7 +264,7 @@ export function installAudit() {
     const onList = (e) => milestones.includes(e?.closest('.lf-celebration')?.dataset.milestone ?? '');
     const offList = [...document.querySelectorAll('.lf-celebration')].filter((e) => e.dataset.celebration !== 'refused' && !onList(e)).map((e) => label(e))
       .concat(document.getAnimations().filter((a) => /^lf-celebration/.test(a.animationName ?? '') && !onList(a.effect?.target)).map((a) => label(a.effect.target)));
-    return { idle: idleThings.size, unbudgeted, breathing, offList };
+    return { idle: idleThings.size, unbudgeted, breathing, offList, strayBusy };
   }
 
   /* ------------------------------------------------------- copy budget */

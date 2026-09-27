@@ -3,7 +3,7 @@ import { isRefusal, rpc, UNAVAILABLE } from './familyLifecycle.js';
 import { serviceRest } from './supabaseRest.js';
 
 /*
- * S07.6: how Family Hub and Digital Banking are presented, decided here and
+ * S07.6: how Family Hub and the Wallet (formerly Digital Banking, OD-28) are presented, decided here and
  * in the database, never by a client.
  *
  * D.12, the age register. One design system for everyone (OD-4); what varies

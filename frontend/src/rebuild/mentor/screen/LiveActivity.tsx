@@ -10,6 +10,7 @@ import {
   type ActivityDraft, type ActivityView,
 } from './liveActivityModel';
 import { fill } from './MentorViews';
+import { playLessonCue } from '../../learning/lessonCue';
 
 /*
  * THE LIVE ACTIVITY (product inventory T1c; Frontend Bible 08 §2 layer 4, 05).
@@ -23,7 +24,9 @@ import { fill } from './MentorViews';
  * cannot pay XP for it. A demonstration the Mentor performs moves the open
  * tray while it speaks, with the learner's input locked until it hands the
  * tray back. No lives, no penalty, never the error hue for a wrong answer
- * (B.26): "not yet" is the retry tone.
+ * (B.26): "not yet" is the retry tone. OD-28 (L-02): a graded answer plays the
+ * lesson's cue where sound is on (the platform off switch): the gentle "not yet"
+ * for a miss, the success cue for a right answer; a failed check stays silent.
  */
 
 export interface MentorActivityCopy {
@@ -120,6 +123,7 @@ export function LiveActivity({ live, copy, locale, headingId, grade, onDone, dem
     if (segmentRef.current !== segmentId) return; // the Mentor moved on while Core answered
     setChecking(false);
     if (!result) { setFailed(true); return; }
+    playLessonCue(result.correct ? 'met' : 'review');
     if (result.correct || attempt >= MAX_ATTEMPTS) { onDone({ ...result, segmentId, attempt }); return; }
     setRetry(result.feedback);
     setAttempt((n) => n + 1);

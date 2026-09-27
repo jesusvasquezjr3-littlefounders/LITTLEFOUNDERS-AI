@@ -1,5 +1,5 @@
 {
-  "about": "S07.7 (D.20): what the Family Hub and Digital Banking practice teaches and, explicitly, what it does not attempt. docs/operations/BLOCK-D-SCOPE-STATEMENT.md explains the statement, its quarterly human audit and the audit log; agent/tools/check-block-d-scope.mjs fails when a line loses its backing or its copy, a required exclusion or a mount disappears, or a borrowing, interest, insurance or investing mechanic appears in the schema without this statement changing.",
+  "about": "S07.7 (D.20): what the Family Hub and the Wallet practice teaches and, explicitly, what it does not attempt. docs/operations/BLOCK-D-SCOPE-STATEMENT.md explains the statement, its quarterly human audit and the audit log; agent/tools/check-block-d-scope.mjs fails when a line loses its backing or its copy, a required exclusion or a mount disappears, or a borrowing, interest, insurance or investing mechanic appears in the schema without this statement changing.",
   "version": 1,
   "copyNamespace": "familyGovernance",
   "component": "frontend/src/rebuild/family/ScopeStatement.tsx",

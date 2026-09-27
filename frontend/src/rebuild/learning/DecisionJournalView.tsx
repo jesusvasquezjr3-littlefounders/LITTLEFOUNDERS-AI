@@ -228,7 +228,7 @@ function ReadyJournal({ state, locale, t, onMore, onClear, onBridge, loadingMore
         <ol className="lf-journal-list">
           {entries.map((entry) => <JournalCard key={entry.id} entry={entry} locale={locale} t={t} />)}
         </ol>
-        {state.hasMore && onMore ? <Button aria-busy={loadingMore} disabled={loadingMore} onClick={onMore}>{t.more}</Button> : null}
+        {state.hasMore && onMore ? <Button pending={loadingMore} onClick={onMore}>{t.more}</Button> : null}
       </section>}
 
       {entries.length > 0 ? <section className="lf-journal-clear" aria-label={t.clear}>

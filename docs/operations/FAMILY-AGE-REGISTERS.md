@@ -1,6 +1,6 @@
-# Age registers in Family Hub and Digital Banking
+# Age registers in Family Hub and the Wallet
 
-Requirement D.12 extends B.23's age-band registers to Family Hub and Digital Banking. Presentation complexity, numeric framing and explanatory copy are differentiated by age tier, using Block B's three registers: young child, tween-teen transition, teen. D.11's fixed bonus for younger children is named as "a specific instance of this general age-differentiation mandate": the two must be one coherent age-band design.
+Requirement D.12 extends B.23's age-band registers to Family Hub and the Wallet. Presentation complexity, numeric framing and explanatory copy are differentiated by age tier, using Block B's three registers: young child, tween-teen transition, teen. D.11's fixed bonus for younger children is named as "a specific instance of this general age-differentiation mandate": the two must be one coherent age-band design.
 
 Owner decision OD-4 binds how: one design system for everyone. Tokens, components, shapes and motion are identical at every age. What varies by age band is copy tone, character presence, reward framing and social mechanics. In this domain that means tone, how numbers are framed, and how much detail a surface shows. Every minor safeguard follows age, never role (OD-3).
 

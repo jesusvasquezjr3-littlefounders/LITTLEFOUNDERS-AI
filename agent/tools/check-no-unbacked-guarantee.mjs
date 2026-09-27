@@ -1,5 +1,5 @@
 // check-no-unbacked-guarantee.mjs — D.7's standing principle as a gate: no
-// visual element or copy in Digital Banking or the Family Hub may imply a
+// visual element or copy in the Wallet or the Family Hub may imply a
 // guarantee the system does not enforce.
 //
 // docs/operations/block-d-controls.json lists every control a family sees

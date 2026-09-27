@@ -215,7 +215,7 @@ export const PAGES = [
     priority: '0.8',
     changefreq: 'monthly',
     agentSummary:
-      'What a Tutor (verified parent) account controls: every Mentor conversation in full, chores with real rewards, simulated banking, and how to create a Tutor account and link a child to it.',
+      'What a Tutor (verified parent) account controls: every Mentor conversation in full, chores with real rewards, a practice Wallet in coins, and how to create a Tutor account and link a child to it.',
     meta: {
       'en-US': {
         title: 'For families: the Tutor account | LittleFounders',

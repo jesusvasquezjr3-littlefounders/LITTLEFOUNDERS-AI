@@ -146,7 +146,12 @@ export function structuralFindings(path, text) {
     if (/role=["']timer["']/.test(code) || /\b(countdown|secondsLeft|timeLeft|expiresIn)\b/i.test(code)) {
       findings.push({ item: 'DP-01', where: path, message: 'a countdown or timer in rebuilt UI' });
     }
-    if (/\bautoPlay\b|\bautoplay\b/.test(code)) findings.push({ item: 'DP-03', where: path, message: 'autoplay in rebuilt UI' });
+    // One exception, by exact file (OD-28 V-12, Frontend 07 §5): the shared celebration motion asset plays a
+    // decorative Lottie once (never a loop) inside a closed-list milestone only. That is the milestone's
+    // celebration, not content that plays on or advances; every autoplay there must be `autoplay loop={false}`.
+    const oneShotCelebration = path.replace(/\\/g, '/').endsWith('src/rebuild/design/MotionAsset.tsx')
+      && (code.match(/\bautoplay\b/g) ?? []).length === (code.match(/\bautoplay loop=\{false\}/g) ?? []).length && !/\bautoPlay\b/.test(code);
+    if (/\bautoPlay\b|\bautoplay\b/.test(code) && !oneShotCelebration) findings.push({ item: 'DP-03', where: path, message: 'autoplay in rebuilt UI' });
     // A timed move to another screen or lesson. A representation stage inside
     // one activity advancing after the learner's own answer is not "more content".
     if (/setTimeout\([^;]*?\b(navigate|onContinue|onNext|location\.assign|location\.href)\b/s.test(code)) {

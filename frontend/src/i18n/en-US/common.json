@@ -223,11 +223,11 @@
       "cancelledAnnounce": "\"{{title}}\" cancelled.",
       "redemptionApprovedAnnounce": "Reward approved.",
       "redemptionDeniedAnnounce": "Reward not approved yet.",
-      "bankingLink": "View wallet details in Digital Banking"
+      "bankingLink": "View details in your Wallet"
     },
     "kid": {
       "subtitle": "Do your chores, earn LF Coins, and decide what to do with them.",
-      "bankingLink": "View your Digital Banking account",
+      "bankingLink": "Open your Wallet",
       "walletTitle": "My wallet",
       "save": "Save",
       "spend": "Spend",
@@ -303,11 +303,11 @@
   },
   "banking": {
     "loading": "Loading your account…",
-    "title": "Digital Banking",
+    "title": "Wallet",
     "kid": {
       "subtitle": "Practice with your LF Coins: a practice card, pockets and goals.",
       "emptyTitle": "Your account isn't open yet",
-      "emptyBody": "Ask a parent to open your Digital Banking account — your Save, Spend and Share balance is already waiting for it.",
+      "emptyBody": "Ask a parent to open your Wallet — your Save, Spend and Share balance is already waiting for it.",
       "accountLabel": "Your account",
       "cardDetails": "Card details",
       "frozenBadge": "Frozen",

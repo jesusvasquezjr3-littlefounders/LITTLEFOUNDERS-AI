@@ -21,6 +21,10 @@ const html = Object.fromEntries(FILES.map((file) => [file, readFileSync(join(fro
 const tokenSheet = readFileSync(join(frontend, 'src/rebuild/design/tokens.css'), 'utf8');
 const light = Object.fromEntries([...tokenSheet.slice(0, tokenSheet.indexOf('}')).matchAll(/--([\w-]+):\s*(#[0-9a-f]{6});/gi)]
   .map(([, name, value]) => [name!, value!.toLowerCase()]));
+const darkBlock = tokenSheet.slice(tokenSheet.indexOf('.lf-rebuild[data-theme="dark"] {'));
+/** OD-28 (V-14): the dark design, the light tokens overridden by the generated dark block. */
+const dark: Record<string, string> = { ...light, ...Object.fromEntries([...darkBlock.slice(0, darkBlock.indexOf('}')).matchAll(/--([\w-]+):\s*(#[0-9a-f]{6});/gi)]
+  .map(([, name, value]) => [name!, value!.toLowerCase()])) };
 
 /** `{{ if eq $l "es-MX" }}ES{{ else if eq $l "pt-BR" }}PT{{ else }}EN{{ end }}` → { en-US, es-MX, pt-BR }. */
 const TRIPLE = /\{\{ if eq \$l "es-MX" \}\}(.*?)\{\{ else if eq \$l "pt-BR" \}\}(.*?)\{\{ else \}\}(.*?)\{\{ end \}\}/g;
@@ -43,8 +47,8 @@ describe('account emails on the one design system (OD-4, 02 D8)', () => {
   for (const file of FILES) describe(file, () => {
     const source = html[file]!;
 
-    it('uses only light-mode token colours, the two brand typefaces, and no glow, gradient, image or legacy face', () => {
-      const tokenValues = new Set(Object.values(light));
+    it('uses only light- and dark-mode token colours, the two brand typefaces, and no glow, gradient, image or legacy face', () => {
+      const tokenValues = new Set([...Object.values(light), ...Object.values(dark)]);
       expect((source.match(/#[0-9a-f]{3,8}\b/gi) ?? []).map((value) => value.toLowerCase()).filter((value) => !tokenValues.has(value))).toEqual([]);
       expect(source).not.toMatch(/rgba?\(|hsla?\(|box-shadow|gradient|<img|Figtree|background-image/i);
       const families = [...source.matchAll(/font-family:\s*([^;"]+)/g)].map(([, value]) => value!.split(',')[0]!.replace(/'/g, '').trim());
@@ -56,7 +60,7 @@ describe('account emails on the one design system (OD-4, 02 D8)', () => {
       const sizes = [...body(source).matchAll(/font-size:\s*(\d+)px/g)].map(([, value]) => Number(value));
       // The one 1 px run is the hidden preview text (display:none), which no one sees in the message.
       expect(sizes.filter((size) => size < 14)).toEqual([1]);
-      expect(source).toMatch(/<div data-copy-role="body" style="display:none;[^"]*font-size:1px/);
+      expect(source).toMatch(/<div class="lf-bg-text" data-copy-role="body" style="display:none;[^"]*font-size:1px/);
       expect(source).toMatch(/class="lf-btn" data-copy-role="action"[^>]*line-height:56px/);
     });
 
@@ -87,6 +91,40 @@ describe('account emails on the one design system (OD-4, 02 D8)', () => {
       expect(found).toEqual([]);
       expect(source).not.toContain('—');
     });
+  });
+
+  it('is designed for dark mode as well: the scheme is declared and every painted class has its dark token (OD-28, V-14)', () => {
+    const expected: Record<string, [string, string]> = {
+      'lf-bg': ['background', 'base'], 'lf-bg-text': ['color', 'base'], 'lf-surface': ['background', 'surface'], 'lf-sunken': ['background', 'sunken'],
+      'lf-brand': ['color', 'primary-strong'], 'lf-text': ['color', 'content'], 'lf-muted': ['color', 'content-muted'], 'lf-link': ['color', 'primary-strong'],
+    };
+    for (const file of FILES) {
+      const source = html[file]!;
+      expect(source).toContain('<meta name="color-scheme" content="light dark">');
+      expect(source).toContain('<meta name="supported-color-schemes" content="light dark">');
+      const media = source.slice(source.indexOf('@media (prefers-color-scheme:dark){'), source.indexOf('}\n    [data-ogsc]'));
+      expect(media).toContain(`body{background:${dark.base}!important}`);
+      for (const [name, [property, token]] of Object.entries(expected)) {
+        expect(media, `${file} ${name}`).toContain(`.${name}{${property}:${dark[token]}!important}`);
+        const outlook = property === 'color' ? '[data-ogsc]' : '[data-ogsb]';
+        expect(source, `${file} ${outlook} ${name}`).toContain(`${outlook} .${name}{${property}:${dark[token]}!important}`);
+      }
+      // Every inline-coloured element carries the class that repaints it, so nothing stays light on the dark design.
+      for (const element of body(source).matchAll(/<(?:td|p|h1|a|div|body|table)\b[^>]*style="[^"]*(?:background|color):#[0-9a-f]{6}[^"]*"[^>]*>/g)) {
+        if (/class="lf-btn"|bgcolor=/.test(element[0])) continue; // the accent call to action keeps its fill in both modes (02 §5)
+        expect(element[0], file).toMatch(/class="[^"]*\blf-(?:bg|bg-text|surface|sunken|brand|text|muted|link)\b/);
+      }
+    }
+  });
+
+  it('every text colour reaches AA on the background it sits on in dark mode too (OD-28, V-14)', () => {
+    const pairs: [string, string, number][] = [
+      ['content', 'surface', 4.5], ['content-muted', 'surface', 4.5], ['content-muted', 'base', 4.5], ['content', 'sunken', 4.5],
+      ['primary-strong', 'surface', 4.5], ['primary-strong', 'base', 4.5], ['on-accent', 'accent', 4.5], ['primary-strong', 'base', 3],
+    ];
+    const failing = pairs.filter(([text, background, minimum]) => contrast(dark[text]!, dark[background]!) < minimum)
+      .map(([text, background]) => `${text} on ${background}: ${contrast(dark[text]!, dark[background]!).toFixed(2)}`);
+    expect(failing).toEqual([]);
   });
 
   it('every text colour reaches AA on the background it sits on', () => {

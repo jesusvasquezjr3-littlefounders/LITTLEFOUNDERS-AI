@@ -52,7 +52,7 @@ export function ChildDecisionsView({ state, locale, dark, open, onToggle, onRetr
             <ol className="lf-journal-list">
               {state.entries.map((entry) => <ChildDecisionItem key={entry.id} entry={entry} locale={locale} chose={t.chose} />)}
             </ol>
-            {state.hasMore && onMore ? <Button aria-busy={loadingMore} disabled={loadingMore} onClick={onMore}>{t.more}</Button> : null}
+            {state.hasMore && onMore ? <Button pending={loadingMore} onClick={onMore}>{t.more}</Button> : null}
           </>}
   </section>;
 }

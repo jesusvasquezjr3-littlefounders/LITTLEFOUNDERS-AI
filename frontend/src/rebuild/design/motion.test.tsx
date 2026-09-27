@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { activeIdleMotion, AnswerChoice, Button, Celebration, celebrationPart, CountUp, isMilestone, useIdleMotion, type Milestone } from './controls';
-import { resetCelebrationsForTest } from './motion';
+import { activeIdleMotion, AnswerChoice, Button, Celebration, celebrationPart, CountUp, isMilestone, LoadingState, useIdleMotion, type Milestone } from './controls';
+import { BUSY_MOTION_KINDS, resetCelebrationsForTest } from './motion';
 import { LessonResultView } from '../learning/LessonResultView';
 
 /*
@@ -75,6 +75,18 @@ describe('idle-motion budget (02 §9.4)', () => {
     rerender(<><Button key="b" variant="accent" breathing>Second</Button></>);
     expect(screen.getByRole('button', { name: 'Second' })).toHaveClass('lf-button--breathing');
     expect(document.querySelectorAll('.lf-button--breathing')).toHaveLength(1);
+  });
+
+  it('counts busy motion apart from the three idle slots: a shimmer and a spinner claim none (OD-28, V-04)', () => {
+    render(<><Button variant="accent" breathing>Continue</Button><Button variant="accent" pending pendingLabel="Saving…">Save</Button>
+      <LoadingState label="Loading…" /></>);
+    expect(activeIdleMotion()).toEqual(['breathing-cta']);
+    const busy = [...document.querySelectorAll<HTMLElement>('[data-busy-motion]')].map((element) => element.dataset.busyMotion);
+    expect(busy.sort()).toEqual([...BUSY_MOTION_KINDS].sort());
+    // Busy motion is never also an idle slot, and only a pending button or a loading placeholder carries it.
+    expect(document.querySelector('[data-busy-motion][data-idle-motion]')).toBeNull();
+    expect(document.querySelector('[data-busy-motion="spinner"]')!.closest('.lf-button--pending[aria-busy="true"]')).not.toBeNull();
+    expect(document.querySelector('[data-busy-motion="shimmer"]')).toHaveClass('lf-skeleton');
   });
 
   it('caps idle loops at three: one hero, one streak flame, one breathing call to action', () => {

@@ -79,7 +79,7 @@
   color: var(--content);
   box-shadow: var(--elevation-float);
 }
-[data-theme='dark'] .lf-mentor-plate { box-shadow: none; background: var(--raised); }
+[data-theme='dark'] .lf-mentor-plate { background: var(--raised); }
 .lf-mentor-plate-text {
   /* The caption keeps a readable measure; the Next button wraps under it before a word is squeezed (02 §7). */
   flex: 1 1 12rem;
@@ -115,7 +115,7 @@
 .lf-mentor-board .lf-learning-board-heading { min-block-size: var(--target-min); padding-inline-end: calc(var(--target-min) + var(--spacing-2)); }
 .lf-mentor-board-frame { min-inline-size: 0; }
 .lf-mentor-activity { padding: var(--spacing-4); background: var(--surface); box-shadow: var(--elevation-card); }
-[data-theme='dark'] .lf-mentor-activity { box-shadow: none; background: var(--raised); }
+[data-theme='dark'] .lf-mentor-activity { background: var(--raised); }
 .lf-mentor-activity h2 { margin: 0; font: var(--type-title); letter-spacing: var(--type-title-tracking); }
 .lf-mentor-activity p { margin: 0; overflow-wrap: anywhere; }
 .lf-mentor-activity-prompt { font: var(--type-body-lg); letter-spacing: var(--type-body-lg-tracking); }

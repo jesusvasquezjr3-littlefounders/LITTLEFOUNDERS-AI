@@ -49,29 +49,14 @@
 .lf-rebuild .lf-result-course { display: inline-flex; align-items: center; gap: var(--spacing-3); padding: var(--spacing-1) var(--spacing-4) var(--spacing-1) var(--spacing-2); border-radius: var(--rounded-full); background: var(--on-accent); color: var(--accent); font-weight: 800; }
 .lf-rebuild .lf-result-pace > .lf-notice { justify-content: center; }
 /*
- * OD-28 (V-12): the lesson-complete confetti burst, mounted only inside the
- * lesson-complete milestone Celebration ([data-celebrate] is set by the gate).
- * The pieces' resting place is the static frame (reduced motion, a revisit, a
- * settled moment); under a playing celebration they burst out from the medal to
- * that same frame once (630 ms plus a short stagger, within the 700 ms celebration budget; the celebration token itself stays the shared motion sheet's), so nothing jumps after.
+ * OD-28 (V-12): the lesson-complete confetti burst, the registered motion asset
+ * (design/MotionAsset.tsx), mounted only inside the lesson-complete milestone
+ * Celebration ([data-celebrate] is set by the gate). Its frame is 2:1 with the
+ * burst's origin 10 px above the frame's bottom edge; the frame's bottom sits
+ * on the anchor (the medal's centre, 55 px down, or the hero's top edge), so
+ * every piece lands above it. It never widens the page: at most the hero's width.
  */
 .lf-rebuild .lf-result-hero { position: relative; }
-.lf-rebuild .lf-result-confetti[data-celebrate] { --lf-confetti-spread: .8; position: absolute; inset-block-start: 0; inset-inline-start: 50%; inline-size: 0; block-size: 0; pointer-events: none; }
-.lf-rebuild .lf-result-confetti--medal[data-celebrate] { inset-block-start: 55px; }
-/* A phone keeps every piece inside the page (no horizontal scroll at 320 px). */
-.lf-rebuild .lf-result-confetti-piece { position: absolute; inline-size: 10px; block-size: 10px; border-radius: var(--rounded-full); background: var(--lf-confetti-tone, var(--on-accent));
-  --lf-confetti-to: translate(calc(var(--lf-confetti-x, 0px) * var(--lf-confetti-spread, 1)), var(--lf-confetti-y, 0px)) rotate(var(--lf-confetti-turn, 0deg));
-  transform: var(--lf-confetti-to, none); }
-@container app (min-width: 640px) { .lf-rebuild .lf-result-confetti[data-celebrate] { --lf-confetti-spread: 1; } }
-.lf-rebuild .lf-result-confetti-piece--bar { inline-size: 6px; block-size: 14px; border-radius: 2px; }
-@media (prefers-reduced-motion: no-preference) {
-  .lf-rebuild .lf-celebration--play .lf-result-confetti[data-celebrate] .lf-result-confetti-piece {
-    animation: lf-result-confetti calc(var(--dur-transition) + var(--dur-component)) var(--ease-enter) both;
-    animation-delay: calc(var(--dur-instant) * var(--lf-confetti-order, 0) / 4);
-  }
-  @keyframes lf-result-confetti {
-    0% { opacity: 0; transform: translate(0, 0) rotate(0deg) scale(.4); }
-    30% { opacity: 1; }
-    100% { opacity: 1; transform: var(--lf-confetti-to, none); }
-  }
-}
+.lf-rebuild .lf-result-confetti[data-celebrate] { --lf-confetti-anchor: 10px; position: absolute; inset-inline: 0; inset-block-end: calc(100% - var(--lf-confetti-anchor)); margin-inline: auto; inline-size: min(100%, 320px); aspect-ratio: 2 / 1; pointer-events: none; }
+.lf-rebuild .lf-result-confetti--medal[data-celebrate] { --lf-confetti-anchor: 65px; }
+.lf-rebuild .lf-result-confetti .lf-motion-asset, .lf-rebuild .lf-result-confetti .lf-motion-asset-media { display: block; inline-size: 100%; block-size: 100%; }

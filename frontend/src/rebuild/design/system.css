@@ -31,7 +31,8 @@ body { margin: 0; }
   letter-spacing: .008em;
   container: app / inline-size;
 }
-.lf-rebuild[data-theme='dark'] { color-scheme: dark; --shadow-control: none; }
+/* OD-28 (V-04): dark mode keeps a soft control shadow (the generated --elevation-control value), as well as its surface step. */
+.lf-rebuild[data-theme='dark'] { color-scheme: dark; --shadow-control: 0 1px 3px rgb(6 7 19 / .56); }
 .lf-rebuild *, .lf-rebuild *::before, .lf-rebuild *::after { box-sizing: border-box; }
 /*
  * Element rules. Each skips a legacy page body mounted inside a rebuilt shell

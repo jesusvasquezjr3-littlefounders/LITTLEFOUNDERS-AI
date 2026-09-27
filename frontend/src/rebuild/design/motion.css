@@ -23,6 +23,17 @@
   .lf-rebuild .lf-button--breathing { animation: lf-breathe 2.6s var(--ease-standard) infinite; }
   .lf-rebuild .lf-button--breathing.lf-button--armed { animation: lf-armed-bump var(--dur-component) var(--ease-standard), lf-breathe 2.6s var(--ease-standard) var(--dur-component) infinite; }
 
+  /*
+   * Busy motion (OD-28, owner review item V-04; the contract is in motion.tsx):
+   * not one of the three idle slots, it runs only while work is in flight. The
+   * loading placeholder shimmers (a soft band sweeping along the reading
+   * direction) and a pending button's spinner turns. Like the breathing halo,
+   * these are loops, not transitions, so their periods are not duration tokens.
+   */
+  .lf-rebuild [data-busy-motion='shimmer'] .lf-skeleton-line::after { opacity: .6; filter: blur(var(--spacing-2)); animation: lf-shimmer 1.6s var(--ease-standard) infinite; }
+  .lf-rebuild[dir='rtl'] [data-busy-motion='shimmer'] .lf-skeleton-line::after, .lf-rebuild [dir='rtl'] [data-busy-motion='shimmer'] .lf-skeleton-line::after { animation-name: lf-shimmer-rtl; }
+  .lf-rebuild .lf-button-spinner[data-busy-motion='spinner'] { animation: lf-spin .9s linear infinite; }
+
   /* Feedback grammar on the answer row (02 §9.2): select bumps, correct bumps, not yet wobbles. */
   .lf-rebuild .lf-choice--bump { animation: lf-select-bump var(--dur-component) var(--ease-standard); }
   .lf-rebuild .lf-choice--wobble { animation: lf-wobble var(--dur-transition) var(--ease-standard); }
@@ -41,6 +52,9 @@
     0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--lf-breath) 45%, transparent); }
     50% { box-shadow: 0 0 0 var(--spacing-2) color-mix(in srgb, var(--lf-breath) 0%, transparent); }
   }
+  @keyframes lf-shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(250%); } }
+  @keyframes lf-shimmer-rtl { 0% { transform: translateX(100%); } 100% { transform: translateX(-250%); } }
+  @keyframes lf-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   @keyframes lf-select-bump { 0% { transform: scale(.96); } 60% { transform: scale(1.035); } 100% { transform: scale(1); } }
   @keyframes lf-wobble {
     0%, 100% { transform: translateX(0); }

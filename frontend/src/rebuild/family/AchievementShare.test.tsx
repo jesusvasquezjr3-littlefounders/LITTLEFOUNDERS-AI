@@ -32,7 +32,7 @@ describe('AchievementShare', () => {
     }
   });
 
-  it('announces each state and disables the button while preparing', () => {
+  it('announces each state and holds the button pending, with a spinner, while preparing', () => {
     const states: [AchievementShareStatus, string | null, string][] = [
       ['preparing', 'Making the picture…', 'status'],
       ['shared', 'Picture shared.', 'status'],
@@ -44,7 +44,9 @@ describe('AchievementShare', () => {
       const { unmount } = render(<AchievementShare copy={en.achievementShare} locale="en-US" dark status={status} onShare={() => undefined} />);
       const region = screen.getByRole(role);
       expect(region.textContent).toBe(text ?? '');
-      expect(screen.getByRole('button').hasAttribute('disabled')).toBe(status === 'preparing');
+      // OD-28 (V-04): a pending press stays focusable, is announced busy and shows the spinner.
+      expect(screen.getByRole('button').getAttribute('aria-busy') === 'true').toBe(status === 'preparing');
+      expect(screen.getByRole('button').querySelector('[data-busy-motion="spinner"]') !== null).toBe(status === 'preparing');
       unmount();
     }
   });

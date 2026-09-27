@@ -25,8 +25,9 @@ export { Art, Banner, Card, Chip, ChipGroup, ChoiceChip, EmptyState, ErrorState,
   type CardTone, type NoticeTone, type PillTone, type StatusTone } from './display';
 export { Glyph, GLYPH_BUDGET, GLYPH_FAMILIES, SYSTEM_GLYPHS, type GlyphName } from './glyphs';
 export { BarChart, niceMax, Sparkline, TrendChart, type VizBar, type VizLabels, type VizPoint, type VizSeries } from './charts';
-export { activeIdleMotion, Celebration, celebrationPart, CountUp, IDLE_MOTION_KINDS, useIdleMotion, useOneShot,
-  type CelebrationPart, type CelebrationState, type IdleMotionKind } from './motion';
+export { activeIdleMotion, BUSY_MOTION_KINDS, Celebration, celebrationPart, CountUp, IDLE_MOTION_KINDS, useCelebrationState, useIdleMotion, useOneShot,
+  type BusyMotionKind, type CelebrationPart, type CelebrationState, type IdleMotionKind } from './motion';
+export { MotionAsset } from './MotionAsset';
 export { isMilestone, type Milestone } from './milestones';
 export { RebuildRoot } from './root';
 export { MENTOR_CHARACTERS, MENTOR_NAMES, type MentorCharacter } from './assets';

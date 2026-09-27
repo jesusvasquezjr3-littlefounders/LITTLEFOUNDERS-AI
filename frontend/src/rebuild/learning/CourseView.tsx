@@ -113,7 +113,7 @@ function RefusalState({ state, t, courseTitles, links, onNavigate, onRetry, retr
     {missing.length ? <div className="lf-course-path-missing"><List label={t.prereqTitle}>
       {missing.map((slug) => <ListRow key={slug} title={courseTitles?.[slug] ?? slug} titleRole="option" onPress={() => onNavigate(links.course(slug))} />)}
     </List></div> : null}
-    {/* The heading already says it is loading (aria-busy on the page); the placeholder shapes are still (02 §9.4). */}
+    {/* The heading already says it is loading (aria-busy on the page); the placeholder shimmers only as busy motion, still under reduced motion (OD-28 V-04). */}
     {state.status === 'loading' ? <Skeleton lines={4} /> : null}
     {retryable ? <div className="lf-actions"><Button variant="accent" pending={retrying} pendingLabel={t.retrying} onClick={onRetry}>{t.retry}</Button></div> : null}
   </>;

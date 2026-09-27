@@ -190,7 +190,7 @@ These are the only places a file can be uploaded. None is a profile, avatar or c
 
 ## 5. Brand position (E.12)
 
-`docs/product-audit/COSMIC_NARRATIVE.md` §6, "People You Already Know", states why LittleFounders does not build an open, discoverable social network for children, in the register of the Digital Banking position, and names the Feed as the thing it refuses to be. `guardrails:check` is Appendix J's Brand-Narrative Coverage Check: it fails if the section or its core statements disappear. It is reviewed on the section 1.2 cadence.
+`docs/product-audit/COSMIC_NARRATIVE.md` §6, "People You Already Know", states why LittleFounders does not build an open, discoverable social network for children, in the register of the Wallet position, and names the Feed as the thing it refuses to be. `guardrails:check` is Appendix J's Brand-Narrative Coverage Check: it fails if the section or its core statements disappear. It is reviewed on the section 1.2 cadence.
 
 ## 6. Metrics (Appendix J)
 
