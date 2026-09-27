@@ -153,7 +153,7 @@ It writes a JSON report with the per-section violations, the sign-off count, the
   - The mode variables (`TUTOR_BEHAVIORAL_TELEMETRY`, `TUTOR_ALLIANCE_CONTROLLER`, `TUTOR_SELF_EXPLANATION`, `TUTOR_SPACED_REVIEW`, `TUTOR_DIALOGUE_CALIBRATION`, `TUTOR_SESSION_END_SIGNAL`) are Stage 7 kill switches. They can only make the Mentor do less, and an unknown value falls back to the active mode, never to a silent off.
   - Core ignores a live-content sampling baseline below its floor (S06.12).
   - `TUTOR_CORROBORATION_MIN_OBSERVATIONS` now refuses to boot below 2. The C.10 floor is a non-negotiable constraint, so the only single-observation path is the per-KC Stage 7 rollback.
-  - `TUTOR_REVIEW_SHORT_HORIZON_MIN` (C.11) and `MENTOR_DIALOGUE_EXPERIMENT_BANDS` (C.17, adults only by default under OD-23) are schema-bounded operator values. Widening the experiment bands is a Product and Legal decision (H.7), which the owner records outside git.
+  - `TUTOR_REVIEW_SHORT_HORIZON_MIN` (C.11) and `MENTOR_DIALOGUE_EXPERIMENT_BANDS` (C.17: adults, teens and tweens by default under OD-26, never a young child) are schema-bounded operator values. Widening the experiment bands further is a Product and Legal decision (H.7), recorded in the owner log.
 - **The two sign-offs are names in a file.** The gate proves that a named human signed and that the record was not rewritten. It cannot prove who typed the name. Branch protection and review on `main` remain the owner's control.
 - **No canary infrastructure beyond the H.7 experiment console exists.** A Stage 5 canary is an experiment arm: surface `tutor`, a small share, adults only (OD-23). The record names it.
 

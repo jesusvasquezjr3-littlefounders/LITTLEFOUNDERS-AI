@@ -117,20 +117,21 @@ const Env = z.object({
   TUTOR_REVIEW_SHORT_HORIZON_MIN: z.coerce.number().int().min(0).max(24 * 60).default(180),
 
   // C.17: the dialogue bands the age-band calibration A/B experiment may
-  // enrol, comma-separated from young_child,tween,teen,adult. OD-23 / H.7
-  // interim default: ADULTS ONLY until Product and Legal choose wider
-  // experiment ages; every learner outside these bands receives the SPEC's
-  // calibrated register and is never enrolled. Unknown names are ignored.
+  // enrol, comma-separated from tween,teen,adult. OD-26 (owner review M-12,
+  // 27 September 2026) opens C.17, and only C.17, to teens 13-17 (their own
+  // analytics opt-in) and tweens 10-12 (a verified guardian's analytics
+  // consent, on an exact age); every other experiment keeps OD-23's
+  // adults-only rule. young_child (6-9) is never accepted here, and Core's
+  // resolver refuses it again. An operator can narrow the list (e.g. `adult`)
+  // but never widen it past these three. Unknown names are ignored.
   MENTOR_DIALOGUE_EXPERIMENT_BANDS: z
     .string()
-    .default('adult')
+    .default('adult,teen,tween')
     .transform((v) =>
       v
         .split(',')
         .map((band) => band.trim())
-        .filter((band): band is 'young_child' | 'tween' | 'teen' | 'adult' =>
-          ['young_child', 'tween', 'teen', 'adult'].includes(band),
-        ),
+        .filter((band): band is 'tween' | 'teen' | 'adult' => ['tween', 'teen', 'adult'].includes(band)),
     ),
 
   // Redis para Rate Limiting distribuido

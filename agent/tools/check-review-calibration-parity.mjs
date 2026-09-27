@@ -24,10 +24,16 @@
  * rollback trips on a false alarm) — or the experiment starts enrolling
  * minors by a default nobody decided. This gate fails first.
  *
- * OD-23 / H.7 GUARD. The experiment's default eligible bands must stay adults
- * only. Widening it is a Product + Legal decision recorded in
- * docs/littlefounders-spec/product/13-OWNER-DECISION-LOG.md, after which this
- * guard is updated in the same reviewed change.
+ * OD-23 / OD-26 / H.7 GUARD. OD-26 (owner review M-12, 27 September 2026)
+ * opened C.17, and only C.17, to teens 13-17 (their own analytics opt-in) and
+ * tweens 10-12 (a verified guardian's analytics consent); children 6-9 stay
+ * excluded, and every other experiment keeps OD-23's adults-only rule. So:
+ * the default may name adult, teen and tween and nothing else; the config
+ * schema must not even accept young_child; and Core's resolver must keep
+ * young_child out of its openable bands, admit a tween only on an exact age
+ * of 10 to 12, and route consent by band (the guardian's for a tween). Any
+ * further widening is a new owner-log decision, after which this guard is
+ * updated in the same reviewed change.
  */
 
 import { readFileSync, readdirSync } from 'node:fs';
@@ -48,7 +54,8 @@ export const FILES = {
   coreConfig: 'backend/src/config.ts',
 };
 
-const MINOR_BANDS = ['young_child', 'tween', 'teen'];
+/** OD-26: the only bands the C.17 experiment may ever enrol. */
+const OPENABLE_BANDS = ['adult', 'teen', 'tween'];
 const quoted = (text) => [...text.matchAll(/'([A-Za-z_]+)'/g)].map((m) => m[1]);
 const same = (a, b) => a.length === b.length && [...a].sort().every((v, i) => v === [...b].sort()[i]);
 
@@ -164,16 +171,35 @@ export function checkReviewCalibrationParity(read, migrationSql) {
   const oracleReport = [...(zodFields(src.dialogue, 'export const DialogueCalibrationSchema') ?? []), ...(interfaceFields(src.dialogue, 'DialogueCalibrationReport') ?? [])];
   fields('dialogue calibration report', oracleReport.length > 4 ? oracleReport : null, zodFields(src.coreDialogue, 'export const DialogueCalibrationReportBody'));
 
-  // ── OD-23 / H.7: adults only until Product and Legal decide ──
+  // ── OD-23 / OD-26 / H.7: adults, teens and tweens for C.17; never a young child ──
+  const bandsBlock = /MENTOR_DIALOGUE_EXPERIMENT_BANDS:\s*z([\s\S]*?)\n {2}\/\/|MENTOR_DIALOGUE_EXPERIMENT_BANDS:\s*z([\s\S]*?)\),\n/.exec(src.coreConfig);
   const bandsDefault = /MENTOR_DIALOGUE_EXPERIMENT_BANDS:\s*z[\s\S]*?\.default\('([^']*)'\)/.exec(src.coreConfig)?.[1];
   if (bandsDefault === undefined) problems.push(`${FILES.coreConfig}: could not read the MENTOR_DIALOGUE_EXPERIMENT_BANDS default`);
   else {
-    const minors = bandsDefault.split(',').map((b) => b.trim()).filter((b) => MINOR_BANDS.includes(b));
-    if (minors.length > 0) {
+    const outside = bandsDefault.split(',').map((b) => b.trim()).filter((b) => !OPENABLE_BANDS.includes(b));
+    if (outside.length > 0) {
       problems.push(
-        `${FILES.coreConfig}: the C.17 experiment would enrol ${minors.join(', ')} by default — OD-23/H.7 keep experiments adults-only until Product and Legal record wider ages`,
+        `${FILES.coreConfig}: the C.17 experiment would enrol ${outside.join(', ')} by default — OD-26 opens only adults, teens and tweens, and OD-23/H.7 keep everything else out`,
       );
     }
+  }
+  const schema = (bandsBlock?.[1] ?? bandsBlock?.[2] ?? '');
+  if (!schema || /young_child/.test(schema)) {
+    problems.push(`${FILES.coreConfig}: MENTOR_DIALOGUE_EXPERIMENT_BANDS must not accept young_child at all (OD-26: children 6-9 stay excluded)`);
+  }
+  const openableMatch = /DIALOGUE_EXPERIMENT_OPENABLE_BANDS(?::[^=]*)?=\s*\[([^\]]*)\]/.exec(src.coreDialogue);
+  const openable = openableMatch ? quoted(openableMatch[1]) : null;
+  if (!openable || !same(openable, OPENABLE_BANDS)) {
+    problems.push(`${FILES.coreDialogue}: DIALOGUE_EXPERIMENT_OPENABLE_BANDS must be exactly ${OPENABLE_BANDS.join(', ')} (OD-26), found ${openable ? openable.join(', ') : 'none'}`);
+  }
+  if (!/DIALOGUE_EXPERIMENT_OPENABLE_BANDS\.includes\(input\.band\)/.test(src.coreDialogue)) {
+    problems.push(`${FILES.coreDialogue}: the resolver must refuse every band outside DIALOGUE_EXPERIMENT_OPENABLE_BANDS whatever the configuration says (OD-26)`);
+  }
+  if (!/input\.band === 'tween' && \(input\.age === null \|\| input\.age < 10 \|\| input\.age > 12\)/.test(src.coreDialogue)) {
+    problems.push(`${FILES.coreDialogue}: a tween may be enrolled only on an exact age of 10 to 12 (OD-26: never a tier guess that could be a younger child)`);
+  }
+  if (!/case 'tween':\s*return guardianConsent\(\);/.test(src.coreDialogue)) {
+    problems.push(`${FILES.coreDialogue}: a tween's enrolment must need a verified guardian's analytics consent (OD-26)`);
   }
   return problems;
 }
@@ -194,7 +220,7 @@ function main() {
     return;
   }
   console.log(
-    'review-calibration:check OK — Oracle, Core and the migration agree on the routing rule and its record, the dialogue register and its record; the experiment stays adults-only by default (OD-23)',
+    'review-calibration:check OK — Oracle, Core and the migration agree on the routing rule and its record, the dialogue register and its record; the C.17 experiment enrols adults, teens and tweens only, never a young child (OD-26)',
   );
 }
 

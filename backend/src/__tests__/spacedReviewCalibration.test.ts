@@ -266,7 +266,7 @@ describe('the dialogue band — Core’s own evidence, in the teaching tier’s 
   });
 });
 
-describe('the variant — OD-23 adults-only experiment, consent-gated, never a guess', () => {
+describe('the variant — the C.17 experiment (OD-23 narrowed by OD-26), consent-gated, never a guess', () => {
   const ASSIGN = 'http://localhost:4008/api/v1/intel/runtime/experiments/assignments';
   const EXPOSE = 'http://localhost:4008/api/v1/intel/runtime/experiments/exposure';
   const EXP = '44444444-4444-4444-8444-444444444444';
@@ -300,7 +300,7 @@ describe('the variant — OD-23 adults-only experiment, consent-gated, never a g
   }
   const base = { userId: USER, age: null, eligibleBands: ['adult'] as const, rollback: false };
 
-  it('every minor is outside the experiment by default: the calibrated register, no runtime call', async () => {
+  it('with the bands narrowed to adults, every minor is outside the experiment: the calibrated register, no runtime call', async () => {
     for (const [band, roles, screening] of [
       ['young_child', ['kid'], screen('under_13', true)],
       ['tween', ['kid'], screen('under_13', true)],
@@ -346,14 +346,62 @@ describe('the variant — OD-23 adults-only experiment, consent-gated, never a g
     });
   });
 
-  it('when Product and Legal open a minor band, consent still gates it: no guardian consent, no teen preference → not enrolled', async () => {
-    const opened = { ...base, eligibleBands: ['young_child', 'tween', 'teen', 'adult'] as const };
-    runtime({ consent: false });
-    expect((await resolveDialogueCalibration({ ...opened, band: 'young_child', roles: ['kid'], screening: screen('under_13', true) })).assignment).toBe('no_consent');
-    runtime({ teenPref: false });
-    expect((await resolveDialogueCalibration({ ...opened, band: 'teen', roles: ['universal'], screening: screen('13_to_17') })).assignment).toBe('no_consent');
+  /*
+   * OD-26 (owner review M-12): C.17 may enrol teens 13-17 with their own
+   * analytics opt-in and tweens 10-12 with a verified guardian's analytics
+   * consent; children 6-9 never, whatever the configuration lists.
+   */
+  const opened = { ...base, eligibleBands: ['young_child', 'tween', 'teen', 'adult'] as const };
+  const armed = { assignments: [{ experimentId: EXP, variant: 'B', surface: 'tutor', target: 'mentor.dialogue-register' }], exposure: { experimentId: EXP, variant: 'B', surface: 'tutor', target: 'mentor.dialogue-register' } };
+
+  it('OD-26: a young child is never enrolled, even listed and with the guardian consenting, and the runtime is not asked', async () => {
+    for (const age of [null, 7, 9]) {
+      const calls = runtime({ ...armed, consent: true });
+      expect(await resolveDialogueCalibration({ ...opened, age, band: 'young_child', roles: ['kid'], screening: screen('under_13', true) })).toEqual({
+        band: 'young_child', variant: 'calibrated', assignment: 'not_eligible', experimentId: null,
+      });
+      expect(calls.some((u) => u.startsWith(ASSIGN) || u.startsWith(EXPOSE))).toBe(false);
+    }
+  });
+
+  it('OD-26: a tween is enrolled only on an exact age of 10 to 12 and with the guardian consent', async () => {
+    const tween = { ...opened, band: 'tween' as const, roles: ['kid'], screening: screen('under_13', true) };
+    // A tier guess (no birth date) could be a younger child; an age outside 10-12 is never a tween here.
+    for (const age of [null, 9, 13]) {
+      const calls = runtime({ ...armed, consent: true });
+      expect((await resolveDialogueCalibration({ ...tween, age })).assignment).toBe('not_eligible');
+      expect(calls.some((u) => u.startsWith(ASSIGN))).toBe(false);
+    }
+    // No guardian consent: not enrolled, even with a teen-style preference on record.
+    runtime({ ...armed, consent: false, teenPref: true });
+    expect((await resolveDialogueCalibration({ ...tween, age: 11 })).assignment).toBe('no_consent');
+    const calls = runtime({ ...armed, consent: true });
+    expect(await resolveDialogueCalibration({ ...tween, age: 11 })).toEqual({ band: 'tween', variant: 'calibrated', assignment: 'experiment', experimentId: EXP });
+    expect(calls.filter((u) => u.startsWith(ASSIGN) || u.startsWith(EXPOSE))).toEqual([ASSIGN, EXPOSE]);
+  });
+
+  it("OD-26: a teen is enrolled only on the teen's own analytics opt-in; a guardian's consent alone never enrols a teen", async () => {
+    const teen = { ...opened, band: 'teen' as const, roles: ['universal'], screening: screen('13_to_17') };
+    for (const teenPref of [undefined, false]) {
+      runtime({ ...armed, teenPref, consent: true });
+      expect((await resolveDialogueCalibration(teen)).assignment).toBe('no_consent');
+    }
+    runtime({ ...armed, teenPref: true });
+    expect((await resolveDialogueCalibration(teen)).assignment).toBe('experiment');
+    // A parent-created teen needs both their own opt-in and the guardian's consent.
+    const kidTeen = { ...teen, roles: ['kid'] };
+    runtime({ ...armed, teenPref: false, consent: true });
+    expect((await resolveDialogueCalibration(kidTeen)).assignment).toBe('no_consent');
+    runtime({ ...armed, teenPref: true, consent: false });
+    expect((await resolveDialogueCalibration(kidTeen)).assignment).toBe('no_consent');
+  });
+
+  it('OD-26: an operator can narrow the bands back to adults, and consent still gates every band', async () => {
+    runtime({ ...armed, teenPref: true, consent: true });
+    expect((await resolveDialogueCalibration({ ...base, band: 'teen', roles: ['universal'], screening: screen('13_to_17') })).assignment).toBe('not_eligible');
+    expect((await resolveDialogueCalibration({ ...base, age: 11, band: 'tween', roles: ['kid'], screening: screen('under_13', true) })).assignment).toBe('not_eligible');
     runtime({ consent: true, assignments: [] });
-    expect((await resolveDialogueCalibration({ ...opened, band: 'young_child', roles: ['kid'], screening: screen('under_13', true) })).assignment).toBe('no_experiment');
+    expect((await resolveDialogueCalibration({ ...opened, age: 12, band: 'tween', roles: ['kid'], screening: screen('under_13', true) })).assignment).toBe('no_experiment');
   });
 
   it('the Stage 7 rollback puts everyone on the control register, without asking the runtime', async () => {

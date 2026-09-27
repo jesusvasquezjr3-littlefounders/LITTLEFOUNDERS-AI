@@ -27,12 +27,15 @@ describe('Core defaults that carry a Mentor governance constraint', () => {
     return getConfig();
   }
 
-  it('C.17 / OD-23 / H.7: the dialogue-register experiment enrols adults only unless Product and Legal widen it', () => {
-    expect(defaults().MENTOR_DIALOGUE_EXPERIMENT_BANDS).toEqual(['adult']);
+  it('C.17 / OD-26 / H.7: the dialogue-register experiment may enrol adults, teens and tweens, never a young child', () => {
+    expect(defaults().MENTOR_DIALOGUE_EXPERIMENT_BANDS).toEqual(['adult', 'teen', 'tween']);
   });
 
-  it('an unknown band name enrols nobody extra', () => {
-    process.env.MENTOR_DIALOGUE_EXPERIMENT_BANDS = 'adult, kids ,everyone';
+  it('an unknown band name, or young_child, enrols nobody extra; an operator can narrow to adults', () => {
+    process.env.MENTOR_DIALOGUE_EXPERIMENT_BANDS = 'adult, kids ,everyone, young_child';
+    resetConfigForTests();
+    expect(getConfig().MENTOR_DIALOGUE_EXPERIMENT_BANDS).toEqual(['adult']);
+    process.env.MENTOR_DIALOGUE_EXPERIMENT_BANDS = 'adult';
     resetConfigForTests();
     expect(getConfig().MENTOR_DIALOGUE_EXPERIMENT_BANDS).toEqual(['adult']);
   });
