@@ -4,6 +4,7 @@ import { TeenWallet } from './TeenWallet';
 import type { Session, TransportResult } from './walletApi';
 import en from '@/i18n/en-US/teenWallet.json';
 import habits from '@/i18n/en-US/moneyHabits.json';
+import { rebuildNamespaceCopy } from '@/i18n/rebuild';
 
 /*
  * S07.2 rebuilt surface (D.3, OD-3 Option B): the teen's own wallet renders
@@ -262,5 +263,43 @@ describe('TeenWallet', () => {
     const { view } = renderWallet(session, { dark: true });
     await ready();
     expect(view.container.querySelector('.lf-teen-wallet')).toHaveAttribute('data-theme', 'dark');
+  });
+});
+
+/*
+ * W2F.2: the /wallet screen's page states on the design system (offline,
+ * refused, ours to fix, each with the right way forward) and the page's
+ * companions beside the wallet.
+ */
+describe('TeenWallet on the /wallet screen (W2F.2)', () => {
+  const screenCopy = rebuildNamespaceCopy['en-US'].family.teenWalletScreen;
+  const screenProps = (onNavigate = vi.fn()) => ({ screen: { copy: screenCopy, learnHref: '/learn', onNavigate }, aside: <p data-copy-role="data">companions</p> });
+
+  it('explains a refusal with the way back, never a retry', async () => {
+    const onNavigate = vi.fn();
+    const { session } = fakeSession({ 'GET /wallet/access': { data: { holder: null, familyChild: false }, error: null } });
+    renderWallet(session, screenProps(onNavigate));
+    await screen.findByRole('heading', { level: 2, name: screenCopy.refusedTitle });
+    expect(screen.queryByRole('button', { name: screenCopy.retry })).toBeNull();
+    fireEvent.click(screen.getByRole('link', { name: screenCopy.refusedAction }));
+    expect(onNavigate).toHaveBeenCalledWith('/learn');
+  });
+
+  it('says "offline" for a network failure and loads on a retry', async () => {
+    let offline = true;
+    const { session } = fakeSession({ 'GET /tasks/wallet': () => offline ? { data: null, error: { code: 'NETWORK' } }
+      : { data: { balances: { save: 10, spend: 6, share: 4 } }, error: null } });
+    renderWallet(session, screenProps());
+    expect(await screen.findByText(screenCopy.offlineBody)).toBeInTheDocument();
+    offline = false;
+    fireEvent.click(screen.getByRole('button', { name: screenCopy.retry }));
+    await ready();
+    expect(screen.getByText('companions')).toBeInTheDocument();
+  });
+
+  it('calls any other failure ours to fix', async () => {
+    const { session } = fakeSession({ 'GET /wallet/rewards': { data: null, error: { code: 'DATA_UNAVAILABLE' } } });
+    renderWallet(session, screenProps());
+    expect(await screen.findByText(screenCopy.failedBody)).toBeInTheDocument();
   });
 });

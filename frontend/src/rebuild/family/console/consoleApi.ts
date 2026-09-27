@@ -17,7 +17,7 @@
 import type { DispositionSummaryData } from '../../mentor/allianceApi';
 
 export type ConsoleTransportResult = { data: unknown; error: null } | { data: null; error: { code: string } };
-export type ConsoleMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
+export type ConsoleMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 /** Calls Core's `/api/v1` with the signed-in session. A network failure answers `{ error: { code: 'NETWORK' } }`. */
 export type ConsoleTransport = (path: string, options?: { method?: ConsoleMethod; body?: unknown }) => Promise<ConsoleTransportResult>;
 export type Outcome<T> = { ok: true; data: T } | { ok: false; code: string };

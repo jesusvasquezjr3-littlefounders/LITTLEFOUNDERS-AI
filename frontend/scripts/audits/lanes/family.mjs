@@ -33,6 +33,20 @@ export const scenarios = {
   'family-progress-no-course': tutor({ kids: 'two', courses: 'none' }),
   'family-mentor-forbidden': tutor({ kids: 'two', history: 'forbidden' }),
   'family-mentor-quiet': tutor({ kids: 'two', history: 'quiet' }),
+  // W2F.2: Tasks (F4) and coins (F5) for the Tutor, the child boards and the teen wallet (verify-family-money-screens.mjs).
+  'money-tutor': tutor({ kids: 'two', money: 'full' }),
+  'money-tutor-new': tutor({ kids: 'two', money: 'new' }),
+  'money-tutor-offline': tutor({ kids: 'two', money: 'offline' }),
+  'money-tutor-empty': tutor({ kids: 'none', money: 'full' }),
+  'money-child': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], family: { money: 'full', register: 'young' } },
+  'money-child-new': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], family: { money: 'new', register: 'young' } },
+  'money-child-offline': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], family: { money: 'offline', register: 'young' } },
+  'money-teen-linked': { population: 'self-registered teen 13-17 with a linked Tutor', guest: false, ageBand: '13-17', roles: ['universal'],
+    wallet: { holder: 'teen', familyChild: true }, family: { money: 'full', register: 'teen' } },
+  'money-teen': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', roles: ['universal'], wallet: { holder: 'teen', familyChild: false },
+    family: { money: 'full', register: 'teen' } },
+  'money-teen-offline': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', roles: ['universal'], wallet: { holder: 'teen', familyChild: false },
+    family: { money: 'offline', register: 'teen' } },
   // Everyone else meets the parent gate (RequireRole): the console never renders for them (verify-family-console.mjs).
   'family-kid': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'] },
   'family-teen': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', roles: ['universal'], wallet: { holder: 'teen', familyChild: false } },
@@ -45,6 +59,10 @@ const ready = {
   console: '[data-screen="family-console"] [data-console-part="overview"]',
   progress: '[data-screen="child-progress"] [data-console-part="map"]',
   mentor: '[data-screen="child-mentor"] [data-console-part="sessions"]',
+  tutorTasks: '[data-screen="tutor-tasks"] [data-family-part="chores"] [data-task-id]',
+  childTasks: '[data-screen="child-tasks"] [data-family-part="chores"] [data-task-id]',
+  tutorCoins: '[data-screen="tutor-coins"] [data-family-part="allowance"]',
+  childCoins: '[data-screen="child-coins"] [data-family-part="card-look"]',
 };
 
 export const states = [
@@ -64,6 +82,23 @@ export const states = [
     { open: ['[data-console-part="sessions"] [data-session-id] button'] }),
   app('/family/:kid/tutor@quiet', `/family/${KID_A}/tutor`, 'family-mentor-quiet', ready.mentor),
   app('/family/:kid/tutor@forbidden', `/family/${KID_A}/tutor`, 'family-mentor-forbidden', '[data-screen="child-mentor"] .lf-state--empty'),
+  // W2F.2: Tasks (F4) and coins (F5), both sides, and the teen wallet.
+  app('/tasks@tutor', '/tasks', 'money-tutor', ready.tutorTasks, { readyAlso: '[data-family-part="rewards"] li' }),
+  app('/tasks@tutor-add-reward', '/tasks', 'money-tutor', '[data-family-part="add-reward"]', { open: ['[data-family-part="rewards"] > .lf-button-group button'] }),
+  app('/tasks@tutor-empty', '/tasks', 'money-tutor-empty', '[data-screen="tutor-tasks"] .lf-state--empty'),
+  app('/tasks@tutor-offline', '/tasks', 'money-tutor-offline', '[data-screen="tutor-tasks"] .lf-state--error'),
+  app('/tasks@child', '/tasks', 'money-child', ready.childTasks, { readyAlso: '[data-family-part="payouts"]' }),
+  app('/tasks@child-new', '/tasks', 'money-child-new', '[data-screen="child-tasks"] [data-family-part="chores"]'),
+  app('/tasks@child-offline', '/tasks', 'money-child-offline', '[data-screen="child-tasks"] .lf-state--error'),
+  app('/tasks@teen-linked', '/tasks', 'money-teen-linked', ready.childTasks),
+  app('/banking@tutor', `/banking?child=${KID_A}`, 'money-tutor', ready.tutorCoins, { readyAlso: '[data-family-part="limit"]' }),
+  app('/banking@tutor-open-card', `/banking?child=${KID_A}`, 'money-tutor-new', '[data-family-part="open-card"]'),
+  app('/banking@tutor-offline', '/banking', 'money-tutor-offline', '[data-screen="tutor-coins"] .lf-state--error'),
+  app('/banking@child', '/banking', 'money-child', ready.childCoins, { readyAlso: '[data-family-part="payouts"]' }),
+  app('/banking@child-card', '/banking', 'money-child', '[data-overlay="dialog"] [data-family-part="card-colour"]', { open: ['[data-family-part="card-look"] button'] }),
+  app('/banking@teen-linked', '/banking', 'money-teen-linked', ready.childCoins),
+  app('/wallet@teen', '/wallet', 'money-teen', '[data-teen-wallet="root"] [data-pocket="save"]'),
+  app('/wallet@teen-offline', '/wallet', 'money-teen-offline', '[data-teen-wallet="root"] .lf-state--error'),
 ];
 
 const kid = (over) => ({ userId: KID_A, displayName: 'Sofía', username: 'sofia_2016', analyticsConsent: false, pendingApprovalCount: 2, walletTotal: 34,
@@ -143,6 +178,10 @@ export function respond({ core, spec, locale, path, request, ok }) {
   const family = spec.family;
   if (!family) return undefined;
   const get = request.method === 'GET';
+  if (family.money) {
+    const answer = money({ spec, family, locale, path, request, ok });
+    if (answer !== undefined) return answer;
+  }
   if (path === '/family/kids' && get) {
     if (family.kids === 'unverified') return refuse(403, 'PARENT_VERIFICATION_REQUIRED');
     if (family.kids === 'offline') return { fail: 'InternetDisconnected' };
@@ -183,5 +222,120 @@ export function respond({ core, spec, locale, path, request, ok }) {
   if (/^\/family\/learning\/kids\/[^/]+\/bridges$/.test(path)) return ok({ prompts: [] });
   if (/^\/family\/learning\/kids\/[^/]+\/streak$/.test(path)) return ok({ streak: { model: 'rest-days-v1', status: 'open', current: 4, best: 9, daysPracticed: 21,
     restDaysLeft: 1, lastActiveDate: '2026-09-24', pause: null } });
+  return undefined;
+}
+
+// ── W2F.2: Tasks (F4), coins (F5) and the teen wallet ───────────────────────
+
+const PARENT = '11111111-1111-4111-8111-111111111111';
+const TASK = (n) => `aaaaaaaa-aaaa-4aaa-8aaa-00000000000${n}`;
+const REWARD_ID = (n) => `eeeeeeee-eeee-4eee-8eee-00000000000${n}`;
+const WORDS = {
+  'en-US': { table: 'Set the table', car: 'Wash the car', plants: 'Water the plants', towels: 'Fold the towels', dinner: 'Pick dinner', bed: 'Late bedtime',
+    note: 'I did the wheels too', reason: 'We did it together', card: 'Rocket Fund', goal: 'Bike', place: 'Food bank', movie: 'Movie night' },
+  'es-MX': { table: 'Poner la mesa', car: 'Lavar el coche', plants: 'Regar las plantas', towels: 'Doblar las toallas', dinner: 'Elegir la cena',
+    bed: 'Dormir más tarde', note: 'También lavé las llantas', reason: 'Lo hicimos juntos', card: 'Fondo cohete', goal: 'Bici', place: 'Banco de alimentos',
+    movie: 'Noche de película' },
+  'pt-BR': { table: 'Pôr a mesa', car: 'Lavar o carro', plants: 'Regar as plantas', towels: 'Dobrar as toalhas', dinner: 'Escolher o jantar',
+    bed: 'Dormir mais tarde', note: 'Lavei as rodas também', reason: 'Fizemos juntos', card: 'Fundo foguete', goal: 'Bicicleta', place: 'Banco de alimentos',
+    movie: 'Noite de filme' },
+};
+const task = (w, over) => ({ id: TASK(1), assignedBy: PARENT, assignedTo: KID_A, title: w.table, rewardCoins: 0, recurrence: 'once', dueAt: null, status: 'open',
+  allocated: false, createdAt: T, hasEvidence: false, requiresEvidence: false, cancelReason: null, kind: 'contribution', completedOn: null, childNote: null, ...over });
+const tasks = (w, fresh) => fresh ? [] : [
+  task(w, {}),
+  task(w, { id: TASK(2), title: w.car, rewardCoins: 20, kind: 'bonus', status: 'done', hasEvidence: true, requiresEvidence: true, recurrence: 'weekly', childNote: w.note }),
+  task(w, { id: TASK(3), title: w.plants, rewardCoins: 10, kind: 'bonus', status: 'approved' }),
+  task(w, { id: TASK(4), assignedTo: KID_B, title: w.towels, status: 'cancelled', cancelReason: w.reason }),
+];
+const rewards = (w) => [
+  { id: REWARD_ID(1), parentUserId: PARENT, title: w.dinner, cost: 15, active: true, createdAt: T },
+  { id: REWARD_ID(2), parentUserId: PARENT, title: w.bed, cost: 40, active: false, createdAt: T },
+];
+const rewardRequest = (over) => ({ id: '77777777-7777-4777-8777-777777777777', catalogId: REWARD_ID(1), kidUserId: KID_A, status: 'requested', createdAt: T, decidedAt: null,
+  decidedBy: null, fulfilledAt: null, childReasonKind: 'saved_for_it', childNote: null, ...over });
+const HOLDS = ['rewards', 'splits', 'credits', 'share'];
+const card = (w) => ({ nickname: w.card, design: 'ocean', simulated: true, freeze: { frozen: false, by: null, since: null, holds: HOLDS, canChange: true } });
+const legacyAccount = (w) => ({ nickname: w.card, cardDesign: 'ocean', displayNumber: 'LF-0000-0000', frozen: false, frozenBy: null, frozenAt: null, openedAt: T });
+const goal = (w) => ({ id: GOAL, kidUserId: KID_A, title: w.goal, target: 40, icon: 'bike', status: 'active', createdAt: T, reachedAt: null, followsGoalId: null, saved: 16,
+  progress: { own: 12, bonus: 2, family: 2, total: 16 }, nextStep: null });
+const statement = (register) => register === 'young' ? { month: '2026-09', earned: 30, spent: 10, saved: 20 }
+  : register === 'transition' ? { month: '2026-09', earned: 30, spent: 10, saved: 20, given: 2, adjusted: 0 }
+    : { month: '2026-09', earned: 30, spent: 10, saved: 20, given: 2, adjusted: 0, lines: [] };
+const limit = (register) => register === 'young' ? { configured: true, period: 'weekly', remaining: 30 }
+  : register === 'transition' ? { configured: true, period: 'weekly', remaining: 30, cap: 50, used: 20 }
+    : { configured: true, period: 'weekly', remaining: 30, cap: 50, used: 20, usedPercent: 40 };
+const AUTONOMY = { inFamily: true, level: 1, storedLevel: 1, levelSince: null, preapprovedLimit: 0, preapprovedCap: 0, unlocks: { selfLogContributions: false, selfLogMaxCoins: null },
+  next: { level: 2, eligible: false, age: { value: 9, min: 8, ok: true }, approved: { value: 4, min: 10 }, notApproved: { value: 0, maxPct: 25, ok: true },
+    daysAtLevel: { value: 30, min: 0, ok: true }, windowDays: 60 }, request: null };
+const STREAK = { status: 'alive', current: 4, best: 9, totalDays: 30, restDaysLeftThisWeek: 1, restDaysPerWeek: 2, pausedUntil: null, today: '2026-09-26' };
+const RESEARCH = { research: { participating: false, recording: false, grantor: null, since: null, disclosureVersion: 0, adult: false, months: 0 }, currentVersion: 1 };
+const SPLIT = { usual: { save: 50, spend: 40, share: 10 }, custom: false, recommended: { save: 50, spend: 40, share: 10 } };
+
+/** Every Core read the rebuilt Tasks, coin and teen-wallet screens (and the wave-1 surfaces on them) make, in Core's real shapes. */
+function money({ spec, family, locale, path, request, ok }) {
+  const w = WORDS[locale] ?? WORDS['en-US'];
+  const fresh = family.money === 'new';
+  const get = request.method === 'GET';
+  const offline = family.money === 'offline';
+  const register = family.register ?? 'young';
+  // A Tutor's reads.
+  if (spec.roles?.includes('parent')) {
+    if (offline && (path === '/tasks' || path === '/family/kids')) return { fail: 'InternetDisconnected' };
+    if (path === '/tasks' && get) return ok({ tasks: tasks(w, false) });
+    if (path === '/tasks/catalog' && get) return ok({ items: rewards(w) });
+    if (path === '/tasks/redemptions' && get) return ok({ redemptions: [rewardRequest({})] });
+    if (path === '/tasks/decisions/queue') return ok({ chores: [tasks(w, false)[1]], openChores: [tasks(w, false)[0]],
+      rewards: [{ ...rewardRequest({}), title: w.dinner, cost: 15 }], reviews: [], nudges: [], levelRequests: [] });
+    const account = path.match(/^\/banking\/accounts\/([^/]+)$/);
+    if (account && get) return ok({ account: fresh && account[1] === KID_A ? null : legacyAccount(w) });
+    if (/^\/banking\/accounts\/[^/]+\/freeze$/.test(path) && get) return ok({ register: 'young', account: card(w) });
+    if (/^\/banking\/allowance\/[^/]+$/.test(path) && get) return ok({ rule: { amount: 10, frequency: 'weekly', anchorDay: 5, active: true, nextRunAt: '2026-10-02T00:00:00.000Z' } });
+    if (/^\/banking\/spend-limit\/[^/]+$/.test(path) && get) return ok({ status: { configured: true, period: 'weekly', cap: 50, used: 20, remaining: 30 } });
+    // The writes a journey presses (verify-family-money-screens.mjs records their bodies); Core's answer shapes.
+    const sent = request.postData ? JSON.parse(request.postData) : {};
+    if (path === '/tasks/catalog' && request.method === 'POST') return ok({ item: { id: REWARD_ID(9), parentUserId: PARENT, title: sent.title, cost: sent.cost, active: true, createdAt: T } });
+    const item = path.match(/^\/tasks\/catalog\/([^/]+)$/);
+    if (item && request.method === 'PATCH') return ok({ item: { ...(rewards(w).find((r) => r.id === item[1]) ?? rewards(w)[0]), active: sent.active } });
+    if (/^\/banking\/allowance\/[^/]+$/.test(path) && request.method === 'PUT') return ok({ rule: { ...sent, nextRunAt: '2026-10-02T00:00:00.000Z' } });
+    if (/^\/banking\/spend-limit\/[^/]+$/.test(path) && request.method === 'PUT') return ok({ status: sent.active
+      ? { configured: true, period: sent.period, cap: sent.cap, used: 20, remaining: Math.max(0, sent.cap - 20) } : { configured: false } });
+    if (/^\/banking\/accounts\/[^/]+$/.test(path) && request.method === 'POST') return ok({ account: { ...legacyAccount(w), nickname: sent.nickname, cardDesign: sent.cardDesign } });
+    // The evidence proxy serves an image, which this JSON-only synthetic Core cannot: the screen's own "did not load" state is what is measured.
+    if (/^\/tasks\/[^/]+\/evidence$/.test(path)) return { status: 404, body: { data: null, error: { code: 'NOT_FOUND', message: 'Synthetic' } } };
+    return undefined;
+  }
+  // A child's (or a teen's) reads.
+  if (offline && ['/tasks/mine', '/banking/account', '/wallet/access', '/tasks/wallet'].includes(path)) return { fail: 'InternetDisconnected' };
+  if (path === '/banking/register') return ok({ register });
+  if (path === '/tasks/mine') return ok({ tasks: tasks(w, fresh).filter((t) => t.assignedTo === KID_A) });
+  if (path === '/tasks/wallet') return ok({ balances: { save: 20, spend: 12, share: 3 } });
+  if (path === '/tasks/catalog/available') return ok({ items: fresh ? [] : rewards(w).map((r) => ({ ...r, active: true })) });
+  if (path === '/tasks/redemptions/mine') return ok({ redemptions: [] });
+  if (path === '/tasks/wallet/ledger') return ok({ entries: [] });
+  if (path === '/tasks/streak') return ok({ streak: STREAK });
+  if (path === '/tasks/autonomy' && get) return ok({ autonomy: AUTONOMY, changes: [] });
+  if (path === '/tasks/decisions/mine') return ok({ decisions: [] });
+  if (path === '/tasks/goals' && get) return ok({ goals: fresh ? [] : [goal(w)] });
+  if (path === '/tasks/wallet/split' && get) return ok(SPLIT);
+  if (path === '/tasks/share' && get) return ok({ destinations: fresh ? [] : [{ id: '88888888-8888-4888-8888-888888888888', title: w.place, kind: 'charity',
+    chosenBy: 'tutor', status: 'active', createdAt: T }], gifts: [] });
+  if (path === '/banking/account' && get) return ok({ account: legacyAccount(w) });
+  if (path === '/banking/account' && request.method === 'PATCH') {
+    const sent = request.postData ? JSON.parse(request.postData) : {};
+    return ok({ account: { ...legacyAccount(w), nickname: sent.nickname, cardDesign: sent.cardDesign } });
+  }
+  if (/^\/tasks\/[^/]+\/evidence$/.test(path)) return { status: 404, body: { data: null, error: { code: 'NOT_FOUND', message: 'Synthetic' } } };
+  if (path === '/banking/wallet/pending-credits') return ok({ credits: fresh ? [] : [{ id: '99999999-9999-4999-8999-999999999990', amount: 10, source: 'allowance', createdAt: T }] });
+  if (path === '/banking/overview') return ok({ register, account: card(w), pockets: { save: 20, spend: 12, share: 3 }, pendingCredits: fresh ? 0 : 1,
+    spendLimit: limit(register), statement: statement(register) });
+  if (path === '/banking/savings-bonus' && get) return ok(register === 'teen'
+    ? { framing: 'percent', perTen: null, maxRateBp: 2000, rule: { rateBp: 1000, active: true, nextRunAt: T }, saved: 20, nextBonus: 2, example: { shown: true, completed: true } }
+    : { framing: 'per_ten', perTen: { unit: 10, coins: 1 }, maxRateBp: null, rule: { rateBp: 1000, active: true, nextRunAt: T }, saved: 20, nextBonus: 2, example: null });
+  if (path === '/family-hub/bridge' && get) return ok({ eligible: false, minAge: 15, moments: [] });
+  if (path === '/family-hub/research/me' && get) return ok(RESEARCH);
+  // The independent teen's own wallet (OD-3 Option B).
+  if (path === '/wallet/rewards' && get) return ok({ rewards: [{ id: REWARD_ID(3), title: w.movie, cost: 5, status: 'active', createdAt: T, archivedAt: null }] });
+  if (path === '/wallet/guardians' && get) return ok({ guardians: [] });
   return undefined;
 }

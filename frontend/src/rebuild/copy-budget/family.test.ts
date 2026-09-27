@@ -8,18 +8,19 @@ describe('rebuild-family copy budget', () => {
     const group = (name: string) => Object.entries(strings[name] as Record<string, string>);
     it(`fits its budgets in ${locale}`, () => {
       expectBudgetedGroups(strings, ['socialGraph', 'socialHistory', 'socialRequests', 'socialNotices', 'badgeShares', 'achievementShare', 'guardianInvite',
-        'familyConsole', 'familyChildAccount', 'familyChildConsent', 'familyChildProgress', 'familyChildMentor', 'familyMemoryNotes']);
+        'familyConsole', 'familyChildAccount', 'familyChildConsent', 'familyChildProgress', 'familyChildMentor', 'familyMemoryNotes',
+        'familyTasks', 'childTasks', 'familyCoins', 'childCoins', 'coinCard', 'teenWalletScreen']);
       // W2F.1: the rebuilt Family console (F1), a child's progress (F2) and Mentor talks (F3). Adult Tutor copy;
       // placeholders take realistic values (a data value counts as its own words, 06 §3).
       const sample = (text: string) => text.replace('{name}', 'Ana').replace('{username}', '@ana_2016').replace('{count}', '12').replace('{date}', 'Sep 20')
         .replace('{course}', 'Money Basics').replace('{goal}', 'Bike').replace('{passed}', '3').replace('{total}', '8').replace('{topic1}', 'saving')
         .replace('{topic2}', 'sharing').replace('{topic}', 'saving').replace('{correct}', '4').replace('{score}', '80').replace('{steps}', '+10, -5')
-        .replace('{label}', 'Ana saves 5 a week');
-      const budget = (name: string, roles: Record<string, 'heading' | 'action' | 'option' | 'data' | 'legal'>) => {
+        .replace('{label}', 'Ana saves 5 a week').replace('{title}', 'Set the table').replace('{used}', '20').replace('{cap}', '50');
+      const budget = (name: string, roles: Record<string, 'heading' | 'action' | 'option' | 'data' | 'legal'>, band: '6-9' | '13-17' | 'adult' = 'adult') => {
         for (const [key, text] of flatten(strings[name] as never)) {
           const role = roles[key] ?? roles[key.split('.')[0]!] ?? 'body';
           if (role === 'data' || role === 'legal') continue;
-          expectFits(sample(text), role, locale, 'adult', `${name}.${key}`);
+          expectFits(sample(text), role, locale, band, `${name}.${key}`);
         }
       };
       budget('familyConsole', { title: 'heading', failedTitle: 'heading', verifyTitle: 'heading', emptyTitle: 'heading', learning: 'heading', money: 'heading',
@@ -37,6 +38,30 @@ describe('rebuild-family copy budget', () => {
       budget('familyChildMentor', { title: 'heading', titleFallback: 'heading', failedTitle: 'heading', forbiddenTitle: 'heading', flagsTitle: 'heading',
         sessionsTitle: 'heading', keptTitle: 'heading', intent: 'heading', back: 'action', retry: 'action', retrying: 'action', read: 'action', hide: 'action',
         more: 'action', loadingMore: 'action', high: 'option', medium: 'option', low: 'option' });
+      // W2F.2: the Tutor's Tasks (F4-P) and coin cards (F5-P) are adult copy; the child's Tasks (F4-K) and wallet (F5-K) are
+      // written to the youngest band's budget (6-9), so they read plainly in every register (D.12); the teen wallet's page states to 13-17.
+      budget('familyTasks', { title: 'heading', failedTitle: 'heading', verifyTitle: 'heading', emptyTitle: 'heading', glance: 'heading', choresTitle: 'heading',
+        waiting: 'heading', toDo: 'heading', recent: 'heading', rewardsTitle: 'heading', photoTitle: 'heading', retry: 'action', retrying: 'action',
+        verifyAction: 'action', emptyAction: 'action', seePhoto: 'action', photoRetry: 'action', photoClose: 'action', pause: 'action', offer: 'action',
+        addReward: 'action', create: 'action', creating: 'action', cancel: 'action', coinCards: 'action', toApprove: 'option', toDecide: 'option',
+        coinsGiven: 'option', statusOpen: 'option', statusDone: 'option', statusApproved: 'option', statusCancelled: 'option', contribution: 'option',
+        bonus: 'option', weekly: 'option', photoNeeded: 'option', offered: 'option', paused: 'option', coin: 'data', coins: 'data' });
+      budget('childTasks', { title: 'heading', failedTitle: 'heading', refusedTitle: 'heading', payoutsTitle: 'heading', choresTitle: 'heading',
+        rewardsTitle: 'heading', pocketsTitle: 'heading', photoTitle: 'heading', retry: 'action', retrying: 'action', refusedAction: 'action',
+        addPhoto: 'action', newPhoto: 'action', savingPhoto: 'action', seePhoto: 'action', photoRetry: 'action', close: 'action', walletLink: 'action',
+        statusOpen: 'option', statusDone: 'option', contribution: 'option', bonus: 'option', weekly: 'option', photoNeeded: 'option', asked: 'option',
+        save: 'option', spend: 'option', share: 'option', coin: 'data', coins: 'data' }, '6-9');
+      budget('familyCoins', { title: 'heading', failedTitle: 'heading', verifyTitle: 'heading', emptyTitle: 'heading', childFailed: 'heading',
+        openTitle: 'heading', allowanceTitle: 'heading', limitTitle: 'heading', retry: 'action', retrying: 'action', verifyAction: 'action',
+        emptyAction: 'action', open: 'action', opening: 'action', save: 'action', saving: 'action', rewardsLink: 'action', children: 'option',
+        cardName: 'option', colour: 'option', allowanceSwitch: 'option', on: 'option', off: 'option', amount: 'option', often: 'option', weekly: 'option',
+        biweekly: 'option', monthly: 'option', weekday: 'option', monthday: 'option', days: 'option', limitSwitch: 'option', window: 'option',
+        days7: 'option', days30: 'option', cap: 'option', usedLabel: 'option', usedValue: 'data', next: 'data' });
+      budget('childCoins', { title: 'heading', titleFamily: 'heading', failedTitle: 'heading', refusedTitle: 'heading', payoutsTitle: 'heading',
+        lookTitle: 'heading', retry: 'action', retrying: 'action', refusedAction: 'action', edit: 'action', save: 'action', saving: 'action',
+        cancel: 'action', tasksLink: 'action', cardName: 'option', colour: 'option' }, '6-9');
+      budget('coinCard', { indigo: 'option', emerald: 'option', violet: 'option', amber: 'option', sunrise: 'option', ocean: 'option' }, '6-9');
+      budget('teenWalletScreen', { failedTitle: 'heading', refusedTitle: 'heading', retry: 'action', retrying: 'action', refusedAction: 'action' }, '13-17');
       budget('familyMemoryNotes', { title: 'heading', approve: 'action', reject: 'action', retry: 'action', outOfDate: 'option' });
       for (const [key, text] of group('socialGraph')) {
         expectFits(text, ['loading', 'empty', 'failed'].includes(key) ? 'body' : 'action', locale, '13-17', `socialGraph.${key}`);

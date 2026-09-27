@@ -36,7 +36,7 @@
       ],
       "provedBy": [
         { "file": "database/scripts/verify-freeze-postgres.py", "contains": "raise AssertionError('Frozen request was accepted')" },
-        { "file": "frontend/src/routes/app/banking/__tests__/KidBankingFreeze.test.tsx", "contains": "preserves the pending credit and explains the hold" }
+        { "file": "frontend/src/routes/app/banking/__tests__/BankingPage.test.tsx", "contains": "preserves the pending credit and explains the hold" }
       ],
       "ui": ["coinAccount:young.whileFrozen", "coinAccount:young.nothingLost", "coinAccount:transition.whileFrozen", "coinAccount:transition.nothingLost", "coinAccount:teen.whileFrozen", "coinAccount:teen.nothingLost", "coinAccount:tutor.whileFrozen", "coinAccount:tutor.nothingLost", "coinAccount:tutor.noCoinsMoved"]
     },
@@ -65,7 +65,7 @@
       ],
       "provedBy": [
         { "file": "database/scripts/verify-freeze-postgres.py", "contains": "assert allocate()=='f'" },
-        { "file": "frontend/src/routes/app/banking/__tests__/KidBankingFreeze.test.tsx", "contains": "resumes the split only after the child's own freeze is lifted and re-read" }
+        { "file": "frontend/src/routes/app/banking/__tests__/BankingPage.test.tsx", "contains": "resumes the split only after the child's own freeze is lifted and re-read" }
       ],
       "ui": ["coinAccount:young.holdSplits", "coinAccount:transition.holdSplits", "coinAccount:teen.holdSplits", "coinAccount:tutor.holdSplits", "coinAccount:young.waitingFrozen", "coinAccount:transition.waitingFrozen", "coinAccount:teen.waitingFrozen"]
     },

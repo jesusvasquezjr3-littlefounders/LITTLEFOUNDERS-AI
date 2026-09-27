@@ -32,7 +32,7 @@
   ],
   "mounts": [
     "frontend/src/routes/app/family/FamilyPage.tsx",
-    "frontend/src/routes/app/banking/ParentBankingControlPanel.tsx",
+    "frontend/src/routes/app/banking/BankingPage.tsx",
     "frontend/src/routes/app/wallet/TeenWalletPage.tsx"
   ],
   "mechanicWords": ["loan", "loans", "debt", "debts", "borrow", "borrowed", "borrowing", "lend", "lends", "lending", "lender", "interest", "apr", "overdraft", "insurance", "insured", "premium", "premiums", "invest", "invested", "investing", "investment", "investments", "stock", "stocks"],

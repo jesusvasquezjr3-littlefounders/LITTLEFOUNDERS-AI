@@ -201,6 +201,8 @@ try {
     await load('/banking', kidId); await ready('child'); await page.evaluate(axeSource);
     const y = c.young;
     await has('child', y.practice); await has('child', y.coinsOnly);
+    // W2F.2: while nothing is frozen, what a freeze pauses is one press away (06 §4 layering); pressed here, then checked.
+    await click('child', y.whatHolds);
     for (const k of ['holdRewards', 'holdSplits', 'holdCredits', 'holdShare']) await has('child', y[k]);
     await has('child', fill(y.limitWeekly, { remaining: 5 }));
     await has('child', y.limitWhen);

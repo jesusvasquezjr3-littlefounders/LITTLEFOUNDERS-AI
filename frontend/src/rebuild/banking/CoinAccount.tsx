@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import { Button, Copy, InlineNotice, LoadingState } from '../design/controls';
 import type { MoneyRegister } from '../family/moneyRegister';
 import type { CoinAccountView, FreezeHold, MonthLine } from './bankingApi';
@@ -31,7 +31,7 @@ import './coinAccount.css';
  */
 
 export interface CoinAccountCopy {
-  heading: string; practice: string; coinsOnly: string; frozen: string; notFrozen: string; byYou: string; byTutor: string; whileFrozen: string;
+  heading: string; practice: string; coinsOnly: string; frozen: string; notFrozen: string; byYou: string; byTutor: string; whileFrozen: string; whatHolds: string;
   holdRewards: string; holdSplits: string; holdCredits: string; holdShare: string; nothingLost: string; freeze: string; unfreeze: string; onlyTutor: string;
   pockets: string; save: string; spend: string; share: string; coins: string; pocketDetail?: string; limitHeading: string; limitWeekly: string;
   limitMonthly: string; limitWhy: string; limitWhen: string; monthHeading: string; earned: string; spent: string; saved: string; given: string;
@@ -82,7 +82,8 @@ export function CoinAccount({ copy, register, locale, dark, view, loading, faile
   onRetry: () => void;
   onFreeze: (frozen: boolean) => void;
 }) {
-  const ids = { heading: useId(), holds: useId(), limit: useId(), month: useId() };
+  const ids = { heading: useId(), holds: useId(), limit: useId(), month: useId(), list: useId() };
+  const [holdsOpen, setHoldsOpen] = useState(false);
   const card = view?.account ?? null;
   const total = view ? view.pockets.save + view.pockets.spend + view.pockets.share : 0;
   const number = new Intl.NumberFormat(locale);
@@ -108,11 +109,17 @@ export function CoinAccount({ copy, register, locale, dark, view, loading, faile
 
         <section className="lf-coin-freeze" data-control="freeze" data-frozen={card.freeze.frozen} data-by={card.freeze.by ?? 'none'} aria-labelledby={ids.holds}>
           {card.freeze.frozen && <Copy role="body">{card.freeze.by === 'you' ? copy.byYou : copy.byTutor}</Copy>}
-          <p id={ids.holds} data-copy-role="body">{copy.whileFrozen}</p>
-          <ul className="lf-coin-holds">
-            {card.freeze.holds.map((hold) => <li key={hold} data-hold={hold} data-control={`freeze.${hold}`}><span data-copy-role="body">{copy[HOLD_KEY[hold]]}</span></li>)}
-          </ul>
-          <Copy role="body">{copy.nothingLost}</Copy>
+          {/* W2F.2 (06 §4 layering): while nothing is frozen, what a freeze pauses is one press away, so the page's first view stays
+              within the child's budget; while frozen it is always shown. The list is the server's, never copy's (D.7). */}
+          {!card.freeze.frozen && <div className="lf-family-hub-actions"><Button size="sm" aria-expanded={holdsOpen} aria-controls={ids.list}
+            onClick={() => setHoldsOpen((open) => !open)}>{copy.whatHolds}</Button></div>}
+          <div id={ids.list} hidden={!card.freeze.frozen && !holdsOpen}>
+            <p id={ids.holds} data-copy-role="body">{copy.whileFrozen}</p>
+            <ul className="lf-coin-holds">
+              {card.freeze.holds.map((hold) => <li key={hold} data-hold={hold} data-control={`freeze.${hold}`}><span data-copy-role="body">{copy[HOLD_KEY[hold]]}</span></li>)}
+            </ul>
+            <Copy role="body">{copy.nothingLost}</Copy>
+          </div>
           {card.freeze.canChange
             ? <div className="lf-family-hub-actions"><Button variant={card.freeze.frozen ? 'success' : 'secondary'} disabled={busy} data-control="freeze.owner"
                 onClick={() => onFreeze(!card.freeze.frozen)}>{card.freeze.frozen ? copy.unfreeze : copy.freeze}</Button></div>
@@ -131,7 +138,8 @@ export function CoinAccount({ copy, register, locale, dark, view, loading, faile
             </span>}
           </li>)}
         </ul>
-        {view.pendingCredits > 0 && <Copy role="body">{fill(copy.waiting, { count: number.format(view.pendingCredits) })}</Copy>}
+        {/* W2F.2: no "N coins wait" line: `pendingCredits` counts payouts, not coins ("1 coins wait" for a 10-coin allowance), and the
+            wallet screen shows each waiting payout with its real coins right below the card. The freeze's hold on them is still said. */}
         {view.pendingCredits > 0 && card?.freeze.frozen && <Copy role="body">{copy.waitingFrozen}</Copy>}
       </section>
 
