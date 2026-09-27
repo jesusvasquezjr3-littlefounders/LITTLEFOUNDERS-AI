@@ -194,6 +194,16 @@ export function createFakeFetch(db: FakeDb): typeof fetch {
       const band = (db.account_age_declarations ?? []).find((row) => row.user_id === userId)?.declared_age_band;
       return respond(200, band === '13_to_17' ? 'teen' : band === 'under_13' ? 'closed' : 'adult');
     }
+    // S10.3 (OD-9 4.2) contract double of *_od9_consent_enforcement.sql's
+    // data_practice_applies: a practice applies unless the subject is a
+    // migrated child (db.legacy_consent_subjects) with no live consent for it
+    // (db.data_practice_consents). Grantor lapse rules are proven natively.
+    if (table === 'rpc/data_practice_applies' && method === 'POST') {
+      const { p_subject: subject, p_practice: practice } = JSON.parse(String(init?.body)) as { p_subject: string; p_practice: string };
+      const migrated = (db.legacy_consent_subjects ?? []).some((row) => row.user_id === subject && !row.released_at);
+      const consented = (db.data_practice_consents ?? []).some((row) => row.subject_user_id === subject && row.practice_key === practice && !row.revoked_at);
+      return respond(200, !migrated || consented);
+    }
     // B.2's completed-course set, read through the badge RPC the same way
     // routes/learn.ts does. Tests seed db.completed_course_badges.
     if (table === 'rpc/get_completed_course_badges' && method === 'POST') {

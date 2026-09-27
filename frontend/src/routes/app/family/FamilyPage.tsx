@@ -7,6 +7,7 @@ import { AutonomyLadderPanel } from './AutonomyLadderPanel';
 import { BadgeSharesPanel } from './BadgeSharesPanel';
 import { CoGuardiansPanel, GuardianRequestsPanel } from './CoGuardiansPanel';
 import { CoachingTipPanel, DataPolicyPanel, ResearchConsentPanel, ScopeStatementPanel } from './GovernancePanels';
+import { DataPracticeConsentPanel } from './DataPracticePanels';
 import { GuardianInviteJoin, GuardianInvitePanel } from './GuardianInvitePanel';
 import { LearningBridgesPanel, LearningNarrativePanel, StreakPausePanel } from './LearningPanels';
 import { ShareDestinationsPanel } from './ShareDestinationsPanel';
@@ -80,7 +81,11 @@ export function FamilyPage() {
         <BadgeSharesPanel {...common} />
       </>,
       // S07.7 (D.22): the Tutor's research answer for this child.
-      privacy: <ResearchConsentPanel {...common} kidName={name} />,
+      // S10.3 (OD-9 4.2): a migrated child's specific consent to each practice the rebuild introduced (renders nothing otherwise).
+      privacy: <>
+        <ResearchConsentPanel {...common} kidName={name} />
+        <DataPracticeConsentPanel {...common} kidName={name} />
+      </>,
       // S04.1 / S07.1 (D.5, OD-21): invite a second Tutor; the Tutors of this child and stepping away.
       account: <>
         <GuardianInvitePanel {...common} />

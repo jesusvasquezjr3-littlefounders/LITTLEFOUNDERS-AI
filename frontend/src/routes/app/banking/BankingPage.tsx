@@ -6,6 +6,7 @@ import { TutorCoins } from '@/rebuild/banking/coins/TutorCoins';
 import { childName } from '@/rebuild/family/console/consoleApi';
 import { useConsoleEnvironment, useConsoleTransport } from '../family/consoleSession';
 import { LimitCoachingPanel, MoneyBridgePanel, MyResearchPanel, ScopeStatementPanel, tokenSession } from '../family/GovernancePanels';
+import { MyDataPracticesPanel } from '../family/DataPracticePanels';
 import { ShareDestinationsPanel } from '../family/ShareDestinationsPanel';
 import { WalletCorrectionsPanel } from '../family/WalletCorrectionsPanel';
 import { AllocationPanel } from '../tasks/AllocationPanel';
@@ -129,7 +130,11 @@ function ChildCoinsRoute({ familyCoins }: { familyCoins: boolean }) {
       history: <WalletActivityPanel token={token} />,
       // S07.7 (D.19, D.22): "Beyond the app" from 15, and the child's own research answer.
       bridge: governance ? <MoneyBridgePanel session={governance} /> : null,
-      research: governance ? <MyResearchPanel session={governance} /> : null,
+      // S10.3 (OD-9 4.2): beside it, the child's own no to a practice the rebuild introduced.
+      research: governance ? <>
+        <MyResearchPanel session={governance} />
+        <MyDataPracticesPanel session={governance} />
+      </> : null,
     }} />;
 }
 

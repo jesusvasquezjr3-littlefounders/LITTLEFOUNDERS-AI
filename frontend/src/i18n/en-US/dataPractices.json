@@ -1,0 +1,53 @@
+{
+  "tutor": {
+    "heading": "New ways we use data",
+    "lead": "Your earlier consent does not cover these. Choose each one for {name}.",
+    "open": "Choose",
+    "close": "Hide",
+    "on": "Yes",
+    "off": "No",
+    "saved": "Saved.",
+    "failed": "This did not save. Try again.",
+    "loadFailed": "This did not load.",
+    "loading": "Loading…"
+  },
+  "groups": {
+    "analytics_event_class": { "heading": "Usage counts", "body": "They help us improve lessons. Nobody else sees them." },
+    "mentor_memory_type": { "heading": "What the Mentor keeps", "body": "Notes the Mentor uses to plan the next session." },
+    "learner_record": { "heading": "Story choices", "body": "Kept so later lessons can recall them." },
+    "sharing_surface": { "heading": "Shared with others", "body": "Only with people and places you approve." }
+  },
+  "practices": {
+    "analytics": {
+      "learning_quality_events": "Replays and best scores",
+      "motivation_events": "Streaks and rest days",
+      "engagement_heartbeats": "Time with the app open",
+      "family_money_events": "Coin activity",
+      "achievement_share_initiations": "Achievement pictures made",
+      "mentor_behavioral_telemetry": "Mentor check-ins",
+      "mentor_integrity_evidence": "Mentor honesty checks"
+    },
+    "mentor": {
+      "disposition_profile": "Notes on learning style",
+      "alliance_record": "Goals agreed each session",
+      "dialogue_calibration": "How the Mentor adjusts its tone"
+    },
+    "learning": { "decision_journal": "Story choices, kept for later" },
+    "sharing": {
+      "social_connections": "Connections with approved friends",
+      "learning_family_bridge": "Lesson ideas for the family"
+    },
+    "research": { "family_longitudinal": "Research, in its own section" }
+  },
+  "self": {
+    "heading": "Your data choices",
+    "bodyOff": "You can turn any of these off.",
+    "bodyChoose": "You choose each one.",
+    "open": "Show",
+    "close": "Hide",
+    "on": "On",
+    "off": "Off",
+    "saved": "Saved.",
+    "failed": "This did not save."
+  }
+}

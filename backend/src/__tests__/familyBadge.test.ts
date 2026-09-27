@@ -89,6 +89,16 @@ describe('POST /api/v1/family/kids/:kidId/achievement-image', () => {
     expect(JSON.parse(write?.body ?? '{}')).toEqual({ achievement_kind: 'streak', handoff: 'download' });
   });
 
+  it('OD-9 4.2: counts nothing for a migrated child without that consent, and still hands over the image', async () => {
+    const calls = stubAchievementTransport({ streakDays: 7, practiceApplies: false });
+    expect((await post({ kind: 'streak', locale: 'en-US', handoff: 'download' })).status).toBe(200);
+    await vi.waitFor(() => expect(calls.some((c) => c.url.includes('/rpc/data_practice_applies'))).toBe(true));
+    const asked = calls.find((c) => c.url.includes('/rpc/data_practice_applies'));
+    expect(JSON.parse(asked?.body ?? '{}')).toEqual({ p_subject: KID_ID, p_practice: 'analytics.achievement_share_initiations' });
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(calls.some((c) => c.url.includes('/achievement_share_initiations'))).toBe(false);
+  });
+
   it('still hands over the image when the metric write fails, and logs the gap', async () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     stubAchievementTransport({ streakDays: 7, initiationFails: true });

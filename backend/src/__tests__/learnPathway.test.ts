@@ -279,6 +279,46 @@ describe('a skill mastered with the Mentor never shows locked', () => {
   });
 });
 
+describe('OD-24: a skill completed on the legacy catalog starts the new course at the right place', () => {
+  const credit = (user: string, key: string, stage = 'teen') => {
+    const kc = built.db.kc!.find((row) => row.key === key)!;
+    built.db.legacy_kc_credits = [...(built.db.legacy_kc_credits ?? []), {
+      user_id: user, kc_id: kc.id, source_topic_id: uid(9001), source_course_slug: 'legacy-course', source_topic_path: 'a/s/t',
+      source_stage: stage, basis: 'lessons_passed', lessons_total: 2, completed_at: '2026-05-05T00:00:00.000Z', map_version: 1,
+    }];
+    return kc;
+  };
+
+  it('opens the topic whose skill a completed legacy topic taught, as course evidence, on the tree and at the lesson gate, without completing it', async () => {
+    place(TEEN15, 'money', 'teen');
+    expect((await get(TEEN15, `/learn/lessons/${built.lesson.t2}`)).body.error.code).toBe('LESSON_LOCKED');
+    credit(TEEN15, 'kc.t2');
+    const tree = await get(TEEN15, '/learn/courses/money/tree');
+    expect(stateOf(tree.body.data, built.lesson.t2!)).toBe('available');
+    expect(tree.body.data.pathway.skills).toContainEqual({ key: 'kc.t2', shown: 'course' });
+    expect(tree.body.data.pathway.progress).toMatchObject({ passed: 0, complete: false });
+    expect((await get(TEEN15, `/learn/lessons/${built.lesson.t2}`)).status).toBe(200);
+  });
+
+  it('never lends one learner\'s legacy credit to another, and ignores a draft KC as the Mentor does', async () => {
+    place(TEEN15, 'money', 'teen');
+    credit(KID7, 'kc.t2', 'child');
+    const kc = credit(TEEN15, 'kc.t2');
+    kc.status = 'draft';
+    const tree = await get(TEEN15, '/learn/courses/money/tree');
+    expect(stateOf(tree.body.data, built.lesson.t2!)).toBe('locked');
+  });
+
+  it('fails closed with 502 when the legacy credits cannot be read, never re-locking as if nothing were completed', async () => {
+    place(TEEN15, 'money', 'teen');
+    const inner = createFakeFetch(built.db);
+    vi.stubGlobal('fetch', (async (input: RequestInfo | URL, init?: RequestInit) =>
+      String(input).includes('/legacy_kc_credits') ? new Response('{}', { status: 503 }) : inner(input, init)) as typeof fetch);
+    expect((await get(TEEN15, '/learn/courses/money/tree')).status).toBe(502);
+    expect((await get(TEEN15, `/learn/lessons/${built.lesson.t1}`)).status).toBe(502);
+  });
+});
+
 describe('no existing credit, XP or badge is lost (OD-9)', () => {
   it('a learner with the live legacy badge keeps it, frozen, dated when earned, and is never asked to earn the stage again', async () => {
     built.db.lesson_progress!.push({ user_id: KID7, lesson_id: built.lesson.f1, passed: true, best_score: 100, xp_earned: 10 });

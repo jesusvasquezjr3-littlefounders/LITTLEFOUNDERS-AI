@@ -7,6 +7,7 @@ import { getVerifiedGuardiansOfKid } from '../supabaseRest.js';
 import { extractDecisions, pickRecall, type RecallRelevance } from './decisionJournal.js';
 import { BRIDGE_COOLDOWN_DAYS, BRIDGE_TTL_DAYS, bridgeAudience, bridgeCandidates, topicNewlyCompleted, type BridgeAction } from './familyBridge.js';
 import { journalCandidates, offerBridgePrompt, recordDecisions, recordResurfacing, topicTeaches } from './narrativeData.js';
+import { dataPracticeApplies } from '../dataPractices.js';
 
 /*
  * B.9 / B.13 (S05.3c) — the three moments the learning routes hand to the
@@ -129,6 +130,8 @@ export async function offerBridgeAfterCompletion(input: {
     if (roles === null || guardians === null) return null;
     const audience = bridgeAudience({ roles, isGuest: input.user.isGuest, age: input.ageScreen, hasVerifiedGuardian: guardians.length > 0 });
     if (!audience) return null;
+    // OD-9 4.2: a migrated child is offered a bridge only with its specific consent.
+    if (!await dataPracticeApplies(input.user.id, 'sharing.learning_family_bridge')) return null;
     const offered = await offerBridgePrompt({
       learnerId: input.user.id, audience, candidates, courseId: input.courseId, topicId: input.topicId, lessonId: input.lessonId,
       ttlDays: BRIDGE_TTL_DAYS, cooldownDays: BRIDGE_COOLDOWN_DAYS,

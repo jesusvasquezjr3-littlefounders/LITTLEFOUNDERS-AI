@@ -30,6 +30,7 @@ vi.mock('../SocialHistoryPanel', async () => { const { panel } = await import('.
 vi.mock('../BadgeSharesPanel', async () => { const { panel } = await import('./panelStub'); return { BadgeSharesPanel: panel('old-links') }; });
 vi.mock('../SocialNoticesPanel', async () => { const { panel } = await import('./panelStub'); return { SocialNoticesPanel: panel('notices') }; });
 vi.mock('../GovernancePanels', async () => { const { panel } = await import('./panelStub'); return { CoachingTipPanel: panel('tip'), DataPolicyPanel: panel('data-policy'), ResearchConsentPanel: panel('research'), ScopeStatementPanel: panel('scope') }; });
+vi.mock('../DataPracticePanels', async () => { const { panel } = await import('./panelStub'); return { DataPracticeConsentPanel: panel('data-practices') }; });
 vi.mock('../GuardianInvitePanel', async () => { const { panel } = await import('./panelStub'); return { GuardianInvitePanel: panel('invite'), GuardianInviteJoin: panel('join') }; });
 vi.mock('../CoGuardiansPanel', async () => { const { panel } = await import('./panelStub'); return { CoGuardiansPanel: panel('tutors'), GuardianRequestsPanel: panel('tutor-requests') }; });
 
@@ -62,7 +63,7 @@ describe('FamilyPage (W2F.1 adapter)', () => {
     const kids = [...container.querySelectorAll('[data-panel][data-kid]')].filter((el) => el.getAttribute('data-kid'))
       .map((el) => `${el.getAttribute('data-panel')}:${el.getAttribute('data-kid')}`);
     expect(kids).toEqual(['narrative', 'bridges', 'learning-pause', 'corrections', 'chore-pauses', 'share-places', 'ladder', 'requests', 'graph',
-      'history', 'old-links', 'research', 'invite', 'tutors'].map((name) => `${name}:kid-2`));
+      'history', 'old-links', 'research', 'data-practices', 'invite', 'tutors'].map((name) => `${name}:kid-2`));
     expect(container.querySelector('[data-panel="tip"]')).not.toBeNull();
     expect(mockApi).toHaveBeenCalledWith('/family/kids', expect.objectContaining({ token: 'token-1' }));
   });

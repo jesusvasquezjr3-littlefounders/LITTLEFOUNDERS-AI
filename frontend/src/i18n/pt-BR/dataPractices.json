@@ -1,0 +1,53 @@
+{
+  "tutor": {
+    "heading": "Novos usos de dados",
+    "lead": "Seu consentimento anterior não cobre isto. Escolha cada um para {name}.",
+    "open": "Escolher",
+    "close": "Ocultar",
+    "on": "Sim",
+    "off": "Não",
+    "saved": "Salvo.",
+    "failed": "Não foi salvo. Tente de novo.",
+    "loadFailed": "Não carregou.",
+    "loading": "Carregando…"
+  },
+  "groups": {
+    "analytics_event_class": { "heading": "Contagens de uso", "body": "Nos ajudam a melhorar as lições. Ninguém mais vê." },
+    "mentor_memory_type": { "heading": "O que o Mentor guarda", "body": "Notas que o Mentor usa para planejar a próxima sessão." },
+    "learner_record": { "heading": "Escolhas nas histórias", "body": "Guardadas para que lições futuras as lembrem." },
+    "sharing_surface": { "heading": "Compartilhado com outros", "body": "Só com pessoas e lugares que você aprovar." }
+  },
+  "practices": {
+    "analytics": {
+      "learning_quality_events": "Repetições e melhores notas",
+      "motivation_events": "Sequências e dias de descanso",
+      "engagement_heartbeats": "Tempo com o app aberto",
+      "family_money_events": "Uso de moedas",
+      "achievement_share_initiations": "Imagens de conquistas criadas",
+      "mentor_behavioral_telemetry": "Conversas de apoio do Mentor",
+      "mentor_integrity_evidence": "Verificações de honestidade do Mentor"
+    },
+    "mentor": {
+      "disposition_profile": "Notas sobre o jeito de aprender",
+      "alliance_record": "Metas combinadas em cada sessão",
+      "dialogue_calibration": "Como o Mentor ajusta o tom"
+    },
+    "learning": { "decision_journal": "Escolhas nas histórias, guardadas" },
+    "sharing": {
+      "social_connections": "Conexões com amigos aprovados",
+      "learning_family_bridge": "Ideias de lições para a família"
+    },
+    "research": { "family_longitudinal": "Pesquisa, em sua própria seção" }
+  },
+  "self": {
+    "heading": "Seus dados",
+    "bodyOff": "Você pode desligar qualquer um destes.",
+    "bodyChoose": "Você escolhe cada um.",
+    "open": "Ver",
+    "close": "Ocultar",
+    "on": "Sim",
+    "off": "Não",
+    "saved": "Salvo.",
+    "failed": "Não foi salvo."
+  }
+}

@@ -31,6 +31,8 @@ export interface AchievementStubOptions {
   renderContentType?: string;
   renderBody?: Buffer;
   initiationFails?: boolean;
+  /** OD-9 4.2: false = the child is a migrated child without the share-initiation consent. */
+  practiceApplies?: boolean;
 }
 
 export interface RecordedCall {
@@ -64,6 +66,9 @@ export function stubAchievementTransport(opts: AchievementStubOptions = {}): Rec
       if (url.includes('/rest/v1/profiles?user_id=')) {
         const displayName = opts.displayName === undefined ? 'Sofía García López' : opts.displayName;
         return Promise.resolve(jsonResponse(200, [{ user_id: KID_ID, display_name: displayName, username: 'sofia', birth_date: '2017-03-02' }]));
+      }
+      if (url.includes('/rpc/data_practice_applies')) {
+        return Promise.resolve(jsonResponse(200, opts.practiceApplies ?? true));
       }
       if (url.includes('/rpc/get_completed_course_badges')) {
         return Promise.resolve(jsonResponse(200, opts.courseBadges ?? []));
