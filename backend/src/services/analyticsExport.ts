@@ -11,19 +11,25 @@ import { DIMENSION_TITLES, PERIOD_LABELS, type PlausibleDimensionKey, type Plaus
  * filters in force, when it was generated, and the standing caveat that
  * excluded internal traffic only stops counting from the day it was excluded.
  *
- * Brand tokens are DESIGN.md's: indigo #4f46e5 is the accent, slate-900 the
- * ink. (The PDF renderer used a papaya/navy pair that no longer exists in the
- * design system — corrected in the same change that added these.)
+ * Colours are Frontend Bible 02 section 3 tokens (02 D8: one design system,
+ * the staff console included), as ExcelJS ARGB. The same values as the PDF's
+ * REPORT_TOKENS (analyticsReport.ts); `analyticsReportTokens.test.ts` fails on
+ * any colour here that is not a token. Headers use the Nunito family name so a
+ * machine with the house fonts shows them; Excel substitutes otherwise.
  */
 
 export const BRAND = {
-  indigo: 'FF4F46E5',
-  indigoSoft: 'FFEEF2FF',
-  ink: 'FF0F172A',
-  muted: 'FF475569',
-  outline: 'FFE2E8F0',
-  white: 'FFFFFFFF',
+  primary: 'FF5C55FD', // --primary
+  primarySoft: 'FFECEFFE', // --primary-soft
+  ink: 'FF11132A', // --content
+  muted: 'FF66697C', // --content-muted
+  outline: 'FFD5D8E7', // --outline
+  warningStrong: 'FF856600', // --warning-strong
+  onPrimary: 'FFFFFFFF', // --on-primary
 } as const;
+
+/** Frontend Bible 02 section 6: Fredoka for headings, Nunito for body text. */
+export const BRAND_FONTS = { heading: 'Fredoka', body: 'Nunito' } as const;
 
 const SHEET_TITLE_LIMIT = 31; // Excel's hard cap on a worksheet name
 
@@ -226,8 +232,8 @@ type Sheet = ExcelJS.Worksheet;
 function headerRow(sheet: Sheet, rowIndex: number, labels: string[]): void {
   const row = sheet.getRow(rowIndex);
   row.values = labels;
-  row.font = { bold: true, color: { argb: BRAND.white }, size: 11 };
-  row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: BRAND.indigo } };
+  row.font = { name: BRAND_FONTS.body, bold: true, color: { argb: BRAND.onPrimary }, size: 11 };
+  row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: BRAND.primary } };
   row.alignment = { vertical: 'middle' };
   row.height = 20;
 }
@@ -236,14 +242,14 @@ function titleBlock(sheet: Sheet, report: PlausibleReportData, subtitle: string)
   sheet.mergeCells('A1:D1');
   const title = sheet.getCell('A1');
   title.value = 'LittleFounders analytics';
-  title.font = { bold: true, size: 16, color: { argb: BRAND.ink } };
+  title.font = { name: BRAND_FONTS.heading, bold: true, size: 16, color: { argb: BRAND.ink } };
   title.alignment = { vertical: 'middle' };
   sheet.getRow(1).height = 26;
 
   sheet.mergeCells('A2:D2');
   const sub = sheet.getCell('A2');
   sub.value = subtitle;
-  sub.font = { size: 11, color: { argb: BRAND.muted } };
+  sub.font = { name: BRAND_FONTS.body, size: 11, color: { argb: BRAND.muted } };
   sheet.getRow(2).height = 18;
   return 4; // first free row
 }
@@ -308,7 +314,7 @@ export async function renderAnalyticsReportXlsx(report: PlausibleReportData): Pr
       size: 9,
       italic: !isDrift,
       bold: isDrift,
-      color: { argb: isDrift ? 'FFB45309' : BRAND.muted },
+      color: { argb: isDrift ? BRAND.warningStrong : BRAND.muted },
     };
     cell.alignment = { wrapText: true, vertical: 'top' };
     summary.getRow(row).height = index === 0 ? 30 : 26;
@@ -437,7 +443,7 @@ export async function renderTablesXlsx(meta: ExportMeta, sheets: ExportSheet[]):
   about.mergeCells('A1:D1');
   const title = about.getCell('A1');
   title.value = meta.title;
-  title.font = { bold: true, size: 16, color: { argb: BRAND.ink } };
+  title.font = { name: BRAND_FONTS.heading, bold: true, size: 16, color: { argb: BRAND.ink } };
   about.getRow(1).height = 26;
   let row = 3;
   for (const [label, value] of [['Window', meta.window], ['Generated', meta.generatedAt]] as [string, string][]) {

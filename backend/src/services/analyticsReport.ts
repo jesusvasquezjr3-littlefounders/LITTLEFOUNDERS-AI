@@ -1,13 +1,15 @@
 import PDFDocument from 'pdfkit';
 import { LF_LOGO_PNG } from '../assets/lfLogo.js';
+import { FREDOKA_SEMIBOLD_TTF, NUNITO_BOLD_TTF, NUNITO_REGULAR_TTF } from '../assets/reportFonts.js';
 
 import type { PlausibleBreakdownRow, PlausibleDimensionKey, PlausibleReportData } from './pulse.js';
 
 /*
  * Branded analytics report PDF (staff console → Export). Pure pdfkit
  * vector/text — NO image fetches, NO headless browser — so rendering stays
- * Railway-light and offline-safe. Brand tokens come from /DESIGN.md: indigo
- * is the accent, slate is the ink.
+ * Railway-light and offline-safe. Colours are Frontend Bible 02 section 3
+ * tokens and type is Fredoka (headings) and Nunito (body), per 02 D3, D4 and
+ * D8: one design system for every surface, the staff console included.
  *
  * The report is localised. It used to be English-only with `en-US` number and
  * date formatters hardwired, which meant a Spanish-speaking operator exported
@@ -172,25 +174,53 @@ function contextFor(locale: ReportLocale): ReportContext {
 }
 
 /*
- * /DESIGN.md tokens, resolved to hex because a PDF has no CSS variables.
- *
- * These were a papaya/navy pair (#ff775c / #080f28) that the design system no
- * longer contains: DESIGN.md's brand is indigo #4f46e5 on slate ink #0f172a.
- * Every exported report was therefore wearing a palette the product had
- * stopped using — the one artefact that leaves the building and gets shown to
- * people. Kept in sync with src/index.css by name below.
+ * Frontend Bible 02 section 3 tokens (light mode: a PDF is printed on
+ * paper), resolved to hex because a PDF has no CSS variables. The source of
+ * truth is frontend/src/rebuild/design/tokens.css; `analyticsReportTokens.test.ts`
+ * fails on any colour in this file or analyticsExport.ts that is not one of
+ * them. The retired indigo, violet and slate palette of the deleted DESIGN.md was
+ * replaced by D4; the decorative violet is gone (02 section 10).
  */
-const ACCENT = '#4f46e5'; // --lf-accent, indigo-600
-const ACCENT_STRONG = '#4338ca'; // --lf-accent-strong, indigo-700
-const DELIGHT = '#8b5cf6'; // --lf-delight, violet-500 (decorative only)
-const INK = '#0f172a'; // --lf-content, slate-900
-const MUTED = '#475569'; // --lf-content-muted, slate-600
-const RULE = '#e2e8f0'; // --lf-outline, slate-200
-const WARNING = '#b45309'; // --lf-warning-strong, amber-700
-const SOFT_ACCENT = '#eef2ff'; // --lf-accent-soft, indigo-50
-const SOFT_SURFACE = '#f1f5f9'; // --lf-surface-sunken, slate-100
-const SUCCESS = '#047857'; // --lf-success-strong, emerald-700
-const ERROR = '#b91c1c'; // --lf-error-strong, red-700
+export const REPORT_TOKENS = {
+  primary: '#5c55fd', // --primary
+  primaryStrong: '#5850f8', // --primary-strong
+  primarySoft: '#eceffe', // --primary-soft
+  sunken: '#eaecf6', // --sunken
+  content: '#11132a', // --content
+  contentMuted: '#66697c', // --content-muted
+  outline: '#d5d8e7', // --outline
+  successStrong: '#027b45', // --success-strong
+  errorStrong: '#d60f26', // --error-strong
+  warningStrong: '#856600', // --warning-strong
+} as const;
+
+const ACCENT = REPORT_TOKENS.primary;
+const ACCENT_STRONG = REPORT_TOKENS.primaryStrong;
+const INK = REPORT_TOKENS.content;
+const MUTED = REPORT_TOKENS.contentMuted;
+const RULE = REPORT_TOKENS.outline;
+const WARNING = REPORT_TOKENS.warningStrong;
+const SOFT_ACCENT = REPORT_TOKENS.primarySoft;
+const SOFT_SURFACE = REPORT_TOKENS.sunken;
+const SUCCESS = REPORT_TOKENS.successStrong;
+const ERROR = REPORT_TOKENS.errorStrong;
+
+/*
+ * The house typefaces, registered on every document (registerFonts). HEADING
+ * is Fredoka SemiBold; BODY and BODY_BOLD are Nunito. They carry the whole
+ * Latin set the three locales use, so text is never rewritten to '?' (the
+ * old Helvetica path needed toLatin1 and turned any other character into one).
+ */
+const HEADING = 'LF-Heading';
+const BODY = 'LF-Body';
+const BODY_BOLD = 'LF-Body-Bold';
+
+function registerFonts(doc: PDFKit.PDFDocument): void {
+  doc.registerFont(HEADING, FREDOKA_SEMIBOLD_TTF);
+  doc.registerFont(BODY, NUNITO_REGULAR_TTF);
+  doc.registerFont(BODY_BOLD, NUNITO_BOLD_TTF);
+  doc.font(BODY);
+}
 
 const MARGIN = 48;
 const BOTTOM_MARGIN = 64; // reserves the footer band
@@ -214,11 +244,6 @@ function formatShortDate(ctx: ReportContext, date: string): string {
   return Number.isNaN(parsed.getTime()) ? date : ctx.shortDate.format(parsed);
 }
 
-/** pdfkit's standard fonts are Latin-1 only — replace anything outside it. */
-function toLatin1(text: string): string {
-  return text.replace(/[^\x20-\x7E\u00A0-\u00FF\u2026]/g, '?');
-}
-
 function contentWidth(doc: PDFKit.PDFDocument): number {
   return doc.page.width - MARGIN * 2;
 }
@@ -238,7 +263,7 @@ function drawWatermark(doc: PDFKit.PDFDocument): void {
   const cy = doc.page.height / 2;
   doc.save();
   doc.rotate(-38, { origin: [cx, cy] });
-  doc.font('Helvetica-Bold').fontSize(52).fillColor(INK).fillOpacity(0.05);
+  doc.font(HEADING).fontSize(52).fillColor(INK).fillOpacity(0.05);
   // y offsets stay well inside the page so pdfkit's text layout never
   // triggers an automatic page break from inside the watermark pass.
   for (const offset of [-190, 0, 190]) {
@@ -257,15 +282,14 @@ function drawHeader(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plausible
   // not a file read: the PDF must not depend on a frontend filesystem asset
   // that a build step might not copy into the deployed image.
   doc.rect(0, 0, doc.page.width, 6).fill(ACCENT);
-  doc.rect(doc.page.width * 0.72, 0, doc.page.width * 0.28, 6).fill(DELIGHT);
   drawLogo(doc, MARGIN, 34);
   doc
-    .font('Helvetica-Bold')
+    .font(HEADING)
     .fontSize(13)
     .fillColor(ACCENT_STRONG)
     .text(`${ctx.s.title}: ${ctx.s.audiences[data.audience]}`, MARGIN, 76, { lineBreak: false });
   doc
-    .font('Helvetica')
+    .font(BODY)
     .fontSize(9)
     .fillColor(MUTED)
     .text(`${ctx.s.periods[data.period]}  |  ${ctx.s.generated} ${formatDate(ctx, data.generatedAt.slice(0, 10))}  |  ${ctx.s.source}`, MARGIN, 96, {
@@ -279,17 +303,17 @@ function drawHeader(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plausible
    * work out whether a campaign did anything.
    */
   doc
-    .font('Helvetica-Bold')
+    .font(BODY_BOLD)
     .fontSize(8)
     .fillColor(ACCENT_STRONG)
     .text(`${ctx.s.window}: ${formatDate(ctx, data.from)} ${ctx.s.to} ${formatDate(ctx, data.to)}`, MARGIN, 108, { lineBreak: false });
 
   const filterText = data.appliedFilters.length ? `${ctx.s.filters}: ${data.appliedFilters.join('  AND  ')}` : `${ctx.s.filters}: ${ctx.s.none}`;
   doc
-    .font('Helvetica')
+    .font(BODY)
     .fontSize(8)
     .fillColor(MUTED)
-    .text(toLatin1(filterText), MARGIN, 119, { lineBreak: false, width: contentWidth(doc), ellipsis: true });
+    .text(filterText, MARGIN, 119, { lineBreak: false, width: contentWidth(doc), ellipsis: true });
 
   doc
     .moveTo(MARGIN, 133)
@@ -341,12 +365,12 @@ function drawKpiBlock(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plausib
   cards.forEach((card, i) => {
     const x = MARGIN + i * (w + gap);
     doc.roundedRect(x, top, w, h, 6).lineWidth(1).strokeColor(RULE).stroke();
-    doc.rect(x, top + 8, 3, h - 16).fill(i === 0 ? ACCENT : DELIGHT);
-    doc.font('Helvetica').fontSize(8).fillColor(MUTED).text(card.label.toUpperCase(), x + 12, top + 11, {
+    doc.rect(x, top + 8, 3, h - 16).fill(i === 0 ? ACCENT : RULE);
+    doc.font(BODY).fontSize(8).fillColor(MUTED).text(card.label.toUpperCase(), x + 12, top + 11, {
       width: w - 20,
       lineBreak: false,
     });
-    doc.font('Helvetica-Bold').fontSize(16).fillColor(INK).text(card.value, x + 12, top + 25, {
+    doc.font(HEADING).fontSize(16).fillColor(INK).text(card.value, x + 12, top + 25, {
       width: w - 20,
       lineBreak: false,
     });
@@ -358,7 +382,7 @@ function drawKpiBlock(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plausib
         : `${card.change >= 0 ? '+' : ''}${(card.change * 100).toFixed(1)}% ${ctx.s.vsPrevious}`;
     const tone =
       card.change === null ? MUTED : (card.change >= 0) === card.higherIsBetter ? SUCCESS : ERROR;
-    doc.font('Helvetica').fontSize(7.5).fillColor(tone).text(changeText, x + 12, top + 46, {
+    doc.font(BODY).fontSize(7.5).fillColor(tone).text(changeText, x + 12, top + 46, {
       width: w - 20,
       lineBreak: false,
     });
@@ -369,7 +393,7 @@ function drawKpiBlock(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plausib
 function drawSectionTitle(doc: PDFKit.PDFDocument, title: string, subtitle?: string): void {
   ensureRoom(doc, subtitle ? 42 : 28);
   const y = doc.y;
-  doc.font('Helvetica-Bold').fontSize(14).fillColor(INK).text(title, MARGIN, y, { lineBreak: false });
+  doc.font(HEADING).fontSize(14).fillColor(INK).text(title, MARGIN, y, { lineBreak: false });
   /*
    * The subtitle starts after the MEASURED title, not at a fixed offset. It
    * used to be pinned to MARGIN + 58, so every title longer than 58pt (which
@@ -381,10 +405,10 @@ function drawSectionTitle(doc: PDFKit.PDFDocument, title: string, subtitle?: str
   if (subtitle) {
     const subtitleX = MARGIN + titleWidth + 12;
     doc
-      .font('Helvetica')
+      .font(BODY)
       .fontSize(8)
       .fillColor(MUTED)
-      .text(toLatin1(subtitle), subtitleX, y + 5, {
+      .text(subtitle, subtitleX, y + 5, {
         lineBreak: false,
         width: Math.max(doc.page.width - MARGIN - subtitleX, 40),
         ellipsis: true,
@@ -413,7 +437,7 @@ function drawTrendChart(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plaus
   const yFor = (value: number) => plotY + plotH - (value / maxValue) * plotH;
   const xFor = (index: number) => plotX + (series.length === 1 ? plotW / 2 : (index / (series.length - 1)) * plotW);
 
-  doc.font('Helvetica').fontSize(7).fillColor(MUTED);
+  doc.font(BODY).fontSize(7).fillColor(MUTED);
   for (const ratio of [0, 0.5, 1]) {
     const y = plotY + plotH - ratio * plotH;
     doc.moveTo(plotX, y).lineTo(plotX + plotW, y).lineWidth(0.5).strokeColor(RULE).stroke();
@@ -424,7 +448,7 @@ function drawTrendChart(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plaus
   series.forEach((point, index) => {
     const x = xFor(index);
     const barTop = yFor(point.pageviews);
-    doc.save().fillOpacity(0.3).rect(x - barW / 2, barTop, barW, plotY + plotH - barTop).fill(DELIGHT).restore();
+    doc.save().fillOpacity(0.3).rect(x - barW / 2, barTop, barW, plotY + plotH - barTop).fill(ACCENT).restore();
   });
 
   const line = series.map((point, index) => ({ x: xFor(index), y: yFor(point.visitors) }));
@@ -442,7 +466,7 @@ function drawTrendChart(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plaus
   doc.lineWidth(2).strokeColor(ACCENT_STRONG).stroke();
   doc.restore();
 
-  doc.font('Helvetica').fontSize(7).fillColor(MUTED);
+  doc.font(BODY).fontSize(7).fillColor(MUTED);
   const labelIndexes = [...new Set([0, Math.floor((series.length - 1) / 2), series.length - 1])];
   labelIndexes.forEach((index) => {
     const x = xFor(index);
@@ -461,19 +485,19 @@ function drawTrendChart(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plaus
    * measured from the rendered strings instead of hardcoded offsets.
    */
   const legendY = top + chartH + 8;
-  doc.font('Helvetica').fontSize(8);
+  doc.font(BODY).fontSize(8);
   const visitorsW = doc.widthOfString(ctx.s.visitors);
   doc.circle(MARGIN + 16, legendY + 3, 3).fill(ACCENT_STRONG);
   doc.fillColor(MUTED).text(ctx.s.visitors, MARGIN + 24, legendY, { lineBreak: false });
   const swatchX = MARGIN + 24 + visitorsW + 14;
-  doc.fillOpacity(0.45).rect(swatchX, legendY + 1, 7, 7).fill(DELIGHT);
+  doc.fillOpacity(0.45).rect(swatchX, legendY + 1, 7, 7).fill(ACCENT);
   doc.fillOpacity(1).fillColor(MUTED).text(ctx.s.pageviews, swatchX + 13, legendY, { lineBreak: false });
   doc.y = top + chartH + 30;
 
   const totalVisitors = series.reduce((sum, point) => sum + point.visitors, 0);
   const totalPageviews = series.reduce((sum, point) => sum + point.pageviews, 0);
   const peak = series.reduce((best, point) => (point.visitors > best.visitors ? point : best), firstSeriesPoint);
-  doc.font('Helvetica').fontSize(8).fillColor(MUTED).text(
+  doc.font(BODY).fontSize(8).fillColor(MUTED).text(
     `${ctx.s.dailyTotals}: ${ctx.int.format(totalVisitors)} ${ctx.s.visitors.toLowerCase()} | ${ctx.int.format(totalPageviews)} ${ctx.s.pageviews.toLowerCase()} | ${ctx.s.peakDay}: ${formatDate(ctx, peak.date)}`,
     MARGIN,
     doc.y,
@@ -499,15 +523,15 @@ function drawSnapshotBars(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Pla
     const x = MARGIN + column * (cardW + gap);
     const y = startY + row * (cardH + gap);
     doc.roundedRect(x, y, cardW, cardH, 7).fill(column === 0 ? SOFT_SURFACE : SOFT_ACCENT);
-    doc.font('Helvetica-Bold').fontSize(10).fillColor(INK).text(ctx.s.dimensions[dimension], x + 12, y + 12, { lineBreak: false });
+    doc.font(HEADING).fontSize(10).fillColor(INK).text(ctx.s.dimensions[dimension], x + 12, y + 12, { lineBreak: false });
     const max = Math.max(...rows.map((item) => item.visitors), 1);
     rows.forEach((item, rowIndex) => {
       const rowY = y + 35 + rowIndex * 19;
       const labelW = cardW - 88;
       const label = fitLabel(doc, item.label || '(none)', labelW);
-      doc.font('Helvetica').fontSize(7.5).fillColor(MUTED).text(label, x + 12, rowY, { width: labelW, lineBreak: false });
+      doc.font(BODY).fontSize(7.5).fillColor(MUTED).text(label, x + 12, rowY, { width: labelW, lineBreak: false });
       doc.roundedRect(x + 12, rowY + 10, cardW - 74, 3, 1.5).fill(RULE);
-      doc.roundedRect(x + 12, rowY + 10, Math.max(3, ((cardW - 74) * item.visitors) / max), 3, 1.5).fill(column === 0 ? ACCENT_STRONG : DELIGHT);
+      doc.roundedRect(x + 12, rowY + 10, Math.max(3, ((cardW - 74) * item.visitors) / max), 3, 1.5).fill(column === 0 ? ACCENT_STRONG : ACCENT);
       numberCell(doc, ctx, item.visitors, x + cardW - 54, rowY - 1, 42);
     });
   });
@@ -521,7 +545,7 @@ function numberCell(doc: PDFKit.PDFDocument, ctx: ReportContext, value: number, 
 
 /** Trim a label (with ellipsis) so it can never overflow its column. */
 function fitLabel(doc: PDFKit.PDFDocument, text: string, maxWidth: number): string {
-  const clean = toLatin1(text);
+  const clean = text;
   if (doc.widthOfString(clean) <= maxWidth) return clean;
   let trimmed = clean;
   while (trimmed.length > 1 && doc.widthOfString(`${trimmed}…`) > maxWidth) {
@@ -541,7 +565,7 @@ function drawBreakdownSection(doc: PDFKit.PDFDocument, ctx: ReportContext, title
 
   const drawColumnHeads = (): void => {
     const y = doc.y;
-    doc.font('Helvetica-Bold').fontSize(8).fillColor(MUTED);
+    doc.font(BODY_BOLD).fontSize(8).fillColor(MUTED);
     doc.text(ctx.s.rank, MARGIN, y, { width: rankW - 6, lineBreak: false });
     doc.text(ctx.s.label, labelX, y, { width: labelW - 8, lineBreak: false });
     doc.text(ctx.s.visitors.toUpperCase(), visitorsX, y, { width: numW, align: 'right', lineBreak: false });
@@ -558,7 +582,7 @@ function drawBreakdownSection(doc: PDFKit.PDFDocument, ctx: ReportContext, title
   // Heading + column heads + first row travel together across page breaks.
   ensureRoom(doc, 30 + ROW_H * 2);
   const headingY = doc.y;
-  doc.font('Helvetica-Bold').fontSize(12).fillColor(INK).text(title, MARGIN, headingY, { lineBreak: false });
+  doc.font(HEADING).fontSize(12).fillColor(INK).text(title, MARGIN, headingY, { lineBreak: false });
   doc
     .moveTo(MARGIN, headingY + 17)
     .lineTo(MARGIN + 42, headingY + 17)
@@ -569,7 +593,7 @@ function drawBreakdownSection(doc: PDFKit.PDFDocument, ctx: ReportContext, title
   drawColumnHeads();
 
   if (rows.length === 0) {
-    doc.font('Helvetica').fontSize(9).fillColor(MUTED).text('No data for this period.', MARGIN, doc.y, { lineBreak: false });
+    doc.font(BODY).fontSize(9).fillColor(MUTED).text('No data for this period.', MARGIN, doc.y, { lineBreak: false });
     doc.y += ROW_H + 10;
     return;
   }
@@ -580,7 +604,7 @@ function drawBreakdownSection(doc: PDFKit.PDFDocument, ctx: ReportContext, title
       drawColumnHeads();
     }
     const y = doc.y;
-    doc.font('Helvetica').fontSize(9).fillColor(MUTED);
+    doc.font(BODY).fontSize(9).fillColor(MUTED);
     doc.text(String(i + 1), MARGIN, y, { width: rankW - 6, lineBreak: false });
     doc.fillColor(INK);
     doc.text(fitLabel(doc, row.label || '(none)', labelW - 8), labelX, y, { width: labelW - 8, lineBreak: false });
@@ -626,8 +650,8 @@ function drawOwnAudience(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plau
 
   if (!fp) {
     // Unread is not zero, and the report says which one this is.
-    doc.font('Helvetica').fontSize(9).fillColor(MUTED);
-    doc.text(toLatin1(ctx.s.ownUnavailable), doc.page.margins.left, doc.y, { width: contentWidth(doc) });
+    doc.font(BODY).fontSize(9).fillColor(MUTED);
+    doc.text(ctx.s.ownUnavailable, doc.page.margins.left, doc.y, { width: contentWidth(doc) });
     doc.moveDown(1);
     return;
   }
@@ -653,16 +677,16 @@ function drawOwnAudience(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plau
     const row = Math.floor(index / perRow);
     const x = doc.page.margins.left + col * cellW;
     const y = top + row * 46;
-    doc.font('Helvetica-Bold').fontSize(15).fillColor(INK);
-    doc.text(toLatin1(value), x, y, { width: cellW - 8 });
-    doc.font('Helvetica').fontSize(8).fillColor(MUTED);
-    doc.text(toLatin1(label), x, y + 19, { width: cellW - 8 });
+    doc.font(HEADING).fontSize(15).fillColor(INK);
+    doc.text(value, x, y, { width: cellW - 8 });
+    doc.font(BODY).fontSize(8).fillColor(MUTED);
+    doc.text(label, x, y + 19, { width: cellW - 8 });
   });
   doc.y = top + Math.ceil(cells.length / perRow) * 46 + 4;
 
   if (fp.unobserved > 0) {
-    doc.font('Helvetica').fontSize(8).fillColor(MUTED);
-    doc.text(toLatin1(ctx.s.ownGap), doc.page.margins.left, doc.y, { width });
+    doc.font(BODY).fontSize(8).fillColor(MUTED);
+    doc.text(ctx.s.ownGap, doc.page.margins.left, doc.y, { width });
     doc.moveDown(0.8);
   }
 }
@@ -694,15 +718,15 @@ function drawCaveats(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plausibl
   const estimated = 26 + lines.length * 26;
   if (doc.y + estimated > doc.page.height - BOTTOM_MARGIN) doc.addPage();
 
-  doc.font('Helvetica-Bold').fontSize(11).fillColor(INK).text(toLatin1(ctx.s.caveats), MARGIN, doc.y);
+  doc.font(HEADING).fontSize(11).fillColor(INK).text(ctx.s.caveats, MARGIN, doc.y);
   doc.y += 6;
 
   for (const line of lines) {
     doc
-      .font(line.warn ? 'Helvetica-Bold' : 'Helvetica')
+      .font(line.warn ? BODY_BOLD : BODY)
       .fontSize(8)
       .fillColor(line.warn ? WARNING : MUTED)
-      .text(`•  ${toLatin1(line.text)}`, MARGIN, doc.y, { width: contentWidth(doc) });
+      .text(`•  ${line.text}`, MARGIN, doc.y, { width: contentWidth(doc) });
     doc.y += 4;
   }
 }
@@ -718,7 +742,7 @@ function drawFooters(doc: PDFKit.PDFDocument, ctx: ReportContext): void {
     const savedBottom = doc.page.margins.bottom;
     doc.page.margins.bottom = 0;
     doc
-      .font('Helvetica')
+      .font(BODY)
       .fontSize(8)
       .fillColor(MUTED)
       .text(
@@ -753,6 +777,7 @@ export function renderAnalyticsReportPdf(
     doc.on('error', reject);
 
     try {
+      registerFonts(doc);
       // The first page exists before this listener can fire — watermark it by hand.
       doc.on('pageAdded', () => drawWatermark(doc));
       drawWatermark(doc);
