@@ -11,7 +11,8 @@ import { MENTOR_CHARACTERS, type MentorCharacter } from '../design/assets';
  *
  * Preference order for one request:
  *   1. for the full stage, a stage still of this character in the requested pose (`mentor.stageStill`);
- *   2. for the compact lesson stage, the character's lesson band still (`lesson.compactMentorStill`);
+ *   2. for the compact lesson stage, the character's lesson band still in the requested pose, else its idle band still
+ *      (`lesson.compactMentorStill`, with a square variant for the wide layout);
  *   3. for the full stage, the character standing on its Diorama (`mentor.chooserStill`, the idle pose);
  *   4. the character's avatar render (`mentor.avatar`: the idle pose, square, transparent).
  * The pose the still actually shows is returned, so the stage can expose it
@@ -55,6 +56,36 @@ function pick(slot: string, character: MentorCharacter, theme: 'light' | 'dark',
 
 const still = (row: StillRow, fit: StageStill['fit']): StageStill => ({ id: row.id, path: row.path, poseId: row.poseId as string, fit });
 
+type BandShape = 'young' | 'teen' | 'square';
+/*
+ * The manifest id of a lesson band still: one per character, band shape, catalogue pose and colour mode.
+ * Spelled per character so the asset gate (check-rebuild-assets) can see which registered stills are referenced.
+ */
+const LESSON_STILL_IDS: Record<MentorCharacter, (shape: BandShape, pose: string, theme: 'light' | 'dark') => string> = {
+  rho: (shape, pose, theme) => `lesson.rho.${shape}.${pose}.${theme}`,
+  zara: (shape, pose, theme) => `lesson.zara.${shape}.${pose}.${theme}`,
+  liruf: (shape, pose, theme) => `lesson.liruf.${shape}.${pose}.${theme}`,
+  dina: (shape, pose, theme) => `lesson.dina.${shape}.${pose}.${theme}`,
+};
+export const lessonStillId = (character: MentorCharacter, shape: BandShape, pose: string, theme: 'light' | 'dark') =>
+  LESSON_STILL_IDS[character](shape, pose, theme);
+/** Dina's first, single-pose band capture (`think.wait`), kept as her last band fallback. */
+const firstBandStillId = (character: MentorCharacter, shape: BandShape, theme: 'light' | 'dark') =>
+  (character === 'dina' ? `lesson.dina.${shape}.${theme}` : null);
+
+/**
+ * A band still in the requested pose; else the same band in the idle pose; else Dina's first,
+ * single-pose capture. Never another character's.
+ */
+function lessonStill(character: MentorCharacter, shape: BandShape, poseId: string, theme: 'light' | 'dark'): StillRow | null {
+  for (const id of [lessonStillId(character, shape, poseId, theme), lessonStillId(character, shape, 'ambient.idle', theme), firstBandStillId(character, shape, theme)]) {
+    if (id === null) continue;
+    const row = pick(LESSON_STILL_SLOT, character, theme, (entry) => entry.id === id);
+    if (row) return row;
+  }
+  return null;
+}
+
 /** The manifest id of a full-stage still: one per character, catalogue pose and colour mode. */
 export const stageStillId = (character: MentorCharacter, pose: string, theme: 'light' | 'dark') => `mentor.${character}.stage.${pose}.${theme}`;
 
@@ -77,12 +108,12 @@ export function findStageStills({ character, poseId, theme, size, band }: {
     const exact = pick(STAGE_STILL_SLOT, character, theme, (row) => row.id === stageStillId(character, poseId, theme) && row.poseId === poseId);
     if (exact) return { base: still(exact, 'cover'), square: null };
   }
-  // The lesson band stills (scene included, per band and mode). Only Dina's are authored so far; another
-  // character's band stills join here when they are rendered and registered.
-  if (size === 'compact' && character === 'dina') {
-    const bandRow = pick(LESSON_STILL_SLOT, character, theme, (row) => row.id === `lesson.dina.${band}.${theme}`);
+  // The lesson band stills (scene included, per band shape, pose and mode; scripts/render-mentor-lesson-stills.mjs):
+  // every character on the edge of its Diorama in the band, in the pose the compact stage is in (08 §7, §11).
+  if (size === 'compact') {
+    const bandRow = lessonStill(character, band, poseId, theme);
     if (bandRow) {
-      const square = pick(LESSON_STILL_SLOT, character, theme, (row) => row.id === `lesson.dina.square.${theme}`);
+      const square = lessonStill(character, 'square', poseId, theme);
       return { base: still(bandRow, 'cover'), square: square ? still(square, 'cover') : null };
     }
   }

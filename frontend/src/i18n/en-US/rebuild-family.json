@@ -329,8 +329,10 @@
     "keptFailed": "Saved boards did not load."
   },
   "familyMemoryNotes": {
-    "title": "Mentor's note",
+    "title": "Mentor's notes",
     "body": "You approve every change.",
+    "learnerStore": "Who they are",
+    "pedagogyStore": "How they learn best",
     "current": "The note now",
     "currentEmpty": "No note yet.",
     "empty": "Nothing is waiting for you.",

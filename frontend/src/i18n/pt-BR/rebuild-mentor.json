@@ -371,6 +371,32 @@
       "needs_review": "Hora de revisar"
     }
   },
+  "mentorDecisions": {
+    "title": "O que o Mentor decidiu",
+    "loading": "Carregando as decisões…",
+    "failed": "Não foi possível carregar as decisões.",
+    "retry": "Tentar de novo",
+    "empty": "Ainda não há decisões.",
+    "states": {
+      "not_yet": "Ainda aprendendo",
+      "provisional_mastered": "Dominado por enquanto",
+      "recheck_due": "Hora de revisar"
+    },
+    "mastered": "Avançou após {n} respostas certas seguidas.",
+    "masteredOne": "Avançou após 1 resposta certa.",
+    "remediation": "Revisou o tema após {n} erros seguidos.",
+    "remediationOne": "Revisou o tema após 1 erro.",
+    "rescue": "Deixou mais fácil após {n} tentativas difíceis seguidas.",
+    "rescueOne": "Deixou mais fácil após 1 tentativa difícil.",
+    "withdrawn": "Conferiu de novo após um erro.",
+    "streak": "{n} respostas certas seguidas até agora.",
+    "streakOne": "1 resposta certa até agora.",
+    "tooFast": "Uma resposta muito rápida não contou.",
+    "hintAssisted": "Uma resposta com dica não contou.",
+    "bothDiscounted": "Uma resposta muito rápida e outra com dica não contaram.",
+    "decidedOn": "Decidido em {date}",
+    "nextCheck": "Vai conferir de novo em {date}."
+  },
   "mentorNotebook": {
     "menu": "Meu caderno",
     "heading": "Meu caderno",

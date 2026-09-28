@@ -94,6 +94,7 @@ import {
   listPendingLearnerMemoryProposals,
   getLearnerMemoryProposal,
   decideLearnerMemoryProposal,
+  type LearnerMemoryProposalRow,
   searchOwnTurns,
   // Class V artifacts (migration 0069, TUTOR_INSTRUMENTS.md §3.6).
   getTutorPlan,
@@ -147,6 +148,8 @@ import {
 } from '../services/pedagogy/kcData.js';
 import { purgeExpiredTutorSessions } from '../services/tutorRetention.js';
 import { buildSessionPlan } from '../services/pedagogy/sessionPlan.js';
+import { buildMasteryEvidence } from '../services/pedagogy/masteryEvidence.js';
+import { revealsAnswerKey } from '../services/pedagogy/answerReveal.js';
 import { buildTutorMap } from '../services/pedagogy/tutorMap.js';
 import { recordTurnHonesty } from '../services/pedagogy/turnHonesty.js';
 import { recordAttempt, type AttemptOutcome } from '../services/pedagogy/recordAttempt.js';
@@ -1462,15 +1465,20 @@ function internalRouter(): Router {
     }
     const { userId, sessionId, stores, expectedBefore } = parsed.data;
 
-    // C.4 / OD-18 (24 September 2026): the reviewer of a LEARNER-store note
-    // is resolved from server-held evidence, not from the request. A verified
-    // guardian link or a legacy `kid` role keeps the guardian-review flow
-    // (unchanged, S01.4e). An independent screened teen (13_to_17, no link,
-    // no protected origin) parks the note as a SELF-review item the teen
-    // decides on through their own learner session — never silently
-    // auto-approved. An account with unknown or under-13 age evidence and no
-    // guardian link is a conservative hold: the whole write is refused.
-    // A screened adult keeps the existing direct write.
+    // C.4 / OD-18 (24 September 2026): the reviewer of a memory note is
+    // resolved from server-held evidence, not from the request. A verified
+    // guardian link or a legacy `kid` role keeps the guardian-review flow. An
+    // independent screened teen (13_to_17, no link, no protected origin)
+    // parks the note as a SELF-review item the teen decides on through their
+    // own learner session — never silently auto-approved. An account with
+    // unknown or under-13 age evidence and no guardian link is a conservative
+    // hold: the whole write is refused, both stores. A screened adult keeps
+    // the existing direct write.
+    //
+    // GAP-FIX-R2 (C.4, OD-18): BOTH stores go through that review. The
+    // pedagogy note ("what teaching works with this child") is the second of
+    // C.4's two memory notes and model-written prose about the same child; it
+    // used to write straight through for every minor with nobody seeing it.
     const review = await classifyMemoryReview(userId);
     if (review === null) {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve memory review eligibility');
@@ -1480,21 +1488,25 @@ function internalRouter(): Router {
     }
     const requiresReview = review !== 'adult-direct';
 
-    const gatedStores = { learner: requiresReview ? null : stores.learner, pedagogy: stores.pedagogy };
-    const pending: ('learner' | 'pedagogy')[] = [];
-    if (requiresReview && stores.learner !== null) {
+    const gatedStores = requiresReview ? { learner: null, pedagogy: null } : stores;
+    const pending: ('learner' | 'pedagogy')[] = requiresReview
+      ? (['learner', 'pedagogy'] as const).filter((store) => stores[store] !== null)
+      : [];
+    if (pending.length > 0) {
       const parked = await parkLearnerMemoryProposal({
         userId,
-        proposed: stores.learner,
-        expectedBefore: expectedBefore.learner,
         sessionId,
+        proposals: pending.map((store) => ({
+          store,
+          proposed: stores[store] as string,
+          expectedBefore: expectedBefore[store],
+        })),
       });
       // Refused, not degraded. A proposal that failed to park is a note that
       // vanished; reporting it as landed would mean nothing ever retries it.
       if (!parked) {
         return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the memory note for review');
       }
-      pending.push('learner');
     }
 
     /*
@@ -1624,9 +1636,14 @@ function internalRouter(): Router {
       evidenceRule: z.enum(['mastery', 'remediation', 'rescue']).nullable().optional(),
       evidenceObservations: z.number().int().min(0).max(100).nullable().optional(),
       evidenceRequired: z.number().int().min(1).max(5).nullable().optional(),
+      // GAP-FIX-R2 (Appendix D §2.6): which correct answers the chain set aside; travels with the evidence.
+      evidenceDiscounted: z.enum(['none', 'too_fast', 'hint_assisted', 'too_fast_and_hint_assisted']).nullable().optional(),
       masteryRevoked: z.boolean().optional(),
     })
     .strict()
+    .refine((step) => (step.evidenceDiscounted ?? null) === null || (step.evidenceRule ?? null) !== null, {
+      message: 'evidenceDiscounted travels with evidenceRule',
+    })
     .refine(
       (step) =>
         (step.evidenceRule ?? null) === null
@@ -2621,6 +2638,34 @@ function internalRouter(): Router {
     return null;
   };
 
+  /*
+   * GAP-FIX-R2 (Frontend Bible 08 §2, §4; C.18): the KEY-BASED reveal check
+   * for a Mentor turn's reply chips, BEFORE the turn is delivered. A chip is
+   * sent as the learner's own words, so a chip that holds the open
+   * activity's answer is a reveal one tap away. Oracle never holds the key;
+   * this answers, per chip, `true` (reveals it), `false` or `null` (not
+   * scorable) with the same `revealsAnswerKey` the honesty ledger scores
+   * delivered turns with. Only a segment of THIS session is checked.
+   */
+  const RevealCheckBody = z
+    .object({
+      sessionId: z.uuid(),
+      texts: z.array(z.string().min(1).max(200)).min(1).max(6),
+    })
+    .strict();
+  router.post('/segments/:segmentId/reveal-check', async (req, res) => {
+    const segmentId = z.string().uuid().safeParse(req.params.segmentId);
+    if (!segmentId.success) return fail(res, 400, VALIDATION, 'Invalid segment id');
+    const parsed = RevealCheckBody.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid body');
+    const row = await getTutorSegment(segmentId.data);
+    if (!row) return fail(res, 404, NOT_FOUND, 'No such segment');
+    if (row.session_id !== parsed.data.sessionId) return fail(res, 403, 'FORBIDDEN', 'Segment is not in this session');
+    return ok(res, {
+      reveals: parsed.data.texts.map((text) => revealsAnswerKey({ segment: row.payload, answer: row.answer, text })),
+    });
+  });
+
   router.post('/segments/:segmentId/voice-check', async (req, res) => {
     const segmentId = z.string().uuid().safeParse(req.params.segmentId);
     if (!segmentId.success) return fail(res, 400, VALIDATION, 'Invalid segment id');
@@ -3273,6 +3318,39 @@ export function tutorRouter(): Router {
     const map = await buildTutorMap(user.id, calibration.tier, normalizeLocale(profile.locale));
     if (map === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the learning map');
     return ok(res, map);
+  });
+
+  /*
+   * GAP-FIX-R2 — WHAT THE MENTOR DECIDED, AND ON WHAT EVIDENCE (Block C Real-
+   * Time Interaction Standard; Appendix D §2.6: "expose the evidence, not
+   * just the conclusion"; C.10). Per skill: the displayed state, the latest
+   * consequential decision with the evidence the controller logged, and the
+   * next re-check. Numbers and closed labels only (`masteryEvidence.ts`).
+   * The learner reads their own; a verified guardian reads their child's,
+   * behind the same `isVerifiedGuardian` gate every other /kids route uses.
+   */
+  const masteryLocale = async (user: ReturnType<typeof authedUser>) =>
+    normalizeLocale((await profileOf(user.accessToken, user.id))?.locale);
+
+  router.get('/mastery', async (_req, res) => {
+    const user = authedUser(res);
+    if (!getConfig().TUTOR_V3_BRAIN) return ok(res, { items: [] });
+    const evidence = await buildMasteryEvidence(user.id, await masteryLocale(user));
+    if (evidence === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the learning evidence');
+    return ok(res, evidence);
+  });
+
+  router.get('/kids/:kidUserId/mastery', async (req, res) => {
+    const kidUserId = z.string().uuid().safeParse(req.params.kidUserId);
+    if (!kidUserId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
+    const user = authedUser(res);
+    const guardian = await isVerifiedGuardian(user.id, kidUserId.data);
+    if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
+    if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
+    if (!getConfig().TUTOR_V3_BRAIN) return ok(res, { items: [] });
+    const evidence = await buildMasteryEvidence(kidUserId.data, await masteryLocale(user));
+    if (evidence === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the learning evidence');
+    return ok(res, evidence);
   });
 
   // ── The offer screen (/ORACLE.md §9.2) ────────────────────────────────────
@@ -4269,6 +4347,32 @@ export function tutorRouter(): Router {
    * `classifyMemoryReview`).
    */
 
+  /*
+   * One queue shape for both reviewers (the guardian portal and the teen's
+   * own queue). Each proposal names its store; `current` is BOTH notes as
+   * they stand TODAY, which is not always what any single proposal expected:
+   * two overlapping sessions can each park a note computed from the same
+   * earlier text, and approving the first moves the store out from under the
+   * second. Sending it lets the portal show a stale note as stale BEFORE the
+   * reviewer taps approve, instead of only afterwards through a CONFLICT.
+   */
+  const memoryQueueBody = (
+    proposals: LearnerMemoryProposalRow[],
+    current: { learner: string | null; pedagogy: string | null },
+  ) => ({
+    proposals: proposals.map((p) => ({
+      id: p.id,
+      store: p.store === 'pedagogy' ? ('pedagogy' as const) : ('learner' as const),
+      proposed: p.proposed,
+      // What the note REPLACES, so the reviewer decides on a change rather
+      // than on a paragraph with no context. Null means there is no note yet.
+      expectedBefore: p.expected_before,
+      sessionId: p.session_id,
+      createdAt: p.created_at,
+    })),
+    current: { learner: current.learner, pedagogy: current.pedagogy },
+  });
+
   router.get('/kids/:kidUserId/memory-proposals', async (req, res) => {
     const kidUserId = z.string().uuid().safeParse(req.params.kidUserId);
     if (!kidUserId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
@@ -4288,26 +4392,7 @@ export function tutorRouter(): Router {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the pending notes');
     }
 
-    return ok(res, {
-      proposals: proposals.map((p) => ({
-        id: p.id,
-        proposed: p.proposed,
-        // What the note REPLACES, so a guardian is deciding on a change rather
-        // than on a paragraph with no context. Null means there is no note yet.
-        expectedBefore: p.expected_before,
-        sessionId: p.session_id,
-        createdAt: p.created_at,
-      })),
-      /*
-       * The store as it stands TODAY, which is not always what any single
-       * proposal expected: two overlapping sessions can each park a note
-       * computed from the same earlier text, and approving the first moves
-       * the store out from under the second. Sending it lets the portal show
-       * a stale note as stale BEFORE the guardian taps approve, instead of
-       * only afterwards through a CONFLICT.
-       */
-      current: current.learner,
-    });
+    return ok(res, memoryQueueBody(proposals, current));
   });
 
   /*
@@ -4340,16 +4425,7 @@ export function tutorRouter(): Router {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the pending notes');
     }
 
-    return ok(res, {
-      proposals: proposals.map((p) => ({
-        id: p.id,
-        proposed: p.proposed,
-        expectedBefore: p.expected_before,
-        sessionId: p.session_id,
-        createdAt: p.created_at,
-      })),
-      current: current.learner,
-    });
+    return ok(res, memoryQueueBody(proposals, current));
   });
 
   const DecisionBody = z.object({ verdict: z.enum(['approved', 'rejected']) }).strict();
@@ -4440,7 +4516,14 @@ export function tutorRouter(): Router {
     if (outcome === 'conflict') {
       return fail(res, 409, 'NOTE_OUT_OF_DATE', 'A newer note has already been approved for this child');
     }
-    return ok(res, { outcome, applied: outcome === 'written' || outcome === 'unchanged' });
+    // The decision is per note, and each note names its store (learner or
+    // pedagogy): the approval applied to exactly that store (0068 function,
+    // redefined by memory_proposal_store).
+    return ok(res, {
+      outcome,
+      applied: outcome === 'written' || outcome === 'unchanged',
+      store: proposal.store === 'pedagogy' ? 'pedagogy' : 'learner',
+    });
   });
 
   // ── Class V artifacts: plan & notebook (migration 0069, TUTOR_INSTRUMENTS.md §3.6) ──

@@ -83,13 +83,23 @@ export const transcriptWire = (sessionId = SESSION_A) => ({
 });
 
 export const notesWire = (over: Record<string, unknown> = {}) => ({
-  current: 'Loves bikes.',
+  current: { learner: 'Loves bikes.', pedagogy: 'Short steps help.' },
   proposals: [
-    { id: 'n1', proposed: 'Loves bikes and saving for one.', expectedBefore: 'Loves bikes.', sessionId: SESSION_A, createdAt: T },
-    { id: 'n2', proposed: 'Likes dinosaurs.', expectedBefore: 'Likes trains.', sessionId: SESSION_B, createdAt: T },
+    { id: 'n1', store: 'learner', proposed: 'Loves bikes and saving for one.', expectedBefore: 'Loves bikes.', sessionId: SESSION_A, createdAt: T },
+    { id: 'n2', store: 'learner', proposed: 'Likes dinosaurs.', expectedBefore: 'Likes trains.', sessionId: SESSION_B, createdAt: T },
+    { id: 'n3', store: 'pedagogy', proposed: 'A picture first, then the rule.', expectedBefore: 'Short steps help.', sessionId: SESSION_A, createdAt: T },
   ],
   ...over,
 });
+
+export const masteryWire = {
+  items: [
+    { kcKey: 'money.make-change', title: 'Making change', state: 'not_yet', correctInARow: 0, attempts: 3,
+      decision: { kind: 'remediation', observations: 2, required: 2, discounted: 'none', decidedAt: T }, nextCheckAt: null },
+    { kcKey: 'money.count-coins', title: 'Counting coins', state: 'provisional_mastered', correctInARow: 2, attempts: 5,
+      decision: { kind: 'mastered', observations: 2, required: 2, discounted: 'too_fast', decidedAt: T }, nextCheckAt: '2026-10-04T12:00:00Z' },
+  ],
+};
 
 export const dispositionWire = {
   exists: true, current: true, sessionsObserved: 7, helpStyle: 'hint_seeking', persistence: 'persists', explanation: 'explains',

@@ -329,8 +329,10 @@
     "keptFailed": "Os quadros guardados não carregaram."
   },
   "familyMemoryNotes": {
-    "title": "Nota do Mentor",
+    "title": "Notas do Mentor",
     "body": "Você aprova cada mudança.",
+    "learnerStore": "Quem é",
+    "pedagogyStore": "Como aprende melhor",
     "current": "A nota agora",
     "currentEmpty": "Ainda sem nota.",
     "empty": "Nada esperando por você.",

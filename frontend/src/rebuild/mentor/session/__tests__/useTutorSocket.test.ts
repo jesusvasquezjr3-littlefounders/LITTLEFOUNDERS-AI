@@ -299,3 +299,19 @@ describe('closeCodeToReason', () => {
     expect(closeCodeToReason(1006)).toBe('CONNECTION_LOST');
   });
 });
+
+describe('GAP-FIX-R2: a turn\'s reply chips', () => {
+  it('keeps the likely answers as strings, at most three, and none when the frame has none', async () => {
+    const { result } = renderHook(() => useTutorSocket('ws://oracle.test/ws/tutor?token=abc'));
+    await act(async () => { await Promise.resolve(); });
+    act(() => {
+      FakeSocket.last?.onmessage?.({ data: JSON.stringify({ type: 'turn', seq: 1, say: 'Which one?', emotion: 'happy', action: 'idle', audioUrl: null, audioPending: false, next: 'ask',
+        replies: ['The red one', '', 7, 'The blue one', 'Both', 'Neither'] }) });
+    });
+    expect(result.current.turn?.replies).toEqual(['The red one', 'The blue one', 'Both']);
+    act(() => {
+      FakeSocket.last?.onmessage?.({ data: JSON.stringify({ type: 'turn', seq: 2, say: 'Good.', emotion: 'happy', action: 'idle', audioUrl: null, audioPending: false, next: 'ask' }) });
+    });
+    expect(result.current.turn?.replies).toEqual([]);
+  });
+});

@@ -33,11 +33,13 @@ export function MentorStagePreview({ locale, theme, ageBand, params }: {
   const scene = pick<MentorStageScene>(params.get('scene'), ['diorama-a', 'diorama-b'], 'diorama-a');
   const shot = (MENTOR_SHOTS as readonly string[]).includes(params.get('shot') ?? '') ? params.get('shot') as MentorShot : undefined;
   const milestone = params.get('milestone');
+  // `?size=compact`: the lesson band (08 §11), for the band-still renderer and visual checks.
+  const size = params.get('size') === 'compact' ? 'compact' : 'full';
   return <div className="lf-rebuild" data-theme={theme} lang={locale} data-age-band={ageBand}>
     <main className="lf-mentor-layout" data-screen="mentor-stage">
       <div className="lf-mentor-layout-stage">
         <MentorStage character={character} state={state} ageBand={ageBand} theme={theme} scene={scene} copy={copy}
-          milestone={milestone && isMilestone(milestone) ? milestone : null} closing={closing} shot={shot} board={params.get('board') === '1'} />
+          milestone={milestone && isMilestone(milestone) ? milestone : null} closing={closing} shot={shot} size={size} board={params.get('board') === '1'} />
       </div>
       <div className="lf-mentor-layout-panel">
         <h1 data-copy-role="data">{MENTOR_NAMES[character]}</h1>

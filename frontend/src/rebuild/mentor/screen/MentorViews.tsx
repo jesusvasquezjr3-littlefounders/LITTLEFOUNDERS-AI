@@ -1,3 +1,4 @@
+import { MentorDecisions, type MasteryEvidence, type MentorDecisionsCopy } from '../MentorDecisions';
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import type { Locale } from '../../design/copyBudget';
 import {
@@ -149,12 +150,14 @@ const STATE_TONE: Record<TutorMapNode['state'], 'success' | 'reward' | 'primary'
  * one it waits on. Outside a conversation a startable skill starts a practice
  * conversation; during one the map is read-only and says why.
  */
-export function LearningMapView({ copy, data, canStart, conversing, onStart }: {
-  copy: MentorMapCopy; data: Pick<MentorData, 'map'>; canStart: boolean; conversing: boolean;
+export function LearningMapView({ copy, decisionsCopy, locale, data, canStart, conversing, onStart }: {
+  copy: MentorMapCopy; decisionsCopy: MentorDecisionsCopy; locale: Locale; data: Pick<MentorData, 'map' | 'mastery'>; canStart: boolean; conversing: boolean;
   onStart: (skillKey: string | null) => void;
 }) {
   const [load, retry] = useLoad<TutorMapResponse>(() => data.map());
   return <div className="lf-mentor-view" data-view="map">
+    {/* GAP-FIX-R2 (Appendix D §2.6): the same evidence the verified Tutor reads, read-only, above the map. */}
+    <MapDecisions copy={decisionsCopy} locale={locale} data={data} />
     <Loaded load={load} loading={copy.loading} failed={copy.failed} retry={copy.retry} onRetry={retry}>{(map) => {
       if (map.nodes.length === 0) return <p data-copy-role="body">{copy.empty}</p>;
       const startable = canStart && !conversing;
@@ -184,6 +187,16 @@ export function LearningMapView({ copy, data, canStart, conversing, onStart }: {
       </>;
     }}</Loaded>
   </div>;
+}
+
+/** What the Mentor decided about this learner, and on what evidence (read-only; the map's own read and retry). */
+function MapDecisions({ copy, locale, data }: { copy: MentorDecisionsCopy; locale: Locale; data: Pick<MentorData, 'mastery'> }) {
+  const [load, retry] = useLoad<MasteryEvidence>(() => data.mastery());
+  return <section className="lf-mentor-view-section">
+    <MentorDecisions copy={copy} locale={locale} headingLevel={3} onRetry={retry}
+      phase={load.status === 'loading' ? 'loading' : load.status === 'failed' ? 'failed' : 'ready'}
+      evidence={load.status === 'ready' ? load.value : null} />
+  </section>;
 }
 
 /* ------------------------------------------------------------------ T1g */

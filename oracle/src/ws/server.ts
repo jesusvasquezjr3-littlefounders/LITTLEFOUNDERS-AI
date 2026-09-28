@@ -2144,6 +2144,8 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
         action: snapshot.lastTurn.turn.action,
         roleplayScene: snapshot.lastTurn.turn.roleplayScene ?? null,
         pointAt: snapshot.lastTurn.turn.pointAt ?? null,
+        // GAP-FIX-R2: the redrawn turn keeps its reply chips (already screened, moderated and key-checked).
+        ...(snapshot.lastTurn.turn.replies && snapshot.lastTurn.turn.replies.length > 0 ? { replies: snapshot.lastTurn.turn.replies } : {}),
         audioUrl: null,
         // No `turn_audio` follows a resume redraw (see the comment above) —
         // the client must not wait for one, or hold hands-free listening
@@ -2932,6 +2934,13 @@ async function deliver(
     ...(wireBoard !== null ? { whiteboard: wireBoard } : {}),
     ...(emission.turn.roleplayScene ? { roleplayScene: emission.turn.roleplayScene } : {}),
     ...(emission.turn.pointAt != null ? { pointAt: emission.turn.pointAt } : {}),
+    /*
+     * GAP-FIX-R2 (Frontend Bible 08 §2 layer 5, §4, §9): the likely answers
+     * as reply chips, sent back as the learner's own words. Already within
+     * budget, moderated with `say` and cleared against the open activity's
+     * key (orchestrator.ts). Omitted when there are none.
+     */
+    ...(emission.turn.replies && emission.turn.replies.length > 0 ? { replies: emission.turn.replies } : {}),
   });
 
   /*

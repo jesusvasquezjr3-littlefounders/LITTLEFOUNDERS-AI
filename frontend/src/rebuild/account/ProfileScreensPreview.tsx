@@ -122,8 +122,9 @@ export function AccountSettingsPreview({ locale, theme, state }: { locale: Local
       <SettingsPanels>
         {name === 'teen' ? <AgeRecordCard copy={t.ageRecord} kind="teenMonth" /> : null}
         {name === 'teen' ? <AnalyticsChoice copy={t.analyticsChoice} locale={locale} dark={dark} enabled={false} experiment loading={false} saving={false} error={null} onToggle={noop} onRetry={noop} /> : null}
-        {name === 'teen' ? <MemorySelfReview copy={t.memorySelfReview} locale={locale} dark={dark} phase="ready" current={null}
-          notes={[{ id: 'n1', proposed: 'Saving for a bike.', expectedBefore: null, sessionId: null, createdAt: '2026-09-20T10:00:00Z' }]}
+        {name === 'teen' ? <MemorySelfReview copy={t.memorySelfReview} locale={locale} dark={dark} phase="ready" current={{ learner: null, pedagogy: 'Short steps help.' }}
+          notes={[{ id: 'n1', store: 'learner', proposed: 'Saving for a bike.', expectedBefore: null, sessionId: null, createdAt: '2026-09-20T10:00:00Z' },
+            { id: 'n2', store: 'pedagogy', proposed: 'A picture first, then the rule.', expectedBefore: 'Short steps help.', sessionId: null, createdAt: '2026-09-20T10:00:00Z' }]}
           deciding={null} settled={{}} failedId={null} notice={null} noticeKind={null} onDecide={noop} onRetry={noop} /> : null}
         {guest ? null : <DispositionSummary copy={MENTOR[locale].mentorProfile} locale={locale} dark={dark} audience="own" phase="ready" canReset={!kid}
           data={{ exists: true, current: true, sessionsObserved: 5, helpStyle: 'independent', persistence: 'persists', explanation: 'unknown', persistentlyDeclined: ['less_text'],

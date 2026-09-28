@@ -43,7 +43,7 @@ function live(overrides: Partial<MentorLive> = {}): MentorLive {
 
 function turn(overrides: Partial<TutorTurnState> = {}): TutorTurnState {
   return { seq: 1, text: 'How much is left to save?', emotion: 'happy', action: 'idle', audioUrl: null, audioPending: false, wordTimings: null,
-    next: 'ask', policy: null, demonstrate: null, whiteboard: null, roleplayScene: null, pointAt: null, ...overrides };
+    next: 'ask', policy: null, demonstrate: null, whiteboard: null, roleplayScene: null, pointAt: null, replies: [], ...overrides };
 }
 
 function session(overrides: Partial<MentorScreenSession> = {}): MentorScreenSession {
@@ -166,6 +166,44 @@ describe('a conversation: the current turn only, Block C as chips', () => {
     fireEvent.click(within(group).getByRole('button', { name: t.hint }));
     fireEvent.click(within(group).getByRole('button', { name: t.tell }));
     expect(sendText.mock.calls).toEqual([[t.hint], [t.tell]]);
+  });
+
+  it('offers the Mentor’s likely answers first, as the learner’s own words, then the ladder, never more than three (08 §2, §4, §9)', () => {
+    const sendText = vi.fn();
+    show(session({ phase: 'conversing', ageBand: '6-9', turn: turn({ replies: ['About 20 coins'] }), sendText }));
+    const group = screen.getByRole('group', { name: t.replyChips });
+    expect(within(group).getAllByRole('button').map((chip) => chip.textContent)).toEqual(['About 20 coins', t.hint, t.tell]);
+    fireEvent.click(within(group).getByRole('button', { name: 'About 20 coins' }));
+    expect(sendText).toHaveBeenCalledWith('About 20 coins');
+  });
+
+  it('puts the chips before the text field for 6-9 and after it for 13+ (08 §9)', () => {
+    const order = () => {
+      const chips = document.querySelector('.lf-mentor-chips')!;
+      const field = document.querySelector('.lf-mentor-compose')!;
+      return chips.compareDocumentPosition(field) & Node.DOCUMENT_POSITION_FOLLOWING ? 'chips-first' : 'field-first';
+    };
+    const { unmount } = show(session({ phase: 'conversing', ageBand: '6-9', turn: turn({ replies: ['Yes', 'No', 'Maybe'] }) }));
+    expect(order()).toBe('chips-first');
+    // The cap holds, and the C.13 "just tell me" escape hatch keeps its place: two likely answers, then tell.
+    expect(within(screen.getByRole('group', { name: t.replyChips })).getAllByRole('button').map((chip) => chip.textContent)).toEqual(['Yes', 'No', t.tell]);
+    unmount();
+    show(session({ phase: 'conversing', ageBand: '13-17', turn: turn({ replies: ['Yes'] }) }));
+    expect(order()).toBe('field-first');
+  });
+
+  it('keeps the "just tell me" escape hatch (C.13) when likely answers, the ladder and another way all compete', () => {
+    const sendText = vi.fn();
+    show(session({ phase: 'conversing', ageBand: '6-9', turn: turn({ seq: 3, replies: ['Yes', 'No', 'Maybe'] }), sendText }));
+    const group = screen.getByRole('group', { name: t.replyChips });
+    expect(within(group).getAllByRole('button').map((chip) => chip.textContent)).toEqual(['Yes', 'No', t.tell]);
+    fireEvent.click(within(group).getByRole('button', { name: t.tell }));
+    expect(sendText).toHaveBeenCalledWith(t.tell);
+  });
+
+  it('shows no likely answers while an offer is open or the Mentor is not asking', () => {
+    show(session({ phase: 'conversing', turn: turn({ replies: ['Yes'], next: 'segment' }) }));
+    expect(screen.queryByRole('button', { name: 'Yes' })).toBeNull();
   });
 
   it('asks an adaptation (C.15) with two equal chips and no default', () => {

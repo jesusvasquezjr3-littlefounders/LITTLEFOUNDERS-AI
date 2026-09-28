@@ -190,3 +190,78 @@ September 2026): complete features, lean verification, full gates at merge.
   passed, 1 skipped), frontend (3,071 passed), coursegen (830 passed) and
   `database` `npm test` (48 passed), all green. Browser matrices and
   `audit:rebuild` on the new boards remain open, as recorded above.
+
+## F2-mentor
+
+Branch `codex/spec-fix2mentor`. Four audited SPEC gaps in the Mentor area.
+Each was checked in the code first; all four were real.
+
+### What was built
+
+| # | SPEC clause | Gap confirmed in code | What was built | Where |
+|---|---|---|---|---|
+| 1 | C.4 (memory-note system: learner note and pedagogy note); OD-18 | `PUT /tutor/internal/learner-memory` sent only the learner store to review; the pedagogy note ("what teaching works with this child") was written straight away for every linked child and independent teen, and no surface showed it | Both stores go through review whenever the reviewer is not `adult-direct`; `hold` still refuses both. Migration `memory_proposal_store` adds `store` ('learner' / 'pedagogy'), store-aware caps (1,400 / 2,200) and redefines `decide_learner_memory_proposal` to apply an approved note to its own store through `write_learner_memory_checked`. `parkLearnerMemoryProposal` parks one row per store in a single insert. Both queue routes return each proposal's `store` and `current.learner` / `current.pedagogy`; the decision route reports the store it applied. Oracle parses `pending` as the closed store set. The Family console (`ChildMentorTalks`) and the teen card in rebuilt Settings show both notes ("Who they are" / "How they learn best"), each with its current note and approve/delete per proposal | `database/migrations/0219_memory_proposal_store.sql`, `backend/src/routes/tutor.ts`, `backend/src/services/tutorData.ts`, `oracle/src/core/client.ts`, `frontend/src/rebuild/family/console/ChildMentorTalks.tsx`, `frontend/src/rebuild/memory/MemorySelfReview.tsx`, `frontend/src/routes/app/profile/TeenMemoryReviewSetting.tsx` |
+| 2 | Bible 08 §2 layer 5, §4, §9; C.13, C.14 | `TutorTurnSchema` had no suggested replies; chips were only board / hint / tell / explain, so a 6-9 learner without a microphone typed every answer | Optional `replies` on the turn. Oracle keeps at most three within the `option` Copy Budget (5 words for tiers 1-2, 8 for tier 3, x1.25 es/pt, one sentence), drops answer statements, moderates them in the same call as `say`, and asks Core's new `POST /tutor/internal/segments/:id/reveal-check` (`revealsAnswerKey`) whenever an activity is open; a revealing chip is dropped, a failed check drops every chip, nothing is retried. C.14 scaffolded prompts carry system-written sentence stems per concept family. The turn frame and the resume redraw forward `replies`; `TutorTurnState.replies` feeds `MentorScreen`, which renders them after the board chip and before hint/tell, capped at three, sent as the learner's own words (chips before the field for 6-12). `honesty:check` now pins the chip cap, the option budget and the Core route | `oracle/src/tutor/turnSchema.ts`, `feedbackHonesty.ts`, `orchestrator.ts`, `prompt.ts`, `scripted.ts`, `selfExplanation.ts`, `oracle/src/ws/*`, `backend/src/routes/tutor.ts`, `frontend/src/rebuild/mentor/session/useTutorSocket.ts`, `frontend/src/rebuild/mentor/screen/MentorScreen.tsx`, `agent/tools/check-mentor-honesty-parity.mjs` |
+| 3 | Block C Real-Time Interaction Standard; Appendix D §2.6; C.10 | No guardian route or surface exposed mastery / remediation decisions or their evidence; the controller did not record discounted answers | The controller records, per KC and session, whether a correct answer was set aside as too fast or hint-assisted and attaches it to every consequential decision (snapshot-safe). Migration `trajectory_discounted_evidence` adds `evidence_discounted` (kept only with the evidence; a trigger fires after the OD-9 consent trigger). `GET /tutor/kids/:kidUserId/mastery` (verified guardian) and `GET /tutor/mastery` (learner) return per skill the displayed state (`not_yet` / `provisional_mastered` / `recheck_due`, the map's own rule), the latest mastery / remediation / rescue / withdrawal decision with observations, requirement, what did not count and the date, and the next re-check; numbers and closed labels only. "What the Mentor decided" card in the Family console child page and, read-only, in the learner's learning map sheet, as templated sentences in EN / es-MX / pt-BR | `oracle/src/tutor/controller.ts`, `database/migrations/0220_trajectory_discounted_evidence.sql`, `backend/src/services/pedagogy/masteryEvidence.ts`, `backend/src/routes/tutor.ts`, `frontend/src/rebuild/mentor/MentorDecisions.tsx`, `ChildMentorTalks.tsx`, `MentorViews.tsx` |
+| 4 | Bible 08 §7, §11; 07 §4; B.8; 02 rule 21 | Band stills existed for Dina only (one pose); Rho, Zara and Liruf fell back to the avatar head crop; the `acknowledging` poses had no stage still | `scripts/render-mentor-lesson-stills.mjs` (zero spend): `MentorStage` compact on `diorama-a`, closeup-wide, held pose, virtual clock; young 343:110, teen 343:80 and square bands x light/dark x every compact-state pose of each register, for all four characters (168 stills, drafts in the manifest). `findStageStills` selects by pose, then the band's idle still; the Dina-only branch is gone. `feedback.correct.quiet` and `greet.nod` stage stills for all four characters (16). The stage preview accepts `size=compact` | `frontend/scripts/render-mentor-lesson-stills.mjs`, `render-mentor-stage-stills.mjs`, `frontend/src/rebuild/mentor/stageStills.ts`, `frontend/src/rebuild/assets/manifest.json`, `frontend/public/rebuild/mentor-stills/`, `mentor-stage/` |
+
+### Verification (local)
+
+- Native PostgreSQL 17.6 (owned cluster, port 15820): `database/scripts/verify-mentor-f2-postgres.py` applies all 216 migrations (220 after the merge renumbering) and passes: older proposals read as learner; store-aware caps and the closed store set; an approved pedagogy proposal writes the pedagogy store with its ledger row; reject moves nothing; a stale proposal stays pending; a learner proposal still writes the learner store; browser roles cannot decide; the E.10 messaging scan stays clean; the discounted label follows the evidence, an unknown label is refused; both migrations replay without changing rows.
+- Core (vitest, focused): `tutor.test.ts` (336, including kid, linked child, linked teen, independent teen, hold and adult for both stores over real HTTP through the Express app, and the mastery routes' guardian gate, 502s and projection), `pedagogy-routes.test.ts` (reveal-check), `masteryEvidence.test.ts`; type-check and lint of touched files.
+- Oracle (vitest, focused): `coreClient`, `controller`, `snapshotFence`, `orchestrator` (reply chips screened, judged with `say`, key-checked, dropped on a failed check, none on non-asking or blocked turns), `feedbackHonesty` (budget, parity with the frontend Copy Budget, C.14 stems within budget in 3 locales), `prompt`, alliance, live-session, hardening, session, park-store and admission suites; type-check and lint.
+- Frontend (vitest, focused): family console, memory self-review, teen setting, Mentor screen (chips first for 6-9, field first for 13+, three-chip cap), socket parsing, map sheet decisions, `MentorDecisions`, stage stills, copy budget, asset gate (OCR test timeout raised for 302 rasters); type-check and lint.
+- Root: `spec:check`, `secrets:check`, `honesty:check` (+ its node tests), `governance:check` (two Tier 1 change rows recorded, sign-offs pending), i18n gate, `check-migrations`, migration phase check.
+- `check-rebuild-assets` passes (329 class B assets, 302 rasters text-free by OCR). `verify-compact-stage` passes all 10 configurations after the script's answer-control selector was updated (`.lf-learning-control` was renamed by another lane; the stage checks themselves were unchanged).
+- Not run here (orchestrator, per merge): browser matrices, `audit:rebuild`, full suites, the disposable-stack GoTrue/PostgREST real-HTTP run.
+
+### Decisions taken with the SPEC's conservative default (owner questions)
+
+1. **Pedagogy-note review for linked teens.** A linked teen's pedagogy note goes to the verified guardian (the same reviewer as the learner note), not to the teen.
+2. **Parent evidence and analytics consent.** Decision evidence is recorded only where the OD-9 `analytics.mentor_integrity_evidence` practice applies (the existing trigger). Without it the card shows the state and the "N correct in a row" streak from the answer ledger, but no logged decision.
+3. **Chip order.** The board chip keeps first place (08 §2), then the Mentor's likely answers, then hint / tell / another way, capped at three. Revised at F2-mentor-finish: C.13 mandates an explicit "just tell me" escape hatch, so while the hint ladder applies the tell chip always keeps its place and the chips cut to fit are the last ones that are not it (three likely answers show as two answers plus "just tell me").
+4. **Band still fallback.** When a pose has no band still, the band shows the same character's idle band still, never the avatar head crop. Dina's first single-pose capture remains as her last fallback.
+
+### Remaining
+
+- Owner visual review of the 184 new character renders (07 §7, OD-14); all are drafts.
+- Tier 1 change-record rows need both leads' sign-offs before release.
+- Disposable-stack real-HTTP evidence (GoTrue, PostgREST) for the pedagogy-note gate and the mastery routes; regenerated `database/types/database.ts` for the two new columns (`db:types`).
+- Live Mentor evidence that the model offers useful replies (OD-23: no paid run here).
+
+## F2-mentor-finish
+
+Final summary of the mentor lane (branch `codex/spec-fix2mentor`). The four audited gaps are built: pedagogy-note review (C.4, OD-18), reply chips (Bible 08 §2, §4, §9; C.13, C.14), the evidence behind each Mentor decision (C.10, Appendix D §2.6) and band stills for every Mentor in every compact pose (Bible 08 §7, §11; 07 §4; B.8). Migrations: `0219_memory_proposal_store.sql`, `0220_trajectory_discounted_evidence.sql` (numbers are this worktree's; the orchestrator renumbers at merge).
+
+- **Sync.** `codex/spec-migration-s02` had not moved past this lane's base (`9463d3c2`); the merge was a no-op.
+- **Adversarial pass.** Authorization stays at the server: the queue and decision routes, `GET /tutor/kids/:kidUserId/mastery` (verified guardian only, refused before any evidence read) and the internal reveal-check route (internal key, own session's segment only) each have refusal tests. The rebuilt surfaces import only shared controls; the two `routes/app` files touched are the thin route wrappers that mount rebuilt components. Copy exists in EN, es-MX and pt-BR (i18n gate green). One gap found and fixed: three likely answers used to push the C.13 "just tell me" chip off the screen; the tell chip now always keeps its place while the ladder applies (MentorScreen, with a test).
+- **Fixes from the full suites.** Three Oracle test fixtures and one Core test helper did not type-check against the lane's new fields (`evidenceDiscounted`, `discountedCorrect`, the reveal-check body); fixed. The asset gate's first case runs OCR over all 302 live rasters (about 80-90 s alone), so its timeout is raised to 300 s like the OCR case.
+- **Verification (full unit suites, once).** Core: type-check, lint, 139 files / 3,221 tests green. Oracle: type-check and lint green; 62 of 65 files green in the parallel run, and the 3 reds (`hardening`, `live-session`, `boot-skills`: boot hooks timing out while three service suites ran at once) pass alone (6 files, 117 tests, together with the fixed fixtures). Frontend: type-check and lint green; 264 of 265 files / 3,055 tests green, and the one red (the asset gate's OCR timeout) passes alone after the timeout change; the Mentor screen folder (8 files, 156 tests) is green after the escape-hatch change. Root: `spec:check`, `secrets:check`, `honesty:check`, the i18n gate and `database` `npm test` green.
+- **Still open.** Owner visual review of the 184 draft renders (07 §7, OD-14); both leads' sign-offs on the two Tier 1 change rows; disposable-stack GoTrue/PostgREST evidence for the pedagogy-note gate and the mastery routes; `db:types` for the two new columns; live evidence that the model offers useful replies (paid run, OD-23 reserves it for the owner). None of C.4, C.10, C.13, C.14 or B.8 is closed: implementation and local verification only.
+
+### F2-mentor merge integration
+
+- Merged into `codex/spec-migration-s02` after the identity-site and learning
+  lanes. Migrations renumbered by four to follow the learning lane's `0218`:
+  `0215_memory_proposal_store` -> `0219`, `0216_trajectory_discounted_evidence`
+  -> `0220`; no other migration redefines `decide_learner_memory_proposal` or
+  touches `tutor_trajectory_step`, so no reconciling migration was needed.
+- Defect found at merge: `0219_memory_proposal_store` declared
+  `@phase: expand` while it drops the two inline 0068 caps and adds the
+  store-aware CHECK, which `check-migration-phase` classifies as a narrowing,
+  so `database` `npm test` failed (the lane's record reported it green). It is
+  now declared `@phase: contract` with an `@after-release: none` line saying
+  why no running write is refused (learner proposals keep exactly 1,400) and
+  that it is applied by hand before the Core release that parks pedagogy
+  proposals. The SQL is unchanged.
+- Conflicts: the asset manifest (the identity-site lane's `brand.mark` and this
+  lane's acknowledging stage stills, both kept: 330 class B assets), this
+  record (sections kept side by side) and the B.7 / B.8 rows of
+  REQUIREMENTS (B.7 from the learning lane, B.8 from this lane).
+- Checks on the merged tree: `typecheck:all`, `lint:all`, `spec:check`,
+  `secrets:check`, the i18n gate, `honesty:check`, `governance:check`,
+  `tools:test` (393 passed), backend (3,270 passed, 1 skipped), Oracle
+  (1,738 passed), frontend (3,094 passed) and the `database` migration,
+  phase and node-test gates (48 passed), all green. `railway-migrate.test.mjs`
+  (fake Railway transport, one bash spawn per migration) was still running
+  after 30 minutes on this Windows machine and is not counted here.

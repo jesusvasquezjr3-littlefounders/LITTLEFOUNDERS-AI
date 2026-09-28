@@ -667,27 +667,31 @@ export async function writeLearnerMemoryPair(input: {
 }
 
 /*
- * ─── THE GUARDIAN APPROVAL GATE (migration 0068, /ORACLE.md §20) ───────────
+ * ─── THE MEMORY-NOTE REVIEW GATE (migrations 0068 and memory_proposal_store) ─
  *
- * `learner_memory` auto-wrote both stores for every learner, and /ORACLE.md
- * §20 recorded that as the owner-accepted INTERIM while the platform's only
- * active learner was the owner, BLOCKING before real families. This is the
- * gate: for a `kid`, the LEARNER store's proposal parks as a pending row a
- * verified guardian decides on. The PEDAGOGY store is not gated — it is the
- * tutor's notes about its own teaching method, not a record of the child (the
- * migration's own header argues this at length).
+ * `learner_memory` auto-wrote both stores for every learner. 0068 gated the
+ * LEARNER store for a `kid`: its proposal parks as a pending row a verified
+ * guardian decides on. C.4 and OD-18 then made the gate cover BOTH notes
+ * (the learner note and the pedagogy note are the SPEC's two memory notes,
+ * both model-written prose about the same child), for every reviewer the
+ * route resolves: a verified guardian, or an independent teen reviewing
+ * their own notes. Only a screened adult's notes still write directly.
  *
  * Nothing here re-implements the write. An approval goes through
- * `write_learner_memory_checked` (0059) — the same function 0061's pair
- * wrapper calls — so the compare-and-swap, the verdict vocabulary and the
- * append-only `learner_memory_ledger` row are literally the same code for a
- * gated write and an ungated one.
+ * `write_learner_memory_checked` (0059) for the proposal's own store — the
+ * same function 0061's pair wrapper calls — so the compare-and-swap, the
+ * verdict vocabulary and the append-only `learner_memory_ledger` row are
+ * literally the same code for a gated write and an ungated one.
  */
 
-/** A parked LEARNER-store proposal awaiting a guardian's decision. */
+export type MemoryStore = 'learner' | 'pedagogy';
+
+/** A parked memory-note proposal awaiting its reviewer's decision. */
 export interface LearnerMemoryProposalRow {
   id: string;
   user_id: string;
+  /** Which note the proposal replaces (memory_proposal_store; 'learner' on every older row). */
+  store: MemoryStore;
   proposed: string;
   expected_before: string | null;
   session_id: string | null;
@@ -698,16 +702,18 @@ export interface LearnerMemoryProposalRow {
 }
 
 const PROPOSAL_COLUMNS =
-  'id,user_id,proposed,expected_before,session_id,status,decided_by,decided_at,created_at';
+  'id,user_id,store,proposed,expected_before,session_id,status,decided_by,decided_at,created_at';
 
 /**
- * Park a LEARNER-store proposal for guardian approval instead of applying it.
+ * Park one proposal PER STORE for review instead of applying them.
+ *
+ * All rows go in ONE insert (a PostgREST array body is one statement), so a
+ * review that proposed both notes never parks one and loses the other.
  *
  * The hashes are computed HERE, with the same `sha256` helper every ledger row
  * already uses, and carried on the row — so when the proposal is later
  * approved, the ledger entry it produces is byte-identical in shape to an
- * ungated write's. Computing them in Postgres at approval time would need
- * pgcrypto and would give the row a second, subtly different provenance.
+ * ungated write's.
  *
  * Returns false on ANY failure. The caller must refuse the whole request on
  * false rather than continuing: a parked proposal that silently failed to land
@@ -715,22 +721,25 @@ const PROPOSAL_COLUMNS =
  */
 export async function parkLearnerMemoryProposal(input: {
   userId: string;
-  proposed: string;
-  expectedBefore: string | null;
   sessionId: string | null;
+  proposals: ReadonlyArray<{ store: MemoryStore; proposed: string; expectedBefore: string | null }>;
 }): Promise<boolean> {
+  if (input.proposals.length === 0) return true;
   const sha = (text: string) => createHash('sha256').update(text, 'utf8').digest('hex');
   const res = await serviceRest<unknown>('/learner_memory_proposals', {
     method: 'POST',
     headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({
-      user_id: input.userId,
-      proposed: input.proposed,
-      expected_before: input.expectedBefore,
-      before_hash: input.expectedBefore === null ? null : sha(input.expectedBefore),
-      after_hash: sha(input.proposed),
-      session_id: input.sessionId,
-    }),
+    body: JSON.stringify(
+      input.proposals.map((proposal) => ({
+        user_id: input.userId,
+        store: proposal.store,
+        proposed: proposal.proposed,
+        expected_before: proposal.expectedBefore,
+        before_hash: proposal.expectedBefore === null ? null : sha(proposal.expectedBefore),
+        after_hash: sha(proposal.proposed),
+        session_id: input.sessionId,
+      })),
+    ),
   });
   return res !== null;
 }
@@ -2950,6 +2959,8 @@ export interface TrajectoryStepInput {
   evidenceRule?: 'mastery' | 'remediation' | 'rescue' | null;
   evidenceObservations?: number | null;
   evidenceRequired?: number | null;
+  /** GAP-FIX-R2: correct answers the evidence chain set aside (absent from an older Oracle). */
+  evidenceDiscounted?: 'none' | 'too_fast' | 'hint_assisted' | 'too_fast_and_hint_assisted' | null;
   masteryRevoked?: boolean;
 }
 
@@ -2999,6 +3010,8 @@ export async function insertTutorTrajectory(
         evidence_rule: step.evidenceRule ?? null,
         evidence_observations: step.evidenceObservations ?? null,
         evidence_required: step.evidenceRequired ?? null,
+        // Every row carries the same keys (a PostgREST bulk insert requires it); needs migration trajectory_discounted_evidence.
+        evidence_discounted: step.evidenceDiscounted ?? null,
         mastery_revoked: step.masteryRevoked ?? false,
       })),
     ),

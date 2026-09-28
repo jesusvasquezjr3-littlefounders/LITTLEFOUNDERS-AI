@@ -14,6 +14,7 @@
  * shares no types across packages.
  */
 
+import { parseMasteryEvidence, type MasteryEvidence } from '../../mentor/MentorDecisions';
 import type { DispositionSummaryData } from '../../mentor/allianceApi';
 import { boardModel, type BoardFormat, type BoardWords } from '../../mentor/screen/boardModel';
 import type { TutorWhiteboardWire } from '../../mentor/session/types';
@@ -417,14 +418,25 @@ export async function fetchTranscript(transport: ConsoleTransport, sessionId: st
   return beats ? { ok: true, data: beats } : { ok: false, code: 'INVALID_RESPONSE' };
 }
 
-// The parental approval gate on the Mentor's note about a child.
+// The parental approval gate on the Mentor's two notes about a child (C.4, OD-18):
+// the learner note (who they are) and the pedagogy note (how they learn best).
 
-export interface MemoryProposal { id: string; proposed: string; expectedBefore: string | null; createdAt: string }
-export interface MemoryNotes { proposals: MemoryProposal[]; current: string | null }
+export type MemoryStore = 'learner' | 'pedagogy';
+export const MEMORY_STORES: readonly MemoryStore[] = ['learner', 'pedagogy'];
+export interface MemoryProposal { id: string; store: MemoryStore; proposed: string; expectedBefore: string | null; createdAt: string }
+export interface MemoryNotes { proposals: MemoryProposal[]; current: Record<MemoryStore, string | null> }
+
+const isStore = (value: unknown): value is MemoryStore => value === 'learner' || value === 'pedagogy';
 
 export function fetchMemoryNotes(transport: ConsoleTransport, kidId: string) {
-  return call(transport, `/tutor/kids/${kid(kidId)}/memory-proposals`, (data): data is MemoryNotes => isObject(data) && isNullableString(data.current)
-    && arrayOf(data.proposals, (p): p is MemoryProposal => isObject(p) && isString(p.id) && isString(p.proposed) && isNullableString(p.expectedBefore) && isInstant(p.createdAt)));
+  return call(transport, `/tutor/kids/${kid(kidId)}/memory-proposals`, (data): data is MemoryNotes => isObject(data)
+    && isObject(data.current) && isNullableString(data.current.learner) && isNullableString(data.current.pedagogy)
+    && arrayOf(data.proposals, (p): p is MemoryProposal => isObject(p) && isString(p.id) && isStore(p.store) && isString(p.proposed) && isNullableString(p.expectedBefore) && isInstant(p.createdAt)));
+}
+
+// GAP-FIX-R2 (Appendix D §2.6, C.10): what the Mentor decided about the child, and on what evidence.
+export function fetchMentorDecisions(transport: ConsoleTransport, kidId: string) {
+  return call(transport, `/tutor/kids/${kid(kidId)}/mastery`, (data): data is MasteryEvidence => parseMasteryEvidence(data) !== null);
 }
 
 /** A decision's outcome as the Tutor must read it: applied, refused as out of date (or decided by someone else), or failed. */

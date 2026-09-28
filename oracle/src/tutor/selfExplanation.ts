@@ -255,6 +255,11 @@ export class SelfExplanation {
     return this.current?.variant ?? null;
   }
 
+  /** The concept family the pending/open event is about (the scaffolded prompt's stems follow it). */
+  get family(): ConceptFamily | null {
+    return this.current?.family ?? null;
+  }
+
   /** The system's question reached the learner (after a delivered model turn). */
   markPromptDelivered(): void {
     const c = this.current;

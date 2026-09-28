@@ -89,7 +89,8 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     expect(release.status).toBe(1);
     expect(release.output).toContain('Unapproved asset blocks the build');
     expect(release.output).toContain('Unapproved asset blocks the build (07 §6): /sounds/edu/not_yet.wav');
-  });
+    // This case runs OCR over every live raster too (302 since GAP-FIX-R2): about 80 s alone on a 16-thread machine.
+  }, 300_000);
 
   it('lets only a local build ship drafts (LF_LOCAL_DRAFT_ASSETS), never on CI or a hosting builder, never past another rule', async () => {
     const dir = tree();
@@ -205,7 +206,8 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     expect(result.output).toMatch(/Raster art contains text \(07 §7, OCR read "Poupar" \d+%\): \/rebuild\/mentor-avatars\/zara-dark\.png/);
     expect(result.output).not.toMatch(/Raster art contains text[^\n]*(rho-dark|liruf|dina)/);
     expect(result.status).toBe(1);
-  });
+    // OCR reads every live raster in the copied tree: GAP-FIX-R2 grew the Mentor renders from 118 to 302 rasters.
+  }, 300_000);
 
   it('keeps reserved hues out of art and at most 3 hues per asset (07 §3, 02 §4.2)', async () => {
     const svg = (dir: string) => join(dir, 'public/rebuild/art/pocket-share.svg');

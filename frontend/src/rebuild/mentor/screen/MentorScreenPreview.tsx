@@ -31,6 +31,13 @@ const SHEETS: Record<string, MentorSheet> = {
   transcript: 'transcript', 'grown-up': 'grownUp', chooser: 'chooser', personalise: 'personalise', map: 'map', notebook: 'notebook', history: 'history',
 };
 
+/** Likely answers for the preview's question turn: what a learner would say (Oracle's `replies`). */
+const REPLIES: Record<Locale, string[]> = {
+  'en-US': ['About 20 coins', "I don't know"],
+  'es-MX': ['Unas 20 monedas', 'No lo sé'],
+  'pt-BR': ['Umas 20 moedas', 'Não sei'],
+};
+
 const TURNS: Record<Locale, { short: string; long: string; ask: string }> = {
   'en-US': {
     short: 'Nice thinking. How much is left to save for the bike?',
@@ -84,6 +91,8 @@ export function MentorScreenPreview({ locale, theme, ageBand, params }: { locale
   const turn: TutorTurnState | null = phase === 'conversing' && state !== 'thinking' ? {
     seq: 3, text, emotion: state === 'error' ? 'encouraging' : 'happy', action: board ? 'point' : 'idle', audioUrl: null, audioPending: false, wordTimings: null,
     next: 'ask', policy: null, demonstrate: null, whiteboard: board, roleplayScene: state === 'roleplay' ? 'lemonade_change' : null, pointAt: null,
+    // GAP-FIX-R2: `?replies=1` shows the likely-answer chips a Mentor turn can carry (08 §2 layer 5).
+    replies: params.get('replies') === '1' ? REPLIES[locale] : [],
     // A roleplay fixture starts its scene at once: the introducing line's voice is still "on its way".
     ...(state === 'roleplay' ? { audioPending: true } : {}),
   } : null;

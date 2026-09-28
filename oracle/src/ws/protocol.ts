@@ -377,6 +377,12 @@ export type ServerMessage =
        * client trusts as content, only where to aim a pose it already has.
        */
       pointAt?: number | null;
+      /**
+       * GAP-FIX-R2: up to three likely answers, shown as reply chips and sent
+       * back as the learner's own words. Absent when the turn offers none.
+       * HAND-MIRRORED in the frontend's `TutorTurnState.replies`.
+       */
+      replies?: string[];
     }
   | {
       /**

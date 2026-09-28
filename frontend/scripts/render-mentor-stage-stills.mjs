@@ -14,7 +14,7 @@ import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.
  * picture here is the rebuilt Mentor stage itself (`MentorStage`), rendering the
  * character's runtime model (`/scenes/<character>.glb`) in ONE catalogue pose,
  * standing on its Diorama, in both colour modes: one still per pose the full
- * stage can play (`stageStates.ts`: the eight states of 08 §3 in the expressive
+ * stage can play (`stageStates.ts`: the nine states of 08 §3 and §11 in the expressive
  * and the calm register, and the closing gesture for each C.16 script).
  *
  * The pose is captured HELD: the capture tab asks for reduced motion, so the
@@ -58,6 +58,9 @@ export const STAGE_STILL_POSES = [
   { pose: 'transition.close.warm', query: 'state=closing&closing=completed&age=6-9' },
   { pose: 'transition.exit', query: 'state=closing&closing=learner_left&age=6-9' },
   { pose: 'transition.pause', query: 'state=closing&closing=safety_stop&age=6-9' },
+  // GAP-FIX-R2: the `acknowledging` state (08 §11, a met answer): the quiet happy pose and the calm register's nod.
+  { pose: 'feedback.correct.quiet', query: 'state=acknowledging&age=6-9' },
+  { pose: 'greet.nod', query: 'state=acknowledging&age=13-17' },
 ];
 const POSES = process.env.STILL_POSES ? STAGE_STILL_POSES.filter((row) => process.env.STILL_POSES.split(',').includes(row.pose)) : STAGE_STILL_POSES;
 

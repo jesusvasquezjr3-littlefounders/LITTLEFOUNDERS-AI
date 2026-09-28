@@ -1556,6 +1556,13 @@ export const WhiteboardSchema = z.discriminatedUnion('kind', [
   WhiteboardYourTurnSchema,
 ]);
 
+/**
+ * GAP-FIX-R2: at most three reply chips on screen at once (Frontend Bible 08
+ * §2). HAND-MIRRORED in `frontend/src/rebuild/mentor/session/useTutorSocket.ts`
+ * (`REPLY_CHIP_MAX`); `npm run honesty:check` keeps the copies identical.
+ */
+export const REPLY_CHIP_MAX = 3;
+
 export const TutorTurnSchema = z
   .object({
     /**
@@ -1641,6 +1648,18 @@ export const TutorTurnSchema = z
      * never ahead of it — an id with no matching scene plays nothing.
      */
     roleplayScene: z.enum(ROLEPLAY_SCENE_IDS).nullable().optional(),
+    /**
+     * GAP-FIX-R2 (Frontend Bible 08 §2 layer 5, §4, §9; C.13/C.14): up to
+     * three LIKELY ANSWERS the learner can tap instead of typing, sent as the
+     * learner's own words. Free text, so it is moderated in the SAME call as
+     * `say` (orchestrator.ts). Each chip must also fit the `option` Copy
+     * Budget (`replyChipBudget`) and must never hold the answer to an open
+     * activity: a failing chip is DROPPED, never retried (Core's key-based
+     * reveal check, `feedbackHonesty.ts`'s answer-statement check). The
+     * schema bound is generous on purpose: an over-long chip costs the chip,
+     * never the turn.
+     */
+    replies: z.array(z.string().max(200)).max(REPLY_CHIP_MAX * 2).nullable().optional(),
   })
   .strict()
   .refine((turn) => turn.next !== 'segment' || turn.segmentRequest != null, {

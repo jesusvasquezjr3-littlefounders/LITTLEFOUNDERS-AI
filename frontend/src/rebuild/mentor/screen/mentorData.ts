@@ -1,5 +1,6 @@
+import { parseMasteryEvidence, type MasteryEvidence } from '../MentorDecisions';
 import {
-  getMap, getNotebook, getPlan, getTranscript, listSessions,
+  getMap, getMastery, getNotebook, getPlan, getTranscript, listSessions,
   type TutorMapResponse, type TutorNotebookEntry, type TutorPlan,
 } from '../session/tutorApi';
 import type { SessionSummary, SessionTranscript, TutorWhiteboardWire } from '../session/types';
@@ -24,6 +25,8 @@ export interface MentorNotebook {
 export interface MentorData {
   /** The learning map (T1f): the knowledge-component graph as this learner sees it. */
   map(): Promise<TutorMapResponse | null>;
+  /** What the Mentor decided about this learner, and on what evidence (Appendix D §2.6), read-only in the map sheet. */
+  mastery(): Promise<MasteryEvidence | null>;
   /** The plan and the kept boards (T1g), with a recap of the last conversation. */
   notebook(): Promise<MentorNotebook | null>;
   /** Past conversations, newest first (T1e). */
@@ -45,6 +48,7 @@ export function coreMentorData(getToken: () => Promise<string | null>): MentorDa
   };
   return {
     map: () => withToken(async (token) => (await getMap(token)).data),
+    mastery: () => withToken(async (token) => parseMasteryEvidence((await getMastery(token)).data)),
     notebook: () => withToken(async (token) => {
       const [plan, notebook] = await Promise.all([getPlan(token), getNotebook(token)]);
       if (!plan.data || !notebook.data) return null;

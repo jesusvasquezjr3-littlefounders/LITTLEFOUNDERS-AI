@@ -750,6 +750,31 @@ export async function voiceCheck(input: {
   }
 }
 
+/**
+ * GAP-FIX-R2: Core's key-based reveal check for a turn's reply chips, before
+ * the turn is delivered (Core `POST /tutor/internal/segments/:id/reveal-check`).
+ * One verdict per text: `true` states the open item's answer, `false` does
+ * not, `null` not scorable. `null` for the whole call on ANY failure — the
+ * caller then drops every chip (`applyKeyRevealCheck`).
+ */
+export async function checkReplyReveal(input: {
+  sessionId: string;
+  segmentId: string;
+  texts: readonly string[];
+}): Promise<(boolean | null)[] | null> {
+  try {
+    const body = await coreFetch(`/tutor/internal/segments/${encodeURIComponent(input.segmentId)}/reveal-check`, {
+      method: 'POST',
+      body: JSON.stringify({ sessionId: input.sessionId, texts: input.texts }),
+    });
+    const parsed = Envelope(z.object({ reveals: z.array(z.boolean().nullable()) })).safeParse(body);
+    if (!parsed.success || parsed.data.error || !parsed.data.data) return null;
+    return parsed.data.data.reveals.length === input.texts.length ? parsed.data.data.reveals : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Whether the learner's guardian consent is STILL active. Cheap, called per turn. */
 /**
  * V4: persist what the post-session review learned. Core owns the caps and
@@ -799,7 +824,14 @@ export async function updateLearnerMemory(input: {
          * older Core simply never sends it, which reads as "nothing parked"
          * — the behaviour this function already had.
          */
-        pending: z.array(z.string()).optional(),
+        /*
+         * GAP-FIX-R2 (C.4, OD-18): the PEDAGOGY note parks too for every
+         * minor with a reviewer (a verified guardian, or an independent teen
+         * reviewing their own notes), so `pending` may name either store.
+         * A closed set: a word this client does not know is a drifted Core,
+         * and the parse failure reads as "did not land" (the safe direction).
+         */
+        pending: z.array(z.enum(['learner', 'pedagogy'])).optional(),
       }),
     ).safeParse(body);
     if (!parsed.success || parsed.data.data === null) return false;
@@ -838,7 +870,7 @@ export async function updateLearnerMemory(input: {
      */
     if (pending.length > 0) {
       console.info(
-        `[oracle] learner memory ${pending.join(', ')} parked for guardian approval — the store moves when a guardian approves it`,
+        `[oracle] memory note(s) ${pending.join(', ')} parked for review — the store moves when the reviewer (a verified guardian, or the teen themself) approves it`,
       );
     }
     return proposedStores.every((store) => written[store] === true || pending.includes(store));
@@ -878,6 +910,8 @@ export interface TrajectoryStepInput {
   evidenceObservations: number | null;
   /** C.10: the corroboration requirement in force for that KC, or null. */
   evidenceRequired: number | null;
+  /** GAP-FIX-R2: which correct answers the evidence chain set aside (travels with the evidence), or null. */
+  evidenceDiscounted: 'none' | 'too_fast' | 'hint_assisted' | 'too_fast_and_hint_assisted' | null;
   /** C.10: this decision withdrew a mastery declared earlier in the session. */
   masteryRevoked: boolean;
 }

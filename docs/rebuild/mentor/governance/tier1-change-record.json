@@ -301,6 +301,26 @@
       "origin": "human",
       "pedagogicalReviewer": "pending",
       "safetyTrustLead": "pending"
+    },
+    {
+      "component": "mentor.non_negotiables",
+      "hash": "78dd952147164b8e9f2b02cc9b2bafde028b14329482d6aecbd93234e0226119",
+      "files": 9,
+      "date": "2026-09-28",
+      "change": "GAP-FIX-R2 mentor lane: the controller records which correct answers the C.10 evidence chain set aside (too fast / hint-assisted) on each consequential decision for the parent evidence view; the orchestrator screens, moderates (with say) and key-checks the new reply chips (Frontend Bible 08 sections 2, 4, 9), and feedbackHonesty.ts adds the reply-chip budget and reveal screen",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "governance.model",
+      "hash": "e9229a31406961aea9d36226eab24d40bf518aa5ef0b21c3f3a8de39e763968d",
+      "files": 3,
+      "date": "2026-09-28",
+      "change": "GAP-FIX-R2 mentor lane: the controller records which correct answers the C.10 evidence chain set aside (too fast / hint-assisted) on each consequential decision for the parent evidence view; the orchestrator screens, moderates (with say) and key-checks the new reply chips (Frontend Bible 08 sections 2, 4, 9), and feedbackHonesty.ts adds the reply-chip budget and reveal screen",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
     }
   ]
 }

@@ -189,6 +189,7 @@ const transcript = (locale, id, drawn) => ({
     demonstrate: index === 2 ? [{ kind: 'add', denomination: 5 }, { kind: 'add', denomination: 5 }] : null })),
   segments: [{ segmentId: `${id}-seg`, seq: 1, origin: 'catalog', segment: { type: 'choice', prompt_md: LINES[locale][2] }, score: 80, xpAwarded: 12, createdAt: '2026-09-20T10:00:04.000Z' }],
 });
+const SKILL = { 'en-US': 'Counting coins', 'es-MX': 'Contar monedas', 'pt-BR': 'Contar moedas' };
 const NOTES = {
   'en-US': ['Loves bikes.', 'Loves bikes and is saving for one.'],
   'es-MX': ['Le encantan las bicis.', 'Le encantan las bicis y ahorra para una.'],
@@ -219,8 +220,13 @@ export function respond({ core, spec, locale, path, request, ok }) {
   if (/^\/tutor\/kids\/[^/]+\/sessions$/.test(path)) return family.history === 'forbidden' ? refuse(403, 'FORBIDDEN') : ok(history(locale, family.history === 'quiet'));
   const sessionMatch = path.match(/^\/tutor\/sessions\/([^/]+)$/);
   if (sessionMatch) return ok(transcript(locale, sessionMatch[1], family.boards === 'drawn'));
-  if (/^\/tutor\/kids\/[^/]+\/memory-proposals$/.test(path)) return ok(family.history === 'quiet' ? { current: null, proposals: [] }
-    : { current: NOTES[locale][0], proposals: [{ id: 'note-1', proposed: NOTES[locale][1], expectedBefore: NOTES[locale][0], sessionId: SESSION_A, createdAt: T }] });
+  if (/^\/tutor\/kids\/[^/]+\/memory-proposals$/.test(path)) return ok(family.history === 'quiet' ? { current: { learner: null, pedagogy: null }, proposals: [] }
+    : { current: { learner: NOTES[locale][0], pedagogy: null }, proposals: [{ id: 'note-1', store: 'learner', proposed: NOTES[locale][1], expectedBefore: NOTES[locale][0], sessionId: SESSION_A, createdAt: T }] });
+  // GAP-FIX-R2: what the Mentor decided (numbers and closed labels; the page phrases them).
+  if (/^\/tutor\/kids\/[^/]+\/mastery$/.test(path)) return ok(family.history === 'quiet' ? { items: [] } : { items: [
+    { kcKey: 'money.count-coins', title: SKILL[locale], state: 'provisional_mastered', correctInARow: 2, attempts: 5,
+      decision: { kind: 'mastered', observations: 2, required: 2, discounted: 'too_fast', decidedAt: T }, nextCheckAt: '2026-10-04T09:00:00Z' },
+  ] });
   if (/^\/tutor\/kids\/[^/]+\/disposition$/.test(path) && get) return ok({ exists: true, current: true, sessionsObserved: 7, helpStyle: 'independent', persistence: 'persists',
     explanation: 'explains', persistentlyDeclined: [], typicalReplySeconds: 9, personas: [], effects: [], updatedAt: T });
   if (/^\/tutor\/kids\/[^/]+\/plan$/.test(path)) return ok({ plan: family.history === 'quiet' ? null
@@ -240,7 +246,7 @@ export function respond({ core, spec, locale, path, request, ok }) {
     return ok({ granted: true, grantedAt: T });
   }
   if (micKid && request.method === 'DELETE') { mic[micKid] = false; return ok({ revoked: true }); }
-  if (/^\/tutor\/memory-proposals\/[^/]+\/decision$/.test(path)) return ok({ outcome: 'approved', applied: true });
+  if (/^\/tutor\/memory-proposals\/[^/]+\/decision$/.test(path)) return ok({ outcome: 'approved', applied: true, store: 'learner' });
   if (/^\/tutor\/kids\/[^/]+\/disposition$/.test(path) && request.method === 'DELETE') return ok({ reset: true });
   // The wave-1 surfaces the console composes: what each reads when it mounts.
   if (path === '/family-hub/coaching') return ok({ tip: { deliveryId: '99999999-9999-4999-8999-999999999999', tipId: 'keep-promises', period: '2026-09', opened: false, dismissed: false } });

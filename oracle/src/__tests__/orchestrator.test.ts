@@ -4596,3 +4596,66 @@ describe('C.18: the Mentor never affirms a verified-wrong answer or an unsound i
     });
   });
 });
+
+/*
+ * GAP-FIX-R2 — reply chips (Frontend Bible 08 §2 layer 5, §4, §9). A model's
+ * likely answers reach the learner only within the `option` budget, judged
+ * in the SAME moderation call as `say`, and never holding the answer to the
+ * open activity (Core's key check; a failed check drops every chip).
+ */
+describe('reply chips are screened, moderated with the turn and cleared against the open key', () => {
+  const route = (queue: Response[], core: (body: string) => Response) => {
+    const seen: { url: string; body: string }[] = [];
+    fetchMock.mockImplementation((url: string, init?: RequestInit) => {
+      const body = String(init?.body ?? '');
+      seen.push({ url: String(url), body });
+      if (String(url).includes('/reveal-check')) return Promise.resolve(core(body));
+      return Promise.resolve(queue.shift() ?? judgeSays(true));
+    });
+    return seen;
+  };
+  const coreSays = (reveals: (boolean | null)[] | null, status = 200) => () => new Response(
+    JSON.stringify(reveals === null ? { data: null, error: { code: 'X', message: 'x' } } : { data: { reveals }, error: null }),
+    { status, headers: { 'Content-Type': 'application/json' } },
+  );
+
+  it('keeps chips within the 6-9 option budget, de-duplicated, at most three, and judges them with say', async () => {
+    const seen = route([modelReplies({ ...GOOD_TURN, replies: ['Sí', 'No', 'sí', 'Creo que tal vez unas cuatro semanas y media', 'Unas cuatro', 'Cinco'] }), judgeSays(true)], coreSays([]));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('quiero ahorrar', Date.now()))!;
+    expect(outcome.emission.turn.replies).toEqual(['Sí', 'No', 'Unas cuatro']);
+    const judged = seen.filter((call) => !call.url.includes('/reveal-check')).at(-1)!.body;
+    expect(judged).toContain('Unas cuatro');
+    // No activity open: no key to check against, no Core call.
+    expect(seen.some((call) => call.url.includes('/reveal-check'))).toBe(false);
+  });
+
+  it('drops a chip that states the open activity\'s answer, and keeps the rest', async () => {
+    const seen = route([modelReplies({ ...GOOD_TURN, replies: ['Doce', '15', 'No sé'] }), judgeSays(true)], coreSays([false, true, null]));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    orchestrator.noteSegmentServed('33333333-3333-4333-8333-333333333333', 'financial-education/x', 'coin_count', '¿Cuánto hay?');
+    const outcome = (await orchestrator.handleLearnerText('no sé', Date.now()))!;
+    expect(outcome.emission.turn.replies).toEqual(['Doce', 'No sé']);
+    const check = seen.find((call) => call.url.includes('/reveal-check'))!;
+    expect(check.url).toContain('/segments/33333333-3333-4333-8333-333333333333/reveal-check');
+    expect(JSON.parse(check.body)).toEqual({ sessionId: KID.sessionId, texts: ['Doce', '15', 'No sé'] });
+  });
+
+  it('drops EVERY chip when the key cannot be checked — never an unchecked chip beside an open item', async () => {
+    route([modelReplies({ ...GOOD_TURN, replies: ['Doce', 'No sé'] }), judgeSays(true)], coreSays(null, 500));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    orchestrator.noteSegmentServed('33333333-3333-4333-8333-333333333333', 'financial-education/x', 'coin_count', '¿Cuánto hay?');
+    const outcome = (await orchestrator.handleLearnerText('no sé', Date.now()))!;
+    expect(outcome.emission.turn.replies ?? null).toBeNull();
+  });
+
+  it('never carries chips on a turn that does not ask, and a blocked turn carries none', async () => {
+    route([modelReplies({ ...GOOD_TURN, next: 'close', replies: ['Sí'] }), judgeSays(true)], coreSays([]));
+    const closing = (await new TutorOrchestrator(KID, Date.now(), silent).handleLearnerText('adiós', Date.now()))!;
+    expect(closing.emission.turn.replies ?? null).toBeNull();
+    route([modelReplies({ ...GOOD_TURN, replies: ['Sí'] }), judgeSays(false)], coreSays([]));
+    const blocked = (await new TutorOrchestrator(KID, Date.now(), silent).handleLearnerText('hola', Date.now()))!;
+    expect(blocked.emission.source).toBe('scripted');
+    expect(blocked.emission.turn.replies ?? null).toBeNull();
+  });
+});

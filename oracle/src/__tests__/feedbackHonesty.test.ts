@@ -1,12 +1,22 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
   affirmsCorrectness,
   ANSWER_HONESTY_RULE,
+  applyKeyRevealCheck,
   classifyPraise,
   endorsesClaim,
   isSycophantic,
+  REPLY_CHIP_BUDGET,
+  replyChipWordLimit,
+  screenReplyChips,
   statesTheAnswer,
 } from '../tutor/feedbackHonesty.js';
+import { CONCEPT_FAMILIES } from '../tutor/explanationLexicon.js';
+import { scaffoldStems, selfExplanationResponse } from '../tutor/scripted.js';
+import { REPLY_CHIP_MAX } from '../tutor/turnSchema.js';
 import { TUTOR_SYSTEM_PROMPT } from '../tutor/prompt.js';
 
 /*
@@ -102,5 +112,47 @@ describe('the anti-sycophancy rule reaches the model', () => {
     expect(TUTOR_SYSTEM_PROMPT).toContain(ANSWER_HONESTY_RULE);
     expect(ANSWER_HONESTY_RULE).toContain('MONEY DECISION THAT IS NOT SOUND');
     expect(ANSWER_HONESTY_RULE).toContain('Praise names ONE specific thing');
+  });
+});
+
+describe('GAP-FIX-R2: reply chips', () => {
+  it('keeps chips within the option budget: 5 words for tiers 1-2, 8 for tier 3, x1.25 for es/pt, one sentence', () => {
+    expect(replyChipWordLimit(1, 'en-US')).toBe(5);
+    expect(replyChipWordLimit(2, 'es-MX')).toBe(7);
+    expect(replyChipWordLimit(3, 'en-US')).toBe(8);
+    expect(replyChipWordLimit(3, 'pt-BR')).toBe(10);
+    expect(screenReplyChips(['I save for later', 'Because I want to buy the bike soon', 'Yes. No.'], 1, 'en-US')).toEqual(['I save for later']);
+    expect(screenReplyChips(['Because I want to buy the bike soon'], 3, 'en-US')).toEqual(['Because I want to buy the bike soon']);
+  });
+
+  it('drops an answer statement, blanks and duplicates, and caps at three', () => {
+    expect(screenReplyChips(['The answer is 12', '  ', 'Twelve', 'twelve', 'Ten', 'Eleven', 'Nine'], 2, 'en-US')).toEqual(['Twelve', 'Ten', 'Eleven']);
+    expect(screenReplyChips(null, 2, 'en-US')).toEqual([]);
+  });
+
+  it('drops a chip Core says reveals the key, and every chip when the check failed', () => {
+    expect(applyKeyRevealCheck(['12', 'Ten', 'Not sure'], [true, false, null])).toEqual(['Ten', 'Not sure']);
+    expect(applyKeyRevealCheck(['12', 'Ten'], null)).toEqual([]);
+    expect(applyKeyRevealCheck(['12', 'Ten'], [false])).toEqual([]);
+  });
+
+  it('matches the frontend Copy Budget for the option role and the screen\'s three-chip cap', () => {
+    const here = path.dirname(fileURLToPath(import.meta.url));
+    const budget = readFileSync(path.resolve(here, '../../../frontend/src/rebuild/design/copyBudget.ts'), 'utf8');
+    expect(Number(/option:\s*(\d+)/.exec(/const app = \{([^}]*)\}/.exec(budget)?.[1] ?? '')?.[1])).toBe(REPLY_CHIP_BUDGET.words);
+    expect(Number(/option:\s*(\d+)/.exec(/const sentences = \{([^}]*)\}/.exec(budget)?.[1] ?? '')?.[1])).toBe(REPLY_CHIP_BUDGET.sentences);
+    expect(budget).toContain(`if (role === 'option') limit = ${REPLY_CHIP_BUDGET.youngWords}`);
+    expect(REPLY_CHIP_MAX).toBe(REPLY_CHIP_BUDGET.max);
+  });
+
+  it('offers system-written C.14 sentence stems that fit the 6-9 option budget in every language', () => {
+    for (const locale of ['en-US', 'es-MX', 'pt-BR'] as const) {
+      for (const family of CONCEPT_FAMILIES) {
+        const stems = scaffoldStems(locale, family);
+        expect(screenReplyChips(stems, 1, locale), `${locale} ${family}`).toEqual(stems);
+      }
+      expect(selfExplanationResponse(locale, 'scaffolded', 'budget').replies).toEqual(scaffoldStems(locale, 'budget'));
+      expect(selfExplanationResponse(locale, 'why', 'budget').replies).toBeUndefined();
+    }
   });
 });

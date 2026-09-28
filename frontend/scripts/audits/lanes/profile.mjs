@@ -143,7 +143,7 @@ export function respond({ spec, locale, path, request, ok }) {
   // The teen's own Mentor-memory review queue (OD-18): one proposed note. Anyone else's queue is not theirs.
   if (path === '/tutor/memory-proposals' && request.method === 'GET') {
     if (!spec.memory) return refuse(403, 'FORBIDDEN');
-    return ok({ proposals: [{ id: '55555555-5555-4555-8555-555555555555', proposed: MEMORY_NOTE[locale], expectedBefore: null, sessionId: null, createdAt: '2026-09-20T10:00:00Z' }], current: null });
+    return ok({ proposals: [{ id: '55555555-5555-4555-8555-555555555555', store: 'learner', proposed: MEMORY_NOTE[locale], expectedBefore: null, sessionId: null, createdAt: '2026-09-20T10:00:00Z' }], current: { learner: null, pedagogy: null } });
   }
   if (path === '/tutor/disposition' && request.method === 'GET') return ok({ exists: true, current: true, sessionsObserved: 6, helpStyle: 'independent', persistence: 'persists',
     explanation: 'unknown', persistentlyDeclined: ['less_text'], typicalReplySeconds: 12, personas: [], effects: [], updatedAt: '2026-09-20T10:00:00Z' });
