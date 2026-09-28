@@ -28,7 +28,7 @@ Appendix J Part 1.4 extends the recalibration logs of Appendices C, F and H to t
 | Guardian-approval queue: unanswered request expiry | 30 days | `run_social_graph_retention` (§3.2) | Appendix J 1.1 Guardian-Approval Queue Latency is diagnostic; an unanswered request is not consent | 2026-09-25 | 2026-12-24 |
 | Teen request cap per requester | 20 pending | `request_teen_connection` | S08.6 abuse limit | 2026-09-25 | 2026-12-24 |
 | Teen decline cooldown | 30 days | `request_teen_connection` | S08.6 abuse limit | 2026-09-25 | 2026-12-24 |
-| Report escalation pattern (E.3) | 3 unrelated children in 30 days | `report_escalation` migration | E.3 automatic trigger | 2026-09-25 | 2026-12-24 |
+| Report escalation pattern (E.3) | 3 unrelated minors in 30 days, by age (child or teen tier, OD-3) | `report_escalation` and `social_pattern_age_based` migrations | E.3 automatic trigger | 2026-09-25 | 2026-12-24 |
 | Report-resolution SLA | Not set (diagnostic baseline) | Appendix J 1.1 | Needs production data first | 2026-09-25 | 2026-12-24 |
 | Age-tier boundaries (E.8) | Under 13 / 13 to 17 / 18+ | `social_tier` | OD-3, Appendix I Part 3 | 2026-09-25 | 2026-12-24 |
 | Social-graph retention windows (E.11) | Section 3.2 | `social_retention_windows` | This policy §3 | 2026-09-25 | 2026-12-24 |

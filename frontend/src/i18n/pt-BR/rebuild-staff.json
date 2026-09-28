@@ -576,7 +576,7 @@
         "counts": "{open} abertas de {total} denúncias",
         "reporter": "Denunciante {id}",
         "noReports": "Este caso não tem denúncias.",
-        "patternHelp": "Aberto automaticamente após denúncias de 3 crianças em 30 dias.",
+        "patternHelp": "Aberto automaticamente após denúncias ou bloqueios de 3 menores sem relação em 30 dias.",
         "consequence": "O caso fecha. Sua decisão vai para o registro de auditoria.",
         "resolved": "Caso resolvido.",
         "resolveFailed": "Não foi possível resolver. Tente de novo.",
