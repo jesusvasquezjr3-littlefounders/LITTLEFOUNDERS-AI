@@ -47,6 +47,18 @@ all seven were real.
 - `0195_staff_access_reviews.sql` (expand)
 - `0196_identity_metrics.sql` (expand)
 
+### Lane finish (F1-staff-ops-finish)
+
+- Sync: `codex/spec-migration-s02` merged; already up to date, no conflicts.
+- Adversarial pass over the seven gaps: every new route sits behind its server-side guard (`/analytics` view_analytics, `/ops` manage_support, `/roles/reviews` and `/roles/review` superadmin only, the internal ops routes the internal key); the rebuilt panels import only `rebuild/design/controls` and console parts, no legacy component; copy present in all three locales (i18n gate green). Nothing mandated was found missing.
+- Full unit suites, once per touched service. Backend: type-check and lint clean; 3092 of 3095 passed (1 skipped); the reds below were fixed and their three files pass alone (the full suite was not rerun). Frontend: type-check and lint clean; 2859 of 2860 passed.
+- Three backend reds, fixed:
+  - `mentorQualityRoutes.test.ts` still expected session efficiency to be `not_instrumented`; this lane instruments it (C.24), so the test now expects `yes`.
+  - `analytics.test.ts` (not lane code) used a fixed first-data day of 2026-08-20; by 2026-09-28 the all-time fill is 40 days and trips its `< 40` bound. The day is now relative to today.
+  - `opsJobDrill.test.ts` spawns the watcher as a child process per job; it timed out at the 5 s default in a loaded run. It now has an explicit 30 s budget.
+- One frontend red, not lane code: `assetGate.test.ts` OCR case timed out at 90 s while four other lanes ran full suites on the same machine; an isolated rerun stalled under the same contention and was stopped. The same OCR check (`check-rebuild-assets.mjs`, 118 rasters free of text) passed inside `spec:check` in this session. Left to the orchestrator's quiet full run.
+- Root: `spec:check`, `secrets:check`, the two new tool test files (11 tests) and the i18n gate green.
+
 ### What remains
 
 - Production data for every Appendix M metric and the first scheduled heartbeat and watch runs (production is out of scope in speed mode).

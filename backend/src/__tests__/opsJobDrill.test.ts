@@ -14,5 +14,7 @@ describe('the simulated job-failure drill', () => {
     expect(result.watcherExit).toBe(1);
     expect(result.notice).toContain(`**${job}**`);
     expect(result.passed).toBe(true);
-  });
+    // Each case spawns the watcher as a Node child process; a loaded full run
+    // can exceed the 5 s default, so the budget is explicit.
+  }, 30_000);
 });
