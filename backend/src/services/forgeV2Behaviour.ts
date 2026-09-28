@@ -19,7 +19,7 @@
 
 import { gradeV2Visual, type V2PublicLesson } from './v2LessonDocument.js';
 import { amortizationSchedule } from './v2ConceptBoards.js';
-import { longArithmeticSteps } from './v2SegmentFamilies.js';
+import { longArithmeticSteps, placeValueScorerPayload, type PlaceValuePayload } from './v2SegmentFamilies.js';
 
 type Json = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 const MAX_STATES = 20_000;
@@ -64,6 +64,17 @@ function flowPaths(payload: Json): string[][] {
   };
   walk(payload.start, []);
   return out;
+}
+
+function replayPlace(start: { hundreds: number; tens: number; ones: number }, trades: string[]): { hundreds: number; tens: number; ones: number } | null {
+  let { hundreds, tens, ones } = start;
+  for (const trade of trades) {
+    if (trade === 'ten') { if (ones < 10) return null; ones -= 10; tens += 1; }
+    else if (trade === 'hundred') { if (tens < 10 || hundreds >= 9) return null; tens -= 10; hundreds += 1; }
+    else if (trade === 'borrow-ten') { if (tens < 1 || ones > 9) return null; tens -= 1; ones += 10; }
+    else { if (hundreds < 1 || tens > 9) return null; hundreds -= 1; tens += 10; }
+  }
+  return { hundreds, tens, ones };
 }
 
 function money(denominations: Json[], limit = MAX_STATES): Json[] {
@@ -118,9 +129,23 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
       return { inRange: p.choices.flatMap((choice: Json) => p.reasons.map((reason: Json) => ({ choice: choice.id, reason: reason.id }))),
         invalid: [{ choice: 'not-an-option', reason: p.reasons[0].id }],
         expectMet: (r) => (rubric.acceptableChoiceIds as string[]).includes(r.choice) };
-    case 'math.place-value.v2':
-      return { inRange: product([range(0, Math.floor(p.total / 10)), range(0, 3), range(0, 29)]).map(([trades, tens, ones]) => ({ trades, tens: String(tens), ones: String(ones) })),
-        invalid: [{ trades: Math.floor(p.total / 10) + 1, tens: '0', ones: '0' }] };
+    case 'math.place-value.v2': {
+      // M5 (GAP-FIX-R2): every possible trade sequence up to one past the needed count, each with the right and a wrong written result.
+      const start = placeValueScorerPayload(p as PlaceValuePayload);
+      const ops = start.mode === 'compose' ? ['ten', 'hundred'] : ['borrow-ten', 'borrow-hundred'];
+      const take = { hundreds: Math.floor(start.subtrahend / 100), tens: Math.floor(start.subtrahend / 10) % 10, ones: start.subtrahend % 10 };
+      const inRange: Json[] = [];
+      for (let length = 0; length <= Math.min(rubric.trades + 1, 8); length += 1) {
+        for (const trades of product(Array.from({ length }, () => ops), 4_000)) {
+          const end = replayPlace(start, trades as string[]);
+          if (!end) continue;
+          const shown = start.mode === 'compose' ? end : { hundreds: end.hundreds - take.hundreds, tens: end.tens - take.tens, ones: end.ones - take.ones };
+          for (const delta of [0, 1]) inRange.push({ trades, hundreds: String(Math.max(0, shown.hundreds)), tens: String(Math.max(0, shown.tens)), ones: String(Math.max(0, shown.ones) + delta) });
+        }
+      }
+      return { inRange, invalid: [{ trades: [ops[0] === 'ten' ? 'borrow-ten' : 'ten'], hundreds: '0', tens: '0', ones: '0' }, { trades: 3, hundreds: '0', tens: '0', ones: '0' }],
+        initial: { trades: [], hundreds: String(start.hundreds), tens: String(start.tens), ones: String(start.ones) } };
+    }
     case 'math.ratio-table.v2':
       return { inRange: range(p.minimumPacks, p.maximumPacks).flatMap((packs) => [packs * p.pricePerPack, packs * p.pricePerPack + 1].map((price) => ({ packs, price: String(price) }))),
         invalid: [{ packs: p.maximumPacks + 1, price: '0' }, { packs: p.minimumPacks - 1, price: '0' }] };

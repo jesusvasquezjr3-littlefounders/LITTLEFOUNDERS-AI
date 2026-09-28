@@ -1,0 +1,113 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "hundreds-and-change",
+  "lesson_id": "v2-place-value-three",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 7,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-tens-and-ones"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Liruf cambia monedas por bolsitas de diez y de cien, y luego paga una compra.",
+  "title": {
+    "en-US": "Hundreds, tens and ones",
+    "es-MX": "Centenas, decenas y unidades",
+    "pt-BR": "Centenas, dezenas e unidades"
+  },
+  "new_concepts": [
+    "kc-tens-and-ones"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "place-value-pilot-01",
+      "type": "math.place-value.v2",
+      "grading": "server",
+      "visual": {
+        "type": "base-ten"
+      },
+      "payload": {
+        "total": 23
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf has 23 coins. Trade tens and write the number."
+        },
+        "es-MX": {
+          "prompt": "Liruf tiene 23 monedas. Cambia decenas y escribe el número."
+        },
+        "pt-BR": {
+          "prompt": "Liruf tem 23 moedas. Troque dezenas e escreva o número."
+        }
+      },
+      "rubric": {
+        "trades": 2
+      }
+    },
+    {
+      "id": "place-value-compose-01",
+      "type": "math.place-value.v2",
+      "grading": "server",
+      "visual": {
+        "type": "base-ten"
+      },
+      "payload": {
+        "mode": "compose",
+        "total": 235,
+        "start": {
+          "hundreds": 1,
+          "tens": 12,
+          "ones": 15
+        }
+      },
+      "rubric": {
+        "trades": 2
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Trade until every column has fewer than ten. Write the number."
+        },
+        "es-MX": {
+          "prompt": "Cambia hasta que cada columna tenga menos de diez. Escribe el número."
+        },
+        "pt-BR": {
+          "prompt": "Troque até cada coluna ter menos de dez. Escreva o número."
+        }
+      }
+    },
+    {
+      "id": "place-value-subtract-01",
+      "type": "math.place-value.v2",
+      "grading": "server",
+      "visual": {
+        "type": "base-ten"
+      },
+      "payload": {
+        "mode": "subtract",
+        "minuend": 100,
+        "subtrahend": 37
+      },
+      "rubric": {
+        "trades": 2
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Spend 37 of 100 coins. Break what you need, write the rest."
+        },
+        "es-MX": {
+          "prompt": "Gasta 37 de 100 monedas. Desarma lo necesario y escribe el resto."
+        },
+        "pt-BR": {
+          "prompt": "Gaste 37 de 100 moedas. Desfaça o necessário e escreva o resto."
+        }
+      }
+    }
+  ]
+}

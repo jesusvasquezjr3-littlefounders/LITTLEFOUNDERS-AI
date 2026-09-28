@@ -1,0 +1,88 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "packs-and-plans",
+  "lesson_id": "v2-generic-tween",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-unit-price",
+    "kc-saving-allocation"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Zara compara paquetes de lápices y reparte su mesada.",
+  "title": {
+    "en-US": "Packs and plans",
+    "es-MX": "Paquetes y planes",
+    "pt-BR": "Pacotes e planos"
+  },
+  "new_concepts": [
+    "kc-unit-price"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "ratio-table-generic",
+      "type": "math.ratio-table.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "payload": {
+        "itemsPerPack": 2,
+        "pricePerPack": 8,
+        "minimumPacks": 1,
+        "maximumPacks": 5,
+        "initialPacks": 1,
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two pencils cost 8 coins. How much do 3 packs cost?"
+        },
+        "es-MX": {
+          "prompt": "Dos lápices cuestan 8 monedas. ¿Cuánto cuestan 3 paquetes?"
+        },
+        "pt-BR": {
+          "prompt": "Dois lápis custam 8 moedas. Quanto custam 3 pacotes?"
+        }
+      },
+      "rubric": {
+        "target_packs": 3
+      }
+    },
+    {
+      "id": "allocate-donut-40",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "visual": {
+        "type": "donut"
+      },
+      "payload": {
+        "total": 40,
+        "step": 2,
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Split 40 coins. Save 10 or more."
+        },
+        "es-MX": {
+          "prompt": "Reparte 40 monedas. Guarda 10 o más."
+        },
+        "pt-BR": {
+          "prompt": "Divida 40 moedas. Guarde 10 ou mais."
+        }
+      },
+      "rubric": {
+        "minimumSave": 10
+      }
+    }
+  ]
+}

@@ -497,6 +497,44 @@ export function gradeV2Response(kind: V2VisualKind, payload: unknown, response: 
   }
 }
 
+
+/* M5 place value (GAP-FIX-R2): columns, trades and borrows. */
+interface PlaceColumns { hundreds: number; tens: number; ones: number; subtrahend: number }
+const COMPOSE_TRADES: readonly string[] = ['ten', 'hundred'];
+const BORROW_TRADES: readonly string[] = ['borrow-ten', 'borrow-hundred'];
+function placeColumns(payload: unknown): PlaceColumns | null {
+  if (!fields(payload, ['mode', 'hundreds', 'tens', 'ones', 'subtrahend']) || (payload.mode !== 'compose' && payload.mode !== 'subtract')
+    || !onGrid(payload.hundreds, 0, 9, 1) || !onGrid(payload.tens, 0, 29, 1) || !onGrid(payload.ones, 0, 29, 1) || !onGrid(payload.subtrahend, 0, 998, 1)) return null;
+  const value = payload.hundreds * 100 + payload.tens * 10 + payload.ones;
+  if (value < 10 || value > 999 || (payload.mode === 'compose') !== (payload.subtrahend === 0) || payload.subtrahend >= value) return null;
+  return { hundreds: payload.hundreds, tens: payload.tens, ones: payload.ones, subtrahend: payload.subtrahend };
+}
+function replayPlaceTrades(start: PlaceColumns, trades: unknown): { hundreds: number; tens: number; ones: number } | null {
+  const allowed = start.subtrahend === 0 ? COMPOSE_TRADES : BORROW_TRADES;
+  if (!Array.isArray(trades) || trades.length > 20) return null;
+  let { hundreds, tens, ones } = start;
+  for (const trade of trades) {
+    if (typeof trade !== 'string' || !allowed.includes(trade)) return null;
+    if (trade === 'ten') { if (ones < 10) return null; ones -= 10; tens += 1; }
+    else if (trade === 'hundred') { if (tens < 10 || hundreds >= 9) return null; tens -= 10; hundreds += 1; }
+    else if (trade === 'borrow-ten') { if (tens < 1 || ones > 9) return null; tens -= 1; ones += 10; }
+    else { if (hundreds < 1 || tens > 9) return null; hundreds -= 1; tens += 10; }
+  }
+  return { hundreds, tens, ones };
+}
+function composeTrades(start: PlaceColumns): number {
+  const tenTrades = Math.floor(start.ones / 10);
+  return tenTrades + Math.floor((start.tens + tenTrades) / 10);
+}
+function borrowCount(start: PlaceColumns): number {
+  let { hundreds, tens, ones } = start;
+  const s = { hundreds: Math.floor(start.subtrahend / 100), tens: Math.floor(start.subtrahend / 10) % 10, ones: start.subtrahend % 10 };
+  let borrows = 0;
+  if (ones < s.ones) { if (tens === 0) { hundreds -= 1; tens += 10; borrows += 1; } tens -= 1; ones += 10; borrows += 1; }
+  if (tens < s.tens) { hundreds -= 1; tens += 10; borrows += 1; }
+  return hundreds < s.hundreds ? -1 : borrows;
+}
+
 function scoreV2Extended(kind: V2VisualKind, payload: unknown, response: unknown, rubric: unknown): V2VisualVerdict {
   return scoreV2ExtendedDetailed(kind, payload, response, rubric).verdict;
 }
@@ -504,14 +542,22 @@ function scoreV2Extended(kind: V2VisualKind, payload: unknown, response: unknown
 function scoreV2ExtendedDetailed(kind: V2VisualKind, payload: unknown, response: unknown, rubric: unknown): V2Grade {
   switch (kind) {
     case 'math.place-value.v2': {
-      // M5: the trade sequence and the written digits, one integer state.
-      if (!fields(payload, ['total']) || !whole(payload.total) || payload.total < 10 || payload.total > 29
-        || !fields(response, ['trades', 'tens', 'ones']) || !whole(response.trades) || response.trades < 0
-        || response.trades > Math.floor(payload.total / 10) || !numberText(response.tens) || !numberText(response.ones)) return INVALID;
+      // M5 (GAP-FIX-R2): three places. The trade sequence is replayed from the start columns, then the written digits.
+      const start = placeColumns(payload);
+      if (!start || !fields(response, ['trades', 'hundreds', 'tens', 'ones']) || !numberText(response.hundreds) || !numberText(response.tens)
+        || !numberText(response.ones)) return INVALID;
+      const final = replayPlaceTrades(start, response.trades);
+      if (!final) return INVALID;
+      const expectedTrades = start.subtrahend === 0 ? composeTrades(start) : borrowCount(start);
       if (rubric === undefined) return grade('valid');
-      if (!fields(rubric, ['trades']) || rubric.trades !== Math.floor(payload.total / 10)) return INVALID;
-      if (response.trades !== rubric.trades) return grade('review', 'structure');
-      return Number(response.tens) === Math.floor(payload.total / 10) && Number(response.ones) === payload.total % 10 ? grade('met') : grade('review', 'value');
+      if (!fields(rubric, ['trades']) || !whole(rubric.trades) || rubric.trades !== expectedTrades || expectedTrades < 1) return INVALID;
+      const s = { hundreds: Math.floor(start.subtrahend / 100), tens: Math.floor(start.subtrahend / 10) % 10, ones: start.subtrahend % 10 };
+      const structured = start.subtrahend === 0 ? final.ones < 10 && final.tens < 10
+        : (response.trades as unknown[]).length === expectedTrades && final.ones >= s.ones && final.tens >= s.tens && final.hundreds >= s.hundreds;
+      if (!structured) return grade('review', 'structure');
+      const value = start.subtrahend === 0 ? final : { hundreds: final.hundreds - s.hundreds, tens: final.tens - s.tens, ones: final.ones - s.ones };
+      return Number(response.hundreds) === value.hundreds && Number(response.tens) === value.tens && Number(response.ones) === value.ones
+        ? grade('met') : grade('review', 'value');
     }
     case 'math.ratio-table.v2': {
       // M14: the chosen pair and the missing value.

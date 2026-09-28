@@ -1,0 +1,57 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "money-plans",
+  "lesson_id": "v2-generic-waffle",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-saving-allocation"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Liruf reparte veinte monedas entre guardar, gastar y compartir.",
+  "title": {
+    "en-US": "Split twenty coins",
+    "es-MX": "Reparte veinte monedas",
+    "pt-BR": "Divida vinte moedas"
+  },
+  "new_concepts": [
+    "kc-saving-allocation"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "allocate-waffle-20",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "visual": {
+        "type": "waffle"
+      },
+      "payload": {
+        "total": 20,
+        "step": 1,
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Split 20 coins. Save at least 5."
+        },
+        "es-MX": {
+          "prompt": "Reparte 20 monedas. Guarda al menos 5."
+        },
+        "pt-BR": {
+          "prompt": "Divida 20 moedas. Guarde pelo menos 5."
+        }
+      },
+      "rubric": {
+        "minimumSave": 5
+      }
+    }
+  ]
+}

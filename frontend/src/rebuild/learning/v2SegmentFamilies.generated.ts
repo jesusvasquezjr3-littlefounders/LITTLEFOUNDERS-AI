@@ -332,3 +332,117 @@ export function masteryFadeCount(stepCount: number, pKnown: number | null): numb
   const depth = pKnown < 0.4 ? 0 : pKnown < 0.6 ? 1 : pKnown < 0.8 ? 2 : 3;
   return Math.min(maximum, depth);
 }
+
+/* ── Appendix P age scope and generic parameters (GAP-FIX-R2 learning) ────── */
+
+/**
+ * B.7 part 3 / Appendix P Part 1 (age column) and Part 8, OD-16: each
+ * first-release representation has an age range and generic parameters, not
+ * one pilot fixture. A document may use a kind when its eligibility lies
+ * inside the kind's Appendix P range; `adult` opens the kind to the adult
+ * chapters of the same course where Appendix P's money use applies to adults
+ * (M9/M10 tax and tip, M14 unit price, M15 discount and tax, M19 compound
+ * interest, M20 tax brackets, the $5 ledger and the $3 donut split). Core and
+ * the browser both call `v2AgeScopeProblem`, so the two contracts can never
+ * drift on who may see a kind.
+ */
+export const V2_AGE_SCOPE: Readonly<Record<string, { ages: readonly [number, number]; adult: boolean }>> = {
+  'math.number-line.fraction.v2': { ages: [9, 12], adult: false }, // M3
+  'math.place-value.v2': { ages: [6, 9], adult: false }, // M5
+  'math.fraction-area.v2': { ages: [7, 10], adult: false }, // M6
+  'math.bar-model.structure.v2': { ages: [8, 13], adult: false }, // M7
+  'math.bar-model.answer.v2': { ages: [8, 13], adult: false },
+  'math.schema-diagram.structure.v2': { ages: [8, 14], adult: false }, // M8
+  'math.schema-diagram.slots.v2': { ages: [8, 14], adult: false },
+  'math.schema-diagram.answer.v2': { ages: [8, 14], adult: false },
+  'math.worked-example.v2': { ages: [9, 17], adult: true }, // M9/M10: price x quantity, bill splits, tax and tip
+  'math.function-machine.v2': { ages: [8, 13], adult: false }, // M13
+  'math.ratio-table.v2': { ages: [10, 13], adult: true }, // M14
+  'money.unit-price.v2': { ages: [10, 14], adult: true }, // $6 (built on M14)
+  'visual.percent-grid.v2': { ages: [10, 14], adult: true }, // M15: discount, sales tax, save 10%
+  'logic.savings-rule.v2': { ages: [8, 17], adult: false }, // L2
+  'logic.rule-builder.v2': { ages: [8, 17], adult: true }, // L2 (adult chapters build the same rules)
+  'money.running-ledger.v2': { ages: [9, 17], adult: true }, // $5
+  'visual.growth-comparison.v2': { ages: [12, 17], adult: true }, // M19 / $8
+  'visual.tax-bracket.v2': { ages: [14, 17], adult: true }, // M20
+  'math.cpa-count.v2': { ages: [6, 12], adult: false }, // M1: 6-9, and 10-12 for new topics
+  'money.allocation.v2:waffle': { ages: [6, 9], adult: false }, // $3 via M6 at 6-9
+  'money.allocation.v2:donut': { ages: [10, 17], adult: true }, // $3 via M14-M15 at 10+
+};
+
+const BAND_AGES: Readonly<Record<string, readonly [number, number]>> = { '6-9': [6, 9], '10-12': [10, 12], '13-17': [13, 17], adult: [18, 119] };
+
+/** Why a kind is not open to this document's pathway, or null when it is. */
+export function v2AgeScopeProblem(key: string, document: { age_band: string; eligibility: { minimum_age: number; maximum_age: number } }): string | null {
+  const scope = V2_AGE_SCOPE[key];
+  if (!scope) return null;
+  const band = BAND_AGES[document.age_band];
+  const { minimum_age: low, maximum_age: high } = document.eligibility;
+  if (!band || high < band[0] || low > band[1]) return 'The eligibility does not match the age band';
+  if (document.age_band === 'adult') return scope.adult && low >= 18 ? null : 'This kind is not open to the adult pathway';
+  return low >= scope.ages[0] && high <= scope.ages[1] ? null : `This kind is open to ages ${scope.ages[0]}-${scope.ages[1]} only`;
+}
+
+/**
+ * The generic-parameter rules a pathway adds on top of each payload schema:
+ * a waffle draws 100 squares, so its total must divide 100 (10 coins = one
+ * row each, 20 = five squares each, ...); a donut keeps at most 40 wedges;
+ * children count LittleFounders coins, and only the adult pathway may use the
+ * local currency of an explicitly real-world lesson (owner glossary).
+ */
+export function v2PayloadScopeProblem(segment: { type: string; visual: { type: string }; payload: unknown }, ageBand: string): string | null {
+  const payload = segment.payload as Record<string, unknown>;
+  const total = typeof payload.total === 'number' ? payload.total : 0;
+  const step = typeof payload.step === 'number' ? payload.step : 1;
+  if (segment.type === 'money.allocation.v2' && segment.visual.type === 'waffle'
+    && (total < 10 || total > 100 || 100 % total !== 0 || step !== 1 || payload.currency !== 'coins')) return 'Invalid waffle parameters';
+  if (segment.type === 'money.allocation.v2' && segment.visual.type === 'donut' && (total / step > 40 || total > 100_000)) return 'Invalid donut parameters';
+  if ((segment.type === 'math.ratio-table.v2' || segment.type === 'money.unit-price.v2') && payload.currency === 'local' && ageBand !== 'adult') {
+    return 'Children count LittleFounders coins';
+  }
+  return null;
+}
+
+/* ── M5 place value: three places, trades and borrows (GAP-FIX-R2) ───────── */
+
+/**
+ * Appendix P M5 ("Trade $1 for 10 dimes; $1.00 - $0.37") and Bible 05 §7
+ * (hundreds as berry flats). Three payload forms, all answerless:
+ * - `{ total }` (10-29): the first-release pilot, loose ones traded for tens;
+ * - `compose`: a start state of hundreds, tens and ones (value = total, up to
+ *   999) that the learner regroups into written digits ("ten" trades 10 ones
+ *   for a ten, "hundred" 10 tens for a hundred);
+ * - `subtract`: minuend and subtrahend; the learner borrows ("borrow-ten",
+ *   "borrow-hundred") until every column can be taken away, then writes the
+ *   difference. The step replay plays the same trade sequence back.
+ */
+const placeCount = z.number().int().min(0).max(29);
+export const placeValuePayload = z.union([
+  z.object({ total: positive.min(10).max(29) }).strict(),
+  z.object({ mode: z.literal('compose'), total: positive.min(10).max(999),
+    start: z.object({ hundreds: z.number().int().min(0).max(9), tens: placeCount, ones: placeCount }).strict() }).strict()
+    .refine((v) => v.start.hundreds * 100 + v.start.tens * 10 + v.start.ones === v.total && (v.start.tens >= 10 || v.start.ones >= 10), 'Invalid place-value start'),
+  z.object({ mode: z.literal('subtract'), minuend: positive.min(10).max(999), subtrahend: positive.max(998) }).strict()
+    .refine((v) => v.subtrahend < v.minuend && placeValueBorrows(v.minuend, v.subtrahend) > 0, 'Invalid place-value subtraction'),
+]);
+export type PlaceValuePayload = z.infer<typeof placeValuePayload>;
+
+/** The fewest borrows a column subtraction needs (0 when no column is short). */
+export function placeValueBorrows(minuend: number, subtrahend: number): number {
+  let hundreds = Math.floor(minuend / 100); let tens = Math.floor(minuend / 10) % 10; let ones = minuend % 10;
+  const s = { hundreds: Math.floor(subtrahend / 100), tens: Math.floor(subtrahend / 10) % 10, ones: subtrahend % 10 };
+  let borrows = 0;
+  if (ones < s.ones) {
+    if (tens === 0) { hundreds -= 1; tens += 10; borrows += 1; }
+    tens -= 1; ones += 10; borrows += 1;
+  }
+  if (tens < s.tens) { hundreds -= 1; tens += 10; borrows += 1; }
+  return hundreds < s.hundreds ? -1 : borrows;
+}
+
+/** The scorer's semantic view: the start columns and, for a subtraction, what is taken away. */
+export function placeValueScorerPayload(payload: PlaceValuePayload): { mode: 'compose' | 'subtract'; hundreds: number; tens: number; ones: number; subtrahend: number } {
+  if (!('mode' in payload)) return { mode: 'compose', hundreds: 0, tens: 0, ones: payload.total, subtrahend: 0 };
+  if (payload.mode === 'compose') return { mode: 'compose', ...payload.start, subtrahend: 0 };
+  return { mode: 'subtract', hundreds: Math.floor(payload.minuend / 100), tens: Math.floor(payload.minuend / 10) % 10, ones: payload.minuend % 10, subtrahend: payload.subtrahend };
+}

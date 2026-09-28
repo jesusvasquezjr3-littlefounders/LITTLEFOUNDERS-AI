@@ -7726,5 +7726,1319 @@
         "target_profit_minor": 250
       }
     }
+  },
+  {
+    "lesson_id": "v2-adult-money",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-adult",
+      "chapter_id": "adult-money-basics",
+      "lesson_id": "v2-adult-money",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "adult",
+      "eligibility": {
+        "minimum_age": 18,
+        "maximum_age": 119
+      },
+      "knowledge_component_ids": [
+        "kc-marginal-tax",
+        "kc-compound-growth",
+        "kc-percent-of",
+        "kc-running-ledger",
+        "kc-unit-price",
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Your first paycheck",
+      "required_capabilities": [
+        "visual.stacked-bar.v1",
+        "operation.parameter-slider.v1",
+        "operation.linked-representations.v1",
+        "visual.multi-line.v1",
+        "operation.predict-reveal.v1",
+        "operation.scale-toggle.v1",
+        "visual.percent-grid.v1",
+        "visual.balance-meter.v1",
+        "operation.running-ledger.v1",
+        "operation.step-replay.v1",
+        "visual.worked-example.v1",
+        "operation.predict-next.v1",
+        "operation.backward-fade.v1",
+        "operation.number-input.v1",
+        "visual.ratio-table.v1",
+        "visual.donut.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "adult-tax-01",
+          "type": "visual.tax-bracket.v2",
+          "grading": "server",
+          "prompt": "Move the income to 45000 coins. What is the tax and the top rate?",
+          "visual": {
+            "type": "stacked-bar"
+          },
+          "payload": {
+            "minimumIncomeMinor": 0,
+            "maximumIncomeMinor": 60000,
+            "incomeStepMinor": 5000,
+            "initialIncomeMinor": 30000,
+            "brackets": [
+              {
+                "upToMinor": 10000,
+                "rateBasisPoints": 1000
+              },
+              {
+                "upToMinor": 30000,
+                "rateBasisPoints": 2000
+              },
+              {
+                "upToMinor": null,
+                "rateBasisPoints": 3000
+              }
+            ]
+          }
+        },
+        {
+          "id": "adult-growth-01",
+          "type": "visual.growth-comparison.v2",
+          "grading": "server",
+          "prompt": "Predict the compound total, then reveal both curves.",
+          "visual": {
+            "type": "multi-line"
+          },
+          "payload": {
+            "principalMinor": 10000,
+            "minimumRateBps": 200,
+            "maximumRateBps": 1200,
+            "rateStepBps": 200,
+            "initialRateBps": 800,
+            "minimumYears": 5,
+            "maximumYears": 30,
+            "yearStep": 5,
+            "initialYears": 10,
+            "predictionStepMinor": 1000,
+            "predictionMaximumMinor": 1000000
+          }
+        },
+        {
+          "id": "adult-percent-01",
+          "type": "visual.percent-grid.v2",
+          "grading": "server",
+          "prompt": "A coat costs 200 coins with 30% off. Shade the discount.",
+          "visual": {
+            "type": "percent-grid"
+          },
+          "payload": {
+            "baseUnits": 200,
+            "step": 10,
+            "initialPercent": 0,
+            "mode": "discount",
+            "currency": "coins"
+          }
+        },
+        {
+          "id": "adult-ledger-01",
+          "type": "money.running-ledger.v2",
+          "grading": "server",
+          "prompt": "Start with 10 coins. Log sales of 5 and costs of 3 until you have 14.",
+          "visual": {
+            "type": "balance-meter"
+          },
+          "payload": {
+            "initial": 10,
+            "sale": 5,
+            "cost": 3,
+            "maxEntries": 6
+          }
+        },
+        {
+          "id": "adult-worked-01",
+          "type": "math.worked-example.v2",
+          "grading": "server",
+          "prompt": "Follow the discount step by step.",
+          "visual": {
+            "type": "worked-example"
+          },
+          "payload": {
+            "steps": [
+              {
+                "id": "discount-part",
+                "expression": "20% × 50",
+                "result": "10",
+                "spokenText": "Twenty percent of 50 is 10"
+              },
+              {
+                "id": "discount-subtract",
+                "expression": "50 − 10",
+                "result": "40",
+                "spokenText": "Fifty minus 10 is 40"
+              },
+              {
+                "id": "sale-price",
+                "expression": "Sale price",
+                "result": "40",
+                "spokenText": "The sale price is 40"
+              }
+            ],
+            "fade_count": 1,
+            "response_step_ids": [
+              "discount-subtract",
+              "sale-price"
+            ]
+          }
+        },
+        {
+          "id": "adult-ratio-01",
+          "type": "math.ratio-table.v2",
+          "grading": "server",
+          "prompt": "A box of 4 filters costs 12 coins. How much do 5 boxes cost?",
+          "visual": {
+            "type": "ratio-table"
+          },
+          "payload": {
+            "itemsPerPack": 4,
+            "pricePerPack": 12,
+            "minimumPacks": 1,
+            "maximumPacks": 6,
+            "initialPacks": 2,
+            "currency": "coins"
+          }
+        },
+        {
+          "id": "adult-donut-01",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Split 100 coins of pay. Save 20 or more.",
+          "visual": {
+            "type": "donut"
+          },
+          "payload": {
+            "total": 100,
+            "step": 10,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "adult-tax-01": {
+        "income_minor": 45000
+      },
+      "adult-growth-01": {
+        "tolerance_minor": 5000
+      },
+      "adult-percent-01": {
+        "target_percent": 30
+      },
+      "adult-ledger-01": {
+        "target_balance": 14
+      },
+      "adult-worked-01": {
+        "expectedValues": {
+          "discount-subtract": "40",
+          "sale-price": "40"
+        }
+      },
+      "adult-ratio-01": {
+        "target_packs": 5
+      },
+      "adult-donut-01": {
+        "minimumSave": 20
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-adult-money",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-adult",
+      "chapter_id": "adult-money-basics",
+      "lesson_id": "v2-adult-money",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "adult",
+      "eligibility": {
+        "minimum_age": 18,
+        "maximum_age": 119
+      },
+      "knowledge_component_ids": [
+        "kc-marginal-tax",
+        "kc-compound-growth",
+        "kc-percent-of",
+        "kc-running-ledger",
+        "kc-unit-price",
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Tu primer sueldo",
+      "required_capabilities": [
+        "visual.stacked-bar.v1",
+        "operation.parameter-slider.v1",
+        "operation.linked-representations.v1",
+        "visual.multi-line.v1",
+        "operation.predict-reveal.v1",
+        "operation.scale-toggle.v1",
+        "visual.percent-grid.v1",
+        "visual.balance-meter.v1",
+        "operation.running-ledger.v1",
+        "operation.step-replay.v1",
+        "visual.worked-example.v1",
+        "operation.predict-next.v1",
+        "operation.backward-fade.v1",
+        "operation.number-input.v1",
+        "visual.ratio-table.v1",
+        "visual.donut.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "adult-tax-01",
+          "type": "visual.tax-bracket.v2",
+          "grading": "server",
+          "prompt": "Mueve el ingreso a 45000 monedas. ¿Cuánto impuesto y qué tasa más alta?",
+          "visual": {
+            "type": "stacked-bar"
+          },
+          "payload": {
+            "minimumIncomeMinor": 0,
+            "maximumIncomeMinor": 60000,
+            "incomeStepMinor": 5000,
+            "initialIncomeMinor": 30000,
+            "brackets": [
+              {
+                "upToMinor": 10000,
+                "rateBasisPoints": 1000
+              },
+              {
+                "upToMinor": 30000,
+                "rateBasisPoints": 2000
+              },
+              {
+                "upToMinor": null,
+                "rateBasisPoints": 3000
+              }
+            ]
+          }
+        },
+        {
+          "id": "adult-growth-01",
+          "type": "visual.growth-comparison.v2",
+          "grading": "server",
+          "prompt": "Predice el total compuesto y luego revela ambas curvas.",
+          "visual": {
+            "type": "multi-line"
+          },
+          "payload": {
+            "principalMinor": 10000,
+            "minimumRateBps": 200,
+            "maximumRateBps": 1200,
+            "rateStepBps": 200,
+            "initialRateBps": 800,
+            "minimumYears": 5,
+            "maximumYears": 30,
+            "yearStep": 5,
+            "initialYears": 10,
+            "predictionStepMinor": 1000,
+            "predictionMaximumMinor": 1000000
+          }
+        },
+        {
+          "id": "adult-percent-01",
+          "type": "visual.percent-grid.v2",
+          "grading": "server",
+          "prompt": "Un abrigo cuesta 200 monedas con 30% de descuento. Sombrea el descuento.",
+          "visual": {
+            "type": "percent-grid"
+          },
+          "payload": {
+            "baseUnits": 200,
+            "step": 10,
+            "initialPercent": 0,
+            "mode": "discount",
+            "currency": "coins"
+          }
+        },
+        {
+          "id": "adult-ledger-01",
+          "type": "money.running-ledger.v2",
+          "grading": "server",
+          "prompt": "Empieza con 10 monedas. Anota ventas de 5 y gastos de 3 hasta tener 14.",
+          "visual": {
+            "type": "balance-meter"
+          },
+          "payload": {
+            "initial": 10,
+            "sale": 5,
+            "cost": 3,
+            "maxEntries": 6
+          }
+        },
+        {
+          "id": "adult-worked-01",
+          "type": "math.worked-example.v2",
+          "grading": "server",
+          "prompt": "Sigue el descuento paso a paso.",
+          "visual": {
+            "type": "worked-example"
+          },
+          "payload": {
+            "steps": [
+              {
+                "id": "discount-part",
+                "expression": "20% × 50",
+                "result": "10",
+                "spokenText": "El veinte por ciento de 50 es 10"
+              },
+              {
+                "id": "discount-subtract",
+                "expression": "50 − 10",
+                "result": "40",
+                "spokenText": "Cincuenta menos 10 es 40"
+              },
+              {
+                "id": "sale-price",
+                "expression": "Precio de oferta",
+                "result": "40",
+                "spokenText": "El precio de oferta es 40"
+              }
+            ],
+            "fade_count": 1,
+            "response_step_ids": [
+              "discount-subtract",
+              "sale-price"
+            ]
+          }
+        },
+        {
+          "id": "adult-ratio-01",
+          "type": "math.ratio-table.v2",
+          "grading": "server",
+          "prompt": "Una caja de 4 filtros cuesta 12 monedas. ¿Cuánto cuestan 5 cajas?",
+          "visual": {
+            "type": "ratio-table"
+          },
+          "payload": {
+            "itemsPerPack": 4,
+            "pricePerPack": 12,
+            "minimumPacks": 1,
+            "maximumPacks": 6,
+            "initialPacks": 2,
+            "currency": "coins"
+          }
+        },
+        {
+          "id": "adult-donut-01",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Reparte 100 monedas de sueldo. Guarda 20 o más.",
+          "visual": {
+            "type": "donut"
+          },
+          "payload": {
+            "total": 100,
+            "step": 10,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "adult-tax-01": {
+        "income_minor": 45000
+      },
+      "adult-growth-01": {
+        "tolerance_minor": 5000
+      },
+      "adult-percent-01": {
+        "target_percent": 30
+      },
+      "adult-ledger-01": {
+        "target_balance": 14
+      },
+      "adult-worked-01": {
+        "expectedValues": {
+          "discount-subtract": "40",
+          "sale-price": "40"
+        }
+      },
+      "adult-ratio-01": {
+        "target_packs": 5
+      },
+      "adult-donut-01": {
+        "minimumSave": 20
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-adult-money",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-adult",
+      "chapter_id": "adult-money-basics",
+      "lesson_id": "v2-adult-money",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "adult",
+      "eligibility": {
+        "minimum_age": 18,
+        "maximum_age": 119
+      },
+      "knowledge_component_ids": [
+        "kc-marginal-tax",
+        "kc-compound-growth",
+        "kc-percent-of",
+        "kc-running-ledger",
+        "kc-unit-price",
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Seu primeiro salário",
+      "required_capabilities": [
+        "visual.stacked-bar.v1",
+        "operation.parameter-slider.v1",
+        "operation.linked-representations.v1",
+        "visual.multi-line.v1",
+        "operation.predict-reveal.v1",
+        "operation.scale-toggle.v1",
+        "visual.percent-grid.v1",
+        "visual.balance-meter.v1",
+        "operation.running-ledger.v1",
+        "operation.step-replay.v1",
+        "visual.worked-example.v1",
+        "operation.predict-next.v1",
+        "operation.backward-fade.v1",
+        "operation.number-input.v1",
+        "visual.ratio-table.v1",
+        "visual.donut.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "adult-tax-01",
+          "type": "visual.tax-bracket.v2",
+          "grading": "server",
+          "prompt": "Mova a renda para 45000 moedas. Qual o imposto e a maior alíquota?",
+          "visual": {
+            "type": "stacked-bar"
+          },
+          "payload": {
+            "minimumIncomeMinor": 0,
+            "maximumIncomeMinor": 60000,
+            "incomeStepMinor": 5000,
+            "initialIncomeMinor": 30000,
+            "brackets": [
+              {
+                "upToMinor": 10000,
+                "rateBasisPoints": 1000
+              },
+              {
+                "upToMinor": 30000,
+                "rateBasisPoints": 2000
+              },
+              {
+                "upToMinor": null,
+                "rateBasisPoints": 3000
+              }
+            ]
+          }
+        },
+        {
+          "id": "adult-growth-01",
+          "type": "visual.growth-comparison.v2",
+          "grading": "server",
+          "prompt": "Preveja o total composto e depois revele as duas curvas.",
+          "visual": {
+            "type": "multi-line"
+          },
+          "payload": {
+            "principalMinor": 10000,
+            "minimumRateBps": 200,
+            "maximumRateBps": 1200,
+            "rateStepBps": 200,
+            "initialRateBps": 800,
+            "minimumYears": 5,
+            "maximumYears": 30,
+            "yearStep": 5,
+            "initialYears": 10,
+            "predictionStepMinor": 1000,
+            "predictionMaximumMinor": 1000000
+          }
+        },
+        {
+          "id": "adult-percent-01",
+          "type": "visual.percent-grid.v2",
+          "grading": "server",
+          "prompt": "Um casaco custa 200 moedas com 30% de desconto. Pinte o desconto.",
+          "visual": {
+            "type": "percent-grid"
+          },
+          "payload": {
+            "baseUnits": 200,
+            "step": 10,
+            "initialPercent": 0,
+            "mode": "discount",
+            "currency": "coins"
+          }
+        },
+        {
+          "id": "adult-ledger-01",
+          "type": "money.running-ledger.v2",
+          "grading": "server",
+          "prompt": "Comece com 10 moedas. Anote vendas de 5 e custos de 3 até ter 14.",
+          "visual": {
+            "type": "balance-meter"
+          },
+          "payload": {
+            "initial": 10,
+            "sale": 5,
+            "cost": 3,
+            "maxEntries": 6
+          }
+        },
+        {
+          "id": "adult-worked-01",
+          "type": "math.worked-example.v2",
+          "grading": "server",
+          "prompt": "Siga o desconto passo a passo.",
+          "visual": {
+            "type": "worked-example"
+          },
+          "payload": {
+            "steps": [
+              {
+                "id": "discount-part",
+                "expression": "20% × 50",
+                "result": "10",
+                "spokenText": "Vinte por cento de 50 é 10"
+              },
+              {
+                "id": "discount-subtract",
+                "expression": "50 − 10",
+                "result": "40",
+                "spokenText": "Cinquenta menos 10 é 40"
+              },
+              {
+                "id": "sale-price",
+                "expression": "Preço da oferta",
+                "result": "40",
+                "spokenText": "O preço da oferta é 40"
+              }
+            ],
+            "fade_count": 1,
+            "response_step_ids": [
+              "discount-subtract",
+              "sale-price"
+            ]
+          }
+        },
+        {
+          "id": "adult-ratio-01",
+          "type": "math.ratio-table.v2",
+          "grading": "server",
+          "prompt": "Uma caixa com 4 filtros custa 12 moedas. Quanto custam 5 caixas?",
+          "visual": {
+            "type": "ratio-table"
+          },
+          "payload": {
+            "itemsPerPack": 4,
+            "pricePerPack": 12,
+            "minimumPacks": 1,
+            "maximumPacks": 6,
+            "initialPacks": 2,
+            "currency": "coins"
+          }
+        },
+        {
+          "id": "adult-donut-01",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Divida 100 moedas de salário. Guarde 20 ou mais.",
+          "visual": {
+            "type": "donut"
+          },
+          "payload": {
+            "total": 100,
+            "step": 10,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "adult-tax-01": {
+        "income_minor": 45000
+      },
+      "adult-growth-01": {
+        "tolerance_minor": 5000
+      },
+      "adult-percent-01": {
+        "target_percent": 30
+      },
+      "adult-ledger-01": {
+        "target_balance": 14
+      },
+      "adult-worked-01": {
+        "expectedValues": {
+          "discount-subtract": "40",
+          "sale-price": "40"
+        }
+      },
+      "adult-ratio-01": {
+        "target_packs": 5
+      },
+      "adult-donut-01": {
+        "minimumSave": 20
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-place-value-three",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "hundreds-and-change",
+      "lesson_id": "v2-place-value-three",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 7,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-tens-and-ones"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Hundreds, tens and ones",
+      "required_capabilities": [
+        "visual.base-ten.v1",
+        "operation.trade-ten.v1",
+        "operation.linked-representations.v1",
+        "operation.step-replay.v1"
+      ],
+      "segments": [
+        {
+          "id": "place-value-pilot-01",
+          "type": "math.place-value.v2",
+          "grading": "server",
+          "prompt": "Liruf has 23 coins. Trade tens and write the number.",
+          "visual": {
+            "type": "base-ten"
+          },
+          "payload": {
+            "total": 23
+          }
+        },
+        {
+          "id": "place-value-compose-01",
+          "type": "math.place-value.v2",
+          "grading": "server",
+          "prompt": "Trade until every column has fewer than ten. Write the number.",
+          "visual": {
+            "type": "base-ten"
+          },
+          "payload": {
+            "mode": "compose",
+            "total": 235,
+            "start": {
+              "hundreds": 1,
+              "tens": 12,
+              "ones": 15
+            }
+          }
+        },
+        {
+          "id": "place-value-subtract-01",
+          "type": "math.place-value.v2",
+          "grading": "server",
+          "prompt": "Spend 37 of 100 coins. Break what you need, write the rest.",
+          "visual": {
+            "type": "base-ten"
+          },
+          "payload": {
+            "mode": "subtract",
+            "minuend": 100,
+            "subtrahend": 37
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "place-value-pilot-01": {
+        "trades": 2
+      },
+      "place-value-compose-01": {
+        "trades": 2
+      },
+      "place-value-subtract-01": {
+        "trades": 2
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-place-value-three",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "hundreds-and-change",
+      "lesson_id": "v2-place-value-three",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 7,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-tens-and-ones"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Centenas, decenas y unidades",
+      "required_capabilities": [
+        "visual.base-ten.v1",
+        "operation.trade-ten.v1",
+        "operation.linked-representations.v1",
+        "operation.step-replay.v1"
+      ],
+      "segments": [
+        {
+          "id": "place-value-pilot-01",
+          "type": "math.place-value.v2",
+          "grading": "server",
+          "prompt": "Liruf tiene 23 monedas. Cambia decenas y escribe el número.",
+          "visual": {
+            "type": "base-ten"
+          },
+          "payload": {
+            "total": 23
+          }
+        },
+        {
+          "id": "place-value-compose-01",
+          "type": "math.place-value.v2",
+          "grading": "server",
+          "prompt": "Cambia hasta que cada columna tenga menos de diez. Escribe el número.",
+          "visual": {
+            "type": "base-ten"
+          },
+          "payload": {
+            "mode": "compose",
+            "total": 235,
+            "start": {
+              "hundreds": 1,
+              "tens": 12,
+              "ones": 15
+            }
+          }
+        },
+        {
+          "id": "place-value-subtract-01",
+          "type": "math.place-value.v2",
+          "grading": "server",
+          "prompt": "Gasta 37 de 100 monedas. Desarma lo necesario y escribe el resto.",
+          "visual": {
+            "type": "base-ten"
+          },
+          "payload": {
+            "mode": "subtract",
+            "minuend": 100,
+            "subtrahend": 37
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "place-value-pilot-01": {
+        "trades": 2
+      },
+      "place-value-compose-01": {
+        "trades": 2
+      },
+      "place-value-subtract-01": {
+        "trades": 2
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-place-value-three",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "hundreds-and-change",
+      "lesson_id": "v2-place-value-three",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 7,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-tens-and-ones"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Centenas, dezenas e unidades",
+      "required_capabilities": [
+        "visual.base-ten.v1",
+        "operation.trade-ten.v1",
+        "operation.linked-representations.v1",
+        "operation.step-replay.v1"
+      ],
+      "segments": [
+        {
+          "id": "place-value-pilot-01",
+          "type": "math.place-value.v2",
+          "grading": "server",
+          "prompt": "Liruf tem 23 moedas. Troque dezenas e escreva o número.",
+          "visual": {
+            "type": "base-ten"
+          },
+          "payload": {
+            "total": 23
+          }
+        },
+        {
+          "id": "place-value-compose-01",
+          "type": "math.place-value.v2",
+          "grading": "server",
+          "prompt": "Troque até cada coluna ter menos de dez. Escreva o número.",
+          "visual": {
+            "type": "base-ten"
+          },
+          "payload": {
+            "mode": "compose",
+            "total": 235,
+            "start": {
+              "hundreds": 1,
+              "tens": 12,
+              "ones": 15
+            }
+          }
+        },
+        {
+          "id": "place-value-subtract-01",
+          "type": "math.place-value.v2",
+          "grading": "server",
+          "prompt": "Gaste 37 de 100 moedas. Desfaça o necessário e escreva o resto.",
+          "visual": {
+            "type": "base-ten"
+          },
+          "payload": {
+            "mode": "subtract",
+            "minuend": 100,
+            "subtrahend": 37
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "place-value-pilot-01": {
+        "trades": 2
+      },
+      "place-value-compose-01": {
+        "trades": 2
+      },
+      "place-value-subtract-01": {
+        "trades": 2
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-generic-waffle",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "money-plans",
+      "lesson_id": "v2-generic-waffle",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Split twenty coins",
+      "required_capabilities": [
+        "visual.waffle.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "allocate-waffle-20",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Split 20 coins. Save at least 5.",
+          "visual": {
+            "type": "waffle"
+          },
+          "payload": {
+            "total": 20,
+            "step": 1,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "allocate-waffle-20": {
+        "minimumSave": 5
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-generic-waffle",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "money-plans",
+      "lesson_id": "v2-generic-waffle",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Reparte veinte monedas",
+      "required_capabilities": [
+        "visual.waffle.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "allocate-waffle-20",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Reparte 20 monedas. Guarda al menos 5.",
+          "visual": {
+            "type": "waffle"
+          },
+          "payload": {
+            "total": 20,
+            "step": 1,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "allocate-waffle-20": {
+        "minimumSave": 5
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-generic-waffle",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "money-plans",
+      "lesson_id": "v2-generic-waffle",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Divida vinte moedas",
+      "required_capabilities": [
+        "visual.waffle.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "allocate-waffle-20",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Divida 20 moedas. Guarde pelo menos 5.",
+          "visual": {
+            "type": "waffle"
+          },
+          "payload": {
+            "total": 20,
+            "step": 1,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "allocate-waffle-20": {
+        "minimumSave": 5
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-generic-tween",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "packs-and-plans",
+      "lesson_id": "v2-generic-tween",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-unit-price",
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Packs and plans",
+      "required_capabilities": [
+        "visual.ratio-table.v1",
+        "operation.parameter-slider.v1",
+        "operation.linked-representations.v1",
+        "visual.donut.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "ratio-table-generic",
+          "type": "math.ratio-table.v2",
+          "grading": "server",
+          "prompt": "Two pencils cost 8 coins. How much do 3 packs cost?",
+          "visual": {
+            "type": "ratio-table"
+          },
+          "payload": {
+            "itemsPerPack": 2,
+            "pricePerPack": 8,
+            "minimumPacks": 1,
+            "maximumPacks": 5,
+            "initialPacks": 1,
+            "currency": "coins"
+          }
+        },
+        {
+          "id": "allocate-donut-40",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Split 40 coins. Save 10 or more.",
+          "visual": {
+            "type": "donut"
+          },
+          "payload": {
+            "total": 40,
+            "step": 2,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "ratio-table-generic": {
+        "target_packs": 3
+      },
+      "allocate-donut-40": {
+        "minimumSave": 10
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-generic-tween",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "packs-and-plans",
+      "lesson_id": "v2-generic-tween",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-unit-price",
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Paquetes y planes",
+      "required_capabilities": [
+        "visual.ratio-table.v1",
+        "operation.parameter-slider.v1",
+        "operation.linked-representations.v1",
+        "visual.donut.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "ratio-table-generic",
+          "type": "math.ratio-table.v2",
+          "grading": "server",
+          "prompt": "Dos lápices cuestan 8 monedas. ¿Cuánto cuestan 3 paquetes?",
+          "visual": {
+            "type": "ratio-table"
+          },
+          "payload": {
+            "itemsPerPack": 2,
+            "pricePerPack": 8,
+            "minimumPacks": 1,
+            "maximumPacks": 5,
+            "initialPacks": 1,
+            "currency": "coins"
+          }
+        },
+        {
+          "id": "allocate-donut-40",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Reparte 40 monedas. Guarda 10 o más.",
+          "visual": {
+            "type": "donut"
+          },
+          "payload": {
+            "total": 40,
+            "step": 2,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "ratio-table-generic": {
+        "target_packs": 3
+      },
+      "allocate-donut-40": {
+        "minimumSave": 10
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-generic-tween",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "packs-and-plans",
+      "lesson_id": "v2-generic-tween",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-unit-price",
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Pacotes e planos",
+      "required_capabilities": [
+        "visual.ratio-table.v1",
+        "operation.parameter-slider.v1",
+        "operation.linked-representations.v1",
+        "visual.donut.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "ratio-table-generic",
+          "type": "math.ratio-table.v2",
+          "grading": "server",
+          "prompt": "Dois lápis custam 8 moedas. Quanto custam 3 pacotes?",
+          "visual": {
+            "type": "ratio-table"
+          },
+          "payload": {
+            "itemsPerPack": 2,
+            "pricePerPack": 8,
+            "minimumPacks": 1,
+            "maximumPacks": 5,
+            "initialPacks": 1,
+            "currency": "coins"
+          }
+        },
+        {
+          "id": "allocate-donut-40",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Divida 40 moedas. Guarde 10 ou mais.",
+          "visual": {
+            "type": "donut"
+          },
+          "payload": {
+            "total": 40,
+            "step": 2,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "ratio-table-generic": {
+        "target_packs": 3
+      },
+      "allocate-donut-40": {
+        "minimumSave": 10
+      }
+    }
   }
 ]

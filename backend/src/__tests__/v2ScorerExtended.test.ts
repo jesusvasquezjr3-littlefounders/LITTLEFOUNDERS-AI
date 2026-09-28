@@ -40,12 +40,36 @@ describe('locale numbers (Appendix P Part 5)', () => {
 
 describe('formerly ungraded visuals are server-graded with impossible-state rejection', () => {
   it('M5 place value grades the trade sequence and the digits', () => {
-    const payload = { total: 23 };
-    expect(scoreV2Visual('math.place-value.v2', payload, { trades: 2, tens: '2', ones: '3' }, { trades: 2 })).toBe('met');
-    expect(gradeV2Response('math.place-value.v2', payload, { trades: 1, tens: '1', ones: '13' }, { trades: 2 }).diagnostic).toBe('structure');
-    expect(gradeV2Response('math.place-value.v2', payload, { trades: 2, tens: '2', ones: '4' }, { trades: 2 }).diagnostic).toBe('value');
-    expect(scoreV2Visual('math.place-value.v2', payload, { trades: 3, tens: '3', ones: '0' }, { trades: 2 })).toBe('invalid');
-    expect(scoreV2Visual('math.place-value.v2', payload, { trades: 2, tens: '2', ones: '3' }, { trades: 1 })).toBe('invalid');
+    // The 10-29 pilot: loose ones traded for tens.
+    const payload = { mode: 'compose', hundreds: 0, tens: 0, ones: 23, subtrahend: 0 };
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['ten', 'ten'], hundreds: '0', tens: '2', ones: '3' }, { trades: 2 })).toBe('met');
+    expect(gradeV2Response('math.place-value.v2', payload, { trades: ['ten'], hundreds: '0', tens: '1', ones: '13' }, { trades: 2 }).diagnostic).toBe('structure');
+    expect(gradeV2Response('math.place-value.v2', payload, { trades: ['ten', 'ten'], hundreds: '0', tens: '2', ones: '4' }, { trades: 2 }).diagnostic).toBe('value');
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['ten', 'ten', 'ten'], hundreds: '0', tens: '3', ones: '0' }, { trades: 2 })).toBe('invalid');
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['ten', 'ten'], hundreds: '0', tens: '2', ones: '3' }, { trades: 1 })).toBe('invalid');
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['borrow-ten'], hundreds: '0', tens: '0', ones: '23' })).toBe('invalid');
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: 2, hundreds: '0', tens: '2', ones: '3' })).toBe('invalid');
+  });
+
+  it('M5 composes three places: ten ones for a ten, ten tens for a hundred (GAP-FIX-R2)', () => {
+    const payload = { mode: 'compose', hundreds: 1, tens: 12, ones: 15, subtrahend: 0 }; // 235
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['ten', 'hundred'], hundreds: '2', tens: '3', ones: '5' }, { trades: 2 })).toBe('met');
+    expect(gradeV2Response('math.place-value.v2', payload, { trades: ['ten'], hundreds: '1', tens: '13', ones: '5' }, { trades: 2 }).diagnostic).toBe('structure');
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['hundred', 'hundred'], hundreds: '3', tens: '0', ones: '15' })).toBe('invalid');
+    expect(scoreV2Visual('math.place-value.v2', { ...payload, subtrahend: 5 }, { trades: [], hundreds: '0', tens: '0', ones: '0' })).toBe('invalid');
+  });
+
+  it('M5 replays a subtraction with borrows: 1.00 - 0.37 as 100 - 37 cents (GAP-FIX-R2)', () => {
+    const payload = { mode: 'subtract', hundreds: 1, tens: 0, ones: 0, subtrahend: 37 };
+    const borrows = ['borrow-hundred', 'borrow-ten'];
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: borrows, hundreds: '0', tens: '6', ones: '3' }, { trades: 2 })).toBe('met');
+    expect(gradeV2Response('math.place-value.v2', payload, { trades: ['borrow-hundred'], hundreds: '0', tens: '7', ones: '0' }, { trades: 2 }).diagnostic).toBe('structure');
+    expect(gradeV2Response('math.place-value.v2', payload, { trades: borrows, hundreds: '0', tens: '7', ones: '3' }, { trades: 2 }).diagnostic).toBe('value');
+    // A borrow with nothing to borrow from, or an up-trade in a subtraction, is impossible.
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['borrow-ten'], hundreds: '0', tens: '0', ones: '0' })).toBe('invalid');
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['ten'], hundreds: '0', tens: '0', ones: '0' })).toBe('invalid');
+    // The rubric's count must be the fewest borrows the subtraction needs.
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: borrows, hundreds: '0', tens: '6', ones: '3' }, { trades: 3 })).toBe('invalid');
   });
 
   it('M14 ratio table grades the pair and the missing value', () => {

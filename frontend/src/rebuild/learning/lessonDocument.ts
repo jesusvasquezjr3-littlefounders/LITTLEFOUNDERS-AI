@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { growthComparison } from './growthComparisonModel.generated';
-import { longArithmeticSchema, v2FamilySegments, v2SegmentExtras } from './v2SegmentFamilies.generated';
+import { longArithmeticSchema, placeValuePayload, v2AgeScopeProblem, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras } from './v2SegmentFamilies.generated';
 import { conceptAllowed, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptType } from './v2ConceptBoards.generated';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './charts/chartModel.generated';
 
@@ -141,7 +141,7 @@ const placeValueSegment = z.object({
   type: z.literal('math.place-value.v2'),
   grading: optionalServer,
   visual: z.object({ type: z.literal('base-ten') }).strict(),
-  payload: z.object({ total: positiveInteger.min(10).max(29) }).strict(),
+  payload: placeValuePayload,
 }).strict();
 
 const savingsRuleSegment = z.object({
@@ -222,7 +222,7 @@ const ratioTableSegment = z.object({
   payload: z.object({
     itemsPerPack: positiveInteger.max(12), pricePerPack: positiveInteger.max(1_000),
     minimumPacks: positiveInteger.max(8), maximumPacks: positiveInteger.max(8), initialPacks: positiveInteger.max(8),
-    currency: z.literal('coins'),
+    currency: z.enum(['coins', 'local']),
   }).strict().refine((value) => value.maximumPacks > value.minimumPacks && value.initialPacks >= value.minimumPacks
     && value.initialPacks <= value.maximumPacks && value.pricePerPack % value.itemsPerPack === 0,
   'Invalid ratio-table range'),
@@ -445,78 +445,17 @@ export const lessonClientDocumentSchema = z.object({
     if ((V2_CONCEPT_TYPES as readonly string[]).includes(value.type) && !conceptAllowed(value.type as V2ConceptType, document.age_band)) {
       ctx.addIssue({ code: 'custom', path: ['segments', index, 'type'], message: 'This concept board is not open to this age pathway' });
     }
-    if (value.type === 'math.place-value.v2' && document.age_band !== '6-9') {
-      ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Place-value pilot is restricted to ages 6–9' });
-    }
-    if (value.type === 'math.number-line.fraction.v2'
-      && (document.age_band !== '10-12' || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Fraction number-line pilot is restricted to ages 10–12' });
-    }
-    if (value.type === 'math.fraction-area.v2'
-      && (document.age_band !== '6-9' || document.eligibility.minimum_age !== 7 || document.eligibility.maximum_age !== 9)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Fraction-area pilot is restricted to ages 7–9' });
-    }
-    if ((value.type === 'math.bar-model.structure.v2' || value.type === 'math.bar-model.answer.v2')
-      && (document.age_band !== '10-12' || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Bar-model pilot is restricted to ages 10–12' });
-    }
-    if (value.type === 'money.allocation.v2' && value.visual.type === 'waffle'
-      && (document.age_band !== '6-9' || value.payload.total !== 10 || value.payload.step !== 1
-        || value.payload.currency !== 'coins')) {
-      ctx.addIssue({ code: 'custom', path: ['segments', index, 'payload'],
-        message: 'This waffle pilot requires ten one-coin rows for ages 6–9' });
-    }
-    if (value.type === 'money.allocation.v2' && value.visual.type === 'donut'
-      && (document.age_band !== '10-12' || value.payload.total !== 60 || value.payload.step !== 5
-        || value.payload.currency !== 'coins')) {
-      ctx.addIssue({ code: 'custom', path: ['segments', index, 'payload'],
-        message: 'This donut pilot requires sixty five-coin steps for ages 10–12' });
-    }
-    if (value.type === 'logic.savings-rule.v2' && document.age_band !== '10-12') {
-      ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Savings-rule pilot is restricted to ages 10–12' });
-    }
-    if (value.type === 'visual.percent-grid.v2' && (document.age_band !== '10-12'
-      || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Percent-grid pilot is restricted to the controlled 10–12 pathway' });
-    }
-    if (value.type === 'money.running-ledger.v2' && document.age_band !== '13-17') {
-      ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Running-ledger pilot is restricted to ages 13–17' });
-    }
-    if (value.type === 'visual.growth-comparison.v2' && document.age_band !== '13-17') {
-      ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Growth-comparison pilot is restricted to ages 13–17' });
-    }
-    if (value.type === 'visual.tax-bracket.v2' && (document.age_band !== '13-17'
-      || document.eligibility.minimum_age !== 14 || document.eligibility.maximum_age !== 17)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Tax-bracket pilot is restricted to ages 14–17' });
-    }
-    if (value.type === 'math.ratio-table.v2' && (document.age_band !== '10-12' || value.payload.itemsPerPack !== 3
-      || value.payload.pricePerPack !== 15 || value.payload.minimumPacks !== 1 || value.payload.maximumPacks !== 4
-      || value.payload.initialPacks !== 2 || value.payload.currency !== 'coins')) {
-      ctx.addIssue({ code: 'custom', path: ['segments', index, 'payload'],
-        message: 'This ratio-table pilot requires the controlled three-items-for-fifteen-coins scenario for ages 10–12' });
-    }
-    if (value.type === 'math.worked-example.v2' && (document.age_band !== '10-12'
-      || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'],
-        message: 'Worked-example pilot is restricted to ages 10–12' });
-    }
-    if (value.type === 'math.function-machine.v2' && (document.age_band !== '10-12'
-      || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'],
-        message: 'Function-machine pilot is restricted to ages 10–12' });
-    }
-    if (value.type === 'math.cpa-count.v2' && (document.age_band !== '6-9' && document.age_band !== '10-12')) {
-      ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'CPA count is restricted to ages 6–12' });
-    }
+    // B.7 part 3 / Appendix P age ranges and generic parameters (Core's shared v2AgeScopeProblem, GAP-FIX-R2).
+    const scopeKey = value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar' ? `${value.type}:${value.visual.type}` : value.type;
+    const scopeProblem = v2AgeScopeProblem(scopeKey, document) ?? v2PayloadScopeProblem(value, document.age_band);
+    if (scopeProblem) ctx.addIssue({ code: 'custom', path: ['segments', index], message: scopeProblem });
   }
   // OD-17 / B.7 (GAP-FIX-R1): mixed documents may surround the M7 chains, which stay contiguous and ordered (Core's contiguousChains).
   if (!contiguousChains(document.segments.map((value) => value.type), ['math.bar-model.structure.v2', 'math.bar-model.answer.v2'])) {
     ctx.addIssue({ code: 'custom', path: ['segments'], message: 'Bar-model pilot requires an ordered structure and answer pair' });
   }
-  const hasSchemaDiagram = document.segments.some((value) => value.type === 'math.schema-diagram.structure.v2' || value.type === 'math.schema-diagram.slots.v2' || value.type === 'math.schema-diagram.answer.v2');
-  if (hasSchemaDiagram && (document.age_band !== '10-12' || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12
-    || !contiguousChains(document.segments.map((value) => value.type), ['math.schema-diagram.structure.v2', 'math.schema-diagram.slots.v2', 'math.schema-diagram.answer.v2']))) {
-    ctx.addIssue({ code: 'custom', path: ['segments'], message: 'Schema-diagram pilot requires an ordered 10–12 structure, slots and answer sequence' });
+  if (!contiguousChains(document.segments.map((value) => value.type), ['math.schema-diagram.structure.v2', 'math.schema-diagram.slots.v2', 'math.schema-diagram.answer.v2'])) {
+    ctx.addIssue({ code: 'custom', path: ['segments'], message: 'Schema diagrams require an ordered structure, slots and answer sequence' });
   }
   const cpaSegments = document.segments.filter((value) => value.type === 'math.cpa-count.v2');
   if (cpaSegments.length > 0) {

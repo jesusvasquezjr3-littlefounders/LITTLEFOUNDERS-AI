@@ -110,7 +110,8 @@ export function SavingsRuleBoard({ document, segment, onBack, sequence, onGrade 
           <Stepper label={t.saved} min={0} max={segment.payload.goal * 2} value={threshold} valueText={amount(threshold)}
             onValueChange={(value) => { grading.reset(); setThreshold(value); }} labels={{ decrease: t.fewer, increase: t.more }} />
           <SegmentedControl legend={t.link} name={`${linkName}-rule-link`} value={ruleLink} onValueChange={(value) => { grading.reset(); setRuleLink(value); }}
-            options={[{ value: 'and' as const, label: t.and }, { value: 'or' as const, label: t.or }, { value: 'none' as const, label: t.savedOnly }]} />
+            options={document.age_band === '6-9' ? [{ value: 'none' as const, label: t.savedOnly }]
+              : [{ value: 'and' as const, label: t.and }, { value: 'or' as const, label: t.or }, { value: 'none' as const, label: t.savedOnly }]} />
         </section> : null}
         {graded ? <GradedFoot locale={document.locale} grading={grading} canCheck={comparator !== null && ruleLink !== null} sequence={sequence}
           onCheck={() => grading.check({ comparator, threshold, link: ruleLink })} /> : null}

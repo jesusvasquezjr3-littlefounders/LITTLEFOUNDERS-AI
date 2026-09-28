@@ -72,7 +72,7 @@ describe('answerless versioned lesson client document', () => {
     expect(loadLessonClientDocument({ ...donut, required_capabilities: ['visual.stacked-bar.v1', 'operation.reallocate.v1'] }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...donut, age_band: '6-9' }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...donut, segments: [{ ...donut.segments[0], payload: {
-      ...donut.segments[0].payload, total: 65 } }] }).status).toBe('invalid');
+      ...donut.segments[0].payload, total: 250 } }] }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...donut, segments: [{ ...donut.segments[0], answer: 20 }] }).status).toBe('invalid');
   });
 
@@ -81,7 +81,7 @@ describe('answerless versioned lesson client document', () => {
     expect(loadLessonClientDocument(ratio).status).toBe('ready');
     expect(loadLessonClientDocument(ratio, ['visual.ratio-table.v1']).status).toBe('upgrade-required');
     expect(loadLessonClientDocument({ ...ratio, age_band: '13-17' }).status).toBe('invalid');
-    expect(loadLessonClientDocument({ ...ratio, segments: [{ ...ratio.segments[0], payload: { ...ratio.segments[0].payload, pricePerPack: 18 } }] }).status).toBe('invalid');
+    expect(loadLessonClientDocument({ ...ratio, segments: [{ ...ratio.segments[0], payload: { ...ratio.segments[0].payload, pricePerPack: 16 } }] }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...ratio, segments: [{ ...ratio.segments[0], answer: 5 }] }).status).toBe('invalid');
   });
 
@@ -104,7 +104,7 @@ describe('answerless versioned lesson client document', () => {
     const percent = percentGridPilotDocument('es-MX', '10-12') as { required_capabilities: string[];
       segments: [{ payload: { baseUnits: number; step: number }; answer?: number }] };
     expect(loadLessonClientDocument(percent).status).toBe('ready');
-    expect(loadLessonClientDocument({ ...percent, eligibility: { minimum_age: 10, maximum_age: 14 } }).status).toBe('invalid');
+    expect(loadLessonClientDocument({ ...percent, eligibility: { minimum_age: 10, maximum_age: 15 } }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...percent, required_capabilities: ['visual.percent-grid.v1', 'operation.parameter-slider.v1'] }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...percent, segments: [{ ...percent.segments[0], payload: { ...percent.segments[0].payload, baseUnits: 201 } }] }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...percent, segments: [{ ...percent.segments[0], payload: { ...percent.segments[0].payload, step: 7 } }] }).status).toBe('invalid');
@@ -182,7 +182,7 @@ describe('answerless versioned lesson client document', () => {
     expect(loadLessonClientDocument({ ...fraction, required_capabilities: ['visual.number-line.v1', 'operation.place-point.v1'] }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...fraction, segments: [{ ...fraction.segments[0], payload: { ...fraction.segments[0].payload, targetNumerator: 3 } }] }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...fraction, segments: [{ ...fraction.segments[0], answer: '3/4' }] }).status).toBe('invalid');
-    expect(loadLessonClientDocument({ ...fraction, eligibility: { minimum_age: 9, maximum_age: 12 } }).status).toBe('invalid');
+    expect(loadLessonClientDocument({ ...fraction, eligibility: { minimum_age: 8, maximum_age: 12 } }).status).toBe('invalid');
   });
 
   it('keeps M6 equal-area partitions answerless within the exact safe age subset', () => {
@@ -195,7 +195,7 @@ describe('answerless versioned lesson client document', () => {
   it('requires the ordered M7 structure-and-answer pair for its exact tween pathway', () => {
     const bar = barModelPilotDocument('en-US') as { eligibility: { minimum_age: number; maximum_age: number }; segments: Array<Record<string, unknown>> };
     expect(loadLessonClientDocument(bar).status).toBe('ready');
-    expect(loadLessonClientDocument({ ...bar, eligibility: { minimum_age: 9, maximum_age: 12 } }).status).toBe('invalid');
+    expect(loadLessonClientDocument({ ...bar, eligibility: { minimum_age: 7, maximum_age: 12 } }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...bar, segments: [bar.segments[1]!, bar.segments[0]!] }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...bar, segments: [bar.segments[0]!]}).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...bar, segments: [{ ...bar.segments[0], answer: { model: 'comparison' } }, bar.segments[1]!]}).status).toBe('invalid');
@@ -204,7 +204,7 @@ describe('answerless versioned lesson client document', () => {
   it('requires M8 schema, slots, and answer to remain answerless and ordered', () => {
     const schema = schemaDiagramPilotDocument('en-US') as { eligibility: { minimum_age: number; maximum_age: number }; segments: Array<Record<string, unknown>> };
     expect(loadLessonClientDocument(schema).status).toBe('ready');
-    expect(loadLessonClientDocument({ ...schema, eligibility: { minimum_age: 9, maximum_age: 12 } }).status).toBe('invalid');
+    expect(loadLessonClientDocument({ ...schema, eligibility: { minimum_age: 7, maximum_age: 12 } }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...schema, segments: [schema.segments[1]!, schema.segments[0]!, schema.segments[2]!]}).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...schema, segments: schema.segments.slice(0, 2) }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...schema, segments: [{ ...schema.segments[0], answer: { schema: 'change' } }, schema.segments[1]!, schema.segments[2]!]}).status).toBe('invalid');
@@ -215,7 +215,7 @@ describe('answerless versioned lesson client document', () => {
       required_capabilities: string[]; segments: [{ payload: { fade_count: number; steps: Array<Record<string, unknown>> } }] };
     expect(loadLessonClientDocument(worked).status).toBe('ready');
     expect(loadLessonClientDocument(worked, ['visual.worked-example.v1', 'operation.step-replay.v1']).status).toBe('upgrade-required');
-    expect(loadLessonClientDocument({ ...worked, eligibility: { minimum_age: 9, maximum_age: 12 } }).status).toBe('invalid');
+    expect(loadLessonClientDocument({ ...worked, eligibility: { minimum_age: 8, maximum_age: 12 } }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...worked, segments: [{ ...worked.segments[0], payload: {
       ...worked.segments[0].payload, fade_count: worked.segments[0].payload.steps.length } }] }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...worked, segments: [{ ...worked.segments[0], payload: {
@@ -224,12 +224,35 @@ describe('answerless versioned lesson client document', () => {
     expect(loadLessonClientDocument({ ...worked, segments: [{ ...worked.segments[0], answer: { target: '40' } }] }).status).toBe('invalid');
   });
 
+  it('opens the Appendix P age ranges and the adult money chapters the same way Core does (GAP-FIX-R2)', () => {
+    const worked = { schema_version: 2, course_id: 'financial-education', pathway_id: 'financial-adult', chapter_id: 'tax-and-tip',
+      lesson_id: 'adult-worked', version_id: 'rev-1', locale: 'en-US', age_band: 'adult', eligibility: { minimum_age: 18, maximum_age: 119 },
+      knowledge_component_ids: ['kc-percent-of'], adventure_scene_id: 'diorama-b', title: 'Add the tip',
+      required_capabilities: ['visual.worked-example.v1', 'operation.step-replay.v1', 'operation.predict-next.v1', 'operation.backward-fade.v1', 'operation.number-input.v1'],
+      segments: [{ id: 'tip-01', type: 'math.worked-example.v2', grading: 'server', prompt: 'Add a 10% tip.', visual: { type: 'worked-example' }, payload: {
+        steps: [{ id: 'tip-part', expression: '10% × 40', result: '4', spokenText: 'Ten percent of 40 is 4' },
+          { id: 'tip-add', expression: '40 + 4', result: '44', spokenText: 'Forty plus 4 is 44' },
+          { id: 'tip-total', expression: 'Total', result: '44', spokenText: 'The total is 44' }], fade_count: 0, response_step_ids: ['tip-add', 'tip-total'] } }] };
+    expect(loadLessonClientDocument(worked).status).toBe('ready');
+    expect(loadLessonClientDocument({ ...worked, eligibility: { minimum_age: 17, maximum_age: 119 } }).status).toBe('invalid');
+    const place = { schema_version: 2, course_id: 'financial-education', pathway_id: 'financial-young', chapter_id: 'hundreds', lesson_id: 'place-three',
+      version_id: 'rev-1', locale: 'pt-BR', age_band: '6-9', eligibility: { minimum_age: 6, maximum_age: 9 }, knowledge_component_ids: ['kc-place-value'],
+      adventure_scene_id: 'diorama-a', title: 'Centenas', required_capabilities: ['visual.base-ten.v1', 'operation.trade-ten.v1', 'operation.linked-representations.v1', 'operation.step-replay.v1'],
+      segments: [{ id: 'place-01', type: 'math.place-value.v2', grading: 'none', prompt: 'Troque.', visual: { type: 'base-ten' }, payload: { mode: 'subtract', minuend: 100, subtrahend: 37 } }] };
+    expect(loadLessonClientDocument(place).status).toBe('ready');
+    // No borrow needed, or a start that already reads as digits, is not an M5 regrouping item.
+    expect(loadLessonClientDocument({ ...place, segments: [{ ...place.segments[0], payload: { mode: 'subtract', minuend: 99, subtrahend: 37 } }] }).status).toBe('invalid');
+    expect(loadLessonClientDocument({ ...place, segments: [{ ...place.segments[0], payload: { mode: 'compose', total: 235, start: { hundreds: 2, tens: 3, ones: 5 } } }] }).status).toBe('invalid');
+    expect(loadLessonClientDocument({ ...place, segments: [{ ...place.segments[0], payload: { mode: 'compose', total: 235, start: { hundreds: 1, tens: 12, ones: 15 } } }] }).status).toBe('ready');
+    expect(loadLessonClientDocument({ ...place, age_band: '10-12', eligibility: { minimum_age: 10, maximum_age: 12 } }).status).toBe('invalid');
+  });
+
   it('keeps M13 function-machine examples public, linear, and restricted to its safe tween pilot', () => {
     const machine = functionMachinePilotDocument('en-US') as { eligibility: { minimum_age: number; maximum_age: number };
       required_capabilities: string[]; segments: [{ payload: { examples: Array<{ input: number; output: number }> }; answer?: unknown }] };
     expect(loadLessonClientDocument(machine).status).toBe('ready');
     expect(loadLessonClientDocument(machine, ['visual.function-machine.v1', 'operation.try-input.v1']).status).toBe('upgrade-required');
-    expect(loadLessonClientDocument({ ...machine, eligibility: { minimum_age: 9, maximum_age: 12 } }).status).toBe('invalid');
+    expect(loadLessonClientDocument({ ...machine, eligibility: { minimum_age: 7, maximum_age: 12 } }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...machine, segments: [{ ...machine.segments[0], payload: { ...machine.segments[0].payload,
       examples: [{ input: 1, output: 15 }, { input: 2, output: 20 }, { input: 3, output: 26 }] } }] }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...machine, segments: [{ ...machine.segments[0], answer: { multiplier: 5 } }] }).status).toBe('invalid');

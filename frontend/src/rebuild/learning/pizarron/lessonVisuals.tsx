@@ -140,10 +140,16 @@ export function StackedSlicesVisual({ label, slices }: { label: string; slices: 
 // ── Base ten (tens rods and ones cubes) ─────────────────────────────────────
 
 /** Tens as rods of ten and ones as single cubes, each group with its written count. */
-export function BaseTenVisual({ label, tens, ones, tensText, onesText }: {
-  label: string; tens: number; ones: number; tensText: string; onesText: string;
+export function BaseTenVisual({ label, hundreds, tens, ones, hundredsText, tensText, onesText }: {
+  label: string; hundreds?: number; tens: number; ones: number; hundredsText?: string; tensText: string; onesText: string;
 }) {
-  return <Picture name="base-ten" label={label} className="lf-place-value-plot">
+  // Bible 05 §7: hundreds are flats (a 10 x 10 square), tens are rods, ones are units.
+  const flats = hundredsText !== undefined;
+  return <Picture name="base-ten" label={label} className={`lf-place-value-plot${flats ? ' lf-place-value-plot--three' : ''}`}>
+    {flats ? <div className="lf-place-value-group"><span data-copy-role="data">{hundredsText}</span>
+      <div className="lf-place-value-flats" aria-hidden="true">{Array.from({ length: Math.max(0, hundreds ?? 0) }, (_, index) =>
+        <span className="lf-place-value-flat" key={index}>{Array.from({ length: 100 }, (_, cell) => <i key={cell} />)}</span>)}</div>
+    </div> : null}
     <div className="lf-place-value-group"><span data-copy-role="data">{tensText}</span>
       <div className="lf-place-value-rods" aria-hidden="true">{Array.from({ length: Math.max(0, tens) }, (_, index) =>
         <span className="lf-place-value-rod" key={index}>{Array.from({ length: 10 }, (_, cell) => <i key={cell} />)}</span>)}</div>

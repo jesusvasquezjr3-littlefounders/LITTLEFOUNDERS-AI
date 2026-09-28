@@ -3,7 +3,7 @@ import { growthComparison } from './v2GrowthComparison.js';
 import { gradeV2Response, scoreV2Judgment, scoreV2Visual, type V2Detection, type V2Diagnostic, type V2JudgmentQuality, type V2VisualKind } from './v2VisualScorer.js';
 import { conceptAllowed, conceptSampleResponse, gradeConcept, V2_CONCEPT_RUBRICS, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptSegment } from './v2ConceptBoards.js';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './v2ChartModel.js';
-import { longArithmeticSchema, V2_FAMILY_RUBRICS, v2FamilySampleResponse, v2FamilyScorerPayload, v2FamilySegments, v2SegmentExtras, type V2FamilySegment } from './v2SegmentFamilies.js';
+import { longArithmeticSchema, placeValuePayload, placeValueScorerPayload, V2_FAMILY_RUBRICS, v2AgeScopeProblem, v2FamilySampleResponse, v2FamilyScorerPayload, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras, type V2FamilySegment } from './v2SegmentFamilies.js';
 
 /*
  * Core's independently authored copy of the public v2 lesson contract.
@@ -113,7 +113,7 @@ const percentGrid = z.object({
 }).strict();
 const placeValue = z.object({
   ...base, type: z.literal('math.place-value.v2'), grading: optionalServer, visual: z.object({ type: z.literal('base-ten') }).strict(),
-  payload: z.object({ total: positive.min(10).max(29) }).strict(),
+  payload: placeValuePayload,
 }).strict();
 const savingsRule = z.object({
   ...base, type: z.literal('logic.savings-rule.v2'), grading: optionalServer, visual: z.object({ type: z.literal('rule-diagram') }).strict(),
@@ -148,7 +148,7 @@ const taxBracket = z.object({
 const ratioTable = z.object({
   ...base, type: z.literal('math.ratio-table.v2'), grading: optionalServer, visual: z.object({ type: z.literal('ratio-table') }).strict(),
   payload: z.object({ itemsPerPack: positive.max(12), pricePerPack: positive.max(1_000), minimumPacks: positive.max(8),
-    maximumPacks: positive.max(8), initialPacks: positive.max(8), currency: z.literal('coins') }).strict()
+    maximumPacks: positive.max(8), initialPacks: positive.max(8), currency: z.enum(['coins', 'local']) }).strict()
     .refine((v) => v.maximumPacks > v.minimumPacks && v.initialPacks >= v.minimumPacks && v.initialPacks <= v.maximumPacks
       && v.pricePerPack % v.itemsPerPack === 0, 'Invalid ratio table'),
 }).strict();
@@ -339,37 +339,10 @@ export const v2PublicLessonSchema = z.object({
     if (isConcept(value) && !conceptAllowed(value.type, document.age_band)) {
       ctx.addIssue({ code: 'custom', path: ['segments', index, 'type'], message: 'This concept board is not open to this age pathway' });
     }
-    if (value.type === 'math.place-value.v2' && document.age_band !== '6-9') ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Invalid place-value pathway' });
-    if (value.type === 'math.number-line.fraction.v2'
-      && (document.age_band !== '10-12' || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Invalid fraction number-line pathway' });
-    }
-    if (value.type === 'math.fraction-area.v2'
-      && (document.age_band !== '6-9' || document.eligibility.minimum_age !== 7 || document.eligibility.maximum_age !== 9)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Invalid fraction-area pathway' });
-    }
-    if ((value.type === 'math.bar-model.structure.v2' || value.type === 'math.bar-model.answer.v2')
-      && (document.age_band !== '10-12' || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Invalid bar-model pathway' });
-    }
-    if (value.type === 'money.allocation.v2' && value.visual.type === 'waffle' && (document.age_band !== '6-9' || value.payload.total !== 10 || value.payload.step !== 1 || value.payload.currency !== 'coins')) ctx.addIssue({ code: 'custom', path: ['segments', index], message: 'Invalid waffle pilot' });
-    if (value.type === 'money.allocation.v2' && value.visual.type === 'donut' && (document.age_band !== '10-12' || value.payload.total !== 60 || value.payload.step !== 5 || value.payload.currency !== 'coins')) ctx.addIssue({ code: 'custom', path: ['segments', index], message: 'Invalid donut pilot' });
-    if (value.type === 'logic.savings-rule.v2' && document.age_band !== '10-12') ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Invalid savings-rule pathway' });
-    if (value.type === 'visual.percent-grid.v2' && (document.age_band !== '10-12' || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Invalid percent-grid pathway' });
-    if ((value.type === 'money.running-ledger.v2' || value.type === 'visual.growth-comparison.v2') && document.age_band !== '13-17') ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Invalid teen pathway' });
-    if (value.type === 'visual.tax-bracket.v2' && (document.age_band !== '13-17' || document.eligibility.minimum_age !== 14 || document.eligibility.maximum_age !== 17)) ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Invalid tax-bracket pathway' });
-    if (value.type === 'math.ratio-table.v2' && (document.age_band !== '10-12' || value.payload.itemsPerPack !== 3 || value.payload.pricePerPack !== 15 || value.payload.minimumPacks !== 1 || value.payload.maximumPacks !== 4 || value.payload.initialPacks !== 2 || value.payload.currency !== 'coins')) ctx.addIssue({ code: 'custom', path: ['segments', index], message: 'Invalid ratio-table pilot' });
-    if (value.type === 'math.worked-example.v2' && (document.age_band !== '10-12'
-      || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Invalid worked-example pathway' });
-    }
-    if (value.type === 'math.function-machine.v2' && (document.age_band !== '10-12'
-      || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Invalid function-machine pathway' });
-    }
-    if (value.type === 'math.cpa-count.v2' && (document.age_band !== '6-9' && document.age_band !== '10-12')) {
-      ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Invalid CPA count pathway' });
-    }
+    // B.7 part 3 / Appendix P Part 1 and Part 8, OD-16 (GAP-FIX-R2): each kind's age range and generic parameters, not pilot pins.
+    const scopeKey = value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar' ? `${value.type}:${value.visual.type}` : value.type;
+    const scopeProblem = v2AgeScopeProblem(scopeKey, document) ?? v2PayloadScopeProblem(value, document.age_band);
+    if (scopeProblem) ctx.addIssue({ code: 'custom', path: ['segments', index], message: scopeProblem });
   }
   // OD-17 / B.7 (GAP-FIX-R1): a mixed document may surround these sequences
   // with other segments, but each M7 chain stays contiguous and ordered, since
@@ -377,10 +350,8 @@ export const v2PublicLessonSchema = z.object({
   if (!contiguousChains(document.segments.map((value) => value.type), ['math.bar-model.structure.v2', 'math.bar-model.answer.v2'])) {
     ctx.addIssue({ code: 'custom', path: ['segments'], message: 'Bar-model pilot requires an ordered structure and answer pair' });
   }
-  const hasSchemaDiagram = document.segments.some((value) => value.type === 'math.schema-diagram.structure.v2' || value.type === 'math.schema-diagram.slots.v2' || value.type === 'math.schema-diagram.answer.v2');
-  if (hasSchemaDiagram && (document.age_band !== '10-12' || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12
-    || !contiguousChains(document.segments.map((value) => value.type), ['math.schema-diagram.structure.v2', 'math.schema-diagram.slots.v2', 'math.schema-diagram.answer.v2']))) {
-    ctx.addIssue({ code: 'custom', path: ['segments'], message: 'Schema-diagram pilot requires an ordered 10–12 structure, slots and answer sequence' });
+  if (!contiguousChains(document.segments.map((value) => value.type), ['math.schema-diagram.structure.v2', 'math.schema-diagram.slots.v2', 'math.schema-diagram.answer.v2'])) {
+    ctx.addIssue({ code: 'custom', path: ['segments'], message: 'Schema diagrams require an ordered structure, slots and answer sequence' });
   }
   const cpaSegments = document.segments.filter((value) => value.type === 'math.cpa-count.v2');
   if (cpaSegments.length > 0) {
@@ -428,7 +399,7 @@ const rubricByKind = {
     reasonQuality: z.record(z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/), z.enum(['sound', 'partial', 'unsupported'])),
   }).strict(),
   // Appendix P Parts 1, 4.2 and 7 (GAP-FIX-R1): the formerly presentation-only visuals.
-  'math.place-value.v2': z.object({ trades: nonnegative.max(2) }).strict(),
+  'math.place-value.v2': z.object({ trades: positive.max(20) }).strict(),
   'math.ratio-table.v2': z.object({ target_packs: positive.max(8) }).strict(),
   'visual.percent-grid.v2': z.object({ target_percent: nonnegative.max(100) }).strict(),
   'visual.growth-comparison.v2': z.object({ tolerance_minor: nonnegative }).strict(),
@@ -462,7 +433,7 @@ function scorerPayload(item: ServerSegment): Record<string, unknown> {
   if (isFamily(item)) return v2FamilyScorerPayload(item);
   if (isConcept(item)) return { type: item.type };
   switch (item.type) {
-    case 'math.place-value.v2': return { total: item.payload.total };
+    case 'math.place-value.v2': return placeValueScorerPayload(item.payload);
     case 'math.ratio-table.v2': return { itemsPerPack: item.payload.itemsPerPack, pricePerPack: item.payload.pricePerPack,
       minimumPacks: item.payload.minimumPacks, maximumPacks: item.payload.maximumPacks };
     case 'visual.percent-grid.v2': return { baseUnits: item.payload.baseUnits, step: item.payload.step };
@@ -515,6 +486,8 @@ export function validateV2LessonForGrading(document: unknown, answerKeys: unknow
   for (const item of scored) {
     if (!Object.hasOwn(keys, item.id)) return null;
     const rubric = rubricByKind[item.type as keyof typeof rubricByKind].safeParse(keys[item.id]);
+    // L2 (Appendix P Part 2): ages 8-9 build a single IF, so their rule key never needs a connective.
+    if (item.type === 'logic.savings-rule.v2' && parsed.data.age_band === '6-9' && rubric.success && (rubric.data as { link: string }).link !== 'none') return null;
     if (isConcept(item)) {
       if (!rubric.success || gradeConcept(item, conceptSampleResponse(item), rubric.data).verdict === 'invalid') return null;
       continue;
@@ -540,7 +513,7 @@ export function validateV2LessonForGrading(document: unknown, answerKeys: unknow
 function v2SampleResponse(item: ServerSegment): unknown {
   if (isFamily(item)) return v2FamilySampleResponse(item);
   switch (item.type) {
-    case 'math.place-value.v2': return { trades: 0, tens: '0', ones: String(item.payload.total) };
+    case 'math.place-value.v2': return { trades: [], hundreds: '0', tens: '0', ones: '0' };
     case 'math.ratio-table.v2': return { packs: item.payload.minimumPacks, price: '0' };
     case 'visual.percent-grid.v2': return { percent: item.payload.initialPercent, amount: '0' };
     case 'visual.growth-comparison.v2': return { rateBps: item.payload.initialRateBps, years: item.payload.initialYears, predictionMinor: item.payload.principalMinor };

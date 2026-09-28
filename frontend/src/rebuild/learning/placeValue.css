@@ -1,4 +1,9 @@
 .lf-place-value-plot { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-4); min-block-size: 128px; }
+.lf-place-value-plot--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* Hundreds are the third series: berry flats (10 x 10, Bible 05 §7), told apart from the rods and units by shape as well as hue. */
+.lf-place-value-flats { display: flex; flex-wrap: wrap; align-content: start; gap: var(--spacing-1); }
+.lf-place-value-flat { display: grid; grid-template-columns: repeat(10, 4px); grid-auto-rows: 4px; gap: 1px; padding: 1px; border-radius: 4px; background: var(--surface); outline: 1px solid var(--berry-strong); }
+.lf-place-value-flat i { display: block; background: var(--berry-strong); }
 .lf-place-value-group { display: grid; grid-template-rows: auto 1fr; gap: var(--spacing-2); min-inline-size: 0; }
 .lf-place-value-group > span { font-size: .875rem; font-weight: 800; }
 .lf-place-value-rods, .lf-place-value-ones { display: flex; flex-wrap: wrap; align-content: start; gap: var(--spacing-1); }
@@ -17,3 +22,5 @@
   .lf-place-value-plot { gap: var(--spacing-2); }
   .lf-place-value-ones { grid-template-columns: repeat(4, 16px); }
 }
+
+.lf-place-value-take { font-size: 1rem; font-weight: 700; }
