@@ -128,6 +128,10 @@ services:
     ports: !override
       - ${SESSION_PORT}:5432
       - ${TXN_PORT}:6543
+  # A.6: pinned as in local-stack.sh (secure email change, guard_kid_email).
+  auth:
+    environment:
+      GOTRUE_MAILER_SECURE_EMAIL_CHANGE_ENABLED: "true"
 EOF
   echo "OK: isolated stack provisioned under $DOCKER_DIR (project $PROJECT)"
 }
