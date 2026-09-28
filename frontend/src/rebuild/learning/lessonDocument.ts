@@ -68,9 +68,12 @@ const numberLineSegment = z.object({
   type: z.literal('math.number-line.whole.v2'),
   grading: z.literal('server'),
   visual: z.object({ type: z.literal('number-line') }).strict(),
-  payload: z.object({ minimum: nonnegativeInteger, maximum: positiveInteger, step: positiveInteger, initial: nonnegativeInteger }).strict()
+  // M2 (GAP-FIX-R2): mirrors Core's optional count-on hop sizes.
+  payload: z.object({ minimum: nonnegativeInteger, maximum: positiveInteger, step: positiveInteger, initial: nonnegativeInteger,
+    hops: z.array(positiveInteger).min(1).max(3).optional() }).strict()
     .refine((value) => value.maximum > value.minimum && (value.maximum - value.minimum) % value.step === 0
-      && value.initial >= value.minimum && value.initial <= value.maximum && (value.initial - value.minimum) % value.step === 0,
+      && value.initial >= value.minimum && value.initial <= value.maximum && (value.initial - value.minimum) % value.step === 0
+      && (value.hops === undefined || (new Set(value.hops).size === value.hops.length && value.hops.every((hop) => hop % value.step === 0 && hop < value.maximum - value.minimum))),
     'Invalid number-line range'),
 }).strict();
 

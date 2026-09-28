@@ -11812,5 +11812,458 @@
         ]
       }
     }
+  },
+  {
+    "lesson_id": "v2-count-on",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "counting-on",
+      "lesson_id": "v2-count-on",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-number-magnitude"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Count on to the goal",
+      "required_capabilities": [
+        "visual.number-line.v1",
+        "operation.place-point.v1"
+      ],
+      "segments": [
+        {
+          "id": "count-on-01",
+          "type": "math.number-line.whole.v2",
+          "grading": "server",
+          "prompt": "You are on 37. Count on to your 50 goal.",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+            "initial": 37,
+            "hops": [
+              1,
+              10
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "count-on-01": {
+        "target": 50
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-count-on",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "counting-on",
+      "lesson_id": "v2-count-on",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-number-magnitude"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Cuenta hasta la meta",
+      "required_capabilities": [
+        "visual.number-line.v1",
+        "operation.place-point.v1"
+      ],
+      "segments": [
+        {
+          "id": "count-on-01",
+          "type": "math.number-line.whole.v2",
+          "grading": "server",
+          "prompt": "Estás en 37. Cuenta hasta tu meta de 50.",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+            "initial": 37,
+            "hops": [
+              1,
+              10
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "count-on-01": {
+        "target": 50
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-count-on",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "counting-on",
+      "lesson_id": "v2-count-on",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-number-magnitude"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Conte até a meta",
+      "required_capabilities": [
+        "visual.number-line.v1",
+        "operation.place-point.v1"
+      ],
+      "segments": [
+        {
+          "id": "count-on-01",
+          "type": "math.number-line.whole.v2",
+          "grading": "server",
+          "prompt": "Você está no 37. Conte até sua meta de 50.",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+            "initial": 37,
+            "hops": [
+              1,
+              10
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "count-on-01": {
+        "target": 50
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-scam-cues",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "message-safety",
+      "lesson_id": "v2-scam-cues",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-message-safety"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Spot the cues",
+      "required_capabilities": [
+        "visual.message-list.v1",
+        "operation.flag-item.v1"
+      ],
+      "segments": [
+        {
+          "id": "messages-cues-01",
+          "type": "money.scam-check.v2",
+          "grading": "server",
+          "prompt": "Mark the tricks and tick the cues you saw.",
+          "visual": {
+            "type": "message-list"
+          },
+          "payload": {
+            "messages": [
+              {
+                "id": "msg-prize",
+                "sender": "Unknown number",
+                "text": "You won 500 coins! Send your password to claim them."
+              },
+              {
+                "id": "msg-coach",
+                "sender": "Coach Ana",
+                "text": "Practice moves to 4 pm on Friday."
+              },
+              {
+                "id": "msg-code",
+                "sender": "Game Team",
+                "text": "Share the code we sent you so we can fix your account."
+              },
+              {
+                "id": "msg-aunt",
+                "sender": "Aunt Rosa",
+                "text": "See you at lunch on Sunday."
+              }
+            ],
+            "cues": [
+              {
+                "id": "cue-password",
+                "label": "Asks for a password"
+              },
+              {
+                "id": "cue-prize",
+                "label": "Too-good prize"
+              },
+              {
+                "id": "cue-code",
+                "label": "Asks for a code"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-message-safety"
+        }
+      ]
+    },
+    "answer_keys": {
+      "messages-cues-01": {
+        "scam_ids": [
+          "msg-prize",
+          "msg-code"
+        ],
+        "cue_ids": {
+          "msg-prize": [
+            "cue-password",
+            "cue-prize"
+          ],
+          "msg-code": [
+            "cue-code"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-scam-cues",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "message-safety",
+      "lesson_id": "v2-scam-cues",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-message-safety"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Detecta las señales",
+      "required_capabilities": [
+        "visual.message-list.v1",
+        "operation.flag-item.v1"
+      ],
+      "segments": [
+        {
+          "id": "messages-cues-01",
+          "type": "money.scam-check.v2",
+          "grading": "server",
+          "prompt": "Marca las trampas y las señales que viste.",
+          "visual": {
+            "type": "message-list"
+          },
+          "payload": {
+            "messages": [
+              {
+                "id": "msg-prize",
+                "sender": "Número desconocido",
+                "text": "¡Ganaste 500 monedas! Envía tu contraseña para cobrarlas."
+              },
+              {
+                "id": "msg-coach",
+                "sender": "Entrenadora Ana",
+                "text": "El entrenamiento pasa a las 4 pm el viernes."
+              },
+              {
+                "id": "msg-code",
+                "sender": "Equipo del juego",
+                "text": "Comparte el código que te enviamos para arreglar tu cuenta."
+              },
+              {
+                "id": "msg-aunt",
+                "sender": "Tía Rosa",
+                "text": "Nos vemos en la comida del domingo."
+              }
+            ],
+            "cues": [
+              {
+                "id": "cue-password",
+                "label": "Pide contraseña"
+              },
+              {
+                "id": "cue-prize",
+                "label": "Premio increíble"
+              },
+              {
+                "id": "cue-code",
+                "label": "Pide un código"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-message-safety"
+        }
+      ]
+    },
+    "answer_keys": {
+      "messages-cues-01": {
+        "scam_ids": [
+          "msg-prize",
+          "msg-code"
+        ],
+        "cue_ids": {
+          "msg-prize": [
+            "cue-password",
+            "cue-prize"
+          ],
+          "msg-code": [
+            "cue-code"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-scam-cues",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "message-safety",
+      "lesson_id": "v2-scam-cues",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-message-safety"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Ache os sinais",
+      "required_capabilities": [
+        "visual.message-list.v1",
+        "operation.flag-item.v1"
+      ],
+      "segments": [
+        {
+          "id": "messages-cues-01",
+          "type": "money.scam-check.v2",
+          "grading": "server",
+          "prompt": "Marque as armadilhas e os sinais que viu.",
+          "visual": {
+            "type": "message-list"
+          },
+          "payload": {
+            "messages": [
+              {
+                "id": "msg-prize",
+                "sender": "Número desconhecido",
+                "text": "Você ganhou 500 moedas! Envie sua senha para receber."
+              },
+              {
+                "id": "msg-coach",
+                "sender": "Técnica Ana",
+                "text": "O treino passa para as 16h na sexta."
+              },
+              {
+                "id": "msg-code",
+                "sender": "Equipe do jogo",
+                "text": "Compartilhe o código que enviamos para arrumar sua conta."
+              },
+              {
+                "id": "msg-aunt",
+                "sender": "Tia Rosa",
+                "text": "Até o almoço de domingo."
+              }
+            ],
+            "cues": [
+              {
+                "id": "cue-password",
+                "label": "Pede senha"
+              },
+              {
+                "id": "cue-prize",
+                "label": "Prêmio bom demais"
+              },
+              {
+                "id": "cue-code",
+                "label": "Pede um código"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-message-safety"
+        }
+      ]
+    },
+    "answer_keys": {
+      "messages-cues-01": {
+        "scam_ids": [
+          "msg-prize",
+          "msg-code"
+        ],
+        "cue_ids": {
+          "msg-prize": [
+            "cue-password",
+            "cue-prize"
+          ],
+          "msg-code": [
+            "cue-code"
+          ]
+        }
+      }
+    }
   }
 ]

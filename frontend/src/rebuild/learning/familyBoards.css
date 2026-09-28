@@ -50,3 +50,7 @@
 .lf-rule-slot { display: grid; gap: var(--spacing-2); }
 .lf-flow-build, .lf-flow-branches { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
 .lf-flow-branches { padding-inline-start: var(--spacing-4); border-inline-start: 2px solid var(--outline); }
+
+/* $2 count-up and L12 cue ticks (GAP-FIX-R2). */
+.lf-coin-count-up { display: grid; gap: var(--spacing-2); }
+.lf-message-cues { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }

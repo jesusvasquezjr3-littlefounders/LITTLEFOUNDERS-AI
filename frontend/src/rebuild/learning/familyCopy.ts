@@ -14,6 +14,7 @@ export interface FamilyCopy {
   messages: string; scam: string; notScam: string; from: string;
   tray: string; total: string; price: string; paid: string; change: string; fewer: string; more: string;
   next: string; whatHappened: string;
+  countUp: string; sayCount: string; say: string; cues: string;
 }
 
 export const familyCopy: Record<Locale, FamilyCopy> = {
@@ -25,6 +26,7 @@ export const familyCopy: Record<Locale, FamilyCopy> = {
     messages: 'Messages', scam: 'Scam', notScam: 'Looks fine', from: 'From',
     tray: 'Money tray', total: 'Total', price: 'Price', paid: 'Paid', change: 'Change to give', fewer: 'Fewer', more: 'More',
     next: 'Next', whatHappened: 'What happened',
+    countUp: 'Counting up', sayCount: 'Say the count', say: 'Say it', cues: 'Cues',
   },
   'es-MX': {
     rule: 'La regla', cards: 'Tarjetas',
@@ -34,6 +36,7 @@ export const familyCopy: Record<Locale, FamilyCopy> = {
     messages: 'Mensajes', scam: 'Estafa', notScam: 'Se ve bien', from: 'De',
     tray: 'Bandeja de dinero', total: 'Total', price: 'Precio', paid: 'Pagado', change: 'Cambio a dar', fewer: 'Menos', more: 'Más',
     next: 'Siguiente', whatHappened: 'Qué pasó',
+    countUp: 'Contando hacia arriba', sayCount: 'Di la cuenta', say: 'Dilo', cues: 'Señales',
   },
   'pt-BR': {
     rule: 'A regra', cards: 'Cartas',
@@ -43,6 +46,7 @@ export const familyCopy: Record<Locale, FamilyCopy> = {
     messages: 'Mensagens', scam: 'Golpe', notScam: 'Parece normal', from: 'De',
     tray: 'Bandeja de dinheiro', total: 'Total', price: 'Preço', paid: 'Pago', change: 'Troco a dar', fewer: 'Menos', more: 'Mais',
     next: 'Próximo', whatHappened: 'O que aconteceu',
+    countUp: 'Contando para cima', sayCount: 'Diga a conta', say: 'Dizer', cues: 'Sinais',
   },
 };
 
@@ -54,4 +58,5 @@ export const familyCopyRoles: Record<keyof FamilyCopy, CopyRole> = {
   messages: 'heading', scam: 'option', notScam: 'option', from: 'data',
   tray: 'heading', total: 'body', price: 'body', paid: 'body', change: 'body', fewer: 'action', more: 'action',
   next: 'action', whatHappened: 'heading',
+  countUp: 'body', sayCount: 'body', say: 'action', cues: 'body',
 };

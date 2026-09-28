@@ -111,4 +111,46 @@ describe('build-and-test boards (GAP-FIX-R2)', () => {
       }
     }
   });
+
+  it('M2 counts on from the current square and sends the hops', async () => {
+    const onGradeNumberLine = vi.fn(async () => 'met' as const);
+    const segment = { id: 'hop-01', type: 'math.number-line.whole.v2', grading: 'server', prompt: 'Count on to 50.', visual: { type: 'number-line' },
+      payload: { minimum: 0, maximum: 100, step: 1, initial: 37, hops: [1, 10] } };
+    render(<LessonDocumentView raw={doc('6-9', segment, ['visual.number-line.v1', 'operation.place-point.v1'])} locale="en-US" ageBand="6-9" onBack={noop} onGradeNumberLine={onGradeNumberLine} />);
+    expect(screen.queryByRole('slider')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: '+10' }));
+    fireEvent.click(screen.getByRole('button', { name: '+1' }));
+    fireEvent.click(screen.getByRole('button', { name: '+1' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Undo hop' }));
+    fireEvent.click(screen.getByRole('button', { name: '+1' }));
+    fireEvent.click(screen.getByRole('button', { name: '+1' }));
+    expect(screen.getByText('37 → 47 → 48 → 49 → 50')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(onGradeNumberLine).toHaveBeenCalledWith({ value: '50', hops: [10, 1, 1, 1] }, 'hop-01', expect.anything()));
+  });
+
+  it('$2 records the count said after each coin, and L12 sends the cue ticks', async () => {
+    const onGradeAny = vi.fn(async () => ({ verdict: 'met' as const }));
+    const change = { id: 'change-01', type: 'money.making-change.v2', grading: 'server', prompt: 'Give the change.', visual: { type: 'coin-tray' },
+      payload: { currency: 'coins', price_minor: 8, paid_minor: 10, denominations: [{ value_minor: 5, kind: 'coin', available: 2 }, { value_minor: 1, kind: 'coin', available: 5 }] } };
+    const { unmount } = render(<LessonDocumentView raw={doc('6-9', change, ['visual.coin-tray.v1', 'operation.count-money.v1', 'operation.make-change.v1'])} locale="en-US" ageBand="6-9" onBack={noop} onGradeAny={onGradeAny} />);
+    const more = () => screen.getAllByRole('button', { name: /More/ });
+    fireEvent.click(more()[1]!);
+    fireEvent.change(screen.getByLabelText('Say the count'), { target: { value: '9' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Say it' }));
+    fireEvent.click(more()[1]!);
+    fireEvent.change(screen.getByLabelText('Say the count'), { target: { value: '10' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Say it' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(onGradeAny).toHaveBeenCalledWith({ counts: { 5: 0, 1: 2 }, sequence: [9, 10] }, 'change-01', expect.anything()));
+    unmount();
+    const scam = { id: 'scam-01', type: 'money.scam-check.v2', grading: 'server', prompt: 'Mark the tricks.', visual: { type: 'message-list' },
+      payload: { messages: [{ id: 'msg-prize', sender: 'Unknown', text: 'Send your password.' }, { id: 'msg-coach', sender: 'Coach', text: 'Practice at 4.' },
+        { id: 'msg-aunt', sender: 'Aunt', text: 'Lunch Sunday.' }], cues: [{ id: 'cue-password', label: 'Asks for a password' }, { id: 'cue-rush', label: 'Rushes you' }] } };
+    render(<LessonDocumentView raw={doc('10-12', scam, ['visual.message-list.v1', 'operation.flag-item.v1'])} locale="en-US" ageBand="10-12" onBack={noop} onGradeAny={onGradeAny} />);
+    fireEvent.click(within(screen.getByRole('group', { name: 'Cues: Unknown' })).getByRole('button', { name: 'Asks for a password' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(onGradeAny).toHaveBeenCalledWith({ flagged: [], cues: { 'msg-prize': ['cue-password'] } }, 'scam-01', expect.anything()));
+  });
 });

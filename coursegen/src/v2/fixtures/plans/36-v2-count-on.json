@@ -1,0 +1,62 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "counting-on",
+  "lesson_id": "v2-count-on",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-number-magnitude"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Liruf avanza en el tablero contando desde su casilla hasta su meta.",
+  "title": {
+    "en-US": "Count on to the goal",
+    "es-MX": "Cuenta hasta la meta",
+    "pt-BR": "Conte até a meta"
+  },
+  "new_concepts": [
+    "kc-number-magnitude"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "count-on-01",
+      "type": "math.number-line.whole.v2",
+      "grading": "server",
+      "visual": {
+        "type": "number-line"
+      },
+      "payload": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1,
+        "initial": 37,
+        "hops": [
+          1,
+          10
+        ]
+      },
+      "rubric": {
+        "target": 50
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You are on 37. Count on to your 50 goal."
+        },
+        "es-MX": {
+          "prompt": "Estás en 37. Cuenta hasta tu meta de 50."
+        },
+        "pt-BR": {
+          "prompt": "Você está no 37. Conte até sua meta de 50."
+        }
+      }
+    }
+  ]
+}

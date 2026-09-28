@@ -38,6 +38,8 @@ export function scoreV2Visual(kind: V2VisualKind, payload: unknown, response: un
       return (response.save as number) >= rubric.minimumSave ? 'met' : 'review';
     }
     case 'math.number-line.whole.v2': {
+      // M2 / $2 (GAP-FIX-R2): board-game counting on from the current square, graded as a hop sequence.
+      if (fields(payload, ['minimum', 'maximum', 'step', 'initial', 'hops'])) return countOnVerdict(payload, response, rubric);
       if (!fields(payload, ['minimum', 'maximum', 'step']) || !whole(payload.minimum) || payload.minimum < 0
         || !whole(payload.maximum) || payload.maximum <= payload.minimum || !whole(payload.step) || payload.step <= 0
         || (payload.maximum - payload.minimum) % payload.step !== 0 || !fields(response, ['value'])
@@ -293,7 +295,7 @@ export function sameAnswer(given: string, expected: string): boolean {
  * verdict. `structure`, `path` and `bin` are structure errors (the learner
  * built the wrong model); every other non-`none` code is an answer error.
  */
-export const V2_DIAGNOSTIC_CODES = ['none', 'structure', 'value', 'partial', 'miss', 'false_alarm', 'path', 'outcome', 'bin', 'reason', 'tolerance'] as const;
+export const V2_DIAGNOSTIC_CODES = ['none', 'structure', 'value', 'partial', 'miss', 'false_alarm', 'path', 'outcome', 'bin', 'reason', 'tolerance', 'count_from_zero'] as const;
 export type V2Diagnostic = (typeof V2_DIAGNOSTIC_CODES)[number];
 export function v2DiagnosticFamily(code: V2Diagnostic): 'structure' | 'answer' | null {
   return code === 'none' ? null : code === 'structure' || code === 'path' || code === 'bin' ? 'structure' : 'answer';
@@ -322,7 +324,9 @@ function probit(p: number): number {
   return (((((a[0]! * r + a[1]!) * r + a[2]!) * r + a[3]!) * r + a[4]!) * r + a[5]!) * q / (((((b[0]! * r + b[1]!) * r + b[2]!) * r + b[3]!) * r + b[4]!) * r + 1);
 }
 
-export interface V2Grade { verdict: V2VisualVerdict; diagnostic: V2Diagnostic; detection?: V2Detection }
+/** L12 / $11 (GAP-FIX-R2): which cues the learner ticked against the key; a diagnostic that never changes d′ or the score. */
+export interface V2CueHits { hits: number; missed: number; false_ticks: number }
+export interface V2Grade { verdict: V2VisualVerdict; diagnostic: V2Diagnostic; detection?: V2Detection; cues?: V2CueHits }
 
 const NUMBER_TEXT = /^-?(0|[1-9]\d*)(\.\d+)?$/;
 function numberText(value: unknown): value is string { return typeof value === 'string' && value.length <= 40 && NUMBER_TEXT.test(value); }
@@ -449,12 +453,18 @@ function sortGrade(payload: unknown, response: unknown, rubric: unknown): V2Grad
 }
 
 function detectionGrade(payload: unknown, response: unknown, rubric: unknown): V2Grade {
-  if (!fields(payload, ['messageIds']) || !strings(payload.messageIds, 3, 8) || !fields(response, ['flagged']) || !strings(response.flagged, 0, 8)
-    || response.flagged.some((flag) => !(payload.messageIds as string[]).includes(flag))) return INVALID;
+  const cued = fields(payload, ['messageIds', 'cueIds']);
+  if ((!cued && !fields(payload, ['messageIds'])) || !strings((payload as Record<string, unknown>).messageIds, 3, 8)
+    || !fields(response, cued ? ['flagged', 'cues'] : ['flagged']) || !strings(response.flagged, 0, 8)
+    || response.flagged.some((flag) => !((payload as Record<string, unknown>).messageIds as string[]).includes(flag))) return INVALID;
+  const messages = (payload as Record<string, unknown>).messageIds as string[];
+  const cueIds = cued ? (payload as Record<string, unknown>).cueIds : [];
+  if (cued && (!strings(cueIds, 2, 6) || !cueTicks(response.cues, messages, cueIds as string[]))) return INVALID;
   if (rubric === undefined) return grade('valid');
-  const messages = payload.messageIds as string[];
   // Genuine messages are always in the set: a key that calls everything a scam cannot measure false alarms.
-  if (!fields(rubric, ['scam_ids']) || !strings(rubric.scam_ids, 1, messages.length - 1) || rubric.scam_ids.some((scam) => !messages.includes(scam))) return INVALID;
+  const rubricFields = record(rubric) && Object.hasOwn(rubric, 'cue_ids') ? ['scam_ids', 'cue_ids'] : ['scam_ids'];
+  if (!fields(rubric, rubricFields) || !strings(rubric.scam_ids, 1, messages.length - 1) || rubric.scam_ids.some((scam) => !messages.includes(scam))) return INVALID;
+  if (rubricFields.length === 2 && (!cued || !cueTicks(rubric.cue_ids, messages, cueIds as string[]))) return INVALID;
   const scams = new Set(rubric.scam_ids);
   const flagged = new Set(response.flagged as string[]);
   const detection: V2Detection = {
@@ -465,7 +475,16 @@ function detectionGrade(payload: unknown, response: unknown, rubric: unknown): V
   };
   const met = detection.misses === 0 && detection.false_alarms === 0;
   const diagnostic: V2Diagnostic = met ? 'none' : detection.misses > 0 && detection.false_alarms > 0 ? 'partial' : detection.misses > 0 ? 'miss' : 'false_alarm';
-  return { verdict: met ? 'met' : 'review', diagnostic, detection };
+  if (rubricFields.length === 1) return { verdict: met ? 'met' : 'review', diagnostic, detection };
+  // L12: "tick which cues fired" — counted beside the verdict; the score and d′ stay the flag decision alone.
+  const key = rubric.cue_ids as Record<string, string[]>; const ticked = response.cues as Record<string, string[]>;
+  const cues: V2CueHits = { hits: 0, missed: 0, false_ticks: 0 };
+  for (const message of messages) {
+    const expected = new Set(key[message] ?? []); const given = new Set(ticked[message] ?? []);
+    for (const cue of given) if (expected.has(cue)) cues.hits += 1; else cues.false_ticks += 1;
+    for (const cue of expected) if (!given.has(cue)) cues.missed += 1;
+  }
+  return { verdict: met ? 'met' : 'review', diagnostic, detection, cues };
 }
 
 /**
@@ -502,6 +521,51 @@ export function gradeV2Response(kind: V2VisualKind, payload: unknown, response: 
   }
 }
 
+
+/* ── M2 counting on, $2 counting up, L12 cue ticks (GAP-FIX-R2) ─────────────── */
+
+function countOnVerdict(payload: Record<string, unknown>, response: unknown, rubric: unknown): V2VisualVerdict {
+  const { minimum, maximum, step, initial, hops } = payload as Record<string, unknown>;
+  if (!whole(minimum) || minimum < 0 || !whole(maximum) || maximum <= minimum || !whole(step) || step <= 0 || !onGrid(initial, minimum, maximum, step)
+    || !Array.isArray(hops) || hops.length < 1 || hops.length > 3 || hops.some((hop) => !whole(hop) || hop <= 0 || hop % step !== 0)
+    || !fields(response, ['value', 'hops']) || typeof response.value !== 'string' || !/^(0|[1-9]\d*)$/.test(response.value)
+    || !Array.isArray(response.hops) || response.hops.length < 1 || response.hops.length > 40
+    || response.hops.some((hop) => !(hops as number[]).includes(hop as number))) return 'invalid';
+  const value = Number(response.value);
+  // Conservation: the point is always where the hops from the current square land.
+  const landed = (response.hops as number[]).reduce((sum, hop) => sum + hop, initial);
+  if (value !== landed || value > maximum) return 'invalid';
+  if (rubric === undefined) return 'valid';
+  if (!fields(rubric, ['target']) || !onGrid(rubric.target, initial, maximum, step) || rubric.target === initial) return 'invalid';
+  return value === rubric.target ? 'met' : 'review';
+}
+
+/** The counting-up sequence: strictly rising totals, each one coin more, the coins exactly the tray. */
+function countUp(denominations: Array<{ value: number }>, counts: Record<string, number>, sequence: unknown, price: number, paid: number): 'from_price' | 'from_zero' | 'wrong' | null {
+  const coins = Object.values(counts).reduce((sum, count) => sum + count, 0);
+  if (!Array.isArray(sequence) || sequence.length !== coins || sequence.length > 60 || sequence.some((value) => !whole(value) || value < 0)) return null;
+  const values = new Set(denominations.map((item) => item.value));
+  const fits = (start: number) => {
+    const used: Record<string, number> = {};
+    let previous = start;
+    for (const said of sequence as number[]) {
+      const coin = said - previous;
+      if (!values.has(coin)) return false;
+      used[String(coin)] = (used[String(coin)] ?? 0) + 1;
+      previous = said;
+    }
+    return Object.entries(counts).every(([coin, count]) => (used[coin] ?? 0) === count);
+  };
+  if (fits(price) && sequence.at(-1) === paid) return 'from_price';
+  if (fits(0)) return 'from_zero';
+  return 'wrong';
+}
+
+function cueTicks(value: unknown, messages: readonly string[], cueIds: readonly string[]): boolean {
+  return record(value) && Object.keys(value).every((message) => messages.includes(message))
+    && Object.values(value).every((ticks) => Array.isArray(ticks) && ticks.length <= cueIds.length && new Set(ticks).size === ticks.length
+      && ticks.every((cue) => typeof cue === 'string' && cueIds.includes(cue)));
+}
 
 /* ── $6 unit prices (GAP-FIX-R2) ─────────────────────────────────────────── */
 
@@ -864,12 +928,18 @@ function scoreV2ExtendedDetailed(kind: V2VisualKind, payload: unknown, response:
     }
     case 'money.making-change.v2': {
       if (!fields(payload, ['denominations', 'price', 'paid']) || !whole(payload.price) || !whole(payload.paid) || payload.paid <= payload.price) return INVALID;
-      const total = money(payload, response);
+      // $2 (GAP-FIX-R2): the coins returned and the counting-up sequence said while adding them, in order.
+      if (!fields(response, ['counts', 'sequence'])) return INVALID;
+      const total = money(payload, { counts: response.counts });
       if (total === null) return INVALID;
+      const counting = countUp(payload.denominations as Array<{ value: number }>, response.counts as Record<string, number>, response.sequence, payload.price, payload.paid);
+      if (counting === null) return INVALID;
       if (rubric === undefined) return grade('valid');
       // Conservation: the change owed is exactly what was paid minus the price.
       if (!fields(rubric, ['change_minor']) || rubric.change_minor !== payload.paid - payload.price) return INVALID;
-      return total === rubric.change_minor ? grade('met') : grade('review', 'value');
+      if (total !== rubric.change_minor) return grade('review', 'value');
+      // Laski & Siegler: count UP from the price to the amount paid; counting the change from zero is a diagnosed review.
+      return counting === 'from_price' ? grade('met') : grade('review', counting === 'from_zero' ? 'count_from_zero' : 'value');
     }
     case 'story.branch.v2':
     case 'story.dialogue-choice.v2': return choiceGrade(payload, response, rubric, 3);

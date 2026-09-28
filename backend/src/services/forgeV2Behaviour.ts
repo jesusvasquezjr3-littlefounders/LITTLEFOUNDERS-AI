@@ -122,6 +122,20 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
       return { inRange, invalid: [{ save: p.total, spend: p.step, share: 0 }, { save: -p.step, spend: p.total, share: p.step }, ...(p.step > 1 ? [{ save: 1, spend: p.total - 1, share: 0 }] : [])] };
     }
     case 'math.number-line.whole.v2':
+      if (p.hops) {
+        // M2 counting on (GAP-FIX-R2): every hop sequence from the current square that stays on the line.
+        const sequences: number[][] = [];
+        const grow = (prefix: number[], at: number) => {
+          if (prefix.length > 0) sequences.push(prefix);
+          if (prefix.length >= 12 || sequences.length > MAX_STATES) return;
+          for (const hop of p.hops as number[]) if (at + hop <= p.maximum) grow([...prefix, hop], at + hop);
+        };
+        grow([], p.initial);
+        const landed = (hops: number[]) => hops.reduce((sum, hop) => sum + hop, p.initial);
+        return { inRange: sample(sequences, MAX_STATES).map((hops) => ({ value: String(landed(hops)), hops })),
+          invalid: [{ value: String(p.initial), hops: [] }, { value: String(p.initial + 1 + (p.hops as number[])[0]!), hops: [(p.hops as number[])[0]] }, { value: String(p.initial) }],
+          expectMet: (r) => Number(r.value) === rubric.target };
+      }
       return { inRange: range(p.minimum, p.maximum, p.step).map((value) => ({ value: String(value) })),
         invalid: [{ value: String(p.maximum + p.step) }, { value: '-1' }, ...(p.step > 1 ? [{ value: String(p.minimum + 1) }] : []), { value: '7.0' }],
         initial: { value: String(p.initial) } };
@@ -265,13 +279,32 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     case 'logic.scam-spotter.v2':
     case 'money.scam-check.v2': {
       const ids = (p.messages as Json[]).map((m) => m.id as string);
-      return { inRange: subsets(ids).map((flagged) => ({ flagged })), invalid: [{ flagged: ['not-a-message'] }],
+      // L12 cues (GAP-FIX-R2) never change the verdict: every flag set is swept with no ticks and with every cue ticked.
+      const cueIds = ((p.cues ?? []) as Json[]).map((c) => c.id as string);
+      const variants = p.cues ? [{}, Object.fromEntries(ids.map((id) => [id, cueIds]))] : [null];
+      return { inRange: subsets(ids).flatMap((flagged) => variants.map((cues) => cues === null ? { flagged } : { flagged, cues })),
+        invalid: [p.cues ? { flagged: ['not-a-message'], cues: {} } : { flagged: ['not-a-message'] }, ...(p.cues ? [{ flagged: [] }, { flagged: [], cues: { [ids[0]!]: ['not-a-cue'] } }] : [])],
         expectMet: (r) => sameSet(r.flagged, rubric.scam_ids) };
     }
-    case 'money.coin-tray.v2':
-    case 'money.making-change.v2': {
+    case 'money.coin-tray.v2': {
       const over = { counts: Object.fromEntries((p.denominations as Json[]).map((d, index) => [String(d.value_minor), index === 0 ? d.available + 1 : 0])) };
       return { inRange: money(p.denominations), invalid: [over, { counts: {} }] };
+    }
+    case 'money.making-change.v2': {
+      // $2 count-up (GAP-FIX-R2): each tray said counting up from the price; the right change also counted from zero (a review).
+      const change = p.paid_minor - p.price_minor;
+      const said = (counts: Json, start: number) => {
+        const out: number[] = []; let at = start;
+        for (const d of p.denominations as Json[]) for (let n = 0; n < counts[String(d.value_minor)]; n += 1) { at += d.value_minor; out.push(at); }
+        return out;
+      };
+      const trays = money(p.denominations, MAX_STATES / 2);
+      const total = (counts: Json) => (p.denominations as Json[]).reduce((sum, d) => sum + d.value_minor * counts[String(d.value_minor)], 0);
+      const inRange = trays.flatMap((tray) => [{ counts: tray.counts, sequence: said(tray.counts, p.price_minor) },
+        ...(total(tray.counts) === change ? [{ counts: tray.counts, sequence: said(tray.counts, 0) }] : [])]);
+      const over = { counts: Object.fromEntries((p.denominations as Json[]).map((d, index) => [String(d.value_minor), index === 0 ? d.available + 1 : 0])), sequence: [] };
+      return { inRange, invalid: [over, { counts: trays[0]!.counts }, { counts: trays.at(-1)!.counts, sequence: [1] }],
+        expectMet: (r) => total(r.counts) === change && (r.sequence.length === 0 ? change === 0 : r.sequence.at(-1) === p.paid_minor) };
     }
     case 'money.unit-price.v2': {
       // $6 (GAP-FIX-R2): the rounded exact unit price and a cent off for each offer, with every choice.

@@ -4,7 +4,7 @@ import { AnswerChoice, Button, ChoiceChip, RadioGroup, SegmentedControl, Stepper
 import { familyCopy } from './familyCopy';
 import type { LessonClientDocument, LessonClientSegment } from './lessonDocument';
 import type { LessonSequenceControl } from './lessonSequence';
-import { BoardShell, GradedFoot, MoveToChoice, useLessonMentor, useSegmentGrade, ViewedFoot, type OnGradeSegment } from './segmentKit';
+import { BoardShell, GradedFoot, MoveToChoice, NumberAnswer, useLessonMentor, useSegmentGrade, ViewedFoot, type OnGradeSegment } from './segmentKit';
 import './familyBoards.css';
 import { TeachingChart } from './charts/TeachingChart';
 import { FlowchartBuildBoard } from './buildBoards';
@@ -191,9 +191,16 @@ export function MessageListBoard({ document, segment, onBack, sequence, onGrade 
   const [flagged, setFlagged] = useState<string[]>([]);
   const grading = useSegmentGrade(segment.id, onGrade);
   const set = (id: string, scam: boolean) => { grading.reset(); setFlagged((current) => scam ? [...new Set([...current, id])] : current.filter((value) => value !== id)); };
+  // L12 (GAP-FIX-R2): "tick which cues fired" per message; stored as a diagnostic beside the flag decision.
+  const cueList = segment.payload.cues;
+  const [ticks, setTicks] = useState<Record<string, string[]>>({});
+  const tick = (message: string, cue: string) => { grading.reset(); setTicks((current) => {
+    const now = current[message] ?? [];
+    return { ...current, [message]: now.includes(cue) ? now.filter((value) => value !== cue) : [...now, cue] };
+  }); };
   return <BoardShell screen={segment.type === 'money.scam-check.v2' ? 'scam-check' : 'scam-spotter'} locale={document.locale} title={document.title} segment={segment}
     onBack={onBack} sequence={sequence} finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
-    foot={<GradedFoot locale={document.locale} grading={grading} canCheck sequence={sequence} onCheck={() => grading.check({ flagged })} />}>
+    foot={<GradedFoot locale={document.locale} grading={grading} canCheck sequence={sequence} onCheck={() => grading.check(cueList ? { flagged, cues: ticks } : { flagged })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-messages`}>
       <h2 id={`${segment.id}-messages`} data-copy-role="heading">{t.messages}</h2>
       <ul className="lf-message-list">
@@ -205,6 +212,10 @@ export function MessageListBoard({ document, segment, onBack, sequence, onGrade 
             <SegmentedControl className="lf-message-actions" legend={message.sender} legendHidden name={`${segment.id}-${message.id}`} size="compact"
               options={[{ value: 'scam', label: t.scam }, { value: 'safe', label: t.notScam }]} value={scam ? 'scam' : 'safe'}
               disabled={grading.pending || grading.met} onValueChange={(value) => set(message.id, value === 'scam')} />
+            {cueList ? <div className="lf-message-cues" role="group" aria-label={`${t.cues}: ${message.sender}`}>
+              {cueList.map((cue) => <ChoiceChip key={cue.id} selected={(ticks[message.id] ?? []).includes(cue.id)} disabled={grading.pending || grading.met}
+                onToggle={() => tick(message.id, cue.id)}>{cue.label}</ChoiceChip>)}
+            </div> : null}
           </li>;
         })}
       </ul>
@@ -226,9 +237,15 @@ export function CoinTrayBoard({ document, segment, onBack, sequence, onGrade }: 
   }, [document.locale, currency]);
   const total = denominations.reduce((sum, d) => sum + d.value_minor * (counts[String(d.value_minor)] ?? 0), 0);
   const change = segment.type === 'money.making-change.v2' ? segment.payload : null;
+  // $2 (GAP-FIX-R2): the learner says the running count after each coin; Core checks it counts UP from the price to the amount paid.
+  const [said, setSaid] = useState<number[]>([]);
+  const [saying, setSaying] = useState<string | null>(null);
+  const coins = Object.values(counts).reduce((sum, count) => sum + count, 0);
+  const awaiting = change !== null && said.length < coins;
   return <BoardShell screen={change ? 'making-change' : 'coin-tray'} locale={document.locale} title={document.title} segment={segment}
     onBack={onBack} sequence={sequence} finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
-    foot={<GradedFoot locale={document.locale} grading={grading} canCheck={total > 0} sequence={sequence} onCheck={() => grading.check({ counts })} />}>
+    foot={<GradedFoot locale={document.locale} grading={grading} canCheck={total > 0 && !awaiting} sequence={sequence}
+      onCheck={() => grading.check(change ? { counts, sequence: said } : { counts })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-tray`}>
       <h2 id={`${segment.id}-tray`} data-copy-role="heading">{t.tray}</h2>
       {change ? <dl className="lf-coin-facts">
@@ -238,11 +255,18 @@ export function CoinTrayBoard({ document, segment, onBack, sequence, onGrade }: 
       <div className="lf-coin-tray">
         {denominations.map((d) => <div key={d.value_minor} className={d.kind === 'bill' ? 'lf-coin lf-coin--bill' : 'lf-coin lf-coin--coin'}>
           <Stepper label={format(d.value_minor)} valuePlacement="label" min={0} max={d.available} value={counts[String(d.value_minor)] ?? 0}
-            disabled={grading.pending || grading.met} labels={{ decrease: t.fewer, increase: t.more }}
-            onValueChange={(value) => { grading.reset(); setCounts((current) => ({ ...current, [String(d.value_minor)]: value })); }} />
+            disabled={grading.pending || grading.met || awaiting} labels={{ decrease: t.fewer, increase: t.more }}
+            onValueChange={(value) => { grading.reset(); if (change && value < (counts[String(d.value_minor)] ?? 0)) { setSaid([]); setCounts(Object.fromEntries(denominations.map((item) => [String(item.value_minor), 0]))); return; }
+              setCounts((current) => ({ ...current, [String(d.value_minor)]: value })); }} />
         </div>)}
       </div>
       <p className="lf-coin-total" role="status" data-copy-role="body"><strong>{change ? t.change : t.total}:</strong> {format(total)}</p>
+      {change ? <div className="lf-coin-count-up">
+        <p data-copy-role="data">{t.countUp}: {said.length ? said.map((value) => format(value)).join(', ') : '…'}</p>
+        {awaiting ? <><NumberAnswer label={t.sayCount} locale={document.locale} onChange={setSaying} disabled={grading.pending || grading.met} />
+          <Button variant="sky" disabled={saying === null || !Number.isSafeInteger(Number(saying))}
+            onClick={() => { setSaid((current) => [...current, currency === 'local' ? Math.round(Number(saying) * 100) : Number(saying)]); }}>{t.say}</Button></> : null}
+      </div> : null}
     </section>
   </BoardShell>;
 }

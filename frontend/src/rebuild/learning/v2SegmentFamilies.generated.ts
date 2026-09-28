@@ -104,7 +104,9 @@ export const sortBinsPayload = z.object({
 /** L12 / $11: messages to classify; genuine messages are always in the set (enforced by the rubric). */
 export const messageListPayload = z.object({
   messages: z.array(z.object({ id, sender: label(40), text: label(200) }).strict()).min(3).max(8),
-}).strict().refine((value) => uniqueIds(value.messages), 'Invalid messages');
+  // L12 (GAP-FIX-R2): the public cue list the learner ticks per message ("tick which cues fired").
+  cues: z.array(option).min(2).max(6).optional(),
+}).strict().refine((value) => uniqueIds([...value.messages, ...(value.cues ?? [])]), 'Invalid messages');
 
 /* ── Money ($1, $2) ───────────────────────────────────────────────────────── */
 
@@ -267,8 +269,8 @@ export const V2_FAMILY_RUBRICS = {
   'money.spend-decision.v2': flowRubric,
   'logic.sort-by-rule.v2': z.object({ accepted: z.record(id, z.array(z.object({ bin: id, reason: id }).strict()).min(1).max(4)) }).strict(),
   'money.needs-wants.v2': z.object({ accepted: z.record(id, z.array(z.object({ bin: id, reason: id }).strict()).min(1).max(4)) }).strict(),
-  'logic.scam-spotter.v2': z.object({ scam_ids: ids(1, 7) }).strict(),
-  'money.scam-check.v2': z.object({ scam_ids: ids(1, 7) }).strict(),
+  'logic.scam-spotter.v2': z.object({ scam_ids: ids(1, 7), cue_ids: z.record(id, ids(0, 6)).optional() }).strict(),
+  'money.scam-check.v2': z.object({ scam_ids: ids(1, 7), cue_ids: z.record(id, ids(0, 6)).optional() }).strict(),
   'money.coin-tray.v2': z.object({ target_minor: positive.max(1_000_000), fewest: z.boolean() }).strict(),
   'money.making-change.v2': z.object({ change_minor: positive.max(1_000_000) }).strict(),
   'money.unit-price.v2': z.object({ unit_prices: z.record(id, z.string().regex(/^\d{1,15}(\/[1-9]\d{0,14}|\.\d{1,12})?$/)), better_id: id }).strict(),
@@ -301,7 +303,8 @@ export function v2FamilyScorerPayload(segment: V2FamilySegment): Record<string, 
       reasonIds: segment.payload.reasons.map((reason) => reason.id),
     };
     case 'logic.scam-spotter.v2':
-    case 'money.scam-check.v2': return { messageIds: segment.payload.messages.map((message) => message.id) };
+    case 'money.scam-check.v2': return { messageIds: segment.payload.messages.map((message) => message.id),
+      ...(segment.payload.cues ? { cueIds: segment.payload.cues.map((cue) => cue.id) } : {}) };
     case 'money.coin-tray.v2': return { denominations: segment.payload.denominations.map((d) => ({ value: d.value_minor, available: d.available })) };
     case 'money.making-change.v2': return {
       denominations: segment.payload.denominations.map((d) => ({ value: d.value_minor, available: d.available })),
@@ -337,9 +340,9 @@ export function v2FamilySampleResponse(segment: V2FamilySegment): unknown {
     case 'money.needs-wants.v2': return { placements: Object.fromEntries(segment.payload.items.map((item) => [item.id,
       { bin: segment.payload.bins[0]!.id, reason: segment.payload.reasons[0]!.id }])) };
     case 'logic.scam-spotter.v2':
-    case 'money.scam-check.v2': return { flagged: [] };
-    case 'money.coin-tray.v2':
-    case 'money.making-change.v2': return { counts: Object.fromEntries(segment.payload.denominations.map((d) => [String(d.value_minor), 0])) };
+    case 'money.scam-check.v2': return { flagged: [], ...(segment.payload.cues ? { cues: {} } : {}) };
+    case 'money.coin-tray.v2': return { counts: Object.fromEntries(segment.payload.denominations.map((d) => [String(d.value_minor), 0])) };
+    case 'money.making-change.v2': return { counts: Object.fromEntries(segment.payload.denominations.map((d) => [String(d.value_minor), 0])), sequence: [] };
     case 'story.branch.v2': return { choice: segment.payload.options[0]!.id };
     case 'story.dialogue-choice.v2': return { choice: segment.payload.replies[0]!.id };
     case 'story.would-you-rather.v2': return { choice: segment.payload.options[0].id };

@@ -1194,7 +1194,9 @@ export function learnRouter(): Router {
         diagnostic: graded.diagnostic, hints_used: hintsUsed,
         ...(gradedSegment.item_role ? { item_role: gradedSegment.item_role } : {}),
         kc: gradedSegment.knowledge_component_id ?? document.knowledge_component_ids[0]!,
-        ...(graded.detection ? { detection: graded.detection } : {}) };
+        ...(graded.detection ? { detection: graded.detection } : {}),
+        // L12 / $11 (GAP-FIX-R2): cue ticks are stored as a diagnostic; d′ is still computed from detection alone.
+        ...(graded.cues ? { cues: graded.cues } : {}) };
       const cpaPrerequisite = v2CpaAttemptPrerequisiteSegmentId(document, segmentId);
       const receipt = cpaPrerequisite === undefined
         ? await recordV2LessonGrade({

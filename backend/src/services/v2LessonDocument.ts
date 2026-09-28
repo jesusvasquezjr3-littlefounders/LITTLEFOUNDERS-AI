@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { growthComparison } from './v2GrowthComparison.js';
-import { gradeV2Response, scoreV2Judgment, scoreV2Visual, type V2Detection, type V2Diagnostic, type V2JudgmentQuality, type V2VisualKind } from './v2VisualScorer.js';
+import { gradeV2Response, scoreV2Judgment, scoreV2Visual, type V2CueHits, type V2Detection, type V2Diagnostic, type V2JudgmentQuality, type V2VisualKind } from './v2VisualScorer.js';
 import { conceptAllowed, conceptSampleResponse, gradeConcept, V2_CONCEPT_RUBRICS, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptSegment } from './v2ConceptBoards.js';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './v2ChartModel.js';
 import { longArithmeticSchema, placeValuePayload, SCHEMA_DIAGRAM_RUBRICS, schemaDiagramPayload, schemaDiagramScorerPayload, placeValueScorerPayload, V2_FAMILY_RUBRICS, v2AgeScopeProblem, v2FamilySampleResponse, v2FamilyScorerPayload, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras, type V2FamilySegment } from './v2SegmentFamilies.js';
@@ -69,9 +69,11 @@ const savingsLine = z.object({
 }).strict();
 const numberLine = z.object({
   ...base, type: z.literal('math.number-line.whole.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('number-line') }).strict(),
-  payload: z.object({ minimum: nonnegative, maximum: positive, step: positive, initial: nonnegative }).strict()
+  // M2 (GAP-FIX-R2): `hops` turns on board-game counting on from the current square (the hop sizes offered).
+  payload: z.object({ minimum: nonnegative, maximum: positive, step: positive, initial: nonnegative, hops: z.array(positive).min(1).max(3).optional() }).strict()
     .refine((v) => v.maximum > v.minimum && (v.maximum - v.minimum) % v.step === 0 && v.initial >= v.minimum
-      && v.initial <= v.maximum && (v.initial - v.minimum) % v.step === 0, 'Invalid number line range'),
+      && v.initial <= v.maximum && (v.initial - v.minimum) % v.step === 0
+      && (v.hops === undefined || (new Set(v.hops).size === v.hops.length && v.hops.every((hop) => hop % v.step === 0 && hop < v.maximum - v.minimum))), 'Invalid number line range'),
 }).strict();
 const fractionNumberLine = z.object({
   ...base, type: z.literal('math.number-line.fraction.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('number-line') }).strict(),
@@ -422,6 +424,8 @@ export type V2GradeResult = {
   score: 0 | 100; correct: boolean; document: V2PublicLesson; segmentId: string; judgment?: V2JudgmentQuality;
   /** Appendix P Part 4.5: the closed diagnostic code, and the detection counts for L12/$11. */
   diagnostic: V2Diagnostic; detection?: V2Detection;
+  /** L12 / $11 (GAP-FIX-R2): cue ticks against the key, a diagnostic beside d′. */
+  cues?: V2CueHits;
 };
 
 /** The canonical scorer accepts only the semantic fields, never renderer metadata. */
@@ -454,7 +458,8 @@ function scorerPayload(item: ServerSegment): Record<string, unknown> {
   return item.type === 'money.allocation.v2'
     ? { total: item.payload.total, step: item.payload.step }
     : item.type === 'math.number-line.whole.v2'
-      ? { minimum: item.payload.minimum, maximum: item.payload.maximum, step: item.payload.step }
+      ? { minimum: item.payload.minimum, maximum: item.payload.maximum, step: item.payload.step,
+        ...(item.payload.hops ? { initial: item.payload.initial, hops: item.payload.hops } : {}) }
       : item.type === 'math.number-line.fraction.v2'
         ? { maximumWhole: item.payload.maximumWhole, divisions: item.payload.divisions }
         : item.type === 'math.fraction-area.v2'
@@ -495,7 +500,7 @@ export function validateV2LessonForGrading(document: unknown, answerKeys: unknow
       continue;
     }
     const sample = item.type === 'money.allocation.v2' ? { save: 0, spend: item.payload.total, share: 0 }
-      : item.type === 'math.number-line.whole.v2' ? { value: String(item.payload.minimum) }
+      : item.type === 'math.number-line.whole.v2' ? item.payload.hops ? { value: String(item.payload.initial + item.payload.hops[0]!), hops: [item.payload.hops[0]!] } : { value: String(item.payload.minimum) }
         : item.type === 'math.number-line.fraction.v2' ? { value: '0/1' }
           : item.type === 'math.fraction-area.v2' ? { n: 0, d: item.payload.minimumParts }
             : item.type === 'math.bar-model.structure.v2' ? { model: 'comparison' }
@@ -543,7 +548,7 @@ export function gradeV2Visual(document: V2PublicLesson, answerKeys: Record<strin
   const verdict = detailed.verdict;
   if (verdict === 'invalid' || verdict === 'valid') return null;
   const graded: V2GradeResult = { score: verdict === 'met' ? 100 : 0, correct: verdict === 'met', document, segmentId, diagnostic: detailed.diagnostic,
-    ...(detailed.detection ? { detection: detailed.detection } : {}) };
+    ...(detailed.detection ? { detection: detailed.detection } : {}), ...(detailed.cues ? { cues: detailed.cues } : {}) };
   if (segment.type !== 'reasoning.decide-justify.v2') return graded;
   // B.12: the same signed response yields a judgment, never folded into the score.
   const judgment = scoreV2Judgment(segment.type, scorerPayload(segment as ServerSegment), response, rubric.data);
