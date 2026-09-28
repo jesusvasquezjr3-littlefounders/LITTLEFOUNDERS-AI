@@ -140,35 +140,7 @@
 .lf-mentor-step { margin: 0; color: var(--content-muted); font: var(--type-label); letter-spacing: var(--type-label-tracking); }
 .lf-mentor-saved { margin: 0; color: var(--content-muted); overflow-wrap: anywhere; }
 
-.lf-mentor-board-bars { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
-.lf-mentor-board-bar-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--spacing-1) var(--spacing-3);
-  align-items: baseline;
-}
-.lf-mentor-board-bar-label, .lf-mentor-board-bar-value { font: var(--type-body); letter-spacing: var(--type-body-tracking); overflow-wrap: anywhere; }
-.lf-mentor-board-bar-value { font-variant-numeric: tabular-nums; text-align: end; }
-.lf-mentor-board-bar-row[data-marked='true'] :is(.lf-mentor-board-bar-label, .lf-mentor-board-bar-value) { font-weight: 800; }
-.lf-mentor-board-bar-track {
-  grid-column: 1 / -1;
-  display: block;
-  block-size: var(--spacing-3);
-  border-radius: var(--rounded-full);
-  background: var(--sunken);
-  overflow: hidden;
-}
-.lf-mentor-board-bar-fill { display: block; block-size: 100%; border-radius: var(--rounded-full); }
-.lf-mentor-board-bar-fill--primary { background: var(--primary); }
-.lf-mentor-board-bar-fill--sky { background: var(--sky); }
-.lf-mentor-board-bar-fill--mint { background: var(--mint); }
-.lf-mentor-board-bar-fill--berry { background: var(--berry); }
-.lf-mentor-board-bar-fill--accent { background: var(--accent); }
-
-.lf-mentor-board-list { display: grid; gap: var(--spacing-2); margin: 0; }
-.lf-mentor-board-list-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--spacing-3); }
-.lf-mentor-board-list-row dt, .lf-mentor-board-list-row dd { margin: 0; font: var(--type-body); letter-spacing: var(--type-body-tracking); overflow-wrap: anywhere; }
-.lf-mentor-board-list-row[data-marked='true'] :is(dt, dd) { font-weight: 800; }
+/* The board's pictures are the shared Pizarrón visuals (learning/pizarron): series hues only (05 §2). */
 .lf-mentor-board-controls { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
 .lf-mentor-board-note { margin: 0; overflow-wrap: anywhere; }
 .lf-mentor-board-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }

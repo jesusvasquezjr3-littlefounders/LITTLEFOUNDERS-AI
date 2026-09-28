@@ -1,0 +1,176 @@
+/*
+ * The shared Pizarrón visuals (visuals.tsx). Frontend Bible 05 §2: series use
+ * sky, mint and berry in that order (fills: the base hue; strokes: the strong
+ * hue), with the pattern channel from the second series on (mint diagonal,
+ * berry dots); a fourth or later series is the neutral overflow (crosshatch).
+ * `primary` is only the selection ring; coins are `reward` with the ridge.
+ * Tokens only; light and dark come from the tokens themselves.
+ */
+.lf-pz { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-pz-note { margin: 0; font-size: .875rem; font-weight: 800; }
+
+/* Series fills and their pattern channel. */
+.lf-pz-fill--sky { background-color: var(--sky); }
+.lf-pz-fill--mint { background-color: var(--mint); background-image: repeating-linear-gradient(135deg, transparent 0 5px, var(--surface) 5px 7px); }
+.lf-pz-fill--berry { background-color: var(--berry); background-image: radial-gradient(circle, var(--surface) 0 1.5px, transparent 2px); background-size: 7px 7px; }
+.lf-pz-fill--overflow {
+  background-color: var(--sunken);
+  background-image: repeating-linear-gradient(45deg, var(--content-muted) 0 1.5px, transparent 1.5px 7px), repeating-linear-gradient(-45deg, var(--content-muted) 0 1.5px, transparent 1.5px 7px);
+  box-shadow: inset 0 0 0 2px var(--content-muted);
+}
+.lf-pz-stroke--sky { stroke: var(--sky-strong); fill: var(--sky-strong); }
+.lf-pz-stroke--mint { stroke: var(--mint-strong); fill: var(--mint-strong); stroke-dasharray: 8 5; }
+.lf-pz-stroke--berry { stroke: var(--berry-strong); fill: var(--berry-strong); stroke-dasharray: 2 5; }
+.lf-pz-stroke--overflow { stroke: var(--content-muted); fill: var(--content-muted); stroke-dasharray: 12 4 2 4; }
+.lf-pz-fill-svg--sky { fill: var(--sky); }
+.lf-pz-fill-svg--mint { fill: var(--mint); }
+[data-marked='true'] > .lf-pz-bar-track, .lf-pz-seg[data-marked='true'], .lf-pz-card[data-marked='true'], .lf-pz-ratio-group[data-marked='true'] { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
+
+/* The written key (direct labels) under a picture. */
+.lf-pz-key { display: flex; flex-wrap: wrap; gap: var(--spacing-2) var(--spacing-4); margin: 0; padding: 0; list-style: none; font-size: .875rem; font-weight: 800; }
+.lf-pz-key li { display: inline-flex; align-items: center; gap: var(--spacing-1); overflow-wrap: anywhere; }
+.lf-pz-key li[data-marked='true'] { text-decoration: underline; text-decoration-thickness: 3px; text-decoration-color: var(--primary-strong); }
+.lf-pz-swatch { display: inline-block; flex: none; inline-size: 14px; block-size: 14px; border-radius: var(--rounded-sm); }
+
+/* Bars. */
+.lf-pz-bars { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-pz-bar-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--spacing-1) var(--spacing-2); font-weight: 800; }
+.lf-pz-bar-label { overflow-wrap: anywhere; }
+.lf-pz-bar-value { font-variant-numeric: tabular-nums; }
+.lf-pz-bar-track { grid-column: 1 / -1; block-size: 20px; border-radius: var(--rounded-sm); background: var(--sunken); overflow: hidden; }
+.lf-pz-bar-fill { display: block; block-size: 100%; border-radius: inherit; }
+
+/* Tapes. */
+.lf-pz-track { display: flex; overflow: hidden; }
+.lf-pz-track .lf-pz-seg { position: relative; display: grid; place-items: center; min-inline-size: 2px; border-radius: 0; border-inline-end: 2px solid var(--surface); }
+.lf-pz-seg--unknown { background: var(--surface) !important; border: 3px dashed var(--edge) !important; }
+.lf-pz-seg-text { padding: 0 var(--spacing-1); border-radius: var(--rounded-sm); background: var(--surface); color: var(--content); font-style: normal; font-size: .875rem; font-weight: 800; white-space: nowrap; }
+.lf-pz-row-total { color: var(--content-muted); }
+
+/* Number line. */
+.lf-pz-line { position: relative; }
+.lf-pz-line svg { display: block; inline-size: 100%; block-size: 96px; }
+.lf-pz-jump { fill: none; stroke: var(--sky-strong); stroke-width: 3; vector-effect: non-scaling-stroke; }
+.lf-pz-line-marks, .lf-pz-line-jumps { position: relative; block-size: 1.5rem; margin: 0; padding: 0; list-style: none; font-size: .875rem; font-weight: 800; }
+.lf-pz-line-marks li, .lf-pz-line-jumps li { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.lf-pz-line-marks li[data-marked='true'] { color: var(--primary-strong); }
+.lf-pz-line-marks { block-size: auto; min-block-size: 2.8rem; }
+.lf-pz-line-marks li { max-inline-size: 40%; white-space: normal; overflow-wrap: anywhere; }
+.lf-pz-line-marks li[data-align='start'] { transform: none; }
+.lf-pz-line-marks li[data-align='end'] { transform: none; text-align: end; }
+.lf-pz-line-ends { position: relative; display: block; block-size: 1.5rem; padding-inline: 0; }
+.lf-pz-line-ends span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.lf-pz-line-ends span:first-child { inset-inline-start: 8%; }
+.lf-pz-line-ends span:last-child { inset-inline-start: 92%; }
+.lf-pz-line-plot { position: relative; }
+.lf-pz-line-dots { position: absolute; inset-inline: 0; inset-block-start: 56px; margin: 0; padding: 0; list-style: none; }
+.lf-pz-line-dots li { position: absolute; inline-size: 14px; block-size: 14px; border-radius: var(--rounded-full); background: var(--sky-strong); box-shadow: 0 0 0 2px var(--surface); transform: translate(-50%, -50%); }
+.lf-pz-line-dots li[data-marked='true'] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 5px var(--primary-strong); }
+
+/* Fraction circle. */
+.lf-pz-circle { justify-items: center; }
+.lf-pz-circle svg { inline-size: min(100%, 160px); }
+.lf-pz-slice { fill: var(--surface); stroke: var(--edge); stroke-width: 2; }
+.lf-pz-slice--filled { fill: var(--sky); }
+.lf-pz-circle-text { font-weight: 800; }
+
+/* Ratio lines. */
+.lf-pz-ratio { gap: var(--spacing-5); }
+.lf-pz-ratio-group { display: grid; gap: var(--spacing-3); padding: var(--spacing-2); border-radius: var(--rounded-md); }
+.lf-pz-ratio-title { margin: 0; font-weight: 800; }
+
+/* Ledger. */
+.lf-pz-ledger { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-pz-ledger-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--spacing-1) var(--spacing-2); font-weight: 800; }
+.lf-pz-ledger-row[data-marked='true'] .lf-pz-ledger-value { text-decoration: underline; text-decoration-thickness: 3px; text-decoration-color: var(--primary-strong); }
+.lf-pz-ledger-label { overflow-wrap: anywhere; }
+.lf-pz-ledger-value { font-variant-numeric: tabular-nums; }
+.lf-pz-ledger-track { position: relative; grid-column: 1 / -1; block-size: 16px; border-radius: var(--rounded-sm); background: var(--sunken); }
+.lf-pz-ledger-zero { position: absolute; inset-block: -4px; inset-inline-start: calc(50% - 1px); inline-size: 2px; background: var(--edge); }
+.lf-pz-ledger-balance { position: absolute; inset-block: 0; background: var(--sky); border-radius: var(--rounded-sm); }
+
+/* Worked steps as a cycle. */
+.lf-pz-loop { justify-self: end; font-size: 1.5rem; font-weight: 800; color: var(--content-muted); }
+
+/* Growth lines. */
+.lf-pz-growth-line polyline { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.lf-pz-growth-line circle { stroke: none; }
+.lf-pz-growth-line[data-highlighted='true'] polyline { stroke-width: 5; }
+
+/* Waffle cells. */
+.lf-pz-waffle-cell { min-inline-size: 0; min-block-size: 0; }
+.lf-pz-waffle-cell:not([class*='lf-pz-fill--']) { background: var(--sunken); }
+
+/* Coins: reward, with the ridge outline (05 §2). */
+.lf-pz-coins { display: flex; flex-wrap: wrap; gap: var(--spacing-4); align-items: flex-end; }
+.lf-pz-coin-group { display: grid; gap: var(--spacing-1); justify-items: start; font-weight: 800; }
+.lf-pz-coins[data-arrow='true'] .lf-pz-coin-group { grid-template-columns: auto 1fr; }
+.lf-pz-coins[data-arrow='true'] .lf-pz-coin-group > :not(.lf-pz-coin-arrow) { grid-column: 2; }
+.lf-pz-coin-arrow { grid-row: 1 / span 2; align-self: center; font-size: 1.5rem; }
+.lf-pz-coin-pile { display: flex; flex-wrap: wrap; gap: 3px; max-inline-size: 180px; }
+.lf-pz-coin { inline-size: 18px; block-size: 18px; border-radius: var(--rounded-full); background: var(--reward); box-shadow: inset 0 0 0 2px var(--reward-ridge); }
+
+/* Counters (ten frames, arrays, pictographs, dealing). */
+.lf-pz-counter { display: inline-block; inline-size: 16px; block-size: 16px; border-radius: var(--rounded-full); box-shadow: inset 0 0 0 2px var(--edge); }
+.lf-pz-counter--on { background: var(--sky); box-shadow: inset 0 0 0 2px var(--sky-strong); }
+.lf-pz-ten-frames { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
+.lf-pz-ten-frame { display: grid; grid-template-columns: repeat(5, 28px); grid-auto-rows: 28px; gap: 2px; padding: 2px; border-radius: var(--rounded-sm); background: var(--edge); }
+.lf-pz-ten-frame .lf-pz-counter { inline-size: 100%; block-size: 100%; border-radius: 0; background: var(--surface); box-shadow: none; }
+.lf-pz-ten-frame .lf-pz-counter--on { background: var(--surface); background-image: radial-gradient(circle, var(--sky-strong) 0 9px, transparent 10px); }
+.lf-pz-beads { display: grid; gap: var(--spacing-2); }
+.lf-pz-bead-row { display: flex; flex-wrap: wrap; gap: 2px; padding-block: 4px; background-image: linear-gradient(var(--edge), var(--edge)); background-size: 100% 2px; background-position: center; background-repeat: no-repeat; }
+.lf-pz-bead { inline-size: 18px; block-size: 18px; border-radius: var(--rounded-full); background: var(--sky-strong); }
+.lf-pz-bead--alt { background: var(--surface); box-shadow: inset 0 0 0 3px var(--sky-strong); }
+.lf-pz-array { display: grid; gap: 4px; justify-items: center; inline-size: min(100%, 320px); }
+.lf-pz-caption { display: grid; gap: var(--spacing-1); margin: 0; padding: 0; list-style: none; font-weight: 800; }
+.lf-pz-tally, .lf-pz-picto { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-pz-tally li, .lf-pz-picto li { display: grid; grid-template-columns: minmax(72px, 1fr) auto auto; align-items: center; gap: var(--spacing-2); font-weight: 800; }
+.lf-pz-tally-marks { block-size: 28px; max-inline-size: 100%; }
+.lf-pz-tally-marks line { stroke: var(--content); stroke-width: 3; stroke-linecap: round; }
+.lf-pz-picto-icons { display: flex; flex-wrap: wrap; gap: 3px; }
+
+/* Balance scale. */
+.lf-pz-scale svg { inline-size: min(100%, 320px); justify-self: center; }
+.lf-pz-scale-post { fill: var(--edge); }
+.lf-pz-scale-beam, .lf-pz-scale-cord { stroke: var(--content); stroke-width: 4; stroke-linecap: round; }
+.lf-pz-scale-cord { stroke-width: 2; }
+.lf-pz-scale-pan { stroke: var(--content); stroke-width: 2; }
+.lf-pz-scale-sides { display: flex; justify-content: space-between; gap: var(--spacing-3); font-weight: 800; }
+
+/* Venn. */
+.lf-pz-venn svg { inline-size: min(100%, 320px); justify-self: center; }
+.lf-pz-venn-set { fill: none; stroke-width: 3; }
+.lf-pz-venn-regions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-2); }
+.lf-pz-venn-region ul { margin: var(--spacing-1) 0 0; padding-inline-start: var(--spacing-4); }
+.lf-pz-venn-region { overflow-wrap: anywhere; font-size: .875rem; }
+
+/* Bins, dealing and cards. */
+.lf-pz-bins { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--spacing-3); }
+.lf-pz-bin { display: grid; gap: var(--spacing-2); align-content: start; padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); overflow-wrap: anywhere; }
+.lf-pz-bin ul { margin: 0; padding-inline-start: var(--spacing-4); }
+.lf-pz-bin--rest { box-shadow: inset 0 0 0 2px var(--edge); background: var(--surface); }
+.lf-pz-deal-pile { display: flex; flex-wrap: wrap; gap: 3px; }
+.lf-pz-icons { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; inline-size: min(100%, 240px); }
+.lf-pz-icon { aspect-ratio: 1; border-radius: var(--rounded-full); }
+.lf-pz-icon:not([class*='lf-pz-fill--']) { background: var(--sunken); }
+.lf-pz-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--spacing-3); }
+.lf-pz-card-slot { display: grid; gap: var(--spacing-2); }
+.lf-pz-card-joiner { justify-self: center; font-size: 1.25rem; font-weight: 800; }
+.lf-pz-card { display: grid; gap: var(--spacing-1); padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); overflow-wrap: anywhere; }
+.lf-pz-card p { margin: 0; }
+
+/* A container filling. */
+.lf-pz-fill-box { position: relative; overflow: hidden; border-radius: var(--rounded-md); box-shadow: inset 0 0 0 3px var(--edge); background: var(--surface); }
+.lf-pz-fill-box--bar { block-size: 40px; }
+.lf-pz-fill-box--jar { inline-size: 120px; block-size: 160px; justify-self: center; border-start-start-radius: var(--rounded-sm); border-start-end-radius: var(--rounded-sm); }
+.lf-pz-fill-level { position: absolute; inset-block-end: 0; inset-inline-start: 0; }
+.lf-pz-fill-box--bar .lf-pz-fill-level { inset-block: 0; }
+.lf-pz-fill-box--jar .lf-pz-fill-level { inset-inline: 0; }
+
+@container app (max-width: 420px) {
+  .lf-pz-venn-regions { grid-template-columns: 1fr; }
+  .lf-pz-tally li, .lf-pz-picto li { grid-template-columns: 1fr auto; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lf-pz-bar-fill, .lf-pz-seg, .lf-pz-fill-level { transition: inline-size var(--dur-component) var(--ease-standard), block-size var(--dur-component) var(--ease-standard); }
+}

@@ -432,7 +432,27 @@ const SOURCES = {
   coreBody: 'backend/src/routes/tutor.ts',
   coreRow: 'backend/src/services/tutorData.ts',
   frontendWire: 'frontend/src/rebuild/mentor/session/types.ts',
+  // Product B.7 (gap-fix round 1): the Mentor's board draws each kind with a
+  // shared Pizarrón visual, the same component set the lessons use.
+  frontendRenderers: 'frontend/src/rebuild/mentor/screen/boardVisuals.tsx',
+  pizarron: 'frontend/src/rebuild/learning/pizarron/index.ts',
 };
+
+/** `BOARD_RENDERERS = { kind: 'Visual', … }` → { kind: 'Visual' }; null when absent. */
+export function boardRenderers(source) {
+  const at = source.indexOf('export const BOARD_RENDERERS');
+  if (at === -1) return null;
+  const open = source.indexOf('{', at);
+  const close = source.indexOf('}', open);
+  if (open === -1 || close === -1) return null;
+  return Object.fromEntries([...source.slice(open + 1, close).matchAll(/(\w+):\s*'(\w+)'/g)].map((m) => [m[1], m[2]]));
+}
+
+/** `PIZARRON_VISUALS = [ 'A', 'B' ]` → ['A', 'B']; null when absent. */
+export function pizarronVisuals(source) {
+  const m = /PIZARRON_VISUALS\s*=\s*\[([^\]]*)\]/.exec(source);
+  return m ? [...m[1].matchAll(/'(\w+)'/g)].map((x) => x[1]) : null;
+}
 
 /**
  * Comments carry braces, colons and the words we scan for, so they are removed
@@ -641,6 +661,22 @@ const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x)) &&
 export function checkInstrumentParity(read) {
   const problems = [];
   const src = Object.fromEntries(Object.entries(SOURCES).map(([id, file]) => [id, read(file)]));
+
+  // 7 — B.7: every kind has a shared visual renderer, exported by the Pizarrón library.
+  const renderers = boardRenderers(src.frontendRenderers);
+  const visuals = pizarronVisuals(src.pizarron);
+  if (renderers === null) problems.push(`${SOURCES.frontendRenderers}: BOARD_RENDERERS not found`);
+  if (visuals === null) problems.push(`${SOURCES.pizarron}: PIZARRON_VISUALS not found`);
+  if (renderers !== null && visuals !== null) {
+    for (const { kind } of INSTRUMENTS) {
+      const visual = renderers[kind];
+      if (visual === undefined) problems.push(`${SOURCES.frontendRenderers} (${kind}): no shared visual renderer, the Mentor board cannot draw this kind`);
+      else if (!visuals.includes(visual)) problems.push(`${SOURCES.frontendRenderers} (${kind}): '${visual}' is not a shared Pizarrón visual (${SOURCES.pizarron})`);
+    }
+    for (const kind of Object.keys(renderers)) {
+      if (!INSTRUMENTS.some((i) => i.kind === kind)) problems.push(`${SOURCES.frontendRenderers}: renderer for unknown kind '${kind}'`);
+    }
+  }
 
   for (const instrument of INSTRUMENTS) {
     const { kind, model, computed, blocks } = instrument;

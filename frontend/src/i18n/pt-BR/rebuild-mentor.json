@@ -245,6 +245,7 @@
         "frame": "Fileira {n}",
         "jump": "Salto",
         "each": "cada",
+        "units": "Unidades",
         "cells": "{n} quadrados",
         "best": "melhor",
         "remainder": "Sobram",

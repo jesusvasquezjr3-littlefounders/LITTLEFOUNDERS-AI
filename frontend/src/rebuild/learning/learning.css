@@ -30,8 +30,8 @@
 .lf-bar-model { display: grid; gap: var(--spacing-3); }
 .lf-bar-model-row { display: grid; grid-template-columns: minmax(88px, 140px) minmax(0, 1fr); align-items: center; gap: var(--spacing-3); font-weight: 800; }
 .lf-bar-model-track { position: relative; min-block-size: var(--target-base); background: var(--sunken); overflow: visible; border-radius: var(--rounded-sm); }
-.lf-bar-model-track i { display: block; min-block-size: inherit; background: var(--sky-strong); border-radius: inherit; }
-.lf-bar-model-row + .lf-bar-model-row i { background: var(--mint-strong); }
+/* The tape's segments take their series fill from the shared Pizarrón visual (pizarron/pizarron.css, 05 §2). */
+.lf-bar-model-track i { display: block; min-block-size: inherit; }
 .lf-bar-model-track b { position: absolute; inset-inline-end: var(--spacing-2); inset-block-start: 50%; transform: translateY(-50%); color: var(--on-mint); }
 @container app (max-width: 420px) { .lf-bar-model-row { grid-template-columns: 1fr; gap: var(--spacing-1); } }
 .lf-schema-diagram { display: grid; grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr); align-items: center; gap: var(--spacing-2); }

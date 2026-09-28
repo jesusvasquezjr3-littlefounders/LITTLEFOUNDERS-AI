@@ -7,6 +7,7 @@ import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { TeachingChartBoard } from './TeachingChartBoard';
 import './learning.css';
 import { LessonStageSlot } from './lessonStage';
+import { RatioLinesVisual } from './pizarron';
 
 type CopySet = {
   back: string; practice: string; board: string; showTable: string; showChart: string; packs: string; pack: string;
@@ -80,11 +81,14 @@ export function RatioTableBoard({ document, segment, onBack, sequence }: {
             <th scope="row" data-label={t.packs} data-copy-role="data">{row.packs}</th><td data-label={t.items} data-copy-role="data">{row.items}</td>
             <td data-label={t.total} data-copy-role="data">{amount(row.price)}</td><td data-label={t.unitPrice} data-copy-role="data">{amount(row.unitPrice)}</td>
           </tr>)}</tbody></table>}
-          chart={<div className="lf-ratio-diagram" role="group" aria-label={`${t.ratioLines}. ${packs} ${t.packs}: ${current?.items} ${t.items}; ${amount(current?.price ?? 0)}. ${t.unit}: ${amount(segment.payload.pricePerPack / segment.payload.itemsPerPack)}.`}>
-            <div className="lf-ratio-line"><span data-copy-role="data">{t.items}</span><div className="lf-ratio-ticks" style={{ gridTemplateColumns: `repeat(${allRows.length}, minmax(0, 1fr))` }}>{allRows.map((row) => <span key={row.packs} aria-hidden="true" className={row.packs <= packs ? undefined : 'lf-ratio-tick--future'}>{row.items}</span>)}<button className="lf-ratio-pair" type="button" aria-label={t.dragPair} style={{ insetInlineStart: pairPosition }} onPointerDown={startPair} onPointerMove={(event) => { if (event.currentTarget.hasPointerCapture(event.pointerId)) movePair(event); }} /></div></div>
-            <div className="lf-ratio-line"><span data-copy-role="data">{t.total}</span><div className="lf-ratio-ticks" style={{ gridTemplateColumns: `repeat(${allRows.length}, minmax(0, 1fr))` }}>{allRows.map((row) => <span key={row.packs} aria-hidden="true" className={row.packs <= packs ? undefined : 'lf-ratio-tick--future'}>{amount(row.price)}</span>)}<button className="lf-ratio-pair" type="button" aria-label={t.dragPair} style={{ insetInlineStart: pairPosition }} onPointerDown={startPair} onPointerMove={(event) => { if (event.currentTarget.hasPointerCapture(event.pointerId)) movePair(event); }} /></div></div>
-            <p className="lf-ratio-unit" data-copy-role="data">{t.unit}: <strong data-copy-role="data">{amount(segment.payload.pricePerPack / segment.payload.itemsPerPack)}</strong></p>
-          </div>}>
+          chart={<RatioLinesVisual
+            label={`${t.ratioLines}. ${packs} ${t.packs}: ${current?.items} ${t.items}; ${amount(current?.price ?? 0)}. ${t.unit}: ${amount(segment.payload.pricePerPack / segment.payload.itemsPerPack)}.`}
+            // B.7: the shared Pizarrón ratio lines (the Mentor's unit-price board draws with the same component); the drag handle is this lesson's own.
+            overlay={<button className="lf-ratio-pair" type="button" aria-label={t.dragPair} style={{ insetInlineStart: pairPosition }} onPointerDown={startPair} onPointerMove={(event) => { if (event.currentTarget.hasPointerCapture(event.pointerId)) movePair(event); }} />}
+            groups={[{ id: 'ratio', lines: [
+              { id: 'items', label: t.items, ticks: allRows.map((row) => ({ id: String(row.packs), text: String(row.items), future: row.packs > packs })) },
+              { id: 'total', label: t.total, ticks: allRows.map((row) => ({ id: String(row.packs), text: amount(row.price), future: row.packs > packs })) },
+            ], unit: { label: t.unit, value: amount(segment.payload.pricePerPack / segment.payload.itemsPerPack) } }]} />}>
           {() => <Slider className="lf-ratio-control" label={t.packs} valueText={`${packs} ${packs === 1 ? t.pack : t.packs}`}
             min={segment.payload.minimumPacks} max={segment.payload.maximumPacks} step={1} value={packs} onValueChange={setPacks}
             stepLabels={{ decrease: '−', increase: '+' }} />}

@@ -15,7 +15,13 @@ import type { TutorWhiteboardWire } from '../session/types';
  * learner as a blank board.
  */
 
-export type BoardTone = 'primary' | 'accent' | 'mint' | 'sky' | 'berry';
+/*
+ * Frontend Bible 05 §2: only sky, mint and berry encode a series, in that
+ * order; a fourth or later series is the neutral overflow (crosshatch, direct
+ * label). `primary` (selection) and `accent` (the call to action) never
+ * encode data, so they are not tones here.
+ */
+export type BoardTone = 'sky' | 'mint' | 'berry' | 'overflow';
 
 export interface BoardRow {
   id: string;
@@ -50,6 +56,8 @@ export interface BoardWords {
   frame: string;
   jump: string;
   each: string;
+  /** The quantity line of a unit-price board (B.7 ratio lines). */
+  units: string;
   cells: string;
   best: string;
   remainder: string;
@@ -76,8 +84,9 @@ export interface BoardWords {
   step: { day: string; week: string; month: string; year: string };
 }
 
-const TONES: readonly BoardTone[] = ['primary', 'sky', 'mint', 'berry', 'accent'];
-const tone = (index: number) => TONES[index % TONES.length]!;
+const TONES: readonly BoardTone[] = ['sky', 'mint', 'berry'];
+/** The index-th series: the three series hues, then the neutral overflow (never a cycle back to a used hue). */
+export const tone = (index: number): BoardTone => TONES[index] ?? 'overflow';
 
 export interface BoardFormat {
   number: (value: number) => string;
@@ -116,7 +125,7 @@ export function boardModel(board: TutorWhiteboardWire, words: BoardWords, format
       const money = (v: number) => format.money(v, board.currency);
       return bars([
         row('start', words.start, money(board.start), { amount: board.start, tone: 'sky' }),
-        ...board.values.map((value, i) => row(i, step(board.unit, i + 1), money(value), { amount: value, tone: 'primary' })),
+        ...board.values.map((value, i) => row(i, step(board.unit, i + 1), money(value), { amount: value, tone: 'sky' })),
       ]);
     }
     case 'compare': {
@@ -152,38 +161,38 @@ export function boardModel(board: TutorWhiteboardWire, words: BoardWords, format
     case 'part_whole':
       return bars([
         row('whole', board.whole.label, format.money(board.whole.value, board.currency), { amount: board.whole.value, tone: 'sky' }),
-        row('left', board.left.label, format.money(board.left.value, board.currency), { amount: board.left.value, tone: 'primary' }),
+        row('left', board.left.label, format.money(board.left.value, board.currency), { amount: board.left.value, tone: 'sky' }),
         row('right', board.right.label, format.money(board.right.value, board.currency), { amount: board.right.value, tone: 'mint' }),
       ]);
     case 'flow':
       return bars([
         row('income', board.income.label, format.money(board.income.value, board.currency), { amount: board.income.value, tone: 'mint' }),
         row('spent', board.spent.label, format.money(board.spent.value, board.currency), { amount: board.spent.value, tone: 'berry' }),
-        row('kept', board.keptLabel, format.money(board.kept, board.currency), { amount: board.kept, tone: 'primary', marked: true }),
+        row('kept', board.keptLabel, format.money(board.kept, board.currency), { amount: board.kept, tone: 'sky', marked: true }),
       ]);
     case 'goal_bar':
       return bars([
         row('goal', board.goal.label, format.money(board.goal.value, board.currency), { amount: board.goal.value, tone: 'sky' }),
         row('saved', board.saved.label, `${format.money(board.saved.value, board.currency)} (${format.percent(board.savedFraction)})`, { amount: board.saved.value, tone: 'mint' }),
-        row('remaining', words.remaining, format.money(board.remaining, board.currency), { amount: board.remaining, tone: 'primary' }),
+        row('remaining', words.remaining, format.money(board.remaining, board.currency), { amount: board.remaining, tone: 'sky' }),
       ]);
     case 'worked':
       return bars([
         row('start', words.start, format.money(board.start, board.currency), { amount: board.start, tone: 'sky' }),
         ...board.steps.map((s, i) => row(i, `${opSign(s.op)} ${format.money(s.value, board.currency)}`, format.money(board.values[i] ?? 0, board.currency),
-          { amount: board.values[i] ?? 0, tone: 'primary' })),
+          { amount: board.values[i] ?? 0, tone: 'sky' })),
         row('check', words.check, format.money(board.checkValue, board.currency), { marked: true }),
       ]);
     case 'ten_frame':
       return bars([
-        ...board.frames.map((count, i) => row(i, fill(words.frame, { n: i + 1 }), format.number(count), { amount: count, tone: 'primary' })),
+        ...board.frames.map((count, i) => row(i, fill(words.frame, { n: i + 1 }), format.number(count), { amount: count, tone: 'sky' })),
         row('total', words.total, format.number(board.count), { marked: true }),
       ]);
     case 'open_number_line':
       return bars([
         row('from', words.start, format.money(board.from, board.currency), { amount: board.from, tone: 'sky' }),
         ...board.jumps.map((j, i) => row(i, `${words.jump} ${i + 1}: +${format.money(j.value, board.currency)}`, format.money(board.stops[i] ?? 0, board.currency),
-          { amount: board.stops[i] ?? 0, tone: 'primary' })),
+          { amount: board.stops[i] ?? 0, tone: 'sky' })),
         row('to', words.total, format.money(board.to, board.currency), { marked: true }),
       ]);
     case 'array':
@@ -306,7 +315,7 @@ export function boardModel(board: TutorWhiteboardWire, words: BoardWords, format
     case 'tally':
       return bars(board.groups.map((g, i) => row(i, g.label, format.number(g.count), { amount: g.count, tone: tone(i) })));
     case 'fraction_circle':
-      return bars([row('share', `${board.highlighted}/${board.denominator}`, format.percent(board.share), { amount: board.share, tone: 'primary' })]);
+      return bars([row('share', `${board.highlighted}/${board.denominator}`, format.percent(board.share), { amount: board.share, tone: 'sky' })]);
     case 'stack':
       return bars(board.columns.map((c, i) => row(i, `${c.label} (${c.parts.map((p) => `${p.label} ${format.money(p.value, board.currency)}`).join(', ')})`,
         format.money(board.totals[i] ?? 0, board.currency), { amount: board.totals[i] ?? 0, tone: tone(i) })));
@@ -323,7 +332,7 @@ export function boardModel(board: TutorWhiteboardWire, words: BoardWords, format
     case 'before_after':
       return bars([
         row('before', `${board.what}: ${words.before}`, format.money(board.before, board.currency), { amount: board.before, tone: 'sky' }),
-        row('after', words.after, format.money(board.after, board.currency), { amount: board.after, tone: 'primary' }),
+        row('after', words.after, format.money(board.after, board.currency), { amount: board.after, tone: 'sky' }),
         row('delta', words.difference, `${board.direction === 'down' ? '−' : board.direction === 'up' ? '+' : ''}${format.money(Math.abs(board.delta), board.currency)}`, { marked: true }),
       ]);
     case 'grab':
@@ -339,7 +348,7 @@ export function boardModel(board: TutorWhiteboardWire, words: BoardWords, format
     case 'your_turn':
       return act([
         row('start', words.start, format.money(board.start, board.currency)),
-        ...board.values.map((value, i) => row(i, step(board.unit, i + 1), format.money(value, board.currency), { amount: value, tone: i < board.givenCount ? 'sky' : 'accent' })),
+        ...board.values.map((value, i) => row(i, step(board.unit, i + 1), format.money(value, board.currency), { amount: value, tone: i < board.givenCount ? 'sky' : 'mint' })),
       ]);
   }
 }
