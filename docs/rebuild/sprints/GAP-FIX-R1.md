@@ -38,3 +38,19 @@ Branch `codex/spec-fix1social`.
 - Production readings for the Appendix J pattern metric.
 - The tier is read when the rule is evaluated, the same "as of today" reading every other E.8 gate uses. A teen who turns 18 inside the window stops counting.
 - Conservative default recorded as an owner question: a child blocking or reporting its own verified Tutor no longer counts toward the Tutor's pattern case. E.3 says "unrelated", and a report still opens a case on its own.
+
+## F1-social-finish: guardian notice by age, lane close
+
+**Adversarial pass.** The audited E.3 gap had a second role test in the same 0108 file: `submit_social_report` notified a reporter's or subject's verified guardian only when that account held the `kid` role. A guardian-linked under-13 origin account (social tier `guardian`, role `universal`) could report or be reported without its Tutor being told, against OD-3.
+
+**Built.** Migration `social_pattern_age_based` now also redefines `public.submit_social_report` (0108 verbatim otherwise). The reporter and subject notice sources read `public.social_child_account` (0121), the same child test E.11 uses. A self-registered teen still decides for itself (S-05). Whether a teen's linked guardian also gets this notice stays the open question SOCIAL-TIERS already records. The migration is now about 11 KB.
+
+**Verified (local).**
+
+- `verify-social-pattern-postgres.py`: 11 of 11 on PostgreSQL 17.6, 193 migrations. The new check covers three cases. A linked origin account that reports, or is reported, notifies its guardian. An unlinked teen reporter notifies nobody. A third mutation check (putting back the `kid` role test) loses the notice. `verify-social-governance-postgres.py` is green on the same chain.
+- Full unit suites, run once at the lane close, with type-check and lint:
+  - backend: 3067 pass, 1 skipped;
+  - frontend: 2855 of 2856 pass. The one red was `assetGate.test.ts`, an OCR timeout under shared machine load in a file this lane never touched. It passed 11 of 11 when rerun alone.
+  - database: the migration, phase and lifecycle checks pass, and so do 44 of 44 node tests. The last step of `npm test`, `railway-migrate.test.mjs`, hung in its fake-Railway shell harness with no output, and was stopped. The same test hung at that moment in two other lane worktrees, and this lane did not touch it or `railway-migrate.sh`. The orchestrator's merge gate should rerun it.
+
+**Lane summary.** E.3 now follows OD-3 in both of its role tests. Minors count toward the pattern trigger by age tier, and a child's guardian is notified by the child test instead of the kid role. The staff copy is updated in EN, es-MX and pt-BR, and so is the policy text. There is no new UI and no Core wire change. Remaining: human review and acceptance of E.3, production readings for the Appendix J metric, and the two owner questions: a child reporting its own Tutor, and notices for a teen's linked guardian.

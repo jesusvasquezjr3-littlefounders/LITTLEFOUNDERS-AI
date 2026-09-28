@@ -18,7 +18,11 @@ blocks trigger):
     verified guardian link is excluded, while a merely pending link started by
     the subject does not shield it;
   - mutation checks: restoring the 0108 rules (role = 'kid', and skipping a
-    reporter with no guardian) turns the independent-teen case red.
+    reporter with no guardian) turns the independent-teen case red;
+  - the E.3 guardian notice follows age too (submit_social_report): a
+    guardian-linked under-13 origin account (no kid role) reporting, or being
+    reported, notifies its verified guardian; an unlinked teen reporter
+    notifies nobody; restoring the kid-role test loses the notice.
 
 Configuration (same variables as the other verifiers):
   LF_PG_PSQL   path to psql      (default <repo>/.codex/audit-db/pgsql/bin/psql.exe)
@@ -98,8 +102,8 @@ try:
     check(f'all {len(migrations)} migrations apply in order on PostgreSQL {run("SHOW server_version")}')
 
     teens = [f'teen{n}' for n in range(1, 8)]
-    adults = ['a_block', 'a_mixed', 'a_adults', 'a_minors', 'a_linked', 'a_pending', 'b1', 'b2', 'b3']
-    ids = {name: str(uuid.uuid4()) for name in teens + adults + ['parent', 'parent2', 'kid', 'sibling', 'other_kid']}
+    adults = ['a_block', 'a_mixed', 'a_adults', 'a_minors', 'a_linked', 'a_pending', 'a_notice', 'b1', 'b2', 'b3']
+    ids = {name: str(uuid.uuid4()) for name in teens + adults + ['parent', 'parent2', 'kid', 'sibling', 'other_kid', 'origin_kid']}
     I = ids
     run('INSERT INTO auth.users (id, email) VALUES ' + ', '.join(f"('{v}', '{k}@example.com')" for k, v in ids.items()) + ';')
     run(f"""
@@ -109,7 +113,8 @@ try:
         VALUES ('{I['parent']}', 'verified', 'local-ocr', 'P', 'One', '1985-03-01'), ('{I['parent2']}', 'verified', 'local-ocr', 'P', 'Two', '1984-03-01');
     INSERT INTO guardian_links (parent_user_id, kid_user_id, verification_status, verified_at) VALUES
         ('{I['parent']}', '{I['kid']}', 'verified', now()), ('{I['parent']}', '{I['sibling']}', 'verified', now()),
-        ('{I['parent2']}', '{I['other_kid']}', 'verified', now());
+        ('{I['parent2']}', '{I['other_kid']}', 'verified', now()), ('{I['parent2']}', '{I['origin_kid']}', 'verified', now());
+    INSERT INTO account_safety_origins (user_id) VALUES ('{I['origin_kid']}');
     INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{I['kid']}', 'kid', '{I['parent']}'),
         ('{I['sibling']}', 'kid', '{I['parent']}'), ('{I['other_kid']}', 'kid', '{I['parent2']}') ON CONFLICT DO NOTHING;
     INSERT INTO account_age_declarations (user_id, declared_age_band) VALUES
@@ -120,9 +125,10 @@ try:
     tiers = {name: service(f"SELECT social_tier('{I[name]}')") for name in ids}
     assert all(tiers[t] == 'teen' for t in teens), tiers
     assert all(tiers[a] == 'adult' for a in adults), tiers
-    assert tiers['kid'] == tiers['sibling'] == tiers['other_kid'] == 'guardian', tiers
+    assert tiers['kid'] == tiers['sibling'] == tiers['other_kid'] == tiers['origin_kid'] == 'guardian', tiers
+    assert run(f"SELECT count(*) FROM user_roles WHERE role = 'kid' AND user_id = '{I['origin_kid']}'") == '0'
     assert run(f"SELECT count(*) FROM user_roles WHERE role = 'kid' AND user_id IN ({', '.join(repr(I[t]) for t in teens)})") == '0'
-    check('seeded: seven self-registered teens (teen tier, no kid role, no guardian), nine adults, two verified Tutors, three children in two families')
+    check('seeded: seven self-registered teens (teen tier, no kid role, no guardian), ten adults, two verified Tutors, three children in two families, one linked under-13 origin account without the kid role')
 
     # ── Independent teens, blocks only ──────────────────────────────────────
     block(I['teen1'], I['a_block'])
@@ -208,6 +214,28 @@ try:
         assert evaluate(I['a_block']) == 't'
         print(f'   mutation {name!r} turns the independent-teen case red')
     check('mutation checks: restoring role = \'kid\' or the no-guardian skip fails the independent-teen case')
+
+    # ── The guardian notice follows age (OD-3) ──────────────────────────────
+    def notices(guardian, child, subject):
+        return run(f"SELECT count(*) FROM social_safety_notices WHERE guardian_id = '{guardian}' "
+                   f"AND kid_user_id = '{child}' AND subject_id = '{subject}'")
+    report(I['origin_kid'], I['a_notice'])
+    assert notices(I['parent2'], I['origin_kid'], I['a_notice']) == '1', 'a linked origin reporter did not notify its guardian'
+    report(I['b1'], I['origin_kid'])
+    assert notices(I['parent2'], I['origin_kid'], I['origin_kid']) == '1', 'a reported linked origin did not notify its guardian'
+    report(I['teen1'], I['b2'])
+    assert run(f"SELECT count(*) FROM social_safety_notices WHERE subject_id = '{I['b2']}'") == '0', 'an unlinked teen reporter produced a notice'
+    kid_role = source.replace('WHERE public.social_child_account(p_reporter_id)',
+                              "WHERE EXISTS (SELECT 1 FROM public.user_roles ur WHERE ur.user_id = p_reporter_id AND ur.role = 'kid')")
+    assert kid_role != source, 'the notice mutation did not apply'
+    run(kid_role)
+    report(I['origin_kid'], I['b3'])
+    assert notices(I['parent2'], I['origin_kid'], I['b3']) == '0', "mutation role = 'kid' on the notice survived"
+    run(source)
+    report(I['origin_kid'], I['a_adults'])
+    assert notices(I['parent2'], I['origin_kid'], I['a_adults']) == '1'
+    check("the E.3 guardian notice follows age: a linked under-13 origin account reporting or reported notifies its guardian; "
+          "an unlinked teen notifies nobody; restoring role = 'kid' loses the notice")
 
     for role in ('anon', 'authenticated', 'service_role'):
         try:

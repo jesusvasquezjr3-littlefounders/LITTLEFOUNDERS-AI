@@ -1,5 +1,5 @@
 -- social_pattern_age_based — E.3's repeated-report pattern trigger counts
--- minors by age, not by role (OD-3).
+-- minors by age, not by role (OD-3), and so does its guardian notice.
 -- @phase: expand
 --
 -- E.3: an account that collects reports or blocks from 3 or more unrelated
@@ -112,3 +112,88 @@ BEGIN
 END;
 $$;
 REVOKE ALL ON FUNCTION public.evaluate_social_pattern(uuid) FROM PUBLIC, anon, authenticated, service_role;
+
+-- E.3 guardian notice, by age (OD-3). 0108 notified the verified guardian of
+-- a reporter or subject only when that account held the kid role, so a
+-- guardian-linked under-13 origin account (social tier 'guardian', no kid
+-- role) reported or was reported without its guardian being told. The rule
+-- now reads public.social_child_account (0121), the same "child" test the
+-- E.11 disclosure rule uses. A self-registered teen keeps deciding for itself
+-- (S-05): whether a teen's linked guardian also gets this notice is the open
+-- question SOCIAL-TIERS already records. Everything else is 0108 verbatim:
+-- validation, the idempotent receipt, the audit row, the case upsert, the
+-- connection-based notice sources and the pattern evaluation.
+
+CREATE OR REPLACE FUNCTION public.submit_social_report(
+    p_reporter_id uuid, p_subject_id uuid, p_category text, p_note text)
+RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+DECLARE report_id uuid;
+BEGIN
+    IF p_reporter_id IS NULL OR p_subject_id IS NULL OR p_reporter_id = p_subject_id THEN
+        RAISE EXCEPTION 'INVALID_SOCIAL_REPORT' USING ERRCODE = 'P0001';
+    END IF;
+    IF p_category IS NULL OR p_category NOT IN
+        ('unwanted_contact', 'harassment', 'inappropriate_content', 'impersonation', 'other') THEN
+        RAISE EXCEPTION 'INVALID_SOCIAL_REPORT' USING ERRCODE = 'P0001';
+    END IF;
+    IF p_note IS NOT NULL AND (char_length(p_note) < 1 OR char_length(p_note) > 140) THEN
+        RAISE EXCEPTION 'INVALID_SOCIAL_REPORT' USING ERRCODE = 'P0001';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = p_reporter_id)
+       OR NOT EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = p_subject_id) THEN
+        RAISE EXCEPTION 'INVALID_SOCIAL_REPORT' USING ERRCODE = 'P0001';
+    END IF;
+    -- Idempotent receipt: one open report per reporter/subject pair; a retry
+    -- returns the existing report instead of double-counting the pattern.
+    PERFORM pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(
+        'social-report:' || p_reporter_id::text || ':' || p_subject_id::text, 0));
+    SELECT id INTO report_id FROM public.social_reports
+        WHERE reporter_id = p_reporter_id AND subject_id = p_subject_id AND status = 'open';
+    IF report_id IS NOT NULL THEN RETURN report_id; END IF;
+    INSERT INTO public.social_reports(reporter_id, subject_id, category, note)
+        VALUES (p_reporter_id, p_subject_id, p_category, p_note) RETURNING id INTO report_id;
+    -- E.2/E.3: the report feeds the append-only audit trail. The note never
+    -- enters audit detail: it lives only on the report row the staff console
+    -- reads under manage_support.
+    INSERT INTO public.audit_logs(actor_id, action, subject, detail)
+        VALUES (p_reporter_id, 'social.report', p_subject_id::text,
+            jsonb_build_object('report_id', report_id, 'subject_id', p_subject_id,
+                'category', p_category, 'origin', 'database-function'));
+    -- Every report opens (or reopens) a review case; a later pattern trigger
+    -- only bumps the same case, it cannot create a duplicate.
+    INSERT INTO public.social_review_cases(subject_id, origin)
+        VALUES (p_subject_id, 'report')
+        ON CONFLICT (subject_id) DO UPDATE
+            SET last_seen_at = now(), status = 'open', origin = 'report';
+    -- E.3: notify the linked guardian. Notified: verified guardians of (a) a
+    -- child reporter, (b) a child subject, and (c) accounts connected to the
+    -- subject through a follow in either direction or a pending/approved
+    -- connection request. A child is public.social_child_account (OD-3: by
+    -- age, so a linked under-13 origin counts, not only the kid role).
+    -- Guardian rows are deduplicated across the three sources.
+    INSERT INTO public.social_safety_notices(guardian_id, kid_user_id, kind, subject_id, report_id)
+    SELECT DISTINCT gl.parent_user_id, involved.kid_user_id, 'social.report', p_subject_id, report_id
+    FROM (
+        SELECT p_reporter_id AS kid_user_id
+        WHERE public.social_child_account(p_reporter_id)
+        UNION
+        SELECT p_subject_id
+        WHERE public.social_child_account(p_subject_id)
+        UNION
+        SELECT f.follower_id FROM public.follows f WHERE f.followed_id = p_subject_id
+        UNION
+        SELECT f.followed_id FROM public.follows f WHERE f.follower_id = p_subject_id
+        UNION
+        SELECT r.requester_id FROM public.social_connection_requests r
+            WHERE r.kid_user_id = p_subject_id AND r.status IN ('pending', 'approved')
+    ) involved
+    JOIN public.guardian_links gl
+        ON gl.kid_user_id = involved.kid_user_id AND gl.verification_status = 'verified';
+    -- Automatic pattern detection, evaluated on write: three unrelated
+    -- minors in 30 days queue the subject for proactive review.
+    PERFORM public.evaluate_social_pattern(p_subject_id);
+    RETURN report_id;
+END;
+$$;
+REVOKE ALL ON FUNCTION public.submit_social_report(uuid, uuid, text, text) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.submit_social_report(uuid, uuid, text, text) TO service_role;
