@@ -90,7 +90,7 @@ describe('PedagogicalController', () => {
       NOW + 1_000,
     );
     expect(decision.strategy).toBe('REMEDIATE');
-    expect(decision.evidence).toEqual({ rule: 'remediation', observations: 2, required: 2 });
+    expect(decision.evidence).toEqual({ rule: 'remediation', observations: 2, required: 2, discounted: 'none' });
     expect(decision.instruction).toContain('Cuenta hacia arriba desde el precio.');
     expect(c.state()?.misconceptionHint).toBe('Cuenta hacia arriba desde el precio.');
     expect(c.state()?.mode).toBe('remediation');
@@ -294,7 +294,7 @@ describe('PedagogicalController', () => {
       expect(c.decide(fastCorrect(1_500), NOW + 11_000).strategy).not.toBe('TRANSFER');
       const regained = c.decide(fastCorrect(1_500), NOW + 12_000);
       expect(regained.strategy).toBe('TRANSFER');
-      expect(regained.evidence).toEqual({ rule: 'mastery', observations: 2, required: 2 });
+      expect(regained.evidence).toEqual({ rule: 'mastery', observations: 2, required: 2, discounted: 'none' });
     });
 
     it('a WRONG answer on a celebrated KC revokes it too — not only a slow one', () => {
@@ -550,7 +550,7 @@ describe('PedagogicalController', () => {
       NOW + 270_000,
     );
     expect(back.strategy).toBe('REMEDIATE');
-    expect(back.evidence).toEqual({ rule: 'remediation', observations: 3, required: 2 });
+    expect(back.evidence).toEqual({ rule: 'remediation', observations: 3, required: 2, discounted: 'none' });
     expect(c.activeKcId).toBe(KC_A);
   });
 
@@ -812,7 +812,7 @@ describe('PedagogicalController', () => {
     expect(c.decide(right, NOW).strategy).not.toBe('CELEBRATE');
     const decision = c.decide(right, NOW + 40_000);
     expect(decision.strategy).toBe('CELEBRATE');
-    expect(decision.evidence).toEqual({ rule: 'mastery', observations: 2, required: 2 });
+    expect(decision.evidence).toEqual({ rule: 'mastery', observations: 2, required: 2, discounted: 'none' });
   });
 
   it('holds its strategy past three changes per minute — never erratic', () => {
@@ -1225,6 +1225,31 @@ describe('C.10: two consecutive qualifying observations before a consequential m
     expect(c.decide(right(), NOW + 120_000).strategy).toBe('CELEBRATE');
   });
 
+  it('GAP-FIX-R2: the decision says which correct answers were set aside (hint-assisted), for the parent view', () => {
+    const c = returning();
+    c.decide(right(), NOW);
+    c.decide(right({ hintAssisted: true }), NOW + 40_000);
+    c.decide(right(), NOW + 80_000);
+    const declared = c.decide(right(), NOW + 120_000);
+    expect(declared.strategy).toBe('CELEBRATE');
+    expect(declared.evidence).toEqual({ rule: 'mastery', observations: 2, required: 2, discounted: 'hint_assisted' });
+    // The label survives a park and resume.
+    const resumed = returning();
+    resumed.restore(c.snapshot());
+    expect(resumed.snapshot().discountedCorrect).toEqual([[KC_A, false, true]]);
+  });
+
+  it('GAP-FIX-R2: a too-fast surprising correct is recorded as set aside too', () => {
+    const c = new PedagogicalController([entry({ pKnown: 0.2, prereqKcIds: [] })]);
+    const miss = { ...wrongWith(null), latencyMs: 9_000 } as const;
+    c.decide(right({ latencyMs: 9_000 }), NOW);
+    c.decide(miss, NOW + 40_000);
+    c.decide(right({ latencyMs: 9_000 }), NOW + 80_000);
+    c.decide(miss, NOW + 120_000);
+    c.decide(right({ latencyMs: 600 }), NOW + 160_000);
+    expect(c.snapshot().discountedCorrect).toEqual([[KC_A, true, false]]);
+  });
+
   it('a SURPRISING correct that arrived too fast to read is a possible guess — neutral', () => {
     // A learner the controller believes does NOT know this (p < 0.5).
     const c = new PedagogicalController([entry({ pKnown: 0.2, prereqKcIds: [] })]);
@@ -1277,7 +1302,7 @@ describe('C.10: two consecutive qualifying observations before a consequential m
     expect(c.decide(stated, NOW).strategy).not.toBe('REMEDIATE');
     const d = c.decide(stated, NOW + 40_000);
     expect(d.strategy).toBe('REMEDIATE');
-    expect(d.evidence).toEqual({ rule: 'remediation', observations: 2, required: 2 });
+    expect(d.evidence).toEqual({ rule: 'remediation', observations: 2, required: 2, discounted: 'none' });
   });
 
   it('RESCUE carries its evidence: two consecutive graded failures', () => {
@@ -1285,7 +1310,7 @@ describe('C.10: two consecutive qualifying observations before a consequential m
     expect(c.decide(wrongWith(null), NOW).evidence).toBeNull();
     const d = c.decide(wrongWith(null), NOW + 40_000);
     expect(d.strategy).toBe('RESCUE');
-    expect(d.evidence).toEqual({ rule: 'rescue', observations: 2, required: 2 });
+    expect(d.evidence).toEqual({ rule: 'rescue', observations: 2, required: 2, discounted: 'none' });
   });
 
   it('a decision a guardrail HELD carries no evidence — it executed nothing', () => {
@@ -1334,7 +1359,7 @@ describe('C.10: two consecutive qualifying observations before a consequential m
       const c = returning({ corroborationRollbackKcKeys: ['money.make-change-counting-up'] });
       const d = c.decide(right(), NOW);
       expect(d.strategy).toBe('CELEBRATE');
-      expect(d.evidence).toEqual({ rule: 'mastery', observations: 1, required: 1 });
+      expect(d.evidence).toEqual({ rule: 'mastery', observations: 1, required: 1, discounted: 'none' });
     });
 
     it("judges a probe's remediation against the ORIGINAL KC's requirement", () => {
@@ -1348,7 +1373,7 @@ describe('C.10: two consecutive qualifying observations before a consequential m
       expect(c.decide(wrongWith(null), NOW).strategy).toBe('PROBE');
       const back = c.decide(right(), NOW + 5_000);
       expect(back.strategy).toBe('REMEDIATE');
-      expect(back.evidence).toEqual({ rule: 'remediation', observations: 1, required: 1 });
+      expect(back.evidence).toEqual({ rule: 'remediation', observations: 1, required: 1, discounted: 'none' });
     });
 
     it('leaves every other knowledge component on the rule', () => {
@@ -1360,7 +1385,7 @@ describe('C.10: two consecutive qualifying observations before a consequential m
       const c = returning({ corroborationMinObservations: 3 });
       c.decide(right(), NOW);
       expect(c.decide(right(), NOW + 40_000).strategy).not.toBe('CELEBRATE');
-      expect(c.decide(right(), NOW + 80_000).evidence).toEqual({ rule: 'mastery', observations: 3, required: 3 });
+      expect(c.decide(right(), NOW + 80_000).evidence).toEqual({ rule: 'mastery', observations: 3, required: 3, discounted: 'none' });
     });
 
     it('ignores an out-of-range value rather than weakening the rule', () => {

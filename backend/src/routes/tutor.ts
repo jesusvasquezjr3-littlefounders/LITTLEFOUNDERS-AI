@@ -148,6 +148,7 @@ import {
 } from '../services/pedagogy/kcData.js';
 import { purgeExpiredTutorSessions } from '../services/tutorRetention.js';
 import { buildSessionPlan } from '../services/pedagogy/sessionPlan.js';
+import { buildMasteryEvidence } from '../services/pedagogy/masteryEvidence.js';
 import { buildTutorMap } from '../services/pedagogy/tutorMap.js';
 import { recordTurnHonesty } from '../services/pedagogy/turnHonesty.js';
 import { recordAttempt, type AttemptOutcome } from '../services/pedagogy/recordAttempt.js';
@@ -1634,9 +1635,14 @@ function internalRouter(): Router {
       evidenceRule: z.enum(['mastery', 'remediation', 'rescue']).nullable().optional(),
       evidenceObservations: z.number().int().min(0).max(100).nullable().optional(),
       evidenceRequired: z.number().int().min(1).max(5).nullable().optional(),
+      // GAP-FIX-R2 (Appendix D §2.6): which correct answers the chain set aside; travels with the evidence.
+      evidenceDiscounted: z.enum(['none', 'too_fast', 'hint_assisted', 'too_fast_and_hint_assisted']).nullable().optional(),
       masteryRevoked: z.boolean().optional(),
     })
     .strict()
+    .refine((step) => (step.evidenceDiscounted ?? null) === null || (step.evidenceRule ?? null) !== null, {
+      message: 'evidenceDiscounted travels with evidenceRule',
+    })
     .refine(
       (step) =>
         (step.evidenceRule ?? null) === null
@@ -3283,6 +3289,39 @@ export function tutorRouter(): Router {
     const map = await buildTutorMap(user.id, calibration.tier, normalizeLocale(profile.locale));
     if (map === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the learning map');
     return ok(res, map);
+  });
+
+  /*
+   * GAP-FIX-R2 — WHAT THE MENTOR DECIDED, AND ON WHAT EVIDENCE (Block C Real-
+   * Time Interaction Standard; Appendix D §2.6: "expose the evidence, not
+   * just the conclusion"; C.10). Per skill: the displayed state, the latest
+   * consequential decision with the evidence the controller logged, and the
+   * next re-check. Numbers and closed labels only (`masteryEvidence.ts`).
+   * The learner reads their own; a verified guardian reads their child's,
+   * behind the same `isVerifiedGuardian` gate every other /kids route uses.
+   */
+  const masteryLocale = async (user: ReturnType<typeof authedUser>) =>
+    normalizeLocale((await profileOf(user.accessToken, user.id))?.locale);
+
+  router.get('/mastery', async (_req, res) => {
+    const user = authedUser(res);
+    if (!getConfig().TUTOR_V3_BRAIN) return ok(res, { items: [] });
+    const evidence = await buildMasteryEvidence(user.id, await masteryLocale(user));
+    if (evidence === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the learning evidence');
+    return ok(res, evidence);
+  });
+
+  router.get('/kids/:kidUserId/mastery', async (req, res) => {
+    const kidUserId = z.string().uuid().safeParse(req.params.kidUserId);
+    if (!kidUserId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
+    const user = authedUser(res);
+    const guardian = await isVerifiedGuardian(user.id, kidUserId.data);
+    if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
+    if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
+    if (!getConfig().TUTOR_V3_BRAIN) return ok(res, { items: [] });
+    const evidence = await buildMasteryEvidence(kidUserId.data, await masteryLocale(user));
+    if (evidence === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the learning evidence');
+    return ok(res, evidence);
   });
 
   // ── The offer screen (/ORACLE.md §9.2) ────────────────────────────────────

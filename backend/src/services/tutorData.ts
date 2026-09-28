@@ -2959,6 +2959,8 @@ export interface TrajectoryStepInput {
   evidenceRule?: 'mastery' | 'remediation' | 'rescue' | null;
   evidenceObservations?: number | null;
   evidenceRequired?: number | null;
+  /** GAP-FIX-R2: correct answers the evidence chain set aside (absent from an older Oracle). */
+  evidenceDiscounted?: 'none' | 'too_fast' | 'hint_assisted' | 'too_fast_and_hint_assisted' | null;
   masteryRevoked?: boolean;
 }
 
@@ -3008,6 +3010,8 @@ export async function insertTutorTrajectory(
         evidence_rule: step.evidenceRule ?? null,
         evidence_observations: step.evidenceObservations ?? null,
         evidence_required: step.evidenceRequired ?? null,
+        // Every row carries the same keys (a PostgREST bulk insert requires it); needs migration trajectory_discounted_evidence.
+        evidence_discounted: step.evidenceDiscounted ?? null,
         mastery_revoked: step.masteryRevoked ?? false,
       })),
     ),

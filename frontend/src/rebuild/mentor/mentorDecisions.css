@@ -1,0 +1,24 @@
+/* "What the Mentor decided" (GAP-FIX-R2): the evidence behind each decision.
+   Separation by fill, never an outline (02 §4.4); tokens only, both modes. */
+.lf-mentor-decisions { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-mentor-decisions-title { margin: 0; font: var(--type-title); }
+.lf-mentor-decisions-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-mentor-decisions-item {
+  display: grid;
+  gap: var(--spacing-1);
+  padding: var(--spacing-4);
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+  color: var(--content);
+  min-inline-size: 0;
+}
+.lf-mentor-decisions-item p { margin: 0; font: var(--type-body); overflow-wrap: anywhere; }
+.lf-mentor-decisions-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--spacing-2); }
+.lf-mentor-decisions-skill { font: var(--type-label); overflow-wrap: anywhere; min-inline-size: 0; }
+.lf-mentor-decisions-state {
+  font: var(--type-caption);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--rounded-full);
+  background: var(--surface);
+}
+.lf-mentor-decisions-date { font: var(--type-caption); color: var(--content-muted); }

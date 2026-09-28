@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { rebuildNamespaceCopy } from '@/i18n/rebuild';
 import { ChildMentorTalks } from './ChildMentorTalks';
 import {
-  dispositionWire, FAMILY, fakeTransport, GOAL_BOARD, historyWire, KID_A, KID_B, micWire, notesWire, ok, refuse, SESSION_A, SESSION_B, sessionWire, transcriptWire, YOUR_TURN_BOARD, type Answer,
+  dispositionWire, FAMILY, masteryWire, fakeTransport, GOAL_BOARD, historyWire, KID_A, KID_B, micWire, notesWire, ok, refuse, SESSION_A, SESSION_B, sessionWire, transcriptWire, YOUR_TURN_BOARD, type Answer,
 } from './consoleFixtures';
 
 /*
@@ -21,6 +21,7 @@ const family = rebuildNamespaceCopy['en-US'].family;
 const copy = family.familyChildMentor;
 const notes = family.familyMemoryNotes;
 const profile = rebuildNamespaceCopy['en-US'].mentor.mentorProfile;
+const decisions = rebuildNamespaceCopy['en-US'].mentor.mentorDecisions;
 const boardCopy = rebuildNamespaceCopy['en-US'].mentor.mentorScreen.board;
 
 function routesFor(kid: string, over: Record<string, Answer> = {}): Record<string, Answer> {
@@ -29,6 +30,7 @@ function routesFor(kid: string, over: Record<string, Answer> = {}): Record<strin
     [`GET /tutor/kids/${kid}/memory-proposals`]: ok(notesWire({ proposals: [] })),
     [`GET /tutor/consent/${kid}`]: ok(micWire()),
     [`GET /tutor/kids/${kid}/disposition`]: ok(dispositionWire),
+    [`GET /tutor/kids/${kid}/mastery`]: ok(masteryWire),
     [`GET /tutor/kids/${kid}/plan`]: ok({ plan: null }),
     [`GET /tutor/kids/${kid}/notebook`]: ok({ entries: [] }),
     [`GET /tutor/sessions/${SESSION_A}`]: ok(transcriptWire(SESSION_A)),
@@ -39,7 +41,7 @@ function routesFor(kid: string, over: Record<string, Answer> = {}): Record<strin
 
 function setup(over: Record<string, Answer> = {}, kid = KID_A) {
   const transport = fakeTransport({ 'GET /family/kids': ok({ kids: FAMILY }), ...routesFor(KID_A), ...routesFor(KID_B), ...over });
-  const props = { copy, notesCopy: notes, consentCopy: family.familyChildConsent, profileCopy: profile, boardCopy, locale: 'en-US' as const, dark: false, transport,
+  const props = { copy, notesCopy: notes, consentCopy: family.familyChildConsent, profileCopy: profile, decisionsCopy: decisions, boardCopy, locale: 'en-US' as const, dark: false, transport,
     backHref: `/family?child=${kid}`, onNavigate: vi.fn() };
   const view = render(<ChildMentorTalks {...props} kidId={kid} />);
   return { transport, view, rerender: (next: string) => view.rerender(<ChildMentorTalks {...props} kidId={next} />) };
@@ -288,5 +290,29 @@ describe('ChildMentorTalks (F3): the note, the profile, the kept boards, the sta
     setup({ [`GET /tutor/kids/${KID_A}/sessions`]: () => (++calls === 1 ? refuse('DATA_UNAVAILABLE') : ok(historyWire())) });
     fireEvent.click(await screen.findByRole('button', { name: copy.retry }));
     expect(await screen.findByRole('heading', { name: copy.flagsTitle })).toBeInTheDocument();
+  });
+});
+
+describe('ChildMentorTalks (GAP-FIX-R2): what the Mentor decided, and on what evidence', () => {
+  it('phrases each decision as sentences from numbers and closed labels, with the next re-check', async () => {
+    setup();
+    await screen.findByRole('heading', { name: decisions.title });
+    const card = document.querySelector('[data-console-part="mentor-decisions"]') as HTMLElement;
+    await within(card).findByText('Moved on after 2 correct answers in a row.');
+    expect(within(card).getByText(decisions.tooFast)).toHaveAttribute('data-copy-role', 'body');
+    expect(within(card).getByText(decisions.states.provisional_mastered)).toBeInTheDocument();
+    expect(within(card).getByText(/Will check again on Oct 4, 2026/u)).toBeInTheDocument();
+    expect(within(card).getByText('Went back over it after 2 misses in a row.')).toBeInTheDocument();
+    // Read-only: the card offers no action beyond a retry on failure.
+    expect(within(card).queryByRole('button')).toBeNull();
+  });
+
+  it('says it could not load rather than showing an empty card, and retries', async () => {
+    const { transport } = setup({ [`GET /tutor/kids/${KID_A}/mastery`]: refuse('DATA_UNAVAILABLE') });
+    await screen.findByText(decisions.failed);
+    const card = document.querySelector('[data-console-part="mentor-decisions"]') as HTMLElement;
+    expect(within(card).queryByText(decisions.empty)).toBeNull();
+    fireEvent.click(within(card).getByRole('button', { name: decisions.retry }));
+    await waitFor(() => expect(transport.calls.filter((call) => call.path.endsWith('/mastery')).length).toBeGreaterThanOrEqual(2));
   });
 });

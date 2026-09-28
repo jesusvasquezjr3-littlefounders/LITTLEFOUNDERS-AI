@@ -3882,6 +3882,7 @@ describe('POST /api/v1/tutor/internal/trajectory — V4 harness backlog (traject
       evidence_rule: null,
       evidence_observations: null,
       evidence_required: null,
+      evidence_discounted: null,
       mastery_revoked: false,
     });
     expect(rows[1]).toMatchObject({ turn_seq: 2, strategy_before: 'DIRECT', strategy: 'CELEBRATE', kc_mode: null });
@@ -3902,6 +3903,7 @@ describe('POST /api/v1/tutor/internal/trajectory — V4 harness backlog (traject
             evidenceRule: 'mastery',
             evidenceObservations: 2,
             evidenceRequired: 2,
+            evidenceDiscounted: 'too_fast',
             masteryRevoked: false,
           },
         ],
@@ -3913,8 +3915,20 @@ describe('POST /api/v1/tutor/internal/trajectory — V4 harness backlog (traject
       evidence_rule: 'mastery',
       evidence_observations: 2,
       evidence_required: 2,
+      evidence_discounted: 'too_fast',
       mastery_revoked: false,
     });
+  });
+
+  it('refuses a discounted label with no evidence, and one outside the closed set', async () => {
+    stub();
+    for (const step of [{ ...oneStep, evidenceDiscounted: 'none' }, { ...oneStep, evidenceRule: 'mastery', evidenceObservations: 2, evidenceRequired: 2, evidenceDiscounted: 'lucky' }]) {
+      const response = await request(createApp())
+        .post('/api/v1/tutor/internal/trajectory')
+        .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+        .send({ userId: KID, sessionId: SESSION, steps: [step] });
+      expect(response.status).toBe(400);
+    }
   });
 
   it('C.10: refuses evidence that does not travel as a unit', async () => {
@@ -6473,5 +6487,94 @@ describe('S06.12 C.5/C.6 — the governed content ladder', () => {
     });
     const response = await post('segments', { ...segmentsBody, kcId: PERCENT_KC });
     expect(response.body.data).toMatchObject({ origin: 'bank' });
+  });
+});
+
+/*
+ * GAP-FIX-R2 — what the Mentor decided, and on what evidence (Appendix D §2.6,
+ * C.10). The guardian route is behind the same verified-guardian gate as every
+ * other /kids route; the projection carries numbers and closed labels only.
+ */
+describe('GET /tutor/kids/:kidUserId/mastery and /tutor/mastery (the evidence behind each decision)', () => {
+  const KC_A = '66666666-6666-4666-8666-666666666661';
+  const KC_B = '66666666-6666-4666-8666-666666666662';
+  const kcs = [
+    { id: KC_A, key: 'money.count-coins', strand: 'money_math', title: { 'en-US': 'Counting coins', 'es-MX': 'Contar monedas' }, tier_min: 1, p_l0: 0.2, status: 'active' },
+    { id: KC_B, key: 'money.make-change', strand: 'money_math', title: { 'en-US': 'Making change', 'es-MX': 'Dar cambio' }, tier_min: 1, p_l0: 0.2, status: 'active' },
+  ];
+  const tables = (extra: { steps?: unknown[]; failSteps?: boolean } = {}) => (url: string): Response | null => {
+    if (url.includes('/rest/v1/learner_kc_mastery')) {
+      return jsonResponse(200, [
+        { kc_id: KC_A, p_known: 0.93, attempts: 5, correct: 5, params_override: null },
+        { kc_id: KC_B, p_known: 0.4, attempts: 3, correct: 1, params_override: null },
+      ]);
+    }
+    if (url.includes('/rest/v1/memory_card')) {
+      return jsonResponse(200, [{ kc_id: KC_A, state: 'review', stability: 4, difficulty: 5, reps: 2, lapses: 0, due_at: '2099-10-04T09:00:00Z', last_review_at: null }]);
+    }
+    if (url.includes('/rest/v1/tutor_trajectory_step')) {
+      return extra.failSteps ? new Response(null, { status: 500 }) : jsonResponse(200, extra.steps ?? [
+        { kc_id: KC_B, evidence_rule: 'remediation', evidence_observations: 2, evidence_required: 2, evidence_discounted: 'none', mastery_revoked: false, created_at: '2026-09-27T10:00:00Z' },
+        { kc_id: KC_A, evidence_rule: 'mastery', evidence_observations: 2, evidence_required: 2, evidence_discounted: 'too_fast', mastery_revoked: false, created_at: '2026-09-26T10:00:00Z' },
+        { kc_id: KC_A, evidence_rule: 'rescue', evidence_observations: 2, evidence_required: 2, evidence_discounted: 'none', mastery_revoked: false, created_at: '2026-09-20T10:00:00Z' },
+      ]);
+    }
+    return null;
+  };
+  const kcAttempts = [
+    { kc_id: KC_A, correct: true }, { kc_id: KC_A, correct: true }, { kc_id: KC_B, correct: false },
+  ];
+  const guardianOf = [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }];
+
+  it('refuses anyone who is not a verified guardian of that child, before reading any evidence', async () => {
+    const calls = stub({ guardianLinks: [], kcs, intercept: tables() });
+    const response = await request(createApp()).get(`/api/v1/tutor/kids/${KID}/mastery`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+    expect(response.status).toBe(403);
+    expect(calls.some((c) => c.url.includes('tutor_trajectory_step') || c.url.includes('learner_kc_mastery'))).toBe(false);
+  });
+
+  it('answers 502 when guardianship cannot be verified, and when the evidence read fails', async () => {
+    stub({ restFailures: ['guardian_links'], kcs, intercept: tables() });
+    const unverified = await request(createApp()).get(`/api/v1/tutor/kids/${KID}/mastery`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+    expect(unverified.status).toBe(502);
+    stub({ guardianLinks: guardianOf, kcs, kcAttempts, intercept: tables({ failSteps: true }) });
+    const unread = await request(createApp()).get(`/api/v1/tutor/kids/${KID}/mastery`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+    expect(unread.status).toBe(502);
+    expect(unread.body.error.code).toBe('DATA_UNAVAILABLE');
+  });
+
+  it('hands a verified guardian each skill\'s state, the latest decision with its evidence, and the next re-check', async () => {
+    stub({ guardianLinks: guardianOf, kcs, kcAttempts, intercept: tables(), profile: { ...KID_PROFILE, user_id: PARENT, locale: 'en-US' } });
+    const response = await request(createApp()).get(`/api/v1/tutor/kids/${KID}/mastery`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+    expect(response.status).toBe(200);
+    expect(response.body.data.items).toEqual([
+      {
+        kcKey: 'money.make-change', title: 'Making change', state: 'not_yet', correctInARow: 0, attempts: 3,
+        decision: { kind: 'remediation', observations: 2, required: 2, discounted: 'none', decidedAt: '2026-09-27T10:00:00Z' },
+        nextCheckAt: null,
+      },
+      {
+        kcKey: 'money.count-coins', title: 'Counting coins', state: 'provisional_mastered', correctInARow: 2, attempts: 5,
+        // The LATEST decision per skill, not the older rescue.
+        decision: { kind: 'mastered', observations: 2, required: 2, discounted: 'too_fast', decidedAt: '2026-09-26T10:00:00Z' },
+        nextCheckAt: '2099-10-04T09:00:00Z',
+      },
+    ]);
+    // Numbers and closed labels only: nothing in the projection is transcript or model text.
+    expect(JSON.stringify(response.body.data)).not.toMatch(/turn_text|say|transcript/i);
+  });
+
+  it('lets the learner read the same projection about themself', async () => {
+    const calls = stub({ kcs, kcAttempts, intercept: tables() });
+    const response = await request(createApp()).get('/api/v1/tutor/mastery')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+    expect(response.status).toBe(200);
+    expect(response.body.data.items).toHaveLength(2);
+    const step = calls.find((c) => c.url.includes('tutor_trajectory_step'));
+    expect(step?.url).toContain(`user_id=eq.${KID}`);
   });
 });

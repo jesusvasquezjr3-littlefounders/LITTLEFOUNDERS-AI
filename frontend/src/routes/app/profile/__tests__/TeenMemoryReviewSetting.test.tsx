@@ -24,7 +24,7 @@ const NOTE = {
   sessionId: 's1',
   createdAt: '2026-09-24T10:00:00Z',
 };
-const queue = (proposals = [NOTE], current: string | null = 'Nota anterior.', pedagogy: string | null = null) => ({
+const queue = (proposals: Array<Omit<typeof NOTE, 'expectedBefore'> & { expectedBefore: string | null }> = [NOTE], current: string | null = 'Nota anterior.', pedagogy: string | null = null) => ({
   data: { proposals, current: { learner: current, pedagogy } },
   error: null,
 });
@@ -167,7 +167,7 @@ describe('TeenMemoryReviewSetting', () => {
   });
 
   it('applies an approved pedagogy note to the pedagogy store only, and refuses a legacy string current', async () => {
-    const pedagogyNote = { ...NOTE, id: 'note-p', store: 'pedagogy', proposed: 'Un dibujo primero ayuda.', expectedBefore: null };
+    const pedagogyNote = { ...NOTE, id: 'note-p', store: 'pedagogy', proposed: 'Un dibujo primero ayuda.', expectedBefore: null as string | null };
     mocks.getOwn.mockResolvedValue(queue([pedagogyNote], 'Nota anterior.'));
     mocks.decide.mockResolvedValue({ data: { outcome: 'written', applied: true, store: 'pedagogy' }, error: null });
     const view = render(<TeenMemoryReviewSetting />);

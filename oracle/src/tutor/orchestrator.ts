@@ -23,6 +23,7 @@ import {
 } from './plan.js';
 import {
   ControllerSnapshotSchema,
+  DISCOUNTED_EVIDENCE,
   IDLE_NUDGE_MS,
   LISTEN_SILENCE_MS,
   PedagogicalController,
@@ -451,6 +452,7 @@ const TrajectoryStepSchema = z
     evidenceRule: z.enum(['mastery', 'remediation', 'rescue']).nullable().default(null),
     evidenceObservations: z.number().int().min(0).nullable().default(null),
     evidenceRequired: z.number().int().min(1).nullable().default(null),
+    evidenceDiscounted: z.enum(DISCOUNTED_EVIDENCE).nullable().default(null),
     masteryRevoked: z.boolean().default(false),
   })
   .strict();
@@ -2035,6 +2037,8 @@ export class TutorOrchestrator {
       // Clamped to Core's wire bound (0..100): one oversized count must never cost the session its whole trajectory batch.
       evidenceObservations: decision.evidence ? Math.min(decision.evidence.observations, 100) : null,
       evidenceRequired: decision.evidence?.required ?? null,
+      // GAP-FIX-R2: which correct answers the chain set aside, for the parent's evidence view (Appendix D §2.6).
+      evidenceDiscounted: decision.evidence ? (decision.evidence.discounted ?? 'none') : null,
       masteryRevoked: decision.masteryRevoked,
     });
   }

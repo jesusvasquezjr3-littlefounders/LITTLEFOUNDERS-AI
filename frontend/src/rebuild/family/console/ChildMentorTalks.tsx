@@ -1,10 +1,11 @@
 import { Component, useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { Button, ButtonGroup, Card, Chip, Copy, EmptyState, InlineNotice, LoadingState, type GlyphName, type StatusTone } from '../../design/controls';
 import { DispositionSummary, type DispositionSummaryCopy } from '../../mentor/DispositionSummary';
+import { MentorDecisions, type MasteryEvidence, type MentorDecisionsCopy } from '../../mentor/MentorDecisions';
 import type { DispositionSummaryData } from '../../mentor/allianceApi';
 import { MentorBoard, type MentorBoardCopy } from '../../mentor/screen/MentorBoard';
 import {
-  childName, decideMemoryNote, MEMORY_STORES, fetchChildren, fetchDisposition, fetchKeptBoards, fetchMemoryNotes, fetchMentorHistory, fetchTranscript, resetDisposition,
+  childName, decideMemoryNote, MEMORY_STORES, fetchChildren, fetchMentorDecisions, fetchDisposition, fetchKeptBoards, fetchMemoryNotes, fetchMentorHistory, fetchTranscript, resetDisposition,
   type BoardNote, type ConsoleTransport, type KeptBoards, type MemoryDecision, type MemoryNotes as Notes, type MentorHistory, type MentorSession,
   type SafetyFlag, type TranscriptBeat,
 } from './consoleApi';
@@ -64,13 +65,15 @@ const SEVERITY: Record<string, { tone: StatusTone; glyph: GlyphName; key: 'high'
 
 const pick = (table: Record<string, string>, key: string | null) => (key && key in table ? table[key] : table.other) ?? '';
 
-export function ChildMentorTalks({ copy, notesCopy, consentCopy, profileCopy, boardCopy, locale, dark, transport, kidId, backHref, onNavigate }: {
+export function ChildMentorTalks({ copy, notesCopy, consentCopy, profileCopy, decisionsCopy, boardCopy, locale, dark, transport, kidId, backHref, onNavigate }: {
   copy: ChildMentorCopy;
   /** The Mentor lane's board words (`rebuild-mentor.json` `mentorScreen.board`), in the page's locale. */
   boardCopy: MentorBoardCopy;
   notesCopy: MemoryNotesCopy;
   consentCopy: ChildConsentCopy;
   profileCopy: DispositionSummaryCopy;
+  /** GAP-FIX-R2: what the Mentor decided and on what evidence (`rebuild-mentor.json` `mentorDecisions`). */
+  decisionsCopy: MentorDecisionsCopy;
   locale: ConsoleLocale;
   dark: boolean;
   transport: ConsoleTransport;
@@ -137,6 +140,7 @@ export function ChildMentorTalks({ copy, notesCopy, consentCopy, profileCopy, bo
     <div className="lf-console-group-items">
       <MicrophoneConsent key={`mic:${kidId}`} kidId={kidId} name={name ?? copy.childSpeaker} copy={consentCopy} locale={locale} transport={transport} />
     </div>
+    <ChildDecisions key={`decisions:${kidId}`} kidId={kidId} copy={decisionsCopy} locale={locale} transport={transport} />
     <ChildDisposition key={`profile:${kidId}`} kidId={kidId} copy={profileCopy} locale={locale} dark={dark} transport={transport} />
     <Kept key={`kept:${kidId}`} kidId={kidId} copy={copy} boardCopy={boardCopy} locale={locale} transport={transport} />
     <section className="lf-console-group" aria-labelledby="child-mentor-talks" data-console-part="sessions">
@@ -342,6 +346,23 @@ function MemoryNotesReview({ kidId, copy, locale, transport }: { kidId: string; 
             ? <Copy role="body">{copy.allDone}</Copy> : null}
         </>}
     </section>
+  </Card>;
+}
+
+/** The Block C / Appendix D §2.6 evidence card: read-only, numbers and closed labels phrased as sentences. */
+function ChildDecisions({ kidId, copy, locale, transport }: { kidId: string; copy: MentorDecisionsCopy; locale: string; transport: ConsoleTransport }) {
+  const [phase, setPhase] = useState<'loading' | 'ready' | 'failed'>('loading');
+  const [evidence, setEvidence] = useState<MasteryEvidence | null>(null);
+  const read = useCallback(async () => {
+    setPhase('loading');
+    const result = await fetchMentorDecisions(transport, kidId);
+    if (result.ok) { setEvidence(result.data); setPhase('ready'); } else setPhase('failed');
+  }, [transport, kidId]);
+  useEffect(() => { void read(); }, [read]);
+  return <Card as="div">
+    <div className="lf-console-group" data-console-part="mentor-decisions">
+      <MentorDecisions copy={copy} locale={locale} phase={phase} evidence={evidence} onRetry={() => void read()} />
+    </div>
   </Card>;
 }
 

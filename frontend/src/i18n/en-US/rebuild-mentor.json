@@ -371,6 +371,32 @@
       "needs_review": "Time to review"
     }
   },
+  "mentorDecisions": {
+    "title": "What the Mentor decided",
+    "loading": "Loading the decisions…",
+    "failed": "Could not load the decisions.",
+    "retry": "Try again",
+    "empty": "No decisions yet.",
+    "states": {
+      "not_yet": "Still learning",
+      "provisional_mastered": "Mastered for now",
+      "recheck_due": "Check-in due now"
+    },
+    "mastered": "Moved on after {n} correct answers in a row.",
+    "masteredOne": "Moved on after 1 correct answer.",
+    "remediation": "Went back over it after {n} misses in a row.",
+    "remediationOne": "Went back over it after 1 miss.",
+    "rescue": "Made it easier after {n} hard tries in a row.",
+    "rescueOne": "Made it easier after 1 hard try.",
+    "withdrawn": "Checked it again after a miss.",
+    "streak": "{n} correct answers in a row so far.",
+    "streakOne": "1 correct answer so far.",
+    "tooFast": "A very quick answer did not count.",
+    "hintAssisted": "An answer given with a hint did not count.",
+    "bothDiscounted": "A very quick answer and a hinted one did not count.",
+    "decidedOn": "Decided {date}",
+    "nextCheck": "Will check again on {date}."
+  },
   "mentorNotebook": {
     "menu": "My notebook",
     "heading": "My notebook",

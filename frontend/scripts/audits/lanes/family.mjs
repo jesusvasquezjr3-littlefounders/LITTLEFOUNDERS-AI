@@ -189,6 +189,7 @@ const transcript = (locale, id, drawn) => ({
     demonstrate: index === 2 ? [{ kind: 'add', denomination: 5 }, { kind: 'add', denomination: 5 }] : null })),
   segments: [{ segmentId: `${id}-seg`, seq: 1, origin: 'catalog', segment: { type: 'choice', prompt_md: LINES[locale][2] }, score: 80, xpAwarded: 12, createdAt: '2026-09-20T10:00:04.000Z' }],
 });
+const SKILL = { 'en-US': 'Counting coins', 'es-MX': 'Contar monedas', 'pt-BR': 'Contar moedas' };
 const NOTES = {
   'en-US': ['Loves bikes.', 'Loves bikes and is saving for one.'],
   'es-MX': ['Le encantan las bicis.', 'Le encantan las bicis y ahorra para una.'],
@@ -221,6 +222,11 @@ export function respond({ core, spec, locale, path, request, ok }) {
   if (sessionMatch) return ok(transcript(locale, sessionMatch[1], family.boards === 'drawn'));
   if (/^\/tutor\/kids\/[^/]+\/memory-proposals$/.test(path)) return ok(family.history === 'quiet' ? { current: { learner: null, pedagogy: null }, proposals: [] }
     : { current: { learner: NOTES[locale][0], pedagogy: null }, proposals: [{ id: 'note-1', store: 'learner', proposed: NOTES[locale][1], expectedBefore: NOTES[locale][0], sessionId: SESSION_A, createdAt: T }] });
+  // GAP-FIX-R2: what the Mentor decided (numbers and closed labels; the page phrases them).
+  if (/^\/tutor\/kids\/[^/]+\/mastery$/.test(path)) return ok(family.history === 'quiet' ? { items: [] } : { items: [
+    { kcKey: 'money.count-coins', title: SKILL[locale], state: 'provisional_mastered', correctInARow: 2, attempts: 5,
+      decision: { kind: 'mastered', observations: 2, required: 2, discounted: 'too_fast', decidedAt: T }, nextCheckAt: '2026-10-04T09:00:00Z' },
+  ] });
   if (/^\/tutor\/kids\/[^/]+\/disposition$/.test(path) && get) return ok({ exists: true, current: true, sessionsObserved: 7, helpStyle: 'independent', persistence: 'persists',
     explanation: 'explains', persistentlyDeclined: [], typicalReplySeconds: 9, personas: [], effects: [], updatedAt: T });
   if (/^\/tutor\/kids\/[^/]+\/plan$/.test(path)) return ok({ plan: family.history === 'quiet' ? null

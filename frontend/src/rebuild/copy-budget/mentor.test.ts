@@ -9,7 +9,7 @@ describe('rebuild-mentor copy budget', () => {
   for (const [locale, strings] of namespaceCopy('mentor')) {
     it(`fits its budgets in ${locale}`, () => {
       expectBudgetedGroups(strings, ['mentorCalibration', 'mentorSessionEnd', 'mentorCheckIn', 'mentorGoalCheck', 'mentorAllianceCheck', 'mentorProfile', 'mentorStage', 'mentorScreen',
-        'mentorPersonalise', 'mentorMap', 'mentorNotebook', 'mentorHistory', 'mentorReplay', 'mentorRoleplay']);
+        'mentorPersonalise', 'mentorMap', 'mentorDecisions', 'mentorNotebook', 'mentorHistory', 'mentorReplay', 'mentorRoleplay']);
       for (const [key, text] of Object.entries(strings.mentorCalibration as Record<string, string>)) {
         const role = key === 'question' ? 'prompt' : ['youngest', 'middle', 'older', 'retry'].includes(key) ? 'action' : 'body';
         expectFits(text, role, locale, '6-9', `mentorCalibration.${key}`);
@@ -71,6 +71,8 @@ describe('rebuild-mentor copy budget', () => {
         mentorPersonalise: (path) => (['menu', 'nicknameSave'].includes(path) ? 'action' : path === 'heading' ? 'heading'
           : path === 'companionNone' || path === 'on' || path === 'off' || path.startsWith('islands.') || path.startsWith('lights.') ? 'option' : 'body'),
         mentorMap: (path) => (['menu', 'retry'].includes(path) ? 'action' : ['heading', 'step'].includes(path) ? 'heading' : 'body'),
+        // GAP-FIX-R2: the evidence card, read by the learner in the map sheet (and by the verified Tutor).
+        mentorDecisions: (path) => (path === 'retry' ? 'action' : path === 'title' ? 'heading' : path === 'decidedOn' ? 'data' : 'body'),
         mentorNotebook: (path) => (['menu', 'retry', 'keep', 'keeping', 'keptDone'].includes(path) ? 'action'
           : ['heading', 'lastTime', 'plan', 'kept'].includes(path) ? 'heading' : ['recap', 'recapMinutes', 'planUpdated', 'keptOn'].includes(path) ? 'data' : 'body'),
         mentorHistory: (path) => (['menu', 'retry'].includes(path) ? 'action' : path === 'heading' ? 'heading' : path === 'detail' ? 'data' : 'body'),

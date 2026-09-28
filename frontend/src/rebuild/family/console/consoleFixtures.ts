@@ -92,6 +92,15 @@ export const notesWire = (over: Record<string, unknown> = {}) => ({
   ...over,
 });
 
+export const masteryWire = {
+  items: [
+    { kcKey: 'money.make-change', title: 'Making change', state: 'not_yet', correctInARow: 0, attempts: 3,
+      decision: { kind: 'remediation', observations: 2, required: 2, discounted: 'none', decidedAt: T }, nextCheckAt: null },
+    { kcKey: 'money.count-coins', title: 'Counting coins', state: 'provisional_mastered', correctInARow: 2, attempts: 5,
+      decision: { kind: 'mastered', observations: 2, required: 2, discounted: 'too_fast', decidedAt: T }, nextCheckAt: '2026-10-04T12:00:00Z' },
+  ],
+};
+
 export const dispositionWire = {
   exists: true, current: true, sessionsObserved: 7, helpStyle: 'hint_seeking', persistence: 'persists', explanation: 'explains',
   persistentlyDeclined: ['less_text'], typicalReplySeconds: 9, personas: [{ character: 'dina', sessions: 7 }], effects: [], updatedAt: T,

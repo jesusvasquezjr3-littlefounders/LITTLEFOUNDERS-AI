@@ -169,6 +169,11 @@ export function getMap(token: string): Promise<ApiResult<TutorMapResponse>> {
   return api<TutorMapResponse>('/tutor/map', { token });
 }
 
+/** GAP-FIX-R2: what the Mentor decided about this learner, and on what evidence (validated by the caller). */
+export function getMastery(token: string): Promise<ApiResult<unknown>> {
+  return api<unknown>('/tutor/mastery', { token });
+}
+
 // ── Consent (/ORACLE.md §4.3) ───────────────────────────────────────────────
 
 export interface ConsentState {

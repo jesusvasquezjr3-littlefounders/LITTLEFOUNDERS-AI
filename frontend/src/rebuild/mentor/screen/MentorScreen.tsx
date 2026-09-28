@@ -28,6 +28,7 @@ import {
   fill, HistoryView, KeepBoard, LearningMapView, NotebookView, PersonaliseView,
   type MentorHistoryCopy, type MentorMapCopy, type MentorNotebookCopy, type MentorPersonaliseCopy,
 } from './MentorViews';
+import type { MentorDecisionsCopy } from '../MentorDecisions';
 import { replayBeats, replayHasSound, type ReplayBeat } from './replayModel';
 import { useReplay } from './useReplay';
 import { useRoleplay } from './useRoleplay';
@@ -108,6 +109,7 @@ export interface MentorCopy {
   mentorScreen: MentorScreenCopy;
   mentorPersonalise: MentorPersonaliseCopy;
   mentorMap: MentorMapCopy;
+  mentorDecisions: MentorDecisionsCopy;
   mentorNotebook: MentorNotebookCopy;
   mentorHistory: MentorHistoryCopy;
   mentorReplay: MentorReplayCopy;
@@ -802,7 +804,7 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
         character={session.character} onSave={session.updatePreferences} /> : null}
     </Sheet>
     <Sheet open={sheet === 'map'} onClose={closeSheet} heading={all.mentorMap.heading} closeLabel={copy.sheetClose}>
-      <LearningMapView copy={all.mentorMap} data={session.data} canStart={session.phase === 'openings' && canStart}
+      <LearningMapView copy={all.mentorMap} decisionsCopy={all.mentorDecisions} locale={locale} data={session.data} canStart={session.phase === 'openings' && canStart}
         conversing={session.phase === 'conversing'} onStart={startFromMap} />
     </Sheet>
     <Sheet open={sheet === 'notebook'} onClose={closeSheet} heading={all.mentorNotebook.heading} closeLabel={copy.sheetClose}>

@@ -885,6 +885,8 @@ export interface TrajectoryStepInput {
   evidenceObservations: number | null;
   /** C.10: the corroboration requirement in force for that KC, or null. */
   evidenceRequired: number | null;
+  /** GAP-FIX-R2: which correct answers the evidence chain set aside (travels with the evidence), or null. */
+  evidenceDiscounted: 'none' | 'too_fast' | 'hint_assisted' | 'too_fast_and_hint_assisted' | null;
   /** C.10: this decision withdrew a mastery declared earlier in the session. */
   masteryRevoked: boolean;
 }

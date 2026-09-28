@@ -160,11 +160,22 @@ describe('the learning map (T1f)', () => {
   it('lays the skills out in steps, each state in words, and names what a closed skill waits on', async () => {
     show(session());
     const dialog = await openMap();
-    expect(within(dialog).getAllByRole('heading', { level: 3 }).map((h) => h.textContent)).toEqual(['Step 1', 'Step 2', 'Step 3', 'Step 4']);
+    expect(within(dialog).getAllByRole('heading', { level: 3 }).map((h) => h.textContent)).toEqual([copy.mentorDecisions.title, 'Step 1', 'Step 2', 'Step 3', 'Step 4']);
     expect(dialog).toHaveTextContent(copy.mentorMap.states.mastered);
     expect(dialog).toHaveTextContent('Opens after Give change by counting up');
     expect(dialog).toHaveTextContent('To review today: 1');
     expect(within(dialog).queryByRole('button', { name: /Plan a budget/ })).toBeNull();
+  });
+
+  it('shows the learner, read-only, what the Mentor decided and on what evidence (Appendix D §2.6)', async () => {
+    show(session());
+    const dialog = await openMap();
+    const card = dialog.querySelector('[data-mentor-decisions]') as HTMLElement;
+    expect(card).toHaveTextContent('Moved on after 2 correct answers in a row.');
+    expect(card).toHaveTextContent(copy.mentorDecisions.hintAssisted);
+    expect(card).toHaveTextContent('1 correct answer so far.');
+    expect(card).toHaveTextContent(copy.mentorDecisions.states.not_yet);
+    expect(within(card).queryByRole('button')).toBeNull();
   });
 
   it('starts a practice talk from a skill outside a conversation', async () => {

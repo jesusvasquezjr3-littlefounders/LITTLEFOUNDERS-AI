@@ -49,6 +49,8 @@ const ControllerSnapshotSchema = z
      * mastery or remediation decision by one observation, never fire one.
      */
     masteryEvidence: z.array(z.tuple([z.string(), z.number().int().min(0)])).default([]),
+    /* GAP-FIX-R2: correct answers the chain set aside, per KC (defaulted: an older snapshot recorded none). */
+    discountedCorrect: z.array(z.tuple([z.string(), z.boolean(), z.boolean()])).default([]),
     remediationEvidence: z
       .array(z.tuple([z.string(), z.string().nullable(), z.number().int().min(0)]))
       .default([]),
@@ -141,7 +143,19 @@ export interface DecisionEvidence {
   observations: number;
   /** The corroboration requirement in force for this KC at decision time. */
   required: number;
+  /**
+   * GAP-FIX-R2 (Appendix D §2.6, C.10): whether any correct answer on this KC
+   * this session was NOT counted as evidence — too fast to have been read (a
+   * surprising correct), or given with the hint ladder's help. Shown to the
+   * parent beside the count ("a quick answer did not count"). Filled in by
+   * `decide()` for every consequential decision; absent means not recorded.
+   */
+  discounted?: DiscountedEvidence;
 }
+
+/** Which correct answers the evidence chain set aside, as one closed label. */
+export type DiscountedEvidence = 'none' | 'too_fast' | 'hint_assisted' | 'too_fast_and_hint_assisted';
+export const DISCOUNTED_EVIDENCE = ['none', 'too_fast', 'hint_assisted', 'too_fast_and_hint_assisted'] as const;
 
 /*
  * The v3 pedagogical controller (/ORACLE.md, Tutor v3; blueprint §9).
@@ -541,6 +555,15 @@ export class PedagogicalController {
    */
   private readonly masteryEvidence = new Map<string, number>();
 
+  /** GAP-FIX-R2: per KC this session, whether a correct answer was set aside as too fast / hint-assisted. */
+  private readonly discountedCorrect = new Map<string, { fast: boolean; hint: boolean }>();
+
+  private discountedFor(kcId: string): DiscountedEvidence {
+    const seen = this.discountedCorrect.get(kcId);
+    if (!seen || (!seen.fast && !seen.hint)) return 'none';
+    return seen.fast && seen.hint ? 'too_fast_and_hint_assisted' : seen.fast ? 'too_fast' : 'hint_assisted';
+  }
+
   /**
    * C.10 — the REMEDIATION chain: consecutive qualifying incorrect
    * observations per KC that AGREE on the diagnosis (the same catalogued
@@ -630,6 +653,7 @@ export class PedagogicalController {
       celebratedKcIds: [...this.celebratedKcIds],
       masteryRevokedKcIds: [...this.masteryRevokedKcIds],
       masteryEvidence: [...this.masteryEvidence.entries()],
+      discountedCorrect: [...this.discountedCorrect.entries()].map(([kcId, seen]) => [kcId, seen.fast, seen.hint]),
       remediationEvidence: [...this.remediationEvidence.entries()].map(([kcId, chain]) => [
         kcId,
         chain.code,
@@ -675,6 +699,8 @@ export class PedagogicalController {
     for (const kcId of snapshot.masteryRevokedKcIds) this.masteryRevokedKcIds.add(kcId);
     this.masteryEvidence.clear();
     for (const [kcId, n] of snapshot.masteryEvidence) this.masteryEvidence.set(kcId, n);
+    this.discountedCorrect.clear();
+    for (const [kcId, fast, hint] of snapshot.discountedCorrect ?? []) this.discountedCorrect.set(kcId, { fast, hint });
     this.remediationEvidence.clear();
     for (const [kcId, code, count] of snapshot.remediationEvidence) {
       this.remediationEvidence.set(kcId, { code, count });
@@ -1140,6 +1166,10 @@ export class PedagogicalController {
         const possibleGuess = pBefore < SURPRISING_CORRECT_BELOW && this.answeredTooFastToRead(kcId, event);
         if (assisted || fragile) this.masteryEvidence.set(kcId, 0);
         else if (!possibleGuess) this.masteryEvidence.set(kcId, (this.masteryEvidence.get(kcId) ?? 0) + 1);
+        if (assisted || possibleGuess) {
+          const seen = this.discountedCorrect.get(kcId) ?? { fast: false, hint: false };
+          this.discountedCorrect.set(kcId, { fast: seen.fast || (possibleGuess && !assisted), hint: seen.hint || assisted });
+        }
         this.remediationEvidence.delete(kcId);
       } else {
         this.masteryEvidence.set(kcId, 0);
@@ -1261,7 +1291,7 @@ export class PedagogicalController {
         kcId: entry.kcId,
         evidence:
           strategy === 'RESCUE' && proposed === 'RESCUE'
-            ? { rule: 'rescue', observations: this.consecutiveFailures, required }
+            ? { rule: 'rescue', observations: this.consecutiveFailures, required, discounted: this.discountedFor(entry.kcId) }
             : null,
         masteryRevoked,
         pKnownBefore: pBefore,
@@ -1361,7 +1391,7 @@ export class PedagogicalController {
       // the raw table: with no active KC there is nothing to be "new" to.
       listenSilenceMs: listenSilenceMsFor(strategy, this.opportunities.get(entry.kcId) ?? 0),
       kcId: entry.kcId,
-      evidence: executed ? proposal.evidence : null,
+      evidence: executed && proposal.evidence ? { ...proposal.evidence, discounted: this.discountedFor(entry.kcId) } : null,
       masteryRevoked,
       pKnownBefore: pBefore,
       review: closedReview,

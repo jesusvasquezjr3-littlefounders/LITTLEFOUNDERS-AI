@@ -192,6 +192,7 @@ describe('a snapshot survives a round trip byte for byte', () => {
       evidenceRule: 'rescue',
       evidenceObservations: 2,
       evidenceRequired: 2,
+      evidenceDiscounted: 'none',
       masteryRevoked: true,
     });
     (o.skillStates as unknown[]).push({
@@ -317,6 +318,7 @@ describe('a snapshot survives a round trip byte for byte', () => {
       masteryRevokedKcIds: ['kc-a'],
       masteryEvidence: [['kc-a', 3]] as [string, number][],
       remediationEvidence: [['kc-b', null, 1]] as [string, string | null, number][],
+      discountedCorrect: [['kc-a', true, false]] as [string, boolean, boolean][],
       inSessionReview: { entryIndex: 0, turns: 2 },
     };
     controller.restore(populated);

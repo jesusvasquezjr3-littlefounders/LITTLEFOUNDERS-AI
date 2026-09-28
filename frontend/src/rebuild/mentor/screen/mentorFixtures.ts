@@ -3,6 +3,7 @@ import type { TutorMapResponse } from '../session/tutorApi';
 import type { SessionSummary, SessionTranscript } from '../session/types';
 import { boardFixtures } from './boardFixtures';
 import type { MentorData, MentorNotebook } from './mentorData';
+import type { MasteryEvidence } from '../MentorDecisions';
 
 /*
  * Fixtures for the Mentor screen's secondary views (the development preview
@@ -67,12 +68,24 @@ export function transcriptFixture(locale: Locale, character: SessionSummary['cha
   };
 }
 
+/** GAP-FIX-R2: the evidence behind the Mentor's decisions, as Core projects it (numbers and closed labels). */
+export function masteryFixture(locale: Locale): MasteryEvidence {
+  return { items: [
+    { kcKey: 'money.make-change', title: w(locale, 'Give change by counting up', 'Dar cambio contando hacia arriba', 'Dar troco contando para cima'),
+      state: 'provisional_mastered', correctInARow: 2, attempts: 5,
+      decision: { kind: 'mastered', observations: 2, required: 2, discounted: 'hint_assisted', decidedAt: '2026-09-24T16:02:00Z' }, nextCheckAt: '2026-10-04T09:00:00Z' },
+    { kcKey: 'money.coin-values', title: w(locale, 'Coin values', 'Valor de las monedas', 'Valor das moedas'),
+      state: 'not_yet', correctInARow: 1, attempts: 3, decision: null, nextCheckAt: null },
+  ] };
+}
+
 /** A data source answering from the fixtures, or the empty, failed or never-answering reads the views must handle. */
 export function fixtureData(locale: Locale, mode: 'ready' | 'empty' | 'failed' | 'loading' = 'ready'): MentorData {
   const answer = <T>(ready: T, empty: T): Promise<T | null> => (mode === 'loading' ? new Promise(() => undefined)
     : Promise.resolve(mode === 'failed' ? null : mode === 'empty' ? empty : ready));
   return {
     map: () => answer(mapFixture(locale), { nodes: [], edges: [], continueTarget: null, review: { count: 0 } }),
+    mastery: () => answer(masteryFixture(locale), { items: [] }),
     notebook: () => answer(notebookFixture(locale), { plan: null, entries: [], recap: null }),
     sessions: () => answer(sessionsFixture(), []),
     transcript: (id) => answer(transcriptFixture(locale, sessionsFixture().find((s) => s.id === id)?.character ?? 'dina'),
