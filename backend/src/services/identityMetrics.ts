@@ -75,6 +75,12 @@ const Counts = z.object({
 });
 export type IdentityCounts = z.infer<typeof Counts>;
 
+/** public.onboarding_discovery_metrics (migration onboarding_discovery_metrics): whole-population counts. */
+const DiscoveryCounts = z.object({
+  answered: n, unconsented: n, flaggedOrigin: n, kid: n, under13Declared: n, teenWithoutOptIn: n,
+});
+export type OnboardingDiscoveryCounts = z.infer<typeof DiscoveryCounts>;
+
 export const IDENTITY_ADVERSARIAL = [
   { id: 'flagged_session_microphone', requirement: 'A.2', suite: 'backend/src/__tests__/tutor.test.ts (flagged-origin session: microphone POLICY_BLOCKED)' },
   { id: 'flagged_session_fail_closed', requirement: 'A.2', suite: 'backend/src/__tests__/tutor.test.ts (flagged-origin session treated as a minor in every Oracle preflight)' },
@@ -99,7 +105,7 @@ function metric(
 }
 
 /** Pure: the report for one set of counts. */
-export function buildIdentityReport(c: IdentityCounts, days: number): IdentityMetricsReport {
+export function buildIdentityReport(c: IdentityCounts, days: number, discovery: OnboardingDiscoveryCounts): IdentityMetricsReport {
   const entry = c.entryCapture;
   const newCreated = entry.email.created + entry.google.created + entry.guest.created;
   const newCaptured = entry.email.captured + entry.google.captured + entry.guest.captured;
@@ -117,6 +123,15 @@ export function buildIdentityReport(c: IdentityCounts, days: number): IdentityMe
   const metrics: IdentityMetric[] = [
     metric('guest_origin_flag_coverage', '1.1', 'A.2', 'release_gate', c.guestOrigin.flagged, c.guestOrigin.requested,
       { flaggedGuestsCreated: c.guestOrigin.flaggedGuestsCreated }),
+    // A.2, Appendix M 1.1 Unconsented Analytics Event Rate (target zero): a
+    // stored onboarding discovery answer from a population the attribution
+    // predicate refuses. Expressed as the share of stored answers that are
+    // admitted, so "met" means zero unconsented rows.
+    metric('onboarding_discovery_unconsented', '1.1', 'A.2', 'release_gate', discovery.answered - discovery.unconsented,
+      discovery.answered, {
+        unconsented: discovery.unconsented, flaggedOrigin: discovery.flaggedOrigin, kid: discovery.kid,
+        under13Declared: discovery.under13Declared, teenWithoutOptIn: discovery.teenWithoutOptIn,
+      }),
     metric('flag_persistence_through_upgrade', '1.1', 'A.2', 'release_gate', c.flagPersistence.safeguarded, c.flagPersistence.upgraded),
     metric('post_callback_age_screen_completion', '1.1', 'A.3', 'release_gate', c.googleAgeScreen.screened, c.googleAgeScreen.firstTime),
     metric('under13_google_reclassification', '1.1', 'A.3', 'release_gate', c.googleUnder13.reclassified, c.googleUnder13.declaredUnder13),
@@ -164,10 +179,14 @@ export function buildIdentityReport(c: IdentityCounts, days: number): IdentityMe
 
 export async function getIdentityMetrics(days: number, now: Date = new Date()): Promise<IdentityMetricsReport | null> {
   const from = new Date(now.getTime() - days * 86_400_000).toISOString();
-  const raw = await serviceRest<unknown>('/rpc/identity_metrics', {
-    method: 'POST',
-    body: JSON.stringify({ p_from: from, p_to: now.toISOString() }),
-  });
+  const [raw, rawDiscovery] = await Promise.all([
+    serviceRest<unknown>('/rpc/identity_metrics', {
+      method: 'POST',
+      body: JSON.stringify({ p_from: from, p_to: now.toISOString() }),
+    }),
+    serviceRest<unknown>('/rpc/onboarding_discovery_metrics', { method: 'POST', body: '{}' }),
+  ]);
   const parsed = Counts.safeParse(raw);
-  return parsed.success ? buildIdentityReport(parsed.data, days) : null;
+  const discovery = DiscoveryCounts.safeParse(rawDiscovery);
+  return parsed.success && discovery.success ? buildIdentityReport(parsed.data, days, discovery.data) : null;
 }

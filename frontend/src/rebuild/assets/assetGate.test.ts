@@ -21,6 +21,12 @@ function tree() {
   const dir = mkdtempSync(join(base, 'case-'));
   cpSync(join(frontend, 'src/rebuild'), join(dir, 'src/rebuild'), { recursive: true });
   cpSync(join(frontend, 'public/rebuild'), join(dir, 'public/rebuild'), { recursive: true });
+  // An asset used outside the app names its consumer script (the brand mark: scripts/seo/render-icons.mjs).
+  for (const row of readManifest(frontend).filter((r) => typeof r.consumer === 'string')) {
+    const path = join(dir, String(row.consumer));
+    mkdirSync(dirname(path), { recursive: true });
+    cpSync(join(frontend, String(row.consumer)), path);
+  }
   // Sound cues live under public/sounds (OD-28 L-02): copy only the registered files, not the legacy MP3 set.
   for (const row of readManifest(frontend).filter((r) => r.type === 'wav')) {
     const path = join(dir, 'public', String(row.path));
@@ -174,6 +180,17 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     });
     expect(unreferenced.output).toContain('Registered asset is referenced nowhere: badge.spare');
     for (const result of [unregistered, colour, text, unreferenced]) expect(result.status).toBe(1);
+  });
+
+  // Gap-fix round 2 (02 D8, 07 §1): the brand mark is used by the icon renderer, not by an app component.
+  it('accepts an asset used by its named consumer script only while that script really uses it', async () => {
+    const dropped = await mutate((dir) => writeFileSync(join(dir, 'scripts/seo/render-icons.mjs'), '// no mark here\n'));
+    expect(dropped.output).toContain('Consumer scripts/seo/render-icons.mjs does not use /rebuild/brand/mark.svg: brand.mark');
+    const outside = await mutate((dir) => writeManifest(dir, readManifest(dir).map((row) => (row.id === 'brand.mark' ? { ...row, consumer: '../outside.mjs' } : row))));
+    expect(outside.output).toContain('A consumer is a script under scripts/: brand.mark');
+    const offToken = await mutate((dir) => writeFileSync(join(dir, 'public/rebuild/brand/mark.svg'), readFileSync(join(dir, 'public/rebuild/brand/mark.svg'), 'utf8').replace('#5C55FD', '#4F46E5')));
+    expect(offToken.output).toContain('SVG colour #4F46E5 is not a token colour');
+    for (const result of [dropped, outside, offToken]) expect(result.status).toBe(1);
   });
 
   it('refuses raster art with text in it, dark or light, in any locale (07 §7 OCR no-text check, OD-28 V-16)', async () => {

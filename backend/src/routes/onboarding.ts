@@ -3,6 +3,9 @@ import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import { requireAgeScreen } from '../middleware/ageScreen.js';
+import { admitsAcquisitionAnswer } from '../services/analyticsPreference.js';
+import type { AgeScreenState } from '../services/ageScreen.js';
+import { getRolesForGate } from '../services/insights.js';
 import { isCalendarDate } from '../services/streak.js';
 import {
   getOnboardingResponse,
@@ -64,9 +67,17 @@ export function onboardingRouter(): Router {
     const streak = await recordLearningPracticeDay(user.id, todayLocal);
     if (!streak) return fail(res, 502, 'INTERNAL', 'Profile saved, but learning stats could not be updated');
 
+    // A.2, Appendix M 1.1 (target zero): the discovery answer is an optional
+    // acquisition event, stored only under the predicate signup attribution
+    // uses. A guest from the age-refusal path, a kid, or a teen who has not
+    // opted in completes onboarding with the answer discarded (null), and the
+    // row still marks completion. A failed role read discards it too.
+    const screening = res.locals.ageScreen as AgeScreenState;
+    const admitted = parsed.data.discoveryChannel !== undefined
+      && await admitsAcquisitionAnswer(user.id, screening, await getRolesForGate(user.id));
     const recorded = await insertOnboardingResponse({
       user_id: user.id,
-      discovery_channel: parsed.data.discoveryChannel ?? null,
+      discovery_channel: admitted ? parsed.data.discoveryChannel ?? null : null,
       account_offer_choice: parsed.data.accountOfferChoice,
     });
     if (!recorded) return fail(res, 502, 'INTERNAL', 'Could not record onboarding completion');

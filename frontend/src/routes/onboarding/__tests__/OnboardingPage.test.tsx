@@ -19,11 +19,12 @@ vi.mock('@/lib/api', () => ({ api: vi.fn() }));
  */
 const refreshMe = vi.fn(async () => {});
 let initialOnboardingComplete = false;
+let discoverySurvey = true;
 vi.mock('@/auth/AuthContext', () => ({
   useAuth: () => {
     const [onboardingComplete, setOnboardingComplete] = useState(initialOnboardingComplete);
     refreshMe.mockImplementation(async () => setOnboardingComplete(true));
-    return { getToken: async () => 'token-123', refreshMe, onboardingComplete };
+    return { getToken: async () => 'token-123', refreshMe, onboardingComplete, discoverySurvey };
   },
 }));
 
@@ -34,6 +35,7 @@ beforeEach(async () => {
   mockedApi.mockReset();
   refreshMe.mockClear();
   initialOnboardingComplete = false;
+  discoverySurvey = true;
   await i18n.changeLanguage('en-US');
 });
 
@@ -205,5 +207,23 @@ describe('OnboardingPage: going back', () => {
     const { container } = renderPage();
     expect(container.querySelector('audio')).toBeNull();
     expect(screen.queryByRole('button', { name: /voices|play again/i })).not.toBeInTheDocument();
+  });
+
+  it('never asks a flagged guest how they found us (A.2): four steps, and no channel in the submit', async () => {
+    discoverySurvey = false;
+    mockedApi.mockResolvedValueOnce({ data: { streakDays: 1 }, error: null });
+    renderPage();
+    expect(screen.getByText('Step 1 of 4')).toBeInTheDocument();
+    press(copy.start);
+    fireEvent.change(await screen.findByLabelText(copy.nameLabel), { target: { value: 'Ana' } });
+    press(copy.continue);
+    await screen.findByRole('heading', { name: copy.mentorTitle });
+    press(copy.skip);
+    await screen.findByRole('heading', { name: copy.accountTitle });
+    expect(screen.queryByRole('heading', { name: copy.discoveryTitle })).toBeNull();
+    expect(screen.getByText('Step 4 of 4')).toBeInTheDocument();
+    press(copy.later);
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledTimes(1));
+    expect((mockedApi.mock.calls[0]![1] as { body: { discoveryChannel?: string } }).body.discoveryChannel).toBeUndefined();
   });
 });

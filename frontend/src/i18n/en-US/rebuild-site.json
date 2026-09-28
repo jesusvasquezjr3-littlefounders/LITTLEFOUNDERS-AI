@@ -236,7 +236,7 @@
       },
       "analyticsToggle": {
         "question": "Can I turn off my child's usage analytics?",
-        "answer": "Yes, for each child, from your Tutor account. They stay off until you turn them on."
+        "answer": "Under 13, we never collect usage data. For a teen, it stays off until their Tutor or the teen turns it on."
       },
       "coppa": {
         "question": "Do you follow children's privacy laws?",

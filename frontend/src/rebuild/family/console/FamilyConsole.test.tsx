@@ -149,6 +149,41 @@ describe('Usage-data consent', () => {
     expect(screen.queryByText(/hint styles/)).toBeNull();
   });
 
+  /*
+   * A.1 (no control for a capability that does not exist), owner answer H-20:
+   * an under-13 child is excluded from all optional analytics, so the console
+   * offers no usage-data switch, only the fact.
+   */
+  it('A.1/H-20: shows no usage-data switch for a child under 13, only the one-line fact', async () => {
+    const { view } = setup({ 'GET /family/kids': ok({ kids: [childWire({ under13: true, dialogueExperiment: false })] }) });
+    const note = await screen.findByText(en.familyChildConsent.insightsUnder13);
+    expect(note).toHaveAttribute('data-copy-role', 'body');
+    expect(screen.queryByRole('switch', { name: en.familyChildConsent.insights })).toBeNull();
+    expect(screen.queryByRole('switch', { name: en.familyChildConsent.hintTest })).toBeNull();
+    expect(screen.queryByText(en.familyChildConsent.insightsHelp)).toBeNull();
+    everyTextHasARole(view.container);
+  });
+
+  it('A.1/M-12: for a 10-12 child the remaining switch is the hint-style test consent alone', async () => {
+    const { transport } = setup({
+      'GET /family/kids': ok({ kids: [childWire({ under13: true, dialogueExperiment: true })] }),
+      [`POST /family/kids/${KID_A}/analytics-consent`]: ok({ kidId: KID_A, analyticsConsent: true }),
+    });
+    const toggle = await screen.findByRole('switch', { name: en.familyChildConsent.hintTest });
+    expect(screen.getByText(en.familyChildConsent.insightsUnder13)).toBeInTheDocument();
+    expect(screen.getByText('The Mentor may try two hint styles with Sofía.')).toBeInTheDocument();
+    expect(screen.queryByRole('switch', { name: en.familyChildConsent.insights })).toBeNull();
+    fireEvent.click(toggle);
+    await waitFor(() => expect(toggle).toHaveAttribute('aria-checked', 'true'));
+    expect(transport.calls.find((call) => call.path.endsWith('/analytics-consent'))?.method).toBe('POST');
+  });
+
+  it('keeps the usage-data switch for a teen (under13 false)', async () => {
+    setup({ 'GET /family/kids': ok({ kids: [childWire({ under13: false })] }) });
+    await screen.findByRole('switch', { name: en.familyChildConsent.insights });
+    expect(screen.queryByText(en.familyChildConsent.insightsUnder13)).toBeNull();
+  });
+
   it('shows the new state once Core confirms it', async () => {
     setup({ 'GET /family/kids': ok({ kids: [FAMILY[0]] }), [`POST /family/kids/${KID_A}/analytics-consent`]: ok({ kidId: KID_A, analyticsConsent: true }) });
     const toggle = await screen.findByRole('switch', { name: en.familyChildConsent.insights });

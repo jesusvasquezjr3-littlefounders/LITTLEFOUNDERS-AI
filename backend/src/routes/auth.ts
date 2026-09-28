@@ -1,4 +1,4 @@
-import { allowsSelfManagedAnalytics, readAnalyticsPreference, setAnalyticsPreference } from '../services/analyticsPreference.js';
+import { admitsAcquisitionAnswer, allowsSelfManagedAnalytics, readAnalyticsPreference, setAnalyticsPreference } from '../services/analyticsPreference.js';
 import { getRolesForGate } from '../services/insights.js';
 import { ownOptInEnrols } from '../services/dialogueExperimentNotice.js';
 import { Router } from 'express';
@@ -543,6 +543,11 @@ export function authRouter(): Router {
       : roleNames.includes('kid')
         ? (await hasActiveAnalyticsConsent(user.id)) === true
         : await allowsSelfManagedAnalytics(user.id, screening);
+    // A.2, Appendix M 1.1: whether the onboarding survey may ask "how did you
+    // hear about us". Core stores the answer only under this same predicate
+    // (POST /onboarding/complete); the flag lets the flow skip a question whose
+    // answer would be discarded. False once onboarding is done.
+    const discoverySurvey = !onboardingComplete && await admitsAcquisitionAnswer(user.id, screening, roleNames);
     /*
      * Was this account created just now?
      *
@@ -580,6 +585,7 @@ export function authRouter(): Router {
       adminPermissions: staffPermissions?.map((row) => row.permission) ?? [],
       avatarOptions: projectAvatarOptions(avatars?.[0]?.options),
       analyticsEnabled,
+      discoverySurvey,
       newAccount,
       isGuest: user.isGuest,
       onboardingComplete,

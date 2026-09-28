@@ -87,6 +87,8 @@ describe('GET /api/v1/family/kids', () => {
         accountType: 'child',
         // A.4 (OD-3): whether the child holds age evidence (none seeded here), so the Tutor is asked for it.
         ageRecorded: false,
+        // A.1 / H-20: whether the child is under 13 on record (no usage-data switch then).
+        under13: false,
         // M-12 (OD-26): whether the usage-data consent also enrols this child in
         // the C.17 dialogue-style experiment (no birth date here, so no).
         dialogueExperiment: false,
@@ -111,6 +113,17 @@ describe('GET /api/v1/family/kids', () => {
     const res = await auth(request(createApp()).get('/api/v1/family/kids'));
     expect(res.status).toBe(200);
     expect(res.body.data.kids[0].dialogueExperiment).toBe(expected);
+  });
+
+  it.each([
+    ['an under-13 origin', () => { db.account_safety_origins = [{ user_id: KID_ID, under13_origin: true }]; }, true],
+    ['an under-13 declaration', () => { db.account_age_declarations = [{ user_id: KID_ID, declared_age_band: 'under_13' }]; }, true],
+    ['a 13-to-17 declaration', () => { db.account_age_declarations = [{ user_id: KID_ID, declared_age_band: '13_to_17' }]; }, false],
+  ])('reports under13 for %s (A.1, H-20)', async (_label, arrange, expected) => {
+    db.user_roles.push({ user_id: KID_ID, role: 'kid' });
+    arrange();
+    const res = await auth(request(createApp()).get('/api/v1/family/kids'));
+    expect(res.body.data.kids[0].under13).toBe(expected);
   });
 
   it('never marks a self-registered teen who linked this Tutor', async () => {
@@ -474,5 +487,67 @@ describe('guardian social decisions', () => {
   it.each([null, true, {}, 'denied'])('does not claim approval from a mismatched receipt: %j', async value => {
     receipt = value;
     expect((await auth(request(createApp()).post(endpoint).send({ decision: 'approve' }))).status).toBe(502);
+  });
+});
+
+/*
+ * A.1 (the console must not describe a capability that does not exist), owner
+ * answer H-20: an under-13 child is excluded from all optional analytics, so
+ * a Tutor's usage-data grant for them is refused with a named code. The one
+ * exception is the M-12 (OD-26) hint-style test for a 10-12 child with a known
+ * birth date, which this same consent admits.
+ */
+describe('POST /api/v1/family/kids/:kidId/analytics-consent — under 13 (A.1, H-20)', () => {
+  const grant = () => auth(request(createApp()).post(`/api/v1/family/kids/${KID_ID}/analytics-consent`)).send();
+  const birthDate = (years: number) => {
+    const now = new Date();
+    return `${now.getUTCFullYear() - years}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-01`;
+  };
+  beforeEach(() => {
+    db.user_roles.push({ user_id: KID_ID, role: 'kid' });
+    db.analytics_consents = [];
+    db.learning_events = [];
+    db.account_safety_origins = [{ user_id: KID_ID, under13_origin: true }];
+    db.account_age_declarations = [{ user_id: KID_ID, declared_age_band: 'under_13' }];
+  });
+
+  it.each([
+    ['an 8-year-old', 8],
+    ['a 9-year-old', 9],
+    ['an under-13 child with no birth date', null],
+  ])('refuses %s with ANALYTICS_NOT_COLLECTED_UNDER_13 and stores nothing', async (_label, years) => {
+    (db.profiles[0] as Record<string, unknown>).birth_date = years === null ? null : birthDate(years);
+    const res = await grant();
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('ANALYTICS_NOT_COLLECTED_UNDER_13');
+    expect(db.analytics_consents).toEqual([]);
+    expect(db.learning_events).toEqual([]);
+  });
+
+  it('refuses an under-13 declaration without the origin row too', async () => {
+    db.account_safety_origins = [];
+    expect((await grant()).status).toBe(403);
+  });
+
+  it('accepts the grant for an 11-year-old, where it admits the M-12 hint-style test', async () => {
+    (db.profiles[0] as Record<string, unknown>).birth_date = birthDate(11);
+    const res = await grant();
+    expect(res.status).toBe(200);
+    expect(db.analytics_consents).toHaveLength(1);
+  });
+
+  it('still lets a Tutor revoke an earlier grant', async () => {
+    db.analytics_consents = [{ kid_user_id: KID_ID, granted_by: PARENT_ID, granted_at: '2026-07-29T00:00:00Z', revoked_at: null }];
+    const res = await auth(request(createApp()).delete(`/api/v1/family/kids/${KID_ID}/analytics-consent`));
+    expect(res.status).toBe(200);
+    expect(db.analytics_consents[0]?.revoked_at).not.toBeNull();
+  });
+
+  it('answers 502 when the age records cannot be read, and grants nothing', async () => {
+    const realFetch = createFakeFetch(db);
+    vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) =>
+      String(input).includes('/account_safety_origins?') ? Promise.resolve(new Response('', { status: 500 })) : realFetch(input, init)));
+    expect((await grant()).status).toBe(502);
+    expect(db.analytics_consents).toEqual([]);
   });
 });

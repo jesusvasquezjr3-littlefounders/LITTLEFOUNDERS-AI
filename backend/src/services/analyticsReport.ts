@@ -1,13 +1,12 @@
 import PDFDocument from 'pdfkit';
-import { LF_LOGO_PNG } from '../assets/lfLogo.js';
 
 import type { PlausibleBreakdownRow, PlausibleDimensionKey, PlausibleReportData } from './pulse.js';
 
 /*
  * Branded analytics report PDF (staff console → Export). Pure pdfkit
  * vector/text — NO image fetches, NO headless browser — so rendering stays
- * Railway-light and offline-safe. Brand tokens come from /DESIGN.md: indigo
- * is the accent, slate is the ink.
+ * Railway-light and offline-safe. Colours are the rebuilt design tokens
+ * (Frontend Bible 02): primary is the accent, the content token is the ink.
  *
  * The report is localised. It used to be English-only with `en-US` number and
  * date formatters hardwired, which meant a Spanish-speaking operator exported
@@ -172,25 +171,29 @@ function contextFor(locale: ReportLocale): ReportContext {
 }
 
 /*
- * /DESIGN.md tokens, resolved to hex because a PDF has no CSS variables.
+ * Design tokens, resolved to hex because a PDF has no CSS variables.
  *
- * These were a papaya/navy pair (#ff775c / #080f28) that the design system no
- * longer contains: DESIGN.md's brand is indigo #4f46e5 on slate ink #0f172a.
- * Every exported report was therefore wearing a palette the product had
- * stopped using — the one artefact that leaves the building and gets shown to
- * people. Kept in sync with src/index.css by name below.
+ * The palette is the rebuilt design system's light tokens (Frontend Bible 02,
+ * generated into frontend/src/rebuild/design/tokens.css), resolved to hex by
+ * name below. It used to be the legacy indigo/slate set of src/index.css,
+ * which the rebuilt brand (02 D3, D4) no longer uses.
  */
-const ACCENT = '#4f46e5'; // --lf-accent, indigo-600
-const ACCENT_STRONG = '#4338ca'; // --lf-accent-strong, indigo-700
-const DELIGHT = '#8b5cf6'; // --lf-delight, violet-500 (decorative only)
-const INK = '#0f172a'; // --lf-content, slate-900
-const MUTED = '#475569'; // --lf-content-muted, slate-600
-const RULE = '#e2e8f0'; // --lf-outline, slate-200
-const WARNING = '#b45309'; // --lf-warning-strong, amber-700
-const SOFT_ACCENT = '#eef2ff'; // --lf-accent-soft, indigo-50
-const SOFT_SURFACE = '#f1f5f9'; // --lf-surface-sunken, slate-100
-const SUCCESS = '#047857'; // --lf-success-strong, emerald-700
-const ERROR = '#b91c1c'; // --lf-error-strong, red-700
+const ACCENT = '#5c55fd'; // --primary
+const ACCENT_STRONG = '#4438cf'; // --primary-ridge (text on white, 7:1)
+const DELIGHT = '#ebb806'; // --reward (decorative band only)
+const INK = '#11132a'; // --content
+const MUTED = '#66697c'; // --content-muted
+const RULE = '#d5d8e7'; // --outline
+const WARNING = '#856600'; // --warning-strong
+const SOFT_ACCENT = '#eceffe'; // --primary-soft
+const SOFT_SURFACE = '#eaecf6'; // --sunken
+const SUCCESS = '#027b45'; // --success-strong
+const ERROR = '#d60f26'; // --error-strong
+/* brand.mark (frontend/public/rebuild/brand/mark.svg), drawn as vectors. */
+const MARK_RIDGE = '#4438cf'; // --primary-ridge
+const MARK_COIN = '#ebb806'; // --reward
+const MARK_COIN_RIDGE = '#a88205'; // --reward-ridge
+const ON_PRIMARY = '#ffffff'; // --on-primary
 
 const MARGIN = 48;
 const BOTTOM_MARGIN = 64; // reserves the footer band
@@ -253,9 +256,9 @@ function drawWatermark(doc: PDFKit.PDFDocument): void {
 }
 
 function drawHeader(doc: PDFKit.PDFDocument, ctx: ReportContext, data: PlausibleReportData): void {
-  // Two-tone brand bar and the real wordmark. The logo is an inlined buffer,
-  // not a file read: the PDF must not depend on a frontend filesystem asset
-  // that a build step might not copy into the deployed image.
+  // Two-tone brand bar and the brand lockup. The mark is drawn as vectors,
+  // not read from a file: the PDF must not depend on a frontend filesystem
+  // asset that a build step might not copy into the deployed image.
   doc.rect(0, 0, doc.page.width, 6).fill(ACCENT);
   doc.rect(doc.page.width * 0.72, 0, doc.page.width * 0.28, 6).fill(DELIGHT);
   drawLogo(doc, MARGIN, 34);
@@ -301,18 +304,32 @@ function drawHeader(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plausible
 }
 
 /**
- * The real wordmark, drawn at its native aspect ratio.
- *
- * This was a violet rounded square with the letters "LF" and the product name
- * set in Helvetica — a placeholder that had outlived its purpose on the one
- * document stakeholders actually see.
+ * The brand lockup: the `brand.mark` asset drawn as pdfkit vectors from its
+ * own 64-unit geometry, beside the product name set as text. The report used
+ * to inline the legacy raster wordmark (gradient lettering), the last outbound
+ * document still wearing it after the site, icons and share cards moved to
+ * the mark (Bible 02 D3, D4, D8; 07 sections 1 and 3). Vectors keep the
+ * report free of any file read or fetch, as before.
  */
-const LOGO_RENDER_WIDTH = 132;
+export const LOGO_MARK_SIZE = 32;
+export const LOGO_WORDMARK = 'LittleFounders';
 
-function drawLogo(doc: PDFKit.PDFDocument, x: number, y: number): void {
+export function drawLogo(doc: PDFKit.PDFDocument, x: number, y: number): void {
+  const k = LOGO_MARK_SIZE / 64;
   doc.save();
-  doc.image(LF_LOGO_PNG, x, y, { width: LOGO_RENDER_WIDTH });
+  doc.roundedRect(x, y, 64 * k, 64 * k, 16 * k).fill(MARK_RIDGE);
+  doc.roundedRect(x, y, 64 * k, 60 * k, 16 * k).fill(ACCENT);
+  for (const [bx, by, bh] of [[13, 37, 13], [27, 29, 21], [41, 21, 29]] as const) {
+    doc.roundedRect(x + bx * k, y + by * k, 10 * k, bh * k, 3 * k).fill(ON_PRIMARY);
+  }
+  doc.circle(x + 46 * k, y + 12.5 * k, 7 * k).fill(MARK_COIN_RIDGE);
+  doc.circle(x + 46 * k, y + 11.5 * k, 6.5 * k).fill(MARK_COIN);
   doc.restore();
+  doc
+    .font('Helvetica-Bold')
+    .fontSize(18)
+    .fillColor(INK)
+    .text(LOGO_WORDMARK, x + LOGO_MARK_SIZE + 10, y + (LOGO_MARK_SIZE - 18) / 2 + 1, { lineBreak: false });
 }
 
 

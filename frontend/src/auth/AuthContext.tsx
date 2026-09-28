@@ -90,6 +90,12 @@ interface AuthContextValue {
   meLoaded: boolean;
   /** Whether the usage beacon may transmit for this account (/INSIGHTS.md). Kids: only with active guardian consent. */
   analyticsEnabled: boolean;
+  /**
+   * A.2, Appendix M 1.1: Core stores the onboarding "how did you hear about us" answer only under the
+   * signup-attribution predicate (never an under-13 origin, a kid, or a teen without their own opt-in).
+   * False until /auth/me says so, so the survey step is skipped when the answer would be discarded.
+   */
+  discoverySurvey: boolean;
   /** True for a guest (GoTrue anonymous) session — never the unrelated pre-signup lf_aid marketing visitor id. */
   isGuest: boolean;
   /** Whether this account has completed the onboarding wizard. Guest-only concept — a real account is always effectively "onboarded" via signup, never redirected to /onboarding regardless of this flag. */
@@ -172,6 +178,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Fail-closed default: the beacon stays silent until /me confirms it may run.
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const [discoverySurvey, setDiscoverySurvey] = useState(false);
   const sessionRef = useRef<StoredSession | null>(null);
   const identityVersion = useRef(0);
   const meVersion = useRef(0);
@@ -191,6 +198,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setAccountDeletion(null);
       setAnalyticsEnabled(false);
       setOnboardingComplete(false);
+      setDiscoverySurvey(false);
       setMeLoaded(!next);
     }
     sessionRef.current = next;
@@ -252,6 +260,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       adminPermissions?: string[];
       avatarOptions: Record<string, unknown>;
       analyticsEnabled?: boolean;
+      discoverySurvey?: boolean;
       newAccount?: boolean;
       onboardingComplete?: boolean;
       accountDeletion?: unknown;
@@ -272,6 +281,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     const resolvedAnalyticsEnabled = data?.analyticsEnabled === true;
     setAnalyticsEnabled(resolvedAnalyticsEnabled);
+    setDiscoverySurvey(data?.discoverySurvey === true);
     if (data) {
       setSuspended(false);
       setDeleted(false);
@@ -492,6 +502,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       avatarOptions,
       meLoaded,
       analyticsEnabled,
+      discoverySurvey,
       isGuest,
       onboardingComplete,
       suspended,
@@ -514,6 +525,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       avatarOptions,
       meLoaded,
       analyticsEnabled,
+      discoverySurvey,
       isGuest,
       onboardingComplete,
       suspended,

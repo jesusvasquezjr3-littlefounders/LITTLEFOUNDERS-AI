@@ -21,7 +21,7 @@ import { applyCoursePathway } from '../services/pathway/coursePathway.js';
 import { courseEngine, coursePathwayInputs, loadLearnerPathwayContext, loadPathwayContent, readLearnerPlacementState } from '../services/pathway/pathwayData.js';
 import { adminCreateUser, adminDeleteUser, adminRevokeUserSessions, adminUpdateUserPassword } from '../services/gotrue.js';
 import { KID_USERNAME, renameFlaggedChild } from '../services/kidUsername.js';
-import { ChildAgeBand, childAgeBand, declaredBandForDate, readAgeRecorded, readAgeScreen, recordAgeScreen, recordAgeScreenBand } from '../services/ageScreen.js';
+import { ChildAgeBand, childAgeBand, declaredBandForDate, readAgeRecorded, readAgeScreen, readUnder13Accounts, recordAgeScreen, recordAgeScreenBand } from '../services/ageScreen.js';
 import { requiresMinorMentorSafeguards } from '../services/mentorSafety.js';
 import { guardianConsentEnrols } from '../services/dialogueExperimentNotice.js';
 import { mayDiscoverProfile, profileAccess, visibleSocialUsers } from '../services/socialVisibility.js';
@@ -166,6 +166,10 @@ export function familyRouter(): Router {
     const childRoleHolders = await getChildRoleHolders(kidIds);
     // A.4: whether the child holds age evidence; a Tutor is asked for it when not.
     const ageRecorded = await readAgeRecorded(kidIds);
+    // A.1 / H-20: an under-13 child is excluded from all optional analytics, so
+    // the console shows no usage-data switch for them (a display hint; the
+    // consent route refuses the grant itself).
+    const under13 = await readUnder13Accounts(kidIds);
     const walletByKid = new Map(walletAndStreak.map((w) => [w.id, w.balances]));
 
     return ok(res, {
@@ -188,6 +192,8 @@ export function familyRouter(): Router {
           accountType: childRoleHolders === null ? null : childRoleHolders.has(l.kid_user_id) ? 'child' : 'teen',
           // A.4 (OD-3): null when unknown; false only for a child with no age evidence yet.
           ageRecorded: ageRecorded === null ? null : ageRecorded.has(l.kid_user_id),
+          // A.1 / H-20: null when unknown; true for a child under 13 on record.
+          under13: under13 === null ? null : under13.has(l.kid_user_id),
           // M-12 (OD-26): the usage-data consent above also admits this child to
           // the C.17 dialogue-style experiment (a 10-12 child with a known birth
           // date); the console says so only then. The resolver re-decides per session.
@@ -641,6 +647,21 @@ export function familyRouter(): Router {
       return fail(res, 403, 'FORBIDDEN', 'No verified guardian link for this kid');
     }
     if (await refuseSelfManaged(kidId, res)) return res;
+    // A.1, owner answer H-20: an under-13 child is excluded from every optional
+    // analytics gate, so a grant would describe collection that never happens.
+    // The one thing it can still admit is the M-12 (OD-26) hint-style test for
+    // a 10-12 child with a known birth date, the only grant accepted for them.
+    const under13 = await readUnder13Accounts([kidId]);
+    if (under13 === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the child age');
+    if (under13.has(kidId)) {
+      const profiles = await getKidProfiles([kidId]);
+      if (!profiles) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the child profile');
+      const experiment = guardianConsentEnrols({ birthDate: profiles[0]?.birth_date ?? null, childRole: true },
+        getConfig().MENTOR_DIALOGUE_EXPERIMENT_BANDS);
+      if (!experiment) {
+        return fail(res, 403, 'ANALYTICS_NOT_COLLECTED_UNDER_13', 'Usage data is never collected for a child under 13');
+      }
+    }
     const granted = await grantAnalyticsConsent(kidId, user.id);
     if (granted === null) return fail(res, 502, DATA_UNAVAILABLE, 'Consent could not be stored');
     // The PARENT's decision is itself family conduct. Subject is the parent;

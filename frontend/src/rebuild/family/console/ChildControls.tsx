@@ -116,7 +116,9 @@ export function AddChild({ copy, locale, transport, startOpen = false, onAdded, 
     // A new child has no chores, coins or streak yet: known zeros by construction, not fetched.
     onAdded({ userId: created.userId, displayName: created.displayName ?? name.trim(), username: created.username ?? handle, analyticsConsent: false,
       pendingApprovalCount: 0, walletTotal: 0, taskStreakDays: 0, accountType: 'child', profileReview: null,
-      dialogueExperiment: age !== null && age >= 10 && age <= 12, ageRecorded: true });
+      dialogueExperiment: age !== null && age >= 10 && age <= 12, ageRecorded: true,
+      // A.1 / H-20: Core marks an under-13 child's origin on creation; no usage-data switch for them.
+      under13: age !== null ? age < 13 : ageBand === 'under_13' });
   }
 
   if (!open) {
@@ -326,10 +328,27 @@ export function InsightsConsent({ child, copy, transport, onChanged }: {
     if (!result.ok) { setFailed(true); return; }
     onChanged(child.userId, result.data.analyticsConsent);
   }
+  /*
+   * A.1 (no control for a capability that does not exist), owner answer H-20:
+   * an under-13 child is excluded from all optional analytics, so there is no
+   * usage-data switch, only the fact. For a 10-12 child the same consent still
+   * admits the M-12 (OD-26) hint-style test, so the switch stays under that
+   * name alone. Core refuses any other grant (ANALYTICS_NOT_COLLECTED_UNDER_13).
+   */
+  if (child.under13 === true) {
+    return <div className="lf-console-control" data-console-control="insights" data-under13="true">
+      <Copy role="body">{copy.insightsUnder13}</Copy>
+      {child.dialogueExperiment
+        ? <Switch label={copy.hintTest} help={fill(copy.hintTestHelp, { name: childName(child) })} checked={child.analyticsConsent} pending={pending}
+          stateLabels={{ on: copy.on, off: copy.off }} onCheckedChange={(next) => void toggle(next)} />
+        : null}
+      {failed ? <InlineNotice tone="error" live>{copy.insightsFailed}</InlineNotice> : null}
+    </div>;
+  }
   return <div className="lf-console-control" data-console-control="insights">
     <Switch label={copy.insights} help={copy.insightsHelp} checked={child.analyticsConsent} pending={pending}
       stateLabels={{ on: copy.on, off: copy.off }} onCheckedChange={(next) => void toggle(next)} />
-    {/* M-12 (OD-26): for a 10-12 child this same consent enrols them in the Mentor's hint-style test; said before it is turned on. */}
+    {/* M-12 (OD-26): where this consent enrols the child in the Mentor's hint-style test, it is said before it is turned on. */}
     {child.dialogueExperiment
       ? <Copy role="body">{fill(copy.insightsExperiment, { name: childName(child) })}</Copy>
       : null}

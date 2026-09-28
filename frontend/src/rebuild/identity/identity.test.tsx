@@ -292,7 +292,7 @@ describe('O1 Onboarding', () => {
   const mentor = { chosen: null, saving: null, failed: false, onChoose: vi.fn() };
 
   it('is one full-bleed single-state screen per step, within the youngest band’s first view', () => {
-    const { container } = inRoot(<OnboardingFlow locale="en-US" skipLabel="Skip to content" mentor={mentor} completing={null} failed={false} onComplete={vi.fn()} />);
+    const { container } = inRoot(<OnboardingFlow locale="en-US" skipLabel="Skip to content" mentor={mentor} askDiscovery completing={null} failed={false} onComplete={vi.fn()} />);
     expect(container.querySelector('[data-shell="single-state"]')).toHaveAttribute('data-hue', 'primary');
     expect(container.querySelectorAll('main')).toHaveLength(1);
     expect(container.querySelector('[data-age-band="6-9"]')).not.toBeNull();
@@ -302,7 +302,7 @@ describe('O1 Onboarding', () => {
   });
 
   it('offers the four Mentors with their names and short lines (08 §8: at most 6 words each)', () => {
-    const { container } = inRoot(<OnboardingFlow locale="pt-BR" skipLabel="Pular" mentor={{ ...mentor, chosen: 'dina' }} completing={null} failed={false}
+    const { container } = inRoot(<OnboardingFlow locale="pt-BR" skipLabel="Pular" mentor={{ ...mentor, chosen: 'dina' }} askDiscovery completing={null} failed={false}
       onComplete={vi.fn()} initialStep="mentor" initialName="Ana" />, 'pt-BR');
     const lines = copy('pt-BR').onboardingFlow.lines;
     for (const line of Object.values(lines)) expect(line.split(/\s+/).length).toBeLessThanOrEqual(6);
@@ -317,7 +317,7 @@ describe('O1 Onboarding', () => {
 
   it('keeps the onboarding saving state and its skip on the shared chooser', () => {
     const onChoose = vi.fn();
-    inRoot(<OnboardingFlow locale="en-US" skipLabel="Skip" mentor={{ ...mentor, saving: 'rho', onChoose }} completing={null} failed={false}
+    inRoot(<OnboardingFlow locale="en-US" skipLabel="Skip" mentor={{ ...mentor, saving: 'rho', onChoose }} askDiscovery completing={null} failed={false}
       onComplete={vi.fn()} initialStep="mentor" initialName="Ana" />);
     expect(screen.getByRole('button', { name: /Dr\. Rho/ })).toHaveTextContent(copy().onboardingFlow.saving);
     screen.getByRole('button', { name: /Zara/ }).click();
@@ -326,9 +326,30 @@ describe('O1 Onboarding', () => {
   });
 
   it('the account step reports which choice is in flight and keeps the other still', () => {
-    inRoot(<OnboardingFlow locale="en-US" skipLabel="Skip" mentor={mentor} completing="created_now" failed={false} onComplete={vi.fn()} initialStep="account" initialName="Ana" />);
+    inRoot(<OnboardingFlow locale="en-US" skipLabel="Skip" mentor={mentor} askDiscovery completing="created_now" failed={false} onComplete={vi.fn()} initialStep="account" initialName="Ana" />);
     expect(screen.getByRole('button', { name: copy().onboardingFlow.saving })).toHaveAttribute('aria-busy', 'true');
     expect(screen.getByRole('button', { name: copy().onboardingFlow.later })).toBeDisabled();
+  });
+
+  /*
+   * A.2, Appendix M 1.1 (flagged sessions: zero unconsented events): a guest
+   * from the age-refusal path, a kid or a teen without an opt-in is never asked
+   * "how did you hear about us", because Core would discard the answer.
+   */
+  it('has no discovery step when Core would not keep the answer: 4 steps, mentor straight to account', () => {
+    const onComplete = vi.fn();
+    const { container } = inRoot(<OnboardingFlow locale="en-US" skipLabel="Skip" mentor={mentor} askDiscovery={false} completing={null} failed={false}
+      onComplete={onComplete} initialStep="mentor" initialName="Ana" />);
+    expect(screen.getByText(copy().onboardingFlow.progress.replace('{current}', '3').replace('{total}', '4'))).toBeInTheDocument();
+    fireEvent.click(document.querySelector('[data-onboarding="skip"]')!);
+    expect(container.querySelector('[data-step]')).toHaveAttribute('data-step', 'account');
+    expect(screen.queryByRole('radiogroup')).toBeNull();
+    expect(screen.getByText(copy().onboardingFlow.progress.replace('{current}', '4').replace('{total}', '4'))).toBeInTheDocument();
+    fireEvent.click(document.querySelector('[data-onboarding="back"]')!);
+    expect(container.querySelector('[data-step]')).toHaveAttribute('data-step', 'mentor');
+    fireEvent.click(document.querySelector('[data-onboarding="skip"]')!);
+    fireEvent.click(document.querySelector('[data-onboarding="later"]')!);
+    expect(onComplete).toHaveBeenCalledWith({ displayName: 'Ana', discoveryChannel: null, choice: 'later' });
   });
 });
 
