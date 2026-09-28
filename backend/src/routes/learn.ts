@@ -35,7 +35,7 @@ import {
   type LearnerPathwayContext,
 } from '../services/pathway/pathwayData.js';
 import { chapterPolicy, coursePrerequisiteDecision, resolvePathway } from '../services/pathway/pathwayPolicy.js';
-import { gradeV2Visual, projectAdventureTheme, projectV2MentorStage, v2ViewedSegmentIds, stripV2MentorStage, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, v2FirstUnaidedStage, v2GradePrerequisiteSegmentId, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
+import { gradeV2Visual, projectAdventureTheme, projectV2MentorStage, v2ViewedSegmentIds, stripV2MentorStage, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, v2CpaSkippedSegmentIds, v2FirstUnaidedStage, v2GradePrerequisiteSegmentId, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
 import { mintLessonAttemptToken, reissueLessonAttemptToken, verifyLessonAttemptToken } from '../services/lessonAttemptToken.js';
 import { getOwnLearnerIntelligence, recordExperimentExposure } from '../services/learningIntel.js';
 import { learnRegisterRouter } from './learnRegister.js';
@@ -47,7 +47,7 @@ import { badgeEarnedNow, completionCelebrations, courseCompletedNow, type Celebr
 import { pathChoice, paceStatus, type PaceStatus } from '../services/autonomy.js';
 import { topicTeaches } from '../services/narrative/narrativeData.js';
 import { buildV2CompletionReceipt, replayNoticeRequired } from '../services/lessonCompletionReceipt.js';
-import { applyMasteryFade, courseReceiptKey, recordCourseLessonEvidence } from '../services/pedagogy/courseLessonEvidence.js';
+import { applyMasteryFade, courseReceiptKey, cpaEntryFor, recordCourseLessonEvidence } from '../services/pedagogy/courseLessonEvidence.js';
 import {
   completeLesson,
   completeV2MixedLesson,
@@ -1049,9 +1049,9 @@ export function learnRouter(): Router {
           // safe to restore its public segment ID so the learner resumes the
           // next representation, while `met_segment_ids` remains the sole
           // authority for completion and non-CPA prerequisites.
-          const attemptedSegmentIds = [...new Set(receipts
+          const attemptedSegmentIds = [...new Set([...v2CpaSkippedSegmentIds(document, prior.cpa_entry_stage), ...receipts
             .filter((receipt) => serverSegmentIds.includes(receipt.segment_id))
-            .map((receipt) => receipt.segment_id))];
+            .map((receipt) => receipt.segment_id)])];
           return ok(res, {
             run_id: prior.id, version_id: document.version_id, expires_at: prior.expires_at, resumed: true, met_segment_ids: metSegmentIds,
             attempted_segment_ids: attemptedSegmentIds,
@@ -1074,9 +1074,15 @@ export function learnRouter(): Router {
     const expiresAt = issued[0]?.expiresAt ?? mintLessonAttemptToken({
       uid: user.id, vid: picked.document_version_id, lid: lessonId, loc: document.locale, sid: document.segments[0]!.id, rid: runId,
     }, secret, issuedAt).expiresAt;
+    // Appendix P Part 4.4 (GAP-FIX-R2): a fluent learner is never sent back to concrete. Core picks the M1
+    // entry stage from mastery and the learner's last first-unaided stage, pins it on the run, and the
+    // skipped stages restore like attempted ones (completion never required them).
+    const progression = document.representation_progressions?.[0];
+    const cpaEntryStage = progression ? await cpaEntryFor(user.id, ctx.topic.id, progression.fading_group_id) : undefined;
     const createdRun = await createV2LessonRun({
       id: runId, user_id: user.id, lesson_id: lessonId, locale: document.locale,
       document_version_id: picked.document_version_id, expires_at: expiresAt,
+      ...(cpaEntryStage ? { cpa_entry_stage: cpaEntryStage } : {}),
     });
     if (!createdRun) return fail(res, 502, 'INTERNAL', 'Could not start this lesson attempt');
     const createdNonces = await createV2LessonAttemptNonces(issued.map((item) => ({
@@ -1091,8 +1097,9 @@ export function learnRouter(): Router {
       expires_at: expiresAt,
       resumed: false,
       met_segment_ids: [],
-      attempted_segment_ids: [],
+      attempted_segment_ids: v2CpaSkippedSegmentIds(document, cpaEntryStage),
       viewed_segment_ids: [],
+      ...(cpaEntryStage ? { cpa_entry_stage: cpaEntryStage } : {}),
       attempt_tokens: Object.fromEntries(issued.map((item) => [item.segmentId, item.token])),
     });
   });
@@ -1213,7 +1220,17 @@ export function learnRouter(): Router {
         ...(parsed.data.client_verdict ? { client_agree: parsed.data.client_verdict === 'valid' } : {}),
         ...(gradedSegment.item_phase ? { item_phase: gradedSegment.item_phase } : {}),
         ...(gradedSegment.variant ? { variant: gradedSegment.variant } : {}) };
-      const cpaPrerequisite = v2CpaAttemptPrerequisiteSegmentId(document, segmentId);
+      // Appendix P Part 4.4 (GAP-FIX-R2): the run's pinned M1 entry stage. A skipped stage is never graded in that run.
+      const cpaStage = v2FirstUnaidedStage(document, segmentId);
+      let entryStage: 'concrete' | 'pictorial' | 'abstract' = 'concrete';
+      if (cpaStage) {
+        const run = await getV2LessonRunForRecovery(user.id, lessonId, parsed.data.run_id);
+        if (run === undefined) return fail(res, 502, 'INTERNAL', 'Could not read this lesson attempt');
+        entryStage = run?.cpa_entry_stage ?? 'concrete';
+        if (v2CpaSkippedSegmentIds(document, entryStage).includes(segmentId)) return fail(res, 409, 'CPA_STAGE_SKIPPED', 'This representation was skipped for this learner');
+        Object.assign(v2Verdict, { entry_stage: entryStage });
+      }
+      const cpaPrerequisite = v2CpaAttemptPrerequisiteSegmentId(document, segmentId, entryStage);
       const receipt = cpaPrerequisite === undefined
         ? await recordV2LessonGrade({
           p_user_id: user.id, p_run_id: parsed.data.run_id, p_document_version_id: picked.document_version_id,

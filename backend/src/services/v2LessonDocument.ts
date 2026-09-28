@@ -544,11 +544,26 @@ export function v2FirstUnaidedStage(document: V2PublicLesson, segmentId: string)
  * stage, and a string is the immediately preceding stage that only needs an
  * attempted receipt (a review is still a legitimate learning attempt).
  */
-export function v2CpaAttemptPrerequisiteSegmentId(document: V2PublicLesson, segmentId: string): string | null | undefined {
+export function v2CpaAttemptPrerequisiteSegmentId(document: V2PublicLesson, segmentId: string, entryStage: 'concrete' | 'pictorial' | 'abstract' = 'concrete'): string | null | undefined {
   const progression = document.representation_progressions?.find((item) => item.stages.some((stage) => stage.segment_id === segmentId));
   if (!progression) return undefined;
   const index = progression.stages.findIndex((stage) => stage.segment_id === segmentId);
-  return index > 0 ? progression.stages[index - 1]!.segment_id : null;
+  // GAP-FIX-R2 (Part 4.4): a mastery-faded run starts at its entry stage, which then has no prerequisite.
+  const entry = progression.stages.findIndex((stage) => stage.stage === entryStage);
+  return index > entry ? progression.stages[index - 1]!.segment_id : null;
+}
+
+/**
+ * GAP-FIX-R2 (Appendix P Part 4.4): the M1 stages a run skipped because the
+ * learner is already fluent. They are never graded in that run; the client
+ * restores past them like attempted stages, and completion never required them.
+ */
+export function v2CpaSkippedSegmentIds(document: V2PublicLesson, entryStage: 'concrete' | 'pictorial' | 'abstract' | null | undefined): string[] {
+  if (!entryStage || entryStage === 'concrete') return [];
+  return (document.representation_progressions ?? []).flatMap((progression) => {
+    const entry = progression.stages.findIndex((stage) => stage.stage === entryStage);
+    return progression.stages.slice(0, Math.max(0, entry)).map((stage) => stage.segment_id);
+  });
 }
 
 /**

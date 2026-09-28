@@ -579,3 +579,22 @@ export const SCHEMA_DIAGRAM_RUBRICS = {
 export function schemaDiagramScorerPayload(payload: SchemaDiagramPayload): { quantityIds: string[]; values: number[] } {
   return { quantityIds: payload.quantities.map((item) => item.id), values: payload.quantities.map((item) => item.value) };
 }
+
+/* ── M1 fading entry stage (GAP-FIX-R2, Appendix P Part 4.4) ──────────────── */
+
+export const CPA_STAGES = ['concrete', 'pictorial', 'abstract'] as const;
+export type CpaStage = (typeof CPA_STAGES)[number];
+
+/**
+ * "Support is removed as accuracy rises, and a learner who is already fluent
+ * is not sent back to concrete (expertise reversal)." The entry stage of an
+ * M1 progression from the learner's mastery of the topic's primary KC (B.6's
+ * shared posterior) and the stage at which they last first succeeded without
+ * help on the same fading group: the later of the two. A novice, or a learner
+ * with no evidence, starts at concrete.
+ */
+export function cpaEntryStage(pKnown: number | null, priorFirstUnaided: CpaStage | null): CpaStage {
+  const fromMastery: CpaStage = pKnown === null || !Number.isFinite(pKnown) || pKnown < 0.6 ? 'concrete' : pKnown < 0.85 ? 'pictorial' : 'abstract';
+  const rank = (stage: CpaStage) => CPA_STAGES.indexOf(stage);
+  return priorFirstUnaided && rank(priorFirstUnaided) > rank(fromMastery) ? priorFirstUnaided : fromMastery;
+}

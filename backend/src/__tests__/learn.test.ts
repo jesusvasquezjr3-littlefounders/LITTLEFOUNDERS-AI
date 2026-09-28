@@ -3,7 +3,7 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 import { mintToken } from './helpers.js';
 import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
-import { COURSE_ID, COURSE_SLUG, LESSON_1_ID, LESSON_2_ID, makeDb } from './learnFixtures.js';
+import { COURSE_ID, COURSE_SLUG, LESSON_1_ID, LESSON_2_ID, TOPIC_ID, makeDb } from './learnFixtures.js';
 
 let db: FakeDb;
 let userId: string;
@@ -838,6 +838,39 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
     expect(graded.status).toBe(200);
     expect(db.lesson_v2_first_unaided_stages).toEqual([expect.objectContaining({ user_id: userId,
       document_version_id: versionId, fading_group_id: 'cpa-savings-01', stage: 'pictorial' })]);
+  });
+
+  it('never sends a fluent learner back to concrete: the M1 entry stage follows mastery (Appendix P Part 4.4, GAP-FIX-R2)', async () => {
+    activateImmutableV2CpaFading();
+    const kcId = 'abababab-abab-4bab-8bab-abababababab';
+    const mastery = (pKnown: number) => {
+      Object.assign(db, { topic_knowledge_components: [{ topic_id: TOPIC_ID, kc_id: kcId, role: 'teaches', is_primary: true }],
+        kc: [{ id: kcId, key: 'kc-count', title: {}, status: 'active' }], learner_kc_mastery: [{ user_id: userId, kc_id: kcId, p_known: pKnown, attempts: 9, correct: 8 }] });
+    };
+    const app = createApp();
+    // Fluent: starts at the symbolic stage; the earlier stages are restored as skipped and can never be graded in this run.
+    mastery(0.92);
+    const fluent = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
+    expect(fluent.body.data).toMatchObject({ cpa_entry_stage: 'abstract', attempted_segment_ids: ['cpa-concrete-01', 'cpa-pictorial-01'] });
+    const grade = (run: { run_id: string; attempt_tokens: Record<string, string> }, segmentId: string, value: string) => auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: segmentId, run_id: run.run_id, attempt_token: run.attempt_tokens[segmentId], answer: { value },
+    });
+    const concrete = await grade(fluent.body.data, 'cpa-concrete-01', '7');
+    expect(concrete.status).toBe(409);
+    expect(concrete.body.error.code).toBe('CPA_STAGE_SKIPPED');
+    const symbolic = await grade(fluent.body.data, 'cpa-abstract-01', '7');
+    expect(symbolic.status).toBe(200);
+    expect(symbolic.body.data.verdict).toMatchObject({ correct: true, score: 100 });
+    expect((db.lesson_v2_grade_receipts as Array<{ verdict: Record<string, unknown> }>).at(-1)!.verdict).toMatchObject({ entry_stage: 'abstract' });
+    // Partial mastery starts at pictorial; a novice at concrete (the pictorial stage still needs the concrete attempt).
+    mastery(0.7);
+    const partial = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
+    expect(partial.body.data).toMatchObject({ cpa_entry_stage: 'pictorial', attempted_segment_ids: ['cpa-concrete-01'] });
+    expect((await grade(partial.body.data, 'cpa-pictorial-01', '7')).status).toBe(200);
+    mastery(0.2);
+    const novice = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
+    expect(novice.body.data).toMatchObject({ cpa_entry_stage: 'concrete', attempted_segment_ids: [] });
+    expect((await grade(novice.body.data, 'cpa-pictorial-01', '7')).status).toBe(409);
   });
 
   it('requires a met M7 structure receipt before its independent arithmetic segment', async () => {

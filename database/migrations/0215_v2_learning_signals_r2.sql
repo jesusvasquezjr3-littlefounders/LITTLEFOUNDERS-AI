@@ -1,7 +1,7 @@
 -- v2_learning_signals_r2 — the Appendix P Part 8 metrics the first round left
 -- out, and the new receipt fields behind them (GAP-FIX-R2 learning).
 -- @phase: contract
--- @after-release: none — the receipt CHECK is dropped and re-added so that every receipt a deployed Core writes still passes (it adds the diagnostic 'count_from_zero' and pins the shape of new optional fields no deployed Core writes), so no running write is rejected. The phase classifier counts any CHECK swap as a contraction, so it is declared contract and applied by hand. Apply it BEFORE the Core release that grades $2 count-up sequences, L12 cue ticks and scorer parity: an older CHECK would refuse those receipts (the grade answers 502 and nothing is recorded).
+-- @after-release: none — the receipt CHECK is dropped and re-added so that every receipt a deployed Core writes still passes (it adds the diagnostic 'count_from_zero' and pins the shape of new optional fields no deployed Core writes), so no running write is rejected. The phase classifier counts any CHECK swap as a contraction, so it is declared contract and applied by hand. Apply it BEFORE the Core release that grades $2 count-up sequences, L12 cue ticks and scorer parity and pins M1 entry stages: an older CHECK would refuse those receipts, and a run insert naming cpa_entry_stage would fail without the column (the route answers 502 and nothing is recorded).
 --
 -- Core writes, beside each v2 verdict in lesson_v2_grade_receipts:
 --   * diagnostic 'count_from_zero' ($2: the change counted from zero instead
@@ -17,6 +17,9 @@
 --     without self-explanation prompts);
 --   * entry_stage 'concrete' | 'pictorial' | 'abstract' (Part 4.4: where a
 --     mastery-faded M1 progression started this learner).
+-- lesson_v2_runs.cpa_entry_stage (nullable) pins that entry stage on the run
+-- when Core starts it, so the grade route can refuse a skipped stage and
+-- relax the stage-order prerequisite for the entry stage only.
 -- The 0205 CHECK is replaced by one that pins every field above, and the
 -- read-only service-role aggregates below report them. No learner id, answer
 -- or rubric leaves these functions.
@@ -53,6 +56,9 @@ ALTER TABLE public.lesson_v2_grade_receipts
 -- NOT VALID keeps the swap cheap on a large table; every row already satisfies
 -- the 0205 CHECK, which this one only widens, so validation cannot fail.
 ALTER TABLE public.lesson_v2_grade_receipts VALIDATE CONSTRAINT lesson_v2_grade_receipts_signals_check;
+
+ALTER TABLE public.lesson_v2_runs ADD COLUMN IF NOT EXISTS cpa_entry_stage text
+    CONSTRAINT lesson_v2_runs_cpa_entry_stage_check CHECK (cpa_entry_stage IS NULL OR cpa_entry_stage IN ('concrete', 'pictorial', 'abstract'));
 
 -- Part 8 scorer parity: of the graded submissions whose browser reported its
 -- advisory verdict, the share where it agreed with Core. Every receipt counts,

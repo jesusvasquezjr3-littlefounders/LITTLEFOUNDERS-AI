@@ -15,11 +15,11 @@
  */
 
 import type { SegmentBase } from '../../lesson-contract/core/types.js';
-import { serviceRest } from '../supabaseRest.js';
+import { getV2PriorFirstUnaidedStage, serviceRest } from '../supabaseRest.js';
 import { topicTeaches } from '../narrative/narrativeData.js';
 import { recordAttempt, type AttemptOutcome } from './recordAttempt.js';
 import { getLearnerMastery } from './kcData.js';
-import { masteryFadeCount } from '../v2SegmentFamilies.js';
+import { cpaEntryStage, masteryFadeCount, type CpaStage } from '../v2SegmentFamilies.js';
 
 const RECEIPT_KEY = /^(v1|v2):[A-Za-z0-9_:.-]{8,200}$/;
 
@@ -71,6 +71,20 @@ export async function topicPrimaryPKnown(userId: string, topicId: string): Promi
  * mastery of the topic's primary KC, chosen on Core. Presentation only: the
  * scorer grades the same response steps whatever the fade.
  */
+/**
+ * GAP-FIX-R2 (Appendix P Part 4.4): the entry stage of an M1 progression for
+ * this learner, from the topic's primary-KC mastery and their last first
+ * unaided stage on the same fading group. Concrete when either read fails:
+ * scaffolding is the safe default, never a skipped representation.
+ */
+export async function cpaEntryFor(userId: string, topicId: string, fadingGroupId: string): Promise<CpaStage> {
+  const [pKnown, prior] = await Promise.all([
+    topicPrimaryPKnown(userId, topicId).catch(() => null),
+    getV2PriorFirstUnaidedStage(userId, fadingGroupId).catch(() => null),
+  ]);
+  return cpaEntryStage(pKnown, prior);
+}
+
 export async function applyMasteryFade<T extends { segments?: unknown }>(document: T, userId: string, topicId: string): Promise<T> {
   const segments = Array.isArray(document.segments) ? document.segments as Array<Record<string, unknown>> : [];
   if (!segments.some((segment) => segment.type === 'math.worked-example.v2')) return document;
