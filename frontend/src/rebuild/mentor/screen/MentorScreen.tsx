@@ -1,11 +1,11 @@
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { copyLimit, wordCount, type AgeBand, type Locale } from '../../design/copyBudget';
 import {
-  Banner, Button, ConfirmDialog, IconButton, InlineNotice, List, ListRow, Menu, MentorAvatar, MENTOR_NAMES, Pill, ReplyChip, RewardChip, Sheet, TextField,
+  Banner, Button, ConfirmDialog, IconButton, InlineNotice, Menu, MENTOR_NAMES, ReplyChip, RewardChip, Sheet, TextField,
   type MentorCharacter, type MenuItem,
 } from '../../design/controls';
-import { findMentorAvatar, MENTOR_CHARACTERS } from '../../design/assets';
-import { findChooserStill } from '../stageStills';
+import { MENTOR_CHARACTERS } from '../../design/assets';
+import { MentorChooser } from '../MentorChooser';
 import { MentorCalibration, type MentorCalibrationCopy } from '../../identity/MentorCalibration';
 import { MentorStage, type MentorCompanionPose, type MentorStageCopy, type MentorStageLight, type MentorStageScene } from '../MentorStage';
 import { AllianceCheck, type AllianceCheckCopy, type AllianceCheckResult } from '../AllianceCheck';
@@ -792,20 +792,9 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
       <p data-copy-role="body">{copy.grownUpBody}</p>
     </Sheet>
     <Sheet open={sheet === 'chooser'} onClose={closeSheet} heading={copy.chooser.heading} closeLabel={copy.sheetClose}>
-      <div className="lf-mentor-chooser"><List label={copy.chooser.heading}>
-        {MENTOR_CHARACTERS.map((candidate) => {
-          // 08 §8: the character standing on its Diorama where that render exists, else its avatar render; never a stand-in.
-          const still = findChooserStill(candidate, theme);
-          const avatar = still ? null : findMentorAvatar(candidate, theme);
-          const current = candidate === session.character;
-          return <ListRow key={candidate} title={MENTOR_NAMES[candidate]} titleRole="data" supporting={copy.chooser.lines[candidate]}
-            leading={still ? <img className="lf-mentor-chooser-still" src={still.path} alt="" data-asset-id={still.id} data-character={candidate} />
-              : avatar ? <MentorAvatar renderId={avatar} label={null} size="md" /> : null}
-            trailing={current ? <Pill tone="primary">{copy.chooser.chosen}</Pill>
-              : choosing === candidate ? <Pill tone="sky">{copy.chooser.saving}</Pill> : null}
-            onPress={choosing ? undefined : () => void choose(candidate)} />;
-        })}
-      </List></div>
+      {/* 08 §8: the shared chooser, the four characters on their Diorama (also the onboarding's mentor step). */}
+      <MentorChooser label={copy.chooser.heading} lines={copy.chooser.lines} chosen={session.character} saving={choosing}
+        chosenLabel={copy.chooser.chosen} savingLabel={copy.chooser.saving} onChoose={(candidate) => void choose(candidate)} />
       {chooseFailed ? <InlineNotice tone="error" live>{copy.chooser.failed}</InlineNotice> : null}
     </Sheet>
     <Sheet open={sheet === 'personalise'} onClose={closeSheet} heading={all.mentorPersonalise.heading} closeLabel={copy.sheetClose}>

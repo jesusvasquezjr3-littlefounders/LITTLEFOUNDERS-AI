@@ -306,9 +306,23 @@ describe('O1 Onboarding', () => {
       onComplete={vi.fn()} initialStep="mentor" initialName="Ana" />, 'pt-BR');
     const lines = copy('pt-BR').onboardingFlow.lines;
     for (const line of Object.values(lines)) expect(line.split(/\s+/).length).toBeLessThanOrEqual(6);
-    expect(container.querySelectorAll('[data-slot="mentor-avatar"] img[data-character]')).toHaveLength(4);
+    // 08 §8: the characters standing on their Diorama (the shared chooser's stills), never bust avatars in a list.
+    const stills = container.querySelectorAll('[data-component="mentor-chooser"] img.lf-mentor-chooser-still[data-character]');
+    expect(stills).toHaveLength(4);
+    for (const still of stills) expect(still.getAttribute('data-asset-id')).toMatch(/^mentor\.(rho|zara|liruf|dina)\.chooser\.(light|dark)$/);
+    expect(container.querySelectorAll('[data-slot="mentor-avatar"]')).toHaveLength(0);
     expect(screen.getByRole('button', { name: /Dina/ })).toHaveTextContent(copy('pt-BR').onboardingFlow.chosen);
     expect(undeclaredText(container)).toEqual([]);
+  });
+
+  it('keeps the onboarding saving state and its skip on the shared chooser', () => {
+    const onChoose = vi.fn();
+    inRoot(<OnboardingFlow locale="en-US" skipLabel="Skip" mentor={{ ...mentor, saving: 'rho', onChoose }} completing={null} failed={false}
+      onComplete={vi.fn()} initialStep="mentor" initialName="Ana" />);
+    expect(screen.getByRole('button', { name: /Dr\. Rho/ })).toHaveTextContent(copy().onboardingFlow.saving);
+    screen.getByRole('button', { name: /Zara/ }).click();
+    expect(onChoose).not.toHaveBeenCalled();
+    expect(document.querySelector('[data-onboarding="skip"]')).toHaveProperty('disabled', true);
   });
 
   it('the account step reports which choice is in flight and keeps the other still', () => {

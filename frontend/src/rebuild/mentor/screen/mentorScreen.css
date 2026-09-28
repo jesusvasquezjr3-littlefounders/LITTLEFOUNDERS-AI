@@ -239,8 +239,7 @@
 
 /* The chooser (08 §8): each character's picture on its Diorama leads its row, then the name and one line. */
 /* The picture takes the room a longer title would: the words wrap before the row's chevron drops to its own line. */
-.lf-mentor-chooser .lf-list-row-text { flex-basis: 7em; }
-.lf-mentor-chooser-still { display: block; inline-size: 5.5rem; aspect-ratio: 4 / 5; border-radius: var(--rounded-md); object-fit: cover; }
+/* The Mentor chooser's rules live with the shared component (../mentorChooser.css). */
 
 /* The learning map's state mark: a shape of the state's hue beside the words (the words carry the meaning). */
 .lf-mentor-map-mark { display: block; inline-size: var(--spacing-3); block-size: var(--spacing-3); border-radius: var(--rounded-full); background: var(--sunken); }

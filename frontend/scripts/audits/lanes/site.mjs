@@ -63,6 +63,8 @@ export const states = [
     .map((view) => preview(`identity@${view}`, { screen: 'identity', view })),
   ...['mentor', 'discovery', 'account'].map((step) => preview(`onboarding@${step}`, { screen: 'onboarding', step })),
   preview('onboarding@mentor-chosen-failed', { screen: 'onboarding', step: 'mentor', chosen: 'liruf', failed: '1' }),
+  // The shared MentorChooser (08 §8): a save in flight locks the other rows.
+  preview('onboarding@mentor-saving', { screen: 'onboarding', step: 'mentor', saving: 'rho' }),
   preview('onboarding@account-failed', { screen: 'onboarding', step: 'account', failed: '1' }),
 ];
 
