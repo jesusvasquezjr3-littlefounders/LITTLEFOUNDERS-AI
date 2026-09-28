@@ -17,6 +17,9 @@ v2_learning_signal_metrics):
     second row for the same receipt is refused;
   - the four metric functions aggregate first tries;
   - each practised local day lands once in learning_practice_days (0196);
+  - publish_v2_lesson_version (0197) is the one way a published lesson's v2
+    pointer moves: it needs a current course verification and a manifest
+    attesting this document, never reuses a version id, and audits;
   - no browser role can read the new tables or call the new functions.
 
 Configuration: LF_PG_PSQL, LF_PG_PORT, LF_PG_USER, LF_PG_KEEP.
@@ -190,7 +193,36 @@ try:
     assert service("SELECT count(*) FROM learning_detection_cells(now() - interval '1 day', now() + interval '1 day')") == '0'
     check('the metric functions aggregate first tries (transfer 1/1 on its KC)')
 
+    # 0197: the reviewed publication transaction is the one way a published lesson's v2 pointer moves.
+    pub_version = 'pub-rev-001'
+    doc = f'{{"schema_version": 2, "lesson_id": "{lesson}", "locale": "es-MX", "version_id": "{pub_version}", "segments": []}}'
+    gate_ids = run("SELECT gate_id FROM forge_release_gates WHERE gate_number IN (1, 11, 12, 13, 14, 15, 16) OR gate_id = 'forge.release.v2-content' ORDER BY gate_id").splitlines()
+    as_checks = lambda ids: ', '.join('{"gate": "%s", "ok": true}' % gate for gate in ids)
+    gates = as_checks(gate_ids)
+    manifest = f'{{"lesson_id": "{lesson}", "locale": "es-MX", "version_id": "{pub_version}", "core_contract": true, "interactive_behaviour": true, "run_id": "audit", "checks": [{gates}]}}'
+    short = manifest.replace(gates, as_checks(gate_ids[1:]))
+    call = lambda m: f"SET ROLE service_role; SELECT publish_v2_lesson_version('{lesson}', 'es-MX', '{pub_version}', '{doc}'::jsonb, '{{}}'::jsonb, '{m}'::jsonb)"
+    run(f"UPDATE lessons SET status = 'published' WHERE id = '{lesson}'")
+    rejected(f"SET ROLE service_role; INSERT INTO lesson_document_version_current (lesson_id, locale, document_version_id) VALUES ('{lesson}', 'en-US', '{version}')",
+             'reviewed publication transaction')
+    check('a direct pointer move on a published lesson is still refused')
+    rejected(call(manifest), 'Course verification refused')
+    all_gates = run("SELECT string_agg(format('{\"gate\": \"%s\", \"ok\": true}', gate_id), ',') FROM forge_release_gates")
+    run(f"INSERT INTO course_release_verifications (course_id, checks, content_watermark) VALUES ('{course}', '[{all_gates}]'::jsonb, forge_release_content_watermark('{course}'))")
+    rejected(call(short), 'release manifest is missing')
+    rejected(call(manifest.replace('"interactive_behaviour": true', '"interactive_behaviour": false')), 'does not attest')
+    published = service(call(manifest) + '::text')
+    assert '"version_id": "pub-rev-001"' in published, published
+    assert run(f"SELECT count(*) FROM lesson_document_version_current c JOIN lesson_document_versions v ON v.id = c.document_version_id WHERE c.lesson_id = '{lesson}' AND c.locale = 'es-MX' AND v.version_id = '{pub_version}'") == '1'
+    assert run(f"SELECT count(*) FROM audit_logs WHERE action = 'forge.v2_lesson_published' AND subject = '{lesson}'") == '1'
+    rejected(call(manifest), 'Course verification refused')
+    check('the reviewed transaction publishes an attested document and moves the pointer; a stale course, a missing gate or an unattested behaviour gate is refused')
+    run(f"INSERT INTO course_release_verifications (course_id, checks, content_watermark) VALUES ('{course}', '[{all_gates}]'::jsonb, forge_release_content_watermark('{course}')) ON CONFLICT (course_id) DO UPDATE SET checks = EXCLUDED.checks, content_watermark = EXCLUDED.content_watermark")
+    rejected(call(manifest), 'versions are immutable')
+    check('a published version id is never reused')
+
     for role in ('anon', 'authenticated'):
+        rejected(f"SET ROLE {role}; SELECT publish_v2_lesson_version('{lesson}', 'es-MX', 'x-rev-9', '{{}}'::jsonb, '{{}}'::jsonb, '{{}}'::jsonb)", 'permission denied')
         rejected(f"SET ROLE {role}; SELECT count(*) FROM lesson_v2_segment_views", 'permission denied')
         for fn in ("record_v2_segment_view(gen_random_uuid(), gen_random_uuid(), gen_random_uuid(), 'x')",
                    "learning_transfer_success(now(), now())", "learning_detection_cells(now(), now())"):

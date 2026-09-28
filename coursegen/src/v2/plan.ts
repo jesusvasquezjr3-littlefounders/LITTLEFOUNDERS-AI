@@ -41,6 +41,12 @@ export const v2PlanSegmentSchema = z
     payload: z.record(z.string(), z.unknown()),
     /** Private rubric: goes to answer_keys, never into the public document. */
     rubric: z.record(z.string(), z.unknown()).optional(),
+    /**
+     * B.16 / F-06 (GAP-FIX-R1): a per-market rubric, when a market's scenario
+     * changes the answer (its own prices or amounts). Each locale's answer
+     * keys are written from its own entry; it replaces `rubric`.
+     */
+    rubric_by_locale: localized(z.record(z.string(), z.unknown())).optional(),
     /** Appendix C 1.1 (GAP-FIX-R1): practice or transfer item, and the KC it evidences. */
     item_role: z.enum(['practice', 'transfer']).optional(),
     knowledge_component_id: id.optional(),
@@ -48,8 +54,9 @@ export const v2PlanSegmentSchema = z
   })
   .strict()
   .superRefine((segment, ctx) => {
-    if (segment.grading === 'server' && !segment.rubric) ctx.addIssue({ code: 'custom', path: ['rubric'], message: 'a server-graded segment needs its private rubric' });
-    if (segment.grading === 'none' && segment.rubric) ctx.addIssue({ code: 'custom', path: ['rubric'], message: 'an ungraded segment carries no rubric' });
+    if (segment.grading === 'server' && !segment.rubric && !segment.rubric_by_locale) ctx.addIssue({ code: 'custom', path: ['rubric'], message: 'a server-graded segment needs its private rubric' });
+    if (segment.rubric && segment.rubric_by_locale) ctx.addIssue({ code: 'custom', path: ['rubric_by_locale'], message: 'use either one rubric or one per market, not both' });
+    if (segment.grading === 'none' && (segment.rubric || segment.rubric_by_locale)) ctx.addIssue({ code: 'custom', path: ['rubric'], message: 'an ungraded segment carries no rubric' });
   });
 
 export const v2LessonPlanSchema = z
