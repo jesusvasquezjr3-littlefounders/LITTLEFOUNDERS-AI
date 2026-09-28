@@ -4,141 +4,103 @@
 <meta charset="utf-8" />
 <title>LittleFounders share card</title>
 <!--
-  The share card, as source rather than as a mystery PNG.
+  The share card, as source rather than as a mystery image.
 
-  WHY IT IS A TEMPLATE AND NOT A GENERATED IMAGE
+  It is built from assets we own and the rebuilt design system only (Frontend
+  Bible 02 D3, D4 and D8: one system for marketing too; rules 2 and 21; 07 §1
+  and §3): a solid primary ground (tokens.css --primary #5c55fd), Fredoka and
+  Nunito self-hosted from public/fonts, the brand mark (manifest `brand.mark`)
+  beside the text wordmark, as in the site shell and the emails, and the four
+  Mentors as their manifest-registered real-model renders
+  (`mentor.<id>.avatar.light`, 07 §4). No gradient, no shadow, no stock art.
 
-  The card that shipped before this one was a stock-style photo of two children
-  at a laptop. It carried no wordmark, no product name and no promise — so a
-  link shared into a WhatsApp family group showed a picture that could have
-  advertised anything. Worse, the laptop screen in it was full of AI-garbled
-  fake text ("Hii !!o Liisi!"), which is a credibility problem the moment
-  anyone looks closely.
-
-  This is built from assets we already own — the real wordmark and the four
-  mentor busts — so it costs nothing to regenerate, it can never invent text,
-  and when the positioning line changes the card changes with it.
+  Until gap-fix round 2 it wore the legacy brand: Inter and Sora from Google
+  Fonts, an indigo radial gradient, a gradient rule, drop shadows and the
+  raster logo with gradient text and two stock child figures.
 
   A share card is read at about 500px wide in a feed and often on a phone, so
   everything here is sized to survive being halved: one short line, high
   contrast, no paragraph.
 
-  REGENERATE (see frontend/README.md): serve `frontend/` over http, open this
-  file with ?locale=es-MX, screenshot at exactly 1200x630, save to
-  frontend/public/og/og-card-<en|es|pt>.png.
+  REGENERATE: `npm run seo:cards` (scripts/seo/render-cards.mjs) serves
+  `frontend/`, opens this file per locale and writes public/og/og-card-<en|es|pt>.jpg.
 -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@700;800&display=swap" rel="stylesheet" />
 <style>
+  @font-face { font-family: Fredoka; font-weight: 300 700; src: url('../../public/fonts/fredoka-latin-v1.woff2') format('woff2'); }
+  @font-face { font-family: Nunito; font-weight: 200 1000; src: url('../../public/fonts/nunito-latin-v1.woff2') format('woff2'); }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   html, body { width: 1200px; height: 630px; overflow: hidden; }
 
   body {
     position: relative;
-    font-family: Inter, system-ui, sans-serif;
-    /* Indigo #4f46e5 is the brand accent (DESIGN.md); the card goes dark so it
-       separates from the white cards around it in a feed. */
-    background: radial-gradient(120% 140% at 8% 0%, #312e81 0%, #1e1b4b 42%, #0b1120 100%);
-    color: #fff;
+    font-family: Nunito, sans-serif;
+    background: #5c55fd; /* --primary */
+    color: #ffffff;      /* --on-primary */
   }
 
-  /* A faint grid, to keep a large flat field from looking like a fallback. */
-  body::before {
-    content: '';
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
-    background-size: 60px 60px;
-    mask-image: radial-gradient(80% 80% at 20% 20%, #000 0%, transparent 75%);
-  }
+  .card { position: relative; height: 100%; padding: 60px 68px 0; }
 
-  .glow {
-    position: absolute;
-    right: -140px; bottom: -220px;
-    width: 760px; height: 760px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(99,102,241,.55) 0%, rgba(99,102,241,0) 62%);
-  }
-
-  .card {
-    position: relative;
-    height: 100%;
-    padding: 62px 68px 0;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* align-self is load-bearing: the card is a column flexbox, whose default
-     `align-items: stretch` blows an <img> up to the full container width and
-     drove the wordmark straight through the domain label. */
-  .wordmark { height: 66px; width: auto; display: block; align-self: flex-start; }
+  .brand { display: flex; align-items: center; gap: 18px; }
+  .brand img { width: 64px; height: 64px; display: block; }
+  .wordmark { font-family: Fredoka, sans-serif; font-weight: 700; font-size: 46px; letter-spacing: -0.01em; }
 
   .kicker {
-    margin-top: 34px;
-    font-size: 23px;
-    font-weight: 600;
-    letter-spacing: .13em;
-    text-transform: uppercase;
-    color: #a5b4fc;
+    margin-top: 44px;
+    font-size: 26px;
+    font-weight: 800;
+    color: #eceffe; /* --primary-soft (light) */
   }
 
   h1 {
-    margin-top: 18px;
-    max-width: 760px;
-    font-family: Sora, Inter, sans-serif;
-    font-weight: 800;
-    font-size: 64px;
-    line-height: 1.06;
-    letter-spacing: -.022em;
+    margin-top: 14px;
+    max-width: 640px;
+    font-family: Fredoka, sans-serif;
+    font-weight: 600;
+    font-size: 62px;
+    line-height: 1.08;
     text-wrap: balance;
-  }
-
-  .rule {
-    margin-top: 30px;
-    width: 132px; height: 7px; border-radius: 4px;
-    background: linear-gradient(90deg, #fbbf24, #f472b6 52%, #818cf8);
   }
 
   .langs {
     position: absolute;
-    left: 68px; bottom: 52px;
+    left: 68px; bottom: 50px;
     display: flex; gap: 14px; align-items: center;
-    font-size: 21px; font-weight: 500; color: #c7d2fe;
+    font-size: 22px; font-weight: 700; color: #eceffe;
   }
-  .langs span { opacity: .55; }
-
-  .cast {
-    position: absolute;
-    right: 52px; bottom: 46px;
-    display: flex; align-items: flex-end;
-  }
-  .cast img {
-    width: 208px; height: 208px;
-    object-fit: contain;
-    filter: drop-shadow(0 26px 34px rgba(0,0,0,.45));
-  }
-  /* Overlap so four busts read as a group rather than a row of stickers. */
-  .cast img + img { margin-left: -42px; }
-  .cast img:nth-child(1) { width: 176px; height: 176px; }
-  .cast img:nth-child(4) { width: 186px; height: 186px; }
 
   .domain {
     position: absolute;
-    right: 68px; top: 66px;
-    font-size: 22px; font-weight: 500; color: #a5b4fc; letter-spacing: .01em;
+    right: 68px; top: 76px;
+    font-size: 22px; font-weight: 700; color: #eceffe;
   }
+
+  /* A flat ground the four Mentors stand on, in the primary ridge token: no shadow, no gradient. */
+  .stage {
+    position: absolute;
+    right: 0; bottom: 0;
+    width: 720px; height: 84px;
+    background: #4438cf; /* --primary-ridge */
+    border-top-left-radius: 42px;
+  }
+
+  .cast {
+    position: absolute;
+    right: 44px; bottom: 30px;
+    display: flex; align-items: flex-end; gap: 4px;
+  }
+  .cast img { width: 158px; height: 158px; display: block; object-fit: contain; }
 </style>
 </head>
 <body>
-  <div class="glow"></div>
   <div class="card">
-    <img class="wordmark" src="../../public/logo-main-trimmed.png" alt="LittleFounders" />
+    <div class="brand">
+      <img src="../../public/rebuild/brand/mark.svg" alt="" />
+      <span class="wordmark">LittleFounders</span>
+    </div>
     <p class="kicker" id="kicker">Financial learning for families</p>
     <h1 id="line">Kids learn money by deciding, not by watching.</h1>
-    <div class="rule"></div>
   </div>
 
   <p class="domain">littlefounders.ai</p>
@@ -147,11 +109,12 @@
     <span>ES</span><span>·</span><span>EN</span><span>·</span><span>PT</span>
   </div>
 
+  <div class="stage"></div>
   <div class="cast">
-    <img src="../../public/marketing/mentor-zara-bust.webp" alt="" />
-    <img src="../../public/marketing/mentor-liruf-bust.webp" alt="" />
-    <img src="../../public/marketing/mentor-rho-bust.webp" alt="" />
-    <img src="../../public/marketing/mentor-dina-bust.webp" alt="" />
+    <img src="../../public/rebuild/mentor-avatars/zara-light.png" alt="" />
+    <img src="../../public/rebuild/mentor-avatars/liruf-light.png" alt="" />
+    <img src="../../public/rebuild/mentor-avatars/rho-light.png" alt="" />
+    <img src="../../public/rebuild/mentor-avatars/dina-light.png" alt="" />
   </div>
 
 <script type="module">
@@ -162,6 +125,9 @@
   document.getElementById('line').textContent = CARD_LINE[locale] ?? CARD_LINE['en-US'];
   document.getElementById('kicker').textContent = CARD_KICKER[locale] ?? CARD_KICKER['en-US'];
   document.documentElement.lang = locale;
+  await document.fonts.load('600 62px Fredoka');
+  await document.fonts.load('800 26px Nunito');
+  await Promise.all([...document.images].map((img) => img.decode().catch(() => {})));
   document.body.dataset.ready = 'true';
 </script>
 </body>

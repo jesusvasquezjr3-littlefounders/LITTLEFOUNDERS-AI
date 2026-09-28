@@ -9,9 +9,11 @@
  * Railway-light and offline-safe).
  *
  * Source: frontend/public/email-templates/lf-logo-email.png (560x102), the
- * same wordmark the transactional emails use, so every outbound
- * LittleFounders document carries one mark. Regenerate from that file if the
- * brand changes.
+ * LEGACY raster wordmark. The rebuilt emails no longer use it (they set the
+ * wordmark as text, build-rebuild-emails.mjs) and the site, icons and share
+ * cards moved to the brand mark `brand.mark` in gap-fix round 2; this staff
+ * report is the one outbound document still carrying it (open item in
+ * docs/rebuild/sprints/GAP-FIX-R2.md).
  */
 export const LF_LOGO_WIDTH = 560;
 export const LF_LOGO_HEIGHT = 102;

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { auditSite, auditRoutes } from './check-seo-surface.mjs';
+import { auditSite, auditRoutes, auditBrand } from './check-seo-surface.mjs';
 
 /*
  * A gate is only worth what its own tests are worth.
@@ -155,4 +155,28 @@ test('the share card exists for every locale it is offered in', () => {
   for (const locale of site.SITE.locales) {
     assert.ok(site.CARD_LINE[locale], `no share-card line for ${locale}`);
   }
+});
+
+// Gap-fix round 2 (Frontend Bible 02 D8): the browser chrome, the manifest and the JSON-LD logo are on the rebuilt tokens.
+const tokenSheet = readFileSync(resolve(ROOT, 'frontend/src/rebuild/design/tokens.css'), 'utf8');
+
+test('the real site passes the brand audit', () => {
+  assert.deepEqual(auditBrand(site, tokenSheet), []);
+});
+
+test('a legacy or invented theme colour fails the brand audit', () => {
+  for (const themeColor of ['#4f46e5', '#123456', undefined]) {
+    const problems = auditBrand({ SITE: { ...site.SITE, themeColor } }, tokenSheet);
+    assert.ok(problems.some((p) => p.includes('themeColor')), String(themeColor));
+  }
+});
+
+test('a non-token manifest background fails the brand audit', () => {
+  const problems = auditBrand({ SITE: { ...site.SITE, manifestBackground: '#0b1120' } }, tokenSheet);
+  assert.ok(problems.some((p) => p.includes('manifestBackground')));
+});
+
+test('the legacy raster logo as the structured-data logo fails the brand audit', () => {
+  const problems = auditBrand({ SITE: { ...site.SITE, logoPath: '/logo-main-trimmed.png' } }, tokenSheet);
+  assert.ok(problems.some((p) => p.includes('logoPath')));
 });

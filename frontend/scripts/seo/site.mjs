@@ -60,7 +60,15 @@ export const SITE = {
    */
   languageNames: { 'en-US': 'English', 'es-MX': 'Spanish (Mexico)', 'pt-BR': 'Portuguese (Brazil)' },
   twitter: null, // No verified account yet — an invented @handle is worse than none.
-  themeColor: '#4f46e5',
+  /*
+   * Browser chrome and the web app manifest, in the rebuilt tokens (Frontend
+   * Bible 02 D8: one system for marketing too). check-seo-surface fails on any
+   * value that is not a colour in frontend/src/rebuild/design/tokens.css.
+   */
+  themeColor: '#5c55fd', // --primary
+  manifestBackground: '#0b0d1b', // --base (dark), the splash behind the icon
+  /** The structured-data logo: the brand mark's 512 px raster (scripts/seo/render-icons.mjs, manifest `brand.mark`). */
+  logoPath: '/icon-512.png',
 
   /*
    * Search-console ownership tokens.

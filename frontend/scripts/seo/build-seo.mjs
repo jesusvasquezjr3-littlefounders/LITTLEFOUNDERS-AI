@@ -114,9 +114,9 @@ function headFor(page, locale, marketing) {
     `<meta name="twitter:image:alt" content="${esc(`${SITE.name}: ${meta.h1}`)}" />`,
 
     /*
-     * Small icons on purpose. `favicon.png` is the 2553px master and weighs
-     * 887 KB — every visitor was downloading it before the browser threw all
-     * but 32 pixels of it away, and so was every crawler fetching the page.
+     * Small icons on purpose: a 48 px tab icon, never a multi-megapixel master
+     * the browser throws away. Every icon is drawn from the brand mark by
+     * scripts/seo/render-icons.mjs (`npm run seo:icons`).
      */
     `<link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png" />`,
     `<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />`,
@@ -152,7 +152,7 @@ function jsonLd(page, locale, marketing) {
     '@id': `${SITE.origin}/#organization`,
     name: SITE.name,
     url: `${SITE.origin}/`,
-    logo: `${SITE.origin}/logo-main-trimmed.png`,
+    logo: `${SITE.origin}${SITE.logoPath}`,
     description: ELEVATOR[locale],
     availableLanguage: SITE.locales,
     knowsLanguage: SITE.locales,
@@ -344,7 +344,7 @@ function renderManifest() {
       lang: SITE.canonicalLocale,
       start_url: '/',
       display: 'standalone',
-      background_color: '#0b1120',
+      background_color: SITE.manifestBackground,
       theme_color: SITE.themeColor,
       icons: [
         { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },

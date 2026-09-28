@@ -23,6 +23,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '../..');
 const SITE_MODULE = resolve(ROOT, 'frontend/scripts/seo/site.mjs');
 const ANALYTICS = resolve(ROOT, 'frontend/src/lib/analytics.tsx');
+const TOKENS = resolve(ROOT, 'frontend/src/rebuild/design/tokens.css');
 
 /*
  * Google truncates a title at roughly 580 CSS pixels, which lands near 60
@@ -133,6 +134,28 @@ export function auditSite(site) {
 }
 
 /**
+ * Browser chrome, the web app manifest and the structured-data logo are the
+ * brand as the world first sees it, before any page renders. Frontend Bible
+ * 02 D8 puts marketing on the one design system, so the theme colour and the
+ * manifest background must be colours of the rebuilt token sheet (the legacy
+ * indigo #4f46e5 and splash #0b1120 were not), and the logo must be our own
+ * mark's raster, never the legacy raster logo.
+ */
+export function auditBrand(site, tokenSheet) {
+  const tokens = new Set([...tokenSheet.matchAll(/#[0-9a-f]{6}\b/gi)].map((m) => m[0].toLowerCase()));
+  const problems = [];
+  for (const [name, value] of [['themeColor', site.SITE.themeColor], ['manifestBackground', site.SITE.manifestBackground]]) {
+    if (typeof value !== 'string' || !tokens.has(value.toLowerCase())) {
+      problems.push(`SITE.${name} ${JSON.stringify(value)} is not a colour of frontend/src/rebuild/design/tokens.css.`);
+    }
+  }
+  if (typeof site.SITE.logoPath !== 'string' || !/^\/icon-\d+\.png$/.test(site.SITE.logoPath)) {
+    problems.push(`SITE.logoPath ${JSON.stringify(site.SITE.logoPath)} must be one of the brand mark's rasters (/icon-<size>.png, scripts/seo/render-icons.mjs).`);
+  }
+  return problems;
+}
+
+/**
  * The app decides which routes are public marketing surfaces; site.mjs decides
  * which ones the world is told about. Two files that cannot import each other
  * is the shape that drifts, so it is asserted rather than trusted — the same
@@ -162,7 +185,7 @@ async function main() {
 // database/scripts/check-migrations.mjs, and the reason database/ `npm test`
 // could not pass on Windows until 2026-08-23 (RUNBOOK.md).
   const site = await import(pathToFileURL(SITE_MODULE).href);
-  const problems = [...auditSite(site), ...auditRoutes(site, readFileSync(ANALYTICS, 'utf8'))];
+  const problems = [...auditSite(site), ...auditRoutes(site, readFileSync(ANALYTICS, 'utf8')), ...auditBrand(site, readFileSync(TOKENS, 'utf8'))];
 
   if (problems.length === 0) {
     const indexable = site.PAGES.filter((p) => p.index).length;

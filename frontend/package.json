@@ -51,6 +51,7 @@
     "assets:walkmask": "tsx scripts/generate-walkmask.ts",
     "publish:scenes": "node scripts/publish-scenes.mjs",
     "seo:cards": "node scripts/seo/render-cards.mjs",
+    "seo:icons": "node scripts/seo/render-icons.mjs",
     "seo:indexnow": "node scripts/seo/indexnow.mjs",
     "scenes:fetch": "node scripts/fetch-scenes.mjs"
   },

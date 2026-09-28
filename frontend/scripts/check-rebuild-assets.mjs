@@ -200,7 +200,8 @@ const MODES = new Set(['both', 'light', 'dark']);
 const REVIEW = new Set(['draft', 'approved', 'retired']);
 // 07 §7 item 2: the families whose first asset needs the owner's style approval. `sounds` is ours, not 07's (below).
 // W2 profile lane: the cartoon avatar parts and the profile covers (E.12) are two more families of our own, each with its first-asset style review.
-const FAMILIES = new Set(['character-renders', 'badges', 'course-icons', 'pockets', 'empty-states', 'scenes', 'task-categories', 'coins', 'celebration-motion', 'avatar-parts', 'profile-covers', 'sounds']);
+// Gap-fix round 2 (02 D8, 07 §1): `brand` holds the one own-asset mark the favicons, app icons and structured-data logo are drawn from.
+const FAMILIES = new Set(['character-renders', 'badges', 'course-icons', 'pockets', 'empty-states', 'scenes', 'task-categories', 'coins', 'celebration-motion', 'avatar-parts', 'profile-covers', 'sounds', 'brand']);
 const BUDGET_KB = { svg: 6, webp: 120, png: 120, lottie: 150, render: 150, wav: 32 };
 const RASTER = new Set(['png', 'render', 'webp']);
 let ocrRead = 0;
@@ -465,9 +466,19 @@ for (const asset of classB) {
   }
   // Referenced somewhere, by path or id (an avatar is found by its slot; a sound by its /sounds/ path).
   // A Lottie's static frame is shown by the component that shows the Lottie (07 §5), so it is referenced with it.
-  const referenced = sound ? soundRefs.some((ref) => ref.literal === asset.path)
+  // An asset used outside the app (the brand mark: favicons, app icons, the structured-data logo) names its
+  // `consumer`, a checked-in script under scripts/ that must carry the asset's path literally.
+  let consumed = false;
+  if ('consumer' in asset) {
+    if (typeof asset.consumer !== 'string' || !/^scripts\/[a-z0-9/-]+\.mjs$/.test(asset.consumer)) fail(`A consumer is a script under scripts/: ${where}`);
+    else {
+      try { consumed = readFileSync(resolve(root, asset.consumer), 'utf8').includes(asset.path); } catch { consumed = false; }
+      if (!consumed) fail(`Consumer ${asset.consumer} does not use ${asset.path}: ${where}`);
+    }
+  }
+  const referenced = consumed || (sound ? soundRefs.some((ref) => ref.literal === asset.path)
     : asset.slot === AVATAR_SLOT || pathRefs.some((ref) => ref.re.test(asset.path)) || idRefs.some((ref) => ref.re.test(asset.id))
-      || classB.some((entry) => entry.type === 'lottie' && entry.reviewStatus !== 'retired' && entry.staticFrame === asset.path && idRefs.some((ref) => ref.re.test(entry.id)));
+      || classB.some((entry) => entry.type === 'lottie' && entry.reviewStatus !== 'retired' && entry.staticFrame === asset.path && idRefs.some((ref) => ref.re.test(entry.id))));
   const awaitingWiring = sound && asset.reviewStatus === 'draft' && typeof asset.wiring === 'string' && asset.wiring.trim().length > 0;
   if (asset.reviewStatus !== 'retired' && !referenced && !awaitingWiring) fail(`Registered asset is referenced nowhere: ${asset.id}`);
   if (release && asset.reviewStatus !== 'approved') {
