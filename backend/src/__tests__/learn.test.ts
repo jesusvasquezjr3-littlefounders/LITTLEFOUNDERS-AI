@@ -1357,7 +1357,7 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
     expect(started.status).toBe(200);
     expect(started.body.data.attempt_tokens).toEqual({ 'schema-structure-01': expect.any(String), 'schema-slots-01': expect.any(String), 'schema-answer-01': expect.any(String) });
     expect(JSON.stringify(started.body)).not.toContain('target');
-    const grade = (segmentId: string, answer: Record<string, string>) => auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+    const grade = (segmentId: string, answer: Record<string, unknown>) => auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
       segment_id: segmentId, run_id: started.body.data.run_id, attempt_token: started.body.data.attempt_tokens[segmentId], answer,
     });
     expect((await grade('schema-structure-01', { schema: 'change' })).body.data.verdict).toMatchObject({ correct: true, score: 100 });

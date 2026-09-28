@@ -56,6 +56,14 @@ September 2026): complete features, lean verification, full gates at merge.
 
 ### What remains
 
-- Browser matrices, `audit:rebuild` (text-fit, proportion and copy-budget over the new boards, charts and the notation state) and full suites at merge.
+- Browser matrices and `audit:rebuild` (text-fit, proportion and copy-budget over the new boards, charts and the notation state) at merge.
 - Screenshots of the new boards were not taken in the lane.
 - USD and BRL denomination facts for real-currency trays (gate 3).
+
+### F2-learning-finish (lane close)
+
+- Synced with `codex/spec-migration-s02` (already up to date, no conflicts).
+- Adversarial pass over the 12 gaps: rebuilt UI imports only shared controls (no legacy component), every new component declares `data-copy-role`, new copy exists in en-US, es-MX and pt-BR, and the new admin routes sit behind `requireRole(admin)` plus `manage_content`.
+- The full unit suites found two lane defects, now fixed: three class names without a stylesheet rule (`lf-chart-box--step`, `lf-math-katex`, `lf-math-fallback`; design-classes test) and a test helper typed too narrowly for the M8 slots answer (backend `type-check`).
+- Final local gates: type-check, lint and full unit suite green in backend (3238 passed, 1 skipped), frontend (3065 passed) and coursegen (830 passed); database `npm test` 48 passed; root `spec:check`, `secrets:check`, `tools:test` and the i18n gate green.
+- Status of every lane row: implemented and locally verified, not accepted, not released, not pushed.

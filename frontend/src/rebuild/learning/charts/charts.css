@@ -22,6 +22,7 @@
 .lf-chart-node { fill: var(--content); }
 .lf-chart-edge { stroke: var(--content-muted); stroke-width: 1.5; }
 .lf-chart-box rect { fill: var(--surface); stroke: var(--primary-strong); stroke-width: 1.5; }
+.lf-chart-box--step rect { stroke-dasharray: none; }
 .lf-chart-box--question rect { stroke-dasharray: 4 2; }
 .lf-chart-box--outcome rect { fill: var(--mint-soft); stroke: var(--mint-strong); }
 .lf-chart-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-3); list-style: none; padding: 0; margin: 0; font-size: .875rem; font-weight: 700; }
