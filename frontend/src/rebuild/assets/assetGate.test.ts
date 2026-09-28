@@ -188,7 +188,8 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     expect(result.output).toMatch(/Raster art contains text \(07 §7, OCR read "Poupar" \d+%\): \/rebuild\/mentor-avatars\/zara-dark\.png/);
     expect(result.output).not.toMatch(/Raster art contains text[^\n]*(rho-dark|liruf|dina)/);
     expect(result.status).toBe(1);
-  });
+    // OCR reads every live raster in the copied tree: GAP-FIX-R2 grew the Mentor renders from 118 to 302 rasters.
+  }, 300_000);
 
   it('keeps reserved hues out of art and at most 3 hues per asset (07 §3, 02 §4.2)', async () => {
     const svg = (dir: string) => join(dir, 'public/rebuild/art/pocket-share.svg');
