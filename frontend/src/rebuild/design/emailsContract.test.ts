@@ -42,7 +42,7 @@ const contrast = (a: string, b: string) => { const [x, y] = [luminance(a), lumin
 describe('account emails on the one design system (OD-4, 02 D8)', () => {
   it('are exactly what the generator makes from the Bible tokens and emails.json (no hand edits)', () => {
     expect(() => execFileSync(process.execPath, [join(frontend, 'scripts/build-rebuild-emails.mjs'), '--check'], { stdio: 'pipe' })).not.toThrow();
-  });
+  }, 60_000); // spawns a Node child process: a full 8-worker suite can take it past vitest's 5 s default
 
   for (const file of FILES) describe(file, () => {
     const source = html[file]!;

@@ -181,7 +181,7 @@ describe('generated tokens', () => {
   it('match the binding Bible 02 token block exactly', () => {
     const script = local('../../../scripts/build-rebuild-tokens.mjs');
     expect(execFileSync(process.execPath, [script, '--check'], { encoding: 'utf8' })).toContain('match the binding specification');
-  });
+  }, 60_000); // spawns a Node child process: a full 8-worker suite can take it past vitest's 5 s default
 
   it('carry typography, elevation, focus and motion, with dark mode keeping a soft shadow as well as its surface step (OD-28, V-04)', () => {
     for (const token of ['--type-button:', '--type-label:', '--type-caption:', '--type-numeral:', '--elevation-card:', '--elevation-control:',
