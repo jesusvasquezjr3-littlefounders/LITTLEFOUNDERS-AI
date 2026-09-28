@@ -97,8 +97,16 @@ describe('Appendix O 1.1 — GET /api/v1/admin/analytics/consent-coverage', () =
   it('computes the verdict from counts: met at 100%, no data for an empty population', () => {
     expect(buildDisclosureCoverage({ ...COUNTS, teens: { ...COUNTS.teens, covered: 8, measuredWithoutOptIn: 0 } }, 30))
       .toMatchObject({ coverage: 1, status: 'met' });
-    expect(buildDisclosureCoverage({ ...COUNTS, teens: { ...COUNTS.teens, active: 0, covered: 0 }, guests: { active: 0, suppressed: 0, measured: 0 } }, 7))
-      .toMatchObject({ population: 0, coverage: null, status: 'no_data' });
+    expect(buildDisclosureCoverage({ ...COUNTS, teens: { ...COUNTS.teens, active: 0, covered: 0, measuredWithoutOptIn: 0 }, guests: { active: 0, suppressed: 0, measured: 0 } }, 7))
+      .toMatchObject({ population: 0, coverage: null, status: 'no_data', gap: { measured: 0, rate: null, status: 'no_data' } });
+  });
+
+  it('reports the Consent-Gate Population Gap Rate: teens measured without an opt-in plus measured guests, target zero', () => {
+    expect(buildDisclosureCoverage(COUNTS, 30).gap).toEqual({ measured: 1, rate: 0.1, target: 0, status: 'missed' });
+    expect(buildDisclosureCoverage({ ...COUNTS, guests: { active: 2, suppressed: 1, measured: 1 } }, 30).gap)
+      .toMatchObject({ measured: 2, rate: 0.2, status: 'missed' });
+    expect(buildDisclosureCoverage({ ...COUNTS, teens: { ...COUNTS.teens, measuredWithoutOptIn: 0 } }, 30).gap)
+      .toMatchObject({ measured: 0, rate: 0, status: 'met' });
   });
 });
 

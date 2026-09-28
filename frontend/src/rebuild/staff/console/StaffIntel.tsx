@@ -243,7 +243,10 @@ function OverviewView({ api, span }: { api: StaffApi; span: IntelWindow }) {
             { id: 'disclosureCoverage', label: t.body.disclosureCoverage, value: <TargetValue value={disclosure.load.data.coverage} target={disclosure.load.data.target} /> },
             { id: 'teensActive', label: t.body.teensActive, value: format.number(disclosure.load.data.teens.active) },
             { id: 'guestsActive', label: t.body.guestsActive, value: format.number(disclosure.load.data.guests.active) },
-            { id: 'measuredWithoutChoice', label: t.body.measuredWithoutChoice, value: format.number(disclosure.load.data.teens.measuredWithoutOptIn + disclosure.load.data.guests.measured) },
+            { id: 'measuredWithoutChoice', label: t.body.measuredWithoutChoice, value: fill(t.body.ofTotal, {
+              n: format.number(disclosure.load.data.gap?.measured ?? disclosure.load.data.teens.measuredWithoutOptIn + disclosure.load.data.guests.measured),
+              total: format.number(disclosure.load.data.population),
+            }) },
           ]} /> : null}
     </Card>
     {data ? <Card heading={t.heading.adoption}>

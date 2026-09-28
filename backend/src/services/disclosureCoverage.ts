@@ -33,6 +33,12 @@ export interface DisclosureCoverageReport extends DisclosureCounts {
   coverage: number | null;
   target: 1;
   status: 'met' | 'missed' | 'no_data';
+  /**
+   * Appendix O 1.1, Consent-Gate Population Gap Rate: the share of the same
+   * population measured with no choice behind it (a teen's event admitted
+   * without an opt-in, or a guest's admitted event). Target: zero.
+   */
+  gap: { measured: number; rate: number | null; target: 0; status: 'met' | 'missed' | 'no_data' };
 }
 
 /** Pure: the report for one set of counts. */
@@ -40,6 +46,8 @@ export function buildDisclosureCoverage(counts: DisclosureCounts, days: number):
   const covered = counts.teens.covered + counts.guests.suppressed;
   const population = counts.teens.active + counts.guests.active;
   const coverage = population === 0 ? null : covered / population;
+  const measured = counts.teens.measuredWithoutOptIn + counts.guests.measured;
+  const gapRate = population === 0 ? null : measured / population;
   return {
     ...counts,
     days,
@@ -48,6 +56,7 @@ export function buildDisclosureCoverage(counts: DisclosureCounts, days: number):
     coverage,
     target: 1,
     status: coverage === null ? 'no_data' : coverage >= 1 ? 'met' : 'missed',
+    gap: { measured, rate: gapRate, target: 0, status: gapRate === null ? 'no_data' : gapRate === 0 ? 'met' : 'missed' },
   };
 }
 

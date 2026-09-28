@@ -33,3 +33,44 @@ the code first, and both were real.
 - Choices the SPEC leaves open (conservative defaults, listed as owner questions): the activity signal for "active in the window" is sign-in, session, creation or an event, because no product-session table exists. A 13-17 account with a protected under-13 origin counts as covered by suppression. Guests count as covered by suppression, as the checkpoint states.
 - The `/admin/intel@operations` audit state and the Overview card were not run through the browser audit matrix (the orchestrator runs it at merge).
 - The migration is numbered `0215` in this worktree; the orchestrator renumbers it at merge, and `database/types/database.ts` should be regenerated again after the merge if other lanes add schema.
+
+## F2-data-platform-finish
+
+Lane close-out for `codex/spec-fix2dataplat`.
+
+- **Sync.** `codex/spec-migration-s02` had no new commits, so the merge was
+  already up to date and no conflicts arose.
+- **Adversarial pass against the two audited gaps.** D.7 is closed by the
+  regenerated types. For H.1 and H.3, authorization holds at the server: the
+  Core route sits behind `view_analytics`, validates the query strictly and
+  refuses before any read. dataintel is internal-only and reached through the
+  existing read-only proxy. The SQL function is service_role only and returns
+  counts only. The UI uses only the shared rebuild controls, declares
+  `data-copy-role`, and has copy in all three locales. One mandated metric was
+  still missing: Appendix O 1.1's second row, the **Consent-Gate Population
+  Gap Rate** (teens and guests measured with no consent-adjacent mechanism,
+  target zero). It is now built. `buildDisclosureCoverage` returns
+  `gap: { measured, rate, target: 0, status }`, where measured is teens with an
+  event admitted without an opt-in plus guests with an admitted event, and rate
+  is measured over the same active population. The Learning intel card shows
+  "measured without a choice" as n of the population, with no new copy. The
+  frontend guard accepts and validates `gap`, and the fixture carries it.
+- **Verification (local).** type-check and lint pass in backend, dataintel and
+  frontend. `spec:check` and `secrets:check` pass. Core `appendixOMetrics.test.ts`
+  has a new gap-rate case, and the staff console and copy-budget suites
+  (16 files, 182 tests) pass. Full unit suites: dataintel 220/222 on the loaded
+  run; the 2 reds were 5 s timeouts in `experiments-stats.test.ts`, a file this
+  lane does not touch, and it passes alone. Backend and frontend full-suite
+  results are in the lane report.
+- **Remains.** Renumber `0215` at merge and regenerate
+  `database/types/database.ts` on the merged tree, using postgres-meta v0.99.0
+  against the full chain plus the `schema_migrations` ledger. Run the browser
+  audit matrix for the Learning intel Overview card and `/admin/intel@operations`.
+  Rerun `database/scripts/railway-migrate.test.mjs` on a quiet machine.
+  Acceptance and release of H.1 and H.3 need 100% coverage and 0% gap held for
+  a release cycle on production data, and a production alert channel (H.3).
+- **Owner questions (conservative defaults implemented).** "Active in the
+  window" means sign-in, session, creation or a learning event, because no
+  product-session table exists. A 13-17 account with a protected under-13
+  origin counts as covered by suppression. Guests count as covered by
+  suppression unless an event was admitted.

@@ -2083,7 +2083,8 @@
       "population": 60,
       "coverage": 0.9833333333333333,
       "target": 1,
-      "status": "missed"
+      "status": "missed",
+      "gap": { "measured": 0, "rate": 0, "target": 0, "status": "met" }
     },
     "learning": {
       "snapshot": {

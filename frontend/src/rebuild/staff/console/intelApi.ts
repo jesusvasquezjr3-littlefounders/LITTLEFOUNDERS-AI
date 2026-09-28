@@ -189,13 +189,17 @@ export interface DisclosureCoverage {
   teens: { active: number; disclosed: number; optedIn: number; optedOut: number; protectedOrigin: number; measuredWithoutOptIn: number; covered: number };
   guests: { active: number; suppressed: number; measured: number };
   days: number; covered: number; population: number; coverage: number | null; target: number; status: 'met' | 'missed' | 'no_data';
+  /** Appendix O 1.1, Consent-Gate Population Gap Rate: measured with no choice behind it, target zero. */
+  gap?: { measured: number; rate: number | null; target: number; status: 'met' | 'missed' | 'no_data' };
 }
 export const isDisclosureCoverage = (value: unknown): value is DisclosureCoverage => isRecord(value) && isRecord(value.teens) && isRecord(value.guests)
   && isNumber(value.teens.active) && isNumber(value.teens.disclosed) && isNumber(value.teens.optedIn) && isNumber(value.teens.optedOut)
   && isNumber(value.teens.measuredWithoutOptIn) && isNumber(value.teens.covered)
   && isNumber(value.guests.active) && isNumber(value.guests.suppressed) && isNumber(value.guests.measured)
   && isNumber(value.covered) && isNumber(value.population) && isNullableNumber(value.coverage) && isNumber(value.target)
-  && ['met', 'missed', 'no_data'].includes(value.status as string);
+  && ['met', 'missed', 'no_data'].includes(value.status as string)
+  && (value.gap === undefined || (isRecord(value.gap) && isNumber(value.gap.measured) && isNullableNumber(value.gap.rate) && isNumber(value.gap.target)
+    && ['met', 'missed', 'no_data'].includes(value.gap.status as string)));
 
 /* ---- Insights (S8): learning evidence ----------------------------------------- */
 
