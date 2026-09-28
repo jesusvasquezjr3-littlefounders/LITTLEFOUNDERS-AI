@@ -199,11 +199,23 @@ describe('ChildMentorTalks (F3): the note, the profile, the kept boards, the sta
     expect(within(fresh).queryByText(notes.outOfDate)).toBeNull();
   });
 
+  it('shows both Mentor notes, who they are and how they learn best, each with its own suggestions', async () => {
+    setup({ [`GET /tutor/kids/${KID_A}/memory-proposals`]: ok(notesWire()) });
+    await screen.findByRole('heading', { level: 3, name: notes.pedagogyStore });
+    expect(screen.getByRole('heading', { level: 3, name: notes.learnerStore })).toHaveAttribute('data-copy-role', 'heading');
+    const pedagogy = document.querySelector('.lf-console-note-store[data-memory-store="pedagogy"]') as HTMLElement;
+    expect(within(pedagogy).getAllByText('Short steps help.').length).toBeGreaterThanOrEqual(1);
+    const n3 = within(pedagogy).getByText('A picture first, then the rule.').closest('li') as HTMLElement;
+    expect(n3).not.toHaveAttribute('data-out-of-date');
+    expect(within(n3).getByRole('button', { name: notes.approve })).toBeEnabled();
+  });
+
   it('tells an applied approval, an out-of-date refusal and a failure apart', async () => {
     setup({
       [`GET /tutor/kids/${KID_A}/memory-proposals`]: ok(notesWire()),
       'POST /tutor/memory-proposals/n1/decision': ok({ outcome: 'approved', applied: true }),
       'POST /tutor/memory-proposals/n2/decision': refuse('NOTE_OUT_OF_DATE'),
+      'POST /tutor/memory-proposals/n3/decision': ok({ outcome: 'rejected', applied: false, store: 'pedagogy' }),
     });
     const n1 = await screen.findByText('Loves bikes and saving for one.').then((el) => el.closest('li') as HTMLElement);
     fireEvent.click(within(n1).getByRole('button', { name: notes.approve }));
@@ -212,6 +224,11 @@ describe('ChildMentorTalks (F3): the note, the profile, the kept boards, the sta
     fireEvent.click(within(n2).getByRole('button', { name: notes.approve }));
     await within(n2).findByText(notes.stale);
     expect(within(n2).queryByText(notes.approved)).toBeNull();
+    // The pedagogy note is decided on its own (C.4, OD-18): rejecting it is a delete.
+    const n3 = document.querySelector('[data-memory-note="n3"]') as HTMLElement;
+    expect(n3).toHaveAttribute('data-memory-store', 'pedagogy');
+    fireEvent.click(within(n3).getByRole('button', { name: notes.reject }));
+    await within(n3).findByText(notes.rejected);
     await screen.findByText(notes.allDone);
   });
 

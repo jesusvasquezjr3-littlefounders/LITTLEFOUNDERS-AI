@@ -132,6 +132,36 @@ describe('updateLearnerMemory reflects the real per-store result, not just envel
     expect(result).toBe(true);
   });
 
+  it('treats a PARKED pedagogy note as landed — C.4/OD-18 review both notes (GAP-FIX-R2)', async () => {
+    fetchMock.mockResolvedValueOnce(coreSaysWithPending({}, ['learner', 'pedagogy']));
+    const both = await updateLearnerMemory({
+      userId: '22222222-2222-4222-8222-222222222222',
+      sessionId: '11111111-1111-4111-8111-111111111111',
+      stores: { learner: 'Nueva nota.', pedagogy: 'Nueva nota de pedagogia.' },
+      expectedBefore: { learner: null, pedagogy: null },
+    });
+    expect(both).toBe(true);
+    fetchMock.mockResolvedValueOnce(coreSaysWithPending({}, ['pedagogy']));
+    const pedagogyOnly = await updateLearnerMemory({
+      userId: '22222222-2222-4222-8222-222222222222',
+      sessionId: '11111111-1111-4111-8111-111111111111',
+      stores: { learner: null, pedagogy: 'Nueva nota de pedagogia.' },
+      expectedBefore: { learner: null, pedagogy: null },
+    });
+    expect(pedagogyOnly).toBe(true);
+  });
+
+  it('refuses a pending store name it does not know (a drifted Core reads as not landed)', async () => {
+    fetchMock.mockResolvedValueOnce(coreSaysWithPending({}, ['diary']));
+    const result = await updateLearnerMemory({
+      userId: '22222222-2222-4222-8222-222222222222',
+      sessionId: '11111111-1111-4111-8111-111111111111',
+      stores: { learner: null, pedagogy: 'Nueva nota de pedagogia.' },
+      expectedBefore: { learner: null, pedagogy: null },
+    });
+    expect(result).toBe(false);
+  });
+
   it('still reports a genuine failure when another store failed alongside a parked one', async () => {
     fetchMock.mockResolvedValueOnce(coreSaysWithPending({ pedagogy: false }, ['learner']));
     const result = await updateLearnerMemory({

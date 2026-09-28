@@ -22,8 +22,13 @@ import './memorySelfReview.css';
  * data (Bible 02 §9.5 reserves the error hue for destructive actions).
  */
 
+export type MemoryStore = 'learner' | 'pedagogy';
+const STORES: readonly MemoryStore[] = ['learner', 'pedagogy'];
+
 export interface MemoryProposal {
   id: string;
+  /** Which of the Mentor's two notes this replaces (C.4): who the teen is, or how they learn best. */
+  store: MemoryStore;
   /** The note as proposed: what the Mentor would hold about this teen. */
   proposed: string;
   /** What it would replace. `null` when there is no note yet. */
@@ -38,6 +43,8 @@ export type SettledVerdict = 'kept' | 'deleted';
 export interface MemorySelfReviewCopy {
   title: string;
   help: string;
+  learnerStore: string;
+  pedagogyStore: string;
   currentLabel: string;
   currentEmpty: string;
   empty: string;
@@ -62,7 +69,8 @@ export function MemorySelfReview({ copy, locale, dark, phase, notes, current, de
   dark: boolean;
   phase: 'loading' | 'failed' | 'ready';
   notes: MemoryProposal[];
-  current: string | null;
+  /** Both notes as they stand today (null: no note yet). */
+  current: Record<MemoryStore, string | null>;
   /** The proposal id whose decision is in flight; its actions are disabled. */
   deciding: string | null;
   /** Notes decided in this visit, so a settled row reads as settled. */
@@ -96,39 +104,46 @@ export function MemorySelfReview({ copy, locale, dark, phase, notes, current, de
     </> : <>
       <Copy role="body">{copy.help}</Copy>
       {notice && <InlineNotice tone={noticeKind === 'alert' ? 'error' : 'info'} live>{notice}</InlineNotice>}
-      <div className="lf-memory-current">
-        <Copy role="body">{copy.currentLabel}</Copy>
-        {current === null ? <Copy role="body">{copy.currentEmpty}</Copy> : <Copy role="data">{current}</Copy>}
-      </div>
-      {notes.length === 0 ? <Copy role="body">{copy.empty}</Copy> : (
-        <ul className="lf-memory-queue">
-          {notes.map((note) => {
-            const verdict = settled[note.id];
-            const busy = deciding === note.id;
-            const outOfDate = note.expectedBefore !== current;
-            return <li key={note.id} className="lf-memory-note">
-              <div className="lf-memory-note-meta">
-                <Copy role="body">{copy.proposedOn}</Copy>
-                <time dateTime={note.createdAt} data-copy-role="data">{date.format(new Date(note.createdAt))}</time>
-                {outOfDate && !verdict && <span className="lf-memory-chip"><Copy role="body" as="span">{copy.outOfDate}</Copy></span>}
-              </div>
-              <Copy role="data">{note.proposed}</Copy>
-              {note.expectedBefore !== null && <div className="lf-memory-before">
-                <Copy role="body">{copy.replacesLabel}</Copy>
-                <Copy role="data">{note.expectedBefore}</Copy>
-              </div>}
-              <div className="lf-memory-note-actions">
-                {verdict ? <InlineNotice tone="success" live>{verdict === 'kept' ? copy.kept : copy.deleted}</InlineNotice> : <>
-                  <Button variant="success" disabled={busy} onClick={(event) => { lastAction.current = event.currentTarget; onDecide(note.id, 'approved'); }}>{copy.approve}</Button>
-                  <Button disabled={busy} onClick={(event) => { lastAction.current = event.currentTarget; onDecide(note.id, 'rejected'); }}>{copy.delete}</Button>
-                </>}
-              </div>
-              {busy && <InlineNotice tone="info" live>{copy.deciding}</InlineNotice>}
-              {failedId === note.id && <InlineNotice tone="error" live>{copy.decisionFailed}</InlineNotice>}
-            </li>;
-          })}
-        </ul>
-      )}
+      {STORES.map((store) => {
+        const now = current[store];
+        const waiting = notes.filter((note) => note.store === store);
+        return <div key={store} className="lf-memory-store" data-memory-store={store}>
+          <h3 className="lf-memory-store-title" data-copy-role="heading">{store === 'learner' ? copy.learnerStore : copy.pedagogyStore}</h3>
+          <div className="lf-memory-current">
+            <Copy role="body">{copy.currentLabel}</Copy>
+            {now === null ? <Copy role="body">{copy.currentEmpty}</Copy> : <Copy role="data">{now}</Copy>}
+          </div>
+          {waiting.length === 0 ? (now === null ? null : <Copy role="body">{copy.empty}</Copy>) : (
+            <ul className="lf-memory-queue">
+              {waiting.map((note) => {
+                const verdict = settled[note.id];
+                const busy = deciding === note.id;
+                const outOfDate = note.expectedBefore !== now;
+                return <li key={note.id} className="lf-memory-note" data-memory-note={note.id}>
+                  <div className="lf-memory-note-meta">
+                    <Copy role="body">{copy.proposedOn}</Copy>
+                    <time dateTime={note.createdAt} data-copy-role="data">{date.format(new Date(note.createdAt))}</time>
+                    {outOfDate && !verdict && <span className="lf-memory-chip"><Copy role="body" as="span">{copy.outOfDate}</Copy></span>}
+                  </div>
+                  <Copy role="data">{note.proposed}</Copy>
+                  {note.expectedBefore !== null && <div className="lf-memory-before">
+                    <Copy role="body">{copy.replacesLabel}</Copy>
+                    <Copy role="data">{note.expectedBefore}</Copy>
+                  </div>}
+                  <div className="lf-memory-note-actions">
+                    {verdict ? <InlineNotice tone="success" live>{verdict === 'kept' ? copy.kept : copy.deleted}</InlineNotice> : <>
+                      <Button variant="success" disabled={busy} onClick={(event) => { lastAction.current = event.currentTarget; onDecide(note.id, 'approved'); }}>{copy.approve}</Button>
+                      <Button disabled={busy} onClick={(event) => { lastAction.current = event.currentTarget; onDecide(note.id, 'rejected'); }}>{copy.delete}</Button>
+                    </>}
+                  </div>
+                  {busy && <InlineNotice tone="info" live>{copy.deciding}</InlineNotice>}
+                  {failedId === note.id && <InlineNotice tone="error" live>{copy.decisionFailed}</InlineNotice>}
+                </li>;
+              })}
+            </ul>
+          )}
+        </div>;
+      })}
     </>}
   </section>;
 }

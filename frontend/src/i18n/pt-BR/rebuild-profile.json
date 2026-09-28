@@ -66,6 +66,8 @@
   "memorySelfReview": {
     "title": "O que seu Mentor lembra",
     "help": "Você decide o que o Mentor lembra de você.",
+    "learnerStore": "Sobre você",
+    "pedagogyStore": "Como você aprende melhor",
     "currentLabel": "A nota agora",
     "currentEmpty": "Seu Mentor ainda não tem uma nota.",
     "empty": "Nada pendente.",

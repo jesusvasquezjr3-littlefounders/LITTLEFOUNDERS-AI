@@ -799,7 +799,14 @@ export async function updateLearnerMemory(input: {
          * older Core simply never sends it, which reads as "nothing parked"
          * — the behaviour this function already had.
          */
-        pending: z.array(z.string()).optional(),
+        /*
+         * GAP-FIX-R2 (C.4, OD-18): the PEDAGOGY note parks too for every
+         * minor with a reviewer (a verified guardian, or an independent teen
+         * reviewing their own notes), so `pending` may name either store.
+         * A closed set: a word this client does not know is a drifted Core,
+         * and the parse failure reads as "did not land" (the safe direction).
+         */
+        pending: z.array(z.enum(['learner', 'pedagogy'])).optional(),
       }),
     ).safeParse(body);
     if (!parsed.success || parsed.data.data === null) return false;
@@ -838,7 +845,7 @@ export async function updateLearnerMemory(input: {
      */
     if (pending.length > 0) {
       console.info(
-        `[oracle] learner memory ${pending.join(', ')} parked for guardian approval — the store moves when a guardian approves it`,
+        `[oracle] memory note(s) ${pending.join(', ')} parked for review — the store moves when the reviewer (a verified guardian, or the teen themself) approves it`,
       );
     }
     return proposedStores.every((store) => written[store] === true || pending.includes(store));

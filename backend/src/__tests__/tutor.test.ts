@@ -2744,7 +2744,7 @@ describe('the LEARNER store parks for guardian approval when the learner is a ki
 
     const park = calls.find((c) => c.method === 'POST' && c.url.includes('learner_memory_proposals'));
     expect(park).toBeDefined();
-    const parked = JSON.parse(String(park?.body ?? '{}'));
+    const parked = JSON.parse(String(park?.body ?? '[{}]'))[0];
     expect(parked.user_id).toBe(KID);
     expect(parked.proposed).toBe('A Ana le gustan los caballos.');
     // The belief the proposal was computed from travels WITH it — it is what
@@ -2766,7 +2766,7 @@ describe('the LEARNER store parks for guardian approval when the learner is a ki
     expect(response.body.data.pending).toEqual(['learner']);
   });
 
-  it('does NOT gate the pedagogy store — the tutor’s own teaching notes keep writing', async () => {
+  it('parks the PEDAGOGY note too, as its own proposal — nothing about a child writes without a decision (C.4, OD-18)', async () => {
     const calls = stub();
     const response = await request(createApp())
       .put('/api/v1/tutor/internal/learner-memory')
@@ -2775,19 +2775,52 @@ describe('the LEARNER store parks for guardian approval when the learner is a ki
         userId: KID,
         sessionId: SESSION,
         stores: { learner: 'Nota sobre Ana.', pedagogy: 'Prefiere un ejemplo antes de la regla.' },
-        expectedBefore: { learner: null, pedagogy: null },
+        expectedBefore: { learner: null, pedagogy: 'Nota pedagógica anterior.' },
       });
 
     expect(response.status).toBe(200);
-    const rpcBody = JSON.parse(
-      String(calls.find((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))?.body ?? '{}'),
-    );
-    // The learner half is NULL to the RPC ("nothing proposed"), the pedagogy
-    // half goes straight through.
-    expect(rpcBody.p_learner_new).toBeNull();
-    expect(rpcBody.p_pedagogy_new).toBe('Prefiere un ejemplo antes de la regla.');
-    expect(response.body.data.written).toEqual({ pedagogy: true });
-    expect(response.body.data.pending).toEqual(['learner']);
+    // Neither store moved: the pair RPC was never called.
+    expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+    const parks = calls.filter((c) => c.method === 'POST' && c.url.includes('learner_memory_proposals'));
+    // ONE insert carrying one row per store, so a review never parks one note and loses the other.
+    expect(parks).toHaveLength(1);
+    const rows = JSON.parse(String(parks[0]?.body ?? '[]'));
+    expect(rows.map((row: { store: string }) => row.store)).toEqual(['learner', 'pedagogy']);
+    expect(rows[1]).toMatchObject({
+      user_id: KID,
+      store: 'pedagogy',
+      proposed: 'Prefiere un ejemplo antes de la regla.',
+      expected_before: 'Nota pedagógica anterior.',
+      session_id: SESSION,
+    });
+    expect(rows[1].before_hash).toMatch(/^[0-9a-f]{64}$/);
+    expect(response.body.data.written).toEqual({});
+    expect(response.body.data.pending).toEqual(['learner', 'pedagogy']);
+  });
+
+  it('parks a pedagogy-only proposal for a linked child and writes nothing', async () => {
+    const calls = stub({ roles: [{ role: 'universal' }], guardianLinks: guardianOfKid });
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ userId: KID, sessionId: SESSION, stores: { learner: null, pedagogy: 'Necesita pausas cortas.' }, expectedBefore: { learner: null, pedagogy: null } });
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual({ written: {}, pending: ['pedagogy'] });
+    expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+  });
+
+  it('writes both of an ADULT learner’s notes directly (no reviewer, OD-18 changes nothing for adults)', async () => {
+    const calls = stub({ roles: [{ role: 'universal' }], declaredAgeBand: 'adult' });
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ userId: KID, sessionId: SESSION, stores: { learner: 'Nota adulta.', pedagogy: 'Método adulto.' }, expectedBefore: { learner: null, pedagogy: null } });
+    expect(response.status).toBe(200);
+    expect(calls.some((c) => c.method === 'POST' && c.url.includes('learner_memory_proposals'))).toBe(false);
+    const rpcBody = JSON.parse(String(calls.find((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))?.body ?? '{}'));
+    expect(rpcBody.p_learner_new).toBe('Nota adulta.');
+    expect(rpcBody.p_pedagogy_new).toBe('Método adulto.');
+    expect(response.body.data).toEqual({ written: { learner: true, pedagogy: true }, pending: [] });
   });
 
   it('writes an ADULT learner’s note directly — there is no guardian to ask', async () => {
@@ -2888,6 +2921,7 @@ describe('the LEARNER store parks for guardian approval when the learner is a ki
       expect(response.body.data.proposals).toEqual([
         {
           id: PROPOSAL,
+          store: 'learner',
           proposed: 'A Ana le gustan los caballos.',
           expectedBefore: 'Nota anterior.',
           sessionId: SESSION,
@@ -2896,7 +2930,7 @@ describe('the LEARNER store parks for guardian approval when the learner is a ki
       ]);
       // The store as it stands today, so the portal can show a stale note as
       // stale BEFORE a guardian taps approve rather than only afterwards.
-      expect(response.body.data.current).toBe('Nota anterior.');
+      expect(response.body.data.current).toEqual({ learner: 'Nota anterior.', pedagogy: null });
     });
 
     it('answers 502 when the queue read fails — never an empty queue', async () => {
@@ -2944,7 +2978,7 @@ describe('the LEARNER store parks for guardian approval when the learner is a ki
         .send({ verdict: 'approved' });
 
       expect(response.status).toBe(200);
-      expect(response.body.data).toEqual({ outcome: 'written', applied: true });
+      expect(response.body.data).toEqual({ outcome: 'written', applied: true, store: 'learner' });
 
       const rpc = calls.find((c) => c.url.includes('/rpc/decide_learner_memory_proposal'));
       expect(rpc).toBeDefined();
@@ -2966,7 +3000,7 @@ describe('the LEARNER store parks for guardian approval when the learner is a ki
         .send({ verdict: 'rejected' });
 
       expect(response.status).toBe(200);
-      expect(response.body.data).toEqual({ outcome: 'rejected', applied: false });
+      expect(response.body.data).toEqual({ outcome: 'rejected', applied: false, store: 'learner' });
       expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
     });
 
@@ -3096,13 +3130,13 @@ describe('the LEARNER store parks for SELF review when the learner is an indepen
 
     const park = calls.find((c) => c.method === 'POST' && c.url.includes('learner_memory_proposals'));
     expect(park).toBeDefined();
-    const parked = JSON.parse(String(park?.body ?? '{}'));
+    const parked = JSON.parse(String(park?.body ?? '[{}]'))[0];
     expect(parked.user_id).toBe(TEEN);
     expect(parked.proposed).toBe('Prefiere ejemplos con monedas.');
     expect(parked.after_hash).toMatch(/^[0-9a-f]{64}$/);
   });
 
-  it('does NOT gate the pedagogy store for a teen — the tutor keeps adapting', async () => {
+  it("parks an independent teen's PEDAGOGY note for their own review too (OD-18)", async () => {
     const calls = stub(teen());
     const response = await request(createApp())
       .put('/api/v1/tutor/internal/learner-memory')
@@ -3115,13 +3149,38 @@ describe('the LEARNER store parks for SELF review when the learner is an indepen
       });
 
     expect(response.status).toBe(200);
-    const rpcBody = JSON.parse(
-      String(calls.find((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))?.body ?? '{}'),
-    );
-    expect(rpcBody.p_learner_new).toBeNull();
-    expect(rpcBody.p_pedagogy_new).toBe('Prefiere un ejemplo antes de la regla.');
-    expect(response.body.data.written).toEqual({ pedagogy: true });
-    expect(response.body.data.pending).toEqual(['learner']);
+    expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+    const rows = JSON.parse(String(calls.find((c) => c.method === 'POST' && c.url.includes('learner_memory_proposals'))?.body ?? '[]'));
+    expect(rows.map((row: { store: string; user_id: string }) => [row.store, row.user_id])).toEqual([['learner', TEEN], ['pedagogy', TEEN]]);
+    expect(response.body.data.written).toEqual({});
+    expect(response.body.data.pending).toEqual(['learner', 'pedagogy']);
+  });
+
+  it("parks a LINKED teen's pedagogy note for their guardian, not for the teen", async () => {
+    const calls = stub({
+      roles: [{ role: 'universal' }],
+      guardianLinks: [{ parent_user_id: PARENT, kid_user_id: TEEN, verification_status: 'verified' }],
+      declaredAgeBand: '13_to_17',
+    });
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ userId: TEEN, sessionId: SESSION, stores: { learner: null, pedagogy: 'Le ayudan los pasos numerados.' }, expectedBefore: { learner: null, pedagogy: null } });
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual({ written: {}, pending: ['pedagogy'] });
+    expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+  });
+
+  it('refuses BOTH stores for an account on hold — the pedagogy note never slips through', async () => {
+    const calls = stub({ roles: [{ role: 'universal' }], ageDeclarations: [] });
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ userId: TEEN, sessionId: SESSION, stores: { learner: null, pedagogy: 'Nota pedagógica sin revisor.' }, expectedBefore: { learner: null, pedagogy: null } });
+    expect(response.status).toBe(403);
+    expect(response.body.error.code).toBe('MEMORY_REVIEW_INELIGIBLE');
+    expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+    expect(calls.some((c) => c.method === 'POST' && c.url.includes('learner_memory_proposals'))).toBe(false);
   });
 
   it('keeps a kid-role LINKED child on guardian review even with a teen-age declaration', async () => {
@@ -3233,13 +3292,14 @@ describe('the LEARNER store parks for SELF review when the learner is an indepen
       expect(response.body.data.proposals).toEqual([
         {
           id: TEEN_PROPOSAL,
+          store: 'learner',
           proposed: 'Prefiere ejemplos con monedas.',
           expectedBefore: null,
           sessionId: SESSION,
           createdAt: '2026-09-20T10:00:00Z',
         },
       ]);
-      expect(response.body.data.current).toBeNull();
+      expect(response.body.data.current).toEqual({ learner: null, pedagogy: null });
     });
 
     it('refuses a kid-role learner — their queue belongs to their guardian', async () => {
@@ -3290,7 +3350,7 @@ describe('the LEARNER store parks for SELF review when the learner is an indepen
         .send({ verdict: 'approved' });
 
       expect(response.status).toBe(200);
-      expect(response.body.data).toEqual({ outcome: 'written', applied: true });
+      expect(response.body.data).toEqual({ outcome: 'written', applied: true, store: 'learner' });
 
       const rpc = calls.find((c) => c.url.includes('/rpc/decide_learner_memory_proposal'));
       expect(rpc).toBeDefined();
@@ -3312,7 +3372,7 @@ describe('the LEARNER store parks for SELF review when the learner is an indepen
         .send({ verdict: 'rejected' });
 
       expect(response.status).toBe(200);
-      expect(response.body.data).toEqual({ outcome: 'rejected', applied: false });
+      expect(response.body.data).toEqual({ outcome: 'rejected', applied: false, store: 'learner' });
       expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
     });
 

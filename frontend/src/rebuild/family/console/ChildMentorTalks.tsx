@@ -4,7 +4,7 @@ import { DispositionSummary, type DispositionSummaryCopy } from '../../mentor/Di
 import type { DispositionSummaryData } from '../../mentor/allianceApi';
 import { MentorBoard, type MentorBoardCopy } from '../../mentor/screen/MentorBoard';
 import {
-  childName, decideMemoryNote, fetchChildren, fetchDisposition, fetchKeptBoards, fetchMemoryNotes, fetchMentorHistory, fetchTranscript, resetDisposition,
+  childName, decideMemoryNote, MEMORY_STORES, fetchChildren, fetchDisposition, fetchKeptBoards, fetchMemoryNotes, fetchMentorHistory, fetchTranscript, resetDisposition,
   type BoardNote, type ConsoleTransport, type KeptBoards, type MemoryDecision, type MemoryNotes as Notes, type MentorHistory, type MentorSession,
   type SafetyFlag, type TranscriptBeat,
 } from './consoleApi';
@@ -289,47 +289,55 @@ function MemoryNotesReview({ kidId, copy, locale, transport }: { kidId: string; 
   }
 
   const date = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' });
+  const nothing = load.status === 'ready' && load.notes.proposals.length === 0 && MEMORY_STORES.every((store) => load.notes.current[store] === null);
   return <Card as="div">
     <section className="lf-console-group" aria-labelledby="child-mentor-notes" data-console-part="memory-notes" aria-busy={load.status === 'loading'}>
       <h2 id="child-mentor-notes" data-copy-role="heading">{copy.title}</h2>
       {/* The approval gate is said where there is something it governs; "No note yet." alone needs no rule (06 §3.1, W2F.3 audit). */}
-      {load.status === 'ready' && (load.notes.current !== null || load.notes.proposals.length > 0) ? <Copy role="body">{copy.body}</Copy> : null}
+      {load.status === 'ready' && !nothing ? <Copy role="body">{copy.body}</Copy> : null}
       {load.status === 'loading' ? <LoadingState label={copy.loading} lines={2} />
         : load.status === 'failed' ? <>
           <InlineNotice tone="error" live>{copy.loadFailed}</InlineNotice>
           <ButtonGroup><Button size="sm" onClick={() => void read()}>{copy.retry}</Button></ButtonGroup>
-        </> : <>
-          {/* No note and nothing waiting is one line, not two. */}
-          {load.notes.current === null && load.notes.proposals.length === 0 ? <Copy role="body">{copy.currentEmpty}</Copy> : <div className="lf-console-note-now">
-            <span className="lf-console-speaker" data-copy-role="body">{copy.current}</span>
-            {load.notes.current ? <span className="lf-console-ugc" data-copy-role="data">{load.notes.current}</span> : <Copy role="body">{copy.currentEmpty}</Copy>}
-          </div>}
-          {load.notes.proposals.length === 0 ? (load.notes.current === null ? null : <Copy role="body">{copy.empty}</Copy>) : <ul className="lf-console-list">
-            {load.notes.proposals.map((note) => {
-              const state = decided[note.id];
-              // Written against another note than the one in force: marked before anyone taps.
-              const outOfDate = note.expectedBefore !== load.notes.current;
-              return <li key={note.id} className="lf-console-item" data-memory-note={note.id} data-out-of-date={outOfDate || undefined}>
-                <div className="lf-console-row">
-                  <span data-copy-role="data">{fill(copy.proposed, { date: date.format(new Date(note.createdAt)) })}</span>
-                  {outOfDate && state !== 'approved' && state !== 'rejected' ? <Chip tone="warning" glyph="warning" role="option">{copy.outOfDate}</Chip> : null}
-                </div>
-                <span className="lf-console-ugc" data-copy-role="data">{note.proposed}</span>
-                {note.expectedBefore !== null ? <div className="lf-console-replaces">
-                  <span className="lf-console-speaker" data-copy-role="body">{copy.replaces}</span>
-                  <span className="lf-console-ugc" data-copy-role="data">{note.expectedBefore}</span>
-                </div> : null}
-                {state === 'approved' || state === 'rejected'
-                  ? <InlineNotice tone="success" live>{state === 'approved' ? copy.approved : copy.rejected}</InlineNotice>
-                  : <ButtonGroup>
-                    <Button size="sm" variant="success" disabled={state === 'busy'} onClick={() => void decide(note.id, 'approved')}>{copy.approve}</Button>
-                    <Button size="sm" disabled={state === 'busy'} onClick={() => void decide(note.id, 'rejected')}>{copy.reject}</Button>
-                  </ButtonGroup>}
-                {state === 'stale' ? <InlineNotice tone="info" live>{copy.stale}</InlineNotice> : null}
-                {state === 'failed' ? <InlineNotice tone="error" live>{copy.failed}</InlineNotice> : null}
-              </li>;
-            })}
-          </ul>}
+        </> : nothing ? <Copy role="body">{copy.currentEmpty}</Copy> : <>
+          {/* C.4 / OD-18: the Mentor keeps two notes, and the Tutor decides on each: who the child is, and how they learn best. */}
+          {MEMORY_STORES.map((store) => {
+            const current = load.notes.current[store];
+            const waiting = load.notes.proposals.filter((note) => note.store === store);
+            return <div key={store} className="lf-console-note-store" data-memory-store={store}>
+              <h3 data-copy-role="heading">{store === 'learner' ? copy.learnerStore : copy.pedagogyStore}</h3>
+              <div className="lf-console-note-now">
+                <span className="lf-console-speaker" data-copy-role="body">{copy.current}</span>
+                {current ? <span className="lf-console-ugc" data-copy-role="data">{current}</span> : <Copy role="body">{copy.currentEmpty}</Copy>}
+              </div>
+              {waiting.length === 0 ? (current === null ? null : <Copy role="body">{copy.empty}</Copy>) : <ul className="lf-console-list">
+                {waiting.map((note) => {
+                  const state = decided[note.id];
+                  // Written against another note than the one in force: marked before anyone taps.
+                  const outOfDate = note.expectedBefore !== current;
+                  return <li key={note.id} className="lf-console-item" data-memory-note={note.id} data-memory-store={store} data-out-of-date={outOfDate || undefined}>
+                    <div className="lf-console-row">
+                      <span data-copy-role="data">{fill(copy.proposed, { date: date.format(new Date(note.createdAt)) })}</span>
+                      {outOfDate && state !== 'approved' && state !== 'rejected' ? <Chip tone="warning" glyph="warning" role="option">{copy.outOfDate}</Chip> : null}
+                    </div>
+                    <span className="lf-console-ugc" data-copy-role="data">{note.proposed}</span>
+                    {note.expectedBefore !== null ? <div className="lf-console-replaces">
+                      <span className="lf-console-speaker" data-copy-role="body">{copy.replaces}</span>
+                      <span className="lf-console-ugc" data-copy-role="data">{note.expectedBefore}</span>
+                    </div> : null}
+                    {state === 'approved' || state === 'rejected'
+                      ? <InlineNotice tone="success" live>{state === 'approved' ? copy.approved : copy.rejected}</InlineNotice>
+                      : <ButtonGroup>
+                        <Button size="sm" variant="success" disabled={state === 'busy'} onClick={() => void decide(note.id, 'approved')}>{copy.approve}</Button>
+                        <Button size="sm" disabled={state === 'busy'} onClick={() => void decide(note.id, 'rejected')}>{copy.reject}</Button>
+                      </ButtonGroup>}
+                    {state === 'stale' ? <InlineNotice tone="info" live>{copy.stale}</InlineNotice> : null}
+                    {state === 'failed' ? <InlineNotice tone="error" live>{copy.failed}</InlineNotice> : null}
+                  </li>;
+                })}
+              </ul>}
+            </div>;
+          })}
           {load.notes.proposals.length > 0 && load.notes.proposals.every((note) => decided[note.id] && decided[note.id] !== 'busy')
             ? <Copy role="body">{copy.allDone}</Copy> : null}
         </>}

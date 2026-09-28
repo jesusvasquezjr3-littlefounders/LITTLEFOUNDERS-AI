@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { useTheme } from '@/theme/useTheme';
-import { decideMemoryNote, getOwnPendingMemoryNotes, type PendingMemoryNote } from '@/rebuild/mentor/session/tutorApi';
+import { decideMemoryNote, getOwnPendingMemoryNotes, type PendingMemoryNote, type PendingMemoryNotes } from '@/rebuild/mentor/session/tutorApi';
 import { MemorySelfReview, type SettledVerdict, type Verdict } from '@/rebuild/memory/MemorySelfReview';
 import en from '@/i18n/en-US/rebuild-profile.json';
 import es from '@/i18n/es-MX/rebuild-profile.json';
@@ -31,13 +31,19 @@ const isProposal = (value: unknown): value is PendingMemoryNote => {
   if (typeof value !== 'object' || value === null) return false;
   const proposal = value as Record<string, unknown>;
   return typeof proposal.id === 'string' && proposal.id.length > 0
+    && (proposal.store === 'learner' || proposal.store === 'pedagogy')
     && typeof proposal.proposed === 'string'
     && (proposal.expectedBefore === null || typeof proposal.expectedBefore === 'string')
     && (proposal.sessionId === null || typeof proposal.sessionId === 'string')
     && typeof proposal.createdAt === 'string' && Number.isFinite(Date.parse(proposal.createdAt));
 };
 
-interface Queue { notes: PendingMemoryNote[]; current: string | null }
+type Current = PendingMemoryNotes['current'];
+interface Queue { notes: PendingMemoryNote[]; current: Current }
+
+const nullableText = (value: unknown) => value === null || typeof value === 'string';
+const isCurrent = (value: unknown): value is Current => typeof value === 'object' && value !== null
+  && nullableText((value as Record<string, unknown>).learner) && nullableText((value as Record<string, unknown>).pedagogy);
 type Phase = 'loading' | 'failed' | 'hidden' | 'ready';
 
 export function TeenMemoryReviewSetting() {
@@ -77,7 +83,7 @@ function AccountMemoryReview() {
         const result = await getOwnPendingMemoryNotes(token);
         if (current !== generation.current) return;
         if (result.error?.code === 'FORBIDDEN') { setQueue(null); setPhase('hidden'); return; }
-        if (result.error || !result.data || !result.data.proposals.every(isProposal) || !(result.data.current === null || typeof result.data.current === 'string')) {
+        if (result.error || !result.data || !result.data.proposals.every(isProposal) || !isCurrent(result.data.current)) {
           setQueue(null);
           setPhase('failed');
           return;
@@ -122,7 +128,10 @@ function AccountMemoryReview() {
       }
       setSettled((prev) => ({ ...prev, [noteId]: verdict === 'approved' ? 'kept' : 'deleted' }));
       if (verdict === 'approved' && result.data.applied) {
-        setQueue((prev) => prev && { notes: prev.notes, current: prev.notes.find((note) => note.id === noteId)?.proposed ?? prev.current });
+        setQueue((prev) => {
+          const note = prev?.notes.find((entry) => entry.id === noteId);
+          return prev && note ? { notes: prev.notes, current: { ...prev.current, [note.store]: note.proposed } } : prev;
+        });
       }
     } finally {
       if (current === generation.current) setDeciding(null);
@@ -132,7 +141,7 @@ function AccountMemoryReview() {
   if (phase === 'hidden') return null;
   return <MemorySelfReview copy={copy} locale={locale} dark={isDark}
     phase={phase === 'loading' ? 'loading' : phase === 'failed' ? 'failed' : 'ready'}
-    notes={queue?.notes ?? []} current={queue?.current ?? null}
+    notes={queue?.notes ?? []} current={queue?.current ?? { learner: null, pedagogy: null }}
     deciding={deciding} settled={settled} failedId={failedId} notice={notice} noticeKind={noticeKind}
     onDecide={(id, verdict) => void decide(id, verdict)}
     onRetry={() => { setNotice(null); setNoticeKind(null); setAttempt((value) => value + 1); }} />;

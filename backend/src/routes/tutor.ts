@@ -94,6 +94,7 @@ import {
   listPendingLearnerMemoryProposals,
   getLearnerMemoryProposal,
   decideLearnerMemoryProposal,
+  type LearnerMemoryProposalRow,
   searchOwnTurns,
   // Class V artifacts (migration 0069, TUTOR_INSTRUMENTS.md §3.6).
   getTutorPlan,
@@ -1462,15 +1463,20 @@ function internalRouter(): Router {
     }
     const { userId, sessionId, stores, expectedBefore } = parsed.data;
 
-    // C.4 / OD-18 (24 September 2026): the reviewer of a LEARNER-store note
-    // is resolved from server-held evidence, not from the request. A verified
-    // guardian link or a legacy `kid` role keeps the guardian-review flow
-    // (unchanged, S01.4e). An independent screened teen (13_to_17, no link,
-    // no protected origin) parks the note as a SELF-review item the teen
-    // decides on through their own learner session — never silently
-    // auto-approved. An account with unknown or under-13 age evidence and no
-    // guardian link is a conservative hold: the whole write is refused.
-    // A screened adult keeps the existing direct write.
+    // C.4 / OD-18 (24 September 2026): the reviewer of a memory note is
+    // resolved from server-held evidence, not from the request. A verified
+    // guardian link or a legacy `kid` role keeps the guardian-review flow. An
+    // independent screened teen (13_to_17, no link, no protected origin)
+    // parks the note as a SELF-review item the teen decides on through their
+    // own learner session — never silently auto-approved. An account with
+    // unknown or under-13 age evidence and no guardian link is a conservative
+    // hold: the whole write is refused, both stores. A screened adult keeps
+    // the existing direct write.
+    //
+    // GAP-FIX-R2 (C.4, OD-18): BOTH stores go through that review. The
+    // pedagogy note ("what teaching works with this child") is the second of
+    // C.4's two memory notes and model-written prose about the same child; it
+    // used to write straight through for every minor with nobody seeing it.
     const review = await classifyMemoryReview(userId);
     if (review === null) {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve memory review eligibility');
@@ -1480,21 +1486,25 @@ function internalRouter(): Router {
     }
     const requiresReview = review !== 'adult-direct';
 
-    const gatedStores = { learner: requiresReview ? null : stores.learner, pedagogy: stores.pedagogy };
-    const pending: ('learner' | 'pedagogy')[] = [];
-    if (requiresReview && stores.learner !== null) {
+    const gatedStores = requiresReview ? { learner: null, pedagogy: null } : stores;
+    const pending: ('learner' | 'pedagogy')[] = requiresReview
+      ? (['learner', 'pedagogy'] as const).filter((store) => stores[store] !== null)
+      : [];
+    if (pending.length > 0) {
       const parked = await parkLearnerMemoryProposal({
         userId,
-        proposed: stores.learner,
-        expectedBefore: expectedBefore.learner,
         sessionId,
+        proposals: pending.map((store) => ({
+          store,
+          proposed: stores[store] as string,
+          expectedBefore: expectedBefore[store],
+        })),
       });
       // Refused, not degraded. A proposal that failed to park is a note that
       // vanished; reporting it as landed would mean nothing ever retries it.
       if (!parked) {
         return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the memory note for review');
       }
-      pending.push('learner');
     }
 
     /*
@@ -4269,6 +4279,32 @@ export function tutorRouter(): Router {
    * `classifyMemoryReview`).
    */
 
+  /*
+   * One queue shape for both reviewers (the guardian portal and the teen's
+   * own queue). Each proposal names its store; `current` is BOTH notes as
+   * they stand TODAY, which is not always what any single proposal expected:
+   * two overlapping sessions can each park a note computed from the same
+   * earlier text, and approving the first moves the store out from under the
+   * second. Sending it lets the portal show a stale note as stale BEFORE the
+   * reviewer taps approve, instead of only afterwards through a CONFLICT.
+   */
+  const memoryQueueBody = (
+    proposals: LearnerMemoryProposalRow[],
+    current: { learner: string | null; pedagogy: string | null },
+  ) => ({
+    proposals: proposals.map((p) => ({
+      id: p.id,
+      store: p.store === 'pedagogy' ? ('pedagogy' as const) : ('learner' as const),
+      proposed: p.proposed,
+      // What the note REPLACES, so the reviewer decides on a change rather
+      // than on a paragraph with no context. Null means there is no note yet.
+      expectedBefore: p.expected_before,
+      sessionId: p.session_id,
+      createdAt: p.created_at,
+    })),
+    current: { learner: current.learner, pedagogy: current.pedagogy },
+  });
+
   router.get('/kids/:kidUserId/memory-proposals', async (req, res) => {
     const kidUserId = z.string().uuid().safeParse(req.params.kidUserId);
     if (!kidUserId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
@@ -4288,26 +4324,7 @@ export function tutorRouter(): Router {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the pending notes');
     }
 
-    return ok(res, {
-      proposals: proposals.map((p) => ({
-        id: p.id,
-        proposed: p.proposed,
-        // What the note REPLACES, so a guardian is deciding on a change rather
-        // than on a paragraph with no context. Null means there is no note yet.
-        expectedBefore: p.expected_before,
-        sessionId: p.session_id,
-        createdAt: p.created_at,
-      })),
-      /*
-       * The store as it stands TODAY, which is not always what any single
-       * proposal expected: two overlapping sessions can each park a note
-       * computed from the same earlier text, and approving the first moves
-       * the store out from under the second. Sending it lets the portal show
-       * a stale note as stale BEFORE the guardian taps approve, instead of
-       * only afterwards through a CONFLICT.
-       */
-      current: current.learner,
-    });
+    return ok(res, memoryQueueBody(proposals, current));
   });
 
   /*
@@ -4340,16 +4357,7 @@ export function tutorRouter(): Router {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the pending notes');
     }
 
-    return ok(res, {
-      proposals: proposals.map((p) => ({
-        id: p.id,
-        proposed: p.proposed,
-        expectedBefore: p.expected_before,
-        sessionId: p.session_id,
-        createdAt: p.created_at,
-      })),
-      current: current.learner,
-    });
+    return ok(res, memoryQueueBody(proposals, current));
   });
 
   const DecisionBody = z.object({ verdict: z.enum(['approved', 'rejected']) }).strict();
@@ -4440,7 +4448,14 @@ export function tutorRouter(): Router {
     if (outcome === 'conflict') {
       return fail(res, 409, 'NOTE_OUT_OF_DATE', 'A newer note has already been approved for this child');
     }
-    return ok(res, { outcome, applied: outcome === 'written' || outcome === 'unchanged' });
+    // The decision is per note, and each note names its store (learner or
+    // pedagogy): the approval applied to exactly that store (0068 function,
+    // redefined by memory_proposal_store).
+    return ok(res, {
+      outcome,
+      applied: outcome === 'written' || outcome === 'unchanged',
+      store: proposal.store === 'pedagogy' ? 'pedagogy' : 'learner',
+    });
   });
 
   // ── Class V artifacts: plan & notebook (migration 0069, TUTOR_INSTRUMENTS.md §3.6) ──

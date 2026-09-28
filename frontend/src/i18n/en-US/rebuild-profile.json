@@ -66,6 +66,8 @@
   "memorySelfReview": {
     "title": "What your Mentor remembers",
     "help": "You decide what the Mentor remembers about you.",
+    "learnerStore": "About you",
+    "pedagogyStore": "How you learn best",
     "currentLabel": "The note right now",
     "currentEmpty": "Your Mentor has no note yet.",
     "empty": "Nothing is waiting.",

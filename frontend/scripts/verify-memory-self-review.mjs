@@ -20,9 +20,9 @@ const token = 'eyJhbGciOiJub25lIn0.' + Buffer.from(JSON.stringify({ sub: id, is_
 const P1 = '11111111-1111-4111-8111-111111111111';
 const P2 = '22222222-2222-4222-8222-222222222222';
 let reads = 0, locale = 'en-US', theme = 'light';
-let queue = [{ id: P1, proposed: 'I like counting coins', expectedBefore: 'Old note', sessionId: null, createdAt: '2026-09-20T10:00:00.000Z' },
-  { id: P2, proposed: 'I need more time with subtraction', expectedBefore: null, sessionId: null, createdAt: '2026-09-21T10:00:00.000Z' }];
-let current = null;
+let queue = [{ id: P1, store: 'learner', proposed: 'I like counting coins', expectedBefore: 'Old note', sessionId: null, createdAt: '2026-09-20T10:00:00.000Z' },
+  { id: P2, store: 'pedagogy', proposed: 'I need more time with subtraction', expectedBefore: null, sessionId: null, createdAt: '2026-09-21T10:00:00.000Z' }];
+let current = { learner: null, pedagogy: null };
 const evidence = [], decisions = [], requestLog = [];
 let decisionAttempts = 0;
 await page.send('Fetch.enable', { patterns: [{ urlPattern: '*' }] });
@@ -49,7 +49,7 @@ page.ws.addEventListener('message', async ({ data }) => {
           const decisionId = url.pathname.split('/')[5];
           const note = queue.find(q => q.id === decisionId);
           const verdict = JSON.parse(request.postData).verdict;
-          if (note && verdict === 'approved') current = note.proposed;
+          if (note && verdict === 'approved') current = { ...current, [note.store]: note.proposed };
           queue = queue.filter(q => q.id !== decisionId);
           body.data = { outcome: verdict === 'approved' ? 'written' : 'rejected', applied: verdict === 'approved' };
         }
@@ -81,9 +81,9 @@ try {
   await page.send('Page.addScriptToEvaluateOnNewDocument', { source: "window.__clicks=[];document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.lf-memory-self-review');if(b)window.__clicks.push((e.target.textContent||'').trim());},true);" });
   for (locale of ['en-US', 'es-MX', 'pt-BR']) for (theme of ['light', 'dark']) for (const width of [375, 1280]) {
     reads = 0; decisionAttempts = 0; decisions.length = 0;
-    queue = [{ id: P1, proposed: 'I like counting coins', expectedBefore: 'Old note', sessionId: null, createdAt: '2026-09-20T10:00:00.000Z' },
-      { id: P2, proposed: 'I need more time with subtraction', expectedBefore: null, sessionId: null, createdAt: '2026-09-21T10:00:00.000Z' }];
-    current = null;
+    queue = [{ id: P1, store: 'learner', proposed: 'I like counting coins', expectedBefore: 'Old note', sessionId: null, createdAt: '2026-09-20T10:00:00.000Z' },
+      { id: P2, store: 'pedagogy', proposed: 'I need more time with subtraction', expectedBefore: null, sessionId: null, createdAt: '2026-09-21T10:00:00.000Z' }];
+    current = { learner: null, pedagogy: null };
     const session = { accessToken: token, refreshToken: 'synthetic', expiresAt: Date.now() + 3600000, user: { id }, isGuest: false };
     await page.evaluate(`localStorage.clear();sessionStorage.clear();localStorage.setItem('lf.session.v1',${JSON.stringify(JSON.stringify(session))});localStorage.setItem('i18nextLng',${JSON.stringify(locale)});localStorage.setItem('lf-theme',${JSON.stringify(theme)});`);
     await page.send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width < 768 });

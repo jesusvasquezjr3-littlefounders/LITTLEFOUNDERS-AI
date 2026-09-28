@@ -45,6 +45,9 @@
 .lf-family-console .lf-console-item { display: grid; gap: var(--spacing-2); min-inline-size: 0; padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
 .lf-family-console .lf-console-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-2) var(--spacing-3); min-inline-size: 0; }
 .lf-family-console .lf-console-row > :first-child { min-inline-size: 0; flex: 1 1 14rem; display: grid; gap: var(--spacing-1); }
+.lf-family-console .lf-console-note-store { display: grid; gap: var(--spacing-3); }
+.lf-family-console .lf-console-note-store + .lf-console-note-store { padding-block-start: var(--spacing-4); }
+.lf-family-console .lf-console-note-store h3 { margin: 0; font: var(--type-button); }
 .lf-family-console .lf-console-note-now { display: grid; gap: var(--spacing-1); padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
 .lf-family-console .lf-console-ugc { white-space: pre-line; overflow-wrap: anywhere; }
 .lf-family-console .lf-console-replaces { display: grid; gap: var(--spacing-1); padding: var(--spacing-3); border-radius: var(--rounded-sm); background: var(--surface); }

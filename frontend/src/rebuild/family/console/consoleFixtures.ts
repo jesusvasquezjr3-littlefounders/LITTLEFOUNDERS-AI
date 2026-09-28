@@ -83,10 +83,11 @@ export const transcriptWire = (sessionId = SESSION_A) => ({
 });
 
 export const notesWire = (over: Record<string, unknown> = {}) => ({
-  current: 'Loves bikes.',
+  current: { learner: 'Loves bikes.', pedagogy: 'Short steps help.' },
   proposals: [
-    { id: 'n1', proposed: 'Loves bikes and saving for one.', expectedBefore: 'Loves bikes.', sessionId: SESSION_A, createdAt: T },
-    { id: 'n2', proposed: 'Likes dinosaurs.', expectedBefore: 'Likes trains.', sessionId: SESSION_B, createdAt: T },
+    { id: 'n1', store: 'learner', proposed: 'Loves bikes and saving for one.', expectedBefore: 'Loves bikes.', sessionId: SESSION_A, createdAt: T },
+    { id: 'n2', store: 'learner', proposed: 'Likes dinosaurs.', expectedBefore: 'Likes trains.', sessionId: SESSION_B, createdAt: T },
+    { id: 'n3', store: 'pedagogy', proposed: 'A picture first, then the rule.', expectedBefore: 'Short steps help.', sessionId: SESSION_A, createdAt: T },
   ],
   ...over,
 });

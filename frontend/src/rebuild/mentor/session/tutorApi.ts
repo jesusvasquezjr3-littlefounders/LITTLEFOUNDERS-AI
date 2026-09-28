@@ -274,6 +274,8 @@ export function getKidTutorHistory(
  */
 export interface PendingMemoryNote {
   id: string;
+  /** Which of the Mentor's two notes this replaces (C.4, OD-18). */
+  store: 'learner' | 'pedagogy';
   /** The note as proposed: what the tutor would hold about this child. */
   proposed: string;
   /** What it would replace. `null` when there is no note yet. */
@@ -291,7 +293,7 @@ export interface PendingMemoryNotes {
    * from under the second. Having it lets the portal mark a stale note as
    * stale BEFORE a guardian taps approve, rather than only afterwards.
    */
-  current: string | null;
+  current: { learner: string | null; pedagogy: string | null };
 }
 
 export function getPendingMemoryNotes(

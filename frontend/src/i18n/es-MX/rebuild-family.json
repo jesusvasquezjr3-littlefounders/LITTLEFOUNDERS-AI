@@ -326,8 +326,10 @@
     "keptFailed": "No cargaron los pizarrones guardados."
   },
   "familyMemoryNotes": {
-    "title": "Nota del Mentor",
+    "title": "Notas del Mentor",
     "body": "Tú apruebas cada cambio.",
+    "learnerStore": "Quién es",
+    "pedagogyStore": "Cómo aprende mejor",
     "current": "La nota ahora",
     "currentEmpty": "Aún no hay nota.",
     "empty": "Nada espera tu revisión.",

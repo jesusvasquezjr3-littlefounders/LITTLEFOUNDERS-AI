@@ -7,6 +7,7 @@ const copy = en.memorySelfReview;
 
 const NOTE: MemoryProposal = {
   id: 'n1',
+  store: 'learner',
   proposed: 'Loves solving money puzzles.',
   expectedBefore: 'Older note.',
   sessionId: 's1',
@@ -17,7 +18,7 @@ const NOTE2: MemoryProposal = { ...NOTE, id: 'n2', proposed: 'Asks about saving.
 type Props = Parameters<typeof MemorySelfReview>[0];
 function renderView(overrides: Partial<Props> = {}) {
   return render(<MemorySelfReview copy={copy} locale="en-US" dark={false} phase="ready"
-    notes={[NOTE]} current="Older note." deciding={null} settled={{}} failedId={null}
+    notes={[NOTE]} current={{ learner: 'Older note.', pedagogy: null }} deciding={null} settled={{}} failedId={null}
     notice={null} noticeKind={null} onDecide={vi.fn()} onRetry={vi.fn()} {...overrides} />);
 }
 
@@ -48,18 +49,20 @@ describe('MemorySelfReview', () => {
 
   it('shows the current note, the proposal, and what it would replace', () => {
     const view = renderView();
-    expect(screen.getByText(copy.currentLabel)).toBeInTheDocument();
+    expect(screen.getAllByText(copy.currentLabel)).toHaveLength(2);
     expect(view.container.querySelector('.lf-memory-current [data-copy-role="data"]')).toHaveTextContent('Older note.');
     expect(screen.getByText(NOTE.proposed)).toHaveAttribute('data-copy-role', 'data');
     // 02 rule 19: the proposal date is text too (found undeclared by the S03.5 authenticated-route audit).
     expect(view.container.querySelector('.lf-memory-note time')).toHaveAttribute('data-copy-role', 'data');
     expect(screen.getByText(copy.replacesLabel)).toBeInTheDocument();
     expect(screen.getAllByText('Older note.')).toHaveLength(2);
-    expect(screen.queryByText(copy.currentEmpty)).toBeNull();
+    // The learner note exists; only the pedagogy note (none yet) says so.
+    expect(view.container.querySelector('[data-memory-store="learner"]')).not.toHaveTextContent(copy.currentEmpty);
+    expect(view.container.querySelector('[data-memory-store="pedagogy"]')).toHaveTextContent(copy.currentEmpty);
   });
 
   it('shows the empty copy when nothing is waiting but keeps the current note', () => {
-    renderView({ notes: [], current: 'Enjoys trading card games.' });
+    renderView({ notes: [], current: { learner: 'Enjoys trading card games.', pedagogy: null } });
     expect(screen.getByText(copy.empty)).toBeInTheDocument();
     expect(screen.getByText('Enjoys trading card games.')).toBeInTheDocument();
   });
@@ -95,7 +98,7 @@ describe('MemorySelfReview', () => {
   );
 
   it('marks a note out of date when the current note has moved past it', () => {
-    renderView({ current: 'A newer note, already approved.' });
+    renderView({ current: { learner: 'A newer note, already approved.', pedagogy: null } });
     expect(screen.getByText(copy.outOfDate)).toBeInTheDocument();
   });
 
@@ -116,11 +119,26 @@ describe('MemorySelfReview', () => {
     const approveButtons = screen.getAllByRole('button', { name: copy.approve });
     fireEvent.click(approveButtons[0]!);
     view.rerender(<MemorySelfReview copy={copy} locale="en-US" dark={false} phase="ready"
-      notes={[NOTE, NOTE2]} current="Older note." deciding="n1" settled={{}} failedId={null}
+      notes={[NOTE, NOTE2]} current={{ learner: 'Older note.', pedagogy: null }} deciding="n1" settled={{}} failedId={null}
       notice={null} noticeKind={null} onDecide={vi.fn()} onRetry={vi.fn()} />);
     view.rerender(<MemorySelfReview copy={copy} locale="en-US" dark={false} phase="ready"
-      notes={[NOTE, NOTE2]} current="Older note." deciding={null} settled={{ n1: 'kept' }} failedId={null}
+      notes={[NOTE, NOTE2]} current={{ learner: 'Older note.', pedagogy: null }} deciding={null} settled={{ n1: 'kept' }} failedId={null}
       notice={null} noticeKind={null} onDecide={vi.fn()} onRetry={vi.fn()} />);
     expect(document.activeElement).toBe(screen.getAllByRole('button', { name: copy.approve })[0]);
+  });
+
+  it('shows BOTH notes, each with its own queue and actions (C.4, OD-18)', () => {
+    const onDecide = vi.fn();
+    const pedagogy: MemoryProposal = { ...NOTE, id: 'p1', store: 'pedagogy', proposed: 'A picture first helps.', expectedBefore: 'Short steps help.' };
+    const view = renderView({ notes: [NOTE, pedagogy], current: { learner: 'Older note.', pedagogy: 'Short steps help.' }, onDecide });
+    expect(screen.getByRole('heading', { level: 3, name: copy.learnerStore })).toHaveAttribute('data-copy-role', 'heading');
+    expect(screen.getByRole('heading', { level: 3, name: copy.pedagogyStore })).toBeInTheDocument();
+    const group = view.container.querySelector('[data-memory-store="pedagogy"]') as HTMLElement;
+    expect(group).toHaveTextContent('Short steps help.');
+    expect(group).toHaveTextContent('A picture first helps.');
+    // Written against the note in force: not marked out of date.
+    expect(group.querySelector('.lf-memory-chip')).toBeNull();
+    fireEvent.click(group.querySelector('button:last-of-type') as HTMLButtonElement);
+    expect(onDecide).toHaveBeenLastCalledWith('p1', 'rejected');
   });
 });

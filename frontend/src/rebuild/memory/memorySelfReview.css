@@ -11,6 +11,15 @@
   gap: var(--spacing-4);
   min-inline-size: 0;
 }
+.lf-memory-store {
+  display: grid;
+  gap: var(--spacing-3);
+  min-inline-size: 0;
+}
+.lf-memory-store-title {
+  margin: 0;
+  font: var(--type-button);
+}
 .lf-memory-current {
   background: var(--sunken);
   border-radius: var(--rounded-md);
