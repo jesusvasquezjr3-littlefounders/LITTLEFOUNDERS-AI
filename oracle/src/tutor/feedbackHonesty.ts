@@ -354,3 +354,76 @@ export function classifyPraise(say: string, learnerText: string): 'specific' | '
   }
   return 'generic';
 }
+
+/*
+ * ── GAP-FIX-R2: REPLY CHIPS (Frontend Bible 08 §2 layer 5, §4, §9) ─────────
+ *
+ * A Mentor turn may offer up to three LIKELY ANSWERS as reply chips, so a
+ * 6-9 learner without a microphone taps instead of typing ("reply chips come
+ * first; the text field is secondary"). A chip is sent as the learner's own
+ * words, which is exactly why it must never hold the answer to an open
+ * activity: a chip that reads the key aloud is a reveal the learner did not
+ * ask for, one tap away. Every chip passes, in order:
+ *
+ *   1. the `option` Copy Budget (Frontend Bible 06: 8 words, 5 for ages 6-9,
+ *      x1.25 for es-MX/pt-BR, one sentence), MIRRORED from
+ *      frontend/src/rebuild/design/copyBudget.ts and pinned by test;
+ *   2. the answer-statement check above (`statesTheAnswer`);
+ *   3. Core's KEY-BASED reveal check against the open activity's stored key
+ *      (`POST /tutor/internal/reveal-check`, `answerReveal.ts`), when an
+ *      activity is open. Oracle never holds the key.
+ *
+ * A failing chip is DROPPED, never retried: a missing chip costs a tap, a
+ * retry costs the learner a turn. Moderation is the orchestrator's, in the
+ * same call as `say` (turnSchema.ts `replies`).
+ */
+export const REPLY_CHIP_BUDGET = { words: 8, youngWords: 5, sentences: 1, translatedFactor: 1.25, max: 3 } as const;
+
+export function replyChipWordLimit(tier: 1 | 2 | 3, locale: 'en-US' | 'es-MX' | 'pt-BR'): number {
+  const base = tier === 3 ? REPLY_CHIP_BUDGET.words : REPLY_CHIP_BUDGET.youngWords;
+  return Math.ceil(base * (locale === 'en-US' ? 1 : REPLY_CHIP_BUDGET.translatedFactor));
+}
+
+function chipFits(text: string, tier: 1 | 2 | 3, locale: 'en-US' | 'es-MX' | 'pt-BR'): boolean {
+  const words = text.match(/[\p{L}\p{N}]+(?:['’][\p{L}\p{N}]+)*/gu)?.length ?? 0;
+  if (words === 0 || words > replyChipWordLimit(tier, locale)) return false;
+  const normalized = text.replace(/\b(?:Dr|Mr|Mrs|Ms|Sr|Sra|Dra)\./gu, '').replace(/(\d)\.(?=\d)/gu, '$1');
+  const sentences = normalized.split(/[.!?…]+(?:\s|$)/u).filter((part) => /[\p{L}\p{N}]/u.test(part)).length;
+  return sentences <= REPLY_CHIP_BUDGET.sentences;
+}
+
+/**
+ * Steps 1 and 2: trimmed, de-duplicated, within budget, no answer statement,
+ * at most three. Pure; what survives still goes through Core's key check
+ * whenever an activity is open.
+ */
+export function screenReplyChips(
+  replies: readonly string[] | null | undefined,
+  tier: 1 | 2 | 3,
+  locale: 'en-US' | 'es-MX' | 'pt-BR',
+): string[] {
+  if (!replies) return [];
+  const seen = new Set<string>();
+  const kept: string[] = [];
+  for (const raw of replies) {
+    const text = raw.replace(/\s+/gu, ' ').trim();
+    const key = fold(text);
+    if (!text || seen.has(key) || !chipFits(text, tier, locale) || statesTheAnswer(text)) continue;
+    seen.add(key);
+    kept.push(text);
+    if (kept.length === REPLY_CHIP_BUDGET.max) break;
+  }
+  return kept;
+}
+
+/**
+ * Step 3: Core's verdict per chip (`true` reveals the key, `false` does not,
+ * `null` not scorable). A chip Core says reveals the key is dropped; a failed
+ * check (`verdicts === null`, or a length mismatch) drops EVERY chip — "we
+ * could not check" never ships an unchecked chip to a learner with an open
+ * graded item.
+ */
+export function applyKeyRevealCheck(replies: readonly string[], verdicts: readonly (boolean | null)[] | null): string[] {
+  if (verdicts === null || verdicts.length !== replies.length) return [];
+  return replies.filter((_, index) => verdicts[index] !== true);
+}

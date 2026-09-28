@@ -750,6 +750,31 @@ export async function voiceCheck(input: {
   }
 }
 
+/**
+ * GAP-FIX-R2: Core's key-based reveal check for a turn's reply chips, before
+ * the turn is delivered (Core `POST /tutor/internal/segments/:id/reveal-check`).
+ * One verdict per text: `true` states the open item's answer, `false` does
+ * not, `null` not scorable. `null` for the whole call on ANY failure — the
+ * caller then drops every chip (`applyKeyRevealCheck`).
+ */
+export async function checkReplyReveal(input: {
+  sessionId: string;
+  segmentId: string;
+  texts: readonly string[];
+}): Promise<(boolean | null)[] | null> {
+  try {
+    const body = await coreFetch(`/tutor/internal/segments/${encodeURIComponent(input.segmentId)}/reveal-check`, {
+      method: 'POST',
+      body: JSON.stringify({ sessionId: input.sessionId, texts: input.texts }),
+    });
+    const parsed = Envelope(z.object({ reveals: z.array(z.boolean().nullable()) })).safeParse(body);
+    if (!parsed.success || parsed.data.error || !parsed.data.data) return null;
+    return parsed.data.data.reveals.length === input.texts.length ? parsed.data.data.reveals : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Whether the learner's guardian consent is STILL active. Cheap, called per turn. */
 /**
  * V4: persist what the post-session review learned. Core owns the caps and

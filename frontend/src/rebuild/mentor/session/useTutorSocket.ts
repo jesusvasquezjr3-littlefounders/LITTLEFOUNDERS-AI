@@ -74,7 +74,21 @@ export interface TutorTurnState {
    * every turn whose action is not `point`, or that named no target.
    */
   pointAt: number | null;
+  /**
+   * GAP-FIX-R2 (Frontend Bible 08 §2 layer 5, §4, §9): the likely answers
+   * Oracle offers for this turn, shown as reply chips and sent back as the
+   * learner's own words. Already within budget, moderated and cleared
+   * against the open activity's key by Oracle. Empty when it offers none.
+   */
+  replies: string[];
 }
+
+/**
+ * At most three reply chips on screen at once (Frontend Bible 08 §2).
+ * HAND-MIRRORED from Oracle's `REPLY_CHIP_MAX` (turnSchema.ts);
+ * `npm run honesty:check` keeps the copies identical.
+ */
+export const REPLY_CHIP_MAX = 3;
 
 export interface LiveSegmentState {
   segmentId: string;
@@ -439,6 +453,10 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
               whiteboard: message.whiteboard ?? null,
               roleplayScene: message.roleplayScene ?? null,
               pointAt: message.pointAt ?? null,
+              // Defensive: only strings, trimmed, never more than the screen's cap.
+              replies: Array.isArray(message.replies)
+                ? message.replies.filter((reply): reply is string => typeof reply === 'string' && reply.trim().length > 0).slice(0, REPLY_CHIP_MAX)
+                : [],
             });
             setLesson(message.lesson ?? null);
             setHistory((prev) =>

@@ -18,7 +18,7 @@ import type { MicBlockedReason } from '../session/micForPhase';
 import type { StartSessionInput } from '../session/tutorApi';
 import type { Adaptation, BudgetState, SessionSummary, TutorCatalog, TutorOffers, TutorPreferences, TutorWhiteboardWire } from '../session/types';
 import { isRoleplayScene } from '../session/roleplay';
-import type { LiveSegmentState, TutorTurnState } from '../session/useTutorSocket';
+import { REPLY_CHIP_MAX, type LiveSegmentState, type TutorTurnState } from '../session/useTutorSocket';
 import type { Microphone } from '../session/useMicrophone';
 import type { MentorClosing, MentorPhase } from './useMentorSession';
 import { MentorBoard, type MentorBoardCopy } from './MentorBoard';
@@ -529,13 +529,20 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
   // "Say it another way" (T1c): once the lesson is under way, never over a board or an activity.
   const explain = between && turn!.seq > 1 && !boardOpen && !segment;
   const boardChip = !!board && !boardOpen && session.phase === 'conversing' && !session.recapOpen;
-  // 08 §2: at most three reply chips; the board comes back first, then the hint ladder, then another way.
+  /*
+   * 08 §2 layer 5, §4, §9 (GAP-FIX-R2): the likely answers the Mentor's turn offers (`turn.replies`, already
+   * screened by Oracle), sent as the learner's own words. They come before the hint ladder, so a 6-9 learner
+   * without a microphone taps an answer instead of typing it.
+   */
+  const replies = between && turn!.next === 'ask' ? turn!.replies : [];
+  // 08 §2: at most three reply chips; the board comes back first, then the likely answers, then the hint ladder, then another way.
   const chips = ([
     boardChip ? { id: 'board', label: copy.showBoard, onPress: () => setBoardOpen(true) } : null,
+    ...replies.map((reply, index) => ({ id: `reply-${index}`, label: reply, onPress: () => say(reply) })),
     ladder ? { id: 'hint', label: copy.hint, onPress: () => say(copy.hint) } : null,
     ladder ? { id: 'tell', label: copy.tell, onPress: () => say(copy.tell) } : null,
     explain ? { id: 'explain', label: copy.explain, onPress: () => say(copy.explain) } : null,
-  ].filter(Boolean) as { id: string; label: string; onPress: () => void }[]).slice(0, 3);
+  ].filter(Boolean) as { id: string; label: string; onPress: () => void }[]).slice(0, REPLY_CHIP_MAX);
 
   function say(text: string) {
     setActivityResult(null);
@@ -717,7 +724,8 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
             : chips.length > 0
               ? <div className="lf-mentor-chips" role="group" aria-label={copy.replyChips}>
                 {chips.map((chip) => <ReplyChip key={chip.id} data-chip={chip.id} data-ladder={chip.id === 'hint' || chip.id === 'tell' ? chip.id : undefined}
-                  data-board-show={chip.id === 'board' ? '' : undefined} onPress={chip.onPress}>{chip.label}</ReplyChip>)}
+                  data-board-show={chip.id === 'board' ? '' : undefined} data-reply={chip.id.startsWith('reply-') ? '' : undefined}
+                  onPress={chip.onPress}>{chip.label}</ReplyChip>)}
               </div>
               : null}
 

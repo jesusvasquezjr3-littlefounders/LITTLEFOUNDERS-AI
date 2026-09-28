@@ -176,6 +176,8 @@ export type ServerMessage =
        * `tutor-scene/pointTarget.ts`.
        */
       pointAt?: number | null;
+      /** GAP-FIX-R2: up to three likely answers (Oracle's `replies`), shown as reply chips. */
+      replies?: string[];
     }
   | {
       type: 'turn_audio';

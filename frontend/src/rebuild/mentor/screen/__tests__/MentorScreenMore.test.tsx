@@ -40,7 +40,7 @@ const live = (overrides: Partial<MentorLive> = {}): MentorLive => ({
 
 const turn = (overrides: Partial<TutorTurnState> = {}): TutorTurnState => ({
   seq: 1, text: 'How much is left to save?', emotion: 'happy', action: 'idle', audioUrl: null, audioPending: false, wordTimings: null,
-  next: 'ask', policy: null, demonstrate: null, whiteboard: null, roleplayScene: null, pointAt: null, ...overrides,
+  next: 'ask', policy: null, demonstrate: null, whiteboard: null, roleplayScene: null, pointAt: null, replies: [], ...overrides,
 });
 
 function session(overrides: Partial<MentorScreenSession> = {}): MentorScreenSession {

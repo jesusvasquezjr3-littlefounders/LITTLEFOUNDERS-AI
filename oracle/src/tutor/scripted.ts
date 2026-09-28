@@ -3,6 +3,7 @@ import type { SafetyCategory } from '../safety/classifier.js';
 import type { TutorTurn } from './turnSchema.js';
 import type { EffortAct, SessionOpening } from './sessionClosing.js';
 import type { PromptVariant } from './selfExplanation.js';
+import type { ConceptFamily } from './explanationLexicon.js';
 
 /*
  * Human-written lines, for every moment a generated one must not be used —
@@ -505,9 +506,37 @@ export function selfExplanationText(locale: Locale, variant: PromptVariant): str
   return SELF_EXPLANATION[variant][locale];
 }
 
-export function selfExplanationResponse(locale: Locale, variant: PromptVariant): TutorTurn {
+/**
+ * GAP-FIX-R2 (C.14, Frontend Bible 08 §4): the scaffolded prompt's
+ * SENTENCE-STEM chips, system-written, finishing "I picked it because…": the
+ * reason that names the decision's idea, a reason that does not, and "I don't
+ * know" (a help request the C.13 ladder honours). The learner picks or types;
+ * the quality check reads whichever they send, so a stem never passes for
+ * them. Within the `option` budget for ages 6-9 (5 words, x1.25 for es/pt).
+ */
+const SCAFFOLD_STEMS: Record<ConceptFamily, Trilingual> = {
+  saving: { 'en-US': 'Because I save for later', 'es-MX': 'Porque ahorro para después', 'pt-BR': 'Porque guardo para depois' },
+  spending: { 'en-US': 'Because it was worth it', 'es-MX': 'Porque valía lo que cuesta', 'pt-BR': 'Porque valia o preço' },
+  needs_wants: { 'en-US': 'Because I need it more', 'es-MX': 'Porque lo necesito más', 'pt-BR': 'Porque preciso mais disso' },
+  price_value: { 'en-US': 'Because it costs less', 'es-MX': 'Porque cuesta menos', 'pt-BR': 'Porque custa menos' },
+  budget: { 'en-US': 'Because it fits my money', 'es-MX': 'Porque cabe en mi dinero', 'pt-BR': 'Porque cabe no meu dinheiro' },
+  earning: { 'en-US': 'Because I earned that money', 'es-MX': 'Porque yo gané ese dinero', 'pt-BR': 'Porque eu ganhei esse dinheiro' },
+  trade: { 'en-US': 'Because both get the same', 'es-MX': 'Porque ambos reciben lo mismo', 'pt-BR': 'Porque os dois ganham igual' },
+  sharing: { 'en-US': 'Because it helps someone else', 'es-MX': 'Porque ayuda a alguien más', 'pt-BR': 'Porque ajuda outra pessoa' },
+  time: { 'en-US': 'Because it lasts longer', 'es-MX': 'Porque dura más tiempo', 'pt-BR': 'Porque dura mais tempo' },
+};
+const SCAFFOLD_OTHER: Trilingual = { 'en-US': 'Because I liked it', 'es-MX': 'Porque me gustó', 'pt-BR': 'Porque eu gostei' };
+const SCAFFOLD_UNSURE: Trilingual = { 'en-US': "I don't know", 'es-MX': 'No lo sé', 'pt-BR': 'Não sei' };
+
+/** The three stems a scaffolded prompt offers (exported for the parity and budget tests). */
+export function scaffoldStems(locale: Locale, family: ConceptFamily): string[] {
+  return [SCAFFOLD_STEMS[family][locale], SCAFFOLD_OTHER[locale], SCAFFOLD_UNSURE[locale]];
+}
+
+export function selfExplanationResponse(locale: Locale, variant: PromptVariant, family: ConceptFamily | null = null): TutorTurn {
   // Curious, never evaluative: the question is about their reasoning.
-  return turn(SELF_EXPLANATION[variant][locale], 'thinking', 'nod');
+  const asked = turn(SELF_EXPLANATION[variant][locale], 'thinking', 'nod');
+  return variant === 'scaffolded' && family !== null ? { ...asked, replies: scaffoldStems(locale, family) } : asked;
 }
 
 /** C.15: the renegotiation question; the learner answers in their own words. */

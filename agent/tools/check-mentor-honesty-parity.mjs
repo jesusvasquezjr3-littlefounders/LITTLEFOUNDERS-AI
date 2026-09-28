@@ -18,6 +18,14 @@
  *
  * It checks (a) the FIELD NAMES of copies 1–3 agree, and (b) the closed
  * VOCABULARIES of the four enum-valued facts agree across all four copies.
+ *
+ * GAP-FIX-R2 adds (c) the REPLY CHIPS the honesty screen clears (Frontend
+ * Bible 08 §2, §4, §9): Oracle's three-chip cap (`REPLY_CHIP_MAX`,
+ * turnSchema.ts) and its `option` word budget (`REPLY_CHIP_BUDGET`,
+ * feedbackHonesty.ts) must match the frontend's cap (`REPLY_CHIP_MAX`,
+ * useTutorSocket.ts) and Copy Budget (copyBudget.ts), and Core's
+ * pre-delivery reveal-check route must exist for Oracle's client call. A
+ * drift here shows a fourth chip, or a chip the screen's budget rejects.
  */
 
 import { readFileSync, readdirSync } from 'node:fs';
@@ -31,7 +39,34 @@ export const FILES = {
   oracleLadder: 'oracle/src/tutor/hintLadder.ts',
   coreBody: 'backend/src/routes/tutor.ts',
   coreInput: 'backend/src/services/pedagogy/turnHonesty.ts',
+  oracleTurn: 'oracle/src/tutor/turnSchema.ts',
+  oracleClient: 'oracle/src/core/client.ts',
+  frontendSocket: 'frontend/src/rebuild/mentor/session/useTutorSocket.ts',
+  frontendBudget: 'frontend/src/rebuild/design/copyBudget.ts',
 };
+
+/** (c) GAP-FIX-R2: the reply-chip cap and budget, Oracle against the frontend, and the Core route Oracle calls. */
+export function checkReplyChipParity(read) {
+  const problems = [];
+  const num = (source, re) => { const m = re.exec(source); return m ? Number(m[1]) : null; };
+  const oracleMax = num(read(FILES.oracleTurn), /export const REPLY_CHIP_MAX = (\d+);/);
+  const frontMax = num(read(FILES.frontendSocket), /export const REPLY_CHIP_MAX = (\d+);/);
+  if (oracleMax === null || frontMax === null) problems.push('REPLY_CHIP_MAX: not found in Oracle turnSchema.ts or the frontend useTutorSocket.ts');
+  else if (oracleMax !== frontMax) problems.push(`REPLY_CHIP_MAX: Oracle ${oracleMax} ≠ frontend ${frontMax}`);
+  const honesty = read(FILES.oracle);
+  const budget = /REPLY_CHIP_BUDGET = \{([^}]*)\}/.exec(honesty)?.[1] ?? '';
+  const words = num(budget, /(?:^|[\s,])words:\s*(\d+)/);
+  const young = num(budget, /youngWords:\s*(\d+)/);
+  const max = num(budget, /(?:^|[\s,])max:\s*(\d+)/);
+  const copy = read(FILES.frontendBudget);
+  const app = /const app = \{([^}]*)\}/.exec(copy)?.[1] ?? '';
+  if (words === null || words !== num(app, /option:\s*(\d+)/)) problems.push(`REPLY_CHIP_BUDGET.words ${words} ≠ the frontend option budget`);
+  if (young === null || !copy.includes(`if (role === 'option') limit = ${young}`)) problems.push(`REPLY_CHIP_BUDGET.youngWords ${young} ≠ the frontend 6-9 option budget`);
+  if (max !== oracleMax) problems.push(`REPLY_CHIP_BUDGET.max ${max} ≠ REPLY_CHIP_MAX ${oracleMax}`);
+  if (!read(FILES.oracleClient).includes('/reveal-check')) problems.push(`${FILES.oracleClient}: no reveal-check call`);
+  if (!read(FILES.coreBody).includes("'/segments/:segmentId/reveal-check'")) problems.push(`${FILES.coreBody}: no /segments/:segmentId/reveal-check route`);
+  return problems;
+}
 
 /** field (camelCase) → DB column holding its vocabulary. */
 const VOCAB_FIELDS = {
@@ -131,14 +166,14 @@ export function readMigration() {
 
 function main() {
   const read = (file) => readFileSync(path.join(ROOT, file), 'utf8');
-  const problems = checkMentorHonestyParity(read, readMigration());
+  const problems = [...checkMentorHonestyParity(read, readMigration()), ...checkReplyChipParity(read)];
   if (problems.length > 0) {
     console.error('honesty:check FAILED — the Mentor-honesty copies disagree:\n');
     for (const p of problems) console.error(`  ✗ ${p}`);
     process.exitCode = 1;
     return;
   }
-  console.log('honesty:check OK — Oracle, Core (body + writer) and the migration agree on the honesty record');
+  console.log('honesty:check OK — Oracle, Core (body + writer) and the migration agree on the honesty record; the reply-chip cap and budget match the frontend');
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();

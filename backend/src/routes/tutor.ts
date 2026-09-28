@@ -149,6 +149,7 @@ import {
 import { purgeExpiredTutorSessions } from '../services/tutorRetention.js';
 import { buildSessionPlan } from '../services/pedagogy/sessionPlan.js';
 import { buildMasteryEvidence } from '../services/pedagogy/masteryEvidence.js';
+import { revealsAnswerKey } from '../services/pedagogy/answerReveal.js';
 import { buildTutorMap } from '../services/pedagogy/tutorMap.js';
 import { recordTurnHonesty } from '../services/pedagogy/turnHonesty.js';
 import { recordAttempt, type AttemptOutcome } from '../services/pedagogy/recordAttempt.js';
@@ -2636,6 +2637,34 @@ function internalRouter(): Router {
     }
     return null;
   };
+
+  /*
+   * GAP-FIX-R2 (Frontend Bible 08 §2, §4; C.18): the KEY-BASED reveal check
+   * for a Mentor turn's reply chips, BEFORE the turn is delivered. A chip is
+   * sent as the learner's own words, so a chip that holds the open
+   * activity's answer is a reveal one tap away. Oracle never holds the key;
+   * this answers, per chip, `true` (reveals it), `false` or `null` (not
+   * scorable) with the same `revealsAnswerKey` the honesty ledger scores
+   * delivered turns with. Only a segment of THIS session is checked.
+   */
+  const RevealCheckBody = z
+    .object({
+      sessionId: z.uuid(),
+      texts: z.array(z.string().min(1).max(200)).min(1).max(6),
+    })
+    .strict();
+  router.post('/segments/:segmentId/reveal-check', async (req, res) => {
+    const segmentId = z.string().uuid().safeParse(req.params.segmentId);
+    if (!segmentId.success) return fail(res, 400, VALIDATION, 'Invalid segment id');
+    const parsed = RevealCheckBody.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid body');
+    const row = await getTutorSegment(segmentId.data);
+    if (!row) return fail(res, 404, NOT_FOUND, 'No such segment');
+    if (row.session_id !== parsed.data.sessionId) return fail(res, 403, 'FORBIDDEN', 'Segment is not in this session');
+    return ok(res, {
+      reveals: parsed.data.texts.map((text) => revealsAnswerKey({ segment: row.payload, answer: row.answer, text })),
+    });
+  });
 
   router.post('/segments/:segmentId/voice-check', async (req, res) => {
     const segmentId = z.string().uuid().safeParse(req.params.segmentId);

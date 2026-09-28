@@ -723,3 +723,31 @@ describe('C.11 — the short-horizon rule on the grade route', () => {
     expect(JSON.parse(String(inserts[1]!.body))).not.toHaveProperty('review_tier');
   });
 });
+
+/*
+ * GAP-FIX-R2: the pre-delivery key check for reply chips. A chip is sent as
+ * the learner's own words, so one that holds the open item's answer is a
+ * reveal one tap away (C.18, Frontend Bible 08 §4).
+ */
+describe('POST /tutor/internal/segments/:id/reveal-check (reply chips)', () => {
+  const check = (body: unknown, segment = SEGMENT) => request(createApp())
+    .post(`/api/v1/tutor/internal/segments/${segment}/reveal-check`)
+    .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+    .send(body);
+
+  it('flags each chip that states the key of the open item, and only that chip', async () => {
+    stub();
+    const response = await check({ sessionId: SESSION, texts: ['Is it 3?', 'I think 17', 'Count up from 7'] });
+    expect(response.status).toBe(200);
+    // 3 is the change owed (10 - 7); 7 is a given the learner can see, so it is not a reveal.
+    expect(response.body.data.reveals).toEqual([true, false, false]);
+  });
+
+  it('refuses a segment of another session, a malformed body and a missing key', async () => {
+    stub();
+    expect((await check({ sessionId: '99999999-9999-4999-8999-999999999999', texts: ['3'] })).status).toBe(403);
+    expect((await check({ sessionId: SESSION, texts: [] })).status).toBe(400);
+    expect((await check({ sessionId: SESSION, texts: ['a'], extra: 1 })).status).toBe(400);
+    expect((await request(createApp()).post(`/api/v1/tutor/internal/segments/${SEGMENT}/reveal-check`).send({ sessionId: SESSION, texts: ['3'] })).status).toBe(403);
+  });
+});

@@ -97,15 +97,17 @@ import {
   type DialoguePolicy,
 } from './dialogueCalibration.js';
 import {
+  applyKeyRevealCheck,
   classifyPraise,
   isSycophantic,
+  screenReplyChips,
   statesTheAnswer,
   type SequenceKind,
   type TurnHonesty,
   type VerdictContext,
 } from './feedbackHonesty.js';
 import { selectSkill, SKILL_WORDING_RULE } from './skills.js';
-import { recallOwnHistory } from '../core/client.js';
+import { checkReplyReveal, recallOwnHistory } from '../core/client.js';
 import { parseTurn, TutorTurnSchema, whiteboardVisibleText, type TutorTurn } from './turnSchema.js';
 import { whiteboardComputesOk } from './whiteboard.js';
 import {
@@ -4658,8 +4660,32 @@ export class TutorOrchestrator {
       // before the system's check-in, renegotiation or self-explanation
       // question only reacts (C.19, C.15, C.14), and the goal restatement
       // and the explanation follow-up are questions that must stand alone.
-      turn = { ...turn, next: 'ask', segmentRequest: null, offerAdaptation: null };
+      // The system's own chips (the offer, the check-in, the goal) are the reply chips of such a turn.
+      turn = { ...turn, next: 'ask', segmentRequest: null, offerAdaptation: null, replies: null };
     }
+
+    /*
+     * GAP-FIX-R2 — REPLY CHIPS (Frontend Bible 08 §2 layer 5, §4, §9). A
+     * model's likely answers are screened here (the `option` Copy Budget, no
+     * answer statement, at most three: `screenReplyChips`); a failing chip is
+     * dropped, never retried. A scripted turn's chips are system-written
+     * (C.14's sentence stems) and pass as written. Chips belong to a turn that
+     * asks: a turn that opens an activity or closes has nothing to answer.
+     */
+    const replyChips = turn.next !== 'ask'
+      ? []
+      : source === 'model'
+        ? screenReplyChips(turn.replies, this.session.tier, this.session.locale)
+        : [...(turn.replies ?? [])];
+    turn = { ...turn, replies: replyChips.length > 0 ? replyChips : null };
+    /*
+     * The key-based half runs in Core, concurrently with the judge below: a
+     * chip that states the OPEN activity's answer is dropped before delivery.
+     * Only a model's chips while an ungraded activity is on screen need it.
+     */
+    const replyRevealCheck = source === 'model' && turn.replies && this.openUngradedSegmentId
+      ? checkReplyReveal({ sessionId: this.session.sessionId, segmentId: this.openUngradedSegmentId, texts: turn.replies })
+      : null;
 
     // ── moderation: whole turn, before screen and before speech ──────────────
     //
@@ -4692,7 +4718,8 @@ export class TutorOrchestrator {
      * The separator is a blank line so the judge reads two sentences rather
      * than one run-on, which is what it would otherwise score.
      */
-    const visibleText = [turn.say, turn.segmentRequest?.framing, ...whiteboardVisibleText(turn.whiteboard)]
+    // GAP-FIX-R2: the reply chips are learner-visible free text too, so they are judged in the same call.
+    const visibleText = [turn.say, turn.segmentRequest?.framing, ...whiteboardVisibleText(turn.whiteboard), ...(turn.replies ?? [])]
       .filter((s): s is string => typeof s === 'string')
       .join('\n\n');
 
@@ -4781,6 +4808,13 @@ export class TutorOrchestrator {
         audio = this.speak(turn);
       } else {
         audio = speculative;
+        if (replyRevealCheck && turn.replies) {
+          const kept = applyKeyRevealCheck(turn.replies, await replyRevealCheck);
+          if (kept.length < turn.replies.length) {
+            console.info(`[oracle] dropped ${turn.replies.length - kept.length} reply chip(s) that could not be cleared against the open activity's key`);
+          }
+          turn = { ...turn, replies: kept.length > 0 ? kept : null };
+        }
       }
     } else {
       audio = this.speak(turn);
@@ -4919,7 +4953,7 @@ export class TutorOrchestrator {
     if (opts.selfExplanationPrompt === true && followsDeliveredModelTurn && after === undefined) {
       const variant = this.selfExplanation.variant;
       if (variant !== null && this.selfExplanation.promptDue) {
-        after = await this.scriptedOutcome(selfExplanationResponse(this.session.locale, variant), afterBudget, null, null);
+        after = await this.scriptedOutcome(selfExplanationResponse(this.session.locale, variant, this.selfExplanation.family), afterBudget, null, null);
         this.selfExplanation.markPromptDelivered();
       }
     }

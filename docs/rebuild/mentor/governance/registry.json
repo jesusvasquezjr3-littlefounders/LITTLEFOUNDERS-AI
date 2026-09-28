@@ -278,7 +278,8 @@
         "backend/src/services/pedagogy/evaluationLoop.ts",
         "backend/src/services/pedagogy/mentorQualityDashboard.ts",
         "backend/src/services/pedagogy/answerReveal.ts",
-        "backend/src/services/pedagogy/turnHonesty.ts"
+        "backend/src/services/pedagogy/turnHonesty.ts",
+        "backend/src/services/pedagogy/masteryEvidence.ts"
       ],
       "examples": ["Adding a breakdown to a report", "Batching the evaluation pass differently"],
       "tierHistory": [{ "tier": "tier_3", "decision": "D-2026-09-25-adoption" }],
