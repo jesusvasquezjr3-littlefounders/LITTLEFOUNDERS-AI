@@ -157,9 +157,11 @@ describe('OnboardingPage: the Mentor (OD-6, 08 §8)', () => {
     press(copy.continue);
     await screen.findByRole('heading', { name: copy.mentorTitle });
     const list = screen.getByRole('list', { name: copy.mentorTitle });
-    const images = [...list.querySelectorAll('[data-slot="mentor-avatar"] img')];
+    // 08 §8: the chooser shows each character standing on its Diorama (the chooser still), not a bust avatar.
+    const images = [...list.querySelectorAll('img.lf-mentor-chooser-still')];
     expect(images.map((image) => image.getAttribute('data-character'))).toEqual(['rho', 'zara', 'liruf', 'dina']);
-    for (const image of images) expect(image.getAttribute('data-asset-id')).toMatch(/^mentor\.[a-z]+\.avatar\.light$/);
+    for (const image of images) expect(image.getAttribute('data-asset-id')).toMatch(/^mentor\.[a-z]+\.chooser\.light$/);
+    expect(list.querySelector('[data-slot="mentor-avatar"]')).toBeNull();
     expect(screen.getByRole('button', { name: copy.continue })).toBeDisabled();
     fireEvent.click(within(list).getByRole('button', { name: /Zara/ }));
     await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/tutor/preferences', { method: 'PUT', token: 'token-123', body: { character: 'zara' } }));

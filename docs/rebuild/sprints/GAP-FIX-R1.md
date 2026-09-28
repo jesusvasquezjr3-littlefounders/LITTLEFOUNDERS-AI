@@ -55,6 +55,34 @@ Verified locally: `npm run verify:placement` is OK on both Dioramas (every lead 
 
 Limitation: the head and hand points are proportional samples of each character's measured height in the bind pose, not projected skinned bones. The exports are quantized and skinned, and the repository cannot measure them headless (see `verify-placement.ts` `characterStandIn`). A gesture that swings a hand far from its bind position is not covered.
 
+### F1-mentor finish: lane close
+
+The finish synced with `codex/spec-migration-s02`, which was already up to date, and then made an adversarial pass over the eight gaps.
+
+Built in the finish:
+
+- **B.7, one component set (the rest of items 1 and 3).** Part B left the lesson boards with their own inline pictures. The finish moved every one of them into the shared library: `learning/pizarron/lessonVisuals.tsx`, exported through `PIZARRON_VISUALS`. That covers the running ledger (balance meter), percent grid, tax brackets (stacked slices), place value (base ten), savings line, growth comparison, goal bullet, number line and fraction number line (number axis), CPA dots, savings rule (condition rule), function machine, and the allocation waffle, donut and stacked bar. The worked example now uses the shared `WorkedStepsList`, which the Mentor's `WorkedStepsVisual` also uses. Each board keeps its model, controls, table and existing selectors.
+- **05 §2 violations the move exposed, now fixed.** Three second or third series were drawn without their pattern channel: the tax brackets' mint and berry slices, the place-value tens rods and the CPA second group. A fourth tax bracket had no fill at all. It now uses the neutral crosshatch overflow.
+- **A static 05 §8 audit.** `learning/pizarron/oneComponentSet.test.tsx` fails if any lesson board or the Mentor board draws its own `<svg>` or chart image. It checks board mark rules in the pizarron and lesson stylesheets: no accent, warning, error or success; reward only for coins; primary only for a selected mark (the learner's prediction or marker, or the board's marked item); and a pattern on every strong mint or berry mark. It also renders the new pictures.
+- **Stale tests fixed.** `OnboardingPage.test.tsx` still expected bust avatars in the onboarding chooser. It now pins the Diorama chooser stills (08 §8, from part B). `designClasses.test.ts` found two classes that part B referenced but never defined (`lf-pz-ledger-change`, `lf-pz-growth`); both are now defined. Core's `analytics.test.ts` used a fixed date that the calendar passed on 2026-09-28, so it now uses a date relative to today.
+
+Verified at the lane close:
+
+- Full unit suites: frontend 251 files and 2,903 tests, Oracle 65 files, Core 125 files, each with type-check and lint. The only reds were the three fixed above and the load-sensitive Oracle boot tests (hardening, live-session, boot-skills). Those passed when rerun alone (86 tests).
+- Gates: instruments:check, spec:check (with the dark-pattern and wallet-glossary gates) and secrets:check.
+- The copy did not change, so the i18n gate was not needed.
+
+Still open (Mentor lane, for the orchestrator or a later round):
+
+- `database/types/database.ts` is not regenerated for the new `tutor_dialogue_calibration` columns (migration 0193). `db:types` needs the shared stack.
+- Live measurement of the OD-13 budget retry rate and its model cost (OD-23 zero spend).
+- C.24 metrics still `not_instrumented`: transfer_success, judgment_quality, streak_anxiety, the B.25, B.22 and B.20 manual audits, and parent_time_to_value.
+- Parts of 05 §8 are not machine-checked yet: measured contrast of marks and axes in both modes, the draggable 64 px and tap-alternative check, and the in-board animation check. The static hue audit is in place.
+- Occlusion uses proportional head and hand points, not skinned bones.
+- The re-rendered Rho and Dina stills are `reviewStatus: draft` and need the owner's character-render review.
+- The merge-time gates still apply: test:all, browser matrices and audits (the lesson boards' DOM selectors were kept), and verify:placement with scenes:fetch.
+- Deploy order for later: Core before Oracle.
+
 ### Owner questions and the defaults taken (Mentor lane)
 
 1. **OD-13 retry cost.** The Mentor turn Copy Budget is enforced as written: 12 words for ages 6-9, 20 above, 2 sentences, one question. An overflow spends the one retry, and many real child turns overflow today, so turns cost more model calls. Default taken: enforce, lowest-priority repair, survivals delivered and counted. The retry rate should be measured before release.

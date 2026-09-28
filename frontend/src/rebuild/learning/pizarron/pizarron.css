@@ -83,6 +83,7 @@
 .lf-pz-ledger { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
 .lf-pz-ledger-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--spacing-1) var(--spacing-2); font-weight: 800; }
 .lf-pz-ledger-row[data-marked='true'] .lf-pz-ledger-value { text-decoration: underline; text-decoration-thickness: 3px; text-decoration-color: var(--primary-strong); }
+.lf-pz-ledger-change { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .lf-pz-ledger-label { overflow-wrap: anywhere; }
 .lf-pz-ledger-value { font-variant-numeric: tabular-nums; }
 .lf-pz-ledger-track { position: relative; grid-column: 1 / -1; block-size: 16px; border-radius: var(--rounded-sm); background: var(--sunken); }
@@ -186,3 +187,6 @@
 .lf-pz-strong--mint { background-color: var(--mint-strong); background-image: repeating-linear-gradient(135deg, transparent 0 3px, var(--surface) 3px 5px); }
 .lf-pz-strong--berry { background-color: var(--berry-strong); background-image: radial-gradient(circle, var(--surface) 0 1.2px, transparent 1.6px); background-size: 5px 5px; }
 .lf-pz-strong--overflow { background-color: var(--sunken); background-image: repeating-linear-gradient(45deg, var(--content-muted) 0 1px, transparent 1px 4px), repeating-linear-gradient(-45deg, var(--content-muted) 0 1px, transparent 1px 4px); box-shadow: inset 0 0 0 1.5px var(--content-muted); }
+
+/* The growth-lines frame: the chart, its key and its axis labels sit closer than the default frame gap. */
+.lf-pz-growth { gap: var(--spacing-2); }
