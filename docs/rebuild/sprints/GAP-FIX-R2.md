@@ -50,3 +50,27 @@ touched panel tests.
 
 **Remains.** The Stage 4 human spot-check and native copy review of the
 reworded keys.
+
+### 2. The Tutor sees a child's story choices on /family (OD-27 (3); B.9/B.10)
+
+**Gap confirmed.** `ChildDecisionsPanel` was imported only by its test and
+the preview; `routes/app/family/LearningPanels.tsx` mounted the narrative,
+bridges and streak pause, not the decisions panel, although Core serves
+`GET /family/learning/kids/:kidId/decisions`.
+
+**Built.** `LearningDecisionsPanel` in `routes/app/family/LearningPanels.tsx`
+(keyed by child and session, the Family Hub transport, locale and mode) hosts
+the real `ChildDecisionsPanel`; `FamilyPage.tsx` renders it in the child's
+`learning` group right after the narrative. Core stays the only judge: a teen's
+journal answers `JOURNAL_PRIVATE` and the panel renders nothing, not even a
+heading. Audit: `/family@story-choices` (scenario `family-two`, KID_A opened)
+with a synthetic Core fixture in all three locales; `/family@teen-selected`
+now also exercises the private answer for KID_B.
+
+**Verified.** `FamilyPageDecisions.test.tsx` (the real panel: an under-13
+child's choice appears after one press, beside the narrative; a teen's private
+journal leaves no section); `FamilyPage.test.tsx` (the panel receives the
+child in view); frontend type-check and lint of touched files.
+
+**Remains.** The browser audit run of the new state (orchestrator's merge
+gates).

@@ -19,7 +19,7 @@ vi.mock('@/auth/AuthContext', () => ({ useAuth: () => ({ getToken: mockGetToken 
 vi.mock('@/theme/useTheme', () => ({ useTheme: () => ({ isDark: false }) }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ i18n: { resolvedLanguage: 'en-US', language: 'en-US' } }) }));
 
-vi.mock('../LearningPanels', async () => { const { panel } = await import('./panelStub'); return { LearningBridgesPanel: panel('bridges'), LearningNarrativePanel: panel('narrative'), StreakPausePanel: panel('learning-pause') }; });
+vi.mock('../LearningPanels', async () => { const { panel } = await import('./panelStub'); return { LearningBridgesPanel: panel('bridges'), LearningNarrativePanel: panel('narrative'), LearningDecisionsPanel: panel('decisions'), StreakPausePanel: panel('learning-pause') }; });
 vi.mock('../WalletCorrectionsPanel', async () => { const { panel } = await import('./panelStub'); return { WalletCorrectionsPanel: panel('corrections') }; });
 vi.mock('../StreakPausesPanel', async () => { const { panel } = await import('./panelStub'); return { StreakPausesPanel: panel('chore-pauses') }; });
 vi.mock('../ShareDestinationsPanel', async () => { const { panel } = await import('./panelStub'); return { ShareDestinationsPanel: panel('share-places') }; });
@@ -62,7 +62,7 @@ describe('FamilyPage (W2F.1 adapter)', () => {
     await screen.findByRole('heading', { level: 2, name: 'Mateo' });
     const kids = [...container.querySelectorAll('[data-panel][data-kid]')].filter((el) => el.getAttribute('data-kid'))
       .map((el) => `${el.getAttribute('data-panel')}:${el.getAttribute('data-kid')}`);
-    expect(kids).toEqual(['narrative', 'bridges', 'learning-pause', 'corrections', 'chore-pauses', 'share-places', 'ladder', 'requests', 'graph',
+    expect(kids).toEqual(['narrative', 'decisions', 'bridges', 'learning-pause', 'corrections', 'chore-pauses', 'share-places', 'ladder', 'requests', 'graph',
       'history', 'old-links', 'research', 'data-practices', 'invite', 'tutors'].map((name) => `${name}:kid-2`));
     expect(container.querySelector('[data-panel="tip"]')).not.toBeNull();
     expect(mockApi).toHaveBeenCalledWith('/family/kids', expect.objectContaining({ token: 'token-1' }));

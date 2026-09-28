@@ -6,6 +6,8 @@ import type { Locale } from '@/rebuild/design/copyBudget';
 import { LearningBridges } from '@/rebuild/family/LearningBridges';
 import { LearningNarrative } from '@/rebuild/family/LearningNarrative';
 import { StreakPauseControl } from '@/rebuild/family/StreakPauseControl';
+import { ChildDecisionsPanel } from '@/rebuild/learning/ChildDecisionsPanel';
+import type { ChildDecisionsTransport } from '@/rebuild/learning/childDecisions';
 import { endKidStreakPause, fetchKidStreak, setKidStreakPause, type KidStreakState, type StreakPauseTransport } from '@/rebuild/family/streakPause';
 import { localDate } from '@/rebuild/learning/motivation';
 import {
@@ -28,6 +30,10 @@ import {
  *   StreakPausePanel        B.21's holiday pause (S05.3e): the child's streak
  *                           as it reads today and the pause the verified
  *                           parent may set or end.
+ *   LearningDecisionsPanel  OD-27 (3) / L-13: which option a parent-created
+ *                           child under 13 chose in each story decision.
+ *                           Core answers JOURNAL_PRIVATE for a teen and the
+ *                           panel then renders nothing (GAP-FIX-R2).
  * Core is the enforcing boundary (verified parent, verified link, one
  * transaction per real goal or task); these hosts only move data. Keyed by
  * child and session, so switching child never shows another child's rows.
@@ -132,4 +138,20 @@ function ScopedStreakPause({ kidUserId, token }: { kidUserId: string; token: str
     onPause={(startsOn, endsOn) => setKidStreakPause(transport, kidUserId, startsOn, endsOn, today)}
     onEnd={() => endKidStreakPause(transport, kidUserId, today)}
     onRetry={() => { setState({ status: 'loading' }); setRevision((n) => n + 1); }} />;
+}
+
+export function LearningDecisionsPanel(props: { kidUserId: string; token: string | null }) {
+  return <ScopedDecisions key={`${props.kidUserId}:${props.token}`} {...props} />;
+}
+
+function ScopedDecisions({ kidUserId, token }: { kidUserId: string; token: string | null }) {
+  const locale = useLocale();
+  const { isDark } = useTheme();
+  const transport = useCallback<ChildDecisionsTransport>(async (path, init) => {
+    if (!token) return { data: null, error: { code: 'UNAUTHORIZED' } };
+    return api<unknown>(path, { token, method: init?.method });
+  }, [token]);
+  // Without a session there is nothing to ask Core; the panel mounts once the token is known.
+  if (!token) return null;
+  return <ChildDecisionsPanel kidId={kidUserId} locale={locale} dark={isDark} transport={transport} />;
 }

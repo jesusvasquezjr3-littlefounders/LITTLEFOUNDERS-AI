@@ -10,7 +10,7 @@ import { CoopGoalsConsentPanel } from '@/app-routes/CoopGoalsConsentPanel';
 import { CoachingTipPanel, DataPolicyPanel, ResearchConsentPanel, ScopeStatementPanel } from './GovernancePanels';
 import { DataPracticeConsentPanel } from './DataPracticePanels';
 import { GuardianInviteJoin, GuardianInvitePanel } from './GuardianInvitePanel';
-import { LearningBridgesPanel, LearningNarrativePanel, StreakPausePanel } from './LearningPanels';
+import { LearningBridgesPanel, LearningDecisionsPanel, LearningNarrativePanel, StreakPausePanel } from './LearningPanels';
 import { ShareDestinationsPanel } from './ShareDestinationsPanel';
 import { SocialGraphPanel } from './SocialGraphPanel';
 import { SocialHistoryPanel } from './SocialHistoryPanel';
@@ -61,9 +61,10 @@ export function FamilyPage() {
     const name = childName(child);
     const common = { kidUserId: child.userId, token };
     return {
-      // S05.3c/e: B.10's narrative, B.13's real-world prompts, B.21's holiday pause of the learning streak.
+      // S05.3c/e: B.10's narrative, OD-27 (3)'s story choices (under 13 only; Core decides), B.13's real-world prompts, B.21's holiday pause.
       learning: <>
         <LearningNarrativePanel {...common} />
+        <LearningDecisionsPanel {...common} />
         <LearningBridgesPanel {...common} />
         <StreakPausePanel {...common} />
       </>,

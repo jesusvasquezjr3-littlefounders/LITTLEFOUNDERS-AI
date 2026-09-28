@@ -82,6 +82,8 @@ const opens = (selector) => [selector, { open: [selector], firstView: false }];
 export const states = [
   app('/family@two-children', `/family?child=${KID_A}`, 'family-two', ready.console, { readyAlso: '[data-console-part="picker"]' }),
   app('/family@teen-selected', `/family?child=${KID_B}`, 'family-two', `[data-console-control="manage-child"][data-self-managed="true"]`),
+  // GAP-FIX-R2 (OD-27 (3)): the story choices of the under-13 child, opened. The teen (KID_B, above) is JOURNAL_PRIVATE: no panel at all.
+  app('/family@story-choices', `/family?child=${KID_A}`, 'family-two', ...opens('[data-screen="child-decisions"] .lf-child-decisions-head button')),
   app('/family@one-child', '/family', 'family-one', ready.console),
   app('/family@manage-open', '/family', 'family-one', ...opens('[data-console-control="manage-child"] button')),
   app('/family@username-flagged', '/family', 'family-flagged', ...opens('[data-console-control="manage-child"] button')),
@@ -194,6 +196,11 @@ const NOTES = {
   'es-MX': ['Le encantan las bicis.', 'Le encantan las bicis y ahorra para una.'],
   'pt-BR': ['Adora bicicletas.', 'Adora bicicletas e está poupando para uma.'],
 };
+const CHOICES = {
+  'en-US': ['A friend asks to borrow the coins saved for the bike.', 'Lend half and keep saving.'],
+  'es-MX': ['Un amigo pide prestadas las monedas ahorradas para la bici.', 'Prestar la mitad y seguir ahorrando.'],
+  'pt-BR': ['Um amigo pede emprestadas as moedas guardadas para a bicicleta.', 'Emprestar metade e continuar poupando.'],
+};
 const POLICY = [{ id: 'photos', days: 30 }, { id: 'records', days: 400 }, { id: 'coins', days: null }, { id: 'insights', days: 400 },
   { id: 'research', days: 1100 }, { id: 'erasure', days: null }, { id: 'sharing', days: null }];
 
@@ -247,6 +254,11 @@ export function respond({ core, spec, locale, path, request, ok }) {
   if (path === '/family-hub/data-policy') return ok({ classes: POLICY });
   if (path === '/family/guardian-links/mine') return ok({ links: [] });
   if (/^\/family\/learning\/kids\/[^/]+\/bridges$/.test(path)) return ok({ prompts: [] });
+  // OD-27 (3): a parent-created child under 13 shares the chosen options; a teen's journal is private (Core's JOURNAL_PRIVATE).
+  const decisions = path.match(/^\/family\/learning\/kids\/([^/]+)\/decisions$/)?.[1];
+  if (decisions && get) return decisions === KID_B ? refuse(403, 'JOURNAL_PRIVATE')
+    : ok({ locale, entries: [{ id: 'decision-1', courseTitle: TITLES.course[locale], lessonTitle: TITLES.goals[locale], situation: CHOICES[locale][0],
+      choice: CHOICES[locale][1], recordedAt: T }], hasMore: false });
   if (/^\/family\/learning\/kids\/[^/]+\/streak$/.test(path)) return ok({ streak: { model: 'rest-days-v1', status: 'open', current: 4, best: 9, daysPracticed: 21,
     restDaysLeft: 1, lastActiveDate: '2026-09-24', pause: null } });
   return undefined;
