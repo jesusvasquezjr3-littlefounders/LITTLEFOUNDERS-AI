@@ -3,6 +3,7 @@ import type { Locale } from '../design/copyBudget';
 import { Button, SegmentedControl, Slider, ProgressBar } from '../design/controls';
 import { growthComparison } from './growthComparisonModel.generated';
 import { TeachingChartBoard } from './TeachingChartBoard';
+import { GrowthCompareVisual } from './pizarron';
 import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import './learning.css';
@@ -92,10 +93,6 @@ export function GrowthComparisonBoard({ document, segment, onBack, sequence }: {
   const changeYears = (next: number) => { setYears(next); setCommitted(null); };
   const changePrediction = (next: number) => { setPrediction(next); setCommitted(null); };
   const reset = () => { setRate(p.initialRateBps); setYears(p.initialYears); setPrediction(initialPrediction); setCommitted(null); };
-  const x = (year: number) => 24 + year * 252 / years;
-  const y = (minor: number) => 144 - minor * 120 / axisMaximum;
-  const simplePoints = points.map((point) => `${x(point.year)},${y(point.simpleMinor)}`).join(' ');
-  const compoundPoints = points.map((point) => `${x(point.year)},${y(point.compoundMinor)}`).join(' ');
   const difference = final ? final.compoundMinor - final.simpleMinor : 0;
   const threeColumnTable = <table className="lf-learning-table" aria-label={t.board}>
     <thead><tr><th scope="col" data-copy-role="data">{t.year}</th><th scope="col" data-copy-role="data">{t.simple}</th>
@@ -121,18 +118,10 @@ export function GrowthComparisonBoard({ document, segment, onBack, sequence }: {
             && prediction === initialPrediction && committed === null}>{t.reset}</Button>}
           chart={<>
             <div className="lf-growth-compare-meta" data-copy-role="data">{t.start}: {money(p.principalMinor)} · {percent.format(rate / 100)}% {t.perYear}</div>
-            <div className="lf-growth-compare-chart" role="img" aria-label={`${t.chart}. ${t.horizontalAxis}: 0–${years}. ${t.verticalAxis}: 0–${money(axisMaximum)}. ${t.simple}: ${final ? money(final.simpleMinor) : ''}. ${committed === null ? t.chartHidden : `${t.chartShown}. ${t.compound}: ${final ? money(final.compoundMinor) : ''}.`}`}>
-              <svg viewBox="0 0 300 160" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-                <line x1="24" y1="24" x2="24" y2="144" className="lf-growth-compare-axis" />
-                <line x1="24" y1="144" x2="276" y2="144" className="lf-growth-compare-axis" />
-                <polyline points={simplePoints} className="lf-growth-compare-simple" />
-                {committed !== null ? <polyline points={compoundPoints} className="lf-growth-compare-compound" /> : null}
-                {predictionAboveScale
-                  ? <path d="M 269 32 L 276 20 L 283 32 Z" className="lf-growth-compare-prediction" />
-                  : <circle cx="276" cy={y(committed ?? prediction)} r="6" className="lf-growth-compare-prediction" />}
-              </svg>
-              <span className="lf-growth-compare-scale-max" aria-hidden="true" data-copy-role="data">{money(axisMaximum)}</span>
-            </div>
+            <GrowthCompareVisual label={`${t.chart}. ${t.horizontalAxis}: 0–${years}. ${t.verticalAxis}: 0–${money(axisMaximum)}. ${t.simple}: ${final ? money(final.simpleMinor) : ''}. ${committed === null ? t.chartHidden : `${t.chartShown}. ${t.compound}: ${final ? money(final.compoundMinor) : ''}.`}`}
+              points={points.map((point) => ({ year: point.year, first: point.simpleMinor, second: point.compoundMinor }))} years={years}
+              axisMaximum={axisMaximum} showSecond={committed !== null} prediction={committed ?? prediction}
+              predictionAboveScale={predictionAboveScale} maxText={money(axisMaximum)} />
             <div className="lf-growth-compare-legend" data-copy-role="data"><span className="lf-growth-compare-legend-simple">{t.simple}</span>
               {committed !== null ? <span className="lf-growth-compare-legend-compound">{t.compound}</span> : null}
               <span className="lf-growth-compare-legend-prediction">{t.prediction}: {money(committed ?? prediction)}

@@ -3,6 +3,7 @@ import type { AgeBand, Locale } from '../design/copyBudget';
 import { Button, Slider, ProgressBar } from '../design/controls';
 import { growthTimeline, type GrowthItem } from './growthModel';
 import { TeachingChartBoard } from './TeachingChartBoard';
+import { SavingsLineVisual } from './pizarron';
 import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import './learning.css';
@@ -82,7 +83,6 @@ export function GrowthBoard({ document, segment, onBack, sequence }: { document:
   const unit = (count: number) => fixture.unit === 'week' ? count === 1 ? t.week : t.weeks : count === 1 ? t.month : t.months;
   const total = points.at(-1)?.balance ?? 0;
   const maximum = fixture.item.maximum * fixture.item.periods;
-  const polyline = points.map(({ period, balance }) => `${20 + period * 270 / fixture.item.periods},${140 - balance * 120 / maximum}`).join(' ');
 
   return <main className="lf-learning" data-surface="app" data-screen="timeline">
     <div className="lf-learning-inner">
@@ -93,18 +93,9 @@ export function GrowthBoard({ document, segment, onBack, sequence }: { document:
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart}
           controlLeading={<Button onClick={() => setContribution(fixture.item.initial)} disabled={contribution === fixture.item.initial}>{t.reset}</Button>}
           columns={[t.period, t.balance]} rows={points.map((point) => ({ id: point.period, label: point.period, value: amount(point.balance) }))}
-          chart={<>
-            <div className="lf-growth-scale-max" data-copy-role="data">{amount(maximum)}</div>
-            <div className="lf-growth-chart" role="img" aria-label={`${t.lineChart}. ${t.horizontalScale}: 0–${fixture.item.periods} ${unit(fixture.item.periods)}. ${t.verticalScale}: 0–${amount(maximum)}. ${t.after} ${fixture.item.periods} ${unit(fixture.item.periods)}: ${amount(total)}.`}>
-              <svg viewBox="0 0 300 160" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-                <line x1="20" y1="20" x2="20" y2="140" className="lf-growth-axis" />
-                <line x1="20" y1="140" x2="290" y2="140" className="lf-growth-axis" />
-                <polyline points={polyline} className="lf-growth-line" />
-              </svg>
-              <span className="lf-growth-point" style={{ left: `${290 / 300 * 100}%`, top: `${(140 - total * 120 / maximum) / 160 * 100}%` }} aria-hidden="true" />
-            </div>
-            <div className="lf-growth-axis-labels"><span data-copy-role="data">0</span><span data-copy-role="data">{fixture.item.periods} {unit(fixture.item.periods)}</span></div>
-          </>}>
+          chart={<SavingsLineVisual label={`${t.lineChart}. ${t.horizontalScale}: 0–${fixture.item.periods} ${unit(fixture.item.periods)}. ${t.verticalScale}: 0–${amount(maximum)}. ${t.after} ${fixture.item.periods} ${unit(fixture.item.periods)}: ${amount(total)}.`}
+            points={points.map((point) => ({ x: point.period, y: point.balance }))} xMax={fixture.item.periods} yMax={maximum}
+            yMaxText={amount(maximum)} startText="0" endText={`${fixture.item.periods} ${unit(fixture.item.periods)}`} />}>
           {() => <Slider className="lf-growth-control" label={fixture.unit === 'week' ? t.weekly : t.monthly}
             valueText={amount(contribution)} min={fixture.item.minimum} max={fixture.item.maximum} step={fixture.item.step}
             value={contribution} onValueChange={setContribution} />}

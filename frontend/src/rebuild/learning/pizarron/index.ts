@@ -8,11 +8,16 @@ export {
   ArrayVisual, BalanceScaleVisual, BarModelVisual, BeadStringVisual, CIRCLE_DENOMINATORS, CoinGroupsVisual, DealVisual, FillContainerVisual,
   FractionCellsVisual, FractionCircleVisual, GrowthLinesVisual, IconArrayVisual, LedgerVisual, NumberLineVisual, PictographVisual, RatioLinesVisual,
   SERIES_TONES, SeriesBarsVisual, SortBinsVisual, TallyVisual, TapeKey, TenFrameVisual, TextCardsVisual, VennVisual, WaffleVisual, WorkedStepsVisual,
-  seriesTone,
+  WorkedStepsList, seriesTone,
 } from './visuals';
+export {
+  AdditionDotsVisual, AllocationDonutVisual, AllocationStackVisual, AllocationWaffleVisual, BalanceMeterVisual, BaseTenVisual, ConditionRuleVisual,
+  FunctionMachineVisual, GoalBulletVisual, GrowthCompareVisual, NumberAxisVisual, PercentGridVisual, SavingsLineVisual, StackedSlicesVisual,
+} from './lessonVisuals';
+export type { ComparePoint, LinePoint, PocketAmount, RuleCondition, StackSlice, WalletPocket } from './lessonVisuals';
 export type {
   ChanceOutcome, CoinGroup, GrowthSeries, LedgerEntry, LineJump, LineMark, PictographRow, RatioGroup, RatioLine, RatioTick, SeriesBarRow, SeriesTone,
-  SortBin, TallyRow, TapeRow, TapeSegment, TextCard, WaffleCategory, WorkedStep,
+  SortBin, TallyRow, TapeRow, TapeSegment, TextCard, WaffleCategory, WorkedStep, WorkedStepRow,
 } from './visuals';
 
 export const PIZARRON_VISUALS = [
@@ -20,5 +25,9 @@ export const PIZARRON_VISUALS = [
   'FractionCellsVisual', 'FractionCircleVisual', 'GrowthLinesVisual', 'IconArrayVisual', 'LedgerVisual', 'NumberLineVisual', 'PictographVisual',
   'RatioLinesVisual', 'SeriesBarsVisual', 'SortBinsVisual', 'TallyVisual', 'TenFrameVisual', 'TextCardsVisual', 'VennVisual', 'WaffleVisual',
   'WorkedStepsVisual',
+  // The lesson pictures (lessonVisuals.tsx): the same set, drawn beside the interactive layer of a lesson.
+  'AdditionDotsVisual', 'AllocationDonutVisual', 'AllocationStackVisual', 'AllocationWaffleVisual', 'BalanceMeterVisual', 'BaseTenVisual',
+  'ConditionRuleVisual', 'FunctionMachineVisual', 'GoalBulletVisual', 'GrowthCompareVisual', 'NumberAxisVisual', 'PercentGridVisual',
+  'SavingsLineVisual', 'StackedSlicesVisual',
 ] as const;
 export type PizarronVisualName = (typeof PIZARRON_VISUALS)[number];

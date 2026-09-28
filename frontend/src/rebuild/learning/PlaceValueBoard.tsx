@@ -5,6 +5,7 @@ import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegm
 import { placeValueState } from './placeValueModel';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { TeachingChartBoard } from './TeachingChartBoard';
+import { BaseTenVisual } from './pizarron';
 import { StepReplay } from './StepReplay';
 import './learning.css';
 import './placeValue.css';
@@ -73,17 +74,8 @@ export function PlaceValueBoard({ document, segment, onBack, sequence }: {
             { id: 'tens', label: t.tens, value: String(state.tens) },
             { id: 'ones', label: t.ones, value: String(state.ones) },
             { id: 'total', label: t.total, value: String(state.total) },
-          ]} chart={<div className="lf-place-value-plot" role="img"
-            aria-label={`${state.tens} ${t.tens}, ${state.ones} ${t.ones}. ${t.total}: ${state.total}.`}>
-            <div className="lf-place-value-group"><span data-copy-role="data">{t.tens}: {state.tens}</span>
-              <div className="lf-place-value-rods" aria-hidden="true">{Array.from({ length: state.tens }, (_, index) =>
-                <span className="lf-place-value-rod" key={index}>{Array.from({ length: 10 }, (_, cell) => <i key={cell} />)}</span>)}</div>
-            </div>
-            <div className="lf-place-value-group"><span data-copy-role="data">{t.ones}: {state.ones}</span>
-              <div className="lf-place-value-ones" aria-hidden="true">{Array.from({ length: state.ones }, (_, index) =>
-                <i key={index} />)}</div>
-            </div>
-          </div>}>
+          ]} chart={<BaseTenVisual label={`${state.tens} ${t.tens}, ${state.ones} ${t.ones}. ${t.total}: ${state.total}.`}
+            tens={state.tens} ones={state.ones} tensText={`${t.tens}: ${state.tens}`} onesText={`${t.ones}: ${state.ones}`} />}>
           {() => replayIndex === null ? <div className="lf-place-value-controls">
             <Button disabled={!state.canTrade} onClick={() => setTrades((value) => value + 1)}>{t.trade}</Button>
             <Button disabled={!state.canUndo} onClick={() => setTrades((value) => value - 1)}>{t.undo}</Button>

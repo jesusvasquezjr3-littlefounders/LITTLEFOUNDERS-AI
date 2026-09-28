@@ -226,17 +226,29 @@ export function LedgerVisual({ label, entries, inLabel, outLabel }: { label: str
 // ── Worked steps ────────────────────────────────────────────────────────────
 
 export interface WorkedStep { id: string; marker: string; expression: string; result?: string; state?: 'complete' | 'active' | 'pending' }
+export interface WorkedStepRow { id: string; marker: string; expression: ReactNode; detail?: ReactNode; state?: 'complete' | 'active' | 'pending' }
+
+/**
+ * The worked-example step list itself, shared by the Mentor's static board and
+ * the lesson's interactive worked example (which puts its prediction or fading
+ * field in `detail`). It is not an image, so a field inside it stays reachable.
+ */
+export function WorkedStepsList({ steps, loop = false }: { steps: readonly WorkedStepRow[]; loop?: boolean }) {
+  return <ol className="lf-worked-example-steps" data-loop={loop ? 'true' : undefined} data-pizarron="worked-steps-list">
+    {steps.map((step) => <li key={step.id}
+      className={`lf-worked-example-step${step.state === 'active' ? ' lf-worked-example-step--active' : step.state === 'complete' ? ' lf-worked-example-step--complete' : ''}`}>
+      <span className="lf-worked-example-number" data-copy-role="data">{step.marker}</span>
+      <span className="lf-worked-example-expression" data-copy-role="data">{step.expression}</span>
+      {step.detail ?? null}
+    </li>)}
+  </ol>;
+}
 
 /** A worked example written out step by step (05 §7 "Worked examples"); also a cycle and an ordered list of stages. */
 export function WorkedStepsVisual({ label, steps, loop = false }: { label: string; steps: readonly WorkedStep[]; loop?: boolean }) {
   return <Frame name="worked-steps" label={label}>
-    <ol className="lf-worked-example-steps" data-loop={loop ? 'true' : undefined}>
-      {steps.map((step) => <li key={step.id}
-        className={`lf-worked-example-step${step.state === 'active' ? ' lf-worked-example-step--active' : step.state === 'complete' ? ' lf-worked-example-step--complete' : ''}`}>
-        <span className="lf-worked-example-number" data-copy-role="data">{step.marker}</span>
-        <span className="lf-worked-example-expression" data-copy-role="data">{step.expression}{step.result ? <> = <strong data-copy-role="data">{step.result}</strong></> : null}</span>
-      </li>)}
-    </ol>
+    <WorkedStepsList loop={loop} steps={steps.map((step) => ({ id: step.id, marker: step.marker, state: step.state,
+      expression: <>{step.expression}{step.result ? <> = <strong data-copy-role="data">{step.result}</strong></> : null}</> }))} />
     {loop ? <span className="lf-pz-loop" data-copy-role="data" aria-hidden="true">↻</span> : null}
   </Frame>;
 }

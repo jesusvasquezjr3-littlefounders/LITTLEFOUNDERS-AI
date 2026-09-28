@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
 import { Button, Stepper, ProgressBar } from '../design/controls';
 import { LessonFeedback } from './LessonFeedback';
+import { NumberAxisVisual } from './pizarron';
 import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import './learning.css';
@@ -81,12 +82,7 @@ export function NumberLineBoard({ document, segment, onBack, onGrade, sequence }
           <section className="lf-learning-board" aria-labelledby={`${id}-title`}>
             <h2 id={`${id}-title`} data-copy-role="heading">{t.board}</h2>
             <div className="lf-number-line-drawing">
-              <div role="img" aria-label={`${t.line}: ${minimum}–${maximum}`}>
-                <svg viewBox="0 0 300 96" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-                  <line x1="24" y1="52" x2="276" y2="52" className="lf-number-line-track" />
-                  {[24, 150, 276].map((x) => <line key={x} x1={x} x2={x} y1="42" y2="62" className="lf-number-line-tick" />)}
-                </svg>
-              </div>
+              <NumberAxisVisual label={`${t.line}: ${minimum}–${maximum}`} />
               <input className="lf-number-line-slider" type="range" min={minimum} max={maximum} step={step} value={value}
                 aria-label={t.place} aria-valuetext={String(value)} onChange={(event) => setPoint(Number(event.target.value))} />
               <span className="lf-number-line-marker" style={{ left: `${8 + percent * 84}%` }} aria-hidden="true" />

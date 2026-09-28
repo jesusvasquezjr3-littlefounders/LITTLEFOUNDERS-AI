@@ -6,6 +6,7 @@ import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { runningLedger, type LedgerEntry } from './runningLedgerModel';
 import { TeachingChartBoard } from './TeachingChartBoard';
 import { StepReplay } from './StepReplay';
+import { BalanceMeterVisual } from './pizarron';
 import './learning.css';
 import './runningLedger.css';
 import './stepReplay.css';
@@ -69,7 +70,6 @@ export function RunningLedgerBoard({ document, segment, onBack, sequence }: {
   const balanceText = (value: number) => `${value < 0 ? '−' : ''}${amount(Math.abs(value))}`;
   const position = snapshot.balance > 0 ? t.above : snapshot.balance < 0 ? t.below : t.zero;
   const scale = Math.max(initial + maxEntries * sale, maxEntries * cost - initial, 1);
-  const extent = 62 * Math.abs(snapshot.balance) / scale;
   const append = (amountValue: number) => {
     if (replayIndex !== null || entries.length >= maxEntries) return;
     const next = [...entries, { id: `entry-${entries.length + 1}`, amount: amountValue }];
@@ -91,15 +91,8 @@ export function RunningLedgerBoard({ document, segment, onBack, sequence }: {
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart}
           columns={[t.movement, t.balance]} rows={rows}
           controlLeading={<Button disabled={!entries.length} onClick={() => { setEntries([]); setReplayIndex(null); }}>{t.reset}</Button>}
-          chart={<div className="lf-ledger-visual" role="img" aria-label={`${t.balance}: ${balanceText(snapshot.balance)}. ${position}. ${t.step}: ${shownEntries.length}/${maxEntries}.`}>
-            <svg viewBox="0 0 220 160" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
-              <line x1="24" y1="80" x2="196" y2="80" className="lf-ledger-zero" />
-              <rect x="92" y={snapshot.balance >= 0 ? 80 - extent : 80} width="36" height={Math.max(extent, 1)}
-                className="lf-ledger-bar" />
-              <circle cx="110" cy={80 - 62 * snapshot.balance / scale} r="6" className="lf-ledger-point" />
-            </svg>
-            <div className="lf-ledger-axis" data-copy-role="data"><span>{t.above}</span><span>{t.zero}</span><span>{t.below}</span></div>
-          </div>}>
+          chart={<BalanceMeterVisual label={`${t.balance}: ${balanceText(snapshot.balance)}. ${position}. ${t.step}: ${shownEntries.length}/${maxEntries}.`}
+            balance={snapshot.balance} scale={scale} aboveLabel={t.above} zeroLabel={t.zero} belowLabel={t.below} />}>
           {() => replayIndex === null ? <div className="lf-ledger-controls" role="group" aria-label={t.movement}>
             <Button disabled={entries.length >= maxEntries} onClick={() => append(sale)}>{t.sale} {signed(sale)}</Button>
             <Button disabled={entries.length >= maxEntries} onClick={() => append(-cost)}>{t.supplies} {signed(-cost)}</Button>
