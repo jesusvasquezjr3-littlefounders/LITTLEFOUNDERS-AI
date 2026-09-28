@@ -1,5 +1,6 @@
 import { useId, useState, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 import { Glyph } from './glyphs';
+import { withPressFeedback } from './motion';
 
 /*
  * Form controls (Frontend Bible 02 §3 `input`, §4.4, §9.8). Every control has a
@@ -163,7 +164,9 @@ export function PictureChoice<T extends string>({ legend, legendRole = 'body', n
     <div className="lf-picture-options">
       {options.map((option) => {
         const kind = option.swatch ? 'swatch' : option.picture ? 'picture' : 'text';
-        return <label key={option.value} className={`lf-picture-option lf-picture-option--${kind}`} data-value={option.value}>
+        return <label key={option.value} className={`lf-picture-option lf-picture-option--${kind}`} data-value={option.value} onPointerDown={withPressFeedback()}>
+          {/* 02 §9.1: the press ring's clipping layer, so the check badge on the corner stays whole. */}
+          <span className="lf-press-host" data-press-host aria-hidden="true" />
           <input type="radio" className="lf-picture-input" name={name} value={option.value} checked={value === option.value}
             aria-label={kind === 'text' ? undefined : option.label} onChange={() => onValueChange(option.value)} />
           {kind === 'swatch' ? <span className="lf-picture-swatch" style={{ background: option.swatch }} aria-hidden="true" />

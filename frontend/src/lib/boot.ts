@@ -24,7 +24,7 @@ declare global {
  * It waits at all because Material Symbols is `font-display: block` — every
  * icon in the product is INVISIBLE until it resolves, so revealing first shows
  * a chrome full of holes that fills in afterwards. It waits only briefly
- * because the fonts are third-party (Inter, Sora from Google Fonts) and a
+ * because a font request can still be slow on a poor connection, and a
  * blocked or slow font request must never be able to hold the product behind a
  * veil: past this cap the app arrives and the text swaps in when it can.
  */

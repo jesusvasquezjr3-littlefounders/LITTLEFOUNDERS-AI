@@ -167,22 +167,53 @@ es-MX and pt-BR, light and dark, 320 and 1280 px: clean. The full matrices and
 - The haptic tick follows the platform sound off switch only, not reduced
   motion (haptics are not visual motion). Conservative alternative: also skip
   it under reduced motion.
-- The legacy island keeps Inter and Sora through a Google Fonts `@import` in
-  its own sheet, so only a v1 lesson (and the staff preview and labs) makes that
-  third-party request. Self-hosting them, or moving the island to Fredoka and
-  Nunito, would remove it entirely.
+- The legacy island's typefaces: resolved at the lane finish by moving the
+  island to the self-hosted Fredoka and Nunito (below), the design system's own
+  faces, rather than self-hosting Inter and Sora. If the owner prefers the v1
+  player's original look until OD-24 retires it, Inter and Sora would have to be
+  self-hosted (a font download this lane did not make).
+
+### Lane finish (F1-design-system-finish)
+
+Sync with `codex/spec-migration-s02`: already up to date (no conflicts). An
+adversarial pass over the lane's three commits against the six gaps closed the
+three items the checkpoint had left open:
+
+- Copy budget, public profile at 6-9 (06 §3.1): the youngest register now shows
+  each badge's art and name without the "Earned {date}" line (the other
+  registers keep it), which brings `app:/@marta@kid-6-9` back under 25
+  first-view words. `PublicProfile.tsx`; pinned in `PublicProfileRoute.test.tsx`.
+- No third-party font on any route (02 D3, D4): `src/index.css` drops its
+  Google Fonts `@import`, declares the self-hosted Fredoka and Nunito faces (the
+  dev labs load this sheet without `system.css`) and sets them in the legacy
+  type scale; `tailwind.config.js` maps `display` and `body` to them. Pinned in
+  `bootVeil.test.ts`.
+- Press ring on the picture option (02 §9.1): `pressFeedback` draws into a
+  `[data-press-host]` clipping layer when the control has one, so the picture
+  option ripples without clipping its corner check badge, and it gives no
+  feedback when the option's input or fieldset is disabled. `fields.tsx`,
+  `motion.tsx`, `motion.css`; pinned in `motionPatterns.test.tsx`.
+
+Verified at the finish: frontend `type-check` and `lint` clean; root
+`spec:check`, `secrets:check`, the i18n gate and `check-rebuild-assets` green.
+Full frontend unit suite: 249 of 252 files and 2,878 of 2,891 tests passed in
+the loaded run; the three red files each pass alone (`App.test.tsx` and
+`LessonRoute.test.tsx` 70/70; `assetGate.test.ts` 11/11 in 490 s, its first
+clean pass, with single cases taking up to 84 s against the suite's 90 s
+budget, so it times out whenever it shares the machine with the rest of the
+suite). The copy-budget audit over `app:/@marta@kid-6-9` and
+`app:/@marta@adult` (375 px, light, three locales, local dev server,
+synthetic Core) reports no issue. Only `frontend/` and docs were touched by
+the lane, so no other service suite applies.
 
 ### Remaining
 
-- Copy budget: `app:/@marta@kid-6-9` (a 6-9 viewer on a public profile) counts
-  28/25 first-view words at 375 px: the first badge's "Earned Aug 14, 2026"
-  sits 5 px above the fold now that the shell's phone padding is 16 px instead
-  of the legacy body's 20 px. The layout is the SPEC's; the fix is a profile
-  copy or composition decision for the profile lane (drop the earned date in
-  the 6-9 register, or move the badges below the safety notice), not an audit
-  exception.
-
 - Ledger lines (activity, corrections, statements) keep signed numbers without
-  the coin mark; tiles and cards other than the pressable list row do not yet
-  ripple (the picture option keeps its scale press only).
+  the coin mark (02 §9.5 limits the coin to money but does not require it on
+  every amount); cards other than the pressable list row do not ripple.
+- `assetGate.test.ts` reruns the whole gate (OCR over every raster) per case,
+  so it needs a quiet machine or a larger budget: run it alone in the merge
+  gate, or make the gate cache its OCR results.
+- The island's typeface change has unit evidence only; the merge matrices cover
+  the v1 lesson's text fit.
 - Acceptance and release are not claimed.

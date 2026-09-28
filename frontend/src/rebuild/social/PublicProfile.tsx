@@ -186,8 +186,10 @@ function Profile({ copy, reportCopy, locale, young, view, safety, onFollow, onUn
           <Art assetId="badge.course.hexagon" />
           <div className="lf-profile-badge-text">
             <p className="lf-profile-badge-title ugc" data-copy-role="data">{badge.title}</p>
-            <p className="lf-account-muted" data-copy-role="body">{badge.completedAt && Number.isFinite(Date.parse(badge.completedAt))
-              ? copy.badgeEarned.replace('{date}', day.format(new Date(badge.completedAt))) : copy.badgeEarnedUndated}</p>
+            {/* The youngest register shows the badge and its name only: the earned date is not first-view
+                copy a 6-9 reader needs (06 §3.1), and the art already says it was earned. */}
+            {young ? null : <p className="lf-account-muted" data-copy-role="body">{badge.completedAt && Number.isFinite(Date.parse(badge.completedAt))
+              ? copy.badgeEarned.replace('{date}', day.format(new Date(badge.completedAt))) : copy.badgeEarnedUndated}</p>}
           </div>
         </li>)}
       </Stagger>}

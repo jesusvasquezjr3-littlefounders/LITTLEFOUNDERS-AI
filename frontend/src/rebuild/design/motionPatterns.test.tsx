@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { AnswerChoice, Button, IconButton, ListRow, ReplyChip } from './controls';
+import { AnswerChoice, Button, IconButton, ListRow, PictureChoice, ReplyChip } from './controls';
 import { noteRouteChange, ORCHESTRATED_MOTION, resetRouteEntriesForTest, SequenceTransition, Stagger, SuccessWipe, Wave } from './motion';
 
 /*
@@ -154,6 +154,21 @@ describe('press feedback (02 §9.1)', () => {
     window.localStorage.removeItem('lf_sound_muted');
     rerender(<Button disabled>Save</Button>);
     fireEvent.pointerDown(screen.getByRole('button'), { pointerType: 'touch' });
+    expect(vibrate).toHaveBeenCalledTimes(1);
+  });
+
+  it('ripples a picture option inside its own clipping layer, so the check badge stays whole, and not when the choice is disabled', () => {
+    const options = [{ value: 'sky', label: 'Sky', swatch: '#5c55fd' }, { value: 'none', label: 'None' }] as const;
+    const { container, rerender } = render(<PictureChoice legend="Colour" name="colour" options={options} value="sky" onValueChange={() => undefined} />);
+    const option = container.querySelector('.lf-picture-option')!;
+    fireEvent.pointerDown(option, { pointerType: 'touch', clientX: 4, clientY: 4 });
+    const host = option.querySelector(':scope > [data-press-host]')!;
+    expect(host).toHaveAttribute('aria-hidden', 'true');
+    expect(host.querySelector('.lf-press-ring')).not.toBeNull();
+    expect(option.querySelector(':scope > .lf-press-ring')).toBeNull();
+    expect(vibrate).toHaveBeenCalledTimes(1);
+    rerender(<PictureChoice legend="Colour" name="colour" options={options} value="sky" onValueChange={() => undefined} disabled />);
+    fireEvent.pointerDown(container.querySelectorAll('.lf-picture-option')[1]!, { pointerType: 'touch' });
     expect(vibrate).toHaveBeenCalledTimes(1);
   });
 });

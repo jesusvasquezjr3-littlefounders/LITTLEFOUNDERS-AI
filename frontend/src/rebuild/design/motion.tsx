@@ -429,6 +429,8 @@ export function pressFeedback(event: ReactPointerEvent<HTMLElement>) {
   const control = event.currentTarget;
   if (event.pointerType === 'mouse' && event.button !== 0) return;
   if (control.matches(':disabled, [aria-disabled="true"]')) return;
+  // A label-wrapped control (the picture option) is as disabled as its input.
+  if (control.querySelector(':scope > input:disabled') || control.closest('fieldset[disabled]')) return;
   if (!hapticsOff()) {
     try { navigator.vibrate?.(8); } catch { /* not supported, or refused */ }
   }
@@ -444,7 +446,9 @@ export function pressFeedback(event: ReactPointerEvent<HTMLElement>) {
   ring.style.setProperty('--lf-press-x', `${x}px`);
   ring.style.setProperty('--lf-press-y', `${y}px`);
   ring.style.setProperty('--lf-press-size', `${Math.ceil(reach * 2)}px`);
-  control.append(ring);
+  // A control whose own box must not clip (the picture option's check badge sits on its corner) names a
+  // clipping layer with [data-press-host]; the ring is drawn there, with the same coordinates.
+  (control.querySelector(':scope > [data-press-host]') ?? control).append(ring);
   const clear = () => ring.remove();
   ring.addEventListener('animationend', clear, { once: true });
   window.setTimeout(clear, 600);

@@ -94,6 +94,8 @@
 .lf-rebuild .lf-success-wipe .lf-system-glyph { flex: none; }
 .lf-rebuild :is(.lf-button, .lf-icon-button, .lf-choice, .lf-choice-chip, .lf-reply-chip, .lf-list-row--pressable):has(> .lf-press-ring) { position: relative; overflow: hidden; }
 .lf-rebuild .lf-press-ring { display: none; }
+/* The picture option clips the ring in its own layer, so the check badge on its corner is not cut (02 §9.1). */
+.lf-rebuild .lf-press-host { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; pointer-events: none; }
 
 @media (prefers-reduced-motion: no-preference) {
   /* 04 §4.1: out 14% on the exit easing, in from 18% on the enter easing, about 22% overlap; the foot travels with its card. */

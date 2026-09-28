@@ -67,6 +67,16 @@ describe('the document ground and typefaces (02 D3, D4; OD-12)', () => {
     expect(HTML).toContain('href="/fonts/fredoka-latin-v1.woff2" crossorigin');
     expect(HTML).toContain('href="/fonts/nunito-latin-v1.woff2" crossorigin');
   });
+  it('keeps the legacy island sheet on the self-hosted Fredoka and Nunito, with no third-party font', () => {
+    const ISLAND = readFileSync(resolve(FRONTEND, 'src/index.css'), 'utf8');
+    const TAILWIND = readFileSync(resolve(FRONTEND, 'tailwind.config.js'), 'utf8');
+    // No remote sheet or remote face: the only host named is in a comment explaining the Material Symbols move.
+    expect(ISLAND).not.toMatch(/@import\s+url\(['"]?https?:|src:\s*url\(['"]?https?:/);
+    expect(ISLAND).not.toMatch(/font-family:\s*'?(Inter|Sora)\b/);
+    expect(ISLAND).toContain("src: url('/fonts/fredoka-latin-v1.woff2')");
+    expect(ISLAND).toContain("src: url('/fonts/nunito-latin-v1.woff2')");
+    expect(TAILWIND).not.toMatch(/'(Inter|Sora)'/);
+  });
 });
 
 describe('boot veil — the release contract', () => {

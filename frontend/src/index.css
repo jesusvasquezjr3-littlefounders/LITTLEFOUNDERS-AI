@@ -3,11 +3,26 @@
  * fix). Nothing on the product's entry imports it: it loads with the v1
  * lesson player (routes/app/learn/LegacyLessonIsland.tsx, lazy), the staff
  * lesson preview (app-routes/staffConsole.tsx, lazy) and the development
- * labs. The legacy typefaces the v1 player sets (Inter, Sora) are declared
- * here for the same reason, so no other route requests them; the rebuilt
- * pages use the self-hosted Fredoka and Nunito (02 D3).
+ * labs. The island sets the design system's own self-hosted Fredoka and
+ * Nunito (02 D3, D4) in place of the v1 player's Inter and Sora, so no route
+ * makes a third-party font request. The faces are declared again here, with
+ * the same files as rebuild/design/system.css, because the development labs
+ * load this sheet without the rebuilt one.
  */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap');
+@font-face {
+  font-family: Fredoka;
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/fredoka-latin-v1.woff2') format('woff2');
+}
+@font-face {
+  font-family: Nunito;
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url('/fonts/nunito-latin-v1.woff2') format('woff2');
+}
 
 @tailwind base;
 @tailwind components;
@@ -581,7 +596,7 @@
  */
 @layer components {
   .lf-display-lg {
-    font-family: 'Sora', system-ui, sans-serif;
+    font-family: Fredoka, system-ui, sans-serif;
     font-size: 27px;
     font-weight: 800;
     line-height: 1.15;
@@ -589,7 +604,7 @@
     text-wrap: balance;
   }
   .lf-headline {
-    font-family: 'Sora', system-ui, sans-serif;
+    font-family: Fredoka, system-ui, sans-serif;
     font-size: 20px;
     font-weight: 700;
     line-height: 28px;
@@ -597,33 +612,33 @@
     text-wrap: balance;
   }
   .lf-title {
-    font-family: 'Sora', system-ui, sans-serif;
+    font-family: Fredoka, system-ui, sans-serif;
     font-size: 15px;
     font-weight: 700;
     line-height: 22px;
   }
   .lf-body-lg {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: Nunito, system-ui, sans-serif;
     font-size: 18px;
     font-weight: 400;
     line-height: 29px;
     text-wrap: pretty;
   }
   .lf-body {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: Nunito, system-ui, sans-serif;
     font-size: 16px;
     font-weight: 400;
     line-height: 25px;
     text-wrap: pretty;
   }
   .lf-label {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: Nunito, system-ui, sans-serif;
     font-size: 14px;
     font-weight: 700;
     line-height: 20px;
   }
   .lf-caption {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: Nunito, system-ui, sans-serif;
     font-size: 12px;
     font-weight: 500;
     line-height: 16px;
