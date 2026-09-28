@@ -101,6 +101,7 @@ import {
   type SceneMeasurement,
 } from '../src/tutor-scene/measurements.js';
 import { standingCast } from '../src/tutor-scene/cast.js';
+import { corridorClear, stageOcclusions, type RayHit } from '../src/tutor-scene/occlusion.js';
 import { modelFooting } from '../src/tutor-scene/modelBounds.js';
 import { walkabilityFor } from '../src/tutor-scene/walkability.js';
 import {
@@ -321,6 +322,19 @@ for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
 
   console.log(`\n=== ${id} — ${asset.targetWidthM} m across (radius ${radius.toFixed(2)} m) ===`);
 
+  /*
+   * 08 §2 / §10 item 3: nothing decorative covers the lead's face or hands in
+   * any stage shot. The island is the only occluder (one mesh), so this is a
+   * raycast from each stage camera to the head and hands (`occlusion.ts`).
+   */
+  const shotScene = { centre: { x: centre.x, y: centre.y, z: centre.z }, size: { x: size.x, y: size.y, z: size.z } };
+  const occluder = new Raycaster();
+  const hitIsland: RayHit = (from, direction, far) => {
+    occluder.set(new Vector3(from.x, from.y, from.z), new Vector3(direction.x, direction.y, direction.z));
+    occluder.far = far;
+    return occluder.intersectObject(island.mesh, false)[0]?.distance ?? null;
+  };
+
   const runCast = (
     cast: readonly CharacterId[],
     label: string,
@@ -347,6 +361,8 @@ for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
       // configuration certifies a different product.
       isWalkable: walkabilityFor(id) ?? undefined,
       clearance: castClearanceM(footprints),
+      // The same corridor gate the product applies to the lead (08 §2), outside an audition.
+      leadCorridorClear: audition || !cast[0] ? undefined : (spot) => corridorClear(cast[0]!, spot, shotScene, hitIsland),
     });
 
     /*
@@ -423,7 +439,16 @@ for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
       const awayDeg = (away * 180) / Math.PI;
       const turnedAway = away > MAX_OFF_VIEWER;
 
-      const bad = surface === 'WATER?' || overhang > 0 || turnedAway;
+      // The lead is the one the Mentor stage frames (close-up, wide close-up) — only outside an audition.
+      const occlusions = i === 0 && !audition
+        ? stageOcclusions({ who, x: spot.x, y: spot.y, z: spot.z, facing: facings[i] ?? STAGE_BEARING }, shotScene, hitIsland)
+        : [];
+      const occluded = occlusions.length > 0;
+      if (occluded) {
+        console.log(`      ✗ ${label} — ${who} OCCLUDED: ${occlusions.map((o) => `${o.shot}/${o.viewport}/${o.point}@${o.blockedAt.toFixed(2)}m of ${o.distance.toFixed(2)}m`).join(', ')}`);
+      }
+
+      const bad = surface === 'WATER?' || overhang > 0 || turnedAway || occluded;
       if (bad) failures += 1;
       tightest = Math.min(tightest, -overhang);
 

@@ -141,6 +141,15 @@ export interface FindSpotsOptions {
    * return the best one there is.
    */
   clearance?: number;
+  /**
+   * May the LEAD (the first member, the one the Mentor stage frames) stand
+   * here? A hard gate, like `isWalkable`: Frontend Bible 08 §2 says nothing
+   * decorative covers the character's face or hands, and the Dioramas are one
+   * mesh, so the ammonite, the palms and the bushes cannot be hidden, only
+   * stood clear of. `occlusion.ts` `corridorClear` answers it from the stage's
+   * own camera poses. Omitted (an audition, a scene without it): every spot.
+   */
+  leadCorridorClear?: (spot: { x: number; y: number; z: number }) => boolean;
 }
 
 /**
@@ -237,6 +246,7 @@ export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): 
     rings = [0.32, 0.45, 0.58, 0.7],
     isWalkable,
     clearance = 0,
+    leadCorridorClear,
   } = options;
 
   const box = new Box3().setFromObject(ground);
@@ -379,6 +389,22 @@ export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): 
   const chosen: StandingSpot[] = [];
   const remaining = [...candidates];
   while (chosen.length < count && remaining.length > 0) {
+    /*
+     * 08 §2: the lead's face and hands are never behind the scenery in a stage
+     * shot. With nobody chosen yet a candidate's value IS its score, and
+     * `remaining` is sorted by score, so the first candidate that passes the
+     * gate is the best one: the raycasts stop there instead of running for
+     * every sample on the island.
+     */
+    if (chosen.length === 0 && leadCorridorClear) {
+      const found = remaining.findIndex((candidate) => leadCorridorClear(candidate));
+      // No clear spot at all (an island this gate was not measured on): a lead partly
+      // behind a prop beats an empty stage, and `verify:placement` names it.
+      const clear = found === -1 ? 0 : found;
+      chosen.push(remaining[clear]!);
+      remaining.splice(clear, 1);
+      continue;
+    }
     let bestIndex = -1;
     let bestValue = -Infinity;
 

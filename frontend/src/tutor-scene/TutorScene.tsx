@@ -1,6 +1,6 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Box3, Group, Vector3 } from 'three';
+import { Box3, Group, Raycaster, Vector3 } from 'three';
 import { SceneCanvas, type SceneStats } from './SceneCanvas';
 import { SceneLighting } from './SceneLighting';
 import { Diorama } from './Diorama';
@@ -33,6 +33,7 @@ import { standingCast } from './cast';
 import { walkabilityFor } from './walkability';
 import { CameraDirector } from './CameraDirector';
 import { solveFacings } from './facing';
+import { corridorClear, type RayHit } from './occlusion';
 import { shotForLegacyFraming, STAGE_BEARING, type LegacyFraming, type ShotId, type ShotSubject } from './shots';
 import { AnchorProjector, AnchorProvider, useAnchorRegistry, WorldAnchor } from './ScreenAnchor';
 import { castMarks, SKY_MARK_IDS, STAGE_MARK_IDS, type AnchorId } from './anchors';
@@ -572,6 +573,27 @@ function Cast({
      * character solve below then runs against the plain `isWalkable`,
      * byte-identical to every session before S18.
      */
+    /*
+     * 08 §2: the lead's face and hands are never behind the scenery in the
+     * stage's close-ups. The island is one mesh, so the gate is a raycast from
+     * each stage camera (`occlusion.ts`); not during an audition, whose shot is
+     * the wide `approach` and whose cast is a ring.
+     */
+    const islandBox = new Box3().setFromObject(ground);
+    const islandCentre = islandBox.getCenter(new Vector3());
+    const islandSize = islandBox.getSize(new Vector3());
+    const shotScene = {
+      centre: { x: islandCentre.x, y: islandCentre.y, z: islandCentre.z },
+      size: { x: islandSize.x, y: islandSize.y, z: islandSize.z },
+    };
+    const occluder = new Raycaster();
+    const hitIsland: RayHit = (from, direction, far) => {
+      occluder.set(new Vector3(from.x, from.y, from.z), new Vector3(direction.x, direction.y, direction.z));
+      occluder.far = far;
+      return occluder.intersectObject(ground, true)[0]?.distance ?? null;
+    };
+    const lead = standing[0];
+
     const solvedProps = findPropSpots(ground, isWalkable, activeProps);
     setPropSpots(solvedProps);
     const propsIsWalkable = excludingProps(isWalkable, solvedProps);
@@ -627,6 +649,7 @@ function Cast({
          */
         isWalkable: audition ? isWalkable : propsIsWalkable,
         clearance: castClearanceM(footprints),
+        leadCorridorClear: audition || !lead ? undefined : (spot) => corridorClear(lead, spot, shotScene, hitIsland),
       }),
     );
     /*
