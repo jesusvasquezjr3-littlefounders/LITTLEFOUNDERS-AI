@@ -1,0 +1,765 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-13-17",
+  "chapter_id": "reading-charts",
+  "lesson_id": "v2-charts-investing",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-reading-charts"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Dina lee gráficas de inversión: velas, sectores y tendencias.",
+  "title": {
+    "en-US": "Read investing charts",
+    "es-MX": "Lee gráficas de inversión",
+    "pt-BR": "Leia gráficos de investimento"
+  },
+  "new_concepts": [
+    "kc-reading-charts"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "candle-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "visual": {
+        "type": "candlestick"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "ohlc": [
+            {
+              "id": "day-mon",
+              "open": 20,
+              "high": 24,
+              "low": 18,
+              "close": 23
+            },
+            {
+              "id": "day-tue",
+              "open": 23,
+              "high": 25,
+              "low": 19,
+              "close": 20
+            },
+            {
+              "id": "day-wed",
+              "open": 20,
+              "high": 27,
+              "low": 20,
+              "close": 26
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "day-q-mon"
+            },
+            {
+              "id": "day-q-tue"
+            },
+            {
+              "id": "day-q-wed"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read each candle: open, high, low, close.",
+          "title": "Share price by day",
+          "data": {
+            "ohlc": [
+              {
+                "label": "Mon"
+              },
+              {
+                "label": "Tue"
+              },
+              {
+                "label": "Wed"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which day closed lower than it opened?",
+            "options": [
+              {
+                "label": "Monday"
+              },
+              {
+                "label": "Tuesday"
+              },
+              {
+                "label": "Wednesday"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Lee cada vela: apertura, máximo, mínimo, cierre.",
+          "title": "Precio por día",
+          "data": {
+            "ohlc": [
+              {
+                "label": "Lun"
+              },
+              {
+                "label": "Mar"
+              },
+              {
+                "label": "Mié"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué día cerró más bajo de lo que abrió?",
+            "options": [
+              {
+                "label": "Lunes"
+              },
+              {
+                "label": "Martes"
+              },
+              {
+                "label": "Miércoles"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Leia cada vela: abertura, máxima, mínima, fechamento.",
+          "title": "Preço por dia",
+          "data": {
+            "ohlc": [
+              {
+                "label": "Seg"
+              },
+              {
+                "label": "Ter"
+              },
+              {
+                "label": "Qua"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Que dia fechou abaixo da abertura?",
+            "options": [
+              {
+                "label": "Segunda"
+              },
+              {
+                "label": "Terça"
+              },
+              {
+                "label": "Quarta"
+              }
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "day-q-tue"
+        ]
+      }
+    },
+    {
+      "id": "treemap-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "treemap"
+      },
+      "payload": {
+        "data": {
+          "unit": "percent",
+          "nodes": [
+            {
+              "id": "node-all"
+            },
+            {
+              "id": "node-tech"
+            },
+            {
+              "id": "node-food"
+            },
+            {
+              "id": "node-apps",
+              "value": 30
+            },
+            {
+              "id": "node-chips",
+              "value": 20
+            },
+            {
+              "id": "node-farms",
+              "value": 50
+            }
+          ],
+          "links": [
+            {
+              "from": "node-all",
+              "to": "node-tech"
+            },
+            {
+              "from": "node-all",
+              "to": "node-food"
+            },
+            {
+              "from": "node-tech",
+              "to": "node-apps"
+            },
+            {
+              "from": "node-tech",
+              "to": "node-chips"
+            },
+            {
+              "from": "node-food",
+              "to": "node-farms"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Compare each holding by its area.",
+          "title": "Holdings by sector",
+          "data": {
+            "nodes": [
+              {
+                "label": "All holdings"
+              },
+              {
+                "label": "Tech"
+              },
+              {
+                "label": "Food"
+              },
+              {
+                "label": "Apps"
+              },
+              {
+                "label": "Chips"
+              },
+              {
+                "label": "Farms"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Compara cada inversión por su área.",
+          "title": "Inversiones por sector",
+          "data": {
+            "nodes": [
+              {
+                "label": "Inversiones"
+              },
+              {
+                "label": "Tecnología"
+              },
+              {
+                "label": "Comida"
+              },
+              {
+                "label": "Apps"
+              },
+              {
+                "label": "Chips"
+              },
+              {
+                "label": "Granjas"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Compare cada investimento pela área.",
+          "title": "Investimentos por setor",
+          "data": {
+            "nodes": [
+              {
+                "label": "Investimentos"
+              },
+              {
+                "label": "Tecnologia"
+              },
+              {
+                "label": "Comida"
+              },
+              {
+                "label": "Apps"
+              },
+              {
+                "label": "Chips"
+              },
+              {
+                "label": "Fazendas"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "sunburst-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "sunburst"
+      },
+      "payload": {
+        "data": {
+          "unit": "percent",
+          "nodes": [
+            {
+              "id": "node-all"
+            },
+            {
+              "id": "node-tech"
+            },
+            {
+              "id": "node-food"
+            },
+            {
+              "id": "node-apps",
+              "value": 30
+            },
+            {
+              "id": "node-chips",
+              "value": 20
+            },
+            {
+              "id": "node-farms",
+              "value": 50
+            }
+          ],
+          "links": [
+            {
+              "from": "node-all",
+              "to": "node-tech"
+            },
+            {
+              "from": "node-all",
+              "to": "node-food"
+            },
+            {
+              "from": "node-tech",
+              "to": "node-apps"
+            },
+            {
+              "from": "node-tech",
+              "to": "node-chips"
+            },
+            {
+              "from": "node-food",
+              "to": "node-farms"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read from the centre out.",
+          "title": "Sectors, then companies",
+          "data": {
+            "nodes": [
+              {
+                "label": "All holdings"
+              },
+              {
+                "label": "Tech"
+              },
+              {
+                "label": "Food"
+              },
+              {
+                "label": "Apps"
+              },
+              {
+                "label": "Chips"
+              },
+              {
+                "label": "Farms"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Lee del centro hacia afuera.",
+          "title": "Sectores y empresas",
+          "data": {
+            "nodes": [
+              {
+                "label": "Inversiones"
+              },
+              {
+                "label": "Tecnología"
+              },
+              {
+                "label": "Comida"
+              },
+              {
+                "label": "Apps"
+              },
+              {
+                "label": "Chips"
+              },
+              {
+                "label": "Granjas"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Leia do centro para fora.",
+          "title": "Setores e empresas",
+          "data": {
+            "nodes": [
+              {
+                "label": "Investimentos"
+              },
+              {
+                "label": "Tecnologia"
+              },
+              {
+                "label": "Comida"
+              },
+              {
+                "label": "Apps"
+              },
+              {
+                "label": "Chips"
+              },
+              {
+                "label": "Fazendas"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "icicle-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "icicle"
+      },
+      "payload": {
+        "data": {
+          "unit": "percent",
+          "nodes": [
+            {
+              "id": "node-all"
+            },
+            {
+              "id": "node-tech"
+            },
+            {
+              "id": "node-food"
+            },
+            {
+              "id": "node-apps",
+              "value": 30
+            },
+            {
+              "id": "node-chips",
+              "value": 20
+            },
+            {
+              "id": "node-farms",
+              "value": 50
+            }
+          ],
+          "links": [
+            {
+              "from": "node-all",
+              "to": "node-tech"
+            },
+            {
+              "from": "node-all",
+              "to": "node-food"
+            },
+            {
+              "from": "node-tech",
+              "to": "node-apps"
+            },
+            {
+              "from": "node-tech",
+              "to": "node-chips"
+            },
+            {
+              "from": "node-food",
+              "to": "node-farms"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read from the top band down.",
+          "title": "The same holdings, in bands",
+          "data": {
+            "nodes": [
+              {
+                "label": "All holdings"
+              },
+              {
+                "label": "Tech"
+              },
+              {
+                "label": "Food"
+              },
+              {
+                "label": "Apps"
+              },
+              {
+                "label": "Chips"
+              },
+              {
+                "label": "Farms"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Lee desde la banda de arriba.",
+          "title": "Las mismas inversiones en bandas",
+          "data": {
+            "nodes": [
+              {
+                "label": "Inversiones"
+              },
+              {
+                "label": "Tecnología"
+              },
+              {
+                "label": "Comida"
+              },
+              {
+                "label": "Apps"
+              },
+              {
+                "label": "Chips"
+              },
+              {
+                "label": "Granjas"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Leia da faixa de cima para baixo.",
+          "title": "Os mesmos investimentos em faixas",
+          "data": {
+            "nodes": [
+              {
+                "label": "Investimentos"
+              },
+              {
+                "label": "Tecnologia"
+              },
+              {
+                "label": "Comida"
+              },
+              {
+                "label": "Apps"
+              },
+              {
+                "label": "Chips"
+              },
+              {
+                "label": "Fazendas"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "cscatter-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "connected-scatter"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "points": [
+            {
+              "id": "pt-y1",
+              "x": 1,
+              "y": 10
+            },
+            {
+              "id": "pt-y2",
+              "x": 2,
+              "y": 14
+            },
+            {
+              "id": "pt-y3",
+              "x": 3,
+              "y": 12
+            },
+            {
+              "id": "pt-y4",
+              "x": 4,
+              "y": 18
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the path from year 1.",
+          "title": "Price over the years",
+          "data": {
+            "points": [
+              {
+                "label": "Year 1"
+              },
+              {
+                "label": "Year 2"
+              },
+              {
+                "label": "Year 3"
+              },
+              {
+                "label": "Year 4"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Sigue el camino desde el año 1.",
+          "title": "Precio con los años",
+          "data": {
+            "points": [
+              {
+                "label": "Año 1"
+              },
+              {
+                "label": "Año 2"
+              },
+              {
+                "label": "Año 3"
+              },
+              {
+                "label": "Año 4"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Siga o caminho desde o ano 1.",
+          "title": "Preço ao longo dos anos",
+          "data": {
+            "points": [
+              {
+                "label": "Ano 1"
+              },
+              {
+                "label": "Ano 2"
+              },
+              {
+                "label": "Ano 3"
+              },
+              {
+                "label": "Ano 4"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "box-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "box-plot"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "boxes": [
+            {
+              "id": "grp-a",
+              "min": 5,
+              "q1": 20,
+              "median": 35,
+              "q3": 50,
+              "max": 90
+            },
+            {
+              "id": "grp-b",
+              "min": 10,
+              "q1": 15,
+              "median": 20,
+              "q3": 30,
+              "max": 40
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Compare the middle lines and the spread.",
+          "title": "Savings by class",
+          "data": {
+            "boxes": [
+              {
+                "label": "Class A"
+              },
+              {
+                "label": "Class B"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Compara las líneas del medio y la dispersión.",
+          "title": "Ahorros por grupo",
+          "data": {
+            "boxes": [
+              {
+                "label": "Grupo A"
+              },
+              {
+                "label": "Grupo B"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Compare as linhas do meio e a dispersão.",
+          "title": "Poupança por turma",
+          "data": {
+            "boxes": [
+              {
+                "label": "Turma A"
+              },
+              {
+                "label": "Turma B"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

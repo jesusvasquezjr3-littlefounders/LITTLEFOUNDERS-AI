@@ -155,5 +155,7 @@ export function isNonCopyKey(key: string): boolean {
     // Chart data: link endpoints and calendar dates are identifiers, not copy.
     || key === 'from' || key === 'to' || key === 'date'
     // GAP-FIX-R2: a rule builder's level and a flowchart's build mode are contract vocabulary.
-    || key === 'level';
+    || key === 'level'
+    // GAP-FIX-R2 charts: a swimlane node's lane and a Venn region's set list are ids.
+    || key === 'lane' || key === 'sets';
 }

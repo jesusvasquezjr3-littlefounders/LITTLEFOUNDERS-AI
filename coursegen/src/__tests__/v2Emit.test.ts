@@ -55,7 +55,7 @@ describe('the committed v2 plans', () => {
       for (const segment of plan.segments.filter((s) => s.rubric)) {
         const emitted = row.document.segments.find((s) => s.id === segment.id)!;
         // GAP-FIX-R1: the optional help ladder, item role and KC ride beside the six base fields; nothing else does.
-        const optional = ['help', 'item_role', 'knowledge_component_id'];
+        const optional = ['help', 'item_role', 'knowledge_component_id', 'item_phase', 'variant'];
         expect(Object.keys(emitted).filter((key) => !optional.includes(key)).sort()).toEqual(['grading', 'id', 'payload', 'prompt', 'type', 'visual']);
         for (const key of Object.keys(segment.rubric!)) {
           if (!(key in segment.payload)) expect(emitted.payload).not.toHaveProperty(key);

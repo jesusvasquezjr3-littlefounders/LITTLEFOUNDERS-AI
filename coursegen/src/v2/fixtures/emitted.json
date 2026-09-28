@@ -12280,5 +12280,2498 @@
         }
       }
     }
+  },
+  {
+    "lesson_id": "v2-charts-investing",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "investing",
+      "pathway_id": "investing-13-17",
+      "chapter_id": "reading-charts",
+      "lesson_id": "v2-charts-investing",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Read investing charts",
+      "required_capabilities": [
+        "visual.candlestick.v1",
+        "operation.show-table.v1",
+        "operation.choose-option.v1",
+        "visual.treemap.v1",
+        "visual.sunburst.v1",
+        "visual.icicle.v1",
+        "visual.connected-scatter.v1",
+        "visual.box-plot.v1"
+      ],
+      "segments": [
+        {
+          "id": "candle-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Read each candle: open, high, low, close.",
+          "visual": {
+            "type": "candlestick"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "ohlc": [
+                {
+                  "id": "day-mon",
+                  "open": 20,
+                  "high": 24,
+                  "low": 18,
+                  "close": 23,
+                  "label": "Mon"
+                },
+                {
+                  "id": "day-tue",
+                  "open": 23,
+                  "high": 25,
+                  "low": 19,
+                  "close": 20,
+                  "label": "Tue"
+                },
+                {
+                  "id": "day-wed",
+                  "open": 20,
+                  "high": 27,
+                  "low": 20,
+                  "close": 26,
+                  "label": "Wed"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "day-q-mon",
+                  "label": "Monday"
+                },
+                {
+                  "id": "day-q-tue",
+                  "label": "Tuesday"
+                },
+                {
+                  "id": "day-q-wed",
+                  "label": "Wednesday"
+                }
+              ],
+              "prompt": "Which day closed lower than it opened?"
+            },
+            "title": "Share price by day"
+          }
+        },
+        {
+          "id": "treemap-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Compare each holding by its area.",
+          "visual": {
+            "type": "treemap"
+          },
+          "payload": {
+            "data": {
+              "unit": "percent",
+              "nodes": [
+                {
+                  "id": "node-all",
+                  "label": "All holdings"
+                },
+                {
+                  "id": "node-tech",
+                  "label": "Tech"
+                },
+                {
+                  "id": "node-food",
+                  "label": "Food"
+                },
+                {
+                  "id": "node-apps",
+                  "value": 30,
+                  "label": "Apps"
+                },
+                {
+                  "id": "node-chips",
+                  "value": 20,
+                  "label": "Chips"
+                },
+                {
+                  "id": "node-farms",
+                  "value": 50,
+                  "label": "Farms"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-all",
+                  "to": "node-tech"
+                },
+                {
+                  "from": "node-all",
+                  "to": "node-food"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-apps"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-chips"
+                },
+                {
+                  "from": "node-food",
+                  "to": "node-farms"
+                }
+              ]
+            },
+            "title": "Holdings by sector"
+          }
+        },
+        {
+          "id": "sunburst-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Read from the centre out.",
+          "visual": {
+            "type": "sunburst"
+          },
+          "payload": {
+            "data": {
+              "unit": "percent",
+              "nodes": [
+                {
+                  "id": "node-all",
+                  "label": "All holdings"
+                },
+                {
+                  "id": "node-tech",
+                  "label": "Tech"
+                },
+                {
+                  "id": "node-food",
+                  "label": "Food"
+                },
+                {
+                  "id": "node-apps",
+                  "value": 30,
+                  "label": "Apps"
+                },
+                {
+                  "id": "node-chips",
+                  "value": 20,
+                  "label": "Chips"
+                },
+                {
+                  "id": "node-farms",
+                  "value": 50,
+                  "label": "Farms"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-all",
+                  "to": "node-tech"
+                },
+                {
+                  "from": "node-all",
+                  "to": "node-food"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-apps"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-chips"
+                },
+                {
+                  "from": "node-food",
+                  "to": "node-farms"
+                }
+              ]
+            },
+            "title": "Sectors, then companies"
+          }
+        },
+        {
+          "id": "icicle-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Read from the top band down.",
+          "visual": {
+            "type": "icicle"
+          },
+          "payload": {
+            "data": {
+              "unit": "percent",
+              "nodes": [
+                {
+                  "id": "node-all",
+                  "label": "All holdings"
+                },
+                {
+                  "id": "node-tech",
+                  "label": "Tech"
+                },
+                {
+                  "id": "node-food",
+                  "label": "Food"
+                },
+                {
+                  "id": "node-apps",
+                  "value": 30,
+                  "label": "Apps"
+                },
+                {
+                  "id": "node-chips",
+                  "value": 20,
+                  "label": "Chips"
+                },
+                {
+                  "id": "node-farms",
+                  "value": 50,
+                  "label": "Farms"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-all",
+                  "to": "node-tech"
+                },
+                {
+                  "from": "node-all",
+                  "to": "node-food"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-apps"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-chips"
+                },
+                {
+                  "from": "node-food",
+                  "to": "node-farms"
+                }
+              ]
+            },
+            "title": "The same holdings, in bands"
+          }
+        },
+        {
+          "id": "cscatter-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Follow the path from year 1.",
+          "visual": {
+            "type": "connected-scatter"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "points": [
+                {
+                  "id": "pt-y1",
+                  "x": 1,
+                  "y": 10,
+                  "label": "Year 1"
+                },
+                {
+                  "id": "pt-y2",
+                  "x": 2,
+                  "y": 14,
+                  "label": "Year 2"
+                },
+                {
+                  "id": "pt-y3",
+                  "x": 3,
+                  "y": 12,
+                  "label": "Year 3"
+                },
+                {
+                  "id": "pt-y4",
+                  "x": 4,
+                  "y": 18,
+                  "label": "Year 4"
+                }
+              ]
+            },
+            "title": "Price over the years"
+          }
+        },
+        {
+          "id": "box-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Compare the middle lines and the spread.",
+          "visual": {
+            "type": "box-plot"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "boxes": [
+                {
+                  "id": "grp-a",
+                  "min": 5,
+                  "q1": 20,
+                  "median": 35,
+                  "q3": 50,
+                  "max": 90,
+                  "label": "Class A"
+                },
+                {
+                  "id": "grp-b",
+                  "min": 10,
+                  "q1": 15,
+                  "median": 20,
+                  "q3": 30,
+                  "max": 40,
+                  "label": "Class B"
+                }
+              ]
+            },
+            "title": "Savings by class"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "candle-01": {
+        "acceptable_choice_ids": [
+          "day-q-tue"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-charts-investing",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "investing",
+      "pathway_id": "investing-13-17",
+      "chapter_id": "reading-charts",
+      "lesson_id": "v2-charts-investing",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Lee gráficas de inversión",
+      "required_capabilities": [
+        "visual.candlestick.v1",
+        "operation.show-table.v1",
+        "operation.choose-option.v1",
+        "visual.treemap.v1",
+        "visual.sunburst.v1",
+        "visual.icicle.v1",
+        "visual.connected-scatter.v1",
+        "visual.box-plot.v1"
+      ],
+      "segments": [
+        {
+          "id": "candle-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Lee cada vela: apertura, máximo, mínimo, cierre.",
+          "visual": {
+            "type": "candlestick"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "ohlc": [
+                {
+                  "id": "day-mon",
+                  "open": 20,
+                  "high": 24,
+                  "low": 18,
+                  "close": 23,
+                  "label": "Lun"
+                },
+                {
+                  "id": "day-tue",
+                  "open": 23,
+                  "high": 25,
+                  "low": 19,
+                  "close": 20,
+                  "label": "Mar"
+                },
+                {
+                  "id": "day-wed",
+                  "open": 20,
+                  "high": 27,
+                  "low": 20,
+                  "close": 26,
+                  "label": "Mié"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "day-q-mon",
+                  "label": "Lunes"
+                },
+                {
+                  "id": "day-q-tue",
+                  "label": "Martes"
+                },
+                {
+                  "id": "day-q-wed",
+                  "label": "Miércoles"
+                }
+              ],
+              "prompt": "¿Qué día cerró más bajo de lo que abrió?"
+            },
+            "title": "Precio por día"
+          }
+        },
+        {
+          "id": "treemap-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Compara cada inversión por su área.",
+          "visual": {
+            "type": "treemap"
+          },
+          "payload": {
+            "data": {
+              "unit": "percent",
+              "nodes": [
+                {
+                  "id": "node-all",
+                  "label": "Inversiones"
+                },
+                {
+                  "id": "node-tech",
+                  "label": "Tecnología"
+                },
+                {
+                  "id": "node-food",
+                  "label": "Comida"
+                },
+                {
+                  "id": "node-apps",
+                  "value": 30,
+                  "label": "Apps"
+                },
+                {
+                  "id": "node-chips",
+                  "value": 20,
+                  "label": "Chips"
+                },
+                {
+                  "id": "node-farms",
+                  "value": 50,
+                  "label": "Granjas"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-all",
+                  "to": "node-tech"
+                },
+                {
+                  "from": "node-all",
+                  "to": "node-food"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-apps"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-chips"
+                },
+                {
+                  "from": "node-food",
+                  "to": "node-farms"
+                }
+              ]
+            },
+            "title": "Inversiones por sector"
+          }
+        },
+        {
+          "id": "sunburst-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Lee del centro hacia afuera.",
+          "visual": {
+            "type": "sunburst"
+          },
+          "payload": {
+            "data": {
+              "unit": "percent",
+              "nodes": [
+                {
+                  "id": "node-all",
+                  "label": "Inversiones"
+                },
+                {
+                  "id": "node-tech",
+                  "label": "Tecnología"
+                },
+                {
+                  "id": "node-food",
+                  "label": "Comida"
+                },
+                {
+                  "id": "node-apps",
+                  "value": 30,
+                  "label": "Apps"
+                },
+                {
+                  "id": "node-chips",
+                  "value": 20,
+                  "label": "Chips"
+                },
+                {
+                  "id": "node-farms",
+                  "value": 50,
+                  "label": "Granjas"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-all",
+                  "to": "node-tech"
+                },
+                {
+                  "from": "node-all",
+                  "to": "node-food"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-apps"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-chips"
+                },
+                {
+                  "from": "node-food",
+                  "to": "node-farms"
+                }
+              ]
+            },
+            "title": "Sectores y empresas"
+          }
+        },
+        {
+          "id": "icicle-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Lee desde la banda de arriba.",
+          "visual": {
+            "type": "icicle"
+          },
+          "payload": {
+            "data": {
+              "unit": "percent",
+              "nodes": [
+                {
+                  "id": "node-all",
+                  "label": "Inversiones"
+                },
+                {
+                  "id": "node-tech",
+                  "label": "Tecnología"
+                },
+                {
+                  "id": "node-food",
+                  "label": "Comida"
+                },
+                {
+                  "id": "node-apps",
+                  "value": 30,
+                  "label": "Apps"
+                },
+                {
+                  "id": "node-chips",
+                  "value": 20,
+                  "label": "Chips"
+                },
+                {
+                  "id": "node-farms",
+                  "value": 50,
+                  "label": "Granjas"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-all",
+                  "to": "node-tech"
+                },
+                {
+                  "from": "node-all",
+                  "to": "node-food"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-apps"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-chips"
+                },
+                {
+                  "from": "node-food",
+                  "to": "node-farms"
+                }
+              ]
+            },
+            "title": "Las mismas inversiones en bandas"
+          }
+        },
+        {
+          "id": "cscatter-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Sigue el camino desde el año 1.",
+          "visual": {
+            "type": "connected-scatter"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "points": [
+                {
+                  "id": "pt-y1",
+                  "x": 1,
+                  "y": 10,
+                  "label": "Año 1"
+                },
+                {
+                  "id": "pt-y2",
+                  "x": 2,
+                  "y": 14,
+                  "label": "Año 2"
+                },
+                {
+                  "id": "pt-y3",
+                  "x": 3,
+                  "y": 12,
+                  "label": "Año 3"
+                },
+                {
+                  "id": "pt-y4",
+                  "x": 4,
+                  "y": 18,
+                  "label": "Año 4"
+                }
+              ]
+            },
+            "title": "Precio con los años"
+          }
+        },
+        {
+          "id": "box-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Compara las líneas del medio y la dispersión.",
+          "visual": {
+            "type": "box-plot"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "boxes": [
+                {
+                  "id": "grp-a",
+                  "min": 5,
+                  "q1": 20,
+                  "median": 35,
+                  "q3": 50,
+                  "max": 90,
+                  "label": "Grupo A"
+                },
+                {
+                  "id": "grp-b",
+                  "min": 10,
+                  "q1": 15,
+                  "median": 20,
+                  "q3": 30,
+                  "max": 40,
+                  "label": "Grupo B"
+                }
+              ]
+            },
+            "title": "Ahorros por grupo"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "candle-01": {
+        "acceptable_choice_ids": [
+          "day-q-tue"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-charts-investing",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "investing",
+      "pathway_id": "investing-13-17",
+      "chapter_id": "reading-charts",
+      "lesson_id": "v2-charts-investing",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Leia gráficos de investimento",
+      "required_capabilities": [
+        "visual.candlestick.v1",
+        "operation.show-table.v1",
+        "operation.choose-option.v1",
+        "visual.treemap.v1",
+        "visual.sunburst.v1",
+        "visual.icicle.v1",
+        "visual.connected-scatter.v1",
+        "visual.box-plot.v1"
+      ],
+      "segments": [
+        {
+          "id": "candle-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Leia cada vela: abertura, máxima, mínima, fechamento.",
+          "visual": {
+            "type": "candlestick"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "ohlc": [
+                {
+                  "id": "day-mon",
+                  "open": 20,
+                  "high": 24,
+                  "low": 18,
+                  "close": 23,
+                  "label": "Seg"
+                },
+                {
+                  "id": "day-tue",
+                  "open": 23,
+                  "high": 25,
+                  "low": 19,
+                  "close": 20,
+                  "label": "Ter"
+                },
+                {
+                  "id": "day-wed",
+                  "open": 20,
+                  "high": 27,
+                  "low": 20,
+                  "close": 26,
+                  "label": "Qua"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "day-q-mon",
+                  "label": "Segunda"
+                },
+                {
+                  "id": "day-q-tue",
+                  "label": "Terça"
+                },
+                {
+                  "id": "day-q-wed",
+                  "label": "Quarta"
+                }
+              ],
+              "prompt": "Que dia fechou abaixo da abertura?"
+            },
+            "title": "Preço por dia"
+          }
+        },
+        {
+          "id": "treemap-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Compare cada investimento pela área.",
+          "visual": {
+            "type": "treemap"
+          },
+          "payload": {
+            "data": {
+              "unit": "percent",
+              "nodes": [
+                {
+                  "id": "node-all",
+                  "label": "Investimentos"
+                },
+                {
+                  "id": "node-tech",
+                  "label": "Tecnologia"
+                },
+                {
+                  "id": "node-food",
+                  "label": "Comida"
+                },
+                {
+                  "id": "node-apps",
+                  "value": 30,
+                  "label": "Apps"
+                },
+                {
+                  "id": "node-chips",
+                  "value": 20,
+                  "label": "Chips"
+                },
+                {
+                  "id": "node-farms",
+                  "value": 50,
+                  "label": "Fazendas"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-all",
+                  "to": "node-tech"
+                },
+                {
+                  "from": "node-all",
+                  "to": "node-food"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-apps"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-chips"
+                },
+                {
+                  "from": "node-food",
+                  "to": "node-farms"
+                }
+              ]
+            },
+            "title": "Investimentos por setor"
+          }
+        },
+        {
+          "id": "sunburst-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Leia do centro para fora.",
+          "visual": {
+            "type": "sunburst"
+          },
+          "payload": {
+            "data": {
+              "unit": "percent",
+              "nodes": [
+                {
+                  "id": "node-all",
+                  "label": "Investimentos"
+                },
+                {
+                  "id": "node-tech",
+                  "label": "Tecnologia"
+                },
+                {
+                  "id": "node-food",
+                  "label": "Comida"
+                },
+                {
+                  "id": "node-apps",
+                  "value": 30,
+                  "label": "Apps"
+                },
+                {
+                  "id": "node-chips",
+                  "value": 20,
+                  "label": "Chips"
+                },
+                {
+                  "id": "node-farms",
+                  "value": 50,
+                  "label": "Fazendas"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-all",
+                  "to": "node-tech"
+                },
+                {
+                  "from": "node-all",
+                  "to": "node-food"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-apps"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-chips"
+                },
+                {
+                  "from": "node-food",
+                  "to": "node-farms"
+                }
+              ]
+            },
+            "title": "Setores e empresas"
+          }
+        },
+        {
+          "id": "icicle-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Leia da faixa de cima para baixo.",
+          "visual": {
+            "type": "icicle"
+          },
+          "payload": {
+            "data": {
+              "unit": "percent",
+              "nodes": [
+                {
+                  "id": "node-all",
+                  "label": "Investimentos"
+                },
+                {
+                  "id": "node-tech",
+                  "label": "Tecnologia"
+                },
+                {
+                  "id": "node-food",
+                  "label": "Comida"
+                },
+                {
+                  "id": "node-apps",
+                  "value": 30,
+                  "label": "Apps"
+                },
+                {
+                  "id": "node-chips",
+                  "value": 20,
+                  "label": "Chips"
+                },
+                {
+                  "id": "node-farms",
+                  "value": 50,
+                  "label": "Fazendas"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-all",
+                  "to": "node-tech"
+                },
+                {
+                  "from": "node-all",
+                  "to": "node-food"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-apps"
+                },
+                {
+                  "from": "node-tech",
+                  "to": "node-chips"
+                },
+                {
+                  "from": "node-food",
+                  "to": "node-farms"
+                }
+              ]
+            },
+            "title": "Os mesmos investimentos em faixas"
+          }
+        },
+        {
+          "id": "cscatter-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Siga o caminho desde o ano 1.",
+          "visual": {
+            "type": "connected-scatter"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "points": [
+                {
+                  "id": "pt-y1",
+                  "x": 1,
+                  "y": 10,
+                  "label": "Ano 1"
+                },
+                {
+                  "id": "pt-y2",
+                  "x": 2,
+                  "y": 14,
+                  "label": "Ano 2"
+                },
+                {
+                  "id": "pt-y3",
+                  "x": 3,
+                  "y": 12,
+                  "label": "Ano 3"
+                },
+                {
+                  "id": "pt-y4",
+                  "x": 4,
+                  "y": 18,
+                  "label": "Ano 4"
+                }
+              ]
+            },
+            "title": "Preço ao longo dos anos"
+          }
+        },
+        {
+          "id": "box-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Compare as linhas do meio e a dispersão.",
+          "visual": {
+            "type": "box-plot"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "boxes": [
+                {
+                  "id": "grp-a",
+                  "min": 5,
+                  "q1": 20,
+                  "median": 35,
+                  "q3": 50,
+                  "max": 90,
+                  "label": "Turma A"
+                },
+                {
+                  "id": "grp-b",
+                  "min": 10,
+                  "q1": 15,
+                  "median": 20,
+                  "q3": 30,
+                  "max": 40,
+                  "label": "Turma B"
+                }
+              ]
+            },
+            "title": "Poupança por turma"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "candle-01": {
+        "acceptable_choice_ids": [
+          "day-q-tue"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-charts-entrepreneurship",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "entrepreneurship",
+      "pathway_id": "entrepreneurship-13-17",
+      "chapter_id": "reading-charts",
+      "lesson_id": "v2-charts-entrepreneurship",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Read business charts",
+      "required_capabilities": [
+        "visual.marimekko.v1",
+        "operation.show-table.v1",
+        "visual.org-chart.v1",
+        "visual.ishikawa.v1"
+      ],
+      "segments": [
+        {
+          "id": "mari-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Wider columns sold more in total.",
+          "visual": {
+            "type": "marimekko"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "cat-north",
+                  "label": "North"
+                },
+                {
+                  "id": "cat-south",
+                  "label": "South"
+                },
+                {
+                  "id": "cat-east",
+                  "label": "East"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-ours",
+                  "values": [
+                    30,
+                    10,
+                    20
+                  ],
+                  "label": "Our stand"
+                },
+                {
+                  "id": "series-rivals",
+                  "values": [
+                    20,
+                    40,
+                    30
+                  ],
+                  "label": "Rivals"
+                }
+              ]
+            },
+            "title": "Sales by street"
+          }
+        },
+        {
+          "id": "org-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "See who reports to whom.",
+          "visual": {
+            "type": "org-chart"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "nodes": [
+                {
+                  "id": "node-lead",
+                  "label": "Founder"
+                },
+                {
+                  "id": "node-make",
+                  "label": "Maker"
+                },
+                {
+                  "id": "node-sell",
+                  "label": "Seller"
+                },
+                {
+                  "id": "node-cash",
+                  "label": "Cashier"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-lead",
+                  "to": "node-make"
+                },
+                {
+                  "from": "node-lead",
+                  "to": "node-sell"
+                },
+                {
+                  "from": "node-sell",
+                  "to": "node-cash"
+                }
+              ]
+            },
+            "title": "Your team"
+          }
+        },
+        {
+          "id": "fish-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Trace each cause to the effect.",
+          "visual": {
+            "type": "ishikawa"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "nodes": [
+                {
+                  "id": "node-effect",
+                  "label": "Few sales"
+                },
+                {
+                  "id": "node-price",
+                  "label": "Price"
+                },
+                {
+                  "id": "node-place",
+                  "label": "Place"
+                },
+                {
+                  "id": "node-high",
+                  "label": "Too high"
+                },
+                {
+                  "id": "node-hidden",
+                  "label": "Hidden stand"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-effect",
+                  "to": "node-price"
+                },
+                {
+                  "from": "node-effect",
+                  "to": "node-place"
+                },
+                {
+                  "from": "node-price",
+                  "to": "node-high"
+                },
+                {
+                  "from": "node-place",
+                  "to": "node-hidden"
+                }
+              ]
+            },
+            "title": "Why sales were low"
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-charts-entrepreneurship",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "entrepreneurship",
+      "pathway_id": "entrepreneurship-13-17",
+      "chapter_id": "reading-charts",
+      "lesson_id": "v2-charts-entrepreneurship",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Lee gráficas de negocio",
+      "required_capabilities": [
+        "visual.marimekko.v1",
+        "operation.show-table.v1",
+        "visual.org-chart.v1",
+        "visual.ishikawa.v1"
+      ],
+      "segments": [
+        {
+          "id": "mari-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Las columnas anchas vendieron más.",
+          "visual": {
+            "type": "marimekko"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "cat-north",
+                  "label": "Norte"
+                },
+                {
+                  "id": "cat-south",
+                  "label": "Sur"
+                },
+                {
+                  "id": "cat-east",
+                  "label": "Este"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-ours",
+                  "values": [
+                    30,
+                    10,
+                    20
+                  ],
+                  "label": "Nuestro puesto"
+                },
+                {
+                  "id": "series-rivals",
+                  "values": [
+                    20,
+                    40,
+                    30
+                  ],
+                  "label": "Rivales"
+                }
+              ]
+            },
+            "title": "Ventas por calle"
+          }
+        },
+        {
+          "id": "org-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Mira quién reporta a quién.",
+          "visual": {
+            "type": "org-chart"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "nodes": [
+                {
+                  "id": "node-lead",
+                  "label": "Fundadora"
+                },
+                {
+                  "id": "node-make",
+                  "label": "Producción"
+                },
+                {
+                  "id": "node-sell",
+                  "label": "Ventas"
+                },
+                {
+                  "id": "node-cash",
+                  "label": "Caja"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-lead",
+                  "to": "node-make"
+                },
+                {
+                  "from": "node-lead",
+                  "to": "node-sell"
+                },
+                {
+                  "from": "node-sell",
+                  "to": "node-cash"
+                }
+              ]
+            },
+            "title": "Tu equipo"
+          }
+        },
+        {
+          "id": "fish-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Sigue cada causa hasta el efecto.",
+          "visual": {
+            "type": "ishikawa"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "nodes": [
+                {
+                  "id": "node-effect",
+                  "label": "Pocas ventas"
+                },
+                {
+                  "id": "node-price",
+                  "label": "Precio"
+                },
+                {
+                  "id": "node-place",
+                  "label": "Lugar"
+                },
+                {
+                  "id": "node-high",
+                  "label": "Muy alto"
+                },
+                {
+                  "id": "node-hidden",
+                  "label": "Puesto oculto"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-effect",
+                  "to": "node-price"
+                },
+                {
+                  "from": "node-effect",
+                  "to": "node-place"
+                },
+                {
+                  "from": "node-price",
+                  "to": "node-high"
+                },
+                {
+                  "from": "node-place",
+                  "to": "node-hidden"
+                }
+              ]
+            },
+            "title": "Por qué se vendió poco"
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-charts-entrepreneurship",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "entrepreneurship",
+      "pathway_id": "entrepreneurship-13-17",
+      "chapter_id": "reading-charts",
+      "lesson_id": "v2-charts-entrepreneurship",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Leia gráficos de negócio",
+      "required_capabilities": [
+        "visual.marimekko.v1",
+        "operation.show-table.v1",
+        "visual.org-chart.v1",
+        "visual.ishikawa.v1"
+      ],
+      "segments": [
+        {
+          "id": "mari-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Colunas largas venderam mais.",
+          "visual": {
+            "type": "marimekko"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "cat-north",
+                  "label": "Norte"
+                },
+                {
+                  "id": "cat-south",
+                  "label": "Sul"
+                },
+                {
+                  "id": "cat-east",
+                  "label": "Leste"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-ours",
+                  "values": [
+                    30,
+                    10,
+                    20
+                  ],
+                  "label": "Nossa banca"
+                },
+                {
+                  "id": "series-rivals",
+                  "values": [
+                    20,
+                    40,
+                    30
+                  ],
+                  "label": "Rivais"
+                }
+              ]
+            },
+            "title": "Vendas por rua"
+          }
+        },
+        {
+          "id": "org-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Veja quem responde a quem.",
+          "visual": {
+            "type": "org-chart"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "nodes": [
+                {
+                  "id": "node-lead",
+                  "label": "Fundadora"
+                },
+                {
+                  "id": "node-make",
+                  "label": "Produção"
+                },
+                {
+                  "id": "node-sell",
+                  "label": "Vendas"
+                },
+                {
+                  "id": "node-cash",
+                  "label": "Caixa"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-lead",
+                  "to": "node-make"
+                },
+                {
+                  "from": "node-lead",
+                  "to": "node-sell"
+                },
+                {
+                  "from": "node-sell",
+                  "to": "node-cash"
+                }
+              ]
+            },
+            "title": "Sua equipe"
+          }
+        },
+        {
+          "id": "fish-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Siga cada causa até o efeito.",
+          "visual": {
+            "type": "ishikawa"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "nodes": [
+                {
+                  "id": "node-effect",
+                  "label": "Poucas vendas"
+                },
+                {
+                  "id": "node-price",
+                  "label": "Preço"
+                },
+                {
+                  "id": "node-place",
+                  "label": "Lugar"
+                },
+                {
+                  "id": "node-high",
+                  "label": "Alto demais"
+                },
+                {
+                  "id": "node-hidden",
+                  "label": "Banca escondida"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-effect",
+                  "to": "node-price"
+                },
+                {
+                  "from": "node-effect",
+                  "to": "node-place"
+                },
+                {
+                  "from": "node-price",
+                  "to": "node-high"
+                },
+                {
+                  "from": "node-place",
+                  "to": "node-hidden"
+                }
+              ]
+            },
+            "title": "Por que vendeu pouco"
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-charts-tween",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-education-10-12",
+      "chapter_id": "reading-charts",
+      "lesson_id": "v2-charts-tween",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Read new charts",
+      "required_capabilities": [
+        "visual.bump.v1",
+        "operation.show-table.v1",
+        "visual.swimlane.v1",
+        "visual.venn.v1",
+        "operation.choose-option.v1",
+        "visual.mind-map.v1"
+      ],
+      "segments": [
+        {
+          "id": "bump-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Follow each goal's rank.",
+          "visual": {
+            "type": "bump"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "cat-w1",
+                  "label": "Week 1"
+                },
+                {
+                  "id": "cat-w2",
+                  "label": "Week 2"
+                },
+                {
+                  "id": "cat-w3",
+                  "label": "Week 3"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-bike",
+                  "values": [
+                    1,
+                    2,
+                    1
+                  ],
+                  "label": "Bike"
+                },
+                {
+                  "id": "series-game",
+                  "values": [
+                    2,
+                    1,
+                    3
+                  ],
+                  "label": "Game"
+                },
+                {
+                  "id": "series-trip",
+                  "values": [
+                    3,
+                    3,
+                    2
+                  ],
+                  "label": "Trip"
+                }
+              ]
+            },
+            "title": "Top savings goals"
+          }
+        },
+        {
+          "id": "swim-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Follow the request between lanes.",
+          "visual": {
+            "type": "swimlane"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "lane-kid",
+                  "label": "Kid"
+                },
+                {
+                  "id": "lane-parent",
+                  "label": "Parent"
+                }
+              ],
+              "nodes": [
+                {
+                  "id": "node-ask",
+                  "lane": "lane-kid",
+                  "label": "Ask"
+                },
+                {
+                  "id": "node-ok",
+                  "lane": "lane-parent",
+                  "label": "Approve"
+                },
+                {
+                  "id": "node-buy",
+                  "lane": "lane-kid",
+                  "label": "Buy"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-ask",
+                  "to": "node-ok"
+                },
+                {
+                  "from": "node-ok",
+                  "to": "node-buy"
+                }
+              ]
+            },
+            "title": "Who does what"
+          }
+        },
+        {
+          "id": "venn-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Count who is in both circles.",
+          "visual": {
+            "type": "venn"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "set-savers",
+                  "label": "Savers"
+                },
+                {
+                  "id": "set-budget",
+                  "label": "Budgeters"
+                }
+              ],
+              "regions": [
+                {
+                  "sets": [
+                    "set-savers"
+                  ],
+                  "value": 12
+                },
+                {
+                  "sets": [
+                    "set-budget"
+                  ],
+                  "value": 7
+                },
+                {
+                  "sets": [
+                    "set-savers",
+                    "set-budget"
+                  ],
+                  "value": 5
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "ans-five",
+                  "label": "5"
+                },
+                {
+                  "id": "ans-twelve",
+                  "label": "12"
+                },
+                {
+                  "id": "ans-seven",
+                  "label": "7"
+                }
+              ],
+              "prompt": "How many save and budget?"
+            },
+            "title": "Our class"
+          }
+        },
+        {
+          "id": "mind-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Read each branch from the centre.",
+          "visual": {
+            "type": "mind-map"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "nodes": [
+                {
+                  "id": "node-plan",
+                  "label": "My plan"
+                },
+                {
+                  "id": "node-earn",
+                  "label": "Earn"
+                },
+                {
+                  "id": "node-save",
+                  "label": "Save"
+                },
+                {
+                  "id": "node-chores",
+                  "label": "Chores"
+                },
+                {
+                  "id": "node-jar",
+                  "label": "Jar"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-plan",
+                  "to": "node-earn"
+                },
+                {
+                  "from": "node-plan",
+                  "to": "node-save"
+                },
+                {
+                  "from": "node-earn",
+                  "to": "node-chores"
+                },
+                {
+                  "from": "node-save",
+                  "to": "node-jar"
+                }
+              ]
+            },
+            "title": "Plan map"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "venn-01": {
+        "acceptable_choice_ids": [
+          "ans-five"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-charts-tween",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-education-10-12",
+      "chapter_id": "reading-charts",
+      "lesson_id": "v2-charts-tween",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Lee gráficas nuevas",
+      "required_capabilities": [
+        "visual.bump.v1",
+        "operation.show-table.v1",
+        "visual.swimlane.v1",
+        "visual.venn.v1",
+        "operation.choose-option.v1",
+        "visual.mind-map.v1"
+      ],
+      "segments": [
+        {
+          "id": "bump-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Sigue el lugar de cada meta.",
+          "visual": {
+            "type": "bump"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "cat-w1",
+                  "label": "Semana 1"
+                },
+                {
+                  "id": "cat-w2",
+                  "label": "Semana 2"
+                },
+                {
+                  "id": "cat-w3",
+                  "label": "Semana 3"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-bike",
+                  "values": [
+                    1,
+                    2,
+                    1
+                  ],
+                  "label": "Bici"
+                },
+                {
+                  "id": "series-game",
+                  "values": [
+                    2,
+                    1,
+                    3
+                  ],
+                  "label": "Juego"
+                },
+                {
+                  "id": "series-trip",
+                  "values": [
+                    3,
+                    3,
+                    2
+                  ],
+                  "label": "Viaje"
+                }
+              ]
+            },
+            "title": "Metas de ahorro favoritas"
+          }
+        },
+        {
+          "id": "swim-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Sigue la solicitud entre carriles.",
+          "visual": {
+            "type": "swimlane"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "lane-kid",
+                  "label": "Niño"
+                },
+                {
+                  "id": "lane-parent",
+                  "label": "Mamá o papá"
+                }
+              ],
+              "nodes": [
+                {
+                  "id": "node-ask",
+                  "lane": "lane-kid",
+                  "label": "Pide"
+                },
+                {
+                  "id": "node-ok",
+                  "lane": "lane-parent",
+                  "label": "Aprueba"
+                },
+                {
+                  "id": "node-buy",
+                  "lane": "lane-kid",
+                  "label": "Compra"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-ask",
+                  "to": "node-ok"
+                },
+                {
+                  "from": "node-ok",
+                  "to": "node-buy"
+                }
+              ]
+            },
+            "title": "Quién hace qué"
+          }
+        },
+        {
+          "id": "venn-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Cuenta a quienes están en ambos.",
+          "visual": {
+            "type": "venn"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "set-savers",
+                  "label": "Ahorran"
+                },
+                {
+                  "id": "set-budget",
+                  "label": "Planean gastos"
+                }
+              ],
+              "regions": [
+                {
+                  "sets": [
+                    "set-savers"
+                  ],
+                  "value": 12
+                },
+                {
+                  "sets": [
+                    "set-budget"
+                  ],
+                  "value": 7
+                },
+                {
+                  "sets": [
+                    "set-savers",
+                    "set-budget"
+                  ],
+                  "value": 5
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "ans-five",
+                  "label": "5"
+                },
+                {
+                  "id": "ans-twelve",
+                  "label": "12"
+                },
+                {
+                  "id": "ans-seven",
+                  "label": "7"
+                }
+              ],
+              "prompt": "¿Cuántos ahorran y planean?"
+            },
+            "title": "Nuestro grupo"
+          }
+        },
+        {
+          "id": "mind-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Lee cada rama desde el centro.",
+          "visual": {
+            "type": "mind-map"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "nodes": [
+                {
+                  "id": "node-plan",
+                  "label": "Mi plan"
+                },
+                {
+                  "id": "node-earn",
+                  "label": "Ganar"
+                },
+                {
+                  "id": "node-save",
+                  "label": "Ahorrar"
+                },
+                {
+                  "id": "node-chores",
+                  "label": "Tareas"
+                },
+                {
+                  "id": "node-jar",
+                  "label": "Frasco"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-plan",
+                  "to": "node-earn"
+                },
+                {
+                  "from": "node-plan",
+                  "to": "node-save"
+                },
+                {
+                  "from": "node-earn",
+                  "to": "node-chores"
+                },
+                {
+                  "from": "node-save",
+                  "to": "node-jar"
+                }
+              ]
+            },
+            "title": "Mapa del plan"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "venn-01": {
+        "acceptable_choice_ids": [
+          "ans-five"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-charts-tween",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-education-10-12",
+      "chapter_id": "reading-charts",
+      "lesson_id": "v2-charts-tween",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Leia gráficos novos",
+      "required_capabilities": [
+        "visual.bump.v1",
+        "operation.show-table.v1",
+        "visual.swimlane.v1",
+        "visual.venn.v1",
+        "operation.choose-option.v1",
+        "visual.mind-map.v1"
+      ],
+      "segments": [
+        {
+          "id": "bump-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Siga a posição de cada meta.",
+          "visual": {
+            "type": "bump"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "cat-w1",
+                  "label": "Semana 1"
+                },
+                {
+                  "id": "cat-w2",
+                  "label": "Semana 2"
+                },
+                {
+                  "id": "cat-w3",
+                  "label": "Semana 3"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-bike",
+                  "values": [
+                    1,
+                    2,
+                    1
+                  ],
+                  "label": "Bicicleta"
+                },
+                {
+                  "id": "series-game",
+                  "values": [
+                    2,
+                    1,
+                    3
+                  ],
+                  "label": "Jogo"
+                },
+                {
+                  "id": "series-trip",
+                  "values": [
+                    3,
+                    3,
+                    2
+                  ],
+                  "label": "Viagem"
+                }
+              ]
+            },
+            "title": "Metas de poupança favoritas"
+          }
+        },
+        {
+          "id": "swim-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Siga o pedido entre as faixas.",
+          "visual": {
+            "type": "swimlane"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "lane-kid",
+                  "label": "Criança"
+                },
+                {
+                  "id": "lane-parent",
+                  "label": "Mãe ou pai"
+                }
+              ],
+              "nodes": [
+                {
+                  "id": "node-ask",
+                  "lane": "lane-kid",
+                  "label": "Pede"
+                },
+                {
+                  "id": "node-ok",
+                  "lane": "lane-parent",
+                  "label": "Aprova"
+                },
+                {
+                  "id": "node-buy",
+                  "lane": "lane-kid",
+                  "label": "Compra"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-ask",
+                  "to": "node-ok"
+                },
+                {
+                  "from": "node-ok",
+                  "to": "node-buy"
+                }
+              ]
+            },
+            "title": "Quem faz o quê"
+          }
+        },
+        {
+          "id": "venn-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Conte quem está nos dois.",
+          "visual": {
+            "type": "venn"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "set-savers",
+                  "label": "Poupam"
+                },
+                {
+                  "id": "set-budget",
+                  "label": "Planejam gastos"
+                }
+              ],
+              "regions": [
+                {
+                  "sets": [
+                    "set-savers"
+                  ],
+                  "value": 12
+                },
+                {
+                  "sets": [
+                    "set-budget"
+                  ],
+                  "value": 7
+                },
+                {
+                  "sets": [
+                    "set-savers",
+                    "set-budget"
+                  ],
+                  "value": 5
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "ans-five",
+                  "label": "5"
+                },
+                {
+                  "id": "ans-twelve",
+                  "label": "12"
+                },
+                {
+                  "id": "ans-seven",
+                  "label": "7"
+                }
+              ],
+              "prompt": "Quantos poupam e planejam?"
+            },
+            "title": "Nossa turma"
+          }
+        },
+        {
+          "id": "mind-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Leia cada ramo a partir do centro.",
+          "visual": {
+            "type": "mind-map"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "nodes": [
+                {
+                  "id": "node-plan",
+                  "label": "Meu plano"
+                },
+                {
+                  "id": "node-earn",
+                  "label": "Ganhar"
+                },
+                {
+                  "id": "node-save",
+                  "label": "Poupar"
+                },
+                {
+                  "id": "node-chores",
+                  "label": "Tarefas"
+                },
+                {
+                  "id": "node-jar",
+                  "label": "Pote"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-plan",
+                  "to": "node-earn"
+                },
+                {
+                  "from": "node-plan",
+                  "to": "node-save"
+                },
+                {
+                  "from": "node-earn",
+                  "to": "node-chores"
+                },
+                {
+                  "from": "node-save",
+                  "to": "node-jar"
+                }
+              ]
+            },
+            "title": "Mapa do plano"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "venn-01": {
+        "acceptable_choice_ids": [
+          "ans-five"
+        ]
+      }
+    }
   }
 ]

@@ -64,7 +64,7 @@ export function loadCarriedCourseData(courseId: string): CarriedCourseData {
 const V2_SKIP_KEYS = new Set(['id', 'type', 'grading', 'visual', 'schema_version', 'course_id', 'pathway_id', 'chapter_id', 'lesson_id', 'version_id',
   'locale', 'age_band', 'eligibility', 'knowledge_component_ids', 'adventure_scene_id', 'required_capabilities', 'representation_progressions',
   'mentor_stage', 'currency', 'mode', 'unit', 'start', 'yes', 'no', 'relation', 'kind', 'role', 'audio_ref', 'from', 'to', 'date', 'level',
-  'item_role', 'item_phase', 'variant', 'knowledge_component_id']);
+  'item_role', 'item_phase', 'variant', 'knowledge_component_id', 'lane', 'sets']);
 
 function visible(document: Json): Array<{ segmentId?: string; path: string; text: string }> {
   const out: Array<{ segmentId?: string; path: string; text: string }> = [];
