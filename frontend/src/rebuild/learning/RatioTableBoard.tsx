@@ -7,6 +7,8 @@ import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { TeachingChartBoard } from './TeachingChartBoard';
 import './learning.css';
 import { LessonStageSlot } from './lessonStage';
+import { GradedFoot, NumberAnswer, SegmentPrompt, useSegmentGrade, type OnGradeSegment } from './segmentKit';
+
 
 type CopySet = {
   back: string; practice: string; board: string; showTable: string; showChart: string; packs: string; pack: string;
@@ -44,10 +46,14 @@ export function ratioTablePilotDocument(locale: Locale): unknown {
   };
 }
 
-export function RatioTableBoard({ document, segment, onBack, sequence }: {
-  document: LessonClientDocument; segment: RatioTableSegment; onBack: () => void; sequence?: LessonSequenceControl;
+export function RatioTableBoard({ document, segment, onBack, sequence, onGrade }: {
+  document: LessonClientDocument; segment: RatioTableSegment; onBack: () => void; sequence?: LessonSequenceControl; onGrade?: OnGradeSegment;
 }) {
   const t = copy[document.locale];
+  const grading = useSegmentGrade(segment.id, onGrade);
+  const graded = segment.grading === 'server' && !!onGrade;
+  const hideLast = graded && !grading.met;
+  const [typed, setTyped] = useState<string | null>(null);
   const [packs, setPacks] = useState(segment.payload.initialPacks);
   const allRows = useMemo(() => ratioTableRows(segment.payload, segment.payload.maximumPacks) ?? [], [segment.payload]);
   const rows = allRows.slice(0, packs);
@@ -70,7 +76,7 @@ export function RatioTableBoard({ document, segment, onBack, sequence }: {
         <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.practice}</span>
       </header><LessonStageSlot />
       <div className="lf-learning-content">
-        <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
+        <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><SegmentPrompt segment={segment} locale={document.locale} /></div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart}
           controlLeading={<Button onClick={() => setPacks(segment.payload.initialPacks)} disabled={!changed}>{t.reset}</Button>}
           table={<table className="lf-learning-table lf-ratio-table" aria-label={t.board}><thead><tr>
@@ -78,18 +84,20 @@ export function RatioTableBoard({ document, segment, onBack, sequence }: {
             <th scope="col" data-copy-role="data">{t.total}</th><th scope="col" data-copy-role="data">{t.unitPrice}</th>
           </tr></thead><tbody>{rows.map((row) => <tr key={row.packs}>
             <th scope="row" data-label={t.packs} data-copy-role="data">{row.packs}</th><td data-label={t.items} data-copy-role="data">{row.items}</td>
-            <td data-label={t.total} data-copy-role="data">{amount(row.price)}</td><td data-label={t.unitPrice} data-copy-role="data">{amount(row.unitPrice)}</td>
+            <td data-label={t.total} data-copy-role="data">{hideLast && row.packs === packs ? '?' : amount(row.price)}</td><td data-label={t.unitPrice} data-copy-role="data">{amount(row.unitPrice)}</td>
           </tr>)}</tbody></table>}
-          chart={<div className="lf-ratio-diagram" role="group" aria-label={`${t.ratioLines}. ${packs} ${t.packs}: ${current?.items} ${t.items}; ${amount(current?.price ?? 0)}. ${t.unit}: ${amount(segment.payload.pricePerPack / segment.payload.itemsPerPack)}.`}>
+          chart={<div className="lf-ratio-diagram" role="group" aria-label={`${t.ratioLines}. ${packs} ${t.packs}: ${current?.items} ${t.items}; ${hideLast ? '?' : amount(current?.price ?? 0)}. ${t.unit}: ${amount(segment.payload.pricePerPack / segment.payload.itemsPerPack)}.`}>
             <div className="lf-ratio-line"><span data-copy-role="data">{t.items}</span><div className="lf-ratio-ticks" style={{ gridTemplateColumns: `repeat(${allRows.length}, minmax(0, 1fr))` }}>{allRows.map((row) => <span key={row.packs} aria-hidden="true" className={row.packs <= packs ? undefined : 'lf-ratio-tick--future'}>{row.items}</span>)}<button className="lf-ratio-pair" type="button" aria-label={t.dragPair} style={{ insetInlineStart: pairPosition }} onPointerDown={startPair} onPointerMove={(event) => { if (event.currentTarget.hasPointerCapture(event.pointerId)) movePair(event); }} /></div></div>
-            <div className="lf-ratio-line"><span data-copy-role="data">{t.total}</span><div className="lf-ratio-ticks" style={{ gridTemplateColumns: `repeat(${allRows.length}, minmax(0, 1fr))` }}>{allRows.map((row) => <span key={row.packs} aria-hidden="true" className={row.packs <= packs ? undefined : 'lf-ratio-tick--future'}>{amount(row.price)}</span>)}<button className="lf-ratio-pair" type="button" aria-label={t.dragPair} style={{ insetInlineStart: pairPosition }} onPointerDown={startPair} onPointerMove={(event) => { if (event.currentTarget.hasPointerCapture(event.pointerId)) movePair(event); }} /></div></div>
+            <div className="lf-ratio-line"><span data-copy-role="data">{t.total}</span><div className="lf-ratio-ticks" style={{ gridTemplateColumns: `repeat(${allRows.length}, minmax(0, 1fr))` }}>{allRows.map((row) => <span key={row.packs} aria-hidden="true" className={row.packs <= packs ? undefined : 'lf-ratio-tick--future'}>{hideLast && row.packs >= packs ? '?' : amount(row.price)}</span>)}<button className="lf-ratio-pair" type="button" aria-label={t.dragPair} style={{ insetInlineStart: pairPosition }} onPointerDown={startPair} onPointerMove={(event) => { if (event.currentTarget.hasPointerCapture(event.pointerId)) movePair(event); }} /></div></div>
             <p className="lf-ratio-unit" data-copy-role="data">{t.unit}: <strong data-copy-role="data">{amount(segment.payload.pricePerPack / segment.payload.itemsPerPack)}</strong></p>
           </div>}>
           {() => <Slider className="lf-ratio-control" label={t.packs} valueText={`${packs} ${packs === 1 ? t.pack : t.packs}`}
-            min={segment.payload.minimumPacks} max={segment.payload.maximumPacks} step={1} value={packs} onValueChange={setPacks}
+            min={segment.payload.minimumPacks} max={segment.payload.maximumPacks} step={1} value={packs} onValueChange={(value) => { grading.reset(); setPacks(value); }}
             stepLabels={{ decrease: '−', increase: '+' }} />}
         </TeachingChartBoard>
-        {sequence ? <footer className="lf-ratio-foot"><Button variant="accent" disabled={!changed} onClick={sequence.onAdvance}>{t.continue}</Button></footer> : null}
+        {graded ? <><NumberAnswer label={t.total} locale={document.locale} onChange={setTyped} disabled={grading.pending || grading.met} />
+          <GradedFoot locale={document.locale} grading={grading} canCheck={typed !== null} sequence={sequence} onCheck={() => grading.check({ packs, price: typed })} /></> : null}
+        {sequence && !graded ? <footer className="lf-ratio-foot"><Button variant="accent" disabled={!changed} onClick={sequence.onAdvance}>{t.continue}</Button></footer> : null}
       </div>
     </div>
   </main>;

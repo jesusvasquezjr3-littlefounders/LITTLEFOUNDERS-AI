@@ -7,6 +7,8 @@ import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import './learning.css';
 import './goalBullet.css';
 import { LessonStageSlot } from './lessonStage';
+import { GradedFoot, SegmentPrompt, useSegmentGrade, type OnGradeSegment } from './segmentKit';
+
 
 type GoalBulletSegment = Extract<LessonClientSegment, { type: 'visual.goal-bullet.v2' }>;
 type Labels = { back: string; explore: string; progress: string; board: string; showTable: string; showChart: string; reset: string; category: string; value: string;
@@ -46,9 +48,11 @@ export function goalBulletPilotDocument(locale: Locale, ageBand: AgeBand): unkno
   };
 }
 
-export function GoalBulletBoard({ document, segment, onBack, sequence }: {
-  document: LessonClientDocument; segment: GoalBulletSegment; onBack: () => void; sequence?: LessonSequenceControl;
+export function GoalBulletBoard({ document, segment, onBack, sequence, onGrade }: {
+  document: LessonClientDocument; segment: GoalBulletSegment; onBack: () => void; sequence?: LessonSequenceControl; onGrade?: OnGradeSegment;
 }) {
+  const grading = useSegmentGrade(segment.id, onGrade);
+  const graded = segment.grading === 'server' && !!onGrade;
   const t = copy[document.locale];
   const { minimum, maximum, target, step, initial, currency } = segment.payload;
   const [saved, setSaved] = useState(initial);
@@ -59,7 +63,7 @@ export function GoalBulletBoard({ document, segment, onBack, sequence }: {
   const left = Math.max(0, target - saved);
   const progress = 100 * (saved - minimum) / (maximum - minimum);
   const goal = 100 * (target - minimum) / (maximum - minimum);
-  const setAmount = (value: number) => { if (Number.isSafeInteger(value) && value >= minimum && value <= maximum && (value - minimum) % step === 0) setSaved(value); };
+  const setAmount = (value: number) => { grading.reset(); if (Number.isSafeInteger(value) && value >= minimum && value <= maximum && (value - minimum) % step === 0) setSaved(value); };
 
   return <main className="lf-learning" data-surface="app" data-screen="goal">
     <div className="lf-learning-inner">
@@ -67,7 +71,7 @@ export function GoalBulletBoard({ document, segment, onBack, sequence }: {
         {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, saved !== initial)} max={100} valueText={`${sequenceProgress(sequence, saved !== initial)}%`} /> : null}
         <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header><LessonStageSlot />
       <div className="lf-learning-content">
-        <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
+        <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><SegmentPrompt segment={segment} locale={document.locale} /></div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart} columns={[t.category, t.value]}
           controlLeading={<Button onClick={() => setSaved(initial)} disabled={saved === initial}>{t.reset}</Button>}
           rows={[{ id: 'saved', label: t.saved, value: amount(saved) }, { id: 'target', label: t.target, value: amount(target) },
@@ -88,9 +92,10 @@ export function GoalBulletBoard({ document, segment, onBack, sequence }: {
             max={maximum} step={step} value={saved} onValueChange={setAmount}
             stepLabels={{ decrease: t.less, increase: t.more }} />}
         </TeachingChartBoard>
+        {graded ? <GradedFoot locale={document.locale} grading={grading} canCheck={saved !== initial} sequence={sequence} onCheck={() => grading.check({ value: saved })} /> : null}
         <footer className="lf-goal-foot"><div role="status" className="lf-goal-outcome">
           <span data-copy-role="body">{left === 0 ? t.reached : t.remaining}</span><strong data-copy-role="data">{left === 0 ? amount(saved) : amount(left)}</strong>
-        </div>{sequence ? <Button variant="accent" disabled={saved === initial} onClick={sequence.onAdvance}>{t.continue}</Button> : null}</footer>
+        </div>{sequence && !graded ? <Button variant="accent" disabled={saved === initial} onClick={sequence.onAdvance}>{t.continue}</Button> : null}</footer>
       </div>
     </div>
   </main>;

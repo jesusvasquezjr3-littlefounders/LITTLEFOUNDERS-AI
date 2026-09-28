@@ -1,0 +1,123 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "clear-thinking",
+  "lesson_id": "v2-first-release-logic",
+  "age_band": "10-12",
+  "eligibility": { "minimum_age": 10, "maximum_age": 12 },
+  "knowledge_component_ids": ["kc-conditional-check", "kc-sets", "kc-decision-steps", "kc-make-change"],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Zara prueba reglas con tarjetas, ordena ideas en círculos, sigue un diagrama para decidir una compra y da cambio en su puesto.",
+  "title": { "en-US": "Think it through", "es-MX": "Piénsalo bien", "pt-BR": "Pense com calma" },
+  "new_concepts": ["kc-conditional-check", "kc-sets"],
+  "regional": { "universal": "Uses LittleFounders coins only; no market amounts, places or customs." },
+  "segments": [
+    {
+      "id": "cards-01", "type": "logic.rule-checker.v2", "grading": "server", "visual": { "type": "rule-cards" },
+      "item_role": "practice", "knowledge_component_id": "kc-conditional-check",
+      "payload": { "cards": [{ "id": "card-even" }, { "id": "card-odd" }, { "id": "card-red" }, { "id": "card-blue" }] },
+      "rubric": { "must_flip_ids": ["card-even", "card-blue"] },
+      "copy": {
+        "en-US": { "prompt": "Which cards must you turn to test the rule?", "rule": "If a card shows an even number, its back is red.",
+          "cards": [{ "face": "8" }, { "face": "5" }, { "face": "Red" }, { "face": "Blue" }] },
+        "es-MX": { "prompt": "¿Qué tarjetas debes voltear para probar la regla?", "rule": "Si una tarjeta muestra un número par, su reverso es rojo.",
+          "cards": [{ "face": "8" }, { "face": "5" }, { "face": "Rojo" }, { "face": "Azul" }] },
+        "pt-BR": { "prompt": "Quais cartas você precisa virar para testar a regra?", "rule": "Se uma carta mostra um número par, o verso é vermelho.",
+          "cards": [{ "face": "8" }, { "face": "5" }, { "face": "Vermelho" }, { "face": "Azul" }] }
+      }
+    },
+    {
+      "id": "euler-01", "type": "logic.euler.v2", "grading": "server", "visual": { "type": "euler" },
+      "knowledge_component_id": "kc-sets",
+      "payload": { "relation": "subset", "sets": [{ "id": "set-coins" }, { "id": "set-money" }], "items": [{ "id": "item-quarter" }, { "id": "item-bill" }, { "id": "item-button" }] },
+      "rubric": { "regions": { "item-quarter": "both", "item-bill": "second", "item-button": "neither" } },
+      "copy": {
+        "en-US": { "prompt": "Every coin is money. Place each thing.", "sets": [{ "label": "Coins" }, { "label": "Money" }], "items": [{ "label": "Quarter" }, { "label": "Bill" }, { "label": "Button" }] },
+        "es-MX": { "prompt": "Toda moneda es dinero. Coloca cada cosa.", "sets": [{ "label": "Monedas" }, { "label": "Dinero" }], "items": [{ "label": "Moneda de 10" }, { "label": "Billete" }, { "label": "Botón" }] },
+        "pt-BR": { "prompt": "Toda moeda é dinheiro. Coloque cada coisa.", "sets": [{ "label": "Moedas" }, { "label": "Dinheiro" }], "items": [{ "label": "Moeda de 10" }, { "label": "Nota" }, { "label": "Botão" }] }
+      }
+    },
+    {
+      "id": "flow-01", "type": "logic.flowchart.v2", "grading": "server", "visual": { "type": "flowchart" },
+      "knowledge_component_id": "kc-decision-steps",
+      "payload": { "start": "q-rain", "nodes": [{ "id": "q-rain", "kind": "question", "yes": "out-umbrella", "no": "out-cap" }, { "id": "out-umbrella", "kind": "outcome" }, { "id": "out-cap", "kind": "outcome" }],
+        "scenarios": [{ "id": "case-stormy" }] },
+      "rubric": { "paths": { "case-stormy": ["q-rain", "out-umbrella"] } },
+      "copy": {
+        "en-US": { "prompt": "Follow the chart for a stormy day.", "nodes": [{ "label": "Is it raining?" }, { "label": "Take an umbrella" }, { "label": "Wear a cap" }], "scenarios": [{ "label": "A stormy day" }] },
+        "es-MX": { "prompt": "Sigue el diagrama para un día de tormenta.", "nodes": [{ "label": "¿Está lloviendo?" }, { "label": "Lleva paraguas" }, { "label": "Usa gorra" }], "scenarios": [{ "label": "Un día de tormenta" }] },
+        "pt-BR": { "prompt": "Siga o diagrama para um dia de tempestade.", "nodes": [{ "label": "Está chovendo?" }, { "label": "Leve guarda-chuva" }, { "label": "Use boné" }], "scenarios": [{ "label": "Um dia de tempestade" }] }
+      }
+    },
+    {
+      "id": "spend-01", "type": "money.spend-decision.v2", "grading": "server", "visual": { "type": "decision-tree" },
+      "item_role": "transfer", "knowledge_component_id": "kc-decision-steps",
+      "payload": { "start": "q-need", "nodes": [{ "id": "q-need", "kind": "question", "yes": "q-enough", "no": "out-wait" }, { "id": "q-enough", "kind": "question", "yes": "out-buy", "no": "out-save" },
+        { "id": "out-wait", "kind": "outcome" }, { "id": "out-buy", "kind": "outcome" }, { "id": "out-save", "kind": "outcome" }], "scenarios": [{ "id": "case-ball" }] },
+      "rubric": { "paths": { "case-ball": ["q-need", "out-wait"] } },
+      "copy": {
+        "en-US": { "prompt": "You want a new ball. Yours still works.", "nodes": [{ "label": "Do I need it?" }, { "label": "Do I have enough?" }, { "label": "Wait a week" }, { "label": "Buy it" }, { "label": "Save for it" }], "scenarios": [{ "label": "A new ball" }] },
+        "es-MX": { "prompt": "Quieres un balón nuevo. El tuyo aún sirve.", "nodes": [{ "label": "¿Lo necesito?" }, { "label": "¿Me alcanza?" }, { "label": "Esperar una semana" }, { "label": "Comprarlo" }, { "label": "Ahorrar para él" }], "scenarios": [{ "label": "Un balón nuevo" }] },
+        "pt-BR": { "prompt": "Você quer uma bola nova. A sua ainda funciona.", "nodes": [{ "label": "Eu preciso?" }, { "label": "Tenho o suficiente?" }, { "label": "Esperar uma semana" }, { "label": "Comprar" }, { "label": "Guardar para ela" }], "scenarios": [{ "label": "Uma bola nova" }] }
+      }
+    },
+    {
+      "id": "sort-01", "type": "logic.sort-by-rule.v2", "grading": "server", "visual": { "type": "sort-bins" },
+      "knowledge_component_id": "kc-sets",
+      "payload": { "bins": [{ "id": "bin-even" }, { "id": "bin-odd" }, { "id": "bin-depends" }], "depends_bin_id": "bin-depends",
+        "items": [{ "id": "item-four" }, { "id": "item-seven" }], "reasons": [{ "id": "why-pairs" }, { "id": "why-one-left" }] },
+      "rubric": { "accepted": { "item-four": [{ "bin": "bin-even", "reason": "why-pairs" }], "item-seven": [{ "bin": "bin-odd", "reason": "why-one-left" }] } },
+      "copy": {
+        "en-US": { "prompt": "Sort the coin piles by the rule.", "bins": [{ "label": "Even" }, { "label": "Odd" }, { "label": "It depends" }], "items": [{ "label": "4 coins" }, { "label": "7 coins" }],
+          "reasons": [{ "label": "They make pairs" }, { "label": "One is left over" }] },
+        "es-MX": { "prompt": "Ordena las pilas de monedas con la regla.", "bins": [{ "label": "Par" }, { "label": "Impar" }, { "label": "Depende" }], "items": [{ "label": "4 monedas" }, { "label": "7 monedas" }],
+          "reasons": [{ "label": "Forman pares" }, { "label": "Sobra una" }] },
+        "pt-BR": { "prompt": "Separe as pilhas de moedas pela regra.", "bins": [{ "label": "Par" }, { "label": "Ímpar" }, { "label": "Depende" }], "items": [{ "label": "4 moedas" }, { "label": "7 moedas" }],
+          "reasons": [{ "label": "Formam pares" }, { "label": "Sobra uma" }] }
+      }
+    },
+    {
+      "id": "spot-01", "type": "logic.scam-spotter.v2", "grading": "server", "visual": { "type": "message-list" },
+      "payload": { "messages": [{ "id": "msg-free" }, { "id": "msg-teacher" }, { "id": "msg-friend" }] },
+      "rubric": { "scam_ids": ["msg-free"] },
+      "copy": {
+        "en-US": { "prompt": "Which message is a trick?", "messages": [{ "sender": "Prize Club", "text": "Free phone! Pay 10 coins to ship it." }, { "sender": "Teacher Luis", "text": "Bring your notebook tomorrow." }, { "sender": "Sam", "text": "Want to play after school?" }] },
+        "es-MX": { "prompt": "¿Qué mensaje es una trampa?", "messages": [{ "sender": "Club de Premios", "text": "¡Teléfono gratis! Paga 10 monedas de envío." }, { "sender": "Maestro Luis", "text": "Trae tu cuaderno mañana." }, { "sender": "Sam", "text": "¿Jugamos después de clases?" }] },
+        "pt-BR": { "prompt": "Qual mensagem é uma armadilha?", "messages": [{ "sender": "Clube de Prêmios", "text": "Celular grátis! Pague 10 moedas de frete." }, { "sender": "Professor Luís", "text": "Traga seu caderno amanhã." }, { "sender": "Sam", "text": "Vamos brincar depois da aula?" }] }
+      }
+    },
+    {
+      "id": "change-01", "type": "money.making-change.v2", "grading": "server", "visual": { "type": "coin-tray" },
+      "item_role": "transfer", "knowledge_component_id": "kc-make-change",
+      "payload": { "currency": "coins", "denominations": [{ "value_minor": 10, "kind": "coin", "available": 3 }, { "value_minor": 5, "kind": "coin", "available": 3 }, { "value_minor": 1, "kind": "coin", "available": 6 }],
+        "price_minor": 13, "paid_minor": 20 },
+      "rubric": { "change_minor": 7 },
+      "copy": {
+        "en-US": { "prompt": "A juice costs 13 coins and you got 20. Give the change." },
+        "es-MX": { "prompt": "Un jugo cuesta 13 monedas y te dieron 20. Da el cambio." },
+        "pt-BR": { "prompt": "Um suco custa 13 moedas e você recebeu 20. Dê o troco." }
+      }
+    },
+    {
+      "id": "reply-01", "type": "story.dialogue-choice.v2", "grading": "server", "visual": { "type": "dialogue" },
+      "payload": { "replies": [{ "id": "reply-check" }, { "id": "reply-yes" }] },
+      "rubric": { "acceptable_choice_ids": ["reply-check", "reply-yes"] },
+      "copy": {
+        "en-US": { "prompt": "How do you answer?", "speaker": "Customer", "line": "Can I pay you tomorrow?", "replies": [{ "label": "Let me ask my family" }, { "label": "Sure, no problem" }] },
+        "es-MX": { "prompt": "¿Cómo respondes?", "speaker": "Cliente", "line": "¿Te puedo pagar mañana?", "replies": [{ "label": "Déjame preguntar en casa" }, { "label": "Claro, sin problema" }] },
+        "pt-BR": { "prompt": "Como você responde?", "speaker": "Cliente", "line": "Posso te pagar amanhã?", "replies": [{ "label": "Vou perguntar em casa" }, { "label": "Claro, sem problema" }] }
+      }
+    },
+    {
+      "id": "rather-01", "type": "story.would-you-rather.v2", "grading": "server", "visual": { "type": "would-you-rather" },
+      "payload": { "options": [{ "id": "opt-now" }, { "id": "opt-later" }] },
+      "rubric": { "acceptable_choice_ids": ["opt-now", "opt-later"] },
+      "copy": {
+        "en-US": { "prompt": "Would you rather?", "options": [{ "label": "One sticker now" }, { "label": "Three stickers next week" }] },
+        "es-MX": { "prompt": "¿Qué prefieres?", "options": [{ "label": "Una estampa ahora" }, { "label": "Tres estampas la próxima semana" }] },
+        "pt-BR": { "prompt": "O que você prefere?", "options": [{ "label": "Uma figurinha agora" }, { "label": "Três figurinhas semana que vem" }] }
+      }
+    }
+  ]
+}

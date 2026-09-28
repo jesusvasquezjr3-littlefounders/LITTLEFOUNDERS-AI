@@ -36,7 +36,28 @@ export const V2_SEGMENT_CAPABILITIES = {
   'math.cpa-count.v2': ['visual.cpa-count.v1', 'operation.count-objects.v1', 'operation.symbolic-answer.v1'],
   // B.12 (S05.3d): decide, then say why. Core's private rubric grades the choice and, separately, the reason.
   'reasoning.decide-justify.v2': ['visual.decision-card.v1', 'operation.choose-option.v1', 'operation.justify-choice.v1'],
+  // GAP-FIX-R1 learning (Appendix P Part 8 first release; B.8, B.9, B.11).
+  'logic.rule-checker.v2': ['visual.rule-cards.v1', 'operation.flip-card.v1'],
+  'logic.euler.v2': ['visual.euler.v1', 'operation.place-in-region.v1', 'operation.move-menu.v1'],
+  'logic.flowchart.v2': ['visual.flowchart.v1', 'operation.step-flowchart.v1'],
+  'money.spend-decision.v2': ['visual.decision-tree.v1', 'operation.step-flowchart.v1'],
+  'logic.sort-by-rule.v2': ['visual.sort-bins.v1', 'operation.sort-to-bin.v1', 'operation.move-menu.v1', 'operation.justify-choice.v1'],
+  'money.needs-wants.v2': ['visual.sort-bins.v1', 'operation.sort-to-bin.v1', 'operation.move-menu.v1', 'operation.justify-choice.v1'],
+  'logic.scam-spotter.v2': ['visual.message-list.v1', 'operation.flag-item.v1'],
+  'money.scam-check.v2': ['visual.message-list.v1', 'operation.flag-item.v1'],
+  'money.coin-tray.v2': ['visual.coin-tray.v1', 'operation.count-money.v1'],
+  'money.making-change.v2': ['visual.coin-tray.v1', 'operation.count-money.v1', 'operation.make-change.v1'],
+  'story.branch.v2': ['visual.story-scene.v1', 'operation.choose-option.v1'],
+  'story.dialogue-choice.v2': ['visual.dialogue.v1', 'operation.choose-option.v1'],
+  'story.would-you-rather.v2': ['visual.would-you-rather.v1', 'operation.choose-option.v1'],
+  'voice.mentor-turn.v2': ['visual.speech-plate.v1'],
+  'voice.mentor-episode.v2': ['visual.speech-plate.v1', 'operation.step-replay.v1'],
 } as const;
+
+/** The Mentor-voiced kinds (B.8, B.11): the only v2 segments that carry a narration channel. */
+export const V2_MENTOR_VOICE_TYPES = ['voice.mentor-turn.v2', 'voice.mentor-episode.v2'] as const;
+/** The story-decision kinds (B.9): their graded choice ids feed the decision journal. */
+export const V2_STORY_TYPES = ['story.branch.v2', 'story.dialogue-choice.v2', 'story.would-you-rather.v2'] as const;
 
 export type V2SegmentType = keyof typeof V2_SEGMENT_CAPABILITIES;
 export const V2_SEGMENT_TYPES = Object.keys(V2_SEGMENT_CAPABILITIES) as V2SegmentType[];
@@ -57,6 +78,10 @@ export interface V2Segment {
   prompt: string;
   visual: { type: string };
   payload: Record<string, unknown>;
+  /** Up to two help ladder steps shown on request as one Mentor speech-plate turn each. */
+  help?: string[];
+  item_role?: 'practice' | 'transfer';
+  knowledge_component_id?: string;
 }
 
 /** The answerless public document (Core's `v2PublicLessonSchema`). */
@@ -103,5 +128,7 @@ export function requiredCapabilities(segments: readonly Pick<V2Segment, 'type' |
  * string is copy (labels, spoken readouts, worked-step text).
  */
 export function isNonCopyKey(key: string): boolean {
-  return key === 'id' || key === 'currency' || key === 'mode' || key === 'unit' || key.endsWith('_ids');
+  return key === 'id' || key === 'currency' || key === 'mode' || key === 'unit' || key.endsWith('_ids') || key.endsWith('_id')
+    // GAP-FIX-R1: structural ids and enums of the new families (flowchart edges, Euler relation, node kind, Mentor role, audio reference).
+    || key === 'start' || key === 'yes' || key === 'no' || key === 'relation' || key === 'kind' || key === 'role' || key === 'audio_ref';
 }

@@ -5,11 +5,13 @@
 // would be exactly the structurally exempt path Product G.2 forbids, so the
 // same gates run here, through the same measurement code, on the v2 shape:
 //
-//   gate 11 (B.18 redundancy)   the v2 contract has no narration channel yet:
-//                               nothing is voiced, so nothing can be redundant.
-//                               Reported as not applicable, never as a pass by
-//                               omission; when v2 gains narration this adapter
-//                               gains the check.
+//   gate 11 (B.18 redundancy)   GAP-FIX-R1: v2 Mentor turns carry the
+//                               narration channel (mode text_only or
+//                               differentiated plus script). A differentiated
+//                               script must add to its on-screen line, and a
+//                               narrated line longer than a caption must not
+//                               duplicate the script. A document with no
+//                               narrated segment voices nothing and passes.
 //   gate 12 (B.14 tone)         every learner-visible string (title, prompts,
 //                               labels, spoken text, worked-step text).
 //   gate 13 (OD-13 Copy Budget) title = heading, prompt = prompt, diagram
@@ -17,9 +19,10 @@
 //                               and results are data (Bible 06 §3.3).
 //   gate 14 (B.17 concept cap)  the plan's declared new concepts against the
 //                               age band's ceiling (plan-level).
-//   gate 15 (B.11 misjudgment)  a flagged episode needs a Mentor voice; v2 has
-//                               none yet, so a flagged v2 plan blocks with that
-//                               reason (plan-level).
+//   gate 15 (B.11 misjudgment)  a flagged episode must be staged: the plan
+//                               needs a `voice.mentor-episode.v2` segment (the
+//                               Mentor voices the misjudgment and the
+//                               recovery); without one it blocks (plan-level).
 //   gate 16 (B.16 regional)     another market's anchors or currency always
 //                               block; with the plan's scenarios, a missing
 //                               market scenario or an unapplied one blocks.
@@ -35,7 +38,10 @@ import { CONCEPT_CEILINGS, type WorkingMemoryBand } from '../contentGates/concep
 import { analyzeRegionalLesson, checkRegionalDocument, loadMarketInventory, type MarketInventory, type RegionalPolicy } from '../contentGates/regional.js';
 import { scanTone, toneAdvice, type ToneFinding } from '../contentGates/tone.js';
 import type { MarketScenario } from '../catalog/schema.js';
-import { isNonCopyKey, type V2AgeBand } from './contract.js';
+import { captionLimit } from '../contentGates/budgets.js';
+import { SCRIPT_REPEAT_THRESHOLD, REDUNDANCY_THRESHOLD, verbatimCoverage } from '../contentGates/redundancy.js';
+import { countWords, tokens } from '../contentGates/text.js';
+import { isNonCopyKey, V2_MENTOR_VOICE_TYPES, type V2AgeBand } from './contract.js';
 import type { V2LessonPlan } from './plan.js';
 
 export interface V2DocumentLike {
@@ -85,6 +91,12 @@ export function v2WorkingMemoryBand(ageBand: V2AgeBand | unknown): WorkingMemory
 }
 
 function roleForPayloadKey(key: string): CopyRole {
+  // GAP-FIX-R1: the new families' learner-visible fields keep their Bible 06 roles.
+  if (key === 'line' || key === 'setup' || key === 'misjudgment' || key === 'recovery') return 'mentor';
+  if (key === 'scene') return 'detail';
+  if (key === 'rule') return 'prompt';
+  if (key === 'text') return 'body';
+  if (key === 'label' || key === 'face') return 'option';
   return /Label$/.test(key) ? 'option' : 'data';
 }
 
@@ -112,8 +124,13 @@ export function v2TextBlocks(document: V2DocumentLike): V2TextBlock[] {
   for (const segment of segments) {
     const segmentId = typeof segment.id === 'string' ? segment.id : '(segment)';
     if (typeof segment.prompt === 'string') blocks.push({ segmentId, path: 'prompt', role: 'prompt', text: segment.prompt });
+    // Help ladder steps are spoken by the Mentor in one speech-plate turn each.
+    if (Array.isArray(segment.help)) segment.help.forEach((step, index) => { if (typeof step === 'string') blocks.push({ segmentId, path: `help[${index}]`, role: 'mentor', text: step }); });
     const strings: Array<{ path: string; key: string; text: string }> = [];
-    payloadStrings(segment.payload, 'payload', '', strings);
+    // A narration script is heard, never shown: the redundancy gate reads it, the Copy Budget does not.
+    const payload = segment.payload && typeof segment.payload === 'object' ? { ...(segment.payload as Record<string, unknown>) } : segment.payload;
+    if (payload && typeof payload === 'object') delete (payload as Record<string, unknown>).narration;
+    payloadStrings(payload, 'payload', '', strings);
     // Ids and enum values (currency: "coins", mode: "discount") are contract
     // vocabulary, not copy (isNonCopyKey): only fields the author writes count.
     for (const item of strings) {
@@ -151,11 +168,38 @@ export function runV2DocumentGates(
   const text = blocks.map((block) => block.text).join('\n');
   for (const finding of checkRegionalDocument(text, locale, regional, markets)) problems.push({ gate: 16, message: finding.message });
 
-  return {
-    problems,
-    review,
-    notApplicable: [{ gate: 11, reason: 'the v2 lesson contract has no narration channel yet, so no on-screen text is voiced' }],
-  };
+  for (const finding of checkV2Narration(document, locale, audience)) problems.push({ gate: 11, segmentId: finding.segmentId, message: finding.message });
+
+  return { problems, review, notApplicable: [] };
+}
+
+/**
+ * Gate 11 (B.18) on v2: every Mentor-voiced segment's narration channel. A
+ * differentiated script must say more than the plate (it may not repeat the
+ * on-screen line), and a plate longer than a caption may not substantially
+ * duplicate what is read aloud.
+ */
+export function checkV2Narration(document: V2DocumentLike, locale: ContentLocale, audience: Audience): Array<{ segmentId: string; message: string }> {
+  const caption = captionLimit(locale, audience);
+  const findings: Array<{ segmentId: string; message: string }> = [];
+  const segments = Array.isArray(document.segments) ? (document.segments as Array<Record<string, unknown>>) : [];
+  for (const segment of segments) {
+    if (!(V2_MENTOR_VOICE_TYPES as readonly string[]).includes(String(segment.type))) continue;
+    const payload = (segment.payload ?? {}) as Record<string, unknown>;
+    const narration = payload.narration as { mode?: unknown; script?: unknown } | undefined;
+    if (!narration || narration.mode !== 'differentiated' || typeof narration.script !== 'string') continue;
+    const segmentId = typeof segment.id === 'string' ? segment.id : '(segment)';
+    const shown = ['line', 'setup', 'misjudgment', 'recovery'].map((key) => payload[key]).filter((value): value is string => typeof value === 'string').join(' ');
+    const script = tokens(narration.script);
+    const screen = tokens(shown);
+    if (verbatimCoverage(script, screen) >= SCRIPT_REPEAT_THRESHOLD) {
+      findings.push({ segmentId, message: `narration.script repeats the on-screen line: a differentiated script must explain, the plate only cues (B.18)` });
+    }
+    if (countWords(shown) > caption.words && verbatimCoverage(screen, script) >= REDUNDANCY_THRESHOLD) {
+      findings.push({ segmentId, message: `a narrated plate of ${countWords(shown)} words duplicates its narration; shorten it to a caption (<= ${caption.words} words) or differentiate it (B.18)` });
+    }
+  }
+  return findings;
 }
 
 export interface V2PlanPolicy {
@@ -178,12 +222,12 @@ export function analyzeV2Plan(plan: V2LessonPlan, markets: MarketInventory = loa
     findings.push({ gate: 14, severity: 'review', message: `introduces ${count} new concepts, above the ${band} target of ${target}: Stage 3 checks they are chunked onto prior knowledge` });
   }
 
-  // Gate 15 — B.11.
-  if (plan.mentor_misjudgment) {
+  // Gate 15 — B.11: a flagged episode is staged by a Mentor-voiced episode segment.
+  if (plan.mentor_misjudgment && !plan.segments.some((segment) => segment.type === 'voice.mentor-episode.v2')) {
     findings.push({
       gate: 15,
       severity: 'block',
-      message: `flags a mentor-misjudgment episode (${plan.mentor_misjudgment.character}), but the v2 lesson contract has no Mentor voice channel to stage the misjudgment and the recovery; stage it in a format with Mentor turns`,
+      message: `flags a mentor-misjudgment episode (${plan.mentor_misjudgment.character}) but stages it nowhere: add a voice.mentor-episode.v2 segment that voices the misjudgment and the recovery`,
     });
   }
 

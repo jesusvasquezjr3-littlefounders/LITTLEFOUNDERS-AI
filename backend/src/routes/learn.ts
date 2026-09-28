@@ -36,12 +36,12 @@ import {
   type LearnerPathwayContext,
 } from '../services/pathway/pathwayData.js';
 import { chapterPolicy, coursePrerequisiteDecision, resolvePathway } from '../services/pathway/pathwayPolicy.js';
-import { gradeV2Visual, projectV2MentorStage, stripV2MentorStage, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, v2FirstUnaidedStage, v2GradePrerequisiteSegmentId, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
+import { gradeV2Visual, projectAdventureTheme, projectV2MentorStage, v2ViewedSegmentIds, stripV2MentorStage, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, v2FirstUnaidedStage, v2GradePrerequisiteSegmentId, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
 import { mintLessonAttemptToken, reissueLessonAttemptToken, verifyLessonAttemptToken } from '../services/lessonAttemptToken.js';
 import { getOwnLearnerIntelligence, recordExperimentExposure } from '../services/learningIntel.js';
 import { learnRegisterRouter } from './learnRegister.js';
 import { guidedReviewFor, localizedTitle, recentSkillOutcomes, recentV2Outcomes, withLearnerMentor, type GuidedReviewOffer } from '../services/guidedReview.js';
-import { offerBridgeAfterCompletion, recordGradedDecisions, resurfaceForLesson } from '../services/narrative/learnerNarrative.js';
+import { offerBridgeAfterCompletion, recordGradedDecisions, recordV2GradedDecisions, resurfaceForLesson } from '../services/narrative/learnerNarrative.js';
 import { learnNarrativeRouter } from './learnNarrative.js';
 import { learnMotivationRouter } from './learnMotivation.js';
 import { badgeEarnedNow, completionCelebrations, courseCompletedNow, type CelebrationMilestone } from '../services/celebrationBudget.js';
@@ -50,7 +50,9 @@ import { topicTeaches } from '../services/narrative/narrativeData.js';
 import { buildV2CompletionReceipt, replayNoticeRequired } from '../services/lessonCompletionReceipt.js';
 import {
   completeLesson,
-  completeV2Lesson,
+  completeV2MixedLesson,
+  getV2SegmentViewsForRecovery,
+  recordV2SegmentView,
   createV2LessonAttemptNonces,
   createV2LessonRun,
   getV2LessonAttemptNoncesForRecovery,
@@ -479,6 +481,8 @@ interface LessonContext {
   topic: { id: string; slug: string; title?: unknown };
   course: CourseHierarchyRow;
   tree: LearnerCourseTree;
+  /** B.8 (GAP-FIX-R1): the chapter's declared scene theme (0007 closed CHECK list). */
+  adventureTheme: string | null;
 }
 
 /** Walk lesson -> topic -> saga -> adventure -> course, then build that course's tree, to resolve one lesson's unlock state (endpoints 3-5). */
@@ -496,7 +500,7 @@ async function resolveLessonContext(accessToken: string, userId: string, lessonI
   const tree = await loadCourseTree(accessToken, userId, course, ageScreen);
   if (!tree) return 'unreachable';
   if (!findLessonNode(tree, lessonId)) return 'not_found';
-  return { lessonRow: lesson, topic, course, tree };
+  return { lessonRow: lesson, topic, course, tree, adventureTheme: typeof (adventure as { theme?: unknown }).theme === 'string' ? (adventure as { theme: string }).theme : null };
 }
 
 
@@ -964,6 +968,8 @@ export function learnRouter(): Router {
       // it references prompt/story/explanation audio only — never answers.
       audio: picked.audio ?? {},
       ...(mentorStage ? { mentor_stage: mentorStage } : {}),
+      // B.8 (GAP-FIX-R1): the lesson inherits its adventure's scene, a closed enum beside the stage projection.
+      ...(document && projectAdventureTheme(ctx.adventureTheme) ? { adventure_theme: projectAdventureTheme(ctx.adventureTheme) } : {}),
       ...(narrativeRecall ? { narrative_recall: narrativeRecall } : {}),
     });
   });
@@ -1011,7 +1017,10 @@ export function learnRouter(): Router {
         && prior.locale === document.locale && Number.isFinite(priorExpiresAt) && priorExpiresAt > Date.now()) {
         const nonces = await getV2LessonAttemptNoncesForRecovery(user.id, prior.id, prior.document_version_id);
         const receipts = await getV2MetSegmentReceiptsForRecovery(user.id, prior.id, prior.document_version_id);
-        if (nonces === null || receipts === null) return fail(res, 502, 'INTERNAL', 'Could not recover this lesson attempt');
+        const views = await getV2SegmentViewsForRecovery(user.id, prior.id, prior.document_version_id);
+        if (nonces === null || receipts === null || views === null) return fail(res, 502, 'INTERNAL', 'Could not recover this lesson attempt');
+        const viewable = new Set(v2ViewedSegmentIds(document));
+        const viewedSegmentIds = [...new Set(views.map((view) => view.segment_id).filter((segmentId) => viewable.has(segmentId)))];
         const nonceBySegment = new Map(nonces.map((nonce) => [nonce.segment_id, nonce]));
         for (const nonce of nonces) if (nonce.consumed_at === null || nonce.consumed_at === undefined) nonceBySegment.set(nonce.segment_id, nonce);
         const exactNonceSet = serverSegmentIds.every((id) => nonceBySegment.has(id));
@@ -1038,6 +1047,7 @@ export function learnRouter(): Router {
           return ok(res, {
             run_id: prior.id, version_id: document.version_id, expires_at: prior.expires_at, resumed: true, met_segment_ids: metSegmentIds,
             attempted_segment_ids: attemptedSegmentIds,
+            viewed_segment_ids: viewedSegmentIds,
             attempt_tokens: Object.fromEntries(serverSegmentIds.map((segmentId, index) => [segmentId, reissued[index]!.token])),
           });
         }
@@ -1051,10 +1061,11 @@ export function learnRouter(): Router {
       .map((segment) => ({ segmentId: segment.id, ...mintLessonAttemptToken({
         uid: user.id, vid: picked.document_version_id!, lid: lessonId, loc: document.locale, sid: segment.id, rid: runId,
       }, secret, issuedAt) }));
-    // The strict document contract guarantees at least the selected segments;
-    // an empty list would create a run that can never be completed, so refuse.
-    if (issued.length === 0) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson has no gradeable segments');
-    const expiresAt = issued[0]!.expiresAt;
+    // GAP-FIX-R1 (OD-17): a lesson with no server-graded segment still pins a
+    // run, completed by view receipts. The run's lifetime matches a token's.
+    const expiresAt = issued[0]?.expiresAt ?? mintLessonAttemptToken({
+      uid: user.id, vid: picked.document_version_id, lid: lessonId, loc: document.locale, sid: document.segments[0]!.id, rid: runId,
+    }, secret, issuedAt).expiresAt;
     const createdRun = await createV2LessonRun({
       id: runId, user_id: user.id, lesson_id: lessonId, locale: document.locale,
       document_version_id: picked.document_version_id, expires_at: expiresAt,
@@ -1073,8 +1084,36 @@ export function learnRouter(): Router {
       resumed: false,
       met_segment_ids: [],
       attempted_segment_ids: [],
+      viewed_segment_ids: [],
       attempt_tokens: Object.fromEntries(issued.map((item) => [item.segmentId, item.token])),
     });
+  });
+
+  // 4b. POST /lessons/:id/v2-runs/:runId/views — GAP-FIX-R1 (OD-17, B.7):
+  // the learner acted on a non-scored segment (a Mentor turn, an explored
+  // visual). Core checks the segment against the run's pinned immutable
+  // version; a graded segment can never be "viewed" into completion.
+  const V2ViewBody = z.object({ segment_id: z.string().min(1).max(101) }).strict();
+  router.post('/lessons/:id/v2-runs/:runId/views', async (req, res) => {
+    const parsed = V2ViewBody.safeParse(req.body);
+    const runId = z.string().uuid().safeParse(req.params.runId);
+    if (!parsed.success || !runId.success) return fail(res, 400, 'VALIDATION_ERROR', 'Invalid input');
+    const user = authedUser(res);
+    const lessonId = req.params.id as string;
+    const run = await getV2LessonRunForRecovery(user.id, lessonId, runId.data);
+    if (run === undefined) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+    if (!run || run.completed_at) return fail(res, 409, 'UNSUPPORTED_LESSON', 'This lesson run is not available');
+    const version = await getV2LessonDocumentVersion(run.document_version_id);
+    if (version === undefined) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+    if (!version || version.lesson_id !== lessonId) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
+    const profiles = await getFullOwnProfile(user.accessToken, user.id);
+    if (!hasV2LessonEligibility(res, version.schema_version, version.document, profiles?.[0]?.birth_date)) return;
+    const document = validateV2LessonForGrading(stripAnswers(version.document), version.answer_keys, { lessonId, locale: version.locale });
+    if (!document) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
+    if (!v2ViewedSegmentIds(document).includes(parsed.data.segment_id)) return fail(res, 400, 'VALIDATION_ERROR', 'This step is not a viewed step');
+    const stored = await recordV2SegmentView({ p_user_id: user.id, p_run_id: run.id, p_document_version_id: run.document_version_id, p_segment_id: parsed.data.segment_id });
+    if (!stored) return fail(res, 502, 'INTERNAL', 'Could not record this step');
+    return ok(res, { recorded: true });
   });
 
   // 5. POST /lessons/:id/grade — server-authoritative single-segment grading.
@@ -1096,6 +1135,8 @@ export function learnRouter(): Router {
     answer: z.unknown(),
     run_id: z.string().uuid(),
     attempt_token: z.string().min(1).max(4_096),
+    // GAP-FIX-R1 (Bible 08 §11, B.10): help-ladder steps opened before Check. Never changes the score.
+    hints_used: z.number().int().min(0).max(2).optional(),
   }).strict();
   const GradeBody = z.union([LegacyGradeBody, V2GradeBody]);
 
@@ -1142,7 +1183,15 @@ export function learnRouter(): Router {
       }, secret);
       // B.12: a reasoning answer carries its judgment quality inside the same
       // one-use receipt as the score (the database CHECK pins its shape).
-      const v2Verdict = { correct: graded.correct, score: graded.score, ...(graded.judgment ? { judgment: { quality: graded.judgment } } : {}) };
+      const gradedSegment = document.segments.find((item) => item.id === segmentId)!;
+      const hintsUsed = Math.min(parsed.data.hints_used ?? 0, gradedSegment.help?.length ?? 0);
+      // Appendix P Part 4.5 / Appendix C 1.1 (GAP-FIX-R1): the diagnostic code,
+      // hint use, item role, KC and detection counts ride in the same receipt.
+      const v2Verdict = { correct: graded.correct, score: graded.score, ...(graded.judgment ? { judgment: { quality: graded.judgment } } : {}),
+        diagnostic: graded.diagnostic, hints_used: hintsUsed,
+        ...(gradedSegment.item_role ? { item_role: gradedSegment.item_role } : {}),
+        kc: gradedSegment.knowledge_component_id ?? document.knowledge_component_ids[0]!,
+        ...(graded.detection ? { detection: graded.detection } : {}) };
       const cpaPrerequisite = v2CpaAttemptPrerequisiteSegmentId(document, segmentId);
       const receipt = cpaPrerequisite === undefined
         ? await recordV2LessonGrade({
@@ -1163,6 +1212,11 @@ export function learnRouter(): Router {
         });
       if (!receipt) return fail(res, 502, 'INTERNAL', 'Could not record the lesson attempt');
       if ('blocked' in receipt) return fail(res, 409, 'LESSON_PREREQUISITE_REQUIRED', 'Complete the previous learning step first');
+      if (!receipt.replayed) {
+        // B.9 for v2 (OD-24): a graded story choice goes to the decision journal. Best-effort.
+        await recordV2GradedDecisions({ userId: user.id, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId, locale: document.locale,
+          lessonTitle: document.title, segment: gradedSegment, answer });
+      }
       const firstUnaided = receipt.verdict.correct ? v2FirstUnaidedStage(document, segmentId) : null;
       if (firstUnaided) {
         // The route, not the browser, supplies the group and stage. This write is
@@ -1174,7 +1228,10 @@ export function learnRouter(): Router {
       // B.26 / OD-1 (S05.3f): a miss costs nothing; a run of misses on this lesson earns an offer, never a lock.
       const guidedReview = receipt.verdict.correct ? null : await v2GuidedReview(user.id, picked.document_version_id, ctx, document.locale);
       return ok(res, {
-        verdict: receipt.verdict, replayed: receipt.replayed,
+        // The client projection: score, correctness, the B.12 judgment and the diagnostic code (never hint counts or detection cells).
+        verdict: { correct: receipt.verdict.correct, score: receipt.verdict.score, ...(receipt.verdict.judgment ? { judgment: receipt.verdict.judgment } : {}),
+          ...(receipt.verdict.diagnostic && receipt.verdict.diagnostic !== 'none' ? { diagnostic: receipt.verdict.diagnostic } : {}) },
+        replayed: receipt.replayed,
         ...(retryAttemptToken ? { retry_attempt_token: retryAttemptToken } : {}),
         ...(guidedReview ? { guided_review: guidedReview } : {}),
       });
@@ -1308,10 +1365,11 @@ export function learnRouter(): Router {
       const document = validateV2LessonForGrading(stripAnswers(version.document), version.answer_keys, { lessonId, locale: version.locale });
       if (!document) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
       const requiredSegmentIds = v2CompletionRequiredSegmentIds(document);
-      if (requiredSegmentIds.length === 0) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson has no gradeable segments');
-      const completion = await completeV2Lesson({
+      const viewedSegmentIds = v2ViewedSegmentIds(document);
+      // GAP-FIX-R1 (OD-17): met receipts for graded steps, view receipts for the rest.
+      const completion = await completeV2MixedLesson({
         p_user_id: user.id, p_lesson_id: lessonId, p_run_id: run.id, p_document_version_id: run.document_version_id,
-        p_required_segment_ids: requiredSegmentIds, p_xp: ctx.lessonRow.xp_total,
+        p_required_segment_ids: requiredSegmentIds, p_viewed_segment_ids: viewedSegmentIds, p_xp: ctx.lessonRow.xp_total,
         p_minutes: parsed.data.seconds_spent !== undefined ? Math.max(1, Math.round(parsed.data.seconds_spent / 60)) : Math.max(1, Math.round(parsed.data.minutes_spent ?? 0)),
         p_local_date: parsed.data.local_date ?? new Date().toISOString().slice(0, 10),
       });

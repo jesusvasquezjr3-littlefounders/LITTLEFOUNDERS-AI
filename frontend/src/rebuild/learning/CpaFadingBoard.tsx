@@ -5,6 +5,7 @@ import { LessonFeedback } from './LessonFeedback';
 import type { LessonClientDocument, LessonClientSegment } from './lessonDocument';
 import './learning.css';
 import { LessonStageSlot } from './lessonStage';
+import { SegmentPrompt } from './segmentKit';
 
 type Segment = Extract<LessonClientSegment, { type: 'math.cpa-count.v2' }>;
 type Verdict = 'invalid' | 'met' | 'review';
@@ -73,7 +74,7 @@ export function CpaFadingBoard({ document, segment, onBack, onGrade, sequence }:
 
   return <main className="lf-learning lf-learning--cpa lf-learning--sticky-foot" data-surface="app" data-screen="cpa-fading"><div className="lf-learning-inner">
     <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button><span data-copy-role="data">{t.stage} {sequence.index + 1}/{sequence.total}</span></header><LessonStageSlot verdict={verdict} />
-    <div className={`lf-learning-content lf-cpa-transition${leaving ? ' lf-cpa-transition--leaving' : ''}`}><div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
+    <div className={`lf-learning-content lf-cpa-transition${leaving ? ' lf-cpa-transition--leaving' : ''}`}><div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><SegmentPrompt segment={segment} locale={document.locale} /></div>
       <section className="lf-learning-board lf-cpa-board" aria-labelledby="cpa-stage-title" data-cpa-stage={stage.stage}>
         <div className="lf-learning-board-heading"><h2 id="cpa-stage-title" data-copy-role="heading">{label}</h2><span className="lf-cpa-stage" data-copy-role="label">{t.stage} {sequence.index + 1}</span></div>
         {stage.stage === 'concrete' ? <div className="lf-cpa-concrete" role="img" aria-label={segment.payload.spokenText}><Dots count={segment.payload.left} tone="left" /><span aria-hidden="true">+</span><Dots count={segment.payload.right} tone="right" /></div> : null}

@@ -986,15 +986,39 @@ export function getV2MetSegmentReceiptsForRecovery(userId: string, runId: string
 const V2GradeReceipt = z.union([
   z.object({ replayed: z.boolean(), verdict: z.object({ correct: z.boolean(), score: z.number().int().min(0).max(100),
     // B.12: present only on a reasoning answer; the database CHECK pins the shape.
-    judgment: z.object({ quality: z.enum(['sound', 'partial', 'unsupported']) }).strict().optional() }), retry_jti: z.string().optional() }),
+    judgment: z.object({ quality: z.enum(['sound', 'partial', 'unsupported']) }).strict().optional(),
+    // GAP-FIX-R1: the closed diagnostic code and the help-ladder steps used (the SQL CHECK pins both).
+    diagnostic: z.enum(['none', 'structure', 'value', 'partial', 'miss', 'false_alarm', 'path', 'outcome', 'bin', 'reason', 'tolerance']).optional(),
+    hints_used: z.number().int().min(0).max(2).optional() }), retry_jti: z.string().optional() }),
   z.object({ blocked: z.literal(true) }),
 ]);
+
+/** The verdict Core stores: score and correctness, plus the diagnostic signals the receipt CHECK pins (0193). */
+export interface V2StoredVerdict {
+  correct: boolean; score: number; judgment?: { quality: 'sound' | 'partial' | 'unsupported' };
+  diagnostic?: string; hints_used?: number; item_role?: 'practice' | 'transfer'; kc?: string;
+  detection?: { hits: number; misses: number; false_alarms: number; correct_rejections: number };
+}
+
+/** GAP-FIX-R1: Core's record that the learner acted on a non-scored segment of a pinned run (0193). */
+export async function recordV2SegmentView(payload: { p_user_id: string; p_run_id: string; p_document_version_id: string; p_segment_id: string }): Promise<boolean> {
+  const result = await rest<unknown>('/rpc/record_v2_segment_view', serviceToken(), { method: 'POST', body: JSON.stringify(payload) });
+  return result === true;
+}
+
+/** Client-safe resume projection of the non-scored segments already acted on in a run. */
+export function getV2SegmentViewsForRecovery(userId: string, runId: string, documentVersionId: string): Promise<Array<{ segment_id: string }> | null> {
+  return rest<Array<{ segment_id: string }>>(
+    `/lesson_v2_segment_views?user_id=eq.${eu(userId)}&run_id=eq.${eu(runId)}&document_version_id=eq.${eu(documentVersionId)}&select=segment_id`,
+    serviceToken(),
+  );
+}
 
 /** The SQL transaction atomically burns the nonce and persists its immutable verdict. */
 export async function recordV2LessonGrade(payload: {
   p_user_id: string; p_run_id: string; p_document_version_id: string; p_segment_id: string; p_jti: string;
   p_required_met_segment_id: string | null;
-  p_verdict: { correct: boolean; score: number; judgment?: { quality: 'sound' | 'partial' | 'unsupported' } };
+  p_verdict: V2StoredVerdict;
   p_next_jti: string;
   p_next_expires_at: string;
 }): Promise<z.infer<typeof V2GradeReceipt> | null> {
@@ -1007,7 +1031,7 @@ export async function recordV2LessonGrade(payload: {
 export async function recordV2CpaGrade(payload: {
   p_user_id: string; p_run_id: string; p_document_version_id: string; p_segment_id: string; p_jti: string;
   p_required_attempted_segment_id: string | null;
-  p_verdict: { correct: boolean; score: number; judgment?: { quality: 'sound' | 'partial' | 'unsupported' } };
+  p_verdict: V2StoredVerdict;
   p_next_jti: string;
   p_next_expires_at: string;
 }): Promise<z.infer<typeof V2GradeReceipt> | null> {
@@ -2328,7 +2352,10 @@ const LessonCompletionResult = z.object({
   replay: ReplayReceipt.optional(),
   // v2 only (complete_v2_lesson): first-try accuracy and the B.12 judgment summary.
   first_try_correct: z.number().int().nonnegative().optional(),
-  graded_count: z.number().int().positive().optional(),
+  graded_count: z.number().int().nonnegative().optional(),
+  // GAP-FIX-R1 (complete_v2_mixed_lesson): non-scored steps acted on and help-ladder steps used.
+  viewed_count: z.number().int().nonnegative().optional(),
+  hints_used: z.number().int().nonnegative().optional(),
   judgment: z.object({
     assessed: z.number().int().nonnegative(), sound: z.number().int().nonnegative(),
     partial: z.number().int().nonnegative(), unsupported: z.number().int().nonnegative(),
@@ -2346,6 +2373,21 @@ export async function completeLesson(input: {
   p_score: number; p_passed: boolean; p_xp: number; p_minutes: number; p_local_date: string;
 }): Promise<z.infer<typeof LessonCompletionResult> | null> {
   const result = await rest<unknown>('/rpc/complete_lesson', serviceToken(), {
+    method: 'POST', body: JSON.stringify(input),
+  });
+  const parsed = LessonCompletionResult.safeParse(result);
+  return parsed.success ? parsed.data : null;
+}
+
+/**
+ * GAP-FIX-R1 (OD-17, B.7): version-pinned completion of a mixed v2 document.
+ * Graded segments need met receipts; non-scored segments need view receipts.
+ */
+export async function completeV2MixedLesson(input: {
+  p_user_id: string; p_lesson_id: string; p_run_id: string; p_document_version_id: string;
+  p_required_segment_ids: string[]; p_viewed_segment_ids: string[]; p_xp: number; p_minutes: number; p_local_date: string;
+}): Promise<z.infer<typeof LessonCompletionResult> | null> {
+  const result = await rest<unknown>('/rpc/complete_v2_mixed_lesson', serviceToken(), {
     method: 'POST', body: JSON.stringify(input),
   });
   const parsed = LessonCompletionResult.safeParse(result);

@@ -10,6 +10,8 @@ import './learning.css';
 import './placeValue.css';
 import './stepReplay.css';
 import { LessonStageSlot } from './lessonStage';
+import { GradedFoot, NumberAnswer, SegmentPrompt, useSegmentGrade, type OnGradeSegment } from './segmentKit';
+
 
 type PlaceValueSegment = Extract<LessonClientSegment, { type: 'math.place-value.v2' }>;
 type Labels = { back: string; explore: string; progress: string; board: string; showTable: string; showChart: string;
@@ -50,10 +52,14 @@ export function placeValuePilotDocument(locale: Locale): unknown {
   };
 }
 
-export function PlaceValueBoard({ document, segment, onBack, sequence }: {
-  document: LessonClientDocument; segment: PlaceValueSegment; onBack: () => void; sequence?: LessonSequenceControl;
+export function PlaceValueBoard({ document, segment, onBack, sequence, onGrade }: {
+  document: LessonClientDocument; segment: PlaceValueSegment; onBack: () => void; sequence?: LessonSequenceControl; onGrade?: OnGradeSegment;
 }) {
   const t = copy[document.locale];
+  const grading = useSegmentGrade(segment.id, onGrade);
+  const graded = segment.grading === 'server' && !!onGrade;
+  const [tensTyped, setTensTyped] = useState<string | null>(null);
+  const [onesTyped, setOnesTyped] = useState<string | null>(null);
   const [trades, setTrades] = useState(0);
   const [replayIndex, setReplayIndex] = useState<number | null>(null);
   const shownTrades = replayIndex ?? trades;
@@ -67,7 +73,7 @@ export function PlaceValueBoard({ document, segment, onBack, sequence }: {
         <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header><LessonStageSlot />
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1>
-          <p data-copy-role="prompt">{segment.prompt}</p></div>
+          <SegmentPrompt segment={segment} locale={document.locale} /></div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart}
           columns={[t.pieces, t.count]} rows={[
             { id: 'tens', label: t.tens, value: String(state.tens) },
@@ -85,8 +91,8 @@ export function PlaceValueBoard({ document, segment, onBack, sequence }: {
             </div>
           </div>}>
           {() => replayIndex === null ? <div className="lf-place-value-controls">
-            <Button disabled={!state.canTrade} onClick={() => setTrades((value) => value + 1)}>{t.trade}</Button>
-            <Button disabled={!state.canUndo} onClick={() => setTrades((value) => value - 1)}>{t.undo}</Button>
+            <Button disabled={!state.canTrade || grading.met} onClick={() => { grading.reset(); setTrades((value) => value + 1); }}>{t.trade}</Button>
+            <Button disabled={!state.canUndo || grading.met} onClick={() => { grading.reset(); setTrades((value) => value - 1); }}>{t.undo}</Button>
           </div> : null}
         </TeachingChartBoard>
         {trades >= 2 ? <div className="lf-place-value-replay">
@@ -94,9 +100,13 @@ export function PlaceValueBoard({ document, segment, onBack, sequence }: {
           {replayIndex !== null ? <StepReplay steps={trades} index={replayIndex} onChange={setReplayIndex}
             labels={{ step: t.step, previous: t.previous, next: t.next, play: t.play, pause: t.pause }} /> : null}
         </div> : null}
+        {graded ? <div className="lf-learning-control-strip"><NumberAnswer label={t.tens} locale={document.locale} onChange={setTensTyped} disabled={grading.pending || grading.met} />
+          <NumberAnswer label={t.ones} locale={document.locale} onChange={setOnesTyped} disabled={grading.pending || grading.met} /></div> : null}
+        {graded ? <GradedFoot locale={document.locale} grading={grading} canCheck={tensTyped !== null && onesTyped !== null && replayIndex === null} sequence={sequence}
+          onCheck={() => grading.check({ trades, tens: tensTyped, ones: onesTyped })} /> : null}
         <footer className="lf-place-value-foot"><p className="lf-place-value-equivalence" role="status" aria-live="polite"
           data-copy-role="data">{shownTrades > 0 ? t.equivalent : `${t.total}: ${state.total}`}</p>
-          {sequence ? <Button variant="accent" disabled={trades === 0 || replayIndex !== null} onClick={sequence.onAdvance}>{t.continue}</Button> : null}
+          {sequence && !graded ? <Button variant="accent" disabled={trades === 0 || replayIndex !== null} onClick={sequence.onAdvance}>{t.continue}</Button> : null}
         </footer>
       </div>
     </div>

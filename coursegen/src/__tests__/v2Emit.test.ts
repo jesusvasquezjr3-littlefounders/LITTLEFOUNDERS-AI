@@ -54,7 +54,9 @@ describe('the committed v2 plans', () => {
       const plan = planById.get(row.lesson_id)!;
       for (const segment of plan.segments.filter((s) => s.rubric)) {
         const emitted = row.document.segments.find((s) => s.id === segment.id)!;
-        expect(Object.keys(emitted).sort()).toEqual(['grading', 'id', 'payload', 'prompt', 'type', 'visual']);
+        // GAP-FIX-R1: the optional help ladder, item role and KC ride beside the six base fields; nothing else does.
+        const optional = ['help', 'item_role', 'knowledge_component_id'];
+        expect(Object.keys(emitted).filter((key) => !optional.includes(key)).sort()).toEqual(['grading', 'id', 'payload', 'prompt', 'type', 'visual']);
         for (const key of Object.keys(segment.rubric!)) {
           if (!(key in segment.payload)) expect(emitted.payload).not.toHaveProperty(key);
         }
@@ -161,9 +163,22 @@ describe('the v2 content gates', () => {
     expect(v2WorkingMemoryBand('unknown')).toBe('6-9');
   });
 
-  it('report the redundancy gate as not applicable (no v2 narration channel), never as a silent pass', () => {
-    const report = runV2DocumentGates({ locale: 'en-US', age_band: '10-12', title: 'Fine', segments: [] });
-    expect(report.notApplicable.map((entry) => entry.gate)).toEqual([11]);
+  it('runs the redundancy gate on the v2 Mentor narration channel (GAP-FIX-R1)', () => {
+    const quiet = runV2DocumentGates({ locale: 'en-US', age_band: '10-12', title: 'Fine', segments: [] });
+    expect(quiet.notApplicable).toEqual([]);
+    const turn = (script: string) => ({ locale: 'en-US', age_band: '10-12', title: 'Fine', segments: [{ id: 'intro-01', type: 'voice.mentor-turn.v2', prompt: 'Listen.',
+      payload: { role: 'intro', line: 'Market day. Let us choose well.', narration: { mode: 'differentiated', script } } }] });
+    expect(runV2DocumentGates(turn('Today we sort needs from wants and pay with care.')).problems.filter((p) => p.gate === 11)).toEqual([]);
+    expect(runV2DocumentGates(turn('Market day. Let us choose well.')).problems.some((p) => p.gate === 11 && /repeats the on-screen line/.test(p.message))).toBe(true);
+  });
+
+  it('passes a flagged misjudgment staged by a voice.mentor-episode.v2 segment and blocks one staged nowhere (gate 15)', () => {
+    const staged = clone(planById.get('v2-first-release-mixed')!);
+    expect(analyzeV2Plan(staged).findings.filter((f) => f.gate === 15)).toEqual([]);
+    const unstaged = clone(staged);
+    unstaged.segments = unstaged.segments.filter((segment) => segment.type !== 'voice.mentor-episode.v2');
+    expect(analyzeV2Plan(unstaged).findings.some((f) => f.gate === 15 && f.severity === 'block')).toBe(true);
+    expect(emitV2Lesson(staged, { versionId: 'forge-test' }).ok).toBe(true);
   });
 
   it('block local-currency amounts in a lesson declared market-neutral', () => {

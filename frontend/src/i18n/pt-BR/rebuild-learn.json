@@ -1,5 +1,4 @@
 {
-  "lessonUnavailable": "Esta lição precisa de atualização.",
   "lessonInvalid": "Esta lição não pode ser aberta.",
   "back": "Voltar",
   "home": {
@@ -263,5 +262,28 @@
     "saveFailed": "Não foi possível salvar. Tente de novo.",
     "reportLeave": "Também sair desta meta",
     "reported": "Obrigado. Nossa equipe de segurança vai olhar."
+  },
+  "player": {
+    "asks": "{name} pergunta",
+    "help": "Ajuda",
+    "moreHelp": "Mais ajuda",
+    "closeHelp": "Entendi",
+    "readsAs": "Lê-se {value}",
+    "notNumber": "Digite um número.",
+    "check": "Conferir",
+    "continue": "Continuar",
+    "met": "Isso funciona.",
+    "review": "Ainda não. Veja de novo.",
+    "reviewStructure": "Ainda não. Veja como você montou.",
+    "reviewAnswer": "Ainda não. Confira seus números.",
+    "unavailable": "Não foi possível conferir. Tente de novo.",
+    "step": "{n} de {total}",
+    "progress": "Progresso da lição",
+    "viewFailed": "Não foi possível salvar este passo. Tente de novo.",
+    "updateTitle": "Atualize o app",
+    "updateBody": "Há uma versão nova. Recarregue para continuar aprendendo.",
+    "reload": "Recarregar",
+    "moveTo": "Mover para",
+    "mentorHeading": "Seu Mentor"
   }
 }

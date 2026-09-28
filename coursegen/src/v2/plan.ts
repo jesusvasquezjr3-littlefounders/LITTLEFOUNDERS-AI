@@ -22,9 +22,13 @@ const id = z.string().regex(V2_ID);
 const localized = <T extends z.ZodType>(value: T) =>
   z.object({ 'en-US': value, 'es-MX': value, 'pt-BR': value }).strict();
 
-/** Learner-visible strings of one segment in one market: the prompt plus string fields merged into the payload. */
+/**
+ * Learner-visible strings of one segment in one market: the prompt, the
+ * optional help ladder (up to two Mentor turns, shown on request), plus string
+ * fields merged into the payload.
+ */
 const segmentCopySchema = z
-  .object({ prompt: z.string().trim().min(1).max(500) })
+  .object({ prompt: z.string().trim().min(1).max(500), help: z.array(z.string().trim().min(1).max(160)).min(1).max(2).optional() })
   .catchall(z.unknown());
 
 export const v2PlanSegmentSchema = z
@@ -37,6 +41,9 @@ export const v2PlanSegmentSchema = z
     payload: z.record(z.string(), z.unknown()),
     /** Private rubric: goes to answer_keys, never into the public document. */
     rubric: z.record(z.string(), z.unknown()).optional(),
+    /** Appendix C 1.1 (GAP-FIX-R1): practice or transfer item, and the KC it evidences. */
+    item_role: z.enum(['practice', 'transfer']).optional(),
+    knowledge_component_id: id.optional(),
     copy: localized(segmentCopySchema),
   })
   .strict()

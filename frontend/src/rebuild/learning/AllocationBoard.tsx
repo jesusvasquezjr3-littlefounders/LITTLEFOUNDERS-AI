@@ -9,6 +9,7 @@ import { ageEligibilityForBand, lessonVersionKey, type LessonClientDocument, typ
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { TeachingChartBoard } from './TeachingChartBoard';
 import { CompactMentorStage } from './CompactMentorStage';
+import { SegmentPrompt } from './segmentKit';
 import './learning.css';
 
 type CopySet = {
@@ -189,7 +190,7 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
       <div className="lf-learning-content">
         <div className="lf-learning-intro">
           <h1 data-copy-role="heading">{document.title}</h1>
-          <p data-copy-role="prompt">{segment.prompt}</p>
+          <SegmentPrompt segment={segment} locale={document.locale} />
         </div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart} onViewChange={setTableMode}
           columns={[t.category, t.amount]}

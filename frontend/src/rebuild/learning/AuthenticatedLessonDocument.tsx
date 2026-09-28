@@ -1,6 +1,6 @@
 import type { AgeBand, Locale } from '../design/copyBudget';
-import { LessonDocumentView, type OnGrade, type OnGradeBarModel, type OnGradeFractionArea, type OnGradeNumberLine, type OnGradeSchemaDiagram, type OnGradeReasoning, type OnGradeWorkedExample } from './LessonDocumentView';
-import { loadLessonClientDocument, loadMentorStageProjection } from './lessonDocument';
+import { LessonDocumentView, type OnGrade, type OnGradeAny, type OnGradeBarModel, type OnGradeFractionArea, type OnGradeNumberLine, type OnGradeSchemaDiagram, type OnGradeReasoning, type OnGradeWorkedExample, type OnView } from './LessonDocumentView';
+import { loadAdventureThemeProjection, loadLessonClientDocument, loadMentorStageProjection } from './lessonDocument';
 
 const supportedLocales = new Set<Locale>(['en-US', 'es-MX', 'pt-BR']);
 
@@ -25,10 +25,12 @@ export function lessonDocumentFrame(raw: unknown, responseLocale: string): { loc
  * mounts it inside the lesson layer (`LessonLayer`, W2L.3), which carries the
  * design system's root, the document title, the skip link and route focus.
  */
-export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, theme = 'light', onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onComplete, metSegmentIds, attemptedSegmentIds }: {
+export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, adventureTheme, theme = 'light', onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onHelpUsed, onComplete, metSegmentIds, attemptedSegmentIds, viewedSegmentIds }: {
   raw: unknown;
   responseLocale: string;
   mentorStage?: unknown;
+  /** B.8 (GAP-FIX-R1): Core's closed-enum adventure theme; malformed means no scene band. */
+  adventureTheme?: unknown;
   /** The application's current mode; the lesson follows it (02 §5). */
   theme?: 'light' | 'dark';
   onBack: () => void;
@@ -39,12 +41,18 @@ export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, 
   onGradeSchemaDiagram?: OnGradeSchemaDiagram;
   onGradeWorkedExample?: OnGradeWorkedExample;
   onGradeReasoning?: OnGradeReasoning;
+  onGradeAny?: OnGradeAny;
+  onView?: OnView;
+  onHelpUsed?: (segmentId: string, steps: number) => void;
   onComplete?: () => Promise<boolean>;
   metSegmentIds?: string[];
   attemptedSegmentIds?: string[];
+  viewedSegmentIds?: string[];
 }) {
   const frame = lessonDocumentFrame(raw, responseLocale);
   const stage = loadMentorStageProjection(mentorStage);
   return <LessonDocumentView raw={raw} locale={frame.locale} ageBand={frame.ageBand ?? '6-9'} theme={theme} onBack={onBack} onGrade={onGrade}
-    onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} mentorStage={stage} />;
+    onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning}
+    onGradeAny={onGradeAny} onView={onView} onHelpUsed={onHelpUsed} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds}
+    viewedSegmentIds={viewedSegmentIds} mentorStage={stage} adventureTheme={loadAdventureThemeProjection(adventureTheme)} />;
 }

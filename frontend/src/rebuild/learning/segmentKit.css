@@ -1,0 +1,21 @@
+/* GAP-FIX-R1 learning: shared v2 board pieces (segmentKit.tsx). Tokens only; light and dark come from the token layer. */
+.lf-prompt-label { display: inline-flex; align-items: center; gap: var(--spacing-2); font-weight: 800; color: var(--on-primary); }
+.lf-prompt-label .lf-mentor-avatar { flex: none; }
+.lf-segment-help { display: grid; gap: var(--spacing-2); justify-items: start; }
+.lf-speech-plate { position: relative; display: grid; gap: var(--spacing-2); max-inline-size: 36rem; padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--rounded-lg); background: var(--surface); color: var(--content); box-shadow: 0 0 0 2px var(--primary-strong); }
+.lf-speech-plate p { font-size: 1.0625rem; line-height: 1.35; font-weight: 700; }
+.lf-speech-plate-name { font-weight: 800; color: var(--primary-strong); }
+.lf-number-answer { display: grid; gap: var(--spacing-1); }
+.lf-number-echo { min-block-size: 1.35em; font-weight: 700; color: var(--content-muted, var(--content)); }
+.lf-move-to { display: grid; gap: var(--spacing-2); padding-block: var(--spacing-2); border-block-end: 1px solid var(--outline); }
+.lf-move-to:last-child { border-block-end: 0; }
+.lf-move-to > span:first-child { font-weight: 800; }
+.lf-move-to-hint { font-size: .875rem; }
+.lf-move-to-options { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-move-to-options .lf-button { min-block-size: var(--target-base); }
+.lf-learning-scene-band { display: grid; place-items: center; overflow: hidden; border-radius: var(--rounded-lg); max-block-size: 160px; }
+.lf-learning-scene-band .lf-art { inline-size: 100%; block-size: auto; object-fit: cover; }
+.lf-learning-update { display: grid; gap: var(--spacing-3); }
+.lf-learning-update-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
+@media (prefers-reduced-motion: reduce) { .lf-speech-plate { transition: none; } }

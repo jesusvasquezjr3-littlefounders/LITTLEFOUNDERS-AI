@@ -9,6 +9,7 @@ import { useSingleActiveGrade } from './useSingleActiveGrade';
 import './learning.css';
 import './stepReplay.css';
 import { LessonStageSlot } from './lessonStage';
+import { SegmentPrompt } from './segmentKit';
 
 type Segment = Extract<LessonClientSegment, { type: 'math.worked-example.v2' }>;
 type Verdict = 'invalid' | 'met' | 'review';
@@ -67,7 +68,7 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button><span data-copy-role="data">{t.example}</span></header><LessonStageSlot verdict={verdict} />
       <div className="lf-learning-content">
-        <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
+        <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><SegmentPrompt segment={segment} locale={document.locale} /></div>
         <section className="lf-learning-board" aria-labelledby="worked-example-title">
           <h2 id="worked-example-title" data-copy-role="heading">{t.example}</h2>
           <ol className="lf-worked-example-steps">

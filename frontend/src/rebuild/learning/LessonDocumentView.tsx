@@ -1,4 +1,5 @@
 import { useLayoutEffect, useState } from 'react';
+import { InlineNotice } from '../design/controls';
 import en from '../../i18n/en-US/rebuild-learn.json';
 import es from '../../i18n/es-MX/rebuild-learn.json';
 import pt from '../../i18n/pt-BR/rebuild-learn.json';
@@ -25,7 +26,9 @@ import { CpaFadingBoard } from './CpaFadingBoard';
 import { DecisionReasonsBoard, type ReasoningGrade } from './DecisionReasonsBoard';
 import type { Allocation } from './allocationModel';
 import { LessonStageProvider } from './lessonStage';
-import { lessonVersionKey, loadLessonClientDocument, type LessonClientDocument, type LessonClientSegment, type LessonMentorStage } from './lessonDocument';
+import { lessonVersionKey, loadLessonClientDocument, type AdventureTheme, type LessonClientDocument, type LessonClientSegment, type LessonMentorStage } from './lessonDocument';
+import { CoinTrayBoard, EulerBoard, FlowchartBoard, MentorEpisodeBoard, MentorTurnBoard, MessageListBoard, RuleCardsBoard, SortBinsBoard, StoryChoiceBoard } from './familyBoards';
+import { LessonPlayerProvider, playerCopy, type SegmentGrade } from './segmentKit';
 
 export type CheckResult = 'invalid' | 'incomplete' | 'review' | 'met';
 export type OnGrade = (answer: Allocation, segmentId: string, document: LessonClientDocument) => CheckResult | Promise<CheckResult>;
@@ -36,9 +39,20 @@ export type OnGradeSchemaDiagram = (answer: Record<string, unknown>, segmentId: 
 export type OnGradeWorkedExample = (answer: { values: Record<string, string> }, segmentId: string, document: LessonClientDocument) => 'invalid' | 'met' | 'review' | Promise<'invalid' | 'met' | 'review'>;
 /** B.12: a reasoning answer returns the decision verdict and, separately, the judgment quality of the reason. */
 export type OnGradeReasoning = (answer: { choice: string; reason: string }, segmentId: string, document: LessonClientDocument) => ReasoningGrade | Promise<ReasoningGrade>;
+/** GAP-FIX-R1: one grader for every newly gradable visual and first-release family (the answer is whatever the board built). */
+export type OnGradeAny = (answer: unknown, segmentId: string, document: LessonClientDocument) => SegmentGrade | Promise<SegmentGrade>;
+/** GAP-FIX-R1 (OD-17): Core's view receipt for a non-scored step; false keeps the learner on the step. */
+export type OnView = (segmentId: string, document: LessonClientDocument) => Promise<boolean>;
 const copy = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 
-function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumberLine?: OnGradeNumberLine, onGradeFractionArea?: OnGradeFractionArea, onGradeBarModel?: OnGradeBarModel, onGradeSchemaDiagram?: OnGradeSchemaDiagram, onGradeWorkedExample?: OnGradeWorkedExample, onGradeReasoning?: OnGradeReasoning): boolean {
+/** The kinds introduced for the first release: each needs the generic grader when graded. */
+const FAMILY_TYPES = new Set(['logic.rule-checker.v2', 'logic.euler.v2', 'logic.flowchart.v2', 'money.spend-decision.v2', 'logic.sort-by-rule.v2', 'money.needs-wants.v2',
+  'logic.scam-spotter.v2', 'money.scam-check.v2', 'money.coin-tray.v2', 'money.making-change.v2', 'story.branch.v2', 'story.dialogue-choice.v2', 'story.would-you-rather.v2']);
+
+function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumberLine?: OnGradeNumberLine, onGradeFractionArea?: OnGradeFractionArea, onGradeBarModel?: OnGradeBarModel, onGradeSchemaDiagram?: OnGradeSchemaDiagram, onGradeWorkedExample?: OnGradeWorkedExample, onGradeReasoning?: OnGradeReasoning, onGradeAny?: OnGradeAny): boolean {
+  // A formerly presentation-only visual that the document now grades needs the generic grader (Appendix P Part 7).
+  if (segment.grading === 'server' && (FAMILY_TYPES.has(segment.type) || ['visual.goal-bullet.v2', 'visual.percent-grid.v2', 'math.place-value.v2', 'logic.savings-rule.v2',
+    'money.running-ledger.v2', 'visual.growth-comparison.v2', 'visual.tax-bracket.v2', 'math.ratio-table.v2'].includes(segment.type))) return !!onGradeAny;
   switch (segment.type) {
     case 'money.allocation.v2': return !!onGrade;
     case 'math.number-line.whole.v2': return !!onGradeNumberLine;
@@ -62,6 +76,11 @@ function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumbe
     case 'visual.tax-bracket.v2': return true;
     case 'math.worked-example.v2': return !!onGradeWorkedExample;
     case 'reasoning.decide-justify.v2': return !!onGradeReasoning;
+    case 'voice.mentor-turn.v2':
+    case 'voice.mentor-episode.v2': return true;
+    case 'logic.rule-checker.v2': case 'logic.euler.v2': case 'logic.flowchart.v2': case 'money.spend-decision.v2': case 'logic.sort-by-rule.v2':
+    case 'money.needs-wants.v2': case 'logic.scam-spotter.v2': case 'money.scam-check.v2': case 'money.coin-tray.v2': case 'money.making-change.v2':
+    case 'story.branch.v2': case 'story.dialogue-choice.v2': case 'story.would-you-rather.v2': return !!onGradeAny;
     default: {
       const exhaustive: never = segment;
       void exhaustive;
@@ -71,35 +90,50 @@ function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumbe
 }
 
 /** The pilot renderer refuses any document it cannot display in full. */
-export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onComplete, metSegmentIds = [], attemptedSegmentIds = [], mentorStage = null, theme = 'light', previewSequence = false }: {
+/**
+ * GAP-FIX-R1 (OD-17, OD-24, B.7): the general ordered-segment player. Any mix
+ * of supported segments plays in order with progress across all of them; the
+ * M1 fading rules apply only to groups declared in `representation_progressions`
+ * (Core validates them). A segment this build cannot render, or a document it
+ * cannot parse because it is newer, is the B.4 update-required screen.
+ */
+export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onHelpUsed, onComplete, metSegmentIds = [], attemptedSegmentIds = [], viewedSegmentIds = [], mentorStage = null, adventureTheme = null, theme = 'light', previewSequence = false }: {
   raw: unknown; locale: Locale; ageBand: AgeBand; onBack: () => void; onGrade?: OnGrade; onGradeNumberLine?: OnGradeNumberLine; onGradeFractionArea?: OnGradeFractionArea; onGradeBarModel?: OnGradeBarModel; onGradeSchemaDiagram?: OnGradeSchemaDiagram; onGradeWorkedExample?: OnGradeWorkedExample; onGradeReasoning?: OnGradeReasoning;
+  onGradeAny?: OnGradeAny; onView?: OnView; onHelpUsed?: (segmentId: string, steps: number) => void;
   metSegmentIds?: string[];
   attemptedSegmentIds?: string[];
+  viewedSegmentIds?: string[];
   onComplete?: () => Promise<boolean>;
-  mentorStage?: LessonMentorStage | null; theme?: 'light' | 'dark'; previewSequence?: boolean;
+  mentorStage?: LessonMentorStage | null; adventureTheme?: AdventureTheme | null; theme?: 'light' | 'dark'; previewSequence?: boolean;
 }) {
   const loaded = loadLessonClientDocument(raw);
-  if (loaded.status !== 'ready') return unavailable(locale, onBack, loaded.status === 'upgrade-required' ? 'upgrade' : 'invalid');
-  const supported = loaded.document.segments.every((segment) => canRender(segment, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning));
+  if (loaded.status !== 'ready') return loaded.status === 'upgrade-required' ? <UpdateRequired locale={locale} onBack={onBack} /> : unavailable(locale, onBack, 'invalid');
+  const supported = loaded.document.segments.every((segment) => canRender(segment, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny));
   if (loaded.document.locale !== locale || loaded.document.age_band !== ageBand) return unavailable(locale, onBack, 'invalid');
-  const barSequence = loaded.document.segments.length === 2 && loaded.document.segments[0]?.type === 'math.bar-model.structure.v2' && loaded.document.segments[1]?.type === 'math.bar-model.answer.v2';
-  const schemaSequence = loaded.document.segments.length === 3 && loaded.document.segments[0]?.type === 'math.schema-diagram.structure.v2' && loaded.document.segments[1]?.type === 'math.schema-diagram.slots.v2' && loaded.document.segments[2]?.type === 'math.schema-diagram.answer.v2';
-  const cpaSequence = loaded.document.segments.length === 3 && loaded.document.segments.every((segment) => segment.type === 'math.cpa-count.v2') && !!loaded.document.representation_progressions;
-  if (!supported || loaded.document.segments.length > 1 && !previewSequence && !barSequence && !schemaSequence && !cpaSequence) return unavailable(locale, onBack, 'upgrade');
+  if (!supported) return <UpdateRequired locale={locale} onBack={onBack} />;
   // W2L.3 (B.8): every board's stage slot reads Core's projection from here; the allocation pilot keeps its own prop.
-  return <LessonStageProvider stage={mentorStage} ageBand={loaded.document.age_band} theme={theme}><ValidatedLessonView key={lessonVersionKey(loaded.document)} document={loaded.document} onBack={onBack} onGrade={onGrade}
-    onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} mentorStage={mentorStage} theme={theme} previewSequence={previewSequence||barSequence||schemaSequence||cpaSequence} /></LessonStageProvider>;
+  return <LessonStageProvider stage={mentorStage} ageBand={loaded.document.age_band} theme={theme} adventureTheme={adventureTheme}>
+    <LessonPlayerProvider stage={mentorStage} theme={theme} onHelpUsed={onHelpUsed}>
+      <ValidatedLessonView key={lessonVersionKey(loaded.document)} document={loaded.document} onBack={onBack} onGrade={onGrade}
+        onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning}
+        onGradeAny={onGradeAny} onView={onView} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} viewedSegmentIds={viewedSegmentIds}
+        mentorStage={mentorStage} theme={theme} previewSequence={previewSequence} />
+    </LessonPlayerProvider>
+  </LessonStageProvider>;
 }
 
-function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onComplete, metSegmentIds, attemptedSegmentIds, mentorStage, theme, previewSequence }: {
+function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onComplete, metSegmentIds, attemptedSegmentIds, viewedSegmentIds, mentorStage, theme, previewSequence }: {
   document: LessonClientDocument; onBack: () => void; onGrade?: OnGrade; onGradeNumberLine?: OnGradeNumberLine; onGradeFractionArea?: OnGradeFractionArea; onGradeBarModel?: OnGradeBarModel; onGradeSchemaDiagram?: OnGradeSchemaDiagram; onGradeWorkedExample?: OnGradeWorkedExample; onGradeReasoning?: OnGradeReasoning;
+  onGradeAny?: OnGradeAny; onView?: OnView;
   metSegmentIds: string[];
   attemptedSegmentIds: string[];
+  viewedSegmentIds: string[];
   onComplete?: () => Promise<boolean>;
   mentorStage: LessonMentorStage | null; theme: 'light' | 'dark'; previewSequence: boolean;
 }) {
+  const [viewFailed, setViewFailed] = useState(false);
   const [index, setIndex] = useState(() => {
-    const restored = new Set(metSegmentIds);
+    const restored = new Set([...metSegmentIds, ...viewedSegmentIds]);
     // M1 reviews are valid experiences for the next representation, but never
     // become a met receipt or completion authority. A review of the final
     // symbolic stage must reopen that stage rather than expose Finish.
@@ -115,33 +149,57 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
   });
   useLayoutEffect(() => { try { window.scrollTo(0, 0); } catch { /* jsdom has no scroll implementation */ } }, [index]);
   const segment = document.segments[index];
-  const terminalScoredSequence = document.segments.length === 1 && !!onComplete
-    && ['money.allocation.v2', 'math.number-line.whole.v2', 'math.number-line.fraction.v2', 'math.fraction-area.v2', 'math.worked-example.v2', 'math.function-machine.v2', 'reasoning.decide-justify.v2'].includes(document.segments[0]?.type ?? '');
-  const sequence = (document.segments.length > 1 && previewSequence || terminalScoredSequence)
+  // Every multi-step document, and every authenticated one, advances through the same sequence control.
+  const sequence = (document.segments.length > 1 || !!onComplete || previewSequence)
     ? { index, total: document.segments.length, onAdvance: () => {
-      setIndex((current) => Math.min(current + 1, document.segments.length));
+      void (async () => {
+        // A non-scored step is recorded with Core before the learner moves on (version-pinned completion).
+        if (segment && segment.grading === 'none' && onView && !(await onView(segment.id, document))) { setViewFailed(true); return; }
+        setViewFailed(false);
+        setIndex((current) => Math.min(current + 1, document.segments.length));
+      })();
     } } : undefined;
   if (!segment) return <V2SequenceEnd locale={document.locale} onBack={onBack} onComplete={onComplete} />;
   const key = `${lessonVersionKey(document)}:${segment.id}`;
+  const board = renderSegment(segment, key);
+  return viewFailed ? <>{board}<div className="lf-learning-view-failed"><InlineNotice tone="error" live>{playerCopy(document.locale).viewFailed}</InlineNotice></div></> : board;
+
+  function renderSegment(segment: LessonClientSegment, key: string) {
+  const any = onGradeAny ? (answer: unknown, id: string) => onGradeAny(answer, id, document) : undefined;
   switch (segment.type) {
+    case 'logic.rule-checker.v2': return <RuleCardsBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'logic.euler.v2': return <EulerBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'logic.flowchart.v2':
+    case 'money.spend-decision.v2': return <FlowchartBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'logic.sort-by-rule.v2':
+    case 'money.needs-wants.v2': return <SortBinsBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'logic.scam-spotter.v2':
+    case 'money.scam-check.v2': return <MessageListBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'money.coin-tray.v2':
+    case 'money.making-change.v2': return <CoinTrayBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'story.branch.v2':
+    case 'story.dialogue-choice.v2':
+    case 'story.would-you-rather.v2': return <StoryChoiceBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'voice.mentor-turn.v2': return <MentorTurnBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
+    case 'voice.mentor-episode.v2': return <MentorEpisodeBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
     case 'money.allocation.v2': return onGrade ? <AllocationBoard key={key} document={document} segment={segment}
       onBack={onBack} onCheck={(answer, segmentId) => onGrade(answer, segmentId, document)} mentorStage={mentorStage} theme={theme} sequence={sequence} />
       : unavailable(document.locale, onBack);
     case 'visual.savings-line.v2': return <GrowthBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
-    case 'visual.goal-bullet.v2': return <GoalBulletBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
-    case 'visual.percent-grid.v2': return <PercentGridBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
+    case 'visual.goal-bullet.v2': return <GoalBulletBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'visual.percent-grid.v2': return <PercentGridBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
     case 'math.place-value.v2': return document.age_band !== '6-9' ? unavailable(document.locale, onBack)
-      : <PlaceValueBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
+      : <PlaceValueBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
     case 'logic.savings-rule.v2': return document.age_band !== '10-12' ? unavailable(document.locale, onBack)
-      : <SavingsRuleBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
+      : <SavingsRuleBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
     case 'money.running-ledger.v2': return document.age_band !== '13-17' ? unavailable(document.locale, onBack)
-      : <RunningLedgerBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
+      : <RunningLedgerBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
     case 'visual.growth-comparison.v2': return document.age_band !== '13-17' ? unavailable(document.locale, onBack)
-      : <GrowthComparisonBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
+      : <GrowthComparisonBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
     case 'math.ratio-table.v2': return document.age_band !== '10-12' ? unavailable(document.locale, onBack)
-      : <RatioTableBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
+      : <RatioTableBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
     case 'visual.tax-bracket.v2': return document.age_band !== '13-17' ? unavailable(document.locale, onBack)
-      : <TaxBracketBoard key={key} document={document} segment={segment} onBack={onBack} />;
+      : <TaxBracketBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
     case 'math.worked-example.v2': return document.age_band !== '10-12' || !onGradeWorkedExample ? unavailable(document.locale, onBack)
       : <WorkedExampleBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence}
         onGrade={(answer, id) => onGradeWorkedExample(answer, id, document)} />;
@@ -174,6 +232,36 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
       return unavailable(document.locale, onBack);
     }
   }
+  }
+}
+
+/**
+ * B.4 (GAP-FIX-R1): the lesson is newer than this app. The learner is asked
+ * to update the app, never told the lesson is broken; Reload drops cached
+ * lazy chunks and reloads with a cache-busting query, and Back stays second.
+ */
+function UpdateRequired({ locale, onBack }: { locale: Locale; onBack: () => void }) {
+  const t = playerCopy(locale);
+  const [reloading, setReloading] = useState(false);
+  const reload = async () => {
+    setReloading(true);
+    try {
+      if (typeof caches !== 'undefined') await Promise.all((await caches.keys()).map((name) => caches.delete(name)));
+    } catch { /* A browser without the Cache API still reloads. */ }
+    const url = new URL(window.location.href);
+    url.searchParams.set('app-reload', String(Date.now()));
+    window.location.replace(url.toString());
+  };
+  return <main className="lf-learning" data-surface="app" data-screen="lesson-update">
+    <div className="lf-learning-inner lf-learning-state lf-learning-update">
+      <h1 className="lf-learning-unavailable" data-copy-role="heading">{t.updateTitle}</h1>
+      <p data-copy-role="body">{t.updateBody}</p>
+      <div className="lf-learning-update-actions">
+        <Button variant="accent" pending={reloading} onClick={() => { void reload(); }}>{t.reload}</Button>
+        <Button onClick={onBack}>{copy[locale].back}</Button>
+      </div>
+    </div>
+  </main>;
 }
 
 function V2SequenceEnd({ locale, onBack, onComplete }: { locale: Locale; onBack: () => void; onComplete?: () => Promise<boolean> }) {
@@ -198,9 +286,9 @@ const endCopy = {
 };
 
 function unavailable(locale: Locale, onBack: () => void, reason: 'upgrade' | 'invalid' = 'invalid') {
-  return <main className="lf-learning" data-surface="app" data-screen={reason === 'upgrade' ? 'lesson-upgrade' : 'lesson-unavailable'}>
-    <div className="lf-learning-inner lf-learning-state"><h1 className="lf-learning-unavailable" data-copy-role="heading">
-      {reason === 'upgrade' ? copy[locale].lessonUnavailable : copy[locale].lessonInvalid}</h1>
+  if (reason === 'upgrade') return <UpdateRequired locale={locale} onBack={onBack} />;
+  return <main className="lf-learning" data-surface="app" data-screen="lesson-unavailable">
+    <div className="lf-learning-inner lf-learning-state"><h1 className="lf-learning-unavailable" data-copy-role="heading">{copy[locale].lessonInvalid}</h1>
       <Button onClick={onBack}>{copy[locale].back}</Button>
     </div>
   </main>;
