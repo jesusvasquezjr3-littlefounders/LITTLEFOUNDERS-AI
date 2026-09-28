@@ -34,10 +34,12 @@
       "payload": {
         "steps": [
           {
-            "id": "discount-part"
+            "id": "discount-part",
+            "notation": "20\\% \\times 50"
           },
           {
-            "id": "discount-subtract"
+            "id": "discount-subtract",
+            "notation": "50 - 10"
           },
           {
             "id": "sale-price"

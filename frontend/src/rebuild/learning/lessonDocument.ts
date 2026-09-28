@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { growthComparison } from './growthComparisonModel.generated';
-import { longArithmeticSchema, placeValuePayload, schemaDiagramPayload, v2AgeScopeProblem, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras } from './v2SegmentFamilies.generated';
+import { longArithmeticSchema, mathNotation, NOTATION_CAPABILITY, placeValuePayload, schemaDiagramPayload, v2AgeScopeProblem, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras } from './v2SegmentFamilies.generated';
 import { conceptAllowed, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptType } from './v2ConceptBoards.generated';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './charts/chartModel.generated';
 
@@ -246,6 +246,8 @@ const workedExampleSegment = z.object({
       expression: z.string().trim().min(1).max(80),
       result: z.string().trim().min(1).max(40),
       spokenText: z.string().trim().min(1).max(120),
+      // Bible 05 §5 (GAP-FIX-R2): optional TeX rendered with KaTeX; spokenText stays the accessible name.
+      notation: mathNotation.optional(),
     }).strict()).min(3).max(4),
     fade_count: nonnegativeInteger.max(3),
     response_step_ids: z.array(id).min(2).max(3),
@@ -265,6 +267,8 @@ const functionMachineSegment = z.object({
   payload: z.object({
     examples: z.array(z.object({ input: nonnegativeInteger.max(12), output: nonnegativeInteger.max(200) }).strict()).min(3).max(5),
     multiplierMaximum: positiveInteger.max(12), offsetMaximum: nonnegativeInteger.max(100),
+    // GAP-FIX-R2: the learner's rule is written in KaTeX notation (declares visual.math-notation.v1).
+    notation: z.literal(true).optional(),
   }).strict().refine((value) => {
     if (new Set(value.examples.map((example) => example.input)).size !== value.examples.length) return false;
     const ordered = [...value.examples].sort((a, b) => a.input - b.input);
@@ -378,7 +382,7 @@ export const REQUIRED_SEGMENT_CAPABILITIES = {
   'money.lemonade-stand.v2': ['visual.waterfall.v1', 'operation.guided-sandbox.v1', 'operation.running-ledger.v1'],
 } as const satisfies Record<SegmentType, readonly string[]>;
 export const LESSON_CLIENT_CAPABILITIES = [...new Set([...Object.values(REQUIRED_SEGMENT_CAPABILITIES).flat(),
-  'visual.waffle.v1', 'visual.donut.v1', 'operation.build-flowchart.v1', ...CHART_KINDS.map((kind) => `visual.${kind}.v1`)])];
+  'visual.waffle.v1', 'visual.donut.v1', 'operation.build-flowchart.v1', NOTATION_CAPABILITY, ...CHART_KINDS.map((kind) => `visual.${kind}.v1`)])];
 const knownTypes = new Set(Object.keys(REQUIRED_SEGMENT_CAPABILITIES));
 /** Every occurrence of a chain member sits inside a complete, in-order run of the whole chain. */
 function contiguousChains(types: readonly string[], chain: readonly string[]): boolean {
@@ -440,7 +444,9 @@ export const lessonClientDocumentSchema = z.object({
       ? [`visual.${value.visual.type}.v1`, 'operation.reallocate.v1']
       : value.type === 'visual.chart.v2' ? [`visual.${value.visual.type}.v1`, ...REQUIRED_SEGMENT_CAPABILITIES[value.type], ...(value.payload.question ? ['operation.choose-option.v1'] : [])]
         : (value.type === 'logic.flowchart.v2' || value.type === 'money.spend-decision.v2') && 'mode' in value.payload ? [...REQUIRED_SEGMENT_CAPABILITIES[value.type], 'operation.build-flowchart.v1']
-          : REQUIRED_SEGMENT_CAPABILITIES[value.type];
+          : (value.type === 'math.worked-example.v2' && value.payload.steps.some((step) => step.notation)) || (value.type === 'math.function-machine.v2' && value.payload.notation)
+            ? [...REQUIRED_SEGMENT_CAPABILITIES[value.type], NOTATION_CAPABILITY]
+            : REQUIRED_SEGMENT_CAPABILITIES[value.type];
     if (value.type === 'visual.chart.v2' && !chartAllowed(value.visual.type, document.age_band, document.course_id)) {
       ctx.addIssue({ code: 'custom', path: ['segments', index, 'visual'], message: 'This chart kind is not open to this age pathway or subject' });
     }

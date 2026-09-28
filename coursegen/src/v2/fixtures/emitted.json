@@ -2931,7 +2931,8 @@
         "operation.step-replay.v1",
         "operation.predict-next.v1",
         "operation.backward-fade.v1",
-        "operation.number-input.v1"
+        "operation.number-input.v1",
+        "visual.math-notation.v1"
       ],
       "segments": [
         {
@@ -2946,12 +2947,14 @@
             "steps": [
               {
                 "id": "discount-part",
+                "notation": "20\\% \\times 50",
                 "expression": "20% × 50",
                 "result": "10",
                 "spokenText": "Twenty percent of 50 is 10"
               },
               {
                 "id": "discount-subtract",
+                "notation": "50 - 10",
                 "expression": "50 − 10",
                 "result": "40",
                 "spokenText": "Fifty minus 10 is 40"
@@ -3009,7 +3012,8 @@
         "operation.step-replay.v1",
         "operation.predict-next.v1",
         "operation.backward-fade.v1",
-        "operation.number-input.v1"
+        "operation.number-input.v1",
+        "visual.math-notation.v1"
       ],
       "segments": [
         {
@@ -3024,12 +3028,14 @@
             "steps": [
               {
                 "id": "discount-part",
+                "notation": "20\\% \\times 50",
                 "expression": "20% × 50",
                 "result": "10",
                 "spokenText": "El veinte por ciento de 50 es 10"
               },
               {
                 "id": "discount-subtract",
+                "notation": "50 - 10",
                 "expression": "50 − 10",
                 "result": "40",
                 "spokenText": "Cincuenta menos 10 es 40"
@@ -3087,7 +3093,8 @@
         "operation.step-replay.v1",
         "operation.predict-next.v1",
         "operation.backward-fade.v1",
-        "operation.number-input.v1"
+        "operation.number-input.v1",
+        "visual.math-notation.v1"
       ],
       "segments": [
         {
@@ -3102,12 +3109,14 @@
             "steps": [
               {
                 "id": "discount-part",
+                "notation": "20\\% \\times 50",
                 "expression": "20% × 50",
                 "result": "10",
                 "spokenText": "Vinte por cento de 50 é 10"
               },
               {
                 "id": "discount-subtract",
+                "notation": "50 - 10",
                 "expression": "50 − 10",
                 "result": "40",
                 "spokenText": "Cinquenta menos 10 é 40"
@@ -3164,7 +3173,8 @@
         "visual.function-machine.v1",
         "operation.try-input.v1",
         "operation.guess-rule.v1",
-        "operation.held-out-check.v1"
+        "operation.held-out-check.v1",
+        "visual.math-notation.v1"
       ],
       "segments": [
         {
@@ -3191,7 +3201,8 @@
               }
             ],
             "multiplierMaximum": 9,
-            "offsetMaximum": 50
+            "offsetMaximum": 50,
+            "notation": true
           }
         }
       ]
@@ -3234,7 +3245,8 @@
         "visual.function-machine.v1",
         "operation.try-input.v1",
         "operation.guess-rule.v1",
-        "operation.held-out-check.v1"
+        "operation.held-out-check.v1",
+        "visual.math-notation.v1"
       ],
       "segments": [
         {
@@ -3261,7 +3273,8 @@
               }
             ],
             "multiplierMaximum": 9,
-            "offsetMaximum": 50
+            "offsetMaximum": 50,
+            "notation": true
           }
         }
       ]
@@ -3304,7 +3317,8 @@
         "visual.function-machine.v1",
         "operation.try-input.v1",
         "operation.guess-rule.v1",
-        "operation.held-out-check.v1"
+        "operation.held-out-check.v1",
+        "visual.math-notation.v1"
       ],
       "segments": [
         {
@@ -3331,7 +3345,8 @@
               }
             ],
             "multiplierMaximum": 9,
-            "offsetMaximum": 50
+            "offsetMaximum": 50,
+            "notation": true
           }
         }
       ]

@@ -19,7 +19,7 @@ import { fractionNumberLinePilotDocument } from '../../learning/FractionNumberLi
 import { fractionAreaPilotDocument } from '../../learning/FractionAreaBoard';
 import { barModelPilotDocument } from '../../learning/BarModelBoard';
 import { schemaDiagramPilotDocument } from '../../learning/SchemaDiagramBoard';
-import { workedExamplePilotDocument } from '../../learning/WorkedExampleBoard';
+import { workedExamplePilotDocument, notationPilotDocument } from '../../learning/WorkedExampleBoard';
 import { functionMachinePilotDocument } from '../../learning/FunctionMachineBoard';
 import { cpaFadingPilotDocument } from '../../learning/CpaFadingBoard';
 import { DECIDE_JUSTIFY_PILOT_RUBRIC, decideJustifyPilotDocument } from '../../learning/DecisionReasonsBoard';
@@ -273,8 +273,8 @@ export const learnPreviewScreens: PreviewRegistry = {
         ? { schema: 'change', slots: { start: 'earned', change: 'spent', result: 'unknown' } } : { target: 15 };
       return verdict(scoreV2Visual(kind, { quantityIds: ['earned', 'spent'], values: [24, 9] }, answer, rubric));
     }} />),
-  workedexample: framed(({ locale, ageBand, params, go }) => <LessonDocumentView key={'workedexample:' + locale + ':' + ageBand + ':' + params.get('fade')}
-    raw={ageBand === '10-12' ? workedExamplePilotDocument(locale, params.get('fade') === '1' ? 1 : 0) : null}
+  workedexample: framed(({ locale, ageBand, params, go }) => <LessonDocumentView key={'workedexample:' + locale + ':' + ageBand + ':' + params.get('fade') + ':' + params.get('notation')}
+    raw={params.get('notation') === '1' ? notationPilotDocument(locale) : ageBand === '10-12' ? workedExamplePilotDocument(locale, params.get('fade') === '1' ? 1 : 0) : null}
     locale={locale} ageBand={ageBand} onBack={() => go('home')}
     onGradeWorkedExample={(answer) => verdict(scoreV2Visual('math.worked-example.v2',
       { response_step_ids: ['discount-subtract', 'sale-price'] }, answer,

@@ -598,3 +598,24 @@ export function cpaEntryStage(pKnown: number | null, priorFirstUnaided: CpaStage
   const rank = (stage: CpaStage) => CPA_STAGES.indexOf(stage);
   return priorFirstUnaided && rank(priorFirstUnaided) > rank(fromMastery) ? priorFirstUnaided : fromMastery;
 }
+
+/* ── Mathematical notation (GAP-FIX-R2, Bible 05 §5, Appendix P Parts 5-6) ── */
+
+/**
+ * Notation is authored TeX rendered with KaTeX, loaded only by lessons that
+ * declare it (capability `visual.math-notation.v1`). The TeX is locale-neutral
+ * with '.' decimals; the renderer writes pt-BR's decimal comma as '{,}'. Every
+ * expression keeps its author-written spokenText per locale as the accessible
+ * name, and its plain `expression` as the fallback. Only a small command set
+ * is accepted, never \href, \url, \html* or \text (copy stays copy).
+ */
+export const NOTATION_CAPABILITY = 'visual.math-notation.v1';
+const TEX_COMMANDS = new Set(['frac', 'dfrac', 'times', 'div', 'cdot', 'sqrt', 'left', 'right', '%', 'le', 'ge', 'approx', 'quad', ',', 'pm']);
+export function texProblem(tex: string): string | null {
+  if (tex.length < 1 || tex.length > 200 || !/^[0-9a-zA-Z\\{}^_+\-=*/()[\].,:%|\s]+$/.test(tex)) return 'Notation uses digits, letters, operators and braces only';
+  for (const match of tex.matchAll(/\\([a-zA-Z]+|.)/g)) if (!TEX_COMMANDS.has(match[1]!)) return `\\${match[1]} is not an allowed notation command`;
+  let depth = 0;
+  for (const char of tex) { if (char === '{') depth += 1; else if (char === '}') { depth -= 1; if (depth < 0) return 'Unbalanced braces'; } }
+  return depth === 0 ? null : 'Unbalanced braces';
+}
+export const mathNotation = z.string().trim().min(1).max(200).refine((value) => texProblem(value) === null, 'Invalid notation');

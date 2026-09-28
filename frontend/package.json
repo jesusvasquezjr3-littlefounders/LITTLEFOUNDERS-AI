@@ -66,6 +66,7 @@
     "dompurify": "^3.4.12",
     "i18next": "^24.2.0",
     "i18next-browser-languagedetector": "^8.0.0",
+    "katex": "0.18.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^15.4.0",

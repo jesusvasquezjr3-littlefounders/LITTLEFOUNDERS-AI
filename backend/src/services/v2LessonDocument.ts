@@ -4,7 +4,7 @@ import { gradeV2Response, scoreV2Judgment, scoreV2Visual, type V2CueHits, type V
 import { conceptAllowed, conceptSampleResponse, gradeConcept, V2_CONCEPT_RUBRICS, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptSegment } from './v2ConceptBoards.js';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './v2ChartModel.js';
 import { v2ScorerPayload } from './v2ScorerPayload.js';
-import { longArithmeticSchema, placeValuePayload, SCHEMA_DIAGRAM_RUBRICS, schemaDiagramPayload, V2_FAMILY_RUBRICS, v2AgeScopeProblem, v2FamilySampleResponse, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras, type V2FamilySegment } from './v2SegmentFamilies.js';
+import { longArithmeticSchema, mathNotation, NOTATION_CAPABILITY, placeValuePayload, SCHEMA_DIAGRAM_RUBRICS, schemaDiagramPayload, V2_FAMILY_RUBRICS, v2AgeScopeProblem, v2FamilySampleResponse, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras, type V2FamilySegment } from './v2SegmentFamilies.js';
 
 /*
  * Core's independently authored copy of the public v2 lesson contract.
@@ -163,6 +163,8 @@ const workedExample = z.object({
     steps: z.array(z.object({
       id, expression: z.string().trim().min(1).max(80), result: z.string().trim().min(1).max(40),
       spokenText: z.string().trim().min(1).max(120),
+      // Bible 05 §5 (GAP-FIX-R2): optional TeX rendered with KaTeX; spokenText stays the accessible name.
+      notation: mathNotation.optional(),
     }).strict()).min(3).max(4),
     fade_count: nonnegative.max(3),
     response_step_ids: z.array(id).min(2).max(3),
@@ -179,6 +181,8 @@ const functionMachine = z.object({
   payload: z.object({
     examples: z.array(z.object({ input: nonnegative.max(12), output: nonnegative.max(200) }).strict()).min(3).max(5),
     multiplierMaximum: positive.max(12), offsetMaximum: nonnegative.max(100),
+    // GAP-FIX-R2: the learner's rule is written in KaTeX notation (declares visual.math-notation.v1).
+    notation: z.literal(true).optional(),
   }).strict().refine((value) => {
     if (new Set(value.examples.map((example) => example.input)).size !== value.examples.length) return false;
     const ordered = [...value.examples].sort((a, b) => a.input - b.input);
@@ -335,7 +339,9 @@ export const v2PublicLessonSchema = z.object({
       ? [`visual.${value.visual.type}.v1`, 'operation.reallocate.v1']
       : value.type === 'visual.chart.v2' ? [`visual.${value.visual.type}.v1`, ...capabilities[value.type], ...(value.payload.question ? ['operation.choose-option.v1'] : [])]
         : (value.type === 'logic.flowchart.v2' || value.type === 'money.spend-decision.v2') && 'mode' in value.payload ? [...capabilities[value.type], 'operation.build-flowchart.v1']
-          : capabilities[value.type];
+          : (value.type === 'math.worked-example.v2' && value.payload.steps.some((step) => step.notation)) || (value.type === 'math.function-machine.v2' && value.payload.notation)
+            ? [...capabilities[value.type], NOTATION_CAPABILITY]
+            : capabilities[value.type];
     // Appendix A: situational chart kinds appear only in their age pathways and subjects, enforced on delivery.
     if (value.type === 'visual.chart.v2' && !chartAllowed(value.visual.type, document.age_band, document.course_id)) {
       ctx.addIssue({ code: 'custom', path: ['segments', index, 'visual'], message: 'This chart kind is not open to this age pathway or subject' });

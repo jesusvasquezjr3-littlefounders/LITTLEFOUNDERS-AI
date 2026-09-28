@@ -118,3 +118,24 @@ describe('the server boundary', () => {
     expect(v2PublicLessonSchema.safeParse({ ...document, age_band: '6-9', eligibility: { minimum_age: 8, maximum_age: 9 } }).success).toBe(false);
   });
 });
+
+describe('notation at the server boundary (Bible 05 §5, GAP-FIX-R2)', () => {
+  const worked = (notation: string | undefined, capabilities: string[]) => ({
+    schema_version: 2, course_id: 'financial-education', pathway_id: 'financial-13-17', chapter_id: 'compound', lesson_id: 'notation-lesson', version_id: 'rev-1',
+    locale: 'pt-BR', age_band: '13-17', eligibility: { minimum_age: 13, maximum_age: 17 }, knowledge_component_ids: ['kc-compound-growth'], adventure_scene_id: 'diorama-a',
+    title: 'Juros sobre juros', required_capabilities: capabilities,
+    segments: [{ id: 'worked-01', type: 'math.worked-example.v2', grading: 'server', prompt: 'Acompanhe.', visual: { type: 'worked-example' }, payload: {
+      steps: [{ id: 'grow-step', expression: '100 × 1,1²', result: '121', spokenText: 'Cem vezes 1,1 ao quadrado é 121', ...(notation ? { notation } : {}) },
+        { id: 'less-step', expression: '121 − 100', result: '21', spokenText: 'Cento e vinte e um menos 100 é 21' },
+        { id: 'end-step', expression: 'Juros', result: '21', spokenText: 'Os juros são 21' }], fade_count: 0, response_step_ids: ['less-step', 'end-step'] } }],
+  });
+  const base = ['visual.worked-example.v1', 'operation.step-replay.v1', 'operation.predict-next.v1', 'operation.backward-fade.v1', 'operation.number-input.v1'];
+  it('requires the KaTeX capability exactly when a step declares notation, and refuses unsafe TeX', () => {
+    expect(v2PublicLessonSchema.safeParse(worked('100 \\times 1.1^{2}', [...base, 'visual.math-notation.v1'])).success).toBe(true);
+    expect(v2PublicLessonSchema.safeParse(worked('100 \\times 1.1^{2}', base)).success).toBe(false);
+    expect(v2PublicLessonSchema.safeParse(worked(undefined, [...base, 'visual.math-notation.v1'])).success).toBe(false);
+    expect(v2PublicLessonSchema.safeParse(worked('\\href{https://x.test}{1}', [...base, 'visual.math-notation.v1'])).success).toBe(false);
+    expect(v2PublicLessonSchema.safeParse(worked('\\text{hi}', [...base, 'visual.math-notation.v1'])).success).toBe(false);
+  });
+});
+

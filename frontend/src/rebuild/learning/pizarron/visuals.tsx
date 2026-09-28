@@ -42,6 +42,21 @@ function Frame({ name, label, children, className }: { name: string; label: stri
   return <div className={`lf-pz ${className ?? ''}`.trim()} role="img" aria-label={label} data-pizarron={name}>{children}</div>;
 }
 
+// ── Schema slots (M8: change, group, compare, ratio) ─────────────────────────
+
+export interface SchemaSlot { id: string; label: string; value: string; detail?: string }
+
+/** A problem schema as three slots joined by its two operators (M8, GAP-FIX-R2); the name states the schema's shape. */
+export function SchemaSlotsVisual({ label, schema, slots, operators }: { label: string; schema: string; slots: readonly [SchemaSlot, SchemaSlot, SchemaSlot]; operators: readonly [string, string] }) {
+  const box = (slot: SchemaSlot) => <div key={slot.id} className="lf-schema-slot" data-slot={slot.id}>
+    <span data-copy-role="label">{slot.label}</span><strong data-copy-role="data">{slot.value}</strong>
+    {slot.detail ? <span data-copy-role="data">{slot.detail}</span> : null}</div>;
+  return <Frame name="schema-slots" label={label} className={`lf-schema-diagram lf-schema-diagram--${schema}`}>
+    {box(slots[0])}<div className="lf-schema-operator" aria-hidden="true">{operators[0]}</div>{box(slots[1])}
+    <div className="lf-schema-operator" aria-hidden="true">{operators[1]}</div>{box(slots[2])}
+  </Frame>;
+}
+
 // ── Bars: one bar per row, direct labels ────────────────────────────────────
 
 export interface SeriesBarRow { id: string; label: string; value: string; amount: number; series: SeriesTone; marked?: boolean }

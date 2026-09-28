@@ -6,6 +6,7 @@ import { type LessonClientDocument, type LessonClientSegment } from './lessonDoc
 import { type LessonSequenceControl } from './lessonSequence';
 import { useSingleActiveGrade } from './useSingleActiveGrade';
 import { SCHEMA_KINDS, SCHEMA_SLOTS, type SchemaKind } from './v2SegmentFamilies.generated';
+import { SchemaSlotsVisual } from './pizarron';
 import './learning.css';
 import { LessonStageSlot } from './lessonStage';
 import { SegmentPrompt } from './segmentKit';
@@ -80,15 +81,11 @@ export function SchemaDiagramBoard({ document, segment, onBack, onGrade, sequenc
   const submit = () => { if (verdict === 'met') { sequence?.onAdvance(); return; } if (!response) return; grade(() => onGrade(response, segment.id), (value) => setVerdict(value === 'met' ? 'met' : 'review'), () => setVerdict('unavailable')); };
   const quantityText = (value: string | undefined) => value === 'unknown' ? p.unknownLabel : p.quantities.find((item) => item.id === value)?.label ?? t.unknown;
   const quantityValue = (value: string | undefined) => value === 'unknown' ? t.unknown : String(p.quantities.find((item) => item.id === value)?.value ?? t.unknown);
-  const slotBox = (slot: SlotName) => <div key={slot} className="lf-schema-slot" data-slot={slot}>
-    <span data-copy-role="label">{t.slots[slot]}</span>
-    <strong data-copy-role="data">{phase === 'slots' ? quantityValue(slots[slot]) : t.unknown}</strong>
-    {phase === 'slots' && slots[slot] ? <span data-copy-role="data">{quantityText(slots[slot])}</span> : null}
-  </div>;
-  const diagram = schema ? <div className={`lf-schema-diagram lf-schema-diagram--${schema}`} role="img" aria-label={`${t.schemas[schema]}. ${t.shapes[schema]}`}>
-    {slotBox(slotNames[0]!)}<div className="lf-schema-operator" aria-hidden="true">{OPERATOR[schema][0]}</div>{slotBox(slotNames[1]!)}
-    <div className="lf-schema-operator" aria-hidden="true">{OPERATOR[schema][1]}</div>{slotBox(slotNames[2]!)}
-  </div> : null;
+  const slotOf = (slot: SlotName) => ({ id: slot, label: t.slots[slot], value: phase === 'slots' ? quantityValue(slots[slot]) : t.unknown,
+    ...(phase === 'slots' && slots[slot] ? { detail: quantityText(slots[slot]) } : {}) });
+  // The shared Pizarrón slot row (B.7 one component set); the name states the schema's shape.
+  const diagram = schema ? <SchemaSlotsVisual label={`${t.schemas[schema]}. ${t.shapes[schema]}`} schema={schema}
+    slots={[slotOf(slotNames[0]!), slotOf(slotNames[1]!), slotOf(slotNames[2]!)]} operators={OPERATOR[schema]} /> : null;
   const change = (update: () => void) => { update(); setVerdict(null); };
   return <main className="lf-learning" data-surface="app" data-screen="schema-diagram"><div className="lf-learning-inner">
     <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button><span data-copy-role="data">{sequence ? `${sequence.index + 1}/${sequence.total}` : ''}</span></header>

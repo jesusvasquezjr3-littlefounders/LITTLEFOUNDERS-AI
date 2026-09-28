@@ -136,7 +136,11 @@ export function requiredCapabilities(segments: readonly Pick<V2Segment, 'type' |
           ? [`visual.${segment.visual.type}.v1`, ...V2_SEGMENT_CAPABILITIES[segment.type], ...(segment.payload?.question ? ['operation.choose-option.v1'] : [])]
           : (segment.type === 'logic.flowchart.v2' || segment.type === 'money.spend-decision.v2') && segment.payload?.mode === 'build'
             ? [...V2_SEGMENT_CAPABILITIES[segment.type], 'operation.build-flowchart.v1']
-            : V2_SEGMENT_CAPABILITIES[segment.type];
+            // Bible 05 §5 (GAP-FIX-R2): TeX notation on a worked step or the function machine's rule needs the KaTeX renderer.
+            : (segment.type === 'math.worked-example.v2' && Array.isArray(segment.payload?.steps) && (segment.payload.steps as Array<{ notation?: unknown }>).some((step) => step.notation))
+              || (segment.type === 'math.function-machine.v2' && segment.payload?.notation === true)
+              ? [...V2_SEGMENT_CAPABILITIES[segment.type], 'visual.math-notation.v1']
+              : V2_SEGMENT_CAPABILITIES[segment.type];
     for (const capability of needed) out.add(capability);
   }
   return [...out];
@@ -157,5 +161,7 @@ export function isNonCopyKey(key: string): boolean {
     // GAP-FIX-R2: a rule builder's level and a flowchart's build mode are contract vocabulary.
     || key === 'level'
     // GAP-FIX-R2 charts: a swimlane node's lane and a Venn region's set list are ids.
-    || key === 'lane' || key === 'sets';
+    || key === 'lane' || key === 'sets'
+    // TeX notation is locale-neutral data (spokenText carries the words).
+    || key === 'notation';
 }
