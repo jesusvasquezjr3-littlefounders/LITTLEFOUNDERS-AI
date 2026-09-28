@@ -34,6 +34,12 @@ jobs:
       - name: Binding product specification and rebuild boundary
         run: npm run spec:check
 
+      # G.6 / Appendix N 1.3: no staff route reaches a Mentor transcript or a
+      # per-account wallet table, and no impersonation or login-as capability
+      # exists. Also inside spec:check; named here so a red is legible.
+      - name: Staff standing constraints (no transcripts, no wallet reads, no impersonation)
+        run: npm run staff-constraints:check
+
       # i18n parity is also enforced inside frontend CI, but only when
       # frontend/** changes. A locale file edited on its own still has to pass.
       - name: i18n 3-locale key parity + hardcoded-string scan

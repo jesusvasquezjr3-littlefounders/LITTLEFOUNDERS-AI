@@ -3,7 +3,7 @@ import { Button, Chip, ConfirmDialog, DataTable, EmptyState, InlineNotice, Segme
 import { isCaseDetail, isCases, REPORTS_PATH, useStaffRead, type ReportCase, type StaffApi } from './staffConsoleApi';
 import { CopyId, Facts, LoadFailure, Loading, Metrics, shortId, StaffPage, useFormats } from './ConsoleParts';
 import { fill, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
-import { AutonomyRollback, RetentionSweepCard } from './StaffProgramme';
+import { AutonomyRollback, OpsJobsCard, RetentionSweepCard } from './StaffProgramme';
 
 /*
  * E.3's platform review queue (manage_support). Every social report routes
@@ -93,7 +93,7 @@ export function StaffReports({ api, initialView = 'cases' }: { api: StaffApi; in
       options={[{ value: 'cases' as const, label: t.option.view_cases }, { value: 'support' as const, label: t.option.view_support }]} />
     <div key={`${view}:${generation}`} className="lf-staff-section" data-view={view}>
       {view === 'cases' ? <ReportQueue api={api} />
-        : <div className="lf-staff-pair"><AutonomyRollback api={api} /><RetentionSweepCard api={api} /></div>}
+        : <><div className="lf-staff-pair"><AutonomyRollback api={api} /><RetentionSweepCard api={api} /></div><OpsJobsCard api={api} /></>}
     </div>
   </StaffPage>;
 }

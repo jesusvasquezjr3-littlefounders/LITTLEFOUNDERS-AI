@@ -463,9 +463,9 @@
         "superadmins": "Superadmins",
         "permissionGrants": "Staff access grants",
         "lastChange": "Last change: {date}",
-        "reviewDue": "{n} grants are over 90 days old. Confirm each one.",
-        "reviewNone": "No grant is older than 90 days.",
-        "reviewRow": "{role}, granted {date}",
+        "reviewDue": "{n} staff grants are past their 90-day review.",
+        "reviewNone": "Every staff grant was reviewed within 90 days.",
+        "reviewRow": "{grant}, last confirmed {date}",
         "userId": "User ID",
         "userIdHelp": "Paste an ID or find the person.",
         "userIdInvalid": "Enter a full user ID.",
@@ -497,7 +497,13 @@
         "systemGrant": "Granted by the system",
         "removed": "{role} removed.",
         "removeConsequence": "{name} loses the {role} role now.",
-        "staffOnly": "Staff access applies to admins only."
+        "staffOnly": "Staff access applies to admins only.",
+        "reviewCompliance": "Reviewed on time",
+        "reviewStale": "Past review",
+        "reviewKept": "{grant} kept. The audit log has it.",
+        "reviewNotHeld": "That grant is gone. The list is updated.",
+        "reviewFailed": "Could not record the review. Try again.",
+        "reviewEmpty": "No staff grants to review."
       },
       "action": {
         "find": "Find a person",
@@ -508,7 +514,9 @@
         "remove": "Remove {role}",
         "keep": "Keep role",
         "confirmRemove": "Remove role",
-        "removing": "Removing"
+        "removing": "Removing",
+        "keepAccess": "Keep access",
+        "keepingAccess": "Saving"
       }
     },
     "audit": {
@@ -1680,7 +1688,8 @@
         "autonomy": "Independence level",
         "changes": "Recent level changes",
         "confirmLower": "Lower this level?",
-        "sweep": "Mentor data sweep"
+        "sweep": "Mentor data sweep",
+        "jobs": "Backups and schema check"
       },
       "body": {
         "autonomyIntro": "Only when a family asks.",
@@ -1710,7 +1719,11 @@
         "sweepIntro": "Deletes Mentor data after 90 days, nightly.",
         "lastRun": "Last run",
         "hoursSince": "Since the last run",
-        "staleHelp": "The sweep has not run in 36 hours. Check the workflow."
+        "staleHelp": "The sweep has not run in 36 hours. Check the workflow.",
+        "jobsIntro": "Daily jobs. A quiet job alerts the team.",
+        "jobStaleHelp": "{job} has not run in {n} hours. Check its workflow.",
+        "lastAttemptFailed": "The last attempt failed.",
+        "lastAttempt": "Last attempt"
       },
       "option": {
         "by_tutor": "Tutor",
@@ -1718,7 +1731,10 @@
         "by_staff": "Staff",
         "by_system": "System",
         "stale": "Not running",
-        "fresh": "Running"
+        "fresh": "Running",
+        "job_vault_backup": "Database backup",
+        "job_pulse_backup": "Analytics backup",
+        "job_vault_drift": "Schema drift check"
       },
       "action": {
         "lookUp": "Look up",
@@ -1750,6 +1766,47 @@
         "add": "Name owner",
         "remove": "Remove",
         "keep": "Keep owner"
+      }
+    },
+    "identity": {
+      "heading": {
+        "title": "Identity and age safeguards",
+        "adversarial": "Proven by tests"
+      },
+      "body": {
+        "intro": "Release gates must reach 100%. Diagnostics show a trend.",
+        "gatesMet": "{met} of {total} release gates met.",
+        "gatesMissed": "{n} release gates are below target.",
+        "ratio": "{num} of {den}",
+        "metric": "Metric",
+        "kind": "Kind",
+        "value": "Value",
+        "status": "Status",
+        "adversarialIntro": "These run as tests every release."
+      },
+      "option": {
+        "release_gate": "Release gate",
+        "diagnostic": "Diagnostic",
+        "met": "Met",
+        "missed": "Below target",
+        "no_data": "No data yet",
+        "guest_origin_flag_coverage": "Guest sessions flagged after age refusal",
+        "flag_persistence_through_upgrade": "Flag kept after guest upgrade",
+        "post_callback_age_screen_completion": "Google sign-ups that passed the age screen",
+        "under13_google_reclassification": "Under-13 Google accounts protected",
+        "entry_path_age_capture": "New accounts with an age on file",
+        "undated_account_backlog": "Older accounts with no age",
+        "verification_status_differentiation": "Tutors tagged ID-verified or staff-granted",
+        "staff_grant_justification_completeness": "Staff Tutor grants with a reason",
+        "revocation_path_utilization": "Revocations with an audited reason",
+        "kid_email_change_restriction": "Child accounts with email change locked",
+        "faq_claim_parity": "Help answers backed by a feature",
+        "schema_field_utilization": "Identity fields written and read",
+        "adv_flagged_session_microphone": "Microphone off for flagged sessions",
+        "adv_flagged_session_fail_closed": "Mentor safety fails closed",
+        "adv_flagged_session_unconsented_analytics": "No analytics without consent",
+        "adv_age_screen_bypass": "No way around the age screen",
+        "adv_kid_email_change_unauthorized": "No child email change"
       }
     }
   }

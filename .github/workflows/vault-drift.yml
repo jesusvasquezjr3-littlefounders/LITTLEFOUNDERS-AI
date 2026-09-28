@@ -112,3 +112,18 @@ jobs:
         run: |
           echo "Pending: ${{ steps.probe.outputs.pending }}"
           echo "Drift would have failed the previous step; reaching here means the ledger agrees with the repository."
+
+      # H.4: leave the run in Core's audit trail (scripts/ops-heartbeat.sh);
+      # ops-job-watch.yml notifies a human when this job goes quiet.
+      - name: Record the heartbeat
+        if: success() && github.event_name != 'push'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: bash scripts/ops-heartbeat.sh vault_drift true "" "${{ steps.probe.outputs.pending }}"
+
+      - name: Record the failed run
+        if: failure() && github.event_name != 'push'
+        continue-on-error: true
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: bash scripts/ops-heartbeat.sh vault_drift false

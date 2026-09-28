@@ -27,6 +27,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      # scripts/ops-heartbeat.sh (H.4) lives in the repository.
+      - uses: actions/checkout@v4
+
       - name: Install Railway CLI
         run: npm i -g @railway/cli@5.43.1
 
@@ -46,6 +49,7 @@ jobs:
           chmod 600 ~/.ssh/config
 
       - name: Dump Postgres and store on the Depot volume
+        id: dump
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
@@ -68,6 +72,7 @@ jobs:
           railway ssh --service db -i ~/.ssh/railway_backup_key -- rm -f /tmp/backup.dump
 
           echo "Backed up $(wc -c < "$FILE") bytes to /data/backups/$FILE on filebase"
+          echo "bytes=$(wc -c < "$FILE" | tr -d ' ')" >> "$GITHUB_OUTPUT"
 
       - name: Prune backups older than 30 days
         env:
@@ -75,3 +80,18 @@ jobs:
         run: |
           railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
             find /data/backups -name 'vault-*.dump' -mtime +30 -delete
+
+      # H.4: leave the run in Core's audit trail (scripts/ops-heartbeat.sh);
+      # ops-job-watch.yml notifies a human when this job goes quiet.
+      - name: Record the heartbeat
+        if: success()
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: bash scripts/ops-heartbeat.sh vault_backup true "${{ steps.dump.outputs.bytes }}"
+
+      - name: Record the failed run
+        if: failure()
+        continue-on-error: true
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: bash scripts/ops-heartbeat.sh vault_backup false

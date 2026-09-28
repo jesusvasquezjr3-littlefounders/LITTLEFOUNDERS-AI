@@ -250,22 +250,50 @@ const HOLDERS = [
   { userId: OTHER, displayName: 'Root', username: null, roles: ['superadmin'], permissions: [],
     roleAssignments: [{ role: 'superadmin', grantedAt: new Date().toISOString(), grantedBy: null }], permissionAssignments: [], lastChangedAt: null },
 ];
-function rolesApi(grant: StaffResult<unknown> = ok({ granted: true })) {
+const REVIEWS = {
+  cadenceDays: 90,
+  grants: [
+    { userId: USER, kind: 'role', grant: 'admin', grantedAt: OLD, lastReviewedAt: null, due: true, displayName: 'Staff One', username: 'staff_one' },
+    { userId: USER, kind: 'permission', grant: 'manage_content', grantedAt: OLD, lastReviewedAt: null, due: true, displayName: 'Staff One', username: 'staff_one' },
+    { userId: OTHER, kind: 'role', grant: 'superadmin', grantedAt: new Date().toISOString(), lastReviewedAt: null, due: false, displayName: 'Root', username: null },
+  ],
+  metrics: { total: 3, stale: 2, reviewedEver: 0, compliance: 1 / 3, staleRate: 2 / 3 },
+};
+function rolesApi(grant: StaffResult<unknown> = ok({ granted: true }), review: StaffResult<unknown> = ok({ recorded: true })) {
   return fakeApi((path) => {
     if (path === '/admin/roles') return ok({ holders: HOLDERS, summary: { totalHolders: 2, totalRoleAssignments: 2, totalPermissionAssignments: 1, roleCounts: { admin: 1, superadmin: 1 }, permissionCounts: {}, lastChangedAt: OLD } });
+    if (path === '/admin/roles/reviews') return ok(REVIEWS);
     if (path.startsWith('/admin/roles/candidates')) return ok({ candidates: [{ userId: '44444444-4444-4444-8444-444444444444', displayName: 'Candidate', username: 'cand', roles: [] }] });
     if (path === '/admin/roles/grant') return grant;
+    if (path === '/admin/roles/review') return review;
     return undefined;
   });
 }
 
 describe('S10 Roles & Access (A.5, G.1, G.4)', () => {
-  it('lists every grant older than 90 days for review (G.4)', async () => {
+  it('lists the staff grants past their review, roles and staff access alike, with the log numbers (G.4)', async () => {
     const { api } = rolesApi();
     render(<Frame><StaffAccess api={api} /></Frame>);
-    await screen.findByText('1 grants are over 90 days old. Confirm each one.');
-    expect(reviewDue(HOLDERS as never).map((row) => row.assignment.role)).toEqual(['admin']);
-    expect(reviewDue([])).toEqual([]);
+    await screen.findByText('2 staff grants are past their 90-day review.');
+    expect(screen.getByText(`Admin, last confirmed ${new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(OLD))}`, { exact: false })).toBeTruthy();
+    expect(screen.getByText(c.access.body.reviewCompliance)).toBeTruthy();
+    expect(reviewDue(REVIEWS as never).map((row) => row.grant)).toEqual(['admin', 'manage_content']);
+    expect(reviewDue(null)).toEqual([]);
+  });
+
+  it('Keep access records the review with Core, and a vanished grant says so (G.4)', async () => {
+    const { api, posts } = rolesApi();
+    render(<Frame><StaffAccess api={api} /></Frame>);
+    await screen.findByText('2 staff grants are past their 90-day review.');
+    fireEvent.click(screen.getAllByRole('button', { name: c.access.action.keepAccess })[1]!);
+    await screen.findByText(/kept\. The audit log has it\./);
+    expect(posts).toEqual([{ path: '/admin/roles/review', body: { userId: USER, kind: 'permission', grant: 'manage_content' } }]);
+    cleanup();
+    const gone = rolesApi(undefined, fail('GRANT_NOT_HELD'));
+    render(<Frame><StaffAccess api={gone.api} /></Frame>);
+    await screen.findByText('2 staff grants are past their 90-day review.');
+    fireEvent.click(screen.getAllByRole('button', { name: c.access.action.keepAccess })[0]!);
+    await screen.findByText(c.access.body.reviewNotHeld);
   });
 
   it('a Tutor grant needs a justification of 10 characters, which Core receives (A.5)', async () => {
