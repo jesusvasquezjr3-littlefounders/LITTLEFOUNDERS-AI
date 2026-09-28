@@ -521,6 +521,10 @@ describe('the visitor chart spans the window that was asked for', () => {
     const filled = fillDailySeries([{ date: '2026-08-20', visitors: 5, pageviews: 5 }], resolved);
 
     expect(filled[0]?.date).toBe('2026-08-20');
-    expect(filled.length).toBeLessThan(40);
+    // Bounded by the days from the first data point to today (the window's
+    // end moves with the clock), never by the 2020 sentinel.
+    const daysSinceFirst = Math.ceil((Date.now() - Date.parse('2026-08-20T00:00:00Z')) / 86_400_000);
+    expect(filled.length).toBeLessThanOrEqual(daysSinceFirst + 2);
+    expect(filled.length).toBeLessThan(365);
   });
 });
