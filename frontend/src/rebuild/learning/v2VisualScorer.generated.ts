@@ -2,7 +2,8 @@
 export type V2VisualKind = 'money.allocation.v2' | 'math.number-line.whole.v2' | 'math.number-line.fraction.v2' | 'math.fraction-area.v2' | 'math.bar-model.structure.v2' | 'math.bar-model.answer.v2' | 'math.schema-diagram.structure.v2' | 'math.schema-diagram.slots.v2' | 'math.schema-diagram.answer.v2' | 'math.worked-example.v2' | 'math.function-machine.v2' | 'math.cpa-count.v2' | 'reasoning.decide-justify.v2'
   | 'math.place-value.v2' | 'math.ratio-table.v2' | 'visual.percent-grid.v2' | 'visual.growth-comparison.v2' | 'visual.tax-bracket.v2' | 'logic.savings-rule.v2' | 'visual.goal-bullet.v2' | 'money.running-ledger.v2'
   | 'logic.rule-checker.v2' | 'logic.euler.v2' | 'logic.flowchart.v2' | 'money.spend-decision.v2' | 'logic.sort-by-rule.v2' | 'money.needs-wants.v2' | 'logic.scam-spotter.v2' | 'money.scam-check.v2'
-  | 'money.coin-tray.v2' | 'money.making-change.v2' | 'story.branch.v2' | 'story.dialogue-choice.v2' | 'story.would-you-rather.v2';
+  | 'money.coin-tray.v2' | 'money.making-change.v2' | 'story.branch.v2' | 'story.dialogue-choice.v2' | 'story.would-you-rather.v2'
+  | 'visual.chart.v2';
 export type V2VisualVerdict = 'invalid' | 'valid' | 'review' | 'met';
 /** B.12 (Law 4): the quality of the reason a learner gave, graded apart from the decision. */
 export type V2JudgmentQuality = 'sound' | 'partial' | 'unsupported';
@@ -408,8 +409,8 @@ function flowPath(payload: Record<string, unknown>, path: unknown): path is stri
   return false;
 }
 
-function choiceGrade(payload: unknown, response: unknown, rubric: unknown, maximum: number): V2Grade {
-  if (!fields(payload, ['choiceIds']) || !strings(payload.choiceIds, 2, 3) || !fields(response, ['choice']) || typeof response.choice !== 'string'
+function choiceGrade(payload: unknown, response: unknown, rubric: unknown, maximum: number, maxChoices = 3): V2Grade {
+  if (!fields(payload, ['choiceIds']) || !strings(payload.choiceIds, 2, maxChoices) || !fields(response, ['choice']) || typeof response.choice !== 'string'
     || !payload.choiceIds.includes(response.choice)) return INVALID;
   if (rubric === undefined) return grade('valid');
   if (!fields(rubric, ['acceptable_choice_ids']) || !strings(rubric.acceptable_choice_ids, 1, maximum)
@@ -675,6 +676,8 @@ function scoreV2ExtendedDetailed(kind: V2VisualKind, payload: unknown, response:
     case 'story.branch.v2':
     case 'story.dialogue-choice.v2': return choiceGrade(payload, response, rubric, 3);
     case 'story.would-you-rather.v2': return choiceGrade(payload, response, rubric, 2);
+    // B.7 part 1: a question read off a teaching chart; the acceptable option ids are private.
+    case 'visual.chart.v2': return choiceGrade(payload, response, rubric, 3, 4);
     default: return INVALID;
   }
 }

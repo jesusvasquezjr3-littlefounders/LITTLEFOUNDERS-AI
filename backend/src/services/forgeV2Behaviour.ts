@@ -205,6 +205,9 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     case 'story.would-you-rather.v2':
       return { inRange: (p.options as Json[]).map((option) => ({ choice: option.id })), invalid: [{ choice: 'not-an-option' }],
         expectMet: (r) => (rubric.acceptable_choice_ids as string[]).includes(r.choice) };
+    case 'visual.chart.v2':
+      return { inRange: ((p.question?.options ?? []) as Json[]).map((option) => ({ choice: option.id })), invalid: [{ choice: 'not-an-option' }],
+        expectMet: (r) => (rubric.acceptable_choice_ids as string[]).includes(r.choice) };
     case 'story.dialogue-choice.v2':
       return { inRange: (p.replies as Json[]).map((option) => ({ choice: option.id })), invalid: [{ choice: 'not-an-option' }],
         expectMet: (r) => (rubric.acceptable_choice_ids as string[]).includes(r.choice) };

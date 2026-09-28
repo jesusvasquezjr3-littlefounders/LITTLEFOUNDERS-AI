@@ -27,7 +27,7 @@ import { DecisionReasonsBoard, type ReasoningGrade } from './DecisionReasonsBoar
 import type { Allocation } from './allocationModel';
 import { LessonStageProvider } from './lessonStage';
 import { lessonVersionKey, loadLessonClientDocument, type AdventureTheme, type LessonClientDocument, type LessonClientSegment, type LessonMentorStage } from './lessonDocument';
-import { CoinTrayBoard, EulerBoard, FlowchartBoard, MentorEpisodeBoard, MentorTurnBoard, MessageListBoard, RuleCardsBoard, SortBinsBoard, StoryChoiceBoard } from './familyBoards';
+import { ChartBoard, CoinTrayBoard, EulerBoard, FlowchartBoard, MentorEpisodeBoard, MentorTurnBoard, MessageListBoard, RuleCardsBoard, SortBinsBoard, StoryChoiceBoard } from './familyBoards';
 import { LessonPlayerProvider, playerCopy, type SegmentGrade } from './segmentKit';
 
 export type CheckResult = 'invalid' | 'incomplete' | 'review' | 'met';
@@ -51,7 +51,7 @@ const FAMILY_TYPES = new Set(['logic.rule-checker.v2', 'logic.euler.v2', 'logic.
 
 function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumberLine?: OnGradeNumberLine, onGradeFractionArea?: OnGradeFractionArea, onGradeBarModel?: OnGradeBarModel, onGradeSchemaDiagram?: OnGradeSchemaDiagram, onGradeWorkedExample?: OnGradeWorkedExample, onGradeReasoning?: OnGradeReasoning, onGradeAny?: OnGradeAny): boolean {
   // A formerly presentation-only visual that the document now grades needs the generic grader (Appendix P Part 7).
-  if (segment.grading === 'server' && (FAMILY_TYPES.has(segment.type) || ['visual.goal-bullet.v2', 'visual.percent-grid.v2', 'math.place-value.v2', 'logic.savings-rule.v2',
+  if (segment.grading === 'server' && (FAMILY_TYPES.has(segment.type) || ['visual.chart.v2', 'visual.goal-bullet.v2', 'visual.percent-grid.v2', 'math.place-value.v2', 'logic.savings-rule.v2',
     'money.running-ledger.v2', 'visual.growth-comparison.v2', 'visual.tax-bracket.v2', 'math.ratio-table.v2'].includes(segment.type))) return !!onGradeAny;
   switch (segment.type) {
     case 'money.allocation.v2': return !!onGrade;
@@ -78,6 +78,7 @@ function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumbe
     case 'reasoning.decide-justify.v2': return !!onGradeReasoning;
     case 'voice.mentor-turn.v2':
     case 'voice.mentor-episode.v2': return true;
+    case 'visual.chart.v2': return segment.grading === 'none' || !!onGradeAny;
     case 'logic.rule-checker.v2': case 'logic.euler.v2': case 'logic.flowchart.v2': case 'money.spend-decision.v2': case 'logic.sort-by-rule.v2':
     case 'money.needs-wants.v2': case 'logic.scam-spotter.v2': case 'money.scam-check.v2': case 'money.coin-tray.v2': case 'money.making-change.v2':
     case 'story.branch.v2': case 'story.dialogue-choice.v2': case 'story.would-you-rather.v2': return !!onGradeAny;
@@ -180,6 +181,7 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
     case 'story.branch.v2':
     case 'story.dialogue-choice.v2':
     case 'story.would-you-rather.v2': return <StoryChoiceBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'visual.chart.v2': return <ChartBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
     case 'voice.mentor-turn.v2': return <MentorTurnBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
     case 'voice.mentor-episode.v2': return <MentorEpisodeBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
     case 'money.allocation.v2': return onGrade ? <AllocationBoard key={key} document={document} segment={segment}

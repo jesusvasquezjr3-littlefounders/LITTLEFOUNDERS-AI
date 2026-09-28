@@ -95,7 +95,7 @@ function roleForPayloadKey(key: string): CopyRole {
   // GAP-FIX-R1: the new families' learner-visible fields keep their Bible 06 roles.
   if (key === 'line' || key === 'setup' || key === 'misjudgment' || key === 'recovery') return 'mentor';
   if (key === 'scene') return 'detail';
-  if (key === 'rule') return 'prompt';
+  if (key === 'rule' || key === 'prompt') return 'prompt';
   if (key === 'text') return 'body';
   if (key === 'label' || key === 'face') return 'option';
   return /Label$/.test(key) ? 'option' : 'data';

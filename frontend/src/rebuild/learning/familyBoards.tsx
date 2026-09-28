@@ -6,6 +6,7 @@ import type { LessonClientDocument, LessonClientSegment } from './lessonDocument
 import type { LessonSequenceControl } from './lessonSequence';
 import { BoardShell, GradedFoot, MoveToChoice, useLessonMentor, useSegmentGrade, ViewedFoot, type OnGradeSegment } from './segmentKit';
 import './familyBoards.css';
+import { TeachingChart } from './charts/TeachingChart';
 
 /*
  * GAP-FIX-R1 learning: the first-release logic and money boards (Appendix P
@@ -295,5 +296,27 @@ export function MentorEpisodeBoard({ document, segment, onBack, sequence }: Boar
       </ol>
       {shown < lines.length ? <Button variant="sky" onClick={() => setShown((value) => value + 1)}>{t.next}</Button> : null}
     </section>
+  </BoardShell>;
+}
+
+/* B.7 part 1: a teaching chart, explored or with one question read off it (the acceptable option is private to Core). */
+export function ChartBoard({ document, segment, onBack, sequence, onGrade }: BoardProps<'visual.chart.v2'>) {
+  const [choice, setChoice] = useState<string | null>(null);
+  const grading = useSegmentGrade(segment.id, onGrade);
+  const question = segment.payload.question;
+  return <BoardShell screen={`chart-${segment.visual.type}`} locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
+    finished={question ? grading.met : true} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
+    foot={question ? <GradedFoot locale={document.locale} grading={grading} canCheck={choice !== null} sequence={sequence} onCheck={() => grading.check({ choice })} />
+      : <ViewedFoot locale={document.locale} sequence={sequence} />}>
+    <section className="lf-learning-board lf-family-board">
+      <TeachingChart kind={segment.visual.type} data={segment.payload.data} title={segment.payload.title} locale={document.locale} />
+    </section>
+    {question ? <section className="lf-learning-control-strip" aria-labelledby={`${segment.id}-question`}>
+      <p id={`${segment.id}-question`} data-copy-role="prompt">{question.prompt}</p>
+      <div className="lf-story-options" role="group" aria-labelledby={`${segment.id}-question`}>
+        {question.options.map((option) => <AnswerChoice key={option.id} label={option.label} selected={choice === option.id} disabled={grading.pending || grading.met}
+          onSelect={() => { grading.reset(); setChoice(option.id); }} />)}
+      </div>
+    </section> : null}
   </BoardShell>;
 }

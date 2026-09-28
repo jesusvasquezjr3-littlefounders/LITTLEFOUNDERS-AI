@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { growthComparison } from './v2GrowthComparison.js';
 import { gradeV2Response, scoreV2Judgment, scoreV2Visual, type V2Detection, type V2Diagnostic, type V2JudgmentQuality, type V2VisualKind } from './v2VisualScorer.js';
+import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './v2ChartModel.js';
 import { longArithmeticSchema, V2_FAMILY_RUBRICS, v2FamilySampleResponse, v2FamilyScorerPayload, v2FamilySegments, v2SegmentExtras, type V2FamilySegment } from './v2SegmentFamilies.js';
 
 /*
@@ -213,7 +214,24 @@ const decideJustify = z.object({
     === value.choices.length + value.reasons.length, 'Invalid decision reasons'),
 }).strict();
 
-const segment = z.discriminatedUnion('type', [allocation, savingsLine, numberLine, fractionNumberLine, fractionArea, barModelStructure, barModelAnswer, schemaDiagramStructure, schemaDiagramSlots, schemaDiagramAnswer, goalBullet, percentGrid, placeValue, savingsRule, ledger, growth, taxBracket, ratioTable, workedExample, functionMachine, cpaCount, decideJustify, ...v2FamilySegments]);
+/*
+ * B.7 part 1 (GAP-FIX-R1): a teaching chart of any Appendix A kind the first
+ * release draws, from the canonical chart model (v2ChartModel.ts). Explored,
+ * or graded when it carries a question read off the chart (answer ids are
+ * private). Situational kinds are gated by age pathway and subject below.
+ */
+const chartQuestion = z.object({ prompt: z.string().trim().min(1).max(160), options: z.array(z.object({ id, label: z.string().trim().min(1).max(80) }).strict()).min(2).max(4) }).strict();
+const chart = z.object({
+  ...base, type: z.literal('visual.chart.v2'), grading: optionalServer,
+  visual: z.object({ type: z.enum(CHART_KINDS) }).strict(),
+  payload: z.object({ title: z.string().trim().min(1).max(60), data: chartDataSchema, question: chartQuestion.optional() }).strict(),
+}).strict().superRefine((value, ctx) => {
+  const problem = chartProblem(value.visual.type, value.payload.data);
+  if (problem) ctx.addIssue({ code: 'custom', path: ['payload', 'data'], message: problem });
+  if ((value.grading === 'server') !== !!value.payload.question) ctx.addIssue({ code: 'custom', path: ['grading'], message: 'A graded chart asks one question; an explored chart asks none' });
+});
+
+const segment = z.discriminatedUnion('type', [allocation, savingsLine, numberLine, fractionNumberLine, fractionArea, barModelStructure, barModelAnswer, schemaDiagramStructure, schemaDiagramSlots, schemaDiagramAnswer, goalBullet, percentGrid, placeValue, savingsRule, ledger, growth, taxBracket, ratioTable, workedExample, functionMachine, cpaCount, decideJustify, chart, ...v2FamilySegments]);
 const capabilities = {
   'money.allocation.v2': ['visual.stacked-bar.v1', 'operation.reallocate.v1'],
   'visual.savings-line.v2': ['visual.line.v1', 'operation.parameter-slider.v1'],
@@ -237,6 +255,8 @@ const capabilities = {
   'math.function-machine.v2': ['visual.function-machine.v1', 'operation.try-input.v1', 'operation.guess-rule.v1', 'operation.held-out-check.v1'],
   'math.cpa-count.v2': ['visual.cpa-count.v1', 'operation.count-objects.v1', 'operation.symbolic-answer.v1'],
   'reasoning.decide-justify.v2': ['visual.decision-card.v1', 'operation.choose-option.v1', 'operation.justify-choice.v1'],
+  // B.7 part 1: plus `visual.<kind>.v1` for the drawn kind, and choose-option when it asks a question.
+  'visual.chart.v2': ['operation.show-table.v1'],
   // GAP-FIX-R1 learning (Appendix P Part 8 first release; B.8, B.9, B.11).
   'logic.rule-checker.v2': ['visual.rule-cards.v1', 'operation.flip-card.v1'],
   'logic.euler.v2': ['visual.euler.v1', 'operation.place-in-region.v1', 'operation.move-menu.v1'],
@@ -295,8 +315,14 @@ export const v2PublicLessonSchema = z.object({
       ctx.addIssue({ code: 'custom', path: ['segments', index, 'knowledge_component_id'], message: 'Unknown knowledge component' });
     }
     segmentIds.add(value.id);
-    const needed = value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar'
-      ? [`visual.${value.visual.type}.v1`, 'operation.reallocate.v1'] : capabilities[value.type];
+    const needed: readonly string[] = value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar'
+      ? [`visual.${value.visual.type}.v1`, 'operation.reallocate.v1']
+      : value.type === 'visual.chart.v2' ? [`visual.${value.visual.type}.v1`, ...capabilities[value.type], ...(value.payload.question ? ['operation.choose-option.v1'] : [])]
+        : capabilities[value.type];
+    // Appendix A: situational chart kinds appear only in their age pathways and subjects, enforced on delivery.
+    if (value.type === 'visual.chart.v2' && !chartAllowed(value.visual.type, document.age_band, document.course_id)) {
+      ctx.addIssue({ code: 'custom', path: ['segments', index, 'visual'], message: 'This chart kind is not open to this age pathway or subject' });
+    }
     needed.forEach((capability) => expected.add(capability));
     if (needed.some((capability) => !declared.has(capability))) ctx.addIssue({ code: 'custom', path: ['required_capabilities'], message: 'Missing segment capability' });
     if (value.type === 'math.place-value.v2' && document.age_band !== '6-9') ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Invalid place-value pathway' });
@@ -397,6 +423,7 @@ const rubricByKind = {
     held_out: z.array(z.object({ saved: nonnegative.max(200), goal_day: z.boolean() }).strict()).min(2).max(8) }).strict(),
   'visual.goal-bullet.v2': z.object({ minimum_value: nonnegative }).strict(),
   'money.running-ledger.v2': z.object({ target_balance: z.number().int().safe() }).strict(),
+  'visual.chart.v2': z.object({ acceptable_choice_ids: z.array(id).min(1).max(3) }).strict(),
   ...V2_FAMILY_RUBRICS,
 } as const;
 
@@ -429,6 +456,7 @@ function scorerPayload(item: ServerSegment): Record<string, unknown> {
     case 'logic.savings-rule.v2': return { goal: item.payload.goal };
     case 'visual.goal-bullet.v2': return { minimum: item.payload.minimum, maximum: item.payload.maximum, step: item.payload.step };
     case 'money.running-ledger.v2': return { initial: item.payload.initial, sale: item.payload.sale, cost: item.payload.cost, maxEntries: item.payload.maxEntries };
+    case 'visual.chart.v2': return { choiceIds: (item.payload.question?.options ?? []).map((option) => option.id) };
     default: break;
   }
   return item.type === 'money.allocation.v2'
@@ -497,6 +525,7 @@ function v2SampleResponse(item: ServerSegment): unknown {
     case 'logic.savings-rule.v2': return { comparator: '>=', threshold: 0, link: 'none' };
     case 'visual.goal-bullet.v2': return { value: item.payload.initial };
     case 'money.running-ledger.v2': return { entries: [], balance: String(item.payload.initial) };
+    case 'visual.chart.v2': return { choice: item.payload.question?.options[0]?.id ?? '' };
     default: return { value: '0' };
   }
 }

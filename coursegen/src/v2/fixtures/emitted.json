@@ -5917,5 +5917,893 @@
         ]
       }
     }
+  },
+  {
+    "lesson_id": "v2-teaching-charts",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "reading-money-charts",
+      "lesson_id": "v2-teaching-charts",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-money-flow",
+        "kc-running-balance"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Read your money charts",
+      "required_capabilities": [
+        "visual.sankey.v1",
+        "operation.show-table.v1",
+        "visual.waterfall.v1",
+        "operation.choose-option.v1",
+        "visual.step.v1",
+        "visual.calendar-heatmap.v1",
+        "visual.stat-tile.v1"
+      ],
+      "segments": [
+        {
+          "id": "flow-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Follow where 100 coins went.",
+          "visual": {
+            "type": "sankey"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "nodes": [
+                {
+                  "id": "node-income",
+                  "label": "Income"
+                },
+                {
+                  "id": "node-save",
+                  "label": "Save"
+                },
+                {
+                  "id": "node-spend",
+                  "label": "Spend"
+                },
+                {
+                  "id": "node-share",
+                  "label": "Share"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-income",
+                  "to": "node-save",
+                  "value": 30
+                },
+                {
+                  "from": "node-income",
+                  "to": "node-spend",
+                  "value": 50
+                },
+                {
+                  "from": "node-income",
+                  "to": "node-share",
+                  "value": 20
+                }
+              ]
+            },
+            "title": "Where the coins went"
+          },
+          "knowledge_component_id": "kc-money-flow"
+        },
+        {
+          "id": "balance-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Read the steps from left to right.",
+          "visual": {
+            "type": "waterfall"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "step-allowance",
+                  "label": "Allowance"
+                },
+                {
+                  "id": "step-snacks",
+                  "label": "Snacks"
+                },
+                {
+                  "id": "step-gift",
+                  "label": "Gift"
+                },
+                {
+                  "id": "step-chores",
+                  "label": "Chores"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-change",
+                  "values": [
+                    50,
+                    -15,
+                    -10,
+                    20
+                  ],
+                  "label": "Change"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "opt-45",
+                  "label": "45 coins"
+                },
+                {
+                  "id": "opt-55",
+                  "label": "55 coins"
+                },
+                {
+                  "id": "opt-35",
+                  "label": "35 coins"
+                }
+              ],
+              "prompt": "What is the balance at the end?"
+            },
+            "title": "How the balance changed"
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-running-balance"
+        },
+        {
+          "id": "rate-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "The savings rate changes in steps.",
+          "visual": {
+            "type": "step"
+          },
+          "payload": {
+            "data": {
+              "unit": "percent",
+              "categories": [
+                {
+                  "id": "month-1",
+                  "label": "Month 1"
+                },
+                {
+                  "id": "month-2",
+                  "label": "Month 2"
+                },
+                {
+                  "id": "month-3",
+                  "label": "Month 3"
+                },
+                {
+                  "id": "month-4",
+                  "label": "Month 4"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-rate",
+                  "values": [
+                    2,
+                    2,
+                    3,
+                    3
+                  ],
+                  "label": "Rate"
+                }
+              ]
+            },
+            "title": "Savings rate"
+          }
+        },
+        {
+          "id": "days-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Darker days had more lessons.",
+          "visual": {
+            "type": "calendar-heatmap"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "days": [
+                {
+                  "date": "2026-09-07",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-08",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-09",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-10",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-11",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-12",
+                  "value": 3
+                },
+                {
+                  "date": "2026-09-13",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-14",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-15",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-16",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-17",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-18",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-19",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-20",
+                  "value": 1
+                }
+              ]
+            },
+            "title": "Two weeks of practice"
+          }
+        },
+        {
+          "id": "total-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "One number can sum up the month.",
+          "visual": {
+            "type": "stat-tile"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "stat": {
+                "value": 120,
+                "delta": 15
+              }
+            },
+            "title": "Saved this month"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "balance-01": {
+        "acceptable_choice_ids": [
+          "opt-45"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-teaching-charts",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "reading-money-charts",
+      "lesson_id": "v2-teaching-charts",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-money-flow",
+        "kc-running-balance"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Lee tus gráficas de dinero",
+      "required_capabilities": [
+        "visual.sankey.v1",
+        "operation.show-table.v1",
+        "visual.waterfall.v1",
+        "operation.choose-option.v1",
+        "visual.step.v1",
+        "visual.calendar-heatmap.v1",
+        "visual.stat-tile.v1"
+      ],
+      "segments": [
+        {
+          "id": "flow-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Sigue a dónde fueron 100 monedas.",
+          "visual": {
+            "type": "sankey"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "nodes": [
+                {
+                  "id": "node-income",
+                  "label": "Ingreso"
+                },
+                {
+                  "id": "node-save",
+                  "label": "Guardar"
+                },
+                {
+                  "id": "node-spend",
+                  "label": "Gastar"
+                },
+                {
+                  "id": "node-share",
+                  "label": "Compartir"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-income",
+                  "to": "node-save",
+                  "value": 30
+                },
+                {
+                  "from": "node-income",
+                  "to": "node-spend",
+                  "value": 50
+                },
+                {
+                  "from": "node-income",
+                  "to": "node-share",
+                  "value": 20
+                }
+              ]
+            },
+            "title": "A dónde fueron"
+          },
+          "knowledge_component_id": "kc-money-flow"
+        },
+        {
+          "id": "balance-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Lee los pasos de izquierda a derecha.",
+          "visual": {
+            "type": "waterfall"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "step-allowance",
+                  "label": "Domingo"
+                },
+                {
+                  "id": "step-snacks",
+                  "label": "Botanas"
+                },
+                {
+                  "id": "step-gift",
+                  "label": "Regalo"
+                },
+                {
+                  "id": "step-chores",
+                  "label": "Tareas"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-change",
+                  "values": [
+                    50,
+                    -15,
+                    -10,
+                    20
+                  ],
+                  "label": "Cambio"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "opt-45",
+                  "label": "45 monedas"
+                },
+                {
+                  "id": "opt-55",
+                  "label": "55 monedas"
+                },
+                {
+                  "id": "opt-35",
+                  "label": "35 monedas"
+                }
+              ],
+              "prompt": "¿Cuál es el saldo al final?"
+            },
+            "title": "Cómo cambió el saldo"
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-running-balance"
+        },
+        {
+          "id": "rate-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "La tasa de ahorro cambia por escalones.",
+          "visual": {
+            "type": "step"
+          },
+          "payload": {
+            "data": {
+              "unit": "percent",
+              "categories": [
+                {
+                  "id": "month-1",
+                  "label": "Mes 1"
+                },
+                {
+                  "id": "month-2",
+                  "label": "Mes 2"
+                },
+                {
+                  "id": "month-3",
+                  "label": "Mes 3"
+                },
+                {
+                  "id": "month-4",
+                  "label": "Mes 4"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-rate",
+                  "values": [
+                    2,
+                    2,
+                    3,
+                    3
+                  ],
+                  "label": "Tasa"
+                }
+              ]
+            },
+            "title": "Tasa de ahorro"
+          }
+        },
+        {
+          "id": "days-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Los días más oscuros tuvieron más lecciones.",
+          "visual": {
+            "type": "calendar-heatmap"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "days": [
+                {
+                  "date": "2026-09-07",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-08",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-09",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-10",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-11",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-12",
+                  "value": 3
+                },
+                {
+                  "date": "2026-09-13",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-14",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-15",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-16",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-17",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-18",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-19",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-20",
+                  "value": 1
+                }
+              ]
+            },
+            "title": "Dos semanas de práctica"
+          }
+        },
+        {
+          "id": "total-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Un número puede resumir el mes.",
+          "visual": {
+            "type": "stat-tile"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "stat": {
+                "value": 120,
+                "delta": 15
+              }
+            },
+            "title": "Ahorrado este mes"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "balance-01": {
+        "acceptable_choice_ids": [
+          "opt-45"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-teaching-charts",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "reading-money-charts",
+      "lesson_id": "v2-teaching-charts",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-money-flow",
+        "kc-running-balance"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Leia seus gráficos de dinheiro",
+      "required_capabilities": [
+        "visual.sankey.v1",
+        "operation.show-table.v1",
+        "visual.waterfall.v1",
+        "operation.choose-option.v1",
+        "visual.step.v1",
+        "visual.calendar-heatmap.v1",
+        "visual.stat-tile.v1"
+      ],
+      "segments": [
+        {
+          "id": "flow-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Siga para onde foram 100 moedas.",
+          "visual": {
+            "type": "sankey"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "nodes": [
+                {
+                  "id": "node-income",
+                  "label": "Renda"
+                },
+                {
+                  "id": "node-save",
+                  "label": "Guardar"
+                },
+                {
+                  "id": "node-spend",
+                  "label": "Gastar"
+                },
+                {
+                  "id": "node-share",
+                  "label": "Compartilhar"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-income",
+                  "to": "node-save",
+                  "value": 30
+                },
+                {
+                  "from": "node-income",
+                  "to": "node-spend",
+                  "value": 50
+                },
+                {
+                  "from": "node-income",
+                  "to": "node-share",
+                  "value": 20
+                }
+              ]
+            },
+            "title": "Para onde foram"
+          },
+          "knowledge_component_id": "kc-money-flow"
+        },
+        {
+          "id": "balance-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Leia os passos da esquerda para a direita.",
+          "visual": {
+            "type": "waterfall"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "step-allowance",
+                  "label": "Mesada"
+                },
+                {
+                  "id": "step-snacks",
+                  "label": "Lanches"
+                },
+                {
+                  "id": "step-gift",
+                  "label": "Presente"
+                },
+                {
+                  "id": "step-chores",
+                  "label": "Tarefas"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-change",
+                  "values": [
+                    50,
+                    -15,
+                    -10,
+                    20
+                  ],
+                  "label": "Mudança"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "opt-45",
+                  "label": "45 moedas"
+                },
+                {
+                  "id": "opt-55",
+                  "label": "55 moedas"
+                },
+                {
+                  "id": "opt-35",
+                  "label": "35 moedas"
+                }
+              ],
+              "prompt": "Qual é o saldo no final?"
+            },
+            "title": "Como o saldo mudou"
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-running-balance"
+        },
+        {
+          "id": "rate-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "A taxa de poupança muda em degraus.",
+          "visual": {
+            "type": "step"
+          },
+          "payload": {
+            "data": {
+              "unit": "percent",
+              "categories": [
+                {
+                  "id": "month-1",
+                  "label": "Mês 1"
+                },
+                {
+                  "id": "month-2",
+                  "label": "Mês 2"
+                },
+                {
+                  "id": "month-3",
+                  "label": "Mês 3"
+                },
+                {
+                  "id": "month-4",
+                  "label": "Mês 4"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-rate",
+                  "values": [
+                    2,
+                    2,
+                    3,
+                    3
+                  ],
+                  "label": "Taxa"
+                }
+              ]
+            },
+            "title": "Taxa de poupança"
+          }
+        },
+        {
+          "id": "days-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Os dias mais escuros tiveram mais lições.",
+          "visual": {
+            "type": "calendar-heatmap"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "days": [
+                {
+                  "date": "2026-09-07",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-08",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-09",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-10",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-11",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-12",
+                  "value": 3
+                },
+                {
+                  "date": "2026-09-13",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-14",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-15",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-16",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-17",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-18",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-19",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-20",
+                  "value": 1
+                }
+              ]
+            },
+            "title": "Duas semanas de prática"
+          }
+        },
+        {
+          "id": "total-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Um número pode resumir o mês.",
+          "visual": {
+            "type": "stat-tile"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "stat": {
+                "value": 120,
+                "delta": 15
+              }
+            },
+            "title": "Guardado este mês"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "balance-01": {
+        "acceptable_choice_ids": [
+          "opt-45"
+        ]
+      }
+    }
   }
 ]

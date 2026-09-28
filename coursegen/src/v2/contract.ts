@@ -36,6 +36,8 @@ export const V2_SEGMENT_CAPABILITIES = {
   'math.cpa-count.v2': ['visual.cpa-count.v1', 'operation.count-objects.v1', 'operation.symbolic-answer.v1'],
   // B.12 (S05.3d): decide, then say why. Core's private rubric grades the choice and, separately, the reason.
   'reasoning.decide-justify.v2': ['visual.decision-card.v1', 'operation.choose-option.v1', 'operation.justify-choice.v1'],
+  // B.7 part 1: plus `visual.<kind>.v1` for the drawn kind, and choose-option when it asks a question.
+  'visual.chart.v2': ['operation.show-table.v1'],
   // GAP-FIX-R1 learning (Appendix P Part 8 first release; B.8, B.9, B.11).
   'logic.rule-checker.v2': ['visual.rule-cards.v1', 'operation.flip-card.v1'],
   'logic.euler.v2': ['visual.euler.v1', 'operation.place-in-region.v1', 'operation.move-menu.v1'],
@@ -109,13 +111,15 @@ export interface V2PublicDocument {
  * need. An allocation drawn as a waffle or donut needs that visual instead of
  * the stacked bar, as in Core's parser.
  */
-export function requiredCapabilities(segments: readonly Pick<V2Segment, 'type' | 'visual'>[]): string[] {
+export function requiredCapabilities(segments: readonly Pick<V2Segment, 'type' | 'visual' | 'payload'>[]): string[] {
   const out = new Set<string>();
   for (const segment of segments) {
     const needed: readonly string[] =
       segment.type === 'money.allocation.v2' && segment.visual.type !== 'stacked-bar'
         ? [`visual.${segment.visual.type}.v1`, 'operation.reallocate.v1']
-        : V2_SEGMENT_CAPABILITIES[segment.type];
+        : segment.type === 'visual.chart.v2'
+          ? [`visual.${segment.visual.type}.v1`, ...V2_SEGMENT_CAPABILITIES[segment.type], ...(segment.payload?.question ? ['operation.choose-option.v1'] : [])]
+          : V2_SEGMENT_CAPABILITIES[segment.type];
     for (const capability of needed) out.add(capability);
   }
   return [...out];
@@ -130,5 +134,7 @@ export function requiredCapabilities(segments: readonly Pick<V2Segment, 'type' |
 export function isNonCopyKey(key: string): boolean {
   return key === 'id' || key === 'currency' || key === 'mode' || key === 'unit' || key.endsWith('_ids') || key.endsWith('_id')
     // GAP-FIX-R1: structural ids and enums of the new families (flowchart edges, Euler relation, node kind, Mentor role, audio reference).
-    || key === 'start' || key === 'yes' || key === 'no' || key === 'relation' || key === 'kind' || key === 'role' || key === 'audio_ref';
+    || key === 'start' || key === 'yes' || key === 'no' || key === 'relation' || key === 'kind' || key === 'role' || key === 'audio_ref'
+    // Chart data: link endpoints and calendar dates are identifiers, not copy.
+    || key === 'from' || key === 'to' || key === 'date';
 }

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { growthComparison } from './growthComparisonModel.generated';
 import { longArithmeticSchema, v2FamilySegments, v2SegmentExtras } from './v2SegmentFamilies.generated';
+import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './charts/chartModel.generated';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/);
 const locale = z.enum(['en-US', 'es-MX', 'pt-BR']);
@@ -302,7 +303,21 @@ const decideJustifySegment = z.object({
     === value.choices.length + value.reasons.length, 'Invalid decision reasons'),
 }).strict();
 
-const segment = z.discriminatedUnion('type', [allocationSegment, timelineSegment, numberLineSegment, fractionNumberLineSegment, fractionAreaSegment, barModelStructureSegment, barModelAnswerSegment, schemaDiagramStructureSegment, schemaDiagramSlotsSegment, schemaDiagramAnswerSegment, goalBulletSegment, percentGridSegment, placeValueSegment, savingsRuleSegment, runningLedgerSegment, growthComparisonSegment, taxBracketSegment, ratioTableSegment, workedExampleSegment, functionMachineSegment, cpaCountSegment, decideJustifySegment, ...v2FamilySegments]);
+/* B.7 part 1 (GAP-FIX-R1): a teaching chart of any first-release kind, mirrored with Core's `chart`. */
+const chartQuestion = z.object({ prompt: z.string().trim().min(1).max(160), options: z.array(z.object({ id, label: z.string().trim().min(1).max(80) }).strict()).min(2).max(4) }).strict();
+const chartSegment = z.object({
+  ...segmentBase,
+  type: z.literal('visual.chart.v2'),
+  grading: optionalServer,
+  visual: z.object({ type: z.enum(CHART_KINDS) }).strict(),
+  payload: z.object({ title: z.string().trim().min(1).max(60), data: chartDataSchema, question: chartQuestion.optional() }).strict(),
+}).strict().superRefine((value, ctx) => {
+  const problem = chartProblem(value.visual.type, value.payload.data);
+  if (problem) ctx.addIssue({ code: 'custom', path: ['payload', 'data'], message: problem });
+  if ((value.grading === 'server') !== !!value.payload.question) ctx.addIssue({ code: 'custom', path: ['grading'], message: 'A graded chart asks one question' });
+});
+
+const segment = z.discriminatedUnion('type', [allocationSegment, timelineSegment, numberLineSegment, fractionNumberLineSegment, fractionAreaSegment, barModelStructureSegment, barModelAnswerSegment, schemaDiagramStructureSegment, schemaDiagramSlotsSegment, schemaDiagramAnswerSegment, goalBulletSegment, percentGridSegment, placeValueSegment, savingsRuleSegment, runningLedgerSegment, growthComparisonSegment, taxBracketSegment, ratioTableSegment, workedExampleSegment, functionMachineSegment, cpaCountSegment, decideJustifySegment, chartSegment, ...v2FamilySegments]);
 type SegmentType = z.infer<typeof segment>['type'];
 export const REQUIRED_SEGMENT_CAPABILITIES = {
   'money.allocation.v2': ['visual.stacked-bar.v1', 'operation.reallocate.v1'],
@@ -328,6 +343,8 @@ export const REQUIRED_SEGMENT_CAPABILITIES = {
   'math.function-machine.v2': ['visual.function-machine.v1', 'operation.try-input.v1', 'operation.guess-rule.v1', 'operation.held-out-check.v1'],
   'math.cpa-count.v2': ['visual.cpa-count.v1', 'operation.count-objects.v1', 'operation.symbolic-answer.v1'],
   'reasoning.decide-justify.v2': ['visual.decision-card.v1', 'operation.choose-option.v1', 'operation.justify-choice.v1'],
+  // B.7 part 1: plus `visual.<kind>.v1` for the drawn kind, and choose-option when it asks a question.
+  'visual.chart.v2': ['operation.show-table.v1'],
   // GAP-FIX-R1 learning (Appendix P Part 8 first release; B.8, B.9, B.11).
   'logic.rule-checker.v2': ['visual.rule-cards.v1', 'operation.flip-card.v1'],
   'logic.euler.v2': ['visual.euler.v1', 'operation.place-in-region.v1', 'operation.move-menu.v1'],
@@ -346,7 +363,7 @@ export const REQUIRED_SEGMENT_CAPABILITIES = {
   'voice.mentor-episode.v2': ['visual.speech-plate.v1', 'operation.step-replay.v1'],
 } as const satisfies Record<SegmentType, readonly string[]>;
 export const LESSON_CLIENT_CAPABILITIES = [...new Set([...Object.values(REQUIRED_SEGMENT_CAPABILITIES).flat(),
-  'visual.waffle.v1', 'visual.donut.v1'])];
+  'visual.waffle.v1', 'visual.donut.v1', ...CHART_KINDS.map((kind) => `visual.${kind}.v1`)])];
 const knownTypes = new Set(Object.keys(REQUIRED_SEGMENT_CAPABILITIES));
 /** Every occurrence of a chain member sits inside a complete, in-order run of the whole chain. */
 function contiguousChains(types: readonly string[], chain: readonly string[]): boolean {
@@ -404,8 +421,13 @@ export const lessonClientDocumentSchema = z.object({
   }
   const expected = new Set<string>();
   for (const [index, value] of document.segments.entries()) {
-    const needed = value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar'
-      ? [`visual.${value.visual.type}.v1`, 'operation.reallocate.v1'] : REQUIRED_SEGMENT_CAPABILITIES[value.type];
+    const needed: readonly string[] = value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar'
+      ? [`visual.${value.visual.type}.v1`, 'operation.reallocate.v1']
+      : value.type === 'visual.chart.v2' ? [`visual.${value.visual.type}.v1`, ...REQUIRED_SEGMENT_CAPABILITIES[value.type], ...(value.payload.question ? ['operation.choose-option.v1'] : [])]
+        : REQUIRED_SEGMENT_CAPABILITIES[value.type];
+    if (value.type === 'visual.chart.v2' && !chartAllowed(value.visual.type, document.age_band, document.course_id)) {
+      ctx.addIssue({ code: 'custom', path: ['segments', index, 'visual'], message: 'This chart kind is not open to this age pathway or subject' });
+    }
     needed.forEach((capability) => expected.add(capability));
     if (needed.some((capability) => !declared.has(capability))) {
       ctx.addIssue({ code: 'custom', path: ['required_capabilities'], message: 'Missing segment capability declaration' });
