@@ -202,3 +202,37 @@ at merge).
 
 - `0215_family_research_reconsent_at_18.sql` (expand)
 - `0216_teen_deletion_guardian_notices.sql` (expand)
+
+### F2-family-finish (lane close)
+
+**Sync.** `codex/spec-migration-s02` was already contained in the lane
+(`Already up to date`); no conflicts.
+
+**Adversarial pass over the four audited gaps.** D.8, OD-27 (3), H-25 and
+D-14 (b) are each built end to end: database (where a rule lives there), Core
+route with the refusals tested at the boundary (guest 403 on
+`/family-hub/research/me`, non-parent 403 and unreadable-link 502 on
+`/family-hub/deletion-notices`, 502 before scheduling a teen deletion when the
+Tutor links are unreadable), rebuilt UI from `rebuild/design/controls` only
+with `data-copy-role`, and copy in EN/es-MX/pt-BR. One real defect was found
+by the full Core suite: the OD-9 4.2 "tables tying two accounts" pin in
+`backend/src/__tests__/dataPractices.test.ts` did not know the new
+`account_deletion_guardian_notices` table. It is now listed as a reviewed
+exemption (an owner-mandated D-14 (b) safeguard to an already verified Tutor,
+ids only; not a sharing surface), rather than consent-gated, which would
+contradict D-14 (b).
+
+**Final verification.** Core and frontend: `type-check`, `lint` and the full
+unit suite once each; `database` `npm test`; root `tools:test`,
+`spec:check`, `secrets:check` and the i18n gate. All green: Core 3,225
+tests after the exemption above (the one red was that pin); frontend 267 files
+/ 3,051 tests (a first run under four concurrent lanes' load had 4 timing reds
+in files this lane never touched, the rerun was clean); `database` 48 tests
+plus the railway-migrate integration; `tools:test` 389 tests. The orchestrator
+runs the browser audit and `test:all` at merge.
+
+**Still open.** Browser audit of `/family@story-choices`,
+`/family@teen-deletion-notice` and the Settings research ask; email delivery
+of the D-14 (b) notice (in-app only, zero spend); adult research measures
+(research-plan phase 2); native review of the reworded copy and the Stage 4
+human spot-check of the tone gate; migrations 0215/0216 renumbered at merge.
