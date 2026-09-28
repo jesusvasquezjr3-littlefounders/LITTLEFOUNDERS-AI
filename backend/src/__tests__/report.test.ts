@@ -39,6 +39,8 @@ interface ReportStubOpts {
   targetRoles?: string[] | null;
   guardianIds?: string[] | null;
   profileRows?: unknown[];
+  /** social_tier answered for every account other than the target. */
+  otherTier?: string;
   calls?: { url: string; method: string; body?: string }[];
 }
 
@@ -55,7 +57,7 @@ function stubReport(opts: ReportStubOpts = {}) {
       }
       if (url.includes('/rpc/social_tier')) {
         const id = (JSON.parse(String(init?.body ?? '{}')) as { p_user?: string }).p_user;
-        if (id !== TARGET_ID) return Promise.resolve(jsonResponse(200, 'adult'));
+        if (id !== TARGET_ID) return Promise.resolve(jsonResponse(200, opts.otherTier ?? 'adult'));
         if (opts.targetRoles === null) return Promise.resolve(jsonResponse(200, null));
         return Promise.resolve(jsonResponse(200, (opts.targetRoles ?? ['parent']).includes('kid') ? 'guardian' : 'adult'));
       }
@@ -146,6 +148,32 @@ describe('POST /api/v1/profiles/:username/report', () => {
       p_category: 'harassment',
       p_note: 'Kept asking me',
     });
+  });
+
+  it('passes every report from independent teens to the transaction as that teen (OD-3: the pattern counts by age)', async () => {
+    // E.3 + OD-3 + D-19: three self-registered teens (teen tier, no kid role,
+    // no guardian) reporting one adult. Core must not filter reporters by
+    // role: each report reaches submit_social_report as the session teen, and
+    // the database rule (evaluate_social_pattern, proven on PostgreSQL by
+    // verify-social-pattern-postgres.py) opens the pattern case at the third.
+    const teens = [
+      'a1a1a1a1-a1a1-4a1a-8a1a-a1a1a1a1a1a1',
+      'b2b2b2b2-b2b2-4b2b-8b2b-b2b2b2b2b2b2',
+      'c3c3c3c3-c3c3-4c3c-8c3c-c3c3c3c3c3c3',
+    ];
+    const calls = stubReport({ targetRoles: ['universal'], otherTier: 'teen' });
+    for (const teen of teens) {
+      const res = await request(createApp())
+        .post('/api/v1/profiles/ana/report')
+        .set('Authorization', `Bearer ${mintToken({ sub: teen })}`)
+        .send({ category: 'unwanted_contact' });
+      expect(res.status).toBe(201);
+    }
+    const reporters = calls
+      .filter((c) => c.url.includes('/rpc/submit_social_report'))
+      .map((c) => (JSON.parse(c.body!) as { p_reporter_id: string; p_subject_id: string }));
+    expect(reporters.map((r) => r.p_reporter_id)).toEqual(teens);
+    expect(new Set(reporters.map((r) => r.p_subject_id))).toEqual(new Set([TARGET_ID]));
   });
 
   it('submits a null note when none is provided', async () => {

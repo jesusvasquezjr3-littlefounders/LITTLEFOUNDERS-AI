@@ -567,7 +567,7 @@
         "counts": "{open} open of {total} reports",
         "reporter": "Reporter {id}",
         "noReports": "No reports on this case.",
-        "patternHelp": "Opened automatically after reports from 3 children in 30 days.",
+        "patternHelp": "Opened after reports or blocks from 3 unrelated minors in 30 days.",
         "consequence": "The case closes. Your decision goes to the audit log.",
         "resolved": "Case resolved.",
         "resolveFailed": "Could not resolve. Try again.",

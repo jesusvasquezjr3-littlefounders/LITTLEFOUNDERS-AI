@@ -8,7 +8,8 @@ import { AutonomyRollback, RetentionSweepCard } from './StaffProgramme';
 /*
  * E.3's platform review queue (manage_support). Every social report routes
  * here, and the automatic pattern trigger (reports or blocks from 3 unrelated
- * children in 30 days) opens a case with origin "pattern". A case shows only
+ * minors in 30 days, children and self-registered teens alike: OD-3) opens a
+ * case with origin "pattern". A case shows only
  * what Core stores: the predefined category and the capped optional note of
  * each report, never free-form profile data. Resolving is a staff decision:
  * Core closes the case in a service-only transaction and records the deciding

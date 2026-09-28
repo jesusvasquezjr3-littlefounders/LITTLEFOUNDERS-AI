@@ -567,7 +567,7 @@
         "counts": "{open} abiertos de {total} reportes",
         "reporter": "Reportó {id}",
         "noReports": "Este caso no tiene reportes.",
-        "patternHelp": "Se abrió solo tras reportes de 3 niños en 30 días.",
+        "patternHelp": "Se abrió solo tras reportes o bloqueos de 3 menores sin relación en 30 días.",
         "consequence": "El caso se cierra. Tu decisión queda en el registro de auditoría.",
         "resolved": "Caso resuelto.",
         "resolveFailed": "No se pudo resolver. Intenta de nuevo.",
