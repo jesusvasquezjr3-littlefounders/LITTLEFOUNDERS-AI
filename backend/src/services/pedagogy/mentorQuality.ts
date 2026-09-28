@@ -147,6 +147,16 @@ export const MENTOR_QUALITY_THRESHOLDS = {
   narrativeMinSample: 20,
   restDayMinLapses: 20,
   autonomyMinOffers: 20,
+  /**
+   * Appendix C 1.2 per-release manual audits (B.25, B.22, B.20; GAP-FIX-R2):
+   * the latest recorded audit must be a pass and no older than this. 45 days
+   * is the release cadence docs/rebuild/DARK-PATTERN-AUDIT.md already binds
+   * `release:readiness` to.
+   */
+  releaseAuditCadenceDays: 45,
+  /** Appendix C 1.2 Parent Time-to-Value, "proposed: 3 minutes": the median, signup to first insight. */
+  parentTimeToValueSeconds: 180,
+  parentTimeToValueMinSample: 20,
 } as const;
 
 const T = MENTOR_QUALITY_THRESHOLDS;
@@ -168,23 +178,30 @@ function rubricSignal(criterion: string): SignalDefinition {
   };
 }
 
-const notInstrumented = (
-  id: string,
-  category: SignalCategory,
-  requirement: string,
-  owner: OwnerRole,
-  pending: string,
-): SignalDefinition => ({
-  id,
-  category,
-  requirement,
-  owner,
-  threshold: { kind: 'none', value: null },
-  minSample: 0,
-  source: 'no data source yet',
-  pending,
-  instrumented: 'not_instrumented',
-});
+/**
+ * Signals taken OFF the registry, with the reason written down (never
+ * silently dropped). The dashboard lists them so a reader sees why.
+ */
+export const RETIRED_SIGNALS: readonly { id: string; requirement: string; reason: string }[] = [
+  {
+    id: 'engagement.streak_anxiety',
+    requirement: 'B.21',
+    reason:
+      'Appendix C defines it as the correlation between session restarts and streak-at-risk notifications. The product sends no ' +
+      'streak-at-risk notification and Frontend Bible 02 section 9.6 forbids loss-framed streak copy, so the correlation has no ' +
+      'trigger to measure. The control is the B.25 dark-pattern audit (item DP-09: no re-engagement notification), which this ' +
+      'dashboard now reads as engagement.dark_pattern_audit. Reinstate the signal if a streak notification is ever built.',
+  },
+];
+
+/** The per-release manual audits (release_audit_results.audit_kind) and the signal each one feeds. */
+export const RELEASE_AUDIT_KINDS = ['dark_pattern', 'variable_ratio', 'reward_framing'] as const;
+export type ReleaseAuditKind = (typeof RELEASE_AUDIT_KINDS)[number];
+export const RELEASE_AUDIT_SIGNAL: Record<ReleaseAuditKind, string> = {
+  dark_pattern: 'engagement.dark_pattern_audit',
+  variable_ratio: 'engagement.variable_ratio_audit',
+  reward_framing: 'engagement.reward_framing',
+};
 
 export const SIGNALS: readonly SignalDefinition[] = [
   // ── Appendix F §1.1 real-time pedagogical effectiveness ──
@@ -233,13 +250,13 @@ export const SIGNALS: readonly SignalDefinition[] = [
   // ── Appendix C §1.2 engagement health ──
   { id: 'engagement.session_efficiency', category: 'engagement_health', requirement: 'B.28', owner: 'pedagogical_lead', threshold: { kind: 'trend', value: T.engagementTrendTolerance }, minSample: T.engagementTrendMinWeeklySample, source: 'learning_session_efficiency (0136), weekly; higher is better', instrumented: 'yes' },
   { id: 'engagement.mentor_resolution', category: 'engagement_health', requirement: 'B.28', owner: 'pedagogical_lead', threshold: { kind: 'trend', value: T.engagementTrendTolerance }, minSample: T.engagementTrendMinWeeklySample, source: 'mentor_resolution_efficiency (0136), weekly median turns; lower is better', instrumented: 'yes' },
-  notInstrumented('engagement.streak_anxiety', 'engagement_health', 'B.21', 'safety_trust_lead', 'B.21 notification and session-restart logs'),
   { id: 'engagement.rest_day_use', category: 'engagement_health', requirement: 'B.21', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.restDayMinLapses, source: 'learning_rest_day_utilization (0134)', instrumented: 'yes' },
-  notInstrumented('engagement.dark_pattern_audit', 'engagement_health', 'B.25', 'safety_trust_lead', 'B.25 per-release manual audit'),
-  notInstrumented('engagement.variable_ratio_audit', 'engagement_health', 'B.22', 'safety_trust_lead', 'B.22 per-release manual audit'),
-  notInstrumented('engagement.reward_framing', 'engagement_health', 'B.20', 'pedagogical_lead', 'B.20 reward-moment copy audit'),
+  // Per-release manual audits (Appendix C Part 3 Stage 3), recorded by the named owner (release_audit_results).
+  { id: 'engagement.dark_pattern_audit', category: 'engagement_health', requirement: 'B.25', owner: 'safety_trust_lead', threshold: { kind: 'zero_tolerance', value: 0 }, minSample: 1, source: 'release_audit_results (dark_pattern): findings in the latest release audit', instrumented: 'yes' },
+  { id: 'engagement.variable_ratio_audit', category: 'engagement_health', requirement: 'B.22', owner: 'safety_trust_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'release_audit_results (variable_ratio): the latest release audit passed', instrumented: 'yes' },
+  { id: 'engagement.reward_framing', category: 'engagement_health', requirement: 'B.20', owner: 'pedagogical_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'release_audit_results (reward_framing): the latest release audit passed', instrumented: 'yes' },
   { id: 'engagement.autonomy_adoption', category: 'engagement_health', requirement: 'B.24', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.autonomyMinOffers, source: 'learning_autonomy_adoption (0134), per lever', instrumented: 'yes' },
-  notInstrumented('engagement.parent_time_to_value', 'engagement_health', 'B.10', 'pedagogical_lead', 'B.10 client timing'),
+  { id: 'engagement.parent_time_to_value', category: 'engagement_health', requirement: 'B.10', owner: 'pedagogical_lead', threshold: { kind: 'ceiling', value: T.parentTimeToValueSeconds }, minSample: T.parentTimeToValueMinSample, source: 'parent_time_to_value: median seconds from parent_signup_completed to parent_first_value', instrumented: 'yes' },
 ] as const;
 
 export function signalDefinition(id: string): SignalDefinition | undefined {
@@ -320,6 +337,18 @@ export interface QualitySources {
   learning: LearningSignalSources;
   /** GAP-FIX-R1 (Appendix C 1.1): first-try success per KC and item role, from v2 receipts (0207). Optional: absent before the loop reads it. */
   transfer?: { kc: string; item_role: 'practice' | 'transfer'; first_attempts: number; successes: number }[] | null;
+  /** GAP-FIX-R2 (Appendix C 1.2): the recorded per-release audits, newest first. Optional: absent before the loop reads it. */
+  releaseAudits?: ReleaseAuditRow[] | null;
+  /** GAP-FIX-R2 (Appendix C 1.2): parent_time_to_value over the window. Optional: absent before the loop reads it. */
+  parentTimeToValue?: { signups: number; reached: number; medianSeconds: number | null; p75Seconds: number | null; withinTarget: number } | null;
+}
+
+export interface ReleaseAuditRow {
+  audit_kind: ReleaseAuditKind;
+  release_id: string;
+  result: 'pass' | 'fail';
+  finding_count: number;
+  recorded_at: string;
 }
 
 export interface LearningSignalSources {
@@ -727,9 +756,62 @@ function evaluateOne(
         detail: { practiceShare: share('practice').value ?? -1 },
       });
     }
+    case 'engagement.dark_pattern_audit':
+    case 'engagement.variable_ratio_audit':
+    case 'engagement.reward_framing':
+      return releaseAuditReading(def, src, anomalies, unavailable);
+    case 'engagement.parent_time_to_value': {
+      // null = the read failed; undefined = a source set built before the loop read it (no evidence yet).
+      if (src.parentTimeToValue === null) return unavailable(def);
+      const p = src.parentTimeToValue ?? { signups: 0, reached: 0, medianSeconds: null, p75Seconds: null, withinTarget: 0 };
+      const status: SignalStatus = p.medianSeconds === null || p.reached < def.minSample ? 'insufficient_data'
+        : p.medianSeconds > T.parentTimeToValueSeconds ? 'breach' : 'ok';
+      if (status === 'breach') anomalies.push(anomalyFor(def, 'threshold_breach', 'all', p.medianSeconds, T.parentTimeToValueSeconds, { reached: p.reached, signups: p.signups }));
+      return reading(def.id, {
+        status,
+        value: p.medianSeconds,
+        sample: p.reached,
+        detail: { signups: p.signups, reached: p.reached, p75Seconds: p.p75Seconds, withinTarget: p.withinTarget },
+      });
+    }
     default:
       return reading(def.id, { status: 'not_instrumented' });
   }
+}
+
+/**
+ * Appendix C 1.2's per-release manual audits (B.25, B.22, B.20). The latest
+ * recorded audit of the kind decides: a fail breaches (a dark-pattern finding
+ * is zero-tolerance), and so does an audit older than the release cadence or
+ * none at all (a promise not currently kept reads as a breach, never as calm).
+ */
+function releaseAuditReading(def: SignalDefinition, src: QualitySources, anomalies: Anomaly[], unavailable: (d: SignalDefinition) => SignalReading): SignalReading {
+  if (src.releaseAudits === null) return unavailable(def);
+  // A source set built before the loop read the audits carries no evidence either way.
+  if (src.releaseAudits === undefined) return reading(def.id, { status: 'insufficient_data', detail: { cadenceDays: T.releaseAuditCadenceDays } });
+  const kind = RELEASE_AUDIT_KINDS.find((k) => RELEASE_AUDIT_SIGNAL[k] === def.id)!;
+  const rows = src.releaseAudits.filter((r) => r.audit_kind === kind).sort((a, b) => b.recorded_at.localeCompare(a.recorded_at));
+  const latest = rows[0];
+  if (!latest) {
+    anomalies.push(anomalyFor(def, 'threshold_breach', 'all', null, T.releaseAuditCadenceDays, { audits: 0 }));
+    return reading(def.id, { status: 'breach', detail: { audits: 0, cadenceDays: T.releaseAuditCadenceDays } });
+  }
+  const ageDays = Math.floor((src.now.getTime() - Date.parse(latest.recorded_at)) / 86_400_000);
+  const failed = latest.result === 'fail';
+  const stale = ageDays > T.releaseAuditCadenceDays;
+  const value = def.id === 'engagement.dark_pattern_audit' ? latest.finding_count : failed ? 0 : 1;
+  if (failed) {
+    anomalies.push(anomalyFor(def, def.threshold.kind === 'zero_tolerance' ? 'zero_tolerance' : 'threshold_breach', 'all', value, def.threshold.value, { findings: latest.finding_count, ageDays }));
+  } else if (stale) {
+    anomalies.push(anomalyFor(def, 'threshold_breach', 'audit_age', ageDays, T.releaseAuditCadenceDays, { ageDays }));
+  }
+  return reading(def.id, {
+    status: failed || stale ? 'breach' : 'ok',
+    value,
+    sample: rows.length,
+    detail: { result: latest.result, findings: latest.finding_count, ageDays, cadenceDays: T.releaseAuditCadenceDays },
+    sourceLatestAt: latest.recorded_at,
+  });
 }
 
 const bondValue = (a: string | null): number | null => (a === 'yes' ? 1 : a === 'partly' ? 0.5 : a === 'no' ? 0 : null);

@@ -1,16 +1,16 @@
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
 import {
   Banner, Button, Card, Chip, ConfirmDialog, DataTable, EmptyState, InlineNotice, List, ListRow, SegmentedControl, SelectField, Sheet,
-  TextField, useRebuildEnvironment, type TableColumn,
+  TextAreaField, TextField, useRebuildEnvironment, type StatusTone, type TableColumn,
 } from '../../design/controls';
 import { LiveContentStatusPanel, PackRelease, type PackResult } from '../../mentor/LiveContentGovernance';
 import { reviewBody, type PackStatus, type ReviewDecision } from '../../mentor/liveContentApi';
 import { LearningQualityPanel, type DecisionOutcome } from '../../learning/LearningQualityPanel';
 import type { ReviewDecisionBody } from '../../learning/learningQualityReport';
 import {
-  audioAssets, CONTENT_VIEWS, COURSE_STATUSES, imageAssets, isContentData, isLessonDetail, isLiveQueue, isLiveStatus, isPacks, isReviewQueue,
-  lessonParts, partTitle, releaseRefusal, riskCategory, type ContentView, type Course, type LessonDetail, type LiveSegment, type ReleaseRefusalKey,
-  type ReviewLesson,
+  audioAssets, CONTENT_VIEWS, COURSE_STATUSES, imageAssets, isBypassReport, isContentData, isLessonDetail, isLiveQueue, isLiveStatus, isPacks,
+  isPendingVersions, isReviewQueue, lessonParts, partTitle, releaseRefusal, riskCategory, versionRefusal, versionTitle, type ContentView,
+  type Course, type LessonDetail, type LiveSegment, type PendingVersion, type ReleaseRefusalKey, type RetroCheck, type RetroState, type ReviewLesson,
 } from './contentApi';
 import { useStaffRead, type StaffApi } from './staffConsoleApi';
 import { CopyId, Facts, LoadFailure, Loading, Metrics, ShareBars, StaffPage, useFormats } from './ConsoleParts';
@@ -27,6 +27,11 @@ import { fill, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
  *                      language (the learner's own player, its parts, audio,
  *                      images and client-safe document), then approve (a
  *                      release through release_lesson) or send it back.
+ *   Live updates       G.2: a new Forge version of a lesson that is already
+ *                      live waits here for a staff release (Core re-runs the
+ *                      course verification) or a rejection with a reason;
+ *                      below it, every skipped release check with its 30-day
+ *                      retroactive check and Appendix N 1.2's two rates.
  *   Mentor activities  C.5's live-content status, the sampled live Mentor
  *                      activities with three equal verdicts (each one also in
  *                      the audit log, G.3), and C.6's activity packs waiting
@@ -74,7 +79,7 @@ function useFocusRescue(target: RefObject<HTMLElement>, load: { state: string; r
 /*  Release refusals (G.2)                                                   */
 /* ------------------------------------------------------------------------- */
 
-type Outcome = { kind: 'done'; message: string } | { kind: 'refused'; key: ReleaseRefusalKey; code: string } | { kind: 'failed' };
+type Outcome = { kind: 'done'; message: string } | { kind: 'refused'; key: ReleaseRefusalKey | 'versionNotPending'; code: string } | { kind: 'failed' };
 
 function OutcomeNotice({ outcome }: { outcome: Outcome | null }) {
   const { copy } = useConsoleCopy();
@@ -382,6 +387,147 @@ function ReviewView({ api, onChanged, renderLessonPreview }: { api: StaffApi; on
 }
 
 /* ------------------------------------------------------------------------- */
+/*  Live updates (G.2, Appendix N 1.2)                                       */
+/* ------------------------------------------------------------------------- */
+
+function VersionSheet({ api, version, onClose, onDecided }: { api: StaffApi; version: PendingVersion; onClose: () => void; onDecided: () => void }) {
+  const { copy, locale } = useConsoleCopy();
+  const format = useFormats(locale);
+  const t = copy.content;
+  const [confirming, setConfirming] = useState(false);
+  const [rejecting, setRejecting] = useState(false);
+  const [reason, setReason] = useState('');
+  const [pending, setPending] = useState(false);
+  const [outcome, setOutcome] = useState<Outcome | null>(null);
+  const [decided, setDecided] = useState(false);
+  const path = `/admin/content/lessons/${version.lessonId}/versions/${version.documentVersionId}`;
+  const settle = (result: { ok: true } | { ok: false; code: string }, message: string) => {
+    if (result.ok) { setOutcome({ kind: 'done', message }); setDecided(true); onDecided(); return; }
+    const key = versionRefusal(result.code);
+    setOutcome(key ? { kind: 'refused', key, code: result.code } : { kind: 'failed' });
+  };
+  const release = async () => {
+    setPending(true); setOutcome(null);
+    const result = await api.post(`${path}/release`, {});
+    setPending(false); setConfirming(false);
+    settle(result, t.body.versionReleased);
+  };
+  const reject = async () => {
+    setPending(true); setOutcome(null);
+    const result = await api.post(`${path}/reject`, { reason: reason.trim() });
+    setPending(false);
+    settle(result, t.body.versionRejected);
+  };
+  const reasonOk = reason.trim().length >= 10 && reason.trim().length <= 600;
+  return <><Sheet open onClose={onClose} heading={t.heading.version} closeLabel={copy.common.action.close}>
+    <div className="lf-staff-sheet" data-sheet="version">
+      <Facts items={[
+        { id: 'lesson', label: t.body.lesson, value: versionTitle(version, locale), ugc: true },
+        { id: 'language', label: t.body.language, value: version.locale },
+        { id: 'version', label: t.body.version, value: version.versionId, ugc: true },
+        { id: 'submitted', label: t.body.submitted, value: format.dateTime(version.submittedAt, copy.common.body.notAvailable) },
+      ]} />
+      <InlineNotice tone="info">{t.body.releaseCheckNote}</InlineNotice>
+      {decided ? null : <div className="lf-staff-actions">
+        <Button variant="success" aria-haspopup="dialog" disabled={pending} onClick={() => setConfirming(true)}>{t.action.release}</Button>
+        <Button aria-expanded={rejecting} disabled={pending} onClick={() => setRejecting(!rejecting)}>{t.action.reject}</Button>
+      </div>}
+      {rejecting && !decided ? <form className="lf-staff-stack" data-form="reject-version" onSubmit={(event) => { event.preventDefault(); if (reasonOk) void reject(); }}>
+        <TextAreaField label={t.body.reason} help={t.body.reasonHelp} value={reason} maxLength={600} onChange={(event) => setReason(event.target.value)} />
+        <div><Button type="submit" disabled={pending || !reasonOk}>{t.action.rejectVersion}</Button></div>
+      </form> : null}
+      <OutcomeNotice outcome={outcome} />
+      <Facts items={[
+        { id: 'run', label: t.body.run, value: version.runId ?? copy.common.body.notAvailable, ugc: true },
+        { id: 'digest', label: t.body.digest, value: version.documentSha256.slice(0, 16), ugc: true },
+      ]} />
+      <CopyId value={version.documentVersionId} />
+    </div>
+  </Sheet>
+    <ConfirmDialog open={confirming} heading={t.heading.confirmRelease} consequence={t.body.consequenceRelease} keepLabel={t.action.keep}
+      confirmLabel={t.action.release} pendingLabel={t.action.saving} pending={pending}
+      onKeep={() => setConfirming(false)} onConfirm={() => void release()} />
+  </>;
+}
+
+const RETRO_TONE: Record<RetroState, { tone: StatusTone; glyph: 'warning' | 'info' | 'check' }> = {
+  overdue: { tone: 'error', glyph: 'warning' },
+  open: { tone: 'warning', glyph: 'info' },
+  closed_late: { tone: 'warning', glyph: 'check' },
+  closed: { tone: 'success', glyph: 'check' },
+};
+
+function RetroChecks({ api }: { api: StaffApi }) {
+  const { copy, locale } = useConsoleCopy();
+  const format = useFormats(locale);
+  const t = copy.content;
+  const report = useStaffRead(api, '/admin/content/bypass-checks', isBypassReport);
+  const rate = (value: number | null) => (value === null ? t.body.notMeasured : format.percent(value));
+  const actionLabel = (action: string) => (action === 'content.live_document_patched' ? t.option.directFix
+    : action === 'content.v2_emergency_activation' ? t.option.emergencyRelease : action === 'forge.v2_lesson_published' ? t.option.earlyPublication : action);
+  const columns: TableColumn<RetroCheck>[] = [
+    { key: 'change', label: t.body.change, value: (entry) => actionLabel(entry.action) },
+    { key: 'when', label: t.body.when, value: (entry) => format.date(entry.occurredAt, copy.common.body.notAvailable) },
+    { key: 'due', label: t.body.due, value: (entry) => format.date(entry.dueAt, copy.common.body.notAvailable) },
+    { key: 'check', label: t.body.check, value: (entry) => <Chip tone={RETRO_TONE[entry.state].tone} glyph={RETRO_TONE[entry.state].glyph}>{t.option[entry.state]}</Chip> },
+    { key: 'reason', label: t.body.reasonLogged, value: (entry) => (entry.justified ? t.body.yes : t.body.no) },
+  ];
+  const data = report.load.state === 'ready' ? report.load.data : null;
+  return <section className="lf-staff-section" aria-labelledby="staff-retro-checks" data-section="retro-checks">
+    <h2 id="staff-retro-checks" data-copy-role="heading" className="lf-staff-subheading">{t.heading.checks}</h2>
+    {report.load.state === 'loading' ? <Loading />
+      : report.load.state === 'error' ? <LoadFailure code={report.load.code} onRetry={report.reload} />
+        : data ? <>
+          <p data-copy-role="body" className="lf-staff-muted">{fill(t.body.checksIntro, { days: format.number(data.retroCheckDays) })}</p>
+          {data.counts.overdue > 0 ? <InlineNotice tone="error">{fill(t.body.overdueNotice, { n: format.number(data.counts.overdue) })}</InlineNotice> : null}
+          <Metrics label={t.heading.checks} items={[
+            { id: 'bypassRate', label: t.body.bypassRate, value: rate(data.bypassRate) },
+            { id: 'completeness', label: t.body.completeness, value: rate(data.completenessRate) },
+            { id: 'overdue', label: t.body.overdue, value: format.number(data.counts.overdue) },
+            { id: 'pending', label: t.body.pendingChecks, value: format.number(data.counts.pending) },
+          ]} />
+          {data.checks.length === 0 ? <EmptyState heading={t.body.checksEmpty} />
+            : <DataTable caption={t.heading.checks} columns={columns} rows={data.checks} rowKey={(entry) => String(entry.id)} />}
+        </> : null}
+  </section>;
+}
+
+function UpdatesView({ api }: { api: StaffApi }) {
+  const { copy, locale } = useConsoleCopy();
+  const format = useFormats(locale);
+  const t = copy.content;
+  const queue = useStaffRead(api, '/admin/content/lesson-versions', isPendingVersions);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [dirty, setDirty] = useState(false);
+  const heading = useRef<HTMLElement>(null);
+  const armRescue = useFocusRescue(heading, queue.load);
+  const versions = queue.load.state === 'ready' ? queue.load.data.versions : [];
+  const version = selected ? versions.find((entry) => entry.requestId === selected) ?? null : null;
+  const columns: TableColumn<PendingVersion>[] = [
+    { key: 'lesson', label: t.body.lesson, value: (entry) => versionTitle(entry, locale), ugc: true },
+    { key: 'language', label: t.body.language, value: (entry) => entry.locale },
+    { key: 'version', label: t.body.version, value: (entry) => entry.versionId, ugc: true },
+    { key: 'submitted', label: t.body.submitted, value: (entry) => format.date(entry.submittedAt, copy.common.body.notAvailable) },
+    { key: 'details', label: copy.common.body.details, value: (entry) => <Button size="sm" onClick={() => setSelected(entry.requestId)}>{copy.common.action.open}</Button> },
+  ];
+  const close = () => {
+    setSelected(null);
+    if (dirty) { setDirty(false); armRescue(); queue.reload(); }
+  };
+  return <div className="lf-staff-section" data-view="updates">
+    <section className="lf-staff-section" aria-label={t.heading.updates} ref={heading} tabIndex={-1}>
+      <p data-copy-role="body" className="lf-staff-muted">{t.body.updatesIntro}</p>
+      {queue.load.state === 'loading' ? <Loading />
+        : queue.load.state === 'error' ? <LoadFailure code={queue.load.code} onRetry={queue.reload} />
+          : versions.length === 0 ? <EmptyState heading={t.body.updatesEmpty} />
+            : <DataTable caption={t.heading.updates} columns={columns} rows={versions} rowKey={(entry) => entry.requestId} />}
+    </section>
+    <RetroChecks api={api} />
+    {version ? <VersionSheet key={version.requestId} api={api} version={version} onClose={close} onDecided={() => setDirty(true)} /> : null}
+  </div>;
+}
+
+/* ------------------------------------------------------------------------- */
 /*  Mentor activities (C.5, C.6, G.3)                                        */
 /* ------------------------------------------------------------------------- */
 
@@ -546,6 +692,7 @@ export function StaffContent({ api, initialView = 'courses', renderLessonPreview
       options={CONTENT_VIEWS.map((value) => ({ value, label: t.option[value] }))} />
     {view === 'courses' ? (data && summary ? <>{incidentsSection}<CoursesView api={api} courses={data.courses} summary={summary} onChanged={content.reload} /></> : null)
       : view === 'review' ? <ReviewView api={api} onChanged={content.reload} renderLessonPreview={renderLessonPreview} />
+        : view === 'updates' ? <UpdatesView api={api} />
         : view === 'live' ? <LiveView api={api} />
           : <QualityView api={api} />}
   </StaffPage>;

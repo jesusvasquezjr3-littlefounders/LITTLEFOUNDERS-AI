@@ -14,7 +14,10 @@
  *     a flag);
  *   - a named owner signs the weekly review of their role's signals;
  *   - staff with `manage_users` name or remove an owner (the person must be
- *     staff who can read analytics).
+ *     staff who can read analytics);
+ *   - a named owner records a per-release manual audit (B.25, B.22, B.20;
+ *     GAP-FIX-R2) through `record_release_audit`, which re-checks the owner
+ *     role in SQL and writes the audit row in the same transaction.
  * The route layer requires `view_analytics` before any of this runs; the
  * named-owner rule is enforced HERE, against the database, never by the UI.
  */
@@ -24,11 +27,16 @@ import {
   freshness,
   isoWeekStart,
   OWNER_ROLES,
+  RELEASE_AUDIT_KINDS,
+  RELEASE_AUDIT_SIGNAL,
+  RETIRED_SIGNALS,
   reviewCompletion,
   rubricSummary,
   SIGNALS,
+  signalDefinition,
   MENTOR_QUALITY_THRESHOLDS as T,
   type OwnerRole,
+  type ReleaseAuditKind,
   type SignalReading,
 } from './mentorQuality.js';
 import { TRANSCRIPT_RUBRIC_HASH, TRANSCRIPT_RUBRIC_VERSION } from './transcriptRubric.js';
@@ -82,10 +90,12 @@ function flagView(f: FlagRow) {
   };
 }
 
+interface ReleaseAuditDbRow { audit_kind: ReleaseAuditKind; release_id: string; result: 'pass' | 'fail'; finding_count: number | string; recorded_at: string }
+
 export async function getMentorQualityDashboard(now = new Date(), viewerId: string | null = null) {
   const previousWeek = isoWeekStart(new Date(now.getTime() - 7 * 86_400_000));
   const resolvedSince = encodeURIComponent(new Date(now.getTime() - 30 * 86_400_000).toISOString());
-  const [snapshots, runs, active, resolved, owners, reviews] = await Promise.all([
+  const [snapshots, runs, active, resolved, owners, reviews, audits] = await Promise.all([
     serviceRest<{ id: string; computed_at: string; window_days: number; rubric_hash: string; signals: SignalReading[] }[]>(
       '/mentor_quality_snapshot?select=id,computed_at,window_days,rubric_hash,signals&order=computed_at.desc&limit=1',
     ),
@@ -98,8 +108,10 @@ export async function getMentorQualityDashboard(now = new Date(), viewerId: stri
     serviceRest<{ owner_role: OwnerRole; reviewer_id: string | null; week_start: string; reviewed_at: string; open_flags: number }[]>(
       `/mentor_quality_review?select=owner_role,reviewer_id,week_start,reviewed_at,open_flags&week_start=gte.${previousWeek}&order=reviewed_at.desc`,
     ),
+    serviceRest<ReleaseAuditDbRow[]>('/release_audit_results?select=audit_kind,release_id,result,finding_count,recorded_at&order=recorded_at.desc&limit=60'),
   ]);
-  if (!Array.isArray(snapshots) || !Array.isArray(runs) || !Array.isArray(active) || !Array.isArray(resolved) || !Array.isArray(owners) || !Array.isArray(reviews)) {
+  if (!Array.isArray(snapshots) || !Array.isArray(runs) || !Array.isArray(active) || !Array.isArray(resolved) || !Array.isArray(owners) || !Array.isArray(reviews)
+    || !Array.isArray(audits)) {
     return null;
   }
   const ids = [...new Set(owners.map((o) => o.user_id))];
@@ -145,6 +157,23 @@ export async function getMentorQualityDashboard(now = new Date(), viewerId: stri
     owners: owners.map((o) => ({ role: o.owner_role, userId: o.user_id, displayName: nameOf.get(o.user_id) ?? null, assignedAt: o.assigned_at })),
     // Which roles the reader is named for: the client shows actions only there (Core still enforces).
     viewerOwnerRoles: viewerId === null ? [] : OWNER_ROLES.filter((role) => owners.some((o) => o.owner_role === role && o.user_id === viewerId)),
+    // GAP-FIX-R2 (Appendix C 1.2): the latest per-release audit of each kind, for the owner's form.
+    releaseAudits: {
+      cadenceDays: T.releaseAuditCadenceDays,
+      kinds: RELEASE_AUDIT_KINDS.map((kind) => {
+        const latest = audits.find((a) => a.audit_kind === kind) ?? null;
+        return {
+          kind,
+          signalId: RELEASE_AUDIT_SIGNAL[kind],
+          ownerRole: signalDefinition(RELEASE_AUDIT_SIGNAL[kind])!.owner,
+          latest: latest === null ? null : {
+            releaseId: latest.release_id, result: latest.result, findingCount: Number(latest.finding_count), recordedAt: latest.recorded_at,
+          },
+        };
+      }),
+    },
+    // Signals taken off the registry, with the reason (never silently dropped).
+    retiredSignals: RETIRED_SIGNALS,
     reviews: {
       ...completion,
       cadenceDays: T.reviewCadenceDays,
@@ -290,3 +319,21 @@ export async function setOwner(input: { role: OwnerRole; userId: string; action:
 }
 
 export { OWNER_ROLES };
+
+// ── Per-release manual audits (Appendix C 1.2; B.25, B.22, B.20) ─────────────
+
+export type ReleaseAuditResult = 'recorded' | 'not_owner' | 'duplicate' | 'invalid' | 'unavailable';
+
+/** Vault checks the named owner of the kind's role and writes the result and its audit row together. */
+export async function recordReleaseAudit(input: {
+  actorId: string; kind: ReleaseAuditKind; releaseId: string; result: 'pass' | 'fail'; findingCount: number; note: string | null;
+}): Promise<ReleaseAuditResult> {
+  const answer = await serviceRest<unknown>('/rpc/record_release_audit', {
+    method: 'POST',
+    body: JSON.stringify({
+      p_actor: input.actorId, p_kind: input.kind, p_release_id: input.releaseId, p_result: input.result,
+      p_findings: input.findingCount, p_note: input.note,
+    }),
+  });
+  return answer === 'recorded' || answer === 'not_owner' || answer === 'duplicate' || answer === 'invalid' ? answer : 'unavailable';
+}

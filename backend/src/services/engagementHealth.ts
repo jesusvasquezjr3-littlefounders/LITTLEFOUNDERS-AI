@@ -33,13 +33,13 @@ export interface EngagementHealthMetric {
 export const ENGAGEMENT_HEALTH_METRICS: readonly EngagementHealthMetric[] = [
   { id: 'session_efficiency_ratio', name: 'Session Efficiency Ratio', direction: 'higher-is-better', source: 'learning_session_efficiency' },
   { id: 'mentor_resolution_turns', name: 'AI Mentor Resolution Efficiency', direction: 'lower-is-better', source: 'mentor_resolution_efficiency' },
-  { id: 'streak_anxiety_correlation', name: 'Streak-Anxiety Correlation', direction: 'lower-is-better', source: 'none: no streak-at-risk notification exists' },
+  { id: 'streak_anxiety_correlation', name: 'Streak-Anxiety Correlation', direction: 'lower-is-better', source: 'retired: no streak-at-risk notification exists (mentorQuality.ts RETIRED_SIGNALS)' },
   { id: 'rest_day_utilization', name: 'Streak-Freeze (rest day) Utilization Rate', direction: 'diagnostic', source: 'learning_rest_day_utilization' },
-  { id: 'dark_pattern_audit_failures', name: 'Dark-Pattern Audit Score', direction: 'lower-is-better', source: 'docs/rebuild/audits/dark-pattern-audits.json' },
-  { id: 'variable_ratio_mechanics', name: 'Variable-Ratio Mechanic Audit Pass Rate', direction: 'higher-is-better', source: 'agent/tools/check-reward-mechanics.mjs' },
-  { id: 'reward_framing_composition', name: 'Reward-Framing Composition Rate', direction: 'higher-is-better', source: 'LessonResultView recognition' },
+  { id: 'dark_pattern_audit_failures', name: 'Dark-Pattern Audit Score', direction: 'lower-is-better', source: 'release_audit_results (dark_pattern) on the C.24 dashboard; docs/rebuild/audits/dark-pattern-audits.json' },
+  { id: 'variable_ratio_mechanics', name: 'Variable-Ratio Mechanic Audit Pass Rate', direction: 'higher-is-better', source: 'release_audit_results (variable_ratio) on the C.24 dashboard; agent/tools/check-reward-mechanics.mjs' },
+  { id: 'reward_framing_composition', name: 'Reward-Framing Composition Rate', direction: 'higher-is-better', source: 'release_audit_results (reward_framing) on the C.24 dashboard; LessonResultView recognition' },
   { id: 'autonomy_adoption', name: 'Autonomy Mechanism Adoption Rate', direction: 'higher-is-better', source: 'learning_autonomy_adoption' },
-  { id: 'parent_time_to_value', name: 'Parent Time-to-Value', direction: 'lower-is-better', source: 'not instrumented yet' },
+  { id: 'parent_time_to_value', name: 'Parent Time-to-Value', direction: 'lower-is-better', source: 'parent_time_to_value (parent_signup_completed to parent_first_value)' },
 ];
 
 /**

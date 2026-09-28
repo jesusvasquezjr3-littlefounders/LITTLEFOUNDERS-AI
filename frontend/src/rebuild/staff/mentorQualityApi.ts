@@ -110,6 +110,15 @@ export interface DashboardFlag {
   resolutionNote: string | null;
 }
 
+/** GAP-FIX-R2: the per-release manual audits (Core mentorQuality.ts RELEASE_AUDIT_KINDS; release_audit_results.audit_kind). */
+export const RELEASE_AUDIT_KINDS = ['dark_pattern', 'variable_ratio', 'reward_framing'] as const;
+export type ReleaseAuditKind = (typeof RELEASE_AUDIT_KINDS)[number];
+
+export interface ReleaseAuditSummary {
+  cadenceDays: number;
+  kinds: { kind: ReleaseAuditKind; signalId: string; ownerRole: OwnerRole; latest: { releaseId: string; result: 'pass' | 'fail'; findingCount: number; recordedAt: string } | null }[];
+}
+
 /** Mirrors `GET /admin/mentor-quality`. */
 export interface MentorQualityDashboardData {
   generatedAt: string;
@@ -120,6 +129,10 @@ export interface MentorQualityDashboardData {
   flags: { active: DashboardFlag[]; recentlyResolved: DashboardFlag[] };
   owners: { role: OwnerRole; userId: string; displayName: string | null; assignedAt: string }[];
   viewerOwnerRoles: OwnerRole[];
+  /** GAP-FIX-R2; absent from an older Core. */
+  releaseAudits?: ReleaseAuditSummary;
+  /** Signals taken off the registry, with the reason (GAP-FIX-R2); absent from an older Core. */
+  retiredSignals?: { id: string; requirement: string; reason: string }[];
   reviews: {
     week: string;
     previousWeek: string;

@@ -36,6 +36,14 @@ import { getAchievementSharingMetrics } from '../services/achievementSharingMetr
 import { getAccountDeletionMetrics } from '../services/accountDeletionMetrics.js';
 import { getIdentityMetrics } from '../services/identityMetrics.js';
 import { getOpsJobStatus } from '../services/opsJobs.js';
+import {
+  BYPASS_WINDOW_DAYS,
+  getContentBypassReport,
+  listPendingLessonVersions,
+  rejectLessonVersion,
+  releaseLessonVersion,
+  type VersionDecision,
+} from '../services/contentRelease.js';
 import { readRegisterDistribution } from '../services/moneyPresentation.js';
 import { renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
 import { getTutorRetentionStatus, listTutorReviewQueue } from '../services/tutorData.js';
@@ -55,11 +63,13 @@ import {
   getMentorQualityDashboard,
   OWNER_ROLES,
   recordOwnerReview,
+  recordReleaseAudit,
   resolveFlag,
   RESOLUTION_NOTE_MAX,
   RESOLUTION_NOTE_MIN,
   setOwner,
 } from '../services/pedagogy/mentorQualityDashboard.js';
+import { RELEASE_AUDIT_KINDS } from '../services/pedagogy/mentorQuality.js';
 import {
   renderAnalyticsReportCsv,
   renderAnalyticsReportXlsx,
@@ -1780,6 +1790,62 @@ export function adminRouter(): Router {
     ok(res, { id: courseId.data, status: status.data });
   });
 
+  // ── G.2: a new v2 version of a live lesson waits for a staff release ──────
+  /*
+   * Forge's reviewed publication records a pending activation for a lesson
+   * that is already published (`*_v2_staff_release_approval.sql`); nothing a
+   * child sees changes until a person with manage_content releases it here.
+   * Vault re-checks the actor and the course's Forge verification in the same
+   * transaction that moves the pointer and writes the audit row (actor = this
+   * staff member). A rejection needs a reason and is audited too.
+   */
+  router.get('/content/lesson-versions', async (_req, res) => {
+    const versions = await listPendingLessonVersions();
+    if (!versions) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the pending lesson versions');
+    ok(res, { versions, total: versions.length });
+  });
+
+  const VersionParams = z.object({ lessonId: z.string().uuid(), versionId: z.string().uuid() });
+  const versionOutcome = (res: Response, result: VersionDecision, params: z.infer<typeof VersionParams>, status: string) => {
+    if (result.outcome === 'done') return ok(res, { lessonId: params.lessonId, versionId: params.versionId, status });
+    if (result.outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not decide on the lesson version');
+    if (result.code === 'FORBIDDEN') return fail(res, 403, 'FORBIDDEN', result.message);
+    if (result.code === 'NOT_FOUND') return fail(res, 404, 'NOT_FOUND', result.message);
+    if (result.code === 'NOT_PENDING') return fail(res, 409, 'VERSION_NOT_PENDING', result.message);
+    if (result.code === 'INVALID_REASON') return fail(res, 400, 'VALIDATION_ERROR', result.message);
+    const refusal = RELEASE_REFUSALS[result.code] ?? { status: 409, code: 'RELEASE_BLOCKED' };
+    return fail(res, refusal.status, refusal.code, result.message);
+  };
+
+  router.post('/content/lessons/:lessonId/versions/:versionId/release', async (req, res) => {
+    const params = VersionParams.safeParse(req.params);
+    const body = z.object({}).strict().safeParse(req.body ?? {});
+    if (!params.success || !body.success) return fail(res, 400, 'VALIDATION_ERROR', 'lessonId and versionId must be uuids and the body empty');
+    return versionOutcome(res, await releaseLessonVersion(authedUser(res).id, params.data.lessonId, params.data.versionId), params.data, 'released');
+  });
+
+  const RejectVersionBody = z.object({ reason: z.string().trim().min(10).max(600) }).strict();
+  router.post('/content/lessons/:lessonId/versions/:versionId/reject', async (req, res) => {
+    const params = VersionParams.safeParse(req.params);
+    const body = RejectVersionBody.safeParse(req.body);
+    if (!params.success || !body.success) return fail(res, 400, 'VALIDATION_ERROR', 'lessonId and versionId must be uuids and the reason 10-600 characters');
+    return versionOutcome(res, await rejectLessonVersion(authedUser(res).id, params.data.lessonId, params.data.versionId, body.data.reason), params.data, 'rejected');
+  });
+
+  /*
+   * G.2 / Appendix N 1.2: every bypass of the release check with its 30-day
+   * retroactive check, and the Release-Verification Bypass Rate (target 0)
+   * and Justification & Retroactive-Check Completeness (target 100%).
+   */
+  const BypassQuery = z.object({ days: z.coerce.number().int().min(7).max(365).default(BYPASS_WINDOW_DAYS) });
+  router.get('/content/bypass-checks', async (req, res) => {
+    const query = BypassQuery.safeParse(req.query);
+    if (!query.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be 7-365');
+    const report = await getContentBypassReport(query.data.days);
+    if (!report) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the release checks');
+    ok(res, report);
+  });
+
   // ── Learning quality (S05.3d: B.19 difficulty band, B.12 judgment, B.5 replay notice) ──
   // Behind '/content' → manage_content. The SQL functions re-check the actor on every write.
   const LearningQualityQuery = z.object({ days: z.coerce.number().int().min(7).max(180).default(REVIEW_WINDOW_DAYS) });
@@ -2064,6 +2130,30 @@ export function adminRouter(): Router {
     if (result.code === 'not_owner') return fail(res, 403, 'NOT_NAMED_OWNER', 'Only a named owner of this role can sign its review');
     if (result.code === 'already') return fail(res, 409, 'ALREADY_REVIEWED', 'This week\'s review is already signed');
     return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the review');
+  });
+
+  /*
+   * GAP-FIX-R2 (Appendix C 1.2): a named owner records a per-release manual
+   * audit (B.25 dark patterns and B.22 variable-ratio rewards: the Safety and
+   * Trust lead; B.20 reward framing: the pedagogical lead). A fail carries its
+   * findings; a pass has none. Vault enforces the owner and writes the audit row.
+   */
+  const ReleaseAuditBody = z.object({
+    kind: z.enum(RELEASE_AUDIT_KINDS),
+    releaseId: z.string().trim().regex(/^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$/),
+    result: z.enum(['pass', 'fail']),
+    findingCount: z.number().int().min(0).max(10_000),
+    note: z.string().trim().min(1).max(600).optional(),
+  }).strict().refine((b) => (b.result === 'fail') === (b.findingCount > 0), 'a fail has at least one finding and a pass none');
+  router.post('/mentor-quality/audits', async (req, res) => {
+    const body = ReleaseAuditBody.safeParse(req.body);
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'kind, releaseId (1-64 of A-Z a-z 0-9 . _ : -), result pass|fail and findingCount (a fail has findings, a pass none) are required');
+    const result = await recordReleaseAudit({ actorId: authedUser(res).id, ...body.data, note: body.data.note ?? null });
+    if (result === 'recorded') return ok(res, { kind: body.data.kind, releaseId: body.data.releaseId, result: body.data.result }, 201);
+    if (result === 'not_owner') return fail(res, 403, 'NOT_NAMED_OWNER', 'Only a named owner of this audit\'s role can record it');
+    if (result === 'duplicate') return fail(res, 409, 'ALREADY_RECORDED', 'This release already has this audit');
+    if (result === 'invalid') return fail(res, 400, 'VALIDATION_ERROR', 'The database refused the audit values');
+    return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the audit');
   });
 
   const OwnerBody = z.object({ role: z.enum(OWNER_ROLES), userId: z.string().uuid(), action: z.enum(['add', 'remove']) }).strict();

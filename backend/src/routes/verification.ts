@@ -10,6 +10,7 @@ import {
   insertParentVerification,
 } from '../services/supabaseRest.js';
 import { getRolesForGate } from '../services/insights.js';
+import { recordParentJourneyEvent } from '../services/parentTimeToValue.js';
 import { readAdultVerificationStatus } from '../services/mentorSafety.js';
 
 /*
@@ -142,6 +143,8 @@ export function verificationRouter(): Router {
 
     const granted = await grantRole(user.id, 'parent', user.id);
     if (!granted) return fail(res, 502, 'INTERNAL', 'Could not grant the Tutor role');
+    // Appendix C 1.2 Parent Time-to-Value starts here: the verified parent's signup is complete.
+    recordParentJourneyEvent(user.id, 'parent_signup_completed');
 
     return ok(res, { verified: true, role: 'parent' });
   });

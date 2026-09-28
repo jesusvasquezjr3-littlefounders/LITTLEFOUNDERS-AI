@@ -52,6 +52,7 @@ function answer(path: string): StaffResult<unknown> | undefined {
     '/admin/tutor/review-queue': sections.liveQueue, '/admin/tutor/live-content/status': sections.liveStatus, '/admin/tutor/packs': sections.packs,
     '/admin/content/learning-quality': sections.learningQuality, '/admin/generation': g.overview, '/admin/generation/live': g.live,
     '/admin/generation/analytics': g.analytics, '/admin/generation/coach': g.coach, '/admin/generation/compare': g.compare, '/admin/mentor-quality': sections.mentorQuality,
+    '/admin/content/lesson-versions': sections.lessonVersions, '/admin/content/bypass-checks': sections.bypassChecks,
   };
   if (route in table) return ok(table[route]);
   if (route.startsWith('/admin/generation/runs/')) return ok(g.runDetail);
@@ -69,6 +70,85 @@ beforeEach(() => {
   Object.assign(navigator, { clipboard: { writeText: vi.fn(async () => undefined) } });
 });
 afterEach(() => { cleanup(); vi.useRealTimers(); });
+
+/* ------------------------------------------------------------------------- */
+
+describe('G.2 Live updates: a live lesson changes only on a staff release; skipped checks and their rates', () => {
+  const VERSION = sections.lessonVersions.versions[0]!;
+  const base = `/admin/content/lessons/${VERSION.lessonId}/versions/${VERSION.documentVersionId}`;
+
+  async function openVersion() {
+    const table = await screen.findByRole('table', { name: c.content.heading.updates });
+    const row = within(table).getAllByRole('row').find((entry) => entry.textContent?.includes(VERSION.versionId))!;
+    fireEvent.click(within(row).getByRole('button', { name: c.common.action.open }));
+    return screen.findByRole('dialog', { name: c.content.heading.version });
+  }
+
+  it('lists the waiting versions and the skipped checks with both Appendix N rates and the overdue notice', async () => {
+    const { api, gets } = fakeApi();
+    render(<Frame><StaffContent api={api} initialView="updates" /></Frame>);
+    const table = await screen.findByRole('table', { name: c.content.heading.updates });
+    expect(within(table).getAllByRole('row')).toHaveLength(3);
+    expect(table).toHaveTextContent(VERSION.lessonTitle['en-US']);
+    const checks = await screen.findByRole('region', { name: c.content.heading.checks });
+    expect(checks).toHaveTextContent(c.content.body.bypassRate);
+    expect(checks).toHaveTextContent('8.3%');
+    expect(checks).toHaveTextContent('66.7%');
+    expect(checks).toHaveTextContent(c.content.body.overdueNotice.replace('{n}', '1'));
+    expect(within(checks).getByRole('table')).toHaveTextContent(c.content.option.overdue);
+    expect(gets).toEqual(expect.arrayContaining(['/admin/content/lesson-versions', '/admin/content/bypass-checks']));
+  });
+
+  it('releases behind a keep-first confirmation, posts to the version route and says learners see it', async () => {
+    const { api, posts } = fakeApi();
+    render(<Frame><StaffContent api={api} initialView="updates" /></Frame>);
+    const details = await openVersion();
+    expect(details).toHaveTextContent(c.content.body.releaseCheckNote);
+    fireEvent.click(within(details).getByRole('button', { name: c.content.action.release }));
+    const confirm = await screen.findByRole('alertdialog');
+    expect(confirm).toHaveTextContent(c.content.body.consequenceRelease);
+    expect(within(confirm).getAllByRole('button')[0]).toHaveTextContent(c.content.action.keep);
+    fireEvent.click(within(confirm).getByRole('button', { name: c.content.action.release }));
+    await waitFor(() => expect(posts).toEqual([{ path: `${base}/release`, body: {} }]));
+    expect(await screen.findByText(c.content.body.versionReleased)).toBeInTheDocument();
+  });
+
+  it('names the release refusals: a stale course check, and a version someone already decided', async () => {
+    for (const [code, text] of [['RELEASE_VERIFICATION_REQUIRED', c.content.body.releaseVerificationRequired], ['VERSION_NOT_PENDING', c.content.body.versionNotPending]] as const) {
+      const { api } = fakeApi((path, body) => (body ? fail(code) : undefined));
+      render(<Frame><StaffContent api={api} initialView="updates" /></Frame>);
+      const details = await openVersion();
+      fireEvent.click(within(details).getByRole('button', { name: c.content.action.release }));
+      fireEvent.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: c.content.action.release }));
+      expect(await within(details).findByText(text)).toBeInTheDocument();
+      cleanup();
+    }
+  });
+
+  it('a rejection needs a reason of at least 10 characters and posts it', async () => {
+    const { api, posts } = fakeApi();
+    render(<Frame><StaffContent api={api} initialView="updates" /></Frame>);
+    const details = await openVersion();
+    fireEvent.click(within(details).getByRole('button', { name: c.content.action.reject }));
+    const submit = within(details).getByRole('button', { name: c.content.action.rejectVersion });
+    fireEvent.change(within(details).getByLabelText(c.content.body.reason), { target: { value: 'short' } });
+    expect(submit).toBeDisabled();
+    fireEvent.change(within(details).getByLabelText(c.content.body.reason), { target: { value: 'The example uses a foreign currency.' } });
+    fireEvent.click(submit);
+    await waitFor(() => expect(posts).toEqual([{ path: `${base}/reject`, body: { reason: 'The example uses a foreign currency.' } }]));
+    expect(await screen.findByText(c.content.body.versionRejected)).toBeInTheDocument();
+  });
+
+  it('shows the empty states, and a failed read of the checks is an error, never a calm zero', async () => {
+    const empty = fakeApi((path) => (path === '/admin/content/lesson-versions' ? ok({ versions: [], total: 0 })
+      : path === '/admin/content/bypass-checks' ? fail('DATA_UNAVAILABLE') : undefined));
+    render(<Frame><StaffContent api={empty.api} initialView="updates" /></Frame>);
+    expect(await screen.findByText(c.content.body.updatesEmpty)).toBeInTheDocument();
+    const checks = await screen.findByRole('region', { name: c.content.heading.checks });
+    expect(await within(checks).findByText(c.common.heading.loadFailed)).toBeInTheDocument();
+    expect(checks).not.toHaveTextContent(c.content.body.bypassRate);
+  });
+});
 
 /* ------------------------------------------------------------------------- */
 
@@ -476,6 +556,37 @@ describe('C.24 Mentor quality on its real route', () => {
     expect(await screen.findByText(en.staffMentorQuality.notOwner)).toBeInTheDocument();
     expect(posts[0]!.path).toMatch(/^\/admin\/mentor-quality\/flags\/.+\/acknowledge$/);
     expect(posts[0]!.body).toEqual({});
+  });
+
+  it('GAP-FIX-R2: lists the latest release audit of each kind, and a named owner records only the kinds of their roles', async () => {
+    const { api, posts } = fakeApi();
+    render(<Frame><StaffMentorQuality api={api} /></Frame>);
+    const card = (await screen.findByRole('heading', { level: 2, name: c.mentorQuality.heading.audits })).closest('section, div[class*="card"], article') as HTMLElement ?? document.body;
+    const list = await screen.findByRole('list', { name: c.mentorQuality.heading.audits });
+    expect(list).toHaveTextContent(c.mentorQuality.option.dark_pattern);
+    expect(list).toHaveTextContent(c.mentorQuality.body.notRecorded);
+    expect(list).toHaveTextContent(c.mentorQuality.body.findingsValue.replace('{n}', '2'));
+    const kinds = within(card).getByLabelText(c.mentorQuality.body.auditKind) as HTMLSelectElement;
+    expect([...kinds.options].map((o) => o.value)).toEqual(['dark_pattern', 'variable_ratio', 'reward_framing']);
+    fireEvent.change(within(card).getByLabelText(c.mentorQuality.body.release), { target: { value: 'release-2026.10' } });
+    fireEvent.click(within(card).getByRole('radio', { name: c.mentorQuality.option.fail }));
+    fireEvent.change(within(card).getByLabelText(c.mentorQuality.body.findings), { target: { value: '3' } });
+    fireEvent.click(within(card).getByRole('button', { name: c.mentorQuality.action.recordAudit }));
+    await waitFor(() => expect(posts).toEqual([{ path: '/admin/mentor-quality/audits', body: { kind: 'dark_pattern', releaseId: 'release-2026.10', result: 'fail', findingCount: 3 } }]));
+    expect(await screen.findByText(c.mentorQuality.body.auditRecorded)).toBeInTheDocument();
+  });
+
+  it('GAP-FIX-R2: a viewer named for no role sees no form; Core\'s refusals are said in words', async () => {
+    const plain = fakeApi((path) => (path === '/admin/mentor-quality' ? ok({ ...sections.mentorQuality, viewerOwnerRoles: [] }) : undefined));
+    render(<Frame><StaffMentorQuality api={plain.api} /></Frame>);
+    expect(await screen.findByText(c.mentorQuality.body.ownersRecord)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: c.mentorQuality.action.recordAudit })).toBeNull();
+    cleanup();
+    const refused = fakeApi((path, body) => (body !== undefined && path === '/admin/mentor-quality/audits' ? fail('ALREADY_RECORDED') : undefined));
+    render(<Frame><StaffMentorQuality api={refused.api} /></Frame>);
+    fireEvent.change(await screen.findByLabelText(c.mentorQuality.body.release), { target: { value: 'release-2026.09' } });
+    fireEvent.click(screen.getByRole('button', { name: c.mentorQuality.action.recordAudit }));
+    expect(await screen.findByText(c.mentorQuality.body.auditDuplicate)).toBeInTheDocument();
   });
 
   it('a refused read (view_analytics withdrawn) is the console\'s refused state with a retry', async () => {

@@ -11,7 +11,11 @@
 //   4. verify      `npm run verify:course -- <course>`: the course attestation
 //                  the reviewed publication requires for a published lesson;
 //   5. publish     Vault's `publish_v2_lesson_version` (0209), once per market,
-//                  with a manifest that attests exactly that document.
+//                  with a manifest that attests exactly that document. For a
+//                  lesson that is already published, Vault stores the version
+//                  as PENDING and nothing a child sees changes until a staff
+//                  member releases it on the Content page (G.2, GAP-FIX-R2:
+//                  *_v2_staff_release_approval.sql); the result lists those.
 //
 // Nothing here spends: no model, image or voice call. Steps 3-5 are injected
 // (child processes and the service-role RPC by default) so the stage is fully
@@ -58,6 +62,8 @@ export interface V2ReleaseResult {
   documents: EmittedV2Document[];
   calls: V2PublishCall[];
   problems: string[];
+  /** G.2: versions of live lessons Vault queued for a staff release (Content page, Live updates). */
+  pendingApproval?: { lessonId: string; locale: string; versionId: string }[];
 }
 
 function defaultCoreCheck(file: string) {
@@ -116,9 +122,14 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
   const verified = (options.deps?.verifyCourse ?? defaultVerifyCourse)(options.courseSlug);
   if (!verified.ok) return { ok: false, stage: 'verify', documents, calls, problems: [verified.output.trim() || 'verify:course failed'] };
   if (!options.deps?.rpc) return { ok: false, stage: 'publish', documents, calls, problems: ['no Vault RPC configured for the publish stage'] };
+  const pendingApproval: NonNullable<V2ReleaseResult['pendingApproval']> = [];
   for (const call of calls) {
     const reply = await options.deps.rpc('publish_v2_lesson_version', call.body);
-    if (!reply.ok) return { ok: false, stage: 'publish', documents, calls, problems: [`${call.lessonId} ${call.locale}: Vault refused the publication (${reply.status}) ${JSON.stringify(reply.body)}`] };
+    if (!reply.ok) return { ok: false, stage: 'publish', documents, calls, problems: [`${call.lessonId} ${call.locale}: Vault refused the publication (${reply.status}) ${JSON.stringify(reply.body)}`], pendingApproval };
+    const body = reply.body as { activation?: unknown } | null;
+    if (body && typeof body === 'object' && body.activation === 'pending_staff_approval') {
+      pendingApproval.push({ lessonId: call.lessonId, locale: call.locale, versionId: call.versionId });
+    }
   }
-  return { ok: true, stage: 'done', documents, calls, problems: [] };
+  return { ok: true, stage: 'done', documents, calls, problems: [], pendingApproval };
 }

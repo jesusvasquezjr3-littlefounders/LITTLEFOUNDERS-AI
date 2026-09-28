@@ -18,6 +18,12 @@
 //
 // The local drill (backend `npm run ops:drill`) feeds this a status that a
 // stale heartbeat produced and checks that it fails and writes the notice.
+//
+// G.2 / Appendix N 2.3(b): the same reply carries `contentRetroChecks.overdue`,
+// the retroactive release checks past their 30-day window and still open
+// (Core's services/contentRelease.ts). Any overdue check fails the watch and
+// is named in the notice; a reply without the number is refused, like a job
+// without its `stale` boolean.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -26,12 +32,12 @@ import { fileURLToPath } from 'node:url';
 export const WATCHED_JOBS = ['vault_backup', 'pulse_backup', 'vault_drift'];
 export const ISSUE_TITLE = 'Operations watchdog: a scheduled job has gone quiet';
 
-/** @returns {{ ok: boolean, stale: object[], errors: string[] }} */
+/** @returns {{ ok: boolean, stale: object[], errors: string[], overdueChecks: number }} */
 export function evaluateOpsStatus(body) {
   const errors = [];
   const data = body && typeof body === 'object' && 'data' in body ? body.data : body;
   if (!data || typeof data !== 'object' || !Array.isArray(data.jobs)) {
-    return { ok: false, stale: [], errors: ['the reply carries no jobs list; refusing to report a health check that did not happen'] };
+    return { ok: false, stale: [], errors: ['the reply carries no jobs list; refusing to report a health check that did not happen'], overdueChecks: 0 };
   }
   const byJob = new Map(data.jobs.map((job) => [job?.job, job]));
   const stale = [];
@@ -47,7 +53,14 @@ export function evaluateOpsStatus(body) {
     }
     if (job.stale) stale.push(job);
   }
-  return { ok: stale.length === 0 && errors.length === 0, stale, errors };
+  const overdue = data.contentRetroChecks?.overdue;
+  let overdueChecks = 0;
+  if (typeof overdue !== 'number' || !Number.isInteger(overdue) || overdue < 0) {
+    errors.push("content_retro_checks: the reply carries no 'overdue' count");
+  } else {
+    overdueChecks = overdue;
+  }
+  return { ok: stale.length === 0 && errors.length === 0 && overdueChecks === 0, stale, errors, overdueChecks };
 }
 
 const hours = (value) => (typeof value === 'number' && Number.isFinite(value) ? `${Math.floor(value)} h ago` : 'never');
@@ -57,6 +70,9 @@ export function buildNotification(result, runUrl = '') {
     `The operations watchdog found ${result.stale.length} stale job(s) and ${result.errors.length} unreadable status(es).`,
     '',
   ];
+  if (result.overdueChecks > 0) {
+    lines.push(`- **content_retro_checks**: ${result.overdueChecks} retroactive release check(s) past the 30-day window (G.2). Run Forge \`verify:course\` for each course listed on the staff Content page, Live updates.`);
+  }
   for (const job of result.stale) {
     lines.push(`- **${job.job}**: last successful run ${hours(job.hoursSinceLastRun)} (window ${job.staleAfterHours ?? '?'} h); last attempt ${job.lastAttemptAt ?? 'never'}${job.lastAttemptOk === false ? ' (failed)' : ''}.`);
   }
@@ -90,5 +106,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   if (notifyFile) writeFileSync(notifyFile, notice + '\n', 'utf8');
   for (const job of result.stale) console.error(`::error::${job.job} is STALE (last successful run ${hours(job.hoursSinceLastRun)})`);
   for (const error of result.errors) console.error(`::error::${error}`);
+  if (result.overdueChecks > 0) console.error(`::error::${result.overdueChecks} retroactive release check(s) are overdue (G.2)`);
   process.exit(1);
 }

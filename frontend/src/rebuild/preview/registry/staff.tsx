@@ -122,7 +122,7 @@ export const staffPreviewScreens: PreviewRegistry = {
   'staff-console-audit': consoleScreen('staff-console-audit', ({ api }) => <StaffAudit api={api} />),
   'staff-console-reports': consoleScreen('staff-console-reports', ({ api }) => <StaffReports api={api} />),
   'staff-console-emails': consoleScreen('staff-console-emails', ({ api }) => <StaffEmails api={api} />),
-  /* W2T.2: ?view=courses|review|live|quality (Content), ?view=live|history|trends|coach (Generation). The preview has no lesson player. */
+  /* W2T.2: ?view=courses|review|updates|live|quality (Content), ?view=live|history|trends|coach (Generation). The preview has no lesson player. */
   'staff-console-content': framed(({ params }: PreviewContext) => <ConsoleFixture id="staff-console-content" params={params}
     render={({ api }) => <StaffContent api={api} initialView={contentView(params.get('view'))} />} />),
   'staff-console-generation': framed(({ params }: PreviewContext) => <ConsoleFixture id="staff-console-generation" params={params}

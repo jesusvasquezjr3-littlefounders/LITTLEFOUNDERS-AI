@@ -20,7 +20,6 @@ import { readAgeScreen } from './ageScreen.js';
  *    third-party API.
  */
 
-/** Mirrors the 0028/0072/S05.3d (learning_quality_events)/S05.3e (motivation_events) CHECK exactly. Closed by design (§1.9 rule 2). */
 /**
  * Appendix C 1.3 (B.1, B.2, B.4) and Appendix P Part 8 (GAP-FIX-R2 learning):
  *   placement_commit_ok      a placement persisted (segment_id = its method);
@@ -36,6 +35,7 @@ export const LEARN_QA_EVENTS = ['placement_commit_ok', 'placement_commit_failed'
   'lesson_update_required', 'scorer_parity_miss'] as const;
 export type LearnQaEvent = (typeof LEARN_QA_EVENTS)[number];
 
+/** Mirrors the 0028/0072/S05.3d (learning_quality_events)/S05.3e (motivation_events)/GAP-FIX-R2 (parent_time_to_value) CHECK exactly. Closed by design (§1.9 rule 2). */
 export const RECORDABLE_EVENTS = [
   // session lifecycle
   'session_start', 'session_heartbeat', 'session_end', 'nav_view',
@@ -75,13 +75,19 @@ export const RECORDABLE_EVENTS = [
   // Appendix C 1.3 QA metrics and Appendix P Part 8 scorer parity (GAP-FIX-R2
   // learning, *_learning_qa_events.sql). All server-only (SERVER_ONLY_EVENTS).
   ...LEARN_QA_EVENTS,
+  // Appendix C 1.2 Parent Time-to-Value (GAP-FIX-R2, *_parent_time_to_value.sql).
+  // Both written by Core only (SERVER_ONLY_EVENTS), once per account.
+  'parent_signup_completed', 'parent_first_value',
 ] as const;
 
 /**
  * Events only Core may write. The client ingest drops them: a forged
  * denominator would move a metric that must stay trustworthy.
  */
-export const SERVER_ONLY_EVENTS: ReadonlySet<string> = new Set(['replay_below_best', 'streak_rest_day', 'streak_restart', 'path_choice', ...LEARN_QA_EVENTS]);
+export const SERVER_ONLY_EVENTS: ReadonlySet<string> = new Set([
+  'replay_below_best', 'streak_rest_day', 'streak_restart', 'path_choice', 'parent_signup_completed', 'parent_first_value',
+  ...LEARN_QA_EVENTS,
+]);
 
 export const ROUTE_CLASSES = ['learn', 'tasks', 'profile', 'tutor', 'family', 'admin', 'marketing', 'other'] as const;
 export const DEVICES = ['mobile', 'tablet', 'desktop'] as const;

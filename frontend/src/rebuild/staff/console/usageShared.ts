@@ -70,6 +70,11 @@ export const INSTRUMENTED_EVENTS = [
   'prerequisite_passed',
   'lesson_update_required',
   'scorer_parity_miss',
+  // C.24 Parent Time-to-Value (GAP-FIX-R2): written by Core only, once per
+  // account — identity verification made the adult a verified parent, then
+  // their first read of a linked child's progress or weekly narrative.
+  'parent_signup_completed',
+  'parent_first_value',
 ] as const;
 
 /**

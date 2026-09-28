@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { insertAuditLog, serviceRest } from './supabaseRest.js';
+import { getOverdueRetroChecks, RETRO_CHECK_DAYS } from './contentRelease.js';
 
 /*
  * H.4 and Appendix O 1.3 / 2.3: the watchdog-plus-notification pattern the
@@ -93,10 +94,18 @@ export function judgeOpsJob(
 }
 
 /**
+ * G.2 / Appendix N 2.3(b): the retroactive release checks past their 30-day
+ * window and still open ride on the same watchdog. `overdue > 0` fails
+ * ops-job-watch and opens or comments on the watchdog issue.
+ */
+export interface ContentRetroCheckStatus { overdue: number; windowDays: number }
+
+/**
  * Every job's status. Null when a READ failed: a database outage is a 502,
  * never "the backups have never run" (§1.14).
  */
-export async function getOpsJobStatus(now: Date = new Date()): Promise<{ jobs: OpsJobStatus[]; anyStale: boolean } | null> {
+export async function getOpsJobStatus(now: Date = new Date()): Promise<{ jobs: OpsJobStatus[]; anyStale: boolean; contentRetroChecks: ContentRetroCheckStatus } | null> {
+  const overdue = getOverdueRetroChecks();
   const reads = await Promise.all(
     OPS_JOBS.flatMap((job) => {
       const action = encodeURIComponent(opsJobAction(job));
@@ -113,5 +122,7 @@ export async function getOpsJobStatus(now: Date = new Date()): Promise<{ jobs: O
     const attempt = parsed[index * 2 + 1]!;
     return judgeOpsJob(job, ok.success ? ok.data[0] : undefined, attempt.success ? attempt.data[0] : undefined, now);
   });
-  return { jobs, anyStale: jobs.some((job) => job.stale) };
+  const overdueChecks = await overdue;
+  if (overdueChecks === null) return null;
+  return { jobs, anyStale: jobs.some((job) => job.stale), contentRetroChecks: { overdue: overdueChecks, windowDays: RETRO_CHECK_DAYS } };
 }

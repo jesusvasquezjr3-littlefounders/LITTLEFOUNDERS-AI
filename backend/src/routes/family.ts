@@ -4,6 +4,7 @@ import { getConfig } from '../config.js';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { firstNameOnly, purgeBadgeImageIfUnreferenced, renderAchievementImage } from '../services/badges.js';
+import { recordParentJourneyEvent } from '../services/parentTimeToValue.js';
 import { acceptGuardianInvite, createGuardianInvite, getGuardianInvitePreview } from '../services/guardianLifecycle.js';
 import {
   decideGuardianLink,
@@ -759,6 +760,8 @@ export function familyRouter(): Router {
     }
     const stats = statsRows[0] ?? null;
 
+    // Appendix C 1.2 Parent Time-to-Value: the first progress view of a linked child (once per account).
+    recordParentJourneyEvent(user.id, 'parent_first_value');
     return ok(res, {
       tree,
       stats: stats

@@ -57,6 +57,8 @@ interface World {
   reviews?: { status: number; body: unknown };
   reviewRpc?: { status: number; body: unknown };
   calls?: { url: string; method: string; body?: string }[];
+  /** G.2: content_bypass_metrics (the overdue retroactive checks the watchdog reads). */
+  bypassMetrics?: { status: number; body: unknown };
 }
 
 function stub(world: World = {}) {
@@ -74,6 +76,10 @@ function stub(world: World = {}) {
     if (url.includes('/rest/v1/rpc/staff_access_review_status')) return Promise.resolve(jsonResponse(world.reviews?.status ?? 200, world.reviews?.body ?? { cadenceDays: 90, total: 0, stale: 0, reviewedEver: 0, grants: [] }));
     if (url.includes('/rest/v1/rpc/record_staff_access_review')) return Promise.resolve(jsonResponse(world.reviewRpc?.status ?? 200, world.reviewRpc?.body ?? 'recorded'));
     if (url.includes('/rest/v1/profiles')) return Promise.resolve(jsonResponse(200, [{ user_id: OTHER_ID, display_name: 'Ops Admin', username: 'ops' }]));
+    if (url.includes('/rest/v1/rpc/content_bypass_metrics')) {
+      return Promise.resolve(jsonResponse(world.bypassMetrics?.status ?? 200, world.bypassMetrics?.body
+        ?? [{ publish_actions: 4, bypasses: 1, decided: 1, unverified: 0, complete: 1, overdue_open: 0 }]));
+    }
     if (url.includes('/rest/v1/audit_logs')) {
       if (world.auditStatus) return Promise.resolve(new Response(null, { status: world.auditStatus }));
       if (method === 'POST') return Promise.resolve(new Response(null, { status: 201 }));
@@ -185,6 +191,16 @@ describe('H.4 — the operations heartbeat and watchdog', () => {
     expect(jobs.pulse_backup).toMatchObject({ stale: true, lastRunAt: null, lastAttemptOk: false });
     expect(jobs.vault_drift).toMatchObject({ stale: true, lastRunAt: null, lastAttemptAt: null });
     expect(res.body.data.anyStale).toBe(true);
+    expect(res.body.data.contentRetroChecks).toEqual({ overdue: 0, windowDays: 30 });
+  });
+
+  it('G.2: carries the overdue retroactive release checks, and an unreadable count is a 502', async () => {
+    stub({ bypassMetrics: { status: 200, body: [{ publish_actions: 4, bypasses: 2, decided: 2, unverified: 1, complete: 1, overdue_open: 1 }] } });
+    const res = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+    expect(res.status).toBe(200);
+    expect(res.body.data.contentRetroChecks).toEqual({ overdue: 1, windowDays: 30 });
+    stub({ bypassMetrics: { status: 500, body: null } });
+    expect((await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key())).status).toBe(502);
   });
 
   it('shows staff the same status behind manage_support, and a failed read is a 502', async () => {

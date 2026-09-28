@@ -86,6 +86,10 @@ async function publish(args: Args): Promise<number> {
   });
   if (!result.ok) { console.error(`v2:publish: stopped at ${result.stage}:\n  ${result.problems.join('\n  ')}`); return 1; }
   console.log(`v2:publish: ${result.stage} — ${result.documents.length} document(s), ${result.calls.length} publication call(s)${dryRun ? ' written to publish-calls.json, nothing sent' : ' accepted by Vault'}`);
+  // G.2: a live lesson's new version waits for a human staff release.
+  for (const pending of result.pendingApproval ?? []) {
+    console.log(`v2:publish: ${pending.lessonId} ${pending.locale} ${pending.versionId} waits for a staff release (staff console, Content, Live updates)`);
+  }
   return 0;
 }
 

@@ -669,7 +669,11 @@
         "images": "Imágenes",
         "document": "Documento de la lección",
         "raw": "Respuestas y datos",
-        "packs": "Paquetes de actividades"
+        "packs": "Paquetes de actividades",
+        "updates": "Versiones nuevas de lecciones publicadas",
+        "version": "Detalles de la versión",
+        "confirmRelease": "¿Publicar esta versión para los alumnos?",
+        "checks": "Revisiones de publicación omitidas"
       },
       "body": {
         "incidents": "Los estudiantes no pudieron abrirlos.",
@@ -750,7 +754,35 @@
         "queueFailed": "La cola de revisión no cargó.",
         "packsFailed": "Los paquetes de actividades no cargaron.",
         "statusRetry": "El estado en vivo no cargó.",
-        "prompt": "Lo que vio el estudiante"
+        "prompt": "Lo que vio el estudiante",
+        "updatesIntro": "Una lección publicada solo cambia cuando el equipo la publica.",
+        "updatesEmpty": "Ninguna versión nueva espera publicación.",
+        "version": "Versión",
+        "submitted": "Enviada",
+        "run": "Ejecución de Forge",
+        "digest": "Huella del documento",
+        "releaseCheckNote": "Al publicar, primero se revisa el curso.",
+        "consequenceRelease": "Si la revisión del curso pasa, los alumnos ven esta versión.",
+        "versionReleased": "Publicada. Los alumnos ya ven esta versión.",
+        "versionRejected": "Rechazada. Los alumnos siguen con la versión actual.",
+        "versionNotPending": "Alguien ya decidió sobre esta versión.",
+        "reason": "¿Por qué la rechazas?",
+        "reasonHelp": "De 10 a 600 caracteres. Queda en el registro de auditoría.",
+        "checksIntro": "Una revisión omitida debe hacerse en {days} días.",
+        "checksEmpty": "No se omitió ninguna revisión de publicación.",
+        "overdueNotice": "{n} revisiones están vencidas. Ejecuta la revisión del curso en Forge.",
+        "bypassRate": "Publicado sin revisión",
+        "completeness": "Justificado y revisado a tiempo",
+        "overdue": "Vencidas",
+        "pendingChecks": "Aún a tiempo",
+        "notMeasured": "Sin datos aún",
+        "change": "Cambio",
+        "when": "Cuándo",
+        "due": "Revisión antes de",
+        "check": "Revisión",
+        "reasonLogged": "Motivo registrado",
+        "yes": "Sí",
+        "no": "No"
       },
       "option": {
         "courses": "Cursos",
@@ -765,7 +797,15 @@
         "preview": "Vista previa",
         "parts": "Partes",
         "media": "Recursos",
-        "data": "Datos"
+        "data": "Datos",
+        "updates": "Actualizaciones",
+        "overdue": "Vencida",
+        "open": "Pendiente",
+        "closed_late": "Revisada tarde",
+        "closed": "Revisada",
+        "directFix": "Corrección directa",
+        "emergencyRelease": "Publicación de emergencia",
+        "earlyPublication": "Publicación anticipada"
       },
       "action": {
         "publish": "Publicar",
@@ -781,7 +821,10 @@
         "nextPreview": "Siguiente parte",
         "showPart": "Mostrar",
         "hidePart": "Ocultar",
-        "fullSize": "Tamaño completo"
+        "fullSize": "Tamaño completo",
+        "release": "Publicar",
+        "reject": "Rechazar",
+        "rejectVersion": "Rechazar versión"
       }
     },
     "generation": {
@@ -950,9 +993,36 @@
     },
     "mentorQuality": {
       "heading": {
-        "status": "Estado de los datos"
+        "status": "Estado de los datos",
+        "audits": "Auditorías por versión"
       },
-      "body": {}
+      "body": {
+        "auditsIntro": "Registra la auditoría de cada versión. Una de más de {days} días cuenta como faltante.",
+        "notRecorded": "Aún sin registrar",
+        "findingsValue": "{n} hallazgos",
+        "ownersRecord": "Solo la persona responsable nombrada registra cada auditoría.",
+        "auditKind": "Auditoría",
+        "release": "Versión",
+        "releaseHelp": "Letras, números, puntos, guiones o dos puntos.",
+        "result": "Resultado",
+        "findings": "Hallazgos",
+        "findingsHelp": "Cuántos problemas encontró la auditoría.",
+        "auditNote": "Nota (opcional)",
+        "auditRecorded": "Auditoría registrada.",
+        "auditNotOwner": "Solo la persona responsable nombrada puede registrarla.",
+        "auditDuplicate": "Esta versión ya tiene esta auditoría.",
+        "auditInvalid": "Revisa el nombre de la versión y los hallazgos."
+      },
+      "option": {
+        "dark_pattern": "Diseño manipulador (B.25)",
+        "variable_ratio": "Premios de razón variable para menores (B.22)",
+        "reward_framing": "Premios presentados como aprendizaje (B.20)",
+        "pass": "Aprobada",
+        "fail": "Reprobada"
+      },
+      "action": {
+        "recordAudit": "Registrar auditoría"
+      }
     },
     "analytics": {
       "action": {
