@@ -23,6 +23,8 @@ export const STAFF_ROUTE_GRANTS: readonly StaffRouteGrant[] = [
   { id: 'overview', path: 'admin', grant: ['manage_users', 'manage_content', 'view_analytics', 'manage_support'], rebuilt: true },
   { id: 'content', path: 'admin/content', grant: 'manage_content', rebuilt: true },
   { id: 'users', path: 'admin/users', grant: 'manage_users', rebuilt: true },
+  // E.4 (OD-3): the staff-reviewed age correction queue; Core decides it behind manage_users as well.
+  { id: 'ageCorrections', path: 'admin/age-corrections', grant: 'manage_users', rebuilt: true },
   { id: 'emails', path: 'admin/emails', grant: 'manage_support', rebuilt: true },
   // G.5 (W2T.3): Insights (S8) is the Insights view of Learning intel, reached from its menu entry; this path opens that view.
   { id: 'insights', path: 'admin/insights', grant: 'view_analytics', redirectTo: 'intel', rebuilt: true },

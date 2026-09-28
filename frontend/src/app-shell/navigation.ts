@@ -22,7 +22,7 @@ export const MENTOR_PATH = '/tutor';
 
 export type Lane = 'core' | 'site' | 'learn' | 'mentor' | 'family' | 'profile' | 'staff';
 export type AppNavLabel = 'learn' | 'tasks' | 'wallet' | 'familyCoins' | 'coins' | 'profile' | 'family' | 'becomeTutor' | 'staff' | 'backToApp';
-export type StaffNavLabel = 'overview' | 'content' | 'users' | 'emails' | 'analytics' | 'intel' | 'mentorQuality' | 'generation' | 'audit' | 'reports' | 'roles';
+export type StaffNavLabel = 'overview' | 'content' | 'users' | 'ageCorrections' | 'emails' | 'analytics' | 'intel' | 'mentorQuality' | 'generation' | 'audit' | 'reports' | 'roles';
 
 export interface NavSlot<Label extends string = AppNavLabel> {
   id: string;
@@ -67,6 +67,7 @@ export const STAFF_SLOTS: readonly NavSlot<StaffNavLabel>[] = [
   { id: 'overview', label: 'overview', path: '/admin', owner: 'staff' },
   { id: 'content', label: 'content', path: '/admin/content', owner: 'staff' },
   { id: 'users', label: 'users', path: '/admin/users', owner: 'staff' },
+  { id: 'ageCorrections', label: 'ageCorrections', path: '/admin/age-corrections', owner: 'staff' },
   { id: 'emails', label: 'emails', path: '/admin/emails', owner: 'staff' },
   { id: 'analytics', label: 'analytics', path: '/admin/analytics', owner: 'staff' },
   { id: 'intel', label: 'intel', path: '/admin/intel', owner: 'staff' },

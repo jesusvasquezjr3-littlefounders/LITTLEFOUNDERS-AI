@@ -25,6 +25,7 @@ import { STAFF_ROUTE_GRANTS, type StaffRouteGrant } from './staffGrants';
 const loadConsole = () => import('./staffConsole');
 const StaffOverviewRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffOverviewRoute })));
 const StaffUsersRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffUsersRoute })));
+const StaffAgeCorrectionsRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffAgeCorrectionsRoute })));
 const StaffEmailsRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffEmailsRoute })));
 const StaffAuditRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffAuditRoute })));
 const StaffReportsRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffReportsRoute })));
@@ -43,6 +44,7 @@ export const STAFF_PAGES: Readonly<Record<string, ReactNode>> = {
   overview: <StaffOverviewRoute />,
   content: <StaffContentRoute />,
   users: <StaffUsersRoute />,
+  ageCorrections: <StaffAgeCorrectionsRoute />,
   emails: <StaffEmailsRoute />,
   insights: <Navigate to="/admin/intel?view=insights" replace />,
   intel: <StaffIntelRoute />,

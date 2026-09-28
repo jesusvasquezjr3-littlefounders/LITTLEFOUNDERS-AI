@@ -338,7 +338,7 @@
     "language": "Idioma",
     "languageHelp": "Las lecciones y la app usan este idioma.",
     "birthDate": "Fecha de nacimiento",
-    "birthDateHelp": "No se puede cambiar aquí.",
+    "birthDateHelp": "¿Es un error? Pide una corrección abajo.",
     "save": "Guardar datos",
     "saving": "Guardando",
     "saved": "Datos guardados.",
@@ -517,6 +517,19 @@
     "teenMonth": "Mes de nacimiento guardado. A los 18, tu cuenta pasa a ajustes de adulto.",
     "teenBand": "Tu grupo de edad se guardó como 13 a 17.",
     "adultByMonth": "Cumpliste 18, así que tu cuenta ya usa ajustes de adulto.",
-    "locked": "No puedes cambiar esto por tu cuenta."
+    "locked": "No puedes cambiar esto por tu cuenta.",
+    "adult": "Tu grupo de edad está guardado como adulto.",
+    "request": "Pedir una corrección",
+    "requestHelp": "Nuestro equipo la revisa. Nada cambia mientras tanto.",
+    "birthDate": "Tu fecha de nacimiento",
+    "send": "Enviar solicitud",
+    "sending": "Enviando…",
+    "cancel": "Cancelar",
+    "pending": "Corrección solicitada. Nuestro equipo la revisa.",
+    "approved": "Tu corrección fue aprobada.",
+    "rejected": "Tu corrección no fue aprobada.",
+    "failed": "No se envió. Intenta de nuevo.",
+    "invalid": "Revisa la fecha.",
+    "unchanged": "Coincide con tu grupo de edad guardado."
   }
 }

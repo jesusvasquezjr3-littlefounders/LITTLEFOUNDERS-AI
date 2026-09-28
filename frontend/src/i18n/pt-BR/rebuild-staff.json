@@ -353,6 +353,7 @@
         "noMonitors": "Nenhum serviço é monitorado ainda.",
         "content": "Cursos, lições e a fila de revisão.",
         "users": "Contas, verificação e cadastros.",
+        "ageCorrections": "Correções de idade para analisar.",
         "emails": "Histórico de envios e falhas.",
         "analytics": "Uso, saúde e exportações.",
         "intel": "Sinais de aprendizagem e de produto.",
@@ -1750,6 +1751,54 @@
         "add": "Nomear responsável",
         "remove": "Remover",
         "keep": "Manter responsável"
+      }
+    },
+    "ageCorrections": {
+      "heading": {
+        "requests": "Pedidos",
+        "request": "Correção de idade",
+        "confirmApprove": "Aprovar esta correção?",
+        "confirmReject": "Recusar esta correção?"
+      },
+      "body": {
+        "status": "Status",
+        "account": "Conta",
+        "from": "Faixa salva",
+        "to": "Faixa pedida",
+        "month": "Mês de nascimento",
+        "requested": "Pedido em",
+        "decidedAt": "Decidido em",
+        "reason": "Motivo",
+        "shown": "Pedidos mostrados",
+        "empty": "Nenhum pedido de correção.",
+        "help": "Confira as provas fora do app. Ninguém decide o próprio pedido.",
+        "approveConsequence": "A faixa etária muda agora. Sua decisão fica na auditoria.",
+        "rejectConsequence": "A idade não muda. Sua decisão fica na auditoria.",
+        "approved": "Correção aprovada.",
+        "rejected": "Correção recusada.",
+        "failed": "Não foi salvo. Tente de novo.",
+        "self": "Você não pode decidir o próprio pedido.",
+        "notPending": "Alguém já decidiu este pedido."
+      },
+      "option": {
+        "pending": "Pendente",
+        "approved": "Aprovado",
+        "rejected": "Recusado",
+        "all": "Todos",
+        "under_13": "Menos de 13",
+        "13_to_17": "De 13 a 17",
+        "adult": "Adulto",
+        "chooseReason": "Escolha um motivo",
+        "evidence_verified": "Prova verificada",
+        "entry_error": "Erro de digitação",
+        "evidence_missing": "Falta prova",
+        "not_credible": "Não confiável"
+      },
+      "action": {
+        "approve": "Aprovar",
+        "reject": "Recusar",
+        "keep": "Manter pendente",
+        "saving": "Salvando"
       }
     }
   }

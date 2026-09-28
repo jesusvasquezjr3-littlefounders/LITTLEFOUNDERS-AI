@@ -338,7 +338,7 @@
     "language": "Language",
     "languageHelp": "Lessons and the app use this language.",
     "birthDate": "Birth date",
-    "birthDateHelp": "It cannot be changed here.",
+    "birthDateHelp": "Wrong? Request a correction below.",
     "save": "Save details",
     "saving": "Saving",
     "saved": "Details saved.",
@@ -517,6 +517,19 @@
     "teenMonth": "Birth month saved. At 18, your account moves to adult settings.",
     "teenBand": "Your age group is saved as 13 to 17.",
     "adultByMonth": "You turned 18, so your account uses adult settings now.",
-    "locked": "You can't change this yourself."
+    "locked": "You can't change this yourself.",
+    "adult": "Your age group is saved as adult.",
+    "request": "Request a correction",
+    "requestHelp": "Our team reviews it. Nothing changes until then.",
+    "birthDate": "Your date of birth",
+    "send": "Send request",
+    "sending": "Sending…",
+    "cancel": "Cancel",
+    "pending": "Correction requested. Our team is reviewing it.",
+    "approved": "Your correction was approved.",
+    "rejected": "Your correction was not approved.",
+    "failed": "That did not send. Try again.",
+    "invalid": "Check the date.",
+    "unchanged": "That matches your saved age group."
   }
 }
