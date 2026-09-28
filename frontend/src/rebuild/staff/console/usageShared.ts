@@ -63,6 +63,11 @@ export const INSTRUMENTED_EVENTS = [
   'streak_rest_day',
   'streak_restart',
   'path_choice',
+  // C.24 Parent Time-to-Value (GAP-FIX-R2): written by Core only, once per
+  // account — identity verification made the adult a verified parent, then
+  // their first read of a linked child's progress or weekly narrative.
+  'parent_signup_completed',
+  'parent_first_value',
 ] as const;
 
 /**
