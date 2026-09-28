@@ -1,3 +1,6 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
@@ -285,5 +288,47 @@ describe('L-04: the Tutor turns goals together on for a 13-to-17 child', () => {
     stub({ eligible: [], rpc: { set_coop_goal_guardian_consent: refusal('COOP_CHILD_NOT_TEEN') } });
     expect((await send('put', TUTOR, `/family/coop-goals/kids/${KID.id}`, { enabled: true })).body.error.code).toBe('COOP_CHILD_NOT_TEEN');
     expect((await send('put', TUTOR, `/family/coop-goals/kids/${KID.id}`, { enabled: 'yes' })).status).toBe(400);
+  });
+});
+
+describe('OD-9 4.2: goals together are a registered data practice (sharing.cooperative_goals)', () => {
+  it('a migrated child without the practice consent is refused by name, before any write', async () => {
+    const calls = stub({ eligible: [], rpc: { data_practice_applies: { status: 200, body: false } } });
+    const res = await send('post', TEEN, '/coop-goals', CREATE);
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('DATA_PRACTICE_CONSENT_REQUIRED');
+    expect(argsOf(calls, 'data_practice_applies')).toEqual({ p_subject: TEEN.id, p_practice: 'sharing.cooperative_goals' });
+    expect(wrote(calls, 'create_coop_goal')).toBe(false);
+  });
+
+  it('an ineligible account the practice applies to (or an unreadable answer) keeps the generic refusal', async () => {
+    stub({ eligible: [], rpc: { data_practice_applies: { status: 200, body: true } } });
+    expect((await send('post', TEEN, '/coop-goals', CREATE)).body.error.code).toBe('COOP_NOT_ELIGIBLE');
+    stub({ eligible: [], rpc: { data_practice_applies: { status: 500, body: { message: 'down' } } } });
+    expect((await send('post', TEEN, '/coop-goals', CREATE)).body.error.code).toBe('COOP_NOT_ELIGIBLE');
+  });
+
+  it('the database\'s named refusal maps to 403 DATA_PRACTICE_CONSENT_REQUIRED on create and on accept', async () => {
+    stub({ eligible: [TEEN.id], rpc: { create_coop_goal: refusal('DATA_PRACTICE_CONSENT_REQUIRED') } });
+    const created = await send('post', TEEN, '/coop-goals', CREATE);
+    expect(created.status).toBe(403);
+    expect(created.body.error.code).toBe('DATA_PRACTICE_CONSENT_REQUIRED');
+    stub({ eligible: [TEEN.id], rpc: { decide_coop_goal_invitation: refusal('DATA_PRACTICE_CONSENT_REQUIRED') } });
+    const accepted = await send('post', TEEN, `/coop-goals/${GOAL}/decision`, { decision: 'accept' });
+    expect(accepted.status).toBe(403);
+    expect(accepted.body.error.code).toBe('DATA_PRACTICE_CONSENT_REQUIRED');
+  });
+
+  it('the practice is registered in a migration and enforced inside coop_goal_eligible and both write paths', () => {
+    const root = fileURLToPath(new URL('../../../', import.meta.url));
+    const dir = join(root, 'database/migrations');
+    const name = readdirSync(dir).find((f) => f.endsWith('_cooperative_goals_data_practice.sql'));
+    expect(name).toBeDefined();
+    const sql = readFileSync(join(dir, name!), 'utf8');
+    expect(sql).toMatch(/\('sharing\.cooperative_goals', 'sharing_surface', 'teen_cooperative_goals', 'B\.23\/OD-27', 'data_practice_consents', false,/);
+    const eligible = sql.slice(sql.indexOf('FUNCTION public.coop_goal_eligible'), sql.indexOf('$$;', sql.indexOf('FUNCTION public.coop_goal_eligible')));
+    expect(eligible).toContain("public.data_practice_applies(p_user, 'sharing.cooperative_goals')");
+    expect(sql.match(/RAISE EXCEPTION 'DATA_PRACTICE_CONSENT_REQUIRED'/g)).toHaveLength(2);
+    expect(sql).toContain("public.data_practice_set_consent(p_kid, p_guardian, 'sharing.cooperative_goals', p_enabled,");
   });
 });

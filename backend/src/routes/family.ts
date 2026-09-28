@@ -29,6 +29,7 @@ import { profileFieldFlags, reviewProfileFields } from '../services/profileField
 import { getChildRoleHolders, selfIssuedInviteIds } from '../services/teenWallet.js';
 import { resolveLocalToday } from '../services/choreStreak.js';
 import { dataPracticeApplies } from '../services/dataPractices.js';
+import { noteSocialProtectionEvent } from '../services/socialProtection.js';
 import { readStreakStates } from '../services/choreStreakData.js';
 import {
   getConsentsForKids,
@@ -455,6 +456,8 @@ export function familyRouter(): Router {
     const users = await visibleSocialUsers(authedUser(res).id, page.users);
     // Recheck after service reads: revocation must not knowingly release a cached graph.
     if (!await guardKid(req, res)) return res;
+    // Appendix J (E.2, Family-Panel Social Visibility Adoption): a first page is one view.
+    if (query.data.offset === 0) noteSocialProtectionEvent('family_social_panel_view', authedUser(res).id, kidId);
     return ok(res, { users, nextOffset: page.nextOffset });
   });
 

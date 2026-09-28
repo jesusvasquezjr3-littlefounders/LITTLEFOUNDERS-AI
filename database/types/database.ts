@@ -5172,7 +5172,6 @@ export type Database = {
           birth_date: string | null
           checks: Json
           created_at: string
-          document_type: string
           given_names: string | null
           id: string
           method: string
@@ -5185,7 +5184,6 @@ export type Database = {
           birth_date?: string | null
           checks?: Json
           created_at?: string
-          document_type?: string
           given_names?: string | null
           id?: string
           method?: string
@@ -5198,7 +5196,6 @@ export type Database = {
           birth_date?: string | null
           checks?: Json
           created_at?: string
-          document_type?: string
           given_names?: string | null
           id?: string
           method?: string

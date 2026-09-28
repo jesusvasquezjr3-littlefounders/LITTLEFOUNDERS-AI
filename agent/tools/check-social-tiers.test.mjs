@@ -17,6 +17,10 @@ const FILES = [
   'backend/src/routes/profile.ts',
   'backend/src/services/socialVisibility.ts',
   'backend/src/services/profileFieldSafety.ts',
+  'backend/src/services/socialProtection.ts',
+  'backend/src/routes/admin.ts',
+  'backend/src/routes/family.ts',
+  'frontend/src/rebuild/staff/console/programmeApi.ts',
   ...SOCIAL_SCREENS,
   'database/scripts/fixtures/profile-field-safety-cases.json',
   'docs/rebuild/policies/SOCIAL-TIERS.md',
@@ -173,4 +177,31 @@ test('S-03: Core asking the opt-in before the flag check, or a route that takes 
 
 test('S-03: the policy must keep the discoverable-profile section', () => {
   withFixture((root) => edit(root, 'docs/rebuild/policies/SOCIAL-TIERS.md', '### 1.1 A discoverable profile at 16 or 17 (S-03, OD-27)', '### 1.1 Public teens'), /missing the 16-17 discoverable-profile section/);
+});
+
+// Appendix J E.1-E.5: each of the nine metrics is pinned from SQL to screen.
+function metricsMigration(root) {
+  return readdirSync(join(root, 'database/migrations')).filter((f) => f.endsWith('_social_protection_metrics.sql')).sort().at(-1);
+}
+
+test('Appendix J: a metric dropped from the SQL answer fails', () => {
+  withFixture((root) => {
+    const file = `database/migrations/${metricsMigration(root)}`;
+    edit(root, file, "'patternEscalation', ", "'escalationGone', ");
+  }, /no longer answers patternEscalation/);
+});
+
+test('Appendix J: a metric dropped from Core validation fails', () => {
+  withFixture((root) => edit(root, 'backend/src/services/socialProtection.ts', "'ageBoundary', 'tutorBadge'", "'tutorBadge'"), /no longer validates the ageBoundary metric/);
+});
+
+test('Appendix J: a metric the staff programme stops reading fails', () => {
+  withFixture((root) => {
+    edit(root, 'frontend/src/rebuild/staff/console/programmeApi.ts', "['familySocialPanel', 'views']", "['panel', 'views']");
+    edit(root, 'frontend/src/rebuild/staff/console/programmeApi.ts', "['familySocialPanel', 'guardiansWithLinkedChild']", "['panel', 'guardiansWithLinkedChild']");
+  }, /no longer reads the familySocialPanel metric/);
+});
+
+test('Appendix J: Core no longer recording a Tutor badge shown fails', () => {
+  withFixture((root) => edit(root, 'backend/src/routes/profile.ts', "noteSocialProtectionEvent('tutor_badge_shown'", "void ('tutor_badge_shown'"), /no longer records tutor_badge_shown/);
 });

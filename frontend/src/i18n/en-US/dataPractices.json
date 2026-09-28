@@ -35,7 +35,8 @@
     "learning": { "decision_journal": "Story choices, kept for later" },
     "sharing": {
       "social_connections": "Connections with approved friends",
-      "learning_family_bridge": "Lesson ideas for the family"
+      "learning_family_bridge": "Lesson ideas for the family",
+      "cooperative_goals": "Goals together with mutual friends"
     },
     "research": { "family_longitudinal": "Research, in its own section" }
   },

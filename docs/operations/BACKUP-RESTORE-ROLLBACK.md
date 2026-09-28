@@ -11,10 +11,10 @@ Backups hold family and Mentor data, so H.5 requires them to be encrypted at res
 | Backup | How it is made | Encrypted at rest? |
 |---|---|---|
 | Cutover backup (this document) | `pg_dump -Fc`, then AES-256-GCM with `database/migration-od9/backup-crypto.mjs` before it is stored anywhere; plaintext deleted | **Yes**, by the file itself, whatever the storage does. Proven locally (section 6) |
-| Daily Vault backup (`vault-backup.yml`) | `pg_dump -Fc` streamed to `/data/backups` on the Depot (filebase) Railway volume | **Not confirmed.** The dump file is plaintext; whether Railway encrypts the volume is not documented in this repository. Until the ops owner confirms volume encryption against Railway's configuration, treat it as **unencrypted** (GOVERNANCE section 5: release-blocking) |
-| Daily Pulse backup (`pulse-backup.yml`) | Same pattern, analytics database | Same as above |
+| Daily Vault backup (`vault-backup.yml`) | `pg_dump -Fc` copied to the runner, encrypted there with `database/migration-od9/backup-crypto.mjs` (key: the `BACKUP_ENCRYPTION_KEY` GitHub secret), plaintext deleted; only the `.dump.lfbk` file and its manifest are written to `/data/backups` on the Depot (filebase) Railway volume | **Yes, by the file itself** once the change is live. The workflow fails on a missing key, an empty ciphertext or a surviving plaintext, and `agent/tools/backup-workflows.test.mjs` refuses a backup workflow that uploads a file without the `.lfbk` suffix. Owner steps: create the secret (keygen below) and push the workflow. Dumps written before the change are plaintext and age out with the 30-day prune |
+| Daily Pulse backup (`pulse-backup.yml`) | Same pattern, analytics database (`pulse-*.dump.lfbk`) | Same as above |
 
-Recommended remediation for the daily backups (an owner decision because it changes a production job): pipe each daily dump through the same `encrypt` command, with the key in a GitHub secret, and prune the plaintext. The restore procedure below then applies to them unchanged.
+Restoring a daily backup uses the procedure below unchanged: decrypt the `.lfbk` file with the key whose fingerprint its manifest names, then `pg_restore`.
 
 ### The key
 

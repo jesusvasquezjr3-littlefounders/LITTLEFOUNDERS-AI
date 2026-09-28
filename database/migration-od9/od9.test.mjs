@@ -70,10 +70,11 @@ test('installSql loads every step in order and keeps browser roles out of od9', 
   }
 });
 
-test('the consent registry in the fixture mirrors the migration seed', () => {
+test('the consent registry in the fixture mirrors the migration seed (every migration that registers a practice)', () => {
   const dir = new URL('../migrations/', import.meta.url);
-  const file = readdirSync(dir).find((f) => f.endsWith('_od9_legacy_migration.sql'));
-  const migration = readFileSync(new URL(file, dir), 'utf8');
+  const migration = readdirSync(dir).filter((f) => f.endsWith('.sql')).sort()
+    .map((f) => readFileSync(new URL(f, dir), 'utf8'))
+    .filter((sql) => sql.includes('INSERT INTO public.data_practices')).join('\n');
   const seeded = [...migration.matchAll(/\('([a-z]+\.[a-z0-9_.-]+)', '[a-z_]+', '[a-z0-9_]+', '[^']+', '[a-z_]+', (true|false),/g)].map((m) => [m[1], m[2] === 'true']);
   assert.deepEqual(seeded, PRACTICES);
 });
@@ -169,4 +170,26 @@ test('spotCheckMarkdown renders a sign-off sheet with every compared value', () 
   assert.match(md, /kid\\|one \| coins:save \| 40 \| 40 \| same/);
   assert.match(md, /\| u1 \| learning_streak \(current\/best\) \| 3 \/ 9 \| 3 \/ 10 \| changed/);
   assert.match(md, /Reviewed by \(name, role\)/);
+});
+
+test('retire-catalog: dry run by default, --apply allowed, labels defaulted and checked (OD-24)', () => {
+  assert.deepEqual(parseArgs(['retire-catalog']), { command: 'retire-catalog', apply: false, before: 'before', label: 'retired' });
+  assert.equal(parseArgs(['retire-catalog', '--apply', '--before', 'legacy_t0']).before, 'legacy_t0');
+  for (const bad of [['retire-catalog', '--label', 'before'], ['retire-catalog', '--label', 'pre_retire'], ['retire-catalog', '--before', 'Bad Label']]) {
+    assert.throws(() => parseArgs(bad), UsageError, bad.join(' '));
+  }
+  assert.match(commandSql(parseArgs(['retire-catalog', '--apply'])), /od9\.run_retire_catalog\(true, 'before'\)/);
+});
+
+test('retire-catalog SQL archives only, refuses before kc-credit, and never deletes (OD-24)', () => {
+  const sql = readFileSync(new URL('./sql/60_retire_catalog.sql', import.meta.url), 'utf8');
+  assert.match(sql, /r\.step = 'kc_credit' AND r\.mode = 'apply'/);
+  assert.match(sql, /OD9_RETIRE_REFUSED/);
+  assert.doesNotMatch(sql, /^\s*DELETE\s+FROM\s+public\./im);
+  for (const table of ['lessons', 'topics', 'sagas', 'adventures', 'courses']) assert.match(sql, new RegExp(String.raw`UPDATE public\.${table} \w+ SET status = 'archived'`));
+  const dir = new URL('../migrations/', import.meta.url);
+  const guard = readdirSync(dir).find((f) => f.endsWith('_legacy_catalog_delete_guard.sql'));
+  assert.ok(guard, 'the delete guard migration exists');
+  const migration = readFileSync(new URL(guard, dir), 'utf8');
+  for (const table of ['lessons', 'topics', 'courses']) assert.match(migration, new RegExp(String.raw`BEFORE DELETE ON public\.${table}\b`));
 });

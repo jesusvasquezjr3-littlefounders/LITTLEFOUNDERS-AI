@@ -35,7 +35,8 @@
     "learning": { "decision_journal": "Escolhas nas histórias, guardadas" },
     "sharing": {
       "social_connections": "Conexões com amigos aprovados",
-      "learning_family_bridge": "Ideias de lições para a família"
+      "learning_family_bridge": "Ideias de lições para a família",
+      "cooperative_goals": "Metas em equipe com amigos em comum"
     },
     "research": { "family_longitudinal": "Pesquisa, em sua própria seção" }
   },

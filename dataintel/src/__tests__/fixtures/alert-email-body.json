@@ -1,0 +1,6 @@
+{
+  "to": "ops@example.com",
+  "subject": "[LittleFounders alert] dau drop",
+  "text": "Alert: dau drop\nMetric: dau\nCondition: below 10\nValue: 3\nTriggered at: 2026-09-27T08:00:00.000Z\n\nSent by the warehouse alert evaluator (dataintel). The trigger and this delivery are recorded in alert_history.",
+  "templateType": "alert_notification"
+}

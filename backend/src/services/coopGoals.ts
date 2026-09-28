@@ -53,7 +53,7 @@ export type CoopGuardianView = z.infer<typeof CoopGuardianView>;
 export type CoopRefusal =
   | 'invalid' | 'not-eligible' | 'member-unavailable' | 'goal-limit' | 'group-full' | 'already-asked'
   | 'goal-not-found' | 'invitation-not-found' | 'member-not-found' | 'not-allowed'
-  | 'guardian-not-linked' | 'child-not-teen' | 'unavailable';
+  | 'guardian-not-linked' | 'child-not-teen' | 'practice-consent' | 'unavailable';
 
 const REFUSALS: Record<string, CoopRefusal> = {
   COOP_INVALID: 'invalid',
@@ -68,6 +68,8 @@ const REFUSALS: Record<string, CoopRefusal> = {
   COOP_NOT_ALLOWED: 'not-allowed',
   COOP_GUARDIAN_NOT_LINKED: 'guardian-not-linked',
   COOP_CHILD_NOT_TEEN: 'child-not-teen',
+  // OD-9 4.2: a migrated child's Tutor has not consented to this sharing surface.
+  DATA_PRACTICE_CONSENT_REQUIRED: 'practice-consent',
 };
 
 export type CoopResult<T> = { ok: true; value: T } | { ok: false; refusal: CoopRefusal };

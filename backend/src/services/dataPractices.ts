@@ -76,3 +76,13 @@ export async function dataPracticeApplies(subjectId: string, practice: string): 
   const answer = await rpc('data_practice_applies', { p_subject: subjectId, p_practice: practice }, z.boolean());
   return answer !== UNAVAILABLE && !isRefusal(answer) && answer === true;
 }
+
+/**
+ * The same question when the caller must tell a clear no apart from an
+ * unreadable answer (to name the refusal): true or false only when the
+ * database answered, null otherwise.
+ */
+export async function readDataPracticeApplies(subjectId: string, practice: string): Promise<boolean | null> {
+  const answer = await rpc('data_practice_applies', { p_subject: subjectId, p_practice: practice }, z.boolean());
+  return answer === UNAVAILABLE || isRefusal(answer) ? null : answer;
+}

@@ -9,6 +9,12 @@
 //   node od9.mjs kc-credit          (dry run)    node od9.mjs kc-credit --apply
 //   node od9.mjs consent            (dry run)    node od9.mjs consent --apply
 //   node od9.mjs inventory --label after
+//   node od9.mjs retire-catalog    (dry run)    node od9.mjs retire-catalog --apply
+//                                  (OD-24: archive the legacy catalog after
+//                                  kc-credit --apply and the --before inventory,
+//                                  default before; apply snapshots pre_retire,
+//                                  archives, captures --label (default retired)
+//                                  and compares the two: exit 1 on any loss)
 //   node od9.mjs compare --before before --after after   (exit 1 on any loss)
 //   node od9.mjs findings
 //   node od9.mjs spot-check --label before --families 10   (section 4.5 sample)
@@ -28,7 +34,9 @@ import { fileURLToPath } from 'node:url';
 const HERE = fileURLToPath(new URL('.', import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const LABEL = /^[a-z0-9_-]{1,40}$/;
-const COMMANDS = ['install', 'inventory', 'compare', 'defects', 'kc-credit', 'consent', 'findings', 'spot-check', 'plan'];
+/** The inventory retire-catalog --apply captures immediately before archiving. */
+export const RETIRE_PRE = 'pre_retire';
+const COMMANDS = ['install', 'inventory', 'compare', 'defects', 'kc-credit', 'consent', 'retire-catalog', 'findings', 'spot-check', 'plan'];
 
 export class UsageError extends Error {}
 
@@ -56,7 +64,13 @@ export function parseArgs(argv) {
     else if (flag === '--migrations') opts.migrations = value();
     else throw new UsageError(`unknown option ${flag}`);
   }
-  if (opts.apply && !['defects', 'kc-credit', 'consent'].includes(command)) throw new UsageError(`--apply does not apply to ${command}`);
+  if (opts.apply && !['defects', 'kc-credit', 'consent', 'retire-catalog'].includes(command)) throw new UsageError(`--apply does not apply to ${command}`);
+  if (command === 'retire-catalog') {
+    opts.before = opts.before ?? 'before';
+    opts.label = opts.label ?? 'retired';
+    if (!LABEL.test(opts.before) || !LABEL.test(opts.label)) throw new UsageError('retire-catalog: --before and --label are labels (1-40 of a-z 0-9 _ -)');
+    if (opts.before === opts.label || opts.label === RETIRE_PRE) throw new UsageError('retire-catalog: the retired inventory needs its own label');
+  }
   if (command === 'inventory' && !LABEL.test(opts.label ?? '')) throw new UsageError('inventory needs --label (1-40 of a-z 0-9 _ -)');
   if (command === 'compare' && !(LABEL.test(opts.before ?? '') && LABEL.test(opts.after ?? ''))) {
     throw new UsageError('compare needs --before and --after labels');
@@ -90,6 +104,7 @@ export function commandSql(opts) {
     defects: () => `SELECT * FROM od9.run_defects(${opts.apply}, ${cutover})`,
     'kc-credit': () => `SELECT * FROM od9.run_kc_credit(${opts.apply})`,
     consent: () => `SELECT * FROM od9.run_consent(${opts.apply}, ${cutover})`,
+    'retire-catalog': () => `SELECT * FROM od9.run_retire_catalog(${opts.apply}, ${lit(opts.before)})`,
     findings: () => 'SELECT kind, status, count(*) AS n FROM od9.findings GROUP BY kind, status ORDER BY kind, status',
     'spot-check': () => `SELECT * FROM od9.capture_spot_check(${lit(opts.label)}, ${opts.from ? 'NULL' : Number(opts.families)}, ${opts.from ? lit(opts.from) : 'NULL'})`,
   }[opts.command];
@@ -255,6 +270,7 @@ function writeReport(opts, name, value) {
 }
 
 export function run(opts, { env = process.env, log = console.log } = {}) {
+  if (opts.command === 'retire-catalog') opts = { before: 'before', label: 'retired', ...opts };
   if (opts.command === 'plan') {
     const dir = opts.migrations ?? join(ROOT, 'database', 'migrations');
     const plan = migrationPlan(readdirSync(dir).map((file) => ({ file, sql: readFileSync(join(dir, file), 'utf8') })), opts.appliedThrough);
@@ -269,6 +285,9 @@ export function run(opts, { env = process.env, log = console.log } = {}) {
     log('od9 toolkit installed (schema od9)');
     return { ok: true };
   }
+  // retire-catalog --apply: snapshot the promised records right before archiving,
+  // so the check isolates the retirement from ordinary activity since cutover.
+  if (opts.command === 'retire-catalog' && opts.apply) runPsql(commandSql({ command: 'inventory', label: RETIRE_PRE }), { db: opts.db, env });
   const stdout = runPsql(commandSql(opts), { db: opts.db, env });
   // json_agg separates elements with newlines: the whole output is one value.
   const rows = JSON.parse(stdout.trim() || '[]');
@@ -286,6 +305,17 @@ export function run(opts, { env = process.env, log = console.log } = {}) {
       ok: true, mode: opts.apply ? 'apply' : 'dry_run', children: new Set(rows.map((r) => r.user_id)).size,
       missing: missing.length, byPractice: tally(missing, (r) => r.practice_key), byGrantor: tally(missing, (r) => r.grantor), rows,
     };
+  } else if (opts.command === 'retire-catalog') {
+    const toArchive = rows.filter((r) => r.kind !== 'missing_credit');
+    const missing = rows.filter((r) => r.kind === 'missing_credit');
+    result = { ok: true, mode: opts.apply ? 'apply' : 'dry_run', counts: tally(toArchive, (r) => r.kind), missingCredit: missing.length, rows };
+    if (opts.apply) {
+      // Archiving must lose nothing: the retired inventory equals the snapshot taken just before it.
+      runPsql(commandSql({ command: 'inventory', label: opts.label }), { db: opts.db, env });
+      const compared = JSON.parse(runPsql(commandSql({ command: 'compare', before: RETIRE_PRE, after: opts.label }), { db: opts.db, env }).trim() || '[]');
+      const verdict = summarizeComparison(compared);
+      result = { ...result, ok: verdict.ok, comparison: { before: RETIRE_PRE, after: opts.label, ok: verdict.ok, failures: verdict.failures, families: verdict.families } };
+    }
   } else if (opts.command === 'spot-check') {
     const count = (v) => rows.filter((r) => r.verdict === v).length;
     result = {
@@ -298,7 +328,7 @@ export function run(opts, { env = process.env, log = console.log } = {}) {
 
   const out = opts.out ?? join(ROOT, 'audit-results', 'od9');
   mkdirSync(out, { recursive: true });
-  const tag = opts.label ?? (opts.command === 'compare' ? `${opts.before}-vs-${opts.after}` : result.mode ?? 'report');
+  const tag = opts.command === 'retire-catalog' ? result.mode : opts.label ?? (opts.command === 'compare' ? `${opts.before}-vs-${opts.after}` : result.mode ?? 'report');
   const file = join(out, `${opts.command}-${tag}.json`);
   writeFileSync(file, `${JSON.stringify(result, null, 2)}\n`);
   const { rows: _rows, failures, ...summary } = result;

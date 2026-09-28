@@ -190,4 +190,40 @@ describe('the enforcement migration covers every registered practice', () => {
     }
     expect(read('_family_research_instrumentation')).toContain('family_research_admitted');
   });
+
+  /*
+   * OD-9 4.2 names "a new sharing surface" as a practice that needs fresh
+   * consent. The registry pin above only sees practices that were registered;
+   * this one catches the unregistered kind: every table a migration at or
+   * after the registry creates that ties TWO accounts together (two or more
+   * references to auth.users) must be mapped here to a registered practice
+   * that some migration enforces through data_practice_applies, or be
+   * exempted with the reason. Teen discoverable (0184, before the registry)
+   * joins this rule once the owner answers its open question.
+   */
+  const TWO_ACCOUNT_TABLES: Record<string, string | { exempt: string }> = {
+    data_practice_consents: { exempt: 'the consent record itself (subject and grantor)' },
+    coop_goal_members: 'sharing.cooperative_goals',
+    coop_goal_guardian_consents: 'sharing.cooperative_goals',
+  };
+  it('every table tying two accounts, created at or after the registry, names a registered and enforced practice', () => {
+    const dir = join(root, 'database/migrations');
+    const files = readdirSync(dir).filter((f) => f.endsWith('.sql')).sort();
+    const all = files.map((f) => readFileSync(join(dir, f), 'utf8').split('\r\n').join('\n'));
+    const from = files.findIndex((f) => f.endsWith('_od9_legacy_migration.sql'));
+    expect(from).toBeGreaterThan(0);
+    const registered = new Set(all.flatMap((sql) => [...sql.matchAll(/^\s+\('([a-z][a-z0-9_.-]+)', '(?:analytics_event_class|mentor_memory_type|sharing_surface|learner_record|research)'/gm)].map((m) => m[1]!)));
+    const found: string[] = [];
+    for (const sql of all.slice(from)) {
+      for (const m of sql.matchAll(/CREATE TABLE IF NOT EXISTS public\.([a-z_]+) \(([\s\S]*?)\n\);/g)) {
+        if ((m[2]!.match(/REFERENCES auth\.users/g) ?? []).length >= 2) found.push(m[1]!);
+      }
+    }
+    expect(found.sort()).toEqual(Object.keys(TWO_ACCOUNT_TABLES).sort());
+    for (const [table, practice] of Object.entries(TWO_ACCOUNT_TABLES)) {
+      if (typeof practice !== 'string') continue;
+      expect(registered.has(practice), `${table} -> ${practice} is registered`).toBe(true);
+      expect(all.some((sql) => sql.includes(`data_practice_applies(p_user, '${practice}')`)), `${practice} is enforced`).toBe(true);
+    }
+  });
 });

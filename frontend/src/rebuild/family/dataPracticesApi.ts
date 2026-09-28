@@ -16,7 +16,8 @@ export const PRACTICE_KEYS = [
   'analytics.learning_quality_events', 'analytics.motivation_events', 'analytics.engagement_heartbeats', 'analytics.family_money_events',
   'analytics.achievement_share_initiations', 'analytics.mentor_behavioral_telemetry', 'analytics.mentor_integrity_evidence',
   'mentor.disposition_profile', 'mentor.alliance_record', 'mentor.dialogue_calibration',
-  'learning.decision_journal', 'sharing.social_connections', 'sharing.learning_family_bridge', 'research.family_longitudinal',
+  'learning.decision_journal', 'sharing.social_connections', 'sharing.learning_family_bridge', 'sharing.cooperative_goals',
+  'research.family_longitudinal',
 ] as const;
 export type PracticeKey = (typeof PRACTICE_KEYS)[number];
 

@@ -55,7 +55,7 @@ describe('getExperimentResults — statistical correctness', () => {
     // Assignment is not evidence. The result must use an actual exposure,
     // then only activity that happened after that treatment rendered.
     for (const u of [...variantAUsers, ...variantBUsers]) {
-      expect(await recordRuntimeExposure(u, exp!.id, 'learn', 'default')).not.toBeNull();
+      expect(await recordRuntimeExposure(u, exp!.id, 'learn', 'default', 30)).not.toBeNull();
     }
     // Keep test ordering unambiguous across DuckDB timestamp precisions.
     await execute(
@@ -90,7 +90,7 @@ describe('getExperimentResults — statistical correctness', () => {
     for (const u of variantAUsers) await assignVariant(exp!.id, u, 'A');
     for (const u of variantBUsers) await assignVariant(exp!.id, u, 'B');
     for (const u of [...variantAUsers, ...variantBUsers]) {
-      expect(await recordRuntimeExposure(u, exp!.id, 'learn', 'default')).not.toBeNull();
+      expect(await recordRuntimeExposure(u, exp!.id, 'learn', 'default', 30)).not.toBeNull();
     }
     await execute(
       "UPDATE experiment_exposures SET exposed_at = CURRENT_TIMESTAMP - INTERVAL 1 SECOND WHERE experiment_id = ?",

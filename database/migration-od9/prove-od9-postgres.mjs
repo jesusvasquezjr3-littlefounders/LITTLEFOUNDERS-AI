@@ -11,7 +11,8 @@
 //   4. defects, KC credit and consent run as dry runs (no product write),
 //      then apply, then apply again (idempotent), each checked against
 //      expectations the fixture computed independently;
-//   5. the legacy catalog is retired the OD-24 way (archived) and the
+//   5. the legacy catalog is retired the OD-24 way (od9 retire-catalog:
+//      archived, never deleted; a delete with learner records is refused) and the
 //      "after" inventory must equal "before" for every promised record,
 //      every family and every identifier; a tampered copy must fail;
 //   6. RLS and grants of the new tables are checked through the browser
@@ -248,11 +249,32 @@ try {
   refused(() => as('authenticated', id.parent_a, `SELECT count(*) FROM public.legacy_consent_subjects`), 'permission denied');
   check('consent enforcement: every migrated child is marked; over the legacy analytics consent, a rebuild event class is skipped at the table without consent and kept with it, a legacy class always kept; an unrelated Tutor, the child for a Tutor-only practice, research (own flow), a stale disclosure and an unknown practice are refused; a grant is idempotent and audited; the child\'s own no stops it; a Tutor consent lapses with the link; a social request is refused by name; the state and the marks are closed to browser roles');
 
-  // ── 5. Retire the legacy catalog (OD-24) and compare ───────────────────
-  sql(`SET session_replication_role = replica;
-       UPDATE public.lessons SET status = 'archived'; UPDATE public.topics SET status = 'archived';
-       UPDATE public.sagas SET status = 'archived'; UPDATE public.adventures SET status = 'archived';
-       UPDATE public.courses SET status = 'archived';`, db);
+  // ── 5. Retire the legacy catalog (OD-24) with the toolkit, and compare ─
+  const live = () => sql(`SELECT concat_ws('|', (SELECT count(*) FROM public.courses WHERE status <> 'archived'),
+    (SELECT count(*) FROM public.adventures WHERE status <> 'archived'), (SELECT count(*) FROM public.sagas WHERE status <> 'archived'),
+    (SELECT count(*) FROM public.topics WHERE status <> 'archived'), (SELECT count(*) FROM public.lessons WHERE status <> 'archived'))`, db);
+  refused(() => cli({ command: 'retire-catalog', before: 'no_such_label' }), 'OD9_RETIRE_REFUSED');
+  const kcRuns = sql(`SELECT string_agg(id::text, ',') FROM od9.runs WHERE step = 'kc_credit' AND mode = 'apply'`, db);
+  sql(`UPDATE od9.runs SET mode = 'dry_run' WHERE id IN (${kcRuns})`, db);
+  refused(() => cli({ command: 'retire-catalog', apply: true }), 'OD9_RETIRE_REFUSED');
+  sql(`UPDATE od9.runs SET mode = 'apply' WHERE id IN (${kcRuns})`, db);
+  const liveBefore = live();
+  const retireDry = cli({ command: 'retire-catalog' });
+  assert.equal(live(), liveBefore, 'a retire dry run archives nothing');
+  assert.equal(retireDry.missingCredit, 0);
+  assert.deepEqual(Object.values(retireDry.counts).reduce((a, b) => a + b, 0), liveBefore.split('|').reduce((a, b) => a + Number(b), 0));
+  const retired = cli({ command: 'retire-catalog', apply: true });
+  assert.equal(retired.ok, true, JSON.stringify(retired.comparison?.failures?.slice(0, 5)));
+  assert.equal(retired.comparison.families.total, retired.comparison.families.same);
+  assert.equal(live(), '0|0|0|0|0');
+  const retiredAgain = cli({ command: 'retire-catalog', apply: true });
+  assert.deepEqual(retiredAgain.counts, {});
+  assert.equal(retiredAgain.ok, true);
+  // No path deletes what learners depend on, not even the database owner.
+  refused(() => sql(`DELETE FROM public.courses WHERE slug = 'first-lemonade-stand'`, db), 'LEGACY_RECORDS_KEPT');
+  refused(() => sql(`DELETE FROM public.lessons WHERE id = (SELECT lesson_id FROM public.lesson_progress LIMIT 1)`, db), 'LEGACY_RECORDS_KEPT');
+  refused(() => sql(`DELETE FROM public.topics WHERE id = (SELECT topic_id FROM public.placement_credits LIMIT 1)`, db), 'LEGACY_RECORDS_KEPT');
+  check(`retire-catalog (OD-24): refused without the before inventory or a kc-credit apply; the dry run archives nothing and lists ${liveBefore.split('|').reduce((a, b) => a + Number(b), 0)} legacy rows with 0 missing KC credits; apply archives them all (never deletes), its own pre_retire/retired comparison passes (${retired.comparison.families.same}/${retired.comparison.families.total} families), and a re-apply archives nothing; deleting a course, lesson or topic with learner records is refused (LEGACY_RECORDS_KEPT) even for the database owner`);
   cli({ command: 'inventory', label: 'after' });
   const verdict = cli({ command: 'compare', before: 'before', after: 'after' });
   assert.equal(verdict.ok, true, JSON.stringify(verdict.failures.slice(0, 5)));

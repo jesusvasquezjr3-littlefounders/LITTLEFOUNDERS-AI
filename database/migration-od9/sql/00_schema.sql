@@ -24,12 +24,16 @@ END $$;
 
 CREATE TABLE IF NOT EXISTS od9.runs (
     id          bigserial PRIMARY KEY,
-    step        text NOT NULL CHECK (step IN ('inventory', 'defects', 'kc_credit', 'consent')),
+    step        text NOT NULL CONSTRAINT runs_step_check CHECK (step IN ('inventory', 'defects', 'kc_credit', 'consent', 'retire_catalog')),
     mode        text NOT NULL CHECK (mode IN ('capture', 'dry_run', 'apply')),
     label       text,
     started_at  timestamptz NOT NULL DEFAULT clock_timestamp(),
     summary     jsonb NOT NULL DEFAULT '{}'::jsonb
 );
+
+-- A toolkit installed before retire-catalog existed: widen its step list.
+ALTER TABLE od9.runs DROP CONSTRAINT IF EXISTS runs_step_check;
+ALTER TABLE od9.runs ADD CONSTRAINT runs_step_check CHECK (step IN ('inventory', 'defects', 'kc_credit', 'consent', 'retire_catalog'));
 
 -- One row per (label, account, category): the promised-record inventory.
 CREATE TABLE IF NOT EXISTS od9.inventory (

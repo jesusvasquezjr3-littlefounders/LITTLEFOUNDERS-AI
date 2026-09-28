@@ -1,12 +1,18 @@
 """E.2 atomic graph audit checks against the owned native PostgreSQL audit cluster."""
 from pathlib import Path
 import json
+import os
 import subprocess
 import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNTIME = ROOT / '.codex/audit-db'
-BASE = [str(RUNTIME / 'pgsql/bin/psql.exe'), '-X', '-h', '127.0.0.1', '-p', '15483', '-U', 'audit_owner', '-v', 'ON_ERROR_STOP=1', '-Atq']
+# LF_PG_PSQL/PORT/USER/DATA point the check at another owned cluster (the
+# social:db-verify runner starts a throwaway one); the defaults are the
+# repo's audit cluster.
+PSQL = os.environ.get('LF_PG_PSQL', str(RUNTIME / 'pgsql/bin/psql.exe'))
+DATA = Path(os.environ.get('LF_PG_DATA', str(RUNTIME / 'data')))
+BASE = [PSQL, '-X', '-h', '127.0.0.1', '-p', os.environ.get('LF_PG_PORT', '15483'), '-U', os.environ.get('LF_PG_USER', 'audit_owner'), '-v', 'ON_ERROR_STOP=1', '-Atq']
 
 def sql(query, database='postgres'):
     result = subprocess.run(BASE + ['-d', database], input=query, text=True, encoding='utf-8', capture_output=True)
@@ -14,7 +20,7 @@ def sql(query, database='postgres'):
         raise RuntimeError(result.stderr)
     return result.stdout.strip()
 
-if Path(sql('SHOW data_directory')).resolve() != (RUNTIME / 'data').resolve():
+if Path(sql('SHOW data_directory')).resolve() != DATA.resolve():
     raise RuntimeError('Refusing an unowned database cluster')
 database = 'lf_social_audit_' + uuid.uuid4().hex
 sql(f'CREATE DATABASE {database}')

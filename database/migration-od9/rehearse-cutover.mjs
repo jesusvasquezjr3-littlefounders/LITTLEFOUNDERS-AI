@@ -17,6 +17,7 @@
 //   R9 smoke         the migrated schema through the browser roles
 //   R10 switch       lift the freeze; application writes work again
 //   R11 post-release post-switch inventory equals "after"; findings queue
+//   R11b retire      od9 retire-catalog: archive the legacy catalog, compare
 //   R12 restore      the rollback: decrypt the backup into a fresh database,
 //                    which must equal the pre-migration state
 //
@@ -270,6 +271,17 @@ try {
     const open = findings.filter((f) => ['flagged', 'review_required'].includes(f.status)).reduce((n, f) => n + Number(f.n), 0);
     check(`post-release: the post-switch inventory equals "after"; ${open} findings wait for a person (${findings.map((f) => `${f.kind}/${f.status} ${f.n}`).join(', ')})`);
     return { openFindings: open };
+  });
+
+  await phase('R11b', 'retire the legacy catalog (T plus 7 days)', () => {
+    const dry = cli(db, { command: 'retire-catalog' });
+    assert.equal(dry.missingCredit, 0);
+    const retired = cli(db, { command: 'retire-catalog', apply: true });
+    assert.equal(retired.ok, true);
+    const live = sql(`SELECT count(*) FROM public.lessons WHERE status <> 'archived'`, db);
+    assert.equal(live, '0');
+    check(`retire-catalog: ${Object.entries(retired.counts).map(([k, n]) => `${n} ${k}`).join(', ')} archived (never deleted) after the KC credit; the pre_retire/retired comparison passes (${retired.comparison.families.same}/${retired.comparison.families.total} families)`);
+    return retired.counts;
   });
 
   await phase('R12', 'restore rehearsal (rollback to the backup)', async () => {

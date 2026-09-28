@@ -64,7 +64,8 @@ export async function recordExperimentExposure(input: {
   surface: 'learn' | 'tasks' | 'profile' | 'tutor';
   target: string;
   /** H.7: the learner's derived age, or null when the evidence is
-   * unavailable — dataintel refuses bounded experiments for unknown ages. */
+   * unavailable — dataintel never enrols an unknown age, and admits 18+ only
+   * unless the experiment carries the OD-26 C.17 exception (OD-23). */
   age?: number | null;
 }): Promise<{ experimentId: string; variant: 'A' | 'B' } | null> {
   const { DATAINTEL_URL, DATAINTEL_INTERNAL_KEY, DATAINTEL_TIMEOUT_MS } = getConfig();
