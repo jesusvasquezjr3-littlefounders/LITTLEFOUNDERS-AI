@@ -47,7 +47,7 @@ describe('GuardianInviteJoin', () => {
       .mockResolvedValueOnce({ data: { linked: true, status: 'verified' }, error: null });
     render(<GuardianInviteJoin inviteToken={'a'.repeat(32)} />);
     expect(await screen.findByText(/You were invited to supervise Ana/)).toBeVisible();
-    fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Join' }));
     expect(await screen.findByText('You are now linked as a second Tutor.')).toBeVisible();
     expect(mockApi).toHaveBeenLastCalledWith(`/family/guardian-invite/${'a'.repeat(32)}/accept`, { method: 'POST', token: 'session' });
   });
@@ -57,8 +57,8 @@ describe('GuardianInviteJoin', () => {
       .mockResolvedValueOnce({ data: { linked: false, status: 'pending' }, error: null });
     render(<GuardianInviteJoin inviteToken={'a'.repeat(32)} />);
     await screen.findByText(/You were invited to supervise Ana/);
-    fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
-    expect(await screen.findByText("Accepted. The child's Tutor will confirm you next.")).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Join' }));
+    expect(await screen.findByText("Joined. The child's Tutor will confirm you next.")).toBeVisible();
     expect(screen.queryByText('You are now linked as a second Tutor.')).toBeNull();
   });
 
@@ -67,15 +67,15 @@ describe('GuardianInviteJoin', () => {
       .mockResolvedValueOnce({ data: { linked: true, status: 'pending' }, error: null });
     render(<GuardianInviteJoin inviteToken={'a'.repeat(32)} />);
     await screen.findByText(/You were invited to supervise Ana/);
-    fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
-    expect(await screen.findByText('Could not accept the invite. Try again.')).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Join' }));
+    expect(await screen.findByText('Could not join. Try again.')).toBeVisible();
   });
 
   it('treats an unknown or consumed invite as one expired state', async () => {
     mockApi.mockResolvedValue({ data: null, error: { code: 'NOT_FOUND' } });
     render(<GuardianInviteJoin inviteToken={'b'.repeat(32)} />);
     expect(await screen.findByText('This invite is no longer valid.')).toBeVisible();
-    expect(screen.queryByRole('button', { name: 'Accept' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Join' })).toBeNull();
   });
 
   it('refuses a malformed token shape without calling the API', async () => {
@@ -90,9 +90,9 @@ describe('GuardianInviteJoin', () => {
       .mockResolvedValueOnce({ data: { linked: true, status: 'verified' }, error: null });
     render(<GuardianInviteJoin inviteToken={'a'.repeat(32)} />);
     await screen.findByText(/You were invited to supervise Ana/);
-    fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
-    expect(await screen.findByText('Could not accept the invite. Try again.')).toBeVisible();
-    fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Join' }));
+    expect(await screen.findByText('Could not join. Try again.')).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Join' }));
     expect(await screen.findByText('You are now linked as a second Tutor.')).toBeVisible();
   });
 });

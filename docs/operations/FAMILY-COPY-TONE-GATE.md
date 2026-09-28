@@ -18,7 +18,10 @@ B.14's Forge gate for lesson content is not built in this branch. It belongs to 
 **Scope, all three locales:**
 - the rebuilt Family Hub and banking namespaces: `familyHub`, `familyMoney`, `moneyHabits`, `familyAutonomy`, `teenWallet`, `coinAccount` and `moneyRegister`;
 - the `tasks`, `banking` and `family` subtrees of `common.json`;
-- the family and banking error codes of `errors.json`.
+- the family and banking error codes of `errors.json`;
+- since GAP-FIX-R2, every group of `rebuild-family.json` that the rebuilt `/family`, `/tasks`, `/family-wallet` and `/wallet` screens render: `familyConsole`, `familyChildAccount`, `familyChildConsent`, `familyChildProgress`, `familyChildMentor`, `familyMemoryNotes`, `guardianInvite`, `familyTasks`, `childTasks`, `familyCoins`, `childCoins`, `coinCard`, `teenWalletScreen`, `familyCoopGoals`, `badgeShares`, `achievementShare` and the four `social*` panels of the Family Hub.
+
+**Coverage.** The gate fails if a surface under `scope.surfaces` names a `rebuild-family.json` group, or loads an i18next namespace, that is not in scope. A lane that adds copy must add it to the scope in the same change.
 
 Core's own error messages are English developer diagnostics. A family never reads them: the legacy error banner and every rebuilt surface resolve the error *code* to copy. So the gate fails instead if a Family Hub or banking surface starts rendering a raw `error.message`.
 
@@ -28,6 +31,7 @@ Core's own error messages are English developer diagnostics. A family never read
 | `guarantee` | D.7: no promise of safety, protection, insurance or a real bank or card | safe, secure, protected, insured, guaranteed, real money, bank account; seguro, protegido; seguro, protegida |
 | `glossary` | Owner log §5, the controlled glossary | money, dinero, dinheiro; job; accept (for a parent's approval); streak freeze; guardian (the verified parent is the Tutor) |
 | `shouting` | A mentor never shouts | stacked "!!", words in capitals, raw error codes such as `ACCOUNT_FROZEN` |
+| `b14_ui` | B.14's UI tone lexicon, read from `coursegen/src/contentGates/tone.ts` (`TONE_LEXICON`), so Family Hub copy meets the same standard as Forge's system copy | account balance, transaction declined, act now, attempts left; saldo disponible, última oportunidad; extrato, não perca essa |
 
 Placeholders (`{count}`, `{{name}}`) are ignored when matching words. The gate prints the pass rate. `--report <path>` writes it as JSON (Appendix H metric). In CI the rate is in the `repo gates` job log for every push.
 
@@ -52,3 +56,4 @@ Automated matching cannot judge meaning. For every release that changes copy in 
 | Date | Strings | First run | After fixes | Notes |
 |---|---|---|---|---|
 | 2026-09-24 | 3,941 first, then 3,480 | 3,862 of 3,941 pass (98.0%) | 3,480 of 3,480 (100%), 6 reviewed exceptions | First run at S07.6. It included Core's English messages; these were then taken out of scope as developer diagnostics a family never reads, and the raw-message rule was added instead. 15 family-facing keys were rewritten in all three locales: redemption, deny, credits, "safe", "guardian", "rejected". |
+| 2026-09-28 | 4,620 | 37 findings in the newly scoped groups | 4,620 of 4,620 (100%), 17 reviewed exceptions | GAP-FIX-R2: the rebuilt Family, Tasks and Wallet groups joined the scope. 7 keys were reworded in all three locales (invite "Accept" became "Join"; the memory-note "Reject" became "Discard"; the social "guardian" pending label names the Tutor). 7 exceptions were added for safety labels and friend-request refusals. The B.14 UI lexicon and the coverage rule were added. |
