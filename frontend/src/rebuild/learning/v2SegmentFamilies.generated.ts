@@ -155,6 +155,60 @@ export const mentorEpisodePayload = z.object({
   narration: narrationChannel.optional(),
 }).strict();
 
+/* ── $6 unit-price comparator (GAP-FIX-R2) ─────────────────────────────────── */
+
+/**
+ * Appendix P $6 (built on M14): two or three offers, each a quantity and a
+ * price; the learner finds the unit price of each ("Always show the unit")
+ * and picks the better choice. The exact rational unit prices and the better
+ * offer are private; unit prices must all differ so the better choice is
+ * unique.
+ */
+export const unitPricePayload = z.object({
+  currency: z.enum(['coins', 'local']),
+  unit: label(24),
+  offers: z.array(z.object({ id, label: label(40), quantity: positive.max(1_000), price_minor: positive.max(1_000_000) }).strict()).min(2).max(3),
+}).strict().refine((value) => uniqueIds(value.offers) && value.offers.every((a, i) => value.offers.every((b, j) => i === j
+  || a.price_minor * b.quantity !== b.price_minor * a.quantity)), 'Invalid unit-price offers');
+
+/* ── L2 IF-THEN-ELSE rule builder, and L6/$9 built flowcharts (GAP-FIX-R2) ── */
+
+/**
+ * Appendix P L2: condition and action tiles build IF <expression> THEN
+ * <action> ELSE <action>; ages 8-9 use a single IF, 10-12 add AND/OR, 13-17
+ * and adults nest and negate (`level`). The public practice cards let the
+ * learner run the rule; Core grades it by behaviour on a fixed hidden set of
+ * 5-10 scenarios in the private rubric, never by tile layout (Part 4.6).
+ */
+export const RULE_LEVELS = ['single', 'connective', 'nested'] as const;
+const facts = z.record(id, z.boolean());
+export const ruleBuilderPayload = z.object({
+  level: z.enum(RULE_LEVELS),
+  conditions: z.array(option).min(1).max(4),
+  actions: z.array(option).min(2).max(3),
+  practice: z.array(z.object({ id, label: label(80), facts }).strict()).min(1).max(4),
+}).strict().refine((value) => uniqueIds([...value.conditions, ...value.actions, ...value.practice])
+  && value.practice.every((card) => sameKeys(card.facts, value.conditions.map((condition) => condition.id)))
+  && (value.level !== 'single' || value.conditions.length >= 1) && (value.level === 'single' || value.conditions.length >= 2), 'Invalid rule builder');
+
+function sameKeys(record: Record<string, unknown>, keys: readonly string[]): boolean {
+  return Object.keys(record).length === keys.length && keys.every((key) => Object.hasOwn(record, key));
+}
+
+/**
+ * L6 "13-17 build their own" / $9 "built by older learners and tested on
+ * scenarios": the learner places question and outcome nodes; Core evaluates
+ * the tree on the hidden cases of the rubric. Public practice cases carry
+ * their answers so the learner can test the tree before checking.
+ */
+export const flowchartBuildPayload = z.object({
+  mode: z.literal('build'),
+  questions: z.array(option).min(1).max(3),
+  outcomes: z.array(option).min(2).max(3),
+  practice: z.array(z.object({ id, label: label(80), answers: facts }).strict()).min(1).max(4),
+}).strict().refine((value) => uniqueIds([...value.questions, ...value.outcomes, ...value.practice])
+  && value.practice.every((card) => sameKeys(card.answers, value.questions.map((question) => question.id))), 'Invalid flowchart build');
+
 /* ── Segments ─────────────────────────────────────────────────────────────── */
 
 const base = { id, prompt: z.string().trim().min(1).max(500), ...v2SegmentExtras };
@@ -164,8 +218,8 @@ const visual = <T extends string>(type: T) => z.object({ type: z.literal(type) }
 export const v2FamilySegments = [
   z.object({ ...base, type: z.literal('logic.rule-checker.v2'), grading: server, visual: visual('rule-cards'), payload: ruleCheckerPayload }).strict(),
   z.object({ ...base, type: z.literal('logic.euler.v2'), grading: server, visual: visual('euler'), payload: eulerPayload }).strict(),
-  z.object({ ...base, type: z.literal('logic.flowchart.v2'), grading: server, visual: visual('flowchart'), payload: flowchartPayload }).strict(),
-  z.object({ ...base, type: z.literal('money.spend-decision.v2'), grading: server, visual: visual('decision-tree'), payload: flowchartPayload }).strict(),
+  z.object({ ...base, type: z.literal('logic.flowchart.v2'), grading: server, visual: visual('flowchart'), payload: z.union([flowchartPayload, flowchartBuildPayload]) }).strict(),
+  z.object({ ...base, type: z.literal('money.spend-decision.v2'), grading: server, visual: visual('decision-tree'), payload: z.union([flowchartPayload, flowchartBuildPayload]) }).strict(),
   z.object({ ...base, type: z.literal('logic.sort-by-rule.v2'), grading: server, visual: visual('sort-bins'), payload: sortBinsPayload }).strict(),
   z.object({ ...base, type: z.literal('money.needs-wants.v2'), grading: server, visual: visual('sort-bins'), payload: sortBinsPayload }).strict(),
   z.object({ ...base, type: z.literal('logic.scam-spotter.v2'), grading: server, visual: visual('message-list'), payload: messageListPayload }).strict(),
@@ -175,6 +229,9 @@ export const v2FamilySegments = [
   z.object({ ...base, type: z.literal('story.branch.v2'), grading: server, visual: visual('story-scene'), payload: storyBranchPayload }).strict(),
   z.object({ ...base, type: z.literal('story.dialogue-choice.v2'), grading: server, visual: visual('dialogue'), payload: dialogueChoicePayload }).strict(),
   z.object({ ...base, type: z.literal('story.would-you-rather.v2'), grading: server, visual: visual('would-you-rather'), payload: wouldYouRatherPayload }).strict(),
+  // GAP-FIX-R2: $6 unit-price comparator and the L2 rule builder.
+  z.object({ ...base, type: z.literal('money.unit-price.v2'), grading: server, visual: visual('ratio-table'), payload: unitPricePayload }).strict(),
+  z.object({ ...base, type: z.literal('logic.rule-builder.v2'), grading: server, visual: visual('rule-builder'), payload: ruleBuilderPayload }).strict(),
   z.object({ ...base, type: z.literal('voice.mentor-turn.v2'), grading: z.literal('none'), visual: visual('speech-plate'), payload: mentorTurnPayload }).strict(),
   z.object({ ...base, type: z.literal('voice.mentor-episode.v2'), grading: z.literal('none'), visual: visual('speech-plate'), payload: mentorEpisodePayload }).strict(),
 ] as const;
@@ -188,17 +245,34 @@ export const V2_STORY_TYPES = ['story.branch.v2', 'story.dialogue-choice.v2', 's
 /* ── Private rubrics (Core only; the browser never receives them) ─────────── */
 
 const ids = (min: number, max: number) => z.array(id).min(min).max(max);
+/** L2 rule expression: a condition, NOT, or a binary AND/OR (the level caps which shapes a rule may take). */
+export type RuleExpr = { c: string } | { not: RuleExpr } | { and: [RuleExpr, RuleExpr] } | { or: [RuleExpr, RuleExpr] };
+export const ruleExprSchema: z.ZodType<RuleExpr> = z.lazy(() => z.union([
+  z.object({ c: id }).strict(), z.object({ not: ruleExprSchema }).strict(),
+  z.object({ and: z.tuple([ruleExprSchema, ruleExprSchema]) }).strict(), z.object({ or: z.tuple([ruleExprSchema, ruleExprSchema]) }).strict(),
+]));
+export const ruleSchema = z.object({ if: ruleExprSchema, then: id, else: id }).strict();
+export type BuiltRule = z.infer<typeof ruleSchema>;
+/** L6 / $9 built chart: a question with a yes and a no branch, down to outcomes. */
+export type FlowTree = { o: string } | { q: string; yes: FlowTree; no: FlowTree };
+export const flowTreeSchema: z.ZodType<FlowTree> = z.lazy(() => z.union([z.object({ o: id }).strict(), z.object({ q: id, yes: flowTreeSchema, no: flowTreeSchema }).strict()]));
+const flowRubric = z.union([
+  z.object({ paths: z.record(id, ids(2, 12)) }).strict(),
+  z.object({ cases: z.array(z.object({ answers: z.record(id, z.boolean()), outcome: id }).strict()).min(5).max(10) }).strict(),
+]);
 export const V2_FAMILY_RUBRICS = {
   'logic.rule-checker.v2': z.object({ must_flip_ids: ids(1, 5) }).strict(),
   'logic.euler.v2': z.object({ regions: z.record(id, z.enum(EULER_REGIONS)) }).strict(),
-  'logic.flowchart.v2': z.object({ paths: z.record(id, ids(2, 12)) }).strict(),
-  'money.spend-decision.v2': z.object({ paths: z.record(id, ids(2, 12)) }).strict(),
+  'logic.flowchart.v2': flowRubric,
+  'money.spend-decision.v2': flowRubric,
   'logic.sort-by-rule.v2': z.object({ accepted: z.record(id, z.array(z.object({ bin: id, reason: id }).strict()).min(1).max(4)) }).strict(),
   'money.needs-wants.v2': z.object({ accepted: z.record(id, z.array(z.object({ bin: id, reason: id }).strict()).min(1).max(4)) }).strict(),
   'logic.scam-spotter.v2': z.object({ scam_ids: ids(1, 7) }).strict(),
   'money.scam-check.v2': z.object({ scam_ids: ids(1, 7) }).strict(),
   'money.coin-tray.v2': z.object({ target_minor: positive.max(1_000_000), fewest: z.boolean() }).strict(),
   'money.making-change.v2': z.object({ change_minor: positive.max(1_000_000) }).strict(),
+  'money.unit-price.v2': z.object({ unit_prices: z.record(id, z.string().regex(/^\d{1,15}(\/[1-9]\d{0,14}|\.\d{1,12})?$/)), better_id: id }).strict(),
+  'logic.rule-builder.v2': z.object({ target: ruleSchema, scenarios: z.array(z.record(id, z.boolean())).min(5).max(10) }).strict(),
   'story.branch.v2': z.object({ acceptable_choice_ids: ids(1, 3) }).strict(),
   'story.dialogue-choice.v2': z.object({ acceptable_choice_ids: ids(1, 3) }).strict(),
   'story.would-you-rather.v2': z.object({ acceptable_choice_ids: ids(1, 2) }).strict(),
@@ -214,7 +288,9 @@ export function v2FamilyScorerPayload(segment: V2FamilySegment): Record<string, 
     case 'logic.rule-checker.v2': return { cardIds: segment.payload.cards.map((card) => card.id) };
     case 'logic.euler.v2': return { relation: segment.payload.relation, itemIds: segment.payload.items.map((item) => item.id) };
     case 'logic.flowchart.v2':
-    case 'money.spend-decision.v2': return {
+    case 'money.spend-decision.v2': return 'mode' in segment.payload ? {
+      mode: 'build', questionIds: segment.payload.questions.map((item) => item.id), outcomeIds: segment.payload.outcomes.map((item) => item.id),
+    } : {
       start: segment.payload.start,
       nodes: segment.payload.nodes.map((node) => node.kind === 'question' ? { id: node.id, yes: node.yes, no: node.no } : { id: node.id }),
       scenarioIds: segment.payload.scenarios.map((scenario) => scenario.id),
@@ -234,6 +310,10 @@ export function v2FamilyScorerPayload(segment: V2FamilySegment): Record<string, 
     case 'story.branch.v2': return { choiceIds: segment.payload.options.map((item) => item.id) };
     case 'story.dialogue-choice.v2': return { choiceIds: segment.payload.replies.map((item) => item.id) };
     case 'story.would-you-rather.v2': return { choiceIds: segment.payload.options.map((item) => item.id) };
+    case 'money.unit-price.v2': return { scale: segment.payload.currency === 'local' ? 100 : 1,
+      offers: segment.payload.offers.map((offer) => ({ id: offer.id, quantity: offer.quantity, price: offer.price_minor })) };
+    case 'logic.rule-builder.v2': return { level: segment.payload.level, conditionIds: segment.payload.conditions.map((item) => item.id),
+      actionIds: segment.payload.actions.map((item) => item.id) };
     case 'voice.mentor-turn.v2':
     case 'voice.mentor-episode.v2': return {};
   }
@@ -246,6 +326,7 @@ export function v2FamilySampleResponse(segment: V2FamilySegment): unknown {
     case 'logic.euler.v2': return { placements: Object.fromEntries(segment.payload.items.map((item) => [item.id, 'neither'])) };
     case 'logic.flowchart.v2':
     case 'money.spend-decision.v2': {
+      if ('mode' in segment.payload) return { tree: { q: segment.payload.questions[0]!.id, yes: { o: segment.payload.outcomes[0]!.id }, no: { o: segment.payload.outcomes[1]!.id } } };
       const byId = new Map(segment.payload.nodes.map((node) => [node.id, node]));
       const path = [segment.payload.start];
       let node = byId.get(segment.payload.start);
@@ -262,6 +343,8 @@ export function v2FamilySampleResponse(segment: V2FamilySegment): unknown {
     case 'story.branch.v2': return { choice: segment.payload.options[0]!.id };
     case 'story.dialogue-choice.v2': return { choice: segment.payload.replies[0]!.id };
     case 'story.would-you-rather.v2': return { choice: segment.payload.options[0].id };
+    case 'money.unit-price.v2': return { unit_prices: Object.fromEntries(segment.payload.offers.map((offer) => [offer.id, '0'])), choice: segment.payload.offers[0]!.id };
+    case 'logic.rule-builder.v2': return { rule: { if: { c: segment.payload.conditions[0]!.id }, then: segment.payload.actions[0]!.id, else: segment.payload.actions[1]!.id } };
     case 'voice.mentor-turn.v2':
     case 'voice.mentor-episode.v2': return null;
   }
@@ -397,6 +480,14 @@ export function v2PayloadScopeProblem(segment: { type: string; visual: { type: s
   if (segment.type === 'money.allocation.v2' && segment.visual.type === 'waffle'
     && (total < 10 || total > 100 || 100 % total !== 0 || step !== 1 || payload.currency !== 'coins')) return 'Invalid waffle parameters';
   if (segment.type === 'money.allocation.v2' && segment.visual.type === 'donut' && (total / step > 40 || total > 100_000)) return 'Invalid donut parameters';
+  // L2: 8-9 build a single IF, 10-12 add AND/OR, 13-17 and adults nest and negate.
+  if (segment.type === 'logic.rule-builder.v2' && ((payload.level !== 'single' && ageBand === '6-9') || (payload.level === 'nested' && ageBand === '10-12'))) {
+    return 'This rule level is not open to this age pathway';
+  }
+  // L6 / $9: learners build their own charts from 13 (Appendix P "13-17 build their own").
+  if ((segment.type === 'logic.flowchart.v2' || segment.type === 'money.spend-decision.v2') && payload.mode === 'build' && ageBand !== '13-17' && ageBand !== 'adult') {
+    return 'Building a flowchart is open to ages 13 and up';
+  }
   if ((segment.type === 'math.ratio-table.v2' || segment.type === 'money.unit-price.v2') && payload.currency === 'local' && ageBand !== 'adult') {
     return 'Children count LittleFounders coins';
   }

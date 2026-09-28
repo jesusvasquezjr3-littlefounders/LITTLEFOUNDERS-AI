@@ -1,0 +1,198 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "if-then-rules",
+  "lesson_id": "v2-rule-builder-connective",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-if-then-rules"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Zara arma una regla de compra con dos condiciones unidas.",
+  "title": {
+    "en-US": "Rules with AND and OR",
+    "es-MX": "Reglas con Y y O",
+    "pt-BR": "Regras com E e OU"
+  },
+  "new_concepts": [
+    "kc-if-then-rules"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "rule-connective-01",
+      "type": "logic.rule-builder.v2",
+      "grading": "server",
+      "visual": {
+        "type": "rule-builder"
+      },
+      "payload": {
+        "level": "connective",
+        "conditions": [
+          {
+            "id": "enough"
+          },
+          {
+            "id": "want-it"
+          }
+        ],
+        "actions": [
+          {
+            "id": "buy"
+          },
+          {
+            "id": "wait"
+          }
+        ],
+        "practice": [
+          {
+            "id": "card-a",
+            "facts": {
+              "enough": true,
+              "want-it": false
+            }
+          },
+          {
+            "id": "card-b",
+            "facts": {
+              "enough": true,
+              "want-it": true
+            }
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Buy only if you have enough AND really want it.",
+          "conditions": [
+            {
+              "label": "I have enough coins"
+            },
+            {
+              "label": "I really want it"
+            }
+          ],
+          "actions": [
+            {
+              "label": "Buy it"
+            },
+            {
+              "label": "Wait a week"
+            }
+          ],
+          "practice": [
+            {
+              "label": "Enough coins, not wanted much"
+            },
+            {
+              "label": "Enough coins and wanted"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Compra solo si te alcanza Y lo quieres de verdad.",
+          "conditions": [
+            {
+              "label": "Tengo monedas suficientes"
+            },
+            {
+              "label": "Lo quiero de verdad"
+            }
+          ],
+          "actions": [
+            {
+              "label": "Cómpralo"
+            },
+            {
+              "label": "Espera una semana"
+            }
+          ],
+          "practice": [
+            {
+              "label": "Monedas suficientes, poco deseo"
+            },
+            {
+              "label": "Monedas suficientes y lo quiere"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Compre só se tiver o bastante E quiser muito.",
+          "conditions": [
+            {
+              "label": "Tenho moedas suficientes"
+            },
+            {
+              "label": "Eu quero muito"
+            }
+          ],
+          "actions": [
+            {
+              "label": "Compre"
+            },
+            {
+              "label": "Espere uma semana"
+            }
+          ],
+          "practice": [
+            {
+              "label": "Moedas suficientes, pouca vontade"
+            },
+            {
+              "label": "Moedas suficientes e quer"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "target": {
+          "if": {
+            "and": [
+              {
+                "c": "enough"
+              },
+              {
+                "c": "want-it"
+              }
+            ]
+          },
+          "then": "buy",
+          "else": "wait"
+        },
+        "scenarios": [
+          {
+            "enough": true,
+            "want-it": true
+          },
+          {
+            "enough": true,
+            "want-it": false
+          },
+          {
+            "enough": false,
+            "want-it": true
+          },
+          {
+            "enough": false,
+            "want-it": false
+          },
+          {
+            "enough": true,
+            "want-it": true
+          },
+          {
+            "enough": false,
+            "want-it": true
+          }
+        ]
+      }
+    }
+  ]
+}

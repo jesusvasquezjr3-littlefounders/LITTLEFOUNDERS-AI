@@ -3,7 +3,7 @@ export type V2VisualKind = 'money.allocation.v2' | 'math.number-line.whole.v2' |
   | 'math.place-value.v2' | 'math.ratio-table.v2' | 'visual.percent-grid.v2' | 'visual.growth-comparison.v2' | 'visual.tax-bracket.v2' | 'logic.savings-rule.v2' | 'visual.goal-bullet.v2' | 'money.running-ledger.v2'
   | 'logic.rule-checker.v2' | 'logic.euler.v2' | 'logic.flowchart.v2' | 'money.spend-decision.v2' | 'logic.sort-by-rule.v2' | 'money.needs-wants.v2' | 'logic.scam-spotter.v2' | 'money.scam-check.v2'
   | 'money.coin-tray.v2' | 'money.making-change.v2' | 'story.branch.v2' | 'story.dialogue-choice.v2' | 'story.would-you-rather.v2'
-  | 'visual.chart.v2';
+  | 'visual.chart.v2' | 'money.unit-price.v2' | 'logic.rule-builder.v2';
 export type V2VisualVerdict = 'invalid' | 'valid' | 'review' | 'met';
 /** B.12 (Law 4): the quality of the reason a learner gave, graded apart from the decision. */
 export type V2JudgmentQuality = 'sound' | 'partial' | 'unsupported';
@@ -503,6 +503,133 @@ export function gradeV2Response(kind: V2VisualKind, payload: unknown, response: 
 }
 
 
+/* ── $6 unit prices (GAP-FIX-R2) ─────────────────────────────────────────── */
+
+interface Offer { id: string; quantity: number; price: number }
+function unitOffers(payload: unknown): { offers: Offer[]; scale: number } | null {
+  if (!fields(payload, ['scale', 'offers']) || (payload.scale !== 1 && payload.scale !== 100) || !Array.isArray(payload.offers)
+    || payload.offers.length < 2 || payload.offers.length > 3) return null;
+  const offers: Offer[] = [];
+  for (const offer of payload.offers) {
+    if (!fields(offer, ['id', 'quantity', 'price']) || typeof offer.id !== 'string' || !REASONING_ID.test(offer.id)
+      || !onGrid(offer.quantity, 1, 1_000, 1) || !onGrid(offer.price, 1, 1_000_000, 1)) return null;
+    offers.push({ id: offer.id, quantity: offer.quantity, price: offer.price });
+  }
+  if (new Set(offers.map((offer) => offer.id)).size !== offers.length) return null;
+  return { offers, scale: payload.scale };
+}
+/** Within half a hundredth of the exact unit price (major units): |g - p/(q*s)| <= 1/200. */
+function nearUnitPrice(given: { n: bigint; d: bigint }, offer: Offer, scale: number): boolean {
+  const qs = BigInt(offer.quantity * scale);
+  const gap = given.n * qs - given.d * BigInt(offer.price);
+  return (gap < 0n ? -gap : gap) * 200n <= given.d * qs;
+}
+function unitPriceGrade(payload: unknown, response: unknown, rubric: unknown): V2Grade {
+  const value = unitOffers(payload);
+  if (!value || !fields(response, ['unit_prices', 'choice']) || !record(response.unit_prices) || typeof response.choice !== 'string') return INVALID;
+  const { offers, scale } = value;
+  const typed = response.unit_prices;
+  if (Object.keys(typed).length !== offers.length || !offers.some((offer) => offer.id === response.choice)) return INVALID;
+  const given = offers.map((offer) => typeof typed[offer.id] === 'string' && NUMBER_TEXT.test(typed[offer.id] as string) ? rational(typed[offer.id] as string) : null);
+  if (given.some((item) => item === null || item.n < 0n)) return INVALID;
+  if (rubric === undefined) return grade('valid');
+  // The key must state each exact unit price and the one strictly cheapest offer.
+  const cheapest = offers.reduce((best, offer) => offer.price * best.quantity < best.price * offer.quantity ? offer : best);
+  if (!fields(rubric, ['unit_prices', 'better_id']) || !record(rubric.unit_prices) || rubric.better_id !== cheapest.id
+    || offers.some((offer) => offer !== cheapest && offer.price * cheapest.quantity === cheapest.price * offer.quantity)
+    || Object.keys(rubric.unit_prices).length !== offers.length) return INVALID;
+  for (const offer of offers) {
+    const key = typeof (rubric.unit_prices as Record<string, unknown>)[offer.id] === 'string' ? rational((rubric.unit_prices as Record<string, string>)[offer.id]!) : null;
+    if (!key || key.n * BigInt(offer.quantity * scale) !== key.d * BigInt(offer.price)) return INVALID;
+  }
+  const pricesRight = offers.every((offer, index) => nearUnitPrice(given[index]!, offer, scale));
+  const choiceRight = response.choice === cheapest.id;
+  return pricesRight && choiceRight ? grade('met') : grade('review', pricesRight ? 'outcome' : 'value');
+}
+
+/* ── L2 rule builder and L6/$9 built flowcharts (GAP-FIX-R2) ──────────────── */
+
+type Expr = { c: string } | { not: Expr } | { and: [Expr, Expr] } | { or: [Expr, Expr] };
+/** A rule expression the level allows: single = one condition; connective = one condition or A AND/OR B; nested = NOT and nesting to depth 3. */
+function exprOk(value: unknown, conditions: readonly string[], level: string, depth = 0): value is Expr {
+  if (!record(value) || Object.keys(value).length !== 1 || depth > 3) return false;
+  if (typeof value.c === 'string') return conditions.includes(value.c);
+  if (level === 'single') return false;
+  if (Object.hasOwn(value, 'not')) return level === 'nested' && exprOk(value.not, conditions, level, depth + 1);
+  const pair = Array.isArray(value.and) ? value.and : Array.isArray(value.or) ? value.or : null;
+  if (!pair || pair.length !== 2) return false;
+  if (level === 'connective') return pair.every((item) => record(item) && typeof item.c === 'string' && conditions.includes(item.c));
+  return pair.every((item) => exprOk(item, conditions, level, depth + 1));
+}
+function evalExpr(value: Expr, facts: Record<string, boolean>): boolean {
+  if ('c' in value) return facts[value.c] === true;
+  if ('not' in value) return !evalExpr(value.not, facts);
+  if ('and' in value) return evalExpr(value.and[0], facts) && evalExpr(value.and[1], facts);
+  return evalExpr(value.or[0], facts) || evalExpr(value.or[1], facts);
+}
+function exprConditions(value: Expr, out = new Set<string>()): Set<string> {
+  if ('c' in value) out.add(value.c);
+  else if ('not' in value) exprConditions(value.not, out);
+  else for (const item of 'and' in value ? value.and : value.or) exprConditions(item, out);
+  return out;
+}
+function ruleOk(rule: unknown, conditions: readonly string[], actions: readonly string[], level: string): rule is { if: Expr; then: string; else: string } {
+  return fields(rule, ['if', 'then', 'else']) && typeof rule.then === 'string' && typeof rule.else === 'string'
+    && actions.includes(rule.then) && actions.includes(rule.else) && exprOk(rule.if, conditions, level) && JSON.stringify(rule.if).length <= 600;
+}
+function factsOk(value: unknown, keys: readonly string[]): value is Record<string, boolean> {
+  return record(value) && Object.keys(value).length === keys.length && keys.every((key) => typeof value[key] === 'boolean');
+}
+function ruleBuilderGrade(payload: unknown, response: unknown, rubric: unknown): V2Grade {
+  if (!fields(payload, ['level', 'conditionIds', 'actionIds']) || !['single', 'connective', 'nested'].includes(payload.level as string)
+    || !strings(payload.conditionIds, 1, 4) || !strings(payload.actionIds, 2, 3) || !fields(response, ['rule'])) return INVALID;
+  const conditions = payload.conditionIds as string[]; const actions = payload.actionIds as string[]; const level = payload.level as string;
+  if (!ruleOk(response.rule, conditions, actions, level)) return INVALID;
+  if (rubric === undefined) return grade('valid');
+  if (!fields(rubric, ['target', 'scenarios']) || !ruleOk(rubric.target, conditions, actions, level) || rubric.target.then === rubric.target.else
+    || !Array.isArray(rubric.scenarios) || rubric.scenarios.length < 5 || rubric.scenarios.length > 10
+    || rubric.scenarios.some((item) => !factsOk(item, conditions))) return INVALID;
+  const target = rubric.target; const learner = response.rule as { if: Expr; then: string; else: string };
+  const scenarios = rubric.scenarios as Record<string, boolean>[];
+  const run = (rule: { if: Expr; then: string; else: string }) => scenarios.map((facts) => evalExpr(rule.if, facts) ? rule.then : rule.else);
+  const key = run(target);
+  // A hidden set on which the target always does the same thing proves nothing (Part 4.6).
+  if (new Set(key).size < 2) return INVALID;
+  if (run(learner).every((value, index) => value === key[index])) return grade('met');
+  const used = exprConditions(learner.if); const needed = exprConditions(target.if);
+  return grade('review', used.size !== needed.size || [...needed].some((item) => !used.has(item)) ? 'structure' : 'outcome');
+}
+
+type Tree = { o: string } | { q: string; yes: Tree; no: Tree };
+function treeOk(value: unknown, questions: readonly string[], outcomes: readonly string[], asked: readonly string[] = []): value is Tree {
+  if (!record(value)) return false;
+  if (Object.keys(value).length === 1 && typeof value.o === 'string') return outcomes.includes(value.o);
+  return Object.keys(value).length === 3 && typeof value.q === 'string' && questions.includes(value.q) && !asked.includes(value.q)
+    && treeOk(value.yes, questions, outcomes, [...asked, value.q]) && treeOk(value.no, questions, outcomes, [...asked, value.q]);
+}
+function walkTree(tree: Tree, answers: Record<string, boolean>): string {
+  return 'o' in tree ? tree.o : walkTree(answers[tree.q] ? tree.yes : tree.no, answers);
+}
+function treeQuestions(tree: Tree, out = new Set<string>()): Set<string> {
+  if (!('o' in tree)) { out.add(tree.q); treeQuestions(tree.yes, out); treeQuestions(tree.no, out); }
+  return out;
+}
+function builtFlowGrade(payload: Record<string, unknown>, response: unknown, rubric: unknown): V2Grade {
+  if (!fields(payload, ['mode', 'questionIds', 'outcomeIds']) || !strings(payload.questionIds, 1, 3) || !strings(payload.outcomeIds, 2, 3)
+    || !fields(response, ['tree'])) return INVALID;
+  const questions = payload.questionIds as string[]; const outcomes = payload.outcomeIds as string[];
+  if (!treeOk(response.tree, questions, outcomes)) return INVALID;
+  if (rubric === undefined) return grade('valid');
+  if (!fields(rubric, ['cases']) || !Array.isArray(rubric.cases) || rubric.cases.length < 5 || rubric.cases.length > 10
+    || rubric.cases.some((item) => !fields(item, ['answers', 'outcome']) || !factsOk(item.answers, questions) || !outcomes.includes(item.outcome as string))) return INVALID;
+  const cases = rubric.cases as Array<{ answers: Record<string, boolean>; outcome: string }>;
+  if (new Set(cases.map((item) => item.outcome)).size < 2) return INVALID;
+  const tree = response.tree as Tree;
+  if (cases.every((item) => walkTree(tree, item.answers) === item.outcome)) return grade('met');
+  // A chart that never asks a question the cases depend on is a structure (path) error.
+  return grade('review', treeQuestions(tree).size < questions.length ? 'path' : 'outcome');
+}
+
 /* M8 schema diagrams (GAP-FIX-R2): four schemas, three slots each. */
 const SCHEMAS: readonly string[] = ['change', 'group', 'compare', 'ratio'];
 const SCHEMA_SLOT_NAMES: Readonly<Record<string, readonly string[]>> = {
@@ -698,6 +825,7 @@ function scoreV2ExtendedDetailed(kind: V2VisualKind, payload: unknown, response:
     }
     case 'logic.flowchart.v2':
     case 'money.spend-decision.v2': {
+      if (record(payload) && payload.mode === 'build') return builtFlowGrade(payload, response, rubric);
       if (!fields(payload, ['start', 'nodes', 'scenarioIds']) || !strings(payload.scenarioIds, 1, 3) || !fields(response, ['paths']) || !record(response.paths)) return INVALID;
       const scenarios = payload.scenarioIds as string[];
       const paths = response.paths;
@@ -748,6 +876,8 @@ function scoreV2ExtendedDetailed(kind: V2VisualKind, payload: unknown, response:
     case 'story.would-you-rather.v2': return choiceGrade(payload, response, rubric, 2);
     // B.7 part 1: a question read off a teaching chart; the acceptable option ids are private.
     case 'visual.chart.v2': return choiceGrade(payload, response, rubric, 3, 4);
+    case 'money.unit-price.v2': return unitPriceGrade(payload, response, rubric);
+    case 'logic.rule-builder.v2': return ruleBuilderGrade(payload, response, rubric);
     default: return INVALID;
   }
 }

@@ -77,6 +77,36 @@ function replayPlace(start: { hundreds: number; tens: number; ones: number }, tr
   return { hundreds, tens, ones };
 }
 
+/** Every built chart of distinct questions (depth at most the question count), each leaf an outcome. */
+function builtTrees(questions: string[], outcomes: string[], asked: string[]): Json[] {
+  const leaves: Json[] = outcomes.map((o) => ({ o }));
+  if (asked.length >= questions.length) return leaves;
+  const out: Json[] = [...leaves];
+  for (const q of questions.filter((item) => !asked.includes(item))) {
+    const below = builtTrees(questions, outcomes, [...asked, q]);
+    for (const yes of below) for (const no of below) { out.push({ q, yes, no }); if (out.length > MAX_STATES * 4) return out; }
+  }
+  return out;
+}
+
+/** Every rule expression the L2 level allows, built the way the board builds it. */
+function ruleExprs(conditions: string[], level: string): Json[] {
+  const atoms: Json[] = conditions.map((c) => ({ c }));
+  if (level === 'single') return atoms;
+  const pairs = atoms.flatMap((a) => atoms.filter((b) => b !== a).flatMap((b) => [{ and: [a, b] }, { or: [a, b] }]));
+  if (level === 'connective') return [...atoms, ...pairs];
+  const literals = [...atoms, ...atoms.map((a) => ({ not: a }))];
+  const twos = literals.flatMap((a) => literals.filter((b) => b !== a).flatMap((b) => [{ and: [a, b] }, { or: [a, b] }]));
+  const threes = twos.flatMap((left) => literals.flatMap((c) => [{ and: [left, c] }, { or: [left, c] }]));
+  return [...literals, ...twos, ...sample(threes, 4_000)];
+}
+function evalExpr(expr: Json, facts: Json): boolean {
+  if (expr.c !== undefined) return facts[expr.c] === true;
+  if (expr.not !== undefined) return !evalExpr(expr.not, facts);
+  if (expr.and !== undefined) return evalExpr(expr.and[0], facts) && evalExpr(expr.and[1], facts);
+  return evalExpr(expr.or[0], facts) || evalExpr(expr.or[1], facts);
+}
+
 function money(denominations: Json[], limit = MAX_STATES): Json[] {
   const lists = denominations.map((d) => range(0, d.available));
   return product(lists, limit).map((counts) => ({ counts: Object.fromEntries(denominations.map((d, index) => [String(d.value_minor), counts[index]])) }));
@@ -207,6 +237,14 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     }
     case 'logic.flowchart.v2':
     case 'money.spend-decision.v2': {
+      if (p.mode === 'build') {
+        // L6 / $9 built charts (GAP-FIX-R2): every tree of up to the declared questions, each asked once per path.
+        const trees = builtTrees((p.questions as Json[]).map((q) => q.id as string), (p.outcomes as Json[]).map((o) => o.id as string), []);
+        const cases = rubric.cases as Json[];
+        const walk = (tree: Json, answers: Json): string => tree.o ?? walk(answers[tree.q] ? tree.yes : tree.no, answers);
+        return { inRange: sample(trees, MAX_STATES).map((tree) => ({ tree })), invalid: [{ tree: { o: 'not-an-outcome' } }, { tree: { q: 'not-a-question', yes: { o: 'x' }, no: { o: 'y' } } }],
+          expectMet: (r) => cases.every((item) => walk(r.tree, item.answers) === item.outcome) };
+      }
       const paths = flowPaths(p);
       const scenarios = (p.scenarios as Json[]).map((s) => s.id as string);
       return { inRange: product(scenarios.map(() => paths)).map((chosen) => ({ paths: Object.fromEntries(scenarios.map((id, index) => [id, chosen[index]])) })),
@@ -234,6 +272,30 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     case 'money.making-change.v2': {
       const over = { counts: Object.fromEntries((p.denominations as Json[]).map((d, index) => [String(d.value_minor), index === 0 ? d.available + 1 : 0])) };
       return { inRange: money(p.denominations), invalid: [over, { counts: {} }] };
+    }
+    case 'money.unit-price.v2': {
+      // $6 (GAP-FIX-R2): the rounded exact unit price and a cent off for each offer, with every choice.
+      const scale = p.currency === 'local' ? 100 : 1;
+      const offers = p.offers as Json[];
+      const exact = (o: Json) => Math.round(o.price_minor * 100 / (o.quantity * scale)) / 100;
+      const perOffer = offers.map((o) => [exact(o), exact(o) + 0.25].map((value) => value.toFixed(2)));
+      const inRange = product(perOffer).flatMap((prices) => offers.map((choice) => ({ unit_prices: Object.fromEntries(offers.map((o, i) => [o.id, prices[i]])), choice: choice.id })));
+      return { inRange, invalid: [{ unit_prices: {}, choice: offers[0]!.id }, { unit_prices: Object.fromEntries(offers.map((o) => [o.id, '-1'])), choice: offers[0]!.id },
+        { unit_prices: Object.fromEntries(offers.map((o) => [o.id, '1'])), choice: 'not-an-offer' }],
+        expectMet: (r) => r.choice === rubric.better_id && offers.every((o) => Math.abs(Number(r.unit_prices[o.id]) - o.price_minor / (o.quantity * scale)) <= 0.005 + 1e-9) };
+    }
+    case 'logic.rule-builder.v2': {
+      // L2 (GAP-FIX-R2): every rule the level allows, graded on the hidden scenarios by behaviour.
+      const conditions = (p.conditions as Json[]).map((c) => c.id as string);
+      const actions = (p.actions as Json[]).map((a) => a.id as string);
+      const exprs = ruleExprs(conditions, p.level);
+      const pairs = actions.flatMap((then) => actions.map((otherwise) => [then, otherwise] as const));
+      const rules = product([exprs as unknown[], pairs as unknown[]], MAX_STATES).map(([expr, pair]) => ({ rule: { if: expr, then: (pair as string[])[0], else: (pair as string[])[1] } }));
+      const evalRule = (rule: Json, facts: Json) => evalExpr(rule.if, facts) ? rule.then : rule.else;
+      const scenarios = rubric.scenarios as Json[];
+      return { inRange: rules, invalid: [{ rule: { if: { c: 'not-a-condition' }, then: actions[0], else: actions[1] } }, { rule: { if: { c: conditions[0] }, then: 'not-an-action', else: actions[1] } },
+        ...(p.level === 'single' ? [{ rule: { if: { not: { c: conditions[0] } }, then: actions[0], else: actions[1] } }] : [])],
+        expectMet: (r) => scenarios.every((facts) => evalRule(r.rule, facts) === evalRule(rubric.target, facts)) };
     }
     case 'story.branch.v2':
     case 'story.would-you-rather.v2':

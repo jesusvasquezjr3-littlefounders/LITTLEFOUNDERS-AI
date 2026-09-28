@@ -7,6 +7,8 @@ import type { LessonSequenceControl } from './lessonSequence';
 import { BoardShell, GradedFoot, MoveToChoice, useLessonMentor, useSegmentGrade, ViewedFoot, type OnGradeSegment } from './segmentKit';
 import './familyBoards.css';
 import { TeachingChart } from './charts/TeachingChart';
+import { FlowchartBuildBoard } from './buildBoards';
+import type { FlowchartPayload } from './v2SegmentFamilies.generated';
 
 /*
  * GAP-FIX-R1 learning: the first-release logic and money boards (Appendix P
@@ -95,10 +97,15 @@ export function EulerBoard({ document, segment, onBack, sequence, onGrade }: Boa
   </BoardShell>;
 }
 
+/* L6 / $9: walk a flowchart once per scenario, or (13+, GAP-FIX-R2) build one and test it on cases. */
+export function FlowchartBoard(props: BoardProps<'logic.flowchart.v2' | 'money.spend-decision.v2'>) {
+  return 'mode' in props.segment.payload ? <FlowchartBuildBoard {...props} /> : <WalkFlowchartBoard {...props} />;
+}
+
 /* L6 / $9: walk a flowchart once per scenario; Core grades the path and the outcome. */
-export function FlowchartBoard({ document, segment, onBack, sequence, onGrade }: BoardProps<'logic.flowchart.v2' | 'money.spend-decision.v2'>) {
+function WalkFlowchartBoard({ document, segment, onBack, sequence, onGrade }: BoardProps<'logic.flowchart.v2' | 'money.spend-decision.v2'>) {
   const t = familyCopy[document.locale];
-  const { start, nodes, scenarios } = segment.payload;
+  const { start, nodes, scenarios } = segment.payload as FlowchartPayload;
   const byId = useMemo(() => new Map(nodes.map((node) => [node.id, node])), [nodes]);
   const [paths, setPaths] = useState<Record<string, string[]>>(() => Object.fromEntries(scenarios.map((scenario) => [scenario.id, [start]])));
   const [active, setActive] = useState(scenarios[0]!.id);

@@ -10030,5 +10030,1787 @@
         "target": 30
       }
     }
+  },
+  {
+    "lesson_id": "v2-unit-price",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "unit-prices",
+      "lesson_id": "v2-unit-price",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-unit-price"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Price per item",
+      "required_capabilities": [
+        "visual.ratio-table.v1",
+        "operation.number-input.v1",
+        "operation.choose-option.v1"
+      ],
+      "segments": [
+        {
+          "id": "unit-price-01",
+          "type": "money.unit-price.v2",
+          "grading": "server",
+          "prompt": "Find the price per sticker, then pick the better buy.",
+          "visual": {
+            "type": "ratio-table"
+          },
+          "payload": {
+            "currency": "coins",
+            "offers": [
+              {
+                "id": "small-pack",
+                "quantity": 3,
+                "price_minor": 45,
+                "label": "Pack of 3"
+              },
+              {
+                "id": "big-pack",
+                "quantity": 5,
+                "price_minor": 70,
+                "label": "Pack of 5"
+              }
+            ],
+            "unit": "sticker"
+          }
+        },
+        {
+          "id": "unit-price-02",
+          "type": "money.unit-price.v2",
+          "grading": "server",
+          "prompt": "Three bags of apples. Which apple costs least?",
+          "visual": {
+            "type": "ratio-table"
+          },
+          "payload": {
+            "currency": "coins",
+            "offers": [
+              {
+                "id": "bag-2",
+                "quantity": 2,
+                "price_minor": 9,
+                "label": "Bag of 2"
+              },
+              {
+                "id": "bag-4",
+                "quantity": 4,
+                "price_minor": 20,
+                "label": "Bag of 4"
+              },
+              {
+                "id": "bag-6",
+                "quantity": 6,
+                "price_minor": 26,
+                "label": "Bag of 6"
+              }
+            ],
+            "unit": "apple"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "unit-price-01": {
+        "unit_prices": {
+          "small-pack": "15",
+          "big-pack": "14"
+        },
+        "better_id": "big-pack"
+      },
+      "unit-price-02": {
+        "unit_prices": {
+          "bag-2": "9/2",
+          "bag-4": "5",
+          "bag-6": "13/3"
+        },
+        "better_id": "bag-6"
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-unit-price",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "unit-prices",
+      "lesson_id": "v2-unit-price",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-unit-price"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Precio por unidad",
+      "required_capabilities": [
+        "visual.ratio-table.v1",
+        "operation.number-input.v1",
+        "operation.choose-option.v1"
+      ],
+      "segments": [
+        {
+          "id": "unit-price-01",
+          "type": "money.unit-price.v2",
+          "grading": "server",
+          "prompt": "Halla el precio por estampa y elige la mejor compra.",
+          "visual": {
+            "type": "ratio-table"
+          },
+          "payload": {
+            "currency": "coins",
+            "offers": [
+              {
+                "id": "small-pack",
+                "quantity": 3,
+                "price_minor": 45,
+                "label": "Paquete de 3"
+              },
+              {
+                "id": "big-pack",
+                "quantity": 5,
+                "price_minor": 70,
+                "label": "Paquete de 5"
+              }
+            ],
+            "unit": "estampa"
+          }
+        },
+        {
+          "id": "unit-price-02",
+          "type": "money.unit-price.v2",
+          "grading": "server",
+          "prompt": "Tres bolsas de manzanas. ¿Cuál manzana cuesta menos?",
+          "visual": {
+            "type": "ratio-table"
+          },
+          "payload": {
+            "currency": "coins",
+            "offers": [
+              {
+                "id": "bag-2",
+                "quantity": 2,
+                "price_minor": 9,
+                "label": "Bolsa de 2"
+              },
+              {
+                "id": "bag-4",
+                "quantity": 4,
+                "price_minor": 20,
+                "label": "Bolsa de 4"
+              },
+              {
+                "id": "bag-6",
+                "quantity": 6,
+                "price_minor": 26,
+                "label": "Bolsa de 6"
+              }
+            ],
+            "unit": "manzana"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "unit-price-01": {
+        "unit_prices": {
+          "small-pack": "15",
+          "big-pack": "14"
+        },
+        "better_id": "big-pack"
+      },
+      "unit-price-02": {
+        "unit_prices": {
+          "bag-2": "9/2",
+          "bag-4": "5",
+          "bag-6": "13/3"
+        },
+        "better_id": "bag-6"
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-unit-price",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "unit-prices",
+      "lesson_id": "v2-unit-price",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-unit-price"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Preço por unidade",
+      "required_capabilities": [
+        "visual.ratio-table.v1",
+        "operation.number-input.v1",
+        "operation.choose-option.v1"
+      ],
+      "segments": [
+        {
+          "id": "unit-price-01",
+          "type": "money.unit-price.v2",
+          "grading": "server",
+          "prompt": "Ache o preço por figurinha e escolha a melhor compra.",
+          "visual": {
+            "type": "ratio-table"
+          },
+          "payload": {
+            "currency": "coins",
+            "offers": [
+              {
+                "id": "small-pack",
+                "quantity": 3,
+                "price_minor": 45,
+                "label": "Pacote com 3"
+              },
+              {
+                "id": "big-pack",
+                "quantity": 5,
+                "price_minor": 70,
+                "label": "Pacote com 5"
+              }
+            ],
+            "unit": "figurinha"
+          }
+        },
+        {
+          "id": "unit-price-02",
+          "type": "money.unit-price.v2",
+          "grading": "server",
+          "prompt": "Três sacos de maçãs. Qual maçã custa menos?",
+          "visual": {
+            "type": "ratio-table"
+          },
+          "payload": {
+            "currency": "coins",
+            "offers": [
+              {
+                "id": "bag-2",
+                "quantity": 2,
+                "price_minor": 9,
+                "label": "Saco com 2"
+              },
+              {
+                "id": "bag-4",
+                "quantity": 4,
+                "price_minor": 20,
+                "label": "Saco com 4"
+              },
+              {
+                "id": "bag-6",
+                "quantity": 6,
+                "price_minor": 26,
+                "label": "Saco com 6"
+              }
+            ],
+            "unit": "maçã"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "unit-price-01": {
+        "unit_prices": {
+          "small-pack": "15",
+          "big-pack": "14"
+        },
+        "better_id": "big-pack"
+      },
+      "unit-price-02": {
+        "unit_prices": {
+          "bag-2": "9/2",
+          "bag-4": "5",
+          "bag-6": "13/3"
+        },
+        "better_id": "bag-6"
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-rule-builder-single",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "if-then-rules",
+      "lesson_id": "v2-rule-builder-single",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 8,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-if-then-rules"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Build an IF rule",
+      "required_capabilities": [
+        "visual.rule-builder.v1",
+        "operation.build-rule.v1",
+        "operation.case-step.v1"
+      ],
+      "segments": [
+        {
+          "id": "rule-single-01",
+          "type": "logic.rule-builder.v2",
+          "grading": "server",
+          "prompt": "Build the rule: IF you have enough, THEN buy.",
+          "visual": {
+            "type": "rule-builder"
+          },
+          "payload": {
+            "level": "single",
+            "conditions": [
+              {
+                "id": "enough",
+                "label": "I have enough coins"
+              }
+            ],
+            "actions": [
+              {
+                "id": "buy",
+                "label": "Buy it"
+              },
+              {
+                "id": "wait",
+                "label": "Wait a week"
+              }
+            ],
+            "practice": [
+              {
+                "id": "card-a",
+                "facts": {
+                  "enough": true
+                },
+                "label": "Toy 8, jar 10"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "rule-single-01": {
+        "target": {
+          "if": {
+            "c": "enough"
+          },
+          "then": "buy",
+          "else": "wait"
+        },
+        "scenarios": [
+          {
+            "enough": true
+          },
+          {
+            "enough": false
+          },
+          {
+            "enough": true
+          },
+          {
+            "enough": false
+          },
+          {
+            "enough": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-rule-builder-single",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "if-then-rules",
+      "lesson_id": "v2-rule-builder-single",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 8,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-if-then-rules"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Arma una regla SI",
+      "required_capabilities": [
+        "visual.rule-builder.v1",
+        "operation.build-rule.v1",
+        "operation.case-step.v1"
+      ],
+      "segments": [
+        {
+          "id": "rule-single-01",
+          "type": "logic.rule-builder.v2",
+          "grading": "server",
+          "prompt": "Arma la regla: SI tienes suficiente, ENTONCES compra.",
+          "visual": {
+            "type": "rule-builder"
+          },
+          "payload": {
+            "level": "single",
+            "conditions": [
+              {
+                "id": "enough",
+                "label": "Tengo monedas suficientes"
+              }
+            ],
+            "actions": [
+              {
+                "id": "buy",
+                "label": "Cómpralo"
+              },
+              {
+                "id": "wait",
+                "label": "Espera una semana"
+              }
+            ],
+            "practice": [
+              {
+                "id": "card-a",
+                "facts": {
+                  "enough": true
+                },
+                "label": "Juguete 8, frasco 10"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "rule-single-01": {
+        "target": {
+          "if": {
+            "c": "enough"
+          },
+          "then": "buy",
+          "else": "wait"
+        },
+        "scenarios": [
+          {
+            "enough": true
+          },
+          {
+            "enough": false
+          },
+          {
+            "enough": true
+          },
+          {
+            "enough": false
+          },
+          {
+            "enough": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-rule-builder-single",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "if-then-rules",
+      "lesson_id": "v2-rule-builder-single",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 8,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-if-then-rules"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Monte uma regra SE",
+      "required_capabilities": [
+        "visual.rule-builder.v1",
+        "operation.build-rule.v1",
+        "operation.case-step.v1"
+      ],
+      "segments": [
+        {
+          "id": "rule-single-01",
+          "type": "logic.rule-builder.v2",
+          "grading": "server",
+          "prompt": "Monte a regra: SE tiver o bastante, ENTÃO compre.",
+          "visual": {
+            "type": "rule-builder"
+          },
+          "payload": {
+            "level": "single",
+            "conditions": [
+              {
+                "id": "enough",
+                "label": "Tenho moedas suficientes"
+              }
+            ],
+            "actions": [
+              {
+                "id": "buy",
+                "label": "Compre"
+              },
+              {
+                "id": "wait",
+                "label": "Espere uma semana"
+              }
+            ],
+            "practice": [
+              {
+                "id": "card-a",
+                "facts": {
+                  "enough": true
+                },
+                "label": "Brinquedo 8, pote 10"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "rule-single-01": {
+        "target": {
+          "if": {
+            "c": "enough"
+          },
+          "then": "buy",
+          "else": "wait"
+        },
+        "scenarios": [
+          {
+            "enough": true
+          },
+          {
+            "enough": false
+          },
+          {
+            "enough": true
+          },
+          {
+            "enough": false
+          },
+          {
+            "enough": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-rule-builder-connective",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "if-then-rules",
+      "lesson_id": "v2-rule-builder-connective",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-if-then-rules"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Rules with AND and OR",
+      "required_capabilities": [
+        "visual.rule-builder.v1",
+        "operation.build-rule.v1",
+        "operation.case-step.v1"
+      ],
+      "segments": [
+        {
+          "id": "rule-connective-01",
+          "type": "logic.rule-builder.v2",
+          "grading": "server",
+          "prompt": "Buy only if you have enough AND really want it.",
+          "visual": {
+            "type": "rule-builder"
+          },
+          "payload": {
+            "level": "connective",
+            "conditions": [
+              {
+                "id": "enough",
+                "label": "I have enough coins"
+              },
+              {
+                "id": "want-it",
+                "label": "I really want it"
+              }
+            ],
+            "actions": [
+              {
+                "id": "buy",
+                "label": "Buy it"
+              },
+              {
+                "id": "wait",
+                "label": "Wait a week"
+              }
+            ],
+            "practice": [
+              {
+                "id": "card-a",
+                "facts": {
+                  "enough": true,
+                  "want-it": false
+                },
+                "label": "Enough coins, not wanted much"
+              },
+              {
+                "id": "card-b",
+                "facts": {
+                  "enough": true,
+                  "want-it": true
+                },
+                "label": "Enough coins and wanted"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "rule-connective-01": {
+        "target": {
+          "if": {
+            "and": [
+              {
+                "c": "enough"
+              },
+              {
+                "c": "want-it"
+              }
+            ]
+          },
+          "then": "buy",
+          "else": "wait"
+        },
+        "scenarios": [
+          {
+            "enough": true,
+            "want-it": true
+          },
+          {
+            "enough": true,
+            "want-it": false
+          },
+          {
+            "enough": false,
+            "want-it": true
+          },
+          {
+            "enough": false,
+            "want-it": false
+          },
+          {
+            "enough": true,
+            "want-it": true
+          },
+          {
+            "enough": false,
+            "want-it": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-rule-builder-connective",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "if-then-rules",
+      "lesson_id": "v2-rule-builder-connective",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-if-then-rules"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Reglas con Y y O",
+      "required_capabilities": [
+        "visual.rule-builder.v1",
+        "operation.build-rule.v1",
+        "operation.case-step.v1"
+      ],
+      "segments": [
+        {
+          "id": "rule-connective-01",
+          "type": "logic.rule-builder.v2",
+          "grading": "server",
+          "prompt": "Compra solo si te alcanza Y lo quieres de verdad.",
+          "visual": {
+            "type": "rule-builder"
+          },
+          "payload": {
+            "level": "connective",
+            "conditions": [
+              {
+                "id": "enough",
+                "label": "Tengo monedas suficientes"
+              },
+              {
+                "id": "want-it",
+                "label": "Lo quiero de verdad"
+              }
+            ],
+            "actions": [
+              {
+                "id": "buy",
+                "label": "Cómpralo"
+              },
+              {
+                "id": "wait",
+                "label": "Espera una semana"
+              }
+            ],
+            "practice": [
+              {
+                "id": "card-a",
+                "facts": {
+                  "enough": true,
+                  "want-it": false
+                },
+                "label": "Monedas suficientes, poco deseo"
+              },
+              {
+                "id": "card-b",
+                "facts": {
+                  "enough": true,
+                  "want-it": true
+                },
+                "label": "Monedas suficientes y lo quiere"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "rule-connective-01": {
+        "target": {
+          "if": {
+            "and": [
+              {
+                "c": "enough"
+              },
+              {
+                "c": "want-it"
+              }
+            ]
+          },
+          "then": "buy",
+          "else": "wait"
+        },
+        "scenarios": [
+          {
+            "enough": true,
+            "want-it": true
+          },
+          {
+            "enough": true,
+            "want-it": false
+          },
+          {
+            "enough": false,
+            "want-it": true
+          },
+          {
+            "enough": false,
+            "want-it": false
+          },
+          {
+            "enough": true,
+            "want-it": true
+          },
+          {
+            "enough": false,
+            "want-it": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-rule-builder-connective",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "if-then-rules",
+      "lesson_id": "v2-rule-builder-connective",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-if-then-rules"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Regras com E e OU",
+      "required_capabilities": [
+        "visual.rule-builder.v1",
+        "operation.build-rule.v1",
+        "operation.case-step.v1"
+      ],
+      "segments": [
+        {
+          "id": "rule-connective-01",
+          "type": "logic.rule-builder.v2",
+          "grading": "server",
+          "prompt": "Compre só se tiver o bastante E quiser muito.",
+          "visual": {
+            "type": "rule-builder"
+          },
+          "payload": {
+            "level": "connective",
+            "conditions": [
+              {
+                "id": "enough",
+                "label": "Tenho moedas suficientes"
+              },
+              {
+                "id": "want-it",
+                "label": "Eu quero muito"
+              }
+            ],
+            "actions": [
+              {
+                "id": "buy",
+                "label": "Compre"
+              },
+              {
+                "id": "wait",
+                "label": "Espere uma semana"
+              }
+            ],
+            "practice": [
+              {
+                "id": "card-a",
+                "facts": {
+                  "enough": true,
+                  "want-it": false
+                },
+                "label": "Moedas suficientes, pouca vontade"
+              },
+              {
+                "id": "card-b",
+                "facts": {
+                  "enough": true,
+                  "want-it": true
+                },
+                "label": "Moedas suficientes e quer"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "rule-connective-01": {
+        "target": {
+          "if": {
+            "and": [
+              {
+                "c": "enough"
+              },
+              {
+                "c": "want-it"
+              }
+            ]
+          },
+          "then": "buy",
+          "else": "wait"
+        },
+        "scenarios": [
+          {
+            "enough": true,
+            "want-it": true
+          },
+          {
+            "enough": true,
+            "want-it": false
+          },
+          {
+            "enough": false,
+            "want-it": true
+          },
+          {
+            "enough": false,
+            "want-it": false
+          },
+          {
+            "enough": true,
+            "want-it": true
+          },
+          {
+            "enough": false,
+            "want-it": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-rule-builder-nested",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-teen",
+      "chapter_id": "if-then-rules",
+      "lesson_id": "v2-rule-builder-nested",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-if-then-rules"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Nested rules with NOT",
+      "required_capabilities": [
+        "visual.rule-builder.v1",
+        "operation.build-rule.v1",
+        "operation.case-step.v1"
+      ],
+      "segments": [
+        {
+          "id": "rule-nested-01",
+          "type": "logic.rule-builder.v2",
+          "grading": "server",
+          "prompt": "Wait for a sale when you could buy now. Build it.",
+          "visual": {
+            "type": "rule-builder"
+          },
+          "payload": {
+            "level": "nested",
+            "conditions": [
+              {
+                "id": "enough",
+                "label": "I have enough coins"
+              },
+              {
+                "id": "want-it",
+                "label": "I really want it"
+              },
+              {
+                "id": "on-sale",
+                "label": "It is on sale"
+              }
+            ],
+            "actions": [
+              {
+                "id": "buy",
+                "label": "Buy it"
+              },
+              {
+                "id": "wait",
+                "label": "Wait a week"
+              }
+            ],
+            "practice": [
+              {
+                "id": "card-a",
+                "facts": {
+                  "enough": false,
+                  "want-it": true,
+                  "on-sale": true
+                },
+                "label": "On sale, wanted, short of coins"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "rule-nested-01": {
+        "target": {
+          "if": {
+            "and": [
+              {
+                "and": [
+                  {
+                    "c": "enough"
+                  },
+                  {
+                    "c": "want-it"
+                  }
+                ]
+              },
+              {
+                "not": {
+                  "c": "on-sale"
+                }
+              }
+            ]
+          },
+          "then": "wait",
+          "else": "buy"
+        },
+        "scenarios": [
+          {
+            "enough": true,
+            "want-it": true,
+            "on-sale": false
+          },
+          {
+            "enough": true,
+            "want-it": true,
+            "on-sale": true
+          },
+          {
+            "enough": false,
+            "want-it": true,
+            "on-sale": false
+          },
+          {
+            "enough": true,
+            "want-it": false,
+            "on-sale": false
+          },
+          {
+            "enough": false,
+            "want-it": false,
+            "on-sale": true
+          },
+          {
+            "enough": true,
+            "want-it": true,
+            "on-sale": false
+          },
+          {
+            "enough": false,
+            "want-it": true,
+            "on-sale": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-rule-builder-nested",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-teen",
+      "chapter_id": "if-then-rules",
+      "lesson_id": "v2-rule-builder-nested",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-if-then-rules"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Reglas anidadas con NO",
+      "required_capabilities": [
+        "visual.rule-builder.v1",
+        "operation.build-rule.v1",
+        "operation.case-step.v1"
+      ],
+      "segments": [
+        {
+          "id": "rule-nested-01",
+          "type": "logic.rule-builder.v2",
+          "grading": "server",
+          "prompt": "Espera la oferta cuando podrías comprar ya. Ármala.",
+          "visual": {
+            "type": "rule-builder"
+          },
+          "payload": {
+            "level": "nested",
+            "conditions": [
+              {
+                "id": "enough",
+                "label": "Tengo monedas suficientes"
+              },
+              {
+                "id": "want-it",
+                "label": "Lo quiero de verdad"
+              },
+              {
+                "id": "on-sale",
+                "label": "Está en oferta"
+              }
+            ],
+            "actions": [
+              {
+                "id": "buy",
+                "label": "Cómpralo"
+              },
+              {
+                "id": "wait",
+                "label": "Espera una semana"
+              }
+            ],
+            "practice": [
+              {
+                "id": "card-a",
+                "facts": {
+                  "enough": false,
+                  "want-it": true,
+                  "on-sale": true
+                },
+                "label": "En oferta, deseado, sin monedas"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "rule-nested-01": {
+        "target": {
+          "if": {
+            "and": [
+              {
+                "and": [
+                  {
+                    "c": "enough"
+                  },
+                  {
+                    "c": "want-it"
+                  }
+                ]
+              },
+              {
+                "not": {
+                  "c": "on-sale"
+                }
+              }
+            ]
+          },
+          "then": "wait",
+          "else": "buy"
+        },
+        "scenarios": [
+          {
+            "enough": true,
+            "want-it": true,
+            "on-sale": false
+          },
+          {
+            "enough": true,
+            "want-it": true,
+            "on-sale": true
+          },
+          {
+            "enough": false,
+            "want-it": true,
+            "on-sale": false
+          },
+          {
+            "enough": true,
+            "want-it": false,
+            "on-sale": false
+          },
+          {
+            "enough": false,
+            "want-it": false,
+            "on-sale": true
+          },
+          {
+            "enough": true,
+            "want-it": true,
+            "on-sale": false
+          },
+          {
+            "enough": false,
+            "want-it": true,
+            "on-sale": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-rule-builder-nested",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-teen",
+      "chapter_id": "if-then-rules",
+      "lesson_id": "v2-rule-builder-nested",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-if-then-rules"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Regras aninhadas com NÃO",
+      "required_capabilities": [
+        "visual.rule-builder.v1",
+        "operation.build-rule.v1",
+        "operation.case-step.v1"
+      ],
+      "segments": [
+        {
+          "id": "rule-nested-01",
+          "type": "logic.rule-builder.v2",
+          "grading": "server",
+          "prompt": "Espere a promoção quando poderia comprar já. Monte.",
+          "visual": {
+            "type": "rule-builder"
+          },
+          "payload": {
+            "level": "nested",
+            "conditions": [
+              {
+                "id": "enough",
+                "label": "Tenho moedas suficientes"
+              },
+              {
+                "id": "want-it",
+                "label": "Eu quero muito"
+              },
+              {
+                "id": "on-sale",
+                "label": "Está em promoção"
+              }
+            ],
+            "actions": [
+              {
+                "id": "buy",
+                "label": "Compre"
+              },
+              {
+                "id": "wait",
+                "label": "Espere uma semana"
+              }
+            ],
+            "practice": [
+              {
+                "id": "card-a",
+                "facts": {
+                  "enough": false,
+                  "want-it": true,
+                  "on-sale": true
+                },
+                "label": "Em promoção, desejado, sem moedas"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "rule-nested-01": {
+        "target": {
+          "if": {
+            "and": [
+              {
+                "and": [
+                  {
+                    "c": "enough"
+                  },
+                  {
+                    "c": "want-it"
+                  }
+                ]
+              },
+              {
+                "not": {
+                  "c": "on-sale"
+                }
+              }
+            ]
+          },
+          "then": "wait",
+          "else": "buy"
+        },
+        "scenarios": [
+          {
+            "enough": true,
+            "want-it": true,
+            "on-sale": false
+          },
+          {
+            "enough": true,
+            "want-it": true,
+            "on-sale": true
+          },
+          {
+            "enough": false,
+            "want-it": true,
+            "on-sale": false
+          },
+          {
+            "enough": true,
+            "want-it": false,
+            "on-sale": false
+          },
+          {
+            "enough": false,
+            "want-it": false,
+            "on-sale": true
+          },
+          {
+            "enough": true,
+            "want-it": true,
+            "on-sale": false
+          },
+          {
+            "enough": false,
+            "want-it": true,
+            "on-sale": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-flowchart-build",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-teen",
+      "chapter_id": "spend-decisions",
+      "lesson_id": "v2-flowchart-build",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-spend-decisions"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Build your buying chart",
+      "required_capabilities": [
+        "visual.decision-tree.v1",
+        "operation.step-flowchart.v1",
+        "operation.build-flowchart.v1"
+      ],
+      "segments": [
+        {
+          "id": "flow-build-01",
+          "type": "money.spend-decision.v2",
+          "grading": "server",
+          "prompt": "Build a chart that decides any purchase. Test it.",
+          "visual": {
+            "type": "decision-tree"
+          },
+          "payload": {
+            "mode": "build",
+            "questions": [
+              {
+                "id": "need-it",
+                "label": "Do I need it?"
+              },
+              {
+                "id": "afford",
+                "label": "Can I afford it this week?"
+              }
+            ],
+            "outcomes": [
+              {
+                "id": "buy-now",
+                "label": "Buy now"
+              },
+              {
+                "id": "save-first",
+                "label": "Save first"
+              },
+              {
+                "id": "skip",
+                "label": "Skip it"
+              }
+            ],
+            "practice": [
+              {
+                "id": "case-a",
+                "answers": {
+                  "need-it": true,
+                  "afford": false
+                },
+                "label": "New shoes, short this week"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "flow-build-01": {
+        "cases": [
+          {
+            "answers": {
+              "need-it": true,
+              "afford": true
+            },
+            "outcome": "buy-now"
+          },
+          {
+            "answers": {
+              "need-it": true,
+              "afford": false
+            },
+            "outcome": "save-first"
+          },
+          {
+            "answers": {
+              "need-it": false,
+              "afford": true
+            },
+            "outcome": "skip"
+          },
+          {
+            "answers": {
+              "need-it": false,
+              "afford": false
+            },
+            "outcome": "skip"
+          },
+          {
+            "answers": {
+              "need-it": true,
+              "afford": true
+            },
+            "outcome": "buy-now"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-flowchart-build",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-teen",
+      "chapter_id": "spend-decisions",
+      "lesson_id": "v2-flowchart-build",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-spend-decisions"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Arma tu diagrama de compra",
+      "required_capabilities": [
+        "visual.decision-tree.v1",
+        "operation.step-flowchart.v1",
+        "operation.build-flowchart.v1"
+      ],
+      "segments": [
+        {
+          "id": "flow-build-01",
+          "type": "money.spend-decision.v2",
+          "grading": "server",
+          "prompt": "Arma un diagrama que decida cualquier compra. Pruébalo.",
+          "visual": {
+            "type": "decision-tree"
+          },
+          "payload": {
+            "mode": "build",
+            "questions": [
+              {
+                "id": "need-it",
+                "label": "¿Lo necesito?"
+              },
+              {
+                "id": "afford",
+                "label": "¿Me alcanza esta semana?"
+              }
+            ],
+            "outcomes": [
+              {
+                "id": "buy-now",
+                "label": "Compra ya"
+              },
+              {
+                "id": "save-first",
+                "label": "Ahorra primero"
+              },
+              {
+                "id": "skip",
+                "label": "Déjalo"
+              }
+            ],
+            "practice": [
+              {
+                "id": "case-a",
+                "answers": {
+                  "need-it": true,
+                  "afford": false
+                },
+                "label": "Zapatos nuevos, sin dinero hoy"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "flow-build-01": {
+        "cases": [
+          {
+            "answers": {
+              "need-it": true,
+              "afford": true
+            },
+            "outcome": "buy-now"
+          },
+          {
+            "answers": {
+              "need-it": true,
+              "afford": false
+            },
+            "outcome": "save-first"
+          },
+          {
+            "answers": {
+              "need-it": false,
+              "afford": true
+            },
+            "outcome": "skip"
+          },
+          {
+            "answers": {
+              "need-it": false,
+              "afford": false
+            },
+            "outcome": "skip"
+          },
+          {
+            "answers": {
+              "need-it": true,
+              "afford": true
+            },
+            "outcome": "buy-now"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-flowchart-build",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-teen",
+      "chapter_id": "spend-decisions",
+      "lesson_id": "v2-flowchart-build",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-spend-decisions"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Monte seu diagrama de compra",
+      "required_capabilities": [
+        "visual.decision-tree.v1",
+        "operation.step-flowchart.v1",
+        "operation.build-flowchart.v1"
+      ],
+      "segments": [
+        {
+          "id": "flow-build-01",
+          "type": "money.spend-decision.v2",
+          "grading": "server",
+          "prompt": "Monte um diagrama que decida qualquer compra. Teste.",
+          "visual": {
+            "type": "decision-tree"
+          },
+          "payload": {
+            "mode": "build",
+            "questions": [
+              {
+                "id": "need-it",
+                "label": "Eu preciso?"
+              },
+              {
+                "id": "afford",
+                "label": "Dá para pagar nesta semana?"
+              }
+            ],
+            "outcomes": [
+              {
+                "id": "buy-now",
+                "label": "Compre já"
+              },
+              {
+                "id": "save-first",
+                "label": "Guarde antes"
+              },
+              {
+                "id": "skip",
+                "label": "Deixe para lá"
+              }
+            ],
+            "practice": [
+              {
+                "id": "case-a",
+                "answers": {
+                  "need-it": true,
+                  "afford": false
+                },
+                "label": "Tênis novo, sem dinheiro agora"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "flow-build-01": {
+        "cases": [
+          {
+            "answers": {
+              "need-it": true,
+              "afford": true
+            },
+            "outcome": "buy-now"
+          },
+          {
+            "answers": {
+              "need-it": true,
+              "afford": false
+            },
+            "outcome": "save-first"
+          },
+          {
+            "answers": {
+              "need-it": false,
+              "afford": true
+            },
+            "outcome": "skip"
+          },
+          {
+            "answers": {
+              "need-it": false,
+              "afford": false
+            },
+            "outcome": "skip"
+          },
+          {
+            "answers": {
+              "need-it": true,
+              "afford": true
+            },
+            "outcome": "buy-now"
+          }
+        ]
+      }
+    }
   }
 ]
