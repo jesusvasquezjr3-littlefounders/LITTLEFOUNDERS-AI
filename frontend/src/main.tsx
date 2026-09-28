@@ -3,7 +3,9 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { App } from '@/App';
 import '@/i18n';
-import '@/index.css';
+// The document ground only: the legacy global sheet (index.css) loads with the
+// OD-24 lesson island, the staff lesson preview and the dev labs, never here.
+import '@/rebuild/design/document.css';
 import { captureLandingContext } from '@/lib/visitor';
 
 // The dotlottie player's WebAssembly URL is set where the player mounts

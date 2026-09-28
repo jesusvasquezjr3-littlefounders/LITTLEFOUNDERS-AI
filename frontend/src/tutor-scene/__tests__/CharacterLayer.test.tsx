@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { render } from '@testing-library/react'
 import { CharacterLayerProvider, CharacterSlot } from '../CharacterLayer'
@@ -16,7 +18,7 @@ import { CharacterLayerProvider, CharacterSlot } from '../CharacterLayer'
  * `element.click()`, which dispatches straight at the node and does no
  * hit-testing. jsdom cannot hit-test either, so what is checkable HERE is the
  * contract: the layer must declare itself non-interactive, and the overlay must
- * carry `pointer-events-none`. The behaviour itself is checked with real mouse
+ * carry `pointer-events: none` (`.lf-character-layer`). The behaviour itself is checked with real mouse
  * events in a browser.
  */
 
@@ -35,8 +37,10 @@ describe('CharacterLayerProvider', () => {
     )
     const overlay = container.querySelector('[data-character-layer]')
     expect(overlay).not.toBeNull()
-    expect(overlay?.className).toContain('pointer-events-none')
-    expect(overlay?.className).toContain('fixed')
+    // The layer's own class (sceneCanvas.css): the Tailwind utilities load only with the OD-24 island's sheet.
+    expect(overlay?.className).toContain('lf-character-layer')
+    const css = readFileSync(resolve(__dirname, '../sceneCanvas.css'), 'utf8')
+    expect(css).toMatch(/\.lf-character-layer \{[^}]*position: fixed;[^}]*pointer-events: none;/)
   })
 
   it('keeps the page it covers rendered and reachable in the DOM', () => {

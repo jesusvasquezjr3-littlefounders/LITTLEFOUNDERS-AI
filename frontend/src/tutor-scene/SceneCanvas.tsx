@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useAdaptiveQuality } from './useAdaptiveQuality';
 import type { QualitySettings, QualityTier } from './quality';
+import './sceneCanvas.css';
 
 export interface SceneStats {
   fps: number;
@@ -167,15 +168,15 @@ export function SceneCanvas({ children, className, onStats, onSettings, camera, 
     return (
       <div
         ref={hostRef}
-        className={cn('flex items-center justify-center rounded-lg bg-surface-sunken p-6 text-center', className)}
+        className={cn('lf-scene-notice', className)}
       >
-        <p className="lf-body text-content-muted">{t('tutor.scene.webglUnavailable')}</p>
+        <p>{t('tutor.scene.webglUnavailable')}</p>
       </div>
     );
   }
 
   /*
-   * `min-w-0` and the canvas cap are what let this shrink, and both are load
+   * `min-inline-size: 0` and the canvas cap (sceneCanvas.css) are what let this shrink, and both are load
    * bearing.
    *
    * R3F gives the <canvas> explicit width/height ATTRIBUTES, which is an
@@ -192,7 +193,7 @@ export function SceneCanvas({ children, className, onStats, onSettings, camera, 
   return (
     <div
       ref={hostRef}
-      className={cn('relative min-w-0 [&_canvas]:max-w-full', !interactive && 'pointer-events-none', className)}
+      className={cn('lf-scene-host', !interactive && 'lf-scene-host--passive', className)}
     >
       <Canvas
         key={contextEpoch}
@@ -274,8 +275,8 @@ export function SceneCanvas({ children, className, onStats, onSettings, camera, 
         {children}
       </Canvas>
       {contextLost ? (
-        <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-surface-sunken/90 p-6 text-center">
-          <p className="lf-body text-content-muted">{t('tutor.scene.contextLost')}</p>
+        <div className="lf-scene-notice lf-scene-notice--over">
+          <p>{t('tutor.scene.contextLost')}</p>
         </div>
       ) : null}
     </div>

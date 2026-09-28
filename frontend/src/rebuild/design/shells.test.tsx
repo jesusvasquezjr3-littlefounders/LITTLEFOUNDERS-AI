@@ -89,6 +89,20 @@ describe('frame: skip link, main, title, language and route focus', () => {
     expect(heading).toHaveAttribute('tabindex', '-1');
   });
 
+  it('plays the shell route entrance on <main> only on a real route change (02 rule 14), and clears it when it ends', () => {
+    const { rerender } = render(<StrictMode><Learner page="learn" /></StrictMode>);
+    const main = screen.getByRole('main');
+    expect(main).not.toHaveAttribute('data-route-enter');
+    rerender(<StrictMode><Learner page="learn" theme="light" /></StrictMode>);
+    expect(main).not.toHaveAttribute('data-route-enter');
+    rerender(<StrictMode><Learner page="wallet" /></StrictMode>);
+    expect(main).toHaveAttribute('data-route-enter');
+    fireEvent.animationEnd(main);
+    expect(main).not.toHaveAttribute('data-route-enter');
+    // No legacy page body and no legacy entrance class are left in the shell (02 rule 23).
+    expect(document.querySelector('[data-legacy-body], .lf-page-enter')).toBeNull();
+  });
+
   it('navigates client-side on a plain click only, and marks the current page', () => {
     const onNavigate = vi.fn();
     render(<Learner page="learn" onNavigate={onNavigate} />);

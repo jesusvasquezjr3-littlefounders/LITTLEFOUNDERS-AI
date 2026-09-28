@@ -14,6 +14,7 @@ import {
 import { cn } from '@/lib/utils';
 import CharacterActor from '@/components/characters/control/CharacterActor';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
+import './sceneCanvas.css';
 
 /*
  * ONE CANVAS FOR A WHOLE SCREEN OF CHARACTERS.
@@ -145,7 +146,7 @@ export function CharacterLayerProvider({
   return (
     <LayerContext.Provider value={registry}>
       {children}
-      <div className={cn('pointer-events-none fixed inset-0', className)} aria-hidden="true" data-character-layer="">
+      <div className={cn('lf-character-layer', className)} aria-hidden="true" data-character-layer="">
         <Suspense fallback={null}>
           <LayerCanvas slots={slots} slotsRef={slotsRef} onDrawing={setDrawing} />
         </Suspense>

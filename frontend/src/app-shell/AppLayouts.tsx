@@ -1,12 +1,11 @@
-import { useEffect, type ReactNode } from 'react';
+import { Fragment, useEffect, type ReactNode } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { useWalletAccess } from '@/routes/app/wallet/useWalletAccess';
 import { LearnerShell, StaffShell, STAFF_PERMISSIONS, TutorShell, type ShellNavItem, type StaffGrants, type StaffNavItem, type StaffPermission } from '@/rebuild/design/controls';
-import { isRebuiltStaffPath } from '@/app-routes/staffGrants';
 import { appShellKind, currentSlot, learnerNav, MENTOR_PATH, staffNav, tutorNav, type NavSlot, type ShellAccount } from './navigation';
-import { LegacyBody, ShellRoot, useShellCopy, useShellLocale, useShellNavigate } from './ShellRoot';
+import { ShellRoot, useShellCopy, useShellLocale, useShellNavigate } from './ShellRoot';
 import { useMentorCharacter } from './useMentorCharacter';
 
 /*
@@ -75,7 +74,9 @@ export function AppShellLayout() {
     appName: APP_NAME, pageTitle: pageTitleFor(pathname, items, current, copy.nav.profile), routeKey: pathname, locale,
     onNavigate: navigate, current, items,
   };
-  const body = <LegacyBody frame="app" routeKey={pathname}><Outlet /></LegacyBody>;
+  // Every page is rebuilt (02 rule 23, D13): the shell's <main> owns the content box and the route entrance.
+  // The key keeps a page's own state from surviving a move to another address on the same route.
+  const body = <Fragment key={pathname}><Outlet /></Fragment>;
   return <ShellRoot>
     {kind === 'tutor'
       ? <TutorShell {...common} roleLabel={copy.tutorRole}
@@ -114,8 +115,7 @@ export function StaffShellLayout() {
     <StaffShell appName={APP_NAME} pageTitle={items.find((item) => item.id === current)?.label ?? copy.staffRole} routeKey={pathname}
       locale={locale} onNavigate={navigate} current={current} items={items} grants={staffGrants(roles, adminPermissions)}
       roleLabel={copy.staffRole} labels={{ skip: copy.skip, navigation: copy.navigation, menu: copy.menu, close: copy.close }}>
-      {/* A rebuilt console screen (Lane 6) takes the shell's content area itself; a legacy page keeps its legacy body. */}
-      {isRebuiltStaffPath(pathname) ? <Outlet /> : <LegacyBody frame="app" routeKey={pathname}><Outlet /></LegacyBody>}
+      <Outlet />
     </StaffShell>
   </ShellRoot>;
 }

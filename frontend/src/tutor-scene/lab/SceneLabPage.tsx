@@ -25,6 +25,8 @@ import { VISEMES } from '../mouthAtlas';
 import { useLipSync } from '../useLipSync';
 import { CHARACTER_ASSETS, SCENE_ASSETS } from '../assets';
 import { Vector3, type PerspectiveCamera } from 'three';
+// Development lab: it renders with the legacy global sheet, which the product entry no longer loads.
+import '@/index.css';
 
 /** Every shipped asset, so the lab can inspect them without a file picker. */
 const PRESETS = [

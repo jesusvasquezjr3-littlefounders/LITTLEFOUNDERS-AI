@@ -14,34 +14,58 @@ import { describe, expect, it } from 'vitest';
 
 const FRONTEND = resolve(__dirname, '../..');
 const HTML = readFileSync(resolve(FRONTEND, 'index.html'), 'utf8');
-const CSS = readFileSync(resolve(FRONTEND, 'src/index.css'), 'utf8');
+const TOKENS = readFileSync(resolve(FRONTEND, 'src/rebuild/design/tokens.css'), 'utf8');
+const DOCUMENT = readFileSync(resolve(FRONTEND, 'src/rebuild/design/document.css'), 'utf8');
+const MAIN = readFileSync(resolve(FRONTEND, 'src/main.tsx'), 'utf8');
 const THEME = readFileSync(resolve(FRONTEND, 'src/theme/useTheme.tsx'), 'utf8');
 const BOOT = readFileSync(resolve(FRONTEND, 'src/lib/boot.ts'), 'utf8');
 
-/** `--lf-base: 248 250 252` → `#f8fafc`, so the two spellings can be compared. */
-function tripletToHex(triplet: string): string {
-  const parts = triplet.trim().split(/\s+/).map(Number);
-  expect(parts).toHaveLength(3);
-  return `#${parts.map((n) => n.toString(16).padStart(2, '0')).join('')}`;
+/** One token's value in the light block, or in the dark block when `dark` is set (02 D4, the generated sheet). */
+function token(name: string, dark = false): string {
+  const start = dark ? TOKENS.indexOf('.lf-rebuild[data-theme="dark"] {') : TOKENS.indexOf('.lf-rebuild {');
+  expect(start, 'token block not found').toBeGreaterThan(-1);
+  const block = TOKENS.slice(start, TOKENS.indexOf('}', start));
+  const match = block.match(new RegExp(`${name}: (#[0-9a-f]{6});`));
+  expect(match, `${name} not found`).not.toBeNull();
+  return match![1]!;
 }
 
-function cssVar(source: string, name: string, after = 0): string {
-  const at = source.indexOf(name, after);
-  expect(at, `${name} not found in stylesheet`).toBeGreaterThan(-1);
-  return source.slice(at + name.length + 1, source.indexOf(';', at));
+function rgbOf(hex: string): string {
+  return [1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16)).join(', ');
 }
 
-describe('boot veil — the ground colour', () => {
-  it('matches --lf-base for light', () => {
-    const light = tripletToHex(cssVar(CSS, '--lf-base'));
-    expect(HTML).toContain(`--lf-boot-ground: ${light};`);
+describe('boot veil — the ground colour (02 D4)', () => {
+  it('is the design token --base for light', () => {
+    expect(token('--base')).toBe('#f4f5fd');
+    expect(HTML).toContain(`--lf-boot-ground: ${token('--base')};`);
   });
 
-  it('matches --lf-base for dark', () => {
-    const darkBlock = CSS.indexOf('.dark {');
-    expect(darkBlock).toBeGreaterThan(-1);
-    const dark = tripletToHex(cssVar(CSS, '--lf-base', darkBlock));
-    expect(HTML).toContain(`--lf-boot-ground: ${dark};`);
+  it('is the design token --base for dark', () => {
+    expect(HTML).toContain(`--lf-boot-ground: ${token('--base', true)};`);
+  });
+
+  it('blooms in --primary, not the legacy indigo', () => {
+    expect(HTML).toContain(`--lf-boot-bloom: rgba(${rgbOf(token('--primary'))}, 0.16);`);
+    expect(HTML).toContain(`--lf-boot-bloom: rgba(${rgbOf(token('--primary'))}, 0.18);`);
+    expect(HTML).not.toMatch(/#f8fafc|#0a0e1a|79, 70, 229|129, 140, 248/);
+  });
+});
+
+describe('the document ground and typefaces (02 D3, D4; OD-12)', () => {
+  it('paints the body in the token --base and --content, in both modes, in Nunito', () => {
+    expect(DOCUMENT).toMatch(new RegExp(`body \\{[^}]*background-color: ${token('--base')};[^}]*color: ${token('--content')};[^}]*Nunito`));
+    expect(DOCUMENT).toContain(`html.dark body { background-color: ${token('--base', true)}; color: ${token('--content', true)}; }`);
+    expect(MAIN).toContain("import '@/rebuild/design/document.css';");
+  });
+
+  it('never loads the legacy global sheet on the product entry', () => {
+    expect(MAIN).not.toMatch(/import '@\/index\.css'/);
+  });
+
+  it('requests no third-party font and preloads the two self-hosted faces, not the icon font', () => {
+    expect(HTML).not.toMatch(/fonts\.googleapis\.com|fonts\.gstatic\.com|material-symbols/);
+    expect(HTML).toContain('href="/fonts/fredoka-latin-v1.woff2" crossorigin');
+    expect(HTML).toContain('href="/fonts/nunito-latin-v1.woff2" crossorigin');
   });
 });
 

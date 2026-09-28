@@ -6,11 +6,14 @@ import type { LessonDocument } from '@/lesson-engine/core/types';
 import type { SessionState } from '@/lesson-engine/core/session';
 import type { AudioManifest } from '@/lesson-engine/player/narration';
 import type { ServerCompletion } from '@/lesson-engine/player/completion';
-import { newCheckpoint, removeCheckpoint, writeCheckpoint, type LessonCheckpoint } from '@/lesson-engine/player/checkpoint';
+import { removeCheckpoint, writeCheckpoint, type LessonCheckpoint } from '@/lesson-engine/player/checkpoint';
 import type { GuidedReviewOfferValue } from '@/rebuild/learning/GuidedReviewOffer';
 import type { LearnerRegister } from '@/rebuild/design/learnerRegisterPolicy.generated';
 import { createCoreGrader } from './coreGrader';
 import { clearCoursesCache } from './coursesCache';
+// The legacy global sheet (Tailwind, the legacy tokens and typefaces) belongs to this island alone:
+// the lesson route loads this module lazily, only for a v1 document, so no rebuilt route pays for it.
+import '@/index.css';
 
 /*
  * THE LEGACY LESSON ISLAND (W2L.3, OD-24).
@@ -21,7 +24,8 @@ import { clearCoursesCache } from './coursesCache';
  * the legacy content (OD-24). This file is its one adapter. Nothing else in
  * the learner lane imports the legacy lesson engine's UI, and no rebuilt file
  * imports this one: the lesson route mounts it for a `schema_version: 1`
- * document only, outside the rebuilt lesson layer, so no legacy component
+ * document only (lazily, so the legacy sheet never loads for a v2 lesson),
+ * outside the rebuilt lesson layer, so no legacy component
  * leaks into rebuilt UI and no rebuilt root restyles the legacy player
  * (`legacyLessonIsland.test.ts` pins both directions).
  *
@@ -33,26 +37,6 @@ import { clearCoursesCache } from './coursesCache';
  * `onExit` is the only navigation), and the learner's register for the
  * player's cast presence and milestone motion (B.23).
  */
-
-/** A delivered document the legacy engine plays: the v1 schema. */
-export function isLegacyLessonDocument(document: unknown): document is LessonDocument {
-  return typeof document === 'object' && document !== null && !Array.isArray(document)
-    && (document as { schema_version?: unknown }).schema_version === 1;
-}
-
-/**
- * Never restore segment indices or verdicts into a revised or translated
- * document: the checkpoint remembers the document it was taken on.
- */
-export function reconcileLegacyCheckpoint(checkpoint: LessonCheckpoint, document: LessonDocument): LessonCheckpoint {
-  const signature = JSON.stringify(document);
-  const snapshot = checkpoint.state;
-  const segmentIds = new Set(document.segments.map((segment) => segment.id));
-  const invalidSnapshot = snapshot && (snapshot.index >= document.segments.length || Object.keys(snapshot.seg).some((id) => !segmentIds.has(id)));
-  const next = invalidSnapshot || (checkpoint.document && checkpoint.document !== signature) ? newCheckpoint() : checkpoint;
-  next.document = signature;
-  return next;
-}
 
 export function LegacyLessonIsland({ lessonId, document, audio, checkpoint, storageKey, register, onGuidedReview, onReachedResults, onExit }: {
   lessonId: string;

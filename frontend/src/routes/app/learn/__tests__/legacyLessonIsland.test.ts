@@ -3,7 +3,7 @@ import { join, relative, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { newCheckpoint } from '@/lesson-engine/player/checkpoint';
 import type { LessonDocument } from '@/lesson-engine/core/types';
-import { isLegacyLessonDocument, reconcileLegacyCheckpoint } from '../LegacyLessonIsland';
+import { isLegacyLessonDocument, reconcileLegacyCheckpoint } from '../LessonRoute';
 
 /*
  * W2L.3 / OD-24: the v1 Lesson Player is the single sanctioned legacy island
@@ -31,8 +31,8 @@ describe('the legacy lesson island (W2L.3, OD-24)', () => {
       'routes/app/learn/LegacyLessonIsland.tsx': () => true,
       // The island's grader helper: types only.
       'routes/app/learn/coreGrader.ts': (name) => name === '@/lesson-engine/core/types',
-      // The route keeps the resume record (a storage module, no UI) for v2 run ids.
-      'routes/app/learn/LessonRoute.tsx': (name) => name === '@/lesson-engine/player/checkpoint',
+      // The route keeps the resume record (a storage module, no UI) for v2 run ids, and decides on a v1 document by its type.
+      'routes/app/learn/LessonRoute.tsx': (name) => name === '@/lesson-engine/player/checkpoint' || name === '@/lesson-engine/core/types',
     };
     const offences = lane.flatMap(({ file, imports: names }) => names
       .filter((name) => /lesson-engine\//.test(name))
@@ -44,6 +44,14 @@ describe('the legacy lesson island (W2L.3, OD-24)', () => {
   it('is mounted by the lesson route alone, and never from rebuilt code', () => {
     const importers = lane.filter(({ imports: names }) => names.some((name) => /LegacyLessonIsland$/.test(name))).map(({ file }) => file);
     expect(importers).toEqual(['routes/app/learn/LessonRoute.tsx']);
+  });
+
+  it('carries the legacy global sheet, and is loaded lazily so a v2 lesson never pays for it (S10 gap fix)', () => {
+    const island = readFileSync(join(src, 'routes/app/learn/LegacyLessonIsland.tsx'), 'utf8');
+    const route = readFileSync(join(src, 'routes/app/learn/LessonRoute.tsx'), 'utf8');
+    expect(island).toMatch(/^import '@\/index\.css';$/m);
+    expect(route).toMatch(/lazy\(\(\) => import\('\.\/LegacyLessonIsland'\)/);
+    expect(route).not.toMatch(/from '\.\/LegacyLessonIsland'/);
   });
 
   it('plays only the v1 schema', () => {

@@ -104,6 +104,29 @@ export function useOneShot(trigger: string | false | null | undefined): [boolean
   return [active, () => setActive(false)];
 }
 
+/**
+ * The shell's route entrance (02 rule 14; 04 §2, `--dur-transition` on
+ * `--ease-enter`): replays the `data-route-enter` animation on <main> for a
+ * real route change. The shell calls it from its route-focus effect, which
+ * never runs on the first render or on an in-place re-render, and the mark is
+ * removed when the entrance ends so nothing about it outlives the move. The
+ * CSS lives under `prefers-reduced-motion: no-preference` (shells.css), so
+ * with reduced motion the mark is set and nothing moves.
+ */
+export function replayRouteEntrance(element: HTMLElement | null) {
+  if (!element) return;
+  element.removeAttribute('data-route-enter');
+  // Reading layout restarts the animation when two route changes come close together.
+  void element.offsetWidth;
+  element.setAttribute('data-route-enter', '');
+  const done = (event: AnimationEvent) => {
+    if (event.target !== element) return;
+    element.removeAttribute('data-route-enter');
+    element.removeEventListener('animationend', done);
+  };
+  element.addEventListener('animationend', done);
+}
+
 function prefersMotion() {
   try { return window.matchMedia('(prefers-reduced-motion: no-preference)').matches; } catch { return false; }
 }

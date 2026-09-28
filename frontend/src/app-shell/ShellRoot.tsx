@@ -75,16 +75,3 @@ export function ShellRoot({ children }: { children: ReactNode }) {
     <RebuildProvider environment={{ theme, locale }} labels={{ dismiss: copy.dismiss }}>{children}</RebuildProvider>
   </RebuildRoot>;
 }
-
-/**
- * A legacy page body inside a rebuilt shell, until its lane rebuilds it
- * (OD-15). It restores the legacy page's own typography and content box
- * (what AppLayout, MarketingLayout and AuthLayout used to give it) and marks
- * the subtree so the design system's element rules leave it alone
- * (`[data-legacy-body]` in rebuild/design/system.css). Rebuilt panels embedded
- * in a legacy page keep their own root and rules.
- */
-export function LegacyBody({ frame, routeKey, children }: { frame: 'app' | 'site' | 'auth'; routeKey: string; children: ReactNode }) {
-  const box = frame === 'app' ? 'mx-auto w-full max-w-container px-5 pb-10 pt-6 md:px-8 lg:pt-10' : 'w-full';
-  return <div key={routeKey} data-legacy-body={frame} className={`lf-page-enter font-body text-content antialiased ${box}`}>{children}</div>;
-}

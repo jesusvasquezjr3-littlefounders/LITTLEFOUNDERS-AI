@@ -4,42 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LittleFounders</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap"
-      rel="stylesheet"
-    />
     <!--
-      Material Symbols Outlined is self-hosted (src/index.css @font-face),
-      not loaded from Google Fonts. Every icon in the product depends on
-      this one font resolving, so it must not depend on a third-party
-      request that iOS Safari content blockers and locked-down school/
-      corporate networks are known to drop. See src/index.css for the why.
-
-      PRELOADED, because self-hosting moved the discovery point. The browser
-      only learns this font exists when src/index.css parses — and that CSS
-      arrives with the bundle, so a 2.23 MB download starts late and
-      `font-display: block` keeps EVERY icon in the product invisible until it
-      lands. The preload starts it alongside the bundle instead. `crossorigin`
-      is required even same-origin: fonts are fetched in CORS mode, and without
-      it the preload is discarded and fetched a second time.
+      The design system's two typefaces (Frontend Bible 02 D3), self-hosted:
+      no third-party font request on any page (OD-12). Preloaded because the
+      stylesheet that declares them (rebuild/design/system.css) arrives with
+      the bundle, which would otherwise start both downloads late. `crossorigin`
+      is required even same-origin: fonts are fetched in CORS mode, and
+      without it the preload is discarded and fetched a second time. The
+      legacy faces (Inter, Sora, Material Symbols) load only with the OD-24
+      lesson island's own sheet (src/index.css).
     -->
-    <link
-      rel="preload"
-      as="font"
-      type="font/woff2"
-      href="/fonts/material-symbols-outlined.woff2"
-      crossorigin
-    />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/fredoka-latin-v1.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/nunito-latin-v1.woff2" crossorigin />
 
     <!--
       THE BOOT VEIL (/DESIGN.md §Motion recipe 11).
 
       This is INLINE, in the <head>, and it has to be: it is the only styling
       that exists at the moment the browser paints its first frame. An external
-      stylesheet is another round trip, and src/index.css does not arrive until
-      the bundle does — which is the entire window this covers.
+      stylesheet is another round trip, and the app's stylesheets do not arrive
+      until the bundle does — which is the entire window this covers.
 
       WHAT IT COVERS, all three photographed on 2026-09-04:
 
@@ -69,12 +53,14 @@
     <style>
       :root {
         /*
-         * Mirrors --lf-base in src/index.css for the two themes. Duplicated on
-         * purpose — these must exist before that file has loaded — and pinned
-         * by src/__tests__/bootVeil.test.ts so the copies cannot drift.
+         * Mirrors the design tokens (src/rebuild/design/tokens.css, 02 D4):
+         * the ground is --base in each mode and the bloom is --primary.
+         * Duplicated on purpose (these must exist before any stylesheet has
+         * loaded) and pinned by src/__tests__/bootVeil.test.ts so the copies
+         * cannot drift.
          */
-        --lf-boot-ground: #f8fafc;
-        --lf-boot-bloom: rgba(79, 70, 229, 0.16);
+        --lf-boot-ground: #f4f5fd;
+        --lf-boot-bloom: rgba(92, 85, 253, 0.16);
         /* The dissolve. Longer than --lf-dur-page: this one is the whole app arriving. */
         --lf-boot-dissolve: 560ms;
         --lf-boot-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -95,8 +81,8 @@
         --lf-boot-deadline: 30s;
       }
       html.dark {
-        --lf-boot-ground: #0a0e1a;
-        --lf-boot-bloom: rgba(129, 140, 248, 0.18);
+        --lf-boot-ground: #0b0d1b;
+        --lf-boot-bloom: rgba(92, 85, 253, 0.18);
       }
 
       /* Painted from the first frame, so there is no white flash under either theme. */

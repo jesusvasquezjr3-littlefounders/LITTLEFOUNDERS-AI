@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { RebuildProvider, RebuildRoot } from '@/rebuild/design/controls';
 import { OVERVIEW_SECTIONS } from '@/rebuild/staff/console/StaffOverview';
 import { staffViewer } from '@/rebuild/staff/console/staffConsoleApi';
-import { isRebuiltStaffPath, STAFF_ROUTE_GRANTS } from '../staffGrants';
+import { STAFF_ROUTE_GRANTS } from '../staffGrants';
 import { STAFF_PAGES } from '../staff';
 import { renderLessonPreview, StaffContentRoute, StaffOverviewRoute, useStaffConsole } from '../staffConsole';
 
@@ -36,11 +36,7 @@ describe('staff console routes (W2T.1)', () => {
       .toEqual(table.map((route) => [route.id, `/${route.path}`, route.grant]).sort());
   });
 
-  it('marks every section rebuilt (W2T.1 to W2T.3), and every section still has a page', () => {
-    expect(STAFF_ROUTE_GRANTS.filter((route) => !route.rebuilt).map((route) => route.id)).toEqual([]);
-    expect(['/admin', '/admin/users', '/admin/emails/', '/admin/audit', '/admin/reports', '/admin/roles', '/admin/content', '/admin/generation', '/admin/mentor-quality',
-      '/admin/analytics', '/admin/intel', '/admin/insights'].every(isRebuiltStaffPath)).toBe(true);
-    expect(['/learn', '/admin/unknown'].some(isRebuiltStaffPath)).toBe(false);
+  it('gives every section a rebuilt page (W2T.1 to W2T.3; no legacy body fallback remains, 02 rule 23)', () => {
     for (const route of STAFF_ROUTE_GRANTS) expect(STAFF_PAGES[route.id], route.id).toBeTruthy();
   });
 

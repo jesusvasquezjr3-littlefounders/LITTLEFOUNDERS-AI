@@ -1,3 +1,14 @@
+/*
+ * THE LEGACY GLOBAL SHEET, scoped to the OD-24 island (S10 design-system gap
+ * fix). Nothing on the product's entry imports it: it loads with the v1
+ * lesson player (routes/app/learn/LegacyLessonIsland.tsx, lazy), the staff
+ * lesson preview (app-routes/staffConsole.tsx, lazy) and the development
+ * labs. The legacy typefaces the v1 player sets (Inter, Sora) are declared
+ * here for the same reason, so no other route requests them; the rebuilt
+ * pages use the self-hosted Fredoka and Nunito (02 D3).
+ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

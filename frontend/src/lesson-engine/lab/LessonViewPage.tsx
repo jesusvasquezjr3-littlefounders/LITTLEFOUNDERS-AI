@@ -11,6 +11,8 @@ import { stripAnswers } from '../core/strip'
 import { createLocalGrader } from './localGrader'
 import LessonPlayer from '../player/LessonPlayer'
 import type { AudioManifest } from '../player/narration'
+// Development lab: it renders with the legacy global sheet, which the product entry no longer loads.
+import '@/index.css';
 
 interface IndexEntry {
   slug: string

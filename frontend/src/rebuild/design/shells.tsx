@@ -5,6 +5,7 @@ import { findMentorAvatar, MENTOR_NAMES, resolveManifestAsset, type MentorCharac
 import { MentorAvatar, Pill } from './display';
 import { useRebuildEnvironment } from './layers';
 import { Sheet } from './overlays';
+import { replayRouteEntrance } from './motion';
 import './shells.css';
 
 /*
@@ -65,6 +66,7 @@ export function useRouteFocus(routeKey: string, main: React.RefObject<HTMLElemen
     if (settled.current === routeKey) return;
     settled.current = routeKey;
     window.scrollTo(0, 0);
+    replayRouteEntrance(main.current);
     const target = main.current?.querySelector<HTMLElement>('h1') ?? main.current;
     if (!target) return;
     if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');

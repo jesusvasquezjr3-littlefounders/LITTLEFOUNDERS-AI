@@ -8,8 +8,7 @@
  */
 
 /* ---- Focus: links get the same ring as every other pressable ---- */
-/* A legacy page body inside a shell keeps its own focus style (system.css, bridge); a rebuilt root nested in it gets this one. */
-.lf-rebuild a:focus-visible:not(:where([data-legacy-body] *)), :where([data-legacy-body]) .lf-rebuild a:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }
+.lf-rebuild a:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }
 /* Route focus lands on the page heading or <main>; that is a reading position, not a control. */
 .lf-rebuild .lf-shell [tabindex='-1']:focus { outline: none; }
 
@@ -90,6 +89,33 @@
   min-inline-size: 0;
   padding-block: max(var(--spacing-6), env(safe-area-inset-top)) var(--spacing-8);
   padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
+}
+
+/*
+ * The signed-in shells' <main> owns the content box (02 rule 23, D13): the
+ * padding above and a centred maximum width, so no page carries a layout of
+ * its own. The public site's sections run full width and pad themselves.
+ */
+.lf-rebuild :is(.lf-shell--learner, .lf-shell--console) .lf-shell-main {
+  inline-size: 100%;
+  max-inline-size: calc(var(--spacing-32) * 10);
+  margin-inline: auto;
+}
+
+/*
+ * The route entrance (02 rule 14, 04 §2): the new page's content arrives
+ * over --dur-transition on the enter easing, only on a real route change
+ * (motion.tsx `replayRouteEntrance`, called by useRouteFocus). The fill mode
+ * is `backwards`, never `both`, so no transform outlives the entrance and
+ * becomes a containing block for a fixed descendant. With reduced motion the
+ * page is simply there.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .lf-rebuild .lf-shell-main[data-route-enter] { animation: lf-route-enter var(--dur-transition) var(--ease-enter) backwards; }
+}
+@keyframes lf-route-enter {
+  from { opacity: 0; transform: translateY(var(--spacing-2)); }
+  to { opacity: 1; transform: none; }
 }
 
 /* The skip link and route focus land on <main>: keep its start clear of a sticky header (site header, console app bar). */
@@ -201,7 +227,7 @@
 .lf-rebuild .lf-site-links, .lf-rebuild .lf-site-actions { display: none; }
 .lf-rebuild .lf-site-menu { margin-inline-start: auto; }
 /* A public page's h1 is the marketing display step, at least 3x the body (03 §3.2); the token steps with the container. */
-.lf-rebuild .lf-shell--site main h1:not(:where([data-legacy-body] *)) { font: var(--type-display-2xl); letter-spacing: var(--type-display-2xl-tracking); }
+.lf-rebuild .lf-shell--site main h1 { font: var(--type-display-2xl); letter-spacing: var(--type-display-2xl-tracking); }
 .lf-rebuild .lf-site-footer {
   display: grid;
   gap: var(--spacing-4);
