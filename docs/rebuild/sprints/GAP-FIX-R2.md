@@ -38,3 +38,29 @@ was checked in the code first.
 - Kicker wording without exclamation marks. EN uses "Badge earned", "Learning streak" and "Goal reached"; es-MX and pt-BR follow the existing glossary ("Insignia ganada", "Insígnia conquistada").
 - The achievement marks reuse the house course badge, streak flame and Save pocket drawings, not new illustrations. The owner may commission dedicated share art under the same slots.
 - A label over 80 characters is replaced whole by the generic label, not wrapped at a larger ceiling.
+
+### Lane finish (F2-design-system-finish)
+
+- Sync: `codex/spec-migration-s02` was merged into the lane; it was already contained (no new commits, no conflicts).
+- Adversarial pass over the three gaps. The Core achievement route keeps its server-side checks unchanged: guardian link, earned course, reached goal, and the stored streak at or above the minimum. The Depot body stays `.strict()` and gains only the optional, exclamation-free kicker. No rebuilt module imports `index.css` or a legacy component. Every kicker and label exists in EN, es-MX and pt-BR. Nothing mandated by the three gaps was found missing.
+- One residual, out of scope: the dev-only labs (`/dev/lesson-lab`, `/dev/lesson-view`, `/dev/pose-lab`, behind `DevRoute`) still import `index.css` directly. They live in frozen legacy directories and never ship to learners, so a visit to a lab in a dev session leaves the sheet in place until reload.
+- Full unit suites, run once each while other lanes held the CPU at 100%:
+  - Depot: 50/50 pass.
+  - Core: 3211 pass and 1 fails. The failure is `mentorQualityRoutes.test.ts`, a file this lane did not touch; it passed 12/12 on a rerun alone.
+  - Frontend: 3032 pass and 6 fail, all in `assetGate.test.ts`. Each is a 90 s case timeout, not an assertion. One gate run without OCR takes 4 s, with OCR 95 s under this load. The file was rerun alone (result below).
+  - Type-check and lint are clean in `filebase/`, `backend/` and `frontend/`.
+- `assetGate.test.ts` rerun alone: 3 of 12 cases passed. The other 9 hit the same 90 s timeout, and none failed an assertion. Measured cause: the gate's first read of a freshly copied tree is slow on this machine. The same gate took 41 to 53 s on a new copy, 1 s on a second run over the same copy, and 2 s in place, with the CPU at 87 to 100% from the parallel lanes. The pattern fits on-access scanning of newly written files. It does not come from the lane's Depot check, which reads two small source files. The lane's own case, "holds the Depot achievement marks to their registered SVGs", passed at the previous checkpoint on a quieter machine. It needs a rerun on a quiet machine at merge.
+- `spec:check` was not rerun: only this record changed since the checkpoint where it was green. `secrets:check` is green.
+
+### Final summary
+
+Implemented and locally verified, not accepted:
+- The OD-20 achievement image redrawn in the house style: tokens only, registered class B marks, glyph-outline typefaces, localized calm kickers, and no ellipsis. Gaps 1 and 3.
+- The legacy global sheet scoped to the lifetime of the v1 surfaces. Gap 2.
+
+Still open:
+- A browser check for gap 2.
+- The owner's style review of the three draft marks.
+- A quiet-machine rerun of `assetGate.test.ts`.
+- The Depot-before-Core deploy order at release.
+- The dev-lab sheet residual.
