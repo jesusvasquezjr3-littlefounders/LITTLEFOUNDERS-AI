@@ -10,23 +10,23 @@ import './savingsRule.css';
 import { LessonStageSlot } from './lessonStage';
 
 type SavingsRuleSegment = Extract<LessonClientSegment, { type: 'logic.savings-rule.v2' }>;
-type Labels = { back: string; explore: string; progress: string; board: string; showTable: string; showChart: string;
+type Labels = { reset: string; back: string; explore: string; progress: string; board: string; showTable: string; showChart: string;
   case: string; result: string; goalMet: string; goalDay: string; yes: string; no: string; and: string; or: string;
   choose: string; ready: string; wait: string; previous: string; next: string; link: string; coin: string; coins: string;
   continue: string; title: string; prompt: string };
 const copy: Record<Locale, Labels> = {
-  'en-US': { back: 'Back', explore: 'Explore', progress: 'Lesson progress', board: 'Savings rule', showTable: 'Show as table',
+  'en-US': { reset: 'Reset', back: 'Back', explore: 'Explore', progress: 'Lesson progress', board: 'Savings rule', showTable: 'Show as table',
     showChart: 'Show rule', case: 'Case', result: 'Result', goalMet: 'Goal met?', goalDay: 'Goal day?', yes: 'Yes', no: 'No',
     and: 'AND', or: 'OR', choose: 'Choose a link', ready: 'Rule says ready', wait: 'Rule says wait', previous: 'Previous',
     next: 'Next', link: 'Link the conditions', coin: 'coin', coins: 'coins', continue: 'Continue',
     title: 'Build a savings rule', prompt: 'Choose AND or OR. When is the goal ready?' },
-  'es-MX': { back: 'Volver', explore: 'Explorar', progress: 'Progreso de lección', board: 'Regla de ahorro',
+  'es-MX': { reset: 'Restablecer', back: 'Volver', explore: 'Explorar', progress: 'Progreso de lección', board: 'Regla de ahorro',
     showTable: 'Ver tabla', showChart: 'Ver regla', case: 'Caso', result: 'Resultado', goalMet: '¿Meta cumplida?',
     goalDay: '¿Llegó el día?', yes: 'Sí', no: 'No', and: 'Y', or: 'O', choose: 'Elige un nexo', ready: 'La regla dice: lista',
     wait: 'La regla dice: espera', previous: 'Anterior', next: 'Siguiente', link: 'Une las condiciones',
     coin: 'moneda', coins: 'monedas', continue: 'Continuar', title: 'Crea una regla de ahorro',
     prompt: 'Elige Y u O. ¿Cuándo está lista la meta?' },
-  'pt-BR': { back: 'Voltar', explore: 'Explorar', progress: 'Progresso da lição', board: 'Regra de poupança',
+  'pt-BR': { reset: 'Recomeçar', back: 'Voltar', explore: 'Explorar', progress: 'Progresso da lição', board: 'Regra de poupança',
     showTable: 'Ver tabela', showChart: 'Ver regra', case: 'Caso', result: 'Resultado', goalMet: 'Meta atingida?',
     goalDay: 'Chegou o dia?', yes: 'Sim', no: 'Não', and: 'E', or: 'OU', choose: 'Escolha uma ligação',
     ready: 'Regra diz: pronta', wait: 'Regra diz: aguarde', previous: 'Anterior', next: 'Próximo', link: 'Ligue as condições',
@@ -85,6 +85,8 @@ export function SavingsRuleBoard({ document, segment, onBack, sequence }: {
             <div className="lf-rule-outcome" data-copy-role="data">{resultLabel}</div>
           </div>}>
           {() => <div className="lf-rule-controls">
+            {/* Bible 05 §3: Reset restores the authored start (no connective chosen, the first case). */}
+            <Button onClick={() => { setLink(null); setCaseIndex(0); }} disabled={link === null && caseIndex === 0}>{t.reset}</Button>
             <SegmentedControl legend={t.link} legendHidden name={`${linkName}-link`} value={link}
               onValueChange={setLink} options={(['and', 'or'] as const).map((value) => ({ value, label: t[value] }))} />
             <div className="lf-rule-cases">

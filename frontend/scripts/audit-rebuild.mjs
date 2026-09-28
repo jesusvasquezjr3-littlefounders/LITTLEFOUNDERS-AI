@@ -18,6 +18,13 @@ import { installSyntheticCore, loadLessonFixtures, SCENARIOS, sessionStorageScri
  *   npm run audit:copy-budget   06 §3 copy budget
  *   npm run audit:rebuild       all three in one pass (the pre-merge gate for UI changes)
  *
+ * The proportion pass also carries the teaching-board rules of Bible 05 §8
+ * (audits/in-page.mjs `boards()`, audits/rules.mjs `boardFindings`): board
+ * labels, mark and axis contrast in both modes, no reserved hue on a series,
+ * 64 px draggables with a tap alternative, and no board animation outside the
+ * allowed state change. The scorer parity half of 05 §8 is the node gate
+ * `agent/tools/sync-v2-visual-scorer.mjs --check` in `npm run spec:check`.
+ *
  * Authenticated routes (S03.5) are measured on the real app, signed in with a
  * synthetic session; every request to Core is answered locally by
  * audits/synthetic-core.mjs (no real Core, database or provider is contacted).
@@ -146,6 +153,8 @@ async function measure(page, state, locale, theme, width, first, sink) {
   await settle(page);
   if (active.has('proportion')) {
     const res = await page.evaluate('window.__lfAudit.proportion()');
+    // Bible 05 §8: the teaching-board rules, over every .lf-learning-board of the state (both modes by the matrix).
+    res.board = await page.evaluate('window.__lfAudit.boards()');
     // 02 §9.4 / D7 motion budget: read with motion allowed, then back to reduced motion for everything else.
     await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: theme }, { name: 'prefers-reduced-motion', value: 'no-preference' }] });
     await page.evaluate('new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))');

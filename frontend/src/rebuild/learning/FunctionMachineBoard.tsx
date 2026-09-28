@@ -11,17 +11,18 @@ import { LessonStageSlot } from './lessonStage';
 type Segment = Extract<LessonClientSegment, { type: 'math.function-machine.v2' }>;
 type Verdict = 'invalid' | 'met' | 'review';
 
-type Copy = Record<'back' | 'board' | 'try' | 'run' | 'input' | 'output' | 'rule' | 'multiplier' | 'offset' | 'check' | 'continue' | 'correct' | 'retry' | 'unavailable', string>;
+type Copy = Record<'reset' | 'back' | 'board' | 'try' | 'run' | 'input' | 'output' | 'rule' | 'multiplier' | 'offset' | 'check' | 'continue' | 'correct' | 'retry' | 'unavailable', string>;
 const copy: Record<Locale, Copy> = {
-  'en-US': { back: 'Back', board: 'Function machine', try: 'Try an input', run: 'Run', input: 'Input', output: 'Output', rule: 'What is the rule?', multiplier: 'Multiply by', offset: 'Then add', check: 'Check rule', continue: 'Continue', correct: 'Correct', retry: 'Try another rule.', unavailable: 'We could not check that. Try again.' },
-  'es-MX': { back: 'Volver', board: 'Máquina de funciones', try: 'Prueba una entrada', run: 'Ejecutar', input: 'Entrada', output: 'Salida', rule: '¿Cuál es la regla?', multiplier: 'Multiplica por', offset: 'Luego suma', check: 'Comprobar regla', continue: 'Continuar', correct: 'Correcto', retry: 'Prueba otra regla.', unavailable: 'No pudimos comprobarlo. Intenta otra vez.' },
-  'pt-BR': { back: 'Voltar', board: 'Máquina de funções', try: 'Teste uma entrada', run: 'Executar', input: 'Entrada', output: 'Saída', rule: 'Qual é a regra?', multiplier: 'Multiplique por', offset: 'Depois some', check: 'Conferir regra', continue: 'Continuar', correct: 'Correto', retry: 'Tente outra regra.', unavailable: 'Não foi possível conferir. Tente de novo.' },
+  'en-US': { reset: 'Reset', back: 'Back', board: 'Function machine', try: 'Try an input', run: 'Run', input: 'Input', output: 'Output', rule: 'What is the rule?', multiplier: 'Multiply by', offset: 'Then add', check: 'Check rule', continue: 'Continue', correct: 'Correct', retry: 'Try another rule.', unavailable: 'We could not check that. Try again.' },
+  'es-MX': { reset: 'Restablecer', back: 'Volver', board: 'Máquina de funciones', try: 'Prueba una entrada', run: 'Ejecutar', input: 'Entrada', output: 'Salida', rule: '¿Cuál es la regla?', multiplier: 'Multiplica por', offset: 'Luego suma', check: 'Comprobar regla', continue: 'Continuar', correct: 'Correcto', retry: 'Prueba otra regla.', unavailable: 'No pudimos comprobarlo. Intenta otra vez.' },
+  'pt-BR': { reset: 'Recomeçar', back: 'Voltar', board: 'Máquina de funções', try: 'Teste uma entrada', run: 'Executar', input: 'Entrada', output: 'Saída', rule: 'Qual é a regra?', multiplier: 'Multiplique por', offset: 'Depois some', check: 'Conferir regra', continue: 'Continuar', correct: 'Correto', retry: 'Tente outra regra.', unavailable: 'Não foi possível conferir. Tente de novo.' },
 };
 
 export function FunctionMachineBoard({ document, segment, onBack, onGrade, sequence }: { document: LessonClientDocument; segment: Segment; onBack: () => void; onGrade: (answer: { multiplier: string; offset: string }, segmentId: string) => Verdict | Promise<Verdict>; sequence?: LessonSequenceControl }) {
   const t = copy[document.locale];
   const tryName = useId();
-  const [selected, setSelected] = useState(segment.payload.examples[0]?.input ?? 0);
+  const initialInput = segment.payload.examples[0]?.input ?? 0;
+  const [selected, setSelected] = useState(initialInput);
   const [ran, setRan] = useState(false);
   const [multiplier, setMultiplier] = useState('');
   const [offset, setOffset] = useState('');
@@ -30,6 +31,9 @@ export function FunctionMachineBoard({ document, segment, onBack, onGrade, seque
   const example = segment.payload.examples.find((item) => item.input === selected);
   // A rule follows an observed result: learners cannot skip the public trial step.
   const valid = ran && /^(0|[1-9]\d*)$/.test(multiplier) && /^(0|[1-9]\d*)$/.test(offset);
+  // Bible 05 §3: Reset restores the authored start (the first input, not yet run, an empty rule) and clears the verdict.
+  const pristine = selected === initialInput && !ran && multiplier === '' && offset === '' && verdict === null;
+  const reset = () => { setSelected(initialInput); setRan(false); setMultiplier(''); setOffset(''); setVerdict(null); };
   const submit = () => { if (verdict === 'met') { sequence?.onAdvance(); return; } if (!valid) return; grade(() => onGrade({ multiplier, offset }, segment.id), (result) => setVerdict(result === 'met' ? 'met' : 'review'), () => setVerdict('unavailable')); };
 
   return <main className="lf-learning" data-surface="app" data-screen="function-machine"><div className="lf-learning-inner">
@@ -41,7 +45,7 @@ export function FunctionMachineBoard({ document, segment, onBack, onGrade, seque
         </div>
         <table className="lf-learning-table lf-function-machine-table" aria-label={t.board}><thead><tr><th scope="col" data-copy-role="label">{t.input}</th><th scope="col" data-copy-role="label">{t.output}</th></tr></thead><tbody>{segment.payload.examples.map((item) => <tr key={item.input}><th scope="row" data-copy-role="data" data-label={t.input}>{item.input}</th><td data-copy-role="data" data-label={t.output}>{ran && selected === item.input ? item.output : '?'}</td></tr>)}</tbody></table>
       </section>
-      <div className="lf-learning-control-strip"><div className="lf-function-machine-try"><SegmentedControl size="compact" legend={t.try} legendHidden name={`${tryName}-input`} disabled={pending} value={String(selected)}
+      <div className="lf-learning-control-strip"><div className="lf-learning-control-bar"><Button size="sm" onClick={reset} disabled={pending || pristine}>{t.reset}</Button></div><div className="lf-function-machine-try"><SegmentedControl size="compact" legend={t.try} legendHidden name={`${tryName}-input`} disabled={pending} value={String(selected)}
           onValueChange={(value) => { setSelected(Number(value)); setRan(false); }} options={segment.payload.examples.map((item) => ({ value: String(item.input), label: String(item.input) }))} />
           <Button variant="accent" disabled={pending} onClick={() => setRan(true)}>{t.run}</Button></div>
         <div className="lf-function-machine-rule"><h2 data-copy-role="heading">{t.rule}</h2><TextField label={t.multiplier} inputMode="numeric" pattern="[0-9]*" autoComplete="off" disabled={pending} value={multiplier} onChange={(event) => { setMultiplier(event.target.value); setVerdict(null); }} /><TextField label={t.offset} inputMode="numeric" pattern="[0-9]*" autoComplete="off" disabled={pending} value={offset} onChange={(event) => { setOffset(event.target.value); setVerdict(null); }} /></div>

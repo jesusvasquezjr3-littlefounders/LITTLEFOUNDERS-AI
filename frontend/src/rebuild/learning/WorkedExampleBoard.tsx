@@ -14,16 +14,16 @@ type Segment = Extract<LessonClientSegment, { type: 'math.worked-example.v2' }>;
 type Verdict = 'invalid' | 'met' | 'review';
 
 const copy: Record<Locale, {
-  back: string; example: string; step: string; previous: string; next: string; play: string; pause: string;
+  reset: string; back: string; example: string; step: string; previous: string; next: string; play: string; pause: string;
   predict: string; predictHint: string; result: string; reveal: string; faded: string; input: string; complete: string; check: string; continue: string; correct: string; retry: string; unavailable: string;
 }> = {
-  'en-US': { back: 'Back', example: 'Worked example', step: 'Step', previous: 'Previous', next: 'Next', play: 'Play', pause: 'Pause',
+  'en-US': { reset: 'Reset', back: 'Back', example: 'Worked example', step: 'Step', previous: 'Previous', next: 'Next', play: 'Play', pause: 'Pause',
     predict: 'Predict the next result', predictHint: 'Write a result before revealing the next step.', result: 'Result', reveal: 'Show next step',
     faded: 'Your turn', input: 'Write the result', complete: 'Review the steps whenever you need.', check: 'Check', continue: 'Continue', correct: 'Correct', retry: 'Try the values again.', unavailable: 'We could not check that. Try again.' },
-  'es-MX': { back: 'Volver', example: 'Ejemplo resuelto', step: 'Paso', previous: 'Anterior', next: 'Siguiente', play: 'Reproducir', pause: 'Pausar',
+  'es-MX': { reset: 'Restablecer', back: 'Volver', example: 'Ejemplo resuelto', step: 'Paso', previous: 'Anterior', next: 'Siguiente', play: 'Reproducir', pause: 'Pausar',
     predict: 'Predice el siguiente resultado', predictHint: 'Escribe un resultado antes de mostrar el siguiente paso.', result: 'Resultado', reveal: 'Mostrar siguiente paso',
     faded: 'Tu turno', input: 'Escribe el resultado', complete: 'Revisa los pasos cuando lo necesites.', check: 'Comprobar', continue: 'Continuar', correct: 'Correcto', retry: 'Revisa los valores e intenta otra vez.', unavailable: 'No pudimos comprobarlo. Intenta otra vez.' },
-  'pt-BR': { back: 'Voltar', example: 'Exemplo resolvido', step: 'Etapa', previous: 'Anterior', next: 'Próxima', play: 'Reproduzir', pause: 'Pausar',
+  'pt-BR': { reset: 'Recomeçar', back: 'Voltar', example: 'Exemplo resolvido', step: 'Etapa', previous: 'Anterior', next: 'Próxima', play: 'Reproduzir', pause: 'Pausar',
     predict: 'Preveja o próximo resultado', predictHint: 'Escreva um resultado antes de mostrar a próxima etapa.', result: 'Resultado', reveal: 'Mostrar próxima etapa',
     faded: 'Sua vez', input: 'Escreva o resultado', complete: 'Revise as etapas quando precisar.', check: 'Conferir', continue: 'Continuar', correct: 'Correto', retry: 'Revise os valores e tente novamente.', unavailable: 'Não foi possível conferir. Tente de novo.' },
 };
@@ -56,6 +56,9 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
     setIndex(index + 1);
     setPrediction('');
   };
+  // Bible 05 §3: Reset restores the authored start (the first step, no predictions or answers) and clears the verdict.
+  const pristine = index === 0 && prediction === '' && Object.keys(values).length === 0 && verdict === null;
+  const reset = () => { setIndex(0); setPrediction(''); setValues({}); setVerdict(null); };
   const complete = segment.payload.response_step_ids.every((stepId) => values[stepId]?.trim());
   const submit = () => {
     if (verdict === 'met') { sequence?.onAdvance(); return; }
@@ -89,6 +92,7 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
           </ol>
         </section>
         <div className="lf-learning-control-strip">
+          <div className="lf-learning-control-bar"><Button size="sm" onClick={reset} disabled={pending || pristine}>{t.reset}</Button></div>
           <StepReplay steps={steps.length - 1} index={Math.min(index, steps.length - 1)} onChange={setIndex}
             labels={{ previous: t.previous, next: t.next, play: t.play, pause: t.pause, step: t.step }} />
           {index < steps.length - 1 && index + 1 < fadeAt ? <div className="lf-worked-example-prediction">

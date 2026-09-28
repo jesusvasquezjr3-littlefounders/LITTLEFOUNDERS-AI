@@ -10,15 +10,15 @@ type Segment = Extract<LessonClientSegment, { type: 'math.cpa-count.v2' }>;
 type Verdict = 'invalid' | 'met' | 'review';
 type Sequence = { index: number; total: number; onAdvance: () => void };
 type Copy = {
-  back: string; concrete: string; pictorial: string; abstract: string; stage: string; count: string; equation: string;
+  reset: string; back: string; concrete: string; pictorial: string; abstract: string; stage: string; count: string; equation: string;
   answer: string; check: string; correct: string; retry: string; unavailable: string; plus: string; equals: string;
   worked: (left: number, right: number) => string[];
 };
 
 const copy: Record<Locale, Copy> = {
-  'en-US': { back: 'Back', concrete: 'Build it', pictorial: 'See it', abstract: 'Write it', stage: 'Step', count: 'Count the two groups', equation: 'Complete the equation', answer: 'Your answer', check: 'Check', correct: 'You found it.', retry: 'Try counting again.', unavailable: 'We could not check that. Try again.', plus: 'plus', equals: 'equals', worked: (left, right) => [`Start with ${left} coins.`, `Count ${right} more.`, 'Name the total.'] },
-  'es-MX': { back: 'Volver', concrete: 'Constrúyelo', pictorial: 'Míralo', abstract: 'Escríbelo', stage: 'Paso', count: 'Cuenta los dos grupos', equation: 'Completa la operación', answer: 'Tu respuesta', check: 'Comprobar', correct: 'Lo encontraste.', retry: 'Cuenta otra vez.', unavailable: 'No pudimos comprobarlo. Intenta otra vez.', plus: 'más', equals: 'es igual a', worked: (left, right) => [`Empieza con ${left} monedas.`, `Cuenta ${right} más.`, 'Di el total.'] },
-  'pt-BR': { back: 'Voltar', concrete: 'Monte', pictorial: 'Veja', abstract: 'Escreva', stage: 'Etapa', count: 'Conte os dois grupos', equation: 'Complete a conta', answer: 'Sua resposta', check: 'Conferir', correct: 'Você encontrou.', retry: 'Conte de novo.', unavailable: 'Não foi possível conferir. Tente de novo.', plus: 'mais', equals: 'é igual a', worked: (left, right) => [`Comece com ${left} moedas.`, `Conte mais ${right}.`, 'Diga o total.'] },
+  'en-US': { reset: 'Reset', back: 'Back', concrete: 'Build it', pictorial: 'See it', abstract: 'Write it', stage: 'Step', count: 'Count the two groups', equation: 'Complete the equation', answer: 'Your answer', check: 'Check', correct: 'You found it.', retry: 'Try counting again.', unavailable: 'We could not check that. Try again.', plus: 'plus', equals: 'equals', worked: (left, right) => [`Start with ${left} coins.`, `Count ${right} more.`, 'Name the total.'] },
+  'es-MX': { reset: 'Restablecer', back: 'Volver', concrete: 'Constrúyelo', pictorial: 'Míralo', abstract: 'Escríbelo', stage: 'Paso', count: 'Cuenta los dos grupos', equation: 'Completa la operación', answer: 'Tu respuesta', check: 'Comprobar', correct: 'Lo encontraste.', retry: 'Cuenta otra vez.', unavailable: 'No pudimos comprobarlo. Intenta otra vez.', plus: 'más', equals: 'es igual a', worked: (left, right) => [`Empieza con ${left} monedas.`, `Cuenta ${right} más.`, 'Di el total.'] },
+  'pt-BR': { reset: 'Recomeçar', back: 'Voltar', concrete: 'Monte', pictorial: 'Veja', abstract: 'Escreva', stage: 'Etapa', count: 'Conte os dois grupos', equation: 'Complete a conta', answer: 'Sua resposta', check: 'Conferir', correct: 'Você encontrou.', retry: 'Conte de novo.', unavailable: 'Não foi possível conferir. Tente de novo.', plus: 'mais', equals: 'é igual a', worked: (left, right) => [`Comece com ${left} moedas.`, `Conte mais ${right}.`, 'Diga o total.'] },
 };
 
 function Dots({ count, tone }: { count: number; tone: 'left' | 'right' }) {
@@ -81,7 +81,7 @@ export function CpaFadingBoard({ document, segment, onBack, onGrade, sequence }:
         {stage.stage === 'abstract' ? <div className="lf-cpa-equation" aria-label={segment.payload.spokenText}><strong data-copy-role="data">{segment.payload.left}</strong><span aria-hidden="true">+</span><strong data-copy-role="data">{segment.payload.right}</strong><span aria-hidden="true">=</span><strong aria-hidden="true">?</strong></div> : null}
         {steps > 0 ? <ol className="lf-cpa-steps" aria-label={t.count}>{t.worked(segment.payload.left, segment.payload.right).slice(0, steps).map((item, index) => <li key={index} data-copy-role="body">{item}</li>)}</ol> : null}
       </section>
-      <div className="lf-learning-control-strip lf-cpa-answer"><TextField label={t.answer} inputMode="numeric" pattern="[0-9]*" autoComplete="off" disabled={pending} value={value} onChange={(event) => { setValue(event.target.value); setVerdict(null); }} /></div>
+      <div className="lf-learning-control-strip lf-cpa-answer">{/* Bible 05 §3: Reset restores the authored start (an empty answer) and clears the verdict. */}<div className="lf-learning-control-bar"><Button size="sm" onClick={() => { setValue(''); setVerdict(null); }} disabled={pending || advancing || value === '' && verdict === null}>{t.reset}</Button></div><TextField label={t.answer} inputMode="numeric" pattern="[0-9]*" autoComplete="off" disabled={pending} value={value} onChange={(event) => { setValue(event.target.value); setVerdict(null); }} /></div>
       <footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === 'met' ? t.correct : verdict === 'review' ? t.retry : verdict === 'unavailable' ? t.unavailable : null}</LessonFeedback><div className="lf-learning-actions"><Button variant="accent" disabled={!valid || pending || advancing} onClick={submit}>{t.check}</Button></div></footer>
     </div>
   </div></main>;

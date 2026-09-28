@@ -75,8 +75,9 @@ export function GoalBulletBoard({ document, segment, onBack, sequence }: {
           chart={<>
             <div className="lf-goal-visual" role="img" aria-label={`${t.bullet}, ${t.scale} ${amount(maximum)}. ${t.saved}: ${amount(saved)}. ${t.target}: ${amount(target)}. ${t.remaining}: ${amount(left)}.`}>
               <svg viewBox="0 0 300 84" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-                <rect x="0" y="24" width="300" height="36" rx="12" className="lf-goal-track" />
-                <rect x="0" y="24" width={300 * goal / 100} height="36" rx="12" className="lf-goal-band" />
+                {/* The track and the goal band are ground, like gridlines (05 §2): the target line and the fill carry the values. */}
+                <rect x="0" y="24" width="300" height="36" rx="12" className="lf-goal-track" data-board-decoration="" />
+                <rect x="0" y="24" width={300 * goal / 100} height="36" rx="12" className="lf-goal-band" data-board-decoration="" />
                 <rect x="0" y="30" width={300 * progress / 100} height="24" rx="8" className="lf-goal-fill" />
                 <line x1={300 * goal / 100} x2={300 * goal / 100} y1="14" y2="70" className="lf-goal-target" />
               </svg>
