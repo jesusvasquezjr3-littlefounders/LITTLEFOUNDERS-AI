@@ -49,3 +49,13 @@ Audited SPEC gaps closed after wave 3, one section per lane. Statuses follow the
 
 - **Tutor tab wording.** Default taken: the Tutor's tab is "Wallet" and the page title "Family wallet" (a Tutor has no personal wallet, OD-3; one word keeps the 375 px tab bar from wrapping further). The owner may prefer "Family wallet" on the tab too.
 - **Path.** Default taken: `/family-wallet`, with `/banking` redirecting (the glossary avoids "bank"; `/wallet` is the independent teen's). API paths stay `/api/v1/banking/*`.
+
+### F1-family-finish: lane summary
+
+**Closed in code (implemented and locally verified, not accepted):** the three audited family gaps. (1) OD-28 glossary: the money section reads Wallet / Cartera / Carteira in every label and title, at `/family-wallet` (`/banking` redirects), pinned by the glossary gate. (2) Block D oversight (Product 10 §1.9, OD-9): the Tutor's view of a child's Mentor talks draws every board read-only with the Mentor lane's renderer, validated at the API edge. (3) D.7: Core no longer mints, stores or serves the card-shaped account number; expand and contract migrations remove the column.
+
+**Finish pass.** Synced with `codex/spec-migration-s02` (already up to date). Adversarial sweep: no `displayNumber`/`display_number` left in any service source outside refusal tests; no rebuilt route opens `/banking` (only API paths `/api/v1/banking/*`); the rebuilt console imports only shared controls and the Mentor lane's board; every new element carries `data-copy-role`. Authorization is unchanged at the server: the boards travel on the existing guardian-only transcript endpoints, and D.7 is a removal.
+
+**Verified once at lane end.** frontend and backend type-check and lint green; root `spec:check`, `secrets:check`, `tools:test` and the i18n gate green. Full unit suites under 100% CPU from parallel lanes: frontend 2849/2862 and backend reds were timeouts in files this lane did not touch; each passed when rerun alone, except `backend/src/__tests__/analytics.test.ts` "does not invent years of leading zeros for all-time", which fails deterministically because it reads the real clock (40 days from its 2026-08-20 fixture to 28 Sep 2026, against a bound of 40). It is not lane code and was left for the owner of that test. `database` npm test: see the lane's final report.
+
+**Open.** `database/types/database.ts` still lists `banking_accounts.display_number` (regenerate with `db:types` at integration; no Supabase CLI or stack here). Deploy order for D.7: Core first, then `banking_display_number_drop`. The new audit state `/family/:kid/tutor@boards` and the `/family-wallet@*` states were not run through the audit matrix. Native copy review of Cartera familiar / Carteira da família and of the read-only board words.
