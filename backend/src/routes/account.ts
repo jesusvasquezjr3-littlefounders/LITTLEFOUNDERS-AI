@@ -4,7 +4,8 @@ import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireInternalKey, type AuthedUser } from '../middleware/auth.js';
 import { authRateLimiter } from '../middleware/rateLimit.js';
 import * as gotrue from '../services/gotrue.js';
-import { readAgeScreen } from '../services/ageScreen.js';
+import { declaredBandForDate, readAgeScreen } from '../services/ageScreen.js';
+import { fileCorrection, readOwnCorrection } from '../services/ageCorrection.js';
 import { getRolesForGate } from '../services/insights.js';
 import { getVerifiedGuardiansOfKid, getVerifiedKidLinks, insertAuditLog } from '../services/supabaseRest.js';
 import {
@@ -105,6 +106,38 @@ function publicDeletion(row: DeletionRequestRow) {
 export function accountRouter(): Router {
   const router = Router();
   router.use(requireAuth);
+
+  /*
+   * E.4 (OD-3): a self-registered account's age is locked after its first
+   * declaration; a later change is a request a staff member decides
+   * (services/ageCorrection.ts). A parent-created child is refused (its Tutor
+   * gives its age, KID_AGE_BY_TUTOR), as are a guest, an account with the
+   * under-13 origin and an unscreened account. The database re-checks each.
+   */
+  router.get('/age-correction', async (_req, res) => {
+    const user = authedUser(res);
+    if (user.isGuest) return ok(res, { eligible: false, request: null });
+    const [age, roles, latest] = await Promise.all([readAgeScreen(user.id), getRolesForGate(user.id), readOwnCorrection(user.id)]);
+    if (!age || roles === null || latest === 'unavailable') return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the age correction state');
+    const eligible = !age.required && !age.protectedOrigin && !roles.includes('kid');
+    return ok(res, { eligible, request: latest });
+  });
+
+  router.post('/age-correction', authRateLimiter, async (req, res) => {
+    const parsed = z.object({ birthDate: z.string() }).strict().safeParse(req.body ?? {});
+    const band = parsed.success ? declaredBandForDate(parsed.data.birthDate) : null;
+    if (!parsed.success || !band) return fail(res, 400, 'VALIDATION_ERROR', 'Enter a valid birth date');
+    const user = authedUser(res);
+    if (user.isGuest) return fail(res, 403, 'NOT_ELIGIBLE', 'Create an account first');
+    const roles = await getRolesForGate(user.id);
+    if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve the account role');
+    if (roles.includes('kid')) return fail(res, 403, 'KID_AGE_BY_TUTOR', 'Your Tutor gives your age');
+    const filed = await fileCorrection(user.id, band, parsed.data.birthDate);
+    if (!filed.ok) return fail(res, filed.status, filed.code, 'The correction request was not filed');
+    const latest = await readOwnCorrection(user.id);
+    if (latest === 'unavailable' || latest === null || latest.id !== filed.value) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not confirm the request');
+    return ok(res, { eligible: true, request: latest }, 201);
+  });
 
   router.get('/deletion', async (_req, res) => {
     const user = authedUser(res);

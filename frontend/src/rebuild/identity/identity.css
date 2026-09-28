@@ -136,4 +136,7 @@
 /* The same for a choice row: its resting fill is the hue's tint, which the panel already is (the chosen row stays the hue). */
 .lf-rebuild .lf-onboarding-panel .lf-radio-option { background: var(--surface); }
 .lf-rebuild .lf-onboarding-form { display: grid; gap: var(--spacing-5); min-inline-size: 0; }
+/* O1's Mentor step (08 §8): each character's picture on its Diorama leads its row, as on the Mentor screen's chooser. */
+.lf-rebuild .lf-onboarding-chooser .lf-list-row-text { flex-basis: 7em; }
+.lf-rebuild .lf-onboarding-chooser-still { display: block; inline-size: 5.5rem; aspect-ratio: 4 / 5; border-radius: var(--rounded-md); object-fit: cover; }
 @container app (min-width: 640px) { .lf-rebuild .lf-onboarding-panel { padding: var(--spacing-8); } }

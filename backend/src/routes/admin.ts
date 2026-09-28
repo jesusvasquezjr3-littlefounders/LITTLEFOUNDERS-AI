@@ -183,6 +183,7 @@ import {
   setLessonStatus,
 } from '../services/adminData.js';
 import { readSocialGovernanceMetrics, windowsMatchPolicy } from '../services/socialGovernance.js';
+import { APPROVE_REASONS, CorrectionReason, CorrectionStatus, decideCorrection, listCorrections, REJECT_REASONS } from '../services/ageCorrection.js';
 
 /*
  * /api/v1/admin — the staff console's data plane. Admins need a current named
@@ -456,6 +457,8 @@ export function adminRouter(): Router {
 
   router.use(requireAuth, requireRole(['admin', 'superadmin']));
   router.use('/users', requireAdminPermission('manage_users'));
+  // E.4 (OD-3): deciding a self-registered account's age correction is a user-account decision.
+  router.use('/age-corrections', requireAdminPermission('manage_users'));
   // The Content screen also loads lesson and Tutor review queues. Guard every
   // endpoint it uses, including mutations and direct API requests.
   router.use('/content', requireAdminPermission('manage_content'));
@@ -2080,6 +2083,35 @@ export function adminRouter(): Router {
   const ReportsQuerySchema = z.object({
     limit: z.coerce.number().int().min(1).max(200).default(50),
     offset: z.coerce.number().int().min(0).default(0),
+  });
+
+  /*
+   * E.4 (OD-3) / Appendix J 1.1: the staff-reviewed age correction queue.
+   * A decision is applied and audited (G.3) by decide_age_correction in one
+   * transaction; the database also refuses a requester deciding their own
+   * request and a decider without manage_users.
+   */
+  const CorrectionQuery = z.object({
+    status: z.union([CorrectionStatus, z.literal('all')]).default('pending'),
+    limit: z.coerce.number().int().min(1).max(200).default(100),
+  }).strict();
+  router.get('/age-corrections', async (req, res) => {
+    const parsed = CorrectionQuery.safeParse(req.query);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a valid status');
+    const requests = await listCorrections(parsed.data.status, parsed.data.limit);
+    if (!requests) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load age corrections');
+    return ok(res, { requests });
+  });
+
+  const CorrectionDecision = z.object({ decision: z.enum(['approve', 'reject']), reason: CorrectionReason }).strict()
+    .refine((body) => (body.decision === 'approve' ? (APPROVE_REASONS as readonly string[]) : (REJECT_REASONS as readonly string[])).includes(body.reason));
+  router.post('/age-corrections/:id/decision', async (req, res) => {
+    const id = z.string().uuid().safeParse(req.params.id);
+    const body = CorrectionDecision.safeParse(req.body ?? {});
+    if (!id.success || !body.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a decision and a matching reason');
+    const decided = await decideCorrection(id.data, authedUser(res).id, body.data.decision === 'approve', body.data.reason);
+    if (!decided.ok) return fail(res, decided.status, decided.code, 'The decision was not recorded');
+    return ok(res, { id: id.data, status: decided.value });
   });
 
   router.get('/reports', async (req, res) => {

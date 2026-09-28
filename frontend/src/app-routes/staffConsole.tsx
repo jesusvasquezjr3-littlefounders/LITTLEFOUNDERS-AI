@@ -19,6 +19,7 @@ import { StaffMentorQuality } from '@/rebuild/staff/console/StaffMentorQuality';
 import { createLiveFeed } from './staffLiveFeed';
 import { StaffOverview } from '@/rebuild/staff/console/StaffOverview';
 import { StaffUsers } from '@/rebuild/staff/console/StaffUsers';
+import { StaffAgeCorrections } from '@/rebuild/staff/console/StaffAgeCorrections';
 import { StaffAccess } from '@/rebuild/staff/console/StaffAccess';
 import { StaffAudit } from '@/rebuild/staff/console/StaffAudit';
 import { reportsView, StaffReports } from '@/rebuild/staff/console/StaffReports';
@@ -98,6 +99,11 @@ export function StaffUsersRoute() {
 
 export function StaffRolesRoute() {
   return <StaffAccess api={useStaffConsole().api} />;
+}
+
+/** E.4 (OD-3): the staff-reviewed age correction queue (manage_users). */
+export function StaffAgeCorrectionsRoute() {
+  return <StaffAgeCorrections api={useStaffConsole().api} />;
 }
 
 export function StaffAuditRoute() {

@@ -85,6 +85,8 @@ describe('GET /api/v1/family/kids', () => {
         // S07.2: a display hint, never an access decision ('teen' = a
         // self-registered teen who linked this parent).
         accountType: 'child',
+        // A.4 (OD-3): whether the child holds age evidence (none seeded here), so the Tutor is asked for it.
+        ageRecorded: false,
         // M-12 (OD-26): whether the usage-data consent also enrols this child in
         // the C.17 dialogue-style experiment (no birth date here, so no).
         dialogueExperiment: false,

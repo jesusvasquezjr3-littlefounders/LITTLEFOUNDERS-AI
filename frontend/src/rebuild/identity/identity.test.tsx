@@ -306,7 +306,10 @@ describe('O1 Onboarding', () => {
       onComplete={vi.fn()} initialStep="mentor" initialName="Ana" />, 'pt-BR');
     const lines = copy('pt-BR').onboardingFlow.lines;
     for (const line of Object.values(lines)) expect(line.split(/\s+/).length).toBeLessThanOrEqual(6);
-    expect(container.querySelectorAll('[data-slot="mentor-avatar"] img[data-character]')).toHaveLength(4);
+    // 08 §8 / OD-6: the characters on the Diorama (mentor.chooserStill), never the square avatar renders (mentor.avatar).
+    const stills = [...container.querySelectorAll('img.lf-onboarding-chooser-still[data-character]')];
+    expect(stills.map((img) => img.getAttribute('data-asset-id'))).toEqual(['rho', 'zara', 'liruf', 'dina'].map((c) => `mentor.${c}.chooser.light`));
+    expect(container.querySelectorAll('[data-slot="mentor-avatar"]')).toHaveLength(0);
     expect(screen.getByRole('button', { name: /Dina/ })).toHaveTextContent(copy('pt-BR').onboardingFlow.chosen);
     expect(undeclaredText(container)).toEqual([]);
   });
@@ -334,6 +337,15 @@ describe('the age question (A.3) and the paused account (A.1)', () => {
     expect(container.querySelectorAll('main')).toHaveLength(1);
     expect(container.querySelector('[data-shell="single-state"]')).toBeNull();
     expect(container.querySelectorAll('.lf-age-date input')).toHaveLength(3);
+  });
+
+  it('A.4: a parent-created child without an age on record is sent to their Tutor, never asked for a date', () => {
+    const { container } = render(<AgeScreen copy={ageCopy} locale="en-US" dark={false} state="askTutor" {...handlers} />);
+    expect(screen.getByRole('heading', { name: ageCopy.askTutorTitle })).toBeInTheDocument();
+    expect(screen.getByText(ageCopy.askTutorBody)).toBeInTheDocument();
+    expect(container.querySelectorAll('input')).toHaveLength(0);
+    expect(container.querySelector('[data-age-screen-state="ask-tutor"]')).not.toBeNull();
+    expect(undeclaredText(container)).toEqual([]);
   });
 
   it('E.4 and S-04: says the answer is kept, and names the move at 18 only for a 13-17 date', () => {

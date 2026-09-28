@@ -360,7 +360,8 @@
         "generation": "Ejecuciones de generación de cursos.",
         "audit": "Cada acción privilegiada, en orden.",
         "reports": "Reportes y casos automáticos por patrón.",
-        "roles": "Roles y acceso de equipo."
+        "roles": "Roles y acceso de equipo.",
+        "ageCorrections": "Correcciones de edad por revisar."
       },
       "option": {
         "published": "Publicado",
@@ -1807,6 +1808,54 @@
         "adv_flagged_session_unconsented_analytics": "Sin analítica sin consentimiento",
         "adv_age_screen_bypass": "Nadie evita la pantalla de edad",
         "adv_kid_email_change_unauthorized": "Sin cambio de correo infantil"
+      }
+    },
+    "ageCorrections": {
+      "heading": {
+        "requests": "Solicitudes",
+        "request": "Corrección de edad",
+        "confirmApprove": "¿Aprobar esta corrección?",
+        "confirmReject": "¿Rechazar esta corrección?"
+      },
+      "body": {
+        "status": "Estado",
+        "account": "Cuenta",
+        "from": "Grupo guardado",
+        "to": "Grupo pedido",
+        "month": "Mes de nacimiento",
+        "requested": "Solicitada",
+        "decidedAt": "Decidida",
+        "reason": "Motivo",
+        "shown": "Solicitudes mostradas",
+        "empty": "No hay solicitudes de corrección.",
+        "help": "Revisa la evidencia fuera de la app. Nadie decide su propia solicitud.",
+        "approveConsequence": "El grupo de edad cambia ahora. Tu decisión queda auditada.",
+        "rejectConsequence": "La edad no cambia. Tu decisión queda auditada.",
+        "approved": "Corrección aprobada.",
+        "rejected": "Corrección rechazada.",
+        "failed": "No se guardó. Intenta de nuevo.",
+        "self": "No puedes decidir tu propia solicitud.",
+        "notPending": "Alguien ya decidió esta solicitud."
+      },
+      "option": {
+        "pending": "Pendiente",
+        "approved": "Aprobada",
+        "rejected": "Rechazada",
+        "all": "Todas",
+        "under_13": "Menos de 13",
+        "13_to_17": "De 13 a 17",
+        "adult": "Adulto",
+        "chooseReason": "Elige un motivo",
+        "evidence_verified": "Evidencia verificada",
+        "entry_error": "Error de captura",
+        "evidence_missing": "Falta evidencia",
+        "not_credible": "No creíble"
+      },
+      "action": {
+        "approve": "Aprobar",
+        "reject": "Rechazar",
+        "keep": "Dejar pendiente",
+        "saving": "Guardando"
       }
     }
   }

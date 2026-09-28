@@ -165,26 +165,29 @@ describe('Adding a child', () => {
   }
   const fillIn = (label: string, value: string) => fireEvent.change(screen.getByLabelText(label), { target: { value } });
 
-  it('asks for a first name, a username, a passphrase and an optional birth date, and nothing else', async () => {
+  it('asks for a first name, a username, a passphrase and the age (a band or a birth date), and nothing else', async () => {
     await openForm();
     const form = screen.getByRole('heading', { name: en.familyChildAccount.addTitle }).closest('section')!;
     const fields = [...form.querySelectorAll('input')].map((input) => input.type);
-    expect(fields).toEqual(['text', 'text', 'password', 'date']);
+    expect(fields).toEqual(['text', 'text', 'password', 'radio', 'radio', 'date']);
     expect(form.querySelector('input[type=email], input[autocomplete=email]')).toBeNull();
     expect(screen.queryByRole('heading', { name: en.familyConsole.emptyTitle })).toBeNull();
   });
 
-  it('sends exactly the documented fields, normalised, with a null birth date when skipped, and confirms without the passphrase', async () => {
+  it('sends exactly the documented fields, normalised, with the chosen band when no birth date is given, and confirms without the passphrase', async () => {
     const onAdded = vi.fn();
     const { transport, onSelect } = await openForm({ 'POST /family/kids': ok({ kid: { userId: KID_A, displayName: 'Ana', username: 'ana_2016' } }) });
     void onAdded;
     fillIn(en.familyChildAccount.name, ' Ana ');
     fillIn(en.familyChildAccount.username, 'Ana_2016');
     fillIn(en.familyChildAccount.passphrase, 'a long secret');
+    // A.4 (OD-3): without an age the Tutor cannot create the child.
+    expect(screen.getByRole('button', { name: en.familyChildAccount.create })).toBeDisabled();
+    fireEvent.click(screen.getByLabelText(en.familyChildAccount.ageUnder13));
     fireEvent.click(screen.getByRole('button', { name: en.familyChildAccount.create }));
     await screen.findByText('Ana signs in as @ana_2016 with the passphrase you chose.');
     expect(transport.calls.find((call) => call.method === 'POST')).toEqual({ method: 'POST', path: '/family/kids',
-      body: { displayName: 'Ana', username: 'ana_2016', passphrase: 'a long secret', birthDate: null, locale: 'en-US' } });
+      body: { displayName: 'Ana', username: 'ana_2016', passphrase: 'a long secret', birthDate: null, ageBand: 'under_13', locale: 'en-US' } });
     expect(document.body.textContent).not.toContain('a long secret');
     expect(onSelect).toHaveBeenCalledWith(KID_A);
   });
@@ -204,6 +207,7 @@ describe('Adding a child', () => {
     fillIn(en.familyChildAccount.name, 'Ana');
     fillIn(en.familyChildAccount.username, 'ana_2016');
     fillIn(en.familyChildAccount.passphrase, 'a long secret');
+    fillIn(en.familyChildAccount.birthDate, '2016-04-09');
     fireEvent.click(screen.getByRole('button', { name: en.familyChildAccount.create }));
     expect(await screen.findByRole('alert')).toHaveTextContent(en.familyChildAccount.usernameTaken);
     expect(onSelect).not.toHaveBeenCalled();
@@ -227,6 +231,23 @@ describe('Managing a child', () => {
     fireEvent.click(within(panel).getByRole('button', { name: en.familyChildAccount.saveName }));
     await screen.findByRole('heading', { level: 2, name: 'Sofi' });
     expect(transport.calls.find((call) => call.method === 'PATCH')?.body).toEqual({ displayName: 'Sofi' });
+  });
+
+  it('A.4: asks the Tutor for the age of a child with none on record, and records it once', async () => {
+    const { transport } = await openManage(childWire({ ageRecorded: false }), { [`PATCH /family/kids/${KID_A}`]: ok({ kid: { userId: KID_A, displayName: null }, ageRecorded: true }) });
+    const panel = screen.getByRole('heading', { name: en.familyChildAccount.manage }).closest('section')!;
+    const save = within(panel).getByRole('button', { name: en.familyChildAccount.saveAge });
+    expect(save).toBeDisabled();
+    fireEvent.click(within(panel).getByLabelText(en.familyChildAccount.ageTeen));
+    fireEvent.click(save);
+    await screen.findByText(en.familyChildAccount.ageSaved);
+    expect(transport.calls.find((call) => call.method === 'PATCH')?.body).toEqual({ ageBand: '13_to_17' });
+    expect(within(panel).queryByRole('button', { name: en.familyChildAccount.saveAge })).toBeNull();
+  });
+
+  it('A.4: offers no age question for a child whose age is on record or unknown', async () => {
+    await openManage(childWire({ ageRecorded: true }));
+    expect(screen.queryByRole('button', { name: en.familyChildAccount.saveAge })).toBeNull();
   });
 
   it('offers no username change for a handle the review does not flag', async () => {

@@ -227,6 +227,11 @@ export function authRouter(): Router {
       return fail(res, 400, 'VALIDATION_ERROR', 'The birth month must be the month of the birth date');
     }
     const id = authedUser(res).id;
+    // A.4 (OD-3): a parent-created child never declares their own age; the
+    // verified Tutor gives it (POST/PATCH /family/kids). Refused before any write.
+    const roles = await getRolesForGate(id);
+    if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve the account role');
+    if (roles.includes('kid')) return fail(res, 403, 'KID_AGE_BY_TUTOR', 'Your Tutor gives your age');
     if (!await recordAgeScreen(id, band, parsed.data.birthDate)) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record age screening');
     const state = await readAgeScreen(id);
     if (!state || state.required) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not confirm age screening');

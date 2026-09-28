@@ -38,6 +38,8 @@ interface StubOptions {
   linkFails?: boolean;
   profilePatchFails?: boolean;
   ageWriteFails?: boolean;
+  /** A.4: the band already on record; record_age_declaration answers it (insert-once). */
+  storedBand?: string;
   verification?: 'verified' | 'revoked' | 'missing';
   createStatus?: number;
   /** S-06: the linked child's current username (GET /profiles?user_id=in.). */
@@ -99,7 +101,7 @@ function stub(opts: StubOptions = {}) {
       }
       if (url.includes('/rpc/record_age_declaration')) {
         const body = JSON.parse(String(init?.body));
-        return Promise.resolve(jsonResponse(200, opts.ageWriteFails ? null : body.p_age_band));
+        return Promise.resolve(jsonResponse(200, opts.ageWriteFails ? null : opts.storedBand ?? body.p_age_band));
       }
       if (url.includes('/auth/v1/admin/users') && method === 'POST') {
         if (opts.createStatus && opts.createStatus >= 400) {
@@ -144,6 +146,36 @@ describe('POST /api/v1/family/kids', () => {
     const role = writes.findIndex(w => w.url.includes('user_roles?on_conflict'));
     expect(writes[age]?.body).toEqual({ p_user_id: KID_ID, p_age_band: 'under_13' });
     expect(role).toBeGreaterThan(age);
+  });
+  // A.4 / OD-3 (adversarial): a parent-created child is never left without age evidence, so the child is never asked.
+  it('refuses a child with neither a birth date nor an age band, before creating an identity', async () => {
+    const calls = stub();
+    for (const body of [{ ...KID, birthDate: undefined }, { ...KID, birthDate: null }]) {
+      const res = await post(body);
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe('CHILD_AGE_REQUIRED');
+    }
+    expect(calls.some(c => c.startsWith('POST ') && c.includes('/admin/users'))).toBe(false);
+  });
+  it('records a Tutor-chosen band for a child without a birth date, before the role', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    stub({ writes });
+    expect((await post({ ...KID, birthDate: null, ageBand: '13_to_17' })).status).toBe(201);
+    const age = writes.findIndex(w => w.url.includes('/rpc/record_age_declaration'));
+    const role = writes.findIndex(w => w.url.includes('user_roles?on_conflict'));
+    expect(writes[age]?.body).toEqual({ p_user_id: KID_ID, p_age_band: '13_to_17' });
+    expect(role).toBeGreaterThan(age);
+  });
+  it.each([['adult'], ['nonsense']])('refuses a Tutor band of %s (only under_13 or 13_to_17)', async (ageBand) => {
+    const calls = stub();
+    expect((await post({ ...KID, birthDate: null, ageBand })).status).toBe(400);
+    expect(calls.some(c => c.startsWith('POST ') && c.includes('/admin/users'))).toBe(false);
+  });
+  it('refuses a band that contradicts the birth date', async () => {
+    const calls = stub();
+    const res = await post({ ...KID, ageBand: '13_to_17' });
+    expect(res.status).toBe(400);
+    expect(calls.some(c => c.startsWith('POST ') && c.includes('/admin/users'))).toBe(false);
   });
   it('rolls back a newly created identity if its age declaration is not acknowledged', async () => {
     const calls = stub({ ageWriteFails: true });
@@ -412,6 +444,37 @@ describe('managing an existing child', () => {
     // alone would strand the account at sign-in.
     expect(Object.keys(patch?.body as Record<string, unknown>)).not.toContain('username');
     expect((patch?.body as Record<string, unknown>).display_name).toBe('Sofía Ren');
+  });
+
+  it('A.4: records the first age a Tutor gives an existing child, and says so', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    managed({ writes });
+    const res = await request(createApp()).patch(`/api/v1/family/kids/${KID_ID_2}`)
+      .set('Authorization', `Bearer ${mintToken({ sub: randomUUID() })}`).send({ ageBand: 'under_13' });
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({ kid: { userId: KID_ID_2 }, ageRecorded: true });
+    expect(writes.find(w => w.url.includes('/rpc/record_age_declaration'))?.body).toEqual({ p_user_id: KID_ID_2, p_age_band: 'under_13' });
+    expect(writes.some(w => w.url.includes('/profiles?user_id=eq.') && w.method === 'PATCH')).toBe(false);
+  });
+
+  it('A.4: a birth date added later records the declaration when none exists yet', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    managed({ writes });
+    const res = await request(createApp()).patch(`/api/v1/family/kids/${KID_ID_2}`)
+      .set('Authorization', `Bearer ${mintToken({ sub: randomUUID() })}`).send({ birthDate: '2016-04-09' });
+    expect(res.status).toBe(200);
+    expect(writes.find(w => w.url.includes('/rpc/record_age_declaration'))?.body).toEqual({ p_user_id: KID_ID_2, p_age_band: 'under_13' });
+    expect(writes.find(w => w.url.includes('/profiles?user_id=eq.') && w.method === 'PATCH')?.body).toMatchObject({ birth_date: '2016-04-09' });
+  });
+
+  it('A.4: a band-only change of an age already on record is refused (insert-once)', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    managed({ writes, storedBand: 'under_13' });
+    const res = await request(createApp()).patch(`/api/v1/family/kids/${KID_ID_2}`)
+      .set('Authorization', `Bearer ${mintToken({ sub: randomUUID() })}`).send({ ageBand: '13_to_17' });
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('AGE_ALREADY_RECORDED');
+    expect(writes.some(w => w.url.includes('/profiles?user_id=eq.') && w.method === 'PATCH')).toBe(false);
   });
 
   it('E.13: refuses a display name that would locate the child, before any write', async () => {

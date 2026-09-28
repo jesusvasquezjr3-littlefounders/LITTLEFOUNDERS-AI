@@ -76,7 +76,7 @@ describe('Settings (P3)', () => {
   it('shows the birth date as data that cannot be edited (E.4) and saves only what changed, plus the language', async () => {
     renderSettings();
     const name = await screen.findByLabelText('Name');
-    expect(screen.getByText('It cannot be changed here.')).toBeInTheDocument();
+    expect(screen.getByText('Wrong? Request a correction below.')).toBeInTheDocument();
     expect(screen.queryByLabelText('Birth date')).toBeNull();
     fireEvent.change(name, { target: { value: 'Ana María' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save details' }));
@@ -94,7 +94,7 @@ describe('Settings (P3)', () => {
     expect(screen.getByText('Your sign-in name stays the same.')).toBeInTheDocument();
     // The youngest register: the adult's helper lines are left out (the date row has no control to begin with).
     expect(screen.getByText('May 1, 2016')).toBeInTheDocument();
-    expect(screen.queryByText('It cannot be changed here.')).toBeNull();
+    expect(screen.queryByText('Wrong? Request a correction below.')).toBeNull();
     expect(screen.queryByText('Lessons and the app use this language.')).toBeNull();
     expect(screen.getByText('A child account has no email. Your Tutor manages sign-in.')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Change email' })).toBeNull();

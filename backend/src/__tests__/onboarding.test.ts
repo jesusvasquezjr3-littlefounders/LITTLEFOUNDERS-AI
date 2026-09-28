@@ -19,6 +19,9 @@ beforeEach(() => {
       { user_id: userId, xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0, longest_streak: 0, last_active_date: null },
     ],
     onboarding_responses: [],
+    // Screened (Appendix M 1.1): the route sits behind requireAgeScreen.
+    account_age_declarations: [{ user_id: userId, declared_age_band: 'adult' }],
+    account_safety_origins: [],
   };
   vi.stubGlobal('fetch', createFakeFetch(db));
 });

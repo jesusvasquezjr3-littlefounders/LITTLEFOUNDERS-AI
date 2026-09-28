@@ -20,6 +20,7 @@ export type ConsoleSection = Exclude<keyof SectionNames, 'overview'>;
 export const OVERVIEW_SECTIONS: readonly { id: ConsoleSection; path: string; grant: StaffPermission | 'superadmin' }[] = [
   { id: 'content', path: '/admin/content', grant: 'manage_content' },
   { id: 'users', path: '/admin/users', grant: 'manage_users' },
+  { id: 'ageCorrections', path: '/admin/age-corrections', grant: 'manage_users' },
   { id: 'emails', path: '/admin/emails', grant: 'manage_support' },
   { id: 'analytics', path: '/admin/analytics', grant: 'view_analytics' },
   { id: 'intel', path: '/admin/intel', grant: 'view_analytics' },

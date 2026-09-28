@@ -4,17 +4,37 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import i18n from '@/i18n';
 import { RequireAgeScreen } from '../RequireAgeScreen';
 
-const mocks = vi.hoisted(() => ({ id: 'synthetic', api: vi.fn(), token: vi.fn().mockResolvedValue('synthetic'), refresh: vi.fn(), logout: vi.fn() }));
+const mocks = vi.hoisted(() => ({ id: 'synthetic', roles: [] as string[], api: vi.fn(), token: vi.fn().mockResolvedValue('synthetic'), refresh: vi.fn(), logout: vi.fn() }));
 vi.mock('@/lib/api', () => ({ api: mocks.api }));
-vi.mock('../AuthContext', () => ({ useAuth: () => ({ session: { user: { id: mocks.id } }, getToken: mocks.token, refreshMe: mocks.refresh, logout: mocks.logout }) }));
+vi.mock('../AuthContext', () => ({ useAuth: () => ({ session: { user: { id: mocks.id } }, roles: mocks.roles, getToken: mocks.token, refreshMe: mocks.refresh, logout: mocks.logout }) }));
 vi.mock('@/theme/useTheme', () => ({ useTheme: () => ({ isDark: false }) }));
 const pending = { data: { required: true, ageBand: null, protectedOrigin: false }, error: null };
 const cleared = { data: { required: false, ageBand: 'under_13', protectedOrigin: true }, error: null };
 const view = () => <MemoryRouter><RequireAgeScreen><p>Protected content</p></RequireAgeScreen></MemoryRouter>;
 const mount = () => render(view());
-beforeEach(async () => { vi.resetAllMocks(); mocks.id = 'synthetic'; mocks.token.mockResolvedValue('synthetic'); await i18n.changeLanguage('en-US'); });
+beforeEach(async () => { vi.resetAllMocks(); mocks.id = 'synthetic'; mocks.roles = []; mocks.token.mockResolvedValue('synthetic'); await i18n.changeLanguage('en-US'); });
 
 describe('mandatory age screen', () => {
+  it('A.4: sends a parent-created child with no age on record to their Tutor, with no date form', async () => {
+    mocks.roles = ['kid'];
+    mocks.api.mockResolvedValue(pending);
+    mount();
+    await screen.findByRole('heading', { name: 'Ask your Tutor' });
+    expect(screen.queryByLabelText('Day')).toBeNull();
+    expect(screen.queryByText('Protected content')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument();
+  });
+  it('A.4: switches to the Tutor screen when Core refuses the child answer (KID_AGE_BY_TUTOR)', async () => {
+    mocks.api.mockResolvedValueOnce(pending).mockResolvedValueOnce({ data: null, error: { code: 'KID_AGE_BY_TUTOR' } });
+    mount();
+    await screen.findByLabelText('Day');
+    for (const [name, value] of [['Day', '01'], ['Month', '02'], ['Year', '2018']] as const) {
+      fireEvent.change(screen.getByLabelText(name), { target: { value } });
+    }
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    await screen.findByRole('heading', { name: 'Ask your Tutor' });
+    expect(screen.queryByText('Protected content')).not.toBeInTheDocument();
+  });
   it('ignores an earlier account read after switching accounts', async () => {
     let resolveOld!: (value: typeof cleared) => void;
     mocks.api.mockReturnValueOnce(new Promise(resolve => { resolveOld = resolve; })).mockResolvedValueOnce(pending);

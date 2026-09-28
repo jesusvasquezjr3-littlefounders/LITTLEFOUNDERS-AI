@@ -30,7 +30,7 @@ describe('rebuild-family copy budget', () => {
         progress: 'action', mentor: 'action', coinCard: 'action', coins: 'data' });
       budget('familyChildAccount', { addTitle: 'heading', doneTitle: 'heading', remove: 'heading', add: 'action', create: 'action', creating: 'action', cancel: 'action',
         done: 'action', manage: 'action', close: 'action', saveName: 'action', saveUsername: 'action', savePassphrase: 'action', removeAction: 'action', removing: 'action', keep: 'action',
-        show: 'action', hide: 'action', saving: 'action' });
+        show: 'action', hide: 'action', saving: 'action', saveAge: 'action', ageUnder13: 'option', ageTeen: 'option' });
       // The microphone consent is the stored, mandated disclosure (06 §3.3 `legal`): shown in full behind "Allow microphone", never shortened.
       // L-04 (OD-27 (1)): the Tutor's opt-in for goals together, for a child aged 13 to 17. Adult Tutor copy.
       budget('familyCoopGoals', { title: 'heading', on: 'option', off: 'option', retry: 'action' });

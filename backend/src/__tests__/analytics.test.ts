@@ -517,12 +517,12 @@ describe('the visitor chart spans the window that was asked for', () => {
     // `all` reaches back to a 2020 sentinel. Filling from there would be tens
     // of thousands of meaningless points; the gap that matters is the recent
     // one, so it fills from the first day that has data.
-    // The first data day is relative to today: a fixed date ages past the bound.
-    const firstDay = new Date(Date.now() - 20 * 86_400_000).toISOString().slice(0, 10);
-    const resolved = resolveRange({ kind: 'preset', period: 'all' });
-    const filled = fillDailySeries([{ date: firstDay, visitors: 5, pageviews: 5 }], resolved);
+    // `now` is pinned: with the real clock the series grows one day per day and
+    // this assertion turned red on its own on 2026-09-28.
+    const resolved = resolveRange({ kind: 'preset', period: 'all' }, Date.parse('2026-09-10T12:00:00Z'), 'UTC');
+    const filled = fillDailySeries([{ date: '2026-08-20', visitors: 5, pageviews: 5 }], resolved);
 
-    expect(filled[0]?.date).toBe(firstDay);
+    expect(filled[0]?.date).toBe('2026-08-20');
     expect(filled.length).toBeLessThan(40);
   });
 });

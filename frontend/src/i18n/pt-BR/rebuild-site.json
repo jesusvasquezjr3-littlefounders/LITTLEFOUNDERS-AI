@@ -13,7 +13,9 @@
     "loading": "Verificando sua conta…",
     "help": "Guardamos só o mês e o ano.",
     "locked": "Você não poderá mudá-la depois.",
-    "teenMonth": "Aos 18, sua conta passa para ajustes de adulto."
+    "teenMonth": "Aos 18, sua conta passa para ajustes de adulto.",
+    "askTutorTitle": "Fale com seu Tutor",
+    "askTutorBody": "Seu Tutor adiciona sua idade em Família."
   },
   "kidSuspended": {
     "title": "Esta conta está pausada",

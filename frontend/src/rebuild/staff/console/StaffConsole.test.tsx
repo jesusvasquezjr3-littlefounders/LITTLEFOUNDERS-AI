@@ -115,7 +115,7 @@ describe('S1 Overview: mixed by the current grants (G.1)', () => {
     const onNavigate = vi.fn();
     const { container } = render(<Frame><StaffOverview api={api} viewer={superadmin} onNavigate={onNavigate} /></Frame>);
     await screen.findByText(c.overview.heading.roles);
-    expect(links(container)).toHaveLength(10);
+    expect(links(container)).toHaveLength(11);
     fireEvent.click(screen.getByText(c.overview.action.manageRoles));
     expect(onNavigate).toHaveBeenCalledWith('/admin/roles');
   });

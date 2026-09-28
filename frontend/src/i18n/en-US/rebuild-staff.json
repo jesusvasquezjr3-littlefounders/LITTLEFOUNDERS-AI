@@ -360,7 +360,8 @@
         "generation": "Course generation runs.",
         "audit": "Every privileged action, in order.",
         "reports": "Reports and automatic pattern cases.",
-        "roles": "Roles and staff access."
+        "roles": "Roles and staff access.",
+        "ageCorrections": "Self-registered age corrections to review."
       },
       "option": {
         "published": "Published",
@@ -1807,6 +1808,54 @@
         "adv_flagged_session_unconsented_analytics": "No analytics without consent",
         "adv_age_screen_bypass": "No way around the age screen",
         "adv_kid_email_change_unauthorized": "No child email change"
+      }
+    },
+    "ageCorrections": {
+      "heading": {
+        "requests": "Requests",
+        "request": "Age correction",
+        "confirmApprove": "Approve this correction?",
+        "confirmReject": "Reject this correction?"
+      },
+      "body": {
+        "status": "Status",
+        "account": "Account",
+        "from": "Saved group",
+        "to": "Requested group",
+        "month": "Birth month",
+        "requested": "Requested",
+        "decidedAt": "Decided",
+        "reason": "Reason",
+        "shown": "Requests shown",
+        "empty": "No correction requests.",
+        "help": "Check the evidence outside the app. Nobody decides their own request.",
+        "approveConsequence": "The age group changes now. Your decision is audited.",
+        "rejectConsequence": "The age stays the same. Your decision is audited.",
+        "approved": "Correction approved.",
+        "rejected": "Correction rejected.",
+        "failed": "That did not save. Try again.",
+        "self": "You cannot decide your own request.",
+        "notPending": "Someone already decided this request."
+      },
+      "option": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "all": "All requests",
+        "under_13": "Under 13",
+        "13_to_17": "13 to 17",
+        "adult": "Adult",
+        "chooseReason": "Choose a reason",
+        "evidence_verified": "Evidence verified",
+        "entry_error": "Entry error",
+        "evidence_missing": "Evidence missing",
+        "not_credible": "Not credible"
+      },
+      "action": {
+        "approve": "Approve",
+        "reject": "Reject",
+        "keep": "Keep pending",
+        "saving": "Saving"
       }
     }
   }

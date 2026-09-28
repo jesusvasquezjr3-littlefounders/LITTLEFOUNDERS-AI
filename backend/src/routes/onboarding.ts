@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
+import { requireAgeScreen } from '../middleware/ageScreen.js';
 import { isCalendarDate } from '../services/streak.js';
 import {
   getOnboardingResponse,
@@ -39,7 +40,10 @@ const OnboardingCompleteBody = z.object({
 
 export function onboardingRouter(): Router {
   const router = Router();
-  router.use(requireAuth);
+  // Appendix M 1.1 / Part 2.3(b): completing onboarding records a Learn
+  // practice day, so an unscreened account is refused here as on /learn. A
+  // refused child's guest carries the under-13 origin and reads as screened.
+  router.use(requireAuth, requireAgeScreen);
 
   router.post('/complete', async (req, res) => {
     const parsed = OnboardingCompleteBody.safeParse(req.body);

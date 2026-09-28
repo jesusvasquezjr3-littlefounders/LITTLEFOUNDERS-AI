@@ -21,7 +21,7 @@ import { applyCoursePathway } from '../services/pathway/coursePathway.js';
 import { courseEngine, coursePathwayInputs, loadLearnerPathwayContext, loadPathwayContent, readLearnerPlacementState } from '../services/pathway/pathwayData.js';
 import { adminCreateUser, adminDeleteUser, adminRevokeUserSessions, adminUpdateUserPassword } from '../services/gotrue.js';
 import { KID_USERNAME, renameFlaggedChild } from '../services/kidUsername.js';
-import { declaredBandForDate, readAgeScreen, recordAgeScreen } from '../services/ageScreen.js';
+import { ChildAgeBand, childAgeBand, declaredBandForDate, readAgeRecorded, readAgeScreen, recordAgeScreen, recordAgeScreenBand } from '../services/ageScreen.js';
 import { requiresMinorMentorSafeguards } from '../services/mentorSafety.js';
 import { guardianConsentEnrols } from '../services/dialogueExperimentNotice.js';
 import { mayDiscoverProfile, profileAccess, visibleSocialUsers } from '../services/socialVisibility.js';
@@ -163,6 +163,8 @@ export function familyRouter(): Router {
     // S07.2: which linked accounts are self-registered teens (a display hint
     // only; every account-holder control re-checks the role itself).
     const childRoleHolders = await getChildRoleHolders(kidIds);
+    // A.4: whether the child holds age evidence; a Tutor is asked for it when not.
+    const ageRecorded = await readAgeRecorded(kidIds);
     const walletByKid = new Map(walletAndStreak.map((w) => [w.id, w.balances]));
 
     return ok(res, {
@@ -183,6 +185,8 @@ export function familyRouter(): Router {
           walletTotal: balances ? balances.save + balances.spend + balances.share : null,
           taskStreakDays: streaks?.get(l.kid_user_id)?.current ?? 0,
           accountType: childRoleHolders === null ? null : childRoleHolders.has(l.kid_user_id) ? 'child' : 'teen',
+          // A.4 (OD-3): null when unknown; false only for a child with no age evidence yet.
+          ageRecorded: ageRecorded === null ? null : ageRecorded.has(l.kid_user_id),
           // M-12 (OD-26): the usage-data consent above also admits this child to
           // the C.17 dialogue-style experiment (a 10-12 child with a known birth
           // date); the console says so only then. The resolver re-decides per session.
@@ -233,6 +237,9 @@ export function familyRouter(): Router {
     // a child, typed rarely, and never rotated by the child themselves.
     passphrase: z.string().min(8).max(72),
     birthDate: z.string().refine(value => declaredBandForDate(value) !== null, 'Enter a valid birth date').nullable().optional(),
+    // A.4 / OD-3: the Tutor gives the child's age at creation, as a birth date
+    // or, without one, as a band. The child is never asked for their own age.
+    ageBand: ChildAgeBand.optional(),
     locale: z.enum(['en-US', 'es-MX', 'pt-BR']).default('en-US'),
   });
 
@@ -242,6 +249,9 @@ export function familyRouter(): Router {
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the child account details');
     const { displayName, username, passphrase, locale } = parsed.data;
     const birthDate = parsed.data.birthDate ?? null;
+    const ageBand = childAgeBand(birthDate, parsed.data.ageBand);
+    if (ageBand === 'missing') return fail(res, 400, 'CHILD_AGE_REQUIRED', 'Give the birth date or the age band of the child');
+    if (ageBand === 'conflict') return fail(res, 400, 'VALIDATION_ERROR', 'The age band must match the birth date');
 
     // E.13: before anything is written, neither the handle nor the name may
     // carry what would locate the child off-platform. The database refuses
@@ -313,9 +323,10 @@ export function familyRouter(): Router {
       return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the child profile');
     }
 
-    // A parent-provided date supplies the same minimal admission evidence as
-    // the standalone screen. Do not ask the child to repeat or override it.
-    if (birthDate && !await recordAgeScreen(kidId, declaredBandForDate(birthDate)!, birthDate)) {
+    // A.4 / OD-3: the Tutor's date or band is the child's age evidence, written
+    // before the role, so a parent-created child is never asked for their own
+    // age (POST /auth/age-screen refuses a kid-role caller).
+    if (!await recordAgeScreen(kidId, ageBand, birthDate ?? undefined)) {
       const undone = await adminDeleteUser(kidId);
       await insertAuditLog(parent.id, 'family.kid_create.rolled_back', kidId, {
         rollbackSucceeded: undone.error === null, stage: 'age_declaration',
@@ -481,6 +492,8 @@ export function familyRouter(): Router {
   const UpdateKid = z.object({
     displayName: z.string().trim().min(1).max(80).optional(),
     birthDate: z.string().refine(value => declaredBandForDate(value) !== null, 'Enter a valid birth date').nullable().optional(),
+    // A.4: a child created before the age was required gets it from the Tutor.
+    ageBand: ChildAgeBand.optional(),
   });
 
   router.patch('/kids/:kidId', async (req, res) => {
@@ -493,15 +506,32 @@ export function familyRouter(): Router {
     const patch: { display_name?: string; birth_date?: string | null } = {};
     if (parsed.data.displayName !== undefined) patch.display_name = parsed.data.displayName;
     if (parsed.data.birthDate !== undefined) patch.birth_date = parsed.data.birthDate;
-    if (Object.keys(patch).length === 0) return fail(res, 400, 'VALIDATION_ERROR', 'Nothing to change');
+    const ageGiven = Boolean(parsed.data.birthDate) || parsed.data.ageBand !== undefined;
+    if (Object.keys(patch).length === 0 && !ageGiven) return fail(res, 400, 'VALIDATION_ERROR', 'Nothing to change');
     if (patch.display_name !== undefined && profileFieldFlags(patch.display_name).length > 0) {
       return fail(res, 422, 'PROFILE_FIELD_UNSAFE', 'That name could help someone find the child outside LittleFounders', { fields: ['displayName'] });
+    }
+    let ageRecorded = false;
+    if (ageGiven) {
+      const band = childAgeBand(parsed.data.birthDate ?? null, parsed.data.ageBand);
+      if (band === 'missing' || band === 'conflict') return fail(res, 400, 'VALIDATION_ERROR', 'The age band must match the birth date');
+      // A.4: the declaration is insert-once. The first one a Tutor gives is
+      // recorded; an existing one stays (a band-only change of a recorded age
+      // is refused, a date keeps updating the profile as before).
+      const stored = await recordAgeScreenBand(kidId, band, parsed.data.birthDate ?? undefined);
+      if (stored === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the child age declaration');
+      if (stored !== band && !parsed.data.birthDate) return fail(res, 409, 'AGE_ALREADY_RECORDED', 'The age of this child is already recorded');
+      ageRecorded = true;
+    }
+    if (Object.keys(patch).length === 0) {
+      await insertAuditLog(authedUser(res).id, 'family.kid_age_recorded', kidId, {});
+      return ok(res, { kid: { userId: kidId, displayName: null }, ageRecorded });
     }
 
     const ok_ = await patchKidProfileFields(kidId, patch);
     if (!ok_) return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the child profile');
-    await insertAuditLog(authedUser(res).id, 'family.kid_updated', kidId, { fields: Object.keys(patch) });
-    return ok(res, { kid: { userId: kidId, displayName: parsed.data.displayName ?? null } });
+    await insertAuditLog(authedUser(res).id, 'family.kid_updated', kidId, { fields: Object.keys(patch), ageRecorded });
+    return ok(res, { kid: { userId: kidId, displayName: parsed.data.displayName ?? null }, ageRecorded });
   });
 
   /*
