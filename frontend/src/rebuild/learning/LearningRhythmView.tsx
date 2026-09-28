@@ -1,6 +1,7 @@
 import { useId, useState, type KeyboardEvent } from 'react';
 import type { Locale } from '../design/copyBudget';
 import { Button, ErrorState, InlineNotice, LoadingState } from '../design/controls';
+import { Wave } from '../design/motion';
 import '../design/tokens.css';
 import '../design/system.css';
 import './learnerPage.css';
@@ -70,6 +71,22 @@ function formatDay(date: string, locale: Locale): string {
   return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`));
 }
 
+/**
+ * The streak strip: the last seven days, oldest first, each either inside the
+ * current streak (practised or a free rest day), today still open, or outside
+ * it. Derived from the streak's own count; the words above carry the meaning,
+ * so the strip is decorative.
+ */
+export function streakWeek(streak: Pick<StreakView, 'status' | 'current'>): ('streak' | 'today' | 'off')[] {
+  const live = streak.status === 'practiced_today' || streak.status === 'open' || streak.status === 'paused';
+  const offset = streak.status === 'practiced_today' ? 0 : 1;
+  return Array.from({ length: 7 }, (_, index) => {
+    const daysAgo = 6 - index;
+    if (daysAgo === 0 && offset === 1 && streak.status === 'open') return 'today';
+    return live && daysAgo >= offset && daysAgo < streak.current + offset ? 'streak' : 'off';
+  });
+}
+
 export function StreakCard({ streak, locale }: { streak: StreakView; locale: Locale }) {
   const t = learningRhythmCopy[locale];
   const n = new Intl.NumberFormat(locale);
@@ -82,6 +99,11 @@ export function StreakCard({ streak, locale }: { streak: StreakView; locale: Loc
     {streak.status === 'resting' || streak.status === 'none' ? null
       : <p className="lf-rhythm-count"><img src="/rebuild/art/streak-flame.svg" alt="" className="lf-rhythm-flame" />
         <strong data-copy-role="data">{n.format(streak.current)}</strong><span data-copy-role="body">{t.days(streak.current)}</span></p>}
+    {/* 04 §4.3: the strip's days rise in a wave, only when the page is entered. */}
+    {streak.status === 'resting' || streak.status === 'none' ? null
+      : <Wave entryKey="learning-rhythm-streak" as="ol" className="lf-streak-strip" aria-hidden="true" data-streak-strip="">
+        {streakWeek(streak).map((day, index) => <li key={index} className="lf-streak-day" data-day={day} />)}
+      </Wave>}
     {status ? <p className="lf-rhythm-status" data-copy-role="body">{status}</p> : null}
     <dl className="lf-rhythm-facts">
       <div><dt data-copy-role="body">{t.best}</dt><dd data-copy-role="data">{n.format(streak.best)}</dd></div>

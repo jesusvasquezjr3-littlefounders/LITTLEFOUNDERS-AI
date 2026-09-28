@@ -316,7 +316,7 @@ const pattern = (literal) => new RegExp(`^${literal.split(/\$\{[^}]*\}/).map((pa
 const pathRefs = [], idRefs = [];
 for (const [file, text] of sources) {
   for (const m of text.matchAll(/['"`](\/rebuild\/[^'"`\s]+?\.(?:png|webp|svg|json|lottie))['"`]/g)) pathRefs.push({ file, literal: m[1], re: pattern(m[1]) });
-  for (const m of text.matchAll(/['"`]((?:lesson|mentor|badge|course|pocket|empty|scene|task|coin|celebration)\.[a-z0-9.${}-]+)['"`]/g)) {
+  for (const m of text.matchAll(/['"`]((?:lesson|mentor|badge|course|pocket|empty|scene|task|coin|money|celebration)\.[a-z0-9.${}-]+)['"`]/g)) {
     if (!isTranslationKey(m[1])) idRefs.push({ file, literal: m[1], re: pattern(m[1]) });
   }
 }

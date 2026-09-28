@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type enProfile from '../../i18n/en-US/rebuild-profile.json';
 import { Art, Button, Card, ConfirmDialog, DashboardLayout, DestructiveAction, ErrorState, InlineNotice, LoadingState, Pill } from '../design/controls';
+import { Stagger } from '../design/motion';
 import { CartoonAvatar, CoverArt } from '../account/avatar/CartoonAvatar';
 import type { AvatarLook, CoverId } from '../account/avatar/avatarKit';
 import { AppLink } from '../account/navLink';
@@ -180,7 +181,7 @@ function Profile({ copy, reportCopy, locale, young, view, safety, onFollow, onUn
   </Card>;
   const badges = <Card heading={copy.badgesTitle}>
     {person.badges.length === 0 ? <p className="lf-account-muted" data-copy-role="body">{copy.badgesEmpty}</p>
-      : <ul className="lf-profile-badges">
+      : <Stagger entryKey="public-profile-badges" as="ul" className="lf-profile-badges">
         {person.badges.map((badge) => <li key={badge.slug} className="lf-profile-badge">
           <Art assetId="badge.course.hexagon" />
           <div className="lf-profile-badge-text">
@@ -189,7 +190,7 @@ function Profile({ copy, reportCopy, locale, young, view, safety, onFollow, onUn
               ? copy.badgeEarned.replace('{date}', day.format(new Date(badge.completedAt))) : copy.badgeEarnedUndated}</p>
           </div>
         </li>)}
-      </ul>}
+      </Stagger>}
   </Card>;
   // E.9: the lists stay reachable, with no number, away from the progress block.
   const people = <Card heading={copy.peopleTitle}>

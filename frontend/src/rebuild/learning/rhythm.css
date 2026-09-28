@@ -45,3 +45,8 @@
   .lf-rhythm-facts > div { display: grid; align-content: start; justify-content: stretch; gap: var(--spacing-1); padding: var(--spacing-3); }
 }
 
+/* The streak strip (04 §4.3): seven days, oldest first; reward gold with its ridge outline for a streak day (02 §4.4 exception 3). */
+.lf-rebuild .lf-streak-strip { display: flex; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-streak-day { inline-size: var(--spacing-6); block-size: var(--spacing-6); border-radius: var(--rounded-full); background: var(--sunken); }
+.lf-rebuild .lf-streak-day[data-day='streak'] { background: var(--reward); box-shadow: inset 0 0 0 2px var(--reward-ridge); }
+.lf-rebuild .lf-streak-day[data-day='today'] { background: transparent; box-shadow: inset 0 0 0 2px var(--edge); }

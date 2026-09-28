@@ -1,7 +1,7 @@
 import type { AnimationEvent, ReactNode } from 'react';
 import type { CopyRole } from './copyBudget';
 import { Glyph } from './glyphs';
-import { useOneShot } from './motion';
+import { useOneShot, withPressFeedback } from './motion';
 import './controls.css';
 
 /*
@@ -21,7 +21,7 @@ export { AuthShell, BrandMark, CONSOLE_TAB_LIMIT, ConsoleShell, DashboardLayout,
 export { Disclosure } from './disclosure';
 export { Checkbox, PictureChoice, RadioGroup, SegmentedControl, SelectField, Slider, Stepper, Switch, TextAreaField, TextField,
   type ChoiceOption, type PictureOption, type SelectOption, type StepLabels, type TextFieldProps } from './fields';
-export { Art, Banner, Card, Chip, ChipGroup, ChoiceChip, EmptyState, ErrorState, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, ReplyChip, RewardChip, Skeleton,
+export { Art, Banner, Card, Chip, ChipGroup, ChoiceChip, CoinAmount, COIN_ASSET_ID, EmptyState, ErrorState, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, ReplyChip, RewardChip, Skeleton,
   type CardTone, type NoticeTone, type PillTone, type StatusTone } from './display';
 export { Glyph, GLYPH_BUDGET, GLYPH_FAMILIES, SYSTEM_GLYPHS, type GlyphName } from './glyphs';
 export { BarChart, niceMax, Sparkline, TrendChart, type VizBar, type VizLabels, type VizPoint, type VizSeries } from './charts';
@@ -61,7 +61,7 @@ export function AnswerChoice({ label, selected, disabled, onSelect, verdict = nu
   };
   return <button type="button"
     className={`lf-choice${motion}`} data-copy-role="option" aria-pressed={selected}
-    disabled={disabled} onClick={onSelect} onAnimationEnd={settle}>
+    disabled={disabled} onClick={onSelect} onAnimationEnd={settle} onPointerDown={withPressFeedback()}>
     <span className="lf-choice-marker" aria-hidden="true">{selected ? '●' : '○'}</span>
     {label}
   </button>;

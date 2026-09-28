@@ -16,13 +16,13 @@
   },
   "goalProgress": {
     "young": {
-      "of": "{saved} de {target}"
+      "of": "{saved} de {target} moedas"
     },
     "transition": {
-      "of": "{saved} de {target}, faltam {left}"
+      "of": "{saved} de {target} moedas, faltam {left}"
     },
     "teen": {
-      "of": "{saved} de {target} ({pct}%)"
+      "of": "{saved} de {target} moedas ({pct}%)"
     }
   },
   "bonus": {

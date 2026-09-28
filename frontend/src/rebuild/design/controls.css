@@ -289,6 +289,12 @@
 .lf-rebuild .lf-status-chip--sky { background: var(--sky-soft); color: var(--sky-strong); }
 .lf-rebuild .lf-status-chip--primary { background: var(--primary-soft); color: var(--primary-strong); }
 .lf-rebuild .lf-status-chip--reward { background: var(--reward); color: var(--on-reward); }
+/* Coins (07 §1 class B `money.coin`; 02 §9.5): the coin art, the number and the word, only for money. The art keeps its ridge outline on any ground. */
+.lf-rebuild .lf-coin-mark { display: block; flex: none; inline-size: var(--spacing-5); block-size: var(--spacing-5); }
+.lf-rebuild .lf-coin-amount { display: inline-flex; align-items: center; gap: var(--spacing-2); min-inline-size: 0; font-variant-numeric: tabular-nums; }
+.lf-rebuild .lf-coin-amount > span { min-inline-size: 0; overflow-wrap: anywhere; }
+.lf-rebuild .lf-coin-amount--lg .lf-coin-mark { inline-size: var(--spacing-8); block-size: var(--spacing-8); }
+.lf-rebuild .lf-status-chip--coins { padding-inline-start: var(--spacing-1); }
 .lf-rebuild .lf-choice-chip {
   display: inline-flex;
   align-items: center;

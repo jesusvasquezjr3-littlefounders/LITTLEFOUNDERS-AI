@@ -65,3 +65,68 @@
   @keyframes lf-celebration-rise { 0% { opacity: 0; transform: translateY(var(--spacing-4)); } 100% { opacity: 1; transform: translateY(0); } }
   @keyframes lf-celebration-fill { 0% { transform: scaleX(0); } 100% { transform: scaleX(1); } }
 }
+
+/*
+ * Orchestrated patterns (04 §4.1-§4.4) and the press ring (02 §9.1). Not
+ * celebrations: standard, enter and exit easing only, never the spring or the
+ * celebration duration. Outside the query nothing moves and every final state
+ * is shown (04 §3).
+ */
+.lf-rebuild .lf-sequence { position: relative; }
+.lf-rebuild .lf-sequence-leaving { position: absolute; margin: 0; pointer-events: none; }
+.lf-rebuild :has(> .lf-success-wipe) { position: relative; }
+.lf-rebuild .lf-success-wipe {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: inherit;
+  background: var(--success);
+  color: var(--on-success);
+  font: var(--type-label);
+  overflow-wrap: anywhere;
+  clip-path: inset(100% 0 0 0);
+}
+.lf-rebuild .lf-success-wipe .lf-system-glyph { flex: none; }
+.lf-rebuild :is(.lf-button, .lf-icon-button, .lf-choice, .lf-choice-chip, .lf-reply-chip, .lf-list-row--pressable):has(> .lf-press-ring) { position: relative; overflow: hidden; }
+.lf-rebuild .lf-press-ring { display: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* 04 §4.1: out 14% on the exit easing, in from 18% on the enter easing, about 22% overlap; the foot travels with its card. */
+  .lf-rebuild .lf-sequence-leaving { animation: lf-sequence-out var(--dur-transition) var(--ease-exit) forwards; }
+  .lf-rebuild .lf-sequence-entering { animation: lf-sequence-in var(--dur-transition) var(--ease-enter) calc(var(--dur-transition) * .78) backwards; }
+  /* 04 §4.2: cover from the top, hold with the check and the title, clear downwards. */
+  .lf-rebuild .lf-success-wipe { animation: lf-success-wipe calc(var(--dur-component) * 3) var(--ease-standard) forwards; }
+  /* 04 §4.3: the streak strip's days, index x 60 ms, enter easing. */
+  .lf-rebuild [data-wave='enter'] > * { animation: lf-wave-rise var(--dur-component) var(--ease-enter) backwards; animation-delay: calc(var(--lf-motion-index, 0) * 60ms); }
+  /* 04 §4.4: badge grids, min(index, 10) x 45 ms. */
+  .lf-rebuild [data-stagger='enter'] > * { animation: lf-stagger-rise var(--dur-component) var(--ease-enter) backwards; animation-delay: calc(min(var(--lf-motion-index, 0), 10) * 45ms); }
+  /* 02 §9.1: a soft ring in the control's own on-* colour from the touch point. */
+  .lf-rebuild .lf-press-ring {
+    position: absolute;
+    display: block;
+    inset-inline-start: var(--lf-press-x, 0);
+    inset-block-start: var(--lf-press-y, 0);
+    inline-size: var(--lf-press-size, 0);
+    block-size: var(--lf-press-size, 0);
+    margin-inline-start: calc(var(--lf-press-size, 0) / -2);
+    margin-block-start: calc(var(--lf-press-size, 0) / -2);
+    border: 2px solid currentColor;
+    border-radius: var(--rounded-full);
+    pointer-events: none;
+    opacity: .45;
+    transform: scale(0);
+    animation: lf-press-ring var(--dur-micro) var(--ease-standard) forwards;
+  }
+
+  @keyframes lf-sequence-out { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-14%); } }
+  @keyframes lf-sequence-in { from { opacity: 0; transform: translateX(18%); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes lf-success-wipe { 0% { clip-path: inset(0 0 100% 0); } 33%, 67% { clip-path: inset(0 0 0 0); } 100% { clip-path: inset(100% 0 0 0); } }
+  @keyframes lf-wave-rise { from { opacity: 0; transform: translateY(var(--spacing-2)); } to { opacity: 1; transform: none; } }
+  @keyframes lf-stagger-rise { from { opacity: 0; transform: translateY(var(--spacing-2)); } to { opacity: 1; transform: none; } }
+  @keyframes lf-press-ring { from { opacity: .45; transform: scale(0); } to { opacity: 0; transform: scale(1); } }
+}

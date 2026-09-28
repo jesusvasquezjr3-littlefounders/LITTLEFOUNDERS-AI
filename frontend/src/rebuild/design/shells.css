@@ -101,6 +101,13 @@
   max-inline-size: calc(var(--spacing-32) * 10);
   margin-inline: auto;
 }
+/*
+ * A page is a flex item of the column <main>: it fills the content width, as it
+ * did in a block box, even when it centres itself with auto inline margins
+ * (which would otherwise shrink it to fit). Zero specificity: a page's own
+ * width rule always wins.
+ */
+:where(.lf-rebuild .lf-shell-main) > * { inline-size: 100%; }
 
 /*
  * The route entrance (02 rule 14, 04 §2): the new page's content arrives

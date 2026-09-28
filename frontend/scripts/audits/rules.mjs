@@ -64,6 +64,7 @@ export function proportionFindings(res, state, width) {
   if (res.strayBusy?.length) add('busy-motion-without-work', res.strayBusy);
   if (res.breathing > 1) add('breathing-cta>1', String(res.breathing));
   if (res.offList?.length) add('celebration-off-milestone-list', res.offList);
+  if (res.strayPattern?.length) add('orchestrated-motion-outside-its-pattern', res.strayPattern);
   findings.push(...boardFindings(res));
   return findings;
 }

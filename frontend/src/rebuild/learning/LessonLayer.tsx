@@ -4,6 +4,7 @@ import esCore from '../../i18n/es-MX/rebuild-core.json';
 import ptCore from '../../i18n/pt-BR/rebuild-core.json';
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { RebuildRoot, SkipLink, useDocumentMeta } from '../design/controls';
+import { noteRouteChange } from '../design/motion';
 import './lessonLayer.css';
 
 const skipLabel: Record<Locale, string> = { 'en-US': enCore.appShell.skip, 'es-MX': esCore.appShell.skip, 'pt-BR': ptCore.appShell.skip };
@@ -44,6 +45,8 @@ export function LessonLayer({ theme, locale, ageBand, pageTitle, screen, childre
   useLayoutEffect(() => {
     if (settled.current === screen) return;
     settled.current = screen;
+    // A new lesson screen is a screen entry for the orchestrated patterns (02 rule 14).
+    noteRouteChange();
     const main = layer.current?.querySelector<HTMLElement>('main');
     const target = main?.querySelector<HTMLElement>('h1') ?? main;
     if (!target) return;

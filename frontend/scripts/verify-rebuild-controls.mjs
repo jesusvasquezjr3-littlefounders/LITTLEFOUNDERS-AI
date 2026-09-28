@@ -198,6 +198,9 @@ try {
     await expectSoon('armed-bump-once', `window.__lfMotion.filter(n => n === 'lf-armed-bump').length === 1 && !document.querySelector('section[aria-labelledby="system-motion"] .lf-button--success').disabled`);
     await click('.lf-celebration[data-milestone=\"badge-earned\"] .lf-button');
     await expectSoon('milestone-celebrates', `document.querySelector('.lf-celebration[data-milestone=\"badge-earned\"]').dataset.milestone === 'badge-earned' && window.__lfMotion.includes('lf-celebration-pop') && window.__lfMotion.includes('lf-celebration-rise')`);
+    // 02 §9.1: a real press ripples a ring from the touch point inside the control, then the ring is gone.
+    await expectSoon('press-ring', `window.__lfMotion.includes('lf-press-ring')`);
+    await expectSoon('press-ring-clears', `!document.querySelector('.lf-press-ring')`);
     await new Promise((done) => setTimeout(done, 1400));
     await expectTrue('celebration-settles', `document.querySelector('.lf-celebration[data-milestone=\"badge-earned\"]').dataset.celebration === 'settled' && document.querySelector('.lf-celebration[data-milestone=\"badge-earned\"] .lf-count-up').textContent === '+40'`);
     await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }, { name: 'prefers-color-scheme', value: theme }] });

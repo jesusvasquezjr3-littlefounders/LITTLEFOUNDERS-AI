@@ -1,5 +1,5 @@
 import { useId, useState } from 'react';
-import { Button, Copy, InlineNotice, LoadingState } from '../design/controls';
+import { Button, CoinAmount, Copy, InlineNotice, LoadingState } from '../design/controls';
 import type { MoneyRegister } from '../family/moneyRegister';
 import { shiftMonth, STATEMENT_MONTHS_BACK, type CoinAccountView, type FreezeHold, type Month, type MonthLine } from './bankingApi';
 import '../design/tokens.css';
@@ -136,7 +136,7 @@ export function CoinAccount({ copy, register, locale, dark, view, loading, faile
         <ul>
           {POCKETS.map((pocket) => <li key={pocket} data-pocket={pocket}>
             <span data-copy-role="body" className="lf-coin-pocket-name">{copy[pocket]}</span>
-            <span data-copy-role="data" className="lf-coin-pocket-count">{count(view.pockets[pocket])}</span>
+            <CoinAmount className="lf-coin-pocket-count">{count(view.pockets[pocket])}</CoinAmount>
             {register !== 'young' && copy.pocketDetail && total > 0 && <span data-copy-role="data" className="lf-family-hub-muted">
               {fill(copy.pocketDetail, { count: number.format(view.pockets[pocket]), total: number.format(total), pct: percents![pocket] })}
             </span>}

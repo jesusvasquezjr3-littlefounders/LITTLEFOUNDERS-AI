@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { Button, TextField } from '../design/controls';
+import { Button, IconButton, TextField } from '../design/controls';
 import { LessonFeedback } from './LessonFeedback';
 import type { LessonClientDocument, LessonClientSegment } from './lessonDocument';
 import './learning.css';
@@ -81,7 +81,7 @@ export function CpaFadingBoard({ document, segment, onBack, onGrade, sequence }:
         {stage.stage === 'abstract' ? <div className="lf-cpa-equation" aria-label={segment.payload.spokenText}><strong data-copy-role="data">{segment.payload.left}</strong><span aria-hidden="true">+</span><strong data-copy-role="data">{segment.payload.right}</strong><span aria-hidden="true">=</span><strong aria-hidden="true">?</strong></div> : null}
         {steps > 0 ? <ol className="lf-cpa-steps" aria-label={t.count}>{t.worked(segment.payload.left, segment.payload.right).slice(0, steps).map((item, index) => <li key={index} data-copy-role="body">{item}</li>)}</ol> : null}
       </section>
-      <div className="lf-learning-control-strip lf-cpa-answer">{/* Bible 05 §3: Reset restores the authored start (an empty answer) and clears the verdict. */}<div className="lf-learning-control-bar"><Button size="sm" onClick={() => { setValue(''); setVerdict(null); }} disabled={pending || advancing || value === '' && verdict === null}>{t.reset}</Button></div><TextField label={t.answer} inputMode="numeric" pattern="[0-9]*" autoComplete="off" disabled={pending} value={value} onChange={(event) => { setValue(event.target.value); setVerdict(null); }} /></div>
+      <div className="lf-learning-control-strip lf-cpa-answer">{/* Bible 05 §3: Reset restores the authored start (an empty answer) and clears the verdict; an icon with its name, so the 6-9 first view keeps its word budget (06 §3.1). */}<div className="lf-learning-control-bar"><IconButton glyph="refresh" label={t.reset} onClick={() => { setValue(''); setVerdict(null); }} disabled={pending || advancing || value === '' && verdict === null} /></div><TextField label={t.answer} inputMode="numeric" pattern="[0-9]*" autoComplete="off" disabled={pending} value={value} onChange={(event) => { setValue(event.target.value); setVerdict(null); }} /></div>
       <footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === 'met' ? t.correct : verdict === 'review' ? t.retry : verdict === 'unavailable' ? t.unavailable : null}</LessonFeedback><div className="lf-learning-actions"><Button variant="accent" disabled={!valid || pending || advancing} onClick={submit}>{t.check}</Button></div></footer>
     </div>
   </div></main>;

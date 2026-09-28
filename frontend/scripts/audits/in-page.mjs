@@ -353,7 +353,13 @@ export function installAudit() {
       return timing.iterations === Infinity || Number(timing.duration) > 250 || /^lf-celebration/.test(a.animationName ?? '')
         || /cubic-bezier\(0?\.34, 1\.5/.test(`${timing.easing ?? ''} ${css}`);
     }).map((a) => `${label(a.effect.target)} ${a.animationName ?? 'script animation'}`);
-    return { idle: idleThings.size, unbudgeted, breathing, offList, strayBusy, boardMotion };
+    // The orchestrated patterns (04 §4; design/motion.tsx ORCHESTRATED_MOTION) are registered non-celebration motion:
+    // the wave only on the streak strip, the stagger only inside its primitive, both only on route entry (their mark).
+    const strayPattern = document.getAnimations().filter((a) => a.animationName === 'lf-wave-rise' || a.animationName === 'lf-stagger-rise').filter((a) => {
+      const target = a.effect?.target;
+      return a.animationName === 'lf-wave-rise' ? !target?.closest?.('[data-wave="enter"][data-streak-strip]') : !target?.closest?.('[data-stagger="enter"]');
+    }).map((a) => `${label(a.effect.target)} ${a.animationName}`);
+    return { idle: idleThings.size, unbudgeted, breathing, offList, strayBusy, boardMotion, strayPattern };
   }
 
   /* ------------------------------------------------------- copy budget */

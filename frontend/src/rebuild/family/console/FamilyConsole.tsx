@@ -198,7 +198,7 @@ function ChildOverview({ child, copy, onNavigate, safety }: { child: Child; copy
       <ChipGroup>
         {child.walletTotal === null
           ? <Pill tone="inverse">{copy.coinsUnknown}</Pill>
-          : <RewardChip>{fill(copy.coins, { count: child.walletTotal })}</RewardChip>}
+          : <RewardChip coin>{fill(copy.coins, { count: child.walletTotal })}</RewardChip>}
         {child.taskStreakDays > 0 ? <RewardChip>{fill(copy.choreStreak, { count: child.taskStreakDays })}</RewardChip> : null}
       </ChipGroup>
       <ButtonGroup>

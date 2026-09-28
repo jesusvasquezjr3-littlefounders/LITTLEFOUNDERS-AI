@@ -305,7 +305,7 @@ describe('Existing money surfaces in each register (D.12)', () => {
 
   it('GoalProgress reads coins, then coins to go, then a percentage; provenance is unchanged', () => {
     const progress = { total: 12, own: 10, bonus: 2, family: 0 };
-    const cases: [MoneyRegister, string][] = [['young', '12 of 30'], ['transition', '12 of 30, 18 to go'], ['teen', '12 of 30 (40%)']];
+    const cases: [MoneyRegister, string][] = [['young', '12 of 30 coins'], ['transition', '12 of 30 coins, 18 to go'], ['teen', '12 of 30 coins (40%)']];
     for (const [register, text] of cases) {
       const { unmount, container } = render(<GoalProgress copy={registerCopy(habitsEn.goalProgress, regEn.goalProgress, register)} title="Bike" target={30} progress={progress} />);
       expect(screen.getByText(text), register).toBeInTheDocument();

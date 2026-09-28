@@ -82,7 +82,9 @@ describe('TeenWallet', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(en.page.title);
     expect(screen.getAllByText(en.page.simulation)).toHaveLength(1);
     const save = view.container.querySelector('[data-pocket="save"]') as HTMLElement;
-    expect(within(save).getByText('10')).toBeVisible();
+    // The balance is a coin quantity: the coin mark, the number and the word (02 §9.5).
+    expect(within(save).getByText('10 coins')).toBeVisible();
+    expect(save.querySelector('img[data-asset-id="money.coin"]')).not.toBeNull();
     expect(screen.queryByRole('heading', { level: 2 })).toBeNull();
     expect(view.container.querySelector('[data-age-band="13-17"]')).not.toBeNull();
     everyTextHasARole(view.container);

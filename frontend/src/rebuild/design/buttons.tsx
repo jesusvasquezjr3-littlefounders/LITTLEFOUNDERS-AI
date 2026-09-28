@@ -1,6 +1,6 @@
 import { forwardRef, type AnchorHTMLAttributes, type AnimationEvent, type ButtonHTMLAttributes, type MouseEvent, type ReactNode } from 'react';
 import { Glyph, type GlyphName } from './glyphs';
-import { useIdleMotion, useOneShot } from './motion';
+import { useIdleMotion, useOneShot, withPressFeedback } from './motion';
 
 /**
  * Button colour roles are a taught convention (Frontend Bible 02 §9.5):
@@ -28,7 +28,7 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   breathing?: boolean;
 };
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({ children, variant = 'secondary', size = 'md', pending = false, pendingLabel, breathing = false, className, onAnimationEnd, ...props }, ref) {
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({ children, variant = 'secondary', size = 'md', pending = false, pendingLabel, breathing = false, className, onAnimationEnd, onPointerDown, ...props }, ref) {
   const usable = !props.disabled && !pending;
   // Armed (02 §9.1): when a disabled or pending button becomes usable it bumps once; never on first render.
   const [armed, settle] = useOneShot(usable ? 'usable' : null);
@@ -44,7 +44,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     if (event.target === event.currentTarget) settle();
     onAnimationEnd?.(event);
   };
-  const motion = { onAnimationEnd: animationEnd, 'data-idle-motion': breathes ? 'breathing-cta' : undefined };
+  // 02 §9.1: the scale press is CSS; the ring from the touch point and the haptic tick are the shared press feedback.
+  const motion = { onAnimationEnd: animationEnd, onPointerDown: withPressFeedback(onPointerDown), 'data-idle-motion': breathes ? 'breathing-cta' : undefined };
   if (!pending) return <button {...props} {...motion} ref={ref} type={props.type ?? 'button'} className={classes.join(' ')} data-copy-role="action">{children}</button>;
   return <button {...props} {...motion} ref={ref} type={props.type === 'submit' ? 'button' : props.type ?? 'button'} className={classes.join(' ')} data-copy-role="action"
     aria-busy="true" aria-disabled="true" onClick={(event: MouseEvent<HTMLButtonElement>) => event.preventDefault()}>
@@ -57,8 +58,8 @@ export type IconButtonVariant = 'secondary' | 'soft' | 'inverse';
 /** One icon action (the circle shape, 02 §9.5). A glyph never stands alone without an accessible name. */
 export const IconButton = forwardRef<HTMLButtonElement, Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'aria-label'> & {
   glyph: GlyphName; label: string; variant?: IconButtonVariant;
-}>(function IconButton({ glyph, label, variant = 'secondary', className, ...props }, ref) {
-  return <button {...props} ref={ref} type={props.type ?? 'button'} className={`lf-icon-button lf-icon-button--${variant}${className ? ` ${className}` : ''}`}
+}>(function IconButton({ glyph, label, variant = 'secondary', className, onPointerDown, ...props }, ref) {
+  return <button {...props} onPointerDown={withPressFeedback(onPointerDown)} ref={ref} type={props.type ?? 'button'} className={`lf-icon-button lf-icon-button--${variant}${className ? ` ${className}` : ''}`}
     aria-label={label} title={label} data-copy-role="action"><Glyph name={glyph} /></button>;
 });
 

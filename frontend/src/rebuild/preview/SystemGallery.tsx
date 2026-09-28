@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import type en from '../../i18n/en-US/rebuild-core.json';
 import {
-  Art, Banner, Button, ButtonGroup, Card, Celebration, celebrationPart, Checkbox, Chip, ChipGroup, ChoiceChip, CountUp, EmptyState, ErrorState,
+  Art, Banner, Button, ButtonGroup, Card, Celebration, celebrationPart, Checkbox, Chip, ChipGroup, ChoiceChip, CoinAmount, CountUp, EmptyState, ErrorState,
   IconButton, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, RadioGroup, RewardChip, SegmentedControl,
   SelectField, Slider, Stepper, Switch, TextField,
 } from '../design/controls';
@@ -118,7 +118,8 @@ export function SystemGallery({ t, theme, onBack }: { t: SystemGalleryCopy; them
           <Chip tone="error" glyph="warning">{t.notSent}</Chip>
           <Chip tone="sky" glyph="info">{t.new}</Chip>
           <Chip tone="primary" glyph="info">{t.simulation}</Chip>
-          <RewardChip>{coinsText(40)}</RewardChip>
+          <RewardChip coin>{coinsText(40)}</RewardChip>
+          <CoinAmount>{coinsText(12)}</CoinAmount>
         </ChipGroup>
         <ChipGroup>
           <Pill tone="primary">{t.new}</Pill>
@@ -147,7 +148,7 @@ export function SystemGallery({ t, theme, onBack }: { t: SystemGalleryCopy; them
           <ListRow title={t.rowLesson} supporting={t.rowLessonInfo} onPress={() => undefined} />
           <ListRow title={t.rowTask} supporting={t.rowTaskInfo} trailing={<Chip tone="warning" glyph="info">{t.waiting}</Chip>} />
           <ListRow title={t.mentorName} titleRole="data" leading={<MentorAvatar renderId={`mentor.dina.avatar.${theme}`} label={null} size="sm" />}
-            trailing={<RewardChip>{coinsText(40)}</RewardChip>} />
+            trailing={<RewardChip coin>{coinsText(40)}</RewardChip>} />
         </List>
       </section>
 

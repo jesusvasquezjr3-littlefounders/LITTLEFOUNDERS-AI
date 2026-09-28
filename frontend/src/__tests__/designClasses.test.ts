@@ -111,6 +111,12 @@ const NOT_CLASSES = new Set([
   'lf-aid',
   'lf-boot',
   'lf-allocation', // local checkpoint contract identifier, not a CSS class
+  // Keyframe names of the orchestrated motion patterns (rebuild/design/motion.tsx ORCHESTRATED_MOTION), not classes.
+  'lf-route-enter',
+  'lf-sequence-in',
+  'lf-sequence-out',
+  'lf-wave-rise',
+  'lf-stagger-rise',
 ]);
 
 describe('design classes', () => {

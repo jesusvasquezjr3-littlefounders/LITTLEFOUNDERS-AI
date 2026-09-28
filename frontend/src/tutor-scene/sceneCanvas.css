@@ -1,7 +1,7 @@
 /*
  * The 3D layer's own boxes (S10 design-system gap fix: the legacy Tailwind
  * utilities no longer load outside the OD-24 lesson island). The rebuilt
- * Mentor stage mounts the scene inside `.lf-rebuild`, so the design tokens
+ * Mentor stage mounts the scene inside the design-system root, so the tokens
  * apply; the v1 island mounts it beside the legacy sheet, whose tokens are
  * the fallbacks.
  */

@@ -1,5 +1,6 @@
 import { useRef, type ReactNode } from 'react';
 import { Art, Button, Card, DashboardLayout, ErrorState, InlineNotice, LoadingState, Pill } from '../design/controls';
+import { Stagger } from '../design/motion';
 import { CartoonAvatar, CoverArt } from './avatar/CartoonAvatar';
 import type { AvatarLook, CoverId } from './avatar/avatarKit';
 import { AppLink } from './navLink';
@@ -133,7 +134,7 @@ function Ready({ copy, locale, data, origin, invite, safetyNotice, connections, 
 
   const badges = <Card heading={copy.badgesTitle}>
     {data.badges.length === 0 ? <p className="lf-account-muted" data-copy-role="body">{copy.badgesEmpty}</p>
-      : <ul className="lf-profile-badges">
+      : <Stagger entryKey="own-profile-badges" as="ul" className="lf-profile-badges">
         {data.badges.map((badge) => <li key={badge.slug} className="lf-profile-badge">
           <Art assetId="badge.course.hexagon" />
           <div className="lf-profile-badge-text">
@@ -142,7 +143,7 @@ function Ready({ copy, locale, data, origin, invite, safetyNotice, connections, 
               ? copy.badgeEarned.replace('{date}', day.format(new Date(badge.completedAt))) : copy.badgeEarnedUndated}</p>
           </div>
         </li>)}
-      </ul>}
+      </Stagger>}
   </Card>;
 
   // E.9: the lists stay reachable, with no number, away from the progress block.

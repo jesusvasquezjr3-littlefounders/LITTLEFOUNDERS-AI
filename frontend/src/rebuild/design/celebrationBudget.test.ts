@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { MILESTONES, celebrationsFrom, crossedStreakMilestone, mayCelebrate, streakMilestone } from './milestones';
+import { ORCHESTRATED_MOTION } from './motion';
 
 /*
  * B.20 acceptance (Product 10): "an automated check that no celebration effect
@@ -150,6 +151,16 @@ describe('B.20 celebration budget: static scan of every celebration effect', () 
     const rebuilt = files.filter(({ file }) => file.startsWith('rebuild/') && !['rebuild/design/system.css', 'rebuild/design/tokens.css'].includes(file));
     const users = rebuilt.filter(({ text }) => /var\(--ease-spring\)|var\(--dur-celebration\)/.test(code(text))).map(({ file }) => file);
     expect(users).toEqual(['rebuild/design/motion.css']);
+  });
+
+  it('registers the orchestrated patterns and the press ring as non-celebration motion (04 §4; 02 §9.1)', () => {
+    // Not effects: they move the scene's own elements on route entry, an exercise change, an approval or a press.
+    expect([...ORCHESTRATED_MOTION]).toEqual(['lf-route-enter', 'lf-sequence-in', 'lf-sequence-out', 'lf-success-wipe', 'lf-wave-rise', 'lf-stagger-rise', 'lf-press-ring']);
+    for (const name of ORCHESTRATED_MOTION) expect(EFFECTS.some(({ pattern }) => pattern.test(name)), name).toBe(false);
+    const sheet = code(files.find(({ file }) => file === 'rebuild/design/motion.css')!.text);
+    for (const line of sheet.split(/\r?\n/).filter((entry) => ORCHESTRATED_MOTION.some((name) => entry.includes(`animation: ${name} `)))) {
+      expect(line).not.toMatch(/--ease-spring|--dur-celebration/);
+    }
   });
 
   it('the definitions list is closed', () => {

@@ -34,6 +34,29 @@ body { margin: 0; }
 /* OD-28 (V-04): dark mode keeps a soft control shadow (the generated --elevation-control value), as well as its surface step. */
 .lf-rebuild[data-theme='dark'] { color-scheme: dark; --shadow-control: 0 1px 3px rgb(6 7 19 / .56); }
 .lf-rebuild *, .lf-rebuild *::before, .lf-rebuild *::after { box-sizing: border-box; }
+/*
+ * The element baseline (S10 design-system gap fix). The legacy global sheet and
+ * its Tailwind preflight no longer load outside the OD-24 island, so the reset
+ * every rebuilt surface was built on in the real app lives here, scoped to the
+ * design-system root at zero specificity: any component rule wins over it, and
+ * the preview entry and the real app now share one baseline.
+ */
+:where(.lf-rebuild), :where(.lf-rebuild) *, :where(.lf-rebuild) ::before, :where(.lf-rebuild) ::after { border-width: 0; border-style: solid; border-color: currentColor; }
+:where(.lf-rebuild) :where(h3, h4, h5, h6) { margin: 0; font-size: inherit; font-weight: inherit; }
+:where(.lf-rebuild) :where(blockquote, dl, dd, figure, pre, hr) { margin: 0; }
+:where(.lf-rebuild) :where(ol, ul, menu) { margin: 0; padding: 0; list-style: none; }
+:where(.lf-rebuild) :where(fieldset) { margin: 0; padding: 0; }
+:where(.lf-rebuild) :where(legend, dialog) { padding: 0; }
+:where(.lf-rebuild) :where(a) { color: inherit; text-decoration: inherit; }
+:where(.lf-rebuild) :where(b, strong) { font-weight: bolder; }
+:where(.lf-rebuild) :where(button, input, optgroup, select, textarea) { margin: 0; padding: 0; color: inherit; font-family: inherit; font-size: 100%; font-weight: inherit; line-height: inherit; letter-spacing: inherit; }
+:where(.lf-rebuild) :where(button, [type='button'], [type='reset'], [type='submit']) { background-color: transparent; background-image: none; }
+:where(.lf-rebuild) :where(button, [role='button']) { cursor: pointer; }
+:where(.lf-rebuild) :where(:disabled) { cursor: default; }
+:where(.lf-rebuild) :where(textarea) { resize: vertical; }
+:where(.lf-rebuild) :where(img, svg, video, canvas, audio, iframe, embed, object) { display: block; vertical-align: middle; }
+:where(.lf-rebuild) :where(img, video) { max-inline-size: 100%; block-size: auto; }
+:where(.lf-rebuild) :where([hidden]) { display: none; }
 /* Element rules: every page is rebuilt, so they apply to the whole root (02 rule 23). */
 .lf-rebuild :is(h1, h2, p) { margin: 0; }
 .lf-rebuild h1 { font: 700 1.75rem/1.12 Fredoka, sans-serif; letter-spacing: -.005em; text-wrap: balance; }

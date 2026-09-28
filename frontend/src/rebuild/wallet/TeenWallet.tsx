@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import {
-  Button, ButtonLink, Copy, DashboardLayout, EmptyState, ErrorState, InlineNotice, LoadingState, SegmentedControl, SelectField, TextField,
+  Button, ButtonLink, CoinAmount, Copy, DashboardLayout, EmptyState, ErrorState, InlineNotice, LoadingState, SegmentedControl, SelectField, TextField,
 } from '../design/controls';
 import {
   archiveGoal, archiveReward, claimReward, createGoal, createParentInvite, createReward, decideParent, fetchBalances,
@@ -381,12 +381,12 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
 
     {state === 'ready' && balances && access && <DashboardLayout secondary={aside} primary={<>
       <section className="lf-teen-wallet-balance" aria-label={fill(copy.page.total, { n: balanceTotal })}>
-        <p className="lf-teen-wallet-total" data-copy-role="data">{fill(copy.page.total, { n: balanceTotal })}</p>
+        <p className="lf-teen-wallet-total"><CoinAmount size="lg">{fill(copy.page.total, { n: balanceTotal })}</CoinAmount></p>
         <ul className="lf-teen-wallet-pockets">
           {(['save', 'spend', 'share'] as const).map((bucket) => <li key={bucket} data-pocket={bucket}>
             <span className="lf-teen-wallet-swatch" aria-hidden="true" />
             <span data-copy-role="option">{pocket[bucket]}</span>
-            <span className="lf-teen-wallet-amount" data-copy-role="data">{balances[bucket]}</span>
+            <CoinAmount className="lf-teen-wallet-amount">{fill(copy.page.total, { n: balances[bucket] })}</CoinAmount>
           </li>)}
         </ul>
       </section>
@@ -461,7 +461,7 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
           {rewards.filter((r) => r.status === 'active').map((reward) => <li key={reward.id}>
             <div className="lf-teen-wallet-row">
               <span className="ugc" data-copy-role="data">{reward.title}</span>
-              <span className="lf-teen-wallet-amount" data-copy-role="data">{fill(copy.rewards.price, { n: reward.cost })}</span>
+              <CoinAmount className="lf-teen-wallet-amount">{fill(copy.rewards.price, { n: reward.cost })}</CoinAmount>
             </div>
             <div className="lf-actions">
               <Button variant="accent" disabled={busy} onClick={() => void act(() => claimReward(reward.id, session), fill(copy.rewards.used, { n: reward.cost }), spendRefusals, copy.rewards.failed)}>
