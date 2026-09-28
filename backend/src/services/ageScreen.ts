@@ -135,6 +135,29 @@ export async function readAgeRecorded(userIds: string[]): Promise<Set<string> | 
 }
 
 /**
+ * A.1, owner answer H-20: which of these accounts are under 13 on record (the
+ * under-13 origin, which every Tutor-declared under-13 child carries since
+ * record_age_declaration marks it, or an under-13 declaration). Every optional
+ * analytics gate drops such an account's events whatever the consent says, so
+ * the Family console must not offer a usage-data switch for it.
+ * `null` = the store did not answer.
+ */
+export async function readUnder13Accounts(userIds: string[]): Promise<Set<string> | null> {
+  const ids = userIds.filter((id) => z.string().uuid().safeParse(id).success);
+  if (ids.length === 0) return new Set();
+  const list = ids.map(encodeURIComponent).join(',');
+  const [declared, origins] = await Promise.all([
+    serviceRest<unknown>(`/account_age_declarations?user_id=in.(${list})&declared_age_band=eq.under_13&select=user_id`),
+    serviceRest<unknown>(`/account_safety_origins?user_id=in.(${list})&select=user_id`),
+  ]);
+  const Rows = z.array(z.object({ user_id: z.string() }).passthrough());
+  const a = Rows.safeParse(declared);
+  const b = Rows.safeParse(origins);
+  if (!a.success || !b.success) return null;
+  return new Set([...a.data, ...b.data].map((row) => row.user_id));
+}
+
+/**
  * Records the first declaration. `birthDate`, when given, is the date the
  * band was derived from: a teen's month and year are kept (OD-28), nothing
  * else of it is sent.

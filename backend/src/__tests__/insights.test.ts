@@ -41,7 +41,9 @@ beforeEach(() => {
   db.parent_verifications = [{ user_id: PARENT_ID, status: 'verified', method: 'local-ocr', birth_date: '1990-01-01' }];
   db.account_age_declarations = [
     { user_id: PARENT_ID, declared_age_band: 'adult' },
-    { user_id: KID_ID, declared_age_band: 'under_13' },
+    // A parent-created teen: the population whose Tutor consent admits usage
+    // data. An under-13 child is excluded from all optional analytics (H-20).
+    { user_id: KID_ID, declared_age_band: '13_to_17' },
     { user_id: ADULT_ID, declared_age_band: 'adult' },
   ];
   db.analytics_consents = [];

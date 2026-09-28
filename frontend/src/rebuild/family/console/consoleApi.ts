@@ -64,6 +64,8 @@ export interface Child {
   dialogueExperiment: boolean;
   /** A.4 (OD-3): false only when Core says the child has no age on record (the Tutor gives it); null or absent = unknown. */
   ageRecorded?: boolean | null;
+  /** A.1 / H-20: the child is under 13 on record, so no usage data is ever collected (no switch). null or absent = unknown. */
+  under13?: boolean | null;
 }
 
 const isField = (value: unknown): value is ProfileField => value === 'username' || value === 'displayName';
@@ -80,6 +82,7 @@ function toChild(value: unknown): Child | null {
     profileReview: isObject(review) && typeof review.flagged === 'boolean' && arrayOf(review.fields, isField) ? { flagged: review.flagged, fields: review.fields } : null,
     dialogueExperiment: value.dialogueExperiment === true,
     ageRecorded: typeof value.ageRecorded === 'boolean' ? value.ageRecorded : null,
+    under13: typeof value.under13 === 'boolean' ? value.under13 : null,
   };
 }
 
