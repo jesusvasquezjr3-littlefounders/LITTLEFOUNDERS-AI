@@ -22,6 +22,9 @@ beforeEach(() => {
     // Screened (Appendix M 1.1): the route sits behind requireAgeScreen.
     account_age_declarations: [{ user_id: userId, declared_age_band: 'adult' }],
     account_safety_origins: [],
+    // GoTrue's signup trigger (0003) gives every account, a guest included, the universal role.
+    user_roles: [{ user_id: userId, role: 'universal' }],
+    teen_analytics_preferences: [],
   };
   vi.stubGlobal('fetch', createFakeFetch(db));
 });
@@ -125,5 +128,54 @@ describe('POST /api/v1/onboarding/complete', () => {
     expect(db.onboarding_responses).toHaveLength(0);
     expect(db.profiles[0]).toMatchObject({ display_name: 'Ana' }); // profile write already landed — safe, idempotent overwrite on retry
     expect(db.learning_stats[0]).toMatchObject({ streak_days: 0, last_active_date: null });
+  });
+
+  /*
+   * A.2, Appendix M 1.1 (Unconsented Analytics Event Rate, flagged sessions:
+   * target zero): the discovery answer is an optional acquisition event. A
+   * forged or stale client that still sends it for a population outside the
+   * attribution predicate completes onboarding with the answer discarded.
+   */
+  describe('discovery answer admission (A.2)', () => {
+    const send = () => auth(request(createApp()).post('/api/v1/onboarding/complete')).send({
+      displayName: 'Ana', discoveryChannel: 'friend', accountOfferChoice: 'later', localDate: '2026-08-10',
+    });
+
+    it.each([
+      ['a flagged guest from the age-refusal path', () => {
+        db.account_age_declarations = [];
+        db.account_safety_origins = [{ user_id: userId, under13_origin: true }];
+      }],
+      ['a flagged account that later declared an older band', () => {
+        db.account_age_declarations = [{ user_id: userId, declared_age_band: 'adult' }];
+        db.account_safety_origins = [{ user_id: userId, under13_origin: true }];
+      }],
+      ['a kid-role account', () => { db.user_roles = [{ user_id: userId, role: 'kid' }]; }],
+      ['an unconfirmed identity with no role', () => { db.user_roles = []; }],
+      ['a self-declared teen who never opted in', () => { db.account_age_declarations = [{ user_id: userId, declared_age_band: '13_to_17' }]; }],
+      ['a self-declared teen who said no', () => {
+        db.account_age_declarations = [{ user_id: userId, declared_age_band: '13_to_17' }];
+        db.teen_analytics_preferences = [{ user_id: userId, enabled: false, disclosure_version: 1 }];
+      }],
+    ])('never persists the channel for %s, and still records completion', async (_label, arrange) => {
+      arrange();
+      const res = await send();
+      expect(res.status).toBe(201);
+      expect(db.onboarding_responses).toEqual([{ user_id: userId, discovery_channel: null, account_offer_choice: 'later' }]);
+    });
+
+    it('persists it for a teen who opted in', async () => {
+      db.account_age_declarations = [{ user_id: userId, declared_age_band: '13_to_17' }];
+      db.teen_analytics_preferences = [{ user_id: userId, enabled: true, disclosure_version: 1 }];
+      expect((await send()).status).toBe(201);
+      expect(db.onboarding_responses[0]).toMatchObject({ discovery_channel: 'friend' });
+    });
+
+    it('tells the client through /auth/me whether to ask at all', async () => {
+      const me = async () => (await auth(request(createApp()).get('/api/v1/auth/me'))).body.data.discoverySurvey;
+      expect(await me()).toBe(true);
+      db.account_safety_origins = [{ user_id: userId, under13_origin: true }];
+      expect(await me()).toBe(false);
+    });
   });
 });

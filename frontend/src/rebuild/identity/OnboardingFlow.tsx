@@ -26,12 +26,24 @@ import { identityCopy } from './authBlocks';
  *
  * A guest can be a child who was refused at sign-up (A.2), so every string is
  * budgeted for the youngest band (06 §3.1: 25 words on the first view).
+ *
+ * That same guest is why the discovery step is conditional (A.2, Appendix M
+ * 1.1: no analytics event for a flagged session without an equivalent consent
+ * mechanism). Core stores the answer only for an account signup attribution
+ * would admit and tells the flow through /auth/me; otherwise the step is not
+ * shown and the progress reads "n of 4".
  */
 
 export const DISCOVERY_CHANNELS = ['friend', 'social_media', 'search', 'app_store', 'school', 'ad', 'other'] as const;
 export type DiscoveryChannel = (typeof DISCOVERY_CHANNELS)[number];
 export const ONBOARDING_STEPS = ['welcome', 'name', 'mentor', 'discovery', 'account'] as const;
 export type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
+/**
+ * A.2, Appendix M 1.1: the "how did you hear about us" step is asked only when Core would keep the answer
+ * (never a guest from the age-refusal path, a kid, or a teen who has not opted in). Without it the flow is 4 steps.
+ */
+export const onboardingSteps = (askDiscovery: boolean): readonly OnboardingStep[] =>
+  askDiscovery ? ONBOARDING_STEPS : ONBOARDING_STEPS.filter((step) => step !== 'discovery');
 export type AccountChoice = 'created_now' | 'later';
 
 export interface MentorChoiceState {
@@ -45,8 +57,10 @@ export interface MentorChoiceState {
 
 export interface OnboardingValues { displayName: string; discoveryChannel: DiscoveryChannel | null; choice: AccountChoice }
 
-export function OnboardingFlow({ locale, skipLabel, mentor, completing, failed, onComplete, initialStep = 'welcome', initialName = '' }: {
+export function OnboardingFlow({ locale, skipLabel, mentor, askDiscovery, completing, failed, onComplete, initialStep = 'welcome', initialName = '' }: {
   locale: Locale; skipLabel: string; mentor: MentorChoiceState;
+  /** Core's /auth/me `discoverySurvey`: show the optional discovery step (A.2). */
+  askDiscovery: boolean;
   /** The account choice whose completion request is in flight. */
   completing: AccountChoice | null; failed: boolean;
   onComplete: (values: OnboardingValues) => void;
@@ -57,7 +71,9 @@ export function OnboardingFlow({ locale, skipLabel, mentor, completing, failed, 
   const [step, setStep] = useState<OnboardingStep>(initialStep);
   const [name, setName] = useState(initialName);
   const [channel, setChannel] = useState<DiscoveryChannel | null>(null);
-  const index = ONBOARDING_STEPS.indexOf(step);
+  const steps = onboardingSteps(askDiscovery);
+  const index = Math.max(0, steps.indexOf(step));
+  const afterMentor: OnboardingStep = askDiscovery ? 'discovery' : 'account';
   const trimmed = name.trim();
 
   // A new step replaces the last in place: focus moves to its heading, and the page starts at the top (02 rule 13).
@@ -72,13 +88,13 @@ export function OnboardingFlow({ locale, skipLabel, mentor, completing, failed, 
 
   const go = (next: OnboardingStep) => setStep(next);
   const busy = completing !== null;
-  const progress = copy.progress.replace('{current}', String(index + 1)).replace('{total}', String(ONBOARDING_STEPS.length));
+  const progress = copy.progress.replace('{current}', String(index + 1)).replace('{total}', String(steps.length));
 
   const bar = <div className="lf-onboarding-bar">
-    {index > 0 ? <IconButton glyph="back" label={copy.back} variant="inverse" disabled={busy} onClick={() => go(ONBOARDING_STEPS[index - 1]!)} data-onboarding="back" /> : null}
+    {index > 0 ? <IconButton glyph="back" label={copy.back} variant="inverse" disabled={busy} onClick={() => go(steps[index - 1]!)} data-onboarding="back" /> : null}
     <div className="lf-onboarding-progress">
       <p data-copy-role="body">{progress}</p>
-      <ProgressBar label={progress} labelHidden value={index + 1} max={ONBOARDING_STEPS.length} valueText={progress} tone="mint" />
+      <ProgressBar label={progress} labelHidden value={index + 1} max={steps.length} valueText={progress} tone="mint" />
     </div>
   </div>;
 
@@ -108,8 +124,8 @@ export function OnboardingFlow({ locale, skipLabel, mentor, completing, failed, 
         {mentor.failed ? <InlineNotice tone="error" live>{copy.mentorFailed}</InlineNotice> : null}
       </>;
       actions = <>
-        <Button variant="accent" size="lg" disabled={!mentor.chosen || mentor.saving !== null} onClick={() => go('discovery')} data-onboarding="continue">{copy.continue}</Button>
-        <Button size="lg" disabled={mentor.saving !== null} onClick={() => go('discovery')} data-onboarding="skip">{copy.skip}</Button>
+        <Button variant="accent" size="lg" disabled={!mentor.chosen || mentor.saving !== null} onClick={() => go(afterMentor)} data-onboarding="continue">{copy.continue}</Button>
+        <Button size="lg" disabled={mentor.saving !== null} onClick={() => go(afterMentor)} data-onboarding="skip">{copy.skip}</Button>
       </>;
       break;
     case 'discovery':
@@ -131,9 +147,9 @@ export function OnboardingFlow({ locale, skipLabel, mentor, completing, failed, 
       </>;
       actions = <>
         <Button variant="accent" size="lg" disabled={busy && completing !== 'created_now'} pending={completing === 'created_now'} pendingLabel={copy.saving}
-          onClick={() => onComplete({ displayName: trimmed, discoveryChannel: channel, choice: 'created_now' })} data-onboarding="create">{copy.create}</Button>
+          onClick={() => onComplete({ displayName: trimmed, discoveryChannel: askDiscovery ? channel : null, choice: 'created_now' })} data-onboarding="create">{copy.create}</Button>
         <Button size="lg" disabled={busy && completing !== 'later'} pending={completing === 'later'} pendingLabel={copy.saving}
-          onClick={() => onComplete({ displayName: trimmed, discoveryChannel: channel, choice: 'later' })} data-onboarding="later">{copy.later}</Button>
+          onClick={() => onComplete({ displayName: trimmed, discoveryChannel: askDiscovery ? channel : null, choice: 'later' })} data-onboarding="later">{copy.later}</Button>
       </>;
       break;
   }

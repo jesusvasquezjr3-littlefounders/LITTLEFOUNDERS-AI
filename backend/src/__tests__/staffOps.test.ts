@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
 import { getConfig } from '../config.js';
-import { buildIdentityReport, type IdentityCounts } from '../services/identityMetrics.js';
+import { buildIdentityReport, type IdentityCounts, type OnboardingDiscoveryCounts } from '../services/identityMetrics.js';
 import { judgeOpsJob, OPS_JOB_STALE_HOURS } from '../services/opsJobs.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
@@ -45,10 +45,13 @@ const COUNTS: IdentityCounts = {
   },
 };
 
+const DISCOVERY: OnboardingDiscoveryCounts = { answered: 8, unconsented: 0, flaggedOrigin: 0, kid: 0, under13Declared: 0, teenWithoutOptIn: 0 };
+
 interface World {
   roles?: string[];
   permissions?: string[];
   identity?: { status: number; body: unknown };
+  discovery?: { status: number; body: unknown };
   audit?: Record<string, { created_at: string; detail: Record<string, unknown> }[]>;
   auditStatus?: number;
   reviews?: { status: number; body: unknown };
@@ -67,6 +70,7 @@ function stub(world: World = {}) {
       return Promise.resolve(jsonResponse(200, (world.permissions ?? ['view_analytics', 'manage_support']).map((permission) => ({ user_id: STAFF_ID, permission }))));
     }
     if (url.includes('/rest/v1/rpc/identity_metrics')) return Promise.resolve(jsonResponse(world.identity?.status ?? 200, world.identity?.body ?? COUNTS));
+    if (url.includes('/rest/v1/rpc/onboarding_discovery_metrics')) return Promise.resolve(jsonResponse(world.discovery?.status ?? 200, world.discovery?.body ?? DISCOVERY));
     if (url.includes('/rest/v1/rpc/staff_access_review_status')) return Promise.resolve(jsonResponse(world.reviews?.status ?? 200, world.reviews?.body ?? { cadenceDays: 90, total: 0, stale: 0, reviewedEver: 0, grants: [] }));
     if (url.includes('/rest/v1/rpc/record_staff_access_review')) return Promise.resolve(jsonResponse(world.reviewRpc?.status ?? 200, world.reviewRpc?.body ?? 'recorded'));
     if (url.includes('/rest/v1/profiles')) return Promise.resolve(jsonResponse(200, [{ user_id: OTHER_ID, display_name: 'Ops Admin', username: 'ops' }]));
@@ -94,12 +98,13 @@ describe('Appendix M Part 1 — GET /api/v1/admin/analytics/identity', () => {
     expect(res.status).toBe(200);
     const byId = Object.fromEntries((res.body.data.metrics as { id: string }[]).map((m) => [m.id, m]));
     expect(Object.keys(byId)).toEqual([
-      'guest_origin_flag_coverage', 'flag_persistence_through_upgrade', 'post_callback_age_screen_completion',
+      'guest_origin_flag_coverage', 'onboarding_discovery_unconsented', 'flag_persistence_through_upgrade', 'post_callback_age_screen_completion',
       'under13_google_reclassification', 'entry_path_age_capture', 'undated_account_backlog',
       'verification_status_differentiation', 'staff_grant_justification_completeness', 'revocation_path_utilization',
       'kid_email_change_restriction', 'faq_claim_parity', 'schema_field_utilization',
     ]);
     expect(byId.guest_origin_flag_coverage).toMatchObject({ kind: 'release_gate', target: 1, value: 1, status: 'met' });
+    expect(byId.onboarding_discovery_unconsented).toMatchObject({ kind: 'release_gate', part: '1.1', requirement: 'A.2', value: 1, status: 'met', detail: { unconsented: 0 } });
     expect(byId.post_callback_age_screen_completion).toMatchObject({ kind: 'release_gate', value: 0.9, status: 'missed' });
     expect(byId.undated_account_backlog).toMatchObject({ kind: 'diagnostic', target: null, value: 0.3, status: 'diagnostic' });
     expect(byId.revocation_path_utilization).toMatchObject({ kind: 'diagnostic', detail: { pathExercised: true } });
@@ -121,6 +126,8 @@ describe('Appendix M Part 1 — GET /api/v1/admin/analytics/identity', () => {
     expect(malformed.status).toBe(502);
     stub({ identity: { status: 500, body: null } });
     expect((await request(createApp()).get('/api/v1/admin/analytics/identity').set('Authorization', auth())).status).toBe(502);
+    stub({ discovery: { status: 200, body: { ...DISCOVERY, unconsented: -1 } } });
+    expect((await request(createApp()).get('/api/v1/admin/analytics/identity').set('Authorization', auth())).status).toBe(502);
   });
 
   it('refuses staff without view_analytics, a family account and no session', async () => {
@@ -133,9 +140,15 @@ describe('Appendix M Part 1 — GET /api/v1/admin/analytics/identity', () => {
   });
 
   it('computes rates from counts and marks an empty population as no data', () => {
-    const report = buildIdentityReport({ ...COUNTS, guestOrigin: { requested: 0, flagged: 0, flaggedGuestsCreated: 0 } }, 30);
+    const report = buildIdentityReport({ ...COUNTS, guestOrigin: { requested: 0, flagged: 0, flaggedGuestsCreated: 0 } }, 30, DISCOVERY);
     expect(report.metrics.find((m) => m.id === 'guest_origin_flag_coverage')).toMatchObject({ value: null, status: 'no_data' });
-    expect(report.releaseGate).toMatchObject({ total: 10, noData: 1 });
+    expect(report.releaseGate).toMatchObject({ total: 11, noData: 1 });
+  });
+
+  it('misses the A.2 target when one flagged account has a stored discovery answer', () => {
+    const report = buildIdentityReport(COUNTS, 30, { ...DISCOVERY, unconsented: 1, flaggedOrigin: 1 });
+    expect(report.metrics.find((m) => m.id === 'onboarding_discovery_unconsented'))
+      .toMatchObject({ numerator: 7, denominator: 8, status: 'missed', detail: { flaggedOrigin: 1 } });
   });
 });
 

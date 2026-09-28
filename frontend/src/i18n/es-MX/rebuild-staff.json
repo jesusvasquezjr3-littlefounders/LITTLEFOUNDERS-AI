@@ -1839,6 +1839,7 @@
         "missed": "Por debajo",
         "no_data": "Aún sin datos",
         "guest_origin_flag_coverage": "Sesiones de invitado marcadas tras rechazo por edad",
+        "onboarding_discovery_unconsented": "Respuestas de encuesta solo con consentimiento",
         "flag_persistence_through_upgrade": "Marca conservada al crear la cuenta",
         "post_callback_age_screen_completion": "Registros con Google que pasaron la edad",
         "under13_google_reclassification": "Cuentas de Google menores de 13 protegidas",

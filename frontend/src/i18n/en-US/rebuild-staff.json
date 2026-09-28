@@ -1839,6 +1839,7 @@
         "missed": "Below target",
         "no_data": "No data yet",
         "guest_origin_flag_coverage": "Guest sessions flagged after age refusal",
+        "onboarding_discovery_unconsented": "Survey answers kept only with consent",
         "flag_persistence_through_upgrade": "Flag kept after guest upgrade",
         "post_callback_age_screen_completion": "Google sign-ups that passed the age screen",
         "under13_google_reclassification": "Under-13 Google accounts protected",

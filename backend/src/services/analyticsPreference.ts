@@ -31,3 +31,21 @@ export async function allowsSelfManagedAnalytics(userId: string, state: AgeScree
   if (state.ageBand !== '13_to_17') return false;
   return (await readAnalyticsPreference(userId))?.enabled === true;
 }
+
+/*
+ * A.2, Appendix M 1.1 (Unconsented Analytics Event Rate, flagged sessions:
+ * target zero): the one predicate every self-reported acquisition answer uses
+ * (signup attribution, the onboarding "how did you hear about us" survey, the
+ * /auth/me flag the survey step reads). Never an under-13 origin (a guest from
+ * the age-refusal path included), never a kid-role account, never an
+ * unscreened or unconfirmed identity, and a teen only after their own opt-in.
+ */
+export async function admitsAcquisitionAnswer(
+  userId: string,
+  screening: AgeScreenState | null,
+  roles: readonly string[] | null,
+): Promise<boolean> {
+  if (!screening || screening.required || screening.protectedOrigin) return false;
+  if (!roles || roles.length === 0 || roles.includes('kid')) return false;
+  return allowsSelfManagedAnalytics(userId, screening);
+}

@@ -35,7 +35,7 @@ export function OnboardingPage() {
   const locale = useShellLocale();
   const skip = useShellCopy().appShell.skip;
   const navigate = useNavigate();
-  const { getToken, refreshMe, onboardingComplete } = useAuth();
+  const { getToken, refreshMe, onboardingComplete, discoverySurvey } = useAuth();
   const [chosen, setChosen] = useState<MentorCharacter | null>(null);
   const [saving, setSaving] = useState<MentorCharacter | null>(null);
   const [mentorFailed, setMentorFailed] = useState(false);
@@ -74,7 +74,7 @@ export function OnboardingPage() {
   }
 
   return <ShellRoot>
-    <OnboardingFlow locale={locale} skipLabel={skip} completing={completing} failed={failed}
+    <OnboardingFlow locale={locale} skipLabel={skip} completing={completing} failed={failed} askDiscovery={discoverySurvey === true}
       mentor={{ chosen, saving, failed: mentorFailed, onChoose: (character) => void choose(character) }}
       onComplete={(values) => void complete(values)} />
   </ShellRoot>;

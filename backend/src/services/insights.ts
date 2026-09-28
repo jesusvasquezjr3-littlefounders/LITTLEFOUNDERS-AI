@@ -1,4 +1,4 @@
-import { allowsSelfManagedAnalytics } from './analyticsPreference.js';
+import { admitsAcquisitionAnswer, allowsSelfManagedAnalytics } from './analyticsPreference.js';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
@@ -531,9 +531,7 @@ export async function upsertAnonVisitor(v: AnonVisitorUpsert): Promise<boolean> 
  * it on every login without thinking about it.
  */
 export async function attributeSignup(anonId: string, userId: string, roles: string[]): Promise<boolean> {
-  const screening = await readAgeScreen(userId);
-  if (!screening || screening.required || screening.protectedOrigin) return false;
-  if (roles.length === 0 || roles.includes('kid') || !await allowsSelfManagedAnalytics(userId, screening)) return false;
+  if (!await admitsAcquisitionAnswer(userId, await readAgeScreen(userId), roles)) return false;
   const res = await serviceRest<unknown>(`/anon_visitors?anon_id=eq.${encodeURIComponent(anonId)}&converted_at=is.null`, {
     method: 'PATCH',
     headers: { Prefer: 'return=minimal' },

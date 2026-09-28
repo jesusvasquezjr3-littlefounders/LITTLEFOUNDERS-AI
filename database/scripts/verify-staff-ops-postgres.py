@@ -16,7 +16,9 @@ staff_access_reviews and identity_metrics):
   - G.4: the access-review log lists only admin/superadmin roles and the four
     staff permissions, ages a grant from max(granted, last kept review), and
     a review is superadmin-only and audited; browser roles read nothing;
-  - Appendix M Part 1: identity_metrics counts every population correctly.
+  - Appendix M Part 1: identity_metrics counts every population correctly;
+  - A.2 / Appendix M 1.1: onboarding_discovery_metrics counts stored discovery
+    answers from refused populations, and its migration scrubs them.
 
 Configuration: LF_PG_PSQL, LF_PG_PORT, LF_PG_USER, LF_PG_KEEP, LF_PG_REPORT
 (see verify-teen-discoverable-postgres.py).
@@ -289,6 +291,29 @@ try:
     check('identity_metrics counts guest flags, Google screening and reclassification, entry-path capture, backlog, parent tags, justification, revocation, kid email and schema fields')
     rejected("SET ROLE service_role; SELECT identity_metrics(now(), now() - interval '1 day');", 'from < to')
     check('identity_metrics refuses an empty or inverted window')
+
+    # ── A.2, Appendix M 1.1: onboarding discovery answers (target zero) ──
+    # Rows written the way Core wrote them before the gap-fix round 2 gate: a
+    # flagged guest, a kid, an under-13 declaration, a teen without an opt-in,
+    # and one admitted adult.
+    run(f"""
+    INSERT INTO onboarding_responses (user_id, discovery_channel, account_offer_choice) VALUES
+        ('{I['guest1']}', 'friend', 'later'), ('{I['kid']}', 'school', 'later'), ('{I['g_kid']}', 'search', 'later'),
+        ('{I['g_teen']}', 'ad', 'later'), ('{I['mail']}', 'friend', 'created_now');
+    """)
+    d = json.loads(service('SELECT onboarding_discovery_metrics();'))
+    assert d['answered'] == 5 and d['unconsented'] == 4, d
+    assert d['flaggedOrigin'] >= 1 and d['kid'] == 1 and d['teenWithoutOptIn'] == 1, d
+    for role in ('anon', 'authenticated'):
+        rejected(f'SET ROLE {role}; SELECT onboarding_discovery_metrics();', 'permission denied')
+    check('onboarding_discovery_metrics counts answers from refused populations and only the service role reads it')
+    scrub = next((ROOT / 'database/migrations').glob('*_onboarding_discovery_metrics.sql'))
+    run(scrub.read_text(encoding='utf-8'))
+    d = json.loads(service('SELECT onboarding_discovery_metrics();'))
+    assert d == {'answered': 1, 'unconsented': 0, 'flaggedOrigin': 0, 'kid': 0, 'under13Declared': 0, 'teenWithoutOptIn': 0}, d
+    assert scalar('SELECT count(*) FROM onboarding_responses;') == '5', 'the completion markers stay'
+    assert scalar(f"SELECT discovery_channel FROM onboarding_responses WHERE user_id = '{I['mail']}';") == 'friend'
+    check('the onboarding_discovery_metrics scrub nulls refused answers, keeps every completion marker and the admitted answer')
 finally:
     if os.environ.get('LF_PG_KEEP') != '1':
         sql(f'DROP DATABASE {database} WITH (FORCE)')
