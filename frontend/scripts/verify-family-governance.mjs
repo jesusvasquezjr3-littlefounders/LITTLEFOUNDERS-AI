@@ -113,7 +113,7 @@ page.ws.addEventListener('message', async ({ data }) => {
       else if (p === '/banking/overview') body.data = { register: 'teen', account: { nickname: 'Rocket', design: 'violet', simulated: true, freeze: { frozen: false, by: null, since: null, holds: ['rewards', 'splits', 'credits', 'share'], canChange: true } },
         pockets: { save: 20, spend: 15, share: 5 }, pendingCredits: 0, spendLimit: { configured: false }, statement: { month: '2026-09', earned: 30, spent: 10, saved: 20, given: 2, adjusted: 0, lines: [] } };
       else if (p === '/banking/register') body.data = { register: 'teen' };
-      else if (p === '/banking/account' && method === 'GET') body.data = { account: { nickname: 'Rocket', cardDesign: 'violet', displayNumber: 'LF-1234-5678', frozen: false, frozenBy: null, frozenAt: null, openedAt: T } };
+      else if (p === '/banking/account' && method === 'GET') body.data = { account: { nickname: 'Rocket', cardDesign: 'violet', frozen: false, frozenBy: null, frozenAt: null, openedAt: T } };
       else if (p === '/banking/wallet/pending-credits') body.data = { credits: [] };
       else if (p === '/banking/savings-bonus' && method === 'GET') body.data = { rule: { rateBp: 1000, active: true, nextRunAt: T }, framing: 'percent', perTen: null, maxRateBp: 2000, saved: 20, nextBonus: 2, example: { shown: false, completed: false } };
       else if (p === '/tasks/wallet') body.data = { balances: { save: 20, spend: 15, share: 5 } };
@@ -121,7 +121,7 @@ page.ws.addEventListener('message', async ({ data }) => {
       else if (p === '/tasks/wallet/split') body.data = { usual: { save: 50, spend: 40, share: 10 }, custom: false, recommended: { save: 50, spend: 40, share: 10 } };
       else if (p === '/tasks/goals') body.data = { goals: [] };
       else if (p === `/banking/accounts/${kidId}/freeze` && method === 'GET') body.data = { register: 'teen', account: { nickname: 'Rocket', design: 'violet', simulated: true, freeze: { frozen: false, by: null, since: null, holds: ['rewards', 'splits', 'credits', 'share'], canChange: true } } };
-      else if (p === `/banking/accounts/${kidId}`) body.data = { account: { nickname: 'Rocket', cardDesign: 'violet', displayNumber: 'LF-1234-5678', frozen: false, frozenBy: null, frozenAt: null, openedAt: T } };
+      else if (p === `/banking/accounts/${kidId}`) body.data = { account: { nickname: 'Rocket', cardDesign: 'violet', frozen: false, frozenBy: null, frozenAt: null, openedAt: T } };
       else if (p === `/banking/allowance/${kidId}`) body.data = { rule: null };
       else if (p === `/banking/spend-limit/${kidId}`) body.data = { status: { configured: false } };
       else if (p === `/banking/savings-bonus/${kidId}`) body.data = { rule: null, framing: 'percent', perTen: null, maxRateBp: 2000 };

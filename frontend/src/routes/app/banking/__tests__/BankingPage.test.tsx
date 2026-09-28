@@ -45,7 +45,7 @@ function Where() {
 const page = () => render(<MemoryRouter initialEntries={['/banking']}><Routes><Route path="/banking" element={<><BankingPage /><Where /></>} /></Routes></MemoryRouter>);
 
 describe('the Tutor (F5-P)', () => {
-  const legacy = (kidId: string) => ({ nickname: `Account ${kidId}`, cardDesign: 'indigo', displayNumber: 'LF-0000-0000', frozen: false, frozenBy: null, frozenAt: null, openedAt: '2026-01-01T00:00:00Z' });
+  const legacy = (kidId: string) => ({ nickname: `Account ${kidId}`, cardDesign: 'indigo', frozen: false, frozenBy: null, frozenAt: null, openedAt: '2026-01-01T00:00:00Z' });
   const view = (kidId: string, frozen: boolean) => ({
     register: 'young',
     account: { nickname: `Account ${kidId}`, design: 'indigo', simulated: true,
@@ -124,7 +124,7 @@ describe('the child (F5-K)', () => {
       }
         : path.startsWith('/banking/overview/month?month=') ? { register: 'young', statement: { month: path.slice(-7), earned: 3, spent: 1, saved: 2 } }
         : path === '/banking/register' ? { register: 'young' }
-        : path === '/banking/account' ? { account: { nickname: 'Synthetic account', cardDesign: 'indigo', displayNumber: 'LF-9', frozen, frozenBy: frozen ? owner : null, frozenAt: null, openedAt: '2026-01-01T00:00:00Z' } }
+        : path === '/banking/account' ? { account: { nickname: 'Synthetic account', cardDesign: 'indigo', frozen, frozenBy: frozen ? owner : null, frozenAt: null, openedAt: '2026-01-01T00:00:00Z' } }
         : path === '/banking/wallet/pending-credits' ? { credits: [{ id: 'credit', amount: 10, source: 'allowance', createdAt: '2026-09-20T00:00:00Z' }] }
         : { status: { configured: false } };
       return { data, error: null };

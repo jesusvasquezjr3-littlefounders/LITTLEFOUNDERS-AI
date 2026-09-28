@@ -63,7 +63,7 @@ const autonomy = { inFamily: true, level: 1, storedLevel: 1, levelSince: null, p
   next: { level: 2, eligible: false, age: { value: 9, min: 8, ok: true }, approved: { value: 4, min: 10 }, notApproved: { value: 0, maxPct: 25, ok: true }, daysAtLevel: { value: 30, min: 0, ok: true }, windowDays: 60 }, request: null };
 const research = { participating: false, recording: false, grantor: null, since: null, disclosureVersion: 1, adult: false, months: 0 };
 const learningStreak = () => ({ model: 'rest-days-v1', status: 'open', current: 3, best: 5, daysPracticed: 12, restDaysLeft: 1, lastActiveDate: day(-1), pause: null });
-const account = { nickname: 'Rocket Fund', cardDesign: 'indigo', displayNumber: 'LF-1234', frozen: false, frozenBy: null, frozenAt: null, openedAt: T };
+const account = { nickname: 'Rocket Fund', cardDesign: 'indigo', frozen: false, frozenBy: null, frozenAt: null, openedAt: T };
 
 await page.send('Fetch.enable', { patterns: [{ urlPattern: '*' }] });
 page.ws.addEventListener('message', async ({ data }) => {

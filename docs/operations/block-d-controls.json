@@ -19,11 +19,13 @@
       "claim": "The account is a practice card: coins stay in the app. There is no bank, card number, card network or payment behind it.",
       "enforcedBy": [
         { "file": "backend/src/routes/banking.ts", "contains": "simulated: true as const" },
-        { "file": "frontend/src/rebuild/banking/bankingApi.ts", "contains": "value.simulated === true" }
+        { "file": "frontend/src/rebuild/banking/bankingApi.ts", "contains": "value.simulated === true" },
+        { "file": "backend/src/services/supabaseRest.ts", "contains": "const BANKING_ACCOUNT_FIELDS = 'kid_user_id,nickname,card_design,frozen,frozen_by,frozen_at,opened_by,opened_at';" }
       ],
       "provedBy": [
         { "file": "backend/src/__tests__/moneyPresentation.test.ts", "contains": "serves the account as a declared simulation with no card number and every real freeze hold" },
-        { "file": "frontend/src/rebuild/banking/CoinAccount.test.tsx", "contains": "refuses a card that is not a declared simulation, carries a number, or claims a hold nobody enforces" }
+        { "file": "frontend/src/rebuild/banking/CoinAccount.test.tsx", "contains": "refuses a card that is not a declared simulation, carries a number, or claims a hold nobody enforces" },
+        { "file": "backend/src/__tests__/banking.test.ts", "contains": "never serves a card-shaped number, even from a row stored before the column was dropped (D.7)" }
       ],
       "ui": ["coinAccount:young.practice", "coinAccount:young.coinsOnly", "coinAccount:transition.practice", "coinAccount:transition.coinsOnly", "coinAccount:teen.practice", "coinAccount:teen.coinsOnly", "coinAccount:tutor.practice", "familyGovernance:scope.intro"]
     },

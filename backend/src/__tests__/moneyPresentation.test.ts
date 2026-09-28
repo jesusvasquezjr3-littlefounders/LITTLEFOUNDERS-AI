@@ -58,7 +58,7 @@ const GRANTS: Record<string, string[]> = { [ANALYST]: ['view_analytics'], [SUPPO
 const GUARDED: Record<string, string[]> = { [PARENT]: [KID, LINKED_TEEN], [STRANGER]: [] };
 
 const account = (over: Record<string, unknown> = {}) => ({
-  kid_user_id: KID, nickname: 'Rocket Fund', card_design: 'emerald', display_number: 'LF-1234-5678', frozen: false, frozen_by: null,
+  kid_user_id: KID, nickname: 'Rocket Fund', card_design: 'emerald', frozen: false, frozen_by: null,
   frozen_at: null, opened_by: PARENT, opened_at: '2026-09-01T00:00:00Z', ...over,
 });
 const ledger = Array.from({ length: 12 }, (_, i) => ({

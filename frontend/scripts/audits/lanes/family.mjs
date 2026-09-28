@@ -283,7 +283,7 @@ const rewardRequest = (over) => ({ id: '77777777-7777-4777-8777-777777777777', c
   decidedBy: null, fulfilledAt: null, childReasonKind: 'saved_for_it', childNote: null, ...over });
 const HOLDS = ['rewards', 'splits', 'credits', 'share'];
 const card = (w) => ({ nickname: w.card, design: 'ocean', simulated: true, freeze: { frozen: false, by: null, since: null, holds: HOLDS, canChange: true } });
-const legacyAccount = (w) => ({ nickname: w.card, cardDesign: 'ocean', displayNumber: 'LF-0000-0000', frozen: false, frozenBy: null, frozenAt: null, openedAt: T });
+const legacyAccount = (w) => ({ nickname: w.card, cardDesign: 'ocean', frozen: false, frozenBy: null, frozenAt: null, openedAt: T });
 const goal = (w) => ({ id: GOAL, kidUserId: KID_A, title: w.goal, target: 40, icon: 'bike', status: 'active', createdAt: T, reachedAt: null, followsGoalId: null, saved: 16,
   progress: { own: 12, bonus: 2, family: 2, total: 16 }, nextStep: null });
 const statement = (register) => register === 'young' ? { month: '2026-09', earned: 30, spent: 10, saved: 20 }

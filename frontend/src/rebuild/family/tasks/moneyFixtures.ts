@@ -36,7 +36,7 @@ export const REWARDS = [rewardWire(), rewardWire({ id: REWARD_PAUSED, title: 'La
 export const requestWire = (over: Record<string, unknown> = {}) => ({ id: '99999999-9999-4999-8999-999999999999', catalogId: REWARD, kidUserId: KID_A,
   status: 'requested', createdAt: T, decidedAt: null, decidedBy: null, fulfilledAt: null, childReasonKind: 'saved_for_it', childNote: null, ...over });
 
-export const accountWire = (over: Record<string, unknown> = {}) => ({ nickname: 'Rocket Fund', cardDesign: 'ocean', displayNumber: 'LF-1234-5678', frozen: false,
+export const accountWire = (over: Record<string, unknown> = {}) => ({ nickname: 'Rocket Fund', cardDesign: 'ocean', frozen: false,
   frozenBy: null, frozenAt: null, openedAt: T, ...over });
 export const allowanceWire = (over: Record<string, unknown> = {}) => ({ amount: 10, frequency: 'weekly', anchorDay: 5, active: true, nextRunAt: '2026-09-25T00:00:00.000Z', ...over });
 

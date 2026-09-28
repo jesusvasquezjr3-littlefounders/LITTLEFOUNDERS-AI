@@ -82,7 +82,6 @@ A table, view, column, function or route whose name carries a messaging word, an
 | `text:badge_shares.image_bucket` | Legacy share: storage location |
 | `text:badge_shares.image_ext` | Legacy share: file extension |
 | `text:badge_shares.image_url` | Legacy share: the image address, retired with the table |
-| `text:banking_accounts.display_number` | System-generated practice account number |
 | `text:banking_accounts.nickname` | Account nickname, set by the guardian or the owner, shown only in the family |
 | `text:data_practice_consents.practice_key` | The code of a registered data practice (a foreign key into `data_practices`, pattern-checked there) on a consent record; written by the service role only (OD-9 section 4.2) |
 | `text:family_autonomy_changes.reason` | A verified Tutor's (or staff's) reason for changing their own child's independence level (D.17), shown inside the family |

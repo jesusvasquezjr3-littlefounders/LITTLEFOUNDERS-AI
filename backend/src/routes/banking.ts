@@ -102,7 +102,6 @@ function toWireAccount(a: BankingAccountRow) {
   return {
     nickname: a.nickname,
     cardDesign: a.card_design,
-    displayNumber: a.display_number,
     frozen: a.frozen,
     frozenBy: a.frozen_by,
     frozenAt: a.frozen_at,

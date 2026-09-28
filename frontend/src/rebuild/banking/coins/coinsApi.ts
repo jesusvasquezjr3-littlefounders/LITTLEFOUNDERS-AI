@@ -3,10 +3,11 @@
  * the Tutor's coin cards; F5-K, the child's wallet), through the transport
  * the route adapter injects. Imports nothing outside the rebuild.
  *
- * D.7, no unbacked guarantee: Core's legacy account read still carries a
- * `displayNumber`; this layer never passes it on, so no rebuilt surface can
- * show a number laid out like a real card's. The freeze itself is read and
- * changed by the S07.6 freeze card (bankingApi.ts), never here.
+ * D.7, no unbacked guarantee: Core no longer mints, stores or serves a
+ * card-shaped number (F1-family); this layer never passed one on either, so
+ * no rebuilt surface can show a number laid out like a real card's. The
+ * freeze itself is read and changed by the S07.6 freeze card (bankingApi.ts),
+ * never here.
  *
  * Client checks mirror Core's (`backend/src/routes/banking.ts`): an allowance
  * of 1-1,000 coins, weekly or every two weeks on a day of the week (0-6) or

@@ -30,3 +30,22 @@ Audited SPEC gaps closed after wave 3, one section per lane. Statuses follow the
 **Verified.** `consoleApi.test.ts` (every Mentor board fixture in three locales passes the validator; unknown shape, no caption, old shape, non-number and missing figure refused), `ChildMentorTalks.test.tsx` (drawn board with its caption as an h4 title and its figures; class II board read-only with no control; undrawable boards keep their caption; kept boards drawn); family, Mentor, learning and copy-budget suites (999 tests); type-check, lint, `spec:check`.
 
 **Remains.** The new audit state was not run in this lane (the orchestrator's matrix at merge); native review of the board words is the Mentor lane's.
+
+### F1-family.3: no card-shaped number is minted, stored or served (D.7)
+
+**Gap (confirmed in code).** Core's `generateDisplayNumber()` minted `LF-1234-5678` on every account insert, `toWireAccount` served `displayNumber` on the account routes, and `banking_accounts.display_number` stayed `NOT NULL`. The rebuilt UI only dropped the field in its API layer; NO-UNBACKED-GUARANTEE.md left the removal open.
+
+**Built.**
+- Core: `generateDisplayNumber` removed; `insertBankingAccount` sends only the row; `BANKING_ACCOUNT_FIELDS` and `BankingAccountRow` no longer name the column; `toWireAccount` no longer returns `displayNumber` (`backend/src/services/supabaseRest.ts`, `backend/src/routes/banking.ts`).
+- Migrations (lane numbers; the orchestrator renumbers at merge): `banking_display_number_optional` (expand; drops the NOT NULL, guarded so a chain replay after the drop is a no-op) and `banking_display_number_drop` (contract, `@after-release` the Core release above): redefines `guard_banking_account_state()` without the column (a PL/pgSQL body naming a dropped column fails at run time), redefines `social_messaging_surfaces()` without the reviewed name `text:banking_accounts.display_number` (removed from SOCIAL-GOVERNANCE.md §2.2 too), then drops the column. The 0121 and 0178 copies of the scan are history; 0192 was the live one.
+- Verifiers that seed an account insert the number only while the column exists (`number_columns()` in six `database/scripts/verify-*-postgres.py`).
+- Docs: the open line in NO-UNBACKED-GUARANTEE.md is closed; `block-d-controls.json` `simulation` names the Core select list as enforcement and the new Core test as proof. Fixtures (`moneyFixtures.ts`, `BankingPage.test.tsx`, the family audit, three verify scripts) no longer carry `displayNumber`; `CoinAccount.test.tsx` keeps its refusal of a card that carries a number.
+
+**Verified.** Core `banking.test.ts` (the insert body carries no number; neither a parent nor a child read serves one, even from a row stored before the drop; the select list does not name the column), `choreStreakBonus`, `moneyPresentation` (151 tests); `database` npm test (migration numbering, phase gate: 147 expand / 47 contract, lifecycle); native PostgreSQL 17.6 on a lane cluster (port 15760) over the WHOLE chain (`LF_PG_FULL_CHAIN=1`): family state machine and account erasure green, and the social-governance, teen wallet, money habits, autonomy and family governance verifiers (results in the checkpoint summary); `guardrails:check`, `no-unbacked-guarantee`, type-check, lint.
+
+**Remains.** `database/types/database.ts` still lists `display_number`: `db:types` needs the Supabase CLI and a local stack, neither available to this lane (the shared Docker database is off limits); regenerate at integration. Deploy order: Core first, then the contract migration (the expand one may go either side).
+
+### Owner questions and defaults (family)
+
+- **Tutor tab wording.** Default taken: the Tutor's tab is "Wallet" and the page title "Family wallet" (a Tutor has no personal wallet, OD-3; one word keeps the 375 px tab bar from wrapping further). The owner may prefer "Family wallet" on the tab too.
+- **Path.** Default taken: `/family-wallet`, with `/banking` redirecting (the glossary avoids "bank"; `/wallet` is the independent teen's). API paths stay `/api/v1/banking/*`.

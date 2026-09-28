@@ -47,13 +47,13 @@ Checklist, on the running product in all three locales, light and dark, at 375 a
 
 | Date | Scope | By | Result |
 |---|---|---|---|
-| 2026-09-24 | Engineering pre-audit at S07.6 of the legacy and rebuilt Banking pages. This is **not** the human audit Appendix H asks for; that is still open. | Engineering (S07 lane) | 8 findings. All fixed in S07.6 except the unrendered legacy `display_number` column (below) |
+| 2026-09-24 | Engineering pre-audit at S07.6 of the legacy and rebuilt Banking pages. This is **not** the human audit Appendix H asks for; that is still open. | Engineering (S07 lane) | 8 findings. All fixed in S07.6 except the unrendered legacy `display_number` column, removed in gap-fix round 1 (below) |
 | 2026-09-24 | Engineering lane review at S07.8 of the marketing site's Family Hub claims (`marketing.json`, three locales) against the controls as built in S07.1-S07.7. Also **not** the human audit. | Engineering (S07 lane) | 3 findings, all fixed in S07.8 (below the first list) |
 
 Findings of the 2026-09-24 pre-audit:
 
 1. **The card looked real.** The legacy card showed `LF-####-####` in a monospace, card-number layout on a gradient card, and the Tutor's panel repeated it. *Fixed:* the rebuilt practice card has no number and says the coins stay in the app. Neither page renders the number any more.
-   *Open:* the `display_number` column and the legacy wire field `displayNumber` still exist. Dropping them is a contract migration for the wave-2 Banking cleanup.
+   *Closed (2026-09-27, gap-fix round 1, F1-family.3):* Core no longer mints, stores or serves the number: `generateDisplayNumber` is gone, account inserts send no number, the account routes no longer return `displayNumber`, and `banking_accounts.display_number` is made optional (migration `banking_display_number_optional`, expand) and then dropped with the guard and the E.10 reviewed name that named it (migration `banking_display_number_drop`, contract, applied after the Core release that stopped writing it).
 2. **The freeze was explained wrongly.** It lived as a switch inside a "Card details" dialog, and its hint said it "Blocks new redemption requests". In fact it holds four things: reward requests and approvals, splits, the scheduled allowance and bonus, and Share gifts. *Fixed:* the rebuilt freeze card lists exactly the holds the database enforces, and the dialog no longer carries the switch.
 3. **"A parent/guardian froze this card".** The glossary says the verified parent is the Tutor. *Fixed* in the rebuilt copy and in `errors.json` (`GUARDIAN_FREEZE`) in three locales.
 4. **"Your credits stay safe until it is unfrozen"** (`ACCOUNT_FROZEN`). "Safe" is a promise, and "credits" is bank register. *Fixed:* "Your coins wait here until it is unfrozen."

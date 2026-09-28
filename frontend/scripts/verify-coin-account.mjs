@@ -78,7 +78,7 @@ page.ws.addEventListener('message', async ({ data }) => {
       // The child's coin account and the panels around it.
       else if (p === '/banking/overview') body.data = overview();
       else if (p === '/banking/register') body.data = { register };
-      else if (p === '/banking/account' && method === 'GET') body.data = { account: { nickname: 'Rocket', cardDesign: 'emerald', displayNumber: 'LF-1234-5678', frozen: state.frozen, frozenBy: state.frozen ? (state.frozenBy === 'child' ? kidId : parentId) : null, frozenAt: null, openedAt: T } };
+      else if (p === '/banking/account' && method === 'GET') body.data = { account: { nickname: 'Rocket', cardDesign: 'emerald', frozen: state.frozen, frozenBy: state.frozen ? (state.frozenBy === 'child' ? kidId : parentId) : null, frozenAt: null, openedAt: T } };
       else if (p === '/banking/account/freeze') { await sleep(60); state.frozen = sent.frozen; state.frozenBy = sent.frozen ? 'child' : null; body.data = { account: { frozen: state.frozen } }; }
       else if (p === '/banking/wallet/pending-credits') body.data = { credits: [] };
       else if (p === '/banking/savings-bonus' && method === 'GET') body.data = register === 'teen'
@@ -92,7 +92,7 @@ page.ws.addEventListener('message', async ({ data }) => {
       else if (p === '/family/kids') body.data = { kids: [{ userId: kidId, displayName: 'Nico', username: 'nico', analyticsConsent: false, pendingApprovalCount: 0, walletTotal: 40, taskStreakDays: 0, accountType: 'child' }] };
       else if (p === `/banking/accounts/${kidId}/freeze` && method === 'GET') body.data = { register, account: { nickname: 'Rocket', design: 'emerald', simulated: true, freeze: freeze('tutor') } };
       else if (p === `/banking/accounts/${kidId}/freeze`) { await sleep(60); state.frozen = sent.frozen; state.frozenBy = sent.frozen ? 'tutor' : null; body.data = { account: { frozen: state.frozen } }; }
-      else if (p === `/banking/accounts/${kidId}`) body.data = { account: { nickname: 'Rocket', cardDesign: 'emerald', displayNumber: 'LF-1234-5678', frozen: state.frozen, frozenBy: null, frozenAt: null, openedAt: T } };
+      else if (p === `/banking/accounts/${kidId}`) body.data = { account: { nickname: 'Rocket', cardDesign: 'emerald', frozen: state.frozen, frozenBy: null, frozenAt: null, openedAt: T } };
       else if (p === `/banking/allowance/${kidId}`) body.data = { rule: null };
       else if (p === `/banking/spend-limit/${kidId}`) body.data = { status: { configured: false } };
       else if (p === `/banking/savings-bonus/${kidId}`) body.data = { rule: null, framing: 'per_ten', perTen: { unit: 10, coins: 1 }, maxRateBp: null };

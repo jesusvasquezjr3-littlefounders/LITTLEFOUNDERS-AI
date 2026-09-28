@@ -101,7 +101,7 @@ function stub(opts: Opts = {}) {
     if (url.includes('/rest/v1/chore_streak_pauses?')) return Promise.resolve(jsonResponse(200, url.includes('offset=0') ? opts.pauses ?? [] : []));
     if (url.includes('/rest/v1/kid_task_streaks?')) return Promise.resolve(jsonResponse(200, []));
     if (url.includes('/rest/v1/banking_accounts')) {
-      return Promise.resolve(jsonResponse(200, [{ kid_user_id: KID, nickname: 'Fund', card_design: 'indigo', display_number: 'LF', frozen: false, frozen_by: null, frozen_at: null, opened_by: PARENT, opened_at: '2026-09-01T00:00:00Z' }]));
+      return Promise.resolve(jsonResponse(200, [{ kid_user_id: KID, nickname: 'Fund', card_design: 'indigo', frozen: false, frozen_by: null, frozen_at: null, opened_by: PARENT, opened_at: '2026-09-01T00:00:00Z' }]));
     }
     if (url.includes('/rest/v1/savings_bonus_rules') && method === 'POST') {
       const answer = opts.bonusInsert ?? { status: 201, body: [{ created_at: '2026-09-01T00:00:00Z', ...body }] };
