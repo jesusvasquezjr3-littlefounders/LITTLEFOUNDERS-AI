@@ -2254,5 +2254,113 @@
         }
       ]
     }
+  },
+  "lessonVersions": {
+    "versions": [
+      {
+        "requestId": "9f1c2d3e-0000-4000-8000-000000000001",
+        "lessonId": "5a0b1c2d-0000-4000-8000-000000000011",
+        "lessonSlug": "saving-for-a-goal",
+        "lessonTitle": {
+          "en-US": "Saving for a goal when prices change every single week at the neighbourhood market",
+          "es-MX": "Ahorrar para una meta cuando los precios cambian cada semana en el mercado del barrio",
+          "pt-BR": "Poupar para uma meta quando os preços mudam toda semana na feira do bairro"
+        },
+        "lessonStatus": "published",
+        "locale": "es-MX",
+        "documentVersionId": "7c1d2e3f-0000-4000-8000-000000000021",
+        "versionId": "forge-v2-2026-09-27-run-0042",
+        "documentSha256": "3f9a1c0b7d2e4f5a6b7c8d9e0f1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c",
+        "runId": "2026-09-27-run-0042",
+        "submittedAt": "2026-09-27T09:30:00Z"
+      },
+      {
+        "requestId": "9f1c2d3e-0000-4000-8000-000000000002",
+        "lessonId": "5a0b1c2d-0000-4000-8000-000000000012",
+        "lessonSlug": "needs-and-wants",
+        "lessonTitle": {
+          "en-US": "Needs and wants",
+          "es-MX": "Necesidades y deseos",
+          "pt-BR": "Necessidades e desejos"
+        },
+        "lessonStatus": "published",
+        "locale": "pt-BR",
+        "documentVersionId": "7c1d2e3f-0000-4000-8000-000000000022",
+        "versionId": "forge-v2-2026-09-26-run-0041",
+        "documentSha256": "0a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f9",
+        "runId": null,
+        "submittedAt": "2026-09-26T15:05:00Z"
+      }
+    ],
+    "total": 2
+  },
+  "bypassChecks": {
+    "windowDays": 90,
+    "retroCheckDays": 30,
+    "bypassRate": 0.0833,
+    "completenessRate": 0.6667,
+    "counts": {
+      "publishActions": 12,
+      "bypasses": 4,
+      "decided": 3,
+      "unverified": 1,
+      "complete": 2,
+      "pending": 1,
+      "overdue": 1
+    },
+    "checks": [
+      {
+        "id": 41,
+        "action": "content.live_document_patched",
+        "lessonId": "5a0b1c2d-0000-4000-8000-000000000013",
+        "courseId": "1b2c3d4e-0000-4000-8000-000000000031",
+        "locale": "es-MX",
+        "occurredAt": "2026-08-10T12:00:00Z",
+        "dueAt": "2026-09-09T12:00:00Z",
+        "justified": true,
+        "closedAt": null,
+        "closingVerifiedAt": null,
+        "state": "overdue"
+      },
+      {
+        "id": 44,
+        "action": "content.v2_emergency_activation",
+        "lessonId": "5a0b1c2d-0000-4000-8000-000000000014",
+        "courseId": "1b2c3d4e-0000-4000-8000-000000000031",
+        "locale": "pt-BR",
+        "occurredAt": "2026-09-20T08:00:00Z",
+        "dueAt": "2026-10-20T08:00:00Z",
+        "justified": true,
+        "closedAt": null,
+        "closingVerifiedAt": null,
+        "state": "open"
+      },
+      {
+        "id": 39,
+        "action": "forge.v2_lesson_published",
+        "lessonId": "5a0b1c2d-0000-4000-8000-000000000015",
+        "courseId": "1b2c3d4e-0000-4000-8000-000000000032",
+        "locale": "en-US",
+        "occurredAt": "2026-07-30T10:00:00Z",
+        "dueAt": "2026-08-29T10:00:00Z",
+        "justified": false,
+        "closedAt": "2026-09-02T10:00:00Z",
+        "closingVerifiedAt": "2026-09-02T09:59:00Z",
+        "state": "closed_late"
+      },
+      {
+        "id": 37,
+        "action": "content.live_document_patched",
+        "lessonId": "5a0b1c2d-0000-4000-8000-000000000016",
+        "courseId": "1b2c3d4e-0000-4000-8000-000000000032",
+        "locale": "en-US",
+        "occurredAt": "2026-07-20T10:00:00Z",
+        "dueAt": "2026-08-19T10:00:00Z",
+        "justified": true,
+        "closedAt": "2026-07-22T10:00:00Z",
+        "closingVerifiedAt": "2026-07-22T09:58:00Z",
+        "state": "closed"
+      }
+    ]
   }
 }

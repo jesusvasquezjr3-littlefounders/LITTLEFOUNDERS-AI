@@ -36,6 +36,14 @@ import { getAchievementSharingMetrics } from '../services/achievementSharingMetr
 import { getAccountDeletionMetrics } from '../services/accountDeletionMetrics.js';
 import { getIdentityMetrics } from '../services/identityMetrics.js';
 import { getOpsJobStatus } from '../services/opsJobs.js';
+import {
+  BYPASS_WINDOW_DAYS,
+  getContentBypassReport,
+  listPendingLessonVersions,
+  rejectLessonVersion,
+  releaseLessonVersion,
+  type VersionDecision,
+} from '../services/contentRelease.js';
 import { readRegisterDistribution } from '../services/moneyPresentation.js';
 import { renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
 import { getTutorRetentionStatus, listTutorReviewQueue } from '../services/tutorData.js';
@@ -1777,6 +1785,62 @@ export function adminRouter(): Router {
     }
     if (result.outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the course');
     ok(res, { id: courseId.data, status: status.data });
+  });
+
+  // ── G.2: a new v2 version of a live lesson waits for a staff release ──────
+  /*
+   * Forge's reviewed publication records a pending activation for a lesson
+   * that is already published (`*_v2_staff_release_approval.sql`); nothing a
+   * child sees changes until a person with manage_content releases it here.
+   * Vault re-checks the actor and the course's Forge verification in the same
+   * transaction that moves the pointer and writes the audit row (actor = this
+   * staff member). A rejection needs a reason and is audited too.
+   */
+  router.get('/content/lesson-versions', async (_req, res) => {
+    const versions = await listPendingLessonVersions();
+    if (!versions) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the pending lesson versions');
+    ok(res, { versions, total: versions.length });
+  });
+
+  const VersionParams = z.object({ lessonId: z.string().uuid(), versionId: z.string().uuid() });
+  const versionOutcome = (res: Response, result: VersionDecision, params: z.infer<typeof VersionParams>, status: string) => {
+    if (result.outcome === 'done') return ok(res, { lessonId: params.lessonId, versionId: params.versionId, status });
+    if (result.outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not decide on the lesson version');
+    if (result.code === 'FORBIDDEN') return fail(res, 403, 'FORBIDDEN', result.message);
+    if (result.code === 'NOT_FOUND') return fail(res, 404, 'NOT_FOUND', result.message);
+    if (result.code === 'NOT_PENDING') return fail(res, 409, 'VERSION_NOT_PENDING', result.message);
+    if (result.code === 'INVALID_REASON') return fail(res, 400, 'VALIDATION_ERROR', result.message);
+    const refusal = RELEASE_REFUSALS[result.code] ?? { status: 409, code: 'RELEASE_BLOCKED' };
+    return fail(res, refusal.status, refusal.code, result.message);
+  };
+
+  router.post('/content/lessons/:lessonId/versions/:versionId/release', async (req, res) => {
+    const params = VersionParams.safeParse(req.params);
+    const body = z.object({}).strict().safeParse(req.body ?? {});
+    if (!params.success || !body.success) return fail(res, 400, 'VALIDATION_ERROR', 'lessonId and versionId must be uuids and the body empty');
+    return versionOutcome(res, await releaseLessonVersion(authedUser(res).id, params.data.lessonId, params.data.versionId), params.data, 'released');
+  });
+
+  const RejectVersionBody = z.object({ reason: z.string().trim().min(10).max(600) }).strict();
+  router.post('/content/lessons/:lessonId/versions/:versionId/reject', async (req, res) => {
+    const params = VersionParams.safeParse(req.params);
+    const body = RejectVersionBody.safeParse(req.body);
+    if (!params.success || !body.success) return fail(res, 400, 'VALIDATION_ERROR', 'lessonId and versionId must be uuids and the reason 10-600 characters');
+    return versionOutcome(res, await rejectLessonVersion(authedUser(res).id, params.data.lessonId, params.data.versionId, body.data.reason), params.data, 'rejected');
+  });
+
+  /*
+   * G.2 / Appendix N 1.2: every bypass of the release check with its 30-day
+   * retroactive check, and the Release-Verification Bypass Rate (target 0)
+   * and Justification & Retroactive-Check Completeness (target 100%).
+   */
+  const BypassQuery = z.object({ days: z.coerce.number().int().min(7).max(365).default(BYPASS_WINDOW_DAYS) });
+  router.get('/content/bypass-checks', async (req, res) => {
+    const query = BypassQuery.safeParse(req.query);
+    if (!query.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be 7-365');
+    const report = await getContentBypassReport(query.data.days);
+    if (!report) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the release checks');
+    ok(res, report);
   });
 
   // ── Learning quality (S05.3d: B.19 difficulty band, B.12 judgment, B.5 replay notice) ──

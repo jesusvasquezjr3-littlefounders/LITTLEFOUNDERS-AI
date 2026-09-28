@@ -669,7 +669,11 @@
         "images": "Images",
         "document": "Lesson document",
         "raw": "Answer key and raw data",
-        "packs": "Activity packs"
+        "packs": "Activity packs",
+        "updates": "New versions of live lessons",
+        "version": "Version details",
+        "confirmRelease": "Release this version to learners?",
+        "checks": "Skipped release checks"
       },
       "body": {
         "incidents": "Learners could not open these.",
@@ -750,7 +754,35 @@
         "queueFailed": "The review queue did not load.",
         "packsFailed": "Activity packs did not load.",
         "statusRetry": "The live status did not load.",
-        "prompt": "What the learner saw"
+        "prompt": "What the learner saw",
+        "updatesIntro": "A live lesson changes only after a staff release.",
+        "updatesEmpty": "No new version waits for release.",
+        "version": "Version",
+        "submitted": "Submitted",
+        "run": "Forge run",
+        "digest": "Document fingerprint",
+        "releaseCheckNote": "Releasing runs the course check first.",
+        "consequenceRelease": "If the course check passes, learners see this version.",
+        "versionReleased": "Released. Learners now see this version.",
+        "versionRejected": "Rejected. Learners keep the current version.",
+        "versionNotPending": "Someone already decided on this version.",
+        "reason": "Why reject it?",
+        "reasonHelp": "10 to 600 characters. It goes to the audit log.",
+        "checksIntro": "A skipped check must run within {days} days.",
+        "checksEmpty": "No release check was skipped.",
+        "overdueNotice": "{n} checks are past due. Run the Forge course check.",
+        "bypassRate": "Released without a check",
+        "completeness": "Justified and checked on time",
+        "overdue": "Past due",
+        "pendingChecks": "Still in time",
+        "notMeasured": "No data yet",
+        "change": "Change",
+        "when": "When",
+        "due": "Check due",
+        "check": "Check",
+        "reasonLogged": "Reason logged",
+        "yes": "Yes",
+        "no": "No"
       },
       "option": {
         "courses": "Courses",
@@ -765,7 +797,15 @@
         "preview": "Preview",
         "parts": "Parts",
         "media": "Media",
-        "data": "Data"
+        "data": "Data",
+        "updates": "Live updates",
+        "overdue": "Overdue",
+        "open": "Waiting",
+        "closed_late": "Checked late",
+        "closed": "Checked",
+        "directFix": "Direct fix",
+        "emergencyRelease": "Emergency release",
+        "earlyPublication": "Early publication"
       },
       "action": {
         "publish": "Publish",
@@ -781,7 +821,10 @@
         "nextPreview": "Next part",
         "showPart": "Show",
         "hidePart": "Hide",
-        "fullSize": "Full size"
+        "fullSize": "Full size",
+        "release": "Release",
+        "reject": "Reject",
+        "rejectVersion": "Reject version"
       }
     },
     "generation": {

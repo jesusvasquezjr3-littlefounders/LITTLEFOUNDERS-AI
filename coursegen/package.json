@@ -34,6 +34,7 @@
     "v2:author": "tsx --env-file-if-exists=.env src/v2/releaseCli.ts author",
     "v2:publish": "tsx --env-file-if-exists=.env src/v2/releaseCli.ts publish",
     "verify:course": "tsx --env-file-if-exists=.env src/verifyCourse.ts",
+    "content:retro-checks": "tsx --env-file-if-exists=.env src/retroChecks.ts",
     "graph:backfill": "tsx --env-file-if-exists=.env.production src/scripts/backfill-graph.ts"
   },
   "dependencies": {

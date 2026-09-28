@@ -3,11 +3,12 @@ import { runOpsJobDrill } from './opsJobDrill.js';
 
 /*
  * `npm run ops:drill` — H.4 / Appendix O 2.3's simulated job-failure drill,
- * once per watched job (see opsJobDrill.ts). Local, read-nothing, zero spend.
+ * once per watched job, plus G.2's overdue retroactive release check (see
+ * opsJobDrill.ts). Local, read-nothing, zero spend.
  */
 async function main(): Promise<void> {
   let failed = 0;
-  for (const job of OPS_JOBS) {
+  for (const job of [...OPS_JOBS, 'content_retro_checks' as const]) {
     const result = await runOpsJobDrill(job);
     console.log(`${result.passed ? 'PASS' : 'FAIL'} ${job}: stale=${result.stale} watcher-exit=${result.watcherExit} notice=${result.notice ? 'written' : 'missing'}`);
     if (!result.passed) failed += 1;

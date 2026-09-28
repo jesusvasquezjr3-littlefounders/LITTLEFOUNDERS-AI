@@ -52,6 +52,7 @@ function answer(path: string): StaffResult<unknown> | undefined {
     '/admin/tutor/review-queue': sections.liveQueue, '/admin/tutor/live-content/status': sections.liveStatus, '/admin/tutor/packs': sections.packs,
     '/admin/content/learning-quality': sections.learningQuality, '/admin/generation': g.overview, '/admin/generation/live': g.live,
     '/admin/generation/analytics': g.analytics, '/admin/generation/coach': g.coach, '/admin/generation/compare': g.compare, '/admin/mentor-quality': sections.mentorQuality,
+    '/admin/content/lesson-versions': sections.lessonVersions, '/admin/content/bypass-checks': sections.bypassChecks,
   };
   if (route in table) return ok(table[route]);
   if (route.startsWith('/admin/generation/runs/')) return ok(g.runDetail);
@@ -69,6 +70,85 @@ beforeEach(() => {
   Object.assign(navigator, { clipboard: { writeText: vi.fn(async () => undefined) } });
 });
 afterEach(() => { cleanup(); vi.useRealTimers(); });
+
+/* ------------------------------------------------------------------------- */
+
+describe('G.2 Live updates: a live lesson changes only on a staff release; skipped checks and their rates', () => {
+  const VERSION = sections.lessonVersions.versions[0]!;
+  const base = `/admin/content/lessons/${VERSION.lessonId}/versions/${VERSION.documentVersionId}`;
+
+  async function openVersion() {
+    const table = await screen.findByRole('table', { name: c.content.heading.updates });
+    const row = within(table).getAllByRole('row').find((entry) => entry.textContent?.includes(VERSION.versionId))!;
+    fireEvent.click(within(row).getByRole('button', { name: c.common.action.open }));
+    return screen.findByRole('dialog', { name: c.content.heading.version });
+  }
+
+  it('lists the waiting versions and the skipped checks with both Appendix N rates and the overdue notice', async () => {
+    const { api, gets } = fakeApi();
+    render(<Frame><StaffContent api={api} initialView="updates" /></Frame>);
+    const table = await screen.findByRole('table', { name: c.content.heading.updates });
+    expect(within(table).getAllByRole('row')).toHaveLength(3);
+    expect(table).toHaveTextContent(VERSION.lessonTitle['en-US']);
+    const checks = await screen.findByRole('region', { name: c.content.heading.checks });
+    expect(checks).toHaveTextContent(c.content.body.bypassRate);
+    expect(checks).toHaveTextContent('8.3%');
+    expect(checks).toHaveTextContent('66.7%');
+    expect(checks).toHaveTextContent(c.content.body.overdueNotice.replace('{n}', '1'));
+    expect(within(checks).getByRole('table')).toHaveTextContent(c.content.option.overdue);
+    expect(gets).toEqual(expect.arrayContaining(['/admin/content/lesson-versions', '/admin/content/bypass-checks']));
+  });
+
+  it('releases behind a keep-first confirmation, posts to the version route and says learners see it', async () => {
+    const { api, posts } = fakeApi();
+    render(<Frame><StaffContent api={api} initialView="updates" /></Frame>);
+    const details = await openVersion();
+    expect(details).toHaveTextContent(c.content.body.releaseCheckNote);
+    fireEvent.click(within(details).getByRole('button', { name: c.content.action.release }));
+    const confirm = await screen.findByRole('alertdialog');
+    expect(confirm).toHaveTextContent(c.content.body.consequenceRelease);
+    expect(within(confirm).getAllByRole('button')[0]).toHaveTextContent(c.content.action.keep);
+    fireEvent.click(within(confirm).getByRole('button', { name: c.content.action.release }));
+    await waitFor(() => expect(posts).toEqual([{ path: `${base}/release`, body: {} }]));
+    expect(await screen.findByText(c.content.body.versionReleased)).toBeInTheDocument();
+  });
+
+  it('names the release refusals: a stale course check, and a version someone already decided', async () => {
+    for (const [code, text] of [['RELEASE_VERIFICATION_REQUIRED', c.content.body.releaseVerificationRequired], ['VERSION_NOT_PENDING', c.content.body.versionNotPending]] as const) {
+      const { api } = fakeApi((path, body) => (body ? fail(code) : undefined));
+      render(<Frame><StaffContent api={api} initialView="updates" /></Frame>);
+      const details = await openVersion();
+      fireEvent.click(within(details).getByRole('button', { name: c.content.action.release }));
+      fireEvent.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: c.content.action.release }));
+      expect(await within(details).findByText(text)).toBeInTheDocument();
+      cleanup();
+    }
+  });
+
+  it('a rejection needs a reason of at least 10 characters and posts it', async () => {
+    const { api, posts } = fakeApi();
+    render(<Frame><StaffContent api={api} initialView="updates" /></Frame>);
+    const details = await openVersion();
+    fireEvent.click(within(details).getByRole('button', { name: c.content.action.reject }));
+    const submit = within(details).getByRole('button', { name: c.content.action.rejectVersion });
+    fireEvent.change(within(details).getByLabelText(c.content.body.reason), { target: { value: 'short' } });
+    expect(submit).toBeDisabled();
+    fireEvent.change(within(details).getByLabelText(c.content.body.reason), { target: { value: 'The example uses a foreign currency.' } });
+    fireEvent.click(submit);
+    await waitFor(() => expect(posts).toEqual([{ path: `${base}/reject`, body: { reason: 'The example uses a foreign currency.' } }]));
+    expect(await screen.findByText(c.content.body.versionRejected)).toBeInTheDocument();
+  });
+
+  it('shows the empty states, and a failed read of the checks is an error, never a calm zero', async () => {
+    const empty = fakeApi((path) => (path === '/admin/content/lesson-versions' ? ok({ versions: [], total: 0 })
+      : path === '/admin/content/bypass-checks' ? fail('DATA_UNAVAILABLE') : undefined));
+    render(<Frame><StaffContent api={empty.api} initialView="updates" /></Frame>);
+    expect(await screen.findByText(c.content.body.updatesEmpty)).toBeInTheDocument();
+    const checks = await screen.findByRole('region', { name: c.content.heading.checks });
+    expect(await within(checks).findByText(c.common.heading.loadFailed)).toBeInTheDocument();
+    expect(checks).not.toHaveTextContent(c.content.body.bypassRate);
+  });
+});
 
 /* ------------------------------------------------------------------------- */
 

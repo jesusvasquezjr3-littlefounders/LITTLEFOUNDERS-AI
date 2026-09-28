@@ -14,6 +14,9 @@
  *   GET  /admin/tutor/live-content/status   C.5 rates, suspensions, backlog
  *   GET  /admin/tutor/packs?status=review   C.6 packs waiting for a release
  *   GET  /admin/content/learning-quality    B.19 / B.12 / B.5 (S05.3d)
+ *   GET  /admin/content/lesson-versions     new versions of live lessons waiting (G.2)
+ *   POST /admin/content/lessons/:id/versions/:v/release|reject   the staff decision (G.2)
+ *   GET  /admin/content/bypass-checks       Appendix N 1.2 rates and the retroactive checks
  */
 
 import type { LiveContentStatus, TutorPackSummary } from '../../mentor/liveContentApi';
@@ -165,8 +168,53 @@ export const isPacks = (value: unknown): value is { packs: TutorPackSummary[]; t
   && isNumber(value.total) && arrayOf(value.packs, (p): p is TutorPackSummary => isRecord(p) && isString(p.id)
     && isString(p.skill_key) && isNumber(p.tier) && isString(p.locale) && isRecord(p.pack) && Array.isArray(p.pack.segments));
 
+/* ---- Live updates: pending v2 versions and the retroactive checks (G.2) -- */
+
+/** A new version of a lesson that is already live, waiting for a staff release (Core services/contentRelease.ts). */
+export interface PendingVersion {
+  requestId: string; lessonId: string; lessonSlug: string | null; lessonTitle: Record<string, string>; lessonStatus: string | null;
+  locale: string; documentVersionId: string; versionId: string; documentSha256: string; runId: string | null; submittedAt: string;
+}
+const isPendingVersion = (v: unknown): v is PendingVersion => isRecord(v) && isString(v.requestId) && isString(v.lessonId)
+  && (v.lessonSlug === null || isString(v.lessonSlug)) && isRecord(v.lessonTitle) && Object.values(v.lessonTitle).every(isString)
+  && isString(v.locale) && isString(v.documentVersionId) && isString(v.versionId) && isString(v.submittedAt);
+export const isPendingVersions = (value: unknown): value is { versions: PendingVersion[]; total: number } => isRecord(value)
+  && arrayOf(value.versions, isPendingVersion) && isNumber(value.total);
+
+/** The lesson's title in the reader's language, then English, then its slug. */
+export function versionTitle(version: PendingVersion, locale: string): string {
+  return version.lessonTitle[locale] ?? version.lessonTitle['en-US'] ?? Object.values(version.lessonTitle)[0] ?? version.lessonSlug ?? version.lessonId;
+}
+
+export const RETRO_STATES = ['overdue', 'open', 'closed_late', 'closed'] as const;
+export type RetroState = (typeof RETRO_STATES)[number];
+export const BYPASS_ACTIONS = ['content.live_document_patched', 'content.v2_emergency_activation', 'forge.v2_lesson_published'] as const;
+export interface RetroCheck {
+  id: number; action: string; lessonId: string | null; courseId: string | null; locale: string | null;
+  occurredAt: string; dueAt: string; justified: boolean; closedAt: string | null; closingVerifiedAt: string | null; state: RetroState;
+}
+export interface BypassReport {
+  windowDays: number; retroCheckDays: number; bypassRate: number | null; completenessRate: number | null;
+  counts: { publishActions: number; bypasses: number; decided: number; unverified: number; complete: number; pending: number; overdue: number };
+  checks: RetroCheck[];
+}
+const isNullableNumber = (value: unknown): value is number | null => value === null || isNumber(value);
+const isRetroCheck = (c: unknown): c is RetroCheck => isRecord(c) && isNumber(c.id) && isString(c.action) && isString(c.occurredAt)
+  && isString(c.dueAt) && typeof c.justified === 'boolean' && (RETRO_STATES as readonly unknown[]).includes(c.state);
+/** A malformed report is an error state: a missing rate is never shown as a calm zero. */
+export const isBypassReport = (value: unknown): value is BypassReport => isRecord(value) && isNumber(value.windowDays)
+  && isNumber(value.retroCheckDays) && isNullableNumber(value.bypassRate) && isNullableNumber(value.completenessRate)
+  && isCounts(value.counts) && ['publishActions', 'bypasses', 'decided', 'unverified', 'complete', 'pending', 'overdue'].every((k) => isNumber((value.counts as Record<string, unknown>)[k]))
+  && arrayOf(value.checks, isRetroCheck);
+
+/** Core's codes for a version decision: a release refusal (named by RELEASE_REFUSALS) or one of these. */
+export function versionRefusal(code: string): ReleaseRefusalKey | 'versionNotPending' | null {
+  if (code === 'VERSION_NOT_PENDING') return 'versionNotPending';
+  return releaseRefusal(code);
+}
+
 /** The views of the Content page, in order. `?view=` on the route opens one directly. */
-export const CONTENT_VIEWS = ['courses', 'review', 'live', 'quality'] as const;
+export const CONTENT_VIEWS = ['courses', 'review', 'updates', 'live', 'quality'] as const;
 export type ContentView = (typeof CONTENT_VIEWS)[number];
 export function contentView(value: string | null | undefined): ContentView {
   return (CONTENT_VIEWS as readonly string[]).includes(value ?? '') ? value as ContentView : 'courses';

@@ -79,6 +79,16 @@ describe('v2 write and publish', () => {
     expect(done.stage).toBe('done');
     expect(rpc).toHaveBeenCalledTimes(3);
     expect(rpc.mock.calls[0]![0]).toBe('publish_v2_lesson_version');
+    expect(done.pendingApproval).toEqual([]);
+  });
+
+  it('G.2: reports every version of a live lesson that Vault queued for a staff release', async () => {
+    const plan = planOf('v2-goal-bullet');
+    const rpc = vi.fn(async () => ({ ok: true, status: 200, body: { activation: 'pending_staff_approval' } }));
+    const done = await releaseV2Lessons([plan], { runId: 'r1', outDir: tmp(), courseSlug: 'money', dryRun: false,
+      deps: { coreCheck: () => ({ ok: true, output: '' }), verifyCourse: () => ({ ok: true, output: '' }), rpc } });
+    expect(done.stage).toBe('done');
+    expect(done.pendingApproval?.map((p) => p.locale).sort()).toEqual(['en-US', 'es-MX', 'pt-BR']);
   });
 
   it('writes each market its own answer keys when the plan gives a rubric per market (B.16)', () => {

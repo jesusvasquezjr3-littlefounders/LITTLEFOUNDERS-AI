@@ -25,21 +25,29 @@ import { getOpsJobStatus, OPS_JOB_STALE_HOURS, opsJobAction, type OpsJob } from 
 const TOOL = resolve(dirname(fileURLToPath(import.meta.url)), '../../../agent/tools/ops-job-watch.mjs');
 
 export interface DrillResult {
-  job: OpsJob;
+  job: DrillTarget;
   stale: boolean;
   watcherExit: number | null;
   notice: string | null;
   passed: boolean;
 }
 
-export async function runOpsJobDrill(job: OpsJob, now: Date = new Date()): Promise<DrillResult> {
-  const staleAt = new Date(now.getTime() - (OPS_JOB_STALE_HOURS[job] + 12) * 3_600_000).toISOString();
+export type DrillTarget = OpsJob | 'content_retro_checks';
+
+const metricsRow = (overdue: number) => [{ publish_actions: 3, bypasses: 1, decided: 1, unverified: overdue, complete: 1 - overdue, overdue_open: overdue }];
+
+export async function runOpsJobDrill(job: DrillTarget, now: Date = new Date()): Promise<DrillResult> {
+  const staleAt = new Date(now.getTime() - (job === 'content_retro_checks' ? 2 : OPS_JOB_STALE_HOURS[job] + 12) * 3_600_000).toISOString();
   const freshAt = new Date(now.getTime() - 2 * 3_600_000).toISOString();
   const original = globalThis.fetch;
   globalThis.fetch = (async (input: RequestInfo | URL) => {
     const url = decodeURIComponent(String(input));
+    // G.2: a retroactive release check past its 30 days, simulated through the same status read.
+    if (url.includes('/rpc/content_bypass_metrics')) {
+      return new Response(JSON.stringify(metricsRow(job === 'content_retro_checks' ? 1 : 0)), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
     const action = /action=eq\.([^&]+)/.exec(url)?.[1] ?? '';
-    const createdAt = action === opsJobAction(job) ? staleAt : freshAt;
+    const createdAt = job !== 'content_retro_checks' && action === opsJobAction(job) ? staleAt : freshAt;
     return new Response(JSON.stringify([{ created_at: createdAt, detail: { ok: true } }]), { status: 200, headers: { 'Content-Type': 'application/json' } });
   }) as typeof fetch;
   let status;
@@ -48,7 +56,9 @@ export async function runOpsJobDrill(job: OpsJob, now: Date = new Date()): Promi
   } finally {
     globalThis.fetch = original;
   }
-  const stale = status?.jobs.find((entry) => entry.job === job)?.stale ?? false;
+  const stale = job === 'content_retro_checks'
+    ? (status?.contentRetroChecks.overdue ?? 0) > 0
+    : status?.jobs.find((entry) => entry.job === job)?.stale ?? false;
 
   const dir = mkdtempSync(join(tmpdir(), 'ops-drill-'));
   try {
@@ -62,7 +72,7 @@ export async function runOpsJobDrill(job: OpsJob, now: Date = new Date()): Promi
     } catch {
       notice = null;
     }
-    const passed = stale && watcher.status === 1 && notice !== null && notice.includes(job);
+    const passed = stale && watcher.status === 1 && notice !== null && notice.includes(job === 'content_retro_checks' ? 'retroactive release check' : job);
     return { job, stale, watcherExit: watcher.status, notice, passed };
   } finally {
     rmSync(dir, { recursive: true, force: true });

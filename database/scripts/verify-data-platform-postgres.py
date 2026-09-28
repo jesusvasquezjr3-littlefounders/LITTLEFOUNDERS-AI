@@ -8,7 +8,8 @@ A throwaway database with the Supabase shim and EVERY migration applied, then:
     to a published lesson's document and a delete of its document are
     refused; Echo's narration stamp (segments[].audio_segment_id only) and the
     audio manifest are allowed; a lesson in review is untouched by the guard;
-    the database owner's change is allowed and logged in audit_logs;
+    the database owner's change needs lf.bypass_justification, and is then
+    allowed and logged in audit_logs;
   - OD-24 (legacy_catalog_delete_guard): deleting a lesson with progress, a
     topic with a placement credit or a course with a frozen badge is refused
     for every role, the owner included; a row nobody learned from can still be
@@ -138,10 +139,12 @@ try:
     rejected(f"SET ROLE service_role; UPDATE lesson_documents SET document = {jlit(stamped_changed)} WHERE {where}", 'only through a release')
     service(f"UPDATE lesson_documents SET document = {jlit(changed)} WHERE lesson_id = '{C['review']}'")
     before = int(run("SELECT count(*) FROM audit_logs WHERE action = 'content.live_document_patched'"))
-    run(f"UPDATE lesson_documents SET document = {jlit(changed)} WHERE {where}")
+    # GAP-FIX-R2 (*_content_bypass_retro_checks.sql): the owner's bypass needs a logged justification.
+    rejected(f"UPDATE lesson_documents SET document = {jlit(changed)} WHERE {where}", 'needs a justification')
+    run(f"BEGIN; SET LOCAL lf.bypass_justification = 'Fixing a wrong price in the live prompt'; UPDATE lesson_documents SET document = {jlit(changed)} WHERE {where}; COMMIT;")
     assert int(run("SELECT count(*) FROM audit_logs WHERE action = 'content.live_document_patched'")) == before + 1
     assert run(f"SELECT detail ->> 'origin' FROM audit_logs WHERE action = 'content.live_document_patched' ORDER BY id DESC LIMIT 1") == 'database-owner'
-    check("G.2: the service role cannot rewrite or delete a published lesson's document (42501); Echo's narration stamp and the audio manifest pass, a stamp bundled with a content change does not; a lesson in review is unaffected; the database owner's change passes and is logged (content.live_document_patched)")
+    check("G.2: the service role cannot rewrite or delete a published lesson's document (42501); Echo's narration stamp and the audio manifest pass, a stamp bundled with a content change does not; a lesson in review is unaffected; the database owner's change needs a justification, then passes and is logged (content.live_document_patched)")
 
     # ── OD-24: the delete guard ──────────────────────────────────────────
     run(f"""

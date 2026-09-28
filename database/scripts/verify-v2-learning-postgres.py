@@ -17,9 +17,10 @@ v2_learning_signal_metrics):
     second row for the same receipt is refused;
   - the four metric functions aggregate first tries;
   - each practised local day lands once in learning_practice_days (0208);
-  - publish_v2_lesson_version (0209) is the one way a published lesson's v2
-    pointer moves: it needs a current course verification and a manifest
-    attesting this document, never reuses a version id, and audits;
+  - publish_v2_lesson_version (0209, redefined by *_v2_staff_release_approval)
+    needs a current course verification and a manifest attesting this
+    document, never reuses a version id, and for a live lesson only records a
+    pending staff release (verify-content-release-postgres.py proves the rest);
   - no browser role can read the new tables or call the new functions.
 
 Configuration: LF_PG_PSQL, LF_PG_PORT, LF_PG_USER, LF_PG_KEEP.
@@ -212,12 +213,13 @@ try:
     rejected(call(short), 'release manifest is missing')
     rejected(call(manifest.replace('"interactive_behaviour": true', '"interactive_behaviour": false')), 'does not attest')
     published = service(call(manifest) + '::text')
-    assert '"version_id": "pub-rev-001"' in published, published
-    assert run(f"SELECT count(*) FROM lesson_document_version_current c JOIN lesson_document_versions v ON v.id = c.document_version_id WHERE c.lesson_id = '{lesson}' AND c.locale = 'es-MX' AND v.version_id = '{pub_version}'") == '1'
-    assert run(f"SELECT count(*) FROM audit_logs WHERE action = 'forge.v2_lesson_published' AND subject = '{lesson}'") == '1'
-    rejected(call(manifest), 'Course verification refused')
-    check('the reviewed transaction publishes an attested document and moves the pointer; a stale course, a missing gate or an unattested behaviour gate is refused')
-    run(f"INSERT INTO course_release_verifications (course_id, checks, content_watermark) VALUES ('{course}', '[{all_gates}]'::jsonb, forge_release_content_watermark('{course}')) ON CONFLICT (course_id) DO UPDATE SET checks = EXCLUDED.checks, content_watermark = EXCLUDED.content_watermark")
+    assert '"version_id": "pub-rev-001"' in published and '"activation": "pending_staff_approval"' in published, published
+    # G.2 (GAP-FIX-R2, *_v2_staff_release_approval.sql): the new version of a live lesson waits for a staff release.
+    assert run(f"SELECT count(*) FROM lesson_document_version_current c JOIN lesson_document_versions v ON v.id = c.document_version_id WHERE c.lesson_id = '{lesson}' AND c.locale = 'es-MX' AND v.version_id = '{pub_version}'") == '0'
+    assert run(f"SELECT count(*) FROM lesson_version_activation_requests WHERE lesson_id = '{lesson}' AND version_id = '{pub_version}' AND status = 'pending'") == '1'
+    assert run(f"SELECT count(*) FROM audit_logs WHERE action = 'forge.v2_lesson_version_submitted' AND subject = '{lesson}'") == '1'
+    assert run(f"SELECT count(*) FROM audit_logs WHERE action = 'forge.v2_lesson_published' AND subject = '{lesson}'") == '0'
+    check('the reviewed transaction stores an attested document of a live lesson as pending (no pointer move); a stale course, a missing gate or an unattested behaviour gate is refused')
     rejected(call(manifest), 'versions are immutable')
     check('a published version id is never reused')
 
