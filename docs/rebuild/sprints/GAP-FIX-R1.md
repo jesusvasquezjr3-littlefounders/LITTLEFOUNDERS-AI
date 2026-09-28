@@ -171,3 +171,61 @@ Built:
   checked outside the app. No document upload is built.
 - Self-declared adults now see the age card, so they can ask for a
   correction.
+
+## Checkpoint F1-identity-site-finish (lane summary)
+
+Final state of the identity-site lane. All five audited gaps (A.4, A.6, E.4,
+Appendix M 1.1 / Part 2.3(b) onboarding, Bible 08 §8 chooser) are
+implemented and locally verified; none is accepted or released.
+
+- Sync: `codex/spec-migration-s02` had not moved since the lane branched
+  (`d0c9a0f7`), so the merge was a no-op.
+- Adversarial pass against the SPEC scope found no mandated behavior missing.
+  Every refusal is enforced at Core and, for A.6 and E.4, again in the
+  database. The rebuilt screens (`ChildControls`, `AgeRecordCard`,
+  `AgeScreen` ask-your-Tutor state, `StaffAgeCorrections`) import only the
+  shared design controls and shells, and their copy exists in EN, es-MX and
+  pt-BR. E.4 is met by its "lock" branch for parent-created children: their
+  recorded band is insert-once, and the database's `profiles_birth_date_guard`
+  (0087) still refuses a self-edit.
+- Fixes in this checkpoint:
+  - `backend/src/__tests__/ageCorrection.test.ts`: the `rpcCalls` helper
+    dropped the recorded body from its type, so backend `type-check` was red
+    (TS2339) although the tests ran. It is generic now.
+  - `frontend/src/routes/onboarding/__tests__/OnboardingPage.test.tsx` still
+    expected the square `mentor.<c>.avatar` renders in the O1 chooser. It now
+    asserts the `mentor.<c>.chooser.<theme>` stills and no `mentor-avatar`
+    slot (Gap 4).
+  - `backend/src/__tests__/analytics.test.ts` (not lane code, found by the
+    full suite): "does not invent years of leading zeros for all-time" used
+    the real clock and turned red on 2026-09-28, when the series from
+    2026-08-20 reached 40 days. `now` and the zone are now pinned. The base
+    branch has the same red.
+- Verification:
+  - Backend and frontend `type-check` and `lint` are clean.
+  - The full backend unit suite ran: 125 of 126 files passed, and the one red
+    was the analytics clock test above, which passes after the fix.
+    `ageCorrection` passes 28 of 28.
+  - The full frontend unit suite ran twice with other lanes loading the CPU
+    to 99%. The first run's real red was the onboarding test above. The
+    second run's reds were timeouts only, in `App`, `BankingPage`,
+    `AuthLayout` and `assetGate`. All four pass when run alone, and
+    `check-rebuild-assets.mjs` passes directly.
+  - `database` `npm test`: `check-migrations`, `check-migration-phase`,
+    `check-family-lifecycle` and the node test files pass on the 194-file
+    chain. `railway-migrate.test.mjs` was still applying its full-chain
+    scenario after more than two hours under load when this record was
+    written; see the lane report.
+  - Root `spec:check` and `secrets:check` pass.
+- Still open: the live GoTrue proof on the disposable stack, the Railway
+  `GOTRUE_MAILER_SECURE_EMAIL_CHANGE_ENABLED=true` operator step, the
+  `onboarding@mentor*` audit, the browser matrix, device and screen-reader
+  passes, human design and Trust review, and acceptance for A.4, A.6 and
+  E.4. A Tutor cannot correct a parent-created child's recorded band (see
+  the owner question below).
+
+Additional owner question (conservative default applied): E.4 allows either
+a lock or a guardian re-confirmation. The lane locks. A Tutor who entered the
+wrong band for their child has no in-app path to change it; the recommended
+follow-up is to let the Tutor file the same staff-reviewed request for a
+linked child.
