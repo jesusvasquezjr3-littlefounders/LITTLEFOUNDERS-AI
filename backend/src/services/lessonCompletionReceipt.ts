@@ -24,6 +24,9 @@ export interface V2CompletionReceipt {
   locale: V2PublicLesson['locale'];
   first_try_correct: number;
   graded_count: number;
+  /** GAP-FIX-R1: non-scored steps acted on, and help-ladder steps used (0 for a lesson stored before 0205). */
+  viewed_count: number;
+  hints_used: number;
   awarded_xp: number;
   duration_seconds: number;
   previous_best_percent: number;
@@ -75,6 +78,8 @@ export function buildV2CompletionReceipt(input: {
     locale: document.locale,
     first_try_correct: completion.first_try_correct,
     graded_count: completion.graded_count,
+    viewed_count: completion.viewed_count ?? 0,
+    hints_used: completion.hints_used ?? 0,
     awarded_xp: completion.xp_delta,
     duration_seconds: Math.max(1, Math.min(7200, Math.round(input.secondsSpent))),
     previous_best_percent: completion.replay.previous_best_score ?? 0,

@@ -20,7 +20,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { checkForgeV2Rows } from '../src/services/forgeV2Rows.js';
+import { checkForgeV2Rows, forgeV2BehaviourPassRate } from '../src/services/forgeV2Rows.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FORGE_FIXTURE = path.resolve(here, '../../coursegen/src/v2/fixtures/emitted.json');
@@ -30,6 +30,8 @@ if (invokedDirectly) {
   const file = process.argv[2] ? path.resolve(process.argv[2]) : FORGE_FIXTURE;
   const rows = JSON.parse(readFileSync(file, 'utf8')) as unknown;
   const problems = checkForgeV2Rows(rows);
+  const behaviour = forgeV2BehaviourPassRate(rows);
+  console.log(`interactive-behaviour gate: ${behaviour.passed}/${behaviour.segments} graded segments pass (${behaviour.passRate === null ? 'n/a' : `${Math.round(behaviour.passRate * 100)}%`}), ${behaviour.states} permitted states scored`);
   if (problems.length > 0) {
     for (const problem of problems) console.error(`FAIL: ${problem}`);
     process.exit(1);

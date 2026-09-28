@@ -1,0 +1,104 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "smart-spending",
+  "lesson_id": "v2-first-release-mixed",
+  "age_band": "10-12",
+  "eligibility": { "minimum_age": 10, "maximum_age": 12 },
+  "knowledge_component_ids": ["kc-needs-wants", "kc-message-safety", "kc-count-coins"],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": { "character": "liruf", "scene": "diorama-b" },
+  "brief": "En el mercado, Liruf ordena compras entre necesidades y deseos, revisa mensajes dudosos y paga con la menor cantidad de monedas.",
+  "title": { "en-US": "Market day choices", "es-MX": "Decisiones de mercado", "pt-BR": "Escolhas na feira" },
+  "new_concepts": ["kc-needs-wants"],
+  "mentor_misjudgment": {
+    "character": "liruf",
+    "misjudgment": "Liruf spends all the coins on a snack before checking the list, and cannot buy the bread the family needs.",
+    "recovery": "Liruf returns the snack, buys the bread first, and says a list helps before spending."
+  },
+  "regional": { "universal": "Uses LittleFounders coins only; no market amounts, places or customs." },
+  "segments": [
+    {
+      "id": "intro-01", "type": "voice.mentor-turn.v2", "grading": "none", "visual": { "type": "speech-plate" },
+      "payload": { "role": "intro", "narration": { "mode": "differentiated" } },
+      "copy": {
+        "en-US": { "prompt": "Listen to your Mentor.", "line": "Market day. Let us choose well.", "narration": { "script": "Today we sort what we need from what we want, check a few messages, and pay with care." } },
+        "es-MX": { "prompt": "Escucha a tu Mentor.", "line": "Día de mercado. Elijamos bien.", "narration": { "script": "Hoy separamos lo que necesitamos de lo que queremos, revisamos mensajes y pagamos con cuidado." } },
+        "pt-BR": { "prompt": "Ouça seu Mentor.", "line": "Dia de feira. Vamos escolher bem.", "narration": { "script": "Hoje separamos o que precisamos do que queremos, olhamos algumas mensagens e pagamos com cuidado." } }
+      }
+    },
+    {
+      "id": "episode-01", "type": "voice.mentor-episode.v2", "grading": "none", "visual": { "type": "speech-plate" },
+      "payload": {},
+      "copy": {
+        "en-US": { "prompt": "See what happened to your Mentor.", "setup": "I had 10 coins and a list.", "misjudgment": "I bought a snack first. Then I had no coins for bread.", "recovery": "I returned the snack and bought bread first. Now I check my list." },
+        "es-MX": { "prompt": "Mira qué le pasó a tu Mentor.", "setup": "Tenía 10 monedas y una lista.", "misjudgment": "Compré un antojo primero. Luego no tuve monedas para el pan.", "recovery": "Devolví el antojo y compré pan primero. Ahora reviso mi lista." },
+        "pt-BR": { "prompt": "Veja o que aconteceu com seu Mentor.", "setup": "Eu tinha 10 moedas e uma lista.", "misjudgment": "Comprei um lanche primeiro. Depois não tive moedas para o pão.", "recovery": "Devolvi o lanche e comprei o pão primeiro. Agora confiro minha lista." }
+      }
+    },
+    {
+      "id": "sort-01", "type": "money.needs-wants.v2", "grading": "server", "visual": { "type": "sort-bins" },
+      "item_role": "practice", "knowledge_component_id": "kc-needs-wants",
+      "payload": {
+        "bins": [{ "id": "bin-need" }, { "id": "bin-want" }, { "id": "bin-depends" }], "depends_bin_id": "bin-depends",
+        "items": [{ "id": "item-bread" }, { "id": "item-sticker" }, { "id": "item-shoes" }],
+        "reasons": [{ "id": "why-every-day" }, { "id": "why-fun" }, { "id": "why-old-pair" }]
+      },
+      "rubric": { "accepted": {
+        "item-bread": [{ "bin": "bin-need", "reason": "why-every-day" }],
+        "item-sticker": [{ "bin": "bin-want", "reason": "why-fun" }],
+        "item-shoes": [{ "bin": "bin-depends", "reason": "why-old-pair" }, { "bin": "bin-need", "reason": "why-old-pair" }]
+      } },
+      "copy": {
+        "en-US": { "prompt": "Sort each thing and pick why.", "help": ["Ask: could the family go without it this week?"],
+          "bins": [{ "label": "Need" }, { "label": "Want" }, { "label": "It depends" }], "items": [{ "label": "Bread" }, { "label": "Sticker" }, { "label": "New shoes" }],
+          "reasons": [{ "label": "We use it every day" }, { "label": "It is just fun" }, { "label": "Only if the old pair broke" }] },
+        "es-MX": { "prompt": "Ordena cada cosa y elige por qué.", "help": ["Pregunta: ¿la familia podría pasar sin eso esta semana?"],
+          "bins": [{ "label": "Necesidad" }, { "label": "Deseo" }, { "label": "Depende" }], "items": [{ "label": "Pan" }, { "label": "Estampa" }, { "label": "Zapatos nuevos" }],
+          "reasons": [{ "label": "Lo usamos cada día" }, { "label": "Solo es divertido" }, { "label": "Solo si los viejos se rompieron" }] },
+        "pt-BR": { "prompt": "Separe cada coisa e escolha por quê.", "help": ["Pergunte: a família ficaria sem isso esta semana?"],
+          "bins": [{ "label": "Necessidade" }, { "label": "Desejo" }, { "label": "Depende" }], "items": [{ "label": "Pão" }, { "label": "Figurinha" }, { "label": "Tênis novo" }],
+          "reasons": [{ "label": "Usamos todo dia" }, { "label": "É só diversão" }, { "label": "Só se o velho quebrou" }] }
+      }
+    },
+    {
+      "id": "messages-01", "type": "money.scam-check.v2", "grading": "server", "visual": { "type": "message-list" },
+      "item_role": "transfer", "knowledge_component_id": "kc-message-safety",
+      "payload": { "messages": [{ "id": "msg-prize" }, { "id": "msg-coach" }, { "id": "msg-code" }, { "id": "msg-aunt" }] },
+      "rubric": { "scam_ids": ["msg-prize", "msg-code"] },
+      "copy": {
+        "en-US": { "prompt": "Mark the messages that are tricks.",
+          "messages": [{ "sender": "Unknown number", "text": "You won 500 coins! Send your password to claim them." }, { "sender": "Coach Ana", "text": "Practice moves to 4 pm on Friday." },
+            { "sender": "Game Team", "text": "Share the code we sent you so we can fix your account." }, { "sender": "Aunt Rosa", "text": "See you at lunch on Sunday." }] },
+        "es-MX": { "prompt": "Marca los mensajes que son trampas.",
+          "messages": [{ "sender": "Número desconocido", "text": "¡Ganaste 500 monedas! Envía tu contraseña para cobrarlas." }, { "sender": "Entrenadora Ana", "text": "El entrenamiento pasa a las 4 pm el viernes." },
+            { "sender": "Equipo del juego", "text": "Comparte el código que te enviamos para arreglar tu cuenta." }, { "sender": "Tía Rosa", "text": "Nos vemos en la comida del domingo." }] },
+        "pt-BR": { "prompt": "Marque as mensagens que são armadilhas.",
+          "messages": [{ "sender": "Número desconhecido", "text": "Você ganhou 500 moedas! Envie sua senha para receber." }, { "sender": "Técnica Ana", "text": "O treino passa para as 16h na sexta." },
+            { "sender": "Equipe do jogo", "text": "Compartilhe o código que enviamos para arrumar sua conta." }, { "sender": "Tia Rosa", "text": "Até o almoço de domingo." }] }
+      }
+    },
+    {
+      "id": "coins-01", "type": "money.coin-tray.v2", "grading": "server", "visual": { "type": "coin-tray" },
+      "item_role": "practice", "knowledge_component_id": "kc-count-coins",
+      "payload": { "currency": "coins", "denominations": [{ "value_minor": 10, "kind": "coin", "available": 3 }, { "value_minor": 5, "kind": "coin", "available": 3 }, { "value_minor": 1, "kind": "coin", "available": 6 }] },
+      "rubric": { "target_minor": 17, "fewest": true },
+      "copy": {
+        "en-US": { "prompt": "Pay 17 coins with the fewest pieces." },
+        "es-MX": { "prompt": "Paga 17 monedas con la menor cantidad de piezas." },
+        "pt-BR": { "prompt": "Pague 17 moedas com o menor número de peças." }
+      }
+    },
+    {
+      "id": "story-01", "type": "story.branch.v2", "grading": "server", "visual": { "type": "story-scene" },
+      "payload": { "options": [{ "id": "opt-list" }, { "id": "opt-browse" }] },
+      "rubric": { "acceptable_choice_ids": ["opt-list", "opt-browse"] },
+      "copy": {
+        "en-US": { "prompt": "What do you do next time?", "scene": "Next market day you have 10 coins again.", "options": [{ "label": "Write a list first" }, { "label": "Look around first" }] },
+        "es-MX": { "prompt": "¿Qué haces la próxima vez?", "scene": "El próximo día de mercado tienes otra vez 10 monedas.", "options": [{ "label": "Escribir una lista primero" }, { "label": "Mirar primero" }] },
+        "pt-BR": { "prompt": "O que você faz da próxima vez?", "scene": "Na próxima feira você tem 10 moedas de novo.", "options": [{ "label": "Fazer uma lista primeiro" }, { "label": "Olhar primeiro" }] }
+      }
+    }
+  ]
+}

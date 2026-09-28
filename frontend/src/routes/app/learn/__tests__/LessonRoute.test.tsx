@@ -169,12 +169,17 @@ describe('LessonRoute', () => {
   });
 
   it('routes a delivered v2 document into the rebuilt lesson renderer without passing age evidence', async () => {
+    const document = goalBulletPilotDocument('en-US', '6-9') as { version_id: string };
     mockedApi.mockResolvedValueOnce({ data: {
-      lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: goalBulletPilotDocument('en-US', '6-9'), audio: {},
-    }, error: null });
+      lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {},
+    }, error: null })
+      // GAP-FIX-R1 (OD-17): an ungraded lesson still pins a run; it completes through view receipts, so no token is issued.
+      .mockResolvedValueOnce({ data: { run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: {} }, error: null });
     renderLessonRoute(['/learn/lesson/lesson-1']);
 
     expect(await screen.findByRole('heading', { name: 'Reach a savings goal' })).toBeInTheDocument();
+    expect(mockedApi.mock.calls[1]?.[0]).toBe('/learn/lessons/lesson-1/v2-runs');
     expect(screen.queryByText('mock-complete')).toBeNull();
   });
 
@@ -183,7 +188,9 @@ describe('LessonRoute', () => {
     try {
       mockedApi
         .mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL', message: 'offline' } })
-        .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'es-MX', document: goalBulletPilotDocument('es-MX', '6-9'), audio: {} }, error: null });
+        .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'es-MX', document: goalBulletPilotDocument('es-MX', '6-9'), audio: {} }, error: null })
+        .mockResolvedValueOnce({ data: { run_id: '99999999-9999-4999-8999-999999999999', version_id: (goalBulletPilotDocument('es-MX', '6-9') as { version_id: string }).version_id,
+          expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: {} }, error: null });
       renderLessonRoute(['/learn/lesson/lesson-1']);
       const offline = await screen.findByRole('heading', { name: 'Connection lost' });
       // The design-system root is the element that carries the mode and the language.
@@ -716,7 +723,7 @@ describe('LessonRoute', () => {
 
     renderLessonRoute(['/learn/lesson/lesson-1']);
 
-    expect(await screen.findByRole('heading', { name: 'This lesson needs an update.' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Update the app' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Check' })).toBeNull();
     expect(mockedApi).toHaveBeenCalledTimes(2);
   });
@@ -734,7 +741,7 @@ describe('LessonRoute', () => {
 
     renderLessonRoute(['/learn/lesson/lesson-1']);
 
-    expect(await screen.findByRole('heading', { name: 'This lesson needs an update.' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Update the app' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Check' })).toBeNull();
     expect(mockedApi).toHaveBeenCalledTimes(2);
   });
@@ -752,7 +759,7 @@ describe('LessonRoute', () => {
 
     renderLessonRoute(['/learn/lesson/lesson-1']);
 
-    expect(await screen.findByRole('heading', { name: 'This lesson needs an update.' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Update the app' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Check' })).toBeNull();
   });
 
@@ -866,7 +873,7 @@ describe('LessonRoute', () => {
     renderLessonRoute(['/learn/lesson/lesson-1']);
 
     expect(await screen.findByRole('heading', { name: 'Connection lost' })).toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'This lesson needs an update.' })).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Update the app' })).toBeNull();
     // The connection coming back retries by itself.
     window.dispatchEvent(new Event('online'));
     expect(await screen.findByRole('button', { name: 'Save: Add' })).toBeInTheDocument();

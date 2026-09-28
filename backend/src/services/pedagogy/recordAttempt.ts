@@ -115,8 +115,10 @@ export interface AttemptInput {
   submission: unknown;
   score: number;
   attemptNumber: number;
-  source: 'segment_grade' | 'voice_check';
+  source: 'segment_grade' | 'voice_check' | 'course_lesson';
   strategy: string | null;
+  /** GAP-FIX-R1 (P-09): a course-lesson receipt key ('v1:...' or 'v2:...'); required for source 'course_lesson'. */
+  receiptKey?: string;
 }
 
 export interface AttemptOutcome {
@@ -278,6 +280,7 @@ export async function recordAttempt(input: AttemptInput, now = new Date()): Prom
     misconception_id: misconceptionId,
     p_known_before: round5(pBefore),
     p_known_after: round5(pAfter),
+    ...(input.receiptKey ? { receipt_key: input.receiptKey } : {}),
   };
   /*
    * C.11: the attempt row carries its review tier. On a schema without the

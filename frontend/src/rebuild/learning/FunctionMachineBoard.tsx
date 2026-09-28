@@ -7,6 +7,7 @@ import type { LessonSequenceControl } from './lessonSequence';
 import { useSingleActiveGrade } from './useSingleActiveGrade';
 import './learning.css';
 import { LessonStageSlot } from './lessonStage';
+import { SegmentPrompt } from './segmentKit';
 
 type Segment = Extract<LessonClientSegment, { type: 'math.function-machine.v2' }>;
 type Verdict = 'invalid' | 'met' | 'review';
@@ -34,7 +35,7 @@ export function FunctionMachineBoard({ document, segment, onBack, onGrade, seque
 
   return <main className="lf-learning" data-surface="app" data-screen="function-machine"><div className="lf-learning-inner">
     <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button><span data-copy-role="data">{t.board}</span></header><LessonStageSlot verdict={verdict} />
-    <div className="lf-learning-content"><div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
+    <div className="lf-learning-content"><div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><SegmentPrompt segment={segment} locale={document.locale} /></div>
       <section className="lf-learning-board" aria-labelledby="function-machine-title"><h2 id="function-machine-title" data-copy-role="heading">{t.board}</h2>
         <div className="lf-function-machine" role="img" aria-label={`${t.input}: ${selected}. ${t.output}: ${ran ? example?.output ?? '' : '?'}`}>
           <span className="lf-function-machine-value" data-copy-role="data">{selected}</span><span className="lf-function-machine-arrow" aria-hidden="true">→</span><span className="lf-function-machine-core" data-copy-role="label">f</span><span className="lf-function-machine-arrow" aria-hidden="true">→</span><span className="lf-function-machine-value" data-copy-role="data">{ran ? example?.output : '?'}</span>

@@ -201,9 +201,11 @@ export interface KcAttemptInsert {
   kc_id: string;
   session_id: string | null;
   segment_id: string | null;
-  source: 'segment_grade' | 'voice_check';
+  source: 'segment_grade' | 'voice_check' | 'course_lesson';
   correct: boolean;
   score: number | null;
+  /** GAP-FIX-R1 (0206): the course-lesson grade receipt this evidence came from; idempotency key. */
+  receipt_key?: string;
   strategy: string | null;
   misconception_id: string | null;
   p_known_before: number;

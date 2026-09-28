@@ -31,6 +31,7 @@ export function narrativeFixture(locale: Locale): NarrativeState {
         struggle: 'open', usedHint: false, decisions: 0, topicComplete: false, conversation: 'explain',
       },
     ],
+    evidence: [{ lessonId: 'l2', firstTry: { correct: 3, graded: 4 }, judgment: { assessed: 2, sound: 1, partial: 1, unsupported: 0 } }],
   };
 }
 

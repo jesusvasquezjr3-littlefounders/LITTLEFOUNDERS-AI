@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { OwnProfile, type InviteStatus, type OwnProfileData, type OwnProfileView, type SocialTier } from '@/rebuild/account/OwnProfile';
+import { OwnProfile, type InviteStatus, type OwnProfileData, type OwnProfileRhythm, type OwnProfileView, type SocialTier } from '@/rebuild/account/OwnProfile';
+import { fetchRhythm } from '@/rebuild/learning/motivation';
 import { resolveCover, resolveLook } from '@/rebuild/account/avatar/avatarKit';
 import { isOffline, useProfileScreenEnvironment } from './profileRouteKit';
 import { TeenConnectionsPanel } from './TeenConnectionsPanel';
@@ -83,6 +84,8 @@ function ScopedOwnProfile() {
   const [discoverable, setDiscoverable] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [invite, setInvite] = useState<InviteStatus>('idle');
+  // Bible 08 §8 / 04 §4.3 (GAP-FIX-R1): the chosen Mentor and this week's strip, best-effort (no row without them).
+  const [rhythm, setRhythm] = useState<OwnProfileRhythm | null>(null);
   const inviteTimer = useRef<number | null>(null);
 
   useEffect(() => {
@@ -99,6 +102,20 @@ function ScopedOwnProfile() {
     })();
     return () => { cancelled = true; };
   }, [getToken, attempt, locale, seed, tutor]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchRhythm(async (path, init) => {
+      const token = await getToken();
+      if (!token) return { data: null, error: { code: 'UNAUTHORIZED' } };
+      const result = await api<unknown>(path, { token, method: init?.method, body: init?.body });
+      return { data: result.data, error: result.error ? { code: result.error.code } : null };
+    }).then((state) => {
+      if (cancelled || state.status !== 'ready') return;
+      setRhythm({ character: state.rhythm.mentor.character, week: state.rhythm.streak.week ?? null });
+    });
+    return () => { cancelled = true; };
+  }, [getToken, attempt]);
 
   useEffect(() => () => { if (inviteTimer.current !== null) window.clearTimeout(inviteTimer.current); }, []);
 
@@ -121,7 +138,7 @@ function ScopedOwnProfile() {
   const connections = tier === 'teen' ? <TeenConnectionsPanel discoverable={discoverable} /> : null;
 
   return <OwnProfile copy={copy.ownProfile} locale={locale} dark={dark} ageBand={ageBand} view={view} origin={window.location.origin}
-    invite={invite} safetyNotice={safetyNotice} connections={connections} onNavigate={(href) => navigate(href)}
+    invite={invite} safetyNotice={safetyNotice} connections={connections} rhythm={rhythm} onNavigate={(href) => navigate(href)}
     onRetry={() => { setView({ kind: 'failed', offline: false, retrying: true }); setAttempt((value) => value + 1); }}
     onCopyInvite={(text) => void copyInvite(text)} />;
 }

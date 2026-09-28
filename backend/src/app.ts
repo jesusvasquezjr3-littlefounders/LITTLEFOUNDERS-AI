@@ -8,6 +8,7 @@ import { analyticsRouter } from './routes/analytics.js';
 import { badgeLinkSweepRouter, badgePublicRouter } from './routes/badgePublic.js';
 import { socialRetentionSweepRouter } from './routes/socialRetention.js';
 import { opsHeartbeatRouter } from './routes/opsHeartbeat.js';
+import { learningRetentionSweepRouter } from './routes/learningRetention.js';
 import { bankingRouter } from './routes/banking.js';
 import { familyRouter } from './routes/family.js';
 import { familyLearningRouter } from './routes/familyLearning.js';
@@ -79,6 +80,7 @@ export function createApp(): express.Express {
   app.use('/api/v1/internal/social-retention', socialRetentionSweepRouter());
   // H.4: the backup and drift-probe heartbeats and their status (internal key only).
   app.use('/api/v1/internal/ops', opsHeartbeatRouter());
+  app.use('/api/v1/internal/learning-retention', learningRetentionSweepRouter());
   app.use('/api/v1/auth', authRouter());
   app.use('/api/v1/account', accountRouter());
   app.use('/api/v1/verification', verificationRouter());

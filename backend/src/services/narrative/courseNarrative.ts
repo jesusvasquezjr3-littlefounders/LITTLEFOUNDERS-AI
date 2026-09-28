@@ -30,6 +30,8 @@ export interface NarrativeAttempt {
   createdAt: string;
   hintsUsed: number;
   diagnosticCode: string | null;
+  /** B.12 judgment of a v2 reasoning answer (GAP-FIX-R1); absent for v1 attempts. */
+  judgment?: 'sound' | 'partial' | 'unsupported' | null;
 }
 
 export interface NarrativeLessonInput {
@@ -40,7 +42,7 @@ export interface NarrativeLessonInput {
   completedAt: string;
   /** Knowledge-component titles the topic teaches, primary first, in the guardian's locale. Empty when the topic has no mapped component. */
   skills: string[];
-  /** v1 attempts for this lesson. Empty for a story-only lesson or a v2 lesson (its receipts are Core-only). */
+  /** Graded attempts for this lesson: v1 attempts, or the receipts of completed v2 runs read server-side (GAP-FIX-R1). Empty for a story-only lesson. */
   attempts: NarrativeAttempt[];
   /** True when the lesson has graded exercises, so an empty `attempts` means placement-credited rather than "no struggle". */
   graded: boolean;
@@ -60,7 +62,7 @@ export interface LessonNarrative {
   completedAt: string;
   /** Up to two skills this lesson practised; the topic title when no skill is mapped. */
   skills: string[];
-  /** Null when there is no attempt evidence to judge from (story-only, v2 or placement-credited). */
+  /** Null when there is no attempt evidence to judge from (story-only or placement-credited). */
   struggle: Struggle | null;
   usedHint: boolean;
   decisions: number;
@@ -98,6 +100,13 @@ export function struggleOf(attempts: readonly NarrativeAttempt[]): Struggle | nu
   return missed ? 'resolved' : 'none';
 }
 
+/** The first attempt of each exercise, in time order. */
+function firstTries(attempts: readonly NarrativeAttempt[]): NarrativeAttempt[] {
+  const first = new Map<string, NarrativeAttempt>();
+  for (const a of [...attempts].sort((x, y) => x.createdAt.localeCompare(y.createdAt))) if (!first.has(a.segmentId)) first.set(a.segmentId, a);
+  return [...first.values()];
+}
+
 export function buildLessonNarrative(input: NarrativeLessonInput): LessonNarrative {
   const skills = input.skills.filter(Boolean).slice(0, MAX_SKILLS);
   return {
@@ -112,6 +121,29 @@ export function buildLessonNarrative(input: NarrativeLessonInput): LessonNarrati
     decisions: input.decisions,
     topicComplete: input.topicComplete,
     conversation: input.decisions > 0 ? 'decision' : 'explain',
+  };
+}
+
+/**
+ * GAP-FIX-R1 (B.10 for v2): the lesson's first-try share and B.12 judgment
+ * counts, from the same attempts. Carried beside the entries (the entry shape
+ * the Family Hub validates strictly is unchanged). Null without evidence.
+ */
+export interface LessonEvidence {
+  lessonId: string;
+  firstTry: { correct: number; graded: number };
+  judgment?: { assessed: number; sound: number; partial: number; unsupported: number };
+}
+
+export function lessonEvidence(input: Pick<NarrativeLessonInput, 'lessonId' | 'attempts' | 'graded'>): LessonEvidence | null {
+  const firsts = input.graded ? firstTries(input.attempts) : [];
+  if (firsts.length === 0) return null;
+  const judged = firsts.filter((a) => a.judgment);
+  const count = (quality: 'sound' | 'partial' | 'unsupported') => judged.filter((a) => a.judgment === quality).length;
+  return {
+    lessonId: input.lessonId,
+    firstTry: { correct: firsts.filter((a) => a.score >= UNDERSTOOD_SCORE && a.diagnosticCode !== 'initial_incorrect').length, graded: firsts.length },
+    ...(judged.length > 0 ? { judgment: { assessed: judged.length, sound: count('sound'), partial: count('partial'), unsupported: count('unsupported') } } : {}),
   };
 }
 

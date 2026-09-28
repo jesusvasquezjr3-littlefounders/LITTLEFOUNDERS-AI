@@ -4,7 +4,7 @@ import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { getRolesForGate } from '../services/insights.js';
 import { requiresMinorMentorSafeguards } from '../services/mentorSafety.js';
-import { buildLessonNarrative, weekSummary, type NarrativeAttempt } from '../services/narrative/courseNarrative.js';
+import { buildLessonNarrative, lessonEvidence, weekSummary, type LessonEvidence, type NarrativeAttempt } from '../services/narrative/courseNarrative.js';
 import {
   actOnBridgePrompt,
   dismissBridgePrompt,
@@ -13,7 +13,7 @@ import {
   kcRowsByIds,
   listJournal,
   listOpenBridgePrompts,
-  readKidAttempts,
+  readKidAttempts, readKidV2Attempts,
   readKidLearningRecord,
   topicTeaches,
 } from '../services/narrative/narrativeData.js';
@@ -150,13 +150,15 @@ export function familyLearningRouter(): Router {
     // L-13: decided on every read, from age evidence as of today. A failed
     // read shows counts only (fail closed); the journal is never widened.
     const choicesVisible = (await readTutorSeesChoices(kidId, undefined, now)) === true;
-    const [attempts, counts, choices, teaches] = await Promise.all([
+    const [attempts, v2Attempts, counts, choices, teaches] = await Promise.all([
       readKidAttempts(kidId, lessonIds),
+      // B.10 for v2 (GAP-FIX-R1): completed v2 runs' receipts, read server-side; never answers.
+      readKidV2Attempts(kidId, lessonIds),
       choicesVisible ? Promise.resolve(null) : journalCountsByLesson(kidId, lessonIds),
       choicesVisible ? readTutorChoices(kidId, lessonIds) : Promise.resolve(null),
       topicTeaches(topicIds),
     ]);
-    if (!attempts) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the child’s learning');
+    if (!attempts || !v2Attempts) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the child’s learning');
     let decisions = counts;
     if (choices) {
       decisions = new Map<string, number>();
@@ -170,6 +172,12 @@ export function familyLearningRouter(): Router {
         segmentId: a.segment_id, score: a.score, createdAt: a.created_at, hintsUsed: a.hints_used ?? 0, diagnosticCode: a.diagnostic_code ?? null,
       }]);
     }
+    for (const a of v2Attempts) {
+      attemptsByLesson.set(a.lesson_id, [...(attemptsByLesson.get(a.lesson_id) ?? []), {
+        segmentId: a.segment_id, score: a.score, createdAt: a.created_at, hintsUsed: a.hints_used, diagnosticCode: a.diagnostic_code, judgment: a.judgment,
+      }]);
+    }
+    const v2Graded = new Set(v2Attempts.map((a) => a.lesson_id));
     const topicComplete = (topicId: string | undefined): boolean => {
       const siblings = topicId ? record.lessonsByTopic.get(topicId) ?? [] : [];
       return siblings.length > 0 && siblings.every((id) => record.done.has(id));
@@ -187,7 +195,7 @@ export function familyLearningRouter(): Router {
         completedAt: c.completedAt,
         skills: (teaches?.get(topic.id) ?? []).map((k) => pick(k.title, locale)),
         attempts: attemptsByLesson.get(c.lessonId) ?? [],
-        graded: lesson.xp_total > 0,
+        graded: lesson.xp_total > 0 || v2Graded.has(c.lessonId),
         decisions: decisions?.get(c.lessonId) ?? 0,
         topicComplete: topicComplete(topic.id),
       })];
@@ -202,7 +210,10 @@ export function familyLearningRouter(): Router {
     const visible: { choicesVisible: boolean; choices?: TutorChoice[] } = choicesVisible && choices
       ? { choicesVisible: true, choices: choices.filter((c) => shown.has(c.lessonId)) }
       : { choicesVisible: false };
-    return ok(res, { locale, week, entries, hasMore: query.data.offset + query.data.limit < record.completions.length, ...visible });
+    // GAP-FIX-R1 (B.10 for v2): first-try share and judgment counts per shown lesson, beside the entries.
+    const evidence = entries.map((e) => lessonEvidence({ lessonId: e.lessonId, attempts: attemptsByLesson.get(e.lessonId) ?? [],
+      graded: (record.lessons.get(e.lessonId)?.xp_total ?? 0) > 0 || v2Graded.has(e.lessonId) })).filter((e): e is LessonEvidence => e !== null);
+    return ok(res, { locale, week, entries, hasMore: query.data.offset + query.data.limit < record.completions.length, ...visible, evidence });
   });
 
   // ── OD-27 (3): the under-13 child's story choices ─────────────────────────

@@ -110,6 +110,22 @@ describe('the guardian narrative', () => {
     expect(within(second).getByText('Ask them to explain it in their own words.')).toBeTruthy();
     expect(within(screen.getAllByRole('listitem')[2]!).getByText('Still working on it.')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Show more' })).toBeTruthy();
+    // GAP-FIX-R1 (B.10 for v2): counts only, on the lesson Core sent evidence for.
+    expect(within(second).getByText('Right on the first try: 3 of 4.')).toBeTruthy();
+    expect(within(second).getByText('Explained their thinking well: 1 of 2.')).toBeTruthy();
+    expect(within(first).queryByText(/first try/)).toBeNull();
+  });
+
+  it("GAP-FIX-R1: keeps evidence only for the page's lessons and refuses a count above its total", async () => {
+    const reply = (data: unknown): FamilyLearningTransport => async () => ({ data, error: null });
+    const entry = narrativeEntrySchema.parse({ lessonId: 'l1', lessonTitle: 'A', topicTitle: '', courseTitle: 'C', completedAt: '2026-09-23T10:00:00.000Z', skills: ['S'], struggle: null, usedHint: false, decisions: 0, topicComplete: false, conversation: 'explain' });
+    const page = { locale: 'en-US', week: { lessons: 1, topicsCompleted: 0 }, entries: [entry], hasMore: false };
+    const good = { lessonId: 'l1', firstTry: { correct: 1, graded: 2 } };
+    expect(await fetchKidNarrative(reply({ ...page, evidence: [good, { ...good, lessonId: 'other' }] }), 'k')).toMatchObject({ status: 'ready', evidence: [good] });
+    expect('evidence' in await fetchKidNarrative(reply({ ...page, evidence: [{ ...good, lessonId: 'other' }] }), 'k')).toBe(false);
+    expect(await fetchKidNarrative(reply({ ...page, evidence: [{ ...good, firstTry: { correct: 3, graded: 2 } }] }), 'k')).toEqual({ status: 'error' });
+    expect(await fetchKidNarrative(reply({ ...page, evidence: [{ ...good, judgment: { assessed: 2, sound: 2, partial: 1, unsupported: 0 } }] }), 'k')).toEqual({ status: 'error' });
+    expect(await fetchKidNarrative(reply({ ...page, evidence: [{ ...good, answer: '12' }] }), 'k')).toEqual({ status: 'error' });
   });
 
   it('OD-27 (3), L-13: for an under-13 child, each lesson shows the situation and the chosen option, and says the child is told', () => {

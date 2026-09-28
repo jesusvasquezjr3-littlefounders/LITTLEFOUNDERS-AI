@@ -10,6 +10,8 @@ import './learning.css';
 import './runningLedger.css';
 import './stepReplay.css';
 import { LessonStageSlot } from './lessonStage';
+import { GradedFoot, NumberAnswer, SegmentPrompt, useSegmentGrade, type OnGradeSegment } from './segmentKit';
+
 
 type LedgerSegment = Extract<LessonClientSegment, { type: 'money.running-ledger.v2' }>;
 type Labels = { back: string; explore: string; progress: string; title: string; prompt: string; board: string;
@@ -53,10 +55,14 @@ export function runningLedgerPilotDocument(locale: Locale): unknown {
   };
 }
 
-export function RunningLedgerBoard({ document, segment, onBack, sequence }: {
-  document: LessonClientDocument; segment: LedgerSegment; onBack: () => void; sequence?: LessonSequenceControl;
+export function RunningLedgerBoard({ document, segment, onBack, sequence, onGrade }: {
+  document: LessonClientDocument; segment: LedgerSegment; onBack: () => void; sequence?: LessonSequenceControl; onGrade?: OnGradeSegment;
 }) {
   const t = copy[document.locale];
+  const grading = useSegmentGrade(segment.id, onGrade);
+  const graded = segment.grading === 'server' && !!onGrade;
+  const hide = graded && !grading.met;
+  const [typed, setTyped] = useState<string | null>(null);
   const { initial, sale, cost, maxEntries } = segment.payload;
   const [entries, setEntries] = useState<LedgerEntry[]>([]);
   const [replayIndex, setReplayIndex] = useState<number | null>(null);
@@ -73,11 +79,11 @@ export function RunningLedgerBoard({ document, segment, onBack, sequence }: {
   const append = (amountValue: number) => {
     if (replayIndex !== null || entries.length >= maxEntries) return;
     const next = [...entries, { id: `entry-${entries.length + 1}`, amount: amountValue }];
-    if (runningLedger(initial, next, maxEntries)) setEntries(next);
+    if (runningLedger(initial, next, maxEntries)) { grading.reset(); setEntries(next); }
   };
   const rows = [{ id: 'start', label: t.start, value: balanceText(initial) }, ...snapshot.rows.map((row) => ({
     id: row.id, label: `${row.amount > 0 ? t.sale : t.supplies} ${signed(row.amount)}`,
-    value: balanceText(row.balance),
+    value: hide ? '?' : balanceText(row.balance),
   }))];
 
   return <main className="lf-learning" data-surface="app" data-screen="running-ledger">
@@ -87,11 +93,11 @@ export function RunningLedgerBoard({ document, segment, onBack, sequence }: {
         <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header><LessonStageSlot />
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1>
-          <p data-copy-role="prompt">{segment.prompt}</p></div>
+          <SegmentPrompt segment={segment} locale={document.locale} /></div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart}
           columns={[t.movement, t.balance]} rows={rows}
           controlLeading={<Button disabled={!entries.length} onClick={() => { setEntries([]); setReplayIndex(null); }}>{t.reset}</Button>}
-          chart={<div className="lf-ledger-visual" role="img" aria-label={`${t.balance}: ${balanceText(snapshot.balance)}. ${position}. ${t.step}: ${shownEntries.length}/${maxEntries}.`}>
+          chart={<div className="lf-ledger-visual" role="img" aria-label={`${t.balance}: ${hide ? '?' : balanceText(snapshot.balance)}. ${hide ? '' : position}. ${t.step}: ${shownEntries.length}/${maxEntries}.`}>
             <svg viewBox="0 0 220 160" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
               <line x1="24" y1="80" x2="196" y2="80" className="lf-ledger-zero" />
               <rect x="92" y={snapshot.balance >= 0 ? 80 - extent : 80} width="36" height={Math.max(extent, 1)}
@@ -111,10 +117,13 @@ export function RunningLedgerBoard({ document, segment, onBack, sequence }: {
           {replayIndex !== null ? <StepReplay steps={entries.length} index={replayIndex} onChange={setReplayIndex}
             labels={{ step: t.step, previous: t.previous, next: t.next, play: t.play, pause: t.pause }} /> : null}
         </div> : null}
+        {graded ? <><NumberAnswer label={t.balance} locale={document.locale} onChange={setTyped} disabled={grading.pending || grading.met} />
+          <GradedFoot locale={document.locale} grading={grading} canCheck={typed !== null && entries.length > 0 && replayIndex === null} sequence={sequence}
+            onCheck={() => grading.check({ entries: entries.map((entry) => entry.amount > 0 ? 'sale' : 'cost'), balance: typed })} /></> : null}
         <footer className="lf-ledger-foot"><p role="status" aria-live="polite" data-copy-role="body">
-          {t.balance}: <strong data-copy-role="data">{balanceText(snapshot.balance)}</strong> · {position}
+          {t.balance}: <strong data-copy-role="data">{hide ? '?' : balanceText(snapshot.balance)}</strong> · {hide ? '' : position}
         </p><span data-copy-role="data">{t.step}: {shownEntries.length}/{replayIndex === null ? maxEntries : entries.length}</span>
-          {sequence ? <Button variant="accent" disabled={!entries.length || replayIndex !== null} onClick={sequence.onAdvance}>{t.continue}</Button> : null}</footer>
+          {sequence && !graded ? <Button variant="accent" disabled={!entries.length || replayIndex !== null} onClick={sequence.onAdvance}>{t.continue}</Button> : null}</footer>
       </div>
     </div>
   </main>;

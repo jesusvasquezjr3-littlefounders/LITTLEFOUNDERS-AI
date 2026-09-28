@@ -5,7 +5,18 @@ import { expectBudgetedGroups, expectFits, flatten, namespaceCopy } from './budg
 
 /* `rebuild-learn.json` (Lane 2): learner home, courses, placement, lessons and results. Youngest (6–9) budget. */
 
-const flat: Record<string, CopyRole> = { lessonUnavailable: 'heading', lessonInvalid: 'heading', back: 'action' };
+const flat: Record<string, CopyRole> = { lessonInvalid: 'heading', back: 'action' };
+/*
+ * GAP-FIX-R1 learning: the general v2 player's shared strings (segmentKit.tsx,
+ * LessonDocumentView.tsx): the Mentor prompt label and help turn (Bible 08
+ * §11), the locale number echo (Appendix P Part 5), the check row, the step
+ * counter, and the B.4 update-required screen.
+ */
+const player: Record<string, CopyRole> = {
+  asks: 'body', help: 'action', moreHelp: 'action', closeHelp: 'action', readsAs: 'body', notNumber: 'body', check: 'action', continue: 'action',
+  met: 'body', review: 'body', reviewStructure: 'body', reviewAnswer: 'body', unavailable: 'body', step: 'data', progress: 'body',
+  viewFailed: 'body', updateTitle: 'heading', updateBody: 'body', reload: 'action', moveTo: 'action', mentorHeading: 'heading',
+};
 
 /*
  * W2L.1: the learner home (L1) and the one course screen (L2), each string by
@@ -22,6 +33,8 @@ const home: Record<string, CopyRole> = {
   rhythm: 'action', storyTitle: 'heading', journal: 'action',
   // L-04 (OD-27 (1)): the goals-together card, shown only to a 13-to-17 participant.
   togetherTitle: 'heading', together: 'action', togetherAsked: 'body',
+  // Bible 08 §8 (GAP-FIX-R1): the Mentor home card.
+  mentorTitle: 'heading', askMentor: 'action',
 };
 const course: Record<string, CopyRole> = {
   allCourses: 'action', map: 'action', progress: 'body', loading: 'heading', start: 'action', minutes: 'data',
@@ -85,15 +98,15 @@ const CHAPTER = { 'en-US': 'The market stall', 'es-MX': 'El puesto del mercado',
 const SKILL = { 'en-US': 'Saving toward a goal', 'es-MX': 'Ahorrar para una meta', 'pt-BR': 'Poupar para uma meta' } as const;
 const filled = (text: string, locale: keyof typeof LONGEST_TITLE) => text
   .replace('{name}', 'Sofía').replace('{course}', LONGEST_TITLE[locale]).replace('{chapter}', CHAPTER[locale]).replace('{skill}', SKILL[locale])
-  .replace('{date}', DATE[locale]).replace('{names}', 'Luz, Río y Sofía')
+  .replace('{date}', DATE[locale]).replace('{names}', 'Luz, Río y Sofía').replace('{value}', '1,234.5')
   .replace(/\{(n|passed|total|done|goal)\}/g, '12');
 
 describe('rebuild-learn copy budget', () => {
   for (const [locale, strings] of namespaceCopy('learn')) {
     it(`fits the youngest copy budget in ${locale}`, () => {
-      expectBudgetedGroups(strings, [...Object.keys(flat), 'home', 'course', 'territory', 'placement', 'lesson', 'together']);
+      expectBudgetedGroups(strings, [...Object.keys(flat), 'home', 'course', 'territory', 'placement', 'lesson', 'together', 'player']);
       for (const [key, role] of Object.entries(flat)) expectFits(strings[key] as string, role, locale, '6-9', key);
-      for (const [group, roles] of [['home', home], ['course', course], ['territory', territory], ['placement', placement], ['lesson', lesson]] as const) {
+      for (const [group, roles] of [['home', home], ['course', course], ['territory', territory], ['placement', placement], ['lesson', lesson], ['player', player]] as const) {
         const entries = flatten(strings[group]!);
         // Exhaustive: every key of the group has a role here, and every role names a key.
         expect(new Set(entries.map(([key]) => key.split('.')[0]))).toEqual(new Set(Object.keys(roles)));

@@ -26,6 +26,8 @@ export const streakViewSchema = z.object({
   restDaysLeft: z.number().int().min(0).max(2),
   lastActiveDate: calendarDate.nullable(),
   pause: z.object({ startsOn: calendarDate, endsOn: calendarDate }).nullable(),
+  // GAP-FIX-R1 (Bible 04 §4.3): the current week, Monday first, for the streak strip. Optional for an older Core.
+  week: z.array(z.object({ date: calendarDate, state: z.enum(['practiced', 'rest', 'paused', 'open', 'today']) }).strict()).length(7).optional(),
 }).refine((view) => view.status !== 'resting' || view.current === 0, 'A resting streak has no live run');
 export type StreakView = z.infer<typeof streakViewSchema>;
 

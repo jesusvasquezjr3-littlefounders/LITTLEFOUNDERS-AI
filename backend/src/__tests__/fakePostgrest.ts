@@ -415,6 +415,50 @@ export function createFakeFetch(db: FakeDb): typeof fetch {
       if (stored) stored.result = { ...(stored.result as FakeRow), ...extras };
       return respond(200, { ...result, ...extras });
     }
+    // GAP-FIX-R1 (0205): view receipts for non-scored steps, and mixed completion.
+    if (table === 'rpc/record_v2_segment_view' && method === 'POST') {
+      const p = JSON.parse(String(init?.body)) as FakeRow;
+      const run = (db.lesson_v2_runs ?? []).find(row => row.id === p.p_run_id);
+      if (!run || run.user_id !== p.p_user_id || run.document_version_id !== p.p_document_version_id
+        || (run.completed_at !== undefined && run.completed_at !== null)) return respond(400, { message: 'Invalid v2 lesson run' });
+      const views = db.lesson_v2_segment_views ??= [];
+      if (!views.some(row => row.run_id === p.p_run_id && row.segment_id === p.p_segment_id)) {
+        views.push({ user_id: p.p_user_id, run_id: p.p_run_id, document_version_id: p.p_document_version_id, segment_id: p.p_segment_id, created_at: fakeNow() });
+      }
+      return respond(200, true);
+    }
+    if (table === 'rpc/complete_v2_mixed_lesson' && method === 'POST') {
+      const p = JSON.parse(String(init?.body)) as FakeRow;
+      const run = (db.lesson_v2_runs ?? []).find(row => row.id === p.p_run_id && row.user_id === p.p_user_id
+        && row.lesson_id === p.p_lesson_id && row.document_version_id === p.p_document_version_id);
+      const required = p.p_required_segment_ids as string[];
+      const viewed = p.p_viewed_segment_ids as string[];
+      if (required.length + viewed.length === 0) return respond(400, { message: 'Invalid v2 completion input' });
+      const receipts = (db.lesson_v2_grade_receipts ?? []).filter(row => row.user_id === p.p_user_id && row.run_id === p.p_run_id
+        && row.document_version_id === p.p_document_version_id);
+      const views = (db.lesson_v2_segment_views ?? []).filter(row => row.user_id === p.p_user_id && row.run_id === p.p_run_id
+        && row.document_version_id === p.p_document_version_id);
+      const met = required.every(segmentId => receipts.some(row => row.segment_id === segmentId
+        && (row.verdict as FakeRow).correct === true && (row.verdict as FakeRow).score === 100));
+      const seen = viewed.every(segmentId => views.some(row => row.segment_id === segmentId));
+      if (!run || !met || !seen) return respond(400, { message: 'Pending learning steps' });
+      const firsts = required.map(segmentId => receipts.find(row => row.segment_id === segmentId)!.verdict as FakeRow);
+      const firstCorrect = firsts.filter(verdict => verdict.correct === true).length;
+      const quality = (name: string) => firsts.filter(verdict => (verdict.judgment as FakeRow | undefined)?.quality === name).length;
+      const hints = receipts.reduce((sum, row) => sum + Number((row.verdict as FakeRow).hints_used ?? 0), 0);
+      const score = required.length === 0 ? 100 : Math.round(100 * firstCorrect / required.length);
+      const result = fakeCompleteLesson(db, { p_user_id: p.p_user_id, p_lesson_id: p.p_lesson_id, p_run_id: p.p_run_id,
+        p_score: score, p_passed: true, p_xp: Number(p.p_xp), p_minutes: Number(p.p_minutes), p_local_date: String(p.p_local_date) });
+      if (result === null) return respond(500, { message: 'Missing learning stats' });
+      run.completed_at ??= new Date().toISOString();
+      if (result.replayed === true) return respond(200, result);
+      const extras = { first_try_correct: firstCorrect, graded_count: required.length, viewed_count: viewed.length, hints_used: hints,
+        judgment: { assessed: quality('sound') + quality('partial') + quality('unsupported'),
+          sound: quality('sound'), partial: quality('partial'), unsupported: quality('unsupported') } };
+      const stored = (db.lesson_completion_receipts ?? []).find(r => r.user_id === p.p_user_id && r.lesson_id === p.p_lesson_id && r.run_id === p.p_run_id);
+      if (stored) stored.result = { ...(stored.result as FakeRow), ...extras };
+      return respond(200, { ...result, ...extras });
+    }
     if (table.startsWith('rpc/') && db.__rpc) {
       // Scripted service RPC results for staff reads (learning quality): the
       // SQL itself is exercised by database/scripts/test-learning-quality.sql.

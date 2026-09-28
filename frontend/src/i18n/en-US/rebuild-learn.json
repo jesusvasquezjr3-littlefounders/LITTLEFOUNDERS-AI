@@ -1,5 +1,4 @@
 {
-  "lessonUnavailable": "This lesson needs an update.",
   "lessonInvalid": "This lesson cannot open.",
   "back": "Go back",
   "home": {
@@ -42,7 +41,9 @@
     "journal": "My decisions",
     "togetherTitle": "Goals together",
     "together": "Open goals",
-    "togetherAsked": "Someone asked you to join a goal."
+    "togetherAsked": "Someone asked you to join a goal.",
+    "mentorTitle": "Your Mentor",
+    "askMentor": "Ask {name}"
   },
   "course": {
     "allCourses": "Courses",
@@ -263,5 +264,28 @@
     "saveFailed": "Could not save. Try again.",
     "reportLeave": "Also leave this goal",
     "reported": "Thanks. Our safety team will look."
+  },
+  "player": {
+    "asks": "{name} asks",
+    "help": "Help",
+    "moreHelp": "More help",
+    "closeHelp": "Got it",
+    "readsAs": "Reads as {value}",
+    "notNumber": "Type a number.",
+    "check": "Check",
+    "continue": "Continue",
+    "met": "That works.",
+    "review": "Not yet. Look again.",
+    "reviewStructure": "Not yet. Check how you set it up.",
+    "reviewAnswer": "Not yet. Check your numbers.",
+    "unavailable": "We could not check that. Try again.",
+    "step": "{n} of {total}",
+    "progress": "Lesson progress",
+    "viewFailed": "Could not save this step. Try again.",
+    "updateTitle": "Update the app",
+    "updateBody": "A newer version is ready. Reload to keep learning.",
+    "reload": "Reload",
+    "moveTo": "Move to",
+    "mentorHeading": "Your Mentor"
   }
 }

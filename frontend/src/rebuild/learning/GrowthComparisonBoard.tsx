@@ -8,6 +8,9 @@ import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import './learning.css';
 import './growthComparison.css';
 import { LessonStageSlot } from './lessonStage';
+import { LessonFeedback } from './LessonFeedback';
+import { playerCopy, SegmentPrompt, useSegmentGrade, type OnGradeSegment } from './segmentKit';
+
 
 type ComparisonSegment = Extract<LessonClientSegment, { type: 'visual.growth-comparison.v2' }>;
 
@@ -66,11 +69,14 @@ export function growthComparisonPilotDocument(locale: Locale): unknown {
   };
 }
 
-export function GrowthComparisonBoard({ document, segment, onBack, sequence }: {
-  document: LessonClientDocument; segment: ComparisonSegment; onBack: () => void; sequence?: LessonSequenceControl;
+export function GrowthComparisonBoard({ document, segment, onBack, sequence, onGrade }: {
+  document: LessonClientDocument; segment: ComparisonSegment; onBack: () => void; sequence?: LessonSequenceControl; onGrade?: OnGradeSegment;
 }) {
   const locale = document.locale;
   const t = copy[locale];
+  const grading = useSegmentGrade(segment.id, onGrade);
+  const graded = segment.grading === 'server' && !!onGrade;
+  const player = playerCopy(locale);
   const scaleName = useId();
   const p = segment.payload;
   const initialPrediction = p.principalMinor;
@@ -88,10 +94,15 @@ export function GrowthComparisonBoard({ document, segment, onBack, sequence }: {
     currency: localCurrency[locale], currencyDisplay: 'code' }), [locale]);
   const percent = useMemo(() => new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }), [locale]);
   const money = (minor: number) => number.format(minor / 100);
-  const changeRate = (next: number) => { setRate(next); setCommitted(null); };
-  const changeYears = (next: number) => { setYears(next); setCommitted(null); };
-  const changePrediction = (next: number) => { setPrediction(next); setCommitted(null); };
-  const reset = () => { setRate(p.initialRateBps); setYears(p.initialYears); setPrediction(initialPrediction); setCommitted(null); };
+  const changeRate = (next: number) => { setRate(next); setCommitted(null); grading.reset(); };
+  const changeYears = (next: number) => { setYears(next); setCommitted(null); grading.reset(); };
+  const changePrediction = (next: number) => { setPrediction(next); setCommitted(null); grading.reset(); };
+  const reset = () => { setRate(p.initialRateBps); setYears(p.initialYears); setPrediction(initialPrediction); setCommitted(null); grading.reset(); };
+  const commit = () => {
+    setCommitted(prediction);
+    if (graded) grading.check({ rateBps: rate, years, predictionMinor: prediction });
+  };
+  const result = grading.result;
   const x = (year: number) => 24 + year * 252 / years;
   const y = (minor: number) => 144 - minor * 120 / axisMaximum;
   const simplePoints = points.map((point) => `${x(point.year)},${y(point.simpleMinor)}`).join(' ');
@@ -114,7 +125,7 @@ export function GrowthComparisonBoard({ document, segment, onBack, sequence }: {
       </header><LessonStageSlot />
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1>
-          <p data-copy-role="prompt">{segment.prompt}</p></div>
+          <SegmentPrompt segment={segment} locale={document.locale} /></div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart}
           table={threeColumnTable}
           controlLeading={<Button onClick={reset} disabled={rate === p.initialRateBps && years === p.initialYears
@@ -157,10 +168,12 @@ export function GrowthComparisonBoard({ document, segment, onBack, sequence }: {
           <span data-copy-role="data">{t.difference}: {money(difference)}</span>
         </div> : null}
         <footer className="lf-learning-foot">
+          {graded ? <LessonFeedback verdict={result === null ? null : result === 'unavailable' ? 'unavailable' : result.verdict === 'met' ? 'met' : 'review'}>
+            {result === null ? null : result === 'unavailable' ? player.unavailable : result.verdict === 'met' ? player.met : player.reviewAnswer}</LessonFeedback> : null}
           <div className="lf-learning-actions"><Button variant={committed === null || sequence ? 'accent' : undefined}
-            disabled={committed === null && prediction === p.principalMinor}
-            onClick={() => committed === null ? setCommitted(prediction) : sequence ? sequence.onAdvance() : reset()}>
-            {committed === null ? t.reveal : sequence ? t.continue : t.tryAgain}</Button></div>
+            disabled={(committed === null && prediction === p.principalMinor) || grading.pending}
+            onClick={() => committed === null ? commit() : sequence && (!graded || grading.met) ? sequence.onAdvance() : reset()}>
+            {committed === null ? t.reveal : sequence && (!graded || grading.met) ? t.continue : t.tryAgain}</Button></div>
         </footer>
       </div>
     </div>

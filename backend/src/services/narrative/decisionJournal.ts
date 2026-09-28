@@ -324,3 +324,36 @@ function sharesSkill(c: JournalCandidate, targetKcs: ReadonlySet<string>, target
   for (const kc of kcs) if (targetKcs.has(kc)) return true;
   return false;
 }
+
+// ── v2 story decisions (GAP-FIX-R1 learning, B.9 applied to the new catalog per OD-24) ──
+
+/** The v2 story kinds, mapped onto the journal's existing decision types (record_learner_decisions accepts only these). */
+export const V2_STORY_DECISION_TYPES: Readonly<Record<string, DecisionSegmentType>> = {
+  'story.branch.v2': 'story_branch',
+  'story.dialogue-choice.v2': 'dialogue_choice',
+  'story.would-you-rather.v2': 'would_you_rather',
+};
+
+/**
+ * The decision inside one graded v2 story answer. Core has already validated
+ * the document and graded the choice id against the private rubric, so this
+ * only snapshots the public situation and the chosen option's label. Returns
+ * [] for every other kind and for anything malformed.
+ */
+export function extractV2Decisions(segment: { id: string; type: string; prompt: string; payload: unknown }, answer: unknown, lessonTitle: string | null): DecisionRecord[] {
+  const kind = V2_STORY_DECISION_TYPES[segment.type];
+  const a = obj(answer);
+  const payload = obj(segment.payload);
+  const choiceId = a ? str(a.choice) : null;
+  if (!kind || !payload || !choiceId) return [];
+  const options = (Array.isArray(payload.options) ? payload.options : Array.isArray(payload.replies) ? payload.replies : []).map(obj).filter((o): o is Dict => o !== null);
+  const chosen = options.find((option) => option.id === choiceId);
+  const choiceText = chosen ? fitSnapshot(str(chosen.label) ?? '') : null;
+  const scene = kind === 'story_branch' ? str(payload.scene) : kind === 'dialogue_choice' ? str(payload.line) : null;
+  const situation = situationOf(scene ?? segment.prompt, lessonTitle) ?? situationOf(segment.prompt, lessonTitle);
+  if (!choiceText || !situation) return [];
+  return [{
+    segment_id: segment.id, decision_point: kind === 'would_you_rather' ? 'pick' : 'choice', segment_type: kind,
+    situation_text: situation, choice_id: choiceId, choice_text: choiceText, outcome_text: null,
+  }];
+}

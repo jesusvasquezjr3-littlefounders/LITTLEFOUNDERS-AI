@@ -3826,5 +3826,3905 @@
         }
       }
     }
+  },
+  {
+    "lesson_id": "v2-first-release-mixed",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "smart-spending",
+      "lesson_id": "v2-first-release-mixed",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-needs-wants",
+        "kc-message-safety",
+        "kc-count-coins"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Market day choices",
+      "required_capabilities": [
+        "visual.speech-plate.v1",
+        "operation.step-replay.v1",
+        "visual.sort-bins.v1",
+        "operation.sort-to-bin.v1",
+        "operation.move-menu.v1",
+        "operation.justify-choice.v1",
+        "visual.message-list.v1",
+        "operation.flag-item.v1",
+        "visual.coin-tray.v1",
+        "operation.count-money.v1",
+        "visual.story-scene.v1",
+        "operation.choose-option.v1"
+      ],
+      "segments": [
+        {
+          "id": "intro-01",
+          "type": "voice.mentor-turn.v2",
+          "grading": "none",
+          "prompt": "Listen to your Mentor.",
+          "visual": {
+            "type": "speech-plate"
+          },
+          "payload": {
+            "role": "intro",
+            "narration": {
+              "mode": "differentiated",
+              "script": "Today we sort what we need from what we want, check a few messages, and pay with care."
+            },
+            "line": "Market day. Let us choose well."
+          }
+        },
+        {
+          "id": "episode-01",
+          "type": "voice.mentor-episode.v2",
+          "grading": "none",
+          "prompt": "See what happened to your Mentor.",
+          "visual": {
+            "type": "speech-plate"
+          },
+          "payload": {
+            "setup": "I had 10 coins and a list.",
+            "misjudgment": "I bought a snack first. Then I had no coins for bread.",
+            "recovery": "I returned the snack and bought bread first. Now I check my list."
+          }
+        },
+        {
+          "id": "sort-01",
+          "type": "money.needs-wants.v2",
+          "grading": "server",
+          "prompt": "Sort each thing and pick why.",
+          "visual": {
+            "type": "sort-bins"
+          },
+          "payload": {
+            "bins": [
+              {
+                "id": "bin-need",
+                "label": "Need"
+              },
+              {
+                "id": "bin-want",
+                "label": "Want"
+              },
+              {
+                "id": "bin-depends",
+                "label": "It depends"
+              }
+            ],
+            "depends_bin_id": "bin-depends",
+            "items": [
+              {
+                "id": "item-bread",
+                "label": "Bread"
+              },
+              {
+                "id": "item-sticker",
+                "label": "Sticker"
+              },
+              {
+                "id": "item-shoes",
+                "label": "New shoes"
+              }
+            ],
+            "reasons": [
+              {
+                "id": "why-every-day",
+                "label": "We use it every day"
+              },
+              {
+                "id": "why-fun",
+                "label": "It is just fun"
+              },
+              {
+                "id": "why-old-pair",
+                "label": "Only if the old pair broke"
+              }
+            ]
+          },
+          "help": [
+            "Ask: could the family go without it this week?"
+          ],
+          "item_role": "practice",
+          "knowledge_component_id": "kc-needs-wants"
+        },
+        {
+          "id": "messages-01",
+          "type": "money.scam-check.v2",
+          "grading": "server",
+          "prompt": "Mark the messages that are tricks.",
+          "visual": {
+            "type": "message-list"
+          },
+          "payload": {
+            "messages": [
+              {
+                "id": "msg-prize",
+                "sender": "Unknown number",
+                "text": "You won 500 coins! Send your password to claim them."
+              },
+              {
+                "id": "msg-coach",
+                "sender": "Coach Ana",
+                "text": "Practice moves to 4 pm on Friday."
+              },
+              {
+                "id": "msg-code",
+                "sender": "Game Team",
+                "text": "Share the code we sent you so we can fix your account."
+              },
+              {
+                "id": "msg-aunt",
+                "sender": "Aunt Rosa",
+                "text": "See you at lunch on Sunday."
+              }
+            ]
+          },
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-message-safety"
+        },
+        {
+          "id": "coins-01",
+          "type": "money.coin-tray.v2",
+          "grading": "server",
+          "prompt": "Pay 17 coins with the fewest pieces.",
+          "visual": {
+            "type": "coin-tray"
+          },
+          "payload": {
+            "currency": "coins",
+            "denominations": [
+              {
+                "value_minor": 10,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 5,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 1,
+                "kind": "coin",
+                "available": 6
+              }
+            ]
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-count-coins"
+        },
+        {
+          "id": "story-01",
+          "type": "story.branch.v2",
+          "grading": "server",
+          "prompt": "What do you do next time?",
+          "visual": {
+            "type": "story-scene"
+          },
+          "payload": {
+            "options": [
+              {
+                "id": "opt-list",
+                "label": "Write a list first"
+              },
+              {
+                "id": "opt-browse",
+                "label": "Look around first"
+              }
+            ],
+            "scene": "Next market day you have 10 coins again."
+          }
+        }
+      ],
+      "mentor_stage": {
+        "character": "liruf",
+        "scene": "diorama-b"
+      }
+    },
+    "answer_keys": {
+      "sort-01": {
+        "accepted": {
+          "item-bread": [
+            {
+              "bin": "bin-need",
+              "reason": "why-every-day"
+            }
+          ],
+          "item-sticker": [
+            {
+              "bin": "bin-want",
+              "reason": "why-fun"
+            }
+          ],
+          "item-shoes": [
+            {
+              "bin": "bin-depends",
+              "reason": "why-old-pair"
+            },
+            {
+              "bin": "bin-need",
+              "reason": "why-old-pair"
+            }
+          ]
+        }
+      },
+      "messages-01": {
+        "scam_ids": [
+          "msg-prize",
+          "msg-code"
+        ]
+      },
+      "coins-01": {
+        "target_minor": 17,
+        "fewest": true
+      },
+      "story-01": {
+        "acceptable_choice_ids": [
+          "opt-list",
+          "opt-browse"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-first-release-mixed",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "smart-spending",
+      "lesson_id": "v2-first-release-mixed",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-needs-wants",
+        "kc-message-safety",
+        "kc-count-coins"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Decisiones de mercado",
+      "required_capabilities": [
+        "visual.speech-plate.v1",
+        "operation.step-replay.v1",
+        "visual.sort-bins.v1",
+        "operation.sort-to-bin.v1",
+        "operation.move-menu.v1",
+        "operation.justify-choice.v1",
+        "visual.message-list.v1",
+        "operation.flag-item.v1",
+        "visual.coin-tray.v1",
+        "operation.count-money.v1",
+        "visual.story-scene.v1",
+        "operation.choose-option.v1"
+      ],
+      "segments": [
+        {
+          "id": "intro-01",
+          "type": "voice.mentor-turn.v2",
+          "grading": "none",
+          "prompt": "Escucha a tu Mentor.",
+          "visual": {
+            "type": "speech-plate"
+          },
+          "payload": {
+            "role": "intro",
+            "narration": {
+              "mode": "differentiated",
+              "script": "Hoy separamos lo que necesitamos de lo que queremos, revisamos mensajes y pagamos con cuidado."
+            },
+            "line": "Día de mercado. Elijamos bien."
+          }
+        },
+        {
+          "id": "episode-01",
+          "type": "voice.mentor-episode.v2",
+          "grading": "none",
+          "prompt": "Mira qué le pasó a tu Mentor.",
+          "visual": {
+            "type": "speech-plate"
+          },
+          "payload": {
+            "setup": "Tenía 10 monedas y una lista.",
+            "misjudgment": "Compré un antojo primero. Luego no tuve monedas para el pan.",
+            "recovery": "Devolví el antojo y compré pan primero. Ahora reviso mi lista."
+          }
+        },
+        {
+          "id": "sort-01",
+          "type": "money.needs-wants.v2",
+          "grading": "server",
+          "prompt": "Ordena cada cosa y elige por qué.",
+          "visual": {
+            "type": "sort-bins"
+          },
+          "payload": {
+            "bins": [
+              {
+                "id": "bin-need",
+                "label": "Necesidad"
+              },
+              {
+                "id": "bin-want",
+                "label": "Deseo"
+              },
+              {
+                "id": "bin-depends",
+                "label": "Depende"
+              }
+            ],
+            "depends_bin_id": "bin-depends",
+            "items": [
+              {
+                "id": "item-bread",
+                "label": "Pan"
+              },
+              {
+                "id": "item-sticker",
+                "label": "Estampa"
+              },
+              {
+                "id": "item-shoes",
+                "label": "Zapatos nuevos"
+              }
+            ],
+            "reasons": [
+              {
+                "id": "why-every-day",
+                "label": "Lo usamos cada día"
+              },
+              {
+                "id": "why-fun",
+                "label": "Solo es divertido"
+              },
+              {
+                "id": "why-old-pair",
+                "label": "Solo si los viejos se rompieron"
+              }
+            ]
+          },
+          "help": [
+            "Pregunta: ¿la familia podría pasar sin eso esta semana?"
+          ],
+          "item_role": "practice",
+          "knowledge_component_id": "kc-needs-wants"
+        },
+        {
+          "id": "messages-01",
+          "type": "money.scam-check.v2",
+          "grading": "server",
+          "prompt": "Marca los mensajes que son trampas.",
+          "visual": {
+            "type": "message-list"
+          },
+          "payload": {
+            "messages": [
+              {
+                "id": "msg-prize",
+                "sender": "Número desconocido",
+                "text": "¡Ganaste 500 monedas! Envía tu contraseña para cobrarlas."
+              },
+              {
+                "id": "msg-coach",
+                "sender": "Entrenadora Ana",
+                "text": "El entrenamiento pasa a las 4 pm el viernes."
+              },
+              {
+                "id": "msg-code",
+                "sender": "Equipo del juego",
+                "text": "Comparte el código que te enviamos para arreglar tu cuenta."
+              },
+              {
+                "id": "msg-aunt",
+                "sender": "Tía Rosa",
+                "text": "Nos vemos en la comida del domingo."
+              }
+            ]
+          },
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-message-safety"
+        },
+        {
+          "id": "coins-01",
+          "type": "money.coin-tray.v2",
+          "grading": "server",
+          "prompt": "Paga 17 monedas con la menor cantidad de piezas.",
+          "visual": {
+            "type": "coin-tray"
+          },
+          "payload": {
+            "currency": "coins",
+            "denominations": [
+              {
+                "value_minor": 10,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 5,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 1,
+                "kind": "coin",
+                "available": 6
+              }
+            ]
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-count-coins"
+        },
+        {
+          "id": "story-01",
+          "type": "story.branch.v2",
+          "grading": "server",
+          "prompt": "¿Qué haces la próxima vez?",
+          "visual": {
+            "type": "story-scene"
+          },
+          "payload": {
+            "options": [
+              {
+                "id": "opt-list",
+                "label": "Escribir una lista primero"
+              },
+              {
+                "id": "opt-browse",
+                "label": "Mirar primero"
+              }
+            ],
+            "scene": "El próximo día de mercado tienes otra vez 10 monedas."
+          }
+        }
+      ],
+      "mentor_stage": {
+        "character": "liruf",
+        "scene": "diorama-b"
+      }
+    },
+    "answer_keys": {
+      "sort-01": {
+        "accepted": {
+          "item-bread": [
+            {
+              "bin": "bin-need",
+              "reason": "why-every-day"
+            }
+          ],
+          "item-sticker": [
+            {
+              "bin": "bin-want",
+              "reason": "why-fun"
+            }
+          ],
+          "item-shoes": [
+            {
+              "bin": "bin-depends",
+              "reason": "why-old-pair"
+            },
+            {
+              "bin": "bin-need",
+              "reason": "why-old-pair"
+            }
+          ]
+        }
+      },
+      "messages-01": {
+        "scam_ids": [
+          "msg-prize",
+          "msg-code"
+        ]
+      },
+      "coins-01": {
+        "target_minor": 17,
+        "fewest": true
+      },
+      "story-01": {
+        "acceptable_choice_ids": [
+          "opt-list",
+          "opt-browse"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-first-release-mixed",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "smart-spending",
+      "lesson_id": "v2-first-release-mixed",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-needs-wants",
+        "kc-message-safety",
+        "kc-count-coins"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Escolhas na feira",
+      "required_capabilities": [
+        "visual.speech-plate.v1",
+        "operation.step-replay.v1",
+        "visual.sort-bins.v1",
+        "operation.sort-to-bin.v1",
+        "operation.move-menu.v1",
+        "operation.justify-choice.v1",
+        "visual.message-list.v1",
+        "operation.flag-item.v1",
+        "visual.coin-tray.v1",
+        "operation.count-money.v1",
+        "visual.story-scene.v1",
+        "operation.choose-option.v1"
+      ],
+      "segments": [
+        {
+          "id": "intro-01",
+          "type": "voice.mentor-turn.v2",
+          "grading": "none",
+          "prompt": "Ouça seu Mentor.",
+          "visual": {
+            "type": "speech-plate"
+          },
+          "payload": {
+            "role": "intro",
+            "narration": {
+              "mode": "differentiated",
+              "script": "Hoje separamos o que precisamos do que queremos, olhamos algumas mensagens e pagamos com cuidado."
+            },
+            "line": "Dia de feira. Vamos escolher bem."
+          }
+        },
+        {
+          "id": "episode-01",
+          "type": "voice.mentor-episode.v2",
+          "grading": "none",
+          "prompt": "Veja o que aconteceu com seu Mentor.",
+          "visual": {
+            "type": "speech-plate"
+          },
+          "payload": {
+            "setup": "Eu tinha 10 moedas e uma lista.",
+            "misjudgment": "Comprei um lanche primeiro. Depois não tive moedas para o pão.",
+            "recovery": "Devolvi o lanche e comprei o pão primeiro. Agora confiro minha lista."
+          }
+        },
+        {
+          "id": "sort-01",
+          "type": "money.needs-wants.v2",
+          "grading": "server",
+          "prompt": "Separe cada coisa e escolha por quê.",
+          "visual": {
+            "type": "sort-bins"
+          },
+          "payload": {
+            "bins": [
+              {
+                "id": "bin-need",
+                "label": "Necessidade"
+              },
+              {
+                "id": "bin-want",
+                "label": "Desejo"
+              },
+              {
+                "id": "bin-depends",
+                "label": "Depende"
+              }
+            ],
+            "depends_bin_id": "bin-depends",
+            "items": [
+              {
+                "id": "item-bread",
+                "label": "Pão"
+              },
+              {
+                "id": "item-sticker",
+                "label": "Figurinha"
+              },
+              {
+                "id": "item-shoes",
+                "label": "Tênis novo"
+              }
+            ],
+            "reasons": [
+              {
+                "id": "why-every-day",
+                "label": "Usamos todo dia"
+              },
+              {
+                "id": "why-fun",
+                "label": "É só diversão"
+              },
+              {
+                "id": "why-old-pair",
+                "label": "Só se o velho quebrou"
+              }
+            ]
+          },
+          "help": [
+            "Pergunte: a família ficaria sem isso esta semana?"
+          ],
+          "item_role": "practice",
+          "knowledge_component_id": "kc-needs-wants"
+        },
+        {
+          "id": "messages-01",
+          "type": "money.scam-check.v2",
+          "grading": "server",
+          "prompt": "Marque as mensagens que são armadilhas.",
+          "visual": {
+            "type": "message-list"
+          },
+          "payload": {
+            "messages": [
+              {
+                "id": "msg-prize",
+                "sender": "Número desconhecido",
+                "text": "Você ganhou 500 moedas! Envie sua senha para receber."
+              },
+              {
+                "id": "msg-coach",
+                "sender": "Técnica Ana",
+                "text": "O treino passa para as 16h na sexta."
+              },
+              {
+                "id": "msg-code",
+                "sender": "Equipe do jogo",
+                "text": "Compartilhe o código que enviamos para arrumar sua conta."
+              },
+              {
+                "id": "msg-aunt",
+                "sender": "Tia Rosa",
+                "text": "Até o almoço de domingo."
+              }
+            ]
+          },
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-message-safety"
+        },
+        {
+          "id": "coins-01",
+          "type": "money.coin-tray.v2",
+          "grading": "server",
+          "prompt": "Pague 17 moedas com o menor número de peças.",
+          "visual": {
+            "type": "coin-tray"
+          },
+          "payload": {
+            "currency": "coins",
+            "denominations": [
+              {
+                "value_minor": 10,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 5,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 1,
+                "kind": "coin",
+                "available": 6
+              }
+            ]
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-count-coins"
+        },
+        {
+          "id": "story-01",
+          "type": "story.branch.v2",
+          "grading": "server",
+          "prompt": "O que você faz da próxima vez?",
+          "visual": {
+            "type": "story-scene"
+          },
+          "payload": {
+            "options": [
+              {
+                "id": "opt-list",
+                "label": "Fazer uma lista primeiro"
+              },
+              {
+                "id": "opt-browse",
+                "label": "Olhar primeiro"
+              }
+            ],
+            "scene": "Na próxima feira você tem 10 moedas de novo."
+          }
+        }
+      ],
+      "mentor_stage": {
+        "character": "liruf",
+        "scene": "diorama-b"
+      }
+    },
+    "answer_keys": {
+      "sort-01": {
+        "accepted": {
+          "item-bread": [
+            {
+              "bin": "bin-need",
+              "reason": "why-every-day"
+            }
+          ],
+          "item-sticker": [
+            {
+              "bin": "bin-want",
+              "reason": "why-fun"
+            }
+          ],
+          "item-shoes": [
+            {
+              "bin": "bin-depends",
+              "reason": "why-old-pair"
+            },
+            {
+              "bin": "bin-need",
+              "reason": "why-old-pair"
+            }
+          ]
+        }
+      },
+      "messages-01": {
+        "scam_ids": [
+          "msg-prize",
+          "msg-code"
+        ]
+      },
+      "coins-01": {
+        "target_minor": 17,
+        "fewest": true
+      },
+      "story-01": {
+        "acceptable_choice_ids": [
+          "opt-list",
+          "opt-browse"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-first-release-logic",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "clear-thinking",
+      "lesson_id": "v2-first-release-logic",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-conditional-check",
+        "kc-sets",
+        "kc-decision-steps",
+        "kc-make-change"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Think it through",
+      "required_capabilities": [
+        "visual.rule-cards.v1",
+        "operation.flip-card.v1",
+        "visual.euler.v1",
+        "operation.place-in-region.v1",
+        "operation.move-menu.v1",
+        "visual.flowchart.v1",
+        "operation.step-flowchart.v1",
+        "visual.decision-tree.v1",
+        "visual.sort-bins.v1",
+        "operation.sort-to-bin.v1",
+        "operation.justify-choice.v1",
+        "visual.message-list.v1",
+        "operation.flag-item.v1",
+        "visual.coin-tray.v1",
+        "operation.count-money.v1",
+        "operation.make-change.v1",
+        "visual.dialogue.v1",
+        "operation.choose-option.v1",
+        "visual.would-you-rather.v1"
+      ],
+      "segments": [
+        {
+          "id": "cards-01",
+          "type": "logic.rule-checker.v2",
+          "grading": "server",
+          "prompt": "Which cards must you turn to test the rule?",
+          "visual": {
+            "type": "rule-cards"
+          },
+          "payload": {
+            "cards": [
+              {
+                "id": "card-even",
+                "face": "8"
+              },
+              {
+                "id": "card-odd",
+                "face": "5"
+              },
+              {
+                "id": "card-red",
+                "face": "Red"
+              },
+              {
+                "id": "card-blue",
+                "face": "Blue"
+              }
+            ],
+            "rule": "If a card shows an even number, its back is red."
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-conditional-check"
+        },
+        {
+          "id": "euler-01",
+          "type": "logic.euler.v2",
+          "grading": "server",
+          "prompt": "Every coin is money. Place each thing.",
+          "visual": {
+            "type": "euler"
+          },
+          "payload": {
+            "relation": "subset",
+            "sets": [
+              {
+                "id": "set-coins",
+                "label": "Coins"
+              },
+              {
+                "id": "set-money",
+                "label": "Money"
+              }
+            ],
+            "items": [
+              {
+                "id": "item-quarter",
+                "label": "Quarter"
+              },
+              {
+                "id": "item-bill",
+                "label": "Bill"
+              },
+              {
+                "id": "item-button",
+                "label": "Button"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-sets"
+        },
+        {
+          "id": "flow-01",
+          "type": "logic.flowchart.v2",
+          "grading": "server",
+          "prompt": "Follow the chart for a stormy day.",
+          "visual": {
+            "type": "flowchart"
+          },
+          "payload": {
+            "start": "q-rain",
+            "nodes": [
+              {
+                "id": "q-rain",
+                "kind": "question",
+                "yes": "out-umbrella",
+                "no": "out-cap",
+                "label": "Is it raining?"
+              },
+              {
+                "id": "out-umbrella",
+                "kind": "outcome",
+                "label": "Take an umbrella"
+              },
+              {
+                "id": "out-cap",
+                "kind": "outcome",
+                "label": "Wear a cap"
+              }
+            ],
+            "scenarios": [
+              {
+                "id": "case-stormy",
+                "label": "A stormy day"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-decision-steps"
+        },
+        {
+          "id": "spend-01",
+          "type": "money.spend-decision.v2",
+          "grading": "server",
+          "prompt": "You want a new ball. Yours still works.",
+          "visual": {
+            "type": "decision-tree"
+          },
+          "payload": {
+            "start": "q-need",
+            "nodes": [
+              {
+                "id": "q-need",
+                "kind": "question",
+                "yes": "q-enough",
+                "no": "out-wait",
+                "label": "Do I need it?"
+              },
+              {
+                "id": "q-enough",
+                "kind": "question",
+                "yes": "out-buy",
+                "no": "out-save",
+                "label": "Do I have enough?"
+              },
+              {
+                "id": "out-wait",
+                "kind": "outcome",
+                "label": "Wait a week"
+              },
+              {
+                "id": "out-buy",
+                "kind": "outcome",
+                "label": "Buy it"
+              },
+              {
+                "id": "out-save",
+                "kind": "outcome",
+                "label": "Save for it"
+              }
+            ],
+            "scenarios": [
+              {
+                "id": "case-ball",
+                "label": "A new ball"
+              }
+            ]
+          },
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-decision-steps"
+        },
+        {
+          "id": "sort-01",
+          "type": "logic.sort-by-rule.v2",
+          "grading": "server",
+          "prompt": "Sort the coin piles by the rule.",
+          "visual": {
+            "type": "sort-bins"
+          },
+          "payload": {
+            "bins": [
+              {
+                "id": "bin-even",
+                "label": "Even"
+              },
+              {
+                "id": "bin-odd",
+                "label": "Odd"
+              },
+              {
+                "id": "bin-depends",
+                "label": "It depends"
+              }
+            ],
+            "depends_bin_id": "bin-depends",
+            "items": [
+              {
+                "id": "item-four",
+                "label": "4 coins"
+              },
+              {
+                "id": "item-seven",
+                "label": "7 coins"
+              }
+            ],
+            "reasons": [
+              {
+                "id": "why-pairs",
+                "label": "They make pairs"
+              },
+              {
+                "id": "why-one-left",
+                "label": "One is left over"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-sets"
+        },
+        {
+          "id": "spot-01",
+          "type": "logic.scam-spotter.v2",
+          "grading": "server",
+          "prompt": "Which message is a trick?",
+          "visual": {
+            "type": "message-list"
+          },
+          "payload": {
+            "messages": [
+              {
+                "id": "msg-free",
+                "sender": "Prize Club",
+                "text": "Free phone! Pay 10 coins to ship it."
+              },
+              {
+                "id": "msg-teacher",
+                "sender": "Teacher Luis",
+                "text": "Bring your notebook tomorrow."
+              },
+              {
+                "id": "msg-friend",
+                "sender": "Sam",
+                "text": "Want to play after school?"
+              }
+            ]
+          }
+        },
+        {
+          "id": "change-01",
+          "type": "money.making-change.v2",
+          "grading": "server",
+          "prompt": "A juice costs 13 coins and you got 20. Give the change.",
+          "visual": {
+            "type": "coin-tray"
+          },
+          "payload": {
+            "currency": "coins",
+            "denominations": [
+              {
+                "value_minor": 10,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 5,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 1,
+                "kind": "coin",
+                "available": 6
+              }
+            ],
+            "price_minor": 13,
+            "paid_minor": 20
+          },
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-make-change"
+        },
+        {
+          "id": "reply-01",
+          "type": "story.dialogue-choice.v2",
+          "grading": "server",
+          "prompt": "How do you answer?",
+          "visual": {
+            "type": "dialogue"
+          },
+          "payload": {
+            "replies": [
+              {
+                "id": "reply-check",
+                "label": "Let me ask my family"
+              },
+              {
+                "id": "reply-yes",
+                "label": "Sure, no problem"
+              }
+            ],
+            "speaker": "Customer",
+            "line": "Can I pay you tomorrow?"
+          }
+        },
+        {
+          "id": "rather-01",
+          "type": "story.would-you-rather.v2",
+          "grading": "server",
+          "prompt": "Would you rather?",
+          "visual": {
+            "type": "would-you-rather"
+          },
+          "payload": {
+            "options": [
+              {
+                "id": "opt-now",
+                "label": "One sticker now"
+              },
+              {
+                "id": "opt-later",
+                "label": "Three stickers next week"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "cards-01": {
+        "must_flip_ids": [
+          "card-even",
+          "card-blue"
+        ]
+      },
+      "euler-01": {
+        "regions": {
+          "item-quarter": "both",
+          "item-bill": "second",
+          "item-button": "neither"
+        }
+      },
+      "flow-01": {
+        "paths": {
+          "case-stormy": [
+            "q-rain",
+            "out-umbrella"
+          ]
+        }
+      },
+      "spend-01": {
+        "paths": {
+          "case-ball": [
+            "q-need",
+            "out-wait"
+          ]
+        }
+      },
+      "sort-01": {
+        "accepted": {
+          "item-four": [
+            {
+              "bin": "bin-even",
+              "reason": "why-pairs"
+            }
+          ],
+          "item-seven": [
+            {
+              "bin": "bin-odd",
+              "reason": "why-one-left"
+            }
+          ]
+        }
+      },
+      "spot-01": {
+        "scam_ids": [
+          "msg-free"
+        ]
+      },
+      "change-01": {
+        "change_minor": 7
+      },
+      "reply-01": {
+        "acceptable_choice_ids": [
+          "reply-check",
+          "reply-yes"
+        ]
+      },
+      "rather-01": {
+        "acceptable_choice_ids": [
+          "opt-now",
+          "opt-later"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-first-release-logic",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "clear-thinking",
+      "lesson_id": "v2-first-release-logic",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-conditional-check",
+        "kc-sets",
+        "kc-decision-steps",
+        "kc-make-change"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Piénsalo bien",
+      "required_capabilities": [
+        "visual.rule-cards.v1",
+        "operation.flip-card.v1",
+        "visual.euler.v1",
+        "operation.place-in-region.v1",
+        "operation.move-menu.v1",
+        "visual.flowchart.v1",
+        "operation.step-flowchart.v1",
+        "visual.decision-tree.v1",
+        "visual.sort-bins.v1",
+        "operation.sort-to-bin.v1",
+        "operation.justify-choice.v1",
+        "visual.message-list.v1",
+        "operation.flag-item.v1",
+        "visual.coin-tray.v1",
+        "operation.count-money.v1",
+        "operation.make-change.v1",
+        "visual.dialogue.v1",
+        "operation.choose-option.v1",
+        "visual.would-you-rather.v1"
+      ],
+      "segments": [
+        {
+          "id": "cards-01",
+          "type": "logic.rule-checker.v2",
+          "grading": "server",
+          "prompt": "¿Qué tarjetas debes voltear para probar la regla?",
+          "visual": {
+            "type": "rule-cards"
+          },
+          "payload": {
+            "cards": [
+              {
+                "id": "card-even",
+                "face": "8"
+              },
+              {
+                "id": "card-odd",
+                "face": "5"
+              },
+              {
+                "id": "card-red",
+                "face": "Rojo"
+              },
+              {
+                "id": "card-blue",
+                "face": "Azul"
+              }
+            ],
+            "rule": "Si una tarjeta muestra un número par, su reverso es rojo."
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-conditional-check"
+        },
+        {
+          "id": "euler-01",
+          "type": "logic.euler.v2",
+          "grading": "server",
+          "prompt": "Toda moneda es dinero. Coloca cada cosa.",
+          "visual": {
+            "type": "euler"
+          },
+          "payload": {
+            "relation": "subset",
+            "sets": [
+              {
+                "id": "set-coins",
+                "label": "Monedas"
+              },
+              {
+                "id": "set-money",
+                "label": "Dinero"
+              }
+            ],
+            "items": [
+              {
+                "id": "item-quarter",
+                "label": "Moneda de 10"
+              },
+              {
+                "id": "item-bill",
+                "label": "Billete"
+              },
+              {
+                "id": "item-button",
+                "label": "Botón"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-sets"
+        },
+        {
+          "id": "flow-01",
+          "type": "logic.flowchart.v2",
+          "grading": "server",
+          "prompt": "Sigue el diagrama para un día de tormenta.",
+          "visual": {
+            "type": "flowchart"
+          },
+          "payload": {
+            "start": "q-rain",
+            "nodes": [
+              {
+                "id": "q-rain",
+                "kind": "question",
+                "yes": "out-umbrella",
+                "no": "out-cap",
+                "label": "¿Está lloviendo?"
+              },
+              {
+                "id": "out-umbrella",
+                "kind": "outcome",
+                "label": "Lleva paraguas"
+              },
+              {
+                "id": "out-cap",
+                "kind": "outcome",
+                "label": "Usa gorra"
+              }
+            ],
+            "scenarios": [
+              {
+                "id": "case-stormy",
+                "label": "Un día de tormenta"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-decision-steps"
+        },
+        {
+          "id": "spend-01",
+          "type": "money.spend-decision.v2",
+          "grading": "server",
+          "prompt": "Quieres un balón nuevo. El tuyo aún sirve.",
+          "visual": {
+            "type": "decision-tree"
+          },
+          "payload": {
+            "start": "q-need",
+            "nodes": [
+              {
+                "id": "q-need",
+                "kind": "question",
+                "yes": "q-enough",
+                "no": "out-wait",
+                "label": "¿Lo necesito?"
+              },
+              {
+                "id": "q-enough",
+                "kind": "question",
+                "yes": "out-buy",
+                "no": "out-save",
+                "label": "¿Me alcanza?"
+              },
+              {
+                "id": "out-wait",
+                "kind": "outcome",
+                "label": "Esperar una semana"
+              },
+              {
+                "id": "out-buy",
+                "kind": "outcome",
+                "label": "Comprarlo"
+              },
+              {
+                "id": "out-save",
+                "kind": "outcome",
+                "label": "Ahorrar para él"
+              }
+            ],
+            "scenarios": [
+              {
+                "id": "case-ball",
+                "label": "Un balón nuevo"
+              }
+            ]
+          },
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-decision-steps"
+        },
+        {
+          "id": "sort-01",
+          "type": "logic.sort-by-rule.v2",
+          "grading": "server",
+          "prompt": "Ordena las pilas de monedas con la regla.",
+          "visual": {
+            "type": "sort-bins"
+          },
+          "payload": {
+            "bins": [
+              {
+                "id": "bin-even",
+                "label": "Par"
+              },
+              {
+                "id": "bin-odd",
+                "label": "Impar"
+              },
+              {
+                "id": "bin-depends",
+                "label": "Depende"
+              }
+            ],
+            "depends_bin_id": "bin-depends",
+            "items": [
+              {
+                "id": "item-four",
+                "label": "4 monedas"
+              },
+              {
+                "id": "item-seven",
+                "label": "7 monedas"
+              }
+            ],
+            "reasons": [
+              {
+                "id": "why-pairs",
+                "label": "Forman pares"
+              },
+              {
+                "id": "why-one-left",
+                "label": "Sobra una"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-sets"
+        },
+        {
+          "id": "spot-01",
+          "type": "logic.scam-spotter.v2",
+          "grading": "server",
+          "prompt": "¿Qué mensaje es una trampa?",
+          "visual": {
+            "type": "message-list"
+          },
+          "payload": {
+            "messages": [
+              {
+                "id": "msg-free",
+                "sender": "Club de Premios",
+                "text": "¡Teléfono gratis! Paga 10 monedas de envío."
+              },
+              {
+                "id": "msg-teacher",
+                "sender": "Maestro Luis",
+                "text": "Trae tu cuaderno mañana."
+              },
+              {
+                "id": "msg-friend",
+                "sender": "Sam",
+                "text": "¿Jugamos después de clases?"
+              }
+            ]
+          }
+        },
+        {
+          "id": "change-01",
+          "type": "money.making-change.v2",
+          "grading": "server",
+          "prompt": "Un jugo cuesta 13 monedas y te dieron 20. Da el cambio.",
+          "visual": {
+            "type": "coin-tray"
+          },
+          "payload": {
+            "currency": "coins",
+            "denominations": [
+              {
+                "value_minor": 10,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 5,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 1,
+                "kind": "coin",
+                "available": 6
+              }
+            ],
+            "price_minor": 13,
+            "paid_minor": 20
+          },
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-make-change"
+        },
+        {
+          "id": "reply-01",
+          "type": "story.dialogue-choice.v2",
+          "grading": "server",
+          "prompt": "¿Cómo respondes?",
+          "visual": {
+            "type": "dialogue"
+          },
+          "payload": {
+            "replies": [
+              {
+                "id": "reply-check",
+                "label": "Déjame preguntar en casa"
+              },
+              {
+                "id": "reply-yes",
+                "label": "Claro, sin problema"
+              }
+            ],
+            "speaker": "Cliente",
+            "line": "¿Te puedo pagar mañana?"
+          }
+        },
+        {
+          "id": "rather-01",
+          "type": "story.would-you-rather.v2",
+          "grading": "server",
+          "prompt": "¿Qué prefieres?",
+          "visual": {
+            "type": "would-you-rather"
+          },
+          "payload": {
+            "options": [
+              {
+                "id": "opt-now",
+                "label": "Una estampa ahora"
+              },
+              {
+                "id": "opt-later",
+                "label": "Tres estampas la próxima semana"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "cards-01": {
+        "must_flip_ids": [
+          "card-even",
+          "card-blue"
+        ]
+      },
+      "euler-01": {
+        "regions": {
+          "item-quarter": "both",
+          "item-bill": "second",
+          "item-button": "neither"
+        }
+      },
+      "flow-01": {
+        "paths": {
+          "case-stormy": [
+            "q-rain",
+            "out-umbrella"
+          ]
+        }
+      },
+      "spend-01": {
+        "paths": {
+          "case-ball": [
+            "q-need",
+            "out-wait"
+          ]
+        }
+      },
+      "sort-01": {
+        "accepted": {
+          "item-four": [
+            {
+              "bin": "bin-even",
+              "reason": "why-pairs"
+            }
+          ],
+          "item-seven": [
+            {
+              "bin": "bin-odd",
+              "reason": "why-one-left"
+            }
+          ]
+        }
+      },
+      "spot-01": {
+        "scam_ids": [
+          "msg-free"
+        ]
+      },
+      "change-01": {
+        "change_minor": 7
+      },
+      "reply-01": {
+        "acceptable_choice_ids": [
+          "reply-check",
+          "reply-yes"
+        ]
+      },
+      "rather-01": {
+        "acceptable_choice_ids": [
+          "opt-now",
+          "opt-later"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-first-release-logic",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "clear-thinking",
+      "lesson_id": "v2-first-release-logic",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-conditional-check",
+        "kc-sets",
+        "kc-decision-steps",
+        "kc-make-change"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Pense com calma",
+      "required_capabilities": [
+        "visual.rule-cards.v1",
+        "operation.flip-card.v1",
+        "visual.euler.v1",
+        "operation.place-in-region.v1",
+        "operation.move-menu.v1",
+        "visual.flowchart.v1",
+        "operation.step-flowchart.v1",
+        "visual.decision-tree.v1",
+        "visual.sort-bins.v1",
+        "operation.sort-to-bin.v1",
+        "operation.justify-choice.v1",
+        "visual.message-list.v1",
+        "operation.flag-item.v1",
+        "visual.coin-tray.v1",
+        "operation.count-money.v1",
+        "operation.make-change.v1",
+        "visual.dialogue.v1",
+        "operation.choose-option.v1",
+        "visual.would-you-rather.v1"
+      ],
+      "segments": [
+        {
+          "id": "cards-01",
+          "type": "logic.rule-checker.v2",
+          "grading": "server",
+          "prompt": "Quais cartas você precisa virar para testar a regra?",
+          "visual": {
+            "type": "rule-cards"
+          },
+          "payload": {
+            "cards": [
+              {
+                "id": "card-even",
+                "face": "8"
+              },
+              {
+                "id": "card-odd",
+                "face": "5"
+              },
+              {
+                "id": "card-red",
+                "face": "Vermelho"
+              },
+              {
+                "id": "card-blue",
+                "face": "Azul"
+              }
+            ],
+            "rule": "Se uma carta mostra um número par, o verso é vermelho."
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-conditional-check"
+        },
+        {
+          "id": "euler-01",
+          "type": "logic.euler.v2",
+          "grading": "server",
+          "prompt": "Toda moeda é dinheiro. Coloque cada coisa.",
+          "visual": {
+            "type": "euler"
+          },
+          "payload": {
+            "relation": "subset",
+            "sets": [
+              {
+                "id": "set-coins",
+                "label": "Moedas"
+              },
+              {
+                "id": "set-money",
+                "label": "Dinheiro"
+              }
+            ],
+            "items": [
+              {
+                "id": "item-quarter",
+                "label": "Moeda de 10"
+              },
+              {
+                "id": "item-bill",
+                "label": "Nota"
+              },
+              {
+                "id": "item-button",
+                "label": "Botão"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-sets"
+        },
+        {
+          "id": "flow-01",
+          "type": "logic.flowchart.v2",
+          "grading": "server",
+          "prompt": "Siga o diagrama para um dia de tempestade.",
+          "visual": {
+            "type": "flowchart"
+          },
+          "payload": {
+            "start": "q-rain",
+            "nodes": [
+              {
+                "id": "q-rain",
+                "kind": "question",
+                "yes": "out-umbrella",
+                "no": "out-cap",
+                "label": "Está chovendo?"
+              },
+              {
+                "id": "out-umbrella",
+                "kind": "outcome",
+                "label": "Leve guarda-chuva"
+              },
+              {
+                "id": "out-cap",
+                "kind": "outcome",
+                "label": "Use boné"
+              }
+            ],
+            "scenarios": [
+              {
+                "id": "case-stormy",
+                "label": "Um dia de tempestade"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-decision-steps"
+        },
+        {
+          "id": "spend-01",
+          "type": "money.spend-decision.v2",
+          "grading": "server",
+          "prompt": "Você quer uma bola nova. A sua ainda funciona.",
+          "visual": {
+            "type": "decision-tree"
+          },
+          "payload": {
+            "start": "q-need",
+            "nodes": [
+              {
+                "id": "q-need",
+                "kind": "question",
+                "yes": "q-enough",
+                "no": "out-wait",
+                "label": "Eu preciso?"
+              },
+              {
+                "id": "q-enough",
+                "kind": "question",
+                "yes": "out-buy",
+                "no": "out-save",
+                "label": "Tenho o suficiente?"
+              },
+              {
+                "id": "out-wait",
+                "kind": "outcome",
+                "label": "Esperar uma semana"
+              },
+              {
+                "id": "out-buy",
+                "kind": "outcome",
+                "label": "Comprar"
+              },
+              {
+                "id": "out-save",
+                "kind": "outcome",
+                "label": "Guardar para ela"
+              }
+            ],
+            "scenarios": [
+              {
+                "id": "case-ball",
+                "label": "Uma bola nova"
+              }
+            ]
+          },
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-decision-steps"
+        },
+        {
+          "id": "sort-01",
+          "type": "logic.sort-by-rule.v2",
+          "grading": "server",
+          "prompt": "Separe as pilhas de moedas pela regra.",
+          "visual": {
+            "type": "sort-bins"
+          },
+          "payload": {
+            "bins": [
+              {
+                "id": "bin-even",
+                "label": "Par"
+              },
+              {
+                "id": "bin-odd",
+                "label": "Ímpar"
+              },
+              {
+                "id": "bin-depends",
+                "label": "Depende"
+              }
+            ],
+            "depends_bin_id": "bin-depends",
+            "items": [
+              {
+                "id": "item-four",
+                "label": "4 moedas"
+              },
+              {
+                "id": "item-seven",
+                "label": "7 moedas"
+              }
+            ],
+            "reasons": [
+              {
+                "id": "why-pairs",
+                "label": "Formam pares"
+              },
+              {
+                "id": "why-one-left",
+                "label": "Sobra uma"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-sets"
+        },
+        {
+          "id": "spot-01",
+          "type": "logic.scam-spotter.v2",
+          "grading": "server",
+          "prompt": "Qual mensagem é uma armadilha?",
+          "visual": {
+            "type": "message-list"
+          },
+          "payload": {
+            "messages": [
+              {
+                "id": "msg-free",
+                "sender": "Clube de Prêmios",
+                "text": "Celular grátis! Pague 10 moedas de frete."
+              },
+              {
+                "id": "msg-teacher",
+                "sender": "Professor Luís",
+                "text": "Traga seu caderno amanhã."
+              },
+              {
+                "id": "msg-friend",
+                "sender": "Sam",
+                "text": "Vamos brincar depois da aula?"
+              }
+            ]
+          }
+        },
+        {
+          "id": "change-01",
+          "type": "money.making-change.v2",
+          "grading": "server",
+          "prompt": "Um suco custa 13 moedas e você recebeu 20. Dê o troco.",
+          "visual": {
+            "type": "coin-tray"
+          },
+          "payload": {
+            "currency": "coins",
+            "denominations": [
+              {
+                "value_minor": 10,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 5,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 1,
+                "kind": "coin",
+                "available": 6
+              }
+            ],
+            "price_minor": 13,
+            "paid_minor": 20
+          },
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-make-change"
+        },
+        {
+          "id": "reply-01",
+          "type": "story.dialogue-choice.v2",
+          "grading": "server",
+          "prompt": "Como você responde?",
+          "visual": {
+            "type": "dialogue"
+          },
+          "payload": {
+            "replies": [
+              {
+                "id": "reply-check",
+                "label": "Vou perguntar em casa"
+              },
+              {
+                "id": "reply-yes",
+                "label": "Claro, sem problema"
+              }
+            ],
+            "speaker": "Cliente",
+            "line": "Posso te pagar amanhã?"
+          }
+        },
+        {
+          "id": "rather-01",
+          "type": "story.would-you-rather.v2",
+          "grading": "server",
+          "prompt": "O que você prefere?",
+          "visual": {
+            "type": "would-you-rather"
+          },
+          "payload": {
+            "options": [
+              {
+                "id": "opt-now",
+                "label": "Uma figurinha agora"
+              },
+              {
+                "id": "opt-later",
+                "label": "Três figurinhas semana que vem"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "cards-01": {
+        "must_flip_ids": [
+          "card-even",
+          "card-blue"
+        ]
+      },
+      "euler-01": {
+        "regions": {
+          "item-quarter": "both",
+          "item-bill": "second",
+          "item-button": "neither"
+        }
+      },
+      "flow-01": {
+        "paths": {
+          "case-stormy": [
+            "q-rain",
+            "out-umbrella"
+          ]
+        }
+      },
+      "spend-01": {
+        "paths": {
+          "case-ball": [
+            "q-need",
+            "out-wait"
+          ]
+        }
+      },
+      "sort-01": {
+        "accepted": {
+          "item-four": [
+            {
+              "bin": "bin-even",
+              "reason": "why-pairs"
+            }
+          ],
+          "item-seven": [
+            {
+              "bin": "bin-odd",
+              "reason": "why-one-left"
+            }
+          ]
+        }
+      },
+      "spot-01": {
+        "scam_ids": [
+          "msg-free"
+        ]
+      },
+      "change-01": {
+        "change_minor": 7
+      },
+      "reply-01": {
+        "acceptable_choice_ids": [
+          "reply-check",
+          "reply-yes"
+        ]
+      },
+      "rather-01": {
+        "acceptable_choice_ids": [
+          "opt-now",
+          "opt-later"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-teaching-charts",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "reading-money-charts",
+      "lesson_id": "v2-teaching-charts",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-money-flow",
+        "kc-running-balance"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Read your money charts",
+      "required_capabilities": [
+        "visual.sankey.v1",
+        "operation.show-table.v1",
+        "visual.waterfall.v1",
+        "operation.choose-option.v1",
+        "visual.step.v1",
+        "visual.calendar-heatmap.v1",
+        "visual.stat-tile.v1"
+      ],
+      "segments": [
+        {
+          "id": "flow-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Follow where 100 coins went.",
+          "visual": {
+            "type": "sankey"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "nodes": [
+                {
+                  "id": "node-income",
+                  "label": "Income"
+                },
+                {
+                  "id": "node-save",
+                  "label": "Save"
+                },
+                {
+                  "id": "node-spend",
+                  "label": "Spend"
+                },
+                {
+                  "id": "node-share",
+                  "label": "Share"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-income",
+                  "to": "node-save",
+                  "value": 30
+                },
+                {
+                  "from": "node-income",
+                  "to": "node-spend",
+                  "value": 50
+                },
+                {
+                  "from": "node-income",
+                  "to": "node-share",
+                  "value": 20
+                }
+              ]
+            },
+            "title": "Where the coins went"
+          },
+          "knowledge_component_id": "kc-money-flow"
+        },
+        {
+          "id": "balance-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Read the steps from left to right.",
+          "visual": {
+            "type": "waterfall"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "step-allowance",
+                  "label": "Allowance"
+                },
+                {
+                  "id": "step-snacks",
+                  "label": "Snacks"
+                },
+                {
+                  "id": "step-gift",
+                  "label": "Gift"
+                },
+                {
+                  "id": "step-chores",
+                  "label": "Chores"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-change",
+                  "values": [
+                    50,
+                    -15,
+                    -10,
+                    20
+                  ],
+                  "label": "Change"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "opt-45",
+                  "label": "45 coins"
+                },
+                {
+                  "id": "opt-55",
+                  "label": "55 coins"
+                },
+                {
+                  "id": "opt-35",
+                  "label": "35 coins"
+                }
+              ],
+              "prompt": "What is the balance at the end?"
+            },
+            "title": "How the balance changed"
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-running-balance"
+        },
+        {
+          "id": "rate-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "The savings rate changes in steps.",
+          "visual": {
+            "type": "step"
+          },
+          "payload": {
+            "data": {
+              "unit": "percent",
+              "categories": [
+                {
+                  "id": "month-1",
+                  "label": "Month 1"
+                },
+                {
+                  "id": "month-2",
+                  "label": "Month 2"
+                },
+                {
+                  "id": "month-3",
+                  "label": "Month 3"
+                },
+                {
+                  "id": "month-4",
+                  "label": "Month 4"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-rate",
+                  "values": [
+                    2,
+                    2,
+                    3,
+                    3
+                  ],
+                  "label": "Rate"
+                }
+              ]
+            },
+            "title": "Savings rate"
+          }
+        },
+        {
+          "id": "days-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Darker days had more lessons.",
+          "visual": {
+            "type": "calendar-heatmap"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "days": [
+                {
+                  "date": "2026-09-07",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-08",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-09",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-10",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-11",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-12",
+                  "value": 3
+                },
+                {
+                  "date": "2026-09-13",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-14",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-15",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-16",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-17",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-18",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-19",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-20",
+                  "value": 1
+                }
+              ]
+            },
+            "title": "Two weeks of practice"
+          }
+        },
+        {
+          "id": "total-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "One number can sum up the month.",
+          "visual": {
+            "type": "stat-tile"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "stat": {
+                "value": 120,
+                "delta": 15
+              }
+            },
+            "title": "Saved this month"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "balance-01": {
+        "acceptable_choice_ids": [
+          "opt-45"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-teaching-charts",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "reading-money-charts",
+      "lesson_id": "v2-teaching-charts",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-money-flow",
+        "kc-running-balance"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Lee tus gráficas de dinero",
+      "required_capabilities": [
+        "visual.sankey.v1",
+        "operation.show-table.v1",
+        "visual.waterfall.v1",
+        "operation.choose-option.v1",
+        "visual.step.v1",
+        "visual.calendar-heatmap.v1",
+        "visual.stat-tile.v1"
+      ],
+      "segments": [
+        {
+          "id": "flow-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Sigue a dónde fueron 100 monedas.",
+          "visual": {
+            "type": "sankey"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "nodes": [
+                {
+                  "id": "node-income",
+                  "label": "Ingreso"
+                },
+                {
+                  "id": "node-save",
+                  "label": "Guardar"
+                },
+                {
+                  "id": "node-spend",
+                  "label": "Gastar"
+                },
+                {
+                  "id": "node-share",
+                  "label": "Compartir"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-income",
+                  "to": "node-save",
+                  "value": 30
+                },
+                {
+                  "from": "node-income",
+                  "to": "node-spend",
+                  "value": 50
+                },
+                {
+                  "from": "node-income",
+                  "to": "node-share",
+                  "value": 20
+                }
+              ]
+            },
+            "title": "A dónde fueron"
+          },
+          "knowledge_component_id": "kc-money-flow"
+        },
+        {
+          "id": "balance-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Lee los pasos de izquierda a derecha.",
+          "visual": {
+            "type": "waterfall"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "step-allowance",
+                  "label": "Domingo"
+                },
+                {
+                  "id": "step-snacks",
+                  "label": "Botanas"
+                },
+                {
+                  "id": "step-gift",
+                  "label": "Regalo"
+                },
+                {
+                  "id": "step-chores",
+                  "label": "Tareas"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-change",
+                  "values": [
+                    50,
+                    -15,
+                    -10,
+                    20
+                  ],
+                  "label": "Cambio"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "opt-45",
+                  "label": "45 monedas"
+                },
+                {
+                  "id": "opt-55",
+                  "label": "55 monedas"
+                },
+                {
+                  "id": "opt-35",
+                  "label": "35 monedas"
+                }
+              ],
+              "prompt": "¿Cuál es el saldo al final?"
+            },
+            "title": "Cómo cambió el saldo"
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-running-balance"
+        },
+        {
+          "id": "rate-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "La tasa de ahorro cambia por escalones.",
+          "visual": {
+            "type": "step"
+          },
+          "payload": {
+            "data": {
+              "unit": "percent",
+              "categories": [
+                {
+                  "id": "month-1",
+                  "label": "Mes 1"
+                },
+                {
+                  "id": "month-2",
+                  "label": "Mes 2"
+                },
+                {
+                  "id": "month-3",
+                  "label": "Mes 3"
+                },
+                {
+                  "id": "month-4",
+                  "label": "Mes 4"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-rate",
+                  "values": [
+                    2,
+                    2,
+                    3,
+                    3
+                  ],
+                  "label": "Tasa"
+                }
+              ]
+            },
+            "title": "Tasa de ahorro"
+          }
+        },
+        {
+          "id": "days-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Los días más oscuros tuvieron más lecciones.",
+          "visual": {
+            "type": "calendar-heatmap"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "days": [
+                {
+                  "date": "2026-09-07",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-08",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-09",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-10",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-11",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-12",
+                  "value": 3
+                },
+                {
+                  "date": "2026-09-13",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-14",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-15",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-16",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-17",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-18",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-19",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-20",
+                  "value": 1
+                }
+              ]
+            },
+            "title": "Dos semanas de práctica"
+          }
+        },
+        {
+          "id": "total-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Un número puede resumir el mes.",
+          "visual": {
+            "type": "stat-tile"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "stat": {
+                "value": 120,
+                "delta": 15
+              }
+            },
+            "title": "Ahorrado este mes"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "balance-01": {
+        "acceptable_choice_ids": [
+          "opt-45"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-teaching-charts",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "reading-money-charts",
+      "lesson_id": "v2-teaching-charts",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-money-flow",
+        "kc-running-balance"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Leia seus gráficos de dinheiro",
+      "required_capabilities": [
+        "visual.sankey.v1",
+        "operation.show-table.v1",
+        "visual.waterfall.v1",
+        "operation.choose-option.v1",
+        "visual.step.v1",
+        "visual.calendar-heatmap.v1",
+        "visual.stat-tile.v1"
+      ],
+      "segments": [
+        {
+          "id": "flow-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Siga para onde foram 100 moedas.",
+          "visual": {
+            "type": "sankey"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "nodes": [
+                {
+                  "id": "node-income",
+                  "label": "Renda"
+                },
+                {
+                  "id": "node-save",
+                  "label": "Guardar"
+                },
+                {
+                  "id": "node-spend",
+                  "label": "Gastar"
+                },
+                {
+                  "id": "node-share",
+                  "label": "Compartilhar"
+                }
+              ],
+              "links": [
+                {
+                  "from": "node-income",
+                  "to": "node-save",
+                  "value": 30
+                },
+                {
+                  "from": "node-income",
+                  "to": "node-spend",
+                  "value": 50
+                },
+                {
+                  "from": "node-income",
+                  "to": "node-share",
+                  "value": 20
+                }
+              ]
+            },
+            "title": "Para onde foram"
+          },
+          "knowledge_component_id": "kc-money-flow"
+        },
+        {
+          "id": "balance-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Leia os passos da esquerda para a direita.",
+          "visual": {
+            "type": "waterfall"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "step-allowance",
+                  "label": "Mesada"
+                },
+                {
+                  "id": "step-snacks",
+                  "label": "Lanches"
+                },
+                {
+                  "id": "step-gift",
+                  "label": "Presente"
+                },
+                {
+                  "id": "step-chores",
+                  "label": "Tarefas"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-change",
+                  "values": [
+                    50,
+                    -15,
+                    -10,
+                    20
+                  ],
+                  "label": "Mudança"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "opt-45",
+                  "label": "45 moedas"
+                },
+                {
+                  "id": "opt-55",
+                  "label": "55 moedas"
+                },
+                {
+                  "id": "opt-35",
+                  "label": "35 moedas"
+                }
+              ],
+              "prompt": "Qual é o saldo no final?"
+            },
+            "title": "Como o saldo mudou"
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-running-balance"
+        },
+        {
+          "id": "rate-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "A taxa de poupança muda em degraus.",
+          "visual": {
+            "type": "step"
+          },
+          "payload": {
+            "data": {
+              "unit": "percent",
+              "categories": [
+                {
+                  "id": "month-1",
+                  "label": "Mês 1"
+                },
+                {
+                  "id": "month-2",
+                  "label": "Mês 2"
+                },
+                {
+                  "id": "month-3",
+                  "label": "Mês 3"
+                },
+                {
+                  "id": "month-4",
+                  "label": "Mês 4"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-rate",
+                  "values": [
+                    2,
+                    2,
+                    3,
+                    3
+                  ],
+                  "label": "Taxa"
+                }
+              ]
+            },
+            "title": "Taxa de poupança"
+          }
+        },
+        {
+          "id": "days-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Os dias mais escuros tiveram mais lições.",
+          "visual": {
+            "type": "calendar-heatmap"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "days": [
+                {
+                  "date": "2026-09-07",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-08",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-09",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-10",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-11",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-12",
+                  "value": 3
+                },
+                {
+                  "date": "2026-09-13",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-14",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-15",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-16",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-17",
+                  "value": 1
+                },
+                {
+                  "date": "2026-09-18",
+                  "value": 2
+                },
+                {
+                  "date": "2026-09-19",
+                  "value": 0
+                },
+                {
+                  "date": "2026-09-20",
+                  "value": 1
+                }
+              ]
+            },
+            "title": "Duas semanas de prática"
+          }
+        },
+        {
+          "id": "total-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Um número pode resumir o mês.",
+          "visual": {
+            "type": "stat-tile"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "stat": {
+                "value": 120,
+                "delta": 15
+              }
+            },
+            "title": "Guardado este mês"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "balance-01": {
+        "acceptable_choice_ids": [
+          "opt-45"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-concept-boards",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "money-models",
+      "lesson_id": "v2-concept-boards",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-amortization",
+        "kc-supply-demand",
+        "kc-opportunity-cost",
+        "kc-inflation",
+        "kc-rule-of-72",
+        "kc-debt-payoff",
+        "kc-diversification",
+        "kc-unit-economics"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Money models",
+      "required_capabilities": [
+        "visual.amortization.v1",
+        "operation.step-replay.v1",
+        "operation.number-input.v1",
+        "visual.supply-demand.v1",
+        "operation.drag-point.v1",
+        "operation.curve-shift.v1",
+        "visual.token-chooser.v1",
+        "operation.trade-off-chooser.v1",
+        "visual.inflation.v1",
+        "operation.parameter-slider.v1",
+        "operation.scale-toggle.v1",
+        "operation.before-after.v1",
+        "operation.reactive-text.v1",
+        "visual.doubling.v1",
+        "operation.threshold-marker.v1",
+        "visual.debt-race.v1",
+        "operation.what-if-branch.v1",
+        "operation.ghost-trace.v1",
+        "visual.portfolio.v1",
+        "operation.reallocate.v1",
+        "operation.linked-representations.v1",
+        "visual.waterfall.v1",
+        "operation.guided-sandbox.v1",
+        "operation.running-ledger.v1"
+      ],
+      "segments": [
+        {
+          "id": "loan-01",
+          "type": "money.amortization.v2",
+          "grading": "server",
+          "prompt": "Scrub to month 6. How much is still owed after that payment?",
+          "visual": {
+            "type": "amortization"
+          },
+          "payload": {
+            "currency": "coins",
+            "principal_minor": 1200,
+            "rate_bps": 1200,
+            "months": 12
+          },
+          "help": [
+            "Start with what was owed, then take away what paid off the loan."
+          ],
+          "item_role": "practice",
+          "knowledge_component_id": "kc-amortization"
+        },
+        {
+          "id": "market-01",
+          "type": "econ.supply-demand.v2",
+          "grading": "server",
+          "prompt": "A heat wave: more people want lemonade. Move one curve one step, then say what the price does.",
+          "visual": {
+            "type": "supply-demand"
+          },
+          "payload": {
+            "demand": {
+              "intercept": 100,
+              "slope": 2
+            },
+            "supply": {
+              "intercept": 10,
+              "slope": 1
+            },
+            "shift_step": 10,
+            "max_shift": 2,
+            "labels": {
+              "price": "Price",
+              "quantity": "Cups",
+              "demand": "Want to buy",
+              "supply": "Want to sell"
+            }
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-supply-demand"
+        },
+        {
+          "id": "tokens-01",
+          "type": "money.opportunity-cost.v2",
+          "grading": "none",
+          "prompt": "You have 3 tokens. Pick what matters most.",
+          "visual": {
+            "type": "token-chooser"
+          },
+          "payload": {
+            "tokens": 3,
+            "options": [
+              {
+                "id": "opt-movie",
+                "cost": 2,
+                "label": "Movie"
+              },
+              {
+                "id": "opt-snack",
+                "cost": 1,
+                "label": "Snack"
+              },
+              {
+                "id": "opt-game",
+                "cost": 2,
+                "label": "Game"
+              },
+              {
+                "id": "opt-book",
+                "cost": 1,
+                "label": "Book"
+              },
+              {
+                "id": "opt-save",
+                "cost": 1,
+                "label": "Save it"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-opportunity-cost"
+        },
+        {
+          "id": "prices-01",
+          "type": "money.inflation.v2",
+          "grading": "server",
+          "prompt": "Pick a yearly price rise and a number of years. Guess what a 100-coin item will cost.",
+          "visual": {
+            "type": "inflation"
+          },
+          "payload": {
+            "currency": "coins",
+            "price_minor": 100,
+            "min_rate_bps": 100,
+            "max_rate_bps": 1000,
+            "rate_step_bps": 100,
+            "min_years": 5,
+            "max_years": 30,
+            "year_step": 5,
+            "prediction_step_minor": 10,
+            "prediction_max_minor": 2000
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-inflation"
+        },
+        {
+          "id": "double-01",
+          "type": "money.rule-of-72.v2",
+          "grading": "server",
+          "prompt": "Pick a growth rate. Use the rule of 72 to guess the years to double.",
+          "visual": {
+            "type": "doubling"
+          },
+          "payload": {
+            "currency": "coins",
+            "principal_minor": 100,
+            "min_rate_bps": 200,
+            "max_rate_bps": 1200,
+            "rate_step_bps": 100
+          },
+          "help": [
+            "Divide 72 by the yearly rate."
+          ],
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-rule-of-72"
+        },
+        {
+          "id": "debts-01",
+          "type": "money.debt-payoff.v2",
+          "grading": "server",
+          "prompt": "Try both plans. Which one pays the least interest?",
+          "visual": {
+            "type": "debt-race"
+          },
+          "payload": {
+            "currency": "coins",
+            "budget_minor": 150,
+            "debts": [
+              {
+                "id": "debt-card",
+                "balance_minor": 1000,
+                "rate_bps": 2400,
+                "minimum_minor": 30,
+                "label": "Card"
+              },
+              {
+                "id": "debt-loan",
+                "balance_minor": 300,
+                "rate_bps": 600,
+                "minimum_minor": 20,
+                "label": "Loan"
+              }
+            ]
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-debt-payoff"
+        },
+        {
+          "id": "mix-01",
+          "type": "money.diversification.v2",
+          "grading": "server",
+          "prompt": "Spread your money so risk is at most 10% and return is at least 4.5%.",
+          "visual": {
+            "type": "portfolio"
+          },
+          "payload": {
+            "assets": [
+              {
+                "id": "asset-stocks",
+                "return_bps": 800,
+                "risk_bps": 2000,
+                "label": "Stocks"
+              },
+              {
+                "id": "asset-bonds",
+                "return_bps": 300,
+                "risk_bps": 600,
+                "label": "Bonds"
+              },
+              {
+                "id": "asset-cash",
+                "return_bps": 100,
+                "risk_bps": 0,
+                "label": "Cash"
+              }
+            ],
+            "step": 10
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-diversification"
+        },
+        {
+          "id": "stand-01",
+          "type": "money.lemonade-stand.v2",
+          "grading": "server",
+          "prompt": "Run your stand for a few days. Find a price and cup count that earns at least 250 coins.",
+          "visual": {
+            "type": "lemonade-stand"
+          },
+          "payload": {
+            "currency": "coins",
+            "cost_per_cup_minor": 2,
+            "fixed_cost_minor": 10,
+            "max_price_minor": 20,
+            "price_step_minor": 2,
+            "demand_at_zero": 60,
+            "cups_lost_per_step": 5,
+            "max_cups": 60
+          },
+          "help": [
+            "A lower price sells more cups, but each cup earns less."
+          ],
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-unit-economics"
+        }
+      ]
+    },
+    "answer_keys": {
+      "loan-01": {
+        "month": 6
+      },
+      "market-01": {
+        "curve": "demand",
+        "direction": 1
+      },
+      "prices-01": {
+        "tolerance_minor": 20
+      },
+      "double-01": {
+        "tolerance_years": 1
+      },
+      "debts-01": {
+        "ask": "least_interest"
+      },
+      "mix-01": {
+        "max_risk_bps": 1000,
+        "min_return_bps": 450
+      },
+      "stand-01": {
+        "target_profit_minor": 250
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-concept-boards",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "money-models",
+      "lesson_id": "v2-concept-boards",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-amortization",
+        "kc-supply-demand",
+        "kc-opportunity-cost",
+        "kc-inflation",
+        "kc-rule-of-72",
+        "kc-debt-payoff",
+        "kc-diversification",
+        "kc-unit-economics"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Modelos de dinero",
+      "required_capabilities": [
+        "visual.amortization.v1",
+        "operation.step-replay.v1",
+        "operation.number-input.v1",
+        "visual.supply-demand.v1",
+        "operation.drag-point.v1",
+        "operation.curve-shift.v1",
+        "visual.token-chooser.v1",
+        "operation.trade-off-chooser.v1",
+        "visual.inflation.v1",
+        "operation.parameter-slider.v1",
+        "operation.scale-toggle.v1",
+        "operation.before-after.v1",
+        "operation.reactive-text.v1",
+        "visual.doubling.v1",
+        "operation.threshold-marker.v1",
+        "visual.debt-race.v1",
+        "operation.what-if-branch.v1",
+        "operation.ghost-trace.v1",
+        "visual.portfolio.v1",
+        "operation.reallocate.v1",
+        "operation.linked-representations.v1",
+        "visual.waterfall.v1",
+        "operation.guided-sandbox.v1",
+        "operation.running-ledger.v1"
+      ],
+      "segments": [
+        {
+          "id": "loan-01",
+          "type": "money.amortization.v2",
+          "grading": "server",
+          "prompt": "Avanza al mes 6. ¿Cuánto se debe después de ese pago?",
+          "visual": {
+            "type": "amortization"
+          },
+          "payload": {
+            "currency": "coins",
+            "principal_minor": 1200,
+            "rate_bps": 1200,
+            "months": 12
+          },
+          "help": [
+            "Empieza con lo que se debía y resta el abono a la deuda."
+          ],
+          "item_role": "practice",
+          "knowledge_component_id": "kc-amortization"
+        },
+        {
+          "id": "market-01",
+          "type": "econ.supply-demand.v2",
+          "grading": "server",
+          "prompt": "Hace mucho calor: más gente quiere limonada. Mueve una curva un paso y di qué pasa con el precio.",
+          "visual": {
+            "type": "supply-demand"
+          },
+          "payload": {
+            "demand": {
+              "intercept": 100,
+              "slope": 2
+            },
+            "supply": {
+              "intercept": 10,
+              "slope": 1
+            },
+            "shift_step": 10,
+            "max_shift": 2,
+            "labels": {
+              "price": "Precio",
+              "quantity": "Vasos",
+              "demand": "Quieren comprar",
+              "supply": "Quieren vender"
+            }
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-supply-demand"
+        },
+        {
+          "id": "tokens-01",
+          "type": "money.opportunity-cost.v2",
+          "grading": "none",
+          "prompt": "Tienes 3 fichas. Elige lo que más te importa.",
+          "visual": {
+            "type": "token-chooser"
+          },
+          "payload": {
+            "tokens": 3,
+            "options": [
+              {
+                "id": "opt-movie",
+                "cost": 2,
+                "label": "Película"
+              },
+              {
+                "id": "opt-snack",
+                "cost": 1,
+                "label": "Botana"
+              },
+              {
+                "id": "opt-game",
+                "cost": 2,
+                "label": "Juego"
+              },
+              {
+                "id": "opt-book",
+                "cost": 1,
+                "label": "Libro"
+              },
+              {
+                "id": "opt-save",
+                "cost": 1,
+                "label": "Ahorrar"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-opportunity-cost"
+        },
+        {
+          "id": "prices-01",
+          "type": "money.inflation.v2",
+          "grading": "server",
+          "prompt": "Elige cuánto suben los precios al año y cuántos años. Calcula cuánto costará algo de 100 monedas.",
+          "visual": {
+            "type": "inflation"
+          },
+          "payload": {
+            "currency": "coins",
+            "price_minor": 100,
+            "min_rate_bps": 100,
+            "max_rate_bps": 1000,
+            "rate_step_bps": 100,
+            "min_years": 5,
+            "max_years": 30,
+            "year_step": 5,
+            "prediction_step_minor": 10,
+            "prediction_max_minor": 2000
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-inflation"
+        },
+        {
+          "id": "double-01",
+          "type": "money.rule-of-72.v2",
+          "grading": "server",
+          "prompt": "Elige una tasa de crecimiento. Usa la regla del 72 para calcular los años para duplicar.",
+          "visual": {
+            "type": "doubling"
+          },
+          "payload": {
+            "currency": "coins",
+            "principal_minor": 100,
+            "min_rate_bps": 200,
+            "max_rate_bps": 1200,
+            "rate_step_bps": 100
+          },
+          "help": [
+            "Divide 72 entre la tasa anual."
+          ],
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-rule-of-72"
+        },
+        {
+          "id": "debts-01",
+          "type": "money.debt-payoff.v2",
+          "grading": "server",
+          "prompt": "Prueba los dos planes. ¿Cuál paga menos interés?",
+          "visual": {
+            "type": "debt-race"
+          },
+          "payload": {
+            "currency": "coins",
+            "budget_minor": 150,
+            "debts": [
+              {
+                "id": "debt-card",
+                "balance_minor": 1000,
+                "rate_bps": 2400,
+                "minimum_minor": 30,
+                "label": "Tarjeta"
+              },
+              {
+                "id": "debt-loan",
+                "balance_minor": 300,
+                "rate_bps": 600,
+                "minimum_minor": 20,
+                "label": "Préstamo"
+              }
+            ]
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-debt-payoff"
+        },
+        {
+          "id": "mix-01",
+          "type": "money.diversification.v2",
+          "grading": "server",
+          "prompt": "Reparte tu dinero para que el riesgo sea máximo 10% y el rendimiento al menos 4.5%.",
+          "visual": {
+            "type": "portfolio"
+          },
+          "payload": {
+            "assets": [
+              {
+                "id": "asset-stocks",
+                "return_bps": 800,
+                "risk_bps": 2000,
+                "label": "Acciones"
+              },
+              {
+                "id": "asset-bonds",
+                "return_bps": 300,
+                "risk_bps": 600,
+                "label": "Bonos"
+              },
+              {
+                "id": "asset-cash",
+                "return_bps": 100,
+                "risk_bps": 0,
+                "label": "Efectivo"
+              }
+            ],
+            "step": 10
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-diversification"
+        },
+        {
+          "id": "stand-01",
+          "type": "money.lemonade-stand.v2",
+          "grading": "server",
+          "prompt": "Abre tu puesto unos días. Encuentra un precio y vasos que ganen al menos 250 monedas.",
+          "visual": {
+            "type": "lemonade-stand"
+          },
+          "payload": {
+            "currency": "coins",
+            "cost_per_cup_minor": 2,
+            "fixed_cost_minor": 10,
+            "max_price_minor": 20,
+            "price_step_minor": 2,
+            "demand_at_zero": 60,
+            "cups_lost_per_step": 5,
+            "max_cups": 60
+          },
+          "help": [
+            "Un precio bajo vende más vasos, pero cada vaso gana menos."
+          ],
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-unit-economics"
+        }
+      ]
+    },
+    "answer_keys": {
+      "loan-01": {
+        "month": 6
+      },
+      "market-01": {
+        "curve": "demand",
+        "direction": 1
+      },
+      "prices-01": {
+        "tolerance_minor": 20
+      },
+      "double-01": {
+        "tolerance_years": 1
+      },
+      "debts-01": {
+        "ask": "least_interest"
+      },
+      "mix-01": {
+        "max_risk_bps": 1000,
+        "min_return_bps": 450
+      },
+      "stand-01": {
+        "target_profit_minor": 250
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-concept-boards",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "money-models",
+      "lesson_id": "v2-concept-boards",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-amortization",
+        "kc-supply-demand",
+        "kc-opportunity-cost",
+        "kc-inflation",
+        "kc-rule-of-72",
+        "kc-debt-payoff",
+        "kc-diversification",
+        "kc-unit-economics"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Modelos de dinheiro",
+      "required_capabilities": [
+        "visual.amortization.v1",
+        "operation.step-replay.v1",
+        "operation.number-input.v1",
+        "visual.supply-demand.v1",
+        "operation.drag-point.v1",
+        "operation.curve-shift.v1",
+        "visual.token-chooser.v1",
+        "operation.trade-off-chooser.v1",
+        "visual.inflation.v1",
+        "operation.parameter-slider.v1",
+        "operation.scale-toggle.v1",
+        "operation.before-after.v1",
+        "operation.reactive-text.v1",
+        "visual.doubling.v1",
+        "operation.threshold-marker.v1",
+        "visual.debt-race.v1",
+        "operation.what-if-branch.v1",
+        "operation.ghost-trace.v1",
+        "visual.portfolio.v1",
+        "operation.reallocate.v1",
+        "operation.linked-representations.v1",
+        "visual.waterfall.v1",
+        "operation.guided-sandbox.v1",
+        "operation.running-ledger.v1"
+      ],
+      "segments": [
+        {
+          "id": "loan-01",
+          "type": "money.amortization.v2",
+          "grading": "server",
+          "prompt": "Avance até o mês 6. Quanto ainda se deve depois desse pagamento?",
+          "visual": {
+            "type": "amortization"
+          },
+          "payload": {
+            "currency": "coins",
+            "principal_minor": 1200,
+            "rate_bps": 1200,
+            "months": 12
+          },
+          "help": [
+            "Comece com a dívida e tire o que foi abatido."
+          ],
+          "item_role": "practice",
+          "knowledge_component_id": "kc-amortization"
+        },
+        {
+          "id": "market-01",
+          "type": "econ.supply-demand.v2",
+          "grading": "server",
+          "prompt": "Uma onda de calor: mais gente quer limonada. Mova uma curva um passo e diga o que acontece com o preço.",
+          "visual": {
+            "type": "supply-demand"
+          },
+          "payload": {
+            "demand": {
+              "intercept": 100,
+              "slope": 2
+            },
+            "supply": {
+              "intercept": 10,
+              "slope": 1
+            },
+            "shift_step": 10,
+            "max_shift": 2,
+            "labels": {
+              "price": "Preço",
+              "quantity": "Copos",
+              "demand": "Querem comprar",
+              "supply": "Querem vender"
+            }
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-supply-demand"
+        },
+        {
+          "id": "tokens-01",
+          "type": "money.opportunity-cost.v2",
+          "grading": "none",
+          "prompt": "Você tem 3 fichas. Escolha o que mais importa.",
+          "visual": {
+            "type": "token-chooser"
+          },
+          "payload": {
+            "tokens": 3,
+            "options": [
+              {
+                "id": "opt-movie",
+                "cost": 2,
+                "label": "Filme"
+              },
+              {
+                "id": "opt-snack",
+                "cost": 1,
+                "label": "Lanche"
+              },
+              {
+                "id": "opt-game",
+                "cost": 2,
+                "label": "Jogo"
+              },
+              {
+                "id": "opt-book",
+                "cost": 1,
+                "label": "Livro"
+              },
+              {
+                "id": "opt-save",
+                "cost": 1,
+                "label": "Guardar"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-opportunity-cost"
+        },
+        {
+          "id": "prices-01",
+          "type": "money.inflation.v2",
+          "grading": "server",
+          "prompt": "Escolha a alta de preços por ano e quantos anos. Calcule quanto vai custar algo de 100 moedas.",
+          "visual": {
+            "type": "inflation"
+          },
+          "payload": {
+            "currency": "coins",
+            "price_minor": 100,
+            "min_rate_bps": 100,
+            "max_rate_bps": 1000,
+            "rate_step_bps": 100,
+            "min_years": 5,
+            "max_years": 30,
+            "year_step": 5,
+            "prediction_step_minor": 10,
+            "prediction_max_minor": 2000
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-inflation"
+        },
+        {
+          "id": "double-01",
+          "type": "money.rule-of-72.v2",
+          "grading": "server",
+          "prompt": "Escolha uma taxa de crescimento. Use a regra do 72 para calcular os anos para dobrar.",
+          "visual": {
+            "type": "doubling"
+          },
+          "payload": {
+            "currency": "coins",
+            "principal_minor": 100,
+            "min_rate_bps": 200,
+            "max_rate_bps": 1200,
+            "rate_step_bps": 100
+          },
+          "help": [
+            "Divida 72 pela taxa anual."
+          ],
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-rule-of-72"
+        },
+        {
+          "id": "debts-01",
+          "type": "money.debt-payoff.v2",
+          "grading": "server",
+          "prompt": "Teste os dois planos. Qual paga menos juros?",
+          "visual": {
+            "type": "debt-race"
+          },
+          "payload": {
+            "currency": "coins",
+            "budget_minor": 150,
+            "debts": [
+              {
+                "id": "debt-card",
+                "balance_minor": 1000,
+                "rate_bps": 2400,
+                "minimum_minor": 30,
+                "label": "Cartão"
+              },
+              {
+                "id": "debt-loan",
+                "balance_minor": 300,
+                "rate_bps": 600,
+                "minimum_minor": 20,
+                "label": "Empréstimo"
+              }
+            ]
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-debt-payoff"
+        },
+        {
+          "id": "mix-01",
+          "type": "money.diversification.v2",
+          "grading": "server",
+          "prompt": "Divida seu dinheiro para o risco ficar em no máximo 10% e o retorno em pelo menos 4,5%.",
+          "visual": {
+            "type": "portfolio"
+          },
+          "payload": {
+            "assets": [
+              {
+                "id": "asset-stocks",
+                "return_bps": 800,
+                "risk_bps": 2000,
+                "label": "Ações"
+              },
+              {
+                "id": "asset-bonds",
+                "return_bps": 300,
+                "risk_bps": 600,
+                "label": "Títulos"
+              },
+              {
+                "id": "asset-cash",
+                "return_bps": 100,
+                "risk_bps": 0,
+                "label": "Dinheiro"
+              }
+            ],
+            "step": 10
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-diversification"
+        },
+        {
+          "id": "stand-01",
+          "type": "money.lemonade-stand.v2",
+          "grading": "server",
+          "prompt": "Abra sua barraca por alguns dias. Ache um preço e copos que rendam pelo menos 250 moedas.",
+          "visual": {
+            "type": "lemonade-stand"
+          },
+          "payload": {
+            "currency": "coins",
+            "cost_per_cup_minor": 2,
+            "fixed_cost_minor": 10,
+            "max_price_minor": 20,
+            "price_step_minor": 2,
+            "demand_at_zero": 60,
+            "cups_lost_per_step": 5,
+            "max_cups": 60
+          },
+          "help": [
+            "Um preço menor vende mais copos, mas cada copo rende menos."
+          ],
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-unit-economics"
+        }
+      ]
+    },
+    "answer_keys": {
+      "loan-01": {
+        "month": 6
+      },
+      "market-01": {
+        "curve": "demand",
+        "direction": 1
+      },
+      "prices-01": {
+        "tolerance_minor": 20
+      },
+      "double-01": {
+        "tolerance_years": 1
+      },
+      "debts-01": {
+        "ask": "least_interest"
+      },
+      "mix-01": {
+        "max_risk_bps": 1000,
+        "min_return_bps": 450
+      },
+      "stand-01": {
+        "target_profit_minor": 250
+      }
+    }
   }
 ]

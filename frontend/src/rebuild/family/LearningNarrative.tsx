@@ -4,7 +4,7 @@ import { Button, ErrorState, InlineNotice, LoadingState, StatusMark } from '../d
 import '../design/tokens.css';
 import '../design/system.css';
 import './familyLearning.css';
-import type { NarrativeEntry, NarrativeState, TutorChoice } from './familyLearning';
+import type { LessonEvidence, NarrativeEntry, NarrativeState, TutorChoice } from './familyLearning';
 
 /*
  * B.10 / S05.3c — what the child learned in their courses, told to the
@@ -34,6 +34,8 @@ type Copy = {
   talk: Record<NarrativeEntry['conversation'], string>; topicDone: string;
   /** L-13: the choices of an under-13 child, and the line that says the child knows. */
   choicesNote: string; chose: string; talkSeen: string;
+  /** B.10 for v2 (GAP-FIX-R1): first-try share and B.12 reasoning, as counts only. */
+  firstTry: (correct: number, graded: number) => string; reasoning: (sound: number, assessed: number) => string;
 };
 
 export const learningNarrativeCopy: Record<Locale, Copy> = {
@@ -45,6 +47,7 @@ export const learningNarrativeCopy: Record<Locale, Copy> = {
     decisions: (n) => `Made ${n} story ${n === 1 ? 'choice' : 'choices'}.`,
     talk: { decision: 'Ask what they chose, and why.', explain: 'Ask them to explain it in their own words.' }, topicDone: 'Topic finished',
     choicesNote: 'Under 13, you see each story choice. Your child is told.', chose: 'Chose', talkSeen: 'Ask why they chose it.',
+    firstTry: (c, g) => `Right on the first try: ${c} of ${g}.`, reasoning: (s, a) => `Explained their thinking well: ${s} of ${a}.`,
   },
   'es-MX': {
     title: 'Aprendizaje en cursos', open: 'Ver aprendizaje', close: 'Ocultar aprendizaje', loading: 'Cargando aprendizaje', retry: 'Reintentar', error: 'No se pudo cargar el aprendizaje.', noAccess: 'Este niño ya no está vinculado contigo.',
@@ -54,6 +57,7 @@ export const learningNarrativeCopy: Record<Locale, Copy> = {
     decisions: (n) => `Tomó ${n} ${n === 1 ? 'decisión' : 'decisiones'} en la historia.`,
     talk: { decision: 'Pregúntale qué eligió y por qué.', explain: 'Pídele que te lo explique con sus palabras.' }, topicDone: 'Tema terminado',
     choicesNote: 'Mientras tenga menos de 13, ves cada elección. Se le avisa.', chose: 'Eligió', talkSeen: 'Pregúntale por qué lo eligió.',
+    firstTry: (c, g) => `Bien a la primera: ${c} de ${g}.`, reasoning: (s, a) => `Explicó bien su razonamiento: ${s} de ${a}.`,
   },
   'pt-BR': {
     title: 'Aprendizado nos cursos', open: 'Ver aprendizado', close: 'Ocultar aprendizado', loading: 'Carregando aprendizado', retry: 'Tentar de novo', error: 'Não foi possível carregar o aprendizado.', noAccess: 'Esta criança não está mais vinculada a você.',
@@ -63,6 +67,7 @@ export const learningNarrativeCopy: Record<Locale, Copy> = {
     decisions: (n) => `Tomou ${n} ${n === 1 ? 'decisão' : 'decisões'} na história.`,
     talk: { decision: 'Pergunte o que escolheu e por quê.', explain: 'Peça que explique com as próprias palavras.' }, topicDone: 'Tema terminado',
     choicesNote: 'Enquanto tiver menos de 13, você vê cada escolha. A criança sabe.', chose: 'Escolheu', talkSeen: 'Pergunte por que escolheu.',
+    firstTry: (c, g) => `Certo de primeira: ${c} de ${g}.`, reasoning: (s, a) => `Explicou bem o raciocínio: ${s} de ${a}.`,
   },
 };
 
@@ -93,6 +98,7 @@ export function LearningNarrative({ state, locale, dark, open, onToggle, onRetry
             {state.choices ? <p className="lf-family-learning-note" data-copy-role="body">{t.choicesNote}</p> : null}
             {state.entries.length === 0 ? <p data-copy-role="body">{t.empty}</p> : <ol className="lf-family-learning-list">
               {state.entries.map((entry) => <NarrativeCard key={entry.lessonId} entry={entry} t={t}
+                evidence={state.evidence?.find((item) => item.lessonId === entry.lessonId) ?? null}
                 choices={state.choices ? state.choices.filter((choice) => choice.lessonId === entry.lessonId) : null} />)}
             </ol>}
             {state.hasMore && onMore ? <Button pending={loadingMore} onClick={onMore}>{t.more}</Button> : null}
@@ -100,7 +106,7 @@ export function LearningNarrative({ state, locale, dark, open, onToggle, onRetry
   </section>;
 }
 
-function NarrativeCard({ entry, t, choices }: { entry: NarrativeEntry; t: Copy; choices: TutorChoice[] | null }) {
+function NarrativeCard({ entry, t, choices, evidence }: { entry: NarrativeEntry; t: Copy; choices: TutorChoice[] | null; evidence: LessonEvidence | null }) {
   const seen = choices !== null && choices.length > 0;
   return <li className="lf-family-learning-entry">
     <div className="lf-family-learning-entry-head">
@@ -111,6 +117,8 @@ function NarrativeCard({ entry, t, choices }: { entry: NarrativeEntry; t: Copy; 
     <p><span className="lf-family-learning-label" data-copy-role="body">{t.practiced}</span>{' '}<span data-copy-role="data">{entry.skills.join(', ')}</span></p>
     {entry.struggle ? <p data-copy-role="body">{t.struggle[entry.struggle]}</p> : null}
     {entry.usedHint ? <p data-copy-role="body">{t.hint}</p> : null}
+    {evidence ? <p data-copy-role="body" data-evidence="first-try">{t.firstTry(evidence.firstTry.correct, evidence.firstTry.graded)}</p> : null}
+    {evidence?.judgment ? <p data-copy-role="body" data-evidence="reasoning">{t.reasoning(evidence.judgment.sound, evidence.judgment.assessed)}</p> : null}
     {seen && choices ? <ul className="lf-family-learning-choices">
       {choices.map((choice, index) => <li key={`${choice.lessonId}:${index}`} lang={choice.locale}>
         <p className="lf-family-learning-situation" data-copy-role="data">{choice.situation}</p>

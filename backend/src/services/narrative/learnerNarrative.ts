@@ -4,7 +4,7 @@ import type { CourseTree, TopicNode } from '../courseTree.js';
 import { getRolesForGate } from '../insights.js';
 import type { GradingSegment } from '../lessonDocument.js';
 import { getVerifiedGuardiansOfKid } from '../supabaseRest.js';
-import { extractDecisions, pickRecall, type RecallRelevance } from './decisionJournal.js';
+import { extractDecisions, extractV2Decisions, pickRecall, type RecallRelevance } from './decisionJournal.js';
 import { BRIDGE_COOLDOWN_DAYS, BRIDGE_TTL_DAYS, bridgeAudience, bridgeCandidates, topicNewlyCompleted, type BridgeAction } from './familyBridge.js';
 import { journalCandidates, offerBridgePrompt, recordDecisions, recordResurfacing, topicTeaches } from './narrativeData.js';
 import { dataPracticeApplies } from '../dataPractices.js';
@@ -145,5 +145,20 @@ export async function offerBridgeAfterCompletion(input: {
   } catch (error) {
     console.error('[narrative] bridge offer threw', error);
     return null;
+  }
+}
+
+/** B.9 for v2 (GAP-FIX-R1): a graded v2 story choice goes to the same journal. Best-effort, after Core stored the receipt. */
+export async function recordV2GradedDecisions(input: {
+  userId: string; courseId: string; topicId: string; lessonId: string; locale: string; lessonTitle: string | null;
+  segment: { id: string; type: string; prompt: string; payload: unknown }; answer: unknown;
+}): Promise<void> {
+  try {
+    const decisions = extractV2Decisions(input.segment, input.answer, input.lessonTitle);
+    if (decisions.length === 0) return;
+    const ok = await recordDecisions({ userId: input.userId, courseId: input.courseId, topicId: input.topicId, lessonId: input.lessonId, locale: input.locale, decisions });
+    if (!ok) console.error('[narrative] v2 decision journal write failed', { lessonId: input.lessonId, segmentId: input.segment.id });
+  } catch (error) {
+    console.error('[narrative] v2 decision journal write threw', error);
   }
 }

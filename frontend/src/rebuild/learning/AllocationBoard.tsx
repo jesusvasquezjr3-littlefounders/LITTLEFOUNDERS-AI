@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { AgeBand, Locale } from '../design/copyBudget';
-import { Button, Slider, Stepper, ProgressBar } from '../design/controls';
+import { Button, Slider, ProgressBar } from '../design/controls';
+import { PocketSplit } from '../family/PocketSplit';
 import { LessonFeedback } from './LessonFeedback';
 import { changeAllocation, inspectAllocation, reallocateBoundary, remaining, type Allocation, type Pocket } from './allocationModel';
 import { decodeAllocationCheckpoint, encodeAllocationCheckpoint } from './allocationCheckpoint';
@@ -9,6 +10,7 @@ import { ageEligibilityForBand, lessonVersionKey, type LessonClientDocument, typ
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { TeachingChartBoard } from './TeachingChartBoard';
 import { CompactMentorStage } from './CompactMentorStage';
+import { SegmentPrompt } from './segmentKit';
 import './learning.css';
 
 type CopySet = {
@@ -189,7 +191,7 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
       <div className="lf-learning-content">
         <div className="lf-learning-intro">
           <h1 data-copy-role="heading">{document.title}</h1>
-          <p data-copy-role="prompt">{segment.prompt}</p>
+          <SegmentPrompt segment={segment} locale={document.locale} />
         </div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart} onViewChange={setTableMode}
           columns={[t.category, t.amount]}
@@ -262,12 +264,11 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
           </>}>
           {(showTable) => <>
           <div className={showTable ? 'lf-learning-left lf-learning-left--visually-hidden' : 'lf-learning-left'} aria-live="polite" aria-atomic="true"><span data-copy-role="body">{t.left}</span> <strong data-copy-role="data">{amount(left)}</strong></div>
+          {/* Bible 05 §7 Money row (GAP-FIX-R1): the Wallet's own pocket rows, so the lesson and the Wallet teach one interaction. */}
           <div className="lf-learning-controls" role="group" aria-label={t.balance}>
-            {pockets.map((pocket) => <div className="lf-learning-control" key={pocket}>
-              <Stepper valuePlacement="label" label={t[pocket]} value={allocation[pocket]} valueText={amount(allocation[pocket])}
-                min={0} max={allocation[pocket] + left} step={item.step} labels={{ decrease: t.remove, increase: t.add }}
-                onValueChange={(next) => change(pocket, next > allocation[pocket] ? 1 : -1)} />
-            </div>)}
+            <PocketSplit mode="stepper" labels={{ save: t.save, spend: t.spend, share: t.share }} values={allocation} step={item.step}
+              max={(pocket) => allocation[pocket] + left} valueText={(_, value) => amount(value)} stepLabels={() => ({ decrease: t.remove, increase: t.add })}
+              onChange={(pocket, next) => change(pocket, next > allocation[pocket] ? 1 : -1)} />
           </div>
           {left === 0 && !showTable ? <div className="lf-learning-sliders" role="group" aria-label={t.balance}>
             <Slider label={t.moveSaveSpend} valueText={amount(allocation.save)} min={0} max={allocation.save + allocation.spend} step={item.step}

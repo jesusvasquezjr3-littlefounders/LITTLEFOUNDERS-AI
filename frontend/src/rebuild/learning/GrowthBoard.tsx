@@ -8,6 +8,7 @@ import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import './learning.css';
 import './growth.css';
 import { LessonStageSlot } from './lessonStage';
+import { SegmentPrompt } from './segmentKit';
 
 type CopySet = {
   back: string; practice: string; board: string; showTable: string; showChart: string;
@@ -89,7 +90,7 @@ export function GrowthBoard({ document, segment, onBack, sequence }: { document:
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
         {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, contribution !== fixture.item.initial)} max={100} valueText={`${sequenceProgress(sequence, contribution !== fixture.item.initial)}%`} /> : null}<span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.practice}</span></header><LessonStageSlot />
       <div className="lf-learning-content">
-        <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
+        <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><SegmentPrompt segment={segment} locale={document.locale} /></div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart}
           controlLeading={<Button onClick={() => setContribution(fixture.item.initial)} disabled={contribution === fixture.item.initial}>{t.reset}</Button>}
           columns={[t.period, t.balance]} rows={points.map((point) => ({ id: point.period, label: point.period, value: amount(point.balance) }))}

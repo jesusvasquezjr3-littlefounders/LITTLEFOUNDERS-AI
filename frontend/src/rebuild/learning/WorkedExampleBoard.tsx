@@ -9,6 +9,9 @@ import { useSingleActiveGrade } from './useSingleActiveGrade';
 import './learning.css';
 import './stepReplay.css';
 import { LessonStageSlot } from './lessonStage';
+import { playerCopy, SegmentPrompt } from './segmentKit';
+import { LongArithmeticLayout } from './LongArithmeticLayout';
+import { parseLocaleNumber } from './v2VisualScorer.generated';
 
 type Segment = Extract<LessonClientSegment, { type: 'math.worked-example.v2' }>;
 type Verdict = 'invalid' | 'met' | 'review';
@@ -57,19 +60,29 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
     setPrediction('');
   };
   const complete = segment.payload.response_step_ids.every((stepId) => values[stepId]?.trim());
+  // Appendix P Part 5 (GAP-FIX-R1): a typed number is parsed for the lesson's locale and sent as its canonical
+  // value; Core compares values, not text. Anything that is not a number is sent as written.
+  const canonical = (text: string) => parseLocaleNumber(text, document.locale) ?? text.trim();
+  const echo = (text: string) => {
+    const parsed = text.trim() ? parseLocaleNumber(text, document.locale) : null;
+    return parsed === null ? null : playerCopy(document.locale).readsAs.replace('{value}', new Intl.NumberFormat(document.locale, { maximumFractionDigits: 12 }).format(Number(parsed)));
+  };
   const submit = () => {
     if (verdict === 'met') { sequence?.onAdvance(); return; }
     if (!complete) return;
-    grade(() => onGrade({ values }, segment.id), (result) => setVerdict(result === 'met' ? 'met' : 'review'), () => setVerdict('unavailable'));
+    const answer = Object.fromEntries(segment.payload.response_step_ids.map((stepId) => [stepId, canonical(values[stepId] ?? '')]));
+    grade(() => onGrade({ values: answer }, segment.id), (result) => setVerdict(result === 'met' ? 'met' : 'review'), () => setVerdict('unavailable'));
   };
 
   return <main className="lf-learning" data-surface="app" data-screen="worked-example">
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button><span data-copy-role="data">{t.example}</span></header><LessonStageSlot verdict={verdict} />
       <div className="lf-learning-content">
-        <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
+        <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><SegmentPrompt segment={segment} locale={document.locale} /></div>
         <section className="lf-learning-board" aria-labelledby="worked-example-title">
           <h2 id="worked-example-title" data-copy-role="heading">{t.example}</h2>
+          {segment.payload.algorithm ? <LongArithmeticLayout algorithm={segment.payload.algorithm} locale={document.locale}
+            revealed={Math.round((index + 1) / steps.length * segment.payload.algorithm.steps.length)} /> : null}
           <ol className="lf-worked-example-steps">
             {steps.map((step, stepIndex) => {
               const active = index === stepIndex;
@@ -82,6 +95,7 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
                 {faded && stepIndex <= index + 1 ? <div className="lf-worked-example-blank">
                   <TextField label={t.faded} aria-label={t.input + ': ' + step.expression} inputMode="decimal" autoComplete="off" disabled={pending} value={values[step.id] ?? ''}
                     onChange={(event) => { setVerdict(null); setValues((current) => ({ ...current, [step.id]: event.target.value })); }} />
+                  <p className="lf-number-echo" data-copy-role="body" aria-live="polite">{echo(values[step.id] ?? '') ?? '\u00a0'}</p>
                 </div> : index >= stepIndex ? <span className="lf-worked-example-result" data-copy-role="data">{t.result}: {step.result}</span>
                   : <span className="lf-worked-example-pending" data-copy-role="body">…</span>}
               </li>;

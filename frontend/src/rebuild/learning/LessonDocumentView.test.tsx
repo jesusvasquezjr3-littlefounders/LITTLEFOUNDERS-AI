@@ -119,7 +119,7 @@ describe('versioned pilot document renderer', () => {
     expect(screen.queryByRole('progressbar')).toBeNull();
     expect(screen.queryByRole('button', { name: 'Check' })).toBeNull();
     rerender(<LessonDocumentView raw={{ ...pilot(), schema_version: 3 }} locale="en-US" ageBand="6-9" onBack={noop} onGrade={onGrade} />);
-    expect(screen.getByText('This lesson needs an update.')).toBeTruthy();
+    expect(screen.getByText('Update the app')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Check' })).toBeNull();
     rerender(<LessonDocumentView raw={pilot()} locale="es-MX" ageBand="6-9" onBack={noop} onGrade={onGrade} />);
     expect(screen.getByText('Esta lección no se puede abrir.')).toBeTruthy();
@@ -170,7 +170,7 @@ describe('versioned pilot document renderer', () => {
     expect(screen.getByText('Move the weekly amount.')).toBeTruthy();
     expect(screen.getByRole('slider')).toBeTruthy();
     rerender(<LessonDocumentView raw={pilot()} locale="en-US" ageBand="6-9" onBack={noop} />);
-    expect(screen.getByText('This lesson needs an update.')).toBeTruthy();
+    expect(screen.getByText('Update the app')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Check' })).toBeNull();
   });
 
@@ -293,7 +293,7 @@ describe('versioned pilot document renderer', () => {
     await waitFor(() => expect(onGradeNumberLine).toHaveBeenCalledWith({ value: '7' }, 'place-01', expect.objectContaining({ version_id: 'rev-1' })));
     await waitFor(() => expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('100'));
     rerender(<LessonDocumentView raw={document} locale="en-US" ageBand="6-9" onBack={noop} />);
-    expect(screen.getByText('This lesson needs an update.')).toBeTruthy();
+    expect(screen.getByText('Update the app')).toBeTruthy();
     expect(screen.queryByRole('slider')).toBeNull();
   });
 
@@ -301,7 +301,7 @@ describe('versioned pilot document renderer', () => {
     const document = sequencePilotDocument('en-US');
     const onGrade = vi.fn(() => 'met' as const);
     const { rerender } = render(<LessonDocumentView raw={document} locale="en-US" ageBand="6-9" onBack={noop} onGrade={onGrade} />);
-    expect(screen.getByText('This lesson needs an update.')).toBeTruthy();
+    expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('0');
     rerender(<LessonDocumentView raw={document} locale="en-US" ageBand="6-9" onBack={noop} onGrade={onGrade} previewSequence />);
     expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('0');
     expect(screen.getByRole('button', { name: 'Continue' }).hasAttribute('disabled')).toBe(true);
@@ -430,7 +430,7 @@ describe('versioned pilot document renderer', () => {
     const document = taxBracketPilotDocument('en-US');
     const { rerender } = render(<LessonDocumentView raw={document} locale="en-US" ageBand="13-17" onBack={noop} />);
     expect(screen.getByRole('img', { name: /Tax bracket stacked bar.*Income:/ })).toHaveAttribute('aria-label', expect.stringContaining('USD 300.00'));
-    expect(screen.getByRole('img').querySelectorAll('rect')).toHaveLength(3);
+    expect(screen.getByRole('img', { name: /Tax bracket stacked bar/ }).querySelectorAll('rect')).toHaveLength(3);
     fireEvent.change(screen.getByRole('slider', { name: /Income/ }), { target: { value: '40000' } });
     expect(screen.getByRole('img', { name: /Income:/ })).toHaveAttribute('aria-label', expect.stringContaining('Tax: USD 80.00'));
     fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));

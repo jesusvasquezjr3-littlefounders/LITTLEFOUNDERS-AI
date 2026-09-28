@@ -29,6 +29,9 @@ type Copy = {
   replay: string; replayRate: (shown: number, total: number) => string; replayNone: string; replayLow: string;
   motivation: string; motivationPending: string; restDays: (kept: number, lapsed: number) => string; restDaysNone: string;
   lever: Record<'path' | 'mentor' | 'pace', string>; adoption: (exercised: number, offered: number) => string; adoptionNone: string;
+  signals: string; signalsPending: string; transfer: (kc: string, practice: string, transfer: string) => string; transferNone: string;
+  errorSplit: (structure: number, answer: number) => string; errorNone: string; unaided: string; stage: Record<'concrete' | 'pictorial' | 'abstract', string>;
+  detection: (dPrime: string, responses: number) => string; detectionNone: string;
 };
 
 const copy: Record<Locale, Copy> = {
@@ -49,6 +52,11 @@ const copy: Record<Locale, Copy> = {
     motivation: 'Motivation signals', motivationPending: 'Available once the motivation migration is applied.',
     restDays: (k, n) => `Rest days kept ${k} of ${n} streaks that met a missed day.`, restDaysNone: 'No missed days in this window.',
     lever: { path: 'Path choice', mentor: 'Mentor choice', pace: 'Pace choice' }, adoption: (e, o) => `${e} of ${o} chose it themselves.`, adoptionNone: 'No data in this window.',
+    signals: 'Lesson signals', signalsPending: 'Available once the lesson signals migration is applied.',
+    transfer: (kc, p, t) => `${kc}: practice ${p}, transfer ${t}.`, transferNone: 'No tagged practice or transfer items in this window.',
+    errorSplit: (s, a) => `${s} setup errors, ${a} number errors on first tries.`, errorNone: 'No first-try errors in this window.',
+    unaided: 'First success without help', stage: { concrete: 'Objects', pictorial: 'Pictures', abstract: 'Symbols' },
+    detection: (d, n) => `Scam spotting d′ ${d} over ${n} answers.`, detectionNone: 'No scam-spotting answers in this window.',
   },
   'es-MX': {
     title: 'Calidad del aprendizaje', intro: (l, u) => `La práctica debe lograr ${l}-${u}% de aciertos al primer intento por lección.`,
@@ -65,6 +73,11 @@ const copy: Record<Locale, Copy> = {
     signal: { distinct: 'Mide el razonamiento', tracks_correctness: 'Solo sigue el acierto', insufficient_sample: 'Faltan datos' },
     replay: 'Aviso al repetir', replayRate: (s, n) => `${s} de ${n} repeticiones más bajas mostraron la mejor marca.`, replayNone: 'No hay repeticiones más bajas en este periodo.', replayLow: 'Debajo de la meta de 100%.',
     motivation: 'Señales de motivación', motivationPending: 'Disponible cuando se aplique la migración de motivación.',
+    signals: 'Señales de lecciones', signalsPending: 'Disponible cuando se aplique la migración de señales de lecciones.',
+    transfer: (kc, p, t) => `${kc}: práctica ${p}, transferencia ${t}.`, transferNone: 'No hay ítems de práctica o transferencia en este periodo.',
+    errorSplit: (s, a) => `${s} errores de planteamiento, ${a} de números al primer intento.`, errorNone: 'No hay errores al primer intento en este periodo.',
+    unaided: 'Primer acierto sin ayuda', stage: { concrete: 'Objetos', pictorial: 'Dibujos', abstract: 'Símbolos' },
+    detection: (d, n) => `Detección de estafas d′ ${d} en ${n} respuestas.`, detectionNone: 'No hay respuestas de detección de estafas en este periodo.',
     restDays: (k, n) => `Los días de descanso mantuvieron ${k} de ${n} rachas con un día sin práctica.`, restDaysNone: 'No hubo días sin práctica en este periodo.',
     lever: { path: 'Elección de ruta', mentor: 'Elección de Mentor', pace: 'Elección de ritmo' }, adoption: (e, o) => `${e} de ${o} lo eligieron por su cuenta.`, adoptionNone: 'Sin datos en este periodo.',
   },
@@ -83,6 +96,11 @@ const copy: Record<Locale, Copy> = {
     signal: { distinct: 'Mede o raciocínio', tracks_correctness: 'Só acompanha o acerto', insufficient_sample: 'Poucos dados' },
     replay: 'Aviso de repetição', replayRate: (s, n) => `${s} de ${n} repetições mais baixas mostraram o recorde.`, replayNone: 'Nenhuma repetição mais baixa neste período.', replayLow: 'Abaixo da meta de 100%.',
     motivation: 'Sinais de motivação', motivationPending: 'Disponível quando a migração de motivação for aplicada.',
+    signals: 'Sinais das lições', signalsPending: 'Disponível quando a migração de sinais das lições for aplicada.',
+    transfer: (kc, p, t) => `${kc}: prática ${p}, transferência ${t}.`, transferNone: 'Nenhum item de prática ou transferência neste período.',
+    errorSplit: (s, a) => `${s} erros de montagem, ${a} de números na primeira tentativa.`, errorNone: 'Nenhum erro na primeira tentativa neste período.',
+    unaided: 'Primeiro acerto sem ajuda', stage: { concrete: 'Objetos', pictorial: 'Figuras', abstract: 'Símbolos' },
+    detection: (d, n) => `Detecção de golpes d′ ${d} em ${n} respostas.`, detectionNone: 'Nenhuma resposta de detecção de golpes neste período.',
     restDays: (k, n) => `Os dias de descanso mantiveram ${k} de ${n} sequências com um dia sem prática.`, restDaysNone: 'Nenhum dia sem prática neste período.',
     lever: { path: 'Escolha de trilha', mentor: 'Escolha de Mentor', pace: 'Escolha de ritmo' }, adoption: (e, o) => `${e} de ${o} escolheram por conta própria.`, adoptionNone: 'Sem dados neste período.',
   },
@@ -179,7 +197,32 @@ export function LearningQualityPanel({ state, locale, dark, onRetry, onSync, onR
         </li>)}</ul>
       </>}
     </section>
+
+    {/* GAP-FIX-R1: transfer vs practice, structure vs answer, the M1 first unaided stage and d′ (Appendix C 1.1, Appendix P Part 8). */}
+    <section className="lf-quality-block" aria-labelledby={`${headingId}-signals`}>
+      <h3 id={`${headingId}-signals`} data-copy-role="heading">{t.signals}</h3>
+      {!report.v2Signals ? <p data-copy-role="body">{t.signalsPending}</p> : <V2Signals signals={report.v2Signals} t={t} percent={percent} nameOf={nameOf} />}
+    </section>
   </section>;
+}
+
+function V2Signals({ signals, t, percent, nameOf }: { signals: NonNullable<LearningQualityReport['v2Signals']>; t: Copy; percent: Intl.NumberFormat; nameOf: (id: string) => string }) {
+  const kcs = [...new Set(signals.transfer.map((row) => row.kc))];
+  const share = (kc: string, role: 'practice' | 'transfer') => {
+    const row = signals.transfer.find((item) => item.kc === kc && item.item_role === role);
+    return row && row.first_attempts > 0 ? percent.format(row.success_share) : '-';
+  };
+  return <>
+    {kcs.length === 0 ? <p data-copy-role="body">{t.transferNone}</p>
+      : <ul className="lf-quality-list">{kcs.map((kc) => <li key={kc} className="lf-quality-row"><p data-copy-role="data">{t.transfer(kc, share(kc, 'practice'), share(kc, 'transfer'))}</p></li>)}</ul>}
+    <p data-copy-role="body">{signals.errorSplit.structure + signals.errorSplit.answer === 0 ? t.errorNone : t.errorSplit(signals.errorSplit.structure, signals.errorSplit.answer)}</p>
+    <p className="lf-quality-name" data-copy-role="data">{t.unaided}</p>
+    <ul className="lf-quality-list">{signals.firstUnaided.map((row) => <li key={row.stage} className="lf-quality-row"><p data-copy-role="data">{t.stage[row.stage]}: {row.learners}</p></li>)}</ul>
+    {signals.detection.length === 0 ? <p data-copy-role="body">{t.detectionNone}</p>
+      : <ul className="lf-quality-list">{signals.detection.map((row) => <li key={row.lesson_id} className="lf-quality-row">
+        <p className="lf-quality-name" data-copy-role="data">{nameOf(row.lesson_id)}</p>
+        <p data-copy-role="data">{t.detection(row.dPrime.toFixed(2), row.responses)}</p></li>)}</ul>}
+  </>;
 }
 
 function ReviewForm({ locale, name, review, t, onResolve, onResolved }: {

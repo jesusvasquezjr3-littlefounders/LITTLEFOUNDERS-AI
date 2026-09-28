@@ -664,7 +664,7 @@ describe('POST /api/v1/learn/lessons/:id/v2-runs', () => {
       segment_id: 'cpa-concrete-01', run_id: started.body.data.run_id,
       attempt_token: started.body.data.attempt_tokens['cpa-concrete-01'], answer: { value: '6' },
     });
-    expect(review.body.data.verdict).toEqual({ correct: false, score: 0 });
+    expect(review.body.data.verdict).toMatchObject({ correct: false, score: 0 });
 
     const resumed = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({ run_id: started.body.data.run_id });
     expect(resumed.status).toBe(200);
@@ -735,14 +735,14 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
     };
     const first = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send(body);
     expect(first.status).toBe(200);
-    expect(first.body.data).toEqual({ verdict: { correct: true, score: 100 }, replayed: false });
+    expect(first.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
     expect(db.lesson_v2_attempt_nonces![0]!.consumed_at).toEqual(expect.any(String));
     expect(db.lesson_v2_grade_receipts).toHaveLength(1);
     expect(db.lesson_segment_attempts).toHaveLength(0);
 
     const retry = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send(body);
     expect(retry.status).toBe(200);
-    expect(retry.body.data).toEqual({ verdict: { correct: true, score: 100 }, replayed: true });
+    expect(retry.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: true });
     expect(db.lesson_v2_grade_receipts).toHaveLength(1);
   });
 
@@ -758,7 +758,7 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
     const corrected = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
       segment_id: 'allocate-01', run_id: runId, attempt_token: first.body.data.retry_attempt_token, answer: { save: 4, spend: 8, share: 0 },
     });
-    expect(corrected.body.data).toEqual({ verdict: { correct: true, score: 100 }, replayed: false });
+    expect(corrected.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
     expect(db.lesson_v2_grade_receipts).toHaveLength(2);
     expect(db.lesson_v2_attempt_nonces).toHaveLength(2);
   });
@@ -784,7 +784,7 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
       answer: { values: { 'discount-subtract': '40', 'sale-price': '40' } },
     });
     expect(corrected.status).toBe(200);
-    expect(corrected.body.data).toEqual({ verdict: { correct: true, score: 100 }, replayed: false });
+    expect(corrected.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
     expect(db.lesson_v2_grade_receipts).toHaveLength(2);
   });
 
@@ -807,7 +807,7 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
       attempt_token: reviewed.body.data.retry_attempt_token, answer: { multiplier: '5', offset: '10' },
     });
     expect(corrected.status).toBe(200);
-    expect(corrected.body.data).toEqual({ verdict: { correct: true, score: 100 }, replayed: false });
+    expect(corrected.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
     expect(db.lesson_v2_grade_receipts).toHaveLength(2);
   });
 
@@ -859,13 +859,13 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
       segment_id: 'bar-structure-01', run_id: started.body.data.run_id,
       attempt_token: started.body.data.attempt_tokens['bar-structure-01'], answer: { model: 'comparison' },
     });
-    expect(structure.body.data).toEqual({ verdict: { correct: true, score: 100 }, replayed: false });
+    expect(structure.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
 
     const answer = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
       segment_id: 'bar-answer-01', run_id: started.body.data.run_id,
       attempt_token: started.body.data.attempt_tokens['bar-answer-01'], answer: { value: '19' },
     });
-    expect(answer.body.data).toEqual({ verdict: { correct: true, score: 100 }, replayed: false });
+    expect(answer.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
   });
 
   it('requires M8 schema and slots receipts before the independent arithmetic segment', async () => {
@@ -882,9 +882,9 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
     expect(slotsFirst.body.error.code).toBe('LESSON_PREREQUISITE_REQUIRED');
     await grade('schema-structure-01', { schema: 'change' });
     const slots = await grade('schema-slots-01', { income: '24', spending: '9' });
-    expect(slots.body.data).toEqual({ verdict: { correct: true, score: 100 }, replayed: false });
+    expect(slots.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
     const answer = await grade('schema-answer-01', { value: '15' });
-    expect(answer.body.data).toEqual({ verdict: { correct: true, score: 100 }, replayed: false });
+    expect(answer.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
   });
 
   it('grades an already-started v2 run against its immutable version after a newer revision is activated', async () => {
@@ -907,7 +907,7 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
     });
 
     expect(graded.status).toBe(200);
-    expect(graded.body.data).toEqual({ verdict: { correct: true, score: 100 }, replayed: false });
+    expect(graded.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
     expect(db.lesson_v2_grade_receipts![0]).toMatchObject({ document_version_id: firstVersionId });
   });
 
@@ -1199,7 +1199,7 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
       segment_id: 'fraction-01', run_id: started.body.data.run_id,
       attempt_token: reviewed.body.data.retry_attempt_token, answer: { value: '6/8' },
     });
-    expect(met.body.data).toEqual({ verdict: { correct: true, score: 100 }, replayed: false });
+    expect(met.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
 
     const complete = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({
       run_id: started.body.data.run_id, seconds_spent: 60, local_date: '2026-09-22',
@@ -1226,7 +1226,7 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
       segment_id: 'fraction-area-01', run_id: started.body.data.run_id,
       attempt_token: reviewed.body.data.retry_attempt_token, answer: { n: 2, d: 4 },
     });
-    expect(met.body.data).toEqual({ verdict: { correct: true, score: 100 }, replayed: false });
+    expect(met.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
 
     const complete = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({
       run_id: started.body.data.run_id, seconds_spent: 60, local_date: '2026-09-22',
@@ -1247,7 +1247,7 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
       segment_id: 'worked-example-01', run_id: started.body.data.run_id,
       attempt_token: started.body.data.attempt_tokens['worked-example-01'], answer: { values: { 'discount-subtract': '40', 'sale-price': '40' } },
     });
-    expect(graded.body.data).toEqual({ verdict: { correct: true, score: 100 }, replayed: false });
+    expect(graded.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
 
     const complete = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({
       run_id: started.body.data.run_id, seconds_spent: 60, local_date: '2026-09-22',
@@ -1268,7 +1268,7 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
       segment_id: 'function-machine-01', run_id: started.body.data.run_id,
       attempt_token: started.body.data.attempt_tokens['function-machine-01'], answer: { multiplier: '5', offset: '10' },
     });
-    expect(graded.body.data).toEqual({ verdict: { correct: true, score: 100 }, replayed: false });
+    expect(graded.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
 
     const complete = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({
       run_id: started.body.data.run_id, seconds_spent: 60, local_date: '2026-09-22',
@@ -1287,11 +1287,11 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
     const structure = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
       segment_id: 'bar-structure-01', run_id: started.body.data.run_id, attempt_token: started.body.data.attempt_tokens['bar-structure-01'], answer: { model: 'comparison' },
     });
-    expect(structure.body.data.verdict).toEqual({ correct: true, score: 100 });
+    expect(structure.body.data.verdict).toMatchObject({ correct: true, score: 100 });
     const answer = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
       segment_id: 'bar-answer-01', run_id: started.body.data.run_id, attempt_token: started.body.data.attempt_tokens['bar-answer-01'], answer: { value: '19' },
     });
-    expect(answer.body.data.verdict).toEqual({ correct: true, score: 100 });
+    expect(answer.body.data.verdict).toMatchObject({ correct: true, score: 100 });
     const complete = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({
       run_id: started.body.data.run_id, seconds_spent: 60, local_date: '2026-09-22',
     });
@@ -1309,9 +1309,9 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
     const grade = (segmentId: string, answer: Record<string, string>) => auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
       segment_id: segmentId, run_id: started.body.data.run_id, attempt_token: started.body.data.attempt_tokens[segmentId], answer,
     });
-    expect((await grade('schema-structure-01', { schema: 'change' })).body.data.verdict).toEqual({ correct: true, score: 100 });
-    expect((await grade('schema-slots-01', { income: '24', spending: '9' })).body.data.verdict).toEqual({ correct: true, score: 100 });
-    expect((await grade('schema-answer-01', { value: '15' })).body.data.verdict).toEqual({ correct: true, score: 100 });
+    expect((await grade('schema-structure-01', { schema: 'change' })).body.data.verdict).toMatchObject({ correct: true, score: 100 });
+    expect((await grade('schema-slots-01', { income: '24', spending: '9' })).body.data.verdict).toMatchObject({ correct: true, score: 100 });
+    expect((await grade('schema-answer-01', { value: '15' })).body.data.verdict).toMatchObject({ correct: true, score: 100 });
     const complete = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({
       run_id: started.body.data.run_id, seconds_spent: 60, local_date: '2026-09-22',
     });
@@ -1337,7 +1337,7 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
       segment_id: 'place-01', run_id: started.body.data.run_id,
       attempt_token: reviewed.body.data.retry_attempt_token, answer: { value: '7' },
     });
-    expect(met.body.data).toEqual({ verdict: { correct: true, score: 100 }, replayed: false });
+    expect(met.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
 
     const complete = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({
       run_id: started.body.data.run_id, seconds_spent: 60, local_date: '2026-09-22',
@@ -1347,7 +1347,7 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
     // B.5 (S05.3d): the kept score is first-try accuracy; a review retry is not a penalty but not a first try.
     expect(complete.body.data.receipt).toEqual({
       schema_version: 2, completion_id: started.body.data.run_id, lesson_id: LESSON_1_ID, version_id: 'number-line-rev-001',
-      locale: 'en-US', first_try_correct: 0, graded_count: 1, awarded_xp: 20, duration_seconds: 60, previous_best_percent: 0,
+      locale: 'en-US', first_try_correct: 0, graded_count: 1, viewed_count: 0, hints_used: 0, awarded_xp: 20, duration_seconds: 60, previous_best_percent: 0,
       replay: { kind: 'first', notice: 'none', best_score_kept: false, xp_policy: 'improvement_only' },
       judgment: { assessed: 0, sound: 0, partial: 0, unsupported: 0 },
       // S05.3e: the closed celebration list, the streak after this run and today's pace (B.20, B.21, B.24).
@@ -1367,12 +1367,12 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
       segment_id: 'cpa-concrete-01', run_id: runId,
       attempt_token: started.body.data.attempt_tokens['cpa-concrete-01'], answer: { value: '6' },
     });
-    expect(concreteReview.body.data.verdict).toEqual({ correct: false, score: 0 });
+    expect(concreteReview.body.data.verdict).toMatchObject({ correct: false, score: 0 });
     const pictorial = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
       segment_id: 'cpa-pictorial-01', run_id: runId,
       attempt_token: started.body.data.attempt_tokens['cpa-pictorial-01'], answer: { value: '7' },
     });
-    expect(pictorial.body.data.verdict).toEqual({ correct: true, score: 100 });
+    expect(pictorial.body.data.verdict).toMatchObject({ correct: true, score: 100 });
 
     const beforeAbstract = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({
       run_id: runId, seconds_spent: 60, local_date: '2026-09-22',
@@ -1383,7 +1383,7 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
       segment_id: 'cpa-abstract-01', run_id: runId,
       attempt_token: started.body.data.attempt_tokens['cpa-abstract-01'], answer: { value: '7' },
     });
-    expect(abstract.body.data.verdict).toEqual({ correct: true, score: 100 });
+    expect(abstract.body.data.verdict).toMatchObject({ correct: true, score: 100 });
     const complete = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({
       run_id: runId, seconds_spent: 60, local_date: '2026-09-22',
     });

@@ -3,9 +3,9 @@ import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser } from '../middleware/auth.js';
 import { AUTONOMY_LEVERS, PACE_GOALS, paceStatus } from '../services/autonomy.js';
-import { habitStateFromStats, pausedDays, readHabitStreak, type StreakReadModel } from '../services/habitStreak.js';
+import { habitStateFromStats, pausedDays, readHabitStreak, streakWeek, type StreakDay, type StreakReadModel } from '../services/habitStreak.js';
 import { isCalendarDate } from '../services/streak.js';
-import { getHabitStreakRow, getPacePreference, getStreakPauses, upsertPacePreference, type StreakPauseRow } from '../services/supabaseRest.js';
+import { getHabitStreakRow, getPacePreference, getPracticeDays, getStreakPauses, upsertPacePreference, type StreakPauseRow } from '../services/supabaseRest.js';
 import { getTutorPreferences } from '../services/tutorData.js';
 
 /*
@@ -33,6 +33,15 @@ const serverToday = () => new Date().toISOString().slice(0, 10);
 export interface StreakView extends StreakReadModel {
   /** The open or upcoming holiday pause a verified guardian set, if any. */
   pause: { startsOn: string; endsOn: string } | null;
+  /** GAP-FIX-R1 (Bible 04 §4.3): the current week's seven days, Monday first, in the learner's calendar. */
+  week: StreakDay[];
+}
+
+/** The Monday of `today`'s ISO week as YYYY-MM-DD. */
+function mondayOf(today: string): string {
+  const date = new Date(`${today}T00:00:00Z`);
+  const weekday = (date.getUTCDay() + 6) % 7;
+  return new Date(date.getTime() - weekday * 86_400_000).toISOString().slice(0, 10);
 }
 
 /** The streak as it reads on `today`, with the pause that matters now. Shared with the guardian's route. */
@@ -40,11 +49,17 @@ export async function loadStreakView(userId: string, today: string): Promise<Str
   const row = await getHabitStreakRow(userId);
   if (!row) return null;
   const state = habitStateFromStats(row);
-  const pauses = await getStreakPauses(userId, state.lastActiveDate ?? today);
-  if (!pauses) return null;
-  const view = readHabitStreak(state, today, pausedDays(pauses.map((p) => ({ startsOn: p.starts_on, endsOn: p.ends_on }))));
+  const monday = mondayOf(today);
+  const from = state.lastActiveDate && state.lastActiveDate < monday ? state.lastActiveDate : monday;
+  const [pauses, practiced] = await Promise.all([getStreakPauses(userId, from), getPracticeDays(userId, monday, today)]);
+  if (!pauses || !practiced) return null;
+  const paused = pausedDays(pauses.map((p) => ({ startsOn: p.starts_on, endsOn: p.ends_on })));
+  const view = readHabitStreak(state, today, paused);
   const current = pauses.find((p: StreakPauseRow) => p.ends_on >= today) ?? null;
-  return { ...view, pause: current ? { startsOn: current.starts_on, endsOn: current.ends_on } : null };
+  // The stats' own last day always counts, even before 0208 recorded it.
+  const days = new Set(practiced);
+  if (state.lastActiveDate && state.lastActiveDate >= monday && state.lastActiveDate <= today) days.add(state.lastActiveDate);
+  return { ...view, pause: current ? { startsOn: current.starts_on, endsOn: current.ends_on } : null, week: streakWeek(view, today, days, paused) };
 }
 
 export function learnMotivationRouter(): Router {

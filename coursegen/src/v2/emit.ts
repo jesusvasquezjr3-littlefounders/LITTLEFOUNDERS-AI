@@ -95,10 +95,15 @@ function mergeCopy(payload: unknown, copy: unknown, where: string, problems: str
 }
 
 function buildSegment(segment: V2PlanSegment, locale: V2Locale, problems: string[]): V2Segment {
-  const { prompt, ...rest } = segment.copy[locale];
+  const { prompt, help, ...rest } = segment.copy[locale];
   const where = `segments.${segment.id}.copy.${locale}`;
   const payload = mergeCopy(segment.payload, rest, where, problems) as Record<string, unknown>;
-  return { id: segment.id, type: segment.type, grading: segment.grading, prompt, visual: { ...segment.visual }, payload };
+  return {
+    id: segment.id, type: segment.type, grading: segment.grading, prompt, visual: { ...segment.visual }, payload,
+    ...(help ? { help: [...help] } : {}),
+    ...(segment.item_role ? { item_role: segment.item_role } : {}),
+    ...(segment.knowledge_component_id ? { knowledge_component_id: segment.knowledge_component_id } : {}),
+  };
 }
 
 /** A version id Vault accepts (`^[a-z0-9][a-z0-9._:-]{2,100}$`) for a Forge run. */
@@ -133,7 +138,10 @@ export function emitV2Lesson(plan: V2LessonPlan, options: { versionId: string; m
     }
   }
 
-  const answerKeys = Object.fromEntries(plan.segments.filter((segment) => segment.rubric).map((segment) => [segment.id, segment.rubric!]));
+  // B.16 / F-06: each market's answer keys come from its own rubric when the plan gives one per market.
+  const answerKeysFor = (locale: V2Locale) => Object.fromEntries(plan.segments
+    .filter((segment) => segment.rubric || segment.rubric_by_locale)
+    .map((segment) => [segment.id, segment.rubric_by_locale ? segment.rubric_by_locale[locale] : segment.rubric!]));
   const documents: EmittedV2Document[] = [];
   let notApplicable: Array<{ gate: number; reason: string }> = [];
   for (const locale of V2_LOCALES) {
@@ -162,7 +170,7 @@ export function emitV2Lesson(plan: V2LessonPlan, options: { versionId: string; m
     for (const problem of report.problems) problems.push({ ...problem, locale });
     for (const finding of report.review) review.push({ ...finding, locale });
     notApplicable = report.notApplicable;
-    documents.push({ lesson_id: plan.lesson_id, locale, schema_version: 2, version_id: options.versionId, document, answer_keys: { ...answerKeys } });
+    documents.push({ lesson_id: plan.lesson_id, locale, schema_version: 2, version_id: options.versionId, document, answer_keys: answerKeysFor(locale) });
   }
 
   const ok = problems.length === 0;

@@ -16,7 +16,10 @@ export const lessonCompletionReceiptSchema = z.object({
   version_id: id,
   locale: z.enum(['en-US', 'es-MX', 'pt-BR']),
   first_try_correct: z.number().int().nonnegative().safe(),
-  graded_count: z.number().int().positive().safe(),
+  // GAP-FIX-R1 (OD-17): a lesson made only of non-scored steps completes with zero graded steps.
+  graded_count: z.number().int().nonnegative().safe(),
+  viewed_count: z.number().int().nonnegative().safe().optional(),
+  hints_used: z.number().int().nonnegative().safe().optional(),
   awarded_xp: z.number().int().nonnegative().safe(),
   duration_seconds: z.number().int().positive().safe(),
   previous_best_percent: z.number().int().min(0).max(100),
@@ -128,7 +131,7 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
   const parsed = lessonCompletionReceiptSchema.safeParse(rawReceipt);
   const valid = parsed.success && parsed.data.locale === locale;
   const receiptValue = valid ? parsed.data : null;
-  const accuracyValue = receiptValue ? Math.round(100 * receiptValue.first_try_correct / receiptValue.graded_count) : 0;
+  const accuracyValue = receiptValue ? receiptValue.graded_count === 0 ? 100 : Math.round(100 * receiptValue.first_try_correct / receiptValue.graded_count) : 0;
   const keptBest = receiptValue ? receiptValue.replay ? receiptValue.replay.notice === 'best_kept'
     : accuracyValue < receiptValue.previous_best_percent : false;
   const reported = useRef(false);
@@ -202,7 +205,7 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
         <h1 data-copy-role="heading">{heading}</h1>
         {/* B.20: the skill behind the XP leads; the first-try count lives in the accuracy tile. B.23: framed per register. */}
         {skill ? <p className="lf-result-figured" data-copy-role="body">{recognition(skill)}</p>
-          : keptBest ? null
+          : keptBest || receipt.graded_count === 0 ? null
             : <p data-copy-role="body">{t.score(receipt.first_try_correct, receipt.graded_count)}</p>}
         {courseMoment}
         {streakLine}

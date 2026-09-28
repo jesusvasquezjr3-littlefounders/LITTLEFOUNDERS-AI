@@ -1,5 +1,8 @@
 import { z } from 'zod';
 import { growthComparison } from './growthComparisonModel.generated';
+import { longArithmeticSchema, v2FamilySegments, v2SegmentExtras } from './v2SegmentFamilies.generated';
+import { conceptAllowed, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptType } from './v2ConceptBoards.generated';
+import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './charts/chartModel.generated';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/);
 const locale = z.enum(['en-US', 'es-MX', 'pt-BR']);
@@ -22,12 +25,25 @@ export const mentorStageSchema = z.object({
   scene: z.enum(MENTOR_STAGE_SCENES),
 }).strict();
 export type LessonMentorStage = z.infer<typeof mentorStageSchema>;
+
+/*
+ * B.8 (GAP-FIX-R1 learning): the adventure scene theme Core projects beside
+ * `mentor_stage` (Core's ADVENTURE_THEMES). Closed on both sides; an unknown
+ * theme simply draws no scene band.
+ */
+export const ADVENTURE_THEMES = ['archipelago', 'forest', 'city', 'valley', 'kingdom', 'cosmos'] as const;
+export type AdventureTheme = (typeof ADVENTURE_THEMES)[number];
+export function loadAdventureThemeProjection(raw: unknown): AdventureTheme | null {
+  return typeof raw === 'string' && (ADVENTURE_THEMES as readonly string[]).includes(raw) ? raw as AdventureTheme : null;
+}
 const eligibility = z.object({ minimum_age: z.number().int().min(0).max(119), maximum_age: z.number().int().min(0).max(119) }).strict()
   .refine((value) => value.minimum_age <= value.maximum_age, 'Invalid age eligibility');
 const positiveInteger = z.number().int().positive().safe();
 const nonnegativeInteger = z.number().int().nonnegative().safe();
 
-const segmentBase = { id, prompt: z.string().trim().min(1).max(500) };
+const segmentBase = { id, prompt: z.string().trim().min(1).max(500), ...v2SegmentExtras };
+/** Appendix P Parts 1/4.2/7: these visuals may be server-graded or explored ungraded (Core's `optionalServer`). */
+const optionalServer = z.enum(['server', 'none']);
 const allocationSegment = z.object({
   ...segmentBase,
   type: z.literal('money.allocation.v2'),
@@ -99,7 +115,7 @@ const schemaDiagramAnswerSegment = z.object({ ...segmentBase, type: z.literal('m
 const goalBulletSegment = z.object({
   ...segmentBase,
   type: z.literal('visual.goal-bullet.v2'),
-  grading: z.literal('none'),
+  grading: optionalServer,
   visual: z.object({ type: z.literal('bullet') }).strict(),
   payload: z.object({ minimum: nonnegativeInteger, maximum: positiveInteger, target: positiveInteger, step: positiveInteger,
     initial: nonnegativeInteger, currency: z.enum(['coins', 'local']) }).strict()
@@ -112,7 +128,7 @@ const goalBulletSegment = z.object({
 const percentGridSegment = z.object({
   ...segmentBase,
   type: z.literal('visual.percent-grid.v2'),
-  grading: z.literal('none'),
+  grading: optionalServer,
   visual: z.object({ type: z.literal('percent-grid') }).strict(),
   payload: z.object({ baseUnits: positiveInteger.max(1_000_000), step: positiveInteger.max(100),
     initialPercent: nonnegativeInteger.max(100), mode: z.enum(['discount', 'tax']), currency: z.enum(['coins', 'local']) }).strict()
@@ -123,7 +139,7 @@ const percentGridSegment = z.object({
 const placeValueSegment = z.object({
   ...segmentBase,
   type: z.literal('math.place-value.v2'),
-  grading: z.literal('none'),
+  grading: optionalServer,
   visual: z.object({ type: z.literal('base-ten') }).strict(),
   payload: z.object({ total: positiveInteger.min(10).max(29) }).strict(),
 }).strict();
@@ -131,7 +147,7 @@ const placeValueSegment = z.object({
 const savingsRuleSegment = z.object({
   ...segmentBase,
   type: z.literal('logic.savings-rule.v2'),
-  grading: z.literal('none'),
+  grading: optionalServer,
   visual: z.object({ type: z.literal('rule-diagram') }).strict(),
   payload: z.object({ goal: positiveInteger.min(2).max(100), shortfall: positiveInteger }).strict()
     .refine((value) => value.shortfall < value.goal, 'Shortfall must be smaller than the goal'),
@@ -140,7 +156,7 @@ const savingsRuleSegment = z.object({
 const runningLedgerSegment = z.object({
   ...segmentBase,
   type: z.literal('money.running-ledger.v2'),
-  grading: z.literal('none'),
+  grading: optionalServer,
   visual: z.object({ type: z.literal('balance-meter') }).strict(),
   payload: z.object({ initial: nonnegativeInteger.max(100), sale: positiveInteger.max(100),
     cost: positiveInteger.max(100), maxEntries: positiveInteger.max(8) }).strict(),
@@ -149,7 +165,7 @@ const runningLedgerSegment = z.object({
 const growthComparisonSegment = z.object({
   ...segmentBase,
   type: z.literal('visual.growth-comparison.v2'),
-  grading: z.literal('none'),
+  grading: optionalServer,
   visual: z.object({ type: z.literal('multi-line') }).strict(),
   payload: z.object({
     principalMinor: positiveInteger.max(1_000_000),
@@ -183,7 +199,7 @@ const growthComparisonSegment = z.object({
 const taxBracketSegment = z.object({
   ...segmentBase,
   type: z.literal('visual.tax-bracket.v2'),
-  grading: z.literal('none'),
+  grading: optionalServer,
   visual: z.object({ type: z.literal('stacked-bar') }).strict(),
   payload: z.object({
     minimumIncomeMinor: nonnegativeInteger, maximumIncomeMinor: positiveInteger.max(10_000_000), incomeStepMinor: positiveInteger,
@@ -201,7 +217,7 @@ const taxBracketSegment = z.object({
 const ratioTableSegment = z.object({
   ...segmentBase,
   type: z.literal('math.ratio-table.v2'),
-  grading: z.literal('none'),
+  grading: optionalServer,
   visual: z.object({ type: z.literal('ratio-table') }).strict(),
   payload: z.object({
     itemsPerPack: positiveInteger.max(12), pricePerPack: positiveInteger.max(1_000),
@@ -231,6 +247,8 @@ const workedExampleSegment = z.object({
     }).strict()).min(3).max(4),
     fade_count: nonnegativeInteger.max(3),
     response_step_ids: z.array(id).min(2).max(3),
+    // M9 (GAP-FIX-R1): the optional written algorithm, mirrored with Core.
+    algorithm: longArithmeticSchema.optional(),
   }).strict().refine((value) => value.fade_count < value.steps.length
     && new Set(value.steps.map((step) => step.id)).size === value.steps.length
     && value.response_step_ids.join(':') === value.steps.slice(1).map((step) => step.id).join(':'),
@@ -286,7 +304,21 @@ const decideJustifySegment = z.object({
     === value.choices.length + value.reasons.length, 'Invalid decision reasons'),
 }).strict();
 
-const segment = z.discriminatedUnion('type', [allocationSegment, timelineSegment, numberLineSegment, fractionNumberLineSegment, fractionAreaSegment, barModelStructureSegment, barModelAnswerSegment, schemaDiagramStructureSegment, schemaDiagramSlotsSegment, schemaDiagramAnswerSegment, goalBulletSegment, percentGridSegment, placeValueSegment, savingsRuleSegment, runningLedgerSegment, growthComparisonSegment, taxBracketSegment, ratioTableSegment, workedExampleSegment, functionMachineSegment, cpaCountSegment, decideJustifySegment]);
+/* B.7 part 1 (GAP-FIX-R1): a teaching chart of any first-release kind, mirrored with Core's `chart`. */
+const chartQuestion = z.object({ prompt: z.string().trim().min(1).max(160), options: z.array(z.object({ id, label: z.string().trim().min(1).max(80) }).strict()).min(2).max(4) }).strict();
+const chartSegment = z.object({
+  ...segmentBase,
+  type: z.literal('visual.chart.v2'),
+  grading: optionalServer,
+  visual: z.object({ type: z.enum(CHART_KINDS) }).strict(),
+  payload: z.object({ title: z.string().trim().min(1).max(60), data: chartDataSchema, question: chartQuestion.optional() }).strict(),
+}).strict().superRefine((value, ctx) => {
+  const problem = chartProblem(value.visual.type, value.payload.data);
+  if (problem) ctx.addIssue({ code: 'custom', path: ['payload', 'data'], message: problem });
+  if ((value.grading === 'server') !== !!value.payload.question) ctx.addIssue({ code: 'custom', path: ['grading'], message: 'A graded chart asks one question' });
+});
+
+const segment = z.discriminatedUnion('type', [allocationSegment, timelineSegment, numberLineSegment, fractionNumberLineSegment, fractionAreaSegment, barModelStructureSegment, barModelAnswerSegment, schemaDiagramStructureSegment, schemaDiagramSlotsSegment, schemaDiagramAnswerSegment, goalBulletSegment, percentGridSegment, placeValueSegment, savingsRuleSegment, runningLedgerSegment, growthComparisonSegment, taxBracketSegment, ratioTableSegment, workedExampleSegment, functionMachineSegment, cpaCountSegment, decideJustifySegment, chartSegment, ...v2FamilySegments, ...v2ConceptSegments]);
 type SegmentType = z.infer<typeof segment>['type'];
 export const REQUIRED_SEGMENT_CAPABILITIES = {
   'money.allocation.v2': ['visual.stacked-bar.v1', 'operation.reallocate.v1'],
@@ -312,10 +344,49 @@ export const REQUIRED_SEGMENT_CAPABILITIES = {
   'math.function-machine.v2': ['visual.function-machine.v1', 'operation.try-input.v1', 'operation.guess-rule.v1', 'operation.held-out-check.v1'],
   'math.cpa-count.v2': ['visual.cpa-count.v1', 'operation.count-objects.v1', 'operation.symbolic-answer.v1'],
   'reasoning.decide-justify.v2': ['visual.decision-card.v1', 'operation.choose-option.v1', 'operation.justify-choice.v1'],
+  // B.7 part 1: plus `visual.<kind>.v1` for the drawn kind, and choose-option when it asks a question.
+  'visual.chart.v2': ['operation.show-table.v1'],
+  // GAP-FIX-R1 learning (Appendix P Part 8 first release; B.8, B.9, B.11).
+  'logic.rule-checker.v2': ['visual.rule-cards.v1', 'operation.flip-card.v1'],
+  'logic.euler.v2': ['visual.euler.v1', 'operation.place-in-region.v1', 'operation.move-menu.v1'],
+  'logic.flowchart.v2': ['visual.flowchart.v1', 'operation.step-flowchart.v1'],
+  'money.spend-decision.v2': ['visual.decision-tree.v1', 'operation.step-flowchart.v1'],
+  'logic.sort-by-rule.v2': ['visual.sort-bins.v1', 'operation.sort-to-bin.v1', 'operation.move-menu.v1', 'operation.justify-choice.v1'],
+  'money.needs-wants.v2': ['visual.sort-bins.v1', 'operation.sort-to-bin.v1', 'operation.move-menu.v1', 'operation.justify-choice.v1'],
+  'logic.scam-spotter.v2': ['visual.message-list.v1', 'operation.flag-item.v1'],
+  'money.scam-check.v2': ['visual.message-list.v1', 'operation.flag-item.v1'],
+  'money.coin-tray.v2': ['visual.coin-tray.v1', 'operation.count-money.v1'],
+  'money.making-change.v2': ['visual.coin-tray.v1', 'operation.count-money.v1', 'operation.make-change.v1'],
+  'story.branch.v2': ['visual.story-scene.v1', 'operation.choose-option.v1'],
+  'story.dialogue-choice.v2': ['visual.dialogue.v1', 'operation.choose-option.v1'],
+  'story.would-you-rather.v2': ['visual.would-you-rather.v1', 'operation.choose-option.v1'],
+  'voice.mentor-turn.v2': ['visual.speech-plate.v1'],
+  'voice.mentor-episode.v2': ['visual.speech-plate.v1', 'operation.step-replay.v1'],
+  // GAP-FIX-R1 learning (Appendix A Parts 2 and 3; B.7 part 2).
+  'money.amortization.v2': ['visual.amortization.v1', 'operation.step-replay.v1', 'operation.number-input.v1'],
+  'econ.supply-demand.v2': ['visual.supply-demand.v1', 'operation.drag-point.v1', 'operation.curve-shift.v1'],
+  'money.opportunity-cost.v2': ['visual.token-chooser.v1', 'operation.trade-off-chooser.v1'],
+  'money.inflation.v2': ['visual.inflation.v1', 'operation.parameter-slider.v1', 'operation.scale-toggle.v1', 'operation.before-after.v1', 'operation.reactive-text.v1'],
+  'money.rule-of-72.v2': ['visual.doubling.v1', 'operation.parameter-slider.v1', 'operation.threshold-marker.v1'],
+  'money.debt-payoff.v2': ['visual.debt-race.v1', 'operation.what-if-branch.v1', 'operation.ghost-trace.v1'],
+  'money.diversification.v2': ['visual.portfolio.v1', 'operation.reallocate.v1', 'operation.linked-representations.v1'],
+  'money.lemonade-stand.v2': ['visual.waterfall.v1', 'operation.guided-sandbox.v1', 'operation.running-ledger.v1'],
 } as const satisfies Record<SegmentType, readonly string[]>;
 export const LESSON_CLIENT_CAPABILITIES = [...new Set([...Object.values(REQUIRED_SEGMENT_CAPABILITIES).flat(),
-  'visual.waffle.v1', 'visual.donut.v1'])];
+  'visual.waffle.v1', 'visual.donut.v1', ...CHART_KINDS.map((kind) => `visual.${kind}.v1`)])];
 const knownTypes = new Set(Object.keys(REQUIRED_SEGMENT_CAPABILITIES));
+/** Every occurrence of a chain member sits inside a complete, in-order run of the whole chain. */
+function contiguousChains(types: readonly string[], chain: readonly string[]): boolean {
+  for (let index = 0; index < types.length; index += 1) {
+    const position = chain.indexOf(types[index]!);
+    if (position < 0) continue;
+    if (position !== 0) return false;
+    for (let step = 1; step < chain.length; step += 1) if (types[index + step] !== chain[step]) return false;
+    index += chain.length - 1;
+  }
+  return true;
+}
+
 const representationProgression = z.object({
   fading_group_id: id,
   problem_id: id,
@@ -347,6 +418,9 @@ export const lessonClientDocumentSchema = z.object({
   for (const [index, value] of document.segments.entries()) {
     if (ids.has(value.id)) ctx.addIssue({ code: 'custom', path: ['segments', index, 'id'], message: 'Duplicate segment id' });
     ids.add(value.id);
+    if (value.knowledge_component_id !== undefined && !document.knowledge_component_ids.includes(value.knowledge_component_id)) {
+      ctx.addIssue({ code: 'custom', path: ['segments', index, 'knowledge_component_id'], message: 'Unknown knowledge component' });
+    }
   }
   if (new Set(document.knowledge_component_ids).size !== document.knowledge_component_ids.length) {
     ctx.addIssue({ code: 'custom', path: ['knowledge_component_ids'], message: 'Duplicate knowledge component id' });
@@ -357,11 +431,19 @@ export const lessonClientDocumentSchema = z.object({
   }
   const expected = new Set<string>();
   for (const [index, value] of document.segments.entries()) {
-    const needed = value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar'
-      ? [`visual.${value.visual.type}.v1`, 'operation.reallocate.v1'] : REQUIRED_SEGMENT_CAPABILITIES[value.type];
+    const needed: readonly string[] = value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar'
+      ? [`visual.${value.visual.type}.v1`, 'operation.reallocate.v1']
+      : value.type === 'visual.chart.v2' ? [`visual.${value.visual.type}.v1`, ...REQUIRED_SEGMENT_CAPABILITIES[value.type], ...(value.payload.question ? ['operation.choose-option.v1'] : [])]
+        : REQUIRED_SEGMENT_CAPABILITIES[value.type];
+    if (value.type === 'visual.chart.v2' && !chartAllowed(value.visual.type, document.age_band, document.course_id)) {
+      ctx.addIssue({ code: 'custom', path: ['segments', index, 'visual'], message: 'This chart kind is not open to this age pathway or subject' });
+    }
     needed.forEach((capability) => expected.add(capability));
     if (needed.some((capability) => !declared.has(capability))) {
       ctx.addIssue({ code: 'custom', path: ['required_capabilities'], message: 'Missing segment capability declaration' });
+    }
+    if ((V2_CONCEPT_TYPES as readonly string[]).includes(value.type) && !conceptAllowed(value.type as V2ConceptType, document.age_band)) {
+      ctx.addIssue({ code: 'custom', path: ['segments', index, 'type'], message: 'This concept board is not open to this age pathway' });
     }
     if (value.type === 'math.place-value.v2' && document.age_band !== '6-9') {
       ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Place-value pilot is restricted to ages 6–9' });
@@ -427,16 +509,13 @@ export const lessonClientDocumentSchema = z.object({
       ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'CPA count is restricted to ages 6–12' });
     }
   }
-  const hasBarModel = document.segments.some((value) => value.type === 'math.bar-model.structure.v2' || value.type === 'math.bar-model.answer.v2');
-  if (hasBarModel && (document.segments.length !== 2
-    || document.segments[0]?.type !== 'math.bar-model.structure.v2'
-    || document.segments[1]?.type !== 'math.bar-model.answer.v2')) {
+  // OD-17 / B.7 (GAP-FIX-R1): mixed documents may surround the M7 chains, which stay contiguous and ordered (Core's contiguousChains).
+  if (!contiguousChains(document.segments.map((value) => value.type), ['math.bar-model.structure.v2', 'math.bar-model.answer.v2'])) {
     ctx.addIssue({ code: 'custom', path: ['segments'], message: 'Bar-model pilot requires an ordered structure and answer pair' });
   }
   const hasSchemaDiagram = document.segments.some((value) => value.type === 'math.schema-diagram.structure.v2' || value.type === 'math.schema-diagram.slots.v2' || value.type === 'math.schema-diagram.answer.v2');
   if (hasSchemaDiagram && (document.age_band !== '10-12' || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12
-    || document.segments.length !== 3 || document.segments[0]?.type !== 'math.schema-diagram.structure.v2'
-    || document.segments[1]?.type !== 'math.schema-diagram.slots.v2' || document.segments[2]?.type !== 'math.schema-diagram.answer.v2')) {
+    || !contiguousChains(document.segments.map((value) => value.type), ['math.schema-diagram.structure.v2', 'math.schema-diagram.slots.v2', 'math.schema-diagram.answer.v2']))) {
     ctx.addIssue({ code: 'custom', path: ['segments'], message: 'Schema-diagram pilot requires an ordered 10–12 structure, slots and answer sequence' });
   }
   const cpaSegments = document.segments.filter((value) => value.type === 'math.cpa-count.v2');

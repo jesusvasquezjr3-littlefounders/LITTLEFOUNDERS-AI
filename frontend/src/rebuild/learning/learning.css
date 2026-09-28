@@ -177,3 +177,5 @@
   .lf-learning-control { align-items: stretch; flex-direction: column; border-block-start: 0; padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); }
   .lf-learning-actions { justify-self: end; inline-size: min(100%, 360px); }
 }
+/* GAP-FIX-R1: a non-scored step Core did not record keeps the learner on the step with this notice under the board. */
+.lf-learning-view-failed { margin-block-start: var(--spacing-3); }

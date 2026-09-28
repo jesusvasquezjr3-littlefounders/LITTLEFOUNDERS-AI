@@ -173,11 +173,61 @@
       "safetyTrustLead": "pending"
     },
     {
+      "component": "mentor.non_negotiables",
+      "hash": "79c2c5ab717bc622f94e5671c153779362dd80488c7c3152151ff645331e9f3d",
+      "files": 9,
+      "date": "2026-09-28",
+      "change": "GAP-FIX-R1 learning: course lessons feed the Mentor's KC mastery through recordAttempt (kcData course_lesson source, owner review P-09); learning.transfer_success instrumented in the Mentor quality registry; courseLessonEvidence.ts classified under mentor.runtime",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "measurement.stage7_and_thresholds",
+      "hash": "cf69eeeded1d245f816e1490afe614cdd5a94fb4f2d888c2825b9e6b2680d3cd",
+      "files": 9,
+      "date": "2026-09-28",
+      "change": "GAP-FIX-R1 learning: course lessons feed the Mentor's KC mastery through recordAttempt (kcData course_lesson source, owner review P-09); learning.transfer_success instrumented in the Mentor quality registry; courseLessonEvidence.ts classified under mentor.runtime",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
       "component": "live_content.judge_and_packs",
       "hash": "a8b4a1596d5aa80a51bb8890e4b990fea8b5e17fd12b16ab35df8a7ca71d88d3",
       "files": 5,
       "date": "2026-09-28",
       "change": "Gap-fix F1-staff-ops (G.3, Appendix N 1.2): a curated-pack status decision and its admin.tutor_pack.status audit row now commit in one database transaction (set_tutor_pack_status); the contract validation, the content-hash check and the human release gate are unchanged",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "governance.model",
+      "hash": "11ab1946b970f18521d67ce146d15e29bcd501d9f01657bc7c442d845935bebe",
+      "files": 3,
+      "date": "2026-09-28",
+      "change": "GAP-FIX-R1 learning: course lessons feed the Mentor's KC mastery through recordAttempt (kcData course_lesson source, owner review P-09); learning.transfer_success instrumented in the Mentor quality registry; courseLessonEvidence.ts classified under mentor.runtime",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "mentor.non_negotiables",
+      "hash": "427f4abefaae7040eacee8c5552c4f8e48156db0e0cdeb85d58c62bf1a828209",
+      "files": 9,
+      "date": "2026-09-28",
+      "change": "Merge integration of GAP-FIX-R1 learning into the integration branch: the lane's course_lesson KC evidence and learning.transfer_success signal combined with F1-staff-ops' consolidated Block B learning signals (C.24) and the other gap-fix round 1 lanes; no threshold, rubric criterion or Stage 7 rollback changes beyond the two recorded lane changes",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "measurement.stage7_and_thresholds",
+      "hash": "a80c2ec109dbc21cd5eef19394e5faf46214fe73662d29f68235a046b0c32983",
+      "files": 9,
+      "date": "2026-09-28",
+      "change": "Merge integration of GAP-FIX-R1 learning into the integration branch: the lane's course_lesson KC evidence and learning.transfer_success signal combined with F1-staff-ops' consolidated Block B learning signals (C.24) and the other gap-fix round 1 lanes; no threshold, rubric criterion or Stage 7 rollback changes beyond the two recorded lane changes",
       "origin": "human",
       "pedagogicalReviewer": "pending",
       "safetyTrustLead": "pending"

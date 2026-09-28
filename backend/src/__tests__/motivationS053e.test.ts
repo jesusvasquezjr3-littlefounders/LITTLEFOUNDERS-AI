@@ -223,6 +223,10 @@ describe('B.21 — the habit streak: rest days, a resting run, and the permanent
     const res = await get(ADULT, `/learn/rhythm?local_date=${TODAY}`);
     expect(res.status, JSON.stringify(res.body)).toBe(200);
     expect(res.body.data.streak).toMatchObject({ status: 'resting', current: 0, best: 12, daysPracticed: 40, restDaysLeft: 2, pause: null });
+    // GAP-FIX-R1 (Bible 04 §4.3): the strip's seven days, Monday first; a broken run shows open days, never a "missed" state.
+    expect(res.body.data.streak.week).toHaveLength(7);
+    expect(new Set(res.body.data.streak.week.map((day: { state: string }) => day.state))).not.toContain('rest');
+    expect(res.body.data.streak.week.find((day: { date: string }) => day.date === TODAY).state).toBe('today');
     expect(stats(ADULT)).toEqual(before);
     expect(res.body.data.levers).toEqual(['path', 'mentor', 'pace']);
     expect(JSON.stringify(res.body.data)).not.toMatch(/avatar/);
