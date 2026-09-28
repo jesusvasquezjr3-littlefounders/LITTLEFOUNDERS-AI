@@ -226,8 +226,9 @@ contradict D-14 (b).
 unit suite once each; `database` `npm test`; root `tools:test`,
 `spec:check`, `secrets:check` and the i18n gate. All green: Core 3,225
 tests after the exemption above (the one red was that pin); frontend 267 files
-/ 3,051 tests (a first run under four concurrent lanes' load had 4 timing reds
-in files this lane never touched, the rerun was clean); `database` 48 tests
+/ 3,051 tests (a first run under four concurrent lanes' load had 14 reds in 4
+files, one identified as LookEditorRoute, which this lane never touched; the
+unchanged rerun was fully clean); `database` 48 tests
 plus the railway-migrate integration; `tools:test` 389 tests. The orchestrator
 runs the browser audit and `test:all` at merge.
 
