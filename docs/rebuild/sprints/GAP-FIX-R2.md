@@ -45,3 +45,51 @@ public-site area. Each was checked in the code first; all three were real.
 - (Closed at the finish checkpoint) The staff analytics PDF report embedded the legacy raster wordmark.
 - `database/types/database.ts` not regenerated for the new function (Core reads it untyped through `serviceRest`, as it does `identity_metrics`).
 - `assetGate.test.ts` needs the orchestrator's quiet run (see verification).
+
+## Checkpoint F2-identity-site-finish
+
+Lane finish for identity-site. Synced with `codex/spec-migration-s02` (already
+up to date, no conflicts).
+
+### Adversarial pass and what it built
+
+- **Staff analytics report PDF (02 D3, D4, D8; 07 §1 and §3).** The last
+  outbound document still inlined the legacy raster wordmark. `drawLogo` now
+  draws `brand.mark` as pdfkit vectors from the asset's own 64-unit geometry
+  beside a text wordmark; the report palette moves from the legacy
+  indigo/slate set to the rebuilt light tokens; `backend/src/assets/lfLogo.ts`
+  (the base64 PNG) is deleted. `analytics-report-pdf.test.ts` asserts no image
+  object in the report and the mark's token fills in the uncompressed lockup.
+  `lf-logo-email.png` itself stays in `public/` (delivered emails link to it).
+- **FAQ copy budget.** The full frontend suite caught the rewritten en-US
+  `analyticsToggle` answer at 27 words against the site body budget of 25; it
+  now reads "Under 13, we never collect usage data. For a teen, it stays off
+  until their Tutor or the teen turns it on." (22 words; es-MX and pt-BR were
+  within their budget).
+- Re-checked: all three gaps are enforced at Core (the onboarding predicate,
+  the 403 on under-13 analytics grants), no legacy component in the rebuilt
+  console or onboarding, new copy present in all three locales (i18n gate
+  green), no remaining reference to the deleted `public/` rasters.
+
+### Verification (local, lane finish)
+
+- Backend: type-check and lint clean; full unit suite run once: 9 red, all in
+  files this lane did not touch (admin, auth, coopGoals, learnNarrative,
+  socialGovernance; 5 s timeouts while three other lanes ran suites), and all
+  five files pass alone (223/223).
+- Frontend: type-check and lint clean; full unit suite run once (264 files,
+  3,040 tests): the copy-budget red above (fixed, `site.test.ts` 6/6);
+  `StaffInsights.test.tsx` and `App.test.tsx` timeouts that pass alone;
+  `assetGate.test.ts` timed out again (see the open item).
+- Root: `spec:check`, `secrets:check` and the i18n gate green.
+
+### Open items (final)
+
+- `assetGate.test.ts` still needs a quiet-machine run; its cases time out here
+  (fresh temp trees read slowly; the gate logic was proved by hand).
+- `database/types/database.ts` not regenerated for
+  `onboarding_discovery_metrics()` (read untyped through `serviceRest`).
+- Owner first-asset style review of the new `brand` review family
+  (`brand.mark`, 07 §7 item 2); the PDF lockup and icons follow it.
+- Production (later, owner): migration `onboarding_discovery_metrics` plus a
+  Core and frontend deploy; icons, share cards and the PDF ship with them.
