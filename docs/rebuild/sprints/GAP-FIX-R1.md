@@ -54,3 +54,10 @@ What was built:
 Verified locally: `npm run verify:placement` is OK on both Dioramas (every lead clear in every stage shot and viewport, still on walkable ground, inside the rim and facing the learner). `occlusion.test.ts` covers all four characters: points on open ground are clear, a post in the camera corridor is reported by shot, viewport and point, the same post behind the character is not, and the solver moves the lead out of a blocked corridor. The tutor-scene and mentor suites are green.
 
 Limitation: the head and hand points are proportional samples of each character's measured height in the bind pose, not projected skinned bones. The exports are quantized and skinned, and the repository cannot measure them headless (see `verify-placement.ts` `characterStandIn`). A gesture that swings a hand far from its bind position is not covered.
+
+### Owner questions and the defaults taken (Mentor lane)
+
+1. **OD-13 retry cost.** The Mentor turn Copy Budget is enforced as written: 12 words for ages 6-9, 20 above, 2 sentences, one question. An overflow spends the one retry, and many real child turns overflow today, so turns cost more model calls. Default taken: enforce, lowest-priority repair, survivals delivered and counted. The retry rate should be measured before release.
+2. **OD-6 self-naming scope.** Only the Mentor calling *itself* a tutor, bot or assistant is caught. "Ask your tutor" (the parent) and a story's "shop assistant" pass. Default taken: self-reference only, to avoid retrying correct sentences.
+3. **C.24 `tell_honored`.** The rules scorer counts an answer turn that carried the tell rung as honoured. Whether that turn really stated the answer is still the judge's question. Default taken: a hard invariant on the runtime record, plus the judge.
+4. **08 §2 occlusion points.** Head and hands are proportional samples, not skinned bones. Default taken: gate placement on them now; measure real bones when source exports are available.
