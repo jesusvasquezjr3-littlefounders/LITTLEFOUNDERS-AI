@@ -24,3 +24,4 @@
 .lf-chart-legend svg { inline-size: 12px; block-size: 12px; }
 .lf-chart-note { font-size: .875rem; }
 .lf-chart-table { inline-size: 100%; }
+.lf-chart-icon { stroke: var(--surface); stroke-width: 1; }

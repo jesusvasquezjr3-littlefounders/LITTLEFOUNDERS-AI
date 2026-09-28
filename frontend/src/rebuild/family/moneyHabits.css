@@ -59,3 +59,6 @@
 .lf-goal-progress [data-part='bonus'] { background: repeating-linear-gradient(135deg, var(--reward-strong) 0 4px, var(--reward-soft) 4px 8px); }
 .lf-goal-progress [data-part='family'] { background: radial-gradient(circle, var(--sky-strong) 2px, var(--sky-soft) 2.5px) 0 0 / 6px 6px; }
 .lf-money-habits-scale { flex: 1 0 100%; color: var(--content-muted); font-weight: 700; }
+/* GAP-FIX-R1: the one Save/Spend/Share split shared by the Wallet and the lesson board. */
+.lf-pocket-split { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-pocket-split-left { margin: 0; font-weight: 800; }

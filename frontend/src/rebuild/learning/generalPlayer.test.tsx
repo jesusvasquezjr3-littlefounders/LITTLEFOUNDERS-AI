@@ -110,9 +110,9 @@ describe('general v2 player', () => {
     const onGradeAny = vi.fn(async () => ({ verdict: 'review' as const, diagnostic: 'structure' }));
     render(<LessonDocumentView raw={mixed([euler], ['visual.euler.v1', 'operation.place-in-region.v1', 'operation.move-menu.v1'])} locale="en-US" ageBand="6-9" onBack={noop} onGradeAny={onGradeAny} />);
     // A subset has no "only Dogs" region.
-    expect(screen.queryByRole('button', { name: 'Only Dogs' })).toBeNull();
-    fireEvent.click(screen.getAllByRole('button', { name: 'Dogs' })[0]!);
-    fireEvent.click(screen.getAllByRole('button', { name: 'In neither' })[1]!);
+    expect(screen.queryByRole('radio', { name: 'Only Dogs' })).toBeNull();
+    fireEvent.click(screen.getAllByRole('radio', { name: 'Dogs' })[0]!);
+    fireEvent.click(screen.getAllByRole('radio', { name: 'In neither' })[1]!);
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(onGradeAny).toHaveBeenCalledWith({ placements: { 'item-rex': 'both', 'item-car': 'neither' } }, 'euler-01', expect.anything()));
     expect(await screen.findByText('Not yet. Check how you set it up.')).toBeTruthy();

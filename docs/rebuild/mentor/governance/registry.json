@@ -258,6 +258,7 @@
         "backend/src/services/pedagogy/checkAnswer.ts",
         "backend/src/services/pedagogy/normalizeSpoken.ts",
         "backend/src/services/pedagogy/recordAttempt.ts",
+        "backend/src/services/pedagogy/courseLessonEvidence.ts",
         "backend/src/services/pedagogy/sessionNarrative.ts"
       ],
       "examples": ["A whiteboard layout adjustment", "A grading tolerance for spoken numbers"],

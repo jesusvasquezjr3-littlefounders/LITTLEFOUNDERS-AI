@@ -1,0 +1,92 @@
+name: Learning practice-day retention sweep
+
+# The daily sweep of learning_practice_days (GAP-FIX-R1, weekly streak strip;
+# Bible 02 §9.6). Each practised local day is kept 400 days. The practice-day
+# trigger trims an active learner's own rows; this workflow asks Core, daily,
+# to run public.sweep_learning_practice_days for learners who stopped
+# practising.
+#
+# WHY IT CALLS CORE FROM INSIDE CORE: same reasoning as social-retention.yml.
+# The sweep route is internal-key-only, and standing inside the container over
+# `railway ssh` and calling 127.0.0.1 uses the INTERNAL_API_KEY already in that
+# process's environment, so no live credential is copied into a secret.
+#
+# IT IS RE-RUNNABLE: it deletes only rows already past the window.
+#
+# ORDER: the function comes from the learning_practice_days migration. Until
+# it is applied, Core answers 502 and this workflow fails loudly, deleting
+# nothing.
+
+on:
+  schedule:
+    - cron: '30 4 * * *' # 04:30 UTC daily, after social-retention.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sweep:
+    name: Apply practice-day retention
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli@5.43.1
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
+          chmod 600 ~/.ssh/railway_key
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            LogLevel ERROR
+          CONFIG
+          chmod 600 ~/.ssh/config
+
+      - name: Sweep expired practice days
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # Same transport as social-retention.yml: the request travels
+          # base64-encoded as ONE argument, and $INTERNAL_API_KEY / $PORT expand
+          # inside the container, never on this runner.
+          remote_sweep() {
+            local script b64
+            script='curl -sS -X POST'
+            script="$script"' -H "Content-Type: application/json"'
+            script="$script"' -H "x-internal-api-key: $INTERNAL_API_KEY"'
+            script="$script"" -d '{}'"
+            script="$script"' "http://127.0.0.1:${PORT:-4000}/api/v1/internal/learning-retention/run"'
+            b64=$(printf '%s' "$script" | base64 | tr -d '\n')
+            railway ssh --service littlefounders-backend -i ~/.ssh/railway_key -- \
+              sh -c "echo $b64 | base64 -d | sh" 2>&1
+          }
+
+          body=''
+          for attempt in 1 2 3; do
+            if body=$(remote_sweep); then break; fi
+            echo "attempt ${attempt} failed:" >&2
+            printf '%s\n' "$body" | head -5 >&2
+            body=''
+            sleep 20
+          done
+          if [ -z "$body" ]; then
+            echo "::error::could not reach Core after 3 attempts"
+            exit 1
+          fi
+
+          removed=$(printf '%s' "$body" | grep -o '"practiceDaysRemoved":[0-9]*' | head -1 | cut -d: -f2)
+          # An absent count is NOT zero: an error envelope or a proxy page must
+          # fail the run, never read as "nothing was due".
+          if [ -z "${removed:-}" ]; then
+            echo "::error::Core's reply carried no sweep count; refusing to report a sweep that may not have happened"
+            printf '%s\n' "$body" | head -5 >&2
+            exit 1
+          fi
+          echo "learning-retention: ${removed} practice days past 400 days removed"

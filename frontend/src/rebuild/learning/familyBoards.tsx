@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { AnswerChoice, Button, ChoiceChip, RadioGroup, Stepper } from '../design/controls';
+import { AnswerChoice, Button, ChoiceChip, RadioGroup, SegmentedControl, Stepper } from '../design/controls';
 import { familyCopy } from './familyCopy';
 import type { LessonClientDocument, LessonClientSegment } from './lessonDocument';
 import type { LessonSequenceControl } from './lessonSequence';
@@ -36,15 +36,10 @@ export function RuleCardsBoard({ document, segment, onBack, sequence, onGrade }:
       <h2 id={`${segment.id}-rule`} data-copy-role="heading">{t.rule}</h2>
       <p className="lf-family-rule" data-copy-role="prompt">{segment.payload.rule}</p>
       <h3 data-copy-role="heading">{t.cards}</h3>
+      {/* Each card is the shared pick chip: a turned card gains a check, never colour alone (02 rule 23). */}
       <div className="lf-rule-cards" role="group" aria-label={t.cards}>
-        {segment.payload.cards.map((card) => {
-          const on = flipped.includes(card.id);
-          return <button key={card.id} type="button" className={`lf-rule-card${on ? ' lf-rule-card--flipped' : ''}`} aria-pressed={on}
-            disabled={grading.pending || grading.met} onClick={() => toggle(card.id)}>
-            <span className="lf-rule-card-face" data-copy-role="option">{card.face}</span>
-            <span className="lf-rule-card-state" data-copy-role="body">{on ? t.flipped : t.flip}</span>
-          </button>;
-        })}
+        {segment.payload.cards.map((card) => <ChoiceChip key={card.id} selected={flipped.includes(card.id)}
+          disabled={grading.pending || grading.met} onToggle={() => toggle(card.id)}>{card.face}</ChoiceChip>)}
       </div>
     </section>
   </BoardShell>;
@@ -200,10 +195,9 @@ export function MessageListBoard({ document, segment, onBack, sequence, onGrade 
           return <li key={message.id} className={`lf-message${scam ? ' lf-message--flagged' : ''}`}>
             <span className="lf-message-from" data-copy-role="data">{t.from}: {message.sender}</span>
             <p data-copy-role="body">{message.text}</p>
-            <div className="lf-message-actions" role="group" aria-label={message.sender}>
-              <Button variant={scam ? 'berry' : 'secondary'} aria-pressed={scam} disabled={grading.pending || grading.met} onClick={() => set(message.id, true)}>{t.scam}</Button>
-              <Button variant={!scam ? 'mint' : 'secondary'} aria-pressed={!scam} disabled={grading.pending || grading.met} onClick={() => set(message.id, false)}>{t.notScam}</Button>
-            </div>
+            <SegmentedControl className="lf-message-actions" legend={message.sender} legendHidden name={`${segment.id}-${message.id}`} size="compact"
+              options={[{ value: 'scam', label: t.scam }, { value: 'safe', label: t.notScam }]} value={scam ? 'scam' : 'safe'}
+              disabled={grading.pending || grading.met} onValueChange={(value) => set(message.id, value === 'scam')} />
           </li>;
         })}
       </ul>
@@ -235,7 +229,7 @@ export function CoinTrayBoard({ document, segment, onBack, sequence, onGrade }: 
         <div><dt data-copy-role="body">{t.paid}</dt><dd data-copy-role="data">{format(change.paid_minor)}</dd></div>
       </dl> : null}
       <div className="lf-coin-tray">
-        {denominations.map((d) => <div key={d.value_minor} className={`lf-coin lf-coin--${d.kind}`}>
+        {denominations.map((d) => <div key={d.value_minor} className={d.kind === 'bill' ? 'lf-coin lf-coin--bill' : 'lf-coin lf-coin--coin'}>
           <Stepper label={format(d.value_minor)} valuePlacement="label" min={0} max={d.available} value={counts[String(d.value_minor)] ?? 0}
             disabled={grading.pending || grading.met} labels={{ decrease: t.fewer, increase: t.more }}
             onValueChange={(value) => { grading.reset(); setCounts((current) => ({ ...current, [String(d.value_minor)]: value })); }} />

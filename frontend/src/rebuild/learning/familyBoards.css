@@ -1,13 +1,7 @@
 /* GAP-FIX-R1 learning: first-release logic, money, story and Mentor boards. Tokens only; sky, mint and berry carry series with a second channel. */
 .lf-family-board { gap: var(--spacing-3); }
 .lf-family-rule { font-weight: 800; }
-.lf-rule-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--spacing-3); }
-.lf-rule-card { display: grid; gap: var(--spacing-2); justify-items: center; min-block-size: 120px; padding: var(--spacing-3); border-radius: var(--rounded-md);
-  border: 2px solid var(--outline); background: var(--sunken); color: var(--content); cursor: pointer; font: inherit; }
-.lf-rule-card:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
-.lf-rule-card--flipped { border-color: var(--sky-strong); background: var(--sky-soft, var(--surface)); border-style: dashed; }
-.lf-rule-card-face { font-family: Fredoka, sans-serif; font-size: 1.75rem; line-height: 1; }
-.lf-rule-card-state { font-size: .875rem; font-weight: 800; }
+.lf-rule-cards { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
 .lf-euler { position: relative; inline-size: min(100%, 420px); justify-self: center; }
 .lf-euler svg { display: block; inline-size: 100%; block-size: auto; }
 .lf-euler-set { fill-opacity: .35; stroke-width: 3px; }
@@ -31,7 +25,7 @@
 .lf-message { display: grid; gap: var(--spacing-2); padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); border: 2px solid transparent; }
 .lf-message--flagged { border-color: var(--berry-strong); border-style: dashed; }
 .lf-message-from { font-weight: 800; }
-.lf-message-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-message-actions { margin-block-start: var(--spacing-2); }
 .lf-coin-facts { display: flex; flex-wrap: wrap; gap: var(--spacing-4); margin: 0; }
 .lf-coin-facts dd { margin: 0; font-weight: 800; }
 .lf-coin-tray { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--spacing-2); }
@@ -44,3 +38,7 @@
 .lf-story-options--pair { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
 .lf-mentor-turn { justify-self: start; }
 .lf-mentor-episode { display: grid; gap: var(--spacing-3); list-style: none; padding: 0; margin: 0; }
+.lf-euler-set-label { max-inline-size: 45%; overflow-wrap: anywhere; }
+.lf-euler-set-label--first { color: var(--sky-strong); }
+.lf-euler-set-label--second { color: var(--mint-strong); text-align: end; }
+.lf-story-board { gap: var(--spacing-3); }

@@ -7,7 +7,7 @@ import type { CopyRole, Locale } from '../design/copyBudget';
  * board's own labels, budgeted in familyCopy.test.ts for the youngest band.
  */
 export interface FamilyCopy {
-  rule: string; cards: string; flip: string; flipped: string;
+  rule: string; cards: string;
   onlyIn: string; both: string; neither: string; diagram: string;
   yes: string; no: string; startOver: string; result: string; caseLabel: string; chart: string; whole: string;
   bins: string; why: string; pickBin: string;
@@ -18,7 +18,7 @@ export interface FamilyCopy {
 
 export const familyCopy: Record<Locale, FamilyCopy> = {
   'en-US': {
-    rule: 'The rule', cards: 'Cards', flip: 'Turn over', flipped: 'Turned over',
+    rule: 'The rule', cards: 'Cards',
     onlyIn: 'Only {set}', both: 'In both', neither: 'In neither', diagram: 'Circle diagram',
     yes: 'Yes', no: 'No', startOver: 'Start over', result: 'Result', caseLabel: 'Case', chart: 'Chart steps', whole: 'Show whole chart',
     bins: 'Groups', why: 'Why?', pickBin: 'Pick a group',
@@ -27,7 +27,7 @@ export const familyCopy: Record<Locale, FamilyCopy> = {
     next: 'Next', whatHappened: 'What happened',
   },
   'es-MX': {
-    rule: 'La regla', cards: 'Tarjetas', flip: 'Voltear', flipped: 'Volteada',
+    rule: 'La regla', cards: 'Tarjetas',
     onlyIn: 'Solo {set}', both: 'En ambos', neither: 'En ninguno', diagram: 'Diagrama de círculos',
     yes: 'Sí', no: 'No', startOver: 'Empezar de nuevo', result: 'Resultado', caseLabel: 'Caso', chart: 'Pasos del diagrama', whole: 'Ver todo el diagrama',
     bins: 'Grupos', why: '¿Por qué?', pickBin: 'Elige un grupo',
@@ -36,7 +36,7 @@ export const familyCopy: Record<Locale, FamilyCopy> = {
     next: 'Siguiente', whatHappened: 'Qué pasó',
   },
   'pt-BR': {
-    rule: 'A regra', cards: 'Cartas', flip: 'Virar', flipped: 'Virada',
+    rule: 'A regra', cards: 'Cartas',
     onlyIn: 'Só {set}', both: 'Nos dois', neither: 'Em nenhum', diagram: 'Diagrama de círculos',
     yes: 'Sim', no: 'Não', startOver: 'Começar de novo', result: 'Resultado', caseLabel: 'Caso', chart: 'Passos do diagrama', whole: 'Ver o diagrama todo',
     bins: 'Grupos', why: 'Por quê?', pickBin: 'Escolha um grupo',
@@ -47,7 +47,7 @@ export const familyCopy: Record<Locale, FamilyCopy> = {
 };
 
 export const familyCopyRoles: Record<keyof FamilyCopy, CopyRole> = {
-  rule: 'heading', cards: 'heading', flip: 'action', flipped: 'body',
+  rule: 'heading', cards: 'heading',
   onlyIn: 'option', both: 'option', neither: 'option', diagram: 'body',
   yes: 'action', no: 'action', startOver: 'action', result: 'body', caseLabel: 'body', chart: 'heading', whole: 'action',
   bins: 'heading', why: 'body', pickBin: 'body',

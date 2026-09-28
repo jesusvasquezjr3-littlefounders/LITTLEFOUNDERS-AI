@@ -3,7 +3,7 @@ import en from '../../i18n/en-US/rebuild-learn.json';
 import es from '../../i18n/es-MX/rebuild-learn.json';
 import pt from '../../i18n/pt-BR/rebuild-learn.json';
 import type { Locale } from '../design/copyBudget';
-import { Button, MentorAvatar, ProgressBar, TextField } from '../design/controls';
+import { Button, MentorAvatar, ProgressBar, SegmentedControl, TextField } from '../design/controls';
 import { findMentorAvatar, MENTOR_NAMES } from '../design/assets';
 import { LessonFeedback } from './LessonFeedback';
 import { LessonStageSlot } from './lessonStage';
@@ -169,15 +169,13 @@ export function ViewedFoot({ locale, sequence, ready = true }: { locale: Locale;
 export function MoveToChoice<T extends string>({ locale, label, options, value, onChange, disabled }: {
   locale: Locale; label: string; options: ReadonlyArray<{ value: T; label: string }>; value: T | null; onChange: (value: T) => void; disabled?: boolean;
 }) {
-  const id = useId();
+  const name = useId();
   const t = copy[locale];
-  return <div className="lf-move-to" role="group" aria-labelledby={id}>
-    <span id={id} data-copy-role="option">{label}</span>
+  // The shared single-choice control (02 rule 23): one radio group per item, named by the item.
+  return <div className="lf-move-to">
     <span className="lf-move-to-hint" data-copy-role="data" aria-hidden="true">{t.moveTo}</span>
-    <div className="lf-move-to-options">
-      {options.map((option) => <Button key={option.value} variant={value === option.value ? 'sky' : 'secondary'} aria-pressed={value === option.value}
-        disabled={disabled} onClick={() => onChange(option.value)}>{option.label}</Button>)}
-    </div>
+    <SegmentedControl className="lf-move-to-options" legend={label} name={name} size="compact" options={options} value={value}
+      disabled={disabled} onValueChange={onChange} />
   </div>;
 }
 

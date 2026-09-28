@@ -1,5 +1,5 @@
 import { useId, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
-import { Button, SegmentedControl, Stepper, Switch } from '../../design/controls';
+import { ChoiceChip, SegmentedControl, Stepper, Switch } from '../../design/controls';
 import { canPick, polyline, stepValue, thresholdIndex, tokensLeft } from './operationsModel';
 import './operations.css';
 
@@ -96,10 +96,10 @@ export function TradeOffChooser({ legend, tokens, options, picked, onChange, lab
     <div className="lf-op-token-options">
       {options.map((option) => {
         const on = picked.includes(option.id);
-        return <Button key={option.id} variant={on ? 'sky' : 'secondary'} aria-pressed={on} disabled={!canPick(option, options, picked, tokens)}
-          onClick={() => onChange(on ? picked.filter((id) => id !== option.id) : [...picked, option.id])}>
+        return <ChoiceChip key={option.id} selected={on} disabled={!canPick(option, options, picked, tokens)}
+          onToggle={() => onChange(on ? picked.filter((id) => id !== option.id) : [...picked, option.id])}>
           {`${option.label} · ${labels.cost(option.cost)}`}
-        </Button>;
+        </ChoiceChip>;
       })}
     </div>
     {left === 0 ? <div className="lf-op-gave-up"><h3 data-copy-role="heading">{labels.gaveUp}</h3>

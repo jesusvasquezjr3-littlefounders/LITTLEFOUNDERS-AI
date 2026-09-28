@@ -55,8 +55,13 @@ const narrativeSchema = z.object({
     lessonId: z.string().min(1),
     firstTry: z.object({ correct: z.number().int().min(0), graded: z.number().int().min(1) }).strict(),
     judgment: z.object({ assessed: z.number().int().min(0), sound: z.number().int().min(0), partial: z.number().int().min(0), unsupported: z.number().int().min(0) }).strict().optional(),
-  }).strict()).optional(),
+  }).strict()
+    // A count can never exceed its own total; a contradictory entry is refused, never shown.
+    .refine((e) => e.firstTry.correct <= e.firstTry.graded)
+    .refine((e) => !e.judgment || (e.judgment.assessed >= 1 && e.judgment.sound + e.judgment.partial + e.judgment.unsupported === e.judgment.assessed)))
+    .optional(),
 });
+export type LessonEvidence = NonNullable<z.infer<typeof narrativeSchema>['evidence']>[number];
 
 export const guardianBridgeSchema = z.object({
   id: z.string().min(1),
@@ -87,7 +92,9 @@ export type NarrativeState =
   | { status: 'loading' }
   | { status: 'ready'; week: { lessons: number; topicsCompleted: number }; entries: NarrativeEntry[]; hasMore: boolean;
     /** L-13: the child's story choices, present only when Core said the Tutor sees them (an under-13 parent-created child). */
-    choices?: TutorChoice[] }
+    choices?: TutorChoice[];
+    /** GAP-FIX-R1 (B.10 for v2): first-try share and reasoning counts for lessons on this page, when Core has evidence. */
+    evidence?: LessonEvidence[] }
   | { status: 'no-access' }
   | { status: 'error' };
 
@@ -98,11 +105,13 @@ export async function fetchKidNarrative(request: FamilyLearningTransport, kidId:
   if (response.error) return ACCESS_LOST.has(response.error.code) ? { status: 'no-access' } : { status: 'error' };
   const parsed = narrativeSchema.safeParse(response.data);
   if (!parsed.success) return { status: 'error' };
-  const { week, entries, hasMore, choicesVisible, choices } = parsed.data;
+  const { week, entries, hasMore, choicesVisible, choices, evidence } = parsed.data;
   // Choices only when Core said so, and only for lessons on this page; anything else is dropped, never guessed.
   const shown = new Set(entries.map((entry) => entry.lessonId));
+  const pageEvidence = (evidence ?? []).filter((item) => shown.has(item.lessonId));
   return { status: 'ready', week, entries, hasMore,
-    ...(choicesVisible === true ? { choices: (choices ?? []).filter((choice) => shown.has(choice.lessonId)) } : {}) };
+    ...(choicesVisible === true ? { choices: (choices ?? []).filter((choice) => shown.has(choice.lessonId)) } : {}),
+    ...(pageEvidence.length > 0 ? { evidence: pageEvidence } : {}) };
 }
 
 export type BridgesState =

@@ -43,3 +43,6 @@
 }
 @keyframes lf-op-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lf-op-draw { from { stroke-dashoffset: 1200; } to { stroke-dashoffset: 0; } }
+/* Per-primitive hooks (data-operation names the contract); each keeps the shared .lf-op grid. */
+.lf-op-branch, .lf-op-toggle, .lf-op-sandbox, .lf-op-tokens, .lf-op-shift { gap: var(--spacing-3); }
+.lf-op-threshold, .lf-op-ghost { gap: var(--spacing-2); }

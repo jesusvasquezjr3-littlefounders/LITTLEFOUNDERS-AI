@@ -44,7 +44,7 @@ export function TeachingChart({ kind, data, title, locale, embedded = false }: {
   const model = chartTable(kind, data);
   return <figure className="lf-chart" data-chart-kind={kind}>
     <figcaption className="lf-chart-head"><span data-copy-role="heading">{title}</span>
-      {embedded ? null : <Button onClick={() => setTable((value) => !value)} aria-pressed={table}>{table ? t.showChart : t.showTable}</Button>}</figcaption>
+      {embedded ? null : <Button onClick={() => setTable((value) => !value)}>{table ? t.showChart : t.showTable}</Button>}</figcaption>
     {table ? <table className="lf-learning-table lf-chart-table" aria-label={t.table}>
       <thead><tr><th scope="col" data-copy-role="data">{t.category}</th>{model.columns.map((column) => <th key={column} scope="col" data-copy-role="data">{column}</th>)}</tr></thead>
       <tbody>{model.rows.map((row) => <tr key={row.id}>{row.cells.map((cell, index) => index === 0
