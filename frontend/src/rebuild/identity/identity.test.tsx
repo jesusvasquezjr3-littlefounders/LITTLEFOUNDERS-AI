@@ -306,7 +306,10 @@ describe('O1 Onboarding', () => {
       onComplete={vi.fn()} initialStep="mentor" initialName="Ana" />, 'pt-BR');
     const lines = copy('pt-BR').onboardingFlow.lines;
     for (const line of Object.values(lines)) expect(line.split(/\s+/).length).toBeLessThanOrEqual(6);
-    expect(container.querySelectorAll('[data-slot="mentor-avatar"] img[data-character]')).toHaveLength(4);
+    // 08 §8 / OD-6: the characters on the Diorama (mentor.chooserStill), never the square avatar renders (mentor.avatar).
+    const stills = [...container.querySelectorAll('img.lf-onboarding-chooser-still[data-character]')];
+    expect(stills.map((img) => img.getAttribute('data-asset-id'))).toEqual(['rho', 'zara', 'liruf', 'dina'].map((c) => `mentor.${c}.chooser.light`));
+    expect(container.querySelectorAll('[data-slot="mentor-avatar"]')).toHaveLength(0);
     expect(screen.getByRole('button', { name: /Dina/ })).toHaveTextContent(copy('pt-BR').onboardingFlow.chosen);
     expect(undeclaredText(container)).toEqual([]);
   });

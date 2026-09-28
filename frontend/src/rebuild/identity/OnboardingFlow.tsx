@@ -4,6 +4,7 @@ import {
   TextField, useRebuildEnvironment, type MentorCharacter,
 } from '../design/controls';
 import { findMentorAvatar } from '../design/assets';
+import { findChooserStill } from '../mentor/stageStills';
 import type { Locale } from '../design/copyBudget';
 import { identityCopy } from './authBlocks';
 
@@ -18,8 +19,11 @@ import { identityCopy } from './authBlocks';
  * What changed from the legacy flow (OD-15, 02 rules 22–23): no legacy
  * component, no narration by the four characters in turn and no speech
  * bubbles. The Mentor is the learner's own choice (OD-6, 08 §8): the four real
- * characters as renders of the real models (07 §4), each with its name and one
- * short line, saved to the same preference the Mentor screen reads. The
+ * characters standing on the Diorama, rendered from the real models (the
+ * `mentor.chooserStill` renders the Mentor screen's chooser uses, 07 §4), each
+ * with its name and one short line, saved to the same preference the Mentor
+ * screen reads. A character without a chooser still shows its avatar render,
+ * never a stand-in. The
  * mandatory age question is not here: the route guard asks it before this
  * screen mounts (A.3, A.4), and this flow never asks for a date again.
  *
@@ -102,16 +106,19 @@ export function OnboardingFlow({ locale, skipLabel, mentor, completing, failed, 
     case 'mentor':
       content = <>
         <h1 ref={heading} tabIndex={-1} data-copy-role="heading">{copy.mentorTitle}</h1>
-        <List label={copy.mentorTitle}>
+        <div className="lf-onboarding-chooser"><List label={copy.mentorTitle}>
           {MENTOR_CHARACTERS.map((character) => {
-            const render = findMentorAvatar(character, theme);
+            // 08 §8: the character standing on its Diorama, as on the Mentor screen's chooser.
+            const still = findChooserStill(character, theme);
+            const render = still ? null : findMentorAvatar(character, theme);
             return <ListRow key={character} title={MENTOR_NAMES[character]} titleRole="data" supporting={copy.lines[character]}
-              leading={render ? <MentorAvatar renderId={render} label={null} size="md" /> : null}
+              leading={still ? <img className="lf-onboarding-chooser-still" src={still.path} alt="" data-asset-id={still.id} data-character={character} />
+                : render ? <MentorAvatar renderId={render} label={null} size="md" /> : null}
               trailing={mentor.chosen === character ? <Pill tone="success">{copy.chosen}</Pill>
                 : mentor.saving === character ? <Pill tone="sky">{copy.saving}</Pill> : null}
               onPress={() => { if (!mentor.saving) mentor.onChoose(character); }} />;
           })}
-        </List>
+        </List></div>
         {mentor.failed ? <InlineNotice tone="error" live>{copy.mentorFailed}</InlineNotice> : null}
       </>;
       actions = <>
