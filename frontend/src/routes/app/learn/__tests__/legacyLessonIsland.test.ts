@@ -46,10 +46,13 @@ describe('the legacy lesson island (W2L.3, OD-24)', () => {
     expect(importers).toEqual(['routes/app/learn/LessonRoute.tsx']);
   });
 
-  it('carries the legacy global sheet, and is loaded lazily so a v2 lesson never pays for it (S10 gap fix)', () => {
+  it('scopes the legacy global sheet to its own lifetime, and is loaded lazily so a v2 lesson never pays for it (S10, F2)', () => {
     const island = readFileSync(join(src, 'routes/app/learn/LegacyLessonIsland.tsx'), 'utf8');
     const route = readFileSync(join(src, 'routes/app/learn/LessonRoute.tsx'), 'utf8');
-    expect(island).toMatch(/^import '@\/index\.css';$/m);
+    // A side-effect import of the sheet is injected by Vite and never removed; the scope removes it on unmount.
+    expect(island).not.toMatch(/import '@\/index\.css/);
+    expect(island).toMatch(/import \{ LegacySheetScope \} from '@\/app-routes\/legacySheet';/);
+    expect(island).toMatch(/<LegacySheetScope><LessonPlayer/);
     expect(route).toMatch(/lazy\(\(\) => import\('\.\/LegacyLessonIsland'\)/);
     expect(route).not.toMatch(/from '\.\/LegacyLessonIsland'/);
   });

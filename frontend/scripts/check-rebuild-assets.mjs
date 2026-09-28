@@ -200,7 +200,8 @@ const MODES = new Set(['both', 'light', 'dark']);
 const REVIEW = new Set(['draft', 'approved', 'retired']);
 // 07 §7 item 2: the families whose first asset needs the owner's style approval. `sounds` is ours, not 07's (below).
 // W2 profile lane: the cartoon avatar parts and the profile covers (E.12) are two more families of our own, each with its first-asset style review.
-const FAMILIES = new Set(['character-renders', 'badges', 'course-icons', 'pockets', 'empty-states', 'scenes', 'task-categories', 'coins', 'celebration-motion', 'avatar-parts', 'profile-covers', 'sounds']);
+// Gap-fix round 2: the OD-20 achievement image's marks are a family of their own (`achievement-share`), drawn by Depot.
+const FAMILIES = new Set(['character-renders', 'badges', 'course-icons', 'pockets', 'empty-states', 'scenes', 'task-categories', 'coins', 'celebration-motion', 'avatar-parts', 'profile-covers', 'sounds', 'achievement-share']);
 const BUDGET_KB = { svg: 6, webp: 120, png: 120, lottie: 150, render: 150, wav: 32 };
 const RASTER = new Set(['png', 'render', 'webp']);
 let ocrRead = 0;
@@ -322,6 +323,40 @@ for (const [file, text] of sources) {
 }
 
 const classB = manifest.filter((row) => row.class !== 'A');
+
+/*
+ * The Depot achievement template (OD-20; gap-fix round 2). The image a verified parent sends out is drawn by
+ * Depot (filebase/src/lib/badge.ts) from the marks inlined in filebase/src/lib/badgeArt.ts. Each mark is a
+ * registered class B asset of the `achievement-share` family, so the owner's style review applies to it: the
+ * inlined body must equal its registered SVG (whitespace aside), that inlining is the asset's reference, and
+ * both template files may name only token colours, with no gradient, opacity tint or emoji (07 sections 1, 3).
+ */
+const DEPOT_FAMILY = 'achievement-share';
+const depotFiles = ['filebase/src/lib/badge.ts', 'filebase/src/lib/badgeArt.ts'];
+const depotSource = Object.fromEntries(depotFiles.map((file) => {
+  try { return [file, readFileSync(resolve(frontendRoot, '..', file), 'utf8')]; } catch { fail(`Depot achievement template missing: ${file}`); return [file, '']; }
+}));
+const depotArt = depotSource['filebase/src/lib/badgeArt.ts'];
+const depotReferenced = new Set();
+for (const [file, text] of Object.entries(depotSource)) {
+  for (const m of text.matchAll(/#[0-9a-f]{3,8}\b/gi)) if (!tokenColours.has(m[0].toLowerCase())) fail(`Depot template colour ${m[0]} is not a token colour (07 section 3): ${file}`);
+  if (/linearGradient|radialGradient|opacity=|\bopacity:/i.test(text)) fail(`Depot template uses a gradient or an opacity tint (02 rules 2, 3): ${file}`);
+  if (/\p{Extended_Pictographic}/u.test(text.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').replace(/PICTOGRAPHIC = .*$/m, ''))) fail(`Depot template carries an emoji (07 section 1): ${file}`);
+}
+for (const [, id] of depotArt.matchAll(/assetId:\s*'([^']+)'/g)) {
+  const asset = classB.find((row) => row.id === id && row.reviewStatus !== 'retired');
+  if (!asset) { fail(`Depot draws an unregistered or retired mark: ${id}`); continue; }
+  if (asset.reviewFamily !== DEPOT_FAMILY || asset.type !== 'svg') { fail(`A Depot achievement mark is an SVG of the ${DEPOT_FAMILY} family: ${id}`); continue; }
+  let svg = '';
+  try { svg = readFileSync(resolve(publicRoot, `.${asset.path}`), 'utf8'); } catch { continue; }
+  const inner = svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').replace(/\s+/g, ' ').trim();
+  if (!depotArt.includes(`body: '${inner}'`)) fail(`Depot's inlined mark differs from its registered SVG; copy it again: ${id}`);
+  else depotReferenced.add(id);
+}
+for (const asset of classB) if (asset.reviewFamily === DEPOT_FAMILY && asset.reviewStatus !== 'retired' && !depotReferenced.has(asset.id)) {
+  fail(`An ${DEPOT_FAMILY} asset must be the mark Depot draws (filebase/src/lib/badgeArt.ts): ${asset.id}`);
+}
+
 const ids = new Set(), paths = new Set();
 for (const asset of classB) {
   const where = asset.id ?? asset.path ?? JSON.stringify(asset).slice(0, 60);
@@ -466,7 +501,7 @@ for (const asset of classB) {
   // Referenced somewhere, by path or id (an avatar is found by its slot; a sound by its /sounds/ path).
   // A Lottie's static frame is shown by the component that shows the Lottie (07 §5), so it is referenced with it.
   const referenced = sound ? soundRefs.some((ref) => ref.literal === asset.path)
-    : asset.slot === AVATAR_SLOT || pathRefs.some((ref) => ref.re.test(asset.path)) || idRefs.some((ref) => ref.re.test(asset.id))
+    : depotReferenced.has(asset.id) || asset.slot === AVATAR_SLOT || pathRefs.some((ref) => ref.re.test(asset.path)) || idRefs.some((ref) => ref.re.test(asset.id))
       || classB.some((entry) => entry.type === 'lottie' && entry.reviewStatus !== 'retired' && entry.staticFrame === asset.path && idRefs.some((ref) => ref.re.test(entry.id)));
   const awaitingWiring = sound && asset.reviewStatus === 'draft' && typeof asset.wiring === 'string' && asset.wiring.trim().length > 0;
   if (asset.reviewStatus !== 'retired' && !referenced && !awaitingWiring) fail(`Registered asset is referenced nowhere: ${asset.id}`);

@@ -11,9 +11,9 @@ import type { GuidedReviewOfferValue } from '@/rebuild/learning/GuidedReviewOffe
 import type { LearnerRegister } from '@/rebuild/design/learnerRegisterPolicy.generated';
 import { createCoreGrader } from './coreGrader';
 import { clearCoursesCache } from './coursesCache';
-// The legacy global sheet (Tailwind, the legacy tokens and typefaces) belongs to this island alone:
-// the lesson route loads this module lazily, only for a v1 document, so no rebuilt route pays for it.
-import '@/index.css';
+// The legacy global sheet (Tailwind, the legacy tokens and typefaces) belongs to this island alone, and only
+// while it is mounted: the scope inserts it on mount and removes it on unmount, so it never outlives the lesson.
+import { LegacySheetScope } from '@/app-routes/legacySheet';
 
 /*
  * THE LEGACY LESSON ISLAND (W2L.3, OD-24).
@@ -99,7 +99,7 @@ export function LegacyLessonIsland({ lessonId, document, audio, checkpoint, stor
     onExit();
   }
 
-  return <LessonPlayer
+  return <LegacySheetScope><LessonPlayer
     document={document}
     lessonId={lessonId}
     grader={grader}
@@ -109,7 +109,7 @@ export function LegacyLessonIsland({ lessonId, document, audio, checkpoint, stor
     onExit={exit}
     onComplete={(result) => persistCompletion(result.seconds_spent)}
     register={register}
-  />;
+  /></LegacySheetScope>;
 }
 
 export default LegacyLessonIsland;

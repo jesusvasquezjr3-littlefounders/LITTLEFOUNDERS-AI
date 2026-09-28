@@ -176,6 +176,22 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     for (const result of [unregistered, colour, text, unreferenced]) expect(result.status).toBe(1);
   });
 
+  it('holds the Depot achievement marks to their registered SVGs (OD-20, gap-fix round 2)', async () => {
+    const drifted = await mutate((dir) => {
+      const file = join(dir, 'public/rebuild/art/share-achievement-course-badge.svg');
+      writeFileSync(file, readFileSync(file, 'utf8').replace('M48 2 93 27', 'M48 4 93 27'));
+    });
+    expect(drifted.output).toContain("Depot's inlined mark differs from its registered SVG; copy it again: share.achievement.course_badge");
+    const undrawn = await mutate((dir) => {
+      cpSync(join(dir, 'public/rebuild/art/share-achievement-streak.svg'), join(dir, 'public/rebuild/art/share-achievement-extra.svg'));
+      writeManifest(dir, [...readManifest(dir), { id: 'share.achievement.extra', class: 'B', type: 'svg', path: '/rebuild/art/share-achievement-extra.svg', slot: 'share.achievement.extra', modes: 'both', altKey: 'decorative', sizesKb: 1, motionTokens: [], generatedBy: 'in-house SVG', reviewFamily: 'achievement-share', reviewStatus: 'draft', approvedBy: null }]);
+    });
+    expect(undrawn.output).toContain('An achievement-share asset must be the mark Depot draws (filebase/src/lib/badgeArt.ts): share.achievement.extra');
+    const retired = await mutate((dir) => writeManifest(dir, readManifest(dir).map((row) => (row.id === 'share.achievement.streak' ? { ...row, reviewStatus: 'retired' } : row))));
+    expect(retired.output).toContain('Depot draws an unregistered or retired mark: share.achievement.streak');
+    for (const result of [drifted, undrawn, retired]) expect(result.status).toBe(1);
+  });
+
   it('refuses raster art with text in it, dark or light, in any locale (07 §7 OCR no-text check, OD-28 V-16)', async () => {
     // A square transparent render with a painted blob, as the avatars are, plus one word.
     const render = (word: string, ink: string) => sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320">
