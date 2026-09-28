@@ -1,0 +1,31 @@
+# Gap-fix round 1
+
+Lane records for the first gap-fix round of the SPEC migration. Each lane appends its own section. Statuses follow the ledger: implemented and locally verified is not accepted and not released.
+
+## Mentor lane
+
+Branch `codex/spec-fix1mentor`, checkpoint F1-mentor. Binding sources: product C.8, C.12, C.13, C.24, B.7; OD-6, OD-13; Frontend Bible 05 §2, 06, 07 §4, 08 §2, §8, §10.
+
+### F1-mentor part A: the Mentor runtime and its measurements
+
+What was built:
+
+- **OD-6, glossary (item 7).** The live system prompt now opens "You are the learner's Mentor, one of the LittleFounders characters." It tells the model to call itself by its character name or "your Mentor", never a tutor, teacher-bot, bot or assistant, and that "Tutor" is the learner's parent. The unknown-persona fallback is "a friendly Mentor character". `selfNamingViolation` (prompt.ts, beside `TIER_FORBIDDEN`) catches self-naming in the three locales ("I'm your tutor", "soy tu tutor", "sou seu tutor", "I'm just a bot", "soy un asistente"). It only catches the Mentor naming itself, so "ask your tutor to approve it" and "the shop assistant" in a story pass. A hit is a shape failure with one retry. A survival is delivered, counted and flagged.
+- **OD-13, Copy Budget (item 8).** The prompt asks for "1-2 short sentences, at most 20 words (12 for ages 6-9), and at most one question", and the length section states the same budget. `mentorTurnBudget(say, tier, locale)` mirrors `frontend/src/rebuild/design/copyBudget.ts`: same word regex, same sentence rule (honorifics and decimals are not boundaries), ×1.25 for es-MX and pt-BR, and 12 words for tiers 1 and 2 (ages 6-9). An overflow gets one retry that names the limit. It is the lowest-priority repair: when a higher fault takes the retry, that correction carries the budget too. A survival is delivered, counted and flagged (the M-13 pattern).
+- **C.8/C.12 (item 2).** Spoken (`voice_result`) and verified conversational answers now pass C.9's onset-based reply latency to `observeGraded()`, with their channel. `SessionEndSignal` keeps one latency baseline per channel (typed, spoken, activity). Each baseline holds the first four latencies of its own channel, and a window's SD of ln(latency) is only compared with the baseline of the same channel. Older snapshots restore, defaulting to the activity channel.
+- **C.24 and the tell invariant (item 5).** The C.24 dashboard now reads the sources that already existed: B.28 session efficiency and Mentor resolution (the `engagementHealth.ts` RPCs, with their trend rule and direction; a regression is a breach), the B.9 decision journal and B.13 bridge conversion (`learning_narrative_metrics`), B.21 rest-day use (`learning_rest_day_utilization`) and B.24 autonomy adoption (`learning_autonomy_adoption`). An unreachable RPC fails closed as `unavailable`, with an urgent flag for engineering. For `rubric.tell_honored`, Oracle now counts, per session, the explicit "just tell me" requests, the answer turns that carried the tell rung, and the requests that were withdrawn (the learner cut in, or a safety response replaced the turn). These counts are stored on `tutor_dialogue_calibration` (migration `0193_mentor_tell_budget_self_naming_counts.sql`, which also stores the budget and self-naming counts). Rubric v2 rule-scores `tell_honored` as a hard invariant, and the judge still scores it too.
+
+What still says `not_instrumented`, and why: `learning.transfer_success` (B.7/B.12 tagging), `learning.judgment_quality` (B.12; the existing `learning_judgment_differentiation` checks the signal's validity, not judgment quality), `engagement.streak_anxiety` (no streak-at-risk notification exists), the B.25, B.22 and B.20 audits (manual), and `engagement.parent_time_to_value` (no client timing).
+
+Tier 1 change control: rows were recorded in `docs/rebuild/mentor/governance/tier1-change-record.json` for evaluation.rubric_and_judges, evaluation.stage2_and_bias_audit, mentor.non_negotiables, mentor.monetization_adjacent and measurement.stage7_and_thresholds. Both leads' sign-offs are pending. The rubric change record has a v2 row (EVALUATION-LOOP-AND-QUALITY-DASHBOARD-POLICY.md §2.2). The bias-audit log records a material change for `session_end.stop_reply`: the file changed, and its classifier did not. The threshold rows are dated 2026-09-27 in THRESHOLD-RECALIBRATION-LOG.md.
+
+Deploy order (for later): Core before Oracle. The close body is strict. The new report fields are optional in Core, so an older Oracle still closes, but a newer Oracle needs a Core that knows the new fields.
+
+Verified locally:
+
+- Oracle: type-check and lint are clean. The full Oracle suite is green after the fixture updates: 1725 tests, with the 5 reds all fixed. The new file `mentorNamingAndBudget.test.ts` covers self-naming in both directions, the budget limits and the parity test that reads the frontend `copyBudget.ts`. `orchestrator.test.ts` has new OD-13, OD-6 and C.13 blocks: retry, survival with counting, and the one-question rule. The budget repair is switched off by default in the rest of that file, whose older fixtures pin other checks. `sessionEndSignal.test.ts` and `sessionEndGym.test.ts` cover the new personas plus two red proofs (latency dropped, channels mixed).
+- Core: type-check and lint are clean. mentorQuality, the routes, transcriptEvaluation, spacedReviewCalibration, judgeCalibration and the tutor routes are green (539 + 89 + 40 tests across the runs).
+- Gates: session-end:check (extended, with 10 node tests), review-calibration:check, evaluation-loop:check, telemetry:check, honesty:check, alliance:check, governance:check, spec:check and secrets:check.
+- PostgreSQL 17.6 (owned cluster, port 15740): `database/scripts/verify-mentor-counts-postgres.py` applies all 193 migrations. It then checks that a legacy row keeps NULL counts, that bad counts and more tell answers than requests are refused, and that RLS still closes the table to browser roles.
+
+Remaining for part A: `database/types/database.ts` is not regenerated (`db:types` needs the shared stack). The budget will spend a retry on many child turns, so its live cost and hit rate are unmeasured (OD-23 zero spend: no live run).

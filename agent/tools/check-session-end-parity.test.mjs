@@ -62,3 +62,16 @@ test('RED when a close reason is added on one side only', () => {
   const problems = checkSessionEndParity(patched(FILES.oracleClient, "  | 'error';", "  | 'error'\n  | 'timeout';"), sql);
   assert.ok(problems.some((p) => p.includes('close reasons')));
 });
+
+test('RED when a graded observation drops the conversational latency again (C.8/C.12 gap-fix)', () => {
+  const problems = checkSessionEndParity(
+    patched(FILES.oracleOrchestrator, 'latencyMs: this.behavioralTelemetry.replyLatency(input.onsetAtMs),\n        latencySource: input.source,', 'latencyMs: null,\n        latencySource: input.source,'),
+    sql,
+  );
+  assert.ok(problems.some((p) => p.includes('latencyMs: null')));
+});
+
+test('RED when the signal and C.9 disagree on the latency channels', () => {
+  const problems = checkSessionEndParity(patched(FILES.oracleSignal, "['typed', 'spoken', 'activity']", "['typed', 'activity']"), sql);
+  assert.ok(problems.some((p) => p.includes('latency channels')));
+});

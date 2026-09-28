@@ -27,7 +27,9 @@
  * reassuring zero (AGENTS.md §1.14). No model call: zero spend (OD-23).
  */
 
+import { z } from 'zod';
 import { countServiceRows, serviceRest, serviceRestRaw } from '../supabaseRest.js';
+import { loadEngagementHealth } from '../engagementHealth.js';
 import { getLiveContentGate, resetLiveContentGateCache, RISK_CATEGORIES } from './liveContentGovernance.js';
 import { readCalibrationRows } from './judgeCalibration.js';
 import { MENTOR_INTEGRITY_THRESHOLDS, type TrajectoryEvidenceRow } from './mentorIntegrity.js';
@@ -56,6 +58,40 @@ import {
 const PAGE = 1000;
 const MAX_ROWS = 200_000;
 const DAY = 86_400_000;
+
+const metricCount = z.coerce.number().int().nonnegative();
+const NarrativeMetricsRow = z.object({
+  journal_entries_recorded: metricCount,
+  journal_entries_resurfaced: metricCount,
+  bridge_prompts_offered: metricCount,
+  bridge_prompts_converted_7d: metricCount,
+  bridge_self_commitments: metricCount,
+  bridge_prompts_dismissed: metricCount,
+  bridge_prompts_expired: metricCount,
+});
+const RestDayMetricsRow = z.object({
+  learners_with_lapse: metricCount,
+  kept_by_rest_days: metricCount,
+  restarted: metricCount,
+  utilization_rate: z.coerce.number().min(0).max(1).nullable(),
+  rest_days_used: metricCount,
+});
+const AutonomyLeverRow = z.object({
+  lever: z.enum(['path', 'mentor', 'pace']),
+  offered: metricCount,
+  exercised: metricCount,
+  adoption_rate: z.coerce.number().min(0).max(1).nullable(),
+});
+
+/** An Appendix C metric RPC over the window; null when unreachable or malformed (fail closed). */
+async function metricRpc<T>(name: string, since: Date, now: Date, schema: z.ZodType<T>): Promise<T | null> {
+  const result = await serviceRest<unknown>(`/rpc/${name}`, {
+    method: 'POST',
+    body: JSON.stringify({ p_since: since.toISOString(), p_until: now.toISOString() }),
+  });
+  const parsed = schema.safeParse(result);
+  return parsed.success ? parsed.data : null;
+}
 export const SNAPSHOT_SCHEMA = 'mentor-quality.v1';
 
 /** Retention of the loop's own artifacts (no personal data; kept for trends). */
@@ -101,8 +137,16 @@ export async function loadBundles(sessions: BacklogSession[]): Promise<SessionBu
     readAll<{ session_id: string; mode: string; outcome: string }>(`/tutor_telemetry_firing?select=session_id,mode,outcome&session_id=in.(${ids})&order=observation.asc`),
     readAll<{ session_id: string; learner_turns: number; goal_agreement: string }>(`/tutor_session_alliance?select=session_id,learner_turns,goal_agreement&session_id=in.(${ids})&order=session_id.asc`),
     readAll<{ session_id: string; mode: string; first_quality: string | null }>(`/tutor_self_explanation_event?select=session_id,mode,first_quality&session_id=in.(${ids})&order=observation.asc`),
-    readAll<{ session_id: string; variant: string | null; band: string | null; controlling_delivered: number | null }>(
-      `/tutor_dialogue_calibration?select=session_id,variant,band,controlling_delivered&session_id=in.(${ids})&order=session_id.asc`,
+    readAll<{
+      session_id: string;
+      variant: string | null;
+      band: string | null;
+      controlling_delivered: number | null;
+      tell_requests: number | null;
+      tell_delivered: number | null;
+      tell_withdrawn: number | null;
+    }>(
+      `/tutor_dialogue_calibration?select=session_id,variant,band,controlling_delivered,tell_requests,tell_delivered,tell_withdrawn&session_id=in.(${ids})&order=session_id.asc`,
     ),
   ]);
   if (!turns || !honesty || !firings || !alliance || !explanations || !dialogue) return null;
@@ -212,6 +256,7 @@ export async function collectSources(now: Date): Promise<QualitySources> {
   const [
     sessions, scores, priorScores, firings, endSignals, alliance, allianceBaseline, renegotiations,
     trajectory, routing, dialogue, ladder, gate, killSwitchAudit, activeRows, profiles, kcAttempts, retention, judgeCalibrations,
+    engagementHealth, narrative, restDays, autonomy,
   ] = await Promise.all([
     readAll<WindowSessionRow>(
       `/tutor_sessions?select=id,character,tier,locale,ended_at,turn_count,evaluation_rubric_hash,close_reason,closing_script,opening,end_signal_evaluated,telemetry_mode,telemetry_evaluated_turns,telemetry_action_turns` +
@@ -243,6 +288,11 @@ export async function collectSources(now: Date): Promise<QualitySources> {
     readAll<KcAttemptRow>(`/kc_attempt?select=user_id,kc_id,correct,p_known_after,created_at&source=eq.segment_grade&created_at=gte.${iso(since)}&order=created_at.asc`),
     serviceRest<{ bucket: string; n: number; avg_first_attempt_score: number }[]>('/rpc/admin_retention_at_distance', { method: 'POST', body: '{}' }),
     readCalibrationRows(),
+    // C.24 × Appendix C: the B.28, B.9/B.13, B.21 and B.24 sources that already exist.
+    loadEngagementHealth(now),
+    metricRpc('learning_narrative_metrics', since, now, NarrativeMetricsRow),
+    metricRpc('learning_rest_day_utilization', since, now, z.array(RestDayMetricsRow)),
+    metricRpc('learning_autonomy_adoption', since, now, z.array(AutonomyLeverRow)),
   ]);
 
   return {
@@ -271,6 +321,10 @@ export async function collectSources(now: Date): Promise<QualitySources> {
     completeness: activeRows === null || profiles === null ? null : { active: new Set(activeRows.map((r) => r.user_id)).size, current: profiles },
     kcAttempts,
     retention: Array.isArray(retention) ? retention : null,
+    engagementHealth,
+    narrative,
+    restDays: restDays === null ? null : (restDays[0] ?? { learners_with_lapse: 0, kept_by_rest_days: 0, restarted: 0, utilization_rate: null, rest_days_used: 0 }),
+    autonomy,
   };
 }
 

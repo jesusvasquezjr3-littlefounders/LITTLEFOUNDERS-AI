@@ -17,7 +17,7 @@ describe('the session-end signal against the simulated learners', () => {
     expect(reports.flatMap((r) => r.problems.map((p) => `${r.persona}: ${p}`))).toEqual([]);
     expect(ok).toBe(true);
     expect(reports.map((r) => r.persona).sort()).toEqual(
-      ['disengaging', 'frustrated', 'gaming', 'masking', 'reactant_teen', 'slipping', 'steady'],
+      ['disengaging', 'frustrated', 'gaming', 'masking', 'mixed_channels', 'reactant_teen', 'slipping', 'steady', 'typed_only', 'voice_only'],
     );
   });
 
@@ -56,5 +56,25 @@ describe('the session-end signal against the simulated learners', () => {
   it('turns red when the re-arm window is removed (the teen is pestered)', () => {
     const broken = { ...SESSION_END_SIGNAL_DEFAULTS, rearmAfterObservations: 0, maxOffers: 10 };
     expect(runSessionEndPersona(persona('reactant_teen'), broken).problems.length).toBeGreaterThan(0);
+  });
+
+  it('offers a stop in a voice-only and in a typed-only conversation, well before the hard cap (C.8/C.12 gap-fix)', () => {
+    for (const name of ['voice_only', 'typed_only']) {
+      const report = runSessionEndPersona(persona(name));
+      expect(report.offers, name).toHaveLength(1);
+      expect(report.offers[0].minute, name).toBeLessThan(20);
+    }
+  });
+
+  it('turns red when a conversation carries no latency (the voice-only learner is never offered)', () => {
+    const p = persona('voice_only');
+    const mute = { ...p, observations: p.observations.map((o) => ({ ...o, observation: { ...o.observation, latencyMs: null } })) };
+    expect(runSessionEndPersona(mute).problems.length).toBeGreaterThan(0);
+  });
+
+  it('turns red when channels are mixed into one baseline (the mixed-channel learner is told to stop)', () => {
+    const p = persona('mixed_channels');
+    const mixed = { ...p, observations: p.observations.map((o) => ({ ...o, observation: { ...o.observation, source: 'activity' as const } })) };
+    expect(runSessionEndPersona(mixed).problems.length).toBeGreaterThan(0);
   });
 });

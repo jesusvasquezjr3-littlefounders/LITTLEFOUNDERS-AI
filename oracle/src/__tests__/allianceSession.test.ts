@@ -479,7 +479,7 @@ describe('C.14 self-explanation — a distinct, quality-checked dialogue move', 
     await orchestrator.handleLearnerText('what is next', Date.now());
     await orchestrator.handleLearnerText('lol', Date.now());
     await orchestrator.handleLearnerText('ok', Date.now());
-    fetchMock.mockImplementationOnce(async () => modelReplies({ ...TURN, say: 'Here is a new one: you found 5 dollars on the street. Should you keep it in your bank or buy a toy?' }));
+    fetchMock.mockImplementationOnce(async () => modelReplies({ ...TURN, say: 'New one: you found 5 dollars. Should you keep it in your bank or buy a toy?' }));
     await orchestrator.handleLearnerText('another one please', Date.now());
     const outcome = (await orchestrator.handleLearnerText('save it', Date.now()))!;
     expect(lastModelBody()).toContain('SELF-EXPLANATION');

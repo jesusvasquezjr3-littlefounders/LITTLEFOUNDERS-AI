@@ -230,6 +230,12 @@ describe('the calibration record', () => {
       controllingDelivered: 0,
       pacingOffers: 1,
       unilateralStyleChanges: 1,
+      tellDelivered: 0,
+      tellWithdrawn: 0,
+      budgetCaught: 0,
+      budgetDelivered: 0,
+      selfNamingCaught: 0,
+      selfNamingDelivered: 0,
     });
     const restored = new DialogueCalibrationRecorder(calibration, dialoguePolicy('teen', 'calibrated'));
     restored.restore(DialogueCalibrationSnapshotSchema.parse(JSON.parse(JSON.stringify(recorder.snapshot()))));

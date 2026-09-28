@@ -346,6 +346,12 @@ describe('C.17 — the register follows the band, and the band never reaches the
       controllingDelivered: 0,
       pacingOffers: 0,
       unilateralStyleChanges: 0,
+      tellDelivered: 0,
+      tellWithdrawn: 0,
+      budgetCaught: 0,
+      budgetDelivered: 0,
+      selfNamingCaught: 0,
+      selfNamingDelivered: 0,
     });
   });
 });

@@ -530,3 +530,13 @@ describe('the quarterly routing spot check cadence', () => {
     expect(routingAuditCadence(daysAgo(110), daysAgo(400), now).overdue).toBe(true);
   });
 });
+
+describe('gap-fix round 1: the close record counts tell answers, budget and self-naming', () => {
+  it('accepts the new optional counts and refuses more tell answers than tell requests', () => {
+    expect(DialogueCalibrationReportBody.safeParse(calReport({ tellRequests: 2, tellDelivered: 1, tellWithdrawn: 1, budgetCaught: 3, budgetDelivered: 1, selfNamingCaught: 0, selfNamingDelivered: 0 })).success).toBe(true);
+    // An Oracle that predates the counts still closes.
+    expect(DialogueCalibrationReportBody.safeParse(calReport()).success).toBe(true);
+    expect(DialogueCalibrationReportBody.safeParse(calReport({ tellRequests: 1, tellDelivered: 1, tellWithdrawn: 1 })).success).toBe(false);
+    expect(DialogueCalibrationReportBody.safeParse(calReport({ budgetCaught: -1 })).success).toBe(false);
+  });
+});

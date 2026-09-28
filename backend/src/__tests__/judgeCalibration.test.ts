@@ -448,6 +448,7 @@ describe('C.23 on the Mentor-quality dashboard (C.24)', () => {
     now: NOW, rubricHash: TRANSCRIPT_RUBRIC_HASH, sessions: [], scores: [], priorScores: [], firings: [], endSignals: [], alliance: [], allianceBaseline: [],
     renegotiations: [], trajectory: [], routing: [], dialogue: [], ladder: [], liveGate: { calibration: 'passed', suspended: [] }, judgeCalibrations,
     killSwitchAudit: [], completeness: { active: 0, current: 0 }, kcAttempts: [], retention: [],
+    engagementHealth: null, narrative: null, restDays: null, autonomy: null,
   });
   const reading = (src: QualitySources) => evaluateSignals(src);
 

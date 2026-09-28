@@ -57,6 +57,18 @@ function empty(): QualitySources {
     completeness: { active: 0, current: 0 },
     kcAttempts: [],
     retention: [],
+    engagementHealth: {
+      weeks: 12,
+      sessionEfficiency: { weekly: [], trend: 'insufficient_data' },
+      mentorResolution: { weekly: [], trend: 'insufficient_data' },
+      thresholds: { windowWeeks: 4, tolerance: 0.1, minWeeklySample: 20 },
+    },
+    narrative: {
+      journal_entries_recorded: 0, journal_entries_resurfaced: 0, bridge_prompts_offered: 0, bridge_prompts_converted_7d: 0,
+      bridge_self_commitments: 0, bridge_prompts_dismissed: 0, bridge_prompts_expired: 0,
+    },
+    restDays: { learners_with_lapse: 0, kept_by_rest_days: 0, restarted: 0, utilization_rate: null, rest_days_used: 0 },
+    autonomy: [],
   };
 }
 
@@ -101,8 +113,12 @@ describe('C.24 registry', () => {
 
   it('shows a metric with no data source as not instrumented, never as healthy', () => {
     const r = evaluateSignals(empty());
-    expect(readingOf(r, 'engagement.session_efficiency').status).toBe('not_instrumented');
-    expect(readingOf(r, 'rubric.tell_honored').status).toBe('not_instrumented');
+    expect(readingOf(r, 'engagement.streak_anxiety').status).toBe('not_instrumented');
+    expect(readingOf(r, 'learning.judgment_quality').status).toBe('not_instrumented');
+    // Instrumented since gap-fix round 1: empty sources read as insufficient data, never as healthy.
+    for (const id of ['engagement.session_efficiency', 'engagement.mentor_resolution', 'learning.decision_journal', 'learning.bridge_conversion', 'engagement.rest_day_use', 'engagement.autonomy_adoption', 'rubric.tell_honored']) {
+      expect(readingOf(r, id).status, id).toBe('insufficient_data');
+    }
     expect(readingOf(r, 'bias_audit.coverage').status).toBe('external');
     expect(r.anomalies).toEqual([]);
   });
@@ -299,5 +315,72 @@ describe('C.24 flags, freshness and owner review', () => {
     const c = reviewCompletion(owners, reviews, NOW);
     expect(c).toMatchObject({ week: '2026-09-21', previousWeek: '2026-09-14', named: 2, reviewedPreviousWeek: 1, reviewedThisWeek: 1, previousRate: 0.5 });
     expect(c.missingRoles).toEqual(['engineering_lead']);
+  });
+});
+
+describe('C.24 x Appendix C: the sources that already existed are read (gap-fix round 1)', () => {
+  const weeks = (values: number[], sample = 30) =>
+    values.map((v, i) => ({ week_start: `2026-0${Math.floor(i / 4) + 6}-${String((i % 4) * 7 + 1).padStart(2, '0')}`, value: v, sample }));
+
+  it('flags a B.28 session-efficiency regression (higher is better) for the owner, never reads more time as success', () => {
+    const points = weeks([0.6, 0.6, 0.6, 0.6, 0.4, 0.4, 0.4, 0.4]);
+    const src = {
+      ...empty(),
+      engagementHealth: {
+        ...empty().engagementHealth!,
+        sessionEfficiency: {
+          weekly: points.map((p) => ({ week_start: p.week_start, learners: p.sample, graded_seconds: 1, session_seconds: 2, efficiency_ratio: p.value })),
+          trend: 'regression' as const,
+        },
+      },
+    };
+    const r = evaluateSignals(src);
+    expect(readingOf(r, 'engagement.session_efficiency')).toMatchObject({ status: 'breach', value: 0.4 });
+    expect(r.anomalies.some((a) => a.signalId === 'engagement.session_efficiency' && a.kind === 'relative_drop' && a.owner === 'pedagogical_lead')).toBe(true);
+  });
+
+  it('flags a rise in Mentor resolution turns (lower is better) and leaves a fall alone', () => {
+    const rows = (values: number[]) =>
+      weeks(values).map((p) => ({ week_start: p.week_start, intent: 'all', resolved_sessions: p.sample, median_turns: p.value, p75_turns: p.value + 1 }));
+    const withTurns = (values: number[]) => ({
+      ...empty(),
+      engagementHealth: { ...empty().engagementHealth!, mentorResolution: { weekly: rows(values), trend: 'insufficient_data' as const } },
+    });
+    expect(readingOf(evaluateSignals(withTurns([4, 4, 4, 4, 6, 6, 6, 6])), 'engagement.mentor_resolution').status).toBe('breach');
+    expect(readingOf(evaluateSignals(withTurns([6, 6, 6, 6, 4, 4, 4, 4])), 'engagement.mentor_resolution').status).toBe('ok');
+  });
+
+  it('reads B.9 resurfacing, B.13 conversion (self commitments apart), B.21 rest days and B.24 adoption as diagnostics', () => {
+    const r = evaluateSignals({
+      ...empty(),
+      narrative: {
+        journal_entries_recorded: 40, journal_entries_resurfaced: 10, bridge_prompts_offered: 25, bridge_prompts_converted_7d: 5,
+        bridge_self_commitments: 3, bridge_prompts_dismissed: 4, bridge_prompts_expired: 2,
+      },
+      restDays: { learners_with_lapse: 30, kept_by_rest_days: 12, restarted: 18, utilization_rate: 0.4, rest_days_used: 20 },
+      autonomy: [
+        { lever: 'path', offered: 20, exercised: 10, adoption_rate: 0.5 },
+        { lever: 'pace', offered: 10, exercised: 2, adoption_rate: 0.2 },
+      ],
+    });
+    expect(readingOf(r, 'learning.decision_journal')).toMatchObject({ status: 'diagnostic', value: 0.25, sample: 40 });
+    expect(readingOf(r, 'learning.bridge_conversion')).toMatchObject({ status: 'diagnostic', value: 0.2, detail: expect.objectContaining({ selfCommitments: 3 }) });
+    expect(readingOf(r, 'engagement.rest_day_use')).toMatchObject({ status: 'diagnostic', value: 0.4, sample: 30 });
+    expect(readingOf(r, 'engagement.autonomy_adoption')).toMatchObject({ status: 'diagnostic', value: 0.4, sample: 30 });
+    expect(r.anomalies).toEqual([]);
+  });
+
+  it('fails closed: an unreachable RPC is an unavailable signal and an urgent flag for engineering', () => {
+    const r = evaluateSignals({ ...empty(), engagementHealth: null, narrative: null, restDays: null, autonomy: null });
+    for (const id of ['engagement.session_efficiency', 'engagement.mentor_resolution', 'learning.decision_journal', 'learning.bridge_conversion', 'engagement.rest_day_use', 'engagement.autonomy_adoption']) {
+      expect(readingOf(r, id).status, id).toBe('unavailable');
+      expect(r.anomalies.some((a) => a.signalId === id && a.kind === 'source_unavailable'), id).toBe(true);
+    }
+  });
+
+  it('reads rubric.tell_honored from the rule scores as a hard invariant: one unhonoured request is urgent', () => {
+    const r = evaluateSignals({ ...empty(), scores: [score('tell_honored', 'fail'), score('tell_honored', 'pass')] });
+    expect(readingOf(r, 'rubric.tell_honored').status).toBe('breach');
+    expect(r.anomalies.some((a) => a.signalId === 'rubric.tell_honored' && a.severity === 'urgent')).toBe(true);
   });
 });

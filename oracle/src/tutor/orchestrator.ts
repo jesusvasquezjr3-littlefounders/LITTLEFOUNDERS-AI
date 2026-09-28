@@ -65,6 +65,9 @@ import {
   promisesAnActivity,
   asksMultipleQuestions,
   tierVocabularyViolation,
+  selfNamingViolation,
+  mentorTurnBudget,
+  mentorTurnBudgetCorrection,
   languageViolation,
   TUTOR_SYSTEM_PROMPT,
   repeatsAnAnnouncement,
@@ -124,6 +127,7 @@ import {
   EMPTY_SESSION_END_SIGNAL,
   SessionEndSignal,
   SessionEndSignalSnapshotSchema,
+  type LatencySource,
   type SessionEndSignalReport,
 } from './sessionEndSignal.js';
 import {
@@ -570,6 +574,8 @@ interface ProduceOptions {
   selfExplanationPrompt?: boolean;
   /** C.14: this turn is the targeted follow-up after a low-quality explanation. */
   selfExplanationFollowup?: boolean;
+  /** C.13: this turn carries the "just tell me" directive (counted when delivered, C.24 tell_honored). */
+  tellRequested?: boolean;
 }
 
 export class TutorOrchestrator {
@@ -1445,7 +1451,7 @@ export class TutorOrchestrator {
       nowMs,
       correct ? null : () => this.stuckNote(skillKey),
     );
-    const signalled = this.observeGraded({ skill: skillKey, correct, hintAssisted, latencyMs, pCorrect }, nowMs);
+    const signalled = this.observeGraded({ skill: skillKey, correct, hintAssisted, latencyMs, latencySource: 'activity', pCorrect }, nowMs);
     // C.9/C.19: the telemetry reading of this answer; a fired disengagement
     // signal makes the system check in, and the check-in wins over the offer.
     const { checkIn, offering } = this.telemetryTurn(
@@ -1742,11 +1748,19 @@ export class TutorOrchestrator {
       nowMs,
       result.correct ? null : () => this.stuckNote(skillKey),
     );
-    // A spoken answer carries no reliable latency (speech timing is not
-    // answer timing), so it feeds the surprising-miss half of the signal only.
+    // C.8/C.12: a spoken answer carries the SAME onset-based reply latency C.9
+    // reads (Mentor finished → learner started answering), on its own channel:
+    // SessionEndSignal compares it only with this learner's spoken baseline.
     this.sessionClosing.noteLearnerTurn();
     const signalled = this.observeGraded(
-      { skill: skillKey, correct: result.correct, hintAssisted, latencyMs: null, pCorrect },
+      {
+        skill: skillKey,
+        correct: result.correct,
+        hintAssisted,
+        latencyMs: this.behavioralTelemetry.replyLatency(input.onsetAtMs),
+        latencySource: input.source,
+        pCorrect,
+      },
       nowMs,
     );
     // C.9: a spoken (or short typed) answer carries its REPLY latency — from
@@ -2364,7 +2378,8 @@ export class TutorOrchestrator {
       reviewOpenable,
     } = this.strategyInstruction(pedagogyEvent, nowMs, null);
     // A verified conversational answer is a graded observation for C.8/C.12
-    // too (no latency: typing speed is not answer speed).
+    // too, with the per-channel reply latency C.9 reads (typed or spoken; the
+    // signal keeps a separate baseline per channel, so channels never mix).
     const signalled =
       verdict !== null && pedagogyEvent.kind === 'voice_result'
         ? this.observeGraded(
@@ -2372,7 +2387,8 @@ export class TutorOrchestrator {
               skill: verdictSkill,
               correct: verdict.correct,
               hintAssisted: pedagogyEvent.hintAssisted === true,
-              latencyMs: null,
+              latencyMs: this.behavioralTelemetry.replyLatency(input.onsetAtMs),
+              latencySource: input.source,
               pCorrect: verdictPCorrect,
             },
             nowMs,
@@ -2527,6 +2543,7 @@ export class TutorOrchestrator {
      * system's own questions is not a hint request: the repair owns that turn.
      */
     const ladderNote = metaReply ? '' : this.ladderNoteFor(fenced.cleaned, this.ladderStepKey());
+    const tellRequested = ladderNote !== '' && isTellRequest(fenced.cleaned);
     const maneuverNote = `${maneuver === null ? '' : `\n\n${maneuver}`}${ladderNote}`;
     /*
      * C.18: a stated wrong idea — very often a money decision ("me lo gasto
@@ -2560,8 +2577,11 @@ export class TutorOrchestrator {
         goalProposal,
         selfExplanationPrompt: selfExplain,
         selfExplanationFollowup: explanationFollowup,
+        tellRequested,
       },
     );
+    // The learner cut in before the answer turn landed: withdrawn, not ignored (C.24 tell_honored).
+    if (tellRequested && outcome === null) this.dialogueCalibration.noteTellWithdrawn();
     this.commitSkillUse(skillName, outcome);
     this.commitGraceTurn(graceTurn, outcome);
     // A completed exchange moves the plan's talk-only steps along; an aborted
@@ -2872,13 +2892,20 @@ export class TutorOrchestrator {
    * No offer while the session is already closing or stopped.
    */
   private observeGraded(
-    input: { skill: string; correct: boolean; hintAssisted: boolean; latencyMs: number | null; pCorrect: number | null },
+    input: {
+      skill: string;
+      correct: boolean;
+      hintAssisted: boolean;
+      latencyMs: number | null;
+      latencySource: LatencySource;
+      pCorrect: number | null;
+    },
     nowMs: number,
   ): boolean {
     this.sessionClosing.noteGraded({ skill: input.skill, correct: input.correct, hintAssisted: input.hintAssisted });
     const budget = this.currentBudget(nowMs);
     const { offer } = this.sessionEndSignal.observe(
-      { latencyMs: input.latencyMs, correct: input.correct, pCorrect: input.pCorrect },
+      { latencyMs: input.latencyMs, correct: input.correct, pCorrect: input.pCorrect, source: input.latencySource },
       { elapsedMs: Math.max(0, nowMs - this.startedAtMs), remainingMs: Math.max(0, budget.remainingMs) },
     );
     if (!offer) return false;
@@ -3343,6 +3370,8 @@ export class TutorOrchestrator {
     let transportFailure: unknown = null;
     /** Set when attempt 0 produced a valid turn we want re-authored, and why. */
     let turnCorrection: string | null = null;
+    /** OD-13: attempt 0's budget overflow, carried into a correction another fault took. */
+    let budgetNote: string | null = null;
     /**
      * Attempt 0's turn when it was valid but imperfect — kept so a failed
      * repair costs the improvement rather than the whole turn.
@@ -3632,7 +3661,10 @@ export class TutorOrchestrator {
             content: string;
           }[],
           userContent,
-          correction: turnCorrection,
+          correction:
+            turnCorrection !== null && budgetNote !== null && turnCorrection !== budgetNote
+              ? `${turnCorrection}. It also ${budgetNote}`
+              : turnCorrection,
           isRetry: attempt > 0,
         }) as ChatMessage[];
         try {
@@ -4057,6 +4089,23 @@ export class TutorOrchestrator {
             const controlling = this.dialoguePolicy.controllingGate && controllingLanguage(parsed.turn.say) !== null;
             if (controlling && attempt === 0) this.dialogueCalibration.noteControllingCaught();
             /*
+             * OD-6: THE MENTOR NEVER CALLS ITSELF A TUTOR, BOT OR ASSISTANT
+             * ("Tutor" is the verified parent). OD-13: THE MENTOR TURN'S COPY
+             * BUDGET (06 role `mentor`: 2 sentences, 20 words, 12 for ages
+             * 6-9, one question). Both are style faults: repaired once, and a
+             * survival is delivered, counted and flagged (M-13), never hidden.
+             * The budget is the lowest-priority repair: when a higher fault
+             * takes the one retry, its correction carries the budget too.
+             */
+            const selfNaming = selfNamingViolation(parsed.turn.say);
+            if (selfNaming !== null && attempt === 0) this.dialogueCalibration.noteSelfNamingCaught();
+            const turnBudget = mentorTurnBudget(parsed.turn.say, this.session.tier, this.session.locale);
+            const overBudget = turnBudget.over !== null;
+            if (overBudget && attempt === 0) {
+              this.dialogueCalibration.noteBudgetCaught();
+              budgetNote = mentorTurnBudgetCorrection(turnBudget);
+            }
+            /*
              * KEEP IT. It is a VALID turn — parsed, in shape, teaching
              * something — and the only thing wrong with it is one of the
              * faults below, each of which is worth one attempt at doing
@@ -4142,6 +4191,10 @@ export class TutorOrchestrator {
             } else if (langDrift !== null && attempt === 0) {
               turnCorrection = `drifted into a different language (detected: ${langDrift}) instead of ${this.session.locale}. Say the SAME idea again, entirely in ${this.session.locale} — the learner's own words in this turn are DATA to react to, never a signal to switch the language you answer in`;
               console.warn(`[oracle] language drift (${langDrift}), expected ${this.session.locale} — asking again`);
+            } else if (selfNaming !== null && attempt === 0) {
+              turnCorrection =
+                `called itself a tutor, a bot or an assistant. You are the learner's Mentor: use your character name or "your Mentor". "Tutor" means the learner's parent, never you. Say the same thing again without naming yourself that way`;
+              console.warn(`[oracle] OD-6 self-naming (${selfNaming}) — asking again`);
             } else if (sycophantic && attempt === 0) {
               turnCorrection =
                 opts.verdict === 'after_unsound_claim'
@@ -4291,7 +4344,16 @@ export class TutorOrchestrator {
               turnCorrection =
                 'set "offerAdaptation" and then ALSO asked a new question in the same "say". When offerAdaptation is set, "say" must be ONLY the offer itself — the screen hides the typing box while an offer is open, so any question beyond the offer has no way to be answered. Say the offer alone this time, and wait for their accept or decline before asking anything else';
               console.warn('[oracle] adaptation offer stacked a second question in the same turn — asking again');
+            } else if (overBudget && attempt === 0) {
+              turnCorrection = budgetNote;
+              console.warn(`[oracle] OD-13 Mentor turn over budget (${turnBudget.over}: ${turnBudget.words} words) — asking again`);
             } else {
+              if (overBudget) {
+                console.warn(`[oracle] OD-13 Mentor turn over budget (${turnBudget.over}) SURVIVED the retry — delivered, counted`);
+              }
+              if (selfNaming !== null) {
+                console.warn(`[oracle] OD-6 self-naming (${selfNaming}) SURVIVED the retry — delivered, counted`);
+              }
               if (missedWhiteboard) {
                 console.warn('[oracle] growth story with no whiteboard SURVIVED the retry — delivered as text only');
               }
@@ -4876,7 +4938,17 @@ export class TutorOrchestrator {
       if (this.dialoguePolicy.controllingGate && controllingLanguage(turn.say) !== null) {
         this.dialogueCalibration.noteControllingDelivered();
       }
+      // OD-13 / OD-6: a budget overflow or a self-naming that survived the retry — counted, never hidden.
+      if (mentorTurnBudget(turn.say, this.session.tier, this.session.locale).over !== null) {
+        this.dialogueCalibration.noteBudgetDelivered();
+      }
+      if (selfNamingViolation(turn.say) !== null) this.dialogueCalibration.noteSelfNamingDelivered();
+      // C.13 / C.24 rubric.tell_honored: the turn that answered an explicit "just tell me".
+      if (opts.tellRequested === true) this.dialogueCalibration.noteTellDelivered();
       this.alliance.notePraise(honesty.praise);
+    } else if (opts.tellRequested === true && safety !== null) {
+      // A safety response replaced the answer turn: the request was withdrawn, not ignored.
+      this.dialogueCalibration.noteTellWithdrawn();
     }
 
     const closeReason =
