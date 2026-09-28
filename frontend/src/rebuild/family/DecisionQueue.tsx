@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
-import { Button, Copy, InlineNotice, LoadingState } from '../design/controls';
+import { Button, Chip, CoinAmount, Copy, InlineNotice, LoadingState } from '../design/controls';
+import { SuccessWipe } from '../design/motion';
 import { NotYetForm, type NotYetCopy } from './NotYetForm';
 import { ReflectionStep, type ReflectionCopy } from './ReflectionStep';
 import {
@@ -85,10 +86,25 @@ export function DecisionQueue({ copy, notYetCopy, reflectionCopy, levelNames, ki
 }) {
   const heading = useId();
   const [answering, setAnswering] = useState<Answering | null>(null);
+  // 04 §4.2: an approved chore or reward is covered by the success wipe, which clears to reveal the row as approved.
+  // The row stays (as approved) until the wipe ends, even when the refreshed queue no longer lists it.
+  const [wipe, setWipe] = useState<{ id: string; title: string; list: 'chores' | 'rewards' } | null>(null);
+  const wipeDone = () => setWipe(null);
   const reasonText: Record<ChildRewardReason, string> = { saved_for_it: copy.saved_for_it, treat: copy.treat, need_it: copy.need_it, for_someone: copy.for_someone, other: copy.other };
   const empty = queue !== null && queue.chores.length + queue.rewards.length + queue.reviews.length + queue.nudges.length + queue.levelRequests.length + queue.openChores.length === 0;
   const open = (id: string, kinds: readonly string[]) => answering !== null && targetId(answering.target) === id && kinds.includes(answering.target.kind);
   const reflect = (target: NotYetTarget | YesTarget, childId: string | null) => setAnswering({ stage: 'reflect', target, name: childId ? kidName(childId) : '' });
+
+  /** The row the success wipe reveals once the queue no longer lists it: the same key, now approved. */
+  function approvedRow(row: { id: string; title: string }) {
+    return <li key={row.id} data-approved="true">
+      <div className="lf-family-hub-row">
+        <span className="ugc" data-copy-role="data">{row.title}</span>
+        <Chip tone="success" glyph="check">{copy.done}</Chip>
+      </div>
+      <SuccessWipe active label={row.title} onDone={wipeDone} />
+    </li>;
+  }
 
   /** The prompt, then either the yes itself or the reason form. */
   function decide(codes: Parameters<typeof NotYetForm>[0]['codes']) {
@@ -104,8 +120,13 @@ export function DecisionQueue({ copy, notYetCopy, reflectionCopy, levelNames, ki
           const note = reflection === 'shared' ? words : null;
           const yes = target as YesTarget;
           setAnswering(null);
-          if (yes.kind === 'approveChore') onAction({ kind: 'approveChore', chore: yes.chore, reflection, note });
-          else if (yes.kind === 'approveReward') onAction({ kind: 'approveReward', reward: yes.reward, reflection, note });
+          if (yes.kind === 'approveChore') {
+            setWipe({ id: yes.chore.id, title: yes.chore.title, list: 'chores' });
+            onAction({ kind: 'approveChore', chore: yes.chore, reflection, note });
+          } else if (yes.kind === 'approveReward') {
+            setWipe({ id: yes.reward.id, title: yes.reward.title ?? '', list: 'rewards' });
+            onAction({ kind: 'approveReward', reward: yes.reward, reflection, note });
+          }
           else if (yes.kind === 'confirm') onAction({ kind: 'confirm', review: yes.review, reflection });
           else onAction({ kind: 'grant', requestId: yes.requestId, level: yes.level, reflection });
         }} />;
@@ -147,7 +168,7 @@ export function DecisionQueue({ copy, notYetCopy, reflectionCopy, levelNames, ki
         </div>)}
       </section>}
 
-      {queue.chores.length > 0 && <section aria-label={copy.chores} data-queue="chores">
+      {(queue.chores.length > 0 || wipe?.list === 'chores') && <section aria-label={copy.chores} data-queue="chores">
         <h3 data-copy-role="heading">{copy.chores}</h3>
         <ul>{queue.chores.map((c) => <li key={c.id} data-task-id={c.id}>
           <div className="lf-family-hub-row">
@@ -163,15 +184,16 @@ export function DecisionQueue({ copy, notYetCopy, reflectionCopy, levelNames, ki
               <Button disabled={busy} onClick={() => reflect({ kind: 'sendBack', chore: c }, c.assignedTo)}>{copy.sendBack}</Button>
               <Button disabled={busy} onClick={() => reflect({ kind: 'remove', chore: c }, c.assignedTo)}>{copy.remove}</Button>
             </div>}
-        </li>)}</ul>
+          <SuccessWipe active={wipe?.id === c.id} label={c.title} onDone={wipeDone} />
+        </li>)}{wipe?.list === 'chores' && !queue.chores.some((c) => c.id === wipe.id) ? approvedRow(wipe) : null}</ul>
       </section>}
 
-      {queue.rewards.length > 0 && <section aria-label={copy.rewards} data-queue="rewards">
+      {(queue.rewards.length > 0 || wipe?.list === 'rewards') && <section aria-label={copy.rewards} data-queue="rewards">
         <h3 data-copy-role="heading">{copy.rewards}</h3>
         <ul>{queue.rewards.map((r) => <li key={r.id} data-redemption-id={r.id}>
           <div className="lf-family-hub-row">
             <span className="ugc" data-copy-role="data">{r.title ?? ''}</span>
-            {r.cost !== null && <span className="lf-family-hub-amount" data-copy-role="data">{fill(copy.cost, { count: r.cost })}</span>}
+            {r.cost !== null && <CoinAmount className="lf-family-hub-amount">{fill(copy.cost, { count: r.cost })}</CoinAmount>}
           </div>
           {r.childReasonKind && <span className="lf-autonomy-voice" data-copy-role="data" data-child-voice="reason">
             {fill(copy.wants, { name: kidName(r.kidUserId), reason: reasonText[r.childReasonKind] })}</span>}
@@ -182,7 +204,8 @@ export function DecisionQueue({ copy, notYetCopy, reflectionCopy, levelNames, ki
               <Button variant="success" disabled={busy} onClick={() => reflect({ kind: 'approveReward', reward: r }, r.kidUserId)}>{copy.approve}</Button>
               <Button disabled={busy} onClick={() => reflect({ kind: 'deny', reward: r }, r.kidUserId)}>{copy.deny}</Button>
             </div>}
-        </li>)}</ul>
+          <SuccessWipe active={wipe?.id === r.id} label={r.title ?? ''} onDone={wipeDone} />
+        </li>)}{wipe?.list === 'rewards' && !queue.rewards.some((r) => r.id === wipe.id) ? approvedRow(wipe) : null}</ul>
       </section>}
 
       {queue.levelRequests.length > 0 && <section aria-label={copy.levels} data-queue="levels">

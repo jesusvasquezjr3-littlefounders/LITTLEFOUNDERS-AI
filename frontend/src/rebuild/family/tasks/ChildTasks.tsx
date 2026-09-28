@@ -152,7 +152,7 @@ export function ChildTasks({ copy, locale, dark, transport, photos, onNavigate, 
             return <li key={reward.id} className="lf-console-item" data-reward-id={reward.id}>
               <div className="lf-console-row">
                 <div><span className="ugc lf-money-title" data-copy-role="data">{reward.title}</span></div>
-                <RewardChip>{coinWord(copy, reward.cost)}</RewardChip>
+                <RewardChip coin>{coinWord(copy, reward.cost)}</RewardChip>
               </div>
               {asked ? <div><Chip tone="warning" glyph="pause" role="option">{copy.asked}</Chip></div> : <>
                 {!affordable ? <Copy role="body">{copy.notEnough}</Copy> : null}

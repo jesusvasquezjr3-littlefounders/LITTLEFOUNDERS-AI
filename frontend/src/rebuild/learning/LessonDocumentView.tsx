@@ -1,9 +1,10 @@
-import { useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useState, type ReactNode } from 'react';
 import { InlineNotice } from '../design/controls';
 import en from '../../i18n/en-US/rebuild-learn.json';
 import es from '../../i18n/es-MX/rebuild-learn.json';
 import pt from '../../i18n/pt-BR/rebuild-learn.json';
 import type { AgeBand, Locale } from '../design/copyBudget';
+import { SequenceTransition } from '../design/motion';
 import { Button } from '../design/controls';
 import { AllocationBoard } from './AllocationBoard';
 import { GrowthBoard } from './GrowthBoard';
@@ -165,10 +166,14 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
         setIndex((current) => Math.min(current + 1, document.segments.length));
       })();
     } } : undefined;
+  // 04 §4.1: one exercise replaces another with the exercise slide; the first one is simply there.
+  return <SequenceTransition step={segment ? `${lessonVersionKey(document)}:${segment.id}` : `${lessonVersionKey(document)}:end`}>{board()}</SequenceTransition>;
+
+  function board(): ReactNode {
   if (!segment) return <V2SequenceEnd locale={document.locale} onBack={onBack} onComplete={onComplete} />;
   const key = `${lessonVersionKey(document)}:${segment.id}`;
-  const board = renderSegment(segment, key);
-  return viewFailed ? <>{board}<div className="lf-learning-view-failed"><InlineNotice tone="error" live>{playerCopy(document.locale).viewFailed}</InlineNotice></div></> : board;
+  const view = renderSegment(segment, key);
+  return viewFailed ? <>{view}<div className="lf-learning-view-failed"><InlineNotice tone="error" live>{playerCopy(document.locale).viewFailed}</InlineNotice></div></> : view;
 
   function renderSegment(segment: LessonClientSegment, key: string) {
   const any = onGradeAny ? (answer: unknown, id: string) => onGradeAny(answer, id, document) : undefined;
@@ -246,6 +251,7 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
       void exhaustive;
       return unavailable(document.locale, onBack);
     }
+  }
   }
   }
 }

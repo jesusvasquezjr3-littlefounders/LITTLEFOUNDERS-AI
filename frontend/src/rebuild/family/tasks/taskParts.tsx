@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Art, Button, ButtonGroup, Chip, ChipGroup, Dialog, InlineNotice, LoadingState, Pill, RewardChip, type StatusTone } from '../../design/controls';
+import { Art, Button, ButtonGroup, Chip, ChipGroup, CoinAmount, Dialog, InlineNotice, LoadingState, Pill, RewardChip, type StatusTone } from '../../design/controls';
 import type { GlyphName } from '../../design/glyphs';
 import type en from '../../../i18n/en-US/rebuild-family.json';
 import { fill } from '../console/consoleParts';
@@ -47,7 +47,7 @@ export function ChoreChips({ task, copy, showOpen = true }: {
   return <ChipGroup>
     {showOpen || task.status !== 'open' ? <Chip tone={status.tone} glyph={status.glyph} role="option">{copy[status.key] ?? ''}</Chip> : null}
     <Pill tone={task.kind === 'bonus' ? 'reward' : 'inverse'} role="option">{task.kind === 'bonus' ? copy.bonus : copy.contribution}</Pill>
-    {task.rewardCoins > 0 ? <RewardChip>{coinWord(copy, task.rewardCoins)}</RewardChip> : null}
+    {task.rewardCoins > 0 ? <RewardChip coin>{coinWord(copy, task.rewardCoins)}</RewardChip> : null}
     {task.recurrence === 'weekly' ? <Pill tone="inverse" role="option">{copy.weekly}</Pill> : null}
     {task.requiresEvidence && !task.hasEvidence ? <Chip tone="warning" glyph="info" role="option">{copy.photoNeeded}</Chip> : null}
   </ChipGroup>;
@@ -132,9 +132,9 @@ export function PhotoPicker({ task, photos, copy, onUploaded }: {
 
 const POCKETS = ['save', 'spend', 'share'] as const;
 
-/** The three pockets: our own pocket art, the word and the number (02 §4.3: colour, icon and label together). */
+/** The three pockets: our own pocket art, the word and the coins (02 §4.3: colour, icon and label together; the coin mark, 02 §9.5). */
 export function PocketRow({ pockets, copy, heading, note, action }: {
-  pockets: Pockets; copy: { save: string; spend: string; share: string }; heading: string; note?: string; action?: ReactNode;
+  pockets: Pockets; copy: { save: string; spend: string; share: string; coin: string; coins: string }; heading: string; note?: string; action?: ReactNode;
 }) {
   return <section className="lf-money-pockets" data-family-part="pockets" aria-label={heading}>
     <h2 data-copy-role="heading">{heading}</h2>
@@ -143,7 +143,7 @@ export function PocketRow({ pockets, copy, heading, note, action }: {
       {POCKETS.map((pocket) => <li key={pocket} data-pocket={pocket}>
         <Art assetId={`pocket.${pocket}.icon`} />
         <span data-copy-role="option">{copy[pocket]}</span>
-        <span className="lf-money-pocket-amount" data-copy-role="data">{pockets[pocket]}</span>
+        <CoinAmount className="lf-money-pocket-amount">{coinWord(copy, pockets[pocket])}</CoinAmount>
       </li>)}
     </ul>
     {action}

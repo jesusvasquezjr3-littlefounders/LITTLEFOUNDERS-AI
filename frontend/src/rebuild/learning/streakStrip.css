@@ -10,7 +10,4 @@
 .lf-streak-day--open .lf-streak-dot, .lf-streak-day--today .lf-streak-dot { background: transparent; }
 .lf-streak-day--current .lf-streak-dot { box-shadow: 0 0 0 3px var(--primary-strong); }
 .lf-streak-weekday { font-size: .8125rem; font-weight: 800; }
-@media (prefers-reduced-motion: no-preference) {
-  .lf-rebuild .lf-streak-day { animation: lf-streak-wave var(--dur-transition) var(--ease-enter) both; }
-  @keyframes lf-streak-wave { 0% { opacity: 0; transform: translateY(var(--spacing-2)); } 100% { opacity: 1; transform: translateY(0); } }
-}
+/* The wave-in is the shared Wave pattern (design/motion.css), fired only on a real route entry. */

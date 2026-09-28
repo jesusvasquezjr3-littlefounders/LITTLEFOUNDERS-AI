@@ -1,4 +1,8 @@
-import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import {
+  Children, cloneElement, Component, createContext, createRef, isValidElement, useContext, useEffect, useLayoutEffect, useRef, useState,
+  type AnimationEvent as ReactAnimationEvent, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode,
+} from 'react';
+import { Glyph } from './glyphs';
 import { isMilestone, type Milestone } from './milestones';
 import './motion.css';
 
@@ -102,6 +106,30 @@ export function useOneShot(trigger: string | false | null | undefined): [boolean
     if (trigger !== before) setActive(true);
   }, [trigger]);
   return [active, () => setActive(false)];
+}
+
+/**
+ * The shell's route entrance (02 rule 14; 04 §2, `--dur-transition` on
+ * `--ease-enter`): replays the `data-route-enter` animation on <main> for a
+ * real route change. The shell calls it from its route-focus effect, which
+ * never runs on the first render or on an in-place re-render, and the mark is
+ * removed when the entrance ends so nothing about it outlives the move. The
+ * CSS lives under `prefers-reduced-motion: no-preference` (shells.css), so
+ * with reduced motion the mark is set and nothing moves.
+ */
+export function replayRouteEntrance(element: HTMLElement | null) {
+  noteRouteChange();
+  if (!element) return;
+  element.removeAttribute('data-route-enter');
+  // Reading layout restarts the animation when two route changes come close together.
+  void element.offsetWidth;
+  element.setAttribute('data-route-enter', '');
+  const done = (event: AnimationEvent) => {
+    if (event.target !== element) return;
+    element.removeAttribute('data-route-enter');
+    element.removeEventListener('animationend', done);
+  };
+  element.addEventListener('animationend', done);
 }
 
 function prefersMotion() {
@@ -214,4 +242,222 @@ export function CountUp({ value, format }: { value: number; format: (value: numb
     // `format` is a pure presentation function; restarting on its identity would replay the count.
   }, [play, value, final]);
   return <span className="lf-count-up" style={{ minInlineSize: `${final.length}ch` }}>{shown}</span>;
+}
+
+/* ---------------------------------------------------------------------------
+ * Orchestrated patterns (Frontend Bible 04 §4.1-§4.4; 02 §9.9, rule 14).
+ * The scene's own elements move: an exercise slides out as the next slides
+ * in, an approved row is covered by a success panel that wipes away, the
+ * streak strip's days rise in a wave and badge grids stagger in. None is a
+ * celebration (no spring, no celebration duration; celebrationBudget.test.ts
+ * lists them as non-celebration motion), every one lives in motion.css under
+ * `prefers-reduced-motion: no-preference`, and with reduced motion the final
+ * state is simply there.
+ * ------------------------------------------------------------------------- */
+
+/** The non-celebration orchestrated patterns, by keyframe name (the in-page motion audit reads the same list). */
+export const ORCHESTRATED_MOTION = ['lf-route-enter', 'lf-sequence-in', 'lf-sequence-out', 'lf-success-wipe', 'lf-wave-rise', 'lf-stagger-rise', 'lf-press-ring'] as const;
+
+let routeEpoch = 0;
+const entered = new Map<string, number>();
+
+/** A real route or screen change happened (the shells' route focus and the lesson layer call it). */
+export function noteRouteChange() {
+  routeEpoch += 1;
+}
+
+/** Test helper: forgets which surfaces have entered. */
+export function resetRouteEntriesForTest() {
+  routeEpoch = 0;
+  entered.clear();
+}
+
+/**
+ * True only on the first render of `key` after a route change (02 rule 14):
+ * a surface that mounts on a new route enters; a re-render, or a remount on
+ * the same route after an unrelated interaction, does not enter again. The
+ * initialiser is pure (StrictMode runs it twice) and the entry is recorded
+ * after commit.
+ */
+export function useRouteEntry(key: string): boolean {
+  const [entry] = useState(() => entered.get(key) !== routeEpoch);
+  useEffect(() => { entered.set(key, routeEpoch); }, [key]);
+  return entry;
+}
+
+function indexed(children: ReactNode): ReactNode {
+  let index = 0;
+  return Children.map(children, (child) => {
+    if (!isValidElement<{ style?: CSSProperties }>(child)) return child;
+    const style = { ...(child.props.style ?? {}), '--lf-motion-index': index++ } as CSSProperties;
+    return cloneElement(child, { style });
+  });
+}
+
+type Collection = 'ul' | 'ol' | 'div';
+
+/**
+ * The streak strip's wave (04 §4.3): its days rise left to right, each
+ * `index x 60ms` after the one before, on the enter easing, only on real
+ * route entry. Reserved for the streak strip: a collection with no sequence
+ * of its own uses `Stagger`.
+ */
+export function Wave({ entryKey, as: Tag = 'ol', className, children, ...rest }: {
+  entryKey: string; as?: Collection; className?: string; children: ReactNode;
+} & { [attribute: `aria-${string}` | `data-${string}`]: string | boolean | undefined }) {
+  const entry = useRouteEntry(entryKey);
+  return <Tag {...rest} className={className} data-wave={entry ? 'enter' : 'settled'}>{indexed(children)}</Tag>;
+}
+
+/**
+ * A badge grid's staggered reveal (04 §4.4): each item fades and rises
+ * `min(index, 10) x 45ms` after the first, only on real route entry.
+ */
+export function Stagger({ entryKey, as: Tag = 'ul', className, children, ...rest }: {
+  entryKey: string; as?: Collection; className?: string; children: ReactNode;
+} & { [attribute: `aria-${string}` | `data-${string}`]: string | boolean | undefined }) {
+  const entry = useRouteEntry(entryKey);
+  return <Tag {...rest} className={className} data-stagger={entry ? 'enter' : 'settled'}>{indexed(children)}</Tag>;
+}
+
+/**
+ * The success wipe (04 §4.2): when `active` turns on, a solid success panel
+ * with the check glyph and the item's own title covers the row from the top
+ * edge, holds, then clears downwards, revealing the row already updated
+ * underneath; `onDone` follows. Render it as the last child of the row. With reduced motion the panel never shows and
+ * `onDone` runs at once. The words are the row's own title (data); the
+ * outcome itself is announced by the surface's notice.
+ */
+export function SuccessWipe({ active, label, onDone }: { active: boolean; label: string; onDone?: () => void }) {
+  const [playing, setPlaying] = useState(false);
+  const done = useRef(onDone);
+  done.current = onDone;
+  useEffect(() => {
+    if (!active) { setPlaying(false); return; }
+    if (prefersMotion()) setPlaying(true);
+    else done.current?.();
+  }, [active]);
+  const finish = (event: ReactAnimationEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) return;
+    setPlaying(false);
+    done.current?.();
+  };
+  // The panel is the last child of the row it covers; the row becomes its positioned ancestor (motion.css).
+  return playing ? <div className="lf-success-wipe" aria-hidden="true" onAnimationEnd={finish}>
+    <Glyph name="check" /><span data-copy-role="data">{label}</span>
+  </div> : null;
+}
+
+type Snapshot = { clone: HTMLElement; top: number; left: number; width: number; height: number } | null;
+
+/**
+ * The exercise slide (04 §4.1): when `step` changes, the outgoing card (the
+ * element matched by `selector`, `.lf-learning-content` by default) is cloned
+ * before the swap and slides out 14% of the track on the exit easing while the
+ * incoming card slides in from 18% on the enter easing, both over
+ * `--dur-transition`, overlapping by about 22%. The clone is inert and hidden
+ * from assistive technology, and it carries the old foot, so the foot
+ * cross-fades with the cards instead of snapping. A surface whose card already
+ * has its own stage transition (`.lf-cpa-transition`) keeps it. With reduced
+ * motion nothing is cloned: the new card is simply there.
+ */
+export class SequenceTransition extends Component<{ step: string; selector?: string; children: ReactNode }> {
+  private host = createRef<HTMLDivElement>();
+  private timers: number[] = [];
+
+  private card(): HTMLElement | null {
+    const card = this.host.current?.querySelector<HTMLElement>(this.props.selector ?? '.lf-learning-content') ?? null;
+    return card && !card.classList.contains('lf-cpa-transition') ? card : null;
+  }
+
+  getSnapshotBeforeUpdate(previous: Readonly<{ step: string }>): Snapshot {
+    if (previous.step === this.props.step || !prefersMotion() || !this.host.current) return null;
+    const outgoing = this.card();
+    if (!outgoing) return null;
+    const box = outgoing.getBoundingClientRect(), frame = this.host.current.getBoundingClientRect();
+    const clone = outgoing.cloneNode(true) as HTMLElement;
+    return { clone, top: box.top - frame.top, left: box.left - frame.left, width: box.width, height: box.height };
+  }
+
+  componentDidUpdate(_previous: unknown, _state: unknown, snapshot: Snapshot) {
+    if (!snapshot || !this.host.current) return;
+    const incoming = this.card();
+    if (!incoming) return;
+    const { clone } = snapshot;
+    for (const node of [clone, ...clone.querySelectorAll<HTMLElement>('[id]')]) node.removeAttribute('id');
+    clone.setAttribute('aria-hidden', 'true');
+    clone.setAttribute('inert', '');
+    clone.classList.add('lf-sequence-leaving');
+    Object.assign(clone.style, { insetBlockStart: `${snapshot.top}px`, insetInlineStart: `${snapshot.left}px`, inlineSize: `${snapshot.width}px`, blockSize: `${snapshot.height}px` });
+    this.host.current.append(clone);
+    incoming.classList.add('lf-sequence-entering');
+    const clear = () => { clone.remove(); incoming.classList.remove('lf-sequence-entering'); };
+    clone.addEventListener('animationend', () => clone.remove(), { once: true });
+    incoming.addEventListener('animationend', (event) => { if (event.target === incoming) incoming.classList.remove('lf-sequence-entering'); });
+    // A hidden tab runs no animation: clear on a timer as well (transition + its delay, with room).
+    this.timers.push(window.setTimeout(clear, 1200));
+  }
+
+  componentWillUnmount() {
+    this.timers.forEach((timer) => window.clearTimeout(timer));
+  }
+
+  render() {
+    return <div ref={this.host} className="lf-sequence" data-sequence-step={this.props.step}>{this.props.children}</div>;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Press feedback (02 §9.1): a soft ring ripples from the touch point and a
+ * haptic tick plays where supported. The scale press itself is CSS
+ * (`--press-scale`).
+ * ------------------------------------------------------------------------- */
+
+/** The platform's sound off switch (lib/sound.ts `lf_sound_muted`) also silences the haptic tick. */
+function hapticsOff() {
+  try { return window.localStorage.getItem('lf_sound_muted') === '1'; } catch { return false; }
+}
+
+/**
+ * One press: a haptic tick unless the platform's sound and haptics are
+ * switched off, and, with motion allowed, a ring in the control's own on-*
+ * colour (`currentColor`) that scales out from the pointer over `--dur-micro`
+ * on `--ease-standard`. With reduced motion only the colour state change
+ * remains. A disabled or pending control gives no feedback.
+ */
+export function pressFeedback(event: ReactPointerEvent<HTMLElement>) {
+  const control = event.currentTarget;
+  if (event.pointerType === 'mouse' && event.button !== 0) return;
+  if (control.matches(':disabled, [aria-disabled="true"]')) return;
+  // A label-wrapped control (the picture option) is as disabled as its input.
+  if (control.querySelector(':scope > input:disabled') || control.closest('fieldset[disabled]')) return;
+  if (!hapticsOff()) {
+    try { navigator.vibrate?.(8); } catch { /* not supported, or refused */ }
+  }
+  if (!prefersMotion()) return;
+  const box = control.getBoundingClientRect();
+  const rtl = getComputedStyle(control).direction === 'rtl';
+  const x = rtl ? box.right - event.clientX : event.clientX - box.left;
+  const y = event.clientY - box.top;
+  const reach = Math.max(Math.hypot(x, y), Math.hypot(box.width - x, y), Math.hypot(x, box.height - y), Math.hypot(box.width - x, box.height - y));
+  const ring = document.createElement('span');
+  ring.className = 'lf-press-ring';
+  ring.setAttribute('aria-hidden', 'true');
+  ring.style.setProperty('--lf-press-x', `${x}px`);
+  ring.style.setProperty('--lf-press-y', `${y}px`);
+  ring.style.setProperty('--lf-press-size', `${Math.ceil(reach * 2)}px`);
+  // A control whose own box must not clip (the picture option's check badge sits on its corner) names a
+  // clipping layer with [data-press-host]; the ring is drawn there, with the same coordinates.
+  (control.querySelector(':scope > [data-press-host]') ?? control).append(ring);
+  const clear = () => ring.remove();
+  ring.addEventListener('animationend', clear, { once: true });
+  window.setTimeout(clear, 600);
+}
+
+/** `onPointerDown` for a pressable: the shared press feedback, then the caller's own handler. */
+export function withPressFeedback<T extends HTMLElement>(handler?: (event: ReactPointerEvent<T>) => void) {
+  return (event: ReactPointerEvent<T>) => {
+    pressFeedback(event as ReactPointerEvent<HTMLElement>);
+    handler?.(event);
+  };
 }

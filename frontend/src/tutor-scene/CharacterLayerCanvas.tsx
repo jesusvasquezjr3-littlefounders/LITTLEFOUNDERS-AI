@@ -131,7 +131,7 @@ export function CharacterLayerCanvas({
 
   return (
     <SceneCanvas
-      className="h-full w-full"
+      className="lf-scene-fill"
       onStats={onStats}
       onSettings={setSettings}
       /*

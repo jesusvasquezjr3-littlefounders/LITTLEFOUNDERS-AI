@@ -201,7 +201,7 @@ export function CharacterStage({
 
   return (
     <div className={className}>
-      <SceneCanvas className="h-full w-full" onStats={onStats} onSettings={setSettings}>
+      <SceneCanvas className="lf-scene-fill" onStats={onStats} onSettings={setSettings}>
         {stageSettings && (
           <>
             {/* `auto` resolves against the app theme. A lesson has no time of day. */}

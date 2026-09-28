@@ -1,5 +1,5 @@
 import { useId, useState, type FormEvent } from 'react';
-import { Button, ChipGroup, ChoiceChip, Copy, ErrorState, InlineNotice, LoadingState, SegmentedControl, TextAreaField, TextField } from '../design/controls';
+import { Button, ChipGroup, ChoiceChip, CoinAmount, Copy, ErrorState, InlineNotice, LoadingState, SegmentedControl, TextAreaField, TextField } from '../design/controls';
 import { DESTINATION_KINDS, DESTINATION_TITLE_MAX, GIFT_MAX_COINS, GIFT_NOTE_MAX, type Destination, type DestinationKind, type Gift, type ShareView } from './moneyHabitsApi';
 import '../design/tokens.css';
 import '../design/system.css';
@@ -148,7 +148,7 @@ export function ShareGiving({ copy, teenCopy, locale, dark, available, view, loa
           return <li key={g.id} data-gift-status={g.status}>
             <div className="lf-family-hub-row">
               <span className="ugc" data-copy-role="data">{place?.title ?? ''}</span>
-              <span className="lf-family-hub-amount" data-copy-role="data">{fill(copy.coins, { count: g.amount })}</span>
+              <CoinAmount className="lf-family-hub-amount">{fill(copy.coins, { count: g.amount })}</CoinAmount>
               <span className="lf-money-habits-chip" data-copy-role="option">{status[g.status]}</span>
             </div>
             {g.note && g.status === 'given' && <span className="ugc" data-copy-role="data">{fill(copy.note, { note: g.note })}</span>}

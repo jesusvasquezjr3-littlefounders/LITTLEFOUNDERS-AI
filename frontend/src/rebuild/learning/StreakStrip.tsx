@@ -1,5 +1,6 @@
 import type { CopyRole, Locale } from '../design/copyBudget';
 import { Glyph } from '../design/controls';
+import { Wave } from '../design/motion';
 import type { StreakView } from './motivation';
 import './streakStrip.css';
 
@@ -11,7 +12,8 @@ import './streakStrip.css';
  * half-filled dot, a paused day a square with the pause glyph, an open day an
  * empty ring. Today wears a 3 px primary-strong ring. An ordinary practised
  * day updates the strip without a celebration (rule 5); the dots only wave in
- * once, on route entry, and not at all with reduced motion.
+ * once, on a real route entry (the shared Wave pattern, 04 §4.3), and not at
+ * all with reduced motion.
  */
 
 export type StreakDay = NonNullable<StreakView['week']>[number];
@@ -37,13 +39,13 @@ export function StreakStrip({ week, locale, today = localToday() }: { week: read
   const weekday = new Intl.DateTimeFormat(locale, { weekday: 'narrow', timeZone: 'UTC' });
   const longDay = new Intl.DateTimeFormat(locale, { weekday: 'long', timeZone: 'UTC' });
   return <section className="lf-streak-strip" aria-label={t.label} data-copy-role="data">
-    <ol className="lf-streak-strip-days">
-      {week.map((day, index) => {
+    <Wave entryKey="streak-strip" as="ol" className="lf-streak-strip-days" data-streak-strip="">
+      {week.map((day) => {
         const date = new Date(`${day.date}T00:00:00Z`);
         const isToday = day.date === today || day.state === 'today';
         const word = day.state === 'practiced' ? t.practiced : day.state === 'rest' ? t.rest : day.state === 'paused' ? t.paused : day.state === 'today' ? t.today : t.open;
         return <li key={day.date} className={`lf-streak-day lf-streak-day--${day.state}${isToday ? ' lf-streak-day--current' : ''}`}
-          style={{ animationDelay: `${index * 60}ms` }} aria-current={isToday ? 'date' : undefined}>
+          aria-current={isToday ? 'date' : undefined}>
           <span className="lf-streak-dot" aria-hidden="true">
             {day.state === 'practiced' ? <Glyph name="check" /> : day.state === 'paused' ? <Glyph name="pause" /> : null}
           </span>
@@ -51,6 +53,6 @@ export function StreakStrip({ week, locale, today = localToday() }: { week: read
           <span className="lf-visually-hidden">{`${longDay.format(date)}: ${word}${isToday && day.state !== 'today' ? `, ${t.today}` : ''}`}</span>
         </li>;
       })}
-    </ol>
+    </Wave>
   </section>;
 }

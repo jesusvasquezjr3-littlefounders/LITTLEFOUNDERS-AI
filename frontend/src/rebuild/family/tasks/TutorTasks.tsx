@@ -198,7 +198,7 @@ function RewardList({ copy, transport, rewards, onChanged }: {
       {rewards.map((reward) => <li key={reward.id} className="lf-console-item" data-reward-id={reward.id} data-offered={reward.active}>
         <div className="lf-console-row">
           <div><span className="ugc lf-money-title" data-copy-role="data">{reward.title}</span></div>
-          <RewardChip>{coinWord(copy, reward.cost)}</RewardChip>
+          <RewardChip coin>{coinWord(copy, reward.cost)}</RewardChip>
         </div>
         <div className="lf-console-row">
           <div><Chip tone={reward.active ? 'success' : 'primary'} glyph={reward.active ? 'check' : 'pause'} role="option">{reward.active ? copy.offered : copy.paused}</Chip></div>

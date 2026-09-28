@@ -222,8 +222,9 @@ export function GoalBulletVisual({ label, progress, target }: { label: string; p
   const goal = 300 * clamp(target);
   return <Picture name="goal-bullet" label={label} className="lf-goal-visual">
     <svg viewBox="0 0 300 84" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      <rect x="0" y="24" width="300" height="36" rx="12" className="lf-goal-track" />
-      <rect x="0" y="24" width={goal} height="36" rx="12" className="lf-goal-band" />
+      {/* The track and the goal band are ground, like gridlines (05 §2): the target line and the fill carry the values. */}
+      <rect x="0" y="24" width="300" height="36" rx="12" className="lf-goal-track" data-board-decoration="" />
+      <rect x="0" y="24" width={goal} height="36" rx="12" className="lf-goal-band" data-board-decoration="" />
       <rect x="0" y="30" width={300 * clamp(progress)} height="24" rx="8" className="lf-goal-fill" />
       <line x1={goal} x2={goal} y1="14" y2="70" className="lf-goal-target" />
     </svg>

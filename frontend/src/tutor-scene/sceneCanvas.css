@@ -1,0 +1,25 @@
+/*
+ * The 3D layer's own boxes (S10 design-system gap fix: the legacy Tailwind
+ * utilities no longer load outside the OD-24 lesson island). The rebuilt
+ * Mentor stage mounts the scene inside the design-system root, so the tokens
+ * apply; the v1 island mounts it beside the legacy sheet, whose tokens are
+ * the fallbacks.
+ */
+.lf-scene-host { position: relative; min-inline-size: 0; }
+/* R3F sizes the canvas with attributes; the cap lets the column shrink again (no page scroll). */
+.lf-scene-host canvas { max-inline-size: 100%; }
+.lf-scene-host--passive { pointer-events: none; }
+.lf-scene-fill { inline-size: 100%; block-size: 100%; }
+.lf-scene-notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  border-radius: var(--rounded-md, 20px);
+  background: var(--sunken, rgb(var(--lf-surface-sunken, 234 236 246)));
+  color: var(--content-muted, rgb(var(--lf-content-muted, 102 105 124)));
+  text-align: center;
+}
+.lf-scene-notice--over { position: absolute; inset: 0; }
+.lf-scene-notice p { margin: 0; font: inherit; }
+.lf-character-layer { position: fixed; inset: 0; pointer-events: none; }

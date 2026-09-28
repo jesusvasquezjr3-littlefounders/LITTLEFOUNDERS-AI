@@ -35,17 +35,35 @@ body { margin: 0; }
 .lf-rebuild[data-theme='dark'] { color-scheme: dark; --shadow-control: 0 1px 3px rgb(6 7 19 / .56); }
 .lf-rebuild *, .lf-rebuild *::before, .lf-rebuild *::after { box-sizing: border-box; }
 /*
- * Element rules. Each skips a legacy page body mounted inside a rebuilt shell
- * (`[data-legacy-body]`, see the bridge section at the end) and applies again
- * to a rebuilt root nested inside that body. `:where()` keeps each selector's
- * specificity exactly what `.lf-rebuild h1` had.
+ * The element baseline (S10 design-system gap fix). The legacy global sheet and
+ * its Tailwind preflight no longer load outside the OD-24 island, so the reset
+ * every rebuilt surface was built on in the real app lives here, scoped to the
+ * design-system root at zero specificity: any component rule wins over it, and
+ * the preview entry and the real app now share one baseline.
  */
-.lf-rebuild :is(h1, h2, p):not(:where([data-legacy-body] *)), :where([data-legacy-body]) .lf-rebuild :is(h1, h2, p) { margin: 0; }
-.lf-rebuild h1:not(:where([data-legacy-body] *)), :where([data-legacy-body]) .lf-rebuild h1 { font: 700 1.75rem/1.12 Fredoka, sans-serif; letter-spacing: -.005em; text-wrap: balance; }
-.lf-rebuild h2:not(:where([data-legacy-body] *)), :where([data-legacy-body]) .lf-rebuild h2 { font: 600 1.5rem/1.25 Fredoka, sans-serif; text-wrap: balance; }
-.lf-rebuild p:not(:where([data-legacy-body] *)), :where([data-legacy-body]) .lf-rebuild p { max-inline-size: 30em; hyphens: auto; overflow-wrap: break-word; text-wrap: pretty; }
-.lf-rebuild :is(button, input, select):not(:where([data-legacy-body] *)), :where([data-legacy-body]) .lf-rebuild :is(button, input, select) { font: inherit; }
-.lf-rebuild :is(button, input, select):focus-visible:not(:where([data-legacy-body] *)), :where([data-legacy-body]) .lf-rebuild :is(button, input, select):focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 3px; }
+:where(.lf-rebuild), :where(.lf-rebuild) *, :where(.lf-rebuild) ::before, :where(.lf-rebuild) ::after { border-width: 0; border-style: solid; border-color: currentColor; }
+:where(.lf-rebuild) :where(h3, h4, h5, h6) { margin: 0; font-size: inherit; font-weight: inherit; }
+:where(.lf-rebuild) :where(blockquote, dl, dd, figure, pre, hr) { margin: 0; }
+:where(.lf-rebuild) :where(ol, ul, menu) { margin: 0; padding: 0; list-style: none; }
+:where(.lf-rebuild) :where(fieldset) { margin: 0; padding: 0; }
+:where(.lf-rebuild) :where(legend, dialog) { padding: 0; }
+:where(.lf-rebuild) :where(a) { color: inherit; text-decoration: inherit; }
+:where(.lf-rebuild) :where(b, strong) { font-weight: bolder; }
+:where(.lf-rebuild) :where(button, input, optgroup, select, textarea) { margin: 0; padding: 0; color: inherit; font-family: inherit; font-size: 100%; font-weight: inherit; line-height: inherit; letter-spacing: inherit; }
+:where(.lf-rebuild) :where(button, [type='button'], [type='reset'], [type='submit']) { background-color: transparent; background-image: none; }
+:where(.lf-rebuild) :where(button, [role='button']) { cursor: pointer; }
+:where(.lf-rebuild) :where(:disabled) { cursor: default; }
+:where(.lf-rebuild) :where(textarea) { resize: vertical; }
+:where(.lf-rebuild) :where(img, svg, video, canvas, audio, iframe, embed, object) { display: block; vertical-align: middle; }
+:where(.lf-rebuild) :where(img, video) { max-inline-size: 100%; block-size: auto; }
+:where(.lf-rebuild) :where([hidden]) { display: none; }
+/* Element rules: every page is rebuilt, so they apply to the whole root (02 rule 23). */
+.lf-rebuild :is(h1, h2, p) { margin: 0; }
+.lf-rebuild h1 { font: 700 1.75rem/1.12 Fredoka, sans-serif; letter-spacing: -.005em; text-wrap: balance; }
+.lf-rebuild h2 { font: 600 1.5rem/1.25 Fredoka, sans-serif; text-wrap: balance; }
+.lf-rebuild p { max-inline-size: 30em; hyphens: auto; overflow-wrap: break-word; text-wrap: pretty; }
+.lf-rebuild :is(button, input, select) { font: inherit; }
+.lf-rebuild :is(button, input, select):focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 3px; }
 .lf-button {
   display: inline-flex;
   align-items: center;
@@ -135,20 +153,6 @@ body { margin: 0; }
   .lf-button { transition: none; }
 }
 .lf-rebuild .ugc { overflow-wrap: anywhere; hyphens: none; min-inline-size: 0; }
-
-/*
- * Bridge (W2 Lane 0, transitional): a legacy page body mounted inside a
- * rebuilt shell on a real route (app-shell/ShellRoot.tsx `LegacyBody`,
- * `[data-legacy-body]`) until its wave-2 lane rebuilds it (OD-15). The element
- * rules above skip that subtree; here it gets back the legacy body's own
- * weight, line height and tracking (its family and colour come from its
- * utility classes), and the shell hands it the whole content area, because
- * the body carries the padding and container width the legacy layouts gave
- * it. Delete this section with the last legacy body.
- */
-.lf-rebuild [data-legacy-body] { font-weight: 400; line-height: 1.5; letter-spacing: normal; }
-.lf-rebuild .lf-shell-main:has(> [data-legacy-body]) { gap: 0; padding: 0; }
-.lf-rebuild .lf-auth-column:has(> [data-legacy-body]) { max-inline-size: none; padding: 0; background: none; box-shadow: none; }
 
 /* The mounted shells' footers: the legal links, the cookie preferences, a visitor's language and mode. */
 .lf-rebuild [data-shell-footer-links] { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2) var(--spacing-5); }

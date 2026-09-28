@@ -118,10 +118,22 @@ describe('shared control stylesheet contract', () => {
     const classes = [...new Set([...withoutComments(shared).matchAll(/\.(lf-[a-z0-9-]+)/g)].map((match) => match[1]))];
     const src = local('../..');
     const legacy = readdirSync(src, { recursive: true, encoding: 'utf8' })
-      .filter((file) => /\.(?:tsx?|css)$/.test(file) && !file.replace(/\\/g, '/').startsWith('rebuild/'))
+      // Tests ship no CSS and restyle nothing (bootVeil.test.ts reads the token sheet by its root class).
+      .filter((file) => /\.(?:tsx?|css)$/.test(file) && !/\.test\.tsx?$/.test(file) && !file.replace(/\\/g, '/').startsWith('rebuild/'))
       .map((file) => readFileSync(join(src, file), 'utf8')).join('\n');
     expect(classes.length).toBeGreaterThan(50);
     expect(classes.filter((name) => new RegExp(`(?<![\\w-])${name}(?![\\w-])`).test(legacy))).toEqual([]);
+  });
+
+  it('ripples a soft ring in the control\'s own colour from the touch point, only with motion allowed (02 §9.1)', () => {
+    const query = motion.slice(motion.lastIndexOf('@media (prefers-reduced-motion: no-preference)'));
+    const ring = rules(query).find((rule) => rule.selector.trim() === '.lf-rebuild .lf-press-ring');
+    expect(ring?.body).toMatch(/border: 2px solid currentColor/);
+    expect(ring?.body).toMatch(/animation: lf-press-ring var\(--dur-micro\) var\(--ease-standard\) forwards/);
+    expect(ring?.body).not.toMatch(/background/);
+    // Outside the query the ring never shows: reduced motion keeps only the colour state change.
+    expect(motion).toMatch(/\.lf-rebuild \.lf-press-ring \{ display: none; \}/);
+    for (const control of ['.lf-button', '.lf-icon-button', '.lf-choice', '.lf-reply-chip', '.lf-list-row--pressable']) expect(motion).toContain(control);
   });
 
   it('keeps a wrong answer out of the error hue (02 §4.2)', () => {

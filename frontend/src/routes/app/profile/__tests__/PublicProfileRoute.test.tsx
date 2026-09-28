@@ -166,6 +166,9 @@ describe('public profile (P6)', () => {
     expect(screen.queryByRole('button', { name: 'Follow' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Ask to connect' })).toBeNull();
     expect(document.querySelector('[data-screen="public-profile"]')?.getAttribute('data-age-band')).toBe('6-9');
+    // The youngest register keeps the badge and its name, without the earned-date line (06 §3.1).
+    expect(screen.getByText('Smart Investing')).toBeInTheDocument();
+    expect(screen.queryByText(/^Earned/)).toBeNull();
     unmount();
     renderAt('/@rio');
     expect(await screen.findByText('Your Tutor handles your connections.')).toBeInTheDocument();

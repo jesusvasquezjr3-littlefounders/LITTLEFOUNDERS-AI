@@ -64,6 +64,28 @@ export function proportionFindings(res, state, width) {
   if (res.strayBusy?.length) add('busy-motion-without-work', res.strayBusy);
   if (res.breathing > 1) add('breathing-cta>1', String(res.breathing));
   if (res.offList?.length) add('celebration-off-milestone-list', res.offList);
+  if (res.strayPattern?.length) add('orchestrated-motion-outside-its-pattern', res.strayPattern);
+  findings.push(...boardFindings(res));
+  return findings;
+}
+
+/**
+ * Teaching-board findings (Frontend Bible 05 §8) for one measured state: `res.board` from in-page `boards()` and
+ * `res.boardMotion` from `motion()`. They apply to specimen sheets as well, since a board is a board wherever it sits.
+ */
+export function boardFindings(res) {
+  const findings = [];
+  const add = (type, detail) => findings.push([type, [detail].flat().join(' ; ')]);
+  const board = res.board;
+  if (board) {
+    if (board.lowContrast.length) add('board-mark-contrast<3:1', board.lowContrast);
+    if (board.svgWords.length) add('board-svg-text-not-numeral', board.svgWords);
+    if (board.labelOutside.length) add('board-label-outside-board', board.labelOutside);
+    if (board.reservedSeries.length) add('board-series-reserved-hue', board.reservedSeries);
+    if (board.dragHit.length) add('board-draggable-hit<64', board.dragHit);
+    if (board.dragNoAlternative.length) add('board-draggable-without-tap-alternative', board.dragNoAlternative);
+  }
+  if (res.boardMotion?.length) add('board-animation-outside-allowed', res.boardMotion);
   return findings;
 }
 

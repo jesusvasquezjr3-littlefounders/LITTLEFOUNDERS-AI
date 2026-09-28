@@ -129,7 +129,8 @@ export function StaffEmailsRoute() {
  * reviewer opens it. The rebuilt console never imports it (02 rule 23); this
  * host hands it in, and follows the learner route when the player is rebuilt.
  */
-const LessonPlayer = lazy(() => import('@/lesson-engine/player/LessonPlayer'));
+// The legacy global sheet the v1 player needs loads with it, never with the console (S10 gap fix).
+const LessonPlayer = lazy(() => import('@/index.css').then(() => import('@/lesson-engine/player/LessonPlayer')));
 const PREVIEW_GRADER: Grader = { grade: async () => { throw new Error('Preview mode does not grade'); } };
 
 export const renderLessonPreview: LessonPreviewRenderer = ({ lessonId, document, audio, labels, onExit }) => (

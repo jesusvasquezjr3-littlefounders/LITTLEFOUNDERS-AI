@@ -15,23 +15,23 @@ import { GradedFoot, NumberAnswer, SegmentPrompt, useSegmentGrade, type OnGradeS
 
 
 type PlaceValueSegment = Extract<LessonClientSegment, { type: 'math.place-value.v2' }>;
-type Labels = { back: string; explore: string; progress: string; board: string; showTable: string; showChart: string;
+type Labels = { reset: string; back: string; explore: string; progress: string; board: string; showTable: string; showChart: string;
   tens: string; ones: string; total: string; pieces: string; count: string; trade: string; undo: string;
   continue: string; title: string; prompt: string; equivalent: string; replay: string; edit: string;
   previous: string; next: string; play: string; pause: string; step: string };
 const copy: Record<Locale, Labels> = {
-  'en-US': { back: 'Back', explore: 'Explore', progress: 'Lesson progress', board: 'Place value', showTable: 'Show as table',
+  'en-US': { reset: 'Reset', back: 'Back', explore: 'Explore', progress: 'Lesson progress', board: 'Place value', showTable: 'Show as table',
     showChart: 'Show blocks', tens: 'Tens', ones: 'Ones', total: 'Total', pieces: 'Pieces', count: 'Count', trade: 'Trade 10',
     undo: 'Undo trade', continue: 'Continue', title: 'Trade ten ones', prompt: 'Trade 10 ones for 1 ten. What changed?',
     equivalent: '10 ones = 1 ten', replay: 'Replay trades', edit: 'Edit trades', previous: 'Previous',
     next: 'Next', play: 'Play', pause: 'Pause', step: 'Trades' },
-  'es-MX': { back: 'Volver', explore: 'Explorar', progress: 'Progreso de lección', board: 'Valor posicional',
+  'es-MX': { reset: 'Restablecer', back: 'Volver', explore: 'Explorar', progress: 'Progreso de lección', board: 'Valor posicional',
     showTable: 'Ver tabla', showChart: 'Ver bloques', tens: 'Decenas', ones: 'Unidades', total: 'Total',
     pieces: 'Piezas', count: 'Cantidad', trade: 'Cambia 10', undo: 'Deshacer', continue: 'Continuar',
     title: 'Cambia diez unidades', prompt: 'Cambia 10 unidades por 1 decena. ¿Qué cambió?', equivalent: '10 unidades = 1 decena',
     replay: 'Repetir cambios', edit: 'Editar cambios', previous: 'Anterior', next: 'Siguiente',
     play: 'Reproducir', pause: 'Pausar', step: 'Cambios' },
-  'pt-BR': { back: 'Voltar', explore: 'Explorar', progress: 'Progresso da lição', board: 'Valor posicional',
+  'pt-BR': { reset: 'Recomeçar', back: 'Voltar', explore: 'Explorar', progress: 'Progresso da lição', board: 'Valor posicional',
     showTable: 'Ver tabela', showChart: 'Ver blocos', tens: 'Dezenas', ones: 'Unidades', total: 'Total',
     pieces: 'Peças', count: 'Quantidade', trade: 'Trocar 10', undo: 'Desfazer', continue: 'Continuar',
     title: 'Troque dez unidades', prompt: 'Troque 10 unidades por 1 dezena. O que mudou?', equivalent: '10 unidades = 1 dezena',
@@ -83,6 +83,8 @@ export function PlaceValueBoard({ document, segment, onBack, sequence, onGrade }
           ]} chart={<BaseTenVisual label={`${state.tens} ${t.tens}, ${state.ones} ${t.ones}. ${t.total}: ${state.total}.`}
             tens={state.tens} ones={state.ones} tensText={`${t.tens}: ${state.tens}`} onesText={`${t.ones}: ${state.ones}`} />}>
           {() => replayIndex === null ? <div className="lf-place-value-controls">
+            {/* Bible 05 §3: Reset restores the authored start (no trades), leaves any replay and clears the verdict. */}
+            <Button onClick={() => { grading.reset(); setTrades(0); setReplayIndex(null); }} disabled={trades === 0 || grading.met}>{t.reset}</Button>
             <Button disabled={!state.canTrade || grading.met} onClick={() => { grading.reset(); setTrades((value) => value + 1); }}>{t.trade}</Button>
             <Button disabled={!state.canUndo || grading.met} onClick={() => { grading.reset(); setTrades((value) => value - 1); }}>{t.undo}</Button>
           </div> : null}

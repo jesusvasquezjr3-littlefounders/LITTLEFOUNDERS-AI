@@ -1,4 +1,5 @@
 import type { GoalProgressParts } from './moneyHabitsApi';
+import { CoinAmount } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './moneyHabits.css';
@@ -42,9 +43,9 @@ export function GoalProgress({ copy, title, target, progress }: { copy: GoalProg
       {parts.map((p) => p.n > 0 && <span key={p.key} className="lf-goal-progress-part" data-part={p.key} style={{ inlineSize: width(p.n) }} />)}
     </div>
     <div className="lf-goal-progress-legend">
-      <span data-copy-role="data" className="lf-goal-progress-total">{fill(copy.of, {
+      <CoinAmount className="lf-goal-progress-total">{fill(copy.of, {
         saved: progress.total, target, left: Math.max(0, target - progress.total), pct: target > 0 ? Math.min(100, Math.floor((progress.total * 100) / target)) : 0,
-      })}</span>
+      })}</CoinAmount>
       {progress.total > 0 && (named.length === 1 && named[0]!.key === 'own'
         ? <span data-copy-role="data" data-legend="own"><span className="lf-goal-progress-key" data-part="own" aria-hidden="true" />{copy.allOwn}</span>
         : named.map((p) => <span key={p.key} data-copy-role="data" data-legend={p.key}>

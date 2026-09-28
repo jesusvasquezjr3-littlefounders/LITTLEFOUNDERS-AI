@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
 // The resume checkpoint is a storage record (no UI); the legacy player itself stays behind its island.
-import { checkpointKey, newCheckpoint, readCheckpoint, writeCheckpoint } from '@/lesson-engine/player/checkpoint';
+import { checkpointKey, newCheckpoint, readCheckpoint, writeCheckpoint, type LessonCheckpoint } from '@/lesson-engine/player/checkpoint';
+import type { LessonDocument } from '@/lesson-engine/core/types';
 import { useTheme } from '@/theme/useTheme';
 import { AuthenticatedLessonDocument, lessonDocumentFrame } from '@/rebuild/learning/AuthenticatedLessonDocument';
 import type { OnGrade, OnGradeAny, OnGradeBarModel, OnGradeFractionArea, OnGradeNumberLine, OnGradeReasoning, OnGradeSchemaDiagram, OnGradeWorkedExample, OnView } from '@/rebuild/learning/LessonDocumentView';
@@ -23,8 +24,34 @@ import { loadLessonClientDocument, type LessonClientDocument } from '@/rebuild/l
 import { GuidedReviewOffer, guidedReviewOfferSchema, type GuidedReviewOfferValue } from '@/rebuild/learning/GuidedReviewOffer';
 import { fetchLearnerRegister, registerForBand, registerOf, type RegisterState } from '@/rebuild/learning/learnerRegister';
 import { clearCoursesCache } from './coursesCache';
-import { isLegacyLessonDocument, LegacyLessonIsland, reconcileLegacyCheckpoint } from './LegacyLessonIsland';
 import { coursePath, guidedReviewPath, placementPath } from './paths';
+
+/*
+ * The route's decisions about a v1 document (W2L.3, OD-24), made here so the
+ * route never loads the legacy player or its stylesheet to make them.
+ */
+/** A delivered document the legacy engine plays: the v1 schema. */
+export function isLegacyLessonDocument(document: unknown): document is LessonDocument {
+  return typeof document === 'object' && document !== null && !Array.isArray(document)
+    && (document as { schema_version?: unknown }).schema_version === 1;
+}
+
+/**
+ * Never restore segment indices or verdicts into a revised or translated
+ * document: the checkpoint remembers the document it was taken on.
+ */
+export function reconcileLegacyCheckpoint(checkpoint: LessonCheckpoint, document: LessonDocument): LessonCheckpoint {
+  const signature = JSON.stringify(document);
+  const snapshot = checkpoint.state;
+  const segmentIds = new Set(document.segments.map((segment) => segment.id));
+  const invalidSnapshot = snapshot && (snapshot.index >= document.segments.length || Object.keys(snapshot.seg).some((id) => !segmentIds.has(id)));
+  const next = invalidSnapshot || (checkpoint.document && checkpoint.document !== signature) ? newCheckpoint() : checkpoint;
+  next.document = signature;
+  return next;
+}
+
+/* OD-24: the v1 island and the legacy sheet it carries load only when a v1 document is delivered. */
+const LegacyLessonIsland = lazy(() => import('./LegacyLessonIsland').then((module) => ({ default: module.LegacyLessonIsland })));
 
 /*
  * /learn/lesson/:lessonId — the learner's lesson route (COURSE_ENGINE.md §2,
@@ -354,8 +381,10 @@ function LessonRouteSession() {
 
   // OD-24: the published v1 catalog, in its one legacy island, outside the rebuilt layer.
   return <>
-    <LegacyLessonIsland lessonId={lessonId} document={state.document} audio={state.audio} checkpoint={checkpoint} storageKey={storageKey}
-      register={registerOf(register)} onGuidedReview={setGuidedReview} onReachedResults={reachedResults} onExit={goBack} />
+    <Suspense fallback={null}>
+      <LegacyLessonIsland lessonId={lessonId} document={state.document} audio={state.audio} checkpoint={checkpoint} storageKey={storageKey}
+        register={registerOf(register)} onGuidedReview={setGuidedReview} onReachedResults={reachedResults} onExit={goBack} />
+    </Suspense>
     {offer}
   </>;
 }

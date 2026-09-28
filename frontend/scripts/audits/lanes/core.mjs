@@ -34,9 +34,9 @@ export const states = [
   // Standalone state routes of the real application (no session needed).
   { id: 'app:/account-suspended', entry: 'app', path: '/account-suspended', budget: 'app', firstView: true, catalogue: false },
   app('/no/such/page@not-found', '/no/such/page', null, '[data-shell="single-state"] [data-not-found-path]'),
-  // The mounted shells on real routes (W2). The page body inside each shell is still legacy and is not
-  // measured (in-page.mjs skips [data-legacy-body]); the shell is, with the per-string, text-fit, tap and
-  // grid rules. The one-screen rules (one h1, heading ratio, type-size count, first view) belong to the page.
+  // The mounted shells on real routes (W2): the shell and its rebuilt page, with the per-string, text-fit, tap
+  // and grid rules. The one-screen rules (one h1, heading ratio, type-size count, first view) belong to each
+  // page's own lane state.
   ...[
     ['/learn@shell-child-10-12', '/learn', 'shell-child', '[data-shell="learner"] [data-nav-id="mentor"]'],
     ['/profile/settings@shell-teen', '/profile/settings', 'shell-teen', '[data-shell="learner"] [data-nav-id="wallet"]'],

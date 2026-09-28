@@ -4,6 +4,8 @@ import { CHARACTER_IDS, type CharacterId } from '@/components/characters/control
 import { CharacterStage } from '../CharacterStage';
 import { POSES, distinctPoseCount, posesByCategory, type Pose, type PoseCategory } from '../poseLibrary';
 import type { SceneStats } from '../SceneCanvas';
+// Development lab: it renders with the legacy global sheet, which the product entry no longer loads.
+import '@/index.css';
 
 /*
  * THE POSE LAB — every pose, on every character, looked at.

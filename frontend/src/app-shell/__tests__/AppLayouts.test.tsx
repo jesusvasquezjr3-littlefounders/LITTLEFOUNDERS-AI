@@ -85,7 +85,10 @@ describe('the learner app shell', () => {
     expect(within(container.querySelector('main')!).getByRole('heading', { name: 'Learn page' })).toBeInTheDocument();
     // The legacy AppLayout's marks: its raster logo, its sidebar, its glass bars and its "Tutor" lock badge.
     expect(container.querySelector('img[src*="logo"], aside, .lf-glass')).toBeNull();
-    expect(container.querySelector('[data-legacy-body="app"]')).not.toBeNull();
+    // No legacy page body is left (02 rule 23, D13): the page sits directly in the shell's <main>.
+    expect(container.querySelector('[data-legacy-body]')).toBeNull();
+    expect(container.querySelector('.lf-page-enter, .font-body, .max-w-container')).toBeNull();
+    expect(container.querySelector('main > h1')?.textContent).toBe('Learn page');
   });
 
   it('gives an independent teen the personal wallet and no Tasks (OD-3 Option B)', async () => {

@@ -41,7 +41,7 @@
     "retry": "Intentar otra vez"
   },
   "goalProgress": {
-    "of": "{saved} de {target}",
+    "of": "{saved} de {target} monedas",
     "own": "Tuyas: {count}",
     "bonus": "Bono: {count}",
     "family": "De tu Tutor: {count}",
@@ -49,7 +49,7 @@
     "label": "{title}: {saved} de {target}"
   },
   "goalProgressTutor": {
-    "of": "{saved} de {target}",
+    "of": "{saved} de {target} monedas",
     "own": "Sus propias monedas: {count}",
     "bonus": "Bono: {count}",
     "family": "De un Tutor: {count}",

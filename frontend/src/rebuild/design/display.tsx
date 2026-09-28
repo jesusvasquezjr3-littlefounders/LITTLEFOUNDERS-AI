@@ -3,6 +3,7 @@ import type { CopyRole } from './copyBudget';
 import { Glyph, type GlyphName } from './glyphs';
 import { Button } from './buttons';
 import { resolveManifestAsset, resolveMentorRender } from './assets';
+import { withPressFeedback } from './motion';
 
 /*
  * Display components (Frontend Bible 02 §3 components, §4.2 reserved hues,
@@ -17,9 +18,34 @@ export function Chip({ tone, glyph, children, role = 'body' }: { tone: StatusTon
   return <span className={`lf-status-chip lf-status-chip--${tone}`} data-copy-role={role}><Glyph name={glyph} /><span>{children}</span></span>;
 }
 
-/** Reward chip: coins, XP, streak (02 `chip-reward`). Reward gold is never a status. */
-export function RewardChip({ children }: { children: ReactNode }) {
-  return <span className="lf-status-chip lf-status-chip--reward" data-copy-role="data">{children}</span>;
+/** The coin mark (07 §1 class B `money.coin`, 02 §9.5): decorative, beside a number and the word "coins", only for money. */
+export const COIN_ASSET_ID = 'money.coin';
+function CoinMark() {
+  const asset = resolveManifestAsset(COIN_ASSET_ID);
+  return asset ? <img className="lf-coin-mark" src={asset.path} alt="" aria-hidden="true" data-asset-id={asset.id} /> : null;
+}
+
+/**
+ * A coin quantity (02 §9.5 "Shape by object type": the coin shape is used only
+ * for money): the coin art, then the text, which always carries the number and
+ * the glossary word "coins" in the reader's language ("12 coins", "12 monedas",
+ * "12 moedas"). The art is decorative; the words carry the meaning.
+ */
+export function CoinAmount({ children, size = 'sm', className }: { children: ReactNode; size?: 'sm' | 'lg'; className?: string }) {
+  return <span className={`lf-coin-amount${size === 'lg' ? ' lf-coin-amount--lg' : ''}${className ? ` ${className}` : ''}`} data-copy-role="data" data-money="coins">
+    <CoinMark /><span>{children}</span>
+  </span>;
+}
+
+/**
+ * Reward chip: coins, XP, streak (02 `chip-reward`). Reward gold is never a
+ * status. `coin` marks a coin quantity with the coin art; XP and a streak never
+ * carry it (the coin means money only).
+ */
+export function RewardChip({ children, coin = false }: { children: ReactNode; coin?: boolean }) {
+  return <span className={`lf-status-chip lf-status-chip--reward${coin ? ' lf-status-chip--coins' : ''}`} data-copy-role="data" data-money={coin ? 'coins' : undefined}>
+    {coin ? <CoinMark /> : null}{coin ? <span>{children}</span> : children}
+  </span>;
 }
 
 /** A wrapping row of chips. */
@@ -29,7 +55,7 @@ export function ChipGroup({ label, children }: { label?: string; children: React
 
 /** A pressable filter or pick chip; selection adds a check, not just a colour. */
 export function ChoiceChip({ selected, onToggle, children, disabled }: { selected: boolean; onToggle: () => void; children: ReactNode; disabled?: boolean }) {
-  return <button type="button" className="lf-choice-chip" aria-pressed={selected} disabled={disabled} data-copy-role="option" onClick={onToggle}>
+  return <button type="button" className="lf-choice-chip" aria-pressed={selected} disabled={disabled} data-copy-role="option" onClick={onToggle} onPointerDown={withPressFeedback()}>
     {selected ? <Glyph name="check" /> : null}<span>{children}</span>
   </button>;
 }
@@ -47,7 +73,7 @@ export function ReplyChip({ children, onPress, disabled, className, ...data }: {
   children: ReactNode; onPress: () => void; disabled?: boolean; className?: string;
 } & { [attribute: `data-${string}`]: string | undefined }) {
   return <button type="button" {...data} className={`lf-button lf-reply-chip${className ? ` ${className}` : ''}`} data-copy-role="option"
-    disabled={disabled} onClick={onPress}>{children}</button>;
+    disabled={disabled} onClick={onPress} onPointerDown={withPressFeedback()}>{children}</button>;
 }
 
 /** Solid label pill. Accent is excluded: it is reserved for the call to action (02 §4.2). */
@@ -91,7 +117,7 @@ export function ListRow({ title, supporting, leading, trailing, onPress, titleRo
     {onPress ? <Glyph name="chevron" className="lf-system-glyph lf-list-row-chevron" /> : null}
   </>;
   return <li className="lf-list-item">{onPress
-    ? <button type="button" className="lf-list-row lf-list-row--pressable" onClick={onPress}>{content}</button>
+    ? <button type="button" className="lf-list-row lf-list-row--pressable" onClick={onPress} onPointerDown={withPressFeedback()}>{content}</button>
     : <div className="lf-list-row">{content}</div>}</li>;
 }
 

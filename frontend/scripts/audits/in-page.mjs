@@ -5,10 +5,8 @@
  *
  * Port notes (reference → rebuilt app):
  *   - Scope: every `.lf-rebuild` root on the page (the surface root and each
- *     body-level overlay host), instead of the mockup's `#app`. On a route of
- *     the real application whose shell is rebuilt (W2), the legacy page body
- *     inside the shell (`[data-legacy-body]`) is skipped until its lane
- *     rebuilds it; a rebuilt root nested inside that body is measured again.
+ *     body-level overlay host), instead of the mockup's `#app`. Every page of
+ *     the real application is rebuilt (02 rule 23), so nothing is skipped.
  *     Page-level horizontal scroll is still read for the whole document.
  *   - Text fit (text-fit-audit.reference.mjs): the same per-element checks —
  *     ellipsis, line-clamp, text clipped by `overflow`, text outside the
@@ -28,8 +26,6 @@
  */
 export function installAudit() {
   const ROOTS = () => [...document.querySelectorAll('.lf-rebuild')].filter((root) => !root.parentElement?.closest('.lf-rebuild'));
-  // Inside a legacy page body, unless a rebuilt root nested in that body is nearer.
-  const legacy = (el) => { const mark = el?.closest?.('[data-legacy-body], .lf-rebuild'); return !!mark && mark.hasAttribute('data-legacy-body'); };
   let hiddenCache = new WeakMap();
   const fresh = () => { hiddenCache = new WeakMap(); };
   const isHidden = (el) => {
@@ -50,7 +46,7 @@ export function installAudit() {
     return `${cls} "${(el.textContent || '').trim().slice(0, 32)}"`;
   };
   const ownText = (el) => [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
-  const all = () => ROOTS().flatMap((root) => [root, ...root.querySelectorAll('*')]).filter((el) => (!el.closest('svg') || el.tagName.toLowerCase() === 'svg') && !legacy(el));
+  const all = () => ROOTS().flatMap((root) => [root, ...root.querySelectorAll('*')]).filter((el) => (!el.closest('svg') || el.tagName.toLowerCase() === 'svg'));
   const words = (t) => (t.trim().match(/[\p{L}\p{N}][\p{L}\p{N}'’.,%$-]*/gu) || []).length;
   const sentences = (t) => t.replace(/\b(Dr|Mr|Mrs|Ms|Sr|Sra|Srta|St)\./g, '$1').trim()
     .split(/(?<=[\p{L}\p{N}]{2}[.!?…]|[.!?…]["”])\s+(?=[\p{Lu}¿¡"“])/u).filter((s) => words(s) > 0).length;
@@ -89,7 +85,7 @@ export function installAudit() {
     }
     for (const root of ROOTS()) for (const b of root.querySelectorAll('button,a[href],input,select,textarea,[role=button],[role=switch],[role=tab],[role=menuitem],[role=option]')) {
       const target = b.matches('input[type=checkbox],input[type=radio]') ? (b.closest('label') ?? b) : b;
-      if (legacy(target) || !visible(target)) continue;
+      if (!visible(target)) continue;
       const r = target.getBoundingClientRect();
       if (r.width < 47.5 || r.height < 47.5) out.push(['tap-target<48', `${label(target)} ${r.width.toFixed(0)}x${r.height.toFixed(0)}`]);
     }
@@ -105,7 +101,7 @@ export function installAudit() {
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
       for (let node = walker.nextNode(); node; node = walker.nextNode()) {
         const value = node.nodeValue;
-        if (!value.trim() || /^[\s\d.,:;%$+\-–−/×·()]+$/.test(value) || node.parentElement?.closest('script,style,svg') || legacy(node.parentElement)) continue;
+        if (!value.trim() || /^[\s\d.,:;%$+\-–−/×·()]+$/.test(value) || node.parentElement?.closest('script,style,svg')) continue;
         const parts = value.trim().split(/\s+/), extra = parts.slice(0, Math.max(1, Math.ceil(parts.length * 0.4))).join(' ');
         stressed.push([node, value]);
         node.nodeValue = `${value} ${extra}`;
@@ -117,8 +113,7 @@ export function installAudit() {
   function spacing(on) {
     let style = document.getElementById('lf-audit-spacing');
     if (!style) { style = document.createElement('style'); style.id = 'lf-audit-spacing'; document.head.append(style); }
-    // A legacy page body inside a rebuilt shell keeps its own spacing; a rebuilt root nested in it gets the override.
-    style.textContent = on ? ':is(.lf-rebuild, .lf-rebuild *):not([data-legacy-body], [data-legacy-body] *), [data-legacy-body] .lf-rebuild, [data-legacy-body] .lf-rebuild * { letter-spacing: .12em !important; word-spacing: .16em !important; line-height: 1.5 !important; } .lf-rebuild p:not([data-legacy-body] p), [data-legacy-body] .lf-rebuild p { margin-bottom: 2em !important; }' : '';
+    style.textContent = on ? ':is(.lf-rebuild, .lf-rebuild *) { letter-spacing: .12em !important; word-spacing: .16em !important; line-height: 1.5 !important; } .lf-rebuild p { margin-bottom: 2em !important; }' : '';
   }
 
   /* -------------------------------------------------------- proportion */
@@ -187,7 +182,7 @@ export function installAudit() {
     }
     const cv = document.createElement('canvas').getContext('2d');
     for (const root of ROOTS()) for (const e of root.querySelectorAll('p,li')) {
-      if (legacy(e) || !visible(e) || (e.tagName === 'LI' && e.querySelector('p,h1,h2,h3,div'))) continue;
+      if (!visible(e) || (e.tagName === 'LI' && e.querySelector('p,h1,h2,h3,div'))) continue;
       const t = e.textContent.trim(); if (t.length < 60) continue;
       const cs = getComputedStyle(e); cv.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
       const avg = cv.measureText(t).width / t.length, w = e.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
@@ -236,6 +231,93 @@ export function installAudit() {
       ratio, center, split, sizes: out.sizes.size, radii: out.radii.size, accent, rhythm, gaps: out.gaps, pairs: out.pairs };
   }
 
+  /* ------------------------------------------------ teaching boards (05 §8) */
+  // Bible 05 §8: the board-specific rules, measured over every visible `.lf-learning-board` (the neutral surface
+  // a teaching visual sits on, 05 V2). Text fit already reaches the board's HTML labels (they are ordinary text in
+  // the root); here: SVG text only for short numerals and symbols (05 §5) and inside the board; marks and axes at
+  // 3:1 against the board in the current mode (05 §6, WCAG 1.4.11); no reserved hue on a data series (05 §2);
+  // every draggable with a 64 px hit area and a tap alternative (05 V4, §2 handle); and, in motion(), no animation
+  // inside the board outside the allowed state change (05 §4).
+  const rgba = (value) => {
+    if (!value || value === 'none' || value.startsWith('url(')) return null;
+    let m = value.match(/^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)(?:\s*[,/]\s*([\d.]+%?))?\s*\)$/);
+    const srgb = !m;
+    if (!m) m = value.match(/^color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+%?))?\s*\)$/);
+    if (!m) return null;
+    const scale = srgb ? 255 : 1;
+    const alpha = m[4] === undefined ? 1 : m[4].endsWith('%') ? parseFloat(m[4]) / 100 : parseFloat(m[4]);
+    return [+m[1] * scale, +m[2] * scale, +m[3] * scale, alpha];
+  };
+  const over = (top, ground) => top.slice(0, 3).map((c, i) => c * top[3] + ground[i] * (1 - top[3]));
+  const luminance = (c) => { const [r, g, b] = c.map((v) => { const x = v / 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+  const contrast = (a, b) => { const [x, y] = [luminance(a), luminance(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+  const groundOf = (el) => { for (let n = el; n; n = n.parentElement) { const c = rgba(getComputedStyle(n).backgroundColor); if (c && c[3] > 0) return over(c, [255, 255, 255]); } return [255, 255, 255]; };
+  const resolveColor = (host, value) => { const probe = document.createElement('span'); probe.style.color = value; host.append(probe); const c = rgba(getComputedStyle(probe).color); probe.remove(); return c; };
+  const RESERVED = ['primary', 'primary-strong', 'accent', 'accent-strong', 'reward', 'reward-strong', 'success', 'success-strong', 'error', 'error-strong', 'warning', 'warning-strong'];
+  const SHAPES = 'line,path,rect,circle,ellipse,polyline,polygon';
+  function boards() {
+    fresh();
+    const out = { count: 0, lowContrast: [], svgWords: [], labelOutside: [], reservedSeries: [], dragHit: [], dragNoAlternative: [] };
+    const list = ROOTS().flatMap((root) => [...root.querySelectorAll('.lf-learning-board')]).filter(visible);
+    for (const board of list) {
+      out.count++;
+      const ground = groundOf(board), box = board.getBoundingClientRect();
+      const name = board.closest('[data-screen]')?.dataset.screen ?? label(board);
+      // Marks and axes against the board (gridlines are decorative, 05 §2, and a shape the colour of the ground is not a mark).
+      for (const shape of board.querySelectorAll(SHAPES)) {
+        if (!visible(shape) || shape.closest('[data-board-decoration], defs, clipPath, mask, pattern') || /grid/.test(shape.getAttribute('class') ?? '')) continue;
+        const cs = getComputedStyle(shape);
+        const opacity = parseFloat(cs.opacity);
+        if (!(opacity > 0)) continue;
+        const paint = (value, part) => {
+          const c = rgba(value); if (!c) return null;
+          const a = c[3] * opacity * (Number.isFinite(parseFloat(part)) ? parseFloat(part) : 1);
+          return a > 0 ? contrast(over([...c.slice(0, 3), a], ground), ground) : null;
+        };
+        const stroke = parseFloat(cs.strokeWidth) > 0 ? paint(cs.stroke, cs.strokeOpacity) : null;
+        const fill = paint(cs.fill, cs.fillOpacity);
+        const best = Math.max(stroke ?? 0, fill ?? 0);
+        if (best < 1.2) continue;
+        if (best < 3) out.lowContrast.push(`${name} ${shape.tagName.toLowerCase()}${shape.getAttribute('class') ? '.' + shape.getAttribute('class').split(/\s+/)[0] : ''} ${best.toFixed(2)}:1`);
+      }
+      for (const text of board.querySelectorAll('svg text')) {
+        if (!visible(text)) continue;
+        const value = (text.textContent || '').trim();
+        // 05 §5: a word or anything that grows in translation is HTML over the SVG; SVG text is short numerals and symbols.
+        if (/\p{L}{2,}/u.test(value) || value.length > 8) out.svgWords.push(`${name} "${value.slice(0, 24)}"`);
+        const r = text.getBoundingClientRect();
+        if (r.left < box.left - 0.5 || r.right > box.right + 0.5 || r.top < box.top - 0.5 || r.bottom > box.bottom + 0.5) out.labelOutside.push(`${name} "${value.slice(0, 24)}"`);
+      }
+      // 05 §2: only sky, mint and berry encode a data series; the reserved hues keep their meanings.
+      const reserved = RESERVED.map((token) => [token, resolveColor(board, `var(--${token})`)]).filter(([, c]) => c && c[3] > 0);
+      for (const series of board.querySelectorAll('[data-series]:not([data-series="reference"]), [class*="lf-viz-series-"]')) {
+        for (const part of [series, ...series.querySelectorAll('*')]) {
+          const cs = getComputedStyle(part);
+          for (const value of [cs.fill, cs.stroke, cs.backgroundColor]) {
+            const c = rgba(value); if (!c || c[3] === 0) continue;
+            const hit = reserved.find(([, r]) => r.slice(0, 3).every((v, i) => Math.abs(v - c[i]) < 2));
+            if (hit) out.reservedSeries.push(`${name} ${series.getAttribute('data-series') ?? label(series)} uses ${hit[0]}`);
+          }
+        }
+      }
+    }
+    // 05 V4 and §2: a draggable is a 64 px answer surface with a tap alternative. A native range track places the value
+    // on a tap; any other handle on the board also needs a button in its board or its control strip.
+    const lessons = ROOTS().flatMap((root) => [...root.querySelectorAll('.lf-learning')]);
+    for (const lesson of lessons) for (const drag of lesson.querySelectorAll('input[type=range], [role=slider], [draggable="true"], [data-board-handle]')) {
+      if (isHidden(drag)) continue;
+      const r = drag.getBoundingClientRect();
+      if (r.width < 63.5 || r.height < 63.5) out.dragHit.push(`${label(drag)} ${r.width.toFixed(0)}x${r.height.toFixed(0)}`);
+      const onBoard = drag.closest('.lf-learning-board');
+      if (onBoard && !drag.matches('input[type=range]')) {
+        const strip = onBoard.nextElementSibling?.matches('.lf-learning-control-strip') ? onBoard.nextElementSibling : null;
+        const buttons = [...onBoard.querySelectorAll('button'), ...(strip ? strip.querySelectorAll('button') : [])].filter((b) => b !== drag && !b.contains(drag));
+        if (!buttons.length && !drag.closest('[data-tap-alternative]')) out.dragNoAlternative.push(label(drag));
+      }
+    }
+    return out;
+  }
+
   /* ------------------------------------------------------- motion budget */
   // Read with motion allowed (the driver switches prefers-reduced-motion to no-preference first; every other
   // measurement runs with reduced motion so nothing moves under it).
@@ -243,8 +325,7 @@ export function installAudit() {
     // Idle motion (02 §9.4): at most three looping things per screen, each one a claimed slot (`data-idle-motion`),
     // and one breathing call to action. CSS loops are read from the running animations; the Mentor's WebGL idle
     // loop is not a CSS animation, so its claimed element counts instead.
-    // A legacy page body inside a rebuilt shell is not measured (its lane replaces it), like every rule above.
-    const running = document.getAnimations().filter((a) => a.playState === 'running' && a.effect?.getTiming().iterations === Infinity && !legacy(a.effect?.target));
+    const running = document.getAnimations().filter((a) => a.playState === 'running' && a.effect?.getTiming().iterations === Infinity);
     // Busy motion (OD-28, V-04; design/motion.tsx): the loading shimmer and a pending button's spinner are progress
     // indicators, not idle loops, so they take no slot; each must be the shared control's own (a loading placeholder,
     // or the spinner of a button that is pending), or it is reported as a stray busy loop.
@@ -264,7 +345,21 @@ export function installAudit() {
     const onList = (e) => milestones.includes(e?.closest('.lf-celebration')?.dataset.milestone ?? '');
     const offList = [...document.querySelectorAll('.lf-celebration')].filter((e) => e.dataset.celebration !== 'refused' && !onList(e)).map((e) => label(e))
       .concat(document.getAnimations().filter((a) => /^lf-celebration/.test(a.animationName ?? '') && !onList(a.effect?.target)).map((a) => label(a.effect.target)));
-    return { idle: idleThings.size, unbudgeted, breathing, offList, strayBusy };
+    // 05 §4: inside a board only a state change moves: finite, at most --dur-component (250 ms), never the spring and
+    // never a celebration (05 V5). A transition that moves the whole exercise targets an ancestor of the board.
+    const boardMotion = document.getAnimations().filter((a) => a.effect?.target?.closest?.('.lf-learning-board')).filter((a) => {
+      const timing = a.effect.getTiming();
+      const css = getComputedStyle(a.effect.target).animationTimingFunction;
+      return timing.iterations === Infinity || Number(timing.duration) > 250 || /^lf-celebration/.test(a.animationName ?? '')
+        || /cubic-bezier\(0?\.34, 1\.5/.test(`${timing.easing ?? ''} ${css}`);
+    }).map((a) => `${label(a.effect.target)} ${a.animationName ?? 'script animation'}`);
+    // The orchestrated patterns (04 §4; design/motion.tsx ORCHESTRATED_MOTION) are registered non-celebration motion:
+    // the wave only on the streak strip, the stagger only inside its primitive, both only on route entry (their mark).
+    const strayPattern = document.getAnimations().filter((a) => a.animationName === 'lf-wave-rise' || a.animationName === 'lf-stagger-rise').filter((a) => {
+      const target = a.effect?.target;
+      return a.animationName === 'lf-wave-rise' ? !target?.closest?.('[data-wave="enter"][data-streak-strip]') : !target?.closest?.('[data-stagger="enter"]');
+    }).map((a) => `${label(a.effect.target)} ${a.animationName}`);
+    return { idle: idleThings.size, unbudgeted, breathing, offList, strayBusy, boardMotion, strayPattern };
   }
 
   /* ------------------------------------------------------- copy budget */
@@ -308,7 +403,7 @@ export function installAudit() {
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
       for (let node = walker.nextNode(); node; node = walker.nextNode()) {
         const host = node.parentElement;
-        if (!node.nodeValue.includes('—') || !host || legacy(host) || !visible(host) || host.closest('[aria-hidden="true"],script,style')) continue;
+        if (!node.nodeValue.includes('—') || !host || !visible(host) || host.closest('[aria-hidden="true"],script,style')) continue;
         dashes.push(node.nodeValue.replace(/\s+/g, ' ').trim().slice(0, 120));
       }
     }
@@ -328,7 +423,7 @@ export function installAudit() {
   }
 
   window.__lfAudit = {
-    textFit, proportion, motion, copyBudget, stress, spacing, signature,
+    textFit, proportion, motion, boards, copyBudget, stress, spacing, signature,
     roots: () => ROOTS().length,
   };
 }

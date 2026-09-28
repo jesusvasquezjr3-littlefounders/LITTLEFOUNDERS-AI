@@ -58,7 +58,8 @@ describe('ChildTasks (F4-K)', () => {
     expect(within(waiting).getByText(en.statusDone)).toBeInTheDocument();
     expect(within(waiting).getByRole('button', { name: en.newPhoto })).toBeInTheDocument();
     const pockets = view.container.querySelector('[data-family-part="pockets"]') as HTMLElement;
-    expect(within(pockets).getByText('20')).toBeInTheDocument();
+    expect(within(pockets).getByText('20 coins')).toBeInTheDocument();
+    expect(pockets.querySelectorAll('img[data-asset-id="money.coin"]').length).toBe(3);
     expect(pockets.querySelectorAll('img[data-asset-id^="pocket."]').length).toBe(3);
     for (const name of ['streak', 'level', 'notes', 'usual', 'goals', 'share', 'history']) expect(view.container.querySelector(`[data-slot="${name}"]`)).not.toBeNull();
   });

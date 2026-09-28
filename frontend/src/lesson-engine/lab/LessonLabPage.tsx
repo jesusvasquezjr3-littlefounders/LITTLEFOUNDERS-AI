@@ -31,6 +31,8 @@ import { DEFAULT_FIXTURE_LOCALE, fixtureLocaleOf } from './fixtureCopy'
 import { createLocalGrader } from './localGrader'
 import LessonPlayer from '../player/LessonPlayer'
 import type { CharacterId } from '@/components/characters/control/types'
+// Development lab: it renders with the legacy global sheet, which the product entry no longer loads.
+import '@/index.css';
 
 /** Titles the lab gives its own throwaway documents, per locale. */
 const LAB_TITLES: Record<Locale, { showcase: string; family: (name: string) => string; objective: string }> = {
