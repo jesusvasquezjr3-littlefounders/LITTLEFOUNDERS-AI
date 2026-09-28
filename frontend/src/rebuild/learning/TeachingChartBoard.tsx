@@ -7,6 +7,8 @@ type TableSource = { columns: readonly [string, string]; rows: readonly ChartTab
   | { table: ReactNode; columns?: undefined; rows?: undefined };
 type TeachingChartBoardProps = TableSource & {
   title: string;
+  /** The title's heading level where the board sits inside a page's own outline (default 2). */
+  headingLevel?: 2 | 3 | 4;
   showTableLabel: string;
   showChartLabel: string;
   chart: ReactNode;
@@ -28,13 +30,14 @@ function renderTable(source: TableSource, title: string): ReactNode {
 }
 
 export function TeachingChartBoard(props: TeachingChartBoardProps) {
-  const { title, showTableLabel, showChartLabel, chart, controlLeading, onViewChange, children } = props;
+  const { title, showTableLabel, showChartLabel, chart, controlLeading, onViewChange, children, headingLevel = 2 } = props;
+  const Heading = `h${headingLevel}` as const;
   const boardId = useId();
   const [showTable, setShowTable] = useState(false);
   return <div className="lf-learning-workspace">
     <section className="lf-learning-board" aria-labelledby={`${boardId}-title`}>
       <div className="lf-learning-board-heading">
-        <h2 id={`${boardId}-title`} data-copy-role="heading">{title}</h2>
+        <Heading id={`${boardId}-title`} data-copy-role="heading">{title}</Heading>
       </div>
       {showTable ? renderTable(props, title) : chart}
     </section>

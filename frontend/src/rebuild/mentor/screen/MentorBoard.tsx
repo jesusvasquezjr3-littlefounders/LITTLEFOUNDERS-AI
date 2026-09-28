@@ -118,24 +118,33 @@ function YourTurnBoard({ board, model, copy }: { board: Extract<TutorWhiteboardW
   </div>;
 }
 
-export function MentorBoard({ board, copy, locale, title }: {
+export function MentorBoard({ board, copy, locale, title, readOnly = false, headingLevel = 2 }: {
   board: TutorWhiteboardWire; copy: MentorBoardCopy; locale: Locale;
   /** A title in place of the board's own, where several boards share a view and two would carry the same name. */
   title?: string;
+  /**
+   * Someone reading the board, not the learner acting on it (the verified
+   * Tutor's transcript): a class II shape is drawn as its rows, with every
+   * value written and no control to press.
+   */
+  readOnly?: boolean;
+  /** The title's heading level inside the surrounding page (default 2). */
+  headingLevel?: 2 | 3 | 4;
 }) {
   const computed = useMemo(() => boardModel(board, copy.words, boardFormat(locale)), [board, copy.words, locale]);
   const model = title ? { ...computed, title } : computed;
-  if (model.interactive) {
+  const Heading = `h${headingLevel}` as const;
+  if (model.interactive && !readOnly) {
     return <section className="lf-learning-board lf-mentor-board-frame" aria-label={model.title} data-board-kind={model.kind}>
-      <div className="lf-learning-board-heading"><h2 data-copy-role="heading">{model.title}</h2></div>
+      <div className="lf-learning-board-heading"><Heading data-copy-role="heading">{model.title}</Heading></div>
       {board.kind === 'grab' ? <GrabBoard board={board} copy={copy} />
         : board.kind === 'fill' ? <FillBoard board={board} copy={copy} locale={locale} />
           : board.kind === 'whatif' ? <WhatifBoard board={board} model={model} copy={copy} />
             : board.kind === 'your_turn' ? <YourTurnBoard board={board} model={model} copy={copy} /> : null}
     </section>;
   }
-  return <div className="lf-mentor-board-frame" data-board-kind={model.kind}>
-    <TeachingChartBoard title={model.title} showTableLabel={copy.showTable} showChartLabel={copy.showPicture}
+  return <div className="lf-mentor-board-frame" data-board-kind={model.kind} data-board-read-only={readOnly && model.interactive ? 'true' : undefined}>
+    <TeachingChartBoard title={model.title} headingLevel={headingLevel} showTableLabel={copy.showTable} showChartLabel={copy.showPicture}
       columns={[copy.item, copy.value]} rows={model.rows.map((row) => ({ id: row.id, label: row.label, value: row.value }))}
       chart={model.picture === 'bars' ? <Bars rows={model.rows} /> : <Rows rows={model.rows} />} />
   </div>;

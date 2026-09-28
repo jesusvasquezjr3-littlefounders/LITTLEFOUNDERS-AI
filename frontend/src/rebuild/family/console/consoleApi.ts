@@ -15,6 +15,8 @@
  */
 
 import type { DispositionSummaryData } from '../../mentor/allianceApi';
+import { boardModel, type BoardFormat, type BoardWords } from '../../mentor/screen/boardModel';
+import type { TutorWhiteboardWire } from '../../mentor/session/types';
 
 export type ConsoleTransportResult = { data: unknown; error: null } | { data: null; error: { code: string } };
 export type ConsoleMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -310,14 +312,43 @@ export async function fetchMentorHistory(transport: ConsoleTransport, kidId: str
   return history ? { ok: true, data: history } : { ok: false, code: 'INVALID_RESPONSE' };
 }
 
-/** A board as the Tutor's transcript can show it: its own caption (the drawing is the Mentor lane's rebuilt board). */
-export interface BoardNote { kind: string; label: string | null }
+/**
+ * A board as the Tutor's transcript shows it: the drawn board (the Mentor
+ * lane's own wire, rendered by its rebuilt renderer) when Core returned one
+ * the renderer can draw, and always its caption, the fallback when it cannot.
+ */
+export interface BoardNote { kind: string; label: string | null; wire: TutorWhiteboardWire | null }
 export type TranscriptBeat =
   | { kind: 'mentor' | 'child' | 'note'; id: string; seq: number; text: string; board: BoardNote | null; demonstrated: number[] }
   | { kind: 'activity'; id: string; seq: number; prompt: string; score: number | null; xpAwarded: number };
 
+/** Probe words and numbers: every word is its own key, and a missing number reads "NaN", so a board with a hole in it is caught. */
+const PROBE_WORDS = new Proxy({}, { get: (_target, key) => (key === 'step' ? { day: 'd{n}', week: 'w{n}', month: 'm{n}', year: 'y{n}' } : String(key)) }) as BoardWords;
+const probeNumber = (value: number) => (typeof value === 'number' && Number.isFinite(value) ? String(value) : 'NaN');
+const PROBE_FORMAT: BoardFormat = { number: probeNumber, money: probeNumber, percent: probeNumber };
+
+/**
+ * The board wire, validated with the Mentor lane's own model: a shape that
+ * model draws (an unknown one yields no model), with a caption, whose every
+ * row it can write (no missing field, no number that is not one). Anything
+ * else is not drawn; its caption stays.
+ */
+export function boardWire(value: unknown): TutorWhiteboardWire | null {
+  if (!isObject(value) || !isString(value.kind) || !isString(value.label)) return null;
+  const wire = value as unknown as TutorWhiteboardWire;
+  try {
+    const model = boardModel(wire, PROBE_WORDS, PROBE_FORMAT) as ReturnType<typeof boardModel> | undefined;
+    if (!model || !Array.isArray(model.rows)) return null;
+    const sound = (text: unknown) => typeof text === 'string' && !/\bNaN\b|undefined|\[object Object\]/.test(text);
+    return model.rows.length > 0 && model.rows.every((row) => sound(row.label) && sound(row.value)
+      && (row.amount === undefined || Number.isFinite(row.amount))) ? wire : null;
+  } catch {
+    return null;
+  }
+}
+
 const boardNote = (value: unknown): BoardNote | null => isObject(value) && isString(value.kind)
-  ? { kind: value.kind, label: isString(value.label) && value.label.trim() !== '' ? value.label : null } : null;
+  ? { kind: value.kind, label: isString(value.label) && value.label.trim() !== '' ? value.label : null, wire: boardWire(value) } : null;
 
 /** The signed coin steps a Mentor demonstrated on the money tray ("+10, -5"); a pause or a non-money step says nothing. */
 function demonstratedSteps(value: unknown): number[] {
