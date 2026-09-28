@@ -37,6 +37,11 @@ npm run test:all
 bash agent/tools/run-all.sh build
 # S07.7 (D.9): a release cannot ship on an overdue Appendix G recalibration.
 node agent/tools/check-block-d-research.mjs --strict
+# Appendix J 1.3 / DoD 2.1(2): the data-gateway half of the social release
+# gate. Every native-PostgreSQL social verifier (and the teen discoverable,
+# cooperative goals and account-erasure ones) against the full migration
+# chain, on a throwaway cluster; a machine with no PostgreSQL prints SKIP.
+npm run social:db-verify
 
 npm --prefix coursegen run catalog:check -- "curriculum/$COURSE"
 npm --prefix coursegen run graph:check -- "$COURSE"

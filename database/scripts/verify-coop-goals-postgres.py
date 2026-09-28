@@ -248,6 +248,34 @@ try:
     assert not [name for name in surfaces if 'coop' in name], surfaces
     check('no browser role can read the tables or call the functions; the service role writes only through the functions; the E.10 scan finds no free text in the new tables')
 
+    # ── OD-9 4.2: goals together are a registered data practice ─────────────
+    practice = "'sharing.cooperative_goals'"
+    assert run(f"SELECT kind || '/' || teen_self_consent FROM data_practices WHERE key = {practice}") == 'sharing_surface/false'
+    assert service(f"SELECT coop_goal_eligible('{I['dan']}')") == 't'
+    run(f"INSERT INTO legacy_consent_subjects (user_id, age_class) VALUES ('{I['dan']}', 'teen'), ('{I['kid16']}', 'teen')")
+    assert service(f"SELECT coop_goal_eligible('{I['dan']}')") == 'f'
+    assert service(f"SELECT data_practice_applies('{I['dan']}', {practice})") == 'f'
+    rejected(f"SET ROLE service_role; SELECT create_coop_goal('{I['dan']}', 10, 7, ARRAY['{I['ana']}']::uuid[])", 'DATA_PRACTICE_CONSENT_REQUIRED')
+    assert I['dan'] not in service(f"SELECT coop_goal_candidates('{I['ana']}')")
+    rejected(f"SET ROLE service_role; SELECT create_coop_goal('{I['ana']}', 10, 7, ARRAY['{I['dan']}']::uuid[])", 'COOP_MEMBER_UNAVAILABLE')
+    assert json.loads(service(f"SELECT coop_goal_overview('{I['dan']}')"))['eligible'] is False
+    # A self-registered migrated teen cannot answer it alone (a Tutor-only practice).
+    rejected(f"SET ROLE service_role; SELECT data_practice_set_consent('{I['dan']}', '{I['dan']}', {practice}, true, 1)", 'DATA_PRACTICE_NOT_ALLOWED')
+    state = json.loads(service(f"SELECT data_practice_state('{I['dan']}')"))
+    assert [p for p in state['practices'] if p['key'] == 'sharing.cooperative_goals'][0]['applies'] is False
+    # The verified Tutor's opt-in is recorded as the practice consent; the opt-out revokes it.
+    service(f"SELECT set_coop_goal_guardian_consent('{I['parent']}', '{I['kid16']}', true)")
+    assert run(f"SELECT grantor_kind || '/' || (granted_by = '{I['parent']}') FROM data_practice_consents WHERE subject_user_id = '{I['kid16']}' AND practice_key = {practice} AND revoked_at IS NULL") == 'tutor/true'
+    assert service(f"SELECT data_practice_applies('{I['kid16']}', {practice})") == 't'
+    assert service(f"SELECT coop_goal_eligible('{I['kid16']}')") == 't'
+    service(f"SELECT set_coop_goal_guardian_consent('{I['parent']}', '{I['kid16']}', false)")
+    assert run(f"SELECT count(*) FROM data_practice_consents WHERE subject_user_id = '{I['kid16']}' AND practice_key = {practice} AND revoked_at IS NULL") == '0'
+    assert service(f"SELECT coop_goal_eligible('{I['kid16']}')") == 'f'
+    assert int(run(f"SELECT count(*) FROM audit_logs WHERE subject = '{I['kid16']}' AND action IN ('data_practice.granted', 'data_practice.revoked') AND detail ->> 'practice' = 'sharing.cooperative_goals'")) == 2
+    run(f"DELETE FROM legacy_consent_subjects WHERE user_id IN ('{I['dan']}', '{I['kid16']}')")
+    assert service(f"SELECT coop_goal_eligible('{I['dan']}')") == 't'
+    check('OD-9 4.2: sharing.cooperative_goals is a registered Tutor-only sharing practice; for a migrated child without it, eligibility, candidates and the overview close, creating is refused by name (DATA_PRACTICE_CONSENT_REQUIRED) and inviting them is simply unavailable; the teen cannot consent alone; the verified Tutor opt-in is recorded (and audited) as the practice consent and the opt-out revokes it; an account the OD-9 step did not mark is unaffected')
+
     if os.environ.get('LF_PG_REPORT'):
         Path(os.environ['LF_PG_REPORT']).write_text(json.dumps({'database': database, 'checks': checks}, indent=2), encoding='utf-8')
     print(f'{len(checks)} checks passed')

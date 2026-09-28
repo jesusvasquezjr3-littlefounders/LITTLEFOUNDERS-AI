@@ -268,3 +268,10 @@ Local only; nothing was pushed or deployed. The isolated stack was `database/scr
 - **Teardown:** `disposable-stack.sh teardown` removed the isolated containers, volumes and directory (0 `lf-reset` containers or volumes left). The native audit cluster was stopped again, as it was found. The dev stack still runs 11 containers.
 
 Deploy note: 0192 only redefines a function, so it is additive and auto-appliable. It must reach any database that has 0186/0187, or `messagingSurfaces` reports one unreviewed name.
+
+## Follow-up: gap-fix round 1 (F1-data-platform)
+
+- OD-24: `od9 retire-catalog [--apply]` (`sql/60_retire_catalog.sql`) replaces the raw archive SQL in the proof and joins the rehearsal (phase R11b); the `legacy_catalog_delete_guard` migration refuses deleting a catalog row learners depend on. CUTOVER-RUNBOOK step 10 (T plus 7 days) now uses it.
+- OD-9 section 4.2: the teen cooperative goals are registered as the data practice `sharing.cooperative_goals` and enforced (`cooperative_goals_data_practice`); the data-practice pin now fails on any later table tying two accounts without a registered practice.
+
+Record: [GAP-FIX-R1.md](GAP-FIX-R1.md#f1-data-platform).

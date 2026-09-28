@@ -260,9 +260,11 @@ try:
     UPDATE account_age_declarations SET created_at = now() - interval '300 days' WHERE user_id = '{I['mail']}';
     INSERT INTO guardian_links (parent_user_id, kid_user_id, verification_status, verified_at) VALUES
         ('{I['ocr']}', '{I['kid']}', 'verified', now()), ('{I['ocr']}', '{I['kidpending']}', 'verified', now());
+    -- A pending address left from before guard_kid_email (0197) existed: it is
+    -- written before the kid role, since the guard now refuses it for a child.
+    UPDATE auth.users SET email_change = 'escape@example.com' WHERE id = '{I['kidpending']}';
     INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{I['kid']}', 'kid', '{I['ocr']}'), ('{I['kidpending']}', 'kid', '{I['ocr']}');
     UPDATE profiles SET birth_date = '2016-05-01' WHERE user_id IN ('{I['kid']}', '{I['kidpending']}');
-    UPDATE auth.users SET email_change = 'escape@example.com' WHERE id = '{I['kidpending']}';
     """)
     m = json.loads(service("SELECT identity_metrics(now() - interval '30 days', now() + interval '1 minute');"))
     assert m['guestOrigin'] == {'requested': 2, 'flagged': 1, 'flaggedGuestsCreated': 1}, m['guestOrigin']
@@ -280,7 +282,9 @@ try:
     assert m['kidEmail'] == {'kids': 2, 'restricted': 1, 'refusalsInWindow': 1}, m['kidEmail']
     assert m['faqCapabilities'] == {'secondGuardian': True, 'cancellationCascade': True, 'reportTool': True}, m['faqCapabilities']
     assert m['schemaFields']['originFlag']['consumed'] is True and m['schemaFields']['originFlag']['produced'] >= 2, m['schemaFields']
-    assert m['schemaFields']['documentType']['declared'] is True, m['schemaFields']
+    # F1-data-platform retires the column (0199 expand, 0200 contract): after the
+    # full chain it is no longer declared, so the Schema Field Utilization check passes.
+    assert m['schemaFields']['documentType'] == {'declared': False, 'consumed': False}, m['schemaFields']
     assert m['flagPersistence']['upgraded'] >= 1 and m['flagPersistence']['upgraded'] == m['flagPersistence']['safeguarded'], m['flagPersistence']
     check('identity_metrics counts guest flags, Google screening and reclassification, entry-path capture, backlog, parent tags, justification, revocation, kid email and schema fields')
     rejected("SET ROLE service_role; SELECT identity_metrics(now(), now() - interval '1 day');", 'from < to')

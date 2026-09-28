@@ -1,6 +1,7 @@
 import { query, execute } from '../db/duckdb.js';
 import { getConfig } from '../env.js';
 import crypto from 'crypto';
+import { alertEmailBody } from './alertEmail.js';
 
 export interface Alert {
   id: string;
@@ -15,6 +16,20 @@ export interface Alert {
   createdAt: string;
 }
 
+/**
+ * H.3 / Appendix O 1.3 (Alert-to-Notification Delivery Rate): the outcome of
+ * the one delivery attempt a trigger gets. `null` only while the attempt is in
+ * flight, or for a trigger recorded before delivery was tracked.
+ */
+export type AlertDeliveryStatus = 'delivered' | 'failed' | 'unconfigured';
+
+export interface AlertDelivery {
+  status: AlertDeliveryStatus;
+  channel: 'webhook' | 'email';
+  /** Short reason, never a payload or a secret (an HTTP status or an error class). */
+  error: string | null;
+}
+
 export interface AlertHistory {
   alertId: string;
   triggeredAt: string;
@@ -22,6 +37,10 @@ export interface AlertHistory {
   value: number;
   threshold: number;
   condition: string;
+  deliveryStatus: AlertDeliveryStatus | null;
+  deliveryChannel: string | null;
+  deliveredAt: string | null;
+  deliveryError: string | null;
 }
 
 type StoredAlert = {
@@ -44,6 +63,10 @@ type StoredHistory = {
   value: number;
   threshold: number;
   condition: string;
+  delivery_status?: string | null;
+  delivery_channel?: string | null;
+  delivered_at?: string | null;
+  delivery_error?: string | null;
 };
 
 type MetricValueRow = {
@@ -76,8 +99,26 @@ CREATE TABLE IF NOT EXISTS alert_history (
   metric TEXT NOT NULL,
   value DOUBLE NOT NULL,
   threshold DOUBLE NOT NULL,
-  condition TEXT NOT NULL
+  condition TEXT NOT NULL,
+  delivery_status TEXT,
+  delivery_channel TEXT,
+  delivered_at TIMESTAMP,
+  delivery_error TEXT
 )`;
+
+/**
+ * Creates alert_history, and gives a file created before delivery tracking
+ * its delivery columns (DuckDB adds only nullable columns to an existing table).
+ */
+async function ensureHistorySchema(): Promise<void> {
+  await execute(ENSURE_HISTORY);
+  await execute('ALTER TABLE alert_history ADD COLUMN IF NOT EXISTS delivery_status TEXT');
+  await execute('ALTER TABLE alert_history ADD COLUMN IF NOT EXISTS delivery_channel TEXT');
+  await execute('ALTER TABLE alert_history ADD COLUMN IF NOT EXISTS delivered_at TIMESTAMP');
+  await execute('ALTER TABLE alert_history ADD COLUMN IF NOT EXISTS delivery_error TEXT');
+}
+
+const DELIVERY_STATUSES: readonly string[] = ['delivered', 'failed', 'unconfigured'];
 
 const VALID_METRIC = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 
@@ -192,7 +233,7 @@ export async function getAlertHistory(
   limit: number,
 ): Promise<AlertHistory[] | null> {
   try {
-    await execute(ENSURE_HISTORY);
+    await ensureHistorySchema();
 
     const rows = await query<StoredHistory>(
       'SELECT * FROM alert_history WHERE alert_id = ? ORDER BY triggered_at DESC LIMIT ?',
@@ -207,6 +248,10 @@ export async function getAlertHistory(
       value: Number(r.value),
       threshold: Number(r.threshold),
       condition: r.condition,
+      deliveryStatus: r.delivery_status && DELIVERY_STATUSES.includes(r.delivery_status) ? r.delivery_status as AlertDeliveryStatus : null,
+      deliveryChannel: r.delivery_channel ?? null,
+      deliveredAt: r.delivered_at ? String(r.delivered_at) : null,
+      deliveryError: r.delivery_error ?? null,
     }));
   } catch (err) {
     console.error('[dataintel][alerts] getHistory failed:', err);
@@ -219,7 +264,7 @@ export async function evaluateAlerts(): Promise<{ triggered: number }> {
 
   try {
     await execute(ENSURE_ALERTS);
-    await execute(ENSURE_HISTORY);
+    await ensureHistorySchema();
 
     const rows = await query<StoredAlert>(
       "SELECT * FROM alerts WHERE status = 'active'",
@@ -278,8 +323,10 @@ export async function evaluateAlerts(): Promise<{ triggered: number }> {
 
         // H.3: a recorded trigger with no consumer is not alerting. Deliver
         // through the alert's configured channel; a delivery failure is
-        // logged loudly, never silent — the trigger row is already durable.
-        await deliverAlert(alertObj, { value: currentValue, triggeredAt });
+        // logged loudly, never silent — the trigger row is already durable —
+        // and its outcome is written back to that row (Appendix O 1.3).
+        const delivery = await deliverAlert(alertObj, { value: currentValue, triggeredAt });
+        await recordDelivery(alertObj.id, triggeredAt, delivery);
 
         triggered++;
       }
@@ -291,49 +338,73 @@ export async function evaluateAlerts(): Promise<{ triggered: number }> {
   return { triggered };
 }
 
+/** Writes a delivery outcome back to its trigger row. A failed write is logged, never thrown. */
+async function recordDelivery(alertId: string, triggeredAt: string, delivery: AlertDelivery): Promise<void> {
+  try {
+    await execute(
+      `UPDATE alert_history SET delivery_status = ?, delivery_channel = ?, delivered_at = ?, delivery_error = ?
+       WHERE alert_id = ? AND triggered_at = ?`,
+      delivery.status,
+      delivery.channel,
+      delivery.status === 'delivered' ? now() : null,
+      delivery.error,
+      alertId,
+      triggeredAt,
+    );
+  } catch (err) {
+    console.error('[dataintel][alerts] recording the delivery outcome failed:', err);
+  }
+}
+
 /**
  * H.3's notification channel. `webhook` alerts POST the trigger payload to
- * the configured URL; `email` alerts POST a short internal email through the
- * email-server's internal API. Both are best-effort, loudly logged, and
- * bounded by a timeout so a hanging channel cannot stall the evaluation
- * loop. The trigger row is written BEFORE delivery, so a failed delivery is
- * a visible gap, not a lost alert.
+ * the configured URL; `email` alerts POST a plain-text internal email through
+ * the email-server's `/api/v1/send`, in the body that endpoint accepts
+ * (alertEmail.ts, contract-tested against the email-server's own route).
+ * Both are bounded by a timeout so a hanging channel cannot stall the
+ * evaluation loop, and both return their outcome for the trigger row:
+ * delivered, failed (with a short reason) or unconfigured (no human could be
+ * notified). The trigger row is written BEFORE delivery, so a failed delivery
+ * is a visible gap, not a lost alert.
  */
 async function deliverAlert(
   alert: Alert,
   trigger: { value: number; triggeredAt: string },
-): Promise<void> {
+): Promise<AlertDelivery> {
   const { ALERT_WEBHOOK_URL, ALERT_EMAIL_SERVER_URL, ALERT_EMAIL_INTERNAL_KEY, ALERT_EMAIL_TO } = getConfig();
-  const payload = JSON.stringify({
-    alertId: alert.id,
-    name: alert.name,
-    metric: alert.metric,
-    condition: alert.condition,
-    threshold: alert.threshold,
-    value: trigger.value,
-    triggeredAt: trigger.triggeredAt,
-  });
+  const failed = (channel: AlertDelivery['channel'], error: string): AlertDelivery => {
+    console.error(`[dataintel][alerts] ${channel} delivery failed for "${alert.name}": ${error}`);
+    return { status: 'failed', channel, error };
+  };
+  const reason = (err: unknown) => (err instanceof Error ? `${err.name}: ${err.message}` : 'Error').slice(0, 200);
   if (alert.channel === 'webhook') {
     if (!ALERT_WEBHOOK_URL) {
       console.warn(`[dataintel][alerts] alert "${alert.name}" triggered but ALERT_WEBHOOK_URL is not configured — no human was notified`);
-      return;
+      return { status: 'unconfigured', channel: 'webhook', error: null };
     }
     try {
       const res = await fetch(ALERT_WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: payload,
+        body: JSON.stringify({
+          alertId: alert.id,
+          name: alert.name,
+          metric: alert.metric,
+          condition: alert.condition,
+          threshold: alert.threshold,
+          value: trigger.value,
+          triggeredAt: trigger.triggeredAt,
+        }),
         signal: AbortSignal.timeout(10_000),
       });
-      if (!res.ok) console.error(`[dataintel][alerts] webhook delivery failed for "${alert.name}": HTTP ${res.status}`);
+      return res.ok ? { status: 'delivered', channel: 'webhook', error: null } : failed('webhook', `HTTP ${res.status}`);
     } catch (err) {
-      console.error(`[dataintel][alerts] webhook delivery failed for "${alert.name}":`, err);
+      return failed('webhook', reason(err));
     }
-    return;
   }
   if (!ALERT_EMAIL_SERVER_URL || !ALERT_EMAIL_INTERNAL_KEY || !ALERT_EMAIL_TO) {
     console.warn(`[dataintel][alerts] alert "${alert.name}" triggered but the email channel is not configured — no human was notified`);
-    return;
+    return { status: 'unconfigured', channel: 'email', error: null };
   }
   try {
     const res = await fetch(`${ALERT_EMAIL_SERVER_URL}/api/v1/send`, {
@@ -342,16 +413,19 @@ async function deliverAlert(
         'Content-Type': 'application/json',
         'x-internal-api-key': ALERT_EMAIL_INTERNAL_KEY,
       },
-      body: JSON.stringify({
-        to: ALERT_EMAIL_TO,
-        template: 'alert_notification',
-        data: JSON.parse(payload),
-      }),
+      body: JSON.stringify(alertEmailBody(ALERT_EMAIL_TO, {
+        name: alert.name,
+        metric: alert.metric,
+        condition: alert.condition,
+        threshold: alert.threshold,
+        value: trigger.value,
+        triggeredAt: trigger.triggeredAt,
+      })),
       signal: AbortSignal.timeout(10_000),
     });
-    if (!res.ok) console.error(`[dataintel][alerts] email delivery failed for "${alert.name}": HTTP ${res.status}`);
+    return res.ok ? { status: 'delivered', channel: 'email', error: null } : failed('email', `HTTP ${res.status}`);
   } catch (err) {
-    console.error(`[dataintel][alerts] email delivery failed for "${alert.name}":`, err);
+    return failed('email', reason(err));
   }
 }
 

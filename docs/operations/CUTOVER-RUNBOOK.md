@@ -129,9 +129,9 @@ Record the switch time. From here on, families write to the new platform, and a 
 - **T plus 15 minutes:** `npm run od9 -- inventory --label post` and `compare --before after --after post`: no promised record changed by the switch itself (new records after are informational).
 - **T plus 1 hour:** error rates on Core and Oracle at their normal level; the first scheduled jobs ran green after re-enabling.
 - **T plus 1 day:** the daily backup ran and verified (encrypted); the findings queue is assigned: A.5 justifications to staff, consent gaps to the Tutor-consent flow, undated accounts to the age screen.
-- **T plus 7 days:** the legacy catalog is retired by archiving only (never deleting), through the Forge release path, followed by `inventory --label retired` and `compare --before before --after retired`.
+- **T plus 7 days:** retire the legacy catalog with the toolkit: `npm run od9 -- retire-catalog` (dry run: the rows to archive and any learner still missing a KC credit), then `npm run od9 -- retire-catalog --apply`. It refuses without the `before` inventory or a recorded `kc-credit --apply`, archives only (never deletes; the database refuses deleting a catalog row learners depend on), and compares the `pre_retire` and `retired` inventories it captures around the archive: exit 1 on any loss.
 
 ## What is not in this runbook
 
-- The Forge-phase retirement of legacy content (archive path) and the reviewed lesson equivalences.
+- The reviewed lesson equivalences of the Forge phase (the legacy catalog's retirement itself is step 10, T plus 7 days).
 - A maintenance page: the product has none, so during the freeze writes fail with an error. The family notice sets that expectation.

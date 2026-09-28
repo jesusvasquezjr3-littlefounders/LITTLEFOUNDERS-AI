@@ -118,12 +118,20 @@ to retain because an active guardian consent admitted them at the source.
 ## 5. Incident response and backups (H.5)
 
 - **Backup encryption.** Database backups contain family and AI Mentor data
-  and MUST be encrypted at rest. **Status: to be confirmed by the ops owner**
-  against the backup provider's configuration before the next release cycle;
-  if any backup store is not encrypted at rest, enabling encryption is a
-  release-blocking task. This line stays in this document until confirmed.
-  The cutover backup procedure (encrypted by the file itself) and the
-  current status of each backup: `BACKUP-RESTORE-ROLLBACK.md` section 1.
+  and MUST be encrypted at rest. The daily Vault and Pulse backups
+  (`.github/workflows/vault-backup.yml`, `pulse-backup.yml`) are encrypted by
+  the file itself: the runner encrypts each dump with
+  `database/migration-od9/backup-crypto.mjs` (AES-256-GCM, a manifest with the
+  key fingerprint) using the `BACKUP_ENCRYPTION_KEY` secret, deletes the
+  plaintext, and stores only the `.lfbk` file and its manifest; a missing key
+  or an empty ciphertext fails the job. `agent/tools/backup-workflows.test.mjs`
+  refuses any backup workflow that uploads a file without the `.lfbk` suffix.
+  Owner steps before this is live: create the secret (`node
+  database/migration-od9/backup-crypto.mjs keygen --key-file <path>`, stored
+  in the secret store and the offline key escrow) and push the workflows.
+  Plaintext dumps written before the change age out with the 30-day prune.
+  The cutover backup procedure and each store's status:
+  `BACKUP-RESTORE-ROLLBACK.md` section 1.
 - **Incident response baseline.** On discovery of a security incident:
   1. Contain: rotate the affected keys, revoke the affected sessions/grant.
   2. Triage: severity decided by Engineering + the Safety/Trust role within
@@ -143,12 +151,25 @@ to retain because an active guardian consent admitted them at the source.
 
 ## 6. Experimentation eligibility (H.7)
 
-- Every experiment may declare integer age bounds (`min_age`/`max_age`).
-  Unbounded experiments accept unknown ages; a bounded experiment NEVER
-  assigns or exposes a learner whose age is unknown or outside the bounds —
-  eligibility cannot be guessed. Enforcement lives in dataintel at the
-  assignment/exposure boundary; Core passes the derived age (or null when the
-  evidence is unavailable). Kid-role exposures additionally require the
-  existing consent gate.
+- **Adults only by default (OD-23).** Every experiment admits adults (18+)
+  only until Product and Legal decide otherwise. An experiment that declares
+  no age bounds is adults-only, never open to every age; a declared bound can
+  raise the floor, never lower it.
+- **One exception (OD-26).** The C.17 dialogue-calibration experiment (the
+  Mentor surface) may enrol teens 13-17 with their own analytics opt-in and
+  tweens 10-12 with guardian analytics consent. Children 6-9 stay excluded.
+  In the warehouse this is the `eligibility_policy` value `od26_c17`, accepted
+  only on the `tutor` surface and never below age 10; Core enforces the
+  opt-in/consent half at its boundary.
+- **Unknown ages are never eligible**, whatever the policy or bounds:
+  eligibility cannot be guessed.
+- **Any new exception needs an owner decision** recorded in the owner
+  decision log, and a new policy value added in code with its tests; staff
+  cannot widen an experiment by setting bounds.
+- Enforcement lives in dataintel at creation (`POST /experiments` refuses a
+  bound or policy outside these rules) and at the assignment/exposure
+  boundary; Core passes the derived age (or null when the evidence is
+  unavailable), and its own exposure route admits adults only. Kid-role
+  exposures additionally require the existing consent gate.
 - No live experiment currently reaches any user; this policy applies from the
   first wired experiment onward.

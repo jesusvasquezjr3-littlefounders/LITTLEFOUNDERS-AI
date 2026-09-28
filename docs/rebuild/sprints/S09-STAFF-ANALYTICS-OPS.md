@@ -42,3 +42,12 @@ Executed 24 September 2026 against the current working tree. Commands below are 
 Execution notes: the dataintel config cache had to be reset between alert-delivery tests (the first test's env var leaked into the cached config — a harness correction). The removed export-job tests were replaced with removal-pinning assertions rather than deleted outright, so the half-built mechanism cannot silently return. The email channel targets the email-server's existing internal `/api/v1/send`; the `alert_notification` template name is a contract the email-server must supply when the channel is configured (an open ops task recorded below).
 
 Remaining acceptance boundaries: production configuration of the alert channels, the ops owner's backup-encryption confirmation and watchdog execution (H.4/H.5), real PostgreSQL evidence for the G.3 audit write, the first real quarterly access review, and human review. None of these requirements is accepted.
+
+## Follow-up: gap-fix round 1 (F1-data-platform)
+
+- H.3: the email alert channel sent a body the email-server rejects; it now sends `{to, subject, text, templateType}` (contract fixture shared by both packages, 202 through the real route), and `alert_history` records each trigger's delivery outcome (Appendix O 1.3).
+- H.5: the daily Vault and Pulse backups are encrypted on the runner with the LFBK tool before upload; only `.lfbk` files and manifests are stored. The `BACKUP_ENCRYPTION_KEY` secret and the push are owner steps.
+- H.7: dataintel now applies OD-23 (adults only by default, unknown ages never eligible) and the OD-26 C.17 exception only; GOVERNANCE section 6 rewritten.
+- G.2: the live lesson document guard (see S05-FORGE-CONTENT-GATES, follow-up).
+
+Record: [GAP-FIX-R1.md](GAP-FIX-R1.md#f1-data-platform).

@@ -23,8 +23,14 @@ function schemaEvents(): string[] {
   for (const file of files) {
     const sql = readFileSync(join(MIGRATIONS, file), 'utf8');
     // Both the CREATE TABLE form and the later ALTER ... ADD CONSTRAINT form.
-    const match = /check \(event in \(([\s\S]*?)\)\)/i.exec(sql);
-    if (match?.[1]) latest = match[1];
+    // Other tables also have an `event` column with a CHECK (for example
+    // social_protection_counters), so a match counts only when the nearest
+    // table or constraint named before it is learning_events.
+    for (const match of sql.matchAll(/check \(event in \(([\s\S]*?)\)\)/gi)) {
+      const owners = [...sql.slice(0, match.index).matchAll(/(?:create table (?:if not exists )?(?:public\.)?|constraint )(\w+)/gi)];
+      const owner = owners.at(-1)?.[1]?.toLowerCase();
+      if (match[1] && (owner === 'learning_events' || owner === 'learning_events_event_check')) latest = match[1];
+    }
   }
   if (latest === null) throw new Error('No learning_events event CHECK found in database/migrations');
   return [...latest.matchAll(/'([a-z_]+)'/g)].flatMap((m) => (m[1] ? [m[1]] : []));

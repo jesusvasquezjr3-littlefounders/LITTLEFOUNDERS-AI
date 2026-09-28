@@ -11,11 +11,18 @@
 // binds in every paid mode: the pass stops cleanly once the images it drew
 // reach it. --dry-run and --reuse-only never contact Prism and need none.
 //
-// For every lesson_document of a published-or-review lesson in the course, it
-// runs the EXISTING `illustrateSegments()` (pipeline/images.ts) over the STORED
+// For every lesson_document of a lesson IN REVIEW in the course, it runs the
+// EXISTING `illustrateSegments()` (pipeline/images.ts) over the STORED
 // client-safe `document`, which fills every target in the shared per-type
 // illustration plan that lacks one, and PATCHes ONLY the `document` column
 // back via PostgREST.
+//
+// G.2 (owner queue F-09, option a): a PUBLISHED lesson is never patched in
+// place. Its content changes only through a release, and Vault refuses the
+// write anyway (live_lesson_document_guard). Published documents are still
+// read as free art donors, but each one is skipped and counted in the summary
+// (`skippedPublished`) so the operator can demote the lesson, backfill it in
+// review, and release it again through the verified preflight.
 //
 // Invariants (mirrors the images stage — COURSE_ENGINE.md §4, AGENTS.md §8d):
 //  - We START from the stored `document` and only ADD `image_url` fields. The
@@ -65,6 +72,8 @@ export interface BackfillDocRow {
   locale: string;
   /** Null/undefined means legacy art and is never eligible as a free donor. */
   illustrationStyleVersion?: string | null;
+  /** The lesson's status. A 'published' document is a donor only, never written (G.2). */
+  lessonStatus?: string;
   /** The STORED client-safe document, passed straight to illustrateSegments (never re-parsed/stripped). */
   document: LessonDocumentParsed;
 }
@@ -199,6 +208,8 @@ export interface BackfillSummary {
   usdSpent: number;
   /** Paid modes: true when --max-usd stopped the pass before every document was processed. */
   stoppedOnBudget: boolean;
+  /** G.2: documents of published lessons left untouched (a live lesson changes only through a release). */
+  skippedPublished: number;
 }
 
 /**
@@ -287,10 +298,17 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
     lessonsAlreadyCurrent: 0,
     usdSpent: 0,
     stoppedOnBudget: false,
+    skippedPublished: 0,
   };
 
   const allRows = await deps.listDocuments(opts.courseSlug);
-  const rows = opts.locale ? allRows.filter((r) => r.locale === opts.locale) : allRows;
+  const inScope = opts.locale ? allRows.filter((r) => r.locale === opts.locale) : allRows;
+  // G.2: a published lesson is never rewritten in place — only reported.
+  const rows = inScope.filter((r) => r.lessonStatus !== 'published');
+  summary.skippedPublished = inScope.length - rows.length;
+  for (const row of inScope.filter((r) => r.lessonStatus === 'published')) {
+    log(`  skip ${row.lessonSlug} [${row.locale}] — published: demote it to review, backfill, then release (G.2)`);
+  }
   // Source order is explicit so the first matching object is deterministic.
   // The authoring locale comes first, then stable lesson and locale order.
   const sourceRows = [...allRows].sort((a, b) =>
@@ -599,6 +617,7 @@ interface IdRow {
 interface LessonRow {
   id: string;
   slug: string;
+  status: string;
 }
 interface LessonDocRow {
   lesson_id: string;
@@ -680,11 +699,12 @@ async function listCourseDocuments(courseSlug: string, adventureSlug?: string): 
   if (topicIds.length === 0) return [];
 
   const lessons = await selectByIds<LessonRow>(
-    (ids) => `/lessons?topic_id=${inFilter(ids)}&status=in.(published,review)&select=id,slug`,
+    (ids) => `/lessons?topic_id=${inFilter(ids)}&status=in.(published,review)&select=id,slug,status`,
     topicIds,
   );
   if (lessons.length === 0) return [];
   const slugById = new Map(lessons.map((l) => [l.id, l.slug]));
+  const statusById = new Map(lessons.map((l) => [l.id, l.status]));
   const lessonIds = lessons.map((l) => l.id);
 
   const rows: BackfillDocRow[] = [];
@@ -698,6 +718,7 @@ async function listCourseDocuments(courseSlug: string, adventureSlug?: string): 
         lessonSlug: slugById.get(d.lesson_id) ?? d.lesson_id,
         locale: d.locale,
         illustrationStyleVersion: d.illustration_style_version,
+        lessonStatus: statusById.get(d.lesson_id),
         document: d.document,
       });
     }
@@ -830,6 +851,7 @@ async function main(): Promise<void> {
   console.log(`  images reused:      ${summary.imagesInherited}`);
   console.log(`  images placed:      ${summary.imagesPlaced}`);
   console.log(`  skipped (no image): ${summary.skipped}`);
+  console.log(`  skipped (published, G.2): ${summary.skippedPublished}${summary.skippedPublished ? ' — demote, backfill in review, then release' : ''}`);
   if (opts.restyleScenes) {
     console.log(`  stale scenes cleared:      ${summary.scenesCleared}`);
     console.log(`  scenes copied to locales:  ${summary.scenesCopiedToLocales} (free — one drawing serves 3 locales)`);

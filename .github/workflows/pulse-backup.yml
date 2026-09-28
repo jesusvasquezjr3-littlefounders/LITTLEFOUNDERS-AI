@@ -21,8 +21,22 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      # scripts/ops-heartbeat.sh (H.4) lives in the repository.
+      # H.5 (Appendix O 1.2): the dump is encrypted on the runner before it is
+      # stored anywhere, with the tested OD-9 backup tool (AES-256-GCM, a
+      # manifest with the key fingerprint, the plaintext deleted). The full
+      # checkout also carries scripts/ops-heartbeat.sh (H.4).
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Write backup encryption key
+        run: |
+          set -euo pipefail
+          printf '%s' "${{ secrets.BACKUP_ENCRYPTION_KEY }}" > "$RUNNER_TEMP/backup.key"
+          chmod 600 "$RUNNER_TEMP/backup.key"
+          # No key, no backup: an unencrypted dump is never stored.
+          test -s "$RUNNER_TEMP/backup.key"
 
       - name: Install Railway CLI
         run: npm i -g @railway/cli@5.43.1
@@ -89,30 +103,43 @@ jobs:
 
           test -s "$FILE"
 
-          n=1
-          until cat "$FILE" | railway ssh --service filebase -i "$KEY" -- sh -c "cat > /data/backups/$FILE"; do
-            if [ "$n" -ge 5 ]; then echo "giving up uploading to filebase" >&2; exit 1; fi
-            echo "upload attempt $n failed, retrying in 20s" >&2
-            n=$((n + 1)); sleep 20
+          # Encrypt before the dump leaves the runner; the tool deletes the
+          # plaintext. Fail on an empty ciphertext or a surviving plaintext.
+          node database/migration-od9/backup-crypto.mjs encrypt --in "$FILE" --out "$FILE.lfbk" --key-file "$RUNNER_TEMP/backup.key"
+          test -s "$FILE.lfbk"
+          test -s "$FILE.lfbk.manifest.json"
+          test ! -e "$FILE"
+
+          for PART in "$FILE.lfbk" "$FILE.lfbk.manifest.json"; do
+            n=1
+            until cat "$PART" | railway ssh --service filebase -i "$KEY" -- sh -c "cat > /data/backups/$PART"; do
+              if [ "$n" -ge 5 ]; then echo "giving up uploading to filebase" >&2; exit 1; fi
+              echo "upload attempt $n failed, retrying in 20s" >&2
+              n=$((n + 1)); sleep 20
+            done
           done
 
           retry railway ssh --service pulse-db -i "$KEY" -- \
             rm -f /tmp/backup.tar /tmp/plausible.dump /tmp/umami.dump
 
-          echo "Backed up $(wc -c < "$FILE") bytes to /data/backups/$FILE on filebase"
-          echo "bytes=$(wc -c < "$FILE" | tr -d ' ')" >> "$GITHUB_OUTPUT"
+          echo "Backed up $(wc -c < "$FILE.lfbk") encrypted bytes to /data/backups/$FILE.lfbk on filebase"
+          echo "bytes=$(wc -c < "$FILE.lfbk" | tr -d ' ')" >> "$GITHUB_OUTPUT"
 
       - name: Prune backups older than 30 days
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
           set -euo pipefail
-          n=1
-          until railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
-            find /data/backups -name 'pulse-*.dump' -mtime +30 -delete; do
-            if [ "$n" -ge 5 ]; then echo "giving up pruning old backups" >&2; exit 1; fi
-            echo "prune attempt $n failed, retrying in 20s" >&2
-            n=$((n + 1)); sleep 20
+          # Encrypted backups and their manifests; the last pattern ages out the
+          # plaintext dumps written before H.5 was closed.
+          for PATTERN in 'pulse-*.dump.lfbk' 'pulse-*.dump.lfbk.manifest.json' 'pulse-*.dump'; do
+            n=1
+            until railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
+              find /data/backups -name "$PATTERN" -mtime +30 -delete; do
+              if [ "$n" -ge 5 ]; then echo "giving up pruning old backups" >&2; exit 1; fi
+              echo "prune attempt $n failed, retrying in 20s" >&2
+              n=$((n + 1)); sleep 20
+            done
           done
 
       # H.4: leave the run in Core's audit trail (scripts/ops-heartbeat.sh);
@@ -129,3 +156,7 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: bash scripts/ops-heartbeat.sh pulse_backup false
+
+      - name: Remove the backup key and any local dump
+        if: always()
+        run: rm -f "$RUNNER_TEMP/backup.key" ./*.dump ./*.dump.lfbk ./*.dump.lfbk.manifest.json

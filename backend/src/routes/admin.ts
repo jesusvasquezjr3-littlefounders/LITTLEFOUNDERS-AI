@@ -184,6 +184,7 @@ import {
 } from '../services/adminData.js';
 import { readSocialGovernanceMetrics, windowsMatchPolicy } from '../services/socialGovernance.js';
 import { APPROVE_REASONS, CorrectionReason, CorrectionStatus, decideCorrection, listCorrections, REJECT_REASONS } from '../services/ageCorrection.js';
+import { readSocialProtectionMetrics, socialProtectionVerdicts } from '../services/socialProtection.js';
 
 /*
  * /api/v1/admin — the staff console's data plane. Admins need a current named
@@ -571,6 +572,26 @@ export function adminRouter(): Router {
       retentionCompliant: overdueTotal === 0 && metrics.unconsentedChildEdges === 0,
       messagingSurfaceFree: metrics.messagingSurfaces.length === 0,
     });
+  });
+
+  /*
+   * Appendix J Part 1.1-1.2 metrics for E.1-E.5 (DoD 2.1(3); migration
+   * social_protection_metrics): Cross-Family Discovery Rate, Unauthorized
+   * Connection Attempt Rate, Guardian-Approval Queue Latency, Report Rate and
+   * Resolution Time, Repeated-Contact Pattern Escalation Rate, Age-Tier
+   * Boundary Integrity, Tutor-Badge Cross-Population Visibility,
+   * Family-Panel Social Visibility Adoption and Audit-Log Completeness for
+   * Social Events, over the last `days`. Counts and durations only; the
+   * verdicts compare them with the Appendix targets. A malformed answer
+   * fails the read.
+   */
+  const SocialProtectionQuery = z.object({ days: z.coerce.number().int().min(1).max(366).default(30) }).strict();
+  router.get('/analytics/social-protection', async (req, res) => {
+    const parsed = SocialProtectionQuery.safeParse(req.query);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer from 1 to 366');
+    const metrics = await readSocialProtectionMetrics(parsed.data.days);
+    if (!metrics) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load social-protection metrics');
+    return ok(res, { ...metrics, ...socialProtectionVerdicts(metrics) });
   });
 
   /*

@@ -114,13 +114,23 @@ const experimentSchema = z.object({
   variantB: z.string().min(1).max(100),
   surface: z.enum(['learn', 'tasks', 'profile', 'tutor']).default('learn'),
   target: z.string().regex(/^[a-z0-9._-]{1,64}$/).default('default'),
-  // H.7: declared age eligibility. minAge/maxAge are integers 0-120; both
-  // absent = unbounded. A bounded experiment never assigns an unknown age.
+  // H.7 under OD-23/OD-26: declared age bounds (integers 0-120) and the
+  // eligibility policy. adults_only (the default) admits 18+ only; od26_c17,
+  // the one owner-approved exception, may go down to 10 and only on the
+  // Mentor (tutor) surface. A new exception needs a new owner decision.
   minAge: z.number().int().min(0).max(120).nullable().optional(),
   maxAge: z.number().int().min(0).max(120).nullable().optional(),
-}).refine(
+  eligibilityPolicy: z.enum(experiments.EXPERIMENT_ELIGIBILITY_POLICIES).default('adults_only'),
+}).strict().refine(
   (exp) => exp.minAge === undefined || exp.minAge === null || exp.maxAge === undefined || exp.maxAge === null || exp.minAge <= exp.maxAge,
   'minAge must be <= maxAge',
+).refine(
+  (exp) => (exp.minAge ?? experiments.POLICY_MIN_AGE[exp.eligibilityPolicy]) >= experiments.POLICY_MIN_AGE[exp.eligibilityPolicy]
+    && (exp.maxAge ?? 120) >= experiments.POLICY_MIN_AGE[exp.eligibilityPolicy],
+  { message: 'Experiments are adults only (18+) (OD-23); only od26_c17 may enrol ages 10-17 (OD-26), never 6-9', path: ['minAge'] },
+).refine(
+  (exp) => exp.eligibilityPolicy !== 'od26_c17' || exp.surface === experiments.OD26_SURFACE,
+  { message: 'The OD-26 exception covers the C.17 Mentor dialogue experiment only (surface tutor)', path: ['eligibilityPolicy'] },
 );
 
 const runtimeAssignmentSchema = z.object({
@@ -649,12 +659,12 @@ export function intelRouter(): Router {
     try {
       const parsed = experimentSchema.safeParse(req.body);
       if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.message);
-      const { name, metric, variantA, variantB, surface, target, minAge, maxAge } = parsed.data;
+      const { name, metric, variantA, variantB, surface, target, minAge, maxAge, eligibilityPolicy } = parsed.data;
       // B.28 (S05.3f): more events or sessions is never what an experiment wins on.
       if (experiments.isEngagementVolumeMetric(metric)) {
         return fail(res, 400, 'ENGAGEMENT_VOLUME_METRIC', 'Engagement volume cannot be an experiment success metric (B.28); use a return or learning metric');
       }
-      const result = await experiments.createExperiment(name, metric, variantA, variantB, surface, target, { minAge: minAge ?? null, maxAge: maxAge ?? null });
+      const result = await experiments.createExperiment(name, metric, variantA, variantB, surface, target, { minAge: minAge ?? null, maxAge: maxAge ?? null, eligibilityPolicy });
       if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Failed to create experiment');
       return ok(res, result, 201);
     } catch (err) {

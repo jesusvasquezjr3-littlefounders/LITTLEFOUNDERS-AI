@@ -27,8 +27,22 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      # scripts/ops-heartbeat.sh (H.4) lives in the repository.
+      # H.5 (Appendix O 1.2): the dump is encrypted on the runner before it is
+      # stored anywhere, with the tested OD-9 backup tool (AES-256-GCM, a
+      # manifest with the key fingerprint, the plaintext deleted). The full
+      # checkout also carries scripts/ops-heartbeat.sh (H.4).
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Write backup encryption key
+        run: |
+          set -euo pipefail
+          printf '%s' "${{ secrets.BACKUP_ENCRYPTION_KEY }}" > "$RUNNER_TEMP/backup.key"
+          chmod 600 "$RUNNER_TEMP/backup.key"
+          # No key, no backup: an unencrypted dump is never stored.
+          test -s "$RUNNER_TEMP/backup.key"
 
       - name: Install Railway CLI
         run: npm i -g @railway/cli@5.43.1
@@ -66,18 +80,33 @@ jobs:
           # Fail loudly on an empty/truncated dump rather than uploading garbage.
           test -s "$FILE"
 
-          cat "$FILE" | railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
-            sh -c "cat > /data/backups/$FILE"
+          # Encrypt before the dump leaves the runner; the tool deletes the
+          # plaintext. Fail on an empty ciphertext or a surviving plaintext.
+          node database/migration-od9/backup-crypto.mjs encrypt --in "$FILE" --out "$FILE.lfbk" --key-file "$RUNNER_TEMP/backup.key"
+          test -s "$FILE.lfbk"
+          test -s "$FILE.lfbk.manifest.json"
+          test ! -e "$FILE"
+
+          for PART in "$FILE.lfbk" "$FILE.lfbk.manifest.json"; do
+            cat "$PART" | railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
+              sh -c "cat > /data/backups/$PART"
+          done
 
           railway ssh --service db -i ~/.ssh/railway_backup_key -- rm -f /tmp/backup.dump
 
-          echo "Backed up $(wc -c < "$FILE") bytes to /data/backups/$FILE on filebase"
-          echo "bytes=$(wc -c < "$FILE" | tr -d ' ')" >> "$GITHUB_OUTPUT"
+          echo "Backed up $(wc -c < "$FILE.lfbk") encrypted bytes to /data/backups/$FILE.lfbk on filebase"
+          echo "bytes=$(wc -c < "$FILE.lfbk" | tr -d ' ')" >> "$GITHUB_OUTPUT"
 
       - name: Prune backups older than 30 days
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
+          # Encrypted backups and their manifests; the last line ages out the
+          # plaintext dumps written before H.5 was closed.
+          railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
+            find /data/backups -name 'vault-*.dump.lfbk' -mtime +30 -delete
+          railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
+            find /data/backups -name 'vault-*.dump.lfbk.manifest.json' -mtime +30 -delete
           railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
             find /data/backups -name 'vault-*.dump' -mtime +30 -delete
 
@@ -95,3 +124,7 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: bash scripts/ops-heartbeat.sh vault_backup false
+
+      - name: Remove the backup key and any local dump
+        if: always()
+        run: rm -f "$RUNNER_TEMP/backup.key" ./*.dump ./*.dump.lfbk ./*.dump.lfbk.manifest.json

@@ -14,6 +14,7 @@ import {
   type SocialTier,
 } from '../services/socialTier.js';
 import { Router } from 'express';
+import { noteSocialProtectionEvent } from '../services/socialProtection.js';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
@@ -161,7 +162,11 @@ async function connectionMode(viewerId: string, subjectId: string, viewerTier: S
  */
 async function tutorVerdict(viewerId: string, subjectId: string): Promise<boolean> {
   if (!(await hasRole(subjectId, 'parent'))) return false;
-  return tutorBadgeVisible(viewerId, subjectId);
+  const shown = await tutorBadgeVisible(viewerId, subjectId);
+  // Appendix J (E.5, Tutor-Badge Cross-Population Visibility): the database
+  // counts every badge shown to someone else, and whether the two are related.
+  if (shown && viewerId !== subjectId) noteSocialProtectionEvent('tutor_badge_shown', viewerId, subjectId);
+  return shown;
 }
 
 /** The fields a minor may not set to something that locates them off-platform (E.13). */
@@ -383,30 +388,48 @@ export function publicProfilesRouter(): Router {
 
   interface Resolved { profile: FullProfileRow; access: Exclude<ProfileAccess, 'none'>; viewerTier: SocialTier; subjectTier: SocialTier }
 
+  /*
+   * Appendix J (E.1, Cross-Family Discovery Rate): every resolution of an
+   * existing profile is counted with its verdict and the surface that asked
+   * (a profile, a followers/following list, or an action on the account).
+   * The database stores the tier pair and whether the two are related, never
+   * who. A list only ever shows a full profile, so its card is a refusal.
+   */
+  type Surface = 'profile' | 'list' | 'action';
+  function noteResolution(surface: Surface, viewerId: string, subjectId: string, access: ProfileAccess | 'refused') {
+    if (viewerId === subjectId) return;
+    const outcome = access === 'full' ? 'full' : access === 'card' && surface !== 'list' ? 'card' : 'refused';
+    noteSocialProtectionEvent(`${surface}_${outcome}` as Parameters<typeof noteSocialProtectionEvent>[0], viewerId, subjectId);
+  }
+
   /**
    * Profile lookup with the E.1/E.8/E.13 access verdict. NOT_FOUND for "doesn't
    * exist", "blocked" and "not visible" alike — never leaks which. A private
    * teen resolves to 'card'; callers that need the whole profile require 'full'.
    */
-  async function resolveAccess(username: string, viewerId: string): Promise<Resolved | null> {
+  async function resolveAccess(username: string, viewerId: string, surface: Surface = 'action'): Promise<Resolved | null> {
     const profile = await resolve(username);
     if (!profile) return null;
-    if (profile.user_id !== viewerId && (await isBlockedEitherWay(viewerId, profile.user_id))) return null;
+    if (profile.user_id !== viewerId && (await isBlockedEitherWay(viewerId, profile.user_id))) {
+      noteResolution(surface, viewerId, profile.user_id, 'refused');
+      return null;
+    }
     const [viewerTier, subjectTier] = await Promise.all([readSocialTier(viewerId), readSocialTier(profile.user_id)]);
     if (viewerTier === null || subjectTier === null) return null;
     const access = await profileAccess(viewerId, profile.user_id,
       { username: profile.username, displayName: profile.display_name }, { viewer: viewerTier, subject: subjectTier });
+    noteResolution(surface, viewerId, profile.user_id, access);
     return access === 'none' ? null : { profile, access, viewerTier, subjectTier };
   }
 
   async function resolveVisible(username: string, viewerId: string): Promise<FullProfileRow | null> {
-    const resolved = await resolveAccess(username, viewerId);
+    const resolved = await resolveAccess(username, viewerId, 'list');
     return resolved?.access === 'full' ? resolved.profile : null;
   }
 
   router.get('/:username', async (req, res) => {
     const user = authedUser(res);
-    const resolved = await resolveAccess(req.params.username.toLowerCase(), user.id);
+    const resolved = await resolveAccess(req.params.username.toLowerCase(), user.id, 'profile');
     if (!resolved) return fail(res, 404, 'NOT_FOUND', 'No such profile');
     const { profile, access, viewerTier, subjectTier } = resolved;
     const [avatars, connection] = await Promise.all([
@@ -505,8 +528,16 @@ export function publicProfilesRouter(): Router {
     if (!resolved) return fail(res, 404, 'NOT_FOUND', 'No such profile');
     const { profile, viewerTier, subjectTier } = resolved;
     if (profile.user_id === user.id) return fail(res, 400, 'VALIDATION_ERROR', 'You cannot follow yourself');
-    if (subjectTier === 'guardian') return fail(res, 403, 'GUARDIAN_APPROVAL_REQUIRED', 'A guardian must approve this connection');
-    if (subjectTier === 'teen') return fail(res, 403, 'SUBJECT_CONSENT_REQUIRED', 'This account decides who connects');
+    // Appendix J (E.1, Unauthorized Connection Attempt Rate): every attempt and each refusal.
+    noteSocialProtectionEvent('follow_attempt', user.id, profile.user_id);
+    if (subjectTier === 'guardian') {
+      noteSocialProtectionEvent('follow_refused_guardian', user.id, profile.user_id);
+      return fail(res, 403, 'GUARDIAN_APPROVAL_REQUIRED', 'A guardian must approve this connection');
+    }
+    if (subjectTier === 'teen') {
+      noteSocialProtectionEvent('follow_refused_teen', user.id, profile.user_id);
+      return fail(res, 403, 'SUBJECT_CONSENT_REQUIRED', 'This account decides who connects');
+    }
     const mode = await connectionMode(user.id, profile.user_id, viewerTier, subjectTier);
     if (mode === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not check connection eligibility');
     if (mode === 'managed') return fail(res, 403, 'GUARDIAN_MANAGED_CONNECTIONS', 'A Tutor manages this account\'s connections');
@@ -527,11 +558,15 @@ export function publicProfilesRouter(): Router {
   router.delete('/:username/follow', async (req, res) => {
     const user = authedUser(res);
     const profile = await resolve(req.params.username.toLowerCase());
-    if (!profile || !(await isFollowing(user.id, profile.user_id)
+    const wasFollowing = profile ? await isFollowing(user.id, profile.user_id) : false;
+    if (!profile || !(wasFollowing
       || await hasOwnOpenSocialRequest(user.id, profile.user_id)
       || await hasPendingTeenRequest(user.id, profile.user_id) === true)) return fail(res, 404, 'NOT_FOUND', 'No such profile');
     const done = await deleteFollow(user.accessToken, user.id, profile.user_id);
     if (!done) return fail(res, 502, 'INTERNAL', 'Could not unfollow');
+    // Appendix J (E.2 audit completeness): a real unfollow (not a withdrawn
+    // request), reconciled with its audit row.
+    if (wasFollowing) noteSocialProtectionEvent('unfollow', user.id, profile.user_id);
     return ok(res, { following: false });
   });
 
@@ -555,6 +590,7 @@ export function publicProfilesRouter(): Router {
     if (!profile || !await hasOwnBlock(user.accessToken, user.id, profile.user_id)) return fail(res, 404, 'NOT_FOUND', 'No such profile');
     const done = await unblockUser(user.accessToken, user.id, profile.user_id);
     if (!done) return fail(res, 502, 'INTERNAL', 'Could not unblock this account');
+    noteSocialProtectionEvent('unblock', user.id, profile.user_id);
     return ok(res, { blocked: false });
   });
 

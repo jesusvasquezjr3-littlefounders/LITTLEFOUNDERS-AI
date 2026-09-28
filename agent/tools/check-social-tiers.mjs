@@ -33,7 +33,19 @@ import { fileURLToPath } from 'node:url';
  *      function consults only the eligibility-checked reader; Core's teen case
  *      asks it only after the E.13 flag check and keeps 'card' as the default;
  *      the opt-in route takes one literal boolean; and the policy records it.
+ *   7. Appendix J E.1-E.5 (DoD 2.1(3)): the nine metrics of
+ *      social_protection_metrics stay answered end to end. The latest SQL
+ *      definition answers every key, Core validates every key and serves the
+ *      route, the staff programme reads every group, and Core still records
+ *      the events only it sees (follow refusals, the Tutor badge shown, the
+ *      Family social panel view).
  */
+
+/** The nine Appendix J Part 1.1-1.2 metrics for E.1-E.5. Dropping one fails social:check. */
+export const SOCIAL_PROTECTION_METRICS = [
+  'discovery', 'unauthorizedConnections', 'approvalLatency', 'reports', 'patternEscalation',
+  'ageBoundary', 'tutorBadge', 'familySocialPanel', 'auditCompleteness',
+];
 
 function read(root, path) {
   return readFileSync(resolve(root, path), 'utf8');
@@ -95,7 +107,7 @@ export function checkSocialTiers(root) {
   if (!/readSocialTier\(/.test(visibility) || !/case 'teen':[\s\S]*return 'card';/.test(visibility)) failures.push("backend/src/services/socialVisibility.ts: visibility must ask the database's tier and keep a teen private ('card') by default");
   if (!/requestTeenConnection\(user\.id, profile\.user_id\)/.test(route)) failures.push('backend/src/routes/profile.ts: a teen request must bind the session requester and the resolved teen');
   if (!/decideTeenConnection\(id\.data, authedUser\(res\)\.id,/.test(route)) failures.push("backend/src/routes/profile.ts: the teen's decision must always be the session's own");
-  if (!/subjectTier === 'teen'\) return fail\(res, 403, 'SUBJECT_CONSENT_REQUIRED'/.test(route)) failures.push('backend/src/routes/profile.ts: a direct follow into a teen must be refused');
+  if (!/subjectTier === 'teen'\)\s*(?:\{[^}]{0,240}?)?return fail\(res, 403, 'SUBJECT_CONSENT_REQUIRED'/.test(route)) failures.push('backend/src/routes/profile.ts: a direct follow into a teen must be refused');
 
   // 4. E.13 parity and guard.
   const flagsSql = latestDefinition(root, 'profile_field_flags');
@@ -143,6 +155,27 @@ export function checkSocialTiers(root) {
   const teenCase = /case 'teen':([\s\S]*?)return 'card';/.exec(visibility)?.[1] ?? '';
   if (/isTeenProfileDiscoverable/.test(visibility) && teenCase.indexOf('isFlagged') > teenCase.indexOf('isTeenProfileDiscoverable')) failures.push('backend/src/services/socialVisibility.ts: the discoverable check must come after the E.13 flag check (S-03)');
   if (!/router\.put\('\/discoverable'[\s\S]*?z\.object\(\{ discoverable: z\.boolean\(\) \}\)\.strict\(\)/.test(route)) failures.push('backend/src/routes/profile.ts: the discoverable opt-in must take one literal boolean (S-03)');
+
+  // 7. Appendix J E.1-E.5: the nine metrics, SQL to screen.
+  const metricsSql = latestDefinition(root, 'social_protection_metrics');
+  const protection = (() => { try { return read(root, 'backend/src/services/socialProtection.ts'); } catch { return ''; } })();
+  const admin = (() => { try { return read(root, 'backend/src/routes/admin.ts'); } catch { return ''; } })();
+  const programme = (() => { try { return read(root, 'frontend/src/rebuild/staff/console/programmeApi.ts'); } catch { return ''; } })();
+  const family = (() => { try { return read(root, 'backend/src/routes/family.ts'); } catch { return ''; } })();
+  if (!metricsSql) failures.push('database/migrations: public.social_protection_metrics is not defined (Appendix J E.1-E.5)');
+  if (!latestDefinition(root, 'record_social_protection_event')) failures.push('database/migrations: public.record_social_protection_event is not defined (Appendix J E.1-E.5)');
+  const coreKeys = /SOCIAL_PROTECTION_METRIC_KEYS = \[([\s\S]*?)\]/.exec(protection)?.[1] ?? '';
+  for (const key of SOCIAL_PROTECTION_METRICS) {
+    if (metricsSql && !metricsSql.body.includes(`'${key}', `)) failures.push(`${metricsSql.file}: social_protection_metrics no longer answers ${key} (Appendix J)`);
+    if (!coreKeys.includes(`'${key}'`) || !protection.includes(`  ${key}: z.object(`)) failures.push(`backend/src/services/socialProtection.ts: Core no longer validates the ${key} metric (Appendix J)`);
+    if (!programme.includes(`['${key}', `)) failures.push(`frontend/src/rebuild/staff/console/programmeApi.ts: the staff programme no longer reads the ${key} metric (Appendix J)`);
+  }
+  if (!/router\.get\('\/analytics\/social-protection'/.test(admin)) failures.push('backend/src/routes/admin.ts: GET /analytics/social-protection is not served (Appendix J E.1-E.5)');
+  for (const event of ['follow_refused_guardian', 'follow_refused_teen', 'tutor_badge_shown']) {
+    if (!route.includes(`noteSocialProtectionEvent('${event}'`)) failures.push(`backend/src/routes/profile.ts: Core no longer records ${event} (Appendix J)`);
+  }
+  if (!/noteResolution\(surface, viewerId, profile\.user_id, access\)/.test(route)) failures.push('backend/src/routes/profile.ts: profile resolutions are no longer recorded (Appendix J E.1 discovery)');
+  if (!family.includes("noteSocialProtectionEvent('family_social_panel_view'")) failures.push('backend/src/routes/family.ts: Family social panel views are no longer recorded (Appendix J E.2)');
 
   // 5. The written policy.
   let policy = '';

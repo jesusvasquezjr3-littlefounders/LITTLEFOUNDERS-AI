@@ -172,10 +172,14 @@ test('L-04: a looser eligibility, a bigger group, a free-text column, a loose bo
   const tables = named('_teen_cooperative_goals.sql');
   const actions = named('_teen_cooperative_goal_actions.sql');
   const sweep = named('_cooperative_goals_retention.sql');
-  expectFailure([[tables, "WHEN 'teen' THEN true", "WHEN 'adult' THEN true"]], /coop_goal_eligible must admit only/);
+  // A function a later migration redefines (OD-9 4.2 redefines coop_goal_eligible
+  // and create_coop_goal) is mutated in its latest definition, the one the gate reads.
+  const latest = (fn) => 'database/migrations/' + readdirSync(join(root, 'database/migrations')).filter((f) => f.endsWith('.sql')).sort()
+    .filter((f) => readFileSync(join(root, 'database/migrations', f), 'utf8').includes(`FUNCTION public.${fn}(`)).at(-1);
+  expectFailure([[latest('coop_goal_eligible'), "WHEN 'teen' THEN true", "WHEN 'adult' THEN true"]], /coop_goal_eligible must admit only/);
   expectFailure([[tables, "interval '13 years'", "interval '10 years'"]], /coop_goal_child_teen/);
   expectFailure([[tables, 'AND public.social_edge_consented(p_from, p_to)', '']], /coop_goal_edge/);
-  expectFailure([[actions, 'cardinality(p_invitees) NOT BETWEEN 1 AND 4', 'cardinality(p_invitees) NOT BETWEEN 1 AND 9']], /create_coop_goal must cap/);
+  expectFailure([[latest('create_coop_goal'), 'cardinality(p_invitees) NOT BETWEEN 1 AND 4', 'cardinality(p_invitees) NOT BETWEEN 1 AND 9']], /create_coop_goal must cap/);
   expectFailure([[actions, "'members', (SELECT jsonb_agg(x.user_id", "'rank', 1, 'members', (SELECT jsonb_agg(x.user_id"]], /group total only/);
   expectFailure([[tables, '    closed_at     timestamptz,\n', '    title         text,\n    closed_at     timestamptz,\n']], /free-text column \(title\)/);
   expectFailure([['backend/src/routes/coopGoals.ts', 'const InviteBody = z.object({ username: USERNAME }).strict();', 'const InviteBody = z.object({ username: USERNAME, note: z.string() });']], /bodies must stay strict/);

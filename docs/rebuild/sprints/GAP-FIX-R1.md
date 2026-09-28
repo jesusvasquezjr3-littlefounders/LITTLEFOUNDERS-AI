@@ -321,3 +321,101 @@ Merged into `codex/spec-migration-s02` after F1-staff-ops.
   frontend unit suite, spec:check, secrets:check, the i18n gate and the fast
   database gates. The onboarding@mentor* rebuild audit and the live GoTrue
   kid-token proof are still open, as listed above.
+
+## F1-data-platform
+
+**Branch:** `codex/spec-fix1dataplat`, based on `d0c9a0f7`. Migrations were numbered `0193`-`0198` in this worktree; the orchestrator renumbered them to `0199`-`0204` at merge (the table below uses the merged names).
+
+Nine audited gaps, each verified in the code before it was fixed. All nine were real.
+
+### What was built
+
+| # | SPEC clause | What | Where |
+|---|---|---|---|
+| 1 | A.5 (field removed, the alternate remedy); Appendix M 1.2 (retired into a Schema Field Utilization check) and 1.4 | `parent_verifications.document_type` stamped `'national-id'` on every new verification although nothing ever validated a document type. Expand step: no default, nullable, NULL on every row. Contract step: the column is dropped, after the Core release that no longer declares it. Core's `ParentVerificationInsert` and the generated types drop the field. A new `schema-fields:check` (in `spec:check`) asserts a retired field stays dropped in the chain, the types and every service source. | `database/migrations/0199_parent_verification_document_type_retire.sql`, `0200_drop_parent_verification_document_type.sql` (contract); `backend/src/services/supabaseRest.ts`; `database/types/database.ts`; `agent/tools/check-schema-fields.mjs` (+ test) |
+| 2 | Appendix J Part 1.1-1.2 and DoD 2.1(3); E.1-E.5 | The nine E.1-E.5 metrics are instrumented. `social_protection_counters` holds daily counts by event, tier pair and relation, never an identifier. Core records the events only it sees through `record_social_protection_event` (every profile, list and action resolution with its verdict; follow attempts and the `GUARDIAN_APPROVAL_REQUIRED` / `SUBJECT_CONSENT_REQUIRED` refusals; the Tutor badge shown; the Family social panel view; unfollow and unblock). Triggers count every change of a set birth date or age declaration with its path (reviewed function, Core's guardian path, other). `social_protection_metrics(days)` returns discovery, unauthorized connections, approval latency p50/p95, reports and resolution time, pattern escalation (subjects meeting the report_escalation rule vs cases staff received), age boundary, Tutor badge, Family panel views and audit completeness (follows, blocks and reports reconciled with their audit rows, unfollows and unblocks with Core's raw count). `GET /admin/analytics/social-protection` (view_analytics, strict `days` 1-366, 502 on a malformed answer) adds the Appendix J verdicts. The staff programme shows three cards next to the social-safety ones. `social:check` fails if any of the nine metrics is dropped from the SQL, Core or the screen, or if Core stops recording. | `database/migrations/0204_social_protection_metrics.sql`; `backend/src/services/socialProtection.ts`, `backend/src/routes/admin.ts`, `profile.ts`, `family.ts`; `frontend/src/rebuild/staff/console/programmeApi.ts`, `staffProgrammeFixtures.json`, `rebuild-staff.json` (3 locales); `agent/tools/check-social-tiers.mjs` section 7 (+ tests) |
+| 3 | Appendix J 1.3, DoD 2.1(2), 2.2 E.1(a-b), Stage 2 | `social:db-verify` (root and `database/`) runs every `verify-social-*.py` plus the teen discoverable, cooperative goals and account-erasure verifiers against the full chain: a throwaway cluster (initdb from `LF_PG_BIN`, `pg_config`, `/usr/lib/postgresql/*` or the portable binaries), or the running cluster named by `LF_PG_*`. Exit 1 on any failure; a clean SKIP only when no PostgreSQL or Python exists. The four older verifiers now honour `LF_PG_PSQL/PORT/USER/DATA`. Called from `release-readiness.sh`; a `social-db-verify` job in `database-ci.yml` (paths-filtered on `database/**`) runs it on a PostgreSQL 17 service container. | `database/scripts/social-db-verify.mjs` (+ test in `database` npm test), `package.json`, `database/package.json`, `agent/tools/release-readiness.sh`, `.github/workflows/database-ci.yml`, README Mandatory testing table |
+| 4 | H.3; Appendix O 1.3 | The email channel sent `{to, template, data}`, which the email-server's `SendBody` rejects (400). It now sends `{to, subject: '[LittleFounders alert] <name>', text, templateType: 'alert_notification'}` (the first option; no template was added to the email-server). `alert_history` gains `delivery_status` (delivered, failed, unconfigured), `delivery_channel`, `delivered_at`, `delivery_error`, written after each attempt and returned by the history read. A shared fixture, byte-identical in both packages, is built by dataintel and POSTed through the email-server's real route (202). | `dataintel/src/services/alertEmail.ts`, `alerts.ts`; `dataintel/src/__tests__/alert-delivery.test.ts` + `fixtures/alert-email-body.json`; `email-server/src/__tests__/send.test.ts` + fixture |
+| 5 | H.5; Appendix O 1.2 | The daily Vault and Pulse backups are encrypted on the runner with `backup-crypto.mjs` (key: the `BACKUP_ENCRYPTION_KEY` secret) before upload; only the `.lfbk` file and its manifest are stored; a missing key, an empty ciphertext or a surviving plaintext fails the job; the prune covers `*.dump.lfbk`, the manifests and the old plaintext dumps; the key is removed on every outcome. A lint refuses a backup workflow that uploads anything without the `.lfbk` suffix. | `.github/workflows/vault-backup.yml`, `pulse-backup.yml`; `agent/tools/backup-workflows.test.mjs`; `docs/operations/BACKUP-RESTORE-ROLLBACK.md` §1, `GOVERNANCE.md` §5 |
+| 6 | G.2; Appendix N 1.2, 2.3; owner queue F-09 (option a) | For the API roles, a content change to a published lesson's `document`, or deleting it, is refused (42501). Echo's narration stamp is the one allowlisted diff (the documents compared with every `segments[].audio_segment_id` removed); the `audio` manifest stays writable. The database owner's change passes and is logged (`content.live_document_patched`) for the retroactive check. `images:backfill` reads each lesson's status, never illustrates or writes a published lesson, and reports each one it skipped (`skippedPublished`). | `database/migrations/0201_live_lesson_document_guard.sql`; `coursegen/src/scripts/backfill-images.ts`; `coursegen/src/__tests__/backfillImages.test.ts`, `liveDocumentGuard.test.ts` (static pins, Echo-stamp parity) |
+| 7 | H.7; OD-23; OD-26 | dataintel treats an experiment with no bounds as adults only (18+); unknown ages are never eligible; a declared bound can raise the floor, never lower it. `eligibility_policy` is `adults_only` (default) or `od26_c17`, the only exception: tutor surface, never under 10. The create schema is strict and refuses every other population. `GOVERNANCE.md` §6 states OD-23, the OD-26 bands and that a new exception needs an owner decision. | `dataintel/src/services/experiments.ts`, `routes/queries.ts`; `dataintel/src/__tests__/experiment-age-eligibility.test.ts`, `experiments-stats.test.ts`; `docs/operations/GOVERNANCE.md` §6; comment in `backend/src/services/learningIntel.ts` |
+| 8 | OD-9 §4.2; S10.3; B.23 / OD-27 (1) | `sharing.cooperative_goals` is registered (sharing surface, Tutor-only). `coop_goal_eligible` also requires `data_practice_applies`, so every read and write path applies it; create and accept refuse the acting account by name (`DATA_PRACTICE_CONSENT_REQUIRED`); an invitee it does not apply to is simply unavailable. The verified Tutor's opt-in is recorded as the practice consent (audited) and the opt-out revokes it. Core names the refusal (403) only on a clear no from the database. The practice appears in the Family Hub "Shared with others" group and in My data practices (3 locales). The data-practice pin now fails when a migration at or after the registry creates a table tying two accounts without a registered, enforced practice (or a written exemption). | `database/migrations/0202_cooperative_goals_data_practice.sql`; `backend/src/services/coopGoals.ts`, `dataPractices.ts`, `routes/coopGoals.ts`; `backend/src/__tests__/coopGoals.test.ts`, `dataPractices.test.ts`; `frontend/src/rebuild/family/dataPracticesApi.ts`, `dataPractices.json` (3 locales); `database/migration-od9/fixtures/generate-legacy-fixture.mjs`, `od9.test.mjs` |
+| 9 | OD-24; OD-9 §4.1; toolkit README step 7; CUTOVER-RUNBOOK "T plus 7 days" | `od9 retire-catalog [--apply]` (`sql/60_retire_catalog.sql`): refused without the `before` inventory or a recorded `kc-credit --apply`; the dry run lists every legacy row to archive (rows that existed at the before inventory) and every learner whose complete topic still lacks its KC credit; apply refuses while one is missing, archives only, idempotently, then snapshots `pre_retire`/`retired` inventories around it and compares them (exit 1 on any loss). A BEFORE DELETE trigger refuses deleting a lesson, topic or course with learner progress, placement or badge rows, for every role. The proof and the rehearsal use the command instead of raw SQL. | `database/migration-od9/sql/60_retire_catalog.sql`, `00_schema.sql`, `od9.mjs`, `prove-od9-postgres.mjs`, `rehearse-cutover.mjs`, `od9.test.mjs`, README; `database/migrations/0203_legacy_catalog_delete_guard.sql`; `docs/operations/CUTOVER-RUNBOOK.md` step 10 |
+
+### Verification
+
+- **Native PostgreSQL 17.6** (the lane's owned cluster, port 15720, full 198-migration chain each time): `verify-data-platform-postgres.py` (new: document_type absent and refused; the live document guard with the stamp allowlist, the review lesson and the logged owner change; the delete guard for owner and service role), `verify-social-protection-postgres.py` (new: counters hold no identifier, browser and service-role access, window validation, discovery, badge, panel, age-boundary buckets, audit completeness with a negative control, pattern escalation with a negative control, latency), `verify-coop-goals-postgres.py` (11 checks, the OD-9 section new). The first `social:db-verify` run on a throwaway cluster passed 9 of 13 and exposed that the older verifiers assumed pre-existing API roles; the runner now creates them first. The second run (14 verifiers, 5 at a time, alongside the OD-9 proof) passed 13 of 14; the block-race verifier lost its connection 7 seconds in (client ephemeral-port exhaustion: one psql connection per statement, many in parallel) and passed alone (292 s). The runner now defaults to 2 at a time and reruns a verifier once, alone, when it failed only on the connection. `prove-od9-postgres.mjs` passed 15 of 15, including the new retire-catalog and delete-guard checks and the 15-practice consent registry.
+- **Unit and contract tests:** backend `socialProtection`, `coopGoals`, `dataPractices`; dataintel `alert-delivery`, `experiment-age-eligibility`, `experiments-stats`, `intel`, `connection-recovery`; email-server `send`; coursegen `backfillImages`, `liveDocumentGuard`; frontend `StaffProgramme`, `DataPractices`; database `npm test` (migration numbering, RLS, phase headers, od9, social-db-verify); root `check-schema-fields`, `backup-workflows`, `check-social-tiers`. Type-check and lint in every touched service; `spec:check`, `secrets:check`, i18n gate.
+
+### Owner questions (conservative default implemented)
+
+1. **Self-registered migrated teens and goals together.** `sharing.cooperative_goals` is Tutor-only (`teen_self_consent = false`, like `sharing.social_connections`), so a self-registered 13-17 account the OD-9 step marks as a migrated child cannot take part until a verified Tutor consents. Should a teen with no Tutor be able to consent to this one practice themselves (H.1's self-managed model)?
+2. **Teen discoverable profile (0184).** Not yet registered as a data practice; the new two-account pin records it as pending the owner's answer to the open question on it.
+3. **Retire-catalog comparison baseline.** The task named "compare against before". At T plus 7 days ordinary activity has changed promised records since the before inventory, so the command compares a `pre_retire` snapshot taken immediately before archiving with the `retired` one (the proof also compares before with after, as before). Confirm this is the intended check.
+
+### Remaining
+
+- Owner steps: create `BACKUP_ENCRYPTION_KEY` (keygen, escrow with the two custodians) and push the backup workflows; apply `0200` (contract; `0194` in the lane) only after the Core release of this lane; a real production restore rehearsal of an encrypted daily backup.
+- Appendix J targets need a release cycle of real data (E.2's 100% audit completeness for one cycle; E.1's zero discovery). Family-Panel adoption is reported as views over Tutors with a linked child: the counters store no ids, so distinct viewers are not measured.
+- `coursegen/src/scripts/apply-image-map.ts` also patches documents; on a published lesson the guard now refuses it (by design). A documented demote-backfill-release flow for live lessons is the Forge phase's.
+- The CI `social-db-verify` job has not run on GitHub yet (nothing is pushed).
+
+### F1-data-platform-finish (lane finish)
+
+- **Sync.** `codex/spec-migration-s02` was already an ancestor of the lane (base `d0c9a0f7`); the merge was a no-op, no conflicts.
+- **Adversarial pass over the nine gaps.** Each was re-read against its clause: every new read or write is enforced at the server (the metrics route sits behind the `/analytics` `view_analytics` mount and its test refuses no session, a Tutor, a child, a teen, an adult and staff without the grant; the cooperative-goals practice is enforced inside `coop_goal_eligible`, so every path applies it; the live-document and catalog-delete guards are database triggers; dataintel's eligibility refuses every population but adults and the OD-26 exception in the strict create schema). The only rebuilt UI (three staff programme cards, one data-practice row) is data-driven through the existing rebuilt console and Family Hub, with copy in EN, es-MX and pt-BR. Nothing mandated was found missing.
+- **Two test fixes found by the full suites.** (a) Lane regression: `frontend/src/rebuild/staff/console/usageShared.test.ts` read the last `check (event in (...))` in any migration as the `learning_events` CHECK, so the lane's `social_protection_counters_event_check` (0198 in the lane, now 0204) was taken for it. The parser now counts a match only when the nearest table or constraint named before it is `learning_events` / `learning_events_event_check`. (b) Clock bomb, not the lane's: `backend/src/__tests__/analytics.test.ts` "does not invent years of leading zeros for all-time" asserted fewer than 40 filled days from a fixed 2026-08-20 point while the window ends today, so it failed on every branch from 28 September 2026. The bound is now relative to the clock (days since the first point, and under a year), which still refuses a fill from the 2020 sentinel.
+- **Final verification.** Type-check and lint green in backend, coursegen, dataintel, email-server and frontend. Full unit suites: email-server 7/7 files, dataintel 17/17, coursegen 56/56, backend 125 files green plus 1 skipped after fix (b) (the one red, rerun alone, was the clock bomb); frontend 246 of 248 files green, then `usageShared` green after fix (a). `assetGate.test.ts` timed out in every case, twice (once in the suite, once alone), with the machine at 100% CPU from other lanes; the gate it drives, `node scripts/check-rebuild-assets.mjs`, passes on this tree in 9 s, and the lane changes no asset, manifest or rebuilt glyph. The orchestrator's merge run should confirm it on a quiet machine. `database` `npm test`: `check-migrations`, `check-migration-phase`, `check-family-lifecycle` and the 48 node tests green; `railway-migrate.test.mjs` (fake transport, about 18 minutes alone) was still running after 70 minutes beside other lanes' copies; the lane does not change the transport. Root `check-schema-fields`, `backup-workflows`, `check-social-tiers` tests (31/31), `spec:check` and `secrets:check` green. The PostgreSQL evidence is the F1 section above.
+
+**Lane summary.** All nine audited data-platform gaps are implemented and locally verified (migrations `0193`-`0198` in this worktree, renumbered to `0199`-`0204` at merge). None is accepted, released or deployed. Open: the owner steps and the three owner questions above, Appendix J targets that need a release cycle of real data, the first GitHub run of the `social-db-verify` job, a `db:types` regeneration when the shared stack is available (the types were hand-edited to drop `document_type`), and the Forge phase's demote-backfill-release flow for live lessons.
+
+### Merge integration (F1-data-platform)
+
+- Migrations renumbered by the orchestrator: the lane's `0193`-`0198` collided
+  with F1-staff-ops' `0193`-`0196` and F1-identity-site's `0197`-`0198`, so they
+  are now `0199_parent_verification_document_type_retire`,
+  `0200_drop_parent_verification_document_type` (contract),
+  `0201_live_lesson_document_guard`, `0202_cooperative_goals_data_practice`,
+  `0203_legacy_catalog_delete_guard` and `0204_social_protection_metrics`
+  (suffix references rewritten; all under 23,000 bytes, largest `0204` at
+  21,687). No other lane redefines a function or trigger these create or
+  replace; the coop-goal functions were last defined in `0189`/`0190`.
+- Cross-lane defect fixed: F1-staff-ops' `verify-staff-ops-postgres.py`
+  asserted that `identity_metrics` still reports `parent_verifications.document_type`
+  as declared. On the merged chain `0200` drops the column, so the verifier
+  now expects `{declared: false, consumed: false}` (the Schema Field
+  Utilization check passes once the contract step is applied; between `0199`
+  and `0200` it reports the field as declared and unconsumed, which is the
+  truthful state).
+- Cross-lane defect fixed (F1-staff-ops against F1-identity-site, already on
+  the integration branch): `verify-staff-ops-postgres.py` wrote a pending
+  `email_change` on a child after giving it the kid role, which
+  `guard_kid_email` (`0197`) now refuses. The fixture writes the legacy
+  pending address before the role, as it existed before the guard.
+- Lane regressions fixed: `check-social-governance.test.mjs` (L-04) mutated
+  `coop_goal_eligible` and `create_coop_goal` in `0189`/`0190`, but `0202`
+  redefines both, so the gate read the unmutated copy; the test now mutates
+  the latest definition. `backend/src/__tests__/dataPractices.test.ts`'s
+  two-account pin found F1-identity-site's `age_correction_requests` (the
+  account and the deciding staff member); it is exempted as a staff decision
+  record that shares nothing between accounts.
+- Cross-lane check: F1-identity-site's `decide_age_correction` (`0198`) is a
+  SECURITY DEFINER function, so an approved correction is counted by `0204`'s
+  age-boundary trigger as `age_change_function` (sanctioned), not `other`.
+- Conflicts resolved as unions: the backup workflows keep F1-staff-ops' H.4
+  heartbeat steps and the lane's H.5 encryption; the checkout is now a full
+  checkout (the lane's sparse checkout of `database/migration-od9` would have
+  dropped `scripts/ops-heartbeat.sh`), and the heartbeat's byte count is the
+  encrypted file's. `package.json` keeps `staff-constraints:check` and adds
+  `social:db-verify` and `schema-fields:check`; `spec:check` runs both
+  `check-staff-standing-constraints.mjs` and `check-schema-fields.mjs`.
+  `admin.ts` imports both the age-correction and social-protection services.
+  REQUIREMENTS rows A.5 and E.4 carry both lanes' evidence.
+- Checks on the merged tree: typecheck:all, lint:all, spec:check,
+  secrets:check, the i18n gate, tools:test (374/374 after the L-04 fix), the
+  backend, frontend (249/249 files), dataintel, email-server and coursegen
+  unit suites (coursegen's `contentGatesSources` timed out once under the
+  parallel load and passed alone), `database` npm test, and on a throwaway
+  native PostgreSQL 17.6 cluster with all 204 migrations:
+  `verify-data-platform`, `verify-social-protection`, `verify-coop-goals`,
+  `verify-staff-ops`, `verify-age-correction` and `verify-kid-email-guard`.

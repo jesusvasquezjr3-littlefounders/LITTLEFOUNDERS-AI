@@ -28,3 +28,39 @@ jobs:
       - name: secrets gate
         working-directory: .
         run: bash agent/tools/check-secrets.sh
+
+  # Appendix J 1.3 / DoD 2.1(2): a migration re-proves the social data-gateway
+  # gate. Every verify-social-*.py (plus teen discoverable, cooperative goals
+  # and account erasure) runs against the full chain on a PostgreSQL 17
+  # service container; each verifier creates and drops its own database.
+  social-db-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: social data-gateway verifiers
+        env:
+          LF_PG_PORT: '5432'
+          LF_PG_USER: postgres
+          LF_PG_PSQL: psql
+          LF_PG_DATA: /var/lib/postgresql/data
+          LF_PG_VERIFY_JOBS: '3'
+        run: node database/scripts/social-db-verify.mjs

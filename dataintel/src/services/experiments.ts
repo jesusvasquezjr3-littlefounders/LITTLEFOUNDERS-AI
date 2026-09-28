@@ -11,10 +11,12 @@ export interface Experiment {
   surface: string;
   target: string;
   segmentFilter?: Record<string, unknown>;
-  /** H.7: age eligibility bounds. NULL = unbounded on that side; a learner
-   * with an unknown age (null) never qualifies for a bounded experiment. */
+  /** H.7: declared age bounds. The eligibility policy sets the floor a bound
+   * can never go under; an unknown age never qualifies (OD-23). */
   minAge?: number | null;
   maxAge?: number | null;
+  /** H.7 / OD-23 / OD-26: 'adults_only' unless an owner decision opened it. */
+  eligibilityPolicy: ExperimentEligibilityPolicy;
   createdAt: string;
   startedAt?: string;
   concludedAt?: string;
@@ -34,6 +36,26 @@ export const ENGAGEMENT_VOLUME_METRICS: ReadonlySet<string> = new Set(['events',
 
 export function isEngagementVolumeMetric(metric: string): boolean {
   return ENGAGEMENT_VOLUME_METRICS.has(metric);
+}
+
+/**
+ * H.7 eligibility policies. OD-23 makes every experiment adults-only (18+)
+ * until Product and Legal decide otherwise; OD-26 opens exactly one, the C.17
+ * dialogue-calibration experiment (Mentor surface), to teens 13-17 with their
+ * own analytics opt-in and tweens 10-12 with guardian analytics consent, and
+ * keeps ages 6-9 out. Any other exception needs a new owner decision and a
+ * new value here. Core enforces the consent half at its boundary; the
+ * warehouse enforces the age floor for every assignment and exposure.
+ */
+export const EXPERIMENT_ELIGIBILITY_POLICIES = ['adults_only', 'od26_c17'] as const;
+export type ExperimentEligibilityPolicy = (typeof EXPERIMENT_ELIGIBILITY_POLICIES)[number];
+/** The youngest age each policy can ever admit, whatever the declared bounds. */
+export const POLICY_MIN_AGE: Record<ExperimentEligibilityPolicy, number> = { adults_only: 18, od26_c17: 10 };
+/** OD-26: the C.17 exception applies to the Mentor dialogue experiment only. */
+export const OD26_SURFACE = 'tutor';
+
+export function isEligibilityPolicy(value: unknown): value is ExperimentEligibilityPolicy {
+  return typeof value === 'string' && (EXPERIMENT_ELIGIBILITY_POLICIES as readonly string[]).includes(value);
 }
 
 export interface ExperimentResults {
@@ -64,6 +86,7 @@ type StoredExperiment = {
   segment_filter: string | null;
   min_age: number | null;
   max_age: number | null;
+  eligibility_policy?: string | null;
   created_at: string;
   started_at: string | null;
   concluded_at: string | null;
@@ -139,6 +162,9 @@ async function ensureExperimentSchema(): Promise<void> {
   // H.7: age eligibility bounds (NULL = unbounded on that side).
   await execute('ALTER TABLE experiments ADD COLUMN IF NOT EXISTS min_age INTEGER');
   await execute('ALTER TABLE experiments ADD COLUMN IF NOT EXISTS max_age INTEGER');
+  // OD-23/OD-26: the eligibility policy. NULL (a row from before the column)
+  // reads as adults_only; nothing ever widens an existing row.
+  await execute('ALTER TABLE experiments ADD COLUMN IF NOT EXISTS eligibility_policy TEXT');
 }
 
 function rowToExperiment(r: StoredExperiment): Experiment {
@@ -156,10 +182,16 @@ function rowToExperiment(r: StoredExperiment): Experiment {
       : undefined,
     minAge: r.min_age,
     maxAge: r.max_age,
+    eligibilityPolicy: storedPolicy(r.eligibility_policy),
     createdAt: r.created_at,
     startedAt: r.started_at ?? undefined,
     concludedAt: r.concluded_at ?? undefined,
   };
+}
+
+/** A stored policy that is missing or unknown is the OD-23 default. */
+function storedPolicy(value: string | null | undefined): ExperimentEligibilityPolicy {
+  return isEligibilityPolicy(value) ? value : 'adults_only';
 }
 
 function id(): string {
@@ -177,17 +209,18 @@ export async function createExperiment(
   variantB: string,
   surface = 'learn',
   target = 'default',
-  ageBounds: { minAge?: number | null; maxAge?: number | null } = {},
+  ageBounds: { minAge?: number | null; maxAge?: number | null; eligibilityPolicy?: ExperimentEligibilityPolicy } = {},
 ): Promise<Experiment | null> {
   try {
     await ensureExperimentSchema();
 
     const experimentId = id();
     const createdAt = now();
+    const eligibilityPolicy = ageBounds.eligibilityPolicy ?? 'adults_only';
 
     await execute(
-      `INSERT INTO experiments (id, name, status, metric, variant_a, variant_b, surface, target, min_age, max_age, created_at)
-       VALUES (?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO experiments (id, name, status, metric, variant_a, variant_b, surface, target, min_age, max_age, eligibility_policy, created_at)
+       VALUES (?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       experimentId,
       name,
       metric,
@@ -197,6 +230,7 @@ export async function createExperiment(
       target,
       ageBounds.minAge ?? null,
       ageBounds.maxAge ?? null,
+      eligibilityPolicy,
       createdAt,
     );
 
@@ -211,6 +245,7 @@ export async function createExperiment(
       target,
       minAge: ageBounds.minAge ?? null,
       maxAge: ageBounds.maxAge ?? null,
+      eligibilityPolicy,
       createdAt,
     };
   } catch (err) {
@@ -347,10 +382,12 @@ export async function getRuntimeAssignments(
     );
     const assignments: RuntimeAssignment[] = [];
     for (const experiment of experiments) {
-      // H.7: age eligibility is evaluated before any assignment exists. An
-      // age-bounded experiment never assigns (and never exposes) a learner
-      // whose age is unknown or outside its bounds.
-      if (!ageWithinBounds(age, experiment.min_age, experiment.max_age)) continue;
+      // H.7: age eligibility is evaluated before any assignment exists. No
+      // experiment assigns (or exposes) a learner whose age is unknown, under
+      // its policy's floor (OD-23: 18; OD-26 C.17: 10) or outside its bounds.
+      const policy = storedPolicy(experiment.eligibility_policy);
+      if (policy === 'od26_c17' && experiment.surface !== OD26_SURFACE) continue;
+      if (!ageWithinBounds(age, experiment.min_age, experiment.max_age, policy)) continue;
       const existing = await query<AssignmentRow>(
         'SELECT experiment_id, user_id, variant, assigned_at FROM experiment_assignments WHERE experiment_id = ? AND user_id = ?',
         experiment.id,
@@ -381,14 +418,20 @@ export async function getRuntimeAssignments(
 }
 
 /**
- * H.7: a learner qualifies for an experiment only when their age is known
- * and inside every declared bound. An unbounded experiment accepts unknown
- * ages (null); a bounded one never does — eligibility cannot be guessed.
+ * H.7 under OD-23/OD-26: a learner qualifies only when their age is known, at
+ * or above the policy's floor (a missing minAge is that floor; a declared one
+ * can raise it, never lower it) and inside every declared bound. Unknown ages
+ * are never eligible: eligibility cannot be guessed.
  */
-export function ageWithinBounds(age: number | null | undefined, minAge: number | null, maxAge: number | null): boolean {
-  if (minAge === null && maxAge === null) return true;
+export function ageWithinBounds(
+  age: number | null | undefined,
+  minAge: number | null,
+  maxAge: number | null,
+  policy: ExperimentEligibilityPolicy = 'adults_only',
+): boolean {
   if (age === null || age === undefined || !Number.isFinite(age)) return false;
-  if (minAge !== null && age < minAge) return false;
+  const floor = Math.max(minAge ?? POLICY_MIN_AGE[policy], POLICY_MIN_AGE[policy]);
+  if (age < floor) return false;
   if (maxAge !== null && age > maxAge) return false;
   return true;
 }

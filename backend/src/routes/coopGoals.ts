@@ -21,6 +21,7 @@ import {
   setCoopGuardianConsent,
   type CoopRefusal,
 } from '../services/coopGoals.js';
+import { readDataPracticeApplies } from '../services/dataPractices.js';
 import { findProfileByUsername, getSocialCards, submitSocialReport, SOCIAL_REPORT_CATEGORIES, SOCIAL_REPORT_NOTE_MAX, type ListedUser } from '../services/supabaseRest.js';
 
 /*
@@ -41,6 +42,8 @@ import { findProfileByUsername, getSocialCards, submitSocialReport, SOCIAL_REPOR
  *                                connection of every member, or does not exist
  *                                (one answer, so nothing about them leaks)
  *   409 COOP_GROUP_FULL / COOP_GOAL_LIMIT / COOP_ALREADY_ASKED
+ *   403 DATA_PRACTICE_CONSENT_REQUIRED  a migrated child (OD-9 4.2) whose Tutor
+ *                                has not consented to 'sharing.cooperative_goals'
  *   404 NOT_FOUND                not your goal, invitation or member
  *
  * No free text is accepted anywhere (E.10: there is no messaging); the only
@@ -79,6 +82,7 @@ function refuse(res: Response, refusal: CoopRefusal) {
     case 'already-asked': return fail(res, 409, 'COOP_ALREADY_ASKED', 'This person was already asked');
     case 'not-allowed': return fail(res, 403, 'COOP_NOT_ALLOWED', 'Only the person who started the goal can do this');
     case 'child-not-teen': return fail(res, 409, 'COOP_CHILD_NOT_TEEN', 'Goals together are for 13 to 17 year olds');
+    case 'practice-consent': return fail(res, 403, 'DATA_PRACTICE_CONSENT_REQUIRED', 'A Tutor needs to say yes to goals together first');
     case 'goal-not-found': case 'invitation-not-found': case 'member-not-found': case 'guardian-not-linked':
       return fail(res, 404, 'NOT_FOUND', 'Not found');
     default: return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not reach goals together');
@@ -99,11 +103,19 @@ async function accountOf(username: string): Promise<string | null | 'unavailable
   return rows[0]?.user_id ?? null;
 }
 
+/** The OD-9 4.2 data practice this surface is (database: cooperative_goals_data_practice). */
+const COOP_PRACTICE = 'sharing.cooperative_goals';
+
 async function requireEligible(res: Response, userId: string, isGuest: boolean): Promise<boolean> {
   if (isGuest) { refuse(res, 'not-eligible'); return false; }
   const eligible = await readCoopEligible(userId);
   if (eligible === null) { refuse(res, 'unavailable'); return false; }
-  if (!eligible) { refuse(res, 'not-eligible'); return false; }
+  if (!eligible) {
+    // OD-9 4.2: name the missing consent only on a clear no from the database.
+    const applies = await readDataPracticeApplies(userId, COOP_PRACTICE);
+    refuse(res, applies === false ? 'practice-consent' : 'not-eligible');
+    return false;
+  }
   return true;
 }
 
