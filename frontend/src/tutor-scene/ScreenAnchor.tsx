@@ -334,7 +334,7 @@ export interface AnchorOptions {
    * Measured on `/dev/tutor-lab` at 375x812 during an adaptation offer: the
    * two-shot stands the camera back far enough that the caption clamped to
    * exactly 12.0 px — smaller than the 13.7 px a world chip's label gets, and
-   * smaller than the 15 px `lf-action` the material guarantees any chrome
+   * smaller than the 15 px action size the material guarantees any chrome
    * caption — while the same tutor's question, one plate below it in the dock,
    * was 19 px. One speaker, two voices, and the primary one was the whisper.
    */

@@ -12,7 +12,7 @@ import { expectBudgetedGroups, expectFits, flatten, namespaceCopy } from './budg
 
 /** W2 app shells: the learner's navigation at the youngest budget, the staff console's at the adult one. */
 function appShellRole(path: string): CopyRole {
-  return ['navigation', 'tutorRole', 'staffRole'].includes(path) ? 'body' : 'action';
+  return ['navigation', 'tutorRole', 'staffRole', 'loading'].includes(path) ? 'body' : 'action';
 }
 /** W2 public site and sign-in shells (adult readers, the app budget: the stricter of the two). */
 function siteShellRole(path: string): CopyRole {

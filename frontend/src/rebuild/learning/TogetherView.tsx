@@ -27,7 +27,7 @@ import type { TogetherGoal, TogetherOutcome, TogetherPerson, TogetherState } fro
  *     removes someone or cancels an ask; anyone reports someone in the goal
  *     (E.3), and may leave in the same step.
  *
- * Presentation only: the host (routes/app/learn/TogetherRoute.tsx, or the
+ * Presentation only: the host (app-routes/TogetherRoute.tsx, or the
  * preview) owns transport. Core decides eligibility; a closed state says why
  * in general words and never names a rule about another person.
  */

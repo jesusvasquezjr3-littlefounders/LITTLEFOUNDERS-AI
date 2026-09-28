@@ -15,7 +15,7 @@ import { TeenMemoryReviewSetting } from './TeenMemoryReviewSetting';
 import { DispositionSetting } from './DispositionSetting';
 import { AccountDeletionSetting } from './AccountDeletionSetting';
 import { DiscoverableSetting, parseDiscoverable, type DiscoverableState } from './DiscoverableSetting';
-import { AgeRecordSetting } from './AgeRecordSetting';
+import { AgeRecordSetting } from '@/app-routes/AgeRecordSetting';
 
 /*
  * /profile/settings (P3): the data plane of the rebuilt Settings page.

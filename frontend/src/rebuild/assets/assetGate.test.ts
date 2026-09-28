@@ -44,11 +44,17 @@ const writeManifest = (dir: string, rows: Row[]) => writeFileSync(manifestPath(d
 // loop for the whole gate run, and vitest's worker RPC times out under load.
 // The OCR no-text check (OD-28 V-16) runs only where a case is about it: every
 // other case sets REBUILD_ASSET_OCR=off so the file stays fast under load.
-function run(dir: string, ...args: string[]) { return spawnGate(dir, args, 'off'); }
-function runWithOcr(dir: string, ...args: string[]) { return spawnGate(dir, args, 'on'); }
-function spawnGate(dir: string, args: string[], ocr: 'on' | 'off'): Promise<{ status: number | null; output: string }> {
+// The local draft override and the hosted-builder markers are cleared, so a case sees only the env it sets.
+const HOSTED = ['LF_LOCAL_DRAFT_ASSETS', 'CI', 'VERCEL', 'RAILWAY_ENVIRONMENT', 'NETLIFY'];
+function run(dir: string, ...args: string[]) { return spawnGate({}, dir, args, 'off'); }
+function runWithOcr(dir: string, ...args: string[]) { return spawnGate({}, dir, args, 'on'); }
+function runWith(extra: Record<string, string>, dir: string, ...args: string[]) { return spawnGate(extra, dir, args, 'off'); }
+function spawnGate(extra: Record<string, string>, dir: string, args: string[], ocr: 'on' | 'off'): Promise<{ status: number | null; output: string }> {
+  const env: NodeJS.ProcessEnv = { ...process.env, REBUILD_ASSET_ROOT: dir, REBUILD_ASSET_OCR: ocr };
+  for (const name of HOSTED) delete env[name];
+  Object.assign(env, extra);
   return new Promise((done, fail) => {
-    const child = spawn(process.execPath, [gate, ...args], { env: { ...process.env, REBUILD_ASSET_ROOT: dir, REBUILD_ASSET_OCR: ocr } });
+    const child = spawn(process.execPath, [gate, ...args], { env });
     let stdout = '';
     let stderr = '';
     child.stdout.setEncoding('utf8').on('data', (chunk: string) => { stdout += chunk; });
@@ -77,6 +83,35 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     expect(release.status).toBe(1);
     expect(release.output).toContain('Unapproved asset blocks the build');
     expect(release.output).toContain('Unapproved asset blocks the build (07 §6): /sounds/edu/not_yet.wav');
+  });
+
+  it('lets only a local build ship drafts (LF_LOCAL_DRAFT_ASSETS), never on CI or a hosting builder, never past another rule', async () => {
+    const dir = tree();
+    const local = await runWith({ LF_LOCAL_DRAFT_ASSETS: '1' }, dir, '--release');
+    expect(local.status).toBe(0);
+    expect(local.output).toContain('LOCAL DRAFT BUILD');
+    expect(local.output).not.toContain('Unapproved asset blocks the build');
+    // Without --release the flag changes nothing: the ordinary gate already allows drafts.
+    const plain = await runWith({ LF_LOCAL_DRAFT_ASSETS: '1' }, dir);
+    expect(plain.status).toBe(0);
+    expect(plain.output).not.toContain('LOCAL DRAFT BUILD');
+    // "0"/"false" are not the flag.
+    expect((await runWith({ LF_LOCAL_DRAFT_ASSETS: '0' }, dir, '--release')).status).toBe(1);
+    for (const hosted of ['CI', 'VERCEL']) {
+      const refused = await runWith({ LF_LOCAL_DRAFT_ASSETS: '1', [hosted]: hosted === 'CI' ? 'true' : '1' }, dir, '--release');
+      expect(refused.status, hosted).toBe(1);
+      expect(refused.output).toContain(`refused on a hosted or CI build (${hosted} is set)`);
+      expect(refused.output).toContain('Unapproved asset blocks the build');
+    }
+    // The override covers `draft` only: a retired asset still blocks the local release build.
+    const rows = readManifest(dir);
+    const scene = rows.find((row) => row.path === '/rebuild/art/scene-valley.svg');
+    expect(scene).toBeDefined();
+    scene!.reviewStatus = 'retired';
+    writeManifest(dir, rows);
+    const broken = await runWith({ LF_LOCAL_DRAFT_ASSETS: '1' }, dir, '--release');
+    expect(broken.status).toBe(1);
+    expect(broken.output).toContain('Unapproved asset blocks the build (07 §6): /rebuild/art/scene-valley.svg');
   });
 
   it('caps the glyph set at 24 families from one source, drawn to the live area', async () => {

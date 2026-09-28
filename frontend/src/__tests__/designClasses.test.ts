@@ -186,9 +186,8 @@ describe('design classes', () => {
       'lf-slot',
       'lf-summary',
       'lf-eyebrow',
-      'lf-stage-pill',
-      'lf-live-emerald',
-      'lf-orb-ring',
+      // lf-stage-pill, lf-live-emerald and lf-orb-ring left with the legacy
+      // Tutor HUD that rendered them (S10L.1); the rebuilt Mentor stage has its own.
       'lf-tactile',
       'lf-press',
     ]) {
@@ -290,9 +289,7 @@ describe('design classes', () => {
       'lf-body',
       'lf-body-lg',
       'lf-caption',
-      'lf-caption-tail',
       'lf-display-lg',
-      'lf-display-xl',
       'lf-headline',
       'lf-label',
       'lf-title',

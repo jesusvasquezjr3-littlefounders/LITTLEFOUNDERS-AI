@@ -6,8 +6,8 @@ type RoleplaySceneId = (typeof ROLEPLAY_SCENE_IDS)[number];
 
 /*
  * Class III / S17 `roleplay`, voice added afterward (owner request,
- * 2026-09-03): the ORACLE-SIDE mirror of `frontend/src/tutor/roleplay/
- * scenes.ts`'s beat text, which oracle otherwise has no reason to know at
+ * 2026-09-03): the ORACLE-SIDE mirror of the rebuilt Mentor's scene captions
+ * (`frontend/src/rebuild/mentor/session/roleplay.ts`, `rebuild-mentor.json`)'s beat text, which oracle otherwise has no reason to know at
  * all — the scene id crosses the wire (`roleplayScene`, migration `0070`),
  * never the dialogue.
  *

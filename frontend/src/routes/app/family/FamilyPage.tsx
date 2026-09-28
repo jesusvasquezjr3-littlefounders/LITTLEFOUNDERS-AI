@@ -6,7 +6,7 @@ import { childName, type Child } from '@/rebuild/family/console/consoleApi';
 import { AutonomyLadderPanel } from './AutonomyLadderPanel';
 import { BadgeSharesPanel } from './BadgeSharesPanel';
 import { CoGuardiansPanel, GuardianRequestsPanel } from './CoGuardiansPanel';
-import { CoopGoalsConsentPanel } from './CoopGoalsConsentPanel';
+import { CoopGoalsConsentPanel } from '@/app-routes/CoopGoalsConsentPanel';
 import { CoachingTipPanel, DataPolicyPanel, ResearchConsentPanel, ScopeStatementPanel } from './GovernancePanels';
 import { DataPracticeConsentPanel } from './DataPracticePanels';
 import { GuardianInviteJoin, GuardianInvitePanel } from './GuardianInvitePanel';

@@ -13,20 +13,9 @@
       "familyGovernance"
     ],
     "subtrees": [
-      "common:tasks",
-      "common:banking",
       "common:family"
     ],
-    "errorCodes": [
-      "ACCOUNT_FROZEN",
-      "GUARDIAN_FREEZE",
-      "FREEZE_CHANGED",
-      "SPEND_LIMIT_REACHED",
-      "INSUFFICIENT_BALANCE",
-      "KID_LIMIT_REACHED",
-      "PARENT_VERIFICATION_REQUIRED",
-      "PARENT_VERIFICATION_REVOKED"
-    ],
+    "errorCodes": [],
     "surfaces": [
       "frontend/src/rebuild/family",
       "frontend/src/rebuild/banking",
@@ -36,7 +25,7 @@
       "frontend/src/routes/app/family",
       "frontend/src/routes/app/wallet"
     ],
-    "surfacesWhy": "Core's error messages are English developer diagnostics. A family reads only copy resolved by error code (errors.json) or the rebuilt surfaces' own copy, both in scope here. The gate fails if a Family Hub or banking surface starts rendering a raw Core message."
+    "surfacesWhy": "Core's error messages are English developer diagnostics. A family reads only the rebuilt surfaces' own copy, in scope here (the legacy errors.json and common.json tasks/banking subtrees left with the legacy UI in S10L.1). The gate fails if a Family Hub or banking surface starts rendering a raw Core message."
   },
   "categories": {
     "bank_register": {
@@ -232,11 +221,6 @@
       "key": "familyMoney:bonusTeen.notInterest",
       "category": "bank_register",
       "why": "The teen's form of the D.11 disclosure: a bonus the family adds, not a bank interest rate."
-    },
-    {
-      "key": "common:banking.parent.bonusHint",
-      "category": "bank_register",
-      "why": "The legacy form of the same disclosure: a bonus the family adds, not a bank interest rate."
     },
     {
       "key": "familyHub:coGuardians.pending",

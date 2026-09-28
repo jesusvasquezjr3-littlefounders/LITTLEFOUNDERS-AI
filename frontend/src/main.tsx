@@ -5,11 +5,11 @@ import { App } from '@/App';
 import '@/i18n';
 import '@/index.css';
 import { captureLandingContext } from '@/lib/visitor';
-import { setWasmUrl } from '@lottiefiles/dotlottie-react';
-import lottieWasmUrl from '@lottiefiles/dotlottie-web/dotlottie-player.wasm?url';
 
-// Serve the pinned player with the app so animations do not depend on a CDN.
-setWasmUrl(lottieWasmUrl);
+// The dotlottie player's WebAssembly URL is set where the player mounts
+// (components/ui/LottieIcon.tsx), not here: an import at the entry put the
+// whole player (about 330 kB) in every route's entry chunk, though only the
+// OD-24 lesson island plays a Lottie (S10L.2).
 
 // Snapshot UTM + referrer BEFORE React mounts and the SPA can navigate —
 // they exist only on the landing URL (/INSIGHTS.md §7). Transmits nothing.

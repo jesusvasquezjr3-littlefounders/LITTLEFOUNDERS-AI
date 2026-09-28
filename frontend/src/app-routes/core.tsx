@@ -11,35 +11,38 @@ import { DevRoute } from './LazyRoute';
  * sibling module (site, learn, mentor, family, profile, staff).
  */
 
-/* Dev-only harness — the Lesson Engine QA surface (LESSON_ENGINE.md §10). Lazy +
- * DEV-gated so the lab (and its local grader) never reaches production bundles. */
-const LessonLabPage = lazy(() => import('@/lesson-engine/lab/LessonLabPage'));
-const LessonViewPage = lazy(() => import('@/lesson-engine/lab/LessonViewPage'));
+/*
+ * Dev-only harnesses, lazy AND declared inside the DEV branch. The `import()`
+ * calls must sit behind `import.meta.env.DEV` themselves: a module-level
+ * `lazy(() => import(...))` is kept by Rollup even when no route renders it,
+ * so the production build used to emit the four lab chunks (about 140 kB,
+ * with the lab's local grader) as dead files (S10L.2). Inside the branch the
+ * production build folds `false ? … : null` away and no chunk is emitted.
+ *
+ * - lesson-lab / lesson-view: the Lesson Engine QA surface (LESSON_ENGINE.md
+ *   §10), used by verify:lesson-engine.
+ * - scene-lab / pose-lab: the Tutor 3D layer's authoring surfaces (measure a
+ *   real .glb against tutor-scene/budget.ts; review the pose library by
+ *   LOOKING at it). `three` must never reach an entry bundle by a stray import.
+ */
+const devLabs = import.meta.env.DEV ? {
+  LessonLabPage: lazy(() => import('@/lesson-engine/lab/LessonLabPage')),
+  LessonViewPage: lazy(() => import('@/lesson-engine/lab/LessonViewPage')),
+  SceneLabPage: lazy(() => import('@/tutor-scene/lab/SceneLabPage')),
+  PoseLabPage: lazy(() => import('@/tutor-scene/lab/PoseLabPage')),
+} : null;
 
-/* Dev-only harness for the Tutor's 3D layer — measures a real .glb against the
- * asset budget (tutor-scene/budget.ts). Lazy + DEV-gated for the same reason as
- * the lesson lab, and additionally because `three` is a large chunk that must
- * never be pulled into a production entry bundle by a stray import. */
-const SceneLabPage = lazy(() => import('@/tutor-scene/lab/SceneLabPage'));
-const PoseLabPage = lazy(() => import('@/tutor-scene/lab/PoseLabPage'));
-
-/* Dev-only visual QA for the Tutor's product surfaces (personalize, offer,
- * conversation) against fixtures — the §1.11 both-breakpoints check without
- * needing a live session, a model key or a websocket. */
-const TutorLabPage = lazy(() => import('@/tutor/lab/TutorLabPage'));
-const LearnLabPage = lazy(() => import('@/routes/app/learn/lab/LearnLabPage'));
+/* The legacy Tutor lab (/dev/tutor-lab) and learn lab (/dev/learn-lab) were
+ * removed with the legacy UI (S10L.1, OD-2, 02 rule 23): the rebuilt screens
+ * are reviewed in the design-system preview entry and the rebuild audits. */
 
 /** DEV-only harnesses; an empty fragment in a production build. */
-export const devRoutes = import.meta.env.DEV ? (
+export const devRoutes = devLabs ? (
   <>
-    <Route path="dev/lesson-lab" element={<DevRoute><LessonLabPage /></DevRoute>} />
-    <Route path="dev/lesson-view" element={<DevRoute><LessonViewPage /></DevRoute>} />
-    <Route path="dev/scene-lab" element={<DevRoute><SceneLabPage /></DevRoute>} />
-    {/* The pose library, reviewed by LOOKING at it. DEV-only for the same
-        reason scene-lab is: it is an authoring surface, not a product one. */}
-    <Route path="dev/pose-lab" element={<DevRoute><PoseLabPage /></DevRoute>} />
-    <Route path="dev/learn-lab/:courseSlug" element={<DevRoute><LearnLabPage /></DevRoute>} />
-    <Route path="dev/tutor-lab" element={<DevRoute><TutorLabPage /></DevRoute>} />
+    <Route path="dev/lesson-lab" element={<DevRoute><devLabs.LessonLabPage /></DevRoute>} />
+    <Route path="dev/lesson-view" element={<DevRoute><devLabs.LessonViewPage /></DevRoute>} />
+    <Route path="dev/scene-lab" element={<DevRoute><devLabs.SceneLabPage /></DevRoute>} />
+    <Route path="dev/pose-lab" element={<DevRoute><devLabs.PoseLabPage /></DevRoute>} />
   </>
 ) : null;
 

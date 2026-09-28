@@ -1,10 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import enPlacement from '../../i18n/en-US/placement.json';
-import esPlacement from '../../i18n/es-MX/placement.json';
-import ptPlacement from '../../i18n/pt-BR/placement.json';
 import { checkCopy, type Locale } from '../design/copyBudget';
-import { PENDING_NARRATION_REFRAME, placementFrameSchema, placementOutcomeCopy, placementOutcomeLines, verdictWords } from './placementOutcome';
+import { placementFrameSchema, placementOutcomeCopy, placementOutcomeLines, verdictWords } from './placementOutcome';
 import { PlacementOutcomeView } from './PlacementOutcomeView';
 
 const locales: Locale[] = ['en-US', 'es-MX', 'pt-BR'];
@@ -12,7 +9,6 @@ const paths = ['adaptive_quiz', 'learner_chose_start', 'learner_adjusted', 'no_p
 const frames = paths.flatMap((path) => (['beginning', 'further_in'] as const).map((start) => ({
   path, start, basis: 'prior_exposure' as const, learner_chosen: path === 'learner_chose_start' || path === 'learner_adjusted',
 })));
-const live = { 'en-US': enPlacement, 'es-MX': esPlacement, 'pt-BR': ptPlacement };
 
 describe('B.15 placement outcome framing', () => {
   it('frames every outcome, in every locale, as prior exposure with growth language and no verdict words', () => {
@@ -26,25 +22,12 @@ describe('B.15 placement outcome framing', () => {
     }
   });
 
-  it('keeps ability, ranking and failure language out of the live placement result', () => {
-    for (const locale of locales) {
-      for (const text of Object.values(live[locale].result)) expect(verdictWords(text, locale), `${locale}: ${text}`).toEqual([]);
-    }
-    // The live "from the beginning" outcome states the same prior-exposure basis as the rebuilt frame.
-    expect(enPlacement.result.creditedNone).toBe(placementOutcomeCopy['en-US'].basis);
-  });
-
-  it('pins the two narrated lines awaiting paid clip regeneration, and their reframed replacements pass the gate', () => {
-    for (const locale of locales) {
-      for (const [key, line] of Object.entries(PENDING_NARRATION_REFRAME[locale]) as [('resultAhead' | 'resultStart'), { current: string; proposed: string }][]) {
-        // When the owner approves regeneration, the live text becomes `proposed` and this entry is removed.
-        expect(live[locale].narration[key], `${locale} ${key}`).toBe(line.current);
-        expect(verdictWords(line.proposed, locale), `${locale} ${line.proposed}`).toEqual([]);
-        expect(checkCopy(line.proposed, 'mentor', { locale, ageBand: '10-12', surface: 'app' }), line.proposed).toEqual([]);
-      }
-    }
-  });
-
+  /*
+   * The legacy placement result and its two narrated lines (placement.json,
+   * the guided-voice clips) left with the legacy UI (S10L.1): the only
+   * placement outcome a learner sees is the rebuilt frame above, so the pin
+   * that held the narrated verdict lines until a paid regeneration is gone too.
+   */
   it('catches the verdict phrases the old copy used', () => {
     expect(verdictWords('Look at that! You already knew a good chunk', 'en-US')).not.toEqual([]);
     expect(verdictWords('This feels too advanced', 'en-US')).not.toEqual([]);

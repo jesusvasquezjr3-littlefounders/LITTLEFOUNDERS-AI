@@ -64,11 +64,10 @@
  * (`tutor-scene/SceneLighting.tsx`), and an unregistered variable would snap the
  * whole HUD to the new hour a third of a second before the island got there.
  *
- * They are written ONCE per backdrop change, by the stage root, from the same
- * palette the lights read (`tutor-scene/atmosphere.ts`). Nothing writes them per
- * frame: a custom-property write invalidates style on the whole inheriting
- * subtree, and doing that sixty times a second to tint a shadow would cost more
- * than drawing the island.
+ * The legacy Tutor stage root wrote them once per backdrop change from the
+ * palette the lights read (`tutor-scene/atmosphere.ts`, removed with the legacy
+ * Tutor UI in S10L.1-2). Nothing writes them any more, so every consumer reads
+ * the registered defaults below.
  *
  * The defaults below are `AUTO_LIGHT` from `tutor-scene/backdrops.ts`, so a
  * HudPlate rendered outside the stage entirely — the lab, a test — still has a
@@ -505,8 +504,8 @@
      * `--lf-stage-sun-y`, the object seat, the stage vignette) computed as
      * though the sun were nearly overhead, and the entire "as the sun goes
      * down" half of this material was unreachable in the theme it was written
-     * for. It is `AUTO_DARK`'s own elevation, derived the same way
-     * `atmosphere.ts` derives it: y / |sunPosition| for [4, 3.4, 5].
+     * for. It is `AUTO_DARK`'s own elevation: y / |sunPosition| for
+     * [4, 3.4, 5].
      */
     --lf-sun-height: 0.469;
   }
@@ -570,14 +569,6 @@
  * way to set type. Composing ad-hoc sizes with utilities is prohibited.
  */
 @layer components {
-  .lf-display-xl {
-    font-family: 'Sora', system-ui, sans-serif;
-    font-size: 37px;
-    font-weight: 800;
-    line-height: 1.08;
-    letter-spacing: -0.03em;
-    text-wrap: balance;
-  }
   .lf-display-lg {
     font-family: 'Sora', system-ui, sans-serif;
     font-size: 27px;
@@ -630,62 +621,6 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /*
-   * The immersive layer's two voices (/DESIGN.md §Lumen → Type).
-   *
-   * The rest of the scale was written for a reading column at desk distance.
-   * A cinematic frame needs two things that scale does not have, and it had
-   * been faking both: a voice for the TUTOR'S SPOKEN LINE, which had to borrow
-   * `lf-body` and came out as chat copy; and a voice for an IN-WORLD CONTROL,
-   * which borrowed `lf-label` — 14 px at weight 700, the voice of a dashboard
-   * toolbar, and the reason 70 of the 71 type classes on this route were the
-   * two smallest in the system.
-   */
-
-  /* The tutor speaking. The largest type on the stage after the character. */
-  .lf-speech {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 19px;
-    font-weight: 500;
-    line-height: 26px;
-    letter-spacing: -0.006em;
-    text-wrap: balance;
-  }
-
-  /*
-   * THE LEARNER'S "LARGE CAPTIONS" PREFERENCE (`tutor/captionSize.ts`). A
-   * complete sibling of `.lf-speech`, never combined with it on the same
-   * node: `useAnchorSlot` reads a node's computed font size ONCE, "at
-   * registration" (`tutor-scene/ScreenAnchor.tsx`), to work out how far the
-   * camera's depth scale may shrink it before the caption stops being
-   * readable — two classes fighting over `font-size` would make that read
-   * depend on stylesheet order rather than on which one is actually true.
-   * `SpeechCaption.tsx` forces a fresh registration on toggle (a `key`
-   * change) for exactly this reason: this is a difference in what the node
-   * fundamentally IS, not a modifier on top of it.
-   */
-  .lf-speech-lg {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 23px;
-    font-weight: 500;
-    line-height: 31px;
-    letter-spacing: -0.006em;
-    text-wrap: balance;
-  }
-
-  /*
-   * A control in the world. Bigger and LIGHTER than `lf-label`, because
-   * confidence over a picture comes from size and air, and 700 in a small box
-   * reads as shouting.
-   */
-  .lf-action {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    line-height: 20px;
-    letter-spacing: -0.004em;
-  }
-
   /* Liquid glass — Apple-refined. Rim light + hairline edge + layered depth.
      .lf-glass = frosted panel on page surfaces (sticky header, dropdown,
      mobile menu, cards). .lf-glass-deep = frosted panel ON the inverse band. */
@@ -720,21 +655,6 @@
       0 8px 16px rgba(0,0,0,0.25),
       0 16px 32px rgba(0,0,0,0.35);
   }
-  /*
-   * The marketing topbar keeps .lf-glass's frosted blur (the actual "glass"
-   * look) but drops its box-shadow. Sitting right above a full-bleed hero
-   * that already carries its own atmosphere (the knowledge-graph canvas,
-   * radial glows), the shared component's 5-layer atmospheric shadow plus
-   * hover shadow read as a second, competing light source rather than a
-   * quiet piece of chrome — distracting, per the report. Scoped to this one
-   * header rather than changed on .lf-glass itself, which the sticky
-   * dropdown, mobile menu and cards elsewhere still rely on unchanged.
-   */
-  .lf-marketing-header,
-  .lf-marketing-header:hover {
-    box-shadow: none;
-  }
-
   .lf-glass-deep {
     background-color: rgb(255 255 255 / 0.06);
     background-image: var(--lf-glass-caustic), var(--lf-glass-mesh);
@@ -757,59 +677,6 @@
     }
   }
 
-  /* ──────────────────────────────────────────────────────────────────────
-     LUMEN — the immersive layer's one material (/DESIGN.md §Lumen).
-
-     `.lf-glass` frosts a panel that sits on a PAGE. This one sits on a
-     WORLD, and the difference is not decoration: a page holds still and an
-     island is relit four times a day, orbited by a camera and walked around
-     by a dinosaur. So the plate takes its light from the scene instead of
-     from the stylesheet — its fill leans 6% toward the sky, its lip is the
-     key light's own colour, its shadow is made of the ground's colour and
-     lengthens as the sun drops — and it lets 14% of the world through,
-     blurred past legibility and stripped of hue.
-
-     14% is the whole argument. The rule this replaces put text on an OPAQUE
-     floor because "a translucent plate over an orbiting camera has no known
-     background", which is true and is not the end of the arithmetic: alpha
-     puts a FLOOR under the composite. At 0.86 the worst case a moving render
-     can produce still measures 4.96:1 for muted body text, so the ratio is
-     computable after all — as a bound rather than as a number. The plate gets
-     to be glass and the contrast floor still holds.
-     ────────────────────────────────────────────────────────────────────── */
-  .lf-lumen {
-    isolation: isolate;
-    /* Fallback first, for a browser without color-mix: a legible plate that
-       simply does not know what hour it is. */
-    background-color: rgb(var(--lf-surface) / 0.9);
-    background-color: color-mix(in srgb, var(--lf-lumen-fill) calc(var(--lf-lumen-alpha) * 100%), transparent);
-    -webkit-backdrop-filter: var(--lf-lumen-backdrop);
-    backdrop-filter: var(--lf-lumen-backdrop);
-    box-shadow: var(--lf-shadow-glass-sm);
-    box-shadow:
-      /* the specular lip, in the key light's colour */
-      inset 0 1px 0 color-mix(in srgb, var(--lf-key) var(--lf-lumen-rim), transparent),
-      /* the edge — the scene's own shade, never a white hairline. A white lip
-         on a warm island is the single loudest "sticker" cue there is. */
-      /*
-       * The edge, in the scene's own shade — plus a WHITE component that only
-       * appears as the sun goes down. §Lumen rejects a white lip on a warm
-       * island and is right; on the design study's dark stage the same edge is
-       * a RIM LIGHT, which is what a real edge does when the light is behind
-       * it. Tying it to `--lf-sun-height` means the plate learns the hour
-       * instead of being handed a constant that is wrong half the day.
-       */
-      inset 0 0 0 1px color-mix(in srgb, var(--lf-lumen-shade) 16%, transparent),
-      inset 0 0 0 1px rgb(255 255 255 / calc((1 - var(--lf-sun-height)) * 0.14)),
-      /* one shadow, agreeing with the sun, instead of five atmospheric layers
-         that agree with nothing */
-      0 var(--lf-lumen-drop-y) var(--lf-lumen-drop-blur) calc(var(--lf-lumen-drop-y) * -0.4)
-        color-mix(in srgb, var(--lf-lumen-shade) var(--lf-lumen-drop-alpha), transparent);
-    transition:
-      box-shadow var(--lf-dur-slow) var(--lf-ease),
-      background-color var(--lf-dur-slow) var(--lf-ease);
-  }
-
   /*
    * THE HOUSE HOVER FOR GLASS CHROME, added 2026-09-05 — it never existed.
    * DESIGN.md already stated the rule ("brightens the HAIRLINE, never the
@@ -829,251 +696,6 @@
    * "hovered" after the finger lifts, which is the standing trap of `:hover`
    * on a touchscreen.
    */
-  @media (hover: hover) {
-    .lf-lumen.lf-press:hover:not(:disabled):not([aria-disabled='true']) {
-      box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--lf-key) var(--lf-lumen-rim), transparent),
-        inset 0 0 0 1px color-mix(in srgb, var(--lf-lumen-shade) 16%, transparent),
-        inset 0 0 0 1.5px rgb(255 255 255 / calc((1 - var(--lf-sun-height)) * 0.14 + 0.18)),
-        0 var(--lf-lumen-drop-y) var(--lf-lumen-drop-blur) calc(var(--lf-lumen-drop-y) * -0.4)
-          color-mix(in srgb, var(--lf-lumen-shade) var(--lf-lumen-drop-alpha), transparent);
-    }
-  }
-
-  /*
-   * ONE INK ON CHROME, AND THE MATERIAL ENFORCES IT.
-   *
-   * At the chrome alpha, `content-muted` measures 3.6:1 over the worst backdrop
-   * a render can produce and `content-faint` is worse — so the rule is not a
-   * preference, it is the other half of the contrast contract. Neutralising the
-   * utility here rather than trusting fourteen call sites is the same decision
-   * the opaque floor made and for the same reason: a contrast rule that has to
-   * be remembered is a contrast rule that is already broken somewhere.
-   *
-   * It has a second, deliberate effect. A quiet second line under a label stops
-   * looking quiet, which is exactly the pressure that gets it deleted — and a
-   * label that needed a second line to explain itself was a label with a second
-   * line to delete (/DESIGN.md → Tutor → fewer words is a count).
-   *
-   * `:where()` keeps the inner half at zero specificity, so the compound is
-   * 0-2-0 and beats the utility without an `!important` anywhere.
-   */
-  .lf-lumen:not(.lf-lumen-reading) :where(.text-content-muted, .text-content-faint) {
-    color: rgb(var(--lf-content));
-  }
-
-  /*
-   * ONE SIZE ON CHROME, AND THE MATERIAL ENFORCES THAT TOO.
-   *
-   * /DESIGN.md §Lumen → Type prohibits `lf-caption` on world-anchored chrome:
-   * 12 px over a moving render at arm's length is not a size, it is an apology.
-   * The prohibition was written as a rule and, like the ink rule before it, was
-   * being remembered rather than guaranteed — the applying pass found 21 live
-   * `lf-caption` call sites still on chrome plates, on controls a six-year-old
-   * is meant to hit while looking at a dinosaur.
-   *
-   * So a caption INSIDE chrome is rendered at `lf-action`'s metrics. The class
-   * still means "the quiet one" everywhere else in the product, and it still
-   * means it inside a `reading` surface, which is held at a fixed distance from
-   * the eye and is the one place a genuine secondary line belongs.
-   *
-   * Same `:where()` trick as the ink rule: 0-2-0, so it beats the utility
-   * without an `!important` and without touching specificity anywhere else.
-   *
-   * `.lf-stage-pill` IS WORLD-ANCHORED CHROME AND WAS NOT IN THIS SELECTOR.
-   *
-   * The rule above says "chrome". The guard said `.lf-lumen`. A stage pill is
-   * neither a Lumen plate nor a reading surface — it is the lightest chrome
-   * there is, floating directly in front of a moving render — so it fell
-   * through the guard and kept the raw 12 px, which is the ONE size this whole
-   * block exists to prevent. Nothing failed: it rendered, it was reachable, it
-   * was simply too small to read, which is exactly how a defect in a value
-   * survives every gate (/AGENTS.md §1.14).
-   *
-   * The live cost, found by a 2026-09-09 audit against production: the sound
-   * blocked notice — the ONLY control that restores the tutor's voice after the
-   * browser blocks autoplay — is a `lf-caption` on a stage pill. A whole
-   * session ran in silence past a 12 px grey line nobody reads. Voice is not a
-   * decoration here; it is the product (/AGENTS.md §1.2).
-   *
-   * So the guard now names both chrome materials. A caption on either is held
-   * at `lf-action`'s metrics; inside a `reading` surface it stays quiet.
-   */
-  .lf-lumen:not(.lf-lumen-reading) :where(.lf-caption),
-  .lf-stage-pill :where(.lf-caption) {
-    font-size: 15px;
-    font-weight: 600;
-    line-height: 20px;
-    letter-spacing: -0.004em;
-  }
-
-  /*
-   * The caption's tail: a short line from the plate down onto the speaker's
-   * crown, so at a two-shot the learner can see at a glance WHICH character the
-   * words belong to.
-   *
-   * It is made of the scene's own shade rather than of `outline`, for the same
-   * reason the plate's edge is: a token hairline over a warm island is the
-   * loudest "sticker" cue there is, and this one is the only part of the
-   * caption that actually touches the character.
-   */
-  .lf-caption-tail {
-    background-image: linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--lf-lumen-shade) 42%, transparent),
-      transparent
-    );
-  }
-
-  /*
-   * The one surface per phase that carries paragraphs rather than a label. It
-   * is DENSER, not differently coloured: same fill, same lip, same shadow, more
-   * of it. Hierarchy on this layer comes from how much world shows through,
-   * which is a property the scene itself supplies.
-   */
-  .lf-lumen-reading {
-    background-color: rgb(var(--lf-surface) / 0.94);
-    background-color: color-mix(in srgb, var(--lf-lumen-fill) calc(var(--lf-lumen-alpha-reading) * 100%), transparent);
-  }
-
-  /*
-   * An ACTION is an object, not a pane. It keeps the seated shadow so it
-   * belongs to the same light, and drops the glass so a CTA never reads as one
-   * more window onto the island.
-   *
-   * IT ALSO GLOWS ITS OWN COLOUR, added 2026-09-05 against the design study's
-   * "Verificar" button. The seated shadow alone is what every OTHER surface
-   * on the stage wears — a plate, a chip, an option all drop the same
-   * ground-toned shadow, so the one indigo action of the phase read as just
-   * another dark shape with no light of its own. The study's button throws an
-   * ambient shadow TINTED BY ITS OWN FILL (`shadow-indigo-600/30`) and wears a
-   * lighter rim of the same hue, which is what a lit, opaque object made of
-   * that colour actually does — it doesn't just occupy space, it colours the
-   * air around it. A dedicated press transform rides with it: this is the one
-   * control the study asks to feel like a key rather than a pane, so instead
-   * of the ordinary `.lf-press` travel it gets a scale as well.
-   */
-  .lf-lumen-solid {
-    background-color: transparent;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    transition:
-      transform var(--lf-dur-press) ease,
-      box-shadow var(--lf-dur-press) ease;
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.22),
-      inset 0 0 0 1px color-mix(in srgb, rgb(var(--lf-accent)) 55%, white 15%),
-      0 10px 24px -8px color-mix(in srgb, rgb(var(--lf-accent)) 50%, transparent),
-      0 var(--lf-lumen-drop-y) var(--lf-lumen-drop-blur) calc(var(--lf-lumen-drop-y) * -0.4)
-        color-mix(in srgb, var(--lf-lumen-shade) var(--lf-lumen-drop-alpha), transparent);
-  }
-  .lf-lumen-solid:active {
-    transform: translateY(var(--lf-tactile-lift)) scale(0.97);
-  }
-  .lf-lumen-solid:disabled,
-  .lf-lumen-solid[aria-disabled='true'] {
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.1),
-      0 var(--lf-lumen-drop-y) var(--lf-lumen-drop-blur) calc(var(--lf-lumen-drop-y) * -0.4)
-        color-mix(in srgb, var(--lf-lumen-shade) var(--lf-lumen-drop-alpha), transparent);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .lf-lumen-solid:active {
-      transform: none;
-    }
-  }
-
-  /*
-   * Chosen. It is part of the material rather than a Tailwind `ring-*`
-   * utility, and that is a bug fix: `ring-2` writes `box-shadow`, utilities
-   * outrank components, so a selected plate used to lose its lip, its edge and
-   * its shadow at the exact moment it was meant to look MORE present.
-   */
-  .lf-lumen-selected {
-    box-shadow:
-      inset 0 0 0 2px rgb(var(--lf-primary)),
-      0 var(--lf-lumen-drop-y) var(--lf-lumen-drop-blur) calc(var(--lf-lumen-drop-y) * -0.4)
-        color-mix(in srgb, var(--lf-lumen-shade) var(--lf-lumen-drop-alpha), transparent);
-  }
-
-  /* ══════════════════════════════════════════════════════════════════════
-     THE EDGE THAT SAYS THERE IS MORE — added 2026-08-22.
-
-     A box whose content continues below the fold looks exactly like a box
-     that has finished, and an overlay scrollbar only appears once the
-     learner is already scrolling, which is after the moment they needed to
-     be told. The lesson plate is 420 px wide, so 27 of the 55 exercise types
-     fit whole and the rest have to scroll their answers (measured on
-     `/dev/tutor-lab` at 1280x800): this is what stops that scroll from being
-     something a child has to discover.
-
-     IT IS MADE OF INK, not of the plate's fill, and that is what makes it
-     work in both themes over any backdrop a moving render can produce: ink
-     darkens a light theme and lightens a dark one, which is the direction
-     "there is more underneath" runs in each. A fade to the surface colour
-     would need to know what the surface composites to, and over a live
-     island nothing does.
-
-     The two attributes are written imperatively by `useScrollEdges` — a
-     scroll handler on this route may write an attribute and may never call
-     `setState`.
-     ══════════════════════════════════════════════════════════════════════ */
-  .lf-scroll-edge {
-    position: relative;
-    /*
-     * The edges belong to the BOX, and this is what makes that true when the
-     * box is shorter than they are. Each is 24 px tall and pinned to an edge,
-     * so in a frame that has been squeezed to nothing — which is exactly what
-     * the conversation log does while an exercise needs the plate — the top one
-     * hangs 24 px out of the bottom. Measured on `/dev/tutor-lab` at 1280x800
-     * with `read_chart` up: 4 px of the plate's own column overflowing past a
-     * body that is supposed never to scroll. Invisible, and the kind of
-     * invisible that turns into a scrollbar on somebody else's platform.
-     */
-    overflow: hidden;
-  }
-
-  .lf-scroll-edge::before,
-  .lf-scroll-edge::after {
-    content: '';
-    position: absolute;
-    inset-inline: 0;
-    height: 1.5rem;
-    pointer-events: none;
-    opacity: 0;
-    z-index: 1;
-    transition: opacity var(--lf-dur-base) var(--lf-ease);
-  }
-
-  .lf-scroll-edge::before {
-    top: 0;
-    background: linear-gradient(
-      to bottom,
-      color-mix(in srgb, rgb(var(--lf-content)) 13%, transparent),
-      transparent
-    );
-  }
-
-  .lf-scroll-edge::after {
-    bottom: 0;
-    background: linear-gradient(
-      to top,
-      color-mix(in srgb, rgb(var(--lf-content)) 13%, transparent),
-      transparent
-    );
-  }
-
-  .lf-scroll-edge[data-scroll-above='yes']::before,
-  .lf-scroll-edge[data-scroll-below='yes']::after {
-    opacity: 1;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .lf-scroll-edge::before,
-    .lf-scroll-edge::after {
-      transition: none;
-    }
-  }
 
   /*
    * ONE BLUR-LESS LUMEN, REACHED TWO WAYS.
@@ -1429,121 +1051,6 @@
   }
 
   /*
-   * THE GROUND THE ISLAND STANDS ON.
-   *
-   * The canvas is `alpha: true`, so everything the island does not paint is
-   * this element — and it used to be one flat token, which is why every
-   * screenshot of this route read as a clip-art cutout pasted on a blank page.
-   * It is the same sky and ground the lights are using, plus a single glow that
-   * rides up and down with the sun. One paint, no per-frame cost, and the
-   * island is standing IN something.
-   *
-   * IT COMMITS TO THE HOUR NOW. Corrected 2026-08-22, after driving the light
-   * theme with a non-day light. The mix used to pull each stop most of the way
-   * back to the theme's base — 18% / 66% / 58% — on the reasoning that a
-   * background should stay a background. In light mode at Dusk that produced a
-   * screen whose top half was warm dusk and whose bottom half was flat white,
-   * with the island floating on the seam between two different times of day.
-   * The reviewer's words for it were "half warm dusk and half flat white", and
-   * they were right; the hedge was the bug.
-   *
-   * The premise it rested on is what was wrong. This is not page behind a
-   * picture — it is the SAME AIR the island is hanging in, and air does not
-   * have a theme. /DESIGN.md §Lumen already says the four chosen hours are
-   * honoured identically in light and dark, because somebody who picked Dusk
-   * asked for dusk; the ground is now the last surface to obey that. What is
-   * left of the base mix is a tint, not a retreat: enough that `auto` — which
-   * publishes nothing and whose sky IS the theme's own — still reads as the
-   * theme, and little enough that a chosen hour reaches the bottom of the
-   * screen.
-   *
-   * THE BOTTOM STOP IS SKY THAT HAS PICKED UP THE GROUND, not the ground.
-   * Committing straight to `--lf-ground` was the first attempt and it measured
-   * worse than the hedge it replaced: at Dusk the ground is `#3a3350`, a cool
-   * purple, so the bottom third of a warm peach screen went dead grey and the
-   * island floated on a second seam instead of the first one. There is no
-   * ground below a floating island — what is down there is more air, deepened
-   * and tinted by the light bouncing off the underside. Mixing the two in that
-   * order keeps the hue related to the sky the whole way down, which is what
-   * makes the frame read as one place.
-   */
-  .lf-stage-ground {
-    background-color: rgb(var(--lf-base));
-    background-image:
-      /*
-       * THE CINEMATIC VIGNETTE (2026-09-06, from the design study).
-       *
-       * The study's stage is one off-centre radial fall from a violet-indigo
-       * core to near-black at the corners — that single gradient is most of
-       * why its screen reads as a LIT STAGE rather than as a dark app, and we
-       * had nothing like it: our ground was a sky-over-earth gradient, which
-       * is right for a daylit island and flat for a night one.
-       *
-       * It is a layer ON TOP of that sky rather than a replacement, and its
-       * strength is tied to `--lf-sun-height` exactly as the Lumen rim is: at
-       * noon it contributes nothing at all (the daylight island is unchanged,
-       * byte for byte, which is the regression this must not cause), and as
-       * the sun drops it closes the corners down to the study's black. Centred
-       * at 45%/42% — the study's own off-centre core, biased up and left of
-       * centre so the character stands in the light rather than beside it.
-       */
-      radial-gradient(
-        118% 96% at 45% 42%,
-        transparent 0%,
-        transparent 34%,
-        rgb(6 9 19 / calc((1 - var(--lf-sun-height)) * 0.82)) 100%
-      ),
-      /*
-       * THE SUN'S BLOOM, and it now SETS with the sun (2026-09-06).
-       *
-       * It was a flat 55% of the key light across 130% x 78% of the frame —
-       * at every hour, including the ones with no sun in the sky. That single
-       * constant is why "dark mode" photographed as an overcast afternoon:
-       * a violet-indigo night sky was being washed by a light-violet bloom
-       * covering most of the frame, so the stage never actually got dark and
-       * the vignette above it had nothing to fall off FROM. Scaling it by
-       * `--lf-sun-height` leaves noon byte-identical (1.0 x 55% = 55%) and
-       * lets the night reach the study's black.
-       */
-      radial-gradient(
-        130% 78% at 50% var(--lf-stage-sun-y),
-        color-mix(in srgb, var(--lf-key) calc(var(--lf-sun-height) * 55%), transparent),
-        transparent 64%
-      ),
-      linear-gradient(
-        to bottom,
-        color-mix(in srgb, var(--lf-sky) 94%, rgb(var(--lf-base)) 6%) 0%,
-        color-mix(in srgb, var(--lf-sky) 78%, rgb(var(--lf-base)) 22%) 46%,
-        color-mix(
-            in srgb,
-            color-mix(in srgb, var(--lf-sky) 58%, var(--lf-ground) 42%) 78%,
-            rgb(var(--lf-base)) 22%
-          )
-          100%
-      );
-  }
-
-  /*
-   * The atmosphere LERPS with the lights it came from. `SceneLighting` eases a
-   * backdrop change over about 600 ms; without this the HUD would arrive at the
-   * new hour first and the island would catch up, which reads as two scenes.
-   * Registered properties (top of file) are what make a colour transitionable
-   * at all.
-   */
-  .lf-stage-ground {
-    transition:
-      --lf-sky var(--lf-dur-atmosphere) linear,
-      --lf-key var(--lf-dur-atmosphere) linear,
-      --lf-ground var(--lf-dur-atmosphere) linear,
-      --lf-sun-height var(--lf-dur-atmosphere) linear;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .lf-stage-ground {
-      transition: none;
-    }
-  }
-
-  /*
    * Material Symbols (DESIGN.md: the only icon set). Ligature-based: the DOM
    * text is a name like "arrow_forward" and the font substitutes a glyph for
    * it via the OpenType 'liga' feature. Without declaring that feature
@@ -1580,82 +1087,6 @@
     font-variation-settings: 'FILL' 1;
   }
 
-  /* Course badges — a restrained metal medallion with a permanent specular sheen. */
-  .lf-course-badge {
-    position: relative;
-    isolation: isolate;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    overflow: visible;
-    border-radius: 9999px;
-    background: conic-gradient(
-      from 210deg,
-      rgb(var(--lf-delight) / 0.72),
-      rgb(var(--lf-on-inverse) / 0.9) 14%,
-      rgb(var(--lf-primary) / 0.8) 32%,
-      rgb(var(--lf-inverse-surface) / 0.96) 54%,
-      rgb(var(--lf-delight) / 0.72) 78%,
-      rgb(var(--lf-on-inverse) / 0.9)
-    );
-    box-shadow:
-      var(--lf-shadow-glass),
-      0 0 24px rgb(var(--lf-delight) / 0.24),
-      inset 0 1px 0 rgb(var(--lf-on-inverse) / 0.64),
-      inset 0 -2px 4px rgb(var(--lf-inverse) / 0.22);
-    transform: translateZ(0);
-  }
-  .lf-course-badge::after {
-    position: absolute;
-    z-index: -1;
-    inset: -10px;
-    border-radius: inherit;
-    background: radial-gradient(circle, rgb(var(--lf-delight) / 0.26), transparent 68%);
-    content: '';
-    filter: blur(8px);
-    opacity: 0.8;
-    pointer-events: none;
-  }
-  .lf-course-badge__metal {
-    position: absolute;
-    inset: 4px;
-    overflow: hidden;
-    border: 1px solid rgb(var(--lf-on-inverse) / 0.42);
-    border-radius: inherit;
-    background:
-      radial-gradient(circle at 32% 20%, rgb(var(--lf-on-inverse) / 0.72), transparent 24%),
-      linear-gradient(145deg, rgb(var(--lf-surface) / 0.34), rgb(var(--lf-inverse-surface) / 0.4) 54%, rgb(var(--lf-primary-strong) / 0.34));
-    box-shadow:
-      inset 0 1px 2px rgb(var(--lf-on-inverse) / 0.45),
-      inset 0 -3px 5px rgb(var(--lf-inverse) / 0.22);
-    pointer-events: none;
-  }
-  .lf-course-badge__shine {
-    position: absolute;
-    top: -40%;
-    bottom: -40%;
-    left: -28%;
-    width: 20%;
-    background: linear-gradient(90deg, transparent, rgb(var(--lf-on-inverse) / 0.82), transparent);
-    opacity: 0.55;
-    transform: rotate(18deg) translateX(220%);
-  }
-
-  /* Ambient float — hero illustration ONLY (DESIGN.md §Components → Hero recipe). */
-  .lf-float {
-    animation: lf-soft-bounce 3s ease-in-out infinite;
-  }
-  @keyframes lf-soft-bounce {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
-  }
-
   /* Page transition — applied to <main> keyed by route (/DESIGN.md §Motion). */
   .lf-page-enter {
     animation: lf-page-enter var(--lf-dur-page) ease-out both;
@@ -1671,19 +1102,6 @@
     }
   }
 
-  /* Scroll reveal — sections rise in as they enter the viewport (useReveal). */
-  .lf-reveal {
-    opacity: 0;
-    transform: translateY(20px);
-    transition:
-      opacity var(--lf-dur-reveal) var(--lf-ease),
-      transform var(--lf-dur-reveal) var(--lf-ease);
-  }
-  .lf-reveal.is-revealed {
-    opacity: 1;
-    transform: none;
-  }
-
   /* Pop-in — floating panels (Dropdown, mobile menu). */
   .lf-pop {
     animation: lf-pop var(--lf-dur-fast) var(--lf-ease) both;
@@ -1697,120 +1115,6 @@
     to {
       opacity: 1;
       transform: none;
-    }
-  }
-
-  /*
-   * COMBO BURST — the one VFX in a lesson (DESIGN.md motion recipe 7).
-   *
-   * A ring that expands and fades once, behind whatever just earned it: a
-   * perfect answer, a combo milestone. It is a RING and not confetti on
-   * purpose — confetti is a screen full of independently animated nodes on the
-   * mid-range phones §1.0 exists for, and this is two composited properties on
-   * one element that leaves nothing behind.
-   *
-   * One-shot, token-timed, and it never moves layout: `position: absolute` with
-   * `pointer-events: none`, so it cannot cover a tap target on a 44 px control.
-   */
-  .lf-burst {
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 9999px;
-    pointer-events: none;
-    border: 2px solid currentColor;
-    animation: lf-burst calc(var(--lf-dur-slow) * 1.2) var(--lf-ease) both;
-  }
-  @keyframes lf-burst {
-    from {
-      opacity: 0.55;
-      transform: scale(0.35);
-    }
-    to {
-      opacity: 0;
-      transform: scale(2.1);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    /* No pulse, and no lingering ring either: the beat is simply not drawn. */
-    .lf-burst {
-      display: none;
-    }
-  }
-
-  /*
-   * SETTLE — how anything on the immersive layer arrives (/DESIGN.md §Lumen →
-   * Motion).
-   *
-   * The camera on this route is critically damped: it never overshoots and it
-   * never cuts. Chrome that POPS in over a camera that settles reads as two
-   * different products sharing a screen, so the plate comes into focus the way
-   * the camera comes to rest — 300 ms, the same easing, no bounce.
-   *
-   * IT IS ON AN INNER NODE, ALWAYS. `ScreenAnchor` writes the anchored node's
-   * whole `transform` string every frame; a transition or animation on THAT
-   * node's transform is erased sixty times a second. The plate inside it is
-   * free, which is why the material owns the entrance and the anchor owns the
-   * position.
-   *
-   * `backwards` rather than `both`: with `both` the final keyframe wins
-   * forever, which would pin every plate to `opacity: 1` and quietly break the
-   * one control that dims itself (the orb while the tutor is speaking).
-   */
-  .lf-settle {
-    animation: lf-settle var(--lf-dur-slow) var(--lf-ease) backwards;
-  }
-  @keyframes lf-settle {
-    from {
-      opacity: 0;
-      transform: scale(0.965);
-      filter: blur(4px);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-      filter: blur(0);
-    }
-  }
-  /* The Reveal cadence (§Motion recipe 2): at most three, 80 ms apart. */
-  .lf-settle-2 {
-    animation-delay: 80ms;
-  }
-  .lf-settle-3 {
-    animation-delay: 160ms;
-  }
-  /*
-   * Leaving is faster than arriving — that is most of what "weight" means in
-   * motion. Only for a plate that is UNMOUNTING. A plate that leaves because
-   * the camera turned away is CULLED, and a cull is a cut: the thing left the
-   * picture, and fading out something that is already off-frame animates a lie.
-   */
-  .lf-settle-out {
-    animation: lf-settle-out var(--lf-dur-fast) var(--lf-ease) forwards;
-  }
-  @keyframes lf-settle-out {
-    to {
-      opacity: 0;
-      transform: scale(0.985);
-    }
-  }
-
-  /* Attention pulse — explicitly requests #FF8F00 for the lesson button */
-  .lf-pulse-attention {
-    animation: lf-pulse-attention 2s infinite;
-  }
-  @keyframes lf-pulse-attention {
-    0%, 100% {
-      /* Fallback to original styles */
-      box-shadow: 0 16px 48px rgba(8, 15, 40, 0.18);
-    }
-    50% {
-      background-color: #FF8F00;
-      border-color: #FF8F00;
-      color: #fff;
-      box-shadow: 0 0 20px 4px rgba(255, 143, 0, 0.6);
     }
   }
 
@@ -1856,20 +1160,6 @@
       50% {
         opacity: 1;
       }
-    }
-  }
-
-  /* ── Day-streak celebration (Lesson Player) — v1 StreakCelebration echo ── */
-  .lf-streak-flame {
-    animation: lf-streak-flame-bob 2.2s var(--lf-ease) infinite;
-  }
-  @keyframes lf-streak-flame-bob {
-    0%,
-    100% {
-      transform: translateY(0) scale(1);
-    }
-    50% {
-      transform: translateY(-6px) scale(1.04);
     }
   }
   .lf-streak-number {
@@ -1921,11 +1211,8 @@
     html {
       scroll-behavior: auto;
     }
-    .lf-float,
     .lf-page-enter,
     .lf-pop,
-    .lf-pulse-attention,
-    .lf-streak-flame,
     .lf-streak-number,
     .lf-streak-ring,
     .lf-streak-spark {
@@ -1934,73 +1221,12 @@
     .lf-streak-spark {
       opacity: 0;
     }
-    .lf-reveal {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
-    /*
-     * A MODIFIER on the settle, never a second entrance. Motion is removed;
-     * the ARRIVAL is not, because "a new thing is here" is information, and a
-     * learner who asked for less movement did not ask to stop being told.
-     */
-    .lf-settle {
-      animation-name: lf-settle-still;
-      animation-duration: 120ms;
-      animation-delay: 0ms;
-    }
-    .lf-settle-out {
-      animation-name: lf-settle-still-out;
-      animation-duration: 120ms;
-    }
-  }
-  @keyframes lf-settle-still {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  @keyframes lf-settle-still-out {
-    to {
-      opacity: 0;
-    }
   }
 
   @media (min-width: 640px) {
-    .lf-display-xl {
-      font-size: 48px;
-    }
     .lf-display-lg {
       font-size: 32px;
     }
-    .lf-speech {
-      font-size: 21px;
-      line-height: 29px;
-    }
-    .lf-speech-lg {
-      font-size: 26px;
-      line-height: 34px;
-    }
-  }
-
-  /* ── Gaming Button — Flat, no glow or sheen. ── */
-  /*
-   * A horizontal scroller that keeps its gesture and loses its bar. Not
-   * `overflow: hidden` with a transform: this stays a REAL scroll container,
-   * so a trackpad swipe, a Tab to an offscreen child and a screen reader's
-   * own reading order all keep working (/DESIGN.md §Tactile → the carousel is
-   * a scroller). The bar is hidden because on desktop it sits under the dots,
-   * which already say the same thing more quietly.
-   */
-  .lf-scroll-x {
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-x: contain;
-  }
-  .lf-scroll-x::-webkit-scrollbar {
-    display: none;
   }
 
   /* ═════════════════════════════════════════════════════════════════════
@@ -2301,221 +1527,6 @@
     font-weight: 800;
   }
 
-  /* ═════════════════════════════════════════════════════════════════════
-   * THE TUTOR'S STAGE CHROME (/DESIGN.md §Lumen → stage chrome)
-   *
-   * The design study's dark HUD, resolved against §Lumen rather than against
-   * it. §Lumen rejects a white 1px rim because "a white lip on a warm island is
-   * the loudest sticker cue there is" — and that is TRUE OF A BRIGHT ISLAND.
-   * On the study's dark cinematic stage a white hairline is not a sticker, it
-   * is a RIM LIGHT, which is what a real edge does when the only light in the
-   * scene is behind it.
-   *
-   * So neither extreme. The rim's strength follows `--lf-sun-height`, which is
-   * already a registered, animatable property written once per backdrop change:
-   * overhead sun → almost nothing, which is today's behaviour and correct;
-   * night → the study's visible white edge. The plate learns the hour instead
-   * of being told a constant.
-   * ═════════════════════════════════════════════════════════════════════ */
-
-  /*
-   * A STAGE PILL — the study's `lumen-glass-pill`. Deliberately a LIGHTER
-   * material than a Lumen plate: less blur, no chroma correction, a cooler
-   * base. A pill floats in front of the scene; a plate is something you read
-   * through.
-   */
-  .lf-stage-pill {
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid rgb(255 255 255 / calc(0.06 + (1 - var(--lf-sun-height)) * 0.12));
-    border-radius: 9999px;
-    background: rgb(15 23 42 / 0.65);
-    box-shadow:
-      0 8px 24px -4px rgb(0 0 0 / 0.35),
-      inset 0 1px 0 rgb(255 255 255 / calc(0.08 + (1 - var(--lf-sun-height)) * 0.12));
-    gap: 0.5rem;
-    color: rgb(var(--lf-on-inverse-muted));
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
-    transition:
-      border-color var(--lf-dur-base) var(--lf-ease),
-      color var(--lf-dur-base) var(--lf-ease);
-  }
-  /*
-   * The house hover for glass chrome, taken from the study: it does NOT change
-   * the background, it BRIGHTENS THE HAIRLINE. A fill change on a translucent
-   * pill fights whatever is behind it and reads differently over every part of
-   * the scene; an edge change reads the same everywhere.
-   */
-  @media (hover: hover) {
-    .lf-stage-pill:hover {
-      border-color: rgb(255 255 255 / 0.3);
-      color: rgb(var(--lf-on-inverse));
-    }
-  }
-
-  /*
-   * ELEVATION IS A PROMISE THAT THE THING CAN BE PRESSED. `.lf-inert` withdraws
-   * it.
-   *
-   * `lf-lumen` and `lf-stage-pill` describe a MATERIAL — blur, base, hairline,
-   * shadow. Neither says anything about whether the thing accepts a tap, so a
-   * label and a button built from the same material are painted identically and
-   * the only difference left is `cursor`, which does not exist on touch.
-   *
-   * The 2026-09-09 production audit measured this in BOTH directions on one
-   * screen, which is why the fix is a class and not two patches:
-   *
-   *  - "2 cosas para repasar hoy" is a `<div pointer-events-none>` whose
-   *    computed `background-color`, `border-radius` and `box-shadow` are
-   *    BYTE-IDENTICAL to the real buttons flanking it. It was tapped three
-   *    times and did nothing.
-   *  - 37 px from the sound-blocked BUTTON sits the mic's tooltip `<span>`,
-   *    same `lf-stage-pill`, same base, same radius, same ink. One restores the
-   *    tutor's voice; the other is decoration.
-   *
-   * So: a surface that cannot be pressed lies flat and keeps only its hairline.
-   * It still reads as one of the family — same material, same shape — it just
-   * stops claiming to be liftable. Applied at the passive call sites, never as
-   * a blanket rule on `pointer-events-none`: that utility also wraps purely
-   * decorative layers where flattening would mean nothing.
-   */
-  .lf-inert {
-    box-shadow: none;
-  }
-
-  /*
-   * A LIVE DOT WITH ITS OWN GLOW — 8px emerald throwing an 8px halo. The halo
-   * is the whole point: a flat dot on a dark plate is a pixel, and this has to
-   * read at a glance as "the microphone is actually open".
-   */
-  .lf-live-emerald {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 9999px;
-    background: rgb(var(--lf-success));
-    box-shadow: 0 0 8px rgb(var(--lf-success) / 0.8);
-    animation: lf-live 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .lf-live-emerald {
-      animation: none;
-    }
-  }
-
-  /*
-   * THE MIC ORB'S BREATHING RING — a halo that expands and fades behind the
-   * orb while the tutor is listening. Behind, `pointer-events: none`, and
-   * bounded by the listening state: it is the one thing on the stage that says
-   * the microphone is open without a word, and it must never outlive it.
-   */
-  .lf-orb-ring {
-    position: absolute;
-    z-index: -1;
-    border-radius: 9999px;
-    background: rgb(var(--lf-accent) / 0.55);
-    inset: -0.5rem;
-    animation: lf-orb-ring 2.4s ease-out infinite;
-    pointer-events: none;
-  }
-  @keyframes lf-orb-ring {
-    0% {
-      opacity: 0.7;
-      transform: scale(0.9);
-    }
-    50% {
-      opacity: 0.15;
-      transform: scale(1.22);
-    }
-    100% {
-      opacity: 0.7;
-      transform: scale(0.9);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .lf-orb-ring {
-      animation: none;
-      opacity: 0.25;
-      transform: none;
-    }
-  }
-
-  /*
-   * THE ORB'S OWN BODY, added 2026-09-05. `bg-accent` painted the mic's inner
-   * disc as one flat colour — correct as a fill, but the one large gradient
-   * OBJECT the design study puts on this stage (`bg-gradient-to-tr
-   * from-indigo-600 to-indigo-500`) was the one thing a flat utility class
-   * cannot express. Lit from the lower-left the same direction as `.lf-coin`
-   * and the stage's own key light, so the darkest stop sits at
-   * `--lf-accent-strong` and the lightest is a mix toward white rather than a
-   * second named token — the study's two stops are one step apart on the SAME
-   * ramp, not two different colours.
-   */
-  /* ══════════════════════════════════════════════════════════════════════
-     THE TUTOR'S CONFIGURATION DIALOG (2026-09-06, owner direction).
-
-     The design study's "Personalizar Experiencia" modal, built as its own
-     small material rather than by stacking Lumen on Lumen: this dialog sits
-     over a BLURRED SCRIM, so what is behind it is already diffuse and there is
-     nothing left for a glass plate to refract. Every recipe below is the
-     study's, mapped onto this project's tokens — the study names raw Tailwind
-     ramps (indigo-500/20, cyan-400/70, amber-300/30) and the closed palette
-     answers each of them with accent / delight / warning.
-     ────────────────────────────────────────────────────────────────────── */
-
-  /* The scrim: never an opaque veil. The stage stays perceptible as soft
-     colour behind it, which is the whole reason the glass system exists. */
-  /*
-   * `.lf-rail-bare` IS GONE (2026-09-12).
-   *
-   * It stopped the desktop plate painting so that each zone inside could carry
-   * its own Lumen card, which was right while the rail held three of them: the
-   * board, the transcript and the composer. It holds one now — the transcript
-   * is a section of the session menu and the composer has a single home in the
-   * dock — and a bare frame around a single card is a material whose only job
-   * was separating things that are no longer there.
-   */
-
-  .lf-config-scrim {
-    background: rgb(var(--lf-inverse) / 0.72);
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
-  }
-
-  /* The dialog shell. 24px radius — the largest on the route, one step above
-     the 16px cards inside it, which is what makes the stack read as
-     dialog > section > card rather than as three boxes. */
-  .lf-config-dialog {
-    background: rgb(var(--lf-surface) / 0.94);
-    -webkit-backdrop-filter: blur(24px) saturate(1.4);
-    backdrop-filter: blur(24px) saturate(1.4);
-    border: 1px solid rgb(var(--lf-content) / 0.14);
-    border-radius: 24px;
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.12),
-      0 25px 60px -15px rgb(0 0 0 / 0.55);
-  }
-  .dark .lf-config-dialog {
-    background: rgb(var(--lf-surface) / 0.86);
-  }
-
-  /* The header's own wash: tinted left-to-right so the header separates from
-     the body by more than the 1px rule under it. */
-  .lf-config-head {
-    background: linear-gradient(
-      to right,
-      rgb(var(--lf-accent) / 0.16),
-      rgb(var(--lf-accent) / 0.05) 45%,
-      transparent
-    );
-    border-bottom: 1px solid rgb(var(--lf-content) / 0.1);
-  }
-  .lf-config-foot {
-    background: rgb(var(--lf-content) / 0.04);
-    border-top: 1px solid rgb(var(--lf-content) / 0.1);
-  }
-
   /*
    * THE TINTED ICON TILE — the study's most reused recipe, and its own note
    * calls it "three matched steps of the same hue at three opacities": a
@@ -2531,100 +1542,6 @@
     border-radius: 12px;
     background: color-mix(in srgb, currentColor 18%, transparent);
     border: 1px solid color-mix(in srgb, currentColor 34%, transparent);
-  }
-
-  /*
-   * A PICKABLE CARD — tutor, world, hour. Selection is signalled FOUR ways at
-   * once because the study signals it four ways at once: a solid fill that
-   * drops the glass entirely, a 2px border at full strength where an
-   * unselected card has 1px at a tenth, an outer coloured glow, and a corner
-   * check. One of those alone is a state you have to look for.
-   */
-  .lf-pick-card {
-    position: relative;
-    border-radius: 16px;
-    border: 1px solid rgb(var(--lf-content) / 0.12);
-    background: rgb(var(--lf-content) / 0.03);
-    transition:
-      border-color var(--lf-dur-base) var(--lf-ease),
-      background-color var(--lf-dur-base) var(--lf-ease),
-      box-shadow var(--lf-dur-base) var(--lf-ease);
-  }
-  @media (hover: hover) {
-    .lf-pick-card:hover:not(.lf-pick-card-on) {
-      border-color: rgb(var(--lf-content) / 0.3);
-    }
-  }
-  .lf-pick-card-on {
-    border-width: 2px;
-    border-color: rgb(var(--lf-accent));
-    background: rgb(var(--lf-accent) / 0.1);
-    box-shadow: 0 0 20px rgb(var(--lf-accent) / 0.3);
-  }
-  .dark .lf-pick-card-on {
-    background: rgb(var(--lf-accent) / 0.22);
-  }
-  /* The corner check disc — a 16px filled circle, not a tick floating on the
-     card, so it reads as a stamp rather than as more content. */
-  .lf-pick-check {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    display: grid;
-    place-items: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 9999px;
-    background: rgb(var(--lf-accent));
-    color: rgb(var(--lf-on-accent));
-    box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
-  }
-
-  /* A settings ROW: the shared skeleton the study gives its quick settings —
-     icon, two lines, and a control pinned right. */
-  .lf-config-row {
-    border-radius: 16px;
-    border: 1px solid rgb(var(--lf-content) / 0.12);
-    background: rgb(var(--lf-content) / 0.03);
-  }
-
-  /*
-   * THE TOGGLE. 40x20 with the knob sunk into the track by an inset shadow,
-   * and the ON position expressed as a flex alignment rather than a transform
-   * — the study's own construction, and it means the knob cannot drift out of
-   * the track when the row's font size changes.
-   */
-  .lf-switch {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    width: 44px;
-    height: 24px;
-    padding: 2px;
-    border-radius: 9999px;
-    background: rgb(var(--lf-content) / 0.18);
-    box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.3);
-    transition: background-color var(--lf-dur-base) var(--lf-ease);
-  }
-  .lf-switch-on {
-    background: rgb(var(--lf-success));
-    justify-content: flex-end;
-  }
-  .lf-switch-knob {
-    width: 20px;
-    height: 20px;
-    border-radius: 9999px;
-    background: #fff;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
-  }
-
-  .lf-orb-fill {
-    background: linear-gradient(
-      to top right,
-      rgb(var(--lf-accent-strong)) 0%,
-      rgb(var(--lf-accent)) 55%,
-      color-mix(in srgb, rgb(var(--lf-accent)) 100%, white 16%) 100%
-    );
   }
 
   /* ─────────────────────────────────────────────────────────────────────
@@ -2674,10 +1591,6 @@
     --lf-ridge: rgb(var(--lf-error-strong));
     --lf-ridge-ambient: rgb(var(--lf-error) / 0.25);
   }
-  .lf-tactile-warning {
-    --lf-ridge: rgb(var(--lf-warning-strong));
-    --lf-ridge-ambient: rgb(var(--lf-warning) / 0.25);
-  }
   /*
    * The press. The surface travels exactly its own ridge height and the ridge
    * goes to zero in the same frame, so the bottom edge stays put and only the
@@ -2720,38 +1633,6 @@
   .lf-press:disabled,
   .lf-press[aria-disabled='true'] {
     transform: none;
-  }
-
-  /*
-   * THE KEYBOARD'S OWN RING — one, in `outline`, because `ring` destroys the
-   * material it lands on.
-   *
-   * Two facts that only matter together. This stylesheet contains no
-   * `:focus-visible` rule at all, so every focusable control on the Tutor route
-   * hand-wrote the same three utilities — `focus-visible:outline-none
-   * focus-visible:ring-2 focus-visible:ring-primary`, sixteen times. And
-   * Tailwind's `ring-*` is not an outline: it compiles to `box-shadow: var(
-   * --tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)`, from
-   * the utilities layer, which OVERRIDES a `box-shadow` set in the components
-   * layer.
-   *
-   * `.lf-lumen`'s box-shadow is the material: the specular lip, two edge
-   * layers that track the sun, and the one drop shadow that agrees with it. So
-   * on every Lumen control, focusing it with a keyboard replaced the whole
-   * plate with a flat indigo halo. `MicOrb` is the proof and the worst case —
-   * `'lf-settle lf-lumen'` and `focus-visible:ring-2` land on the SAME element,
-   * so the largest, most important control in the product loses its lip, its
-   * edge and its seat at the exact moment a keyboard user needs to see where
-   * they are.
-   *
-   * `outline` is drawn outside the box, composes with any box-shadow, and has
-   * followed `border-radius` in every engine since 2021 — so one rule serves a
-   * pill, a plate and the orb without knowing which it is. The offset keeps it
-   * clear of the lip rather than sitting on it.
-   */
-  .lf-focus:focus-visible {
-    outline: 3px solid rgb(var(--lf-primary));
-    outline-offset: 2px;
   }
 
   /*
@@ -2798,37 +1679,6 @@
   }
 
   /*
-   * THE WORK SURFACE — the place a learner works, drawn as a place.
-   *
-   * The exercise used to sit straight on the page ground, so the question, the
-   * options and the empty base colour were one plane. Photographed against the
-   * design study on 2026-09-05, this was the second-biggest difference after
-   * the answer object's missing side: theirs has a surface, ours had a
-   * background.
-   *
-   * It is `--lf-obj-fill` and the same edge ink the answer material uses, NOT
-   * `bg-surface` — partly because `answerSurfaces.test.tsx` forbids the engine
-   * from hand-drawing surfaces, and mostly because this frame has to sit under
-   * answer objects that are themselves lit by the scene. A tone-based card
-   * would go opaque and wrong the moment this runs over the Tutor's island.
-   *
-   * `padding` only from `sm` up: on a phone the viewport IS the frame, and
-   * 16px of chrome on each side is 32px taken from the thing being worked on.
-   */
-  .lf-worksurface {
-    border-radius: 24px;
-    background: color-mix(in srgb, var(--lf-obj-fill) 55%, transparent);
-    box-shadow:
-      inset 0 1px 0 color-mix(in srgb, var(--lf-key) var(--lf-obj-rim), transparent),
-      inset 0 0 0 1px var(--lf-obj-edge);
-  }
-  @media (min-width: 640px) {
-    .lf-worksurface {
-      padding: 1.25rem;
-    }
-  }
-
-  /*
    * A PORTRAIT FRAME — a well the mentor's bust sits in, desktop only.
    *
    * `presence="talk"` is a BUST crop: the render ends at the box's bottom edge
@@ -2855,67 +1705,6 @@
     }
   }
 
-  /*
-   * REWARD MOTION — the one place the overshoot easing is allowed.
-   * One-shot, like every other action in the system (§Motion recipe 7): it
-   * lands and it is over. Nothing here loops.
-   */
-  .lf-land {
-    animation: lf-land var(--lf-dur-reward) var(--lf-ease-tactile) both;
-  }
-  @keyframes lf-land {
-    0% {
-      opacity: 0;
-      transform: translateY(-16px) scale(0.65);
-    }
-    70% {
-      opacity: 1;
-      transform: translateY(2px) scale(1.08);
-    }
-    100% {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  /*
-   * The mentor's speech tail. A drawn triangle rather than a rotated square,
-   * because a rotated square needs the bubble's exact background to hide its
-   * own corners and stops matching the moment the surface behind it changes.
-   * `currentColor` is set by the caller from the same token the bubble uses.
-   */
-  /*
-   * The tail's colour is its OWN property, not `currentColor`. Reading it off
-   * `color` means the bubble has to set `color` to its own background, which
-   * then cascades into every child that did not name a colour — the caller
-   * ends up fighting their own tail for the text inside it. `--lf-tail`
-   * defaults to the surface, which is what a bubble is nine times out of ten.
-   */
-  .lf-bubble-tail {
-    --lf-tail: rgb(var(--lf-surface));
-    position: relative;
-  }
-  .lf-bubble-tail::after {
-    position: absolute;
-    width: 0;
-    height: 0;
-    content: '';
-    pointer-events: none;
-  }
-  .lf-bubble-tail-bottom::after {
-    bottom: -10px;
-    left: 42px;
-    border-top: 10px solid var(--lf-tail);
-    border-right: 10px solid transparent;
-    border-left: 10px solid transparent;
-  }
-  .lf-bubble-tail-left::after {
-    top: 24px;
-    left: -9px;
-    border-top: 7px solid transparent;
-    border-right: 9px solid var(--lf-tail);
-    border-bottom: 7px solid transparent;
-  }
   /*
    * The breakpoint lives HERE, not in a `md:` utility prefix. A Tailwind
    * variant on a class defined in `@layer components` generates NOTHING and
@@ -2962,9 +1751,6 @@
     .lf-tactile:active,
     .lf-press:active {
       transform: none;
-    }
-    .lf-land {
-      animation: none;
     }
   }
 

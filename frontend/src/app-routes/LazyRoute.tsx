@@ -1,7 +1,10 @@
 import { Suspense, type ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
 import { RouteErrorBoundary } from '@/components/RouteErrorBoundary';
-import { LoadingOverlay } from '@/components/ui';
+import { rebuildNamespaceCopy } from '@/i18n/rebuild';
+import { useShellLocale } from '@/app-shell/ShellRoot';
+import { useTheme } from '@/theme/useTheme';
+import { LoadingState, RebuildRoot } from '@/rebuild/design/controls';
+import './lazyRoute.css';
 
 /*
  * The wrapper every lazy route goes through (Lane 0; shared by every route
@@ -22,20 +25,21 @@ export function LazyRoute({ children, home }: { children: ReactNode; home?: stri
 }
 
 /*
- * What a learner sees while a lazy chunk (the Mentor's 3D stage above all)
- * downloads. It used to be `fallback={null}` — a BLANK SCREEN for the length
- * of the `three` download, which on a slow connection is seconds of
- * apparently-broken product before the stage's own veil could even mount. The
- * overlay paints the app surface and says loading, in the learner's language,
- * from the first frame.
+ * What a person sees while a lazy chunk (the lesson player, the staff console)
+ * downloads: the rebuilt loading state, in the page's language and mode, from
+ * the first frame. A bare design-system root, not `ShellRoot`: the shell root
+ * moves focus on its first mount after a route change, and that mount must be
+ * the page's own, not this placeholder's. (It replaced the legacy
+ * LoadingOverlay with the legacy UI, S10L.1.)
  */
 export function TutorChunkFallback() {
-  const { t } = useTranslation();
-  return (
-    <div className="fixed inset-0 z-40 grid place-items-center bg-surface">
-      <LoadingOverlay label={t('tutor.page.loading')} />
+  const locale = useShellLocale();
+  const { isDark } = useTheme();
+  return <RebuildRoot theme={isDark ? 'dark' : 'light'} locale={locale}>
+    <div className="lf-route-loading">
+      <LoadingState label={rebuildNamespaceCopy[locale].core.appShell.loading} lines={2} />
     </div>
-  );
+  </RebuildRoot>;
 }
 
 /** A development-only harness: its chunk never reaches a production bundle (the route is DEV-gated). */

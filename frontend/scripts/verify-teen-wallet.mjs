@@ -204,7 +204,9 @@ try {
   const only = (name, all) => (process.env[name] ? process.env[name].split(',') : all);
   for (locale of only('TEEN_WALLET_LOCALES', ['en-US', 'es-MX', 'pt-BR'])) for (theme of only('TEEN_WALLET_THEMES', ['light', 'dark'])) for (const width of only('TEEN_WALLET_WIDTHS', ['375', '1280']).map(Number)) {
     const copy = JSON.parse(readFileSync(resolve(`src/i18n/${locale}/teenWallet.json`), 'utf8'));
-    const nav = JSON.parse(readFileSync(resolve(`src/i18n/${locale}/dashboard.json`), 'utf8')).nav;
+    // The rebuilt shell's labels (rebuild-core.json); the legacy dashboard.json went with the legacy UI (S10L.1).
+    const shellNav = JSON.parse(readFileSync(resolve(`src/i18n/${locale}/rebuild-core.json`), 'utf8')).appShell.nav;
+    const nav = { family: shellNav.family, banking: shellNav.familyCoins };
     // S07.4/S07.6 (D.16, D.12): a goal's progress is the shared GoalProgress line in the teen register.
     const progressOf = JSON.parse(readFileSync(resolve(`src/i18n/${locale}/moneyRegister.json`), 'utf8')).goalProgress.teen.of;
     const progress = (saved, target) => progressOf.replace('{saved}', String(saved)).replace('{target}', String(target)).replace('{pct}', String(Math.min(100, Math.floor((saved * 100) / target))));

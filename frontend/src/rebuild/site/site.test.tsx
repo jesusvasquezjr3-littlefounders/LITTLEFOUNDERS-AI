@@ -11,6 +11,7 @@ import { Families } from './Families';
 import { Faq } from './Faq';
 import { LegalDocumentPage } from './LegalDocumentPage';
 import { CookieConsent } from './CookieConsent';
+import { BadgeLanding, type BadgePayload } from './BadgeLanding';
 import { FAQ_ITEMS } from './faqItems';
 import { legalDocument, matchingSections } from './legalContent';
 import type { StartAction } from './blocks';
@@ -231,5 +232,36 @@ describe('Cookie choice (M8)', () => {
     }
     expect(sheet).toHaveTextContent(copy().cookies.currentDenied);
     expect(within(sheet).getByRole('link', { name: copy().cookies.privacyLink })).toHaveAttribute('href', '/legal/privacy');
+  });
+});
+
+describe('BadgeLanding (M7, S10L.3)', () => {
+  const payload: BadgePayload = { firstName: 'Ana', achievementKind: 'course_badge', achievementLabel: 'Money Basics', imageUrl: 'https://depot.example/badge.png' };
+
+  it('shows the shared badge with its alt text, one heading and the guest start, and no celebration', () => {
+    const onStart = vi.fn();
+    const { container } = inRoot(<BadgeLanding locale="en-US" state={{ status: 'ready', payload }} start={guest({ onStart })} />);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Ana earned Money Basics');
+    expect(container.querySelectorAll('h1')).toHaveLength(1);
+    expect(screen.getByRole('img', { name: "Ana's achievement badge: Money Basics" })).toHaveAttribute('src', payload.imageUrl);
+    fireEvent.click(screen.getByRole('button', { name: copy().site.startFree }));
+    expect(onStart).toHaveBeenCalledWith('badge-landing');
+    expect(screen.getByRole('link', { name: copy().badgeLanding.howItWorks })).toHaveAttribute('href', '/how-it-works');
+    expect(container.querySelector('[data-celebrate]')).toBeNull();
+    expect(undeclaredText(container)).toEqual([]);
+  });
+
+  it('says an expired, revoked or unknown link expired, and still offers the site', () => {
+    const { container } = inRoot(<BadgeLanding locale="es-MX" state={{ status: 'expired' }} start={{ kind: 'continue', href: '/learn' }} />, 'dark', 'es-MX');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(copy('es-MX').badgeLanding.expiredTitle);
+    expect(screen.queryByRole('img')).toBeNull();
+    expect(screen.getByRole('link', { name: copy('es-MX').site.continue })).toHaveAttribute('href', '/learn');
+    expect(undeclaredText(container)).toEqual([]);
+  });
+
+  it('announces the load in the page language', () => {
+    const { container } = inRoot(<BadgeLanding locale="pt-BR" state={{ status: 'loading' }} start={guest()} />, 'light', 'pt-BR');
+    expect(screen.getByRole('status')).toHaveTextContent(copy('pt-BR').badgeLanding.loading);
+    expect(undeclaredText(container)).toEqual([]);
   });
 });

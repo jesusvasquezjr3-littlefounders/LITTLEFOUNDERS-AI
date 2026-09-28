@@ -4,17 +4,8 @@
   "forbiddenDependencies": ["stripe", "@stripe/stripe-js", "@stripe/react-stripe-js", "paypal", "@paypal/checkout-server-sdk", "@paypal/react-paypal-js", "braintree", "@adyen/api-library", "@adyen/adyen-web", "plaid", "react-plaid-link", "marqeta", "square", "checkout-sdk-node", "mercadopago", "@mercadopago/sdk-react", "pagarme", "unit-finance", "synctera", "galileo"],
   "retiredClaims": [
     {
-      "namespace": "marketing",
-      "why": "D.17 lets a Tutor pre-approve small rewards and self-logged chores, so not every reward or chore waits for a tap (control approval); D.14 sends Share coins to a place a Tutor chose, never to another person's goal (control share_destination). Retired in S07.8.",
-      "phrases": {
-        "en-US": ["spending needs your approval first", "you approve it before it lands", "waiting for their approval before it's yours", "someone else's goal"],
-        "es-MX": ["gastar necesita tu aprobación primero", "lo apruebas antes de que llegue", "esperando su aprobación antes de ser tuyo", "la meta de alguien más"],
-        "pt-BR": ["gastar precisa da sua aprovação antes", "aprova antes de chegar até ele", "esperando a aprovação dele antes de ser seu", "a meta de outra pessoa"]
-      }
-    },
-    {
       "namespace": "rebuild-site",
-      "why": "The same retired claims, held out of the rebuilt public site (W2 Lane 1), which replaced the marketing namespace's pages; the chore and share wording there follows the approval and share_destination controls.",
+      "why": "D.17 lets a Tutor pre-approve small rewards and self-logged chores, so not every reward or chore waits for a tap (control approval); D.14 sends Share coins to a place a Tutor chose, never to another person's goal (control share_destination). Retired in S07.8 from the legacy marketing namespace, held out of the rebuilt public site (W2 Lane 1) that replaced it; the legacy namespace itself was deleted in S10L.3.",
       "phrases": {
         "en-US": ["spending needs your approval first", "you approve it before it lands", "waiting for their approval before it's yours", "someone else's goal"],
         "es-MX": ["gastar necesita tu aprobación primero", "lo apruebas antes de que llegue", "esperando su aprobación antes de ser tuyo", "la meta de alguien más"],

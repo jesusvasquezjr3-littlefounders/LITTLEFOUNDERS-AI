@@ -1073,8 +1073,8 @@ describe('a categories board contradicted by the words beside it', () => {
  * THE PRODUCT'S OWN COPY, IN ALL THREE LOCALES, MUST NOT TRIP ANY OF THEM.
  *
  * Hand-written examples prove a check FIRES; only real content proves it stays
- * quiet. These are the `say`/board pairs from `frontend/src/tutor/lab/
- * labFixtures.ts` — the fixtures `verify-tutor-ui.mjs` puts on a real screen —
+ * quiet. These are the `say`/board pairs from the legacy Tutor lab's fixtures (retired with the legacy
+ * UI in S10L.1) — the fixtures its browser gate put on a real screen —
  * copied verbatim, because oracle and frontend are separate packages with no
  * shared fixture module. They are known-consistent by construction, so every
  * assertion here is `false`, and a `true` means a check has started firing on

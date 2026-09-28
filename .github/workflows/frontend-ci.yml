@@ -85,12 +85,14 @@ jobs:
   # which is how a full-viewport canvas once swallowed the whole product while
   # every audit stayed green). It is the only gate that would have caught it.
   #
-  # verify:tutor-ui is here for the same reason on the Tutor's side: it sweeps
-  # every whiteboard instrument and affordance for reachability, and it was
-  # equally honour-system.
+  # verify:tutor-ui and verify:tutor-a11y used to run here too, against the
+  # legacy Tutor lab (/dev/tutor-lab). That lab and the legacy Tutor UI it
+  # mounted were removed in S10L.1 (OD-2, Frontend Bible 02 rule 23); the
+  # rebuilt Mentor stage is verified by scripts/verify-mentor-stage.mjs and the
+  # rebuild audits.
   #
-  # Their own job because together they take ~38 minutes, and `needs: ci` so a
-  # push that fails type-check does not also pay for them.
+  # Its own job because it takes ~20 minutes or more, and `needs: ci` so a push
+  # that fails type-check does not also pay for it.
   browser-gates:
     needs: ci
     runs-on: ubuntu-latest
@@ -128,14 +130,3 @@ jobs:
         env:
           CHROME_PATH: /usr/bin/google-chrome
         run: npm run verify:lesson-engine
-      - name: Tutor UI — every instrument and affordance reachable
-        env:
-          CHROME_PATH: /usr/bin/google-chrome
-        run: npm run verify:tutor-ui
-      # WCAG A/AA across all 8 stage phases, both themes, desktop and mobile.
-      # A kid using a screen reader is the one learner who cannot tell us the
-      # product is broken, so this is the gate with the quietest failure mode.
-      - name: Tutor a11y — zero WCAG A/AA violations
-        env:
-          CHROME_PATH: /usr/bin/google-chrome
-        run: npm run verify:tutor-a11y

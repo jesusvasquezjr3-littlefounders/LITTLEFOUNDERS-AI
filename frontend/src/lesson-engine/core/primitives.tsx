@@ -43,7 +43,7 @@ export type OptionVisualState = 'idle' | 'selected' | 'correct' | 'wrong' | 'dim
  * is `outline` rather than `ring-*` deliberately: a Tailwind `ring` compiles to
  * `box-shadow`, utilities outrank components, and a focused option would lose
  * its lip, its edge and its seat at the exact moment it is being pointed at —
- * the same trap `.lf-lumen-selected` records for the Tutor's plates.
+ * the same trap the legacy Tutor's selected plates recorded.
  */
 export const FOCUS_RING =
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary'

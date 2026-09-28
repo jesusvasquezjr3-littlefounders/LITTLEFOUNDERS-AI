@@ -7,7 +7,7 @@ import { CoursePathRedirect, CourseRoute } from '@/routes/app/learn/CourseRoute'
 import { TerritoryRoute } from '@/routes/app/learn/TerritoryRoute';
 import { DecisionJournalRoute } from '@/routes/app/learn/DecisionJournalRoute';
 import { LearningRhythmRoute } from '@/routes/app/learn/LearningRhythmRoute';
-import { TogetherRoute } from '@/routes/app/learn/TogetherRoute';
+import { TogetherRoute } from '@/app-routes/TogetherRoute';
 import { PlacementRoute } from '@/routes/app/learn/PlacementRoute';
 import {
   COURSE_PATH_ROUTE_PATH,

@@ -5,9 +5,10 @@
 // reached, a freeze, an allowance arriving, a correction.
 //
 // Scope (agent/tools/family-copy-tone.lexicon.json): every string of the
-// Family Hub and banking namespaces in all three locales, the Family Hub and
-// banking subtrees of common.json and the family and banking error codes of
-// errors.json. Core's own error messages are English developer diagnostics a
+// Family Hub and banking namespaces in all three locales and the family
+// subtree of common.json (the legacy tasks/banking subtrees and errors.json
+// left with the legacy UI in S10L.1; `errorCodes` stays available for any
+// error copy a surface resolves again). Core's own error messages are English developer diagnostics a
 // family never reads (a surface resolves the error CODE to copy); the gate
 // fails if a Family Hub or banking surface starts rendering one.
 //

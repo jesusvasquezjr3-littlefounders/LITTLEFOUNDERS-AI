@@ -72,8 +72,6 @@ const CONSUMERS: Record<string, { gate: RegExp; reason: string }> = {
     reason: 'the sound of the celebrate action, played only when a caller names it: the lesson director never does per answer (director.test.ts) and the live results cast only for Core\'s lesson-complete. The live Mentor\'s turn schema is an open S06 item.',
   },
   'lesson-engine/player/StreakCelebration.tsx': { gate: /export function StreakCelebration/, reason: 'the takeover itself; mounted only by LessonPlayer' },
-  'tutor/hud/GamificationCelebration.tsx': { gate: /export function GamificationCelebration/, reason: 'the Mentor pill itself; mounted only by ConversationView' },
-  'tutor/ConversationView.tsx': { gate: /streakJustAdvanced|GamificationCelebration streakDays/, reason: 'mounts the pill on useTutorLearningStats\' milestone flag' },
   'rebuild/learning/LessonResultView.tsx': { gate: /mayCelebrate\(|celebrationsFrom\(/, reason: 'the lesson-complete and streak milestone moments on the result screen' },
   'rebuild/learning/result.css': { gate: /\[data-celebrate/, reason: 'milestone motion bound to [data-celebrate], which only the gate sets' },
   'rebuild/design/motion.css': {
@@ -103,7 +101,8 @@ const MOUNTS: Record<string, string[]> = {
   // The component itself also refuses to show anything outside a closed-list Celebration (MotionAsset.test.tsx).
   MotionAsset: ['rebuild/learning/LessonResultView.tsx'],
   StreakCelebration: ['lesson-engine/player/LessonPlayer.tsx'],
-  GamificationCelebration: ['tutor/ConversationView.tsx'],
+  // The legacy Mentor streak pill left with the legacy Tutor UI (S10L.1): nothing may mount it again.
+  GamificationCelebration: [],
 };
 
 const files = walk(src).map((file) => ({ file: rel(file), text: readFileSync(file, 'utf8') }));
@@ -111,7 +110,7 @@ const files = walk(src).map((file) => ({ file: rel(file), text: readFileSync(fil
 describe('B.20 celebration budget: static scan of every celebration effect', () => {
   it('finds the effects it is meant to find (the scan is live, not vacuous)', () => {
     const hits = files.filter(({ text }) => EFFECTS.some(({ pattern }) => pattern.test(code(text))));
-    expect(hits.map((h) => h.file)).toEqual(expect.arrayContaining(['lesson-engine/player/LessonPlayer.tsx', 'tutor/hud/GamificationCelebration.tsx']));
+    expect(hits.map((h) => h.file)).toEqual(expect.arrayContaining(['lesson-engine/player/LessonPlayer.tsx', 'rebuild/design/motion.css']));
   });
 
   it('every file that uses a celebration effect is a registered, gated consumer or a closed-list definition', () => {
@@ -141,9 +140,7 @@ describe('B.20 celebration budget: static scan of every celebration effect', () 
     expect(player).toMatch(/action=\{lessonCelebrates \? 'celebrate'/);
   });
 
-  it('the Mentor pill\'s flag comes from the streak-milestone crossing, and the lesson burst is gone', () => {
-    const stats = files.find(({ file }) => file === 'tutor/useTutorLearningStats.ts')!.text;
-    expect(stats).toMatch(/crossedStreakMilestone\(lastSeen, stats\.streakDays\)/);
+  it('the lesson burst is gone (the legacy Mentor pill left with the legacy Tutor UI, S10L.1)', () => {
     const player = files.find(({ file }) => file === 'lesson-engine/player/LessonPlayer.tsx')!.text;
     expect(code(player)).not.toMatch(/lf-burst|<CountUp/);
   });

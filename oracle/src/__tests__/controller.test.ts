@@ -949,7 +949,7 @@ describe('per-strategy listening budgets', () => {
  *
  * `wouldEndTurn` mirrors — without importing, since `frontend/` is a
  * separate package with no shared code (`/AGENTS.md` §1.2) — the ONE
- * comparison `createTurnDetector` in `frontend/src/tutor/turnDetector.ts`
+ * comparison `createTurnDetector` in `frontend/src/rebuild/mentor/session/turnDetector.ts`
  * actually uses to close a turn: `speechMs >= minSpeechMs && silenceMs >=
  * policy.silenceMs`. Real speech is a given in every case below, so only the
  * silence side of that comparison is exercised here — this grounds the proof

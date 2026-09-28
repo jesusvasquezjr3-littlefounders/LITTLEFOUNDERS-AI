@@ -34,6 +34,13 @@ import { inflateSync } from 'node:zlib';
  *   `staticFrame`, which must be a registered, live SVG of the same slot.
  *   A row may name a checked-in `generator` (scripts/*.mjs exporting
  *   `synthesize(path)`); the file must equal its output byte for byte.
+ *   Local draft override (S10L.2): `LF_LOCAL_DRAFT_ASSETS=1` with `--release`
+ *   lets a LOCAL production build (`npm run build:local`) ship draft assets
+ *   while the owner style review (OD-14) is pending. It only downgrades the
+ *   one "not approved" refusal to a listed warning; every other check still
+ *   fails the build. It is itself refused when the build runs in CI or on a
+ *   hosting builder (CI, VERCEL, RAILWAY_ENVIRONMENT, NETLIFY), and it never
+ *   applies to a `retired` asset, so the release build stays strict.
  *
  *   Sound cues (type `wav`) are class B rows too; 07 has no audio section, so
  *   how its §6 fields and §7 gate apply to a sound is written beside the
@@ -53,9 +60,19 @@ const root = process.env.REBUILD_ASSET_ROOT ? resolve(process.env.REBUILD_ASSET_
 const publicRoot = resolve(root, 'public');
 const rebuildRoot = resolve(root, 'src/rebuild');
 const release = process.argv.includes('--release');
+const draftOverride = /^(1|true|yes)$/i.test(process.env.LF_LOCAL_DRAFT_ASSETS ?? '');
+const hostedBuilder = ['CI', 'VERCEL', 'RAILWAY_ENVIRONMENT', 'NETLIFY'].find((name) => {
+  const value = process.env[name];
+  return typeof value === 'string' && value !== '' && !/^(0|false)$/i.test(value);
+});
+const allowDrafts = release && draftOverride && !hostedBuilder;
+const allowedDrafts = [];
 const manifest = JSON.parse(readFileSync(resolve(root, 'src/rebuild/assets/manifest.json'), 'utf8'));
 const failures = [];
 const fail = (message) => failures.push(message);
+if (release && draftOverride && hostedBuilder) {
+  fail(`LF_LOCAL_DRAFT_ASSETS is a local-only override and is refused on a hosted or CI build (${hostedBuilder} is set)`);
+}
 
 /* ---------------------------------------------------------------- sources */
 function walk(dir) {
@@ -453,7 +470,10 @@ for (const asset of classB) {
       || classB.some((entry) => entry.type === 'lottie' && entry.reviewStatus !== 'retired' && entry.staticFrame === asset.path && idRefs.some((ref) => ref.re.test(entry.id)));
   const awaitingWiring = sound && asset.reviewStatus === 'draft' && typeof asset.wiring === 'string' && asset.wiring.trim().length > 0;
   if (asset.reviewStatus !== 'retired' && !referenced && !awaitingWiring) fail(`Registered asset is referenced nowhere: ${asset.id}`);
-  if (release && asset.reviewStatus !== 'approved') fail(`Unapproved asset blocks the build (07 §6): ${asset.path}`);
+  if (release && asset.reviewStatus !== 'approved') {
+    if (allowDrafts && asset.reviewStatus === 'draft') allowedDrafts.push(asset.path);
+    else fail(`Unapproved asset blocks the build (07 §6): ${asset.path}`);
+  }
 }
 // Every referenced path is registered and live.
 const live = classB.filter((asset) => asset.reviewStatus !== 'retired');
@@ -492,5 +512,10 @@ if (process.env.REBUILD_ASSET_OCR !== 'off' && rasters.length) {
 if (failures.length) { console.error(failures.join('\n')); process.exitCode = 1; }
 else {
   const pending = [...new Set(live.filter((asset) => asset.reviewStatus !== 'approved').map((asset) => asset.reviewFamily))];
-  console.log(`Rebuild asset integrity OK: ${glyphRows.length}/${GLYPH_BUDGET} glyph families from one source (${glyphNames.length} names); ${classB.length} class B assets, ${ocrRead} raster(s) free of text by OCR${release ? ' approved' : `, ${live.filter((asset) => asset.reviewStatus === 'draft').length} awaiting review${pending.length ? ` (owner style review pending for: ${pending.join(', ')})` : ''}`}.`);
+  const status = release && !allowDrafts ? ' approved'
+    : `, ${live.filter((asset) => asset.reviewStatus === 'draft').length} awaiting review${pending.length ? ` (owner style review pending for: ${pending.join(', ')})` : ''}`;
+  console.log(`Rebuild asset integrity OK: ${glyphRows.length}/${GLYPH_BUDGET} glyph families from one source (${glyphNames.length} names); ${classB.length} class B assets, ${ocrRead} raster(s) free of text by OCR${status}.`);
+  if (allowedDrafts.length) {
+    console.warn(`LOCAL DRAFT BUILD (LF_LOCAL_DRAFT_ASSETS=1): ${allowedDrafts.length} draft assets allowed; this build is not releasable (07 §6).`);
+  }
 }
