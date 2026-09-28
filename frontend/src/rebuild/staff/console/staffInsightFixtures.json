@@ -2045,7 +2045,9 @@
         "cooldownMinutes": 60,
         "status": "active",
         "lastTriggeredAt": null,
-        "createdAt": "2026-09-01T00:00:00Z"
+        "createdAt": "2026-09-01T00:00:00Z",
+        "lastDeliveryStatus": null,
+        "lastDeliveryError": null
       },
       {
         "id": "a2",
@@ -2057,9 +2059,32 @@
         "cooldownMinutes": 60,
         "status": "paused",
         "lastTriggeredAt": "2026-09-22T09:12:00Z",
-        "createdAt": "2026-09-01T00:00:00Z"
+        "createdAt": "2026-09-01T00:00:00Z",
+        "lastDeliveryStatus": "failed",
+        "lastDeliveryError": "HTTP 500"
       }
     ],
+    "alertDelivery": {
+      "days": 30,
+      "triggered": 5,
+      "delivered": 3,
+      "failed": 1,
+      "unconfigured": 1,
+      "pending": 0,
+      "rate": 0.6,
+      "target": 1
+    },
+    "disclosure": {
+      "window": { "from": "2026-08-27T00:00:00Z", "to": "2026-09-26T00:00:00Z" },
+      "teens": { "active": 48, "disclosed": 46, "optedIn": 31, "optedOut": 15, "protectedOrigin": 1, "measuredWithoutOptIn": 0, "covered": 47 },
+      "guests": { "active": 12, "suppressed": 12, "measured": 0 },
+      "days": 30,
+      "covered": 59,
+      "population": 60,
+      "coverage": 0.9833333333333333,
+      "target": 1,
+      "status": "missed"
+    },
     "learning": {
       "snapshot": {
         "courses": 6,

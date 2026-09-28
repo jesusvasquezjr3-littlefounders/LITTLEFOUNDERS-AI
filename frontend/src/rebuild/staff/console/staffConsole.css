@@ -137,6 +137,8 @@
 .lf-rebuild .lf-staff-image { display: grid; gap: var(--spacing-1); margin: 0; }
 .lf-rebuild .lf-staff-image img { display: block; inline-size: 100%; aspect-ratio: 1; object-fit: contain; border-radius: var(--rounded-md); background: var(--sunken); }
 .lf-rebuild .lf-staff-image figcaption { font: var(--type-caption); color: var(--content-muted); }
+/* A value beside its verdict chip (Appendix O targets); wraps on a phone. */
+.lf-rebuild .lf-staff-inline { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2); }
 /* A plain link that still meets the 48 px target (02 §8). */
 .lf-rebuild .lf-staff-inline-link {
   display: inline-flex; align-items: center; min-block-size: var(--target-base); min-inline-size: var(--target-base); padding-inline: var(--spacing-2);

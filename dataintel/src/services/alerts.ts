@@ -14,6 +14,31 @@ export interface Alert {
   status: 'active' | 'paused';
   lastTriggeredAt?: string;
   createdAt: string;
+  /**
+   * H.3: the outcome of the latest trigger's delivery, so staff see an alert
+   * that fired and notified nobody. `null` when the alert never fired, or the
+   * latest trigger is still in flight or predates delivery tracking.
+   */
+  lastDeliveryStatus?: AlertDeliveryStatus | null;
+  lastDeliveryError?: string | null;
+}
+
+/**
+ * Appendix O 1.3 (Alert-to-Notification Delivery Rate): every trigger in the
+ * window against the ones that reached a human. `pending` counts triggers
+ * with no recorded outcome (in flight, or recorded before delivery was
+ * tracked). `rate` is delivered / triggered, `null` when nothing fired.
+ * Target: 100% (an alert that fires but notifies nobody counts as no alert).
+ */
+export interface AlertDeliveryRate {
+  days: number;
+  triggered: number;
+  delivered: number;
+  failed: number;
+  unconfigured: number;
+  pending: number;
+  rate: number | null;
+  target: 1;
 }
 
 /**
@@ -54,6 +79,18 @@ type StoredAlert = {
   status: string;
   last_triggered_at: string | null;
   created_at: string;
+};
+
+type StoredAlertWithDelivery = StoredAlert & {
+  last_delivery_status?: string | null;
+  last_delivery_error?: string | null;
+};
+
+type DeliveryCountRow = {
+  triggered: number | bigint;
+  delivered: number | bigint;
+  failed: number | bigint;
+  unconfigured: number | bigint;
 };
 
 type StoredHistory = {
@@ -130,6 +167,10 @@ function now(): string {
   return new Date().toISOString();
 }
 
+function deliveryStatusOf(value: string | null | undefined): AlertDeliveryStatus | null {
+  return value && DELIVERY_STATUSES.includes(value) ? value as AlertDeliveryStatus : null;
+}
+
 function rowToAlert(r: StoredAlert): Alert {
   return {
     id: r.id,
@@ -188,11 +229,25 @@ export async function listAlerts(): Promise<Alert[] | null> {
   try {
     await execute(ENSURE_ALERTS);
 
-    const rows = await query<StoredAlert>(
-      'SELECT * FROM alerts ORDER BY created_at DESC',
+    await ensureHistorySchema();
+
+    // H.3: each alert with the delivery outcome of its latest trigger.
+    const rows = await query<StoredAlertWithDelivery>(
+      `SELECT a.*, h.delivery_status AS last_delivery_status, h.delivery_error AS last_delivery_error
+       FROM alerts a
+       LEFT JOIN (
+         SELECT alert_id, delivery_status, delivery_error,
+                ROW_NUMBER() OVER (PARTITION BY alert_id ORDER BY triggered_at DESC) AS rn
+         FROM alert_history
+       ) h ON h.alert_id = a.id AND h.rn = 1
+       ORDER BY a.created_at DESC`,
     );
 
-    return rows.map(rowToAlert);
+    return rows.map((r) => ({
+      ...rowToAlert(r),
+      lastDeliveryStatus: deliveryStatusOf(r.last_delivery_status),
+      lastDeliveryError: r.last_delivery_error ?? null,
+    }));
   } catch (err) {
     console.error('[dataintel][alerts] list failed:', err);
     return null;
@@ -248,13 +303,52 @@ export async function getAlertHistory(
       value: Number(r.value),
       threshold: Number(r.threshold),
       condition: r.condition,
-      deliveryStatus: r.delivery_status && DELIVERY_STATUSES.includes(r.delivery_status) ? r.delivery_status as AlertDeliveryStatus : null,
+      deliveryStatus: deliveryStatusOf(r.delivery_status),
       deliveryChannel: r.delivery_channel ?? null,
       deliveredAt: r.delivered_at ? String(r.delivered_at) : null,
       deliveryError: r.delivery_error ?? null,
     }));
   } catch (err) {
     console.error('[dataintel][alerts] getHistory failed:', err);
+    return null;
+  }
+}
+
+/**
+ * Appendix O 1.3: the delivery rate of every trigger in the last `days`
+ * (1-365). A read failure answers null, never zeros.
+ */
+export async function alertDeliveryRate(days: number): Promise<AlertDeliveryRate | null> {
+  if (!Number.isInteger(days) || days < 1 || days > 365) return null;
+  try {
+    await ensureHistorySchema();
+    const rows = await query<DeliveryCountRow>(
+      `SELECT COUNT(*) AS triggered,
+              COUNT(*) FILTER (WHERE delivery_status = 'delivered') AS delivered,
+              COUNT(*) FILTER (WHERE delivery_status = 'failed') AS failed,
+              COUNT(*) FILTER (WHERE delivery_status = 'unconfigured') AS unconfigured
+       FROM alert_history
+       WHERE triggered_at >= CURRENT_TIMESTAMP - to_days(CAST(? AS INTEGER))`,
+      days,
+    );
+    const row = rows[0];
+    if (!row) return null;
+    const triggered = Number(row.triggered);
+    const delivered = Number(row.delivered);
+    const failed = Number(row.failed);
+    const unconfigured = Number(row.unconfigured);
+    return {
+      days,
+      triggered,
+      delivered,
+      failed,
+      unconfigured,
+      pending: Math.max(0, triggered - delivered - failed - unconfigured),
+      rate: triggered === 0 ? null : delivered / triggered,
+      target: 1,
+    };
+  } catch (err) {
+    console.error('[dataintel][alerts] deliveryRate failed:', err);
     return null;
   }
 }

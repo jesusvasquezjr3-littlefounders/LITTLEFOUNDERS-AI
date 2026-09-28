@@ -26,7 +26,7 @@ describe('rebuild-staff copy budget', () => {
         const filled = text.replace(/\{role\}/g, longestRole).replace(/\{name\}/g, 'Ana').replace(/\{(?:date|from|to)\}/g, 'Sep 12, 2026')
           .replace(/\{(?:n|start|end|total|shown|open|visitors|accounts|bucket)\}/g, '12').replace(/\{id\}/g, '1a2b3c4d')
           .replace(/\{share\}/g, '50%').replace(/\{dimension\}/g, longestDimension)
-          .replace(/\{(?:cost|spent|latest|average)\}/g, '12,345.67 USD').replace(/\{(?:progress)\}/g, '100%')
+          .replace(/\{(?:cost|spent|latest|average)\}/g, '12,345.67 USD').replace(/\{(?:progress|target)\}/g, '100%')
           .replace(/\{(?:topics|lessons|published|failed|skipped|done|passed|inherited|billed)\}/g, '1,234').replace(/\{value\}/g, '4.25')
           // W2T.3: Analytics & Health and Learning intel. A place is the longest country name we list; a list of places, two of them;
           // a filter is a dimension and its value; a metric is the longest metric label; counts take their longest real shape.

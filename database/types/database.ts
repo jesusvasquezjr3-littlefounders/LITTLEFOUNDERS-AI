@@ -247,6 +247,60 @@ export type Database = {
           },
         ]
       }
+      age_correction_requests: {
+        Row: {
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          from_age_band: string
+          id: string
+          reason_code: string | null
+          requested_age_band: string
+          requested_birth_month: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          from_age_band: string
+          id?: string
+          reason_code?: string | null
+          requested_age_band: string
+          requested_birth_month?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          from_age_band?: string
+          id?: string
+          reason_code?: string | null
+          requested_age_band?: string
+          requested_birth_month?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "age_correction_requests_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "age_correction_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       allowance_rules: {
         Row: {
           active: boolean
@@ -606,7 +660,6 @@ export type Database = {
       banking_accounts: {
         Row: {
           card_design: string
-          display_number: string
           frozen: boolean
           frozen_at: string | null
           frozen_by: string | null
@@ -617,7 +670,6 @@ export type Database = {
         }
         Insert: {
           card_design?: string
-          display_number: string
           frozen?: boolean
           frozen_at?: string | null
           frozen_by?: string | null
@@ -628,7 +680,6 @@ export type Database = {
         }
         Update: {
           card_design?: string
-          display_number?: string
           frozen?: boolean
           frozen_at?: string | null
           frozen_by?: string | null
@@ -2881,6 +2932,7 @@ export type Database = {
           misconception_id: string | null
           p_known_after: number
           p_known_before: number
+          receipt_key: string | null
           review_tier: string | null
           score: number | null
           segment_id: string | null
@@ -2897,6 +2949,7 @@ export type Database = {
           misconception_id?: string | null
           p_known_after: number
           p_known_before: number
+          receipt_key?: string | null
           review_tier?: string | null
           score?: number | null
           segment_id?: string | null
@@ -2913,6 +2966,7 @@ export type Database = {
           misconception_id?: string | null
           p_known_after?: number
           p_known_before?: number
+          receipt_key?: string | null
           review_tier?: string | null
           score?: number | null
           segment_id?: string | null
@@ -3744,6 +3798,32 @@ export type Database = {
           },
         ]
       }
+      learning_practice_days: {
+        Row: {
+          local_date: string
+          recorded_at: string
+          user_id: string
+        }
+        Insert: {
+          local_date: string
+          recorded_at?: string
+          user_id: string
+        }
+        Update: {
+          local_date?: string
+          recorded_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_practice_days_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       learning_stats: {
         Row: {
           day_lessons_passed: number
@@ -4546,6 +4626,52 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "lesson_document_versions"
             referencedColumns: ["id", "lesson_id", "locale"]
+          },
+        ]
+      }
+      lesson_v2_segment_views: {
+        Row: {
+          created_at: string
+          document_version_id: string
+          run_id: string
+          segment_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_version_id: string
+          run_id: string
+          segment_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          document_version_id?: string
+          run_id?: string
+          segment_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_v2_segment_views_document_version_id_fkey"
+            columns: ["document_version_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_document_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_v2_segment_views_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_v2_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_v2_segment_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -6128,6 +6254,33 @@ export type Database = {
           },
         ]
       }
+      social_protection_counters: {
+        Row: {
+          day: string
+          event: string
+          n: number
+          related: boolean
+          subject_tier: string
+          viewer_tier: string
+        }
+        Insert: {
+          day: string
+          event: string
+          n?: number
+          related: boolean
+          subject_tier: string
+          viewer_tier: string
+        }
+        Update: {
+          day?: string
+          event?: string
+          n?: number
+          related?: boolean
+          subject_tier?: string
+          viewer_tier?: string
+        }
+        Relationships: []
+      }
       social_reports: {
         Row: {
           category: string
@@ -6374,6 +6527,47 @@ export type Database = {
           {
             foreignKeyName: "spend_limits_parent_user_id_fkey"
             columns: ["parent_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      staff_access_reviews: {
+        Row: {
+          grant_key: string
+          id: string
+          kind: string
+          note: string | null
+          outcome: string
+          reviewed_at: string
+          reviewed_by: string
+          subject_user_id: string
+        }
+        Insert: {
+          grant_key: string
+          id?: string
+          kind: string
+          note?: string | null
+          outcome: string
+          reviewed_at?: string
+          reviewed_by: string
+          subject_user_id: string
+        }
+        Update: {
+          grant_key?: string
+          id?: string
+          kind?: string
+          note?: string | null
+          outcome?: string
+          reviewed_at?: string
+          reviewed_by?: string
+          subject_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_access_reviews_subject_user_id_fkey"
+            columns: ["subject_user_id"]
             isOneToOne: false
             referencedRelation: "dataintel_users_sync"
             referencedColumns: ["user_id"]
@@ -6820,6 +7014,8 @@ export type Database = {
         Row: {
           assignment: string
           band: string
+          budget_caught: number | null
+          budget_delivered: number | null
           character: string
           controlling_caught: number
           controlling_delivered: number
@@ -6829,14 +7025,20 @@ export type Database = {
           id: string
           ladder_rungs: number
           pacing_offers: number
+          self_naming_caught: number | null
+          self_naming_delivered: number | null
           session_id: string | null
+          tell_delivered: number | null
           tell_requests: number
+          tell_withdrawn: number | null
           unilateral_style_changes: number
           variant: string
         }
         Insert: {
           assignment: string
           band: string
+          budget_caught?: number | null
+          budget_delivered?: number | null
           character: string
           controlling_caught: number
           controlling_delivered: number
@@ -6846,14 +7048,20 @@ export type Database = {
           id?: string
           ladder_rungs: number
           pacing_offers: number
+          self_naming_caught?: number | null
+          self_naming_delivered?: number | null
           session_id?: string | null
+          tell_delivered?: number | null
           tell_requests: number
+          tell_withdrawn?: number | null
           unilateral_style_changes: number
           variant: string
         }
         Update: {
           assignment?: string
           band?: string
+          budget_caught?: number | null
+          budget_delivered?: number | null
           character?: string
           controlling_caught?: number
           controlling_delivered?: number
@@ -6863,8 +7071,12 @@ export type Database = {
           id?: string
           ladder_rungs?: number
           pacing_offers?: number
+          self_naming_caught?: number | null
+          self_naming_delivered?: number | null
           session_id?: string | null
+          tell_delivered?: number | null
           tell_requests?: number
+          tell_withdrawn?: number | null
           unilateral_style_changes?: number
           variant?: string
         }
@@ -9034,6 +9246,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      analytics_disclosure_coverage: {
+        Args: { p_from: string; p_to: string }
+        Returns: Json
+      }
       avatar_options_valid: { Args: { p_options: Json }; Returns: boolean }
       award_tutor_xp: {
         Args: {
@@ -9177,6 +9393,20 @@ export type Database = {
         }
         Returns: Json
       }
+      complete_v2_mixed_lesson: {
+        Args: {
+          p_document_version_id: string
+          p_lesson_id: string
+          p_local_date: string
+          p_minutes: number
+          p_required_segment_ids: string[]
+          p_run_id: string
+          p_user_id: string
+          p_viewed_segment_ids: string[]
+          p_xp: number
+        }
+        Returns: Json
+      }
       coop_goal_candidates: { Args: { p_user: string }; Returns: string[] }
       coop_goal_child_teen: { Args: { p_user: string }; Returns: boolean }
       coop_goal_close: {
@@ -9246,6 +9476,15 @@ export type Database = {
         Returns: Json
       }
       data_practice_state: { Args: { p_subject: string }; Returns: Json }
+      decide_age_correction: {
+        Args: {
+          p_approve: boolean
+          p_reason: string
+          p_request: string
+          p_staff: string
+        }
+        Returns: string
+      }
       decide_coop_goal_invitation: {
         Args: { p_accept: boolean; p_goal: string; p_user: string }
         Returns: string
@@ -9716,6 +9955,10 @@ export type Database = {
           total: number
         }[]
       }
+      grant_parent_role_with_justification: {
+        Args: { p_actor: string; p_justification: string; p_user: string }
+        Returns: string
+      }
       guardian_adjust_wallet: {
         Args: {
           p_actor: string
@@ -9780,6 +10023,10 @@ export type Database = {
       has_data_practice_consent: {
         Args: { p_practice: string; p_subject: string }
         Returns: boolean
+      }
+      identity_metrics: {
+        Args: { p_from: string; p_to: string }
+        Returns: Json
       }
       insert_tutor_live_segment_checked: {
         Args: {
@@ -9878,6 +10125,32 @@ export type Database = {
           offered: number
         }[]
       }
+      learning_detection_cells: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          correct_rejections: number
+          false_alarms: number
+          hits: number
+          lesson_id: string
+          misses: number
+          responses: number
+        }[]
+      }
+      learning_error_family_split: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          diagnostic: string
+          errors: number
+          family: string
+        }[]
+      }
+      learning_first_unaided_stage_distribution: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          learners: number
+          stage: string
+        }[]
+      }
       learning_judgment_differentiation: {
         Args: { p_since: string; p_until: string }
         Returns: {
@@ -9927,9 +10200,23 @@ export type Database = {
         Args: { p_after: string; p_before: string; p_user_id: string }
         Returns: string[]
       }
+      learning_transfer_success: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          first_attempts: number
+          item_role: string
+          kc: string
+          success_share: number
+          successes: number
+        }[]
+      }
       legacy_kc_credit_covers: {
         Args: { p_kc_id: string; p_stage: string; p_user_id: string }
         Returns: boolean
+      }
+      lesson_document_without_audio_stamps: {
+        Args: { p_document: Json }
+        Returns: Json
       }
       mark_under13_origin: { Args: { p_user_id: string }; Returns: boolean }
       mentor_resolution_efficiency: {
@@ -10051,6 +10338,17 @@ export type Database = {
         Args: { p_retain_days?: number }
         Returns: number
       }
+      publish_v2_lesson_version: {
+        Args: {
+          p_answer_keys: Json
+          p_document: Json
+          p_lesson_id: string
+          p_locale: string
+          p_release_manifest: Json
+          p_version_id: string
+        }
+        Returns: Json
+      }
       purge_closed_learning_bridge_prompts: {
         Args: { p_days: number }
         Returns: number
@@ -10159,6 +10457,21 @@ export type Database = {
         }
         Returns: boolean
       }
+      record_social_protection_event: {
+        Args: { p_event: string; p_subject: string; p_viewer: string }
+        Returns: undefined
+      }
+      record_staff_access_review: {
+        Args: {
+          p_actor: string
+          p_grant_key: string
+          p_kind: string
+          p_note: string
+          p_outcome: string
+          p_subject: string
+        }
+        Returns: string
+      }
       record_staff_insight_check: {
         Args: { p_insight: string; p_outcome: string; p_source: string }
         Returns: undefined
@@ -10237,6 +10550,15 @@ export type Database = {
         }
         Returns: Json
       }
+      record_v2_segment_view: {
+        Args: {
+          p_document_version_id: string
+          p_run_id: string
+          p_segment_id: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
       record_wallet_split: {
         Args: {
           p_goal_id: string
@@ -10310,6 +10632,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      request_age_correction: {
+        Args: { p_age_band: string; p_birth_month: string; p_user: string }
+        Returns: string
+      }
       request_social_connection: {
         Args: { p_kid_user_id: string; p_requester_id: string }
         Returns: string
@@ -10338,6 +10664,10 @@ export type Database = {
       revoke_own_guardian_link: {
         Args: { p_actor: string; p_kid_user_id: string }
         Returns: boolean
+      }
+      revoke_parent_verification: {
+        Args: { p_actor: string; p_reason: string; p_user: string }
+        Returns: string
       }
       run_due_scheduled_credits: {
         Args: { p_kid_user_id: string }
@@ -10403,6 +10733,16 @@ export type Database = {
         Args: { p_discoverable: boolean; p_user: string }
         Returns: boolean
       }
+      set_tutor_pack_status: {
+        Args: {
+          p_actor: string
+          p_content_hash: string
+          p_from: string
+          p_pack_id: string
+          p_to: string
+        }
+        Returns: Json
+      }
       set_wallet_usual_split: {
         Args: {
           p_actor: string
@@ -10467,10 +10807,32 @@ export type Database = {
         Returns: boolean
       }
       social_messaging_surfaces: { Args: never; Returns: Json }
+      social_pattern_qualifies: {
+        Args: { p_subject: string }
+        Returns: boolean
+      }
+      social_protection_count: {
+        Args: {
+          p_event: string
+          p_related: boolean
+          p_subject_tier: string
+          p_viewer_tier: string
+        }
+        Returns: undefined
+      }
+      social_protection_metrics: { Args: { p_days: number }; Returns: Json }
+      social_protection_related: {
+        Args: { p_subject: string; p_viewer: string }
+        Returns: boolean
+      }
       social_retention_windows: { Args: never; Returns: Json }
       social_safety_metrics: { Args: never; Returns: Json }
       social_subject_visible: { Args: { p_subject: string }; Returns: boolean }
       social_tier: { Args: { p_user: string }; Returns: string }
+      staff_access_review_status: {
+        Args: { p_cadence_days?: number }
+        Returns: Json
+      }
       staff_insight_uptime: {
         Args: { p_insight: string; p_since: string }
         Returns: {
@@ -10545,6 +10907,7 @@ export type Database = {
         }
         Returns: string
       }
+      sweep_learning_practice_days: { Args: never; Returns: number }
       sync_practice_difficulty_reviews: {
         Args: { p_now: string; p_window_days: number }
         Returns: number

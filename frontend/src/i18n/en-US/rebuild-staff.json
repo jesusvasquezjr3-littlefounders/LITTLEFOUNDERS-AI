@@ -1227,7 +1227,9 @@
         "readiness": "How learners are doing",
         "skillHealth": "Skills by mastery",
         "skills": "Skills",
-        "trend": "Trend"
+        "trend": "Trend",
+        "disclosure": "Teen and guest choice",
+        "delivery": "Alert delivery"
       },
       "body": {
         "view": "View",
@@ -1338,7 +1340,24 @@
         "never": "Never",
         "exportIntro": "The same period and figures as a file, without staff activity.",
         "noData": "No data",
-        "noChurn": "No churn risk recorded in this period."
+        "noChurn": "No churn risk recorded in this period.",
+        "disclosureIntro": "Teens who saw the analytics choice. Guests send no events.",
+        "disclosureCovered": "Covered",
+        "disclosureCoverage": "Coverage",
+        "againstTarget": "{share} · target {target}",
+        "teensActive": "Active teens",
+        "guestsActive": "Active guests",
+        "measuredWithoutChoice": "Measured without a choice",
+        "deliveryIntro": "Alerts that reached a person in the last {n} days.",
+        "delivered": "Delivered",
+        "deliveryRate": "Delivery rate",
+        "deliveryFailed": "Failed",
+        "deliveryUnconfigured": "No channel set up",
+        "deliveryPending": "Waiting",
+        "lastDelivery": "Last delivery",
+        "deliveryReason": "Reason",
+        "noDelivery": "None yet",
+        "noReason": "None"
       },
       "option": {
         "view_overview": "Overview",
@@ -1390,7 +1409,12 @@
         "format_json": "JSON",
         "allEvents": "All events",
         "anonymous": "Anonymous",
-        "view_families": "Families"
+        "view_families": "Families",
+        "delivery_delivered": "Delivered",
+        "delivery_failed": "Failed",
+        "delivery_unconfigured": "Not set up",
+        "status_met": "On target",
+        "status_missed": "Below target"
       }
     },
     "programme": {

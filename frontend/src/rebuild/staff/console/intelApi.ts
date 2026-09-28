@@ -152,9 +152,50 @@ export function churnBuckets(rows: readonly ChurnRow[]) {
 export interface Experiment { id: string; name: string; status: string; metric: string; variantA: string; variantB: string }
 export const isExperiments = (value: unknown): value is Experiment[] => arrayOf(value, (e): e is Experiment => isRecord(e) && isString(e.id)
   && isString(e.name) && isString(e.status) && isString(e.metric) && isString(e.variantA) && isString(e.variantB));
-export interface IntelAlert { id: string; name: string; metric: string; condition: string; threshold: number; channel: string; status: string; lastTriggeredAt?: string | null }
+/**
+ * H.3: the outcome of an alert's latest trigger (dataintel alerts.ts). null
+ * when it never fired, or the trigger is in flight or predates tracking.
+ */
+export const DELIVERY_STATUSES = ['delivered', 'failed', 'unconfigured'] as const;
+export type DeliveryStatus = (typeof DELIVERY_STATUSES)[number];
+const isDeliveryStatus = (value: unknown): value is DeliveryStatus | null | undefined => value === null || value === undefined
+  || (DELIVERY_STATUSES as readonly unknown[]).includes(value);
+export interface IntelAlert {
+  id: string; name: string; metric: string; condition: string; threshold: number; channel: string; status: string; lastTriggeredAt?: string | null;
+  lastDeliveryStatus?: DeliveryStatus | null; lastDeliveryError?: string | null;
+}
 export const isAlerts = (value: unknown): value is IntelAlert[] => arrayOf(value, (a): a is IntelAlert => isRecord(a) && isString(a.id)
-  && isString(a.name) && isString(a.metric) && isString(a.condition) && isNumber(a.threshold) && isString(a.channel) && isString(a.status));
+  && isString(a.name) && isString(a.metric) && isString(a.condition) && isNumber(a.threshold) && isString(a.channel) && isString(a.status)
+  && isDeliveryStatus(a.lastDeliveryStatus) && (a.lastDeliveryError === undefined || isNullableString(a.lastDeliveryError)));
+
+/**
+ * Appendix O 1.3 (H.3): the Alert-to-Notification Delivery Rate
+ * (GET /admin/intel/alerts/delivery). `rate` is delivered / triggered, null
+ * when nothing fired; the target is 100%.
+ */
+export interface AlertDeliveryRate { days: number; triggered: number; delivered: number; failed: number; unconfigured: number; pending: number; rate: number | null; target: number }
+export const isAlertDelivery = (value: unknown): value is AlertDeliveryRate => isRecord(value) && isNumber(value.days) && isNumber(value.triggered)
+  && isNumber(value.delivered) && isNumber(value.failed) && isNumber(value.unconfigured) && isNumber(value.pending) && isNullableNumber(value.rate) && isNumber(value.target);
+/** The delivery rate is read over a fixed month: the Experiments & alerts view has no window of its own. */
+export const DELIVERY_WINDOW_DAYS = 30;
+
+/**
+ * Appendix O 1.1 (H.1): Teen/Guest Consent-Adjacent Disclosure Coverage
+ * (GET /admin/analytics/consent-coverage): active self-registered teens shown
+ * the disclosure (or with analytics suppressed) and active guests (suppressed
+ * by their protected origin), against a 100% target. Counts only.
+ */
+export interface DisclosureCoverage {
+  teens: { active: number; disclosed: number; optedIn: number; optedOut: number; protectedOrigin: number; measuredWithoutOptIn: number; covered: number };
+  guests: { active: number; suppressed: number; measured: number };
+  days: number; covered: number; population: number; coverage: number | null; target: number; status: 'met' | 'missed' | 'no_data';
+}
+export const isDisclosureCoverage = (value: unknown): value is DisclosureCoverage => isRecord(value) && isRecord(value.teens) && isRecord(value.guests)
+  && isNumber(value.teens.active) && isNumber(value.teens.disclosed) && isNumber(value.teens.optedIn) && isNumber(value.teens.optedOut)
+  && isNumber(value.teens.measuredWithoutOptIn) && isNumber(value.teens.covered)
+  && isNumber(value.guests.active) && isNumber(value.guests.suppressed) && isNumber(value.guests.measured)
+  && isNumber(value.covered) && isNumber(value.population) && isNullableNumber(value.coverage) && isNumber(value.target)
+  && ['met', 'missed', 'no_data'].includes(value.status as string);
 
 /* ---- Insights (S8): learning evidence ----------------------------------------- */
 

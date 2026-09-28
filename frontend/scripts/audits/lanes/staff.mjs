@@ -207,6 +207,8 @@ function insightRespond(route, query, empty, ok) {
   if (route === '/admin/intel/churn/risk') return ok(empty ? [] : i.churn);
   if (route === '/admin/intel/experiments') return ok(empty ? [] : i.experiments);
   if (route === '/admin/intel/alerts') return ok(empty ? [] : i.alerts);
+  if (route === '/admin/intel/alerts/delivery') return ok(empty ? { ...i.alertDelivery, triggered: 0, delivered: 0, failed: 0, unconfigured: 0, pending: 0, rate: null } : i.alertDelivery);
+  if (route === '/admin/analytics/consent-coverage') return ok(empty ? { ...i.disclosure, teens: { active: 0, disclosed: 0, optedIn: 0, optedOut: 0, protectedOrigin: 0, measuredWithoutOptIn: 0, covered: 0 }, guests: { active: 0, suppressed: 0, measured: 0 }, covered: 0, population: 0, coverage: null, status: 'no_data' } : i.disclosure);
   if (route === '/admin/intel/learning/overview') return ok(empty ? { ...i.learning, snapshot: { courses: 0, lessons: 0, attempts: 0, learners: 0, avgScore: null, firstTryAvgScore: null, hintRate: null, retryRate: null, avgSecondsPerAttempt: null, evidenceStatus: 'awaiting_evidence' }, courses: [], lessons: [], learners: [], trends: [] } : i.learning);
   if (route === '/admin/intel/learning/content-health') return ok(empty ? { skills: [] } : i.skills);
   if (route.startsWith('/admin/intel/learning/learners/')) return ok(i.learner);

@@ -774,6 +774,23 @@ export function intelRouter(): Router {
     }
   });
 
+  /*
+   * Appendix O 1.3 (H.3): the Alert-to-Notification Delivery Rate over the
+   * last `days` (1-365, default 30), against its 100% target. Read-only;
+   * Core proxies it at /admin/intel/alerts/delivery (view_analytics).
+   */
+  router.get('/alerts/delivery', async (req, res) => {
+    try {
+      const days = z.coerce.number().int().min(1).max(365).default(30).parse(req.query.days ?? '30');
+      const result = await alerts.alertDeliveryRate(days);
+      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Alert delivery rate unavailable');
+      return ok(res, result);
+    } catch (err) {
+      if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);
+      return fail(res, 500, 'INTERNAL', (err as Error).message);
+    }
+  });
+
   router.patch('/alerts/:id', async (req, res) => {
     try {
       const id = z.string().uuid().parse(req.params.id);
