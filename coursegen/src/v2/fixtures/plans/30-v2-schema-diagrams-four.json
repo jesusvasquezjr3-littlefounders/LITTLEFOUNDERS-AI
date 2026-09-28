@@ -1,0 +1,621 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "problem-schemas",
+  "lesson_id": "v2-schema-diagrams-four",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-money-change-schema"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Ana, Rho y Liruf resuelven problemas de juntar, comparar y precio por unidad.",
+  "title": {
+    "en-US": "Name the problem type",
+    "es-MX": "Nombra el tipo de problema",
+    "pt-BR": "Nomeie o tipo de problema"
+  },
+  "new_concepts": [
+    "kc-money-change-schema"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "group-structure-01",
+      "type": "math.schema-diagram.structure.v2",
+      "grading": "server",
+      "visual": {
+        "type": "schema-diagram"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "jar",
+            "value": 18
+          },
+          {
+            "id": "box",
+            "value": 7
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Ana keeps 18 coins in a jar and 7 in a box. Choose the schema.",
+          "quantities": [
+            {
+              "label": "In the jar"
+            },
+            {
+              "label": "In the box"
+            }
+          ],
+          "unknownLabel": "All together",
+          "spokenText": "eighteen plus seven"
+        },
+        "es-MX": {
+          "prompt": "Ana guarda 18 monedas en un frasco y 7 en una caja. Elige el esquema.",
+          "quantities": [
+            {
+              "label": "En el frasco"
+            },
+            {
+              "label": "En la caja"
+            }
+          ],
+          "unknownLabel": "En total",
+          "spokenText": "dieciocho más siete"
+        },
+        "pt-BR": {
+          "prompt": "Ana guarda 18 moedas num pote e 7 numa caixa. Escolha o esquema.",
+          "quantities": [
+            {
+              "label": "No pote"
+            },
+            {
+              "label": "Na caixa"
+            }
+          ],
+          "unknownLabel": "No total",
+          "spokenText": "dezoito mais sete"
+        }
+      },
+      "rubric": {
+        "schema": "group"
+      }
+    },
+    {
+      "id": "group-slots-01",
+      "type": "math.schema-diagram.slots.v2",
+      "grading": "server",
+      "visual": {
+        "type": "schema-diagram"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "jar",
+            "value": 18
+          },
+          {
+            "id": "box",
+            "value": 7
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Put each number in its box.",
+          "quantities": [
+            {
+              "label": "In the jar"
+            },
+            {
+              "label": "In the box"
+            }
+          ],
+          "unknownLabel": "All together",
+          "spokenText": "eighteen plus seven"
+        },
+        "es-MX": {
+          "prompt": "Pon cada número en su caja.",
+          "quantities": [
+            {
+              "label": "En el frasco"
+            },
+            {
+              "label": "En la caja"
+            }
+          ],
+          "unknownLabel": "En total",
+          "spokenText": "dieciocho más siete"
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada número na sua caixa.",
+          "quantities": [
+            {
+              "label": "No pote"
+            },
+            {
+              "label": "Na caixa"
+            }
+          ],
+          "unknownLabel": "No total",
+          "spokenText": "dezoito mais sete"
+        }
+      },
+      "rubric": {
+        "schema": "group",
+        "slots": {
+          "part": "jar",
+          "other": "box",
+          "total": "unknown"
+        }
+      }
+    },
+    {
+      "id": "group-answer-01",
+      "type": "math.schema-diagram.answer.v2",
+      "grading": "server",
+      "visual": {
+        "type": "schema-diagram"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "jar",
+            "value": 18
+          },
+          {
+            "id": "box",
+            "value": 7
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "How many coins in all?",
+          "quantities": [
+            {
+              "label": "In the jar"
+            },
+            {
+              "label": "In the box"
+            }
+          ],
+          "unknownLabel": "All together",
+          "spokenText": "eighteen plus seven"
+        },
+        "es-MX": {
+          "prompt": "¿Cuántas monedas hay en total?",
+          "quantities": [
+            {
+              "label": "En el frasco"
+            },
+            {
+              "label": "En la caja"
+            }
+          ],
+          "unknownLabel": "En total",
+          "spokenText": "dieciocho más siete"
+        },
+        "pt-BR": {
+          "prompt": "Quantas moedas ao todo?",
+          "quantities": [
+            {
+              "label": "No pote"
+            },
+            {
+              "label": "Na caixa"
+            }
+          ],
+          "unknownLabel": "No total",
+          "spokenText": "dezoito mais sete"
+        }
+      },
+      "rubric": {
+        "target": 25
+      }
+    },
+    {
+      "id": "compare-structure-01",
+      "type": "math.schema-diagram.structure.v2",
+      "grading": "server",
+      "visual": {
+        "type": "schema-diagram"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "rho",
+            "value": 40
+          },
+          {
+            "id": "zara",
+            "value": 26
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho saved 40 coins and Zara 26. Choose the schema.",
+          "quantities": [
+            {
+              "label": "Rho saved"
+            },
+            {
+              "label": "Zara saved"
+            }
+          ],
+          "unknownLabel": "How many more",
+          "spokenText": "forty minus twenty six"
+        },
+        "es-MX": {
+          "prompt": "Rho ahorró 40 monedas y Zara 26. Elige el esquema.",
+          "quantities": [
+            {
+              "label": "Rho ahorró"
+            },
+            {
+              "label": "Zara ahorró"
+            }
+          ],
+          "unknownLabel": "Cuántas más",
+          "spokenText": "cuarenta menos veintiséis"
+        },
+        "pt-BR": {
+          "prompt": "Rho guardou 40 moedas e Zara 26. Escolha o esquema.",
+          "quantities": [
+            {
+              "label": "Rho guardou"
+            },
+            {
+              "label": "Zara guardou"
+            }
+          ],
+          "unknownLabel": "Quantas a mais",
+          "spokenText": "quarenta menos vinte e seis"
+        }
+      },
+      "rubric": {
+        "schema": "compare"
+      }
+    },
+    {
+      "id": "compare-slots-01",
+      "type": "math.schema-diagram.slots.v2",
+      "grading": "server",
+      "visual": {
+        "type": "schema-diagram"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "rho",
+            "value": 40
+          },
+          {
+            "id": "zara",
+            "value": 26
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Put each number in its box.",
+          "quantities": [
+            {
+              "label": "Rho saved"
+            },
+            {
+              "label": "Zara saved"
+            }
+          ],
+          "unknownLabel": "How many more",
+          "spokenText": "forty minus twenty six"
+        },
+        "es-MX": {
+          "prompt": "Pon cada número en su caja.",
+          "quantities": [
+            {
+              "label": "Rho ahorró"
+            },
+            {
+              "label": "Zara ahorró"
+            }
+          ],
+          "unknownLabel": "Cuántas más",
+          "spokenText": "cuarenta menos veintiséis"
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada número na sua caixa.",
+          "quantities": [
+            {
+              "label": "Rho guardou"
+            },
+            {
+              "label": "Zara guardou"
+            }
+          ],
+          "unknownLabel": "Quantas a mais",
+          "spokenText": "quarenta menos vinte e seis"
+        }
+      },
+      "rubric": {
+        "schema": "compare",
+        "slots": {
+          "larger": "rho",
+          "smaller": "zara",
+          "difference": "unknown"
+        }
+      }
+    },
+    {
+      "id": "compare-answer-01",
+      "type": "math.schema-diagram.answer.v2",
+      "grading": "server",
+      "visual": {
+        "type": "schema-diagram"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "rho",
+            "value": 40
+          },
+          {
+            "id": "zara",
+            "value": 26
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "How many more did Rho save?",
+          "quantities": [
+            {
+              "label": "Rho saved"
+            },
+            {
+              "label": "Zara saved"
+            }
+          ],
+          "unknownLabel": "How many more",
+          "spokenText": "forty minus twenty six"
+        },
+        "es-MX": {
+          "prompt": "¿Cuántas más ahorró Rho?",
+          "quantities": [
+            {
+              "label": "Rho ahorró"
+            },
+            {
+              "label": "Zara ahorró"
+            }
+          ],
+          "unknownLabel": "Cuántas más",
+          "spokenText": "cuarenta menos veintiséis"
+        },
+        "pt-BR": {
+          "prompt": "Quantas a mais Rho guardou?",
+          "quantities": [
+            {
+              "label": "Rho guardou"
+            },
+            {
+              "label": "Zara guardou"
+            }
+          ],
+          "unknownLabel": "Quantas a mais",
+          "spokenText": "quarenta menos vinte e seis"
+        }
+      },
+      "rubric": {
+        "target": 14
+      }
+    },
+    {
+      "id": "ratio-structure-01",
+      "type": "math.schema-diagram.structure.v2",
+      "grading": "server",
+      "visual": {
+        "type": "schema-diagram"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "price",
+            "value": 6
+          },
+          {
+            "id": "tickets",
+            "value": 5
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Each ticket costs 6 coins. Liruf buys 5. Choose the schema.",
+          "quantities": [
+            {
+              "label": "Coins per ticket"
+            },
+            {
+              "label": "Tickets"
+            }
+          ],
+          "unknownLabel": "Total cost",
+          "spokenText": "six coins times five tickets"
+        },
+        "es-MX": {
+          "prompt": "Cada boleto cuesta 6 monedas. Liruf compra 5. Elige el esquema.",
+          "quantities": [
+            {
+              "label": "Monedas por boleto"
+            },
+            {
+              "label": "Boletos"
+            }
+          ],
+          "unknownLabel": "Costo total",
+          "spokenText": "seis monedas por cinco boletos"
+        },
+        "pt-BR": {
+          "prompt": "Cada ingresso custa 6 moedas. Liruf compra 5. Escolha o esquema.",
+          "quantities": [
+            {
+              "label": "Moedas por ingresso"
+            },
+            {
+              "label": "Ingressos"
+            }
+          ],
+          "unknownLabel": "Custo total",
+          "spokenText": "seis moedas vezes cinco ingressos"
+        }
+      },
+      "rubric": {
+        "schema": "ratio"
+      }
+    },
+    {
+      "id": "ratio-slots-01",
+      "type": "math.schema-diagram.slots.v2",
+      "grading": "server",
+      "visual": {
+        "type": "schema-diagram"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "price",
+            "value": 6
+          },
+          {
+            "id": "tickets",
+            "value": 5
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Put each number in its box.",
+          "quantities": [
+            {
+              "label": "Coins per ticket"
+            },
+            {
+              "label": "Tickets"
+            }
+          ],
+          "unknownLabel": "Total cost",
+          "spokenText": "six coins times five tickets"
+        },
+        "es-MX": {
+          "prompt": "Pon cada número en su caja.",
+          "quantities": [
+            {
+              "label": "Monedas por boleto"
+            },
+            {
+              "label": "Boletos"
+            }
+          ],
+          "unknownLabel": "Costo total",
+          "spokenText": "seis monedas por cinco boletos"
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada número na sua caixa.",
+          "quantities": [
+            {
+              "label": "Moedas por ingresso"
+            },
+            {
+              "label": "Ingressos"
+            }
+          ],
+          "unknownLabel": "Custo total",
+          "spokenText": "seis moedas vezes cinco ingressos"
+        }
+      },
+      "rubric": {
+        "schema": "ratio",
+        "slots": {
+          "rate": "price",
+          "count": "tickets",
+          "total": "unknown"
+        }
+      }
+    },
+    {
+      "id": "ratio-answer-01",
+      "type": "math.schema-diagram.answer.v2",
+      "grading": "server",
+      "visual": {
+        "type": "schema-diagram"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "price",
+            "value": 6
+          },
+          {
+            "id": "tickets",
+            "value": 5
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "What do the tickets cost?",
+          "quantities": [
+            {
+              "label": "Coins per ticket"
+            },
+            {
+              "label": "Tickets"
+            }
+          ],
+          "unknownLabel": "Total cost",
+          "spokenText": "six coins times five tickets"
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto cuestan los boletos?",
+          "quantities": [
+            {
+              "label": "Monedas por boleto"
+            },
+            {
+              "label": "Boletos"
+            }
+          ],
+          "unknownLabel": "Costo total",
+          "spokenText": "seis monedas por cinco boletos"
+        },
+        "pt-BR": {
+          "prompt": "Quanto custam os ingressos?",
+          "quantities": [
+            {
+              "label": "Moedas por ingresso"
+            },
+            {
+              "label": "Ingressos"
+            }
+          ],
+          "unknownLabel": "Custo total",
+          "spokenText": "seis moedas vezes cinco ingressos"
+        }
+      },
+      "rubric": {
+        "target": 30
+      }
+    }
+  ]
+}

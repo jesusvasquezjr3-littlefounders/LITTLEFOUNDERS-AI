@@ -34,13 +34,19 @@
 .lf-bar-model-track i { display: block; min-block-size: inherit; }
 .lf-bar-model-track b { position: absolute; inset-inline-end: var(--spacing-2); inset-block-start: 50%; transform: translateY(-50%); color: var(--on-mint); }
 @container app (max-width: 420px) { .lf-bar-model-row { grid-template-columns: 1fr; gap: var(--spacing-1); } }
-.lf-schema-diagram { display: grid; grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr); align-items: center; gap: var(--spacing-2); }
-.lf-schema-slot { display: grid; min-block-size: var(--target-base); gap: var(--spacing-1); padding: var(--spacing-2); border-radius: var(--rounded-md); background: var(--primary-soft); color: var(--primary-strong); }
+.lf-schema-diagram { display: grid; grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr) 24px minmax(0, 1fr); align-items: center; gap: var(--spacing-2); }
+.lf-schema-slot { display: grid; min-block-size: var(--target-base); gap: var(--spacing-1); padding: var(--spacing-2); border-radius: var(--rounded-md); background: var(--primary-soft); color: var(--primary-strong); min-inline-size: 0; overflow-wrap: anywhere; }
 .lf-schema-slot strong { font-family: Fredoka, sans-serif; font-size: 1.5rem; line-height: 1; }
-.lf-schema-slot--editable { outline: 2px dashed var(--primary-strong); outline-offset: 2px; }
-.lf-schema-operator { font-family: Fredoka, sans-serif; font-size: 2rem; text-align: center; }
-.lf-schema-arrow { grid-column: 1 / -1; justify-self: center; font-size: 1.5rem; font-weight: 800; }
-.lf-schema-arrow + .lf-schema-slot { grid-column: 1 / -1; justify-self: center; inline-size: min(100%, 240px); }
+.lf-schema-operator { font-family: Fredoka, sans-serif; font-size: 1.5rem; text-align: center; }
+/* M8 (GAP-FIX-R2): the four schemas share one slot row; the compare and group totals read as the wider box. */
+.lf-schema-diagram--group .lf-schema-slot[data-slot="total"], .lf-schema-diagram--compare .lf-schema-slot[data-slot="larger"] { outline: 2px solid var(--primary-strong); outline-offset: -2px; }
+.lf-schema-story { display: flex; flex-wrap: wrap; gap: var(--spacing-2); margin: 0 0 var(--spacing-3); }
+.lf-schema-story > div { display: grid; gap: var(--spacing-1); padding: var(--spacing-2) var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-schema-story dd { margin: 0; font-family: Fredoka, sans-serif; font-size: 1.25rem; }
+@container app (max-width: 399px) {
+  .lf-schema-diagram { grid-template-columns: minmax(0, 1fr); }
+  .lf-schema-operator { line-height: 1; }
+}
 .lf-learning-chart svg { display: block; inline-size: 100%; block-size: 100%; }
 .lf-learning-chart-track { fill: var(--sunken); }
 .lf-learning-donut { position: relative; inline-size: 128px; block-size: 128px; justify-self: center; }

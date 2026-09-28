@@ -446,3 +446,38 @@ export function placeValueScorerPayload(payload: PlaceValuePayload): { mode: 'co
   if (payload.mode === 'compose') return { mode: 'compose', ...payload.start, subtrahend: 0 };
   return { mode: 'subtract', hundreds: Math.floor(payload.minuend / 100), tens: Math.floor(payload.minuend / 10) % 10, ones: payload.minuend % 10, subtrahend: payload.subtrahend };
 }
+
+/* ── M8 schema diagrams: change, group, compare, ratio (GAP-FIX-R2) ───────── */
+
+/**
+ * Appendix P M8: the learner picks a schema (change, group, compare, ratio)
+ * and fills its slots from the text; $4 and $8 build on it. The public payload
+ * is schema-neutral: the two story quantities and the label of the unknown.
+ * Which schema fits and where each quantity goes live in the private rubric,
+ * so a document never reveals the structure it grades.
+ */
+export const SCHEMA_KINDS = ['change', 'group', 'compare', 'ratio'] as const;
+export type SchemaKind = (typeof SCHEMA_KINDS)[number];
+export const SCHEMA_SLOTS: Readonly<Record<SchemaKind, readonly [string, string, string]>> = {
+  change: ['start', 'change', 'result'],
+  group: ['part', 'other', 'total'],
+  compare: ['larger', 'smaller', 'difference'],
+  ratio: ['rate', 'count', 'total'],
+};
+const quantity = z.object({ id, value: positive.max(100_000), label: label(40) }).strict();
+export const schemaDiagramPayload = z.object({
+  quantities: z.tuple([quantity, quantity]),
+  unknownLabel: label(40),
+  spokenText: label(120),
+}).strict().refine((value) => value.quantities[0].id !== value.quantities[1].id && value.quantities[0].id !== 'unknown' && value.quantities[1].id !== 'unknown',
+  'Invalid schema-diagram quantities');
+export type SchemaDiagramPayload = z.infer<typeof schemaDiagramPayload>;
+const slotAssignment = z.record(z.string(), z.union([id, z.literal('unknown')]));
+export const SCHEMA_DIAGRAM_RUBRICS = {
+  'math.schema-diagram.structure.v2': z.object({ schema: z.enum(SCHEMA_KINDS) }).strict(),
+  'math.schema-diagram.slots.v2': z.object({ schema: z.enum(SCHEMA_KINDS), slots: slotAssignment }).strict(),
+  'math.schema-diagram.answer.v2': z.object({ target: z.number().int().nonnegative().max(10_000_000_000) }).strict(),
+} as const;
+export function schemaDiagramScorerPayload(payload: SchemaDiagramPayload): { quantityIds: string[]; values: number[] } {
+  return { quantityIds: payload.quantities.map((item) => item.id), values: payload.quantities.map((item) => item.value) };
+}

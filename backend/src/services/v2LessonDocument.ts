@@ -3,7 +3,7 @@ import { growthComparison } from './v2GrowthComparison.js';
 import { gradeV2Response, scoreV2Judgment, scoreV2Visual, type V2Detection, type V2Diagnostic, type V2JudgmentQuality, type V2VisualKind } from './v2VisualScorer.js';
 import { conceptAllowed, conceptSampleResponse, gradeConcept, V2_CONCEPT_RUBRICS, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptSegment } from './v2ConceptBoards.js';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './v2ChartModel.js';
-import { longArithmeticSchema, placeValuePayload, placeValueScorerPayload, V2_FAMILY_RUBRICS, v2AgeScopeProblem, v2FamilySampleResponse, v2FamilyScorerPayload, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras, type V2FamilySegment } from './v2SegmentFamilies.js';
+import { longArithmeticSchema, placeValuePayload, SCHEMA_DIAGRAM_RUBRICS, schemaDiagramPayload, schemaDiagramScorerPayload, placeValueScorerPayload, V2_FAMILY_RUBRICS, v2AgeScopeProblem, v2FamilySampleResponse, v2FamilyScorerPayload, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras, type V2FamilySegment } from './v2SegmentFamilies.js';
 
 /*
  * Core's independently authored copy of the public v2 lesson contract.
@@ -94,7 +94,7 @@ const fractionArea = z.object({
 const barModelPayload = z.object({ whole: positive.max(100), difference: positive.max(99), knownLabel: z.string().trim().min(1).max(40), unknownLabel: z.string().trim().min(1).max(40), spokenText: z.string().trim().min(1).max(120) }).strict().refine((v) => v.difference < v.whole, 'Invalid bar model');
 const barModelStructure = z.object({ ...base, type: z.literal('math.bar-model.structure.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('bar-model') }).strict(), payload: barModelPayload }).strict();
 const barModelAnswer = z.object({ ...base, type: z.literal('math.bar-model.answer.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('bar-model') }).strict(), payload: barModelPayload }).strict();
-const schemaDiagramPayload = z.object({ income: positive.max(100), spending: positive.max(99), incomeLabel: z.string().trim().min(1).max(40), spendingLabel: z.string().trim().min(1).max(40), remainingLabel: z.string().trim().min(1).max(40), spokenText: z.string().trim().min(1).max(120) }).strict().refine((v) => v.spending < v.income, 'Invalid schema diagram');
+// M8 (GAP-FIX-R2): a schema-neutral payload from v2SegmentFamilies; the schema and the slot places are private.
 const schemaDiagramStructure = z.object({ ...base, type: z.literal('math.schema-diagram.structure.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('schema-diagram') }).strict(), payload: schemaDiagramPayload }).strict();
 const schemaDiagramSlots = z.object({ ...base, type: z.literal('math.schema-diagram.slots.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('schema-diagram') }).strict(), payload: schemaDiagramPayload }).strict();
 const schemaDiagramAnswer = z.object({ ...base, type: z.literal('math.schema-diagram.answer.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('schema-diagram') }).strict(), payload: schemaDiagramPayload }).strict();
@@ -387,9 +387,7 @@ const rubricByKind = {
   'math.fraction-area.v2': z.object({ targetNumerator: nonnegative, targetDenominator: positive.min(2).max(6) }).strict(),
   'math.bar-model.structure.v2': z.object({ model: z.literal('comparison') }).strict(),
   'math.bar-model.answer.v2': z.object({ target: nonnegative.max(100) }).strict(),
-  'math.schema-diagram.structure.v2': z.object({ schema: z.literal('change') }).strict(),
-  'math.schema-diagram.slots.v2': z.object({ income: positive.max(100), spending: positive.max(99) }).strict(),
-  'math.schema-diagram.answer.v2': z.object({ target: nonnegative.max(100) }).strict(),
+  ...SCHEMA_DIAGRAM_RUBRICS,
   'math.worked-example.v2': z.object({ expectedValues: z.record(z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/), z.string().trim().min(1).max(40)) }).strict(),
   'math.function-machine.v2': z.object({ multiplier: positive.max(12), offset: nonnegative.max(100), heldOutInputs: z.array(nonnegative.max(24)).min(2).max(4) }).strict()
     .refine((value) => new Set(value.heldOutInputs).size === value.heldOutInputs.length, 'Duplicate held-out input'),
@@ -467,7 +465,7 @@ function scorerPayload(item: ServerSegment): Record<string, unknown> {
               : item.type === 'reasoning.decide-justify.v2'
                 ? { choiceIds: item.payload.choices.map((option) => option.id), reasonIds: item.payload.reasons.map((option) => option.id) }
           : (item.type === 'math.schema-diagram.structure.v2' || item.type === 'math.schema-diagram.slots.v2' || item.type === 'math.schema-diagram.answer.v2')
-            ? { income: item.payload.income, spending: item.payload.spending }
+            ? schemaDiagramScorerPayload(item.payload)
           : { whole: item.payload.whole, difference: item.payload.difference };
 }
 
@@ -497,8 +495,8 @@ export function validateV2LessonForGrading(document: unknown, answerKeys: unknow
         : item.type === 'math.number-line.fraction.v2' ? { value: '0/1' }
           : item.type === 'math.fraction-area.v2' ? { n: 0, d: item.payload.minimumParts }
             : item.type === 'math.bar-model.structure.v2' ? { model: 'comparison' }
-              : item.type === 'math.schema-diagram.structure.v2' ? { schema: 'change' }
-                : item.type === 'math.schema-diagram.slots.v2' ? { income: String(item.payload.income), spending: String(item.payload.spending) }
+                : item.type === 'math.schema-diagram.structure.v2' ? { schema: 'change' }
+                : item.type === 'math.schema-diagram.slots.v2' ? { schema: 'group', slots: { part: item.payload.quantities[0].id, other: item.payload.quantities[1].id, total: 'unknown' } }
                   : item.type === 'math.worked-example.v2' ? { values: Object.fromEntries(item.payload.response_step_ids.map((stepId) => [stepId, '0'])) }
                   : item.type === 'math.function-machine.v2' ? { multiplier: '1', offset: '0' }
                   : item.type === 'math.cpa-count.v2' ? { value: '0' }

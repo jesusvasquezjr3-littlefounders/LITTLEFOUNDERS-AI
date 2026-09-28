@@ -174,7 +174,7 @@ describe('v2 public lesson capabilities', () => {
   });
 
   it('requires M8 to keep its change schema, slots and answer in the exact 10–12 order', () => {
-    const payload = { income: 24, spending: 9, incomeLabel: 'Earned', spendingLabel: 'Spent', remainingLabel: 'Left', spokenText: 'twenty four minus nine' };
+    const payload = { quantities: [{ id: 'earned', value: 24, label: 'Earned' }, { id: 'spent', value: 9, label: 'Spent' }], unknownLabel: 'Left over', spokenText: 'twenty-four minus nine equals fifteen' };
     const document = { schema_version: 2, course_id: 'financial-education', pathway_id: 'financial-10-12', chapter_id: 'change-schemas', lesson_id: 'schema-diagram-pilot', version_id: 'revision-001', locale: 'en-US', age_band: '10-12', eligibility: { minimum_age: 10, maximum_age: 12 }, knowledge_component_ids: ['kc-change-schemas'], adventure_scene_id: 'diorama-a', title: 'Find what is left', required_capabilities: ['visual.schema-diagram.v1', 'operation.build-slots.v1', 'operation.structure-check.v1', 'operation.number-input.v1'], segments: [{ id: 'schema-structure-01', type: 'math.schema-diagram.structure.v2', grading: 'server', prompt: 'Choose the schema.', visual: { type: 'schema-diagram' }, payload }, { id: 'schema-slots-01', type: 'math.schema-diagram.slots.v2', grading: 'server', prompt: 'Fill the values.', visual: { type: 'schema-diagram' }, payload }, { id: 'schema-answer-01', type: 'math.schema-diagram.answer.v2', grading: 'server', prompt: 'Find the amount left.', visual: { type: 'schema-diagram' }, payload }] };
     expect(v2PublicLessonSchema.safeParse(document).success).toBe(true);
     // Appendix P M8 is 8-14 (GAP-FIX-R2).

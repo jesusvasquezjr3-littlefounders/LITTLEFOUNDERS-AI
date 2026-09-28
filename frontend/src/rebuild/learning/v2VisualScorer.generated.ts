@@ -92,28 +92,31 @@ export function scoreV2Visual(kind: V2VisualKind, payload: unknown, response: un
       return value === rubric.target ? 'met' : 'review';
     }
     case 'math.schema-diagram.structure.v2': {
-      if (!fields(payload, ['income', 'spending']) || !whole(payload.income) || !whole(payload.spending) || payload.income <= payload.spending
-        || !fields(response, ['schema']) || (response.schema !== 'change' && response.schema !== 'compare')) return 'invalid';
+      // M8 (GAP-FIX-R2): the learner picks one of the four schemas; the right one is private.
+      if (!schemaQuantities(payload) || !fields(response, ['schema']) || !SCHEMAS.includes(response.schema as string)) return 'invalid';
       if (rubric === undefined) return 'valid';
-      if (!fields(rubric, ['schema']) || rubric.schema !== 'change') return 'invalid';
+      if (!fields(rubric, ['schema']) || !SCHEMAS.includes(rubric.schema as string)) return 'invalid';
       return response.schema === rubric.schema ? 'met' : 'review';
     }
     case 'math.schema-diagram.slots.v2': {
-      if (!fields(payload, ['income', 'spending']) || !whole(payload.income) || !whole(payload.spending) || payload.income <= payload.spending
-        || !fields(response, ['income', 'spending']) || typeof response.income !== 'string' || typeof response.spending !== 'string'
-        || !/^(0|[1-9]\d*)$/.test(response.income) || !/^(0|[1-9]\d*)$/.test(response.spending)) return 'invalid';
-      const income = Number(response.income), spending = Number(response.spending);
-      if (!whole(income) || !whole(spending) || income > payload.income || spending > payload.income) return 'invalid';
+      // M8: the chosen schema's three slots, each holding one story quantity or the unknown.
+      const quantities = schemaQuantities(payload);
+      if (!quantities || !fields(response, ['schema', 'slots']) || !schemaSlots(response.schema, response.slots, quantities.ids)) return 'invalid';
       if (rubric === undefined) return 'valid';
-      if (!fields(rubric, ['income', 'spending']) || !whole(rubric.income) || !whole(rubric.spending)) return 'invalid';
-      return income === rubric.income && spending === rubric.spending ? 'met' : 'review';
+      if (!fields(rubric, ['schema', 'slots']) || !schemaSlots(rubric.schema, rubric.slots, quantities.ids)) return 'invalid';
+      const given = response.slots as Record<string, string>; const key = rubric.slots as Record<string, string>;
+      return response.schema === rubric.schema && Object.keys(key).every((slot) => given[slot] === key[slot]) ? 'met' : 'review';
     }
     case 'math.schema-diagram.answer.v2': {
-      if (!fields(payload, ['income', 'spending']) || !whole(payload.income) || !whole(payload.spending) || payload.income <= payload.spending
-        || !fields(response, ['value']) || typeof response.value !== 'string' || !/^(0|[1-9]\d*)$/.test(response.value)) return 'invalid';
-      const value = Number(response.value); if (!whole(value) || value > payload.income) return 'invalid';
+      const quantities = schemaQuantities(payload);
+      if (!quantities || !fields(response, ['value']) || typeof response.value !== 'string' || !/^(0|[1-9]\d*)$/.test(response.value)) return 'invalid';
+      const value = Number(response.value);
+      const [a, b] = quantities.values as [number, number];
+      if (!whole(value) || value > a * b + a + b) return 'invalid';
       if (rubric === undefined) return 'valid';
-      if (!fields(rubric, ['target']) || !whole(rubric.target) || rubric.target < 0 || rubric.target > payload.income) return 'invalid';
+      // The target must be one relation of the two story quantities: a group total, a change or comparison difference, or a rate.
+      const relations = [a + b, Math.abs(a - b), a * b, ...(a % b === 0 ? [a / b] : []), ...(b % a === 0 ? [b / a] : [])];
+      if (!fields(rubric, ['target']) || !whole(rubric.target) || !relations.includes(rubric.target)) return 'invalid';
       return value === rubric.target ? 'met' : 'review';
     }
     case 'math.worked-example.v2': {
@@ -476,13 +479,15 @@ export function gradeV2Response(kind: V2VisualKind, payload: unknown, response: 
   switch (kind) {
     case 'money.allocation.v2':
     case 'math.bar-model.answer.v2':
-    case 'math.schema-diagram.slots.v2':
     case 'math.schema-diagram.answer.v2':
     case 'math.fraction-area.v2':
     case 'math.function-machine.v2':
     case 'math.cpa-count.v2': return grade(verdict);
     case 'math.bar-model.structure.v2':
     case 'math.schema-diagram.structure.v2': return grade(verdict, verdict === 'met' ? 'none' : 'structure');
+    // M8: a slot step built on the wrong schema is a structure error; the right schema with misplaced quantities is a value error.
+    case 'math.schema-diagram.slots.v2': return grade(verdict, verdict === 'met' ? 'none'
+      : (response as { schema: string }).schema !== (rubric as { schema: string }).schema ? 'structure' : 'value');
     case 'math.number-line.whole.v2':
     case 'math.number-line.fraction.v2': return grade(verdict, verdict === 'met' ? 'none' : 'tolerance');
     case 'reasoning.decide-justify.v2': return grade(verdict, verdict === 'met' ? 'none' : 'outcome');
@@ -497,6 +502,25 @@ export function gradeV2Response(kind: V2VisualKind, payload: unknown, response: 
   }
 }
 
+
+/* M8 schema diagrams (GAP-FIX-R2): four schemas, three slots each. */
+const SCHEMAS: readonly string[] = ['change', 'group', 'compare', 'ratio'];
+const SCHEMA_SLOT_NAMES: Readonly<Record<string, readonly string[]>> = {
+  change: ['start', 'change', 'result'], group: ['part', 'other', 'total'], compare: ['larger', 'smaller', 'difference'], ratio: ['rate', 'count', 'total'],
+};
+function schemaQuantities(payload: unknown): { ids: string[]; values: number[] } | null {
+  if (!fields(payload, ['quantityIds', 'values']) || !strings(payload.quantityIds, 2, 2) || !Array.isArray(payload.values) || payload.values.length !== 2
+    || payload.values.some((value) => !whole(value) || value < 1 || value > 100_000) || payload.quantityIds.includes('unknown')) return null;
+  return { ids: payload.quantityIds as string[], values: payload.values as number[] };
+}
+/** Exactly the schema's three slots; each story quantity placed once and the unknown once. */
+function schemaSlots(schema: unknown, slots: unknown, quantityIds: readonly string[]): boolean {
+  if (typeof schema !== 'string' || !SCHEMAS.includes(schema) || !record(slots)) return false;
+  const names = SCHEMA_SLOT_NAMES[schema]!;
+  if (Object.keys(slots).length !== 3 || names.some((name) => typeof slots[name] !== 'string')) return false;
+  const placed = names.map((name) => slots[name] as string);
+  return placed.filter((value) => value === 'unknown').length === 1 && quantityIds.every((quantityId) => placed.filter((value) => value === quantityId).length === 1);
+}
 
 /* M5 place value (GAP-FIX-R2): columns, trades and borrows. */
 interface PlaceColumns { hundreds: number; tens: number; ones: number; subtrahend: number }

@@ -69,7 +69,7 @@ describe('the committed v2 plans', () => {
   it('localize every visible string per market and never leave a string in the neutral payload', () => {
     const run = runV2Emit(FIXTURE_PLANS, FIXTURE_RUN_ID);
     const ledger = run.documents.filter((row) => row.lesson_id === 'v2-schema-diagram');
-    expect(ledger.map((row) => row.document.segments[0]!.payload.incomeLabel)).toEqual(['Earned', 'Ganado', 'Ganho']);
+    expect(ledger.map((row) => (row.document.segments[0]!.payload.quantities as Array<{ label: string }>)[0]!.label)).toEqual(['Earned', 'Ganado', 'Ganho']);
     const market = run.documents.filter((row) => row.lesson_id === 'v2-savings-line').map((row) => row.document.segments[0]!.prompt);
     expect(market[0]).toContain('yard sale');
     expect(market[1]).toContain('tianguis');
@@ -148,7 +148,8 @@ describe('the v2 content gates', () => {
     const roles = new Map(v2TextBlocks(row.document as never).map((block) => [`${block.segmentId}:${block.path}`, block.role]));
     expect(roles.get('(title):title')).toBe('heading');
     expect(roles.get('schema-structure-01:prompt')).toBe('prompt');
-    expect(roles.get('schema-structure-01:payload.incomeLabel')).toBe('option');
+    expect(roles.get('schema-structure-01:payload.quantities[0].label')).toBe('option');
+    expect(roles.get('schema-structure-01:payload.unknownLabel')).toBe('option');
     expect(roles.get('schema-structure-01:payload.spokenText')).toBe('data');
     expect([...roles.keys()].some((key) => key.endsWith('payload.currency'))).toBe(false);
   });

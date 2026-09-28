@@ -99,7 +99,7 @@ function v2BarModelDocument() {
 const v2BarModelKeys = { 'bar-structure-01': { model: 'comparison' }, 'bar-answer-01': { target: 19 } };
 
 function v2SchemaDiagramDocument() {
-  const payload = { income: 24, spending: 9, incomeLabel: 'Earned', spendingLabel: 'Spent', remainingLabel: 'Left over', spokenText: 'twenty-four minus nine equals fifteen' };
+  const payload = { quantities: [{ id: 'earned', value: 24, label: 'Earned' }, { id: 'spent', value: 9, label: 'Spent' }], unknownLabel: 'Left over', spokenText: 'twenty-four minus nine equals fifteen' };
   return {
     schema_version: 2, course_id: 'financial-education', pathway_id: 'financial-10-12', chapter_id: 'money-change',
     lesson_id: LESSON_1_ID, version_id: 'schema-rev-001', locale: 'en-US', age_band: '10-12', eligibility: { minimum_age: 10, maximum_age: 12 },
@@ -113,7 +113,7 @@ function v2SchemaDiagramDocument() {
   };
 }
 
-const v2SchemaDiagramKeys = { 'schema-structure-01': { schema: 'change' }, 'schema-slots-01': { income: 24, spending: 9 }, 'schema-answer-01': { target: 15 } };
+const v2SchemaDiagramKeys = { 'schema-structure-01': { schema: 'change' }, 'schema-slots-01': { schema: 'change', slots: { start: 'earned', change: 'spent', result: 'unknown' } }, 'schema-answer-01': { target: 15 } };
 
 function v2WorkedExampleDocument() {
   const steps = [
@@ -877,11 +877,11 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
       segment_id, answer, run_id: started.body.data.run_id, attempt_token: started.body.data.attempt_tokens[segment_id],
     });
 
-    const slotsFirst = await grade('schema-slots-01', { income: '24', spending: '9' });
+    const slotsFirst = await grade('schema-slots-01', { schema: 'change', slots: { start: 'earned', change: 'spent', result: 'unknown' } });
     expect(slotsFirst.status).toBe(409);
     expect(slotsFirst.body.error.code).toBe('LESSON_PREREQUISITE_REQUIRED');
     await grade('schema-structure-01', { schema: 'change' });
-    const slots = await grade('schema-slots-01', { income: '24', spending: '9' });
+    const slots = await grade('schema-slots-01', { schema: 'change', slots: { start: 'earned', change: 'spent', result: 'unknown' } });
     expect(slots.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
     const answer = await grade('schema-answer-01', { value: '15' });
     expect(answer.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
@@ -1310,7 +1310,7 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
       segment_id: segmentId, run_id: started.body.data.run_id, attempt_token: started.body.data.attempt_tokens[segmentId], answer,
     });
     expect((await grade('schema-structure-01', { schema: 'change' })).body.data.verdict).toMatchObject({ correct: true, score: 100 });
-    expect((await grade('schema-slots-01', { income: '24', spending: '9' })).body.data.verdict).toMatchObject({ correct: true, score: 100 });
+    expect((await grade('schema-slots-01', { schema: 'change', slots: { start: 'earned', change: 'spent', result: 'unknown' } })).body.data.verdict).toMatchObject({ correct: true, score: 100 });
     expect((await grade('schema-answer-01', { value: '15' })).body.data.verdict).toMatchObject({ correct: true, score: 100 });
     const complete = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({
       run_id: started.body.data.run_id, seconds_spent: 60, local_date: '2026-09-22',

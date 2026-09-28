@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { growthComparison } from './growthComparisonModel.generated';
-import { longArithmeticSchema, placeValuePayload, v2AgeScopeProblem, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras } from './v2SegmentFamilies.generated';
+import { longArithmeticSchema, placeValuePayload, schemaDiagramPayload, v2AgeScopeProblem, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras } from './v2SegmentFamilies.generated';
 import { conceptAllowed, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptType } from './v2ConceptBoards.generated';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './charts/chartModel.generated';
 
@@ -106,8 +106,7 @@ const barModelPayload = z.object({ whole: positiveInteger.max(100), difference: 
   .refine((value) => value.difference < value.whole, 'Invalid bar-model range');
 const barModelStructureSegment = z.object({ ...segmentBase, type: z.literal('math.bar-model.structure.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('bar-model') }).strict(), payload: barModelPayload }).strict();
 const barModelAnswerSegment = z.object({ ...segmentBase, type: z.literal('math.bar-model.answer.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('bar-model') }).strict(), payload: barModelPayload }).strict();
-const schemaDiagramPayload = z.object({ income: positiveInteger.max(100), spending: positiveInteger.max(99), incomeLabel: z.string().trim().min(1).max(40), spendingLabel: z.string().trim().min(1).max(40), remainingLabel: z.string().trim().min(1).max(40), spokenText: z.string().trim().min(1).max(120) }).strict()
-  .refine((value) => value.spending < value.income, 'Invalid schema-diagram range');
+// M8 (GAP-FIX-R2): Core's schema-neutral payload (v2SegmentFamilies); the schema and slot places stay private.
 const schemaDiagramStructureSegment = z.object({ ...segmentBase, type: z.literal('math.schema-diagram.structure.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('schema-diagram') }).strict(), payload: schemaDiagramPayload }).strict();
 const schemaDiagramSlotsSegment = z.object({ ...segmentBase, type: z.literal('math.schema-diagram.slots.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('schema-diagram') }).strict(), payload: schemaDiagramPayload }).strict();
 const schemaDiagramAnswerSegment = z.object({ ...segmentBase, type: z.literal('math.schema-diagram.answer.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('schema-diagram') }).strict(), payload: schemaDiagramPayload }).strict();

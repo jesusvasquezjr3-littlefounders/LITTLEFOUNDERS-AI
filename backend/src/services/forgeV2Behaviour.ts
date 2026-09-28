@@ -19,7 +19,7 @@
 
 import { gradeV2Visual, type V2PublicLesson } from './v2LessonDocument.js';
 import { amortizationSchedule } from './v2ConceptBoards.js';
-import { longArithmeticSteps, placeValueScorerPayload, type PlaceValuePayload } from './v2SegmentFamilies.js';
+import { longArithmeticSteps, placeValueScorerPayload, SCHEMA_KINDS, SCHEMA_SLOTS, type PlaceValuePayload } from './v2SegmentFamilies.js';
 
 type Json = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 const MAX_STATES = 20_000;
@@ -108,12 +108,20 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     case 'math.bar-model.answer.v2':
       return { inRange: range(0, p.whole).map((value) => ({ value: String(value) })), invalid: [{ value: String(p.whole + 1) }, { value: '-3' }] };
     case 'math.schema-diagram.structure.v2':
-      return { inRange: [{ schema: 'change' }, { schema: 'compare' }], invalid: [{ schema: 'combine' }] };
-    case 'math.schema-diagram.slots.v2':
-      return { inRange: product([range(0, p.income), range(0, p.income)]).map(([income, spending]) => ({ income: String(income), spending: String(spending) })),
-        invalid: [{ income: String(p.income + 1), spending: '1' }] };
-    case 'math.schema-diagram.answer.v2':
-      return { inRange: range(0, p.income).map((value) => ({ value: String(value) })), invalid: [{ value: String(p.income + 1) }] };
+      return { inRange: SCHEMA_KINDS.map((schema) => ({ schema })), invalid: [{ schema: 'combine' }, {}], expectMet: (r) => r.schema === rubric.schema };
+    case 'math.schema-diagram.slots.v2': {
+      // M8 (GAP-FIX-R2): every schema with every placement of the two quantities and the unknown.
+      const ids = [(p.quantities as Json[])[0]!.id as string, (p.quantities as Json[])[1]!.id as string, 'unknown'];
+      const orders = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+      const inRange = SCHEMA_KINDS.flatMap((schema) => orders.map((order) => ({ schema, slots: Object.fromEntries(SCHEMA_SLOTS[schema].map((slot, index) => [slot, ids[order[index]!]])) })));
+      return { inRange, invalid: [{ schema: 'change', slots: { start: ids[0], change: ids[0], result: 'unknown' } }, { schema: 'group', slots: { start: ids[0], change: ids[1], result: 'unknown' } }],
+        expectMet: (r) => r.schema === rubric.schema && Object.entries(rubric.slots as Record<string, string>).every(([slot, value]) => r.slots[slot] === value) };
+    }
+    case 'math.schema-diagram.answer.v2': {
+      const [a, b] = (p.quantities as Json[]).map((item) => item.value as number) as [number, number];
+      return { inRange: sample(range(0, a * b + a + b), 2_000).concat([rubric.target]).map((value) => ({ value: String(value) })), invalid: [{ value: String(a * b + a + b + 1) }, { value: '-3' }],
+        expectMet: (r) => Number(r.value) === rubric.target };
+    }
     case 'math.worked-example.v2': {
       const ids = p.response_step_ids as string[];
       const expected = rubric.expectedValues as Json;
