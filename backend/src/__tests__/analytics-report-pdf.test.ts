@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
-import { LF_LOGO_HEIGHT, LF_LOGO_WIDTH } from '../assets/lfLogo.js';
+import PDFDocument from 'pdfkit';
+import { drawLogo, LOGO_WORDMARK, renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
 import type { PlausibleReportData } from '../services/pulse.js';
 
 /*
@@ -34,21 +34,35 @@ const DATA: PlausibleReportData = {
 };
 
 describe('renderAnalyticsReportPdf', () => {
-  it('embeds the real wordmark, not a drawn placeholder', async () => {
+  it('draws the rebuilt brand mark and wordmark, with no raster logo', async () => {
     const pdf = await renderAnalyticsReportPdf(DATA, 'en-US');
     expect(pdf.subarray(0, 5).toString()).toBe('%PDF-');
+    expect(pdf.toString('latin1')).not.toContain('/Subtype /Image');
 
+    // The lockup alone, uncompressed, so its drawing operators are readable.
+    const doc = new PDFDocument({ compress: false });
+    const chunks: Buffer[] = [];
+    doc.on('data', (c: Buffer) => chunks.push(c));
+    const done = new Promise<void>((r) => doc.on('end', () => r()));
+    drawLogo(doc, 48, 34);
+    doc.end();
+    await done;
+    const raw = Buffer.concat(chunks).toString('latin1');
     /*
-     * pdfkit repackages the PNG into an image XObject, so the source bytes do
-     * not survive verbatim — assert on the object it writes instead. The
-     * dimensions identify OUR wordmark specifically: the previous placeholder
-     * was drawn with vector primitives and produced a valid PDF containing no
-     * image object at all, which is exactly why it went unnoticed for so long.
+     * The legacy raster wordmark came in as an image XObject; the mark is now
+     * vectors, so the document carries no image at all. Its fills are the
+     * mark's token hues (primary, primary-ridge, reward) as pdfkit writes
+     * them (RGB fractions of 255), and the product name is set as text.
      */
-    const raw = pdf.toString('latin1');
-    expect(raw).toContain('/Subtype /Image');
-    expect(raw).toContain(`/Width ${LF_LOGO_WIDTH}`);
-    expect(raw).toContain(`/Height ${LF_LOGO_HEIGHT}`);
+    expect(raw).not.toContain('/Subtype /Image');
+    const fill = (hex: string) =>
+      [1, 3, 5].map((i) => String(parseInt(hex.slice(i, i + 2), 16) / 255)).join(' ') + ' scn';
+    expect(raw).toContain(fill('#5c55fd')); // --primary
+    expect(raw).toContain(fill('#4438cf')); // --primary-ridge
+    expect(raw).toContain(fill('#ebb806')); // --reward
+    expect(raw).toContain(fill('#a88205')); // --reward-ridge
+    expect(raw).toContain('/Font');
+    expect(LOGO_WORDMARK).toBe('LittleFounders');
   });
 
   it('renders every supported locale and produces a distinct document each time', async () => {

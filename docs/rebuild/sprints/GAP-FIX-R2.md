@@ -32,7 +32,7 @@ public-site area. Each was checked in the code first; all three were real.
 
 1. **Adult guest discovery answer.** The predicate is signup attribution's, so an adult guest's answer is kept (as before) while a guest's usage beacon stays off. Acquisition self-report from a declared adult is treated like attribution, not like product analytics.
 2. **Earlier answers scrubbed.** The migration nulls stored discovery answers of refused populations instead of only measuring them, so the metric starts at zero once applied. The completion rows stay.
-3. **`lf-logo-email.png` kept.** The task listed it as unreferenced, but README says it stays because account emails already delivered link to it. Deleting it breaks those messages' images, so it is kept; the staff analytics PDF (`backend/src/assets/lfLogo.ts`) still inlines that legacy raster and is left as an open item.
+3. **`lf-logo-email.png` kept.** The task listed it as unreferenced, but README says it stays because account emails already delivered link to it. Deleting it breaks those messages' images, so it is kept. The staff analytics PDF no longer uses it (see the finish checkpoint).
 4. **Mentor art on the card** uses the `mentor.<id>.avatar.light` renders (square, transparent), not the chooser stills (which carry the Diorama).
 5. **Brand mark design** is ours and in draft: the new `brand` review family awaits the owner's first-asset style review (07 §7 item 2).
 
@@ -42,6 +42,6 @@ public-site area. Each was checked in the code first; all three were real.
 
 ### Open items
 
-- The staff analytics PDF report still embeds the legacy raster wordmark (`backend/src/assets/lfLogo.ts`); replacing it needs a wide lockup of the new mark or a text wordmark in the PDF.
+- (Closed at the finish checkpoint) The staff analytics PDF report embedded the legacy raster wordmark.
 - `database/types/database.ts` not regenerated for the new function (Core reads it untyped through `serviceRest`, as it does `identity_metrics`).
 - `assetGate.test.ts` needs the orchestrator's quiet run (see verification).
