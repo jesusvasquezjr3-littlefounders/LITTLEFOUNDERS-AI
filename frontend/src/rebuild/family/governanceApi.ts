@@ -62,12 +62,17 @@ export function fetchDataPolicy(session: Session) {
 }
 
 // ── D.22: research participation ────────────────────────────────────────────
-export interface Research { participating: boolean; recording: boolean; grantor: 'tutor' | 'self' | null; since: string | null; disclosureVersion: number; adult: boolean; months: number }
+export interface Research {
+  participating: boolean; recording: boolean; grantor: 'tutor' | 'self' | null; since: string | null; disclosureVersion: number; adult: boolean; months: number;
+  /** H-25: the Tutor's yes lapsed at 18 and the young adult is asked again (absent from an older Core = false). */
+  lapsed?: boolean;
+}
 export interface ResearchView { research: Research; currentVersion: number }
 
 const isResearch = (v: unknown): v is Research => isObject(v) && typeof v.participating === 'boolean' && typeof v.recording === 'boolean'
   && (v.grantor === null || v.grantor === 'tutor' || v.grantor === 'self') && (v.since === null || isInstant(v.since))
   && isCount(v.disclosureVersion) && typeof v.adult === 'boolean' && isCount(v.months)
+  && (v.lapsed === undefined || (typeof v.lapsed === 'boolean' && (!v.lapsed || (v.participating && v.grantor === 'tutor' && v.adult && !v.recording))))
   // Nobody is recorded without a yes, and a yes always has its grantor and date.
   && (v.participating ? v.grantor !== null && v.since !== null : !v.recording && v.grantor === null && v.since === null);
 const isResearchView = (v: unknown): v is ResearchView => isObject(v) && isResearch(v.research) && isCount(v.currentVersion) && v.currentVersion >= 1;
@@ -88,6 +93,12 @@ export function fetchMyResearch(session: Session) {
 export function stopMyResearch(session: Session) {
   return call('/family-hub/research/me', session, (d): d is ResearchView => isResearchView(d) && !d.research.participating && d.research.months === 0,
     { method: 'PUT', body: { participate: false } });
+}
+
+/** H-25: an adult's own yes (the young adult answering after their Tutor's yes lapsed at 18); the database decides who may. */
+export function joinMyResearch(disclosureVersion: number, session: Session) {
+  return call('/family-hub/research/me', session, (d): d is ResearchView => isResearchView(d) && d.research.participating && d.research.grantor === 'self',
+    { method: 'PUT', body: { participate: true, disclosureVersion } });
 }
 
 // ── D.19: the older-teen bridge ─────────────────────────────────────────────

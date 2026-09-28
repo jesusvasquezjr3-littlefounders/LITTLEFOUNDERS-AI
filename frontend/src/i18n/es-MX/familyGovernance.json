@@ -173,5 +173,22 @@
     "splitResult": "Ahorrar {save}, gastar {spend}, compartir {share}",
     "splitNote": "Solo tú lo ves. No se guarda.",
     "failed": "No se guardó."
+  },
+  "researchAtEighteen": {
+    "heading": "Investigación",
+    "lapsed": "El sí de tu Tutor por ti terminó a los 18.",
+    "ask": "¿Sigues en el estudio?",
+    "what": "Estudiamos si practicar aquí ayuda más adelante.",
+    "how": "Solo totales mensuales, nunca nombres ni notas.",
+    "yes": "Sí, seguir",
+    "no": "No, borrarlo",
+    "self": "Elegiste participar. Puedes detenerlo cuando quieras.",
+    "stopButton": "Detener y borrar",
+    "confirm": "¿Borrar tus datos de investigación?",
+    "confirmYes": "Borrarlos",
+    "confirmNo": "Conservarlos",
+    "joined": "Guardado. Estás participando.",
+    "deleted": "Detenido y borrado.",
+    "failed": "No se guardó. Inténtalo de nuevo."
   }
 }

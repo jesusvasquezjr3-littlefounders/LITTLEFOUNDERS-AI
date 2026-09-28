@@ -20,7 +20,7 @@ import { SCOPE_NOT, SCOPE_TEACHES } from './ScopeStatement';
 type Group = keyof typeof en;
 const BANDS: Record<Group, AgeBand> = {
   coaching: 'adult', tips: 'adult', reflection: 'adult', pricing: 'adult', limitNote: 'adult', scope: 'adult', dataPolicy: 'adult', research: 'adult',
-  myResearch: '6-9', bridge: '13-17',
+  myResearch: '6-9', bridge: '13-17', researchAtEighteen: 'adult',
 };
 const TIP_ROLE: Record<string, CopyRole> = { title: 'heading', body: 'body', why: 'body' };
 const ROLE: Record<Exclude<Group, 'tips'>, Record<string, CopyRole>> = {
@@ -41,6 +41,11 @@ const ROLE: Record<Exclude<Group, 'tips'>, Record<string, CopyRole>> = {
     paused: 'body', stopButton: 'action', confirm: 'prompt', confirmYes: 'action', confirmNo: 'action', saved: 'body', deleted: 'body', failed: 'body', loading: 'body',
   },
   myResearch: { heading: 'heading', body: 'body', stop: 'body', button: 'action', confirm: 'prompt', yes: 'action', no: 'action', stopped: 'body', failed: 'body' },
+  // H-25 (GAP-FIX-R2): the young adult's own answer after the Tutor's yes lapsed at 18.
+  researchAtEighteen: {
+    heading: 'heading', lapsed: 'body', ask: 'prompt', what: 'body', how: 'body', yes: 'action', no: 'action', self: 'body',
+    stopButton: 'action', confirm: 'prompt', confirmYes: 'action', confirmNo: 'action', joined: 'body', deleted: 'body', failed: 'body',
+  },
   bridge: {
     heading: 'heading', intro: 'body', first_pay: 'heading', first_account: 'heading', first_budget: 'heading', arrived: 'action', undo: 'action',
     first_pay1: 'body', first_pay2: 'body', first_pay3: 'body', first_account1: 'body', first_account2: 'body', first_account3: 'body',
@@ -92,8 +97,8 @@ describe('Family governance copy (S07.7)', () => {
       }
       // The AI is the Mentor, named only where the data policy says what it never receives.
       for (const [key, value] of all) if (key !== 'dataPolicy.sharing') expect(value, key).not.toMatch(/\bMentor\b/);
-      // "Tutor" is the verified parent: only the child's own research note names them.
-      for (const [key, value] of all) if (key !== 'myResearch.body') expect(value, key).not.toMatch(/\bTutor\b/);
+      // "Tutor" is the verified parent: only the child's own research note and the young adult's lapse note name them.
+      for (const [key, value] of all) if (key !== 'myResearch.body' && key !== 'researchAtEighteen.lapsed') expect(value, key).not.toMatch(/\bTutor\b/);
       // Nothing is marketed as proven (Block D Part 4 governance boundary).
       expect(text).not.toMatch(/\b(proven|prove[sn]?|scientifically|guarantee[sd]?|comprobad[oa]|demostrad[oa]|comprovad[oa]|cientificamente|científicamente|garantiza\w*|garant\w*)\b/i);
       // No percentage reaches a child or a teen.
@@ -113,6 +118,8 @@ describe('Family governance copy (S07.7)', () => {
         [adult, [f.research.heading, f.research.close, f.research.what, f.research.how, sample(f.research.never), f.research.stop, sample(f.research.yes)]],
         [adult, [sample(f.reflection.prompt), f.reflection.hint, f.reflection.continue, f.reflection.share, f.reflection.back]],
         [young, [f.myResearch.heading, f.myResearch.body, f.myResearch.stop, f.myResearch.button]],
+        [adult, [f.researchAtEighteen.heading, f.researchAtEighteen.lapsed, f.researchAtEighteen.what, f.researchAtEighteen.how,
+          f.researchAtEighteen.ask, f.researchAtEighteen.yes, f.researchAtEighteen.no]],
         [teen, [f.bridge.heading, f.bridge.intro, f.bridge.first_pay, f.bridge.first_account, f.bridge.first_budget, f.bridge.arrived, f.bridge.arrived, f.bridge.arrived]],
       ];
       for (const [limit, view] of views) expect(wordCount(view.join(' ')), view[1]).toBeLessThanOrEqual(limit);

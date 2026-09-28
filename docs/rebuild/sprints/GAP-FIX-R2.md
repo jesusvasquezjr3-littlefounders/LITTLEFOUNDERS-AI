@@ -74,3 +74,49 @@ child in view); frontend type-check and lint of touched files.
 
 **Remains.** The browser audit run of the new state (orchestrator's merge
 gates).
+
+### 3. A young adult is asked again when the Tutor's research yes lapses at 18 (H-25; D.22; OD-9 4.2)
+
+**Gap confirmed, and one layer deeper than audited.** Core served
+`/family-hub/research/me` only to wallet holders, and a linked teen stops being
+one at 18, so the young adult could not even read the lapsed state; the panel
+lived only on the wallet pages; the client had no yes call. The database also
+refused the young adult's own yes: `family_research_set_consent` required
+`wallet_holder_kind` for every yes, and it is NULL for a former linked teen at
+18 (reproduced on native PostgreSQL before the fix).
+
+**Built.**
+- `database/migrations/0215_family_research_reconsent_at_18.sql` (expand):
+  `family_research_set_consent` also admits an adult's own yes while they hold
+  an active consent row (the lapsed Tutor one, or their own). The lapsed row is
+  replaced, never revived, so the months recorded as a child stay under their
+  own consent; a repeated yes to the same disclosure changes nothing; a no
+  deletes every snapshot. `family_research_admitted` is unchanged: an adult
+  without a wallet is not recorded further in this phase.
+- Core (`backend/src/routes/familyGovernance.ts`): GET/PUT `/research/me`
+  admit any signed-in non-guest account (guests 403 `GUEST_NOT_ALLOWED`); the
+  database decides who may answer. The wire gains `lapsed` (participating,
+  grantor tutor, adult, not recording). The self-yes audit row now carries the
+  disclosure version.
+- Frontend: `joinMyResearch` in `governanceApi.ts`; `rebuild/family/AdultResearch.tsx`
+  (the lapsed ask: one sentence, what and how, Yes / No, nothing preselected;
+  an adult's own participation with a confirmed stop);
+  `AdultResearchPanel` in `routes/app/family/GovernancePanels.tsx`, mounted by
+  `routes/app/profile/ResearchSetting.tsx` in Settings. The child's wallet note
+  (`MyResearch`) no longer shows to an adult. Copy group
+  `familyGovernance.researchAtEighteen` in three locales (adult band, Copy
+  Budget and first-view budget pinned).
+- `docs/operations/BLOCK-D-LONGITUDINAL-RESEARCH-PLAN.md` updated.
+
+**Verified.** `database/scripts/verify-research-reconsent-postgres.py` on
+native PostgreSQL 17.6 (lane cluster, port 15840): the gap reproduced before
+the migration, then the yes, the kept history, the no that deletes, and the
+refusals (Tutor for an 18-year-old, a 17-year-old for themselves, an adult with
+no lapsed consent, a guest, a stale disclosure). Core
+`familyGovernance.test.ts` (60, including the lapsed read without a wallet, the
+self grant with its audit row, the no with its audit row, the guest refusal).
+Frontend `ResearchSetting.test.tsx` (7), governance copy contract, family and
+wallet suites; type-check and lint clean; database migration gates green.
+
+**Remains.** The adult measures and their own disclosure (research plan phase
+2); native copy review.

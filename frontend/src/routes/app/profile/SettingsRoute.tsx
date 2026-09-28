@@ -14,6 +14,7 @@ import { TeenAnalyticsSetting } from './TeenAnalyticsSetting';
 import { TeenMemoryReviewSetting } from './TeenMemoryReviewSetting';
 import { DispositionSetting } from './DispositionSetting';
 import { AccountDeletionSetting } from './AccountDeletionSetting';
+import { ResearchSetting } from './ResearchSetting';
 import { DiscoverableSetting, parseDiscoverable, type DiscoverableState } from './DiscoverableSetting';
 import { AgeRecordSetting } from '@/app-routes/AgeRecordSetting';
 
@@ -36,8 +37,10 @@ import { AgeRecordSetting } from '@/app-routes/AgeRecordSetting';
  *              locked declaration (S-04, E.4) to a self-managed teen only.
  *   panels     the rebuilt panels with their own data planes: the analytics
  *              choice (H.1), the memory self-review (OD-18), how the Mentor
- *              adapts (C.7), the mode and sign-out (Lane 0), account deletion
- *              (E.6). Each decides its own visibility from Core's answer.
+ *              adapts (C.7), the mode and sign-out (Lane 0), research at 18
+ *              (H-25: the young adult answers after their Tutor's yes lapsed),
+ *              account deletion (E.6). Each decides its own visibility from
+ *              Core's answer.
  */
 
 const LOCALES = ['en-US', 'es-MX', 'pt-BR'];
@@ -220,6 +223,7 @@ function ScopedSettings() {
       <TeenMemoryReviewSetting />
       <DispositionSetting />
       <SessionPreferencesSetting />
+      <ResearchSetting />
       <AccountDeletionSetting />
     </SettingsPanels>
   </SettingsScreen>;

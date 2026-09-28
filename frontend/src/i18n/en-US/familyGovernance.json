@@ -173,5 +173,22 @@
     "splitResult": "Save {save}, spend {spend}, share {share}",
     "splitNote": "Only you see this. It is not saved.",
     "failed": "This did not save."
+  },
+  "researchAtEighteen": {
+    "heading": "Research",
+    "lapsed": "Your Tutor's yes for you ended at 18.",
+    "ask": "Stay in the study?",
+    "what": "We study if practice here helps later in life.",
+    "how": "Monthly totals only, never names or notes.",
+    "yes": "Yes, stay in",
+    "no": "No, delete it",
+    "self": "You chose to take part. You can stop any time.",
+    "stopButton": "Stop and delete",
+    "confirm": "Delete your research data?",
+    "confirmYes": "Delete it",
+    "confirmNo": "Keep it",
+    "joined": "Saved. You are taking part.",
+    "deleted": "Stopped and deleted.",
+    "failed": "This did not save. Try again."
   }
 }

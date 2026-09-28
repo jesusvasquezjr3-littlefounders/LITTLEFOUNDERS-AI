@@ -31,12 +31,18 @@ export interface ResearchState {
   disclosureVersion: number;
   adult: boolean;
   months: number;
+  /**
+   * H-25: a Tutor's yes that lapsed at 18. The young adult is asked again (their
+   * own yes or no); nothing more is recorded meanwhile.
+   */
+  lapsed: boolean;
 }
 
 export function toWireResearch(state: z.infer<typeof State>): ResearchState {
   return {
     participating: state.participating, recording: state.admitted, grantor: state.grantor, since: state.since,
     disclosureVersion: state.version, adult: state.adult, months: state.snapshots,
+    lapsed: state.participating && state.grantor === 'tutor' && state.adult && !state.admitted,
   };
 }
 
