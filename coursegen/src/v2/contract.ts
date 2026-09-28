@@ -52,6 +52,9 @@ export const V2_SEGMENT_CAPABILITIES = {
   'story.branch.v2': ['visual.story-scene.v1', 'operation.choose-option.v1'],
   'story.dialogue-choice.v2': ['visual.dialogue.v1', 'operation.choose-option.v1'],
   'story.would-you-rather.v2': ['visual.would-you-rather.v1', 'operation.choose-option.v1'],
+  // GAP-FIX-R2: $6 unit prices and the L2 rule builder; a built flowchart (L6/$9, 13+) also needs operation.build-flowchart.v1.
+  'money.unit-price.v2': ['visual.ratio-table.v1', 'operation.number-input.v1', 'operation.choose-option.v1'],
+  'logic.rule-builder.v2': ['visual.rule-builder.v1', 'operation.build-rule.v1', 'operation.case-step.v1'],
   'voice.mentor-turn.v2': ['visual.speech-plate.v1'],
   'voice.mentor-episode.v2': ['visual.speech-plate.v1', 'operation.step-replay.v1'],
   // GAP-FIX-R1 learning (Appendix A Parts 2 and 3; B.7 part 2).
@@ -92,6 +95,9 @@ export interface V2Segment {
   /** Up to two help ladder steps shown on request as one Mentor speech-plate turn each. */
   help?: string[];
   item_role?: 'practice' | 'transfer';
+  /** Appendix P Part 8 (GAP-FIX-R2): L12/$11 pre/post items and the representation variant an A/B compares. */
+  item_phase?: 'pre' | 'post';
+  variant?: string;
   knowledge_component_id?: string;
 }
 
@@ -128,7 +134,13 @@ export function requiredCapabilities(segments: readonly Pick<V2Segment, 'type' |
         ? [`visual.${segment.visual.type}.v1`, 'operation.reallocate.v1']
         : segment.type === 'visual.chart.v2'
           ? [`visual.${segment.visual.type}.v1`, ...V2_SEGMENT_CAPABILITIES[segment.type], ...(segment.payload?.question ? ['operation.choose-option.v1'] : [])]
-          : V2_SEGMENT_CAPABILITIES[segment.type];
+          : (segment.type === 'logic.flowchart.v2' || segment.type === 'money.spend-decision.v2') && segment.payload?.mode === 'build'
+            ? [...V2_SEGMENT_CAPABILITIES[segment.type], 'operation.build-flowchart.v1']
+            // Bible 05 §5 (GAP-FIX-R2): TeX notation on a worked step or the function machine's rule needs the KaTeX renderer.
+            : (segment.type === 'math.worked-example.v2' && Array.isArray(segment.payload?.steps) && (segment.payload.steps as Array<{ notation?: unknown }>).some((step) => step.notation))
+              || (segment.type === 'math.function-machine.v2' && segment.payload?.notation === true)
+              ? [...V2_SEGMENT_CAPABILITIES[segment.type], 'visual.math-notation.v1']
+              : V2_SEGMENT_CAPABILITIES[segment.type];
     for (const capability of needed) out.add(capability);
   }
   return [...out];
@@ -145,5 +157,11 @@ export function isNonCopyKey(key: string): boolean {
     // GAP-FIX-R1: structural ids and enums of the new families (flowchart edges, Euler relation, node kind, Mentor role, audio reference).
     || key === 'start' || key === 'yes' || key === 'no' || key === 'relation' || key === 'kind' || key === 'role' || key === 'audio_ref'
     // Chart data: link endpoints and calendar dates are identifiers, not copy.
-    || key === 'from' || key === 'to' || key === 'date';
+    || key === 'from' || key === 'to' || key === 'date'
+    // GAP-FIX-R2: a rule builder's level and a flowchart's build mode are contract vocabulary.
+    || key === 'level'
+    // GAP-FIX-R2 charts: a swimlane node's lane and a Venn region's set list are ids.
+    || key === 'lane' || key === 'sets'
+    // TeX notation is locale-neutral data (spokenText carries the words).
+    || key === 'notation';
 }

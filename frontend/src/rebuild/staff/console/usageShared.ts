@@ -63,6 +63,13 @@ export const INSTRUMENTED_EVENTS = [
   'streak_rest_day',
   'streak_restart',
   'path_choice',
+  // Appendix C 1.3 QA and Appendix P Part 8 scorer parity (GAP-FIX-R2): all six written by Core only.
+  'placement_commit_ok',
+  'placement_commit_failed',
+  'prerequisite_refused',
+  'prerequisite_passed',
+  'lesson_update_required',
+  'scorer_parity_miss',
 ] as const;
 
 /**

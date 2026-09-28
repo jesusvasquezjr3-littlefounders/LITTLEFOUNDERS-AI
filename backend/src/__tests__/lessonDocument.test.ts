@@ -149,7 +149,10 @@ describe('v2 public lesson capabilities', () => {
     expect(v2PublicLessonSchema.safeParse(fractionDocument).success).toBe(true);
     expect(v2PublicLessonSchema.safeParse({ ...fractionDocument, required_capabilities: ['visual.number-line.v1', 'operation.place-point.v1'] }).success).toBe(false);
     expect(v2PublicLessonSchema.safeParse({ ...fractionDocument, segments: [{ ...fractionDocument.segments[0], payload: { ...fractionDocument.segments[0].payload, targetNumerator: 3 } }] }).success).toBe(false);
-    expect(v2PublicLessonSchema.safeParse({ ...fractionDocument, eligibility: { minimum_age: 9, maximum_age: 12 } }).success).toBe(false);
+    // Appendix P M3 is 9-12 (GAP-FIX-R2): a 9-12 reach opens, 8 or an adult reach stays refused.
+    expect(v2PublicLessonSchema.safeParse({ ...fractionDocument, eligibility: { minimum_age: 9, maximum_age: 12 } }).success).toBe(true);
+    expect(v2PublicLessonSchema.safeParse({ ...fractionDocument, eligibility: { minimum_age: 8, maximum_age: 12 } }).success).toBe(false);
+    expect(v2PublicLessonSchema.safeParse({ ...fractionDocument, age_band: 'adult', eligibility: { minimum_age: 18, maximum_age: 119 } }).success).toBe(false);
   });
 
   it('keeps M6 equal-area targets private and exactly limits its safe age subset', () => {
@@ -163,16 +166,20 @@ describe('v2 public lesson capabilities', () => {
     const payload = { whole: 50, difference: 12, knownLabel: 'Ana', unknownLabel: 'Leo', spokenText: 'fifty minus twelve' };
     const document = { schema_version: 2, course_id: 'financial-education', pathway_id: 'financial-10-12', chapter_id: 'compare-savings', lesson_id: 'bar-model-pilot', version_id: 'revision-001', locale: 'en-US', age_band: '10-12', eligibility: { minimum_age: 10, maximum_age: 12 }, knowledge_component_ids: ['kc-compare-quantities'], adventure_scene_id: 'diorama-a', title: 'Compare two savings', required_capabilities: ['visual.bar-model.v1', 'operation.build-slots.v1', 'operation.structure-check.v1', 'operation.number-input.v1'], segments: [{ id: 'bar-structure-01', type: 'math.bar-model.structure.v2', grading: 'server', prompt: 'Choose the model.', visual: { type: 'bar-model' }, payload }, { id: 'bar-answer-01', type: 'math.bar-model.answer.v2', grading: 'server', prompt: 'Solve it.', visual: { type: 'bar-model' }, payload }] };
     expect(v2PublicLessonSchema.safeParse(document).success).toBe(true);
-    expect(v2PublicLessonSchema.safeParse({ ...document, eligibility: { minimum_age: 9, maximum_age: 12 } }).success).toBe(false);
+    // Appendix P M7 is 8-13 (GAP-FIX-R2).
+    expect(v2PublicLessonSchema.safeParse({ ...document, eligibility: { minimum_age: 9, maximum_age: 12 } }).success).toBe(true);
+    expect(v2PublicLessonSchema.safeParse({ ...document, eligibility: { minimum_age: 7, maximum_age: 12 } }).success).toBe(false);
     expect(v2PublicLessonSchema.safeParse({ ...document, segments: [document.segments[1], document.segments[0]] }).success).toBe(false);
     expect(v2PublicLessonSchema.safeParse({ ...document, segments: [document.segments[0]] }).success).toBe(false);
   });
 
   it('requires M8 to keep its change schema, slots and answer in the exact 10–12 order', () => {
-    const payload = { income: 24, spending: 9, incomeLabel: 'Earned', spendingLabel: 'Spent', remainingLabel: 'Left', spokenText: 'twenty four minus nine' };
+    const payload = { quantities: [{ id: 'earned', value: 24, label: 'Earned' }, { id: 'spent', value: 9, label: 'Spent' }], unknownLabel: 'Left over', spokenText: 'twenty-four minus nine equals fifteen' };
     const document = { schema_version: 2, course_id: 'financial-education', pathway_id: 'financial-10-12', chapter_id: 'change-schemas', lesson_id: 'schema-diagram-pilot', version_id: 'revision-001', locale: 'en-US', age_band: '10-12', eligibility: { minimum_age: 10, maximum_age: 12 }, knowledge_component_ids: ['kc-change-schemas'], adventure_scene_id: 'diorama-a', title: 'Find what is left', required_capabilities: ['visual.schema-diagram.v1', 'operation.build-slots.v1', 'operation.structure-check.v1', 'operation.number-input.v1'], segments: [{ id: 'schema-structure-01', type: 'math.schema-diagram.structure.v2', grading: 'server', prompt: 'Choose the schema.', visual: { type: 'schema-diagram' }, payload }, { id: 'schema-slots-01', type: 'math.schema-diagram.slots.v2', grading: 'server', prompt: 'Fill the values.', visual: { type: 'schema-diagram' }, payload }, { id: 'schema-answer-01', type: 'math.schema-diagram.answer.v2', grading: 'server', prompt: 'Find the amount left.', visual: { type: 'schema-diagram' }, payload }] };
     expect(v2PublicLessonSchema.safeParse(document).success).toBe(true);
-    expect(v2PublicLessonSchema.safeParse({ ...document, eligibility: { minimum_age: 9, maximum_age: 12 } }).success).toBe(false);
+    // Appendix P M8 is 8-14 (GAP-FIX-R2).
+    expect(v2PublicLessonSchema.safeParse({ ...document, eligibility: { minimum_age: 9, maximum_age: 12 } }).success).toBe(true);
+    expect(v2PublicLessonSchema.safeParse({ ...document, eligibility: { minimum_age: 7, maximum_age: 12 } }).success).toBe(false);
     expect(v2PublicLessonSchema.safeParse({ ...document, segments: [document.segments[1], document.segments[0], document.segments[2]] }).success).toBe(false);
     expect(v2PublicLessonSchema.safeParse({ ...document, segments: document.segments.slice(0, 2) }).success).toBe(false);
   });
@@ -194,7 +201,11 @@ describe('v2 public lesson capabilities', () => {
         } }],
     };
     expect(v2PublicLessonSchema.safeParse(document).success).toBe(true);
-    expect(v2PublicLessonSchema.safeParse({ ...document, eligibility: { minimum_age: 9, maximum_age: 12 } }).success).toBe(false);
+    // Appendix P M9/M10 is 9-17 plus the adult chapters (tax, tip, bill splits; OD-16, GAP-FIX-R2).
+    expect(v2PublicLessonSchema.safeParse({ ...document, eligibility: { minimum_age: 9, maximum_age: 12 } }).success).toBe(true);
+    expect(v2PublicLessonSchema.safeParse({ ...document, eligibility: { minimum_age: 8, maximum_age: 12 } }).success).toBe(false);
+    expect(v2PublicLessonSchema.safeParse({ ...document, age_band: 'adult', eligibility: { minimum_age: 18, maximum_age: 119 } }).success).toBe(true);
+    expect(v2PublicLessonSchema.safeParse({ ...document, age_band: 'adult', eligibility: { minimum_age: 16, maximum_age: 119 } }).success).toBe(false);
     expect(v2PublicLessonSchema.safeParse({ ...document, required_capabilities: ['visual.worked-example.v1', 'operation.step-replay.v1'] }).success).toBe(false);
     expect(v2PublicLessonSchema.safeParse({ ...document, segments: [{ ...document.segments[0], grading: 'none' }] }).success).toBe(false);
     expect(v2PublicLessonSchema.safeParse({ ...document, segments: [{ ...document.segments[0], payload: {

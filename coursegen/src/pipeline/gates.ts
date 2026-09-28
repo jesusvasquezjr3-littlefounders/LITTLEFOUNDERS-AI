@@ -66,7 +66,7 @@ export function runContractGate(rawDocument: unknown): { ok: boolean; problems: 
 
 const COMBINING_DIACRITICS_RE = new RegExp('[\\u0300-\\u036f]', 'g');
 
-function normalizeText(s: string): string {
+export function normalizeText(s: string): string {
   return s.normalize('NFD').replace(COMBINING_DIACRITICS_RE, '').toLowerCase();
 }
 
@@ -74,7 +74,7 @@ function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function buildForbiddenRegex(word: string): RegExp {
+export function buildForbiddenRegex(word: string): RegExp {
   const normalized = normalizeText(word);
   const pattern = escapeRegExp(normalized).replace(/\s+/g, '\\s+');
   return new RegExp(`(?<![a-z0-9])${pattern}(?![a-z0-9])`, 'i');

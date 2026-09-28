@@ -1,0 +1,106 @@
+{
+  "expected_gate": 3,
+  "note": "Gate 3: a real-currency tray with a coin no market issues",
+  "plan": {
+    "plan_version": 1,
+    "course_id": "financial-education",
+    "pathway_id": "financial-10-12",
+    "chapter_id": "clear-thinking",
+    "lesson_id": "v2-red-team-gate03-currency-facts",
+    "age_band": "10-12",
+    "eligibility": {
+      "minimum_age": 10,
+      "maximum_age": 12
+    },
+    "knowledge_component_ids": [
+      "kc-make-change"
+    ],
+    "adventure_scene_id": "diorama-a",
+    "brief": "Zara prueba reglas con tarjetas, ordena ideas en círculos, sigue un diagrama para decidir una compra y da cambio en su puesto.",
+    "title": {
+      "en-US": "Think it through",
+      "es-MX": "Piénsalo bien",
+      "pt-BR": "Pense com calma"
+    },
+    "new_concepts": [],
+    "regional": {
+      "scenarios": {
+        "es-MX": {
+          "scenario": "Dina vende pulseras en el tianguis del domingo y guarda una parte en pesos cada semana.",
+          "problem_refs": [
+            "mx-cash-and-informal-commerce"
+          ],
+          "anchors": [
+            "tianguis"
+          ]
+        },
+        "en-US": {
+          "scenario": "Dina sells bracelets at a Saturday yard sale and sets aside dollars every week.",
+          "problem_refs": [
+            "us-parent-silence"
+          ],
+          "anchors": [
+            "yard sale"
+          ]
+        },
+        "pt-BR": {
+          "scenario": "Dina vende pulseiras na feira livre do bairro e separa reais toda semana.",
+          "problem_refs": [
+            "br-baseline-literacy-gap"
+          ],
+          "anchors": [
+            "feira livre"
+          ]
+        }
+      }
+    },
+    "segments": [
+      {
+        "id": "change-01",
+        "type": "money.making-change.v2",
+        "grading": "server",
+        "visual": {
+          "type": "coin-tray"
+        },
+        "item_role": "transfer",
+        "knowledge_component_id": "kc-make-change",
+        "payload": {
+          "currency": "local",
+          "denominations": [
+            {
+              "value_minor": 1000,
+              "kind": "bill",
+              "available": 2
+            },
+            {
+              "value_minor": 100,
+              "kind": "coin",
+              "available": 5
+            },
+            {
+              "value_minor": 30,
+              "kind": "coin",
+              "available": 3
+            }
+          ],
+          "price_minor": 1300,
+          "paid_minor": 2000
+        },
+        "rubric": {
+          "change_minor": 700
+        },
+        "copy": {
+          "en-US": {
+            "prompt": "At the yard sale a juice costs 13; you paid 20. Give change."
+          },
+          "es-MX": {
+            "prompt": "En el tianguis un jugo cuesta 13; pagaste 20. Da el cambio."
+          },
+          "pt-BR": {
+            "prompt": "Na feira livre um suco custa 13; você pagou 20. Dê o troco."
+          }
+        }
+      }
+    ]
+  }
+}

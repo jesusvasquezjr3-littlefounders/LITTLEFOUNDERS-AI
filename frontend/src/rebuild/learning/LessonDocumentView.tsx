@@ -30,6 +30,7 @@ import { LessonStageProvider } from './lessonStage';
 import { lessonVersionKey, loadLessonClientDocument, type AdventureTheme, type LessonClientDocument, type LessonClientSegment, type LessonMentorStage } from './lessonDocument';
 import { AmortizationBoard, DebtPayoffBoard, DiversificationBoard, InflationBoard, LemonadeStandBoard, OpportunityCostBoard, RuleOf72Board, SupplyDemandBoard } from './conceptBoards';
 import { V2_CONCEPT_TYPES } from './v2ConceptBoards.generated';
+import { RuleBuilderBoard, UnitPriceBoard } from './buildBoards';
 import { ChartBoard, CoinTrayBoard, EulerBoard, FlowchartBoard, MentorEpisodeBoard, MentorTurnBoard, MessageListBoard, RuleCardsBoard, SortBinsBoard, StoryChoiceBoard } from './familyBoards';
 import { LessonPlayerProvider, playerCopy, type SegmentGrade } from './segmentKit';
 
@@ -50,7 +51,8 @@ const copy = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 
 /** The kinds introduced for the first release: each needs the generic grader when graded. */
 const FAMILY_TYPES = new Set(['logic.rule-checker.v2', 'logic.euler.v2', 'logic.flowchart.v2', 'money.spend-decision.v2', 'logic.sort-by-rule.v2', 'money.needs-wants.v2',
-  'logic.scam-spotter.v2', 'money.scam-check.v2', 'money.coin-tray.v2', 'money.making-change.v2', 'story.branch.v2', 'story.dialogue-choice.v2', 'story.would-you-rather.v2']);
+  'logic.scam-spotter.v2', 'money.scam-check.v2', 'money.coin-tray.v2', 'money.making-change.v2', 'story.branch.v2', 'story.dialogue-choice.v2', 'story.would-you-rather.v2',
+  'money.unit-price.v2', 'logic.rule-builder.v2']);
 
 function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumberLine?: OnGradeNumberLine, onGradeFractionArea?: OnGradeFractionArea, onGradeBarModel?: OnGradeBarModel, onGradeSchemaDiagram?: OnGradeSchemaDiagram, onGradeWorkedExample?: OnGradeWorkedExample, onGradeReasoning?: OnGradeReasoning, onGradeAny?: OnGradeAny): boolean {
   // A formerly presentation-only visual that the document now grades needs the generic grader (Appendix P Part 7).
@@ -85,6 +87,7 @@ function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumbe
     case 'logic.rule-checker.v2': case 'logic.euler.v2': case 'logic.flowchart.v2': case 'money.spend-decision.v2': case 'logic.sort-by-rule.v2':
     case 'money.needs-wants.v2': case 'logic.scam-spotter.v2': case 'money.scam-check.v2': case 'money.coin-tray.v2': case 'money.making-change.v2':
     case 'story.branch.v2': case 'story.dialogue-choice.v2': case 'story.would-you-rather.v2': return !!onGradeAny;
+    case 'money.unit-price.v2': case 'logic.rule-builder.v2': return !!onGradeAny;
     // Appendix A Part 3 concept boards: explored boards render anywhere; graded ones need the generic grader (checked above).
     case 'money.amortization.v2': case 'econ.supply-demand.v2': case 'money.opportunity-cost.v2': case 'money.inflation.v2': case 'money.rule-of-72.v2':
     case 'money.debt-payoff.v2': case 'money.diversification.v2': case 'money.lemonade-stand.v2': return true;
@@ -178,6 +181,8 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
   function renderSegment(segment: LessonClientSegment, key: string) {
   const any = onGradeAny ? (answer: unknown, id: string) => onGradeAny(answer, id, document) : undefined;
   switch (segment.type) {
+    case 'money.unit-price.v2': return <UnitPriceBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'logic.rule-builder.v2': return <RuleBuilderBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
     case 'logic.rule-checker.v2': return <RuleCardsBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
     case 'logic.euler.v2': return <EulerBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
     case 'logic.flowchart.v2':

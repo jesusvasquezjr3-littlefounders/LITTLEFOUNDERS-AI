@@ -19,7 +19,7 @@
 
 import { gradeV2Visual, type V2PublicLesson } from './v2LessonDocument.js';
 import { amortizationSchedule } from './v2ConceptBoards.js';
-import { longArithmeticSteps } from './v2SegmentFamilies.js';
+import { longArithmeticSteps, placeValueScorerPayload, SCHEMA_KINDS, SCHEMA_SLOTS, type PlaceValuePayload } from './v2SegmentFamilies.js';
 
 type Json = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 const MAX_STATES = 20_000;
@@ -66,6 +66,47 @@ function flowPaths(payload: Json): string[][] {
   return out;
 }
 
+function replayPlace(start: { hundreds: number; tens: number; ones: number }, trades: string[]): { hundreds: number; tens: number; ones: number } | null {
+  let { hundreds, tens, ones } = start;
+  for (const trade of trades) {
+    if (trade === 'ten') { if (ones < 10) return null; ones -= 10; tens += 1; }
+    else if (trade === 'hundred') { if (tens < 10 || hundreds >= 9) return null; tens -= 10; hundreds += 1; }
+    else if (trade === 'borrow-ten') { if (tens < 1 || ones > 9) return null; tens -= 1; ones += 10; }
+    else { if (hundreds < 1 || tens > 9) return null; hundreds -= 1; tens += 10; }
+  }
+  return { hundreds, tens, ones };
+}
+
+/** Every built chart of distinct questions (depth at most the question count), each leaf an outcome. */
+function builtTrees(questions: string[], outcomes: string[], asked: string[]): Json[] {
+  const leaves: Json[] = outcomes.map((o) => ({ o }));
+  if (asked.length >= questions.length) return leaves;
+  const out: Json[] = [...leaves];
+  for (const q of questions.filter((item) => !asked.includes(item))) {
+    const below = builtTrees(questions, outcomes, [...asked, q]);
+    for (const yes of below) for (const no of below) { out.push({ q, yes, no }); if (out.length > MAX_STATES * 4) return out; }
+  }
+  return out;
+}
+
+/** Every rule expression the L2 level allows, built the way the board builds it. */
+function ruleExprs(conditions: string[], level: string): Json[] {
+  const atoms: Json[] = conditions.map((c) => ({ c }));
+  if (level === 'single') return atoms;
+  const pairs = atoms.flatMap((a) => atoms.filter((b) => b !== a).flatMap((b) => [{ and: [a, b] }, { or: [a, b] }]));
+  if (level === 'connective') return [...atoms, ...pairs];
+  const literals = [...atoms, ...atoms.map((a) => ({ not: a }))];
+  const twos = literals.flatMap((a) => literals.filter((b) => b !== a).flatMap((b) => [{ and: [a, b] }, { or: [a, b] }]));
+  const threes = twos.flatMap((left) => literals.flatMap((c) => [{ and: [left, c] }, { or: [left, c] }]));
+  return [...literals, ...twos, ...sample(threes, 4_000)];
+}
+function evalExpr(expr: Json, facts: Json): boolean {
+  if (expr.c !== undefined) return facts[expr.c] === true;
+  if (expr.not !== undefined) return !evalExpr(expr.not, facts);
+  if (expr.and !== undefined) return evalExpr(expr.and[0], facts) && evalExpr(expr.and[1], facts);
+  return evalExpr(expr.or[0], facts) || evalExpr(expr.or[1], facts);
+}
+
 function money(denominations: Json[], limit = MAX_STATES): Json[] {
   const lists = denominations.map((d) => range(0, d.available));
   return product(lists, limit).map((counts) => ({ counts: Object.fromEntries(denominations.map((d, index) => [String(d.value_minor), counts[index]])) }));
@@ -81,6 +122,20 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
       return { inRange, invalid: [{ save: p.total, spend: p.step, share: 0 }, { save: -p.step, spend: p.total, share: p.step }, ...(p.step > 1 ? [{ save: 1, spend: p.total - 1, share: 0 }] : [])] };
     }
     case 'math.number-line.whole.v2':
+      if (p.hops) {
+        // M2 counting on (GAP-FIX-R2): every hop sequence from the current square that stays on the line.
+        const sequences: number[][] = [];
+        const grow = (prefix: number[], at: number) => {
+          if (prefix.length > 0) sequences.push(prefix);
+          if (prefix.length >= 12 || sequences.length > MAX_STATES) return;
+          for (const hop of p.hops as number[]) if (at + hop <= p.maximum) grow([...prefix, hop], at + hop);
+        };
+        grow([], p.initial);
+        const landed = (hops: number[]) => hops.reduce((sum, hop) => sum + hop, p.initial);
+        return { inRange: sample(sequences, MAX_STATES).map((hops) => ({ value: String(landed(hops)), hops })),
+          invalid: [{ value: String(p.initial), hops: [] }, { value: String(p.initial + 1 + (p.hops as number[])[0]!), hops: [(p.hops as number[])[0]] }, { value: String(p.initial) }],
+          expectMet: (r) => Number(r.value) === rubric.target };
+      }
       return { inRange: range(p.minimum, p.maximum, p.step).map((value) => ({ value: String(value) })),
         invalid: [{ value: String(p.maximum + p.step) }, { value: '-1' }, ...(p.step > 1 ? [{ value: String(p.minimum + 1) }] : []), { value: '7.0' }],
         initial: { value: String(p.initial) } };
@@ -97,12 +152,20 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     case 'math.bar-model.answer.v2':
       return { inRange: range(0, p.whole).map((value) => ({ value: String(value) })), invalid: [{ value: String(p.whole + 1) }, { value: '-3' }] };
     case 'math.schema-diagram.structure.v2':
-      return { inRange: [{ schema: 'change' }, { schema: 'compare' }], invalid: [{ schema: 'combine' }] };
-    case 'math.schema-diagram.slots.v2':
-      return { inRange: product([range(0, p.income), range(0, p.income)]).map(([income, spending]) => ({ income: String(income), spending: String(spending) })),
-        invalid: [{ income: String(p.income + 1), spending: '1' }] };
-    case 'math.schema-diagram.answer.v2':
-      return { inRange: range(0, p.income).map((value) => ({ value: String(value) })), invalid: [{ value: String(p.income + 1) }] };
+      return { inRange: SCHEMA_KINDS.map((schema) => ({ schema })), invalid: [{ schema: 'combine' }, {}], expectMet: (r) => r.schema === rubric.schema };
+    case 'math.schema-diagram.slots.v2': {
+      // M8 (GAP-FIX-R2): every schema with every placement of the two quantities and the unknown.
+      const ids = [(p.quantities as Json[])[0]!.id as string, (p.quantities as Json[])[1]!.id as string, 'unknown'];
+      const orders = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+      const inRange = SCHEMA_KINDS.flatMap((schema) => orders.map((order) => ({ schema, slots: Object.fromEntries(SCHEMA_SLOTS[schema].map((slot, index) => [slot, ids[order[index]!]])) })));
+      return { inRange, invalid: [{ schema: 'change', slots: { start: ids[0], change: ids[0], result: 'unknown' } }, { schema: 'group', slots: { start: ids[0], change: ids[1], result: 'unknown' } }],
+        expectMet: (r) => r.schema === rubric.schema && Object.entries(rubric.slots as Record<string, string>).every(([slot, value]) => r.slots[slot] === value) };
+    }
+    case 'math.schema-diagram.answer.v2': {
+      const [a, b] = (p.quantities as Json[]).map((item) => item.value as number) as [number, number];
+      return { inRange: sample(range(0, a * b + a + b), 2_000).concat([rubric.target]).map((value) => ({ value: String(value) })), invalid: [{ value: String(a * b + a + b + 1) }, { value: '-3' }],
+        expectMet: (r) => Number(r.value) === rubric.target };
+    }
     case 'math.worked-example.v2': {
       const ids = p.response_step_ids as string[];
       const expected = rubric.expectedValues as Json;
@@ -118,9 +181,23 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
       return { inRange: p.choices.flatMap((choice: Json) => p.reasons.map((reason: Json) => ({ choice: choice.id, reason: reason.id }))),
         invalid: [{ choice: 'not-an-option', reason: p.reasons[0].id }],
         expectMet: (r) => (rubric.acceptableChoiceIds as string[]).includes(r.choice) };
-    case 'math.place-value.v2':
-      return { inRange: product([range(0, Math.floor(p.total / 10)), range(0, 3), range(0, 29)]).map(([trades, tens, ones]) => ({ trades, tens: String(tens), ones: String(ones) })),
-        invalid: [{ trades: Math.floor(p.total / 10) + 1, tens: '0', ones: '0' }] };
+    case 'math.place-value.v2': {
+      // M5 (GAP-FIX-R2): every possible trade sequence up to one past the needed count, each with the right and a wrong written result.
+      const start = placeValueScorerPayload(p as PlaceValuePayload);
+      const ops = start.mode === 'compose' ? ['ten', 'hundred'] : ['borrow-ten', 'borrow-hundred'];
+      const take = { hundreds: Math.floor(start.subtrahend / 100), tens: Math.floor(start.subtrahend / 10) % 10, ones: start.subtrahend % 10 };
+      const inRange: Json[] = [];
+      for (let length = 0; length <= Math.min(rubric.trades + 1, 8); length += 1) {
+        for (const trades of product(Array.from({ length }, () => ops), 4_000)) {
+          const end = replayPlace(start, trades as string[]);
+          if (!end) continue;
+          const shown = start.mode === 'compose' ? end : { hundreds: end.hundreds - take.hundreds, tens: end.tens - take.tens, ones: end.ones - take.ones };
+          for (const delta of [0, 1]) inRange.push({ trades, hundreds: String(Math.max(0, shown.hundreds)), tens: String(Math.max(0, shown.tens)), ones: String(Math.max(0, shown.ones) + delta) });
+        }
+      }
+      return { inRange, invalid: [{ trades: [ops[0] === 'ten' ? 'borrow-ten' : 'ten'], hundreds: '0', tens: '0', ones: '0' }, { trades: 3, hundreds: '0', tens: '0', ones: '0' }],
+        initial: { trades: [], hundreds: String(start.hundreds), tens: String(start.tens), ones: String(start.ones) } };
+    }
     case 'math.ratio-table.v2':
       return { inRange: range(p.minimumPacks, p.maximumPacks).flatMap((packs) => [packs * p.pricePerPack, packs * p.pricePerPack + 1].map((price) => ({ packs, price: String(price) }))),
         invalid: [{ packs: p.maximumPacks + 1, price: '0' }, { packs: p.minimumPacks - 1, price: '0' }] };
@@ -174,6 +251,14 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     }
     case 'logic.flowchart.v2':
     case 'money.spend-decision.v2': {
+      if (p.mode === 'build') {
+        // L6 / $9 built charts (GAP-FIX-R2): every tree of up to the declared questions, each asked once per path.
+        const trees = builtTrees((p.questions as Json[]).map((q) => q.id as string), (p.outcomes as Json[]).map((o) => o.id as string), []);
+        const cases = rubric.cases as Json[];
+        const walk = (tree: Json, answers: Json): string => tree.o ?? walk(answers[tree.q] ? tree.yes : tree.no, answers);
+        return { inRange: sample(trees, MAX_STATES).map((tree) => ({ tree })), invalid: [{ tree: { o: 'not-an-outcome' } }, { tree: { q: 'not-a-question', yes: { o: 'x' }, no: { o: 'y' } } }],
+          expectMet: (r) => cases.every((item) => walk(r.tree, item.answers) === item.outcome) };
+      }
       const paths = flowPaths(p);
       const scenarios = (p.scenarios as Json[]).map((s) => s.id as string);
       return { inRange: product(scenarios.map(() => paths)).map((chosen) => ({ paths: Object.fromEntries(scenarios.map((id, index) => [id, chosen[index]])) })),
@@ -194,13 +279,56 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     case 'logic.scam-spotter.v2':
     case 'money.scam-check.v2': {
       const ids = (p.messages as Json[]).map((m) => m.id as string);
-      return { inRange: subsets(ids).map((flagged) => ({ flagged })), invalid: [{ flagged: ['not-a-message'] }],
+      // L12 cues (GAP-FIX-R2) never change the verdict: every flag set is swept with no ticks and with every cue ticked.
+      const cueIds = ((p.cues ?? []) as Json[]).map((c) => c.id as string);
+      const variants = p.cues ? [{}, Object.fromEntries(ids.map((id) => [id, cueIds]))] : [null];
+      return { inRange: subsets(ids).flatMap((flagged) => variants.map((cues) => cues === null ? { flagged } : { flagged, cues })),
+        invalid: [p.cues ? { flagged: ['not-a-message'], cues: {} } : { flagged: ['not-a-message'] }, ...(p.cues ? [{ flagged: [] }, { flagged: [], cues: { [ids[0]!]: ['not-a-cue'] } }] : [])],
         expectMet: (r) => sameSet(r.flagged, rubric.scam_ids) };
     }
-    case 'money.coin-tray.v2':
-    case 'money.making-change.v2': {
+    case 'money.coin-tray.v2': {
       const over = { counts: Object.fromEntries((p.denominations as Json[]).map((d, index) => [String(d.value_minor), index === 0 ? d.available + 1 : 0])) };
       return { inRange: money(p.denominations), invalid: [over, { counts: {} }] };
+    }
+    case 'money.making-change.v2': {
+      // $2 count-up (GAP-FIX-R2): each tray said counting up from the price; the right change also counted from zero (a review).
+      const change = p.paid_minor - p.price_minor;
+      const said = (counts: Json, start: number) => {
+        const out: number[] = []; let at = start;
+        for (const d of p.denominations as Json[]) for (let n = 0; n < counts[String(d.value_minor)]; n += 1) { at += d.value_minor; out.push(at); }
+        return out;
+      };
+      const trays = money(p.denominations, MAX_STATES / 2);
+      const total = (counts: Json) => (p.denominations as Json[]).reduce((sum, d) => sum + d.value_minor * counts[String(d.value_minor)], 0);
+      const inRange = trays.flatMap((tray) => [{ counts: tray.counts, sequence: said(tray.counts, p.price_minor) },
+        ...(total(tray.counts) === change ? [{ counts: tray.counts, sequence: said(tray.counts, 0) }] : [])]);
+      const over = { counts: Object.fromEntries((p.denominations as Json[]).map((d, index) => [String(d.value_minor), index === 0 ? d.available + 1 : 0])), sequence: [] };
+      return { inRange, invalid: [over, { counts: trays[0]!.counts }, { counts: trays.at(-1)!.counts, sequence: [1] }],
+        expectMet: (r) => total(r.counts) === change && (r.sequence.length === 0 ? change === 0 : r.sequence.at(-1) === p.paid_minor) };
+    }
+    case 'money.unit-price.v2': {
+      // $6 (GAP-FIX-R2): the rounded exact unit price and a cent off for each offer, with every choice.
+      const scale = p.currency === 'local' ? 100 : 1;
+      const offers = p.offers as Json[];
+      const exact = (o: Json) => Math.round(o.price_minor * 100 / (o.quantity * scale)) / 100;
+      const perOffer = offers.map((o) => [exact(o), exact(o) + 0.25].map((value) => value.toFixed(2)));
+      const inRange = product(perOffer).flatMap((prices) => offers.map((choice) => ({ unit_prices: Object.fromEntries(offers.map((o, i) => [o.id, prices[i]])), choice: choice.id })));
+      return { inRange, invalid: [{ unit_prices: {}, choice: offers[0]!.id }, { unit_prices: Object.fromEntries(offers.map((o) => [o.id, '-1'])), choice: offers[0]!.id },
+        { unit_prices: Object.fromEntries(offers.map((o) => [o.id, '1'])), choice: 'not-an-offer' }],
+        expectMet: (r) => r.choice === rubric.better_id && offers.every((o) => Math.abs(Number(r.unit_prices[o.id]) - o.price_minor / (o.quantity * scale)) <= 0.005 + 1e-9) };
+    }
+    case 'logic.rule-builder.v2': {
+      // L2 (GAP-FIX-R2): every rule the level allows, graded on the hidden scenarios by behaviour.
+      const conditions = (p.conditions as Json[]).map((c) => c.id as string);
+      const actions = (p.actions as Json[]).map((a) => a.id as string);
+      const exprs = ruleExprs(conditions, p.level);
+      const pairs = actions.flatMap((then) => actions.map((otherwise) => [then, otherwise] as const));
+      const rules = product([exprs as unknown[], pairs as unknown[]], MAX_STATES).map(([expr, pair]) => ({ rule: { if: expr, then: (pair as string[])[0], else: (pair as string[])[1] } }));
+      const evalRule = (rule: Json, facts: Json) => evalExpr(rule.if, facts) ? rule.then : rule.else;
+      const scenarios = rubric.scenarios as Json[];
+      return { inRange: rules, invalid: [{ rule: { if: { c: 'not-a-condition' }, then: actions[0], else: actions[1] } }, { rule: { if: { c: conditions[0] }, then: 'not-an-action', else: actions[1] } },
+        ...(p.level === 'single' ? [{ rule: { if: { not: { c: conditions[0] } }, then: actions[0], else: actions[1] } }] : [])],
+        expectMet: (r) => scenarios.every((facts) => evalRule(r.rule, facts) === evalRule(rubric.target, facts)) };
     }
     case 'story.branch.v2':
     case 'story.would-you-rather.v2':

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
 import { applyMasteryFade } from '../services/pedagogy/courseLessonEvidence.js';
-import { longArithmeticSchema, longArithmeticSteps, masteryFadeCount } from '../services/v2SegmentFamilies.js';
+import { cpaEntryStage, longArithmeticSchema, longArithmeticSteps, masteryFadeCount } from '../services/v2SegmentFamilies.js';
 
 /* GAP-FIX-R1 learning (Appendix P Part 1 M9–M10): long arithmetic steps and the mastery-driven fade chosen on Core. */
 
@@ -46,5 +46,18 @@ describe('mastery-driven backward fade', () => {
     expect((faded.segments as Array<{ payload: { fade_count?: number } }>)[0]!.payload.fade_count).toBe(2);
     vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('offline'); }));
     expect(await applyMasteryFade(doc, userId, topicId)).toBe(doc);
+  });
+});
+
+describe('M1 entry stage (Appendix P Part 4.4, GAP-FIX-R2)', () => {
+  it('starts novices at concrete, partial learners at pictorial and fluent ones at abstract, never earlier than their last unaided stage', () => {
+    expect(cpaEntryStage(null, null)).toBe('concrete');
+    expect(cpaEntryStage(0.3, null)).toBe('concrete');
+    expect(cpaEntryStage(0.7, null)).toBe('pictorial');
+    expect(cpaEntryStage(0.9, null)).toBe('abstract');
+    expect(cpaEntryStage(0.3, 'pictorial')).toBe('pictorial');
+    expect(cpaEntryStage(0.3, 'abstract')).toBe('abstract');
+    expect(cpaEntryStage(0.9, 'concrete')).toBe('abstract');
+    expect(cpaEntryStage(Number.NaN, null)).toBe('concrete');
   });
 });

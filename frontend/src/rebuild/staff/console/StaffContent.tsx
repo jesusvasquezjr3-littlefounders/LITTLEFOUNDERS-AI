@@ -509,7 +509,8 @@ function QualityView({ api }: { api: StaffApi }) {
     state={report.load.state === 'ready' ? { status: 'ready', report: report.load.data } : report.load.state === 'error' ? { status: 'error' } : { status: 'loading' }}
     onRetry={report.reload}
     onSync={async () => (await api.post('/admin/content/learning-quality/reviews/sync', {})).ok}
-    onResolve={resolve} />;
+    onResolve={resolve}
+    onRecordEscape={async (body) => (await api.post('/admin/content/learning-quality/defect-escapes', body)).ok} />;
 }
 
 /* ------------------------------------------------------------------------- */

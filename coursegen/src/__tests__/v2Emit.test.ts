@@ -55,7 +55,7 @@ describe('the committed v2 plans', () => {
       for (const segment of plan.segments.filter((s) => s.rubric)) {
         const emitted = row.document.segments.find((s) => s.id === segment.id)!;
         // GAP-FIX-R1: the optional help ladder, item role and KC ride beside the six base fields; nothing else does.
-        const optional = ['help', 'item_role', 'knowledge_component_id'];
+        const optional = ['help', 'item_role', 'knowledge_component_id', 'item_phase', 'variant'];
         expect(Object.keys(emitted).filter((key) => !optional.includes(key)).sort()).toEqual(['grading', 'id', 'payload', 'prompt', 'type', 'visual']);
         for (const key of Object.keys(segment.rubric!)) {
           if (!(key in segment.payload)) expect(emitted.payload).not.toHaveProperty(key);
@@ -69,7 +69,7 @@ describe('the committed v2 plans', () => {
   it('localize every visible string per market and never leave a string in the neutral payload', () => {
     const run = runV2Emit(FIXTURE_PLANS, FIXTURE_RUN_ID);
     const ledger = run.documents.filter((row) => row.lesson_id === 'v2-schema-diagram');
-    expect(ledger.map((row) => row.document.segments[0]!.payload.incomeLabel)).toEqual(['Earned', 'Ganado', 'Ganho']);
+    expect(ledger.map((row) => (row.document.segments[0]!.payload.quantities as Array<{ label: string }>)[0]!.label)).toEqual(['Earned', 'Ganado', 'Ganho']);
     const market = run.documents.filter((row) => row.lesson_id === 'v2-savings-line').map((row) => row.document.segments[0]!.prompt);
     expect(market[0]).toContain('yard sale');
     expect(market[1]).toContain('tianguis');
@@ -82,7 +82,7 @@ describe('the v2 red team (Appendix C DoD "Gated")', () => {
 
   it('has one sample per content gate that applies to v2', () => {
     const gates = samples.map((file) => (JSON.parse(readFileSync(path.join(RED_TEAM, file), 'utf8')) as { expected_gate: number }).expected_gate);
-    expect(gates.sort((a, b) => a - b)).toEqual([12, 13, 14, 15, 16]);
+    expect(gates.sort((a, b) => a - b)).toEqual([2, 3, 4, 12, 13, 14, 15, 16, 18, 18]);
   });
 
   it.each(samples)('%s blocks on exactly its own gate and emits nothing', (file) => {
@@ -101,7 +101,7 @@ describe('the v2 red team (Appendix C DoD "Gated")', () => {
     expect(run.documents).toEqual([]);
     expect(run.results).toHaveLength(samples.length);
     const blockedGates = run.results.map((result) => [...new Set(result.problems.map((problem) => problem.gate))]);
-    expect(blockedGates.flat().sort((a, b) => a - b)).toEqual([12, 13, 14, 15, 16]);
+    expect(blockedGates.flat().sort((a, b) => a - b)).toEqual([2, 3, 4, 12, 13, 14, 15, 16, 18, 18]);
     expect(blockedGates.every((gates) => gates.length === 1)).toBe(true);
   });
 });
@@ -148,7 +148,8 @@ describe('the v2 content gates', () => {
     const roles = new Map(v2TextBlocks(row.document as never).map((block) => [`${block.segmentId}:${block.path}`, block.role]));
     expect(roles.get('(title):title')).toBe('heading');
     expect(roles.get('schema-structure-01:prompt')).toBe('prompt');
-    expect(roles.get('schema-structure-01:payload.incomeLabel')).toBe('option');
+    expect(roles.get('schema-structure-01:payload.quantities[0].label')).toBe('option');
+    expect(roles.get('schema-structure-01:payload.unknownLabel')).toBe('option');
     expect(roles.get('schema-structure-01:payload.spokenText')).toBe('data');
     expect([...roles.keys()].some((key) => key.endsWith('payload.currency'))).toBe(false);
   });

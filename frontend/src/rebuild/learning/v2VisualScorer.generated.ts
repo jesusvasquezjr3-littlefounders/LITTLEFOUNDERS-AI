@@ -3,7 +3,7 @@ export type V2VisualKind = 'money.allocation.v2' | 'math.number-line.whole.v2' |
   | 'math.place-value.v2' | 'math.ratio-table.v2' | 'visual.percent-grid.v2' | 'visual.growth-comparison.v2' | 'visual.tax-bracket.v2' | 'logic.savings-rule.v2' | 'visual.goal-bullet.v2' | 'money.running-ledger.v2'
   | 'logic.rule-checker.v2' | 'logic.euler.v2' | 'logic.flowchart.v2' | 'money.spend-decision.v2' | 'logic.sort-by-rule.v2' | 'money.needs-wants.v2' | 'logic.scam-spotter.v2' | 'money.scam-check.v2'
   | 'money.coin-tray.v2' | 'money.making-change.v2' | 'story.branch.v2' | 'story.dialogue-choice.v2' | 'story.would-you-rather.v2'
-  | 'visual.chart.v2';
+  | 'visual.chart.v2' | 'money.unit-price.v2' | 'logic.rule-builder.v2';
 export type V2VisualVerdict = 'invalid' | 'valid' | 'review' | 'met';
 /** B.12 (Law 4): the quality of the reason a learner gave, graded apart from the decision. */
 export type V2JudgmentQuality = 'sound' | 'partial' | 'unsupported';
@@ -38,6 +38,8 @@ export function scoreV2Visual(kind: V2VisualKind, payload: unknown, response: un
       return (response.save as number) >= rubric.minimumSave ? 'met' : 'review';
     }
     case 'math.number-line.whole.v2': {
+      // M2 / $2 (GAP-FIX-R2): board-game counting on from the current square, graded as a hop sequence.
+      if (fields(payload, ['minimum', 'maximum', 'step', 'initial', 'hops'])) return countOnVerdict(payload, response, rubric);
       if (!fields(payload, ['minimum', 'maximum', 'step']) || !whole(payload.minimum) || payload.minimum < 0
         || !whole(payload.maximum) || payload.maximum <= payload.minimum || !whole(payload.step) || payload.step <= 0
         || (payload.maximum - payload.minimum) % payload.step !== 0 || !fields(response, ['value'])
@@ -92,28 +94,31 @@ export function scoreV2Visual(kind: V2VisualKind, payload: unknown, response: un
       return value === rubric.target ? 'met' : 'review';
     }
     case 'math.schema-diagram.structure.v2': {
-      if (!fields(payload, ['income', 'spending']) || !whole(payload.income) || !whole(payload.spending) || payload.income <= payload.spending
-        || !fields(response, ['schema']) || (response.schema !== 'change' && response.schema !== 'compare')) return 'invalid';
+      // M8 (GAP-FIX-R2): the learner picks one of the four schemas; the right one is private.
+      if (!schemaQuantities(payload) || !fields(response, ['schema']) || !SCHEMAS.includes(response.schema as string)) return 'invalid';
       if (rubric === undefined) return 'valid';
-      if (!fields(rubric, ['schema']) || rubric.schema !== 'change') return 'invalid';
+      if (!fields(rubric, ['schema']) || !SCHEMAS.includes(rubric.schema as string)) return 'invalid';
       return response.schema === rubric.schema ? 'met' : 'review';
     }
     case 'math.schema-diagram.slots.v2': {
-      if (!fields(payload, ['income', 'spending']) || !whole(payload.income) || !whole(payload.spending) || payload.income <= payload.spending
-        || !fields(response, ['income', 'spending']) || typeof response.income !== 'string' || typeof response.spending !== 'string'
-        || !/^(0|[1-9]\d*)$/.test(response.income) || !/^(0|[1-9]\d*)$/.test(response.spending)) return 'invalid';
-      const income = Number(response.income), spending = Number(response.spending);
-      if (!whole(income) || !whole(spending) || income > payload.income || spending > payload.income) return 'invalid';
+      // M8: the chosen schema's three slots, each holding one story quantity or the unknown.
+      const quantities = schemaQuantities(payload);
+      if (!quantities || !fields(response, ['schema', 'slots']) || !schemaSlots(response.schema, response.slots, quantities.ids)) return 'invalid';
       if (rubric === undefined) return 'valid';
-      if (!fields(rubric, ['income', 'spending']) || !whole(rubric.income) || !whole(rubric.spending)) return 'invalid';
-      return income === rubric.income && spending === rubric.spending ? 'met' : 'review';
+      if (!fields(rubric, ['schema', 'slots']) || !schemaSlots(rubric.schema, rubric.slots, quantities.ids)) return 'invalid';
+      const given = response.slots as Record<string, string>; const key = rubric.slots as Record<string, string>;
+      return response.schema === rubric.schema && Object.keys(key).every((slot) => given[slot] === key[slot]) ? 'met' : 'review';
     }
     case 'math.schema-diagram.answer.v2': {
-      if (!fields(payload, ['income', 'spending']) || !whole(payload.income) || !whole(payload.spending) || payload.income <= payload.spending
-        || !fields(response, ['value']) || typeof response.value !== 'string' || !/^(0|[1-9]\d*)$/.test(response.value)) return 'invalid';
-      const value = Number(response.value); if (!whole(value) || value > payload.income) return 'invalid';
+      const quantities = schemaQuantities(payload);
+      if (!quantities || !fields(response, ['value']) || typeof response.value !== 'string' || !/^(0|[1-9]\d*)$/.test(response.value)) return 'invalid';
+      const value = Number(response.value);
+      const [a, b] = quantities.values as [number, number];
+      if (!whole(value) || value > a * b + a + b) return 'invalid';
       if (rubric === undefined) return 'valid';
-      if (!fields(rubric, ['target']) || !whole(rubric.target) || rubric.target < 0 || rubric.target > payload.income) return 'invalid';
+      // The target must be one relation of the two story quantities: a group total, a change or comparison difference, or a rate.
+      const relations = [a + b, Math.abs(a - b), a * b, ...(a % b === 0 ? [a / b] : []), ...(b % a === 0 ? [b / a] : [])];
+      if (!fields(rubric, ['target']) || !whole(rubric.target) || !relations.includes(rubric.target)) return 'invalid';
       return value === rubric.target ? 'met' : 'review';
     }
     case 'math.worked-example.v2': {
@@ -290,7 +295,7 @@ export function sameAnswer(given: string, expected: string): boolean {
  * verdict. `structure`, `path` and `bin` are structure errors (the learner
  * built the wrong model); every other non-`none` code is an answer error.
  */
-export const V2_DIAGNOSTIC_CODES = ['none', 'structure', 'value', 'partial', 'miss', 'false_alarm', 'path', 'outcome', 'bin', 'reason', 'tolerance'] as const;
+export const V2_DIAGNOSTIC_CODES = ['none', 'structure', 'value', 'partial', 'miss', 'false_alarm', 'path', 'outcome', 'bin', 'reason', 'tolerance', 'count_from_zero'] as const;
 export type V2Diagnostic = (typeof V2_DIAGNOSTIC_CODES)[number];
 export function v2DiagnosticFamily(code: V2Diagnostic): 'structure' | 'answer' | null {
   return code === 'none' ? null : code === 'structure' || code === 'path' || code === 'bin' ? 'structure' : 'answer';
@@ -319,7 +324,9 @@ function probit(p: number): number {
   return (((((a[0]! * r + a[1]!) * r + a[2]!) * r + a[3]!) * r + a[4]!) * r + a[5]!) * q / (((((b[0]! * r + b[1]!) * r + b[2]!) * r + b[3]!) * r + b[4]!) * r + 1);
 }
 
-export interface V2Grade { verdict: V2VisualVerdict; diagnostic: V2Diagnostic; detection?: V2Detection }
+/** L12 / $11 (GAP-FIX-R2): which cues the learner ticked against the key; a diagnostic that never changes d′ or the score. */
+export interface V2CueHits { hits: number; missed: number; false_ticks: number }
+export interface V2Grade { verdict: V2VisualVerdict; diagnostic: V2Diagnostic; detection?: V2Detection; cues?: V2CueHits }
 
 const NUMBER_TEXT = /^-?(0|[1-9]\d*)(\.\d+)?$/;
 function numberText(value: unknown): value is string { return typeof value === 'string' && value.length <= 40 && NUMBER_TEXT.test(value); }
@@ -446,12 +453,18 @@ function sortGrade(payload: unknown, response: unknown, rubric: unknown): V2Grad
 }
 
 function detectionGrade(payload: unknown, response: unknown, rubric: unknown): V2Grade {
-  if (!fields(payload, ['messageIds']) || !strings(payload.messageIds, 3, 8) || !fields(response, ['flagged']) || !strings(response.flagged, 0, 8)
-    || response.flagged.some((flag) => !(payload.messageIds as string[]).includes(flag))) return INVALID;
+  const cued = fields(payload, ['messageIds', 'cueIds']);
+  if ((!cued && !fields(payload, ['messageIds'])) || !strings((payload as Record<string, unknown>).messageIds, 3, 8)
+    || !fields(response, cued ? ['flagged', 'cues'] : ['flagged']) || !strings(response.flagged, 0, 8)
+    || response.flagged.some((flag) => !((payload as Record<string, unknown>).messageIds as string[]).includes(flag))) return INVALID;
+  const messages = (payload as Record<string, unknown>).messageIds as string[];
+  const cueIds = cued ? (payload as Record<string, unknown>).cueIds : [];
+  if (cued && (!strings(cueIds, 2, 6) || !cueTicks(response.cues, messages, cueIds as string[]))) return INVALID;
   if (rubric === undefined) return grade('valid');
-  const messages = payload.messageIds as string[];
   // Genuine messages are always in the set: a key that calls everything a scam cannot measure false alarms.
-  if (!fields(rubric, ['scam_ids']) || !strings(rubric.scam_ids, 1, messages.length - 1) || rubric.scam_ids.some((scam) => !messages.includes(scam))) return INVALID;
+  const rubricFields = record(rubric) && Object.hasOwn(rubric, 'cue_ids') ? ['scam_ids', 'cue_ids'] : ['scam_ids'];
+  if (!fields(rubric, rubricFields) || !strings(rubric.scam_ids, 1, messages.length - 1) || rubric.scam_ids.some((scam) => !messages.includes(scam))) return INVALID;
+  if (rubricFields.length === 2 && (!cued || !cueTicks(rubric.cue_ids, messages, cueIds as string[]))) return INVALID;
   const scams = new Set(rubric.scam_ids);
   const flagged = new Set(response.flagged as string[]);
   const detection: V2Detection = {
@@ -462,7 +475,16 @@ function detectionGrade(payload: unknown, response: unknown, rubric: unknown): V
   };
   const met = detection.misses === 0 && detection.false_alarms === 0;
   const diagnostic: V2Diagnostic = met ? 'none' : detection.misses > 0 && detection.false_alarms > 0 ? 'partial' : detection.misses > 0 ? 'miss' : 'false_alarm';
-  return { verdict: met ? 'met' : 'review', diagnostic, detection };
+  if (rubricFields.length === 1) return { verdict: met ? 'met' : 'review', diagnostic, detection };
+  // L12: "tick which cues fired" — counted beside the verdict; the score and d′ stay the flag decision alone.
+  const key = rubric.cue_ids as Record<string, string[]>; const ticked = response.cues as Record<string, string[]>;
+  const cues: V2CueHits = { hits: 0, missed: 0, false_ticks: 0 };
+  for (const message of messages) {
+    const expected = new Set(key[message] ?? []); const given = new Set(ticked[message] ?? []);
+    for (const cue of given) if (expected.has(cue)) cues.hits += 1; else cues.false_ticks += 1;
+    for (const cue of expected) if (!given.has(cue)) cues.missed += 1;
+  }
+  return { verdict: met ? 'met' : 'review', diagnostic, detection, cues };
 }
 
 /**
@@ -476,13 +498,15 @@ export function gradeV2Response(kind: V2VisualKind, payload: unknown, response: 
   switch (kind) {
     case 'money.allocation.v2':
     case 'math.bar-model.answer.v2':
-    case 'math.schema-diagram.slots.v2':
     case 'math.schema-diagram.answer.v2':
     case 'math.fraction-area.v2':
     case 'math.function-machine.v2':
     case 'math.cpa-count.v2': return grade(verdict);
     case 'math.bar-model.structure.v2':
     case 'math.schema-diagram.structure.v2': return grade(verdict, verdict === 'met' ? 'none' : 'structure');
+    // M8: a slot step built on the wrong schema is a structure error; the right schema with misplaced quantities is a value error.
+    case 'math.schema-diagram.slots.v2': return grade(verdict, verdict === 'met' ? 'none'
+      : (response as { schema: string }).schema !== (rubric as { schema: string }).schema ? 'structure' : 'value');
     case 'math.number-line.whole.v2':
     case 'math.number-line.fraction.v2': return grade(verdict, verdict === 'met' ? 'none' : 'tolerance');
     case 'reasoning.decide-justify.v2': return grade(verdict, verdict === 'met' ? 'none' : 'outcome');
@@ -497,6 +521,235 @@ export function gradeV2Response(kind: V2VisualKind, payload: unknown, response: 
   }
 }
 
+
+/* ── M2 counting on, $2 counting up, L12 cue ticks (GAP-FIX-R2) ─────────────── */
+
+function countOnVerdict(payload: Record<string, unknown>, response: unknown, rubric: unknown): V2VisualVerdict {
+  const { minimum, maximum, step, initial, hops } = payload as Record<string, unknown>;
+  if (!whole(minimum) || minimum < 0 || !whole(maximum) || maximum <= minimum || !whole(step) || step <= 0 || !onGrid(initial, minimum, maximum, step)
+    || !Array.isArray(hops) || hops.length < 1 || hops.length > 3 || hops.some((hop) => !whole(hop) || hop <= 0 || hop % step !== 0)
+    || !fields(response, ['value', 'hops']) || typeof response.value !== 'string' || !/^(0|[1-9]\d*)$/.test(response.value)
+    || !Array.isArray(response.hops) || response.hops.length < 1 || response.hops.length > 40
+    || response.hops.some((hop) => !(hops as number[]).includes(hop as number))) return 'invalid';
+  const value = Number(response.value);
+  // Conservation: the point is always where the hops from the current square land.
+  const landed = (response.hops as number[]).reduce((sum, hop) => sum + hop, initial);
+  if (value !== landed || value > maximum) return 'invalid';
+  if (rubric === undefined) return 'valid';
+  if (!fields(rubric, ['target']) || !onGrid(rubric.target, initial, maximum, step) || rubric.target === initial) return 'invalid';
+  return value === rubric.target ? 'met' : 'review';
+}
+
+/** The counting-up sequence: strictly rising totals, each one coin more, the coins exactly the tray. */
+function countUp(denominations: Array<{ value: number }>, counts: Record<string, number>, sequence: unknown, price: number, paid: number): 'from_price' | 'from_zero' | 'wrong' | null {
+  const coins = Object.values(counts).reduce((sum, count) => sum + count, 0);
+  if (!Array.isArray(sequence) || sequence.length !== coins || sequence.length > 60 || sequence.some((value) => !whole(value) || value < 0)) return null;
+  const values = new Set(denominations.map((item) => item.value));
+  const fits = (start: number) => {
+    const used: Record<string, number> = {};
+    let previous = start;
+    for (const said of sequence as number[]) {
+      const coin = said - previous;
+      if (!values.has(coin)) return false;
+      used[String(coin)] = (used[String(coin)] ?? 0) + 1;
+      previous = said;
+    }
+    return Object.entries(counts).every(([coin, count]) => (used[coin] ?? 0) === count);
+  };
+  if (fits(price) && sequence.at(-1) === paid) return 'from_price';
+  if (fits(0)) return 'from_zero';
+  return 'wrong';
+}
+
+function cueTicks(value: unknown, messages: readonly string[], cueIds: readonly string[]): boolean {
+  return record(value) && Object.keys(value).every((message) => messages.includes(message))
+    && Object.values(value).every((ticks) => Array.isArray(ticks) && ticks.length <= cueIds.length && new Set(ticks).size === ticks.length
+      && ticks.every((cue) => typeof cue === 'string' && cueIds.includes(cue)));
+}
+
+/* ── $6 unit prices (GAP-FIX-R2) ─────────────────────────────────────────── */
+
+interface Offer { id: string; quantity: number; price: number }
+function unitOffers(payload: unknown): { offers: Offer[]; scale: number } | null {
+  if (!fields(payload, ['scale', 'offers']) || (payload.scale !== 1 && payload.scale !== 100) || !Array.isArray(payload.offers)
+    || payload.offers.length < 2 || payload.offers.length > 3) return null;
+  const offers: Offer[] = [];
+  for (const offer of payload.offers) {
+    if (!fields(offer, ['id', 'quantity', 'price']) || typeof offer.id !== 'string' || !REASONING_ID.test(offer.id)
+      || !onGrid(offer.quantity, 1, 1_000, 1) || !onGrid(offer.price, 1, 1_000_000, 1)) return null;
+    offers.push({ id: offer.id, quantity: offer.quantity, price: offer.price });
+  }
+  if (new Set(offers.map((offer) => offer.id)).size !== offers.length) return null;
+  return { offers, scale: payload.scale };
+}
+/** Within half a hundredth of the exact unit price (major units): |g - p/(q*s)| <= 1/200. */
+function nearUnitPrice(given: { n: bigint; d: bigint }, offer: Offer, scale: number): boolean {
+  const qs = BigInt(offer.quantity * scale);
+  const gap = given.n * qs - given.d * BigInt(offer.price);
+  return (gap < 0n ? -gap : gap) * 200n <= given.d * qs;
+}
+function unitPriceGrade(payload: unknown, response: unknown, rubric: unknown): V2Grade {
+  const value = unitOffers(payload);
+  if (!value || !fields(response, ['unit_prices', 'choice']) || !record(response.unit_prices) || typeof response.choice !== 'string') return INVALID;
+  const { offers, scale } = value;
+  const typed = response.unit_prices;
+  if (Object.keys(typed).length !== offers.length || !offers.some((offer) => offer.id === response.choice)) return INVALID;
+  const given = offers.map((offer) => typeof typed[offer.id] === 'string' && NUMBER_TEXT.test(typed[offer.id] as string) ? rational(typed[offer.id] as string) : null);
+  if (given.some((item) => item === null || item.n < 0n)) return INVALID;
+  if (rubric === undefined) return grade('valid');
+  // The key must state each exact unit price and the one strictly cheapest offer.
+  const cheapest = offers.reduce((best, offer) => offer.price * best.quantity < best.price * offer.quantity ? offer : best);
+  if (!fields(rubric, ['unit_prices', 'better_id']) || !record(rubric.unit_prices) || rubric.better_id !== cheapest.id
+    || offers.some((offer) => offer !== cheapest && offer.price * cheapest.quantity === cheapest.price * offer.quantity)
+    || Object.keys(rubric.unit_prices).length !== offers.length) return INVALID;
+  for (const offer of offers) {
+    const key = typeof (rubric.unit_prices as Record<string, unknown>)[offer.id] === 'string' ? rational((rubric.unit_prices as Record<string, string>)[offer.id]!) : null;
+    if (!key || key.n * BigInt(offer.quantity * scale) !== key.d * BigInt(offer.price)) return INVALID;
+  }
+  const pricesRight = offers.every((offer, index) => nearUnitPrice(given[index]!, offer, scale));
+  const choiceRight = response.choice === cheapest.id;
+  return pricesRight && choiceRight ? grade('met') : grade('review', pricesRight ? 'outcome' : 'value');
+}
+
+/* ── L2 rule builder and L6/$9 built flowcharts (GAP-FIX-R2) ──────────────── */
+
+type Expr = { c: string } | { not: Expr } | { and: [Expr, Expr] } | { or: [Expr, Expr] };
+/** A rule expression the level allows: single = one condition; connective = one condition or A AND/OR B; nested = NOT and nesting to depth 3. */
+function exprOk(value: unknown, conditions: readonly string[], level: string, depth = 0): value is Expr {
+  if (!record(value) || Object.keys(value).length !== 1 || depth > 3) return false;
+  if (typeof value.c === 'string') return conditions.includes(value.c);
+  if (level === 'single') return false;
+  if (Object.hasOwn(value, 'not')) return level === 'nested' && exprOk(value.not, conditions, level, depth + 1);
+  const pair = Array.isArray(value.and) ? value.and : Array.isArray(value.or) ? value.or : null;
+  if (!pair || pair.length !== 2) return false;
+  if (level === 'connective') return pair.every((item) => record(item) && typeof item.c === 'string' && conditions.includes(item.c));
+  return pair.every((item) => exprOk(item, conditions, level, depth + 1));
+}
+function evalExpr(value: Expr, facts: Record<string, boolean>): boolean {
+  if ('c' in value) return facts[value.c] === true;
+  if ('not' in value) return !evalExpr(value.not, facts);
+  if ('and' in value) return evalExpr(value.and[0], facts) && evalExpr(value.and[1], facts);
+  return evalExpr(value.or[0], facts) || evalExpr(value.or[1], facts);
+}
+function exprConditions(value: Expr, out = new Set<string>()): Set<string> {
+  if ('c' in value) out.add(value.c);
+  else if ('not' in value) exprConditions(value.not, out);
+  else for (const item of 'and' in value ? value.and : value.or) exprConditions(item, out);
+  return out;
+}
+function ruleOk(rule: unknown, conditions: readonly string[], actions: readonly string[], level: string): rule is { if: Expr; then: string; else: string } {
+  return fields(rule, ['if', 'then', 'else']) && typeof rule.then === 'string' && typeof rule.else === 'string'
+    && actions.includes(rule.then) && actions.includes(rule.else) && exprOk(rule.if, conditions, level) && JSON.stringify(rule.if).length <= 600;
+}
+function factsOk(value: unknown, keys: readonly string[]): value is Record<string, boolean> {
+  return record(value) && Object.keys(value).length === keys.length && keys.every((key) => typeof value[key] === 'boolean');
+}
+function ruleBuilderGrade(payload: unknown, response: unknown, rubric: unknown): V2Grade {
+  if (!fields(payload, ['level', 'conditionIds', 'actionIds']) || !['single', 'connective', 'nested'].includes(payload.level as string)
+    || !strings(payload.conditionIds, 1, 4) || !strings(payload.actionIds, 2, 3) || !fields(response, ['rule'])) return INVALID;
+  const conditions = payload.conditionIds as string[]; const actions = payload.actionIds as string[]; const level = payload.level as string;
+  if (!ruleOk(response.rule, conditions, actions, level)) return INVALID;
+  if (rubric === undefined) return grade('valid');
+  if (!fields(rubric, ['target', 'scenarios']) || !ruleOk(rubric.target, conditions, actions, level) || rubric.target.then === rubric.target.else
+    || !Array.isArray(rubric.scenarios) || rubric.scenarios.length < 5 || rubric.scenarios.length > 10
+    || rubric.scenarios.some((item) => !factsOk(item, conditions))) return INVALID;
+  const target = rubric.target; const learner = response.rule as { if: Expr; then: string; else: string };
+  const scenarios = rubric.scenarios as Record<string, boolean>[];
+  const run = (rule: { if: Expr; then: string; else: string }) => scenarios.map((facts) => evalExpr(rule.if, facts) ? rule.then : rule.else);
+  const key = run(target);
+  // A hidden set on which the target always does the same thing proves nothing (Part 4.6).
+  if (new Set(key).size < 2) return INVALID;
+  if (run(learner).every((value, index) => value === key[index])) return grade('met');
+  const used = exprConditions(learner.if); const needed = exprConditions(target.if);
+  return grade('review', used.size !== needed.size || [...needed].some((item) => !used.has(item)) ? 'structure' : 'outcome');
+}
+
+type Tree = { o: string } | { q: string; yes: Tree; no: Tree };
+function treeOk(value: unknown, questions: readonly string[], outcomes: readonly string[], asked: readonly string[] = []): value is Tree {
+  if (!record(value)) return false;
+  if (Object.keys(value).length === 1 && typeof value.o === 'string') return outcomes.includes(value.o);
+  return Object.keys(value).length === 3 && typeof value.q === 'string' && questions.includes(value.q) && !asked.includes(value.q)
+    && treeOk(value.yes, questions, outcomes, [...asked, value.q]) && treeOk(value.no, questions, outcomes, [...asked, value.q]);
+}
+function walkTree(tree: Tree, answers: Record<string, boolean>): string {
+  return 'o' in tree ? tree.o : walkTree(answers[tree.q] ? tree.yes : tree.no, answers);
+}
+function treeQuestions(tree: Tree, out = new Set<string>()): Set<string> {
+  if (!('o' in tree)) { out.add(tree.q); treeQuestions(tree.yes, out); treeQuestions(tree.no, out); }
+  return out;
+}
+function builtFlowGrade(payload: Record<string, unknown>, response: unknown, rubric: unknown): V2Grade {
+  if (!fields(payload, ['mode', 'questionIds', 'outcomeIds']) || !strings(payload.questionIds, 1, 3) || !strings(payload.outcomeIds, 2, 3)
+    || !fields(response, ['tree'])) return INVALID;
+  const questions = payload.questionIds as string[]; const outcomes = payload.outcomeIds as string[];
+  if (!treeOk(response.tree, questions, outcomes)) return INVALID;
+  if (rubric === undefined) return grade('valid');
+  if (!fields(rubric, ['cases']) || !Array.isArray(rubric.cases) || rubric.cases.length < 5 || rubric.cases.length > 10
+    || rubric.cases.some((item) => !fields(item, ['answers', 'outcome']) || !factsOk(item.answers, questions) || !outcomes.includes(item.outcome as string))) return INVALID;
+  const cases = rubric.cases as Array<{ answers: Record<string, boolean>; outcome: string }>;
+  if (new Set(cases.map((item) => item.outcome)).size < 2) return INVALID;
+  const tree = response.tree as Tree;
+  if (cases.every((item) => walkTree(tree, item.answers) === item.outcome)) return grade('met');
+  // A chart that never asks a question the cases depend on is a structure (path) error.
+  return grade('review', treeQuestions(tree).size < questions.length ? 'path' : 'outcome');
+}
+
+/* M8 schema diagrams (GAP-FIX-R2): four schemas, three slots each. */
+const SCHEMAS: readonly string[] = ['change', 'group', 'compare', 'ratio'];
+const SCHEMA_SLOT_NAMES: Readonly<Record<string, readonly string[]>> = {
+  change: ['start', 'change', 'result'], group: ['part', 'other', 'total'], compare: ['larger', 'smaller', 'difference'], ratio: ['rate', 'count', 'total'],
+};
+function schemaQuantities(payload: unknown): { ids: string[]; values: number[] } | null {
+  if (!fields(payload, ['quantityIds', 'values']) || !strings(payload.quantityIds, 2, 2) || !Array.isArray(payload.values) || payload.values.length !== 2
+    || payload.values.some((value) => !whole(value) || value < 1 || value > 100_000) || payload.quantityIds.includes('unknown')) return null;
+  return { ids: payload.quantityIds as string[], values: payload.values as number[] };
+}
+/** Exactly the schema's three slots; each story quantity placed once and the unknown once. */
+function schemaSlots(schema: unknown, slots: unknown, quantityIds: readonly string[]): boolean {
+  if (typeof schema !== 'string' || !SCHEMAS.includes(schema) || !record(slots)) return false;
+  const names = SCHEMA_SLOT_NAMES[schema]!;
+  if (Object.keys(slots).length !== 3 || names.some((name) => typeof slots[name] !== 'string')) return false;
+  const placed = names.map((name) => slots[name] as string);
+  return placed.filter((value) => value === 'unknown').length === 1 && quantityIds.every((quantityId) => placed.filter((value) => value === quantityId).length === 1);
+}
+
+/* M5 place value (GAP-FIX-R2): columns, trades and borrows. */
+interface PlaceColumns { hundreds: number; tens: number; ones: number; subtrahend: number }
+const COMPOSE_TRADES: readonly string[] = ['ten', 'hundred'];
+const BORROW_TRADES: readonly string[] = ['borrow-ten', 'borrow-hundred'];
+function placeColumns(payload: unknown): PlaceColumns | null {
+  if (!fields(payload, ['mode', 'hundreds', 'tens', 'ones', 'subtrahend']) || (payload.mode !== 'compose' && payload.mode !== 'subtract')
+    || !onGrid(payload.hundreds, 0, 9, 1) || !onGrid(payload.tens, 0, 29, 1) || !onGrid(payload.ones, 0, 29, 1) || !onGrid(payload.subtrahend, 0, 998, 1)) return null;
+  const value = payload.hundreds * 100 + payload.tens * 10 + payload.ones;
+  if (value < 10 || value > 999 || (payload.mode === 'compose') !== (payload.subtrahend === 0) || payload.subtrahend >= value) return null;
+  return { hundreds: payload.hundreds, tens: payload.tens, ones: payload.ones, subtrahend: payload.subtrahend };
+}
+function replayPlaceTrades(start: PlaceColumns, trades: unknown): { hundreds: number; tens: number; ones: number } | null {
+  const allowed = start.subtrahend === 0 ? COMPOSE_TRADES : BORROW_TRADES;
+  if (!Array.isArray(trades) || trades.length > 20) return null;
+  let { hundreds, tens, ones } = start;
+  for (const trade of trades) {
+    if (typeof trade !== 'string' || !allowed.includes(trade)) return null;
+    if (trade === 'ten') { if (ones < 10) return null; ones -= 10; tens += 1; }
+    else if (trade === 'hundred') { if (tens < 10 || hundreds >= 9) return null; tens -= 10; hundreds += 1; }
+    else if (trade === 'borrow-ten') { if (tens < 1 || ones > 9) return null; tens -= 1; ones += 10; }
+    else { if (hundreds < 1 || tens > 9) return null; hundreds -= 1; tens += 10; }
+  }
+  return { hundreds, tens, ones };
+}
+function composeTrades(start: PlaceColumns): number {
+  const tenTrades = Math.floor(start.ones / 10);
+  return tenTrades + Math.floor((start.tens + tenTrades) / 10);
+}
+function borrowCount(start: PlaceColumns): number {
+  let { hundreds, tens, ones } = start;
+  const s = { hundreds: Math.floor(start.subtrahend / 100), tens: Math.floor(start.subtrahend / 10) % 10, ones: start.subtrahend % 10 };
+  let borrows = 0;
+  if (ones < s.ones) { if (tens === 0) { hundreds -= 1; tens += 10; borrows += 1; } tens -= 1; ones += 10; borrows += 1; }
+  if (tens < s.tens) { hundreds -= 1; tens += 10; borrows += 1; }
+  return hundreds < s.hundreds ? -1 : borrows;
+}
+
 function scoreV2Extended(kind: V2VisualKind, payload: unknown, response: unknown, rubric: unknown): V2VisualVerdict {
   return scoreV2ExtendedDetailed(kind, payload, response, rubric).verdict;
 }
@@ -504,14 +757,22 @@ function scoreV2Extended(kind: V2VisualKind, payload: unknown, response: unknown
 function scoreV2ExtendedDetailed(kind: V2VisualKind, payload: unknown, response: unknown, rubric: unknown): V2Grade {
   switch (kind) {
     case 'math.place-value.v2': {
-      // M5: the trade sequence and the written digits, one integer state.
-      if (!fields(payload, ['total']) || !whole(payload.total) || payload.total < 10 || payload.total > 29
-        || !fields(response, ['trades', 'tens', 'ones']) || !whole(response.trades) || response.trades < 0
-        || response.trades > Math.floor(payload.total / 10) || !numberText(response.tens) || !numberText(response.ones)) return INVALID;
+      // M5 (GAP-FIX-R2): three places. The trade sequence is replayed from the start columns, then the written digits.
+      const start = placeColumns(payload);
+      if (!start || !fields(response, ['trades', 'hundreds', 'tens', 'ones']) || !numberText(response.hundreds) || !numberText(response.tens)
+        || !numberText(response.ones)) return INVALID;
+      const final = replayPlaceTrades(start, response.trades);
+      if (!final) return INVALID;
+      const expectedTrades = start.subtrahend === 0 ? composeTrades(start) : borrowCount(start);
       if (rubric === undefined) return grade('valid');
-      if (!fields(rubric, ['trades']) || rubric.trades !== Math.floor(payload.total / 10)) return INVALID;
-      if (response.trades !== rubric.trades) return grade('review', 'structure');
-      return Number(response.tens) === Math.floor(payload.total / 10) && Number(response.ones) === payload.total % 10 ? grade('met') : grade('review', 'value');
+      if (!fields(rubric, ['trades']) || !whole(rubric.trades) || rubric.trades !== expectedTrades || expectedTrades < 1) return INVALID;
+      const s = { hundreds: Math.floor(start.subtrahend / 100), tens: Math.floor(start.subtrahend / 10) % 10, ones: start.subtrahend % 10 };
+      const structured = start.subtrahend === 0 ? final.ones < 10 && final.tens < 10
+        : (response.trades as unknown[]).length === expectedTrades && final.ones >= s.ones && final.tens >= s.tens && final.hundreds >= s.hundreds;
+      if (!structured) return grade('review', 'structure');
+      const value = start.subtrahend === 0 ? final : { hundreds: final.hundreds - s.hundreds, tens: final.tens - s.tens, ones: final.ones - s.ones };
+      return Number(response.hundreds) === value.hundreds && Number(response.tens) === value.tens && Number(response.ones) === value.ones
+        ? grade('met') : grade('review', 'value');
     }
     case 'math.ratio-table.v2': {
       // M14: the chosen pair and the missing value.
@@ -628,6 +889,7 @@ function scoreV2ExtendedDetailed(kind: V2VisualKind, payload: unknown, response:
     }
     case 'logic.flowchart.v2':
     case 'money.spend-decision.v2': {
+      if (record(payload) && payload.mode === 'build') return builtFlowGrade(payload, response, rubric);
       if (!fields(payload, ['start', 'nodes', 'scenarioIds']) || !strings(payload.scenarioIds, 1, 3) || !fields(response, ['paths']) || !record(response.paths)) return INVALID;
       const scenarios = payload.scenarioIds as string[];
       const paths = response.paths;
@@ -666,18 +928,26 @@ function scoreV2ExtendedDetailed(kind: V2VisualKind, payload: unknown, response:
     }
     case 'money.making-change.v2': {
       if (!fields(payload, ['denominations', 'price', 'paid']) || !whole(payload.price) || !whole(payload.paid) || payload.paid <= payload.price) return INVALID;
-      const total = money(payload, response);
+      // $2 (GAP-FIX-R2): the coins returned and the counting-up sequence said while adding them, in order.
+      if (!fields(response, ['counts', 'sequence'])) return INVALID;
+      const total = money(payload, { counts: response.counts });
       if (total === null) return INVALID;
+      const counting = countUp(payload.denominations as Array<{ value: number }>, response.counts as Record<string, number>, response.sequence, payload.price, payload.paid);
+      if (counting === null) return INVALID;
       if (rubric === undefined) return grade('valid');
       // Conservation: the change owed is exactly what was paid minus the price.
       if (!fields(rubric, ['change_minor']) || rubric.change_minor !== payload.paid - payload.price) return INVALID;
-      return total === rubric.change_minor ? grade('met') : grade('review', 'value');
+      if (total !== rubric.change_minor) return grade('review', 'value');
+      // Laski & Siegler: count UP from the price to the amount paid; counting the change from zero is a diagnosed review.
+      return counting === 'from_price' ? grade('met') : grade('review', counting === 'from_zero' ? 'count_from_zero' : 'value');
     }
     case 'story.branch.v2':
     case 'story.dialogue-choice.v2': return choiceGrade(payload, response, rubric, 3);
     case 'story.would-you-rather.v2': return choiceGrade(payload, response, rubric, 2);
     // B.7 part 1: a question read off a teaching chart; the acceptable option ids are private.
     case 'visual.chart.v2': return choiceGrade(payload, response, rubric, 3, 4);
+    case 'money.unit-price.v2': return unitPriceGrade(payload, response, rubric);
+    case 'logic.rule-builder.v2': return ruleBuilderGrade(payload, response, rubric);
     default: return INVALID;
   }
 }

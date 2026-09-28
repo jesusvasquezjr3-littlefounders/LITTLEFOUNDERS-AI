@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { dPrime } from './v2VisualScorer.js';
 import { serviceRest, serviceRestRaw } from './supabaseRest.js';
+import { loadLearningQaSignals, type LearningQaSignals } from './learningQaSignals.js';
 import { loadEngagementHealth, type EngagementHealthReport } from './engagementHealth.js';
 
 /*
@@ -185,6 +186,8 @@ export interface LearningQualityReport {
   engagementHealth: EngagementHealthReport | null;
   /** GAP-FIX-R1: transfer vs practice, structure vs answer errors, first unaided stage and d′; null until 0207 is applied. */
   v2Signals: V2LearningSignals | null;
+  /** GAP-FIX-R2: Appendix P Part 8 parity, d′ pre/post, A/B and coverage; Appendix C 1.3 B.1/B.2/B.4 and defect escapes. Null until 0216 and 0218. */
+  qaSignals: LearningQaSignals | null;
   thresholds: {
     judgmentDivergenceFloor: number; judgmentMinAttempts: number; replayNoticeTarget: number; bandReviewCadenceDays: number;
   };
@@ -195,7 +198,7 @@ export async function loadLearningQualityReport(days: number, now = new Date()):
   const until = now.toISOString();
   const since = new Date(now.getTime() - days * 86_400_000).toISOString();
   const window = { p_since: since, p_until: until };
-  const [lessons, reviews, bands, log, judgment, replay, restDays, autonomy, engagementHealth, v2Signals] = await Promise.all([
+  const [lessons, reviews, bands, log, judgment, replay, restDays, autonomy, engagementHealth, v2Signals, qaSignals] = await Promise.all([
     rpc('practice_success_band_metrics', window, z.array(MetricRow)),
     serviceRest<unknown>('/practice_difficulty_reviews?select=id,lesson_id,direction,window_days,evidence,status,decision,decision_note,opened_at,resolved_at&order=opened_at.desc&limit=100')
       .then((rows) => { const parsed = z.array(ReviewRow).safeParse(rows); return parsed.success ? parsed.data : null; }),
@@ -209,6 +212,7 @@ export async function loadLearningQualityReport(days: number, now = new Date()):
     rpc('learning_autonomy_adoption', window, z.array(AutonomyRow)),
     loadEngagementHealth(now),
     loadV2LearningSignals(window),
+    loadLearningQaSignals(window),
   ]);
   if (!lessons || !reviews || !bands || !log || !judgment || !replay) return null;
   const band = bands[0];
@@ -228,6 +232,7 @@ export async function loadLearningQualityReport(days: number, now = new Date()):
     } : null,
     engagementHealth,
     v2Signals,
+    qaSignals,
     thresholds: {
       judgmentDivergenceFloor: JUDGMENT_DIVERGENCE_FLOOR, judgmentMinAttempts: JUDGMENT_MIN_ATTEMPTS,
       replayNoticeTarget: REPLAY_NOTICE_TARGET, bandReviewCadenceDays: BAND_REVIEW_CADENCE_DAYS,

@@ -1,0 +1,215 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-teen",
+  "chapter_id": "if-then-rules",
+  "lesson_id": "v2-rule-builder-nested",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-if-then-rules"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Dina arma una regla anidada con NO para esperar una oferta.",
+  "title": {
+    "en-US": "Nested rules with NOT",
+    "es-MX": "Reglas anidadas con NO",
+    "pt-BR": "Regras aninhadas com NÃO"
+  },
+  "new_concepts": [
+    "kc-if-then-rules"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "rule-nested-01",
+      "type": "logic.rule-builder.v2",
+      "grading": "server",
+      "visual": {
+        "type": "rule-builder"
+      },
+      "payload": {
+        "level": "nested",
+        "conditions": [
+          {
+            "id": "enough"
+          },
+          {
+            "id": "want-it"
+          },
+          {
+            "id": "on-sale"
+          }
+        ],
+        "actions": [
+          {
+            "id": "buy"
+          },
+          {
+            "id": "wait"
+          }
+        ],
+        "practice": [
+          {
+            "id": "card-a",
+            "facts": {
+              "enough": false,
+              "want-it": true,
+              "on-sale": true
+            }
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Wait for a sale even when you have enough. Build it.",
+          "conditions": [
+            {
+              "label": "I have enough coins"
+            },
+            {
+              "label": "I really want it"
+            },
+            {
+              "label": "It is on sale"
+            }
+          ],
+          "actions": [
+            {
+              "label": "Buy it"
+            },
+            {
+              "label": "Wait a week"
+            }
+          ],
+          "practice": [
+            {
+              "label": "On sale, wanted, short of coins"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Espera la oferta aunque te alcance. Ármala.",
+          "conditions": [
+            {
+              "label": "Tengo monedas suficientes"
+            },
+            {
+              "label": "Lo quiero de verdad"
+            },
+            {
+              "label": "Está en oferta"
+            }
+          ],
+          "actions": [
+            {
+              "label": "Cómpralo"
+            },
+            {
+              "label": "Espera una semana"
+            }
+          ],
+          "practice": [
+            {
+              "label": "En oferta, deseado, sin monedas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Espere a promoção mesmo tendo o bastante. Monte.",
+          "conditions": [
+            {
+              "label": "Tenho moedas suficientes"
+            },
+            {
+              "label": "Eu quero muito"
+            },
+            {
+              "label": "Está em promoção"
+            }
+          ],
+          "actions": [
+            {
+              "label": "Compre"
+            },
+            {
+              "label": "Espere uma semana"
+            }
+          ],
+          "practice": [
+            {
+              "label": "Em promoção, desejado, sem moedas"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "target": {
+          "if": {
+            "and": [
+              {
+                "and": [
+                  {
+                    "c": "enough"
+                  },
+                  {
+                    "c": "want-it"
+                  }
+                ]
+              },
+              {
+                "not": {
+                  "c": "on-sale"
+                }
+              }
+            ]
+          },
+          "then": "wait",
+          "else": "buy"
+        },
+        "scenarios": [
+          {
+            "enough": true,
+            "want-it": true,
+            "on-sale": false
+          },
+          {
+            "enough": true,
+            "want-it": true,
+            "on-sale": true
+          },
+          {
+            "enough": false,
+            "want-it": true,
+            "on-sale": false
+          },
+          {
+            "enough": true,
+            "want-it": false,
+            "on-sale": false
+          },
+          {
+            "enough": false,
+            "want-it": false,
+            "on-sale": true
+          },
+          {
+            "enough": true,
+            "want-it": true,
+            "on-sale": false
+          },
+          {
+            "enough": false,
+            "want-it": true,
+            "on-sale": true
+          }
+        ]
+      }
+    }
+  ]
+}

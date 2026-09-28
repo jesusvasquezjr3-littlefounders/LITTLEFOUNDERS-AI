@@ -58,3 +58,14 @@ test('RED when a gate number disagrees between the manifest and the database', (
   });
   assert.ok(problems.some((p) => p.includes('forge.gate.12.tone') && p.includes('gate number differs')));
 });
+
+test('v2 manifest parity: Forge attests exactly the gates Vault requires (GAP-FIX-R2)', async () => {
+  const { checkV2ManifestParity } = await import('./check-forge-release-gate-parity.mjs');
+  const releaseSource = "export const V2_MANIFEST_GATES = RELEASE_CHECK_IDS\n  .filter((id) => ['forge.gate.01.contract', 'forge.gate.17.reward-mechanics'].includes(id));";
+  const seeded = { sql: "INSERT INTO public.forge_v2_manifest_gates (gate_id) VALUES ('forge.gate.01.contract'), ('forge.gate.17.reward-mechanics') ON CONFLICT (gate_id) DO NOTHING;" };
+  assert.deepEqual(checkV2ManifestParity({ releaseSource, migrations: [seeded] }), []);
+  const missing = { sql: "INSERT INTO public.forge_v2_manifest_gates (gate_id) VALUES ('forge.gate.01.contract');" };
+  assert.equal(checkV2ManifestParity({ releaseSource, migrations: [missing] }).length, 1);
+  const extra = { sql: "INSERT INTO public.forge_v2_manifest_gates (gate_id) VALUES ('forge.gate.01.contract'), ('forge.gate.17.reward-mechanics'), ('forge.gate.18.wellbeing-language');" };
+  assert.match(checkV2ManifestParity({ releaseSource, migrations: [extra] })[0], /never attests/);
+});

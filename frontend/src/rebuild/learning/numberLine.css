@@ -12,3 +12,7 @@
 .lf-fraction-area { margin-block-end: var(--spacing-4); }
 .lf-fraction-cells { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; min-block-size: var(--target-lg); overflow: hidden; border-radius: var(--rounded-md); background: var(--sunken); }
 .lf-fraction-cell { background: var(--surface); border-inline-end: 1px solid var(--edge); }.lf-fraction-cell--filled { background: var(--sky-strong); }
+
+/* M2 counting on (GAP-FIX-R2): hop buttons from the current square and the trail of landings. */
+.lf-number-line-hops { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2); }
+.lf-number-line-hop-trail { flex-basis: 100%; margin: 0; font-weight: 800; overflow-wrap: anywhere; }

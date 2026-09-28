@@ -21,6 +21,21 @@ import { readAgeScreen } from './ageScreen.js';
  */
 
 /** Mirrors the 0028/0072/S05.3d (learning_quality_events)/S05.3e (motivation_events) CHECK exactly. Closed by design (§1.9 rule 2). */
+/**
+ * Appendix C 1.3 (B.1, B.2, B.4) and Appendix P Part 8 (GAP-FIX-R2 learning):
+ *   placement_commit_ok      a placement persisted (segment_id = its method);
+ *   placement_commit_failed  a placement write failed (segment_id = why);
+ *   prerequisite_refused     a course entry refused for an unmet prerequisite;
+ *   prerequisite_passed      a course entry with declared prerequisites opened;
+ *   lesson_update_required   Core blocked a completion the document format
+ *                            cannot earn and asked for a client update;
+ *   scorer_parity_miss       the browser scorer read an answer as valid that
+ *                            Core refused (lesson_id, segment_id).
+ */
+export const LEARN_QA_EVENTS = ['placement_commit_ok', 'placement_commit_failed', 'prerequisite_refused', 'prerequisite_passed',
+  'lesson_update_required', 'scorer_parity_miss'] as const;
+export type LearnQaEvent = (typeof LEARN_QA_EVENTS)[number];
+
 export const RECORDABLE_EVENTS = [
   // session lifecycle
   'session_start', 'session_heartbeat', 'session_end', 'nav_view',
@@ -57,13 +72,16 @@ export const RECORDABLE_EVENTS = [
   // B.21 / B.24 motivation metrics (S05.3e, *_motivation_events.sql). All
   // three are written by Core only (SERVER_ONLY_EVENTS).
   'streak_rest_day', 'streak_restart', 'path_choice',
+  // Appendix C 1.3 QA metrics and Appendix P Part 8 scorer parity (GAP-FIX-R2
+  // learning, *_learning_qa_events.sql). All server-only (SERVER_ONLY_EVENTS).
+  ...LEARN_QA_EVENTS,
 ] as const;
 
 /**
  * Events only Core may write. The client ingest drops them: a forged
  * denominator would move a metric that must stay trustworthy.
  */
-export const SERVER_ONLY_EVENTS: ReadonlySet<string> = new Set(['replay_below_best', 'streak_rest_day', 'streak_restart', 'path_choice']);
+export const SERVER_ONLY_EVENTS: ReadonlySet<string> = new Set(['replay_below_best', 'streak_rest_day', 'streak_restart', 'path_choice', ...LEARN_QA_EVENTS]);
 
 export const ROUTE_CLASSES = ['learn', 'tasks', 'profile', 'tutor', 'family', 'admin', 'marketing', 'other'] as const;
 export const DEVICES = ['mobile', 'tablet', 'desktop'] as const;

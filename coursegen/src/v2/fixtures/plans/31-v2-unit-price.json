@@ -1,0 +1,184 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "unit-prices",
+  "lesson_id": "v2-unit-price",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-unit-price"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Zara compara paquetes de estampas y bolsas de manzanas por precio unitario.",
+  "title": {
+    "en-US": "Price per item",
+    "es-MX": "Precio por unidad",
+    "pt-BR": "Preço por unidade"
+  },
+  "new_concepts": [
+    "kc-unit-price"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "unit-price-01",
+      "type": "money.unit-price.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "payload": {
+        "currency": "coins",
+        "offers": [
+          {
+            "id": "small-pack",
+            "quantity": 3,
+            "price_minor": 45
+          },
+          {
+            "id": "big-pack",
+            "quantity": 5,
+            "price_minor": 70
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Find the price per sticker, then pick the better buy.",
+          "unitLabel": "sticker",
+          "offers": [
+            {
+              "label": "Pack of 3"
+            },
+            {
+              "label": "Pack of 5"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Halla el precio por estampa y elige la mejor compra.",
+          "unitLabel": "estampa",
+          "offers": [
+            {
+              "label": "Paquete de 3"
+            },
+            {
+              "label": "Paquete de 5"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Ache o preço por figurinha e escolha a melhor compra.",
+          "unitLabel": "figurinha",
+          "offers": [
+            {
+              "label": "Pacote com 3"
+            },
+            {
+              "label": "Pacote com 5"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "unit_prices": {
+          "small-pack": "15",
+          "big-pack": "14"
+        },
+        "better_id": "big-pack"
+      },
+      "variant": "ratio-lines"
+    },
+    {
+      "id": "unit-price-02",
+      "type": "money.unit-price.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "payload": {
+        "currency": "coins",
+        "offers": [
+          {
+            "id": "bag-2",
+            "quantity": 2,
+            "price_minor": 9
+          },
+          {
+            "id": "bag-4",
+            "quantity": 4,
+            "price_minor": 20
+          },
+          {
+            "id": "bag-6",
+            "quantity": 6,
+            "price_minor": 26
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Three bags of apples. Which apple costs least?",
+          "unitLabel": "apple",
+          "offers": [
+            {
+              "label": "Bag of 2"
+            },
+            {
+              "label": "Bag of 4"
+            },
+            {
+              "label": "Bag of 6"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tres bolsas de manzanas. ¿Cuál manzana cuesta menos?",
+          "unitLabel": "manzana",
+          "offers": [
+            {
+              "label": "Bolsa de 2"
+            },
+            {
+              "label": "Bolsa de 4"
+            },
+            {
+              "label": "Bolsa de 6"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Três sacos de maçãs. Qual maçã custa menos?",
+          "unitLabel": "maçã",
+          "offers": [
+            {
+              "label": "Saco com 2"
+            },
+            {
+              "label": "Saco com 4"
+            },
+            {
+              "label": "Saco com 6"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "unit_prices": {
+          "bag-2": "9/2",
+          "bag-4": "5",
+          "bag-6": "13/3"
+        },
+        "better_id": "bag-6"
+      },
+      "variant": "ratio-lines",
+      "item_role": "transfer"
+    }
+  ]
+}

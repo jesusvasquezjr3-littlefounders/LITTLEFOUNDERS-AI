@@ -44,6 +44,7 @@ import { SCRIPT_REPEAT_THRESHOLD, REDUNDANCY_THRESHOLD, verbatimCoverage } from 
 import { countWords, tokens } from '../contentGates/text.js';
 import { isNonCopyKey, V2_MENTOR_VOICE_TYPES, type V2AgeBand } from './contract.js';
 import type { V2LessonPlan } from './plan.js';
+import { runV2CarriedGates } from './carriedGates.js';
 
 export interface V2DocumentLike {
   locale?: unknown;
@@ -146,6 +147,7 @@ export function runV2DocumentGates(
   document: V2DocumentLike,
   regional?: RegionalPolicy,
   markets: MarketInventory = loadMarketInventory(),
+  answerKeys?: Record<string, unknown>,
 ): V2GateReport {
   const locale = v2Locale(document);
   const audience = v2Audience(document.age_band);
@@ -180,6 +182,11 @@ export function runV2DocumentGates(
   for (const finding of checkRegionalDocument(text, locale, regional, markets)) problems.push({ gate: 16, message: finding.message });
 
   for (const finding of checkV2Narration(document, locale, audience)) problems.push({ gate: 11, segmentId: finding.segmentId, message: finding.message });
+
+  // GAP-FIX-R2 (Appendix C Stage 2; B.22, B.26, B.27; G.2): the carried-over gates 2, 3, 4, 17 and 18.
+  const carried = runV2CarriedGates(document as Record<string, unknown>, answerKeys);
+  problems.push(...carried.problems);
+  review.push(...carried.review);
 
   return { problems, review, notApplicable: [] };
 }

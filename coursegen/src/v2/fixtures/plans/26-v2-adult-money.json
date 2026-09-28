@@ -1,0 +1,321 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "adult-money-basics",
+  "lesson_id": "v2-adult-money",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "kc-marginal-tax",
+    "kc-compound-growth",
+    "kc-percent-of",
+    "kc-running-ledger",
+    "kc-unit-price",
+    "kc-saving-allocation"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Un adulto revisa su primer sueldo: impuestos, descuentos, interés compuesto y precio por unidad.",
+  "title": {
+    "en-US": "Your first paycheck",
+    "es-MX": "Tu primer sueldo",
+    "pt-BR": "Seu primeiro salário"
+  },
+  "new_concepts": [
+    "kc-marginal-tax",
+    "kc-compound-growth"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "adult-tax-01",
+      "type": "visual.tax-bracket.v2",
+      "grading": "server",
+      "visual": {
+        "type": "stacked-bar"
+      },
+      "payload": {
+        "minimumIncomeMinor": 0,
+        "maximumIncomeMinor": 60000,
+        "incomeStepMinor": 5000,
+        "initialIncomeMinor": 30000,
+        "brackets": [
+          {
+            "upToMinor": 10000,
+            "rateBasisPoints": 1000
+          },
+          {
+            "upToMinor": 30000,
+            "rateBasisPoints": 2000
+          },
+          {
+            "upToMinor": null,
+            "rateBasisPoints": 3000
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Move the income to 45000 coins. What is the tax and the top rate?"
+        },
+        "es-MX": {
+          "prompt": "Mueve el ingreso a 45000 monedas. ¿Cuánto impuesto y qué tasa más alta?"
+        },
+        "pt-BR": {
+          "prompt": "Mova a renda para 45000 moedas. Qual o imposto e a maior alíquota?"
+        }
+      },
+      "rubric": {
+        "income_minor": 45000
+      }
+    },
+    {
+      "id": "adult-growth-01",
+      "type": "visual.growth-comparison.v2",
+      "grading": "server",
+      "visual": {
+        "type": "multi-line"
+      },
+      "payload": {
+        "principalMinor": 10000,
+        "minimumRateBps": 200,
+        "maximumRateBps": 1200,
+        "rateStepBps": 200,
+        "initialRateBps": 800,
+        "minimumYears": 5,
+        "maximumYears": 30,
+        "yearStep": 5,
+        "initialYears": 10,
+        "predictionStepMinor": 1000,
+        "predictionMaximumMinor": 1000000
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Predict the compound total, then reveal both curves."
+        },
+        "es-MX": {
+          "prompt": "Predice el total compuesto y luego revela ambas curvas."
+        },
+        "pt-BR": {
+          "prompt": "Preveja o total composto e depois revele as duas curvas."
+        }
+      },
+      "rubric": {
+        "tolerance_minor": 5000
+      }
+    },
+    {
+      "id": "adult-percent-01",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 200,
+        "step": 10,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A coat costs 200 coins with 30% off. Shade the discount."
+        },
+        "es-MX": {
+          "prompt": "Un abrigo cuesta 200 monedas con 30% de descuento. Sombrea el descuento."
+        },
+        "pt-BR": {
+          "prompt": "Um casaco custa 200 moedas com 30% de desconto. Pinte o desconto."
+        }
+      },
+      "rubric": {
+        "target_percent": 30
+      }
+    },
+    {
+      "id": "adult-ledger-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "payload": {
+        "initial": 10,
+        "sale": 5,
+        "cost": 3,
+        "maxEntries": 6
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Start with 10 coins. Log sales of 5 and costs of 3 until you have 14."
+        },
+        "es-MX": {
+          "prompt": "Empieza con 10 monedas. Anota ventas de 5 y gastos de 3 hasta tener 14."
+        },
+        "pt-BR": {
+          "prompt": "Comece com 10 moedas. Anote vendas de 5 e custos de 3 até ter 14."
+        }
+      },
+      "rubric": {
+        "target_balance": 14
+      }
+    },
+    {
+      "id": "adult-worked-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "discount-part"
+          },
+          {
+            "id": "discount-subtract"
+          },
+          {
+            "id": "sale-price"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "discount-subtract",
+          "sale-price"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the discount step by step.",
+          "steps": [
+            {
+              "expression": "20% × 50",
+              "result": "10",
+              "spokenText": "Twenty percent of 50 is 10"
+            },
+            {
+              "expression": "50 − 10",
+              "result": "40",
+              "spokenText": "Fifty minus 10 is 40"
+            },
+            {
+              "expression": "Sale price",
+              "result": "40",
+              "spokenText": "The sale price is 40"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Sigue el descuento paso a paso.",
+          "steps": [
+            {
+              "expression": "20% × 50",
+              "result": "10",
+              "spokenText": "El veinte por ciento de 50 es 10"
+            },
+            {
+              "expression": "50 − 10",
+              "result": "40",
+              "spokenText": "Cincuenta menos 10 es 40"
+            },
+            {
+              "expression": "Precio de oferta",
+              "result": "40",
+              "spokenText": "El precio de oferta es 40"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Siga o desconto passo a passo.",
+          "steps": [
+            {
+              "expression": "20% × 50",
+              "result": "10",
+              "spokenText": "Vinte por cento de 50 é 10"
+            },
+            {
+              "expression": "50 − 10",
+              "result": "40",
+              "spokenText": "Cinquenta menos 10 é 40"
+            },
+            {
+              "expression": "Preço da oferta",
+              "result": "40",
+              "spokenText": "O preço da oferta é 40"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "expectedValues": {
+          "discount-subtract": "40",
+          "sale-price": "40"
+        }
+      }
+    },
+    {
+      "id": "adult-ratio-01",
+      "type": "math.ratio-table.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "payload": {
+        "itemsPerPack": 4,
+        "pricePerPack": 12,
+        "minimumPacks": 1,
+        "maximumPacks": 6,
+        "initialPacks": 2,
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A box of 4 filters costs 12 coins. How much do 5 boxes cost?"
+        },
+        "es-MX": {
+          "prompt": "Una caja de 4 filtros cuesta 12 monedas. ¿Cuánto cuestan 5 cajas?"
+        },
+        "pt-BR": {
+          "prompt": "Uma caixa com 4 filtros custa 12 moedas. Quanto custam 5 caixas?"
+        }
+      },
+      "rubric": {
+        "target_packs": 5
+      }
+    },
+    {
+      "id": "adult-donut-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "visual": {
+        "type": "donut"
+      },
+      "payload": {
+        "total": 100,
+        "step": 10,
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Split 100 coins of pay. Save 20 or more."
+        },
+        "es-MX": {
+          "prompt": "Reparte 100 monedas de sueldo. Guarda 20 o más."
+        },
+        "pt-BR": {
+          "prompt": "Divida 100 moedas de salário. Guarde 20 ou mais."
+        }
+      },
+      "rubric": {
+        "minimumSave": 20
+      }
+    }
+  ]
+}

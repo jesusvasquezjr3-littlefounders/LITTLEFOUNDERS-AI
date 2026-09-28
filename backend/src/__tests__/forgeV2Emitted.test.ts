@@ -28,8 +28,9 @@ describe('Forge-emitted v2 rows under Core\'s strict contract', () => {
   it('accepts every committed row: all segment kinds, all three markets', () => {
     expect(rows.length).toBeGreaterThanOrEqual(60);
     // Every v2 segment kind: the 21 of S05.2, B.12's decide-and-justify (S05.3d), and the 15 first-release
-    // logic, money, story and Mentor-voice kinds, the teaching chart and the eight concept boards of GAP-FIX-R1.
-    expect(new Set(rows.flatMap((row) => row.document.segments.map((segment) => segment.type))).size).toBe(46);
+    // logic, money, story and Mentor-voice kinds, the teaching chart and the eight concept boards of GAP-FIX-R1,
+    // and GAP-FIX-R2's $6 unit prices and L2 rule builder.
+    expect(new Set(rows.flatMap((row) => row.document.segments.map((segment) => segment.type))).size).toBe(48);
     expect(checkForgeV2Rows(rows)).toEqual([]);
   });
 

@@ -1,0 +1,553 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "reading-charts",
+  "lesson_id": "v2-charts-tween",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-reading-charts"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Zara compara metas, procesos y grupos con gráficas nuevas.",
+  "title": {
+    "en-US": "Read new charts",
+    "es-MX": "Lee gráficas nuevas",
+    "pt-BR": "Leia gráficos novos"
+  },
+  "new_concepts": [
+    "kc-reading-charts"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "bump-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "bump"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "cat-w1"
+            },
+            {
+              "id": "cat-w2"
+            },
+            {
+              "id": "cat-w3"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-bike",
+              "values": [
+                1,
+                2,
+                1
+              ]
+            },
+            {
+              "id": "series-game",
+              "values": [
+                2,
+                1,
+                3
+              ]
+            },
+            {
+              "id": "series-trip",
+              "values": [
+                3,
+                3,
+                2
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow each goal's rank.",
+          "title": "Top savings goals",
+          "data": {
+            "categories": [
+              {
+                "label": "Week 1"
+              },
+              {
+                "label": "Week 2"
+              },
+              {
+                "label": "Week 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Bike"
+              },
+              {
+                "label": "Game"
+              },
+              {
+                "label": "Trip"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Sigue el lugar de cada meta.",
+          "title": "Metas de ahorro favoritas",
+          "data": {
+            "categories": [
+              {
+                "label": "Semana 1"
+              },
+              {
+                "label": "Semana 2"
+              },
+              {
+                "label": "Semana 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Bici"
+              },
+              {
+                "label": "Juego"
+              },
+              {
+                "label": "Viaje"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Siga a posição de cada meta.",
+          "title": "Metas de poupança favoritas",
+          "data": {
+            "categories": [
+              {
+                "label": "Semana 1"
+              },
+              {
+                "label": "Semana 2"
+              },
+              {
+                "label": "Semana 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Bicicleta"
+              },
+              {
+                "label": "Jogo"
+              },
+              {
+                "label": "Viagem"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "swim-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "swimlane"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "lane-kid"
+            },
+            {
+              "id": "lane-parent"
+            }
+          ],
+          "nodes": [
+            {
+              "id": "node-ask",
+              "lane": "lane-kid"
+            },
+            {
+              "id": "node-ok",
+              "lane": "lane-parent"
+            },
+            {
+              "id": "node-buy",
+              "lane": "lane-kid"
+            }
+          ],
+          "links": [
+            {
+              "from": "node-ask",
+              "to": "node-ok"
+            },
+            {
+              "from": "node-ok",
+              "to": "node-buy"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the request between lanes.",
+          "title": "Who does what",
+          "data": {
+            "categories": [
+              {
+                "label": "Kid"
+              },
+              {
+                "label": "Parent"
+              }
+            ],
+            "nodes": [
+              {
+                "label": "Ask"
+              },
+              {
+                "label": "Approve"
+              },
+              {
+                "label": "Buy"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Sigue la solicitud entre carriles.",
+          "title": "Quién hace qué",
+          "data": {
+            "categories": [
+              {
+                "label": "Niño"
+              },
+              {
+                "label": "Mamá o papá"
+              }
+            ],
+            "nodes": [
+              {
+                "label": "Pide"
+              },
+              {
+                "label": "Aprueba"
+              },
+              {
+                "label": "Compra"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Siga o pedido entre as faixas.",
+          "title": "Quem faz o quê",
+          "data": {
+            "categories": [
+              {
+                "label": "Criança"
+              },
+              {
+                "label": "Mãe ou pai"
+              }
+            ],
+            "nodes": [
+              {
+                "label": "Pede"
+              },
+              {
+                "label": "Aprova"
+              },
+              {
+                "label": "Compra"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "venn-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "visual": {
+        "type": "venn"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "set-savers"
+            },
+            {
+              "id": "set-budget"
+            }
+          ],
+          "regions": [
+            {
+              "sets": [
+                "set-savers"
+              ],
+              "value": 12
+            },
+            {
+              "sets": [
+                "set-budget"
+              ],
+              "value": 7
+            },
+            {
+              "sets": [
+                "set-savers",
+                "set-budget"
+              ],
+              "value": 5
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-five"
+            },
+            {
+              "id": "ans-twelve"
+            },
+            {
+              "id": "ans-seven"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Count who is in both circles.",
+          "title": "Our class",
+          "data": {
+            "categories": [
+              {
+                "label": "Savers"
+              },
+              {
+                "label": "Budgeters"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "How many save and budget?",
+            "options": [
+              {
+                "label": "5"
+              },
+              {
+                "label": "12"
+              },
+              {
+                "label": "7"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Cuenta a quienes están en ambos.",
+          "title": "Nuestro grupo",
+          "data": {
+            "categories": [
+              {
+                "label": "Ahorran"
+              },
+              {
+                "label": "Planean gastos"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuántos ahorran y planean?",
+            "options": [
+              {
+                "label": "5"
+              },
+              {
+                "label": "12"
+              },
+              {
+                "label": "7"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Conte quem está nos dois.",
+          "title": "Nossa turma",
+          "data": {
+            "categories": [
+              {
+                "label": "Poupam"
+              },
+              {
+                "label": "Planejam gastos"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Quantos poupam e planejam?",
+            "options": [
+              {
+                "label": "5"
+              },
+              {
+                "label": "12"
+              },
+              {
+                "label": "7"
+              }
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-five"
+        ]
+      }
+    },
+    {
+      "id": "mind-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "mind-map"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "nodes": [
+            {
+              "id": "node-plan"
+            },
+            {
+              "id": "node-earn"
+            },
+            {
+              "id": "node-save"
+            },
+            {
+              "id": "node-chores"
+            },
+            {
+              "id": "node-jar"
+            }
+          ],
+          "links": [
+            {
+              "from": "node-plan",
+              "to": "node-earn"
+            },
+            {
+              "from": "node-plan",
+              "to": "node-save"
+            },
+            {
+              "from": "node-earn",
+              "to": "node-chores"
+            },
+            {
+              "from": "node-save",
+              "to": "node-jar"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read each branch from the centre.",
+          "title": "Plan map",
+          "data": {
+            "nodes": [
+              {
+                "label": "My plan"
+              },
+              {
+                "label": "Earn"
+              },
+              {
+                "label": "Save"
+              },
+              {
+                "label": "Chores"
+              },
+              {
+                "label": "Jar"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Lee cada rama desde el centro.",
+          "title": "Mapa del plan",
+          "data": {
+            "nodes": [
+              {
+                "label": "Mi plan"
+              },
+              {
+                "label": "Ganar"
+              },
+              {
+                "label": "Ahorrar"
+              },
+              {
+                "label": "Tareas"
+              },
+              {
+                "label": "Frasco"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Leia cada ramo a partir do centro.",
+          "title": "Mapa do plano",
+          "data": {
+            "nodes": [
+              {
+                "label": "Meu plano"
+              },
+              {
+                "label": "Ganhar"
+              },
+              {
+                "label": "Poupar"
+              },
+              {
+                "label": "Tarefas"
+              },
+              {
+                "label": "Pote"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

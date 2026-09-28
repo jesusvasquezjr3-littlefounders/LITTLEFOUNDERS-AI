@@ -40,12 +40,36 @@ describe('locale numbers (Appendix P Part 5)', () => {
 
 describe('formerly ungraded visuals are server-graded with impossible-state rejection', () => {
   it('M5 place value grades the trade sequence and the digits', () => {
-    const payload = { total: 23 };
-    expect(scoreV2Visual('math.place-value.v2', payload, { trades: 2, tens: '2', ones: '3' }, { trades: 2 })).toBe('met');
-    expect(gradeV2Response('math.place-value.v2', payload, { trades: 1, tens: '1', ones: '13' }, { trades: 2 }).diagnostic).toBe('structure');
-    expect(gradeV2Response('math.place-value.v2', payload, { trades: 2, tens: '2', ones: '4' }, { trades: 2 }).diagnostic).toBe('value');
-    expect(scoreV2Visual('math.place-value.v2', payload, { trades: 3, tens: '3', ones: '0' }, { trades: 2 })).toBe('invalid');
-    expect(scoreV2Visual('math.place-value.v2', payload, { trades: 2, tens: '2', ones: '3' }, { trades: 1 })).toBe('invalid');
+    // The 10-29 pilot: loose ones traded for tens.
+    const payload = { mode: 'compose', hundreds: 0, tens: 0, ones: 23, subtrahend: 0 };
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['ten', 'ten'], hundreds: '0', tens: '2', ones: '3' }, { trades: 2 })).toBe('met');
+    expect(gradeV2Response('math.place-value.v2', payload, { trades: ['ten'], hundreds: '0', tens: '1', ones: '13' }, { trades: 2 }).diagnostic).toBe('structure');
+    expect(gradeV2Response('math.place-value.v2', payload, { trades: ['ten', 'ten'], hundreds: '0', tens: '2', ones: '4' }, { trades: 2 }).diagnostic).toBe('value');
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['ten', 'ten', 'ten'], hundreds: '0', tens: '3', ones: '0' }, { trades: 2 })).toBe('invalid');
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['ten', 'ten'], hundreds: '0', tens: '2', ones: '3' }, { trades: 1 })).toBe('invalid');
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['borrow-ten'], hundreds: '0', tens: '0', ones: '23' })).toBe('invalid');
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: 2, hundreds: '0', tens: '2', ones: '3' })).toBe('invalid');
+  });
+
+  it('M5 composes three places: ten ones for a ten, ten tens for a hundred (GAP-FIX-R2)', () => {
+    const payload = { mode: 'compose', hundreds: 1, tens: 12, ones: 15, subtrahend: 0 }; // 235
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['ten', 'hundred'], hundreds: '2', tens: '3', ones: '5' }, { trades: 2 })).toBe('met');
+    expect(gradeV2Response('math.place-value.v2', payload, { trades: ['ten'], hundreds: '1', tens: '13', ones: '5' }, { trades: 2 }).diagnostic).toBe('structure');
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['hundred', 'hundred'], hundreds: '3', tens: '0', ones: '15' })).toBe('invalid');
+    expect(scoreV2Visual('math.place-value.v2', { ...payload, subtrahend: 5 }, { trades: [], hundreds: '0', tens: '0', ones: '0' })).toBe('invalid');
+  });
+
+  it('M5 replays a subtraction with borrows: 1.00 - 0.37 as 100 - 37 cents (GAP-FIX-R2)', () => {
+    const payload = { mode: 'subtract', hundreds: 1, tens: 0, ones: 0, subtrahend: 37 };
+    const borrows = ['borrow-hundred', 'borrow-ten'];
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: borrows, hundreds: '0', tens: '6', ones: '3' }, { trades: 2 })).toBe('met');
+    expect(gradeV2Response('math.place-value.v2', payload, { trades: ['borrow-hundred'], hundreds: '0', tens: '7', ones: '0' }, { trades: 2 }).diagnostic).toBe('structure');
+    expect(gradeV2Response('math.place-value.v2', payload, { trades: borrows, hundreds: '0', tens: '7', ones: '3' }, { trades: 2 }).diagnostic).toBe('value');
+    // A borrow with nothing to borrow from, or an up-trade in a subtraction, is impossible.
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['borrow-ten'], hundreds: '0', tens: '0', ones: '0' })).toBe('invalid');
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: ['ten'], hundreds: '0', tens: '0', ones: '0' })).toBe('invalid');
+    // The rubric's count must be the fewest borrows the subtraction needs.
+    expect(scoreV2Visual('math.place-value.v2', payload, { trades: borrows, hundreds: '0', tens: '6', ones: '3' }, { trades: 3 })).toBe('invalid');
   });
 
   it('M14 ratio table grades the pair and the missing value', () => {
@@ -153,8 +177,49 @@ describe('first-release logic and money families (Appendix P Part 8)', () => {
     expect(gradeV2Response('money.coin-tray.v2', tray, { counts: { 25: 0, 10: 3, 5: 1, 1: 2 } }, { target_minor: 37, fewest: true }).diagnostic).toBe('partial');
     expect(scoreV2Visual('money.coin-tray.v2', tray, { counts: { 25: 4, 10: 0, 5: 0, 1: 0 } }, { target_minor: 37, fewest: false })).toBe('invalid');
     const change = { ...tray, price: 63, paid: 100 };
-    expect(scoreV2Visual('money.making-change.v2', change, { counts: { 25: 1, 10: 1, 5: 0, 1: 2 } }, { change_minor: 37 })).toBe('met');
-    expect(scoreV2Visual('money.making-change.v2', change, { counts: { 25: 1, 10: 1, 5: 0, 1: 2 } }, { change_minor: 36 })).toBe('invalid');
+    const counts = { 25: 1, 10: 1, 5: 0, 1: 2 };
+    // Counting up from 63: 64, 65, 75, 100 (Laski & Siegler).
+    expect(scoreV2Visual('money.making-change.v2', change, { counts, sequence: [64, 65, 75, 100] }, { change_minor: 37 })).toBe('met');
+    expect(scoreV2Visual('money.making-change.v2', change, { counts, sequence: [64, 65, 75, 100] }, { change_minor: 36 })).toBe('invalid');
+  });
+
+  it('$2 grades the counting-up sequence and diagnoses counting from zero (GAP-FIX-R2)', () => {
+    const change = { denominations: [{ value: 25, available: 3 }, { value: 10, available: 3 }, { value: 5, available: 3 }, { value: 1, available: 5 }], price: 63, paid: 100 };
+    const counts = { 25: 1, 10: 1, 5: 0, 1: 2 };
+    expect(gradeV2Response('money.making-change.v2', change, { counts, sequence: [88, 98, 99, 100] }, { change_minor: 37 }).verdict).toBe('met');
+    expect(gradeV2Response('money.making-change.v2', change, { counts, sequence: [25, 35, 36, 37] }, { change_minor: 37 }).diagnostic).toBe('count_from_zero');
+    // A slip in the spoken count is an answer error, not a crash.
+    expect(gradeV2Response('money.making-change.v2', change, { counts, sequence: [64, 66, 75, 100] }, { change_minor: 37 }).diagnostic).toBe('value');
+    // Missing sequence, one count per coin, and never falling.
+    expect(scoreV2Visual('money.making-change.v2', change, { counts })).toBe('invalid');
+    expect(scoreV2Visual('money.making-change.v2', change, { counts, sequence: [64, 65, 100] })).toBe('invalid');
+    expect(scoreV2Visual('money.making-change.v2', change, { counts, sequence: [64, 65, 75, -1] })).toBe('invalid');
+  });
+
+  it('M2 counts on from the current square as a hop sequence (GAP-FIX-R2)', () => {
+    const payload = { minimum: 0, maximum: 100, step: 1, initial: 37, hops: [1, 10] };
+    expect(scoreV2Visual('math.number-line.whole.v2', payload, { value: '50', hops: [10, 1, 1, 1] }, { target: 50 })).toBe('met');
+    expect(gradeV2Response('math.number-line.whole.v2', payload, { value: '47', hops: [10] }, { target: 50 }).diagnostic).toBe('tolerance');
+    // The point must be where the hops land, every hop an offered size, at least one hop, and never off the line.
+    expect(scoreV2Visual('math.number-line.whole.v2', payload, { value: '50', hops: [10] })).toBe('invalid');
+    expect(scoreV2Visual('math.number-line.whole.v2', payload, { value: '42', hops: [5] })).toBe('invalid');
+    expect(scoreV2Visual('math.number-line.whole.v2', payload, { value: '37', hops: [] })).toBe('invalid');
+    expect(scoreV2Visual('math.number-line.whole.v2', payload, { value: '50' })).toBe('invalid');
+    expect(scoreV2Visual('math.number-line.whole.v2', payload, { value: '107', hops: [10, 10, 10, 10, 10, 10, 10] })).toBe('invalid');
+  });
+
+  it('L12 stores cue ticks beside d′ without changing the verdict (GAP-FIX-R2)', () => {
+    const payload = { messageIds: ['msg-prize', 'msg-coach', 'msg-code'], cueIds: ['cue-password', 'cue-prize', 'cue-code'] };
+    const rubric = { scam_ids: ['msg-prize', 'msg-code'], cue_ids: { 'msg-prize': ['cue-password', 'cue-prize'], 'msg-code': ['cue-code'] } };
+    const perfect = gradeV2Response('money.scam-check.v2', payload, { flagged: ['msg-prize', 'msg-code'], cues: { 'msg-prize': ['cue-prize'], 'msg-coach': ['cue-code'] } }, rubric);
+    expect(perfect.verdict).toBe('met');
+    expect(perfect.cues).toEqual({ hits: 1, missed: 2, false_ticks: 1 });
+    expect(perfect.detection).toEqual({ hits: 2, misses: 0, false_alarms: 0, correct_rejections: 1 });
+    expect(scoreV2Visual('money.scam-check.v2', payload, { flagged: [] })).toBe('invalid');
+    expect(scoreV2Visual('money.scam-check.v2', payload, { flagged: [], cues: { 'msg-prize': ['cue-unknown'] } })).toBe('invalid');
+    expect(scoreV2Visual('money.scam-check.v2', payload, { flagged: [], cues: { 'msg-other': ['cue-code'] } })).toBe('invalid');
+    // A cue key on a document without cues is a broken key.
+    expect(scoreV2Visual('money.scam-check.v2', { messageIds: payload.messageIds }, { flagged: [] }, rubric)).toBe('invalid');
   });
 
   it('story choices are graded by id only', () => {

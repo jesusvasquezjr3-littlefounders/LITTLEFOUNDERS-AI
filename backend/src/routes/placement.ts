@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
-import { loadCourseTree, loadLearnerCourse, settleCourseBadges, type LearnerCourseTree } from './learn.js';
+import { loadCourseTree, loadLearnerCourse, recordServerLearnEvent, settleCourseBadges, type LearnerCourseTree } from './learn.js';
 import type { AgeScreenState } from '../services/ageScreen.js';
 import { commitCoursePathwayPlacement } from '../services/pathway/pathwayData.js';
 import {
@@ -404,8 +404,10 @@ export function placementRouter(): Router {
         credited_topics: placement.creditedTopicCount,
       }, placement.creditedLessonIds)
       : await commitCoursePlacement(legacyRow, placement.creditedLessonIds);
-    if (!recorded) return fail(res, 502, 'INTERNAL', 'Could not record placement');
-    if (recorded === 'conflict') return fail(res, 409, 'PLACEMENT_ALREADY_COMPLETE', 'Placement was already completed for this course');
+    // Appendix C 1.3 (B.1): Placement Commit Success Rate, from the write itself.
+    if (!recorded) { recordServerLearnEvent(user, 'placement_commit_failed', null, { segmentId: 'write_failed' }); return fail(res, 502, 'INTERNAL', 'Could not record placement'); }
+    if (recorded === 'conflict') { recordServerLearnEvent(user, 'placement_commit_failed', null, { segmentId: 'already_complete' }); return fail(res, 409, 'PLACEMENT_ALREADY_COMPLETE', 'Placement was already completed for this course'); }
+    recordServerLearnEvent(user, 'placement_commit_ok', null, { segmentId: placement.method });
 
     // Same "only asked because it wasn't already known" posture as onboarding —
     // never overwrite an existing birth_date.

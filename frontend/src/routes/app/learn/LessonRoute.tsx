@@ -21,6 +21,7 @@ import type { AgeBand, Locale } from '@/rebuild/design/copyBudget';
 import { REGISTERS } from '@/rebuild/design/learnerRegisterPolicy.generated';
 import { learnCopy } from '@/rebuild/learning/learnCopy';
 import { loadLessonClientDocument, type LessonClientDocument } from '@/rebuild/learning/lessonDocument';
+import { clientScorerVerdict } from '@/rebuild/learning/clientScorerVerdict';
 import { GuidedReviewOffer, guidedReviewOfferSchema, type GuidedReviewOfferValue } from '@/rebuild/learning/GuidedReviewOffer';
 import { fetchLearnerRegister, registerForBand, registerOf, type RegisterState } from '@/rebuild/learning/learnerRegister';
 import { clearCoursesCache } from './coursesCache';
@@ -255,8 +256,11 @@ function LessonRouteSession() {
     const token = await getToken();
     if (!attemptToken || !token) throw new Error('No lesson attempt token');
     const hints = hintsRef.current[segmentId];
+    const parity = clientScorerVerdict(document, segmentId, answer);
     const { data, error } = await api<{ verdict: { correct: boolean; score: number; judgment?: { quality?: unknown }; diagnostic?: unknown }; replayed: boolean; retry_attempt_token?: string; guided_review?: unknown }>(`/learn/lessons/${lessonId}/grade`, {
-      method: 'POST', token, body: { segment_id: segmentId, answer, run_id: attempt.runId, attempt_token: attemptToken, ...(hints ? { hints_used: hints } : {}) },
+      method: 'POST', token, body: { segment_id: segmentId, answer, run_id: attempt.runId, attempt_token: attemptToken, ...(hints ? { hints_used: hints } : {}),
+        // Appendix P Part 8 (GAP-FIX-R2): the browser scorer's advisory reading; Core only records whether it agreed.
+        ...(parity ? { client_verdict: parity } : {}) },
     });
     if (error || !data || (data.verdict.score !== 0 && data.verdict.score !== 100)) throw new Error('Could not grade v2 segment');
     const offer = guidedReviewOfferSchema.safeParse(data.guided_review);

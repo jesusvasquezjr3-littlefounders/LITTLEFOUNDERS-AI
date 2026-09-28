@@ -905,6 +905,8 @@ export interface V2LessonRunInsert {
   locale: string;
   document_version_id: string;
   expires_at: string;
+  /** GAP-FIX-R2 (Appendix P Part 4.4): where a mastery-faded M1 progression starts this run. */
+  cpa_entry_stage?: 'concrete' | 'pictorial' | 'abstract';
 }
 
 /** A v2 run is only created by Core after it selected an activated immutable version. */
@@ -941,17 +943,28 @@ export interface V2LessonRunRecoveryRow {
   document_version_id: string;
   expires_at: string;
   completed_at: string | null;
+  cpa_entry_stage?: 'concrete' | 'pictorial' | 'abstract' | null;
 }
 
 /** Service-only lookup for a checkpointed run; it never exposes the row to the browser. */
 export async function getV2LessonRunForRecovery(userId: string, lessonId: string, runId: string): Promise<V2LessonRunRecoveryRow | null | undefined> {
   const rows = await rest<V2LessonRunRecoveryRow[]>(
-    `/lesson_v2_runs?id=eq.${eu(runId)}&user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}&select=id,user_id,lesson_id,locale,document_version_id,expires_at,completed_at`,
+    `/lesson_v2_runs?id=eq.${eu(runId)}&user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}&select=id,user_id,lesson_id,locale,document_version_id,expires_at,completed_at,cpa_entry_stage`,
     serviceToken(),
   );
   if (rows === null) return undefined;
   const row = rows[0];
   return row && row.id === runId && row.user_id === userId && row.lesson_id === lessonId ? row : null;
+}
+
+/** GAP-FIX-R2 (Part 4.4): the latest stage at which this learner first succeeded unaided on a fading group, any version. */
+export async function getV2PriorFirstUnaidedStage(userId: string, fadingGroupId: string): Promise<'concrete' | 'pictorial' | 'abstract' | null> {
+  const rows = await rest<Array<{ stage: string }>>(
+    `/lesson_v2_first_unaided_stages?user_id=eq.${eu(userId)}&fading_group_id=eq.${eu(fadingGroupId)}&select=stage&order=created_at.desc&limit=1`,
+    serviceToken(),
+  );
+  const stage = rows?.[0]?.stage;
+  return stage === 'concrete' || stage === 'pictorial' || stage === 'abstract' ? stage : null;
 }
 
 export interface V2AttemptNonceRecoveryRow {

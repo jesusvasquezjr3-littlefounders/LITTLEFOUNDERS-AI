@@ -1,0 +1,65 @@
+{
+  "expected_gate": 18,
+  "note": "B.27: moralizing a family's real money in every market",
+  "plan": {
+    "plan_version": 1,
+    "course_id": "financial-education",
+    "pathway_id": "financial-young",
+    "chapter_id": "saving-basics",
+    "lesson_id": "v2-red-team-b27-family-finance",
+    "age_band": "6-9",
+    "eligibility": {
+      "minimum_age": 6,
+      "maximum_age": 9
+    },
+    "knowledge_component_ids": [
+      "kc-saving-allocation"
+    ],
+    "adventure_scene_id": "diorama-a",
+    "brief": "Liruf reparte las monedas de su semana entre guardar, gastar y compartir.",
+    "title": {
+      "en-US": "Split your coins",
+      "es-MX": "Reparte tus monedas",
+      "pt-BR": "Divida suas moedas"
+    },
+    "new_concepts": [
+      "kc-saving-allocation"
+    ],
+    "regional": {
+      "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+    },
+    "mentor_stage": {
+      "character": "liruf",
+      "scene": "diorama-a"
+    },
+    "segments": [
+      {
+        "id": "allocate-01",
+        "type": "money.allocation.v2",
+        "grading": "server",
+        "visual": {
+          "type": "stacked-bar"
+        },
+        "payload": {
+          "total": 12,
+          "step": 1,
+          "currency": "coins"
+        },
+        "copy": {
+          "en-US": {
+            "prompt": "Poor families are lazy. Split 12 coins."
+          },
+          "es-MX": {
+            "prompt": "Las familias pobres son flojas. Reparte 12 monedas."
+          },
+          "pt-BR": {
+            "prompt": "Famílias pobres são preguiçosas. Divida 12 moedas."
+          }
+        },
+        "rubric": {
+          "minimumSave": 4
+        }
+      }
+    ]
+  }
+}

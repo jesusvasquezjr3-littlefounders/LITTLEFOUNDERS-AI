@@ -190,3 +190,10 @@
 
 /* The growth-lines frame: the chart, its key and its axis labels sit closer than the default frame gap. */
 .lf-pz-growth { gap: var(--spacing-2); }
+
+/* Bible 05 §5 (GAP-FIX-R2): KaTeX notation inherits the board's ink and size; the fallback is the plain expression. */
+.lf-math { display: inline-block; max-inline-size: 100%; overflow-x: auto; color: var(--content); vertical-align: middle; }
+.lf-math--block { display: block; }
+.lf-math .katex { font-size: 1.15em; color: inherit; }
+.lf-math-katex, .lf-math-fallback { display: inline-block; max-inline-size: 100%; }
+.lf-math-fallback { white-space: pre-wrap; overflow-wrap: anywhere; }

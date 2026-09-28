@@ -18,14 +18,17 @@ export const CORE_CHART_KINDS = [
 ] as const;
 
 /**
- * Appendix A Part 1 "Situational" types drawn in the first release, each gated
- * by age pathway and course subject (SITUATIONAL_CHART_GATES). The remaining
- * situational types in Appendix A (marimekko, treemap, sunburst, icicle, box
- * plot, strip plot, connected scatter, candlestick, bump, org chart, funnel,
- * swimlane, fishbone, mind map) are not in the contract, so they cannot be
- * authored; Venn and Euler diagrams ship as `logic.euler.v2`.
+ * Appendix A Part 1 "Situational" types, each gated by age pathway and course
+ * subject (SITUATIONAL_CHART_GATES). GAP-FIX-R2 (B.7 part 1) adds the learner-
+ * facing situational kinds the first round left out: candlestick (OHLC),
+ * Marimekko, treemap, sunburst, icicle, box plot, connected scatter, bump,
+ * org chart, swimlane, Venn (as a counted chart; the Euler placement task
+ * stays `logic.euler.v2`), Ishikawa (fishbone) and mind map. Strip plot and
+ * funnel stay out: Appendix A names no learner use for them.
  */
-export const SITUATIONAL_CHART_KINDS = ['stacked-bar-100', 'stacked-area-100', 'lollipop', 'slope', 'step', 'histogram', 'pareto', 'gauge'] as const;
+export const SITUATIONAL_CHART_KINDS = ['stacked-bar-100', 'stacked-area-100', 'lollipop', 'slope', 'step', 'histogram', 'pareto', 'gauge',
+  'candlestick', 'marimekko', 'treemap', 'sunburst', 'icicle', 'box-plot', 'connected-scatter', 'bump', 'org-chart', 'swimlane', 'venn',
+  'ishikawa', 'mind-map'] as const;
 export const CHART_KINDS = [...CORE_CHART_KINDS, ...SITUATIONAL_CHART_KINDS] as const;
 export type ChartKind = (typeof CHART_KINDS)[number];
 
@@ -40,6 +43,19 @@ export const SITUATIONAL_CHART_GATES: Readonly<Record<(typeof SITUATIONAL_CHART_
   histogram: { bands: ['13-17', 'adult'], subjects: null }, // teens, spread of a variable
   pareto: { bands: ['13-17', 'adult'], subjects: ['entrepreneurship', 'financial-education'] }, // which expenses drive most spending
   gauge: { bands: ['13-17', 'adult'], subjects: null }, // one hero KPI, used sparingly
+  candlestick: { bands: ['13-17', 'adult'], subjects: ['investing'] }, // Investing course, teens only (and the adult chapters)
+  marimekko: { bands: ['13-17', 'adult'], subjects: ['entrepreneurship'] }, // teens, market-share style Entrepreneurship content
+  treemap: { bands: ['13-17', 'adult'], subjects: ['investing'] }, // portfolio holdings by sector (Investing, teens)
+  sunburst: { bands: ['13-17', 'adult'], subjects: null }, // spending category -> subcategory drill-down
+  icicle: { bands: ['13-17', 'adult'], subjects: null }, // same use as sunburst, alternate layout
+  'box-plot': { bands: ['13-17', 'adult'], subjects: null }, // teens, comparing cohort savings amounts
+  'connected-scatter': { bands: ['13-17', 'adult'], subjects: ['investing'] }, // teens, price vs. time in Investing
+  bump: { bands: ['10-12', '13-17', 'adult'], subjects: null }, // "most popular savings goals this month"
+  'org-chart': { bands: ['13-17', 'adult'], subjects: ['entrepreneurship'] }, // Entrepreneurship, "build your team"
+  swimlane: { bands: ['10-12', '13-17', 'adult'], subjects: null }, // "parent approval -> child request -> bank" process explainer
+  venn: { bands: ['10-12', '13-17', 'adult'], subjects: null }, // "savers AND investors AND budgeters", 2-3 sets
+  ishikawa: { bands: ['13-17', 'adult'], subjects: ['entrepreneurship'] }, // teens: "why did my business idea fail"
+  'mind-map': { bands: ['10-12', '13-17', 'adult'], subjects: null }, // organizing a broad topic (plan and notebook)
 };
 
 /** The subject a course id belongs to (course ids start with their subject). */
@@ -66,17 +82,52 @@ export const chartDataSchema = z.object({
   target: finite.optional(),
   bands: z.array(finite).max(3).optional(),
   points: z.array(z.object({ id, label, x: finite, y: finite, size: z.number().finite().positive().max(1_000_000).optional() }).strict()).max(30).optional(),
-  nodes: z.array(z.object({ id, label, kind: z.enum(['start', 'step', 'question', 'outcome']).optional() }).strict()).max(16).optional(),
+  // GAP-FIX-R2: a hierarchy leaf's value (treemap, sunburst, icicle) and a node's lane (swimlane, a category id).
+  nodes: z.array(z.object({ id, label, kind: z.enum(['start', 'step', 'question', 'outcome']).optional(),
+    value: z.number().finite().positive().max(1_000_000_000).optional(), lane: id.optional() }).strict()).max(16).optional(),
   links: z.array(z.object({ from: id, to: id, value: z.number().finite().positive().max(1_000_000_000).optional(), label: z.string().trim().min(1).max(20).optional() }).strict()).max(24).optional(),
   days: z.array(z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), value: z.number().int().min(0).max(1_000) }).strict()).max(42).optional(),
   icon_value: z.number().int().positive().max(1_000).optional(),
   stat: z.object({ value: finite, delta: finite.optional() }).strict().optional(),
+  /** GAP-FIX-R2 candlestick: open, high, low and close per period. */
+  ohlc: z.array(z.object({ id, label, open: finite, high: finite, low: finite, close: finite }).strict()).max(20).optional(),
+  /** GAP-FIX-R2 box plot: the five-number summary per group. */
+  boxes: z.array(z.object({ id, label, min: finite, q1: finite, median: finite, q3: finite, max: finite }).strict()).max(6).optional(),
+  /** GAP-FIX-R2 Venn: the count in each region, named by the category (set) ids it belongs to. */
+  regions: z.array(z.object({ sets: z.array(id).min(1).max(3), value: z.number().int().min(0).max(1_000_000) }).strict()).max(7).optional(),
 }).strict();
 export type ChartData = z.infer<typeof chartDataSchema>;
 
 const SERIES_KINDS = new Set<ChartKind>(['bar', 'column', 'grouped-bar', 'stacked-bar', 'diverging-bar', 'pie', 'donut', 'waterfall', 'radar', 'bullet',
   'line', 'area', 'stacked-area', 'time-series', 'sparkline', 'pictogram', 'waffle', 'stat-tile', 'stacked-bar-100', 'stacked-area-100', 'lollipop',
-  'slope', 'step', 'histogram', 'pareto', 'gauge']);
+  'slope', 'step', 'histogram', 'pareto', 'gauge', 'marimekko', 'bump']);
+const TREE_KINDS = new Set<ChartKind>(['tree', 'decision-tree', 'treemap', 'sunburst', 'icicle', 'org-chart', 'ishikawa', 'mind-map']);
+
+/** A single-rooted tree over the nodes and links, or why not: root id, children and depth per node. */
+export function chartTree(data: ChartData): { root: string; children: Map<string, string[]>; depth: Map<string, number> } | string {
+  const nodes = data.nodes ?? []; const links = data.links ?? [];
+  if (nodes.length < 2) return 'a hierarchy needs nodes and links';
+  const ids = new Set(nodes.map((node) => node.id));
+  if (links.some((l) => !ids.has(l.from) || !ids.has(l.to) || l.from === l.to)) return 'a hierarchy link joins two known nodes';
+  const parent = new Map<string, string>();
+  for (const link of links) { if (parent.has(link.to)) return 'a tree node has one parent'; parent.set(link.to, link.from); }
+  const roots = nodes.filter((node) => !parent.has(node.id));
+  if (roots.length !== 1) return 'a diagram has exactly one start';
+  const children = new Map<string, string[]>();
+  for (const link of links) children.set(link.from, [...(children.get(link.from) ?? []), link.to]);
+  const depth = new Map<string, number>([[roots[0]!.id, 0]]);
+  const queue = [roots[0]!.id];
+  while (queue.length) { const at = queue.shift()!; for (const child of children.get(at) ?? []) { if (depth.has(child)) return 'a hierarchy has no cycles'; depth.set(child, depth.get(at)! + 1); queue.push(child); } }
+  if (depth.size !== nodes.length) return 'every node hangs from the start';
+  return { root: roots[0]!.id, children, depth };
+}
+
+/** A hierarchy node's value: its own value at a leaf, the sum of its children above. */
+export function hierarchyValue(data: ChartData, nodeId: string, children: Map<string, string[]>): number {
+  const kids = children.get(nodeId) ?? [];
+  if (kids.length === 0) return data.nodes?.find((node) => node.id === nodeId)?.value ?? 0;
+  return kids.reduce((sum, kid) => sum + hierarchyValue(data, kid, children), 0);
+}
 
 /** Why a chart's data does not fit its kind, or null. The rules each renderer relies on (and the overflow rule) live here. */
 export function chartProblem(kind: ChartKind, data: ChartData): string | null {
@@ -131,6 +182,60 @@ export function chartProblem(kind: ChartKind, data: ChartData): string | null {
       }
       return null;
     }
+    case 'candlestick': {
+      const rows = data.ohlc ?? [];
+      if (rows.length < 2 || new Set(rows.map((row) => row.id)).size !== rows.length) return 'a candlestick chart needs two or more periods';
+      if (rows.some((row) => row.low > Math.min(row.open, row.close) || row.high < Math.max(row.open, row.close) || row.low < 0)) return 'each candle keeps low <= open, close <= high';
+      return null;
+    }
+    case 'box-plot': {
+      const rows = data.boxes ?? [];
+      if (rows.length < 1 || new Set(rows.map((row) => row.id)).size !== rows.length) return 'a box plot needs one or more groups';
+      if (rows.some((row) => !(row.min <= row.q1 && row.q1 <= row.median && row.median <= row.q3 && row.q3 <= row.max))) return 'each box keeps min <= q1 <= median <= q3 <= max';
+      return null;
+    }
+    case 'marimekko':
+      if (n < 2 || data.series.length < 2 || values.some((v) => v < 0) || data.categories.some((_, i) => data.series.every((series) => (series.values[i] ?? 0) === 0))) return 'a Marimekko needs 2+ columns of 2-3 non-negative series, no empty column';
+      return null;
+    case 'bump': {
+      if (n < 2 || data.series.length < 2) return 'a bump chart ranks 2-3 series over 2+ periods';
+      for (let i = 0; i < n; i += 1) {
+        const ranks = data.series.map((series) => series.values[i]).sort((a, b) => (a ?? 0) - (b ?? 0));
+        if (ranks.some((rank, index) => rank !== index + 1)) return 'each period ranks the series 1..k with no ties';
+      }
+      return null;
+    }
+    case 'connected-scatter':
+      return !data.points || data.points.length < 3 ? 'a connected scatter needs 3+ points in time order' : null;
+    case 'venn': {
+      const sets = data.categories.map((c) => c.id);
+      const regions = data.regions ?? [];
+      if (sets.length < 2 || sets.length > 3 || regions.length < 1) return 'a Venn chart counts regions of 2-3 sets';
+      const keys = regions.map((region) => [...region.sets].sort().join('+'));
+      if (new Set(keys).size !== keys.length || regions.some((region) => region.sets.some((set) => !sets.includes(set)) || new Set(region.sets).size !== region.sets.length)) return 'each Venn region names distinct known sets once';
+      return null;
+    }
+    case 'swimlane': {
+      const lanes = data.categories.map((c) => c.id);
+      if (lanes.length < 2 || lanes.length > 4 || !data.nodes || data.nodes.length < 2 || !data.links) return 'a swimlane needs 2-4 lanes and linked steps';
+      if (data.nodes.some((node) => !node.lane || !lanes.includes(node.lane))) return 'every swimlane step sits in a lane';
+      const ids = new Set(data.nodes.map((node) => node.id));
+      if (data.links.some((l) => !ids.has(l.from) || !ids.has(l.to))) return 'a diagram link joins two known nodes';
+      return null;
+    }
+    case 'treemap': case 'sunburst': case 'icicle': case 'org-chart': case 'ishikawa': case 'mind-map': {
+      const tree = chartTree(data);
+      if (typeof tree === 'string') return tree;
+      const maxDepth = Math.max(...tree.depth.values());
+      if (kind === 'treemap' || kind === 'sunburst' || kind === 'icicle') {
+        const leaves = (data.nodes ?? []).filter((node) => !(tree.children.get(node.id)?.length));
+        if (leaves.some((node) => node.value === undefined) || (data.nodes ?? []).some((node) => tree.children.get(node.id)?.length && node.value !== undefined)) return 'every leaf carries a value; parents are their children\'s sum';
+        if (maxDepth > 3) return 'a hierarchy chart shows at most three levels';
+      }
+      if (kind === 'ishikawa' && (maxDepth !== 2 || (tree.children.get(tree.root) ?? []).length < 2 || (tree.children.get(tree.root) ?? []).length > 6)) return 'a fishbone has one effect, 2-6 cause bones and their causes';
+      if ((kind === 'mind-map' || kind === 'org-chart') && maxDepth > 3) return 'a map shows at most three levels';
+      return null;
+    }
     case 'flowchart': case 'decision-tree': case 'tree': {
       if (!data.nodes || data.nodes.length < 2 || !data.links) return 'a diagram needs nodes and links';
       const ids = new Set(data.nodes.map((node) => node.id));
@@ -158,6 +263,25 @@ export function chartTable(kind: ChartKind, data: ChartData): { columns: string[
       cells: [name.get(l.from) ?? l.from, name.get(l.to) ?? l.to, ...(kind === 'sankey' ? [l.value ?? 0] : l.label ? [l.label] : [])] })) };
   }
   if (kind === 'calendar-heatmap') return { columns: ['value'], rows: (data.days ?? []).map((d) => ({ id: d.date, cells: [d.date, d.value] })) };
+  if (kind === 'connected-scatter') return { columns: ['x', 'y'], rows: (data.points ?? []).map((p) => ({ id: p.id, cells: [p.label, p.x, p.y] })) };
+  if (kind === 'candlestick') return { columns: ['open', 'high', 'low', 'close'], rows: (data.ohlc ?? []).map((r) => ({ id: r.id, cells: [r.label, r.open, r.high, r.low, r.close] })) };
+  if (kind === 'box-plot') return { columns: ['min', 'q1', 'median', 'q3', 'max'], rows: (data.boxes ?? []).map((r) => ({ id: r.id, cells: [r.label, r.min, r.q1, r.median, r.q3, r.max] })) };
+  if (kind === 'venn') {
+    const name = new Map(data.categories.map((c) => [c.id, c.label]));
+    return { columns: ['value'], rows: (data.regions ?? []).map((r) => ({ id: [...r.sets].sort().join('+'), cells: [r.sets.map((set) => name.get(set) ?? set).join(' + '), r.value] })) };
+  }
+  if (TREE_KINDS.has(kind) || kind === 'swimlane') {
+    const tree = kind === 'swimlane' ? null : chartTree(data);
+    const name = new Map((data.nodes ?? []).map((node) => [node.id, node.label]));
+    const valued = kind === 'treemap' || kind === 'sunburst' || kind === 'icicle';
+    const lanes = new Map(data.categories.map((c) => [c.id, c.label]));
+    return { columns: kind === 'swimlane' ? ['lane', 'next'] : valued ? ['parent', 'value'] : ['parent'],
+      rows: (data.nodes ?? []).map((node) => {
+        const up = (data.links ?? []).find((l) => l.to === node.id)?.from;
+        if (kind === 'swimlane') return { id: node.id, cells: [node.label, lanes.get(node.lane ?? '') ?? '', (data.links ?? []).filter((l) => l.from === node.id).map((l) => name.get(l.to) ?? l.to).join(', ')] };
+        return { id: node.id, cells: [node.label, up ? name.get(up) ?? up : '', ...(valued && typeof tree !== 'string' && tree ? [hierarchyValue(data, node.id, tree.children)] : [])] };
+      }) };
+  }
   if (kind === 'stat-tile' || kind === 'bullet' || kind === 'gauge') {
     return { columns: ['value'], rows: [{ id: 'value', cells: ['value', data.stat?.value ?? 0] }, ...(data.target !== undefined ? [{ id: 'target', cells: ['target', data.target] }] : []),
       ...(data.stat?.delta !== undefined ? [{ id: 'delta', cells: ['delta', data.stat.delta] }] : [])] };
@@ -186,7 +310,9 @@ export function valueExtent(kind: ChartKind, data: ChartData): [number, number] 
   let values: number[];
   if (kind === 'stacked-bar' || kind === 'stacked-area') values = data.categories.map((_, i) => data.series.reduce((s, series) => s + (series.values[i] ?? 0), 0));
   else if (kind === 'waterfall') values = waterfallSteps(data).flatMap((step) => [step.start, step.end]);
-  else if (kind === 'stacked-bar-100' || kind === 'stacked-area-100') values = [0, 1];
+  else if (kind === 'stacked-bar-100' || kind === 'stacked-area-100' || kind === 'marimekko') values = [0, 1];
+  else if (kind === 'candlestick') values = (data.ohlc ?? []).flatMap((r) => [r.low, r.high]);
+  else if (kind === 'box-plot') values = (data.boxes ?? []).flatMap((r) => [r.min, r.max]);
   else values = data.series.flatMap((s) => s.values);
   const low = Math.min(0, ...values);
   const high = Math.max(0, ...values);
@@ -207,6 +333,15 @@ export function chartFacts(kind: ChartKind, data: ChartData): Array<{ label: str
   }
   if (kind === 'calendar-heatmap') return (data.days ?? []).map((d) => ({ label: d.date, value: d.value }));
   if (kind === 'stat-tile' || kind === 'bullet' || kind === 'gauge') return [{ label: 'value', value: data.stat?.value ?? 0 }, ...(data.target !== undefined ? [{ label: 'target', value: data.target }] : [])];
-  if (kind === 'flowchart' || kind === 'decision-tree' || kind === 'tree') return [];
+  if (kind === 'flowchart' || kind === 'decision-tree' || kind === 'tree' || kind === 'org-chart' || kind === 'swimlane' || kind === 'ishikawa' || kind === 'mind-map') return [];
+  if (kind === 'connected-scatter') return (data.points ?? []).map((p) => ({ label: p.label, value: p.y }));
+  if (kind === 'candlestick') return (data.ohlc ?? []).map((r) => ({ label: r.label, value: r.close }));
+  if (kind === 'box-plot') return (data.boxes ?? []).map((r) => ({ label: r.label, value: r.median }));
+  if (kind === 'venn') { const name = new Map(data.categories.map((c) => [c.id, c.label])); return (data.regions ?? []).map((r) => ({ label: r.sets.map((set) => name.get(set) ?? set).join(' + '), value: r.value })); }
+  if (kind === 'treemap' || kind === 'sunburst' || kind === 'icicle') {
+    const tree = chartTree(data);
+    if (typeof tree === 'string') return [];
+    return (data.nodes ?? []).filter((node) => !(tree.children.get(node.id)?.length)).map((node) => ({ label: node.label, value: node.value ?? 0 }));
+  }
   return data.categories.flatMap((c, i) => data.series.map((s) => ({ label: data.series.length > 1 ? `${c.label} ${s.label}` : c.label, value: s.values[i] ?? 0 })));
 }

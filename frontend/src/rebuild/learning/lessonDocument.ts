@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { growthComparison } from './growthComparisonModel.generated';
-import { longArithmeticSchema, v2FamilySegments, v2SegmentExtras } from './v2SegmentFamilies.generated';
+import { longArithmeticSchema, mathNotation, NOTATION_CAPABILITY, placeValuePayload, schemaDiagramPayload, v2AgeScopeProblem, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras } from './v2SegmentFamilies.generated';
 import { conceptAllowed, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptType } from './v2ConceptBoards.generated';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './charts/chartModel.generated';
 
@@ -68,9 +68,12 @@ const numberLineSegment = z.object({
   type: z.literal('math.number-line.whole.v2'),
   grading: z.literal('server'),
   visual: z.object({ type: z.literal('number-line') }).strict(),
-  payload: z.object({ minimum: nonnegativeInteger, maximum: positiveInteger, step: positiveInteger, initial: nonnegativeInteger }).strict()
+  // M2 (GAP-FIX-R2): mirrors Core's optional count-on hop sizes.
+  payload: z.object({ minimum: nonnegativeInteger, maximum: positiveInteger, step: positiveInteger, initial: nonnegativeInteger,
+    hops: z.array(positiveInteger).min(1).max(3).optional() }).strict()
     .refine((value) => value.maximum > value.minimum && (value.maximum - value.minimum) % value.step === 0
-      && value.initial >= value.minimum && value.initial <= value.maximum && (value.initial - value.minimum) % value.step === 0,
+      && value.initial >= value.minimum && value.initial <= value.maximum && (value.initial - value.minimum) % value.step === 0
+      && (value.hops === undefined || (new Set(value.hops).size === value.hops.length && value.hops.every((hop) => hop % value.step === 0 && hop < value.maximum - value.minimum))),
     'Invalid number-line range'),
 }).strict();
 
@@ -106,8 +109,7 @@ const barModelPayload = z.object({ whole: positiveInteger.max(100), difference: 
   .refine((value) => value.difference < value.whole, 'Invalid bar-model range');
 const barModelStructureSegment = z.object({ ...segmentBase, type: z.literal('math.bar-model.structure.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('bar-model') }).strict(), payload: barModelPayload }).strict();
 const barModelAnswerSegment = z.object({ ...segmentBase, type: z.literal('math.bar-model.answer.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('bar-model') }).strict(), payload: barModelPayload }).strict();
-const schemaDiagramPayload = z.object({ income: positiveInteger.max(100), spending: positiveInteger.max(99), incomeLabel: z.string().trim().min(1).max(40), spendingLabel: z.string().trim().min(1).max(40), remainingLabel: z.string().trim().min(1).max(40), spokenText: z.string().trim().min(1).max(120) }).strict()
-  .refine((value) => value.spending < value.income, 'Invalid schema-diagram range');
+// M8 (GAP-FIX-R2): Core's schema-neutral payload (v2SegmentFamilies); the schema and slot places stay private.
 const schemaDiagramStructureSegment = z.object({ ...segmentBase, type: z.literal('math.schema-diagram.structure.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('schema-diagram') }).strict(), payload: schemaDiagramPayload }).strict();
 const schemaDiagramSlotsSegment = z.object({ ...segmentBase, type: z.literal('math.schema-diagram.slots.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('schema-diagram') }).strict(), payload: schemaDiagramPayload }).strict();
 const schemaDiagramAnswerSegment = z.object({ ...segmentBase, type: z.literal('math.schema-diagram.answer.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('schema-diagram') }).strict(), payload: schemaDiagramPayload }).strict();
@@ -141,7 +143,7 @@ const placeValueSegment = z.object({
   type: z.literal('math.place-value.v2'),
   grading: optionalServer,
   visual: z.object({ type: z.literal('base-ten') }).strict(),
-  payload: z.object({ total: positiveInteger.min(10).max(29) }).strict(),
+  payload: placeValuePayload,
 }).strict();
 
 const savingsRuleSegment = z.object({
@@ -222,7 +224,7 @@ const ratioTableSegment = z.object({
   payload: z.object({
     itemsPerPack: positiveInteger.max(12), pricePerPack: positiveInteger.max(1_000),
     minimumPacks: positiveInteger.max(8), maximumPacks: positiveInteger.max(8), initialPacks: positiveInteger.max(8),
-    currency: z.literal('coins'),
+    currency: z.enum(['coins', 'local']),
   }).strict().refine((value) => value.maximumPacks > value.minimumPacks && value.initialPacks >= value.minimumPacks
     && value.initialPacks <= value.maximumPacks && value.pricePerPack % value.itemsPerPack === 0,
   'Invalid ratio-table range'),
@@ -244,6 +246,8 @@ const workedExampleSegment = z.object({
       expression: z.string().trim().min(1).max(80),
       result: z.string().trim().min(1).max(40),
       spokenText: z.string().trim().min(1).max(120),
+      // Bible 05 §5 (GAP-FIX-R2): optional TeX rendered with KaTeX; spokenText stays the accessible name.
+      notation: mathNotation.optional(),
     }).strict()).min(3).max(4),
     fade_count: nonnegativeInteger.max(3),
     response_step_ids: z.array(id).min(2).max(3),
@@ -263,6 +267,8 @@ const functionMachineSegment = z.object({
   payload: z.object({
     examples: z.array(z.object({ input: nonnegativeInteger.max(12), output: nonnegativeInteger.max(200) }).strict()).min(3).max(5),
     multiplierMaximum: positiveInteger.max(12), offsetMaximum: nonnegativeInteger.max(100),
+    // GAP-FIX-R2: the learner's rule is written in KaTeX notation (declares visual.math-notation.v1).
+    notation: z.literal(true).optional(),
   }).strict().refine((value) => {
     if (new Set(value.examples.map((example) => example.input)).size !== value.examples.length) return false;
     const ordered = [...value.examples].sort((a, b) => a.input - b.input);
@@ -360,6 +366,9 @@ export const REQUIRED_SEGMENT_CAPABILITIES = {
   'story.branch.v2': ['visual.story-scene.v1', 'operation.choose-option.v1'],
   'story.dialogue-choice.v2': ['visual.dialogue.v1', 'operation.choose-option.v1'],
   'story.would-you-rather.v2': ['visual.would-you-rather.v1', 'operation.choose-option.v1'],
+  // GAP-FIX-R2: $6 unit prices and the L2 rule builder; a built flowchart (L6/$9, 13+) also needs operation.build-flowchart.v1.
+  'money.unit-price.v2': ['visual.ratio-table.v1', 'operation.number-input.v1', 'operation.choose-option.v1'],
+  'logic.rule-builder.v2': ['visual.rule-builder.v1', 'operation.build-rule.v1', 'operation.case-step.v1'],
   'voice.mentor-turn.v2': ['visual.speech-plate.v1'],
   'voice.mentor-episode.v2': ['visual.speech-plate.v1', 'operation.step-replay.v1'],
   // GAP-FIX-R1 learning (Appendix A Parts 2 and 3; B.7 part 2).
@@ -373,7 +382,7 @@ export const REQUIRED_SEGMENT_CAPABILITIES = {
   'money.lemonade-stand.v2': ['visual.waterfall.v1', 'operation.guided-sandbox.v1', 'operation.running-ledger.v1'],
 } as const satisfies Record<SegmentType, readonly string[]>;
 export const LESSON_CLIENT_CAPABILITIES = [...new Set([...Object.values(REQUIRED_SEGMENT_CAPABILITIES).flat(),
-  'visual.waffle.v1', 'visual.donut.v1', ...CHART_KINDS.map((kind) => `visual.${kind}.v1`)])];
+  'visual.waffle.v1', 'visual.donut.v1', 'operation.build-flowchart.v1', NOTATION_CAPABILITY, ...CHART_KINDS.map((kind) => `visual.${kind}.v1`)])];
 const knownTypes = new Set(Object.keys(REQUIRED_SEGMENT_CAPABILITIES));
 /** Every occurrence of a chain member sits inside a complete, in-order run of the whole chain. */
 function contiguousChains(types: readonly string[], chain: readonly string[]): boolean {
@@ -434,7 +443,10 @@ export const lessonClientDocumentSchema = z.object({
     const needed: readonly string[] = value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar'
       ? [`visual.${value.visual.type}.v1`, 'operation.reallocate.v1']
       : value.type === 'visual.chart.v2' ? [`visual.${value.visual.type}.v1`, ...REQUIRED_SEGMENT_CAPABILITIES[value.type], ...(value.payload.question ? ['operation.choose-option.v1'] : [])]
-        : REQUIRED_SEGMENT_CAPABILITIES[value.type];
+        : (value.type === 'logic.flowchart.v2' || value.type === 'money.spend-decision.v2') && 'mode' in value.payload ? [...REQUIRED_SEGMENT_CAPABILITIES[value.type], 'operation.build-flowchart.v1']
+          : (value.type === 'math.worked-example.v2' && value.payload.steps.some((step) => step.notation)) || (value.type === 'math.function-machine.v2' && value.payload.notation)
+            ? [...REQUIRED_SEGMENT_CAPABILITIES[value.type], NOTATION_CAPABILITY]
+            : REQUIRED_SEGMENT_CAPABILITIES[value.type];
     if (value.type === 'visual.chart.v2' && !chartAllowed(value.visual.type, document.age_band, document.course_id)) {
       ctx.addIssue({ code: 'custom', path: ['segments', index, 'visual'], message: 'This chart kind is not open to this age pathway or subject' });
     }
@@ -445,78 +457,17 @@ export const lessonClientDocumentSchema = z.object({
     if ((V2_CONCEPT_TYPES as readonly string[]).includes(value.type) && !conceptAllowed(value.type as V2ConceptType, document.age_band)) {
       ctx.addIssue({ code: 'custom', path: ['segments', index, 'type'], message: 'This concept board is not open to this age pathway' });
     }
-    if (value.type === 'math.place-value.v2' && document.age_band !== '6-9') {
-      ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Place-value pilot is restricted to ages 6–9' });
-    }
-    if (value.type === 'math.number-line.fraction.v2'
-      && (document.age_band !== '10-12' || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Fraction number-line pilot is restricted to ages 10–12' });
-    }
-    if (value.type === 'math.fraction-area.v2'
-      && (document.age_band !== '6-9' || document.eligibility.minimum_age !== 7 || document.eligibility.maximum_age !== 9)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Fraction-area pilot is restricted to ages 7–9' });
-    }
-    if ((value.type === 'math.bar-model.structure.v2' || value.type === 'math.bar-model.answer.v2')
-      && (document.age_band !== '10-12' || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Bar-model pilot is restricted to ages 10–12' });
-    }
-    if (value.type === 'money.allocation.v2' && value.visual.type === 'waffle'
-      && (document.age_band !== '6-9' || value.payload.total !== 10 || value.payload.step !== 1
-        || value.payload.currency !== 'coins')) {
-      ctx.addIssue({ code: 'custom', path: ['segments', index, 'payload'],
-        message: 'This waffle pilot requires ten one-coin rows for ages 6–9' });
-    }
-    if (value.type === 'money.allocation.v2' && value.visual.type === 'donut'
-      && (document.age_band !== '10-12' || value.payload.total !== 60 || value.payload.step !== 5
-        || value.payload.currency !== 'coins')) {
-      ctx.addIssue({ code: 'custom', path: ['segments', index, 'payload'],
-        message: 'This donut pilot requires sixty five-coin steps for ages 10–12' });
-    }
-    if (value.type === 'logic.savings-rule.v2' && document.age_band !== '10-12') {
-      ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Savings-rule pilot is restricted to ages 10–12' });
-    }
-    if (value.type === 'visual.percent-grid.v2' && (document.age_band !== '10-12'
-      || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Percent-grid pilot is restricted to the controlled 10–12 pathway' });
-    }
-    if (value.type === 'money.running-ledger.v2' && document.age_band !== '13-17') {
-      ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Running-ledger pilot is restricted to ages 13–17' });
-    }
-    if (value.type === 'visual.growth-comparison.v2' && document.age_band !== '13-17') {
-      ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Growth-comparison pilot is restricted to ages 13–17' });
-    }
-    if (value.type === 'visual.tax-bracket.v2' && (document.age_band !== '13-17'
-      || document.eligibility.minimum_age !== 14 || document.eligibility.maximum_age !== 17)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'], message: 'Tax-bracket pilot is restricted to ages 14–17' });
-    }
-    if (value.type === 'math.ratio-table.v2' && (document.age_band !== '10-12' || value.payload.itemsPerPack !== 3
-      || value.payload.pricePerPack !== 15 || value.payload.minimumPacks !== 1 || value.payload.maximumPacks !== 4
-      || value.payload.initialPacks !== 2 || value.payload.currency !== 'coins')) {
-      ctx.addIssue({ code: 'custom', path: ['segments', index, 'payload'],
-        message: 'This ratio-table pilot requires the controlled three-items-for-fifteen-coins scenario for ages 10–12' });
-    }
-    if (value.type === 'math.worked-example.v2' && (document.age_band !== '10-12'
-      || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'],
-        message: 'Worked-example pilot is restricted to ages 10–12' });
-    }
-    if (value.type === 'math.function-machine.v2' && (document.age_band !== '10-12'
-      || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) {
-      ctx.addIssue({ code: 'custom', path: ['eligibility'],
-        message: 'Function-machine pilot is restricted to ages 10–12' });
-    }
-    if (value.type === 'math.cpa-count.v2' && (document.age_band !== '6-9' && document.age_band !== '10-12')) {
-      ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'CPA count is restricted to ages 6–12' });
-    }
+    // B.7 part 3 / Appendix P age ranges and generic parameters (Core's shared v2AgeScopeProblem, GAP-FIX-R2).
+    const scopeKey = value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar' ? `${value.type}:${value.visual.type}` : value.type;
+    const scopeProblem = v2AgeScopeProblem(scopeKey, document) ?? v2PayloadScopeProblem(value, document.age_band);
+    if (scopeProblem) ctx.addIssue({ code: 'custom', path: ['segments', index], message: scopeProblem });
   }
   // OD-17 / B.7 (GAP-FIX-R1): mixed documents may surround the M7 chains, which stay contiguous and ordered (Core's contiguousChains).
   if (!contiguousChains(document.segments.map((value) => value.type), ['math.bar-model.structure.v2', 'math.bar-model.answer.v2'])) {
     ctx.addIssue({ code: 'custom', path: ['segments'], message: 'Bar-model pilot requires an ordered structure and answer pair' });
   }
-  const hasSchemaDiagram = document.segments.some((value) => value.type === 'math.schema-diagram.structure.v2' || value.type === 'math.schema-diagram.slots.v2' || value.type === 'math.schema-diagram.answer.v2');
-  if (hasSchemaDiagram && (document.age_band !== '10-12' || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12
-    || !contiguousChains(document.segments.map((value) => value.type), ['math.schema-diagram.structure.v2', 'math.schema-diagram.slots.v2', 'math.schema-diagram.answer.v2']))) {
-    ctx.addIssue({ code: 'custom', path: ['segments'], message: 'Schema-diagram pilot requires an ordered 10–12 structure, slots and answer sequence' });
+  if (!contiguousChains(document.segments.map((value) => value.type), ['math.schema-diagram.structure.v2', 'math.schema-diagram.slots.v2', 'math.schema-diagram.answer.v2'])) {
+    ctx.addIssue({ code: 'custom', path: ['segments'], message: 'Schema diagrams require an ordered structure, slots and answer sequence' });
   }
   const cpaSegments = document.segments.filter((value) => value.type === 'math.cpa-count.v2');
   if (cpaSegments.length > 0) {

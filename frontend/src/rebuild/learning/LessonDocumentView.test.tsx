@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { allocationPilotDocument, donutPilotDocument, wafflePilotDocument } from './AllocationBoard';
 import { growthPilotDocument } from './GrowthBoard';
@@ -634,21 +634,26 @@ describe('versioned pilot document renderer', () => {
   it('keeps M8 schema choice, slots, and arithmetic in separate steps', async () => {
     const grade = vi.fn((answer: Record<string, unknown>, id: string) => id === 'schema-structure-01'
       ? answer.schema === 'change' ? 'met' as const : 'review' as const
-      : id === 'schema-slots-01' ? answer.income === '24' && answer.spending === '9' ? 'met' as const : 'review' as const
+      : id === 'schema-slots-01' ? answer.schema === 'change' && (answer.slots as Record<string, string>).start === 'earned' ? 'met' as const : 'review' as const
         : answer.value === '15' ? 'met' as const : 'review' as const);
     render(<LessonDocumentView raw={schemaDiagramPilotDocument('en-US')} locale="en-US" ageBand="10-12" onBack={noop} onGradeSchemaDiagram={grade} />);
     expect(screen.getByRole('heading', { name: 'Choose the schema' })).toBeTruthy();
-    expect(screen.queryByLabelText('Earned')).toBeNull();
+    // GAP-FIX-R2: the four M8 schemas are offered, and the document never says which one fits.
+    for (const schema of ['Change', 'Group', 'Compare', 'Ratio']) expect(screen.getByRole('radio', { name: schema })).toBeTruthy();
+    expect(screen.queryByRole('group', { name: 'Start' })).toBeNull();
     fireEvent.click(screen.getByRole('radio', { name: 'Change' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Correct'));
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
-    fireEvent.change(screen.getByLabelText('Earned'), { target: { value: '24' } });
-    fireEvent.change(screen.getByLabelText('Spent'), { target: { value: '9' } });
+    fireEvent.click(screen.getByRole('radio', { name: 'Change' }));
+    fireEvent.click(within(screen.getByRole('group', { name: 'Start' })).getByRole('radio', { name: 'Earned 24' }));
+    fireEvent.click(within(screen.getByRole('group', { name: 'Change' })).getByRole('radio', { name: 'Spent 9' }));
+    expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
+    fireEvent.click(within(screen.getByRole('group', { name: 'Result' })).getByRole('radio', { name: 'Left over' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    await waitFor(() => expect(grade).toHaveBeenNthCalledWith(2, { income: '24', spending: '9' }, 'schema-slots-01', expect.anything()));
+    await waitFor(() => expect(grade).toHaveBeenNthCalledWith(2, { schema: 'change', slots: { start: 'earned', change: 'spent', result: 'unknown' } }, 'schema-slots-01', expect.anything()));
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
-    fireEvent.change(screen.getByLabelText('How many coins are left?'), { target: { value: '15' } });
+    fireEvent.change(screen.getByLabelText('Your answer'), { target: { value: '15' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(grade).toHaveBeenNthCalledWith(3, { value: '15' }, 'schema-answer-01', expect.anything()));
   });

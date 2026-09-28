@@ -34,6 +34,10 @@ export const v2SegmentExtras = {
   help: z.array(label(160)).min(1).max(2).optional(),
   item_role: z.enum(['practice', 'transfer']).optional(),
   knowledge_component_id: id.optional(),
+  // Appendix P Part 8 (GAP-FIX-R2): L12/$11 items before and after the lesson (d-prime pre/post),
+  // and the representation variant an A/B comparison groups transfer success by.
+  item_phase: z.enum(['pre', 'post']).optional(),
+  variant: id.optional(),
 };
 
 function uniqueIds(values: ReadonlyArray<{ id: string }>): boolean {
@@ -104,7 +108,9 @@ export const sortBinsPayload = z.object({
 /** L12 / $11: messages to classify; genuine messages are always in the set (enforced by the rubric). */
 export const messageListPayload = z.object({
   messages: z.array(z.object({ id, sender: label(40), text: label(200) }).strict()).min(3).max(8),
-}).strict().refine((value) => uniqueIds(value.messages), 'Invalid messages');
+  // L12 (GAP-FIX-R2): the public cue list the learner ticks per message ("tick which cues fired").
+  cues: z.array(option).min(2).max(6).optional(),
+}).strict().refine((value) => uniqueIds([...value.messages, ...(value.cues ?? [])]), 'Invalid messages');
 
 /* ── Money ($1, $2) ───────────────────────────────────────────────────────── */
 
@@ -155,6 +161,60 @@ export const mentorEpisodePayload = z.object({
   narration: narrationChannel.optional(),
 }).strict();
 
+/* ── $6 unit-price comparator (GAP-FIX-R2) ─────────────────────────────────── */
+
+/**
+ * Appendix P $6 (built on M14): two or three offers, each a quantity and a
+ * price; the learner finds the unit price of each ("Always show the unit")
+ * and picks the better choice. The exact rational unit prices and the better
+ * offer are private; unit prices must all differ so the better choice is
+ * unique.
+ */
+export const unitPricePayload = z.object({
+  currency: z.enum(['coins', 'local']),
+  unitLabel: label(24),
+  offers: z.array(z.object({ id, label: label(40), quantity: positive.max(1_000), price_minor: positive.max(1_000_000) }).strict()).min(2).max(3),
+}).strict().refine((value) => uniqueIds(value.offers) && value.offers.every((a, i) => value.offers.every((b, j) => i === j
+  || a.price_minor * b.quantity !== b.price_minor * a.quantity)), 'Invalid unit-price offers');
+
+/* ── L2 IF-THEN-ELSE rule builder, and L6/$9 built flowcharts (GAP-FIX-R2) ── */
+
+/**
+ * Appendix P L2: condition and action tiles build IF <expression> THEN
+ * <action> ELSE <action>; ages 8-9 use a single IF, 10-12 add AND/OR, 13-17
+ * and adults nest and negate (`level`). The public practice cards let the
+ * learner run the rule; Core grades it by behaviour on a fixed hidden set of
+ * 5-10 scenarios in the private rubric, never by tile layout (Part 4.6).
+ */
+export const RULE_LEVELS = ['single', 'connective', 'nested'] as const;
+const facts = z.record(id, z.boolean());
+export const ruleBuilderPayload = z.object({
+  level: z.enum(RULE_LEVELS),
+  conditions: z.array(option).min(1).max(4),
+  actions: z.array(option).min(2).max(3),
+  practice: z.array(z.object({ id, label: label(80), facts }).strict()).min(1).max(4),
+}).strict().refine((value) => uniqueIds([...value.conditions, ...value.actions, ...value.practice])
+  && value.practice.every((card) => sameKeys(card.facts, value.conditions.map((condition) => condition.id)))
+  && (value.level !== 'single' || value.conditions.length >= 1) && (value.level === 'single' || value.conditions.length >= 2), 'Invalid rule builder');
+
+function sameKeys(record: Record<string, unknown>, keys: readonly string[]): boolean {
+  return Object.keys(record).length === keys.length && keys.every((key) => Object.hasOwn(record, key));
+}
+
+/**
+ * L6 "13-17 build their own" / $9 "built by older learners and tested on
+ * scenarios": the learner places question and outcome nodes; Core evaluates
+ * the tree on the hidden cases of the rubric. Public practice cases carry
+ * their answers so the learner can test the tree before checking.
+ */
+export const flowchartBuildPayload = z.object({
+  mode: z.literal('build'),
+  questions: z.array(option).min(1).max(3),
+  outcomes: z.array(option).min(2).max(3),
+  practice: z.array(z.object({ id, label: label(80), answers: facts }).strict()).min(1).max(4),
+}).strict().refine((value) => uniqueIds([...value.questions, ...value.outcomes, ...value.practice])
+  && value.practice.every((card) => sameKeys(card.answers, value.questions.map((question) => question.id))), 'Invalid flowchart build');
+
 /* ── Segments ─────────────────────────────────────────────────────────────── */
 
 const base = { id, prompt: z.string().trim().min(1).max(500), ...v2SegmentExtras };
@@ -164,8 +224,8 @@ const visual = <T extends string>(type: T) => z.object({ type: z.literal(type) }
 export const v2FamilySegments = [
   z.object({ ...base, type: z.literal('logic.rule-checker.v2'), grading: server, visual: visual('rule-cards'), payload: ruleCheckerPayload }).strict(),
   z.object({ ...base, type: z.literal('logic.euler.v2'), grading: server, visual: visual('euler'), payload: eulerPayload }).strict(),
-  z.object({ ...base, type: z.literal('logic.flowchart.v2'), grading: server, visual: visual('flowchart'), payload: flowchartPayload }).strict(),
-  z.object({ ...base, type: z.literal('money.spend-decision.v2'), grading: server, visual: visual('decision-tree'), payload: flowchartPayload }).strict(),
+  z.object({ ...base, type: z.literal('logic.flowchart.v2'), grading: server, visual: visual('flowchart'), payload: z.union([flowchartPayload, flowchartBuildPayload]) }).strict(),
+  z.object({ ...base, type: z.literal('money.spend-decision.v2'), grading: server, visual: visual('decision-tree'), payload: z.union([flowchartPayload, flowchartBuildPayload]) }).strict(),
   z.object({ ...base, type: z.literal('logic.sort-by-rule.v2'), grading: server, visual: visual('sort-bins'), payload: sortBinsPayload }).strict(),
   z.object({ ...base, type: z.literal('money.needs-wants.v2'), grading: server, visual: visual('sort-bins'), payload: sortBinsPayload }).strict(),
   z.object({ ...base, type: z.literal('logic.scam-spotter.v2'), grading: server, visual: visual('message-list'), payload: messageListPayload }).strict(),
@@ -175,6 +235,9 @@ export const v2FamilySegments = [
   z.object({ ...base, type: z.literal('story.branch.v2'), grading: server, visual: visual('story-scene'), payload: storyBranchPayload }).strict(),
   z.object({ ...base, type: z.literal('story.dialogue-choice.v2'), grading: server, visual: visual('dialogue'), payload: dialogueChoicePayload }).strict(),
   z.object({ ...base, type: z.literal('story.would-you-rather.v2'), grading: server, visual: visual('would-you-rather'), payload: wouldYouRatherPayload }).strict(),
+  // GAP-FIX-R2: $6 unit-price comparator and the L2 rule builder.
+  z.object({ ...base, type: z.literal('money.unit-price.v2'), grading: server, visual: visual('ratio-table'), payload: unitPricePayload }).strict(),
+  z.object({ ...base, type: z.literal('logic.rule-builder.v2'), grading: server, visual: visual('rule-builder'), payload: ruleBuilderPayload }).strict(),
   z.object({ ...base, type: z.literal('voice.mentor-turn.v2'), grading: z.literal('none'), visual: visual('speech-plate'), payload: mentorTurnPayload }).strict(),
   z.object({ ...base, type: z.literal('voice.mentor-episode.v2'), grading: z.literal('none'), visual: visual('speech-plate'), payload: mentorEpisodePayload }).strict(),
 ] as const;
@@ -188,17 +251,34 @@ export const V2_STORY_TYPES = ['story.branch.v2', 'story.dialogue-choice.v2', 's
 /* ── Private rubrics (Core only; the browser never receives them) ─────────── */
 
 const ids = (min: number, max: number) => z.array(id).min(min).max(max);
+/** L2 rule expression: a condition, NOT, or a binary AND/OR (the level caps which shapes a rule may take). */
+export type RuleExpr = { c: string } | { not: RuleExpr } | { and: [RuleExpr, RuleExpr] } | { or: [RuleExpr, RuleExpr] };
+export const ruleExprSchema: z.ZodType<RuleExpr> = z.lazy(() => z.union([
+  z.object({ c: id }).strict(), z.object({ not: ruleExprSchema }).strict(),
+  z.object({ and: z.tuple([ruleExprSchema, ruleExprSchema]) }).strict(), z.object({ or: z.tuple([ruleExprSchema, ruleExprSchema]) }).strict(),
+]));
+export const ruleSchema = z.object({ if: ruleExprSchema, then: id, else: id }).strict();
+export type BuiltRule = z.infer<typeof ruleSchema>;
+/** L6 / $9 built chart: a question with a yes and a no branch, down to outcomes. */
+export type FlowTree = { o: string } | { q: string; yes: FlowTree; no: FlowTree };
+export const flowTreeSchema: z.ZodType<FlowTree> = z.lazy(() => z.union([z.object({ o: id }).strict(), z.object({ q: id, yes: flowTreeSchema, no: flowTreeSchema }).strict()]));
+const flowRubric = z.union([
+  z.object({ paths: z.record(id, ids(2, 12)) }).strict(),
+  z.object({ cases: z.array(z.object({ answers: z.record(id, z.boolean()), outcome: id }).strict()).min(5).max(10) }).strict(),
+]);
 export const V2_FAMILY_RUBRICS = {
   'logic.rule-checker.v2': z.object({ must_flip_ids: ids(1, 5) }).strict(),
   'logic.euler.v2': z.object({ regions: z.record(id, z.enum(EULER_REGIONS)) }).strict(),
-  'logic.flowchart.v2': z.object({ paths: z.record(id, ids(2, 12)) }).strict(),
-  'money.spend-decision.v2': z.object({ paths: z.record(id, ids(2, 12)) }).strict(),
+  'logic.flowchart.v2': flowRubric,
+  'money.spend-decision.v2': flowRubric,
   'logic.sort-by-rule.v2': z.object({ accepted: z.record(id, z.array(z.object({ bin: id, reason: id }).strict()).min(1).max(4)) }).strict(),
   'money.needs-wants.v2': z.object({ accepted: z.record(id, z.array(z.object({ bin: id, reason: id }).strict()).min(1).max(4)) }).strict(),
-  'logic.scam-spotter.v2': z.object({ scam_ids: ids(1, 7) }).strict(),
-  'money.scam-check.v2': z.object({ scam_ids: ids(1, 7) }).strict(),
+  'logic.scam-spotter.v2': z.object({ scam_ids: ids(1, 7), cue_ids: z.record(id, ids(0, 6)).optional() }).strict(),
+  'money.scam-check.v2': z.object({ scam_ids: ids(1, 7), cue_ids: z.record(id, ids(0, 6)).optional() }).strict(),
   'money.coin-tray.v2': z.object({ target_minor: positive.max(1_000_000), fewest: z.boolean() }).strict(),
   'money.making-change.v2': z.object({ change_minor: positive.max(1_000_000) }).strict(),
+  'money.unit-price.v2': z.object({ unit_prices: z.record(id, z.string().regex(/^\d{1,15}(\/[1-9]\d{0,14}|\.\d{1,12})?$/)), better_id: id }).strict(),
+  'logic.rule-builder.v2': z.object({ target: ruleSchema, scenarios: z.array(z.record(id, z.boolean())).min(5).max(10) }).strict(),
   'story.branch.v2': z.object({ acceptable_choice_ids: ids(1, 3) }).strict(),
   'story.dialogue-choice.v2': z.object({ acceptable_choice_ids: ids(1, 3) }).strict(),
   'story.would-you-rather.v2': z.object({ acceptable_choice_ids: ids(1, 2) }).strict(),
@@ -214,7 +294,9 @@ export function v2FamilyScorerPayload(segment: V2FamilySegment): Record<string, 
     case 'logic.rule-checker.v2': return { cardIds: segment.payload.cards.map((card) => card.id) };
     case 'logic.euler.v2': return { relation: segment.payload.relation, itemIds: segment.payload.items.map((item) => item.id) };
     case 'logic.flowchart.v2':
-    case 'money.spend-decision.v2': return {
+    case 'money.spend-decision.v2': return 'mode' in segment.payload ? {
+      mode: 'build', questionIds: segment.payload.questions.map((item) => item.id), outcomeIds: segment.payload.outcomes.map((item) => item.id),
+    } : {
       start: segment.payload.start,
       nodes: segment.payload.nodes.map((node) => node.kind === 'question' ? { id: node.id, yes: node.yes, no: node.no } : { id: node.id }),
       scenarioIds: segment.payload.scenarios.map((scenario) => scenario.id),
@@ -225,7 +307,8 @@ export function v2FamilyScorerPayload(segment: V2FamilySegment): Record<string, 
       reasonIds: segment.payload.reasons.map((reason) => reason.id),
     };
     case 'logic.scam-spotter.v2':
-    case 'money.scam-check.v2': return { messageIds: segment.payload.messages.map((message) => message.id) };
+    case 'money.scam-check.v2': return { messageIds: segment.payload.messages.map((message) => message.id),
+      ...(segment.payload.cues ? { cueIds: segment.payload.cues.map((cue) => cue.id) } : {}) };
     case 'money.coin-tray.v2': return { denominations: segment.payload.denominations.map((d) => ({ value: d.value_minor, available: d.available })) };
     case 'money.making-change.v2': return {
       denominations: segment.payload.denominations.map((d) => ({ value: d.value_minor, available: d.available })),
@@ -234,6 +317,10 @@ export function v2FamilyScorerPayload(segment: V2FamilySegment): Record<string, 
     case 'story.branch.v2': return { choiceIds: segment.payload.options.map((item) => item.id) };
     case 'story.dialogue-choice.v2': return { choiceIds: segment.payload.replies.map((item) => item.id) };
     case 'story.would-you-rather.v2': return { choiceIds: segment.payload.options.map((item) => item.id) };
+    case 'money.unit-price.v2': return { scale: segment.payload.currency === 'local' ? 100 : 1,
+      offers: segment.payload.offers.map((offer) => ({ id: offer.id, quantity: offer.quantity, price: offer.price_minor })) };
+    case 'logic.rule-builder.v2': return { level: segment.payload.level, conditionIds: segment.payload.conditions.map((item) => item.id),
+      actionIds: segment.payload.actions.map((item) => item.id) };
     case 'voice.mentor-turn.v2':
     case 'voice.mentor-episode.v2': return {};
   }
@@ -246,6 +333,7 @@ export function v2FamilySampleResponse(segment: V2FamilySegment): unknown {
     case 'logic.euler.v2': return { placements: Object.fromEntries(segment.payload.items.map((item) => [item.id, 'neither'])) };
     case 'logic.flowchart.v2':
     case 'money.spend-decision.v2': {
+      if ('mode' in segment.payload) return { tree: { q: segment.payload.questions[0]!.id, yes: { o: segment.payload.outcomes[0]!.id }, no: { o: segment.payload.outcomes[1]!.id } } };
       const byId = new Map(segment.payload.nodes.map((node) => [node.id, node]));
       const path = [segment.payload.start];
       let node = byId.get(segment.payload.start);
@@ -256,12 +344,14 @@ export function v2FamilySampleResponse(segment: V2FamilySegment): unknown {
     case 'money.needs-wants.v2': return { placements: Object.fromEntries(segment.payload.items.map((item) => [item.id,
       { bin: segment.payload.bins[0]!.id, reason: segment.payload.reasons[0]!.id }])) };
     case 'logic.scam-spotter.v2':
-    case 'money.scam-check.v2': return { flagged: [] };
-    case 'money.coin-tray.v2':
-    case 'money.making-change.v2': return { counts: Object.fromEntries(segment.payload.denominations.map((d) => [String(d.value_minor), 0])) };
+    case 'money.scam-check.v2': return { flagged: [], ...(segment.payload.cues ? { cues: {} } : {}) };
+    case 'money.coin-tray.v2': return { counts: Object.fromEntries(segment.payload.denominations.map((d) => [String(d.value_minor), 0])) };
+    case 'money.making-change.v2': return { counts: Object.fromEntries(segment.payload.denominations.map((d) => [String(d.value_minor), 0])), sequence: [] };
     case 'story.branch.v2': return { choice: segment.payload.options[0]!.id };
     case 'story.dialogue-choice.v2': return { choice: segment.payload.replies[0]!.id };
     case 'story.would-you-rather.v2': return { choice: segment.payload.options[0].id };
+    case 'money.unit-price.v2': return { unit_prices: Object.fromEntries(segment.payload.offers.map((offer) => [offer.id, '0'])), choice: segment.payload.offers[0]!.id };
+    case 'logic.rule-builder.v2': return { rule: { if: { c: segment.payload.conditions[0]!.id }, then: segment.payload.actions[0]!.id, else: segment.payload.actions[1]!.id } };
     case 'voice.mentor-turn.v2':
     case 'voice.mentor-episode.v2': return null;
   }
@@ -332,3 +422,200 @@ export function masteryFadeCount(stepCount: number, pKnown: number | null): numb
   const depth = pKnown < 0.4 ? 0 : pKnown < 0.6 ? 1 : pKnown < 0.8 ? 2 : 3;
   return Math.min(maximum, depth);
 }
+
+/* ── Appendix P age scope and generic parameters (GAP-FIX-R2 learning) ────── */
+
+/**
+ * B.7 part 3 / Appendix P Part 1 (age column) and Part 8, OD-16: each
+ * first-release representation has an age range and generic parameters, not
+ * one pilot fixture. A document may use a kind when its eligibility lies
+ * inside the kind's Appendix P range; `adult` opens the kind to the adult
+ * chapters of the same course where Appendix P's money use applies to adults
+ * (M9/M10 tax and tip, M14 unit price, M15 discount and tax, M19 compound
+ * interest, M20 tax brackets, the $5 ledger and the $3 donut split). Core and
+ * the browser both call `v2AgeScopeProblem`, so the two contracts can never
+ * drift on who may see a kind.
+ */
+export const V2_AGE_SCOPE: Readonly<Record<string, { ages: readonly [number, number]; adult: boolean }>> = {
+  'math.number-line.fraction.v2': { ages: [9, 12], adult: false }, // M3
+  'math.place-value.v2': { ages: [6, 9], adult: false }, // M5
+  'math.fraction-area.v2': { ages: [7, 10], adult: false }, // M6
+  'math.bar-model.structure.v2': { ages: [8, 13], adult: false }, // M7
+  'math.bar-model.answer.v2': { ages: [8, 13], adult: false },
+  'math.schema-diagram.structure.v2': { ages: [8, 14], adult: false }, // M8
+  'math.schema-diagram.slots.v2': { ages: [8, 14], adult: false },
+  'math.schema-diagram.answer.v2': { ages: [8, 14], adult: false },
+  'math.worked-example.v2': { ages: [9, 17], adult: true }, // M9/M10: price x quantity, bill splits, tax and tip
+  'math.function-machine.v2': { ages: [8, 13], adult: false }, // M13
+  'math.ratio-table.v2': { ages: [10, 13], adult: true }, // M14
+  'money.unit-price.v2': { ages: [10, 14], adult: true }, // $6 (built on M14)
+  'visual.percent-grid.v2': { ages: [10, 14], adult: true }, // M15: discount, sales tax, save 10%
+  'logic.savings-rule.v2': { ages: [8, 17], adult: false }, // L2
+  'logic.rule-builder.v2': { ages: [8, 17], adult: true }, // L2 (adult chapters build the same rules)
+  'money.running-ledger.v2': { ages: [9, 17], adult: true }, // $5
+  'visual.growth-comparison.v2': { ages: [12, 17], adult: true }, // M19 / $8
+  'visual.tax-bracket.v2': { ages: [14, 17], adult: true }, // M20
+  'math.cpa-count.v2': { ages: [6, 12], adult: false }, // M1: 6-9, and 10-12 for new topics
+  'money.allocation.v2:waffle': { ages: [6, 9], adult: false }, // $3 via M6 at 6-9
+  'money.allocation.v2:donut': { ages: [10, 17], adult: true }, // $3 via M14-M15 at 10+
+};
+
+const BAND_AGES: Readonly<Record<string, readonly [number, number]>> = { '6-9': [6, 9], '10-12': [10, 12], '13-17': [13, 17], adult: [18, 119] };
+
+/** Why a kind is not open to this document's pathway, or null when it is. */
+export function v2AgeScopeProblem(key: string, document: { age_band: string; eligibility: { minimum_age: number; maximum_age: number } }): string | null {
+  const scope = V2_AGE_SCOPE[key];
+  if (!scope) return null;
+  const band = BAND_AGES[document.age_band];
+  const { minimum_age: low, maximum_age: high } = document.eligibility;
+  if (!band || high < band[0] || low > band[1]) return 'The eligibility does not match the age band';
+  if (document.age_band === 'adult') return scope.adult && low >= 18 ? null : 'This kind is not open to the adult pathway';
+  return low >= scope.ages[0] && high <= scope.ages[1] ? null : `This kind is open to ages ${scope.ages[0]}-${scope.ages[1]} only`;
+}
+
+/**
+ * The generic-parameter rules a pathway adds on top of each payload schema:
+ * a waffle draws 100 squares, so its total must divide 100 (10 coins = one
+ * row each, 20 = five squares each, ...); a donut keeps at most 40 wedges;
+ * children count LittleFounders coins, and only the adult pathway may use the
+ * local currency of an explicitly real-world lesson (owner glossary).
+ */
+export function v2PayloadScopeProblem(segment: { type: string; visual: { type: string }; payload: unknown }, ageBand: string): string | null {
+  const payload = segment.payload as Record<string, unknown>;
+  const total = typeof payload.total === 'number' ? payload.total : 0;
+  const step = typeof payload.step === 'number' ? payload.step : 1;
+  if (segment.type === 'money.allocation.v2' && segment.visual.type === 'waffle'
+    && (total < 10 || total > 100 || 100 % total !== 0 || step !== 1 || payload.currency !== 'coins')) return 'Invalid waffle parameters';
+  if (segment.type === 'money.allocation.v2' && segment.visual.type === 'donut' && (total / step > 40 || total > 100_000)) return 'Invalid donut parameters';
+  // L2: 8-9 build a single IF, 10-12 add AND/OR, 13-17 and adults nest and negate.
+  if (segment.type === 'logic.rule-builder.v2' && ((payload.level !== 'single' && ageBand === '6-9') || (payload.level === 'nested' && ageBand === '10-12'))) {
+    return 'This rule level is not open to this age pathway';
+  }
+  // L6 / $9: learners build their own charts from 13 (Appendix P "13-17 build their own").
+  if ((segment.type === 'logic.flowchart.v2' || segment.type === 'money.spend-decision.v2') && payload.mode === 'build' && ageBand !== '13-17' && ageBand !== 'adult') {
+    return 'Building a flowchart is open to ages 13 and up';
+  }
+  if ((segment.type === 'math.ratio-table.v2' || segment.type === 'money.unit-price.v2') && payload.currency === 'local' && ageBand !== 'adult') {
+    return 'Children count LittleFounders coins';
+  }
+  return null;
+}
+
+/* ── M5 place value: three places, trades and borrows (GAP-FIX-R2) ───────── */
+
+/**
+ * Appendix P M5 ("Trade $1 for 10 dimes; $1.00 - $0.37") and Bible 05 §7
+ * (hundreds as berry flats). Three payload forms, all answerless:
+ * - `{ total }` (10-29): the first-release pilot, loose ones traded for tens;
+ * - `compose`: a start state of hundreds, tens and ones (value = total, up to
+ *   999) that the learner regroups into written digits ("ten" trades 10 ones
+ *   for a ten, "hundred" 10 tens for a hundred);
+ * - `subtract`: minuend and subtrahend; the learner borrows ("borrow-ten",
+ *   "borrow-hundred") until every column can be taken away, then writes the
+ *   difference. The step replay plays the same trade sequence back.
+ */
+const placeCount = z.number().int().min(0).max(29);
+export const placeValuePayload = z.union([
+  z.object({ total: positive.min(10).max(29) }).strict(),
+  z.object({ mode: z.literal('compose'), total: positive.min(10).max(999),
+    start: z.object({ hundreds: z.number().int().min(0).max(9), tens: placeCount, ones: placeCount }).strict() }).strict()
+    .refine((v) => v.start.hundreds * 100 + v.start.tens * 10 + v.start.ones === v.total && (v.start.tens >= 10 || v.start.ones >= 10), 'Invalid place-value start'),
+  z.object({ mode: z.literal('subtract'), minuend: positive.min(10).max(999), subtrahend: positive.max(998) }).strict()
+    .refine((v) => v.subtrahend < v.minuend && placeValueBorrows(v.minuend, v.subtrahend) > 0, 'Invalid place-value subtraction'),
+]);
+export type PlaceValuePayload = z.infer<typeof placeValuePayload>;
+
+/** The fewest borrows a column subtraction needs (0 when no column is short). */
+export function placeValueBorrows(minuend: number, subtrahend: number): number {
+  let hundreds = Math.floor(minuend / 100); let tens = Math.floor(minuend / 10) % 10; let ones = minuend % 10;
+  const s = { hundreds: Math.floor(subtrahend / 100), tens: Math.floor(subtrahend / 10) % 10, ones: subtrahend % 10 };
+  let borrows = 0;
+  if (ones < s.ones) {
+    if (tens === 0) { hundreds -= 1; tens += 10; borrows += 1; }
+    tens -= 1; ones += 10; borrows += 1;
+  }
+  if (tens < s.tens) { hundreds -= 1; tens += 10; borrows += 1; }
+  return hundreds < s.hundreds ? -1 : borrows;
+}
+
+/** The scorer's semantic view: the start columns and, for a subtraction, what is taken away. */
+export function placeValueScorerPayload(payload: PlaceValuePayload): { mode: 'compose' | 'subtract'; hundreds: number; tens: number; ones: number; subtrahend: number } {
+  if (!('mode' in payload)) return { mode: 'compose', hundreds: 0, tens: 0, ones: payload.total, subtrahend: 0 };
+  if (payload.mode === 'compose') return { mode: 'compose', ...payload.start, subtrahend: 0 };
+  return { mode: 'subtract', hundreds: Math.floor(payload.minuend / 100), tens: Math.floor(payload.minuend / 10) % 10, ones: payload.minuend % 10, subtrahend: payload.subtrahend };
+}
+
+/* ── M8 schema diagrams: change, group, compare, ratio (GAP-FIX-R2) ───────── */
+
+/**
+ * Appendix P M8: the learner picks a schema (change, group, compare, ratio)
+ * and fills its slots from the text; $4 and $8 build on it. The public payload
+ * is schema-neutral: the two story quantities and the label of the unknown.
+ * Which schema fits and where each quantity goes live in the private rubric,
+ * so a document never reveals the structure it grades.
+ */
+export const SCHEMA_KINDS = ['change', 'group', 'compare', 'ratio'] as const;
+export type SchemaKind = (typeof SCHEMA_KINDS)[number];
+export const SCHEMA_SLOTS: Readonly<Record<SchemaKind, readonly [string, string, string]>> = {
+  change: ['start', 'change', 'result'],
+  group: ['part', 'other', 'total'],
+  compare: ['larger', 'smaller', 'difference'],
+  ratio: ['rate', 'count', 'total'],
+};
+const quantity = z.object({ id, value: positive.max(100_000), label: label(40) }).strict();
+export const schemaDiagramPayload = z.object({
+  quantities: z.tuple([quantity, quantity]),
+  unknownLabel: label(40),
+  spokenText: label(120),
+}).strict().refine((value) => value.quantities[0].id !== value.quantities[1].id && value.quantities[0].id !== 'unknown' && value.quantities[1].id !== 'unknown',
+  'Invalid schema-diagram quantities');
+export type SchemaDiagramPayload = z.infer<typeof schemaDiagramPayload>;
+const slotAssignment = z.record(z.string(), z.union([id, z.literal('unknown')]));
+export const SCHEMA_DIAGRAM_RUBRICS = {
+  'math.schema-diagram.structure.v2': z.object({ schema: z.enum(SCHEMA_KINDS) }).strict(),
+  'math.schema-diagram.slots.v2': z.object({ schema: z.enum(SCHEMA_KINDS), slots: slotAssignment }).strict(),
+  'math.schema-diagram.answer.v2': z.object({ target: z.number().int().nonnegative().max(10_000_000_000) }).strict(),
+} as const;
+export function schemaDiagramScorerPayload(payload: SchemaDiagramPayload): { quantityIds: string[]; values: number[] } {
+  return { quantityIds: payload.quantities.map((item) => item.id), values: payload.quantities.map((item) => item.value) };
+}
+
+/* ── M1 fading entry stage (GAP-FIX-R2, Appendix P Part 4.4) ──────────────── */
+
+export const CPA_STAGES = ['concrete', 'pictorial', 'abstract'] as const;
+export type CpaStage = (typeof CPA_STAGES)[number];
+
+/**
+ * "Support is removed as accuracy rises, and a learner who is already fluent
+ * is not sent back to concrete (expertise reversal)." The entry stage of an
+ * M1 progression from the learner's mastery of the topic's primary KC (B.6's
+ * shared posterior) and the stage at which they last first succeeded without
+ * help on the same fading group: the later of the two. A novice, or a learner
+ * with no evidence, starts at concrete.
+ */
+export function cpaEntryStage(pKnown: number | null, priorFirstUnaided: CpaStage | null): CpaStage {
+  const fromMastery: CpaStage = pKnown === null || !Number.isFinite(pKnown) || pKnown < 0.6 ? 'concrete' : pKnown < 0.85 ? 'pictorial' : 'abstract';
+  const rank = (stage: CpaStage) => CPA_STAGES.indexOf(stage);
+  return priorFirstUnaided && rank(priorFirstUnaided) > rank(fromMastery) ? priorFirstUnaided : fromMastery;
+}
+
+/* ── Mathematical notation (GAP-FIX-R2, Bible 05 §5, Appendix P Parts 5-6) ── */
+
+/**
+ * Notation is authored TeX rendered with KaTeX, loaded only by lessons that
+ * declare it (capability `visual.math-notation.v1`). The TeX is locale-neutral
+ * with '.' decimals; the renderer writes pt-BR's decimal comma as '{,}'. Every
+ * expression keeps its author-written spokenText per locale as the accessible
+ * name, and its plain `expression` as the fallback. Only a small command set
+ * is accepted, never \href, \url, \html* or \text (copy stays copy).
+ */
+export const NOTATION_CAPABILITY = 'visual.math-notation.v1';
+const TEX_COMMANDS = new Set(['frac', 'dfrac', 'times', 'div', 'cdot', 'sqrt', 'left', 'right', '%', 'le', 'ge', 'approx', 'quad', ',', 'pm']);
+export function texProblem(tex: string): string | null {
+  if (tex.length < 1 || tex.length > 200 || !/^[0-9a-zA-Z\\{}^_+\-=*/()[\].,:%|\s]+$/.test(tex)) return 'Notation uses digits, letters, operators and braces only';
+  for (const match of tex.matchAll(/\\([a-zA-Z]+|.)/g)) if (!TEX_COMMANDS.has(match[1]!)) return `\\${match[1]} is not an allowed notation command`;
+  let depth = 0;
+  for (const char of tex) { if (char === '{') depth += 1; else if (char === '}') { depth -= 1; if (depth < 0) return 'Unbalanced braces'; } }
+  return depth === 0 ? null : 'Unbalanced braces';
+}
+export const mathNotation = z.string().trim().min(1).max(200).refine((value) => texProblem(value) === null, 'Invalid notation');

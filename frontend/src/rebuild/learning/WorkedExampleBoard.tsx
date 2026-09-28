@@ -5,7 +5,7 @@ import { LessonFeedback } from './LessonFeedback';
 import { type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
 import type { LessonSequenceControl } from './lessonSequence';
 import { StepReplay } from './StepReplay';
-import { WorkedStepsList } from './pizarron';
+import { WorkedStepsList, MathExpression } from './pizarron';
 import { useSingleActiveGrade } from './useSingleActiveGrade';
 import './learning.css';
 import './stepReplay.css';
@@ -89,7 +89,9 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
             revealed={Math.round((index + 1) / steps.length * segment.payload.algorithm.steps.length)} /> : null}
           <WorkedStepsList steps={steps.map((step, stepIndex) => {
             const faded = stepIndex >= fadeAt;
-            return { id: step.id, marker: String(stepIndex + 1), expression: step.expression,
+            // Bible 05 §5 (GAP-FIX-R2): a step that carries TeX notation renders it with KaTeX; spokenText is its accessible name.
+            return { id: step.id, marker: String(stepIndex + 1), expression: step.notation
+              ? <MathExpression tex={step.notation} spokenText={step.spokenText} fallback={step.expression} locale={document.locale} /> : step.expression,
               state: index === stepIndex ? 'active' as const : index > stepIndex ? 'complete' as const : 'pending' as const,
               detail: faded && stepIndex <= index + 1 ? <div className="lf-worked-example-blank">
                 <TextField label={t.faded} aria-label={t.input + ': ' + step.expression} inputMode="decimal" autoComplete="off" disabled={pending} value={values[step.id] ?? ''}
@@ -120,6 +122,33 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
 }
 
 /** A local fixture that lets visual review inspect full and faded states without Forge. */
+/**
+ * Bible 05 §5 (GAP-FIX-R2): a worked example that declares TeX notation (a
+ * fraction and an exponent), the text-fit and board-audit state for KaTeX.
+ * pt-BR reads its decimals with a comma ({,}); spokenText stays the name.
+ */
+export function notationPilotDocument(locale: Locale): unknown {
+  const title = { 'en-US': 'Interest on interest', 'es-MX': 'Interés sobre interés', 'pt-BR': 'Juros sobre juros' }[locale];
+  const prompt = { 'en-US': 'Follow two years at 10%, then predict each result.', 'es-MX': 'Sigue dos años al 10% y predice cada resultado.', 'pt-BR': 'Acompanhe dois anos a 10% e preveja cada resultado.' }[locale];
+  const spoken = { 'en-US': ['Ten over one hundred is 0.1', 'One hundred times 1.1 squared is 121', 'One hundred twenty-one minus 100 is 21'],
+    'es-MX': ['Diez entre cien es 0.1', 'Cien por 1.1 al cuadrado es 121', 'Ciento veintiuno menos 100 es 21'],
+    'pt-BR': ['Dez sobre cem é 0,1', 'Cem vezes 1,1 ao quadrado é 121', 'Cento e vinte e um menos 100 é 21'] }[locale];
+  const decimal = (text: string) => locale === 'pt-BR' ? text.replace(/(\d)\.(\d)/g, '$1,$2') : text;
+  return {
+    schema_version: 2, course_id: 'financial-education', pathway_id: 'financial-13-17', chapter_id: 'compound-interest',
+    lesson_id: 'pilot-notation', version_id: 'rev-notation-1', locale, age_band: '13-17',
+    eligibility: { minimum_age: 13, maximum_age: 17 }, knowledge_component_ids: ['kc-compound-growth'], adventure_scene_id: 'diorama-a', title,
+    required_capabilities: ['visual.worked-example.v1', 'operation.step-replay.v1', 'operation.predict-next.v1', 'operation.backward-fade.v1', 'operation.number-input.v1', 'visual.math-notation.v1'],
+    segments: [{ id: 'worked-notation-01', type: 'math.worked-example.v2', grading: 'server', prompt, visual: { type: 'worked-example' }, payload: {
+      steps: [
+        { id: 'rate-step', expression: decimal('10 / 100'), notation: '\\frac{10}{100}', result: decimal('0.1'), spokenText: spoken[0] },
+        { id: 'grow-step', expression: decimal('100 × 1.1²'), notation: '100 \\times 1.1^{2}', result: '121', spokenText: spoken[1] },
+        { id: 'interest-step', expression: '121 − 100', notation: '121 - 100', result: '21', spokenText: spoken[2] },
+      ], fade_count: 0, response_step_ids: ['grow-step', 'interest-step'],
+    } }],
+  };
+}
+
 export function workedExamplePilotDocument(locale: Locale, fadeCount = 0): unknown {
   const title = { 'en-US': 'Find a sale price', 'es-MX': 'Encuentra un precio con descuento', 'pt-BR': 'Encontre um preço com desconto' }[locale];
   const prompt = { 'en-US': 'Follow the discount, then predict the next result.', 'es-MX': 'Sigue el descuento y predice el siguiente resultado.', 'pt-BR': 'Acompanhe o desconto e preveja o próximo resultado.' }[locale];

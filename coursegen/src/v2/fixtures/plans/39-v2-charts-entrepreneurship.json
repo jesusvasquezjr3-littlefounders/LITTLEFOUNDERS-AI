@@ -1,0 +1,371 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-13-17",
+  "chapter_id": "reading-charts",
+  "lesson_id": "v2-charts-entrepreneurship",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-reading-charts"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Rho analiza su negocio con un mapa de causas, su equipo y el mercado.",
+  "title": {
+    "en-US": "Read business charts",
+    "es-MX": "Lee gráficas de negocio",
+    "pt-BR": "Leia gráficos de negócio"
+  },
+  "new_concepts": [
+    "kc-reading-charts"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "mari-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "marimekko"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "cat-north"
+            },
+            {
+              "id": "cat-south"
+            },
+            {
+              "id": "cat-east"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-ours",
+              "values": [
+                30,
+                10,
+                20
+              ]
+            },
+            {
+              "id": "series-rivals",
+              "values": [
+                20,
+                40,
+                30
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Wider columns sold more in total.",
+          "title": "Sales by street",
+          "data": {
+            "categories": [
+              {
+                "label": "North"
+              },
+              {
+                "label": "South"
+              },
+              {
+                "label": "East"
+              }
+            ],
+            "series": [
+              {
+                "label": "Our stand"
+              },
+              {
+                "label": "Rivals"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Las columnas anchas vendieron más.",
+          "title": "Ventas por calle",
+          "data": {
+            "categories": [
+              {
+                "label": "Norte"
+              },
+              {
+                "label": "Sur"
+              },
+              {
+                "label": "Este"
+              }
+            ],
+            "series": [
+              {
+                "label": "Nuestro puesto"
+              },
+              {
+                "label": "Rivales"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Colunas largas venderam mais.",
+          "title": "Vendas por rua",
+          "data": {
+            "categories": [
+              {
+                "label": "Norte"
+              },
+              {
+                "label": "Sul"
+              },
+              {
+                "label": "Leste"
+              }
+            ],
+            "series": [
+              {
+                "label": "Nossa banca"
+              },
+              {
+                "label": "Rivais"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "org-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "org-chart"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "nodes": [
+            {
+              "id": "node-lead"
+            },
+            {
+              "id": "node-make"
+            },
+            {
+              "id": "node-sell"
+            },
+            {
+              "id": "node-cash"
+            }
+          ],
+          "links": [
+            {
+              "from": "node-lead",
+              "to": "node-make"
+            },
+            {
+              "from": "node-lead",
+              "to": "node-sell"
+            },
+            {
+              "from": "node-sell",
+              "to": "node-cash"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "See who reports to whom.",
+          "title": "Your team",
+          "data": {
+            "nodes": [
+              {
+                "label": "Founder"
+              },
+              {
+                "label": "Maker"
+              },
+              {
+                "label": "Seller"
+              },
+              {
+                "label": "Cashier"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Mira quién reporta a quién.",
+          "title": "Tu equipo",
+          "data": {
+            "nodes": [
+              {
+                "label": "Fundadora"
+              },
+              {
+                "label": "Producción"
+              },
+              {
+                "label": "Ventas"
+              },
+              {
+                "label": "Caja"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Veja quem responde a quem.",
+          "title": "Sua equipe",
+          "data": {
+            "nodes": [
+              {
+                "label": "Fundadora"
+              },
+              {
+                "label": "Produção"
+              },
+              {
+                "label": "Vendas"
+              },
+              {
+                "label": "Caixa"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "fish-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "ishikawa"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "nodes": [
+            {
+              "id": "node-effect"
+            },
+            {
+              "id": "node-price"
+            },
+            {
+              "id": "node-place"
+            },
+            {
+              "id": "node-high"
+            },
+            {
+              "id": "node-hidden"
+            }
+          ],
+          "links": [
+            {
+              "from": "node-effect",
+              "to": "node-price"
+            },
+            {
+              "from": "node-effect",
+              "to": "node-place"
+            },
+            {
+              "from": "node-price",
+              "to": "node-high"
+            },
+            {
+              "from": "node-place",
+              "to": "node-hidden"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Trace each cause to the effect.",
+          "title": "Why sales were low",
+          "data": {
+            "nodes": [
+              {
+                "label": "Few sales"
+              },
+              {
+                "label": "Price"
+              },
+              {
+                "label": "Place"
+              },
+              {
+                "label": "Too high"
+              },
+              {
+                "label": "Hidden stand"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Sigue cada causa hasta el efecto.",
+          "title": "Por qué se vendió poco",
+          "data": {
+            "nodes": [
+              {
+                "label": "Pocas ventas"
+              },
+              {
+                "label": "Precio"
+              },
+              {
+                "label": "Lugar"
+              },
+              {
+                "label": "Muy alto"
+              },
+              {
+                "label": "Puesto oculto"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Siga cada causa até o efeito.",
+          "title": "Por que vendeu pouco",
+          "data": {
+            "nodes": [
+              {
+                "label": "Poucas vendas"
+              },
+              {
+                "label": "Preço"
+              },
+              {
+                "label": "Lugar"
+              },
+              {
+                "label": "Alto demais"
+              },
+              {
+                "label": "Banca escondida"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

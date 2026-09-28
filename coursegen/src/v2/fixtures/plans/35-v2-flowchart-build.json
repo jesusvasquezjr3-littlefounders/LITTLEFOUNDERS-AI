@@ -1,0 +1,191 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-teen",
+  "chapter_id": "spend-decisions",
+  "lesson_id": "v2-flowchart-build",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-spend-decisions"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Rho arma su propio diagrama de decisión de compra y lo prueba con casos.",
+  "title": {
+    "en-US": "Build your buying chart",
+    "es-MX": "Arma tu diagrama de compra",
+    "pt-BR": "Monte seu diagrama de compra"
+  },
+  "new_concepts": [
+    "kc-spend-decisions"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "flow-build-01",
+      "type": "money.spend-decision.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-tree"
+      },
+      "payload": {
+        "mode": "build",
+        "questions": [
+          {
+            "id": "need-it"
+          },
+          {
+            "id": "afford"
+          }
+        ],
+        "outcomes": [
+          {
+            "id": "buy-now"
+          },
+          {
+            "id": "save-first"
+          },
+          {
+            "id": "skip"
+          }
+        ],
+        "practice": [
+          {
+            "id": "case-a",
+            "answers": {
+              "need-it": true,
+              "afford": false
+            }
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Build a chart that decides any purchase. Test it.",
+          "questions": [
+            {
+              "label": "Do I need it?"
+            },
+            {
+              "label": "Can I afford it this week?"
+            }
+          ],
+          "outcomes": [
+            {
+              "label": "Buy it"
+            },
+            {
+              "label": "Save first"
+            },
+            {
+              "label": "Skip it"
+            }
+          ],
+          "practice": [
+            {
+              "label": "New shoes, short this week"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Arma un diagrama que decida cualquier compra. Pruébalo.",
+          "questions": [
+            {
+              "label": "¿Lo necesito?"
+            },
+            {
+              "label": "¿Me alcanza esta semana?"
+            }
+          ],
+          "outcomes": [
+            {
+              "label": "Cómpralo"
+            },
+            {
+              "label": "Ahorra primero"
+            },
+            {
+              "label": "Déjalo"
+            }
+          ],
+          "practice": [
+            {
+              "label": "Zapatos nuevos, sin dinero hoy"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Monte um diagrama que decida qualquer compra. Teste.",
+          "questions": [
+            {
+              "label": "Eu preciso?"
+            },
+            {
+              "label": "Dá para pagar nesta semana?"
+            }
+          ],
+          "outcomes": [
+            {
+              "label": "Compre"
+            },
+            {
+              "label": "Guarde antes"
+            },
+            {
+              "label": "Deixe para lá"
+            }
+          ],
+          "practice": [
+            {
+              "label": "Tênis novo, sem dinheiro agora"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "cases": [
+          {
+            "answers": {
+              "need-it": true,
+              "afford": true
+            },
+            "outcome": "buy-now"
+          },
+          {
+            "answers": {
+              "need-it": true,
+              "afford": false
+            },
+            "outcome": "save-first"
+          },
+          {
+            "answers": {
+              "need-it": false,
+              "afford": true
+            },
+            "outcome": "skip"
+          },
+          {
+            "answers": {
+              "need-it": false,
+              "afford": false
+            },
+            "outcome": "skip"
+          },
+          {
+            "answers": {
+              "need-it": true,
+              "afford": true
+            },
+            "outcome": "buy-now"
+          }
+        ]
+      }
+    }
+  ]
+}

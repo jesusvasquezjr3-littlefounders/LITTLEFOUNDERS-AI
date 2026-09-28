@@ -1,0 +1,153 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "if-then-rules",
+  "lesson_id": "v2-rule-builder-single",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 8,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-if-then-rules"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Liruf arma su primera regla de compra con una sola condición.",
+  "title": {
+    "en-US": "Build an IF rule",
+    "es-MX": "Arma una regla SI",
+    "pt-BR": "Monte uma regra SE"
+  },
+  "new_concepts": [
+    "kc-if-then-rules"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "rule-single-01",
+      "type": "logic.rule-builder.v2",
+      "grading": "server",
+      "visual": {
+        "type": "rule-builder"
+      },
+      "payload": {
+        "level": "single",
+        "conditions": [
+          {
+            "id": "enough"
+          }
+        ],
+        "actions": [
+          {
+            "id": "buy"
+          },
+          {
+            "id": "wait"
+          }
+        ],
+        "practice": [
+          {
+            "id": "card-a",
+            "facts": {
+              "enough": true
+            }
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Build the rule: IF you have enough, THEN buy.",
+          "conditions": [
+            {
+              "label": "I have enough coins"
+            }
+          ],
+          "actions": [
+            {
+              "label": "Buy it"
+            },
+            {
+              "label": "Wait a week"
+            }
+          ],
+          "practice": [
+            {
+              "label": "Toy 8, jar 10"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Arma la regla: SI tienes suficiente, ENTONCES compra.",
+          "conditions": [
+            {
+              "label": "Tengo monedas suficientes"
+            }
+          ],
+          "actions": [
+            {
+              "label": "Cómpralo"
+            },
+            {
+              "label": "Espera una semana"
+            }
+          ],
+          "practice": [
+            {
+              "label": "Juguete 8, frasco 10"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Monte a regra: SE tiver o bastante, ENTÃO compre.",
+          "conditions": [
+            {
+              "label": "Tenho moedas suficientes"
+            }
+          ],
+          "actions": [
+            {
+              "label": "Compre"
+            },
+            {
+              "label": "Espere uma semana"
+            }
+          ],
+          "practice": [
+            {
+              "label": "Brinquedo 8, pote 10"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "target": {
+          "if": {
+            "c": "enough"
+          },
+          "then": "buy",
+          "else": "wait"
+        },
+        "scenarios": [
+          {
+            "enough": true
+          },
+          {
+            "enough": false
+          },
+          {
+            "enough": true
+          },
+          {
+            "enough": false
+          },
+          {
+            "enough": false
+          }
+        ]
+      }
+    }
+  ]
+}

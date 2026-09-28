@@ -22,6 +22,7 @@
 .lf-chart-node { fill: var(--content); }
 .lf-chart-edge { stroke: var(--content-muted); stroke-width: 1.5; }
 .lf-chart-box rect { fill: var(--surface); stroke: var(--primary-strong); stroke-width: 1.5; }
+.lf-chart-box--step rect { stroke-dasharray: none; }
 .lf-chart-box--question rect { stroke-dasharray: 4 2; }
 .lf-chart-box--outcome rect { fill: var(--mint-soft); stroke: var(--mint-strong); }
 .lf-chart-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-3); list-style: none; padding: 0; margin: 0; font-size: .875rem; font-weight: 700; }
@@ -30,3 +31,10 @@
 .lf-chart-note { font-size: .875rem; }
 .lf-chart-table { inline-size: 100%; }
 .lf-chart-icon { stroke: var(--surface); stroke-width: 1; }
+
+/* GAP-FIX-R2 (B.7 part 1): the remaining situational kinds; outlines and lanes stay on tokens in light and dark. */
+.lf-chart-tile { stroke: var(--surface); stroke-width: 1; }
+.lf-chart-lane { fill: var(--sunken); stroke: var(--outline); stroke-width: 1; }
+.lf-chart-spine { stroke: var(--content); stroke-width: 3; }
+.lf-chart-bubble { stroke: var(--outline); stroke-width: 1; }
+.lf-chart-stat--small { font-size: 14px; }

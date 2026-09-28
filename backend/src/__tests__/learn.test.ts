@@ -3,7 +3,7 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 import { mintToken } from './helpers.js';
 import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
-import { COURSE_ID, COURSE_SLUG, LESSON_1_ID, LESSON_2_ID, makeDb } from './learnFixtures.js';
+import { COURSE_ID, COURSE_SLUG, LESSON_1_ID, LESSON_2_ID, TOPIC_ID, makeDb } from './learnFixtures.js';
 
 let db: FakeDb;
 let userId: string;
@@ -99,7 +99,7 @@ function v2BarModelDocument() {
 const v2BarModelKeys = { 'bar-structure-01': { model: 'comparison' }, 'bar-answer-01': { target: 19 } };
 
 function v2SchemaDiagramDocument() {
-  const payload = { income: 24, spending: 9, incomeLabel: 'Earned', spendingLabel: 'Spent', remainingLabel: 'Left over', spokenText: 'twenty-four minus nine equals fifteen' };
+  const payload = { quantities: [{ id: 'earned', value: 24, label: 'Earned' }, { id: 'spent', value: 9, label: 'Spent' }], unknownLabel: 'Left over', spokenText: 'twenty-four minus nine equals fifteen' };
   return {
     schema_version: 2, course_id: 'financial-education', pathway_id: 'financial-10-12', chapter_id: 'money-change',
     lesson_id: LESSON_1_ID, version_id: 'schema-rev-001', locale: 'en-US', age_band: '10-12', eligibility: { minimum_age: 10, maximum_age: 12 },
@@ -113,7 +113,7 @@ function v2SchemaDiagramDocument() {
   };
 }
 
-const v2SchemaDiagramKeys = { 'schema-structure-01': { schema: 'change' }, 'schema-slots-01': { income: 24, spending: 9 }, 'schema-answer-01': { target: 15 } };
+const v2SchemaDiagramKeys = { 'schema-structure-01': { schema: 'change' }, 'schema-slots-01': { schema: 'change', slots: { start: 'earned', change: 'spent', result: 'unknown' } }, 'schema-answer-01': { target: 15 } };
 
 function v2WorkedExampleDocument() {
   const steps = [
@@ -840,6 +840,39 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
       document_version_id: versionId, fading_group_id: 'cpa-savings-01', stage: 'pictorial' })]);
   });
 
+  it('never sends a fluent learner back to concrete: the M1 entry stage follows mastery (Appendix P Part 4.4, GAP-FIX-R2)', async () => {
+    activateImmutableV2CpaFading();
+    const kcId = 'abababab-abab-4bab-8bab-abababababab';
+    const mastery = (pKnown: number) => {
+      Object.assign(db, { topic_knowledge_components: [{ topic_id: TOPIC_ID, kc_id: kcId, role: 'teaches', is_primary: true }],
+        kc: [{ id: kcId, key: 'kc-count', title: {}, status: 'active' }], learner_kc_mastery: [{ user_id: userId, kc_id: kcId, p_known: pKnown, attempts: 9, correct: 8 }] });
+    };
+    const app = createApp();
+    // Fluent: starts at the symbolic stage; the earlier stages are restored as skipped and can never be graded in this run.
+    mastery(0.92);
+    const fluent = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
+    expect(fluent.body.data).toMatchObject({ cpa_entry_stage: 'abstract', attempted_segment_ids: ['cpa-concrete-01', 'cpa-pictorial-01'] });
+    const grade = (run: { run_id: string; attempt_tokens: Record<string, string> }, segmentId: string, value: string) => auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: segmentId, run_id: run.run_id, attempt_token: run.attempt_tokens[segmentId], answer: { value },
+    });
+    const concrete = await grade(fluent.body.data, 'cpa-concrete-01', '7');
+    expect(concrete.status).toBe(409);
+    expect(concrete.body.error.code).toBe('CPA_STAGE_SKIPPED');
+    const symbolic = await grade(fluent.body.data, 'cpa-abstract-01', '7');
+    expect(symbolic.status).toBe(200);
+    expect(symbolic.body.data.verdict).toMatchObject({ correct: true, score: 100 });
+    expect((db.lesson_v2_grade_receipts as Array<{ verdict: Record<string, unknown> }>).at(-1)!.verdict).toMatchObject({ entry_stage: 'abstract' });
+    // Partial mastery starts at pictorial; a novice at concrete (the pictorial stage still needs the concrete attempt).
+    mastery(0.7);
+    const partial = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
+    expect(partial.body.data).toMatchObject({ cpa_entry_stage: 'pictorial', attempted_segment_ids: ['cpa-concrete-01'] });
+    expect((await grade(partial.body.data, 'cpa-pictorial-01', '7')).status).toBe(200);
+    mastery(0.2);
+    const novice = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
+    expect(novice.body.data).toMatchObject({ cpa_entry_stage: 'concrete', attempted_segment_ids: [] });
+    expect((await grade(novice.body.data, 'cpa-pictorial-01', '7')).status).toBe(409);
+  });
+
   it('requires a met M7 structure receipt before its independent arithmetic segment', async () => {
     activateImmutableV2BarModel();
     const app = createApp();
@@ -877,11 +910,11 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
       segment_id, answer, run_id: started.body.data.run_id, attempt_token: started.body.data.attempt_tokens[segment_id],
     });
 
-    const slotsFirst = await grade('schema-slots-01', { income: '24', spending: '9' });
+    const slotsFirst = await grade('schema-slots-01', { schema: 'change', slots: { start: 'earned', change: 'spent', result: 'unknown' } });
     expect(slotsFirst.status).toBe(409);
     expect(slotsFirst.body.error.code).toBe('LESSON_PREREQUISITE_REQUIRED');
     await grade('schema-structure-01', { schema: 'change' });
-    const slots = await grade('schema-slots-01', { income: '24', spending: '9' });
+    const slots = await grade('schema-slots-01', { schema: 'change', slots: { start: 'earned', change: 'spent', result: 'unknown' } });
     expect(slots.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
     const answer = await grade('schema-answer-01', { value: '15' });
     expect(answer.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
@@ -1299,6 +1332,24 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
     expect(complete.body.data).toMatchObject({ score: 100, passed: true, xp_earned: 20 });
   });
 
+  it('records the browser scorer parity beside the verdict and never grades with it (Appendix P Part 8, GAP-FIX-R2)', async () => {
+    activateImmutableV2SchemaDiagram();
+    const app = createApp();
+    const started = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
+    const grade = (segmentId: string, answer: Record<string, unknown>, clientVerdict?: unknown) => auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: segmentId, run_id: started.body.data.run_id, attempt_token: started.body.data.attempt_tokens[segmentId], answer,
+      ...(clientVerdict === undefined ? {} : { client_verdict: clientVerdict }),
+    });
+    expect((await grade('schema-structure-01', { schema: 'change' }, 'bogus')).status).toBe(400);
+    // A client that calls a valid answer invalid is recorded as disagreeing; the verdict is Core's alone.
+    const graded = await grade('schema-structure-01', { schema: 'change' }, 'invalid');
+    expect(graded.body.data.verdict).toMatchObject({ correct: true, score: 100 });
+    const receipt = (db.lesson_v2_grade_receipts as Array<{ segment_id: string; verdict: Record<string, unknown> }>).find((row) => row.segment_id === 'schema-structure-01');
+    expect(receipt?.verdict).toMatchObject({ correct: true, client_agree: false });
+    // An answer Core refuses is never graded, whatever the browser claimed.
+    expect((await grade('schema-slots-01', { schema: 'change', slots: { start: 'earned' } }, 'valid')).status).toBe(400);
+  });
+
   it('delivers, grades, and completes M8 after its ordered immutable receipts', async () => {
     activateImmutableV2SchemaDiagram();
     const app = createApp();
@@ -1306,11 +1357,11 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
     expect(started.status).toBe(200);
     expect(started.body.data.attempt_tokens).toEqual({ 'schema-structure-01': expect.any(String), 'schema-slots-01': expect.any(String), 'schema-answer-01': expect.any(String) });
     expect(JSON.stringify(started.body)).not.toContain('target');
-    const grade = (segmentId: string, answer: Record<string, string>) => auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+    const grade = (segmentId: string, answer: Record<string, unknown>) => auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
       segment_id: segmentId, run_id: started.body.data.run_id, attempt_token: started.body.data.attempt_tokens[segmentId], answer,
     });
     expect((await grade('schema-structure-01', { schema: 'change' })).body.data.verdict).toMatchObject({ correct: true, score: 100 });
-    expect((await grade('schema-slots-01', { income: '24', spending: '9' })).body.data.verdict).toMatchObject({ correct: true, score: 100 });
+    expect((await grade('schema-slots-01', { schema: 'change', slots: { start: 'earned', change: 'spent', result: 'unknown' } })).body.data.verdict).toMatchObject({ correct: true, score: 100 });
     expect((await grade('schema-answer-01', { value: '15' })).body.data.verdict).toMatchObject({ correct: true, score: 100 });
     const complete = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({
       run_id: started.body.data.run_id, seconds_spent: 60, local_date: '2026-09-22',

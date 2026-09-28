@@ -1,7 +1,7 @@
 import { useId, useState, type ReactNode } from 'react';
 import type { Locale } from '../../design/copyBudget';
 import { Button } from '../../design/controls';
-import { chartFacts, chartTable, fitLabel, shares, valueExtent, waterfallSteps, type ChartData, type ChartKind } from './chartModel.generated';
+import { chartFacts, chartTable, chartTree, fitLabel, hierarchyValue, shares, valueExtent, waterfallSteps, type ChartData, type ChartKind } from './chartModel.generated';
 import './charts.css';
 
 /*
@@ -61,7 +61,7 @@ export function TeachingChart({ kind, data, title, locale, embedded = false }: {
 }
 
 function legend(kind: ChartKind, data: ChartData, prefix: string): ReactNode {
-  const perCategory = kind === 'pie' || kind === 'donut' || kind === 'waffle';
+  const perCategory = kind === 'pie' || kind === 'donut' || kind === 'waffle' || kind === 'venn';
   const items = perCategory ? data.categories.map((c) => c.label) : data.series.length > 1 ? data.series.map((s) => s.label) : [];
   if (items.length === 0) return null;
   return <ul className="lf-chart-legend">{items.map((item, index) => <li key={item} data-copy-role="data">
@@ -218,9 +218,169 @@ function draw(kind: ChartKind, data: ChartData, prefix: string, locale: Locale):
           fill={fillOf(prefix, i)} fillOpacity={0.75} />)}</>;
     }
     case 'sankey': return sankey(data, prefix);
-    case 'flowchart': case 'decision-tree': case 'tree': return diagram(kind, data);
+    case 'flowchart': case 'decision-tree': case 'tree': case 'org-chart': return diagram(kind === 'org-chart' ? 'tree' : kind, data);
+    default: return situational(kind, data, prefix, extent);
+  }
+}
+
+/* ── GAP-FIX-R2 (B.7 part 1): the remaining Appendix A situational kinds ─── */
+
+function situational(kind: ChartKind, data: ChartData, prefix: string, extent: [number, number]): ReactNode {
+  const n = Math.max(1, data.categories.length);
+  switch (kind) {
+    case 'candlestick': {
+      // A rising candle is hollow with the sky outline, a falling one filled berry: never colour alone (05 §2).
+      const rows = data.ohlc ?? []; const band = (W - 2 * PAD) / Math.max(1, rows.length);
+      return <>{rows.map((r, i) => { const x = PAD + (i + 0.5) * band; const up = r.close >= r.open;
+        const top = scaleY(Math.max(r.open, r.close), extent); const bottom = scaleY(Math.min(r.open, r.close), extent);
+        return <g key={r.id}><line x1={x} x2={x} y1={scaleY(r.high, extent)} y2={scaleY(r.low, extent)} className="lf-chart-stem" />
+          <rect x={x - band * 0.3} y={top} width={band * 0.6} height={Math.max(1, bottom - top)} fill={up ? 'var(--surface)' : fillOf(prefix, 2)} stroke={up ? HUES[0] : HUES[2]} strokeWidth="2" />
+          <text x={x} y={H - 8} textAnchor="middle" className="lf-chart-label">{fitLabel(r.label, 6)}</text></g>; })}</>;
+    }
+    case 'box-plot': {
+      const rows = data.boxes ?? []; const band = (W - 2 * PAD) / Math.max(1, rows.length);
+      return <>{rows.map((r, i) => { const x = PAD + (i + 0.5) * band; const w = band * 0.5;
+        return <g key={r.id}><line x1={x} x2={x} y1={scaleY(r.max, extent)} y2={scaleY(r.min, extent)} className="lf-chart-stem" />
+          <line x1={x - w / 4} x2={x + w / 4} y1={scaleY(r.max, extent)} y2={scaleY(r.max, extent)} className="lf-chart-stem" />
+          <line x1={x - w / 4} x2={x + w / 4} y1={scaleY(r.min, extent)} y2={scaleY(r.min, extent)} className="lf-chart-stem" />
+          <rect x={x - w / 2} y={scaleY(r.q3, extent)} width={w} height={Math.max(1, scaleY(r.q1, extent) - scaleY(r.q3, extent))} fill={fillOf(prefix, i)} fillOpacity={0.6} />
+          <line x1={x - w / 2} x2={x + w / 2} y1={scaleY(r.median, extent)} y2={scaleY(r.median, extent)} className="lf-chart-target" />
+          <text x={x} y={H - 8} textAnchor="middle" className="lf-chart-label">{fitLabel(r.label, 8)}</text></g>; })}</>;
+    }
+    case 'marimekko': {
+      // Column width is the column's share of the whole; each stack is 100% of its column.
+      const totals = data.categories.map((_, i) => data.series.reduce((sum, series) => sum + (series.values[i] ?? 0), 0));
+      const grand = totals.reduce((a, b) => a + b, 0) || 1; let left = PAD;
+      return <>{data.categories.map((c, i) => { const width = (W - 2 * PAD) * totals[i]! / grand; const x = left; left += width; let top = 0;
+        return <g key={c.id}>{data.series.map((series, k) => { const share = (series.values[i] ?? 0) / (totals[i] || 1);
+          const y0 = scaleY(top, [0, 1]); top += share; const y1 = scaleY(top, [0, 1]);
+          return <rect key={series.id} x={x} y={y1} width={Math.max(0, width - 2)} height={Math.max(0, y0 - y1)} fill={fillOf(prefix, k)} />; })}
+          <text x={x + width / 2} y={H - 8} textAnchor="middle" className="lf-chart-label">{fitLabel(c.label, 8)}</text></g>; })}</>;
+    }
+    case 'bump': {
+      const k = data.series.length; const x = (i: number) => PAD + i * (W - 2 * PAD) / Math.max(1, n - 1);
+      const y = (rank: number) => PAD + (rank - 1) * (H - 2 * PAD) / Math.max(1, k - 1);
+      return <>{data.series.map((series, j) => <g key={series.id}>
+        <polyline points={series.values.map((rank, i) => `${x(i)},${y(rank)}`).join(' ')} className="lf-chart-line" stroke={HUES[j]} strokeDasharray={j === 1 ? '6 3' : j === 2 ? '2 3' : undefined} />
+        {series.values.map((rank, i) => <circle key={i} cx={x(i)} cy={y(rank)} r="5" fill={fillOf(prefix, j)} />)}</g>)}
+        {Array.from({ length: k }, (_, r) => <text key={r} x={PAD - 10} y={y(r + 1)} textAnchor="end" dominantBaseline="middle" className="lf-chart-label">{r + 1}</text>)}
+        {axisLabels(data)}</>;
+    }
+    case 'connected-scatter': {
+      const points = data.points ?? [];
+      const xs: [number, number] = [Math.min(0, ...points.map((p) => p.x)), Math.max(1, ...points.map((p) => p.x))];
+      const ys: [number, number] = [Math.min(0, ...points.map((p) => p.y)), Math.max(1, ...points.map((p) => p.y))];
+      return <><line x1={PAD} x2={W - PAD} y1={H - PAD} y2={H - PAD} className="lf-chart-axis" /><line x1={PAD} x2={PAD} y1={PAD} y2={H - PAD} className="lf-chart-axis" />
+        <polyline points={points.map((p) => `${scaleX(p.x, xs)},${scaleY(p.y, ys)}`).join(' ')} className="lf-chart-line" stroke={HUES[0]} />
+        {points.map((p, i) => <g key={p.id}><circle cx={scaleX(p.x, xs)} cy={scaleY(p.y, ys)} r={i === points.length - 1 ? 6 : 4} fill={fillOf(prefix, i === points.length - 1 ? 2 : 0)} />
+          {i === 0 || i === points.length - 1 ? <text x={scaleX(p.x, xs) + 7} y={scaleY(p.y, ys) - 6} className="lf-chart-label">{fitLabel(p.label, 8)}</text> : null}</g>)}</>;
+    }
+    case 'venn': {
+      const sets = data.categories; const r = sets.length === 2 ? 58 : 50;
+      const centers = sets.length === 2 ? [[W / 2 - 34, H / 2], [W / 2 + 34, H / 2]] : [[W / 2 - 30, H / 2 - 18], [W / 2 + 30, H / 2 - 18], [W / 2, H / 2 + 28]];
+      const at = (ids: string[]) => { const picked = ids.map((id) => sets.findIndex((set) => set.id === id)).filter((index) => index >= 0);
+        const cx = picked.reduce((sum, index) => sum + centers[index]![0]!, 0) / picked.length; const cy = picked.reduce((sum, index) => sum + centers[index]![1]!, 0) / picked.length;
+        if (picked.length === 1) { const ox = cx - W / 2; const oy = cy - H / 2; const len = Math.hypot(ox, oy) || 1; return [cx + ox / len * 22, cy + oy / len * 22]; }
+        return [cx, cy]; };
+      return <>{sets.map((set, i) => <circle key={set.id} cx={centers[i]![0]} cy={centers[i]![1]} r={r} fill={fillOf(prefix, i)} fillOpacity={0.35} stroke={HUES[i]} strokeWidth="2" />)}
+        {(data.regions ?? []).map((region) => { const [x, y] = at(region.sets);
+          return <text key={[...region.sets].sort().join('+')} x={x} y={y} textAnchor="middle" dominantBaseline="middle" className="lf-chart-stat lf-chart-stat--small">{region.value}</text>; })}</>;
+    }
+    case 'treemap': case 'icicle': case 'sunburst': return hierarchy(kind, data, prefix);
+    case 'swimlane': return swimlane(data);
+    case 'ishikawa': return fishbone(data);
+    case 'mind-map': return mindMap(data, prefix);
     default: return null;
   }
+}
+
+function hierarchy(kind: ChartKind, data: ChartData, prefix: string): ReactNode {
+  const tree = chartTree(data);
+  if (typeof tree === 'string') return null;
+  const value = (id: string) => hierarchyValue(data, id, tree.children);
+  const label = (id: string) => data.nodes?.find((node) => node.id === id)?.label ?? id;
+  const top = tree.children.get(tree.root) ?? [];
+  const out: ReactNode[] = [];
+  if (kind === 'treemap') {
+    // Slice-and-dice: top-level groups across, their children down, each group one hue with its pattern.
+    let x = PAD / 2; const total = value(tree.root) || 1;
+    top.forEach((group, g) => { const width = (W - PAD) * value(group) / total; let y = 8; const kids = tree.children.get(group) ?? [group];
+      kids.forEach((kid) => { const height = (H - 16) * value(kid) / (value(group) || 1);
+        out.push(<g key={kid}><rect x={x} y={y} width={Math.max(0, width - 2)} height={Math.max(0, height - 2)} fill={fillOf(prefix, g)} fillOpacity={0.75} className="lf-chart-tile" />
+          {width > 36 && height > 16 ? <text x={x + 4} y={y + 12} className="lf-chart-label">{fitLabel(label(kid), Math.max(3, Math.floor(width / 7)))}</text> : null}</g>); y += height; });
+      x += width; });
+    return <>{out}</>;
+  }
+  if (kind === 'icicle') {
+    const rowH = (H - 16) / (Math.max(...tree.depth.values()) + 1);
+    const place = (id: string, x: number, width: number, g: number) => { const d = tree.depth.get(id)!;
+      out.push(<g key={id}><rect x={x} y={8 + d * rowH} width={Math.max(0, width - 2)} height={rowH - 2} fill={d === 0 ? 'var(--sunken)' : fillOf(prefix, g)} fillOpacity={d === 0 ? 1 : 0.9 - d * 0.15} className="lf-chart-tile" />
+        {width > 30 ? <text x={x + 4} y={8 + d * rowH + rowH / 2} dominantBaseline="middle" className="lf-chart-label">{fitLabel(label(id), Math.max(3, Math.floor(width / 7)))}</text> : null}</g>);
+      let left = x; for (const kid of tree.children.get(id) ?? []) { const w = width * value(kid) / (value(id) || 1); place(kid, left, w, d === 0 ? (tree.children.get(id) ?? []).indexOf(kid) : g); left += w; } };
+    place(tree.root, PAD / 2, W - PAD, 0);
+    return <>{out}</>;
+  }
+  // Sunburst: rings by depth, the root a centre disc.
+  const cx = W / 2; const cy = H / 2; const ring = 26;
+  const arc = (r0: number, r1: number, a0: number, a1: number) => {
+    const large = a1 - a0 > Math.PI ? 1 : 0; const p = (r: number, a: number) => `${cx + r * Math.cos(a)} ${cy + r * Math.sin(a)}`;
+    if (a1 - a0 >= Math.PI * 2 - 1e-6) return `M ${p(r1, 0)} A ${r1} ${r1} 0 1 1 ${p(r1, Math.PI)} A ${r1} ${r1} 0 1 1 ${p(r1, 0)} M ${p(r0, 0)} A ${r0} ${r0} 0 1 0 ${p(r0, Math.PI)} A ${r0} ${r0} 0 1 0 ${p(r0, 0)} Z`;
+    return `M ${p(r0, a0)} L ${p(r1, a0)} A ${r1} ${r1} 0 ${large} 1 ${p(r1, a1)} L ${p(r0, a1)} A ${r0} ${r0} 0 ${large} 0 ${p(r0, a0)} Z`; };
+  const place = (id: string, a0: number, a1: number, g: number) => { const d = tree.depth.get(id)!;
+    if (d > 0) out.push(<path key={id} d={arc(18 + (d - 1) * ring, 18 + d * ring - 2, a0, a1)} fill={fillOf(prefix, g)} fillOpacity={1 - (d - 1) * 0.2} className="lf-chart-slice" />);
+    let start = a0; for (const kid of tree.children.get(id) ?? []) { const span = (a1 - a0) * value(kid) / (value(id) || 1); place(kid, start, start + span, d === 0 ? (tree.children.get(id) ?? []).indexOf(kid) : g); start += span; } };
+  place(tree.root, -Math.PI / 2, Math.PI * 1.5, 0);
+  return <><circle cx={cx} cy={cy} r={16} fill="var(--sunken)" />{out}</>;
+}
+
+function swimlane(data: ChartData): ReactNode {
+  const lanes = data.categories; const nodes = data.nodes ?? []; const links = data.links ?? [];
+  const laneH = (H - 8) / Math.max(1, lanes.length); const order = new Map(nodes.map((node, i) => [node.id, i]));
+  const box = { w: 64, h: 22 }; const colW = (W - 70 - box.w) / Math.max(1, nodes.length - 1);
+  const at = (id: string) => { const node = nodes.find((item) => item.id === id)!; const lane = lanes.findIndex((l) => l.id === node.lane);
+    return { x: 62 + order.get(id)! * colW, y: 4 + lane * laneH + laneH / 2 - box.h / 2 }; };
+  return <>{lanes.map((lane, i) => <g key={lane.id}><rect x={2} y={4 + i * laneH} width={W - 4} height={laneH - 2} className="lf-chart-lane" />
+    <text x={6} y={4 + i * laneH + laneH / 2} dominantBaseline="middle" className="lf-chart-label">{fitLabel(lane.label, 8)}</text></g>)}
+    {links.map((l, i) => { const a = at(l.from); const b = at(l.to);
+      return <line key={i} x1={a.x + box.w} y1={a.y + box.h / 2} x2={b.x} y2={b.y + box.h / 2} className="lf-chart-edge" />; })}
+    {nodes.map((node) => { const p = at(node.id); return <g key={node.id} className="lf-chart-box lf-chart-box--step"><rect x={p.x} y={p.y} width={box.w} height={box.h} rx="6" />
+      <text x={p.x + box.w / 2} y={p.y + box.h / 2} textAnchor="middle" dominantBaseline="middle" className="lf-chart-label">{fitLabel(node.label, 9)}</text></g>; })}</>;
+}
+
+function fishbone(data: ChartData): ReactNode {
+  const tree = chartTree(data);
+  if (typeof tree === 'string') return null;
+  const label = (id: string) => data.nodes?.find((node) => node.id === id)?.label ?? id;
+  const bones = tree.children.get(tree.root) ?? []; const spineY = H / 2; const head = W - 70;
+  const per = Math.ceil(bones.length / 2); const step = (head - 30) / Math.max(1, per);
+  return <><line x1={20} x2={head} y1={spineY} y2={spineY} className="lf-chart-spine" />
+    <g className="lf-chart-box lf-chart-box--outcome"><rect x={head} y={spineY - 16} width={64} height={32} rx="4" />
+      <text x={head + 32} y={spineY} textAnchor="middle" dominantBaseline="middle" className="lf-chart-label">{fitLabel(label(tree.root), 9)}</text></g>
+    {bones.map((bone, i) => { const up = i % 2 === 0; const x = 40 + Math.floor(i / 2) * step + step * 0.6; const y = up ? 22 : H - 22;
+      return <g key={bone}><line x1={x - 30} y1={y} x2={x} y2={spineY} className="lf-chart-edge" />
+        <text x={x - 30} y={up ? y - 6 : y + 12} textAnchor="middle" className="lf-chart-label">{fitLabel(label(bone), 10)}</text>
+        {(tree.children.get(bone) ?? []).map((cause, k) => { const t = (k + 1) / ((tree.children.get(bone) ?? []).length + 1);
+          const cx2 = x - 30 + 30 * t; const cy2 = y + (spineY - y) * t;
+          return <g key={cause}><line x1={cx2 - 26} x2={cx2} y1={cy2} y2={cy2} className="lf-chart-edge" />
+            <text x={cx2 - 28} y={cy2} textAnchor="end" dominantBaseline="middle" className="lf-chart-edge-label">{fitLabel(label(cause), 8)}</text></g>; })}</g>; })}</>;
+}
+
+function mindMap(data: ChartData, prefix: string): ReactNode {
+  const tree = chartTree(data);
+  if (typeof tree === 'string') return null;
+  const cx = W / 2; const cy = H / 2; const pos = new Map<string, [number, number]>([[tree.root, [cx, cy]]]);
+  const place = (id: string, a0: number, a1: number) => { const kids = tree.children.get(id) ?? []; const d = tree.depth.get(id)! + 1;
+    kids.forEach((kid, i) => { const a = a0 + (a1 - a0) * (i + 0.5) / kids.length; pos.set(kid, [cx + Math.cos(a) * d * 52, cy + Math.sin(a) * d * 34]);
+      place(kid, a0 + (a1 - a0) * i / kids.length, a0 + (a1 - a0) * (i + 1) / kids.length); }); };
+  place(tree.root, -Math.PI, Math.PI);
+  const branch = (id: string): number => { let at = id; let up = (data.links ?? []).find((l) => l.to === at)?.from;
+    while (up && up !== tree.root) { at = up; up = (data.links ?? []).find((l) => l.to === at)?.from; }
+    return (tree.children.get(tree.root) ?? []).indexOf(at); };
+  return <>{(data.links ?? []).map((l, i) => { const a = pos.get(l.from)!; const b = pos.get(l.to)!;
+    return <line key={i} x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} className="lf-chart-edge" />; })}
+    {(data.nodes ?? []).map((node) => { const [x, y] = pos.get(node.id)!; const root = node.id === tree.root;
+      return <g key={node.id}><ellipse cx={x} cy={y} rx={root ? 36 : 30} ry={root ? 16 : 12} fill={root ? 'var(--sunken)' : fillOf(prefix, Math.max(0, branch(node.id)))} fillOpacity={root ? 1 : 0.45} className="lf-chart-bubble" />
+        <text x={x} y={y} textAnchor="middle" dominantBaseline="middle" className="lf-chart-label">{fitLabel(node.label, root ? 10 : 8)}</text></g>; })}</>;
 }
 
 /** Layered positions: a node's column is its longest path from a start. */

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { scoreV2Visual } from '../services/v2VisualScorer.js';
+import { gradeV2Response, scoreV2Visual } from '../services/v2VisualScorer.js';
 
 describe('canonical v2 visual scorer', () => {
   it('checks every complete 12-coin allocation and refuses impossible responses', () => {
@@ -61,12 +61,35 @@ describe('canonical v2 visual scorer', () => {
   });
 
   it('keeps M8 schema, slots, and answer as three semantic scores', () => {
-    const payload = { income: 24, spending: 9 };
+    const payload = { quantityIds: ['earned', 'spent'], values: [24, 9] };
+    const slots = { schema: 'change', slots: { start: 'earned', change: 'spent', result: 'unknown' } };
     expect(scoreV2Visual('math.schema-diagram.structure.v2', payload, { schema: 'change' }, { schema: 'change' })).toBe('met');
     expect(scoreV2Visual('math.schema-diagram.structure.v2', payload, { schema: 'compare' }, { schema: 'change' })).toBe('review');
-    expect(scoreV2Visual('math.schema-diagram.slots.v2', payload, { income: '24', spending: '9' }, { income: 24, spending: 9 })).toBe('met');
-    expect(scoreV2Visual('math.schema-diagram.slots.v2', payload, { income: '24', spending: '8' }, { income: 24, spending: 9 })).toBe('review');
+    expect(scoreV2Visual('math.schema-diagram.slots.v2', payload, slots, slots)).toBe('met');
+    expect(scoreV2Visual('math.schema-diagram.slots.v2', payload, { schema: 'change', slots: { start: 'spent', change: 'earned', result: 'unknown' } }, slots)).toBe('review');
     expect(scoreV2Visual('math.schema-diagram.answer.v2', payload, { value: '15' }, { target: 15 })).toBe('met');
+  });
+
+  it('grades all four M8 schemas: change, group, compare and ratio (GAP-FIX-R2)', () => {
+    const payload = { quantityIds: ['price', 'tickets'], values: [6, 5] };
+    const ratio = { schema: 'ratio', slots: { rate: 'price', count: 'tickets', total: 'unknown' } };
+    for (const schema of ['change', 'group', 'compare', 'ratio']) {
+      expect(scoreV2Visual('math.schema-diagram.structure.v2', payload, { schema }, { schema: 'ratio' })).toBe(schema === 'ratio' ? 'met' : 'review');
+    }
+    expect(gradeV2Response('math.schema-diagram.structure.v2', payload, { schema: 'group' }, { schema: 'ratio' }).diagnostic).toBe('structure');
+    expect(scoreV2Visual('math.schema-diagram.slots.v2', payload, ratio, ratio)).toBe('met');
+    // The group schema with the right numbers is a structure error; the ratio schema with swapped numbers a value error.
+    expect(gradeV2Response('math.schema-diagram.slots.v2', payload, { schema: 'group', slots: { part: 'price', other: 'tickets', total: 'unknown' } }, ratio).diagnostic).toBe('structure');
+    expect(gradeV2Response('math.schema-diagram.slots.v2', payload, { schema: 'ratio', slots: { rate: 'tickets', count: 'price', total: 'unknown' } }, ratio).diagnostic).toBe('value');
+    // Impossible slot states: a slot from another schema, a number used twice, two unknowns, no unknown.
+    expect(scoreV2Visual('math.schema-diagram.slots.v2', payload, { schema: 'ratio', slots: { start: 'price', count: 'tickets', total: 'unknown' } })).toBe('invalid');
+    expect(scoreV2Visual('math.schema-diagram.slots.v2', payload, { schema: 'ratio', slots: { rate: 'price', count: 'price', total: 'unknown' } })).toBe('invalid');
+    expect(scoreV2Visual('math.schema-diagram.slots.v2', payload, { schema: 'ratio', slots: { rate: 'unknown', count: 'unknown', total: 'price' } })).toBe('invalid');
+    expect(scoreV2Visual('math.schema-diagram.slots.v2', payload, { schema: 'combine', slots: {} })).toBe('invalid');
+    expect(scoreV2Visual('math.schema-diagram.answer.v2', payload, { value: '30' }, { target: 30 })).toBe('met');
+    expect(scoreV2Visual('math.schema-diagram.answer.v2', payload, { value: '11' }, { target: 30 })).toBe('review');
+    // A target that is no relation of the two quantities is a broken key.
+    expect(scoreV2Visual('math.schema-diagram.answer.v2', payload, { value: '30' }, { target: 29 })).toBe('invalid');
   });
 
   it('scores every submitted M9/M10 step and rejects incomplete or widened responses', () => {

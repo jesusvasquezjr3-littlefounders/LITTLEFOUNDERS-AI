@@ -31,6 +31,22 @@ function sample(kind: ChartKind) {
     case 'flowchart': case 'decision-tree': case 'tree': return { ...base, nodes, links: links.map(({ value: _, ...link }) => link) };
     case 'histogram': case 'pareto': case 'waterfall': return { ...base, categories, series: [{ ...two[0]!, values: kind === 'waterfall' ? [50, -15, -10, 20] : [30, 50, 20, 5] }] };
     case 'grouped-bar': case 'stacked-bar': case 'stacked-bar-100': case 'stacked-area': case 'stacked-area-100': return { ...base, categories, series: two };
+    // GAP-FIX-R2 (B.7 part 1): the remaining Appendix A situational kinds.
+    case 'marimekko': return { ...base, categories: categories.slice(0, 3), series: [{ ...two[0]!, values: [30, 50, 20] }, { ...two[1]!, values: [20, 40, 30] }] };
+    case 'bump': return { ...base, categories: categories.slice(0, 3), series: [{ ...two[0]!, values: [1, 2, 1] }, { ...two[1]!, values: [2, 1, 2] }] };
+    case 'candlestick': return { ...base, ohlc: [{ id: 'day-100', label: 'Mon', open: 10, high: 14, low: 9, close: 13 }, { id: 'day-200', label: 'Tue', open: 13, high: 13, low: 8, close: 9 }] };
+    case 'box-plot': return { ...base, boxes: [{ id: 'grp-100', label: 'Class A', min: 2, q1: 5, median: 8, q3: 12, max: 20 }, { id: 'grp-200', label: 'Class B', min: 1, q1: 3, median: 4, q3: 9, max: 15 }] };
+    case 'connected-scatter': return { ...base, points: [1, 2, 3].map((n) => ({ id: `pt-${n}00`, label: `Year ${n}`, x: n * 2, y: 10 - n })) };
+    case 'venn': return { ...base, categories: categories.slice(0, 2), regions: [{ sets: ['cat-000'], value: 12 }, { sets: ['cat-100'], value: 7 }, { sets: ['cat-000', 'cat-100'], value: 5 }] };
+    case 'swimlane': return { ...base, categories: categories.slice(0, 2), nodes: [{ id: 'node-a', label: 'Ask', lane: 'cat-000' }, { id: 'node-b', label: 'Approve', lane: 'cat-100' }, { id: 'node-c', label: 'Buy', lane: 'cat-000' }],
+      links: [{ from: 'node-a', to: 'node-b' }, { from: 'node-b', to: 'node-c' }] };
+    case 'treemap': case 'sunburst': case 'icicle': return { ...base, nodes: [{ id: 'node-root', label: 'Budget' }, { id: 'node-food', label: 'Food' }, { id: 'node-fun', label: 'Fun' },
+      { id: 'node-snacks', label: 'Snacks', value: 20 }, { id: 'node-lunch', label: 'Lunch', value: 40 }, { id: 'node-games', label: 'Games', value: 30 }],
+      links: [{ from: 'node-root', to: 'node-food' }, { from: 'node-root', to: 'node-fun' }, { from: 'node-food', to: 'node-snacks' }, { from: 'node-food', to: 'node-lunch' }, { from: 'node-fun', to: 'node-games' }] };
+    case 'org-chart': case 'mind-map': return { ...base, nodes, links: links.map(({ value: _, label: __, ...link }) => link) };
+    case 'ishikawa': return { ...base, nodes: [{ id: 'node-eff', label: 'Low sales' }, { id: 'node-price', label: 'Price' }, { id: 'node-place', label: 'Place' },
+      { id: 'node-high', label: 'Too high' }, { id: 'node-hidden', label: 'Hidden stand' }],
+      links: [{ from: 'node-eff', to: 'node-price' }, { from: 'node-eff', to: 'node-place' }, { from: 'node-price', to: 'node-high' }, { from: 'node-place', to: 'node-hidden' }] };
     default: return { ...base, categories, series: [two[0]!] };
   }
 }

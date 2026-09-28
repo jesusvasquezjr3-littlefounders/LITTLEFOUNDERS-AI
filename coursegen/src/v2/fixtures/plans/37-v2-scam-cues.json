@@ -1,0 +1,180 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "message-safety",
+  "lesson_id": "v2-scam-cues",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-message-safety"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Zara revisa mensajes y marca qué señales delatan una trampa.",
+  "title": {
+    "en-US": "Spot the cues",
+    "es-MX": "Detecta las señales",
+    "pt-BR": "Ache os sinais"
+  },
+  "new_concepts": [
+    "kc-message-safety"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "messages-cues-01",
+      "type": "money.scam-check.v2",
+      "grading": "server",
+      "visual": {
+        "type": "message-list"
+      },
+      "knowledge_component_id": "kc-message-safety",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-prize"
+          },
+          {
+            "id": "msg-coach"
+          },
+          {
+            "id": "msg-code"
+          },
+          {
+            "id": "msg-aunt"
+          }
+        ],
+        "cues": [
+          {
+            "id": "cue-password"
+          },
+          {
+            "id": "cue-prize"
+          },
+          {
+            "id": "cue-code"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-prize",
+          "msg-code"
+        ],
+        "cue_ids": {
+          "msg-prize": [
+            "cue-password",
+            "cue-prize"
+          ],
+          "msg-code": [
+            "cue-code"
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mark the tricks and tick the cues you saw.",
+          "messages": [
+            {
+              "sender": "Unknown number",
+              "text": "You won 500 coins! Send your password to claim them."
+            },
+            {
+              "sender": "Coach Ana",
+              "text": "Practice moves to 4 pm on Friday."
+            },
+            {
+              "sender": "Game Team",
+              "text": "Share the code we sent you so we can fix your account."
+            },
+            {
+              "sender": "Aunt Rosa",
+              "text": "See you at lunch on Sunday."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Asks for a password"
+            },
+            {
+              "label": "Too-good prize"
+            },
+            {
+              "label": "Asks for a code"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Marca las trampas y las señales que viste.",
+          "messages": [
+            {
+              "sender": "Número desconocido",
+              "text": "¡Ganaste 500 monedas! Envía tu contraseña para cobrarlas."
+            },
+            {
+              "sender": "Entrenadora Ana",
+              "text": "El entrenamiento pasa a las 4 pm el viernes."
+            },
+            {
+              "sender": "Equipo del juego",
+              "text": "Comparte el código que te enviamos para arreglar tu cuenta."
+            },
+            {
+              "sender": "Tía Rosa",
+              "text": "Nos vemos en la comida del domingo."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Pide contraseña"
+            },
+            {
+              "label": "Premio increíble"
+            },
+            {
+              "label": "Pide un código"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Marque as armadilhas e os sinais que viu.",
+          "messages": [
+            {
+              "sender": "Número desconhecido",
+              "text": "Você ganhou 500 moedas! Envie sua senha para receber."
+            },
+            {
+              "sender": "Técnica Ana",
+              "text": "O treino passa para as 16h na sexta."
+            },
+            {
+              "sender": "Equipe do jogo",
+              "text": "Compartilhe o código que enviamos para arrumar sua conta."
+            },
+            {
+              "sender": "Tia Rosa",
+              "text": "Até o almoço de domingo."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Pede senha"
+            },
+            {
+              "label": "Prêmio bom demais"
+            },
+            {
+              "label": "Pede um código"
+            }
+          ]
+        }
+      },
+      "item_phase": "post"
+    }
+  ]
+}

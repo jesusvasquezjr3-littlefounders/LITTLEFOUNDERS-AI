@@ -5,6 +5,7 @@ import {
   bandInsideGuardRails, decisionsFor, learningQualityReportSchema,
   type LearningQualityReport, type ReviewDecision, type ReviewDecisionBody,
 } from './learningQualityReport';
+import { LearningQaSignals, type DefectEscapeBody } from './LearningQaSignals';
 import './learningQuality.css';
 
 /*
@@ -117,11 +118,13 @@ function evidencePct(evidence: Record<string, unknown>, key: 'current' | 'previo
   return typeof value === 'number' || typeof value === 'string' ? String(value) : '-';
 }
 
-export function LearningQualityPanel({ state, locale, dark, onRetry, onSync, onResolve, fixture = false }: {
+export function LearningQualityPanel({ state, locale, dark, onRetry, onSync, onResolve, onRecordEscape, fixture = false }: {
   state: LearningQualityState; locale: Locale; dark: boolean;
   onRetry: () => void;
   onSync: () => Promise<boolean>;
   onResolve: (reviewId: string, body: ReviewDecisionBody) => Promise<DecisionOutcome>;
+  /** GAP-FIX-R2 (Appendix C 1.3): records a defect escape through Core. */
+  onRecordEscape?: (body: DefectEscapeBody) => Promise<boolean>;
   fixture?: boolean;
 }) {
   const t = copy[locale];
@@ -203,6 +206,9 @@ export function LearningQualityPanel({ state, locale, dark, onRetry, onSync, onR
       <h3 id={`${headingId}-signals`} data-copy-role="heading">{t.signals}</h3>
       {!report.v2Signals ? <p data-copy-role="body">{t.signalsPending}</p> : <V2Signals signals={report.v2Signals} t={t} percent={percent} nameOf={nameOf} />}
     </section>
+
+    {/* GAP-FIX-R2: Appendix P Part 8 parity, d′ pre/post, A/B and coverage; Appendix C 1.3 B.1, B.2, B.4 and defect escapes. */}
+    <LearningQaSignals signals={report.qaSignals ?? null} locale={locale} {...(onRecordEscape ? { onRecordEscape } : {})} />
   </section>;
 }
 
