@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import type { Session, Transport } from '@/rebuild/family/familyHubApi';
-import { AdultResearchPanel } from '../family/GovernancePanels';
+import { AdultResearchPanel } from '@/routes/app/family/GovernancePanels';
 
 /*
  * GAP-FIX-R2 (owner review H-25, D.22): the research answer in the account's

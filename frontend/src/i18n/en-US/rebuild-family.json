@@ -569,5 +569,12 @@
     "failed": "Could not load this. Try again.",
     "retry": "Try again",
     "saveFailed": "Could not save. Try again."
+  },
+  "familyDeletionNotices": {
+    "title": "Account deletion",
+    "body": "{name} asked to delete their account. It is deleted on {date}.",
+    "keep": "{name} can keep it by signing in before then.",
+    "failed": "Account notices did not load.",
+    "retry": "Try again"
   }
 }

@@ -37,6 +37,8 @@ export const scenarios = {
   'family-mentor-quiet': tutor({ kids: 'two', history: 'quiet' }),
   // F1-family (Block D oversight, OD-9): a talk whose boards are drawn, a class II board read-only, and kept boards.
   'family-mentor-boards': tutor({ kids: 'two', boards: 'drawn' }),
+  // GAP-FIX-R2 (D-14 (b)): the linked teen (KID_B) asked to delete their own account; the Tutor is told (notify only).
+  'family-deletion-notice': tutor({ kids: 'two', deletionNotice: true }),
   // W2F.2: Tasks (F4) and coins (F5) for the Tutor, the child boards and the teen wallet (verify-family-money-screens.mjs).
   'money-tutor': tutor({ kids: 'two', money: 'full' }),
   'money-tutor-new': tutor({ kids: 'two', money: 'new' }),
@@ -84,6 +86,7 @@ export const states = [
   app('/family@teen-selected', `/family?child=${KID_B}`, 'family-two', `[data-console-control="manage-child"][data-self-managed="true"]`),
   // GAP-FIX-R2 (OD-27 (3)): the story choices of the under-13 child, opened. The teen (KID_B, above) is JOURNAL_PRIVATE: no panel at all.
   app('/family@story-choices', `/family?child=${KID_A}`, 'family-two', ...opens('[data-screen="child-decisions"] .lf-child-decisions-head button')),
+  app('/family@teen-deletion-notice', `/family?child=${KID_A}`, 'family-deletion-notice', '[data-family-part="deletion-notices"] [data-deletion-notice]'),
   app('/family@one-child', '/family', 'family-one', ready.console),
   app('/family@manage-open', '/family', 'family-one', ...opens('[data-console-control="manage-child"] button')),
   app('/family@username-flagged', '/family', 'family-flagged', ...opens('[data-console-control="manage-child"] button')),
@@ -252,6 +255,8 @@ export function respond({ core, spec, locale, path, request, ok }) {
   // The wave-1 surfaces the console composes: what each reads when it mounts.
   if (path === '/family-hub/coaching') return ok({ tip: { deliveryId: '99999999-9999-4999-8999-999999999999', tipId: 'keep-promises', period: '2026-09', opened: false, dismissed: false } });
   if (path === '/family-hub/data-policy') return ok({ classes: POLICY });
+  if (path === '/family-hub/deletion-notices' && get) return ok({ notices: family.deletionNotice
+    ? [{ id: '77777777-7777-4777-8777-777777777777', teenUserId: KID_B, displayName: 'Mateo', scheduledFor: '2026-10-12T10:00:00.000Z', notifiedAt: T }] : [] });
   if (path === '/family/guardian-links/mine') return ok({ links: [] });
   if (/^\/family\/learning\/kids\/[^/]+\/bridges$/.test(path)) return ok({ prompts: [] });
   // OD-27 (3): a parent-created child under 13 shares the chosen options; a teen's journal is private (Core's JOURNAL_PRIVATE).

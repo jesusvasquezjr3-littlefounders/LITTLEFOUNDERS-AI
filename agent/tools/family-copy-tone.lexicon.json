@@ -33,7 +33,8 @@
       "rebuild-family:socialGraph",
       "rebuild-family:socialHistory",
       "rebuild-family:socialRequests",
-      "rebuild-family:socialNotices"
+      "rebuild-family:socialNotices",
+      "rebuild-family:familyDeletionNotices"
     ],
     "errorCodes": [],
     "surfaces": [

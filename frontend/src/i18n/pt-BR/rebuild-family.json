@@ -569,5 +569,12 @@
     "failed": "Não foi possível carregar. Tente de novo.",
     "retry": "Tentar de novo",
     "saveFailed": "Não foi possível salvar. Tente de novo."
+  },
+  "familyDeletionNotices": {
+    "title": "Exclusão de conta",
+    "body": "{name} pediu para apagar a conta. Ela é apagada em {date}.",
+    "keep": "{name} pode mantê-la entrando antes disso.",
+    "failed": "Os avisos de conta não carregaram.",
+    "retry": "Tentar de novo"
   }
 }

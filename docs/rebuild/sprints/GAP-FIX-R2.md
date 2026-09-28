@@ -102,7 +102,7 @@ refused the young adult's own yes: `family_research_set_consent` required
   (the lapsed ask: one sentence, what and how, Yes / No, nothing preselected;
   an adult's own participation with a confirmed stop);
   `AdultResearchPanel` in `routes/app/family/GovernancePanels.tsx`, mounted by
-  `routes/app/profile/ResearchSetting.tsx` in Settings. The child's wallet note
+  `app-routes/ResearchSetting.tsx` in Settings (moved from `routes/app/profile/` in the next commit: the legacy-UI gate freezes that directory). The child's wallet note
   (`MyResearch`) no longer shows to an adult. Copy group
   `familyGovernance.researchAtEighteen` in three locales (adult band, Copy
   Budget and first-view budget pinned).
@@ -120,3 +120,85 @@ wallet suites; type-check and lint clean; database migration gates green.
 
 **Remains.** The adult measures and their own disclosure (research plan phase
 2); native copy review.
+
+### 4. A linked teen's own deletion tells each verified Tutor (D-14 (b); E.6; OD-3 section 2)
+
+**Gap confirmed.** `POST /account/deletion` scheduled a teen's request and
+revoked sessions without reading guardian links; migrations 0116-0118 hold no
+notice; the erasure removes the link. `ACCOUNT-DELETION.md` still assumed links
+exist only for parent-created children.
+
+**Built.**
+- `database/migrations/0216_teen_deletion_guardian_notices.sql` (expand):
+  `account_deletion_guardian_notices` (ids and a timestamp only; RLS, the named
+  Tutor reads, no browser writes; both user columns cascade, so the erasure
+  takes the teen's notices with the account); the AFTER INSERT trigger
+  `notify_guardians_of_teen_deletion` writes one notice per verified guardian
+  link of a self-initiated `teen` request and the audit row
+  `account.deletion_guardians_notified` in the request's own transaction;
+  `guardian_deletion_notices(p_guardian)` (service only) returns open notices
+  with the display name and date, so a cancelled request drops out.
+- Core: `backend/src/routes/account.ts` reads the teen's verified Tutors
+  before scheduling (unreadable = 502, nothing scheduled) and returns
+  `tutorsTold` on GET and POST; `GET /family-hub/deletion-notices` (parent
+  role) via `backend/src/services/teenDeletionNotices.ts`.
+- Frontend: `rebuild/family/TeenDeletionNotices.tsx` (name, date, "can keep it
+  by signing in"; no control) hosted by `app-routes/TeenDeletionNoticesPanel.tsx`
+  in the Family console's aside on `/family`; the teen's confirm step says
+  "We tell your Tutor the deletion date." (`accountDeletion.tutorToldOne/Many`).
+  Copy group `familyDeletionNotices` in three locales, in the tone gate's scope
+  and the family copy-budget test. Audit state `/family@teen-deletion-notice`.
+- `docs/rebuild/policies/ACCOUNT-DELETION.md` updated (population row and the
+  resolved open item).
+- The gap-3 Settings adapter moved from `routes/app/profile/` to
+  `app-routes/ResearchSetting.tsx`: the legacy-UI gate (`spec:check`) refuses new
+  files under `routes/`.
+
+**Verified.** `database/scripts/verify-teen-deletion-notices-postgres.py` on
+native PostgreSQL 17.6: the gap shown before the migration; two verified
+Tutors told, a pending link not; one audit row; an unlinked teen and an adult
+tell nobody; RLS (each Tutor only their own; no browser writes or function
+call); a cancel drops the notice with no second one; a new request tells
+again; the erasure removes the notices; replay. `verify-account-erasure-postgres.py`
+re-run on the new chain: 16 checks green. Core `accountDeletion.test.ts`
+(linked teen told in the request's step, read before scheduling; unlinked teen
+and adult tell nobody; cancel needs no second notice; unreadable links schedule
+nothing) and `familyGovernance.test.ts` (the Tutor's read, 502 on malformed,
+every non-Tutor refused). Frontend `TeenDeletionNoticesPanel.test.tsx`,
+`AccountDeletion.test.tsx`, `deletionClient.test.ts`, copy budgets; i18n,
+tone, spec and secrets gates green.
+
+**Remains.** Email delivery of the notice (in-app only today, zero spend);
+native copy review; the browser audit run of the new state.
+
+### Verification summary (lean mode)
+
+Per checkpoint: focused Core and frontend vitest files, type-check and lint of
+touched files in each service, `npm run spec:check`, `npm run secrets:check`,
+the i18n gate, the tone gate and its tests, and the database migration gates;
+two new native PostgreSQL verifiers (`verify-research-reconsent-postgres.py`,
+`verify-teen-deletion-notices-postgres.py`) plus the account-erasure verifier.
+No browser matrix, no `audit:rebuild`, no full suites (orchestrator runs them
+at merge).
+
+### Decisions taken with the conservative default (owner questions)
+
+1. D.8 scope: the four `social*` Family Hub panels and `badgeShares` /
+   `achievementShare` joined the tone gate, with reviewed exceptions for the
+   friend-request "Deny" and the "safety notices" labels. The invite's
+   "Accept" became "Join" (glossary: approve, never accept).
+2. H-25: a young adult's own yes keeps what was recorded as a child, but
+   nothing more is recorded while they hold no wallet; adult measures wait for
+   a later phase with their own disclosure.
+3. H-25: the child's wallet research note no longer shows to an adult; the
+   adult answers in Settings only.
+4. D-14 (b): the notice is in-app on `/family`, not email; the Tutor sees open
+   requests only, and a cancelled one disappears silently (no "kept" notice).
+   Only population `teen` self-requests notify; an adult with a leftover link
+   notifies nobody.
+5. D-14 (b): the teen is told before confirming that their Tutor gets the date.
+
+### Migrations (renumbered by the orchestrator at merge)
+
+- `0215_family_research_reconsent_at_18.sql` (expand)
+- `0216_teen_deletion_guardian_notices.sql` (expand)

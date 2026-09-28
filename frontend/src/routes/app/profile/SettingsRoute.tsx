@@ -14,7 +14,7 @@ import { TeenAnalyticsSetting } from './TeenAnalyticsSetting';
 import { TeenMemoryReviewSetting } from './TeenMemoryReviewSetting';
 import { DispositionSetting } from './DispositionSetting';
 import { AccountDeletionSetting } from './AccountDeletionSetting';
-import { ResearchSetting } from './ResearchSetting';
+import { ResearchSetting } from '@/app-routes/ResearchSetting';
 import { DiscoverableSetting, parseDiscoverable, type DiscoverableState } from './DiscoverableSetting';
 import { AgeRecordSetting } from '@/app-routes/AgeRecordSetting';
 

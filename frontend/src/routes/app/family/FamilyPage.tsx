@@ -17,6 +17,7 @@ import { SocialHistoryPanel } from './SocialHistoryPanel';
 import { SocialNoticesPanel } from './SocialNoticesPanel';
 import { SocialRequestsPanel } from './SocialRequestsPanel';
 import { StreakPausesPanel } from './StreakPausesPanel';
+import { TeenDeletionNoticesPanel } from '@/app-routes/TeenDeletionNoticesPanel';
 import { WalletCorrectionsPanel } from './WalletCorrectionsPanel';
 import { useConsoleEnvironment, useConsoleTransport } from './consoleSession';
 
@@ -105,6 +106,8 @@ export function FamilyPage() {
     familyAside={(hasChildren) => <>
       {/* S07.7 (D.23, D.20, D.21): this month's tip, what the practice covers, how long the family's data is kept. */}
       {hasChildren ? <CoachingTipPanel token={token} /> : null}
+      {/* GAP-FIX-R2 (D-14 (b)): a linked teen asked to delete their own account (notify only; nothing shows otherwise). */}
+      {hasChildren ? <TeenDeletionNoticesPanel token={token} /> : null}
       {hasChildren ? <SocialNoticesPanel token={token} /> : null}
       <GuardianRequestsPanel token={token} />
       <ScopeStatementPanel />

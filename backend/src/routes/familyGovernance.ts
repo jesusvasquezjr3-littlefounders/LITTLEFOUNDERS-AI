@@ -10,6 +10,7 @@ import { deliverTip, markTip, reviewedTipIds, toWireTip } from '../services/pare
 import { BRIDGE_MILESTONES, BRIDGE_STEPS, markBridge, readBridge, toWireBridge } from '../services/moneyBridge.js';
 import { readResearch, RESEARCH_DISCLOSURE_VERSION, setResearch, toWireResearch } from '../services/familyResearch.js';
 import { readDataPractices, setDataPractice, toWireDataPractices } from '../services/dataPractices.js';
+import { readTeenDeletionNotices } from '../services/teenDeletionNotices.js';
 
 /*
  * /api/v1/family-hub — S07.7, the governance half of Block D:
@@ -33,6 +34,8 @@ import { readDataPractices, setDataPractice, toWireDataPractices } from '../serv
  *   PUT  /data-practices/me/:key                 a no from the account itself (a child's own no counts);
  *                                                a yes only from a self-registered teen with no Tutor,
  *                                                for the analytics classes
+ *   GET  /deletion-notices             D-14 (b)  a linked teen's own account deletion, told to
+ *                                                each verified Tutor (notify only)
  *   POST /internal/retention/run       D.21  the nightly sweep and photo purge
  *
  * The database decides every rule (eligibility by age evidence, who may say
@@ -173,6 +176,14 @@ export function familyGovernanceRouter(): Router {
     await insertAuditLog(me.id, body.data.participate ? 'family.research_yes_self' : 'family.research_no_self', me.id,
       body.data.participate ? { version: body.data.disclosureVersion ?? null } : {});
     return ok(res, { research: toWireResearch(state), currentVersion: RESEARCH_DISCLOSURE_VERSION });
+  });
+
+  // ── D-14 (b): a linked teen's deletion, told to the Tutor (notify only) ─
+  router.get('/deletion-notices', requireRole(['parent']), async (_req, res) => {
+    const tutor = authedUser(res);
+    const notices = await readTeenDeletionNotices(tutor.id);
+    if (notices === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the notices');
+    return ok(res, { notices });
   });
 
   // ── OD-9 4.2: consent for the practices the rebuild introduced ──────────

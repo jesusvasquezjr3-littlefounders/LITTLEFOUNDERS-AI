@@ -54,7 +54,7 @@ function ScopedAccountDeletion() {
       } else {
         setView({
           kind: 'ready', step: 'intro', immediate: eligibility.immediate, graceDays: eligibility.graceDays,
-          reauth: eligibility.reauth, pausedChildren: eligibility.children.lastTutorOf, submitting: false, error: null,
+          reauth: eligibility.reauth, pausedChildren: eligibility.children.lastTutorOf, tutorsTold: eligibility.tutorsTold, submitting: false, error: null,
         });
       }
     })();

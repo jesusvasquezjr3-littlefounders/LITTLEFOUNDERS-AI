@@ -17,8 +17,15 @@ const allowed = { allowed: true, population: 'adult', graceDays: 14, immediate: 
 describe('getDeletionState', () => {
   it('parses an allowed account with no open deletion', async () => {
     const t = transport(200, { data: { deletion: null, eligibility: allowed }, error: null });
-    await expect(getDeletionState(t)).resolves.toEqual({ ok: true, value: { deletion: null, eligibility: allowed } });
+    // An older Core without `tutorsTold` reads as nobody told.
+    await expect(getDeletionState(t)).resolves.toEqual({ ok: true, value: { deletion: null, eligibility: { ...allowed, tutorsTold: 0 } } });
     expect(String(t.calls.mock.calls[0]![0])).toBe('http://core.test/api/v1/account/deletion');
+  });
+
+  it("reads how many Tutors a linked teen's deletion tells (D-14 (b))", async () => {
+    const teen = { ...allowed, population: 'teen', tutorsTold: 2 };
+    const t = transport(200, { data: { deletion: null, eligibility: teen }, error: null });
+    await expect(getDeletionState(t)).resolves.toEqual({ ok: true, value: { deletion: null, eligibility: teen } });
   });
 
   it('parses a scheduled deletion and a refusal', async () => {

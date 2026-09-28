@@ -29,6 +29,7 @@ vi.mock('../SocialGraphPanel', async () => { const { panel } = await import('./p
 vi.mock('../SocialHistoryPanel', async () => { const { panel } = await import('./panelStub'); return { SocialHistoryPanel: panel('history') }; });
 vi.mock('../BadgeSharesPanel', async () => { const { panel } = await import('./panelStub'); return { BadgeSharesPanel: panel('old-links') }; });
 vi.mock('../SocialNoticesPanel', async () => { const { panel } = await import('./panelStub'); return { SocialNoticesPanel: panel('notices') }; });
+vi.mock('@/app-routes/TeenDeletionNoticesPanel', async () => { const { panel } = await import('./panelStub'); return { TeenDeletionNoticesPanel: panel('deletion-notices') }; });
 vi.mock('../GovernancePanels', async () => { const { panel } = await import('./panelStub'); return { CoachingTipPanel: panel('tip'), DataPolicyPanel: panel('data-policy'), ResearchConsentPanel: panel('research'), ScopeStatementPanel: panel('scope') }; });
 vi.mock('../DataPracticePanels', async () => { const { panel } = await import('./panelStub'); return { DataPracticeConsentPanel: panel('data-practices') }; });
 vi.mock('../GuardianInvitePanel', async () => { const { panel } = await import('./panelStub'); return { GuardianInvitePanel: panel('invite'), GuardianInviteJoin: panel('join') }; });

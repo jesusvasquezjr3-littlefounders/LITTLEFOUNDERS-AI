@@ -569,5 +569,12 @@
     "failed": "No se pudo cargar. Inténtalo de nuevo.",
     "retry": "Reintentar",
     "saveFailed": "No se pudo guardar. Inténtalo de nuevo."
+  },
+  "familyDeletionNotices": {
+    "title": "Borrado de cuenta",
+    "body": "{name} pidió borrar su cuenta. Se borra el {date}.",
+    "keep": "{name} puede conservarla si inicia sesión antes.",
+    "failed": "Los avisos de cuenta no cargaron.",
+    "retry": "Intentar de nuevo"
   }
 }

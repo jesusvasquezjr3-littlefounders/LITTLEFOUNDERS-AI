@@ -466,6 +466,32 @@ describe('D.22: research participation', () => {
   });
 });
 
+describe('D-14 (b): a linked teen\'s account deletion, told to the Tutor', () => {
+  const notice = { id: DELIVERY, teen_user_id: LINKED_TEEN, display_name: 'Mateo', scheduled_for: '2026-10-12T10:00:00Z', notified_at: '2026-09-28T10:00:00Z' };
+
+  it('reads the caller\'s own open notices, and only the name, the date and when they were told', async () => {
+    const calls = stub({ guardian_deletion_notices: { status: 200, body: [notice] } });
+    const res = await app().get('/api/v1/family-hub/deletion-notices').set('Authorization', auth(PARENT));
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ notices: [{ id: DELIVERY, teenUserId: LINKED_TEEN, displayName: 'Mateo', scheduledFor: '2026-10-12T10:00:00Z',
+      notifiedAt: '2026-09-28T10:00:00Z' }] });
+    expect(rpcCalls(calls, 'guardian_deletion_notices')[0]!.body).toEqual({ p_guardian: PARENT });
+  });
+
+  it('answers 502 when the notices cannot be read or come back malformed, never "none"', async () => {
+    stub({ guardian_deletion_notices: { status: 500, body: { message: 'down' } } });
+    expect((await app().get('/api/v1/family-hub/deletion-notices').set('Authorization', auth(PARENT))).status).toBe(502);
+    stub({ guardian_deletion_notices: { status: 200, body: [{ ...notice, reason: 'moving on' }] } });
+    expect((await app().get('/api/v1/family-hub/deletion-notices').set('Authorization', auth(PARENT))).status).toBe(502);
+  });
+
+  it.each(NON_TUTORS)('refuses %s before any read', async (_label, who, extra) => {
+    const calls = stub({ guardian_deletion_notices: { status: 200, body: [notice] } });
+    expect((await app().get('/api/v1/family-hub/deletion-notices').set('Authorization', auth(who, extra))).status).toBe(403);
+    expect(rpcCalls(calls, 'guardian_deletion_notices')).toHaveLength(0);
+  });
+});
+
 describe('D.19: the older-teen bridge', () => {
   it('reads the bridge as the caller and presents each moment with its ticked steps', async () => {
     const calls = stub({ money_bridge_state: { status: 200, body: bridge() } });
