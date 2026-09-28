@@ -60,8 +60,14 @@ Lane close-out for `codex/spec-fix2dataplat`.
   has a new gap-rate case, and the staff console and copy-budget suites
   (16 files, 182 tests) pass. Full unit suites: dataintel 220/222 on the loaded
   run; the 2 reds were 5 s timeouts in `experiments-stats.test.ts`, a file this
-  lane does not touch, and it passes alone. Backend and frontend full-suite
-  results are in the lane report.
+  lane does not touch, and it passes alone. Backend 3212/3217 on the loaded
+  run: the reds were the pre-fix gap test (fixed; `appendixOMetrics` 8/8)
+  and 5 s timeouts in `auth.test.ts` and `wellbeingS053f.test.ts`, both green
+  alone. Frontend 3024/3038: `App`, `StaffSections`, `AuthLayout` and
+  `LookEditorRoute` are green alone (61/61). `assetGate.test.ts` times out at
+  90 s per case even alone while other lanes load the machine; running
+  `check-rebuild-assets.mjs` directly on the tree passes (OCR of 118 rasters
+  took about 3 minutes). This lane touches no asset.
 - **Remains.** Renumber `0215` at merge and regenerate
   `database/types/database.ts` on the merged tree, using postgres-meta v0.99.0
   against the full chain plus the `schema_migrations` ledger. Run the browser
