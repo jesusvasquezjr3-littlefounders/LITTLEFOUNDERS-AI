@@ -70,6 +70,8 @@ Verified at the lane close:
 
 - Full unit suites: frontend 251 files and 2,903 tests, Oracle 65 files, Core 125 files, each with type-check and lint. The only reds were the three fixed above and the load-sensitive Oracle boot tests (hardening, live-session, boot-skills). Those passed when rerun alone (86 tests).
 - Gates: instruments:check, spec:check (with the dark-pattern and wallet-glossary gates) and secrets:check.
+- Database package: check-migrations and check-migration-phase pass on 193 files, and the chained node tests passed. `railway-migrate.test.mjs`, which runs against a fake Railway CLI and never contacts production, was still in its fifth scenario after about 20 minutes on this Windows machine and was stopped. The lane did not touch it. The orchestrator's merge gate should run it where process spawning is fast.
+- Touched gate node tests: 38 of 38 pass (instrument, session-end and review-calibration parity).
 - The copy did not change, so the i18n gate was not needed.
 
 Still open (Mentor lane, for the orchestrator or a later round):
