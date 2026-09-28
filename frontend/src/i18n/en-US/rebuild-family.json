@@ -176,7 +176,16 @@
     "teenNote": "{name} manages their own sign-in.",
     "saving": "Saving…",
     "removed": "{name}'s account was removed.",
-    "keep": "Keep account"
+    "keep": "Keep account",
+    "ageLegend": "Age",
+    "ageHelp": "Needed. A birth date sets it exactly.",
+    "ageUnder13": "Under 13",
+    "ageTeen": "13 to 17",
+    "ageMissing": "Choose an age or give a birth date.",
+    "ageNeeded": "{name} has no age on record. Add it so they can start.",
+    "saveAge": "Save age",
+    "ageSaved": "Age saved.",
+    "ageAlready": "Their age is already on record."
   },
   "familyChildConsent": {
     "insights": "Share usage data",

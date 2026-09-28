@@ -60,6 +60,8 @@ export interface Child {
   profileReview: { flagged: boolean; fields: ProfileField[] } | null;
   /** M-12 (OD-26): the usage-data consent also enrols this child in the Mentor's hint-style test (a 10-12 child). Absent = false. */
   dialogueExperiment: boolean;
+  /** A.4 (OD-3): false only when Core says the child has no age on record (the Tutor gives it); null or absent = unknown. */
+  ageRecorded?: boolean | null;
 }
 
 const isField = (value: unknown): value is ProfileField => value === 'username' || value === 'displayName';
@@ -75,6 +77,7 @@ function toChild(value: unknown): Child | null {
     pendingApprovalCount: value.pendingApprovalCount, walletTotal: value.walletTotal as number | null, taskStreakDays: value.taskStreakDays, accountType,
     profileReview: isObject(review) && typeof review.flagged === 'boolean' && arrayOf(review.fields, isField) ? { flagged: review.flagged, fields: review.fields } : null,
     dialogueExperiment: value.dialogueExperiment === true,
+    ageRecorded: typeof value.ageRecorded === 'boolean' ? value.ageRecorded : null,
   };
 }
 
@@ -91,7 +94,11 @@ export const childName = (child: Pick<Child, 'displayName' | 'username'>) => chi
 export const USERNAME_PATTERN = /^[a-z0-9_]{3,20}$/;
 export const PASSPHRASE_MIN = 8;
 
-export interface NewChild { displayName: string; username: string; passphrase: string; birthDate: string | null; locale: 'en-US' | 'es-MX' | 'pt-BR' }
+/** A.4 (OD-3): the bands a Tutor may give a child without a birth date. */
+export type ChildAgeBand = 'under_13' | '13_to_17';
+
+/** The Tutor gives the child's age: a birth date, or else `ageBand` (Core refuses a child with neither, CHILD_AGE_REQUIRED). */
+export interface NewChild { displayName: string; username: string; passphrase: string; birthDate: string | null; ageBand?: ChildAgeBand; locale: 'en-US' | 'es-MX' | 'pt-BR' }
 
 export function createChild(transport: ConsoleTransport, input: NewChild) {
   return call(transport, '/family/kids', (data): data is { kid: { userId: string; displayName: string | null; username: string | null } } =>
@@ -103,6 +110,13 @@ export function renameChild(transport: ConsoleTransport, kidId: string, displayN
   return call(transport, `/family/kids/${kid(kidId)}`, (data): data is { kid: { userId: string; displayName: string | null } } =>
     isObject(data) && isObject(data.kid) && data.kid.userId === kidId && isNullableString(data.kid.displayName),
   { method: 'PATCH', body: { displayName } });
+}
+
+/** A.4: the age of a child who has none on record; Core records it once (AGE_ALREADY_RECORDED when one exists). */
+export function setChildAge(transport: ConsoleTransport, kidId: string, ageBand: ChildAgeBand) {
+  return call(transport, `/family/kids/${kid(kidId)}`, (data): data is { kid: { userId: string }; ageRecorded: true } =>
+    isObject(data) && isObject(data.kid) && data.kid.userId === kidId && data.ageRecorded === true,
+  { method: 'PATCH', body: { ageBand } });
 }
 
 export function setChildPassphrase(transport: ConsoleTransport, kidId: string, passphrase: string) {

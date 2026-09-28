@@ -115,18 +115,60 @@ export async function readAgeScreen(userId: string): Promise<AgeScreenState | nu
 }
 
 /**
+ * A.4 (OD-3): which of these accounts already hold age evidence, a
+ * declaration or the under-13 origin. The Family console offers a Tutor the
+ * age question only for a child with neither. `null` = the store did not answer.
+ */
+export async function readAgeRecorded(userIds: string[]): Promise<Set<string> | null> {
+  const ids = userIds.filter((id) => z.string().uuid().safeParse(id).success);
+  if (ids.length === 0) return new Set();
+  const list = ids.map(encodeURIComponent).join(',');
+  const [declared, origins] = await Promise.all([
+    serviceRest<unknown>(`/account_age_declarations?user_id=in.(${list})&select=user_id`),
+    serviceRest<unknown>(`/account_safety_origins?user_id=in.(${list})&select=user_id`),
+  ]);
+  const Rows = z.array(z.object({ user_id: z.string() }).passthrough());
+  const a = Rows.safeParse(declared);
+  const b = Rows.safeParse(origins);
+  if (!a.success || !b.success) return null;
+  return new Set([...a.data, ...b.data].map((row) => row.user_id));
+}
+
+/**
  * Records the first declaration. `birthDate`, when given, is the date the
  * band was derived from: a teen's month and year are kept (OD-28), nothing
  * else of it is sent.
  */
 export async function recordAgeScreen(userId: string, band: AgeBand, birthDate?: string): Promise<boolean> {
-  if (!z.string().uuid().safeParse(userId).success) return false;
+  return await recordAgeScreenBand(userId, band, birthDate) !== null;
+}
+
+/** As `recordAgeScreen`, returning the band as stored (insert-once: an earlier declaration wins). */
+export async function recordAgeScreenBand(userId: string, band: AgeBand, birthDate?: string): Promise<AgeBand | null> {
+  if (!z.string().uuid().safeParse(userId).success) return null;
   const month = birthDate ? birthMonthForBand(birthDate, band) : null;
   const saved = await serviceRest<unknown>('/rpc/record_age_declaration', {
     method: 'POST',
     body: JSON.stringify(month ? { p_user_id: userId, p_age_band: band, p_birth_month: month } : { p_user_id: userId, p_age_band: band }),
   });
-  return AgeBand.safeParse(saved).success;
+  const parsed = AgeBand.safeParse(saved);
+  return parsed.success ? parsed.data : null;
+}
+
+/** A.4 / OD-3: the bands a Tutor may give a parent-created child without a birth date. */
+export const ChildAgeBand = z.enum(['under_13', '13_to_17']);
+
+/**
+ * The band a Tutor's input gives a parent-created child: from the birth date
+ * when there is one (a sent band must agree with it), else the chosen band.
+ */
+export function childAgeBand(birthDate: string | null, band: z.infer<typeof ChildAgeBand> | undefined): AgeBand | 'missing' | 'conflict' {
+  if (birthDate) {
+    const derived = declaredBandForDate(birthDate);
+    if (!derived) return 'conflict';
+    return band !== undefined && band !== derived ? 'conflict' : derived;
+  }
+  return band ?? 'missing';
 }
 
 /**

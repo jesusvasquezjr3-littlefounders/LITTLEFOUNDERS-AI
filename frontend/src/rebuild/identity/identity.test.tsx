@@ -336,6 +336,15 @@ describe('the age question (A.3) and the paused account (A.1)', () => {
     expect(container.querySelectorAll('.lf-age-date input')).toHaveLength(3);
   });
 
+  it('A.4: a parent-created child without an age on record is sent to their Tutor, never asked for a date', () => {
+    const { container } = render(<AgeScreen copy={ageCopy} locale="en-US" dark={false} state="askTutor" {...handlers} />);
+    expect(screen.getByRole('heading', { name: ageCopy.askTutorTitle })).toBeInTheDocument();
+    expect(screen.getByText(ageCopy.askTutorBody)).toBeInTheDocument();
+    expect(container.querySelectorAll('input')).toHaveLength(0);
+    expect(container.querySelector('[data-age-screen-state="ask-tutor"]')).not.toBeNull();
+    expect(undeclaredText(container)).toEqual([]);
+  });
+
   it('E.4 and S-04: says the answer is kept, and names the move at 18 only for a 13-17 date', () => {
     const onSubmit = vi.fn();
     const { container } = render(<AgeScreen copy={ageCopy} locale="en-US" dark={false} state="form" {...handlers} onSubmit={onSubmit} />);

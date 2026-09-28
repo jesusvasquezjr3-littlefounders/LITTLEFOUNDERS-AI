@@ -176,7 +176,16 @@
     "teenNote": "{name} maneja su propio inicio de sesión.",
     "saving": "Guardando…",
     "removed": "Se eliminó la cuenta de {name}.",
-    "keep": "Mantener cuenta"
+    "keep": "Mantener cuenta",
+    "ageLegend": "Edad",
+    "ageHelp": "Obligatoria. Una fecha la fija con exactitud.",
+    "ageUnder13": "Menos de 13",
+    "ageTeen": "De 13 a 17",
+    "ageMissing": "Elige una edad o da una fecha.",
+    "ageNeeded": "{name} no tiene edad registrada. Agrégala para que empiece.",
+    "saveAge": "Guardar edad",
+    "ageSaved": "Edad guardada.",
+    "ageAlready": "Su edad ya está registrada."
   },
   "familyChildConsent": {
     "insights": "Compartir datos de uso",

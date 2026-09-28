@@ -13,7 +13,9 @@
     "loading": "Checking your account…",
     "help": "We keep month and year.",
     "locked": "It's final.",
-    "teenMonth": "At 18, your account moves to adult settings."
+    "teenMonth": "At 18, your account moves to adult settings.",
+    "askTutorTitle": "Ask your Tutor",
+    "askTutorBody": "Your Tutor adds your age in Family."
   },
   "kidSuspended": {
     "title": "This account is paused",

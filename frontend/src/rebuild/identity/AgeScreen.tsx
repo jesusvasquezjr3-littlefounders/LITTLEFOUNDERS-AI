@@ -29,11 +29,15 @@ export interface AgeScreenCopy {
   locked: string;
   /** S-04 (OD-28): shown once the date reads 13 to 17, before the month is sent. */
   teenMonth: string;
+  /** A.4 (OD-3): a parent-created child is never asked their own age; their Tutor gives it. */
+  askTutorTitle: string;
+  askTutorBody: string;
 }
 
 type AgeScreenProps = {
   copy: AgeScreenCopy; locale: string; dark: boolean;
-  state: 'loading' | 'error' | 'form' | 'saving'; error?: 'invalid' | 'unavailable';
+  /** 'askTutor': a parent-created child with no age on record; only the Tutor can give it (A.4). */
+  state: 'loading' | 'error' | 'form' | 'saving' | 'askTutor'; error?: 'invalid' | 'unavailable';
   /** `birthMonth` (`YYYY-MM`) only for a date that reads 13 to 17, after the screen said what it is kept for. */
   onSubmit: (birthDate: string, birthMonth?: string) => void; onRetry: () => void; onExit: () => void;
 };
@@ -50,6 +54,14 @@ function AgeQuestion({ copy, state, error, onSubmit, onRetry, onExit }: Omit<Age
     const birthMonth = `${year.padStart(4, '0')}-${month.padStart(2, '0')}`;
     const birthDate = `${birthMonth}-${day.padStart(2, '0')}`;
     if (teen) onSubmit(birthDate, birthMonth); else onSubmit(birthDate);
+  }
+  if (state === 'askTutor') {
+    return <div className="lf-age-screen" data-surface="app" data-screen="age-screen" data-age-screen-state="ask-tutor" data-age-band="6-9">
+      <Copy role="heading" as="h1">{copy.askTutorTitle}</Copy>
+      <Copy role="body">{copy.askTutorBody}</Copy>
+      <Button variant="accent" onClick={onRetry}>{copy.retry}</Button>
+      <Button onClick={onExit}>{copy.exit}</Button>
+    </div>;
   }
   return <div className="lf-age-screen" data-surface="app" data-screen="age-screen" data-age-band="6-9">
     <Copy role="heading" as="h1">{copy.title}</Copy>
@@ -80,7 +92,7 @@ export function AgeScreen({ locale, dark, ...question }: AgeScreenProps) {
   const shellLocale: Locale = locale === 'es-MX' || locale === 'pt-BR' ? locale : 'en-US';
   return <div ref={probe} className={`lf-rebuild${frame === 'embedded' ? ' lf-age-root--embedded' : ''}`} data-theme={dark ? 'dark' : 'light'} lang={locale}>
     {frame === 'embedded' ? <AgeQuestion {...question} /> : frame === 'standalone'
-      ? <SingleStateScreen appName="LittleFounders" pageTitle={question.copy.title} routeKey="age-screen" locale={shellLocale} hue="primary"
+      ? <SingleStateScreen appName="LittleFounders" pageTitle={question.state === 'askTutor' ? question.copy.askTutorTitle : question.copy.title} routeKey="age-screen" locale={shellLocale} hue="primary"
         labels={{ skip: rebuildNamespaceCopy[shellLocale].core.appShell.skip }}>
         <div className="lf-age-panel"><AgeQuestion {...question} /></div>
       </SingleStateScreen> : null}

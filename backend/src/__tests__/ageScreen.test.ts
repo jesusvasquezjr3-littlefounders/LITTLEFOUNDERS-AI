@@ -23,6 +23,46 @@ describe('A.3/A.4 authoritative age-screen contract', () => {
       expect(res.body.error.code).toBe('AGE_SCREEN_REQUIRED');
     },
   );
+  // A.4 / OD-3 (adversarial): a parent-created child cannot declare their own age, whatever band they claim.
+  it.each(['2018-01-01', '1990-01-01'])('refuses a kid-role caller declaring %s, before any write', async (birthDate) => {
+    const writes: string[] = [];
+    vi.stubGlobal('fetch', vi.fn((url: string, init?: RequestInit) => {
+      if ((init?.method ?? 'GET') !== 'GET') writes.push(url);
+      return Promise.resolve(jsonResponse(200, url.includes('user_roles') ? [{ role: 'kid' }] : []));
+    }));
+    const res = await request(createApp()).post('/api/v1/auth/age-screen')
+      .set('Authorization', `Bearer ${mintToken({ sub: USER })}`).send({ birthDate });
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('KID_AGE_BY_TUTOR');
+    expect(writes).toEqual([]);
+  });
+
+  it('fails closed when the caller role cannot be read', async () => {
+    const writes: string[] = [];
+    vi.stubGlobal('fetch', vi.fn((url: string, init?: RequestInit) => {
+      if ((init?.method ?? 'GET') !== 'GET') writes.push(url);
+      return Promise.resolve(url.includes('user_roles') ? jsonResponse(500, { message: 'down' }) : jsonResponse(200, []));
+    }));
+    const res = await request(createApp()).post('/api/v1/auth/age-screen')
+      .set('Authorization', `Bearer ${mintToken({ sub: USER })}`).send({ birthDate: '1990-01-01' });
+    expect(res.status).toBe(502);
+    expect(writes).toEqual([]);
+  });
+
+  it('refuses onboarding completion before screening and writes nothing (Appendix M 1.1, Part 2.3(b))', async () => {
+    const writes: string[] = [];
+    vi.stubGlobal('fetch', vi.fn((url: string, init?: RequestInit) => {
+      if ((init?.method ?? 'GET') !== 'GET') writes.push(url);
+      return Promise.resolve(jsonResponse(200, []));
+    }));
+    const res = await request(createApp()).post('/api/v1/onboarding/complete')
+      .set('Authorization', `Bearer ${mintToken({ sub: USER })}`)
+      .send({ displayName: 'Ana', accountOfferChoice: 'later', localDate: '2026-09-21' });
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('AGE_SCREEN_REQUIRED');
+    expect(writes).toEqual([]);
+  });
+
   it('classifies exact birthdays and rejects impossible dates', () => {
     const now = new Date('2026-09-21T00:00:00Z');
     expect(declaredBandForDate('2013-09-21', now)).toBe('13_to_17');

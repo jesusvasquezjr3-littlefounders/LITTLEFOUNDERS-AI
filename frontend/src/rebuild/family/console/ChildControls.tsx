@@ -1,8 +1,8 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
-import { Button, ButtonGroup, Copy, DestructiveAction, InlineNotice, LoadingState, Switch, TextField } from '../../design/controls';
+import { Button, ButtonGroup, Copy, DestructiveAction, InlineNotice, LoadingState, RadioGroup, Switch, TextField } from '../../design/controls';
 import {
-  changeChildUsername, createChild, fetchMicrophone, grantMicrophone, PASSPHRASE_MIN, removeChild, renameChild, revokeMicrophone, setChildPassphrase, setInsightsConsent,
-  childName, USERNAME_PATTERN, type Child, type ConsoleTransport, type MicrophoneState,
+  changeChildUsername, createChild, fetchMicrophone, grantMicrophone, PASSPHRASE_MIN, removeChild, renameChild, revokeMicrophone, setChildAge, setChildPassphrase,
+  setInsightsConsent, childName, USERNAME_PATTERN, type Child, type ChildAgeBand, type ConsoleTransport, type MicrophoneState,
 } from './consoleApi';
 import { ageFromParts } from '../../identity/ageFromParts';
 import { fill, type ChildAccountCopy, type ChildConsentCopy, type ConsoleLocale } from './consoleParts';
@@ -14,8 +14,10 @@ import { fill, type ChildAccountCopy, type ChildConsentCopy, type ConsoleLocale 
  * microphone control):
  *
  *   AddChild           creates a parent-managed child: a first name, a
- *                      username and a passphrase, plus an optional birth date
- *                      for the age band; no email, surname or address (§1.9).
+ *                      username and a passphrase, plus the child's age: a
+ *                      birth date or, without one, an age band (A.4, OD-3:
+ *                      the child is never asked their own age); no email,
+ *                      surname or address (§1.9).
  *                      The confirmation repeats the username, never the
  *                      passphrase. Nothing celebrates (not an OD-7 milestone).
  *   ManageChild        rename, a new passphrase, and removal. The username
@@ -28,6 +30,8 @@ import { fill, type ChildAccountCopy, type ChildConsentCopy, type ConsoleLocale 
  *                      A removal Core holds (E.6) is said to be on hold, and
  *                      the child stays. A self-registered teen manages their
  *                      own sign-in, so none of this is offered for them.
+ *                      A child created before the age was required, with no
+ *                      age on record, gets the age question here (A.4).
  *   InsightsConsent    the §1.9 usage-data consent: a switch that applies at
  *                      once and keeps the server-confirmed state on failure.
  *   MicrophoneConsent  deliberately NOT a switch: allowing the microphone
@@ -49,8 +53,10 @@ function validBirthDate(value: string): boolean {
 }
 
 const CREATE_ERRORS: Record<string, keyof ChildAccountCopy> = {
-  USERNAME_IN_USE: 'usernameTaken', PROFILE_FIELD_UNSAFE: 'unsafe', KID_LIMIT_REACHED: 'limit', VALIDATION_ERROR: 'invalid',
+  USERNAME_IN_USE: 'usernameTaken', PROFILE_FIELD_UNSAFE: 'unsafe', KID_LIMIT_REACHED: 'limit', VALIDATION_ERROR: 'invalid', CHILD_AGE_REQUIRED: 'ageMissing',
 };
+
+const ageOptions = (copy: ChildAccountCopy) => [{ value: 'under_13' as const, label: copy.ageUnder13 }, { value: '13_to_17' as const, label: copy.ageTeen }];
 
 /** The confirmation after a child is added: the username to sign in with, never the passphrase. */
 export function ChildAdded({ copy, name, username, onDone }: { copy: ChildAccountCopy; name: string; username: string; onDone: () => void }) {
@@ -78,6 +84,7 @@ export function AddChild({ copy, locale, transport, startOpen = false, onAdded, 
   const [username, setUsername] = useState('');
   const [passphrase, setPassphrase] = useState('');
   const [birthDate, setBirthDate] = useState('');
+  const [ageBand, setAgeBand] = useState<ChildAgeBand | null>(null);
   const [busy, setBusy] = useState<Busy>('idle');
   const [error, setError] = useState<string | null>(null);
 
@@ -85,15 +92,19 @@ export function AddChild({ copy, locale, transport, startOpen = false, onAdded, 
   const handle = username.trim().toLowerCase();
   const handleInvalid = handle.length > 0 && !USERNAME_PATTERN.test(handle);
   const birthInvalid = birthDate.length > 0 && !validBirthDate(birthDate);
-  const ready = name.trim().length > 0 && USERNAME_PATTERN.test(handle) && passphrase.length >= PASSPHRASE_MIN && !birthInvalid;
+  // A.4 (OD-3): the age is required, as a band or as a birth date (the date decides when it is given).
+  const dated = birthDate.length > 0 && !birthInvalid;
+  const ready = name.trim().length > 0 && USERNAME_PATTERN.test(handle) && passphrase.length >= PASSPHRASE_MIN && !birthInvalid && (dated || ageBand !== null);
 
-  function reset() { setName(''); setUsername(''); setPassphrase(''); setBirthDate(''); setError(null); }
+  function reset() { setName(''); setUsername(''); setPassphrase(''); setBirthDate(''); setAgeBand(null); setError(null); }
 
   async function submit(event: FormEvent) {
     event.preventDefault();
     if (!ready || busy === 'saving') return;
     setBusy('saving'); setError(null);
-    const result = await createChild(transport, { displayName: name.trim(), username: handle, passphrase, birthDate: birthDate || null, locale });
+    const result = await createChild(transport, dated
+      ? { displayName: name.trim(), username: handle, passphrase, birthDate, locale }
+      : { displayName: name.trim(), username: handle, passphrase, birthDate: null, ageBand: ageBand ?? undefined, locale });
     setBusy('idle');
     if (!result.ok) { setError(copy[CREATE_ERRORS[result.code] ?? 'failed']); return; }
     const created = result.data.kid;
@@ -105,7 +116,7 @@ export function AddChild({ copy, locale, transport, startOpen = false, onAdded, 
     // A new child has no chores, coins or streak yet: known zeros by construction, not fetched.
     onAdded({ userId: created.userId, displayName: created.displayName ?? name.trim(), username: created.username ?? handle, analyticsConsent: false,
       pendingApprovalCount: 0, walletTotal: 0, taskStreakDays: 0, accountType: 'child', profileReview: null,
-      dialogueExperiment: age !== null && age >= 10 && age <= 12 });
+      dialogueExperiment: age !== null && age >= 10 && age <= 12, ageRecorded: true });
   }
 
   if (!open) {
@@ -125,6 +136,8 @@ export function AddChild({ copy, locale, transport, startOpen = false, onAdded, 
       <TextField type="password" label={copy.passphrase} help={copy.passphraseHelp} autoComplete="new-password" minLength={PASSPHRASE_MIN} required
         revealLabels={{ show: copy.show, hide: copy.hide }} value={passphrase} onChange={(e) => setPassphrase(e.target.value)}
         error={passphrase.length > 0 && passphrase.length < PASSPHRASE_MIN ? copy.passphraseShort : undefined} />
+      <RadioGroup legend={copy.ageLegend} help={copy.ageHelp} name={`${heading}-age`} options={ageOptions(copy)} value={dated ? null : ageBand}
+        disabled={dated} onValueChange={setAgeBand} />
       <TextField type="date" label={copy.birthDate} help={copy.birthDateHelp} value={birthDate} max={new Date().toISOString().slice(0, 10)}
         onChange={(e) => setBirthDate(e.target.value)} error={birthInvalid ? copy.invalid : undefined} />
       <ButtonGroup>
@@ -153,7 +166,9 @@ export function ManageChild({ child, copy, transport, onRenamed, onUsernameChang
   const [passphrase, setPassphrase] = useState('');
   const [handle, setHandle] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [busy, setBusy] = useState<'idle' | 'name' | 'username' | 'passphrase' | 'remove'>('idle');
+  const [busy, setBusy] = useState<'idle' | 'name' | 'username' | 'passphrase' | 'remove' | 'age'>('idle');
+  const [ageBand, setAgeBand] = useState<ChildAgeBand | null>(null);
+  const [ageDone, setAgeDone] = useState(false);
   const [notice, setNotice] = useState<{ tone: 'success' | 'error' | 'info'; text: string } | null>(null);
   const label = child.displayName ?? child.username ?? '';
 
@@ -209,6 +224,20 @@ export function ManageChild({ child, copy, transport, onRenamed, onUsernameChang
     setNotice({ tone: 'success', text: fill(copy.passphraseSaved, { name: label }) });
   }
 
+  // A.4: only a child Core reports with no age on record is asked; the answer is recorded once.
+  const ageMissing = child.ageRecorded === false && !ageDone;
+
+  async function saveAge(event: FormEvent) {
+    event.preventDefault();
+    if (!ageBand || busy !== 'idle') return;
+    setBusy('age'); setNotice(null);
+    const result = await setChildAge(transport, child.userId, ageBand);
+    setBusy('idle');
+    if (!result.ok && result.code !== 'AGE_ALREADY_RECORDED') { setNotice({ tone: 'error', text: refusal(result.code) }); return; }
+    setAgeDone(true);
+    setNotice({ tone: result.ok ? 'success' : 'info', text: result.ok ? copy.ageSaved : copy.ageAlready });
+  }
+
   // No username, nothing to type: the gate refuses the whole action rather than matching a blank field.
   const confirmed = child.username !== null && confirm.trim().toLowerCase() === child.username;
 
@@ -224,6 +253,7 @@ export function ManageChild({ child, copy, transport, onRenamed, onUsernameChang
 
   if (!open) {
     return <div className="lf-console-control" data-console-control="manage-child">
+      {ageMissing ? <Copy role="body">{fill(copy.ageNeeded, { name: label })}</Copy> : null}
       <ButtonGroup><Button aria-expanded={false} onClick={() => setOpen(true)}>{copy.manage}</Button></ButtonGroup>
     </div>;
   }
@@ -232,6 +262,13 @@ export function ManageChild({ child, copy, transport, onRenamed, onUsernameChang
     <h3 id={heading} data-copy-role="heading">{copy.manage}</h3>
     <div role="status">{notice && notice.tone !== 'error' ? <InlineNotice tone={notice.tone}>{notice.text}</InlineNotice> : null}</div>
     {notice?.tone === 'error' ? <InlineNotice tone="error" live>{notice.text}</InlineNotice> : null}
+    {ageMissing
+      ? <form className="lf-console-form" noValidate onSubmit={(event) => void saveAge(event)} data-console-control="child-age">
+        <Copy role="body">{fill(copy.ageNeeded, { name: label })}</Copy>
+        <RadioGroup legend={copy.ageLegend} name={`${heading}-age`} options={ageOptions(copy)} value={ageBand} onValueChange={setAgeBand} />
+        <ButtonGroup><Button type="submit" disabled={ageBand === null} pending={busy === 'age'} pendingLabel={copy.saving}>{copy.saveAge}</Button></ButtonGroup>
+      </form>
+      : null}
     <form className="lf-console-form" noValidate onSubmit={(event) => void saveName(event)}>
       <TextField label={copy.name} help={usernameFlagged ? undefined : copy.renameHelp} maxLength={80} required value={name} onChange={(e) => setName(e.target.value)} />
       <ButtonGroup><Button type="submit" disabled={name.trim().length === 0 || name.trim() === child.displayName} pending={busy === 'name'}

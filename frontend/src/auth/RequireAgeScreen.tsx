@@ -16,7 +16,7 @@ function validState(value: Screening | null): value is Screening {
 }
 
 export function RequireAgeScreen({ children }: { children: ReactNode }) {
-  const { session, getToken, logout, refreshMe } = useAuth();
+  const { session, getToken, logout, refreshMe, roles } = useAuth();
   const { pathname } = useLocation();
   const { i18n } = useTranslation();
   const { isDark } = useTheme();
@@ -28,6 +28,9 @@ export function RequireAgeScreen({ children }: { children: ReactNode }) {
   const [attempt, setAttempt] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<'invalid' | 'unavailable' | undefined>();
+  // A.4 (OD-3): a parent-created child's age comes from their Tutor; Core refuses the child's own answer (KID_AGE_BY_TUTOR).
+  const [tutorGivesAge, setTutorGivesAge] = useState(false);
+  const kid = roles.includes('kid') || tutorGivesAge;
   useEffect(() => {
     generation.current += 1;
     let cancelled = false;
@@ -45,7 +48,7 @@ export function RequireAgeScreen({ children }: { children: ReactNode }) {
   if (current && validState(current.state) && !current.state.required) return <>{children}</>;
   const locale = i18n.resolvedLanguage === 'es-MX' ? 'es-MX' : i18n.resolvedLanguage === 'pt-BR' ? 'pt-BR' : 'en-US';
   return <AgeScreen key={identity} locale={locale} dark={isDark} copy={({'en-US': en, 'es-MX': es, 'pt-BR': pt})[locale].ageScreen}
-    state={!current ? 'loading' : !validState(current.state) ? 'error' : saving ? 'saving' : 'form'} error={error}
+    state={!current ? 'loading' : !validState(current.state) ? 'error' : kid ? 'askTutor' : saving ? 'saving' : 'form'} error={error}
     onRetry={() => setAttempt(n => n + 1)} onExit={() => void logout()}
     onSubmit={(birthDate, birthMonth) => {
       const submissionGeneration = generation.current;
@@ -59,6 +62,7 @@ export function RequireAgeScreen({ children }: { children: ReactNode }) {
         const response = await api<Screening>('/auth/age-screen', { token, body: birthMonth ? { birthDate, birthMonth } : { birthDate } });
         if (stale()) return;
         setSaving(false);
+        if (response.error?.code === 'KID_AGE_BY_TUTOR') { setTutorGivesAge(true); return; }
         if (response.error || !validState(response.data) || response.data.required) {
           setError(response.error?.code === 'VALIDATION_ERROR' ? 'invalid' : 'unavailable'); return;
         }

@@ -69,7 +69,7 @@ describe('rebuild-site copy budget', () => {
         }
       }
       for (const [key, text] of Object.entries(strings.ageScreen as Record<string, string>)) {
-        const role = key === 'title' ? 'heading' : ['continue', 'exit', 'retry'].includes(key) ? 'action' : 'body';
+        const role = key === 'title' || key === 'askTutorTitle' ? 'heading' : ['continue', 'exit', 'retry'].includes(key) ? 'action' : 'body';
         expectFits(text, role, locale, '6-9', `ageScreen.${key}`);
       }
       for (const [key, text] of Object.entries(strings.kidSuspended as Record<string, string>)) {
