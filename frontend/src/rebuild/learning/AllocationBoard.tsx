@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { Button, Slider, ProgressBar } from '../design/controls';
 import { PocketSplit } from '../family/PocketSplit';
@@ -9,6 +9,7 @@ import { learningFixtures } from './allocationFixtures';
 import { ageEligibilityForBand, lessonVersionKey, type LessonClientDocument, type LessonClientSegment, type LessonMentorStage } from './lessonDocument';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { TeachingChartBoard } from './TeachingChartBoard';
+import { AllocationDonutVisual, AllocationStackVisual, AllocationWaffleVisual } from './pizarron';
 import { CompactMentorStage } from './CompactMentorStage';
 import { SegmentPrompt } from './segmentKit';
 import './learning.css';
@@ -141,8 +142,6 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
   const [verdict, setVerdict] = useState<CheckResult | 'unavailable' | null>(null);
   const [pending, setPending] = useState(false);
   const requestId = useRef(0);
-  const patternId = useId().replaceAll(':', '');
-  const ringLength = 2 * Math.PI * 42;
   useEffect(() => {
     try { window.sessionStorage.setItem(storageKey, encodeAllocationCheckpoint(document.lesson_id, document.version_id, allocation)); }
     catch { return; }
@@ -150,6 +149,7 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
   useEffect(() => () => { requestId.current++; }, []);
   const t = copy[locale];
   const left = remaining(item, allocation);
+  const pocketAmounts = pockets.map((pocket) => ({ id: pocket, amount: allocation[pocket] }));
   const formatter = useMemo(() => new Intl.NumberFormat(locale, segment.payload.currency === 'local'
     ? { style: 'currency', currency: localCurrency[locale], currencyDisplay: 'code', maximumFractionDigits: 0 }
     : { maximumFractionDigits: 0 }), [locale, segment.payload.currency]);
@@ -198,64 +198,15 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
           controlLeading={<Button onClick={reset} disabled={allocation.save + allocation.spend + allocation.share === 0}>{t.reset}</Button>}
           rows={[...pockets.map((pocket) => ({ id: pocket, label: t[pocket], value: amount(allocation[pocket]) })), { id: 'left', label: t.left, value: amount(left) }]}
           chart={<>
-            {segment.visual.type === 'waffle' ? <div className="lf-learning-waffle" role="img"
-              aria-label={`${t.waffle}. ${t.waffleKey}. ${t.balance}: ${pockets.map((pocket) => `${t[pocket]} ${amount(allocation[pocket])}`).join(', ')}, ${t.left} ${amount(left)}`}>
-              <div className="lf-learning-waffle-grid" aria-hidden="true">
-                {Array.from({ length: 100 }, (_, index) => {
-                  const row = Math.floor(index / 10);
-                  const kind = row < allocation.save ? 'save' : row < allocation.save + allocation.spend ? 'spend'
-                    : row < allocation.save + allocation.spend + allocation.share ? 'share' : 'left';
-                  const className = kind === 'save' ? 'lf-learning-waffle-cell lf-learning-waffle-cell--save'
-                    : kind === 'spend' ? 'lf-learning-waffle-cell lf-learning-waffle-cell--spend'
-                      : kind === 'share' ? 'lf-learning-waffle-cell lf-learning-waffle-cell--share'
-                        : 'lf-learning-waffle-cell lf-learning-waffle-cell--left';
-                  return <span key={index} className={className} />;
-                })}
-              </div>
-              <span className="lf-learning-waffle-key" data-copy-role="data">{t.waffleKey}</span>
-            </div> : segment.visual.type === 'donut' ? <div className="lf-learning-donut" role="img"
-              aria-label={`${t.donut}. ${t.balance}: ${pockets.map((pocket) => `${t[pocket]} ${amount(allocation[pocket])}`).join(', ')}, ${t.left} ${amount(left)}.`}>
-              <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
-                <defs>
-                  <pattern id={`${patternId}-donut-spend`} patternUnits="userSpaceOnUse" width="8" height="8">
-                    <rect width="8" height="8" className="lf-learning-pattern-spend-base" />
-                    <path d="M-2 8 L8 -2 M2 10 L10 2" className="lf-learning-pattern-spend-line" />
-                  </pattern>
-                  <pattern id={`${patternId}-donut-share`} patternUnits="userSpaceOnUse" width="8" height="8">
-                    <rect width="8" height="8" className="lf-learning-pattern-share-base" />
-                    <circle cx="4" cy="4" r="1.5" className="lf-learning-pattern-share-dot" />
-                  </pattern>
-                </defs>
-                <circle cx="60" cy="60" r="42" className="lf-learning-donut-track" />
-                {pockets.map((pocket, index) => {
-                  const prior = pockets.slice(0, index).reduce((sum, value) => sum + allocation[value], 0);
-                  return <circle key={pocket} cx="60" cy="60" r="42" className="lf-learning-donut-segment"
-                    stroke={pocket === 'save' ? 'var(--mint-strong)' : `url(#${patternId}-donut-${pocket})`}
-                    strokeDasharray={`${ringLength * allocation[pocket] / item.total} ${ringLength}`}
-                    strokeDashoffset={-ringLength * prior / item.total} />;
-                })}
-              </svg>
-              <span className="lf-learning-donut-total" data-copy-role="data">{amount(item.total)}</span>
-            </div> : <div className="lf-learning-chart" role="img" aria-label={`${t.stackedBar}, ${t.scaleFromZero} ${amount(item.total)}. ${t.balance}: ${pockets.map((pocket) => `${t[pocket]} ${amount(allocation[pocket])}`).join(', ')}, ${t.left} ${amount(left)}`}>
-              <svg viewBox="0 0 300 64" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-                <defs>
-                  <pattern id={`${patternId}-spend`} patternUnits="userSpaceOnUse" width="8" height="8">
-                    <rect width="8" height="8" className="lf-learning-pattern-spend-base" />
-                    <path d="M-2 8 L8 -2 M2 10 L10 2" className="lf-learning-pattern-spend-line" />
-                  </pattern>
-                  <pattern id={`${patternId}-share`} patternUnits="userSpaceOnUse" width="8" height="8">
-                    <rect width="8" height="8" className="lf-learning-pattern-share-base" />
-                    <circle cx="4" cy="4" r="1.5" className="lf-learning-pattern-share-dot" />
-                  </pattern>
-                </defs>
-                <rect x="0" y="12" width="300" height="40" rx="20" className="lf-learning-chart-track" />
-                {pockets.map((pocket, index) => {
-                  const prior = pockets.slice(0, index).reduce((sum, p) => sum + allocation[p], 0);
-                  return <rect key={pocket} x={300 * prior / item.total} y="12" width={300 * allocation[pocket] / item.total} height="40"
-                    fill={pocket === 'save' ? 'var(--mint)' : `url(#${patternId}-${pocket})`} />;
-                })}
-              </svg>
-            </div>}
+            {segment.visual.type === 'waffle' ? <AllocationWaffleVisual
+              label={`${t.waffle}. ${t.waffleKey}. ${t.balance}: ${pockets.map((pocket) => `${t[pocket]} ${amount(allocation[pocket])}`).join(', ')}, ${t.left} ${amount(left)}`}
+              pockets={pocketAmounts} keyText={t.waffleKey} />
+              : segment.visual.type === 'donut' ? <AllocationDonutVisual
+                label={`${t.donut}. ${t.balance}: ${pockets.map((pocket) => `${t[pocket]} ${amount(allocation[pocket])}`).join(', ')}, ${t.left} ${amount(left)}.`}
+                pockets={pocketAmounts} total={item.total} totalText={amount(item.total)} />
+                : <AllocationStackVisual
+                  label={`${t.stackedBar}, ${t.scaleFromZero} ${amount(item.total)}. ${t.balance}: ${pockets.map((pocket) => `${t[pocket]} ${amount(allocation[pocket])}`).join(', ')}, ${t.left} ${amount(left)}`}
+                  pockets={pocketAmounts} total={item.total} />}
             <div className={`lf-learning-legend${segment.visual.type === 'donut' ? ' lf-learning-legend--donut' : ''}`}
               aria-hidden={segment.visual.type === 'donut' ? undefined : true}>
               {pockets.map((pocket) => <span key={pocket} className={`lf-learning-legend-${pocket}`} data-copy-role="data">

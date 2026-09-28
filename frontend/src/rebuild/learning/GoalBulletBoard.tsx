@@ -3,6 +3,7 @@ import type { AgeBand, Locale } from '../design/copyBudget';
 import { Button, Slider, ProgressBar } from '../design/controls';
 import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
 import { TeachingChartBoard } from './TeachingChartBoard';
+import { GoalBulletVisual } from './pizarron';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import './learning.css';
 import './goalBullet.css';
@@ -77,14 +78,8 @@ export function GoalBulletBoard({ document, segment, onBack, sequence, onGrade }
           rows={[{ id: 'saved', label: t.saved, value: amount(saved) }, { id: 'target', label: t.target, value: amount(target) },
             { id: 'remaining', label: t.remaining, value: amount(left) }]}
           chart={<>
-            <div className="lf-goal-visual" role="img" aria-label={`${t.bullet}, ${t.scale} ${amount(maximum)}. ${t.saved}: ${amount(saved)}. ${t.target}: ${amount(target)}. ${t.remaining}: ${amount(left)}.`}>
-              <svg viewBox="0 0 300 84" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-                <rect x="0" y="24" width="300" height="36" rx="12" className="lf-goal-track" />
-                <rect x="0" y="24" width={300 * goal / 100} height="36" rx="12" className="lf-goal-band" />
-                <rect x="0" y="30" width={300 * progress / 100} height="24" rx="8" className="lf-goal-fill" />
-                <line x1={300 * goal / 100} x2={300 * goal / 100} y1="14" y2="70" className="lf-goal-target" />
-              </svg>
-            </div>
+            <GoalBulletVisual label={`${t.bullet}, ${t.scale} ${amount(maximum)}. ${t.saved}: ${amount(saved)}. ${t.target}: ${amount(target)}. ${t.remaining}: ${amount(left)}.`}
+              progress={progress / 100} target={goal / 100} />
             <div className="lf-goal-axis"><span data-copy-role="data">{amount(minimum)}</span><span data-copy-role="data">{amount(maximum)}</span></div>
             <div className="lf-goal-legend" data-copy-role="data">{t.target}: {amount(target)}</div>
           </>}>

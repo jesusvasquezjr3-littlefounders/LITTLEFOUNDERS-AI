@@ -33,7 +33,7 @@ import { createHash } from 'node:crypto';
  * `npm run evaluation-loop:check` keeps them identical.
  */
 
-export const TRANSCRIPT_RUBRIC_VERSION = 'mentor-transcript-rubric.v1';
+export const TRANSCRIPT_RUBRIC_VERSION = 'mentor-transcript-rubric.v2';
 
 export type CriterionKind =
   /** One violation is a defect, whatever the sample (Appendix F "100%" invariants). */
@@ -117,7 +117,10 @@ export const TRANSCRIPT_RUBRIC: readonly RubricCriterion[] = [
     id: 'tell_honored',
     requirement: 'C.13',
     kind: 'hard_invariant',
-    scoredBy: ['judge'],
+    // Rules: Oracle's own count of tell requests and of the answer turns that
+    // carried the tell rung (tutor_dialogue_calibration, gap-fix round 1). The
+    // judge still reads whether that turn really gave the answer.
+    scoredBy: ['rules', 'judge'],
     measures: 'explicit "just tell me" requests the next Mentor turn did not honour',
     per: 'explicit requests for the answer',
     target: 0,

@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
-  Button, IconButton, InlineNotice, List, ListRow, MENTOR_CHARACTERS, MENTOR_NAMES, MentorAvatar, Pill, ProgressBar, RadioGroup, SingleStateScreen,
-  TextField, useRebuildEnvironment, type MentorCharacter,
+  Button, IconButton, InlineNotice, ProgressBar, RadioGroup, SingleStateScreen, TextField, type MentorCharacter,
 } from '../design/controls';
-import { findMentorAvatar } from '../design/assets';
-import { findChooserStill } from '../mentor/stageStills';
+import { MentorChooser } from '../mentor/MentorChooser';
 import type { Locale } from '../design/copyBudget';
 import { identityCopy } from './authBlocks';
 
@@ -19,11 +17,10 @@ import { identityCopy } from './authBlocks';
  * What changed from the legacy flow (OD-15, 02 rules 22–23): no legacy
  * component, no narration by the four characters in turn and no speech
  * bubbles. The Mentor is the learner's own choice (OD-6, 08 §8): the four real
- * characters standing on the Diorama, rendered from the real models (the
- * `mentor.chooserStill` renders the Mentor screen's chooser uses, 07 §4), each
- * with its name and one short line, saved to the same preference the Mentor
- * screen reads. A character without a chooser still shows its avatar render,
- * never a stand-in. The
+ * characters as renders of the real models (07 §4), each with its name and one
+ * short line, saved to the same preference the Mentor screen reads. The step
+ * is the shared MentorChooser (08 §8: the characters standing on their
+ * Diorama, `mentor.chooserStill`), not bust avatars in a list. The
  * mandatory age question is not here: the route guard asks it before this
  * screen mounts (A.3, A.4), and this flow never asks for a date again.
  *
@@ -57,7 +54,6 @@ export function OnboardingFlow({ locale, skipLabel, mentor, completing, failed, 
   initialStep?: OnboardingStep; initialName?: string;
 }) {
   const copy = identityCopy(locale).onboardingFlow;
-  const { theme } = useRebuildEnvironment();
   const [step, setStep] = useState<OnboardingStep>(initialStep);
   const [name, setName] = useState(initialName);
   const [channel, setChannel] = useState<DiscoveryChannel | null>(null);
@@ -106,19 +102,9 @@ export function OnboardingFlow({ locale, skipLabel, mentor, completing, failed, 
     case 'mentor':
       content = <>
         <h1 ref={heading} tabIndex={-1} data-copy-role="heading">{copy.mentorTitle}</h1>
-        <div className="lf-onboarding-chooser"><List label={copy.mentorTitle}>
-          {MENTOR_CHARACTERS.map((character) => {
-            // 08 §8: the character standing on its Diorama, as on the Mentor screen's chooser.
-            const still = findChooserStill(character, theme);
-            const render = still ? null : findMentorAvatar(character, theme);
-            return <ListRow key={character} title={MENTOR_NAMES[character]} titleRole="data" supporting={copy.lines[character]}
-              leading={still ? <img className="lf-onboarding-chooser-still" src={still.path} alt="" data-asset-id={still.id} data-character={character} />
-                : render ? <MentorAvatar renderId={render} label={null} size="md" /> : null}
-              trailing={mentor.chosen === character ? <Pill tone="success">{copy.chosen}</Pill>
-                : mentor.saving === character ? <Pill tone="sky">{copy.saving}</Pill> : null}
-              onPress={() => { if (!mentor.saving) mentor.onChoose(character); }} />;
-          })}
-        </List></div>
+        {/* 08 §8: the four real characters on their Diorama, the same chooser the Mentor screen uses. */}
+        <MentorChooser label={copy.mentorTitle} lines={copy.lines} chosen={mentor.chosen} saving={mentor.saving}
+          chosenLabel={copy.chosen} savingLabel={copy.saving} chosenTone="success" onChoose={mentor.onChoose} />
         {mentor.failed ? <InlineNotice tone="error" live>{copy.mentorFailed}</InlineNotice> : null}
       </>;
       actions = <>

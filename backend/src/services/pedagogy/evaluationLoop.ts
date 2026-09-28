@@ -59,6 +59,7 @@ import {
 const PAGE = 1000;
 const MAX_ROWS = 200_000;
 const DAY = 86_400_000;
+
 export const SNAPSHOT_SCHEMA = 'mentor-quality.v1';
 
 /** Retention of the loop's own artifacts (no personal data; kept for trends). */
@@ -104,8 +105,16 @@ export async function loadBundles(sessions: BacklogSession[]): Promise<SessionBu
     readAll<{ session_id: string; mode: string; outcome: string }>(`/tutor_telemetry_firing?select=session_id,mode,outcome&session_id=in.(${ids})&order=observation.asc`),
     readAll<{ session_id: string; learner_turns: number; goal_agreement: string }>(`/tutor_session_alliance?select=session_id,learner_turns,goal_agreement&session_id=in.(${ids})&order=session_id.asc`),
     readAll<{ session_id: string; mode: string; first_quality: string | null }>(`/tutor_self_explanation_event?select=session_id,mode,first_quality&session_id=in.(${ids})&order=observation.asc`),
-    readAll<{ session_id: string; variant: string | null; band: string | null; controlling_delivered: number | null }>(
-      `/tutor_dialogue_calibration?select=session_id,variant,band,controlling_delivered&session_id=in.(${ids})&order=session_id.asc`,
+    readAll<{
+      session_id: string;
+      variant: string | null;
+      band: string | null;
+      controlling_delivered: number | null;
+      tell_requests: number | null;
+      tell_delivered: number | null;
+      tell_withdrawn: number | null;
+    }>(
+      `/tutor_dialogue_calibration?select=session_id,variant,band,controlling_delivered,tell_requests,tell_delivered,tell_withdrawn&session_id=in.(${ids})&order=session_id.asc`,
     ),
   ]);
   if (!turns || !honesty || !firings || !alliance || !explanations || !dialogue) return null;

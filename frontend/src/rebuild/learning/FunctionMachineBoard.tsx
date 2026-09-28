@@ -8,6 +8,7 @@ import { useSingleActiveGrade } from './useSingleActiveGrade';
 import './learning.css';
 import { LessonStageSlot } from './lessonStage';
 import { SegmentPrompt } from './segmentKit';
+import { FunctionMachineVisual } from './pizarron';
 
 type Segment = Extract<LessonClientSegment, { type: 'math.function-machine.v2' }>;
 type Verdict = 'invalid' | 'met' | 'review';
@@ -37,9 +38,8 @@ export function FunctionMachineBoard({ document, segment, onBack, onGrade, seque
     <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button><span data-copy-role="data">{t.board}</span></header><LessonStageSlot verdict={verdict} />
     <div className="lf-learning-content"><div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><SegmentPrompt segment={segment} locale={document.locale} /></div>
       <section className="lf-learning-board" aria-labelledby="function-machine-title"><h2 id="function-machine-title" data-copy-role="heading">{t.board}</h2>
-        <div className="lf-function-machine" role="img" aria-label={`${t.input}: ${selected}. ${t.output}: ${ran ? example?.output ?? '' : '?'}`}>
-          <span className="lf-function-machine-value" data-copy-role="data">{selected}</span><span className="lf-function-machine-arrow" aria-hidden="true">→</span><span className="lf-function-machine-core" data-copy-role="label">f</span><span className="lf-function-machine-arrow" aria-hidden="true">→</span><span className="lf-function-machine-value" data-copy-role="data">{ran ? example?.output : '?'}</span>
-        </div>
+        <FunctionMachineVisual label={`${t.input}: ${selected}. ${t.output}: ${ran ? example?.output ?? '' : '?'}`}
+          inputText={String(selected)} ruleText="f" outputText={ran ? String(example?.output ?? '') : '?'} />
         <table className="lf-learning-table lf-function-machine-table" aria-label={t.board}><thead><tr><th scope="col" data-copy-role="label">{t.input}</th><th scope="col" data-copy-role="label">{t.output}</th></tr></thead><tbody>{segment.payload.examples.map((item) => <tr key={item.input}><th scope="row" data-copy-role="data" data-label={t.input}>{item.input}</th><td data-copy-role="data" data-label={t.output}>{ran && selected === item.input ? item.output : '?'}</td></tr>)}</tbody></table>
       </section>
       <div className="lf-learning-control-strip"><div className="lf-function-machine-try"><SegmentedControl size="compact" legend={t.try} legendHidden name={`${tryName}-input`} disabled={pending} value={String(selected)}

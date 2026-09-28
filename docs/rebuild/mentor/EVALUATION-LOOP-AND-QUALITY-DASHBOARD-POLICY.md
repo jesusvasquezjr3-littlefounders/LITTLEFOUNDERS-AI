@@ -17,7 +17,7 @@ Every threshold below is **proposed, pending calibration**. Each one is recorded
 
 ## 2. The rubric
 
-### 2.1 Criteria (`mentor-transcript-rubric.v1`)
+### 2.1 Criteria (`mentor-transcript-rubric.v2`)
 
 Source: `backend/src/services/pedagogy/transcriptRubric.ts`.
 
@@ -28,7 +28,7 @@ Source: `backend/src/services/pedagogy/transcriptRubric.ts`.
 | `praise_specificity` | C.18 | diagnostic | — | rules, judge |
 | `emotion_label` | C.9 | zero tolerance | 0 | rules (an independent read of the Mentor's text), judge |
 | `hint_repeat` | C.13 | hard invariant | 0 | rules (a hint repeated word for word), judge |
-| `tell_honored` | C.13 | hard invariant | 0 | judge only |
+| `tell_honored` | C.13 | hard invariant | 0 | rules (Oracle's tell count) and judge |
 | `closing_script` | C.16 | hard invariant | 0 | rules |
 | `check_in` | C.19 | hard invariant | 0 | rules |
 | `goal_agreement` | C.15 | floor | 95% of sessions with 3 or more learner turns | rules |
@@ -51,6 +51,7 @@ The Core suite (`transcriptEvaluation.test.ts`) fails when the computed hash is 
 | Version | Hash | Date | Change | Pedagogical Reviewer | Safety/Trust Lead |
 |---|---|---|---|---|---|
 | v1 | `c2b0afe50fba8e6690b65e67f05773e42f5f1cbd53a3c016e652679035dfe5ea` | 2026-09-25 | Initial rubric (S06.13) | Pending | Pending |
+| v2 | `9d6b500802aec630ff78bcf1ef940f6e79b427c439889f880c70797109172506` | 2026-09-27 | `tell_honored` is rule-scored as well as judged: Oracle counts each explicit "just tell me", the answer turns that carried the tell rung and the requests withdrawn (learner cut in, or a safety response replaced the turn); misses are a hard invariant (gap-fix round 1, C.24) | Pending | Pending |
 
 ## 3. Scoring
 
@@ -161,6 +162,6 @@ Appendix F §1.4 requires every consolidated signal to be updated within 24 hour
 
 ## 11. What this does not claim
 
-- The deterministic scorer does not judge meaning. `tell_honored` and `scaffold_quality` stay unscored until a calibrated judge exists.
+- The deterministic scorer does not judge meaning. `scaffold_quality` stays unscored until a calibrated judge exists. `tell_honored` is rule-scored from Oracle's count of answer turns that carried the tell rung; whether that turn really stated the answer is still the judge's question.
 - A fixture agreement of 100% is not a calibration.
 - Nothing here is "the Mentor improving itself". This is measurement and flagging only (Appendix E §2.3).

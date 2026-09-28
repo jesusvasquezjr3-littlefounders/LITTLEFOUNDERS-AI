@@ -1,0 +1,3 @@
+/* The shared Mentor chooser (08 §8): the character on its Diorama leads each row. */
+.lf-mentor-chooser .lf-list-row-text { flex-basis: 7em; }
+.lf-mentor-chooser-still { display: block; inline-size: 5.5rem; aspect-ratio: 4 / 5; border-radius: var(--rounded-md); object-fit: cover; }

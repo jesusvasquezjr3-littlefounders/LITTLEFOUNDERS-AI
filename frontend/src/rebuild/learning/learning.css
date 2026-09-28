@@ -30,8 +30,8 @@
 .lf-bar-model { display: grid; gap: var(--spacing-3); }
 .lf-bar-model-row { display: grid; grid-template-columns: minmax(88px, 140px) minmax(0, 1fr); align-items: center; gap: var(--spacing-3); font-weight: 800; }
 .lf-bar-model-track { position: relative; min-block-size: var(--target-base); background: var(--sunken); overflow: visible; border-radius: var(--rounded-sm); }
-.lf-bar-model-track i { display: block; min-block-size: inherit; background: var(--sky-strong); border-radius: inherit; }
-.lf-bar-model-row + .lf-bar-model-row i { background: var(--mint-strong); }
+/* The tape's segments take their series fill from the shared Pizarrón visual (pizarron/pizarron.css, 05 §2). */
+.lf-bar-model-track i { display: block; min-block-size: inherit; }
 .lf-bar-model-track b { position: absolute; inset-inline-end: var(--spacing-2); inset-block-start: 50%; transform: translateY(-50%); color: var(--on-mint); }
 @container app (max-width: 420px) { .lf-bar-model-row { grid-template-columns: 1fr; gap: var(--spacing-1); } }
 .lf-schema-diagram { display: grid; grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr); align-items: center; gap: var(--spacing-2); }
@@ -136,7 +136,8 @@
 .lf-cpa-concrete > span, .lf-cpa-pictorial > span, .lf-cpa-equation > span { color: var(--primary-strong); font-family: Fredoka, sans-serif; font-size: 2rem; font-weight: 800; }
 .lf-cpa-dots { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-2); min-block-size: 84px; padding: var(--spacing-3); border-radius: var(--rounded-lg); background: var(--sunken); }
 .lf-cpa-dots span { inline-size: 28px; block-size: 28px; border-radius: var(--rounded-full); background: var(--sky-strong); box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--sky-strong), #000 20%); }
-.lf-cpa-dots--right span { background: var(--mint-strong); box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--mint-strong), #000 20%); }
+/* The second group is the second series: mint with its diagonal pattern channel (05 §2). */
+.lf-cpa-dots--right span { background-color: var(--mint-strong); background-image: repeating-linear-gradient(135deg, transparent 0 5px, var(--surface) 5px 7px); box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--mint-strong), #000 20%); }
 .lf-cpa-pictorial > div { display: grid; place-items: center; min-block-size: 112px; padding: var(--spacing-3); border: 2px dashed var(--outline); border-radius: var(--rounded-lg); }
 .lf-cpa-pictorial .lf-cpa-dots { min-block-size: 0; padding: 0; background: transparent; }
 .lf-cpa-equation { display: flex; align-items: center; justify-content: center; gap: var(--spacing-3); min-block-size: 148px; padding: var(--spacing-4); border-radius: var(--rounded-lg); background: var(--sunken); color: var(--content); }

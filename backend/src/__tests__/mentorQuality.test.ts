@@ -110,7 +110,10 @@ describe('C.24 registry', () => {
   it('shows a metric with no data source as not instrumented, never as healthy', () => {
     const r = evaluateSignals(empty());
     expect(readingOf(r, 'engagement.streak_anxiety').status).toBe('not_instrumented');
-    expect(readingOf(r, 'rubric.tell_honored').status).toBe('not_instrumented');
+    // Instrumented since gap-fix round 1: empty sources read as insufficient data, never as healthy.
+    for (const id of ['learning.judgment_quality', 'learning.transfer_success', 'engagement.session_efficiency', 'engagement.mentor_resolution', 'learning.decision_journal', 'learning.bridge_conversion', 'engagement.rest_day_use', 'engagement.autonomy_adoption', 'rubric.tell_honored']) {
+      expect(readingOf(r, id).status, id).toBe('insufficient_data');
+    }
     expect(readingOf(r, 'bias_audit.coverage').status).toBe('external');
     expect(r.anomalies).toEqual([]);
   });
@@ -134,15 +137,15 @@ describe('C.24 consolidates the Learning Quality tab (Appendix C 1.1 and 1.2)', 
   it('breaches judgment quality when it tracks correctness, and reads the narrative, rest-day and autonomy rates', () => {
     const r = evaluateSignals(learning({
       judgment: [{ lesson_id: 'l1', attempts: 100, correct_not_sound: 3, incorrect_sound: 2 }],
-      narrative: { journal_entries_recorded: 10, journal_entries_resurfaced: 4, bridge_prompts_offered: 20, bridge_prompts_converted_7d: 5, bridge_self_commitments: 2 },
-      restDays: { learners_with_lapse: 8, kept_by_rest_days: 2, utilization_rate: 0.25, rest_days_used: 3 },
+      narrative: { journal_entries_recorded: 40, journal_entries_resurfaced: 16, bridge_prompts_offered: 20, bridge_prompts_converted_7d: 5, bridge_self_commitments: 2 },
+      restDays: { learners_with_lapse: 32, kept_by_rest_days: 8, utilization_rate: 0.25, rest_days_used: 12 },
       autonomy: [{ lever: 'path', offered: 10, exercised: 4, adoption_rate: 0.4 }, { lever: 'pace', offered: 10, exercised: 6, adoption_rate: 0.6 }],
     }));
     expect(readingOf(r, 'learning.judgment_quality')).toMatchObject({ status: 'breach', value: 0.05, sample: 100 });
     expect(r.anomalies.some((a) => a.signalId === 'learning.judgment_quality' && a.kind === 'threshold_breach')).toBe(true);
     expect(readingOf(r, 'learning.bridge_conversion')).toMatchObject({ status: 'diagnostic', value: 0.25 });
     expect(readingOf(r, 'learning.decision_journal')).toMatchObject({ status: 'diagnostic', value: 0.4 });
-    expect(readingOf(r, 'engagement.rest_day_use')).toMatchObject({ status: 'diagnostic', value: 0.25, sample: 8 });
+    expect(readingOf(r, 'engagement.rest_day_use')).toMatchObject({ status: 'diagnostic', value: 0.25, sample: 32 });
     expect(readingOf(r, 'engagement.autonomy_adoption')).toMatchObject({ status: 'diagnostic', value: 0.5, sample: 20 });
   });
 
@@ -362,5 +365,28 @@ describe('C.24 flags, freshness and owner review', () => {
     const c = reviewCompletion(owners, reviews, NOW);
     expect(c).toMatchObject({ week: '2026-09-21', previousWeek: '2026-09-14', named: 2, reviewedPreviousWeek: 1, reviewedThisWeek: 1, previousRate: 0.5 });
     expect(c.missingRoles).toEqual(['engineering_lead']);
+  });
+});
+
+describe('C.24 x Appendix C: minimum samples and the tell invariant (gap-fix round 1)', () => {
+  it('reads a diagnostic below its minimum opportunities (20) as insufficient data, never as a rate', () => {
+    const r = evaluateSignals({
+      ...empty(),
+      learning: {
+        ...empty().learning,
+        narrative: { journal_entries_recorded: 5, journal_entries_resurfaced: 2, bridge_prompts_offered: 4, bridge_prompts_converted_7d: 1, bridge_self_commitments: 0 },
+        restDays: { learners_with_lapse: 3, kept_by_rest_days: 1, utilization_rate: 0.33, rest_days_used: 1 },
+        autonomy: [{ lever: 'path', offered: 5, exercised: 2, adoption_rate: 0.4 }],
+      },
+    });
+    for (const id of ['learning.decision_journal', 'learning.bridge_conversion', 'engagement.rest_day_use', 'engagement.autonomy_adoption']) {
+      expect(readingOf(r, id).status, id).toBe('insufficient_data');
+    }
+  });
+
+  it('reads rubric.tell_honored from the rule scores as a hard invariant: one unhonoured request is urgent', () => {
+    const r = evaluateSignals({ ...empty(), scores: [score('tell_honored', 'fail'), score('tell_honored', 'pass')] });
+    expect(readingOf(r, 'rubric.tell_honored').status).toBe('breach');
+    expect(r.anomalies.some((a) => a.signalId === 'rubric.tell_honored' && a.severity === 'urgent')).toBe(true);
   });
 });

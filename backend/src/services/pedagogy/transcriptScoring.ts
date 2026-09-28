@@ -16,8 +16,11 @@
  *     sound (a declared emotion, a hint repeated word for word). These catch
  *     what the runtime did NOT notice about itself.
  *
- * Criteria that need semantic judgement (`tell_honored`, `scaffold_quality`)
- * produce no row here: only a calibrated judge may score them (C.23).
+ * Criteria that need semantic judgement (`scaffold_quality`) produce no row
+ * here: only a calibrated judge may score them (C.23). `tell_honored` is
+ * scored from the runtime's own record: every explicit "just tell me" that
+ * was not withdrawn (the learner cut in, or a safety response replaced the
+ * turn) must have been answered by a Mentor turn carrying the tell rung.
  *
  * Output per criterion: `numerator` / `denominator` (what the criterion
  * counts, over its opportunities) and an outcome:
@@ -63,7 +66,15 @@ export interface SessionBundle {
   firings: { mode: string; outcome: string }[];
   alliance: { learner_turns: number; goal_agreement: string } | null;
   selfExplanation: { mode: string; first_quality: string | null }[];
-  dialogue: { variant: string | null; band: string | null; controlling_delivered: number | null } | null;
+  dialogue: {
+    variant: string | null;
+    band: string | null;
+    controlling_delivered: number | null;
+    /** C.13 tell requests and the answer turns that honoured them (null before gap-fix round 1). */
+    tell_requests?: number | null;
+    tell_delivered?: number | null;
+    tell_withdrawn?: number | null;
+  } | null;
 }
 
 export interface CriterionScore {
@@ -241,6 +252,12 @@ export function scoreSession(bundle: SessionBundle): CriterionScore[] {
   const d = bundle.dialogue;
   const autonomy = d !== null && d.variant === 'calibrated' && (d.band === 'teen' || d.band === 'adult');
   scores.push(autonomy ? verdict('controlling_language', Math.min(d!.controlling_delivered ?? 0, tutorTurns.length), tutorTurns.length) : verdict('controlling_language', 0, 0));
+
+  // C.13 non-negotiable: "just tell me" is always honoured (hard invariant, rules-scored).
+  const tellOwed = d === null || d.tell_delivered === null || d.tell_delivered === undefined
+    ? 0
+    : Math.max(0, (d.tell_requests ?? 0) - (d.tell_withdrawn ?? 0));
+  scores.push(verdict('tell_honored', tellOwed === 0 ? 0 : Math.max(0, tellOwed - (d!.tell_delivered ?? 0)), tellOwed));
 
   // C.14 diagnostic: first-attempt concept answers.
   const answered = bundle.selfExplanation.filter(

@@ -261,6 +261,14 @@ export const DialogueCalibrationSnapshotSchema = z
     controllingDelivered: z.number().int().min(0),
     pacingOffers: z.number().int().min(0),
     unilateralStyleChanges: z.number().int().min(0),
+    // Added by the gap-fix round (C.24 tell_honored; OD-13 budget; OD-6 self-naming).
+    // Defaulted so a snapshot written before them still restores.
+    tellDelivered: z.number().int().min(0).default(0),
+    tellWithdrawn: z.number().int().min(0).default(0),
+    budgetCaught: z.number().int().min(0).default(0),
+    budgetDelivered: z.number().int().min(0).default(0),
+    selfNamingCaught: z.number().int().min(0).default(0),
+    selfNamingDelivered: z.number().int().min(0).default(0),
   })
   .strict();
 export type DialogueCalibrationSnapshot = z.infer<typeof DialogueCalibrationSnapshotSchema>;
@@ -272,6 +280,12 @@ export const EMPTY_DIALOGUE_CALIBRATION: DialogueCalibrationSnapshot = {
   controllingDelivered: 0,
   pacingOffers: 0,
   unilateralStyleChanges: 0,
+  tellDelivered: 0,
+  tellWithdrawn: 0,
+  budgetCaught: 0,
+  budgetDelivered: 0,
+  selfNamingCaught: 0,
+  selfNamingDelivered: 0,
 };
 
 export interface DialogueCalibrationReport extends DialogueCalibration {
@@ -282,6 +296,16 @@ export interface DialogueCalibrationReport extends DialogueCalibration {
   controllingDelivered: number;
   pacingOffers: number;
   unilateralStyleChanges: number;
+  /** C.13: turns that answered an explicit "just tell me" (C.24 rubric.tell_honored). */
+  tellDelivered: number;
+  /** C.13: tell requests whose answer turn the learner cut off or a safety response replaced. */
+  tellWithdrawn: number;
+  /** OD-13: Mentor turns over the Copy Budget, caught on the first attempt / delivered anyway. */
+  budgetCaught: number;
+  budgetDelivered: number;
+  /** OD-6: turns where the Mentor called itself a tutor, bot or assistant. */
+  selfNamingCaught: number;
+  selfNamingDelivered: number;
 }
 
 const cap = (n: number): number => Math.min(n, 10_000);
@@ -311,6 +335,30 @@ export class DialogueCalibrationRecorder {
     this.counts.controllingDelivered += 1;
   }
 
+  noteTellDelivered(): void {
+    this.counts.tellDelivered += 1;
+  }
+
+  noteTellWithdrawn(): void {
+    this.counts.tellWithdrawn += 1;
+  }
+
+  noteBudgetCaught(): void {
+    this.counts.budgetCaught += 1;
+  }
+
+  noteBudgetDelivered(): void {
+    this.counts.budgetDelivered += 1;
+  }
+
+  noteSelfNamingCaught(): void {
+    this.counts.selfNamingCaught += 1;
+  }
+
+  noteSelfNamingDelivered(): void {
+    this.counts.selfNamingDelivered += 1;
+  }
+
   noteStuckMove(kind: 'none' | 'style_change' | 'offer' | 'no_offer_left'): void {
     if (kind === 'offer') this.counts.pacingOffers += 1;
     if (kind === 'style_change') this.counts.unilateralStyleChanges += 1;
@@ -326,6 +374,12 @@ export class DialogueCalibrationRecorder {
       controllingDelivered: cap(this.counts.controllingDelivered),
       pacingOffers: cap(this.counts.pacingOffers),
       unilateralStyleChanges: cap(this.counts.unilateralStyleChanges),
+      tellDelivered: cap(this.counts.tellDelivered),
+      tellWithdrawn: cap(this.counts.tellWithdrawn),
+      budgetCaught: cap(this.counts.budgetCaught),
+      budgetDelivered: cap(this.counts.budgetDelivered),
+      selfNamingCaught: cap(this.counts.selfNamingCaught),
+      selfNamingDelivered: cap(this.counts.selfNamingDelivered),
     };
   }
 
@@ -334,6 +388,6 @@ export class DialogueCalibrationRecorder {
   }
 
   restore(snapshot: DialogueCalibrationSnapshot): void {
-    this.counts = { ...snapshot };
+    this.counts = { ...EMPTY_DIALOGUE_CALIBRATION, ...snapshot };
   }
 }

@@ -25,6 +25,8 @@ const FILES = {
   coreBody: 'backend/src/routes/tutor.ts',
   coreRow: 'backend/src/services/tutorData.ts',
   frontendWire: 'frontend/src/rebuild/mentor/session/types.ts',
+  frontendRenderers: 'frontend/src/rebuild/mentor/screen/boardVisuals.tsx',
+  pizarron: 'frontend/src/rebuild/learning/pizarron/index.ts',
 };
 
 const real = Object.fromEntries(
@@ -195,3 +197,15 @@ console.log(
   'check-instrument-parity OK — 4 instruments verified across 5 copies, and 7 deliberate ' +
     'desynchronisations each turn the gate red',
 );
+
+test('RED (B.7) when a kind has no shared Pizarrón visual on the Mentor board', () => {
+  const read = readWith(FILES.frontendRenderers, (s) => s.replace("  ten_frame: 'TenFrameVisual',\n", ''));
+  const problems = checkInstrumentParity(read);
+  assert.ok(problems.some((p) => p.includes('(ten_frame)') && p.includes('no shared visual renderer')), problems.join('\n'));
+});
+
+test('RED (B.7) when a kind maps to something that is not a shared visual', () => {
+  const read = readWith(FILES.frontendRenderers, (s) => s.replace("  scale: 'BalanceScaleVisual',", "  scale: 'GenericBars',"));
+  const problems = checkInstrumentParity(read);
+  assert.ok(problems.some((p) => p.includes('(scale)') && p.includes('not a shared Pizarrón visual')), problems.join('\n'));
+});

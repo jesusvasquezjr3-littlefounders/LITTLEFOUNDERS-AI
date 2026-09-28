@@ -103,6 +103,7 @@ describe('S06.13 C.24 GET /api/v1/admin/mentor-quality', () => {
     expect(d.signals.find((s: { id: string }) => s.id === 'rubric.emotion_label')).toMatchObject({ ownerRole: 'safety_trust_lead', reading: { status: 'breach' } });
     // A signal the snapshot does not carry is present, with no reading: never dropped.
     expect(d.signals.find((s: { id: string }) => s.id === 'mastery.reversal_rate')).toMatchObject({ reading: null });
+    expect(d.signals.find((s: { id: string }) => s.id === 'engagement.streak_anxiety')).toMatchObject({ instrumented: 'not_instrumented' });
     // GAP-FIX-R1 C.24: session efficiency now reads learning_session_efficiency.
     expect(d.signals.find((s: { id: string }) => s.id === 'engagement.session_efficiency')).toMatchObject({ instrumented: 'yes' });
     expect(d.flags.active[0]).toMatchObject({ id: FLAG_ID, ownerRole: 'safety_trust_lead', severity: 'urgent', value: 0.02 });

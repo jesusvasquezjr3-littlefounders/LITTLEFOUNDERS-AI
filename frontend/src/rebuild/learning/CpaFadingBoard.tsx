@@ -6,6 +6,7 @@ import type { LessonClientDocument, LessonClientSegment } from './lessonDocument
 import './learning.css';
 import { LessonStageSlot } from './lessonStage';
 import { SegmentPrompt } from './segmentKit';
+import { AdditionDotsVisual } from './pizarron';
 
 type Segment = Extract<LessonClientSegment, { type: 'math.cpa-count.v2' }>;
 type Verdict = 'invalid' | 'met' | 'review';
@@ -21,10 +22,6 @@ const copy: Record<Locale, Copy> = {
   'es-MX': { back: 'Volver', concrete: 'Constrúyelo', pictorial: 'Míralo', abstract: 'Escríbelo', stage: 'Paso', count: 'Cuenta los dos grupos', equation: 'Completa la operación', answer: 'Tu respuesta', check: 'Comprobar', correct: 'Lo encontraste.', retry: 'Cuenta otra vez.', unavailable: 'No pudimos comprobarlo. Intenta otra vez.', plus: 'más', equals: 'es igual a', worked: (left, right) => [`Empieza con ${left} monedas.`, `Cuenta ${right} más.`, 'Di el total.'] },
   'pt-BR': { back: 'Voltar', concrete: 'Monte', pictorial: 'Veja', abstract: 'Escreva', stage: 'Etapa', count: 'Conte os dois grupos', equation: 'Complete a conta', answer: 'Sua resposta', check: 'Conferir', correct: 'Você encontrou.', retry: 'Conte de novo.', unavailable: 'Não foi possível conferir. Tente de novo.', plus: 'mais', equals: 'é igual a', worked: (left, right) => [`Comece com ${left} moedas.`, `Conte mais ${right}.`, 'Diga o total.'] },
 };
-
-function Dots({ count, tone }: { count: number; tone: 'left' | 'right' }) {
-  return <div className={`lf-cpa-dots lf-cpa-dots--${tone}`} aria-label={String(count)}>{Array.from({ length: count }, (_, index) => <span key={index} aria-hidden="true" />)}</div>;
-}
 
 /** A single M1 stage. The answer is server-graded; the client only chooses its representation. */
 export function CpaFadingBoard({ document, segment, onBack, onGrade, sequence }: {
@@ -77,8 +74,8 @@ export function CpaFadingBoard({ document, segment, onBack, onGrade, sequence }:
     <div className={`lf-learning-content lf-cpa-transition${leaving ? ' lf-cpa-transition--leaving' : ''}`}><div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><SegmentPrompt segment={segment} locale={document.locale} /></div>
       <section className="lf-learning-board lf-cpa-board" aria-labelledby="cpa-stage-title" data-cpa-stage={stage.stage}>
         <div className="lf-learning-board-heading"><h2 id="cpa-stage-title" data-copy-role="heading">{label}</h2><span className="lf-cpa-stage" data-copy-role="label">{t.stage} {sequence.index + 1}</span></div>
-        {stage.stage === 'concrete' ? <div className="lf-cpa-concrete" role="img" aria-label={segment.payload.spokenText}><Dots count={segment.payload.left} tone="left" /><span aria-hidden="true">+</span><Dots count={segment.payload.right} tone="right" /></div> : null}
-        {stage.stage === 'pictorial' ? <div className="lf-cpa-pictorial" role="img" aria-label={segment.payload.spokenText}><div><Dots count={segment.payload.left} tone="left" /></div><span aria-hidden="true">+</span><div><Dots count={segment.payload.right} tone="right" /></div></div> : null}
+        {stage.stage === 'concrete' || stage.stage === 'pictorial' ? <AdditionDotsVisual label={segment.payload.spokenText}
+          left={segment.payload.left} right={segment.payload.right} stage={stage.stage} /> : null}
         {stage.stage === 'abstract' ? <div className="lf-cpa-equation" aria-label={segment.payload.spokenText}><strong data-copy-role="data">{segment.payload.left}</strong><span aria-hidden="true">+</span><strong data-copy-role="data">{segment.payload.right}</strong><span aria-hidden="true">=</span><strong aria-hidden="true">?</strong></div> : null}
         {steps > 0 ? <ol className="lf-cpa-steps" aria-label={t.count}>{t.worked(segment.payload.left, segment.payload.right).slice(0, steps).map((item, index) => <li key={index} data-copy-role="body">{item}</li>)}</ol> : null}
       </section>

@@ -350,6 +350,8 @@ export const TRANSCRIPT_FIXTURES: TranscriptFixture[] = [
         honesty('rho', 2, { sequence_kind: 'hint_ladder', hint_level: 'tell', reveal_sanctioned: true, reveal_key_match: true }),
       ],
       ...NONE,
+      // Oracle's own record: one explicit request, answered by a turn carrying the tell rung.
+      dialogue: { variant: 'calibrated', band: 'young_child', controlling_delivered: 0, tell_requests: 1, tell_delivered: 1, tell_withdrawn: 0 },
     },
     expected: {
       answer_reveal: 'pass', false_affirmation: 'pass', praise_specificity: 'not_applicable', emotion_label: 'pass', hint_repeat: 'pass',
@@ -359,7 +361,7 @@ export const TRANSCRIPT_FIXTURES: TranscriptFixture[] = [
   },
   {
     id: 'pt-tell-ignored',
-    note: 'The learner asks for the answer and the Mentor keeps withholding it (judge-only criterion).',
+    note: 'The learner asks for the answer and the Mentor keeps withholding it: two requests, no answer turn on the runtime record (rules) and no answer in the text (judge).',
     bundle: {
       session: session('f-pt-ignored', 'pt-BR', 2, 'learner_left', 'learner_left', 'liruf'),
       turns: turns([
@@ -375,6 +377,7 @@ export const TRANSCRIPT_FIXTURES: TranscriptFixture[] = [
         honesty('liruf', 4, { sequence_kind: 'hint_ladder', hint_level: 'fill_blank', praise: 'generic' }),
       ],
       ...NONE,
+      dialogue: { variant: 'calibrated', band: 'young_child', controlling_delivered: 0, tell_requests: 2, tell_delivered: 0, tell_withdrawn: 0 },
     },
     expected: {
       answer_reveal: 'pass', false_affirmation: 'pass', praise_specificity: 'observed', emotion_label: 'pass', hint_repeat: 'pass',

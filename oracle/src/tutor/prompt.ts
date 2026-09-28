@@ -109,6 +109,102 @@ export function tierVocabularyViolation(text: string, tier: 1 | 2 | 3): string |
 }
 
 /**
+ * THE MENTOR NAMES ITSELF AS THE MENTOR (OD-6; owner log §5 glossary: the AI
+ * character is the Mentor, never "Tutor", "bot" or "assistant"; "Tutor" is
+ * the learner's verified parent). The persona line says so; this is the
+ * check, because `turn.say` reaches a child as speech and captions.
+ *
+ * Only SELF-naming is caught: "ask your tutor to approve it" is the Mentor
+ * talking about the parent and is correct, and "the shop assistant" in a
+ * story is not the Mentor describing itself. A hit is a shape failure with
+ * one retry, like `TIER_FORBIDDEN`.
+ */
+export const SELF_NAMING_FORBIDDEN: { pattern: RegExp; why: string }[] = [
+  {
+    pattern: /\b(?:i'?m|i am|as)\s+(?:your|an?|the)\s+(?:ai\s+|virtual\s+|personal\s+|learning\s+)?tutor\b/i,
+    why: 'calling itself a tutor',
+  },
+  { pattern: /\b(?:soy|como)\s+(?:tu|un|una|el|la)\s+(?:tutor|tutora)\b/i, why: 'calling itself a tutor (es)' },
+  { pattern: /\b(?:sou|como)\s+(?:seu|sua|o|a|um|uma|teu|tua)\s+(?:tutor|tutora)\b/i, why: 'calling itself a tutor (pt)' },
+  {
+    pattern:
+      /\b(?:i'?m|i am|as|soy|como|sou)\s+(?:your|an?|the|tu|un|una|el|la|seu|sua|o|um|uma)\s+(?:ai\s+|virtual\s+|personal\s+)?(?:bot|chatbot|teacher-?bot|assistant|asistente|assistente)\b/i,
+    why: 'calling itself a bot or an assistant',
+  },
+  { pattern: /\b(?:i'?m|i am)\s+(?:just\s+)?an?\s+(?:ai\s+)?(?:bot|chatbot)\b/i, why: 'calling itself a bot' },
+];
+
+/** The first way a learner-visible string names the Mentor wrongly, or null. */
+export function selfNamingViolation(text: string): string | null {
+  for (const { pattern, why } of SELF_NAMING_FORBIDDEN) {
+    if (pattern.test(text)) return why;
+  }
+  return null;
+}
+
+/**
+ * THE MENTOR TURN'S COPY BUDGET (OD-13; Frontend Bible 06 role table row
+ * `mentor`; 08 §2 layer 3): at most 2 sentences and 20 words, 12 words for
+ * ages 6–9, one question per turn. Spanish and Portuguese run a quarter
+ * longer (06 §4, ×1.25, rounded up).
+ *
+ * MIRRORS `copyLimit('mentor', …)` and `checkCopy` in
+ * frontend/src/rebuild/design/copyBudget.ts (the services share no library by
+ * design); `prompt.test.ts` reads that file and fails when the numbers drift.
+ * The frontend splits an over-long turn into caption pages, which HIDES a
+ * violation; this check prevents it at the source. An overflow is a shape
+ * failure with one retry that names the limit; one that survives the retry
+ * is delivered, counted and flagged (the M-13 pattern), never hidden.
+ *
+ * Age: Oracle knows the learner's tier, not the band. Tiers 1 and 2 are the
+ * 6–9 band (TIER_GUIDANCE above); tier 3 is 10 and older.
+ */
+export const MENTOR_TURN_BUDGET = {
+  words: 20,
+  youngWords: 12,
+  sentences: 2,
+  questions: 1,
+  translatedFactor: 1.25,
+} as const;
+
+export function mentorTurnWordLimit(tier: 1 | 2 | 3, locale: Locale): number {
+  const base = tier === 3 ? MENTOR_TURN_BUDGET.words : MENTOR_TURN_BUDGET.youngWords;
+  return Math.ceil(base * (locale === 'en-US' ? 1 : MENTOR_TURN_BUDGET.translatedFactor));
+}
+
+export interface MentorTurnBudgetResult {
+  words: number;
+  sentences: number;
+  questions: number;
+  wordLimit: number;
+  /** The first limit the turn exceeds, or null when it fits. */
+  over: 'words' | 'sentences' | 'questions' | null;
+}
+
+export function mentorTurnBudget(say: string, tier: 1 | 2 | 3, locale: Locale): MentorTurnBudgetResult {
+  // Same word and sentence rules as the frontend's checkCopy.
+  const words = say.match(/[\p{L}\p{N}]+(?:['’][\p{L}\p{N}]+)*/gu)?.length ?? 0;
+  const normalized = say.replace(/\b(?:Dr|Mr|Mrs|Ms|Sr|Sra|Dra)\./gu, '').replace(/(\d)\.(?=\d)/gu, '$1');
+  const sentences = normalized.split(/[.!?…]+(?:\s|$)/u).filter((part) => /[\p{L}\p{N}]/u.test(part)).length;
+  const questions = say.match(/\?+/g)?.length ?? 0;
+  const wordLimit = mentorTurnWordLimit(tier, locale);
+  const over =
+    words > wordLimit
+      ? 'words'
+      : sentences > MENTOR_TURN_BUDGET.sentences
+        ? 'sentences'
+        : questions > MENTOR_TURN_BUDGET.questions
+          ? 'questions'
+          : null;
+  return { words, sentences, questions, wordLimit, over };
+}
+
+/** The one-retry correction that names the limit the turn broke. */
+export function mentorTurnBudgetCorrection(result: MentorTurnBudgetResult): string {
+  return `ran past the Mentor turn budget (${result.words} words, ${result.sentences} sentences, ${result.questions} questions; the limit is ${result.wordLimit} words, ${MENTOR_TURN_BUDGET.sentences} sentences and ${MENTOR_TURN_BUDGET.questions} question). Say it again within ${result.wordLimit} words and ${MENTOR_TURN_BUDGET.sentences} short sentences, with at most one question. CUT, do not compress: keep one idea and the question, and leave the rest for the next turn`;
+}
+
+/**
  * A NARROW, high-confidence signal that a turn drifted into a DIFFERENT
  * language than the session's own locale — not a full language detector,
  * on purpose, only the handful of orthographic/lexical markers that
@@ -1777,10 +1873,15 @@ export function repeatsEarlierSentence(say: string, earlierTutorLines: readonly 
  * it rather than instead of it, for the identical reason stated just above.
  */
 export const TUTOR_SYSTEM_PROMPT: string = [
-  'You are a tutor character inside LittleFounders, an educational product that',
-  'teaches money, mathematics, science, economics and beginner programming to',
-  'children and teenagers. You are speaking out loud, in a live session, to one',
-  'learner.',
+  "You are the learner's Mentor, one of the LittleFounders characters.",
+  'LittleFounders is an educational product that teaches money, mathematics,',
+  'science, economics and beginner programming to children and teenagers. You',
+  'are speaking out loud, in a live session, to one learner.',
+  '',
+  'Call yourself by your character name or "your Mentor"; never call yourself a',
+  "tutor, teacher-bot, bot or assistant. \"Tutor\" means the learner's parent",
+  '(tutor or tutora in Spanish and Portuguese), the adult who approves their',
+  'tasks and rewards, never you.',
   '',
   '## How you must answer',
   '',
@@ -1788,7 +1889,7 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   'prose after it, no markdown fence. The object has exactly these fields:',
   '',
   '{',
-  '  "say": string,            // what you say out loud, 1-3 short sentences',
+  '  "say": string,            // what you say out loud: 1-2 short sentences, at most 20 words (12 for ages 6-9), and at most one question',
   `  "emotion": one of ${EMOTIONS.join(' | ')},`,
   `  "action": one of ${ACTIONS.join(' | ')},`,
   '  "pointAt": null or an integer index,',
@@ -2413,11 +2514,12 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '',
   '## Length',
   '',
-  'KEEP "say" UNDER 60 WORDS. That is a ceiling, not an average, and it is',
-  'spoken aloud: sixty words is already twenty seconds of a child listening',
-  'without being asked anything. Ninety is a lecture, and by the middle of it',
-  'they have stopped listening — so the end of a long turn, which is usually',
-  'where your question is, reaches nobody.',
+  'KEEP "say" WITHIN THE MENTOR BUDGET: at most 2 short sentences and 20 words',
+  '(12 words when the learner is 6-9; Spanish and Portuguese may run a quarter',
+  'longer), with at most ONE question. That is a ceiling, not an average, and it',
+  'is spoken aloud and shown as a caption. A long turn is a lecture, and by the',
+  'middle of it they have stopped listening — so the end of a long turn, which',
+  'is usually where your question is, reaches nobody.',
   'When what you want to say does not fit, do not compress it into denser',
   'sentences — CUT it. Say one idea and ask the question; the rest of what you',
   'were going to say is next turn\'s, and it will be better then because you',
@@ -2439,7 +2541,7 @@ export function buildContextMessage(context: TutorContext): string {
   const lines: string[] = [
     '## This session',
     '',
-    `You are ${CHARACTER_VOICES[context.character] ?? 'a friendly tutor character.'}`,
+    `You are ${CHARACTER_VOICES[context.character] ?? 'a friendly Mentor character.'}`,
     '',
     `Call the learner "${context.nickname}". That is a nickname they chose, not their real name.`,
     `Language: ${context.locale}. Answer entirely in this language.`,

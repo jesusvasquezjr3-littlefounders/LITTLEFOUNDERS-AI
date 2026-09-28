@@ -167,7 +167,8 @@ export function structuralFindings(path, text) {
     // The Mentor whiteboard's `ranking` instrument (the wire types, ported from tutor/types.ts in W2M.1) orders the
     // items of a money problem, which is the skill practised: it ranks no person. Only that literal kind is exempt,
     // as a type member (`kind: 'ranking'`) or as the branch that draws it (`case 'ranking':`, the W2M.2 board).
-    const people = code.replace(/\bkind:\s*['"]ranking['"]|\bcase\s+['"]ranking['"]\s*:/g, '');
+    // Gap-fix round 1 (B.7): the board's renderer manifest names the same instrument (`ranking: 'SeriesBarsVisual'`).
+    const people = code.replace(/\bkind:\s*['"]ranking['"]|\bcase\s+['"]ranking['"]\s*:|\branking:\s*'\w+Visual'/g, '');
     if (/\bleaderboards?\b|\branking\b/i.test(people)) findings.push({ item: 'DP-05', where: path, message: 'a leaderboard or ranking in rebuilt UI' });
     // The cartoon avatar's closed option set names an eye shape 'hearts' (E.12, W2P.1): a list literally named
     // `eyes` is a drawing choice, never a counter, and is the one place the word is not read as a lives mechanic.

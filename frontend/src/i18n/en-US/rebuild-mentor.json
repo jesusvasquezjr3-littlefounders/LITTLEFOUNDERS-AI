@@ -245,6 +245,7 @@
         "frame": "Row {n}",
         "jump": "Jump",
         "each": "each",
+        "units": "Units",
         "cells": "{n} squares",
         "best": "best",
         "remainder": "Left over",

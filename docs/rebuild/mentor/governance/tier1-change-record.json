@@ -231,6 +231,76 @@
       "origin": "human",
       "pedagogicalReviewer": "pending",
       "safetyTrustLead": "pending"
+    },
+    {
+      "component": "evaluation.rubric_and_judges",
+      "hash": "4bfafc295f35b8602bd74964ed9bed42cb9ed6d4e18d9ba5b86e70c6040fef7c",
+      "files": 8,
+      "date": "2026-09-28",
+      "change": "Gap-fix round 1 (Mentor lane): OD-6 persona and self-naming check (the AI is the Mentor, Tutor is the parent); OD-13 Mentor-turn Copy Budget (2 sentences, 20 words, 12 for ages 6-9, one question) as a one-retry shape check, survivals delivered and counted; C.8/C.12 session-end signal takes the per-channel reply latency (typed, spoken, activity baselines never mixed) with voice-only, typed-only and mixed-channel gym personas; C.24 rubric v2 rule-scores tell_honored from Oracle's tell count; mentorQuality instruments B.28 efficiency and resolution, B.9 journal, B.13 bridge conversion, B.21 rest-day use and B.24 autonomy adoption from their existing RPCs",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "evaluation.stage2_and_bias_audit",
+      "hash": "c82580bdab375c4fb7f46a1df0139ed14a621e28cfbb49c15d74b20d3866f0e8",
+      "files": 10,
+      "date": "2026-09-28",
+      "change": "Gap-fix round 1 (Mentor lane): OD-6 persona and self-naming check (the AI is the Mentor, Tutor is the parent); OD-13 Mentor-turn Copy Budget (2 sentences, 20 words, 12 for ages 6-9, one question) as a one-retry shape check, survivals delivered and counted; C.8/C.12 session-end signal takes the per-channel reply latency (typed, spoken, activity baselines never mixed) with voice-only, typed-only and mixed-channel gym personas; C.24 rubric v2 rule-scores tell_honored from Oracle's tell count; mentorQuality instruments B.28 efficiency and resolution, B.9 journal, B.13 bridge conversion, B.21 rest-day use and B.24 autonomy adoption from their existing RPCs",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "mentor.non_negotiables",
+      "hash": "aa1c75bc96b21a7cac4231a98422a089f316c4c8b45128bc9afb656b1c2a8b86",
+      "files": 9,
+      "date": "2026-09-28",
+      "change": "Gap-fix round 1 (Mentor lane): OD-6 persona and self-naming check (the AI is the Mentor, Tutor is the parent); OD-13 Mentor-turn Copy Budget (2 sentences, 20 words, 12 for ages 6-9, one question) as a one-retry shape check, survivals delivered and counted; C.8/C.12 session-end signal takes the per-channel reply latency (typed, spoken, activity baselines never mixed) with voice-only, typed-only and mixed-channel gym personas; C.24 rubric v2 rule-scores tell_honored from Oracle's tell count; mentorQuality instruments B.28 efficiency and resolution, B.9 journal, B.13 bridge conversion, B.21 rest-day use and B.24 autonomy adoption from their existing RPCs",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "mentor.monetization_adjacent",
+      "hash": "c871af5b6d76df0161639e04f051c08a257fd5dc270efe5112ecf1a2b9ad95a6",
+      "files": 3,
+      "date": "2026-09-28",
+      "change": "Gap-fix round 1 (Mentor lane): OD-6 persona and self-naming check (the AI is the Mentor, Tutor is the parent); OD-13 Mentor-turn Copy Budget (2 sentences, 20 words, 12 for ages 6-9, one question) as a one-retry shape check, survivals delivered and counted; C.8/C.12 session-end signal takes the per-channel reply latency (typed, spoken, activity baselines never mixed) with voice-only, typed-only and mixed-channel gym personas; C.24 rubric v2 rule-scores tell_honored from Oracle's tell count; mentorQuality instruments B.28 efficiency and resolution, B.9 journal, B.13 bridge conversion, B.21 rest-day use and B.24 autonomy adoption from their existing RPCs",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "measurement.stage7_and_thresholds",
+      "hash": "e14ec83f17ae3eea66595296341573e13f8414be18f8304fadd6873498139462",
+      "files": 9,
+      "date": "2026-09-28",
+      "change": "Gap-fix round 1 (Mentor lane): OD-6 persona and self-naming check (the AI is the Mentor, Tutor is the parent); OD-13 Mentor-turn Copy Budget (2 sentences, 20 words, 12 for ages 6-9, one question) as a one-retry shape check, survivals delivered and counted; C.8/C.12 session-end signal takes the per-channel reply latency (typed, spoken, activity baselines never mixed) with voice-only, typed-only and mixed-channel gym personas; C.24 rubric v2 rule-scores tell_honored from Oracle's tell count; mentorQuality instruments B.28 efficiency and resolution, B.9 journal, B.13 bridge conversion, B.21 rest-day use and B.24 autonomy adoption from their existing RPCs",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "mentor.non_negotiables",
+      "hash": "a5fa36fa26fcd88110fa53f49d181dd7b855472c41749c8f538d39cd15b80e55",
+      "files": 9,
+      "date": "2026-09-28",
+      "change": "Merge integration of gap-fix round 1 Mentor lane into the integration branch: the Mentor lane's OD-6 self-naming check, OD-13 turn budget, C.8/C.12 per-channel latency and rule-scored tell_honored combined with F1-staff-ops' consolidated Block B learning signals (C.24; the staff-ops readers are the one implementation, with the Mentor lane's minimum of 20 opportunities on the four diagnostics) and the learning lane's KC evidence and transfer_success; no other threshold, rubric criterion or Stage 7 rollback change",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "measurement.stage7_and_thresholds",
+      "hash": "b9640eef05a4bd484e0ea5e92196923f417118070f9216c2c158d645ad5f8997",
+      "files": 9,
+      "date": "2026-09-28",
+      "change": "Merge integration of gap-fix round 1 Mentor lane into the integration branch: the Mentor lane's OD-6 self-naming check, OD-13 turn budget, C.8/C.12 per-channel latency and rule-scored tell_honored combined with F1-staff-ops' consolidated Block B learning signals (C.24; the staff-ops readers are the one implementation, with the Mentor lane's minimum of 20 opportunities on the four diagnostics) and the learning lane's KC evidence and transfer_success; no other threshold, rubric criterion or Stage 7 rollback change",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
     }
   ]
 }

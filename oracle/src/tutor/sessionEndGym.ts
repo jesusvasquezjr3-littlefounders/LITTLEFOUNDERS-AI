@@ -38,6 +38,14 @@ import {
  *                  the signature — must NOT fire.
  *   steady         A learner in flow for the whole 25 minutes. Must NOT fire,
  *                  however long the session runs (time is never an input).
+ *   voice_only     The disengaging signature in a spoken conversation with no
+ *                  served activity (the normal Mentor session): reply
+ *                  latencies on the spoken channel. MUST be offered a stop.
+ *   typed_only     The same signature, typed. MUST be offered a stop.
+ *   mixed_channels Misses on known items (the surprise half rises) while the
+ *                  learner alternates a slow spoken reply and a fast typed
+ *                  one. Each channel alone is steady; only MIXING them would
+ *                  look erratic. Must NOT fire (channels never mix).
  *
  * Every threshold is the proposed default (Threshold Recalibration Log); the
  * personas are a floor for regressions, not a validation of the design, which
@@ -119,6 +127,40 @@ export const SESSION_END_PERSONAS: SessionEndPersona[] = [
     name: 'masking',
     why: 'slow, careful and correct: slowness alone is not the signature',
     observations: stream(18, (i) => ({ latencyMs: 40_000 + (i % 2) * 2_000, correct: i % 7 !== 3, pCorrect: 0.8 })),
+    expectOffer: false,
+    respond: 'ignore',
+  },
+  {
+    name: 'voice_only',
+    why: 'the sink-state signature in a spoken conversation: erratic spoken replies and misses on items they know',
+    observations: [
+      ...stream(5, (i) => ({ latencyMs: 2_400 + (i % 2) * 300, correct: true, pCorrect: 0.85, source: 'spoken' as const })),
+      ...stream(12, (i) => ({ latencyMs: i % 2 === 0 ? 700 : 11_000, correct: i % 3 === 0, pCorrect: 0.85, source: 'spoken' as const }), 6),
+    ],
+    expectOffer: true,
+    respond: 'accept',
+  },
+  {
+    name: 'typed_only',
+    why: 'the sink-state signature in a typed conversation: erratic typed replies and misses on items they know',
+    observations: [
+      ...stream(5, (i) => ({ latencyMs: 5_000 + (i % 2) * 400, correct: true, pCorrect: 0.85, source: 'typed' as const })),
+      ...stream(12, (i) => ({ latencyMs: i % 2 === 0 ? 1_200 : 26_000, correct: i % 3 === 0, pCorrect: 0.85, source: 'typed' as const }), 6),
+    ],
+    expectOffer: true,
+    respond: 'accept',
+  },
+  {
+    name: 'mixed_channels',
+    why: 'misses on known items while each channel stays steady: only mixing a slow spoken reply with a fast typed one would look erratic',
+    observations: [
+      ...stream(5, (i) => ({ latencyMs: 5_000 + (i % 2) * 200, correct: true, pCorrect: 0.85, source: 'typed' as const })),
+      ...stream(16, (i) =>
+        i % 2 === 0
+          ? { latencyMs: 30_000 + (i % 4) * 250, correct: i % 3 === 0, pCorrect: 0.85, source: 'spoken' as const }
+          : { latencyMs: 5_000 + (i % 4) * 100, correct: i % 3 === 0, pCorrect: 0.85, source: 'typed' as const },
+      6),
+    ],
     expectOffer: false,
     respond: 'ignore',
   },

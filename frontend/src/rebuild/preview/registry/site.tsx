@@ -63,11 +63,12 @@ function identityScreen(context: PreviewContext) {
 function onboardingScreen({ locale, theme, params, t }: PreviewContext) {
   const requested = params.get('step') as OnboardingStep | null;
   const step = requested && (ONBOARDING_STEPS as readonly string[]).includes(requested) ? requested : 'welcome';
-  const chosen = (params.get('chosen') as MentorCharacter | null) ?? null;
+  const chosen = (params.get('chosen') as MentorCharacter | null) || null;
+  const saving = (params.get('saving') as MentorCharacter | null) || null;
   const failed = params.get('failed') === '1';
   return <RebuildRoot theme={theme} locale={locale as Locale}>
     <OnboardingFlow locale={locale} skipLabel={t.appShell.skip} initialStep={step} initialName="Alessandro"
-      mentor={{ chosen, saving: null, failed: failed && step === 'mentor', onChoose: noop }} completing={null} failed={failed && step === 'account'} onComplete={noop} />
+      mentor={{ chosen, saving, failed: failed && step === 'mentor', onChoose: noop }} completing={null} failed={failed && step === 'account'} onComplete={noop} />
   </RebuildRoot>;
 }
 

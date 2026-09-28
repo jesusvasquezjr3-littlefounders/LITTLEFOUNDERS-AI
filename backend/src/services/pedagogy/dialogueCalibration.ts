@@ -241,6 +241,17 @@ export const DialogueCalibrationReportBody = z
     controllingDelivered: z.number().int().min(0).max(10_000),
     pacingOffers: z.number().int().min(0).max(10_000),
     unilateralStyleChanges: z.number().int().min(0).max(10_000),
+    /*
+     * Gap-fix round 1 (C.24 rubric.tell_honored; OD-13 Mentor turn budget;
+     * OD-6 self-naming). OPTIONAL so an Oracle that predates them still
+     * closes; deploy Core before an Oracle that sends them (the body is strict).
+     */
+    tellDelivered: z.number().int().min(0).max(10_000).optional(),
+    tellWithdrawn: z.number().int().min(0).max(10_000).optional(),
+    budgetCaught: z.number().int().min(0).max(10_000).optional(),
+    budgetDelivered: z.number().int().min(0).max(10_000).optional(),
+    selfNamingCaught: z.number().int().min(0).max(10_000).optional(),
+    selfNamingDelivered: z.number().int().min(0).max(10_000).optional(),
   })
   .strict()
   .refine((r) => (r.assignment === 'experiment') === (r.experimentId !== null), 'an experiment id belongs to an enrolled session only')
@@ -249,6 +260,7 @@ export const DialogueCalibrationReportBody = z
   // Only the younger-child register shortens the ladder.
   .refine((r) => r.ladderRungs === (r.variant === 'calibrated' && r.band === 'young_child' ? 4 : 5), 'ladder does not fit the register')
   .refine((r) => r.controllingDelivered <= r.controllingCaught, 'more controlling turns delivered than caught')
+  .refine((r) => (r.tellDelivered ?? 0) + (r.tellWithdrawn ?? 0) <= r.tellRequests, 'more tell answers than tell requests')
   // The ask-first register never changes the approach on its own.
   .refine(
     (r) => !(r.variant === 'calibrated' && (r.band === 'teen' || r.band === 'adult')) || r.unilateralStyleChanges === 0,
@@ -280,6 +292,12 @@ export async function recordDialogueCalibrationClose(input: {
       controlling_delivered: r.controllingDelivered,
       pacing_offers: r.pacingOffers,
       unilateral_style_changes: r.unilateralStyleChanges,
+      tell_delivered: r.tellDelivered ?? null,
+      tell_withdrawn: r.tellWithdrawn ?? null,
+      budget_caught: r.budgetCaught ?? null,
+      budget_delivered: r.budgetDelivered ?? null,
+      self_naming_caught: r.selfNamingCaught ?? null,
+      self_naming_delivered: r.selfNamingDelivered ?? null,
     }),
   });
   return res !== null;

@@ -1,4 +1,26 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+/*
+ * OD-13 (the Mentor turn Copy Budget) is a repair that fires on MOST of this
+ * file's real-transcript fixtures, which predate it and were written to pin
+ * OTHER checks with exact call counts. So the budget is switched off here by
+ * default (every other check still runs for real) and switched on in the
+ * `the Mentor turn Copy Budget (OD-13)` block below, which pins its own
+ * retry, survival and counting. The pure check is pinned in
+ * mentorNamingAndBudget.test.ts.
+ */
+const budget = vi.hoisted(() => ({ enforced: false }));
+vi.mock('../tutor/prompt.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../tutor/prompt.js')>();
+  return {
+    ...actual,
+    mentorTurnBudget: (...args: Parameters<typeof actual.mentorTurnBudget>) => {
+      const result = actual.mentorTurnBudget(...args);
+      return budget.enforced ? result : { ...result, over: null };
+    },
+  };
+});
+
 import { RECALL_TRIGGER, TutorOrchestrator } from '../tutor/orchestrator.js';
 import { TUTOR_SYSTEM_PROMPT } from '../tutor/prompt.js';
 import { interruptedCloseText } from '../tutor/scripted.js';
@@ -1579,7 +1601,7 @@ describe('the budget', () => {
     // The budget expires with that question still open. The learner answers.
     fetchMock.mockClear();
     fetchMock.mockResolvedValueOnce(
-      modelReplies({ ...GOOD_TURN, say: '¡Cuarenta pesos, exacto! Hoy aprendiste a estimar. ¡Hasta pronto!', next: 'close' }),
+      modelReplies({ ...GOOD_TURN, say: '¡Cuarenta pesos, exacto, hoy aprendiste a estimar! ¡Hasta pronto!', next: 'close' }),
     );
     fetchMock.mockResolvedValueOnce(judgeSays(true));
     const late = now + 60 * 60 * 1000;
@@ -1650,7 +1672,7 @@ describe('the budget', () => {
     fetchMock.mockReset();
     fetchMock
       .mockResolvedValueOnce(
-        modelReplies({ ...GOOD_TURN, say: '¡Cuarenta pesos, exacto! Hoy aprendiste a estimar. ¡Hasta pronto!', next: 'close' }),
+        modelReplies({ ...GOOD_TURN, say: '¡Cuarenta pesos, exacto, hoy aprendiste a estimar! ¡Hasta pronto!', next: 'close' }),
       )
       .mockResolvedValueOnce(judgeSays(true));
     const grace = await orchestrator.handleLearnerText('cuarenta', late + 1000);
@@ -2436,8 +2458,96 @@ describe('the offer must stand alone in its turn (§11)', () => {
     const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
     const outcome = (await orchestrator.handleLearnerText('no entiendo', Date.now()))!;
 
+    // The OFFER rule stays scoped to an open offer. (Since OD-13 the Copy
+    // Budget's one-question limit does retry this turn: see the OD-13 block.)
     expect(outcome.emission.turn.say).toBe(real);
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('the Mentor turn Copy Budget (OD-13)', () => {
+  beforeEach(() => {
+    budget.enforced = true;
+  });
+  afterEach(() => {
+    budget.enforced = false;
+  });
+
+  const OVER = 'Mira, Robi. Una paleta cuesta 9 pesos y un chicle cuesta 3 pesos en la tienda de la esquina. ¿Cuál compras primero?';
+  const FITS = 'Te quedan 25 pesos. ¿Cuánto sobra si pagas 30?';
+
+  it('asks again once, naming the limit, and delivers the turn that fits', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: OVER }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: FITS }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('25', Date.now()))!;
+
+    expect(outcome.emission.turn.say).toBe(FITS);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    // Ages 6-9 (tier 2) in es-MX: 12 words x 1.25 = 15.
+    expect(retryBody).toContain('within 15 words');
+    expect(orchestrator.dialogueCalibrationReport).toMatchObject({ budgetCaught: 1, budgetDelivered: 0 });
+  });
+
+  it('delivers an overflow that survives the retry, counted and never hidden (M-13)', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: OVER }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: OVER }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('25', Date.now()))!;
+
+    expect(outcome.emission.source).toBe('model');
+    expect(outcome.emission.turn.say).toBe(OVER);
+    expect(orchestrator.dialogueCalibrationReport).toMatchObject({ budgetCaught: 1, budgetDelivered: 1 });
+  });
+
+  it('retries a turn that asks two questions, the one-question-per-turn rule', async () => {
+    const two = '¿Cuánto tienes? ¿Y cuánto cuesta?';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: two }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: '¿Cuánto tienes en total?' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('no sé', Date.now()))!;
+
+    expect(outcome.emission.turn.say).toBe('¿Cuánto tienes en total?');
+    expect(String(fetchMock.mock.calls[1]?.[1]?.body ?? '')).toContain('at most one question');
+  });
+});
+
+describe('OD-6: the Mentor never calls itself a tutor, bot or assistant', () => {
+  it('asks again when a turn self-names as a tutor, and counts it', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Soy tu tutor. ¿Cuánto juntarías?' }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Soy Rho, tu Mentor. ¿Cuánto juntarías?' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('hola', Date.now()))!;
+
+    expect(outcome.emission.turn.say).toBe('Soy Rho, tu Mentor. ¿Cuánto juntarías?');
+    expect(String(fetchMock.mock.calls[1]?.[1]?.body ?? '')).toContain('called itself a tutor');
+    expect(orchestrator.dialogueCalibrationReport).toMatchObject({ selfNamingCaught: 1, selfNamingDelivered: 0 });
+  });
+});
+
+describe('C.13 / C.24: "just tell me" is counted when it is honoured', () => {
+  it('counts the request and the answer turn that carried the tell rung', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Son 25 pesos. ¿Seguimos?' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('solo dime la respuesta', Date.now());
+
+    expect(orchestrator.dialogueCalibrationReport).toMatchObject({ tellRequests: 1, tellDelivered: 1, tellWithdrawn: 0 });
   });
 });
 

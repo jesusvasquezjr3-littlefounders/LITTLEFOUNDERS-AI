@@ -5,6 +5,7 @@ import type { LessonClientDocument, LessonClientSegment } from './lessonDocument
 import { percentOutcome } from './percentModel';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { TeachingChartBoard } from './TeachingChartBoard';
+import { PercentGridVisual } from './pizarron';
 import './learning.css';
 import './percentGrid.css';
 import { LessonStageSlot } from './lessonStage';
@@ -69,8 +70,6 @@ export function PercentGridBoard({ document, segment, onBack, sequence, onGrade 
   const amount = (n: number) => currency === 'coins' ? `${formatter.format(n)} ${n === 1 ? t.coin : t.coins}` : formatter.format(n);
   const setRate = (value: number) => { grading.reset(); if (percentOutcome(segment.payload, value)) setPercent(value); };
   const changed = mode === 'discount' ? t.discount : t.tax;
-  const cells = Array.from({ length: 100 }, (_, index) => <rect key={index} x={index % 10 * 12 + 1} y={Math.floor(index / 10) * 12 + 1}
-    width="10" height="10" rx="2" className={index < percent ? 'lf-percent-cell--filled' : 'lf-percent-cell'} />);
 
   return <main className="lf-learning" data-surface="app" data-screen="percent">
     <div className="lf-learning-inner">
@@ -86,15 +85,9 @@ export function PercentGridBoard({ document, segment, onBack, sequence, onGrade 
             { id: 'percent', label: t.percent, value: `${percent}%` },
             ...(graded && !grading.met ? [] : [{ id: 'change', label: changed, value: amount(outcome?.change ?? 0) },
               { id: 'final', label: t.final, value: amount(outcome?.final ?? 0) }]),
-          ]} chart={<div className="lf-percent-plot" role="img"
-            aria-label={graded && !grading.met ? `${t.grid}: ${percent} ${t.ofHundred}.` : `${t.grid}: ${percent} ${t.ofHundred}. ${changed}: ${amount(outcome?.change ?? 0)}. ${t.final}: ${amount(outcome?.final ?? 0)}.`}>
-            <svg className="lf-percent-grid" viewBox="0 0 120 120" aria-hidden="true" focusable="false">{cells}</svg>
-            <div className="lf-percent-bar-set"><span data-copy-role="data">{percent}%</span>
-              <svg className="lf-percent-bar" viewBox="0 0 120 32" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-                <rect x="0" y="8" width="120" height="16" rx="8" className="lf-percent-bar-track" />
-                <rect x="0" y="8" width={120 * percent / 100} height="16" rx="8" className="lf-percent-bar-fill" />
-              </svg><span data-copy-role="data">{percent} {t.ofHundred}</span></div>
-          </div>}>
+          ]} chart={<PercentGridVisual
+            label={graded && !grading.met ? `${t.grid}: ${percent} ${t.ofHundred}.` : `${t.grid}: ${percent} ${t.ofHundred}. ${changed}: ${amount(outcome?.change ?? 0)}. ${t.final}: ${amount(outcome?.final ?? 0)}.`}
+            percent={percent} percentText={`${percent}%`} ofHundredText={`${percent} ${t.ofHundred}`} />}>
           {() => <Slider label={t.change} valueText={`${percent}%`}
             min={0} max={100} step={step} value={percent} onValueChange={setRate}
             stepLabels={{ decrease: t.less, increase: t.more }} />}

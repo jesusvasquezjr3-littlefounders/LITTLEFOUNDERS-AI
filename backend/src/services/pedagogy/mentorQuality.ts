@@ -136,6 +136,17 @@ export const MENTOR_QUALITY_THRESHOLDS = {
   practiceMinAttempts: 30,
   /** Mastery for Time-to-Mastery: the Mentor's mastery display posterior. */
   masteryPosterior: 0.85,
+  /**
+   * B.28 engagement health (Appendix C §1.2): the last 4 weeks against the 4
+   * before; a move of more than 10% in the metric's bad direction is a
+   * regression (engagementHealth.ts owns the numbers; mirrored here for the reader).
+   */
+  engagementTrendTolerance: TREND_TOLERANCE,
+  engagementTrendMinWeeklySample: TREND_MIN_WEEKLY_SAMPLE,
+  /** B.9 / B.13 / B.21 / B.24 diagnostics: below this many opportunities the reading is insufficient_data. */
+  narrativeMinSample: 20,
+  restDayMinLapses: 20,
+  autonomyMinOffers: 20,
 } as const;
 
 const T = MENTOR_QUALITY_THRESHOLDS;
@@ -180,7 +191,7 @@ export const SIGNALS: readonly SignalDefinition[] = [
   { id: 'mastery.corroboration_compliance', category: 'pedagogy', requirement: 'C.10', owner: 'pedagogical_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'tutor_trajectory_step', instrumented: 'yes' },
   { id: 'mastery.reversal_rate', category: 'pedagogy', requirement: 'C.10', owner: 'pedagogical_lead', threshold: { kind: 'ceiling', value: MENTOR_INTEGRITY_THRESHOLDS.masteryReversalCeiling }, minSample: MENTOR_INTEGRITY_THRESHOLDS.masteryReversalMinDeclarations, source: 'tutor_trajectory_step (90-day reversal window)', instrumented: 'yes' },
   rubricSignal('hint_repeat'),
-  notInstrumented('rubric.tell_honored', 'pedagogy', 'C.13', 'pedagogical_lead', 'a calibrated transcript judge scoring real sessions (C.23 calibration exists; real-session scoring needs a privacy review and a spend decision)'),
+  rubricSignal('tell_honored'),
   rubricSignal('self_explanation'),
   { id: 'spaced_review.routing', category: 'pedagogy', requirement: 'C.11', owner: 'pedagogical_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'tutor_review_routing (rule re-evaluation)', instrumented: 'yes' },
   { id: 'disposition.completeness', category: 'pedagogy', requirement: 'C.7', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'learner_disposition_profile, tutor_sessions', instrumented: 'yes' },
@@ -217,17 +228,17 @@ export const SIGNALS: readonly SignalDefinition[] = [
   { id: 'learning.transfer_success', category: 'learning_outcome', requirement: 'B.7', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'v2 grade receipts tagged practice or transfer (learning_transfer_success)', instrumented: 'yes' },
   // Appendix C: "the two signals should meaningfully diverge" — a floor on the divergent share (learningQuality.ts).
   { id: 'learning.judgment_quality', category: 'learning_outcome', requirement: 'B.12', owner: 'pedagogical_lead', threshold: { kind: 'floor', value: JUDGMENT_DIVERGENCE_FLOOR }, minSample: JUDGMENT_MIN_ATTEMPTS, source: 'learning_judgment_differentiation (0129)', instrumented: 'yes' },
-  { id: 'learning.bridge_conversion', category: 'learning_outcome', requirement: 'B.13', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'learning_narrative_metrics (0127): prompts converted within 7 days', instrumented: 'yes' },
-  { id: 'learning.decision_journal', category: 'learning_outcome', requirement: 'B.9', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'learning_narrative_metrics (0127): entries recorded and resurfaced', instrumented: 'yes' },
+  { id: 'learning.bridge_conversion', category: 'learning_outcome', requirement: 'B.13', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.narrativeMinSample, source: 'learning_narrative_metrics (0127): prompts converted within 7 days', instrumented: 'yes' },
+  { id: 'learning.decision_journal', category: 'learning_outcome', requirement: 'B.9', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.narrativeMinSample, source: 'learning_narrative_metrics (0127): entries recorded and resurfaced', instrumented: 'yes' },
   // ── Appendix C §1.2 engagement health ──
-  { id: 'engagement.session_efficiency', category: 'engagement_health', requirement: 'B.28', owner: 'pedagogical_lead', threshold: { kind: 'trend', value: TREND_TOLERANCE }, minSample: TREND_MIN_WEEKLY_SAMPLE, source: 'learning_session_efficiency (0136), weekly; higher is better', instrumented: 'yes' },
-  { id: 'engagement.mentor_resolution', category: 'engagement_health', requirement: 'B.28', owner: 'pedagogical_lead', threshold: { kind: 'trend', value: TREND_TOLERANCE }, minSample: TREND_MIN_WEEKLY_SAMPLE, source: 'mentor_resolution_efficiency (0136), weekly median turns; lower is better', instrumented: 'yes' },
+  { id: 'engagement.session_efficiency', category: 'engagement_health', requirement: 'B.28', owner: 'pedagogical_lead', threshold: { kind: 'trend', value: T.engagementTrendTolerance }, minSample: T.engagementTrendMinWeeklySample, source: 'learning_session_efficiency (0136), weekly; higher is better', instrumented: 'yes' },
+  { id: 'engagement.mentor_resolution', category: 'engagement_health', requirement: 'B.28', owner: 'pedagogical_lead', threshold: { kind: 'trend', value: T.engagementTrendTolerance }, minSample: T.engagementTrendMinWeeklySample, source: 'mentor_resolution_efficiency (0136), weekly median turns; lower is better', instrumented: 'yes' },
   notInstrumented('engagement.streak_anxiety', 'engagement_health', 'B.21', 'safety_trust_lead', 'B.21 notification and session-restart logs'),
-  { id: 'engagement.rest_day_use', category: 'engagement_health', requirement: 'B.21', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'learning_rest_day_utilization (0134)', instrumented: 'yes' },
+  { id: 'engagement.rest_day_use', category: 'engagement_health', requirement: 'B.21', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.restDayMinLapses, source: 'learning_rest_day_utilization (0134)', instrumented: 'yes' },
   notInstrumented('engagement.dark_pattern_audit', 'engagement_health', 'B.25', 'safety_trust_lead', 'B.25 per-release manual audit'),
   notInstrumented('engagement.variable_ratio_audit', 'engagement_health', 'B.22', 'safety_trust_lead', 'B.22 per-release manual audit'),
   notInstrumented('engagement.reward_framing', 'engagement_health', 'B.20', 'pedagogical_lead', 'B.20 reward-moment copy audit'),
-  { id: 'engagement.autonomy_adoption', category: 'engagement_health', requirement: 'B.24', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'learning_autonomy_adoption (0134), per lever', instrumented: 'yes' },
+  { id: 'engagement.autonomy_adoption', category: 'engagement_health', requirement: 'B.24', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.autonomyMinOffers, source: 'learning_autonomy_adoption (0134), per lever', instrumented: 'yes' },
   notInstrumented('engagement.parent_time_to_value', 'engagement_health', 'B.10', 'pedagogical_lead', 'B.10 client timing'),
 ] as const;
 
@@ -850,7 +861,7 @@ function learningReading(def: SignalDefinition, l: LearningSignalSources, anomal
       const n = l.narrative;
       const value = rate(n.bridge_prompts_converted_7d, n.bridge_prompts_offered);
       return reading(def.id, {
-        status: value === null ? 'insufficient_data' : 'diagnostic', value, sample: n.bridge_prompts_offered,
+        status: value === null || n.bridge_prompts_offered < def.minSample ? 'insufficient_data' : 'diagnostic', value, sample: n.bridge_prompts_offered,
         detail: { converted: n.bridge_prompts_converted_7d, selfCommitments: n.bridge_self_commitments },
       });
     }
@@ -859,7 +870,7 @@ function learningReading(def: SignalDefinition, l: LearningSignalSources, anomal
       const n = l.narrative;
       const value = rate(n.journal_entries_resurfaced, n.journal_entries_recorded);
       return reading(def.id, {
-        status: value === null ? 'insufficient_data' : 'diagnostic', value, sample: n.journal_entries_recorded,
+        status: value === null || n.journal_entries_recorded < def.minSample ? 'insufficient_data' : 'diagnostic', value, sample: n.journal_entries_recorded,
         detail: { recorded: n.journal_entries_recorded, resurfaced: n.journal_entries_resurfaced },
       });
     }
@@ -867,7 +878,7 @@ function learningReading(def: SignalDefinition, l: LearningSignalSources, anomal
       if (l.restDays === null) return unavailable(def);
       const r = l.restDays;
       return reading(def.id, {
-        status: r.utilization_rate === null ? 'insufficient_data' : 'diagnostic', value: r.utilization_rate, sample: r.learners_with_lapse,
+        status: r.utilization_rate === null || r.learners_with_lapse < def.minSample ? 'insufficient_data' : 'diagnostic', value: r.utilization_rate, sample: r.learners_with_lapse,
         detail: { keptByRestDays: r.kept_by_rest_days, restDaysUsed: r.rest_days_used },
       });
     }
@@ -877,7 +888,7 @@ function learningReading(def: SignalDefinition, l: LearningSignalSources, anomal
       const exercised = l.autonomy.reduce((s, r) => s + r.exercised, 0);
       const value = rate(exercised, offered);
       return reading(def.id, {
-        status: value === null ? 'insufficient_data' : 'diagnostic', value, sample: offered,
+        status: value === null || offered < def.minSample ? 'insufficient_data' : 'diagnostic', value, sample: offered,
         breakdown: l.autonomy.map((r) => ({ key: `lever:${r.lever}`, value: r.adoption_rate, sample: r.offered, status: 'diagnostic' as const })),
         detail: { exercised },
       });

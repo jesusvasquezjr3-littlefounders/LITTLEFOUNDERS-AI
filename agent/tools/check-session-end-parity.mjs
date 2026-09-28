@@ -15,6 +15,13 @@
  *   DB       database/migrations/*_mentor_session_end_and_closing.sql  the CHECKs
  *   Client   frontend/src/rebuild/mentor/session/types.ts, frontend/src/rebuild/mentor/SessionEnd.tsx
  *
+ * Gap-fix round 1 (C.8/C.12): the signal's latency CHANNELS (LATENCY_SOURCES)
+ * must equal the telemetry sources C.9 keeps baselines for
+ * (oracle/src/tutor/behavioralTelemetry.ts TelemetrySource), and every
+ * `observeGraded(` call in oracle/src/tutor/orchestrator.ts must name its
+ * channel (`latencySource:`) and may not pass `latencyMs: null` — the defect
+ * that left a voice or typed conversation unable to ever fire.
+ *
  * A drift fails in the worst direction for these metrics: Core's validator
  * refuses the close's new fields (the close is REFUSED — a 400), or the
  * Session-Closing Script Accuracy is measured against a different table than
@@ -31,6 +38,8 @@ export const FILES = {
   oracleClosing: 'oracle/src/tutor/sessionClosing.ts',
   oracleSignal: 'oracle/src/tutor/sessionEndSignal.ts',
   oracleClient: 'oracle/src/core/client.ts',
+  oracleTelemetry: 'oracle/src/tutor/behavioralTelemetry.ts',
+  oracleOrchestrator: 'oracle/src/tutor/orchestrator.ts',
   core: 'backend/src/services/pedagogy/sessionEnd.ts',
   coreRoute: 'backend/src/routes/tutor.ts',
   clientTypes: 'frontend/src/rebuild/mentor/session/types.ts',
@@ -157,11 +166,42 @@ export function checkSessionEndParity(read, migrationSql) {
     [FILES.core, zodEnum(src.core, 'export const SessionEndEventBody', 'outcome')],
     ['migration CHECK on outcome', migrationVocab(migrationSql, 'outcome')],
   ]);
+  // C.8/C.12 latency channels: the same three sources C.9 keeps baselines for.
+  compare('latency channels', unionType(src.oracleTelemetry, 'TelemetrySource'), [
+    [FILES.oracleSignal, constArray(src.oracleSignal, 'LATENCY_SOURCES')],
+  ]);
+  // Every graded observation names its channel and never drops the latency outright.
+  const calls = observeGradedCalls(src.oracleOrchestrator);
+  if (calls.length === 0) problems.push(`${FILES.oracleOrchestrator}: no observeGraded( call found`);
+  for (const call of calls) {
+    if (!/latencySource\s*:/.test(call)) problems.push(`${FILES.oracleOrchestrator}: an observeGraded( call names no latencySource`);
+    if (/latencyMs\s*:\s*null/.test(call)) problems.push(`${FILES.oracleOrchestrator}: an observeGraded( call passes latencyMs: null`);
+  }
   compare('signal modes', zodEnum(src.oracleSignal, 'const EventSchema', 'mode'), [
     [FILES.core, zodEnum(src.core, 'export const SessionEndEventBody', 'mode')],
     ['migration CHECK on mode', migrationVocab(migrationSql, 'mode')],
   ]);
   return problems;
+}
+
+/** The argument text of every `this.observeGraded(` call (balanced parentheses). */
+export function observeGradedCalls(source) {
+  const out = [];
+  let at = source.indexOf('this.observeGraded(');
+  while (at !== -1) {
+    let depth = 0;
+    let end = at + 'this.observeGraded'.length;
+    for (; end < source.length; end++) {
+      if (source[end] === '(') depth += 1;
+      else if (source[end] === ')') {
+        depth -= 1;
+        if (depth === 0) break;
+      }
+    }
+    out.push(source.slice(at, end + 1));
+    at = source.indexOf('this.observeGraded(', end);
+  }
+  return out;
 }
 
 export function readMigration() {

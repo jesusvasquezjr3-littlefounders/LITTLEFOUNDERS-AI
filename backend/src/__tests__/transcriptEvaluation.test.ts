@@ -44,8 +44,9 @@ describe('C.21 rubric governance (Tier 1)', () => {
       expect(c.judgeQuestion.length, c.id).toBeGreaterThan(20);
       if (c.kind === 'ceiling' || c.kind === 'floor') expect(c.target, c.id).not.toBeNull();
     }
-    // Judge-only criteria are never produced by the rules scorer.
-    expect(RULES_CRITERIA).not.toContain('tell_honored');
+    // Judge-only criteria are never produced by the rules scorer. tell_honored
+    // is rule-scored since gap-fix round 1, from Oracle's own count (C.24).
+    expect(RULES_CRITERIA).toContain('tell_honored');
     expect(RULES_CRITERIA).not.toContain('scaffold_quality');
   });
 });
@@ -101,6 +102,16 @@ describe('C.21 deterministic scorer on the fixture set', () => {
     const base = TRANSCRIPT_FIXTURES.find((f) => f.id === 'en-hint-repeated')!.bundle;
     const turns = base.turns.map((t) => (t.seq === 2 || t.seq === 4 ? { ...t, text: 'Okay, try.' } : t));
     expect(scoreSession({ ...base, turns }).find((s) => s.criterion === 'hint_repeat')?.outcome).toBe('pass');
+  });
+
+  it('scores tell_honored from the runtime record: withdrawn requests owe nothing, a pre-instrumentation row is not measured', () => {
+    const base = TRANSCRIPT_FIXTURES.find((f) => f.id === 'es-tell-honored')!.bundle;
+    const tell = (dialogue: SessionBundle['dialogue']) => scoreSession({ ...base, dialogue }).find((s) => s.criterion === 'tell_honored');
+    const d = { variant: 'calibrated', band: 'young_child', controlling_delivered: 0 };
+    expect(tell({ ...d, tell_requests: 2, tell_delivered: 1, tell_withdrawn: 1 })).toMatchObject({ outcome: 'pass', numerator: 0, denominator: 1 });
+    expect(tell({ ...d, tell_requests: 2, tell_delivered: 1, tell_withdrawn: 0 })).toMatchObject({ outcome: 'fail', numerator: 1, denominator: 2 });
+    expect(tell({ ...d, tell_requests: 1, tell_delivered: null, tell_withdrawn: null })?.outcome).toBe('not_applicable');
+    expect(tell(null)?.outcome).toBe('not_applicable');
   });
 
   it('keeps numerator within denominator for every score', () => {

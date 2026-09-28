@@ -254,3 +254,49 @@ describe('the learner’s answer to the offer, in words', () => {
     }
   });
 });
+
+describe('C.8/C.12 latency channels (gap-fix round 1)', () => {
+  const clock = { elapsedMs: 60_000, remainingMs: 20 * 60_000 };
+
+  it('keeps a separate baseline per channel and compares a window only with its own channel', () => {
+    const signal = new SessionEndSignal('offer');
+    // Spoken replies open at ~2.5 s, typed replies at ~20 s: steady on each channel.
+    for (let i = 0; i < 16; i++) {
+      signal.observe(
+        i % 2 === 0
+          ? { latencyMs: 2_500 + (i % 4) * 50, correct: true, pCorrect: 0.85, source: 'spoken' }
+          : { latencyMs: 20_000 + (i % 4) * 200, correct: true, pCorrect: 0.85, source: 'typed' },
+        clock,
+      );
+    }
+    const snap = signal.snapshot();
+    expect(snap.latencyBaselines.spoken).toHaveLength(4);
+    expect(snap.latencyBaselines.typed).toHaveLength(4);
+    const reading = signal.evaluate();
+    // Measured on one channel against the same channel: no rise from mixing 2.5 s with 20 s.
+    expect(reading.latencySource).not.toBeNull();
+    expect((reading.latencySdWindow ?? 0) - (reading.latencySdBaseline ?? 0)).toBeLessThan(0.3);
+  });
+
+  it('fires in a spoken-only conversation once spoken replies turn erratic and known items are missed', () => {
+    const signal = new SessionEndSignal('offer');
+    let offered = false;
+    for (let i = 0; i < 5; i++) signal.observe({ latencyMs: 2_400 + (i % 2) * 300, correct: true, pCorrect: 0.85, source: 'spoken' }, clock);
+    for (let i = 0; i < 12 && !offered; i++) {
+      offered = signal.observe({ latencyMs: i % 2 === 0 ? 700 : 11_000, correct: i % 3 === 0, pCorrect: 0.85, source: 'spoken' }, clock).offer;
+    }
+    expect(offered).toBe(true);
+    expect(signal.evaluate().latencySource).toBe('spoken');
+  });
+
+  it('restores a snapshot written before channels (defaults to the activity channel)', () => {
+    const signal = new SessionEndSignal('offer');
+    const legacy = {
+      count: 1, baseline: [{ latencyMs: 9_000, correct: true, pCorrect: 0.85 }], recent: [], events: [],
+      offersMade: 0, offerOpen: false, armedFrom: 0, evaluations: 0,
+    };
+    signal.restore(legacy as never);
+    expect(signal.snapshot().baseline[0]?.source).toBe('activity');
+    expect(signal.snapshot().latencyBaselines).toEqual({ typed: [], spoken: [], activity: [] });
+  });
+});

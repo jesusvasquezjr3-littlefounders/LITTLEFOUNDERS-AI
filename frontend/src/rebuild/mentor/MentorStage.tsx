@@ -69,7 +69,11 @@ export const MENTOR_STAGE_LIGHTS: readonly MentorStageLight[] = ['auto', 'dawn',
  *     close-up shows all of her on the island, which is also the legacy
  *     engine's rule for the two characters without a mouth card
  *     (`shotForPhase`). On `diorama-b` the wide close-up buries her in a bush,
- *     so the close-up stays there (a known limitation: a leaf still crosses).
+ *     so the close-up stays there.
+ * Since gap-fix round 1 the placement solver also keeps the lead's face and
+ * hands out of every stage shot's camera corridor (`tutor-scene/occlusion.ts`,
+ * checked on both Dioramas by `npm run verify:placement`), so no shot choice
+ * here has to work around a prop.
  */
 export function defaultStageShot(character: MentorCharacter, scene: MentorStageScene, size: MentorStageSize): MentorShot {
   if (size === 'compact') return 'closeup-wide';

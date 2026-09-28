@@ -13,6 +13,15 @@ import { z } from 'zod';
  *      answer times (standard deviation of ln(latency), so a slow and a fast
  *      learner are judged on the same scale), in a rolling window of recent
  *      graded turns, against their OWN session-opening baseline.
+ *      PER CHANNEL (gap-fix round 1): a typed reply, a spoken reply and an
+ *      activity answer are timed differently (the onset-based reply latency
+ *      C.9 already computes for typed and spoken answers; the activity's own
+ *      answer time), so each source keeps its own baseline — the first
+ *      `baselineSize` latencies OF THAT SOURCE — and a window's SD is only
+ *      ever compared with the baseline of the same source. Channels are never
+ *      mixed. The latency half rises when any measured source rises. Before
+ *      this, spoken and typed answers carried no latency at all, so a voice or
+ *      typed conversation (the normal Mentor session) could never fire.
  *   2. A RISING "SURPRISING MISS" RATE — the miss rate on items the learner's
  *      own history says they should get right (the controller's predicted
  *      probability of a correct answer at or above `surpriseProbability`),
@@ -95,15 +104,32 @@ export function parseSessionEndSignalMode(raw: string | undefined): SessionEndSi
   return raw === 'shadow' || raw === 'off' || raw === 'offer' ? raw : 'offer';
 }
 
+/** The answer channels, mirroring behavioralTelemetry.ts's TelemetrySource (session-end:check). */
+export const LATENCY_SOURCES = ['typed', 'spoken', 'activity'] as const;
+export type LatencySource = (typeof LATENCY_SOURCES)[number];
+
 const ObservationSchema = z
   .object({
     latencyMs: z.number().min(0).nullable(),
     correct: z.boolean(),
     /** The controller's predicted probability of a correct answer, or null when unknown. */
     pCorrect: z.number().min(0).max(1).nullable(),
+    /** The channel the latency was measured on; defaulted for snapshots written before channels. */
+    source: z.enum(LATENCY_SOURCES).default('activity'),
+    /** Set when this latency went into its source's baseline, so the window never reuses it. */
+    inLatencyBaseline: z.boolean().default(false),
   })
   .strict();
-export type SessionEndObservation = z.infer<typeof ObservationSchema>;
+export type SessionEndObservation = z.input<typeof ObservationSchema>;
+type StoredObservation = z.output<typeof ObservationSchema>;
+
+const LatencyBaselinesSchema = z
+  .object({
+    typed: z.array(z.number().min(0)).max(16),
+    spoken: z.array(z.number().min(0)).max(16),
+    activity: z.array(z.number().min(0)).max(16),
+  })
+  .strict();
 
 export const OFFER_OUTCOMES = ['pending', 'accepted', 'declined', 'unanswered', 'not_offered'] as const;
 export type OfferOutcome = (typeof OFFER_OUTCOMES)[number];
@@ -137,6 +163,8 @@ export const SessionEndSignalSnapshotSchema = z
     count: z.number().int().min(0),
     baseline: z.array(ObservationSchema).max(16),
     recent: z.array(ObservationSchema).max(32),
+    /** Per-channel latency baselines (ms): the first `baselineSize` latencies of each source. */
+    latencyBaselines: LatencyBaselinesSchema.default({ typed: [], spoken: [], activity: [] }),
     events: z.array(EventSchema).max(10),
     offersMade: z.number().int().min(0),
     offerOpen: z.boolean(),
@@ -151,6 +179,7 @@ export const EMPTY_SESSION_END_SIGNAL: SessionEndSignalSnapshot = {
   count: 0,
   baseline: [],
   recent: [],
+  latencyBaselines: { typed: [], spoken: [], activity: [] },
   events: [],
   offersMade: 0,
   offerOpen: false,
@@ -163,6 +192,8 @@ export interface SignalEvaluation {
   /** Null when the component could not be measured (too few samples). */
   latencySdBaseline: number | null;
   latencySdWindow: number | null;
+  /** The channel whose baseline and window the latency figures above come from. */
+  latencySource: LatencySource | null;
   surpriseRateBaseline: number | null;
   surpriseRateWindow: number | null;
   surprisingMisses: number;
@@ -199,7 +230,7 @@ export class SessionEndSignal {
   }
 
   restore(snapshot: SessionEndSignalSnapshot): void {
-    this.state = structuredClone(snapshot);
+    this.state = SessionEndSignalSnapshotSchema.parse(structuredClone(snapshot));
   }
 
   /** Whether an offer is on screen, waiting for the learner's choice. */
@@ -207,7 +238,7 @@ export class SessionEndSignal {
     return this.state.offerOpen;
   }
 
-  private surpriseRate(observations: SessionEndObservation[]): { rate: number | null; misses: number } {
+  private surpriseRate(observations: StoredObservation[]): { rate: number | null; misses: number } {
     const expected = observations.filter(
       (o) => o.pCorrect !== null && o.pCorrect >= this.config.surpriseProbability,
     );
@@ -215,9 +246,24 @@ export class SessionEndSignal {
     return { rate: expected.length === 0 ? null : misses / expected.length, misses };
   }
 
-  private latencySd(observations: SessionEndObservation[]): number | null {
-    const latencies = observations.map((o) => o.latencyMs).filter((l): l is number => l !== null);
-    return latencies.length >= this.config.minLatencySamples ? lnSd(latencies) : null;
+  /**
+   * The latency half, per channel: each source's window SD against the
+   * baseline of the SAME source. Returns the measured source with the largest
+   * rise (null figures when no source has enough samples on both sides).
+   */
+  private latencyReading(window: StoredObservation[]): { baseline: number | null; window: number | null; source: LatencySource | null } {
+    let best: { baseline: number; window: number; source: LatencySource } | null = null;
+    for (const source of LATENCY_SOURCES) {
+      const base = this.state.latencyBaselines[source];
+      if (base.length < this.config.minLatencySamples) continue;
+      const latencies = window
+        .filter((o) => o.source === source && o.latencyMs !== null && !o.inLatencyBaseline)
+        .map((o) => o.latencyMs as number);
+      if (latencies.length < this.config.minLatencySamples) continue;
+      const reading = { baseline: lnSd(base), window: lnSd(latencies), source };
+      if (best === null || reading.window - reading.baseline > best.window - best.baseline) best = reading;
+    }
+    return best ?? { baseline: null, window: null, source: null };
   }
 
   /** The current reading, without recording anything. */
@@ -226,6 +272,7 @@ export class SessionEndSignal {
       fired: false,
       latencySdBaseline: null,
       latencySdWindow: null,
+      latencySource: null,
       surpriseRateBaseline: null,
       surpriseRateWindow: null,
       surprisingMisses: 0,
@@ -241,8 +288,9 @@ export class SessionEndSignal {
       (o) => o.pCorrect !== null && o.pCorrect >= this.config.surpriseProbability,
     ).length;
     const surpriseMeasured = expectedInWindow >= this.config.minExpectedItems;
-    const latencySdBaseline = this.latencySd(this.state.baseline);
-    const latencySdWindow = this.latencySd(window);
+    const latency = this.latencyReading(window);
+    const latencySdBaseline = latency.baseline;
+    const latencySdWindow = latency.window;
     // A baseline with no expected-correct items opened with no reason to
     // expect anything, so its surprising-miss rate is zero by definition.
     const baselineRate = baselineSurprise.rate ?? 0;
@@ -259,6 +307,7 @@ export class SessionEndSignal {
       fired: surpriseRising && latencyRising,
       latencySdBaseline,
       latencySdWindow,
+      latencySource: latency.source,
       surpriseRateBaseline: baselineSurprise.rate ?? 0,
       surpriseRateWindow: surpriseMeasured ? windowSurprise.rate : null,
       surprisingMisses: windowSurprise.misses,
@@ -275,6 +324,12 @@ export class SessionEndSignal {
   observe(observation: SessionEndObservation, clock: { elapsedMs: number; remainingMs: number }): { offer: boolean } {
     if (this.mode === 'off') return { offer: false };
     const clean = ObservationSchema.parse(observation);
+    // Each channel's own opening baseline: its first `baselineSize` latencies.
+    const sourceBaseline = this.state.latencyBaselines[clean.source];
+    if (clean.latencyMs !== null && sourceBaseline.length < this.config.baselineSize) {
+      sourceBaseline.push(clean.latencyMs);
+      clean.inLatencyBaseline = true;
+    }
     this.state.count += 1;
     if (this.state.baseline.length < this.config.baselineSize) this.state.baseline.push(clean);
     else {

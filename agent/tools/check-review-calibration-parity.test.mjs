@@ -62,7 +62,7 @@ test('RED when Core lacks a dialogue assignment Oracle reports', () => {
 });
 
 test('RED when the report Oracle sends carries a field Core refuses', () => {
-  const problems = checkReviewCalibrationParity(patched(FILES.dialogue, '  unilateralStyleChanges: number;\n}', '  unilateralStyleChanges: number;\n  learnerAge: number;\n}'), sql);
+  const problems = checkReviewCalibrationParity(patched(FILES.dialogue, '  selfNamingDelivered: number;\n}', '  selfNamingDelivered: number;\n  learnerAge: number;\n}'), sql);
   assert.ok(problems.some((p) => p.includes('dialogue calibration report')));
 });
 

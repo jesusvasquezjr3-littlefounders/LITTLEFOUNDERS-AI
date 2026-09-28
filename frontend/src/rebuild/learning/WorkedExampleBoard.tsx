@@ -5,6 +5,7 @@ import { LessonFeedback } from './LessonFeedback';
 import { type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
 import type { LessonSequenceControl } from './lessonSequence';
 import { StepReplay } from './StepReplay';
+import { WorkedStepsList } from './pizarron';
 import { useSingleActiveGrade } from './useSingleActiveGrade';
 import './learning.css';
 import './stepReplay.css';
@@ -83,24 +84,17 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
           <h2 id="worked-example-title" data-copy-role="heading">{t.example}</h2>
           {segment.payload.algorithm ? <LongArithmeticLayout algorithm={segment.payload.algorithm} locale={document.locale}
             revealed={Math.round((index + 1) / steps.length * segment.payload.algorithm.steps.length)} /> : null}
-          <ol className="lf-worked-example-steps">
-            {steps.map((step, stepIndex) => {
-              const active = index === stepIndex;
-              const complete = index > stepIndex;
-              const faded = stepIndex >= fadeAt;
-              const className = 'lf-worked-example-step' + (active ? ' lf-worked-example-step--active' : '') + (complete ? ' lf-worked-example-step--complete' : '');
-              return <li key={step.id} className={className}>
-                <span className="lf-worked-example-number" data-copy-role="data">{stepIndex + 1}</span>
-                <span className="lf-worked-example-expression" data-copy-role="data">{step.expression}</span>
-                {faded && stepIndex <= index + 1 ? <div className="lf-worked-example-blank">
-                  <TextField label={t.faded} aria-label={t.input + ': ' + step.expression} inputMode="decimal" autoComplete="off" disabled={pending} value={values[step.id] ?? ''}
-                    onChange={(event) => { setVerdict(null); setValues((current) => ({ ...current, [step.id]: event.target.value })); }} />
-                  <p className="lf-number-echo" data-copy-role="body" aria-live="polite">{echo(values[step.id] ?? '') ?? '\u00a0'}</p>
-                </div> : index >= stepIndex ? <span className="lf-worked-example-result" data-copy-role="data">{t.result}: {step.result}</span>
-                  : <span className="lf-worked-example-pending" data-copy-role="body">…</span>}
-              </li>;
-            })}
-          </ol>
+          <WorkedStepsList steps={steps.map((step, stepIndex) => {
+            const faded = stepIndex >= fadeAt;
+            return { id: step.id, marker: String(stepIndex + 1), expression: step.expression,
+              state: index === stepIndex ? 'active' as const : index > stepIndex ? 'complete' as const : 'pending' as const,
+              detail: faded && stepIndex <= index + 1 ? <div className="lf-worked-example-blank">
+                <TextField label={t.faded} aria-label={t.input + ': ' + step.expression} inputMode="decimal" autoComplete="off" disabled={pending} value={values[step.id] ?? ''}
+                  onChange={(event) => { setVerdict(null); setValues((current) => ({ ...current, [step.id]: event.target.value })); }} />
+                <p className="lf-number-echo" data-copy-role="body" aria-live="polite">{echo(values[step.id] ?? '') ?? '\u00a0'}</p>
+              </div> : index >= stepIndex ? <span className="lf-worked-example-result" data-copy-role="data">{t.result}: {step.result}</span>
+                : <span className="lf-worked-example-pending" data-copy-role="body">…</span> };
+          })} />
         </section>
         <div className="lf-learning-control-strip">
           <StepReplay steps={steps.length - 1} index={Math.min(index, steps.length - 1)} onChange={setIndex}

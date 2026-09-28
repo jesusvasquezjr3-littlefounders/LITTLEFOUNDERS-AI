@@ -5,6 +5,7 @@ import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegm
 import { savingsRuleCases, savingsRuleOutcome, type RuleCase, type RuleLink } from './savingsRuleModel';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { TeachingChartBoard } from './TeachingChartBoard';
+import { ConditionRuleVisual } from './pizarron';
 import './learning.css';
 import './savingsRule.css';
 import { LessonStageSlot } from './lessonStage';
@@ -86,15 +87,10 @@ export function SavingsRuleBoard({ document, segment, onBack, sequence, onGrade 
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart}
           columns={[t.case, t.result]} rows={cases.map((value, index) => ({ id: index,
             label: caseText(value), value: link ? savingsRuleOutcome(value, link) ? t.ready : t.wait : '?' }))}
-          chart={<div className="lf-rule-plot" role="img"
-            aria-label={`${t.case} ${caseIndex + 1}: ${t.goalMet} ${met ? t.yes : t.no}. ${t.goalDay} ${selected.goalDay ? t.yes : t.no}. ${resultLabel}.`}>
-            <div className="lf-rule-conditions">
-              <div className="lf-rule-node"><span data-copy-role="data">{t.goalMet}</span><strong data-copy-role="data">{met ? t.yes : t.no}</strong></div>
-              <span className="lf-rule-link" data-copy-role="data">{link ? t[link] : '?'}</span>
-              <div className="lf-rule-node"><span data-copy-role="data">{t.goalDay}</span><strong data-copy-role="data">{selected.goalDay ? t.yes : t.no}</strong></div>
-            </div>
-            <div className="lf-rule-outcome" data-copy-role="data">{resultLabel}</div>
-          </div>}>
+          chart={<ConditionRuleVisual
+            label={`${t.case} ${caseIndex + 1}: ${t.goalMet} ${met ? t.yes : t.no}. ${t.goalDay} ${selected.goalDay ? t.yes : t.no}. ${resultLabel}.`}
+            conditions={[{ id: 'goal-met', label: t.goalMet, valueText: met ? t.yes : t.no }, { id: 'goal-day', label: t.goalDay, valueText: selected.goalDay ? t.yes : t.no }]}
+            linkText={link ? t[link] : '?'} outcomeText={resultLabel} />}>
           {() => <div className="lf-rule-controls">
             <SegmentedControl legend={t.link} legendHidden name={`${linkName}-link`} value={link}
               onValueChange={setLink} options={(['and', 'or'] as const).map((value) => ({ value, label: t[value] }))} />
