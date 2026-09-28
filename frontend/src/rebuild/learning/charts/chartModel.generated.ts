@@ -201,7 +201,10 @@ export function fitLabel(text: string, room = 14): string {
 /** The numbers the accessible description reads, in document order. */
 export function chartFacts(kind: ChartKind, data: ChartData): Array<{ label: string; value: number }> {
   if (kind === 'scatter' || kind === 'bubble') return (data.points ?? []).map((p) => ({ label: p.label, value: p.y }));
-  if (kind === 'sankey') return (data.links ?? []).map((l) => ({ label: `${l.from}→${l.to}`, value: l.value ?? 0 }));
+  if (kind === 'sankey') {
+    const name = new Map((data.nodes ?? []).map((node) => [node.id, node.label]));
+    return (data.links ?? []).map((l) => ({ label: `${name.get(l.from) ?? l.from} → ${name.get(l.to) ?? l.to}`, value: l.value ?? 0 }));
+  }
   if (kind === 'calendar-heatmap') return (data.days ?? []).map((d) => ({ label: d.date, value: d.value }));
   if (kind === 'stat-tile' || kind === 'bullet' || kind === 'gauge') return [{ label: 'value', value: data.stat?.value ?? 0 }, ...(data.target !== undefined ? [{ label: 'target', value: data.target }] : [])];
   if (kind === 'flowchart' || kind === 'decision-tree' || kind === 'tree') return [];

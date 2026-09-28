@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { growthComparison } from './v2GrowthComparison.js';
 import { gradeV2Response, scoreV2Judgment, scoreV2Visual, type V2Detection, type V2Diagnostic, type V2JudgmentQuality, type V2VisualKind } from './v2VisualScorer.js';
+import { conceptAllowed, conceptSampleResponse, gradeConcept, V2_CONCEPT_RUBRICS, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptSegment } from './v2ConceptBoards.js';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './v2ChartModel.js';
 import { longArithmeticSchema, V2_FAMILY_RUBRICS, v2FamilySampleResponse, v2FamilyScorerPayload, v2FamilySegments, v2SegmentExtras, type V2FamilySegment } from './v2SegmentFamilies.js';
 
@@ -231,7 +232,7 @@ const chart = z.object({
   if ((value.grading === 'server') !== !!value.payload.question) ctx.addIssue({ code: 'custom', path: ['grading'], message: 'A graded chart asks one question; an explored chart asks none' });
 });
 
-const segment = z.discriminatedUnion('type', [allocation, savingsLine, numberLine, fractionNumberLine, fractionArea, barModelStructure, barModelAnswer, schemaDiagramStructure, schemaDiagramSlots, schemaDiagramAnswer, goalBullet, percentGrid, placeValue, savingsRule, ledger, growth, taxBracket, ratioTable, workedExample, functionMachine, cpaCount, decideJustify, chart, ...v2FamilySegments]);
+const segment = z.discriminatedUnion('type', [allocation, savingsLine, numberLine, fractionNumberLine, fractionArea, barModelStructure, barModelAnswer, schemaDiagramStructure, schemaDiagramSlots, schemaDiagramAnswer, goalBullet, percentGrid, placeValue, savingsRule, ledger, growth, taxBracket, ratioTable, workedExample, functionMachine, cpaCount, decideJustify, chart, ...v2FamilySegments, ...v2ConceptSegments]);
 const capabilities = {
   'money.allocation.v2': ['visual.stacked-bar.v1', 'operation.reallocate.v1'],
   'visual.savings-line.v2': ['visual.line.v1', 'operation.parameter-slider.v1'],
@@ -273,6 +274,15 @@ const capabilities = {
   'story.would-you-rather.v2': ['visual.would-you-rather.v1', 'operation.choose-option.v1'],
   'voice.mentor-turn.v2': ['visual.speech-plate.v1'],
   'voice.mentor-episode.v2': ['visual.speech-plate.v1', 'operation.step-replay.v1'],
+  // GAP-FIX-R1 learning (Appendix A Parts 2 and 3; B.7 part 2): the concept boards and the primitives they compose.
+  'money.amortization.v2': ['visual.amortization.v1', 'operation.step-replay.v1', 'operation.number-input.v1'],
+  'econ.supply-demand.v2': ['visual.supply-demand.v1', 'operation.drag-point.v1', 'operation.curve-shift.v1'],
+  'money.opportunity-cost.v2': ['visual.token-chooser.v1', 'operation.trade-off-chooser.v1'],
+  'money.inflation.v2': ['visual.inflation.v1', 'operation.parameter-slider.v1', 'operation.scale-toggle.v1', 'operation.before-after.v1', 'operation.reactive-text.v1'],
+  'money.rule-of-72.v2': ['visual.doubling.v1', 'operation.parameter-slider.v1', 'operation.threshold-marker.v1'],
+  'money.debt-payoff.v2': ['visual.debt-race.v1', 'operation.what-if-branch.v1', 'operation.ghost-trace.v1'],
+  'money.diversification.v2': ['visual.portfolio.v1', 'operation.reallocate.v1', 'operation.linked-representations.v1'],
+  'money.lemonade-stand.v2': ['visual.waterfall.v1', 'operation.guided-sandbox.v1', 'operation.running-ledger.v1'],
 } as const;
 
 /** Every occurrence of a chain member sits inside a complete, in-order run of the whole chain. */
@@ -325,6 +335,10 @@ export const v2PublicLessonSchema = z.object({
     }
     needed.forEach((capability) => expected.add(capability));
     if (needed.some((capability) => !declared.has(capability))) ctx.addIssue({ code: 'custom', path: ['required_capabilities'], message: 'Missing segment capability' });
+    // Appendix A Part 3: the concept boards open by age (teens, except opportunity cost and the lemonade stand).
+    if (isConcept(value) && !conceptAllowed(value.type, document.age_band)) {
+      ctx.addIssue({ code: 'custom', path: ['segments', index, 'type'], message: 'This concept board is not open to this age pathway' });
+    }
     if (value.type === 'math.place-value.v2' && document.age_band !== '6-9') ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Invalid place-value pathway' });
     if (value.type === 'math.number-line.fraction.v2'
       && (document.age_band !== '10-12' || document.eligibility.minimum_age !== 10 || document.eligibility.maximum_age !== 12)) {
@@ -425,6 +439,7 @@ const rubricByKind = {
   'money.running-ledger.v2': z.object({ target_balance: z.number().int().safe() }).strict(),
   'visual.chart.v2': z.object({ acceptable_choice_ids: z.array(id).min(1).max(3) }).strict(),
   ...V2_FAMILY_RUBRICS,
+  ...V2_CONCEPT_RUBRICS,
 } as const;
 
 export type V2PublicLesson = z.infer<typeof v2PublicLessonSchema>;
@@ -439,9 +454,13 @@ export type V2GradeResult = {
 /** The canonical scorer accepts only the semantic fields, never renderer metadata. */
 const FAMILY_TYPES = new Set<string>(v2FamilySegments.map((schema) => schema.shape.type.value));
 function isFamily(item: V2Segment): item is V2Segment & V2FamilySegment { return FAMILY_TYPES.has(item.type); }
+const CONCEPT_TYPES = new Set<string>(V2_CONCEPT_TYPES);
+/** The concept boards grade from the whole segment through their own canonical model (v2ConceptBoards.ts). */
+function isConcept(item: V2Segment): item is V2Segment & V2ConceptSegment { return CONCEPT_TYPES.has(item.type); }
 
 function scorerPayload(item: ServerSegment): Record<string, unknown> {
   if (isFamily(item)) return v2FamilyScorerPayload(item);
+  if (isConcept(item)) return { type: item.type };
   switch (item.type) {
     case 'math.place-value.v2': return { total: item.payload.total };
     case 'math.ratio-table.v2': return { itemsPerPack: item.payload.itemsPerPack, pricePerPack: item.payload.pricePerPack,
@@ -496,6 +515,10 @@ export function validateV2LessonForGrading(document: unknown, answerKeys: unknow
   for (const item of scored) {
     if (!Object.hasOwn(keys, item.id)) return null;
     const rubric = rubricByKind[item.type as keyof typeof rubricByKind].safeParse(keys[item.id]);
+    if (isConcept(item)) {
+      if (!rubric.success || gradeConcept(item, conceptSampleResponse(item), rubric.data).verdict === 'invalid') return null;
+      continue;
+    }
     const sample = item.type === 'money.allocation.v2' ? { save: 0, spend: item.payload.total, share: 0 }
       : item.type === 'math.number-line.whole.v2' ? { value: String(item.payload.minimum) }
         : item.type === 'math.number-line.fraction.v2' ? { value: '0/1' }
@@ -536,6 +559,11 @@ export function gradeV2Visual(document: V2PublicLesson, answerKeys: Record<strin
   if (!segment || segment.grading !== 'server' || !Object.hasOwn(answerKeys, segmentId)) return null;
   const rubric = rubricByKind[segment.type as keyof typeof rubricByKind].safeParse(answerKeys[segmentId]);
   if (!rubric.success) return null;
+  if (isConcept(segment)) {
+    const concept = gradeConcept(segment, response, rubric.data);
+    if (concept.verdict === 'invalid' || concept.verdict === 'valid') return null;
+    return { score: concept.verdict === 'met' ? 100 : 0, correct: concept.verdict === 'met', document, segmentId, diagnostic: concept.diagnostic };
+  }
   const detailed = gradeV2Response(segment.type as V2VisualKind, scorerPayload(segment as ServerSegment), response, rubric.data);
   const verdict = detailed.verdict;
   if (verdict === 'invalid' || verdict === 'valid') return null;

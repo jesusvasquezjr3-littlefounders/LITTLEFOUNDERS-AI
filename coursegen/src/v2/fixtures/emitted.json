@@ -6805,5 +6805,926 @@
         ]
       }
     }
+  },
+  {
+    "lesson_id": "v2-concept-boards",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "money-models",
+      "lesson_id": "v2-concept-boards",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-amortization",
+        "kc-supply-demand",
+        "kc-opportunity-cost",
+        "kc-inflation",
+        "kc-rule-of-72",
+        "kc-debt-payoff",
+        "kc-diversification",
+        "kc-unit-economics"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Money models",
+      "required_capabilities": [
+        "visual.amortization.v1",
+        "operation.step-replay.v1",
+        "operation.number-input.v1",
+        "visual.supply-demand.v1",
+        "operation.drag-point.v1",
+        "operation.curve-shift.v1",
+        "visual.token-chooser.v1",
+        "operation.trade-off-chooser.v1",
+        "visual.inflation.v1",
+        "operation.parameter-slider.v1",
+        "operation.scale-toggle.v1",
+        "operation.before-after.v1",
+        "operation.reactive-text.v1",
+        "visual.doubling.v1",
+        "operation.threshold-marker.v1",
+        "visual.debt-race.v1",
+        "operation.what-if-branch.v1",
+        "operation.ghost-trace.v1",
+        "visual.portfolio.v1",
+        "operation.reallocate.v1",
+        "operation.linked-representations.v1",
+        "visual.waterfall.v1",
+        "operation.guided-sandbox.v1",
+        "operation.running-ledger.v1"
+      ],
+      "segments": [
+        {
+          "id": "loan-01",
+          "type": "money.amortization.v2",
+          "grading": "server",
+          "prompt": "Scrub to month 6. How much is still owed after that payment?",
+          "visual": {
+            "type": "amortization"
+          },
+          "payload": {
+            "currency": "coins",
+            "principal_minor": 1200,
+            "rate_bps": 1200,
+            "months": 12
+          },
+          "help": [
+            "Start with what was owed, then take away what paid off the loan."
+          ],
+          "item_role": "practice",
+          "knowledge_component_id": "kc-amortization"
+        },
+        {
+          "id": "market-01",
+          "type": "econ.supply-demand.v2",
+          "grading": "server",
+          "prompt": "A heat wave: more people want lemonade. Move one curve one step, then say what the price does.",
+          "visual": {
+            "type": "supply-demand"
+          },
+          "payload": {
+            "demand": {
+              "intercept": 100,
+              "slope": 2
+            },
+            "supply": {
+              "intercept": 10,
+              "slope": 1
+            },
+            "shift_step": 10,
+            "max_shift": 2,
+            "labels": {
+              "price": "Price",
+              "quantity": "Cups",
+              "demand": "Want to buy",
+              "supply": "Want to sell"
+            }
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-supply-demand"
+        },
+        {
+          "id": "tokens-01",
+          "type": "money.opportunity-cost.v2",
+          "grading": "none",
+          "prompt": "You have 3 tokens. Pick what matters most.",
+          "visual": {
+            "type": "token-chooser"
+          },
+          "payload": {
+            "tokens": 3,
+            "options": [
+              {
+                "id": "opt-movie",
+                "cost": 2,
+                "label": "Movie"
+              },
+              {
+                "id": "opt-snack",
+                "cost": 1,
+                "label": "Snack"
+              },
+              {
+                "id": "opt-game",
+                "cost": 2,
+                "label": "Game"
+              },
+              {
+                "id": "opt-book",
+                "cost": 1,
+                "label": "Book"
+              },
+              {
+                "id": "opt-save",
+                "cost": 1,
+                "label": "Save it"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-opportunity-cost"
+        },
+        {
+          "id": "prices-01",
+          "type": "money.inflation.v2",
+          "grading": "server",
+          "prompt": "Pick a yearly price rise and a number of years. Guess what a 100-coin item will cost.",
+          "visual": {
+            "type": "inflation"
+          },
+          "payload": {
+            "currency": "coins",
+            "price_minor": 100,
+            "min_rate_bps": 100,
+            "max_rate_bps": 1000,
+            "rate_step_bps": 100,
+            "min_years": 5,
+            "max_years": 30,
+            "year_step": 5,
+            "prediction_step_minor": 10,
+            "prediction_max_minor": 2000
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-inflation"
+        },
+        {
+          "id": "double-01",
+          "type": "money.rule-of-72.v2",
+          "grading": "server",
+          "prompt": "Pick a growth rate. Use the rule of 72 to guess the years to double.",
+          "visual": {
+            "type": "doubling"
+          },
+          "payload": {
+            "currency": "coins",
+            "principal_minor": 100,
+            "min_rate_bps": 200,
+            "max_rate_bps": 1200,
+            "rate_step_bps": 100
+          },
+          "help": [
+            "Divide 72 by the yearly rate."
+          ],
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-rule-of-72"
+        },
+        {
+          "id": "debts-01",
+          "type": "money.debt-payoff.v2",
+          "grading": "server",
+          "prompt": "Try both plans. Which one pays the least interest?",
+          "visual": {
+            "type": "debt-race"
+          },
+          "payload": {
+            "currency": "coins",
+            "budget_minor": 150,
+            "debts": [
+              {
+                "id": "debt-card",
+                "balance_minor": 1000,
+                "rate_bps": 2400,
+                "minimum_minor": 30,
+                "label": "Card"
+              },
+              {
+                "id": "debt-loan",
+                "balance_minor": 300,
+                "rate_bps": 600,
+                "minimum_minor": 20,
+                "label": "Loan"
+              }
+            ]
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-debt-payoff"
+        },
+        {
+          "id": "mix-01",
+          "type": "money.diversification.v2",
+          "grading": "server",
+          "prompt": "Spread your money so risk is at most 10% and return is at least 4.5%.",
+          "visual": {
+            "type": "portfolio"
+          },
+          "payload": {
+            "assets": [
+              {
+                "id": "asset-stocks",
+                "return_bps": 800,
+                "risk_bps": 2000,
+                "label": "Stocks"
+              },
+              {
+                "id": "asset-bonds",
+                "return_bps": 300,
+                "risk_bps": 600,
+                "label": "Bonds"
+              },
+              {
+                "id": "asset-cash",
+                "return_bps": 100,
+                "risk_bps": 0,
+                "label": "Cash"
+              }
+            ],
+            "step": 10
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-diversification"
+        },
+        {
+          "id": "stand-01",
+          "type": "money.lemonade-stand.v2",
+          "grading": "server",
+          "prompt": "Run your stand for a few days. Find a price and cup count that earns at least 250 coins.",
+          "visual": {
+            "type": "lemonade-stand"
+          },
+          "payload": {
+            "currency": "coins",
+            "cost_per_cup_minor": 2,
+            "fixed_cost_minor": 10,
+            "max_price_minor": 20,
+            "price_step_minor": 2,
+            "demand_at_zero": 60,
+            "cups_lost_per_step": 5,
+            "max_cups": 60
+          },
+          "help": [
+            "A lower price sells more cups, but each cup earns less."
+          ],
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-unit-economics"
+        }
+      ]
+    },
+    "answer_keys": {
+      "loan-01": {
+        "month": 6
+      },
+      "market-01": {
+        "curve": "demand",
+        "direction": 1
+      },
+      "prices-01": {
+        "tolerance_minor": 20
+      },
+      "double-01": {
+        "tolerance_years": 1
+      },
+      "debts-01": {
+        "ask": "least_interest"
+      },
+      "mix-01": {
+        "max_risk_bps": 1000,
+        "min_return_bps": 450
+      },
+      "stand-01": {
+        "target_profit_minor": 250
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-concept-boards",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "money-models",
+      "lesson_id": "v2-concept-boards",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-amortization",
+        "kc-supply-demand",
+        "kc-opportunity-cost",
+        "kc-inflation",
+        "kc-rule-of-72",
+        "kc-debt-payoff",
+        "kc-diversification",
+        "kc-unit-economics"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Modelos de dinero",
+      "required_capabilities": [
+        "visual.amortization.v1",
+        "operation.step-replay.v1",
+        "operation.number-input.v1",
+        "visual.supply-demand.v1",
+        "operation.drag-point.v1",
+        "operation.curve-shift.v1",
+        "visual.token-chooser.v1",
+        "operation.trade-off-chooser.v1",
+        "visual.inflation.v1",
+        "operation.parameter-slider.v1",
+        "operation.scale-toggle.v1",
+        "operation.before-after.v1",
+        "operation.reactive-text.v1",
+        "visual.doubling.v1",
+        "operation.threshold-marker.v1",
+        "visual.debt-race.v1",
+        "operation.what-if-branch.v1",
+        "operation.ghost-trace.v1",
+        "visual.portfolio.v1",
+        "operation.reallocate.v1",
+        "operation.linked-representations.v1",
+        "visual.waterfall.v1",
+        "operation.guided-sandbox.v1",
+        "operation.running-ledger.v1"
+      ],
+      "segments": [
+        {
+          "id": "loan-01",
+          "type": "money.amortization.v2",
+          "grading": "server",
+          "prompt": "Avanza al mes 6. ¿Cuánto se debe después de ese pago?",
+          "visual": {
+            "type": "amortization"
+          },
+          "payload": {
+            "currency": "coins",
+            "principal_minor": 1200,
+            "rate_bps": 1200,
+            "months": 12
+          },
+          "help": [
+            "Empieza con lo que se debía y resta el abono a la deuda."
+          ],
+          "item_role": "practice",
+          "knowledge_component_id": "kc-amortization"
+        },
+        {
+          "id": "market-01",
+          "type": "econ.supply-demand.v2",
+          "grading": "server",
+          "prompt": "Hace mucho calor: más gente quiere limonada. Mueve una curva un paso y di qué pasa con el precio.",
+          "visual": {
+            "type": "supply-demand"
+          },
+          "payload": {
+            "demand": {
+              "intercept": 100,
+              "slope": 2
+            },
+            "supply": {
+              "intercept": 10,
+              "slope": 1
+            },
+            "shift_step": 10,
+            "max_shift": 2,
+            "labels": {
+              "price": "Precio",
+              "quantity": "Vasos",
+              "demand": "Quieren comprar",
+              "supply": "Quieren vender"
+            }
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-supply-demand"
+        },
+        {
+          "id": "tokens-01",
+          "type": "money.opportunity-cost.v2",
+          "grading": "none",
+          "prompt": "Tienes 3 fichas. Elige lo que más te importa.",
+          "visual": {
+            "type": "token-chooser"
+          },
+          "payload": {
+            "tokens": 3,
+            "options": [
+              {
+                "id": "opt-movie",
+                "cost": 2,
+                "label": "Película"
+              },
+              {
+                "id": "opt-snack",
+                "cost": 1,
+                "label": "Botana"
+              },
+              {
+                "id": "opt-game",
+                "cost": 2,
+                "label": "Juego"
+              },
+              {
+                "id": "opt-book",
+                "cost": 1,
+                "label": "Libro"
+              },
+              {
+                "id": "opt-save",
+                "cost": 1,
+                "label": "Ahorrar"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-opportunity-cost"
+        },
+        {
+          "id": "prices-01",
+          "type": "money.inflation.v2",
+          "grading": "server",
+          "prompt": "Elige cuánto suben los precios al año y cuántos años. Calcula cuánto costará algo de 100 monedas.",
+          "visual": {
+            "type": "inflation"
+          },
+          "payload": {
+            "currency": "coins",
+            "price_minor": 100,
+            "min_rate_bps": 100,
+            "max_rate_bps": 1000,
+            "rate_step_bps": 100,
+            "min_years": 5,
+            "max_years": 30,
+            "year_step": 5,
+            "prediction_step_minor": 10,
+            "prediction_max_minor": 2000
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-inflation"
+        },
+        {
+          "id": "double-01",
+          "type": "money.rule-of-72.v2",
+          "grading": "server",
+          "prompt": "Elige una tasa de crecimiento. Usa la regla del 72 para calcular los años para duplicar.",
+          "visual": {
+            "type": "doubling"
+          },
+          "payload": {
+            "currency": "coins",
+            "principal_minor": 100,
+            "min_rate_bps": 200,
+            "max_rate_bps": 1200,
+            "rate_step_bps": 100
+          },
+          "help": [
+            "Divide 72 entre la tasa anual."
+          ],
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-rule-of-72"
+        },
+        {
+          "id": "debts-01",
+          "type": "money.debt-payoff.v2",
+          "grading": "server",
+          "prompt": "Prueba los dos planes. ¿Cuál paga menos interés?",
+          "visual": {
+            "type": "debt-race"
+          },
+          "payload": {
+            "currency": "coins",
+            "budget_minor": 150,
+            "debts": [
+              {
+                "id": "debt-card",
+                "balance_minor": 1000,
+                "rate_bps": 2400,
+                "minimum_minor": 30,
+                "label": "Tarjeta"
+              },
+              {
+                "id": "debt-loan",
+                "balance_minor": 300,
+                "rate_bps": 600,
+                "minimum_minor": 20,
+                "label": "Préstamo"
+              }
+            ]
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-debt-payoff"
+        },
+        {
+          "id": "mix-01",
+          "type": "money.diversification.v2",
+          "grading": "server",
+          "prompt": "Reparte tu dinero para que el riesgo sea máximo 10% y el rendimiento al menos 4.5%.",
+          "visual": {
+            "type": "portfolio"
+          },
+          "payload": {
+            "assets": [
+              {
+                "id": "asset-stocks",
+                "return_bps": 800,
+                "risk_bps": 2000,
+                "label": "Acciones"
+              },
+              {
+                "id": "asset-bonds",
+                "return_bps": 300,
+                "risk_bps": 600,
+                "label": "Bonos"
+              },
+              {
+                "id": "asset-cash",
+                "return_bps": 100,
+                "risk_bps": 0,
+                "label": "Efectivo"
+              }
+            ],
+            "step": 10
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-diversification"
+        },
+        {
+          "id": "stand-01",
+          "type": "money.lemonade-stand.v2",
+          "grading": "server",
+          "prompt": "Abre tu puesto unos días. Encuentra un precio y vasos que ganen al menos 250 monedas.",
+          "visual": {
+            "type": "lemonade-stand"
+          },
+          "payload": {
+            "currency": "coins",
+            "cost_per_cup_minor": 2,
+            "fixed_cost_minor": 10,
+            "max_price_minor": 20,
+            "price_step_minor": 2,
+            "demand_at_zero": 60,
+            "cups_lost_per_step": 5,
+            "max_cups": 60
+          },
+          "help": [
+            "Un precio bajo vende más vasos, pero cada vaso gana menos."
+          ],
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-unit-economics"
+        }
+      ]
+    },
+    "answer_keys": {
+      "loan-01": {
+        "month": 6
+      },
+      "market-01": {
+        "curve": "demand",
+        "direction": 1
+      },
+      "prices-01": {
+        "tolerance_minor": 20
+      },
+      "double-01": {
+        "tolerance_years": 1
+      },
+      "debts-01": {
+        "ask": "least_interest"
+      },
+      "mix-01": {
+        "max_risk_bps": 1000,
+        "min_return_bps": 450
+      },
+      "stand-01": {
+        "target_profit_minor": 250
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-concept-boards",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "money-models",
+      "lesson_id": "v2-concept-boards",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-amortization",
+        "kc-supply-demand",
+        "kc-opportunity-cost",
+        "kc-inflation",
+        "kc-rule-of-72",
+        "kc-debt-payoff",
+        "kc-diversification",
+        "kc-unit-economics"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Modelos de dinheiro",
+      "required_capabilities": [
+        "visual.amortization.v1",
+        "operation.step-replay.v1",
+        "operation.number-input.v1",
+        "visual.supply-demand.v1",
+        "operation.drag-point.v1",
+        "operation.curve-shift.v1",
+        "visual.token-chooser.v1",
+        "operation.trade-off-chooser.v1",
+        "visual.inflation.v1",
+        "operation.parameter-slider.v1",
+        "operation.scale-toggle.v1",
+        "operation.before-after.v1",
+        "operation.reactive-text.v1",
+        "visual.doubling.v1",
+        "operation.threshold-marker.v1",
+        "visual.debt-race.v1",
+        "operation.what-if-branch.v1",
+        "operation.ghost-trace.v1",
+        "visual.portfolio.v1",
+        "operation.reallocate.v1",
+        "operation.linked-representations.v1",
+        "visual.waterfall.v1",
+        "operation.guided-sandbox.v1",
+        "operation.running-ledger.v1"
+      ],
+      "segments": [
+        {
+          "id": "loan-01",
+          "type": "money.amortization.v2",
+          "grading": "server",
+          "prompt": "Avance até o mês 6. Quanto ainda se deve depois desse pagamento?",
+          "visual": {
+            "type": "amortization"
+          },
+          "payload": {
+            "currency": "coins",
+            "principal_minor": 1200,
+            "rate_bps": 1200,
+            "months": 12
+          },
+          "help": [
+            "Comece com a dívida e tire o que foi abatido."
+          ],
+          "item_role": "practice",
+          "knowledge_component_id": "kc-amortization"
+        },
+        {
+          "id": "market-01",
+          "type": "econ.supply-demand.v2",
+          "grading": "server",
+          "prompt": "Uma onda de calor: mais gente quer limonada. Mova uma curva um passo e diga o que acontece com o preço.",
+          "visual": {
+            "type": "supply-demand"
+          },
+          "payload": {
+            "demand": {
+              "intercept": 100,
+              "slope": 2
+            },
+            "supply": {
+              "intercept": 10,
+              "slope": 1
+            },
+            "shift_step": 10,
+            "max_shift": 2,
+            "labels": {
+              "price": "Preço",
+              "quantity": "Copos",
+              "demand": "Querem comprar",
+              "supply": "Querem vender"
+            }
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-supply-demand"
+        },
+        {
+          "id": "tokens-01",
+          "type": "money.opportunity-cost.v2",
+          "grading": "none",
+          "prompt": "Você tem 3 fichas. Escolha o que mais importa.",
+          "visual": {
+            "type": "token-chooser"
+          },
+          "payload": {
+            "tokens": 3,
+            "options": [
+              {
+                "id": "opt-movie",
+                "cost": 2,
+                "label": "Filme"
+              },
+              {
+                "id": "opt-snack",
+                "cost": 1,
+                "label": "Lanche"
+              },
+              {
+                "id": "opt-game",
+                "cost": 2,
+                "label": "Jogo"
+              },
+              {
+                "id": "opt-book",
+                "cost": 1,
+                "label": "Livro"
+              },
+              {
+                "id": "opt-save",
+                "cost": 1,
+                "label": "Guardar"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-opportunity-cost"
+        },
+        {
+          "id": "prices-01",
+          "type": "money.inflation.v2",
+          "grading": "server",
+          "prompt": "Escolha a alta de preços por ano e quantos anos. Calcule quanto vai custar algo de 100 moedas.",
+          "visual": {
+            "type": "inflation"
+          },
+          "payload": {
+            "currency": "coins",
+            "price_minor": 100,
+            "min_rate_bps": 100,
+            "max_rate_bps": 1000,
+            "rate_step_bps": 100,
+            "min_years": 5,
+            "max_years": 30,
+            "year_step": 5,
+            "prediction_step_minor": 10,
+            "prediction_max_minor": 2000
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-inflation"
+        },
+        {
+          "id": "double-01",
+          "type": "money.rule-of-72.v2",
+          "grading": "server",
+          "prompt": "Escolha uma taxa de crescimento. Use a regra do 72 para calcular os anos para dobrar.",
+          "visual": {
+            "type": "doubling"
+          },
+          "payload": {
+            "currency": "coins",
+            "principal_minor": 100,
+            "min_rate_bps": 200,
+            "max_rate_bps": 1200,
+            "rate_step_bps": 100
+          },
+          "help": [
+            "Divida 72 pela taxa anual."
+          ],
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-rule-of-72"
+        },
+        {
+          "id": "debts-01",
+          "type": "money.debt-payoff.v2",
+          "grading": "server",
+          "prompt": "Teste os dois planos. Qual paga menos juros?",
+          "visual": {
+            "type": "debt-race"
+          },
+          "payload": {
+            "currency": "coins",
+            "budget_minor": 150,
+            "debts": [
+              {
+                "id": "debt-card",
+                "balance_minor": 1000,
+                "rate_bps": 2400,
+                "minimum_minor": 30,
+                "label": "Cartão"
+              },
+              {
+                "id": "debt-loan",
+                "balance_minor": 300,
+                "rate_bps": 600,
+                "minimum_minor": 20,
+                "label": "Empréstimo"
+              }
+            ]
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-debt-payoff"
+        },
+        {
+          "id": "mix-01",
+          "type": "money.diversification.v2",
+          "grading": "server",
+          "prompt": "Divida seu dinheiro para o risco ficar em no máximo 10% e o retorno em pelo menos 4,5%.",
+          "visual": {
+            "type": "portfolio"
+          },
+          "payload": {
+            "assets": [
+              {
+                "id": "asset-stocks",
+                "return_bps": 800,
+                "risk_bps": 2000,
+                "label": "Ações"
+              },
+              {
+                "id": "asset-bonds",
+                "return_bps": 300,
+                "risk_bps": 600,
+                "label": "Títulos"
+              },
+              {
+                "id": "asset-cash",
+                "return_bps": 100,
+                "risk_bps": 0,
+                "label": "Dinheiro"
+              }
+            ],
+            "step": 10
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-diversification"
+        },
+        {
+          "id": "stand-01",
+          "type": "money.lemonade-stand.v2",
+          "grading": "server",
+          "prompt": "Abra sua barraca por alguns dias. Ache um preço e copos que rendam pelo menos 250 moedas.",
+          "visual": {
+            "type": "lemonade-stand"
+          },
+          "payload": {
+            "currency": "coins",
+            "cost_per_cup_minor": 2,
+            "fixed_cost_minor": 10,
+            "max_price_minor": 20,
+            "price_step_minor": 2,
+            "demand_at_zero": 60,
+            "cups_lost_per_step": 5,
+            "max_cups": 60
+          },
+          "help": [
+            "Um preço menor vende mais copos, mas cada copo rende menos."
+          ],
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-unit-economics"
+        }
+      ]
+    },
+    "answer_keys": {
+      "loan-01": {
+        "month": 6
+      },
+      "market-01": {
+        "curve": "demand",
+        "direction": 1
+      },
+      "prices-01": {
+        "tolerance_minor": 20
+      },
+      "double-01": {
+        "tolerance_years": 1
+      },
+      "debts-01": {
+        "ask": "least_interest"
+      },
+      "mix-01": {
+        "max_risk_bps": 1000,
+        "min_return_bps": 450
+      },
+      "stand-01": {
+        "target_profit_minor": 250
+      }
+    }
   }
 ]

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { growthComparison } from './growthComparisonModel.generated';
 import { longArithmeticSchema, v2FamilySegments, v2SegmentExtras } from './v2SegmentFamilies.generated';
+import { conceptAllowed, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptType } from './v2ConceptBoards.generated';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './charts/chartModel.generated';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/);
@@ -317,7 +318,7 @@ const chartSegment = z.object({
   if ((value.grading === 'server') !== !!value.payload.question) ctx.addIssue({ code: 'custom', path: ['grading'], message: 'A graded chart asks one question' });
 });
 
-const segment = z.discriminatedUnion('type', [allocationSegment, timelineSegment, numberLineSegment, fractionNumberLineSegment, fractionAreaSegment, barModelStructureSegment, barModelAnswerSegment, schemaDiagramStructureSegment, schemaDiagramSlotsSegment, schemaDiagramAnswerSegment, goalBulletSegment, percentGridSegment, placeValueSegment, savingsRuleSegment, runningLedgerSegment, growthComparisonSegment, taxBracketSegment, ratioTableSegment, workedExampleSegment, functionMachineSegment, cpaCountSegment, decideJustifySegment, chartSegment, ...v2FamilySegments]);
+const segment = z.discriminatedUnion('type', [allocationSegment, timelineSegment, numberLineSegment, fractionNumberLineSegment, fractionAreaSegment, barModelStructureSegment, barModelAnswerSegment, schemaDiagramStructureSegment, schemaDiagramSlotsSegment, schemaDiagramAnswerSegment, goalBulletSegment, percentGridSegment, placeValueSegment, savingsRuleSegment, runningLedgerSegment, growthComparisonSegment, taxBracketSegment, ratioTableSegment, workedExampleSegment, functionMachineSegment, cpaCountSegment, decideJustifySegment, chartSegment, ...v2FamilySegments, ...v2ConceptSegments]);
 type SegmentType = z.infer<typeof segment>['type'];
 export const REQUIRED_SEGMENT_CAPABILITIES = {
   'money.allocation.v2': ['visual.stacked-bar.v1', 'operation.reallocate.v1'],
@@ -361,6 +362,15 @@ export const REQUIRED_SEGMENT_CAPABILITIES = {
   'story.would-you-rather.v2': ['visual.would-you-rather.v1', 'operation.choose-option.v1'],
   'voice.mentor-turn.v2': ['visual.speech-plate.v1'],
   'voice.mentor-episode.v2': ['visual.speech-plate.v1', 'operation.step-replay.v1'],
+  // GAP-FIX-R1 learning (Appendix A Parts 2 and 3; B.7 part 2).
+  'money.amortization.v2': ['visual.amortization.v1', 'operation.step-replay.v1', 'operation.number-input.v1'],
+  'econ.supply-demand.v2': ['visual.supply-demand.v1', 'operation.drag-point.v1', 'operation.curve-shift.v1'],
+  'money.opportunity-cost.v2': ['visual.token-chooser.v1', 'operation.trade-off-chooser.v1'],
+  'money.inflation.v2': ['visual.inflation.v1', 'operation.parameter-slider.v1', 'operation.scale-toggle.v1', 'operation.before-after.v1', 'operation.reactive-text.v1'],
+  'money.rule-of-72.v2': ['visual.doubling.v1', 'operation.parameter-slider.v1', 'operation.threshold-marker.v1'],
+  'money.debt-payoff.v2': ['visual.debt-race.v1', 'operation.what-if-branch.v1', 'operation.ghost-trace.v1'],
+  'money.diversification.v2': ['visual.portfolio.v1', 'operation.reallocate.v1', 'operation.linked-representations.v1'],
+  'money.lemonade-stand.v2': ['visual.waterfall.v1', 'operation.guided-sandbox.v1', 'operation.running-ledger.v1'],
 } as const satisfies Record<SegmentType, readonly string[]>;
 export const LESSON_CLIENT_CAPABILITIES = [...new Set([...Object.values(REQUIRED_SEGMENT_CAPABILITIES).flat(),
   'visual.waffle.v1', 'visual.donut.v1', ...CHART_KINDS.map((kind) => `visual.${kind}.v1`)])];
@@ -431,6 +441,9 @@ export const lessonClientDocumentSchema = z.object({
     needed.forEach((capability) => expected.add(capability));
     if (needed.some((capability) => !declared.has(capability))) {
       ctx.addIssue({ code: 'custom', path: ['required_capabilities'], message: 'Missing segment capability declaration' });
+    }
+    if ((V2_CONCEPT_TYPES as readonly string[]).includes(value.type) && !conceptAllowed(value.type as V2ConceptType, document.age_band)) {
+      ctx.addIssue({ code: 'custom', path: ['segments', index, 'type'], message: 'This concept board is not open to this age pathway' });
     }
     if (value.type === 'math.place-value.v2' && document.age_band !== '6-9') {
       ctx.addIssue({ code: 'custom', path: ['age_band'], message: 'Place-value pilot is restricted to ages 6–9' });

@@ -430,7 +430,7 @@ describe('versioned pilot document renderer', () => {
     const document = taxBracketPilotDocument('en-US');
     const { rerender } = render(<LessonDocumentView raw={document} locale="en-US" ageBand="13-17" onBack={noop} />);
     expect(screen.getByRole('img', { name: /Tax bracket stacked bar.*Income:/ })).toHaveAttribute('aria-label', expect.stringContaining('USD 300.00'));
-    expect(screen.getByRole('img').querySelectorAll('rect')).toHaveLength(3);
+    expect(screen.getByRole('img', { name: /Tax bracket stacked bar/ }).querySelectorAll('rect')).toHaveLength(3);
     fireEvent.change(screen.getByRole('slider', { name: /Income/ }), { target: { value: '40000' } });
     expect(screen.getByRole('img', { name: /Income:/ })).toHaveAttribute('aria-label', expect.stringContaining('Tax: USD 80.00'));
     fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));

@@ -54,6 +54,15 @@ export const V2_SEGMENT_CAPABILITIES = {
   'story.would-you-rather.v2': ['visual.would-you-rather.v1', 'operation.choose-option.v1'],
   'voice.mentor-turn.v2': ['visual.speech-plate.v1'],
   'voice.mentor-episode.v2': ['visual.speech-plate.v1', 'operation.step-replay.v1'],
+  // GAP-FIX-R1 learning (Appendix A Parts 2 and 3; B.7 part 2).
+  'money.amortization.v2': ['visual.amortization.v1', 'operation.step-replay.v1', 'operation.number-input.v1'],
+  'econ.supply-demand.v2': ['visual.supply-demand.v1', 'operation.drag-point.v1', 'operation.curve-shift.v1'],
+  'money.opportunity-cost.v2': ['visual.token-chooser.v1', 'operation.trade-off-chooser.v1'],
+  'money.inflation.v2': ['visual.inflation.v1', 'operation.parameter-slider.v1', 'operation.scale-toggle.v1', 'operation.before-after.v1', 'operation.reactive-text.v1'],
+  'money.rule-of-72.v2': ['visual.doubling.v1', 'operation.parameter-slider.v1', 'operation.threshold-marker.v1'],
+  'money.debt-payoff.v2': ['visual.debt-race.v1', 'operation.what-if-branch.v1', 'operation.ghost-trace.v1'],
+  'money.diversification.v2': ['visual.portfolio.v1', 'operation.reallocate.v1', 'operation.linked-representations.v1'],
+  'money.lemonade-stand.v2': ['visual.waterfall.v1', 'operation.guided-sandbox.v1', 'operation.running-ledger.v1'],
 } as const;
 
 /** The Mentor-voiced kinds (B.8, B.11): the only v2 segments that carry a narration channel. */

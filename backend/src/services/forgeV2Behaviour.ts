@@ -18,6 +18,7 @@
 // A document that fails blocks review; the report carries the pass rate.
 
 import { gradeV2Visual, type V2PublicLesson } from './v2LessonDocument.js';
+import { amortizationSchedule } from './v2ConceptBoards.js';
 import { longArithmeticSteps } from './v2SegmentFamilies.js';
 
 type Json = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -211,6 +212,38 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     case 'story.dialogue-choice.v2':
       return { inRange: (p.replies as Json[]).map((option) => ({ choice: option.id })), invalid: [{ choice: 'not-an-option' }],
         expectMet: (r) => (rubric.acceptable_choice_ids as string[]).includes(r.choice) };
+    // Appendix A Part 3 concept boards (B.7 part 2).
+    case 'money.amortization.v2': {
+      const rows = amortizationSchedule(p.principal_minor, p.rate_bps, p.months);
+      return { inRange: range(0, rows.length).flatMap((month) => { const balance = month === 0 ? p.principal_minor : rows[month - 1]!.balance; return [balance, balance + 5].map((b) => ({ month, balance: String(b) })); }),
+        invalid: [{ month: rows.length + 1, balance: '0' }, { month: 1, balance: 'twelve' }], initial: { month: 0, balance: String(p.principal_minor) } };
+    }
+    case 'econ.supply-demand.v2': {
+      const shifts = range(-p.max_shift, p.max_shift);
+      return { inRange: product<string | number>([shifts, shifts, ['up', 'down', 'same']]).map(([demand_shift, supply_shift, price]) => ({ demand_shift, supply_shift, price })),
+        invalid: [{ demand_shift: p.max_shift + 1, supply_shift: 0, price: 'up' }, { demand_shift: 0, supply_shift: 0, price: 'sideways' }] };
+    }
+    case 'money.inflation.v2': {
+      const rates = range(p.min_rate_bps, p.max_rate_bps, p.rate_step_bps);
+      const years = range(p.min_years, p.max_years, p.year_step);
+      const predictions = sample(range(p.price_minor, p.prediction_max_minor, p.prediction_step_minor), 400);
+      return { inRange: sample(product([rates, years, predictions], MAX_STATES * 4), MAX_STATES).map(([rateBps, yearsValue, predictionMinor]) => ({ rateBps, years: yearsValue, predictionMinor })),
+        invalid: [{ rateBps: p.max_rate_bps + p.rate_step_bps, years: p.min_years, predictionMinor: p.price_minor }, { rateBps: p.min_rate_bps, years: p.min_years, predictionMinor: p.price_minor - 1 }] };
+    }
+    case 'money.rule-of-72.v2':
+      return { inRange: product([range(p.min_rate_bps, p.max_rate_bps, p.rate_step_bps), range(1, 100)]).map(([rateBps, years]) => ({ rateBps, years })),
+        invalid: [{ rateBps: p.max_rate_bps + p.rate_step_bps, years: 10 }, { rateBps: p.min_rate_bps, years: 0 }] };
+    case 'money.debt-payoff.v2':
+      return { inRange: [{ strategy: 'snowball' }, { strategy: 'avalanche' }], invalid: [{ strategy: 'minimum' }, {}] };
+    case 'money.diversification.v2': {
+      const ids = (p.assets as Json[]).map((a) => a.id as string);
+      const inRange = product(ids.map(() => range(0, 100, p.step))).filter((w) => w.reduce((sum, v) => sum + v, 0) === 100)
+        .map((w) => ({ weights: Object.fromEntries(ids.map((assetId, index) => [assetId, w[index]])) }));
+      return { inRange, invalid: [{ weights: Object.fromEntries(ids.map((assetId, index) => [assetId, index === 0 ? 90 : 0])) }, { weights: {} }] };
+    }
+    case 'money.lemonade-stand.v2':
+      return { inRange: product([range(0, p.max_price_minor, p.price_step_minor), range(0, p.max_cups)]).map(([price, cups]) => ({ price, cups })),
+        invalid: [{ price: p.max_price_minor + p.price_step_minor, cups: 0 }, { price: 0, cups: p.max_cups + 1 }], initial: { price: 0, cups: 0 } };
     default:
       return null;
   }

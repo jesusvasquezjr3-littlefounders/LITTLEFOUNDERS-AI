@@ -1,0 +1,45 @@
+/* GAP-FIX-R1 learning (Appendix A Part 2): the interaction primitives. Tokens only; light and dark come from the token layer. */
+.lf-op { display: grid; gap: var(--spacing-2); min-inline-size: 0; margin: 0; }
+.lf-op svg { display: block; inline-size: 100%; block-size: auto; max-block-size: 260px; overflow: visible; }
+.lf-op-axis { stroke: var(--outline); stroke-width: 1; }
+.lf-op-line { fill: none; stroke: var(--sky-strong); stroke-width: 3; stroke-linejoin: round; }
+.lf-op-line--ghost { stroke: var(--content-muted); stroke-dasharray: 6 4; stroke-width: 2; }
+.lf-op-line--second { stroke: var(--berry-strong); }
+.lf-op-label { font-size: 9px; font-weight: 700; fill: var(--content); }
+.lf-op-status { font-weight: 700; min-block-size: 1.5em; }
+.lf-op-threshold-line { stroke: var(--berry-strong); stroke-width: 2; stroke-dasharray: 4 3; }
+.lf-op-flag-stem { stroke: var(--berry-strong); stroke-width: 2; }
+.lf-op-flag-dot { fill: var(--berry-strong); stroke: var(--surface); stroke-width: 2; }
+.lf-op-branch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: var(--spacing-3); }
+.lf-op-branch-card { border: 2px solid var(--outline); border-radius: var(--rounded-md); padding: var(--spacing-3); background: var(--surface); display: grid; gap: var(--spacing-2); }
+.lf-op-branch-card[data-chosen] { border-color: var(--primary-strong); border-width: 3px; }
+.lf-op-branch-card h3 { margin: 0; font-size: 1rem; }
+.lf-op-toggle-panel { border-radius: var(--rounded-md); background: var(--sunken); padding: var(--spacing-3); }
+.lf-op-goal { margin: 0; }
+.lf-op-cues { margin: 0; padding-inline-start: var(--spacing-4); display: grid; gap: var(--spacing-1); }
+.lf-op-token-row { display: flex; flex-wrap: wrap; gap: var(--spacing-1); }
+.lf-op-token { inline-size: 20px; block-size: 20px; border-radius: 50%; background: var(--mint-strong); border: 2px solid var(--content); }
+.lf-op-token[data-spent] { background: transparent; border-style: dashed; border-color: var(--content-muted); }
+.lf-op-token-options { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-op-gave-up h3 { margin: 0; font-size: 1rem; }
+.lf-op-gave-up ul { margin: 0; padding-inline-start: var(--spacing-4); }
+.lf-op-drag { cursor: grab; outline: none; touch-action: none; }
+.lf-op-drag-hit { fill: transparent; }
+.lf-op-drag-dot { fill: var(--primary-strong); stroke: var(--surface); stroke-width: 3; }
+.lf-op-drag:focus-visible .lf-op-drag-dot { stroke: var(--content); stroke-width: 4; }
+.lf-op-drag[aria-disabled='true'] { cursor: default; opacity: .6; }
+.lf-op-reactive { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-1) var(--spacing-2); line-height: 1.6; }
+.lf-op-inline { display: inline-flex; }
+.lf-op-reactive-result { font-weight: 800; }
+.lf-op-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-3); list-style: none; margin: 0; padding: 0; font-size: .875rem; font-weight: 700; }
+.lf-op-legend li { display: inline-flex; align-items: center; gap: var(--spacing-1); }
+.lf-op-key { inline-size: 18px; block-size: 0; border-block-start: 3px solid var(--sky-strong); }
+.lf-op-key--ghost { border-block-start: 2px dashed var(--content-muted); }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-op-toggle-panel { animation: lf-op-fade 200ms ease-out; }
+  .lf-op-flag { animation: lf-op-fade 240ms ease-out; }
+  .lf-op-line:not(.lf-op-line--ghost) { stroke-dasharray: 1200; animation: lf-op-draw 600ms ease-out; }
+  .lf-op-token { transition: background-color 160ms ease-out; }
+}
+@keyframes lf-op-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lf-op-draw { from { stroke-dashoffset: 1200; } to { stroke-dashoffset: 0; } }

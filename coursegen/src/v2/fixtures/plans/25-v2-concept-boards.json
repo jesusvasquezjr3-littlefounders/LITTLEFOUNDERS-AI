@@ -1,0 +1,491 @@
+{
+ "plan_version": 1,
+ "course_id": "financial-education",
+ "pathway_id": "financial-13-17",
+ "chapter_id": "money-models",
+ "lesson_id": "v2-concept-boards",
+ "age_band": "13-17",
+ "eligibility": {
+  "minimum_age": 13,
+  "maximum_age": 17
+ },
+ "knowledge_component_ids": [
+  "kc-amortization",
+  "kc-supply-demand",
+  "kc-opportunity-cost",
+  "kc-inflation",
+  "kc-rule-of-72",
+  "kc-debt-payoff",
+  "kc-diversification",
+  "kc-unit-economics"
+ ],
+ "adventure_scene_id": "diorama-a",
+ "brief": "Un adolescente explora modelos de dinero: pagar un préstamo, el mercado, elegir con pocas fichas, la inflación, la regla del 72, dos planes de deuda, repartir riesgo y un puesto de limonada.",
+ "title": {
+  "en-US": "Money models",
+  "es-MX": "Modelos de dinero",
+  "pt-BR": "Modelos de dinheiro"
+ },
+ "new_concepts": [
+  "kc-amortization",
+  "kc-supply-demand"
+ ],
+ "regional": {
+  "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+ },
+ "segments": [
+  {
+   "id": "loan-01",
+   "type": "money.amortization.v2",
+   "grading": "server",
+   "visual": {
+    "type": "amortization"
+   },
+   "item_role": "practice",
+   "knowledge_component_id": "kc-amortization",
+   "payload": {
+    "currency": "coins",
+    "principal_minor": 1200,
+    "rate_bps": 1200,
+    "months": 12
+   },
+   "rubric": {
+    "month": 6
+   },
+   "copy": {
+    "en-US": {
+     "prompt": "Scrub to month 6. How much is still owed after that payment?",
+     "help": [
+      "Start with what was owed, then take away what paid off the loan."
+     ]
+    },
+    "es-MX": {
+     "prompt": "Avanza al mes 6. ¿Cuánto se debe después de ese pago?",
+     "help": [
+      "Empieza con lo que se debía y resta el abono a la deuda."
+     ]
+    },
+    "pt-BR": {
+     "prompt": "Avance até o mês 6. Quanto ainda se deve depois desse pagamento?",
+     "help": [
+      "Comece com a dívida e tire o que foi abatido."
+     ]
+    }
+   }
+  },
+  {
+   "id": "market-01",
+   "type": "econ.supply-demand.v2",
+   "grading": "server",
+   "visual": {
+    "type": "supply-demand"
+   },
+   "item_role": "practice",
+   "knowledge_component_id": "kc-supply-demand",
+   "payload": {
+    "demand": {
+     "intercept": 100,
+     "slope": 2
+    },
+    "supply": {
+     "intercept": 10,
+     "slope": 1
+    },
+    "shift_step": 10,
+    "max_shift": 2
+   },
+   "rubric": {
+    "curve": "demand",
+    "direction": 1
+   },
+   "copy": {
+    "en-US": {
+     "prompt": "A heat wave: more people want lemonade. Move one curve one step, then say what the price does.",
+     "labels": {
+      "price": "Price",
+      "quantity": "Cups",
+      "demand": "Want to buy",
+      "supply": "Want to sell"
+     }
+    },
+    "es-MX": {
+     "prompt": "Hace mucho calor: más gente quiere limonada. Mueve una curva un paso y di qué pasa con el precio.",
+     "labels": {
+      "price": "Precio",
+      "quantity": "Vasos",
+      "demand": "Quieren comprar",
+      "supply": "Quieren vender"
+     }
+    },
+    "pt-BR": {
+     "prompt": "Uma onda de calor: mais gente quer limonada. Mova uma curva um passo e diga o que acontece com o preço.",
+     "labels": {
+      "price": "Preço",
+      "quantity": "Copos",
+      "demand": "Querem comprar",
+      "supply": "Querem vender"
+     }
+    }
+   }
+  },
+  {
+   "id": "tokens-01",
+   "type": "money.opportunity-cost.v2",
+   "grading": "none",
+   "visual": {
+    "type": "token-chooser"
+   },
+   "knowledge_component_id": "kc-opportunity-cost",
+   "payload": {
+    "tokens": 3,
+    "options": [
+     {
+      "id": "opt-movie",
+      "cost": 2
+     },
+     {
+      "id": "opt-snack",
+      "cost": 1
+     },
+     {
+      "id": "opt-game",
+      "cost": 2
+     },
+     {
+      "id": "opt-book",
+      "cost": 1
+     },
+     {
+      "id": "opt-save",
+      "cost": 1
+     }
+    ]
+   },
+   "copy": {
+    "en-US": {
+     "prompt": "You have 3 tokens. Pick what matters most.",
+     "options": [
+      {
+       "label": "Movie"
+      },
+      {
+       "label": "Snack"
+      },
+      {
+       "label": "Game"
+      },
+      {
+       "label": "Book"
+      },
+      {
+       "label": "Save it"
+      }
+     ]
+    },
+    "es-MX": {
+     "prompt": "Tienes 3 fichas. Elige lo que más te importa.",
+     "options": [
+      {
+       "label": "Película"
+      },
+      {
+       "label": "Botana"
+      },
+      {
+       "label": "Juego"
+      },
+      {
+       "label": "Libro"
+      },
+      {
+       "label": "Ahorrar"
+      }
+     ]
+    },
+    "pt-BR": {
+     "prompt": "Você tem 3 fichas. Escolha o que mais importa.",
+     "options": [
+      {
+       "label": "Filme"
+      },
+      {
+       "label": "Lanche"
+      },
+      {
+       "label": "Jogo"
+      },
+      {
+       "label": "Livro"
+      },
+      {
+       "label": "Guardar"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "prices-01",
+   "type": "money.inflation.v2",
+   "grading": "server",
+   "visual": {
+    "type": "inflation"
+   },
+   "item_role": "practice",
+   "knowledge_component_id": "kc-inflation",
+   "payload": {
+    "currency": "coins",
+    "price_minor": 100,
+    "min_rate_bps": 100,
+    "max_rate_bps": 1000,
+    "rate_step_bps": 100,
+    "min_years": 5,
+    "max_years": 30,
+    "year_step": 5,
+    "prediction_step_minor": 10,
+    "prediction_max_minor": 2000
+   },
+   "rubric": {
+    "tolerance_minor": 20
+   },
+   "copy": {
+    "en-US": {
+     "prompt": "Pick a yearly price rise and a number of years. Guess what a 100-coin item will cost."
+    },
+    "es-MX": {
+     "prompt": "Elige cuánto suben los precios al año y cuántos años. Calcula cuánto costará algo de 100 monedas."
+    },
+    "pt-BR": {
+     "prompt": "Escolha a alta de preços por ano e quantos anos. Calcule quanto vai custar algo de 100 moedas."
+    }
+   }
+  },
+  {
+   "id": "double-01",
+   "type": "money.rule-of-72.v2",
+   "grading": "server",
+   "visual": {
+    "type": "doubling"
+   },
+   "item_role": "transfer",
+   "knowledge_component_id": "kc-rule-of-72",
+   "payload": {
+    "currency": "coins",
+    "principal_minor": 100,
+    "min_rate_bps": 200,
+    "max_rate_bps": 1200,
+    "rate_step_bps": 100
+   },
+   "rubric": {
+    "tolerance_years": 1
+   },
+   "copy": {
+    "en-US": {
+     "prompt": "Pick a growth rate. Use the rule of 72 to guess the years to double.",
+     "help": [
+      "Divide 72 by the yearly rate."
+     ]
+    },
+    "es-MX": {
+     "prompt": "Elige una tasa de crecimiento. Usa la regla del 72 para calcular los años para duplicar.",
+     "help": [
+      "Divide 72 entre la tasa anual."
+     ]
+    },
+    "pt-BR": {
+     "prompt": "Escolha uma taxa de crescimento. Use a regra do 72 para calcular os anos para dobrar.",
+     "help": [
+      "Divida 72 pela taxa anual."
+     ]
+    }
+   }
+  },
+  {
+   "id": "debts-01",
+   "type": "money.debt-payoff.v2",
+   "grading": "server",
+   "visual": {
+    "type": "debt-race"
+   },
+   "item_role": "practice",
+   "knowledge_component_id": "kc-debt-payoff",
+   "payload": {
+    "currency": "coins",
+    "budget_minor": 150,
+    "debts": [
+     {
+      "id": "debt-card",
+      "balance_minor": 1000,
+      "rate_bps": 2400,
+      "minimum_minor": 30
+     },
+     {
+      "id": "debt-loan",
+      "balance_minor": 300,
+      "rate_bps": 600,
+      "minimum_minor": 20
+     }
+    ]
+   },
+   "rubric": {
+    "ask": "least_interest"
+   },
+   "copy": {
+    "en-US": {
+     "prompt": "Try both plans. Which one pays the least interest?",
+     "debts": [
+      {
+       "label": "Card"
+      },
+      {
+       "label": "Loan"
+      }
+     ]
+    },
+    "es-MX": {
+     "prompt": "Prueba los dos planes. ¿Cuál paga menos interés?",
+     "debts": [
+      {
+       "label": "Tarjeta"
+      },
+      {
+       "label": "Préstamo"
+      }
+     ]
+    },
+    "pt-BR": {
+     "prompt": "Teste os dois planos. Qual paga menos juros?",
+     "debts": [
+      {
+       "label": "Cartão"
+      },
+      {
+       "label": "Empréstimo"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "mix-01",
+   "type": "money.diversification.v2",
+   "grading": "server",
+   "visual": {
+    "type": "portfolio"
+   },
+   "item_role": "practice",
+   "knowledge_component_id": "kc-diversification",
+   "payload": {
+    "assets": [
+     {
+      "id": "asset-stocks",
+      "return_bps": 800,
+      "risk_bps": 2000
+     },
+     {
+      "id": "asset-bonds",
+      "return_bps": 300,
+      "risk_bps": 600
+     },
+     {
+      "id": "asset-cash",
+      "return_bps": 100,
+      "risk_bps": 0
+     }
+    ],
+    "step": 10
+   },
+   "rubric": {
+    "max_risk_bps": 1000,
+    "min_return_bps": 450
+   },
+   "copy": {
+    "en-US": {
+     "prompt": "Spread your money so risk is at most 10% and return is at least 4.5%.",
+     "assets": [
+      {
+       "label": "Stocks"
+      },
+      {
+       "label": "Bonds"
+      },
+      {
+       "label": "Cash"
+      }
+     ]
+    },
+    "es-MX": {
+     "prompt": "Reparte tu dinero para que el riesgo sea máximo 10% y el rendimiento al menos 4.5%.",
+     "assets": [
+      {
+       "label": "Acciones"
+      },
+      {
+       "label": "Bonos"
+      },
+      {
+       "label": "Efectivo"
+      }
+     ]
+    },
+    "pt-BR": {
+     "prompt": "Divida seu dinheiro para o risco ficar em no máximo 10% e o retorno em pelo menos 4,5%.",
+     "assets": [
+      {
+       "label": "Ações"
+      },
+      {
+       "label": "Títulos"
+      },
+      {
+       "label": "Dinheiro"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "stand-01",
+   "type": "money.lemonade-stand.v2",
+   "grading": "server",
+   "visual": {
+    "type": "lemonade-stand"
+   },
+   "item_role": "transfer",
+   "knowledge_component_id": "kc-unit-economics",
+   "payload": {
+    "currency": "coins",
+    "cost_per_cup_minor": 2,
+    "fixed_cost_minor": 10,
+    "max_price_minor": 20,
+    "price_step_minor": 2,
+    "demand_at_zero": 60,
+    "cups_lost_per_step": 5,
+    "max_cups": 60
+   },
+   "rubric": {
+    "target_profit_minor": 250
+   },
+   "copy": {
+    "en-US": {
+     "prompt": "Run your stand for a few days. Find a price and cup count that earns at least 250 coins.",
+     "help": [
+      "A lower price sells more cups, but each cup earns less."
+     ]
+    },
+    "es-MX": {
+     "prompt": "Abre tu puesto unos días. Encuentra un precio y vasos que ganen al menos 250 monedas.",
+     "help": [
+      "Un precio bajo vende más vasos, pero cada vaso gana menos."
+     ]
+    },
+    "pt-BR": {
+     "prompt": "Abra sua barraca por alguns dias. Ache um preço e copos que rendam pelo menos 250 moedas.",
+     "help": [
+      "Um preço menor vende mais copos, mas cada copo rende menos."
+     ]
+    }
+   }
+  }
+ ]
+}
