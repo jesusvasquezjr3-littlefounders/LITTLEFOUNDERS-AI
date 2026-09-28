@@ -40,7 +40,6 @@ function defaultAccount(): Record<string, unknown> {
     kid_user_id: KID_ID,
     nickname: 'Rocket Fund',
     card_design: 'indigo',
-    display_number: 'LF-1234-5678',
     frozen: false,
     frozen_by: null,
     frozen_at: null,
@@ -212,7 +211,10 @@ describe('POST /api/v1/banking/accounts/:kidId (parent opens)', () => {
     const res = await postAsParent(`/api/v1/banking/accounts/${KID_ID}`, { nickname: 'Rocket Fund', cardDesign: 'emerald' });
     expect(res.status).toBe(201);
     expect(res.body.data.account.nickname).toBe('Rocket Fund');
-    expect(res.body.data.account.displayNumber).toMatch(/^LF-\d{4}-\d{4}$/);
+    // D.7: no card-shaped number is minted, stored or served.
+    expect(res.body.data.account).not.toHaveProperty('displayNumber');
+    const insert = vi.mocked(fetch).mock.calls.find(([url, init]) => String(url).includes('/rest/v1/banking_accounts') && init?.method === 'POST');
+    expect(JSON.parse(String(insert?.[1]?.body))).toEqual({ kid_user_id: KID_ID, nickname: 'Rocket Fund', card_design: 'emerald', opened_by: PARENT_ID });
   });
 
   it('rejects an unknown card design', async () => {
@@ -235,6 +237,20 @@ describe('GET /api/v1/banking/accounts/:kidId (parent) and /account (kid)', () =
     const res = await asKid('/api/v1/banking/account');
     expect(res.status).toBe(200);
     expect(res.body.data.account.nickname).toBe('Rocket Fund');
+  });
+
+  it('never serves a card-shaped number, even from a row stored before the column was dropped (D.7)', async () => {
+    const legacy = { ...defaultAccount(), display_number: 'LF-1234-5678' };
+    stub({ account: legacy });
+    const parent = await asParent(`/api/v1/banking/accounts/${KID_ID}`);
+    expect(parent.status).toBe(200);
+    expect(JSON.stringify(parent.body)).not.toMatch(/displayNumber|display_number|LF-1234-5678/);
+    stub({ account: legacy, roles: ['kid'] });
+    const kid = await asKid('/api/v1/banking/account');
+    expect(kid.status).toBe(200);
+    expect(JSON.stringify(kid.body)).not.toMatch(/displayNumber|display_number|LF-1234-5678/);
+    // Nor is the column read: the select list no longer names it.
+    expect(vi.mocked(fetch).mock.calls.some(([url]) => String(url).includes('/rest/v1/banking_accounts') && String(url).includes('display_number'))).toBe(false);
   });
 
   it('runs the scheduled-credits catch-up before reading (best-effort, never fails the request)', async () => {

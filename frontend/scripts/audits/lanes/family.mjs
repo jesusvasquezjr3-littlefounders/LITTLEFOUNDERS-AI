@@ -35,6 +35,8 @@ export const scenarios = {
   'family-progress-no-course': tutor({ kids: 'two', courses: 'none' }),
   'family-mentor-forbidden': tutor({ kids: 'two', history: 'forbidden' }),
   'family-mentor-quiet': tutor({ kids: 'two', history: 'quiet' }),
+  // F1-family (Block D oversight, OD-9): a talk whose boards are drawn, a class II board read-only, and kept boards.
+  'family-mentor-boards': tutor({ kids: 'two', boards: 'drawn' }),
   // W2F.2: Tasks (F4) and coins (F5) for the Tutor, the child boards and the teen wallet (verify-family-money-screens.mjs).
   'money-tutor': tutor({ kids: 'two', money: 'full' }),
   'money-tutor-new': tutor({ kids: 'two', money: 'new' }),
@@ -92,6 +94,7 @@ export const states = [
   app('/family/:kid/territory@no-course', `/family/${KID_A}/territory`, 'family-progress-no-course', '[data-screen="child-progress"] .lf-state--empty'),
   app('/family/:kid/tutor@talks', `/family/${KID_A}/tutor`, 'family-two', ready.mentor, { readyAlso: ['[data-console-part="flags"]', '[data-memory-note]'] }),
   app('/family/:kid/tutor@transcript', `/family/${KID_A}/tutor`, 'family-two', ...opens('[data-console-part="sessions"] [data-session-id] button')),
+  app('/family/:kid/tutor@boards', `/family/${KID_A}/tutor`, 'family-mentor-boards', ...opens('[data-console-part="sessions"] [data-session-id] button')),
   app('/family/:kid/tutor@quiet', `/family/${KID_A}/tutor`, 'family-mentor-quiet', ready.mentor),
   app('/family/:kid/tutor@forbidden', `/family/${KID_A}/tutor`, 'family-mentor-forbidden', '[data-screen="child-mentor"] .lf-state--empty'),
   // W2F.2: Tasks (F4) and coins (F5), both sides, and the teen wallet.
@@ -103,12 +106,12 @@ export const states = [
   app('/tasks@child-new', '/tasks', 'money-child-new', '[data-screen="child-tasks"] [data-family-part="chores"]'),
   app('/tasks@child-offline', '/tasks', 'money-child-offline', '[data-screen="child-tasks"] .lf-state--error'),
   app('/tasks@teen-linked', '/tasks', 'money-teen-linked', ready.childTasks),
-  app('/banking@tutor', `/banking?child=${KID_A}`, 'money-tutor', ready.tutorCoins, { readyAlso: '[data-family-part="limit"]' }),
-  app('/banking@tutor-open-card', `/banking?child=${KID_A}`, 'money-tutor-new', '[data-family-part="open-card"]'),
-  app('/banking@tutor-offline', '/banking', 'money-tutor-offline', '[data-screen="tutor-coins"] .lf-state--error'),
-  app('/banking@child', '/banking', 'money-child', ready.childCoins, { readyAlso: '[data-family-part="payouts"]' }),
-  app('/banking@child-card', '/banking', 'money-child', ...opens('[data-family-part="card-look"] button')),
-  app('/banking@teen-linked', '/banking', 'money-teen-linked', ready.childCoins),
+  app('/family-wallet@tutor', `/family-wallet?child=${KID_A}`, 'money-tutor', ready.tutorCoins, { readyAlso: '[data-family-part="limit"]' }),
+  app('/family-wallet@tutor-open-card', `/family-wallet?child=${KID_A}`, 'money-tutor-new', '[data-family-part="open-card"]'),
+  app('/family-wallet@tutor-offline', '/family-wallet', 'money-tutor-offline', '[data-screen="tutor-coins"] .lf-state--error'),
+  app('/family-wallet@child', '/family-wallet', 'money-child', ready.childCoins, { readyAlso: '[data-family-part="payouts"]' }),
+  app('/family-wallet@child-card', '/family-wallet', 'money-child', ...opens('[data-family-part="card-look"] button')),
+  app('/family-wallet@teen-linked', '/family-wallet', 'money-teen-linked', ready.childCoins),
   app('/wallet@teen', '/wallet', 'money-teen', '[data-teen-wallet="root"] [data-pocket="save"]'),
   app('/wallet@teen-offline', '/wallet', 'money-teen-offline', '[data-teen-wallet="root"] .lf-state--error'),
 ];
@@ -168,11 +171,21 @@ const LINES = {
   'es-MX': ['¿Planeamos una meta juntos?', 'Sí, una bici', 'Bien. ¿Cuántas monedas por semana puedes ahorrar?'],
   'pt-BR': ['Vamos planejar uma meta juntos?', 'Sim, uma bicicleta', 'Ótimo. Quantas moedas por semana você consegue poupar?'],
 };
-const transcript = (locale, id) => ({
+/** Boards as Oracle stores them (the Mentor lane's wire), with each locale's words. */
+const BOARD_WORDS = {
+  bike: { 'en-US': 'Bike', 'es-MX': 'Bici', 'pt-BR': 'Bicicleta' },
+  saved: { 'en-US': 'Saved', 'es-MX': 'Ahorrado', 'pt-BR': 'Poupado' },
+  weekly: { 'en-US': 'Saving each week', 'es-MX': 'Ahorro cada semana', 'pt-BR': 'Poupança toda semana' },
+};
+const goalBoard = (locale) => ({ kind: 'goal_bar', goal: { label: BOARD_WORDS.bike[locale], value: 20 }, saved: { label: BOARD_WORDS.saved[locale], value: 5 }, remaining: 15,
+  savedFraction: 0.25, label: '5 / 20', currency: null });
+const yourTurnBoard = (locale) => ({ kind: 'your_turn', start: 5, steps: [{ op: 'add', value: 5 }], givenCount: 1, unit: 'week', values: [10, 15, 20],
+  label: BOARD_WORDS.weekly[locale], currency: null });
+const transcript = (locale, id, drawn) => ({
   session: session({ id }),
   turns: LINES[locale].map((text, index) => ({ id: `${id}-t${index}`, seq: index + 1, speaker: index === 1 ? 'learner' : 'tutor', text, emotion: null, action: null,
     audio_path: null, source: 'model', created_at: `2026-09-20T10:00:0${index * 3}.000Z`, roleplay_scene: null, point_at: null,
-    whiteboard: index === 2 ? { kind: 'goal_bar', saved: 5, target: 20, label: '5 / 20' } : null,
+    whiteboard: index === 2 ? goalBoard(locale) : index === 0 && drawn ? yourTurnBoard(locale) : null,
     demonstrate: index === 2 ? [{ kind: 'add', denomination: 5 }, { kind: 'add', denomination: 5 }] : null })),
   segments: [{ segmentId: `${id}-seg`, seq: 1, origin: 'catalog', segment: { type: 'choice', prompt_md: LINES[locale][2] }, score: 80, xpAwarded: 12, createdAt: '2026-09-20T10:00:04.000Z' }],
 });
@@ -205,14 +218,15 @@ export function respond({ core, spec, locale, path, request, ok }) {
   if (/^\/tasks\/[^/]+\/goals$/.test(path) && get) return ok({ goals: [{ id: GOAL, title: locale === 'en-US' ? 'Bike' : 'Bici', status: 'reached', target: 20 }] });
   if (/^\/tutor\/kids\/[^/]+\/sessions$/.test(path)) return family.history === 'forbidden' ? refuse(403, 'FORBIDDEN') : ok(history(locale, family.history === 'quiet'));
   const sessionMatch = path.match(/^\/tutor\/sessions\/([^/]+)$/);
-  if (sessionMatch) return ok(transcript(locale, sessionMatch[1]));
+  if (sessionMatch) return ok(transcript(locale, sessionMatch[1], family.boards === 'drawn'));
   if (/^\/tutor\/kids\/[^/]+\/memory-proposals$/.test(path)) return ok(family.history === 'quiet' ? { current: null, proposals: [] }
     : { current: NOTES[locale][0], proposals: [{ id: 'note-1', proposed: NOTES[locale][1], expectedBefore: NOTES[locale][0], sessionId: SESSION_A, createdAt: T }] });
   if (/^\/tutor\/kids\/[^/]+\/disposition$/.test(path) && get) return ok({ exists: true, current: true, sessionsObserved: 7, helpStyle: 'independent', persistence: 'persists',
     explanation: 'explains', persistentlyDeclined: [], typicalReplySeconds: 9, personas: [], effects: [], updatedAt: T });
   if (/^\/tutor\/kids\/[^/]+\/plan$/.test(path)) return ok({ plan: family.history === 'quiet' ? null
-    : { content: { kind: 'goal_bar', saved: 5, target: 20, label: '5 / 20' }, sessionId: SESSION_A, updatedAt: T } });
-  if (/^\/tutor\/kids\/[^/]+\/notebook$/.test(path)) return ok({ entries: [] });
+    : { content: goalBoard(locale), sessionId: SESSION_A, updatedAt: T } });
+  if (/^\/tutor\/kids\/[^/]+\/notebook$/.test(path)) return ok({ entries: family.boards === 'drawn'
+    ? [{ id: 'kept-1', whiteboard: yourTurnBoard(locale), sessionId: SESSION_A, turnSeq: 1, keptAt: T }] : [] });
   // The microphone consent keeps what a journey wrote, as Core would (per page session).
   const mic = (core.family ??= { microphone: {} }).microphone;
   const micKid = path.match(/^\/tutor\/consent\/([^/]+)$/)?.[1];
@@ -269,7 +283,7 @@ const rewardRequest = (over) => ({ id: '77777777-7777-4777-8777-777777777777', c
   decidedBy: null, fulfilledAt: null, childReasonKind: 'saved_for_it', childNote: null, ...over });
 const HOLDS = ['rewards', 'splits', 'credits', 'share'];
 const card = (w) => ({ nickname: w.card, design: 'ocean', simulated: true, freeze: { frozen: false, by: null, since: null, holds: HOLDS, canChange: true } });
-const legacyAccount = (w) => ({ nickname: w.card, cardDesign: 'ocean', displayNumber: 'LF-0000-0000', frozen: false, frozenBy: null, frozenAt: null, openedAt: T });
+const legacyAccount = (w) => ({ nickname: w.card, cardDesign: 'ocean', frozen: false, frozenBy: null, frozenAt: null, openedAt: T });
 const goal = (w) => ({ id: GOAL, kidUserId: KID_A, title: w.goal, target: 40, icon: 'bike', status: 'active', createdAt: T, reachedAt: null, followsGoalId: null, saved: 16,
   progress: { own: 12, bonus: 2, family: 2, total: 16 }, nextStep: null });
 const statement = (register) => register === 'young' ? { month: '2026-09', earned: 30, spent: 10, saved: 20 }

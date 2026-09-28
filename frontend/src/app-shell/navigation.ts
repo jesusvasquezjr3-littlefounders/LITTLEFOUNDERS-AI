@@ -1,4 +1,5 @@
 import { STAFF_ROUTE_GRANTS, type StaffGrant } from '@/app-routes/staffGrants';
+import { FAMILY_WALLET_PATH, LEGACY_FAMILY_WALLET_PATH } from '@/rebuild/banking/walletPath';
 import { APP_HOME } from './home';
 
 /*
@@ -19,6 +20,8 @@ import { APP_HOME } from './home';
 export { APP_HOME };
 /** The Mentor stage's route (Lane 3). The learner's tab shows the chosen character's name, never this path's word. */
 export const MENTOR_PATH = '/tutor';
+/** The family Wallet's path (OD-28; `/banking` only redirects). The slot id stays `banking`, an identifier nobody reads. */
+export { FAMILY_WALLET_PATH, LEGACY_FAMILY_WALLET_PATH };
 
 export type Lane = 'core' | 'site' | 'learn' | 'mentor' | 'family' | 'profile' | 'staff';
 export type AppNavLabel = 'learn' | 'tasks' | 'wallet' | 'familyCoins' | 'coins' | 'profile' | 'family' | 'becomeTutor' | 'staff' | 'backToApp';
@@ -49,11 +52,11 @@ export const SLOTS = {
   /** The independent teen's personal wallet (OD-3 Option B). */
   teenWallet: { id: 'wallet', label: 'wallet', path: '/wallet', owner: 'family' },
   /** A parent-created child's coin card: their wallet. */
-  childWallet: { id: 'banking', label: 'wallet', path: '/banking', owner: 'family' },
-  /** A teen who linked a verified parent: the family coin card beside their own wallet. */
-  familyCoins: { id: 'banking', label: 'familyCoins', path: '/banking', owner: 'family' },
-  /** The verified parent's view of the family's coin cards. */
-  coins: { id: 'banking', label: 'coins', path: '/banking', owner: 'family' },
+  childWallet: { id: 'banking', label: 'wallet', path: FAMILY_WALLET_PATH, owner: 'family' },
+  /** A teen who linked a verified parent: the family wallet beside their own wallet ("Family wallet", OD-28). */
+  familyCoins: { id: 'banking', label: 'familyCoins', path: FAMILY_WALLET_PATH, owner: 'family' },
+  /** The verified parent's view of the family's coin cards: the Wallet (OD-28), labelled with the glossary term. */
+  coins: { id: 'banking', label: 'coins', path: FAMILY_WALLET_PATH, owner: 'family' },
   family: { id: 'family', label: 'family', path: '/family', owner: 'family' },
   /** An adult who is not yet a verified parent: the way into Tutor verification. */
   becomeTutor: { id: 'become-tutor', label: 'becomeTutor', path: '/verify-parent', owner: 'site' },

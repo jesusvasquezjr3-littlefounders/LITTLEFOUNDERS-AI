@@ -1,4 +1,3 @@
-import { randomInt } from 'node:crypto';
 import { projectAvatarOptions } from './profileShape.js';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
@@ -2054,7 +2053,6 @@ export interface BankingAccountRow {
   kid_user_id: string;
   nickname: string;
   card_design: string;
-  display_number: string;
   frozen: boolean;
   frozen_by: string | null;
   frozen_at: string | null;
@@ -2063,7 +2061,13 @@ export interface BankingAccountRow {
   opened_at: string;
 }
 
-const BANKING_ACCOUNT_FIELDS = 'kid_user_id,nickname,card_design,display_number,frozen,frozen_by,frozen_at,opened_by,opened_at';
+/*
+ * No card-shaped number (D.7): the practice account never had a real one, and
+ * a number laid out like a card's implies a guarantee nothing backs. Core no
+ * longer mints, stores or serves it (banking_display_number_drop removes the
+ * column; docs/operations/NO-UNBACKED-GUARANTEE.md).
+ */
+const BANKING_ACCOUNT_FIELDS = 'kid_user_id,nickname,card_design,frozen,frozen_by,frozen_at,opened_by,opened_at';
 
 /**
  * `undefined` means "couldn't check" (transport failure) — DISTINCT from
@@ -2079,18 +2083,6 @@ export async function getBankingAccount(kidId: string): Promise<BankingAccountRo
   return rows[0] ?? null;
 }
 
-/**
- * Structurally NOT a real card number: 8 digits, letter prefix, a grouping
- * (LF-####-####) no card network uses. A kid who screenshots this and types
- * it into a real payment field gets an obvious reject by FORMAT alone — see
- * `displayNumber.test.ts`, which is the regression this function exists to
- * keep passing (BANKING.md §2, §10).
- */
-export function generateDisplayNumber(): string {
-  const group = () => String(Math.floor(1000 + randomInt(9000))).padStart(4, '0');
-  return `LF-${group()}-${group()}`;
-}
-
 export async function insertBankingAccount(row: {
   kid_user_id: string;
   nickname: string;
@@ -2100,7 +2092,7 @@ export async function insertBankingAccount(row: {
   const rows = await serviceRest<BankingAccountRow[]>('/banking_accounts', {
     method: 'POST',
     headers: { Prefer: 'return=representation' },
-    body: JSON.stringify({ ...row, display_number: generateDisplayNumber() }),
+    body: JSON.stringify(row),
   });
   return rows?.[0] ?? null;
 }

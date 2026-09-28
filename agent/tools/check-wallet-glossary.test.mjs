@@ -74,3 +74,33 @@ test('the disclaimer and unrelated bank words are not the section name', () => {
   assert.equal(copyViolation('pt-BR', 'Não é uma taxa de juros bancária.'), null);
   assert.equal(copyViolation('en-US', 'Word bank'), null);
 });
+
+// The section's own names (OD-28 glossary row): the navigation labels and page
+// titles of /family-wallet and /wallet carry the Wallet term in every locale.
+const CORE_NAV = (wallet, familyCoins, coins) => JSON.stringify({ appShell: { nav: { wallet, familyCoins, coins } } });
+const namesGreen = {
+  'frontend/src/i18n/en-US/rebuild-core.json': CORE_NAV('Wallet', 'Family wallet', 'Wallet'),
+  'frontend/src/i18n/es-MX/rebuild-core.json': CORE_NAV('Cartera', 'Cartera familiar', 'Cartera'),
+  'frontend/src/i18n/pt-BR/rebuild-core.json': CORE_NAV('Carteira', 'Carteira da família', 'Carteira'),
+  'frontend/src/app-shell/navigation.ts': "export const FAMILY_WALLET_PATH = '/family-wallet';\nconst SLOTS = {\n  coins: { id: 'banking', label: 'coins', path: FAMILY_WALLET_PATH, owner: 'family' },\n  teenWallet: { id: 'wallet', label: 'wallet', path: '/wallet', owner: 'family' },\n};\n",
+};
+
+test('the section names that carry the Wallet term stay green', () => {
+  assert.deepEqual(run(namesGreen), []);
+});
+
+const refusedNames = [
+  ['the Tutor tab labelled "Coins"', { 'frontend/src/i18n/en-US/rebuild-core.json': CORE_NAV('Wallet', 'Family wallet', 'Coins') }, /en-US\/rebuild-core.json appShell.nav.coins: names the Wallet section without the glossary term "Coins"/],
+  ['a linked teen\'s tab "Monedas de familia"', { 'frontend/src/i18n/es-MX/rebuild-core.json': CORE_NAV('Cartera', 'Monedas de familia', 'Cartera') }, /es-MX\/rebuild-core.json appShell.nav.familyCoins/],
+  ['a missing pt-BR label', { 'frontend/src/i18n/pt-BR/rebuild-core.json': JSON.stringify({ appShell: { nav: { wallet: 'Carteira', familyCoins: 'Carteira da família' } } }) }, /pt-BR\/rebuild-core.json appShell.nav.coins: missing/],
+  ['a page title "Coins"', { 'frontend/src/i18n/en-US/teenWallet.json': JSON.stringify({ page: { title: 'Coins' } }) }, /en-US\/teenWallet.json page.title: names the Wallet section/],
+  ['a Wallet slot on a bank path', { 'frontend/src/app-shell/navigation.ts': "const SLOTS = {\n  coins: { id: 'banking', label: 'coins', path: '/banking', owner: 'family' },\n};\n" }, /the "coins" slot points at "\/banking"/],
+];
+
+for (const [name, files, expected] of refusedNames) {
+  test(`refuses ${name}`, () => {
+    const found = run({ ...namesGreen, ...files });
+    assert.equal(found.length, 1, found.join('\n'));
+    assert.match(found[0], expected);
+  });
+}

@@ -63,7 +63,7 @@ describe('FamilyConsole (F1)', () => {
     expect(screen.getByRole('link', { name: '2 to approve' })).toHaveAttribute('href', '/tasks');
     expect(screen.getByRole('link', { name: en.familyConsole.progress })).toHaveAttribute('href', `/family/${KID_A}/territory`);
     expect(screen.getByRole('link', { name: en.familyConsole.mentor })).toHaveAttribute('href', `/family/${KID_A}/tutor`);
-    expect(screen.getByRole('link', { name: en.familyConsole.coinCard })).toHaveAttribute('href', '/banking');
+    expect(screen.getByRole('link', { name: en.familyConsole.coinCard })).toHaveAttribute('href', '/family-wallet');
     fireEvent.click(screen.getByRole('link', { name: en.familyConsole.mentor }));
     expect(onNavigate).toHaveBeenCalledWith(`/family/${KID_A}/tutor`);
     for (const group of ['learning', 'money', 'connections', 'privacy', 'account']) {

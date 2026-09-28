@@ -57,6 +57,15 @@ def sql(query, database='postgres'):
     return result.stdout.strip()
 
 
+def number_columns(database):
+    """D.7 (F1-family): the retired card-shaped number is required on a chain that
+    stops before its contract migration and gone after it. Returns the column
+    list fragment and the value fragment for an INSERT into banking_accounts."""
+    present = sql("SELECT count(*) FROM information_schema.columns WHERE table_schema = 'public' "
+                  "AND table_name = 'banking_accounts' AND column_name = 'display_number'", database) == '1'
+    return (', display_number', ", 'LF-1234-5678'") if present else ('', '')
+
+
 if Path(sql('SHOW data_directory')).resolve() != DATA.resolve():
     raise RuntimeError('Refusing an unowned database cluster')
 
@@ -272,8 +281,8 @@ service(db, f"DELETE FROM public.spend_limits WHERE kid_user_id = '{kid}'")
 check('redemptions: pre-approved insert, another family\'s reward, over-cap catalog cost, approval without the debit, fulfilment before approval, fulfilment by stranger/kid, re-fulfilment, fulfilled->approved and a request past the spend limit all refused; decide + fulfill_redemption produce and record the fulfilled state')
 
 # Banking freeze ownership at the database.
-service(db, f"INSERT INTO public.banking_accounts (kid_user_id, display_number, opened_by) VALUES ('{kid}', 'LF-1234-5678', '{pa}')")
-refused(lambda: service(db, f"INSERT INTO public.banking_accounts (kid_user_id, display_number, opened_by) VALUES ('{teen}', 'LF-1111-2222', '{stranger}')"), 'NOT_A_GUARDIAN')
+service(db, f"INSERT INTO public.banking_accounts (kid_user_id{number_columns(db)[0]}, opened_by) VALUES ('{kid}'{number_columns(db)[1]}, '{pa}')")
+refused(lambda: service(db, f"INSERT INTO public.banking_accounts (kid_user_id{number_columns(db)[0]}, opened_by) VALUES ('{teen}'{number_columns(db)[1]}, '{stranger}')"), 'NOT_A_GUARDIAN')
 service(db, f"UPDATE public.banking_accounts SET frozen = true, frozen_by = '{pa}', frozen_at = now() WHERE kid_user_id = '{kid}'")
 refused(lambda: service(db, f"UPDATE public.banking_accounts SET frozen = false, frozen_by = '{kid}', frozen_at = NULL WHERE kid_user_id = '{kid}'"), 'FREEZE_OWNED_BY_GUARDIAN')
 refused(lambda: service(db, f"UPDATE public.banking_accounts SET frozen_by = '{kid}' WHERE kid_user_id = '{kid}'"), 'FREEZE_OWNED_BY_GUARDIAN')

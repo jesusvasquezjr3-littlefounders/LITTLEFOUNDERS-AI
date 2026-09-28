@@ -61,3 +61,5 @@
 /* L-04 (OD-27 (1)): the Tutor's goals-together card, a stack like every console group; each line keeps the 03 §3 measure. */
 .lf-coop-consent { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
 .lf-coop-consent > p { max-inline-size: 36rem; }
+/* A drawn board inside a talk or among the kept ones (read-only, the Mentor lane's renderer). */
+.lf-family-console .lf-console-board { min-inline-size: 0; max-inline-size: 34rem; }

@@ -9,6 +9,7 @@ import {
 import '../../design/tokens.css';
 import '../../design/system.css';
 import './console.css';
+import { FAMILY_WALLET_PATH } from '@/rebuild/banking/walletPath';
 
 /*
  * F1, the Family console (W2F.1): the verified Tutor's page for their
@@ -207,7 +208,7 @@ function ChildOverview({ child, copy, onNavigate, safety }: { child: Child; copy
           : null}
         <ConsoleLink href={`${base}/territory`} onNavigate={onNavigate}>{copy.progress}</ConsoleLink>
         <ConsoleLink href={`${base}/tutor`} onNavigate={onNavigate}>{copy.mentor}</ConsoleLink>
-        <ConsoleLink href="/banking" onNavigate={onNavigate}>{copy.coinCard}</ConsoleLink>
+        <ConsoleLink href={FAMILY_WALLET_PATH} onNavigate={onNavigate}>{copy.coinCard}</ConsoleLink>
       </ButtonGroup>
       {safety}
     </section>

@@ -10,7 +10,7 @@ import type { PendingCredit } from './coinsApi';
  * W2F.2 F5-K: the child's wallet. The S07.6 coin account leads; allowance
  * coins wait to be split (held while frozen, D.1); the child changes their
  * card's name and colour in a dialog and the account re-reads; the register
- * is declared for the Copy Budget; a linked teen reads "Family coins".
+ * is declared for the Copy Budget; a linked teen reads "Family wallet" (OD-28).
  */
 
 const copy = rebuildNamespaceCopy['en-US'].family;
@@ -81,7 +81,7 @@ describe('ChildCoins (F5-K)', () => {
     expect(screen.queryByRole('button', { name: en.edit })).toBeNull();
   });
 
-  it('titles a linked teen\'s page "Family coins"', async () => {
+  it('titles a linked teen\'s page "Family wallet"', async () => {
     setup({}, true);
     expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(en.titleFamily);
   });

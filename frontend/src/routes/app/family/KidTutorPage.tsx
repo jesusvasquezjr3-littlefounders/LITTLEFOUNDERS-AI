@@ -16,7 +16,7 @@ export function KidTutorPage() {
   const { locale, dark, family, copy } = useConsoleEnvironment();
   const navigate = useNavigate();
   return <ChildMentorTalks key={kidId} copy={family.familyChildMentor} notesCopy={family.familyMemoryNotes} consentCopy={family.familyChildConsent}
-    profileCopy={copy.mentor.mentorProfile} locale={locale} dark={dark} transport={transport} kidId={kidId} backHref={familyHref(kidId)}
+    profileCopy={copy.mentor.mentorProfile} boardCopy={copy.mentor.mentorScreen.board} locale={locale} dark={dark} transport={transport} kidId={kidId} backHref={familyHref(kidId)}
     onNavigate={(href) => navigate(href)} />;
 }
 

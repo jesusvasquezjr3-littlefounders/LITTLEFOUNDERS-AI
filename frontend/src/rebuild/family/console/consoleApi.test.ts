@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   createChild, decideMemoryNote, fetchChildren, fetchKeptBoards, fetchMentorHistory, fetchMicrophone, fetchReachedGoal, fetchTerritory, fetchTranscript,
-  orderTranscript, plainPrompt, removeChild, setInsightsConsent,
+  boardWire, orderTranscript, plainPrompt, removeChild, setInsightsConsent,
 } from './consoleApi';
-import { FAMILY, fakeTransport, historyWire, KID_A, ok, refuse, SESSION_A, territoryWire, transcriptWire } from './consoleFixtures';
+import { FAMILY, fakeTransport, GOAL_BOARD, historyWire, KID_A, ok, refuse, SESSION_A, territoryWire, transcriptWire, YOUR_TURN_BOARD } from './consoleFixtures';
+import { boardFixtures } from '../../mentor/screen/boardFixtures';
 
 /*
  * W2F.1 client layer: every response is shape-checked (a surface never
@@ -97,7 +98,8 @@ describe('Family console API layer', () => {
     expect(result.data.map((beat) => beat.kind)).toEqual(['mentor', 'child', 'activity', 'mentor', 'note']);
     expect(JSON.stringify(result.data)).not.toContain('answer');
     const mentor = result.data[0]!;
-    expect(mentor.kind === 'mentor' && mentor.board).toEqual({ kind: 'goal_bar', label: 'Bike: 5 of 20' });
+    // The full board wire travels on the beat (the Mentor lane draws it), with its caption as the fallback.
+    expect(mentor.kind === 'mentor' && mentor.board).toEqual({ kind: 'goal_bar', label: 'Bike: 5 of 20', wire: GOAL_BOARD });
     const demo = result.data[3]!;
     expect(demo.kind === 'mentor' && demo.demonstrated).toEqual([10, -5]);
     const activity = result.data[2]!;
@@ -122,12 +124,34 @@ describe('Family console API layer', () => {
     expect(await decideMemoryNote(answer('DATA_UNAVAILABLE'), 'n1', 'approved')).toBe('failed');
   });
 
-  it('keeps the plan and the kept boards by their captions only', async () => {
+  it('keeps the plan and the kept boards with their wire when it can be drawn, and their captions always', async () => {
     const result = await fetchKeptBoards(fakeTransport({
-      [`GET /tutor/kids/${KID_A}/plan`]: ok({ plan: { content: { kind: 'goal_bar', label: 'Bike plan' }, sessionId: null, updatedAt: '2026-09-19T00:00:00Z' } }),
-      [`GET /tutor/kids/${KID_A}/notebook`]: ok({ entries: [{ id: 'k1', whiteboard: { kind: 'tally', label: '' }, sessionId: null, turnSeq: null, keptAt: '2026-09-18T00:00:00Z' }] }),
+      [`GET /tutor/kids/${KID_A}/plan`]: ok({ plan: { content: { ...GOAL_BOARD, label: 'Bike plan' }, sessionId: null, updatedAt: '2026-09-19T00:00:00Z' } }),
+      [`GET /tutor/kids/${KID_A}/notebook`]: ok({ entries: [
+        { id: 'k1', whiteboard: { kind: 'tally', label: '' }, sessionId: null, turnSeq: null, keptAt: '2026-09-18T00:00:00Z' },
+        { id: 'k2', whiteboard: YOUR_TURN_BOARD, sessionId: null, turnSeq: null, keptAt: '2026-09-19T00:00:00Z' },
+      ] }),
     }), KID_A);
-    expect(result.ok && result.data.plan?.board).toEqual({ kind: 'goal_bar', label: 'Bike plan' });
-    expect(result.ok && result.data.kept.map((entry) => entry.board)).toEqual([{ kind: 'tally', label: null }]);
+    expect(result.ok && result.data.plan?.board).toEqual({ kind: 'goal_bar', label: 'Bike plan', wire: { ...GOAL_BOARD, label: 'Bike plan' } });
+    expect(result.ok && result.data.kept.map((entry) => entry.board)).toEqual([
+      { kind: 'tally', label: null, wire: null },
+      { kind: 'your_turn', label: 'Keep it going', wire: YOUR_TURN_BOARD },
+    ]);
+  });
+
+  it('draws every board shape the Mentor lane draws, in every locale', () => {
+    for (const locale of ['en-US', 'es-MX', 'pt-BR'] as const) {
+      for (const board of Object.values(boardFixtures(locale))) expect(boardWire(board), `${locale} ${board.kind}`).toBe(board);
+    }
+  });
+
+  it('refuses to draw a board it cannot: unknown shape, no caption, a missing figure, a figure that is not a number', () => {
+    expect(boardWire(null)).toBeNull();
+    expect(boardWire({ kind: 'hologram', label: 'Space' })).toBeNull();
+    expect(boardWire({ ...GOAL_BOARD, label: undefined })).toBeNull();
+    expect(boardWire({ kind: 'goal_bar', saved: 5, target: 20, label: 'Old shape' })).toBeNull();
+    expect(boardWire({ ...GOAL_BOARD, remaining: 'fifteen' })).toBeNull();
+    expect(boardWire({ ...YOUR_TURN_BOARD, values: [15, null, 25] })).toBeNull();
+    expect(boardWire({ kind: 'toString', label: 'x' })).toBeNull();
   });
 });

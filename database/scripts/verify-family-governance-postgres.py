@@ -70,6 +70,15 @@ def sql(query, database='postgres'):
     return result.stdout.strip()
 
 
+def number_columns(database):
+    """D.7 (F1-family): the retired card-shaped number is required on a chain that
+    stops before its contract migration and gone after it. Returns the column
+    list fragment and the value fragment for an INSERT into banking_accounts."""
+    present = sql("SELECT count(*) FROM information_schema.columns WHERE table_schema = 'public' "
+                  "AND table_name = 'banking_accounts' AND column_name = 'display_number'", database) == '1'
+    return (', display_number', ", 'LF-1234-5678'") if present else ('', '')
+
+
 if Path(sql('SHOW data_directory')).resolve() != DATA.resolve():
     raise RuntimeError('Refusing an unowned database cluster')
 
@@ -185,8 +194,8 @@ def family_money(db, ids, parent, kid):
     cat, red, goal, dest, gift, action = (str(uuid.uuid4()) for _ in range(6))
     t = chore(db, parent, kid, approve=True, coins=10)
     fixture(db, f"""
-INSERT INTO public.banking_accounts (kid_user_id, display_number, frozen, frozen_by, frozen_at, opened_by)
-  VALUES ('{kid}', 'LF-0000-{kid[:4]}', true, '{parent}', now(), '{parent}');
+INSERT INTO public.banking_accounts (kid_user_id{number_columns(db)[0]}, frozen, frozen_by, frozen_at, opened_by)
+  VALUES ('{kid}'{number_columns(db)[1]}, true, '{parent}', now(), '{parent}');
 INSERT INTO public.redemption_catalog (id, parent_user_id, title, cost) VALUES ('{cat}', '{ids['parent_b']}', 'Park', 1);
 INSERT INTO public.redemptions (id, catalog_id, kid_user_id, status, decided_by, decided_at) VALUES ('{red}', '{cat}', '{kid}', 'approved', '{parent}', now());
 INSERT INTO public.wallet_ledger (kid_user_id, bucket, amount, reason, created_by, task_id) VALUES ('{kid}', 'spend', 4, 'task_approved', '{parent}', '{t}');

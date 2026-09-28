@@ -11,6 +11,7 @@ import '../../design/tokens.css';
 import '../../design/system.css';
 import '../console/console.css';
 import './money.css';
+import { FAMILY_WALLET_PATH } from '@/rebuild/banking/walletPath';
 
 /*
  * F4-P, the Tutor's Tasks board (W2F.2), rebuilt on the design system's
@@ -126,7 +127,7 @@ export function TutorTasks({ copy, locale, dark, transport, photos, onNavigate, 
         onChanged={(reward, added) => setLoad((previous) => previous.status !== 'ready' ? previous : {
           ...previous, board: { ...previous.board, rewards: added ? [reward, ...previous.board.rewards] : previous.board.rewards.map((item) => item.id === reward.id ? reward : item) },
         })} />
-      <div className="lf-money-link"><ConsoleLink href="/banking" onNavigate={onNavigate}>{copy.coinCards}</ConsoleLink></div>
+      <div className="lf-money-link"><ConsoleLink href={FAMILY_WALLET_PATH} onNavigate={onNavigate}>{copy.coinCards}</ConsoleLink></div>
     </>} />);
 }
 

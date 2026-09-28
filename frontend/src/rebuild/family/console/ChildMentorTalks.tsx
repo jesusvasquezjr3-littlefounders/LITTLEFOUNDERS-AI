@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { Component, useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { Button, ButtonGroup, Card, Chip, Copy, EmptyState, InlineNotice, LoadingState, type GlyphName, type StatusTone } from '../../design/controls';
 import { DispositionSummary, type DispositionSummaryCopy } from '../../mentor/DispositionSummary';
 import type { DispositionSummaryData } from '../../mentor/allianceApi';
+import { MentorBoard, type MentorBoardCopy } from '../../mentor/screen/MentorBoard';
 import {
   childName, decideMemoryNote, fetchChildren, fetchDisposition, fetchKeptBoards, fetchMemoryNotes, fetchMentorHistory, fetchTranscript, resetDisposition,
   type BoardNote, type ConsoleTransport, type KeptBoards, type MemoryDecision, type MemoryNotes as Notes, type MentorHistory, type MentorSession,
@@ -37,15 +38,19 @@ import './console.css';
  *      Family console).
  *   4. How the child learns (C.7): the disposition profile in closed labels,
  *      readable and resettable by the Tutor (Appendix D §2.6).
- *   5. The savings plan and the boards the child kept, by their captions.
+ *   5. The savings plan and the boards the child kept, drawn.
  *   6. The talks, newest first, each with its plain-language narrative, its
  *      length, how it ended when that was not the ordinary way, and the full
  *      transcript one press away; older talks load on request (90-day
  *      retention, stated at the end).
  *
- * The boards are shown by their own captions: the drawn board is the Mentor
- * lane's rebuilt teaching-visual renderer (Bible 05/08), which this page will
- * mount when it exists. The answer key never travels (Core never sends it).
+ * Every board is drawn with the Mentor lane's rebuilt renderer (Bible 05/08,
+ * `mentor/screen/MentorBoard`), read-only: the shapes a learner acts on show
+ * their rows with every value written and no control, because the Tutor reads
+ * the talk and does not take part in it. The board's caption is its title,
+ * and the caption alone stands in for a board the renderer cannot draw (an
+ * unknown or incomplete shape, validated in consoleApi, or a render that
+ * fails). The answer key never travels (Core never sends it).
  * Core re-checks the verified guardian link on every request.
  */
 
@@ -59,8 +64,10 @@ const SEVERITY: Record<string, { tone: StatusTone; glyph: GlyphName; key: 'high'
 
 const pick = (table: Record<string, string>, key: string | null) => (key && key in table ? table[key] : table.other) ?? '';
 
-export function ChildMentorTalks({ copy, notesCopy, consentCopy, profileCopy, locale, dark, transport, kidId, backHref, onNavigate }: {
+export function ChildMentorTalks({ copy, notesCopy, consentCopy, profileCopy, boardCopy, locale, dark, transport, kidId, backHref, onNavigate }: {
   copy: ChildMentorCopy;
+  /** The Mentor lane's board words (`rebuild-mentor.json` `mentorScreen.board`), in the page's locale. */
+  boardCopy: MentorBoardCopy;
   notesCopy: MemoryNotesCopy;
   consentCopy: ChildConsentCopy;
   profileCopy: DispositionSummaryCopy;
@@ -125,20 +132,20 @@ export function ChildMentorTalks({ copy, notesCopy, consentCopy, profileCopy, lo
   const { sessions, hasMore, flags } = load.history;
   const speakerName = name ?? copy.childSpeaker;
   return root(<>
-    {flags.length > 0 ? <Flags flags={flags} copy={copy} locale={locale} transport={transport} speakerName={speakerName} open={open} onOpen={setOpen} /> : null}
+    {flags.length > 0 ? <Flags flags={flags} copy={copy} boardCopy={boardCopy} locale={locale} transport={transport} speakerName={speakerName} open={open} onOpen={setOpen} /> : null}
     <MemoryNotesReview key={`notes:${kidId}`} kidId={kidId} copy={notesCopy} locale={locale} transport={transport} />
     <div className="lf-console-group-items">
       <MicrophoneConsent key={`mic:${kidId}`} kidId={kidId} name={name ?? copy.childSpeaker} copy={consentCopy} locale={locale} transport={transport} />
     </div>
     <ChildDisposition key={`profile:${kidId}`} kidId={kidId} copy={profileCopy} locale={locale} dark={dark} transport={transport} />
-    <Kept key={`kept:${kidId}`} kidId={kidId} copy={copy} locale={locale} transport={transport} />
+    <Kept key={`kept:${kidId}`} kidId={kidId} copy={copy} boardCopy={boardCopy} locale={locale} transport={transport} />
     <section className="lf-console-group" aria-labelledby="child-mentor-talks" data-console-part="sessions">
       <h2 id="child-mentor-talks" data-copy-role="heading">{copy.sessionsTitle}</h2>
       {/* "Every word, in full" (§1.9) is said where the transcripts are, not in the page header: the first view stays within 06 §3.1 (W2F.3 audit). */}
       {sessions.length > 0 ? <Copy role="body">{copy.intro}</Copy> : null}
       {sessions.length === 0 ? <Copy role="body">{copy.empty}</Copy>
         : <ul className="lf-console-list">
-          {sessions.map((session) => <Session key={session.id} session={session} copy={copy} locale={locale} transport={transport} speakerName={speakerName}
+          {sessions.map((session) => <Session key={session.id} session={session} copy={copy} boardCopy={boardCopy} locale={locale} transport={transport} speakerName={speakerName}
             open={open === `session:${session.id}`} onToggle={() => setOpen(open === `session:${session.id}` ? null : `session:${session.id}`)} />)}
         </ul>}
       {hasMore ? <ButtonGroup>
@@ -150,8 +157,8 @@ export function ChildMentorTalks({ copy, notesCopy, consentCopy, profileCopy, lo
   </>);
 }
 
-function Flags({ flags, copy, locale, transport, speakerName, open, onOpen }: {
-  flags: SafetyFlag[]; copy: ChildMentorCopy; locale: string; transport: ConsoleTransport; speakerName: string; open: string | null; onOpen: (key: string | null) => void;
+function Flags({ flags, copy, boardCopy, locale, transport, speakerName, open, onOpen }: {
+  flags: SafetyFlag[]; copy: ChildMentorCopy; boardCopy: MentorBoardCopy; locale: ConsoleLocale; transport: ConsoleTransport; speakerName: string; open: string | null; onOpen: (key: string | null) => void;
 }) {
   const date = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' });
   return <Card as="div">
@@ -175,7 +182,7 @@ function Flags({ flags, copy, locale, transport, speakerName, open, onOpen }: {
                 : null}
             </div>
             {flag.source === 'session' && open === key
-              ? <Transcript sessionId={flag.sessionId} highlightSeq={flag.turnSeq} copy={copy} locale={locale} transport={transport} speakerName={speakerName} />
+              ? <Transcript sessionId={flag.sessionId} highlightSeq={flag.turnSeq} copy={copy} boardCopy={boardCopy} boardHeading={3} locale={locale} transport={transport} speakerName={speakerName} />
               : null}
           </li>;
         })}
@@ -184,8 +191,8 @@ function Flags({ flags, copy, locale, transport, speakerName, open, onOpen }: {
   </Card>;
 }
 
-function Session({ session, copy, locale, transport, speakerName, open, onToggle }: {
-  session: MentorSession; copy: ChildMentorCopy; locale: string; transport: ConsoleTransport; speakerName: string; open: boolean; onToggle: () => void;
+function Session({ session, copy, boardCopy, locale, transport, speakerName, open, onToggle }: {
+  session: MentorSession; copy: ChildMentorCopy; boardCopy: MentorBoardCopy; locale: ConsoleLocale; transport: ConsoleTransport; speakerName: string; open: boolean; onToggle: () => void;
 }) {
   const heading = useId();
   const date = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' });
@@ -212,14 +219,15 @@ function Session({ session, copy, locale, transport, speakerName, open, onToggle
       </div>
       <Button size="sm" aria-expanded={open} onClick={onToggle}>{open ? copy.hide : copy.read}</Button>
     </section>
-    {open ? <Transcript sessionId={session.id} highlightSeq={null} copy={copy} locale={locale} transport={transport} speakerName={speakerName} /> : null}
+    {open ? <Transcript sessionId={session.id} highlightSeq={null} copy={copy} boardCopy={boardCopy} boardHeading={4} locale={locale} transport={transport} speakerName={speakerName} /> : null}
   </li>;
 }
 
 type TranscriptLoad = { status: 'loading' } | { status: 'failed' } | { status: 'ready'; beats: TranscriptBeat[] };
 
-function Transcript({ sessionId, highlightSeq, copy, locale, transport, speakerName }: {
-  sessionId: string; highlightSeq: number | null; copy: ChildMentorCopy; locale: string; transport: ConsoleTransport; speakerName: string;
+function Transcript({ sessionId, highlightSeq, copy, boardCopy, boardHeading, locale, transport, speakerName }: {
+  sessionId: string; highlightSeq: number | null; copy: ChildMentorCopy; boardCopy: MentorBoardCopy; boardHeading: 3 | 4; locale: ConsoleLocale;
+  transport: ConsoleTransport; speakerName: string;
 }) {
   const [load, setLoad] = useState<TranscriptLoad>({ status: 'loading' });
   const highlight = useRef<HTMLLIElement | null>(null);
@@ -237,7 +245,6 @@ function Transcript({ sessionId, highlightSeq, copy, locale, transport, speakerN
   if (load.status === 'failed') return <InlineNotice tone="error" live>{copy.transcriptFailed}</InlineNotice>;
   const signed = new Intl.NumberFormat(locale, { signDisplay: 'exceptZero', maximumFractionDigits: 0 });
   const list = new Intl.ListFormat(locale, { style: 'long', type: 'conjunction' });
-  const boardText = (board: BoardNote) => board.label ? fill(copy.board, { label: board.label }) : copy.boardUnlabeled;
   return <ol className="lf-console-transcript" data-console-part="transcript">
     {load.beats.map((beat) => {
       if (beat.kind === 'activity') {
@@ -253,7 +260,7 @@ function Transcript({ sessionId, highlightSeq, copy, locale, transport, speakerN
       return <li key={beat.id} ref={flagged ? highlight : undefined} className="lf-console-beat" data-speaker={beat.kind} data-flagged={flagged || undefined}>
         <span className="lf-console-speaker ugc" data-copy-role="data">{speaker}{flagged ? ` · ${copy.flagged}` : ''}</span>
         <span className="lf-console-ugc" data-copy-role="data">{beat.text}</span>
-        {beat.board ? <span data-copy-role="data" data-board-kind={beat.board.kind}>{boardText(beat.board)}</span> : null}
+        {beat.board ? <TalkBoard board={beat.board} copy={copy} boardCopy={boardCopy} locale={locale} headingLevel={boardHeading} /> : null}
         {beat.demonstrated.length > 0
           ? <span data-copy-role="data">{fill(copy.demonstrated, { steps: list.format(beat.demonstrated.map((step) => signed.format(step))) })}</span> : null}
       </li>;
@@ -353,8 +360,29 @@ function ChildDisposition({ kidId, copy, locale, dark, transport }: { kidId: str
 
 type KeptLoad = { status: 'loading' } | { status: 'failed' } | { status: 'ready'; kept: KeptBoards };
 
+/** A board the renderer could not draw falls back to its caption, never to a blank or a broken page. */
+class BoardBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { failed: boolean }> {
+  override state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  override render() { return this.state.failed ? this.props.fallback : this.props.children; }
+}
+
+/** One board in a talk or among the kept ones: drawn read-only, titled by its caption; the caption alone when it cannot be drawn. */
+function TalkBoard({ board, copy, boardCopy, locale, headingLevel }: {
+  board: BoardNote; copy: ChildMentorCopy; boardCopy: MentorBoardCopy; locale: ConsoleLocale; headingLevel: 3 | 4;
+}) {
+  const caption = board.label ? fill(copy.board, { label: board.label }) : copy.boardUnlabeled;
+  const text = <span className="lf-console-ugc" data-copy-role="data" data-board-kind={board.kind}>{caption}</span>;
+  if (!board.wire) return text;
+  return <div className="lf-console-board" data-console-part="board" data-board-kind={board.kind}>
+    <BoardBoundary fallback={text}>
+      <MentorBoard board={board.wire} copy={boardCopy} locale={locale} title={caption} readOnly headingLevel={headingLevel} />
+    </BoardBoundary>
+  </div>;
+}
+
 /** Opt-in artifacts: hidden entirely when there is nothing, a quiet line when they could not load. */
-function Kept({ kidId, copy, locale, transport }: { kidId: string; copy: ChildMentorCopy; locale: string; transport: ConsoleTransport }) {
+function Kept({ kidId, copy, boardCopy, locale, transport }: { kidId: string; copy: ChildMentorCopy; boardCopy: MentorBoardCopy; locale: ConsoleLocale; transport: ConsoleTransport }) {
   const [load, setLoad] = useState<KeptLoad>({ status: 'loading' });
   useEffect(() => {
     let live = true;
@@ -366,18 +394,17 @@ function Kept({ kidId, copy, locale, transport }: { kidId: string; copy: ChildMe
   const { plan, kept } = load.kept;
   if (!plan && kept.length === 0) return null;
   const date = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' });
-  const caption = (board: BoardNote) => board.label ? fill(copy.board, { label: board.label }) : copy.boardUnlabeled;
   return <Card as="div">
     <section className="lf-console-group" aria-labelledby="child-mentor-kept" data-console-part="kept">
       <h2 id="child-mentor-kept" data-copy-role="heading">{copy.keptTitle}</h2>
       <ul className="lf-console-list">
         {plan ? <li className="lf-console-item" data-kept="plan">
           <span className="lf-console-speaker" data-copy-role="body">{fill(copy.planLabel, { date: date.format(new Date(plan.updatedAt)) })}</span>
-          <span className="lf-console-ugc" data-copy-role="data" data-board-kind={plan.board.kind}>{caption(plan.board)}</span>
+          <TalkBoard board={plan.board} copy={copy} boardCopy={boardCopy} locale={locale} headingLevel={3} />
         </li> : null}
         {kept.map((entry) => <li key={entry.id} className="lf-console-item" data-kept="board">
           <span className="lf-console-speaker" data-copy-role="body">{fill(copy.keptLabel, { date: date.format(new Date(entry.keptAt)) })}</span>
-          <span className="lf-console-ugc" data-copy-role="data" data-board-kind={entry.board.kind}>{caption(entry.board)}</span>
+          <TalkBoard board={entry.board} copy={copy} boardCopy={boardCopy} locale={locale} headingLevel={3} />
         </li>)}
       </ul>
     </section>

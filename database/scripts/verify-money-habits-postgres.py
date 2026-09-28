@@ -50,6 +50,15 @@ def sql(query, database='postgres'):
     return result.stdout.strip()
 
 
+def number_columns(database):
+    """D.7 (F1-family): the retired card-shaped number is required on a chain that
+    stops before its contract migration and gone after it. Returns the column
+    list fragment and the value fragment for an INSERT into banking_accounts."""
+    present = sql("SELECT count(*) FROM information_schema.columns WHERE table_schema = 'public' "
+                  "AND table_name = 'banking_accounts' AND column_name = 'display_number'", database) == '1'
+    return (', display_number', ", 'LF-1234-5678'") if present else ('', '')
+
+
 if Path(sql('SHOW data_directory')).resolve() != DATA.resolve():
     raise RuntimeError('Refusing an unowned database cluster')
 
@@ -392,7 +401,7 @@ check('share forgery: the service role cannot write gifts directly or forge a gi
       'pointing at a gift); a gift written without its debit is refused at commit (SHARE_GIFT_UNBALANCED); a settled gift cannot reopen, even '
       'for a superuser; browser roles have no write path; the child and the Tutor read the gifts, a stranger and another teen read nothing')
 
-service(db, f"INSERT INTO public.banking_accounts (kid_user_id, display_number, opened_by) VALUES ('{kid14}', 'LF-1234-5678', '{pa}')")
+service(db, f"INSERT INTO public.banking_accounts (kid_user_id{number_columns(db)[0]}, opened_by) VALUES ('{kid14}'{number_columns(db)[1]}, '{pa}')")
 held = service(db, f"SELECT public.share_gift_pledge('{kid14}', '{dest}', 1)")
 service(db, f"UPDATE public.banking_accounts SET frozen = true, frozen_by = '{pa}', frozen_at = now() WHERE kid_user_id = '{kid14}'")
 refused(lambda: service(db, f"SELECT public.share_gift_pledge('{kid14}', '{dest}', 1)"), 'ACCOUNT_FROZEN')

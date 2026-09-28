@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { rebuildNamespaceCopy } from '@/i18n/rebuild';
 import { ChildMentorTalks } from './ChildMentorTalks';
 import {
-  dispositionWire, FAMILY, fakeTransport, historyWire, KID_A, KID_B, micWire, notesWire, ok, refuse, SESSION_A, SESSION_B, sessionWire, transcriptWire, type Answer,
+  dispositionWire, FAMILY, fakeTransport, GOAL_BOARD, historyWire, KID_A, KID_B, micWire, notesWire, ok, refuse, SESSION_A, SESSION_B, sessionWire, transcriptWire, YOUR_TURN_BOARD, type Answer,
 } from './consoleFixtures';
 
 /*
@@ -21,6 +21,7 @@ const family = rebuildNamespaceCopy['en-US'].family;
 const copy = family.familyChildMentor;
 const notes = family.familyMemoryNotes;
 const profile = rebuildNamespaceCopy['en-US'].mentor.mentorProfile;
+const boardCopy = rebuildNamespaceCopy['en-US'].mentor.mentorScreen.board;
 
 function routesFor(kid: string, over: Record<string, Answer> = {}): Record<string, Answer> {
   return {
@@ -38,7 +39,7 @@ function routesFor(kid: string, over: Record<string, Answer> = {}): Record<strin
 
 function setup(over: Record<string, Answer> = {}, kid = KID_A) {
   const transport = fakeTransport({ 'GET /family/kids': ok({ kids: FAMILY }), ...routesFor(KID_A), ...routesFor(KID_B), ...over });
-  const props = { copy, notesCopy: notes, consentCopy: family.familyChildConsent, profileCopy: profile, locale: 'en-US' as const, dark: false, transport,
+  const props = { copy, notesCopy: notes, consentCopy: family.familyChildConsent, profileCopy: profile, boardCopy, locale: 'en-US' as const, dark: false, transport,
     backHref: `/family?child=${kid}`, onNavigate: vi.fn() };
   const view = render(<ChildMentorTalks {...props} kidId={kid} />);
   return { transport, view, rerender: (next: string) => view.rerender(<ChildMentorTalks {...props} kidId={next} />) };
@@ -97,17 +98,28 @@ describe('ChildMentorTalks (F3): what needs the Tutor first', () => {
 describe('ChildMentorTalks (F3): the talks', () => {
   const sessionsSection = () => screen.getByRole('heading', { name: copy.sessionsTitle }).closest('section')!;
 
-  it('reads a talk in full: lines, the activity between them with its score and no answer key, the board caption and the tray steps', async () => {
+  it('reads a talk in full: lines, the activity between them with its score and no answer key, the drawn board and the tray steps', async () => {
     setup();
     await screen.findByRole('heading', { name: copy.sessionsTitle });
     fireEvent.click(within(sessionsSection()).getByRole('button', { name: copy.read }));
     await within(sessionsSection()).findByText('Hi! Want to plan a goal?');
     const transcript = sessionsSection().querySelector('[data-console-part="transcript"]') as HTMLElement;
-    const kinds = [...transcript.querySelectorAll('li')].map((li) => li.getAttribute('data-speaker'));
+    const kinds = [...transcript.querySelectorAll(':scope > li')].map((li) => li.getAttribute('data-speaker'));
     expect(kinds).toEqual(['mentor', 'child', 'activity', 'mentor', 'note']);
     expect(within(transcript).getByText('How many more coins?')).toBeInTheDocument();
     expect(within(transcript).getByText('Scored 80 of 100 · 12 XP')).toBeInTheDocument();
-    expect(within(transcript).getByText('Board: Bike: 5 of 20')).toBeInTheDocument();
+    // The board is drawn by the Mentor lane's renderer, titled by its caption, with its figures written.
+    const goal = transcript.querySelector('[data-console-part="board"][data-board-kind="goal_bar"]') as HTMLElement;
+    expect(within(goal).getByRole('heading', { level: 4, name: 'Board: Bike: 5 of 20' })).toBeInTheDocument();
+    expect(within(goal).getByText('Bike')).toBeInTheDocument();
+    expect(within(goal).getByText('15')).toBeInTheDocument();
+    // A class II board is read-only for the Tutor: every value written, no control to act on it.
+    const turn = transcript.querySelector('[data-console-part="board"][data-board-kind="your_turn"]') as HTMLElement;
+    expect(turn.querySelector('[data-board-read-only="true"]')).not.toBeNull();
+    expect(within(turn).queryByRole('button', { name: boardCopy.showNext })).toBeNull();
+    // The shared Pizarrón picture describes every step (none held back as the learner's turn); the table is one press away.
+    const picture = within(turn).getByRole('img').getAttribute('aria-label') ?? '';
+    for (const value of ['10', '15', '20', '25']) expect(picture).toMatch(new RegExp(`: ${value}(\.|$)`));
     expect(within(transcript).getByText(/^The Mentor showed: \+10 and -5$/)).toBeInTheDocument();
     expect(within(transcript).getByText('Sofía')).toBeInTheDocument();
     expect(transcript.textContent).not.toMatch(/answer_hidden|answer key/i);
@@ -212,15 +224,38 @@ describe('ChildMentorTalks (F3): the note, the profile, the kept boards, the sta
     expect(transport.calls.filter((call) => call.method === 'DELETE' && call.path.endsWith('/disposition'))).toHaveLength(1);
   });
 
-  it('hides the kept boards when there are none and lists them by caption when there are', async () => {
+  it('keeps the caption for a board the renderer cannot draw (an unknown shape, a hole in its figures)', async () => {
+    const sessionsSection = () => screen.getByRole('heading', { name: copy.sessionsTitle }).closest('section')!;
+    const turns = transcriptWire(SESSION_A).turns.map((turn, index) => index === 0
+      ? { ...turn, whiteboard: { kind: 'goal_bar', saved: 5, target: 20, label: 'Bike: 5 of 20' } }
+      : index === 2 ? { ...turn, whiteboard: { kind: 'hologram', label: 'Space' } } : turn);
+    setup({ [`GET /tutor/sessions/${SESSION_A}`]: ok({ ...transcriptWire(SESSION_A), turns }) });
+    await screen.findByRole('heading', { name: copy.sessionsTitle });
+    fireEvent.click(within(sessionsSection()).getByRole('button', { name: copy.read }));
+    await within(sessionsSection()).findByText('Board: Bike: 5 of 20');
+    const transcript = sessionsSection().querySelector('[data-console-part="transcript"]') as HTMLElement;
+    expect(transcript.querySelector('[data-console-part="board"]')).toBeNull();
+    expect(within(transcript).getByText('Board: Space')).toBeInTheDocument();
+  });
+
+  it('hides the kept boards when there are none and draws them when there are', async () => {
     const { view } = setup();
     await screen.findByRole('heading', { name: copy.sessionsTitle });
     expect(view.container.querySelector('[data-console-part="kept"]')).toBeNull();
     view.unmount();
     setup({
-      [`GET /tutor/kids/${KID_A}/plan`]: ok({ plan: { content: { kind: 'goal_bar', label: 'Bike plan' }, sessionId: null, updatedAt: '2026-09-19T00:00:00Z' } }),
+      [`GET /tutor/kids/${KID_A}/plan`]: ok({ plan: { content: { ...GOAL_BOARD, label: 'Bike plan' }, sessionId: null, updatedAt: '2026-09-19T00:00:00Z' } }),
+      [`GET /tutor/kids/${KID_A}/notebook`]: ok({ entries: [
+        { id: 'k1', whiteboard: YOUR_TURN_BOARD, keptAt: '2026-09-20T00:00:00Z' },
+        { id: 'k2', whiteboard: { kind: 'goal_bar', label: 'Old board' }, keptAt: '2026-09-18T00:00:00Z' },
+      ] }),
     });
-    expect(await screen.findByText('Board: Bike plan')).toBeInTheDocument();
+    const kept = (await screen.findByRole('heading', { level: 2, name: copy.keptTitle })).closest('section')!;
+    expect(within(kept).getByRole('heading', { level: 3, name: 'Board: Bike plan' })).toBeInTheDocument();
+    expect(within(kept).getByRole('heading', { level: 3, name: 'Board: Keep it going' })).toBeInTheDocument();
+    expect(within(kept).queryByRole('button', { name: boardCopy.showNext })).toBeNull();
+    // A kept board the renderer cannot draw keeps its caption.
+    expect(within(kept).getByText('Board: Old board')).toBeInTheDocument();
   });
 
   it('carries the microphone consent for this child', async () => {

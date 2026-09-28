@@ -52,6 +52,15 @@ def sql(query, database='postgres'):
     return result.stdout.strip()
 
 
+def number_columns(database):
+    """D.7 (F1-family): the retired card-shaped number is required on a chain that
+    stops before its contract migration and gone after it. Returns the column
+    list fragment and the value fragment for an INSERT into banking_accounts."""
+    present = sql("SELECT count(*) FROM information_schema.columns WHERE table_schema = 'public' "
+                  "AND table_name = 'banking_accounts' AND column_name = 'display_number'", database) == '1'
+    return (', display_number', ", 'LF-1234-5678'") if present else ('', '')
+
+
 if Path(sql('SHOW data_directory')).resolve() != DATA.resolve():
     raise RuntimeError('Refusing an unowned database cluster')
 
@@ -433,7 +442,7 @@ COMMIT;""", db), 'REDEMPTION_PREAPPROVAL_FORBIDDEN')
 service(db, f"INSERT INTO public.spend_limits (kid_user_id, parent_user_id, period, cap) VALUES ('{kid9}', '{pa}', 'weekly', 15)")
 refused(lambda: service(db, f"SELECT public.family_request_redemption('{kid9}', '{cheap}', 'treat', NULL)"), 'SPEND_LIMIT_REACHED')
 service(db, f"DELETE FROM public.spend_limits WHERE kid_user_id = '{kid9}'")
-service(db, f"INSERT INTO public.banking_accounts (kid_user_id, display_number, opened_by) VALUES ('{kid9}', 'LF-1234-5678', '{pa}')")
+service(db, f"INSERT INTO public.banking_accounts (kid_user_id{number_columns(db)[0]}, opened_by) VALUES ('{kid9}'{number_columns(db)[1]}, '{pa}')")
 service(db, f"UPDATE public.banking_accounts SET frozen = true, frozen_by = '{pa}', frozen_at = now() WHERE kid_user_id = '{kid9}'")
 refused(lambda: service(db, f"SELECT public.family_request_redemption('{kid9}', '{cheap}', 'treat', NULL)"), 'ACCOUNT_FROZEN')
 service(db, f"UPDATE public.banking_accounts SET frozen = false, frozen_by = '{pa}', frozen_at = NULL WHERE kid_user_id = '{kid9}'")

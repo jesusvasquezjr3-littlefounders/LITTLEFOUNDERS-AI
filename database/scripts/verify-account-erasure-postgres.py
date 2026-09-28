@@ -50,6 +50,15 @@ def sql(query, database='postgres'):
     return result.stdout.strip()
 
 
+def number_columns(database):
+    """D.7 (F1-family): the retired card-shaped number is required on a chain that
+    stops before its contract migration and gone after it. Returns the column
+    list fragment and the value fragment for an INSERT into banking_accounts."""
+    present = sql("SELECT count(*) FROM information_schema.columns WHERE table_schema = 'public' "
+                  "AND table_name = 'banking_accounts' AND column_name = 'display_number'", database) == '1'
+    return (', display_number', ", 'LF-1234-5678'") if present else ('', '')
+
+
 SHIM = """
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='anon') THEN CREATE ROLE anon NOLOGIN; END IF;
@@ -139,8 +148,8 @@ try:
     INSERT INTO redemption_catalog (id, parent_user_id, title, cost) VALUES ('{str(uuid.uuid4())}', '{P2}', 'Park trip', 20);
     INSERT INTO redemptions (catalog_id, kid_user_id, status, decided_at, decided_by)
         SELECT id, '{K2}', 'approved', now(), '{P1}' FROM redemption_catalog WHERE parent_user_id = '{P2}';
-    INSERT INTO banking_accounts (kid_user_id, display_number, opened_by, frozen, frozen_by, frozen_at)
-        VALUES ('{K2}', 'LF-1234-5678', '{P1}', true, '{P1}', now());
+    INSERT INTO banking_accounts (kid_user_id{number_columns(database)[0]}, opened_by, frozen, frozen_by, frozen_at)
+        VALUES ('{K2}'{number_columns(database)[1]}, '{P1}', true, '{P1}', now());
     INSERT INTO tutor_voice_consent (user_id, granted_by, consent_text, locale) VALUES ('{K2}', '{P1}', 'I agree', 'en-US');
     INSERT INTO tasks (assigned_by, assigned_to, title, reward_coins, evidence_bucket, evidence_hash, evidence_ext)
         VALUES ('{P1}', '{K1}', 'Tidy up', 5, 'task-evidence', '{'e' * 64}', 'jpg');

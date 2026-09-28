@@ -58,15 +58,21 @@ export const historyWire = (over: Record<string, unknown> = {}) => ({
   ...over,
 });
 
+/** A drawn board as Oracle stores it on a turn (the Mentor lane's wire): the goal bar, and a class II board the learner acted on. */
+export const GOAL_BOARD = { kind: 'goal_bar', goal: { label: 'Bike', value: 20 }, saved: { label: 'Saved', value: 5 }, remaining: 15, savedFraction: 0.25,
+  label: 'Bike: 5 of 20', currency: null } as const;
+export const YOUR_TURN_BOARD = { kind: 'your_turn', start: 10, steps: [{ op: 'add', value: 5 }], givenCount: 1, unit: 'week', values: [15, 20, 25],
+  label: 'Keep it going', currency: null } as const;
+
 export const transcriptWire = (sessionId = SESSION_A) => ({
   session: sessionWire({ id: sessionId }),
   turns: [
     { id: 'u1', seq: 1, speaker: 'tutor', text: 'Hi! Want to plan a goal?', emotion: null, action: null, audio_path: null, source: 'model', created_at: '2026-09-20T10:00:01.000Z',
-      whiteboard: { kind: 'goal_bar', saved: 5, target: 20, label: 'Bike: 5 of 20' }, demonstrate: null, roleplay_scene: null, point_at: null },
+      whiteboard: GOAL_BOARD, demonstrate: null, roleplay_scene: null, point_at: null },
     { id: 'u2', seq: 2, speaker: 'learner', text: 'Yes, a bike', emotion: null, action: null, audio_path: null, source: 'typed', created_at: '2026-09-20T10:00:05.000Z',
       whiteboard: null, demonstrate: null, roleplay_scene: null, point_at: null },
     { id: 'u3', seq: 3, speaker: 'tutor', text: 'Let me show you with coins.', emotion: null, action: null, audio_path: null, source: 'model', created_at: '2026-09-20T10:00:30.000Z',
-      whiteboard: null, demonstrate: [{ kind: 'add', denomination: 10 }, { kind: 'pause' }, { kind: 'remove', denomination: 5 }], roleplay_scene: null, point_at: null },
+      whiteboard: YOUR_TURN_BOARD, demonstrate: [{ kind: 'add', denomination: 10 }, { kind: 'pause' }, { kind: 'remove', denomination: 5 }], roleplay_scene: null, point_at: null },
     { id: 'u4', seq: 4, speaker: 'system', text: 'Session paused for today.', emotion: null, action: null, audio_path: null, source: 'system', created_at: '2026-09-20T10:01:00.000Z',
       whiteboard: null, demonstrate: null, roleplay_scene: null, point_at: null },
   ],

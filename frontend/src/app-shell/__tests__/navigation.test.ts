@@ -116,7 +116,8 @@ describe('current slot', () => {
     expect(currentSlot('/learn', learner)).toBe('learn');
     expect(currentSlot('/learn/money-basics/territory', learner)).toBe('learn');
     expect(currentSlot('/profile/settings', learner)).toBe('profile');
-    expect(currentSlot('/banking', learner)).toBe('banking');
+    expect(currentSlot('/family-wallet', learner)).toBe('banking');
+    expect(currentSlot('/banking', learner)).toBe('');
     expect(currentSlot('/@ana', learner)).toBe('');
   });
   it('marks the console overview only on /admin itself', () => {
