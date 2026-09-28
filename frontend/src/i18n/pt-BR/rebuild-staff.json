@@ -463,9 +463,9 @@
         "superadmins": "Superadmins",
         "permissionGrants": "Acessos de equipe",
         "lastChange": "Última mudança: {date}",
-        "reviewDue": "{n} atribuições têm mais de 90 dias. Confirme cada uma.",
-        "reviewNone": "Nenhuma atribuição tem mais de 90 dias.",
-        "reviewRow": "{role}, atribuído em {date}",
+        "reviewDue": "{n} permissões da equipe passaram da revisão de 90 dias.",
+        "reviewNone": "Cada permissão da equipe foi revisada em 90 dias.",
+        "reviewRow": "{grant}, confirmado pela última vez em {date}",
         "userId": "ID do usuário",
         "userIdHelp": "Cole um ID ou encontre a pessoa.",
         "userIdInvalid": "Digite um ID de usuário completo.",
@@ -497,7 +497,13 @@
         "systemGrant": "Atribuído pelo sistema",
         "removed": "Papel {role} removido.",
         "removeConsequence": "{name} perde o papel {role} agora.",
-        "staffOnly": "O acesso de equipe vale só para admins."
+        "staffOnly": "O acesso de equipe vale só para admins.",
+        "reviewCompliance": "Revisadas no prazo",
+        "reviewStale": "Revisão vencida",
+        "reviewKept": "{grant} mantido. Está na auditoria.",
+        "reviewNotHeld": "Essa permissão não existe mais. A lista foi atualizada.",
+        "reviewFailed": "Não foi possível salvar a revisão. Tente de novo.",
+        "reviewEmpty": "Não há permissões da equipe para revisar."
       },
       "action": {
         "find": "Encontrar pessoa",
@@ -508,7 +514,9 @@
         "remove": "Remover {role}",
         "keep": "Manter papel",
         "confirmRemove": "Remover papel",
-        "removing": "Removendo"
+        "removing": "Removendo",
+        "keepAccess": "Manter acesso",
+        "keepingAccess": "Salvando"
       }
     },
     "audit": {
@@ -1680,7 +1688,8 @@
         "autonomy": "Nível de independência",
         "changes": "Mudanças de nível recentes",
         "confirmLower": "Baixar este nível?",
-        "sweep": "Limpeza de dados do Mentor"
+        "sweep": "Limpeza de dados do Mentor",
+        "jobs": "Backups e verificação do esquema"
       },
       "body": {
         "autonomyIntro": "Só quando a família pedir.",
@@ -1710,7 +1719,11 @@
         "sweepIntro": "Apaga os dados do Mentor após 90 dias, toda noite.",
         "lastRun": "Última execução",
         "hoursSince": "Desde a última execução",
-        "staleHelp": "A limpeza não roda há 36 horas. Verifique o fluxo."
+        "staleHelp": "A limpeza não roda há 36 horas. Verifique o fluxo.",
+        "jobsIntro": "Tarefas diárias. Se uma parar, a equipe é avisada.",
+        "jobStaleHelp": "{job} não roda há {n} horas. Verifique o fluxo.",
+        "lastAttemptFailed": "A última tentativa falhou.",
+        "lastAttempt": "Última tentativa"
       },
       "option": {
         "by_tutor": "Tutor",
@@ -1718,7 +1731,10 @@
         "by_staff": "Equipe",
         "by_system": "Sistema",
         "stale": "Parada",
-        "fresh": "Rodando"
+        "fresh": "Rodando",
+        "job_vault_backup": "Backup do banco de dados",
+        "job_pulse_backup": "Backup de analytics",
+        "job_vault_drift": "Verificação de mudanças do esquema"
       },
       "action": {
         "lookUp": "Buscar",
@@ -1750,6 +1766,47 @@
         "add": "Nomear responsável",
         "remove": "Remover",
         "keep": "Manter responsável"
+      }
+    },
+    "identity": {
+      "heading": {
+        "title": "Identidade e proteção por idade",
+        "adversarial": "Comprovado por testes"
+      },
+      "body": {
+        "intro": "As metas de lançamento devem chegar a 100%. Os diagnósticos mostram tendência.",
+        "gatesMet": "{met} de {total} metas de lançamento cumpridas.",
+        "gatesMissed": "{n} metas de lançamento estão abaixo.",
+        "ratio": "{num} de {den}",
+        "metric": "Métrica",
+        "kind": "Tipo",
+        "value": "Valor",
+        "status": "Situação",
+        "adversarialIntro": "Rodam como testes em cada lançamento."
+      },
+      "option": {
+        "release_gate": "Meta de lançamento",
+        "diagnostic": "Diagnóstico",
+        "met": "Cumprida",
+        "missed": "Abaixo da meta",
+        "no_data": "Ainda sem dados",
+        "guest_origin_flag_coverage": "Sessões de convidado marcadas após recusa por idade",
+        "flag_persistence_through_upgrade": "Marca mantida ao criar a conta",
+        "post_callback_age_screen_completion": "Cadastros com Google que passaram pela idade",
+        "under13_google_reclassification": "Contas Google menores de 13 protegidas",
+        "entry_path_age_capture": "Contas novas com idade registrada",
+        "undated_account_backlog": "Contas antigas sem idade",
+        "verification_status_differentiation": "Tutores marcados por documento ou pela equipe",
+        "staff_grant_justification_completeness": "Permissões de Tutor da equipe com motivo",
+        "revocation_path_utilization": "Revogações com motivo auditado",
+        "kid_email_change_restriction": "Contas infantis sem troca de e-mail",
+        "faq_claim_parity": "Respostas de ajuda com recurso real",
+        "schema_field_utilization": "Campos de identidade gravados e lidos",
+        "adv_flagged_session_microphone": "Microfone desligado em sessões marcadas",
+        "adv_flagged_session_fail_closed": "A segurança do Mentor falha fechada",
+        "adv_flagged_session_unconsented_analytics": "Sem analytics sem consentimento",
+        "adv_age_screen_bypass": "Ninguém contorna a tela de idade",
+        "adv_kid_email_change_unauthorized": "Sem troca de e-mail infantil"
       }
     }
   }

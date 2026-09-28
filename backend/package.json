@@ -23,6 +23,7 @@
     "audit:content-bridge": "tsx --env-file-if-exists=.env src/scripts/audit-content-bridge.ts",
     "curate:tutor-skills": "tsx --env-file-if-exists=.env src/scripts/curate-tutor-skills.ts",
     "audit:bkt-calibration": "tsx --env-file-if-exists=.env src/scripts/audit-bkt-calibration.ts",
+    "ops:drill": "tsx --env-file-if-exists=.env src/scripts/ops-job-drill.ts",
     "tutor:integrity-report": "tsx --env-file-if-exists=.env src/scripts/mentor-integrity-report.ts",
     "tutor:session-end-report": "tsx --env-file-if-exists=.env src/scripts/session-end-report.ts",
     "tutor:telemetry-report": "tsx --env-file-if-exists=.env src/scripts/telemetry-report.ts",

@@ -14,7 +14,7 @@ import { birthMonthToKeep, declaredBandForDate, readAgeScreen, recordAgeScreen }
 import { enforceKidSuspensionAtAdmission } from '../services/guardianLifecycle.js';
 import { readOpenDeletion } from '../services/accountDeletion.js';
 import { attributeSignup, hasActiveAnalyticsConsent } from '../services/insights.js';
-import { getOnboardingResponse, getOwnAdminPermissions, getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
+import { getOnboardingResponse, getOwnAdminPermissions, getOwnAvatar, getOwnProfile, getOwnRoles, insertAuditLog } from '../services/supabaseRest.js';
 import { projectAvatarOptions, projectCover } from '../services/profileShape.js';
 
 /** Social providers Core is willing to broker (GoTrue must also have each enabled). */
@@ -286,8 +286,13 @@ export function authRouter(): Router {
     if (!origin.success) return fail(res, 400, 'VALIDATION_ERROR', 'Invalid guest origin');
     const { data, error } = await gotrue.signInAnonymously();
     if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
-    if (origin.data.under13Origin && (!data.user?.id || !await markUnder13Origin(data.user.id))) {
-      return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not protect the guest session');
+    if (origin.data.under13Origin) {
+      const flagged = Boolean(data.user?.id) && await markUnder13Origin(data.user!.id);
+      // Appendix M 1.1 Guest-Session Origin-Flag Coverage (target 100%): every
+      // age-refusal guest request leaves an event with whether its flag was
+      // confirmed. Read by public.identity_metrics; no detail beyond that.
+      if (data.user?.id) await insertAuditLog(data.user.id, 'auth.guest.age_refusal', data.user.id, { flagged });
+      if (!flagged) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not protect the guest session');
     }
     return ok(res, { session: sessionPayload(data) }, 201);
   });
@@ -446,7 +451,12 @@ export function authRouter(): Router {
     // kid role rather than merely hidden.
     const roles = await getRolesForGate(user.id);
     if (roles === null) return fail(res, 502, 'INTERNAL', 'Could not verify account roles');
-    if (roles.includes('kid')) return fail(res, 403, 'KID_EMAIL_FORBIDDEN', 'A child account has no email to change');
+    if (roles.includes('kid')) {
+      // Appendix M 1.3: every refused attempt is counted (identity_metrics
+      // reads 'auth.kid_email_change.refused'); the address is never logged.
+      await insertAuditLog(user.id, 'auth.kid_email_change.refused', user.id, {});
+      return fail(res, 403, 'KID_EMAIL_FORBIDDEN', 'A child account has no email to change');
+    }
     const { error: verifyError } = await gotrue.signInWithPassword(user.email, parsed.data.currentPassword);
     if (verifyError) return fail(res, 401, 'INVALID_CREDENTIALS', 'Current password is incorrect');
     const { FRONTEND_URL } = getConfig();

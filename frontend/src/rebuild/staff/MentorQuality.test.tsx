@@ -113,7 +113,10 @@ describe('MentorQualityDashboard', () => {
     const breach = document.querySelector('[data-signal="rubric.emotion_label"]')!;
     expect(breach.textContent).toContain('Needs review');
     expect(breach.querySelector('svg')).not.toBeNull();
-    expect(document.querySelector('[data-signal="engagement.session_efficiency"]')!.textContent).toContain('Not measured yet');
+    expect(document.querySelector('[data-signal="engagement.streak_anxiety"]')!.textContent).toContain('Not measured yet');
+    // C.24 consolidates the Learning Quality tab: the Block B metrics read real sources now.
+    expect(document.querySelector('[data-signal="engagement.session_efficiency"]')!.textContent).toContain('57%');
+    expect(document.querySelector('[data-signal="engagement.mentor_resolution"]')!.textContent).toContain('6');
     expect(document.querySelector('[data-signal="bias_audit.coverage"]')!.textContent).toContain('Measured elsewhere');
     expect(document.querySelector('[data-signal="session_end.trigger_rate"]')!.querySelector('svg')).toBeNull();
     // Shares as percentages, counts as numbers, the bond proxy as a score.

@@ -218,9 +218,15 @@ describe('C.6 the human release gate (setTutorPackStatus)', () => {
       const method = init?.method ?? 'GET';
       calls.push({ url, method, body: init?.body as string | undefined });
       if (url.includes('/rest/v1/tutor_packs') && method === 'GET') return Promise.resolve(jsonResponse(200, [current]));
-      if (url.includes('/rest/v1/tutor_packs') && method === 'PATCH') {
-        const patch = JSON.parse(String(init?.body)) as Partial<TutorPackAdminRow>;
-        return Promise.resolve(jsonResponse(200, [{ ...current, ...patch }]));
+      if (url.includes('/rest/v1/rpc/set_tutor_pack_status')) {
+        const args = JSON.parse(String(init?.body)) as { p_from: string; p_to: string; p_actor: string; p_content_hash: string | null };
+        // The database's own guard: a stale `from` changes nothing (NULL).
+        if (args.p_from !== current.status || args.p_from === args.p_to) return Promise.resolve(jsonResponse(200, null));
+        const published = args.p_to === 'published';
+        return Promise.resolve(jsonResponse(200, {
+          ...current, status: args.p_to,
+          ...(published ? { released_by: args.p_actor, content_hash: args.p_content_hash, released_at: '2026-09-27T00:00:00Z' } : {}),
+        }));
       }
       if (url.includes('/rest/v1/kc?')) return Promise.resolve(jsonResponse(200, [{ tier_min: tierMin }]));
       if (url.includes('/rest/v1/audit_logs')) return Promise.resolve(new Response(null, { status: 201 }));
@@ -233,11 +239,12 @@ describe('C.6 the human release gate (setTutorPackStatus)', () => {
     const calls: { url: string; method: string; body?: string }[] = [];
     stubPacks(row(), calls);
     const result = await setTutorPackStatus({ packId: PACK_ID, status: 'published', actorId: ACTOR });
-    expect(result.ok).toBe(true);
-    const patch = calls.find((c) => c.method === 'PATCH')!;
-    expect(patch.url).toContain('status=eq.review');
-    expect(JSON.parse(patch.body!)).toMatchObject({ status: 'published', released_by: ACTOR });
-    expect(calls.find((c) => c.url.includes('audit_logs'))?.body).toContain('admin.tutor_pack.status');
+    expect(result).toMatchObject({ ok: true, row: { status: 'published', released_by: ACTOR } });
+    // G.3: one call records the decision AND its audit row (set_tutor_pack_status);
+    // the stale-decision guard is the `from` Core read.
+    const rpc = calls.find((c) => c.url.includes('/rpc/set_tutor_pack_status'))!;
+    expect(JSON.parse(rpc.body!)).toMatchObject({ p_pack_id: PACK_ID, p_from: 'review', p_to: 'published', p_actor: ACTOR, p_content_hash: packContentHash(toStoredPack(GOOD)) });
+    expect(calls.some((c) => c.url.includes('audit_logs'))).toBe(false);
   });
 
   it('refuses to publish stored content that breaks the contract', async () => {
@@ -246,7 +253,7 @@ describe('C.6 the human release gate (setTutorPackStatus)', () => {
     stubPacks(row({ pack: broken, content_hash: packContentHash(broken) }), calls);
     const result = await setTutorPackStatus({ packId: PACK_ID, status: 'published', actorId: ACTOR });
     expect(result).toMatchObject({ ok: false, code: 'invalid' });
-    expect(calls.some((c) => c.method === 'PATCH')).toBe(false);
+    expect(calls.some((c) => c.url.includes('/rpc/set_tutor_pack_status'))).toBe(false);
   });
 
   it('refuses to publish content that no longer matches its recorded hash', async () => {
@@ -268,5 +275,15 @@ describe('C.6 the human release gate (setTutorPackStatus)', () => {
     stubPacks(row({ status: 'published' }), calls);
     expect((await setTutorPackStatus({ packId: PACK_ID, status: 'archived', actorId: ACTOR })).ok).toBe(true);
     expect(await setTutorPackStatus({ packId: PACK_ID, status: 'published', actorId: ACTOR })).toMatchObject({ ok: false, code: 'unchanged' });
+  });
+
+  it('reports unavailable, never success, when the decision cannot be confirmed', async () => {
+    vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes('/rest/v1/tutor_packs')) return Promise.resolve(jsonResponse(200, [row({ status: 'published' })]));
+      if (url.includes('/rest/v1/rpc/set_tutor_pack_status')) return Promise.resolve(jsonResponse(500, { code: 'XX000', message: 'audit store unavailable' }));
+      throw new Error(`unexpected ${init?.method ?? 'GET'} ${url}`);
+    }));
+    expect(await setTutorPackStatus({ packId: PACK_ID, status: 'archived', actorId: ACTOR })).toMatchObject({ ok: false, code: 'unavailable' });
   });
 });

@@ -2,9 +2,10 @@ import { useId, useMemo, useState } from 'react';
 import { Button, ButtonGroup, Card, Chip, ConfirmDialog, DataTable, EmptyState, InlineNotice, SegmentedControl, SelectField, TextField } from '../../design/controls';
 import { reasonActionable } from '../../family/familyAutonomyApi';
 import {
-  autonomyPath, denialSamplePath, FAMILY_GROUPS, FAMILY_METRICS, isDenialSample, isRetentionSweep, isStaffAccount, isStaffAutonomy, lowerLevels,
-  LOWER_REASON_MAX, metricGuard, onTarget, OWNERS_PATH, readField, RETENTION_SWEEP_PATH, TRUST_METRICS, pick,
-  type AutonomyLevel, type FamilyGroup, type MetricField, type MetricSpec, type StaffAutonomyChange,
+  autonomyPath, denialSamplePath, FAMILY_GROUPS, FAMILY_METRICS, identityPath, isDenialSample, isIdentityReport, isOpsJobs, isRetentionSweep,
+  isStaffAccount, isStaffAutonomy, lowerLevels, LOWER_REASON_MAX, metricGuard, onTarget, OPS_JOBS_PATH, OWNERS_PATH, readField,
+  RETENTION_SWEEP_PATH, TRUST_METRICS, pick,
+  type AutonomyLevel, type FamilyGroup, type IdentityMetric, type MetricField, type MetricSpec, type StaffAutonomyChange,
 } from './programmeApi';
 import { isUsers, UUID, useStaffRead, type StaffApi } from './staffConsoleApi';
 import { CopyId, Facts, LoadFailure, Loading, shortId, useFormats } from './ConsoleParts';
@@ -150,13 +151,64 @@ export function FamilyMetricsView({ api, days }: { api: StaffApi; days: number }
   </div>;
 }
 
-/** Analytics & Health → Trust: the Appendix J/L trust metrics. */
+/** Analytics & Health → Trust: the Appendix J/L trust metrics, and Appendix M's identity metrics. */
 export function TrustMetricsView({ api, days }: { api: StaffApi; days: number }) {
   return <div className="lf-staff-section">
+    <IdentityMetricsCard api={api} days={days} />
     <div className="lf-staff-pair">
       {TRUST_METRICS.map((spec) => <MetricCard key={spec.id} api={api} spec={spec} days={days} />)}
     </div>
   </div>;
+}
+
+function IdentityStatusChip({ metric }: { metric: IdentityMetric }) {
+  const { copy } = useConsoleCopy();
+  const t = copy.identity.option;
+  if (metric.status === 'met') return <Chip tone="success" glyph="check">{t.met}</Chip>;
+  if (metric.status === 'missed') return <Chip tone="warning" glyph="warning">{t.missed}</Chip>;
+  if (metric.status === 'no_data') return <Chip tone="sky" glyph="info">{t.no_data}</Chip>;
+  return <Chip tone="sky" glyph="info">{t.diagnostic}</Chip>;
+}
+
+/**
+ * Appendix M Part 1 (Block A): each acquisition and identity metric, marked
+ * as a release-gate target (held to 100%) or a diagnostic (a trend), with
+ * the counts behind it. The adversarial metrics are listed as the tests that
+ * prove them every release, never as a rate.
+ */
+export function IdentityMetricsCard({ api, days }: { api: StaffApi; days: number }) {
+  const { copy, locale } = useConsoleCopy();
+  const format = useFormats(locale);
+  const t = copy.identity;
+  const read = useStaffRead(api, identityPath(days), isIdentityReport);
+  const label = (id: string) => labelOf(t.option as Record<string, string>, id);
+  const data = read.load.state === 'ready' ? read.load.data : null;
+  return <Card heading={t.heading.title} headingLevel={3}>
+    <div className="lf-staff-section" data-metric-card="identity">
+      <p data-copy-role="body" className="lf-staff-muted">{t.body.intro}</p>
+      {read.load.state === 'loading' ? <Loading />
+        : read.load.state === 'error' ? <LoadFailure code={read.load.code} onRetry={read.reload} />
+          : data ? <>
+            {data.releaseGate.missed > 0
+              ? <InlineNotice tone="error">{fill(t.body.gatesMissed, { n: format.number(data.releaseGate.missed) })}</InlineNotice>
+              : <InlineNotice tone="success">{fill(t.body.gatesMet, { met: format.number(data.releaseGate.met), total: format.number(data.releaseGate.total) })}</InlineNotice>}
+            <DataTable caption={t.heading.title} rows={data.metrics} rowKey={(m) => m.id} columns={[
+              { key: 'metric', label: t.body.metric, value: (m) => label(m.id) },
+              { key: 'kind', label: t.body.kind, value: (m) => (m.kind === 'release_gate' ? t.option.release_gate : t.option.diagnostic) },
+              { key: 'value', label: t.body.value, value: (m) => (m.value === null ? t.option.no_data
+                : `${format.percent(m.value)} · ${fill(t.body.ratio, { num: format.number(m.numerator), den: format.number(m.denominator) })}`) },
+              { key: 'status', label: t.body.status, value: (m) => <IdentityStatusChip metric={m} /> },
+            ]} />
+            <h4 data-copy-role="heading" className="lf-staff-subheading">{t.heading.adversarial}</h4>
+            <p data-copy-role="body" className="lf-staff-muted">{t.body.adversarialIntro}</p>
+            <ul className="lf-staff-reports" aria-label={t.heading.adversarial}>
+              {data.adversarial.map((entry) => <li key={entry.id} data-adversarial={entry.id}>
+                <p data-copy-role="body">{label(`adv_${entry.id}`)}</p>
+              </li>)}
+            </ul>
+          </> : null}
+    </div>
+  </Card>;
 }
 
 /* ------------------------------------------------------------------------- */
@@ -276,6 +328,41 @@ export function RetentionSweepCard({ api }: { api: StaffApi }) {
             ]} />
             {read.load.data.stale ? <InlineNotice tone="error">{t.body.staleHelp}</InlineNotice> : null}
           </> : null}
+    </div>
+  </Card>;
+}
+
+/**
+ * H.4 (Appendix O 1.3): the daily Vault and Pulse backups and the schema
+ * drift probe, beside the retention sweep. `stale` comes from Core (one home
+ * for each window); a stale job is also what fails ops-job-watch.yml and
+ * notifies the team.
+ */
+export function OpsJobsCard({ api }: { api: StaffApi }) {
+  const { copy, locale } = useConsoleCopy();
+  const format = useFormats(locale);
+  const t = copy.support;
+  const read = useStaffRead(api, OPS_JOBS_PATH, isOpsJobs);
+  return <Card heading={t.heading.jobs} headingLevel={2}>
+    <div className="lf-staff-section" data-tool="ops-jobs">
+      <p data-copy-role="body" className="lf-staff-muted">{t.body.jobsIntro}</p>
+      {read.load.state === 'loading' ? <Loading />
+        : read.load.state === 'error' ? <LoadFailure code={read.load.code} onRetry={read.reload} />
+          : read.load.state === 'ready' ? <ul className="lf-staff-reports" aria-label={t.heading.jobs}>
+            {read.load.data.jobs.map((job) => {
+              const name = t.option[`job_${job.job}`];
+              return <li key={job.job} data-job={job.job} data-stale={job.stale ? 'true' : 'false'}>
+                <p data-copy-role="body" className="lf-staff-report-category">{name}</p>
+                <div>{job.stale ? <Chip tone="warning" glyph="warning">{t.option.stale}</Chip> : <Chip tone="success" glyph="check">{t.option.fresh}</Chip>}</div>
+                <Facts items={[
+                  { id: `${job.job}-last`, label: t.body.lastRun, value: format.dateTime(job.lastRunAt, copy.programme.body.never) },
+                  { id: `${job.job}-attempt`, label: t.body.lastAttempt, value: format.dateTime(job.lastAttemptAt, copy.programme.body.never) },
+                ]} />
+                {job.stale ? <InlineNotice tone="error">{fill(t.body.jobStaleHelp, { job: name, n: format.number(job.staleAfterHours) })}</InlineNotice> : null}
+                {job.lastAttemptOk === false ? <InlineNotice tone="error">{t.body.lastAttemptFailed}</InlineNotice> : null}
+              </li>;
+            })}
+          </ul> : null}
     </div>
   </Card>;
 }

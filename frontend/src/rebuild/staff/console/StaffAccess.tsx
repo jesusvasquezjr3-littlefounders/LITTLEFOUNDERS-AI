@@ -4,8 +4,8 @@ import {
   TextAreaField, TextField, type StaffPermission, type TableColumn,
 } from '../../design/controls';
 import {
-  GRANTABLE_ROLES, isCandidates, isRolesData, JUSTIFICATION, reviewDue, ROLE_ORDER, useStaffRead, UUID,
-  type Candidate, type GrantableRole, type Holder, type StaffApi,
+  ACCESS_REVIEWS_PATH, GRANTABLE_ROLES, isAccessReviews, isCandidates, isRolesData, JUSTIFICATION, reviewDue, ROLE_ORDER, useStaffRead, UUID,
+  type AccessReviewGrant, type Candidate, type GrantableRole, type Holder, type StaffApi,
 } from './staffConsoleApi';
 import { CopyId, Facts, LoadFailure, Loading, Metrics, ShareBars, shortId, StaffPage, useFormats } from './ConsoleParts';
 import { fill, labelOf, useConsoleCopy } from './staffConsoleCopy';
@@ -20,8 +20,12 @@ import { fill, labelOf, useConsoleCopy } from './staffConsoleCopy';
  *   - G.1: the four staff grants are switches only for an admin, the one role
  *     they restrict. A superadmin opens every section, so no switch is shown
  *     for them: a label that restricts nothing is never displayed.
- *   - G.4: the access-review card lists every role grant older than 90 days,
- *     oldest first, so the quarterly re-justification is a visible task.
+ *   - G.4 (Appendix N 1.1): the access-review card lists the elevated grants
+ *     past their 90-day review (admin and superadmin roles and the four staff
+ *     permissions, never a family role), aged from the later of the grant and
+ *     its last kept review. "Keep access" records the review (audited by
+ *     Core in the same transaction); the card shows the on-time share and the
+ *     stale count from the review log.
  *
  * Removing a role is destructive and always behind a keep-first confirmation.
  * The database's role triggers are the last word: a refusal says so.
@@ -154,7 +158,22 @@ export function StaffAccess({ api }: { api: StaffApi }) {
     return (data?.holders ?? []).filter((holder) => (!needle || [holder.displayName, holder.username ?? '', holder.userId].some((value) => value.toLowerCase().includes(needle)))
       && (roleFilter === 'all' || holder.roles.includes(roleFilter)));
   }, [data, search, roleFilter]);
-  const due = useMemo(() => reviewDue(data?.holders ?? []), [data]);
+  const reviews = useStaffRead(api, ACCESS_REVIEWS_PATH, isAccessReviews);
+  const reviewData = reviews.load.state === 'ready' ? reviews.load.data : null;
+  const due = useMemo(() => reviewDue(reviewData), [reviewData]);
+  const [keeping, setKeeping] = useState<string | null>(null);
+  const [reviewNotice, setReviewNotice] = useState<{ tone: 'success' | 'error'; text: string } | null>(null);
+  const grantName = (grant: AccessReviewGrant) => (grant.kind === 'role' ? roleName(grant.grant) : labelOf(copy.permissions.option, grant.grant));
+  const keepAccess = async (grant: AccessReviewGrant) => {
+    const key = `${grant.userId}:${grant.kind}:${grant.grant}`;
+    setKeeping(key);
+    setReviewNotice(null);
+    const result = await api.post('/admin/roles/review', { userId: grant.userId, kind: grant.kind, grant: grant.grant });
+    setKeeping(null);
+    if (result.ok) setReviewNotice({ tone: 'success', text: fill(t.body.reviewKept, { grant: grantName(grant) }) });
+    else setReviewNotice({ tone: 'error', text: result.code === 'GRANT_NOT_HELD' ? t.body.reviewNotHeld : t.body.reviewFailed });
+    if (result.ok || result.code === 'GRANT_NOT_HELD') { reviews.reload(); roles.reload(); }
+  };
   const current = data?.holders.find((holder) => holder.userId === selected) ?? null;
 
   const columns: TableColumn<Holder>[] = [
@@ -183,14 +202,33 @@ export function StaffAccess({ api }: { api: StaffApi }) {
 
   const secondary = data ? <>
     <Card heading={t.heading.review}>
-      {due.length === 0 ? <InlineNotice tone="success">{t.body.reviewNone}</InlineNotice> : <>
-        <InlineNotice tone="info">{fill(t.body.reviewDue, { n: format.number(due.length) })}</InlineNotice>
-        <List label={t.heading.review}>
-          {due.map(({ holder, assignment }) => <ListRow key={`${holder.userId}:${assignment.role}`} title={holder.displayName} titleRole="data"
-            supporting={fill(t.body.reviewRow, { role: roleName(assignment.role), date: format.date(assignment.grantedAt, copy.common.body.notAvailable) })}
-            trailing={<Button size="sm" onClick={() => setSelected(holder.userId)}>{t.action.manage}</Button>} />)}
-        </List>
-      </>}
+      <div className="lf-staff-section" data-tool="access-review">
+        {reviews.load.state === 'loading' ? <Loading />
+          : reviews.load.state === 'error' ? <LoadFailure code={reviews.load.code} onRetry={reviews.reload} />
+            : reviewData ? <>
+              <Metrics label={t.heading.review} items={[
+                { id: 'compliance', label: t.body.reviewCompliance, value: reviewData.metrics.compliance === null ? copy.common.body.notAvailable : format.percent(reviewData.metrics.compliance) },
+                { id: 'stale', label: t.body.reviewStale, value: format.number(reviewData.metrics.stale) },
+              ]} />
+              {reviewNotice ? <InlineNotice tone={reviewNotice.tone} live>{reviewNotice.text}</InlineNotice> : null}
+              {reviewData.grants.length === 0 ? <InlineNotice tone="info">{t.body.reviewEmpty}</InlineNotice>
+                : due.length === 0 ? <InlineNotice tone="success">{t.body.reviewNone}</InlineNotice> : <>
+                  <InlineNotice tone="info">{fill(t.body.reviewDue, { n: format.number(due.length) })}</InlineNotice>
+                  <List label={t.heading.review}>
+                    {due.map((grant) => {
+                      const key = `${grant.userId}:${grant.kind}:${grant.grant}`;
+                      return <ListRow key={key} title={grant.displayName} titleRole="data"
+                        supporting={fill(t.body.reviewRow, { grant: grantName(grant), date: format.date(grant.lastReviewedAt ?? grant.grantedAt, copy.common.body.notAvailable) })}
+                        trailing={<div className="lf-staff-actions">
+                          <Button size="sm" variant="brand" pending={keeping === key} pendingLabel={t.action.keepingAccess}
+                            disabled={keeping !== null && keeping !== key} onClick={() => void keepAccess(grant)}>{t.action.keepAccess}</Button>
+                          <Button size="sm" onClick={() => setSelected(grant.userId)}>{t.action.manage}</Button>
+                        </div>} />;
+                    })}
+                  </List>
+                </>}
+            </> : null}
+      </div>
     </Card>
     <Card heading={t.heading.distribution}>
       <ShareBars label={t.heading.distribution} locale={locale} total={data.summary.totalRoleAssignments}
@@ -238,7 +276,7 @@ export function StaffAccess({ api }: { api: StaffApi }) {
               </List> : null}
       </div>
     </Sheet> : null}
-    {current ? <HolderDetails key={current.userId} api={api} holder={current} onClose={() => setSelected(null)} onChanged={roles.reload}
+    {current ? <HolderDetails key={current.userId} api={api} holder={current} onClose={() => setSelected(null)} onChanged={() => { roles.reload(); reviews.reload(); }}
       onRemoved={(text) => setRemoved(text)} /> : null}
   </StaffPage>;
 }

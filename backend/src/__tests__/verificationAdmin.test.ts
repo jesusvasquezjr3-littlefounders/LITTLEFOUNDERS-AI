@@ -31,6 +31,8 @@ interface StubOpts {
   adminPerms?: string[];
   verificationRows?: unknown[];
   writes?: { url: string; body: unknown }[];
+  /** The database function's answer: a status and a body (PostgREST error shape on refusal). */
+  rpc?: { status: number; body: unknown };
 }
 
 function stub(opts: StubOpts = {}) {
@@ -43,6 +45,12 @@ function stub(opts: StubOpts = {}) {
       const url = String(input);
       const method = init?.method ?? 'GET';
       if (init?.body) writes.push({ url, body: JSON.parse(String(init.body)) as unknown });
+      if (url.includes('/rest/v1/rpc/grant_parent_role_with_justification')) {
+        return Promise.resolve(jsonResponse(opts.rpc?.status ?? 200, opts.rpc?.body ?? 'granted'));
+      }
+      if (url.includes('/rest/v1/rpc/revoke_parent_verification')) {
+        return Promise.resolve(jsonResponse(opts.rpc?.status ?? 200, opts.rpc?.body ?? 'revoked'));
+      }
       if (url.includes('/rest/v1/admin_permissions')) {
         return Promise.resolve(jsonResponse(200, (opts.adminPerms ?? ['manage_users']).map((permission) => ({ permission }))));
       }
@@ -86,17 +94,42 @@ describe('admin verification revoke (A.5)', () => {
     expect(writes.some((w) => w.url.includes('/rest/v1/parent_verifications'))).toBe(false);
   });
 
-  it('audits the reason first and writes the revoked row', async () => {
+  it('writes the revoked row and its audited reason in one database call', async () => {
     const writes = stub();
     const res = await request(createApp())
       .post(`/api/v1/admin/users/${TARGET_ID}/verification/revoke`)
       .set('Authorization', `Bearer ${adminToken()}`)
       .send({ reason: 'Fraud report confirmed by two guardians' });
     expect(res.status).toBe(200);
-    const audit = writes.find((w) => w.url.includes('/rest/v1/audit_logs'));
-    expect(audit?.body).toMatchObject({ action: 'admin.parent_verification.revoked', subject: TARGET_ID });
-    const row = writes.find((w) => w.url.includes('/rest/v1/parent_verifications') && !w.url.includes('?'));
-    expect(row?.body).toMatchObject({ user_id: TARGET_ID, status: 'revoked', method: 'staff-revoked' });
+    const rpc = writes.find((w) => w.url.includes('/rpc/revoke_parent_verification'));
+    expect(rpc?.body).toEqual({ p_user: TARGET_ID, p_actor: ADMIN_ID, p_reason: 'Fraud report confirmed by two guardians' });
+    // No second, separately failing write: the function owns both rows.
+    expect(writes.some((w) => w.url.includes('/rest/v1/audit_logs') || (w.url.includes('/rest/v1/parent_verifications') && !w.url.includes('?')))).toBe(false);
+  });
+
+  it('answers 502, never "revoked", when the database cannot confirm the revocation', async () => {
+    stub({ rpc: { status: 500, body: { code: 'XX000', message: 'audit store unavailable' } } });
+    const res = await request(createApp())
+      .post(`/api/v1/admin/users/${TARGET_ID}/verification/revoke`)
+      .set('Authorization', `Bearer ${adminToken()}`)
+      .send({ reason: 'Fraud report confirmed by two guardians' });
+    expect(res.status).toBe(502);
+    expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
+  });
+
+  it('answers 404 for an unknown account and 409 when the database refuses the actor', async () => {
+    stub({ rpc: { status: 200, body: 'not_found' } });
+    const missing = await request(createApp())
+      .post(`/api/v1/admin/users/${TARGET_ID}/verification/revoke`)
+      .set('Authorization', `Bearer ${adminToken()}`)
+      .send({ reason: 'Fraud report confirmed by two guardians' });
+    expect(missing.status).toBe(404);
+    stub({ rpc: { status: 403, body: { code: '42501', message: 'PARENT_REVOKE_FORBIDDEN: only staff revoke a verification' } } });
+    const refused = await request(createApp())
+      .post(`/api/v1/admin/users/${TARGET_ID}/verification/revoke`)
+      .set('Authorization', `Bearer ${adminToken()}`)
+      .send({ reason: 'Fraud report confirmed by two guardians' });
+    expect(refused.status).toBe(409);
   });
 });
 
@@ -111,16 +144,44 @@ describe('parent-role staff grant justification (A.5)', () => {
     expect(writes.some((w) => w.url.includes('/rest/v1/user_roles'))).toBe(false);
   });
 
-  it('carries the justification into its own audit row', async () => {
+  it('commits the role and its justification in one database call', async () => {
     const writes = stub({ roles: ['superadmin'] });
     const res = await request(createApp())
       .post('/api/v1/admin/roles/grant')
       .set('Authorization', `Bearer ${superadminToken()}`)
       .send({ userId: TARGET_ID, role: 'parent', justification: 'Support case: parent lost access to their phone and re-verified in person.' });
     expect(res.status).toBe(200);
-    const audit = writes.find((w) => w.url.includes('/rest/v1/audit_logs') && (w.body as { action?: string }).action === 'admin.parent_role_justification');
-    expect(audit?.body).toMatchObject({ subject: TARGET_ID });
-    expect(JSON.stringify(audit?.body)).toContain('lost access to their phone');
+    expect(res.body.data).toMatchObject({ role: 'parent', granted: true });
+    const rpc = writes.find((w) => w.url.includes('/rpc/grant_parent_role_with_justification'));
+    expect(rpc?.body).toEqual({ p_user: TARGET_ID, p_actor: ADMIN_ID, p_justification: 'Support case: parent lost access to their phone and re-verified in person.' });
+    // Never the old two-step: a role insert, then a separately failing audit row.
+    expect(writes.some((w) => w.url.includes('/rest/v1/user_roles') || w.url.includes('/rest/v1/audit_logs'))).toBe(false);
+  });
+
+  it('answers 502, never "granted", when the grant and its justification cannot be confirmed', async () => {
+    stub({ roles: ['superadmin'], rpc: { status: 503, body: null } });
+    const res = await request(createApp())
+      .post('/api/v1/admin/roles/grant')
+      .set('Authorization', `Bearer ${superadminToken()}`)
+      .send({ userId: TARGET_ID, role: 'parent', justification: 'Support case: parent re-verified in person.' });
+    expect(res.status).toBe(502);
+    expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
+  });
+
+  it('maps the database refusals: a reason out of bounds is 400, a refused actor or trigger is 409', async () => {
+    stub({ roles: ['superadmin'], rpc: { status: 400, body: { code: '22023', message: 'PARENT_GRANT_JUSTIFICATION_REQUIRED: a justification of 10-200 characters is required' } } });
+    const invalid = await request(createApp())
+      .post('/api/v1/admin/roles/grant')
+      .set('Authorization', `Bearer ${superadminToken()}`)
+      .send({ userId: TARGET_ID, role: 'parent', justification: '          padded          ' });
+    expect(invalid.status).toBe(400);
+    stub({ roles: ['superadmin'], rpc: { status: 403, body: { code: '42501', message: 'PARENT_GRANT_FORBIDDEN: only a superadmin grants the parent role' } } });
+    const refused = await request(createApp())
+      .post('/api/v1/admin/roles/grant')
+      .set('Authorization', `Bearer ${superadminToken()}`)
+      .send({ userId: TARGET_ID, role: 'parent', justification: 'Support case: parent re-verified in person.' });
+    expect(refused.status).toBe(409);
+    expect(refused.body.error.code).toBe('ROLE_REJECTED');
   });
 });
 
@@ -148,14 +209,17 @@ describe('A.6 role-branched Settings boundaries', () => {
     expect(res.body.error.code).toBe('KID_USERNAME_LOCKED');
   });
 
-  it('refuses a kid-role email change', async () => {
-    stub({ roles: ['kid'] });
+  it('refuses a kid-role email change and counts the refusal without the address (Appendix M 1.3)', async () => {
+    const writes = stub({ roles: ['kid'] });
     const res = await request(createApp())
       .post('/api/v1/auth/change-email')
       .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`)
       .send({ newEmail: 'escape@example.com', currentPassword: 'whatever' });
     expect(res.status).toBe(403);
     expect(res.body.error.code).toBe('KID_EMAIL_FORBIDDEN');
+    const audit = writes.find((w) => w.url.includes('/rest/v1/audit_logs'));
+    expect(audit?.body).toEqual({ actor_id: KID_ID, action: 'auth.kid_email_change.refused', subject: KID_ID, detail: {} });
+    expect(JSON.stringify(writes)).not.toContain('escape@example.com');
   });
 
   it('still permits a display-name and locale edit for a kid', async () => {

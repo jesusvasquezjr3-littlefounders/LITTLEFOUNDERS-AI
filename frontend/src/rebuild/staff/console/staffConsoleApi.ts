@@ -200,14 +200,32 @@ export interface Candidate { userId: string; displayName: string; username: stri
 export const isCandidates = (value: unknown): value is { candidates: Candidate[] } => isRecord(value)
   && arrayOf(value.candidates, (c): c is Candidate => isRecord(c) && isString(c.userId) && isString(c.displayName) && isNullableString(c.username) && arrayOf(c.roles, isString));
 
-/** The grants older than the review window: one row per role assignment (G.4). */
-export function reviewDue(holders: readonly Holder[], now = Date.now()): { holder: Holder; assignment: Assignment }[] {
-  const cutoff = now - REVIEW_WINDOW_DAYS * 24 * 60 * 60 * 1000;
-  return holders.flatMap((holder) => holder.roleAssignments
-    .filter((assignment) => assignment.grantedAt !== null && Date.parse(assignment.grantedAt) < cutoff)
-    .map((assignment) => ({ holder, assignment })))
-    .sort((a, b) => Date.parse(a.assignment.grantedAt!) - Date.parse(b.assignment.grantedAt!));
+/*
+ * G.4 / Appendix N 1.1: the access-review log. Core lists only the elevated
+ * grants (admin and superadmin roles, the four staff permissions; never a
+ * family role), each with its last kept review; a grant is due when
+ * max(granted, last review) is older than the cadence. Recording "Keep
+ * access" is POST /admin/roles/review, audited in the same transaction.
+ */
+export const ACCESS_REVIEWS_PATH = '/admin/roles/reviews';
+export interface AccessReviewGrant {
+  userId: string; kind: 'role' | 'permission'; grant: string; grantedAt: string; lastReviewedAt: string | null; due: boolean;
+  displayName: string; username: string | null;
 }
+export interface AccessReviews {
+  cadenceDays: number;
+  grants: AccessReviewGrant[];
+  metrics: { total: number; stale: number; reviewedEver: number; compliance: number | null; staleRate: number | null };
+}
+const isReviewGrant = (g: unknown): g is AccessReviewGrant => isRecord(g) && isString(g.userId) && (g.kind === 'role' || g.kind === 'permission')
+  && isString(g.grant) && isString(g.grantedAt) && isNullableString(g.lastReviewedAt) && typeof g.due === 'boolean'
+  && isString(g.displayName) && isNullableString(g.username);
+export const isAccessReviews = (value: unknown): value is AccessReviews => isRecord(value) && isNumber(value.cadenceDays)
+  && arrayOf(value.grants, isReviewGrant) && isRecord(value.metrics) && isNumber(value.metrics.total) && isNumber(value.metrics.stale)
+  && (value.metrics.compliance === null || isNumber(value.metrics.compliance));
+
+/** The grants the review card asks about: due first, oldest confirmation first (the server's order). */
+export const reviewDue = (reviews: AccessReviews | null): AccessReviewGrant[] => (reviews?.grants ?? []).filter((grant) => grant.due);
 
 /* ---- Audit log (S9) ------------------------------------------------------ */
 

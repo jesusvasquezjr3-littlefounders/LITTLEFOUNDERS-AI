@@ -168,6 +168,21 @@ describe('Analytics & Health → Trust (view_analytics)', () => {
     await waitFor(() => expect(within(safety).getByText(p.option.offTarget)).toBeTruthy());
   });
 
+  it('shows the Appendix M identity metrics, release gates apart from diagnostics', async () => {
+    const { api, gets } = fakeApi();
+    render(<Frame><StaffAnalytics api={api} viewer={ANALYST} initialView="trust" /></Frame>);
+    const card = (await screen.findByRole('heading', { name: en.staffConsole.identity.heading.title })).closest('section')!;
+    const i = en.staffConsole.identity;
+    await within(card).findByText(i.body.gatesMissed.replace('{n}', '3'));
+    expect(gets).toContain('/admin/analytics/identity?days=30');
+    const row = within(card).getByText(i.option.undated_account_backlog).closest('tr')!;
+    expect(within(row).getAllByText(i.option.diagnostic).length).toBeGreaterThan(0);
+    const gate = within(card).getByText(i.option.post_callback_age_screen_completion).closest('tr')!;
+    expect(within(gate).getByText(i.option.release_gate)).toBeTruthy();
+    expect(within(gate).getByText(i.option.missed)).toBeTruthy();
+    expect(within(card).getByText(i.option.adv_age_screen_bypass)).toBeTruthy();
+  });
+
   it('renders in es-MX', async () => {
     const { api } = fakeApi();
     render(<Frame locale="es-MX"><StaffAnalytics api={api} viewer={ANALYST} initialView="trust" /></Frame>);
@@ -185,7 +200,29 @@ describe('Reports → Support tools (manage_support)', () => {
     fireEvent.click(screen.getByRole('button', { name: s.action.lookUp }));
     expect(await screen.findByText(s.body.idInvalid)).toBeTruthy();
     expect(gets.some((path) => path.startsWith('/admin/family-autonomy'))).toBe(false);
-    expect(await screen.findByText(s.option.fresh)).toBeTruthy();
+    const sweep = document.querySelector<HTMLElement>('[data-tool="retention-sweep"]')!;
+    expect(await within(sweep).findByText(s.option.fresh)).toBeTruthy();
+  });
+
+  it('shows the backups and the drift probe beside the sweep, a quiet job in words (H.4)', async () => {
+    const { api, gets } = fakeApi();
+    render(<Frame><StaffReports api={api} initialView="support" /></Frame>);
+    expect(await screen.findByRole('heading', { name: s.heading.jobs })).toBeTruthy();
+    const jobs = document.querySelector<HTMLElement>('[data-tool="ops-jobs"]')!;
+    await within(jobs).findByText(s.option.job_pulse_backup);
+    expect(jobs.querySelector('[data-job="pulse_backup"]')!.getAttribute('data-stale')).toBe('true');
+    expect(jobs.querySelector('[data-job="vault_backup"]')!.getAttribute('data-stale')).toBe('false');
+    expect(within(jobs).getByText(s.body.jobStaleHelp.replace('{job}', s.option.job_pulse_backup).replace('{n}', '36'))).toBeTruthy();
+    expect(within(jobs).getByText(s.body.lastAttemptFailed)).toBeTruthy();
+    expect(gets).toContain('/admin/ops/job-status');
+  });
+
+  it('a reply missing a job is an error state, never a healthy list (H.4)', async () => {
+    const { api } = fakeApi((path) => (path === '/admin/ops/job-status' ? { ok: true, data: { jobs: [], anyStale: false } } : undefined));
+    render(<Frame><StaffReports api={api} initialView="support" /></Frame>);
+    const jobs = await waitFor(() => { const el = document.querySelector<HTMLElement>('[data-tool="ops-jobs"]'); if (!el) throw new Error('no card'); return el; });
+    expect(await within(jobs).findByRole('button')).toBeTruthy();
+    expect(jobs.querySelector('[data-job]')).toBeNull();
   });
 
   it('lowers a level only below the current one, with an actionable reason and a keep-first confirmation', async () => {
@@ -214,8 +251,9 @@ describe('Reports → Support tools (manage_support)', () => {
   it('says Core refusals in words', async () => {
     const { api } = fakeApi((path) => (path.endsWith('/lower') ? { ok: false, code: 'AUTONOMY_STAFF_FORBIDDEN' } : path.startsWith('/admin/tutor/') ? { ok: true, data: programme.empty['/admin/tutor/retention-status'] } : undefined));
     render(<Frame><StaffReports api={api} initialView="support" /></Frame>);
-    expect(await screen.findByText(s.option.stale)).toBeTruthy();
-    expect(screen.getByText(s.body.staleHelp)).toBeTruthy();
+    await screen.findByText(s.body.staleHelp);
+    const sweep = document.querySelector<HTMLElement>('[data-tool="retention-sweep"]')!;
+    expect(within(sweep).getByText(s.option.stale)).toBeTruthy();
     fireEvent.change(screen.getByLabelText(s.body.childId), { target: { value: KID } });
     fireEvent.click(screen.getByRole('button', { name: s.action.lookUp }));
     await screen.findByText(s.body.levelN.replace('{n}', '3'));

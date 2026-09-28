@@ -44,17 +44,17 @@ export const PREVIEW_SIGNAL_REGISTRY: Row[] = [
   ['learning.practice_success_band', 'learning_outcome', 'pedagogical_lead', 'yes'],
   ['learning.time_to_mastery', 'learning_outcome', 'pedagogical_lead', 'yes'],
   ['learning.transfer_success', 'learning_outcome', 'pedagogical_lead', 'not_instrumented'],
-  ['learning.judgment_quality', 'learning_outcome', 'pedagogical_lead', 'not_instrumented'],
-  ['learning.bridge_conversion', 'learning_outcome', 'pedagogical_lead', 'not_instrumented'],
-  ['learning.decision_journal', 'learning_outcome', 'pedagogical_lead', 'not_instrumented'],
-  ['engagement.session_efficiency', 'engagement_health', 'pedagogical_lead', 'not_instrumented'],
-  ['engagement.mentor_resolution', 'engagement_health', 'pedagogical_lead', 'not_instrumented'],
+  ['learning.judgment_quality', 'learning_outcome', 'pedagogical_lead', 'yes'],
+  ['learning.bridge_conversion', 'learning_outcome', 'pedagogical_lead', 'yes'],
+  ['learning.decision_journal', 'learning_outcome', 'pedagogical_lead', 'yes'],
+  ['engagement.session_efficiency', 'engagement_health', 'pedagogical_lead', 'yes'],
+  ['engagement.mentor_resolution', 'engagement_health', 'pedagogical_lead', 'yes'],
   ['engagement.streak_anxiety', 'engagement_health', 'safety_trust_lead', 'not_instrumented'],
-  ['engagement.rest_day_use', 'engagement_health', 'pedagogical_lead', 'not_instrumented'],
+  ['engagement.rest_day_use', 'engagement_health', 'pedagogical_lead', 'yes'],
   ['engagement.dark_pattern_audit', 'engagement_health', 'safety_trust_lead', 'not_instrumented'],
   ['engagement.variable_ratio_audit', 'engagement_health', 'safety_trust_lead', 'not_instrumented'],
   ['engagement.reward_framing', 'engagement_health', 'pedagogical_lead', 'not_instrumented'],
-  ['engagement.autonomy_adoption', 'engagement_health', 'pedagogical_lead', 'not_instrumented'],
+  ['engagement.autonomy_adoption', 'engagement_health', 'pedagogical_lead', 'yes'],
   ['engagement.parent_time_to_value', 'engagement_health', 'pedagogical_lead', 'not_instrumented'],
 ];
 
@@ -87,6 +87,13 @@ const READINGS: Record<string, [SignalStatus, number | null, number]> = {
   'learning.delayed_retention': ['diagnostic', 0.74, 640],
   'learning.practice_success_band': ['ok', 0.78, 4410],
   'learning.time_to_mastery': ['diagnostic', 5, 212],
+  'learning.judgment_quality': ['ok', 0.18, 530],
+  'learning.bridge_conversion': ['diagnostic', 0.21, 88],
+  'learning.decision_journal': ['diagnostic', 0.46, 140],
+  'engagement.session_efficiency': ['diagnostic', 0.57, 610],
+  'engagement.mentor_resolution': ['breach', 6, 240],
+  'engagement.rest_day_use': ['diagnostic', 0.34, 52],
+  'engagement.autonomy_adoption': ['insufficient_data', null, 0],
 };
 
 export function previewMentorQuality(options: { fresh?: string | null; viewer?: string | null; empty?: boolean } = {}): MentorQualityDashboardData {

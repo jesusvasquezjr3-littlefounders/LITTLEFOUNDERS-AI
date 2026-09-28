@@ -54,6 +54,16 @@ export function fixtureAnswer(path: string, state: FixtureState): StaffResult<un
   if (route === '/admin/insights/registrations') return ok(empty ? { entries: [] } : fixtures.registrations);
   if (route === '/admin/roles') return ok(empty ? { holders: [], summary: { totalHolders: 0, totalRoleAssignments: 0, totalPermissionAssignments: 0, roleCounts: {}, permissionCounts: {}, lastChangedAt: null } } : fixtures.roles);
   if (route === '/admin/roles/candidates') return ok({ candidates: empty ? [] : fixtures.candidates });
+  if (route === '/admin/roles/reviews') {
+    // G.4: the review log's view of the fixture holders (admin/superadmin roles and staff permissions only).
+    const grants = empty ? [] : fixtures.roles.holders.flatMap((holder) => [
+      ...holder.roleAssignments.filter((a) => a.role === 'admin' || a.role === 'superadmin').map((a) => ({ kind: 'role' as const, grant: a.role, grantedAt: a.grantedAt })),
+      ...holder.permissionAssignments.map((a) => ({ kind: 'permission' as const, grant: a.permission, grantedAt: a.grantedAt })),
+    ].map((g) => ({ userId: holder.userId, displayName: holder.displayName, username: holder.username, lastReviewedAt: null,
+      due: Date.parse(g.grantedAt ?? '') < Date.parse('2026-06-29T00:00:00Z'), ...g, grantedAt: g.grantedAt ?? '2026-01-01T00:00:00Z' })));
+    const stale = grants.filter((g) => g.due).length;
+    return ok({ cadenceDays: 90, grants, metrics: { total: grants.length, stale, reviewedEver: 0, compliance: grants.length ? (grants.length - stale) / grants.length : null, staleRate: grants.length ? stale / grants.length : null } });
+  }
   if (route === '/admin/audit') {
     const entries = empty ? [] : fixtures.audit;
     return ok({ entries, total: empty ? 0 : 5311, limit: 50, offset: Number(query.get('offset') ?? 0) });

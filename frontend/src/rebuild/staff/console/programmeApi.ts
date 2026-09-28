@@ -264,6 +264,46 @@ export const RETENTION_SWEEP_PATH = '/admin/tutor/retention-status';
 export const isRetentionSweep = (value: unknown): value is RetentionSweep => isRecord(value) && typeof value.stale === 'boolean'
   && (value.lastRunAt === null || typeof value.lastRunAt === 'string') && (value.hoursSinceLastRun === null || isNumber(value.hoursSinceLastRun));
 
+/* ---- H.4 operations watchdog (manage_support) --------------------------------- */
+
+export const OPS_JOBS_PATH = '/admin/ops/job-status';
+export const OPS_JOB_NAMES = ['vault_backup', 'pulse_backup', 'vault_drift'] as const;
+export type OpsJobName = (typeof OPS_JOB_NAMES)[number];
+export interface OpsJob {
+  job: OpsJobName; lastRunAt: string | null; hoursSinceLastRun: number | null; lastAttemptAt: string | null;
+  lastAttemptOk: boolean | null; staleAfterHours: number; stale: boolean;
+}
+const isNullableTime = (value: unknown): value is string | null => value === null || typeof value === 'string';
+const isOpsJob = (value: unknown): value is OpsJob => isRecord(value) && (OPS_JOB_NAMES as readonly unknown[]).includes(value.job)
+  && isNullableTime(value.lastRunAt) && (value.hoursSinceLastRun === null || isNumber(value.hoursSinceLastRun)) && isNullableTime(value.lastAttemptAt)
+  && (value.lastAttemptOk === null || typeof value.lastAttemptOk === 'boolean') && isNumber(value.staleAfterHours) && typeof value.stale === 'boolean';
+/** A reply without every watched job, or without its `stale` boolean, is an error state, never "healthy". */
+export const isOpsJobs = (value: unknown): value is { jobs: OpsJob[]; anyStale: boolean } => isRecord(value) && Array.isArray(value.jobs)
+  && value.jobs.every(isOpsJob) && OPS_JOB_NAMES.every((name) => (value.jobs as OpsJob[]).some((job) => job.job === name)) && typeof value.anyStale === 'boolean';
+
+/* ---- Appendix M Part 1: identity metrics (view_analytics) ----------------------- */
+
+export const identityPath = (days: number) => `/admin/analytics/identity?days=${days}`;
+export type IdentityKind = 'release_gate' | 'diagnostic';
+export type IdentityStatus = 'met' | 'missed' | 'no_data' | 'diagnostic';
+export interface IdentityMetric {
+  id: string; part: string; requirement: string; kind: IdentityKind; target: number | null;
+  numerator: number; denominator: number; value: number | null; status: IdentityStatus;
+}
+export interface IdentityReport {
+  window: { from: string; to: string; days: number };
+  metrics: IdentityMetric[];
+  adversarial: { id: string; requirement: string; suite: string }[];
+  releaseGate: { total: number; met: number; missed: number; noData: number };
+}
+const isIdentityMetric = (value: unknown): value is IdentityMetric => isRecord(value) && typeof value.id === 'string'
+  && (value.kind === 'release_gate' || value.kind === 'diagnostic') && ['met', 'missed', 'no_data', 'diagnostic'].includes(value.status as string)
+  && isNumber(value.numerator) && isNumber(value.denominator) && (value.value === null || isNumber(value.value));
+export const isIdentityReport = (value: unknown): value is IdentityReport => isRecord(value) && isRecord(value.window)
+  && Array.isArray(value.metrics) && value.metrics.every(isIdentityMetric) && Array.isArray(value.adversarial)
+  && value.adversarial.every((entry) => isRecord(entry) && typeof entry.id === 'string')
+  && isRecord(value.releaseGate) && isNumber(value.releaseGate.total) && isNumber(value.releaseGate.met) && isNumber(value.releaseGate.missed);
+
 /* ---- C.24 named owners (manage_users) ---------------------------------------- */
 
 export const OWNERS_PATH = '/admin/mentor-quality/owners';

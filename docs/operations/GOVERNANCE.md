@@ -21,6 +21,17 @@ decision log — never by default.
    guardian links; staff consoles do not surface balances.
 3. **No user-impersonation or "login as" capability.** None exists, and none
    may be added without an explicit reviewed exception.
+
+Constraints 1-3 are enforced every release (Appendix N 1.3) by
+`agent/tools/check-staff-standing-constraints.mjs`, in `npm run spec:check`
+and the repo-gates workflow: it follows every symbol the staff router uses,
+function by function, and fails on a reachable read of `tutor_turns`, a
+transcript or turns endpoint, or a per-account wallet/banking table; on any
+route, request field or identifier named impersonate, act-as, login-as or
+sudo; and on minting a session or token for another account. An exception
+needs an allowlist entry citing its owner decision (OD-n). At runtime,
+`backend/src/__tests__/staffStandingConstraints.test.ts` calls every staff
+GET route and asserts none of them reads or returns those fields.
 4. **The kid-role analytics consent gate is the reference implementation for
    every future consent-gated feature** (H.6): transmission is blocked at the
    source (the beacon does not even transmit before the server confirms
@@ -33,13 +44,22 @@ decision log — never by default.
 
 - **Quarterly access review.** Every calendar quarter, the staff/access owner
   reviews Admin/Superadmin role holders and staff permission grants against
-  actual usage. The Roles & Access console surfaces the review state: grants
-  older than 90 days are listed in a "review due" card, so the re-justification
-  is a visible standing task.
+  actual usage. Each completed review is a row in the access-review log
+  (`staff_access_reviews`, written with its `admin.access.reviewed` audit row
+  in one transaction by `POST /admin/roles/review`). The Roles & Access card
+  lists every admin/superadmin role and staff permission whose later of grant
+  and last kept review is older than 90 days (family roles are never listed),
+  each with "Keep access", and shows the Appendix N numbers from the log:
+  Access-Review Cadence Compliance (target 100%) and the stale-grant count.
 - **Grant discipline.** A parent-role staff grant requires a mandatory audited
-  justification (A.5). Verification revocation carries a mandatory audited
-  reason (A.5). Every staff moderation decision on live AI-Mentor activities
-  is recorded in the central audit log (G.3).
+  justification (A.5), committed with the role in one transaction
+  (`grant_parent_role_with_justification`); the database refuses a parent role
+  written through the API with neither an ID check nor a justification.
+  Verification revocation carries a mandatory audited reason, committed with
+  the revoked row (`revoke_parent_verification`). Every staff moderation
+  decision on live AI-Mentor activities, and every curated-pack status
+  decision, writes its central audit row inside the decision's own
+  transaction (G.3).
 - **Discoverability.** Every staff-facing screen is either in active,
   documented use or removed (G.5). The Insights screen is in the staff
   navigation under the `view_analytics` grant.
@@ -74,15 +94,26 @@ to retain because an active guardian consent admitted them at the source.
   job is now impossible; the direct synchronous export surface is the only
   one). The `task_view` and `tutor_open` events, previously catalogued with
   no emitter, now emit from the tasks boards and the Mentor experience.
-- **Watchdog coverage (H.4).** The AI Mentor retention sweep already has a
-  watchdog plus a staff-console status. The same pattern is REQUIRED for:
-  - the daily database backup job (silent failure = undiscovered loss of
-    every family's data), and
-  - the schema drift probe (silent failure = an unreviewed production schema
-    change goes unnoticed).
-  Both are Railway-scheduled jobs; each must gain a status endpoint
-  pollable by the same external check the retention sweep uses, before the
-  next release cycle. This is an open operations task owned by the ops owner.
+- **Watchdog coverage (H.4).** The AI Mentor retention sweep has a watchdog
+  plus a staff-console status, and the same pattern now covers the daily Vault
+  backup, the daily Pulse backup and the schema drift probe:
+  - each job ends with `scripts/ops-heartbeat.sh`, which records
+    `ops.<job>.completed` (with `ok`) through Core's internal
+    `POST /api/v1/internal/ops/heartbeat`; a heartbeat Core does not confirm
+    fails the job;
+  - `GET /admin/ops/job-status` (manage_support) and the Reports, Support
+    view show each job's last successful run and `stale`, beside the
+    retention sweep; the window (36 hours for each daily job) has one home,
+    `OPS_JOB_STALE_HOURS` in `backend/src/services/opsJobs.ts`;
+  - `.github/workflows/ops-job-watch.yml` (daily, 10:00 UTC) reads the
+    status from inside the container, fails when a job is stale or the reply
+    is unreadable, and opens or comments on the `ops-watchdog` GitHub issue,
+    so a human is notified;
+  - the simulated-failure drill (`npm --prefix backend run ops:drill`, also a
+    unit test) proves, for each job, that a stale heartbeat produces
+    `stale: true` and the notice.
+  Remaining for the ops owner: the first scheduled runs in production and a
+  drill run against the deployed Core.
 
 ## 5. Incident response and backups (H.5)
 

@@ -9,10 +9,16 @@ describe('rebuild-staff copy budget', () => {
       expectBudgetedGroups(strings, ['staffConsole', 'staffLiveContent', 'staffMentorQuality']);
       // W2T.1: the rebuilt staff console. Keys are <screen>.<role>.<key>, so the role is read from the path;
       // placeholders are filled with the longest real value (the longest role, permission and date shape).
-      const consoleCopy = strings.staffConsole as { roleNames: { option: Record<string, string> }; generation: { option: Record<string, string> } };
+      const consoleCopy = strings.staffConsole as {
+        roleNames: { option: Record<string, string> }; generation: { option: Record<string, string> };
+        permissions: { option: Record<string, string> }; support: { option: Record<string, string> };
+      };
       const longest = (values: string[]) => values.reduce((a, b) => (b.length > a.length ? b : a));
       const longestRole = longest(Object.values(consoleCopy.roleNames.option));
       // W2T.2: a judge dimension is the longest rubric label; money and shares take their longest real shape.
+      // F1-staff-ops: a reviewed grant is the longest role or staff-access name; a job the longest job name.
+      const longestGrant = longest([...Object.values(consoleCopy.roleNames.option), ...Object.values(consoleCopy.permissions.option)]);
+      const longestJob = longest(Object.entries(consoleCopy.support.option).filter(([key]) => key.startsWith('job_')).map(([, value]) => value));
       const longestDimension = longest(Object.entries(consoleCopy.generation.option).filter(([key]) => key.startsWith('dim_')).map(([, value]) => value));
       for (const [path, text] of flatten(strings.staffConsole!)) {
         const role = path.split('.')[1];
@@ -26,7 +32,8 @@ describe('rebuild-staff copy budget', () => {
           // a filter is a dimension and its value; a metric is the longest metric label; counts take their longest real shape.
           .replace(/\{(?:country|place)\}/g, 'United States').replace(/\{places\}/g, 'Kosovo, Western Sahara')
           .replace(/\{filter\}/g, 'Country: Mexico').replace(/\{metric\}/g, 'daily users')
-          .replace(/\{(?:converted|events|sessions|accounts|learners|peak|latest)\}/g, '12,345').replace(/\{change\}/g, '+1,234');
+          .replace(/\{(?:converted|events|sessions|accounts|learners|peak|latest)\}/g, '12,345').replace(/\{change\}/g, '+1,234')
+          .replace(/\{grant\}/g, longestGrant).replace(/\{job\}/g, longestJob).replace(/\{(?:met|num|den)\}/g, '12,345');
         expect(filled, `staffConsole.${path} has an unfilled placeholder`).not.toMatch(/\{\w+\}/);
         expectFits(filled, role as 'action' | 'heading' | 'body' | 'option', locale, 'adult', `staffConsole.${path}`);
       }

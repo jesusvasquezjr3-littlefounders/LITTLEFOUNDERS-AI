@@ -161,6 +161,26 @@
       "origin": "human",
       "pedagogicalReviewer": "pending",
       "safetyTrustLead": "pending"
+    },
+    {
+      "component": "measurement.stage7_and_thresholds",
+      "hash": "b7123dee49bde4aed1e246c3674c674e1d2a36d7134d9c98bc8d0bb78ed563f3",
+      "files": 9,
+      "date": "2026-09-28",
+      "change": "Gap-fix F1-staff-ops (C.24, Appendix C 1.1-1.2): the consolidated dashboard reads the seven Block B signals the Learning Quality tab already computes (learning_judgment_differentiation, learning_narrative_metrics, learning_session_efficiency, mentor_resolution_efficiency, learning_rest_day_utilization, learning_autonomy_adoption); judgment quality is a floor at the existing JUDGMENT_DIVERGENCE_FLOOR, the two B.28 metrics use the existing classifyTrend rule, the rest are diagnostic. No existing threshold, rubric criterion or Stage 7 rollback changes",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "live_content.judge_and_packs",
+      "hash": "a8b4a1596d5aa80a51bb8890e4b990fea8b5e17fd12b16ab35df8a7ca71d88d3",
+      "files": 5,
+      "date": "2026-09-28",
+      "change": "Gap-fix F1-staff-ops (G.3, Appendix N 1.2): a curated-pack status decision and its admin.tutor_pack.status audit row now commit in one database transaction (set_tutor_pack_status); the contract validation, the content-hash check and the human release gate are unchanged",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
     }
   ]
 }

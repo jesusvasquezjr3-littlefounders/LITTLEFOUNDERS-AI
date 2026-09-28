@@ -46,6 +46,8 @@ import { summarizeLadder, type LadderEventRow } from './liveContentGovernance.js
 import { summarizeDefaultToInaction, TELEMETRY_THRESHOLDS, type TelemetrySessionRow } from './behavioralTelemetry.js';
 import { summarizeTriggerRate, type ClosedSessionRow, type SignalEventRow } from './sessionEnd.js';
 import { judgeTrust, type CalibrationRecordRow } from './judgeCalibration.js';
+import { classifyTrend, TREND_MIN_WEEKLY_SAMPLE, TREND_TOLERANCE, TREND_WINDOW_WEEKS, type TrendStatus } from '../engagementHealth.js';
+import { JUDGMENT_DIVERGENCE_FLOOR, JUDGMENT_MIN_ATTEMPTS } from '../learningQuality.js';
 
 export const OWNER_ROLES = ['pedagogical_lead', 'safety_trust_lead', 'engineering_lead'] as const;
 export type OwnerRole = (typeof OWNER_ROLES)[number];
@@ -79,7 +81,8 @@ export type FlagStatus = (typeof FLAG_STATUSES)[number];
 
 export type SignalStatus = 'ok' | 'breach' | 'insufficient_data' | 'diagnostic' | 'unavailable' | 'not_instrumented' | 'external';
 
-export type ThresholdKind = CriterionKind | 'relative_drop' | 'band' | 'none';
+/** 'trend': Appendix C's "hold steady or improve" metrics, judged by classifyTrend (engagementHealth.ts). */
+export type ThresholdKind = CriterionKind | 'relative_drop' | 'band' | 'trend' | 'none';
 
 export interface SignalDefinition {
   id: string;
@@ -212,18 +215,19 @@ export const SIGNALS: readonly SignalDefinition[] = [
   { id: 'learning.practice_success_band', category: 'learning_outcome', requirement: 'B.19', owner: 'pedagogical_lead', threshold: { kind: 'band', value: T.practiceBand.low, upper: T.practiceBand.high }, minSample: T.practiceMinAttempts, source: 'kc_attempt (Mentor practice)', instrumented: 'yes' },
   { id: 'learning.time_to_mastery', category: 'learning_outcome', requirement: 'B.19', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'kc_attempt (attempts to the mastery posterior)', instrumented: 'yes' },
   notInstrumented('learning.transfer_success', 'learning_outcome', 'B.7', 'pedagogical_lead', 'B.7/B.12 practice-vs-transfer tagging'),
-  notInstrumented('learning.judgment_quality', 'learning_outcome', 'B.12', 'pedagogical_lead', 'B.12 judgment-quality signal'),
-  notInstrumented('learning.bridge_conversion', 'learning_outcome', 'B.13', 'pedagogical_lead', 'B.13 Family Hub bridge events'),
-  notInstrumented('learning.decision_journal', 'learning_outcome', 'B.9', 'pedagogical_lead', 'B.9 narrative-state event log'),
+  // Appendix C: "the two signals should meaningfully diverge" — a floor on the divergent share (learningQuality.ts).
+  { id: 'learning.judgment_quality', category: 'learning_outcome', requirement: 'B.12', owner: 'pedagogical_lead', threshold: { kind: 'floor', value: JUDGMENT_DIVERGENCE_FLOOR }, minSample: JUDGMENT_MIN_ATTEMPTS, source: 'learning_judgment_differentiation (0129)', instrumented: 'yes' },
+  { id: 'learning.bridge_conversion', category: 'learning_outcome', requirement: 'B.13', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'learning_narrative_metrics (0127): prompts converted within 7 days', instrumented: 'yes' },
+  { id: 'learning.decision_journal', category: 'learning_outcome', requirement: 'B.9', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'learning_narrative_metrics (0127): entries recorded and resurfaced', instrumented: 'yes' },
   // ── Appendix C §1.2 engagement health ──
-  notInstrumented('engagement.session_efficiency', 'engagement_health', 'B.28', 'pedagogical_lead', 'client instrumentation of graded vs total time'),
-  notInstrumented('engagement.mentor_resolution', 'engagement_health', 'B.28', 'pedagogical_lead', 'B.28 Mentor resolution events'),
+  { id: 'engagement.session_efficiency', category: 'engagement_health', requirement: 'B.28', owner: 'pedagogical_lead', threshold: { kind: 'trend', value: TREND_TOLERANCE }, minSample: TREND_MIN_WEEKLY_SAMPLE, source: 'learning_session_efficiency (0136), weekly; higher is better', instrumented: 'yes' },
+  { id: 'engagement.mentor_resolution', category: 'engagement_health', requirement: 'B.28', owner: 'pedagogical_lead', threshold: { kind: 'trend', value: TREND_TOLERANCE }, minSample: TREND_MIN_WEEKLY_SAMPLE, source: 'mentor_resolution_efficiency (0136), weekly median turns; lower is better', instrumented: 'yes' },
   notInstrumented('engagement.streak_anxiety', 'engagement_health', 'B.21', 'safety_trust_lead', 'B.21 notification and session-restart logs'),
-  notInstrumented('engagement.rest_day_use', 'engagement_health', 'B.21', 'pedagogical_lead', 'B.21 rest-day event log'),
+  { id: 'engagement.rest_day_use', category: 'engagement_health', requirement: 'B.21', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'learning_rest_day_utilization (0134)', instrumented: 'yes' },
   notInstrumented('engagement.dark_pattern_audit', 'engagement_health', 'B.25', 'safety_trust_lead', 'B.25 per-release manual audit'),
   notInstrumented('engagement.variable_ratio_audit', 'engagement_health', 'B.22', 'safety_trust_lead', 'B.22 per-release manual audit'),
   notInstrumented('engagement.reward_framing', 'engagement_health', 'B.20', 'pedagogical_lead', 'B.20 reward-moment copy audit'),
-  notInstrumented('engagement.autonomy_adoption', 'engagement_health', 'B.24', 'pedagogical_lead', 'B.24 choice-event log'),
+  { id: 'engagement.autonomy_adoption', category: 'engagement_health', requirement: 'B.24', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'learning_autonomy_adoption (0134), per lever', instrumented: 'yes' },
   notInstrumented('engagement.parent_time_to_value', 'engagement_health', 'B.10', 'pedagogical_lead', 'B.10 client timing'),
 ] as const;
 
@@ -298,6 +302,23 @@ export interface QualitySources {
   completeness: { active: number; current: number } | null;
   kcAttempts: KcAttemptRow[] | null;
   retention: { bucket: string; n: number; avg_first_attempt_score: number }[] | null;
+  /**
+   * Appendix C 1.1 / 1.2 sources the Learning Quality tab already reads
+   * (learningQuality.ts, engagementHealth.ts); each is null when its read failed.
+   */
+  learning: LearningSignalSources;
+}
+
+export interface LearningSignalSources {
+  judgment: { lesson_id: string; attempts: number; correct_not_sound: number; incorrect_sound: number }[] | null;
+  narrative: {
+    journal_entries_recorded: number; journal_entries_resurfaced: number;
+    bridge_prompts_offered: number; bridge_prompts_converted_7d: number; bridge_self_commitments: number;
+  } | null;
+  sessionEfficiency: { week_start: string; learners: number; efficiency_ratio: number | null }[] | null;
+  mentorResolution: { week_start: string; intent: string; resolved_sessions: number; median_turns: number | null }[] | null;
+  restDays: { learners_with_lapse: number; kept_by_rest_days: number; utilization_rate: number | null; rest_days_used: number } | null;
+  autonomy: { lever: string; offered: number; exercised: number; adoption_rate: number | null }[] | null;
 }
 
 // ── What the loop stores ────────────────────────────────────────────────────
@@ -661,6 +682,15 @@ function evaluateOne(
     case 'learning.practice_success_band':
     case 'learning.time_to_mastery':
       return practiceReading(def, src, anomalies, unavailable);
+    case 'learning.judgment_quality':
+    case 'learning.bridge_conversion':
+    case 'learning.decision_journal':
+    case 'engagement.rest_day_use':
+    case 'engagement.autonomy_adoption':
+      return learningReading(def, src.learning, anomalies, unavailable);
+    case 'engagement.session_efficiency':
+    case 'engagement.mentor_resolution':
+      return trendReading(def, src.learning, anomalies, unavailable);
     default:
       return reading(def.id, { status: 'not_instrumented' });
   }
@@ -766,6 +796,97 @@ function practiceReading(def: SignalDefinition, src: QualitySources, anomalies: 
   counts.sort((a, b) => a - b);
   const median = counts.length === 0 ? null : counts.length % 2 === 1 ? counts[(counts.length - 1) / 2]! : (counts[counts.length / 2 - 1]! + counts[counts.length / 2]!) / 2;
   return reading(def.id, { status: counts.length === 0 ? 'insufficient_data' : 'diagnostic', value: median, sample: counts.length, detail: { pairs: pairs.size }, sourceLatestAt });
+}
+
+// ── Appendix C 1.1 / 1.2 signals the Learning Quality tab already computes ─
+
+function learningReading(def: SignalDefinition, l: LearningSignalSources, anomalies: Anomaly[], unavailable: (d: SignalDefinition) => SignalReading): SignalReading {
+  const rate = (num: number, den: number) => (den === 0 ? null : num / den);
+  switch (def.id) {
+    case 'learning.judgment_quality': {
+      if (l.judgment === null) return unavailable(def);
+      const attempts = l.judgment.reduce((s, r) => s + r.attempts, 0);
+      const divergent = l.judgment.reduce((s, r) => s + r.correct_not_sound + r.incorrect_sound, 0);
+      const value = rate(divergent, attempts);
+      const status: SignalStatus = value === null || attempts < def.minSample ? 'insufficient_data' : value < JUDGMENT_DIVERGENCE_FLOOR ? 'breach' : 'ok';
+      if (status === 'breach') anomalies.push(anomalyFor(def, 'threshold_breach', 'all', value, JUDGMENT_DIVERGENCE_FLOOR, { attempts }));
+      const breakdown: Breakdown[] = l.judgment
+        .filter((r) => r.attempts >= JUDGMENT_MIN_ATTEMPTS)
+        .map((r) => {
+          const v = (r.correct_not_sound + r.incorrect_sound) / r.attempts;
+          return { key: `lesson:${r.lesson_id}`, value: v, sample: r.attempts, status: v < JUDGMENT_DIVERGENCE_FLOOR ? 'breach' as const : 'ok' as const };
+        })
+        .sort((a, b) => (a.value ?? 0) - (b.value ?? 0))
+        .slice(0, 20);
+      return reading(def.id, { status, value, sample: attempts, breakdown, detail: { lessons: l.judgment.length, divergent } });
+    }
+    case 'learning.bridge_conversion': {
+      if (l.narrative === null) return unavailable(def);
+      const n = l.narrative;
+      const value = rate(n.bridge_prompts_converted_7d, n.bridge_prompts_offered);
+      return reading(def.id, {
+        status: value === null ? 'insufficient_data' : 'diagnostic', value, sample: n.bridge_prompts_offered,
+        detail: { converted: n.bridge_prompts_converted_7d, selfCommitments: n.bridge_self_commitments },
+      });
+    }
+    case 'learning.decision_journal': {
+      if (l.narrative === null) return unavailable(def);
+      const n = l.narrative;
+      const value = rate(n.journal_entries_resurfaced, n.journal_entries_recorded);
+      return reading(def.id, {
+        status: value === null ? 'insufficient_data' : 'diagnostic', value, sample: n.journal_entries_recorded,
+        detail: { recorded: n.journal_entries_recorded, resurfaced: n.journal_entries_resurfaced },
+      });
+    }
+    case 'engagement.rest_day_use': {
+      if (l.restDays === null) return unavailable(def);
+      const r = l.restDays;
+      return reading(def.id, {
+        status: r.utilization_rate === null ? 'insufficient_data' : 'diagnostic', value: r.utilization_rate, sample: r.learners_with_lapse,
+        detail: { keptByRestDays: r.kept_by_rest_days, restDaysUsed: r.rest_days_used },
+      });
+    }
+    default: {
+      if (l.autonomy === null) return unavailable(def);
+      const offered = l.autonomy.reduce((s, r) => s + r.offered, 0);
+      const exercised = l.autonomy.reduce((s, r) => s + r.exercised, 0);
+      const value = rate(exercised, offered);
+      return reading(def.id, {
+        status: value === null ? 'insufficient_data' : 'diagnostic', value, sample: offered,
+        breakdown: l.autonomy.map((r) => ({ key: `lever:${r.lever}`, value: r.adoption_rate, sample: r.offered, status: 'diagnostic' as const })),
+        detail: { exercised },
+      });
+    }
+  }
+}
+
+/**
+ * Appendix C 1.2's two B.28 metrics: "hold steady or improve". The weekly
+ * series is judged by classifyTrend (the Learning Quality tab's own rule);
+ * a regression in the bad direction is a breach for the named owner.
+ */
+function trendReading(def: SignalDefinition, l: LearningSignalSources, anomalies: Anomaly[], unavailable: (d: SignalDefinition) => SignalReading): SignalReading {
+  const efficiency = def.id === 'engagement.session_efficiency';
+  const points = efficiency
+    ? l.sessionEfficiency?.map((r) => ({ week_start: r.week_start, value: r.efficiency_ratio, sample: r.learners })) ?? null
+    : l.mentorResolution?.filter((r) => r.intent === 'all').map((r) => ({ week_start: r.week_start, value: r.median_turns, sample: r.resolved_sessions })) ?? null;
+  if (points === null) return unavailable(def);
+  const trend: TrendStatus = classifyTrend(points, efficiency ? 'higher-is-better' : 'lower-is-better');
+  const usable = points.filter((p) => p.value !== null && p.sample >= TREND_MIN_WEEKLY_SAMPLE).sort((a, b) => a.week_start.localeCompare(b.week_start));
+  const recent = usable.slice(-TREND_WINDOW_WEEKS);
+  const value = recent.length === 0 ? null : recent[recent.length - 1]!.value;
+  const status: SignalStatus = trend === 'insufficient_data' ? 'insufficient_data' : trend === 'regression' ? 'breach' : 'diagnostic';
+  if (trend === 'regression') {
+    anomalies.push(anomalyFor(def, efficiency ? 'relative_drop' : 'upward_drift', 'all', value, TREND_TOLERANCE, { weeks: usable.length }));
+  }
+  return reading(def.id, {
+    status,
+    value,
+    sample: recent.reduce((s, p) => s + p.sample, 0),
+    breakdown: usable.slice(-TREND_WINDOW_WEEKS * 2).map((p) => ({ key: `week:${p.week_start}`, value: p.value, sample: p.sample, status: 'diagnostic' as const })),
+    detail: { trend, weeks: usable.length },
+    sourceLatestAt: usable.length === 0 ? null : usable[usable.length - 1]!.week_start,
+  });
 }
 
 /** Every Stage 7 rollback whose latest event is a trigger (still in force). */
