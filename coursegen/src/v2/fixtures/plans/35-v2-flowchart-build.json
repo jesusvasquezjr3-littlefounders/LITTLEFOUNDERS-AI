@@ -77,7 +77,7 @@
           ],
           "outcomes": [
             {
-              "label": "Buy now"
+              "label": "Buy it"
             },
             {
               "label": "Save first"
@@ -104,7 +104,7 @@
           ],
           "outcomes": [
             {
-              "label": "Compra ya"
+              "label": "Cómpralo"
             },
             {
               "label": "Ahorra primero"
@@ -131,7 +131,7 @@
           ],
           "outcomes": [
             {
-              "label": "Compre já"
+              "label": "Compre"
             },
             {
               "label": "Guarde antes"

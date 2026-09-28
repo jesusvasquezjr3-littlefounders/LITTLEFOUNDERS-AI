@@ -82,7 +82,7 @@ describe('the v2 red team (Appendix C DoD "Gated")', () => {
 
   it('has one sample per content gate that applies to v2', () => {
     const gates = samples.map((file) => (JSON.parse(readFileSync(path.join(RED_TEAM, file), 'utf8')) as { expected_gate: number }).expected_gate);
-    expect(gates.sort((a, b) => a - b)).toEqual([12, 13, 14, 15, 16]);
+    expect(gates.sort((a, b) => a - b)).toEqual([2, 3, 4, 12, 13, 14, 15, 16, 18, 18]);
   });
 
   it.each(samples)('%s blocks on exactly its own gate and emits nothing', (file) => {
@@ -101,7 +101,7 @@ describe('the v2 red team (Appendix C DoD "Gated")', () => {
     expect(run.documents).toEqual([]);
     expect(run.results).toHaveLength(samples.length);
     const blockedGates = run.results.map((result) => [...new Set(result.problems.map((problem) => problem.gate))]);
-    expect(blockedGates.flat().sort((a, b) => a - b)).toEqual([12, 13, 14, 15, 16]);
+    expect(blockedGates.flat().sort((a, b) => a - b)).toEqual([2, 3, 4, 12, 13, 14, 15, 16, 18, 18]);
     expect(blockedGates.every((gates) => gates.length === 1)).toBe(true);
   });
 });

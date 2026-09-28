@@ -28,10 +28,18 @@ import type { V2LessonPlan } from './plan.js';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '../../..');
 
-/** The Forge gates a v2 document runs (the manifest ids 0209 requires): gate 1 (contract, by Core) and gates 11-16, plus the v2 content gate. */
+/**
+ * The Forge gates a v2 document runs (the manifest ids Vault requires, rows of
+ * public.forge_v2_manifest_gates): gate 1 (contract, by Core), gates 11-16,
+ * the v2 content gate and (GAP-FIX-R2, Appendix C Stage 2) the carried-over
+ * age-vocabulary (2), currency-fact (3), arithmetic (4), reward-mechanic (17)
+ * and wellbeing-language (18) gates. check-forge-release-gate-parity keeps
+ * this list equal to the migration rows.
+ */
 export const V2_MANIFEST_GATES = RELEASE_CHECK_IDS
-  .filter((id) => ['forge.gate.01.contract', 'forge.gate.11.redundancy', 'forge.gate.12.tone', 'forge.gate.13.copy-budget',
-    'forge.gate.14.concept-cap', 'forge.gate.15.mentor-misjudgment', 'forge.gate.16.regional-adaptation', 'forge.release.v2-content'].includes(id));
+  .filter((id) => ['forge.gate.01.contract', 'forge.gate.02.age-vocabulary', 'forge.gate.03.currency-facts', 'forge.gate.04.arithmetic',
+    'forge.gate.11.redundancy', 'forge.gate.12.tone', 'forge.gate.13.copy-budget', 'forge.gate.14.concept-cap', 'forge.gate.15.mentor-misjudgment',
+    'forge.gate.16.regional-adaptation', 'forge.gate.17.reward-mechanics', 'forge.gate.18.wellbeing-language', 'forge.release.v2-content'].includes(id));
 
 export interface V2PublishCall { lessonId: string; locale: string; versionId: string; body: Record<string, unknown> }
 

@@ -28,6 +28,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 export const GATES = 'coursegen/src/pipeline/gates.ts';
 export const MANIFEST = 'coursegen/src/release/gateManifest.ts';
 export const MIGRATIONS = 'database/migrations';
+export const V2_RELEASE = 'coursegen/src/v2/release.ts';
 
 /** Gate numbers of the `GateNumber` union in gates.ts. */
 export function gateNumbers(source) {
@@ -104,6 +105,42 @@ export function checkReleaseGateParity({ gatesSource, manifestSource, migrations
   return problems;
 }
 
+/**
+ * GAP-FIX-R2 learning (Appendix C Stage 2; G.2): the gates a v2 publication
+ * manifest attests (Forge's V2_MANIFEST_GATES) and the gates Vault's
+ * publish_v2_lesson_version requires (rows of public.forge_v2_manifest_gates)
+ * must be the same list, or a v2 lesson publishes around a gate (or never).
+ */
+export function v2ManifestGates(source) {
+  const start = source.indexOf('export const V2_MANIFEST_GATES');
+  const end = start === -1 ? -1 : source.indexOf('.includes(id))', start);
+  if (start === -1 || end === -1) return null;
+  return [...source.slice(start, end).matchAll(/'(forge\.[^']+)'/g)].map((m) => m[1]).sort();
+}
+
+export function databaseV2ManifestGates(migrations) {
+  const rows = new Set();
+  for (const { sql } of migrations) {
+    for (const block of sql.matchAll(/insert\s+into\s+public\.forge_v2_manifest_gates\s*\([^)]*\)\s*values([\s\S]*?)(?:on\s+conflict|;)/gi)) {
+      for (const row of block[1].matchAll(/'(forge\.[^']+)'/g)) rows.add(row[1]);
+    }
+    for (const removed of sql.matchAll(/delete\s+from\s+public\.forge_v2_manifest_gates\s+where\s+gate_id\s*(?:=|in)\s*\(?([^;]+)/gi)) {
+      for (const id of removed[1].matchAll(/'(forge\.[^']+)'/g)) rows.delete(id[1]);
+    }
+  }
+  return [...rows].sort();
+}
+
+export function checkV2ManifestParity({ releaseSource, migrations }) {
+  const forge = v2ManifestGates(releaseSource);
+  if (!forge) return [`${V2_RELEASE}: V2_MANIFEST_GATES not found`];
+  const db = databaseV2ManifestGates(migrations);
+  const problems = [];
+  for (const id of forge) if (!db.includes(id)) problems.push(`${id} is attested by Forge's v2 manifest but not required by public.forge_v2_manifest_gates: a v2 publication could skip it`);
+  for (const id of db) if (!forge.includes(id)) problems.push(`${id} is required for a v2 publication but Forge's v2 manifest never attests it: every v2 publication would be refused`);
+  return problems;
+}
+
 function loadMigrations(dir) {
   return readdirSync(dir)
     .filter((f) => f.endsWith('.sql'))
@@ -113,11 +150,15 @@ function loadMigrations(dir) {
 
 const invokedDirectly = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (invokedDirectly) {
-  const problems = checkReleaseGateParity({
-    gatesSource: readFileSync(path.join(ROOT, GATES), 'utf8'),
-    manifestSource: readFileSync(path.join(ROOT, MANIFEST), 'utf8'),
-    migrations: loadMigrations(path.join(ROOT, MIGRATIONS)),
-  });
+  const migrations = loadMigrations(path.join(ROOT, MIGRATIONS));
+  const problems = [
+    ...checkReleaseGateParity({
+      gatesSource: readFileSync(path.join(ROOT, GATES), 'utf8'),
+      manifestSource: readFileSync(path.join(ROOT, MANIFEST), 'utf8'),
+      migrations,
+    }),
+    ...checkV2ManifestParity({ releaseSource: readFileSync(path.join(ROOT, V2_RELEASE), 'utf8'), migrations }),
+  ];
   if (problems.length > 0) {
     for (const problem of problems) console.error(`FAIL: ${problem}`);
     process.exit(1);

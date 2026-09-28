@@ -102,6 +102,8 @@ function buildSegment(segment: V2PlanSegment, locale: V2Locale, problems: string
     id: segment.id, type: segment.type, grading: segment.grading, prompt, visual: { ...segment.visual }, payload,
     ...(help ? { help: [...help] } : {}),
     ...(segment.item_role ? { item_role: segment.item_role } : {}),
+    ...(segment.item_phase ? { item_phase: segment.item_phase } : {}),
+    ...(segment.variant ? { variant: segment.variant } : {}),
     ...(segment.knowledge_component_id ? { knowledge_component_id: segment.knowledge_component_id } : {}),
   };
 }
@@ -166,7 +168,7 @@ export function emitV2Lesson(plan: V2LessonPlan, options: { versionId: string; m
       ...(plan.representation_progressions ? { representation_progressions: plan.representation_progressions } : {}),
       ...(plan.mentor_stage ? { mentor_stage: { ...plan.mentor_stage } } : {}),
     };
-    const report = runV2DocumentGates(document, policy.regional, markets);
+    const report = runV2DocumentGates(document, policy.regional, markets, answerKeysFor(locale));
     for (const problem of report.problems) problems.push({ ...problem, locale });
     for (const finding of report.review) review.push({ ...finding, locale });
     notApplicable = report.notApplicable;

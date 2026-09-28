@@ -67,7 +67,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Wait for a sale when you could buy now. Build it.",
+          "prompt": "Wait for a sale even when you have enough. Build it.",
           "conditions": [
             {
               "label": "I have enough coins"
@@ -94,7 +94,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Espera la oferta cuando podrías comprar ya. Ármala.",
+          "prompt": "Espera la oferta aunque te alcance. Ármala.",
           "conditions": [
             {
               "label": "Tengo monedas suficientes"
@@ -121,7 +121,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Espere a promoção quando poderia comprar já. Monte.",
+          "prompt": "Espere a promoção mesmo tendo o bastante. Monte.",
           "conditions": [
             {
               "label": "Tenho moedas suficientes"
