@@ -84,6 +84,7 @@ A table, view, column, function or route whose name carries a messaging word, an
 | `text:badge_shares.image_url` | Legacy share: the image address, retired with the table |
 | `text:banking_accounts.display_number` | System-generated practice account number |
 | `text:banking_accounts.nickname` | Account nickname, set by the guardian or the owner, shown only in the family |
+| `text:data_practice_consents.practice_key` | The code of a registered data practice (a foreign key into `data_practices`, pattern-checked there) on a consent record; written by the service role only (OD-9 section 4.2) |
 | `text:family_autonomy_changes.reason` | A verified Tutor's (or staff's) reason for changing their own child's independence level (D.17), shown inside the family |
 | `text:family_decisions.prior_status` | The state a chore or reward was in before the decision; a system-written status code |
 | `text:family_decisions.reason` | A verified Tutor's mandatory reason for their own decision on their own child's chore or reward (D.18), inside the family |
@@ -105,7 +106,7 @@ A table, view, column, function or route whose name carries a messaging word, an
 | `text:tutor_voice_consent.scope` | The consent's scope |
 | `text:wallet_guardian_actions.reason` | A verified Tutor's reason for correcting their own child's coins (D.5), inside the family |
 
-Adding a row here is a Stage 3 decision. The ten rows for `family_*`, `mentor_quality_flag`, `redemptions.child_note`, `share_*`, `tasks.child_note` and `wallet_guardian_actions` were added at the S07 merge (migration `s07_merge_reconciliation`), when the live scan first saw the S06 and S07 schemas; their Stage 3 review is open with the rest of this list. A row that is a real person-to-person channel also needs its `messaging-features.json` entry (§2.1).
+Adding a row here is a Stage 3 decision. The ten rows for `family_*`, `mentor_quality_flag`, `redemptions.child_note`, `share_*`, `tasks.child_note` and `wallet_guardian_actions` were added at the S07 merge (migration `s07_merge_reconciliation`), when the live scan first saw the S06 and S07 schemas; their Stage 3 review is open with the rest of this list. The `data_practice_consents.practice_key` row was added at the S10 merge (migration `od9_merge_reconciliation`) on the same terms. A row that is a real person-to-person channel also needs its `messaging-features.json` entry (§2.1).
 
 ### 2.3 Enforcement
 

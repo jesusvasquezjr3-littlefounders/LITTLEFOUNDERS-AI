@@ -132,6 +132,28 @@ EOF
   echo "OK: isolated stack provisioned under $DOCKER_DIR (project $PROJECT)"
 }
 
+# The db image's first boot runs its init scripts on a temporary server and
+# then restarts PostgreSQL. pg_isready (the healthcheck) can pass against that
+# temporary server, and on a loaded Docker Desktop host init outlasts the
+# healthcheck's 50s budget, so neither `up --wait` succeeding nor failing
+# proves the database is stable. Ready means: init finished (or was skipped on
+# an existing PGDATA), the container is healthy, and a real query succeeds.
+wait_db_ready() {
+  local id status logs i
+  for i in $(seq 1 120); do
+    id="$(compose ps -q db 2>/dev/null || true)"
+    if [[ -n "$id" ]]; then
+      status="$(docker inspect -f '{{.State.Health.Status}}' "$id" 2>/dev/null || true)"
+      logs="$(docker logs "$id" 2>&1 || true)"
+      if [[ "$status" == "healthy" ]]         && grep -qE 'init process complete|Skipping initialization' <<<"$logs"         && psql_in_db -tA -c 'select 1' >/dev/null 2>&1; then
+        return 0
+      fi
+    fi
+    sleep 5
+  done
+  return 1
+}
+
 cmd_up() {
   resolve_root
   require_base_clone
@@ -139,12 +161,13 @@ cmd_up() {
   preflight_ports
   local attempt
   for attempt in 1 2 3; do
-    if (cd "$DOCKER_DIR" && docker compose -p "$PROJECT" up -d --wait); then
+    # The second `up --wait` re-checks every dependent after the db restart.
+    if (cd "$DOCKER_DIR" && docker compose -p "$PROJECT" up -d --wait)       && wait_db_ready       && (cd "$DOCKER_DIR" && docker compose -p "$PROJECT" up -d --wait); then
       echo "OK: isolated stack is healthy"
       return 0
     fi
-    echo "start attempt ${attempt} reported unhealthy container(s); retrying after settle ..."
-    sleep 20
+    echo "start attempt ${attempt} reported unhealthy container(s); waiting for db init to finish, then retrying ..."
+    wait_db_ready || true
   done
   echo "FAIL: isolated stack did not become healthy after 3 start attempts" >&2
   return 1

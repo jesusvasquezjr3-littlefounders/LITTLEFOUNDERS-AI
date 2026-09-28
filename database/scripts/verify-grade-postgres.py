@@ -1,22 +1,47 @@
-"""Real atomic-grade regression against the explicitly owned disposable WSL stack."""
+"""Real atomic-grade regression against an explicitly owned disposable full Supabase stack.
+
+Set LF_DISPOSABLE_DOCKER_DIR to the docker directory of a stack provisioned by
+database/scripts/disposable-stack.sh (the default target is the retired WSL QA
+distro). Run it once per fresh reset: it inserts fixed synthetic ids.
+"""
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import json
+import os
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
-WSL = ['wsl.exe', '-d', 'LittleFounders-QA-20260916', '--']
-def run(args, input=None):
-    result = subprocess.run(WSL + args, input=input, capture_output=True, text=True, encoding='utf-8')
-    if result.returncode:
-        raise RuntimeError(result.stderr)
-    return result.stdout.strip()
+DISPOSABLE = os.environ.get('LF_DISPOSABLE_DOCKER_DIR')
+if DISPOSABLE:
+    # The isolated stack from database/scripts/disposable-stack.sh (distinct
+    # compose project, remapped ports, fresh PGDATA). Refuse anything else.
+    PROJECT = os.environ.get('DISPOSABLE_PROJECT', 'lf-reset')
+    assert PROJECT != 'docker', 'Refusing the development stack'
+    env_text = (Path(DISPOSABLE) / '.env').read_text(encoding='utf-8')
+    assert 'POOLER_TENANT_ID=littlefounders-disposable' in env_text, 'Refusing a stack not provisioned by disposable-stack.sh'
 
-assert run(['cat', '/root/lfqa/AUDIT_OWNER']) == 'LittleFounders isolated audit 2026-09-16'
-DOCKER = ['env', 'DOCKER_HOST=unix:///var/run/lfqa-docker.sock', 'docker']
-assert run(DOCKER + ['info', '--format', '{{.DockerRootDir}}']) == '/var/lib/lfqa-docker'
-def sql(query):
-    return run(DOCKER + ['exec', '-i', 'supabase-db', 'psql', '-X', '-U', 'supabase_admin', '-d', 'postgres', '-Atq', '-v', 'ON_ERROR_STOP=1'], query)
+    def sql(query):
+        result = subprocess.run(['docker', 'compose', '-p', PROJECT, 'exec', '-T', 'db', 'psql', '-X', '-U', 'supabase_admin', '-d', 'postgres', '-Atq', '-v', 'ON_ERROR_STOP=1'],
+                                input=query, capture_output=True, text=True, encoding='utf-8', cwd=DISPOSABLE,
+                                env={**os.environ, 'COMPOSE_PATH_SEPARATOR': ':'})
+        if result.returncode:
+            raise RuntimeError(result.stderr)
+        return result.stdout.strip()
+else:
+    WSL = ['wsl.exe', '-d', 'LittleFounders-QA-20260916', '--']
+
+    def run(args, input=None):
+        result = subprocess.run(WSL + args, input=input, capture_output=True, text=True, encoding='utf-8')
+        if result.returncode:
+            raise RuntimeError(result.stderr)
+        return result.stdout.strip()
+
+    assert run(['cat', '/root/lfqa/AUDIT_OWNER']) == 'LittleFounders isolated audit 2026-09-16'
+    DOCKER = ['env', 'DOCKER_HOST=unix:///var/run/lfqa-docker.sock', 'docker']
+    assert run(DOCKER + ['info', '--format', '{{.DockerRootDir}}']) == '/var/lib/lfqa-docker'
+
+    def sql(query):
+        return run(DOCKER + ['exec', '-i', 'supabase-db', 'psql', '-X', '-U', 'supabase_admin', '-d', 'postgres', '-Atq', '-v', 'ON_ERROR_STOP=1'], query)
 
 user = 'e1840000-0000-4000-8000-000000000001'
 lesson = 'e1840000-0000-4000-8000-000000000002'
@@ -74,5 +99,5 @@ sql((ROOT/'database/migrations/0084_atomic_segment_grading.sql').read_text(encod
 assert sql(f"SELECT count(*) FROM lesson_segment_attempts WHERE user_id='{user}'") == '3'
 
 report = {'provenance': 'Real PostgreSQL in isolated full Supabase; all grading calls as service_role', 'sameRequestConcurrency': 8, 'sameRequestAttempts': 1, 'distinctRequestConcurrency': 8, 'acceptedDistinctAttempts': 2, 'changedPayloadReplayPreservesVerdict': True, 'finalRevealGating': True, 'receiptFailureRollsBackAttempt': True, 'browserExecutionDenied': True, 'browserReceiptReadsDenied': True, 'migrationReplayPreservesAttempts': True}
-(ROOT/'audit-results/atomic-grade-postgres.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
+Path(os.environ.get('LF_PG_REPORT', str(ROOT/'audit-results/atomic-grade-postgres.json'))).write_text(json.dumps(report,indent=2),encoding='utf-8')
 print(json.dumps(report,indent=2))
