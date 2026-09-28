@@ -63,11 +63,13 @@ import {
   getMentorQualityDashboard,
   OWNER_ROLES,
   recordOwnerReview,
+  recordReleaseAudit,
   resolveFlag,
   RESOLUTION_NOTE_MAX,
   RESOLUTION_NOTE_MIN,
   setOwner,
 } from '../services/pedagogy/mentorQualityDashboard.js';
+import { RELEASE_AUDIT_KINDS } from '../services/pedagogy/mentorQuality.js';
 import {
   renderAnalyticsReportCsv,
   renderAnalyticsReportXlsx,
@@ -2113,6 +2115,30 @@ export function adminRouter(): Router {
     if (result.code === 'not_owner') return fail(res, 403, 'NOT_NAMED_OWNER', 'Only a named owner of this role can sign its review');
     if (result.code === 'already') return fail(res, 409, 'ALREADY_REVIEWED', 'This week\'s review is already signed');
     return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the review');
+  });
+
+  /*
+   * GAP-FIX-R2 (Appendix C 1.2): a named owner records a per-release manual
+   * audit (B.25 dark patterns and B.22 variable-ratio rewards: the Safety and
+   * Trust lead; B.20 reward framing: the pedagogical lead). A fail carries its
+   * findings; a pass has none. Vault enforces the owner and writes the audit row.
+   */
+  const ReleaseAuditBody = z.object({
+    kind: z.enum(RELEASE_AUDIT_KINDS),
+    releaseId: z.string().trim().regex(/^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$/),
+    result: z.enum(['pass', 'fail']),
+    findingCount: z.number().int().min(0).max(10_000),
+    note: z.string().trim().min(1).max(600).optional(),
+  }).strict().refine((b) => (b.result === 'fail') === (b.findingCount > 0), 'a fail has at least one finding and a pass none');
+  router.post('/mentor-quality/audits', async (req, res) => {
+    const body = ReleaseAuditBody.safeParse(req.body);
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'kind, releaseId (1-64 of A-Z a-z 0-9 . _ : -), result pass|fail and findingCount (a fail has findings, a pass none) are required');
+    const result = await recordReleaseAudit({ actorId: authedUser(res).id, ...body.data, note: body.data.note ?? null });
+    if (result === 'recorded') return ok(res, { kind: body.data.kind, releaseId: body.data.releaseId, result: body.data.result }, 201);
+    if (result === 'not_owner') return fail(res, 403, 'NOT_NAMED_OWNER', 'Only a named owner of this audit\'s role can record it');
+    if (result === 'duplicate') return fail(res, 409, 'ALREADY_RECORDED', 'This release already has this audit');
+    if (result === 'invalid') return fail(res, 400, 'VALIDATION_ERROR', 'The database refused the audit values');
+    return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the audit');
   });
 
   const OwnerBody = z.object({ role: z.enum(OWNER_ROLES), userId: z.string().uuid(), action: z.enum(['add', 'remove']) }).strict();

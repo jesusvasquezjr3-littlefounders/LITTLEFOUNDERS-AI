@@ -26,6 +26,9 @@ interface World {
   failSnapshotRead?: boolean;
   targetRoles?: string[];
   targetPermissions?: string[];
+  /** GAP-FIX-R2: the latest release audits and record_release_audit's answer. */
+  audits?: unknown[];
+  auditRpc?: { status: number; body: unknown };
 }
 interface Call { url: string; method: string; body?: string }
 
@@ -83,6 +86,8 @@ function stub(world: World, calls: Call[] = []) {
       }
       if (url.includes('/rest/v1/profiles')) return Promise.resolve(jsonResponse(200, [{ user_id: STAFF_ID, display_name: 'Ana Staff' }]));
       if (url.includes('/rest/v1/audit_logs')) return Promise.resolve(new Response(null, { status: 201 }));
+      if (url.includes('/rest/v1/release_audit_results')) return Promise.resolve(jsonResponse(200, world.audits ?? []));
+      if (url.includes('/rest/v1/rpc/record_release_audit')) return Promise.resolve(jsonResponse(world.auditRpc?.status ?? 200, world.auditRpc?.body ?? 'recorded'));
       throw new Error(`unexpected ${method} ${url}`);
     }),
   );
@@ -103,7 +108,11 @@ describe('S06.13 C.24 GET /api/v1/admin/mentor-quality', () => {
     expect(d.signals.find((s: { id: string }) => s.id === 'rubric.emotion_label')).toMatchObject({ ownerRole: 'safety_trust_lead', reading: { status: 'breach' } });
     // A signal the snapshot does not carry is present, with no reading: never dropped.
     expect(d.signals.find((s: { id: string }) => s.id === 'mastery.reversal_rate')).toMatchObject({ reading: null });
-    expect(d.signals.find((s: { id: string }) => s.id === 'engagement.streak_anxiety')).toMatchObject({ instrumented: 'not_instrumented' });
+    // GAP-FIX-R2: streak anxiety is retired from the registry with its written reason.
+    expect(d.signals.find((s: { id: string }) => s.id === 'engagement.streak_anxiety')).toBeUndefined();
+    expect(d.retiredSignals.map((s: { id: string }) => s.id)).toEqual(['engagement.streak_anxiety']);
+    expect(d.releaseAudits.kinds.map((k: { kind: string; ownerRole: string }) => `${k.kind}:${k.ownerRole}`))
+      .toEqual(['dark_pattern:safety_trust_lead', 'variable_ratio:safety_trust_lead', 'reward_framing:pedagogical_lead']);
     // GAP-FIX-R1 C.24: session efficiency now reads learning_session_efficiency.
     expect(d.signals.find((s: { id: string }) => s.id === 'engagement.session_efficiency')).toMatchObject({ instrumented: 'yes' });
     expect(d.flags.active[0]).toMatchObject({ id: FLAG_ID, ownerRole: 'safety_trust_lead', severity: 'urgent', value: 0.02 });
@@ -241,5 +250,57 @@ describe('S06.13 C.24 naming owners (manage_users)', () => {
     stub({ permissions: ['view_analytics', 'manage_users'] });
     expect((await name({ role: 'pedagogical_lead', userId: TARGET_ID, action: 'remove' })).status).toBe(409);
     expect((await name({ role: 'pedagogical_lead', userId: 'x', action: 'add' })).status).toBe(400);
+  });
+});
+
+describe('GAP-FIX-R2 C.24 per-release manual audits (B.25, B.22, B.20)', () => {
+  const body = { kind: 'dark_pattern', releaseId: 'release-2026.10', result: 'fail', findingCount: 2, note: 'Two countdown banners.' };
+
+  it('records through Vault with the staff actor; Vault decides the named owner', async () => {
+    const calls: Call[] = [];
+    stub({ named: ['safety_trust_lead'] }, calls);
+    const res = await request(createApp()).post('/api/v1/admin/mentor-quality/audits').set('Authorization', staff()).send(body);
+    expect(res.status).toBe(201);
+    expect(res.body.data).toEqual({ kind: 'dark_pattern', releaseId: 'release-2026.10', result: 'fail' });
+    const rpc = calls.find((c) => c.url.includes('/rpc/record_release_audit'))!;
+    expect(JSON.parse(rpc.body!)).toEqual({ p_actor: STAFF_ID, p_kind: 'dark_pattern', p_release_id: 'release-2026.10', p_result: 'fail', p_findings: 2, p_note: 'Two countdown banners.' });
+  });
+
+  it('maps a non-owner to 403, a repeat to 409 and an unreadable answer to 502', async () => {
+    for (const [answer, status, code] of [['not_owner', 403, 'NOT_NAMED_OWNER'], ['duplicate', 409, 'ALREADY_RECORDED'], ['invalid', 400, 'VALIDATION_ERROR'], [null, 502, 'DATA_UNAVAILABLE']] as const) {
+      stub({ auditRpc: answer === null ? { status: 500, body: null } : { status: 200, body: answer } });
+      const res = await request(createApp()).post('/api/v1/admin/mentor-quality/audits').set('Authorization', staff()).send(body);
+      expect(res.status, String(answer)).toBe(status);
+      expect(res.body.error.code).toBe(code);
+    }
+  });
+
+  it('refuses a fail without findings, a pass with findings, an unknown kind and a malformed release id, with no call', async () => {
+    const calls: Call[] = [];
+    stub({}, calls);
+    for (const bad of [{ ...body, findingCount: 0 }, { ...body, result: 'pass' }, { ...body, kind: 'loot_box' }, { ...body, releaseId: 'no spaces' }, { ...body, extra: 1 }]) {
+      expect((await request(createApp()).post('/api/v1/admin/mentor-quality/audits').set('Authorization', staff()).send(bad)).status).toBe(400);
+    }
+    expect(calls.some((c) => c.url.includes('/rpc/'))).toBe(false);
+  });
+
+  it('refuses staff without view_analytics before any call', async () => {
+    const calls: Call[] = [];
+    stub({ permissions: ['manage_support'] }, calls);
+    expect((await request(createApp()).post('/api/v1/admin/mentor-quality/audits').set('Authorization', staff()).send(body)).status).toBe(403);
+    expect(dataCalls(calls)).toEqual([]);
+  });
+
+  it('the dashboard carries the latest audit of each kind for the form', async () => {
+    stub({ audits: [
+      { audit_kind: 'reward_framing', release_id: 'r-9', result: 'pass', finding_count: 0, recorded_at: '2026-09-20T00:00:00Z' },
+      { audit_kind: 'dark_pattern', release_id: 'r-9', result: 'fail', finding_count: '2', recorded_at: '2026-09-19T00:00:00Z' },
+    ] });
+    const res = await request(createApp()).get('/api/v1/admin/mentor-quality').set('Authorization', staff());
+    expect(res.status).toBe(200);
+    const kinds = Object.fromEntries(res.body.data.releaseAudits.kinds.map((k: { kind: string }) => [k.kind, k]));
+    expect(kinds.dark_pattern.latest).toEqual({ releaseId: 'r-9', result: 'fail', findingCount: 2, recordedAt: '2026-09-19T00:00:00Z' });
+    expect(kinds.variable_ratio.latest).toBeNull();
+    expect(res.body.data.releaseAudits.cadenceDays).toBe(45);
   });
 });

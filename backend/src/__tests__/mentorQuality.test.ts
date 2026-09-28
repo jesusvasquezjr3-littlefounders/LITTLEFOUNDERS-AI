@@ -9,6 +9,7 @@ import {
   MENTOR_QUALITY_THRESHOLDS as T,
   openKillSwitches,
   OWNER_ROLES,
+  RETIRED_SIGNALS,
   reviewCompletion,
   SIGNALS,
   type QualitySources,
@@ -109,9 +110,13 @@ describe('C.24 registry', () => {
 
   it('shows a metric with no data source as not instrumented, never as healthy', () => {
     const r = evaluateSignals(empty());
-    expect(readingOf(r, 'engagement.streak_anxiety').status).toBe('not_instrumented');
-    // Instrumented since gap-fix round 1: empty sources read as insufficient data, never as healthy.
-    for (const id of ['learning.judgment_quality', 'learning.transfer_success', 'engagement.session_efficiency', 'engagement.mentor_resolution', 'learning.decision_journal', 'learning.bridge_conversion', 'engagement.rest_day_use', 'engagement.autonomy_adoption', 'rubric.tell_honored']) {
+    // GAP-FIX-R2: every Appendix C signal now has a source; streak anxiety is retired with its reason, never silently dropped.
+    expect(SIGNALS.filter((s) => s.instrumented === 'not_instrumented').map((s) => s.id)).toEqual([]);
+    expect(r.readings.some((x) => x.id === 'engagement.streak_anxiety')).toBe(false);
+    expect(RETIRED_SIGNALS.find((x) => x.id === 'engagement.streak_anxiety')?.reason).toMatch(/no\s+streak-at-risk notification/);
+    // Instrumented since gap-fix rounds 1 and 2: empty sources read as insufficient data, never as healthy.
+    for (const id of ['learning.judgment_quality', 'learning.transfer_success', 'engagement.session_efficiency', 'engagement.mentor_resolution', 'learning.decision_journal', 'learning.bridge_conversion', 'engagement.rest_day_use', 'engagement.autonomy_adoption', 'rubric.tell_honored',
+      'engagement.dark_pattern_audit', 'engagement.variable_ratio_audit', 'engagement.reward_framing', 'engagement.parent_time_to_value']) {
       expect(readingOf(r, id).status, id).toBe('insufficient_data');
     }
     expect(readingOf(r, 'bias_audit.coverage').status).toBe('external');
@@ -388,5 +393,45 @@ describe('C.24 x Appendix C: minimum samples and the tell invariant (gap-fix rou
     const r = evaluateSignals({ ...empty(), scores: [score('tell_honored', 'fail'), score('tell_honored', 'pass')] });
     expect(readingOf(r, 'rubric.tell_honored').status).toBe('breach');
     expect(r.anomalies.some((a) => a.signalId === 'rubric.tell_honored' && a.severity === 'urgent')).toBe(true);
+  });
+});
+
+describe('GAP-FIX-R2: the per-release manual audits and Parent Time-to-Value (Appendix C 1.2)', () => {
+  const audit = (kind: 'dark_pattern' | 'variable_ratio' | 'reward_framing', result: 'pass' | 'fail', days: number, findings = result === 'fail' ? 2 : 0) =>
+    ({ audit_kind: kind, release_id: `r-${kind}-${days}`, result, finding_count: findings, recorded_at: recent(days) });
+
+  it('reads the latest audit of each kind: a recent pass is ok and opens nothing', () => {
+    const r = evaluateSignals({ ...empty(), releaseAudits: [audit('dark_pattern', 'pass', 3), audit('dark_pattern', 'fail', 60), audit('variable_ratio', 'pass', 10), audit('reward_framing', 'pass', 44)] });
+    expect(readingOf(r, 'engagement.dark_pattern_audit')).toMatchObject({ status: 'ok', value: 0, sample: 2 });
+    expect(readingOf(r, 'engagement.variable_ratio_audit')).toMatchObject({ status: 'ok', value: 1 });
+    expect(readingOf(r, 'engagement.reward_framing')).toMatchObject({ status: 'ok', value: 1 });
+    expect(r.anomalies.filter((a) => a.signalId.startsWith('engagement.'))).toEqual([]);
+  });
+
+  it('a failed dark-pattern audit is a zero-tolerance breach for the Safety and Trust lead; a failed reward-framing audit flags the pedagogical lead', () => {
+    const r = evaluateSignals({ ...empty(), releaseAudits: [audit('dark_pattern', 'fail', 1, 3), audit('variable_ratio', 'pass', 1), audit('reward_framing', 'fail', 1)] });
+    expect(readingOf(r, 'engagement.dark_pattern_audit')).toMatchObject({ status: 'breach', value: 3 });
+    expect(r.anomalies.find((a) => a.signalId === 'engagement.dark_pattern_audit')).toMatchObject({ kind: 'zero_tolerance', owner: 'safety_trust_lead', severity: 'urgent' });
+    expect(r.anomalies.find((a) => a.signalId === 'engagement.reward_framing')).toMatchObject({ kind: 'threshold_breach', owner: 'pedagogical_lead', value: 0 });
+  });
+
+  it('an audit older than the release cadence, or none at all, is a breach, never calm; an unreadable table is unavailable', () => {
+    const stale = evaluateSignals({ ...empty(), releaseAudits: [audit('dark_pattern', 'pass', T.releaseAuditCadenceDays + 1)] });
+    expect(readingOf(stale, 'engagement.dark_pattern_audit').status).toBe('breach');
+    expect(stale.anomalies.find((a) => a.signalId === 'engagement.dark_pattern_audit')).toMatchObject({ scope: 'audit_age', threshold: T.releaseAuditCadenceDays });
+    expect(readingOf(stale, 'engagement.variable_ratio_audit')).toMatchObject({ status: 'breach', detail: { audits: 0 } });
+    const down = evaluateSignals({ ...empty(), releaseAudits: null });
+    expect(readingOf(down, 'engagement.reward_framing').status).toBe('unavailable');
+  });
+
+  it('Parent Time-to-Value: the median against the proposed 3 minutes, with a minimum sample', () => {
+    const p = (medianSeconds: number | null, reached: number) => ({ signups: reached + 5, reached, medianSeconds, p75Seconds: medianSeconds, withinTarget: 0 });
+    expect(T.parentTimeToValueSeconds).toBe(180);
+    expect(readingOf(evaluateSignals({ ...empty(), parentTimeToValue: p(400, T.parentTimeToValueMinSample - 1) }), 'engagement.parent_time_to_value').status).toBe('insufficient_data');
+    expect(readingOf(evaluateSignals({ ...empty(), parentTimeToValue: p(150, T.parentTimeToValueMinSample) }), 'engagement.parent_time_to_value')).toMatchObject({ status: 'ok', value: 150 });
+    const slow = evaluateSignals({ ...empty(), parentTimeToValue: p(400, T.parentTimeToValueMinSample) });
+    expect(readingOf(slow, 'engagement.parent_time_to_value')).toMatchObject({ status: 'breach', value: 400 });
+    expect(slow.anomalies.find((a) => a.signalId === 'engagement.parent_time_to_value')).toMatchObject({ kind: 'threshold_breach', owner: 'pedagogical_lead', threshold: 180 });
+    expect(readingOf(evaluateSignals({ ...empty(), parentTimeToValue: null }), 'engagement.parent_time_to_value').status).toBe('unavailable');
   });
 });

@@ -993,9 +993,36 @@
     },
     "mentorQuality": {
       "heading": {
-        "status": "Data status"
+        "status": "Data status",
+        "audits": "Release audits"
       },
-      "body": {}
+      "body": {
+        "auditsIntro": "Record each release's audit. One older than {days} days counts as missing.",
+        "notRecorded": "Not recorded yet",
+        "findingsValue": "{n} findings",
+        "ownersRecord": "Only the named owner of an audit records it.",
+        "auditKind": "Audit",
+        "release": "Release",
+        "releaseHelp": "Letters, numbers, dots, dashes or colons.",
+        "result": "Result",
+        "findings": "Findings",
+        "findingsHelp": "How many problems the audit found.",
+        "auditNote": "Note (optional)",
+        "auditRecorded": "Audit recorded.",
+        "auditNotOwner": "Only the named owner of this audit can record it.",
+        "auditDuplicate": "This release already has this audit.",
+        "auditInvalid": "Check the release name and the findings."
+      },
+      "option": {
+        "dark_pattern": "Manipulative design (B.25)",
+        "variable_ratio": "Variable-ratio rewards for minors (B.22)",
+        "reward_framing": "Rewards framed as learning (B.20)",
+        "pass": "Pass",
+        "fail": "Fail"
+      },
+      "action": {
+        "recordAudit": "Record audit"
+      }
     },
     "analytics": {
       "action": {

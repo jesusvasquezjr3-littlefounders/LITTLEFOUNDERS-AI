@@ -3,6 +3,7 @@ import { flagResultFrom, MentorQualityDashboard, reviewResultFrom, type MentorQu
 import type { MentorQualityDashboardData, OwnerRole } from '../mentorQualityApi';
 import { can, useStaffRead, type StaffApi, type StaffViewer } from './staffConsoleApi';
 import { MentorOwners } from './StaffProgramme';
+import { ReleaseAudits } from './ReleaseAudits';
 import { LoadFailure, StaffPage } from './ConsoleParts';
 import { useConsoleCopy } from './staffConsoleCopy';
 
@@ -21,6 +22,9 @@ import { useConsoleCopy } from './staffConsoleCopy';
  * W2T.4: a viewer who also holds manage_users (the grant Core's
  * /admin/mentor-quality/owners requires) names and removes the owners here;
  * no one else sees the roster form.
+ *
+ * GAP-FIX-R2: the per-release manual audits (B.25, B.22, B.20) with their
+ * latest result; a named owner records the next one (ReleaseAudits).
  */
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -47,6 +51,7 @@ export function StaffMentorQuality({ api, viewer }: { api: StaffApi; viewer?: St
         onAcknowledge={async (id) => flagResultFrom(await act(`/admin/mentor-quality/flags/${encodeURIComponent(id)}/acknowledge`, {}))}
         onResolve={async (id, note) => flagResultFrom(await act(`/admin/mentor-quality/flags/${encodeURIComponent(id)}/resolve`, { note: note.trim() }))}
         onReview={async (role: OwnerRole) => reviewResultFrom(await act('/admin/mentor-quality/reviews', { role }))} />}
+    {read.load.state === 'ready' ? <ReleaseAudits api={api} data={read.load.data} onRecorded={read.reload} /> : null}
     {viewer && can(viewer, 'manage_users') && read.load.state === 'ready'
       ? <MentorOwners api={api} data={read.load.data} roleNames={quality.ownerRole} onChanged={read.reload} /> : null}
   </StaffPage>;

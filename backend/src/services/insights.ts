@@ -20,7 +20,7 @@ import { readAgeScreen } from './ageScreen.js';
  *    third-party API.
  */
 
-/** Mirrors the 0028/0072/S05.3d (learning_quality_events)/S05.3e (motivation_events) CHECK exactly. Closed by design (§1.9 rule 2). */
+/** Mirrors the 0028/0072/S05.3d (learning_quality_events)/S05.3e (motivation_events)/GAP-FIX-R2 (parent_time_to_value) CHECK exactly. Closed by design (§1.9 rule 2). */
 export const RECORDABLE_EVENTS = [
   // session lifecycle
   'session_start', 'session_heartbeat', 'session_end', 'nav_view',
@@ -57,13 +57,18 @@ export const RECORDABLE_EVENTS = [
   // B.21 / B.24 motivation metrics (S05.3e, *_motivation_events.sql). All
   // three are written by Core only (SERVER_ONLY_EVENTS).
   'streak_rest_day', 'streak_restart', 'path_choice',
+  // Appendix C 1.2 Parent Time-to-Value (GAP-FIX-R2, *_parent_time_to_value.sql).
+  // Both written by Core only (SERVER_ONLY_EVENTS), once per account.
+  'parent_signup_completed', 'parent_first_value',
 ] as const;
 
 /**
  * Events only Core may write. The client ingest drops them: a forged
  * denominator would move a metric that must stay trustworthy.
  */
-export const SERVER_ONLY_EVENTS: ReadonlySet<string> = new Set(['replay_below_best', 'streak_rest_day', 'streak_restart', 'path_choice']);
+export const SERVER_ONLY_EVENTS: ReadonlySet<string> = new Set([
+  'replay_below_best', 'streak_rest_day', 'streak_restart', 'path_choice', 'parent_signup_completed', 'parent_first_value',
+]);
 
 export const ROUTE_CLASSES = ['learn', 'tasks', 'profile', 'tutor', 'family', 'admin', 'marketing', 'other'] as const;
 export const DEVICES = ['mobile', 'tablet', 'desktop'] as const;

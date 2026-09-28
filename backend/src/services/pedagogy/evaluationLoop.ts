@@ -41,10 +41,12 @@ import type { LadderEventRow } from './liveContentGovernance.js';
 import type { SignalEventRow } from './sessionEnd.js';
 import { scoreSession, type ScoringHonestyRow, type SessionBundle } from './transcriptScoring.js';
 import { TRANSCRIPT_RUBRIC_HASH, TRANSCRIPT_RUBRIC_VERSION } from './transcriptRubric.js';
+import { readParentTimeToValue } from '../parentTimeToValue.js';
 import {
   dedupKey,
   evaluateSignals,
   MENTOR_QUALITY_THRESHOLDS as T,
+  RELEASE_AUDIT_KINDS,
   type Anomaly,
   type AuditRow,
   type FiringRow,
@@ -270,6 +272,7 @@ export async function collectSources(now: Date): Promise<QualitySources> {
   const [
     sessions, scores, priorScores, firings, endSignals, alliance, allianceBaseline, renegotiations,
     trajectory, routing, dialogue, ladder, gate, killSwitchAudit, activeRows, profiles, kcAttempts, retention, judgeCalibrations, learning, transfer,
+    releaseAudits, parentTimeToValue,
   ] = await Promise.all([
     readAll<WindowSessionRow>(
       `/tutor_sessions?select=id,character,tier,locale,ended_at,turn_count,evaluation_rubric_hash,close_reason,closing_script,opening,end_signal_evaluated,telemetry_mode,telemetry_evaluated_turns,telemetry_action_turns` +
@@ -306,7 +309,12 @@ export async function collectSources(now: Date): Promise<QualitySources> {
     serviceRest<{ kc: string; item_role: 'practice' | 'transfer'; first_attempts: number; successes: number }[]>('/rpc/learning_transfer_success', {
       method: 'POST', body: JSON.stringify({ p_since: iso(since), p_until: iso(now) }),
     }),
+    // GAP-FIX-R2 (Appendix C 1.2): the per-release manual audits (B.25, B.22, B.20), newest first.
+    serviceRest<unknown>('/release_audit_results?select=audit_kind,release_id,result,finding_count,recorded_at&order=recorded_at.desc&limit=60'),
+    // GAP-FIX-R2 (Appendix C 1.2, B.10): Parent Time-to-Value over the window.
+    readParentTimeToValue(since, now),
   ]);
+  const audits = ReleaseAuditRows.safeParse(releaseAudits);
 
   return {
     now,
@@ -336,8 +344,18 @@ export async function collectSources(now: Date): Promise<QualitySources> {
     retention: Array.isArray(retention) ? retention : null,
     learning,
     transfer: Array.isArray(transfer) ? transfer.map((r) => ({ ...r, first_attempts: Number(r.first_attempts), successes: Number(r.successes) })) : null,
+    releaseAudits: audits.success ? audits.data : null,
+    parentTimeToValue,
   };
 }
+
+const ReleaseAuditRows = z.array(z.object({
+  audit_kind: z.enum(RELEASE_AUDIT_KINDS),
+  release_id: z.string(),
+  result: z.enum(['pass', 'fail']),
+  finding_count: z.coerce.number().int().nonnegative(),
+  recorded_at: z.string(),
+}));
 
 // ── 3. Flags ────────────────────────────────────────────────────────────────
 

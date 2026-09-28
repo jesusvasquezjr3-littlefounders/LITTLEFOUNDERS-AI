@@ -2235,6 +2235,46 @@
       "safety_trust_lead",
       "pedagogical_lead"
     ],
+    "releaseAudits": {
+      "cadenceDays": 45,
+      "kinds": [
+        {
+          "kind": "dark_pattern",
+          "signalId": "engagement.dark_pattern_audit",
+          "ownerRole": "safety_trust_lead",
+          "latest": {
+            "releaseId": "release-2026.09-rc.3-stress-length-name",
+            "result": "fail",
+            "findingCount": 2,
+            "recordedAt": "2026-09-20T10:00:00Z"
+          }
+        },
+        {
+          "kind": "variable_ratio",
+          "signalId": "engagement.variable_ratio_audit",
+          "ownerRole": "safety_trust_lead",
+          "latest": {
+            "releaseId": "release-2026.09",
+            "result": "pass",
+            "findingCount": 0,
+            "recordedAt": "2026-09-20T10:05:00Z"
+          }
+        },
+        {
+          "kind": "reward_framing",
+          "signalId": "engagement.reward_framing",
+          "ownerRole": "pedagogical_lead",
+          "latest": null
+        }
+      ]
+    },
+    "retiredSignals": [
+      {
+        "id": "engagement.streak_anxiety",
+        "requirement": "B.21",
+        "reason": "No streak-at-risk notification exists; the B.25 audit is the control."
+      }
+    ],
     "reviews": {
       "week": "2026-09-21",
       "previousWeek": "2026-09-14",

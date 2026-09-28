@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { getRolesForGate } from '../services/insights.js';
+import { recordParentJourneyEvent } from '../services/parentTimeToValue.js';
 import { requiresMinorMentorSafeguards } from '../services/mentorSafety.js';
 import { buildLessonNarrative, lessonEvidence, weekSummary, type LessonEvidence, type NarrativeAttempt } from '../services/narrative/courseNarrative.js';
 import {
@@ -213,6 +214,8 @@ export function familyLearningRouter(): Router {
     // GAP-FIX-R1 (B.10 for v2): first-try share and judgment counts per shown lesson, beside the entries.
     const evidence = entries.map((e) => lessonEvidence({ lessonId: e.lessonId, attempts: attemptsByLesson.get(e.lessonId) ?? [],
       graded: (record.lessons.get(e.lessonId)?.xp_total ?? 0) > 0 || v2Graded.has(e.lessonId) })).filter((e): e is LessonEvidence => e !== null);
+    // Appendix C 1.2 Parent Time-to-Value: the weekly narrative (B.10) is a first insight too (once per account).
+    recordParentJourneyEvent(authedUser(res).id, 'parent_first_value');
     return ok(res, { locale, week, entries, hasMore: query.data.offset + query.data.limit < record.completions.length, ...visible, evidence });
   });
 

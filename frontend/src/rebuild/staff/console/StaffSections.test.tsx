@@ -558,6 +558,37 @@ describe('C.24 Mentor quality on its real route', () => {
     expect(posts[0]!.body).toEqual({});
   });
 
+  it('GAP-FIX-R2: lists the latest release audit of each kind, and a named owner records only the kinds of their roles', async () => {
+    const { api, posts } = fakeApi();
+    render(<Frame><StaffMentorQuality api={api} /></Frame>);
+    const card = (await screen.findByRole('heading', { level: 2, name: c.mentorQuality.heading.audits })).closest('section, div[class*="card"], article') as HTMLElement ?? document.body;
+    const list = await screen.findByRole('list', { name: c.mentorQuality.heading.audits });
+    expect(list).toHaveTextContent(c.mentorQuality.option.dark_pattern);
+    expect(list).toHaveTextContent(c.mentorQuality.body.notRecorded);
+    expect(list).toHaveTextContent(c.mentorQuality.body.findingsValue.replace('{n}', '2'));
+    const kinds = within(card).getByLabelText(c.mentorQuality.body.auditKind) as HTMLSelectElement;
+    expect([...kinds.options].map((o) => o.value)).toEqual(['dark_pattern', 'variable_ratio', 'reward_framing']);
+    fireEvent.change(within(card).getByLabelText(c.mentorQuality.body.release), { target: { value: 'release-2026.10' } });
+    fireEvent.click(within(card).getByRole('radio', { name: c.mentorQuality.option.fail }));
+    fireEvent.change(within(card).getByLabelText(c.mentorQuality.body.findings), { target: { value: '3' } });
+    fireEvent.click(within(card).getByRole('button', { name: c.mentorQuality.action.recordAudit }));
+    await waitFor(() => expect(posts).toEqual([{ path: '/admin/mentor-quality/audits', body: { kind: 'dark_pattern', releaseId: 'release-2026.10', result: 'fail', findingCount: 3 } }]));
+    expect(await screen.findByText(c.mentorQuality.body.auditRecorded)).toBeInTheDocument();
+  });
+
+  it('GAP-FIX-R2: a viewer named for no role sees no form; Core\'s refusals are said in words', async () => {
+    const plain = fakeApi((path) => (path === '/admin/mentor-quality' ? ok({ ...sections.mentorQuality, viewerOwnerRoles: [] }) : undefined));
+    render(<Frame><StaffMentorQuality api={plain.api} /></Frame>);
+    expect(await screen.findByText(c.mentorQuality.body.ownersRecord)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: c.mentorQuality.action.recordAudit })).toBeNull();
+    cleanup();
+    const refused = fakeApi((path, body) => (body !== undefined && path === '/admin/mentor-quality/audits' ? fail('ALREADY_RECORDED') : undefined));
+    render(<Frame><StaffMentorQuality api={refused.api} /></Frame>);
+    fireEvent.change(await screen.findByLabelText(c.mentorQuality.body.release), { target: { value: 'release-2026.09' } });
+    fireEvent.click(screen.getByRole('button', { name: c.mentorQuality.action.recordAudit }));
+    expect(await screen.findByText(c.mentorQuality.body.auditDuplicate)).toBeInTheDocument();
+  });
+
   it('a refused read (view_analytics withdrawn) is the console\'s refused state with a retry', async () => {
     const { api } = fakeApi((path) => (path === '/admin/mentor-quality' ? fail('FORBIDDEN') : undefined));
     render(<Frame><StaffMentorQuality api={api} /></Frame>);

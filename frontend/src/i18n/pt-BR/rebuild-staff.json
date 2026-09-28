@@ -993,9 +993,36 @@
     },
     "mentorQuality": {
       "heading": {
-        "status": "Status dos dados"
+        "status": "Status dos dados",
+        "audits": "Auditorias por versão"
       },
-      "body": {}
+      "body": {
+        "auditsIntro": "Registre a auditoria de cada versão. Uma com mais de {days} dias conta como ausente.",
+        "notRecorded": "Ainda não registrada",
+        "findingsValue": "{n} achados",
+        "ownersRecord": "Só a pessoa responsável nomeada registra cada auditoria.",
+        "auditKind": "Auditoria",
+        "release": "Versão",
+        "releaseHelp": "Letras, números, pontos, hífens ou dois-pontos.",
+        "result": "Resultado",
+        "findings": "Achados",
+        "findingsHelp": "Quantos problemas a auditoria encontrou.",
+        "auditNote": "Nota (opcional)",
+        "auditRecorded": "Auditoria registrada.",
+        "auditNotOwner": "Só a pessoa responsável nomeada pode registrá-la.",
+        "auditDuplicate": "Esta versão já tem esta auditoria.",
+        "auditInvalid": "Confira o nome da versão e os achados."
+      },
+      "option": {
+        "dark_pattern": "Design manipulador (B.25)",
+        "variable_ratio": "Prêmios de razão variável para menores (B.22)",
+        "reward_framing": "Prêmios apresentados como aprendizado (B.20)",
+        "pass": "Aprovada",
+        "fail": "Reprovada"
+      },
+      "action": {
+        "recordAudit": "Registrar auditoria"
+      }
     },
     "analytics": {
       "action": {
