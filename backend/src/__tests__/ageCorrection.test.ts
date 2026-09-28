@@ -53,7 +53,7 @@ function stub(opts: Stub = {}) {
 }
 
 const as = (sub: string, claims: Record<string, unknown> = {}) => `Bearer ${mintToken({ sub, ...claims })}`;
-const rpcCalls = (calls: { url: string }[]) => calls.filter((c) => c.url.includes('/rpc/request_age_correction') || c.url.includes('/rpc/decide_age_correction'));
+const rpcCalls = <T extends { url: string }>(calls: T[]): T[] => calls.filter((c) => c.url.includes('/rpc/request_age_correction') || c.url.includes('/rpc/decide_age_correction'));
 
 describe('the account asks for an age correction', () => {
   it('reports eligibility and the latest request for a self-registered teen', async () => {
