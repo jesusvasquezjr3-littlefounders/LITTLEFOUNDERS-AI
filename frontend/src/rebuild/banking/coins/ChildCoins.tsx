@@ -57,7 +57,7 @@ export function ChildCoins({ copy, colours, locale, dark, transport, onNavigate,
   dark: boolean;
   transport: ConsoleTransport;
   onNavigate: (href: string) => void;
-  /** A self-registered teen who linked a parent reads "Family coins" (their own wallet is elsewhere). */
+  /** A self-registered teen who linked a parent reads "Family wallet" (OD-28; their own wallet is elsewhere). */
   familyCoins?: boolean;
   /** Bumped by the route adapter when a wave-1 surface changed the account (a freeze lifted, a split landed): the card and the waiting coins re-read. */
   refreshKey?: number;

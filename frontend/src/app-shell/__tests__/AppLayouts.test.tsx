@@ -113,7 +113,7 @@ describe('the Tutor console (verified parent)', () => {
     const { container } = renderApp('/family');
     expect(container.querySelector('[data-shell="tutor"]')).not.toBeNull();
     expect(screen.getAllByText('Tutor').length).toBeGreaterThan(0);
-    expect(navLinks().map((link) => link.textContent)).toEqual(['Family', 'Tasks', 'Coins', 'Learn', 'Profile']);
+    expect(navLinks().map((link) => link.textContent)).toEqual(['Family', 'Tasks', 'Wallet', 'Learn', 'Profile']);
     expect(screen.queryByRole('link', { name: /Mentor|Dina/ })).toBeNull();
     expect(navLinks().find((link) => link.getAttribute('aria-current') === 'page')?.textContent).toBe('Family');
   });

@@ -22,6 +22,13 @@
 //      the owner amends. A doc line that names the rename itself ("formerly",
 //      OD-28, H-16) is allowed.
 //
+//   4. the section's own names: every navigation label and page title of the
+//      family Wallet (/family-wallet, formerly /banking) and of the teen's
+//      personal wallet (/wallet) must carry the glossary term (Wallet /
+//      Cartera / Carteira), so a label like "Coins" or "Family coins" cannot
+//      stand in for the section; and no navigation slot of the section may
+//      point at a path that says "bank" (the glossary avoids the word).
+//
 // A sentence that says coins are NOT in a bank ("not a bank account") stays
 // allowed: the rule is about the section's name, not about the disclaimer.
 //
@@ -45,6 +52,26 @@ export const LOCALE_SYNONYMS = {
 export const BARE_LABEL = /^\s*(?:banking|banca|banco)\s*$/iu;
 /** A doc line may name the old section when it records the rename. */
 export const RENAME_NOTE = /formerly|OD-28|H-16|antes llamad|antigo|anteriormente/i;
+
+/** The glossary term each locale must use to name the section. */
+export const WALLET_TERM = {
+  'en-US': /(?<![\p{L}])wallet(?![\p{L}])/iu,
+  'es-MX': /(?<![\p{L}])cartera(?![\p{L}])/iu,
+  'pt-BR': /(?<![\p{L}])carteira(?![\p{L}])/iu,
+};
+/**
+ * The keys that name the section: navigation labels and page titles (and the
+ * titles of its failure and refusal states) for /family-wallet and /wallet.
+ * A key is checked when its namespace file exists; a missing key is refused.
+ */
+export const SECTION_NAME_KEYS = {
+  'rebuild-core.json': ['appShell.nav.wallet', 'appShell.nav.familyCoins', 'appShell.nav.coins'],
+  'rebuild-family.json': ['familyCoins.title', 'familyCoins.failedTitle', 'childCoins.title', 'childCoins.titleFamily', 'childCoins.failedTitle', 'childCoins.refusedTitle', 'teenWalletScreen.failedTitle', 'teenWalletScreen.refusedTitle'],
+  'teenWallet.json': ['page.title'],
+};
+/** The navigation file whose Wallet slots may not point at a "bank" path, and the module its path constants come from. */
+export const NAVIGATION_FILE = 'frontend/src/app-shell/navigation.ts';
+export const PATH_CONSTANT_FILES = [NAVIGATION_FILE, 'frontend/src/rebuild/banking/walletPath.ts'];
 
 /** Documentation kept as history, or owned by the owner (the checksummed SPEC): never rewritten here, so never scanned. */
 export const HISTORY = [
@@ -111,6 +138,36 @@ export function scanI18n(root) {
   return found;
 }
 
+/** Every key that names the section carries the locale's Wallet term. */
+export function scanSectionNames(root) {
+  const base = join(root, 'frontend/src/i18n');
+  const found = [];
+  for (const [locale, term] of Object.entries(WALLET_TERM)) {
+    for (const [file, keys] of Object.entries(SECTION_NAME_KEYS)) {
+      const path = join(base, locale, file);
+      if (!existsSync(path)) continue;
+      const strings = new Map(flatten(JSON.parse(readFileSync(path, 'utf8'))));
+      for (const key of keys) {
+        const text = strings.get(key);
+        if (typeof text !== 'string') found.push(`frontend/src/i18n/${locale}/${file} ${key}: missing (it names the Wallet section)`);
+        else if (!term.test(text)) found.push(`frontend/src/i18n/${locale}/${file} ${key}: names the Wallet section without the glossary term "${text}"`);
+      }
+    }
+  }
+  const nav = join(root, NAVIGATION_FILE);
+  if (existsSync(nav)) {
+    const text = withoutComments(readFileSync(nav, 'utf8'));
+    const constants = new Map(PATH_CONSTANT_FILES.filter((file) => existsSync(join(root, file)))
+      .flatMap((file) => [...withoutComments(readFileSync(join(root, file), 'utf8')).matchAll(/export const (\w+)\s*=\s*'([^']*)'/g)].map((m) => [m[1], m[2]])));
+    for (const m of text.matchAll(/\{\s*id:\s*'[^']*',\s*label:\s*'(wallet|familyCoins|coins)',\s*path:\s*('([^']*)'|\w+)/g)) {
+      const path = m[3] ?? constants.get(m[2]);
+      if (path === undefined) found.push(`${NAVIGATION_FILE}: the "${m[1]}" slot's path ${m[2]} is not a known constant`);
+      else if (/bank/i.test(path)) found.push(`${NAVIGATION_FILE}: the "${m[1]}" slot points at "${path}" (the glossary avoids "bank")`);
+    }
+  }
+  return found;
+}
+
 /** Source and public files a person reads the output of. */
 export function scanSources(root) {
   const serviceDirs = readdirSync(root, { withFileTypes: true })
@@ -152,7 +209,7 @@ export function scanDocs(root) {
 }
 
 export function checkWalletGlossary(root = repo) {
-  return [...scanI18n(root), ...scanSources(root), ...scanDocs(root)];
+  return [...scanI18n(root), ...scanSectionNames(root), ...scanSources(root), ...scanDocs(root)];
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

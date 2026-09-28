@@ -9,6 +9,7 @@ import '../../design/tokens.css';
 import '../../design/system.css';
 import '../console/console.css';
 import './money.css';
+import { FAMILY_WALLET_PATH } from '@/rebuild/banking/walletPath';
 
 /*
  * F4-K, the child's Tasks board (W2F.2), for a parent-created child or a
@@ -165,7 +166,7 @@ export function ChildTasks({ copy, locale, dark, transport, photos, onNavigate, 
     </>}
     secondary={<>
       <PocketRow pockets={board.pockets} copy={copy} heading={copy.pocketsTitle}
-        action={<div className="lf-money-link"><ConsoleLink href="/banking" onNavigate={onNavigate}>{copy.walletLink}</ConsoleLink></div>} />
+        action={<div className="lf-money-link"><ConsoleLink href={FAMILY_WALLET_PATH} onNavigate={onNavigate}>{copy.walletLink}</ConsoleLink></div>} />
       <div className="lf-money-slot">{slots.streak}</div>
       <div className="lf-money-slot">{slots.level}</div>
       <div className="lf-money-slot">{slots.notes}</div>
