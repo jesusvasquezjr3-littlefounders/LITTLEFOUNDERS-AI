@@ -30,6 +30,8 @@ export interface LearnLinks {
   journal: string;
   /** L-04: goals together (13 to 17). Optional so older hosts and previews still type-check. */
   together?: string;
+  /** Bible 08 §8 (GAP-FIX-R1): the Mentor screen the home card opens. Optional for older hosts and previews. */
+  mentor?: string;
 }
 
 /** Client-side navigation; `courseSlug` tells the lesson player where "exit" returns. */

@@ -341,3 +341,49 @@ export async function readKidAttempts(kidId: string, lessonIds: string[]): Promi
   const parsed = z.array(AttemptRow).safeParse(rows);
   return parsed.success ? parsed.data : null;
 }
+
+// ── B.10 for v2 (GAP-FIX-R1): the receipts of completed v2 runs ──────────────
+
+const V2RunRow = z.object({ id: z.string(), lesson_id: z.string() });
+const V2ReceiptRow = z.object({
+  run_id: z.string(), segment_id: z.string(), created_at: z.string(),
+  verdict: z.object({
+    correct: z.boolean(), score: z.number(),
+    judgment: z.object({ quality: z.enum(['sound', 'partial', 'unsupported']) }).optional(),
+    diagnostic: z.string().optional(), hints_used: z.number().int().min(0).max(2).optional(),
+  }),
+});
+
+/** One v2 receipt as narrative evidence: the score, hint use and diagnostic code; never the answer or the rubric. */
+export interface KidV2Attempt {
+  lesson_id: string; segment_id: string; score: number; created_at: string; hints_used: number; diagnostic_code: string | null;
+  judgment: 'sound' | 'partial' | 'unsupported' | null;
+}
+
+/**
+ * The graded receipts of the kid's COMPLETED v2 runs for these lessons,
+ * read server-side (the receipts stay Core-only). An in-progress run tells
+ * the guardian nothing yet, so it is not read.
+ */
+export async function readKidV2Attempts(kidId: string, lessonIds: string[]): Promise<KidV2Attempt[] | null> {
+  const runs = await restBatchedByIds(lessonIds, (batch) => serviceRest<unknown[]>(
+    `/lesson_v2_runs?user_id=eq.${eu(kidId)}&lesson_id=${inList(batch)}&completed_at=not.is.null&select=id,lesson_id`));
+  const parsedRuns = z.array(V2RunRow).safeParse(runs);
+  if (!parsedRuns.success) return null;
+  if (parsedRuns.data.length === 0) return [];
+  const lessonByRun = new Map(parsedRuns.data.map((run) => [run.id, run.lesson_id]));
+  const receipts = await restBatchedByIds([...lessonByRun.keys()], (batch) => serviceRest<unknown[]>(
+    `/lesson_v2_grade_receipts?user_id=eq.${eu(kidId)}&run_id=${inList(batch)}&select=run_id,segment_id,created_at,verdict`));
+  const parsed = z.array(V2ReceiptRow).safeParse(receipts);
+  if (!parsed.success) return null;
+  return parsed.data.flatMap((row) => {
+    const lessonId = lessonByRun.get(row.run_id);
+    if (!lessonId) return [];
+    return [{
+      lesson_id: lessonId, segment_id: `${row.run_id}:${row.segment_id}`, score: row.verdict.score, created_at: row.created_at,
+      hints_used: row.verdict.hints_used ?? 0,
+      diagnostic_code: row.verdict.correct ? null : row.verdict.diagnostic && row.verdict.diagnostic !== 'none' ? row.verdict.diagnostic : 'initial_incorrect',
+      judgment: row.verdict.judgment?.quality ?? null,
+    }];
+  });
+}

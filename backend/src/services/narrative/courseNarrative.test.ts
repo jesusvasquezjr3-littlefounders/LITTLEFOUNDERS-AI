@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildLessonNarrative, struggleOf, weekSummary, type NarrativeAttempt, type NarrativeLessonInput } from './courseNarrative.js';
+import { buildLessonNarrative, lessonEvidence, struggleOf, weekSummary, type NarrativeAttempt, type NarrativeLessonInput } from './courseNarrative.js';
 
 const at = (segmentId: string, score: number, minute: number, extra: Partial<NarrativeAttempt> = {}): NarrativeAttempt => ({
   segmentId, score, createdAt: `2026-09-20T10:${String(minute).padStart(2, '0')}:00.000Z`, hintsUsed: 0, diagnosticCode: null, ...extra,
@@ -35,7 +35,20 @@ describe('the guardian narrative entry', () => {
     expect(Object.keys(entry).sort()).toEqual(['completedAt', 'conversation', 'courseTitle', 'decisions', 'lessonId', 'lessonTitle', 'skills', 'struggle', 'topicComplete', 'topicTitle', 'usedHint']);
   });
 
-  it('claims no struggle where there is no evidence: story-only, v2 and placement-credited lessons', () => {
+  it('GAP-FIX-R1: reads a completed v2 run through the same fields, with first-try share and judgment counts, never answers', () => {
+    const attempts = [
+      at('run:decide-01', 0, 1, { diagnosticCode: 'outcome', judgment: 'partial', hintsUsed: 1 }), at('run:decide-01', 100, 2, { judgment: 'sound' }),
+      at('run:coins-01', 100, 3, { judgment: null }),
+    ];
+    const v2 = buildLessonNarrative({ ...base, attempts });
+    expect(v2).toMatchObject({ struggle: 'resolved', usedHint: true });
+    const evidence = lessonEvidence({ lessonId: 'l1', attempts, graded: true });
+    expect(evidence).toEqual({ lessonId: 'l1', firstTry: { correct: 1, graded: 2 }, judgment: { assessed: 1, sound: 0, partial: 1, unsupported: 0 } });
+    expect(JSON.stringify([v2, evidence])).not.toMatch(/choice|answer|rubric/);
+    expect(lessonEvidence({ lessonId: 'l1', attempts: [], graded: true })).toBeNull();
+  });
+
+  it('claims no struggle where there is no evidence: story-only and placement-credited lessons', () => {
     expect(buildLessonNarrative({ ...base, graded: false, attempts: [at('a', 0, 1)] }).struggle).toBeNull();
     expect(buildLessonNarrative({ ...base, attempts: [] }).struggle).toBeNull();
     expect(buildLessonNarrative({ ...base, attempts: [at('a', 60, 1, { hintsUsed: 1 }), at('a', 80, 2)] })).toMatchObject({ struggle: 'resolved', usedHint: true });

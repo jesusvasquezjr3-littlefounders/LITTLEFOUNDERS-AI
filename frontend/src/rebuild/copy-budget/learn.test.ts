@@ -33,6 +33,8 @@ const home: Record<string, CopyRole> = {
   rhythm: 'action', storyTitle: 'heading', journal: 'action',
   // L-04 (OD-27 (1)): the goals-together card, shown only to a 13-to-17 participant.
   togetherTitle: 'heading', together: 'action', togetherAsked: 'body',
+  // Bible 08 §8 (GAP-FIX-R1): the Mentor home card.
+  mentorTitle: 'heading', askMentor: 'action',
 };
 const course: Record<string, CopyRole> = {
   allCourses: 'action', map: 'action', progress: 'body', loading: 'heading', start: 'action', minutes: 'data',

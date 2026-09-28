@@ -1,6 +1,7 @@
 import { useId, useState, type FormEvent } from 'react';
-import { Button, Copy, IconButton, InlineNotice, SelectField, TextField } from '../design/controls';
-import { BUCKETS, sameSplit, splitCoins, type Bucket, type HabitGoal, type Split } from './moneyHabitsApi';
+import { Button, Copy, InlineNotice, SelectField } from '../design/controls';
+import { PocketSplit } from './PocketSplit';
+import { sameSplit, splitCoins, type Bucket, type HabitGoal, type Split } from './moneyHabitsApi';
 import '../design/tokens.css';
 import '../design/system.css';
 import './familyHub.css';
@@ -50,20 +51,10 @@ export function SplitChooser({ copy, locale, dark, amount, usual, goals, busy, n
   const label: Record<Bucket, string> = { save: copy.save, spend: copy.spend, share: copy.share };
   const active = goals.filter((g) => g.status === 'active');
 
-  function step(bucket: Bucket, delta: 1 | -1) {
+  /** A typed or stepped count: whole coins, never below zero nor above the payout. */
+  function set(bucket: Bucket, next: number) {
     setMismatch(false);
-    setSplit((current) => {
-      const next = current[bucket] + delta;
-      if (next < 0 || (delta > 0 && current.save + current.spend + current.share >= amount)) return current;
-      return { ...current, [bucket]: next };
-    });
-  }
-
-  /** A typed count: whole coins, never more than the payout. */
-  function set(bucket: Bucket, raw: string) {
-    setMismatch(false);
-    const n = /^\d{1,4}$/.test(raw.trim()) ? Number(raw.trim()) : 0;
-    setSplit((current) => ({ ...current, [bucket]: Math.min(n, amount) }));
+    setSplit((current) => ({ ...current, [bucket]: Math.max(0, Math.min(next, amount)) }));
   }
 
   function submit(event: FormEvent, chosen: Split) {
@@ -77,23 +68,11 @@ export function SplitChooser({ copy, locale, dark, amount, usual, goals, busy, n
     <h2 id={headingId} data-copy-role="heading">{fill(copy.heading, { count: amount })}</h2>
     {!editing && <Copy role="body">{copy.usual}</Copy>}
     <form onSubmit={(event) => submit(event, editing ? split : suggested)} noValidate>
-      <ul className="lf-money-habits-pockets">
-        {BUCKETS.map((bucket) => <li key={bucket} data-pocket={bucket}>
-          <span className="lf-money-habits-swatch" aria-hidden="true" />
-          {editing ? <>
-            <div className="lf-money-habits-pocket-count">
-              <TextField label={label[bucket]} type="number" inputMode="numeric" min={0} max={amount} step={1}
-                value={split[bucket]} disabled={busy} onChange={(event) => set(bucket, event.target.value)} />
-            </div>
-            <IconButton glyph="minus" label={fill(copy.less, { pocket: label[bucket] })} disabled={busy || split[bucket] === 0} onClick={() => step(bucket, -1)} />
-            <IconButton glyph="plus" label={fill(copy.more, { pocket: label[bucket] })} disabled={busy || left <= 0} onClick={() => step(bucket, 1)} />
-          </> : <>
-            <span data-copy-role="option" className="lf-money-habits-pocket-name">{label[bucket]}</span>
-            <span className="lf-money-habits-count" data-copy-role="data">{suggested[bucket]}</span>
-          </>}
-        </li>)}
-      </ul>
-      {editing && <p data-copy-role="data" aria-live="polite">{left === 0 ? copy.placed : fill(copy.left, { count: left })}</p>}
+      {/* Bible 05 §7: the same pocket rows the lesson's allocation board uses. */}
+      <PocketSplit mode={editing ? 'typed' : 'readonly'} labels={label} values={editing ? split : suggested} disabled={busy}
+        max={(bucket) => split[bucket] + Math.max(0, left)} typedMax={amount}
+        stepLabels={(bucket) => ({ decrease: fill(copy.less, { pocket: label[bucket] }), increase: fill(copy.more, { pocket: label[bucket] }) })}
+        onChange={set} remaining={editing ? (left === 0 ? copy.placed : fill(copy.left, { count: left })) : null} />
       {active.length > 0 && (editing ? split : suggested).save > 0 && <SelectField label={copy.toGoal} value={goalId} disabled={busy}
         onChange={(event) => setGoalId(event.target.value)}
         options={[{ value: '', label: copy.noGoal }, ...active.map((g) => ({ value: g.id, label: g.title, role: 'data' as const }))]} />}

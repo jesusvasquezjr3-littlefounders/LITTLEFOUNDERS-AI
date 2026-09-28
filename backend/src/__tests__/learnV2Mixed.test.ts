@@ -3,7 +3,7 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 import { mintToken } from './helpers.js';
 import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
-import { LESSON_1_ID, makeDb } from './learnFixtures.js';
+import { LESSON_1_ID, TOPIC_ID, makeDb } from './learnFixtures.js';
 
 /*
  * GAP-FIX-R1 learning (OD-17, OD-24, B.7, B.8, B.9): a normal authored v2
@@ -133,5 +133,28 @@ describe('mixed v2 documents (general player, version-pinned completion)', () =>
     const started = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
     const stray = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs/${started.body.data.run_id}/views`)).send({ segment_id: 'intro-01', score: 100 });
     expect(stray.status).toBe(400);
+  });
+
+  it('P-09: a graded course lesson is evidence on the topic primary KC, once per receipt, in the Mentor mastery model', async () => {
+    const kcId = 'abababab-abab-4bab-8bab-abababababab';
+    db.topic_knowledge_components = [{ topic_id: TOPIC_ID, kc_id: kcId, role: 'teaches', is_primary: true }];
+    db.kc = [{ id: kcId, key: 'saving-goal', strand: 'money', title: { 'en-US': 'Saving goal' }, objective: {}, tier_min: 1, p_l0: 0.2, p_t: 0.15, p_g: 0.2, p_s: 0.1,
+      skill_key: null, status: 'active' }];
+    db.learner_kc_mastery = []; db.memory_card = []; db.misconception = []; db.kc_attempt = [];
+    activate(mixedDocument([decide], ['visual.story-scene.v1', 'operation.choose-option.v1']), { 'story-01': { acceptable_choice_ids: ['opt-save'] } });
+    const app = createApp();
+    const started = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
+    const body = { segment_id: 'story-01', run_id: started.body.data.run_id, attempt_token: started.body.data.attempt_tokens['story-01'], answer: { choice: 'opt-save' } };
+    expect((await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send(body)).status).toBe(200);
+    // A network retry replays the same receipt: no second evidence row, no second posterior move.
+    expect((await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send(body)).body.data.replayed).toBe(true);
+    const attempts = db.kc_attempt as Array<Record<string, unknown>>;
+    expect(attempts).toHaveLength(1);
+    expect(attempts[0]).toMatchObject({ kc_id: kcId, source: 'course_lesson', correct: true, receipt_key: expect.stringMatching(/^v2:/) });
+    // The Mentor's map now reads the same mastery the course path reads.
+    const mastery = (db.learner_kc_mastery as Array<Record<string, unknown>>).find((row) => row.kc_id === kcId);
+    expect(Number(mastery?.p_known)).toBeGreaterThan(0.2);
+    expect(Number(mastery?.p_known)).toBe(Number(attempts[0]!.p_known_after));
+    expect((db.memory_card as Array<Record<string, unknown>>).some((row) => row.kc_id === kcId)).toBe(true);
   });
 });

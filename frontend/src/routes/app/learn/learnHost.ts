@@ -26,6 +26,8 @@ export const LEARN_LINKS: LearnLinks = {
   placement: placementPath,
   territory: territoryPath,
   rhythm: learningRhythmPath(),
+  // Bible 08 §8 (GAP-FIX-R1): the home card's way to the learner's Mentor.
+  mentor: '/tutor',
   journal: decisionJournalPath(),
   together: togetherPath(),
 };

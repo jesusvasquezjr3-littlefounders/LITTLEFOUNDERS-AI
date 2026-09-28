@@ -72,3 +72,6 @@
   .lf-learn-hero { padding: var(--spacing-8); }
   .lf-learn-hero h2 { font: var(--type-display-lg); letter-spacing: var(--type-display-lg-tracking); }
 }
+/* Bible 08 §8 (GAP-FIX-R1): the Mentor home card. */
+.lf-learn-mentor { display: grid; gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-lg); background: var(--primary-soft); color: var(--content); }
+.lf-learn-mentor-row { display: flex; align-items: center; gap: var(--spacing-3); font-weight: 800; }

@@ -59,6 +59,21 @@ export const learningQualityReportSchema = z.object({
     autonomy: z.array(z.object({ lever: z.enum(['path', 'mentor', 'pace']), offered: count, exercised: count,
       adoption_rate: z.number().min(0).max(1).nullable() })),
   }).nullable().optional(),
+  /*
+   * GAP-FIX-R1 (Appendix C 1.1, Appendix P Parts 4.5 and 8): transfer versus
+   * practice per KC, the structure-versus-answer split of first-try errors,
+   * the M1 first unaided stage and d-prime on the scam families. Null until
+   * 0195 is applied; absent from an older Core.
+   */
+  v2Signals: z.object({
+    transfer: z.array(z.object({ kc: z.string(), item_role: z.enum(['practice', 'transfer']), first_attempts: count, successes: count,
+      success_share: z.number().min(0).max(1) })),
+    errorSplit: z.object({ structure: count, answer: count,
+      byDiagnostic: z.array(z.object({ family: z.enum(['structure', 'answer']), diagnostic: z.string(), errors: count })) }),
+    firstUnaided: z.array(z.object({ stage: z.enum(['concrete', 'pictorial', 'abstract']), learners: count })),
+    detection: z.array(z.object({ lesson_id: z.string().uuid(), responses: count, hits: count, misses: count, false_alarms: count,
+      correct_rejections: count, dPrime: z.number() })),
+  }).nullable().optional(),
 });
 export type LearningQualityReport = z.infer<typeof learningQualityReportSchema>;
 export type ReviewDecision = 'make_harder' | 'make_easier' | 'adjust_band' | 'no_change';

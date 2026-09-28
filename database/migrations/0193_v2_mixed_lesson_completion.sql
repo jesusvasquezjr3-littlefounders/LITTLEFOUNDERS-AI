@@ -180,6 +180,7 @@ BEGIN
                 AND (NOT (verdict ? 'kc') OR (jsonb_typeof(verdict->'kc') = 'string'
                     AND verdict->>'kc' ~ '^[a-z0-9][a-z0-9._:-]{2,100}$'))
                 AND (NOT (verdict ? 'detection') OR (jsonb_typeof(verdict->'detection') = 'object'
+                    AND (verdict->'detection') ?& ARRAY['hits', 'misses', 'false_alarms', 'correct_rejections']
                     AND (verdict->'detection') - ARRAY['hits', 'misses', 'false_alarms', 'correct_rejections'] = '{}'::jsonb
                     AND (verdict->'detection'->>'hits') ~ '^[0-9]$'
                     AND (verdict->'detection'->>'misses') ~ '^[0-9]$'

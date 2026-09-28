@@ -5,6 +5,7 @@
 // by the model, so they cannot drift. Re-gates vocabulary for the TARGET
 // locale afterwards (forbidden-word lists are per-locale).
 
+import { glossaryPromptLines, glossaryProblems } from '../contentGates/glossary.js';
 import { completeDeepSeek } from '../providers/deepseek.js';
 import type { UsageLedger } from '../providers/usage.js';
 import { getConfig } from '../env.js';
@@ -251,6 +252,8 @@ export function translationSystemPrompt(targetLocale: 'en-US' | 'pt-BR', toneDir
     'Preserve any EMOJI exactly as-is (same emoji, same position in the sentence) — never drop, add, or swap them. ' +
     'LENGTH: on-screen instructions are hard-capped — a translation must NEVER be meaningfully LONGER than its source string; when your language runs long, compress (drop filler words, use the shorter synonym) rather than exceed the source length. ' +
     `${currencyLine} ${colloquialLine} ` +
+    // OD-11 (GAP-FIX-R1): the controlled glossary, for the target market.
+    `${glossaryPromptLines(targetLocale)} ` +
     // B.16 (S05.4b): a lesson with per-market scenarios is ADAPTED, not translated.
     (adaptation ? `${adaptation} ` : '') +
     'Output ONLY a strict flat JSON object mapping each input key to its translation — same keys, translated values, nothing else.'
@@ -461,6 +464,8 @@ export async function localizeLesson(
     // carries the source market's context, or skips its own scenario, is a
     // translation, not a localization (B.16).
     ...runLessonPolicyGates(parsed.data, gateCtx.lessonPolicy, markets).problems,
+    // OD-11 (GAP-FIX-R1): a never-use glossary term in the translation blocks like a tone hit (gate 12).
+    ...glossaryProblems(parsed.data, targetLocale).map((message) => ({ gate: 12 as const, message })),
   ];
   if (contentProblems.length > 0) {
     throw new LocalizeContentGateError(targetLocale, contentProblems);

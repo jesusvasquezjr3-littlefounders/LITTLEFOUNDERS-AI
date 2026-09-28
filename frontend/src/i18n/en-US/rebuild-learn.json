@@ -41,7 +41,9 @@
     "journal": "My decisions",
     "togetherTitle": "Goals together",
     "together": "Open goals",
-    "togetherAsked": "Someone asked you to join a goal."
+    "togetherAsked": "Someone asked you to join a goal.",
+    "mentorTitle": "Your Mentor",
+    "askMentor": "Ask {name}"
   },
   "course": {
     "allCourses": "Courses",

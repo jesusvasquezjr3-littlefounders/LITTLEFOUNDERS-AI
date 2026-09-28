@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { dPrime } from './v2VisualScorer.js';
 import { serviceRest, serviceRestRaw } from './supabaseRest.js';
 import { loadEngagementHealth, type EngagementHealthReport } from './engagementHealth.js';
 
@@ -125,6 +126,37 @@ const AutonomyRow = z.object({
 });
 export type MotivationMetrics = { restDays: z.infer<typeof RestDayRow>; autonomy: z.infer<typeof AutonomyRow>[] };
 
+// GAP-FIX-R1 (Appendix C 1.1, Appendix P Parts 4.5 and 8): the v2 receipt signals (0195).
+const TransferRow = z.object({ kc: z.string(), item_role: z.enum(['practice', 'transfer']), first_attempts: count, successes: count,
+  success_share: z.coerce.number().min(0).max(1) });
+const ErrorSplitRow = z.object({ family: z.enum(['structure', 'answer']), diagnostic: z.string(), errors: count });
+const UnaidedRow = z.object({ stage: z.enum(['concrete', 'pictorial', 'abstract']), learners: count });
+const DetectionRow = z.object({ lesson_id: z.string().uuid(), responses: count, hits: count, misses: count, false_alarms: count, correct_rejections: count });
+export interface V2LearningSignals {
+  transfer: z.infer<typeof TransferRow>[];
+  errorSplit: { structure: number; answer: number; byDiagnostic: z.infer<typeof ErrorSplitRow>[] };
+  firstUnaided: z.infer<typeof UnaidedRow>[];
+  detection: (z.infer<typeof DetectionRow> & { dPrime: number })[];
+}
+
+/** Null until 0195 is applied: the rest of the report does not depend on it. */
+export async function loadV2LearningSignals(window: { p_since: string; p_until: string }): Promise<V2LearningSignals | null> {
+  const [transfer, split, unaided, detection] = await Promise.all([
+    rpc('learning_transfer_success', window, z.array(TransferRow)),
+    rpc('learning_error_family_split', window, z.array(ErrorSplitRow)),
+    rpc('learning_first_unaided_stage_distribution', window, z.array(UnaidedRow)),
+    rpc('learning_detection_cells', window, z.array(DetectionRow)),
+  ]);
+  if (!transfer || !split || !unaided || !detection) return null;
+  const total = (family: 'structure' | 'answer') => split.filter((row) => row.family === family).reduce((sum, row) => sum + row.errors, 0);
+  return {
+    transfer,
+    errorSplit: { structure: total('structure'), answer: total('answer'), byDiagnostic: split },
+    firstUnaided: unaided,
+    detection: detection.map((row) => ({ ...row, dPrime: dPrime({ hits: row.hits, misses: row.misses, false_alarms: row.false_alarms, correct_rejections: row.correct_rejections }) })),
+  };
+}
+
 async function rpc<T>(name: string, body: Record<string, unknown>, schema: z.ZodType<T>): Promise<T | null> {
   const result = await serviceRest<unknown>(`/rpc/${name}`, { method: 'POST', body: JSON.stringify(body) });
   const parsed = schema.safeParse(result);
@@ -151,6 +183,8 @@ export interface LearningQualityReport {
    * their trend. Null until the *_engagement_health.sql migration is applied.
    */
   engagementHealth: EngagementHealthReport | null;
+  /** GAP-FIX-R1: transfer vs practice, structure vs answer errors, first unaided stage and d′; null until 0195 is applied. */
+  v2Signals: V2LearningSignals | null;
   thresholds: {
     judgmentDivergenceFloor: number; judgmentMinAttempts: number; replayNoticeTarget: number; bandReviewCadenceDays: number;
   };
@@ -161,7 +195,7 @@ export async function loadLearningQualityReport(days: number, now = new Date()):
   const until = now.toISOString();
   const since = new Date(now.getTime() - days * 86_400_000).toISOString();
   const window = { p_since: since, p_until: until };
-  const [lessons, reviews, bands, log, judgment, replay, restDays, autonomy, engagementHealth] = await Promise.all([
+  const [lessons, reviews, bands, log, judgment, replay, restDays, autonomy, engagementHealth, v2Signals] = await Promise.all([
     rpc('practice_success_band_metrics', window, z.array(MetricRow)),
     serviceRest<unknown>('/practice_difficulty_reviews?select=id,lesson_id,direction,window_days,evidence,status,decision,decision_note,opened_at,resolved_at&order=opened_at.desc&limit=100')
       .then((rows) => { const parsed = z.array(ReviewRow).safeParse(rows); return parsed.success ? parsed.data : null; }),
@@ -174,6 +208,7 @@ export async function loadLearningQualityReport(days: number, now = new Date()):
     rpc('learning_rest_day_utilization', window, z.array(RestDayRow)),
     rpc('learning_autonomy_adoption', window, z.array(AutonomyRow)),
     loadEngagementHealth(now),
+    loadV2LearningSignals(window),
   ]);
   if (!lessons || !reviews || !bands || !log || !judgment || !replay) return null;
   const band = bands[0];
@@ -192,6 +227,7 @@ export async function loadLearningQualityReport(days: number, now = new Date()):
       autonomy,
     } : null,
     engagementHealth,
+    v2Signals,
     thresholds: {
       judgmentDivergenceFloor: JUDGMENT_DIVERGENCE_FLOOR, judgmentMinAttempts: JUDGMENT_MIN_ATTEMPTS,
       replayNoticeTarget: REPLAY_NOTICE_TARGET, bandReviewCadenceDays: BAND_REVIEW_CADENCE_DAYS,

@@ -1,6 +1,8 @@
 import { useId, type ReactNode } from 'react';
 import type { AgeBand, Locale } from '../design/copyBudget';
-import { Art, Banner, ButtonLink, Card, DashboardLayout, EmptyState, ErrorState, LoadingState, Pill, ProgressBar, RewardChip, Button } from '../design/controls';
+import { Art, Banner, ButtonLink, Card, DashboardLayout, EmptyState, ErrorState, LoadingState, MentorAvatar, Pill, ProgressBar, RewardChip, Button } from '../design/controls';
+import { findMentorAvatar, MENTOR_NAMES } from '../design/assets';
+import { StreakStrip } from './StreakStrip';
 import '../design/tokens.css';
 import '../design/system.css';
 import './learnerPage.css';
@@ -89,6 +91,7 @@ export function LearnHomeView(props: LearnHomeProps) {
       primary={<Shelf {...props} courses={courses} lead={featured} />}
       secondary={<>
         <StreakCard {...props} />
+        <MentorCard {...props} />
         <SelfBridgeList bridges={props.bridges} locale={locale} onBridge={props.onBridge} onOpenWallet={props.onOpenWallet} />
         <StoryCard {...props} />
         <TogetherCard {...props} />
@@ -219,8 +222,32 @@ function StreakCard({ locale, rhythm, links, onNavigate }: LearnHomeProps) {
     {streak?.status === 'resting' ? <p className="lf-learn-streak-count"><span data-copy-role="body">{t.best}</span>
       <strong data-copy-role="data">{new Intl.NumberFormat(locale).format(streak.best)}</strong>
       <span data-copy-role="body">{plural(locale, streak.best, t.daysOne, t.daysOther)}</span></p> : null}
+    {streak?.week ? <StreakStrip week={streak.week} locale={locale} /> : null}
     {streak ? <p data-copy-role="body">{fill(t.restLeft, { n: new Intl.NumberFormat(locale).format(streak.restDaysLeft) })}</p> : null}
     <div className="lf-learn-card-action"><ButtonLink {...linkTo(links.rhythm, onNavigate)}>{t.rhythm}</ButtonLink></div>
+  </section>;
+}
+
+/**
+ * Bible 08 §8 (GAP-FIX-R1): the chosen Mentor fills its home card: the real
+ * render, the name and one ask that opens the Mentor. The character comes
+ * from Core's rhythm payload; without it (loading, a failed read) there is
+ * no card rather than a guessed character.
+ */
+function MentorCard({ locale, rhythm, dark, links, onNavigate }: LearnHomeProps) {
+  const t = learnCopy[locale].home;
+  const headingId = useId();
+  if (rhythm.status !== 'ready' || !links.mentor) return null;
+  const character = rhythm.rhythm.mentor.character;
+  const avatar = findMentorAvatar(character, dark ? 'dark' : 'light');
+  const name = MENTOR_NAMES[character];
+  return <section className="lf-learn-mentor" aria-labelledby={headingId} data-character={character}>
+    <h2 id={headingId} data-copy-role="heading">{t.mentorTitle}</h2>
+    <div className="lf-learn-mentor-row">
+      {avatar ? <MentorAvatar renderId={avatar} label={null} size="md" /> : null}
+      <p data-copy-role="body">{name}</p>
+    </div>
+    <div className="lf-learn-card-action"><ButtonLink {...linkTo(links.mentor, onNavigate)}>{fill(t.askMentor, { name })}</ButtonLink></div>
   </section>;
 }
 

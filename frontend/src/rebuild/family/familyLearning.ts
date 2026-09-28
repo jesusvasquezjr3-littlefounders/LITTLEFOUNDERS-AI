@@ -50,6 +50,12 @@ const narrativeSchema = z.object({
   hasMore: z.boolean(),
   choicesVisible: z.boolean().optional(),
   choices: z.array(tutorChoiceSchema).optional(),
+  // GAP-FIX-R1 (B.10 for v2): per shown lesson, the first-try share and the B.12 judgment counts; never answers.
+  evidence: z.array(z.object({
+    lessonId: z.string().min(1),
+    firstTry: z.object({ correct: z.number().int().min(0), graded: z.number().int().min(1) }).strict(),
+    judgment: z.object({ assessed: z.number().int().min(0), sound: z.number().int().min(0), partial: z.number().int().min(0), unsupported: z.number().int().min(0) }).strict().optional(),
+  }).strict()).optional(),
 });
 
 export const guardianBridgeSchema = z.object({

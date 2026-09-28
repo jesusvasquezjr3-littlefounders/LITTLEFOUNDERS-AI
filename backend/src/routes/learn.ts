@@ -48,6 +48,7 @@ import { badgeEarnedNow, completionCelebrations, courseCompletedNow, type Celebr
 import { pathChoice, paceStatus, type PaceStatus } from '../services/autonomy.js';
 import { topicTeaches } from '../services/narrative/narrativeData.js';
 import { buildV2CompletionReceipt, replayNoticeRequired } from '../services/lessonCompletionReceipt.js';
+import { applyMasteryFade, courseReceiptKey, recordCourseLessonEvidence } from '../services/pedagogy/courseLessonEvidence.js';
 import {
   completeLesson,
   completeV2MixedLesson,
@@ -933,7 +934,9 @@ export function learnRouter(): Router {
      */
     const prefs = document?.mentor_stage ? await getTutorPreferences(user.id) : null;
     const mentorStage = document ? projectV2MentorStage(document, prefs?.character) : null;
-    const deliveredDocument = (document ? stripV2MentorStage(safeDocument) : safeDocument) as { meta?: { cast?: unknown }; scoring?: unknown };
+    const stripped = (document ? stripV2MentorStage(safeDocument) : safeDocument) as { meta?: { cast?: unknown }; scoring?: unknown; segments?: unknown };
+    // M9–M10 (GAP-FIX-R1): worked examples fade by the learner's mastery, chosen here on Core.
+    const deliveredDocument = document ? await applyMasteryFade(stripped, user.id, ctx.topic.id) : stripped;
     // B.9 (S05.3c): one earlier, relevant story decision from this course,
     // resurfaced as the lesson opens. Best-effort: never blocks the lesson.
     const narrativeRecall = await resurfaceForLesson({ userId: user.id, tree: ctx.tree, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId });
@@ -1213,6 +1216,8 @@ export function learnRouter(): Router {
       if (!receipt) return fail(res, 502, 'INTERNAL', 'Could not record the lesson attempt');
       if ('blocked' in receipt) return fail(res, 409, 'LESSON_PREREQUISITE_REQUIRED', 'Complete the previous learning step first');
       if (!receipt.replayed) {
+        // P-09 (GAP-FIX-R1): the grade is evidence on the topic's primary KC, once per receipt (best-effort).
+        await recordCourseLessonEvidence({ userId: user.id, topicId: ctx.topic.id, receiptKey: courseReceiptKey('v2', verified.payload.jti), score: graded.score });
         // B.9 for v2 (OD-24): a graded story choice goes to the decision journal. Best-effort.
         await recordV2GradedDecisions({ userId: user.id, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId, locale: document.locale,
           lessonTitle: document.title, segment: gradedSegment, answer });
@@ -1445,6 +1450,11 @@ export function learnRouter(): Router {
       p_local_date: parsed.data.local_date ?? new Date().toISOString().slice(0, 10),
     });
     if (!completion) return fail(res, 502, 'INTERNAL', 'Could not save lesson completion; retry this run');
+    // P-09 (GAP-FIX-R1): a graded v1 completion is evidence on the topic's primary KC, once per run.
+    if (gradedIds.length > 0 && !completion.replayed) {
+      await recordCourseLessonEvidence({ userId: user.id, topicId: ctx.topic.id, score: lessonScore,
+        receiptKey: courseReceiptKey('v1', parsed.data.run_id ?? `${lessonId}:${parsed.data.local_date ?? new Date().toISOString().slice(0, 10)}`) });
+    }
 
     /*
      * Retention signal, recorded SERVER-side because only the server knows

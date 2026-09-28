@@ -1,4 +1,5 @@
 import { useId, useState, type KeyboardEvent } from 'react';
+import { StreakStrip } from './StreakStrip';
 import type { Locale } from '../design/copyBudget';
 import { Button, ErrorState, InlineNotice, LoadingState } from '../design/controls';
 import '../design/tokens.css';
@@ -83,6 +84,7 @@ export function StreakCard({ streak, locale }: { streak: StreakView; locale: Loc
       : <p className="lf-rhythm-count"><img src="/rebuild/art/streak-flame.svg" alt="" className="lf-rhythm-flame" />
         <strong data-copy-role="data">{n.format(streak.current)}</strong><span data-copy-role="body">{t.days(streak.current)}</span></p>}
     {status ? <p className="lf-rhythm-status" data-copy-role="body">{status}</p> : null}
+    {streak.week ? <StreakStrip week={streak.week} locale={locale} /> : null}
     <dl className="lf-rhythm-facts">
       <div><dt data-copy-role="body">{t.best}</dt><dd data-copy-role="data">{n.format(streak.best)}</dd></div>
       <div><dt data-copy-role="body">{t.practiced}</dt><dd data-copy-role="data">{n.format(streak.daysPracticed)}</dd></div>

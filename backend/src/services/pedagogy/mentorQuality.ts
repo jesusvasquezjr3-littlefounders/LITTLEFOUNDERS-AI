@@ -211,7 +211,7 @@ export const SIGNALS: readonly SignalDefinition[] = [
   { id: 'learning.delayed_retention', category: 'learning_outcome', requirement: 'B.6', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'spaced-review first attempts (admin_retention_at_distance)', instrumented: 'yes' },
   { id: 'learning.practice_success_band', category: 'learning_outcome', requirement: 'B.19', owner: 'pedagogical_lead', threshold: { kind: 'band', value: T.practiceBand.low, upper: T.practiceBand.high }, minSample: T.practiceMinAttempts, source: 'kc_attempt (Mentor practice)', instrumented: 'yes' },
   { id: 'learning.time_to_mastery', category: 'learning_outcome', requirement: 'B.19', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'kc_attempt (attempts to the mastery posterior)', instrumented: 'yes' },
-  notInstrumented('learning.transfer_success', 'learning_outcome', 'B.7', 'pedagogical_lead', 'B.7/B.12 practice-vs-transfer tagging'),
+  { id: 'learning.transfer_success', category: 'learning_outcome', requirement: 'B.7', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'v2 grade receipts tagged practice or transfer (learning_transfer_success)', instrumented: 'yes' },
   notInstrumented('learning.judgment_quality', 'learning_outcome', 'B.12', 'pedagogical_lead', 'B.12 judgment-quality signal'),
   notInstrumented('learning.bridge_conversion', 'learning_outcome', 'B.13', 'pedagogical_lead', 'B.13 Family Hub bridge events'),
   notInstrumented('learning.decision_journal', 'learning_outcome', 'B.9', 'pedagogical_lead', 'B.9 narrative-state event log'),
@@ -298,6 +298,8 @@ export interface QualitySources {
   completeness: { active: number; current: number } | null;
   kcAttempts: KcAttemptRow[] | null;
   retention: { bucket: string; n: number; avg_first_attempt_score: number }[] | null;
+  /** GAP-FIX-R1 (Appendix C 1.1): first-try success per KC and item role, from v2 receipts (0195). Optional: absent before the loop reads it. */
+  transfer?: { kc: string; item_role: 'practice' | 'transfer'; first_attempts: number; successes: number }[] | null;
 }
 
 // ── What the loop stores ────────────────────────────────────────────────────
@@ -661,6 +663,29 @@ function evaluateOne(
     case 'learning.practice_success_band':
     case 'learning.time_to_mastery':
       return practiceReading(def, src, anomalies, unavailable);
+    case 'learning.transfer_success': {
+      // Appendix C 1.1: success on transfer items, beside practice success on the same KCs.
+      // null = the read failed (unavailable); undefined = a source set built before 0195 (no evidence yet).
+      if (src.transfer === null) return unavailable(def);
+      const all = src.transfer ?? [];
+      const share = (role: 'practice' | 'transfer', rows = all) => {
+        const picked = rows.filter((r) => r.item_role === role);
+        const n = picked.reduce((s, r) => s + r.first_attempts, 0);
+        return { n, value: n === 0 ? null : picked.reduce((s, r) => s + r.successes, 0) / n };
+      };
+      const transfer = share('transfer');
+      const kcs = [...new Set(all.map((r) => r.kc))].sort();
+      return reading(def.id, {
+        status: transfer.n === 0 ? 'insufficient_data' : 'diagnostic',
+        value: transfer.value,
+        sample: transfer.n,
+        breakdown: kcs.flatMap((kc) => (['practice', 'transfer'] as const).map((role) => {
+          const s = share(role, all.filter((r) => r.kc === kc));
+          return { key: `kc:${kc}/${role}`, value: s.value, sample: s.n, status: 'diagnostic' as const };
+        })),
+        detail: { practiceShare: share('practice').value ?? -1 },
+      });
+    }
     default:
       return reading(def.id, { status: 'not_instrumented' });
   }

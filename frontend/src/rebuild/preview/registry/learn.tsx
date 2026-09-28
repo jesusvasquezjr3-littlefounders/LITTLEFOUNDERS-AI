@@ -76,7 +76,7 @@ const LearnPreviewHost = ({ children }: { children: ReactNode }) => <main classN
 /* W2L.1: the learner pages' links, as preview screens (a plain press opens that screen in place). */
 const previewLinks: LearnLinks = {
   home: '?screen=learnhome', course: () => '?screen=course', lesson: () => '?screen=lesson', placement: () => '?screen=placement',
-  territory: () => '?screen=territory', rhythm: '?screen=rhythm', journal: '?screen=journal', together: '?screen=together',
+  territory: () => '?screen=territory', rhythm: '?screen=rhythm', journal: '?screen=journal', together: '?screen=together', mentor: '?screen=mentor',
 };
 const REPORT_COPY = { 'en-US': enProfile.report, 'es-MX': esProfile.report, 'pt-BR': ptProfile.report } as const;
 

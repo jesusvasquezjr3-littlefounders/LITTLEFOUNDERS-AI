@@ -2448,6 +2448,15 @@ export async function getStreakPauses(userId: string, fromDate: string): Promise
   return parsed.success ? parsed.data : null;
 }
 
+/** GAP-FIX-R1: the learner's recorded local practice days in [fromDate, toDate] (0196), service role. Null when the read fails. */
+export async function getPracticeDays(userId: string, fromDate: string, toDate: string): Promise<string[] | null> {
+  const rows = await serviceRest<unknown[]>(
+    `/learning_practice_days?user_id=eq.${eu(userId)}&local_date=gte.${es(fromDate)}&local_date=lte.${es(toDate)}&select=local_date&order=local_date.asc&limit=14`,
+  );
+  const parsed = z.array(z.object({ local_date: z.string() })).safeParse(rows);
+  return parsed.success ? parsed.data.map((row) => row.local_date.slice(0, 10)) : null;
+}
+
 export type PauseWriteStatus = 'set' | 'cancelled' | 'none' | 'forbidden' | 'invalid' | 'unavailable';
 /** The guardian's holiday pause. The function re-checks the verified link itself. */
 export async function setStreakPause(input: { guardianId: string; learnerId: string; startsOn: string; endsOn: string; today: string }): Promise<PauseWriteStatus> {

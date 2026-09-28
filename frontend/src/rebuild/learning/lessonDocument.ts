@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { growthComparison } from './growthComparisonModel.generated';
-import { v2FamilySegments, v2SegmentExtras } from './v2SegmentFamilies.generated';
+import { longArithmeticSchema, v2FamilySegments, v2SegmentExtras } from './v2SegmentFamilies.generated';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/);
 const locale = z.enum(['en-US', 'es-MX', 'pt-BR']);
@@ -245,6 +245,8 @@ const workedExampleSegment = z.object({
     }).strict()).min(3).max(4),
     fade_count: nonnegativeInteger.max(3),
     response_step_ids: z.array(id).min(2).max(3),
+    // M9 (GAP-FIX-R1): the optional written algorithm, mirrored with Core.
+    algorithm: longArithmeticSchema.optional(),
   }).strict().refine((value) => value.fade_count < value.steps.length
     && new Set(value.steps.map((step) => step.id)).size === value.steps.length
     && value.response_step_ids.join(':') === value.steps.slice(1).map((step) => step.id).join(':'),

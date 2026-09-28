@@ -1,5 +1,7 @@
 import { useRef, type ReactNode } from 'react';
-import { Art, Button, Card, DashboardLayout, ErrorState, InlineNotice, LoadingState, Pill } from '../design/controls';
+import { Art, Button, Card, DashboardLayout, ErrorState, InlineNotice, LoadingState, MentorAvatar, Pill } from '../design/controls';
+import { findMentorAvatar, MENTOR_NAMES, type MentorCharacter } from '../design/assets';
+import { StreakStrip, type StreakDay } from '../learning/StreakStrip';
 import { CartoonAvatar, CoverArt } from './avatar/CartoonAvatar';
 import type { AvatarLook, CoverId } from './avatar/avatarKit';
 import { AppLink } from './navLink';
@@ -41,7 +43,12 @@ export interface OwnProfileCopy {
   badgesTitle: string; badgeEarned: string; badgeEarnedUndated: string; badgesEmpty: string;
   peopleTitle: string; followers: string; following: string; peopleManaged: string;
   inviteTitle: string; inviteBody: string; inviteNeedsUsername: string; copyLink: string; copied: string; copyFailed: string; inviteMessage: string;
+  /** Bible 08 §8 (GAP-FIX-R1): the Mentor row. */
+  mentorTitle: string; mentorChange: string;
 }
+
+/** The learner's rhythm as the profile shows it (Core's /learn/rhythm): the chosen Mentor and this week's strip. */
+export interface OwnProfileRhythm { character: MentorCharacter; week: StreakDay[] | null }
 
 export type SocialTier = 'guardian' | 'teen' | 'adult' | 'closed' | null;
 
@@ -73,7 +80,7 @@ export function invitesAllowed(tier: SocialTier) {
   return tier === 'adult' || tier === 'teen';
 }
 
-export function OwnProfile({ copy, locale, dark, ageBand, view, origin, invite = 'idle', safetyNotice, connections, onNavigate, onRetry, onCopyInvite }: {
+export function OwnProfile({ copy, locale, dark, ageBand, view, origin, invite = 'idle', safetyNotice, connections, rhythm = null, onNavigate, onRetry, onCopyInvite }: {
   copy: OwnProfileCopy;
   locale: string;
   dark: boolean;
@@ -85,6 +92,8 @@ export function OwnProfile({ copy, locale, dark, ageBand, view, origin, invite =
   invite?: InviteStatus;
   safetyNotice?: ReactNode;
   connections?: ReactNode;
+  /** GAP-FIX-R1: the Mentor row and the streak strip; null when the rhythm read failed or is not the learner's. */
+  rhythm?: OwnProfileRhythm | null;
   onNavigate: (href: string) => void;
   onRetry: () => void;
   onCopyInvite: (text: string) => void;
@@ -101,14 +110,14 @@ export function OwnProfile({ copy, locale, dark, ageBand, view, origin, invite =
       <header className="lf-account-header"><h1 data-copy-role="heading">{copy.title}</h1></header>
       <ErrorState heading={view.offline ? copy.offlineTitle : copy.failedTitle} body={view.offline ? copy.offlineBody : copy.failedBody}
         retryLabel={copy.retry} retryingLabel={copy.retrying} retrying={view.retrying} onRetry={onRetry} />
-    </div> : <Ready copy={copy} locale={locale} data={view.data} origin={origin} invite={invite} safetyNotice={safetyNotice}
-      connections={connections} onNavigate={onNavigate} onCopyInvite={onCopyInvite} />}
+    </div> : <Ready copy={copy} locale={locale} dark={dark} data={view.data} origin={origin} invite={invite} safetyNotice={safetyNotice}
+      connections={connections} rhythm={rhythm} onNavigate={onNavigate} onCopyInvite={onCopyInvite} />}
   </div>;
 }
 
-function Ready({ copy, locale, data, origin, invite, safetyNotice, connections, onNavigate, onCopyInvite }: {
-  copy: OwnProfileCopy; locale: string; data: OwnProfileData; origin: string; invite: InviteStatus;
-  safetyNotice?: ReactNode; connections?: ReactNode; onNavigate: (href: string) => void; onCopyInvite: (text: string) => void;
+function Ready({ copy, locale, dark, data, origin, invite, safetyNotice, connections, rhythm, onNavigate, onCopyInvite }: {
+  copy: OwnProfileCopy; locale: string; dark: boolean; data: OwnProfileData; origin: string; invite: InviteStatus;
+  safetyNotice?: ReactNode; connections?: ReactNode; rhythm: OwnProfileRhythm | null; onNavigate: (href: string) => void; onCopyInvite: (text: string) => void;
 }) {
   const number = new Intl.NumberFormat(locale);
   const month = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' });
@@ -129,7 +138,18 @@ function Ready({ copy, locale, data, origin, invite, safetyNotice, connections, 
         <dd data-copy-role="data">{number.format(value)}</dd>
       </div>)}
     </dl>
+    {rhythm?.week && (locale === 'en-US' || locale === 'es-MX' || locale === 'pt-BR') ? <StreakStrip week={rhythm.week} locale={locale} /> : null}
   </Card>;
+
+  // Bible 08 §8 (GAP-FIX-R1): the chosen Mentor fills its profile row: the real render, the name and "Change".
+  const avatar = rhythm ? findMentorAvatar(rhythm.character, dark ? 'dark' : 'light') : null;
+  const mentor = rhythm ? <Card heading={copy.mentorTitle}>
+    <div className="lf-profile-mentor" data-character={rhythm.character}>
+      {avatar ? <MentorAvatar renderId={avatar} label={null} size="md" /> : null}
+      <p className="lf-profile-mentor-name" data-copy-role="body">{MENTOR_NAMES[rhythm.character]}</p>
+      <AppLink href="/tutor?sheet=chooser" onNavigate={onNavigate}>{copy.mentorChange}</AppLink>
+    </div>
+  </Card> : null;
 
   const badges = <Card heading={copy.badgesTitle}>
     {data.badges.length === 0 ? <p className="lf-account-muted" data-copy-role="body">{copy.badgesEmpty}</p>
@@ -192,6 +212,6 @@ function Ready({ copy, locale, data, origin, invite, safetyNotice, connections, 
     {safetyNotice ? <div className="lf-account-slot">{safetyNotice}</div> : null}
     <DashboardLayout primary={<>{progress}{badges}</>}
       // A teen's pending requests are the one thing on this page that waits for a decision: they come first.
-      secondary={people || share || connections ? <>{connections ? <div className="lf-account-slot">{connections}</div> : null}{people}{share}</> : undefined} />
+      secondary={mentor || people || share || connections ? <>{connections ? <div className="lf-account-slot">{connections}</div> : null}{mentor}{people}{share}</> : undefined} />
   </>;
 }

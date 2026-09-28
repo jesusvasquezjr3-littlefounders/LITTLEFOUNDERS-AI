@@ -37,6 +37,7 @@ import { checkCopyBudget } from '../contentGates/copyBudget.js';
 import { CONCEPT_CEILINGS, type WorkingMemoryBand } from '../contentGates/conceptCap.js';
 import { analyzeRegionalLesson, checkRegionalDocument, loadMarketInventory, type MarketInventory, type RegionalPolicy } from '../contentGates/regional.js';
 import { scanTone, toneAdvice, type ToneFinding } from '../contentGates/tone.js';
+import { scanGlossary } from '../contentGates/glossary.js';
 import type { MarketScenario } from '../catalog/schema.js';
 import { captionLimit } from '../contentGates/budgets.js';
 import { SCRIPT_REPEAT_THRESHOLD, REDUNDANCY_THRESHOLD, verbatimCoverage } from '../contentGates/redundancy.js';
@@ -159,6 +160,16 @@ export function runV2DocumentGates(
     const message = `${finding.path}: "${finding.phrase}" (${finding.category}) — ${toneAdvice(finding.category)}. Text: "${finding.excerpt}"`;
     if (finding.severity === 'block') problems.push({ gate: 12, ...where, message });
     else review.push({ gate: 12, severity: 'review', ...where, message });
+  }
+
+  // OD-11 (GAP-FIX-R1): the controlled glossary over every learner-visible v2 string.
+  for (const block of blocks) {
+    for (const finding of scanGlossary(block.text, locale)) {
+      const where = block.segmentId.startsWith('(') ? {} : { segmentId: block.segmentId };
+      const message = `${block.path}: "${finding.phrase}" is a never-use glossary term (${finding.misuse}, OD-11). Text: "${finding.excerpt}"`;
+      if (finding.severity === 'block') problems.push({ gate: 12, ...where, message });
+      else review.push({ gate: 12, severity: 'review', ...where, message });
+    }
   }
 
   for (const finding of checkCopyBudget(blocks, locale, audience)) {

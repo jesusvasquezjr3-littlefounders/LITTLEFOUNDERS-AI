@@ -41,7 +41,9 @@
     "journal": "Mis decisiones",
     "togetherTitle": "Metas en equipo",
     "together": "Ver metas",
-    "togetherAsked": "Alguien te invitó a una meta."
+    "togetherAsked": "Alguien te invitó a una meta.",
+    "mentorTitle": "Tu Mentor",
+    "askMentor": "Pregunta a {name}"
   },
   "course": {
     "allCourses": "Cursos",

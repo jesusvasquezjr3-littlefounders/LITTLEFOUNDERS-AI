@@ -160,9 +160,10 @@ describe('B.12 reasoning through the signed v2 attempt route', () => {
     });
     expect(second.body.data).toEqual({ verdict: { correct: true, score: 100, judgment: { quality: 'unsupported' } }, replayed: false });
     const stored = (db.lesson_v2_grade_receipts ?? []).map((row) => row.verdict);
+    // GAP-FIX-R1: the receipt also carries the diagnostic code, hint use and KC; the judgment still never changes the score.
     expect(stored).toEqual([
-      { correct: false, score: 0, judgment: { quality: 'sound' } },
-      { correct: true, score: 100, judgment: { quality: 'unsupported' } },
+      { correct: false, score: 0, judgment: { quality: 'sound' }, diagnostic: 'outcome', hints_used: 0, kc: expect.any(String) },
+      { correct: true, score: 100, judgment: { quality: 'unsupported' }, diagnostic: 'none', hints_used: 0, kc: expect.any(String) },
     ]);
 
     const complete = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ run_id: runId, seconds_spent: 95, local_date: '2026-09-24' });

@@ -211,7 +211,7 @@ export async function collectSources(now: Date): Promise<QualitySources> {
   resetLiveContentGateCache();
   const [
     sessions, scores, priorScores, firings, endSignals, alliance, allianceBaseline, renegotiations,
-    trajectory, routing, dialogue, ladder, gate, killSwitchAudit, activeRows, profiles, kcAttempts, retention, judgeCalibrations,
+    trajectory, routing, dialogue, ladder, gate, killSwitchAudit, activeRows, profiles, kcAttempts, retention, judgeCalibrations, transfer,
   ] = await Promise.all([
     readAll<WindowSessionRow>(
       `/tutor_sessions?select=id,character,tier,locale,ended_at,turn_count,evaluation_rubric_hash,close_reason,closing_script,opening,end_signal_evaluated,telemetry_mode,telemetry_evaluated_turns,telemetry_action_turns` +
@@ -243,6 +243,10 @@ export async function collectSources(now: Date): Promise<QualitySources> {
     readAll<KcAttemptRow>(`/kc_attempt?select=user_id,kc_id,correct,p_known_after,created_at&source=eq.segment_grade&created_at=gte.${iso(since)}&order=created_at.asc`),
     serviceRest<{ bucket: string; n: number; avg_first_attempt_score: number }[]>('/rpc/admin_retention_at_distance', { method: 'POST', body: '{}' }),
     readCalibrationRows(),
+    // GAP-FIX-R1 (Appendix C 1.1): v2 practice vs transfer first-try success (0195).
+    serviceRest<{ kc: string; item_role: 'practice' | 'transfer'; first_attempts: number; successes: number }[]>('/rpc/learning_transfer_success', {
+      method: 'POST', body: JSON.stringify({ p_since: iso(since), p_until: iso(now) }),
+    }),
   ]);
 
   return {
@@ -271,6 +275,7 @@ export async function collectSources(now: Date): Promise<QualitySources> {
     completeness: activeRows === null || profiles === null ? null : { active: new Set(activeRows.map((r) => r.user_id)).size, current: profiles },
     kcAttempts,
     retention: Array.isArray(retention) ? retention : null,
+    transfer: Array.isArray(transfer) ? transfer.map((r) => ({ ...r, first_attempts: Number(r.first_attempts), successes: Number(r.successes) })) : null,
   };
 }
 

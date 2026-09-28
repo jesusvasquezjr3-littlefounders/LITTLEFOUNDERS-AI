@@ -43,8 +43,8 @@ describe('rebuild-profile copy budget', () => {
       }
       // W2 profile lane (P1-P3): a child reads all three screens, so the youngest band applies to every string.
       for (const [key, text] of group('ownProfile')) {
-        const role = ['title', 'failedTitle', 'offlineTitle', 'progressTitle', 'badgesTitle', 'peopleTitle', 'inviteTitle'].includes(key) ? 'heading'
-          : ['retry', 'retrying', 'chooseUsername', 'editLook', 'settings', 'followers', 'following', 'copyLink'].includes(key) ? 'action' : 'body';
+        const role = ['title', 'failedTitle', 'offlineTitle', 'progressTitle', 'badgesTitle', 'peopleTitle', 'inviteTitle', 'mentorTitle'].includes(key) ? 'heading'
+          : ['retry', 'retrying', 'chooseUsername', 'editLook', 'settings', 'followers', 'following', 'copyLink', 'mentorChange'].includes(key) ? 'action' : 'body';
         const filled = text.replace('{date}', 'September 2026').replace('{link}', 'littlefounders.ai/@ana');
         expectFits(filled, role, locale, '6-9', `ownProfile.${key}`);
       }

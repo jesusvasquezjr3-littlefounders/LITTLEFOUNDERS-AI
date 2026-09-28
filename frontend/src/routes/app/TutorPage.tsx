@@ -57,6 +57,8 @@ export default function TutorPage() {
   const wallet = useWalletAccess();
   const navigate = useNavigate();
   const reviewSkill = useMemo(() => guidedReviewSkillFrom(window.location.search), []);
+  // Bible 08 §8 (GAP-FIX-R1): /tutor?sheet=chooser (the profile's "Change") opens with the Mentor chooser.
+  const initialSheet = useMemo(() => new URLSearchParams(window.location.search).get('sheet') === 'chooser' ? 'chooser' as const : null, []);
   const opened = useRef(false);
   useEffect(() => {
     if (opened.current) return;
@@ -68,7 +70,7 @@ export default function TutorPage() {
   return <MentorBoundary fallback={<MentorFailure />}>
     <ShellRoot>
       <MentorRoute getToken={getToken} userId={session?.user?.id ?? null} locale={locale} theme={isDark ? 'dark' : 'light'}
-        guardianLink={wallet.familyChild} reviewSkill={reviewSkill} onLeave={leave} onPath={path} />
+        guardianLink={wallet.familyChild} reviewSkill={reviewSkill} onLeave={leave} onPath={path} initialSheet={initialSheet} />
     </ShellRoot>
   </MentorBoundary>;
 }

@@ -285,3 +285,37 @@ export function pauseRangeRefusal(startsOn: string, endsOn: string, today: strin
 export function addDays(date: string, offset: number): string {
   return fromDay(toDay(date) + offset);
 }
+
+// ── The weekly strip (GAP-FIX-R1 learning; Bible 02 §9.6 rules 4-5, 04 §4.3) ──
+
+export type StreakDayState = 'practiced' | 'rest' | 'paused' | 'open' | 'today';
+export interface StreakDay { date: string; state: StreakDayState }
+
+/**
+ * The current ISO week (Monday first) in the learner's calendar, day by day.
+ * `practicedDates` are the learner's recorded local practice days
+ * (learning_practice_days, 0196). A missed day inside a run that is still
+ * alive was bridged by a rest day (the same lapse-tolerant rule as the
+ * streak); a paused day is paused; today, not yet practised, is `today`;
+ * anything else, including future days, is `open`. Never a "missed" or "lost"
+ * state: an ordinary gap reads as open, without judgment.
+ */
+export function streakWeek(view: Pick<StreakReadModel, 'status' | 'current' | 'lastActiveDate'>, today: string,
+  practicedDates: ReadonlySet<string>, paused: ReadonlySet<number> = new Set()): StreakDay[] {
+  const todayDay = toDay(today);
+  const monday = isoWeekStart(todayDay);
+  const alive = view.status !== 'none' && view.status !== 'resting' && view.current > 0;
+  const practicedThisWeek = [...practicedDates].map(toDay).filter((day) => day >= monday && day <= todayDay).sort((a, b) => a - b);
+  // A run older than this week covers every missed day since Monday; otherwise it starts at its first practised day here.
+  const runStart = !alive ? Infinity : view.current > practicedThisWeek.length ? monday : practicedThisWeek[0] ?? todayDay;
+  return Array.from({ length: 7 }, (_, offset) => {
+    const day = monday + offset;
+    const date = fromDay(day);
+    const state: StreakDayState = practicedDates.has(date) && day <= todayDay ? 'practiced'
+      : day === todayDay ? 'today'
+        : day > todayDay ? 'open'
+          : paused.has(day) ? 'paused'
+            : alive && day > runStart ? 'rest' : 'open';
+    return { date, state };
+  });
+}

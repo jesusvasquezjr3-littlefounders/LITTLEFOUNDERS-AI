@@ -266,3 +266,69 @@ export function v2FamilySampleResponse(segment: V2FamilySegment): unknown {
     case 'voice.mentor-episode.v2': return null;
   }
 }
+
+/* ── M9 long arithmetic (Appendix P Part 1 M9–M10, GAP-FIX-R1) ─────────────── */
+
+/**
+ * The optional written algorithm behind a worked example: long division or
+ * long multiplication as a step array of {digit, product, remainder}. For
+ * division each step brings down a digit: `digit` is the quotient digit,
+ * `product` is digit × divisor and `remainder` what is left. For
+ * multiplication each step takes one multiplier digit from the right: `digit`
+ * is that digit, `product` the shifted partial product and `remainder` the
+ * running total. The steps must be exactly the standard algorithm's, so a
+ * renderer can never draw arithmetic that does not add up.
+ */
+export const longArithmeticSchema = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('long-division'), dividend: positive.max(99_999), divisor: positive.min(2).max(99),
+    steps: z.array(z.object({ digit: z.number().int().min(0).max(9), product: z.number().int().nonnegative(), remainder: z.number().int().nonnegative() }).strict()).min(1).max(6) }).strict(),
+  z.object({ kind: z.literal('long-multiplication'), multiplicand: positive.max(9_999), multiplier: positive.min(10).max(99),
+    steps: z.array(z.object({ digit: z.number().int().min(0).max(9), product: z.number().int().nonnegative(), remainder: z.number().int().nonnegative() }).strict()).min(2).max(2) }).strict(),
+]).refine((value) => sameSteps(value.steps, longArithmeticSteps(value)), 'Long arithmetic steps do not follow the algorithm');
+
+export type LongArithmetic = z.infer<typeof longArithmeticSchema>;
+type Step = { digit: number; product: number; remainder: number };
+
+/** The standard algorithm's steps for these operands. */
+export function longArithmeticSteps(value: { kind: 'long-division'; dividend: number; divisor: number } | { kind: 'long-multiplication'; multiplicand: number; multiplier: number }): Step[] {
+  if (value.kind === 'long-division') {
+    const digits = String(value.dividend).split('').map(Number);
+    const steps: Step[] = [];
+    let current = 0;
+    let started = false;
+    for (const digit of digits) {
+      current = current * 10 + digit;
+      if (!started && current < value.divisor) continue;
+      started = true;
+      const q = Math.floor(current / value.divisor);
+      steps.push({ digit: q, product: q * value.divisor, remainder: current - q * value.divisor });
+      current -= q * value.divisor;
+    }
+    return steps.length > 0 ? steps : [{ digit: 0, product: 0, remainder: value.dividend }];
+  }
+  const multiplierDigits = String(value.multiplier).split('').map(Number).reverse();
+  let total = 0;
+  return multiplierDigits.map((digit, place) => {
+    const product = value.multiplicand * digit * 10 ** place;
+    total += product;
+    return { digit, product, remainder: total };
+  });
+}
+
+function sameSteps(left: readonly Step[], right: readonly Step[]): boolean {
+  return left.length === right.length && left.every((step, index) => step.digit === right[index]!.digit
+    && step.product === right[index]!.product && step.remainder === right[index]!.remainder);
+}
+
+/**
+ * The backward-fade depth for a worked example from the learner's mastery of
+ * the topic's primary KC (Appendix P Part 1 M9–M10; B.6's shared posterior).
+ * Novices see every step worked; the fade grows with mastery, and at least
+ * the first step always stays worked (a worked example, not a test).
+ */
+export function masteryFadeCount(stepCount: number, pKnown: number | null): number {
+  const maximum = Math.max(0, stepCount - 1);
+  if (pKnown === null || !Number.isFinite(pKnown)) return 0;
+  const depth = pKnown < 0.4 ? 0 : pKnown < 0.6 ? 1 : pKnown < 0.8 ? 2 : 3;
+  return Math.min(maximum, depth);
+}

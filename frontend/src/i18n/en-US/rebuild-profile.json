@@ -164,7 +164,9 @@
     "copyLink": "Copy link",
     "copied": "Link copied.",
     "copyFailed": "Could not copy. Select the link instead.",
-    "inviteMessage": "Learn with me on LittleFounders: {link}"
+    "inviteMessage": "Learn with me on LittleFounders: {link}",
+    "mentorTitle": "Your Mentor",
+    "mentorChange": "Change"
   },
   "lookEditor": {
     "title": "Your look",

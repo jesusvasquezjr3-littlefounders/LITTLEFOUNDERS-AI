@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { growthComparison } from './v2GrowthComparison.js';
 import { gradeV2Response, scoreV2Judgment, scoreV2Visual, type V2Detection, type V2Diagnostic, type V2JudgmentQuality, type V2VisualKind } from './v2VisualScorer.js';
-import { V2_FAMILY_RUBRICS, v2FamilySampleResponse, v2FamilyScorerPayload, v2FamilySegments, v2SegmentExtras, type V2FamilySegment } from './v2SegmentFamilies.js';
+import { longArithmeticSchema, V2_FAMILY_RUBRICS, v2FamilySampleResponse, v2FamilyScorerPayload, v2FamilySegments, v2SegmentExtras, type V2FamilySegment } from './v2SegmentFamilies.js';
 
 /*
  * Core's independently authored copy of the public v2 lesson contract.
@@ -161,6 +161,8 @@ const workedExample = z.object({
     }).strict()).min(3).max(4),
     fade_count: nonnegative.max(3),
     response_step_ids: z.array(id).min(2).max(3),
+    // M9 (GAP-FIX-R1): the optional written algorithm, drawn in the locale's own layout.
+    algorithm: longArithmeticSchema.optional(),
   }).strict().refine((value) => value.fade_count < value.steps.length
     && new Set(value.steps.map((step) => step.id)).size === value.steps.length
     && value.response_step_ids.join(':') === value.steps.slice(1).map((step) => step.id).join(':'), 'Invalid worked-example steps'),

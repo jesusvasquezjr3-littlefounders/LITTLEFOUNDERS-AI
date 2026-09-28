@@ -1,6 +1,7 @@
 import { useId, useState } from 'react';
-import { Button, Copy, ErrorState, InlineNotice, LoadingState, Stepper } from '../design/controls';
-import { BUCKETS, sameSplit, type Bucket, type Split, type UsualSplit as Usual } from './moneyHabitsApi';
+import { Button, Copy, ErrorState, InlineNotice, LoadingState } from '../design/controls';
+import { PocketSplit } from './PocketSplit';
+import { sameSplit, type Bucket, type Split, type UsualSplit as Usual } from './moneyHabitsApi';
 import { DEFAULT_REGISTER, type MoneyRegister } from './moneyRegister';
 import '../design/tokens.css';
 import '../design/system.css';
@@ -69,17 +70,13 @@ export function UsualSplit({ copy, locale, dark, open, loading, failed, value, b
       {failed ? <ErrorState heading={copy.failed} retryLabel={copy.retry} retryingLabel={copy.loading} onRetry={onRetry} />
         : loading || !tenths || !value ? <LoadingState label={copy.loading} lines={2} /> : <>
         <Copy role="body">{copy.body}</Copy>
-        <ul className="lf-money-habits-pockets">
-          {BUCKETS.map((bucket) => <li key={bucket} data-pocket={bucket}>
-            <span className="lf-money-habits-swatch" aria-hidden="true" />
-            {/* The + bound is what is still unplaced, so + disables once all ten tenths are placed. */}
-            <Stepper className="lf-money-habits-stepper" valuePlacement="label" label={label[bucket]} value={tenths[bucket]}
-              valueText={fill(copy.tenths, { count: tenths[bucket], pct: tenths[bucket] * 10 })} min={0} max={Math.min(10, tenths[bucket] + Math.max(0, 10 - placed))}
-              disabled={busy} onValueChange={(next) => step(bucket, next)}
-              labels={{ decrease: fill(copy.less, { pocket: label[bucket] }), increase: fill(copy.more, { pocket: label[bucket] }) }} />
-            {copy.scale && <span className="lf-money-habits-scale" data-copy-role="data">{fill(copy.scale, { count: tenths[bucket], pct: tenths[bucket] * 10 })}</span>}
-          </li>)}
-        </ul>
+        {/* Bible 05 §7: the same pocket rows the lesson's allocation board uses. The + bound is what is still unplaced. */}
+        <PocketSplit mode="stepper" stepperClassName="lf-money-habits-stepper" labels={label} values={tenths} disabled={busy}
+          max={(bucket) => Math.min(10, tenths[bucket] + Math.max(0, 10 - placed))}
+          valueText={(bucket, count) => fill(copy.tenths, { count, pct: count * 10 })}
+          stepLabels={(bucket) => ({ decrease: fill(copy.less, { pocket: label[bucket] }), increase: fill(copy.more, { pocket: label[bucket] }) })}
+          onChange={step}
+          rowExtra={copy.scale ? (bucket) => <span className="lf-money-habits-scale" data-copy-role="data">{fill(copy.scale!, { count: tenths[bucket], pct: tenths[bucket] * 10 })}</span> : undefined} />
         {placed !== 10 && <InlineNotice tone="error" live>{copy.mustBe10}</InlineNotice>}
         {notice && <InlineNotice tone={notice.error ? 'error' : 'success'} live>{notice.text}</InlineNotice>}
         <div className="lf-family-hub-actions">

@@ -1,0 +1,20 @@
+/* M9 long arithmetic layouts (GAP-FIX-R1). Tokens only; tabular numerals keep columns aligned. */
+.lf-long { display: grid; justify-items: end; gap: var(--spacing-1); inline-size: max-content; max-inline-size: 100%; padding: var(--spacing-3);
+  border-radius: var(--rounded-md); background: var(--sunken); color: var(--content); font-family: Fredoka, sans-serif; font-size: 1.5rem;
+  font-variant-numeric: tabular-nums; overflow-x: auto; }
+.lf-long-rule { inline-size: 100%; border-block-start: 2px solid var(--content); }
+.lf-long--bracket, .lf-long--casita { justify-items: start; }
+.lf-long-quotient--top { padding-inline-start: 3ch; color: var(--primary-strong); }
+.lf-long-house { display: flex; align-items: stretch; }
+.lf-long-divisor { padding-inline-end: var(--spacing-2); }
+.lf-long-dividend--housed { padding-inline: var(--spacing-2); border-block-start: 2px solid var(--content); border-inline-start: 2px solid var(--content); border-start-start-radius: var(--rounded-sm); }
+.lf-long--casita .lf-long-dividend--housed { border-start-start-radius: 0; }
+.lf-long-work { display: grid; gap: var(--spacing-1); padding-inline-start: 3ch; }
+.lf-long-step { display: grid; justify-items: end; }
+.lf-long-product { border-block-end: 2px solid var(--content); }
+.lf-long-remainder { color: var(--primary-strong); }
+.lf-long--chave { grid-template-columns: auto auto; align-items: start; justify-items: stretch; }
+.lf-long-chave-left { display: grid; justify-items: end; gap: var(--spacing-1); padding-inline-end: var(--spacing-3); }
+.lf-long-chave-right { display: grid; gap: var(--spacing-1); }
+.lf-long-chave-right .lf-long-divisor { padding-inline: var(--spacing-2); border-inline-start: 2px solid var(--content); border-block-end: 2px solid var(--content); }
+.lf-long-chave-right .lf-long-quotient { padding-inline: var(--spacing-2); color: var(--primary-strong); }
