@@ -730,7 +730,7 @@ describe('C.11 — the short-horizon rule on the grade route', () => {
  * reveal one tap away (C.18, Frontend Bible 08 §4).
  */
 describe('POST /tutor/internal/segments/:id/reveal-check (reply chips)', () => {
-  const check = (body: unknown, segment = SEGMENT) => request(createApp())
+  const check = (body: string | object, segment = SEGMENT) => request(createApp())
     .post(`/api/v1/tutor/internal/segments/${segment}/reveal-check`)
     .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
     .send(body);

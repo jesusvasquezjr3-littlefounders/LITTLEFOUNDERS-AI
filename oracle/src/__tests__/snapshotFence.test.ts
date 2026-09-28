@@ -246,6 +246,7 @@ describe('a snapshot survives a round trip byte for byte', () => {
       masteryRevokedKcIds: ['kc-saving-1'],
       masteryEvidence: [['kc-saving-1', 1]],
       remediationEvidence: [['kc-saving-1', 'mc-unit-confusion', 2]],
+      discountedCorrect: [['kc-saving-1', true, false]],
       inSessionReview: { entryIndex: 0, turns: 1 },
     });
   }

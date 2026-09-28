@@ -535,14 +535,23 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
    * without a microphone taps an answer instead of typing it.
    */
   const replies = between && turn!.next === 'ask' ? turn!.replies : [];
-  // 08 §2: at most three reply chips; the board comes back first, then the likely answers, then the hint ladder, then another way.
-  const chips = ([
+  /*
+   * 08 §2: at most three reply chips; the board comes back first, then the likely answers, then the hint ladder,
+   * then another way. C.13 mandates an explicit "just tell me" escape hatch, so while the ladder applies the tell
+   * chip always keeps its place: the chips cut to fit are the last ones that are not it, in order.
+   */
+  const chips = [
     boardChip ? { id: 'board', label: copy.showBoard, onPress: () => setBoardOpen(true) } : null,
     ...replies.map((reply, index) => ({ id: `reply-${index}`, label: reply, onPress: () => say(reply) })),
     ladder ? { id: 'hint', label: copy.hint, onPress: () => say(copy.hint) } : null,
     ladder ? { id: 'tell', label: copy.tell, onPress: () => say(copy.tell) } : null,
     explain ? { id: 'explain', label: copy.explain, onPress: () => say(copy.explain) } : null,
-  ].filter(Boolean) as { id: string; label: string; onPress: () => void }[]).slice(0, REPLY_CHIP_MAX);
+  ].filter(Boolean) as { id: string; label: string; onPress: () => void }[];
+  while (chips.length > REPLY_CHIP_MAX) {
+    let cut = chips.length - 1;
+    while (chips[cut]!.id === 'tell') cut -= 1;
+    chips.splice(cut, 1);
+  }
 
   function say(text: string) {
     setActivityResult(null);

@@ -185,11 +185,20 @@ describe('a conversation: the current turn only, Block C as chips', () => {
     };
     const { unmount } = show(session({ phase: 'conversing', ageBand: '6-9', turn: turn({ replies: ['Yes', 'No', 'Maybe'] }) }));
     expect(order()).toBe('chips-first');
-    // Three likely answers fill the three places: the cap holds.
-    expect(within(screen.getByRole('group', { name: t.replyChips })).getAllByRole('button').map((chip) => chip.textContent)).toEqual(['Yes', 'No', 'Maybe']);
+    // The cap holds, and the C.13 "just tell me" escape hatch keeps its place: two likely answers, then tell.
+    expect(within(screen.getByRole('group', { name: t.replyChips })).getAllByRole('button').map((chip) => chip.textContent)).toEqual(['Yes', 'No', t.tell]);
     unmount();
     show(session({ phase: 'conversing', ageBand: '13-17', turn: turn({ replies: ['Yes'] }) }));
     expect(order()).toBe('field-first');
+  });
+
+  it('keeps the "just tell me" escape hatch (C.13) when likely answers, the ladder and another way all compete', () => {
+    const sendText = vi.fn();
+    show(session({ phase: 'conversing', ageBand: '6-9', turn: turn({ seq: 3, replies: ['Yes', 'No', 'Maybe'] }), sendText }));
+    const group = screen.getByRole('group', { name: t.replyChips });
+    expect(within(group).getAllByRole('button').map((chip) => chip.textContent)).toEqual(['Yes', 'No', t.tell]);
+    fireEvent.click(within(group).getByRole('button', { name: t.tell }));
+    expect(sendText).toHaveBeenCalledWith(t.tell);
   });
 
   it('shows no likely answers while an offer is open or the Mentor is not asking', () => {

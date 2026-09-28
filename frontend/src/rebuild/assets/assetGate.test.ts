@@ -83,7 +83,8 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     expect(release.status).toBe(1);
     expect(release.output).toContain('Unapproved asset blocks the build');
     expect(release.output).toContain('Unapproved asset blocks the build (07 §6): /sounds/edu/not_yet.wav');
-  });
+    // This case runs OCR over every live raster too (302 since GAP-FIX-R2): about 80 s alone on a 16-thread machine.
+  }, 300_000);
 
   it('lets only a local build ship drafts (LF_LOCAL_DRAFT_ASSETS), never on CI or a hosting builder, never past another rule', async () => {
     const dir = tree();
