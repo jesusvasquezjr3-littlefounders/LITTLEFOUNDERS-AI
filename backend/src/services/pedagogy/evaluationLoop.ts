@@ -27,7 +27,9 @@
  * reassuring zero (AGENTS.md §1.14). No model call: zero spend (OD-23).
  */
 
+import { z } from 'zod';
 import { countServiceRows, serviceRest, serviceRestRaw } from '../supabaseRest.js';
+import { ENGAGEMENT_HEALTH_WEEKS } from '../engagementHealth.js';
 import { getLiveContentGate, resetLiveContentGateCache, RISK_CATEGORIES } from './liveContentGovernance.js';
 import { readCalibrationRows } from './judgeCalibration.js';
 import { MENTOR_INTEGRITY_THRESHOLDS, type TrajectoryEvidenceRow } from './mentorIntegrity.js';
@@ -47,6 +49,7 @@ import {
   type AuditRow,
   type FiringRow,
   type KcAttemptRow,
+  type LearningSignalSources,
   type QualitySources,
   type ScoreRow,
   type SignalReading,
@@ -199,6 +202,52 @@ export async function scoreBacklog(opts: { now: Date; limit: number; batchSize?:
 
 // ── 2. The sources of every consolidated signal ─────────────────────────────
 
+const count = z.coerce.number().int().nonnegative();
+const ratio = z.coerce.number().min(0).max(1).nullable();
+
+async function rpcRows<T>(name: string, body: Record<string, unknown>, schema: z.ZodType<T>): Promise<T | null> {
+  const result = await serviceRest<unknown>(`/rpc/${name}`, { method: 'POST', body: JSON.stringify(body) });
+  const parsed = schema.safeParse(result);
+  return parsed.success ? parsed.data : null;
+}
+
+/**
+ * C.24 consolidates what the Learning Quality tab already computes (Appendix
+ * C 1.1 and 1.2): the same RPCs learningQuality.ts and engagementHealth.ts
+ * read, over the dashboard's window (the weekly trends over the engagement
+ * report's 12 weeks). A failed read is null, and the signal reads
+ * 'unavailable' with a flag for the engineering lead, never a calm zero.
+ */
+export async function collectLearningSignals(now: Date): Promise<LearningSignalSources> {
+  const window = { p_since: new Date(now.getTime() - T.windowDays * DAY).toISOString(), p_until: now.toISOString() };
+  const weekly = { p_since: new Date(now.getTime() - ENGAGEMENT_HEALTH_WEEKS * 7 * DAY).toISOString(), p_until: now.toISOString() };
+  const [judgment, narrative, sessionEfficiency, mentorResolution, restDays, autonomy] = await Promise.all([
+    rpcRows('learning_judgment_differentiation', window, z.array(z.object({
+      lesson_id: z.string(), attempts: count, correct_not_sound: count, incorrect_sound: count,
+    }))),
+    rpcRows('learning_narrative_metrics', window, z.object({
+      journal_entries_recorded: count, journal_entries_resurfaced: count, bridge_prompts_offered: count,
+      bridge_prompts_converted_7d: count, bridge_self_commitments: count,
+    })),
+    rpcRows('learning_session_efficiency', weekly, z.array(z.object({ week_start: z.string(), learners: count, efficiency_ratio: ratio }))),
+    rpcRows('mentor_resolution_efficiency', weekly, z.array(z.object({
+      week_start: z.string(), intent: z.string(), resolved_sessions: count, median_turns: z.coerce.number().nonnegative().nullable(),
+    }))),
+    rpcRows('learning_rest_day_utilization', window, z.array(z.object({
+      learners_with_lapse: count, kept_by_rest_days: count, utilization_rate: ratio, rest_days_used: count,
+    }))),
+    rpcRows('learning_autonomy_adoption', window, z.array(z.object({ lever: z.string(), offered: count, exercised: count, adoption_rate: ratio }))),
+  ]);
+  return {
+    judgment,
+    narrative,
+    sessionEfficiency,
+    mentorResolution,
+    restDays: restDays === null ? null : restDays[0] ?? { learners_with_lapse: 0, kept_by_rest_days: 0, utilization_rate: null, rest_days_used: 0 },
+    autonomy,
+  };
+}
+
 export async function collectSources(now: Date): Promise<QualitySources> {
   const since = new Date(now.getTime() - T.windowDays * DAY);
   const priorSince = new Date(since.getTime() - T.windowDays * DAY);
@@ -211,7 +260,7 @@ export async function collectSources(now: Date): Promise<QualitySources> {
   resetLiveContentGateCache();
   const [
     sessions, scores, priorScores, firings, endSignals, alliance, allianceBaseline, renegotiations,
-    trajectory, routing, dialogue, ladder, gate, killSwitchAudit, activeRows, profiles, kcAttempts, retention, judgeCalibrations,
+    trajectory, routing, dialogue, ladder, gate, killSwitchAudit, activeRows, profiles, kcAttempts, retention, judgeCalibrations, learning,
   ] = await Promise.all([
     readAll<WindowSessionRow>(
       `/tutor_sessions?select=id,character,tier,locale,ended_at,turn_count,evaluation_rubric_hash,close_reason,closing_script,opening,end_signal_evaluated,telemetry_mode,telemetry_evaluated_turns,telemetry_action_turns` +
@@ -243,6 +292,7 @@ export async function collectSources(now: Date): Promise<QualitySources> {
     readAll<KcAttemptRow>(`/kc_attempt?select=user_id,kc_id,correct,p_known_after,created_at&source=eq.segment_grade&created_at=gte.${iso(since)}&order=created_at.asc`),
     serviceRest<{ bucket: string; n: number; avg_first_attempt_score: number }[]>('/rpc/admin_retention_at_distance', { method: 'POST', body: '{}' }),
     readCalibrationRows(),
+    collectLearningSignals(now),
   ]);
 
   return {
@@ -271,6 +321,7 @@ export async function collectSources(now: Date): Promise<QualitySources> {
     completeness: activeRows === null || profiles === null ? null : { active: new Set(activeRows.map((r) => r.user_id)).size, current: profiles },
     kcAttempts,
     retention: Array.isArray(retention) ? retention : null,
+    learning,
   };
 }
 

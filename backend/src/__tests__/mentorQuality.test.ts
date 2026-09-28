@@ -57,6 +57,14 @@ function empty(): QualitySources {
     completeness: { active: 0, current: 0 },
     kcAttempts: [],
     retention: [],
+    learning: {
+      judgment: [],
+      narrative: { journal_entries_recorded: 0, journal_entries_resurfaced: 0, bridge_prompts_offered: 0, bridge_prompts_converted_7d: 0, bridge_self_commitments: 0 },
+      sessionEfficiency: [],
+      mentorResolution: [],
+      restDays: { learners_with_lapse: 0, kept_by_rest_days: 0, utilization_rate: null, rest_days_used: 0 },
+      autonomy: [],
+    },
   };
 }
 
@@ -101,10 +109,65 @@ describe('C.24 registry', () => {
 
   it('shows a metric with no data source as not instrumented, never as healthy', () => {
     const r = evaluateSignals(empty());
-    expect(readingOf(r, 'engagement.session_efficiency').status).toBe('not_instrumented');
+    expect(readingOf(r, 'engagement.streak_anxiety').status).toBe('not_instrumented');
     expect(readingOf(r, 'rubric.tell_honored').status).toBe('not_instrumented');
     expect(readingOf(r, 'bias_audit.coverage').status).toBe('external');
     expect(r.anomalies).toEqual([]);
+  });
+});
+
+describe('C.24 consolidates the Learning Quality tab (Appendix C 1.1 and 1.2)', () => {
+  const week = (i: number) => new Date(Date.UTC(2026, 5, 1 + i * 7)).toISOString().slice(0, 10);
+  const learning = (patch: Partial<QualitySources['learning']>): QualitySources => ({ ...empty(), learning: { ...empty().learning, ...patch } });
+
+  it('marks the seven Block B metrics instrumented, with their Appendix C threshold kind', () => {
+    const kinds = Object.fromEntries(SIGNALS.map((s) => [s.id, [s.instrumented, s.threshold.kind]]));
+    expect(kinds['learning.judgment_quality']).toEqual(['yes', 'floor']);
+    expect(kinds['learning.bridge_conversion']).toEqual(['yes', 'diagnostic']);
+    expect(kinds['learning.decision_journal']).toEqual(['yes', 'diagnostic']);
+    expect(kinds['engagement.session_efficiency']).toEqual(['yes', 'trend']);
+    expect(kinds['engagement.mentor_resolution']).toEqual(['yes', 'trend']);
+    expect(kinds['engagement.rest_day_use']).toEqual(['yes', 'diagnostic']);
+    expect(kinds['engagement.autonomy_adoption']).toEqual(['yes', 'diagnostic']);
+  });
+
+  it('breaches judgment quality when it tracks correctness, and reads the narrative, rest-day and autonomy rates', () => {
+    const r = evaluateSignals(learning({
+      judgment: [{ lesson_id: 'l1', attempts: 100, correct_not_sound: 3, incorrect_sound: 2 }],
+      narrative: { journal_entries_recorded: 10, journal_entries_resurfaced: 4, bridge_prompts_offered: 20, bridge_prompts_converted_7d: 5, bridge_self_commitments: 2 },
+      restDays: { learners_with_lapse: 8, kept_by_rest_days: 2, utilization_rate: 0.25, rest_days_used: 3 },
+      autonomy: [{ lever: 'path', offered: 10, exercised: 4, adoption_rate: 0.4 }, { lever: 'pace', offered: 10, exercised: 6, adoption_rate: 0.6 }],
+    }));
+    expect(readingOf(r, 'learning.judgment_quality')).toMatchObject({ status: 'breach', value: 0.05, sample: 100 });
+    expect(r.anomalies.some((a) => a.signalId === 'learning.judgment_quality' && a.kind === 'threshold_breach')).toBe(true);
+    expect(readingOf(r, 'learning.bridge_conversion')).toMatchObject({ status: 'diagnostic', value: 0.25 });
+    expect(readingOf(r, 'learning.decision_journal')).toMatchObject({ status: 'diagnostic', value: 0.4 });
+    expect(readingOf(r, 'engagement.rest_day_use')).toMatchObject({ status: 'diagnostic', value: 0.25, sample: 8 });
+    expect(readingOf(r, 'engagement.autonomy_adoption')).toMatchObject({ status: 'diagnostic', value: 0.5, sample: 20 });
+  });
+
+  it('flags a declining session efficiency and a rising resolution turn count as regressions', () => {
+    const series = (from: number, to: number) => Array.from({ length: 8 }, (_, i) => ({ i, v: i < 4 ? from : to }));
+    const r = evaluateSignals(learning({
+      sessionEfficiency: series(0.6, 0.4).map(({ i, v }) => ({ week_start: week(i), learners: 40, efficiency_ratio: v })),
+      mentorResolution: series(4, 6).map(({ i, v }) => ({ week_start: week(i), intent: 'all', resolved_sessions: 40, median_turns: v })),
+    }));
+    expect(readingOf(r, 'engagement.session_efficiency')).toMatchObject({ status: 'breach', value: 0.4 });
+    expect(readingOf(r, 'engagement.mentor_resolution')).toMatchObject({ status: 'breach', value: 6 });
+    expect(r.anomalies.find((a) => a.signalId === 'engagement.session_efficiency')?.kind).toBe('relative_drop');
+    expect(r.anomalies.find((a) => a.signalId === 'engagement.mentor_resolution')?.kind).toBe('upward_drift');
+    const steady = evaluateSignals(learning({
+      sessionEfficiency: series(0.5, 0.52).map(({ i, v }) => ({ week_start: week(i), learners: 40, efficiency_ratio: v })),
+    }));
+    expect(readingOf(steady, 'engagement.session_efficiency').status).toBe('diagnostic');
+    expect(readingOf(steady, 'engagement.mentor_resolution').status).toBe('insufficient_data');
+  });
+
+  it('turns an unreadable learning source into unavailable, never a calm zero', () => {
+    const r = evaluateSignals(learning({ judgment: null, narrative: null, sessionEfficiency: null, mentorResolution: null, restDays: null, autonomy: null }));
+    for (const id of ['learning.judgment_quality', 'learning.bridge_conversion', 'learning.decision_journal', 'engagement.session_efficiency', 'engagement.mentor_resolution', 'engagement.rest_day_use', 'engagement.autonomy_adoption']) {
+      expect(readingOf(r, id).status, id).toBe('unavailable');
+    }
   });
 });
 

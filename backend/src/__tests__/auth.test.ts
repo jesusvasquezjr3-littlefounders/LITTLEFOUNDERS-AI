@@ -242,17 +242,25 @@ describe('POST /api/v1/auth/signup', () => {
 describe('POST /api/v1/auth/guest', () => {
   it.each([true, false])('returns an age-refusal session only after confirmed provenance: %s', async (confirmed) => {
     const calls: string[] = [];
+    const events: unknown[] = [];
     stubFetch((url, init) => {
       calls.push(url);
       if (url.includes('/auth/v1/signup')) return jsonResponse(200, SESSION);
+      if (url.includes('/rest/v1/audit_logs')) {
+        events.push(JSON.parse(String(init?.body)));
+        return new Response(null, { status: 201 });
+      }
       expect(url).toContain('/rpc/mark_under13_origin');
       expect(JSON.parse(String(init?.body))).toEqual({ p_user_id: SESSION.user.id });
       return jsonResponse(200, confirmed);
     });
     const res = await request(createApp()).post('/api/v1/auth/guest').send({ under13Origin: true });
     expect(res.status).toBe(confirmed ? 201 : 502);
-    expect(calls).toHaveLength(2);
+    expect(calls).toHaveLength(3);
     if (!confirmed) expect(res.body.data).toBeNull();
+    // Appendix M 1.1 Guest-Session Origin-Flag Coverage: every age-refusal
+    // request is counted with whether its flag was confirmed.
+    expect(events).toEqual([{ actor_id: SESSION.user.id, action: 'auth.guest.age_refusal', subject: SESSION.user.id, detail: { flagged: confirmed } }]);
   });
 
   it('rejects attempts to attach a refused birth date or clear an origin flag', async () => {

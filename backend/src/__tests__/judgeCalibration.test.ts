@@ -448,6 +448,14 @@ describe('C.23 on the Mentor-quality dashboard (C.24)', () => {
     now: NOW, rubricHash: TRANSCRIPT_RUBRIC_HASH, sessions: [], scores: [], priorScores: [], firings: [], endSignals: [], alliance: [], allianceBaseline: [],
     renegotiations: [], trajectory: [], routing: [], dialogue: [], ladder: [], liveGate: { calibration: 'passed', suspended: [] }, judgeCalibrations,
     killSwitchAudit: [], completeness: { active: 0, current: 0 }, kcAttempts: [], retention: [],
+    learning: {
+    judgment: [],
+    narrative: { journal_entries_recorded: 0, journal_entries_resurfaced: 0, bridge_prompts_offered: 0, bridge_prompts_converted_7d: 0, bridge_self_commitments: 0 },
+    sessionEfficiency: [],
+    mentorResolution: [],
+    restDays: { learners_with_lapse: 0, kept_by_rest_days: 0, utilization_rate: null, rest_days_used: 0 },
+    autonomy: [],
+  },
   });
   const reading = (src: QualitySources) => evaluateSignals(src);
 

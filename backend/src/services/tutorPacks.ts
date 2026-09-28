@@ -3,7 +3,7 @@ import { z } from 'zod';
 import type { SegmentBase } from '../lesson-contract/core/types.js';
 import { stripAnswers } from './lessonDocument.js';
 import { lexicalRiskSignals } from './pedagogy/contentRisk.js';
-import { insertAuditLog, serviceRest } from './supabaseRest.js';
+import { serviceRest, serviceRestRaw } from './supabaseRest.js';
 import { verifyGeneratedSegment } from './tutorLadder.js';
 
 /*
@@ -354,8 +354,7 @@ export async function setTutorPackStatus(input: {
   if (row === null) return { ok: false, code: 'not_found' };
   if (row.status === input.status) return { ok: false, code: 'unchanged' };
 
-  const now = new Date().toISOString();
-  let patch: Record<string, unknown> = { status: input.status, updated_at: now };
+  let contentHash: string | null = null;
   if (input.status === 'published') {
     const tierMin = await kcTierMin(row.kc_key);
     if (tierMin === undefined) return { ok: false, code: 'unavailable' };
@@ -369,25 +368,21 @@ export async function setTutorPackStatus(input: {
       validation.failures = [...validation.failures, 'the stored content no longer matches its recorded hash'];
     }
     if (!validation.ok) return { ok: false, code: 'invalid', failures: validation.failures };
-    patch = { ...patch, released_by: input.actorId, released_at: now, validated_at: now, content_hash: hash };
+    contentHash = hash;
   }
 
-  // The status filter makes a stale second decision a no-op, not an overwrite.
-  const updated = await serviceRest<TutorPackAdminRow[]>(
-    `/tutor_packs?id=eq.${encodeURIComponent(input.packId)}&status=eq.${row.status}&select=${PACK_SELECT}`,
-    { method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify(patch) },
-  );
-  if (updated === null) return { ok: false, code: 'unavailable' };
-  const next = updated[0];
-  if (!next) return { ok: false, code: 'unchanged' };
-  await insertAuditLog(input.actorId, 'admin.tutor_pack.status', input.packId, {
-    from: row.status,
-    to: input.status,
-    skillKey: row.skill_key,
-    tier: row.tier,
-    locale: row.locale,
-    packVersion: row.pack_version,
-    contentHash: next.content_hash,
+  // G.3: the status change and its 'admin.tutor_pack.status' audit row commit
+  // in ONE transaction (set_tutor_pack_status, migration
+  // audited_staff_decisions). The `from` guard makes a stale second decision
+  // a no-op (NULL), never an overwrite.
+  const { ok, body: updated } = await serviceRestRaw('/rpc/set_tutor_pack_status', {
+    method: 'POST',
+    body: JSON.stringify({ p_pack_id: input.packId, p_from: row.status, p_to: input.status, p_actor: input.actorId, p_content_hash: contentHash }),
   });
-  return { ok: true, row: next };
+  if (!ok) return { ok: false, code: 'unavailable' };
+  if (updated === null) return { ok: false, code: 'unchanged' };
+  if (typeof updated !== 'object' || Array.isArray(updated)) return { ok: false, code: 'unavailable' };
+  const next = updated as Record<string, unknown>;
+  const picked = Object.fromEntries(PACK_SELECT.split(',').map((key) => [key, next[key] ?? null])) as unknown as TutorPackAdminRow;
+  return { ok: true, row: picked };
 }

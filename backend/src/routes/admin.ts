@@ -34,6 +34,8 @@ import {
 } from '../services/audience.js';
 import { getAchievementSharingMetrics } from '../services/achievementSharingMetrics.js';
 import { getAccountDeletionMetrics } from '../services/accountDeletionMetrics.js';
+import { getIdentityMetrics } from '../services/identityMetrics.js';
+import { getOpsJobStatus } from '../services/opsJobs.js';
 import { readRegisterDistribution } from '../services/moneyPresentation.js';
 import { renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
 import { getTutorRetentionStatus, listTutorReviewQueue } from '../services/tutorData.js';
@@ -154,6 +156,12 @@ import {
   getSignupTimeline,
   getSlotDetail,
   grantRoleChecked,
+  grantParentRoleWithJustification,
+  getAccessReviewStatus,
+  recordAccessReview,
+  ACCESS_REVIEW_CADENCE_DAYS,
+  STAFF_REVIEW_ROLES,
+  STAFF_REVIEW_PERMISSIONS,
   ADMIN_PERMISSIONS,
   findRoleCandidates,
   isCourseStatus,
@@ -472,6 +480,8 @@ export function adminRouter(): Router {
   router.use('/emails', requireAdminPermission('manage_support'));
   router.use('/audit', requireAdminPermission('manage_support'));
   router.use('/tutor/retention-status', requireAdminPermission('manage_support'));
+  // H.4: the backup and drift-probe watchdog status sits beside the retention sweep's.
+  router.use('/ops', requireAdminPermission('manage_support'));
   // E.3 report escalation queue: support-adjacent tooling per G.1's mapping.
   router.use('/reports', requireAdminPermission('manage_support'));
   // D.4's Appendix H metric: a read-only integrity count, analytics-grade.
@@ -572,6 +582,21 @@ export function adminRouter(): Router {
     const metrics = await getAccountDeletionMetrics(parsed.data.days);
     if (!metrics) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load account-deletion metrics');
     return ok(res, metrics);
+  });
+
+  /*
+   * Appendix M Part 1 (1.1-1.4): the Block A acquisition and identity
+   * metrics (public.identity_metrics), each marked as a release-gate target
+   * or diagnostic, plus the adversarial metrics with the suite that proves
+   * them. Counts only; guarded by the '/analytics' view_analytics mount.
+   */
+  const IdentityMetricsQuery = z.object({ days: z.coerce.number().int().min(1).max(366).default(30) }).strict();
+  router.get('/analytics/identity', async (req, res) => {
+    const parsed = IdentityMetricsQuery.safeParse(req.query);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer from 1 to 366');
+    const report = await getIdentityMetrics(parsed.data.days);
+    if (!report) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load identity metrics');
+    return ok(res, report);
   });
 
   router.get('/analytics/overview', async (req, res) => {
@@ -1660,9 +1685,10 @@ export function adminRouter(): Router {
   });
 
   // A.5: the real revocation trigger path — a staff action following a
-  // fraud report. Writes a new revoked row (latest-row-wins resolver) and
-  // records the deciding actor and reason in the audit trail FIRST, so the
-  // reason exists even if the write itself fails.
+  // fraud report. The database writes the revoked row (latest-row-wins
+  // resolver) and the audit row carrying the deciding actor and reason in ONE
+  // transaction (revoke_parent_verification); a write Core cannot confirm
+  // answers 502, never 'revoked'.
   const VerificationRevokeSchema = z.object({
     reason: z.string().trim().min(10).max(300),
   }).strict();
@@ -1673,12 +1699,11 @@ export function adminRouter(): Router {
     if (!userId.success || !parsed.success) {
       return fail(res, 400, 'VALIDATION_ERROR', 'userId must be a uuid and a reason (10-300 characters) is required');
     }
-    const actor = authedUser(res);
-    await insertAuditLog(actor.id, 'admin.parent_verification.revoked', userId.data, {
-      reason: parsed.data.reason,
-    });
-    const revoked = await revokeParentVerification(userId.data);
-    if (!revoked) return fail(res, 502, DATA_UNAVAILABLE, 'Could not revoke the verification');
+    const outcome = await revokeParentVerification(userId.data, authedUser(res).id, parsed.data.reason);
+    if (outcome === 'not_found') return fail(res, 404, 'NOT_FOUND', 'No such account');
+    if (outcome === 'invalid') return fail(res, 400, 'VALIDATION_ERROR', 'A reason of 10-300 characters is required');
+    if (outcome === 'rejected') return fail(res, 409, 'ROLE_REJECTED', 'The database refused this revocation');
+    if (outcome !== 'revoked') return fail(res, 502, DATA_UNAVAILABLE, 'Could not revoke the verification');
     ok(res, { userId: userId.data, verification: 'revoked' });
   });
 
@@ -1873,15 +1898,10 @@ export function adminRouter(): Router {
     });
     if (outcome === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the review');
     if (outcome === 'not_pending') return fail(res, 409, 'ALREADY_DECIDED', 'This activity was already reviewed');
-    // G.3: the moderation decision must ALSO land in the central audit log
-    // (the activity row keeps the status; the log keeps the searchable,
-    // staff-wide trail of WHO approved/rejected WHAT — the same treatment
-    // course/lesson status changes already receive).
-    await insertAuditLog(actor.id, 'admin.tutor_activity.review', segmentId.data, {
-      status: body.data.status,
-      issue: body.data.issue ?? null,
-      governed: outcome === 'recorded',
-    });
+    // G.3: the central audit row 'admin.tutor_activity.review' is written by
+    // record_tutor_live_review itself, in the transaction that records the
+    // verdict (migration audited_staff_decisions): the decision and its
+    // staff-wide trail commit together or not at all.
     ok(res, { id: segmentId.data, status: body.data.status, issue: body.data.issue ?? null });
   });
 
@@ -2110,20 +2130,24 @@ export function adminRouter(): Router {
   router.post('/roles/grant', superadminOnly, async (req, res) => {
     const parsed = RoleMutationSchema.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'userId (uuid) + role required');
-    if (parsed.data.role === 'parent' && !parsed.data.justification) {
-      return fail(res, 400, 'VALIDATION_ERROR', 'A parent-role staff grant requires a justification');
+    const actorId = authedUser(res).id;
+    if (parsed.data.role === 'parent') {
+      if (!parsed.data.justification) {
+        return fail(res, 400, 'VALIDATION_ERROR', 'A parent-role staff grant requires a justification');
+      }
+      // A.5 (Appendix M 1.2, target 100%): the role and its audited
+      // justification commit in ONE transaction; the database also refuses a
+      // parent role that arrives any other way without an ID check.
+      const outcome = await grantParentRoleWithJustification(parsed.data.userId, actorId, parsed.data.justification);
+      if (outcome === 'invalid') return fail(res, 400, 'VALIDATION_ERROR', 'A parent-role staff grant requires a justification');
+      if (outcome === 'rejected') return fail(res, 409, 'ROLE_REJECTED', 'The database rejected this role change (see role invariants)');
+      if (outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not confirm the grant and its justification');
+      return ok(res, { userId: parsed.data.userId, role: 'parent', granted: true });
     }
-    const result = await grantRoleChecked(parsed.data.userId, parsed.data.role, authedUser(res).id);
+    const result = await grantRoleChecked(parsed.data.userId, parsed.data.role, actorId);
     // DB triggers (superadmin-domain, admin-granter, kid-guardian) are the real
     // guardrails — a rejection there means the mutation is not allowed.
     if (!result.ok) return fail(res, 409, 'ROLE_REJECTED', 'The database rejected this role change (see role invariants)');
-    if (parsed.data.role === 'parent' && parsed.data.justification) {
-      // A.5: the justification rides its own audit row (the grant trigger
-      // records the actor/timestamp; this row carries the reason).
-      await insertAuditLog(authedUser(res).id, 'admin.parent_role_justification', parsed.data.userId, {
-        justification: parsed.data.justification,
-      });
-    }
     ok(res, { userId: parsed.data.userId, role: parsed.data.role, granted: true });
   });
 
@@ -2152,6 +2176,61 @@ export function adminRouter(): Router {
     const result = await revokeAdminPermissionChecked(parsed.data.userId, parsed.data.permission);
     if (!result.ok) return fail(res, 409, 'ROLE_REJECTED', 'The database rejected this permission change');
     ok(res, { userId: parsed.data.userId, permission: parsed.data.permission, revoked: true });
+  });
+
+  // ── G.4: the quarterly access review (Appendix N 1.1) ────────────────────
+  /*
+   * Only elevated grants are reviewed: the admin and superadmin roles and
+   * the four staff permissions, never a family role. A grant is due when
+   * max(granted_at, last kept review) is older than the cadence. Recording
+   * a review writes the review-log row and 'admin.access.reviewed' in one
+   * transaction (record_staff_access_review).
+   */
+  router.get('/roles/reviews', superadminOnly, async (_req, res) => {
+    const status = await getAccessReviewStatus(ACCESS_REVIEW_CADENCE_DAYS);
+    if (!status) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the access-review status');
+    ok(res, status);
+  });
+
+  const AccessReviewGrant = z.discriminatedUnion('kind', [
+    z.object({ kind: z.literal('role'), grant: z.enum(STAFF_REVIEW_ROLES) }).strict(),
+    z.object({ kind: z.literal('permission'), grant: z.enum(STAFF_REVIEW_PERMISSIONS) }).strict(),
+  ]);
+  const AccessReviewBody = z.object({
+    userId: z.string().uuid(),
+    kind: z.enum(['role', 'permission']),
+    grant: z.string(),
+    outcome: z.enum(['kept', 'revoked']).default('kept'),
+    note: z.string().trim().min(1).max(300).regex(/^[^<>]*$/).optional(),
+  }).strict();
+
+  router.post('/roles/review', superadminOnly, async (req, res) => {
+    const body = AccessReviewBody.safeParse(req.body);
+    const grant = body.success ? AccessReviewGrant.safeParse({ kind: body.data.kind, grant: body.data.grant }) : null;
+    if (!body.success || !grant?.success) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'userId (uuid), kind role|permission with an elevated grant, outcome kept|revoked, note up to 300 characters');
+    }
+    const outcome = await recordAccessReview({
+      subjectId: body.data.userId, kind: grant.data.kind, grant: grant.data.grant, actorId: authedUser(res).id,
+      outcome: body.data.outcome, note: body.data.note ?? null,
+    });
+    if (outcome === 'not_held') return fail(res, 409, 'GRANT_NOT_HELD', 'That account does not hold this grant any more');
+    if (outcome === 'rejected') return fail(res, 409, 'ROLE_REJECTED', 'The database refused this review');
+    if (outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the review');
+    ok(res, { userId: body.data.userId, kind: grant.data.kind, grant: grant.data.grant, outcome: body.data.outcome, recorded: true });
+  });
+
+  // ── H.4: the operations watchdog (manage_support) ──────────────────────────
+  /*
+   * The daily Vault and Pulse backups and the schema drift probe, next to
+   * the retention sweep's own status: per job the last successful run and
+   * `stale` (services/opsJobs.ts holds each staleness constant). A failed
+   * read is a 502; "never ran" is a 200 whose `stale: true` says so.
+   */
+  router.get('/ops/job-status', async (_req, res) => {
+    const status = await getOpsJobStatus();
+    if (!status) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the operations job status');
+    ok(res, status);
   });
 
   // ── Email (Courier proxy) ──────────────────────────────────────────────────

@@ -878,12 +878,11 @@ describe('the tutor live-content review queue (/ORACLE.md §7.3)', () => {
       p_issue: null,
       p_reviewer: ADMIN_ID,
     });
-    // G.3: the decision must ALSO land in the central audit log — the
-    // searchable staff-wide trail, not only the activity row.
-    const audit = calls.find((c) => c.url.includes('/rest/v1/audit_logs') && c.method === 'POST');
-    expect(audit).toBeTruthy();
-    expect(audit?.body).toContain('admin.tutor_activity.review');
-    expect(audit?.body).toContain(SEGMENT_ID);
+    // G.3: the central audit row is written by record_tutor_live_review in
+    // the verdict's own transaction (migration audited_staff_decisions,
+    // proven in verify-staff-ops-postgres.py), so the route posts no second,
+    // best-effort row that could fail after the decision committed.
+    expect(calls.some((c) => c.url.includes('/rest/v1/audit_logs') && c.method === 'POST')).toBe(false);
   });
 
   it('refuses an invented status', async () => {
@@ -1188,7 +1187,7 @@ describe('S06.12 C.5/C.6 — staff governance surfaces', () => {
     expect(res.body.data).toEqual({ id: SEGMENT_ID, status: 'rejected', issue: 'safety' });
     const rpc = calls.find((c) => c.url.includes('/rpc/record_tutor_live_review'));
     expect(JSON.parse(rpc?.body ?? '{}')).toMatchObject({ p_verdict: 'rejected', p_issue: 'safety', p_reviewer: ADMIN_ID });
-    expect(calls.find((c) => c.url.includes('audit_logs') && c.method === 'POST')?.body).toContain('"issue":"safety"');
+    expect(calls.some((c) => c.url.includes('audit_logs') && c.method === 'POST')).toBe(false);
   });
 
   it('refuses an issue on an approval, an unknown issue class and extra fields', async () => {
@@ -1196,6 +1195,13 @@ describe('S06.12 C.5/C.6 — staff governance surfaces', () => {
     expect((await decide({ status: 'approved', issue: 'quality' })).status).toBe(400);
     expect((await decide({ status: 'rejected', issue: 'boring' })).status).toBe(400);
     expect((await decide({ status: 'rejected', rate: 0 })).status).toBe(400);
+  });
+
+  it('answers 502, never 200, when the verdict and its audit row cannot be confirmed', async () => {
+    stubGovernance({ reviewOutcome: { code: 'XX000', message: 'audit store unavailable' } });
+    const res = await decide({ status: 'approved' });
+    expect(res.status).toBe(502);
+    expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
   });
 
   it('answers 409 when another reviewer already decided the item', async () => {

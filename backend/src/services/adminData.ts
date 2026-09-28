@@ -483,13 +483,123 @@ export async function resolveSocialReviewCase(subjectId: string, actorId: string
  * the audit trail's reconstruction. The caller must have already written
  * the audit row carrying the reason.
  */
-export async function revokeParentVerification(userId: string): Promise<boolean> {
-  const inserted = await serviceRest<unknown>('/parent_verifications', {
+/*
+ * A.5 (Appendix M 1.2): the staff writes of the parent-verification tier go
+ * through database functions (migration parent_grant_integrity) that commit
+ * the row and its audited reason in ONE transaction. A refusal the database
+ * names (a reason out of bounds, an actor without the role, a role trigger)
+ * is 'rejected'; anything else, including a transport failure, is
+ * 'unavailable' and the route answers 502: a write Core cannot confirm is
+ * never reported as done.
+ */
+const DB_REFUSAL_CODES = new Set(['22023', '42501', '23503', '23514', 'P0001']);
+function dbRefusal(body: unknown): { code: string; message: string } | null {
+  const parsed = z.object({ code: z.string(), message: z.string() }).passthrough().safeParse(body);
+  return parsed.success && DB_REFUSAL_CODES.has(parsed.data.code) ? { code: parsed.data.code, message: parsed.data.message } : null;
+}
+
+export type ParentGrantOutcome = 'granted' | 'already_granted' | 'invalid' | 'rejected' | 'unavailable';
+
+export async function grantParentRoleWithJustification(userId: string, actorId: string, justification: string): Promise<ParentGrantOutcome> {
+  const { ok, body } = await serviceRestRaw('/rpc/grant_parent_role_with_justification', {
     method: 'POST',
-    headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({ user_id: userId, status: 'revoked', method: 'staff-revoked', checks: {} }),
+    body: JSON.stringify({ p_user: userId, p_actor: actorId, p_justification: justification }),
   });
-  return inserted !== null;
+  if (!ok) {
+    const refusal = dbRefusal(body);
+    if (!refusal) return 'unavailable';
+    return refusal.message.includes('PARENT_GRANT_JUSTIFICATION_REQUIRED') ? 'invalid' : 'rejected';
+  }
+  return body === 'granted' || body === 'already_granted' ? body : 'unavailable';
+}
+
+export type ParentRevokeOutcome = 'revoked' | 'not_found' | 'invalid' | 'rejected' | 'unavailable';
+
+export async function revokeParentVerification(userId: string, actorId: string, reason: string): Promise<ParentRevokeOutcome> {
+  const { ok, body } = await serviceRestRaw('/rpc/revoke_parent_verification', {
+    method: 'POST',
+    body: JSON.stringify({ p_user: userId, p_actor: actorId, p_reason: reason }),
+  });
+  if (!ok) {
+    const refusal = dbRefusal(body);
+    if (!refusal) return 'unavailable';
+    return refusal.message.includes('PARENT_REVOKE_REASON_REQUIRED') ? 'invalid' : 'rejected';
+  }
+  return body === 'revoked' || body === 'not_found' ? body : 'unavailable';
+}
+
+// ── G.4: the access-review log (migration staff_access_reviews) ─────────────
+
+/** The quarterly cadence G.4 names; Appendix N measures compliance against it. */
+export const ACCESS_REVIEW_CADENCE_DAYS = 90;
+export const STAFF_REVIEW_ROLES = ['admin', 'superadmin'] as const;
+export const STAFF_REVIEW_PERMISSIONS = ['manage_users', 'manage_content', 'view_analytics', 'manage_support'] as const;
+
+const ReviewGrant = z.object({
+  userId: z.string().uuid(),
+  kind: z.enum(['role', 'permission']),
+  grant: z.enum([...STAFF_REVIEW_ROLES, ...STAFF_REVIEW_PERMISSIONS]),
+  grantedAt: z.string(),
+  lastReviewedAt: z.string().nullable(),
+  due: z.boolean(),
+});
+const ReviewStatus = z.object({
+  cadenceDays: z.number().int(),
+  total: z.coerce.number().int().nonnegative(),
+  stale: z.coerce.number().int().nonnegative(),
+  reviewedEver: z.coerce.number().int().nonnegative(),
+  grants: z.array(ReviewGrant),
+});
+export type AccessReviewGrant = z.infer<typeof ReviewGrant>;
+
+export interface AccessReviewStatus {
+  cadenceDays: number;
+  grants: (AccessReviewGrant & { displayName: string; username: string | null })[];
+  /** Appendix N: Access-Review Cadence Compliance (target 100%) and Stale-Grant Rate (trend to zero). */
+  metrics: { total: number; stale: number; reviewedEver: number; compliance: number | null; staleRate: number | null };
+}
+
+export async function getAccessReviewStatus(cadenceDays = ACCESS_REVIEW_CADENCE_DAYS): Promise<AccessReviewStatus | null> {
+  const raw = await serviceRest<unknown>('/rpc/staff_access_review_status', {
+    method: 'POST',
+    body: JSON.stringify({ p_cadence_days: cadenceDays }),
+  });
+  const parsed = ReviewStatus.safeParse(raw);
+  if (!parsed.success) return null;
+  const ids = [...new Set(parsed.data.grants.map((g) => g.userId))];
+  const profiles = ids.length === 0 ? [] : await serviceRest<{ user_id: string; display_name: string; username: string | null }[]>(
+    `/profiles?user_id=in.(${ids.join(',')})&select=user_id,display_name,username`,
+  );
+  if (!profiles) return null;
+  const byId = new Map(profiles.map((p) => [p.user_id, p]));
+  const { total, stale, reviewedEver } = parsed.data;
+  return {
+    cadenceDays: parsed.data.cadenceDays,
+    grants: parsed.data.grants.map((g) => ({ ...g, displayName: byId.get(g.userId)?.display_name ?? '—', username: byId.get(g.userId)?.username ?? null })),
+    metrics: {
+      total,
+      stale,
+      reviewedEver,
+      compliance: total === 0 ? null : (total - stale) / total,
+      staleRate: total === 0 ? null : stale / total,
+    },
+  };
+}
+
+export type AccessReviewOutcome = 'recorded' | 'not_held' | 'rejected' | 'unavailable';
+
+export async function recordAccessReview(input: {
+  subjectId: string; kind: 'role' | 'permission'; grant: string; actorId: string; outcome: 'kept' | 'revoked'; note: string | null;
+}): Promise<AccessReviewOutcome> {
+  const { ok, body } = await serviceRestRaw('/rpc/record_staff_access_review', {
+    method: 'POST',
+    body: JSON.stringify({
+      p_subject: input.subjectId, p_kind: input.kind, p_grant_key: input.grant, p_actor: input.actorId,
+      p_outcome: input.outcome, p_note: input.note,
+    }),
+  });
+  if (!ok) return dbRefusal(body) ? 'rejected' : 'unavailable';
+  return body === 'recorded' || body === 'not_held' ? body : 'unavailable';
 }
 
 export async function getAdminContentSummary(): Promise<AdminContentSummary | null> {
