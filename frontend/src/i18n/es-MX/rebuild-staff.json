@@ -1822,8 +1822,8 @@
         "adversarial": "Comprobado con pruebas"
       },
       "body": {
-        "intro": "Las metas de lanzamiento deben llegar al 100%. Los diagnósticos muestran tendencia.",
-        "gatesMet": "{met} de {total} metas de lanzamiento cumplidas.",
+        "intro": "Las metas de lanzamiento deben llegar al 100%.",
+        "gatesMet": "{met}/{total} metas de lanzamiento cumplidas.",
         "gatesMissed": "{n} metas de lanzamiento están por debajo.",
         "ratio": "{num} de {den}",
         "metric": "Métrica",

@@ -1822,8 +1822,8 @@
         "adversarial": "Proven by tests"
       },
       "body": {
-        "intro": "Release gates must reach 100%. Diagnostics show a trend.",
-        "gatesMet": "{met} of {total} release gates met.",
+        "intro": "Release gates need 100%.",
+        "gatesMet": "{met}/{total} release gates met.",
         "gatesMissed": "{n} release gates are below target.",
         "ratio": "{num} of {den}",
         "metric": "Metric",

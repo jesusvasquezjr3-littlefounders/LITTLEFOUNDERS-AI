@@ -2,7 +2,8 @@
 .lf-money-habits [data-pocket='save'], .lf-money-habits[data-pocket='save'] { --pocket: var(--mint); --pocket-soft: var(--mint-soft); }
 .lf-money-habits [data-pocket='spend'] { --pocket: var(--sky); --pocket-soft: var(--sky-soft); }
 .lf-money-habits [data-pocket='share'], .lf-money-habits[data-pocket='share'] { --pocket: var(--berry); --pocket-soft: var(--berry-soft); }
-.lf-family-hub .lf-money-habits-pockets { display: grid; gap: var(--spacing-2); }
+/* The pocket rows stay 8 px apart wherever PocketSplit is mounted (the allocation lesson too), so no two step buttons touch (03 §3 tap gap). */
+:is(.lf-family-hub, .lf-pocket-split) .lf-money-habits-pockets { display: grid; gap: var(--spacing-2); }
 .lf-family-hub .lf-money-habits-pockets li {
   display: flex;
   flex-wrap: wrap;

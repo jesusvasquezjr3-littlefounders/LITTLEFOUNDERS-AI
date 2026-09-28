@@ -3,6 +3,11 @@
 .lf-chart-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-2); font-weight: 800; }
 .lf-chart-plot { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
 .lf-chart-plot svg { display: block; inline-size: 100%; block-size: auto; max-block-size: 320px; }
+/* The drawing box keeps the viewBox proportions (320 x 180), so the HTML labels over it land on the marks they name. */
+.lf-chart-canvas { position: relative; inline-size: 100%; max-inline-size: calc(320px * 16 / 9); margin-inline: auto; aspect-ratio: 16 / 9; }
+.lf-chart-canvas > svg { block-size: 100%; }
+.lf-chart-tag { position: absolute; transform: translateY(-50%); font-size: .75rem; font-weight: 700; line-height: 1; color: var(--content); white-space: nowrap; }
+.lf-chart-tag[data-anchor='end'] { transform: translate(-100%, -50%); }
 .lf-chart-label { font-size: 9px; font-weight: 700; fill: var(--content); }
 .lf-chart-edge-label { font-size: 8px; fill: var(--content-muted); }
 .lf-chart-stat { font-family: Fredoka, sans-serif; font-size: 36px; fill: var(--content); }

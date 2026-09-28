@@ -50,8 +50,9 @@ export function TeachingChart({ kind, data, title, locale, embedded = false }: {
       <tbody>{model.rows.map((row) => <tr key={row.id}>{row.cells.map((cell, index) => index === 0
         ? <th key={index} scope="row" data-copy-role="data">{cell}</th>
         : <td key={index} data-copy-role="data">{typeof cell === 'number' ? number.format(cell) : cell}</td>)}</tr>)}</tbody>
-    </table> : <div className="lf-chart-plot" role="img" aria-label={title} aria-describedby={`${id}-desc`}>
-      <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false"><Patterns prefix={id} />{draw(kind, data, id, locale)}</svg>
+    </table> : <div className="lf-chart-plot" role="img" aria-label={title} aria-describedby={`${id}-desc`} data-copy-role="data">
+      {/* 05 §5: words are HTML over the SVG (`tags`), the SVG itself carries marks, numerals and symbols. */}
+      <div className="lf-chart-canvas"><svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false"><Patterns prefix={id} />{draw(kind, data, id, locale)}</svg>{tags(kind, data)}</div>
       <p id={`${id}-desc`} className="lf-visually-hidden">{facts}</p>
       {legend(kind, data, id)}
       {kind === 'pictogram' && data.icon_value ? <p className="lf-chart-note" data-copy-role="data">{t.each(number.format(data.icon_value))}</p> : null}
@@ -234,7 +235,9 @@ function layers(nodes: NonNullable<ChartData['nodes']>, links: NonNullable<Chart
   return out;
 }
 
-function sankey(data: ChartData, prefix: string): ReactNode {
+type SankeyLayout = { paths: string[]; nodes: { id: string; label: string; x: number; y: number; height: number; last: boolean }[] };
+
+function sankeyLayout(data: ChartData): SankeyLayout {
   const nodes = data.nodes ?? []; const links = data.links ?? [];
   const pos = layers(nodes, links);
   const through = (nodeId: string) => Math.max(links.filter((l) => l.to === nodeId).reduce((s, l) => s + l.value!, 0), links.filter((l) => l.from === nodeId).reduce((s, l) => s + l.value!, 0));
@@ -245,15 +248,28 @@ function sankey(data: ChartData, prefix: string): ReactNode {
   const y = new Map<string, number>(); const cursorOut = new Map<string, number>(); const cursorIn = new Map<string, number>();
   const colY = new Map<number, number>();
   for (const node of nodes) { const p = pos.get(node.id)!; const top = colY.get(p.col) ?? 20; y.set(node.id, top); colY.set(p.col, top + through(node.id) * scale + 10); }
-  return <>{links.map((l, i) => {
+  const paths = links.map((l) => {
     const a = pos.get(l.from)!; const b = pos.get(l.to)!; const h = l.value! * scale;
     const y0 = y.get(l.from)! + (cursorOut.get(l.from) ?? 0); cursorOut.set(l.from, (cursorOut.get(l.from) ?? 0) + h);
     const y1 = y.get(l.to)! + (cursorIn.get(l.to) ?? 0); cursorIn.set(l.to, (cursorIn.get(l.to) ?? 0) + h);
     const x0 = colX(a.col, a.cols) + 10; const x1 = colX(b.col, b.cols); const mid = (x0 + x1) / 2;
-    return <path key={i} d={`M ${x0} ${y0} C ${mid} ${y0}, ${mid} ${y1}, ${x1} ${y1} L ${x1} ${y1 + h} C ${mid} ${y1 + h}, ${mid} ${y0 + h}, ${x0} ${y0 + h} Z`} fill={fillOf(prefix, i)} fillOpacity={0.55} />;
-  })}{nodes.map((node) => { const p = pos.get(node.id)!; const x = colX(p.col, p.cols);
-    return <g key={node.id}><rect x={x} y={y.get(node.id)} width="10" height={Math.max(2, through(node.id) * scale)} className="lf-chart-node" />
-      <text x={p.col === p.cols - 1 ? x - 4 : x + 14} y={y.get(node.id)! + Math.max(2, through(node.id) * scale) / 2} textAnchor={p.col === p.cols - 1 ? 'end' : 'start'} dominantBaseline="middle" className="lf-chart-label">{fitLabel(node.label, 12)}</text></g>; })}</>;
+    return `M ${x0} ${y0} C ${mid} ${y0}, ${mid} ${y1}, ${x1} ${y1} L ${x1} ${y1 + h} C ${mid} ${y1 + h}, ${mid} ${y0 + h}, ${x0} ${y0 + h} Z`;
+  });
+  return { paths, nodes: nodes.map((node) => { const p = pos.get(node.id)!;
+    return { id: node.id, label: node.label, x: colX(p.col, p.cols), y: y.get(node.id)!, height: Math.max(2, through(node.id) * scale), last: p.col === p.cols - 1 }; }) };
+}
+
+function sankey(data: ChartData, prefix: string): ReactNode {
+  const layout = sankeyLayout(data);
+  return <>{layout.paths.map((d, i) => <path key={i} d={d} fill={fillOf(prefix, i)} fillOpacity={0.55} />)}
+    {layout.nodes.map((node) => <rect key={node.id} x={node.x} y={node.y} width="10" height={node.height} className="lf-chart-node" />)}</>;
+}
+
+/** The HTML labels over the SVG (05 §5), placed in the viewBox's own proportions so they sit where the SVG text sat. */
+function tags(kind: ChartKind, data: ChartData): ReactNode {
+  if (kind !== 'sankey') return null;
+  return sankeyLayout(data).nodes.map((node) => <span key={node.id} className="lf-chart-tag" data-copy-role="data" data-anchor={node.last ? 'end' : 'start'}
+    style={{ insetInlineStart: `${(node.last ? node.x - 4 : node.x + 14) / W * 100}%`, insetBlockStart: `${(node.y + node.height / 2) / H * 100}%` }}>{node.label}</span>);
 }
 
 function diagram(kind: ChartKind, data: ChartData): ReactNode {
