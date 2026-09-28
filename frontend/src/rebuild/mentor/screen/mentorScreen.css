@@ -295,7 +295,9 @@
 }
 
 @container app (min-width: 1024px) {
-  .lf-mentor-main {
+  /* The age-band row templates above are more specific than .lf-mentor-main: name them here too, or a banded desktop
+     split keeps the stacked rows and a tall recap overflows the unscrolled main (text-fit, 1280 px with WCAG spacing). */
+  .lf-mentor-main, .lf-mentor-screen[data-age-band] .lf-mentor-main {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     grid-template-rows: minmax(0, 1fr);
     overflow: hidden;

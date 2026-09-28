@@ -11,8 +11,8 @@
     "day": "Día",
     "year": "Año",
     "loading": "Revisando tu cuenta…",
-    "help": "Tu edad protege tu aprendizaje. Guardamos como máximo el mes y el año.",
-    "locked": "No podrás cambiar esta respuesta después.",
+    "help": "Guardamos solo el mes y el año.",
+    "locked": "No podrás cambiarla después.",
     "teenMonth": "A los 18, tu cuenta pasa a ajustes de adulto."
   },
   "kidSuspended": {

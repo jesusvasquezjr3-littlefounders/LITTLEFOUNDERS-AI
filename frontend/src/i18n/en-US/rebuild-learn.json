@@ -121,7 +121,7 @@
     "masteryTitle": "Shown with your Mentor",
     "masteryAsk": "You showed {skill}. Unlock the next step?",
     "masteryYes": "Yes, unlock",
-    "masteryMeans": "Yes counts this topic as done. No keeps its lessons for you.",
+    "masteryMeans": "Yes marks this topic done.",
     "masteryNo": "No, I'll practice",
     "masteryDeclined": "Okay. Its lessons stay open for you.",
     "notNow": "Not now",

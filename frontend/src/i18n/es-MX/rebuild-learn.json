@@ -121,7 +121,7 @@
     "masteryTitle": "Lo mostraste con tu Mentor",
     "masteryAsk": "Mostraste {skill}. ¿Desbloqueas el siguiente paso?",
     "masteryYes": "Sí, desbloquear",
-    "masteryMeans": "Sí lo cuenta como hecho. No deja sus lecciones para ti.",
+    "masteryMeans": "Sí marca este tema como hecho.",
     "masteryNo": "No, voy a practicar",
     "masteryDeclined": "Está bien. Sus lecciones siguen abiertas para ti.",
     "notNow": "Ahora no",

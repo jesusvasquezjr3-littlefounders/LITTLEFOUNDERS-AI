@@ -288,7 +288,7 @@ describe('OD-25: the learner answers the one-stage-early and the Mentor-mastery 
     expect(within(early).getByText('You showed')).toBeTruthy();
     expect(within(early).getByText('Save for later')).toBeTruthy();
     const mastery = screen.getByRole('region', { name: 'Shown with your Mentor' });
-    expect(within(mastery).getByText('Yes counts this topic as done. No keeps its lessons for you.')).toBeTruthy();
+    expect(within(mastery).getByText('Yes marks this topic done.')).toBeTruthy();
     expect(within(mastery).queryByRole('button', { name: 'Not now' })).toBeNull();
     fireEvent.click(within(mastery).getByRole('button', { name: "No, I'll practice" }));
     expect(await within(mastery).findByText('Okay. Its lessons stay open for you.')).toBeTruthy();
