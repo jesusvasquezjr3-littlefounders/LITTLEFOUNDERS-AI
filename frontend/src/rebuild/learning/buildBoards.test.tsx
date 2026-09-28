@@ -27,7 +27,7 @@ function doc(band: '6-9' | '10-12' | '13-17', segment: Record<string, unknown>, 
     adventure_scene_id: 'diorama-a', title: 'Build and test', required_capabilities: capabilities, segments: [segment] };
 }
 const unitPrice = { id: 'unit-01', type: 'money.unit-price.v2', grading: 'server', prompt: 'Find each price per sticker.', visual: { type: 'ratio-table' },
-  payload: { currency: 'coins', unit: 'sticker', offers: [{ id: 'small', label: 'Pack of 3', quantity: 3, price_minor: 45 }, { id: 'big', label: 'Pack of 5', quantity: 5, price_minor: 70 }] } };
+  payload: { currency: 'coins', unitLabel: 'sticker', offers: [{ id: 'small', label: 'Pack of 3', quantity: 3, price_minor: 45 }, { id: 'big', label: 'Pack of 5', quantity: 5, price_minor: 70 }] } };
 const unitCaps = ['visual.ratio-table.v1', 'operation.number-input.v1', 'operation.choose-option.v1'];
 const rule = (level: string) => ({ id: 'rule-01', type: 'logic.rule-builder.v2', grading: 'server', prompt: 'Build the rule.', visual: { type: 'rule-builder' },
   payload: { level, conditions: [{ id: 'enough', label: 'Enough coins' }, { id: 'want', label: 'Really want it' }],

@@ -1299,6 +1299,24 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
     expect(complete.body.data).toMatchObject({ score: 100, passed: true, xp_earned: 20 });
   });
 
+  it('records the browser scorer parity beside the verdict and never grades with it (Appendix P Part 8, GAP-FIX-R2)', async () => {
+    activateImmutableV2SchemaDiagram();
+    const app = createApp();
+    const started = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
+    const grade = (segmentId: string, answer: Record<string, unknown>, clientVerdict?: unknown) => auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: segmentId, run_id: started.body.data.run_id, attempt_token: started.body.data.attempt_tokens[segmentId], answer,
+      ...(clientVerdict === undefined ? {} : { client_verdict: clientVerdict }),
+    });
+    expect((await grade('schema-structure-01', { schema: 'change' }, 'bogus')).status).toBe(400);
+    // A client that calls a valid answer invalid is recorded as disagreeing; the verdict is Core's alone.
+    const graded = await grade('schema-structure-01', { schema: 'change' }, 'invalid');
+    expect(graded.body.data.verdict).toMatchObject({ correct: true, score: 100 });
+    const receipt = (db.lesson_v2_grade_receipts as Array<{ segment_id: string; verdict: Record<string, unknown> }>).find((row) => row.segment_id === 'schema-structure-01');
+    expect(receipt?.verdict).toMatchObject({ correct: true, client_agree: false });
+    // An answer Core refuses is never graded, whatever the browser claimed.
+    expect((await grade('schema-slots-01', { schema: 'change', slots: { start: 'earned' } }, 'valid')).status).toBe(400);
+  });
+
   it('delivers, grades, and completes M8 after its ordered immutable receipts', async () => {
     activateImmutableV2SchemaDiagram();
     const app = createApp();

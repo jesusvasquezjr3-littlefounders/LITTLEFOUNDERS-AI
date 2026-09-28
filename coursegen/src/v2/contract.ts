@@ -95,6 +95,9 @@ export interface V2Segment {
   /** Up to two help ladder steps shown on request as one Mentor speech-plate turn each. */
   help?: string[];
   item_role?: 'practice' | 'transfer';
+  /** Appendix P Part 8 (GAP-FIX-R2): L12/$11 pre/post items and the representation variant an A/B compares. */
+  item_phase?: 'pre' | 'post';
+  variant?: string;
   knowledge_component_id?: string;
 }
 

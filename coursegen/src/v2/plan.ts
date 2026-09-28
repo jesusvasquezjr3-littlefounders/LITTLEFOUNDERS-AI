@@ -49,6 +49,8 @@ export const v2PlanSegmentSchema = z
     rubric_by_locale: localized(z.record(z.string(), z.unknown())).optional(),
     /** Appendix C 1.1 (GAP-FIX-R1): practice or transfer item, and the KC it evidences. */
     item_role: z.enum(['practice', 'transfer']).optional(),
+    item_phase: z.enum(['pre', 'post']).optional(),
+    variant: z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/).optional(),
     knowledge_component_id: id.optional(),
     copy: localized(segmentCopySchema),
   })

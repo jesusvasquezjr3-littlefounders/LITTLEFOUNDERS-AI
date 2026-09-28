@@ -3,6 +3,7 @@ import { growthComparison } from './v2GrowthComparison.js';
 import { gradeV2Response, scoreV2Judgment, scoreV2Visual, type V2CueHits, type V2Detection, type V2Diagnostic, type V2JudgmentQuality, type V2VisualKind } from './v2VisualScorer.js';
 import { conceptAllowed, conceptSampleResponse, gradeConcept, V2_CONCEPT_RUBRICS, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptSegment } from './v2ConceptBoards.js';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './v2ChartModel.js';
+import { v2ScorerPayload } from './v2ScorerPayload.js';
 import { longArithmeticSchema, placeValuePayload, SCHEMA_DIAGRAM_RUBRICS, schemaDiagramPayload, schemaDiagramScorerPayload, placeValueScorerPayload, V2_FAMILY_RUBRICS, v2AgeScopeProblem, v2FamilySampleResponse, v2FamilyScorerPayload, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras, type V2FamilySegment } from './v2SegmentFamilies.js';
 
 /*
@@ -436,46 +437,9 @@ const CONCEPT_TYPES = new Set<string>(V2_CONCEPT_TYPES);
 function isConcept(item: V2Segment): item is V2Segment & V2ConceptSegment { return CONCEPT_TYPES.has(item.type); }
 
 function scorerPayload(item: ServerSegment): Record<string, unknown> {
-  if (isFamily(item)) return v2FamilyScorerPayload(item);
   if (isConcept(item)) return { type: item.type };
-  switch (item.type) {
-    case 'math.place-value.v2': return placeValueScorerPayload(item.payload);
-    case 'math.ratio-table.v2': return { itemsPerPack: item.payload.itemsPerPack, pricePerPack: item.payload.pricePerPack,
-      minimumPacks: item.payload.minimumPacks, maximumPacks: item.payload.maximumPacks };
-    case 'visual.percent-grid.v2': return { baseUnits: item.payload.baseUnits, step: item.payload.step };
-    case 'visual.growth-comparison.v2': return { principalMinor: item.payload.principalMinor, minimumRateBps: item.payload.minimumRateBps,
-      maximumRateBps: item.payload.maximumRateBps, rateStepBps: item.payload.rateStepBps, minimumYears: item.payload.minimumYears,
-      maximumYears: item.payload.maximumYears, yearStep: item.payload.yearStep, predictionStepMinor: item.payload.predictionStepMinor,
-      predictionMaximumMinor: item.payload.predictionMaximumMinor };
-    case 'visual.tax-bracket.v2': return { minimumIncomeMinor: item.payload.minimumIncomeMinor, maximumIncomeMinor: item.payload.maximumIncomeMinor,
-      incomeStepMinor: item.payload.incomeStepMinor, brackets: item.payload.brackets };
-    case 'logic.savings-rule.v2': return { goal: item.payload.goal };
-    case 'visual.goal-bullet.v2': return { minimum: item.payload.minimum, maximum: item.payload.maximum, step: item.payload.step };
-    case 'money.running-ledger.v2': return { initial: item.payload.initial, sale: item.payload.sale, cost: item.payload.cost, maxEntries: item.payload.maxEntries };
-    case 'visual.chart.v2': return { choiceIds: (item.payload.question?.options ?? []).map((option) => option.id) };
-    default: break;
-  }
-  return item.type === 'money.allocation.v2'
-    ? { total: item.payload.total, step: item.payload.step }
-    : item.type === 'math.number-line.whole.v2'
-      ? { minimum: item.payload.minimum, maximum: item.payload.maximum, step: item.payload.step,
-        ...(item.payload.hops ? { initial: item.payload.initial, hops: item.payload.hops } : {}) }
-      : item.type === 'math.number-line.fraction.v2'
-        ? { maximumWhole: item.payload.maximumWhole, divisions: item.payload.divisions }
-        : item.type === 'math.fraction-area.v2'
-          ? { minimumParts: item.payload.minimumParts, maximumParts: item.payload.maximumParts }
-          : item.type === 'math.worked-example.v2'
-            ? { response_step_ids: item.payload.response_step_ids }
-            : item.type === 'math.function-machine.v2'
-              ? { multiplierMaximum: item.payload.multiplierMaximum, offsetMaximum: item.payload.offsetMaximum,
-                exampleInputs: item.payload.examples.map((example) => example.input) }
-              : item.type === 'math.cpa-count.v2'
-                ? { left: item.payload.left, right: item.payload.right }
-              : item.type === 'reasoning.decide-justify.v2'
-                ? { choiceIds: item.payload.choices.map((option) => option.id), reasonIds: item.payload.reasons.map((option) => option.id) }
-          : (item.type === 'math.schema-diagram.structure.v2' || item.type === 'math.schema-diagram.slots.v2' || item.type === 'math.schema-diagram.answer.v2')
-            ? schemaDiagramScorerPayload(item.payload)
-          : { whole: item.payload.whole, difference: item.payload.difference };
+  // GAP-FIX-R2 (Part 8 scorer parity): the one canonical semantic payload, synced byte-for-byte to the browser.
+  return v2ScorerPayload(item as never) ?? {};
 }
 
 /**

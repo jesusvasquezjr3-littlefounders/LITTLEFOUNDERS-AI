@@ -32,7 +32,7 @@ function OfferPrice({ label, locale, disabled, onPrice }: { label: string; local
 
 export function UnitPriceBoard({ document, segment, onBack, sequence, onGrade }: BoardProps<'money.unit-price.v2'>) {
   const t = buildCopy[document.locale];
-  const { offers, unit, currency } = segment.payload;
+  const { offers, unitLabel: unit, currency } = segment.payload;
   const grading = useSegmentGrade(segment.id, onGrade);
   const [prices, setPrices] = useState<Record<string, string | null>>({});
   const [choice, setChoice] = useState<string | null>(null);

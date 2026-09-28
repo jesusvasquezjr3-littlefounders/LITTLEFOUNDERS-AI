@@ -74,6 +74,30 @@ export const learningQualityReportSchema = z.object({
     detection: z.array(z.object({ lesson_id: z.string().uuid(), responses: count, hits: count, misses: count, false_alarms: count,
       correct_rejections: count, dPrime: z.number() })),
   }).nullable().optional(),
+  /*
+   * GAP-FIX-R2 (Appendix P Part 8; Appendix C 1.3): scorer parity, d′ by
+   * phase, cue hits, representation A/B, CPA entry stages, B.1/B.2/B.4 and
+   * defect escapes, and the committed coverage snapshot. Null until 0215 and
+   * 0217 are applied; absent from an older Core.
+   */
+  qaSignals: z.object({
+    scorerParity: z.object({ graded: count, reported: count, agreed: count, agreement_share: z.number().min(0).max(1).nullable(), refusedButClientValid: count, target: z.literal(1) }),
+    detectionByPhase: z.array(z.object({ item_phase: z.enum(['pre', 'post', 'practice']), responses: count, hits: count, misses: count, false_alarms: count,
+      correct_rejections: count, dPrime: z.number() })),
+    cueHits: z.object({ responses: count, hits: count, missed: count, false_ticks: count, diagnostic: z.literal(true) }),
+    variantTransfer: z.object({ rows: z.array(z.object({ kc: z.string(), variant: z.string(), first_attempts: count, successes: count,
+      success_share: z.number().min(0).max(1) })), diagnostic: z.literal(true) }),
+    cpaEntryStages: z.object({ rows: z.array(z.object({ entry_stage: z.enum(['concrete', 'pictorial', 'abstract']), runs: count })), diagnostic: z.literal(true) }),
+    placementCommit: z.object({ ok: count, failed: count, successRate: z.number().min(0).max(1).nullable(), byMethod: z.record(z.string(), count), target: z.literal(1) }),
+    prerequisiteGate: z.object({ refused: count, passed: count, target: z.literal(1) }),
+    forcedUpdate: z.object({ blocked: count, target: z.literal(1) }),
+    defectEscapes: z.object({ escapes: count, publishedVersions: count, byGate: z.array(z.object({ gateId: z.string(), escapes: count })), target: z.literal(0) }),
+    coverage: z.object({
+      generated_at: z.string(),
+      tap_alternative: z.object({ drag_interactions: count, with_alternative: count, share: z.number().min(0).max(1).nullable(), missing: z.array(z.string()) }),
+      locale_rendering: z.object({ kinds: count, covered: count, share: z.number().min(0).max(1).nullable(), missing: z.array(z.string()) }),
+    }).nullable(),
+  }).nullable().optional(),
 });
 export type LearningQualityReport = z.infer<typeof learningQualityReportSchema>;
 export type ReviewDecision = 'make_harder' | 'make_easier' | 'adjust_band' | 'no_change';

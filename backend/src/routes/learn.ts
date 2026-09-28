@@ -4,8 +4,7 @@ import {
   hasActiveAnalyticsConsent,
   deterministicEventId,
   insertLearningEvents,
-  stampRole,
-} from '../services/insights.js';
+  stampRole, type LearnQaEvent } from '../services/insights.js';
 import { Router, type Response } from 'express';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
@@ -279,8 +278,10 @@ async function courseEntry(user: AuthedUser, course: CourseHierarchyRow, ageScre
       const completedSlugs = new Set(completed.map((badge) => badge.course_slug));
       const missing = requires.filter((slug) => !completedSlugs.has(slug));
       if (missing.length > 0) {
+        recordServerLearnEvent(user, 'prerequisite_refused', null, { segmentId: 'legacy' });
         return { kind: 'refused', status: 409, code: 'COURSE_PREREQUISITE_REQUIRED', message: 'Finish the prerequisite course first', details: { missingPrerequisites: missing } };
       }
+      recordServerLearnEvent(user, 'prerequisite_passed', null, { segmentId: 'legacy' });
     }
     const load = await loadLearnerCourse(user.accessToken, user.id, course, ageScreen);
     if (!load) return { kind: 'refused', status: 502, code: 'INTERNAL', message: 'Content service unreachable' };
@@ -300,8 +301,11 @@ async function courseEntry(user: AuthedUser, course: CourseHierarchyRow, ageScre
     if (decision === 'missing') missing.push(slug);
   }
   if (missing.length > 0) {
+    // Appendix C 1.3 (B.2): prerequisite gate compliance, from Core's own decision.
+    recordServerLearnEvent(user, 'prerequisite_refused', null, { segmentId: 'pathway' });
     return { kind: 'refused', status: 409, code: 'COURSE_PREREQUISITE_REQUIRED', message: 'Finish the prerequisite course first', details: { missingPrerequisites: missing } };
   }
+  if (requires.length > 0) recordServerLearnEvent(user, 'prerequisite_passed', null, { segmentId: 'pathway' });
   await settleCourseBadges(user.id, course, load);
   return { kind: 'open', load };
 }
@@ -513,11 +517,11 @@ async function resolveLessonContext(accessToken: string, userId: string, lessonI
  * divides a client event by this one, so both must be dropped for the same
  * learners or the rate would lie.
  */
-function recordServerLearnEvent(
+export function recordServerLearnEvent(
   user: AuthedUser,
-  event: 'replay_below_best' | 'streak_rest_day' | 'streak_restart' | 'path_choice',
+  event: 'replay_below_best' | 'streak_rest_day' | 'streak_restart' | 'path_choice' | LearnQaEvent,
   lessonId: string | null,
-  extra: { value?: number; clientEventId?: string } = {},
+  extra: { value?: number; clientEventId?: string; segmentId?: string } = {},
 ): void {
   if (user.isGuest) return;
   void (async () => {
@@ -532,6 +536,7 @@ function recordServerLearnEvent(
       user_id: user.id, role: stampRole(roles), event, route_class: 'learn', lesson_id: lessonId,
       ...(extra.value !== undefined ? { value: extra.value } : {}),
       ...(extra.clientEventId ? { client_event_id: extra.clientEventId } : {}),
+      ...(extra.segmentId ? { segment_id: extra.segmentId } : {}),
     }]);
   })();
 }
@@ -1140,6 +1145,9 @@ export function learnRouter(): Router {
     attempt_token: z.string().min(1).max(4_096),
     // GAP-FIX-R1 (Bible 08 §11, B.10): help-ladder steps opened before Check. Never changes the score.
     hints_used: z.number().int().min(0).max(2).optional(),
+    // GAP-FIX-R2 (Appendix P Part 8 scorer parity): the browser scorer's advisory reading of the same answer.
+    // Never trusted and never graded: Core only records whether it agreed.
+    client_verdict: z.enum(['valid', 'invalid']).optional(),
   }).strict();
   const GradeBody = z.union([LegacyGradeBody, V2GradeBody]);
 
@@ -1180,7 +1188,11 @@ export function learnRouter(): Router {
       });
       if (verified.status !== 'valid') return fail(res, 403, 'INVALID_ATTEMPT_TOKEN', 'This lesson attempt is no longer valid');
       const graded = gradeV2Visual(document, picked.answer_keys as Record<string, unknown>, segmentId, answer);
-      if (!graded) return fail(res, 400, 'VALIDATION_ERROR', 'Invalid answer for this lesson segment');
+      if (!graded) {
+        // Part 8: a browser that read the refused answer as valid disagreed with Core; the miss is counted.
+        if (parsed.data.client_verdict === 'valid') recordServerLearnEvent(user, 'scorer_parity_miss', lessonId, { segmentId });
+        return fail(res, 400, 'VALIDATION_ERROR', 'Invalid answer for this lesson segment');
+      }
       const next = mintLessonAttemptToken({
         uid: user.id, vid: picked.document_version_id, lid: lessonId, loc: document.locale, sid: segmentId, rid: parsed.data.run_id,
       }, secret);
@@ -1196,7 +1208,11 @@ export function learnRouter(): Router {
         kc: gradedSegment.knowledge_component_id ?? document.knowledge_component_ids[0]!,
         ...(graded.detection ? { detection: graded.detection } : {}),
         // L12 / $11 (GAP-FIX-R2): cue ticks are stored as a diagnostic; d′ is still computed from detection alone.
-        ...(graded.cues ? { cues: graded.cues } : {}) };
+        ...(graded.cues ? { cues: graded.cues } : {}),
+        // Appendix P Part 8 (GAP-FIX-R2): scorer parity, pre/post phase and the representation variant.
+        ...(parsed.data.client_verdict ? { client_agree: parsed.data.client_verdict === 'valid' } : {}),
+        ...(gradedSegment.item_phase ? { item_phase: gradedSegment.item_phase } : {}),
+        ...(gradedSegment.variant ? { variant: gradedSegment.variant } : {}) };
       const cpaPrerequisite = v2CpaAttemptPrerequisiteSegmentId(document, segmentId);
       const receipt = cpaPrerequisite === undefined
         ? await recordV2LessonGrade({
@@ -1407,7 +1423,11 @@ export function learnRouter(): Router {
     const passThreshold = typeof scoring.pass_threshold === 'number' ? scoring.pass_threshold : 70;
 
     const gradedIds = completableSegmentIds(picked.document, picked.answer_keys, new Set(Object.keys(GRADERS)), KEYLESS_GRADERS);
-    if (!gradedIds) return fail(res, 409, 'UNSUPPORTED_LESSON', 'This lesson format needs an update before it can be completed');
+    if (!gradedIds) {
+      // Appendix C 1.3 (B.4): the forced-update trigger fired instead of an unearned pass.
+      recordServerLearnEvent(user, 'lesson_update_required', lessonId, { segmentId: 'completion' });
+      return fail(res, 409, 'UNSUPPORTED_LESSON', 'This lesson format needs an update before it can be completed');
+    }
     const xpMap = xpBySegmentId(picked.document);
 
     // Score THIS run (0012): scoped to the run_id so a replay reflects the

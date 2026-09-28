@@ -4074,6 +4074,7 @@
             ]
           },
           "item_role": "transfer",
+          "item_phase": "pre",
           "knowledge_component_id": "kc-message-safety"
         },
         {
@@ -4343,6 +4344,7 @@
             ]
           },
           "item_role": "transfer",
+          "item_phase": "pre",
           "knowledge_component_id": "kc-message-safety"
         },
         {
@@ -4612,6 +4614,7 @@
             ]
           },
           "item_role": "transfer",
+          "item_phase": "pre",
           "knowledge_component_id": "kc-message-safety"
         },
         {
@@ -10084,8 +10087,9 @@
                 "label": "Pack of 5"
               }
             ],
-            "unit": "sticker"
-          }
+            "unitLabel": "sticker"
+          },
+          "variant": "ratio-lines"
         },
         {
           "id": "unit-price-02",
@@ -10117,8 +10121,10 @@
                 "label": "Bag of 6"
               }
             ],
-            "unit": "apple"
-          }
+            "unitLabel": "apple"
+          },
+          "item_role": "transfer",
+          "variant": "ratio-lines"
         }
       ]
     },
@@ -10193,8 +10199,9 @@
                 "label": "Paquete de 5"
               }
             ],
-            "unit": "estampa"
-          }
+            "unitLabel": "estampa"
+          },
+          "variant": "ratio-lines"
         },
         {
           "id": "unit-price-02",
@@ -10226,8 +10233,10 @@
                 "label": "Bolsa de 6"
               }
             ],
-            "unit": "manzana"
-          }
+            "unitLabel": "manzana"
+          },
+          "item_role": "transfer",
+          "variant": "ratio-lines"
         }
       ]
     },
@@ -10302,8 +10311,9 @@
                 "label": "Pacote com 5"
               }
             ],
-            "unit": "figurinha"
-          }
+            "unitLabel": "figurinha"
+          },
+          "variant": "ratio-lines"
         },
         {
           "id": "unit-price-02",
@@ -10335,8 +10345,10 @@
                 "label": "Saco com 6"
               }
             ],
-            "unit": "maçã"
-          }
+            "unitLabel": "maçã"
+          },
+          "item_role": "transfer",
+          "variant": "ratio-lines"
         }
       ]
     },
@@ -11060,7 +11072,7 @@
           "id": "rule-nested-01",
           "type": "logic.rule-builder.v2",
           "grading": "server",
-          "prompt": "Wait for a sale when you could buy now. Build it.",
+          "prompt": "Wait for a sale even when you have enough. Build it.",
           "visual": {
             "type": "rule-builder"
           },
@@ -11203,7 +11215,7 @@
           "id": "rule-nested-01",
           "type": "logic.rule-builder.v2",
           "grading": "server",
-          "prompt": "Espera la oferta cuando podrías comprar ya. Ármala.",
+          "prompt": "Espera la oferta aunque te alcance. Ármala.",
           "visual": {
             "type": "rule-builder"
           },
@@ -11346,7 +11358,7 @@
           "id": "rule-nested-01",
           "type": "logic.rule-builder.v2",
           "grading": "server",
-          "prompt": "Espere a promoção quando poderia comprar já. Monte.",
+          "prompt": "Espere a promoção mesmo tendo o bastante. Monte.",
           "visual": {
             "type": "rule-builder"
           },
@@ -11508,7 +11520,7 @@
             "outcomes": [
               {
                 "id": "buy-now",
-                "label": "Buy now"
+                "label": "Buy it"
               },
               {
                 "id": "save-first",
@@ -11627,7 +11639,7 @@
             "outcomes": [
               {
                 "id": "buy-now",
-                "label": "Compra ya"
+                "label": "Cómpralo"
               },
               {
                 "id": "save-first",
@@ -11746,7 +11758,7 @@
             "outcomes": [
               {
                 "id": "buy-now",
-                "label": "Compre já"
+                "label": "Compre"
               },
               {
                 "id": "save-first",
@@ -12052,6 +12064,7 @@
               }
             ]
           },
+          "item_phase": "post",
           "knowledge_component_id": "kc-message-safety"
         }
       ]
@@ -12148,6 +12161,7 @@
               }
             ]
           },
+          "item_phase": "post",
           "knowledge_component_id": "kc-message-safety"
         }
       ]
@@ -12244,6 +12258,7 @@
               }
             ]
           },
+          "item_phase": "post",
           "knowledge_component_id": "kc-message-safety"
         }
       ]

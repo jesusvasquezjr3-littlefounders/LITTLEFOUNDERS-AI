@@ -104,7 +104,7 @@ describe('the server boundary', () => {
     locale: 'en-US', age_band: '10-12', eligibility: { minimum_age: 10, maximum_age: 12 }, knowledge_component_ids: ['kc-unit-price'], adventure_scene_id: 'diorama-a',
     title: 'Price per item', required_capabilities: ['visual.ratio-table.v1', 'operation.number-input.v1', 'operation.choose-option.v1'],
     segments: [{ id: 'unit-01', type: 'money.unit-price.v2', grading: 'server', prompt: 'Find each price per sticker.', visual: { type: 'ratio-table' },
-      payload: { currency: 'coins', unit: 'sticker', offers: [{ id: 'small', label: 'Pack of 3', quantity: 3, price_minor: 45 }, { id: 'big', label: 'Pack of 5', quantity: 5, price_minor: 70 }] } }],
+      payload: { currency: 'coins', unitLabel: 'sticker', offers: [{ id: 'small', label: 'Pack of 3', quantity: 3, price_minor: 45 }, { id: 'big', label: 'Pack of 5', quantity: 5, price_minor: 70 }] } }],
   };
   it('grades through Core and refuses tied offers, children in local currency and answer-bearing documents', () => {
     const lesson = validateV2LessonForGrading(document, { 'unit-01': unitKey }, { lessonId: 'unit-lesson', locale: 'en-US' });

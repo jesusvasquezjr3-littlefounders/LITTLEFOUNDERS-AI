@@ -108,6 +108,7 @@ import {
   setPracticeBand,
   syncPracticeReviews,
 } from '../services/learningQuality.js';
+import { DEFECT_KINDS, recordContentDefectEscape } from '../services/learningQaSignals.js';
 import { getFamilyStateIntegrity } from '../services/familyLifecycle.js';
 import { readRetentionCompliance } from '../services/familyRetention.js';
 import { readCoachingDelivery, readReflectionRate } from '../services/parentCoaching.js';
@@ -1827,6 +1828,20 @@ export function adminRouter(): Router {
     if (outcome === 'rejected') return fail(res, 403, 'FORBIDDEN', 'The database refused this decision');
     if (outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the decision');
     ok(res, { id: reviewId.data, status: 'resolved' });
+  });
+
+  // Appendix C 1.3 (GAP-FIX-R2): a defect found in released content, and the Forge gate that should have caught it.
+  const DefectEscapeBody = z.object({
+    lessonId: z.string().uuid(),
+    gateId: z.string().regex(/^forge\.[a-z0-9][a-z0-9.-]{2,80}$/),
+    kind: z.enum(DEFECT_KINDS),
+  }).strict();
+  router.post('/content/learning-quality/defect-escapes', async (req, res) => {
+    const body = DefectEscapeBody.safeParse(req.body);
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'Invalid defect escape');
+    const id = await recordContentDefectEscape({ ...body.data, actorId: authedUser(res).id });
+    if (!id) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the defect escape');
+    ok(res, { id, status: 'recorded' });
   });
 
   router.post('/content/learning-quality/bands', async (req, res) => {

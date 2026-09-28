@@ -34,6 +34,10 @@ export const v2SegmentExtras = {
   help: z.array(label(160)).min(1).max(2).optional(),
   item_role: z.enum(['practice', 'transfer']).optional(),
   knowledge_component_id: id.optional(),
+  // Appendix P Part 8 (GAP-FIX-R2): L12/$11 items before and after the lesson (d-prime pre/post),
+  // and the representation variant an A/B comparison groups transfer success by.
+  item_phase: z.enum(['pre', 'post']).optional(),
+  variant: id.optional(),
 };
 
 function uniqueIds(values: ReadonlyArray<{ id: string }>): boolean {
@@ -168,7 +172,7 @@ export const mentorEpisodePayload = z.object({
  */
 export const unitPricePayload = z.object({
   currency: z.enum(['coins', 'local']),
-  unit: label(24),
+  unitLabel: label(24),
   offers: z.array(z.object({ id, label: label(40), quantity: positive.max(1_000), price_minor: positive.max(1_000_000) }).strict()).min(2).max(3),
 }).strict().refine((value) => uniqueIds(value.offers) && value.offers.every((a, i) => value.offers.every((b, j) => i === j
   || a.price_minor * b.quantity !== b.price_minor * a.quantity)), 'Invalid unit-price offers');

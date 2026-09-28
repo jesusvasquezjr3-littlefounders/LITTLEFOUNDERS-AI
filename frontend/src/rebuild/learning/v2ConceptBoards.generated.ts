@@ -116,6 +116,9 @@ const base = {
   help: z.array(z.string().trim().min(1).max(160)).min(1).max(2).optional(),
   item_role: z.enum(['practice', 'transfer']).optional(),
   knowledge_component_id: id.optional(),
+  // Appendix P Part 8 (GAP-FIX-R2): the same pre/post phase and representation variant every v2 segment may carry.
+  item_phase: z.enum(['pre', 'post']).optional(),
+  variant: id.optional(),
 };
 const grading = z.enum(['server', 'none']);
 const visual = <T extends string>(type: T) => z.object({ type: z.literal(type) }).strict();
