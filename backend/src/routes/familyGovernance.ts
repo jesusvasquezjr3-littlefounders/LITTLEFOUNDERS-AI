@@ -10,6 +10,7 @@ import { deliverTip, markTip, reviewedTipIds, toWireTip } from '../services/pare
 import { BRIDGE_MILESTONES, BRIDGE_STEPS, markBridge, readBridge, toWireBridge } from '../services/moneyBridge.js';
 import { readResearch, RESEARCH_DISCLOSURE_VERSION, setResearch, toWireResearch } from '../services/familyResearch.js';
 import { readDataPractices, setDataPractice, toWireDataPractices } from '../services/dataPractices.js';
+import { readTeenDeletionNotices } from '../services/teenDeletionNotices.js';
 
 /*
  * /api/v1/family-hub — S07.7, the governance half of Block D:
@@ -19,9 +20,12 @@ import { readDataPractices, setDataPractice, toWireDataPractices } from '../serv
  *   GET  /data-policy                  D.21  how long each kind of data is kept
  *   GET  /kids/:kidId/research         D.22  a child's research participation (their Tutor)
  *   PUT  /kids/:kidId/research         D.22  the Tutor says yes or no
- *   GET  /research/me                  D.22  the participant's own view
+ *   GET  /research/me                  D.22  the participant's own view (any signed-in,
+ *                                            non-guest account: a young adult whose
+ *                                            Tutor's yes lapsed at 18 holds no wallet)
  *   PUT  /research/me                  D.22  a no from the participant (a child's own no
- *                                            counts); a yes only from an adult
+ *                                            counts); a yes only from an adult, including
+ *                                            the H-25 re-consent at 18
  *   GET  /bridge                       D.19  the older-teen bridge (wallet holders)
  *   POST /bridge                       D.19  tick or untick one checklist entry
  *   GET  /kids/:kidId/data-practices   OD-9 4.2  each rebuild data practice and a child's consent (their Tutor)
@@ -30,6 +34,8 @@ import { readDataPractices, setDataPractice, toWireDataPractices } from '../serv
  *   PUT  /data-practices/me/:key                 a no from the account itself (a child's own no counts);
  *                                                a yes only from a self-registered teen with no Tutor,
  *                                                for the analytics classes
+ *   GET  /deletion-notices             D-14 (b)  a linked teen's own account deletion, told to
+ *                                                each verified Tutor (notify only)
  *   POST /internal/retention/run       D.21  the nightly sweep and photo purge
  *
  * The database decides every rule (eligibility by age evidence, who may say
@@ -146,22 +152,38 @@ export function familyGovernanceRouter(): Router {
     return ok(res, { research: toWireResearch(state), currentVersion: RESEARCH_DISCLOSURE_VERSION });
   });
 
-  router.get('/research/me', requireWalletAccess('holder'), async (_req, res) => {
+  // H-25 (GAP-FIX-R2): not wallet-gated. A linked teen stops being a wallet holder at 18, which is exactly
+  // when their Tutor's yes lapses and they must be asked; the database decides who may answer.
+  const refuseGuest: RequestHandler = (_req, res, next) => {
+    if (authedUser(res).isGuest) return fail(res, 403, 'GUEST_NOT_ALLOWED', 'Research is not offered to guest sessions');
+    next();
+  };
+
+  router.get('/research/me', refuseGuest, async (_req, res) => {
     const me = authedUser(res);
     const state = await readResearch(me.id);
     if (state === UNAVAILABLE || isRefusal(state)) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load research participation');
     return ok(res, { research: toWireResearch(state), currentVersion: RESEARCH_DISCLOSURE_VERSION });
   });
 
-  router.put('/research/me', requireWalletAccess('holder'), async (req, res) => {
+  router.put('/research/me', refuseGuest, async (req, res) => {
     const me = authedUser(res);
     const body = SetResearch.safeParse(req.body ?? {});
     if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'participate must be a boolean; a yes names the description version');
     const state = await setResearch(me.id, me.id, body.data.participate, body.data.disclosureVersion ?? RESEARCH_DISCLOSURE_VERSION);
     if (state === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the answer');
     if (isRefusal(state)) return refuse(res, state.refused);
-    await insertAuditLog(me.id, body.data.participate ? 'family.research_yes_self' : 'family.research_no_self', me.id, {});
+    await insertAuditLog(me.id, body.data.participate ? 'family.research_yes_self' : 'family.research_no_self', me.id,
+      body.data.participate ? { version: body.data.disclosureVersion ?? null } : {});
     return ok(res, { research: toWireResearch(state), currentVersion: RESEARCH_DISCLOSURE_VERSION });
+  });
+
+  // ── D-14 (b): a linked teen's deletion, told to the Tutor (notify only) ─
+  router.get('/deletion-notices', requireRole(['parent']), async (_req, res) => {
+    const tutor = authedUser(res);
+    const notices = await readTeenDeletionNotices(tutor.id);
+    if (notices === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the notices');
+    return ok(res, { notices });
   });
 
   // ── OD-9 4.2: consent for the practices the rebuild introduced ──────────

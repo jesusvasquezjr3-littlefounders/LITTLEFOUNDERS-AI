@@ -94,6 +94,8 @@
     "pausedOne": "1 child account only you supervise will be paused.",
     "pausedMany": "{count} child accounts only you supervise will be paused.",
     "pausedAfter": "Without another Tutor, a paused account is deleted after 90 days.",
+    "tutorToldOne": "We tell your Tutor the deletion date.",
+    "tutorToldMany": "We tell your {count} Tutors the deletion date.",
     "detailsLabel": "What gets deleted",
     "detailsProfile": "Your profile, progress, coins, and Mentor conversations and notes.",
     "detailsFiles": "Photos, audio, and usage records linked to your account.",

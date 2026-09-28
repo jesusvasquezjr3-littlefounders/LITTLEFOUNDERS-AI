@@ -27,6 +27,8 @@ export function MyResearch({ copy, locale, dark, research, busy, notice, onStop 
 }) {
   const heading = useId();
   const [confirming, setConfirming] = useState(false);
+  // An adult's answer (H-25, the re-consent at 18) lives in their own Settings (AdultResearch), never here.
+  if (research?.adult && !notice) return null;
   if (!notice && (!research || !research.participating)) return null;
   return <section className="lf-rebuild lf-family-hub lf-governance" data-governance="my-research" data-theme={dark ? 'dark' : 'light'} lang={locale} aria-labelledby={heading}>
     <h2 id={heading} className="lf-governance-tip-title" data-copy-role="heading">{copy.heading}</h2>

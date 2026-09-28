@@ -94,6 +94,8 @@
     "pausedOne": "1 conta infantil que só você supervisiona será pausada.",
     "pausedMany": "{count} contas infantis que só você supervisiona serão pausadas.",
     "pausedAfter": "Sem outro Tutor, uma conta pausada é excluída após 90 dias.",
+    "tutorToldOne": "Avisamos seu Tutor da data da exclusão.",
+    "tutorToldMany": "Avisamos seus {count} Tutores da data da exclusão.",
     "detailsLabel": "O que é excluído",
     "detailsProfile": "Seu perfil, progresso, moedas e as conversas e notas do Mentor.",
     "detailsFiles": "Fotos, áudios e registros de uso ligados à sua conta.",

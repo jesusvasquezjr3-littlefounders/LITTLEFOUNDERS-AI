@@ -11,7 +11,7 @@ describe('rebuild-family copy budget', () => {
     it(`fits its budgets in ${locale}`, () => {
       expectBudgetedGroups(strings, ['socialGraph', 'socialHistory', 'socialRequests', 'socialNotices', 'badgeShares', 'achievementShare', 'guardianInvite',
         'familyConsole', 'familyChildAccount', 'familyChildConsent', 'familyChildProgress', 'familyChildMentor', 'familyMemoryNotes',
-        'familyTasks', 'childTasks', 'familyCoins', 'childCoins', 'coinCard', 'teenWalletScreen', 'familyCoopGoals']);
+        'familyTasks', 'childTasks', 'familyCoins', 'childCoins', 'coinCard', 'teenWalletScreen', 'familyCoopGoals', 'familyDeletionNotices']);
       // W2F.1: the rebuilt Family console (F1), a child's progress (F2) and Mentor talks (F3). Adult Tutor copy;
       // placeholders take realistic values (a data value counts as its own words, 06 §3).
       const sample = (text: string) => text.replace('{name}', 'Ana').replace('{username}', '@ana_2016').replace('{count}', '12').replace('{date}', 'Sep 20')
@@ -67,6 +67,8 @@ describe('rebuild-family copy budget', () => {
       budget('coinCard', { indigo: 'option', emerald: 'option', violet: 'option', amber: 'option', sunrise: 'option', ocean: 'option' }, '6-9');
       budget('teenWalletScreen', { failedTitle: 'heading', refusedTitle: 'heading', retry: 'action', retrying: 'action', refusedAction: 'action' }, '13-17');
       budget('familyMemoryNotes', { title: 'heading', approve: 'action', reject: 'action', retry: 'action', outOfDate: 'option' });
+      // GAP-FIX-R2 (D-14 (b)): a linked teen's own account deletion, told to the Tutor. Adult copy, notify only.
+      budget('familyDeletionNotices', { title: 'heading', retry: 'action' });
       for (const [key, text] of group('socialGraph')) {
         expectFits(text, ['loading', 'empty', 'failed'].includes(key) ? 'body' : 'action', locale, '13-17', `socialGraph.${key}`);
       }

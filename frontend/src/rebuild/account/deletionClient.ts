@@ -27,6 +27,8 @@ export type DeletionEligibility =
       immediate: boolean;
       reauth: DeletionReauth;
       children: { lastTutorOf: number; sharedTutorOf: number };
+      /** D-14 (b): the verified Tutors a linked teen's deletion tells (0 when absent). */
+      tutorsTold: number;
     };
 
 export interface DeletionState {
@@ -68,6 +70,7 @@ function parseEligibility(value: unknown): DeletionEligibility | undefined {
     immediate: value.immediate,
     reauth: value.reauth as DeletionReauth,
     children: { lastTutorOf: children.lastTutorOf, sharedTutorOf: children.sharedTutorOf },
+    tutorsTold: isCount(value.tutorsTold) ? value.tutorsTold : 0,
   };
 }
 

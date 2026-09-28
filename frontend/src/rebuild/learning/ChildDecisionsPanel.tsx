@@ -16,7 +16,8 @@ import { fetchChildDecisions, type ChildDecision, type ChildDecisionsState, type
  * choices.
  *
  * Owned by the learner lane (the journal's data) and mounted by the Family
- * Hub's child learning panels (Lane 4), beside the B.10 narrative. Adult
+ * Hub's child learning panels (routes/app/family/LearningPanels.tsx,
+ * LearningDecisionsPanel, on /family), beside the B.10 narrative. Adult
  * register (B.23): direct, the choices first, one press to open.
  */
 

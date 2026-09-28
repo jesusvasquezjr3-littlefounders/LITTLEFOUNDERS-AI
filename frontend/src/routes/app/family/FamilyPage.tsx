@@ -10,13 +10,14 @@ import { CoopGoalsConsentPanel } from '@/app-routes/CoopGoalsConsentPanel';
 import { CoachingTipPanel, DataPolicyPanel, ResearchConsentPanel, ScopeStatementPanel } from './GovernancePanels';
 import { DataPracticeConsentPanel } from './DataPracticePanels';
 import { GuardianInviteJoin, GuardianInvitePanel } from './GuardianInvitePanel';
-import { LearningBridgesPanel, LearningNarrativePanel, StreakPausePanel } from './LearningPanels';
+import { LearningBridgesPanel, LearningDecisionsPanel, LearningNarrativePanel, StreakPausePanel } from './LearningPanels';
 import { ShareDestinationsPanel } from './ShareDestinationsPanel';
 import { SocialGraphPanel } from './SocialGraphPanel';
 import { SocialHistoryPanel } from './SocialHistoryPanel';
 import { SocialNoticesPanel } from './SocialNoticesPanel';
 import { SocialRequestsPanel } from './SocialRequestsPanel';
 import { StreakPausesPanel } from './StreakPausesPanel';
+import { TeenDeletionNoticesPanel } from '@/app-routes/TeenDeletionNoticesPanel';
 import { WalletCorrectionsPanel } from './WalletCorrectionsPanel';
 import { useConsoleEnvironment, useConsoleTransport } from './consoleSession';
 
@@ -61,9 +62,10 @@ export function FamilyPage() {
     const name = childName(child);
     const common = { kidUserId: child.userId, token };
     return {
-      // S05.3c/e: B.10's narrative, B.13's real-world prompts, B.21's holiday pause of the learning streak.
+      // S05.3c/e: B.10's narrative, OD-27 (3)'s story choices (under 13 only; Core decides), B.13's real-world prompts, B.21's holiday pause.
       learning: <>
         <LearningNarrativePanel {...common} />
+        <LearningDecisionsPanel {...common} />
         <LearningBridgesPanel {...common} />
         <StreakPausePanel {...common} />
       </>,
@@ -104,6 +106,8 @@ export function FamilyPage() {
     familyAside={(hasChildren) => <>
       {/* S07.7 (D.23, D.20, D.21): this month's tip, what the practice covers, how long the family's data is kept. */}
       {hasChildren ? <CoachingTipPanel token={token} /> : null}
+      {/* GAP-FIX-R2 (D-14 (b)): a linked teen asked to delete their own account (notify only; nothing shows otherwise). */}
+      {hasChildren ? <TeenDeletionNoticesPanel token={token} /> : null}
       {hasChildren ? <SocialNoticesPanel token={token} /> : null}
       <GuardianRequestsPanel token={token} />
       <ScopeStatementPanel />

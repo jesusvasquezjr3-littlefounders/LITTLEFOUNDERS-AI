@@ -20,6 +20,16 @@
 //   shouting       stacked exclamation marks, capitals, raw error codes
 // A reviewed exception names the key, the category and why.
 //
+// B.14's UI tone lexicon (coursegen/src/contentGates/tone.ts TONE_LEXICON; on
+// the `ui` surface every entry blocks) runs over the same strings as a fifth
+// category, `b14_ui`, so D.8 holds Family Hub copy to the same no-bank-register
+// standard as Forge's system copy.
+//
+// Coverage (GAP-FIX-R2): every rebuild-family.json group a surface under
+// scope.surfaces names must be one of scope.subtrees, and every i18next
+// namespace a surface loads must be in scope; otherwise a lane could add copy
+// the gate never reads.
+//
 // It also reports Appendix H's Tone-Gate Pass Rate (Diagnostic): the share of
 // in-scope strings that pass. `--report <path>` writes it as JSON.
 
@@ -36,6 +46,25 @@ export function flatten(node, prefix = '') {
   if (typeof node === 'string') return [[prefix, node]];
   if (!node || typeof node !== 'object') return [];
   return Object.entries(node).flatMap(([k, v]) => flatten(v, prefix ? `${prefix}.${k}` : k));
+}
+
+/** Lower case, no diacritics, typographic apostrophes folded (as coursegen's foldText). */
+export function fold(text) {
+  return text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/’/g, "'");
+}
+
+const escapePhrase = (phrase) => phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+
+/** B.14's phrases per locale, parsed from coursegen's tone lexicon source (bank/hype/urge/proc all block on `ui`). */
+export function parseB14Lexicon(source) {
+  const out = {};
+  for (const locale of LOCALES) {
+    const start = source.indexOf(`'${locale}': [`);
+    if (start < 0) continue;
+    const block = source.slice(start, source.indexOf('\n  ],', start));
+    out[locale] = [...block.matchAll(/\b(?:bank|hype|urge|proc)\((['"])(.*?)\1\)/g)].map((m) => m[2]);
+  }
+  return out;
 }
 
 function compile(words) {
@@ -55,8 +84,9 @@ export function findings(text, locale, lexicon) {
       continue;
     }
     const words = spec[locale];
-    if (!words) continue;
-    const m = compile(words).exec(text.replace(/\{\{?\w+\}?\}/g, ' '));
+    if (!words || words.length === 0) continue;
+    const plain = text.replace(/\{\{?\w+\}?\}/g, ' ');
+    const m = spec.folded ? compile(words.map(escapePhrase)).exec(fold(plain)) : compile(words).exec(plain);
     if (m) out.push({ category, match: m[0] });
   }
   return out;
@@ -103,6 +133,16 @@ export function checkTone({ lexicon, readLocale, surfaceSources = [] }) {
   for (const [file, source] of surfaceSources) {
     if (/\berror\??\.message\b/.test(source)) failures.push(`${file}: renders a raw Core error message; map the code to copy instead`);
   }
+  // Coverage: no surface renders a rebuild-family group or an i18next namespace the gate never reads.
+  const groups = Object.keys(readLocale('en-US', 'rebuild-family') ?? {});
+  const scopedGroups = new Set(lexicon.scope.subtrees.filter((s) => s.startsWith('rebuild-family:')).map((s) => s.slice('rebuild-family:'.length).split('.')[0]));
+  const scopedNamespaces = new Set([...lexicon.scope.namespaces, ...lexicon.scope.subtrees.map((s) => s.split(':')[0])]);
+  const unread = new Map();
+  for (const [file, source] of surfaceSources) {
+    for (const g of groups) if (!scopedGroups.has(g) && new RegExp(`\\b${g}\\b`).test(source)) unread.set(`rebuild-family:${g}`, file);
+    for (const m of source.matchAll(/useTranslation\(\s*\[?\s*['"]([\w-]+)['"]/g)) if (!scopedNamespaces.has(m[1])) unread.set(m[1], file);
+  }
+  for (const [group, file] of unread) failures.push(`${file}: renders ${group}, which is outside the tone gate's scope; add it to scope in ${LEXICON}`);
   return { checked: strings.length, passed, failures };
 }
 
@@ -110,11 +150,23 @@ function walk(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)]));
 }
 
+export const B14_TONE = 'coursegen/src/contentGates/tone.ts';
+
+/** The lexicon file plus B.14's UI phrases as the folded `b14_ui` category. */
+export function loadLexicon(root = ROOT) {
+  const lexicon = JSON.parse(readFileSync(join(root, LEXICON), 'utf8'));
+  const b14 = parseB14Lexicon(readFileSync(join(root, B14_TONE), 'utf8'));
+  if (LOCALES.some((l) => !(b14[l]?.length > 0))) throw new Error(`${B14_TONE}: could not read TONE_LEXICON for every locale`);
+  lexicon.categories.b14_ui = { why: "B.14's UI tone lexicon (Law 2), shared with Forge's system-copy gate.", folded: true, ...b14 };
+  return lexicon;
+}
+
 export function liveInputs(root = ROOT) {
+  const lexicon = loadLexicon(root);
   return {
-    lexicon: JSON.parse(readFileSync(join(root, LEXICON), 'utf8')),
+    lexicon,
     readLocale: (locale, ns) => { try { return JSON.parse(readFileSync(join(root, 'frontend/src/i18n', locale, `${ns}.json`), 'utf8')); } catch { return null; } },
-    surfaceSources: (JSON.parse(readFileSync(join(root, LEXICON), 'utf8')).scope.surfaces ?? []).flatMap((dir) => walk(join(root, dir)))
+    surfaceSources: (lexicon.scope.surfaces ?? []).flatMap((dir) => walk(join(root, dir)))
       .filter((f) => /\.(tsx?|mjs)$/.test(f) && !/\.test\.tsx?$/.test(f))
       .map((f) => [f.slice(root.length).replace(/\\/g, '/'), readFileSync(f, 'utf8')]),
   };

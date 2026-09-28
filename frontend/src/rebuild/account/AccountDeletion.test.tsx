@@ -69,6 +69,15 @@ describe('AccountDeletion', () => {
     expect(screen.queryByText(/will be paused/)).toBeNull();
   });
 
+  it('tells a linked teen, right above the decision, that their Tutors are told the date (D-14 (b))', () => {
+    const { rerender } = render(<AccountDeletion copy={en.accountDeletion} locale="en-US" dark={false} view={ready({ step: 'confirm', tutorsTold: 1 })} />);
+    expect(screen.getByText('We tell your Tutor the deletion date.')).toBeTruthy();
+    rerender(<AccountDeletion copy={en.accountDeletion} locale="en-US" dark={false} view={ready({ step: 'confirm', tutorsTold: 2 })} />);
+    expect(screen.getByText('We tell your 2 Tutors the deletion date.')).toBeTruthy();
+    rerender(<AccountDeletion copy={en.accountDeletion} locale="en-US" dark={false} view={ready({ step: 'confirm', tutorsTold: 0 })} />);
+    expect(screen.queryByText(/deletion date/)).toBeNull();
+  });
+
   it('reports a wrong password and a stale sign-in as alerts, and offers to sign in again', () => {
     const onSignIn = vi.fn();
     const { rerender } = render(<AccountDeletion copy={en.accountDeletion} locale="en-US" dark={false} view={ready({ step: 'confirm', error: 'password' })} />);

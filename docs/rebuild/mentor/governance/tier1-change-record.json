@@ -321,6 +321,16 @@
       "origin": "human",
       "pedagogicalReviewer": "pending",
       "safetyTrustLead": "pending"
+    },
+    {
+      "component": "measurement.stage7_and_thresholds",
+      "hash": "18ec36f1e93962396089c4294997739e81785038a91dea2e56a594f518d49474",
+      "files": 9,
+      "date": "2026-09-28",
+      "change": "GAP-FIX-R2 F2-staff-ops (C.24, Appendix C 1.2): release audit results (B.25, B.22, B.20) and parent time to value join the Mentor quality dashboard and the evaluation loop; the loop breaches on a failed, stale (over 45 days) or missing audit, and engagement.streak_anxiety is retired with its written reason; thresholds in THRESHOLD-RECALIBRATION-LOG.md. Recorded at the F2-family merge.",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
     }
   ]
 }

@@ -34,6 +34,15 @@ import {
  *     screened): pending for ACCOUNT_DELETION_GRACE_DAYS, every session
  *     signed out, cancellable by signing back in.
  *
+ * A LINKED TEEN'S TUTORS ARE TOLD (owner review D-14 (b), GAP-FIX-R2): for a
+ * teen, Core reads the verified guardian links before scheduling (unreadable =
+ * 502, nothing scheduled) and reports how many Tutors will be told
+ * (`tutorsTold`, also on the GET so the teen sees it before confirming). The
+ * database writes one notice per verified Tutor and its audit row in the
+ * request's own transaction (teen_deletion_guardian_notices); the Tutor reads
+ * it on /family (GET /family-hub/deletion-notices). Notify only: no reason, no
+ * action. An unlinked teen tells nobody (D-14 (a)).
+ *
  * CONFIRMATION is server-side, not only a UI step: the body must carry
  * acknowledge:true, and the session must prove it is the holder — the current
  * password for a password session (checked by a real GoTrue sign-in, as
@@ -151,6 +160,12 @@ export function accountRouter(): Router {
       if (impact === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the linked children');
       children = impact;
     }
+    let tutorsTold = 0;
+    if (allowed.allowed && allowed.population === 'teen') {
+      const tutors = await getVerifiedGuardiansOfKid(user.id);
+      if (tutors === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the linked Tutors');
+      tutorsTold = tutors.length;
+    }
     return ok(res, {
       deletion: open === null ? null : publicDeletion(open),
       eligibility: allowed.allowed
@@ -161,6 +176,7 @@ export function accountRouter(): Router {
             immediate: allowed.graceDays === 0,
             reauth: reauthKind(user),
             children,
+            tutorsTold,
           }
         : { allowed: false, reason: allowed.reason },
     });
@@ -186,6 +202,15 @@ export function accountRouter(): Router {
       if (error) return fail(res, 401, 'INVALID_CREDENTIALS', 'Current password is incorrect');
     } else if (reauth === 'recent_sign_in' && !recentlySignedIn(user)) {
       return fail(res, 401, 'REAUTH_REQUIRED', 'Sign in again to confirm');
+    }
+
+    // D-14 (b): a linked teen's verified Tutors are told in the request's own transaction (the database trigger);
+    // Core reads them first so an unreadable link table schedules nothing and the answer states who is told.
+    let tutorsTold = 0;
+    if (allowed.population === 'teen') {
+      const tutors = await getVerifiedGuardiansOfKid(user.id);
+      if (tutors === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the linked Tutors');
+      tutorsTold = tutors.length;
     }
 
     const created = await requestDeletion({
@@ -222,6 +247,7 @@ export function accountRouter(): Router {
       population: allowed.population,
       graceDays: allowed.graceDays,
       signedOut: revoked.error === null,
+      tutorsTold,
     }, 202);
   });
 

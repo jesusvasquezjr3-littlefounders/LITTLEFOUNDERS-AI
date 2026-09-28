@@ -206,6 +206,7 @@ describe('the enforcement migration covers every registered practice', () => {
     age_correction_requests: { exempt: 'a staff decision record (the account and the deciding staff member); it shares nothing between accounts' },
     coop_goal_members: 'sharing.cooperative_goals',
     coop_goal_guardian_consents: 'sharing.cooperative_goals',
+    account_deletion_guardian_notices: { exempt: 'the owner-mandated D-14 (b) notice to an already verified Tutor of a linked teen\'s own deletion: ids only, read only by that Tutor, gone with the account; a safeguard, not a sharing surface' },
   };
   it('every table tying two accounts, created at or after the registry, names a registered and enforced practice', () => {
     const dir = join(root, 'database/migrations');

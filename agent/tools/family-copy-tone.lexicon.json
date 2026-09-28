@@ -13,7 +13,28 @@
       "familyGovernance"
     ],
     "subtrees": [
-      "common:family"
+      "common:family",
+      "rebuild-family:familyConsole",
+      "rebuild-family:familyChildAccount",
+      "rebuild-family:familyChildConsent",
+      "rebuild-family:familyChildProgress",
+      "rebuild-family:familyChildMentor",
+      "rebuild-family:familyMemoryNotes",
+      "rebuild-family:guardianInvite",
+      "rebuild-family:familyTasks",
+      "rebuild-family:childTasks",
+      "rebuild-family:familyCoins",
+      "rebuild-family:childCoins",
+      "rebuild-family:coinCard",
+      "rebuild-family:teenWalletScreen",
+      "rebuild-family:familyCoopGoals",
+      "rebuild-family:badgeShares",
+      "rebuild-family:achievementShare",
+      "rebuild-family:socialGraph",
+      "rebuild-family:socialHistory",
+      "rebuild-family:socialRequests",
+      "rebuild-family:socialNotices",
+      "rebuild-family:familyDeletionNotices"
     ],
     "errorCodes": [],
     "surfaces": [
@@ -25,7 +46,8 @@
       "frontend/src/routes/app/family",
       "frontend/src/routes/app/wallet"
     ],
-    "surfacesWhy": "Core's error messages are English developer diagnostics. A family reads only the rebuilt surfaces' own copy, in scope here (the legacy errors.json and common.json tasks/banking subtrees left with the legacy UI in S10L.1). The gate fails if a Family Hub or banking surface starts rendering a raw Core message."
+    "surfacesWhy": "Core's error messages are English developer diagnostics. A family reads only the rebuilt surfaces' own copy, in scope here (the legacy errors.json and common.json tasks/banking subtrees left with the legacy UI in S10L.1). The gate fails if a Family Hub or banking surface starts rendering a raw Core message.",
+    "subtreesWhy": "GAP-FIX-R2 (D.8): every rebuilt Family Hub, Tasks, Wallet and Family console group of rebuild-family.json is in scope. check-family-copy-tone.mjs fails if a surface under scope.surfaces names a rebuild-family group that is not listed here, so a later lane cannot add copy the gate never reads."
   },
   "categories": {
     "bank_register": {
@@ -261,6 +283,41 @@
       "key": "familyGovernance:bridge.first_account1",
       "category": "bank_register",
       "why": "The D.19 bridge advises a teen about a real bank account outside the app (ask about its fees first); it describes no in-app transaction."
+    },
+    {
+      "key": "rebuild-family:familyConsole.privacy",
+      "category": "guarantee",
+      "why": "The console section label \"Privacidad y seguridad\" / \"Privacidade e segurança\" names the safety settings the Tutor controls; it promises no protection of coins or money."
+    },
+    {
+      "key": "rebuild-family:familyChildMentor.category.other",
+      "category": "guarantee",
+      "why": "Tells the Tutor a Mentor safety review ran on a talk (moderation event); it describes an event and promises nothing."
+    },
+    {
+      "key": "rebuild-family:familyChildMentor.closeReason.safety_stop",
+      "category": "guarantee",
+      "why": "Tells the Tutor the Mentor stopped a talk for safety reasons (moderation stop); it describes an event and promises nothing."
+    },
+    {
+      "key": "rebuild-family:socialRequests.deny",
+      "category": "bank_register",
+      "why": "A Tutor refusing a friend request for their child, a safety decision about a person, not a money transaction."
+    },
+    {
+      "key": "rebuild-family:socialRequests.denied",
+      "category": "bank_register",
+      "why": "Confirms a Tutor refused a friend request for their child, a decision about a person, not a money transaction."
+    },
+    {
+      "key": "rebuild-family:socialNotices.title",
+      "category": "guarantee",
+      "why": "The es-MX/pt-BR heading of the child safety notices list (\"safety notices\"); it names a list of moderation notices and promises nothing."
+    },
+    {
+      "key": "rebuild-family:socialNotices.empty",
+      "category": "guarantee",
+      "why": "The empty state of the child safety notices list (\"no safety notices\"); it names a list and promises nothing."
     }
   ]
 }

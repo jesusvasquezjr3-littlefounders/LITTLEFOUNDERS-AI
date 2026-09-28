@@ -105,4 +105,7 @@ export const REGISTER_POLICY: Record<string, { policy: 'register' | 'neutral' | 
   LearningBridges: { policy: 'tutor', why: 'the Tutor turns a learned skill into a real goal or task (S05, B.13)' },
   LearningNarrative: { policy: 'tutor', why: 'what the child learned, told to the Tutor in the adult register (S05, B.10)' },
   StreakPauseControl: { policy: 'tutor', why: 'the Tutor\'s holiday pause of the learning streak (S05, B.21)' },
+  // GAP-FIX-R2.
+  AdultResearch: { policy: 'tutor', why: 'an adult\'s own research answer in Settings (H-25): adult copy, no numbers, never shown to a child' },
+  TeenDeletionNotices: { policy: 'tutor', why: 'the Tutor is told that a linked teen asked to delete their account (D-14 (b)), adult copy' },
 };

@@ -35,7 +35,9 @@ interface Fake {
   calls: string[];
   kidLinks: Map<string, string[]>; // kid -> verified guardians
   openCase: Set<string>;
-  fail: Partial<Record<'oracle' | 'core' | 'depot' | 'dataintel' | 'roles' | 'deletionRead', boolean>>;
+  fail: Partial<Record<'oracle' | 'core' | 'depot' | 'dataintel' | 'roles' | 'deletionRead' | 'links', boolean>>;
+  // D-14 (b): what the database trigger writes for a linked teen's own request (request id, Tutor).
+  notices: { request: string; guardian: string }[];
   depotPaths: string[];
   revoked: string[];
 }
@@ -72,6 +74,7 @@ function install(): void {
         .map(([kid]) => ({ parent_user_id: parent, kid_user_id: kid, verification_status: 'verified' })));
     }
     if (url.includes('/rest/v1/guardian_links?kid_user_id=')) {
+      if (fake.fail.links) return jsonResponse(500, {});
       return jsonResponse(200, (fake.kidLinks.get(param('kid_user_id')) ?? []).map((id) => ({ parent_user_id: id, id: randomUUID() })));
     }
     if (url.includes('/rest/v1/audit_logs')) {
@@ -109,6 +112,10 @@ function install(): void {
       };
       fake.rows.push(row);
       fake.audits.push({ action: 'account.deletion_requested', subject, actor_id: (body.p_actor as string | null) ?? null, detail: { request_id: row.id } });
+      // teen_deletion_guardian_notices: the trigger tells each verified Tutor of a teen's own request, in the same transaction.
+      const tutors = row.population === 'teen' && row.initiated_by === 'self' ? fake.kidLinks.get(subject) ?? [] : [];
+      for (const guardian of tutors) fake.notices.push({ request: row.id, guardian });
+      if (tutors.length > 0) fake.audits.push({ action: 'account.deletion_guardians_notified', subject, actor_id: subject, detail: { request_id: row.id, guardians: tutors.length } });
       return jsonResponse(200, row);
     }
     if (url.endsWith('/rest/v1/rpc/cancel_account_deletion')) {
@@ -187,7 +194,7 @@ function install(): void {
 }
 
 beforeEach(() => {
-  fake = { accounts: new Map(), rows: [], audits: [], calls: [], kidLinks: new Map(), openCase: new Set(), fail: {}, depotPaths: [], revoked: [] };
+  fake = { accounts: new Map(), rows: [], audits: [], calls: [], kidLinks: new Map(), openCase: new Set(), fail: {}, depotPaths: [], revoked: [], notices: [] };
   install();
 });
 afterEach(() => {
@@ -285,6 +292,70 @@ describe('who may delete their own account (POST /api/v1/account/deletion)', () 
     const res = await del(as(teen), { acknowledge: true, currentPassword: 'pw-correct' });
     expect(res.status).toBe(202);
     expect(res.body.data).toMatchObject({ status: 'pending', population: 'teen' });
+  });
+
+  describe('D-14 (b): a linked teen\'s Tutors are told (notify only)', () => {
+    const PARENT_A = randomUUID();
+    const PARENT_B = randomUUID();
+    const linkedTeen = () => {
+      const teen = person({ roles: ['universal'], band: '13_to_17', password: 'pw-correct', email: 'lt@example.com' });
+      fake.kidLinks.set(teen, [PARENT_A, PARENT_B]);
+      return teen;
+    };
+
+    it('shows the teen, before confirming, how many Tutors will be told', async () => {
+      const teen = linkedTeen();
+      const res = await request(createApp()).get('/api/v1/account/deletion').set(as(teen));
+      expect(res.status).toBe(200);
+      expect(res.body.data.eligibility).toMatchObject({ allowed: true, population: 'teen', tutorsTold: 2 });
+    });
+
+    it('tells each verified Tutor in the request\'s own step, with the audit row', async () => {
+      const teen = linkedTeen();
+      const res = await del(as(teen), { acknowledge: true, currentPassword: 'pw-correct' });
+      expect(res.status).toBe(202);
+      expect(res.body.data).toMatchObject({ status: 'pending', population: 'teen', tutorsTold: 2 });
+      const [row] = fake.rows;
+      expect(fake.notices).toEqual([{ request: row!.id, guardian: PARENT_A }, { request: row!.id, guardian: PARENT_B }]);
+      expect(fake.audits.filter((a) => a.action === 'account.deletion_guardians_notified'))
+        .toEqual([{ action: 'account.deletion_guardians_notified', subject: teen, actor_id: teen, detail: { request_id: row!.id, guardians: 2 } }]);
+      // Read before scheduling: the link lookup precedes the request.
+      const lookup = fake.calls.findIndex((c) => c.includes(`guardian_links?kid_user_id=eq.${teen}`));
+      const scheduled = fake.calls.findIndex((c) => c.includes('rpc/request_account_deletion'));
+      expect(lookup).toBeGreaterThanOrEqual(0);
+      expect(lookup).toBeLessThan(scheduled);
+    });
+
+    it('tells nobody for an unlinked teen (D-14 (a)) or an adult', async () => {
+      const teen = person({ roles: ['universal'], band: '13_to_17', password: 'pw-correct', email: 'ut@example.com' });
+      const res = await del(as(teen), { acknowledge: true, currentPassword: 'pw-correct' });
+      expect(res.status).toBe(202);
+      expect(res.body.data.tutorsTold).toBe(0);
+      const adult = person({ roles: ['universal'], band: 'adult', password: 'pw-correct', email: 'ad@example.com' });
+      fake.kidLinks.set(adult, [PARENT_A]);
+      expect((await del(as(adult), { acknowledge: true, currentPassword: 'pw-correct' })).body.data.tutorsTold).toBe(0);
+      expect(fake.notices).toEqual([]);
+      expect(fake.audits.some((a) => a.action === 'account.deletion_guardians_notified')).toBe(false);
+    });
+
+    it('needs no second notice when the teen keeps the account', async () => {
+      const teen = linkedTeen();
+      await del(as(teen), { acknowledge: true, currentPassword: 'pw-correct' });
+      const kept = await request(createApp()).delete('/api/v1/account/deletion').set(as(teen));
+      expect(kept.status).toBe(200);
+      expect(fake.notices).toHaveLength(2);
+      expect(fake.audits.filter((a) => a.action === 'account.deletion_guardians_notified')).toHaveLength(1);
+    });
+
+    it('schedules nothing when the linked Tutors cannot be read (502)', async () => {
+      const teen = linkedTeen();
+      fake.fail.links = true;
+      const res = await del(as(teen), { acknowledge: true, currentPassword: 'pw-correct' });
+      expect(res.status).toBe(502);
+      expect(fake.rows).toEqual([]);
+      expect(fake.calls.some((c) => c.includes('rpc/request_account_deletion'))).toBe(false);
+      expect((await request(createApp()).get('/api/v1/account/deletion').set(as(teen))).status).toBe(502);
+    });
   });
 
   it('a guest is erased now, across every service, with no password to re-enter', async () => {

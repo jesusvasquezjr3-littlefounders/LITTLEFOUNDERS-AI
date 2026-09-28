@@ -4,12 +4,13 @@ import { useTheme } from '@/theme/useTheme';
 import { CoachingNote } from '@/rebuild/family/CoachingNote';
 import { CoachingTip } from '@/rebuild/family/CoachingTip';
 import { DataPolicy } from '@/rebuild/family/DataPolicy';
+import { AdultResearch } from '@/rebuild/family/AdultResearch';
 import { MyResearch } from '@/rebuild/family/MyResearch';
 import { ResearchConsent } from '@/rebuild/family/ResearchConsent';
 import { ScopeStatement } from '@/rebuild/family/ScopeStatement';
 import { MoneyBridge } from '@/rebuild/wallet/MoneyBridge';
 import {
-  fetchBridge, fetchCoachingTip, fetchDataPolicy, fetchKidResearch, fetchMyResearch, markBridge, markCoachingTip, setKidResearch, stopMyResearch,
+  fetchBridge, fetchCoachingTip, fetchDataPolicy, fetchKidResearch, fetchMyResearch, joinMyResearch, markBridge, markCoachingTip, setKidResearch, stopMyResearch,
   type BridgeMoment, type BridgeState, type CoachingTip as Tip, type PolicyLine, type Research, type ResearchView,
 } from '@/rebuild/family/governanceApi';
 import { fetchUsualSplit, type Split } from '@/rebuild/family/moneyHabitsApi';
@@ -143,6 +144,34 @@ export function MyResearchPanel({ session }: { session: Session }) {
     if (res.ok) { setResearch(res.data.research); setNotice({ text: copy.myResearch.stopped, error: false }); } else setNotice({ text: copy.myResearch.failed, error: true });
   }
   return <MyResearch copy={copy.myResearch} locale={locale} dark={dark} research={research} busy={busy} notice={notice} onStop={() => void stop()} />;
+}
+
+/**
+ * H-25 (GAP-FIX-R2): research in an adult's own Settings. Shows only when Core
+ * reports the Tutor's lapsed yes (the ask) or the adult's own yes (the stop).
+ */
+export function AdultResearchPanel({ session }: { session: Session }) {
+  const { locale, dark, copy } = useLocale();
+  const [view, setView] = useState<ResearchView | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState<Notice>(null);
+  useEffect(() => {
+    let live = true;
+    void fetchMyResearch(session).then((res) => { if (live && res.ok) setView(res.data); });
+    return () => { live = false; };
+  }, [session]);
+  async function answer(participate: boolean) {
+    if (busy || !view) return;
+    setBusy(true);
+    const res = participate ? await joinMyResearch(view.currentVersion, session) : await stopMyResearch(session);
+    setBusy(false);
+    if (res.ok) {
+      setView(res.data);
+      setNotice({ text: participate ? copy.researchAtEighteen.joined : copy.researchAtEighteen.deleted, error: false });
+    } else setNotice({ text: copy.researchAtEighteen.failed, error: true });
+  }
+  return <AdultResearch copy={copy.researchAtEighteen} locale={locale} dark={dark} research={view?.research ?? null} busy={busy} notice={notice}
+    onAnswer={(participate) => void answer(participate)} />;
 }
 
 /** D.19: "Beyond the app" for a wallet holder the database finds old enough. */

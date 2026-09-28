@@ -30,6 +30,8 @@ export interface AccountDeletionCopy {
   pausedOne: string;
   pausedMany: string;
   pausedAfter: string;
+  tutorToldOne: string;
+  tutorToldMany: string;
   detailsLabel: string;
   detailsProfile: string;
   detailsFiles: string;
@@ -81,6 +83,8 @@ export type AccountDeletionView =
       graceDays: number;
       reauth: 'password' | 'recent_sign_in' | 'none';
       pausedChildren: number;
+      /** D-14 (b): how many verified Tutors of a linked teen are told the date (absent = none). */
+      tutorsTold?: number;
       submitting: boolean;
       error: 'password' | 'reauth' | 'failed' | null;
     }
@@ -220,6 +224,10 @@ function Ready({ copy, view, onStart, onBack, onConfirm, onSignIn }: {
     {view.pausedChildren > 0 ? <div className="lf-account-deletion-children">
       <Copy role="body">{view.pausedChildren === 1 ? copy.pausedOne : copy.pausedMany.replace('{count}', String(view.pausedChildren))}</Copy>
       <Copy role="body">{copy.pausedAfter}</Copy>
+    </div> : null}
+    {/* D-14 (b): a linked teen's Tutors are told the date (notify only), said before the decision. */}
+    {(view.tutorsTold ?? 0) > 0 ? <div className="lf-account-deletion-children" data-deletion-tutors-told={view.tutorsTold}>
+      <Copy role="body">{view.tutorsTold === 1 ? copy.tutorToldOne : copy.tutorToldMany.replace('{count}', String(view.tutorsTold))}</Copy>
     </div> : null}
     <form className="lf-account-deletion-confirm" noValidate onSubmit={(event) => {
       event.preventDefault();

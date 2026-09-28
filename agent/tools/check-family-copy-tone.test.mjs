@@ -74,3 +74,35 @@ test('a surface rendering a raw Core message fails', () => {
   const { failures } = checkTone({ ...live, surfaceSources });
   assert.deepEqual(failures, ['frontend/src/routes/app/banking/Fake.tsx: renders a raw Core error message; map the code to copy instead']);
 });
+
+test('B.14 UI lexicon runs as the b14_ui category in each locale', () => {
+  assert.ok(findings('Your available balance is low.', 'en-US', live.lexicon).some((f) => f.category === 'b14_ui'));
+  assert.ok(findings('Última oportunidad, actúa ya.', 'es-MX', live.lexicon).some((f) => f.category === 'b14_ui'));
+  assert.ok(findings('Não perca essa chance.', 'pt-BR', live.lexicon).some((f) => f.category === 'b14_ui'));
+});
+
+test('the rebuilt Tasks, Wallet and Family console groups are in scope', () => {
+  for (const group of ['familyTasks', 'childTasks', 'familyCoins', 'childCoins', 'coinCard', 'teenWalletScreen', 'familyConsole',
+    'familyChildAccount', 'familyChildConsent', 'familyChildProgress', 'familyChildMentor', 'familyMemoryNotes', 'guardianInvite', 'familyCoopGoals']) {
+    assert.ok(live.lexicon.scope.subtrees.includes(`rebuild-family:${group}`), group);
+  }
+});
+
+test('a rebuilt family surface that renders a group outside the scope fails', () => {
+  const lexicon = { ...live.lexicon, scope: { ...live.lexicon.scope, subtrees: live.lexicon.scope.subtrees.filter((s) => s !== 'rebuild-family:familyTasks') } };
+  const { failures } = checkTone({ ...live, lexicon });
+  assert.ok(failures.some((f) => /renders rebuild-family:familyTasks, which is outside the tone gate's scope/.test(f)), failures.join('\n'));
+});
+
+test('a surface that loads an i18next namespace outside the scope fails', () => {
+  const surfaceSources = [...live.surfaceSources, ['frontend/src/rebuild/wallet/Fake.tsx', "const { t } = useTranslation('walletExtras');"]];
+  const { failures } = checkTone({ ...live, surfaceSources });
+  assert.deepEqual(failures, ["frontend/src/rebuild/wallet/Fake.tsx: renders walletExtras, which is outside the tone gate's scope; add it to scope in agent/tools/family-copy-tone.lexicon.json"]);
+});
+
+test('a new rebuild-family group used by a rebuilt surface must be scoped', () => {
+  const readLocale = (locale, ns) => (ns === 'rebuild-family' ? { ...live.readLocale(locale, ns), familyNewThing: { title: 'New' } } : live.readLocale(locale, ns));
+  const surfaceSources = [...live.surfaceSources, ['frontend/src/rebuild/banking/New.tsx', 'const c = copy.familyNewThing;']];
+  const { failures } = checkTone({ ...live, readLocale, surfaceSources });
+  assert.deepEqual(failures, ["frontend/src/rebuild/banking/New.tsx: renders rebuild-family:familyNewThing, which is outside the tone gate's scope; add it to scope in agent/tools/family-copy-tone.lexicon.json"]);
+});

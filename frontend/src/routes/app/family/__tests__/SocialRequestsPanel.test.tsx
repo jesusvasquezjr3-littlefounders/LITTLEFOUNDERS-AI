@@ -13,7 +13,7 @@ it('loads only on opening and renders pending requests with their date', async (
   mockApi.mockResolvedValue(response()); render(<SocialRequestsPanel kidUserId="kid" token="session" />);
   expect(mockApi).not.toHaveBeenCalled(); open();
   expect(await screen.findByText('Requester')).toBeVisible();
-  expect(screen.getByText('Pending guardian approval')).toBeVisible();
+  expect(screen.getByText('Waiting for Tutor approval')).toBeVisible();
   expect(mockApi).toHaveBeenCalledWith('/family/kids/kid/social/requests?offset=0', { token: 'session' });
   expect(document.querySelector('time')).toHaveAttribute('dateTime', item.requestedAt);
 });

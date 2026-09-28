@@ -94,6 +94,8 @@
     "pausedOne": "Se pausará 1 cuenta infantil que solo tú supervisas.",
     "pausedMany": "Se pausarán {count} cuentas infantiles que solo tú supervisas.",
     "pausedAfter": "Sin otro Tutor, una cuenta en pausa se elimina a los 90 días.",
+    "tutorToldOne": "Le avisamos a tu Tutor la fecha del borrado.",
+    "tutorToldMany": "Les avisamos a tus {count} Tutores la fecha del borrado.",
     "detailsLabel": "Qué se elimina",
     "detailsProfile": "Tu perfil, tu progreso, tus monedas y las conversaciones y notas del Mentor.",
     "detailsFiles": "Fotos, audio y registros de uso vinculados a tu cuenta.",

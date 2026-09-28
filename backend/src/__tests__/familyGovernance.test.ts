@@ -360,7 +360,7 @@ describe('D.22: research participation', () => {
     let calls = stub({ family_research_state: { status: 200, body: research() } });
     const res = await app().get(`/api/v1/family-hub/kids/${KID}/research`).set('Authorization', auth(PARENT));
     expect(res.status).toBe(200);
-    expect(res.body.data).toEqual({ research: { participating: true, recording: true, grantor: 'tutor', since: '2026-06-01T00:00:00Z', disclosureVersion: 1, adult: false, months: 3 },
+    expect(res.body.data).toEqual({ research: { participating: true, recording: true, grantor: 'tutor', since: '2026-06-01T00:00:00Z', disclosureVersion: 1, adult: false, months: 3, lapsed: false },
       currentVersion: RESEARCH_DISCLOSURE_VERSION });
     calls = stub({ family_research_set_consent: { status: 200, body: research() } });
     expect((await app().put(`/api/v1/family-hub/kids/${KID}/research`).set('Authorization', auth(PARENT)).send({ participate: true })).status).toBe(400);
@@ -400,14 +400,96 @@ describe('D.22: research participation', () => {
       expect(rpcCalls(calls, 'family_research_set_consent')[0]!.body).toEqual({ p_subject: who, p_actor: who, p_participate: false, p_version: RESEARCH_DISCLOSURE_VERSION });
     });
 
-  it.each([['an adult learner', ADULT, {}], ['a guest', GUEST, { is_anonymous: true }], ['a parent', PARENT, {}], ['staff', ANALYST, {}]])(
-    'refuses %s the participant routes before any research call', async (_label, who, extra) => {
-      const calls = stub({ family_research_state: { status: 200, body: research() } });
-      expect((await app().get('/api/v1/family-hub/research/me').set('Authorization', auth(who, extra))).status).toBe(403);
-      expect((await app().put('/api/v1/family-hub/research/me').set('Authorization', auth(who, extra)).send({ participate: false })).status).toBe(403);
-      expect(rpcCalls(calls, 'family_research_state')).toHaveLength(0);
-      expect(rpcCalls(calls, 'family_research_set_consent')).toHaveLength(0);
+  it('refuses a guest the participant routes before any research call', async () => {
+    const calls = stub({ family_research_state: { status: 200, body: research() } });
+    expect((await app().get('/api/v1/family-hub/research/me').set('Authorization', auth(GUEST, { is_anonymous: true }))).status).toBe(403);
+    expect((await app().put('/api/v1/family-hub/research/me').set('Authorization', auth(GUEST, { is_anonymous: true })).send({ participate: false })).status).toBe(403);
+    expect(rpcCalls(calls, 'family_research_state')).toHaveLength(0);
+    expect(rpcCalls(calls, 'family_research_set_consent')).toHaveLength(0);
+  });
+
+  // H-25 (GAP-FIX-R2): the route is no longer wallet-gated; the database decides who may answer.
+  it.each([['an adult learner', ADULT], ['a parent', PARENT], ['staff', ANALYST]])(
+    'lets %s read their own (empty) participation, and passes their yes to the database as the caller, which refuses it', async (_label, who) => {
+      const calls = stub({
+        family_research_state: { status: 200, body: research({ participating: false, admitted: false, grantor: null, since: null, adult: true, snapshots: 0 }) },
+        family_research_set_consent: refusal('RESEARCH_CONSENT_NOT_ALLOWED'),
+      });
+      const read = await app().get('/api/v1/family-hub/research/me').set('Authorization', auth(who));
+      expect(read.status).toBe(200);
+      expect(read.body.data.research).toMatchObject({ participating: false, lapsed: false });
+      const yes = await app().put('/api/v1/family-hub/research/me').set('Authorization', auth(who)).send({ participate: true, disclosureVersion: 1 });
+      expect(yes.status).toBe(403);
+      expect(yes.body.error.code).toBe('RESEARCH_CONSENT_NOT_ALLOWED');
+      expect(rpcCalls(calls, 'family_research_set_consent')[0]!.body).toEqual({ p_subject: who, p_actor: who, p_participate: true, p_version: 1 });
+      expect(calls.filter((c) => c.url.includes('/rest/v1/audit_logs'))).toHaveLength(0);
     });
+
+  describe("H-25: a Tutor's yes lapsed at 18, and the young adult is asked again", () => {
+    // A former linked teen at 18: no wallet any more (wallet_access kind null), the Tutor's consent row still active.
+    const lapsed = research({ participating: true, admitted: false, grantor: 'tutor', adult: true, snapshots: 4 });
+    const audits = (calls: Call[]) => calls.filter((c) => c.url.includes('/rest/v1/audit_logs')).map((c) => c.body as Record<string, unknown>);
+
+    it('shows the young adult the lapsed state, although they hold no wallet', async () => {
+      stub({ family_research_state: { status: 200, body: lapsed } });
+      const res = await app().get('/api/v1/family-hub/research/me').set('Authorization', auth(ADULT));
+      expect(res.status).toBe(200);
+      expect(res.body.data.research).toMatchObject({ participating: true, recording: false, grantor: 'tutor', adult: true, lapsed: true, months: 4 });
+    });
+
+    it('never calls a recorded Tutor grant, a self grant or a lapse under 18 lapsed', async () => {
+      for (const body of [research(), research({ grantor: 'self', adult: true, admitted: false }), research({ adult: false, admitted: false })]) {
+        stub({ family_research_state: { status: 200, body } });
+        const res = await app().get('/api/v1/family-hub/research/me').set('Authorization', auth(ADULT));
+        expect(res.body.data.research.lapsed).toBe(false);
+      }
+    });
+
+    it("records the young adult's own yes as a self grant, as the caller, with the audit row", async () => {
+      const calls = stub({ family_research_set_consent: { status: 200, body: research({ grantor: 'self', adult: true, admitted: false, snapshots: 4 }) } });
+      const yes = await app().put('/api/v1/family-hub/research/me').set('Authorization', auth(ADULT)).send({ participate: true, disclosureVersion: 1 });
+      expect(yes.status).toBe(200);
+      expect(yes.body.data.research).toMatchObject({ participating: true, grantor: 'self', lapsed: false, months: 4 });
+      expect(rpcCalls(calls, 'family_research_set_consent')[0]!.body).toEqual({ p_subject: ADULT, p_actor: ADULT, p_participate: true, p_version: 1 });
+      expect(audits(calls)).toEqual([{ actor_id: ADULT, action: 'family.research_yes_self', subject: ADULT, detail: { version: 1 } }]);
+      // A yes names the description it answers.
+      expect((await app().put('/api/v1/family-hub/research/me').set('Authorization', auth(ADULT)).send({ participate: true })).status).toBe(400);
+    });
+
+    it("deletes everything on the young adult's no, with the audit row", async () => {
+      const calls = stub({ family_research_set_consent: { status: 200, body: research({ participating: false, admitted: false, grantor: null, since: null, adult: true, snapshots: 0 }) } });
+      const no = await app().put('/api/v1/family-hub/research/me').set('Authorization', auth(ADULT)).send({ participate: false });
+      expect(no.status).toBe(200);
+      expect(no.body.data.research).toMatchObject({ participating: false, months: 0, lapsed: false });
+      expect(audits(calls)).toEqual([{ actor_id: ADULT, action: 'family.research_no_self', subject: ADULT, detail: {} }]);
+    });
+  });
+});
+
+describe('D-14 (b): a linked teen\'s account deletion, told to the Tutor', () => {
+  const notice = { id: DELIVERY, teen_user_id: LINKED_TEEN, display_name: 'Mateo', scheduled_for: '2026-10-12T10:00:00Z', notified_at: '2026-09-28T10:00:00Z' };
+
+  it('reads the caller\'s own open notices, and only the name, the date and when they were told', async () => {
+    const calls = stub({ guardian_deletion_notices: { status: 200, body: [notice] } });
+    const res = await app().get('/api/v1/family-hub/deletion-notices').set('Authorization', auth(PARENT));
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ notices: [{ id: DELIVERY, teenUserId: LINKED_TEEN, displayName: 'Mateo', scheduledFor: '2026-10-12T10:00:00Z',
+      notifiedAt: '2026-09-28T10:00:00Z' }] });
+    expect(rpcCalls(calls, 'guardian_deletion_notices')[0]!.body).toEqual({ p_guardian: PARENT });
+  });
+
+  it('answers 502 when the notices cannot be read or come back malformed, never "none"', async () => {
+    stub({ guardian_deletion_notices: { status: 500, body: { message: 'down' } } });
+    expect((await app().get('/api/v1/family-hub/deletion-notices').set('Authorization', auth(PARENT))).status).toBe(502);
+    stub({ guardian_deletion_notices: { status: 200, body: [{ ...notice, reason: 'moving on' }] } });
+    expect((await app().get('/api/v1/family-hub/deletion-notices').set('Authorization', auth(PARENT))).status).toBe(502);
+  });
+
+  it.each(NON_TUTORS)('refuses %s before any read', async (_label, who, extra) => {
+    const calls = stub({ guardian_deletion_notices: { status: 200, body: [notice] } });
+    expect((await app().get('/api/v1/family-hub/deletion-notices').set('Authorization', auth(who, extra))).status).toBe(403);
+    expect(rpcCalls(calls, 'guardian_deletion_notices')).toHaveLength(0);
+  });
 });
 
 describe('D.19: the older-teen bridge', () => {
