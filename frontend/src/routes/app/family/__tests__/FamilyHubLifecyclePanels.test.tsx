@@ -118,6 +118,8 @@ function walletResponses() {
     if (path.startsWith('/tasks/redemptions?kidId=')) return Promise.resolve({ data: { redemptions: [{ id: REDEMPTION, catalogId: CATALOG, status: 'approved', createdAt: T, decidedAt: T, fulfilledAt: null }] }, error: null });
     if (path === '/tasks/catalog') return Promise.resolve({ data: { items: [{ id: CATALOG, title: 'Movie night' }] }, error: null });
     if (path.endsWith('/guardian-actions')) return Promise.resolve({ data: { actions: [] }, error: null });
+    // GAP-FIX-R6: the child's pockets, read beside the correction.
+    if (path === `/tasks/${KID}/wallet`) return Promise.resolve({ data: { balances: { save: 6, spend: 20, share: 2 } }, error: null });
     return Promise.resolve({ data: null, error: { code: 'NOT_STUBBED', message: path } });
   };
 }
@@ -127,16 +129,20 @@ describe('WalletCorrectionsPanel', () => {
     const respond = walletResponses();
     mockApi.mockImplementation((path: string, init?: { method?: string }) =>
       init?.method === 'POST' && path.endsWith('/wallet/adjustments') ? Promise.resolve({ data: { actionId: ACTION }, error: null }) : respond(path));
-    render(<WalletCorrectionsPanel kidUserId={KID} kidName="Nico" token="t" />);
+    const onChanged = vi.fn();
+    render(<WalletCorrectionsPanel kidUserId={KID} kidName="Nico" token="t" onChanged={onChanged} />);
     expect(mockApi).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: en.walletCorrections.title }));
     const form = await screen.findByRole('form', { name: en.walletCorrections.adjustHeading });
+    expect(within(form).getByText('In this pocket now: 20')).toBeVisible();
     fireEvent.change(within(form).getByLabelText(en.walletCorrections.amount), { target: { value: '5' } });
     fireEvent.change(within(form).getByLabelText(en.walletCorrections.reason), { target: { value: 'Birthday gift' } });
     fireEvent.click(within(form).getByRole('button', { name: en.walletCorrections.submit }));
     expect(await screen.findByText(en.walletCorrections.saved)).toBeVisible();
     expect(mockApi).toHaveBeenCalledWith(`/tasks/${KID}/wallet/adjustments`, { token: 't', method: 'POST', body: { bucket: 'spend', amount: 5, reason: 'Birthday gift' } });
     await waitFor(() => expect(mockApi.mock.calls.filter(([p]) => String(p).endsWith('/guardian-actions'))).toHaveLength(2));
+    // The Wallet's read of this child's coins re-reads too.
+    expect(onChanged).toHaveBeenCalledTimes(1);
   });
 
   it('maps the protected-savings refusal to honest copy', async () => {

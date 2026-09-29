@@ -68,6 +68,8 @@ describe('the Tutor (F5-P)', () => {
       const data = path === '/family/kids' ? { kids: [kid('a', 'Child A'), kid('b', 'Child B')] }
         : path.startsWith('/banking/accounts/') ? { account: legacy(path.split('/').at(-1)!) }
         : path.startsWith('/banking/spend-limit') ? { status: { configured: false } }
+        // GAP-FIX-R6: the child's pockets, read for the Tutor under the freeze card.
+        : /^\/tasks\/\w\/wallet$/.test(path) ? { balances: { save: 1, spend: 2, share: 3 } }
         : { rule: null };
       return { data, error: null };
     });
@@ -86,6 +88,7 @@ describe('the Tutor (F5-P)', () => {
     await waitFor(() => expect(screen.getByText('You froze it.')).toBeInTheDocument());
     expect(screen.getByRole('button', { name: 'Unfreeze' })).toBeEnabled();
     expect(screen.getByText('corrections:Child A')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: "Child A's coins" })).toBeInTheDocument();
   });
 
   it('does not apply a pending freeze response to another child, and writes the child in view to the address', async () => {

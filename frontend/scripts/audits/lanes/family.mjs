@@ -136,6 +136,11 @@ const QUEUE = {
 };
 /** The Tutor's freeze card has loaded (it reads only once the session token is there, so every token-keyed panel has remounted). */
 const TUTOR_CARD = '[data-coin-account="tutor"] [data-control="freeze"]';
+/** GAP-FIX-R6: the month summary and the latest history under the child's pockets (each a disclosure that reads when opened). */
+const COINS = {
+  month: '[data-family-part="child-coins"] [data-coins-toggle="month"] .lf-disclosure-summary',
+  history: '[data-family-part="child-coins"] [data-coins-toggle="history"] .lf-disclosure-summary',
+};
 const opensAfter = (settled, selector, open = [selector]) => [selector, { open, firstView: false, readyAlso: settled }];
 
 export const states = [
@@ -219,6 +224,10 @@ export const states = [
   // The details a frozen card keeps one press away (06 §4.4): who froze it, what pauses, that waiting coins wait, who can lift it.
   app('/family-wallet@child-frozen-why', '/family-wallet', 'money-child-frozen', ...opens('[data-coin-account="child"] button[data-freeze-control="holds"]')),
   app('/family-wallet@tutor-frozen-holds', `/family-wallet?child=${KID_A}`, 'money-tutor-frozen', ...opens(`${TUTOR_CARD}[data-frozen="true"] button[data-freeze-control="holds"]`)),
+  // GAP-FIX-R6 (OD-3 §2, Law 5, H-06): the child's pockets under the freeze card, the month summary and the latest history opened.
+  app('/family-wallet@child-coins', `/family-wallet?child=${KID_B}`, 'money-tutor', '[data-family-part="child-coins"] [data-pocket="save"]', { readyAlso: TUTOR_CARD }),
+  app('/family-wallet@child-coins-month', `/family-wallet?child=${KID_B}`, 'money-tutor', ...opensAfter(TUTOR_CARD, COINS.month)),
+  app('/family-wallet@child-coins-history', `/family-wallet?child=${KID_B}`, 'money-tutor', ...opensAfter(TUTOR_CARD, COINS.history)),
   app('/family-wallet@tutor-open-card', `/family-wallet?child=${KID_A}`, 'money-tutor-new', '[data-family-part="open-card"]'),
   app('/family-wallet@tutor-offline', '/family-wallet', 'money-tutor-offline', '[data-screen="tutor-coins"] .lf-state--error'),
   app('/family-wallet@child', '/family-wallet', 'money-child', ready.childCoins, { readyAlso: '[data-family-part="payouts"]' }),
@@ -584,6 +593,17 @@ const STREAK = { status: 'alive', current: 4, best: 9, totalDays: 30, restDaysLe
 const RESEARCH = { research: { participating: false, recording: false, grantor: null, since: null, disclosureVersion: 0, adult: false, months: 0 }, currentVersion: 1 };
 const SPLIT = { usual: { save: 50, spend: 40, share: 10 }, custom: false, recommended: { save: 50, spend: 40, share: 10 } };
 
+/** GAP-FIX-R6: a child's coin lines as Core serves them to a Tutor, newest first; a linked teen's own entries (no approval step) among them. */
+const tutorLines = (w) => [
+  { id: 7, bucket: 'spend', amount: 12, reason: 'self_income', taskId: null, goalId: null, note: null, createdAt: at(26) },
+  { id: 6, bucket: 'spend', amount: -5, reason: 'personal_reward', taskId: null, goalId: null, note: null, createdAt: at(25) },
+  { id: 5, bucket: 'spend', amount: -2, reason: 'manual_adjustment', taskId: null, goalId: null, note: w.reason, createdAt: at(24) },
+  { id: 4, bucket: 'share', amount: -2, reason: 'share_gift', taskId: null, goalId: null, note: null, createdAt: at(23) },
+  { id: 3, bucket: 'save', amount: 10, reason: 'allowance', taskId: null, goalId: null, note: null, createdAt: at(22) },
+  { id: 2, bucket: 'save', amount: 10, reason: 'task_approved', taskId: TASK(3), goalId: null, note: null, createdAt: at(21) },
+  { id: 1, bucket: 'spend', amount: 10, reason: 'task_approved', taskId: TASK(2), goalId: null, note: null, createdAt: at(20) },
+];
+
 /** Every Core read the rebuilt Tasks, coin and teen-wallet screens (and the wave-1 surfaces on them) make, in Core's real shapes. */
 function money({ spec, family, locale, path, request, ok }) {
   const w = WORDS[locale] ?? WORDS['en-US'];
@@ -608,6 +628,13 @@ function money({ spec, family, locale, path, request, ok }) {
     if (bonusKid && bonusKid !== 'example' && get) return ok(bonusKid === KID_B
       ? { framing: 'percent', perTen: null, maxRateBp: 2000, rule: { rateBp: 1000, active: true, nextRunAt: '2026-10-01T00:00:00.000Z' } }
       : { framing: 'per_ten', perTen: { unit: 10, coins: 1 }, maxRateBp: null, rule: { rateBp: 1000, active: true, nextRunAt: '2026-10-01T00:00:00.000Z' } });
+    // GAP-FIX-R6 (OD-3 §2, Law 5, H-06): the child's pockets, month summary and latest history as the Tutor reads them.
+    const coinsKid = path.match(/^\/tasks\/([^/]+)\/wallet$/)?.[1];
+    if (coinsKid && get) return ok({ balances: coinsKid === KID_B ? { save: 40, spend: 12, share: 6 } : { save: 20, spend: 16, share: 3 } });
+    const ledgerKid = path.match(/^\/tasks\/([^/]+)\/wallet\/ledger$/)?.[1];
+    if (ledgerKid && get) return ok({ entries: tutorLines(w) });
+    const statementKid = path.match(/^\/banking\/statement\/([^/]+)$/)?.[1];
+    if (statementKid && get) return ok({ statement: { month: '2026-09', earned: 30, spent: 10, adjusted: -2, given: 2, saved: 20, entries: tutorLines(w) } });
     if (/^\/banking\/allowance\/[^/]+$/.test(path) && get) return ok({ rule: { amount: 10, frequency: 'weekly', anchorDay: 5, active: true, nextRunAt: '2026-10-02T00:00:00.000Z' } });
     if (/^\/banking\/spend-limit\/[^/]+$/.test(path) && get) return ok({ status: { configured: true, period: 'weekly', cap: 50, used: 20, remaining: 30 } });
     // The writes a journey presses (verify-family-money-screens.mjs records their bodies); Core's answer shapes.
