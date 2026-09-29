@@ -60,6 +60,15 @@ GET route and asserts none of them reads or returns those fields.
   The staff/access owner watches that issue; it is commented on every day
   until each due grant is kept or revoked. The drill
   (`npm --prefix backend run ops:drill`, target `access_reviews`) proves it.
+- **Calendar trigger.** On 1 January, April, July and October at 09:00 UTC,
+  `access-review-quarterly.yml` opens the quarter's review issue
+  ("Quarterly access review: YYYY-Qn", label `access-review`) for the
+  staff/access owner, with the elevated grants held (`accessReviews.total`)
+  and the number already due, and the steps: review every grant against
+  actual usage on Roles & Access, keep or revoke each, close the issue. It
+  opens even when nothing is due. An unreadable status still opens the issue
+  and turns the run red. `agent/tools/access-review-quarterly.test.mjs` pins
+  the schedule, the tool and the notification.
 - **Grant discipline.** A parent-role staff grant requires a mandatory audited
   justification (A.5), committed with the role in one transaction
   (`grant_parent_role_with_justification`); the database refuses a parent role

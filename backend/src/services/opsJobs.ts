@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { insertAuditLog, serviceRest } from './supabaseRest.js';
 import { getOverdueRetroChecks, RETRO_CHECK_DAYS } from './contentRelease.js';
 import { getTutorRetentionStatus, RETENTION_STALE_HOURS, type TutorRetentionStatus } from './tutorData.js';
-import { ACCESS_REVIEW_CADENCE_DAYS, getAccessReviewDueCount } from './adminData.js';
+import { ACCESS_REVIEW_CADENCE_DAYS, getAccessReviewCounts } from './adminData.js';
 
 /*
  * H.4 and Appendix O 1.3 / 2.3: the watchdog-plus-notification pattern the
@@ -35,7 +35,9 @@ import { ACCESS_REVIEW_CADENCE_DAYS, getAccessReviewDueCount } from './adminData
  * G.4 (quarterly access review, Appendix N 1.1): the number of elevated
  * grants past the 90-day review cadence rides here too (`accessReviews`), so
  * a due review reaches the watchdog issue instead of waiting for a
- * superadmin to open Roles & Access.
+ * superadmin to open Roles & Access. It also carries `total` (every elevated
+ * grant held), which the calendar-quarter review issue
+ * (access-review-quarterly.yml) puts in front of the staff/access owner.
  */
 
 export const OPS_JOBS = ['vault_backup', 'pulse_backup', 'vault_drift'] as const;
@@ -116,8 +118,13 @@ export function judgeOpsJob(
  */
 export interface ContentRetroCheckStatus { overdue: number; windowDays: number }
 
-/** G.4: elevated staff grants past the access-review cadence (the Roles & Access card's due list). */
-export interface AccessReviewDueStatus { due: number; windowDays: number }
+/**
+ * G.4: elevated staff grants past the access-review cadence (`due`, the Roles &
+ * Access card's due list) and all elevated grants held (`total`, what the
+ * quarterly calendar-triggered review issue asks the staff/access owner to
+ * review; agent/tools/access-review-quarterly.mjs).
+ */
+export interface AccessReviewDueStatus { due: number; total: number; windowDays: number }
 
 /** The Mentor retention sweep in the watched-job shape (its window stays RETENTION_STALE_HOURS in tutorData.ts). */
 export interface TutorRetentionJobStatus extends Omit<OpsJobStatus, 'job'> { job: 'tutor_retention' }
@@ -152,7 +159,7 @@ export interface OpsStatus {
 export async function getOpsJobStatus(now: Date = new Date()): Promise<OpsStatus | null> {
   const overdue = getOverdueRetroChecks();
   const retention = getTutorRetentionStatus(now);
-  const accessDue = getAccessReviewDueCount(ACCESS_REVIEW_CADENCE_DAYS);
+  const accessCounts = getAccessReviewCounts(ACCESS_REVIEW_CADENCE_DAYS);
   const reads = await Promise.all(
     OPS_JOBS.flatMap((job) => {
       const action = encodeURIComponent(opsJobAction(job));
@@ -169,14 +176,14 @@ export async function getOpsJobStatus(now: Date = new Date()): Promise<OpsStatus
     const attempt = parsed[index * 2 + 1]!;
     return judgeOpsJob(job, ok.success ? ok.data[0] : undefined, attempt.success ? attempt.data[0] : undefined, now);
   });
-  const [overdueChecks, retentionStatus, due] = await Promise.all([overdue, retention, accessDue]);
-  if (overdueChecks === null || retentionStatus === null || due === null) return null;
+  const [overdueChecks, retentionStatus, access] = await Promise.all([overdue, retention, accessCounts]);
+  if (overdueChecks === null || retentionStatus === null || access === null) return null;
   const tutorRetention = retentionAsJob(retentionStatus);
   return {
     jobs,
     tutorRetention,
     anyStale: jobs.some((job) => job.stale) || tutorRetention.stale,
     contentRetroChecks: { overdue: overdueChecks, windowDays: RETRO_CHECK_DAYS },
-    accessReviews: { due, windowDays: ACCESS_REVIEW_CADENCE_DAYS },
+    accessReviews: { due: access.due, total: access.total, windowDays: ACCESS_REVIEW_CADENCE_DAYS },
   };
 }

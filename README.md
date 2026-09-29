@@ -456,7 +456,7 @@ RAILWAY_TOKEN=… RAILWAY_SSH_KEY_PATH=~/.ssh/id_ed25519 \
 
 ## Scheduled production jobs
 
-Fourteen workflows run against production on a schedule. A stale backup, drift probe or retention sweep, an overdue retroactive release check or a due staff access review reaches a human through `ops-job-watch.yml`, which opens or comments on the `ops-watchdog` GitHub issue; any other missed or failed run surfaces only as a red GitHub run, so someone has to look. Several of them are promises to users, not maintenance:
+Fifteen workflows run against production on a schedule. A stale backup, drift probe or retention sweep, an overdue retroactive release check or a due staff access review reaches a human through `ops-job-watch.yml`, which opens or comments on the `ops-watchdog` GitHub issue; any other missed or failed run surfaces only as a red GitHub run, so someone has to look. Several of them are promises to users, not maintenance:
 
 | Workflow | When (UTC) | What it holds up |
 |---|---|---|
@@ -472,6 +472,7 @@ Fourteen workflows run against production on a schedule. A stale backup, drift p
 | `vault-backup.yml` | 08:00 daily | Vault `pg_dump` → Depot volume |
 | `pulse-backup.yml` | 08:30 daily | Pulse `pg_dump` → Depot volume |
 | `ops-job-watch.yml` | 10:00 daily | H.4: fails and notifies the `ops-watchdog` issue when a backup, the drift probe or the retention sweep is stale, a retroactive release check is overdue or a staff access review is due |
+| `access-review-quarterly.yml` | 09:00 on 1 Jan, Apr, Jul, Oct | G.4: opens the quarter's `access-review` issue for the staff/access owner with the elevated grants held and the number already due |
 | `nsm-weekly-export.yml` | Mon 08:00 | Raw export of the events the North Star Metric is computed from |
 | `tutor-skill-curation.yml` | Mon 09:20 | Proposes what to author next from the live curriculum. Propose-only — it writes nothing to the catalogue |
 

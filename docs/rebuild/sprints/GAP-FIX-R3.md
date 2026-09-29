@@ -44,14 +44,32 @@ Documentation:
 
 1. **The retention sweep is a separate `tutorRetention` field, not a fourth entry in `jobs`.** The staff console already shows the sweep on its own card. Putting it in `jobs` would duplicate it there and change the frontend's strict `jobs` check. The watcher treats it as its fourth watched job either way.
 2. **Retroactive-check cadence: weekly (Monday 05:00 UTC).** Every bypass is verified within 7 days, and at least three more runs fit inside the 30-day window. A daily run would comment on the watchdog issue every day about one failing course. The ops watchdog still alerts daily once a check passes 30 days.
-3. **Access-review trigger is the daily watchdog, not a separate quarterly issue.** Each grant is due on its own rolling 90 days, the same verdict the Roles & Access card shows, so a due grant is reported the day it falls due and every day until it is kept or revoked. A calendar-quarter issue (for example, opened on 1 January, April, July and October) could be added if the owner wants the review batched by calendar quarter.
+3. **Access-review trigger: both the daily watchdog and a calendar-quarter issue.** Each grant is due on its own rolling 90 days, the same verdict the Roles & Access card shows, so a due grant is reported the day it falls due and every day until it is kept or revoked. The SPEC's proposal is "quarterly, calendar-triggered", so the finish checkpoint added the calendar trigger as well (see F3-staff-ops-finish). The rolling per-grant check stays; the owner may drop one of the two.
 4. **The notification channel is the `ops-watchdog` GitHub issue**, the H.4 channel already built. For the notice to reach the staff/access owner and the ops owner, they must watch the repository or that issue label (owner step).
 
 ### Migrations
 
 None.
 
+### F3-staff-ops-finish
+
+Sync: `git merge codex/spec-migration-s02` was already up to date.
+
+Adversarial pass against the three gaps. H.4 (retention sweep notification) and G.2 (scheduled retroactive checks) held: the server builds the status, the watcher refuses any reply without the fields, and the drill proves each. G.4 was half-built. The SPEC mandates a cadence "quarterly, calendar-triggered, owned by the staff/access owner" (10-PRODUCT-GOLD-STANDARD-REQUIREMENTS G.4), and only the rolling per-grant watchdog existed. It was built now:
+
+| What | Where |
+|---|---|
+| The job status's `accessReviews` also carries `total`, the elevated grants held, from the same `staff_access_review_status` read (`getAccessReviewDueCount` became `getAccessReviewCounts`, returning `{ due, total }`, or null on a failed or malformed read, which is a 502). | `backend/src/services/adminData.ts`, `opsJobs.ts`; `staffOps.test.ts` |
+| `access-review-quarterly.yml` runs at 09:00 UTC on 1 January, April, July and October (and on `workflow_dispatch`). It asks Core for the status over the same Railway SSH route as `ops-job-watch.yml`, and opens the quarter's issue, "Quarterly access review: YYYY-Qn", labelled `access-review`, or comments on it if it is already open. The issue carries the held and due counts and the review steps (every grant against actual usage on Roles & Access, keep or revoke each, then close). It opens even when nothing is due. An unreadable status still opens the issue and turns the run red. | `.github/workflows/access-review-quarterly.yml`; `agent/tools/access-review-quarterly.mjs` |
+| `agent/tools/access-review-quarterly.test.mjs` (8 tests) covers the quarter label, the issue with counts, the issue with nothing due, eight unreadable replies (each still writes the issue and exits 1) and a workflow lint. The lint pins the calendar-quarter cron, the tool call, `issues: write` and an `always()` notification, and goes red on yearly or daily schedules, a skipped tool, a failure-only notice and a read-only permission. | `agent/tools/access-review-quarterly.test.mjs` |
+| Docs: GOVERNANCE.md section 2 has a "Calendar trigger" bullet. The README scheduled-jobs table now counts fifteen workflows, with the new row. CUTOVER-RUNBOOK.md pauses `access-review-quarterly`. REQUIREMENTS G.4 row appended (not accepted). | docs |
+
+No UI or copy changed, so the i18n gate and the UI audits do not apply. Authorization: the counts are read only through Core's internal status (`x-internal-api-key`, 403 without it, already pinned) and the staff route behind `manage_support`.
+
+Final verification (local): backend `npm run type-check` and `npm run lint` clean. Full backend unit suite: 147 files passed and 1 skipped (the Postgres-only placement test), 3,341 tests passed and 1 skipped. Root `npm run tools:test`: 416 of 416 passed. `npm run spec:check` and `npm run secrets:check` are OK. `npm --prefix backend run ops:drill` gives PASS for all six targets.
+
 ### What remains
 
+- The staff/access owner must watch the `access-review` label, as well as `ops-watchdog`, and the first quarterly run (1 October 2026 if deployed by then) is the first real review.
 - Owner and ops steps: the first scheduled runs in production of `content-retro-checks.yml` and `ops-job-watch.yml`, with its new fields, once Core is deployed. Deploy Core before the watcher runs against it: a Core without `tutorRetention` and `accessReviews` makes the watcher refuse the reply and notify, which is loud, not silent. Also the subscription of the staff/access owner to the `ops-watchdog` issue, and a drill against the deployed Core.
 - Human review. Acceptance of G.2, G.4 and H.4.

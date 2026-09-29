@@ -226,7 +226,7 @@ describe('H.4 — the operations heartbeat and watchdog', () => {
     stub({ calls, reviews: { status: 200, body: { cadenceDays: 90, total: 3, stale: 2, reviewedEver: 1, grants: [] } } });
     const res = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
     expect(res.status).toBe(200);
-    expect(res.body.data.accessReviews).toEqual({ due: 2, windowDays: 90 });
+    expect(res.body.data.accessReviews).toEqual({ due: 2, total: 3, windowDays: 90 });
     const rpc = calls.find((call) => call.url.includes('/rpc/staff_access_review_status'));
     expect(JSON.parse(rpc!.body!)).toEqual({ p_cadence_days: 90 });
     stub({ reviews: { status: 500, body: null } });
