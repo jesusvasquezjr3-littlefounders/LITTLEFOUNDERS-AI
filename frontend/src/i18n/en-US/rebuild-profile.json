@@ -87,7 +87,15 @@
     "deleted": "Note deleted.",
     "changed": "The note changed. We reloaded it.",
     "outOfDate": "Out of date",
-    "decisionFailed": "We could not save that. Try again."
+    "decisionFailed": "We could not save that. Try again.",
+    "deleteNote": "Delete this note",
+    "deleteTitle": "Delete this note?",
+    "deleteBody": "Your Mentor forgets it. You cannot undo this.",
+    "deleteKeep": "Keep it",
+    "deleteConfirm": "Delete",
+    "deleteDeleting": "Deleting…",
+    "noteGone": "Note deleted. Your Mentor no longer uses it.",
+    "deleteFailed": "We could not delete that. Try again."
   },
   "accountDeletion": {
     "title": "Delete your account",

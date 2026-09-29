@@ -838,6 +838,43 @@ export async function decideLearnerMemoryProposal(input: {
 }
 
 /**
+ * GAP-FIX-R5 (C.4, OD-18, S01.4): delete ONE stored memory note, compared
+ * against the text the reviewer was shown (`clear_learner_memory`, the
+ * learner_memory_clear migration). The function removes the row, writes the
+ * append-only ledger row (the actor, never the text) and closes the pending
+ * proposals of that store that were written against the deleted note.
+ *
+ *   'deleted'   the note is gone.
+ *   'absent'    there was no note in that store.
+ *   'conflict'  the note changed since the reviewer read it; nothing moved.
+ *
+ * `null` is a transport failure or a word this layer does not recognise,
+ * never folded into any of the three (§1.14).
+ */
+export type LearnerMemoryClearOutcome = 'deleted' | 'absent' | 'conflict';
+
+export async function clearLearnerMemory(input: {
+  userId: string;
+  store: MemoryStore;
+  expected: string;
+  actor: 'learner-self-deleted' | 'guardian-deleted';
+  decidedBy: string;
+}): Promise<LearnerMemoryClearOutcome | null> {
+  const outcome = await serviceRest<string>('/rpc/clear_learner_memory', {
+    method: 'POST',
+    body: JSON.stringify({
+      p_user: input.userId,
+      p_store: input.store,
+      p_expected: input.expected,
+      p_actor: input.actor,
+      p_decided_by: input.decidedBy,
+    }),
+  });
+  if (outcome === 'deleted' || outcome === 'absent' || outcome === 'conflict') return outcome;
+  return null;
+}
+
+/**
  * Episodic recall: literal excerpts from this learner's own past sessions.
  * ~20 ms of GIN index, zero model cost — the only memory cheap enough for
  * the conversation clock.

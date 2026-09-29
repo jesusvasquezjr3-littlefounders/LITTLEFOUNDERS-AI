@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { MemorySelfReview, type MemoryProposal, type SettledVerdict } from './MemorySelfReview';
 import en from '@/i18n/en-US/rebuild-profile.json';
@@ -140,5 +140,46 @@ describe('MemorySelfReview', () => {
     expect(group.querySelector('.lf-memory-chip')).toBeNull();
     fireEvent.click(group.querySelector('button:last-of-type') as HTMLButtonElement);
     expect(onDecide).toHaveBeenLastCalledWith('p1', 'rejected');
+  });
+
+  // GAP-FIX-R5 (C.4 self-review/deletion mechanism, OD-18, S01.4).
+  it('offers no delete control unless the route can delete, and none for an empty store', () => {
+    renderView();
+    expect(screen.queryByRole('button', { name: copy.deleteNote })).toBeNull();
+    renderView({ onDeleteNote: vi.fn() });
+    // Only the learner store holds a note here.
+    expect(screen.getAllByRole('button', { name: copy.deleteNote })).toHaveLength(1);
+  });
+
+  it('deletes a stored note only after the ConfirmDialog, as a secondary action with a destructive confirm', async () => {
+    const onDeleteNote = vi.fn(async () => undefined);
+    const view = renderView({ onDeleteNote, current: { learner: 'Older note.', pedagogy: 'Short steps help.' } });
+    const trigger = view.container.querySelector('[data-memory-delete="pedagogy"]') as HTMLButtonElement;
+    expect(trigger).toHaveAttribute('aria-haspopup', 'dialog');
+    expect(trigger.className).not.toMatch(/danger/);
+    fireEvent.click(trigger);
+    const dialog = await screen.findByRole('alertdialog');
+    expect(dialog).toHaveTextContent(copy.deleteTitle);
+    expect(dialog).toHaveTextContent(copy.deleteBody);
+    // Keeping it deletes nothing.
+    fireEvent.click(within(dialog).getByRole('button', { name: copy.deleteKeep }));
+    expect(onDeleteNote).not.toHaveBeenCalled();
+    fireEvent.click(trigger);
+    const again = await screen.findByRole('alertdialog');
+    const confirm = within(again).getByRole('button', { name: copy.deleteConfirm });
+    expect(confirm.className).toMatch(/danger/);
+    fireEvent.click(confirm);
+    await waitFor(() => expect(onDeleteNote).toHaveBeenCalledWith('pedagogy'));
+    await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
+  });
+
+  it("reports each store's delete outcome as a status line", () => {
+    const view = renderView({ onDeleteNote: vi.fn(), current: { learner: null, pedagogy: 'Short steps help.' }, notes: [],
+      deletions: { learner: 'deleted', pedagogy: 'failed' } });
+    const learner = view.container.querySelector('[data-memory-store="learner"]') as HTMLElement;
+    expect(within(learner).getByText(copy.noteGone)).toBeInTheDocument();
+    expect(within(learner).getByText(copy.currentEmpty)).toBeInTheDocument();
+    const pedagogy = view.container.querySelector('[data-memory-store="pedagogy"]') as HTMLElement;
+    expect(within(pedagogy).getByRole('alert')).toHaveTextContent(copy.deleteFailed);
   });
 });

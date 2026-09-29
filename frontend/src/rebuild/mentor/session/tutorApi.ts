@@ -330,6 +330,24 @@ export function decideMemoryNote(
   });
 }
 
+/*
+ * GAP-FIX-R5 (C.4, OD-18): delete the caller's own STORED note. `expected` is
+ * the text the teen was shown; Core deletes only while the note still reads
+ * exactly that (409 NOTE_OUT_OF_DATE otherwise), and admits only an account
+ * whose notes are self-reviewed (or an adult's own).
+ */
+export function deleteOwnMemoryNote(
+  token: string,
+  store: 'learner' | 'pedagogy',
+  expected: string,
+): Promise<ApiResult<{ deleted: boolean; store: 'learner' | 'pedagogy' }>> {
+  return api<{ deleted: boolean; store: 'learner' | 'pedagogy' }>(`/tutor/memory/${store}`, {
+    method: 'DELETE',
+    token,
+    body: { expected },
+  });
+}
+
 // ── Class V artifacts: plan & notebook (migration 0069, /TUTOR_INSTRUMENTS.md §3.6) ──
 
 export interface TutorPlan {
