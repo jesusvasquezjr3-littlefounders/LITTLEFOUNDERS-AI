@@ -510,7 +510,13 @@ function dbRefusal(body: unknown): { code: string; message: string } | null {
   return parsed.success && DB_REFUSAL_CODES.has(parsed.data.code) ? { code: parsed.data.code, message: parsed.data.message } : null;
 }
 
-export type ParentGrantOutcome = 'granted' | 'already_granted' | 'invalid' | 'rejected' | 'unavailable';
+/*
+ * 'minor_record' (F4-staff-ops, OD-3 section 2): the target's age record is a
+ * minor's (kid role, under-13 origin, or an effective band under 13 or 13 to
+ * 17). The database refuses before any write (staff_parent_grant_age_guard);
+ * the age record is corrected through the E.4 review, never by a grant.
+ */
+export type ParentGrantOutcome = 'granted' | 'already_granted' | 'invalid' | 'minor_record' | 'rejected' | 'unavailable';
 
 export async function grantParentRoleWithJustification(userId: string, actorId: string, justification: string): Promise<ParentGrantOutcome> {
   const { ok, body } = await serviceRestRaw('/rpc/grant_parent_role_with_justification', {
@@ -520,7 +526,8 @@ export async function grantParentRoleWithJustification(userId: string, actorId: 
   if (!ok) {
     const refusal = dbRefusal(body);
     if (!refusal) return 'unavailable';
-    return refusal.message.includes('PARENT_GRANT_JUSTIFICATION_REQUIRED') ? 'invalid' : 'rejected';
+    if (refusal.message.includes('PARENT_GRANT_JUSTIFICATION_REQUIRED')) return 'invalid';
+    return refusal.message.includes('PARENT_GRANT_MINOR_RECORD') ? 'minor_record' : 'rejected';
   }
   return body === 'granted' || body === 'already_granted' ? body : 'unavailable';
 }

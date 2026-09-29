@@ -483,6 +483,7 @@
         "granted": "{role} granted.",
         "rejected": "The database refused this change.",
         "grantFailed": "Could not grant the role. Try again.",
+        "ageRecordMinor": "The age record says under 18. Correct it before granting Tutor.",
         "searchPeople": "Name or username",
         "searchHelp": "Type at least 2 characters.",
         "noPeople": "No one matches.",
@@ -524,7 +525,8 @@
         "confirmRemove": "Remove role",
         "removing": "Removing",
         "keepAccess": "Keep access",
-        "keepingAccess": "Saving"
+        "keepingAccess": "Saving",
+        "openAgeCorrections": "Open age corrections"
       }
     },
     "audit": {

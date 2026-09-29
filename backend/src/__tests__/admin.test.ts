@@ -244,7 +244,7 @@ type OverviewStub = {
 function stubData(
   callerRole: 'admin' | 'superadmin' | 'universal',
   capture?: { calls: { url: string; method: string; body?: string }[] },
-  options: { releaseRefusal?: { code: string; message: string }; auditInsertStatus?: number; overview?: OverviewStub; permissions?: string[]; permissionStatus?: number; minorRecord?: string[]; minorRecordStatus?: number; courseAssemblyIncidents?: { course_id: string; occurrence_count: number; first_seen_at: string; last_seen_at: string }[] } = {},
+  options: { releaseRefusal?: { code: string; message: string }; auditInsertStatus?: number; overview?: OverviewStub; permissions?: string[]; permissionStatus?: number; minorRecord?: string[]; minorRecordStatus?: number; parentGrant?: { status: number; body: unknown }; courseAssemblyIncidents?: { course_id: string; occurrence_count: number; first_seen_at: string; last_seen_at: string }[] } = {},
 ) {
   const overviewProfiles = options.overview?.profiles ?? [PROFILE];
   const overviewRoles = options.overview?.roles ?? [{ user_id: ADMIN_ID, role: 'admin' }, { user_id: ADMIN_ID, role: 'universal' }];
@@ -285,6 +285,10 @@ function stubData(
       if (url.includes('/rest/v1/rpc/list_minor_record_tutors')) {
         if (options.minorRecordStatus) return Promise.resolve(jsonResponse(options.minorRecordStatus, { message: 'unavailable' }));
         return Promise.resolve(jsonResponse(200, (options.minorRecord ?? []).map((user_id) => ({ user_id }))));
+      }
+      // A.5 / OD-3 section 2: the audited staff parent grant (one database call).
+      if (url.includes('/rest/v1/rpc/grant_parent_role_with_justification')) {
+        return Promise.resolve(jsonResponse(options.parentGrant?.status ?? 200, options.parentGrant?.body ?? 'granted'));
       }
       if (url.includes('/rest/v1/rpc/release_lesson')) {
         return Promise.resolve(jsonResponse(200, [{
@@ -1014,6 +1018,47 @@ describe('Roles & Access (superadmin-only)', () => {
       .send({ userId: '55555555-5555-4555-8555-555555555555', role: 'admin' });
     expect(res.status).toBe(200);
     expect(res.body.data).toMatchObject({ granted: true, role: 'admin' });
+  });
+
+  // F4-staff-ops (A.5, OD-3 section 2, Appendix M 1.2): the staff grant
+  // follows the age record. The database refuses a kid-role, under-13-origin
+  // or declared-minor target before any write; Core answers 409
+  // AGE_RECORD_MINOR, never "granted", and writes nothing of its own.
+  it('refuses a staff parent grant to a minor-record account with 409 AGE_RECORD_MINOR and no direct write', async () => {
+    const minorRefusal = { code: '42501', message: "PARENT_GRANT_MINOR_RECORD: the account's age record is a minor's; correct it through the age review first" };
+    for (const target of ['55555555-5555-4555-8555-555555555555', '66666666-6666-4666-8666-666666666666']) {
+      const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+      stubData('superadmin', capture, { parentGrant: { status: 403, body: minorRefusal } });
+      const res = await request(createApp())
+        .post('/api/v1/admin/roles/grant')
+        .set('Authorization', staffAuth('superadmin'))
+        .send({ userId: target, role: 'parent', justification: 'Support case 5678: re-verified in person' });
+      expect(res.status).toBe(409);
+      expect(res.body.error.code).toBe('AGE_RECORD_MINOR');
+      expect(res.body.data?.granted).toBeUndefined();
+      const rpc = capture.calls.filter((c) => c.url.includes('/rpc/grant_parent_role_with_justification'));
+      expect(rpc).toHaveLength(1);
+      expect(JSON.parse(rpc[0]!.body ?? '{}')).toMatchObject({ p_user: target });
+      // No fallback write: no direct role insert, no separate audit row.
+      expect(capture.calls.some((c) => c.method !== 'GET' && (c.url.includes('/rest/v1/user_roles') || c.url.includes('/rest/v1/audit_logs')))).toBe(false);
+    }
+  });
+
+  it('keeps other database refusals distinct from the age refusal', async () => {
+    stubData('superadmin', undefined, { parentGrant: { status: 403, body: { code: '42501', message: 'PARENT_GRANT_FORBIDDEN: only a superadmin grants the parent role' } } });
+    const forbidden = await request(createApp())
+      .post('/api/v1/admin/roles/grant')
+      .set('Authorization', staffAuth('superadmin'))
+      .send({ userId: '55555555-5555-4555-8555-555555555555', role: 'parent', justification: 'Support case 5678: re-verified in person' });
+    expect(forbidden.status).toBe(409);
+    expect(forbidden.body.error.code).toBe('ROLE_REJECTED');
+    stubData('superadmin');
+    const adult = await request(createApp())
+      .post('/api/v1/admin/roles/grant')
+      .set('Authorization', staffAuth('superadmin'))
+      .send({ userId: '55555555-5555-4555-8555-555555555555', role: 'parent', justification: 'Support case 5678: re-verified in person' });
+    expect(adult.status).toBe(200);
+    expect(adult.body.data).toMatchObject({ role: 'parent', granted: true });
   });
 
   it('403s a plain admin from granting', async () => {

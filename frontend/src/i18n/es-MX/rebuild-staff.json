@@ -483,6 +483,7 @@
         "granted": "Rol {role} asignado.",
         "rejected": "La base de datos rechazó este cambio.",
         "grantFailed": "No se pudo asignar el rol. Intenta de nuevo.",
+        "ageRecordMinor": "La edad registrada es menor de 18. Corrígela antes de asignar Tutor.",
         "searchPeople": "Nombre o usuario",
         "searchHelp": "Escribe al menos 2 caracteres.",
         "noPeople": "Nadie coincide.",
@@ -524,7 +525,8 @@
         "confirmRemove": "Quitar rol",
         "removing": "Quitando",
         "keepAccess": "Mantener acceso",
-        "keepingAccess": "Guardando"
+        "keepingAccess": "Guardando",
+        "openAgeCorrections": "Abrir correcciones de edad"
       }
     },
     "audit": {

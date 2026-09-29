@@ -2314,6 +2314,9 @@ export function adminRouter(): Router {
       // parent role that arrives any other way without an ID check.
       const outcome = await grantParentRoleWithJustification(parsed.data.userId, actorId, parsed.data.justification);
       if (outcome === 'invalid') return fail(res, 400, 'VALIDATION_ERROR', 'A parent-role staff grant requires a justification');
+      // OD-3 section 2: the age record outranks the grant (kid role, under-13
+      // origin, declared minor band). Correct the record in the E.4 age review.
+      if (outcome === 'minor_record') return fail(res, 409, 'AGE_RECORD_MINOR', 'The account age record is a minor record; correct it through the age review first');
       if (outcome === 'rejected') return fail(res, 409, 'ROLE_REJECTED', 'The database rejected this role change (see role invariants)');
       if (outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not confirm the grant and its justification');
       return ok(res, { userId: parsed.data.userId, role: 'parent', granted: true });

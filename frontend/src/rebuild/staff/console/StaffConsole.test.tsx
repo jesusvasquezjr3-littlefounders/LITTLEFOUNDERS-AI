@@ -287,7 +287,7 @@ function rolesApi(grant: StaffResult<unknown> = ok({ granted: true }), review: S
 describe('S10 Roles & Access (A.5, G.1, G.4)', () => {
   it('lists the staff grants past their review, roles and staff access alike, with the log numbers (G.4)', async () => {
     const { api } = rolesApi();
-    render(<Frame><StaffAccess api={api} /></Frame>);
+    render(<Frame><StaffAccess api={api} onNavigate={vi.fn()} /></Frame>);
     await screen.findByText('2 staff grants are past their 90-day review.');
     expect(screen.getByText(`Admin, last confirmed ${new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(OLD))}`, { exact: false })).toBeTruthy();
     expect(screen.getByText(c.access.body.reviewCompliance)).toBeTruthy();
@@ -297,14 +297,14 @@ describe('S10 Roles & Access (A.5, G.1, G.4)', () => {
 
   it('Keep access records the review with Core, and a vanished grant says so (G.4)', async () => {
     const { api, posts } = rolesApi();
-    render(<Frame><StaffAccess api={api} /></Frame>);
+    render(<Frame><StaffAccess api={api} onNavigate={vi.fn()} /></Frame>);
     await screen.findByText('2 staff grants are past their 90-day review.');
     fireEvent.click(screen.getAllByRole('button', { name: c.access.action.keepAccess })[1]!);
     await screen.findByText(/kept\. The audit log has it\./);
     expect(posts).toEqual([{ path: '/admin/roles/review', body: { userId: USER, kind: 'permission', grant: 'manage_content' } }]);
     cleanup();
     const gone = rolesApi(undefined, fail('GRANT_NOT_HELD'));
-    render(<Frame><StaffAccess api={gone.api} /></Frame>);
+    render(<Frame><StaffAccess api={gone.api} onNavigate={vi.fn()} /></Frame>);
     await screen.findByText('2 staff grants are past their 90-day review.');
     fireEvent.click(screen.getAllByRole('button', { name: c.access.action.keepAccess })[0]!);
     await screen.findByText(c.access.body.reviewNotHeld);
@@ -312,7 +312,7 @@ describe('S10 Roles & Access (A.5, G.1, G.4)', () => {
 
   it('a Tutor grant needs a justification of 10 characters, which Core receives (A.5)', async () => {
     const { api, posts } = rolesApi();
-    render(<Frame><StaffAccess api={api} /></Frame>);
+    render(<Frame><StaffAccess api={api} onNavigate={vi.fn()} /></Frame>);
     await screen.findByText(c.access.heading.grant);
     fireEvent.change(screen.getByLabelText(c.access.body.userId), { target: { value: OTHER } });
     fireEvent.change(screen.getAllByLabelText(c.access.body.role)[0]!, { target: { value: 'parent' } });
@@ -325,9 +325,25 @@ describe('S10 Roles & Access (A.5, G.1, G.4)', () => {
     expect(posts).toEqual([{ path: '/admin/roles/grant', body: { userId: OTHER, role: 'parent', justification: 'Verified in person' } }]);
   });
 
+  it('a minor age record refuses the Tutor grant and points to the age-correction queue (OD-3, F4-staff-ops)', async () => {
+    const { api, posts } = rolesApi(fail('AGE_RECORD_MINOR'));
+    const onNavigate = vi.fn();
+    render(<Frame><StaffAccess api={api} onNavigate={onNavigate} /></Frame>);
+    await screen.findByText(c.access.heading.grant);
+    fireEvent.change(screen.getByLabelText(c.access.body.userId), { target: { value: OTHER } });
+    fireEvent.change(screen.getAllByLabelText(c.access.body.role)[0]!, { target: { value: 'parent' } });
+    fireEvent.change(screen.getByLabelText(c.access.body.justification), { target: { value: 'Verified in person' } });
+    fireEvent.click(screen.getByRole('button', { name: c.access.action.grant }));
+    await screen.findByText(c.access.body.ageRecordMinor);
+    expect(screen.queryByText('Tutor granted.')).toBeNull();
+    expect(posts).toHaveLength(1);
+    fireEvent.click(screen.getByRole('link', { name: c.access.action.openAgeCorrections }));
+    expect(onNavigate).toHaveBeenCalledWith('/admin/age-corrections');
+  });
+
   it('refuses an incomplete id before calling Core, and names a database refusal', async () => {
     const { api, posts } = rolesApi(fail('ROLE_REJECTED'));
-    render(<Frame><StaffAccess api={api} /></Frame>);
+    render(<Frame><StaffAccess api={api} onNavigate={vi.fn()} /></Frame>);
     await screen.findByText(c.access.heading.grant);
     fireEvent.change(screen.getByLabelText(c.access.body.userId), { target: { value: '1234' } });
     fireEvent.click(screen.getByRole('button', { name: c.access.action.grant }));
@@ -340,7 +356,7 @@ describe('S10 Roles & Access (A.5, G.1, G.4)', () => {
 
   it('finds a person from 2 characters and fills the id', async () => {
     const { api, gets } = rolesApi();
-    render(<Frame><StaffAccess api={api} /></Frame>);
+    render(<Frame><StaffAccess api={api} onNavigate={vi.fn()} /></Frame>);
     await screen.findByText(c.access.heading.grant);
     fireEvent.click(screen.getByRole('button', { name: c.access.action.find }));
     const sheet = await screen.findByRole('dialog');
@@ -355,7 +371,7 @@ describe('S10 Roles & Access (A.5, G.1, G.4)', () => {
 
   it('staff access switches only for an admin; a superadmin opens everything (G.1)', async () => {
     const { api, posts } = rolesApi();
-    render(<Frame><StaffAccess api={api} /></Frame>);
+    render(<Frame><StaffAccess api={api} onNavigate={vi.fn()} /></Frame>);
     await screen.findAllByText('Staff One');
     fireEvent.click(screen.getAllByRole('button', { name: c.access.action.manage })[0]!);
     let sheet = await screen.findByRole('dialog');
@@ -374,7 +390,7 @@ describe('S10 Roles & Access (A.5, G.1, G.4)', () => {
 
   it('removes a role only after a keep-first confirmation', async () => {
     const { api, posts } = rolesApi();
-    render(<Frame><StaffAccess api={api} /></Frame>);
+    render(<Frame><StaffAccess api={api} onNavigate={vi.fn()} /></Frame>);
     await screen.findAllByText('Staff One');
     fireEvent.click(screen.getAllByRole('button', { name: c.access.action.manage })[0]!);
     const sheet = await screen.findByRole('dialog');

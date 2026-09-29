@@ -8,7 +8,8 @@ staff_access_reviews and identity_metrics):
 
   - A.5: a parent role reaches an account only through the audited staff
     function (reason 10-200 characters, superadmin actor) or an ID-verified
-    row; a direct service-role insert without either is refused; when the
+    row, and never, by either path, an account whose age record is a minor's
+    (OD-3 section 2, staff_parent_grant_age_guard); a direct service-role insert without either is refused; when the
     audit row cannot be written, the role is not committed either; the
     revocation writes its row and its reason together or not at all;
   - G.3: a live-activity verdict and a pack decision write their audit row in
@@ -203,7 +204,7 @@ try:
         rejected(f"SET ROLE service_role; UPDATE parent_verifications SET status = 'verified', method = 'local-ocr' WHERE user_id = '{A[name]}';",
                  'AGE_RECORD_MINOR')
         rejected(f"SET ROLE service_role; INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{A[name]}', 'parent', '{A[name]}');",
-                 'PARENT_ROLE_UNJUSTIFIED')
+                 'PARENT_GRANT_MINOR_RECORD')
         assert scalar(f"SELECT count(*) FROM parent_verifications WHERE user_id = '{A[name]}' AND status = 'verified'") == '0'
     for name in ('teen_due', 'adult_ok'):
         service(verified.format(A[name]))
@@ -364,6 +365,49 @@ try:
     assert scalar('SELECT count(*) FROM onboarding_responses;') == '5', 'the completion markers stay'
     assert scalar(f"SELECT discovery_channel FROM onboarding_responses WHERE user_id = '{I['mail']}';") == 'friend'
     check('the onboarding_discovery_metrics scrub nulls refused answers, keeps every completion marker and the admitted answer')
+
+    # ── F4-staff-ops: the STAFF grant follows the age record too (OD-3 section 2) ──
+    S = {name: str(uuid.uuid4()) for name in ('s_guest', 's_upgraded', 's_teen', 's_under13', 's_kid', 's_adult', 's_due')}
+    run(f"""
+    INSERT INTO auth.users (id, email, is_anonymous) VALUES ('{S['s_guest']}', NULL, true),
+        ('{S['s_upgraded']}', 's_up@example.com', false), ('{S['s_teen']}', 's_teen@example.com', false),
+        ('{S['s_under13']}', 's_u13@example.com', false), ('{S['s_kid']}', 's_kid@example.com', false),
+        ('{S['s_adult']}', 's_adult@example.com', false), ('{S['s_due']}', 's_due@example.com', false);
+    INSERT INTO account_safety_origins (user_id) VALUES ('{S['s_guest']}'), ('{S['s_upgraded']}');
+    INSERT INTO account_age_declarations (user_id, declared_age_band, declared_birth_month) VALUES
+        ('{S['s_teen']}', '13_to_17', NULL), ('{S['s_under13']}', 'under_13', NULL), ('{S['s_adult']}', 'adult', NULL),
+        ('{S['s_due']}', '13_to_17', date_trunc('month', now() - interval '18 years 2 months')::date);
+    INSERT INTO guardian_links (parent_user_id, kid_user_id, verification_status, verified_at) VALUES ('{I['ocr']}', '{S['s_kid']}', 'verified', now());
+    INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{S['s_kid']}', 'kid', '{I['ocr']}');
+    """)
+    reason = 'Support case 5678: re-verified in person'
+    for name in ('s_guest', 's_upgraded', 's_teen', 's_under13', 's_kid'):
+        rejected(f"SET ROLE service_role; SELECT grant_parent_role_with_justification('{S[name]}', '{I['boss']}', '{reason}');",
+                 'PARENT_GRANT_MINOR_RECORD')
+        assert scalar(f"SELECT count(*) FROM user_roles WHERE user_id = '{S[name]}' AND role = 'parent'") == '0', name
+        assert scalar(f"SELECT count(*) FROM audit_logs WHERE action = 'admin.parent_role_justification' AND subject = '{S[name]}'") == '0', name
+    check('a staff parent grant to a flagged guest, an upgraded flagged account, a declared teen, a declared under-13 or a kid is refused and writes no role and no audit row')
+
+    # The trigger refuses the same accounts on every branch: the staff marker set
+    # by hand, and a re-grant whose justification is already on record.
+    for name in ('s_guest', 's_teen', 's_kid'):
+        rejected(f"SET ROLE service_role; SELECT set_config('lf.parent_grant', '{S[name]}', false); "
+                 f"INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{S[name]}', 'parent', '{I['boss']}');",
+                 'PARENT_GRANT_MINOR_RECORD')
+        run(f"INSERT INTO audit_logs (actor_id, action, subject, detail) VALUES ('{I['boss']}', 'admin.parent_role_justification', '{S[name]}', "
+            f"jsonb_build_object('justification', '{reason}'));")
+        rejected(f"SET ROLE service_role; INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{S[name]}', 'parent', '{I['boss']}');",
+                 'PARENT_GRANT_MINOR_RECORD')
+        assert scalar(f"SELECT count(*) FROM user_roles WHERE user_id = '{S[name]}' AND role = 'parent'") == '0', name
+    check('enforce_parent_role_provenance refuses a minor-record account on the staff-marker and the re-grant branches')
+
+    for name in ('s_adult', 's_due'):
+        assert service(f"SELECT grant_parent_role_with_justification('{S[name]}', '{I['boss']}', '{reason}');") == 'granted', name
+        assert scalar(f"SELECT count(*) FROM audit_logs WHERE action = 'admin.parent_role_justification' AND subject = '{S[name]}'") == '1', name
+    assert not ({S['s_adult'], S['s_due']} & set(run('SET ROLE service_role; SELECT user_id FROM list_minor_record_tutors();').split()))
+    for role in ('anon', 'authenticated'):
+        rejected(f"SET ROLE {role}; SELECT account_age_record_is_minor('{S['s_teen']}');", 'permission denied')
+    check('a declared adult and a teen made 18 by birth month still receive the staff grant; the age predicate is service-role only')
 finally:
     if os.environ.get('LF_PG_KEEP') != '1':
         sql(f'DROP DATABASE {database} WITH (FORCE)')

@@ -483,6 +483,7 @@
         "granted": "Papel {role} atribuído.",
         "rejected": "O banco de dados recusou esta mudança.",
         "grantFailed": "Não foi possível atribuir o papel. Tente de novo.",
+        "ageRecordMinor": "A idade registrada é menor de 18. Corrija antes de atribuir Tutor.",
         "searchPeople": "Nome ou usuário",
         "searchHelp": "Digite pelo menos 2 caracteres.",
         "noPeople": "Ninguém corresponde.",
@@ -524,7 +525,8 @@
         "confirmRemove": "Remover papel",
         "removing": "Removendo",
         "keepAccess": "Manter acesso",
-        "keepingAccess": "Salvando"
+        "keepingAccess": "Salvando",
+        "openAgeCorrections": "Abrir correções de idade"
       }
     },
     "audit": {

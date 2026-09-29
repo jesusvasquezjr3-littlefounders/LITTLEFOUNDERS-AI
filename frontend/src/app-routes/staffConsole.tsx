@@ -98,7 +98,8 @@ export function StaffUsersRoute() {
 }
 
 export function StaffRolesRoute() {
-  return <StaffAccess api={useStaffConsole().api} />;
+  const { api, onNavigate } = useStaffConsole();
+  return <StaffAccess api={api} onNavigate={(href) => onNavigate(href)} />;
 }
 
 /** E.4 (OD-3): the staff-reviewed age correction queue (manage_users). */
