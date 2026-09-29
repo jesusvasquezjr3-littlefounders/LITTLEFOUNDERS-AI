@@ -48,7 +48,10 @@ code first and each was real:
   `admin.access.reviewed` land, a non-superadmin, missing actor, unknown
   kind and self-revocation are refused, a failed review write keeps the
   grant, a direct DELETE records no actor, browser roles refused). The whole
-  `staff:db-verify` gate was run on the same cluster (result below).
+  `staff:db-verify` gate on the same cluster: 9/9 verifiers pass over the
+  whole chain (content release, staff ops, data platform, course publish,
+  admin permissions, analytics disclosure, analytics, Mentor quality audits,
+  origin).
 - `database`: `check-migrations`, `check-migration-phase`, the node tests of
   the phase gate, auto-apply gate, publish CLI boundary (bash) and the
   db-verify runner self-tests (37 pass).
