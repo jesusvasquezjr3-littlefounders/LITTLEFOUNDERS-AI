@@ -22,6 +22,16 @@ const site = (id, path, ready, extra = {}) => app(id, path, extra.scenario ?? nu
 
 export const states = [
   app('/onboarding@age-screen', '/onboarding', 'age-screen', '.lf-age-date'),
+  // GAP-FIX-R5 (02 §7 item 10, 06 §7): the age question's other two states on a real route. A parent-created child
+  // with no age on record is told to ask their Tutor (A.4, GAP-FIX-R1); an unreadable answer offers a retry.
+  app('/learn@age-ask-tutor', '/learn', 'age-kid-unrecorded', '[data-age-screen-state="ask-tutor"]'),
+  app('/learn@age-error', '/learn', 'age-unreadable', '[data-screen="age-screen"] .lf-notice--error'),
+  preview('age-screen@askTutor', { screen: 'age-screen', state: 'askTutor' }),
+  preview('age-screen@error', { screen: 'age-screen', state: 'error' }),
+  // H.1 (F3-identity-site): a self-registered teen's first session with no analytics choice on file opens the
+  // disclosure sheet over the page, with both equal answers.
+  app('/learn@teen-analytics-disclosure', '/learn', 'teen-undisclosed',
+    '[role="dialog"] .lf-analytics-choice [data-analytics-choice="off"]', { readyAlso: '[role="dialog"] .lf-analytics-choice [data-analytics-choice="on"]' }),
   site('/@landing', '/', '[data-screen="landing"] [data-slot="mentor-avatar"] img', { readyAlso: '[data-consent-banner]' }),
   site('/@landing-tutor', '/', '[data-screen="landing"] [data-cta="continue"]', { scenario: 'site-tutor' }),
   site('/@cookie-preferences', '/', '[data-consent-banner]', { open: ['[data-consent="preferences"]'] }),
@@ -60,11 +70,18 @@ export const states = [
   // An account Core has not screened opens verification: the age question inside the sign-in shell (one <main>).
   app('/verify-parent@age-embedded', '/verify-parent', 'age-screen', '[data-shell="auth"] .lf-age-date'),
   app('/upgrade-account@upgrade', '/upgrade-account', 'identity-guest', '[data-shell="auth"] [data-screen="upgrade-account"]'),
+  // GAP-FIX-R5 (A.1, D.3): a Tutor invite's landing, for each person who can open the link. A verified Tutor is sent
+  // on to /family?join= (the family lane's route), so no state of theirs lands here.
+  app('/join/:token@signed-out', '/join/auditInviteToken0123456789', null, '[data-shell="auth"] [data-screen="join-invite"] [data-join="signup"]'),
+  app('/join/:token@verify', '/join/auditInviteToken0123456789', 'identity-adult', '[data-shell="auth"] [data-screen="join-invite-verify"] [data-join="verify"]'),
+  app('/join/:token@child', '/join/auditInviteToken0123456789', 'identity-kid', '[data-shell="auth"] [data-screen="join-invite-child"]'),
+  app('/join/:token@invalid', '/join/not-a-token', null, '[data-shell="auth"] [data-screen="join-invite-invalid"]'),
   app('/onboarding@onboarding-welcome', '/onboarding', 'identity-new-guest', '[data-screen="onboarding"][data-step="welcome"]'),
   app('/onboarding@onboarding-name', '/onboarding', 'identity-new-guest', '[data-screen="onboarding"][data-step="welcome"]', { open: ['[data-onboarding="start"]'] }),
   // The states a real route cannot be made to show on demand, in the frame they have on the route.
-  ...['login-google', 'signup-refused', 'signup-refused-failed', 'signup-confirm', 'forgot-sent', 'reset-form', 'reset-done', 'upgrade-error',
-    'verify-failed', 'verify-success', 'verify-revoked', 'verify-ineligible', 'verify-status-error']
+  // GAP-FIX-R5: verify-minor (AGE_RECORD_MINOR, F3) and the W2S.3 offline copy on the sign-in forms were never measured.
+  ...['login-google', 'login-offline', 'signup-offline', 'signup-refused', 'signup-refused-failed', 'signup-confirm', 'forgot-sent', 'reset-form',
+    'reset-done', 'upgrade-error', 'verify-failed', 'verify-success', 'verify-revoked', 'verify-ineligible', 'verify-minor', 'verify-status-error']
     .map((view) => preview(`identity@${view}`, { screen: 'identity', view })),
   ...['mentor', 'discovery', 'account'].map((step) => preview(`onboarding@${step}`, { screen: 'onboarding', step })),
   preview('onboarding@mentor-chosen-failed', { screen: 'onboarding', step: 'mentor', chosen: 'liruf', failed: '1' }),
@@ -81,10 +98,18 @@ export const states = [
 
 export const scenarios = {
   'age-screen': { population: 'guest', guest: true, ageBand: null },
+  // GAP-FIX-R5: a parent-created child (kid role) with no age on record: only their Tutor can give it (A.4).
+  'age-kid-unrecorded': { population: 'parent-created child, no age on record', guest: false, roles: ['kid'], ageBand: null },
+  // GAP-FIX-R5: an adult whose age answer Core cannot read right now.
+  'age-unreadable': { population: 'adult, age answer unreadable', guest: false, ageBand: null, ageScreenError: true },
+  // GAP-FIX-R5 (H.1): a self-registered teen with no analytics choice on file.
+  'teen-undisclosed': { population: 'independent teen 13-17, no analytics choice on file', guest: false, ageBand: '13-17', analyticsDisclosed: false },
   // A signed-in adult who has not verified (the universal account a parent signs up with).
   'identity-adult': { population: 'adult, not verified', guest: false, ageBand: 'adult', verification: { verified: false } },
   // A verified parent: Core's status, not the role, says "already a Tutor".
   'identity-tutor': { population: 'verified parent (Tutor)', guest: false, ageBand: 'adult', roles: ['parent'], verification: { verified: true } },
+  // GAP-FIX-R5: a parent-created child (kid role) who opens a Tutor invite link.
+  'identity-kid': { population: 'parent-created child 10-12', guest: false, roles: ['kid'], ageBand: '10-12' },
   // A guest who finished onboarding and saves their progress (A6); screened as a teen.
   'identity-guest': { population: 'guest (screened 13-17)', guest: true, ageBand: '13-17' },
   // A guest refused at sign-up (A.2) on their first run: screened under 13, onboarding not done.

@@ -260,7 +260,8 @@
       "resetPassword": "Escolha uma nova senha",
       "verifyParent": "Seja Tutor",
       "callback": "Entrando",
-      "upgradeAccount": "Salve seu progresso"
+      "upgradeAccount": "Salve seu progresso",
+      "joinInvite": "Convite da família"
     }
   },
   "notFound": {

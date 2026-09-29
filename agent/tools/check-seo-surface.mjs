@@ -188,7 +188,19 @@ const EM_DASH = String.fromCharCode(0x2014);
  * the verified parent (capitalised, the account), and the AI is the Mentor;
  * the brief once said "the tutor holds a real conversation". Bible 02 rule 16:
  * no em dash. `label` names the file in the message.
+ *
+ * GAP-FIX-R5 (OD-27 (3), OD-18, A.1): the brief once promised that the Tutor
+ * "can see everything their child does" and that parent visibility is "a
+ * permanent property of the product". Neither is true: a teen's story choices
+ * stay private from every Tutor, and an independent teen reviews their own
+ * Mentor notes. A total-visibility claim is refused in every locale's brief.
  */
+const OVERCLAIMS = [
+  [/\bsees? everything\b/i, 'promises total visibility ("see everything")'],
+  [/\beverything (?:their|your|a|the) (?:child|children|kid|kids)\b/i, 'promises total visibility ("everything their child does")'],
+  [/\bpermanent property\b/i, 'calls parent visibility a "permanent property" of the product'],
+];
+
 export function auditAgentText(text, label) {
   const problems = [];
   const lines = text.split('\n');
@@ -200,6 +212,9 @@ export function auditAgentText(text, label) {
     }
     if (/\b(?:AI|IA)[\s-]+Tutor\b|\bTutor[\s-]+(?:AI|IA)\b/i.test(line)) {
       problems.push(`${at} calls the AI a Tutor (OD-6): ${JSON.stringify(line.slice(0, 120))}`);
+    }
+    for (const [pattern, what] of OVERCLAIMS) {
+      if (pattern.test(line)) problems.push(`${at} ${what}; a teen's story choices stay private (OD-27 (3), OD-18): ${JSON.stringify(line.slice(0, 120))}`);
     }
   }
   return problems;

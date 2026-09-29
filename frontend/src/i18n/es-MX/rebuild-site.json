@@ -454,7 +454,24 @@
     "retryHint": "Prueba con una foto más nítida u otra identificación.",
     "helpBody": "Una persona puede revisarla por ti.",
     "writeToUs": "Escríbenos",
-    "supportEmail": "informame@littlefounders.ai"
+    "supportEmail": "informame@littlefounders.ai",
+    "openInvite": "Abrir la invitación"
+  },
+  "authJoin": {
+    "title": "Te invitaron a ser Tutor",
+    "body": "Inicia sesión o crea una cuenta. Luego verifica tu identificación para aceptar.",
+    "create": "Crear cuenta",
+    "login": "Iniciar sesión",
+    "verifyTitle": "Verifica tu identificación para aceptar",
+    "verifyBody": "Solo un Tutor verificado puede unirse a esta familia.",
+    "verify": "Hazte Tutor",
+    "otherAccount": "Usar otra cuenta",
+    "childTitle": "Esta invitación es para un adulto",
+    "childBody": "Envía este enlace a tu mamá o papá.",
+    "invalidTitle": "Este enlace de invitación no funciona",
+    "invalidBody": "Pide un enlace nuevo. Cada uno funciona una vez, durante 7 días.",
+    "home": "Ir al inicio",
+    "checking": "Revisando tu cuenta…"
   },
   "onboardingFlow": {
     "title": "Primeros pasos",
@@ -502,5 +519,10 @@
     "expiredTitle": "Este enlace de insignia expiró",
     "expiredBody": "Los enlaces de insignias caducan. Aún puedes ver cómo funciona LittleFounders.",
     "howItWorks": "Cómo funciona"
+  },
+  "siteHeroArt": {
+    "landing": "Dina, del equipo de Mentores, sonriendo",
+    "howItWorks": "Dr. Rho, del equipo de Mentores, explicando",
+    "families": "Zara, del equipo de Mentores, saludando"
   }
 }

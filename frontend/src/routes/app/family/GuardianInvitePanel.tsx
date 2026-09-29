@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme/useTheme';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
+import { forgetInvite, joinPath } from '@/auth/pendingInvite';
 import { GuardianInviteMint, GuardianInviteAccept } from '@/rebuild/family/GuardianInvite';
 import en from '@/i18n/en-US/rebuild-family.json';
 import es from '@/i18n/es-MX/rebuild-family.json';
@@ -11,10 +12,13 @@ import pt from '@/i18n/pt-BR/rebuild-family.json';
 /*
  * A.1's second-verified-guardian data plane. Two surfaces:
  *  - GuardianInvitePanel: a verified parent mints a single-use invite for
- *    one kid; the resulting link points at /family?join=TOKEN.
+ *    one kid; the resulting link points at /join/TOKEN (GAP-FIX-R5: a landing
+ *    that needs no role and keeps the token through sign-in, sign-up and
+ *    verification; a verified Tutor goes on to /family?join=TOKEN).
  *  - GuardianInviteJoin: the joining verified parent sees the invite at
  *    /family?join=TOKEN, previews the kid's display name (server-derived,
- *    never contact data) and accepts through the one-shot exchange.
+ *    never contact data) and accepts through the one-shot exchange. An
+ *    accepted or unusable invite is no longer kept as pending.
  * Core remains the enforcing boundary — these panels authorize nothing.
  */
 
@@ -45,7 +49,7 @@ function ScopedGuardianInvite({ kidUserId, token }: { kidUserId: string; token: 
       const result = await api<{ token: string }>(`/family/kids/${kidUserId}/guardian-invite`, { method: 'POST', token });
       if (current !== generation.current) return;
       if (result.error || !result.data) throw new Error('Invite unavailable');
-      setLink(`${window.location.origin}/family?join=${encodeURIComponent(result.data.token)}`);
+      setLink(`${window.location.origin}${joinPath(result.data.token)}`);
       setNotice(copy.linkReady);
     } catch {
       if (current === generation.current) { setNotice(copy.failed); setNoticeIsError(true); }
@@ -89,7 +93,7 @@ export function GuardianInviteJoin({ inviteToken }: { inviteToken: string }) {
   const validToken = TOKEN_RE.test(inviteToken);
 
   useEffect(() => {
-    if (!validToken) { setExpired(true); return; }
+    if (!validToken) { forgetInvite(inviteToken); setExpired(true); return; }
     let cancelled = false;
     void (async () => {
       const token = await getToken();
@@ -97,7 +101,7 @@ export function GuardianInviteJoin({ inviteToken }: { inviteToken: string }) {
       if (!token) return;
       const result = await api<{ displayName: string | null; confirmedBy?: string }>(`/family/guardian-invite/${inviteToken}`, { token });
       if (cancelled) return;
-      if (result.error || !result.data) { setExpired(true); return; }
+      if (result.error || !result.data) { forgetInvite(inviteToken); setExpired(true); return; }
       // S07.2: a teen's own invite is confirmed by the teen, not a current Tutor.
       setSelfIssued(result.data.confirmedBy === 'account_holder');
       setKidName(result.data.displayName);
@@ -115,6 +119,7 @@ export function GuardianInviteJoin({ inviteToken }: { inviteToken: string }) {
     // confirmed shape is shown, never an assumed link.
     const status = result.data?.status;
     if (result.error || !((status === 'verified' && result.data?.linked === true) || (status === 'pending' && result.data?.linked === false))) { setFailed(true); return; }
+    forgetInvite(inviteToken);
     setPending(status === 'pending');
     setAccepted(true);
   }

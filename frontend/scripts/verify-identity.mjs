@@ -34,6 +34,12 @@ import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.
  * received: the exact payloads, the origin marker, no date of birth where none
  * belongs, no token left in the address bar.
  *
+ * GAP-FIX-R5 (A.1, D.3 / OD-3 Option B): a Tutor invite link, /join/TOKEN, from
+ * a signed-out visitor (sign-up, then verification) and from a signed-in adult
+ * who is not a Tutor yet (verification), each to the accepted link: the token
+ * survives every hop, nothing reaches the invite before verification, and the
+ * pending invite is forgotten once accepted.
+ *
  *   REBUILD_URL=http://localhost:5410 node scripts/verify-identity.mjs
  *   Filters: ID_CASES, ID_LOCALES, ID_THEMES, ID_WIDTHS, ID_TEXT (100,140), ID_JOURNEYS=0
  * Report and failure screenshots: audit-results/identity/.
@@ -49,7 +55,9 @@ const TEXT = list('ID_TEXT', ['100', '140']).map(Number);
 const JOURNEYS = process.env.ID_JOURNEYS !== '0';
 const copy = Object.fromEntries(['en-US', 'es-MX', 'pt-BR'].map((locale) => [locale, {
   ...JSON.parse(readFileSync(resolve(`src/i18n/${locale}/rebuild-site.json`), 'utf8')),
+  family: JSON.parse(readFileSync(resolve(`src/i18n/${locale}/rebuild-family.json`), 'utf8')),
 }]));
+const INVITE = 'journeyInviteToken0123456789';
 
 const USER = '44444444-4444-4444-8444-444444444444';
 const jwt = (claims) => `eyJhbGciOiJub25lIn0.${Buffer.from(JSON.stringify({ sub: USER, ...claims })).toString('base64url')}.synthetic`;
@@ -74,6 +82,9 @@ const CASES = [
   { id: 'verify-child', path: '/verify-parent', signedIn: 'adult', roles: ['kid'], verifyError: 'FORBIDDEN', screened: 'under_13', shell: 'auth', h1: (c) => c.authVerify.ineligibleTitle, first: 'main a[href="/learn"]' },
   { id: 'upgrade', path: '/upgrade-account', signedIn: 'guest', screened: '13_to_17', onboarded: true, shell: 'auth', h1: (c) => c.authUpgrade.title, first: 'input[type=email]', journey: 'upgrade' },
   { id: 'onboarding', path: '/onboarding', signedIn: 'guest', screened: 'under_13', protectedOrigin: true, onboarded: false, shell: 'single-state', h1: (c) => c.onboardingFlow.welcomeTitle, first: '[data-onboarding="start"]', journey: 'onboarding' },
+  // GAP-FIX-R5: the Tutor invite landing, from a signed-out visitor and from a signed-in adult who is not a Tutor yet.
+  { id: 'join-visitor', path: `/join/${INVITE}`, signedIn: null, signupOk: true, verifyPasses: true, screened: 'adult', shell: 'auth', h1: (c) => c.authJoin.title, first: '[data-join="signup"]', journey: 'join' },
+  { id: 'join-adult', path: `/join/${INVITE}`, signedIn: 'adult', verified: false, verifyPasses: true, screened: 'adult', shell: 'auth', h1: (c) => c.authJoin.verifyTitle, first: '[data-join="verify"]', journey: 'join' },
   { id: 'suspended', path: '/account-suspended', signedIn: null, shell: 'single-state', h1: (c) => c.kidSuspended.title, first: 'main a[href^="mailto:"]' },
 ];
 const filter = process.env.ID_CASES?.split(',');
@@ -87,7 +98,7 @@ const failures = [];
 const unknown = new Set();
 
 /** The Core this run answers from: the case, what it has received, and a small state machine. */
-const core = { entry: null, calls: [], signedIn: null, upgradeFailures: 1, onboarded: false, offline: false };
+const core = { entry: null, calls: [], signedIn: null, upgradeFailures: 1, onboarded: false, offline: false, verified: false, accepted: false };
 
 function answer(path, method, body) {
   const entry = core.entry;
@@ -97,6 +108,8 @@ function answer(path, method, body) {
   if (path === '/auth/oauth/providers') return ok({ providers: entry.google ? ['google'] : [] });
   if (path === '/auth/oauth/google') return fail(502, 'UPSTREAM_FAILED');
   if (path === '/auth/login') return fail(401, 'INVALID_CREDENTIALS');
+  // An adult's sign-up (the invite journey): Core confirms at once (autoconfirm) and hands back the session.
+  if (path === '/auth/signup' && entry.signupOk) { core.signedIn = 'adult'; return ok({ session: session(false), confirmationRequired: false }, 201); }
   if (path === '/auth/signup') return fail(403, 'AGE_RESTRICTED');
   if (path === '/auth/guest') { core.signedIn = 'guest'; core.onboarded = false; return ok({ session: session(true) }); }
   if (path === '/auth/recover') return ok({ sent: true });
@@ -109,7 +122,8 @@ function answer(path, method, body) {
   if (path === '/auth/logout') { core.signedIn = null; return ok({}); }
   if (path === '/auth/me') {
     if (!core.signedIn) return fail(401, 'UNAUTHORIZED');
-    return ok({ profile: { display_name: 'Synthetic', locale: 'en-US', theme: 'light', cover: {} }, roles: entry.roles ?? ['universal'], adminPermissions: [], avatarOptions: {},
+    // A passed verification makes the account a Tutor (the `parent` role), as Core's verification does.
+    return ok({ profile: { display_name: 'Synthetic', locale: 'en-US', theme: 'light', cover: {} }, roles: core.verified ? ['parent'] : entry.roles ?? ['universal'], adminPermissions: [], avatarOptions: {},
       analyticsEnabled: false, isGuest: guest, newAccount: entry.id === 'callback-first-google', onboardingComplete: guest ? core.onboarded : true });
   }
   if (path === '/auth/age-screen') {
@@ -119,9 +133,18 @@ function answer(path, method, body) {
     return ok(screened ? { required: false, ageBand: screened, protectedOrigin: entry.protectedOrigin === true || entry.id === 'signup' } : { required: true, ageBand: null, protectedOrigin: false });
   }
   if (path === '/verification/parent') {
-    if (method === 'GET') return entry.verifyError ? fail(403, entry.verifyError) : ok({ verified: entry.verified === true });
+    if (method === 'GET') return entry.verifyError ? fail(403, entry.verifyError) : ok({ verified: entry.verified === true || core.verified });
+    if (entry.verifyPasses) { core.verified = true; return ok({ verified: true, checks: { documentReadable: true, nameMatch: true, birthDateMatch: true, notExpired: true } }); }
     return ok({ verified: false, checks: { documentReadable: true, nameMatch: false, birthDateMatch: true, notExpired: true } });
   }
+  // The invite, as Core answers it inside the verified-parent boundary: only a verified Tutor may preview or accept.
+  if (path === `/family/guardian-invite/${INVITE}` || path === `/family/guardian-invite/${INVITE}/accept`) {
+    if (!core.verified) return fail(403, 'PARENT_VERIFICATION_REQUIRED');
+    if (method === 'GET') return ok({ kidUserId: '55555555-5555-4555-8555-555555555555', displayName: 'Rio', username: 'rio_m', expiresAt: '2026-10-05T00:00:00Z', confirmedBy: 'account_holder' });
+    core.accepted = true;
+    return ok({ linked: false, status: 'pending', kidUserId: '55555555-5555-4555-8555-555555555555' });
+  }
+  if (path.startsWith('/family/') || path.startsWith('/family-hub/')) return ok(path === '/family/kids' ? { kids: [] } : {});
   if (path === '/tutor/preferences') return ok({ character: body?.character ?? 'rho', companion: null, diorama: 'diorama-a', backdrop: 'day', nickname: null, adaptations: [],
     personalized: method === 'PUT', catalog: { characters: ['rho', 'zara', 'liruf', 'dina'], dioramas: [], backdrops: [], adaptations: [], articulates: ['rho', 'zara'] } });
   if (path === '/onboarding/complete') { core.onboarded = true; return ok({ streakDays: 1 }, 201); }
@@ -307,6 +330,53 @@ const JOURNEY = {
     assert.ok(!/name="documentType"/.test(post.body.raw), 'no document type (A.5)');
     return { multipart: 'givenNames, surnames, birthDate, document', failedChecksNamed: true };
   },
+  async join(page, c) {
+    const stored = "localStorage.getItem('lf.guardian-invite.v1') ?? ''";
+    assert.ok((await page.evaluate(stored)).includes(INVITE), 'the landing keeps the token');
+    if (!core.signedIn) {
+      await press(page, '[data-join="signup"]');
+      await waitFor(page, "location.pathname === '/signup' && document.querySelector('[data-auth=\"parent-intent\"]')?.checked", 'sign-up opens with the Tutor intent');
+      await type(page, 'input[autocomplete=name]', 'Ana Ruiz');
+      await type(page, 'input[type=email]', 'ana@example.test');
+      await type(page, 'input[type=password]', 'synthetic-password');
+      await type(page, '[data-date-part=day]', '4');
+      await type(page, '[data-date-part=month]', '7');
+      await type(page, '[data-date-part=year]', '1988');
+      await press(page, '[data-auth="submit"]');
+    }
+    // Back on the landing, signed in and not a Tutor yet: one message, one action to verification.
+    await waitFor(page, `location.pathname === ${JSON.stringify(`/join/${INVITE}`)} && document.querySelector('[data-join="verify"]')`, 'the landing asks to verify', 2400);
+    await press(page, '[data-join="verify"]');
+    await waitFor(page, "location.pathname === '/verify-parent' && document.querySelector('[data-auth=\"start\"]')", 'verification intro', 2400);
+    await press(page, '[data-auth="start"]');
+    await waitFor(page, "document.querySelector('[data-screen=verify-form]')", 'form opens');
+    await type(page, 'input[autocomplete=given-name]', 'Ana');
+    await type(page, 'input[autocomplete=family-name]', 'Ruiz');
+    await type(page, '[data-date-part=day]', '4');
+    await type(page, '[data-date-part=month]', '7');
+    await type(page, '[data-date-part=year]', '1988');
+    await page.evaluate(`(() => { const input = document.querySelector('input[type=file]'); const data = new DataTransfer();
+      data.items.add(new File([new Uint8Array([137, 80, 78, 71])], 'id-front.png', { type: 'image/png' })); input.files = data.files;
+      input.dispatchEvent(new Event('change', { bubbles: true })); })()`);
+    await waitFor(page, `document.querySelector('.lf-id-document-name')?.textContent === 'id-front.png'`, 'file chosen');
+    assert.equal(core.calls.filter((call) => call.path.startsWith('/family/guardian-invite')).length, 0, 'nothing reaches the invite before verification');
+    await press(page, '[data-auth="submit"]');
+    // Verified: the way on is the invite itself, not the bare Family page.
+    await waitFor(page, `document.querySelector('[data-auth="family"]')?.getAttribute('href') === ${JSON.stringify(`/family?join=${INVITE}`)}`, 'success links to the invite', 2400);
+    // The page's language may follow the new account's profile (the synthetic Core answers en-US): read it from the page.
+    const shown = async () => copy[await page.evaluate('document.documentElement.lang')] ?? c;
+    assert.equal(await page.evaluate("document.querySelector('[data-auth=\"family\"]').textContent.trim()"), (await shown()).authVerify.openInvite);
+    await press(page, '[data-auth="family"]');
+    await waitFor(page, "location.pathname === '/family' && document.querySelector('.lf-guardian-invite button:not([disabled])')", 'the invite opens on the Family page', 2400);
+    await press(page, '.lf-guardian-invite button');
+    const accepted = (await shown()).family.guardianInvite.pendingTeen.replace('{name}', 'Rio');
+    await waitFor(page, `[...document.querySelectorAll('.lf-guardian-invite [role=status]')].some((e) => e.textContent.includes(${JSON.stringify(accepted)}))`, 'accepted, waiting for the teen', 2400);
+    assert.equal(core.accepted, true, 'Core accepted the invite');
+    assert.equal(core.calls.filter((call) => call.path === `/family/guardian-invite/${INVITE}/accept`).length, 1, 'one accept');
+    assert.equal(await page.evaluate(stored), '', 'the pending invite is forgotten once accepted');
+    return { from: core.entry.signedIn ? 'signed-in adult' : 'signed-out visitor',
+      hops: core.entry.signedIn ? 'landing, verify, family' : 'landing, sign-up, landing, verify, family', accepted: 'pending (the teen confirms)' };
+  },
   async upgrade(page, c) {
     await type(page, 'input[type=email]', 'saved@example.test');
     await type(page, 'input[type=password]', 'longenough1');
@@ -360,6 +430,7 @@ try {
   async function load(entry, locale, theme, width, where) {
     page.errors.length = 0;
     core.entry = entry; core.calls = []; core.signedIn = entry.signedIn; core.upgradeFailures = 1; core.onboarded = entry.onboarded ?? false;
+    core.verified = false; core.accepted = false;
     await page.send('Network.clearBrowserCookies');
     // A first visit to a public page would show the cookie choice over the form; it is M8's to verify (verify-public-site).
     await page.send('Network.setCookie', { name: 'lf_cc', value: 'denied', url: origin });

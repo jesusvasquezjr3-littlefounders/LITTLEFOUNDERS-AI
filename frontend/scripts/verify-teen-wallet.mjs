@@ -290,7 +290,8 @@ try {
     await click(copy.parents.open);
     await wait(has(copy.parents.tasksLocked));
     await click(copy.parents.invite);
-    await wait(`${has('/family?join=' + 'q'.repeat(32))} && ${has(copy.parents.linkReady)}`);
+    // GAP-FIX-R5: the link opens the invite landing, which keeps the token through the parent's sign-up and verification.
+    await wait(`${has('/join/' + 'q'.repeat(32))} && ${has(copy.parents.linkReady)}`);
     await click(copy.parents.copy);
     await wait(`${has(copy.parents.copied)} || ${has(copy.parents.copyFailed)}`);
     // The parent accepts out of band; the teen comes back to the wallet later.

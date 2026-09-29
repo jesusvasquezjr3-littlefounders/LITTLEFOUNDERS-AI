@@ -454,7 +454,24 @@
     "retryHint": "Try a sharper photo or another ID.",
     "helpBody": "A person can check it for you.",
     "writeToUs": "Write to us",
-    "supportEmail": "informame@littlefounders.ai"
+    "supportEmail": "informame@littlefounders.ai",
+    "openInvite": "Open the invite"
+  },
+  "authJoin": {
+    "title": "You're invited to be a Tutor",
+    "body": "Log in or create an account. Then verify your ID to accept.",
+    "create": "Create account",
+    "login": "Log in",
+    "verifyTitle": "Verify your ID to accept",
+    "verifyBody": "Only a verified Tutor can join this family.",
+    "verify": "Become a Tutor",
+    "otherAccount": "Use another account",
+    "childTitle": "This invite is for an adult",
+    "childBody": "Send this link to your parent.",
+    "invalidTitle": "This invite link does not work",
+    "invalidBody": "Ask for a new link. Each one works once, for 7 days.",
+    "home": "Go home",
+    "checking": "Checking your account…"
   },
   "onboardingFlow": {
     "title": "Getting started",
@@ -502,5 +519,10 @@
     "expiredTitle": "This badge link has expired",
     "expiredBody": "Shared badge links expire. You can still see how LittleFounders works.",
     "howItWorks": "How it works"
+  },
+  "siteHeroArt": {
+    "landing": "Dina, one of the Mentors, smiling",
+    "howItWorks": "Dr. Rho, one of the Mentors, explaining",
+    "families": "Zara, one of the Mentors, nodding hello"
   }
 }

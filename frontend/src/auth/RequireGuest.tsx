@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/app-shell/home';
+import { continueAfterSignIn } from './pendingInvite';
 
 /**
  * Route guard: a visitor with a REAL (non-guest) session is sent to
@@ -18,6 +19,7 @@ export function RequireGuest({ children }: { children: ReactNode }) {
   const { session, isGuest } = useAuth();
 
   if (session === undefined) return null; // restoring from storage
-  if (session && !isGuest) return <Navigate to={APP_HOME} replace />;
+  // GAP-FIX-R5: a signed-in account with a pending Tutor invite goes on to it.
+  if (session && !isGuest) return <Navigate to={continueAfterSignIn(undefined, APP_HOME)} replace />;
   return <>{children}</>;
 }

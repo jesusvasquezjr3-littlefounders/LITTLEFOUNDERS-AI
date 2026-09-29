@@ -1,5 +1,5 @@
 import type { Locale } from '../design/copyBudget';
-import { DecisionDemo, MentorCast, SiteHero, SiteSection, StartButton, siteCopy, type Navigate, type StartAction } from './blocks';
+import { DecisionDemo, MentorCast, SiteHero, SiteHeroArt, SiteSection, StartButton, siteCopy, type Navigate, type StartAction } from './blocks';
 
 /*
  * M2, How it works, rebuilt on the public-site shell (W2 Lane 1).
@@ -19,7 +19,8 @@ export function HowItWorks({ locale, start, onNavigate }: { locale: Locale; star
   const copy = siteCopy(locale);
   const h = copy.howItWorks;
   return <div className="lf-site-page" data-screen="how-it-works">
-    <SiteHero>
+    {/* GAP-FIX-R5 (03 §3.3): a 7:5 hero with its own portrait scene, Dr. Rho explaining. */}
+    <SiteHero art={<SiteHeroArt scene="how-it-works" locale={locale} />} overlap>
       <h1 data-copy-role="heading">{h.title}</h1>
       <p className="lf-site-lead" data-copy-role="body">{h.lead}</p>
       <div className="lf-site-cta-row"><StartButton action={start} copy={copy.site} onNavigate={onNavigate} origin="how-hero" breathing /></div>

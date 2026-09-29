@@ -36,6 +36,12 @@ export const states = [
     { readyAlso: ['[data-screen="settings"] .lf-settings-blocked li', '.lf-disposition dl', '.lf-account-deletion', '.lf-session-preferences'] }),
   app('/profile/settings@teen', '/profile/settings', 'settings-teen', '.lf-analytics-choice [role="switch"]',
     { readyAlso: ['.lf-memory-self-review .lf-memory-note', '[data-screen="settings"] .lf-settings-form', '.lf-disposition dl', '[data-setting="discoverable"] [role="switch"]'] }),
+  // GAP-FIX-R5 (H.1): the same teen with no analytics choice on file. The first-session sheet opens over Settings and
+  // is closed with "Decide later" (its close control), as a teen who reads Settings first does; the card then offers
+  // the two equal answers and no switch.
+  app('/profile/settings@teen-undecided', '/profile/settings', 'settings-teen-undecided',
+    '.lf-analytics-choice:not(.lf-analytics-choice--plain)[data-decided="false"] [data-analytics-choice="off"]',
+    { readyAlso: ['[role="dialog"] .lf-analytics-choice--plain', '[data-screen="settings"] .lf-settings-form'], open: ['[role="dialog"] .lf-sheet-close'] }),
   // OD-9 4.2 (GAP-FIX-R3): a migrated 16-17 whose Tutor has not consented to the discoverable profile: no switch, one line.
   app('/profile/settings@teen-consent-required', '/profile/settings', 'settings-teen-consent', '[data-setting="discoverable"] .lf-notice--info',
     { readyAlso: ['[data-screen="settings"] .lf-settings-form'] }),
@@ -99,6 +105,10 @@ export const scenarios = {
   'settings-teen': { population: 'independent teen 16-17', guest: false, ageBand: '13-17', memory: true,
     profile: profile({ displayName: 'Rio Montes', username: 'rio_montes', birthDate: '2009-06-02',
       // OD-27 (2): a 17-year-old Core offers the choice to be found; private until they turn it on.
+      social: { tier: 'teen', privateProfile: true, discoverable: { canChoose: true, enabled: false } } }), deletion: 'grace' },
+  // GAP-FIX-R5 (H.1): the independent teen before any analytics choice is on file.
+  'settings-teen-undecided': { population: 'independent teen 16-17, no analytics choice on file', guest: false, ageBand: '13-17', memory: true,
+    analyticsDisclosed: false, profile: profile({ displayName: 'Rio Montes', username: 'rio_montes', birthDate: '2009-06-02',
       social: { tier: 'teen', privateProfile: true, discoverable: { canChoose: true, enabled: false } } }), deletion: 'grace' },
   'settings-teen-consent': { population: 'migrated teen 16-17, Tutor consent to the discoverable profile missing (OD-9 4.2)', guest: false, ageBand: '13-17',
     profile: profile({ displayName: 'Rio Montes', username: 'rio_montes', birthDate: '2009-06-02',

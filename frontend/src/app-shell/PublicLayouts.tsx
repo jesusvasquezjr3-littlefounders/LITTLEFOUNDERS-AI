@@ -99,7 +99,8 @@ export function AuthLayout() {
   const locale = useShellLocale();
   const navigate = useShellNavigate();
   const { pathname } = useLocation();
-  const title = copy.pageTitle[AUTH_TITLES[pathname] ?? 'login'];
+  // GAP-FIX-R5: /join/:token, a Tutor invite's landing.
+  const title = copy.pageTitle[pathname.startsWith('/join/') ? 'joinInvite' : AUTH_TITLES[pathname] ?? 'login'];
   return <ShellRoot>
     <AuthShell appName={APP_NAME} pageTitle={title} routeKey={pathname} locale={locale} onNavigate={navigate} homeHref="/"
       back={session ? { label: copy.openApp, href: APP_HOME } : { label: copy.home, href: '/' }} labels={{ skip: shell.skip }} footer={<Preferences />}>

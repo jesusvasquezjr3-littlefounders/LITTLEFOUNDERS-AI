@@ -14,6 +14,7 @@ import { ForgotPasswordPage } from '@/routes/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from '@/routes/auth/ResetPasswordPage';
 import { VerifyParentPage } from '@/routes/auth/VerifyParentPage';
 import { UpgradeAccountPage } from '@/routes/auth/UpgradeAccountPage';
+import { JoinInvitePage } from '@/app-routes/JoinInvitePage';
 import { OnboardingPage } from '@/routes/onboarding/OnboardingPage';
 
 /*
@@ -54,6 +55,11 @@ export const siteAccountRoutes = (
     {/* OAuth landing — not guest-guarded: it completes the transition from guest to authed. */}
     <Route path="auth/callback" element={<AuthCallbackPage />} />
     <Route path="verify-parent" element={<RequireAuth><VerifyParentPage /></RequireAuth>} />
+    {/* GAP-FIX-R5 (A.1, D.3): a Tutor invite's landing. No guard: the person
+        who opens it is usually not a verified Tutor yet, often not signed in.
+        It keeps the token through sign-in, sign-up and verification; the
+        accept stays on /family, inside Core's verified-parent boundary. */}
+    <Route path="join/:token" element={<JoinInvitePage />} />
     {/* Attach a permanent identity to the current guest session in
         place — never /signup, which would mint a second blank identity.
         On the sign-in shell since W2S.2 (A6 is a sign-in screen). */}

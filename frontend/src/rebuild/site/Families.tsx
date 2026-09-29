@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button, Card, InlineNotice, MentorAvatar, Pill, useRebuildEnvironment } from '../design/controls';
 import { findMentorAvatar, MENTOR_NAMES } from '../design/assets';
 import type { Locale } from '../design/copyBudget';
-import { DecisionDemo, SiteHero, SiteLink, SiteSection, SiteSteps, TutorButton, siteCopy, type Navigate, type TutorAction } from './blocks';
+import { DecisionDemo, SiteHero, SiteHeroArt, SiteLink, SiteSection, SiteSteps, TutorButton, siteCopy, type Navigate, type TutorAction } from './blocks';
 
 /*
  * M3, For families, rebuilt on the public-site shell (W2 Lane 1).
@@ -58,7 +58,8 @@ export function Families({ locale, tutor, onNavigate }: { locale: Locale; tutor:
   const copy = siteCopy(locale);
   const f = copy.families;
   return <div className="lf-site-page" data-screen="families">
-    <SiteHero>
+    {/* GAP-FIX-R5 (03 §3.3): a 7:5 hero with its own portrait scene, Zara nodding hello. */}
+    <SiteHero art={<SiteHeroArt scene="families" locale={locale} />} overlap>
       <h1 data-copy-role="heading">{f.title}</h1>
       <p className="lf-site-lead" data-copy-role="body">{f.lead}</p>
       <div className="lf-site-cta-row">
