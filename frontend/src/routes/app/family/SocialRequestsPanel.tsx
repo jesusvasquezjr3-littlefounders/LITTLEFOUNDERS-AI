@@ -4,9 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme/useTheme';
 import { api } from '@/lib/api';
 import { SocialRequests, type PendingConnection } from '@/rebuild/social/SocialRequests';
+import { guardianReportRequest } from '@/rebuild/social/guardianConnectionsClient';
+import type { ReportCategory } from '@/rebuild/social/ReportDialog';
 import en from '@/i18n/en-US/rebuild-family.json';
 import es from '@/i18n/es-MX/rebuild-family.json';
 import pt from '@/i18n/pt-BR/rebuild-family.json';
+import enProfile from '@/i18n/en-US/rebuild-profile.json';
+import esProfile from '@/i18n/es-MX/rebuild-profile.json';
+import ptProfile from '@/i18n/pt-BR/rebuild-profile.json';
 
 interface Page { requests: PendingConnection[]; nextOffset: number | null }
 export function SocialRequestsPanel(props: { kidUserId: string; token: string | null }) {
@@ -16,12 +21,15 @@ function ScopedSocialRequests({ kidUserId, token }: { kidUserId: string; token: 
   const { i18n } = useTranslation(); const { isDark } = useTheme();
   const locale = i18n.resolvedLanguage ?? 'en-US';
   const copy = (locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en).socialRequests;
+  const reportCopy = (locale === 'es-MX' ? esProfile : locale === 'pt-BR' ? ptProfile : enProfile).report;
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState<Page>({ requests: [], nextOffset: null });
   const [loading, setLoading] = useState(false); const [failed, setFailed] = useState(false);
   const [deciding, setDeciding] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [decisionFailed, setDecisionFailed] = useState(false);
+  // E.3: the request the Tutor just denied stays reportable beside the receipt (Core admits it for 30 days).
+  const [closedRequestId, setClosedRequestId] = useState<string | null>(null);
   const generation = useRef(0); const busy = useRef(false);
   useEffect(() => () => { generation.current++; }, []);
   async function load(offset = 0) {
@@ -46,7 +54,7 @@ function ScopedSocialRequests({ kidUserId, token }: { kidUserId: string; token: 
   async function decide(requestId: string, decision: 'approve' | 'deny') {
     if (busy.current || !token) return;
     busy.current = true; const current = ++generation.current;
-    setDeciding(true); setNotice(null); setDecisionFailed(false);
+    setDeciding(true); setNotice(null); setDecisionFailed(false); setClosedRequestId(null);
     let refresh = false;
     try {
       const result = await api<{ requestId: string; status: string }>(`/family/kids/${kidUserId}/social/requests/${encodeURIComponent(requestId)}/decision`, { token, method: 'POST', body: { decision } });
@@ -62,6 +70,7 @@ function ScopedSocialRequests({ kidUserId, token }: { kidUserId: string; token: 
         const status = decision === 'approve' ? 'approved' : 'denied';
         if (result.error || result.data?.requestId !== requestId || result.data.status !== status) throw new Error('Decision not confirmed');
         setNotice(copy[status]); refresh = true;
+        if (status === 'denied') setClosedRequestId(requestId);
       }
     } catch {
       if (current === generation.current) { setNotice(copy.decisionFailed); setDecisionFailed(true); }
@@ -72,12 +81,23 @@ function ScopedSocialRequests({ kidUserId, token }: { kidUserId: string; token: 
       }
     }
   }
+  // E.3 (GAP-FIX-R5 social): reporting leaves the request for the Tutor to decide; the queue does not change.
+  async function report(requestId: string, category: ReportCategory, note: string | null) {
+    if (!token) return false;
+    const current = generation.current;
+    const sent = await guardianReportRequest(api, kidUserId, requestId, category, note, token);
+    if (sent && current === generation.current) {
+      setNotice(copy.reported); setDecisionFailed(false);
+      setClosedRequestId(closed => (closed === requestId ? null : closed));
+    }
+    return sent;
+  }
   function reload() {
-    generation.current++; busy.current = false; setDeciding(false); setNotice(null);
+    generation.current++; busy.current = false; setDeciding(false); setNotice(null); setClosedRequestId(null);
     setPage({ requests: [], nextOffset: null }); void load();
   }
-  function close() { generation.current++; busy.current = false; setOpen(false); setDeciding(false); setNotice(null); setPage({ requests: [], nextOffset: null }); }
-  return <SocialRequests deciding={deciding} notice={notice} decisionFailed={decisionFailed} onDecision={(id, decision) => void decide(id, decision)} copy={copy} locale={locale} dark={isDark} open={open} requests={page.requests} loading={loading} failed={failed} hasMore={page.nextOffset !== null}
+  function close() { generation.current++; busy.current = false; setOpen(false); setDeciding(false); setNotice(null); setClosedRequestId(null); setPage({ requests: [], nextOffset: null }); }
+  return <SocialRequests reportCopy={reportCopy} onReport={report} deciding={deciding} notice={notice} decisionFailed={decisionFailed} closedRequestId={closedRequestId} onDecision={(id, decision) => void decide(id, decision)} copy={copy} locale={locale} dark={isDark} open={open} requests={page.requests} loading={loading} failed={failed} hasMore={page.nextOffset !== null}
     onToggle={() => { if (open) close(); else { setOpen(true); reload(); } }}
     onMore={() => { if (page.nextOffset !== null) void load(page.nextOffset); }} onRetry={reload} />;
 }

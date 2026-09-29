@@ -56,6 +56,17 @@ import { fileURLToPath } from 'node:url';
  *      re-checks the link after the read; the guardian history reads every
  *      social.coop_* action the policy lists; and the Family card and the
  *      history render both.
+ *  10. E.3 from the request queues (GAP-FIX-R5 social; OD-8's report action
+ *      for unwanted contact; D-19). An inbound connection request is the
+ *      first unwanted-contact event: Core serves a report on the Tutor's
+ *      queue (the session guardian, admitted by the request addressed to the
+ *      child, the link re-checked after the write) and a report and a block
+ *      on the teen's own queue (the session, admitted by the request addressed
+ *      to it, never by profile visibility); both admit a request closed
+ *      without a connection for 30 days; both queues render the report dialog
+ *      and the teen's a confirmed block, also for the request just denied or
+ *      declined (beside the receipt); and the PostgreSQL proof that queue
+ *      reports and blocks feed the E.3 pattern trigger is in the social gate.
  */
 
 /** The nine Appendix J Part 1.1-1.2 metrics for E.1-E.5. Dropping one fails social:check. */
@@ -236,6 +247,31 @@ export function checkSocialTiers(root) {
   const history = (() => { try { return read(root, 'frontend/src/rebuild/social/SocialHistory.tsx'); } catch { return ''; } })();
   if (!/COOP_HISTORY_ACTIONS/.test(history) || !/coopSentence\(entry\)/.test(history)) failures.push('frontend/src/rebuild/social/SocialHistory.tsx: the Family history no longer renders goals-together events (E.2)');
 
+  // 10. E.3 from the request queues (GAP-FIX-R5 social).
+  if (!/router\.post\('\/kids\/:kidId\/social\/requests\/:requestId\/report'[\s\S]*?guardKid\(req, res\)[\s\S]*?GuardianReportBody\.safeParse[\s\S]*?getGuardianReportableRequest\(requestId\.data, kidId\)[\s\S]*?submitSocialReport\(guardian, request\.requesterId,[\s\S]*?if \(!await guardKid\(req, res\)\) return res;/.test(family)) {
+    failures.push("backend/src/routes/family.ts: POST /kids/:kidId/social/requests/:requestId/report must check the guardian, bound the body, admit only a request addressed to the child, file the report as the session guardian and re-check the link after the write (E.3, OD-8)");
+  }
+  if (!/router\.post\('\/connection-requests\/:requestId\/report'[\s\S]*?queueRequester\(req, res, user\.id\)[\s\S]*?submitSocialReport\(user\.id, requester,/.test(route)
+    || !/router\.post\('\/connection-requests\/:requestId\/block'[\s\S]*?queueRequester\(req, res, user\.id\)[\s\S]*?blockUser\(user\.accessToken, user\.id, requester\)/.test(route)
+    || !/async function queueRequester[\s\S]*?getTeenActionableRequest\(id\.data, userId\)/.test(route)) {
+    failures.push("backend/src/routes/profile.ts: the teen's queue must report and block the requester of a request addressed to the session, as the session (E.3, D-19)");
+  }
+  if (!/export const SOCIAL_REQUEST_ACTION_DAYS = 30;/.test(rest)) failures.push('backend/src/services/supabaseRest.ts: a closed request must stay reportable for 30 days (SOCIAL_REQUEST_ACTION_DAYS, E.3)');
+  const guardianQueue = (() => { try { return read(root, 'frontend/src/rebuild/social/SocialRequests.tsx'); } catch { return ''; } })();
+  if (!/<ReportDialog\b[^\n]*onReport\(request\.requestId,/.test(guardianQueue)) failures.push("frontend/src/rebuild/social/SocialRequests.tsx: the Tutor's request queue must offer the report dialog on every request (E.3, OD-8)");
+  if (!/<ReportDialog\b[^\n]*onReport\(closedRequestId,/.test(guardianQueue)) failures.push("frontend/src/rebuild/social/SocialRequests.tsx: the request the Tutor just denied must stay reportable beside the receipt (E.3, 30-day window)");
+  const teenQueue = (() => { try { return read(root, 'frontend/src/rebuild/social/TeenConnections.tsx'); } catch { return ''; } })();
+  if (!/<ReportDialog\b[^\n]*onReport\(request\.requestId,/.test(teenQueue) || !/<DestructiveAction\b[^\n]*onBlock\(request\.requestId\)/.test(teenQueue)) {
+    failures.push("frontend/src/rebuild/social/TeenConnections.tsx: the teen's request queue must offer the report dialog and a confirmed block on every request (E.3, D-19)");
+  }
+  if (!/<ReportDialog\b[^\n]*onReport\(closedRequestId,/.test(teenQueue) || !/<DestructiveAction\b[^\n]*onBlock\(closedRequestId\)/.test(teenQueue)) {
+    failures.push("frontend/src/rebuild/social/TeenConnections.tsx: the request the teen just declined must stay reportable and blockable beside the receipt (E.3, 30-day window)");
+  }
+  const queueProof = (() => { try { return read(root, 'database/scripts/verify-social-request-report-postgres.py'); } catch { return ''; } })();
+  if (!/evaluate_social_pattern/.test(queueProof) || !/request_teen_connection/.test(queueProof)) {
+    failures.push('database/scripts/verify-social-request-report-postgres.py: the proof that queue reports and blocks feed the E.3 pattern trigger is missing (D-19)');
+  }
+
   // 5. The written policy.
   let policy = '';
   try { policy = read(root, 'docs/rebuild/policies/SOCIAL-TIERS.md'); } catch { failures.push('docs/rebuild/policies/SOCIAL-TIERS.md: the social-tier policy is missing'); }
@@ -248,6 +284,7 @@ export function checkSocialTiers(root) {
     }
     if (!policy.includes('### 1.1 A discoverable profile at 16 or 17 (S-03, OD-27)')) failures.push('docs/rebuild/policies/SOCIAL-TIERS.md: missing the 16-17 discoverable-profile section (S-03, OD-27)');
     if (!policy.includes('**The Tutor sees the goals (E.2, Law 5; GAP-FIX-R4).**')) failures.push("docs/rebuild/policies/SOCIAL-TIERS.md: missing the Tutor's view of goals together (E.2, GAP-FIX-R4)");
+    if (!policy.includes('**Report and block from the request queues (E.3, D-19; GAP-FIX-R5).**')) failures.push('docs/rebuild/policies/SOCIAL-TIERS.md: missing the request-queue report and block (E.3, GAP-FIX-R5)');
   }
 
   return failures;

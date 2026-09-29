@@ -26,6 +26,9 @@ const FILES = [
   'frontend/src/rebuild/social/SocialNotices.tsx',
   'frontend/src/rebuild/social/SocialHistory.tsx',
   'frontend/src/rebuild/family/CoopGoalsConsent.tsx',
+  'frontend/src/rebuild/social/SocialRequests.tsx',
+  'frontend/src/rebuild/social/TeenConnections.tsx',
+  'database/scripts/verify-social-request-report-postgres.py',
   'backend/src/services/supabaseRest.ts',
   ...SOCIAL_SCREENS,
   'database/scripts/fixtures/profile-field-safety-cases.json',
@@ -271,4 +274,18 @@ test('E.2 (GAP-FIX-R4): a history that drops a goals-together action, or a card 
   withFixture((root) => edit(root, 'frontend/src/rebuild/family/CoopGoalsConsent.tsx', 'data-coop-goal=', 'data-goal='), /no longer lists the child's goals/);
   withFixture((root) => edit(root, 'frontend/src/rebuild/social/SocialHistory.tsx', 'const sentence = coopSentence(entry);', "const sentence = null as null | 'coopClosed';"), /no longer renders goals-together events/);
   withFixture((root) => edit(root, 'docs/rebuild/policies/SOCIAL-TIERS.md', '**The Tutor sees the goals (E.2, Law 5; GAP-FIX-R4).**', '**Goals.**'), /missing the Tutor's view of goals together/);
+});
+
+test('E.3 (GAP-FIX-R5): a request queue without its report (or the teen block), or a Core route that skips a check, fails', () => {
+  withFixture((root) => edit(root, 'backend/src/routes/family.ts', 'submitSocialReport(guardian, request.requesterId,', 'submitSocialReport(kidId, request.requesterId,'), /requests\/:requestId\/report must check the guardian/);
+  withFixture((root) => edit(root, 'backend/src/routes/family.ts', 'getGuardianReportableRequest(requestId.data, kidId)', 'getGuardianReportableRequest(requestId.data, guardian)'), /requests\/:requestId\/report must check the guardian/);
+  withFixture((root) => edit(root, 'backend/src/routes/profile.ts', 'blockUser(user.accessToken, user.id, requester)', 'blockUser(user.accessToken, requester, user.id)'), /the teen's queue must report and block/);
+  withFixture((root) => edit(root, 'backend/src/routes/profile.ts', 'getTeenActionableRequest(id.data, userId)', 'getTeenActionableRequest(id.data, String(req.query.subject))'), /the teen's queue must report and block/);
+  withFixture((root) => edit(root, 'backend/src/services/supabaseRest.ts', 'SOCIAL_REQUEST_ACTION_DAYS = 30;', 'SOCIAL_REQUEST_ACTION_DAYS = 1;'), /reportable for 30 days/);
+  withFixture((root) => edit(root, 'frontend/src/rebuild/social/SocialRequests.tsx', 'onReport(request.requestId,', 'onReport(String(requests[0]?.requestId),'), /Tutor's request queue must offer the report dialog/);
+  withFixture((root) => edit(root, 'frontend/src/rebuild/social/TeenConnections.tsx', 'onBlock(request.requestId)', 'undefined'), /teen's request queue must offer the report dialog and a confirmed block/);
+  withFixture((root) => edit(root, 'frontend/src/rebuild/social/SocialRequests.tsx', 'onReport(closedRequestId,', 'onReport(String(requests[0]?.requestId),'), /the Tutor just denied must stay reportable/);
+  withFixture((root) => edit(root, 'frontend/src/rebuild/social/TeenConnections.tsx', 'onBlock(closedRequestId)', 'undefined'), /the teen just declined must stay reportable and blockable/);
+  withFixture((root) => rmSync(join(root, 'database/scripts/verify-social-request-report-postgres.py')), /feed the E\.3 pattern trigger is missing/);
+  withFixture((root) => edit(root, 'docs/rebuild/policies/SOCIAL-TIERS.md', '**Report and block from the request queues (E.3, D-19; GAP-FIX-R5).**', '**Queues.**'), /request-queue report and block/);
 });

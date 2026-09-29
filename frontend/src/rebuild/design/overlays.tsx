@@ -98,11 +98,13 @@ export function ConfirmDialog({ open, heading, consequence, keepLabel, confirmLa
  * opens a `ConfirmDialog` and runs `onConfirm` only after the person confirms
  * (02 §9.5: the error hue is "always behind a confirmation dialog").
  */
-export function DestructiveAction({ label, confirm, onConfirm, pending = false, size }: {
+export function DestructiveAction({ label, confirm, onConfirm, pending = false, disabled = false, size }: {
   label: string;
   confirm: { heading: string; consequence: string; keepLabel: string; confirmLabel: string; pendingLabel?: string };
   onConfirm: () => void | Promise<void>;
   pending?: boolean;
+  /** The trigger waits while a sibling action on the same row is in flight. */
+  disabled?: boolean;
   size?: 'sm' | 'md' | 'lg';
 }) {
   const [open, setOpen] = useState(false);
@@ -113,7 +115,7 @@ export function DestructiveAction({ label, confirm, onConfirm, pending = false, 
     try { await onConfirm(); setOpen(false); } finally { setRunning(false); }
   };
   return <>
-    <Button variant="danger" size={size} aria-haspopup="dialog" onClick={() => setOpen(true)}>{label}</Button>
+    <Button variant="danger" size={size} aria-haspopup="dialog" disabled={disabled} onClick={() => setOpen(true)}>{label}</Button>
     <ConfirmDialog open={open} destructive pending={busy} {...confirm} onKeep={() => setOpen(false)} onConfirm={() => { void run(); }} />
   </>;
 }

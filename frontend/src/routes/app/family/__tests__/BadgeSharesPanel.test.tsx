@@ -27,6 +27,8 @@ it('loads only on opening and renders each share with its expiry', async () => {
   expect(screen.getByText(/Expires /)).toBeVisible();
   // OD-20: the list is legacy links only, and the panel says they end on their date.
   expect(screen.getByText('Older links stop working on the date shown.')).toBeVisible();
+  // F.2 (b) / F.3 (GAP-FIX-R5): a preview a messaging app already cached can outlive revocation, and the panel says so.
+  expect(screen.getByText('Apps that already showed a preview of a link may keep it.')).toBeVisible();
   expect(mockApi).toHaveBeenCalledWith('/family/kids/kid/badges', { token: 'session' });
 });
 
@@ -34,7 +36,7 @@ it('revokes a share on confirmation and removes the row', async () => {
   mockApi.mockResolvedValueOnce(response()).mockResolvedValueOnce({ data: { revoked: true }, error: null });
   render(<BadgeSharesPanel kidUserId="kid" token="session" />); open(); await screen.findByText('7-day streak');
   fireEvent.click(screen.getByRole('button', { name: 'Revoke link' }));
-  expect(await screen.findByText('Link revoked.')).toBeVisible();
+  expect(await screen.findByText('Link revoked. Previews other apps already made may stay.')).toBeVisible();
   expect(screen.queryByText('7-day streak')).toBeNull();
   expect(mockApi).toHaveBeenLastCalledWith(`/family/kids/kid/badges/${item.token}`, { token: 'session', method: 'DELETE' });
 });
@@ -70,11 +72,11 @@ it('prevents a duplicate revoke while one is in flight', async () => {
   render(<BadgeSharesPanel kidUserId="kid" token="session" />); open(); await screen.findByText('7-day streak');
   fireEvent.click(screen.getByRole('button', { name: 'Revoke link' }));
   expect(screen.getByRole('button', { name: 'Revoke link' })).toBeDisabled();
-  expect(screen.queryByText('Link revoked.')).toBeNull();
+  expect(screen.queryByText('Link revoked. Previews other apps already made may stay.')).toBeNull();
   fireEvent.click(screen.getByRole('button', { name: 'Revoke link' }));
   expect(mockApi).toHaveBeenCalledTimes(2);
   await act(async () => finish({ data: { revoked: true }, error: null }));
-  expect(await screen.findByText('Link revoked.')).toBeVisible();
+  expect(await screen.findByText('Link revoked. Previews other apps already made may stay.')).toBeVisible();
 });
 
 it('discards a late list response after the child changes', async () => {
@@ -92,7 +94,7 @@ it('ignores a late revoke receipt after switching children', async () => {
   fireEvent.click(screen.getByRole('button', { name: 'Revoke link' }));
   rerender(<BadgeSharesPanel kidUserId="second" token="session" />);
   await act(async () => finish({ data: { revoked: true }, error: null }));
-  expect(screen.queryByText('Link revoked.')).toBeNull();
+  expect(screen.queryByText('Link revoked. Previews other apps already made may stay.')).toBeNull();
   expect(mockApi).toHaveBeenCalledTimes(2);
 });
 

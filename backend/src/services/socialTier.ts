@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { serviceRest, serviceRestRaw } from './supabaseRest.js';
+import { requestStillActionable, serviceRest, serviceRestRaw } from './supabaseRest.js';
 
 /*
  * E.8 — the age-tiered social layer, Core side.
@@ -112,6 +112,31 @@ export async function getPendingTeenRequests(subjectId: string, offset: number):
     requests: parsed.data.slice(0, LIST_LIMIT).map((row) => ({ requestId: row.id, requesterId: row.requester_id, requestedAt: row.requested_at })),
     nextOffset: parsed.data.length > LIST_LIMIT ? offset + LIST_LIMIT : null,
   };
+}
+
+/** A teen request closed without a connection: declined, removed (a block, or the teen removing them) or withdrawn. */
+export const TEEN_REQUEST_CLOSED = ['declined', 'removed', 'withdrawn'] as const;
+
+/**
+ * E.3 from the teen's own queue (GAP-FIX-R5 social, D-19): the requester of a
+ * request addressed to THIS session that the teen may report or block,
+ * whatever the requester's profile visibility: pending, or closed without a
+ * connection in the last 30 days. 'not-found' for anything else (someone
+ * else's request, an accepted one, an old one); null when unreadable.
+ */
+export async function getTeenActionableRequest(requestId: string, subjectId: string): Promise<{ requesterId: string } | 'not-found' | null> {
+  if (!UUID.safeParse(requestId).success || !UUID.safeParse(subjectId).success) return null;
+  const raw = await serviceRest<unknown>(
+    `/social_consent_requests?id=eq.${encodeURIComponent(requestId)}&subject_id=eq.${encodeURIComponent(subjectId)}&select=id,requester_id,subject_id,status,decided_at&limit=1`,
+  );
+  const rows = z.array(z.object({
+    id: UUID, requester_id: UUID, subject_id: UUID, status: z.string(), decided_at: z.string().datetime({ offset: true }).nullable(),
+  })).max(1).safeParse(raw);
+  if (!rows.success) return null;
+  const row = rows.data[0];
+  if (!row) return 'not-found';
+  if (row.id !== requestId || row.subject_id !== subjectId) return null;
+  return requestStillActionable(row.status, row.decided_at, TEEN_REQUEST_CLOSED) ? { requesterId: row.requester_id } : 'not-found';
 }
 
 /** Whether this requester has a pending request to this teen (null: unreadable). */

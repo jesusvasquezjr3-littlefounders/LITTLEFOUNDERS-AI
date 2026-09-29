@@ -77,7 +77,7 @@ describe('rebuild-family copy budget', () => {
         expectFits(text, ['title', 'close', 'retry', 'more'].includes(key) ? 'action' : 'body', locale, '13-17', `socialHistory.${key}`);
       }
       for (const [key, text] of group('socialRequests')) {
-        expectFits(text, ['title', 'close', 'retry', 'more', 'approve', 'deny'].includes(key) ? 'action' : 'body', locale, '13-17', `socialRequests.${key}`);
+        expectFits(text, ['title', 'close', 'retry', 'more', 'approve', 'deny', 'report'].includes(key) ? 'action' : 'body', locale, '13-17', `socialRequests.${key}`);
       }
       for (const [key, text] of group('badgeShares')) {
         expectFits(text.replace('{date}', '20 Sep 2026'), ['title', 'close', 'retry', 'revoke'].includes(key) ? 'action' : 'body', locale, '13-17', `badgeShares.${key}`);

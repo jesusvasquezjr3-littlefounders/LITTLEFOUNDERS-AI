@@ -51,7 +51,9 @@
     "decisionFailed": "Could not save. Try again.",
     "conflict": "This request has changed.",
     "approved": "Connection approved.",
-    "denied": "Request denied."
+    "denied": "Request denied.",
+    "report": "Report",
+    "reported": "Report sent to our safety team."
   },
   "badgeShares": {
     "title": "Old share links",
@@ -62,10 +64,11 @@
     "retry": "Try again",
     "revoke": "Revoke link",
     "revoking": "Revoking…",
-    "revoked": "Link revoked.",
+    "revoked": "Link revoked. Previews other apps already made may stay.",
     "revokeFailed": "Could not revoke. Try again.",
     "expires": "Expires {date}",
-    "legacyNote": "Older links stop working on the date shown."
+    "legacyNote": "Older links stop working on the date shown.",
+    "cachedPreview": "Apps that already showed a preview of a link may keep it."
   },
   "achievementShare": {
     "share": "Share achievement",

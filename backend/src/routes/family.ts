@@ -59,6 +59,7 @@ import {
   getGuardianSocialNotices,
   getSocialDisplayNames,
   getPendingSocialRequests,
+  getGuardianReportableRequest,
   decideSocialConnectionForKid,
   guardianEndSocialConnection,
   hasGuardianSocialNotice,
@@ -596,6 +597,35 @@ export function familyRouter(): Router {
     if (result === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the report');
     if (!await guardKid(req, res)) return res;
     return ok(res, { reported: true, reportId: result.id }, 201);
+  });
+
+  /*
+   * E.3 from the Tutor's request queue (GAP-FIX-R5 social; OD-8's report
+   * action for unwanted contact; D-19). An inbound request is the first
+   * unwanted-contact event, and the queue that decides it is where the Tutor
+   * acts on a concern. Admitted: a request addressed to THIS child that is
+   * pending, or was closed without a connection (denied, or revoked by a
+   * block) in the last 30 days. Anything else is a 404 that says nothing
+   * about the requester. The session guardian files the report through the
+   * same transaction as every other report (staff queue, notices, pattern
+   * evaluation); the link is re-checked after the write.
+   */
+  router.post('/kids/:kidId/social/requests/:requestId/report', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const requestId = z.string().uuid().safeParse(req.params.requestId);
+    const body = GuardianReportBody.safeParse(req.body);
+    if (!requestId.success || !body.success || Object.keys(req.query).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a report reason');
+    const guardian = authedUser(res).id;
+    const request = await getGuardianReportableRequest(requestId.data, kidId);
+    if (request === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check the connection request');
+    if (request === 'not-found') return fail(res, 404, NOT_FOUND, 'No such connection request');
+    if (request.requesterId === kidId || request.requesterId === guardian) return fail(res, 400, 'VALIDATION_ERROR', 'This account cannot be reported here');
+    const result = await submitSocialReport(guardian, request.requesterId, body.data.category, body.data.note ?? null);
+    if (result === 'invalid') return fail(res, 400, 'VALIDATION_ERROR', 'This report cannot be recorded');
+    if (result === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the report');
+    if (!await guardKid(req, res)) return res;
+    return ok(res, { requestId: requestId.data, reported: true, reportId: result.id }, 201);
   });
 
   /*

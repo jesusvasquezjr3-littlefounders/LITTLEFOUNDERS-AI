@@ -99,6 +99,8 @@ const SOCIAL = {
   badges: '[data-share-audit="badges"] > button[aria-expanded]',
   end: '.lf-social-graph:not([data-social-audit]) [data-social-actions] > .lf-button--danger',
   report: '.lf-social-graph:not([data-social-audit]) [data-social-actions] > button[aria-haspopup="dialog"]:not(.lf-button--danger)',
+  // GAP-FIX-R5 social (E.3, OD-8): the report on the first row of the Tutor's request queue.
+  requestReport: '[data-social-audit="requests"] [data-request-actions] > button[aria-haspopup="dialog"]',
   // The session token arrives after the console renders, and every token-bound panel remounts when it does (a press before that
   // is lost with the old mount). The goals-together card's answered paragraph proves the remount happened; its failed state is a notice.
   settled: '[data-console-part="coop-goals"] p[data-copy-role="body"]:not(.lf-notice)',
@@ -139,6 +141,8 @@ export const states = [
   app('/family@social-notices', `/family?child=${KID_A}`, 'family-two', ...opensSettled(SOCIAL.notices)),
   app('/family@connection-end-confirm', `/family?child=${KID_A}`, 'family-two', ...opensSettled(SOCIAL.graph, [SOCIAL.graph, SOCIAL.end])),
   app('/family@connection-report', `/family?child=${KID_A}`, 'family-two', ...opensSettled(SOCIAL.graph, [SOCIAL.graph, SOCIAL.report])),
+  // GAP-FIX-R5 social (E.3, OD-8, D-19): the report dialog opened from a pending connection request.
+  app('/family@connection-request-report', `/family?child=${KID_A}`, 'family-two', ...opensSettled(SOCIAL.requests, [SOCIAL.requests, SOCIAL.requestReport])),
   app('/family@badge-links', `/family?child=${KID_A}`, 'family-two', ...opensSettled(SOCIAL.badges)),
   app('/family@coop-goals-consent', '/family', 'family-coop', '[data-console-part="coop-goals"] [data-coop-part="goals"] [data-coop-goal]'),
   app('/family@coop-goals-off', '/family', 'family-coop-off', '[data-console-part="coop-goals"] [role="switch"]'),
@@ -377,6 +381,8 @@ function social({ family, locale, path, request, ok }) {
   if (kidOf('/badges') && get) return ok({ shares: [{ token: 'auditShareToken0123456789ab', achievementLabel: BADGE[locale], createdAt: at(18), expiresAt: '2026-10-18T16:00:00.000Z' }] });
   if (/^\/family\/kids\/[^/]+\/social\/connections\/[^/]+$/.test(path) && request.method === 'DELETE') return ok({ ended: true, removed: 2 });
   if (/^\/family\/kids\/[^/]+\/social\/connections\/[^/]+\/report$/.test(path) && request.method === 'POST') return ok({ reported: true, reportId: '99999999-9999-4999-8999-999999999995' });
+  const queueReport = /^\/family\/kids\/[^/]+\/social\/requests\/([^/]+)\/report$/.exec(path);
+  if (queueReport && request.method === 'POST') return ok({ requestId: queueReport[1], reported: true, reportId: '99999999-9999-4999-8999-999999999996' });
   if (/^\/family\/coop-goals\/kids\/[^/]+$/.test(path) && get) return ok(coopView(family));
   const coopKid = kidOf('/coop-goals');
   if (coopKid && get) return coopKid === KID_B ? refuse(403, 'ACCOUNT_SELF_MANAGED') : ok({ goals: coopGoals(family) });

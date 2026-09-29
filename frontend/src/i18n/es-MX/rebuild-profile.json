@@ -54,7 +54,17 @@
     "remove": "Quitar",
     "removed": "Quitado. Ya no ve tu perfil.",
     "removeFailed": "No se quitó. Intenta de nuevo.",
-    "introDiscoverable": "Te pueden encontrar. Tú eliges quién se conecta."
+    "introDiscoverable": "Te pueden encontrar. Tú eliges quién se conecta.",
+    "report": "Reportar",
+    "reported": "Reporte enviado a nuestro equipo de seguridad.",
+    "block": "Bloquear",
+    "blockTitle": "¿Bloquear esta cuenta?",
+    "blockBody": "No podrá pedirlo otra vez ni ver tu perfil. Desbloquea en Ajustes.",
+    "blockKeep": "Cancelar",
+    "blockConfirm": "Bloquear",
+    "blocking": "Bloqueando",
+    "blocked": "Bloqueado. Ya no podrá pedir conectarse.",
+    "blockFailed": "No se bloqueó. Intenta de nuevo."
   },
   "profileSafety": {
     "title": "Tu nombre necesita un cambio",

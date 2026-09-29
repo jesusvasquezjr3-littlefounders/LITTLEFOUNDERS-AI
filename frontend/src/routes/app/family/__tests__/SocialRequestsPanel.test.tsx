@@ -86,3 +86,53 @@ it.each(['GUARDIAN_DECISION_FORBIDDEN', 'PARENT_VERIFICATION_REQUIRED', 'FORBIDD
   expect(screen.queryByText('Requester')).toBeNull();
   expect(screen.queryByRole('button', { name: 'Approve' })).toBeNull();
 });
+
+// E.3 from the Tutor's queue (GAP-FIX-R5 social; OD-8, D-19): a report per row, confirmed by Core's receipt; the Tutor still decides.
+it('reports a requester from the queue on a matching receipt and keeps the row to decide', async () => {
+  mockApi.mockResolvedValueOnce(response()).mockResolvedValueOnce({ data: { requestId: 'request', reported: true, reportId: 'r1' }, error: null });
+  render(<SocialRequestsPanel kidUserId="kid" token="session" />); open(); await screen.findByText('Requester');
+  fireEvent.click(screen.getByRole('button', { name: 'Report' }));
+  fireEvent.click(await screen.findByRole('radio', { name: 'Unwanted contact' }));
+  fireEvent.change(screen.getByRole('textbox'), { target: { value: '  Asked for our address  ' } });
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Send report' })); });
+  expect(mockApi).toHaveBeenLastCalledWith('/family/kids/kid/social/requests/request/report', { token: 'session', method: 'POST', body: { category: 'unwanted_contact', note: 'Asked for our address' } });
+  expect(await screen.findByText('Report sent to our safety team.')).toBeVisible();
+  expect(screen.queryByRole('dialog')).toBeNull();
+  expect(screen.getByText('Requester')).toBeVisible();
+  expect(screen.getByRole('button', { name: 'Approve' })).toBeEnabled();
+});
+it('keeps the report dialog open with its choice when the receipt does not match', async () => {
+  mockApi.mockResolvedValueOnce(response()).mockResolvedValueOnce({ data: { requestId: 'other', reported: true }, error: null });
+  render(<SocialRequestsPanel kidUserId="kid" token="session" />); open(); await screen.findByText('Requester');
+  fireEvent.click(screen.getByRole('button', { name: 'Report' }));
+  fireEvent.click(await screen.findByRole('radio', { name: 'Harassment or bullying' }));
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Send report' })); });
+  expect(await screen.findByText('The report was not sent. Try again.')).toBeVisible();
+  expect(screen.getByRole('radio', { name: 'Harassment or bullying' })).toBeChecked();
+  expect(screen.queryByText('Report sent to our safety team.')).toBeNull();
+});
+// E.3 after a denial (GAP-FIX-R5 social finish): the request just denied keeps a Report action beside the receipt; Core admits it for 30 days.
+it('keeps the denied request reportable beside the receipt until it is reported', async () => {
+  mockApi.mockResolvedValueOnce(response()).mockResolvedValueOnce({ data: { requestId: 'request', status: 'denied' }, error: null })
+    .mockResolvedValueOnce(response([])).mockResolvedValueOnce({ data: { requestId: 'request', reported: true, reportId: 'r2' }, error: null });
+  render(<SocialRequestsPanel kidUserId="kid" token="session" />); open(); await screen.findByText('Requester');
+  fireEvent.click(screen.getByRole('button', { name: 'Deny' }));
+  expect(await screen.findByText('No pending requests.')).toBeVisible();
+  expect(screen.getByText('Request denied.')).toBeVisible();
+  const closed = document.querySelector('[data-closed-request-actions="request"]') as HTMLElement;
+  expect(closed).not.toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Report' }));
+  fireEvent.click(await screen.findByRole('radio', { name: 'Unwanted contact' }));
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Send report' })); });
+  expect(mockApi).toHaveBeenLastCalledWith('/family/kids/kid/social/requests/request/report', { token: 'session', method: 'POST', body: { category: 'unwanted_contact' } });
+  expect(await screen.findByText('Report sent to our safety team.')).toBeVisible();
+  expect(document.querySelector('[data-closed-request-actions]')).toBeNull();
+});
+it('offers no report beside an approval receipt', async () => {
+  mockApi.mockResolvedValueOnce(response()).mockResolvedValueOnce({ data: { requestId: 'request', status: 'approved' }, error: null }).mockResolvedValueOnce(response([]));
+  render(<SocialRequestsPanel kidUserId="kid" token="session" />); open(); await screen.findByText('Requester');
+  fireEvent.click(screen.getByRole('button', { name: 'Approve' }));
+  expect(await screen.findByText('Connection approved.')).toBeVisible();
+  expect(document.querySelector('[data-closed-request-actions]')).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Report' })).toBeNull();
+});

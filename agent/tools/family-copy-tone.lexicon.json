@@ -324,6 +324,11 @@
       "key": "rebuild-family:socialConnectionActions.reported",
       "category": "guarantee",
       "why": "Confirms a Tutor's report reached the safety team (\"equipo de seguridad\" / \"equipe de segurança\", the same name the profile and lesson report copy uses); it names who reads the report and promises nothing."
+    },
+    {
+      "key": "rebuild-family:socialRequests.reported",
+      "category": "guarantee",
+      "why": "Confirms a report from a connection-request queue reached the safety team (\"equipo de seguridad\" / \"equipe de segurança\", the same name the profile report copy uses); it names who reads the report and promises nothing (GAP-FIX-R5 social, E.3)."
     }
   ]
 }

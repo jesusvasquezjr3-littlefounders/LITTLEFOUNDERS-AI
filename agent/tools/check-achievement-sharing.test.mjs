@@ -4,7 +4,7 @@ import { cpSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writ
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { checkAchievementSharing } from './check-achievement-sharing.mjs';
+import { cachedPreviewFailures, checkAchievementSharing } from './check-achievement-sharing.mjs';
 
 /*
  * The gate must pass on the real tree and fail on each regression it exists
@@ -30,6 +30,10 @@ const FILES = [
   'frontend/src/i18n/en-US/common.json',
   'frontend/src/i18n/es-MX/common.json',
   'frontend/src/i18n/pt-BR/common.json',
+  'frontend/src/rebuild/family/BadgeShares.tsx',
+  'frontend/src/i18n/en-US/rebuild-family.json',
+  'frontend/src/i18n/es-MX/rebuild-family.json',
+  'frontend/src/i18n/pt-BR/rebuild-family.json',
 ];
 
 function fixture() {
@@ -129,4 +133,30 @@ test('fails when a share button loses its disclosure or its description', () => 
     delete json.family.badge.disclosureKeep;
     writeFileSync(path, JSON.stringify(json, null, 2));
   }, /pt-BR\/common\.json: family\.badge\.disclosureKeep is missing/);
+});
+
+// F.2 (b) / F.3 (GAP-FIX-R5): the legacy-link panel discloses that a preview
+// a messaging app cached before revocation may persist, until the links retire.
+test('fails when the cached-preview caveat leaves the legacy-link panel before the links retire', () => {
+  withFixture((root) => edit(root, 'frontend/src/rebuild/family/BadgeShares.tsx', '<Copy role="body">{copy.cachedPreview}</Copy>', ''), /BadgeShares\.tsx: the legacy-link panel must render badgeShares\.cachedPreview/);
+  for (const [locale, key] of [['en-US', 'cachedPreview'], ['es-MX', 'revoked'], ['pt-BR', 'cachedPreview']]) {
+    withFixture((root) => {
+      const path = join(root, `frontend/src/i18n/${locale}/rebuild-family.json`);
+      const json = JSON.parse(readFileSync(path, 'utf8'));
+      json.badgeShares[key] = locale === 'es-MX' ? 'Enlace revocado.' : '';
+      writeFileSync(path, JSON.stringify(json, null, 2));
+    }, new RegExp(`${locale}/rebuild-family\.json: badgeShares\.${key} must disclose`));
+  }
+  withFixture((root) => edit(root, 'docs/rebuild/policies/ACHIEVEMENT-SHARING.md', 'accepted and disclosed for legacy links', 'noted'), /record the cached-preview caveat/);
+});
+
+test('the cached-preview pin lifts once the legacy links have retired', () => {
+  const root = fixture();
+  try {
+    edit(root, 'frontend/src/rebuild/family/BadgeShares.tsx', '<Copy role="body">{copy.cachedPreview}</Copy>', '');
+    assert.ok(cachedPreviewFailures(root, '2026-10-24T00:00:00.000Z', Date.parse('2026-10-01T00:00:00Z')).length > 0);
+    assert.deepEqual(cachedPreviewFailures(root, '2026-10-24T00:00:00.000Z', Date.parse('2026-10-24T00:00:00Z')), []);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });

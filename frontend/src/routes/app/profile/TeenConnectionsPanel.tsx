@@ -4,7 +4,8 @@ import { useAuth } from '@/auth/AuthContext';
 import { useTheme } from '@/theme/useTheme';
 import { BASE_URL } from '@/lib/api';
 import { TeenConnections, type FollowerView, type TeenNotice, type TeenRequestView } from '@/rebuild/social/TeenConnections';
-import { decideTeenRequest, getFollowers, getTeenRequests, removeFollower } from '@/rebuild/social/teenConnectionsClient';
+import { blockTeenRequest, decideTeenRequest, getFollowers, getTeenRequests, removeFollower, reportTeenRequest } from '@/rebuild/social/teenConnectionsClient';
+import type { ReportCategory } from '@/rebuild/social/ReportDialog';
 import en from '@/i18n/en-US/rebuild-profile.json';
 import es from '@/i18n/es-MX/rebuild-profile.json';
 import pt from '@/i18n/pt-BR/rebuild-profile.json';
@@ -25,7 +26,8 @@ function Scoped({ discoverable }: { discoverable: boolean }) {
   const { isDark } = useTheme();
   const { i18n } = useTranslation();
   const locale = i18n.resolvedLanguage ?? 'en-US';
-  const copy = (locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en).teenConnections;
+  const strings = locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en;
+  const copy = strings.teenConnections;
   const [requests, setRequests] = useState<TeenRequestView[]>([]);
   const [followers, setFollowers] = useState<FollowerView[]>([]);
   const [nextOffset, setNextOffset] = useState<number | null>(null);
@@ -33,6 +35,8 @@ function Scoped({ discoverable }: { discoverable: boolean }) {
   const [failed, setFailed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<TeenNotice | null>(null);
+  // E.3: the request the teen just declined stays reportable and blockable beside the receipt (Core admits both for 30 days).
+  const [closedRequestId, setClosedRequestId] = useState<string | null>(null);
   const generation = useRef(0);
   useEffect(() => () => { generation.current++; }, []);
 
@@ -61,6 +65,7 @@ function Scoped({ discoverable }: { discoverable: boolean }) {
     if (busy) return;
     setBusy(true);
     setNotice(null);
+    setClosedRequestId(null);
     const current = generation.current;
     const token = await getToken();
     const result = token ? await decideTeenRequest({ baseUrl: BASE_URL, token }, requestId, decision) : { ok: false as const, code: 'UNAUTHORIZED' };
@@ -68,6 +73,7 @@ function Scoped({ discoverable }: { discoverable: boolean }) {
     setBusy(false);
     if (result.ok) {
       setNotice({ tone: 'status', text: result.value === 'accepted' ? copy.accepted : copy.declined });
+      if (result.value === 'declined') setClosedRequestId(requestId);
       void load(0);
       return;
     }
@@ -79,10 +85,42 @@ function Scoped({ discoverable }: { discoverable: boolean }) {
     setNotice({ tone: 'alert', text: result.code === 'PROFILE_REVIEW_REQUIRED' ? copy.review : copy.decisionFailed });
   }
 
+  // E.3 (GAP-FIX-R5 social): a report leaves the request to decide; a block closes it, so the lists reload.
+  async function report(requestId: string, category: ReportCategory, note: string | null): Promise<boolean> {
+    const current = generation.current;
+    const token = await getToken();
+    const result = token ? await reportTeenRequest({ baseUrl: BASE_URL, token }, requestId, category, note) : { ok: false as const, code: 'UNAUTHORIZED' };
+    if (current !== generation.current) return result.ok;
+    if (result.ok) {
+      setNotice({ tone: 'status', text: copy.reported });
+      setClosedRequestId((closed) => (closed === requestId ? null : closed));
+    }
+    return result.ok;
+  }
+
+  async function block(requestId: string) {
+    if (busy) return;
+    setBusy(true);
+    setNotice(null);
+    const current = generation.current;
+    const token = await getToken();
+    const result = token ? await blockTeenRequest({ baseUrl: BASE_URL, token }, requestId) : { ok: false as const, code: 'UNAUTHORIZED' };
+    if (current !== generation.current) return;
+    setBusy(false);
+    if (result.ok || result.code === 'NOT_FOUND') {
+      setNotice({ tone: 'status', text: result.ok ? copy.blocked : copy.conflict });
+      setClosedRequestId((closed) => (closed === requestId ? null : closed));
+      void load(0);
+      return;
+    }
+    setNotice({ tone: 'alert', text: copy.blockFailed });
+  }
+
   async function remove(username: string) {
     if (busy) return;
     setBusy(true);
     setNotice(null);
+    setClosedRequestId(null);
     const current = generation.current;
     const token = await getToken();
     const result = token ? await removeFollower({ baseUrl: BASE_URL, token }, username) : { ok: false as const, code: 'UNAUTHORIZED' };
@@ -96,8 +134,8 @@ function Scoped({ discoverable }: { discoverable: boolean }) {
     setNotice({ tone: 'alert', text: copy.removeFailed });
   }
 
-  return <TeenConnections copy={copy} locale={locale} dark={isDark} discoverable={discoverable} requests={requests} followers={followers} loading={loading}
-    failed={failed} busy={busy} notice={notice} hasMore={nextOffset !== null}
-    onDecide={(id, decision) => void decide(id, decision)} onRemove={(username) => void remove(username)}
-    onRetry={() => void load(0)} onMore={() => { if (nextOffset !== null) void load(nextOffset); }} />;
+  return <TeenConnections copy={copy} reportCopy={strings.report} locale={locale} dark={isDark} discoverable={discoverable} requests={requests} followers={followers} loading={loading}
+    failed={failed} busy={busy} notice={notice} hasMore={nextOffset !== null} closedRequestId={closedRequestId}
+    onDecide={(id, decision) => void decide(id, decision)} onReport={report} onBlock={block} onRemove={(username) => void remove(username)}
+    onRetry={() => { setClosedRequestId(null); void load(0); }} onMore={() => { if (nextOffset !== null) void load(nextOffset); }} />;
 }

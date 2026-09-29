@@ -51,7 +51,9 @@
     "decisionFailed": "No pudimos guardar. Intenta de nuevo.",
     "conflict": "La solicitud cambió.",
     "approved": "Conexión aprobada.",
-    "denied": "Solicitud rechazada."
+    "denied": "Solicitud rechazada.",
+    "report": "Reportar",
+    "reported": "Reporte enviado a nuestro equipo de seguridad."
   },
   "badgeShares": {
     "title": "Enlaces anteriores",
@@ -62,10 +64,11 @@
     "retry": "Intentar de nuevo",
     "revoke": "Revocar enlace",
     "revoking": "Revocando…",
-    "revoked": "Enlace revocado.",
+    "revoked": "Enlace revocado. Las vistas previas que otras apps ya hicieron pueden quedarse.",
     "revokeFailed": "No se pudo revocar. Inténtalo de nuevo.",
     "expires": "Caduca {date}",
-    "legacyNote": "Los enlaces anteriores dejan de funcionar en la fecha indicada."
+    "legacyNote": "Los enlaces anteriores dejan de funcionar en la fecha indicada.",
+    "cachedPreview": "Las apps que ya mostraron la vista previa de un enlace pueden conservarla."
   },
   "achievementShare": {
     "share": "Compartir logro",
