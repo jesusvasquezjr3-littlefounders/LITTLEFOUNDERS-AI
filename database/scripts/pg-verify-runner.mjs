@@ -87,7 +87,7 @@ function must(cmd, args, what) {
   return r.stdout;
 }
 
-async function throwawayCluster(bin, label) {
+export async function throwawayCluster(bin, label) {
   const dir = mkdtempSync(join(tmpdir(), `lf-${label}-`));
   const data = join(dir, 'data');
   const user = 'lf_verify';
