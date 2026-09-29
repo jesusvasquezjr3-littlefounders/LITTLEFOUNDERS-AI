@@ -32,7 +32,8 @@
         "oracle/src/safety/untrusted.ts",
         "oracle/src/session/review.ts",
         "oracle/src/session/memoryRevision.ts",
-        "oracle/src/context/**"
+        "oracle/src/context/**",
+        "agent/tools/check-mentor-minor-safeguards.mjs"
       ],
       "examples": [
         "Changing what the moderation judge refuses, or when it may be skipped",
@@ -154,19 +155,26 @@
     {
       "id": "governance.model",
       "tier": "tier_1",
-      "title": "This registry and the gates that enforce the tiers and the judge-calibration floors.",
+      "title": "This registry, the gates that enforce the tiers and the judge-calibration floors, and the Stage 5 canary delivery path (the canary manifest, the generated Tier 2 bounds tables and the code that resolves and applies a canary).",
       "requirements": ["C.22", "C.23"],
       "owner": "safety_trust_lead",
       "policy": "docs/rebuild/mentor/SELF-IMPROVEMENT-GOVERNANCE-POLICY.md",
       "paths": [
         "docs/rebuild/mentor/governance/registry.json",
         "agent/tools/check-mentor-governance.mjs",
-        "agent/tools/check-judge-calibration-parity.mjs"
+        "agent/tools/check-judge-calibration-parity.mjs",
+        "docs/rebuild/mentor/governance/canaries.json",
+        "agent/tools/check-mentor-canary-parity.mjs",
+        "oracle/src/tutor/mentorCanary.ts",
+        "oracle/src/tutor/tier2Parameters.generated.ts",
+        "backend/src/services/pedagogy/mentorCanary.ts",
+        "backend/src/services/pedagogy/mentorCanaryTables.generated.ts"
       ],
       "examples": [
         "Moving a component to a more autonomous tier",
         "Widening a Tier 2 parameter's approved bounds",
-        "Declaring a new automated pipeline"
+        "Declaring a new automated pipeline",
+        "Starting a Stage 5 canary (a canaries.json entry), or changing how its overrides reach a session"
       ],
       "tierHistory": [{ "tier": "tier_1", "decision": "D-2026-09-25-adoption" }]
     },
@@ -295,13 +303,13 @@
     }
   ],
   "tier2Parameters": [
-    { "id": "telemetry.latencyZ", "file": "oracle/src/tutor/behavioralTelemetry.ts", "object": "TELEMETRY_DEFAULTS", "field": "latencyZ", "bounds": [1.0, 2.5] },
-    { "id": "telemetry.minChannels", "file": "oracle/src/tutor/behavioralTelemetry.ts", "object": "TELEMETRY_DEFAULTS", "field": "minChannels", "bounds": [2, 3] },
-    { "id": "telemetry.maxCheckIns", "file": "oracle/src/tutor/behavioralTelemetry.ts", "object": "TELEMETRY_DEFAULTS", "field": "maxCheckIns", "bounds": [1, 3] },
-    { "id": "alliance.renegotiateAfterDeclines", "file": "oracle/src/tutor/allianceController.ts", "object": "ALLIANCE_DEFAULTS", "field": "renegotiateAfterDeclines", "bounds": [2, 4] },
-    { "id": "alliance.maxRenegotiations", "file": "oracle/src/tutor/allianceController.ts", "object": "ALLIANCE_DEFAULTS", "field": "maxRenegotiations", "bounds": [1, 3] },
-    { "id": "selfExplanation.maxPerSession", "file": "oracle/src/tutor/selfExplanation.ts", "object": "SELF_EXPLANATION_DEFAULTS", "field": "maxPerSession", "bounds": [1, 6] },
-    { "id": "selfExplanation.minSpacingTurns", "file": "oracle/src/tutor/selfExplanation.ts", "object": "SELF_EXPLANATION_DEFAULTS", "field": "minSpacingTurns", "bounds": [2, 6] }
+    { "id": "telemetry.latencyZ", "file": "oracle/src/tutor/behavioralTelemetry.ts", "object": "TELEMETRY_DEFAULTS", "field": "latencyZ", "bounds": [1.0, 2.5], "integer": false },
+    { "id": "telemetry.minChannels", "file": "oracle/src/tutor/behavioralTelemetry.ts", "object": "TELEMETRY_DEFAULTS", "field": "minChannels", "bounds": [2, 3], "integer": true },
+    { "id": "telemetry.maxCheckIns", "file": "oracle/src/tutor/behavioralTelemetry.ts", "object": "TELEMETRY_DEFAULTS", "field": "maxCheckIns", "bounds": [1, 3], "integer": true },
+    { "id": "alliance.renegotiateAfterDeclines", "file": "oracle/src/tutor/allianceController.ts", "object": "ALLIANCE_DEFAULTS", "field": "renegotiateAfterDeclines", "bounds": [2, 4], "integer": true },
+    { "id": "alliance.maxRenegotiations", "file": "oracle/src/tutor/allianceController.ts", "object": "ALLIANCE_DEFAULTS", "field": "maxRenegotiations", "bounds": [1, 3], "integer": true },
+    { "id": "selfExplanation.maxPerSession", "file": "oracle/src/tutor/selfExplanation.ts", "object": "SELF_EXPLANATION_DEFAULTS", "field": "maxPerSession", "bounds": [1, 6], "integer": true },
+    { "id": "selfExplanation.minSpacingTurns", "file": "oracle/src/tutor/selfExplanation.ts", "object": "SELF_EXPLANATION_DEFAULTS", "field": "minSpacingTurns", "bounds": [2, 6], "integer": true }
   ],
   "automationPolicyDocs": {
     "C.5": "docs/rebuild/mentor/LIVE-CONTENT-GOVERNANCE-POLICY.md",

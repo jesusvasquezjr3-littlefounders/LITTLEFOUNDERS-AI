@@ -50,7 +50,7 @@ test('RED when Core lacks a firing field Oracle sends', () => {
 
 test('RED when Core would send a context field Oracle cannot parse', () => {
   const problems = checkTelemetryParity(
-    patched(FILES.core, "  'dialogueCalibration',\n] as const;", "  'dialogueCalibration',\n  'mood',\n] as const;"),
+    patched(FILES.core, "  'canary',\n] as const;", "  'canary',\n  'mood',\n] as const;"),
     sql,
   );
   assert.ok(problems.some((p) => p.includes('optional context fields')));

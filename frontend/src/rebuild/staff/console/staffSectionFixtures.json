@@ -1854,6 +1854,40 @@
         "stale": false
       },
       {
+        "id": "safety.fracture_closure",
+        "category": "safety_governance",
+        "ownerRole": "safety_trust_lead",
+        "instrumented": "external",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": null,
+        "stale": false
+      },
+      {
+        "id": "safety.age_tier_calibration",
+        "category": "safety_governance",
+        "ownerRole": "safety_trust_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "safety.age_tier_calibration",
+          "status": "ok",
+          "value": 1,
+          "sample": 46,
+          "breakdown": []
+        },
+        "stale": false
+      },
+      {
         "id": "evaluation.coverage",
         "category": "pipeline",
         "ownerRole": "engineering_lead",
@@ -1919,6 +1953,26 @@
         },
         "pending": null,
         "reading": null,
+        "stale": false
+      },
+      {
+        "id": "canary.arm_comparison",
+        "category": "pipeline",
+        "ownerRole": "pedagogical_lead",
+        "instrumented": "yes",
+        "requirement": "C.24",
+        "threshold": {
+          "kind": "diagnostic",
+          "value": null
+        },
+        "pending": null,
+        "reading": {
+          "id": "canary.arm_comparison",
+          "status": "insufficient_data",
+          "value": 0,
+          "sample": 0,
+          "breakdown": []
+        },
         "stale": false
       },
       {

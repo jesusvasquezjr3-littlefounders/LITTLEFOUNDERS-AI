@@ -42,6 +42,7 @@ import type { SignalEventRow } from './sessionEnd.js';
 import { scoreSession, type ScoringHonestyRow, type SessionBundle } from './transcriptScoring.js';
 import { TRANSCRIPT_RUBRIC_HASH, TRANSCRIPT_RUBRIC_VERSION } from './transcriptRubric.js';
 import { readParentTimeToValue } from '../parentTimeToValue.js';
+import { readAgeCalibrationCoverage } from '../mentorAgeCalibration.js';
 import {
   dedupKey,
   evaluateSignals,
@@ -272,7 +273,7 @@ export async function collectSources(now: Date): Promise<QualitySources> {
   const [
     sessions, scores, priorScores, firings, endSignals, alliance, allianceBaseline, renegotiations,
     trajectory, routing, dialogue, ladder, gate, killSwitchAudit, activeRows, profiles, kcAttempts, retention, judgeCalibrations, learning, transfer,
-    releaseAudits, parentTimeToValue,
+    releaseAudits, parentTimeToValue, canaryArms, ageCalibration,
   ] = await Promise.all([
     readAll<WindowSessionRow>(
       `/tutor_sessions?select=id,character,tier,locale,ended_at,turn_count,evaluation_rubric_hash,close_reason,closing_script,opening,end_signal_evaluated,telemetry_mode,telemetry_evaluated_turns,telemetry_action_turns` +
@@ -313,7 +314,14 @@ export async function collectSources(now: Date): Promise<QualitySources> {
     serviceRest<unknown>('/release_audit_results?select=audit_kind,release_id,result,finding_count,recorded_at&order=recorded_at.desc&limit=60'),
     // GAP-FIX-R2 (Appendix C 1.2, B.10): Parent Time-to-Value over the window.
     readParentTimeToValue(since, now),
+    // GAP-FIX-R3 (C.22 Stage 5): the sessions of the window that ran a canary arm (0228).
+    readAll<unknown>(
+      `/tutor_sessions?select=id,canary_proposal_id,canary_arm,ended_at&canary_proposal_id=not.is.null&ended_at=gte.${iso(since)}&order=ended_at.asc`,
+    ),
+    // GAP-FIX-R3 (C.1, Appendix F 1.3): Age-Tier Calibration Coverage over the window (0229).
+    readAgeCalibrationCoverage(since, now),
   ]);
+  const arms = canaryArms === null ? null : CanaryArmRows.safeParse(canaryArms);
   const audits = ReleaseAuditRows.safeParse(releaseAudits);
 
   return {
@@ -346,8 +354,17 @@ export async function collectSources(now: Date): Promise<QualitySources> {
     transfer: Array.isArray(transfer) ? transfer.map((r) => ({ ...r, first_attempts: Number(r.first_attempts), successes: Number(r.successes) })) : null,
     releaseAudits: audits.success ? audits.data : null,
     parentTimeToValue,
+    canaryArms: arms === null || !arms.success ? null : arms.data,
+    ageCalibration,
   };
 }
+
+const CanaryArmRows = z.array(z.object({
+  id: z.string().uuid(),
+  canary_proposal_id: z.string().regex(/^P-d{4}-d{2}-d{2}-[a-z0-9-]+$/),
+  canary_arm: z.enum(['canary', 'control']),
+  ended_at: z.string().nullable(),
+}));
 
 const ReleaseAuditRows = z.array(z.object({
   audit_kind: z.enum(RELEASE_AUDIT_KINDS),

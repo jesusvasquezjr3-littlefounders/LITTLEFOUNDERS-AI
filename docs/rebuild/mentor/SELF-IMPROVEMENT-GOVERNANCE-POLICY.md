@@ -82,6 +82,22 @@ Each file belongs to exactly one component, and each component carries:
 - A record cannot claim `canary`, `released` or `rolled_back` while a stage its tier requires is missing.
 - A Stage 3 claim must name its calibration, judge identity and criteria, and say it was verified with `npm --prefix backend run tutor:judge-calibration -- --verify-proposal=<file>`. That command reads the calibration registry; the repository gate cannot reach the database.
 - The **Canary Regression Rate** (Appendix F §1.4) is computed from the Stage 5 outcomes in these records.
+- **Stage 5 must have been deliverable** (gap-fix round 3). From `canary` on, `stage5.experimentId` must name a `mentor.canary` canary in [`canaries.json`](governance/canaries.json) that delivers this proposal's `parameterChanges` exactly (same parameters, same values). A proposal in `canary` needs its canary `running`; a released one keeps it as `concluded` evidence. `parameterChanges` may name registered Tier 2 parameters only, inside their bounds, in a file the proposal lists. A proposal with no `parameterChanges` cannot claim a canary: no delivery path exists for it (§4.1).
+
+### 4.1 Stage 5: the canary delivery path
+
+A Tier 2 change reaches "a small percentage of real sessions first" as an arm of an H.7 experiment. Built in gap-fix round 3.
+
+1. **The experiment.** Staff create it through the experiment API (`POST /admin/intel/experiments`, relayed to dataintel): surface `tutor`, target `mentor.canary`, policy `adults_only`, no upper age bound. Dataintel refuses any other shape for that target. Variant A is the control arm, variant B the canary arm.
+2. **The manifest.** A `canaries.json` entry names the experiment id, the proposal, the share (at most `maxShare`, 10%) and the proposal's `parameterChanges` as `overrides`, with status `running`. `node agent/tools/check-mentor-canary-parity.mjs --write` generates the Tier 2 bounds table into Oracle and the table plus the running canaries into Core; `npm run canary:check` fails on any drift. The manifest is Tier 1 (component `governance.model`), so starting a canary needs a change-record row.
+3. **Who is in it (OD-23).** Core resolves the arm at session start (`backend/src/services/pedagogy/mentorCanary.ts`). Only a learner the Mentor's safeguards already treat as a verified adult (`resolveMentorSafety`: a service-owned ID verification proves 18+), whose dialogue band is adult and whom the adult analytics rule admits. Every other population is never asked for an assignment and never exposed. A deterministic pool of twice the share (salted apart from the runtime's A/B draw) keeps both arms small; the exposure is recorded before the arm is sent.
+4. **The session context.** Core sends `canary: { proposalId, arm, overrides }` in the negotiated context, only to an Oracle that announced the field. It is never part of the sealed 14-field model context.
+5. **Oracle.** `oracle/src/tutor/mentorCanary.ts` applies the overrides to the three Tier 2 config objects only, clamps each value to the registry bounds (and rounds an integer parameter), and refuses the whole canary if any key is not a registered Tier 2 parameter: the session then runs the approved defaults and reports no arm.
+6. **The record.** Oracle reports the arm it ran at close; Core stores it once (`tutor_sessions.canary_proposal_id`, `canary_arm`) and refuses a proposal the manifest does not run.
+7. **The reading.** The dashboard signal `canary.arm_comparison` compares each canary arm with its control on the rules-scored transcripts and flags a clearly worse canary to the pedagogical lead. `npm --prefix backend run tutor:canary-report -- --proposal=<id> --sample=20 [--transcripts]` prints the comparison and a reproducible sample of closed canary-arm sessions for the named reader, who records `stage5` (`reader`, `date`, `transcriptsRead` of at least 20, `outcome`).
+8. **Ending it.** Conclude the experiment in the console (no new assignment from then on), set the entry to `concluded` and regenerate. A rollback records `outcome: "rolled_back"`.
+
+What it does not do: a change that is not a registered Tier 2 parameter (a reworded line, a new persona variant) has no canary path. It cannot clear Stage 5 as a proposal; it ships only as a human change.
 
 ## 5. The Tier 1 change record
 
@@ -149,13 +165,13 @@ It writes a JSON report with the per-section violations, the sign-off count, the
 ## 9. What this does not claim
 
 - **The gate governs the repository.** Operators can still change environment variables in Railway, such as a telemetry mode, a sampling baseline or a kill switch. Those are human actions outside git. The lane review (S06.15) checked what those variables can reach:
-  - The seven registered Tier 2 parameters have **no environment override**. They are code constants, so they change only through a commit, and this gate checks their bounds.
+  - The seven registered Tier 2 parameters have **no environment override**. They are code constants, so they change only through a commit, and this gate checks their bounds. The one runtime path that moves them is a running canary (§4.1): adults only, a small share, every value clamped to the registry bounds, and the manifest itself is a Tier 1 file.
   - The mode variables (`TUTOR_BEHAVIORAL_TELEMETRY`, `TUTOR_ALLIANCE_CONTROLLER`, `TUTOR_SELF_EXPLANATION`, `TUTOR_SPACED_REVIEW`, `TUTOR_DIALOGUE_CALIBRATION`, `TUTOR_SESSION_END_SIGNAL`) are Stage 7 kill switches. They can only make the Mentor do less, and an unknown value falls back to the active mode, never to a silent off.
   - Core ignores a live-content sampling baseline below its floor (S06.12).
   - `TUTOR_CORROBORATION_MIN_OBSERVATIONS` now refuses to boot below 2. The C.10 floor is a non-negotiable constraint, so the only single-observation path is the per-KC Stage 7 rollback.
   - `TUTOR_REVIEW_SHORT_HORIZON_MIN` (C.11) and `MENTOR_DIALOGUE_EXPERIMENT_BANDS` (C.17: adults, teens and tweens by default under OD-26, never a young child) are schema-bounded operator values. Widening the experiment bands further is a Product and Legal decision (H.7), recorded in the owner log.
 - **The two sign-offs are names in a file.** The gate proves that a named human signed and that the record was not rewritten. It cannot prove who typed the name. Branch protection and review on `main` remain the owner's control.
-- **No canary infrastructure beyond the H.7 experiment console exists.** A Stage 5 canary is an experiment arm: surface `tutor`, a small share, adults only (OD-23). The record names it.
+- **The canary covers registered Tier 2 parameters only.** Since gap-fix round 3 a Stage 5 canary is a delivered experiment arm (§4.1): surface `tutor`, target `mentor.canary`, a small share, verified adults only (OD-23), and the gate checks that the experiment delivers exactly the proposal's parameter changes. A change that is not a registered parameter has no percentage rollout, and no experiment console screen creates a canary: staff use the experiment API. The gate cannot see dataintel, so it proves the manifest delivers the change, not that the experiment is running; Core only asks the runtime for `mentor.canary` and only delivers manifest entries.
 
 ## 10. Proposals recorded for owner review
 

@@ -198,6 +198,7 @@ import { classifyCheckInReply } from './telemetryLexicon.js';
 import { predictedCorrectFrom } from './controller.js';
 import type { SpeechResult } from '../voice/speech.js';
 import type { CloseReason, SessionContext, TrajectoryStepInput } from '../core/client.js';
+import { applyCanary, type CanaryConfigs, type MentorCanaryReport } from './mentorCanary.js';
 import type { WordTiming } from '../voice/provider.js';
 
 /*
@@ -691,6 +692,12 @@ export class TutorOrchestrator {
   private readonly alliance: AllianceController;
   /** C.14: the self-explanation move after financial decisions (`selfExplanation.ts`). */
   private readonly selfExplanation: SelfExplanation;
+  /**
+   * C.22 Stage 5: the Tier 2 configs this session runs with — the approved
+   * defaults, or a canary arm's overrides clamped to the registry bounds
+   * (`mentorCanary.ts`). Derived at construction from the pinned context.
+   */
+  private readonly canary: CanaryConfigs;
   /** C.7: what this session contributes to the persistent disposition profile. */
   private readonly dispositionObserver: DispositionObserver;
   /** C.7: what the learner's disposition profile changes this session (derived from the pinned context). */
@@ -767,9 +774,19 @@ export class TutorOrchestrator {
      * rollback verdict (off > shadow > act): Core can only ever make the
      * layer quieter, never louder than the operator set it.
      */
+    /*
+     * C.22 Stage 5: a canary arm moves registered Tier 2 parameters only,
+     * clamped to their approved bounds; an unknown key refuses the whole
+     * canary (the approved defaults run and no arm is reported).
+     */
+    this.canary = applyCanary(session.canary ?? null);
+    if (this.canary.refused !== null) {
+      console.error(`[tutor] canary ${session.canary?.proposalId ?? '?'} refused for session ${session.sessionId}: ${this.canary.refused}`);
+    }
     this.behavioralTelemetry = new BehavioralTelemetry(
       strictestTelemetryMode(config.TUTOR_BEHAVIORAL_TELEMETRY, session.behavioralTelemetryMode ?? 'act'),
       session.locale,
+      this.canary.telemetry,
     );
     /*
      * C.7: the learner's persistent disposition profile, read beside the
@@ -787,8 +804,9 @@ export class TutorOrchestrator {
     this.alliance = new AllianceController(
       strictestAllianceMode(config.TUTOR_ALLIANCE_CONTROLLER, session.allianceMode ?? 'act'),
       session.allianceContinuity ?? null,
+      this.canary.alliance,
     );
-    this.selfExplanation = new SelfExplanation(config.TUTOR_SELF_EXPLANATION);
+    this.selfExplanation = new SelfExplanation(config.TUTOR_SELF_EXPLANATION, this.canary.selfExplanation);
     this.dispositionObserver = new DispositionObserver(session.dispositionProfile != null, this.dispositionEffects);
     this.minorPosture = session.isMinor;
     /*
@@ -2954,6 +2972,7 @@ export class TutorOrchestrator {
     disposition: DispositionObservation;
     spacedReview?: SpacedReviewReport;
     dialogueCalibration: DialogueCalibrationReport;
+    canary?: MentorCanaryReport;
   } {
     return {
       closingScript: closingScriptFor(reason),
@@ -2970,6 +2989,8 @@ export class TutorOrchestrator {
       ...(this.spacedReview.mode === 'off' ? {} : { spacedReview: this.spacedReview.report() }),
       // C.17: the register this session ran and what it did.
       dialogueCalibration: this.dialogueCalibration.report(),
+      // C.22 Stage 5: the canary arm this session ran (nothing when none applied).
+      ...(this.canary.report === null ? {} : { canary: this.canary.report }),
     };
   }
 

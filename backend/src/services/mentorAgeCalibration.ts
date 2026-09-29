@@ -55,3 +55,48 @@ export async function recordMentorAgeCalibration(userId: string, tier: MentorAge
   }));
   return result.success ? result.data : null;
 }
+
+// ── C.1 / Appendix F 1.3 Age-Tier Calibration Coverage Rate (GAP-FIX-R3) ────
+
+const count = z.coerce.number().int().nonnegative();
+const CoverageRows = z
+  .array(
+    z.object({
+      sessions: count,
+      unknown_age_sessions: count,
+      calibrated_before_start: count,
+      coverage: z.coerce.number().min(0).max(1).nullable(),
+    }),
+  )
+  .length(1);
+
+export interface AgeCalibrationCoverage {
+  sessions: number;
+  unknownAgeSessions: number;
+  calibratedBeforeStart: number;
+  coverage: number | null;
+}
+
+/**
+ * mentor_age_calibration_coverage over [from, to): the Mentor sessions of
+ * learners Core could not place in a teaching tier, and how many had the
+ * explicit calibration before they started (a hard invariant at 100%). Null
+ * when the read failed or the numbers do not add up (never a guess).
+ */
+export async function readAgeCalibrationCoverage(from: Date, to: Date): Promise<AgeCalibrationCoverage | null> {
+  const parsed = CoverageRows.safeParse(
+    await serviceRest<unknown>('/rpc/mentor_age_calibration_coverage', {
+      method: 'POST',
+      body: JSON.stringify({ p_from: from.toISOString(), p_to: to.toISOString() }),
+    }),
+  );
+  if (!parsed.success) return null;
+  const r = parsed.data[0]!;
+  if (r.unknown_age_sessions > r.sessions || r.calibrated_before_start > r.unknown_age_sessions) return null;
+  return {
+    sessions: r.sessions,
+    unknownAgeSessions: r.unknown_age_sessions,
+    calibratedBeforeStart: r.calibrated_before_start,
+    coverage: r.coverage,
+  };
+}

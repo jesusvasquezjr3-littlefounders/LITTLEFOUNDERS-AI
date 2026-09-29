@@ -435,3 +435,74 @@ describe('GAP-FIX-R2: the per-release manual audits and Parent Time-to-Value (Ap
     expect(readingOf(evaluateSignals({ ...empty(), parentTimeToValue: null }), 'engagement.parent_time_to_value').status).toBe('unavailable');
   });
 });
+
+describe('GAP-FIX-R3: the C.1-C.4 safety metrics and the Stage 5 canary reading (Appendix F 1.3, Part 3)', () => {
+  it('registers Fracture-Closure Verification (external, zero tolerance) and Age-Tier Calibration Coverage (hard invariant 100%) for the Safety and Trust lead', () => {
+    expect(SIGNALS.find((s) => s.id === 'safety.fracture_closure')).toMatchObject({
+      requirement: 'C.2', owner: 'safety_trust_lead', instrumented: 'external', threshold: { kind: 'zero_tolerance', value: 0 },
+    });
+    expect(SIGNALS.find((s) => s.id === 'safety.fracture_closure')?.pending).toMatch(/minor-safeguards:check/);
+    expect(SIGNALS.find((s) => s.id === 'safety.age_tier_calibration')).toMatchObject({
+      requirement: 'C.1', owner: 'safety_trust_lead', instrumented: 'yes', threshold: { kind: 'hard_invariant', value: 1 },
+    });
+    expect(SIGNALS.find((s) => s.id === 'canary.arm_comparison')).toMatchObject({ requirement: 'C.22', owner: 'pedagogical_lead', instrumented: 'yes' });
+    expect(readingOf(evaluateSignals(empty()), 'safety.fracture_closure').status).toBe('external');
+  });
+
+  it('Age-Tier Calibration Coverage: every unknown-age session calibrated is ok; one missed is an urgent breach; none yet is insufficient; an unreadable RPC is unavailable', () => {
+    const c = (unknownAgeSessions: number, calibratedBeforeStart: number) => ({
+      sessions: unknownAgeSessions + 40, unknownAgeSessions, calibratedBeforeStart,
+      coverage: unknownAgeSessions === 0 ? null : calibratedBeforeStart / unknownAgeSessions,
+    });
+    expect(readingOf(evaluateSignals({ ...empty(), ageCalibration: c(12, 12) }), 'safety.age_tier_calibration')).toMatchObject({ status: 'ok', value: 1, sample: 12 });
+    const missed = evaluateSignals({ ...empty(), ageCalibration: c(12, 11) });
+    expect(readingOf(missed, 'safety.age_tier_calibration')).toMatchObject({ status: 'breach', detail: { uncalibrated: 1 } });
+    expect(missed.anomalies.find((a) => a.signalId === 'safety.age_tier_calibration')).toMatchObject({
+      kind: 'threshold_breach', owner: 'safety_trust_lead', severity: 'urgent', requirement: 'C.1', threshold: 1,
+    });
+    expect(readingOf(evaluateSignals({ ...empty(), ageCalibration: c(0, 0) }), 'safety.age_tier_calibration').status).toBe('insufficient_data');
+    const down = evaluateSignals({ ...empty(), ageCalibration: null });
+    expect(readingOf(down, 'safety.age_tier_calibration').status).toBe('unavailable');
+    expect(down.anomalies.find((a) => a.signalId === 'safety.age_tier_calibration')).toMatchObject({ kind: 'source_unavailable' });
+  });
+
+  const PROPOSAL = 'P-2026-10-01-latency-z';
+  function canaryWorld(canaryFails: number, controlFails: number, perArm = 40): QualitySources {
+    const canaryArms: NonNullable<QualitySources['canaryArms']> = [];
+    const scores: ScoreRow[] = [];
+    for (const [arm, fails] of [['canary', canaryFails], ['control', controlFails]] as const) {
+      for (let i = 0; i < perArm; i += 1) {
+        const id = `${arm}-${i}`;
+        canaryArms.push({ id, canary_proposal_id: PROPOSAL, canary_arm: arm, ended_at: recent(1) });
+        scores.push(score('hint_repeat', i < fails ? 'fail' : 'pass', { session_id: id }));
+        scores.push(score('check_in', 'not_applicable', { session_id: id }));
+      }
+    }
+    return { ...empty(), canaryArms, scores };
+  }
+
+  it('canary against control: comparable arms read as diagnostic, with each arm in the breakdown', () => {
+    const r = evaluateSignals(canaryWorld(2, 2));
+    const reading = readingOf(r, 'canary.arm_comparison');
+    expect(reading).toMatchObject({ status: 'diagnostic', value: 0, sample: 40, detail: { canaries: 1, regressions: 0, canarySessions: 40, controlSessions: 40 } });
+    expect(reading.breakdown.map((b) => b.key)).toEqual([`proposal:${PROPOSAL}/arm:canary`, `proposal:${PROPOSAL}/arm:control`]);
+    expect(r.anomalies.filter((a) => a.signalId === 'canary.arm_comparison')).toEqual([]);
+  });
+
+  it('a canary arm clearly worse than its control opens a flag for the pedagogical lead, scoped to the proposal', () => {
+    const r = evaluateSignals(canaryWorld(12, 2));
+    expect(readingOf(r, 'canary.arm_comparison')).toMatchObject({ status: 'breach', value: 1 });
+    const flag = r.anomalies.find((a) => a.signalId === 'canary.arm_comparison');
+    expect(flag).toMatchObject({ kind: 'threshold_breach', scope: `proposal:${PROPOSAL}`, owner: 'pedagogical_lead', requirement: 'C.22' });
+    expect(flag?.scope).toMatch(/^[a-z]+(:[A-Za-z0-9_.:-]+)?(\/[a-z]+:[A-Za-z0-9_.:-]+)*$/);
+    // A control arm worse than the canary is not a canary regression.
+    expect(evaluateSignals(canaryWorld(2, 12)).anomalies.filter((a) => a.signalId === 'canary.arm_comparison')).toEqual([]);
+  });
+
+  it('too few scored sessions is never a regression; no canary is insufficient data; an unreadable source is unavailable', () => {
+    expect(evaluateSignals(canaryWorld(10, 0, 12)).anomalies.filter((a) => a.signalId === 'canary.arm_comparison')).toEqual([]);
+    expect(readingOf(evaluateSignals({ ...empty(), canaryArms: [] }), 'canary.arm_comparison').status).toBe('insufficient_data');
+    expect(readingOf(evaluateSignals({ ...empty(), canaryArms: null }), 'canary.arm_comparison').status).toBe('unavailable');
+    expect(readingOf(evaluateSignals({ ...canaryWorld(2, 2), scores: null }), 'canary.arm_comparison').status).toBe('unavailable');
+  });
+});

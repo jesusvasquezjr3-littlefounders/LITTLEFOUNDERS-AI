@@ -131,6 +131,12 @@ const experimentSchema = z.object({
 ).refine(
   (exp) => exp.eligibilityPolicy !== 'od26_c17' || exp.surface === experiments.OD26_SURFACE,
   { message: 'The OD-26 exception covers the C.17 Mentor dialogue experiment only (surface tutor)', path: ['eligibilityPolicy'] },
+).refine(
+  // C.22 / Appendix F Stage 5 (GAP-FIX-R3): a Mentor canary is a tutor experiment, adults only (OD-23), with no upper
+  // age bound (Core sends a verified adult without an exact age as 18, the floor the ID verification proves).
+  (exp) => exp.target !== experiments.MENTOR_CANARY_TARGET
+    || (exp.surface === 'tutor' && exp.eligibilityPolicy === 'adults_only' && (exp.maxAge ?? null) === null),
+  { message: 'A Mentor canary (target mentor.canary) runs on the tutor surface, adults only, with no upper age bound', path: ['target'] },
 );
 
 const runtimeAssignmentSchema = z.object({

@@ -66,6 +66,12 @@ import {
   resolveDialogueCalibration,
   type DialogueCalibration,
 } from '../services/pedagogy/dialogueCalibration.js';
+import {
+  CanaryReportBody,
+  recordCanaryArm,
+  resolveMentorCanary,
+  type MentorCanaryContext,
+} from '../services/pedagogy/mentorCanary.js';
 import { tutorSocketUrl } from '../services/tutorToken.js';
 import {
   ADAPTATIONS,
@@ -713,6 +719,25 @@ function internalRouter(): Router {
       }
     }
 
+    /*
+     * C.22 / Appendix F Stage 5: this learner's arm of a running Mentor canary
+     * (mentorCanary.ts). Only for an Oracle that can apply it — otherwise no
+     * assignment is asked for and no exposure recorded, so a canary is never
+     * counted for a session that could not have run it. Adults only (OD-23):
+     * the verified-adult posture above, the adult band, the adult analytics
+     * rule. Anything unexpected is "no canary": the approved defaults run.
+     */
+    let canary: MentorCanaryContext | null = null;
+    if (accepts.has('canary')) {
+      try {
+        const { band, age } = dialogueBandFor({ birthDate: calibration.birthDate, screening, tier: session.tier });
+        canary = (await resolveMentorCanary({ userId: session.user_id, isMinor, band, age, screening })).canary;
+      } catch (error) {
+        console.error('[tutor] mentor canary could not be decided — the approved defaults apply:', error);
+        canary = null;
+      }
+    }
+
     const previousSessions = (recent ?? []).map((row) => ({
       topic: row.summary.topic,
       skillKeys: row.summary.skillKeys.slice(0, 5),
@@ -781,6 +806,7 @@ function internalRouter(): Router {
       ...(allianceKillSwitch !== null ? { allianceMode: allianceKillSwitch.mode } : {}),
       ...(spacedReviewSwitch !== null ? { spacedReviewMode: spacedReviewSwitch.mode } : {}),
       ...(accepts.has('dialogueCalibration') ? { dialogueCalibration } : {}),
+      ...(accepts.has('canary') ? { canary } : {}),
     });
   });
 
@@ -1724,6 +1750,11 @@ function internalRouter(): Router {
      */
     spacedReview: SpacedReviewReportBody.optional(),
     dialogueCalibration: DialogueCalibrationReportBody.optional(),
+    /*
+     * C.22 Stage 5: the canary arm Oracle actually ran. OPTIONAL (no canary,
+     * a refused one, or an older Oracle); strict inside.
+     */
+    canary: CanaryReportBody.optional(),
   });
 
   router.post('/sessions/:id/close', async (req, res) => {
@@ -1836,6 +1867,10 @@ function internalRouter(): Router {
             report: parsed.data.dialogueCalibration,
           });
           if (!written) console.warn(`[tutor] dialogue calibration NOT recorded for session ${owner.id}`);
+        }
+        if (parsed.data.canary) {
+          const stored = await recordCanaryArm({ sessionId: owner.id, report: parsed.data.canary });
+          if (stored !== 'recorded') console.warn(`[tutor] canary arm NOT recorded for session ${owner.id} (${stored})`);
         }
       }
     }

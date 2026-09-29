@@ -31,6 +31,8 @@
 /docs/rebuild/mentor/governance/          @jesusvasquezjr3-littlefounders
 /agent/tools/check-mentor-governance.mjs  @jesusvasquezjr3-littlefounders
 /agent/tools/check-judge-calibration-parity.mjs @jesusvasquezjr3-littlefounders
+/agent/tools/check-mentor-canary-parity.mjs @jesusvasquezjr3-littlefounders
+/agent/tools/check-mentor-minor-safeguards.mjs @jesusvasquezjr3-littlefounders
 
 # This file and the ruleset it depends on
 /.github/CODEOWNERS                       @jesusvasquezjr3-littlefounders

@@ -58,6 +58,9 @@ describe('POST /experiments refuses every population outside OD-23/OD-26', () =>
     ['od26_c17 outside the Mentor surface', { minAge: 13, surface: 'learn', eligibilityPolicy: 'od26_c17' }],
     ['an unknown policy', { eligibilityPolicy: 'everyone' }],
     ['an undeclared field', { allowMinors: true }],
+    ['a Mentor canary outside the tutor surface', { target: 'mentor.canary', surface: 'learn' }],
+    ['a Mentor canary under the OD-26 exception', { target: 'mentor.canary', surface: 'tutor', minAge: 13, eligibilityPolicy: 'od26_c17' }],
+    ['a Mentor canary with an upper age bound', { target: 'mentor.canary', surface: 'tutor', maxAge: 40 }],
   ])('refuses %s with 400', async (_label, extra) => {
     const res = await post('/experiments', { ...BASE, ...extra });
     expect(res.status).toBe(400);
@@ -68,6 +71,12 @@ describe('POST /experiments refuses every population outside OD-23/OD-26', () =>
     const res = await post('/experiments', BASE);
     expect(res.status).toBe(201);
     expect(res.body.data.eligibilityPolicy).toBe('adults_only');
+  });
+
+  it('creates a Mentor canary only as an adults-only tutor experiment with no upper bound (C.22 Stage 5)', async () => {
+    const res = await post('/experiments', { ...BASE, surface: 'tutor', target: 'mentor.canary' });
+    expect(res.status).toBe(201);
+    expect(res.body.data).toMatchObject({ eligibilityPolicy: 'adults_only', target: 'mentor.canary', surface: 'tutor' });
   });
 
   it('creates the C.17 exception only as od26_c17 on the tutor surface, 10 and over', async () => {

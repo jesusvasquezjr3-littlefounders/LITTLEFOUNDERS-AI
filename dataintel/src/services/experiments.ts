@@ -53,6 +53,8 @@ export type ExperimentEligibilityPolicy = (typeof EXPERIMENT_ELIGIBILITY_POLICIE
 export const POLICY_MIN_AGE: Record<ExperimentEligibilityPolicy, number> = { adults_only: 18, od26_c17: 10 };
 /** OD-26: the C.17 exception applies to the Mentor dialogue experiment only. */
 export const OD26_SURFACE = 'tutor';
+/** C.22 Stage 5 (GAP-FIX-R3): the Mentor canary target Core reads; always tutor, adults only. */
+export const MENTOR_CANARY_TARGET = 'mentor.canary';
 
 export function isEligibilityPolicy(value: unknown): value is ExperimentEligibilityPolicy {
   return typeof value === 'string' && (EXPERIMENT_ELIGIBILITY_POLICIES as readonly string[]).includes(value);

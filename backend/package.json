@@ -30,6 +30,7 @@
     "tutor:alliance-report": "tsx --env-file-if-exists=.env src/scripts/alliance-report.ts",
     "tutor:spaced-review-report": "tsx --env-file-if-exists=.env src/scripts/spaced-review-report.ts",
     "tutor:dialogue-calibration-report": "tsx --env-file-if-exists=.env src/scripts/dialogue-calibration-report.ts",
+    "tutor:canary-report": "tsx --env-file-if-exists=.env src/scripts/canary-report.ts",
     "tutor:live-content-report": "tsx --env-file-if-exists=.env src/scripts/live-content-report.ts",
     "seed:tutor-packs": "tsx --env-file-if-exists=.env src/scripts/seed-tutor-packs.ts",
     "tutor:evaluate": "tsx --env-file-if-exists=.env src/scripts/evaluate-transcripts.ts",

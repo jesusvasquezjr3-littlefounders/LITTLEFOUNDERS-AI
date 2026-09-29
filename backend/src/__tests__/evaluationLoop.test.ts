@@ -26,6 +26,9 @@ interface World {
   failRunInsert?: boolean;
   activeFlags?: unknown[];
   scoresStore?: unknown[];
+  /** GAP-FIX-R3: the mentor_age_calibration_coverage answer and the canary-arm sessions. */
+  ageCoverage?: unknown[];
+  canaryArms?: unknown[];
 }
 
 function stubPostgrest(world: World, calls: Call[]) {
@@ -80,6 +83,8 @@ function stubPostgrest(world: World, calls: Call[]) {
         if (method === 'POST') return Promise.resolve(jsonResponse(201, [{ id: 'snap-1' }]));
         return Promise.resolve(new Response(null, { status: 204 }));
       }
+      if (url.includes('/rest/v1/rpc/mentor_age_calibration_coverage')) return Promise.resolve(jsonResponse(200, world.ageCoverage ?? []));
+      if (url.includes('/rest/v1/tutor_sessions?select=id,canary_proposal_id')) return Promise.resolve(jsonResponse(200, world.canaryArms ?? []));
       if (url.includes('/rest/v1/rpc/')) return Promise.resolve(jsonResponse(200, []));
       if (url.includes('/rest/v1/')) return Promise.resolve(jsonResponse(200, []));
       throw new Error(`unexpected ${method} ${url}`);
@@ -131,6 +136,23 @@ describe('C.21 the evaluation pass', () => {
     expect(result).toMatchObject({ runId: 'run-1', snapshotId: 'snap-1' });
     // Retention of the loop's own artifacts ran.
     expect(calls.filter((c) => c.method === 'DELETE').length).toBe(3);
+  });
+
+  it('GAP-FIX-R3: reads Age-Tier Calibration Coverage and the canary arms; a missed calibration opens an urgent flag for the Safety and Trust lead', async () => {
+    const calls: Call[] = [];
+    stubPostgrest({
+      backlog: [],
+      ageCoverage: [{ sessions: 50, unknown_age_sessions: 10, calibrated_before_start: 9, coverage: 0.9 }],
+      canaryArms: [{ id: S1, canary_proposal_id: 'P-2026-10-01-latency-z', canary_arm: 'canary', ended_at: '2026-09-25T10:00:00Z' }],
+    }, calls);
+    await runEvaluationPass({ now: NOW, trigger: 'operator' });
+    const rpc = calls.find((c) => c.url.includes('/rpc/mentor_age_calibration_coverage'));
+    expect(Object.keys(JSON.parse(rpc!.body!))).toEqual(['p_from', 'p_to']);
+    expect(calls.some((c) => c.url.includes('canary_proposal_id=not.is.null'))).toBe(true);
+    const flags = calls.filter((c) => c.url.includes('mentor_quality_flag') && c.method === 'POST').map((c) => JSON.parse(c.body!) as Record<string, unknown>);
+    expect(flags.find((f) => f.signal_id === 'safety.age_tier_calibration')).toMatchObject({ kind: 'threshold_breach', owner_role: 'safety_trust_lead', severity: 'urgent', requirement: 'C.1' });
+    const snapshot = JSON.parse(calls.find((c) => c.url.includes('mentor_quality_snapshot') && c.method === 'POST')!.body!) as { signals: { id: string; reading?: { status: string } }[] };
+    expect(snapshot.signals.map((s) => s.id)).toEqual(expect.arrayContaining(['safety.fracture_closure', 'safety.age_tier_calibration', 'canary.arm_comparison']));
   });
 
   it('scores NOTHING from a batch whose honesty ledger could not be read (a missing ledger would read as clean)', async () => {

@@ -68,6 +68,9 @@ export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 export const REGISTRY = 'docs/rebuild/mentor/governance/registry.json';
 export const LEDGER = 'docs/rebuild/mentor/governance/tier1-change-record.json';
 export const PROPOSALS_DIR = 'docs/rebuild/mentor/governance/proposals';
+/** Appendix F Stage 5: the canaries that deliver a proposal's Tier 2 parameter changes to real sessions (GAP-FIX-R3). */
+export const CANARIES = 'docs/rebuild/mentor/governance/canaries.json';
+export const CANARY_TARGET = 'mentor.canary';
 
 export const TIERS = ['tier_1', 'live_content_judging', 'tier_2', 'tier_3'];
 /** Change-controlled like Tier 1: hashed, signed, never automated. */
@@ -773,11 +776,67 @@ const ORDER = { draft: 0, rejected: 0, in_review: 1, canary: 2, released: 3, rol
 const nonEmpty = (v, n = 1) => typeof v === 'string' && v.trim().length >= n;
 const isDate = (v) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v) && !Number.isNaN(Date.parse(v));
 
+const sameNumbers = (a, b) => {
+  const ka = Object.keys(a ?? {}).sort();
+  const kb = Object.keys(b ?? {}).sort();
+  return ka.length === kb.length && ka.every((k, i) => k === kb[i] && a[k] === b[k]);
+};
+
+/**
+ * C.22 / Appendix F Stage 5 (GAP-FIX-R3): the proposal's declared Tier 2
+ * parameter changes. Each must be a registered Tier 2 parameter in a file the
+ * proposal names, inside its approved bounds (an integer where required).
+ */
+export function checkParameterChanges(p, registry) {
+  const problems = [];
+  if (p.parameterChanges === undefined) return problems;
+  const changes = p.parameterChanges;
+  if (!changes || typeof changes !== 'object' || Array.isArray(changes) || Object.keys(changes).length === 0) {
+    return ['parameterChanges must name at least one Tier 2 parameter and its new value'];
+  }
+  const params = new Map((registry.tier2Parameters ?? []).map((x) => [x.id, x]));
+  for (const [id, value] of Object.entries(changes)) {
+    const param = params.get(id);
+    if (!param) problems.push(`parameterChanges: ${id} is not a registered Tier 2 parameter`);
+    else if (typeof value !== 'number' || !Number.isFinite(value)) problems.push(`parameterChanges: ${id} must be a number`);
+    else if (value < param.bounds[0] || value > param.bounds[1]) problems.push(`parameterChanges: ${id} = ${value} is outside its approved bounds [${param.bounds.join(', ')}]`);
+    else if (param.integer === true && !Number.isInteger(value)) problems.push(`parameterChanges: ${id} must be an integer`);
+    else if (!(p.paths ?? []).includes(param.file)) problems.push(`parameterChanges: ${id} lives in ${param.file}, which the proposal does not name in paths`);
+  }
+  return problems;
+}
+
+/**
+ * C.22 / Appendix F Stage 5 (GAP-FIX-R3): the experiment a proposal's Stage 5
+ * names must be a `mentor.canary` experiment in canaries.json that delivers
+ * THIS proposal's parameter changes. A canary that could not have delivered
+ * the change is not a canary, and its transcripts prove nothing.
+ */
+export function checkCanaryDelivery(p, manifest) {
+  const id = p.stage5?.experimentId;
+  if (!manifest || manifest.kind !== 'mentor-canary-manifest' || !Array.isArray(manifest.canaries)) {
+    return [`stage5 names experiment ${id}, but the canary manifest ${CANARIES} is missing or malformed`];
+  }
+  if (manifest.target !== CANARY_TARGET) return [`${CANARIES} does not target ${CANARY_TARGET}`];
+  const entry = manifest.canaries.find((c) => c.experimentId === id);
+  if (!entry) return [`stage5.experimentId ${id} is not a ${CANARY_TARGET} canary in ${CANARIES}: no real session could have received this change`];
+  const problems = [];
+  if (entry.proposalId !== p.id) problems.push(`stage5.experimentId ${id} delivers ${entry.proposalId}, not this proposal`);
+  if (p.parameterChanges === undefined) {
+    problems.push('the canary path delivers registered Tier 2 parameter changes only, and this proposal declares no parameterChanges: no canary could have delivered it');
+  } else if (!sameNumbers(entry.overrides, p.parameterChanges)) {
+    problems.push(`the canary's overrides ${JSON.stringify(entry.overrides)} are not the proposal's parameterChanges ${JSON.stringify(p.parameterChanges)}`);
+  }
+  if (p.status === 'canary' && entry.status !== 'running') problems.push(`status canary, but its canary ${id} is ${entry.status ?? 'not running'}`);
+  return problems;
+}
+
 /**
  * Which stages a proposal still misses for its status, and any violation.
  * The tier is COMPUTED from the paths (never trusted from the record).
+ * `manifest` is canaries.json (null when missing): Stage 5 is checked against it.
  */
-export function evaluateProposal(p, registry) {
+export function evaluateProposal(p, registry, manifest = null) {
   const violations = [];
   const missing = [];
   if (p?.kind !== 'mentor-change-proposal') return { computedTier: null, violations: ['not a mentor-change-proposal'], missing: [], releaseReady: false };
@@ -827,6 +886,14 @@ export function evaluateProposal(p, registry) {
     if (!judged && !humanReview) missing.push('stage3 (a calibrated judge, verified with tutor:judge-calibration --verify-proposal) or stage4 (human review)');
   }
 
+  violations.push(...checkParameterChanges(p, registry));
+
+  // Stage 5 delivery — from `canary` on, the experiment must actually deliver the change.
+  if (behaviour && level >= 2) {
+    if (!nonEmpty(p.stage5?.experimentId)) missing.push(`stage5.experimentId (the ${CANARY_TARGET} experiment in ${CANARIES} that delivers the change)`);
+    else violations.push(...checkCanaryDelivery(p, manifest));
+  }
+
   // Stage 5 — canary with a human reading real transcripts, for any behaviour change.
   if (behaviour && level >= 3) {
     const s5 = p.stage5;
@@ -853,7 +920,7 @@ export function readProposals(read = readText, fsList = null) {
   });
 }
 
-export function checkProposals(registry, proposals) {
+export function checkProposals(registry, proposals, manifest = null) {
   const problems = [];
   for (const { file, record } of proposals) {
     if (!record) {
@@ -861,7 +928,7 @@ export function checkProposals(registry, proposals) {
       continue;
     }
     if (path.basename(file, '.json') !== record.id) problems.push(`${file}: the file name must be the proposal id`);
-    const r = evaluateProposal(record, registry);
+    const r = evaluateProposal(record, registry, manifest);
     for (const v of r.violations) problems.push(`${file}: ${v}`);
     // A proposal cannot claim a status its stages do not support.
     if (['canary', 'released', 'rolled_back'].includes(record.status)) for (const m of r.missing) problems.push(`${file}: status ${record.status} but missing ${m}`);
@@ -922,7 +989,7 @@ export function commitPaths(commit, registry) {
 
 export const isAutomated = (c) => /\[bot\]/i.test(`${c.name} ${c.email}`) || AUTOMATED_TRAILER.test(c.body);
 
-export function checkCommits(commits, registry, proposals) {
+export function checkCommits(commits, registry, proposals, manifest = null) {
   const problems = [];
   const byId = new Map(proposals.filter((p) => p.record).map((p) => [p.record.id, p.record]));
   for (const c of commits) {
@@ -945,7 +1012,7 @@ export function checkCommits(commits, registry, proposals) {
     const named = proposal.paths ?? [];
     const outside = governed.filter((f) => !named.includes(f) && !named.includes(f.split('#')[0]));
     if (outside.length > 0) problems.push(`${c.sha.slice(0, 10)}: changes files its proposal ${id} does not name (${outside.join(', ')})`);
-    const r = evaluateProposal(proposal, registry);
+    const r = evaluateProposal(proposal, registry, manifest);
     if (!['canary', 'released'].includes(proposal.status) || r.violations.length > 0 || r.missing.length > 0) {
       problems.push(`${c.sha.slice(0, 10)}: proposal ${id} has not cleared its stages (${[...r.violations, ...r.missing].join('; ') || proposal.status})`);
     }
@@ -1010,6 +1077,7 @@ function main() {
 
   const release = process.argv.includes('--release');
   const proposals = readProposals();
+  const manifest = parseJson(readText(CANARIES));
   const sections = {
     registry: checkRegistry(registry),
     coverage: checkCoverage(registry),
@@ -1017,7 +1085,7 @@ function main() {
     tier2Bounds: checkTier2Parameters(registry),
     policyStatements: checkPolicyStatements(registry),
     pipelines: checkPipelines(registry),
-    proposals: checkProposals(registry, proposals),
+    proposals: checkProposals(registry, proposals, manifest),
   };
   if (release) {
     const unsigned = (registry.decisions ?? []).filter((d) => !(SIGNED(d.pedagogicalReviewer) && SIGNED(d.safetyTrustLead)));
@@ -1038,7 +1106,7 @@ function main() {
   let commits = [];
   if (range) {
     commits = commitsIn(range, registry);
-    sections.automatedOrigin = checkCommits(commits, registry, proposals);
+    sections.automatedOrigin = checkCommits(commits, registry, proposals, manifest);
   }
 
   const problems = Object.values(sections).flat();
