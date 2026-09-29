@@ -152,6 +152,12 @@ export interface MentorStageProps {
   onReady?: (event: MentorStageReady) => void;
   onError?: (event: MentorStageError) => void;
   className?: string;
+  /**
+   * B.8 / Bible 08 §11 (GAP-FIX-R3): a decorative backdrop drawn inside the
+   * compact band, under the scene layer (the lesson's adventure scene). The
+   * band stays one element, so the lesson layout's side column still applies.
+   */
+  backdrop?: ReactNode;
 }
 
 function readEnvironment(): StageEnvironment {
@@ -180,7 +186,7 @@ class RendererBoundary extends Component<{ onFailure: () => void; children: Reac
 
 export function MentorStage({
   character, state, board = false, ageBand, size = 'full', theme, scene = 'diorama-a', light = 'auto', companion = null, companionPose = null,
-  milestone = null, closing = null, beat = 0, shot, copy, speechUrl = null, audioKey = 0, onSpeechEnd, onSpeechBlocked, onReady, onError, className,
+  milestone = null, closing = null, beat = 0, shot, copy, speechUrl = null, audioKey = 0, onSpeechEnd, onSpeechBlocked, onReady, onError, className, backdrop = null,
 }: MentorStageProps) {
   const [environment] = useState<StageEnvironment>(readEnvironment);
   const [failure, setFailure] = useState<MentorStageFailure | null>(null);
@@ -296,7 +302,8 @@ export function MentorStage({
     data-board={board ? 'open' : 'closed'} data-idle-motion={idle ? 'hero' : undefined}
     data-ready={(mode === 'still' ? firstRenderMs !== null : liveReady) ? 'true' : 'false'}
     data-first-render-ms={firstRenderMs ?? undefined}
-    data-still-pose={stillVisible ? stills?.base.poseId : undefined}>
+    data-still-pose={stillVisible ? stills?.base.poseId : undefined} data-backdrop={backdrop ? 'true' : undefined}>
+    {backdrop ? <div className="lf-mentor-stage-backdrop" aria-hidden="true">{backdrop}</div> : null}
     <div className="lf-mentor-stage-scene" data-swap={swapping ? 'out' : undefined}>
       {showStill && stills ? <picture key={`${stills.base.id}:${mode}`}>
         {stills.square ? <source media="(min-width: 640px)" srcSet={stills.square.path} /> : null}

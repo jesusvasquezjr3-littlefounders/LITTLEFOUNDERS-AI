@@ -571,13 +571,19 @@ describe('GET /api/v1/learn/lessons/:id', () => {
     expect(res.body.data.mentor_stage).toEqual({ character: 'rho', scene: 'diorama-b' });
   });
 
-  it('omits the projection when the document does not declare a mentor stage', async () => {
+  it('B.8 (GAP-FIX-R3): projects the Mentor on the lesson adventure scene when the document declares no stage', async () => {
     activateMutableV2AllocationWithStage(undefined);
+    db.tutor_preferences = [{ user_id: userId, character: 'zara', companion: 'liruf', diorama: 'diorama-a', backdrop: 'auto', nickname: null, adaptations: [], updated_at: '2026-09-24T00:00:00.000Z' }];
 
     const res = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
 
     expect(res.status).toBe(200);
-    expect(res.body.data).not.toHaveProperty('mentor_stage');
+    expect(res.body.data.mentor_stage).toEqual({ character: 'zara', scene: (db.lesson_documents[0]!.document as { adventure_scene_id: string }).adventure_scene_id });
+    // An adventure scene outside the approved catalog still stages the Mentor, on the catalog's first scene.
+    db.lesson_documents[0]!.document = { ...(db.lesson_documents[0]!.document as Record<string, unknown>), adventure_scene_id: 'harbor-night' };
+    const off = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
+    expect(off.status).toBe(200);
+    expect(off.body.data.mentor_stage).toEqual({ character: 'zara', scene: 'diorama-a' });
   });
 
   it('omits the projection rather than a wrong character when the preference read fails', async () => {

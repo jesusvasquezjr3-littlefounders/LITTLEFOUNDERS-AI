@@ -22,3 +22,9 @@
   .lf-learning-inner:has(> .lf-mentor-band) > .lf-mentor-band { grid-column: 1 / 5; grid-row: 2; block-size: auto; aspect-ratio: 1; }
   .lf-learning-inner:has(> .lf-mentor-band) > .lf-learning-content { margin-block-start: 0; }
 }
+/*
+ * GAP-FIX-R3 (Bible 08 §11): with no stage projected, the adventure scene alone keeps the band's class contract and
+ * height (the register's 110/96/80 px on a phone), so the layout above never changes shape.
+ */
+.lf-mentor-band--scene { position: relative; inline-size: 100%; block-size: var(--lf-mentor-band-size, 96px); overflow: hidden; background: var(--primary); }
+.lf-mentor-band--scene .lf-art { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; max-inline-size: none; object-fit: cover; }

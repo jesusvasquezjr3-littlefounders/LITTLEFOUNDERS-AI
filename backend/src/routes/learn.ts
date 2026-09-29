@@ -936,8 +936,10 @@ export function learnRouter(): Router {
      * the answerless document and the per-learner projection never mix. A
      * preference READ failure omits the stage rather than showing the wrong
      * character (§1.14): the lesson must not depend on this cosmetic read.
+     * B.8 (GAP-FIX-R3): the preferences are read for EVERY v2 document, so the
+     * Mentor is present whether or not the author declared a stage.
      */
-    const prefs = document?.mentor_stage ? await getTutorPreferences(user.id) : null;
+    const prefs = document ? await getTutorPreferences(user.id).catch(() => null) : null;
     const mentorStage = document ? projectV2MentorStage(document, prefs?.character) : null;
     const stripped = (document ? stripV2MentorStage(safeDocument) : safeDocument) as { meta?: { cast?: unknown }; scoring?: unknown; segments?: unknown };
     // M9–M10 (GAP-FIX-R1): worked examples fade by the learner's mastery, chosen here on Core.

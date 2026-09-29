@@ -55,8 +55,8 @@ describe('general v2 player', () => {
     expect(screen.getAllByText('Dina asks').length).toBeGreaterThan(0);
     expect(screen.getByText('Let us save for a kite together.')).toBeTruthy();
     expect(screen.getByText('1 of 3')).toBeTruthy();
-    // B.8: the adventure scene band sits in the stage slot, outside the board.
-    expect(document.querySelector('[data-adventure-theme="archipelago"]')).toBeTruthy();
+    // B.8 / 08 §11 (GAP-FIX-R3): the adventure scene is the backdrop of the one Mentor band, outside the board.
+    expect(document.querySelector('.lf-learning-inner > .lf-mentor-band .lf-mentor-stage-backdrop [data-asset-id="scene.archipelago.art"]')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     await waitFor(() => expect(screen.getByText('2 of 3')).toBeTruthy());
     expect(onView).toHaveBeenCalledWith('intro-01', expect.objectContaining({ lesson_id: 'mixed-lesson' }));

@@ -23,6 +23,11 @@
 //                               needs a `voice.mentor-episode.v2` segment (the
 //                               Mentor voices the misjudgment and the
 //                               recovery); without one it blocks (plan-level).
+//                               GAP-FIX-R3 (B.8, OD-19): the document's stage
+//                               scene (mentor_stage.scene, else the lesson's
+//                               adventure_scene_id) must be an approved
+//                               catalog scene, so every v2 lesson stages the
+//                               learner's Mentor (document-level).
 //   gate 16 (B.16 regional)     another market's anchors or currency always
 //                               block; with the plan's scenarios, a missing
 //                               market scenario or an unapplied one blocks.
@@ -183,12 +188,30 @@ export function runV2DocumentGates(
 
   for (const finding of checkV2Narration(document, locale, audience)) problems.push({ gate: 11, segmentId: finding.segmentId, message: finding.message });
 
+  for (const message of checkV2StageScene(document)) problems.push({ gate: 15, message });
+
   // GAP-FIX-R2 (Appendix C Stage 2; B.22, B.26, B.27; G.2): the carried-over gates 2, 3, 4, 17 and 18.
   const carried = runV2CarriedGates(document as Record<string, unknown>, answerKeys);
   problems.push(...carried.problems);
   review.push(...carried.review);
 
   return { problems, review, notApplicable: [] };
+}
+
+/** The approved Mentor stage scenes (Core's `MENTOR_STAGE_SCENES`; frontend `lessonDocument.ts`). */
+export const V2_STAGE_SCENES = ['diorama-a', 'diorama-b'] as const;
+
+/**
+ * B.8 / OD-19 (GAP-FIX-R3): every v2 lesson stages the learner's Mentor on a
+ * scene the lesson declares. The stage scene is `mentor_stage.scene`, else
+ * the lesson's `adventure_scene_id`; a document whose stage scene is not an
+ * approved catalog scene blocks, so Core never has to fall back.
+ */
+export function checkV2StageScene(document: V2DocumentLike): string[] {
+  const stage = (document as { mentor_stage?: { scene?: unknown } }).mentor_stage;
+  const scene = stage ? stage.scene : (document as { adventure_scene_id?: unknown }).adventure_scene_id;
+  if (typeof scene === 'string' && (V2_STAGE_SCENES as readonly string[]).includes(scene)) return [];
+  return [`the Mentor stage has no approved scene: ${stage ? 'mentor_stage.scene' : 'adventure_scene_id'} is ${JSON.stringify(scene ?? null)}, not one of ${V2_STAGE_SCENES.join(', ')} (B.8, OD-19)`];
 }
 
 /**

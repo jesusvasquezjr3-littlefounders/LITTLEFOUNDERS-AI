@@ -182,6 +182,17 @@ describe('the v2 content gates', () => {
     expect(emitV2Lesson(staged, { versionId: 'forge-test' }).ok).toBe(true);
   });
 
+  it('B.8 / OD-19 (GAP-FIX-R3): blocks a document whose Mentor stage has no approved scene (gate 15)', () => {
+    const base = { locale: 'en-US', age_band: '10-12', title: 'Fine', segments: [] };
+    const stageProblems = (document: Record<string, unknown>) => runV2DocumentGates(document as never).problems.filter((p) => p.gate === 15);
+    expect(stageProblems({ ...base, adventure_scene_id: 'diorama-b' })).toEqual([]);
+    expect(stageProblems({ ...base, adventure_scene_id: 'harbor-night', mentor_stage: { character: 'rho', scene: 'diorama-a' } })).toEqual([]);
+    expect(stageProblems({ ...base, adventure_scene_id: 'harbor-night' })[0]?.message).toMatch(/no approved scene/);
+    expect(stageProblems({ ...base, adventure_scene_id: 'diorama-a', mentor_stage: { character: 'rho', scene: 'moon' } })).toHaveLength(1);
+    // Every committed plan stages its Mentor.
+    for (const plan of planById.values()) expect(emitV2Lesson(clone(plan), { versionId: 'forge-test' }).problems.filter((p) => p.gate === 15)).toEqual([]);
+  });
+
   it('block local-currency amounts in a lesson declared market-neutral', () => {
     const plan = clone(planById.get('v2-goal-bullet')!);
     plan.segments[0]!.payload.currency = 'local';

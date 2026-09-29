@@ -693,6 +693,24 @@ describe('compact Mentor stage projection', () => {
     expect(screen.getByRole('slider')).toBeTruthy();
   });
 
+  it('08 §11 (GAP-FIX-R3): with an adventure theme the scene is the band backdrop and the band stays the side-column child', () => {
+    render(<LessonDocumentView raw={growthPilotDocument('en-US', '6-9')} locale="en-US" ageBand="6-9" onBack={noop}
+      mentorStage={{ character: 'rho', scene: 'diorama-a' }} adventureTheme="archipelago" />);
+    const band = document.querySelector('.lf-learning-inner > .lf-mentor-band');
+    expect(band?.getAttribute('data-mentor-character')).toBe('rho');
+    expect(band?.querySelector('.lf-mentor-stage-backdrop [data-asset-id="scene.archipelago.art"]')).toBeTruthy();
+    // One band, no separate stripe: nothing else in the slot.
+    expect(document.querySelectorAll('.lf-learning-inner > .lf-mentor-band')).toHaveLength(1);
+    expect(document.querySelector('.lf-learning-scene-band, .lf-learning-stage-band')).toBeNull();
+  });
+
+  it('08 §11 (GAP-FIX-R3): with no stage projected, the scene alone keeps the band class contract and the register height', () => {
+    render(<LessonDocumentView raw={growthPilotDocument('en-US', '6-9')} locale="en-US" ageBand="6-9" onBack={noop} adventureTheme="archipelago" />);
+    const band = document.querySelector<HTMLElement>('.lf-learning-inner > .lf-mentor-band.lf-mentor-band--scene');
+    expect(band?.style.getPropertyValue('--lf-mentor-band-size')).toBe('110px');
+    expect(band?.querySelector('[data-asset-id="scene.archipelago.art"]')).toBeTruthy();
+  });
+
   it('W2L.3: a board without a projection carries no stage', () => {
     render(<LessonDocumentView raw={growthPilotDocument('en-US', '6-9')} locale="en-US" ageBand="6-9" onBack={noop} />);
     expect(document.querySelector('.lf-mentor-band')).toBeNull();

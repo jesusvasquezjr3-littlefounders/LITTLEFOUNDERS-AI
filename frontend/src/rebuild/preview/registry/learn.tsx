@@ -4,6 +4,7 @@ import { growthPilotDocument } from '../../learning/GrowthBoard';
 import { learningFixtures } from '../../learning/allocationFixtures';
 import { scoreV2Judgment, scoreV2Visual } from '../../learning/v2VisualScorer.generated';
 import { LessonDocumentView } from '../../learning/LessonDocumentView';
+import { loadAdventureThemeProjection } from '../../learning/lessonDocument';
 import { numberLinePilotDocument } from '../../learning/NumberLineBoard';
 import { sequencePilotDocument } from '../../learning/sequencePilotDocument';
 import { LessonResultView } from '../../learning/LessonResultView';
@@ -128,6 +129,8 @@ export const learnPreviewScreens: PreviewRegistry = {
   invalid: refusal,
   lesson: framed(({ locale, ageBand, theme, params, go }) => <LessonDocumentView key={`${locale}:${ageBand}`} raw={allocationPilotDocument(locale, ageBand)} locale={locale} ageBand={ageBand}
     theme={theme} onBack={() => go('home')} mentorStage={params.get('stage') === '1' ? PREVIEW_MENTOR_STAGE : null}
+    // GAP-FIX-R3 (08 §11): `?adventure=<theme>` draws the adventure scene as the band's backdrop (the compact-stage audit's theme states).
+    adventureTheme={loadAdventureThemeProjection(params.get('adventure'))}
     onGrade={(allocation) => {
       const item = learningFixtures[ageBand].item;
       return verdict(scoreV2Visual('money.allocation.v2', { total: item.total, step: item.step }, allocation, { minimumSave: item.minimumSave }));

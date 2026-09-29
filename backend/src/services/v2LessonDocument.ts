@@ -587,20 +587,31 @@ export function v2CompletionRequiredSegmentIds(document: V2PublicLesson): string
 }
 
 /**
- * The response-level Mentor stage projection (OD-19 / S05.2bh). The
- * character is ALWAYS the learner's own stored preference — catalog default
- * when never chosen — never the document's authored `mentor_stage.character`
- * and never anything a client supplied. The scene is the document's
- * declared, already-validated scene. The stored character is re-validated
- * against the catalog here so a drifted preference row fails closed (no
- * stage) instead of sending an unknown character to a renderer.
+ * The response-level Mentor stage projection (OD-19 / S05.2bh; B.8 and
+ * Bible 08 §11 as closed by GAP-FIX-R3). Every v2 lesson has a Mentor on its
+ * stage: `mentor_stage` metadata is no longer what switches the presence on.
+ * The character is ALWAYS the learner's own stored preference — catalog
+ * default when never chosen — never the document's authored
+ * `mentor_stage.character` and never anything a client supplied. The scene
+ * is the document's declared stage scene, else the lesson's required
+ * `adventure_scene_id`, validated against the approved scene enum; a lesson
+ * scene outside the catalog falls back to the catalog's first scene so the
+ * Mentor is never missing (Forge's v2 gate blocks such a document before
+ * publication). The stored character is re-validated against the catalog so
+ * a drifted preference row fails closed (no stage) instead of sending an
+ * unknown character to a renderer; a failed preference READ is the route's
+ * call and also omits the stage (§1.14).
  */
+export function v2StageScene(document: Pick<V2PublicLesson, 'mentor_stage' | 'adventure_scene_id'>): V2MentorStage['scene'] {
+  if (document.mentor_stage) return document.mentor_stage.scene;
+  const scene = v2MentorStageSchema.shape.scene.safeParse(document.adventure_scene_id);
+  return scene.success ? scene.data : MENTOR_STAGE_SCENES[0];
+}
+
 export function projectV2MentorStage(document: V2PublicLesson, character: string | null | undefined): V2MentorStage | null {
-  const declared = document.mentor_stage;
-  if (!declared) return null;
   const parsed = v2MentorStageSchema.shape.character.safeParse(character);
   if (!parsed.success) return null;
-  return { character: parsed.data, scene: declared.scene };
+  return { character: parsed.data, scene: v2StageScene(document) };
 }
 
 /**

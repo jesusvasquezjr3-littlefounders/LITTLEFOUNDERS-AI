@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { AgeBand } from '../design/copyBudget';
 import { REGISTERS, registerForCopyBand } from '../design/learnerRegisterPolicy.generated';
 import { MentorStage } from '../mentor/MentorStage';
@@ -23,12 +24,14 @@ export function mentorReaction(ageBand: AgeBand, verdict: LessonVerdict) {
  * stage component as the Mentor screen, at its compact size. Decorative here:
  * the lesson's prompt label carries the Mentor's name and words.
  */
-export function CompactMentorStage({ ageBand, theme, verdict, character, scene, beat }: {
+export function CompactMentorStage({ ageBand, theme, verdict, character, scene, beat, backdrop = null }: {
   ageBand: AgeBand; theme: 'light' | 'dark'; verdict: LessonVerdict;
   character: LessonMentorStage['character']; scene: LessonMentorStage['scene'];
   /** Bump for each new verdict, so a second miss gets a second nod. */
   beat?: number;
+  /** The lesson's adventure scene, drawn inside the one band (GAP-FIX-R3), never as its own stripe. */
+  backdrop?: ReactNode;
 }) {
   return <MentorStage size="compact" character={character} scene={scene} state={lessonStateFor(verdict)} ageBand={ageBand}
-    theme={theme} beat={beat} />;
+    theme={theme} beat={beat} backdrop={backdrop} />;
 }

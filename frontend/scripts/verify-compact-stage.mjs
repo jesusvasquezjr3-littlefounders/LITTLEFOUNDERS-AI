@@ -12,12 +12,20 @@ const cases = [
   { name: 'young-phone-low-power', width: 375, height: 740, age: '6-9', dark: false, lowPower: true },
   { name: 'teen-phone', width: 375, height: 740, age: '13-17', dark: false },
   { name: 'teen-phone-dark', width: 375, height: 740, age: '13-17', dark: true },
+  // GAP-FIX-R3 (Bible 08 §11): the adventure scene is the band's backdrop, never a stripe of its own; each register
+  // keeps its cap (30% for 6-9, 25% for 10-12, 15% for teens) and the answers stay in the first view.
+  { name: 'young-phone-theme', width: 375, height: 740, age: '6-9', dark: false, adventure: 'archipelago' },
+  { name: 'tween-phone-theme', width: 375, height: 740, age: '10-12', dark: false, adventure: 'archipelago' },
+  { name: 'teen-phone-theme', width: 375, height: 740, age: '13-17', dark: true, adventure: 'archipelago' },
+  { name: 'tablet-theme', width: 768, height: 900, age: '10-12', dark: false, adventure: 'archipelago' },
   { name: 'tablet', width: 768, height: 900, age: '10-12', dark: false },
   { name: 'adult-desktop-light', width: 1280, height: 800, age: 'adult', dark: false },
   { name: 'adult-desktop-dark', width: 1280, height: 800, age: 'adult', dark: true },
   { name: 'adult-desktop-dark-reduced', width: 1280, height: 800, age: 'adult', dark: true, reduced: true },
 ];
 let failures = 0;
+/** Bible 08 §11: the phone band's share of the viewport height, by register. */
+const bandCap = (age) => (age === '6-9' ? .3 : age === '10-12' ? .25 : .15);
 const page = await openPage(browser.browser, cases[0]);
 async function click(selector) {
   const point = await page.evaluate(`(() => {
@@ -40,7 +48,7 @@ try {
       page.failedRequests.length = 0;
       await page.send('Emulation.setDeviceMetricsOverride', { width: scenario.width, height: scenario.height, deviceScaleFactor: 1, mobile: scenario.width < 768 });
       await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: scenario.dark ? 'dark' : 'light' }, { name: 'prefers-reduced-motion', value: scenario.reduced ? 'reduce' : 'no-preference' }] });
-      await page.send('Page.navigate', { url: `${process.env.REBUILD_URL ?? 'http://127.0.0.1:5190'}/rebuild.html?locale=es-MX&theme=${scenario.dark ? 'dark' : 'light'}&screen=lesson&age=${scenario.age}&stage=1${scenario.lowPower ? '&lowPower=1' : ''}` });
+      await page.send('Page.navigate', { url: `${process.env.REBUILD_URL ?? 'http://127.0.0.1:5190'}/rebuild.html?locale=es-MX&theme=${scenario.dark ? 'dark' : 'light'}&screen=lesson&age=${scenario.age}&stage=1${scenario.adventure ? `&adventure=${scenario.adventure}` : ''}${scenario.lowPower ? '&lowPower=1' : ''}` });
       for (let n = 0; n < 1200; n++) {
         if (page.errors.length) break;
         // Low power: the still. Reduced motion: the same 3D with its poses held (Bible 08 §7). Otherwise: live 3D.
@@ -51,7 +59,7 @@ try {
       const state = await page.evaluate(`(() => {
         const rect = (selector) => { const node = document.querySelector(selector); if (!node) return null; const r = node.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height, bottom: r.bottom }; };
         const clippedLabels = [...document.querySelectorAll('.lf-learning-controls .lf-stepper > *, .lf-learning-controls .lf-stepper-value')].filter((node) => node.scrollWidth > node.clientWidth + 1).map((node) => node.textContent);
-        return { main: !!document.querySelector('.lf-learning'), canvas: !!document.querySelector('.lf-mentor-band canvas'), renderMode: document.querySelector('.lf-mentor-band')?.dataset.renderMode, fallback: document.querySelector('.lf-mentor-band')?.dataset.fallback ?? null, stillLoaded: !!document.querySelector('.lf-mentor-band .lf-mentor-stage-still')?.naturalWidth, ready: !document.querySelector('.lf-mentor-band .lf-mentor-stage-still'), band: rect('.lf-mentor-band'), question: rect('.lf-learning-intro'), firstAnswer: rect('.lf-learning-controls, .lf-learning-control-strip'), horizontalOverflow: document.documentElement.scrollWidth > innerWidth, clippedLabels, errors: window.__stageErrors ?? [] };
+        return { main: !!document.querySelector('.lf-learning'), canvas: !!document.querySelector('.lf-mentor-band canvas'), renderMode: document.querySelector('.lf-mentor-band')?.dataset.renderMode, fallback: document.querySelector('.lf-mentor-band')?.dataset.fallback ?? null, stillLoaded: !!document.querySelector('.lf-mentor-band .lf-mentor-stage-still')?.naturalWidth, ready: !document.querySelector('.lf-mentor-band .lf-mentor-stage-still'), band: rect('.lf-mentor-band'), bandIsDirectChild: !!document.querySelector('.lf-learning-inner > .lf-mentor-band'), backdrop: !!document.querySelector('.lf-mentor-band .lf-mentor-stage-backdrop .lf-art'), stripes: document.querySelectorAll('.lf-learning-scene-band, .lf-learning-stage-band').length, question: rect('.lf-learning-intro'), firstAnswer: rect('.lf-learning-controls, .lf-learning-control-strip'), horizontalOverflow: document.documentElement.scrollWidth > innerWidth, clippedLabels, errors: window.__stageErrors ?? [] };
       })()`);
       const shot = await page.send('Page.captureScreenshot', { format: 'png' });
       writeFileSync(join(output, `${scenario.name}.png`), Buffer.from(shot.data, 'base64'));
@@ -64,7 +72,8 @@ try {
           // A software renderer under load cannot hold 30 fps: the stage then takes its still, as designed (08 §7).
           || (state.renderMode === 'still' && state.fallback === 'frame-rate' && state.stillLoaded);
       const ok = state.main && rendered && state.band && state.firstAnswer && !state.horizontalOverflow && !state.clippedLabels.length
-        && (scenario.width < 640 ? state.firstAnswer.y < scenario.height && state.band.height <= scenario.height * (scenario.age === '13-17' ? .15 : .3) : state.band.x < state.question.x)
+        && (scenario.width < 640 ? state.firstAnswer.y < scenario.height && state.band.height <= scenario.height * bandCap(scenario.age) : state.band.x < state.question.x)
+        && state.bandIsDirectChild && !state.stripes && (!scenario.adventure || state.backdrop)
         && !state.errors.length && !page.errors.length && !page.failedRequests.length;
       if (!ok) failures++;
       console.log(`${ok ? 'PASS' : 'FAIL'} ${scenario.name} ${JSON.stringify({ state, consoleErrors: page.errors, failedRequests: page.failedRequests })}`);

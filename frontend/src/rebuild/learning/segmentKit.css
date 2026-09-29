@@ -12,9 +12,6 @@
 .lf-move-to:last-child { border-block-end: 0; }
 .lf-move-to-hint { font-size: .875rem; }
 .lf-move-to-options { margin: 0; }
-.lf-learning-scene-band { display: grid; place-items: center; overflow: hidden; border-radius: var(--rounded-lg); max-block-size: 160px; }
-.lf-learning-scene-band .lf-art { inline-size: 100%; block-size: auto; object-fit: cover; }
 .lf-learning-update { display: grid; gap: var(--spacing-3); }
 .lf-learning-update-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
 @media (prefers-reduced-motion: reduce) { .lf-speech-plate { transition: none; } }
-.lf-learning-stage-band { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
