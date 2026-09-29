@@ -331,3 +331,43 @@ jobs:
           LF_PG_DATA: /var/lib/postgresql/data
           LF_PG_VERIFY_JOBS: '3'
         run: node database/scripts/family-db-verify.mjs
+
+  # Appendix M Part 2.1 criterion 2 / Part 3 Stage 2 (GAP-FIX-R4): the age and
+  # identity adversarial checks hold every release. A Core-only release does
+  # not run database-ci.yml, so this unfiltered job re-proves every Block A
+  # database guarantee (flagged sessions record no optional analytics, a
+  # child's sign-in address cannot move, parent-role provenance, the
+  # verification age guard, the age correction, the teen birth month) over the
+  # whole migration chain on every push and pull request.
+  identity-db-verify:
+    name: Block A database proofs (origin, kid email, parent provenance) over the full chain
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Block A database proofs
+        env:
+          LF_PG_PORT: '5432'
+          LF_PG_USER: postgres
+          LF_PG_PSQL: psql
+          LF_PG_DATA: /var/lib/postgresql/data
+          LF_PG_VERIFY_JOBS: '3'
+        run: node database/scripts/identity-db-verify.mjs

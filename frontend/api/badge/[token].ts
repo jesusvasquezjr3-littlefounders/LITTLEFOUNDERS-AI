@@ -31,11 +31,43 @@
 
 export const config = { runtime: 'edge' };
 
+type BadgeLocale = 'en-US' | 'es-MX' | 'pt-BR';
+
 interface BadgePayload {
   firstName: string;
   achievementKind: 'course_badge' | 'streak' | 'goal_reached';
   achievementLabel: string;
   imageUrl: string;
+  /** The locale Core localized the label in (routes/badgePublic.ts); absent from an older Core. */
+  locale?: string;
+}
+
+/*
+ * Bible 02 section 1.2 (three locales) and rule 16 (no em dash): the unfurl a
+ * family member sees in a chat app is written in the language the label was
+ * written in, never fixed English. Keyed by the payload's locale; en-US for a
+ * missing or unknown one. Tested in src/badgeEdge.test.ts.
+ */
+export const BADGE_UNFURL_COPY: Record<BadgeLocale, { title: (name: string, label: string) => string; description: (name: string, label: string) => string; ogLocale: string }> = {
+  'en-US': {
+    title: (name, label) => `${name}: ${label} · LittleFounders`,
+    description: (name, label) => `${name} just earned ${label} on LittleFounders, where kids learn real money and business skills.`,
+    ogLocale: 'en_US',
+  },
+  'es-MX': {
+    title: (name, label) => `${name}: ${label} · LittleFounders`,
+    description: (name, label) => `${name} acaba de lograr ${label} en LittleFounders, donde niñas y niños aprenden habilidades reales de dinero y emprendimiento.`,
+    ogLocale: 'es_MX',
+  },
+  'pt-BR': {
+    title: (name, label) => `${name}: ${label} · LittleFounders`,
+    description: (name, label) => `${name} acabou de conquistar ${label} no LittleFounders, onde crianças aprendem habilidades reais com dinheiro e empreendedorismo.`,
+    ogLocale: 'pt_BR',
+  },
+};
+
+export function badgeUnfurlCopy(locale: string | undefined): (typeof BADGE_UNFURL_COPY)[BadgeLocale] {
+  return locale && Object.hasOwn(BADGE_UNFURL_COPY, locale) ? BADGE_UNFURL_COPY[locale as BadgeLocale] : BADGE_UNFURL_COPY['en-US'];
 }
 
 /** Mirrors backend/src/services/badgeLinkWindow.ts; `npm run sharing:check` keeps them equal. */
@@ -71,13 +103,13 @@ async function fetchShell(origin: string): Promise<string> {
 }
 
 function withOgTags(shell: string, badge: BadgePayload): string {
-  const title = esc(`${badge.firstName} — ${badge.achievementLabel} · LittleFounders`);
-  const description = esc(
-    `${badge.firstName} just earned ${badge.achievementLabel} on LittleFounders — where kids learn real money and business skills.`,
-  );
+  const copy = badgeUnfurlCopy(badge.locale);
+  const title = esc(copy.title(badge.firstName, badge.achievementLabel));
+  const description = esc(copy.description(badge.firstName, badge.achievementLabel));
   const image = esc(badge.imageUrl);
   const tags = [
     '<meta property="og:type" content="website" />',
+    `<meta property="og:locale" content="${copy.ogLocale}" />`,
     `<meta property="og:title" content="${title}" />`,
     `<meta property="og:description" content="${description}" />`,
     `<meta property="og:image" content="${image}" />`,

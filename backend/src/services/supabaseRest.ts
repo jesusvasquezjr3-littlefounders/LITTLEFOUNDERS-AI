@@ -1630,6 +1630,25 @@ function liveBadgeShareFilter(): string {
  * able to tell "dead" apart from "never existed" so it can trigger the lazy
  * image purge.
  */
+/**
+ * The locale a legacy badge link's copy was written in. A legacy row stores
+ * no locale: its label was localized in the sharing Tutor's language, so this
+ * reads the profile locale of the Tutor who created the share (created_by),
+ * then the child's (the family's locale at creation). Only the locale column
+ * is read. Null when neither is readable, and the caller falls back to en-US.
+ */
+export async function getBadgeShareLocale(share: Pick<BadgeShareRow, 'created_by' | 'kid_user_id'>): Promise<string | null> {
+  const ids = [share.created_by, share.kid_user_id].filter((id): id is string => typeof id === 'string' && UUID.safeParse(id).success);
+  if (ids.length === 0) return null;
+  const rows = await serviceRest<{ user_id: string; locale: string | null }[]>(`/profiles?user_id=${inFilter(ids)}&select=user_id,locale`);
+  if (!Array.isArray(rows)) return null;
+  for (const id of ids) {
+    const locale = rows.find((row) => row?.user_id === id)?.locale;
+    if (typeof locale === 'string' && locale) return locale;
+  }
+  return null;
+}
+
 export async function getBadgeShareByToken(token: string): Promise<BadgeShareRow | null> {
   const rows = await serviceRest<BadgeShareRow[]>(`/badge_shares?token=eq.${es(token)}&select=${BADGE_SHARE_FIELDS}&limit=1`);
   return rows?.[0] ?? null;

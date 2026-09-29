@@ -22,6 +22,7 @@ import { readFileSync } from 'node:fs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '../..');
 const SITE_MODULE = resolve(ROOT, 'frontend/scripts/seo/site.mjs');
+const BUILD_MODULE = resolve(ROOT, 'frontend/scripts/seo/build-seo.mjs');
 const ANALYTICS = resolve(ROOT, 'frontend/src/lib/analytics.tsx');
 const TOKENS = resolve(ROOT, 'frontend/src/rebuild/design/tokens.css');
 
@@ -178,6 +179,32 @@ export function auditRoutes(site, analyticsSource) {
   ];
 }
 
+const EM_DASH = String.fromCharCode(0x2014);
+
+/**
+ * llms.txt and llms-full.txt are read by assistants that then describe the
+ * product to a parent in their own words, so a wrong word here is repeated
+ * everywhere. OD-6 and Frontend Bible 02 D10 / section 1.1: "Tutor" is only
+ * the verified parent (capitalised, the account), and the AI is the Mentor;
+ * the brief once said "the tutor holds a real conversation". Bible 02 rule 16:
+ * no em dash. `label` names the file in the message.
+ */
+export function auditAgentText(text, label) {
+  const problems = [];
+  const lines = text.split('\n');
+  for (const [index, line] of lines.entries()) {
+    const at = `${label}:${index + 1}`;
+    if (line.includes(EM_DASH)) problems.push(`${at} uses an em dash (Bible 02 rule 16): ${JSON.stringify(line.slice(0, 120))}`);
+    for (const match of line.matchAll(/\btutor(?:es|s|a|as)?\b/g)) {
+      problems.push(`${at} says "${match[0]}": the AI is the Mentor, and "Tutor" (capitalised) is only the verified parent (OD-6): ${JSON.stringify(line.slice(0, 120))}`);
+    }
+    if (/\b(?:AI|IA)[\s-]+Tutor\b|\bTutor[\s-]+(?:AI|IA)\b/i.test(line)) {
+      problems.push(`${at} calls the AI a Tutor (OD-6): ${JSON.stringify(line.slice(0, 120))}`);
+    }
+  }
+  return problems;
+}
+
 async function main() {
 // pathToFileURL, never a bare absolute path: Node's ESM loader takes a URL,
 // and on Windows `C:\...` parses as the scheme `c:` -> ERR_UNSUPPORTED_ESM_URL_SCHEME.
@@ -185,7 +212,12 @@ async function main() {
 // database/scripts/check-migrations.mjs, and the reason database/ `npm test`
 // could not pass on Windows until 2026-08-23 (RUNBOOK.md).
   const site = await import(pathToFileURL(SITE_MODULE).href);
-  const problems = [...auditSite(site), ...auditRoutes(site, readFileSync(ANALYTICS, 'utf8')), ...auditBrand(site, readFileSync(TOKENS, 'utf8'))];
+  const seo = await import(pathToFileURL(BUILD_MODULE).href);
+  const agentText = site.SITE.locales.flatMap((locale) => [
+    ...auditAgentText(seo.renderLlmsTxt(locale), `llms.txt (${locale})`),
+    ...auditAgentText(seo.renderLlmsFullTxt(locale), `llms-full.txt (${locale})`),
+  ]);
+  const problems = [...auditSite(site), ...auditRoutes(site, readFileSync(ANALYTICS, 'utf8')), ...auditBrand(site, readFileSync(TOKENS, 'utf8')), ...agentText];
 
   if (problems.length === 0) {
     const indexable = site.PAGES.filter((p) => p.index).length;

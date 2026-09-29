@@ -1,7 +1,8 @@
 """OD-28 (S-04): a declared teen keeps a birth month and moves to adult at 18.
 
 Applies the ACTUAL migration chain (every file in database/migrations, in
-order, through the age_declaration_birth_month migration) to a fresh database
+order, through the age_declaration_birth_month migration; with LF_PG_FULL_CHAIN=1
+every later migration too, so a later redefinition is re-proved) to a fresh database
 on an owned native PostgreSQL cluster, over the minimal Supabase shim the S07
 verifiers use, then checks: only a teen's month is kept and only on the first
 declaration; malformed months are refused; promotion happens only when due
@@ -15,6 +16,7 @@ Cluster selection (never the shared Docker stack):
   LF_PG_PORT   loopback port (default 15483)
   LF_PG_USER   superuser (default audit_owner)
   LF_PG_DATA   the data directory the server must report (ownership check)
+  LF_PG_FULL_CHAIN  set to 1 to apply the WHOLE chain (identity-db-verify.mjs does)
   LF_PG_REPORT report path (default audit-results/w2s3-age-birth-month-postgres.json)
 """
 from concurrent.futures import ThreadPoolExecutor
@@ -73,8 +75,12 @@ CREATE PUBLICATION supabase_realtime;
 database = 'lf_age_month_' + uuid.uuid4().hex
 sql(f'CREATE DATABASE {database}')
 sql(SHIM, database)
+# LF_PG_FULL_CHAIN=1 (the identity:db-verify gate) applies every later
+# migration as well, so a later redefinition of these functions must keep
+# every check below true.
+FULL_CHAIN = os.environ.get('LF_PG_FULL_CHAIN') == '1'
 for migration in MIGRATIONS:
-    if migration.name > TARGET.name:
+    if migration.name > TARGET.name and not FULL_CHAIN:
         break
     sql(migration.read_text(encoding='utf-8'), database)
 
@@ -159,7 +165,11 @@ with ThreadPoolExecutor(max_workers=8) as pool:
 assert bands == ['adult'] * 8, bands
 assert row(due) == 'adult|-|true', row(due)
 tier_after = sql(f"SELECT social_tier('{due}')", database)
-assert (tier_before, tier_after) == ('teen', 'adult'), (tier_before, tier_after)
+# Through this migration the tier moves with the promotion. Once a later
+# migration reads the band through effective_age_band (0182 on the whole
+# chain), a due month is already the adult tier before promotion is stored.
+reads_month = sql("SELECT to_regprocedure('public.effective_age_band(uuid)') IS NOT NULL", database) == 't'
+assert (tier_before, tier_after) == ('adult' if reads_month else 'teen', 'adult'), (tier_before, tier_after)
 stamp = sql(f"SELECT promoted_to_adult_at FROM account_age_declarations WHERE user_id = '{due}'", database)
 assert service(f"SELECT promote_age_declaration('{due}')") == 'adult'
 assert sql(f"SELECT promoted_to_adult_at FROM account_age_declarations WHERE user_id = '{due}'", database) == stamp

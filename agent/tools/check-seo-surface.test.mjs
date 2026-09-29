@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { auditSite, auditRoutes, auditBrand } from './check-seo-surface.mjs';
+import { auditSite, auditRoutes, auditBrand, auditAgentText } from './check-seo-surface.mjs';
 
 /*
  * A gate is only worth what its own tests are worth.
@@ -179,4 +179,36 @@ test('a non-token manifest background fails the brand audit', () => {
 test('the legacy raster logo as the structured-data logo fails the brand audit', () => {
   const problems = auditBrand({ SITE: { ...site.SITE, logoPath: '/logo-main-trimmed.png' } }, tokenSheet);
   assert.ok(problems.some((p) => p.includes('logoPath')));
+});
+
+// GAP-FIX-R4 (OD-6, Bible 02 D10 / section 1.1, rule 16): the rendered llms
+// files are what assistants repeat to parents. The brief once said "the tutor
+// holds a real conversation" and used em dashes; neither can come back.
+const seo = await import(pathToFileURL(resolve(ROOT, 'frontend/scripts/seo/build-seo.mjs')).href);
+const EM_DASH = String.fromCharCode(0x2014);
+
+test('the rendered llms.txt and llms-full.txt carry no em dash and never call the AI a tutor, in every locale', () => {
+  for (const locale of site.SITE.locales) {
+    const brief = seo.renderLlmsTxt(locale);
+    const full = seo.renderLlmsFullTxt(locale);
+    assert.ok(full.startsWith(brief), 'llms-full.txt opens with the brief');
+    for (const [label, text] of [['llms.txt', brief], ['llms-full.txt', full]]) {
+      assert.deepEqual(auditAgentText(text, `${label} (${locale})`), []);
+      assert.ok(!text.includes(EM_DASH), `${label} (${locale}) has an em dash`);
+      assert.ok(!/\btutor/.test(text), `${label} (${locale}) says "tutor"`);
+    }
+    assert.match(brief, /The Mentor holds a real conversation/);
+    for (const name of site.MENTORS) assert.ok(brief.includes(name), `${name} is missing from the brief`);
+  }
+});
+
+test('the agent-text audit catches an em dash, a lowercase tutor and an AI Tutor', () => {
+  assert.deepEqual(auditAgentText('The Mentor answers. A Tutor account links a child.', 'ok'), []);
+  const dash = auditAgentText(`Four characters ${EM_DASH} Dina, Zara`, 'x');
+  assert.equal(dash.length, 1);
+  assert.match(dash[0], /em dash/);
+  assert.match(auditAgentText('line one\nand the tutor holds a real conversation', 'x')[0], /^x:2 says "tutor"/);
+  assert.ok(auditAgentText('Chat with our AI Tutor', 'x').some((p) => p.includes('calls the AI a Tutor')));
+  assert.ok(auditAgentText('Habla con la IA-Tutor', 'x').some((p) => p.includes('calls the AI a Tutor')));
+  assert.equal(auditAgentText('the tutors and tutores', 'x').length, 2);
 });

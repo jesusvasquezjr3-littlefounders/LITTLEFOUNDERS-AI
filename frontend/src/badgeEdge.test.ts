@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import badgeHandler, { BADGE_LINK_ROUTE_RETIRES_AT } from '../api/badge/[token]';
+import badgeHandler, { BADGE_LINK_ROUTE_RETIRES_AT, BADGE_UNFURL_COPY, badgeUnfurlCopy } from '../api/badge/[token]';
 
 const token = 'a'.repeat(32);
 const shell = '<html><head><title>LittleFounders</title><meta name="robots" content="noindex, follow" /></head><body><div id="root"></div></body></html>';
@@ -88,5 +88,54 @@ describe('public badge edge response', () => {
     expectPrivate(response);
     expect(await response.text()).not.toContain('Sofía');
     expect(fetchMock.mock.calls.map(([input]) => String(input))).toEqual(['https://littlefounders.ai/app-shell.html']);
+  });
+});
+
+/*
+ * GAP-FIX-R4 (Bible 02 section 1.2, rule 16): the unfurl is written in the
+ * locale Core localized the label in, never fixed English, and with no em
+ * dash in any locale.
+ */
+describe('badge unfurl copy', () => {
+  const EM_DASH = String.fromCharCode(0x2014);
+  const meta = (html: string, key: string) => new RegExp(`<meta (?:property|name)="${key}" content="([^"]*)"`).exec(html)?.[1] ?? null;
+
+  async function unfurl(locale: string | undefined, label: string) {
+    stubBadge(200, { firstName: 'Sofía', achievementKind: 'streak', achievementLabel: label, imageUrl: 'https://media.example/badge.png', ...(locale ? { locale } : {}) });
+    const response = await badgeHandler(new Request(`https://littlefounders.ai/badge/${token}`));
+    return response.text();
+  }
+
+  it('every locale has a title and a description with no em dash', () => {
+    expect(Object.keys(BADGE_UNFURL_COPY).sort()).toEqual(['en-US', 'es-MX', 'pt-BR']);
+    for (const copy of Object.values(BADGE_UNFURL_COPY)) {
+      for (const text of [copy.title('Ana', 'X'), copy.description('Ana', 'X')]) {
+        expect(text).not.toContain(EM_DASH);
+        expect(text).toContain('Ana');
+        expect(text).toContain('X');
+      }
+    }
+  });
+
+  it.each([
+    ['es-MX', 'Racha de 7 días', 'es_MX', 'acaba de lograr Racha de 7 días en LittleFounders'],
+    ['pt-BR', 'Sequência de 7 dias', 'pt_BR', 'acabou de conquistar Sequência de 7 dias no LittleFounders'],
+    ['en-US', '7-day streak', 'en_US', 'just earned 7-day streak on LittleFounders'],
+  ])('writes the %s unfurl in its own language', async (locale, label, ogLocale, phrase) => {
+    const html = await unfurl(locale, label);
+    expect(meta(html, 'og:description')).toContain(phrase);
+    expect(meta(html, 'twitter:description')).toBe(meta(html, 'og:description'));
+    expect(meta(html, 'og:title')).toBe(`Sofía: ${label} · LittleFounders`);
+    expect(meta(html, 'og:locale')).toBe(ogLocale);
+    expect(html).not.toContain(EM_DASH);
+  });
+
+  it('falls back to English for a missing or unknown locale', async () => {
+    expect(badgeUnfurlCopy(undefined)).toBe(BADGE_UNFURL_COPY['en-US']);
+    expect(badgeUnfurlCopy('fr-FR')).toBe(BADGE_UNFURL_COPY['en-US']);
+    expect(badgeUnfurlCopy('toString')).toBe(BADGE_UNFURL_COPY['en-US']);
+    const html = await unfurl(undefined, '7-day streak');
+    expect(meta(html, 'og:locale')).toBe('en_US');
+    expect(meta(html, 'og:description')).toContain('just earned 7-day streak');
   });
 });

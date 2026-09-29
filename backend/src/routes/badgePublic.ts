@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { requireInternalKey } from '../middleware/auth.js';
 import { badgeLinksRetired, isBadgeShareActive, purgeBadgeImage, purgeBadgeImageIfUnreferenced } from '../services/badges.js';
-import { getBadgeShareByToken, insertAuditLog, listDeadBadgeShares } from '../services/supabaseRest.js';
+import { getBadgeShareByToken, getBadgeShareLocale, insertAuditLog, listDeadBadgeShares } from '../services/supabaseRest.js';
 
 /*
  * GET /api/v1/badges/:token — the LEGACY public badge-link read (0073/0109).
@@ -19,12 +19,25 @@ import { getBadgeShareByToken, insertAuditLog, listDeadBadgeShares } from '../se
  *
  * It is the ONE unauthenticated Core read a stranger's browser reaches
  * (/AGENTS.md §1.5's deliberate exception while legacy links live). The
- * response is whitelisted to display fields only: no kid_user_id, no
- * created_by, no row id. `token` is a 32-char base64url opaque string
- * (~144 bits of entropy), rate-limited by the app-level globalRateLimiter.
+ * response is whitelisted to display fields only (and the locale the
+ * label was written in): no kid_user_id, no created_by, no row id. `token`
+ * is a 32-char base64url opaque string (~144 bits of entropy), rate-limited
+ * by the app-level globalRateLimiter.
  */
 
 const TokenParam = z.string().regex(/^[A-Za-z0-9_-]{16,64}$/);
+
+/*
+ * Bible 02 section 1.2: the unfurl (frontend/api/badge/[token].ts) writes its
+ * title and description in the family's language, so the payload carries the
+ * locale the label was written in. One of the three product locales, en-US
+ * when the sharing Tutor's and the child's profiles give none.
+ */
+const BADGE_LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
+type BadgeLocale = (typeof BADGE_LOCALES)[number];
+function badgeLocale(value: string | null): BadgeLocale {
+  return (BADGE_LOCALES as readonly string[]).includes(value ?? '') ? (value as BadgeLocale) : 'en-US';
+}
 
 export function badgePublicRouter(): Router {
   const router = Router();
@@ -48,11 +61,13 @@ export function badgePublicRouter(): Router {
       return fail(res, 404, 'NOT_FOUND', 'No such badge');
     }
 
+    const locale = badgeLocale(await getBadgeShareLocale(share).catch(() => null));
     return ok(res, {
       firstName: share.first_name,
       achievementKind: share.achievement_kind,
       achievementLabel: share.achievement_label,
       imageUrl: share.image_url,
+      locale,
     });
   });
 

@@ -364,7 +364,7 @@ function renderRobots() {
   const block = (agent) => `User-agent: ${agent}\nAllow: /\n${disallow}\n`;
 
   return [
-    '# LittleFounders — https://littlefounders.ai',
+    '# LittleFounders: https://littlefounders.ai',
     '# Financial learning for families. Crawling the public site is welcome.',
     '#',
     '# AI and agent crawlers are allowed on purpose (owner decision, 2026-08-27).',
@@ -420,24 +420,24 @@ function renderSitemap() {
  * assuming an English-only product and never recommending it to a Spanish- or
  * Portuguese-speaking parent.
  */
-function renderLlmsTxt(locale) {
+export function renderLlmsTxt(locale) {
   const lines = [
     `# ${SITE.name}`,
     '',
     `> ${ELEVATOR[locale]}`,
     '',
-    'LittleFounders is for families: a parent creates the family, children learn inside it, and the parent can see everything their child does. It is free to start and can be tried without creating an account at all.',
+    'LittleFounders is for families: a parent opens a Tutor account (the verified parent) and creates the family, children learn inside it, and the Tutor can see everything their child does, every Mentor conversation included. It is free to start and can be tried without creating an account at all.',
     '',
     '## What makes it different',
     '',
     '- **Decisions, not lectures.** Every lesson puts the learner inside a choice that has a consequence. They learn because they decided, not because they listened.',
-    `- **Mentors, not teachers.** Four characters — ${MENTORS.join(', ')} — guide the lessons, and the tutor holds a real conversation: ask it, repeat it, slow it down.`,
+    `- **Mentors, not teachers.** Four characters guide the lessons: ${MENTORS.join(', ')}. The Mentor holds a real conversation, so a learner can ask a question, hear it again or take it slower.`,
     '- **Built for families.** Parent and child accounts are linked and verified, and parent visibility into a child\'s activity is a permanent property of the product, not a setting.',
-    `- **Three languages.** Fully available in ${SITE.locales.map((id) => SITE.languageNames[id]).join(', ')} — not an English product with translations bolted on.`,
+    `- **Three languages.** Fully available in ${SITE.locales.map((id) => SITE.languageNames[id]).join(', ')}, not an English product with translations bolted on.`,
     '',
     '## What can be learned',
     '',
-    ...SUBJECTS[locale].map((s) => `- **${s.name}** — ${s.about}`),
+    ...SUBJECTS[locale].map((s) => `- **${s.name}**: ${s.about}`),
     '',
     '## Pages',
     '',
@@ -453,6 +453,23 @@ function renderLlmsTxt(locale) {
     '',
   ];
   return `${lines.join('\n')}\n`;
+}
+
+/** The rebuilt public site's copy (the pages a person sees) and the site shell's navigation label. */
+export function loadMarketing(locale) {
+  return { ...readJson(join(FRONTEND, `src/i18n/${locale}/rebuild-site.json`)), nav: readJson(join(FRONTEND, `src/i18n/${locale}/rebuild-core.json`)).appShell };
+}
+
+/**
+ * llms-full.txt: the brief plus the text of every indexable page. Exported with
+ * renderLlmsTxt so agent/tools/check-seo-surface.mjs audits exactly what ships
+ * (OD-6: the AI is the Mentor, never "tutor"; Bible 02 rule 16: no em dash).
+ */
+export function renderLlmsFullTxt(locale, marketing = loadMarketing(locale)) {
+  return [
+    renderLlmsTxt(locale),
+    ...indexablePages().map((p) => `\n---\n\n# ${metaFor(p, locale).h1}\n\n${absolute(p.path)}\n\n${shellFor(p, locale, marketing).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()}\n`),
+  ].join('');
 }
 
 /* ── drift guard ───────────────────────────────────────────────────────── */
@@ -497,8 +514,7 @@ function main() {
   }
 
   const locale = SITE.canonicalLocale;
-  // The rebuilt public site's copy (the pages a person sees) and the site shell's navigation label.
-  const marketing = { ...readJson(join(FRONTEND, `src/i18n/${locale}/rebuild-site.json`)), nav: readJson(join(FRONTEND, `src/i18n/${locale}/rebuild-core.json`)).appShell };
+  const marketing = loadMarketing(locale);
 
   // The SPA fallback FIRST, from the untouched template.
   writeFileSync(join(DIST, 'app-shell.html'), renderAppShell(template));
@@ -527,11 +543,7 @@ function main() {
   // llms-full.txt is the same brief plus the page copy, for agents that prefer
   // one fetch over several. Cheap to emit, and it is what the convention's
   // larger consumers look for.
-  const full = [
-    renderLlmsTxt(locale),
-    ...indexablePages().map((p) => `\n---\n\n# ${metaFor(p, locale).h1}\n\n${absolute(p.path)}\n\n${shellFor(p, locale, marketing).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()}\n`),
-  ].join('');
-  writeFileSync(join(DIST, 'llms-full.txt'), full);
+  writeFileSync(join(DIST, 'llms-full.txt'), renderLlmsFullTxt(locale, marketing));
 
   // The share cards live in public/og and Vite copies public/ into dist/ on
   // its own — there is nothing to move here.
@@ -542,4 +554,5 @@ function main() {
   );
 }
 
-main();
+// Only when invoked directly (the frontend build), so the SEO audit can import the renderers.
+if (process.argv[1] && resolve(fileURLToPath(import.meta.url)) === resolve(process.argv[1])) main();

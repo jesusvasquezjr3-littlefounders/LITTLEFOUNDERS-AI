@@ -1,5 +1,5 @@
 // pg-verify-runner.mjs — the shared harness behind the native-PostgreSQL
-// release gates (social-db-verify.mjs, family-db-verify.mjs).
+// release gates (social-db-verify.mjs, family-db-verify.mjs, identity-db-verify.mjs).
 //
 // A gate names its verifiers (database/scripts/verify-*.py); this runs each
 // against the full migration chain on one PostgreSQL cluster and fails on any

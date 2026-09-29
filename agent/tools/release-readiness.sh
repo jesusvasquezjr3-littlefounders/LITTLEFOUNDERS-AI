@@ -55,6 +55,13 @@ npm run social:db-verify
 # among them, re-run over the whole migration chain for every release; a
 # machine with no PostgreSQL prints SKIP.
 npm run family:db-verify
+# Appendix M Part 2.1 criterion 2 / Part 3 Stage 2 (GAP-FIX-R4): the age and
+# identity adversarial checks hold through every path, every release. The
+# Block A database proofs (flagged sessions record no optional analytics, 1.1;
+# a child's sign-in address cannot move, 1.3, even straight through GoTrue;
+# parent-role provenance and the verification age guard, A.5) re-run over the
+# whole migration chain; a machine with no PostgreSQL prints SKIP.
+npm run identity:db-verify
 
 npm --prefix coursegen run catalog:check -- "curriculum/$COURSE"
 npm --prefix coursegen run graph:check -- "$COURSE"
