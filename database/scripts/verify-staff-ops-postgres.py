@@ -17,6 +17,13 @@ staff_access_reviews and identity_metrics):
   - G.4: the access-review log lists only admin/superadmin roles and the four
     staff permissions, ages a grant from max(granted, last kept review), and
     a review is superadmin-only and audited; browser roles read nothing;
+  - G.1 / G.4 (GAP-FIX-R5): a role or staff-permission revocation goes
+    through revoke_staff_grant, superadmin actor only (never the actor's own
+    superadmin role); its audit row names the REVOKING superadmin, never the
+    original granter; an elevated revocation also writes the access-review
+    row 'revoked' in the same transaction (a failed review write keeps the
+    grant); a direct service-role DELETE records no actor rather than the
+    granter;
   - Appendix M Part 1: identity_metrics counts every population correctly;
   - A.2 / Appendix M 1.1: onboarding_discovery_metrics counts stored discovery
     answers from refused populations, and its migration scrubs them.
@@ -408,6 +415,66 @@ try:
     for role in ('anon', 'authenticated'):
         rejected(f"SET ROLE {role}; SELECT account_age_record_is_minor('{S['s_teen']}');", 'permission denied')
     check('a declared adult and a teen made 18 by birth month still receive the staff grant; the age predicate is service-role only')
+
+    # ── G.1 / G.4 (GAP-FIX-R5): a revocation names the revoking superadmin ──
+    R = {name: str(uuid.uuid4()) for name in ('rv_boss2', 'rv_admin', 'rv_admin2', 'rv_user')}
+    run('INSERT INTO auth.users (id, email) VALUES ' + ', '.join(
+        f"('{v}', '{k}@{'littlefounders.ai' if k != 'rv_user' else 'example.com'}')" for k, v in R.items()) + ';')
+    run(f"""
+    INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{R['rv_boss2']}', 'superadmin', '{I['boss']}');
+    INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{R['rv_admin']}', 'admin', '{I['boss']}'), ('{R['rv_admin2']}', 'admin', '{I['boss']}');
+    INSERT INTO admin_permissions (user_id, permission, granted_by) VALUES
+        ('{R['rv_admin']}', 'manage_content', '{I['boss']}'), ('{R['rv_admin2']}', 'view_analytics', '{I['boss']}'), ('{R['rv_admin2']}', 'manage_support', '{I['boss']}');
+    """)
+    revoke = lambda actor, subject, kind, grant: service(f"SELECT revoke_staff_grant('{actor}', '{subject}', '{kind}', '{grant}');")
+    held = lambda table, col, subject, grant: scalar(f"SELECT count(*) FROM {table} WHERE user_id = '{subject}' AND {col} = '{grant}'")
+    last_audit = lambda action, subject: scalar(
+        f"SELECT coalesce(actor_id::text, 'none') || '|' || coalesce(detail ->> 'grantedBy', '') FROM audit_logs WHERE action = '{action}' AND subject = '{subject}' ORDER BY id DESC LIMIT 1")
+    reviews_of = lambda subject: scalar(
+        f"SELECT count(*) || ':' || coalesce(string_agg(outcome || '/' || grant_key || '/' || reviewed_by::text, ',' ORDER BY grant_key), '') FROM staff_access_reviews WHERE subject_user_id = '{subject}'")
+
+    rejected(f"SET ROLE service_role; SELECT revoke_staff_grant('{I['admin']}', '{R['rv_admin']}', 'permission', 'manage_content');", 'ACCESS_REVOKE_FORBIDDEN')
+    rejected(f"SET ROLE service_role; SELECT revoke_staff_grant(NULL, '{R['rv_admin']}', 'permission', 'manage_content');", 'ACCESS_REVOKE_INVALID')
+    rejected(f"SET ROLE service_role; SELECT revoke_staff_grant('{R['rv_boss2']}', '{R['rv_admin']}', 'grant', 'manage_content');", 'ACCESS_REVOKE_INVALID')
+    rejected(f"SET ROLE service_role; SELECT revoke_staff_grant('{R['rv_boss2']}', '{R['rv_boss2']}', 'role', 'superadmin');", 'ACCESS_REVOKE_SELF')
+    assert held('admin_permissions', 'permission', R['rv_admin'], 'manage_content') == '1'
+    assert held('user_roles', 'role', R['rv_boss2'], 'superadmin') == '1'
+    assert reviews_of(R['rv_admin']) == '0:'
+    check('revoke_staff_grant refuses a non-superadmin actor, a missing actor, an unknown kind and a superadmin revoking their own superadmin role; nothing is removed')
+
+    assert revoke(R['rv_boss2'], R['rv_admin'], 'permission', 'manage_content') == 'revoked'
+    assert held('admin_permissions', 'permission', R['rv_admin'], 'manage_content') == '0'
+    assert last_audit('admin_permissions.delete', R['rv_admin']) == f"{R['rv_boss2']}|{I['boss']}"
+    assert revoke(R['rv_boss2'], R['rv_admin'], 'role', 'admin') == 'revoked'
+    assert held('user_roles', 'role', R['rv_admin'], 'admin') == '0'
+    assert last_audit('user_roles.delete', R['rv_admin']) == f"{R['rv_boss2']}|{I['boss']}"
+    assert reviews_of(R['rv_admin']) == f"2:revoked/admin/{R['rv_boss2']},revoked/manage_content/{R['rv_boss2']}"
+    assert scalar(f"SELECT count(*) || ':' || string_agg(DISTINCT actor_id::text, ',') FROM audit_logs WHERE action = 'admin.access.reviewed' AND subject = '{R['rv_admin']}' AND detail ->> 'outcome' = 'revoked'") == f"2:{R['rv_boss2']}"
+    assert scalar("SELECT current_setting('lf.actor', true) IS NULL OR current_setting('lf.actor', true) = ''") == 't'
+    check('a revoked staff permission and a revoked admin role are audited under the REVOKING superadmin (the granter kept as grantedBy), and each writes the access-review row "revoked" and admin.access.reviewed in the same transaction')
+
+    assert revoke(R['rv_boss2'], R['rv_user'], 'role', 'universal') == 'revoked'
+    # Every account holds 'universal' from sign-up (no granter).
+    assert last_audit('user_roles.delete', R['rv_user']) == f"{R['rv_boss2']}|"
+    assert reviews_of(R['rv_user']) == '0:'
+    assert revoke(R['rv_boss2'], R['rv_user'], 'role', 'universal') == 'not_held'
+    assert scalar(f"SELECT count(*) FROM audit_logs WHERE action = 'user_roles.delete' AND subject = '{R['rv_user']}'") == '1'
+    check('a family-role revocation names the revoking superadmin and writes no review row; revoking a grant not held changes and records nothing')
+
+    rejected(f"SET ROLE service_role; SET test.break_action = 'admin.access.reviewed'; SELECT revoke_staff_grant('{R['rv_boss2']}', '{R['rv_admin2']}', 'permission', 'view_analytics');",
+             'audit store unavailable')
+    assert held('admin_permissions', 'permission', R['rv_admin2'], 'view_analytics') == '1'
+    assert reviews_of(R['rv_admin2']) == '0:'
+    assert scalar(f"SELECT count(*) FROM audit_logs WHERE action = 'admin_permissions.delete' AND subject = '{R['rv_admin2']}'") == '0'
+    check('when the review row cannot be audited, the revocation is not committed either')
+
+    service(f"DELETE FROM admin_permissions WHERE user_id = '{R['rv_admin2']}' AND permission = 'manage_support';")
+    assert last_audit('admin_permissions.delete', R['rv_admin2']) == f"none|{I['boss']}"
+    check('a direct service-role DELETE (an older Core) records no actor, never the original granter')
+
+    for role in ('anon', 'authenticated'):
+        rejected(f"SET ROLE {role}; SELECT revoke_staff_grant('{R['rv_boss2']}', '{R['rv_admin2']}', 'permission', 'view_analytics');", 'permission denied')
+    check('no browser role can call revoke_staff_grant')
 finally:
     if os.environ.get('LF_PG_KEEP') != '1':
         sql(f'DROP DATABASE {database} WITH (FORCE)')

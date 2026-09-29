@@ -1351,14 +1351,6 @@ export async function tutorBadgeVisible(viewerId: string, subjectId: string): Pr
   return linked.length > 0 || mutualFollow;
 }
 
-export async function revokeAdminPermission(userId: string, permission: string): Promise<boolean> {
-  const res = await restRaw(`/admin_permissions?user_id=eq.${eu(userId)}&permission=eq.${permission}`, serviceToken(), {
-    method: 'DELETE',
-    headers: { Prefer: 'return=minimal' },
-  });
-  return res.ok;
-}
-
 /**
  * Append-only audit entry (no PII in detail — booleans/ids only). Returns
  * whether the row landed: audit_logs is the only record of staff actions, so
@@ -1407,15 +1399,9 @@ export async function recordCourseAssemblyIncident(courseId: string): Promise<bo
   return result !== null;
 }
 
-/** Revoke a role (DELETE). The DB's audit_role_change trigger records it; the
- * BEFORE DELETE guards (parent-cascade / last-guardian) still apply. */
-export async function revokeRole(userId: string, role: string): Promise<boolean> {
-  const res = await rest<unknown>(`/user_roles?user_id=eq.${eu(userId)}&role=eq.${es(role)}`, serviceToken(), {
-    method: 'DELETE',
-    headers: { Prefer: 'return=minimal' },
-  });
-  return res !== null;
-}
+/* A role or staff-permission revocation is never a service-role DELETE: the
+ * trigger could not name the revoking superadmin. It goes through Vault's
+ * revoke_staff_grant (services/adminData.ts revokeStaffGrant, GAP-FIX-R5). */
 
 // ── Family (guardian-brokered reads — routes/family.ts) ─────────────────────
 

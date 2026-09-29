@@ -188,9 +188,9 @@ import {
   getSocialReportCase,
   resolveSocialReviewCase,
   revokeParentVerification,
-  revokeRoleChecked,
   grantAdminPermissionChecked,
-  revokeAdminPermissionChecked,
+  revokeStaffGrant,
+  type StaffRevokeOutcome,
   setCourseStatus,
   setLessonStatus,
 } from '../services/adminData.js';
@@ -1775,6 +1775,9 @@ export function adminRouter(): Router {
     VERIFICATION_INCOMPLETE: { status: 409, code: 'RELEASE_VERIFICATION_INCOMPLETE' },
     // S05.4c: release_lesson only publishes into an already-live course.
     COURSE_RELEASE_REQUIRED: { status: 409, code: 'RELEASE_COURSE_RELEASE_REQUIRED' },
+    // G.3 (GAP-FIX-R5): Vault re-checks the staff actor of every status
+    // decision (superadmin, or admin with manage_content).
+    FORBIDDEN: { status: 403, code: 'FORBIDDEN' },
   };
 
   router.get('/content', async (_req, res) => {
@@ -2328,15 +2331,29 @@ export function adminRouter(): Router {
     ok(res, { userId: parsed.data.userId, role: parsed.data.role, granted: true });
   });
 
+  /*
+   * G.1 / G.4 (GAP-FIX-R5): a revocation names the revoking superadmin. Vault's
+   * revoke_staff_grant removes the grant with this actor on its audit row and,
+   * for an elevated grant, records the access-review decision 'revoked' in the
+   * same transaction. 'not_held' is the requested end state (nothing to
+   * record); a write Core cannot confirm answers 502, never 'revoked'.
+   */
+  const revokeOutcome = (res: Response, outcome: StaffRevokeOutcome, rejected: string, data: Record<string, unknown>) => {
+    if (outcome === 'revoked' || outcome === 'not_held') return ok(res, { ...data, revoked: outcome === 'revoked' });
+    if (outcome === 'forbidden') return fail(res, 403, 'FORBIDDEN', 'Only a superadmin revokes access, and never their own superadmin role');
+    if (outcome === 'rejected') return fail(res, 409, 'ROLE_REJECTED', rejected);
+    return fail(res, 502, DATA_UNAVAILABLE, 'Could not confirm the revocation');
+  };
+
   router.post('/roles/revoke', superadminOnly, async (req, res) => {
     const parsed = RoleMutationSchema.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'userId (uuid) + role required');
-    if (parsed.data.role === 'superadmin' && parsed.data.userId === authedUser(res).id) {
+    const actorId = authedUser(res).id;
+    if (parsed.data.role === 'superadmin' && parsed.data.userId === actorId) {
       return fail(res, 409, 'ROLE_REJECTED', 'A superadmin cannot revoke their own superadmin access');
     }
-    const result = await revokeRoleChecked(parsed.data.userId, parsed.data.role);
-    if (!result.ok) return fail(res, 409, 'ROLE_REJECTED', 'The database rejected this role change (see role invariants)');
-    ok(res, { userId: parsed.data.userId, role: parsed.data.role, revoked: true });
+    const outcome = await revokeStaffGrant({ actorId, subjectId: parsed.data.userId, kind: 'role', grant: parsed.data.role });
+    revokeOutcome(res, outcome, 'The database rejected this role change (see role invariants)', { userId: parsed.data.userId, role: parsed.data.role });
   });
 
   router.post('/roles/permissions/grant', superadminOnly, async (req, res) => {
@@ -2350,9 +2367,8 @@ export function adminRouter(): Router {
   router.post('/roles/permissions/revoke', superadminOnly, async (req, res) => {
     const parsed = AdminPermissionMutationSchema.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'userId (uuid) + permission required');
-    const result = await revokeAdminPermissionChecked(parsed.data.userId, parsed.data.permission);
-    if (!result.ok) return fail(res, 409, 'ROLE_REJECTED', 'The database rejected this permission change');
-    ok(res, { userId: parsed.data.userId, permission: parsed.data.permission, revoked: true });
+    const outcome = await revokeStaffGrant({ actorId: authedUser(res).id, subjectId: parsed.data.userId, kind: 'permission', grant: parsed.data.permission });
+    revokeOutcome(res, outcome, 'The database rejected this permission change', { userId: parsed.data.userId, permission: parsed.data.permission });
   });
 
   // ── G.4: the quarterly access review (Appendix N 1.1) ────────────────────

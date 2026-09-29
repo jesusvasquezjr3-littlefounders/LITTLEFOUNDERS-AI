@@ -5,9 +5,6 @@ import {
   getLessonDocumentLocales,
   grantRole,
   grantAdminPermission,
-  insertAuditLog,
-  revokeRole,
-  revokeAdminPermission,
   serviceRest,
   serviceRestRaw,
 } from './supabaseRest.js';
@@ -683,44 +680,52 @@ interface CourseReleaseRow {
   lessons_published: number;
 }
 
+interface StatusMoveRow {
+  ok: boolean;
+  code: string;
+  message: string;
+}
+
+/**
+ * One receipt reader for the four audited status RPCs: a decision is 'ok'
+ * only when Vault answered a row saying so. No row (a failed request, an
+ * unreadable body) is 'unavailable', and the route answers 502: the decision
+ * and its audit row either both committed or neither did, and Core does not
+ * know which, so it never reports success.
+ */
+function statusReceipt(rows: StatusMoveRow[] | null): CourseStatusResult {
+  const row = Array.isArray(rows) ? rows[0] : undefined;
+  if (!row || typeof row.ok !== 'boolean' || typeof row.code !== 'string') return { outcome: 'unavailable' };
+  if (!row.ok) return { outcome: 'blocked', code: row.code, message: typeof row.message === 'string' ? row.message : row.code };
+  return { outcome: 'ok' };
+}
+
 /**
  * A publish click is a human approval, but it must release the complete
  * hierarchy atomically. Directly PATCHing courses.status left every child in
  * draft/review, making the course appear released to staff while remaining
  * invisible to learners. The Vault RPC preflights locale completeness and
- * lesson readiness before any state changes; this layer supplies the audit.
+ * lesson readiness before any state changes.
+ *
+ * G.3 (GAP-FIX-R5): every course decision names its staff actor and Vault
+ * writes the central audit row in the SAME transaction ('admin.course.release'
+ * from release_course, 'admin.course.set_status' from set_course_status), and
+ * refuses an actor without the content permission (FORBIDDEN). Vault also
+ * refuses a direct status PATCH, so no unaudited path is left here.
  */
 export async function setCourseStatus(courseId: string, status: CourseStatus, actorId: string): Promise<CourseStatusResult> {
   if (status === 'published') {
     const rows = await serviceRest<CourseReleaseRow[]>('/rpc/release_course', {
       method: 'POST',
-      body: JSON.stringify({ p_course_id: courseId }),
+      body: JSON.stringify({ p_actor: actorId, p_course_id: courseId }),
     });
-    const release = rows?.[0];
-    if (!release) return { outcome: 'unavailable' };
-    if (!release.ok) return { outcome: 'blocked', code: release.code, message: release.message };
-    const audited = await insertAuditLog(actorId, 'admin.course.release', courseId, {
-      adventuresPublished: release.adventures_published,
-      sagasPublished: release.sagas_published,
-      topicsPublished: release.topics_published,
-      lessonsPublished: release.lessons_published,
-    });
-    if (!audited) {
-      // The release transaction already committed, so this must not become a
-      // user-facing failure — but a whole-course release without its audit row
-      // has to be detectable, and audit_logs is the only record of it.
-      console.error(`[backend] audit write FAILED for admin.course.release course=${courseId} actor=${actorId}`);
-    }
-    return { outcome: 'ok' };
+    return statusReceipt(rows);
   }
-  const res = await serviceRest<unknown>(`/courses?id=eq.${encodeURIComponent(courseId)}`, {
-    method: 'PATCH',
-    headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({ status }),
+  const rows = await serviceRest<StatusMoveRow[]>('/rpc/set_course_status', {
+    method: 'POST',
+    body: JSON.stringify({ p_actor: actorId, p_course_id: courseId, p_status: status }),
   });
-  if (res === null) return { outcome: 'unavailable' };
-  await insertAuditLog(actorId, 'admin.course.set_status', courseId, { status });
-  return { outcome: 'ok' };
+  return statusReceipt(rows);
 }
 
 // ── Moderation (lesson review gate) ──────────────────────────────────────────
@@ -843,32 +848,24 @@ interface LessonReleaseRow {
  * RELEASE, never a status write (Product G.2, S05.4c): `release_lesson` runs
  * the same verification preflight as the course release (a fresh Forge
  * verify:course attesting every required release gate), and Vault refuses a
- * direct API-role write of status='published'. Other statuses stay a plain
- * audited update.
+ * direct API-role status write. A rejection back to draft, a return to
+ * review and a takedown go through `set_lesson_status`. Both name the staff
+ * actor and write 'admin.lesson.release' / 'admin.lesson.set_status' in the
+ * same transaction (G.3, GAP-FIX-R5); an unconfirmed write is 'unavailable'.
  */
 export async function setLessonStatus(lessonId: string, status: LessonStatus, actorId: string): Promise<CourseStatusResult> {
   if (status === 'published') {
     const rows = await serviceRest<LessonReleaseRow[]>('/rpc/release_lesson', {
       method: 'POST',
-      body: JSON.stringify({ p_lesson_id: lessonId }),
+      body: JSON.stringify({ p_actor: actorId, p_lesson_id: lessonId }),
     });
-    const release = rows?.[0];
-    if (!release) return { outcome: 'unavailable' };
-    if (!release.ok) return { outcome: 'blocked', code: release.code, message: release.message };
-    const audited = await insertAuditLog(actorId, 'admin.lesson.release', lessonId, { lessonsPublished: release.lessons_published });
-    if (!audited) {
-      console.error(`[backend] audit write FAILED for admin.lesson.release lesson=${lessonId} actor=${actorId}`);
-    }
-    return { outcome: 'ok' };
+    return statusReceipt(rows);
   }
-  const res = await serviceRest<unknown>(`/lessons?id=eq.${encodeURIComponent(lessonId)}`, {
-    method: 'PATCH',
-    headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({ status }),
+  const rows = await serviceRest<StatusMoveRow[]>('/rpc/set_lesson_status', {
+    method: 'POST',
+    body: JSON.stringify({ p_actor: actorId, p_lesson_id: lessonId, p_status: status }),
   });
-  if (res === null) return { outcome: 'unavailable' };
-  await insertAuditLog(actorId, 'admin.lesson.set_status', lessonId, { status });
-  return { outcome: 'ok' };
+  return statusReceipt(rows);
 }
 
 // ── Audit log ────────────────────────────────────────────────────────────────
@@ -1125,19 +1122,37 @@ export async function grantRoleChecked(userId: string, role: string, actorId: st
   return ok ? { ok: true } : { ok: false, code: 'DB_REJECTED' };
 }
 
-export async function revokeRoleChecked(userId: string, role: string): Promise<RoleMutationResult> {
-  const ok = await revokeRole(userId, role);
-  return ok ? { ok: true } : { ok: false, code: 'DB_REJECTED' };
-}
-
 export async function grantAdminPermissionChecked(userId: string, permission: string, actorId: string): Promise<RoleMutationResult> {
   const ok = await grantAdminPermission(userId, permission, actorId);
   return ok ? { ok: true } : { ok: false, code: 'DB_REJECTED' };
 }
 
-export async function revokeAdminPermissionChecked(userId: string, permission: string): Promise<RoleMutationResult> {
-  const ok = await revokeAdminPermission(userId, permission);
-  return ok ? { ok: true } : { ok: false, code: 'DB_REJECTED' };
+/*
+ * G.1 / G.4 (GAP-FIX-R5): a role or staff-permission revocation goes through
+ * Vault's revoke_staff_grant, never a service-role DELETE. The function
+ * checks the superadmin actor, removes the grant with that actor on the
+ * trigger's audit row ('user_roles.delete' / 'admin_permissions.delete'; a
+ * service-role DELETE used to be recorded under the ORIGINAL granter), and
+ * for an elevated grant records the access-review decision 'revoked', all in
+ * one transaction. The role triggers (superadmin domain, kid guardian, parent
+ * cascade) still refuse: 'rejected'. A write Core cannot confirm is
+ * 'unavailable' (502), never 'revoked'.
+ */
+export type StaffRevokeOutcome = 'revoked' | 'not_held' | 'forbidden' | 'rejected' | 'unavailable';
+
+export async function revokeStaffGrant(input: {
+  actorId: string; subjectId: string; kind: 'role' | 'permission'; grant: string;
+}): Promise<StaffRevokeOutcome> {
+  const { ok, body } = await serviceRestRaw('/rpc/revoke_staff_grant', {
+    method: 'POST',
+    body: JSON.stringify({ p_actor: input.actorId, p_subject: input.subjectId, p_kind: input.kind, p_grant: input.grant }),
+  });
+  if (!ok) {
+    const refusal = dbRefusal(body);
+    if (!refusal) return 'unavailable';
+    return refusal.message.includes('ACCESS_REVOKE_FORBIDDEN') || refusal.message.includes('ACCESS_REVOKE_SELF') ? 'forbidden' : 'rejected';
+  }
+  return body === 'revoked' || body === 'not_held' ? body : 'unavailable';
 }
 
 // ── Learning retention (0016) ───────────────────────────────────────────────

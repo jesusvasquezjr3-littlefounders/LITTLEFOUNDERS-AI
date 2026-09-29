@@ -244,7 +244,7 @@ type OverviewStub = {
 function stubData(
   callerRole: 'admin' | 'superadmin' | 'universal',
   capture?: { calls: { url: string; method: string; body?: string }[] },
-  options: { releaseRefusal?: { code: string; message: string }; auditInsertStatus?: number; overview?: OverviewStub; permissions?: string[]; permissionStatus?: number; minorRecord?: string[]; minorRecordStatus?: number; parentGrant?: { status: number; body: unknown }; courseAssemblyIncidents?: { course_id: string; occurrence_count: number; first_seen_at: string; last_seen_at: string }[] } = {},
+  options: { releaseRefusal?: { code: string; message: string }; releaseReceipt?: { status: number; body: unknown }; statusMove?: { status: number; body: unknown }; revoke?: { status: number; body: unknown }; auditInsertStatus?: number; overview?: OverviewStub; permissions?: string[]; permissionStatus?: number; minorRecord?: string[]; minorRecordStatus?: number; parentGrant?: { status: number; body: unknown }; courseAssemblyIncidents?: { course_id: string; occurrence_count: number; first_seen_at: string; last_seen_at: string }[] } = {},
 ) {
   const overviewProfiles = options.overview?.profiles ?? [PROFILE];
   const overviewRoles = options.overview?.roles ?? [{ user_id: ADMIN_ID, role: 'admin' }, { user_id: ADMIN_ID, role: 'universal' }];
@@ -289,6 +289,17 @@ function stubData(
       // A.5 / OD-3 section 2: the audited staff parent grant (one database call).
       if (url.includes('/rest/v1/rpc/grant_parent_role_with_justification')) {
         return Promise.resolve(jsonResponse(options.parentGrant?.status ?? 200, options.parentGrant?.body ?? 'granted'));
+      }
+      // G.3 (GAP-FIX-R5): the audited status moves, one database call each.
+      if (url.includes('/rest/v1/rpc/set_course_status') || url.includes('/rest/v1/rpc/set_lesson_status')) {
+        return Promise.resolve(jsonResponse(options.statusMove?.status ?? 200, options.statusMove?.body ?? [{ ok: true, code: 'UPDATED', message: 'Status changed.' }]));
+      }
+      // G.1 / G.4 (GAP-FIX-R5): a revocation names the revoking superadmin.
+      if (url.includes('/rest/v1/rpc/revoke_staff_grant')) {
+        return Promise.resolve(jsonResponse(options.revoke?.status ?? 200, options.revoke?.body ?? 'revoked'));
+      }
+      if ((url.includes('/rest/v1/rpc/release_lesson') || url.includes('/rest/v1/rpc/release_course')) && options.releaseReceipt) {
+        return Promise.resolve(jsonResponse(options.releaseReceipt.status, options.releaseReceipt.body));
       }
       if (url.includes('/rest/v1/rpc/release_lesson')) {
         return Promise.resolve(jsonResponse(200, [{
@@ -650,7 +661,9 @@ describe('GET + POST /api/v1/admin/content', () => {
     expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
   });
 
-  it('releases a complete course atomically (and audits it)', async () => {
+  // G.3 (GAP-FIX-R5): Vault writes the audit row inside the release
+  // transaction, with the staff actor Core passes; Core writes none itself.
+  it('releases a complete course atomically, naming the staff actor, with the audit row written by Vault', async () => {
     const capture = { calls: [] as { url: string; method: string; body?: string }[] };
     stubData('admin', capture);
     const res = await request(createApp())
@@ -659,9 +672,54 @@ describe('GET + POST /api/v1/admin/content', () => {
       .send({ status: 'published' });
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual({ id: COURSE.id, status: 'published' });
-    expect(capture.calls.some((c) => c.method === 'POST' && c.url.includes('/rpc/release_course'))).toBe(true);
+    const rpc = capture.calls.find((c) => c.method === 'POST' && c.url.includes('/rpc/release_course'));
+    expect(rpc?.body && JSON.parse(rpc.body)).toEqual({ p_actor: ADMIN_ID, p_course_id: COURSE.id });
     expect(capture.calls.some((c) => c.method === 'PATCH' && c.url.includes('/courses'))).toBe(false);
-    expect(capture.calls.some((c) => c.method === 'POST' && c.url.includes('/audit_logs'))).toBe(true);
+    expect(capture.calls.some((c) => c.method === 'POST' && c.url.includes('/audit_logs'))).toBe(false);
+  });
+
+  it.each([
+    ['draft'],
+    ['archived'],
+  ])('moves a course to %s only through set_course_status, never a PATCH or a separate audit write', async (target) => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture);
+    const res = await request(createApp())
+      .post(`/api/v1/admin/content/${COURSE.id}/status`)
+      .set('Authorization', staffAuth('admin'))
+      .send({ status: target });
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ id: COURSE.id, status: target });
+    const rpc = capture.calls.find((c) => c.method === 'POST' && c.url.includes('/rpc/set_course_status'));
+    expect(rpc?.body && JSON.parse(rpc.body)).toEqual({ p_actor: ADMIN_ID, p_course_id: COURSE.id, p_status: target });
+    expect(capture.calls.some((c) => c.method === 'PATCH')).toBe(false);
+    expect(capture.calls.some((c) => c.method === 'POST' && c.url.includes('/audit_logs'))).toBe(false);
+  });
+
+  it.each([
+    ['a failed release request', 'published', { releaseReceipt: { status: 500, body: { message: 'down' } } }],
+    ['an empty release receipt', 'published', { releaseReceipt: { status: 200, body: [] } }],
+    ['an unreadable release receipt', 'published', { releaseReceipt: { status: 200, body: [{ code: 'RELEASED' }] } }],
+    ['a failed status move', 'archived', { statusMove: { status: 500, body: { message: 'audit store unavailable' } } }],
+    ['an empty status receipt', 'draft', { statusMove: { status: 200, body: [] } }],
+  ] as const)('answers 502 on %s: an unconfirmed course decision is never reported done', async (_label, target, options) => {
+    stubData('admin', undefined, options);
+    const res = await request(createApp())
+      .post(`/api/v1/admin/content/${COURSE.id}/status`)
+      .set('Authorization', staffAuth('admin'))
+      .send({ status: target });
+    expect(res.status).toBe(502);
+    expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
+  });
+
+  it('maps a Vault actor refusal (FORBIDDEN) of a status move to 403', async () => {
+    stubData('admin', undefined, { statusMove: { status: 200, body: [{ ok: false, code: 'FORBIDDEN', message: 'Only staff with the content permission may change a course status.' }] } });
+    const res = await request(createApp())
+      .post(`/api/v1/admin/content/${COURSE.id}/status`)
+      .set('Authorization', staffAuth('admin'))
+      .send({ status: 'archived' });
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('FORBIDDEN');
   });
 
   // Each Vault refusal must reach the console as its own envelope code with
@@ -675,6 +733,7 @@ describe('GET + POST /api/v1/admin/content', () => {
     ['INCOMPLETE_LOCALES', 409, 'RELEASE_INCOMPLETE_LOCALES'],
     ['VERIFICATION_REQUIRED', 409, 'RELEASE_VERIFICATION_REQUIRED'],
     ['VERIFICATION_INCOMPLETE', 409, 'RELEASE_VERIFICATION_INCOMPLETE'],
+    ['FORBIDDEN', 403, 'FORBIDDEN'],
   ])('maps the %s release refusal to %i %s', async (rpcCode, status, envelopeCode) => {
     const capture = { calls: [] as { url: string; method: string; body?: string }[] };
     stubData('admin', capture, { releaseRefusal: { code: rpcCode, message: `Refused: ${rpcCode}` } });
@@ -698,24 +757,6 @@ describe('GET + POST /api/v1/admin/content', () => {
     expect(res.status).toBe(409);
     expect(res.body.error.code).toBe('RELEASE_BLOCKED');
     expect(res.body.error.message).toBe('A new gate refused it.');
-  });
-
-  it('still releases when the audit write fails, but logs the lost trail loudly', async () => {
-    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    try {
-      stubData('admin', undefined, { auditInsertStatus: 500 });
-      const res = await request(createApp())
-        .post(`/api/v1/admin/content/${COURSE.id}/status`)
-        .set('Authorization', staffAuth('admin'))
-        .send({ status: 'published' });
-      expect(res.status).toBe(200); // the release already committed in Vault
-      const logged = errorSpy.mock.calls.map((args) => args.join(' ')).join('\n');
-      expect(logged).toContain('admin.course.release');
-      expect(logged).toContain(`course=${COURSE.id}`);
-      expect(logged).toContain(`actor=${ADMIN_ID}`);
-    } finally {
-      errorSpy.mockRestore();
-    }
   });
 
   it('400s on an invalid status', async () => {
@@ -771,7 +812,7 @@ describe('GET /api/v1/admin/moderation', () => {
 // of a live course reached children with no Forge verification. Publishing is
 // now Vault's release_lesson, which shares the course release preflight.
 describe('POST /api/v1/admin/moderation/:lessonId/status', () => {
-  it('publishes a lesson only through release_lesson, never a status write, and audits the release', async () => {
+  it('publishes a lesson only through release_lesson, never a status write, naming the staff actor (Vault audits it)', async () => {
     const capture = { calls: [] as { url: string; method: string; body?: string }[] };
     stubData('admin', capture);
     const res = await request(createApp())
@@ -781,10 +822,9 @@ describe('POST /api/v1/admin/moderation/:lessonId/status', () => {
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual({ id: REVIEW_LESSON.id, status: 'published' });
     const rpc = capture.calls.find((c) => c.method === 'POST' && c.url.includes('/rpc/release_lesson'));
-    expect(rpc?.body && JSON.parse(rpc.body)).toEqual({ p_lesson_id: REVIEW_LESSON.id });
+    expect(rpc?.body && JSON.parse(rpc.body)).toEqual({ p_actor: ADMIN_ID, p_lesson_id: REVIEW_LESSON.id });
     expect(capture.calls.some((c) => c.method === 'PATCH' && c.url.includes('/lessons'))).toBe(false);
-    const audit = capture.calls.find((c) => c.method === 'POST' && c.url.includes('/audit_logs'));
-    expect(audit?.body).toContain('admin.lesson.release');
+    expect(capture.calls.some((c) => c.method === 'POST' && c.url.includes('/audit_logs'))).toBe(false);
   });
 
   it.each([
@@ -795,6 +835,7 @@ describe('POST /api/v1/admin/moderation/:lessonId/status', () => {
     ['LESSONS_NOT_REVIEWABLE', 409, 'RELEASE_LESSONS_NOT_REVIEWABLE'],
     ['ARCHIVED', 409, 'RELEASE_ARCHIVED'],
     ['NOT_FOUND', 404, 'RELEASE_NOT_FOUND'],
+    ['FORBIDDEN', 403, 'FORBIDDEN'],
   ])('maps the %s lesson release refusal to %i %s with no status write or audit', async (rpcCode, status, envelopeCode) => {
     const capture = { calls: [] as { url: string; method: string; body?: string }[] };
     stubData('admin', capture, { releaseRefusal: { code: rpcCode, message: `Refused: ${rpcCode}` } });
@@ -826,17 +867,34 @@ describe('POST /api/v1/admin/moderation/:lessonId/status', () => {
     }
   });
 
-  it('keeps a non-publishing decision as an audited status update', async () => {
+  it.each([['draft'], ['review'], ['archived']])('moves a lesson to %s only through set_lesson_status (audited by Vault with the actor), never a PATCH', async (target) => {
     const capture = { calls: [] as { url: string; method: string; body?: string }[] };
     stubData('admin', capture);
     const res = await request(createApp())
       .post(`/api/v1/admin/moderation/${REVIEW_LESSON.id}/status`)
       .set('Authorization', staffAuth('admin'))
-      .send({ status: 'draft' });
+      .send({ status: target });
     expect(res.status).toBe(200);
-    const patch = capture.calls.find((c) => c.method === 'PATCH' && c.url.includes('/lessons'));
-    expect(patch?.body && JSON.parse(patch.body)).toEqual({ status: 'draft' });
+    const rpc = capture.calls.find((c) => c.method === 'POST' && c.url.includes('/rpc/set_lesson_status'));
+    expect(rpc?.body && JSON.parse(rpc.body)).toEqual({ p_actor: ADMIN_ID, p_lesson_id: REVIEW_LESSON.id, p_status: target });
+    expect(capture.calls.some((c) => c.method === 'PATCH')).toBe(false);
+    expect(capture.calls.some((c) => c.method === 'POST' && c.url.includes('/audit_logs'))).toBe(false);
     expect(capture.calls.some((c) => c.url.includes('/rpc/release_lesson'))).toBe(false);
+  });
+
+  it.each([
+    ['a failed release request', 'published', { releaseReceipt: { status: 503, body: { message: 'down' } } }],
+    ['an empty release receipt', 'published', { releaseReceipt: { status: 200, body: [] } }],
+    ['a failed rejection', 'draft', { statusMove: { status: 500, body: { message: 'audit store unavailable' } } }],
+    ['an unreadable takedown receipt', 'archived', { statusMove: { status: 200, body: { ok: true } } }],
+  ] as const)('answers 502 on %s: an unconfirmed lesson decision is never reported done', async (_label, target, options) => {
+    stubData('admin', undefined, options);
+    const res = await request(createApp())
+      .post(`/api/v1/admin/moderation/${REVIEW_LESSON.id}/status`)
+      .set('Authorization', staffAuth('admin'))
+      .send({ status: target });
+    expect(res.status).toBe(502);
+    expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
   });
 });
 
@@ -1105,14 +1163,69 @@ describe('Roles & Access (superadmin-only)', () => {
     expect(res.body.error.code).toBe('ROLE_REJECTED');
   });
 
-  it('revokes a role for a superadmin', async () => {
-    stubData('superadmin');
+  // G.1 / G.4 (GAP-FIX-R5): a revocation goes through revoke_staff_grant with
+  // the revoking superadmin as the actor, never a service-role DELETE (whose
+  // trigger row named the original granter).
+  it('revokes a role through revoke_staff_grant, naming the revoking superadmin, never a DELETE', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('superadmin', capture);
     const res = await request(createApp())
       .post('/api/v1/admin/roles/revoke')
       .set('Authorization', staffAuth('superadmin'))
       .send({ userId: '55555555-5555-4555-8555-555555555555', role: 'admin' });
     expect(res.status).toBe(200);
-    expect(res.body.data).toMatchObject({ revoked: true });
+    expect(res.body.data).toEqual({ userId: '55555555-5555-4555-8555-555555555555', role: 'admin', revoked: true });
+    const rpc = capture.calls.find((c) => c.method === 'POST' && c.url.includes('/rpc/revoke_staff_grant'));
+    expect(rpc?.body && JSON.parse(rpc.body)).toEqual({ p_actor: ADMIN_ID, p_subject: '55555555-5555-4555-8555-555555555555', p_kind: 'role', p_grant: 'admin' });
+    expect(capture.calls.some((c) => c.method === 'DELETE')).toBe(false);
+  });
+
+  it('turns off a staff permission through revoke_staff_grant, never a DELETE', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('superadmin', capture);
+    const res = await request(createApp())
+      .post('/api/v1/admin/roles/permissions/revoke')
+      .set('Authorization', staffAuth('superadmin'))
+      .send({ userId: '55555555-5555-4555-8555-555555555555', permission: 'manage_content' });
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ userId: '55555555-5555-4555-8555-555555555555', permission: 'manage_content', revoked: true });
+    const rpc = capture.calls.find((c) => c.method === 'POST' && c.url.includes('/rpc/revoke_staff_grant'));
+    expect(rpc?.body && JSON.parse(rpc.body)).toEqual({ p_actor: ADMIN_ID, p_subject: '55555555-5555-4555-8555-555555555555', p_kind: 'permission', p_grant: 'manage_content' });
+    expect(capture.calls.some((c) => c.method === 'DELETE')).toBe(false);
+  });
+
+  it.each([
+    ['/api/v1/admin/roles/revoke', { role: 'admin' }],
+    ['/api/v1/admin/roles/permissions/revoke', { permission: 'view_analytics' }],
+  ])('maps every revoke_staff_grant outcome on %s', async (path, grant) => {
+    const cases: [{ status: number; body: unknown }, number, string | null, boolean | null][] = [
+      [{ status: 200, body: 'not_held' }, 200, null, false],
+      [{ status: 403, body: { code: '42501', message: 'ACCESS_REVOKE_FORBIDDEN: only a superadmin revokes a role or a staff permission' } }, 403, 'FORBIDDEN', null],
+      [{ status: 400, body: { code: 'P0001', message: 'A kid must keep a verified guardian' } }, 409, 'ROLE_REJECTED', null],
+      [{ status: 500, body: { message: 'connection reset' } }, 502, 'DATA_UNAVAILABLE', null],
+      [{ status: 200, body: 'maybe' }, 502, 'DATA_UNAVAILABLE', null],
+    ];
+    for (const [revoke, status, code, revoked] of cases) {
+      stubData('superadmin', undefined, { revoke });
+      const res = await request(createApp())
+        .post(path)
+        .set('Authorization', staffAuth('superadmin'))
+        .send({ userId: '55555555-5555-4555-8555-555555555555', ...grant });
+      expect(res.status, JSON.stringify(revoke)).toBe(status);
+      if (code) expect(res.body.error.code).toBe(code);
+      else expect(res.body.data.revoked).toBe(revoked);
+    }
+  });
+
+  it('refuses a revocation from an admin before any database call', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture);
+    const res = await request(createApp())
+      .post('/api/v1/admin/roles/revoke')
+      .set('Authorization', staffAuth('admin'))
+      .send({ userId: '55555555-5555-4555-8555-555555555555', role: 'admin' });
+    expect(res.status).toBe(403);
+    expect(capture.calls.some((c) => c.url.includes('/rpc/revoke_staff_grant'))).toBe(false);
   });
 });
 
