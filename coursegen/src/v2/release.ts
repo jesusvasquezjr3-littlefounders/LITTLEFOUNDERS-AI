@@ -64,6 +64,33 @@ export interface V2ReleaseResult {
   problems: string[];
   /** G.2: versions of live lessons Vault queued for a staff release (Content page, Live updates). */
   pendingApproval?: { lessonId: string; locale: string; versionId: string }[];
+  /**
+   * B.18 (GAP-FIX-R3): differentiated narration channels with no generated
+   * audio asset. Flagged, never silently shipped: learners get the text-only
+   * plate until the audio exists; with `requireNarrationAudio` they block.
+   */
+  narrationWithoutAudio?: string[];
+}
+
+/**
+ * B.18 (GAP-FIX-R3): each Mentor-voiced segment whose narration channel is
+ * `differentiated` must name an `audio_ref` that Echo's audio manifest (the
+ * assets audiogen generated, a paid run under OD-23) holds. Producing the
+ * audio is out of scope here; this only reports what is missing.
+ */
+export function narrationWithoutAudio(documents: readonly EmittedV2Document[], audioManifest: Readonly<Record<string, unknown>> = {}): string[] {
+  const missing: string[] = [];
+  for (const row of documents) {
+    const segments = (row.document as unknown as { segments?: Array<Record<string, unknown>> }).segments ?? [];
+    for (const segment of segments) {
+      const narration = (segment.payload as { narration?: { mode?: string; audio_ref?: string } } | undefined)?.narration;
+      if (narration?.mode !== 'differentiated') continue;
+      const asset = narration.audio_ref ? audioManifest[narration.audio_ref] : undefined;
+      if (typeof asset === 'string' && asset.length > 0) continue;
+      missing.push(`${row.lesson_id} ${row.locale} ${String(segment.id)}: differentiated narration ${narration.audio_ref ? `audio_ref ${narration.audio_ref} has no generated asset` : 'names no audio_ref'}; learners get the text-only plate`);
+    }
+  }
+  return missing;
 }
 
 function defaultCoreCheck(file: string) {
@@ -92,6 +119,10 @@ export function publicationManifest(row: EmittedV2Document, runId: string): Reco
  */
 export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
   runId: string; outDir: string; courseSlug: string; dryRun: boolean; deps?: V2ReleaseDeps;
+  /** Echo's audio manifest (audio_ref -> asset) the narration check reads; empty when no audio was generated. */
+  audioManifest?: Readonly<Record<string, unknown>>;
+  /** Refuse (instead of flag) a differentiated narration channel without its audio. */
+  requireNarrationAudio?: boolean;
 }): Promise<V2ReleaseResult> {
   const versionId = forgeVersionId(options.runId);
   const documents: EmittedV2Document[] = [];
@@ -102,6 +133,9 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
     documents.push(...result.documents);
   }
   if (problems.length) return { ok: false, stage: 'emit', documents: [], calls: [], problems };
+  const silent = narrationWithoutAudio(documents, options.audioManifest);
+  if (silent.length && options.requireNarrationAudio) return { ok: false, stage: 'emit', documents: [], calls: [], problems: silent, narrationWithoutAudio: silent };
+  const flagged = silent.length ? { narrationWithoutAudio: silent } : {};
 
   mkdirSync(options.outDir, { recursive: true });
   const file = path.join(options.outDir, 'documents.json');
@@ -117,7 +151,7 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
     },
   }));
   writeFileSync(path.join(options.outDir, 'publish-calls.json'), `${JSON.stringify(calls, null, 2)}\n`);
-  if (options.dryRun) return { ok: true, stage: 'dry-run', documents, calls, problems: [] };
+  if (options.dryRun) return { ok: true, stage: 'dry-run', documents, calls, problems: [], ...flagged };
 
   const verified = (options.deps?.verifyCourse ?? defaultVerifyCourse)(options.courseSlug);
   if (!verified.ok) return { ok: false, stage: 'verify', documents, calls, problems: [verified.output.trim() || 'verify:course failed'] };
@@ -131,5 +165,5 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
       pendingApproval.push({ lessonId: call.lessonId, locale: call.locale, versionId: call.versionId });
     }
   }
-  return { ok: true, stage: 'done', documents, calls, problems: [], pendingApproval };
+  return { ok: true, stage: 'done', documents, calls, problems: [], pendingApproval, ...flagged };
 }

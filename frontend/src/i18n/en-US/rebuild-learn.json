@@ -270,6 +270,8 @@
     "reported": "Thanks. Our safety team will look."
   },
   "player": {
+    "listen": "Listen",
+    "stopListening": "Stop",
     "asks": "{name} asks",
     "help": "Help",
     "moreHelp": "More help",

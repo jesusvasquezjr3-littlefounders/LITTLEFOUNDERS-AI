@@ -15,3 +15,5 @@
 .lf-learning-update { display: grid; gap: var(--spacing-3); }
 .lf-learning-update-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
 @media (prefers-reduced-motion: reduce) { .lf-speech-plate { transition: none; } }
+/* GAP-FIX-R3 (B.18): the Mentor's narration on request, beside its caption plate. */
+.lf-narration-control { justify-self: start; }

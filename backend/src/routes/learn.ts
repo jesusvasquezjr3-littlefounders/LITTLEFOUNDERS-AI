@@ -35,7 +35,7 @@ import {
   type LearnerPathwayContext,
 } from '../services/pathway/pathwayData.js';
 import { chapterPolicy, coursePrerequisiteDecision, resolvePathway } from '../services/pathway/pathwayPolicy.js';
-import { gradeV2Visual, projectAdventureTheme, projectV2MentorStage, v2ViewedSegmentIds, stripV2MentorStage, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, v2CpaSkippedSegmentIds, v2FirstUnaidedStage, v2GradePrerequisiteSegmentId, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
+import { gradeV2Visual, projectAdventureTheme, projectV2MentorStage, v2NarrationAudio, v2ViewedSegmentIds, stripV2MentorStage, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, v2CpaSkippedSegmentIds, v2FirstUnaidedStage, v2GradePrerequisiteSegmentId, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
 import { mintLessonAttemptToken, reissueLessonAttemptToken, verifyLessonAttemptToken } from '../services/lessonAttemptToken.js';
 import { getOwnLearnerIntelligence, recordExperimentExposure } from '../services/learningIntel.js';
 import { learnRegisterRouter } from './learnRegister.js';
@@ -941,6 +941,8 @@ export function learnRouter(): Router {
      */
     const prefs = document ? await getTutorPreferences(user.id).catch(() => null) : null;
     const mentorStage = document ? projectV2MentorStage(document, prefs?.character) : null;
+    // B.18 (GAP-FIX-R3): the v2 narration channel, resolved against Echo's manifest; prompt audio only.
+    const narrationAudio = document ? v2NarrationAudio(document, picked.audio) : {};
     const stripped = (document ? stripV2MentorStage(safeDocument) : safeDocument) as { meta?: { cast?: unknown }; scoring?: unknown; segments?: unknown };
     // M9–M10 (GAP-FIX-R1): worked examples fade by the learner's mastery, chosen here on Core.
     const deliveredDocument = document ? await applyMasteryFade(stripped, user.id, ctx.topic.id) : stripped;
@@ -978,6 +980,7 @@ export function learnRouter(): Router {
       // it references prompt/story/explanation audio only — never answers.
       audio: picked.audio ?? {},
       ...(mentorStage ? { mentor_stage: mentorStage } : {}),
+      ...(Object.keys(narrationAudio).length > 0 ? { narration_audio: narrationAudio } : {}),
       // B.8 (GAP-FIX-R1): the lesson inherits its adventure's scene, a closed enum beside the stage projection.
       ...(document && projectAdventureTheme(ctx.adventureTheme) ? { adventure_theme: projectAdventureTheme(ctx.adventureTheme) } : {}),
       ...(narrativeRecall ? { narrative_recall: narrativeRecall } : {}),

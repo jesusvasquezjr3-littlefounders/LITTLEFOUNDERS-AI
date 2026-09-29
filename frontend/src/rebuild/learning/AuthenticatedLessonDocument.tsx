@@ -25,12 +25,14 @@ export function lessonDocumentFrame(raw: unknown, responseLocale: string): { loc
  * mounts it inside the lesson layer (`LessonLayer`, W2L.3), which carries the
  * design system's root, the document title, the skip link and route focus.
  */
-export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, adventureTheme, theme = 'light', onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onHelpUsed, onComplete, metSegmentIds, attemptedSegmentIds, viewedSegmentIds }: {
+export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, adventureTheme, narrationAudio, theme = 'light', onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onHelpUsed, onComplete, metSegmentIds, attemptedSegmentIds, viewedSegmentIds }: {
   raw: unknown;
   responseLocale: string;
   mentorStage?: unknown;
   /** B.8 (GAP-FIX-R1): Core's closed-enum adventure theme; malformed means no scene band. */
   adventureTheme?: unknown;
+  /** B.18 (GAP-FIX-R3): Core's narration map; anything malformed is dropped (text-only plates). */
+  narrationAudio?: unknown;
   /** The application's current mode; the lesson follows it (02 §5). */
   theme?: 'light' | 'dark';
   onBack: () => void;
@@ -54,5 +56,12 @@ export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, 
   return <LessonDocumentView raw={raw} locale={frame.locale} ageBand={frame.ageBand ?? '6-9'} theme={theme} onBack={onBack} onGrade={onGrade}
     onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning}
     onGradeAny={onGradeAny} onView={onView} onHelpUsed={onHelpUsed} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds}
-    viewedSegmentIds={viewedSegmentIds} mentorStage={stage} adventureTheme={loadAdventureThemeProjection(adventureTheme)} />;
+    viewedSegmentIds={viewedSegmentIds} mentorStage={stage} adventureTheme={loadAdventureThemeProjection(adventureTheme)} narrationAudio={loadNarrationAudio(narrationAudio)} />;
+}
+
+/** Only segment ids mapped to an https or same-origin audio path survive; everything else plays nothing. */
+export function loadNarrationAudio(raw: unknown): Record<string, string> {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  return Object.fromEntries(Object.entries(raw as Record<string, unknown>)
+    .filter((entry): entry is [string, string] => /^[a-z0-9][a-z0-9._:-]{2,100}$/.test(entry[0]) && typeof entry[1] === 'string' && /^(https:\/\/[^\s"'<>]+|\/[^\s"'<>]*)$/.test(entry[1])));
 }

@@ -35,6 +35,38 @@ export function lessonSoundMuted(): boolean {
   }
 }
 
+/*
+ * B.18 (GAP-FIX-R3): the lesson's one narration channel. The Mentor's
+ * differentiated narration plays only when the learner asks (never autoplay,
+ * so it never talks over the learner's own audio), never with the sound off
+ * switch on, and one line at a time: a new line stops the previous one.
+ */
+let narration: HTMLAudioElement | null = null;
+
+export function stopLessonNarration(): void {
+  if (!narration) return;
+  try { narration.pause(); } catch { /* jsdom */ }
+  narration.onended = null;
+  narration = null;
+}
+
+/** Starts one narration line; false when the sound is off or audio is unavailable. `onEnd` fires when it finishes or fails. */
+export function playLessonNarration(src: string, onEnd: () => void): boolean {
+  if (typeof window === 'undefined' || typeof Audio === 'undefined' || lessonSoundMuted()) return false;
+  stopLessonNarration();
+  try {
+    const el = new Audio(src);
+    narration = el;
+    el.onended = () => { if (narration === el) narration = null; onEnd(); };
+    const started: unknown = el.play();
+    if (started instanceof Promise) started.catch(() => { if (narration === el) narration = null; onEnd(); });
+    return true;
+  } catch {
+    narration = null;
+    return false;
+  }
+}
+
 export function playLessonCue(cue: LessonCue): void {
   if (typeof window === 'undefined' || typeof Audio === 'undefined' || lessonSoundMuted()) return;
   try {

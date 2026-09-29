@@ -270,6 +270,8 @@
     "reported": "Gracias. Nuestro equipo de seguridad lo revisará."
   },
   "player": {
+    "listen": "Escuchar",
+    "stopListening": "Detener",
     "asks": "{name} pregunta",
     "help": "Ayuda",
     "moreHelp": "Más ayuda",

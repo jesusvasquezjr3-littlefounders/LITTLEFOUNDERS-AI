@@ -44,11 +44,11 @@ const decide = { id: 'story-01', type: 'story.branch.v2', grading: 'server', pro
   item_role: 'transfer', knowledge_component_id: 'kc-saving-goal', help: ['Think about the kite.', 'Saving gets you closer.'],
   payload: { scene: 'You have 12 coins. Do you save or spend?', options: [{ id: 'opt-save', label: 'Save 4 coins' }, { id: 'opt-spend', label: 'Spend all now' }] } };
 
-function activate(document: unknown, keys: unknown): void {
+function activate(document: unknown, keys: unknown, audio: Record<string, unknown> = {}): void {
   const versionId = '99999999-9999-4999-8999-99999999aa01';
   db.lesson_document_version_current = [{ lesson_id: LESSON_1_ID, locale: 'en-US', document_version_id: versionId }];
   db.lesson_document_versions = [{ id: versionId, lesson_id: LESSON_1_ID, locale: 'en-US', version_id: 'mixed-rev-001', schema_version: 2,
-    document, answer_keys: keys, audio: {}, created_at: '2026-09-22T12:00:00.000Z' }];
+    document, answer_keys: keys, audio, created_at: '2026-09-22T12:00:00.000Z' }];
   db.profiles[0]!.birth_date = '2018-09-22';
 }
 
@@ -122,6 +122,21 @@ describe('mixed v2 documents (general player, version-pinned completion)', () =>
     const complete = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ run_id: runId, seconds_spent: 30, local_date: '2026-09-27' });
     expect(complete.status).toBe(200);
     expect(complete.body.data).toMatchObject({ passed: true, score: 100, graded_count: 0, viewed_count: 2 });
+  });
+
+  it('B.18 (GAP-FIX-R3): resolves each differentiated narration audio_ref against the audio manifest, prompt audio only', async () => {
+    const voiced = { ...intro, payload: { ...intro.payload, narration: { ...intro.payload.narration, audio_ref: 'intro-01-voice' } } };
+    const wrap = { ...intro, id: 'wrap-01', payload: { role: 'wrap', line: 'Good plan.', narration: { mode: 'differentiated', script: 'You planned four weeks of saving for the kite.', audio_ref: 'wrap-01-voice' } } };
+    const unsafe = { ...intro, id: 'bridge-01', payload: { role: 'transition', line: 'Next, choose.', narration: { mode: 'differentiated', script: 'Now you choose what to do with your twelve coins.', audio_ref: 'bridge-01-voice' } } };
+    activate(mixedDocument([voiced, unsafe, decide, wrap], ['visual.speech-plate.v1', 'visual.story-scene.v1', 'operation.choose-option.v1']), { 'story-01': { acceptable_choice_ids: ['opt-save'] } },
+      { 'intro-01-voice': 'https://cdn.littlefounders.test/audio/intro-01.mp3', 'bridge-01-voice': 'javascript:alert(1)', 'story-01': 'https://cdn.littlefounders.test/audio/story.mp3' });
+    const lesson = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
+    expect(lesson.status).toBe(200);
+    // The wrap's ref is not in the manifest (text-only fallback); the unsafe value and the graded segment never resolve.
+    expect(lesson.body.data.narration_audio).toEqual({ 'intro-01': 'https://cdn.littlefounders.test/audio/intro-01.mp3' });
+    activate(mixedDocument([intro, decide], ['visual.speech-plate.v1', 'visual.story-scene.v1', 'operation.choose-option.v1']), { 'story-01': { acceptable_choice_ids: ['opt-save'] } });
+    const silent = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
+    expect(silent.body.data).not.toHaveProperty('narration_audio');
   });
 
   it('refuses a segment knowledge component outside the document list, and a stray view body field', async () => {

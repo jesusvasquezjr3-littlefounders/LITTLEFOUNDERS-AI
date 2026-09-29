@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { authorV2Plan, fixtureResponder, mergeAuthoredCopy, skeletonOf } from '../v2/author.js';
 import { emitV2Lesson } from '../v2/emit.js';
 import { loadV2Plans, type V2LessonPlan } from '../v2/plan.js';
-import { releaseV2Lessons, V2_MANIFEST_GATES } from '../v2/release.js';
+import { narrationWithoutAudio, releaseV2Lessons, V2_MANIFEST_GATES } from '../v2/release.js';
 
 /*
  * GAP-FIX-R1 learning (OD-17, OD-23, OD-24, F-06/B.16): the v2 authoring
@@ -100,5 +100,26 @@ describe('v2 write and publish', () => {
     expect(emitted.ok).toBe(true);
     expect(Object.fromEntries(emitted.documents.map((d) => [d.locale, (d.answer_keys['coins-01'] as { target_minor: number }).target_minor])))
       .toEqual({ 'en-US': 17, 'es-MX': 18, 'pt-BR': 16 });
+  });
+});
+
+describe('B.18 narration audio at release (GAP-FIX-R3)', () => {
+  const coreCheck = () => ({ ok: true, output: 'ok' });
+  it('flags a differentiated narration channel with no generated audio, and blocks it when audio is required', async () => {
+    const plan = planOf('v2-first-release-mixed');
+    const flagged = await releaseV2Lessons([plan], { runId: 'r3-narration', outDir: tmp(), courseSlug: 'money', dryRun: true, deps: { coreCheck } });
+    expect(flagged.ok).toBe(true);
+    expect(flagged.narrationWithoutAudio?.length).toBeGreaterThan(0);
+    expect(flagged.narrationWithoutAudio?.[0]).toMatch(/names no audio_ref/);
+    const required = await releaseV2Lessons([plan], { runId: 'r3-narration', outDir: tmp(), courseSlug: 'money', dryRun: true, deps: { coreCheck }, requireNarrationAudio: true });
+    expect(required).toMatchObject({ ok: false, stage: 'emit' });
+    // With the ref and its asset, nothing is flagged; a ref the manifest lacks is.
+    const emitted = emitV2Lesson(plan, { versionId: 'forge-test' }).documents;
+    const withRef = emitted.map((row) => ({ ...row, document: { ...row.document, segments: (row.document.segments as Array<Record<string, any>>).map((segment) => // eslint-disable-line @typescript-eslint/no-explicit-any
+      segment.payload?.narration?.mode === 'differentiated' ? { ...segment, payload: { ...segment.payload, narration: { ...segment.payload.narration, audio_ref: `${segment.id}-voice` } } } : segment) } }));
+    const refs = Object.fromEntries(withRef.flatMap((row) => (row.document.segments as Array<Record<string, any>>) // eslint-disable-line @typescript-eslint/no-explicit-any
+      .filter((segment) => segment.payload?.narration?.audio_ref).map((segment) => [segment.payload.narration.audio_ref, `/audio/${segment.id}.mp3`])));
+    expect(narrationWithoutAudio(withRef as typeof emitted, refs)).toEqual([]);
+    expect(narrationWithoutAudio(withRef as typeof emitted, {})[0]).toMatch(/has no generated asset/);
   });
 });

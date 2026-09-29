@@ -270,6 +270,8 @@
     "reported": "Obrigado. Nossa equipe de segurança vai olhar."
   },
   "player": {
+    "listen": "Ouvir",
+    "stopListening": "Parar",
     "asks": "{name} pergunta",
     "help": "Ajuda",
     "moreHelp": "Mais ajuda",

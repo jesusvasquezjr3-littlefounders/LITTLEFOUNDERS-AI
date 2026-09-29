@@ -641,6 +641,30 @@ export function projectV2MentorStage(document: V2PublicLesson, character: string
 }
 
 /**
+ * B.8 / B.18 (GAP-FIX-R3; Appendix P Part 5; OD-24): the narration that
+ * reaches a v2 learner. Each segment whose channel is `differentiated` names
+ * an `audio_ref`; Core resolves it against Echo's public audio manifest for
+ * the delivered version and returns `{segmentId -> public URL}` beside the
+ * document. Only ungraded, Mentor-voiced prompt audio is resolved (never a
+ * graded segment, so no URL can carry an answer); a ref the manifest does not
+ * hold, or a value that is not a public URL, is left out and the browser
+ * falls back to the text-only plate.
+ */
+const NARRATION_URL = /^(https:\/\/[^\s"'<>]+|\/[^\s"'<>]*)$/;
+export function v2NarrationAudio(document: V2PublicLesson, manifest: unknown): Record<string, string> {
+  const audio = manifest && typeof manifest === 'object' && !Array.isArray(manifest) ? manifest as Record<string, unknown> : {};
+  const out: Record<string, string> = {};
+  for (const segment of document.segments) {
+    if (segment.grading === 'server') continue;
+    const narration = (segment.payload as { narration?: { mode?: string; audio_ref?: string } }).narration;
+    if (narration?.mode !== 'differentiated' || !narration.audio_ref || !Object.hasOwn(audio, narration.audio_ref)) continue;
+    const url = audio[narration.audio_ref];
+    if (typeof url === 'string' && url.length <= 2048 && NARRATION_URL.test(url)) out[segment.id] = url;
+  }
+  return out;
+}
+
+/**
  * The delivered document must not carry the authored `mentor_stage`: the
  * per-learner character is resolved at the route and projected as the
  * response's own `mentor_stage` field. Stripping it here — the same posture
