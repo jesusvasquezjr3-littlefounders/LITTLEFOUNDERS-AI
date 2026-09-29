@@ -1,7 +1,8 @@
-import { useEffect, useId, useRef, useState, type FormEvent, type MouseEvent } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent, type MouseEvent, type ReactNode } from 'react';
 import { Button, Copy, InlineNotice, LoadingState, SegmentedControl, TextAreaField, TextField } from '../design/controls';
 import type { Bucket, GuardianAction, KidGoal } from './familyHubApi';
 import { GoalProgress, type GoalProgressCopy } from './GoalProgress';
+import { PocketMark } from './PocketMark';
 import '../design/tokens.css';
 import '../design/system.css';
 import './familyHub.css';
@@ -37,7 +38,7 @@ export type Notice = { text: string; error: boolean } | null;
 
 /** A pick-one choice (pocket, direction, destination): the shared SegmentedControl, named by its visible legend. */
 function Options<T extends string>({ label, value, options, onChange, disabled }: {
-  label: string; value: T; options: { value: T; label: string }[]; onChange: (value: T) => void; disabled: boolean;
+  label: string; value: T; options: { value: T; label: string; art?: ReactNode }[]; onChange: (value: T) => void; disabled: boolean;
 }) {
   const name = useId();
   return <SegmentedControl legend={label} name={name} value={value} options={options} disabled={disabled} onValueChange={onChange} />;
@@ -126,7 +127,9 @@ export function WalletCorrections({ copy, progressCopy, locale, dark, kidName, o
         <form onSubmit={(event) => void submitAdjustment(event)} noValidate aria-label={copy.adjustHeading}>
           <h3 data-copy-role="heading">{copy.adjustHeading}</h3>
           <Options label={copy.bucket} value={bucket} disabled={busy} onChange={setBucket}
-            options={[{ value: 'save', label: copy.save }, { value: 'spend', label: copy.spend }, { value: 'share', label: copy.share }]} />
+            options={[{ value: 'save', label: copy.save, art: <PocketMark pocket="save" size="sm" /> },
+              { value: 'spend', label: copy.spend, art: <PocketMark pocket="spend" size="sm" /> },
+              { value: 'share', label: copy.share, art: <PocketMark pocket="share" size="sm" /> }]} />
           <Options label={copy.direction} value={direction} disabled={busy} onChange={setDirection}
             options={[{ value: 'add', label: copy.add }, { value: 'remove', label: copy.remove }]} />
           <TextField label={copy.amount} inputMode="numeric" autoComplete="off" value={amount} disabled={busy} onChange={(event) => setAmount(event.target.value)} />
@@ -144,7 +147,8 @@ export function WalletCorrections({ copy, progressCopy, locale, dark, kidName, o
             <GoalProgress copy={progressCopy} title={goal.title} target={goal.target} progress={goal.progress} />
             {goalId === goal.id ? <form onSubmit={(event) => void submitWithdrawal(event)} noValidate aria-label={copy.moveOut}>
               <Options label={copy.destination} value={destination} disabled={busy} onChange={setDestination}
-                options={[{ value: 'spend', label: copy.toSpend }, { value: 'save', label: copy.toSave }]} />
+                options={[{ value: 'spend', label: copy.toSpend, art: <PocketMark pocket="spend" size="sm" /> },
+                  { value: 'save', label: copy.toSave, art: <PocketMark pocket="save" size="sm" /> }]} />
               <TextField label={copy.amount} inputMode="numeric" autoComplete="off" value={goalAmount} disabled={busy} onChange={(event) => setGoalAmount(event.target.value)} />
               <ReasonField label={copy.reason} hint={copy.reasonHint} value={goalReason} disabled={busy} onChange={setGoalReason} />
               {goalError && <InlineNotice tone="error" live>{goalError}</InlineNotice>}
@@ -169,9 +173,9 @@ export function WalletCorrections({ copy, progressCopy, locale, dark, kidName, o
 
         <section aria-label={copy.historyHeading}>
           <h3 data-copy-role="heading">{copy.historyHeading}</h3>
-          {history.length === 0 ? <Copy role="body">{copy.noHistory}</Copy> : <ul>{history.map((action) => <li key={action.id} data-action-kind={action.kind}>
+          {history.length === 0 ? <Copy role="body">{copy.noHistory}</Copy> : <ul>{history.map((action) => <li key={action.id} data-action-kind={action.kind} data-pocket={action.bucket}>
             <div className="lf-family-hub-row">
-              <Copy role="option">{action.kind === 'manual_adjustment' ? `${copy.kindAdjust}: ${bucketLabel(action.bucket)}` : `${copy.kindGoal}: ${bucketLabel(action.bucket)}`}</Copy>
+              <span className="lf-pocket-heading"><PocketMark pocket={action.bucket} size="sm" /><Copy role="option">{action.kind === 'manual_adjustment' ? `${copy.kindAdjust}: ${bucketLabel(action.bucket)}` : `${copy.kindGoal}: ${bucketLabel(action.bucket)}`}</Copy></span>
               <span data-copy-role="data" className={`lf-family-hub-amount${action.kind === 'manual_adjustment' && action.amount > 0 ? ' lf-family-hub-amount--credit' : ''}`}>
                 {action.kind === 'manual_adjustment' ? (action.amount > 0 ? `+${action.amount}` : `−${Math.abs(action.amount)}`) : String(action.amount)}
               </span>

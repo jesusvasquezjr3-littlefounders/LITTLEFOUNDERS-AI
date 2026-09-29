@@ -69,3 +69,35 @@ surfaces. Both were checked in the code first and both were real:
   under the pockets. Confirm, or move it into the pockets card.
 - The result replaces "Coins added." (EN "Done: …", es-MX "Listo: …", pt-BR
   "Pronto: …"); native copy review of the three lines.
+
+## F4-family-finish
+
+Lane close. The sync with `codex/spec-migration-s02` was already up to date,
+so there were no conflicts. An adversarial pass over the two gaps found one
+place where Gap 2 was only half-built, and it is now fixed:
+
+| # | SPEC clause | Finding and fix | Where |
+|---|---|---|---|
+| 5 | Bible 02 §4.3; 07 §1 class B | The Tutor's coin-correction form (the pocket choice and the goal-move destination), the Tutor's correction history and the child's own coin history (`WalletActivity`) named a pocket with the word only. Now the shared `SegmentedControl` takes an optional decorative `art` node per option. This is additive: no existing caller changes. The pocket choices pass `<PocketMark size="sm">`, and both history lists mark each line with `data-pocket` and its icon. The segmented label's minimum width now applies only to the label span, not to the mark. | `frontend/src/rebuild/design/fields.tsx`, `controls.css`, `rebuild/family/WalletCorrections.tsx`, `WalletActivity.tsx` |
+| 6 | Gate integrity | `pocketIdentityGate.test.ts` built its nesting regex from a template string where `\s` had collapsed to `s`. As a result, a nested element of the same tag with attributes was not counted, and the element body could be cut short. The escape is fixed, and the floor rises from 7 to 9 `data-pocket` elements. | `frontend/src/rebuild/family/pocketIdentityGate.test.ts` |
+
+The new tests in `FamilyHubLifecycle.test.tsx` check that every pocket radio in both correction forms carries its mark, and that each correction-history and coin-history line carries `data-pocket` and an aria-hidden icon.
+
+Server boundary: the lane changed no Core code. Both allocate routes already accept only the child's own payout (`guardOwnTask`, and the credit equivalent), refuse a frozen account, and validate the split inside the allocate transaction. No legacy component was used. There is no new copy in this pass.
+
+### Final verification (local)
+
+- Frontend `type-check` and `lint` are clean. The full frontend unit suite ran once: 278 files and 3202 tests, all green. Root `spec:check` and `secrets:check` are green.
+
+### Lane summary and what remains
+
+Both audited gaps are implemented and locally verified, not accepted:
+
+- Gap 1 (02 §9.2, K18, OD-7, D.13): the confirmed-split result.
+- Gap 2 (02 §4.3, §4.4; 07 §1 class B): pocket identity on every pocket display, plus the split bar.
+
+Still open:
+
+- The 768/1280 px audit matrix, the browser journeys `verify-money-habits` and `verify-teen-wallet`, and an audit state for the correction form. The orchestrator runs these per merge.
+- The owner style review of the pockets asset family (OD-14), human design review, and native copy review of the result lines.
+- The owner questions listed under F4-family.

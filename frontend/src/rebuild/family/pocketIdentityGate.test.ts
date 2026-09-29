@@ -28,7 +28,7 @@ function sources(dir: string): string[] {
 function elementBody(source: string, start: number, tag: string): string | null {
   const open = source.indexOf('>', start);
   if (open < 0 || source[open - 1] === '/') return null;
-  const pattern = new RegExp(`<${tag}[\s>]|</${tag}>`, 'g');
+  const pattern = new RegExp(`<${tag}[\\s>]|</${tag}>`, 'g');
   pattern.lastIndex = open + 1;
   let depth = 1;
   for (let m = pattern.exec(source); m; m = pattern.exec(source)) {
@@ -50,7 +50,7 @@ describe('pocket identity gate (02 §4.3)', () => {
         if (body === null || !/<PocketMark\b|pocket\.\$\{[^}]+\}\.icon/.test(body)) offenders.push(`${relative(SRC, file)}:${source.slice(0, m.index).split('\n').length}`);
       }
     }
-    expect(seen).toBeGreaterThanOrEqual(7);
+    expect(seen).toBeGreaterThanOrEqual(9);
     expect(offenders).toEqual([]);
   });
 });
