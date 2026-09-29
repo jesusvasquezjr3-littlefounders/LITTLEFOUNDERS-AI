@@ -30,6 +30,15 @@ code first and all three were real:
 | 2 | F.2 (b) (the cached-preview caveat accepted and disclosed to the parent per F.3); OD-20 (F.2's revocation remains the control for legacy links); Appendix L Part 2.1(2) | `badgeShares.cachedPreview` ("Apps that already showed a preview of a link may keep it.") rendered beside `legacyNote`, and the revoke receipt `badgeShares.revoked` repeats it ("Link revoked. Previews other apps already made may stay."), in three locales, inside the copy budget and both tone gates with no exception. ACHIEVEMENT-SHARING.md section 3 records the caveat as accepted and disclosed for legacy links, with the table of the six strings, and no longer says the caveat is gone. `sharing:check` section 7 pins the panel render, both keys in every locale (each must name the preview) and the policy sentence until `BADGE_LINK_ROUTE_RETIRES_AT`; after that date the pin lifts (tested) | `frontend/src/i18n/*/rebuild-family.json`, `frontend/src/rebuild/family/BadgeShares.tsx`, `docs/rebuild/policies/ACHIEVEMENT-SHARING.md`, `agent/tools/check-achievement-sharing.mjs` (+ test), `frontend/src/routes/app/family/__tests__/BadgeSharesPanel.test.tsx` |
 | 3 | Appendix J 2.2 E.1 (c) (green in CI on every build); Appendix J 1.3 (Discoverability-Gate Enforcement Verification, every release, UI, API and data gateway); Part 3 Stage 2 | A `social-db-verify` job in the unfiltered `repo-gates.yml`, mirroring `family-db-verify` (PostgreSQL 17 service, Node 24, Python 3.12, `LF_PG_*`, `LF_PG_VERIFY_JOBS=3`, `node database/scripts/social-db-verify.mjs`), with a header citing E.1 (c) and 1.3. `social-db-verify.test.mjs` now asserts the list is non-empty and includes the discovery, guardian-end, pattern and new queue-report proofs, that both workflows carry the job, that `repo-gates.yml` stays unfiltered, and the npm and release-readiness wiring | `.github/workflows/repo-gates.yml`, `database/scripts/social-db-verify.test.mjs` |
 
+Finish pass (same checkpoint): a decision was still the end of the path in
+the UI, since a denied or declined row left the queue. The request the Tutor
+just denied now keeps Report beside the receipt, and the request the teen just
+declined keeps Report and Block (confirmed), until the next action; Core
+already admits both for 30 days. Pinned in `social:check` section 10 (two
+more mutation tests); unit tests in `SocialRequestsPanel.test.tsx` and
+`SocialTiers.test.tsx` (three locales). Where: `rebuild/social/{SocialRequests,TeenConnections}.tsx`,
+`routes/app/family/SocialRequestsPanel.tsx`, `routes/app/profile/TeenConnectionsPanel.tsx`.
+
 No migration: the database already accepted every report and block these
 routes file; the new admission is Core's, over service-role reads.
 
@@ -55,6 +64,10 @@ routes file; the new admission is Core's, over service-role reads.
 - Root: `spec:check`, `secrets:check`, `sharing:check` (+ 10 node tests),
   `social:check` (+ 31 node tests), `social-db-verify.test.mjs` (3), both tone
   gates at 100%, the i18n gate.
+- Finish pass: frontend `type-check`, lint of the touched files, `rebuild/social`,
+  `SocialRequestsPanel` and `routes/app/profile` suites (12 files, 130 tests);
+  `social:check` (+ 31 node tests); `spec:check`; `secrets:check`. No copy
+  changed. Merged with `codex/spec-migration-s02` (already contained).
 - Not run here (speed mode, merge gates): the audit matrix for the three new
   states, the full suites, `test:all`.
 
@@ -77,6 +90,6 @@ routes file; the new admission is Core's, over service-role reads.
 - A request stays reportable for 30 days after it closed without a
   connection (the same window as the teen decline cooldown). Default taken;
   the owner may prefer a different window.
-- No "deny and report" single action was added: the Tutor reports, then
-  decides, and a denied request stays reportable for 30 days through the
-  same route (the gap listed the combined action as optional).
+- No "deny and report" single action was added (the gap listed it as
+  optional): the Tutor may report before deciding, and after a denial Report
+  stays beside the receipt; Core admits a denied request for 30 days.
