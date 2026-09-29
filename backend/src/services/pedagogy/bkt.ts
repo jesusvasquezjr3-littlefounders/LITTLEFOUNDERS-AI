@@ -81,3 +81,20 @@ export const MASTERY_DISPLAY_THRESHOLD = 0.85;
  * calibration (docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md).
  */
 export const MASTERY_CORROBORATION_MIN = 2;
+
+/**
+ * Appendix F Part 3 Stage 7 (C.10): while the Extended Mastery Engine's kill
+ * switch holds a KC (Core's `mentor.kill_switch.mastery.*` trip), that KC is
+ * judged on the single-observation baseline (the pre-C.10 rule) on the
+ * persisted side too: the latest answer must be correct, no more. Mirrors the
+ * `1` Oracle's controller applies to a rolled-back KC, so the map, the planner
+ * and the parent's evidence agree with the live session's declaration.
+ */
+export const MASTERY_ROLLBACK_CORROBORATION_MIN = 1;
+
+/** The corroboration a KC needs: the C.10 rule, or the Stage 7 baseline while rolled back. */
+export function corroborationMinFor(kcKey: string | undefined, rolledBackKcKeys?: ReadonlySet<string>): number {
+  return kcKey !== undefined && rolledBackKcKeys?.has(kcKey) === true
+    ? MASTERY_ROLLBACK_CORROBORATION_MIN
+    : MASTERY_CORROBORATION_MIN;
+}

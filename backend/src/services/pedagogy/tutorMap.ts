@@ -8,7 +8,8 @@
  * Node states are derived server-side, deterministically, and unit-tested.
  */
 
-import { MASTERY_CORROBORATION_MIN, MASTERY_DISPLAY_THRESHOLD, MASTERY_PREREQ_THRESHOLD } from './bkt.js';
+import { MASTERY_CORROBORATION_MIN, MASTERY_DISPLAY_THRESHOLD, MASTERY_PREREQ_THRESHOLD, corroborationMinFor } from './bkt.js';
+import { getMasteryRollbackKcKeys } from './mentorIntegrity.js';
 import { rankPlanKcs } from './sessionPlan.js';
 import {
   getActiveKcs,
@@ -59,6 +60,12 @@ export function deriveNodeState(input: {
   prereqsMet: boolean;
   /** C.10: trailing consecutive correct answers on this KC. */
   consecutiveCorrect: number;
+  /**
+   * The corroboration this KC needs (`corroborationMinFor`): the C.10 rule by
+   * default, the single-observation baseline while the Stage 7 mastery kill
+   * switch holds the KC.
+   */
+  corroborationMin?: number;
 }): MapNodeState {
   if (input.reviewDue) return 'needs_review';
   /*
@@ -71,7 +78,7 @@ export function deriveNodeState(input: {
   if (
     input.pKnown >= MASTERY_DISPLAY_THRESHOLD &&
     input.attempts >= 3 &&
-    input.consecutiveCorrect >= MASTERY_CORROBORATION_MIN
+    input.consecutiveCorrect >= (input.corroborationMin ?? MASTERY_CORROBORATION_MIN)
   ) {
     return 'mastered';
   }
@@ -90,12 +97,13 @@ export async function buildTutorMap(
   locale: string,
   now = new Date(),
 ): Promise<TutorMapResponse | null> {
-  const [kcs, edges, mastery, cards, streaks] = await Promise.all([
+  const [kcs, edges, mastery, cards, streaks, rolledBack] = await Promise.all([
     getActiveKcs(),
     getKcEdges(),
     getLearnerMastery(userId),
     getMemoryCards(userId),
     getCorrectStreaks(userId),
+    getMasteryRollbackKcKeys(now),
   ]);
   if (kcs === null || edges === null || mastery === null || cards === null || streaks === null) return null;
 
@@ -135,6 +143,7 @@ export async function buildTutorMap(
         reviewDue: dueByKc.has(kc.id),
         prereqsMet,
         consecutiveCorrect: streaks.get(kc.id) ?? 0,
+        corroborationMin: corroborationMinFor(kc.key, rolledBack),
       }),
       mastery: attempts > 0 ? Math.round((row?.p_known ?? 0) * 100) / 100 : null,
       attempts,
@@ -158,7 +167,7 @@ export async function buildTutorMap(
    * itself failed"). Cannot fail here — the four reads it needs already
    * succeeded, or this function would have returned null above.
    */
-  const first = rankPlanKcs(kcs, edges, mastery, cards, tier, streaks)[0] ?? null;
+  const first = rankPlanKcs(kcs, edges, mastery, cards, tier, streaks, rolledBack)[0] ?? null;
   const firstNode = first ? nodes.find((n) => n.kcId === first.kc.id) : null;
 
   return {

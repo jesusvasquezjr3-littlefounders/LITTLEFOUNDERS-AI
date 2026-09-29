@@ -6714,10 +6714,20 @@ describe('C.10 Appendix F Stage 7 — the Extended Mastery Engine rollback reach
   });
   const revocation = (i: number) => ({ ...declaration(i), strategy: 'SPACED', evidence_rule: null, evidence_observations: null, evidence_required: null, mastery_revoked: true, created_at: at(19) });
 
-  async function contextWithMastery(opts: { fields: string; audit?: unknown[]; trajectory?: unknown[] | 'fail' }) {
+  async function contextWithMastery(opts: {
+    fields: string;
+    audit?: unknown[];
+    trajectory?: unknown[] | 'fail';
+    kcs?: unknown[];
+    kcAttempts?: unknown[];
+    mastery?: unknown[];
+  }) {
     const calls = stub({
       session: [SESSION_ROW],
+      kcs: opts.kcs,
+      kcAttempts: opts.kcAttempts,
       intercept: (url, method) => {
+        if (method === 'GET' && url.includes('/rest/v1/learner_kc_mastery')) return jsonResponse(200, opts.mastery ?? []);
         if (method === 'GET' && url.includes('/rest/v1/audit_logs')) return jsonResponse(200, opts.audit ?? []);
         if (method === 'GET' && url.includes('/rest/v1/tutor_trajectory_step') && url.includes('evidence_required')) {
           return opts.trajectory === 'fail' ? new Response(null, { status: 500 }) : jsonResponse(200, opts.trajectory ?? []);
@@ -6757,6 +6767,37 @@ describe('C.10 Appendix F Stage 7 — the Extended Mastery Engine rollback reach
     expect(response.status).toBe(200);
     expect(response.body.data.corroborationRollbackKcKeys).toEqual([]);
     expect(audits).toEqual([]);
+  });
+
+  it("the session plan applies the same rollback: a rolled-back KC on one correct answer leaves the frontier", async () => {
+    const kc = {
+      id: KC_ID,
+      key: 'money.coins.count',
+      strand: 'money_math',
+      title: { 'es-MX': 'Contar monedas' },
+      objective: { 'es-MX': 'Contar monedas' },
+      tier_min: 1,
+      p_l0: 0.3,
+      p_t: 0.2,
+      p_g: 0.2,
+      p_s: 0.1,
+      skill_key: null,
+    };
+    const learner = {
+      kcs: [kc],
+      mastery: [{ kc_id: KC_ID, p_known: 0.9, attempts: 4, correct: 3, params_override: null }],
+      kcAttempts: [{ kc_id: KC_ID, correct: true }, { kc_id: KC_ID, correct: false }],
+    };
+    const tripping = [...Array.from({ length: 20 }, (_, i) => declaration(i)), revocation(0), revocation(1)];
+    const rolled = await contextWithMastery({ fields: 'corroborationRollbackKcKeys', trajectory: tripping, ...learner });
+    expect(rolled.response.body.data.corroborationRollbackKcKeys).toEqual(['money.coins.count']);
+    expect(rolled.response.body.data.sessionPlan ?? []).toEqual([]);
+
+    const { resetMasteryKillSwitchCache } = await import('../services/pedagogy/mentorIntegrity.js');
+    resetMasteryKillSwitchCache();
+    // An Oracle that cannot receive the keys judges the KC on the C.10 rule, and so does the plan.
+    const strict = await contextWithMastery({ fields: 'opening', trajectory: tripping, ...learner });
+    expect((strict.response.body.data.sessionPlan ?? []).map((e: { kcKey: string }) => e.kcKey)).toEqual(['money.coins.count']);
   });
 
   it('an Oracle that did not announce the field gets neither the field nor the kill-switch reads', async () => {

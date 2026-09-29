@@ -625,6 +625,30 @@ function internalRouter(): Router {
     const learnerBrief = learnerBriefResult ?? { learner: null, pedagogy: null };
 
     /*
+     * The optional context fields the CALLING Oracle can parse (it names them
+     * in `x-oracle-context-fields`). Oracle's context schema is `.strict()`,
+     * so a field an older Oracle does not know would make it refuse every
+     * session: an optional field is sent only when it was announced, which
+     * makes the Core/Oracle deploy order irrelevant. Kept identical to
+     * Oracle's CONTEXT_OPTIONAL_FIELDS by `npm run telemetry:check`.
+     */
+    const accepts = new Set(
+      String(req.get('x-oracle-context-fields') ?? '')
+        .split(',')
+        .map((f) => f.trim())
+        .filter((f) => (CONTEXT_OPTIONAL_FIELDS as readonly string[]).includes(f)),
+    );
+    /*
+     * C.10 Appendix F Stage 7: the Extended Mastery Engine's automatic
+     * rollback — the `kc.key`s reverted to the single-observation baseline
+     * until an operator resolves the trip. SERVER-SIDE ONLY: Oracle's
+     * controller reads it and it never enters the sealed model context. A
+     * failed read rolls back only what the audit trail already holds (never a
+     * guess), and Oracle adds the operator's env list to it. Computed before
+     * the plan so the planner's frontier applies the same KCs.
+     */
+    const masterySwitch = accepts.has('corroborationRollbackKcKeys') ? await getMasteryKillSwitch() : null;
+    /*
      * THE V3 BRAIN (migration 0052). The session plan (review debt + ZPD
      * frontier) and the per-KC posteriors are computed HERE, once, on the
      * decision clock — never inside a voice turn. Degrades to null while the
@@ -632,7 +656,7 @@ function internalRouter(): Router {
      * null here is exactly what tells Oracle to behave as v2.
      */
     const pedagogyPlan = getConfig().TUTOR_V3_BRAIN
-      ? await buildSessionPlan(session.user_id, session.tier, session.locale)
+      ? await buildSessionPlan(session.user_id, session.tier, session.locale, new Set(masterySwitch?.kcKeys ?? []))
       : null;
 
     /*
@@ -651,20 +675,6 @@ function internalRouter(): Router {
             skill_key: session.skill_key,
           });
 
-    /*
-     * The optional context fields the CALLING Oracle can parse (it names them
-     * in `x-oracle-context-fields`). Oracle's context schema is `.strict()`,
-     * so a field an older Oracle does not know would make it refuse every
-     * session: an optional field is sent only when it was announced, which
-     * makes the Core/Oracle deploy order irrelevant. Kept identical to
-     * Oracle's CONTEXT_OPTIONAL_FIELDS by `npm run telemetry:check`.
-     */
-    const accepts = new Set(
-      String(req.get('x-oracle-context-fields') ?? '')
-        .split(',')
-        .map((f) => f.trim())
-        .filter((f) => (CONTEXT_OPTIONAL_FIELDS as readonly string[]).includes(f)),
-    );
     /*
      * C.9/C.19 Appendix F Stage 7 AUTOMATIC ROLLBACK: while the Behavioral
      * Telemetry Layer's kill-switch condition holds (or a trip is unresolved),
@@ -694,15 +704,6 @@ function internalRouter(): Router {
      * verdict — evaluated only for an Oracle that can receive it.
      */
     const spacedReviewSwitch = accepts.has('spacedReviewMode') ? await getSpacedReviewKillSwitch() : null;
-    /*
-     * C.10 Appendix F Stage 7: the Extended Mastery Engine's automatic
-     * rollback — the `kc.key`s reverted to the single-observation baseline
-     * until an operator resolves the trip. SERVER-SIDE ONLY: Oracle's
-     * controller reads it and it never enters the sealed model context. A
-     * failed read rolls back only what the audit trail already holds (never a
-     * guess), and Oracle adds the operator's env list to it.
-     */
-    const masterySwitch = accepts.has('corroborationRollbackKcKeys') ? await getMasteryKillSwitch() : null;
     /*
      * C.17: the dialogue register. The band is derived HERE from Core's own
      * age evidence (the birth date never travels); the variant comes from the

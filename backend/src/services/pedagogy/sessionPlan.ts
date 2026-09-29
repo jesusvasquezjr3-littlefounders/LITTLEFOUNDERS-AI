@@ -15,7 +15,7 @@
 
 import {
   predictCorrect,
-  MASTERY_CORROBORATION_MIN,
+  corroborationMinFor,
   MASTERY_PREREQ_THRESHOLD,
   MASTERY_DISPLAY_THRESHOLD,
 } from './bkt.js';
@@ -166,6 +166,12 @@ export function rankPlanKcs(
    * Omitted = the pre-C.10 posterior-only rule (callers without the read).
    */
   streaks?: ReadonlyMap<string, number>,
+  /**
+   * Appendix F Stage 7: the `kc.key`s the Extended Mastery Engine's kill
+   * switch holds on the single-observation baseline (`corroborationMinFor`).
+   * Omitted = none rolled back.
+   */
+  rolledBackKcKeys?: ReadonlySet<string>,
 ): Array<{ kc: KcRow; reason: 'review_due' | 'frontier' }> {
   if (kcs.length === 0) return [];
 
@@ -197,7 +203,7 @@ export function rankPlanKcs(
     .filter(
       (kc) =>
         (graph.pKnown.get(kc.id) ?? 0) < MASTERY_DISPLAY_THRESHOLD ||
-        (streaks !== undefined && (streaks.get(kc.id) ?? 0) < MASTERY_CORROBORATION_MIN),
+        (streaks !== undefined && (streaks.get(kc.id) ?? 0) < corroborationMinFor(kc.key, rolledBackKcKeys)),
     )
     .filter((kc) => prereqsMet(graph, kc.id))
     .sort((a, b) => frontierScore(graph, b, unlocks) - frontierScore(graph, a, unlocks))
@@ -221,6 +227,14 @@ export async function buildSessionPlan(
   userId: string,
   tier: number,
   locale: string,
+  /**
+   * Appendix F Stage 7: the `kc.key`s the calling Oracle will judge on the
+   * single-observation baseline (Core's mastery kill switch, sent to an Oracle
+   * that announced `corroborationRollbackKcKeys`). The planner applies the same
+   * set, so it does not keep a KC on the frontier that the session declares
+   * mastered. Omitted = the C.10 rule for every KC.
+   */
+  rolledBackKcKeys?: ReadonlySet<string>,
 ): Promise<SessionPlanResult | null> {
   const [kcs, edges, mastery, cards, streaks] = await Promise.all([
     getActiveKcs(),
@@ -234,7 +248,7 @@ export async function buildSessionPlan(
 
   const eligible = kcs.filter((k) => k.tier_min <= tier);
   const graph = assemble(eligible, edges, mastery);
-  const planKcs = rankPlanKcs(kcs, edges, mastery, cards, tier, streaks);
+  const planKcs = rankPlanKcs(kcs, edges, mastery, cards, tier, streaks, rolledBackKcKeys);
 
   const misconceptions = await getMisconceptionsForKcs(planKcs.map((p) => p.kc.id));
   if (misconceptions === null) return null;

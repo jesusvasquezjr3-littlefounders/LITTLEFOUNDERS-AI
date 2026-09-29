@@ -501,9 +501,37 @@ export function masteryTripInForce(rows: readonly MasteryAuditRow[]): {
 
 let masteryCache: { at: number; state: MasteryKillSwitchState } | null = null;
 
-/** Test hook: forget the cached verdict. */
+let rollbackKeysCache: { at: number; keys: ReadonlySet<string> } | null = null;
+
+/** Test hook: forget the cached verdict (and the persisted side's cached keys). */
 export function resetMasteryKillSwitchCache(): void {
   masteryCache = null;
+  rollbackKeysCache = null;
+}
+
+/**
+ * The persisted side of the same rollback, READ-ONLY: the `kc.key`s of the
+ * trip in force, for the learning map, the session planner's frontier and the
+ * parent's mastery evidence (`corroborationMinFor`). It never evaluates the
+ * condition and never writes a trigger: tripping stays with
+ * `getMasteryKillSwitch` on the session-context path. Reuses that verdict
+ * while it is fresh, else reads the audit trail, cached for
+ * `killSwitchCacheMs`. A FAILED read is not evidence (§1.14): it returns the
+ * empty set (the stricter C.10 rule stays in force) and is not cached.
+ */
+export async function getMasteryRollbackKcKeys(
+  now: Date = new Date(),
+  k: typeof MASTERY_KILL_SWITCH = MASTERY_KILL_SWITCH,
+): Promise<ReadonlySet<string>> {
+  if (masteryCache !== null && now.getTime() - masteryCache.at < k.killSwitchCacheMs) return new Set(masteryCache.state.kcKeys);
+  if (rollbackKeysCache !== null && now.getTime() - rollbackKeysCache.at < k.killSwitchCacheMs) return rollbackKeysCache.keys;
+  const log = await serviceRest<MasteryAuditRow[]>(
+    `/audit_logs?action=in.(${MASTERY_KILL_SWITCH_TRIGGERED},${MASTERY_KILL_SWITCH_RESOLVED})&select=action,created_at,detail&order=created_at.desc&limit=500`,
+  );
+  if (log === null) return new Set();
+  const keys: ReadonlySet<string> = new Set(masteryTripInForce(log).kcKeys.slice(0, k.maxRolledBackKcs));
+  rollbackKeysCache = { at: now.getTime(), keys };
+  return keys;
 }
 
 /**

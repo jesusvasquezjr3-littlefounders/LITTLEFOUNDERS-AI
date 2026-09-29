@@ -105,3 +105,64 @@ Log. Before this checkpoint:
 - M-F4-2: A compliance miss on a move that names no KC trips and is logged, but
   rolls nothing back, because no KC can be named. Confirm that this, plus the
   report's defect line, is the intended response.
+
+## Checkpoint F4-mentor-finish
+
+Lane finish for `codex/spec-fix4mentor`. The worktree was clean, and the sync
+with `codex/spec-migration-s02` was already up to date (no conflicts).
+
+### Adversarial pass: one half-built part found and built
+
+Stage 7 says "revert to single-observation BKT thresholds for affected
+knowledge components". F4-mentor applied that only in Oracle's controller.
+Core's persisted side still required the C.10 corroboration (two correct
+answers in a row) for the same KC, in three places:
+
+- the learning map (`deriveNodeState`, `buildTutorMap`),
+- the session planner's frontier (`rankPlanKcs`, `buildSessionPlan`),
+- the parent's mastery evidence (`displayStateOf`, `buildMasteryEvidence`).
+
+So a KC that the live session declared mastered under the rollback still showed
+"in progress" on the map and in the parent's view, and the planner kept it on
+the frontier.
+
+| SPEC clause | What was built | Where |
+|---|---|---|
+| Appendix F Part 3 Stage 7; C.10 | `corroborationMinFor(kcKey, rolledBack)`: the C.10 minimum, or `MASTERY_ROLLBACK_CORROBORATION_MIN = 1` (the same value Oracle's controller uses) for a rolled-back KC. Only the corroboration is lowered: the posterior bar and the 3-attempt evidence bar stay. | `backend/src/services/pedagogy/bkt.ts` |
+| Stage 7; §1.14 | `getMasteryRollbackKcKeys()`: a read-only accessor that returns the `kc.key`s of the trip in force. It never evaluates the condition and never writes a trigger. It reuses a fresh `getMasteryKillSwitch` verdict, otherwise it reads `audit_logs` and caches the result for 10 minutes. A failed read returns the empty set, so the stricter C.10 rule stays in force, and that result is not cached. | `backend/src/services/pedagogy/mentorIntegrity.ts` |
+| Stage 7; C.10 | The map and the parent's evidence read those keys and apply `corroborationMinFor`. The planner takes the keys as a parameter. The context route now evaluates the mastery switch before it builds the plan and passes it the same keys it sends to that Oracle. An Oracle that did not announce `corroborationRollbackKcKeys` gets a plan on the C.10 rule, which matches what it will apply. | `tutorMap.ts`, `masteryEvidence.ts`, `sessionPlan.ts`, `backend/src/routes/tutor.ts` |
+| C.22 | New Tier 1 change-record rows for `mentor.non_negotiables` and `measurement.stage7_and_thresholds` (origin human, both sign-offs pending). No threshold value changed. | `docs/rebuild/mentor/governance/tier1-change-record.json` |
+| Docs | MENTOR-INTEGRITY-POLICY §3.3 item 3 covers the persisted side. The REQUIREMENTS C.10 row is updated and not marked Accepted. | `docs/rebuild/mentor/MENTOR-INTEGRITY-POLICY.md`, `docs/rebuild/REQUIREMENTS.md` |
+
+Also checked, with no change needed:
+
+- Authorization is enforced at the server. The context route is internal-only (`x-internal-api-key`). `--resolve` is an operator CLI that uses the service role. No learner-facing surface can set or clear a trip.
+- No UI and no copy changed in this lane, so there is no legacy-component or locale exposure and the i18n gate does not apply.
+
+### Tests added
+
+- `backend/src/__tests__/masteryRollbackPersisted.test.ts` (11): the shared rule; the map state (one correct answer counts as mastered only under the rollback, a last answer that was wrong never does, and the posterior and evidence bars still hold); the planner (only the rolled-back KC leaves the frontier); the accessor (keys in force, a resolved trip, no writes, no trajectory read, a failed read keeps C.10 and is not cached, a cache hit); the map, the parent's evidence and the plan end to end, including a failed read.
+- `backend/src/__tests__/tutor.test.ts` (1): on the context route, the plan drops the rolled-back KC for an Oracle that announced the field, and keeps it on the C.10 rule for one that did not.
+
+### Verification (local, lane finish)
+
+- Backend: `type-check` and `lint` green. The full unit suite is green (153 files passed and 1 skipped; 3,511 tests passed and 1 skipped).
+- Oracle (touched in F4-mentor): `type-check` and `lint` green. The full unit suite is green (67 files, 1,767 tests). No `.boot-test-` processes were left over.
+- Root: `spec:check`, `secrets:check`, `telemetry:check` and `governance:check` green (governance after the change-record rows above).
+- No migration in this lane.
+
+### Lane summary and what remains
+
+The lane closes the one audited gap. The Extended Mastery Engine now has an automatic, per-KC, logged Stage 7 rollback: Core evaluates it and writes it to the Kill-Switch Trigger Log, it holds until an operator resolves it, and Oracle, the map, the planner and the parent's evidence all apply it. Status: implemented and locally verified. It is not accepted and not released.
+
+What is still open:
+
+- Acceptance needs production data from a real trip.
+- Both leads must sign the four pending Tier 1 change-record rows.
+- The owner must confirm the operating defaults (M-F4-1, M-F4-2).
+- The env override `TUTOR_CORROBORATION_ROLLBACK_KC_KEYS` still writes no `audit_logs` row, and Core's persisted side does not know about it. Only Core's automatic trip reaches the map and the parent's view. By policy the operator records a manual override by hand.
+- Deploy order: either order works, because the field is negotiated.
+
+Owner question added:
+
+- M-F4-3: While a KC is rolled back, the parent's mastery view uses the single-observation baseline, following the SPEC's "revert … for affected knowledge components". The conservative alternative is to keep the parent's view on the C.10 rule during a trip. The SPEC text was implemented; confirm it.

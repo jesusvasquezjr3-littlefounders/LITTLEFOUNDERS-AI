@@ -411,6 +411,26 @@
       "origin": "human",
       "pedagogicalReviewer": "pending",
       "safetyTrustLead": "pending"
+    },
+    {
+      "component": "mentor.non_negotiables",
+      "hash": "4aef6cbcd5594fb262df000bc9dbca600a59dcce4c0ca7c46f238e702bc94058",
+      "files": 9,
+      "date": "2026-09-29",
+      "change": "GAP-FIX-R4 F4-mentor-finish: Appendix F Part 3 Stage 7 Extended Mastery Engine rollback on the persisted side. For the kc keys of the mastery trip in force, the learning map, the session-plan frontier and the parent mastery evidence use the single-observation baseline (corroborationMinFor, read-only getMasteryRollbackKcKeys; a failed read keeps the C.10 rule); the plan uses exactly the keys sent to that session's Oracle. No threshold value changed.",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "measurement.stage7_and_thresholds",
+      "hash": "859542985f6168049371f5d75dfca5a7b611f1481e06c16e12aacd33cc2030bc",
+      "files": 9,
+      "date": "2026-09-29",
+      "change": "GAP-FIX-R4 F4-mentor-finish: Appendix F Part 3 Stage 7 Extended Mastery Engine rollback on the persisted side. For the kc keys of the mastery trip in force, the learning map, the session-plan frontier and the parent mastery evidence use the single-observation baseline (corroborationMinFor, read-only getMasteryRollbackKcKeys; a failed read keeps the C.10 rule); the plan uses exactly the keys sent to that session's Oracle. No threshold value changed.",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
     }
   ]
 }
