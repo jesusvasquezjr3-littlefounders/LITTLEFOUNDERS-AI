@@ -138,6 +138,12 @@ async function load(page, state, locale, theme, width) {
     await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...point, button: 'left', clickCount: 1 });
     await wait(350);
   }
+  // A state whose last press opens something that loads (a lazy chunk, a read) names what must be there before it is measured.
+  if (state.openReady) {
+    let opened = false;
+    for (let n = 0; n < readyTries && !opened; n++) { await wait(50); opened = await page.evaluate(`!!document.querySelector(${JSON.stringify(state.openReady)})`).catch(() => false); }
+    if (!opened) throw new Error(`${state.id} ${locale} ${theme}: ${state.openReady} never appeared after the presses`);
+  }
   await page.evaluate(`Promise.all([...document.images].map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; })))`);
   await page.evaluate(`(${installAudit})()`);
   // A milestone celebration measures on its settled frame (it settles within 1.2 s by contract; 07 §5).

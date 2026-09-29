@@ -2458,5 +2458,161 @@
         "state": "closed"
       }
     ]
+  },
+  "lessonDocumentsV2": [
+    {
+      "locale": "en-US",
+      "schemaVersion": 2,
+      "documentVersionId": "7c1d2e3f-0000-4000-8000-000000000031",
+      "playable": true,
+      "mentorStage": {
+        "character": "rho",
+        "scene": "diorama-a"
+      },
+      "narrationAudio": {},
+      "audio": {},
+      "document": {
+        "schema_version": 2,
+        "course_id": "financial-education",
+        "pathway_id": "financial-6-9",
+        "chapter_id": "money-plans",
+        "lesson_id": "pricing-your-first-product",
+        "version_id": "rev-3",
+        "locale": "en-US",
+        "age_band": "6-9",
+        "eligibility": {
+          "minimum_age": 6,
+          "maximum_age": 9
+        },
+        "knowledge_component_ids": [
+          "kc-saving-allocation"
+        ],
+        "adventure_scene_id": "diorama-a",
+        "title": "Split your money",
+        "required_capabilities": [
+          "visual.stacked-bar.v1",
+          "operation.reallocate.v1"
+        ],
+        "segments": [
+          {
+            "id": "allocate-01",
+            "type": "money.allocation.v2",
+            "prompt": "You have 12 coins and must save at least 4. Where will they go?",
+            "grading": "server",
+            "visual": {
+              "type": "stacked-bar"
+            },
+            "payload": {
+              "total": 12,
+              "step": 1,
+              "currency": "coins"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "locale": "es-MX",
+      "schemaVersion": 2,
+      "documentVersionId": "7c1d2e3f-0000-4000-8000-000000000032",
+      "playable": true,
+      "mentorStage": {
+        "character": "rho",
+        "scene": "diorama-a"
+      },
+      "narrationAudio": {},
+      "audio": {},
+      "document": {
+        "schema_version": 2,
+        "course_id": "financial-education",
+        "pathway_id": "financial-6-9",
+        "chapter_id": "money-plans",
+        "lesson_id": "pricing-your-first-product",
+        "version_id": "rev-3",
+        "locale": "es-MX",
+        "age_band": "6-9",
+        "eligibility": {
+          "minimum_age": 6,
+          "maximum_age": 9
+        },
+        "knowledge_component_ids": [
+          "kc-saving-allocation"
+        ],
+        "adventure_scene_id": "diorama-a",
+        "title": "Divide tu dinero",
+        "required_capabilities": [
+          "visual.stacked-bar.v1",
+          "operation.reallocate.v1"
+        ],
+        "segments": [
+          {
+            "id": "allocate-01",
+            "type": "money.allocation.v2",
+            "prompt": "Tienes 12 monedas y debes guardar al menos 4. ¿Dónde irán?",
+            "grading": "server",
+            "visual": {
+              "type": "stacked-bar"
+            },
+            "payload": {
+              "total": 12,
+              "step": 1,
+              "currency": "coins"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "versionDocument": {
+    "lessonId": "5a0b1c2d-0000-4000-8000-000000000011",
+    "locale": "es-MX",
+    "schemaVersion": 2,
+    "documentVersionId": "7c1d2e3f-0000-4000-8000-000000000021",
+    "playable": true,
+    "mentorStage": {
+      "character": "rho",
+      "scene": "diorama-a"
+    },
+    "narrationAudio": {},
+    "audio": {},
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-6-9",
+      "chapter_id": "money-plans",
+      "lesson_id": "saving-for-a-goal",
+      "version_id": "forge-v2-2026-09-27-run-0042",
+      "locale": "es-MX",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Divide tu dinero",
+      "required_capabilities": [
+        "visual.stacked-bar.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "allocate-01",
+          "type": "money.allocation.v2",
+          "prompt": "Tienes 12 monedas y debes guardar al menos 4. ¿Dónde irán?",
+          "grading": "server",
+          "visual": {
+            "type": "stacked-bar"
+          },
+          "payload": {
+            "total": 12,
+            "step": 1,
+            "currency": "coins"
+          }
+        }
+      ]
+    }
   }
 }

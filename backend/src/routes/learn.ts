@@ -71,10 +71,9 @@ import {
   getCompletedCourseBadgesByUserId,
   getCoursePlacementsForCourses,
   getFullOwnProfile,
-  getCurrentV2LessonDocumentLocales,
+  getEffectiveLessonDocumentLocales,
   getV2LessonDocumentVersion,
   getLessonById,
-  getLessonDocumentLocales,
   getLessonProgressForLessons,
   getLessonsByTopicIds,
   getPlacementCreditsForCourse,
@@ -91,7 +90,6 @@ import {
   getTopicsBySagaIds,
   type CourseHierarchyRow,
   type LessonHierarchyRow,
-  type LessonDocumentRow,
   getPacePreference,
   type LessonCompletionResult,
 } from '../services/supabaseRest.js';
@@ -120,13 +118,6 @@ function hasV2LessonEligibility(res: Response, schemaVersion: number, document: 
 /** v2 is off until a deployment explicitly provisions its independent signer. */
 function lessonAttemptSecret(): string | null {
   return getConfig().LESSON_ATTEMPT_SECRET ?? null;
-}
-
-/** One selection rule for delivery and every mutation: an activated v2 version wins; otherwise use v1. */
-async function getEffectiveLessonDocumentLocales(lessonId: string): Promise<LessonDocumentRow[] | null> {
-  const v2Docs = await getCurrentV2LessonDocumentLocales(lessonId);
-  if (v2Docs === null || v2Docs.length > 0) return v2Docs;
-  return getLessonDocumentLocales(lessonId);
 }
 
 /** A learner's course tree: the linear tree, or the pathway tree with its `pathway` view (COURSE_PATHWAY_ENGINE). */

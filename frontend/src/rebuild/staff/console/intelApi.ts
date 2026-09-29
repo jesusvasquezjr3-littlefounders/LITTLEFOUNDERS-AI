@@ -176,6 +176,13 @@ export const isAlerts = (value: unknown): value is IntelAlert[] => arrayOf(value
 export interface AlertDeliveryRate { days: number; triggered: number; delivered: number; failed: number; unconfigured: number; pending: number; rate: number | null; target: number }
 export const isAlertDelivery = (value: unknown): value is AlertDeliveryRate => isRecord(value) && isNumber(value.days) && isNumber(value.triggered)
   && isNumber(value.delivered) && isNumber(value.failed) && isNumber(value.unconfigured) && isNumber(value.pending) && isNullableNumber(value.rate) && isNumber(value.target);
+/**
+ * H.3 (GAP-FIX-R6): the delivery channels the warehouse can use
+ * (GET /admin/intel/alerts/channels). An alert can only be created or switched
+ * on for a configured one.
+ */
+export interface AlertChannels { webhook: boolean; email: boolean }
+export const isAlertChannels = (value: unknown): value is AlertChannels => isRecord(value) && typeof value.webhook === 'boolean' && typeof value.email === 'boolean';
 /** The delivery rate is read over a fixed month: the Experiments & alerts view has no window of its own. */
 export const DELIVERY_WINDOW_DAYS = 30;
 

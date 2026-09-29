@@ -23,6 +23,8 @@ export interface Alert {
   lastDeliveryError?: string | null;
 }
 
+export type AlertChannel = Alert['channel'];
+
 /**
  * Appendix O 1.3 (Alert-to-Notification Delivery Rate): every trigger in the
  * window against the ones that reached a human. `pending` counts triggers
@@ -42,8 +44,9 @@ export interface AlertDeliveryRate {
 }
 
 /**
- * H.3 / Appendix O 1.3 (Alert-to-Notification Delivery Rate): the outcome of
- * the one delivery attempt a trigger gets. `null` only while the attempt is in
+ * H.3 / Appendix O 1.3 (Alert-to-Notification Delivery Rate): the final
+ * outcome of a trigger's delivery, after its bounded retries (each attempt is
+ * its own row in alert_delivery_attempts). `null` only while delivery is in
  * flight, or for a trigger recorded before delivery was tracked.
  */
 export type AlertDeliveryStatus = 'delivered' | 'failed' | 'unconfigured';
@@ -53,7 +56,37 @@ export interface AlertDelivery {
   channel: 'webhook' | 'email';
   /** Short reason, never a payload or a secret (an HTTP status or an error class). */
   error: string | null;
+  /** Sends made (0 for an unconfigured channel, which is never attempted). */
+  attempts: number;
 }
+
+/**
+ * H.3 (GAP-FIX-R6): a failed send is retried a bounded number of times and
+ * every attempt is recorded. A network error, a timeout, 408, 425, 429 and any
+ * 5xx are worth another try; any other 4xx is the receiver refusing the
+ * payload and is not retried. `delaysMs[i]` is the wait before attempt i + 2.
+ */
+export const ALERT_DELIVERY_ATTEMPTS = 3;
+export const alertRetry: { delaysMs: number[] } = { delaysMs: [2_000, 8_000] };
+
+/**
+ * H.3 (GAP-FIX-R6): a trigger whose delivery reached nobody. `unrecorded` is a
+ * trigger with no outcome well after its send window (the process stopped
+ * mid-delivery): nobody was told about it either.
+ */
+export type UndeliveredStatus = 'failed' | 'unconfigured' | 'unrecorded';
+export interface UndeliveredAlert {
+  alertId: string;
+  name: string | null;
+  channel: string | null;
+  triggeredAt: string;
+  status: UndeliveredStatus;
+  error: string | null;
+  attempts: number | null;
+}
+export interface UndeliveredAlerts { hours: number; count: number; alerts: UndeliveredAlert[] }
+/** The most rows an undelivered read lists; `count` is always the full number. */
+export const UNDELIVERED_LIST_LIMIT = 50;
 
 export interface AlertHistory {
   alertId: string;
@@ -66,6 +99,7 @@ export interface AlertHistory {
   deliveryChannel: string | null;
   deliveredAt: string | null;
   deliveryError: string | null;
+  deliveryAttempts: number | null;
 }
 
 type StoredAlert = {
@@ -104,6 +138,17 @@ type StoredHistory = {
   delivery_channel?: string | null;
   delivered_at?: string | null;
   delivery_error?: string | null;
+  delivery_attempts?: number | bigint | null;
+};
+
+type StoredUndelivered = {
+  alert_id: string;
+  name: string | null;
+  channel: string | null;
+  triggered_at: string;
+  delivery_status: string | null;
+  delivery_error: string | null;
+  delivery_attempts: number | bigint | null;
 };
 
 type MetricValueRow = {
@@ -140,7 +185,20 @@ CREATE TABLE IF NOT EXISTS alert_history (
   delivery_status TEXT,
   delivery_channel TEXT,
   delivered_at TIMESTAMP,
-  delivery_error TEXT
+  delivery_error TEXT,
+  delivery_attempts INTEGER
+)`;
+
+/** H.3 (GAP-FIX-R6): one row per send, so a retried delivery shows each try. */
+const ENSURE_ATTEMPTS = `\
+CREATE TABLE IF NOT EXISTS alert_delivery_attempts (
+  alert_id TEXT NOT NULL,
+  triggered_at TIMESTAMP NOT NULL,
+  attempt INTEGER NOT NULL,
+  channel TEXT NOT NULL,
+  status TEXT NOT NULL,
+  error TEXT,
+  attempted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 )`;
 
 /**
@@ -153,6 +211,8 @@ async function ensureHistorySchema(): Promise<void> {
   await execute('ALTER TABLE alert_history ADD COLUMN IF NOT EXISTS delivery_channel TEXT');
   await execute('ALTER TABLE alert_history ADD COLUMN IF NOT EXISTS delivered_at TIMESTAMP');
   await execute('ALTER TABLE alert_history ADD COLUMN IF NOT EXISTS delivery_error TEXT');
+  await execute('ALTER TABLE alert_history ADD COLUMN IF NOT EXISTS delivery_attempts INTEGER');
+  await execute(ENSURE_ATTEMPTS);
 }
 
 const DELIVERY_STATUSES: readonly string[] = ['delivered', 'failed', 'unconfigured'];
@@ -184,6 +244,33 @@ function rowToAlert(r: StoredAlert): Alert {
     lastTriggeredAt: r.last_triggered_at ?? undefined,
     createdAt: r.created_at,
   };
+}
+
+/**
+ * H.3 (GAP-FIX-R6): the channels this deployment can deliver through. An alert
+ * may only be created, or made active, on one of them: an alert that can only
+ * ever record `unconfigured` is the un-completable object Block H forbids.
+ */
+export function configuredChannels(): Record<AlertChannel, boolean> {
+  const { ALERT_WEBHOOK_URL, ALERT_EMAIL_SERVER_URL, ALERT_EMAIL_INTERNAL_KEY, ALERT_EMAIL_TO } = getConfig();
+  return { webhook: !!ALERT_WEBHOOK_URL, email: !!(ALERT_EMAIL_SERVER_URL && ALERT_EMAIL_INTERNAL_KEY && ALERT_EMAIL_TO) };
+}
+
+export function isChannelConfigured(channel: string): boolean {
+  const channels = configuredChannels();
+  return channel === 'webhook' || channel === 'email' ? channels[channel] : false;
+}
+
+/** One alert, `null` when there is none, `undefined` when the read failed. */
+export async function getAlert(alertId: string): Promise<Alert | null | undefined> {
+  try {
+    await execute(ENSURE_ALERTS);
+    const rows = await query<StoredAlert>('SELECT * FROM alerts WHERE id = ?', alertId);
+    return rows[0] ? rowToAlert(rows[0]) : null;
+  } catch (err) {
+    console.error('[dataintel][alerts] get failed:', err);
+    return undefined;
+  }
 }
 
 export async function createAlert(
@@ -307,6 +394,7 @@ export async function getAlertHistory(
       deliveryChannel: r.delivery_channel ?? null,
       deliveredAt: r.delivered_at ? String(r.delivered_at) : null,
       deliveryError: r.delivery_error ?? null,
+      deliveryAttempts: r.delivery_attempts === null || r.delivery_attempts === undefined ? null : Number(r.delivery_attempts),
     }));
   } catch (err) {
     console.error('[dataintel][alerts] getHistory failed:', err);
@@ -349,6 +437,51 @@ export async function alertDeliveryRate(days: number): Promise<AlertDeliveryRate
     };
   } catch (err) {
     console.error('[dataintel][alerts] deliveryRate failed:', err);
+    return null;
+  }
+}
+
+/**
+ * H.3 (GAP-FIX-R6): every trigger in the last `hours` (1-168) that notified
+ * nobody: delivery failed after its retries, the channel is not configured,
+ * or no outcome was recorded 15 minutes after the trigger. Core's
+ * GET /internal/ops/job-status carries the count as `alerts.undelivered`, and
+ * ops-job-watch fails and names them on the ops-watchdog issue, the
+ * escalation channel. A read failure answers null, never zero.
+ */
+export async function undeliveredAlerts(hours: number): Promise<UndeliveredAlerts | null> {
+  if (!Number.isInteger(hours) || hours < 1 || hours > 168) return null;
+  const where = `h.triggered_at >= CURRENT_TIMESTAMP - to_hours(CAST(? AS INTEGER))
+       AND (h.delivery_status IN ('failed', 'unconfigured')
+            OR (h.delivery_status IS NULL AND h.triggered_at < CURRENT_TIMESTAMP - INTERVAL 15 MINUTE))`;
+  try {
+    await execute(ENSURE_ALERTS);
+    await ensureHistorySchema();
+    const counted = await query<{ total: number | bigint }>(`SELECT COUNT(*) AS total FROM alert_history h WHERE ${where}`, hours);
+    const rows = await query<StoredUndelivered>(
+      `SELECT h.alert_id, a.name, COALESCE(h.delivery_channel, a.channel) AS channel, h.triggered_at,
+              h.delivery_status, h.delivery_error, h.delivery_attempts
+       FROM alert_history h LEFT JOIN alerts a ON a.id = h.alert_id
+       WHERE ${where}
+       ORDER BY h.triggered_at DESC
+       LIMIT ${UNDELIVERED_LIST_LIMIT}`,
+      hours,
+    );
+    return {
+      hours,
+      count: Number(counted[0]?.total ?? 0),
+      alerts: rows.map((r) => ({
+        alertId: r.alert_id,
+        name: r.name ?? null,
+        channel: r.channel ?? null,
+        triggeredAt: String(r.triggered_at),
+        status: r.delivery_status === 'failed' || r.delivery_status === 'unconfigured' ? r.delivery_status : 'unrecorded',
+        error: r.delivery_error ?? null,
+        attempts: r.delivery_attempts === null || r.delivery_attempts === undefined ? null : Number(r.delivery_attempts),
+      })),
+    };
+  } catch (err) {
+    console.error('[dataintel][alerts] undelivered read failed:', err);
     return null;
   }
 }
@@ -416,9 +549,11 @@ export async function evaluateAlerts(): Promise<{ triggered: number }> {
         );
 
         // H.3: a recorded trigger with no consumer is not alerting. Deliver
-        // through the alert's configured channel; a delivery failure is
-        // logged loudly, never silent — the trigger row is already durable —
-        // and its outcome is written back to that row (Appendix O 1.3).
+        // through the alert's configured channel, retrying a failed send a
+        // bounded number of times; the trigger row is already durable and its
+        // final outcome is written back to it (Appendix O 1.3). A trigger that
+        // still reached nobody surfaces in undeliveredAlerts() and fails the
+        // operations watchdog.
         const delivery = await deliverAlert(alertObj, { value: currentValue, triggeredAt });
         await recordDelivery(alertObj.id, triggeredAt, delivery);
 
@@ -436,12 +571,13 @@ export async function evaluateAlerts(): Promise<{ triggered: number }> {
 async function recordDelivery(alertId: string, triggeredAt: string, delivery: AlertDelivery): Promise<void> {
   try {
     await execute(
-      `UPDATE alert_history SET delivery_status = ?, delivery_channel = ?, delivered_at = ?, delivery_error = ?
+      `UPDATE alert_history SET delivery_status = ?, delivery_channel = ?, delivered_at = ?, delivery_error = ?, delivery_attempts = ?
        WHERE alert_id = ? AND triggered_at = ?`,
       delivery.status,
       delivery.channel,
       delivery.status === 'delivered' ? now() : null,
       delivery.error,
+      delivery.attempts,
       alertId,
       triggeredAt,
     );
@@ -450,34 +586,65 @@ async function recordDelivery(alertId: string, triggeredAt: string, delivery: Al
   }
 }
 
+type SendOutcome = { delivered: boolean; error: string | null; retryable: boolean };
+
+/** Records one send. A failed write is logged, never thrown: the send already happened. */
+async function recordAttempt(alertId: string, triggeredAt: string, attempt: number, channel: AlertChannel, outcome: SendOutcome): Promise<void> {
+  try {
+    await execute(
+      `INSERT INTO alert_delivery_attempts (alert_id, triggered_at, attempt, channel, status, error, attempted_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      alertId,
+      triggeredAt,
+      attempt,
+      channel,
+      outcome.delivered ? 'delivered' : 'failed',
+      outcome.error,
+      now(),
+    );
+  } catch (err) {
+    console.error('[dataintel][alerts] recording a delivery attempt failed:', err);
+  }
+}
+
+const retryableStatus = (status: number) => status === 408 || status === 425 || status === 429 || status >= 500;
+const reasonOf = (err: unknown) => (err instanceof Error ? `${err.name}: ${err.message}` : 'Error').slice(0, 200);
+const sleep = (ms: number) => (ms > 0 ? new Promise<void>((resolve) => setTimeout(resolve, ms)) : Promise.resolve());
+
+/** One bounded send: delivered, or failed with a short reason and whether another try could help. */
+async function send(url: string, init: RequestInit): Promise<SendOutcome> {
+  try {
+    const res = await fetch(url, { ...init, signal: AbortSignal.timeout(10_000) });
+    if (res.ok) return { delivered: true, error: null, retryable: false };
+    return { delivered: false, error: `HTTP ${res.status}`, retryable: retryableStatus(res.status) };
+  } catch (err) {
+    return { delivered: false, error: reasonOf(err), retryable: true };
+  }
+}
+
 /**
  * H.3's notification channel. `webhook` alerts POST the trigger payload to
  * the configured URL; `email` alerts POST a plain-text internal email through
  * the email-server's `/api/v1/send`, in the body that endpoint accepts
  * (alertEmail.ts, contract-tested against the email-server's own route).
- * Both are bounded by a timeout so a hanging channel cannot stall the
- * evaluation loop, and both return their outcome for the trigger row:
- * delivered, failed (with a short reason) or unconfigured (no human could be
- * notified). The trigger row is written BEFORE delivery, so a failed delivery
- * is a visible gap, not a lost alert.
+ * Each send is bounded by a timeout so a hanging channel cannot stall the
+ * evaluation loop; a failed send is retried up to ALERT_DELIVERY_ATTEMPTS
+ * times (alertRetry), each attempt recorded in alert_delivery_attempts. The
+ * outcome is delivered, failed (with a short reason) or unconfigured (no
+ * human could be notified). The trigger row is written BEFORE delivery, so a
+ * failed delivery is a visible gap, not a lost alert.
  */
 async function deliverAlert(
   alert: Alert,
   trigger: { value: number; triggeredAt: string },
 ): Promise<AlertDelivery> {
   const { ALERT_WEBHOOK_URL, ALERT_EMAIL_SERVER_URL, ALERT_EMAIL_INTERNAL_KEY, ALERT_EMAIL_TO } = getConfig();
-  const failed = (channel: AlertDelivery['channel'], error: string): AlertDelivery => {
-    console.error(`[dataintel][alerts] ${channel} delivery failed for "${alert.name}": ${error}`);
-    return { status: 'failed', channel, error };
-  };
-  const reason = (err: unknown) => (err instanceof Error ? `${err.name}: ${err.message}` : 'Error').slice(0, 200);
-  if (alert.channel === 'webhook') {
-    if (!ALERT_WEBHOOK_URL) {
-      console.warn(`[dataintel][alerts] alert "${alert.name}" triggered but ALERT_WEBHOOK_URL is not configured — no human was notified`);
-      return { status: 'unconfigured', channel: 'webhook', error: null };
-    }
-    try {
-      const res = await fetch(ALERT_WEBHOOK_URL, {
+  const channel = alert.channel;
+  let target: { url: string; init: RequestInit } | null = null;
+  if (channel === 'webhook' && ALERT_WEBHOOK_URL) {
+    target = {
+      url: ALERT_WEBHOOK_URL,
+      init: {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -489,38 +656,45 @@ async function deliverAlert(
           value: trigger.value,
           triggeredAt: trigger.triggeredAt,
         }),
-        signal: AbortSignal.timeout(10_000),
-      });
-      return res.ok ? { status: 'delivered', channel: 'webhook', error: null } : failed('webhook', `HTTP ${res.status}`);
-    } catch (err) {
-      return failed('webhook', reason(err));
-    }
-  }
-  if (!ALERT_EMAIL_SERVER_URL || !ALERT_EMAIL_INTERNAL_KEY || !ALERT_EMAIL_TO) {
-    console.warn(`[dataintel][alerts] alert "${alert.name}" triggered but the email channel is not configured — no human was notified`);
-    return { status: 'unconfigured', channel: 'email', error: null };
-  }
-  try {
-    const res = await fetch(`${ALERT_EMAIL_SERVER_URL}/api/v1/send`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-internal-api-key': ALERT_EMAIL_INTERNAL_KEY,
       },
-      body: JSON.stringify(alertEmailBody(ALERT_EMAIL_TO, {
-        name: alert.name,
-        metric: alert.metric,
-        condition: alert.condition,
-        threshold: alert.threshold,
-        value: trigger.value,
-        triggeredAt: trigger.triggeredAt,
-      })),
-      signal: AbortSignal.timeout(10_000),
-    });
-    return res.ok ? { status: 'delivered', channel: 'email', error: null } : failed('email', `HTTP ${res.status}`);
-  } catch (err) {
-    return failed('email', reason(err));
+    };
+  } else if (channel === 'email' && ALERT_EMAIL_SERVER_URL && ALERT_EMAIL_INTERNAL_KEY && ALERT_EMAIL_TO) {
+    target = {
+      url: `${ALERT_EMAIL_SERVER_URL}/api/v1/send`,
+      init: {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-internal-api-key': ALERT_EMAIL_INTERNAL_KEY,
+        },
+        body: JSON.stringify(alertEmailBody(ALERT_EMAIL_TO, {
+          name: alert.name,
+          metric: alert.metric,
+          condition: alert.condition,
+          threshold: alert.threshold,
+          value: trigger.value,
+          triggeredAt: trigger.triggeredAt,
+        })),
+      },
+    };
   }
+  if (!target) {
+    const setting = channel === 'webhook' ? 'ALERT_WEBHOOK_URL is' : 'the email channel is';
+    console.warn(`[dataintel][alerts] alert "${alert.name}" triggered but ${setting} not configured — no human was notified`);
+    return { status: 'unconfigured', channel, error: null, attempts: 0 };
+  }
+  let last: SendOutcome = { delivered: false, error: null, retryable: true };
+  let attempts = 0;
+  for (let attempt = 1; attempt <= ALERT_DELIVERY_ATTEMPTS; attempt++) {
+    if (attempt > 1) await sleep(alertRetry.delaysMs[attempt - 2] ?? 0);
+    last = await send(target.url, target.init);
+    attempts = attempt;
+    await recordAttempt(alert.id, trigger.triggeredAt, attempt, channel, last);
+    if (last.delivered) return { status: 'delivered', channel, error: null, attempts };
+    if (!last.retryable) break;
+  }
+  console.error(`[dataintel][alerts] ${channel} delivery failed for "${alert.name}" after ${attempts} attempt(s): ${last.error}`);
+  return { status: 'failed', channel, error: last.error, attempts };
 }
 
 async function checkCooldown(

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { evaluateAlerts, getAlertHistory } from '../services/alerts.js';
+import { alertRetry, evaluateAlerts, getAlertHistory } from '../services/alerts.js';
 import { alertEmailBody } from '../services/alertEmail.js';
 import { resetConfigCache } from '../env.js';
 
@@ -66,6 +66,8 @@ function stubAlert(alert: Record<string, unknown> | null) {
 
 beforeEach(() => {
   stubAlert(ACTIVE_ALERT);
+  // Retries run back to back here; the production waits are alertRetry's defaults.
+  alertRetry.delaysMs = [0, 0];
 });
 
 describe('evaluateAlerts delivery (H.3)', () => {
@@ -168,7 +170,8 @@ describe('email channel contract and delivery outcome (H.3, Appendix O 1.3)', ()
     expect(update!.slice(1, 3)).toEqual(['delivered', 'email']);
     expect(update![3]).toEqual(expect.any(String));
     expect(update![4]).toBeNull();
-    expect(update![5]).toBe('a1');
+    expect(update![5]).toBe(1);
+    expect(update![6]).toBe('a1');
   });
 
   it('records "failed" with the HTTP status when the email-server refuses', async () => {
@@ -206,5 +209,67 @@ describe('email channel contract and delivery outcome (H.3, Appendix O 1.3)', ()
     expect(history![1]!.deliveryStatus).toBeNull();
     const ddl = mockExecute.mock.calls.map((call) => String(call[0]));
     expect(ddl).toContain('ALTER TABLE alert_history ADD COLUMN IF NOT EXISTS delivery_status TEXT');
+  });
+});
+
+/*
+ * H.3 (GAP-FIX-R6): a failed send is retried a bounded number of times and
+ * every attempt is recorded; a refusal that another try cannot fix is not
+ * retried; the final outcome carries the number of attempts.
+ */
+describe('bounded delivery retries (H.3)', () => {
+  const attemptRows = () => mockExecute.mock.calls.filter((call) => String(call[0]).includes('INSERT INTO alert_delivery_attempts'));
+  const finalUpdate = () => mockExecute.mock.calls.find((call) => String(call[0]).includes('UPDATE alert_history SET delivery_status'))!;
+
+  beforeEach(() => {
+    process.env.ALERT_WEBHOOK_URL = 'https://ops.example.test/alerts';
+    resetConfigCache();
+    vi.stubGlobal('fetch', mockFetch);
+  });
+
+  it('retries a 5xx and a network error, records each attempt, and delivers on the third try', async () => {
+    mockFetch
+      .mockResolvedValueOnce(new Response(null, { status: 503 }))
+      .mockRejectedValueOnce(new Error('socket hang up'))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+    await evaluateAlerts();
+    expect(mockFetch).toHaveBeenCalledTimes(3);
+    expect(attemptRows().map((call) => [call[3], call[5], call[6]])).toEqual([
+      [1, 'failed', 'HTTP 503'], [2, 'failed', 'Error: socket hang up'], [3, 'delivered', null],
+    ]);
+    expect(finalUpdate().slice(1, 3)).toEqual(['delivered', 'webhook']);
+    expect(finalUpdate()[5]).toBe(3);
+  });
+
+  it('stops after the bounded number of attempts and records "failed" with the last reason', async () => {
+    mockFetch.mockResolvedValue(new Response(null, { status: 502 }));
+    await evaluateAlerts();
+    expect(mockFetch).toHaveBeenCalledTimes(3);
+    expect(attemptRows()).toHaveLength(3);
+    expect(finalUpdate().slice(1, 6)).toEqual(['failed', 'webhook', null, 'HTTP 502', 3]);
+  });
+
+  it('does not retry a refusal another try cannot fix (a 4xx other than 408/425/429)', async () => {
+    mockFetch.mockResolvedValue(new Response(null, { status: 404 }));
+    await evaluateAlerts();
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(attemptRows()).toHaveLength(1);
+    expect(finalUpdate().slice(1, 6)).toEqual(['failed', 'webhook', null, 'HTTP 404', 1]);
+  });
+
+  it('retries a 429', async () => {
+    mockFetch.mockResolvedValueOnce(new Response(null, { status: 429 })).mockResolvedValueOnce(new Response(null, { status: 200 }));
+    await evaluateAlerts();
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+    expect(finalUpdate()[5]).toBe(2);
+  });
+
+  it('never "attempts" an unconfigured channel: zero attempts, no attempt row', async () => {
+    delete process.env.ALERT_WEBHOOK_URL;
+    resetConfigCache();
+    await evaluateAlerts();
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(attemptRows()).toHaveLength(0);
+    expect(finalUpdate().slice(1, 6)).toEqual(['unconfigured', 'webhook', null, null, 0]);
   });
 });

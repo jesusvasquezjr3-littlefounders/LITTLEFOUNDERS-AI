@@ -217,6 +217,28 @@ describe('Reports → Support tools (manage_support)', () => {
     expect(gets).toContain('/admin/ops/job-status');
   });
 
+  it('H.3 (GAP-FIX-R6): the warehouse alerts that notified nobody sit on the same watchdog card; an unread count is never "all delivered"', async () => {
+    const { api } = fakeApi();
+    render(<Frame><StaffReports api={api} initialView="support" /></Frame>);
+    const jobs = await waitFor(() => { const el = document.querySelector<HTMLElement>('[data-tool="ops-jobs"] [data-job="alerts"]'); if (!el) throw new Error('no alerts item'); return el; });
+    expect(jobs.getAttribute('data-stale')).toBe('true');
+    expect(jobs).toHaveTextContent(s.option.job_alerts);
+    expect(jobs).toHaveTextContent(s.body.alertsUndelivered.replace('{n}', '1'));
+    cleanup();
+    const status = programme.routes['/admin/ops/job-status'];
+    const unread = fakeApi((path) => (path === '/admin/ops/job-status' ? { ok: true, data: { ...status, alerts: { undelivered: null, windowHours: 36, alerts: [] } } } : undefined));
+    render(<Frame><StaffReports api={unread.api} initialView="support" /></Frame>);
+    const item = await waitFor(() => { const el = document.querySelector<HTMLElement>('[data-tool="ops-jobs"] [data-job="alerts"]'); if (!el) throw new Error('no alerts item'); return el; });
+    expect(item).toHaveTextContent(s.body.alertsUnread);
+    expect(item).not.toHaveTextContent(s.option.alertsDelivered);
+    cleanup();
+    const clear = fakeApi((path) => (path === '/admin/ops/job-status' ? { ok: true, data: { ...status, alerts: { undelivered: 0, windowHours: 36, alerts: [] } } } : undefined));
+    render(<Frame><StaffReports api={clear.api} initialView="support" /></Frame>);
+    const ok = await waitFor(() => { const el = document.querySelector<HTMLElement>('[data-tool="ops-jobs"] [data-job="alerts"]'); if (!el) throw new Error('no alerts item'); return el; });
+    expect(ok.getAttribute('data-stale')).toBe('false');
+    expect(ok).toHaveTextContent(s.option.alertsDelivered);
+  });
+
   it('lists the family-data jobs and names stalled erasures in words (H.4, E.6, GAP-FIX-R6)', async () => {
     const { api } = fakeApi();
     render(<Frame><StaffReports api={api} initialView="support" /></Frame>);

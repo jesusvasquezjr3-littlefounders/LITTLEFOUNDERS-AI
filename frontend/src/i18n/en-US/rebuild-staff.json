@@ -695,7 +695,8 @@
         "updates": "New versions of live lessons",
         "version": "Version details",
         "confirmRelease": "Release this version to learners?",
-        "checks": "Skipped release checks"
+        "checks": "Skipped release checks",
+        "preview": "Lesson preview"
       },
       "body": {
         "incidents": "Learners could not open these.",
@@ -804,7 +805,10 @@
         "check": "Check",
         "reasonLogged": "Reason logged",
         "yes": "Yes",
-        "no": "No"
+        "no": "No",
+        "previewHelpV2": "Plays the lesson as learners see it. Answers are checked, not saved.",
+        "previewBar": "Staff preview. Nothing is saved.",
+        "notPlayable": "Learners cannot open this yet: its answer key does not match."
       },
       "option": {
         "courses": "Courses",
@@ -846,7 +850,8 @@
         "fullSize": "Full size",
         "release": "Release",
         "reject": "Reject",
-        "rejectVersion": "Reject version"
+        "rejectVersion": "Reject version",
+        "closePreview": "Close preview"
       }
     },
     "generation": {
@@ -1334,7 +1339,8 @@
         "skills": "Skills",
         "trend": "Trend",
         "disclosure": "Teen and guest choice",
-        "delivery": "Alert delivery"
+        "delivery": "Alert delivery",
+        "channels": "Alert channels"
       },
       "body": {
         "view": "View",
@@ -1462,7 +1468,8 @@
         "lastDelivery": "Last delivery",
         "deliveryReason": "Reason",
         "noDelivery": "None yet",
-        "noReason": "None"
+        "noReason": "None",
+        "channelsIntro": "An alert needs a channel that is set up."
       },
       "option": {
         "view_overview": "Overview",
@@ -1519,7 +1526,8 @@
         "delivery_failed": "Failed",
         "delivery_unconfigured": "Not set up",
         "status_met": "On target",
-        "status_missed": "Below target"
+        "status_missed": "Below target",
+        "channel_ready": "Set up"
       }
     },
     "programme": {
@@ -1901,6 +1909,8 @@
         "jobStaleHelp": "{job} has not run in {n} hours. Check its workflow.",
         "lastAttemptFailed": "The last attempt failed.",
         "lastAttempt": "Last attempt",
+        "alertsUndelivered": "{n} recent alerts reached nobody. Check the alert channels.",
+        "alertsUnread": "The data alerts could not be read.",
         "deletionsStuck": "Deletions stalled over {hours} hours: {n}. Check the failed step."
       },
       "option": {
@@ -1913,6 +1923,9 @@
         "job_vault_backup": "Database backup",
         "job_pulse_backup": "Analytics backup",
         "job_vault_drift": "Schema drift check",
+        "job_alerts": "Data alerts",
+        "alertsDelivered": "All delivered",
+        "alertsUndelivered": "Not delivered",
         "job_learning_retention": "Practice-day cleanup",
         "job_insights_prune": "Learning event cleanup",
         "job_account_deletions": "Account deletions",

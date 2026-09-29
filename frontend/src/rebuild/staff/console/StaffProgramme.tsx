@@ -4,7 +4,7 @@ import { reasonActionable } from '../../family/familyAutonomyApi';
 import {
   autonomyPath, denialSamplePath, FAMILY_GROUPS, FAMILY_METRICS, identityPath, isDenialSample, isIdentityReport, isOpsJobs, isRetentionSweep,
   isStaffAccount, isStaffAutonomy, lowerLevels, LOWER_REASON_MAX, metricGuard, onTarget, OPS_JOBS_PATH, OWNERS_PATH, readField,
-  RETENTION_SWEEP_PATH, TRUST_METRICS, pick,
+  RETENTION_SWEEP_PATH, TRUST_METRICS, pick, undeliveredAlertsOf,
   type AutonomyLevel, type FamilyGroup, type IdentityMetric, type MetricField, type MetricSpec, type StaffAutonomyChange,
 } from './programmeApi';
 import { isUsers, UUID, useStaffRead, type StaffApi } from './staffConsoleApi';
@@ -369,9 +369,25 @@ export function OpsJobsCard({ api }: { api: StaffApi }) {
                 {job.lastAttemptOk === false ? <InlineNotice tone="error">{t.body.lastAttemptFailed}</InlineNotice> : null}
               </li>;
             })}
+            <AlertsDeliveryItem data={read.load.data} />
           </ul></> : null}
     </div>
   </Card>;
+}
+
+/** H.3 (GAP-FIX-R6): the warehouse alerts that notified nobody, on the same watchdog card (and the same watchdog issue). */
+function AlertsDeliveryItem({ data }: { data: unknown }) {
+  const { copy, locale } = useConsoleCopy();
+  const format = useFormats(locale);
+  const t = copy.support;
+  const alerts = undeliveredAlertsOf(data);
+  const count = alerts?.undelivered ?? null;
+  return <li data-job="alerts" data-stale={count === 0 ? 'false' : 'true'}>
+    <p data-copy-role="body" className="lf-staff-report-category">{t.option.job_alerts}</p>
+    <div>{count === 0 ? <Chip tone="success" glyph="check">{t.option.alertsDelivered}</Chip> : <Chip tone="warning" glyph="warning">{t.option.alertsUndelivered}</Chip>}</div>
+    {count === null ? <InlineNotice tone="error">{t.body.alertsUnread}</InlineNotice>
+      : count > 0 ? <InlineNotice tone="error">{fill(t.body.alertsUndelivered, { n: format.number(count) })}</InlineNotice> : null}
+  </li>;
 }
 
 /* ------------------------------------------------------------------------- */

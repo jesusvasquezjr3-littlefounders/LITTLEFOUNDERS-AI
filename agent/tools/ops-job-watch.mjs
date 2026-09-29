@@ -42,6 +42,14 @@
 // raw-event window). `accountDeletionFailures.stuck` counts erasures whose step
 // failed more than a day ago and never completed; any fails the watch, and a
 // reply without the number is refused.
+//
+// H.3 (GAP-FIX-R6; Block H: no alert may record without a consumer):
+// `alerts.undelivered` is the number of warehouse alert triggers in the last
+// 36 hours that reached nobody (delivery failed after its retries, the
+// channel is not configured, or no outcome was recorded; Core's
+// services/warehouseAlerts.ts). Any undelivered trigger fails the watch and is
+// named in the notice, so this issue is the alert's escalation channel. A reply
+// without the number (the warehouse could not be read) is refused.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -55,12 +63,12 @@ export const ISSUE_TITLE = 'Operations watchdog: a scheduled job has gone quiet'
 
 const count = (value) => (typeof value === 'number' && Number.isInteger(value) && value >= 0 ? value : null);
 
-/** @returns {{ ok: boolean, stale: object[], errors: string[], overdueChecks: number, dueReviews: number, stuckDeletions: number }} */
+/** @returns {{ ok: boolean, stale: object[], errors: string[], overdueChecks: number, dueReviews: number, stuckDeletions: number, undeliveredAlerts: number, alerts: object[] }} */
 export function evaluateOpsStatus(body) {
   const errors = [];
   const data = body && typeof body === 'object' && 'data' in body ? body.data : body;
   if (!data || typeof data !== 'object' || !Array.isArray(data.jobs)) {
-    return { ok: false, stale: [], errors: ['the reply carries no jobs list; refusing to report a health check that did not happen'], overdueChecks: 0, dueReviews: 0, stuckDeletions: 0 };
+    return { ok: false, stale: [], errors: ['the reply carries no jobs list; refusing to report a health check that did not happen'], overdueChecks: 0, dueReviews: 0, stuckDeletions: 0, undeliveredAlerts: 0, alerts: [] };
   }
   const byJob = new Map(data.jobs.map((job) => [job?.job, job]));
   // The retention sweep is reported beside the heartbeat jobs; its name must match.
@@ -86,15 +94,24 @@ export function evaluateOpsStatus(body) {
   if (dueReviews === null) errors.push("access_reviews: the reply carries no 'due' count");
   const stuckDeletions = count(data.accountDeletionFailures?.stuck);
   if (stuckDeletions === null) errors.push("account_deletion_failures: the reply carries no 'stuck' count");
+  const undeliveredAlerts = count(data.alerts?.undelivered);
+  if (undeliveredAlerts === null) errors.push("alerts: the reply carries no 'undelivered' count (the warehouse alert history was not read)");
+  const alerts = Array.isArray(data.alerts?.alerts) ? data.alerts.alerts.filter((alert) => alert && typeof alert === 'object') : [];
   return {
-    ok: stale.length === 0 && errors.length === 0 && !overdueChecks && !dueReviews && !stuckDeletions,
+    ok: stale.length === 0 && errors.length === 0 && !overdueChecks && !dueReviews && !stuckDeletions && !undeliveredAlerts,
     stale,
     errors,
     overdueChecks: overdueChecks ?? 0,
     dueReviews: dueReviews ?? 0,
     stuckDeletions: stuckDeletions ?? 0,
+    undeliveredAlerts: undeliveredAlerts ?? 0,
+    alerts,
   };
 }
+
+/** Staff-authored text in a GitHub issue body: one line, no markdown code or link syntax, bounded. */
+const plain = (value, fallback) => (typeof value === 'string' && value.trim() ? value.replace(/[\r\n`<>[\]|*_]/g, ' ').trim().slice(0, 80) : fallback);
+const ALERT_LIST_LIMIT = 10;
 
 const hours = (value) => (typeof value === 'number' && Number.isFinite(value) ? `${Math.floor(value)} h ago` : 'never');
 
@@ -111,6 +128,15 @@ export function buildNotification(result, runUrl = '') {
   }
   if (result.stuckDeletions > 0) {
     lines.push(`- **account_deletion_failures**: ${result.stuckDeletions} account erasure(s) with a step failed more than 24 h ago and not completed since (E.6). Read the \`account.deletion_step_failed\` rows and fix the failing service; the daily sweep resumes each one.`);
+  }
+  if (result.undeliveredAlerts > 0) {
+    lines.push(`- **alerts.undelivered**: ${result.undeliveredAlerts} warehouse alert trigger(s) in the last 36 h notified nobody (H.3). Configure the channel (ALERT_WEBHOOK_URL, or ALERT_EMAIL_SERVER_URL, ALERT_EMAIL_INTERNAL_KEY and ALERT_EMAIL_TO on dataintel) or fix the receiver, then act on the alert itself (staff console, Learning intel, Experiments & alerts).`);
+    for (const alert of (result.alerts ?? []).slice(0, ALERT_LIST_LIMIT)) {
+      const attempts = typeof alert.attempts === 'number' ? `, ${alert.attempts} attempt(s)` : '';
+      const reason = alert.error ? `, ${plain(alert.error, '')}` : '';
+      lines.push(`  - "${plain(alert.name, 'unnamed alert')}" (${plain(alert.channel, 'no channel')}) at ${plain(alert.triggeredAt, '?')}: ${plain(alert.status, 'undelivered')}${reason}${attempts}`);
+    }
+    if ((result.alerts ?? []).length > ALERT_LIST_LIMIT) lines.push(`  - and ${result.undeliveredAlerts - ALERT_LIST_LIMIT} more.`);
   }
   for (const job of result.stale) {
     lines.push(`- **${job.job}**: last successful run ${hours(job.hoursSinceLastRun)} (window ${job.staleAfterHours ?? '?'} h); last attempt ${job.lastAttemptAt ?? 'never'}${job.lastAttemptOk === false ? ' (failed)' : ''}.`);
@@ -149,5 +175,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   if (result.overdueChecks > 0) console.error(`::error::${result.overdueChecks} retroactive release check(s) are overdue (G.2)`);
   if (result.dueReviews > 0) console.error(`::error::${result.dueReviews} staff grant(s) are past the 90-day access review (G.4)`);
   if (result.stuckDeletions > 0) console.error(`::error::${result.stuckDeletions} account erasure(s) have a step failed for over 24 h (E.6)`);
+  if (result.undeliveredAlerts > 0) console.error(`::error::${result.undeliveredAlerts} warehouse alert trigger(s) notified nobody (H.3)`);
   process.exit(1);
 }

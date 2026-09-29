@@ -695,7 +695,8 @@
         "updates": "Novas versões de lições publicadas",
         "version": "Detalhes da versão",
         "confirmRelease": "Publicar esta versão para os alunos?",
-        "checks": "Verificações de publicação puladas"
+        "checks": "Verificações de publicação puladas",
+        "preview": "Prévia da lição"
       },
       "body": {
         "incidents": "Os alunos não conseguiram abrir estes.",
@@ -804,7 +805,10 @@
         "check": "Verificação",
         "reasonLogged": "Motivo registrado",
         "yes": "Sim",
-        "no": "Não"
+        "no": "Não",
+        "previewHelpV2": "Abre a lição como o aluno a vê. Confere respostas sem salvar.",
+        "previewBar": "Prévia da equipe. Nada é salvo.",
+        "notPlayable": "Os alunos ainda não podem abri-la: o gabarito não corresponde."
       },
       "option": {
         "courses": "Cursos",
@@ -846,7 +850,8 @@
         "fullSize": "Tamanho real",
         "release": "Publicar",
         "reject": "Rejeitar",
-        "rejectVersion": "Rejeitar versão"
+        "rejectVersion": "Rejeitar versão",
+        "closePreview": "Fechar prévia"
       }
     },
     "generation": {
@@ -1334,7 +1339,8 @@
         "skills": "Habilidades",
         "trend": "Tendência",
         "disclosure": "Escolha de adolescentes e convidados",
-        "delivery": "Entrega de alertas"
+        "delivery": "Entrega de alertas",
+        "channels": "Canais de alerta"
       },
       "body": {
         "view": "Visão",
@@ -1462,7 +1468,8 @@
         "lastDelivery": "Última entrega",
         "deliveryReason": "Motivo",
         "noDelivery": "Nenhuma ainda",
-        "noReason": "Nenhum"
+        "noReason": "Nenhum",
+        "channelsIntro": "Um alerta precisa de um canal configurado."
       },
       "option": {
         "view_overview": "Visão geral",
@@ -1519,7 +1526,8 @@
         "delivery_failed": "Com falha",
         "delivery_unconfigured": "Sem configurar",
         "status_met": "Na meta",
-        "status_missed": "Abaixo da meta"
+        "status_missed": "Abaixo da meta",
+        "channel_ready": "Configurado"
       }
     },
     "programme": {
@@ -1901,6 +1909,8 @@
         "jobStaleHelp": "{job} não roda há {n} horas. Verifique o fluxo.",
         "lastAttemptFailed": "A última tentativa falhou.",
         "lastAttempt": "Última tentativa",
+        "alertsUndelivered": "{n} alertas recentes não chegaram a ninguém. Verifique os canais de alerta.",
+        "alertsUnread": "Não foi possível ler os alertas de dados.",
         "deletionsStuck": "Exclusões paradas há mais de {hours} horas: {n}. Verifique a etapa com falha."
       },
       "option": {
@@ -1913,6 +1923,9 @@
         "job_vault_backup": "Backup do banco de dados",
         "job_pulse_backup": "Backup de analytics",
         "job_vault_drift": "Verificação de mudanças do esquema",
+        "job_alerts": "Alertas de dados",
+        "alertsDelivered": "Todos entregues",
+        "alertsUndelivered": "Não entregues",
         "job_learning_retention": "Limpeza de dias de prática",
         "job_insights_prune": "Limpeza de eventos de aprendizagem",
         "job_account_deletions": "Exclusão de contas",

@@ -4,7 +4,7 @@ import {
   type StatusTone, type TableColumn,
 } from '../../design/controls';
 import {
-  churnBuckets, cohortGrid, cohortWeeks, customWindow, DELIVERY_WINDOW_DAYS, EXPORT_ROLES, GRANULARITIES, INTEL_PRESETS, INTEL_VIEWS, isAlertDelivery, isAlerts,
+  churnBuckets, cohortGrid, cohortWeeks, customWindow, DELIVERY_WINDOW_DAYS, EXPORT_ROLES, GRANULARITIES, INTEL_PRESETS, INTEL_VIEWS, isAlertChannels, isAlertDelivery, isAlerts,
   isAnomalies, isChurn, isCohorts, isDisclosureCoverage, isExperiments, isFamilies, isFunnel, isIntelSummary, isLearnerDetail, isLearningOverview, isSkillHealth, isStaffExclusion, isTrend,
   isUserNames, rawExportPath, summaryDays, titleIn, TREND_METRICS, windowQuery,
   type Attention, type CourseHealth, type DeliveryStatus, type EvidenceStatus, type Granularity, type IntelView, type IntelWindow, type LearnerProfile, type LessonHealth,
@@ -597,6 +597,7 @@ function OperationsView({ api }: { api: StaffApi }) {
   const experiments = useStaffRead(api, '/admin/intel/experiments', isExperiments);
   const alerts = useStaffRead(api, '/admin/intel/alerts', isAlerts);
   const delivery = useStaffRead(api, `/admin/intel/alerts/delivery?days=${DELIVERY_WINDOW_DAYS}`, isAlertDelivery);
+  const channels = useStaffRead(api, '/admin/intel/alerts/channels', isAlertChannels);
   const deliveryChip = (value: DeliveryStatus | null | undefined) => {
     if (!value) return <>{t.body.noDelivery}</>;
     const label = t.option[`delivery_${value}`];
@@ -649,6 +650,18 @@ function OperationsView({ api }: { api: StaffApi }) {
             { id: 'deliveryUnconfigured', label: t.body.deliveryUnconfigured, value: format.number(delivery.load.data.unconfigured) },
             { id: 'deliveryPending', label: t.body.deliveryPending, value: format.number(delivery.load.data.pending) },
           ]} /> : null}
+    </Card>
+    <Card heading={t.heading.channels}>
+      <div className="lf-staff-section" data-section="alert-channels">
+        <p data-copy-role="body" className="lf-staff-muted">{t.body.channelsIntro}</p>
+        {channels.load.state === 'loading' ? <Loading />
+          : channels.load.state === 'error' ? <LoadFailure code={channels.load.code} onRetry={channels.reload} />
+            : channels.load.state === 'ready' ? <Facts items={(['webhook', 'email'] as const).map((channel) => ({
+              id: `channel-${channel}`, label: t.option[`channel_${channel}`],
+              value: channels.load.state === 'ready' && channels.load.data[channel]
+                ? <Chip tone="success" glyph="check">{t.option.channel_ready}</Chip> : <Chip tone="warning" glyph="info">{t.option.delivery_unconfigured}</Chip>,
+            }))} /> : null}
+      </div>
     </Card>
   </div>;
 }

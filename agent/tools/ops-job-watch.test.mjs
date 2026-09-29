@@ -13,7 +13,8 @@ const checks = (overdue = 0) => ({ overdue, windowDays: 30 });
 const reviews = (due = 0) => ({ due, windowDays: 90 });
 const retention = (stale = false) => job('tutor_retention', stale);
 const deletions = (stuck = 0) => ({ stuck, afterHours: 24 });
-const extras = { tutorRetention: retention(), contentRetroChecks: checks(), accessReviews: reviews(), accountDeletionFailures: deletions() };
+const alerts = (undelivered = 0, list = []) => ({ undelivered, windowHours: 36, alerts: list });
+const extras = { tutorRetention: retention(), contentRetroChecks: checks(), accessReviews: reviews(), accountDeletionFailures: deletions(), alerts: alerts() };
 // GAP-FIX-R6: the family-data jobs, fresh; the tests below that build their own jobs list keep them.
 const FAMILY_JOBS = ['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune'];
 const familyJobs = () => FAMILY_JOBS.map((name) => job(name, false));
@@ -33,7 +34,7 @@ function run(body) {
 }
 
 test('a healthy status passes and notifies nobody', () => {
-  assert.deepEqual(evaluateOpsStatus(healthy), { ok: true, stale: [], errors: [], overdueChecks: 0, dueReviews: 0, stuckDeletions: 0 });
+  assert.deepEqual(evaluateOpsStatus(healthy), { ok: true, stale: [], errors: [], overdueChecks: 0, dueReviews: 0, stuckDeletions: 0, undeliveredAlerts: 0, alerts: [] });
   assert.deepEqual(run(healthy), { code: 0, notice: null });
 });
 
@@ -65,7 +66,7 @@ test('G.2: an overdue retroactive release check fails the watch and is named; a 
   const result = run(overdue);
   assert.equal(result.code, 1);
   assert.match(result.notice, /content_retro_checks\*\*: 2 retroactive release check\(s\) past the 30-day window/);
-  const noCount = evaluateOpsStatus({ data: { jobs: healthy.data.jobs, tutorRetention: retention(), accessReviews: reviews(), accountDeletionFailures: deletions() } });
+  const noCount = evaluateOpsStatus({ data: { jobs: healthy.data.jobs, tutorRetention: retention(), accessReviews: reviews(), accountDeletionFailures: deletions(), alerts: alerts() } });
   assert.equal(noCount.ok, false);
   assert.deepEqual(noCount.errors, ["content_retro_checks: the reply carries no 'overdue' count"]);
 });
@@ -105,6 +106,32 @@ test('G.4: a reply without the due count, or with a malformed one, is refused', 
     assert.equal(result.ok, false);
     assert.deepEqual(result.errors, ["access_reviews: the reply carries no 'due' count"]);
   }
+});
+
+test('H.3: an undelivered warehouse alert fails the watch and is named in the notice a human receives', () => {
+  const failed = { alertId: 'a1', name: 'dau drop', channel: 'webhook', triggeredAt: '2026-09-29T08:00:00Z', status: 'failed', error: 'HTTP 502', attempts: 3 };
+  const unconfigured = { alertId: 'a2', name: 'events `spike`\n[x](y)', channel: 'email', triggeredAt: '2026-09-29T09:00:00Z', status: 'unconfigured', error: null, attempts: 0 };
+  const result = run({ data: { ...healthy.data, alerts: alerts(2, [failed, unconfigured]) } });
+  assert.equal(result.code, 1);
+  assert.match(result.notice, /\*\*alerts\.undelivered\*\*: 2 warehouse alert trigger\(s\) in the last 36 h notified nobody \(H\.3\)/);
+  assert.match(result.notice, /"dau drop" \(webhook\) at 2026-09-29T08:00:00Z: failed, HTTP 502, 3 attempt\(s\)/);
+  // Staff-authored names cannot inject markdown into the issue.
+  assert.match(result.notice, /"events  spike   x \(y\)" \(email\) at 2026-09-29T09:00:00Z: unconfigured, 0 attempt\(s\)/);
+});
+
+test('H.3: a reply without the undelivered count, or with an unreadable warehouse (null), is refused, never read as healthy', () => {
+  const { alerts: _drop, ...withoutAlerts } = healthy.data;
+  assert.deepEqual(evaluateOpsStatus({ data: withoutAlerts }).errors, ["alerts: the reply carries no 'undelivered' count (the warehouse alert history was not read)"]);
+  const unreadable = evaluateOpsStatus({ data: { ...healthy.data, alerts: alerts(null) } });
+  assert.equal(unreadable.ok, false);
+  assert.equal(run({ data: { ...healthy.data, alerts: alerts(null) } }).code, 1);
+});
+
+test('H.3: the notice lists at most ten undelivered alerts and counts the rest', () => {
+  const list = Array.from({ length: 12 }, (_, i) => ({ alertId: `a${i}`, name: `alert ${i}`, channel: 'webhook', triggeredAt: 't', status: 'failed', error: null, attempts: 3 }));
+  const notice = buildNotification({ stale: [], errors: [], overdueChecks: 0, dueReviews: 0, undeliveredAlerts: 14, alerts: list });
+  assert.equal((notice.match(/^ {2}- "alert/gm) ?? []).length, 10);
+  assert.match(notice, /and 4 more\./);
 });
 
 test('H.4 (GAP-FIX-R6): each family-data job that goes quiet fails the watch and is named in the notice', () => {

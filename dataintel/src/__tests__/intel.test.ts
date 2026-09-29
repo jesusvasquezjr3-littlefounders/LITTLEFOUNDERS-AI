@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
-import { getConfig } from '../env.js';
+import { getConfig, resetConfigCache } from '../env.js';
 
 const KEY = getConfig().INTERNAL_API_KEY;
 
@@ -967,6 +967,9 @@ describe('POST /api/v1/intel/alerts', () => {
   });
 
   it('creates alert with valid body', async () => {
+    // H.3 (GAP-FIX-R6): only on a configured channel (alert-channel-guard.test.ts pins the refusal).
+    process.env.ALERT_WEBHOOK_URL = 'https://ops.example.test/alerts';
+    resetConfigCache();
     const res = await auth(
       request(createApp())
         .post('/api/v1/intel/alerts')
@@ -982,6 +985,8 @@ describe('POST /api/v1/intel/alerts', () => {
     expect(writeOk(res.status)).toBe(true);
     expect(res.body).toHaveProperty('error');
     expect(res.body).toHaveProperty('data');
+    delete process.env.ALERT_WEBHOOK_URL;
+    resetConfigCache();
   });
 });
 

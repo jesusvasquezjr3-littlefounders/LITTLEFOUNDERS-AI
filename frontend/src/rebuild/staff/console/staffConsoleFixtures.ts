@@ -116,6 +116,8 @@ export function insightAnswer(route: string, query: URLSearchParams, empty: bool
   if (route === '/admin/intel/churn/risk') return ok(empty ? [] : i.churn);
   if (route === '/admin/intel/experiments') return ok(empty ? [] : i.experiments);
   if (route === '/admin/intel/alerts') return ok(empty ? [] : i.alerts);
+  // H.3 (GAP-FIX-R6): the delivery channels the warehouse has; a new deployment has none.
+  if (route === '/admin/intel/alerts/channels') return ok({ webhook: !empty, email: false });
   if (route === '/admin/intel/alerts/delivery') return ok(empty ? { ...i.alertDelivery, triggered: 0, delivered: 0, failed: 0, unconfigured: 0, pending: 0, rate: null } : i.alertDelivery);
   if (route === '/admin/analytics/consent-coverage') return ok(empty ? { ...i.disclosure, teens: { active: 0, disclosed: 0, optedIn: 0, optedOut: 0, protectedOrigin: 0, measuredWithoutOptIn: 0, covered: 0 }, guests: { active: 0, suppressed: 0, measured: 0 }, covered: 0, population: 0, coverage: null, status: 'no_data' } : i.disclosure);
   if (route === '/admin/intel/learning/overview') return ok(empty ? { ...i.learning, snapshot: { courses: 0, lessons: 0, attempts: 0, learners: 0, avgScore: null, firstTryAvgScore: null, hintRate: null, retryRate: null, avgSecondsPerAttempt: null, evidenceStatus: 'awaiting_evidence' }, courses: [], lessons: [], learners: [], trends: [] } : i.learning);
@@ -135,13 +137,22 @@ export function sectionAnswer(route: string, query: URLSearchParams, empty: bool
   const g = sections.generation;
   if (route === '/admin/content') return ok(empty ? { courses: [], summary: { courses: { total: 0 }, lessons: { total: 0 } }, courseAssemblyIncidents: [] } : sections.content);
   if (route === '/admin/moderation') return ok(empty ? { lessons: [], total: 0 } : sections.moderation);
-  if (route.startsWith('/admin/moderation/')) return route.endsWith(sections.lessonDetail.id) ? ok(sections.lessonDetail) : ok({ ...sections.lessonDetail, ...sections.moderation.lessons.find((lesson) => route.endsWith(lesson.id)) });
+  if (route.startsWith('/admin/moderation/')) {
+    if (route.endsWith(sections.lessonDetail.id)) return ok(sections.lessonDetail);
+    // GAP-FIX-R6: the second lesson in the queue is a v2 lesson, previewed in the rebuilt lesson view.
+    const lesson = sections.moderation.lessons.find((entry) => route.endsWith(entry.id));
+    return ok({ ...sections.lessonDetail, ...lesson, ...(lesson && lesson.id === sections.moderation.lessons[1]?.id ? { documents: sections.lessonDocumentsV2 } : {}) });
+  }
   if (route === '/admin/tutor/review-queue') return ok(empty ? { segments: [], total: 0 } : sections.liveQueue);
   if (route === '/admin/tutor/live-content/status') return ok(sections.liveStatus);
   if (route === '/admin/tutor/packs') return ok(empty ? { packs: [], total: 0 } : sections.packs);
   if (route === '/admin/content/learning-quality') return ok(sections.learningQuality);
   // G.2: new versions of live lessons waiting for a staff release, and the skipped release checks.
   if (route === '/admin/content/lesson-versions') return ok(empty ? { versions: [], total: 0 } : sections.lessonVersions);
+  // GAP-FIX-R6: a pending version's document, for its preview before the release.
+  if (/^\/admin\/content\/lessons\/[^/]+\/versions\/[^/]+$/.test(route)) {
+    return ok({ ...sections.versionDocument, lessonId: route.split('/')[4], documentVersionId: route.split('/')[6] });
+  }
   if (route === '/admin/content/bypass-checks') {
     return ok(empty ? { windowDays: 90, retroCheckDays: 30, bypassRate: null, completenessRate: null,
       counts: { publishActions: 0, bypasses: 0, decided: 0, unverified: 0, complete: 0, pending: 0, overdue: 0 }, checks: [] } : sections.bypassChecks);

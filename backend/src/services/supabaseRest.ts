@@ -1046,6 +1046,16 @@ export async function getCurrentV2LessonDocumentLocales(lessonId: string): Promi
 }
 
 /**
+ * One selection rule for learner delivery, every learner mutation and the
+ * staff review preview: an activated v2 version wins; otherwise the v1 row.
+ */
+export async function getEffectiveLessonDocumentLocales(lessonId: string): Promise<LessonDocumentRow[] | null> {
+  const v2Docs = await getCurrentV2LessonDocumentLocales(lessonId);
+  if (v2Docs === null || v2Docs.length > 0) return v2Docs;
+  return getLessonDocumentLocales(lessonId);
+}
+
+/**
  * Resolves the immutable document named by an already-authenticated v2 run.
  * `undefined` is an unavailable content service; `null` is a missing or
  * malformed version and must not be mistaken for a legacy fallback.

@@ -17,6 +17,8 @@
  *   GET  /admin/content/lesson-versions     new versions of live lessons waiting (G.2)
  *   POST /admin/content/lessons/:id/versions/:v/release|reject   the staff decision (G.2)
  *   GET  /admin/content/bypass-checks       Appendix N 1.2 rates and the retroactive checks
+ *   GET  /admin/content/lessons/:id/versions/:v   one version's document, as a learner is served it (GAP-FIX-R6)
+ *   POST /admin/content/lessons/:id/preview-grade  a preview answer checked, nothing recorded (GAP-FIX-R6)
  */
 
 import type { LiveContentStatus, TutorPackSummary } from '../../mentor/liveContentApi';
@@ -88,16 +90,45 @@ export interface ReviewLesson {
   adventureTitle: string; sagaTitle: string; topicTitle: string; difficulty: number; xpTotal: number; estimatedMinutes: number;
   createdAt: string; locales: string[];
 }
-export interface LessonDocumentRow { locale: string; schemaVersion: number; document: Record<string, unknown>; audio: Record<string, unknown> }
+/**
+ * A document as the learner is served it (Core's staffLessonPreview.ts). For
+ * v2: the immutable version it is, whether Core would deliver it at all
+ * (`playable`), and the Mentor stage and narration delivered beside it.
+ */
+export interface LessonDocumentRow {
+  locale: string; schemaVersion: number; document: Record<string, unknown>; audio: Record<string, unknown>;
+  documentVersionId?: string | null; playable?: boolean; mentorStage?: unknown; narrationAudio?: unknown;
+}
 export interface LessonDetail extends ReviewLesson { documents: LessonDocumentRow[] }
 
 const isReviewLesson = (l: unknown): l is ReviewLesson => isRecord(l) && isString(l.id) && isString(l.title) && isString(l.status)
   && isString(l.courseTitle) && isString(l.topicTitle) && isString(l.createdAt) && arrayOf(l.locales, isString);
 export const isReviewQueue = (value: unknown): value is { lessons: ReviewLesson[]; total: number } => isRecord(value)
   && arrayOf(value.lessons, isReviewLesson) && isNumber(value.total);
+const isLessonDocumentRow = (d: unknown): d is LessonDocumentRow => isRecord(d) && isString(d.locale)
+  && isNumber(d.schemaVersion) && isRecord(d.document) && (d.audio === undefined || d.audio === null || isRecord(d.audio))
+  && (d.documentVersionId === undefined || d.documentVersionId === null || isString(d.documentVersionId))
+  && (d.playable === undefined || typeof d.playable === 'boolean');
 export const isLessonDetail = (value: unknown): value is LessonDetail => isReviewLesson(value)
-  && arrayOf((value as unknown as Record<string, unknown>).documents, (d): d is LessonDocumentRow => isRecord(d) && isString(d.locale)
-    && isNumber(d.schemaVersion) && isRecord(d.document) && (d.audio === undefined || d.audio === null || isRecord(d.audio)));
+  && arrayOf((value as unknown as Record<string, unknown>).documents, isLessonDocumentRow);
+
+/** GAP-FIX-R6: a pending version's document for the Live updates preview. */
+export type VersionDocument = LessonDocumentRow & { lessonId: string };
+export const isVersionDocument = (value: unknown): value is VersionDocument => isLessonDocumentRow(value) && isString((value as unknown as Record<string, unknown>).lessonId);
+export const versionDocumentPath = (lessonId: string, documentVersionId: string) =>
+  `/admin/content/lessons/${encodeURIComponent(lessonId)}/versions/${encodeURIComponent(documentVersionId)}`;
+
+/**
+ * GAP-FIX-R6: the reviewer's answer, checked by Core with the learner's scorer
+ * and recorded nowhere. `met` / `review` is what the learner's board shows.
+ */
+export interface PreviewVerdict { verdict: 'met' | 'review'; judgment?: string; diagnostic?: string }
+export const previewGradePath = (lessonId: string) => `/admin/content/lessons/${encodeURIComponent(lessonId)}/preview-grade`;
+export function previewVerdict(value: unknown): PreviewVerdict | null {
+  if (!isRecord(value) || !isRecord(value.verdict) || typeof value.verdict.correct !== 'boolean') return null;
+  const { correct, judgment, diagnostic } = value.verdict;
+  return { verdict: correct ? 'met' : 'review', ...(isString(judgment) ? { judgment } : {}), ...(isString(diagnostic) ? { diagnostic } : {}) };
+}
 
 /** Reading a lesson document for inspection: its parts, its audio and its images, never guessed. */
 export interface MediaAsset { id: string; kind: 'audio' | 'image'; label: string; url: string; durationMs?: number }

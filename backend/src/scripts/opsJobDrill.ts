@@ -36,6 +36,8 @@ import { RETENTION_SWEEP_AUDIT_ACTION, RETENTION_STALE_HOURS } from '../services
  * `access_reviews` (G.4, an elevated grant past the 90-day access review);
  * `account_deletion_failures` (E.6, an erasure whose step failed more than a
  * day ago and never completed).
+ * `alerts_undelivered` (H.3, GAP-FIX-R6: a warehouse alert trigger whose
+ * delivery failed after its retries, read from dataintel).
  */
 
 const TOOL = resolve(dirname(fileURLToPath(import.meta.url)), '../../../agent/tools/ops-job-watch.mjs');
@@ -48,15 +50,25 @@ export interface DrillResult {
   passed: boolean;
 }
 
-export type DrillTarget = OpsJob | 'tutor_retention' | 'content_retro_checks' | 'access_reviews' | 'account_deletion_failures';
-export const DRILL_TARGETS: readonly DrillTarget[] = [...OPS_JOBS, 'tutor_retention', 'content_retro_checks', 'access_reviews', 'account_deletion_failures'];
-const CONDITIONS: readonly DrillTarget[] = ['content_retro_checks', 'access_reviews', 'account_deletion_failures'];
+export type DrillTarget = OpsJob | 'tutor_retention' | 'content_retro_checks' | 'access_reviews' | 'account_deletion_failures' | 'alerts_undelivered';
+export const DRILL_TARGETS: readonly DrillTarget[] = [...OPS_JOBS, 'tutor_retention', 'content_retro_checks', 'access_reviews', 'account_deletion_failures', 'alerts_undelivered'];
+/** Targets that are a condition on the status, not a scheduled job's trail. */
+const CONDITIONS: readonly DrillTarget[] = ['content_retro_checks', 'access_reviews', 'account_deletion_failures', 'alerts_undelivered'];
 const DRILL_REQUEST = '00000000-0000-4000-8000-00000000d11e';
 
 const metricsRow = (overdue: number) => [{ publish_actions: 3, bypasses: 1, decided: 1, unverified: overdue, complete: 1 - overdue, overdue_open: overdue }];
 const reviewStatus = (due: number) => ({
   cadenceDays: 90, total: 2, stale: due, reviewedEver: 1,
   grants: [{ userId: '00000000-0000-4000-8000-000000000001', kind: 'role', grant: 'admin', grantedAt: '2026-01-01T00:00:00Z', lastReviewedAt: null, due: due > 0 }],
+});
+/** H.3: the warehouse's undelivered-trigger read (dataintel GET /alerts/undelivered). */
+const undelivered = (count: number) => ({
+  data: {
+    hours: 36, count,
+    alerts: count === 0 ? [] : [{ alertId: '00000000-0000-4000-8000-0000000000a1', name: 'dau drop', channel: 'webhook',
+      triggeredAt: '2026-09-27T08:00:00.000Z', status: 'failed', error: 'HTTP 502', attempts: 3 }],
+  },
+  error: null,
 });
 const json = (body: unknown) => new Response(JSON.stringify(body), { status: 200, headers: { 'Content-Type': 'application/json' } });
 
@@ -76,7 +88,8 @@ function staleHours(job: DrillTarget): number {
   return OPS_JOB_STALE_HOURS[job as OpsJob];
 }
 
-const noticeMark = (job: DrillTarget): string => (job === 'content_retro_checks' ? 'retroactive release check' : `**${job}**`);
+const noticeMark = (job: DrillTarget): string => (job === 'content_retro_checks' ? 'retroactive release check'
+  : job === 'alerts_undelivered' ? '**alerts.undelivered**' : `**${job}**`);
 
 export async function runOpsJobDrill(job: DrillTarget, now: Date = new Date()): Promise<DrillResult> {
   const staleAt = new Date(now.getTime() - (staleHours(job) + 12) * 3_600_000).toISOString();
@@ -95,6 +108,8 @@ export async function runOpsJobDrill(job: DrillTarget, now: Date = new Date()): 
     }
     // E.6: an erasure still processing whose step failed more than a day ago.
     if (url.includes('/account_deletion_requests')) return json(job === 'account_deletion_failures' ? [{ id: DRILL_REQUEST }] : []);
+    // H.3: a warehouse alert whose delivery failed after its retries.
+    if (url.includes('/api/v1/intel/alerts/undelivered')) return json(undelivered(job === 'alerts_undelivered' ? 1 : 0));
     const action = /action=eq\.([^&]+)/.exec(url)?.[1] ?? '';
     if (action === DELETION_STEP_FAILED_AUDIT_ACTION) {
       return json(job === 'account_deletion_failures' ? [{ detail: { request_id: DRILL_REQUEST, step: 'depot', reason: 'unreachable' } }] : []);
@@ -110,6 +125,7 @@ export async function runOpsJobDrill(job: DrillTarget, now: Date = new Date()): 
   const stale = job === 'content_retro_checks' ? (status?.contentRetroChecks.overdue ?? 0) > 0
     : job === 'access_reviews' ? (status?.accessReviews.due ?? 0) > 0
       : job === 'account_deletion_failures' ? (status?.accountDeletionFailures.stuck ?? 0) > 0
+      : job === 'alerts_undelivered' ? (status?.alerts.undelivered ?? 0) > 0
       : job === 'tutor_retention' ? status?.tutorRetention.stale ?? false
         : status?.jobs.find((entry) => entry.job === job)?.stale ?? false;
 

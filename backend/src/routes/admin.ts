@@ -109,7 +109,10 @@ import {
   recordStaffSighting,
   revokeExclusion,
 } from '../services/analyticsExclusions.js';
-import { getOwnAdminPermissions, insertAuditLog } from '../services/supabaseRest.js';
+import {
+  getEffectiveLessonDocumentLocales, getOwnAdminPermissions, getV2LessonDocumentVersion, insertAuditLog, type LessonDocumentRow,
+} from '../services/supabaseRest.js';
+import { gradeStaffPreview, staffLessonDocument } from '../services/staffLessonPreview.js';
 import { readSocialSafetyMetrics } from '../services/socialTier.js';
 import {
   REVIEW_WINDOW_DAYS,
@@ -1849,6 +1852,59 @@ export function adminRouter(): Router {
     const body = RejectVersionBody.safeParse(req.body);
     if (!params.success || !body.success) return fail(res, 400, 'VALIDATION_ERROR', 'lessonId and versionId must be uuids and the reason 10-600 characters');
     return versionOutcome(res, await rejectLessonVersion(authedUser(res).id, params.data.lessonId, params.data.versionId, body.data.reason), params.data, 'rejected');
+  });
+
+  /*
+   * GAP-FIX-R6 (G.2, Appendix C Part 3 Stage 3): a pending version is released
+   * or rejected after the reviewer has PLAYED it. This returns that version's
+   * document as a learner would be served it (answerless, the Mentor stage
+   * projected, narration resolved; staffLessonPreview.ts), plus `playable`,
+   * whether Core would deliver it at all. Behind '/content' → manage_content.
+   */
+  router.get('/content/lessons/:lessonId/versions/:versionId', async (req, res) => {
+    const params = VersionParams.safeParse(req.params);
+    if (!params.success) return fail(res, 400, 'VALIDATION_ERROR', 'lessonId and versionId must be uuids');
+    const version = await getV2LessonDocumentVersion(params.data.versionId);
+    if (version === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the lesson version');
+    if (!version || version.lesson_id !== params.data.lessonId) return fail(res, 404, 'NOT_FOUND', 'Lesson version not found');
+    ok(res, { lessonId: params.data.lessonId, ...staffLessonDocument(version, params.data.lessonId) });
+  });
+
+  /*
+   * GAP-FIX-R6: a preview answer, checked against the document's own answer
+   * key with the learner's scorer, so the reviewer sees the feedback a child
+   * gets. NOTHING is recorded: no run, receipt, evidence or event; the key
+   * never leaves Core. `document_version_id` names a version (the Live updates
+   * preview); without it the document is the one a learner is served in that
+   * locale (the review queue preview). Behind '/content' → manage_content.
+   */
+  const PreviewGradeBody = z.object({
+    locale: z.enum(['en-US', 'es-MX', 'pt-BR']),
+    document_version_id: z.string().uuid().optional(),
+    segment_id: z.string().min(1).max(101),
+    answer: z.unknown(),
+  }).strict();
+  router.post('/content/lessons/:lessonId/preview-grade', async (req, res) => {
+    const lessonId = z.string().uuid().safeParse(req.params.lessonId);
+    const body = PreviewGradeBody.safeParse(req.body);
+    if (!lessonId.success || !body.success || body.data.answer === undefined) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'lessonId must be a uuid; the body names a locale, a segment_id and an answer');
+    }
+    let row: LessonDocumentRow | null = null;
+    if (body.data.document_version_id) {
+      const version = await getV2LessonDocumentVersion(body.data.document_version_id);
+      if (version === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the lesson version');
+      row = version && version.lesson_id === lessonId.data && version.locale === body.data.locale ? version : null;
+    } else {
+      const documents = await getEffectiveLessonDocumentLocales(lessonId.data);
+      if (!documents) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the lesson');
+      row = documents.find((document) => document.locale === body.data.locale) ?? null;
+    }
+    if (!row) return fail(res, 404, 'NOT_FOUND', 'No such lesson document');
+    const graded = gradeStaffPreview(row, lessonId.data, body.data.segment_id, body.data.answer);
+    if (graded.status === 'unplayable') return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document cannot be checked');
+    if (graded.status === 'invalid') return fail(res, 400, 'VALIDATION_ERROR', 'Invalid answer for this lesson segment');
+    ok(res, { verdict: graded.verdict, recorded: false });
   });
 
   /*
