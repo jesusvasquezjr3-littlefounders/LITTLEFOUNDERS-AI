@@ -31,6 +31,7 @@ import { StreakCelebration } from './StreakCelebration'
 import { playSfx, playLessonBgm, stopLessonBgm } from './sfx'
 import { formatDuration, streakCelebrationFor, useCountUp, type ServerCompletion } from './completion'
 import { mayCelebrate } from '@/rebuild/design/milestones'
+import { Celebration, MotionAsset } from '@/rebuild/design/controls'
 import { REGISTERS, type LearnerRegister } from '@/rebuild/design/learnerRegisterPolicy.generated'
 import type { LessonCheckpoint } from './checkpoint'
 import type { SessionState } from '../core/session'
@@ -1146,6 +1147,26 @@ export function ResultsScreen({
         result a CARD: the ring on one side, what it means on the other, so the
         number is read as a sentence rather than as a gauge on its own.
       */}
+      {/*
+        OD-28 (owner review V-12): lesson completion gets the registered
+        confetti burst here too, since every lesson in today's catalog finishes
+        in this v1 player (OD-24). The same asset and gate as the v2 result
+        screen: mounted only inside the shared Celebration for the
+        lesson-complete milestone Core named, in a register that shows the
+        medal. It plays once; reduced motion or a revisit (V-11) shows its
+        registered static frame. Decorative only.
+      */}
+      {lessonCelebrates ? (
+        <Celebration milestone="lesson-complete" momentId={lessonId ?? 'lesson'} className="relative -mb-6">
+          <span
+            className="pointer-events-none absolute inset-x-0 bottom-full mx-auto block aspect-[2/1] w-full max-w-[320px] [&_.lf-motion-asset-media]:block [&_.lf-motion-asset-media]:h-full [&_.lf-motion-asset-media]:w-full [&_.lf-motion-asset]:block [&_.lf-motion-asset]:h-full [&_.lf-motion-asset]:w-full"
+            aria-hidden="true"
+            data-celebrate="lesson-complete"
+          >
+            <MotionAsset assetId="celebration.lesson-complete.confetti" />
+          </span>
+        </Celebration>
+      ) : null}
       <section className="lf-glass flex flex-col items-center gap-5 rounded-md p-6 text-center sm:flex-row sm:gap-7 sm:text-left">
         <div
           className="relative h-32 w-32 shrink-0"

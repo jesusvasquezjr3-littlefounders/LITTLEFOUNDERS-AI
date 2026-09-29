@@ -100,7 +100,8 @@ const DEFINITIONS: Record<string, string> = {
 
 const MOUNTS: Record<string, string[]> = {
   // The component itself also refuses to show anything outside a closed-list Celebration (MotionAsset.test.tsx).
-  MotionAsset: ['rebuild/learning/LessonResultView.tsx'],
+  // GAP-FIX-R4 (OD-28): the v1 player's results screen mounts the same lesson-complete confetti, gated by Core's milestone.
+  MotionAsset: ['lesson-engine/player/LessonPlayer.tsx', 'rebuild/learning/LessonResultView.tsx'],
   StreakCelebration: ['lesson-engine/player/LessonPlayer.tsx'],
   // The legacy Mentor streak pill left with the legacy Tutor UI (S10L.1): nothing may mount it again.
   GamificationCelebration: [],
