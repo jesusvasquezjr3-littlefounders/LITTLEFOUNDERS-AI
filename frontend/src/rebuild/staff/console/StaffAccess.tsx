@@ -7,7 +7,7 @@ import {
   ACCESS_REVIEWS_PATH, GRANTABLE_ROLES, isAccessReviews, isCandidates, isRolesData, JUSTIFICATION, reviewDue, ROLE_ORDER, useStaffRead, UUID,
   type AccessReviewGrant, type Candidate, type GrantableRole, type Holder, type StaffApi,
 } from './staffConsoleApi';
-import { CopyId, Facts, LoadFailure, Loading, Metrics, ShareBars, shortId, StaffPage, useFormats } from './ConsoleParts';
+import { ConsoleLink, CopyId, Facts, LoadFailure, Loading, Metrics, ShareBars, shortId, StaffPage, useFormats } from './ConsoleParts';
 import { fill, labelOf, useConsoleCopy } from './staffConsoleCopy';
 
 /*
@@ -17,6 +17,10 @@ import { fill, labelOf, useConsoleCopy } from './staffConsoleCopy';
  *   - A.5: granting the parent role (the Tutor) needs a justification of
  *     10-200 characters; Core refuses the grant without it and writes it to
  *     its own audit row, so a staff-granted Tutor can always be explained.
+ *     OD-3 section 2: an account whose age record is a minor's (kid role,
+ *     under-13 origin, declared band under 18) is refused by the database
+ *     (409 AGE_RECORD_MINOR); the notice points to the E.4 age-correction
+ *     queue, the only place that record changes.
  *   - G.1: the four staff grants are switches only for an admin, the one role
  *     they restrict. A superadmin opens every section, so no switch is shown
  *     for them: a label that restricts nothing is never displayed.
@@ -116,7 +120,7 @@ function HolderDetails({ api, holder, onClose, onChanged, onRemoved }: {
   </Sheet>;
 }
 
-export function StaffAccess({ api }: { api: StaffApi }) {
+export function StaffAccess({ api, onNavigate }: { api: StaffApi; onNavigate: (href: string) => void }) {
   const { copy, sections, locale } = useConsoleCopy();
   const format = useFormats(locale);
   const t = copy.access;
@@ -127,7 +131,7 @@ export function StaffAccess({ api }: { api: StaffApi }) {
   const [justification, setJustification] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [granting, setGranting] = useState(false);
-  const [result, setResult] = useState<{ tone: 'success' | 'error'; text: string } | null>(null);
+  const [result, setResult] = useState<{ tone: 'success' | 'error'; text: string; ageReview?: boolean } | null>(null);
   const [finding, setFinding] = useState(false);
   const [candidateQuery, setCandidateQuery] = useState('');
   const candidates = useCandidates(api, candidateQuery, finding);
@@ -150,7 +154,8 @@ export function StaffAccess({ api }: { api: StaffApi }) {
       setResult({ tone: 'success', text: fill(t.body.granted, { role: roleName(role) }) });
       setUserId(''); setJustification(''); setSubmitted(false);
       roles.reload();
-    } else setResult({ tone: 'error', text: response.code === 'ROLE_REJECTED' ? t.body.rejected : t.body.grantFailed });
+    } else if (response.code === 'AGE_RECORD_MINOR') setResult({ tone: 'error', text: t.body.ageRecordMinor, ageReview: true });
+    else setResult({ tone: 'error', text: response.code === 'ROLE_REJECTED' ? t.body.rejected : t.body.grantFailed });
   };
 
   const holders = useMemo(() => {
@@ -197,6 +202,7 @@ export function StaffAccess({ api }: { api: StaffApi }) {
       <div><Button variant="accent" pending={granting} pendingLabel={t.action.granting} disabled={!userId.trim() || !justified}
         onClick={() => void grant()}>{t.action.grant}</Button></div>
       {result ? <InlineNotice tone={result.tone} live>{result.text}</InlineNotice> : null}
+      {result?.ageReview ? <div><ConsoleLink href="/admin/age-corrections" onNavigate={onNavigate}>{t.action.openAgeCorrections}</ConsoleLink></div> : null}
     </div>
   </Card>;
 

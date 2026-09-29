@@ -93,14 +93,14 @@ export function importCaveats(report: PlausibleReportData): string[] {
   if (report.rangeDrift) {
     const { askedFor, answeredFor } = report.rangeDrift;
     notes.push(
-      `WINDOW MISMATCH — figures were requested for ${askedFor[0]} to ${askedFor[1]} but the analytics API answered for ${answeredFor[0]} to ${answeredFor[1]}. Treat every number in this file as describing the second window, and report this.`,
+      `WINDOW MISMATCH: figures were requested for ${askedFor[0]} to ${askedFor[1]} but the analytics API answered for ${answeredFor[0]} to ${answeredFor[1]}. Treat every number in this file as describing the second window, and report this.`,
     );
   }
 
   if (!report.imports.importsIncluded) {
     notes.push(
       `Headline totals EXCLUDE historical imported (GA4) traffic${
-        report.imports.importsSkipReason ? ` — reason: ${report.imports.importsSkipReason}` : ''
+        report.imports.importsSkipReason ? ` (reason: ${report.imports.importsSkipReason})` : ''
       }.`,
     );
   }
@@ -109,7 +109,7 @@ export function importCaveats(report: PlausibleReportData): string[] {
     notes.push(
       `These breakdowns cover natively tracked visits only and exclude historical imported (GA4) traffic, so they will not sum to the headline visitor total: ${report.breakdownsWithoutImports
         .map((d) => DIMENSION_TITLES[d])
-        .join(', ')}. This is a property of how imported data is stored — it cannot be filtered by page — and not a gap in tracking.`,
+        .join(', ')}. This is a property of how imported data is stored (it cannot be filtered by page), not a gap in tracking.`,
     );
   }
 
@@ -199,7 +199,7 @@ export function renderAnalyticsReportCsv(report: PlausibleReportData): string {
     row('conversion_rate', fp.conversionRate === null ? 'no data' : fp.conversionRate.toFixed(4));
     if (fp.unobserved > 0) row('note', FIRST_PARTY_GAP_NOTE);
   } else {
-    lines.push(['firstparty', 'status', 'unavailable — first-party views could not be read; this is NOT zero', '', '', '', '']);
+    lines.push(['firstparty', 'status', 'unavailable: first-party views could not be read; this is NOT zero', '', '', '', '']);
   }
 
   for (const point of report.timeseries) {
@@ -338,14 +338,14 @@ export async function renderAnalyticsReportXlsx(report: PlausibleReportData): Pr
     const rows: [string, string | number, string][] = [
       ['Anonymous sessions', fp.sessions.anonymous, 'Visitors with no account'],
       ['Registered sessions', fp.sessions.registered, 'Signed-in, non-staff'],
-      ['Staff sessions', fp.sessions.staff, 'Shown, not filtered — usually most of the volume pre-launch'],
+      ['Staff sessions', fp.sessions.staff, 'Shown, not filtered; usually most of the volume pre-launch'],
       ['Share that was not staff', fp.externalShare === null ? 'no data' : `${(fp.externalShare * 100).toFixed(1)}%`, fp.externalShare === null ? 'No sessions in this window' : ''],
-      ['Accounts created', fp.accountsCreated, 'Server-side record — authoritative'],
+      ['Accounts created', fp.accountsCreated, 'Server-side record, authoritative'],
       ['Signups the client funnel saw', fp.signupObserved, 'Consent-gated; a floor, not a count'],
       ['Accounts unobserved', fp.unobserved, fp.unobserved > 0 ? FIRST_PARTY_GAP_NOTE : ''],
       ['Anonymous visitors', fp.anonymousVisitors, 'Arrived without an account'],
       ['Became accounts', fp.anonymousConverted, ''],
-      ['Conversion', fp.conversionRate === null ? 'no data' : `${(fp.conversionRate * 100).toFixed(1)}%`, fp.conversionRate === null ? 'Nobody arrived — not 0%' : ''],
+      ['Conversion', fp.conversionRate === null ? 'no data' : `${(fp.conversionRate * 100).toFixed(1)}%`, fp.conversionRate === null ? 'Nobody arrived, so not 0%' : ''],
     ];
     rows.forEach(([measure, value, note], index) => {
       const row = own.getRow(index + 2);

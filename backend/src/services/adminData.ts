@@ -510,7 +510,13 @@ function dbRefusal(body: unknown): { code: string; message: string } | null {
   return parsed.success && DB_REFUSAL_CODES.has(parsed.data.code) ? { code: parsed.data.code, message: parsed.data.message } : null;
 }
 
-export type ParentGrantOutcome = 'granted' | 'already_granted' | 'invalid' | 'rejected' | 'unavailable';
+/*
+ * 'minor_record' (F4-staff-ops, OD-3 section 2): the target's age record is a
+ * minor's (kid role, under-13 origin, or an effective band under 13 or 13 to
+ * 17). The database refuses before any write (staff_parent_grant_age_guard);
+ * the age record is corrected through the E.4 review, never by a grant.
+ */
+export type ParentGrantOutcome = 'granted' | 'already_granted' | 'invalid' | 'minor_record' | 'rejected' | 'unavailable';
 
 export async function grantParentRoleWithJustification(userId: string, actorId: string, justification: string): Promise<ParentGrantOutcome> {
   const { ok, body } = await serviceRestRaw('/rpc/grant_parent_role_with_justification', {
@@ -520,7 +526,8 @@ export async function grantParentRoleWithJustification(userId: string, actorId: 
   if (!ok) {
     const refusal = dbRefusal(body);
     if (!refusal) return 'unavailable';
-    return refusal.message.includes('PARENT_GRANT_JUSTIFICATION_REQUIRED') ? 'invalid' : 'rejected';
+    if (refusal.message.includes('PARENT_GRANT_JUSTIFICATION_REQUIRED')) return 'invalid';
+    return refusal.message.includes('PARENT_GRANT_MINOR_RECORD') ? 'minor_record' : 'rejected';
   }
   return body === 'granted' || body === 'already_granted' ? body : 'unavailable';
 }
@@ -1669,6 +1676,17 @@ export async function getGenerationAnalytics(
 
 // ── Coach report (forge:coach surfaced in the admin dashboard) ─────────────
 
+/*
+ * Bible 02 section 1.2 and rule 16 (F4-staff-ops): Core returns each proposed
+ * action as structured facts only, never prose. The staff console composes
+ * the proposal and its evidence in the viewer's locale (en-US, es-MX, pt-BR)
+ * and formats every number with Intl.
+ */
+export type CoachAction =
+  | { tag: 'cost:cache'; params: { cacheHitPct: number; wastedUsd: number } }
+  | { tag: `judge:${string}`; params: { dimension: string; mean: number; min: number | null; n: number } }
+  | { tag: 'failure:stage'; params: { stage: string; count: number; total: number } }
+  | { tag: 'cost:perLesson'; params: { usdPerLesson: number; totalUsd: number; published: number; inherited: number; billed: number } };
 export interface CoachReport {
   courseSlug: string | null;
   trackId: string | null;
@@ -1685,7 +1703,7 @@ export interface CoachReport {
   };
   cost: { totalUsd: number; totalTokens: number; cacheHitPct: number };
   images: { generated: number; billed: number; inherited: number };
-  proposedActions: { tag: string; proposal: string; evidence: string }[];
+  proposedActions: CoachAction[];
 }
 
 const COACH_LIMIT = 20;
@@ -1751,12 +1769,13 @@ export async function getCoachReport(
       const msg = f.error.slice(0, 120);
       errorGroups.set(msg, (errorGroups.get(msg) ?? 0) + 1);
     }
-    totalUsd += Number(r.usd_used);
-    totalTokens += r.tokens_used;
-    totalCached += r.cached_tokens;
-    totalImagesGenerated += r.images_generated;
-    totalImagesBilled += r.images_billed;
-    totalImagesInherited += r.images_inherited;
+    // A missing counter is zero, never NaN (a NaN would reach the console as null).
+    totalUsd += Number(r.usd_used ?? 0);
+    totalTokens += Number(r.tokens_used ?? 0);
+    totalCached += Number(r.cached_tokens ?? 0);
+    totalImagesGenerated += Number(r.images_generated ?? 0);
+    totalImagesBilled += Number(r.images_billed ?? 0);
+    totalImagesInherited += Number(r.images_inherited ?? 0);
   }
 
   const topErrors = [...errorGroups.entries()]
@@ -1819,43 +1838,26 @@ export async function getCoachReport(
 
   const cacheHitPct = totalTokens > 0 ? (totalCached / totalTokens) * 100 : 0;
 
-  // Generate proposed actions from evidence
-  const actions: CoachReport['proposedActions'] = [];
+  // Proposed actions from the evidence: structured facts, composed and localized by the console.
+  const actions: CoachAction[] = [];
   if (cacheHitPct < 30) {
-    actions.push({
-      tag: 'cost:cache',
-      proposal: 'Revisar el orden de los bloques en los prompts de write/review — el cache de prefijo de DeepSeek descuenta ~120x los tokens idénticos al inicio. Material estático primero, por-lección al final.',
-      evidence: `Cache-hit general: ${cacheHitPct.toFixed(1)}% (bajo — desperdicio estimado ~$${((totalTokens - totalCached) * 0.0004).toFixed(2)} en tokens no cacheados).`,
-    });
+    actions.push({ tag: 'cost:cache', params: { cacheHitPct, wastedUsd: (totalTokens - totalCached) * 0.0004 } });
   }
-  const judgeDimLow = dims.filter((d) => {
-    const m = dimensionMeans[d];
-    return typeof m === 'number' && m < 3.5;
-  });
-  const playbookFile = 'contentPlaybook.ts';
-  const unitPlural = 'lecciones';
-  for (const dim of judgeDimLow) {
-    actions.push({
-      tag: `judge:${dim}`,
-      proposal: `La dimensión '${dim}' promedia ${dimensionMeans[dim]?.toFixed(2)}/5. Revisar la sección correspondiente del playbook (${playbookFile}) y los anchors del juez.`,
-      evidence: `Media de ${dim}: ${dimensionMeans[dim]?.toFixed(2)}/5 sobre ${judged.length} ${unitPlural} evaluados (mín: ${dimensionMins[dim]?.toFixed(2)}).`,
-    });
+  for (const dim of dims) {
+    const mean = dimensionMeans[dim];
+    if (typeof mean !== 'number' || mean >= 3.5) continue;
+    actions.push({ tag: `judge:${dim}`, params: { dimension: dim, mean, min: dimensionMins[dim] ?? null, n: judged.length } });
   }
   const topStage = [...heatmap.entries()].sort((a, b) => b[1] - a[1])[0];
   if (topStage && topStage[1] > 0) {
-    actions.push({
-      tag: 'failure:stage',
-      proposal: `La etapa '${topStage[0]}' concentra ${topStage[1]} de ${totalFailed} fallos. Si es 'written', revisar los corrective retries y el salvage en write.ts. Si es 'reviewed', revisar los floors del juez en passesJudgeGate.`,
-      evidence: `Fallos en ${topStage[0]}: ${topStage[1]}/${totalFailed} (${((topStage[1] / totalFailed) * 100).toFixed(0)}%).`,
-    });
+    actions.push({ tag: 'failure:stage', params: { stage: topStage[0], count: topStage[1], total: totalFailed } });
   }
   if (totalPublished > 0) {
     const usdPerLesson = totalUsd / totalPublished;
     if (usdPerLesson > 0.15) {
       actions.push({
         tag: 'cost:perLesson',
-        proposal: `Costo por lección: $${usdPerLesson.toFixed(3)} — arriba de ~$0.07-0.10. Verificar que imageInheritance.ts esté activo (la herencia de imágenes es el mayor ahorro) y que el prefijo de prompts sea estático.`,
-        evidence: `$${totalUsd.toFixed(2)} / ${totalPublished} lecciones = $${usdPerLesson.toFixed(3)}/lección. ${totalImagesInherited} imágenes heredadas (gratis) vs ${totalImagesBilled} facturadas.`,
+        params: { usdPerLesson, totalUsd, published: totalPublished, inherited: totalImagesInherited, billed: totalImagesBilled },
       });
     }
   }

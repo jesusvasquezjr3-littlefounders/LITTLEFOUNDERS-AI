@@ -118,7 +118,7 @@ export const staffPreviewScreens: PreviewRegistry = {
   </div></main>),
   'staff-console-overview': consoleScreen('staff-console-overview', ({ api, viewer }) => <StaffOverview api={api} viewer={viewer} onNavigate={() => {}} />),
   'staff-console-users': consoleScreen('staff-console-users', ({ api, viewer }) => <StaffUsers api={api} viewer={viewer} />),
-  'staff-console-roles': consoleScreen('staff-console-roles', ({ api }) => <StaffAccess api={api} />),
+  'staff-console-roles': consoleScreen('staff-console-roles', ({ api }) => <StaffAccess api={api} onNavigate={() => {}} />),
   'staff-console-audit': consoleScreen('staff-console-audit', ({ api }) => <StaffAudit api={api} />),
   'staff-console-reports': consoleScreen('staff-console-reports', ({ api }) => <StaffReports api={api} />),
   'staff-console-emails': consoleScreen('staff-console-emails', ({ api }) => <StaffEmails api={api} />),

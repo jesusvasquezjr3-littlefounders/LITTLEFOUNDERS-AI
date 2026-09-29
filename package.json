@@ -52,6 +52,7 @@
     "social:db-verify": "node database/scripts/social-db-verify.mjs",
     "family:db-verify": "node database/scripts/family-db-verify.mjs",
     "identity:db-verify": "node database/scripts/identity-db-verify.mjs",
+    "staff:db-verify": "node database/scripts/staff-analytics-db-verify.mjs",
     "schema-fields:check": "node agent/tools/check-schema-fields.mjs",
     "guardrails:check": "node agent/tools/check-social-governance.mjs",
     "glossary:check": "node agent/tools/check-wallet-glossary.mjs",

@@ -62,6 +62,11 @@ npm run family:db-verify
 # parent-role provenance and the verification age guard, A.5) re-run over the
 # whole migration chain; a machine with no PostgreSQL prints SKIP.
 npm run identity:db-verify
+# Appendix N 1.1 / 1.2 and Appendix O 1.1 (GAP-FIX-R4): the Block G/H database
+# proofs (staff grants and decisions, content release, the Generation read
+# path, the kid and teen consent gate) over the whole migration chain; a
+# machine with no PostgreSQL prints SKIP.
+npm run staff:db-verify
 
 npm --prefix coursegen run catalog:check -- "curriculum/$COURSE"
 npm --prefix coursegen run graph:check -- "$COURSE"

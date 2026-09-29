@@ -226,3 +226,26 @@ describe('GET /api/v1/admin/generation/live', () => {
     expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
   });
 });
+
+// Bible 02 section 1.2 and rule 16 (F4-staff-ops): the coach's proposed
+// actions are structured facts the console localizes, never Core-authored
+// prose in one language.
+describe('GET /api/v1/admin/generation/coach proposed actions', () => {
+  it('returns each action as a tag and numeric facts, with no prose', async () => {
+    stubGeneration('admin');
+    const res = await request(createApp()).get('/api/v1/admin/generation/coach').set('Authorization', auth());
+    expect(res.status).toBe(200);
+    const actions = res.body.data.proposedActions as { tag: string; params: Record<string, unknown> }[];
+    expect(actions).toEqual([
+      { tag: 'failure:stage', params: { stage: 'written', count: 1, total: 1 } },
+      { tag: 'cost:perLesson', params: { usdPerLesson: 0.61725, totalUsd: 1.2345, published: 2, inherited: 0, billed: 2 } },
+    ]);
+    for (const action of actions) {
+      expect(Object.keys(action).sort()).toEqual(['params', 'tag']);
+      for (const value of Object.values(action.params)) expect(['number', 'string'].includes(typeof value) || value === null).toBe(true);
+    }
+    const text = JSON.stringify(actions);
+    expect(text).not.toMatch(/[—–]/);
+    expect(text).not.toMatch(/Revisar|lecci|Costo|dimensi/);
+  });
+});

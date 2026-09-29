@@ -483,6 +483,7 @@
         "granted": "Rol {role} asignado.",
         "rejected": "La base de datos rechazó este cambio.",
         "grantFailed": "No se pudo asignar el rol. Intenta de nuevo.",
+        "ageRecordMinor": "La edad registrada es menor de 18. Corrígela antes de asignar Tutor.",
         "searchPeople": "Nombre o usuario",
         "searchHelp": "Escribe al menos 2 caracteres.",
         "noPeople": "Nadie coincide.",
@@ -524,7 +525,8 @@
         "confirmRemove": "Quitar rol",
         "removing": "Quitando",
         "keepAccess": "Mantener acceso",
-        "keepingAccess": "Guardando"
+        "keepingAccess": "Guardando",
+        "openAgeCorrections": "Abrir correcciones de edad"
       }
     },
     "audit": {
@@ -947,6 +949,15 @@
         "noErrors": "No hay errores recurrentes.",
         "allClear": "No se encontraron problemas. El proceso funciona bien.",
         "actionsNote": "Cada propuesta cita su evidencia. Aplícala en un cambio revisado.",
+        "coachCacheProposal": "Pon primero los bloques fijos del prompt y al final la parte de cada lección.",
+        "coachCacheEvidence": "Aciertos de caché: {share}. Los tokens sin caché cuestan cerca de {cost}.",
+        "coachJudgeProposal": "Revisa el playbook y las anclas del juez para {dimension}.",
+        "coachJudgeEvidence": "Media de {value} sobre 5 en {n} lecciones; mínimo {low}.",
+        "coachStageProposal": "Revisa cómo la etapa {stage} reintenta y filtra lecciones.",
+        "coachStageEvidence": "{n} de {total} fallos ({share}) ocurrieron en esta etapa.",
+        "coachLessonProposal": "Comprueba que la reutilización de imágenes esté activa y el prefijo del prompt sea fijo.",
+        "coachLessonEvidence": "{cost} por lección en {published} lecciones.",
+        "coachLessonImages": "{inherited} imágenes reutilizadas, {billed} cobradas.",
         "cycle1": "Un ciclo",
         "cycle2": "Dos ciclos",
         "cycle3": "Tres o más",
@@ -992,7 +1003,11 @@
         "stage_publishing": "Publicación",
         "stage_published": "Publicadas",
         "stage_skipped": "Omitidas",
-        "stage_unknown": "Etapa desconocida"
+        "stage_unknown": "Etapa desconocida",
+        "coach_cache": "Caché de prompts",
+        "coach_judge": "Puntaje del juez: {dimension}",
+        "coach_stage": "Fallos en {stage}",
+        "coach_perLesson": "Costo por lección"
       },
       "action": {
         "refresh": "Actualizar"

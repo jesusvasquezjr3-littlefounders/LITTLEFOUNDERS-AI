@@ -371,3 +371,41 @@ jobs:
           LF_PG_DATA: /var/lib/postgresql/data
           LF_PG_VERIFY_JOBS: '3'
         run: node database/scripts/identity-db-verify.mjs
+
+  # Appendix N 1.1 (every release) and Appendix O 1.1 (Kid-Role Consent Gate,
+  # pass every release), GAP-FIX-R4: a Core-only release changes nothing under
+  # database/, so database-ci.yml would not run; this unfiltered job re-proves
+  # every Block G/H database guarantee over the whole migration chain on every
+  # push and pull request.
+  staff-db-verify:
+    name: Block G/H database proofs (staff grants, content release, consent gate) over the full chain
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Block G/H database proofs
+        env:
+          LF_PG_PORT: '5432'
+          LF_PG_USER: postgres
+          LF_PG_PSQL: psql
+          LF_PG_DATA: /var/lib/postgresql/data
+          LF_PG_VERIFY_JOBS: '3'
+        run: node database/scripts/staff-analytics-db-verify.mjs

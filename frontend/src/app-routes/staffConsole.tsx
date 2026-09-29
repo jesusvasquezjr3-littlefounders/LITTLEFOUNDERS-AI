@@ -98,7 +98,8 @@ export function StaffUsersRoute() {
 }
 
 export function StaffRolesRoute() {
-  return <StaffAccess api={useStaffConsole().api} />;
+  const { api, onNavigate } = useStaffConsole();
+  return <StaffAccess api={api} onNavigate={(href) => onNavigate(href)} />;
 }
 
 /** E.4 (OD-3): the staff-reviewed age correction queue (manage_users). */
@@ -148,9 +149,9 @@ export function StaffContentRoute() {
 
 export function StaffGenerationRoute() {
   const { getToken } = useAuth();
-  const { api } = useStaffConsole();
+  const { api, viewer } = useStaffConsole();
   const [params] = useSearchParams();
-  const liveFeed = useMemo(() => createLiveFeed(getSupabaseClient, getToken), [getToken]);
+  const liveFeed = useMemo(() => createLiveFeed(getSupabaseClient, getToken, viewer), [getToken, viewer]);
   return <StaffGeneration api={api} liveFeed={liveFeed} initialView={generationView(params.get('view'))} />;
 }
 
