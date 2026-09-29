@@ -167,12 +167,30 @@ const LEDGER_REASONS: readonly LedgerReason[] = ['task_approved', 'redemption', 
 
 export interface LedgerEntry { id: number; bucket: Bucket; amount: number; reason: LedgerReason; note: string | null; createdAt: string }
 
+/** One history line as Core serves it; a guardian movement must carry its reason, or it is not shown as if explained. */
+export function isLedgerEntry(value: unknown): value is LedgerEntry {
+  const e = value as LedgerEntry | null;
+  return typeof e === 'object' && e !== null && isInt(e.id) && isBucket(e.bucket) && isInt(e.amount) && LEDGER_REASONS.includes(e.reason)
+    && isNullableString(e.note) && isInstant(e.createdAt)
+    && ((e.reason !== 'manual_adjustment' && e.reason !== 'goal_withdrawal') || (typeof e.note === 'string' && e.note.length > 0));
+}
+
+/** S07.2 (H-06): the entries a linked teen makes without an approval step; a Tutor sees them after the fact. */
+export const SELF_DIRECTED_REASONS: readonly LedgerReason[] = ['self_income', 'personal_reward', 'goal_release'];
+
 export function fetchOwnLedger(session: Session) {
   return call('/tasks/wallet/ledger', session,
-    (data): data is { entries: LedgerEntry[] } => Array.isArray((data as { entries?: unknown })?.entries) && (data as { entries: LedgerEntry[] }).entries.every((e) =>
-      isInt(e.id) && isBucket(e.bucket) && isInt(e.amount) && LEDGER_REASONS.includes(e.reason) && isNullableString(e.note) && isInstant(e.createdAt)
-      // A guardian movement must carry its reason; one without it is not shown as if explained.
-      && ((e.reason !== 'manual_adjustment' && e.reason !== 'goal_withdrawal') || (typeof e.note === 'string' && e.note.length > 0))));
+    (data): data is { entries: LedgerEntry[] } => Array.isArray((data as { entries?: unknown })?.entries) && (data as { entries: unknown[] }).entries.every(isLedgerEntry));
+}
+
+export interface KidPockets { save: number; spend: number; share: number }
+
+/** GAP-FIX-R6 (D.5): a child's three pockets as their Tutor reads them, beside a correction (Core re-checks the guardian link). */
+export function fetchKidPockets(kidId: string, session: Session) {
+  return call(`/tasks/${encodeURIComponent(kidId)}/wallet`, session, (data): data is { balances: KidPockets } => {
+    const b = (data as { balances?: Record<string, unknown> } | null)?.balances;
+    return typeof b === 'object' && b !== null && isInt(b.save) && isInt(b.spend) && isInt(b.share);
+  });
 }
 
 export function fetchOwnRedemptions(session: Session) {

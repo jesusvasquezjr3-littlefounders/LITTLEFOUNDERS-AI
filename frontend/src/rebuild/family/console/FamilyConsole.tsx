@@ -208,7 +208,8 @@ function ChildOverview({ child, copy, onNavigate, safety }: { child: Child; copy
           : null}
         <ConsoleLink href={`${base}/territory`} onNavigate={onNavigate}>{copy.progress}</ConsoleLink>
         <ConsoleLink href={`${base}/tutor`} onNavigate={onNavigate}>{copy.mentor}</ConsoleLink>
-        <ConsoleLink href={FAMILY_WALLET_PATH} onNavigate={onNavigate}>{copy.coinCard}</ConsoleLink>
+        {/* GAP-FIX-R6: the Wallet opens on the child in view (`?child=`), never on the first child. The Tasks board above is family-wide. */}
+        <ConsoleLink href={`${FAMILY_WALLET_PATH}?child=${encodeURIComponent(child.userId)}`} onNavigate={onNavigate}>{copy.coinCard}</ConsoleLink>
       </ButtonGroup>
       {safety}
     </section>

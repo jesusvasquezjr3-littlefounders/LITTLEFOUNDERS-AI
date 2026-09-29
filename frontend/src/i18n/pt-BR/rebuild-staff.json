@@ -1908,7 +1908,8 @@
         "lastAttemptFailed": "A última tentativa falhou.",
         "lastAttempt": "Última tentativa",
         "alertsUndelivered": "{n} alertas recentes não chegaram a ninguém. Verifique os canais de alerta.",
-        "alertsUnread": "Não foi possível ler os alertas de dados."
+        "alertsUnread": "Não foi possível ler os alertas de dados.",
+        "deletionsStuck": "Exclusões paradas há mais de {hours} horas: {n}. Verifique a etapa com falha."
       },
       "option": {
         "by_tutor": "Tutor",
@@ -1922,7 +1923,12 @@
         "job_vault_drift": "Verificação de mudanças do esquema",
         "job_alerts": "Alertas de dados",
         "alertsDelivered": "Todos entregues",
-        "alertsUndelivered": "Não entregues"
+        "alertsUndelivered": "Não entregues",
+        "job_learning_retention": "Limpeza de dias de prática",
+        "job_insights_prune": "Limpeza de eventos de aprendizagem",
+        "job_account_deletions": "Exclusão de contas",
+        "job_family_retention": "Limpeza de dados da família",
+        "job_social_retention": "Limpeza de dados de amizades"
       },
       "action": {
         "lookUp": "Buscar",

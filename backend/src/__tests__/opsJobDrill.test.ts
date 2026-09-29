@@ -8,7 +8,7 @@ import { DRILL_TARGETS, runOpsJobDrill } from '../scripts/opsJobDrill.js';
  * scheduled workflow runs.
  */
 describe('the simulated job-failure drill', () => {
-  it.each(OPS_JOBS)('a stale %s heartbeat is reported stale and notifies a human', async (job) => {
+  it.each(OPS_JOBS)('a stale %s trail is reported stale and notifies a human', async (job) => {
     const result = await runOpsJobDrill(job, new Date('2026-09-27T12:00:00Z'));
     expect(result.stale).toBe(true);
     expect(result.watcherExit).toBe(1);
@@ -51,6 +51,15 @@ describe('the simulated job-failure drill', () => {
     expect(result.passed).toBe(true);
   }, 30_000);
 
+  it('E.6 (GAP-FIX-R6): an erasure whose step failed more than a day ago notifies a human through the same watchdog', async () => {
+    const result = await runOpsJobDrill('account_deletion_failures', new Date('2026-09-27T12:00:00Z'));
+    expect(result.stale).toBe(true);
+    expect(result.watcherExit).toBe(1);
+    expect(result.notice).toContain('**account_deletion_failures**: 1 account erasure(s)');
+    expect(result.notice).not.toContain('**account_deletions**');
+    expect(result.passed).toBe(true);
+  }, 30_000);
+
   it('H.3 (GAP-FIX-R6): a warehouse alert that notified nobody fails the watch and is named on the watchdog issue', async () => {
     const result = await runOpsJobDrill('alerts_undelivered', new Date('2026-09-27T12:00:00Z'));
     expect(result.stale).toBe(true);
@@ -61,7 +70,8 @@ describe('the simulated job-failure drill', () => {
     expect(result.passed).toBe(true);
   }, 30_000);
 
-  it('the drill covers the three Appendix O 1.3 jobs and every other watched condition', () => {
-    expect(DRILL_TARGETS).toEqual(expect.arrayContaining([...OPS_JOBS, 'tutor_retention', 'content_retro_checks', 'access_reviews', 'alerts_undelivered']));
+  it('the drill covers the three Appendix O 1.3 jobs, the family-data jobs and every other watched condition', () => {
+    expect(OPS_JOBS).toEqual(expect.arrayContaining(['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune']));
+    expect(DRILL_TARGETS).toEqual(expect.arrayContaining([...OPS_JOBS, 'tutor_retention', 'content_retro_checks', 'access_reviews', 'account_deletion_failures', 'alerts_undelivered']));
   });
 });

@@ -144,6 +144,8 @@ A register is not a safeguard. Every minor safeguard keeps following age through
 
 ## 6. Thresholds (Appendix C threshold recalibration log)
 
+The machine-checked log of record is now [`docs/operations/BLOCK-B-THRESHOLD-LOG.md`](../operations/BLOCK-B-THRESHOLD-LOG.md) (GAP-FIX-R6): it holds these values with their constants, a review due date and the review history, and `agent/tools/check-block-b-thresholds.mjs` fails when they drift. This table is the initial record. The quarterly Age-Band Register Differentiation Audit (MN-03) is due by the same log and opened each quarter by `.github/workflows/block-b-reviews-quarterly.yml`.
+
 | Threshold | Value | Owner | Review |
 |---|---|---|---|
 | Guided review after consecutive misses on one skill | 3, repeated at 6, 9 and 12 (proposed in B.26) | Pedagogical Lead | quarterly for the first year |

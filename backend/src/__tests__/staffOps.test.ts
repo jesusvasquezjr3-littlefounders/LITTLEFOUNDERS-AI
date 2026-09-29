@@ -61,6 +61,11 @@ interface World {
   calls?: { url: string; method: string; body?: string }[];
   /** G.2: content_bypass_metrics (the overdue retroactive checks the watchdog reads). */
   bypassMetrics?: { status: number; body: unknown };
+  /** D.21: family_retention_runs rows (newest first). */
+  familyRuns?: { status?: number; rows: { ran_at: string; removed: Record<string, unknown>; evidence_cleared: number | null; evidence_failed: number | null }[] };
+  /** E.6: account_deletion_requests still processing, and the step-failure audit rows. */
+  processing?: { status?: number; ids: string[] };
+  stepFailures?: { created_at: string; detail: Record<string, unknown> }[];
   /** H.3: dataintel's undelivered alert triggers (GET /api/v1/intel/alerts/undelivered). */
   undelivered?: { status: number; body: unknown };
 }
@@ -85,6 +90,12 @@ function stub(world: World = {}) {
       return Promise.resolve(jsonResponse(world.bypassMetrics?.status ?? 200, world.bypassMetrics?.body
         ?? [{ publish_actions: 4, bypasses: 1, decided: 1, unverified: 0, complete: 1, overdue_open: 0 }]));
     }
+    if (url.includes('/rest/v1/family_retention_runs')) {
+      return Promise.resolve(jsonResponse(world.familyRuns?.status ?? 200, (world.familyRuns?.rows ?? []).slice(0, 1)));
+    }
+    if (url.includes('/rest/v1/account_deletion_requests')) {
+      return Promise.resolve(jsonResponse(world.processing?.status ?? 200, (world.processing?.ids ?? []).map((id) => ({ id }))));
+    }
     if (url.includes('/api/v1/intel/alerts/undelivered')) {
       return Promise.resolve(jsonResponse(world.undelivered?.status ?? 200, world.undelivered?.body ?? { data: { hours: 36, count: 0, alerts: [] }, error: null }));
     }
@@ -92,9 +103,16 @@ function stub(world: World = {}) {
       if (world.auditStatus) return Promise.resolve(new Response(null, { status: world.auditStatus }));
       if (method === 'POST') return Promise.resolve(new Response(null, { status: 201 }));
       const action = /action=eq\.([^&]+)/.exec(url)?.[1] ?? '';
-      const rows = world.audit?.[action] ?? [];
-      const okOnly = url.includes('detail->>ok=eq.true');
-      return Promise.resolve(jsonResponse(200, (okOnly ? rows.filter((r) => r.detail.ok === true) : rows).slice(0, 1)));
+      if (action === 'account.deletion_step_failed') {
+        const cutoff = /created_at=lt\.([^&]+)/.exec(url)?.[1] ?? '';
+        const ids = /detail->>request_id=in\.\(([^)]*)\)/.exec(url)?.[1]?.split(',') ?? [];
+        const rows = (world.stepFailures ?? []).filter((r) => r.created_at < cutoff && ids.includes(String(r.detail.request_id)));
+        return Promise.resolve(jsonResponse(200, rows.map((r) => ({ detail: r.detail }))));
+      }
+      let rows = world.audit?.[action] ?? [];
+      if (url.includes('detail->>ok=eq.true')) rows = rows.filter((r) => r.detail.ok === true);
+      if (url.includes('detail->>suspensionsUnreadable=is.null')) rows = rows.filter((r) => r.detail.suspensionsUnreadable === undefined);
+      return Promise.resolve(jsonResponse(200, rows.slice(0, 1)));
     }
     throw new Error(`staffOps.test: unexpected ${method} ${url}`);
   }));
@@ -238,8 +256,10 @@ describe('H.4 — the operations heartbeat and watchdog', () => {
       job: 'tutor_retention', stale: true, staleAfterHours: 36, lastAttemptOk: true, lastRunDetail: { sessionsDeleted: 2 },
     });
     expect(res.body.data.anyStale).toBe(true);
-    // The heartbeat jobs list is unchanged: the staff console shows the sweep on its own card.
-    expect((res.body.data.jobs as { job: string }[]).map((j) => j.job)).toEqual(['vault_backup', 'pulse_backup', 'vault_drift']);
+    // The staff console shows the Mentor sweep on its own card, so it is not in `jobs`.
+    expect((res.body.data.jobs as { job: string }[]).map((j) => j.job)).toEqual([
+      'vault_backup', 'pulse_backup', 'vault_drift', 'learning_retention', 'insights_prune', 'account_deletions', 'family_retention', 'social_retention',
+    ]);
     stub({ audit: { 'tutor.retention.swept': [{ created_at: hoursAgo(5), detail: {} }] } });
     const fresh = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
     expect(fresh.body.data.tutorRetention).toMatchObject({ stale: false });
@@ -281,6 +301,70 @@ describe('H.4 — the operations heartbeat and watchdog', () => {
       expect(down.body.data.alerts).toEqual({ undelivered: null, windowHours: 36, alerts: [] });
     }
   });
+
+  it('GAP-FIX-R6: accepts a heartbeat from the learning retention sweep and the insights prune, and none for a trail job', async () => {
+    const calls = stub();
+    for (const job of ['learning_retention', 'insights_prune']) {
+      const res = await request(createApp()).post('/api/v1/internal/ops/heartbeat').set('x-internal-api-key', key()).send({ job, ok: true });
+      expect(res.status).toBe(201);
+    }
+    const actions = calls.filter((c) => c.method === 'POST' && c.url.includes('/audit_logs')).map((c) => JSON.parse(c.body!).action);
+    expect(actions).toEqual(['ops.learning_retention.completed', 'ops.insights_prune.completed']);
+    // A trail job keeps its own record: a heartbeat can never fake one.
+    for (const job of ['account_deletions', 'family_retention', 'social_retention', 'tutor_retention']) {
+      expect((await request(createApp()).post('/api/v1/internal/ops/heartbeat').set('x-internal-api-key', key()).send({ job, ok: true })).status).toBe(400);
+    }
+  });
+
+  it('GAP-FIX-R6: judges the account-deletion, family and social sweeps from their own trails', async () => {
+    stub({
+      audit: {
+        'account_deletions.sweep_ran': [{ created_at: hoursAgo(3), detail: { scanned: 0, suspensionsUnreadable: true } }, { created_at: hoursAgo(30), detail: { scanned: 2 } }],
+        'social_retention.sweep_ran': [{ created_at: hoursAgo(40), detail: { edges: 1 } }],
+        'ops.learning_retention.completed': [{ created_at: hoursAgo(4), detail: { ok: true } }],
+      },
+      familyRuns: { rows: [{ ran_at: hoursAgo(2), removed: { decisions: 3 }, evidence_cleared: 1, evidence_failed: 0 }] },
+    });
+    const res = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+    expect(res.status).toBe(200);
+    const jobs = Object.fromEntries((res.body.data.jobs as { job: string }[]).map((j) => [j.job, j]));
+    // The paused children were unreadable on the latest run: a failed attempt; the last good run was 30 h ago.
+    expect(jobs.account_deletions).toMatchObject({ stale: false, lastAttemptOk: false, lastRunDetail: { scanned: 2 } });
+    expect(jobs.family_retention).toMatchObject({ stale: false, lastAttemptOk: true, lastRunDetail: { removed: { decisions: 3 }, evidenceCleared: 1, evidenceFailed: 0 } });
+    expect(jobs.social_retention).toMatchObject({ stale: true, staleAfterHours: 36, lastAttemptOk: true });
+    expect(jobs.learning_retention).toMatchObject({ stale: false });
+    expect(jobs.insights_prune).toMatchObject({ stale: true, lastRunAt: null, lastAttemptAt: null });
+    expect(res.body.data.anyStale).toBe(true);
+    expect(res.body.data.accountDeletionFailures).toEqual({ stuck: 0, afterHours: 24 });
+  });
+
+  it('GAP-FIX-R6: a family run table that cannot be read is a 502, never "never ran"', async () => {
+    stub({ familyRuns: { status: 500, rows: [] } });
+    expect((await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key())).status).toBe(502);
+  });
+
+  it('E.6: counts erasures still processing whose step failed more than 24 h ago, and an unreadable list is a 502', async () => {
+    const A = '0a0a0a0a-0000-4000-8000-00000000000a';
+    const B = '0b0b0b0b-0000-4000-8000-00000000000b';
+    const C = '0c0c0c0c-0000-4000-8000-00000000000c';
+    stub({
+      processing: { ids: [A, B] },
+      stepFailures: [
+        { created_at: hoursAgo(30), detail: { request_id: A, step: 'depot' } },
+        { created_at: hoursAgo(26), detail: { request_id: A, step: 'depot' } },
+        // B failed an hour ago: the sweep has not had its day yet.
+        { created_at: hoursAgo(1), detail: { request_id: B, step: 'oracle' } },
+        // C failed long ago but completed since, so it is no longer processing.
+        { created_at: hoursAgo(80), detail: { request_id: C, step: 'dataintel' } },
+      ],
+    });
+    const res = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+    expect(res.status).toBe(200);
+    expect(res.body.data.accountDeletionFailures).toEqual({ stuck: 1, afterHours: 24 });
+    stub({ processing: { status: 500, ids: [] } });
+    expect((await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key())).status).toBe(502);
+  });
+
 
   it('refuses the internal status without the internal key', async () => {
     stub();

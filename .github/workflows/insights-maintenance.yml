@@ -17,6 +17,10 @@ name: Insights maintenance
 # ORDER MATTERS ONLY IN ONE DIRECTION: refresh first, so anything that aged
 # out today is rolled up before it is deleted.
 #
+# WATCHED (H.4, GAP-FIX-R6): the prune IS H.2's 400-day raw-event window, so
+# the last step records a heartbeat (`insights_prune`) and ops-job-watch.yml
+# notifies a human when no successful run lands within 36 hours.
+#
 # Mechanics mirror vault-backup.yml, including the lessons recorded there:
 # one `railway ssh` per command with args as DISTINCT TOKENS (never a quoted
 # script string — Railway space-joins and the remote re-parses), and a retry
@@ -37,6 +41,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      # The checkout carries scripts/ops-heartbeat.sh (H.4).
+      - uses: actions/checkout@v4
+
       - name: Install Railway CLI
         run: npm i -g @railway/cli@5.43.1
 
@@ -146,3 +153,19 @@ jobs:
           run_sql 'SELECT count(*) FROM insights_daily_activity;' 'rollup_rows'
           # S05.3c (B.13): closed family-bridge prompts leave after the same 400-day window.
           run_sql 'SELECT public.purge_closed_learning_bridge_prompts(400);' 'bridge_prompts_purged'
+
+      # H.4 (GAP-FIX-R6): leave the run in Core's audit trail
+      # (scripts/ops-heartbeat.sh); ops-job-watch.yml notifies a human when
+      # this job goes quiet.
+      - name: Record the heartbeat
+        if: success()
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: RAILWAY_SSH_KEY_PATH="$HOME/.ssh/railway_key" bash scripts/ops-heartbeat.sh insights_prune true
+
+      - name: Record the failed run
+        if: failure()
+        continue-on-error: true
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: RAILWAY_SSH_KEY_PATH="$HOME/.ssh/railway_key" bash scripts/ops-heartbeat.sh insights_prune false

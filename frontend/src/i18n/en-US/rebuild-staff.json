@@ -1908,7 +1908,8 @@
         "lastAttemptFailed": "The last attempt failed.",
         "lastAttempt": "Last attempt",
         "alertsUndelivered": "{n} recent alerts reached nobody. Check the alert channels.",
-        "alertsUnread": "The data alerts could not be read."
+        "alertsUnread": "The data alerts could not be read.",
+        "deletionsStuck": "Deletions stalled over {hours} hours: {n}. Check the failed step."
       },
       "option": {
         "by_tutor": "Tutor",
@@ -1922,7 +1923,12 @@
         "job_vault_drift": "Schema drift check",
         "job_alerts": "Data alerts",
         "alertsDelivered": "All delivered",
-        "alertsUndelivered": "Not delivered"
+        "alertsUndelivered": "Not delivered",
+        "job_learning_retention": "Practice-day cleanup",
+        "job_insights_prune": "Learning event cleanup",
+        "job_account_deletions": "Account deletions",
+        "job_family_retention": "Family data cleanup",
+        "job_social_retention": "Friends data cleanup"
       },
       "action": {
         "lookUp": "Look up",

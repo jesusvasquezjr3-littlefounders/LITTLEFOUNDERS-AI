@@ -72,6 +72,9 @@ Branch `codex/spec-fix6staffo9`. Two audited gaps, both verified real in the cod
   - `spec:check`, `secrets:check` and `bash agent/tools/check-i18n.sh` pass.
   - `ops-job-watch` (12) and `check-product-spec` (3) tests are green.
 - **No browser run.** The four new audit states are for the orchestrator's UI audit.
+- **After merging `codex/spec-migration-s02`:**
+  - That branch's round-6 data-platform lane had extended the same watchdog (the family-data jobs and `accountDeletionFailures`). The conflicts were resolved as unions: the watcher, the Core status, the drill, their tests, the console card and its fixtures carry both. `alerts` is checked beside `accountDeletionFailures`.
+  - After the merge, the type-checks of Core, frontend and dataintel are clean, and the focused suites above are green: Core 252 tests, frontend 185, dataintel 139, watcher and spec 18.
 
 ## Open
 

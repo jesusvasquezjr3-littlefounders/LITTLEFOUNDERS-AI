@@ -60,7 +60,7 @@ const proc = (phrase: string): ToneEntry => ({ phrase, category: 'procedural', l
  * "hurry", "moon") collides with ordinary story language and belongs in human
  * review, not here; names of concepts the curriculum teaches ("FOMO") are not
  * voice. Every change is a Threshold Recalibration Log entry (Appendix C Part
- * 1.3) in docs/rebuild/sprints/S05-FORGE-CONTENT-GATES.md.
+ * 1.3) in docs/operations/BLOCK-B-THRESHOLD-LOG.md (the per-locale count is checked).
  */
 export const TONE_LEXICON: Readonly<Record<ContentLocale, readonly ToneEntry[]>> = {
   'en-US': [
@@ -105,6 +105,15 @@ export const TONE_LEXICON: Readonly<Record<ContentLocale, readonly ToneEntry[]>>
     proc('acabaram as tentativas'), proc('nao tem mais tentativas'),
   ],
 };
+
+/**
+ * How far back a negation ("never", "nunca", "nao") or a warning cue
+ * ("signal", "estafa", "golpe") may sit and still downgrade a blocking hit
+ * to review. Calibrated on the four catalogs and the corpus; recorded in the
+ * Block B threshold log (docs/operations/BLOCK-B-THRESHOLD-LOG.md).
+ */
+export const NEGATION_WINDOW_WORDS = 4;
+export const WARNING_CUE_WINDOW_WORDS = 6;
 
 const NEGATIONS: Readonly<Record<ContentLocale, ReadonlySet<string>>> = {
   'en-US': new Set(['no', 'not', 'never', 'nobody', 'nothing', "don't", "doesn't", "isn't", "aren't", "can't", 'cannot', "won't", 'without', 'neither', 'nor']),
@@ -181,8 +190,8 @@ export function scanTone(text: string, locale: ContentLocale, surface: ToneSurfa
       const before = wordsBefore(folded, at);
       if (options.examined) downgraded = 'examined';
       else if (quotes.some(([start, end]) => at > start && at < end)) downgraded = 'quoted';
-      else if (before.slice(-4).some((word) => NEGATIONS[locale].has(word))) downgraded = 'negated';
-      else if (before.slice(-6).some((word) => WARNING_CUES[locale].has(word))) downgraded = 'warned';
+      else if (before.slice(-NEGATION_WINDOW_WORDS).some((word) => NEGATIONS[locale].has(word))) downgraded = 'negated';
+      else if (before.slice(-WARNING_CUE_WINDOW_WORDS).some((word) => WARNING_CUES[locale].has(word))) downgraded = 'warned';
       if (downgraded) severity = 'review';
     }
     findings.push({ phrase: entry.phrase, category: entry.category, severity, ...(downgraded ? { downgraded } : {}), excerpt: excerpt(text) });

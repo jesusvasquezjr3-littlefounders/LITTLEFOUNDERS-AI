@@ -17,6 +17,10 @@ enforcing boundary (migrations v2_number_line_pae, learning_autonomy_levers):
   - learning_events admits approach_choice, enrichment_offer, enrichment_open;
   - learning_autonomy_adoption reports path, pace, Mentor, approach and
     enrichment rows;
+  - (GAP-FIX-R6, migration autonomy_events_practice_gate) the three autonomy
+    events obey the OD-9 practice trigger: skipped for a migrated child
+    without the analytics.motivation_events consent, recorded once a Tutor
+    gives it, skipped again on revocation;
   - get_completed_course_badges never waits for an optional enrichment lesson.
 
 Configuration: LF_PG_PSQL, LF_PG_PORT, LF_PG_USER, LF_PG_KEEP, LF_PG_REPORT
@@ -198,6 +202,43 @@ try:
     assert table['enrichment'] == ['2', '1', '0.5000'], table
     rejected("SET ROLE authenticated; SELECT * FROM learning_autonomy_adoption(now() - interval '1 day', now());", 'permission denied')
     check('learning_events admits the three autonomy events (and refuses an unknown one); learning_autonomy_adoption adds the approach and enrichment rows')
+
+    # ── GAP-FIX-R6 (OD-9 4.2): the three autonomy events obey the practice gate ──
+    # A kid with a verified Tutor and the legacy H.1 analytics consent, so the
+    # admission trigger lets the rows through and only the OD-9 practice
+    # trigger (learning_events_data_practice) decides. Both triggers enabled
+    # (the refused insert above left them disabled: its DISABLE committed).
+    run('ALTER TABLE learning_events ENABLE TRIGGER USER;')
+    tutor, migrated, fresh = (str(uuid.uuid4()) for _ in range(3))
+    run(f"""INSERT INTO auth.users (id, email) VALUES ('{tutor}', 'tutor-r6@example.com'),
+          ('{migrated}', 'migrated-r6@example.com'), ('{fresh}', 'fresh-r6@example.com');
+        SELECT record_age_declaration('{tutor}', 'adult');
+        INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{tutor}', 'parent', NULL) ON CONFLICT DO NOTHING;""")
+    for kid in (migrated, fresh):
+        run(f"""SELECT record_age_declaration('{kid}', '13_to_17');
+            INSERT INTO guardian_links (parent_user_id, kid_user_id, verification_status, verified_at) VALUES ('{tutor}', '{kid}', 'verified', now());
+            INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{kid}', 'kid', '{tutor}') ON CONFLICT DO NOTHING;
+            INSERT INTO analytics_consents (kid_user_id, granted_by) VALUES ('{kid}', '{tutor}');""")
+    run(f"INSERT INTO legacy_consent_subjects (user_id, age_class) VALUES ('{migrated}', 'teen');")
+    autonomy = ('approach_choice', 'enrichment_offer', 'enrichment_open')
+
+    def landed(kid, event):
+        return run(f"""SET ROLE service_role;
+            INSERT INTO learning_events (user_id, role, event, route_class, value) VALUES ('{kid}', 'kid', '{event}', 'learn', 1) RETURNING id""") != ''
+
+    for event in autonomy + ('path_choice',):
+        assert not landed(migrated, event), f'{event} landed for a migrated child without the motivation consent'
+        assert landed(fresh, event), f'{event} was dropped for a child who is not migrated'
+    run(f"""INSERT INTO data_practice_consents (subject_user_id, practice_key, grantor_kind, granted_by, disclosure_version)
+        VALUES ('{migrated}', 'analytics.motivation_events', 'tutor', '{tutor}',
+                (SELECT disclosure_version FROM data_practices WHERE key = 'analytics.motivation_events'));""")
+    for event in autonomy:
+        assert landed(migrated, event), f'{event} was dropped after the Tutor gave the motivation consent'
+    run(f"UPDATE data_practice_consents SET revoked_at = now(), revoked_by = '{tutor}' WHERE subject_user_id = '{migrated}';")
+    for event in autonomy:
+        assert not landed(migrated, event), f'{event} landed after the Tutor revoked the motivation consent'
+    assert run(f"SELECT count(*) FROM learning_events WHERE user_id = '{migrated}' AND event IN {autonomy}") == '3'
+    check('OD-9 4.2: approach_choice, enrichment_offer and enrichment_open are skipped for a migrated child without the analytics.motivation_events consent (legacy H.1 consent alone is not enough), land once the Tutor consents, stop again on revocation, and are unaffected for a child who is not migrated')
 finally:
     if os.environ.get('LF_PG_KEEP') != '1':
         sql(f'DROP DATABASE {database} WITH (FORCE)')

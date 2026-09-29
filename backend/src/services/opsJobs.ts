@@ -3,6 +3,7 @@ import { insertAuditLog, serviceRest } from './supabaseRest.js';
 import { getOverdueRetroChecks, RETRO_CHECK_DAYS } from './contentRelease.js';
 import { getTutorRetentionStatus, RETENTION_STALE_HOURS, type TutorRetentionStatus } from './tutorData.js';
 import { ACCESS_REVIEW_CADENCE_DAYS, getAccessReviewCounts } from './adminData.js';
+import { ACCOUNT_DELETION_SWEEP_AUDIT_ACTION } from '../routes/account.js';
 import { getUndeliveredAlerts, type UndeliveredAlertsStatus } from './warehouseAlerts.js';
 
 /*
@@ -47,25 +48,67 @@ import { getUndeliveredAlerts, type UndeliveredAlertsStatus } from './warehouseA
  * watcher refuses, without hiding the other jobs' verdicts.
  */
 
-export const OPS_JOBS = ['vault_backup', 'pulse_backup', 'vault_drift'] as const;
+/*
+ * GAP-FIX-R6 (H.4 and the Block H non-negotiable: no job whose silent failure
+ * would harm family data may lack the watchdog-plus-notification pattern):
+ * five more jobs keep promises made to families and are watched here too.
+ *
+ *   heartbeat jobs (report through POST /internal/ops/heartbeat, like the
+ *   backups):
+ *     learning_retention  learning-retention.yml, the 400-day practice days
+ *     insights_prune      insights-maintenance.yml, prune_learning_events(400),
+ *                         the H.2 raw-event window itself
+ *   trail jobs (already leave their own durable record; read, never re-written):
+ *     account_deletions   account-deletion.yml (E.6 erasure, A.1's 90-day
+ *                         paused-child promise): `account_deletions.sweep_ran`;
+ *                         a run whose paused-child candidates were unreadable
+ *                         (`suspensionsUnreadable`) is a failed attempt
+ *     family_retention    family-retention.yml (D.21): family_retention_runs.ran_at
+ *     social_retention    social-retention.yml (E.11): `social_retention.sweep_ran`,
+ *                         written by the database in the sweep's own transaction
+ *
+ * An erasure that stalls is watched as well: a request still `processing` with
+ * an `account.deletion_step_failed` row older than DELETION_STEP_FAILURE_HOURS
+ * (no later completion) is `accountDeletionFailures.stuck`, a notify condition.
+ */
+
+/** Jobs that record themselves through the heartbeat route (scripts/ops-heartbeat.sh). */
+export const HEARTBEAT_JOBS = ['vault_backup', 'pulse_backup', 'vault_drift', 'learning_retention', 'insights_prune'] as const;
+export type HeartbeatJob = (typeof HEARTBEAT_JOBS)[number];
+/** Jobs whose own durable trail is read directly. */
+export const TRAIL_JOBS = ['account_deletions', 'family_retention', 'social_retention'] as const;
+export type TrailJob = (typeof TRAIL_JOBS)[number];
+export const OPS_JOBS = [...HEARTBEAT_JOBS, ...TRAIL_JOBS] as const;
 export type OpsJob = (typeof OPS_JOBS)[number];
 
 /**
- * All three run once a day (vault-drift 07:30, vault-backup 08:00,
- * pulse-backup 08:30 UTC). 36 hours is a day plus half a day of slack for an
- * ordinary late or retried run, without hiding a genuinely missed day.
+ * Every watched job runs once a day (family retention 03:15, account deletion
+ * 03:45, social retention 04:15, learning retention 04:30, vault-drift and the
+ * insights prune 07:30, vault-backup 08:00, pulse-backup 08:30 UTC). 36 hours
+ * is a day plus half a day of slack for an ordinary late or retried run,
+ * without hiding a genuinely missed day.
  */
 export const OPS_JOB_STALE_HOURS: Record<OpsJob, number> = {
   vault_backup: 36,
   pulse_backup: 36,
   vault_drift: 36,
+  learning_retention: 36,
+  insights_prune: 36,
+  account_deletions: 36,
+  family_retention: 36,
+  social_retention: 36,
 };
 
-export const opsJobAction = (job: OpsJob): string => `ops.${job}.completed`;
+/** A step failure older than this with the request still processing is a stalled erasure (the sweep retries daily). */
+export const DELETION_STEP_FAILURE_HOURS = 24;
+export const DELETION_STEP_FAILED_AUDIT_ACTION = 'account.deletion_step_failed';
+export const SOCIAL_RETENTION_SWEEP_AUDIT_ACTION = 'social_retention.sweep_ran';
+
+export const opsJobAction = (job: HeartbeatJob): string => `ops.${job}.completed`;
 
 export const OpsHeartbeatBody = z
   .object({
-    job: z.enum(OPS_JOBS),
+    job: z.enum(HEARTBEAT_JOBS),
     ok: z.boolean(),
     bytes: z.number().int().nonnegative().max(1e13).optional(),
     pending: z.number().int().nonnegative().max(10_000).optional(),
@@ -96,6 +139,24 @@ export interface OpsJobStatus {
 }
 
 const Rows = z.array(z.object({ created_at: z.string(), detail: z.record(z.string(), z.unknown()).nullable() }));
+type TrailRow = z.infer<typeof Rows>[number];
+
+/** family_retention_runs: one row per completed sweep (migration family_data_retention). */
+const FamilyRuns = z.array(z.object({
+  ran_at: z.string(),
+  removed: z.record(z.string(), z.unknown()),
+  evidence_cleared: z.number().int().nullable(),
+  evidence_failed: z.number().int().nullable(),
+}));
+
+/** Pure: whether one trail row records a successful run of that job. */
+export function runSucceeded(job: OpsJob, detail: Record<string, unknown> | null): boolean {
+  if ((HEARTBEAT_JOBS as readonly string[]).includes(job)) return detail?.ok === true;
+  // The sweep audits every run; one that could not read the paused children did not keep A.1's promise.
+  if (job === 'account_deletions') return detail !== null && detail.suspensionsUnreadable !== true;
+  // The social sweep's row and a family run row exist only for a run that completed.
+  return true;
+}
 
 /** Pure: the verdict for one job from its latest successful and latest attempted rows. */
 export function judgeOpsJob(
@@ -111,7 +172,7 @@ export function judgeOpsJob(
     lastRunAt: lastOk?.created_at ?? null,
     hoursSinceLastRun: hours,
     lastAttemptAt: lastAttempt?.created_at ?? null,
-    lastAttemptOk: lastAttempt ? lastAttempt.detail?.ok === true : null,
+    lastAttemptOk: lastAttempt ? runSucceeded(job, lastAttempt.detail) : null,
     staleAfterHours,
     stale: hours === null || hours > staleAfterHours,
     lastRunDetail: lastOk?.detail ?? null,
@@ -150,15 +211,70 @@ export function retentionAsJob(status: TutorRetentionStatus): TutorRetentionJobS
   };
 }
 
+/** E.6: erasures still processing whose step failed more than `afterHours` ago with no completion since. */
+export interface AccountDeletionFailureStatus { stuck: number; afterHours: number }
+
 export interface OpsStatus {
   jobs: OpsJobStatus[];
   tutorRetention: TutorRetentionJobStatus;
-  /** Any heartbeat job or the retention sweep stale. */
+  /** Any watched job or the retention sweep stale. */
   anyStale: boolean;
   contentRetroChecks: ContentRetroCheckStatus;
   accessReviews: AccessReviewDueStatus;
   /** H.3: warehouse alert triggers that notified nobody (null count = the warehouse was not read). */
   alerts: UndeliveredAlertsStatus;
+  accountDeletionFailures: AccountDeletionFailureStatus;
+}
+
+const auditPath = (action: string, extra = '') =>
+  `/audit_logs?action=eq.${encodeURIComponent(action)}${extra}&select=created_at,detail&order=created_at.desc&limit=1`;
+
+/** The latest successful and latest attempted row of one job, or null when a read failed. */
+async function readTrail(job: OpsJob): Promise<{ ok: TrailRow | undefined; attempt: TrailRow | undefined } | null> {
+  if (job === 'family_retention') {
+    const parsed = FamilyRuns.safeParse(await serviceRest<unknown>('/family_retention_runs?select=ran_at,removed,evidence_cleared,evidence_failed&order=ran_at.desc&limit=1'));
+    if (!parsed.success) return null;
+    const run = parsed.data[0];
+    const row = run ? { created_at: run.ran_at, detail: { removed: run.removed, evidenceCleared: run.evidence_cleared, evidenceFailed: run.evidence_failed } } : undefined;
+    return { ok: row, attempt: row };
+  }
+  const [okPath, attemptPath] = job === 'account_deletions'
+    ? [auditPath(ACCOUNT_DELETION_SWEEP_AUDIT_ACTION, '&detail->>suspensionsUnreadable=is.null'), auditPath(ACCOUNT_DELETION_SWEEP_AUDIT_ACTION)]
+    : job === 'social_retention'
+      ? [auditPath(SOCIAL_RETENTION_SWEEP_AUDIT_ACTION), auditPath(SOCIAL_RETENTION_SWEEP_AUDIT_ACTION)]
+      : [auditPath(opsJobAction(job), '&detail->>ok=eq.true'), auditPath(opsJobAction(job))];
+  const [okRows, attemptRows] = await Promise.all([serviceRest<unknown>(okPath), serviceRest<unknown>(attemptPath)]);
+  const ok = Rows.safeParse(okRows);
+  const attempt = Rows.safeParse(attemptRows);
+  if (!ok.success || !attempt.success) return null;
+  return { ok: ok.data[0], attempt: attempt.data[0] };
+}
+
+const ProcessingIds = z.array(z.object({ id: z.string().uuid() })).max(200);
+const FailureRows = z.array(z.object({ detail: z.record(z.string(), z.unknown()).nullable() }));
+
+/**
+ * E.6: erasures that stalled. A request still `processing` with a step failure
+ * recorded more than DELETION_STEP_FAILURE_HOURS ago has had no success since
+ * (completion moves it out of `processing`). Null when a read failed.
+ */
+export async function getStuckAccountDeletions(now: Date = new Date()): Promise<number | null> {
+  const open = ProcessingIds.safeParse(await serviceRest<unknown>('/account_deletion_requests?status=eq.processing&select=id&order=started_at.asc&limit=200'));
+  if (!open.success) return null;
+  if (open.data.length === 0) return 0;
+  const ids = new Set(open.data.map((row) => row.id));
+  const cutoff = new Date(now.getTime() - DELETION_STEP_FAILURE_HOURS * 3_600_000).toISOString();
+  const failures = FailureRows.safeParse(await serviceRest<unknown>(
+    `/audit_logs?action=eq.${encodeURIComponent(DELETION_STEP_FAILED_AUDIT_ACTION)}&created_at=lt.${encodeURIComponent(cutoff)}`
+    + `&detail->>request_id=in.(${[...ids].join(',')})&select=detail&limit=1000`,
+  ));
+  if (!failures.success) return null;
+  const stuck = new Set<string>();
+  for (const row of failures.data) {
+    const requestId = row.detail?.request_id;
+    if (typeof requestId === 'string' && ids.has(requestId)) stuck.add(requestId);
+  }
+  return stuck.size;
 }
 
 /**
@@ -169,25 +285,13 @@ export async function getOpsJobStatus(now: Date = new Date()): Promise<OpsStatus
   const overdue = getOverdueRetroChecks();
   const retention = getTutorRetentionStatus(now);
   const accessCounts = getAccessReviewCounts(ACCESS_REVIEW_CADENCE_DAYS);
+  const stuckDeletions = getStuckAccountDeletions(now);
   const undeliveredAlerts = getUndeliveredAlerts();
-  const reads = await Promise.all(
-    OPS_JOBS.flatMap((job) => {
-      const action = encodeURIComponent(opsJobAction(job));
-      return [
-        serviceRest<unknown>(`/audit_logs?action=eq.${action}&detail->>ok=eq.true&select=created_at,detail&order=created_at.desc&limit=1`),
-        serviceRest<unknown>(`/audit_logs?action=eq.${action}&select=created_at,detail&order=created_at.desc&limit=1`),
-      ];
-    }),
-  );
-  const parsed = reads.map((rows) => Rows.safeParse(rows));
-  if (parsed.some((result) => !result.success)) return null;
-  const jobs = OPS_JOBS.map((job, index) => {
-    const ok = parsed[index * 2]!;
-    const attempt = parsed[index * 2 + 1]!;
-    return judgeOpsJob(job, ok.success ? ok.data[0] : undefined, attempt.success ? attempt.data[0] : undefined, now);
-  });
-  const [overdueChecks, retentionStatus, access, alerts] = await Promise.all([overdue, retention, accessCounts, undeliveredAlerts]);
-  if (overdueChecks === null || retentionStatus === null || access === null) return null;
+  const trails = await Promise.all(OPS_JOBS.map((job) => readTrail(job)));
+  if (trails.some((trail) => trail === null)) return null;
+  const jobs = OPS_JOBS.map((job, index) => judgeOpsJob(job, trails[index]!.ok, trails[index]!.attempt, now));
+  const [overdueChecks, retentionStatus, access, stuck, alerts] = await Promise.all([overdue, retention, accessCounts, stuckDeletions, undeliveredAlerts]);
+  if (overdueChecks === null || retentionStatus === null || access === null || stuck === null) return null;
   const tutorRetention = retentionAsJob(retentionStatus);
   return {
     jobs,
@@ -195,6 +299,7 @@ export async function getOpsJobStatus(now: Date = new Date()): Promise<OpsStatus
     anyStale: jobs.some((job) => job.stale) || tutorRetention.stale,
     contentRetroChecks: { overdue: overdueChecks, windowDays: RETRO_CHECK_DAYS },
     accessReviews: { due: access.due, total: access.total, windowDays: ACCESS_REVIEW_CADENCE_DAYS },
+    accountDeletionFailures: { stuck, afterHours: DELETION_STEP_FAILURE_HOURS },
     alerts,
   };
 }

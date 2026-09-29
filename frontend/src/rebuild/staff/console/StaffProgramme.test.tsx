@@ -239,6 +239,26 @@ describe('Reports → Support tools (manage_support)', () => {
     expect(ok).toHaveTextContent(s.option.alertsDelivered);
   });
 
+  it('lists the family-data jobs and names stalled erasures in words (H.4, E.6, GAP-FIX-R6)', async () => {
+    const { api } = fakeApi();
+    render(<Frame><StaffReports api={api} initialView="support" /></Frame>);
+    const jobs = await waitFor(() => { const el = document.querySelector<HTMLElement>('[data-tool="ops-jobs"]'); if (!el) throw new Error('no card'); return el; });
+    for (const name of ['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune'] as const) {
+      await within(jobs).findByText(s.option[`job_${name}`]);
+      expect(jobs.querySelector(`[data-job="${name}"]`)!.getAttribute('data-stale')).toBe('false');
+    }
+    expect(within(jobs).getByText(s.body.deletionsStuck.replace('{hours}', '24').replace('{n}', '1'))).toBeTruthy();
+  });
+
+  it('a reply without the stalled-erasure count is an error state (E.6, GAP-FIX-R6)', async () => {
+    const ready = (programme as unknown as { routes: Record<string, { jobs: unknown[]; anyStale: boolean }> }).routes['/admin/ops/job-status']!;
+    const { api } = fakeApi((path) => (path === '/admin/ops/job-status' ? { ok: true, data: { jobs: ready.jobs, anyStale: ready.anyStale } } : undefined));
+    render(<Frame><StaffReports api={api} initialView="support" /></Frame>);
+    const jobs = await waitFor(() => { const el = document.querySelector<HTMLElement>('[data-tool="ops-jobs"]'); if (!el) throw new Error('no card'); return el; });
+    expect(await within(jobs).findByRole('button')).toBeTruthy();
+    expect(jobs.querySelector('[data-job]')).toBeNull();
+  });
+
   it('a reply missing a job is an error state, never a healthy list (H.4)', async () => {
     const { api } = fakeApi((path) => (path === '/admin/ops/job-status' ? { ok: true, data: { jobs: [], anyStale: false } } : undefined));
     render(<Frame><StaffReports api={api} initialView="support" /></Frame>);

@@ -7,6 +7,7 @@ import { childName, fetchChildren, type Child, type ConsoleTransport } from '../
 import { ConsoleLink, FailureState, fill, PageLoading, type ConsoleLocale, type PageFailure } from '../../family/console/consoleParts';
 import type { CoinCardCopy, TutorCoinsCopy } from '../../family/tasks/taskParts';
 import { CardFields } from './cardParts';
+import { ChildCoinActivity } from './ChildCoinActivity';
 import {
   ALLOWANCE_MAX, CARD_NAME_MAX, fetchSetup, openCard, saveAllowance, saveLimit, validAllowance, type Allowance, type CardDesign, type ChildCoinsSetup,
   type Frequency, type Limit, type LimitWindow,
@@ -33,6 +34,12 @@ import '../../family/tasks/money.css';
  * and the Share places with the child's usual split (D.13, D.14). Beside
  * them: the decisions waiting (D.17, D.18) and what the practice covers and
  * does not (D.20).
+ *
+ * GAP-FIX-R6 (OD-3 §2, Law 5, H-06): right under the freeze card, the
+ * child's own coins as the Tutor reads them: the three pockets, the month
+ * summary and the latest history, a linked teen's self-directed entries
+ * included (ChildCoinActivity). A child with no coin card yet still has
+ * pockets, so the read shows beside "Open a coin card" too.
  *
  * Those wave-1 surfaces keep their own data planes and arrive as slots for
  * the child in view; this screen owns the family list, the child's card,
@@ -126,6 +133,7 @@ function ChildSetup({ child, copy, colours, locale, transport, slots }: {
 }) {
   const [state, setState] = useState<Setup>({ status: 'loading' });
   const [retrying, setRetrying] = useState(false);
+  const [coinsVersion, setCoinsVersion] = useState(0);
   const generation = useRef(0);
 
   const read = useCallback(async () => {
@@ -151,13 +159,19 @@ function ChildSetup({ child, copy, colours, locale, transport, slots }: {
       retryLabel={copy.retry} retryingLabel={copy.retrying} retrying={retrying} onRetry={() => { setRetrying(true); void read(); }} />;
   }
   const { setup } = state;
+  const coins = <ChildCoinActivity child={child} copy={copy} locale={locale} transport={transport} refreshKey={coinsVersion} />;
   if (!setup.card) {
-    return <OpenCard child={child} copy={copy} colours={colours} transport={transport}
-      onOpened={(card) => setState({ status: 'ready', setup: { ...setup, card } })} />;
+    return <>
+      <OpenCard child={child} copy={copy} colours={colours} transport={transport}
+        onOpened={(card) => setState({ status: 'ready', setup: { ...setup, card } })} />
+      {coins}
+    </>;
   }
-  const parts = slots(child, () => void read());
+  // A slot that moved coins (a correction, a goal move, a freeze) re-reads the card and every open part of the coins read.
+  const parts = slots(child, () => { void read(); setCoinsVersion((value) => value + 1); });
   return <>
     <div className="lf-money-slot" data-family-part="freeze">{parts.freeze}</div>
+    {coins}
     <AllowanceForm child={child} copy={copy} locale={locale} transport={transport} rule={setup.allowance}
       onSaved={(allowance) => setState({ status: 'ready', setup: { ...setup, allowance } })} />
     <LimitForm child={child} copy={copy} transport={transport} limit={setup.limit}
