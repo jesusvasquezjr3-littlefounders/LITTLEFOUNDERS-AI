@@ -19,7 +19,8 @@ import { ProfileSafetyNotice } from '../social/ProfileSafetyNotice';
 import { AccountDeletion } from './AccountDeletion';
 import { OwnProfile, type OwnProfileData, type OwnProfileView } from './OwnProfile';
 import { LookEditor } from './LookEditor';
-import { AgeRecordCard } from './AgeRecordCard';
+import { AgeRecordCard, type AgeRecordKind, type CorrectionStatus } from './AgeRecordCard';
+import { DiscoverableCard, type DiscoverableView } from './DiscoverableCard';
 import { BlockedCard, DetailsCard, GuestCard, SettingsPanels, SettingsScreen, SignInCard, type DetailsFormState } from './AccountSettings';
 import { resolveLook, type AvatarLook, type CoverId } from './avatar/avatarKit';
 
@@ -56,7 +57,35 @@ function profileData(state: string): OwnProfileData {
 
 export const OWN_PROFILE_PREVIEW_STATES = ['adult', 'tutor', 'teen', 'teenFlagged', 'kid', 'guest', 'noUsername', 'noBadges', 'copied', 'loading', 'failed', 'offline'] as const;
 export const LOOK_EDITOR_PREVIEW_STATES = ['ready', 'saving', 'failed', 'loading', 'loadFailed', 'offline'] as const;
-export const SETTINGS_PREVIEW_STATES = ['adult', 'teen', 'kid', 'guest', 'editing', 'errors', 'loading', 'failed'] as const;
+export const SETTINGS_PREVIEW_STATES = ['adult', 'teen', 'kid', 'guest', 'editing', 'errors', 'loading', 'failed',
+  'ageTeenBand', 'ageAdultByMonth', 'ageForm', 'agePending', 'ageApproved', 'ageRejected',
+  'discoverableConfirming', 'discoverableEnabled', 'discoverableSaving', 'discoverableFailed'] as const;
+
+/*
+ * GAP-FIX-R6 social (Bible 02 §7 item 10, 06 §7, 03 §5): one Settings card in
+ * each of its states, so the three audits measure every string the card can
+ * show. The age card (S-04, OD-28; E.4 as amended by OD-3): each kind Core
+ * answers, the staff-reviewed correction's form (opened by a real press) and
+ * each receipt. The discoverable card (OD-27 (2), S-03): the confirmation a
+ * 16-17-year-old answers before becoming findable, its pending save, the card
+ * while the choice is on, and a failed save.
+ */
+export const AGE_RECORD_FOCUS: Record<string, { kind: AgeRecordKind; status: CorrectionStatus | null }> = {
+  ageTeenBand: { kind: 'teenBand', status: null },
+  ageAdultByMonth: { kind: 'adultByMonth', status: null },
+  ageForm: { kind: 'teenBand', status: null },
+  agePending: { kind: 'teenBand', status: 'pending' },
+  // Staff approved the correction: the account now reads as the group it asked for.
+  ageApproved: { kind: 'adult', status: 'approved' },
+  ageRejected: { kind: 'teenBand', status: 'rejected' },
+};
+const DISCOVERABLE_OFF = { enabled: false, canChoose: true, reason: null, confirming: false, saving: false, status: null } as const;
+export const DISCOVERABLE_FOCUS: Record<string, DiscoverableView> = {
+  discoverableConfirming: { ...DISCOVERABLE_OFF, confirming: true },
+  discoverableSaving: { ...DISCOVERABLE_OFF, confirming: true, saving: true },
+  discoverableEnabled: { ...DISCOVERABLE_OFF, enabled: true, status: 'saved' },
+  discoverableFailed: { ...DISCOVERABLE_OFF, status: 'failed' },
+};
 
 function Page({ locale, theme, screen, children }: { locale: Locale; theme: 'light' | 'dark'; screen: string; children: ReactNode }) {
   return <div className="lf-rebuild" data-screen={`${screen}-preview`} data-theme={theme} lang={locale}>
@@ -102,9 +131,13 @@ export function AccountSettingsPreview({ locale, theme, state }: { locale: Local
   const name = state ?? 'adult';
   const kid = name === 'kid';
   const guest = name === 'guest';
+  const ageFocus = AGE_RECORD_FOCUS[name] ?? null;
+  const discoverableFocus = DISCOVERABLE_FOCUS[name] ?? null;
+  // Every focus state is a self-registered teen's Settings, except the one who moved to the adult tier by birth month.
+  const teen = name === 'teen' || discoverableFocus !== null || (ageFocus !== null && ageFocus.kind.startsWith('teen'));
   const form: DetailsFormState = {
     displayName: kid ? 'Valentina' : 'María Fernanda de la Cruz Villanueva', username: guest ? '' : kid ? 'vale_rocket' : 'maria_fernanda_22',
-    locale, birthDate: kid ? '2017-03-14' : name === 'teen' ? '2010-06-02' : null, saving: false, status: name === 'errors' ? null : null,
+    locale, birthDate: kid ? '2017-03-14' : teen && !ageFocus ? '2010-06-02' : null, saving: false, status: name === 'errors' ? null : null,
     errors: name === 'errors' ? { username: 'unsafe' } : {},
   };
   const view = name === 'loading' ? { kind: 'loading' as const } : name === 'failed' ? { kind: 'failed' as const, offline: false, retrying: false } : { kind: 'ready' as const };
@@ -121,6 +154,9 @@ export function AccountSettingsPreview({ locale, theme, state }: { locale: Local
         onUnblock={noop} onRetry={noop} />
       <SettingsPanels>
         {name === 'teen' ? <AgeRecordCard copy={t.ageRecord} kind="teenMonth" /> : null}
+        {ageFocus ? <AgeRecordCard copy={t.ageRecord} kind={ageFocus.kind} correction={{ eligible: true, status: ageFocus.status }}
+          onRequest={() => Promise.resolve(null)} /> : null}
+        {discoverableFocus ? <DiscoverableCard copy={t.discoverable} view={discoverableFocus} onToggle={noop} onConfirm={noop} onKeep={noop} /> : null}
         {name === 'teen' ? <AnalyticsChoice copy={t.analyticsChoice} locale={locale} dark={dark} enabled={false} experiment loading={false} saving={false} error={null} onToggle={noop} onRetry={noop} /> : null}
         {name === 'teen' ? <MemorySelfReview copy={t.memorySelfReview} locale={locale} dark={dark} phase="ready" current={{ learner: null, pedagogy: 'Short steps help.' }}
           notes={[{ id: 'n1', store: 'learner', proposed: 'Saving for a bike.', expectedBefore: null, sessionId: null, createdAt: '2026-09-20T10:00:00Z' },
