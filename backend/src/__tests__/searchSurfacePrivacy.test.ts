@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
-import { jsonResponse, mintToken } from './helpers.js';
+import { admissionStubResponse, jsonResponse, mintToken } from './helpers.js';
 
 /*
  * E.1 search/suggestion inventory — adversarial boundary tests.
@@ -53,6 +53,8 @@ function stub(opts: StubOpts = {}) {
     'fetch',
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
+      const admission = admissionStubResponse(url);
+      if (admission) return Promise.resolve(admission);
       const method = init?.method ?? 'GET';
       calls.push({ url, method, body: init?.body as string | undefined });
 
@@ -264,6 +266,8 @@ describe('staff search surfaces keep their own grants', () => {
       'fetch',
       vi.fn((input: RequestInfo | URL) => {
         const url = String(input);
+        const admission = admissionStubResponse(url);
+        if (admission) return Promise.resolve(admission);
         calls.push(url);
         if (url.includes('/rest/v1/user_roles?user_id=eq.') && !url.includes('user_id=in.')) {
           return Promise.resolve(jsonResponse(200, [{ role: 'superadmin' }]));

@@ -24,6 +24,7 @@ import { tutorRouter } from './routes/tutor.js';
 import { verificationRouter } from './routes/verification.js';
 import { walletRouter } from './routes/wallet.js';
 import { familyGovernanceRouter } from './routes/familyGovernance.js';
+import { ACTIVE_ACCOUNT_PATHS, requireActiveAccount } from './middleware/accountAdmission.js';
 
 export const SERVICE = 'backend';
 export const VERSION = '0.1.0';
@@ -62,6 +63,9 @@ export function createApp(): express.Express {
   // Telemetry sits ABOVE the global limiter with its own budget + json
   // parser (events.ts): beacon traffic must not drain the per-IP pool that
   // lessons and auth depend on, and a 429 here is invisible by design.
+  // A.1 (F3-identity-site): a paused child's still-valid access token is refused
+  // on every product router, not only on /auth/me (middleware/accountAdmission.ts).
+  app.use([...ACTIVE_ACCOUNT_PATHS], requireActiveAccount);
   app.use('/api/v1/events', eventsRouter());
   app.use(globalRateLimiter);
   app.use(express.json({ limit: '64kb' }));

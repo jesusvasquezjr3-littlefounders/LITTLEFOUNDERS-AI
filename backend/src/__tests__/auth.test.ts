@@ -3,7 +3,7 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 import { yearsOld } from '../routes/auth.js';
 import { accountRateLimiter, authRateLimiter } from '../middleware/rateLimit.js';
-import { jsonResponse, mintToken } from './helpers.js';
+import { admissionStubResponse, jsonResponse, mintToken } from './helpers.js';
 
 const SESSION = {
   access_token: 'at',
@@ -28,6 +28,8 @@ afterEach(() => {
 
 function stubFetch(handler: (url: string, init?: RequestInit) => Response | Promise<Response>, confirmedAgeWrite = true) {
   vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+    const admission = admissionStubResponse(String(input));
+    if (admission) return Promise.resolve(admission);
     if (String(input).includes('/rpc/record_age_declaration')) {
       const payload = JSON.parse(String(init?.body));
       expect(Object.keys(payload).sort()).toEqual(['p_age_band', 'p_user_id']);

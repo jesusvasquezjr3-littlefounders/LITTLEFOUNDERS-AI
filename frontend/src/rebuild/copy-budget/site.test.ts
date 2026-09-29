@@ -45,7 +45,7 @@ const ACTIONS: Record<string, readonly string[]> = {
   authReset: ['submit', 'submitting', 'login', 'requestNew'],
   authCallback: [],
   authUpgrade: ['submit', 'submitting', 'later', 'login'],
-  authVerify: ['retry', 'retrying', 'home', 'openFamily', 'ready', 'notNow', 'choosePhoto', 'changePhoto', 'submit', 'submitting', 'writeToUs'],
+  authVerify: ['retry', 'retrying', 'home', 'openFamily', 'openSettings', 'ready', 'notNow', 'choosePhoto', 'changePhoto', 'submit', 'submitting', 'writeToUs'],
   onboardingFlow: ['back', 'continue', 'skip', 'saving', 'start', 'create', 'later'],
 };
 const IDENTITY_HEADINGS = new Set(['title', 'identity', 'document']);

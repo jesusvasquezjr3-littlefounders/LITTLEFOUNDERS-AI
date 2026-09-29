@@ -16,7 +16,7 @@ import {
 } from '../services/moneyPresentation.js';
 import { PERCENT_FRAMING_MIN_AGE } from '../services/savingsBonus.js';
 import { FAMILY_ENGAGEMENT_CHILD_KEYS, FAMILY_ENGAGEMENT_SUMMARY_KEYS } from '../services/insights.js';
-import { jsonResponse, mintToken } from './helpers.js';
+import { admissionStubResponse, jsonResponse, mintToken } from './helpers.js';
 
 /*
  * S07.6 at the Core boundary.
@@ -89,6 +89,8 @@ function stub(opts: Opts = {}) {
   const calls: Call[] = [];
   vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
+    const admission = admissionStubResponse(url);
+    if (admission) return Promise.resolve(admission);
     const method = init?.method ?? 'GET';
     const body = init?.body ? JSON.parse(String(init.body)) as Record<string, unknown> : undefined;
     calls.push({ url, method, body });

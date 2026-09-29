@@ -8,9 +8,11 @@ name: Account deletion sweep
 # something asks, so this workflow asks Core, daily, to run every due request,
 # re-check every request held by an open E.3 safety review, and resume any
 # erasure whose Oracle, Depot or warehouse step failed on an earlier attempt.
-# Immediate deletions (guests, self-registered under-13 accounts, a Tutor
-# deleting a child, A.1's 90-day purge) run at request time; this sweep is
-# only their retry path.
+# It also erases every child whose account has been paused for 90 days with
+# no verified Tutor (A.1's FAQ promise; F3-identity-site): the child never has
+# to sign in again for the deletion to happen. Immediate deletions (guests,
+# self-registered under-13 accounts, a Tutor deleting a child) run at request
+# time; this sweep is only their retry path.
 #
 # WHY IT CALLS CORE FROM INSIDE CORE — same reasoning as tutor-retention.yml:
 # the sweep route is internal-key-only, and standing inside the container over
@@ -89,6 +91,7 @@ jobs:
           completed_total=0
           retrying_total=0
           held_total=0
+          purged_total=0
           for round in $(seq 1 10); do
             body=''
             for attempt in 1 2 3; do
@@ -107,10 +110,12 @@ jobs:
             completed=$(printf '%s' "$body" | grep -o '"completed":[0-9]*' | head -1 | cut -d: -f2)
             held=$(printf '%s' "$body" | grep -o '"held":[0-9]*' | head -1 | cut -d: -f2)
             retrying=$(printf '%s' "$body" | grep -o '"retrying":[0-9]*' | head -1 | cut -d: -f2)
+            purged=$(printf '%s' "$body" | grep -o '"suspensionsErased":[0-9]*' | head -1 | cut -d: -f2)
+            expired=$(printf '%s' "$body" | grep -o '"suspensionsExpired":[0-9]*' | head -1 | cut -d: -f2)
 
             # An absent count is NOT zero (§1.14): an error envelope or a proxy
             # page must fail the run, never read as "nothing was due".
-            if [ -z "${scanned:-}" ] || [ -z "${completed:-}" ] || [ -z "${held:-}" ] || [ -z "${retrying:-}" ]; then
+            if [ -z "${scanned:-}" ] || [ -z "${completed:-}" ] || [ -z "${held:-}" ] || [ -z "${retrying:-}" ] || [ -z "${purged:-}" ] || [ -z "${expired:-}" ]; then
               echo "::error::Core's reply carried no sweep counts; refusing to report a sweep that may not have happened"
               printf '%s\n' "$body" | head -5 >&2
               exit 1
@@ -119,17 +124,18 @@ jobs:
             completed_total=$((completed_total + completed))
             retrying_total=$((retrying_total + retrying))
             held_total=$((held_total + held))
-            echo "round ${round}: scanned ${scanned}, completed ${completed}, held ${held}, retrying ${retrying}"
+            purged_total=$((purged_total + purged))
+            echo "round ${round}: scanned ${scanned}, completed ${completed}, held ${held}, retrying ${retrying}; paused children erased ${purged} of ${expired} expired"
 
             # A short page means nothing else is due. A full page with no
             # completion means only held or failing requests remain: another
             # round would see the same rows.
-            if [ "$scanned" -lt "$BATCH" ] || [ "$completed" -eq 0 ]; then
+            if { [ "$scanned" -lt "$BATCH" ] || [ "$completed" -eq 0 ]; } && { [ "$expired" -lt "$BATCH" ] || [ "$purged" -eq 0 ]; }; then
               break
             fi
           done
 
-          echo "account-deletion: ${completed_total} completed, ${held_total} held by a safety review, ${retrying_total} retrying"
+          echo "account-deletion: ${completed_total} completed, ${held_total} held by a safety review, ${retrying_total} retrying, ${purged_total} paused children erased after 90 days"
           if [ "$retrying_total" -gt 0 ]; then
             echo "::warning::${retrying_total} erasure(s) have a failed step; tomorrow's run retries them (see account.deletion_step_failed in the audit log)"
           fi

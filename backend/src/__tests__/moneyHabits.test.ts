@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
 import { RECOMMENDED_SPLIT, splitCoins } from '../services/moneyHabits.js';
-import { jsonResponse, mintToken } from './helpers.js';
+import { admissionStubResponse, jsonResponse, mintToken } from './helpers.js';
 
 /*
  * S07.4 at the Core boundary: D.13 (a recommended default split with an easy
@@ -68,6 +68,8 @@ function stub(opts: Opts = {}) {
   const calls: Call[] = [];
   vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
+    const admission = admissionStubResponse(url);
+    if (admission) return Promise.resolve(admission);
     const method = init?.method ?? 'GET';
     const body = init?.body ? JSON.parse(String(init.body)) as Record<string, unknown> : undefined;
     calls.push({ url, method, body });
@@ -210,6 +212,8 @@ describe('the usual split (D.13)', () => {
     const calls = stub({ rpc: { allocate_pending_credit: { status: 200, body: true } } });
     vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
+      const admission = admissionStubResponse(url);
+      if (admission) return Promise.resolve(admission);
       calls.push({ url, method: init?.method ?? 'GET', body: init?.body ? JSON.parse(String(init.body)) as Record<string, unknown> : undefined });
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ user_id: KID, role: 'kid' }]));
       if (url.includes('/rest/v1/pending_credits?id=eq.')) return Promise.resolve(jsonResponse(200, [{ id: credit, kid_user_id: KID, amount: 10, source: 'allowance', source_ref: null, allocated: false, created_at: '2026-09-20T00:00:00Z' }]));
@@ -343,6 +347,8 @@ describe('the Share destination (D.14)', () => {
   it('reports a given gift in the monthly statement as given, never as spending', async () => {
     vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL) => {
       const url = String(input);
+      const admission = admissionStubResponse(url);
+      if (admission) return Promise.resolve(admission);
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ user_id: KID, role: 'kid' }]));
       if (url.includes('/rest/v1/wallet_ledger')) {
         const at = '2026-09-10T00:00:00Z';

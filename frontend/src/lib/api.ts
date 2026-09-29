@@ -27,6 +27,14 @@ export interface ApiError {
   missingPrerequisites?: string[];
 }
 
+/**
+ * A.1 (F3-identity-site): Core answers ACCOUNT_SUSPENDED on any route once a
+ * child's last verified Tutor link is gone. The session holder hears it at
+ * once (AuthContext drops the session and shows the paused screen), not on
+ * the next /auth/me.
+ */
+export const ACCOUNT_SUSPENDED_EVENT = 'lf:account-suspended';
+
 export type ApiResult<T> = { data: T; error: null } | { data: null; error: ApiError };
 
 interface ApiOptions {
@@ -61,6 +69,7 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<Ap
     if (body.data === null && error && typeof error === 'object'
       && 'code' in error && typeof error.code === 'string'
       && 'message' in error && typeof error.message === 'string') {
+      if (error.code === 'ACCOUNT_SUSPENDED' && typeof window !== 'undefined') window.dispatchEvent(new Event(ACCOUNT_SUSPENDED_EVENT));
       return { data: null, error: error as ApiError };
     }
   } else if (res.ok && body.data !== null && body.data !== undefined) {

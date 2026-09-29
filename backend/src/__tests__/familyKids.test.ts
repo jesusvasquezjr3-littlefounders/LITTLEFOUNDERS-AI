@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { randomUUID } from 'node:crypto';
 import { createApp } from '../app.js';
-import { erasureStubResponse, jsonResponse, mintToken } from './helpers.js';
+import { admissionStubResponse, erasureStubResponse, jsonResponse, mintToken } from './helpers.js';
 
 /*
  * POST /api/v1/family/kids — creating a child account and linking it.
@@ -58,6 +58,8 @@ function stub(opts: StubOptions = {}) {
     'fetch',
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
+      const admission = admissionStubResponse(url);
+      if (admission) return Promise.resolve(admission);
       const method = init?.method ?? 'GET';
       calls.push(`${method} ${url.replace(/^https?:\/\/[^/]+/, '')}`);
       if (opts.writes && init?.body) {
@@ -419,6 +421,8 @@ describe('managing an existing child', () => {
     const calls = managed({ linkedKidRoles: undefined });
     vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
+      const admission = admissionStubResponse(url);
+      if (admission) return Promise.resolve(admission);
       if (url.includes(`/rest/v1/user_roles?user_id=eq.${KID_ID_2}`)) return Promise.resolve(jsonResponse(500, { message: 'down' }));
       if (url.includes('/rest/v1/user_roles?user_id=eq.')) return Promise.resolve(jsonResponse(200, [{ role: 'parent' }]));
       if (url.includes('/rest/v1/parent_verifications?')) return Promise.resolve(jsonResponse(200, [{ status: 'verified', method: 'local-ocr', birth_date: '1990-01-01' }]));

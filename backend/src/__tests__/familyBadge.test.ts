@@ -152,6 +152,7 @@ describe('POST /api/v1/family/kids/:kidId/badge (retired link issuer)', () => {
     expect(res.body.error.code).toBe('SHARE_LINKS_RETIRED');
     expect(calls.some((c) => c.url.includes(':4006/'))).toBe(false);
     expect(calls.some((c) => c.url.includes('/badge_shares'))).toBe(false);
-    expect(calls.some((c) => c.url.includes('/profiles?') || c.url.includes('get_completed_course_badges'))).toBe(false);
+    // The only read is Core's A.1 pause check on the caller (middleware/accountAdmission.ts).
+    expect(calls.some((c) => (c.url.includes('/profiles?') && !c.url.includes('suspended_at=not.is.null')) || c.url.includes('get_completed_course_badges'))).toBe(false);
   });
 });

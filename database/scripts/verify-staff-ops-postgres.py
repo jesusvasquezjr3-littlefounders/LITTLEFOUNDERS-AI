@@ -183,6 +183,33 @@ try:
     assert service(f"SELECT revoke_parent_verification('{uuid.uuid4()}', '{I['admin']}', 'Fraud report confirmed by two guardians');") == 'not_found'
     check('a revocation writes its row and its reason together, refuses a short reason or a non-staff actor, and fails whole')
 
+    # ── F3-identity-site: a verified ID check never outranks a minor's age record ──
+    A = {name: str(uuid.uuid4()) for name in ('flag_guest', 'flag_upgraded', 'teen', 'teen_due', 'adult_ok')}
+    run(f"""
+    INSERT INTO auth.users (id, email, is_anonymous) VALUES ('{A['flag_guest']}', NULL, true),
+        ('{A['flag_upgraded']}', 'up@example.com', false), ('{A['teen']}', 'teen@example.com', false),
+        ('{A['teen_due']}', 'due@example.com', false), ('{A['adult_ok']}', 'ok@example.com', false);
+    INSERT INTO account_safety_origins (user_id) VALUES ('{A['flag_guest']}'), ('{A['flag_upgraded']}');
+    INSERT INTO account_age_declarations (user_id, declared_age_band, declared_birth_month) VALUES
+        ('{A['teen']}', '13_to_17', NULL),
+        ('{A['teen_due']}', '13_to_17', date_trunc('month', now() - interval '18 years 2 months')::date),
+        ('{A['adult_ok']}', 'adult', NULL);
+    """)
+    verified = "INSERT INTO parent_verifications (user_id, status, method, given_names, surnames, birth_date) VALUES ('{0}', 'verified', 'local-ocr', 'A', 'Dult', '1980-01-01');"
+    for name in ('flag_guest', 'flag_upgraded', 'teen'):
+        rejected('SET ROLE service_role; ' + verified.format(A[name]), 'AGE_RECORD_MINOR')
+        # A row that is not a verified ID check may exist; it cannot be turned into one.
+        service(verified.format(A[name]).replace("'verified', 'local-ocr'", "'revoked', 'staff-revoked'"))
+        rejected(f"SET ROLE service_role; UPDATE parent_verifications SET status = 'verified', method = 'local-ocr' WHERE user_id = '{A[name]}';",
+                 'AGE_RECORD_MINOR')
+        rejected(f"SET ROLE service_role; INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{A[name]}', 'parent', '{A[name]}');",
+                 'PARENT_ROLE_UNJUSTIFIED')
+        assert scalar(f"SELECT count(*) FROM parent_verifications WHERE user_id = '{A[name]}' AND status = 'verified'") == '0'
+    for name in ('teen_due', 'adult_ok'):
+        service(verified.format(A[name]))
+    run(f"DELETE FROM auth.users WHERE id IN ({', '.join(repr(v) for v in A.values())});")
+    check('a verified ID check cannot be written or updated into place for a flagged guest, an upgraded flagged account or a declared teen (so none gains the parent role); an adult and a teen whose birth month made them 18 can')
+
     # ── G.3: live-activity verdicts and pack decisions ───────────────────
     session = run(f"INSERT INTO tutor_sessions (user_id, locale, tier, character, diorama, intent) VALUES ('{I['plain']}', 'en-US', 2, 'rho', 'a', 'open') RETURNING id;").splitlines()[-1]
     segs = [run(f"INSERT INTO tutor_segments (session_id, seq, origin, segment_type, payload, review_status) VALUES ('{session}', {n}, 'live', 'quiz_mcq', '{{}}', 'pending') RETURNING id;").splitlines()[-1] for n in range(3)]
@@ -282,7 +309,18 @@ try:
     assert m['staffGrantJustification']['staffGranted'] == 2 and m['staffGrantJustification']['justified'] == 1, m['staffGrantJustification']
     assert m['revocation']['revokedRows'] == 1 and m['revocation']['auditedRevocations'] == 1, m['revocation']
     assert m['kidEmail'] == {'kids': 2, 'restricted': 1, 'refusalsInWindow': 1}, m['kidEmail']
+    # F3-identity-site: the cancellation promise has parity only once a sweep that
+    # looks for expired suspensions has run; the schema alone is not enough.
+    assert m['faqCapabilities'] == {'secondGuardian': True, 'cancellationCascade': False, 'reportTool': True}, m['faqCapabilities']
+    run("INSERT INTO audit_logs (actor_id, action, subject, detail) VALUES "
+        "(NULL, 'account_deletions.sweep_ran', 'account_deletion_requests', '{\"scanned\": 0, \"limit\": 50}');")
+    stale = json.loads(service("SELECT identity_metrics(now() - interval '30 days', now() + interval '1 minute');"))
+    assert stale['faqCapabilities']['cancellationCascade'] is False, 'a sweep run that never read the suspensions is not parity'
+    run("INSERT INTO audit_logs (actor_id, action, subject, detail) VALUES "
+        "(NULL, 'account_deletions.sweep_ran', 'account_deletion_requests', '{\"scanned\": 0, \"limit\": 50, \"suspensionsExpired\": 0}');")
+    m = json.loads(service("SELECT identity_metrics(now() - interval '30 days', now() + interval '1 minute');"))
     assert m['faqCapabilities'] == {'secondGuardian': True, 'cancellationCascade': True, 'reportTool': True}, m['faqCapabilities']
+    check('FAQ parity for the cancellation promise needs the suspension triggers with the ban, the scheduled candidate read and a recent sweep that used it (F3-identity-site)')
     assert m['schemaFields']['originFlag']['consumed'] is True and m['schemaFields']['originFlag']['produced'] >= 2, m['schemaFields']
     # F1-data-platform retires the column (0199 expand, 0200 contract): after the
     # full chain it is no longer declared, so the Schema Field Utilization check passes.

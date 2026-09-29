@@ -15,13 +15,17 @@ import { VERIFICATION_CHECKS, VerifyParentScreen, type VerificationCheck, type V
  * role: a staff grant or a revoked verification must not read as "already a
  * Tutor" (A.5). PARENT_VERIFICATION_REVOKED ends at the support address; a
  * child account (FORBIDDEN) is told who can verify, with no retry that could
- * never succeed; any other failure is a retry, never a verdict.
+ * never succeed; an account whose age record is under 18 (AGE_RECORD_MINOR)
+ * is sent to the staff-reviewed age correction; any other failure is a retry,
+ * never a verdict.
  */
 type Verdict = { verified: boolean; checks?: Record<string, boolean> };
 
 function statusView(code: string): VerifyView {
   if (code === 'PARENT_VERIFICATION_REVOKED') return { kind: 'revoked' };
   if (code === 'FORBIDDEN') return { kind: 'ineligible' };
+  // F3-identity-site: the account's own age record is under 18 (A.2, E.4, OD-3).
+  if (code === 'AGE_RECORD_MINOR') return { kind: 'minor' };
   return { kind: 'status-error', retrying: false };
 }
 
@@ -56,7 +60,7 @@ export function VerifyParentPage() {
     const { data, error } = await api<Verdict>('/verification/parent', { formData: form, token });
     if (error) {
       if (error.code === 'ALREADY_VERIFIED') { setView({ kind: 'verified' }); return; }
-      if (error.code === 'PARENT_VERIFICATION_REVOKED' || error.code === 'FORBIDDEN') { setView(statusView(error.code)); return; }
+      if (error.code === 'PARENT_VERIFICATION_REVOKED' || error.code === 'FORBIDDEN' || error.code === 'AGE_RECORD_MINOR') { setView(statusView(error.code)); return; }
       setView({ kind: 'form', pending: false, errorCode: failureCode(error), failedChecks });
       return;
     }

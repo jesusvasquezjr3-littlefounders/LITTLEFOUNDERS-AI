@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
 import { dataPracticeApplies } from '../services/dataPractices.js';
-import { jsonResponse, mintToken } from './helpers.js';
+import { admissionStubResponse, jsonResponse, mintToken } from './helpers.js';
 
 /*
  * S10.3 (OD-9 section 4.2) at the Core boundary: consent for the practices the
@@ -40,6 +40,8 @@ function stub(rpc: Record<string, Reply> = {}) {
   const calls: Call[] = [];
   vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
+    const admission = admissionStubResponse(url);
+    if (admission) return Promise.resolve(admission);
     const method = init?.method ?? 'GET';
     const body = init?.body ? JSON.parse(String(init.body)) as Record<string, unknown> : undefined;
     calls.push({ url, method, body });

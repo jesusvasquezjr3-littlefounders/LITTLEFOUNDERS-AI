@@ -18,6 +18,7 @@ import {
   type DeletionPopulation,
   type DeletionRequestRow,
 } from '../services/accountDeletion.js';
+import { listExpiredKidSuspensions, purgeExpiredKidSuspension } from '../services/guardianLifecycle.js';
 
 /*
  * /api/v1/account/deletion — Product 10 E.6, the account holder's own
@@ -267,7 +268,8 @@ export function accountRouter(): Router {
 
 /*
  * POST /api/v1/internal/account-deletions/run — the daily sweep
- * (.github/workflows/account-deletion.yml). Runs every due self-service
+ * (.github/workflows/account-deletion.yml). Erases every child paused 90
+ * days with no Tutor (A.1, F3-identity-site), runs every due self-service
  * request, re-checks held ones and resumes any erasure whose step failed.
  * Audited on every run, including a run that found nothing: "ran and found
  * nothing" and "never ran" must stay distinguishable (§1.14). An unreadable
@@ -284,6 +286,25 @@ export function accountDeletionSweepRouter(): Router {
   router.post('/run', async (req, res) => {
     const parsed = SweepBody.safeParse(req.body ?? {});
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid body');
+    /*
+     * A.1 (F3-identity-site): the FAQ's "deleted if nobody supervises it within
+     * 90 days" runs here, daily, without waiting for the child to sign in
+     * again. Each candidate goes through purgeExpiredKidSuspension, which
+     * re-reads the verified links and never erases on an ambiguous read.
+     */
+    const expired = await listExpiredKidSuspensions(parsed.data.limit);
+    const suspensions = { suspensionsExpired: 0, suspensionsErased: 0, suspensionsKept: 0 };
+    if (expired === null) {
+      console.error('[account-deletion] expired-suspension candidates UNREADABLE; no paused child was erased this run');
+    } else {
+      for (const candidate of expired) {
+        suspensions.suspensionsExpired += 1;
+        const outcome = await purgeExpiredKidSuspension(candidate.userId, candidate.suspendedAt);
+        if (outcome === 'deleted') suspensions.suspensionsErased += 1;
+        else suspensions.suspensionsKept += 1;
+      }
+    }
+
     const ids = await listSweepCandidates(parsed.data.limit);
     if (ids === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'The deletion sweep could not read the requests');
 
@@ -295,9 +316,17 @@ export function accountDeletionSweepRouter(): Router {
       else if (outcome.status === 'processing') counts.retrying += 1;
       else counts.skipped += 1;
     }
-    const audited = await insertAuditLog(null, ACCOUNT_DELETION_SWEEP_AUDIT_ACTION, 'account_deletion_requests', { ...counts, limit: parsed.data.limit });
+    // The suspension counts are recorded only when the candidates were read:
+    // identity_metrics counts a run as covering the 90-day promise by that key.
+    const detail = { ...counts, limit: parsed.data.limit, ...(expired === null ? { suspensionsUnreadable: true } : suspensions) };
+    const audited = await insertAuditLog(null, ACCOUNT_DELETION_SWEEP_AUDIT_ACTION, 'account_deletion_requests', detail);
     if (!audited) console.error('[account-deletion] sweep audit write FAILED — the sweep ran but will not show as having run');
-    return ok(res, { ...counts, limit: parsed.data.limit, complete: ids.length < parsed.data.limit });
+    // An unreadable candidate list is a 502 after the requests ran, never a reassuring zero.
+    if (expired === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'The deletion sweep could not read the expired suspensions');
+    return ok(res, {
+      ...counts, ...suspensions, limit: parsed.data.limit,
+      complete: ids.length < parsed.data.limit && expired.length < parsed.data.limit,
+    });
   });
 
   return router;

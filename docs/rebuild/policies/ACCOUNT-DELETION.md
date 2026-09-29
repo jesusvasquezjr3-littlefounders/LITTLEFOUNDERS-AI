@@ -39,7 +39,7 @@ Every minor safeguard follows age, not role. The under-13 rule applies to any se
 
 ## 4. What is erased (one lifecycle, four recorded steps)
 
-Every deletion path uses the same lifecycle: self-service, a Tutor deleting a child, and A.1's 90-day purge. Each request is one `account_deletion_requests` row. `complete_account_deletion` refuses to mark it completed until all four steps are recorded and no stored file is left. Each step is idempotent.
+Every deletion path uses the same lifecycle: self-service, a Tutor deleting a child, and A.1's 90-day purge. The 90-day purge runs in the daily sweep (`list_expired_kid_suspensions`, then a re-read of the verified links before anything is erased), so a paused child is erased even if nobody signs in again. Each request is one `account_deletion_requests` row. `complete_account_deletion` refuses to mark it completed until all four steps are recorded and no stored file is left. Each step is idempotent.
 
 1. **Oracle (Mentor runtime).** `POST /api/v1/tutor/erasure` (internal key) closes the learner's live socket and drops any parked session. The ordinary endings are skipped: no close written back to Core, no post-session review (a paid model call) and no trajectory emission. Oracle has no database of its own. The speech cache is keyed by content hash with a TTL and holds no user id.
 2. **Core (one database transaction, `erase_account_data`).**

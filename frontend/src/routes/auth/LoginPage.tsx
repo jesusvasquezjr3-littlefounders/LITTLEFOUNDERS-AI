@@ -46,6 +46,8 @@ export function LoginPage() {
     setErrorCode(null);
     const { error, analyticsEnabled } = await login(identifier, password);
     setPending(false);
+    // A.1: the password was right and the account is paused (Core names it only then).
+    if (error?.code === 'ACCOUNT_SUSPENDED') { navigate('/account-suspended', { replace: true }); return; }
     if (error) {
       playPlatformSound('auth_error');
       setErrorCode(failureCode(error));

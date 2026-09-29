@@ -21,7 +21,7 @@ import { standalone, type PreviewContext, type PreviewRegistry } from './types';
  *                     signup-refused, signup-refused-failed, signup-confirm,
  *                     forgot-sent, reset-form, reset-done, upgrade-error,
  *                     verify-failed, verify-success, verify-revoked,
- *                     verify-ineligible, verify-status-error.
+ *                     verify-ineligible, verify-minor, verify-status-error.
  *   onboarding        O1 on its single-state screen: `?step=` one of the five
  *                     steps (name prefilled), `?chosen=` a Mentor, `?failed=1`.
  */
@@ -55,6 +55,7 @@ function identityScreen(context: PreviewContext) {
     'verify-success': verify({ kind: 'success' }),
     'verify-revoked': verify({ kind: 'revoked' }),
     'verify-ineligible': verify({ kind: 'ineligible' }),
+    'verify-minor': verify({ kind: 'minor' }),
     'verify-status-error': verify({ kind: 'status-error', retrying: false }),
   };
   return inAuthShell(context, context.t.authLogin.title, screens[view] ?? screens['login-google']);
