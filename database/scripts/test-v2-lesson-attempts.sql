@@ -4,6 +4,8 @@
 -- It uses existing synthetic/local rows and rolls every audit row back.
 
 BEGIN;
+-- The pointer may belong to a published lesson: the owner's justified bypass of the Stage 3 gate (rolled back).
+SET LOCAL lf.bypass_justification = 'Reversible v2 attempts integration check';
 
 DO $$
 DECLARE

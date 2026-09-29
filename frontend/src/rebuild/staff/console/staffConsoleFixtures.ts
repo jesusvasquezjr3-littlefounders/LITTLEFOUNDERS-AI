@@ -142,6 +142,12 @@ export function sectionAnswer(route: string, query: URLSearchParams, empty: bool
   if (route === '/admin/content/learning-quality') return ok(sections.learningQuality);
   // G.2: new versions of live lessons waiting for a staff release, and the skipped release checks.
   if (route === '/admin/content/lesson-versions') return ok(empty ? { versions: [], total: 0 } : sections.lessonVersions);
+  // Appendix C Stage 3 (GAP-FIX-R6): the pedagogical review of a lesson, or of one version with ?versionId=.
+  if (route.endsWith('/pedagogical-review')) {
+    const versionId = query.get('versionId');
+    return ok(versionId ? { ...sections.stage3Review, subject: 'version', fingerprint: null, documentVersionId: versionId, locale: 'es-MX',
+      versionId: 'forge-v2-2026-09-27-run-0042', latest: null, refusal: 'no Stage 3 pedagogical review covers this content' } : sections.stage3Review);
+  }
   if (route === '/admin/content/bypass-checks') {
     return ok(empty ? { windowDays: 90, retroCheckDays: 30, bypassRate: null, completenessRate: null,
       counts: { publishActions: 0, bypasses: 0, decided: 0, unverified: 0, complete: 0, pending: 0, overdue: 0 }, checks: [] } : sections.bypassChecks);

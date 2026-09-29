@@ -17,6 +17,7 @@
  *   GET  /admin/content/lesson-versions     new versions of live lessons waiting (G.2)
  *   POST /admin/content/lessons/:id/versions/:v/release|reject   the staff decision (G.2)
  *   GET  /admin/content/bypass-checks       Appendix N 1.2 rates and the retroactive checks
+ *   GET|POST /admin/content/lessons/:id/pedagogical-review   Appendix C Stage 3 (stage3Api.ts)
  */
 
 import type { LiveContentStatus, TutorPackSummary } from '../../mentor/liveContentApi';
@@ -71,6 +72,8 @@ export const RELEASE_REFUSALS = {
   RELEASE_VERIFICATION_REQUIRED: 'releaseVerificationRequired',
   RELEASE_VERIFICATION_INCOMPLETE: 'releaseVerificationIncomplete',
   RELEASE_COURSE_RELEASE_REQUIRED: 'releaseCourseRequired',
+  // GAP-FIX-R6: no passing Appendix C Stage 3 pedagogical review covers the content (Stage3Review.tsx records one).
+  RELEASE_STAGE3_REVIEW_REQUIRED: 'releaseStage3Required',
   RELEASE_BLOCKED: 'releaseBlocked',
 } as const;
 export type ReleaseRefusalKey = (typeof RELEASE_REFUSALS)[keyof typeof RELEASE_REFUSALS];

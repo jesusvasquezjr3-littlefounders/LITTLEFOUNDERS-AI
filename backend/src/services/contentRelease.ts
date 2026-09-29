@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { serviceRest } from './supabaseRest.js';
+import { serviceRest, serviceRestRaw } from './supabaseRest.js';
+import { STAGE3_REFUSAL, stage3RefusalMessage } from './pedagogicalReview.js';
 
 /*
  * Product G.2 (Block G opening: no lesson reaches a child without a human
@@ -81,8 +82,13 @@ const DecisionRows = z.array(z.object({ ok: z.boolean(), code: z.string(), messa
 export type VersionDecision = { outcome: 'done'; code: string } | { outcome: 'refused'; code: string; message: string } | { outcome: 'unavailable' };
 
 async function decide(fn: 'release_lesson_version' | 'reject_lesson_version', body: Record<string, unknown>): Promise<VersionDecision> {
-  const rows = await serviceRest<unknown>(`/rpc/${fn}`, { method: 'POST', body: JSON.stringify(body) });
-  const parsed = DecisionRows.safeParse(rows);
+  const raw = await serviceRestRaw(`/rpc/${fn}`, { method: 'POST', body: JSON.stringify(body) });
+  if (!raw.ok) {
+    // GAP-FIX-R6: Vault's release gate refuses a version no passing Stage 3 review covers (the pointer does not move).
+    const stage3 = stage3RefusalMessage(raw.body);
+    return stage3 === null ? { outcome: 'unavailable' } : { outcome: 'refused', code: STAGE3_REFUSAL, message: stage3 };
+  }
+  const parsed = DecisionRows.safeParse(raw.body);
   if (!parsed.success) return { outcome: 'unavailable' };
   const row = parsed.data[0]!;
   return row.ok ? { outcome: 'done', code: row.code } : { outcome: 'refused', code: row.code, message: row.message };

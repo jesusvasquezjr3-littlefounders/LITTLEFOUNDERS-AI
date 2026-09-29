@@ -2458,5 +2458,55 @@
         "state": "closed"
       }
     ]
+  },
+  "stage3Review": {
+    "lessonId": "44444444-4444-4444-8444-444444444401",
+    "lessonStatus": "review",
+    "subject": "lesson",
+    "fingerprint": "5d2f8a1c9b3e4d6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f",
+    "documentVersionId": null,
+    "locale": null,
+    "versionId": null,
+    "versionAuthorId": null,
+    "latest": {
+      "id": "8e1f2a3b-0000-4000-8000-000000000031",
+      "result": "fail",
+      "findingCount": 2,
+      "reviewerId": "0c1d2e3f-0000-4000-8000-000000000041",
+      "authorId": "0c1d2e3f-0000-4000-8000-000000000042",
+      "authorSource": "named_by_reviewer",
+      "checks": {},
+      "forgeItems": [],
+      "recordedAt": "2026-09-28T16:20:00Z"
+    },
+    "openItems": [
+      {
+        "id": "6a7b8c9d-0000-4000-8000-000000000051",
+        "gate": 17,
+        "message": "intro-01: reward wording: the Stage 3 reviewer confirms the lesson teaches the mechanic and never offers it (B.22)",
+        "locale": null,
+        "runId": "2026-09-27-run-0042",
+        "createdAt": "2026-09-27T09:31:00Z"
+      },
+      {
+        "id": "6a7b8c9d-0000-4000-8000-000000000052",
+        "gate": 16,
+        "message": "declared market-neutral: \"Uses LittleFounders coins only; no market amounts, places or customs.\" Stage 3 confirms no market context is needed",
+        "locale": "es-MX",
+        "runId": "2026-09-27-run-0042",
+        "createdAt": "2026-09-27T09:31:00Z"
+      }
+    ],
+    "authors": [
+      {
+        "userId": "0c1d2e3f-0000-4000-8000-000000000042",
+        "displayName": "Mariana Beatriz Fernández de la Fuente"
+      },
+      {
+        "userId": "0c1d2e3f-0000-4000-8000-000000000043",
+        "displayName": "Ana"
+      }
+    ],
+    "refusal": "the latest Stage 3 pedagogical review of this content failed"
   }
 }

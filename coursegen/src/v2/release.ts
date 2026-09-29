@@ -16,6 +16,11 @@
 //                  as PENDING and nothing a child sees changes until a staff
 //                  member releases it on the Content page (G.2, GAP-FIX-R2:
 //                  *_v2_staff_release_approval.sql); the result lists those.
+//   6. Stage 3     (GAP-FIX-R6, Appendix C Part 3) each published version's
+//                  review flags (gates 12, 14, 16, 17, 18, 19: findings a human
+//                  must judge) are recorded in Vault
+//                  (`record_forge_stage3_items`); no version goes live until a
+//                  Stage 3 pedagogical review resolves each of them.
 //
 // Nothing here spends: no model, image or voice call. Steps 3-5 are injected
 // (child processes and the service-role RPC by default) so the stage is fully
@@ -26,7 +31,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { RELEASE_CHECK_IDS } from '../release/gateManifest.js';
-import { emitV2Lesson, forgeVersionId, type EmittedV2Document } from './emit.js';
+import { emitV2Lesson, forgeVersionId, type EmittedV2Document, type V2EmitResult } from './emit.js';
 import type { V2LessonPlan } from './plan.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -56,6 +61,30 @@ export interface V2ReleaseDeps {
   rpc?: (fn: string, body: Record<string, unknown>) => Promise<{ ok: boolean; status: number; body: unknown }>;
 }
 
+/** One Forge flag for the Stage 3 pedagogical reviewer, as Vault stores it (gate 1-99, message 1-600 characters). */
+export interface Stage3Item { gate: number; message: string }
+export interface Stage3Record { lessonId: string; locale: string; versionId: string; items: Stage3Item[] }
+
+/**
+ * Appendix C Part 3 Stage 3 (GAP-FIX-R6): the review flags of one market's
+ * document. A plan-level flag (no locale) belongs to every market's version,
+ * so each version's review resolves it. Duplicates are dropped.
+ */
+export function stage3ItemsFor(review: V2EmitResult['review'], locale: string): Stage3Item[] {
+  const seen = new Set<string>();
+  const items: Stage3Item[] = [];
+  for (const finding of review) {
+    if (finding.locale && finding.locale !== locale) continue;
+    const text = finding.segmentId && !finding.message.includes(finding.segmentId) ? `${finding.segmentId}: ${finding.message}` : finding.message;
+    const message = text.trim().slice(0, 600);
+    const key = `${finding.gate}|${message}`;
+    if (!message || seen.has(key)) continue;
+    seen.add(key);
+    items.push({ gate: finding.gate, message });
+  }
+  return items;
+}
+
 export interface V2ReleaseResult {
   ok: boolean;
   stage: 'emit' | 'core-check' | 'verify' | 'publish' | 'done' | 'dry-run';
@@ -70,6 +99,8 @@ export interface V2ReleaseResult {
    * plate until the audio exists; with `requireNarrationAudio` they block.
    */
   narrationWithoutAudio?: string[];
+  /** Stage 3 (GAP-FIX-R6): the review flags per published version; recorded in Vault on a real run, listed on a dry run. */
+  stage3?: Stage3Record[];
 }
 
 /**
@@ -127,10 +158,12 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
   const versionId = forgeVersionId(options.runId);
   const documents: EmittedV2Document[] = [];
   const problems: string[] = [];
+  const reviewByLesson = new Map<string, V2EmitResult['review']>();
   for (const plan of plans) {
     const result = emitV2Lesson(plan, { versionId });
     if (!result.ok) problems.push(...result.problems.map((p) => `${plan.lesson_id}: [gate ${p.gate}] ${p.locale ?? ''} ${p.message}`.trim()));
     documents.push(...result.documents);
+    reviewByLesson.set(plan.lesson_id, [...(reviewByLesson.get(plan.lesson_id) ?? []), ...result.review]);
   }
   if (problems.length) return { ok: false, stage: 'emit', documents: [], calls: [], problems };
   const silent = narrationWithoutAudio(documents, options.audioManifest);
@@ -151,7 +184,10 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
     },
   }));
   writeFileSync(path.join(options.outDir, 'publish-calls.json'), `${JSON.stringify(calls, null, 2)}\n`);
-  if (options.dryRun) return { ok: true, stage: 'dry-run', documents, calls, problems: [], ...flagged };
+  const stage3: Stage3Record[] = calls
+    .map((call) => ({ lessonId: call.lessonId, locale: call.locale, versionId: call.versionId, items: stage3ItemsFor(reviewByLesson.get(call.lessonId) ?? [], call.locale) }))
+    .filter((record) => record.items.length > 0);
+  if (options.dryRun) return { ok: true, stage: 'dry-run', documents, calls, problems: [], stage3, ...flagged };
 
   const verified = (options.deps?.verifyCourse ?? defaultVerifyCourse)(options.courseSlug);
   if (!verified.ok) return { ok: false, stage: 'verify', documents, calls, problems: [verified.output.trim() || 'verify:course failed'] };
@@ -164,6 +200,16 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
     if (body && typeof body === 'object' && body.activation === 'pending_staff_approval') {
       pendingApproval.push({ lessonId: call.lessonId, locale: call.locale, versionId: call.versionId });
     }
+    const record = stage3.find((entry) => entry.lessonId === call.lessonId && entry.locale === call.locale);
+    if (record) {
+      const stored = await options.deps.rpc('record_forge_stage3_items', {
+        p_lesson_id: record.lessonId, p_locale: record.locale, p_version_id: record.versionId, p_run_id: options.runId.slice(0, 120), p_items: record.items,
+      });
+      if (!stored.ok) {
+        return { ok: false, stage: 'publish', documents, calls, pendingApproval, stage3,
+          problems: [`${call.lessonId} ${call.locale}: Vault did not record the ${record.items.length} Stage 3 review flag(s) (${stored.status}) ${JSON.stringify(stored.body)}; the version cannot be released until they are recorded and reviewed`] };
+      }
+    }
   }
-  return { ok: true, stage: 'done', documents, calls, problems: [], pendingApproval, ...flagged };
+  return { ok: true, stage: 'done', documents, calls, problems: [], pendingApproval, stage3, ...flagged };
 }

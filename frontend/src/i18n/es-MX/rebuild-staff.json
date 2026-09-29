@@ -802,7 +802,8 @@
         "check": "Revisión",
         "reasonLogged": "Motivo registrado",
         "yes": "Sí",
-        "no": "No"
+        "no": "No",
+        "releaseStage3Required": "Necesita una revisión de etapa 3 aprobada. Regístrala en la lección."
       },
       "option": {
         "courses": "Cursos",
@@ -2032,6 +2033,73 @@
         "reject": "Rechazar",
         "keep": "Dejar pendiente",
         "saving": "Guardando"
+      }
+    },
+    "stage3": {
+      "heading": {
+        "review": "Revisión pedagógica de etapa 3",
+        "form": "Registrar la revisión",
+        "checks": "Las seis verificaciones",
+        "questions": "Preguntas de revisión",
+        "forgeItems": "Avisos de Forge por resolver",
+        "latest": "Última revisión"
+      },
+      "body": {
+        "intro": "Otra persona revisa este contenido antes de que lo vea cualquier niño.",
+        "passed": "Aprobada",
+        "failed": "No aprobada",
+        "needed": "Falta la revisión",
+        "noneYet": "Ninguna revisión cubre este contenido todavía.",
+        "failedNote": "La última revisión no fue aprobada. La publicación sigue bloqueada.",
+        "itemsOpen": "Hay avisos de Forge abiertos. Una nueva revisión debe resolverlos.",
+        "passedNote": "Una revisión aprobada cubre este contenido. Se puede publicar.",
+        "findings": "Hallazgos",
+        "recorded": "Registrada",
+        "openFlags": "Avisos de Forge abiertos",
+        "version": "Versión",
+        "author": "Autor del contenido",
+        "authorHelp": "La persona que escribió este contenido. Nunca tú.",
+        "authorFixed": "Esta versión registra su propio autor.",
+        "authorPick": "Elige al autor",
+        "noAuthors": "No hay otra cuenta del equipo para nombrar como autor.",
+        "finding": "Hallazgo",
+        "findingHelp": "Nombra lo que viste, en 10 a 600 caracteres.",
+        "note": "Nota de resolución",
+        "gate": "Validación de Forge {n}",
+        "incomplete": "Responde cada verificación con un hallazgo antes de guardar.",
+        "recordedPass": "Revisión guardada. Fue aprobada, así que este contenido se puede publicar.",
+        "recordedFail": "Revisión guardada. No fue aprobada, así que la publicación sigue bloqueada.",
+        "contentChanged": "El contenido cambió. Vuelve a cargarlo y revísalo otra vez.",
+        "selfReview": "Tú escribiste este contenido. Pide otra persona revisora.",
+        "authorRequired": "Elige al autor del contenido.",
+        "authorNotStaff": "El autor debe ser una cuenta del equipo.",
+        "authorMismatch": "Esta versión ya registra a su autor.",
+        "forgeUnresolved": "Resuelve una vez cada aviso de Forge abierto.",
+        "invalid": "Cada verificación necesita un resultado y un hallazgo.",
+        "q_working_memory": "Las ideas nuevas respetan el límite de la edad, cada una con apoyo visual.",
+        "q_feedback_scope": "La retroalimentación juzga la acción, nunca al niño. Sin señales de vergüenza.",
+        "q_reward_autonomy": "Las recompensas reconocen decisiones reales y existe una elección real.",
+        "q_practice_zone": "La práctica ronda entre 70 y 85 por ciento de aciertos, no es segura.",
+        "q_age_register": "El tono, la presencia del Mentor y las recompensas encajan con esta edad.",
+        "q_resolution_efficiency": "Los momentos del Mentor se resuelven con eficiencia, sin alargar la charla.",
+        "q_register_genuine": "El registro es de verdad adecuado a la edad, no solo cumple.",
+        "q_autonomy_real": "El mecanismo de elección es real, no cosmético.",
+        "q_reasoning_authentic": "El ejercicio de razonamiento califica el razonamiento, no aciertos disfrazados.",
+        "q_mentor_fallibility": "El Mentor muestra un error real y cómo se recupera cuando se requiere."
+      },
+      "option": {
+        "pass": "Aprobado",
+        "fail": "No aprobado",
+        "not_applicable": "No aplica",
+        "acceptable": "Aceptable",
+        "needs_change": "Requiere cambio"
+      },
+      "action": {
+        "open": "Registrar revisión",
+        "hide": "Ocultar formulario",
+        "save": "Guardar revisión",
+        "saving": "Guardando",
+        "reload": "Recargar"
       }
     }
   }

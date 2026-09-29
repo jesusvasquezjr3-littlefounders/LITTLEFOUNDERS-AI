@@ -55,6 +55,7 @@ function answer(path: string): StaffResult<unknown> | undefined {
     '/admin/content/lesson-versions': sections.lessonVersions, '/admin/content/bypass-checks': sections.bypassChecks,
   };
   if (route in table) return ok(table[route]);
+  if (route.endsWith('/pedagogical-review')) return ok(sections.stage3Review);
   if (route.startsWith('/admin/generation/runs/')) return ok(g.runDetail);
   if (route.startsWith('/admin/generation/slots/')) return ok(g.slotDetail);
   if (route.startsWith('/admin/generation/snapshots/')) return ok(g.snapshots);
@@ -224,7 +225,7 @@ describe('S2 Content: courses, the B.3 incident counter and the G.2 release pref
       cleanup();
     }
     expect(releaseRefusal('FORBIDDEN')).toBeNull();
-    expect(Object.keys(RELEASE_REFUSALS)).toHaveLength(9);
+    expect(Object.keys(RELEASE_REFUSALS)).toHaveLength(10);
   });
 
   it('a write that fails for another reason says it did not save; archiving is a destructive confirmation', async () => {
@@ -262,9 +263,9 @@ describe('S2 Content: the lesson review queue', () => {
     return { ...fake, details };
   }
 
-  it('opens straight on the queue from ?view=review and reads only the queue and the content summary', async () => {
+  it('opens straight on the queue from ?view=review and reads only the queue, the content summary and the lesson with its Stage 3 review', async () => {
     const { gets } = await openLesson();
-    expect(gets.sort()).toEqual(['/admin/content', '/admin/moderation', `/admin/moderation/${LESSON.id}`]);
+    expect(gets.sort()).toEqual(['/admin/content', `/admin/content/lessons/${LESSON.id}/pedagogical-review`, '/admin/moderation', `/admin/moderation/${LESSON.id}`]);
   });
 
   it('previews in the learner\'s own player, in the chosen language, and comes back to the review', async () => {

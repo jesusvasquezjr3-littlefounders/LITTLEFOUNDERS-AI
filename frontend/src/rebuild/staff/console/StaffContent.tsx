@@ -13,6 +13,7 @@ import {
   type Course, type LessonDetail, type LiveSegment, type PendingVersion, type ReleaseRefusalKey, type RetroCheck, type RetroState, type ReviewLesson,
 } from './contentApi';
 import { useStaffRead, type StaffApi } from './staffConsoleApi';
+import { Stage3Review } from './Stage3Review';
 import { CopyId, Facts, LoadFailure, Loading, Metrics, ShareBars, StaffPage, useFormats } from './ConsoleParts';
 import { fill, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
 
@@ -25,8 +26,10 @@ import { fill, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
  *                      and each refusal is named with its next step.
  *   Lesson review      the human review queue: inspect a lesson in each
  *                      language (the learner's own player, its parts, audio,
- *                      images and client-safe document), then approve (a
- *                      release through release_lesson) or send it back.
+ *                      images and client-safe document), record its Appendix
+ *                      C Stage 3 pedagogical review (Stage3Review.tsx), then
+ *                      approve (a release through release_lesson, refused
+ *                      without a passing review) or send it back.
  *   Live updates       G.2: a new Forge version of a lesson that is already
  *                      live waits here for a staff release (Core re-runs the
  *                      course verification) or a rejection with a reason;
@@ -298,6 +301,7 @@ function LessonSheet({ api, lessonId, onClose, onDecided, renderLessonPreview }:
                 <Button aria-haspopup="dialog" disabled={pending} onClick={() => setConfirming('draft')}>{t.action.sendBack}</Button>
               </div>}
               <OutcomeNotice outcome={outcome} />
+              <Stage3Review api={api} lessonId={data.id} />
               <Facts items={[
                 { id: 'subject', label: t.body.subject, value: data.subject, ugc: true },
                 { id: 'difficulty', label: t.body.difficulty, value: format.number(data.difficulty) },
@@ -437,6 +441,7 @@ function VersionSheet({ api, version, onClose, onDecided }: { api: StaffApi; ver
         <div><Button type="submit" disabled={pending || !reasonOk}>{t.action.rejectVersion}</Button></div>
       </form> : null}
       <OutcomeNotice outcome={outcome} />
+      <Stage3Review api={api} lessonId={version.lessonId} versionId={version.documentVersionId} />
       <Facts items={[
         { id: 'run', label: t.body.run, value: version.runId ?? copy.common.body.notAvailable, ugc: true },
         { id: 'digest', label: t.body.digest, value: version.documentSha256.slice(0, 16), ugc: true },

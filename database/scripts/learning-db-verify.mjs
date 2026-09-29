@@ -34,6 +34,8 @@ export const LEARNING = [
   'verify-pathway-od25-postgres.py',
   'verify-completion-postgres.py',
   'verify-course-publish-postgres.py',
+  // GAP-FIX-R6: Appendix C Part 3 Stage 3, the pedagogical review record and its release gate.
+  'verify-stage3-review-postgres.py',
 ];
 
 /**
