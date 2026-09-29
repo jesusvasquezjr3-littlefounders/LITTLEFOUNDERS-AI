@@ -117,22 +117,53 @@ jobs:
       # REMOTE command fails, so the `test -s` on the pulled file is the only
       # thing that actually proves a dump exists. Reporting a restore point that
       # was never taken is the worst lie to tell before touching a schema.
+      #
+      # H.5 (Appendix O 1.2): the dump holds every family's data and the
+      # Mentor's, so it is encrypted on the runner with the tested OD-9 tool
+      # (AES-256-GCM, a manifest with the key fingerprint, the plaintext
+      # deleted) before it is stored; no key, no dump, no migration.
       - name: Pre-migration dump
         if: steps.gate.outputs.apply == 'true'
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
           set -euo pipefail
+          printf '%s' "${{ secrets.BACKUP_ENCRYPTION_KEY }}" > "$RUNNER_TEMP/backup.key"
+          chmod 600 "$RUNNER_TEMP/backup.key"
+          test -s "$RUNNER_TEMP/backup.key"
           FILE="pre-migration-$(date -u +%Y%m%d-%H%M%S).dump"
           railway ssh --service db -i ~/.ssh/railway_key -- \
             pg_dump -U supabase_admin -d postgres -Fc -f /tmp/premig.dump
           railway ssh --service db -i ~/.ssh/railway_key -- \
             cat /tmp/premig.dump > "$FILE"
-          test -s "$FILE"
-          cat "$FILE" | railway ssh --service filebase -i ~/.ssh/railway_key -- \
-            sh -c "cat > /data/backups/$FILE"
           railway ssh --service db -i ~/.ssh/railway_key -- rm -f /tmp/premig.dump
-          echo "Restore point: /data/backups/$FILE ($(wc -c < "$FILE") bytes)"
+          test -s "$FILE"
+          node database/migration-od9/backup-crypto.mjs encrypt --in "$FILE" --out "$FILE.lfbk" --key-file "$RUNNER_TEMP/backup.key"
+          test -s "$FILE.lfbk"
+          test -s "$FILE.lfbk.manifest.json"
+          test ! -e "$FILE"
+          for PART in "$FILE.lfbk" "$FILE.lfbk.manifest.json"; do
+            cat "$PART" | railway ssh --service filebase -i ~/.ssh/railway_key -- \
+              sh -c "cat > /data/backups/$PART"
+          done
+          echo "Restore point: /data/backups/$FILE.lfbk ($(wc -c < "$FILE.lfbk") encrypted bytes)"
+
+      # Encrypted restore points age out after 30 days, as the daily backups
+      # do. The plaintext pre-migration dumps written before H.5 was closed for
+      # this path are removed once the encrypted point above is stored: the
+      # daily encrypted Vault backups hold every later state.
+      - name: Prune pre-migration restore points
+        if: steps.gate.outputs.apply == 'true'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+          railway ssh --service filebase -i ~/.ssh/railway_key -- \
+            find /data/backups -name 'pre-migration-*.dump.lfbk' -mtime +30 -delete
+          railway ssh --service filebase -i ~/.ssh/railway_key -- \
+            find /data/backups -name 'pre-migration-*.dump.lfbk.manifest.json' -mtime +30 -delete
+          railway ssh --service filebase -i ~/.ssh/railway_key -- \
+            find /data/backups -name 'pre-migration-*.dump' -delete
 
       - name: Apply
         if: steps.gate.outputs.apply == 'true'
@@ -161,3 +192,9 @@ jobs:
           code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://api-b2c.littlefounders.ai/health)
           echo "Core /health -> $code"
           [ "$code" = "200" ] || { echo "FAIL: Core is not healthy after the migration"; exit 1; }
+
+      # H.5: the key and every local dump (plaintext or ciphertext) leave the
+      # runner on every outcome, the failed and the refused runs included.
+      - name: Remove the backup key and any local dump
+        if: always()
+        run: rm -f "$RUNNER_TEMP/backup.key" ./*.dump ./*.dump.lfbk ./*.dump.lfbk.manifest.json

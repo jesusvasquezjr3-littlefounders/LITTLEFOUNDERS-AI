@@ -237,16 +237,53 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
           set -euo pipefail
+          # H.5 (Appendix O 1.2): the dump holds every family's data and the
+          # Mentor's; it is encrypted on the runner with the tested OD-9 tool
+          # before it is stored. No key, no dump, no migration.
+          printf '%s' "${{ secrets.BACKUP_ENCRYPTION_KEY }}" > "$RUNNER_TEMP/backup.key"
+          chmod 600 "$RUNNER_TEMP/backup.key"
+          test -s "$RUNNER_TEMP/backup.key"
           TS=$(date -u +%Y%m%d-%H%M%S)
           FILE="pre-migration-${TS}.dump"
 
-          railway ssh --service db -i ~/.ssh/railway_key --             pg_dump -U supabase_admin -d postgres -Fc -f /tmp/premig.dump
-          railway ssh --service db -i ~/.ssh/railway_key --             cat /tmp/premig.dump > "$FILE"
+          railway ssh --service db -i ~/.ssh/railway_key -- \
+            pg_dump -U supabase_admin -d postgres -Fc -f /tmp/premig.dump
+          railway ssh --service db -i ~/.ssh/railway_key -- \
+            cat /tmp/premig.dump > "$FILE"
+          railway ssh --service db -i ~/.ssh/railway_key -- rm -f /tmp/premig.dump
           test -s "$FILE"
 
-          cat "$FILE" | railway ssh --service filebase -i ~/.ssh/railway_key --             sh -c "cat > /data/backups/$FILE"
-          railway ssh --service db -i ~/.ssh/railway_key -- rm -f /tmp/premig.dump
-          echo "Restore point: /data/backups/$FILE ($(wc -c < "$FILE") bytes)"
+          node database/migration-od9/backup-crypto.mjs encrypt --in "$FILE" --out "$FILE.lfbk" --key-file "$RUNNER_TEMP/backup.key"
+          test -s "$FILE.lfbk"
+          test -s "$FILE.lfbk.manifest.json"
+          test ! -e "$FILE"
+
+          for PART in "$FILE.lfbk" "$FILE.lfbk.manifest.json"; do
+            cat "$PART" | railway ssh --service filebase -i ~/.ssh/railway_key -- \
+              sh -c "cat > /data/backups/$PART"
+          done
+          echo "Restore point: /data/backups/$FILE.lfbk ($(wc -c < "$FILE.lfbk") encrypted bytes)"
+
+      # Encrypted restore points age out after 30 days, as the daily backups
+      # do; the plaintext pre-migration dumps written before H.5 was closed for
+      # this path are removed once the encrypted point above is stored.
+      - name: Prune pre-migration restore points
+        if: inputs.step == 'migrate'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+          railway ssh --service filebase -i ~/.ssh/railway_key -- \
+            find /data/backups -name 'pre-migration-*.dump.lfbk' -mtime +30 -delete
+          railway ssh --service filebase -i ~/.ssh/railway_key -- \
+            find /data/backups -name 'pre-migration-*.dump.lfbk.manifest.json' -mtime +30 -delete
+          railway ssh --service filebase -i ~/.ssh/railway_key -- \
+            find /data/backups -name 'pre-migration-*.dump' -delete
+
+      # H.5: the key and every local dump leave the runner on every outcome.
+      - name: Remove the backup key and any local dump
+        if: always()
+        run: rm -f "$RUNNER_TEMP/backup.key" ./*.dump ./*.dump.lfbk ./*.dump.lfbk.manifest.json
 
       - name: Apply pending migrations
         if: inputs.step == 'migrate'

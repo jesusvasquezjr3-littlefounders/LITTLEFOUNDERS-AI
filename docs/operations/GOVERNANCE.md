@@ -162,6 +162,13 @@ to retain because an active guardian consent admitted them at the source.
   database/migration-od9/backup-crypto.mjs keygen --key-file <path>`, stored
   in the secret store and the offline key escrow) and push the workflows.
   Plaintext dumps written before the change age out with the 30-day prune.
+  The pre-migration restore points (a full production dump taken by
+  `.github/workflows/database-cd.yml` before every auto-applied additive
+  migration and by `tutor-deploy.yml` `step: migrate`) follow the same rule:
+  encrypted on the runner, only `pre-migration-*.dump.lfbk` and its manifest
+  stored, pruned after 30 days, the older plaintext `pre-migration-*.dump`
+  files deleted once the encrypted point is stored. The lint discovers every
+  workflow that writes to `/data/backups`, never a fixed list.
   The cutover backup procedure and each store's status:
   `BACKUP-RESTORE-ROLLBACK.md` section 1.
 - **Incident response baseline.** On discovery of a security incident:
