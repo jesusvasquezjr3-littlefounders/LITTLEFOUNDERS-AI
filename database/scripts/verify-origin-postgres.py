@@ -27,7 +27,13 @@ enforcing boundary, against the LATEST definition of each function:
     without an opt-in, an account with no declaration or no role record none;
     an account flagged after an admitted event records none from then on; a
     teen who reached adult by birth month keeps an earlier "no"; safety and
-    audit logs are never switched off.
+    audit logs are never switched off;
+  - the same trigger under concurrency, with the lock wait observed each time:
+    an event racing a teen's revocation or an under-13 origin mark waits for
+    it and is refused (the choice locks the account row; the mark is
+    serialized by its foreign key's KEY SHARE lock on that row), and a revocation or mark racing an
+    already-admitted event waits for that event to commit first, so no
+    optional event ever commits after the "no" or the flag is acknowledged.
 
 Cluster selection (never the shared Docker stack):
   LF_PG_PSQL   path to psql (default: LF_PG_BIN/psql, else <repo>/.codex/audit-db/pgsql/bin)
@@ -49,6 +55,7 @@ from pathlib import Path
 import json
 import os
 import subprocess
+import time
 import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -328,6 +335,75 @@ try:
     run(f"INSERT INTO audit_logs (actor_id, action, subject) VALUES ('{flagged_later}', 'safety.check', '{flagged_later}')")
     assert run(f"SELECT count(*) FROM audit_logs WHERE actor_id = '{flagged_later}' AND action = 'safety.check'") == '1'
     check('an account flagged after an admitted event records no further optional event, is refused by the Family Hub admission too, and still writes its audit log')
+
+    # ── Appendix M 1.1 / H.1 under concurrency: the lock ordering ───────────
+    def wait_for(expression):
+        for _ in range(250):
+            if run(expression) == 't':
+                return
+            time.sleep(.02)
+        raise AssertionError(f'expected lock state was not observed: {expression}')
+
+    def race(first, second, label, key):
+        """Run `first` in an open transaction, start `second`, prove it waits on
+        the first transaction, then commit the first and return the second's output."""
+        holder = subprocess.Popen(BASE + ['-d', database], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE, text=True, encoding='utf-8',
+                                  env={**os.environ, 'PGCLIENTENCODING': 'UTF8'})
+        try:
+            holder.stdin.write(f'BEGIN; {first}; SELECT pg_advisory_xact_lock({key});\n')
+            holder.stdin.flush()
+            wait_for(f"""SELECT EXISTS (SELECT 1 FROM pg_locks WHERE locktype = 'advisory' AND objid = {key}
+                         AND database = (SELECT oid FROM pg_database WHERE datname = current_database()))""")
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                pending = pool.submit(run, f"SET application_name = '{label}'; {second}")
+                try:
+                    wait_for(f"""SELECT EXISTS (SELECT 1 FROM pg_stat_activity WHERE datname = current_database()
+                                 AND application_name = '{label}' AND cardinality(pg_blocking_pids(pid)) > 0)""")
+                finally:
+                    holder.stdin.write('COMMIT;\n')
+                    holder.stdin.flush()
+                    holder.stdin.close()
+                    holder.stdin = None
+                result = pending.result(timeout=30)
+            _, stderr = holder.communicate(timeout=30)
+            assert holder.returncode == 0, stderr
+            return result
+        finally:
+            if holder.poll() is None:
+                if holder.stdin:
+                    holder.stdin.write('ROLLBACK;\n')
+                    holder.stdin.close()
+                    holder.stdin = None
+                holder.communicate(timeout=30)
+
+    def insert_event(uid):
+        return f"SET ROLE service_role; INSERT INTO learning_events (user_id, role, event) VALUES ('{uid}', 'universal', 'nav_view') RETURNING id"
+
+    def events(uid):
+        return int(run(f"SELECT count(*) FROM learning_events WHERE user_id = '{uid}'"))
+
+    racer = population('13_to_17', opt_in=True)
+    assert race(f"SET LOCAL ROLE service_role; SELECT set_teen_analytics_preference('{racer}', false)",
+                insert_event(racer), 'lf_event_after_revoke', 9101) == '', 'an event racing a revocation was admitted'
+    assert events(racer) == 0
+    service(f"SELECT set_teen_analytics_preference('{racer}', true)")
+    assert race(f"SET LOCAL ROLE service_role; INSERT INTO learning_events (user_id, role, event) VALUES ('{racer}', 'universal', 'nav_view')",
+                f"SET ROLE service_role; SELECT set_teen_analytics_preference('{racer}', false)", 'lf_revoke_after_event', 9102) == 'f'
+    assert events(racer) == 1 and not admitted(racer)
+    check('a teen revocation and an event serialize both ways: the event behind the revocation is refused, '
+          'the revocation behind an admitted event waits for it to commit, and nothing lands after the "no"')
+
+    flag_racer = population('adult')
+    assert race(f"SET LOCAL ROLE service_role; SELECT mark_under13_origin('{flag_racer}')",
+                insert_event(flag_racer), 'lf_event_after_flag', 9103) == '', 'an event racing the under-13 flag was admitted'
+    assert events(flag_racer) == 0 and origin(flag_racer) == '1'
+    flag_later = population('adult')
+    assert race(f"SET LOCAL ROLE service_role; INSERT INTO learning_events (user_id, role, event) VALUES ('{flag_later}', 'universal', 'nav_view')",
+                f"SET ROLE service_role; SELECT mark_under13_origin('{flag_later}')", 'lf_flag_after_event', 9104) == 't'
+    assert events(flag_later) == 1 and not admitted(flag_later) and origin(flag_later) == '1'
+    check('an under-13 origin mark and an event serialize both ways (the origin foreign key locks the account row): the event behind the mark is refused, '
+          'the mark behind an admitted event waits for it, and no optional event commits after the flag')
 
     grown = population('13_to_17', month=teen_month, opt_in=False)
     run(f"""UPDATE account_age_declarations SET declared_birth_month = '{grown_month}' WHERE user_id = '{grown}'""")

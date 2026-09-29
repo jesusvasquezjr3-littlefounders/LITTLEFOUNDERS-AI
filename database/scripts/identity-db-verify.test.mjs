@@ -61,6 +61,36 @@ test('every database guard of Block A is defined by a migration and proved by a 
   }
 });
 
+/** The body of the LATEST migration that (re)defines public.<fn>, in chain order. */
+function latestDefinition(fn) {
+  const pattern = new RegExp(`CREATE OR REPLACE FUNCTION public\\.${fn}\\([\\s\\S]*?\\$\\$([\\s\\S]*?)\\$\\$`, 'g');
+  let body = null;
+  for (const name of [...migrations].sort()) {
+    for (const match of read(`database/migrations/${name}`).matchAll(pattern)) body = match[1];
+  }
+  return body;
+}
+
+test('a flagged session cannot race an optional event past the flag: every writer serializes on the account row the guard locks', () => {
+  // Appendix M 1.1 / A.2 / H.1. The guard reads the origin, the declaration and
+  // the teen choice under a FOR UPDATE lock on the auth.users row. The teen
+  // choice and the declaration take that lock explicitly; the origin mark is
+  // serialized by its foreign key (the FK check's KEY SHARE lock on the same
+  // row conflicts with FOR UPDATE). The chain proves both orderings of both
+  // races with observed lock waits in verify-origin-postgres.py.
+  assert.match(latestDefinition('guard_optional_learning_event') ?? '', /FROM auth\.users WHERE id = NEW\.user_id FOR UPDATE/);
+  for (const fn of ['set_teen_analytics_preference', 'record_age_declaration']) {
+    assert.match(latestDefinition(fn) ?? '', /FROM auth\.users WHERE id = p_user_id FOR UPDATE/, `${fn} no longer serializes with the event guard`);
+  }
+  assert.match(read('database/migrations/0085_under13_origin.sql'), /user_id uuid PRIMARY KEY REFERENCES auth\.users\(id\) ON DELETE CASCADE/,
+    'the origin mark lost the foreign key that serializes it with the event guard');
+  const origin = read('database/scripts/verify-origin-postgres.py');
+  for (const label of ['lf_event_after_revoke', 'lf_revoke_after_event', 'lf_event_after_flag', 'lf_flag_after_event']) {
+    assert.ok(origin.includes(`'${label}'`), `verify-origin-postgres.py lost the ${label} race`);
+  }
+  assert.ok(origin.includes('cardinality(pg_blocking_pids(pid)) > 0'), 'the races no longer prove a real lock wait');
+});
+
 test('a verifier that cites a Block A clause in its first line cannot be left out of the runner', () => {
   // verify-analytics-postgres.py (H.1, a hand-written 0090-era schema) is superseded by the full-chain origin proof.
   const blockA = files.filter((name) => /^verify-.+\.py$/.test(name))

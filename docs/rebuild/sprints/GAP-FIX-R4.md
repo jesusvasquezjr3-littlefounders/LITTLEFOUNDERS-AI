@@ -56,3 +56,67 @@ while production runs the 0182 definition.
 - None blocking. Default taken: the unfurl reads the sharing Tutor's profile
   locale, then the child's, rather than adding a column no new row would fill
   (OD-20 issues no new links).
+
+## Checkpoint F4-identity-site-finish
+
+Lane finish. The worktree was clean; `codex/spec-migration-s02` was already
+merged (no conflicts). Adversarial pass over the lane commit against the two
+audited gaps: nothing mandated was missing from Gap 2 (the llms brief, the
+seo:check audit and the badge unfurl already cover all three locales, and the
+locale read is server-side and returns one of three values only). Gap 1 had
+one open proof, the H.1 concurrency race, which lived only in the hand-written
+`verify-analytics-postgres.py` outside every gate. It is now proven on the
+whole chain.
+
+### What was built
+
+| SPEC clause | What was built | Where |
+|---|---|---|
+| Appendix M 1.1 (flagged sessions), A.2, H.1 | `verify-origin-postgres.py` runs four races on the whole migration chain, each with an observed lock wait (`pg_blocking_pids`): an event behind a teen revocation is refused; a revocation behind an admitted event waits for it to commit; an event behind an under-13 origin mark is refused; a mark behind an admitted event waits for it. No optional event commits after the "no" or the flag is acknowledged. `identity-db-verify.test.mjs` pins the lock each writer takes (the guard's `FOR UPDATE`, the teen choice and the declaration locking the account row, the origin's foreign key to `auth.users`) and the four races | `database/scripts/verify-origin-postgres.py`, `database/scripts/identity-db-verify.test.mjs` |
+
+A correction to my own first reading: I suspected that `mark_under13_origin`,
+which Core calls directly at sign-up, did not serialize with the event guard,
+and wrote a migration to make it take the row lock. The chain WITHOUT that
+migration passed the new race, because the origin's foreign key check takes a
+KEY SHARE lock on the same `auth.users` row, and that conflicts with the
+guard's `FOR UPDATE`. The migration was redundant and was dropped (no
+migration in this checkpoint). The self-test now pins that foreign key as the
+serialization.
+
+### Verification (local)
+
+- Lane cluster (native PostgreSQL 17.6, `.lane-cache/pg`, port 15600):
+  `npm run identity:db-verify` 6/6 verifiers pass over the whole chain
+  (origin now 14 checks, two of them the four races). Mutation: with the
+  guard's `FOR UPDATE` removed from 0182, the origin verifier fails at the
+  first race ("an event racing a revocation was admitted").
+- `database` gates and node tests 61/61 (identity self-test 7/7);
+  `railway-migrate.test.mjs` again did not finish within 15 minutes (hang,
+  untouched here, as in F4-identity-site).
+- Backend `type-check`, `lint`, full suite: 3480 passed, 1 skipped.
+- Frontend `type-check`, `lint`, full suite: 3189 passed, 6 failed, all six
+  in `src/rebuild/assets/assetGate.test.ts` by 90-second timeouts while the
+  machine ran at 85% CPU with other lanes. Untouched by this lane; the gate
+  itself (`node scripts/check-rebuild-assets.mjs`) passes when run directly.
+  A lone rerun of the file did not finish in 15 minutes under the same load,
+  so it is left to the merge gates.
+- Root `tools:test`: 416 of 418 in the loaded run; the two reds
+  (`check-social-tiers`, `railway-preflight`, both untouched) pass alone
+  (48/48 with `check-seo-surface`). Root `spec:check` and `secrets:check`
+  pass.
+
+### Remaining
+
+- Carried over from F4-identity-site: the first GitHub-runner run of the
+  `identity-db-verify` jobs; `railway-migrate.test.mjs` left to the merge
+  gates; the badge unfurl locale is a best reading of legacy rows.
+- `assetGate.test.ts` (frontend) to be confirmed by the merge gates on a
+  quieter machine.
+- `verify-analytics-postgres.py` is kept only as S01 history (it is the
+  evidence that record cites); its races and populations are now superseded
+  by the full-chain origin proof.
+- Acceptance: Trust review of the identity gate list. Nothing is accepted.
+
+### Owner questions
+
+- None.
