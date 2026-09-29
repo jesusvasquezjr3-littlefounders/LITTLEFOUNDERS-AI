@@ -77,3 +77,39 @@ checks pass (the band was seen `speaking` then `idle`; `speaking` then
 `demonstrating` with the `teach.explain` still; `encouraging` with
 `feedback.retry.gentle` (6-9) and `ambient.listen` (13-17), choices 56 px and
 equal).
+
+### Gap 3: every mounted Mentor screen state is in a Bible audit state (08 §10 item 5, 08 §4, 02 §7 item 10, 06 §7, 03 §5)
+
+Verified first: `frontend/scripts/audits/lanes/mentor.mjs` declared no state
+for the goal-agreement chips, the stop-or-continue choice, the likely-answer
+chips, the Thinking plate, the microphone level, the live error notice, the
+transcript and grown-up sheets, the recap's "Finish now" chip or the
+start-over ConfirmDialog, and no lane audited the four standalone Mentor
+preview screens.
+
+| SPEC clause | What was built | Where |
+|---|---|---|
+| 08 §10 item 5, 06 §7, 02 §7 item 10, 03 §5 | 19 new Mentor screen audit states spread over the child bands (goal, session-end, replies, thinking, recording, error, transcript, grown-up, recap, start-over), each with `readyAll` selectors that prove the state rendered; 10 states for the standalone previews (`mentor-session-end` with each closing script, `mentor-goal-check`, `mentor-alliance-check`, `mentor-profile` own and child) | `frontend/scripts/audits/lanes/mentor.mjs` |
+| same | Preview openers `?recap=1` (the OD-28 recap's one "Finish now" chip) and `?dialog=start-over` (the start-over ConfirmDialog), both only in a conversation, through a new `initialConfirmRestart` prop | `frontend/src/rebuild/mentor/screen/MentorScreenPreview.tsx`, `MentorScreen.tsx` |
+
+Verification (local): `MentorScreenPreview.test.tsx` (3: recap chip, start-over
+dialog, neither outside a conversation or by default) with the Mentor screen
+suites (74 pass); the lane module loads with 63 unique state ids and every
+`readyAll` selector was checked against the component source. Frontend
+type-check and lint pass. No requirement row owns audit coverage, so no row
+changed.
+
+Remaining: the three audits (`npm run audit:rebuild`) have not measured these
+states. Speed mode keeps browser runs with the orchestrator's final gate; an
+earlier attempt in this lane was interrupted before it finished. Any finding
+there is open until that run.
+
+### Lane summary
+
+Built: stored-note deletion for the owner and the verified Tutor (C.4, OD-18);
+a compact lesson Mentor that introduces, demonstrates and encourages, with
+equal guided-review choices (08 §11, §3, §4); audit states for every mounted
+Mentor screen state (08 §10 item 5). Migration: `0241_learner_memory_clear.sql`
+(provisional number, declared contract, apply by hand before the Core
+release). Open: the orchestrator's UI audit of the new states; device,
+assistive-technology and human review; nothing is accepted.
