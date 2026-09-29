@@ -61,7 +61,10 @@ describe('rebuild-family copy budget', () => {
         emptyAction: 'action', open: 'action', opening: 'action', save: 'action', saving: 'action', rewardsLink: 'action', children: 'option',
         cardName: 'option', colour: 'option', allowanceSwitch: 'option', on: 'option', off: 'option', amount: 'option', often: 'option', weekly: 'option',
         biweekly: 'option', monthly: 'option', weekday: 'option', monthday: 'option', days: 'option', limitSwitch: 'option', window: 'option',
-        days7: 'option', days30: 'option', cap: 'option', usedLabel: 'option', usedValue: 'data', next: 'data' });
+        days7: 'option', days30: 'option', cap: 'option', usedLabel: 'option', usedValue: 'data', next: 'data',
+        // GAP-FIX-R6 (OD-3 §2, Law 5): the Tutor's read of a child's pockets, month summary and latest history.
+        coinsTitle: 'heading', monthTitle: 'heading', historyTitle: 'heading', prevMonth: 'action', nextMonth: 'action', showMore: 'action',
+        pockets: 'option', earned: 'option', spent: 'option', savedNet: 'option', given: 'option', adjusted: 'option', onOwn: 'option', reasons: 'option', note: 'data' });
       budget('childCoins', { title: 'heading', titleFamily: 'heading', failedTitle: 'heading', refusedTitle: 'heading', payoutsTitle: 'heading',
         lookTitle: 'heading', retry: 'action', retrying: 'action', refusedAction: 'action', edit: 'action', save: 'action', saving: 'action',
         cancel: 'action', tasksLink: 'action', cardName: 'option', colour: 'option' }, '6-9');

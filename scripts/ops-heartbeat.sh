@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ops-heartbeat.sh <job> <ok:true|false> [bytes] [pending]
 #
-# H.4 / Appendix O 1.3: the last step of vault-backup.yml, pulse-backup.yml
-# and vault-drift.yml. Records the run in Core's audit trail through
+# H.4 / Appendix O 1.3: the last step of vault-backup.yml, pulse-backup.yml,
+# vault-drift.yml, learning-retention.yml and insights-maintenance.yml. Records the run in Core's audit trail through
 # POST /api/v1/internal/ops/heartbeat, called from INSIDE the Core container
 # (the same route to Core tutor-retention.yml uses), so INTERNAL_API_KEY and
 # PORT expand there and never on the runner. ops-job-watch.yml later reads
@@ -14,13 +14,13 @@
 # not recorded must not look healthy.
 set -euo pipefail
 
-job="${1:?job: vault_backup | pulse_backup | vault_drift}"
+job="${1:?job: vault_backup | pulse_backup | vault_drift | learning_retention | insights_prune}"
 ok="${2:?ok: true | false}"
 bytes="${3:-}"
 pending="${4:-}"
 key="${RAILWAY_SSH_KEY_PATH:-$HOME/.ssh/railway_backup_key}"
 
-case "$job" in vault_backup|pulse_backup|vault_drift) ;; *) echo "unknown job: $job" >&2; exit 2 ;; esac
+case "$job" in vault_backup|pulse_backup|vault_drift|learning_retention|insights_prune) ;; *) echo "unknown job: $job" >&2; exit 2 ;; esac
 case "$ok" in true|false) ;; *) echo "ok must be true or false" >&2; exit 2 ;; esac
 payload="{\"job\":\"${job}\",\"ok\":${ok}"
 if [ -n "$bytes" ]; then payload="${payload},\"bytes\":${bytes}"; fi

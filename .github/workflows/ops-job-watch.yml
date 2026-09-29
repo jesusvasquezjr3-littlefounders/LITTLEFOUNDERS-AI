@@ -36,9 +36,18 @@ name: Operations job watch
 # access review, so the staff/access owner is told without first opening
 # Roles & Access). Any of them fails this run and is named in the notice.
 #
-# 10:00 UTC: after the retention sweep (03:00), the drift probe (07:30), the
-# Vault backup (08:00) and the Pulse backup (08:30) have had time to finish
-# and record themselves.
+# GAP-FIX-R6 (H.4 and the Block H non-negotiable: no job whose silent failure
+# would harm family data may lack this pattern): the account-deletion sweep
+# (E.6, A.1's 90-day paused child), the family retention sweep (D.21), the
+# social retention sweep (E.11), the learning practice-day sweep and the
+# insights prune (H.2's 400-day raw-event window) are watched jobs too, each
+# read from its own trail in services/opsJobs.ts. `accountDeletionFailures.stuck`
+# (an erasure whose step failed more than a day ago and never completed) is a
+# notify condition like the ones above.
+#
+# 10:00 UTC: after the retention sweeps (03:00 to 04:30), the drift probe and
+# the insights prune (07:30), the Vault backup (08:00) and the Pulse backup
+# (08:30) have had time to finish and record themselves.
 
 on:
   schedule:
@@ -51,7 +60,7 @@ permissions:
 
 jobs:
   watch:
-    name: Fail and notify if a backup, the drift probe or the retention sweep has gone quiet, or an access review is due
+    name: Fail and notify if a backup, the drift probe or a retention sweep has gone quiet, an erasure stalled, or an access review is due
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

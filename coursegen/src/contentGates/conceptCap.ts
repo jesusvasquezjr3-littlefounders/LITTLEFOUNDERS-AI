@@ -38,6 +38,9 @@ export const CONCEPT_CEILINGS: Readonly<Record<WorkingMemoryBand, { target: numb
   '13+': { target: 4, ceiling: 6 },
 };
 
+/** The oldest youngest-age each younger band takes (Appendix B §1.2 ranges); older is 13+. */
+export const WORKING_MEMORY_BAND_MAX_AGE = { '6-9': 9, '10-12': 12 } as const;
+
 /**
  * The working-memory band a tier is authored for. Conservative like the Copy
  * Budget audience: the YOUNGEST age a tier serves decides (tier2 8–10 serves
@@ -48,8 +51,8 @@ export function workingMemoryBand(taxonomy: TaxonomyFile | undefined, tier: stri
   if (register === 'adult') return '13+';
   const ages = taxonomy?.age_tiers[tier]?.ages;
   const lowest = ages ? Number(/(\d+)/.exec(ages)?.[1]) : NaN;
-  if (!Number.isFinite(lowest) || lowest <= 9) return '6-9';
-  if (lowest <= 12) return '10-12';
+  if (!Number.isFinite(lowest) || lowest <= WORKING_MEMORY_BAND_MAX_AGE['6-9']) return '6-9';
+  if (lowest <= WORKING_MEMORY_BAND_MAX_AGE['10-12']) return '10-12';
   return '13+';
 }
 

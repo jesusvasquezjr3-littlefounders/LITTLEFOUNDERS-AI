@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState, type FormEvent, type MouseEvent, type ReactNode } from 'react';
 import { Button, Copy, InlineNotice, LoadingState, SegmentedControl, TextAreaField, TextField } from '../design/controls';
-import type { Bucket, GuardianAction, KidGoal } from './familyHubApi';
+import type { Bucket, GuardianAction, KidGoal, KidPockets } from './familyHubApi';
 import { GoalProgress, type GoalProgressCopy } from './GoalProgress';
 import { PocketMark } from './PocketMark';
 import '../design/tokens.css';
@@ -18,6 +18,10 @@ import './familyHub.css';
  *    (redemption 'fulfilled').
  *  - Past corrections: every guardian action with its reason, attributed as
  *    "you" or "another Tutor" only.
+ * GAP-FIX-R6 (D.5, Law 5): the chosen pocket's coins stand beside the
+ * correction, so a Tutor never learns a pocket's balance from a refusal; a
+ * removal larger than the pocket is stopped here first (the database still
+ * refuses it with INSUFFICIENT_BALANCE).
  * Client validation mirrors the server's (integer 1-1000, 1-240 character
  * reason) so a family learns the rule before a round trip; the server and the
  * database remain the boundary. No celebration: none of these is a milestone.
@@ -27,7 +31,7 @@ export interface WalletCorrectionsCopy {
   title: string; close: string; heading: string; loading: string; failed: string; retry: string;
   adjustHeading: string; bucket: string; save: string; spend: string; share: string; direction: string; add: string; remove: string;
   amount: string; reason: string; reasonHint: string; submit: string; saving: string; saved: string; reasonRequired: string; amountInvalid: string;
-  insufficient: string; protected: string; saveFailed: string;
+  insufficient: string; protected: string; saveFailed: string; pocketNow: string;
   goalsHeading: string; moveOut: string; destination: string; toSpend: string; toSave: string; moved: string; goalShort: string; noGoals: string;
   rewardsHeading: string; deliver: string; delivered: string; notApproved: string; noRewards: string; rewardUntitled: string;
   historyHeading: string; noHistory: string; byYou: string; byOther: string; kindAdjust: string; kindGoal: string;
@@ -59,12 +63,14 @@ function ReasonField({ label, hint, value, onChange, disabled }: {
 const parseAmount = (raw: string) => /^\d{1,4}$/.test(raw.trim()) ? Number(raw.trim()) : NaN;
 const validAmount = (amount: number) => Number.isInteger(amount) && amount >= 1 && amount <= 1000;
 
-export function WalletCorrections({ copy, progressCopy, locale, dark, kidName, open, loading, failed, goals, rewards, history, busy, notice, onToggle, onRetry, onAdjust, onWithdraw, onDeliver }: {
+export function WalletCorrections({ copy, progressCopy, locale, dark, kidName, open, loading, failed, goals, rewards, history, pockets = null, busy, notice, onToggle, onRetry, onAdjust, onWithdraw, onDeliver }: {
   copy: WalletCorrectionsCopy;
   /** S07.4 (D.16): each goal shows the child's own coins apart from bonus and Tutor coins. */
   progressCopy: GoalProgressCopy;
   locale: string; dark: boolean; kidName: string; open: boolean; loading: boolean; failed: boolean;
   goals: KidGoal[]; rewards: DeliverableReward[]; history: GuardianAction[]; busy: boolean; notice: Notice;
+  /** The child's three pockets now; null when they could not be read (the correction still works, Core stays the boundary). */
+  pockets?: KidPockets | null;
   onToggle: () => void; onRetry: () => void;
   onAdjust: (input: { bucket: Bucket; amount: number; reason: string }) => Promise<boolean>;
   onWithdraw: (goalId: string, input: { amount: number; destination: 'spend' | 'save'; reason: string }) => Promise<boolean>;
@@ -95,6 +101,7 @@ export function WalletCorrections({ copy, progressCopy, locale, dark, kidName, o
     event.preventDefault();
     const value = parseAmount(amount);
     if (!validAmount(value)) return setAdjustError(copy.amountInvalid);
+    if (direction === 'remove' && pockets && value > pockets[bucket]) return setAdjustError(copy.insufficient);
     if (reason.trim().length === 0) return setAdjustError(copy.reasonRequired);
     setAdjustError(null);
     const saved = await onAdjust({ bucket, amount: direction === 'add' ? value : -value, reason: reason.trim() });
@@ -130,6 +137,7 @@ export function WalletCorrections({ copy, progressCopy, locale, dark, kidName, o
             options={[{ value: 'save', label: copy.save, art: <PocketMark pocket="save" size="sm" /> },
               { value: 'spend', label: copy.spend, art: <PocketMark pocket="spend" size="sm" /> },
               { value: 'share', label: copy.share, art: <PocketMark pocket="share" size="sm" /> }]} />
+          {pockets ? <p className="lf-family-hub-muted" data-copy-role="data" data-pocket-now={bucket}>{copy.pocketNow.replace('{count}', String(pockets[bucket]))}</p> : null}
           <Options label={copy.direction} value={direction} disabled={busy} onChange={setDirection}
             options={[{ value: 'add', label: copy.add }, { value: 'remove', label: copy.remove }]} />
           <TextField label={copy.amount} inputMode="numeric" autoComplete="off" value={amount} disabled={busy} onChange={(event) => setAmount(event.target.value)} />

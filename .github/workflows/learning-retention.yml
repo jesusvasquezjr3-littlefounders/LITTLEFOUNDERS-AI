@@ -16,6 +16,10 @@ name: Learning practice-day retention sweep
 # ORDER: the function comes from the learning_practice_days migration. Until
 # it is applied, Core answers 502 and this workflow fails loudly, deleting
 # nothing.
+#
+# WATCHED (H.4, GAP-FIX-R6): the last step records a heartbeat
+# (`learning_retention`) and ops-job-watch.yml notifies a human when no
+# successful run lands within 36 hours.
 
 on:
   schedule:
@@ -31,6 +35,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      # The checkout carries scripts/ops-heartbeat.sh (H.4).
+      - uses: actions/checkout@v4
+
       - name: Install Railway CLI
         run: npm i -g @railway/cli@5.43.1
 
@@ -90,3 +97,19 @@ jobs:
             exit 1
           fi
           echo "learning-retention: ${removed} practice days past 400 days removed"
+
+      # H.4 (GAP-FIX-R6): leave the run in Core's audit trail
+      # (scripts/ops-heartbeat.sh); ops-job-watch.yml notifies a human when
+      # this job goes quiet.
+      - name: Record the heartbeat
+        if: success()
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: RAILWAY_SSH_KEY_PATH="$HOME/.ssh/railway_key" bash scripts/ops-heartbeat.sh learning_retention true
+
+      - name: Record the failed run
+        if: failure()
+        continue-on-error: true
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: RAILWAY_SSH_KEY_PATH="$HOME/.ssh/railway_key" bash scripts/ops-heartbeat.sh learning_retention false

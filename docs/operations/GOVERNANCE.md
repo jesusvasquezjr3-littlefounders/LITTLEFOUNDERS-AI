@@ -123,38 +123,56 @@ to retain because an active guardian consent admitted them at the source.
   job is now impossible; the direct synchronous export surface is the only
   one). The `task_view` and `tutor_open` events, previously catalogued with
   no emitter, now emit from the tasks boards and the Mentor experience.
-- **Watchdog coverage (H.4).** Four scheduled jobs are watched, each with a
-  watchdog and a notification to a human (Appendix O 1.3 names the first
-  three): the AI Mentor 90-day retention sweep, the daily Vault backup, the
-  daily Pulse backup and the schema drift probe:
-  - the retention sweep records its own trail (`tutor.retention.swept`, on
-    every purge that reaches the database) and keeps its 36-hour window in
-    `RETENTION_STALE_HOURS` (`backend/src/services/tutorData.ts`); Core's
-    job status carries it as the `tutor_retention` job (`tutorRetention`),
-    built from `getTutorRetentionStatus()`. `tutor-retention-watch.yml`
-    (06:00 UTC) still fails its own run early; the human notification is the
-    watchdog issue below;
-  - each of the other three ends with `scripts/ops-heartbeat.sh`, which records
-    `ops.<job>.completed` (with `ok`) through Core's internal
-    `POST /api/v1/internal/ops/heartbeat`; a heartbeat Core does not confirm
-    fails the job;
+- **Watchdog coverage (H.4 and the Block H non-negotiable).** Nine scheduled
+  jobs are watched, each with a watchdog and a notification to a human.
+  Appendix O 1.3 names the first three; the Block H standard adds every job
+  whose silent failure would harm family data (GAP-FIX-R6):
+
+  | Job (`job`) | Workflow (UTC) | Trail Core reads |
+  |---|---|---|
+  | `tutor_retention` | `tutor-retention.yml` 03:00 | `tutor.retention.swept` audit rows |
+  | `family_retention` (D.21) | `family-retention.yml` 03:15 | `family_retention_runs.ran_at` |
+  | `account_deletions` (E.6, A.1's 90-day paused child) | `account-deletion.yml` 03:45 | `account_deletions.sweep_ran` audit rows; a run with `suspensionsUnreadable` is a failed attempt |
+  | `social_retention` (E.11) | `social-retention.yml` 04:15 | `social_retention.sweep_ran` audit rows (written by the database in the sweep's transaction) |
+  | `learning_retention` (400-day practice days) | `learning-retention.yml` 04:30 | heartbeat `ops.learning_retention.completed` |
+  | `insights_prune` (H.2's 400-day raw events) | `insights-maintenance.yml` 07:30 | heartbeat `ops.insights_prune.completed` |
+  | `vault_drift` | `vault-drift.yml` 07:30 | heartbeat `ops.vault_drift.completed` |
+  | `vault_backup` | `vault-backup.yml` 08:00 | heartbeat `ops.vault_backup.completed` |
+  | `pulse_backup` | `pulse-backup.yml` 08:30 | heartbeat `ops.pulse_backup.completed` |
+
+  - the retention sweep keeps its 36-hour window in `RETENTION_STALE_HOURS`
+    (`backend/src/services/tutorData.ts`); Core's job status carries it as
+    `tutorRetention`, built from `getTutorRetentionStatus()`.
+    `tutor-retention-watch.yml` (06:00 UTC) still fails its own run early;
+    the human notification is the watchdog issue below;
+  - a heartbeat job ends with `scripts/ops-heartbeat.sh`, which records
+    `ops.<job>.completed` (with `ok`, also on a failed run) through Core's
+    internal `POST /api/v1/internal/ops/heartbeat`; a heartbeat Core does not
+    confirm fails the job. A trail job is never given a heartbeat: the route
+    refuses its name, so nothing can fake its record;
+  - a stalled erasure is a notify condition too: `accountDeletionFailures.stuck`
+    counts requests still `processing` with an `account.deletion_step_failed`
+    row older than 24 hours (`DELETION_STEP_FAILURE_HOURS`), which means no
+    success since;
   - `GET /admin/ops/job-status` (manage_support) and the Reports, Support
-    view show each job's last successful run and `stale`, beside the
-    retention sweep; the window (36 hours for each daily job) has one home,
-    `OPS_JOB_STALE_HOURS` in `backend/src/services/opsJobs.ts`;
+    view show each job's last successful run, last attempt and `stale`, and
+    name stalled erasures in words; each window (36 hours for every daily
+    job) has one home, `OPS_JOB_STALE_HOURS` in
+    `backend/src/services/opsJobs.ts`;
   - `.github/workflows/ops-job-watch.yml` (daily, 10:00 UTC) reads the
-    status from inside the container, fails when any of the four jobs is
-    stale, a retroactive release check is overdue (G.2), an elevated grant
-    is due for review (G.4, section 2) or the reply is unreadable, and opens
-    or comments on the `ops-watchdog` GitHub issue, so a human is notified;
+    status from inside the container, fails when any watched job is stale,
+    an erasure has stalled, a retroactive release check is overdue (G.2), an
+    elevated grant is due for review (G.4, section 2) or the reply is
+    unreadable, and opens or comments on the `ops-watchdog` GitHub issue, so
+    a human is notified;
   - `.github/workflows/content-retro-checks.yml` (weekly, Monday 05:00 UTC)
     runs the retroactive release check itself inside its 30-day window and
     comments on the same issue when a course's verification fails (G.2, see
     `docs/content/FORGE-V2-RELEASE.md`);
   - the simulated-failure drill (`npm --prefix backend run ops:drill`, also a
-    unit test) proves, for each of the four jobs, that a stale trail produces
-    `stale: true`, a failed watcher and the notice; it also drills an overdue
-    retroactive check and a due access review.
+    unit test) proves, for each of the nine jobs, that a stale trail produces
+    `stale: true`, a failed watcher and the notice; it also drills a stalled
+    erasure, an overdue retroactive check and a due access review.
   Remaining for the ops owner: the first scheduled runs in production and a
   drill run against the deployed Core.
 
