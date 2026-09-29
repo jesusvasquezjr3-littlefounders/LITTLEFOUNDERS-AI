@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { pluralUnit } from '../design/plural';
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { Button, Slider, ProgressBar } from '../design/controls';
 import type { LessonClientDocument, LessonClientSegment } from './lessonDocument';
@@ -67,7 +68,7 @@ export function PercentGridBoard({ document, segment, onBack, sequence, onGrade 
   const formatter = useMemo(() => new Intl.NumberFormat(document.locale, currency === 'local'
     ? { style: 'currency', currency: localCurrency[document.locale], currencyDisplay: 'code', maximumFractionDigits: 0 }
     : { maximumFractionDigits: 0 }), [document.locale, currency]);
-  const amount = (n: number) => currency === 'coins' ? `${formatter.format(n)} ${n === 1 ? t.coin : t.coins}` : formatter.format(n);
+  const amount = (n: number) => currency === 'coins' ? `${formatter.format(n)} ${pluralUnit(document.locale, n, { one: t.coin, other: t.coins })}` : formatter.format(n);
   const setRate = (value: number) => { grading.reset(); if (percentOutcome(segment.payload, value)) setPercent(value); };
   const changed = mode === 'discount' ? t.discount : t.tax;
 

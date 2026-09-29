@@ -1,4 +1,5 @@
 import { useId, useState, type KeyboardEvent } from 'react';
+import { pluralUnit } from '../design/plural';
 import { StreakStrip } from './StreakStrip';
 import type { Locale } from '../design/copyBudget';
 import { Button, ErrorState, InlineNotice, LoadingState } from '../design/controls';
@@ -40,7 +41,7 @@ type Copy = {
 export const learningRhythmCopy: Record<Locale, Copy> = {
   'en-US': {
     title: 'Your rhythm', back: 'Go back', loading: 'Loading your rhythm', errorTitle: 'Rhythm unavailable', errorBody: 'We could not load it. Try again.', retry: 'Try again',
-    streak: 'Streak', days: (n) => (n === 1 ? 'day' : 'days'), resting: 'Streak resting', restingBody: 'Your best stays.', tabs: 'Your rhythm',
+    streak: 'Streak', days: (n) => pluralUnit('en-US', n, { one: 'day', other: 'days' }), resting: 'Streak resting', restingBody: 'Your best stays.', tabs: 'Your rhythm',
     none: 'Pass a lesson to start.', today: 'You practiced today.', paused: (date) => `Paused until ${date}.`,
     best: 'Best', practiced: 'Days practiced', restLeft: 'Rest days left', rule: 'Every week has 2 rest days.',
     pace: 'Lessons a day', paceToday: (done, goal) => `Today: ${done} of ${goal}.`, paceDone: 'Today\'s plan is done.',
@@ -49,7 +50,7 @@ export const learningRhythmCopy: Record<Locale, Copy> = {
   },
   'es-MX': {
     title: 'Tu ritmo', back: 'Volver', loading: 'Cargando tu ritmo', errorTitle: 'Ritmo no disponible', errorBody: 'No pudimos cargarlo. Inténtalo de nuevo.', retry: 'Reintentar',
-    streak: 'Racha', days: (n) => (n === 1 ? 'día' : 'días'), resting: 'Racha en descanso', restingBody: 'Tu mejor marca se queda.', tabs: 'Tu ritmo',
+    streak: 'Racha', days: (n) => pluralUnit('es-MX', n, { one: 'día', other: 'días' }), resting: 'Racha en descanso', restingBody: 'Tu mejor marca se queda.', tabs: 'Tu ritmo',
     none: 'Termina una lección para empezar.', today: 'Hoy ya practicaste.', paused: (date) => `En pausa hasta el ${date}.`,
     best: 'Mejor', practiced: 'Días practicados', restLeft: 'Días de descanso libres', rule: 'Cada semana tiene 2 días de descanso.',
     pace: 'Lecciones al día', paceToday: (done, goal) => `Hoy: ${done} de ${goal}.`, paceDone: 'Tu plan de hoy está listo.',
@@ -58,7 +59,7 @@ export const learningRhythmCopy: Record<Locale, Copy> = {
   },
   'pt-BR': {
     title: 'Seu ritmo', back: 'Voltar', loading: 'Carregando seu ritmo', errorTitle: 'Ritmo indisponível', errorBody: 'Não foi possível carregar. Tente de novo.', retry: 'Tentar de novo',
-    streak: 'Sequência', days: (n) => (n === 1 ? 'dia' : 'dias'), resting: 'Sequência em descanso', restingBody: 'Seu recorde fica.', tabs: 'Seu ritmo',
+    streak: 'Sequência', days: (n) => pluralUnit('pt-BR', n, { one: 'dia', other: 'dias' }), resting: 'Sequência em descanso', restingBody: 'Seu recorde fica.', tabs: 'Seu ritmo',
     none: 'Conclua uma lição para começar.', today: 'Você praticou hoje.', paused: (date) => `Pausada até ${date}.`,
     best: 'Recorde', practiced: 'Dias praticados', restLeft: 'Dias de descanso livres', rule: 'Toda semana tem 2 dias de descanso.',
     pace: 'Lições por dia', paceToday: (done, goal) => `Hoje: ${done} de ${goal}.`, paceDone: 'Seu plano de hoje está feito.',

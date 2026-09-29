@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { pluralUnit } from '../design/plural';
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { Button, Slider, ProgressBar } from '../design/controls';
 import { PocketSplit } from '../family/PocketSplit';
@@ -155,7 +156,7 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
   const formatter = useMemo(() => new Intl.NumberFormat(locale, segment.payload.currency === 'local'
     ? { style: 'currency', currency: localCurrency[locale], currencyDisplay: 'code', maximumFractionDigits: 0 }
     : { maximumFractionDigits: 0 }), [locale, segment.payload.currency]);
-  const amount = (n: number) => segment.payload.currency === 'coins' ? `${formatter.format(n)} ${n === 1 ? t.coinSingular : t.coin}` : formatter.format(n);
+  const amount = (n: number) => segment.payload.currency === 'coins' ? `${formatter.format(n)} ${pluralUnit(locale, n, { one: t.coinSingular, other: t.coin })}` : formatter.format(n);
   const invalidate = () => { requestId.current++; setPending(false); setVerdict(null); };
   const reset = () => { invalidate(); setAllocation(empty); };
   const change = (pocket: Pocket, direction: -1 | 1) => {

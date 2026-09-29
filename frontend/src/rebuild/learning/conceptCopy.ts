@@ -1,4 +1,5 @@
 import type { Locale } from '../design/copyBudget';
+import { pluralUnit } from '../design/plural';
 
 /*
  * GAP-FIX-R1 learning (B.7 part 2): the fixed UI words of the Appendix A
@@ -65,7 +66,7 @@ export function conceptMoney(locale: Locale, currency: 'coins' | 'local'): (mino
     return (minor) => format.format(minor / 100);
   }
   const format = new Intl.NumberFormat(locale);
-  return (minor) => `${format.format(minor)} ${coinWord[locale][Math.abs(minor) === 1 ? 0 : 1]}`;
+  return (minor) => `${format.format(minor)} ${pluralUnit(locale, minor, { one: coinWord[locale][0], other: coinWord[locale][1] })}`;
 }
 export function conceptPercent(locale: Locale): (bps: number) => string {
   const format = new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 2 });

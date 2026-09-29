@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { pluralUnit } from '../design/plural';
 import type { Locale } from '../design/copyBudget';
 import { Button, ProgressBar } from '../design/controls';
 import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
@@ -71,7 +72,7 @@ export function RunningLedgerBoard({ document, segment, onBack, sequence, onGrad
   const snapshot = runningLedger(initial, shownEntries, maxEntries);
   if (!snapshot) return null;
   const formatter = new Intl.NumberFormat(document.locale, { maximumFractionDigits: 0 });
-  const amount = (value: number) => `${formatter.format(value)} ${Math.abs(value) === 1 ? t.coin : t.coins}`;
+  const amount = (value: number) => `${formatter.format(value)} ${pluralUnit(document.locale, value, { one: t.coin, other: t.coins })}`;
   const signed = (value: number) => `${value > 0 ? '+' : '−'}${amount(Math.abs(value))}`;
   const balanceText = (value: number) => `${value < 0 ? '−' : ''}${amount(Math.abs(value))}`;
   const position = snapshot.balance > 0 ? t.above : snapshot.balance < 0 ? t.below : t.zero;

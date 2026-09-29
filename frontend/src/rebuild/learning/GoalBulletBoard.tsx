@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { pluralUnit } from '../design/plural';
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { Button, Slider, ProgressBar } from '../design/controls';
 import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
@@ -60,7 +61,7 @@ export function GoalBulletBoard({ document, segment, onBack, sequence, onGrade }
   const formatter = useMemo(() => new Intl.NumberFormat(document.locale, currency === 'local'
     ? { style: 'currency', currency: localCurrency[document.locale], currencyDisplay: 'code', maximumFractionDigits: 0 }
     : { maximumFractionDigits: 0 }), [document.locale, currency]);
-  const amount = (n: number) => currency === 'coins' ? `${formatter.format(n)} ${n === 1 ? t.coin : t.coins}` : formatter.format(n);
+  const amount = (n: number) => currency === 'coins' ? `${formatter.format(n)} ${pluralUnit(document.locale, n, { one: t.coin, other: t.coins })}` : formatter.format(n);
   const left = Math.max(0, target - saved);
   const progress = 100 * (saved - minimum) / (maximum - minimum);
   const goal = 100 * (target - minimum) / (maximum - minimum);
