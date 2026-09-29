@@ -27,7 +27,7 @@ describe('GuardianInvitePanel', () => {
     render(<GuardianInvitePanel kidUserId="kid" token="session" />);
     fireEvent.click(screen.getByRole('button', { name: 'Invite a Tutor' }));
     fireEvent.click(screen.getByRole('button', { name: 'Create invite link' }));
-    expect(await screen.findByLabelText('invite link')).toHaveTextContent('https://app.test/family?join=');
+    expect(await screen.findByLabelText('Invite link')).toHaveTextContent('https://app.test/family?join=');
     expect(mockApi).toHaveBeenCalledWith('/family/kids/kid/guardian-invite', { method: 'POST', token: 'session' });
   });
 
@@ -37,7 +37,7 @@ describe('GuardianInvitePanel', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Invite a Tutor' }));
     fireEvent.click(screen.getByRole('button', { name: 'Create invite link' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Could not create the invite. Try again.');
-    expect(screen.queryByLabelText('invite link')).toBeNull();
+    expect(screen.queryByLabelText('Invite link')).toBeNull();
   });
 });
 
