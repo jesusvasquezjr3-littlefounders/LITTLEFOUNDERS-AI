@@ -2,14 +2,6 @@
 .lf-family-board { gap: var(--spacing-3); }
 .lf-family-rule { font-weight: 800; }
 .lf-rule-cards { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
-.lf-euler { position: relative; inline-size: min(100%, 420px); justify-self: center; }
-.lf-euler svg { display: block; inline-size: 100%; block-size: auto; }
-.lf-euler-set { fill-opacity: .35; stroke-width: 3px; }
-.lf-euler-set--first { fill: var(--sky-strong); stroke: var(--sky-strong); }
-.lf-euler-set--second { fill: var(--mint-strong); stroke: var(--mint-strong); stroke-dasharray: 8 5; }
-.lf-euler-labels { display: flex; justify-content: space-between; font-weight: 800; }
-.lf-euler-regions { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--spacing-2); }
-.lf-euler-region { display: grid; gap: var(--spacing-1); padding: var(--spacing-2); border-radius: var(--rounded-sm); background: var(--sunken); }
 .lf-flow-cases { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
 .lf-flow-path { display: grid; gap: var(--spacing-2); padding-inline-start: var(--spacing-5); }
 .lf-flow-node { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--spacing-2); padding: var(--spacing-2) var(--spacing-3); border-radius: var(--rounded-sm); background: var(--sunken); }
@@ -17,10 +9,6 @@
 .lf-flow-node--outcome { background: var(--mint-soft); color: var(--content); font-weight: 800; }
 .lf-flow-table { inline-size: 100%; border-collapse: collapse; }
 .lf-flow-table th, .lf-flow-table td { padding: var(--spacing-2); border-block-end: 1px solid var(--outline); text-align: start; }
-.lf-sort-bins { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--spacing-3); }
-.lf-sort-bin { display: grid; align-content: start; gap: var(--spacing-2); min-block-size: 120px; padding: var(--spacing-3); border-radius: var(--rounded-md); border: 2px solid var(--outline); }
-.lf-sort-bin--depends { border-style: dashed; border-color: var(--berry-strong); }
-.lf-sort-bin ul { display: grid; gap: var(--spacing-1); list-style: none; padding: 0; margin: 0; }
 .lf-sort-item { display: grid; gap: var(--spacing-2); }
 .lf-message-list { display: grid; gap: var(--spacing-3); list-style: none; padding: 0; margin: 0; }
 .lf-message { display: grid; gap: var(--spacing-2); padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); border: 2px solid transparent; }
@@ -31,23 +19,18 @@
 .lf-coin-facts dd { margin: 0; font-weight: 800; }
 .lf-coin-tray { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--spacing-2); }
 .lf-coin { padding: var(--spacing-2); border-radius: var(--rounded-md); background: var(--sunken); }
-.lf-coin--bill { border-inline-start: 6px solid var(--mint-strong); }
-.lf-coin--coin { border-inline-start: 6px dotted var(--sky-strong); }
 .lf-coin-total { font-size: 1.125rem; }
 .lf-story-scene { font-size: 1.125rem; line-height: 1.4; }
 .lf-story-options { display: grid; gap: var(--spacing-2); }
 .lf-story-options--pair { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
 .lf-mentor-turn { justify-self: start; }
 .lf-mentor-episode { display: grid; gap: var(--spacing-3); list-style: none; padding: 0; margin: 0; }
-.lf-euler-set-label { max-inline-size: 45%; overflow-wrap: anywhere; }
-.lf-euler-set-label--first { color: var(--sky-strong); }
-.lf-euler-set-label--second { color: var(--mint-strong); text-align: end; }
 .lf-story-board { gap: var(--spacing-3); }
 
 /* GAP-FIX-R2: the build-and-test boards ($6 offers, L2 rule builder, L6/$9 built chart). */
 .lf-rule-line { font-weight: 800; overflow-wrap: anywhere; }
 .lf-rule-practice { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
-.lf-rule-card { display: grid; gap: var(--spacing-1); padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); overflow-wrap: anywhere; }
+.lf-rule-card { display: grid; gap: var(--spacing-1); padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); overflow-wrap: anywhere; max-inline-size: 48ch; }
 .lf-rule-slot { display: grid; gap: var(--spacing-2); }
 .lf-flow-build, .lf-flow-branches { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
 .lf-flow-branches { padding-inline-start: var(--spacing-4); border-inline-start: 2px solid var(--outline); }
@@ -55,3 +38,10 @@
 /* $2 count-up and L12 cue ticks (GAP-FIX-R2). */
 .lf-coin-count-up { display: grid; gap: var(--spacing-2); }
 .lf-message-cues { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+
+/* GAP-FIX-R4: the Euler and sort pictures are the shared Pizarrón visuals (B.7); the coin tray draws reward coins
+   and notes there (Bible 05 §2: never the Wallet's save and spend hues). What stays here is the board's own layout:
+   the chips the learner drags or taps, and the control strip under the board. */
+.lf-drag-chips { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-family-board .lf-learning-actions { gap: var(--spacing-3); }
+.lf-board-controls { display: flex; flex-wrap: wrap; gap: var(--spacing-3); align-items: center; }

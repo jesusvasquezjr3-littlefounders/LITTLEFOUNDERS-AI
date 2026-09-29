@@ -160,6 +160,8 @@ export function isNonCopyKey(key: string): boolean {
     || key === 'from' || key === 'to' || key === 'date'
     // GAP-FIX-R2: a rule builder's level and a flowchart's build mode are contract vocabulary.
     || key === 'level'
+    // GAP-FIX-R4: an L1 rule's kind is contract vocabulary.
+    || key === 'rule_kind'
     // GAP-FIX-R2 charts: a swimlane node's lane and a Venn region's set list are ids.
     || key === 'lane' || key === 'sets'
     // TeX notation is locale-neutral data (spokenText carries the words).

@@ -427,6 +427,17 @@ export function createFakeFetch(db: FakeDb): typeof fetch {
       }
       return respond(200, true);
     }
+    // GAP-FIX-R4 (0238): time on task, set once on the learner's own receipt or view.
+    if (table === 'rpc/record_v2_time_on_task' && method === 'POST') {
+      const p = JSON.parse(String(init?.body)) as FakeRow;
+      if (typeof p.p_seconds !== 'number' || p.p_seconds < 0 || p.p_seconds > 7200) return respond(400, { message: 'Invalid time on task' });
+      const rows = p.p_receipt_jti === null
+        ? (db.lesson_v2_segment_views ?? []).filter(row => row.run_id === p.p_run_id && row.segment_id === p.p_segment_id && row.user_id === p.p_user_id)
+        : (db.lesson_v2_grade_receipts ?? []).filter(row => row.jti === p.p_receipt_jti && row.run_id === p.p_run_id && row.segment_id === p.p_segment_id && row.user_id === p.p_user_id);
+      const open = rows.filter(row => row.time_spent_seconds === undefined || row.time_spent_seconds === null);
+      for (const row of open) row.time_spent_seconds = p.p_seconds;
+      return respond(200, open.length === 1);
+    }
     if (table === 'rpc/complete_v2_mixed_lesson' && method === 'POST') {
       const p = JSON.parse(String(init?.body)) as FakeRow;
       const run = (db.lesson_v2_runs ?? []).find(row => row.id === p.p_run_id && row.user_id === p.p_user_id

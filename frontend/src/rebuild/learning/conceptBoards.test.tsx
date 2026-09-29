@@ -59,6 +59,43 @@ function play(segment: (typeof SEGMENTS)[keyof typeof SEGMENTS]) {
 }
 const check = () => fireEvent.click(screen.getByRole('button', { name: 'Check' }));
 
+describe('GAP-FIX-R4: the concept boards keep the board contract (Bible 05 §3, §5, §6; B.7)', () => {
+  it.each(['loan', 'market', 'prices', 'double', 'debts', 'mix'] as const)('%s: its chart has Show as table, draws no word in SVG, and is a shared Pizarrón picture', (key) => {
+    // A graded inflation board hides its line until Core has met the prediction; the explored board shows it.
+    play(key === 'prices' ? { ...SEGMENTS.prices, grading: 'none' } as unknown as typeof SEGMENTS.prices : SEGMENTS[key]);
+    if (key === 'debts') fireEvent.click(screen.getByRole('radio', { name: 'Smallest first' }));
+    const toggle = screen.getByRole('button', { name: 'Show as table' });
+    const charts = document.querySelectorAll('[data-pizarron]');
+    expect(charts.length).toBeGreaterThan(0);
+    for (const chart of charts) {
+      expect(chart.querySelector('svg text'), key).toBeNull();
+      // An interactive picture is a group; a static one an image with its description.
+      expect(['img', 'group']).toContain(chart.getAttribute('role'));
+      if (chart.getAttribute('role') === 'img') expect(chart.querySelector('[role="slider"], button, input')).toBeNull();
+    }
+    fireEvent.click(toggle);
+    expect(screen.getAllByRole('table').length).toBeGreaterThan(0);
+    expect(screen.getByRole('button', { name: 'Show as chart' })).toBeTruthy();
+  });
+
+  it.each(['loan', 'market', 'tokens', 'prices', 'double', 'debts', 'mix', 'stand'] as const)('%s: Reset restores the first state and is off until something changed', (key) => {
+    play(SEGMENTS[key]);
+    const reset = () => screen.getByRole('button', { name: 'Reset' });
+    expect(reset()).toBeDisabled();
+    if (key === 'loan') fireEvent.click(screen.getByRole('button', { name: 'Month: More' }));
+    if (key === 'market') fireEvent.click(screen.getByRole('button', { name: 'Move Want to buy: More' }));
+    if (key === 'tokens') fireEvent.click(screen.getByRole('button', { name: 'Movie · 2 tokens' }));
+    if (key === 'prices') fireEvent.click(screen.getByRole('button', { name: 'Price rise per year: More' }));
+    if (key === 'double') fireEvent.click(screen.getByRole('button', { name: 'Growth per year: More' }));
+    if (key === 'debts') fireEvent.click(screen.getByRole('radio', { name: 'Smallest first' }));
+    if (key === 'mix') fireEvent.click(screen.getByRole('button', { name: 'Bonds share: More' }));
+    if (key === 'stand') fireEvent.click(screen.getByRole('button', { name: 'Cups made: More' }));
+    expect(reset()).toBeEnabled();
+    fireEvent.click(reset());
+    expect(reset()).toBeDisabled();
+  });
+});
+
 describe('concept boards', () => {
   it('parses every board in a teen lesson and refuses the teen-only boards for 10-12', () => {
     for (const segment of Object.values(SEGMENTS)) expect(loadLessonClientDocument(lesson(segment)).status, segment.type).toBe('ready');
@@ -81,8 +118,19 @@ describe('concept boards', () => {
   it('supply and demand: a curve shifts by keyboard and the chosen price move is sent', async () => {
     const { onGradeAny } = play(SEGMENTS.market);
     expect(screen.getByText('Price now: 40')).toBeTruthy();
-    fireEvent.keyDown(screen.getByRole('slider', { name: 'Move Want to buy' }), { key: 'ArrowUp' });
+    // GAP-FIX-R4 (Bible 05 §6): the curve handles sit in the aria-hidden drawing; the stepper is the keyboard path.
+    expect(screen.queryByRole('slider', { name: 'Move Want to buy' })).toBeNull();
+    const picture = document.querySelector('[data-pizarron="supply-demand"]')!;
+    expect(picture.getAttribute('role')).toBe('group');
+    expect(picture.querySelector('svg')!.getAttribute('aria-hidden')).toBe('true');
+    expect(picture.querySelector('svg text')).toBeNull();
+    expect(picture.textContent).toContain('Want to buy');
+    fireEvent.click(screen.getByRole('button', { name: 'Move Want to buy: More' }));
     expect(screen.getByText(/Price now: 43/)).toBeTruthy();
+    // Show as table, and back.
+    fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
+    expect(screen.getByRole('table', { name: 'Market chart' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Show as chart' }));
     fireEvent.click(screen.getByRole('button', { name: 'Goes up' }));
     check();
     await waitFor(() => expect(onGradeAny).toHaveBeenCalledWith({ demand_shift: 1, supply_shift: 0, price: 'up' }, 'market-01', expect.anything()));

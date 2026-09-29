@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { RebuildRoot } from '../../../design/controls';
@@ -48,6 +50,28 @@ describe('the Mentor board draws with the shared Pizarrón visuals (B.7)', () =>
       ledger: 'LedgerVisual', worked: 'WorkedStepsVisual', ten_frame: 'TenFrameVisual', scale: 'BalanceScaleVisual', venn: 'VennVisual',
       array: 'ArrayVisual', tally: 'TallyVisual', bead_string: 'BeadStringVisual', pictograph: 'PictographVisual', sequence: 'GrowthLinesVisual',
     });
+  });
+
+  it('GAP-FIX-R4: each concept is drawn by one component on both surfaces (the lesson boards and the Mentor board)', () => {
+    const source = (path: string) => readFileSync(fileURLToPath(new URL(path, import.meta.url)), 'utf8');
+    const family = source('../../../learning/familyBoards.tsx');
+    const concept = source('../../../learning/conceptBoards.tsx');
+    const operations = source('../../../learning/operations/operations.tsx');
+    // Sets, sorting, coins and cards: the Mentor's venn, two bins, tokens and outcomes, and the lesson's L5, L10, $1/$2 and L1 boards.
+    const shared: Array<[string, string, string]> = [['venn', 'VennVisual', family], ['two_bins', 'SortBinsVisual', family], ['tokens', 'CoinGroupsVisual', family],
+      ['outcomes', 'TextCardsVisual', family], ['sequence', 'GrowthLinesVisual', concept]];
+    for (const [kind, visual, lesson] of shared) {
+      expect(BOARD_RENDERERS[kind as keyof typeof BOARD_RENDERERS], kind).toBe(visual);
+      expect(lesson, visual).toMatch(new RegExp(`<${visual}\\b`));
+    }
+    // The rule-of-72 and debt lines draw through the operation primitives, which draw with the same growth lines.
+    expect(operations).toMatch(/<GrowthLinesVisual\b/);
+    // The concept pictures are shared Pizarrón visuals the Mentor's board can use too.
+    for (const visual of ['SupplyDemandVisual', 'RiskReturnVisual', 'StackedColumnsVisual']) {
+      expect(PIZARRON_VISUALS).toContain(visual);
+      expect(concept).toMatch(new RegExp(`<${visual}\\b`));
+    }
+    for (const file of [family, concept, operations]) expect(file).not.toMatch(/<svg\b/);
   });
 
   for (const locale of LOCALES) {

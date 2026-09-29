@@ -321,9 +321,25 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     expect(fast.output).toContain('Lottie frame rate must be at most 60 fps');
     const untimed = await mutate((dir) => patch(dir, { motionTokens: ['--dur-slow'] }));
     expect(untimed.output).toContain(`A motion asset maps to the motion tokens (07 §5): ${id}`);
-    const unplayed = await mutate((dir) => {
+    // GAP-FIX-R4 (OD-28): the asset plays on both result screens, v2 and the live v1 player; both references must go.
+    const player = 'src/lesson-engine/player/LessonPlayer.tsx';
+    const bothScreens = (dir: string) => {
+      mkdirSync(dirname(join(dir, player)), { recursive: true });
+      cpSync(join(frontend, player), join(dir, player));
+    };
+    // With either screen still naming it, the asset counts as played.
+    const onlyV1 = await mutate((dir) => {
+      bothScreens(dir);
       const view = join(dir, 'src/rebuild/learning/LessonResultView.tsx');
       writeFileSync(view, readFileSync(view, 'utf8').split(id).join('celebration.lesson-complete.other'));
+    });
+    expect(onlyV1.output).not.toContain(`Registered asset is referenced nowhere: ${id}`);
+    const unplayed = await mutate((dir) => {
+      bothScreens(dir);
+      for (const file of ['src/rebuild/learning/LessonResultView.tsx', player]) {
+        const view = join(dir, file);
+        writeFileSync(view, readFileSync(view, 'utf8').split(id).join('celebration.lesson-complete.other'));
+      }
     });
     expect(unplayed.output).toContain(`Registered asset is referenced nowhere: ${id}`);
     expect(unplayed.output).toContain('Registered asset is referenced nowhere: celebration.lesson-complete.confetti-still');

@@ -4,7 +4,7 @@
 .lf-segment-help { display: grid; gap: var(--spacing-2); justify-items: start; }
 .lf-speech-plate { position: relative; display: grid; gap: var(--spacing-2); max-inline-size: 36rem; padding: var(--spacing-3) var(--spacing-4);
   border-radius: var(--rounded-lg); background: var(--surface); color: var(--content); box-shadow: 0 0 0 2px var(--primary-strong); }
-.lf-speech-plate p { font-size: 1.0625rem; line-height: 1.35; font-weight: 700; }
+.lf-speech-plate p { font-size: 1.125rem; line-height: 1.35; font-weight: 700; }
 .lf-speech-plate-name { font-weight: 800; color: var(--primary-strong); }
 .lf-number-answer { display: grid; gap: var(--spacing-1); }
 .lf-number-echo { min-block-size: 1.35em; font-weight: 700; color: var(--content-muted, var(--content)); }

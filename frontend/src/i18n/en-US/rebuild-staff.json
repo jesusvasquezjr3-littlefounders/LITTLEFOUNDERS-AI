@@ -119,6 +119,17 @@
     "signReview": "Sign review",
     "reviewSigned": "Review signed.",
     "reviewAlready": "Already signed this week.",
+    "breakdown": {
+      "show": "Show breakdown",
+      "hide": "Hide breakdown",
+      "window": "{kc}, {days} days",
+      "band": "Ages {band}",
+      "adult": "Adults",
+      "unknown": "Age not known",
+      "skill": "{kc}",
+      "baseline": "Compared with release {release}",
+      "noBaseline": "No release recorded yet. This period sets the baseline."
+    },
     "signal": {
       "mastery": {
         "corroboration_compliance": "Mastery backed by two answers",

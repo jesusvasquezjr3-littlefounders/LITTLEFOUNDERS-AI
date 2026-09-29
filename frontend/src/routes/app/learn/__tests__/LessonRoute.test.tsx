@@ -238,7 +238,7 @@ describe('LessonRoute', () => {
 
     await waitFor(() => expect(mockedApi).toHaveBeenCalledWith(
       '/learn/lessons/lesson-1/grade',
-      expect.objectContaining({ method: 'POST', token: 'token-123', body: { client_verdict: 'valid',
+      expect.objectContaining({ method: 'POST', token: 'token-123', body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number),
         segment_id: 'allocate-01', run_id: '99999999-9999-4999-8999-999999999999',
         attempt_token: 'opaque-signed-token', answer: { save: 4, spend: 8, share: 0 },
       } }),
@@ -282,7 +282,7 @@ describe('LessonRoute', () => {
     fireEvent.change(await screen.findByRole('slider', { name: 'Place the fraction' }), { target: { value: '3' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({
-      method: 'POST', token: 'token-123', body: { client_verdict: 'valid',
+      method: 'POST', token: 'token-123', body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number),
         segment_id: 'fraction-01', run_id: '99999999-9999-4999-8999-999999999999',
         attempt_token: 'fraction-attempt-token', answer: { value: '3/4' },
       },
@@ -310,7 +310,7 @@ describe('LessonRoute', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Shaded parts: More' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({
-      method: 'POST', token: 'token-123', body: { client_verdict: 'valid',
+      method: 'POST', token: 'token-123', body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number),
         segment_id: 'fraction-area-01', run_id: '99999999-9999-4999-8999-999999999999',
         attempt_token: 'area-attempt-token', answer: { n: 1, d: 2 },
       },
@@ -338,7 +338,7 @@ describe('LessonRoute', () => {
     fireEvent.change(await screen.findByRole('slider', { name: 'Place the point' }), { target: { value: '7' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({
-      method: 'POST', token: 'token-123', body: { client_verdict: 'valid',
+      method: 'POST', token: 'token-123', body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number),
         segment_id: 'place-01', run_id: '99999999-9999-4999-8999-999999999999',
         attempt_token: 'line-attempt-token', answer: { value: '7' },
       },
@@ -370,7 +370,7 @@ describe('LessonRoute', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
 
     await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({
-      method: 'POST', token: 'token-123', body: { client_verdict: 'valid',
+      method: 'POST', token: 'token-123', body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number),
         segment_id: 'worked-example-01', run_id: '99999999-9999-4999-8999-999999999999',
         attempt_token: 'worked-example-attempt-token', answer: { values: { 'discount-subtract': '40', 'sale-price': '40' } },
       },
@@ -407,7 +407,7 @@ describe('LessonRoute', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     expect(await screen.findByText('Your reason explains it well.')).toBeInTheDocument();
     expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({
-      body: { client_verdict: 'valid', segment_id: 'decide-01', run_id: runId, attempt_token: 'decide-attempt-token', answer: { choice: 'spend-all', reason: 'reason-goal' } },
+      body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number), segment_id: 'decide-01', run_id: runId, attempt_token: 'decide-attempt-token', answer: { choice: 'spend-all', reason: 'reason-goal' } },
     }));
     fireEvent.click(screen.getByRole('button', { name: 'Save 4 coins' }));
     fireEvent.click(screen.getByRole('button', { name: 'I just picked one' }));
@@ -445,7 +445,7 @@ describe('LessonRoute', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Check rule' }));
 
     await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({
-      method: 'POST', token: 'token-123', body: { client_verdict: 'valid',
+      method: 'POST', token: 'token-123', body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number),
         segment_id: 'function-machine-01', run_id: '99999999-9999-4999-8999-999999999999',
         attempt_token: 'function-machine-attempt-token', answer: { multiplier: '5', offset: '10' },
       },
@@ -474,13 +474,13 @@ describe('LessonRoute', () => {
     await screen.findByRole('button', { name: 'Two bars to compare' });
     await buildPilotBars();
     fireEvent.click(await screen.findByRole('button', { name: 'Check' }));
-    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid',
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number),
       segment_id: 'bar-structure-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'structure-token', answer: PILOT_BUILD,
     } })));
     fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
     fireEvent.change(await screen.findByLabelText('Your answer'), { target: { value: '19' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid',
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number),
       segment_id: 'bar-answer-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'answer-token', answer: { value: '19' },
     } })));
     fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
@@ -507,7 +507,7 @@ describe('LessonRoute', () => {
     renderLessonRoute(['/learn/lesson/lesson-1']);
     fireEvent.click(await screen.findByRole('radio', { name: 'Change' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid',
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number),
       segment_id: 'schema-structure-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'schema-token', answer: { schema: 'change' },
     } })));
     fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
@@ -516,13 +516,13 @@ describe('LessonRoute', () => {
     fireEvent.click(within(screen.getByRole('group', { name: 'Change' })).getByRole('radio', { name: 'Spent 9' }));
     fireEvent.click(within(screen.getByRole('group', { name: 'Result' })).getByRole('radio', { name: 'Left over' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid',
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number),
       segment_id: 'schema-slots-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'slots-token', answer: { schema: 'change', slots: { start: 'earned', change: 'spent', result: 'unknown' } },
     } })));
     fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
     fireEvent.change(await screen.findByLabelText('Your answer'), { target: { value: '15' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid',
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number),
       segment_id: 'schema-answer-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'answer-token', answer: { value: '15' },
     } })));
     fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
@@ -549,19 +549,19 @@ describe('LessonRoute', () => {
     renderLessonRoute(['/learn/lesson/lesson-1']);
     fireEvent.change(await screen.findByRole('textbox', { name: 'Your answer' }), { target: { value: '6' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid',
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number),
       segment_id: 'cpa-concrete-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'concrete-token', answer: { value: '6' },
     } })));
     expect(await screen.findByRole('heading', { name: 'See it' })).toBeInTheDocument();
     fireEvent.change(screen.getByRole('textbox', { name: 'Your answer' }), { target: { value: '7' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid',
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number),
       segment_id: 'cpa-pictorial-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'pictorial-token', answer: { value: '7' },
     } })));
     expect(await screen.findByRole('heading', { name: 'Write it' })).toBeInTheDocument();
     fireEvent.change(screen.getByRole('textbox', { name: 'Your answer' }), { target: { value: '7' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid',
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number),
       segment_id: 'cpa-abstract-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'abstract-token', answer: { value: '7' },
     } })));
     expect(await screen.findByRole('heading', { name: 'Lesson ready' })).toBeInTheDocument();

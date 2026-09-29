@@ -22,7 +22,7 @@ export { Disclosure } from './disclosure';
 export { Checkbox, PictureChoice, RadioGroup, SegmentedControl, SelectField, Slider, Stepper, Switch, TextAreaField, TextField,
   type ChoiceOption, type PictureOption, type SelectOption, type StepLabels, type TextFieldProps } from './fields';
 export { Art, Banner, Card, Chip, ChipGroup, ChoiceChip, CoinAmount, COIN_ASSET_ID, EmptyState, ErrorState, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, ReplyChip, RewardChip, Skeleton,
-  type CardTone, type NoticeTone, type PillTone, type StatusTone } from './display';
+  type CardTone, type ChipDrag, type NoticeTone, type PillTone, type StatusTone } from './display';
 export { Glyph, GLYPH_BUDGET, GLYPH_FAMILIES, SYSTEM_GLYPHS, type GlyphName } from './glyphs';
 export { BarChart, niceMax, Sparkline, TrendChart, type VizBar, type VizLabels, type VizPoint, type VizSeries } from './charts';
 export { activeIdleMotion, BUSY_MOTION_KINDS, Celebration, celebrationPart, CountUp, IDLE_MOTION_KINDS, useCelebrationState, useIdleMotion, useOneShot,

@@ -1,6 +1,7 @@
 import { useId, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
-import { ChoiceChip, SegmentedControl, Stepper, Switch } from '../../design/controls';
-import { canPick, polyline, stepValue, thresholdIndex, tokensLeft } from './operationsModel';
+import { Button, ChoiceChip, SegmentedControl, Stepper, Switch } from '../../design/controls';
+import { GrowthLinesVisual } from '../pizarron';
+import { canPick, stepValue, thresholdIndex, tokensLeft } from './operationsModel';
 import './operations.css';
 
 /*
@@ -57,26 +58,34 @@ export function GuidedSandbox({ goalLabel, goal, cues, children }: {
   </div>;
 }
 
-/** Pattern 10: a continuous series with a marker that appears exactly where it first reaches the threshold. */
+/**
+ * Bible 05 §3 and §6 (GAP-FIX-R4): every chart has "Show as table", one press
+ * away and formatted by the board for its locale. The chart and the table are
+ * the same data; the button says which view comes next.
+ */
+export function ChartOrTable({ chart, table, labels }: { chart: ReactNode; table: ReactNode; labels: { showTable: string; showChart: string } }) {
+  const [asTable, setAsTable] = useState(false);
+  return <div className="lf-op" data-operation="operation.show-table.v1">
+    {asTable ? table : chart}
+    <Button size="sm" variant="sky" className="lf-learning-view-toggle" onClick={() => setAsTable((value) => !value)}>
+      {asTable ? labels.showChart : labels.showTable}</Button>
+  </div>;
+}
+
+/**
+ * Pattern 10: a continuous series with a marker that appears exactly where it
+ * first reaches the threshold. GAP-FIX-R4 (B.7): drawn with the shared
+ * Pizarrón growth lines, the threshold's word an HTML label (Bible 05 §5).
+ */
 export function ThresholdPlot({ values, threshold, max, revealed, title, labels }: {
   values: readonly number[]; threshold: number; max: number; revealed: boolean; title: string;
   labels: { threshold: string; crossed: (index: number) => string; notYet: string };
 }) {
   const at = thresholdIndex(values, threshold);
-  const width = 300; const height = 140; const span = Math.max(1, values.length - 1);
-  const y = height - Math.min(threshold, max) / max * height;
   const status = !revealed ? '' : at < 0 ? labels.notYet : labels.crossed(at);
   return <figure className="lf-op lf-op-threshold" data-operation="operation.threshold-marker.v1">
-    <svg viewBox={`-8 -12 ${width + 16} ${height + 24}`} role="img" aria-label={`${title}. ${status}`}>
-      <line className="lf-op-axis" x1="0" y1={height} x2={width} y2={height} />
-      <line className="lf-op-threshold-line" x1="0" y1={y} x2={width} y2={y} />
-      <text className="lf-op-label" x="2" y={y - 4}>{labels.threshold}</text>
-      <polyline className="lf-op-line" points={polyline(values, width, height, max)} />
-      {revealed && at >= 0 ? <g className="lf-op-flag" transform={`translate(${at / span * width} ${y})`}>
-        <line x1="0" y1="0" x2="0" y2={height - y} className="lf-op-flag-stem" />
-        <circle r="6" className="lf-op-flag-dot" />
-      </g> : null}
-    </svg>
+    <GrowthLinesVisual label={`${title}. ${status}`} max={max} threshold={{ value: threshold, label: labels.threshold }} marker={revealed ? at : undefined}
+      series={[{ id: 'value', label: title, values, endText: '', series: 'sky' }]} startLabel="0" endLabel={String(values.length - 1)} maxText="" />
     <figcaption className="lf-op-status" aria-live="polite" data-copy-role="data">{status}</figcaption>
   </figure>;
 }
@@ -107,10 +116,14 @@ export function TradeOffChooser({ legend, tokens, options, picked, onChange, lab
   </div>;
 }
 
-/** Pattern 2: a point dragged along one axis (or moved with the arrow keys), stepping on the grid. */
-export function DragPoint({ x, y, value, min, max, step = 1, axis, length, label, valueText, onChange, disabled }: {
+/**
+ * Pattern 2: a point dragged along one axis (or moved with the arrow keys), stepping on the grid.
+ * `presentational` (GAP-FIX-R4, Bible 05 §6): drawn inside an `aria-hidden` Pizarrón picture whose
+ * accessible path is the board's own HTML steppers, the handle is pointer-only and out of the tab order.
+ */
+export function DragPoint({ x, y, value, min, max, step = 1, axis, length, label, valueText, onChange, disabled, presentational = false }: {
   x: number; y: number; value: number; min: number; max: number; step?: number; axis: 'x' | 'y'; length: number; label: string; valueText: string;
-  onChange: (value: number) => void; disabled?: boolean;
+  onChange: (value: number) => void; disabled?: boolean; presentational?: boolean;
 }) {
   const dragging = useRef<{ start: number; origin: number } | null>(null);
   const onKey = (event: KeyboardEvent<SVGGElement>) => {
@@ -125,8 +138,9 @@ export function DragPoint({ x, y, value, min, max, step = 1, axis, length, label
     const view = svg?.viewBox.baseVal;
     return box && view && box.width > 0 ? (axis === 'x' ? view.width / box.width : view.height / box.height) : 1;
   };
-  return <g className="lf-op-drag" data-operation="operation.drag-point.v1" role="slider" tabIndex={disabled ? -1 : 0} aria-label={label}
-    aria-valuemin={min} aria-valuemax={max} aria-valuenow={value} aria-valuetext={valueText} aria-disabled={disabled || undefined}
+  const semantics = presentational ? { 'aria-hidden': true as const, 'data-label': label }
+    : { role: 'slider', tabIndex: disabled ? -1 : 0, 'aria-label': label, 'aria-valuemin': min, 'aria-valuemax': max, 'aria-valuenow': value, 'aria-valuetext': valueText, 'aria-disabled': disabled || undefined };
+  return <g className="lf-op-drag" data-operation="operation.drag-point.v1" {...semantics}
     transform={`translate(${x} ${y})`} onKeyDown={onKey}
     onPointerDown={(event) => { if (disabled) return; (event.currentTarget as Element).setPointerCapture?.(event.pointerId); dragging.current = { start: axis === 'x' ? event.clientX : event.clientY, origin: value }; }}
     onPointerMove={(event) => {
@@ -173,21 +187,15 @@ export function useGhost<T>(key: string, run: T): T | null {
   }
   return state.ghost;
 }
+/** GAP-FIX-R4 (B.7): the run and its ghost drawn with the shared Pizarrón growth lines on one fixed frame. */
 export function GhostTracePlot({ current, ghost, max, count, title, labels }: {
   current: readonly number[]; ghost: readonly number[] | null; max: number; count: number; title: string; labels: { current: string; ghost: string; summary: string };
 }) {
   const id = useId();
-  const width = 300; const height = 140;
-  return <figure className="lf-op lf-op-ghost" data-operation="operation.ghost-trace.v1">
-    <svg viewBox={`-4 -4 ${width + 8} ${height + 8}`} role="img" aria-label={title} aria-describedby={id}>
-      <line className="lf-op-axis" x1="0" y1={height} x2={width} y2={height} />
-      {ghost ? <polyline className="lf-op-line lf-op-line--ghost" points={polyline(ghost, width, height, max, count)} /> : null}
-      <polyline className="lf-op-line" key={current.join(',')} points={polyline(current, width, height, max, count)} />
-    </svg>
-    <ul className="lf-op-legend">
-      <li data-copy-role="data"><span className="lf-op-key" aria-hidden="true" />{labels.current}</li>
-      {ghost ? <li data-copy-role="data"><span className="lf-op-key lf-op-key--ghost" aria-hidden="true" />{labels.ghost}</li> : null}
-    </ul>
+  return <figure className="lf-op lf-op-ghost" data-operation="operation.ghost-trace.v1" aria-describedby={id}>
+    <GrowthLinesVisual label={`${title}. ${labels.summary}`} max={max} count={count} startLabel="0" endLabel={String(count - 1)} maxText=""
+      series={[{ id: 'current', label: labels.current, values: current, endText: '', series: 'sky', highlighted: true },
+        ...(ghost ? [{ id: 'ghost', label: labels.ghost, values: ghost, endText: '', series: 'overflow' as const }] : [])]} />
     <figcaption id={id} className="lf-op-status" aria-live="polite" data-copy-role="data">{labels.summary}</figcaption>
   </figure>;
 }

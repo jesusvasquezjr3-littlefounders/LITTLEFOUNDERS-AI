@@ -1,4 +1,5 @@
 import { useMemo, useState, type PointerEvent } from 'react';
+import { pluralUnit } from '../design/plural';
 import type { Locale } from '../design/copyBudget';
 import { Button, Slider, ProgressBar } from '../design/controls';
 import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
@@ -95,7 +96,7 @@ export function RatioTableBoard({ document, segment, onBack, sequence, onGrade }
               { id: 'items', label: t.items, ticks: allRows.map((row) => ({ id: String(row.packs), text: String(row.items), future: row.packs > packs })) },
               { id: 'total', label: t.total, ticks: allRows.map((row) => ({ id: String(row.packs), text: hideLast && row.packs >= packs ? '?' : amount(row.price), future: row.packs > packs })) },
             ], unit: { label: t.unit, value: amount(segment.payload.pricePerPack / segment.payload.itemsPerPack) } }]} />}>
-          {() => <Slider className="lf-ratio-control" label={t.packs} valueText={`${packs} ${packs === 1 ? t.pack : t.packs}`}
+          {() => <Slider className="lf-ratio-control" label={t.packs} valueText={`${new Intl.NumberFormat(document.locale).format(packs)} ${pluralUnit(document.locale, packs, { one: t.pack, other: t.packs })}`}
             min={segment.payload.minimumPacks} max={segment.payload.maximumPacks} step={1} value={packs} onValueChange={(value) => { grading.reset(); setPacks(value); }}
             stepLabels={{ decrease: '−', increase: '+' }} />}
         </TeachingChartBoard>

@@ -4,7 +4,8 @@
 .lf-concept-bars { display: block; inline-size: 100%; block-size: 96px; }
 .lf-concept-bar-principal { fill: var(--sky-strong); }
 .lf-concept-bar-interest { fill: var(--berry-strong); }
-.lf-concept-bar:not([data-current]) rect { opacity: .45; }
+/* GAP-FIX-R4 (05 §2: marks reach 3:1): the current payment is ringed, never the others faded. */
+.lf-concept-bar[data-current] rect { stroke: var(--content); stroke-width: 1.5; }
 .lf-concept-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-3); list-style: none; margin: 0; padding: 0; font-size: .875rem; font-weight: 700; }
 .lf-concept-legend li { display: inline-flex; align-items: center; gap: var(--spacing-1); }
 .lf-concept-key { inline-size: 12px; block-size: 12px; border-radius: var(--rounded-sm); }

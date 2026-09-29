@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import { pluralUnit } from '../design/plural';
 import type { Locale } from '../design/copyBudget';
 import { Button, SegmentedControl, ProgressBar, Stepper } from '../design/controls';
 import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
@@ -72,7 +73,7 @@ export function SavingsRuleBoard({ document, segment, onBack, sequence, onGrade 
   const met = selected.saved >= selected.goal;
   const result = link ? savingsRuleOutcome(selected, link) : null;
   const resultLabel = result === null ? t.choose : result ? t.ready : t.wait;
-  const amount = (value: number) => `${new Intl.NumberFormat(document.locale).format(value)} ${value === 1 ? t.coin : t.coins}`;
+  const amount = (value: number) => `${new Intl.NumberFormat(document.locale).format(value)} ${pluralUnit(document.locale, value, { one: t.coin, other: t.coins })}`;
   const caseText = (value: RuleCase) => `${amount(value.saved)}; ${t.goalDay} ${value.goalDay ? t.yes : t.no}`;
   const progress = sequenceProgress(sequence, link !== null && caseIndex === cases.length - 1);
 

@@ -67,6 +67,11 @@ npm run identity:db-verify
 # path, the kid and teen consent gate) over the whole migration chain; a
 # machine with no PostgreSQL prints SKIP.
 npm run staff:db-verify
+# Appendix C 2.2 B.1 / 2.1 (GAP-FIX-R4): the learning database proofs
+# (placement for all four methods, v2 grading, the learning signals, the
+# pathway, completion, the course release gate) over the whole migration
+# chain; a machine with no PostgreSQL prints SKIP.
+npm run learning:db-verify
 
 npm --prefix coursegen run catalog:check -- "curriculum/$COURSE"
 npm --prefix coursegen run graph:check -- "$COURSE"

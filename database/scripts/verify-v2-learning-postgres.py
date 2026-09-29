@@ -197,7 +197,9 @@ try:
     # 0209: the reviewed publication transaction is the one way a published lesson's v2 pointer moves.
     pub_version = 'pub-rev-001'
     doc = f'{{"schema_version": 2, "lesson_id": "{lesson}", "locale": "es-MX", "version_id": "{pub_version}", "segments": []}}'
-    gate_ids = run("SELECT gate_id FROM forge_release_gates WHERE gate_number IN (1, 11, 12, 13, 14, 15, 16) OR gate_id = 'forge.release.v2-content' ORDER BY gate_id").splitlines()
+    # The gates a v2 manifest must attest are the forge_v2_manifest_gates rows (GAP-FIX-R2 carried gates 2, 3, 4, 17, 18
+    # joined the original list); read them from the chain rather than a copy, so a new gate never stales this proof.
+    gate_ids = run("SELECT gate_id FROM forge_v2_manifest_gates ORDER BY gate_id").splitlines()
     as_checks = lambda ids: ', '.join('{"gate": "%s", "ok": true}' % gate for gate in ids)
     gates = as_checks(gate_ids)
     manifest = f'{{"lesson_id": "{lesson}", "locale": "es-MX", "version_id": "{pub_version}", "core_contract": true, "interactive_behaviour": true, "run_id": "audit", "checks": [{gates}]}}'

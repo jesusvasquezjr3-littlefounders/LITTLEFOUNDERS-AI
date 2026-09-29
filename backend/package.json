@@ -34,7 +34,8 @@
     "tutor:live-content-report": "tsx --env-file-if-exists=.env src/scripts/live-content-report.ts",
     "seed:tutor-packs": "tsx --env-file-if-exists=.env src/scripts/seed-tutor-packs.ts",
     "tutor:evaluate": "tsx --env-file-if-exists=.env src/scripts/evaluate-transcripts.ts",
-    "tutor:judge-calibration": "tsx --env-file-if-exists=.env src/scripts/judge-calibration.ts"
+    "tutor:judge-calibration": "tsx --env-file-if-exists=.env src/scripts/judge-calibration.ts",
+    "learning:retention-release": "tsx --env-file-if-exists=.env src/scripts/retention-release.ts"
   },
   "dependencies": {
     "exceljs": "^4.4.0",

@@ -11,14 +11,17 @@ itself and run with psql's own variable binding, as the operator runs it:
   - a course whose lessons lack a locale is refused (INCOMPLETE_LOCALES) and
     nothing is published;
   - without a Forge verification it is refused (VERIFICATION_REQUIRED); an
-    incomplete verification (a gate missing) is refused too;
+    incomplete verification is refused too: an empty attestation, and one
+    that names every required Forge gate but one (VERIFICATION_INCOMPLETE);
   - a complete, current verification releases the whole hierarchy; a retry
     is idempotent; a verification made stale by a content change is refused;
   - a quoted slug is bound safely; an unknown slug releases nothing;
   - no browser role can call release_course.
 
-Configuration: LF_PG_PSQL (or LF_PG_BIN), LF_PG_PORT, LF_PG_USER, LF_PG_KEEP,
-LF_PG_REPORT. Run by database/scripts/staff-analytics-db-verify.mjs.
+Configuration: LF_PG_PSQL (or LF_PG_BIN), LF_PG_PORT, LF_PG_USER, LF_PG_DATA
+(checked against the cluster's data_directory before anything is touched),
+LF_PG_KEEP, LF_PG_REPORT. Run by database/scripts/staff-analytics-db-verify.mjs
+and database/scripts/learning-db-verify.mjs (both over the whole chain).
 """
 import json
 import os
@@ -32,6 +35,7 @@ BIN = Path(os.environ.get('LF_PG_BIN', str(ROOT / '.codex/audit-db/pgsql/bin')))
 PSQL = os.environ.get('LF_PG_PSQL', str(BIN / ('psql.exe' if os.name == 'nt' else 'psql')))
 PORT = os.environ.get('LF_PG_PORT', '15483')
 USER = os.environ.get('LF_PG_USER', 'audit_owner')
+DATA = Path(os.environ.get('LF_PG_DATA', str(ROOT / '.codex/audit-db/data')))
 BASE = [PSQL, '-X', '-h', '127.0.0.1', '-p', PORT, '-U', USER, '-v', 'ON_ERROR_STOP=1', '-Atq']
 
 
@@ -45,6 +49,9 @@ def sql(query, database='postgres', variables=None):
         raise RuntimeError(result.stderr)
     return result.stdout.strip()
 
+
+if Path(sql('SHOW data_directory')).resolve() != DATA.resolve():
+    raise RuntimeError('Refusing a PostgreSQL cluster outside the owned audit directory (LF_PG_DATA)')
 
 # The same minimal Supabase shim as the other native verifiers.
 SHIM = re.search(r'SHIM = """(.*?)"""', (ROOT / 'database/scripts/verify-data-platform-postgres.py').read_text(encoding='utf-8'), re.S).group(1)
@@ -116,6 +123,14 @@ try:
     assert incomplete[0] == 'f' and incomplete[1].startswith('VERIFICATION'), incomplete
     assert status('courses', 'course') == 'draft'
     check('without a Forge verification, or with an incomplete one, the release is refused and nothing moves')
+
+    # An attestation that names every required Forge gate but one cannot unlock a release.
+    partial = run("SELECT string_agg(format('{\"gate\": \"%s\", \"ok\": true}', gate_id), ',') FROM forge_release_gates WHERE gate_id <> 'forge.gate.13.copy-budget'")
+    run(f"UPDATE course_release_verifications SET checks = '[{partial}]'::jsonb, content_watermark = forge_release_content_watermark('{I['course']}') WHERE course_id = '{I['course']}';")
+    missing_one = release()
+    assert missing_one[0:2] == ['f', 'VERIFICATION_INCOMPLETE'], missing_one
+    assert status('courses', 'course') == 'draft'
+    check('an attestation missing one required Forge gate is refused (VERIFICATION_INCOMPLETE)')
 
     gates = run("SELECT string_agg(format('{\"gate\": \"%s\", \"ok\": true}', gate_id), ',') FROM forge_release_gates")
     run(f"UPDATE course_release_verifications SET checks = '[{gates}]'::jsonb, content_watermark = forge_release_content_watermark('{I['course']}') WHERE course_id = '{I['course']}';")

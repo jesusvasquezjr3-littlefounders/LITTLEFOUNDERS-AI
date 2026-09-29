@@ -1073,6 +1073,16 @@ export async function recordV2SegmentView(payload: { p_user_id: string; p_run_id
   return result === true;
 }
 
+/**
+ * Appendix C 1.2 / Appendix P Part 7.5 (GAP-FIX-R4): the learner's time on a
+ * v2 step, an analytics field only. Set once, after the receipt (by jti) or
+ * the view (jti null) exists; nothing that grades or completes reads it.
+ */
+export async function recordV2TimeOnTask(payload: { p_user_id: string; p_run_id: string; p_segment_id: string; p_receipt_jti: string | null; p_seconds: number }): Promise<boolean> {
+  const result = await rest<unknown>('/rpc/record_v2_time_on_task', serviceToken(), { method: 'POST', body: JSON.stringify(payload) });
+  return result === true;
+}
+
 /** Client-safe resume projection of the non-scored segments already acted on in a run. */
 export function getV2SegmentViewsForRecovery(userId: string, runId: string, documentVersionId: string): Promise<Array<{ segment_id: string }> | null> {
   return rest<Array<{ segment_id: string }>>(

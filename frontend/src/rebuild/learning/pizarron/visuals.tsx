@@ -38,9 +38,20 @@ export function seriesTone(index: number): SeriesTone {
 const pct = (share: number) => `${Math.max(0, Math.min(1, Number.isFinite(share) ? share : 0)) * 100}%`;
 const clamp01 = (share: number) => Math.max(0, Math.min(1, Number.isFinite(share) ? share : 0));
 
-function Frame({ name, label, children, className }: { name: string; label: string; children: ReactNode; className?: string }) {
-  return <div className={`lf-pz ${className ?? ''}`.trim()} role="img" aria-label={label} data-pizarron={name}>{children}</div>;
+/**
+ * A static visual is one image with a description (`role="img"`). An
+ * interactive one (a lesson board with drop targets or controls inside,
+ * GAP-FIX-R4) is a named group instead: Bible 05 §6, never `role="img"` on
+ * something the learner acts on, since it removes the children from the
+ * accessibility tree.
+ */
+function Frame({ name, label, children, className, interactive = false }: { name: string; label: string; children: ReactNode; className?: string; interactive?: boolean }) {
+  return <div className={`lf-pz ${className ?? ''}`.trim()} role={interactive ? 'group' : 'img'} aria-label={label} data-pizarron={name}
+    data-interactive={interactive ? 'true' : undefined}>{children}</div>;
 }
+
+/** What a lesson board attaches to a region or bin it makes a drop target (GAP-FIX-R4, Bible 05 §4). */
+export type DropTargetProps = Record<`data-${string}`, string> & { onClick?: () => void; className?: string };
 
 // ── Schema slots (M8: change, group, compare, ratio) ─────────────────────────
 
@@ -278,31 +289,43 @@ export interface GrowthSeries { id: string; label: string; values: readonly numb
  * with its label and final value written at its end. `shown` hides the points
  * a learner has not revealed yet (your turn).
  */
-export function GrowthLinesVisual({ label, series, startLabel, endLabel, maxText, shown }: {
+export function GrowthLinesVisual({ label, series, startLabel, endLabel, maxText, shown, threshold, marker, max: fixedMax, count }: {
   label: string; series: readonly GrowthSeries[]; startLabel: string; endLabel: string; maxText: string; shown?: number;
+  /** GAP-FIX-R4: a reference line (the doubling line) with its HTML label, and the flag where a line first reaches it. */
+  threshold?: { value: number; label: string }; marker?: number;
+  /** GAP-FIX-R4: a fixed scale and period count, so a run and its ghost share one frame (debt payoff). */
+  max?: number; count?: number;
 }) {
-  const length = Math.max(2, ...series.map((s) => s.values.length));
+  const length = Math.max(2, count ?? 0, ...series.map((s) => s.values.length));
   // Only what is shown sets the scale: a hidden value must not be readable off the axis.
-  const max = Math.max(1, ...series.flatMap((s) => (shown === undefined ? s.values : s.values.slice(0, shown))));
-  const point = (value: number, index: number) => `${24 + (252 * index) / (length - 1)},${144 - (120 * Math.max(0, value)) / max}`;
+  const max = fixedMax ?? Math.max(1, threshold?.value ?? 0, ...series.flatMap((s) => (shown === undefined ? s.values : s.values.slice(0, shown))));
+  const yOf = (value: number) => 144 - (120 * Math.max(0, Math.min(value, max))) / max;
+  const point = (value: number, index: number) => `${24 + (252 * index) / (length - 1)},${yOf(value)}`;
+  const dots = length <= 40;
   return <Frame name="growth-lines" label={label} className="lf-pz-growth">
     <div className="lf-growth-compare-chart">
       <svg viewBox="0 0 300 160" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <line x1="24" y1="24" x2="24" y2="144" className="lf-growth-compare-axis" />
         <line x1="24" y1="144" x2="276" y2="144" className="lf-growth-compare-axis" />
+        {threshold ? <line x1="24" x2="276" y1={yOf(threshold.value)} y2={yOf(threshold.value)} className="lf-op-threshold-line" /> : null}
         {series.map((s) => {
           const visible = shown === undefined ? s.values : s.values.slice(0, shown);
           return <g key={s.id} className={`lf-pz-growth-line lf-pz-stroke--${s.series}`} data-highlighted={s.highlighted ? 'true' : undefined}>
             <polyline points={visible.map(point).join(' ')} />
-            {visible.map((value, index) => <circle key={index} cx={point(value, index).split(',')[0]} cy={point(value, index).split(',')[1]} r="4" />)}
+            {dots ? visible.map((value, index) => <circle key={index} cx={point(value, index).split(',')[0]} cy={point(value, index).split(',')[1]} r="4" />) : null}
           </g>;
         })}
+        {threshold && marker !== undefined && marker >= 0 ? <g className="lf-op-flag" transform={`translate(${24 + (252 * marker) / (length - 1)} ${yOf(threshold.value)})`}>
+          <line x1="0" y1="0" x2="0" y2={144 - yOf(threshold.value)} className="lf-op-flag-stem" /><circle r="6" className="lf-op-flag-dot" />
+        </g> : null}
       </svg>
       <span className="lf-growth-compare-scale-max" aria-hidden="true" data-copy-role="data">{maxText}</span>
+      {threshold ? <span className="lf-pz-threshold-label" aria-hidden="true" data-copy-role="data"
+        style={{ insetBlockStart: `${(yOf(threshold.value) / 160) * 100}%` }}>{threshold.label}</span> : null}
     </div>
     <ul className="lf-pz-key">
       {series.map((s) => <li key={s.id} data-marked={s.highlighted ? 'true' : undefined}>
-        <span className={`lf-pz-swatch lf-pz-fill--${s.series}`} aria-hidden="true" /><span data-copy-role="data">{s.label}: {s.endText}</span>
+        <span className={`lf-pz-swatch lf-pz-fill--${s.series}`} aria-hidden="true" /><span data-copy-role="data">{s.endText ? `${s.label}: ${s.endText}` : s.label}</span>
       </li>)}
     </ul>
     <div className="lf-growth-compare-axis-labels"><span data-copy-role="data">{startLabel}</span><span data-copy-role="data">{endLabel}</span></div>
@@ -336,19 +359,27 @@ export function WaffleVisual({ label, categories }: { label: string; categories:
 
 // ── Coins ──────────────────────────────────────────────────────────────────
 
-export interface CoinGroup { id: string; label: string; count: number; subtotal?: string }
+/** `kind: 'bill'` draws a simplified note token in the same reward family (GAP-FIX-R4, Bible 05 §7 Money). */
+export interface CoinGroup { id: string; label: string; count: number; subtotal?: string; kind?: 'coin' | 'bill' }
 
-/** Piles of coins or notes (05 §2: coins use `reward` with the ridge outline). Up to 20 are drawn per pile; the count is written. */
-export function CoinGroupsVisual({ label, groups, total, arrow = false }: { label: string; groups: readonly CoinGroup[]; total?: string; arrow?: boolean }) {
+/**
+ * Piles of coins or notes (05 §2: coins use `reward` with the ridge outline;
+ * notes are simplified tokens of the same family, never the wallet's save or
+ * spend hues). Up to 20 are drawn per pile; the count is written. The lesson
+ * coin tray ($1, $2) and the Mentor's tokens, trade and change draw with it.
+ */
+export function CoinGroupsVisual({ label, groups, total, arrow = false, aside }: { label: string; groups: readonly CoinGroup[]; total?: string; arrow?: boolean; aside?: ReactNode }) {
   return <Frame name="coin-groups" label={label}>
     <div className="lf-pz-coins" data-arrow={arrow ? 'true' : undefined}>
-      {groups.map((group, groupIndex) => <div key={group.id} className="lf-pz-coin-group">
+      {groups.map((group, groupIndex) => <div key={group.id} className="lf-pz-coin-group" data-kind={group.kind ?? 'coin'}>
         {arrow && groupIndex > 0 ? <span className="lf-pz-coin-arrow" aria-hidden="true" data-copy-role="data">→</span> : null}
         <span className="lf-pz-coin-pile" aria-hidden="true">
-          {Array.from({ length: Math.min(20, Math.max(0, group.count)) }, (_, index) => <span key={index} className="lf-pz-coin" />)}
+          {Array.from({ length: Math.min(20, Math.max(0, group.count)) }, (_, index) => <span key={index} className={group.kind === 'bill' ? 'lf-pz-coin-bill' : 'lf-pz-coin'} />)}
         </span>
-        <span data-copy-role="data">{group.count} × {group.label}{group.subtotal ? ` = ${group.subtotal}` : ''}</span>
+        {/* An empty pile names only its denomination (the count arrives with the first piece). */}
+        <span data-copy-role="data">{group.count > 0 ? `${group.count} × ${group.label}${group.subtotal ? ` = ${group.subtotal}` : ''}` : group.label}</span>
       </div>)}
+      {aside}
     </div>
     {total ? <p className="lf-pz-note" data-copy-role="data">{total}</p> : null}
   </Frame>;
@@ -455,36 +486,74 @@ export function BalanceScaleVisual({ label, left, right, tilt, difference }: {
   </Frame>;
 }
 
-/** Two overlapping sets: each region lists its items and its count (the circles are outlines, sky and dashed mint). */
-export function VennVisual({ label, leftLabel, rightLabel, bothLabel, regions }: {
-  label: string; leftLabel: string; rightLabel: string; bothLabel: string;
-  regions: { left: { count: string; items: readonly string[] }; both: { count: string; items: readonly string[] }; right: { count: string; items: readonly string[] } };
+export type VennRegionKey = 'left' | 'both' | 'right' | 'neither';
+type VennRegion = { count: string; items: readonly string[] };
+
+/**
+ * Two sets and their regions: each region lists its items and its count (the
+ * circles are outlines, sky and dashed mint). GAP-FIX-R4 (Appendix P L5): the
+ * relation draws the three Euler layouts - `overlap` (two crossing circles),
+ * `subset` (the left set nested inside the right; no "only left" region) and
+ * `disjoint` (two circles apart; no "both" region) - and an optional `neither`
+ * region. A lesson board passes `targetProps` to make the regions drop targets
+ * and `overlay` for its own controls; the visual is then a group, not an image.
+ * The Mentor's venn and the lesson's Euler board draw with this one component.
+ */
+export function VennVisual({ label, leftLabel, rightLabel, bothLabel, neitherLabel, regions, relation = 'overlap', targetProps, overlay }: {
+  label: string; leftLabel: string; rightLabel: string; bothLabel: string; neitherLabel?: string;
+  regions: Partial<Record<VennRegionKey, VennRegion>> & { both?: VennRegion };
+  relation?: 'overlap' | 'subset' | 'disjoint';
+  targetProps?: (key: VennRegionKey) => DropTargetProps | undefined; overlay?: ReactNode;
 }) {
-  const region = (key: 'left' | 'both' | 'right', name: string) => <div className={`lf-pz-venn-region lf-pz-venn-region--${key}`}>
-    <strong data-copy-role="data">{name} · {regions[key].count}</strong>
-    <ul>{regions[key].items.map((item, index) => <li key={index} data-copy-role="data">{item}</li>)}</ul>
-  </div>;
-  return <Frame name="venn" label={label} className="lf-pz-venn">
+  const names: Record<VennRegionKey, string> = { left: leftLabel, both: bothLabel, right: rightLabel, neither: neitherLabel ?? '' };
+  const shown: VennRegionKey[] = (relation === 'subset' ? ['both', 'right'] : relation === 'disjoint' ? ['left', 'right'] : ['left', 'both', 'right'] as VennRegionKey[])
+    .concat(neitherLabel !== undefined ? ['neither'] : []) as VennRegionKey[];
+  const region = (key: VennRegionKey) => {
+    const content = regions[key] ?? { count: '0', items: [] };
+    const extra = targetProps?.(key);
+    return <div key={key} {...extra} className={`lf-pz-venn-region lf-pz-venn-region--${key}${extra?.className ? ` ${extra.className}` : ''}`}>
+      <strong data-copy-role="data">{content.count ? `${names[key]} · ${content.count}` : names[key]}</strong>
+      <ul>{content.items.map((item, index) => <li key={index} data-copy-role="data">{item}</li>)}</ul>
+    </div>;
+  };
+  return <Frame name="venn" label={label} className={`lf-pz-venn lf-pz-venn--${relation}`} interactive={Boolean(targetProps || overlay)}>
     <svg viewBox="0 0 300 150" aria-hidden="true" focusable="false">
-      <circle cx="115" cy="75" r="66" className="lf-pz-venn-set lf-pz-stroke--sky" />
-      <circle cx="185" cy="75" r="66" className="lf-pz-venn-set lf-pz-stroke--mint" />
+      {relation === 'subset' ? <>
+        <ellipse cx="150" cy="75" rx="140" ry="70" className="lf-pz-venn-set lf-pz-stroke--mint" />
+        <ellipse cx="150" cy="82" rx="66" ry="40" className="lf-pz-venn-set lf-pz-stroke--sky" />
+      </> : relation === 'disjoint' ? <>
+        <circle cx="78" cy="75" r="64" className="lf-pz-venn-set lf-pz-stroke--sky" />
+        <circle cx="222" cy="75" r="64" className="lf-pz-venn-set lf-pz-stroke--mint" />
+      </> : <>
+        <circle cx="115" cy="75" r="66" className="lf-pz-venn-set lf-pz-stroke--sky" />
+        <circle cx="185" cy="75" r="66" className="lf-pz-venn-set lf-pz-stroke--mint" />
+      </>}
     </svg>
-    <div className="lf-pz-venn-regions">{region('left', leftLabel)}{region('both', bothLabel)}{region('right', rightLabel)}</div>
+    <div className="lf-pz-venn-regions" data-regions={shown.length}>{shown.map(region)}</div>
+    {overlay}
   </Frame>;
 }
 
 // ── Sorting, dealing, chance and text cards ────────────────────────────────
 
-export interface SortBin { id: string; label: string; count?: string; items: readonly string[] }
+/** `marked` rings the one bin the board selects (the "it depends" bin keeps an outline, never a hue). */
+export interface SortBin { id: string; label: string; count?: string; items: readonly string[]; marked?: boolean }
 
-/** Things sorted into labelled groups. */
-export function SortBinsVisual({ label, bins }: { label: string; bins: readonly SortBin[] }) {
-  return <Frame name="sort-bins" label={label}>
+/**
+ * Things sorted into labelled groups (the Mentor's two bins, the lesson's L10
+ * and $10 sorts). A lesson board passes `targetProps` to make each bin a drop
+ * target (GAP-FIX-R4); the visual is then a group, not an image.
+ */
+export function SortBinsVisual({ label, bins, targetProps }: { label: string; bins: readonly SortBin[]; targetProps?: (id: string) => DropTargetProps | undefined }) {
+  return <Frame name="sort-bins" label={label} interactive={Boolean(targetProps)}>
     <div className="lf-pz-bins">
-      {bins.map((bin) => <div key={bin.id} className="lf-pz-bin">
-        <strong data-copy-role="data">{bin.label}{bin.count ? ` · ${bin.count}` : ''}</strong>
-        <ul>{bin.items.map((item, index) => <li key={index} data-copy-role="data">{item}</li>)}</ul>
-      </div>)}
+      {bins.map((bin) => {
+        const extra = targetProps?.(bin.id);
+        return <div key={bin.id} {...extra} className={`lf-pz-bin${bin.marked ? ' lf-pz-bin--rest' : ''}${extra?.className ? ` ${extra.className}` : ''}`}>
+          <strong data-copy-role="data">{bin.label}{bin.count ? ` · ${bin.count}` : ''}</strong>
+          <ul>{bin.items.map((item, index) => <li key={index} data-copy-role="data">{item}</li>)}</ul>
+        </div>;
+      })}
     </div>
   </Frame>;
 }
@@ -522,7 +591,7 @@ export function IconArrayVisual({ label, outcomes }: { label: string; outcomes: 
 
 export interface TextCard { id: string; title: string; lines: readonly string[]; marked?: boolean }
 
-/** Words side by side (two outcomes, the two sides of a trade, a price tag): neutral cards, no hue meaning. */
+/** Words side by side (two outcomes, the two sides of a trade, a price tag, the L1 rule cards): neutral cards, no hue meaning. */
 export function TextCardsVisual({ label, cards, joiner }: { label: string; cards: readonly TextCard[]; joiner?: string }) {
   return <Frame name="text-cards" label={label}>
     <div className="lf-pz-cards">

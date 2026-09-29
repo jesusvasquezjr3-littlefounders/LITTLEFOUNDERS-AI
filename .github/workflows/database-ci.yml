@@ -184,3 +184,41 @@ jobs:
           LF_PG_DATA: /var/lib/postgresql/data
           LF_PG_VERIFY_JOBS: '3'
         run: node database/scripts/staff-analytics-db-verify.mjs
+
+  # Appendix C 2.2 B.1 and 2.1 (GAP-FIX-R4): the learning database proofs
+  # (placement commit for all four methods, v2 grading and completion, the
+  # learning signals of rounds 2-4, the OD-25 pathway, atomic lesson completion,
+  # the course release gate) run over the WHOLE migration chain on a
+  # PostgreSQL 17 service container. The runner and its self-test:
+  # database/scripts/learning-db-verify*.mjs.
+  learning-db-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: learning database proofs
+        env:
+          LF_PG_PORT: '5432'
+          LF_PG_USER: postgres
+          LF_PG_PSQL: psql
+          LF_PG_DATA: /var/lib/postgresql/data
+          LF_PG_VERIFY_JOBS: '3'
+        run: node database/scripts/learning-db-verify.mjs

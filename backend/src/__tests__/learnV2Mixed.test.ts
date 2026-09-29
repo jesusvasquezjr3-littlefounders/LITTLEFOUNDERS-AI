@@ -109,6 +109,33 @@ describe('mixed v2 documents (general player, version-pinned completion)', () =>
     expect(complete.body.data.receipt).toMatchObject({ graded_count: 1, viewed_count: 2, hints_used: 2 });
   });
 
+  it('GAP-FIX-R4 (Appendix C 1.2, Appendix P Part 7.5): stores bounded time on task beside the view and the receipt, never as a grading input', async () => {
+    activate(mixedDocument([intro, decide], ['visual.speech-plate.v1', 'visual.story-scene.v1', 'operation.choose-option.v1']), { 'story-01': { acceptable_choice_ids: ['opt-save'] } });
+    const app = createApp();
+    const started = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
+    const runId = started.body.data.run_id as string;
+    const view = (body: Record<string, unknown>) => auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs/${runId}/views`)).send({ segment_id: 'intro-01', ...body });
+    // Out of bounds, fractional or text: refused at the boundary, and nothing is recorded.
+    for (const bad of [-1, 7201, 1.5, '30']) expect((await view({ time_spent_seconds: bad })).status).toBe(400);
+    expect(db.lesson_v2_segment_views ?? []).toEqual([]);
+    expect((await view({ time_spent_seconds: 42 })).status).toBe(200);
+    // A second view keeps the first time.
+    expect((await view({ time_spent_seconds: 900 })).status).toBe(200);
+    expect(db.lesson_v2_segment_views![0]).toMatchObject({ segment_id: 'intro-01', time_spent_seconds: 42 });
+
+    const grade = (answer: unknown, seconds: unknown, attemptToken: string) => auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`))
+      .send({ segment_id: 'story-01', run_id: runId, attempt_token: attemptToken, answer, time_spent_seconds: seconds });
+    expect((await grade({ choice: 'opt-save' }, 7201, started.body.data.attempt_tokens['story-01'])).status).toBe(400);
+    const missed = await grade({ choice: 'opt-spend' }, 7200, started.body.data.attempt_tokens['story-01']);
+    expect(missed.status).toBe(200);
+    // The time never reaches the verdict: a miss taken slowly is still a miss, and the verdict carries no time.
+    expect(missed.body.data.verdict).toEqual({ correct: false, score: 0, diagnostic: 'outcome' });
+    const met = await grade({ choice: 'opt-save' }, 12, missed.body.data.retry_attempt_token);
+    expect(met.body.data.verdict).toEqual({ correct: true, score: 100 });
+    expect(db.lesson_v2_grade_receipts!.map((r) => r.time_spent_seconds)).toEqual([7200, 12]);
+    for (const receipt of db.lesson_v2_grade_receipts!) expect(JSON.stringify(receipt.verdict)).not.toContain('time');
+  });
+
   it('completes a visual-only lesson from view receipts alone (score 100, no graded step)', async () => {
     activate(mixedDocument([intro, goal], ['visual.speech-plate.v1', 'visual.bullet.v1', 'operation.parameter-slider.v1']), {});
     const app = createApp();

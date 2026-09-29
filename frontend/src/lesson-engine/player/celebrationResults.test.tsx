@@ -68,6 +68,38 @@ describe('live results: the completed-lesson milestone is decided by Core and th
     expect(actions).not.toContain('celebrate')
   })
 
+  it('OD-28 (GAP-FIX-R4): the confetti burst plays inside the lesson-complete celebration only when Core named it, in a medal register', () => {
+    const confetti = (view: ReturnType<typeof show>) => view.container.querySelector('[data-celebrate="lesson-complete"]')
+    const celebrated = show(completion({ celebrations: ['lesson-complete'] }), 'young')
+    const burst = confetti(celebrated)
+    expect(burst).not.toBeNull()
+    expect(burst!.closest('[data-milestone="lesson-complete"]')).not.toBeNull()
+    expect(burst!.getAttribute('aria-hidden')).toBe('true')
+    celebrated.unmount()
+    for (const view of [show(null), show(completion({})), show(completion({ passed: false, celebrations: [] })),
+      show(completion({ celebrations: ['correct-answer'] })), show(completion({ celebrations: ['lesson-complete'] }), 'teen'),
+      show(completion({ celebrations: ['lesson-complete'] }), 'adult')]) {
+      expect(confetti(view)).toBeNull()
+      view.unmount()
+    }
+  })
+
+  it('OD-28 (GAP-FIX-R4): under reduced motion the burst is its registered static frame, never the animation', () => {
+    const original = window.matchMedia
+    window.matchMedia = ((query: string) => ({ matches: !query.includes('no-preference') && query.includes('reduce'), media: query, onchange: null, addListener: () => {}, removeListener: () => {},
+      addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => false })) as typeof window.matchMedia
+    try {
+      // A lesson this session never celebrated: the static frame is reduced motion's, not a revisit's.
+      const view = render(<ResultsScreen doc={doc} state={initialSession(doc)} server={completion({ celebrations: ['lesson-complete'] })} secondsSpent={60} pendingSave={false} onExit={() => {}} lessonId="lesson-reduced" register="young" />)
+      const celebration = view.container.querySelector('[data-milestone="lesson-complete"]')!
+      expect(celebration.getAttribute('data-celebration')).toBe('static')
+      const still = view.container.querySelector('[data-celebrate="lesson-complete"] img')
+      expect(still?.getAttribute('src')).toBe('/rebuild/motion/lesson-confetti-still.svg')
+    } finally {
+      window.matchMedia = original
+    }
+  })
+
   it('presents a teen or adult result as data: the cast nods, no fanfare', () => {
     show(completion({ celebrations: ['lesson-complete'] }), 'teen')
     show(completion({ celebrations: ['lesson-complete'] }), 'adult')

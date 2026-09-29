@@ -53,6 +53,7 @@ import {
   completeV2MixedLesson,
   getV2SegmentViewsForRecovery,
   recordV2SegmentView,
+  recordV2TimeOnTask,
   createV2LessonAttemptNonces,
   createV2LessonRun,
   getV2LessonAttemptNoncesForRecovery,
@@ -1113,7 +1114,9 @@ export function learnRouter(): Router {
   // the learner acted on a non-scored segment (a Mentor turn, an explored
   // visual). Core checks the segment against the run's pinned immutable
   // version; a graded segment can never be "viewed" into completion.
-  const V2ViewBody = z.object({ segment_id: z.string().min(1).max(101) }).strict();
+  // GAP-FIX-R4 (Appendix C 1.2; Appendix P Part 7.5): optional time on task, an analytics field only.
+  const TimeOnTask = z.number().int().min(0).max(7200);
+  const V2ViewBody = z.object({ segment_id: z.string().min(1).max(101), time_spent_seconds: TimeOnTask.optional() }).strict();
   router.post('/lessons/:id/v2-runs/:runId/views', async (req, res) => {
     const parsed = V2ViewBody.safeParse(req.body);
     const runId = z.string().uuid().safeParse(req.params.runId);
@@ -1133,6 +1136,10 @@ export function learnRouter(): Router {
     if (!v2ViewedSegmentIds(document).includes(parsed.data.segment_id)) return fail(res, 400, 'VALIDATION_ERROR', 'This step is not a viewed step');
     const stored = await recordV2SegmentView({ p_user_id: user.id, p_run_id: run.id, p_document_version_id: run.document_version_id, p_segment_id: parsed.data.segment_id });
     if (!stored) return fail(res, 502, 'INTERNAL', 'Could not record this step');
+    // Best-effort and after the view: time never decides whether the step counts.
+    if (parsed.data.time_spent_seconds !== undefined) {
+      await recordV2TimeOnTask({ p_user_id: user.id, p_run_id: run.id, p_segment_id: parsed.data.segment_id, p_receipt_jti: null, p_seconds: parsed.data.time_spent_seconds });
+    }
     return ok(res, { recorded: true });
   });
 
@@ -1160,6 +1167,9 @@ export function learnRouter(): Router {
     // GAP-FIX-R2 (Appendix P Part 8 scorer parity): the browser scorer's advisory reading of the same answer.
     // Never trusted and never graded: Core only records whether it agreed.
     client_verdict: z.enum(['valid', 'invalid']).optional(),
+    // GAP-FIX-R4 (Appendix C 1.2 Session Efficiency; Appendix P Part 7.5): seconds from the step shown to Check,
+    // idle capped by the browser. Stored beside the receipt for analytics; never a grading input.
+    time_spent_seconds: TimeOnTask.optional(),
   }).strict();
   const GradeBody = z.union([LegacyGradeBody, V2GradeBody]);
 
@@ -1255,6 +1265,10 @@ export function learnRouter(): Router {
         });
       if (!receipt) return fail(res, 502, 'INTERNAL', 'Could not record the lesson attempt');
       if ('blocked' in receipt) return fail(res, 409, 'LESSON_PREREQUISITE_REQUIRED', 'Complete the previous learning step first');
+      // Part 7.5: the time is written after the verdict exists and only onto its receipt (set once; a replay keeps the first).
+      if (parsed.data.time_spent_seconds !== undefined && !receipt.replayed) {
+        await recordV2TimeOnTask({ p_user_id: user.id, p_run_id: parsed.data.run_id, p_segment_id: segmentId, p_receipt_jti: verified.payload.jti, p_seconds: parsed.data.time_spent_seconds });
+      }
       if (!receipt.replayed) {
         // P-09 (GAP-FIX-R1): the grade is evidence on the topic's primary KC, once per receipt (best-effort).
         await recordCourseLessonEvidence({ userId: user.id, topicId: ctx.topic.id, receiptKey: courseReceiptKey('v2', verified.payload.jti), score: graded.score });

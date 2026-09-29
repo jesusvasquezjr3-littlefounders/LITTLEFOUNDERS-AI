@@ -1,9 +1,9 @@
-import { createContext, useContext, useEffect, useId, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useId, useRef, useState, type PointerEvent, type ReactNode } from 'react';
 import en from '../../i18n/en-US/rebuild-learn.json';
 import es from '../../i18n/es-MX/rebuild-learn.json';
 import pt from '../../i18n/pt-BR/rebuild-learn.json';
 import type { Locale } from '../design/copyBudget';
-import { Button, MentorAvatar, ProgressBar, SegmentedControl, TextField } from '../design/controls';
+import { Button, Menu, MentorAvatar, ProgressBar, TextField, type ChipDrag } from '../design/controls';
 import { findMentorAvatar, MENTOR_NAMES } from '../design/assets';
 import { LessonFeedback } from './LessonFeedback';
 import { LessonStageSlot } from './lessonStage';
@@ -144,7 +144,7 @@ export function NumberAnswer({ label, locale, onChange, disabled }: { label: str
 
 function reviewText(locale: Locale, diagnostic: string | undefined): string {
   const t = copy[locale];
-  if (diagnostic === 'structure' || diagnostic === 'path' || diagnostic === 'bin') return t.reviewStructure;
+  if (diagnostic === 'structure' || diagnostic === 'path' || diagnostic === 'bin' || diagnostic === 'rule_switch') return t.reviewStructure;
   if (diagnostic && diagnostic !== 'none' && diagnostic !== 'outcome') return t.reviewAnswer;
   return t.review;
 }
@@ -189,36 +189,106 @@ export function ViewedFoot({ locale, sequence, ready = true }: { locale: Locale;
   </div></footer>;
 }
 
-/** Keyboard and tap alternative to dragging: a "Move to" menu of the board's regions or bins. */
-export function MoveToChoice<T extends string>({ locale, label, options, value, onChange, disabled }: {
-  locale: Locale; label: string; options: ReadonlyArray<{ value: T; label: string }>; value: T | null; onChange: (value: T) => void; disabled?: boolean;
+/**
+ * Keyboard and tap alternative to dragging (Bible 05 §4): the object the
+ * learner picked up (a pressed chip: Enter or Space on it, or a tap) goes to
+ * the place chosen in one shared "Move to…" menu (WAI-ARIA menu button) of
+ * the board's regions or bins. GAP-FIX-R4: one menu per board, not one set of
+ * regions repeated under every item, so the first view stays in budget; the
+ * menu names the carried item and is off until something is picked up.
+ */
+export function MoveToChoice<T extends string>({ locale, item, options, onChange, disabled }: {
+  locale: Locale; item: { label: string } | null; options: ReadonlyArray<{ value: T; label: string }>; onChange: (value: T) => void; disabled?: boolean;
 }) {
-  const name = useId();
   const t = copy[locale];
-  // The shared single-choice control (02 rule 23): one radio group per item, named by the item.
   return <div className="lf-move-to">
-    <span className="lf-move-to-hint" data-copy-role="data" aria-hidden="true">{t.moveTo}</span>
-    <SegmentedControl className="lf-move-to-options" legend={label} name={name} size="compact" options={options} value={value}
-      disabled={disabled} onValueChange={onChange} />
+    <Menu label={item ? `${item.label}: ${t.moveTo}` : t.moveTo} items={options.map((option) => ({ id: option.value, label: option.label, onSelect: () => onChange(option.value) }))}
+      trigger={(props) => <Button {...props} size="sm" variant="secondary" disabled={disabled || item === null}
+        aria-label={item ? `${item.label}: ${t.moveTo}` : t.moveTo}>{t.moveTo}</Button>} />
   </div>;
+}
+
+/**
+ * Drag an object onto a board region, with the tap alternative (Bible 05 §4,
+ * V4; GAP-FIX-R4). The chip the learner presses is picked up (tap path: press
+ * the chip, then press the region); dragging it past a few pixels carries it,
+ * the region under the pointer highlights, and releasing over a region places
+ * it. The keyboard path is the board's "Move to" menu, which stays beside it.
+ * `drop` names the region under a point (a board region carries
+ * `data-drop-target`); it is injectable for tests.
+ */
+export function useDragPlace<T extends string>(onPlace: (item: string, target: T) => void, disabled: boolean,
+  drop: (x: number, y: number) => string | null = (x, y) => (typeof document.elementFromPoint === 'function'
+    ? document.elementFromPoint(x, y)?.closest('[data-drop-target]')?.getAttribute('data-drop-target') ?? null : null)) {
+  const [carried, setCarried] = useState<string | null>(null);
+  const [over, setOver] = useState<string | null>(null);
+  const drag = useRef<{ item: string; x: number; y: number; moved: boolean } | null>(null);
+  const suppressClick = useRef(false);
+  const chip = (item: string): { selected: boolean; onToggle: () => void; drag: ChipDrag } => ({
+    selected: carried === item,
+    onToggle: () => {
+      if (suppressClick.current) { suppressClick.current = false; return; }
+      if (!disabled) setCarried((current) => (current === item ? null : item));
+    },
+    drag: {
+      onPointerDown: (event: PointerEvent<HTMLButtonElement>) => {
+        if (disabled) return;
+        drag.current = { item, x: event.clientX, y: event.clientY, moved: false };
+        event.currentTarget.setPointerCapture?.(event.pointerId);
+      },
+      onPointerMove: (event: PointerEvent<HTMLButtonElement>) => {
+        const current = drag.current;
+        if (!current) return;
+        if (!current.moved && Math.hypot(event.clientX - current.x, event.clientY - current.y) > 6) { current.moved = true; setCarried(current.item); }
+        if (current.moved) setOver(drop(event.clientX, event.clientY));
+      },
+      onPointerUp: (event: PointerEvent<HTMLButtonElement>) => {
+        const current = drag.current;
+        drag.current = null;
+        setOver(null);
+        if (!current?.moved) return;
+        suppressClick.current = true;
+        const target = drop(event.clientX, event.clientY);
+        setCarried(null);
+        if (target) onPlace(current.item, target as T);
+      },
+      onPointerCancel: () => { drag.current = null; setOver(null); },
+    },
+  });
+  const target = (id: T) => ({
+    'data-drop-target': id,
+    'data-drop-selected': over === id ? 'true' : 'false',
+    'data-drop-armed': carried ? 'true' : 'false',
+    ...(carried && !disabled ? { onClick: () => { onPlace(carried, id); setCarried(null); } } : {}),
+  });
+  return { carried, chip, target, clear: () => setCarried(null) };
 }
 
 /**
  * The Bible 05 board anatomy every new v2 board shares: back and progress on
  * top, the compact Mentor stage band, the title, the Mentor-labelled prompt
- * with its help ladder, the board itself, then its foot.
+ * with its help ladder, the board itself, its control strip, then its foot.
+ * GAP-FIX-R4 (Bible 05 §3): the control strip always carries Reset when the
+ * board has a state to restore (`onReset`, disabled while nothing changed);
+ * `controls` adds the board's own controls beside it.
  */
-export function BoardShell({ screen, locale, title, segment, onBack, sequence, finished, verdict, children, foot }: {
+export function BoardShell({ screen, locale, title, segment, onBack, sequence, finished, verdict, children, foot, onReset, resetDisabled, controls }: {
   screen: string; locale: Locale; title: string; segment: { id: string; prompt: string; help?: string[] }; onBack: () => void;
   sequence?: LessonSequenceControl; finished: boolean; verdict?: unknown; children: ReactNode; foot: ReactNode;
+  onReset?: () => void; resetDisabled?: boolean; controls?: ReactNode;
 }) {
   const back = { 'en-US': en.back, 'es-MX': es.back, 'pt-BR': pt.back }[locale];
+  const t = copy[locale];
   return <main className="lf-learning" data-surface="app" data-screen={screen}><div className="lf-learning-inner">
     <header className="lf-learning-top"><Button onClick={onBack}>{back}</Button><SegmentProgress sequence={sequence} locale={locale} finished={finished} /></header>
     <LessonStageSlot verdict={verdict} />
     <div className="lf-learning-content">
       <div className="lf-learning-intro"><h1 data-copy-role="heading">{title}</h1><SegmentPrompt segment={segment} locale={locale} /></div>
       {children}
+      {onReset || controls ? <div className="lf-learning-control-strip lf-board-controls" data-board-controls="true">
+        {controls}
+        {onReset ? <Button size="sm" disabled={resetDisabled} onClick={onReset}>{t.reset}</Button> : null}
+      </div> : null}
       {foot}
     </div>
   </div></main>;

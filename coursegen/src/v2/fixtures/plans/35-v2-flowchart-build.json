@@ -66,13 +66,13 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Build a chart that decides any purchase. Test it.",
+          "prompt": "Build a chart and test it.",
           "questions": [
             {
               "label": "Do I need it?"
             },
             {
-              "label": "Can I afford it this week?"
+              "label": "Can I afford it?"
             }
           ],
           "outcomes": [
@@ -88,18 +88,18 @@
           ],
           "practice": [
             {
-              "label": "New shoes, short this week"
+              "label": "New shoes"
             }
           ]
         },
         "es-MX": {
-          "prompt": "Arma un diagrama que decida cualquier compra. Pruébalo.",
+          "prompt": "Arma un diagrama y pruébalo.",
           "questions": [
             {
               "label": "¿Lo necesito?"
             },
             {
-              "label": "¿Me alcanza esta semana?"
+              "label": "¿Me alcanza?"
             }
           ],
           "outcomes": [
@@ -115,18 +115,18 @@
           ],
           "practice": [
             {
-              "label": "Zapatos nuevos, sin dinero hoy"
+              "label": "Tenis nuevos"
             }
           ]
         },
         "pt-BR": {
-          "prompt": "Monte um diagrama que decida qualquer compra. Teste.",
+          "prompt": "Monte um diagrama e teste.",
           "questions": [
             {
               "label": "Eu preciso?"
             },
             {
-              "label": "Dá para pagar nesta semana?"
+              "label": "Cabe no bolso?"
             }
           ],
           "outcomes": [
@@ -142,7 +142,7 @@
           ],
           "practice": [
             {
-              "label": "Tênis novo, sem dinheiro agora"
+              "label": "Tênis novo"
             }
           ]
         }

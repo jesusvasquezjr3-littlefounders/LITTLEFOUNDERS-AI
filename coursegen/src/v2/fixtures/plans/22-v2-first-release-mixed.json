@@ -11,8 +11,7 @@
   },
   "knowledge_component_ids": [
     "kc-needs-wants",
-    "kc-message-safety",
-    "kc-count-coins"
+    "kc-message-safety"
   ],
   "adventure_scene_id": "diorama-b",
   "mentor_stage": {
@@ -313,9 +312,6 @@
           },
           {
             "id": "msg-code"
-          },
-          {
-            "id": "msg-aunt"
           }
         ]
       },
@@ -327,115 +323,58 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Mark the messages that are tricks.",
+          "prompt": "Mark the tricks.",
           "messages": [
             {
               "sender": "Unknown number",
-              "text": "You won 500 coins! Send your password to claim them."
+              "text": "You won 500 coins! Send your password."
             },
             {
               "sender": "Coach Ana",
-              "text": "Practice moves to 4 pm on Friday."
+              "text": "Practice is at 4 pm Friday."
             },
             {
               "sender": "Game Team",
-              "text": "Share the code we sent you so we can fix your account."
-            },
-            {
-              "sender": "Aunt Rosa",
-              "text": "See you at lunch on Sunday."
+              "text": "Send us the code we texted you."
             }
           ]
         },
         "es-MX": {
-          "prompt": "Marca los mensajes que son trampas.",
+          "prompt": "Marca las trampas.",
           "messages": [
             {
               "sender": "Número desconocido",
-              "text": "¡Ganaste 500 monedas! Envía tu contraseña para cobrarlas."
+              "text": "¡Ganaste 500 monedas! Envía tu contraseña."
             },
             {
               "sender": "Entrenadora Ana",
-              "text": "El entrenamiento pasa a las 4 pm el viernes."
+              "text": "El entrenamiento es el viernes a las 4 pm."
             },
             {
               "sender": "Equipo del juego",
-              "text": "Comparte el código que te enviamos para arreglar tu cuenta."
-            },
-            {
-              "sender": "Tía Rosa",
-              "text": "Nos vemos en la comida del domingo."
+              "text": "Envíanos el código que te mandamos."
             }
           ]
         },
         "pt-BR": {
-          "prompt": "Marque as mensagens que são armadilhas.",
+          "prompt": "Marque as armadilhas.",
           "messages": [
             {
               "sender": "Número desconhecido",
-              "text": "Você ganhou 500 moedas! Envie sua senha para receber."
+              "text": "Você ganhou 500 moedas! Envie sua senha."
             },
             {
               "sender": "Técnica Ana",
-              "text": "O treino passa para as 16h na sexta."
+              "text": "O treino é sexta às 16h."
             },
             {
               "sender": "Equipe do jogo",
-              "text": "Compartilhe o código que enviamos para arrumar sua conta."
-            },
-            {
-              "sender": "Tia Rosa",
-              "text": "Até o almoço de domingo."
+              "text": "Envie o código que mandamos."
             }
           ]
         }
       },
       "item_phase": "pre"
-    },
-    {
-      "id": "coins-01",
-      "type": "money.coin-tray.v2",
-      "grading": "server",
-      "visual": {
-        "type": "coin-tray"
-      },
-      "item_role": "practice",
-      "knowledge_component_id": "kc-count-coins",
-      "payload": {
-        "currency": "coins",
-        "denominations": [
-          {
-            "value_minor": 10,
-            "kind": "coin",
-            "available": 3
-          },
-          {
-            "value_minor": 5,
-            "kind": "coin",
-            "available": 3
-          },
-          {
-            "value_minor": 1,
-            "kind": "coin",
-            "available": 6
-          }
-        ]
-      },
-      "rubric": {
-        "target_minor": 17,
-        "fewest": true
-      },
-      "copy": {
-        "en-US": {
-          "prompt": "Pay 17 coins with the fewest pieces."
-        },
-        "es-MX": {
-          "prompt": "Paga 17 monedas con la menor cantidad de piezas."
-        },
-        "pt-BR": {
-          "prompt": "Pague 17 moedas com o menor número de peças."
-        }
-      }
     },
     {
       "id": "story-01",

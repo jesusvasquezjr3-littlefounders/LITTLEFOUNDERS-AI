@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { pluralUnit } from '../design/plural';
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { Button, Slider, ProgressBar } from '../design/controls';
 import { growthTimeline, type GrowthItem } from './growthModel';
@@ -80,8 +81,8 @@ export function GrowthBoard({ document, segment, onBack, sequence }: { document:
   const number = useMemo(() => new Intl.NumberFormat(locale, fixture.currency === 'local'
     ? { style: 'currency', currency: localCurrency[locale], currencyDisplay: 'code', maximumFractionDigits: 0 }
     : { maximumFractionDigits: 0 }), [locale, fixture.currency]);
-  const amount = (value: number) => fixture.currency === 'coins' ? `${number.format(value)} ${value === 1 ? t.coin : t.coins}` : number.format(value);
-  const unit = (count: number) => fixture.unit === 'week' ? count === 1 ? t.week : t.weeks : count === 1 ? t.month : t.months;
+  const amount = (value: number) => fixture.currency === 'coins' ? `${number.format(value)} ${pluralUnit(locale, value, { one: t.coin, other: t.coins })}` : number.format(value);
+  const unit = (count: number) => fixture.unit === 'week' ? pluralUnit(locale, count, { one: t.week, other: t.weeks }) : pluralUnit(locale, count, { one: t.month, other: t.months });
   const total = points.at(-1)?.balance ?? 0;
   const maximum = fixture.item.maximum * fixture.item.periods;
 

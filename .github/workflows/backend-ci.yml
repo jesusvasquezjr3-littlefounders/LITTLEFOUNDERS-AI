@@ -26,6 +26,14 @@ name: backend CI
 # database/seeds/ holds the Mentor KC graph and the B.6 topic map; backend tests
 # (seedKcGraph, services/pathway) and coursegen's kc:map gate validate them,
 # so an edit there alone must still run both CIs.
+#
+# Appendix C 2.2 B.1(b) (GAP-FIX-R4): the placement E2E
+# (src/__tests__/placement.postgres.test.ts: quiz, commit, placement credit,
+# course progress, badge attainable, for all four placement methods) runs on
+# every build against a PostgreSQL 17 service with the WHOLE migration chain
+# (database/migrations, prepared by database/scripts/verify-placement-postgres.py),
+# so an edit to either must run this CI too. With CI set and no cluster
+# configured, that test fails instead of skipping.
 
 on:
   push:
@@ -36,6 +44,9 @@ on:
       - 'database/seeds/**'
       - 'frontend/src/lesson-engine/**'
       - 'coursegen/src/v2/**'
+      - 'database/migrations/**'
+      - 'database/scripts/verify-placement-postgres.py'
+      - 'database/scripts/pg-verify-runner.mjs'
       - '.github/workflows/backend-ci.yml'
   pull_request:
     paths:
@@ -44,12 +55,27 @@ on:
       - 'database/seeds/**'
       - 'frontend/src/lesson-engine/**'
       - 'coursegen/src/v2/**'
+      - 'database/migrations/**'
+      - 'database/scripts/verify-placement-postgres.py'
+      - 'database/scripts/pg-verify-runner.mjs'
       - '.github/workflows/backend-ci.yml'
 
 jobs:
   ci:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
     defaults:
       run:
         working-directory: backend
@@ -60,9 +86,18 @@ jobs:
           node-version: 24
           cache: npm
           cache-dependency-path: backend/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - run: npm ci
       - run: npm run type-check
       - run: npm run lint
       # = contract:check (lesson parity) && vitest run (backend/package.json).
       # If that chain is ever unbundled, add the checks back as explicit steps.
+      # The LF_PG_* cluster is the placement E2E's (Appendix C 2.2 B.1(b)).
       - run: npm test
+        env:
+          LF_PG_PORT: '5432'
+          LF_PG_USER: postgres
+          LF_PG_PSQL: psql
+          LF_PG_DATA: /var/lib/postgresql/data

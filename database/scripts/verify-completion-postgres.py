@@ -1,19 +1,32 @@
-"""Exercise real PostgreSQL transactions in the audit-owned native cluster only.
+"""B.5 / lesson completion (atomic completion, replay and privileges): real PostgreSQL transactions on an owned native cluster only.
+
+Every migration applies in order (twice, on two databases), then concurrent
+completions keep exact totals, a replay never double-counts, receipts are not
+browser-readable and a browser cannot execute complete_lesson.
 
 Auth objects are minimal fixtures, not a GoTrue/Supabase certification.
 This is supplemental to the mandatory Docker reset and type-generation gates.
+
+Configuration: LF_PG_PSQL, LF_PG_PORT, LF_PG_USER, LF_PG_DATA (checked against
+the cluster's data_directory), LF_PG_REPORT (else audit-results/ when that
+directory exists), LF_PG_KEEP=1 keeps the databases.
 """
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import json
 import hashlib
+import os
 import subprocess
 import time
+import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNTIME = ROOT / '.codex' / 'audit-db'
-PSQL = RUNTIME / 'pgsql' / 'bin' / 'psql.exe'
-BASE = [str(PSQL), '-X', '-h', '127.0.0.1', '-p', '15483', '-U', 'audit_owner', '-v', 'ON_ERROR_STOP=1', '-Atq']
+PSQL = os.environ.get('LF_PG_PSQL', str(RUNTIME / 'pgsql' / 'bin' / 'psql.exe'))
+PORT = os.environ.get('LF_PG_PORT', '15483')
+USER = os.environ.get('LF_PG_USER', 'audit_owner')
+DATA = Path(os.environ.get('LF_PG_DATA', str(RUNTIME / 'data')))
+BASE = [PSQL, '-X', '-h', '127.0.0.1', '-p', PORT, '-U', USER, '-v', 'ON_ERROR_STOP=1', '-Atq']
 
 def sql(query, database='postgres'):
     result = subprocess.run(BASE + ['-d', database], input=query, text=True, encoding='utf-8', capture_output=True)
@@ -22,7 +35,7 @@ def sql(query, database='postgres'):
     return result.stdout.strip()
 
 actual = Path(sql('SHOW data_directory')).resolve()
-if actual != (RUNTIME / 'data').resolve():
+if actual != DATA.resolve():
     raise RuntimeError('Refusing a cluster not owned by this audit')
 for role in ('anon', 'authenticated', 'service_role', 'supabase_admin', 'postgres'):
     if sql(f"SELECT count(*) FROM pg_roles WHERE rolname='{role}'") == '0':
@@ -56,7 +69,7 @@ INSERT INTO lessons (id,topic_id,position,slug) VALUES
 """
 report = {'provenance': 'Native PostgreSQL 17.6; minimal auth fixtures; no Docker/GoTrue/provider', 'runs': []}
 for iteration in (1,2):
-    db = f'lf_audit_{int(time.time())}_{iteration}'
+    db = f'lf_completion_{uuid.uuid4().hex[:12]}_{iteration}'
     sql(f'CREATE DATABASE {db}')
     sql(bootstrap, db)
     migrations = sorted((ROOT / 'database' / 'migrations').glob('*.sql'))
@@ -89,4 +102,10 @@ for iteration in (1,2):
     sql((ROOT/'database/migrations/0083_atomic_lesson_completion.sql').read_text(encoding='utf-8'),db)
     report['runs'].append({'database':db,'migrations':len(migrations),'rollback':True,'retry':True,'privileges':True,'concurrentSameRun':8,'concurrentDifferentRuns':8,'totals':totals,'newMigrationReplay':True,'receiptRls':True,'browserExecutionDenied':True,'lockHoldMilliseconds':150,'completedAsServiceRole':True})
     print(f'PASS {db}: real concurrent completions retained exact totals',flush=True)
-(ROOT/'audit-results/closure-postgres.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
+if os.environ.get('LF_PG_KEEP') != '1':
+    for run in report['runs']:
+        sql(f"DROP DATABASE {run['database']} WITH (FORCE)")
+report_path = os.environ.get('LF_PG_REPORT') or (str(ROOT / 'audit-results/closure-postgres.json') if (ROOT / 'audit-results').is_dir() else None)
+if report_path:
+    Path(report_path).write_text(json.dumps(report, indent=2), encoding='utf-8')
+print(json.dumps({'passed': True, 'runs': len(report['runs'])}))
