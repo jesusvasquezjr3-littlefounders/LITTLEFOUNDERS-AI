@@ -6,9 +6,9 @@ import { withConnection, type DuckConnection } from '../db/duckdb.js';
  * Core erases the account in Vault first; this removes every row the
  * warehouse copied about it: first-party events by the account or by the
  * pre-signup visitor ids that converted into it, authoritative lesson
- * attempts, derived skill states, sessions, the user dimension and the
- * visitor-conversion links. Aggregates (agg_daily_*) hold counts only and
- * are left as they are.
+ * attempts, derived skill states, sessions, the user dimension, the
+ * visitor-conversion links and the experiment assignments and exposures.
+ * Aggregates (agg_daily_*) hold counts only and are left as they are.
  *
  * The deletions and the tombstones commit together on a connection of their
  * own. `applyErasureTombstones` repeats the deletion for every tombstone after
@@ -17,26 +17,34 @@ import { withConnection, type DuckConnection } from '../db/duckdb.js';
  * after.
  */
 
-const TABLES: { table: string; byUser: boolean; byAnon: boolean }[] = [
+/*
+ * `textUser`: the experiment tables (services/experiments.ts) store the learner
+ * id as TEXT, not UUID, so they are matched on the canonical lowercase text
+ * form. They hold a learner's assignment and exposure, so an erasure removes
+ * them too (H.2 / Appendix O 1.2 gap-fix round 6).
+ */
+const TABLES: { table: string; byUser: boolean; byAnon: boolean; textUser?: boolean }[] = [
   { table: 'fact_events_raw', byUser: true, byAnon: true },
   { table: 'fact_segment_attempts_raw', byUser: true, byAnon: false },
   { table: 'learner_skill_states', byUser: true, byAnon: false },
   { table: 'dim_sessions_raw', byUser: true, byAnon: false },
   { table: 'dim_users_raw', byUser: true, byAnon: false },
   { table: 'dim_anon_conversions', byUser: true, byAnon: true },
+  { table: 'experiment_assignments', byUser: true, byAnon: false, textUser: true },
+  { table: 'experiment_exposures', byUser: true, byAnon: false, textUser: true },
 ];
 
-function where(byUser: boolean, byAnon: boolean, anonCount: number): string | null {
+function where(byUser: boolean, byAnon: boolean, anonCount: number, textUser = false): string | null {
   const parts: string[] = [];
-  if (byUser) parts.push('user_id = ?::UUID');
+  if (byUser) parts.push(textUser ? 'lower(user_id) = lower(?)' : 'user_id = ?::UUID');
   if (byAnon && anonCount > 0) parts.push(`anon_id IN (${Array.from({ length: anonCount }, () => '?::UUID').join(', ')})`);
   return parts.length === 0 ? null : parts.join(' OR ');
 }
 
 async function deleteFor(connection: DuckConnection, userId: string, anonIds: string[]): Promise<Record<string, number>> {
   const counts: Record<string, number> = {};
-  for (const { table, byUser, byAnon } of TABLES) {
-    const clause = where(byUser, byAnon, anonIds.length);
+  for (const { table, byUser, byAnon, textUser } of TABLES) {
+    const clause = where(byUser, byAnon, anonIds.length, textUser);
     if (!clause) continue;
     const params = [...(byUser ? [userId] : []), ...(byAnon ? anonIds : [])];
     const rows = await connection.query<{ n: number | bigint }>(`SELECT count(*) AS n FROM ${table} WHERE ${clause}`, ...params);
@@ -76,9 +84,10 @@ export async function applyErasureTombstones(): Promise<number> {
     await connection.exec('BEGIN TRANSACTION');
     try {
       let removed = 0;
-      for (const { table, byUser, byAnon } of TABLES) {
+      for (const { table, byUser, byAnon, textUser } of TABLES) {
         const parts: string[] = [];
-        if (byUser) parts.push("user_id IN (SELECT subject_id FROM erased_subjects WHERE kind = 'user')");
+        if (byUser && textUser) parts.push("lower(user_id) IN (SELECT subject_id::VARCHAR FROM erased_subjects WHERE kind = 'user')");
+        else if (byUser) parts.push("user_id IN (SELECT subject_id FROM erased_subjects WHERE kind = 'user')");
         if (byAnon) parts.push("anon_id IN (SELECT subject_id FROM erased_subjects WHERE kind = 'anon')");
         const clause = parts.join(' OR ');
         const rows = await connection.query<{ n: number | bigint }>(`SELECT count(*) AS n FROM ${table} WHERE ${clause}`);

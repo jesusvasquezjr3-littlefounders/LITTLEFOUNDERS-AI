@@ -47,6 +47,8 @@ A decision that would push a lesson further out of its band ("make easier" on a 
 
 ## 5. The Threshold Recalibration Log
 
+The machine-checked log of record is now [`docs/operations/BLOCK-B-THRESHOLD-LOG.md`](../operations/BLOCK-B-THRESHOLD-LOG.md) (GAP-FIX-R6): it holds these values with their constants, a review due date and the review history, and `agent/tools/check-block-b-thresholds.mjs` fails when they drift. This table is the initial record.
+
 Appendix C asks for a living record of every threshold, when it was last reviewed and what changed. S05.3d keeps it in two places:
 
 - **The band history is data:** `practice_difficulty_band_log` is append-only (a trigger refuses updates and deletes). Each row keeps the previous and the new band, the rationale, the review it came from and the actor.

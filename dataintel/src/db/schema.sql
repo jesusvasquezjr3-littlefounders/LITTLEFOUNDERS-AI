@@ -166,6 +166,37 @@ CREATE TABLE IF NOT EXISTS dataintel_sync_state (
   last_error VARCHAR
 );
 
+-- H.2 / Appendix O 1.2: the experiment tables are keyed by a learner and are
+-- inside the warehouse's 400-day retention window and the E.6 erasure, so both
+-- jobs need them to exist from the first boot, not only after the first
+-- experiment call (services/experiments.ts keeps the same definitions).
+CREATE TABLE IF NOT EXISTS experiment_assignments (
+  experiment_id TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  variant TEXT NOT NULL CHECK (variant IN ('A', 'B')),
+  assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (experiment_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS experiment_exposures (
+  experiment_id TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  variant TEXT NOT NULL CHECK (variant IN ('A', 'B')),
+  exposed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (experiment_id, user_id)
+);
+
+-- One row per warehouse retention prune and table (services/warehouseRetention.ts),
+-- the warehouse twin of Vault's insights_maintenance_log: rows removed, the
+-- window applied and when, so a prune that stopped running is visible.
+CREATE TABLE IF NOT EXISTS warehouse_maintenance_log (
+  job VARCHAR NOT NULL,
+  table_name VARCHAR NOT NULL,
+  retain_days INTEGER NOT NULL,
+  removed BIGINT NOT NULL,
+  ran_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- SCHEMA EVOLUTION — must run BEFORE the indexes below (production incident
 -- 2026-08-09). `CREATE TABLE IF NOT EXISTS` does not update a persistent DuckDB
 -- file: on a warehouse that already exists (the Railway volume survives every

@@ -151,6 +151,14 @@ describe('Data practice copy (S10.3)', () => {
     expect(Object.keys(en.groups).sort()).toEqual([...PRACTICE_GROUPS].sort());
   });
 
+  it('names the learning choices the motivation practice covers, so the consent is specific (OD-9 4.2, GAP-FIX-R6)', () => {
+    // analytics.motivation_events gates path_choice, approach_choice and the
+    // enrichment offer/open events as well as streaks and rest days.
+    expect(practiceLabel(en as DataPracticesCopy, 'analytics.motivation_events')).toMatch(/choices/);
+    expect(practiceLabel(es as DataPracticesCopy, 'analytics.motivation_events')).toMatch(/elecciones/);
+    expect(practiceLabel(pt as DataPracticesCopy, 'analytics.motivation_events')).toMatch(/escolhas/);
+  });
+
   for (const [locale, file] of Object.entries(files)) {
     it(`fits the Copy Budget and keeps the glossary in ${locale}`, () => {
       const all = flat(file);

@@ -477,12 +477,22 @@ export function bankingRouter(): Router {
     return ok(res, { rule: toWireSavingsBonusRule(rule), ...toWireFraming(framing) });
   });
 
+  /*
+   * GAP-FIX-R6 (OD-3 §2, Law 5, Block D monthly statements): a child's month
+   * as their verified Tutor reads it on the Wallet screen. The Tutor is an
+   * adult reader, so the statement keeps its full detail (every line with its
+   * reason, a linked teen's self-directed entries included); the month is
+   * bounded exactly like the child's own paging (never after this month, at
+   * most STATEMENT_MONTHS_BACK months back).
+   */
   router.get('/statement/:kidId', requireRole(['parent']), async (req, res) => {
     const parent = authedUser(res);
     const kidId = z.string().uuid().safeParse(req.params.kidId);
     if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
     const q = MonthQuery.safeParse(req.query);
-    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'month must be YYYY-MM');
+    if (!q.success || (q.data.month !== undefined && !statementMonthAllowed(q.data.month))) {
+      return fail(res, 400, 'VALIDATION_ERROR', `month must be YYYY-MM, this month or up to ${STATEMENT_MONTHS_BACK - 1} months before it`);
+    }
     if (!(await guardParentOf(kidId.data, res, parent.id))) return;
     const statement = await buildStatement(kidId.data, q.data.month);
     if (!statement) return fail(res, 502, DATA_UNAVAILABLE, 'Could not build the statement');

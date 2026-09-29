@@ -334,7 +334,9 @@ export function RetentionSweepCard({ api }: { api: StaffApi }) {
 
 /**
  * H.4 (Appendix O 1.3): the daily Vault and Pulse backups and the schema
- * drift probe, beside the retention sweep. `stale` comes from Core (one home
+ * drift probe, beside the retention sweep. GAP-FIX-R6: the account-deletion,
+ * family, social and learning retention sweeps and the insights prune are
+ * listed too, and erasures stalled past a day are named in words. `stale` comes from Core (one home
  * for each window); a stale job is also what fails ops-job-watch.yml and
  * notifies the team.
  */
@@ -348,7 +350,12 @@ export function OpsJobsCard({ api }: { api: StaffApi }) {
       <p data-copy-role="body" className="lf-staff-muted">{t.body.jobsIntro}</p>
       {read.load.state === 'loading' ? <Loading />
         : read.load.state === 'error' ? <LoadFailure code={read.load.code} onRetry={read.reload} />
-          : read.load.state === 'ready' ? <ul className="lf-staff-reports" aria-label={t.heading.jobs}>
+          : read.load.state === 'ready' ? <>
+          {read.load.data.accountDeletionFailures.stuck > 0
+            ? <InlineNotice tone="error">{fill(t.body.deletionsStuck, {
+              n: format.number(read.load.data.accountDeletionFailures.stuck), hours: format.number(read.load.data.accountDeletionFailures.afterHours),
+            })}</InlineNotice> : null}
+          <ul className="lf-staff-reports" aria-label={t.heading.jobs}>
             {read.load.data.jobs.map((job) => {
               const name = t.option[`job_${job.job}`];
               return <li key={job.job} data-job={job.job} data-stale={job.stale ? 'true' : 'false'}>
@@ -362,7 +369,7 @@ export function OpsJobsCard({ api }: { api: StaffApi }) {
                 {job.lastAttemptOk === false ? <InlineNotice tone="error">{t.body.lastAttemptFailed}</InlineNotice> : null}
               </li>;
             })}
-          </ul> : null}
+          </ul></> : null}
     </div>
   </Card>;
 }
