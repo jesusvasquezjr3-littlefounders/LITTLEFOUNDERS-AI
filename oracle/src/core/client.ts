@@ -253,6 +253,20 @@ export const SessionContextSchema = z
      * OPTIONAL: negotiated.
      */
     canary: MentorCanarySchema.nullable().optional(),
+    /*
+     * C.10 Appendix F Stage 7 AUTOMATIC ROLLBACK: the `kc.key`s Core's
+     * Extended Mastery Engine kill switch reverted to the pre-C.10
+     * single-observation baseline (a KC whose Mastery Declaration Reversal
+     * Rate is over the 8% ceiling, or with a Corroborating-Evidence
+     * Compliance miss), held until an operator resolves the logged trip.
+     * SERVER-SIDE ONLY: the controller unions it with the operator's
+     * TUTOR_CORROBORATION_ROLLBACK_KC_KEYS; it is never a field of the sealed
+     * model context. OPTIONAL: negotiated.
+     */
+    corroborationRollbackKcKeys: z
+      .array(z.string().regex(/^[a-z0-9][a-z0-9_.-]{2,95}$/))
+      .max(200)
+      .optional(),
   })
   .strict();
 
@@ -275,6 +289,7 @@ export const CONTEXT_OPTIONAL_FIELDS = [
   'spacedReviewMode',
   'dialogueCalibration',
   'canary',
+  'corroborationRollbackKcKeys',
 ] as const;
 
 export type SessionContext = z.infer<typeof SessionContextSchema>;

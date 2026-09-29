@@ -48,6 +48,8 @@ export const CONTEXT_OPTIONAL_FIELDS = [
   'dialogueCalibration',
   // C.22 Stage 5 (GAP-FIX-R3): the canary arm; see services/pedagogy/mentorCanary.ts.
   'canary',
+  // C.10 Stage 7 (GAP-FIX-R4): the Extended Mastery Engine rollback; see mentorIntegrity.ts getMasteryKillSwitch.
+  'corroborationRollbackKcKeys',
 ] as const;
 
 export const TELEMETRY_CHANNELS = [

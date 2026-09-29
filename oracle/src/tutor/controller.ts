@@ -105,6 +105,32 @@ export const CORROBORATION_MIN_OBSERVATIONS = 2;
  */
 const SURPRISING_CORRECT_BELOW = 0.5;
 
+/**
+ * The Appendix F Stage 7 Extended Mastery Engine rollback in force for one
+ * session: the UNION of the keys Core's automatic kill switch sends
+ * (`corroborationRollbackKcKeys`, logged in Core's Kill-Switch Trigger Log)
+ * and the operator's manual TUTOR_CORROBORATION_ROLLBACK_KC_KEYS. `inPlan`
+ * names the rolled-back KCs this session can actually decide on, so the
+ * orchestrator logs a rollback exactly when it can change a decision.
+ */
+export function corroborationRollback(
+  envKeys: readonly string[],
+  coreKeys: readonly string[] | undefined,
+  plan: readonly { kcKey: string }[],
+): { keys: string[]; inPlan: { kcKey: string; source: 'core' | 'env' | 'core+env' }[] } {
+  const core = new Set(coreKeys ?? []);
+  const env = new Set(envKeys);
+  const keys = [...new Set([...core, ...env])].sort();
+  const inPlan = [...new Set(plan.map((entry) => entry.kcKey))]
+    .filter((kcKey) => core.has(kcKey) || env.has(kcKey))
+    .sort()
+    .map((kcKey) => ({
+      kcKey,
+      source: core.has(kcKey) && env.has(kcKey) ? ('core+env' as const) : core.has(kcKey) ? ('core' as const) : ('env' as const),
+    }));
+  return { keys, inPlan };
+}
+
 /** Operator configuration for the C.10 rule — see `CORROBORATION_MIN_OBSERVATIONS`. */
 export interface ControllerOptions {
   /**
@@ -115,7 +141,9 @@ export interface ControllerOptions {
   corroborationMinObservations?: number;
   /**
    * `kcKey`s rolled back to the pre-C.10 single-observation baseline by the
-   * Appendix F Stage 7 kill switch, until root-caused. Empty by default.
+   * Appendix F Stage 7 kill switch, until root-caused: the union computed by
+   * `corroborationRollback` (Core's automatic trip + the operator's env
+   * list). Empty by default.
    */
   corroborationRollbackKcKeys?: readonly string[];
   /**

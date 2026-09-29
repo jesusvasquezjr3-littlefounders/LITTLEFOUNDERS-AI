@@ -24,6 +24,8 @@
  */
 
 import { serviceRest } from '../supabaseRest.js';
+import { corroborationMinFor } from './bkt.js';
+import { getMasteryRollbackKcKeys } from './mentorIntegrity.js';
 import { deriveNodeState } from './tutorMap.js';
 import { getActiveKcs, getCorrectStreaks, getKcTitlesByIds, getLearnerMastery, getMemoryCards, type Localized } from './kcData.js';
 
@@ -99,6 +101,8 @@ export function displayStateOf(input: {
   attempts: number;
   reviewDue: boolean;
   consecutiveCorrect: number;
+  /** The corroboration this KC needs (`corroborationMinFor`; Appendix F Stage 7 rollback). */
+  corroborationMin?: number;
 }): MasteryDisplayState {
   const node = deriveNodeState({ ...input, prereqsMet: true });
   return node === 'needs_review' ? 'recheck_due' : node === 'mastered' ? 'provisional_mastered' : 'not_yet';
@@ -109,7 +113,7 @@ export function displayStateOf(input: {
  * "nothing to show"). A learner with no evidence yet gets an empty list.
  */
 export async function buildMasteryEvidence(userId: string, locale: string, now = new Date()): Promise<MasteryEvidenceResponse | null> {
-  const [kcs, mastery, cards, streaks, steps] = await Promise.all([
+  const [kcs, mastery, cards, streaks, steps, rolledBack] = await Promise.all([
     getActiveKcs(),
     getLearnerMastery(userId),
     getMemoryCards(userId),
@@ -119,6 +123,7 @@ export async function buildMasteryEvidence(userId: string, locale: string, now =
         '&select=kc_id,evidence_rule,evidence_observations,evidence_required,evidence_discounted,mastery_revoked,created_at' +
         '&order=created_at.desc&limit=500',
     ),
+    getMasteryRollbackKcKeys(now),
   ]);
   if (kcs === null || mastery === null || cards === null || streaks === null || steps === null) return null;
 
@@ -158,6 +163,7 @@ export async function buildMasteryEvidence(userId: string, locale: string, now =
         attempts,
         reviewDue: card ? new Date(card.due_at).getTime() <= now.getTime() : false,
         consecutiveCorrect: correctInARow,
+        corroborationMin: corroborationMinFor(kc?.key, rolledBack),
       }),
       correctInARow,
       attempts,

@@ -216,10 +216,17 @@ const Env = z.object({
    */
   TUTOR_CORROBORATION_MIN_OBSERVATIONS: z.coerce.number().int().min(2).max(5).default(2),
   /**
-   * Appendix F Part 3 Stage 7 — the Extended Mastery Engine kill switch:
-   * comma-separated `kc.key`s reverted to the pre-C.10 single-observation
-   * baseline until root-caused. Empty (the default) rolls nothing back.
-   * Every use is logged in the Kill-Switch Trigger Log.
+   * Appendix F Part 3 Stage 7 — the Extended Mastery Engine kill switch,
+   * OPERATOR OVERRIDE: comma-separated `kc.key`s reverted to the pre-C.10
+   * single-observation baseline until root-caused. Empty (the default) rolls
+   * nothing back. The automatic rollback is Core's (`getMasteryKillSwitch`,
+   * which writes `mentor.kill_switch.mastery.*` to `audit_logs` and sends the
+   * tripped keys as the negotiated context field
+   * `corroborationRollbackKcKeys`); the controller applies the UNION of the
+   * two. This env list is NOT written to the Kill-Switch Trigger Log by
+   * itself: Oracle logs it to stdout once per session in which a listed KC
+   * is in the plan, and the operator who sets it records the trip in the
+   * log by hand (MENTOR-INTEGRITY-POLICY.md §3.3).
    */
   TUTOR_CORROBORATION_ROLLBACK_KC_KEYS: z
     .string()

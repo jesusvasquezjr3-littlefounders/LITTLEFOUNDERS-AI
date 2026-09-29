@@ -195,7 +195,7 @@ import {
   type DispositionObservation,
 } from './dispositionProfile.js';
 import { classifyCheckInReply } from './telemetryLexicon.js';
-import { predictedCorrectFrom } from './controller.js';
+import { corroborationRollback, predictedCorrectFrom } from './controller.js';
 import type { SpeechResult } from '../voice/speech.js';
 import type { CloseReason, SessionContext, TrajectoryStepInput } from '../core/client.js';
 import { applyCanary, type CanaryConfigs, type MentorCanaryReport } from './mentorCanary.js';
@@ -793,9 +793,27 @@ export class TutorOrchestrator {
      * mastery values (never instead of them). Server-side only.
      */
     this.dispositionEffects = dispositionEffects(session.dispositionProfile ?? null);
+    /*
+     * C.10 Appendix F Stage 7: the Extended Mastery Engine rollback is the
+     * union of Core's automatic kill switch (audit-logged in Core's
+     * Kill-Switch Trigger Log) and the operator's env list. Logged ONCE per
+     * session when a rolled-back KC is in this session's plan — the only case
+     * in which it can change a mastery or remediation decision.
+     */
+    const rollback = corroborationRollback(
+      config.TUTOR_CORROBORATION_ROLLBACK_KC_KEYS,
+      session.corroborationRollbackKcKeys,
+      session.sessionPlan ?? [],
+    );
+    if (rollback.inPlan.length > 0) {
+      console.warn(
+        `[tutor] session ${session.sessionId}: Stage 7 mastery rollback in force (single-observation baseline) for ` +
+          rollback.inPlan.map((kc) => `${kc.kcKey} [${kc.source}]`).join(', '),
+      );
+    }
     this.controller = new PedagogicalController(session.sessionPlan ?? [], session.kcStates ?? [], {
       corroborationMinObservations: config.TUTOR_CORROBORATION_MIN_OBSERVATIONS,
-      corroborationRollbackKcKeys: config.TUTOR_CORROBORATION_ROLLBACK_KC_KEYS,
+      corroborationRollbackKcKeys: rollback.keys,
       stuckDegradeAfter: this.dispositionEffects.stuckDegradeAfter,
     });
     // Cross-session task agreement: an adaptation turned down across sessions

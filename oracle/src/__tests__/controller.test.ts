@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   ControllerSnapshotSchema,
+  corroborationRollback,
   CORROBORATION_MIN_OBSERVATIONS,
   IDLE_NUDGE_MS,
   LISTEN_SILENCE_MS,
@@ -1386,6 +1387,28 @@ describe('C.10: two consecutive qualifying observations before a consequential m
       c.decide(right(), NOW);
       expect(c.decide(right(), NOW + 40_000).strategy).not.toBe('CELEBRATE');
       expect(c.decide(right(), NOW + 80_000).evidence).toEqual({ rule: 'mastery', observations: 3, required: 3, discounted: 'none' });
+    });
+
+    it("GAP-FIX-R4: the rollback in force is the UNION of Core's automatic kill switch and the operator's env list", () => {
+      const plan = [{ kcKey: 'money.make-change-counting-up' }, { kcKey: 'ent.price.set' }, { kcKey: 'money.make-change-counting-up' }];
+      const r = corroborationRollback(['env.only-kc', 'ent.price.set'], ['money.make-change-counting-up', 'ent.price.set'], plan);
+      expect(r.keys).toEqual(['ent.price.set', 'env.only-kc', 'money.make-change-counting-up']);
+      // Only the plan's rolled-back KCs are named (once each), with where the rollback came from.
+      expect(r.inPlan).toEqual([
+        { kcKey: 'ent.price.set', source: 'core+env' },
+        { kcKey: 'money.make-change-counting-up', source: 'core' },
+      ]);
+      // An older Core (field absent) leaves the env list in force; nothing at all rolls nothing back.
+      expect(corroborationRollback(['env.only-kc'], undefined, plan)).toEqual({ keys: ['env.only-kc'], inPlan: [] });
+      expect(corroborationRollback([], [], plan)).toEqual({ keys: [], inPlan: [] });
+    });
+
+    it("GAP-FIX-R4: a KC Core rolled back is judged on one observation; the session's other KCs stay on the rule", () => {
+      const { keys } = corroborationRollback([], ['money.make-change-counting-up'], []);
+      const rolled = returning({ corroborationRollbackKcKeys: keys });
+      expect(rolled.decide(right(), NOW).evidence).toEqual({ rule: 'mastery', observations: 1, required: 1, discounted: 'none' });
+      const other = returning({ corroborationRollbackKcKeys: corroborationRollback([], ['ent.price.set'], []).keys });
+      expect(other.decide(right(), NOW).strategy).not.toBe('CELEBRATE');
     });
 
     it('ignores an out-of-range value rather than weakening the rule', () => {

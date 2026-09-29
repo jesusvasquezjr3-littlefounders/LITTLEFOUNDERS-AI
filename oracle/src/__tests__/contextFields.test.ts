@@ -41,7 +41,7 @@ describe('context optional fields', () => {
     expect(await fetchSessionContext(CONTEXT.sessionId)).not.toBeNull();
     const headers = (fetchMock.mock.calls[0] as unknown as [string, RequestInit])[1].headers as Record<string, string>;
     expect(headers['x-oracle-context-fields']).toBe(
-      'opening,behavioralTelemetryMode,dispositionProfile,allianceContinuity,allianceMode,spacedReviewMode,dialogueCalibration,canary',
+      'opening,behavioralTelemetryMode,dispositionProfile,allianceContinuity,allianceMode,spacedReviewMode,dialogueCalibration,canary,corroborationRollbackKcKeys',
     );
     expect(headers['x-internal-api-key']).toBeDefined();
     expect(CONTEXT_OPTIONAL_FIELDS).toEqual([
@@ -53,6 +53,7 @@ describe('context optional fields', () => {
       'spacedReviewMode',
       'dialogueCalibration',
       'canary',
+      'corroborationRollbackKcKeys',
     ]);
   });
 
@@ -83,6 +84,22 @@ describe('context optional fields', () => {
     ]) {
       vi.stubGlobal('fetch', vi.fn(async () => coreReplies({ ...CONTEXT, ...bad })));
       expect(await fetchSessionContext(CONTEXT.sessionId)).toBeNull();
+    }
+  });
+
+  it('C.10 Stage 7: parses the mastery-rollback kc keys, strictly', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => coreReplies({ ...CONTEXT, corroborationRollbackKcKeys: ['money.coins.count', 'ent.price'] })));
+    expect((await fetchSessionContext(CONTEXT.sessionId))?.corroborationRollbackKcKeys).toEqual(['money.coins.count', 'ent.price']);
+    vi.stubGlobal('fetch', vi.fn(async () => coreReplies({ ...CONTEXT, corroborationRollbackKcKeys: [] })));
+    expect((await fetchSessionContext(CONTEXT.sessionId))?.corroborationRollbackKcKeys).toEqual([]);
+    // A key that is not a kc.key, a non-array or an oversized list refuses the context.
+    for (const bad of [
+      { corroborationRollbackKcKeys: ['Not A Key'] },
+      { corroborationRollbackKcKeys: 'money.coins.count' },
+      { corroborationRollbackKcKeys: Array.from({ length: 201 }, (_, i) => `kc.key${i}`) },
+    ]) {
+      vi.stubGlobal('fetch', vi.fn(async () => coreReplies({ ...CONTEXT, ...bad })));
+      expect(await fetchSessionContext(CONTEXT.sessionId), JSON.stringify(bad).slice(0, 80)).toBeNull();
     }
   });
 

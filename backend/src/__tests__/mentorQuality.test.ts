@@ -369,6 +369,20 @@ describe('C.24 non-rubric signals', () => {
     ]);
   });
 
+  it('shows an Extended Mastery Engine trip (mentor.kill_switch.mastery.*) until an operator resolves it (GAP-FIX-R4)', () => {
+    const tripped = [
+      { action: 'mentor.kill_switch.mastery.triggered', created_at: recent(3), detail: { kcKeys: ['money.coins.count'], causes: ['reversal_above_ceiling'] } },
+      // A second KC joining the same open trip is still one open rollback.
+      { action: 'mentor.kill_switch.mastery.triggered', created_at: recent(2), detail: { kcKeys: ['ent.price.set'], causes: ['compliance_below_target'] } },
+    ];
+    expect(openKillSwitches(tripped)).toEqual([{ key: 'mastery', triggeredAt: recent(3) }]);
+    const r = evaluateSignals({ ...empty(), killSwitchAudit: tripped });
+    expect(readingOf(r, 'kill_switch.open')).toMatchObject({ status: 'breach', value: 1 });
+    expect(r.anomalies.filter((a) => a.signalId === 'kill_switch.open').map((a) => a.scope)).toEqual(['component:mastery']);
+    const resolved = [...tripped, { action: 'mentor.kill_switch.mastery.resolved', created_at: recent(1), detail: { note: 'root caused' } }];
+    expect(readingOf(evaluateSignals({ ...empty(), killSwitchAudit: resolved }), 'kill_switch.open')).toMatchObject({ status: 'ok', value: 0 });
+  });
+
   it('treats an uncalibrated content judge as a breach for the Safety/Trust Lead', () => {
     const r = evaluateSignals({ ...empty(), liveGate: { calibration: 'uncalibrated', suspended: [{ category: 'standard', reasons: ['uncalibrated'] }] } });
     expect(readingOf(r, 'judge.content_calibration').status).toBe('breach');
