@@ -18,6 +18,11 @@ import './console/console.css';
  * person by name (or "private account" when the Tutor may not see them) with
  * a status (asked, joined, left). No progress of any kind is shown: the group
  * total belongs to the group, and there is no number per person.
+ *
+ * OD-3 Option B (GAP-FIX-R4 finish): a self-registered teen who linked this
+ * Tutor manages goals together on their own account. The card says so and
+ * offers no switch, instead of the age-rule sentence Core's `ageFits: false`
+ * would otherwise produce for a non-child account.
  */
 
 export type CoopGoalsConsentCopy = typeof enFamily.familyCoopGoals;
@@ -45,15 +50,16 @@ function fill(template: string, values: Record<string, string | number>) {
 const STATUS_COPY = { asked: 'statusAsked', joined: 'statusJoined', left: 'statusLeft' } as const;
 const STATUS_TONE = { asked: 'sky', joined: 'mint', left: 'berry' } as const;
 
-export function CoopGoalsConsent({ copy, name, locale = 'en-US', view, goals = { kind: 'none' }, saving, saveFailed, onChange, onRetry, onRetryGoals }: {
-  copy: CoopGoalsConsentCopy; name: string; locale?: string; view: CoopConsentView; goals?: CoopGoalsList; saving: boolean; saveFailed: boolean;
+export function CoopGoalsConsent({ copy, name, locale = 'en-US', view, goals = { kind: 'none' }, selfManaged = false, saving, saveFailed, onChange, onRetry, onRetryGoals }: {
+  copy: CoopGoalsConsentCopy; name: string; locale?: string; view: CoopConsentView; goals?: CoopGoalsList; selfManaged?: boolean; saving: boolean; saveFailed: boolean;
   onChange: (enabled: boolean) => void; onRetry: () => void; onRetryGoals?: () => void;
 }) {
   const noteId = useId();
   const date = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' });
   return <Card heading={copy.title} headingLevel={3} as="section">
-    <div className="lf-coop-consent" data-console-part="coop-goals">
-      {view.kind === 'loading' ? <LoadingState label={copy.loading} lines={2} />
+    <div className="lf-coop-consent" data-console-part="coop-goals" data-self-managed={selfManaged ? 'true' : undefined}>
+      {selfManaged ? <p data-copy-role="body">{fill(copy.selfManaged, { name })}</p>
+        : view.kind === 'loading' ? <LoadingState label={copy.loading} lines={2} />
         : view.kind === 'failed' ? <>
           <InlineNotice tone="error">{copy.failed}</InlineNotice>
           <div className="lf-actions"><Button onClick={onRetry}>{copy.retry}</Button></div>

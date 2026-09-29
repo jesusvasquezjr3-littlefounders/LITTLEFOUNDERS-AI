@@ -593,6 +593,7 @@
     "on": "On",
     "off": "Off",
     "notTeen": "Only for ages 13 to 17, by the birth date you gave.",
+    "selfManaged": "{name} manages goals together on their own account.",
     "active": "{name} is in {count} goals.",
     "offNote": "Turning it off takes {name} out of every goal.",
     "loading": "Loading goals together",

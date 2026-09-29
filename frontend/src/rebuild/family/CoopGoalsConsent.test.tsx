@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import en from '../../i18n/en-US/rebuild-family.json';
 import es from '../../i18n/es-MX/rebuild-family.json';
+import pt from '../../i18n/pt-BR/rebuild-family.json';
 import { parseGuardianGoals } from './coopGuardianGoals';
 import { SocialHistory, coopSentence, type SocialHistoryEntry } from '../social/SocialHistory';
 import { CoopGoalsConsent, type CoopGoalsList } from './CoopGoalsConsent';
@@ -69,6 +70,22 @@ describe('the Tutor sees the child\'s goals together', () => {
     expect(parseGuardianGoals({ goals: [{ ...good.goals[0], people: [{ name: 'Leo', status: 'winning' }] }] })).toBeNull();
     expect(parseGuardianGoals({ goals: [{ ...good.goals[0], childStatus: 'invited' }] })).toBeNull();
     expect(parseGuardianGoals({})).toBeNull();
+  });
+});
+
+describe('a self-registered teen manages goals together on their own account (OD-3 Option B)', () => {
+  it('says so, with no switch, no age rule and no goals, even when Core answers ageFits false', () => {
+    render(<CoopGoalsConsent copy={en.familyCoopGoals} name="Ana" locale="en-US" view={{ kind: 'ready', ageFits: false, enabled: false, openGoals: 0 }}
+      goals={goals} selfManaged saving={false} saveFailed={false} onChange={vi.fn()} onRetry={vi.fn()} />);
+    expect(screen.getByText('Ana manages goals together on their own account.')).toBeTruthy();
+    expect(screen.queryByText(en.familyCoopGoals.notTeen)).toBeNull();
+    expect(screen.queryByRole('switch')).toBeNull();
+    expect(screen.queryByRole('region', { name: en.familyCoopGoals.goalsTitle })).toBeNull();
+  });
+
+  it('has the sentence in every locale', () => {
+    expect(es.familyCoopGoals.selfManaged).toContain('{name}');
+    expect(pt.familyCoopGoals.selfManaged).toContain('{name}');
   });
 });
 

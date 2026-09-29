@@ -593,6 +593,7 @@
     "on": "Activado",
     "off": "Apagado",
     "notTeen": "Solo para 13 a 17 años, según la fecha de nacimiento que diste.",
+    "selfManaged": "{name} maneja sus metas en equipo desde su propia cuenta.",
     "active": "{name} está en {count} metas.",
     "offNote": "Al apagarlo, {name} sale de todas sus metas.",
     "loading": "Cargando metas en equipo",

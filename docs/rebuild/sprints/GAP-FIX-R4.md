@@ -66,4 +66,31 @@ Findings the audit pass fixed:
 
 - `database/types/database.ts` is not regenerated for `coop_goal_guardian_goals`. Regeneration needs `db:types` against a Supabase stack, and this lane may not touch the shared one.
 - The Stage 4 human spot-check of the social copy, and a native es-MX/pt-BR read of the new goals-together and history sentences.
-- A linked self-registered teen's goals-together card still says "Only for ages 13 to 17, by the birth date you gave". This is Core's `ageFits:false` for a non-kid account. The card should say the teen manages it themself. This behavior predates the lane and is left unchanged.
+- ~~A linked self-registered teen's goals-together card says "Only for ages 13 to 17, by the birth date you gave".~~ Fixed at lane finish (below).
+
+## Checkpoint F4-social-finish
+
+Lane finish. The base branch `codex/spec-migration-s02` (`14232a10`) was already merged, so the sync had nothing to add and no conflicts.
+
+### Adversarial pass against the three gaps
+
+- **Gap 3 (E.2, Law 5, OD-27 (1), OD-3 Option B).** The server enforces the guardian link twice, the guardian tier and a query-free request. Only fixed fields leave Core. One half-built edge was found and fixed: a linked self-registered teen's card said "Only for ages 13 to 17, by the birth date you gave". That sentence is Core's `ageFits:false` for a non-child account, and it is wrong for a teen who is 13 to 17. The card now says "{name} manages goals together on their own account." (new key `familyCoopGoals.selfManaged` in EN, es-MX and pt-BR). It shows no switch and no goals, and the panel makes neither read when the family list says `accountType: 'teen'`. Core is unchanged and still refuses the goals read with `403 ACCOUNT_SELF_MANAGED`. Where: `rebuild/family/CoopGoalsConsent.tsx`, `app-routes/CoopGoalsConsentPanel.tsx`, `routes/app/family/FamilyPage.tsx`.
+- **Gap 1 (Appendix J Stage 4, F.3, Law 2).** The new key falls within the tone gate's `familyCoopGoals` scope and passes it.
+- **Gap 2 (Bible 02 §7, 03 §5, 06 §3).** The audit state `connections-graph-self-managed` now renders the new sentence. It still meets `SOCIAL.settled` (a body paragraph in the card). No legacy component was added: the card uses only the rebuild controls.
+
+### Verification (local, lane finish)
+
+- Frontend: type-check and lint clean. The full unit suite passes (278 files, 3,201 tests), including 2 new card tests and the new `CoopGoalsConsentPanel.test.tsx` (2 tests: the self-managed teen gets no read and no switch, and a parent-created child is read).
+- Backend: type-check and lint clean. The full unit suite passes (151 files, 3,486 tests, 1 skipped).
+- Root: `spec:check`, `secrets:check`, `social:check`, the i18n gate, `check-social-copy-tone.mjs` (2,001 strings, 100%) and `check-family-copy-tone.mjs` (4,800 strings, 100%) all pass.
+- Root `tools:test`: 478 tests pass.
+- Database: `check-migrations`, `check-migration-phase` and `check-family-lifecycle` pass (235 files), and the `node --test` group passes (54 tests). The last step, `railway-migrate.test.mjs`, did not finish in over 20 minutes on this Windows machine and was stopped. It drives `railway-migrate.sh` through `bash`, which resolves to WSL here. This lane does not touch that runner, and another lane's run of the same script was hanging at the same time. It is left to the orchestrator's merge gates.
+- Not rerun at finish: the browser matrices and `audit:rebuild` (the orchestrator runs them per merge). The new sentence is 8 words in a body paragraph, within the budget test.
+
+### Lane summary
+
+Three audited gaps are closed, each implemented and locally verified, and none is accepted. Gap 3: the Tutor sees each goal together, who is in it, and the goal history, with no progress shown (migration `0235_coop_goal_guardian_goals.sql`). Gap 1: the social copy tone gate. Gap 2: the Connections panels and `/learn/together` in the Bible audits. Requirement rows E.2, E.10, F.3 and B.23 were updated. Still open:
+
+- `database/types/database.ts` does not include `coop_goal_guardian_goals`. Regenerating it needs `db:types` against a Supabase stack.
+- The Stage 4 human spot-check of the social copy, and a native es-MX and pt-BR read of the goals-together, history and self-managed sentences.
+- W3-SOCIAL-ANSWERS.md (lines 53 and 111) and the GAP-FIX-R3 F3-social "visual pass" item are now covered by this round's audit evidence. They are left unedited for the orchestrator to reconcile.

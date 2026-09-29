@@ -18,6 +18,10 @@ import pt from '@/i18n/pt-BR/rebuild-family.json';
  * goal), it also reads GET /family/kids/:kidId/coop-goals, the child's open
  * goals and who is in them. A self-registered teen's goals are its own
  * (ACCOUNT_SELF_MANAGED): nothing is listed, and nothing is guessed.
+ *
+ * OD-3 Option B: when the family list already says the child is a
+ * self-registered teen (`accountType: 'teen'`), the card only says the teen
+ * manages this on their own account, and neither read is made.
  */
 
 function parse(raw: unknown): Extract<CoopConsentView, { kind: 'ready' }> | null {
@@ -26,14 +30,25 @@ function parse(raw: unknown): Extract<CoopConsentView, { kind: 'ready' }> | null
   return { kind: 'ready', ageFits: value.ageFits, enabled: value.enabled, openGoals: value.openGoals as number };
 }
 
-export function CoopGoalsConsentPanel(props: { kidUserId: string; token: string | null; kidName: string }) {
+export function CoopGoalsConsentPanel(props: { kidUserId: string; token: string | null; kidName: string; selfManaged?: boolean }) {
+  if (props.selfManaged) return <SelfManaged kidName={props.kidName} />;
   return <Scoped key={`${props.kidUserId}:${props.token}`} {...props} />;
 }
 
-function Scoped({ kidUserId, token, kidName }: { kidUserId: string; token: string | null; kidName: string }) {
+function useCopy() {
   const { i18n } = useTranslation();
   const locale = i18n.resolvedLanguage ?? 'en-US';
-  const copy = (locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en).familyCoopGoals;
+  return { locale, copy: (locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en).familyCoopGoals };
+}
+
+function SelfManaged({ kidName }: { kidName: string }) {
+  const { locale, copy } = useCopy();
+  return <CoopGoalsConsent copy={copy} name={kidName} locale={locale} view={{ kind: 'loading' }} selfManaged saving={false} saveFailed={false}
+    onChange={() => undefined} onRetry={() => undefined} />;
+}
+
+function Scoped({ kidUserId, token, kidName }: { kidUserId: string; token: string | null; kidName: string }) {
+  const { locale, copy } = useCopy();
   const [view, setView] = useState<CoopConsentView>({ kind: 'loading' });
   const [goals, setGoals] = useState<CoopGoalsList>({ kind: 'none' });
   const [saving, setSaving] = useState(false);
