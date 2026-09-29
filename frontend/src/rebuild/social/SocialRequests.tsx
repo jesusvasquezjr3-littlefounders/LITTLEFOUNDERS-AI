@@ -29,7 +29,7 @@ export function SocialRequests({ copy, locale, dark, open, requests, loading, fa
         <ul>{requests.map(request => <li key={request.requestId}>
           <Copy role="option">{request.requesterName || copy.hidden}</Copy>
           <Copy role="body">{copy.pending}</Copy>
-          <time dateTime={request.requestedAt}>{date.format(new Date(request.requestedAt))}</time>
+          <time dateTime={request.requestedAt} data-copy-role="data">{date.format(new Date(request.requestedAt))}</time>
           <div className="lf-social-request-actions">
             <Button disabled={loading || deciding} onClick={event => { lastAction.current = event.currentTarget; onDecision(request.requestId, 'approve'); }}>{copy.approve}</Button>
             <Button disabled={loading || deciding} onClick={event => { lastAction.current = event.currentTarget; onDecision(request.requestId, 'deny'); }}>{copy.deny}</Button>

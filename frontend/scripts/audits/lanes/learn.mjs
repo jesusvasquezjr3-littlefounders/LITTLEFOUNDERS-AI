@@ -52,7 +52,12 @@ export const states = [
  * engine, an independent teen and an adult on the pathway engine, the B.3
  * unavailable course, the B.2 prerequisite and the age safeguard (OD-16).
  */
-const learner = (id, path, scenario, ready) => app(id, path, scenario, ready, { readyAlso: '[data-shell="learner"] [data-nav-id="mentor"]' });
+const learner = (id, path, scenario, ready, extra = {}) => app(id, path, scenario, ready, { readyAlso: '[data-shell="learner"] [data-nav-id="mentor"]', ...extra });
+/* GAP-FIX-R4: the controls a learner presses on /learn/together (the start form; the report dialog from a goal's actions). */
+const TOGETHER = {
+  start: '[data-screen="together"] .lf-together-section > .lf-actions > .lf-button--accent',
+  report: '[data-screen="together"] .lf-together-goal-actions > button:nth-child(2)',
+};
 states.push(
   learner('/learn@home-child-6-9', '/learn', 'learn-home-child', '[data-screen="learn-home"][data-state="ready"] .lf-learn-hero[data-step="lesson"]'),
   learner('/learn@home-teen-pathway', '/learn', 'learn-home-teen', '[data-screen="learn-home"][data-state="ready"] .lf-bridge-self'),
@@ -67,6 +72,14 @@ states.push(
   learner('/learn/:course@age-restricted', '/learn/investing', 'learn-home-young', '[data-screen="course-path-age-restricted"]'),
   learner('/learn/journal@teen', '/learn/journal', 'learn-home-teen', '[data-screen="journal"]'),
   learner('/learn/rhythm@child', '/learn/rhythm', 'learn-home-child', '[data-screen="rhythm"]'),
+  // GAP-FIX-R4 (OD-27 (1); Bible 02 §7, 03 §5, 06 §3): goals together on its real route (TOGETHER_ROUTE_PATH) for a 13-to-17 participant:
+  // the learner-home card, open goals, an invitation, the start form, the report dialog from inside a goal, and the closed page.
+  learner('/learn@home-together', '/learn', 'learn-together', '[data-screen="learn-home"][data-state="ready"] .lf-learn-together'),
+  learner('/learn/together@goals', '/learn/together', 'learn-together', '[data-screen="together"] .lf-together-goal-actions'),
+  learner('/learn/together@invitation', '/learn/together', 'learn-together-invited', '[data-screen="together"] .lf-together-section .lf-card--sky'),
+  learner('/learn/together@start-goal', '/learn/together', 'learn-together', TOGETHER.start, { open: [TOGETHER.start], firstView: false }),
+  learner('/learn/together@report', '/learn/together', 'learn-together', TOGETHER.report, { open: [TOGETHER.report], firstView: false }),
+  learner('/learn/together@closed', '/learn/together', 'learn-together-closed', '[data-screen="together"] .lf-state--empty'),
   // W2L.2: the course world (L3) on its real route, both engines, the placement owed, the age safeguard.
   learner('/learn/:course/territory@linear-child', '/learn/financial-education/territory', 'learn-home-child', '[data-screen="territory"] .lf-territory-world--here'),
   learner('/learn/:course/territory@pathway-teen', '/learn/financial-education/territory', 'learn-home-teen', '[data-screen="territory"] .lf-course-path-note'),
@@ -145,6 +158,26 @@ export const scenarios = {
   'learn-home-empty': { population: 'adult', guest: false, ageBand: 'adult', roles: ['universal'], shelf: 'empty', engine: 'linear', register: 'adult' },
   'learn-home-error': { population: 'adult', guest: false, ageBand: 'adult', roles: ['universal'], shelf: 'error', engine: 'linear', register: 'adult' },
   'learn-course-adult': { population: 'adult', guest: false, ageBand: 'adult', roles: ['universal'], shelf: 'child', engine: 'pathway', register: 'adult' },
+  // GAP-FIX-R4 (OD-27 (1)): goals together. `together` is what GET /coop-goals answers: open goals, an invitation, or closed (a child under 13).
+  'learn-together': { population: 'independent teen 13-17, goals together open', guest: false, ageBand: '13-17', roles: ['universal'], wallet: { holder: 'teen', familyChild: false },
+    mentor: 'dina', shelf: 'teen', engine: 'pathway', register: 'teen', together: 'goals' },
+  'learn-together-invited': { population: 'independent teen 13-17, asked to a goal', guest: false, ageBand: '13-17', roles: ['universal'], wallet: { holder: 'teen', familyChild: false },
+    mentor: 'dina', shelf: 'teen', engine: 'pathway', register: 'teen', together: 'invited' },
+  'learn-together-closed': { population: 'parent-created child 6-9, goals together closed', guest: false, ageBand: '6-9', roles: ['kid'], mentor: 'liruf', shelf: 'young',
+    engine: 'pathway', register: 'young', together: 'closed' },
+};
+
+/* ---- GAP-FIX-R4: GET /coop-goals and /coop-goals/candidates as Core answers them (rebuild/learning/together.ts parses them) ---- */
+const mate = (username, displayName, isSelf = false) => ({ username, displayName, avatarOptions: {}, isSelf });
+const COOP_OPTIONS = { targets: [5, 10, 15, 20, 30, 40], days: [7, 14, 28], maxPeople: 5 };
+const togetherAnswer = (kind) => kind !== 'goals' && kind !== 'invited' ? { eligible: false, options: COOP_OPTIONS, goals: [], invitations: [], finished: [] } : {
+  eligible: true, options: COOP_OPTIONS,
+  goals: kind === 'goals' ? [{ id: 'cccccccc-cccc-4ccc-8ccc-000000000001', kind: 'lessons', target: 10, startsAt: '2026-09-20T16:00:00.000Z', endsAt: '2026-10-04T16:00:00.000Z',
+    createdByMe: true, done: 4, reached: false, members: [mate('rio_2010', 'Río', true), mate('luz_reads', 'Luz')], invited: [{ ...mate('sol_sings', 'Sol'), mine: true }],
+    canInvite: true }] : [],
+  invitations: kind === 'invited' ? [{ goalId: 'cccccccc-cccc-4ccc-8ccc-000000000002', kind: 'lessons', target: 5, endsAt: '2026-10-01T16:00:00.000Z',
+    invitedBy: mate('mar_2011', 'Mar'), members: [mate('mar_2011', 'Mar'), mate('luz_reads', 'Luz')] }] : [],
+  finished: kind === 'goals' ? [{ id: 'cccccccc-cccc-4ccc-8ccc-000000000003', kind: 'lessons', target: 5, endsAt: '2026-09-18T16:00:00.000Z', done: 5, reached: true }] : [],
 };
 
 const RUN_ID = '44444444-4444-4444-8444-444444444444';
@@ -247,6 +280,10 @@ function respondLearnerPages({ spec, scenario, locale, path, request, ok }) {
     return undefined;
   }
   if (!spec.shelf) return undefined;
+  // GAP-FIX-R4: every learner scenario answers goals together (closed unless the scenario opens it), as Core does.
+  if (path === '/coop-goals' && request.method === 'GET') return ok(togetherAnswer(spec.together));
+  if (path === '/coop-goals/candidates' && request.method === 'GET') return spec.together === 'goals' || spec.together === 'invited'
+    ? ok({ people: [mate('luz_reads', 'Luz'), mate('mar_2011', 'Mar'), mate('sol_sings', 'Sol')] }) : refuse(403, 'COOP_NOT_ELIGIBLE');
   if (path === '/learn/courses') return spec.shelf === 'error' ? refuse(502, 'INTERNAL') : ok(SHELVES[spec.shelf]());
   const courseRead = path.match(/^\/learn\/courses\/([^/]+)\/(path|tree)$/);
   if (courseRead) {

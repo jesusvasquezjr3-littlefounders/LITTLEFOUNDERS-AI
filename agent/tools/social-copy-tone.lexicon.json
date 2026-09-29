@@ -19,6 +19,9 @@
       "rebuild-profile:discoverable",
       "rebuild-profile:ageRecord",
       "rebuild-learn:together",
+      "rebuild-learn:home.togetherTitle",
+      "rebuild-learn:home.together",
+      "rebuild-learn:home.togetherAsked",
       "rebuild-family:socialGraph",
       "rebuild-family:socialHistory",
       "rebuild-family:socialRequests",
@@ -51,7 +54,7 @@
       "frontend/src/rebuild/learning/together.ts"
     ],
     "surfacesWhy": "The profile, people-list, connection, report and account screens (rebuild/social, rebuild/account and their routes), and /learn/together (OD-27 (1)). A person reads only these surfaces' own copy; the gate fails if one of them starts rendering a raw Core message.",
-    "subtreesWhy": "Every group of rebuild-profile.json is in scope (scope.complete: a new group fails until it is listed), plus rebuild-learn.json `together` and the Family connection groups of rebuild-family.json, which the D.8 gate also reads under its own lexicon. A social surface that names a rebuild-profile or rebuild-family group outside this list fails (scope.coverage), so a later lane cannot add social copy the gate never reads."
+    "subtreesWhy": "Every group of rebuild-profile.json is in scope (scope.complete: a new group fails until it is listed), plus rebuild-learn.json `together` and the learner-home card's three together keys and the Family connection groups of rebuild-family.json, which the D.8 gate also reads under its own lexicon. A social surface that names a rebuild-profile or rebuild-family group outside this list fails (scope.coverage), so a later lane cannot add social copy the gate never reads."
   },
   "categories": {
     "guarantee": {

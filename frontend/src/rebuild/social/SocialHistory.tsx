@@ -62,7 +62,7 @@ export function SocialHistory({ copy, locale, dark, open, entries, loading, fail
                 <Copy role="body">{copy[entry.action.slice(7) as 'follow' | 'unfollow' | 'block' | 'unblock']}</Copy>
                 <Copy role="option">{entry.targetName || copy.hidden}</Copy>
               </>}
-            <time dateTime={entry.createdAt}>{date.format(new Date(entry.createdAt))}</time>
+            <time dateTime={entry.createdAt} data-copy-role="data">{date.format(new Date(entry.createdAt))}</time>
           </li>;
         })}</ul>
         {!loading && entries.length === 0 && <Copy role="body">{copy.empty}</Copy>}

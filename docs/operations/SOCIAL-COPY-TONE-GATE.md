@@ -10,7 +10,7 @@ Before GAP-FIX-R4 the only copy tone gate was the D.8 Family Hub gate ([FAMILY-C
 
 **Scope, all three locales:**
 - every group of `rebuild-profile.json`. The scope is `complete`: a new group in that file fails until it is listed;
-- `rebuild-learn.json` `together` (the `/learn/together` page);
+- `rebuild-learn.json` `together` (the `/learn/together` page) and the learner-home card's `home.togetherTitle`, `home.together` and `home.togetherAsked`;
 - the Family connection groups of `rebuild-family.json`: `socialGraph`, `socialHistory`, `socialRequests`, `socialNotices`, `socialConnectionActions`, `familyCoopGoals`, `badgeShares` and `achievementShare`. The D.8 gate also reads these under its own lexicon.
 
 **Surfaces:** `frontend/src/rebuild/social`, `frontend/src/rebuild/account`, `frontend/src/routes/app/profile`, `frontend/src/app-routes/TogetherRoute.tsx`, `frontend/src/rebuild/learning/TogetherView.tsx` and `together.ts`.
@@ -51,4 +51,4 @@ Any new pattern the reviewer finds is added to the lexicon.
 
 | Date | Strings | First run | After fixes | Notes |
 |---|---|---|---|---|
-| 2026-09-29 | 1,992 | 1,959 of 1,992 pass (98.3%) and 1 raw-message finding | 1,992 of 1,992 (100%), 14 reviewed exceptions | GAP-FIX-R4. One key was reworded in all three locales: `accountDeletion.reauth` said "for your safety" and now says "to confirm it is you". The raw-message rule stopped flagging a comparison (`profileRouteKit.ts`, the offline probe). |
+| 2026-09-29 | 1,992 first, then 1,998 | 1,959 of 1,992 pass (98.3%) and 1 raw-message finding | 1,998 of 1,998 (100%), 14 reviewed exceptions | GAP-FIX-R4. One key was reworded in all three locales: `accountDeletion.reauth` said "for your safety" and now says "to confirm it is you". The raw-message rule stopped flagging a comparison (`profileRouteKit.ts`, the offline probe). The learner-home together keys then joined the scope, and the audit pass shortened the together intro, rules and invitation copy. |
