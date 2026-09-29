@@ -497,10 +497,10 @@
   "badgeLanding": {
     "loading": "Cargando el logro",
     "title": "{name} logró {achievement}",
-    "body": "LittleFounders enseña a niñas y niños sobre dinero y negocios con historias, juegos y un Mentor que responde.",
+    "body": "Niñas y niños aprenden dinero y negocios con historias, juegos y un Mentor.",
     "imageAlt": "Insignia de logro de {name}: {achievement}",
     "expiredTitle": "Este enlace de insignia expiró",
-    "expiredBody": "Los enlaces de insignias dejan de funcionar después de un tiempo. Aún puedes ver cómo funciona LittleFounders.",
+    "expiredBody": "Los enlaces de insignias caducan. Aún puedes ver cómo funciona LittleFounders.",
     "howItWorks": "Cómo funciona"
   }
 }

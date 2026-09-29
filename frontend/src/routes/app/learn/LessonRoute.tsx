@@ -330,8 +330,11 @@ function LessonRouteSession() {
     locale={appLocale} dark={isDark} onDecline={() => setGuidedReview(null)}
     onReview={(skillKey) => navigate(guidedReviewPath(skillKey))} /> : null;
   const lessonTitle = learnCopy[appLocale].lesson.pageTitle;
+  // Bible 06 §7 (GAP-FIX-R4): every lesson screen carries a band. A lesson document declares its own audience; the
+  // opening, recall and refusal screens read in the learner's register (the youngest until Core answers).
+  const learnerBand = REGISTERS[registerOf(register)].copyBand;
   const layer = (screen: string, view: JSX.Element, frame: { locale?: Locale; ageBand?: AgeBand; pageTitle?: string } = {}) =>
-    <LessonLayer theme={theme} locale={frame.locale ?? appLocale} ageBand={frame.ageBand} screen={screen}
+    <LessonLayer theme={theme} locale={frame.locale ?? appLocale} ageBand={frame.ageBand ?? learnerBand} screen={screen}
       pageTitle={frame.pageTitle ?? learnCopy[frame.locale ?? appLocale].lesson.pageTitle}>{view}{offer}</LessonLayer>;
 
   if (state.status === 'loading') {

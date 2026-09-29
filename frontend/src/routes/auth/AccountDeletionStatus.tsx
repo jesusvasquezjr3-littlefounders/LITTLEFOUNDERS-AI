@@ -41,7 +41,7 @@ function readHandoff(state: unknown): AccountDeletionView | null {
 
 export function AccountDeletionStatus() {
   const locale = useShellLocale();
-  const { session, accountDeletion, getToken, logout, refreshMe } = useAuth();
+  const { session, meLoaded, accountDeletion, getToken, logout, refreshMe } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [keeping, setKeeping] = useState(false);
@@ -59,6 +59,9 @@ export function AccountDeletionStatus() {
   else if (session && accountDeletion) {
     view = { kind: 'scheduled', status: accountDeletion.status, scheduledFor: accountDeletion.scheduledFor, signedOut: false, keeping, keepFailed };
   }
+  // A signed-in visit (a reload, a bookmark) waits for Core's /auth/me: the scheduled deletion is only known after
+  // it, and leaving before then sent the holder to the public landing page (GAP-FIX-R4, found by the audit).
+  if (!view && session && !meLoaded) return null;
   if (!view) return <Navigate to={session ? '/' : '/login'} replace />;
 
   const keep = async () => {

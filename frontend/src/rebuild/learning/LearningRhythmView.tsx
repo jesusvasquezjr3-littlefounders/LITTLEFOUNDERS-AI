@@ -1,6 +1,6 @@
 import { useId, useState, type KeyboardEvent } from 'react';
 import { StreakStrip } from './StreakStrip';
-import type { Locale } from '../design/copyBudget';
+import type { AgeBand, Locale } from '../design/copyBudget';
 import { Button, ErrorState, InlineNotice, LoadingState } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
@@ -94,10 +94,12 @@ export function StreakCard({ streak, locale }: { streak: StreakView; locale: Loc
   </section>;
 }
 
-export function LearningRhythmView({ state, locale, dark, onBack, onRetry, onSavePace, onOpenPath, onOpenMentor, fixture = false }: {
+export function LearningRhythmView({ state, locale, dark, ageBand, onBack, onRetry, onSavePace, onOpenPath, onOpenMentor, fixture = false }: {
   state: RhythmState;
   locale: Locale;
   dark: boolean;
+  /** Bible 06 §7 (GAP-FIX-R4): the learner's Copy Budget band, as Core's register gives it. */
+  ageBand?: AgeBand;
   onBack: () => void;
   onRetry: () => void;
   onSavePace: (goal: 1 | 2 | 3) => Promise<Pace | null>;
@@ -134,7 +136,7 @@ export function LearningRhythmView({ state, locale, dark, onBack, onRetry, onSav
   }
 
   return <div className="lf-rebuild lf-learner-page lf-rhythm" data-theme={dark ? 'dark' : 'light'} lang={locale} data-surface="app"
-    data-screen={fixture ? 'rhythm-preview' : 'rhythm'}>
+    data-age-band={ageBand} data-screen={fixture ? 'rhythm-preview' : 'rhythm'}>
     <div className="lf-rhythm-inner">
       <div className="lf-rhythm-top">
         <Button onClick={onBack}>{t.back}</Button>

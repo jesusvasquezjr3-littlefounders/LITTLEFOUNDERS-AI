@@ -19,7 +19,7 @@ import type { LessonEvidence, NarrativeEntry, NarrativeState, TutorChoice } from
  * L-13): for a parent-created child under 13 each lesson shows the story's
  * situation and the option the child chose (the latest; no outcome), in the
  * lesson's language, and the panel says the child is told (their journal
- * says "Your Tutor can see the choices you make"). Teens stay counts only.
+ * says "Your Tutor sees your choices"). Teens stay counts only.
  * Adult register (B.23): direct, no decoration, respects time,
  * so the first view carries the week in two numbers and the latest lessons.
  *

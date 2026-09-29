@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme/useTheme';
 import { rebuildNamespaceCopy } from '@/i18n/rebuild';
 import { RebuildProvider, RebuildRoot } from '@/rebuild/design/controls';
-import type { Locale } from '@/rebuild/design/copyBudget';
+import type { AgeBand, Locale } from '@/rebuild/design/copyBudget';
 
 /*
  * The bridge between the application's providers and the rebuilt design
@@ -65,13 +65,19 @@ function useRouteFocusAcrossRemount() {
   useEffect(() => { lastShellPath = pathname; }, [pathname]);
 }
 
-export function ShellRoot({ children }: { children: ReactNode }) {
+/**
+ * `ageBand`: the Copy Budget band of the person the shell serves (Bible 06 §7:
+ * in production the root carries `data-age-band`). The signed-in shells pass
+ * it (AppLayouts.tsx); a session-less or state screen whose reader's age is
+ * unknown passes none.
+ */
+export function ShellRoot({ children, ageBand }: { children: ReactNode; ageBand?: AgeBand }) {
   useRouteFocusAcrossRemount();
   const locale = useShellLocale();
   const { isDark } = useTheme();
   const theme = isDark ? 'dark' : 'light';
   const copy = rebuildNamespaceCopy[locale].core.appShell;
-  return <RebuildRoot theme={theme} locale={locale}>
-    <RebuildProvider environment={{ theme, locale }} labels={{ dismiss: copy.dismiss }}>{children}</RebuildProvider>
+  return <RebuildRoot theme={theme} locale={locale} ageBand={ageBand}>
+    <RebuildProvider environment={{ theme, locale, ageBand }} labels={{ dismiss: copy.dismiss }}>{children}</RebuildProvider>
   </RebuildRoot>;
 }

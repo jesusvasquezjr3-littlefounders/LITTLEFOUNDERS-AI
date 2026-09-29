@@ -7,6 +7,7 @@ import { app, gallery, preview, shell } from './helpers.mjs';
 export const lane = 'core';
 
 const overlays = ['dialog', 'confirm', 'sheet', 'popover', 'menu', 'toast'];
+const DELETION = '[data-shell="single-state"]';
 
 export const states = [
   // S03 component gallery (specimens: every string budgeted, no first-view total).
@@ -34,6 +35,19 @@ export const states = [
   // Standalone state routes of the real application (no session needed).
   { id: 'app:/account-suspended', entry: 'app', path: '/account-suspended', budget: 'app', firstView: true, catalogue: false },
   app('/no/such/page@not-found', '/no/such/page', null, '[data-shell="single-state"] [data-not-found-path]'),
+  // GAP-FIX-R4 (02 §7 item 10): E.6's one public deletion screen (routes/auth/AccountDeletionStatus.tsx) in every state a
+  // real route shows: signed in with a deletion scheduled (and held), kept with one press, and signed out right after
+  // confirming (Settings hands the outcome over in router state: scheduled, or already deleted).
+  app('/account-deletion@scheduled', '/account-deletion', 'deletion-scheduled', `${DELETION} [data-deletion-audit="scheduled"]`),
+  app('/account-deletion@held', '/account-deletion', 'deletion-held', `${DELETION} [data-deletion-audit="scheduled"]`),
+  app('/account-deletion@kept', '/account-deletion', 'deletion-scheduled', `${DELETION} [data-deletion-audit="scheduled"]`,
+    { open: [`${DELETION} [data-deletion-audit="scheduled"] .lf-button--accent`] }),
+  app('/account-deletion@signed-out', '/login', null, `${DELETION} [data-deletion-audit="scheduled"]`,
+    { pushState: { path: '/account-deletion', state: { deletion: { kind: 'scheduled', scheduledFor: '2026-10-13T21:00:00.000Z' } } } }),
+  app('/account-deletion@deleted', '/login', null, `${DELETION} [data-deletion-audit="deleted"]`,
+    { pushState: { path: '/account-deletion', state: { deletion: { kind: 'deleted', finishing: false } } } }),
+  // The states only a failure or Core's own timing reaches, on the preview's full-screen layout.
+  ...['processing', 'unavailable', 'loading'].map((state) => preview(`account-deletion@${state}`, { screen: 'account-deletion', state, layout: 'screen' })),
   // The mounted shells on real routes (W2): the shell and its rebuilt page, with the per-string, text-fit, tap
   // and grid rules. The one-screen rules (one h1, heading ratio, type-size count, first view) belong to each
   // page's own lane state.
@@ -64,6 +78,10 @@ export const scenarios = {
   'shell-tutor': { population: 'verified parent (Tutor)', guest: false, ageBand: 'adult', roles: ['parent'] },
   // The console pages under the staff shell read many analytics endpoints; here Core reports them unavailable
   // (a real state every console page handles), so the shell is measured over a page that renders, not a crash.
+  // GAP-FIX-R4: an adult whose account deletion is scheduled (E.6); Core's /auth/me carries it, and every app route
+  // sends them to /account-deletion until they decide.
+  'deletion-scheduled': { population: 'adult, account deletion scheduled', guest: false, ageBand: 'adult', accountDeletion: { status: 'pending', scheduledFor: '2026-10-13T21:00:00.000Z' } },
+  'deletion-held': { population: 'adult, account deletion held (a review is open)', guest: false, ageBand: 'adult', accountDeletion: { status: 'held', scheduledFor: '2026-10-13T21:00:00.000Z' } },
   'shell-staff': { population: 'staff, view_analytics only', guest: false, ageBand: 'adult', roles: ['admin'], adminPermissions: ['view_analytics'], adminUnavailable: true },
 };
 
@@ -83,6 +101,8 @@ export function respond({ spec, path, request, ok }) {
   if (request.method === 'GET' && (path === '/family-hub/data-practices/me' || /^\/family-hub\/kids\/[^/]+\/data-practices$/.test(path))) {
     return ok({ migrated: false, hasTutor: Boolean(spec.roles?.includes('kid')), practices: [] });
   }
+  // E.6: "Keep account" cancels the scheduled deletion.
+  if (path === '/account/deletion' && request.method === 'DELETE' && spec.accountDeletion) return ok({ status: 'cancelled' });
   if (spec.adminUnavailable && path.startsWith('/admin/')) return { status: 502, body: { data: null, error: { code: 'DATA_UNAVAILABLE', message: 'Synthetic: not available' } } };
   return undefined;
 }

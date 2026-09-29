@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { app, preview } from './helpers.mjs';
 
 /*
@@ -12,6 +13,10 @@ import { app, preview } from './helpers.mjs';
  * ready selectors hold on load; its `open` presses come after them.
  */
 export const lane = 'site';
+
+// The route retires on this date (routes/marketing/BadgeLandingPage.tsx); after it every link reads as expired.
+const BADGE_ROUTE_RETIRES_AT = Date.parse(readFileSync(new URL('../../../src/routes/marketing/BadgeLandingPage.tsx', import.meta.url), 'utf8')
+  .match(/BADGE_LINK_ROUTE_RETIRES_AT = '([^']+)'/)[1]);
 
 const site = (id, path, ready, extra = {}) => app(id, path, extra.scenario ?? null, ready, { budget: 'site', ...extra });
 
@@ -66,6 +71,12 @@ export const states = [
   // The shared MentorChooser (08 §8): a save in flight locks the other rows.
   preview('onboarding@mentor-saving', { screen: 'onboarding', step: 'mentor', saving: 'rho' }),
   preview('onboarding@account-failed', { screen: 'onboarding', step: 'account', failed: '1' }),
+  // GAP-FIX-R4 (02 §7 item 10): M7, the legacy badge-link page (OD-20), signed out as its audience meets it: a link
+  // Core refuses (expired, revoked or after the cutover) and, until the route retires, a link Core still answers. It
+  // renders on the single-state shell, not the site shell, so it is budgeted as the other single-state screens are.
+  site('/badge/:token@expired', '/badge/audit-expired', '[data-screen="badge-landing"][data-state="expired"]', { scenario: 'badge-visitor', budget: 'app' }),
+  ...(Date.now() < BADGE_ROUTE_RETIRES_AT ? [site('/badge/:token@ready', '/badge/audit-ready', '[data-screen="badge-landing"][data-state="ready"] img',
+    { scenario: 'badge-visitor', budget: 'app' })] : []),
 ];
 
 export const scenarios = {
@@ -79,6 +90,8 @@ export const scenarios = {
   // A guest refused at sign-up (A.2) on their first run: screened under 13, onboarding not done.
   'identity-new-guest': { population: 'guest, under-13 origin, first run', guest: true, ageBand: '6-9', onboarding: false },
   // A verified parent on the public pages: "Continue" instead of "Start free", "Open your family" instead of the sign-up.
+  // GAP-FIX-R4: a visitor with no session opening a badge link (Core answers GET /badges/:token without one).
+  'badge-visitor': { population: 'visitor, signed out', guest: false, signedOut: true, ageBand: null },
   'site-tutor': { population: 'verified parent (Tutor) on the public site', guest: false, ageBand: 'adult', roles: ['parent'] },
 };
 
@@ -86,6 +99,10 @@ export const scenarios = {
 export function respond({ spec, path, request, ok }) {
   if (path === '/verification/parent' && request.method === 'GET' && spec.verification) return ok(spec.verification);
   if (path === '/auth/oauth/providers') return ok({ providers: [] });
+  // M7: a link issued before the OD-20 cutover; Core answers only the share image and the first name.
+  if (path === '/badges/audit-ready') return ok({ firstName: 'Sofía', achievementKind: 'course_badge', achievementLabel: 'Money basics',
+    imageUrl: '/course-badges/financial-education.png' });
+  if (path.startsWith('/badges/')) return { status: 404, body: { data: null, error: { code: 'NOT_FOUND', message: 'Synthetic: expired link' } } };
   if (path === '/tutor/preferences' && request.method === 'PUT') return ok({ character: 'rho', companion: null, diorama: 'diorama-a', backdrop: 'day', nickname: null, adaptations: [] });
   return undefined;
 }

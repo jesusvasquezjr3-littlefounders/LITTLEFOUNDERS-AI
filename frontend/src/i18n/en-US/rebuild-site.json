@@ -497,10 +497,10 @@
   "badgeLanding": {
     "loading": "Loading the achievement",
     "title": "{name} earned {achievement}",
-    "body": "LittleFounders teaches kids money and business skills with stories, games and a Mentor who answers back.",
+    "body": "Kids learn money and business with stories, games and a Mentor.",
     "imageAlt": "{name}'s achievement badge: {achievement}",
     "expiredTitle": "This badge link has expired",
-    "expiredBody": "Shared badge links stop working after a while. You can still see how LittleFounders works.",
+    "expiredBody": "Shared badge links expire. You can still see how LittleFounders works.",
     "howItWorks": "How it works"
   }
 }

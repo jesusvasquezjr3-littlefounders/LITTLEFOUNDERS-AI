@@ -87,10 +87,20 @@ async function load(page, state, locale, theme, width) {
     // authenticated state, none for a session-less route. Core is answered by the synthetic Core.
     await onOrigin(page);
     const spec = state.scenario ? SCENARIOS[state.scenario] : null;
-    await page.evaluate(spec ? sessionStorageScript({ guest: spec.guest, locale, theme }) : signedOutStorageScript({ locale, theme }));
+    // A `signedOut` scenario answers Core for a visitor with no session (a public page that reads Core).
+    await page.evaluate(spec && !spec.signedOut ? sessionStorageScript({ guest: spec.guest, locale, theme }) : signedOutStorageScript({ locale, theme }));
     page.core = spec ? { scenario: state.scenario, locale, theme, fixtures } : null;
   } else page.core = null;
   await page.send('Page.navigate', { url });
+  if (state.entry === 'app' && state.pushState) {
+    // A screen only a router hand-off reaches (router state, never a URL): once the app has mounted, push the
+    // address with that state and let the router read it, as a navigate(path, { state }) inside the app does.
+    for (let n = 0; n < readyTries && !await page.evaluate("!!document.querySelector('.lf-rebuild')").catch(() => false); n++) await wait(50);
+    await page.evaluate(`(() => {
+      history.pushState({ usr: ${JSON.stringify(state.pushState.state)}, key: 'audit', idx: (history.state?.idx ?? 0) + 1 }, '', ${JSON.stringify(state.pushState.path)});
+      dispatchEvent(new PopStateEvent('popstate', { state: history.state }));
+    })()`);
+  }
   const ready = state.entry === 'app'
     ? `document.readyState === 'complete' && !!document.querySelector('.lf-rebuild') && document.documentElement.lang === ${JSON.stringify(locale)}${(state.readyAll ?? []).map((selector) => ` && !!document.querySelector(${JSON.stringify(selector)})`).join('')}`
     :`location.href === ${JSON.stringify(url)} && !!document.querySelector('.lf-rebuild main, main.lf-rebuild')`;
@@ -167,7 +177,8 @@ async function measure(page, state, locale, theme, width, first, sink) {
     const res = await page.evaluate(`window.__lfAudit.copyBudget(${FOLD})`);
     sink.configurations['copy-budget']++;
     if (!res.blocks.length) sink.rows['copy-budget'].push({ type: 'no-text-measured', detail: 'the state rendered no measurable text', ...where });
-    for (const [type, detail] of copyFindings(res, state, locale, { firstView: width === 375 })) sink.rows['copy-budget'].push({ type, detail, ...where });
+    const band = state.scenario ? SCENARIOS[state.scenario]?.ageBand : undefined;
+    for (const [type, detail] of copyFindings(res, state, locale, { firstView: width === 375, band })) sink.rows['copy-budget'].push({ type, detail, ...where });
   }
 }
 

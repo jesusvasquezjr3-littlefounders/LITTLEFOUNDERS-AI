@@ -70,11 +70,6 @@ function dateOf(iso: string, locale: Locale): string {
   return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(date);
 }
 
-function names(people: TogetherPerson[], locale: Locale, t: Copy): string {
-  const list = people.map((p) => (p.isSelf ? t.you : p.displayName || p.username));
-  return new Intl.ListFormat(locale, { style: 'long', type: 'conjunction' }).format(list);
-}
-
 export function TogetherView(props: TogetherViewProps) {
   const { locale, dark, state, fixture = false } = props;
   const t = learnCopy[locale].together;
@@ -88,7 +83,11 @@ export function TogetherView(props: TogetherViewProps) {
         : status === 'offline' || status === 'error' ? <ErrorState heading={t.errorTitle} body={status === 'offline' ? t.offlineBody : t.errorBody}
           retryLabel={t.retry} retryingLabel={t.retrying} retrying={props.retrying} onRetry={props.onRetry} />
           : state.status !== 'ready' || !state.value.eligible
-            ? <EmptyState heading={t.closedTitle} body={`${t.closedBody} ${t.closedHint}`} />
+            ? <>
+              <EmptyState heading={t.closedTitle} body={t.closedBody} />
+              {/* The way in, a separate line (06 §3: one idea per body block, at most 12 words). */}
+              <p className="lf-together-hint" data-copy-role="body">{t.closedHint}</p>
+            </>
             : <Ready {...props} value={state.value} t={t} />}
     </div>
   </div>;
@@ -102,8 +101,8 @@ function Ready(props: TogetherViewProps & { value: Extract<TogetherState, { stat
   const say = (outcome: TogetherOutcome, success: string) => setNotice(outcome === 'done' ? { tone: 'success', text: success } : { tone: 'error', text: refusalText(t, outcome) });
 
   return <>
+    {/* GAP-FIX-R4 (06 §3.1): one line says who sees it and what is not here; the first view stays within 40 words. */}
     <p className="lf-together-intro" data-copy-role="body">{t.intro}</p>
-    <p className="lf-together-rules" data-copy-role="body">{t.rules}</p>
     {notice ? <InlineNotice tone={notice.tone} live>{notice.text}</InlineNotice> : null}
 
     {value.invitations.length > 0 ? <section className="lf-together-section" aria-labelledby={`${headingId}-asked`}>
@@ -112,7 +111,6 @@ function Ready(props: TogetherViewProps & { value: Extract<TogetherState, { stat
         {value.invitations.map((invitation) => <li key={invitation.goalId}>
           <Card tone="sky" heading={fill(t.goalLine, { n: invitation.target, date: dateOf(invitation.endsAt, locale) })} headingLevel={3} as="article">
             {invitation.invitedBy ? <p data-copy-role="body">{fill(t.invitedBy, { name: invitation.invitedBy.displayName || invitation.invitedBy.username })}</p> : null}
-            {invitation.members.length > 0 ? <p data-copy-role="body">{fill(t.withPeople, { names: names(invitation.members, locale, t) })}</p> : null}
             <People people={invitation.members} t={t} label={t.membersTitle} />
             <Answer {...props} goalId={invitation.goalId} onDone={say} />
           </Card>
@@ -173,6 +171,9 @@ function GoalCard(props: TogetherViewProps & { goal: TogetherGoal; t: Copy; onDo
   const [reporting, setReporting] = useState<TogetherPerson | null>(null);
   const [asking, setAsking] = useState(false);
   const [busy, setBusy] = useState(false);
+  // 06 §3.1 layering: the goal, the group total and the people first; asking, removing, reporting and leaving one press away.
+  const [managing, setManaging] = useState(false);
+  const manageId = useId();
   const others = goal.members.filter((m) => !m.isSelf);
   const alreadyIn = new Set([...goal.members, ...goal.invited].map((p) => p.username));
 
@@ -188,28 +189,30 @@ function GoalCard(props: TogetherViewProps & { goal: TogetherGoal; t: Copy; onDo
     <ProgressBar label={t.progressLabel} value={Math.min(goal.done, goal.target)} max={goal.target} tone="mint"
       valueText={fill(t.progressValue, { done: goal.done, n: goal.target })} />
     {goal.reached ? <InlineNotice tone="info">{t.reached}</InlineNotice> : null}
-    <h4 className="lf-together-subhead" data-copy-role="heading">{t.membersTitle}</h4>
     <ul className="lf-together-people" aria-label={t.membersTitle}>
       {goal.members.map((person) => <li key={person.username} className="lf-together-person">
         <CartoonAvatar look={resolveLook(person.avatarOptions, person.username)} size="sm" />
         <span data-copy-role="data">{person.isSelf ? t.you : person.displayName || person.username}</span>
-        {!person.isSelf && goal.createdByMe ? <Button size="sm" disabled={busy} onClick={() => setRemoving(person)}>{t.remove}</Button> : null}
+        {managing && !person.isSelf && goal.createdByMe ? <Button size="sm" disabled={busy} onClick={() => setRemoving(person)}>{t.remove}</Button> : null}
       </li>)}
       {goal.invited.map((person) => <li key={person.username} className="lf-together-person">
         <CartoonAvatar look={resolveLook(person.avatarOptions, person.username)} size="sm" />
         <span data-copy-role="data">{person.displayName || person.username}</span>
         <Pill tone="sky">{t.waiting}</Pill>
-        {goal.createdByMe || person.mine
+        {managing && (goal.createdByMe || person.mine)
           ? <Button size="sm" disabled={busy} onClick={() => void run(() => props.onRemove(goal.id, person.username), t.removed)}>{t.withdraw}</Button> : null}
       </li>)}
     </ul>
-    {asking ? <AskSomeone candidates={props.candidates} t={t} exclude={alreadyIn} onClose={() => setAsking(false)}
-      onPick={async (username) => { const outcome = await run(() => props.onAsk(goal.id, username), t.invited); if (outcome === 'done') setAsking(false); }} /> : null}
     <div className="lf-actions lf-together-goal-actions">
+      <Button aria-expanded={managing} aria-controls={managing ? manageId : undefined} onClick={() => { setManaging((open) => !open); setAsking(false); }}>{t.manage}</Button>
+    </div>
+    {managing ? <div id={manageId} className="lf-actions lf-together-goal-actions">
       {goal.canInvite && !asking ? <Button disabled={busy} onClick={() => { setAsking(true); props.onLoadCandidates(); }}>{t.invite}</Button> : null}
       {others.length > 0 ? <Button disabled={busy} onClick={() => setReporting(others[0] ?? null)}>{t.report}</Button> : null}
       <Button disabled={busy} onClick={() => setLeaving(true)}>{t.leave}</Button>
-    </div>
+    </div> : null}
+    {asking ? <AskSomeone candidates={props.candidates} t={t} exclude={alreadyIn} onClose={() => setAsking(false)}
+      onPick={async (username) => { const outcome = await run(() => props.onAsk(goal.id, username), t.invited); if (outcome === 'done') setAsking(false); }} /> : null}
     <ConfirmDialog open={leaving} heading={t.leaveTitle} consequence={t.leaveBody} keepLabel={t.stay} confirmLabel={t.leaveYes} pendingLabel={t.leaveYes}
       pending={busy} destructive onKeep={() => setLeaving(false)}
       onConfirm={() => void run(() => props.onLeave(goal.id), t.left).then(() => setLeaving(false))} />

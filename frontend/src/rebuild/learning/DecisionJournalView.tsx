@@ -1,5 +1,5 @@
 import { useId, useState } from 'react';
-import type { Locale } from '../design/copyBudget';
+import type { AgeBand, Locale } from '../design/copyBudget';
 import { Button, IconButton, InlineNotice } from '../design/controls';
 import { TextField } from '../design/fields';
 import '../design/tokens.css';
@@ -53,7 +53,7 @@ export const decisionJournalCopy: Record<Locale, Copy> = {
     tryIt: 'I will try', notNow: 'Not now', planned: 'Saved as your plan.', bridgeClosed: 'This idea has closed.', bridgeFailed: 'Could not save it. Try again.',
     goalName: 'What will you save for?', goalTarget: 'Coins to save', createGoal: 'Create goal', planOnly: 'Just a plan',
     goalCreated: 'Goal added to your Wallet.', noWallet: 'Your Wallet is not open.', goalCoins: '{n} coins to save', openWallet: 'See my Wallet',
-    tutorSees: 'Your Tutor can see the choices you make.',
+    tutorSees: 'Your Tutor sees your choices.',
   },
   'es-MX': {
     title: 'Mis decisiones', back: 'Volver', loading: 'Cargando tus decisiones', retry: 'Reintentar', errorTitle: 'Diario no disponible', errorBody: 'No pudimos cargarlo. Inténtalo de nuevo.',
@@ -63,7 +63,7 @@ export const decisionJournalCopy: Record<Locale, Copy> = {
     tryIt: 'Lo intentaré', notNow: 'Ahora no', planned: 'Guardado como tu plan.', bridgeClosed: 'Esta idea ya cerró.', bridgeFailed: 'No se pudo guardar. Inténtalo de nuevo.',
     goalName: '¿Para qué vas a ahorrar?', goalTarget: 'Monedas por ahorrar', createGoal: 'Crear meta', planOnly: 'Solo un plan',
     goalCreated: 'Meta agregada a tu Cartera.', noWallet: 'Tu Cartera no está abierta.', goalCoins: '{n} monedas por ahorrar', openWallet: 'Ver mi Cartera',
-    tutorSees: 'Tu Tutor puede ver las elecciones que haces.',
+    tutorSees: 'Tu Tutor ve tus elecciones.',
   },
   'pt-BR': {
     title: 'Minhas decisões', back: 'Voltar', loading: 'Carregando suas decisões', retry: 'Tentar de novo', errorTitle: 'Diário indisponível', errorBody: 'Não foi possível carregar. Tente de novo.',
@@ -73,7 +73,7 @@ export const decisionJournalCopy: Record<Locale, Copy> = {
     tryIt: 'Vou tentar', notNow: 'Agora não', planned: 'Salvo como seu plano.', bridgeClosed: 'Esta ideia já fechou.', bridgeFailed: 'Não foi possível salvar. Tente de novo.',
     goalName: 'Para que você vai poupar?', goalTarget: 'Moedas para poupar', createGoal: 'Criar meta', planOnly: 'Só um plano',
     goalCreated: 'Meta adicionada à sua Carteira.', noWallet: 'Sua Carteira não está aberta.', goalCoins: '{n} moedas para poupar', openWallet: 'Ver minha Carteira',
-    tutorSees: 'Seu Tutor pode ver as escolhas que você faz.',
+    tutorSees: 'Seu Tutor vê suas escolhas.',
   },
 };
 
@@ -174,10 +174,12 @@ export function SelfBridgeList({ bridges, locale, onBridge, onOpenWallet }: {
   </section>;
 }
 
-export function DecisionJournalView({ state, locale, dark, onBack, onRetry, onMore, onClear, onBridge, onOpenWallet, loadingMore = false, fixture = false }: {
+export function DecisionJournalView({ state, locale, dark, ageBand, onBack, onRetry, onMore, onClear, onBridge, onOpenWallet, loadingMore = false, fixture = false }: {
   state: JournalState;
   locale: Locale;
   dark: boolean;
+  /** Bible 06 §7 (GAP-FIX-R4): the learner's Copy Budget band, as Core's register gives it. */
+  ageBand?: AgeBand;
   onBack: () => void;
   onRetry?: () => void;
   onMore?: () => void;
@@ -196,7 +198,7 @@ export function DecisionJournalView({ state, locale, dark, onBack, onRetry, onMo
    * page's <h1> takes focus on arrival while the journal is still loading;
    * that heading must survive the answer instead of being replaced under it.
    */
-  return <div className="lf-rebuild lf-learner-page lf-journal" data-theme={theme} lang={locale} data-surface="app"
+  return <div className="lf-rebuild lf-learner-page lf-journal" data-theme={theme} lang={locale} data-surface="app" data-age-band={ageBand}
     data-screen={state.status === 'ready' ? (fixture ? 'journal-preview' : 'journal') : `journal-${state.status}`} aria-busy={state.status === 'loading'}>
     <div className={`lf-journal-inner${state.status === 'ready' ? '' : ' lf-journal-state'}`}>
       <div className="lf-journal-top">

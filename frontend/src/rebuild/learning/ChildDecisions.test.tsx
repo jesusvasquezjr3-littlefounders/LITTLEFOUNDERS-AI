@@ -61,9 +61,9 @@ describe('the child is told on their own journal', () => {
   it('says the Tutor can see the choices only when Core says so, within the youngest budget', () => {
     const shared = { ...journalFixture('en-US', false), sharedWithTutor: true } as const;
     const { rerender } = render(<DecisionJournalView state={shared} locale="en-US" dark={false} onBack={() => {}} onClear={async () => true} onBridge={async () => 'done'} />);
-    expect(screen.getByText('Your Tutor can see the choices you make.')).toBeTruthy();
+    expect(screen.getByText('Your Tutor sees your choices.')).toBeTruthy();
     rerender(<DecisionJournalView state={journalFixture('en-US', false)} locale="en-US" dark={false} onBack={() => {}} onClear={async () => true} onBridge={async () => 'done'} />);
-    expect(screen.queryByText('Your Tutor can see the choices you make.')).toBeNull();
+    expect(screen.queryByText('Your Tutor sees your choices.')).toBeNull();
     for (const locale of locales) {
       expect(checkCopy(decisionJournalCopy[locale].tutorSees, 'body', { locale, ageBand: '6-9', surface: 'app' })).toEqual([]);
     }

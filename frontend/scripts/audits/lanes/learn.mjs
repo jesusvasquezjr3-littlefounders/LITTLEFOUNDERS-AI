@@ -67,6 +67,8 @@ states.push(
   learner('/learn/:course@age-restricted', '/learn/investing', 'learn-home-young', '[data-screen="course-path-age-restricted"]'),
   learner('/learn/journal@teen', '/learn/journal', 'learn-home-teen', '[data-screen="journal"]'),
   learner('/learn/rhythm@child', '/learn/rhythm', 'learn-home-child', '[data-screen="rhythm"]'),
+  // GAP-FIX-R4 (06 §7): the journal for the 6-9 child too, at the 6-9 limits the learner shell's root now carries.
+  learner('/learn/journal@child', '/learn/journal', 'learn-home-child', '[data-screen="journal"] .lf-journal-shared'),
   // W2L.2: the course world (L3) on its real route, both engines, the placement owed, the age safeguard.
   learner('/learn/:course/territory@linear-child', '/learn/financial-education/territory', 'learn-home-child', '[data-screen="territory"] .lf-territory-world--here'),
   learner('/learn/:course/territory@pathway-teen', '/learn/financial-education/territory', 'learn-home-teen', '[data-screen="territory"] .lf-course-path-note'),
@@ -122,6 +124,21 @@ states.push(
   preview('placement-age@6-9', { screen: 'placement', flow: 'age', age: '6-9' }),
 );
 
+/*
+ * GAP-FIX-R4 (02 §7 item 10, 06 §7): goals together (L-04, OD-27 (1)) on its real route inside the learner shell,
+ * for an eligible 13-17 teen (with a goal and an invitation, with nothing yet, with a goal reached) and for a
+ * 13-17 teen Core reports as not eligible (a parent-created teen whose Tutor has not opted in), plus the preview.
+ */
+const together = (id, scenario, ready) => learner(`/learn/together@${id}`, '/learn/together', scenario, `[data-screen="together"] ${ready}`);
+states.push(
+  together('ready', 'together-ready', 'section[aria-labelledby$="-asked"]'),
+  together('empty', 'together-empty', '.lf-together-section > .lf-state--empty'),
+  together('closed', 'together-closed', '.lf-together-inner > .lf-state--empty'),
+  together('reached', 'together-reached', '.lf-notice--info'),
+  preview('together@13-17', { screen: 'together', together: 'ready', age: '13-17' }),
+  preview('together-closed@13-17', { screen: 'together', together: 'closed', age: '13-17' }),
+);
+
 export const scenarios = {
   'lesson-goal': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', lesson: 'goal' },
   'lesson-allocation': { population: 'adult', guest: false, ageBand: 'adult', lesson: 'allocation', graded: true, mentorStage: { character: 'zara', scene: 'diorama-a' } },
@@ -145,7 +162,31 @@ export const scenarios = {
   'learn-home-empty': { population: 'adult', guest: false, ageBand: 'adult', roles: ['universal'], shelf: 'empty', engine: 'linear', register: 'adult' },
   'learn-home-error': { population: 'adult', guest: false, ageBand: 'adult', roles: ['universal'], shelf: 'error', engine: 'linear', register: 'adult' },
   'learn-course-adult': { population: 'adult', guest: false, ageBand: 'adult', roles: ['universal'], shelf: 'child', engine: 'pathway', register: 'adult' },
+  // GAP-FIX-R4: goals together. `together` is what GET /coop-goals answers.
+  'together-ready': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', roles: ['universal'], wallet: { holder: 'teen', familyChild: false }, mentor: 'dina', together: 'ready' },
+  'together-empty': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', roles: ['universal'], wallet: { holder: 'teen', familyChild: false }, mentor: 'dina', together: 'empty' },
+  'together-reached': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', roles: ['universal'], wallet: { holder: 'teen', familyChild: false }, mentor: 'dina', together: 'reached' },
+  'together-closed': { population: 'parent-created teen 13-17, no Tutor opt-in', guest: false, ageBand: '13-17', roles: ['kid'], mentor: 'rho', together: 'closed' },
 };
+
+/* ---- GAP-FIX-R4: GET /coop-goals, shaped exactly like Core's (rebuild/learning/together.ts parses it; togetherFixtures.ts mirrors it) ---- */
+const coopPerson = (username, displayName, isSelf = false) => ({ username, displayName, avatarOptions: { seed: username }, isSelf });
+const inDays = (days) => new Date(Date.now() + days * 86_400_000).toISOString();
+function coopGoals(kind) {
+  const options = { targets: [5, 10, 15, 20, 30, 40], days: [7, 14, 28], maxPeople: 5 };
+  if (kind === 'empty' || kind === 'closed') return { eligible: kind === 'empty', options, goals: [], invitations: [], finished: [] };
+  return {
+    eligible: true, options,
+    goals: [{
+      id: '11111111-1111-4111-8111-111111111111', kind: 'lessons', target: 10, startsAt: inDays(-4), endsAt: inDays(10), createdByMe: true,
+      done: kind === 'reached' ? 11 : 4, reached: kind === 'reached',
+      members: [coopPerson('sofia_r', 'Sofía', true), coopPerson('luz_m', 'Luz')], invited: [{ ...coopPerson('teo_x', 'Teo'), mine: true }], canInvite: true,
+    }],
+    invitations: kind === 'ready' ? [{ goalId: '22222222-2222-4222-8222-222222222222', kind: 'lessons', target: 5, endsAt: inDays(7),
+      invitedBy: coopPerson('mar_17', 'Mar'), members: [coopPerson('mar_17', 'Mar')] }] : [],
+    finished: [{ id: '33333333-3333-4333-8333-333333333333', kind: 'lessons', target: 15, endsAt: inDays(-2), done: 12, reached: false }],
+  };
+}
 
 const RUN_ID = '44444444-4444-4444-8444-444444444444';
 
@@ -267,7 +308,9 @@ function respondLearnerPages({ spec, scenario, locale, path, request, ok }) {
   if (path === '/learn/register' && request.method === 'GET') return ok({ register: spec.register, copy_band: BAND[spec.register], policy_version: '2026-09-24.1', graduation: null });
   if (path === '/learn/bridges') return ok({ prompts: spec.bridges ? [{ id: 'bridge-1', action: 'savings_goal', skill: loc('Saving toward a goal', 'Ahorrar para una meta', 'Poupar para uma meta'),
     createdAt: '2026-09-22T10:00:00.000Z', expiresAt: '2026-10-06T10:00:00.000Z' }] : [] });
-  if (path === '/learn/journal' && request.method === 'GET') return ok({ hasMore: false, entries: [{
+  // OD-27 (3): Core says the journal of a parent-created child under 13 is visible to their verified Tutor.
+  if (path === '/learn/journal' && request.method === 'GET') return ok({ hasMore: false,
+    sharedWithTutor: Boolean(spec.roles?.includes('kid') && (spec.ageBand === '6-9' || spec.ageBand === '10-12')), entries: [{
     id: 'e1', course: { slug: 'financial-education', title: TITLES['financial-education'] }, lesson: { id: 'l1', title: loc('The lemonade stand', 'El puesto de limonada', 'A barraca de limonada') },
     situation: 'What price brings me closer to the guitar?', choice: '10 coins, double the price', firstChoice: '5 coins, the usual price',
     outcome: 'Two neighbors buy. Liruf earns 16 coins toward the guitar.', timesDecided: 2, resurfaced: 1, recordedAt: '2026-09-21T10:00:00.000Z' }] });
@@ -302,6 +345,8 @@ function respondPlacement({ spec, locale, kind, request, ok }) {
 
 /** The lesson document and its server-graded run, from the product's own pilot fixtures. */
 export function respond({ spec, scenario, locale, fixtures, path, request, ok }) {
+  if (spec.together && path === '/coop-goals' && request.method === 'GET') return ok(coopGoals(spec.together));
+  if (spec.together && path === '/coop-goals/candidates') return ok({ people: [coopPerson('luz_m', 'Luz'), coopPerson('teo_x', 'Teo')] });
   const learnerPage = respondLearnerPages({ spec, scenario, locale, path, request, ok });
   if (learnerPage !== undefined) return learnerPage;
   // W2L.3: the lesson route reads the learner's register (B.23) as the lesson opens; answer it from the scenario's age.

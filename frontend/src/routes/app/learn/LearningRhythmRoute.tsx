@@ -5,6 +5,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { useTheme } from '@/theme/useTheme';
 import type { Locale } from '@/rebuild/design/copyBudget';
+import { useRebuildEnvironment } from '@/rebuild/design/layers';
 import { LearningRhythmView } from '@/rebuild/learning/LearningRhythmView';
 import { fetchRhythm, savePace, type MotivationTransport, type RhythmState } from '@/rebuild/learning/motivation';
 
@@ -20,6 +21,8 @@ export function LearningRhythmRoute() {
   const { i18n } = useTranslation();
   const { isDark } = useTheme();
   const { getToken } = useAuth();
+  // Bible 06 §7 (GAP-FIX-R4): the band the learner shell resolved once from Core's register; the youngest outside it.
+  const ageBand = useRebuildEnvironment().ageBand ?? '6-9';
   const [state, setState] = useState<RhythmState>({ status: 'loading' });
   const [revision, setRevision] = useState(0);
   const value = i18n.resolvedLanguage ?? i18n.language;
@@ -38,7 +41,7 @@ export function LearningRhythmRoute() {
     return () => { active = false; };
   }, [transport, revision]);
 
-  return <LearningRhythmView state={state} locale={locale} dark={isDark}
+  return <LearningRhythmView state={state} locale={locale} dark={isDark} ageBand={ageBand}
     onBack={() => navigate('/learn')}
     onRetry={() => setRevision((n) => n + 1)}
     onSavePace={(goal) => savePace(transport, goal)}

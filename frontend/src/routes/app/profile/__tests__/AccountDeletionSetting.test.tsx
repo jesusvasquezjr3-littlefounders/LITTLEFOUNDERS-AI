@@ -15,6 +15,7 @@ import { AccountDeletionStatus } from '@/routes/auth/AccountDeletionStatus';
 const mocks = vi.hoisted(() => ({
   auth: {
     session: { user: { id: 'synthetic' } } as unknown,
+    meLoaded: true,
     accountDeletion: null as unknown,
     getToken: vi.fn().mockResolvedValue('jwt'),
     logout: vi.fn().mockResolvedValue(undefined),
@@ -34,6 +35,7 @@ beforeEach(async () => {
   sent.length = 0;
   mocks.auth.session = { user: { id: 'synthetic' } };
   mocks.auth.accountDeletion = null;
+  mocks.auth.meLoaded = true;
   vi.stubGlobal('fetch', vi.fn(async (_url: string, init?: RequestInit) => {
     const method = init?.method ?? 'GET';
     sent.push({ method, body: init?.body ? JSON.parse(String(init.body)) : null });
@@ -126,6 +128,23 @@ describe('AccountDeletionStatus (signed in with a scheduled deletion)', () => {
     expect(mocks.auth.refreshMe).toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     expect(screen.getByTestId('where').textContent).toBe('/');
+  });
+
+  it("waits for Core's /auth/me on a signed-in visit before deciding where to go", () => {
+    mocks.auth.meLoaded = false;
+    const view = () => <MemoryRouter initialEntries={['/account-deletion']}>
+      <Routes>
+        <Route path="/account-deletion" element={<><AccountDeletionStatus /><Where /></>} />
+        <Route path="/" element={<Where />} />
+      </Routes>
+    </MemoryRouter>;
+    const { rerender } = render(view());
+    expect(screen.getByTestId('where').textContent).toBe('/account-deletion');
+    mocks.auth.meLoaded = true;
+    mocks.auth.accountDeletion = { status: 'held', scheduledFor: '2026-10-08T21:00:00.000Z' };
+    rerender(view());
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Deletion scheduled');
+    expect(screen.getByTestId('where').textContent).toBe('/account-deletion');
   });
 
   it('a direct visit with nothing to show goes to sign-in', () => {

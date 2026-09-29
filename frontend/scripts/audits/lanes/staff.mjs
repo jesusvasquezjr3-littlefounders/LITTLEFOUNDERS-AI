@@ -99,6 +99,26 @@ export const states = [
   app('/admin/intel@people', '/admin/intel?view=people', 'staff-analytics', ready('staff-intel', '.lf-viz-bars')),
   app('/admin/intel@operations', '/admin/intel?view=operations', 'staff-analytics', ready('staff-intel', '.lf-table-row')),
   app('/admin/intel@empty', '/admin/intel?view=insights', 'staff-empty', ready('staff-intel', '.lf-state--empty')),
+  // GAP-FIX-R4 (02 §7 item 10): the E.4 age-correction queue (manage_users), its request sheet and its empty queue.
+  app('/admin/age-corrections@staff-super', '/admin/age-corrections', 'staff-super', ready('staff-age-corrections', '.lf-table-row')),
+  app('/admin/age-corrections@request', '/admin/age-corrections', 'staff-super', ready('staff-age-corrections', '.lf-table-row'),
+    { open: ['[data-screen="staff-age-corrections"] .lf-table-row:first-child .lf-table-cell:last-child button'] }),
+  app('/admin/age-corrections@staff-users', '/admin/age-corrections', 'staff-users', ready('staff-age-corrections', '.lf-table-row'),
+    { open: ['[data-screen="staff-age-corrections"] .lf-table-row:nth-child(2) .lf-table-cell:last-child button'] }),
+  app('/admin/age-corrections@empty', '/admin/age-corrections', 'staff-empty', ready('staff-age-corrections', '.lf-state--empty')),
+];
+
+/*
+ * GET /admin/age-corrections (backend admin routes, E.4): what Core keeps of a request, never a name or a day of
+ * birth. Pending requests for the default filter; `all` adds the decided ones.
+ */
+const AGE_CORRECTIONS = [
+  { id: 'a1f0c2d4-0000-4000-8000-000000000001', userId: '6c7e2b9a-5d41-4f3e-9a8b-1c2d3e4f5a61', status: 'pending', fromBand: '13_to_17', requestedBand: 'adult',
+    requestedBirthMonth: null, reason: null, createdAt: '2026-09-26T14:05:00.000Z', decidedAt: null, decidedBy: null },
+  { id: 'a1f0c2d4-0000-4000-8000-000000000002', userId: '0b9d8c7e-6f5a-4b3c-8d2e-1f0a9b8c7d62', status: 'pending', fromBand: 'adult', requestedBand: '13_to_17',
+    requestedBirthMonth: '2011-04', reason: null, createdAt: '2026-09-27T09:40:00.000Z', decidedAt: null, decidedBy: null },
+  { id: 'a1f0c2d4-0000-4000-8000-000000000003', userId: '3e4f5a6b-7c8d-4e9f-a0b1-c2d3e4f5a663', status: 'approved', fromBand: '13_to_17', requestedBand: 'adult',
+    requestedBirthMonth: null, reason: 'evidence_verified', createdAt: '2026-09-20T11:00:00.000Z', decidedAt: '2026-09-21T16:30:00.000Z', decidedBy: '9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c64' },
 ];
 
 const SUPER = { guest: false, ageBand: 'adult', roles: ['superadmin'], adminPermissions: [] };
@@ -152,6 +172,10 @@ export function respond({ spec, scenario, path, request, ok }) {
       : { status: 404, body: { data: null, error: { code: 'NOT_FOUND', message: 'Synthetic: no case' } } };
   }
   if (route === '/admin/emails/logs') return ok({ entries: empty ? [] : fixtures.emailLogs, total: empty ? 0 : 948 });
+  if (route === '/admin/age-corrections') {
+    const status = query.get('status') ?? 'pending';
+    return ok({ requests: empty ? [] : AGE_CORRECTIONS.filter((entry) => status === 'all' || entry.status === status) });
+  }
   if (route === '/admin/emails/summary') return ok(empty ? { total: 0, statuses: {}, templates: {}, locales: {}, trend: [] } : fixtures.emailSummary);
   return sectionRespond(route, query, empty, ok);
 }

@@ -7,9 +7,11 @@
  * screen's type scale, radii, accents and measure do not apply, as the
  * reference exempts its `system` route), `widths` (a subset, for phone-only
  * states), `open` (selectors pressed in order after load), `scenario` (the
- * synthetic-Core scenario an authenticated real route is signed in with) and
+ * synthetic-Core scenario an authenticated real route is signed in with; a
+ * scenario with `signedOut: true` answers Core for a visitor with no session),
  * `readyAll` (the selectors that prove the route reached that state, not an
- * earlier one).
+ * earlier one) and `pushState` ({ path, state }: a screen only a router
+ * hand-off reaches, pushed with that router state once the app has mounted).
  */
 
 /** A screen of the development-only preview entry (`/rebuild.html?…`). */
