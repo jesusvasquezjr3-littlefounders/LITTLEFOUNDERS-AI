@@ -46,6 +46,14 @@ async function seed(userId: string, anonId: string): Promise<void> {
     `INSERT INTO dim_anon_conversions (anon_id, user_id, converted_at) VALUES (?::UUID, ?::UUID, CURRENT_TIMESTAMP)`,
     anonId, userId,
   );
+  await execute(
+    `INSERT INTO experiment_assignments (experiment_id, user_id, variant, assigned_at) VALUES (?, ?, 'A', CURRENT_TIMESTAMP)`,
+    `exp-${randomUUID()}`, userId,
+  );
+  await execute(
+    `INSERT INTO experiment_exposures (experiment_id, user_id, variant, exposed_at) VALUES (?, ?, 'A', CURRENT_TIMESTAMP)`,
+    `exp-${randomUUID()}`, userId,
+  );
 }
 
 async function remaining(userId: string, anonId: string): Promise<number> {
@@ -55,8 +63,10 @@ async function remaining(userId: string, anonId: string): Promise<number> {
           + (SELECT count(*) FROM learner_skill_states WHERE user_id = ?::UUID)
           + (SELECT count(*) FROM dim_sessions_raw WHERE user_id = ?::UUID)
           + (SELECT count(*) FROM dim_users_raw WHERE user_id = ?::UUID)
-          + (SELECT count(*) FROM dim_anon_conversions WHERE user_id = ?::UUID OR anon_id = ?::UUID) AS n`,
-    userId, anonId, userId, userId, userId, userId, userId, anonId,
+          + (SELECT count(*) FROM dim_anon_conversions WHERE user_id = ?::UUID OR anon_id = ?::UUID)
+          + (SELECT count(*) FROM experiment_assignments WHERE user_id = ?)
+          + (SELECT count(*) FROM experiment_exposures WHERE user_id = ?) AS n`,
+    userId, anonId, userId, userId, userId, userId, userId, anonId, userId, userId,
   );
   return Number(rows[0]?.n ?? -1);
 }
@@ -75,7 +85,7 @@ describe('POST /api/v1/intel/erasure', () => {
     const extra = await request(createApp()).post('/api/v1/intel/erasure').set('x-internal-api-key', KEY)
       .send({ userId: erased, anonIds: [], email: 'x@example.com' });
     expect(extra.status).toBe(400);
-    expect(await remaining(erased, anon)).toBe(7);
+    expect(await remaining(erased, anon)).toBe(9);
   });
 
   it('removes every copied row about the account and its converted visitor ids, and only those', async () => {
@@ -89,9 +99,11 @@ describe('POST /api/v1/intel/erasure', () => {
       dim_sessions_raw: 1,
       dim_users_raw: 1,
       dim_anon_conversions: 1,
+      experiment_assignments: 1,
+      experiment_exposures: 1,
     });
     expect(await remaining(erased, anon)).toBe(0);
-    expect(await remaining(other, otherAnon)).toBe(7);
+    expect(await remaining(other, otherAnon)).toBe(9);
     const tombstones = await query<{ kind: string }>('SELECT kind FROM erased_subjects WHERE subject_id IN (?::UUID, ?::UUID) ORDER BY kind', erased, anon);
     expect(tombstones.map((row) => row.kind)).toEqual(['anon', 'user']);
   });
@@ -105,10 +117,10 @@ describe('POST /api/v1/intel/erasure', () => {
 
   it('a sync batch that lands after the erasure cannot bring the rows back', async () => {
     await seed(erased, anon);
-    expect(await remaining(erased, anon)).toBe(7);
-    expect(await applyErasureTombstones()).toBe(7);
+    expect(await remaining(erased, anon)).toBe(9);
+    expect(await applyErasureTombstones()).toBe(9);
     expect(await remaining(erased, anon)).toBe(0);
-    expect(await remaining(other, otherAnon)).toBe(7);
+    expect(await remaining(other, otherAnon)).toBe(9);
   });
 
   it('forgets a tombstone after 30 days', async () => {

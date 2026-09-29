@@ -85,7 +85,7 @@ GET route and asserts none of them reads or returns those fields.
 ## 3. Analytics retention policy (H.2)
 
 Two windows exist over overlapping activity data, and the difference is
-deliberate:
+deliberate (the warehouse's copy of the raw events shares the first one):
 
 - **Raw usage events — 400 days** in the operational store. This is the
   investigative and reconciliation window: it must cover at least one full
@@ -96,6 +96,17 @@ deliberate:
   90-day session window keeps the derived layer cheap and stale-proof; any
   question older than that is answered from the raw store, not the derived
   layer.
+- **Warehouse copy of raw usage events — 400 days, the same window.** The
+  warehouse (dataintel) copies every raw event into `fact_events_raw`
+  incrementally, and keeps learner-keyed `experiment_assignments` and
+  `experiment_exposures`. These are not a third window: after every sync,
+  `dataintel/src/services/warehouseRetention.ts` deletes rows older than
+  `RAW_EVENT_RETENTION_DAYS` (400 days, the constant the Vault prune
+  `prune_learning_events(400)` is pinned to by
+  `dataintel/src/__tests__/warehouse-retention.test.ts`) and logs every run,
+  rows removed per table, in `warehouse_maintenance_log`. An account erasure
+  removes the same tables at once. The daily aggregates (`agg_daily_*`) hold
+  counts only and are kept.
 
 The kid-role consent gate applies to BOTH stores: a kid's events only exist
 to retain because an active guardian consent admitted them at the source.

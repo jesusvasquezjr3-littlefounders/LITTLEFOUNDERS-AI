@@ -20,7 +20,7 @@
   "practices": {
     "analytics": {
       "learning_quality_events": "Replays and best scores",
-      "motivation_events": "Streaks and rest days",
+      "motivation_events": "Streaks, rest days and learning choices",
       "engagement_heartbeats": "Time with the app open",
       "family_money_events": "Coin activity",
       "achievement_share_initiations": "Achievement pictures made",
