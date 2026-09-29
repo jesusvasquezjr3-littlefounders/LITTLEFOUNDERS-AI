@@ -233,17 +233,18 @@ The parent must always be able to see what their child is learning, what the gui
 
 *(Brand position required by Product 10 E.12, written for the social layer shipped in S08. Operational detail and enforcement: `docs/rebuild/policies/SOCIAL-GOVERNANCE.md` and `docs/rebuild/policies/SOCIAL-TIERS.md`.)*
 
-**What it is.** A small, safe way to say hello to people you already know. A child can see their brother's progress and their grandmother can follow along, because a parent said yes to each of those people. A teen chooses, one by one, who may see them. That is the whole social layer, and it is small on purpose.
+**What it is.** A small, safe way to say hello to people you already know. A child can see their brother's progress and their grandmother can follow along, because a parent said yes to each of those people. A teen's profile is private by default, and nobody follows a teen until the teen, or the parent who manages their account, says yes to that one person. At 16 or 17, a teen may choose to let signed-in members find and see their profile, and can turn that off at any time. Even then, nobody can follow them without their yes, nobody can message them, and their learning stats stay hidden from others. Teens may also work toward a small goal together with people they are already connected to: the group sees one shared total, with no rankings and no score for each person. A teen whose account a parent manages joins only if that parent allows it. That is the whole social layer, and it is small on purpose.
 
 **What it deliberately is not.**
 - **Not the Feed.** The Feed is the villain of this story: strangers, rankings, likes and an audience that is always watching. It teaches children to perform for people they have never met. We refuse to build a public social graph for children, because the day we build one we become the thing we promised to protect them from.
-- **Not a place to be found.** A child's profile cannot be searched for or followed by a stranger. Nobody new reaches a child unless a parent approves that one person, and a parent can see everyone who is connected.
+- **Not a place to be found.** A child's profile cannot be searched for or followed by a stranger. Nobody new reaches a child unless a parent approves that one person, and a parent can see everyone who is connected. The one exception is a 16- or 17-year-old's own choice to be findable, and even then nobody can follow them without their yes, and nobody can write to them at all.
 - **Not a place to talk to strangers.** There are no messages, chats or comments between people, and there never will be for a child without the parent turning them on. The only one who talks with a child here is their Mentor, and the parent can read every word.
 - **Not a contest.** There is no follower count and no popularity number anywhere. Children measure themselves against who they were last week, never against each other.
 - **Not a photo album.** Every face on LittleFounders is a cartoon the child builds. Nobody can upload a picture of themselves.
 
 **The promises that come with it.**
 - Every connection a child has is one their parent chose, and the parent sees the whole list and its history.
+- A teen who signed up on their own makes these choices themselves. Each follower needs the teen's yes. Being findable stays off until the teen turns it on, and it stops at once if their name or handle is flagged. A goal together has no rankings, and a teen can leave it at any time.
 - A request nobody answers expires. A connection nobody approved is removed. We keep the history only as long as our written policy says, and we never share who follows whom with anyone.
 - These lines are written down so that no future feature can quietly cross them. Changing any of them means a full child-safety review first.
 

@@ -82,7 +82,8 @@
     "byYou": "By you",
     "byOther": "By another Tutor",
     "kindAdjust": "Correction",
-    "kindGoal": "Moved out of a goal"
+    "kindGoal": "Moved out of a goal",
+    "pocketNow": "In this pocket now: {count}"
   },
   "walletActivity": {
     "open": "My history",

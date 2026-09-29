@@ -1900,7 +1900,8 @@
         "jobsIntro": "Tarefas diárias. Se uma parar, a equipe é avisada.",
         "jobStaleHelp": "{job} não roda há {n} horas. Verifique o fluxo.",
         "lastAttemptFailed": "A última tentativa falhou.",
-        "lastAttempt": "Última tentativa"
+        "lastAttempt": "Última tentativa",
+        "deletionsStuck": "Exclusões paradas há mais de {hours} horas: {n}. Verifique a etapa com falha."
       },
       "option": {
         "by_tutor": "Tutor",
@@ -1911,7 +1912,12 @@
         "fresh": "Rodando",
         "job_vault_backup": "Backup do banco de dados",
         "job_pulse_backup": "Backup de analytics",
-        "job_vault_drift": "Verificação de mudanças do esquema"
+        "job_vault_drift": "Verificação de mudanças do esquema",
+        "job_learning_retention": "Limpeza de dias de prática",
+        "job_insights_prune": "Limpeza de eventos de aprendizagem",
+        "job_account_deletions": "Exclusão de contas",
+        "job_family_retention": "Limpeza de dados da família",
+        "job_social_retention": "Limpeza de dados de amizades"
       },
       "action": {
         "lookUp": "Buscar",

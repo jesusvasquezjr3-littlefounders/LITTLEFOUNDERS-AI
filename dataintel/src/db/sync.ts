@@ -1,6 +1,7 @@
 import { query, execute, exec, isReady, withConnection } from './duckdb.js';
 import { getConfig } from '../env.js';
 import { applyErasureTombstones } from '../services/erasure.js';
+import { applyWarehouseRetention } from '../services/warehouseRetention.js';
 
 type TableName = 'learning_events' | 'users' | 'lessons' | 'sessions' | 'attempts' | 'anon_conversions';
 
@@ -682,6 +683,17 @@ export async function syncAll(): Promise<{
     tables.erasure_reapplied = await applyErasureTombstones();
   } catch {
     tables.erasure_reapplied = -1;
+  }
+
+  // H.2 / Appendix O 1.2: the warehouse copy of raw events (and the learner-
+  // keyed experiment rows) keeps the raw store's 400-day window, never longer
+  // (services/warehouseRetention.ts). Runs after every sync, so a batch that brought an
+  // already-expired row in cannot keep it.
+  try {
+    const removed = await applyWarehouseRetention();
+    tables.retention_pruned = Object.values(removed).reduce((sum, n) => sum + n, 0);
+  } catch {
+    tables.retention_pruned = -1;
   }
 
   return { tables, elapsed: Date.now() - start };

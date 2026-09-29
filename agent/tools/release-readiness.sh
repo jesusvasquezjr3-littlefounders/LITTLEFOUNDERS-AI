@@ -58,6 +58,10 @@ node agent/tools/check-mentor-thresholds.mjs --strict
 # dry run passes, and no material change, overdue cadence or open live drift
 # finding is outstanding (the paid live run stays owner-run, OD-23).
 npm --prefix oracle run equity-audit -- --check
+# Appendix C 1.3 / Stage 6 (GAP-FIX-R6): nor on an overdue Block B threshold
+# review or Age-Band Register Differentiation Audit (MN-03), each due by
+# docs/operations/BLOCK-B-THRESHOLD-LOG.md (block-b-review-cadence.mjs).
+node agent/tools/check-block-b-thresholds.mjs --strict
 # Appendix J 1.3 / DoD 2.1(2): the data-gateway half of the social release
 # gate. Every native-PostgreSQL social verifier (and the teen discoverable,
 # cooperative goals and account-erasure ones) against the full migration

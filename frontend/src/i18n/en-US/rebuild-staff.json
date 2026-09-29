@@ -1900,7 +1900,8 @@
         "jobsIntro": "Daily jobs. A quiet job alerts the team.",
         "jobStaleHelp": "{job} has not run in {n} hours. Check its workflow.",
         "lastAttemptFailed": "The last attempt failed.",
-        "lastAttempt": "Last attempt"
+        "lastAttempt": "Last attempt",
+        "deletionsStuck": "Deletions stalled over {hours} hours: {n}. Check the failed step."
       },
       "option": {
         "by_tutor": "Tutor",
@@ -1911,7 +1912,12 @@
         "fresh": "Running",
         "job_vault_backup": "Database backup",
         "job_pulse_backup": "Analytics backup",
-        "job_vault_drift": "Schema drift check"
+        "job_vault_drift": "Schema drift check",
+        "job_learning_retention": "Practice-day cleanup",
+        "job_insights_prune": "Learning event cleanup",
+        "job_account_deletions": "Account deletions",
+        "job_family_retention": "Family data cleanup",
+        "job_social_retention": "Friends data cleanup"
       },
       "action": {
         "lookUp": "Look up",
