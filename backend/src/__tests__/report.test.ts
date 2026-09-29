@@ -241,7 +241,7 @@ describe('GET /api/v1/family/social-notices', () => {
       .set('Authorization', `Bearer ${mintToken({ sub: PARENT_ID })}`);
     expect(res.status).toBe(200);
     expect(res.body.data.notices).toEqual([
-      { noticeId: REPORT_ID, kidUserId: KID_ID, kind: 'social.report', subjectId: SUBJECT_ADULT, reportId: null, createdAt: '2026-09-24T10:00:00Z', subjectName: 'Zed' },
+      { noticeId: REPORT_ID, kidUserId: KID_ID, kind: 'social.report', subjectId: SUBJECT_ADULT, reportId: null, createdAt: '2026-09-24T10:00:00Z', subjectName: 'Zed', canEnd: false },
     ]);
     expect(res.body.data.nextOffset).toBeNull();
   });

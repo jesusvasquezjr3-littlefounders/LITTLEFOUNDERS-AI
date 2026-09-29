@@ -39,6 +39,13 @@ import { fileURLToPath } from 'node:url';
  *      route, the staff programme reads every group, and Core still records
  *      the events only it sees (follow refusals, the Tutor badge shown, the
  *      Family social panel view).
+ *   8. E.1/E.3/E.13 (GAP-FIX-R3 social): the approval gate works both ways.
+ *      The latest guardian_end_social_connection re-checks the guardian,
+ *      refuses a self-managed teen, takes the pair locks and writes its
+ *      guardian_ended audit row; the audit-completeness metric reconciles
+ *      those unfollows; Core serves the end and report routes with the
+ *      session guardian and records each removed edge; and the Family graph
+ *      and safety notices offer both actions.
  */
 
 /** The nine Appendix J Part 1.1-1.2 metrics for E.1-E.5. Dropping one fails social:check. */
@@ -176,6 +183,25 @@ export function checkSocialTiers(root) {
   }
   if (!/noteResolution\(surface, viewerId, profile\.user_id, access\)/.test(route)) failures.push('backend/src/routes/profile.ts: profile resolutions are no longer recorded (Appendix J E.1 discovery)');
   if (!family.includes("noteSocialProtectionEvent('family_social_panel_view'")) failures.push('backend/src/routes/family.ts: Family social panel views are no longer recorded (Appendix J E.2)');
+
+  // 8. E.1/E.3/E.13: the Tutor ends or reports a connection of their child.
+  const endSql = latestDefinition(root, 'guardian_end_social_connection');
+  for (const needle of ['social_guardian_is_current(p_guardian, p_kid)', "'SOCIAL_SELF_MANAGED'", 'pg_advisory_xact_lock', "status = 'revoked'", "'guardian_ended'", 'audit_logs']) {
+    if (!endSql || !endSql.body.includes(needle)) failures.push(`${endSql?.file ?? 'database/migrations'}: the latest guardian_end_social_connection no longer carries ${needle} (E.1/E.13)`);
+  }
+  if (metricsSql && !metricsSql.body.includes("'guardian_ended'")) failures.push(`${metricsSql.file}: audit completeness no longer reconciles guardian-ended unfollows (Appendix J E.2)`);
+  if (!/router\.delete\('\/kids\/:kidId\/social\/connections\/:userId'[\s\S]*?guardianEndSocialConnection\(guardian, kidId, other\.data\)[\s\S]*?noteSocialProtectionEvent\('unfollow', guardian, kidId\)/.test(family)) {
+    failures.push('backend/src/routes/family.ts: the guardian end route must end with the session guardian and record each removed edge (E.1/E.13, Appendix J)');
+  }
+  if (!/router\.post\('\/kids\/:kidId\/social\/connections\/:userId\/report'[\s\S]*?submitSocialReport\(guardian, other\.data,/.test(family)) {
+    failures.push('backend/src/routes/family.ts: the guardian report route must file the report as the session guardian (E.3)');
+  }
+  const actions = (() => { try { return read(root, 'frontend/src/rebuild/social/ConnectionActions.tsx'); } catch { return ''; } })();
+  if (!/<DestructiveAction\b/.test(actions) || !/<ReportDialog\b/.test(actions)) failures.push('frontend/src/rebuild/social/ConnectionActions.tsx: a connection must offer a confirmed end and the report dialog (E.1/E.3)');
+  for (const surface of ['frontend/src/rebuild/social/SocialGraph.tsx', 'frontend/src/rebuild/social/SocialNotices.tsx']) {
+    const source = (() => { try { return read(root, surface); } catch { return ''; } })();
+    if (!/<ConnectionActions\b/.test(source)) failures.push(`${surface}: the Family surface no longer offers the Tutor's connection actions (E.1/E.3/E.13)`);
+  }
 
   // 5. The written policy.
   let policy = '';

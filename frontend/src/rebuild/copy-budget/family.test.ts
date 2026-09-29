@@ -9,7 +9,7 @@ describe('rebuild-family copy budget', () => {
   for (const [locale, strings] of namespaceCopy('family')) {
     const group = (name: string) => Object.entries(strings[name] as Record<string, string>);
     it(`fits its budgets in ${locale}`, () => {
-      expectBudgetedGroups(strings, ['socialGraph', 'socialHistory', 'socialRequests', 'socialNotices', 'badgeShares', 'achievementShare', 'guardianInvite',
+      expectBudgetedGroups(strings, ['socialGraph', 'socialHistory', 'socialRequests', 'socialNotices', 'socialConnectionActions', 'badgeShares', 'achievementShare', 'guardianInvite',
         'familyConsole', 'familyChildAccount', 'familyChildConsent', 'familyChildProgress', 'familyChildMentor', 'familyMemoryNotes',
         'familyTasks', 'childTasks', 'familyCoins', 'childCoins', 'coinCard', 'teenWalletScreen', 'familyCoopGoals', 'familyDeletionNotices']);
       // W2F.1: the rebuilt Family console (F1), a child's progress (F2) and Mentor talks (F3). Adult Tutor copy;
@@ -88,6 +88,8 @@ describe('rebuild-family copy budget', () => {
       for (const [key, text] of group('socialNotices')) {
         expectFits(text.replace('{name}', 'Ana'), ['title', 'close', 'retry'].includes(key) ? 'action' : 'body', locale, '13-17', `socialNotices.${key}`);
       }
+      // GAP-FIX-R3 social (E.1, E.3, E.13): the Tutor ends or reports a child's connection. Adult Tutor copy.
+      budget('socialConnectionActions', { endAction: 'action', endConfirm: 'action', endKeep: 'action', endPending: 'action', report: 'action', endHeading: 'heading' });
       for (const [key, text] of group('guardianInvite')) {
         const role = key === 'title' || key === 'acceptTitle' || key === 'acceptTitleTeen' ? 'heading'
           : ['close', 'open', 'invite', 'copy', 'accept'].includes(key) ? 'action' : 'body';

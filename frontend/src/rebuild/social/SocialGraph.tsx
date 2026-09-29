@@ -3,15 +3,23 @@ import { Button, Copy, InlineNotice, LoadingState, SegmentedControl } from '../d
 import '../design/tokens.css';
 import '../design/system.css';
 import './socialGraph.css';
+import { ConnectionActions, type ConnectionActionHandlers } from './ConnectionActions';
 
 export interface SocialGraphCopy {
   title: string; followers: string; following: string; loading: string; empty: string;
   failed: string; retry: string; more: string; close: string;
 }
 export interface SocialMember { userId: string; displayName: string; username: string | null }
-export function SocialGraph({ copy, locale, dark, open, direction, users, loading, failed, hasMore, onOpen, onClose, onDirection, onMore, onRetry }: {
+/*
+ * E.2's Family view of a child's followers and following. E.1/E.13
+ * (GAP-FIX-R3 social): each row carries the Tutor's actions when the data
+ * plane passes them; `canEnd` is Core's word that this child's connections
+ * are the Tutor's to end (a self-registered teen decides its own, E.8).
+ */
+export function SocialGraph({ copy, locale, dark, open, direction, users, loading, failed, hasMore, canEnd = false, actions, notice = null, onOpen, onClose, onDirection, onMore, onRetry }: {
   copy: SocialGraphCopy; locale: string; dark: boolean; open: boolean; direction: 'followers' | 'following';
   users: SocialMember[]; loading: boolean; failed: boolean; hasMore: boolean;
+  canEnd?: boolean; actions?: ConnectionActionHandlers; notice?: { text: string; error: boolean } | null;
   onOpen: () => void; onClose: () => void; onDirection: (direction: 'followers' | 'following') => void;
   onMore: () => void; onRetry: () => void;
 }) {
@@ -23,9 +31,11 @@ export function SocialGraph({ copy, locale, dark, open, direction, users, loadin
       <SegmentedControl legend={copy.title} legendHidden name={`${name}-direction`} value={direction}
         onValueChange={onDirection} options={(['followers', 'following'] as const).map(value => ({ value, label: copy[value] }))} />
       {failed ? <><InlineNotice tone="error" live>{copy.failed}</InlineNotice><Button onClick={onRetry}>{copy.retry}</Button></> : <>
+        {notice && <InlineNotice tone={notice.error ? 'error' : 'info'} live>{notice.text}</InlineNotice>}
         <ul aria-label={copy[direction]}>{users.map(user => <li key={user.userId}>
           <Copy role="option">{user.displayName || user.username}</Copy>
           {user.username && <Copy role="body">@{user.username}</Copy>}
+          {actions && <ConnectionActions actions={actions} userId={user.userId} name={user.displayName || (user.username ? `@${user.username}` : '')} canEnd={canEnd} />}
         </li>)}</ul>
         {!loading && users.length === 0 && <Copy role="body">{copy.empty}</Copy>}
         {loading && <LoadingState label={copy.loading} lines={2} />}

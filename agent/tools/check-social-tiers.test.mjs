@@ -21,6 +21,9 @@ const FILES = [
   'backend/src/routes/admin.ts',
   'backend/src/routes/family.ts',
   'frontend/src/rebuild/staff/console/programmeApi.ts',
+  'frontend/src/rebuild/social/ConnectionActions.tsx',
+  'frontend/src/rebuild/social/SocialGraph.tsx',
+  'frontend/src/rebuild/social/SocialNotices.tsx',
   ...SOCIAL_SCREENS,
   'database/scripts/fixtures/profile-field-safety-cases.json',
   'docs/rebuild/policies/SOCIAL-TIERS.md',
@@ -181,7 +184,9 @@ test('S-03: the policy must keep the discoverable-profile section', () => {
 
 // Appendix J E.1-E.5: each of the nine metrics is pinned from SQL to screen.
 function metricsMigration(root) {
-  return readdirSync(join(root, 'database/migrations')).filter((f) => f.endsWith('_social_protection_metrics.sql')).sort().at(-1);
+  // The migration holding the LATEST definition (a later lane may redefine it).
+  return readdirSync(join(root, 'database/migrations')).filter((f) => f.endsWith('.sql')).sort()
+    .filter((f) => readFileSync(join(root, 'database/migrations', f), 'utf8').includes('FUNCTION public.social_protection_metrics(')).at(-1);
 }
 
 test('Appendix J: a metric dropped from the SQL answer fails', () => {
@@ -204,4 +209,33 @@ test('Appendix J: a metric the staff programme stops reading fails', () => {
 
 test('Appendix J: Core no longer recording a Tutor badge shown fails', () => {
   withFixture((root) => edit(root, 'backend/src/routes/profile.ts', "noteSocialProtectionEvent('tutor_badge_shown'", "void ('tutor_badge_shown'"), /no longer records tutor_badge_shown/);
+});
+
+// E.1/E.3/E.13 (GAP-FIX-R3 social): the Tutor can end and report a child's connection.
+test('E.1/E.13: a later guardian end without the guardian re-check or the audit row fails', () => {
+  withFixture((root) => laterMigration(root, `-- @phase: expand
+CREATE OR REPLACE FUNCTION public.guardian_end_social_connection(p_guardian uuid, p_kid uuid, p_other uuid)
+RETURNS integer LANGUAGE sql AS $$ SELECT 0; $$;
+`), /guardian_end_social_connection no longer carries social_guardian_is_current/);
+});
+
+test('E.1/E.13: a Family graph or notice without the actions fails', () => {
+  withFixture((root) => edit(root, 'frontend/src/rebuild/social/SocialGraph.tsx', '{actions && <ConnectionActions ', '{actions && <span '), /SocialGraph\.tsx: the Family surface no longer offers/);
+  withFixture((root) => edit(root, 'frontend/src/rebuild/social/SocialNotices.tsx', '<ConnectionActions ', '<span '), /SocialNotices\.tsx: the Family surface no longer offers/);
+  withFixture((root) => edit(root, 'frontend/src/rebuild/social/ConnectionActions.tsx', '<DestructiveAction ', '<Button '), /must offer a confirmed end/);
+});
+
+test('E.1/E.3: Core routes that trust a client guardian or skip the unfollow record fail', () => {
+  withFixture((root) => edit(root, 'backend/src/routes/family.ts', "noteSocialProtectionEvent('unfollow', guardian, kidId)", 'void 0'), /guardian end route must end with the session guardian/);
+  withFixture((root) => edit(root, 'backend/src/routes/family.ts', 'submitSocialReport(guardian, other.data,', 'submitSocialReport(String(req.body.reporterId), other.data,'), /file the report as the session guardian/);
+});
+
+test('Appendix J: audit completeness that stops reconciling guardian-ended unfollows fails', () => {
+  withFixture((root) => {
+    const file = `database/migrations/${metricsMigration(root)}`;
+    const path = join(root, file);
+    const sql = readFileSync(path, 'utf8');
+    const at = sql.indexOf('FUNCTION public.social_protection_metrics(');
+    writeFileSync(path, sql.slice(0, at) + sql.slice(at).replaceAll("'guardian_ended'", "'other_reason'"));
+  }, /no longer reconciles guardian-ended unfollows/);
 });
