@@ -87,3 +87,61 @@ content-release proof had gone stale and failed on the current chain).
 - Acceptance and release of every row touched (A.5, G.1, G.2, G.3, H.1, H.5).
 - The Coach and Roles & Access notices were verified by unit tests, not by a
   screenshot.
+
+## Checkpoint F4-staff-ops-finish (lane finish)
+
+### Summary
+
+The staff-ops lane closed its six audited gaps (A.5 / OD-3 section 2 staff
+Tutor grant; H.5 (a) encrypted pre-migration restore points; Appendix N/O
+database proofs wired into CI and release readiness; G.1 Generation live
+table gated on `manage_content`; the localized Generation coach; the
+analytics report PDF that never cuts text) plus the stale content-release
+proof found on the way. Details are in the checkpoint above.
+
+### Finish steps
+
+- Sync: `codex/spec-migration-s02` was already contained in the lane branch
+  (head `14232a10`); the merge was a no-op, no conflicts.
+- Adversarial pass over the lane's seven commits against the six gaps:
+  server enforcement holds on every path (the grant refusal is in the
+  database function and the provenance trigger, and Core maps it to 409
+  `AGE_RECORD_MINOR`; the live table is gated by RLS, not only by the
+  client, and `createLiveFeed` refuses without `manage_content`; the coach
+  route stays behind `manage_content`). The rebuilt screens use only
+  `rebuild/design/controls` and `ConsoleParts` (no legacy component), every
+  new element carries `data-copy-role`, and each new key exists in EN,
+  es-MX and pt-BR. Both migrations are under 23,000 bytes (6,949 and 1,966)
+  with a truthful `@phase: expand`. Nothing mandated was found missing, so
+  no code changed at the finish.
+
+### Verification at the finish
+
+- Backend: `type-check`, `lint`, full vitest suite: 151 files, 3,486 tests
+  pass, 1 skipped.
+- Frontend: `type-check`, `lint` (whole package), full vitest suite: 275 of
+  276 files pass. `src/rebuild/assets/assetGate.test.ts` (untouched by the
+  lane) timed out three cases at 90 s while other lanes' suites ran on the
+  machine; rerun alone it passes 13 of 13.
+- Database: `npm test` checks and node tests pass (59 of 59, including the
+  staff-analytics runner self-test), and
+  `railway-migrate.test.mjs` passes its 12 transport scenarios against the
+  fake Railway CLI (about 50 minutes on Windows with other lanes running).
+- Root: `spec:check`, `secrets:check`, `check-i18n.sh`, `tools:test`
+  (447 of 447).
+- Not run here (orchestrator, per merge): browser matrices, `audit:rebuild`,
+  root `test:all`, a screenshot of Roles & Access and the Coach.
+
+### Still open
+
+- Owner: create the `BACKUP_ENCRYPTION_KEY` secret before `database-cd.yml`
+  or `tutor-deploy.yml` runs a migration (without it the migration stops at
+  the dump, by design); the one-line manual cleanup of plaintext
+  pre-migration dumps already on the volume (BACKUP-RESTORE-ROLLBACK.md).
+- Deploy order: `staff_parent_grant_age_guard` may go before or after Core
+  (an older Core answers 409 `ROLE_REJECTED` for the refusal);
+  `generation_live_manage_content` narrows the live table's readers, and
+  the new frontend already stops subscribing without `manage_content`.
+- Acceptance and release of rows A.5, G.1, G.2, G.3, H.1 and H.5.
+- The orchestrator renumbers 0235/0236 at merge; the verifiers and the
+  runner's test find them by name pattern, not number.
