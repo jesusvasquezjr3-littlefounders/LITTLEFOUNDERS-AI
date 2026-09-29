@@ -4,12 +4,22 @@
 .lf-chart-plot { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
 .lf-chart-plot svg { display: block; inline-size: 100%; block-size: auto; max-block-size: 320px; }
 /* The drawing box keeps the viewBox proportions (320 x 180), so the HTML labels over it land on the marks they name. */
-.lf-chart-canvas { position: relative; inline-size: 100%; max-inline-size: calc(320px * 16 / 9); margin-inline: auto; aspect-ratio: 16 / 9; }
+.lf-chart-canvas { position: relative; inline-size: 100%; max-inline-size: calc(320px * 16 / 9); margin-inline: auto; aspect-ratio: 16 / 9;
+  margin-block-end: var(--spacing-6); /* GAP-FIX-R3: room for a category name that wraps under the axis. */ }
 .lf-chart-canvas > svg { block-size: 100%; }
-.lf-chart-tag { position: absolute; transform: translateY(-50%); font-size: .75rem; font-weight: 700; line-height: 1; color: var(--content); white-space: nowrap; }
-.lf-chart-tag[data-anchor='end'] { transform: translate(-100%, -50%); }
-.lf-chart-label { font-size: 9px; font-weight: 700; fill: var(--content); }
-.lf-chart-edge-label { font-size: 8px; fill: var(--content-muted); }
+/*
+ * GAP-FIX-R3 (02 D1, rule 1; 05 §5): every word label is HTML at caption size that wraps inside the room its mark
+ * gives it (placement and width come from the drawing, TeachingChart.tsx). A word never breaks and is never cut:
+ * a label that does not fit is hidden (`data-fit="no"`) and the table carries it.
+ */
+.lf-chart-tag { position: absolute; inline-size: max-content; font-size: .875rem; font-weight: 700; line-height: 1.15; color: var(--content);
+  white-space: normal; overflow-wrap: normal; word-break: normal; text-align: start; pointer-events: none; }
+.lf-chart-tag[data-align='middle'] { text-align: center; }
+.lf-chart-tag[data-align='end'] { text-align: end; }
+.lf-chart-tag--edge { font-weight: 600; color: var(--content-muted); }
+.lf-chart-tag[data-fit='no'] { visibility: hidden; }
+/* SVG text is numerals and single symbols only. */
+.lf-chart-label { font-size: 11px; font-weight: 700; fill: var(--content); }
 .lf-chart-stat { font-family: Fredoka, sans-serif; font-size: 36px; fill: var(--content); }
 .lf-chart-axis { stroke: var(--outline); stroke-width: 1; }
 .lf-chart-line { fill: none; stroke-width: 2.5; stroke-linejoin: round; }

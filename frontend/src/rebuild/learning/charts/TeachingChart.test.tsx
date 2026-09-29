@@ -65,13 +65,31 @@ describe('teaching charts', () => {
     });
   }
 
-  it('carries series by hue and a pattern, and shortens a long label only in the drawing', () => {
+  it('carries series by hue and a pattern, and never shortens a label (02 D1; 05 §5)', () => {
     const data = chartDataSchema.parse({ unit: 'coins', categories: [{ id: 'cat-long', label: 'A very long category name' }, { id: 'cat-b00', label: 'B' }], series: two.map((s) => ({ ...s, values: [1, 2] })) });
     const { container } = render(<TeachingChart kind="grouped-bar" data={data} title="Weeks" locale="en-US" />);
     expect(container.querySelectorAll('pattern')).toHaveLength(3);
-    expect(container.querySelector('text')?.textContent).toMatch(/…$/);
+    const tag = [...container.querySelectorAll('.lf-chart-tag')].find((node) => node.textContent === 'A very long category name');
+    expect(tag?.getAttribute('data-copy-role')).toBe('data');
+    expect(container.textContent).not.toContain('…');
     fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
     expect(screen.getByText('A very long category name')).toBeTruthy();
+  });
+
+  it('GAP-FIX-R3: no kind draws a word as SVG text or ends a label in an ellipsis; words are HTML tags over the drawing', () => {
+    for (const kind of CHART_KINDS) {
+      const { container, unmount } = render(<TeachingChart kind={kind} data={chartDataSchema.parse(sample(kind))} title={`Chart ${kind}`} locale="en-US" />);
+      for (const text of container.querySelectorAll('svg text')) expect(text.textContent, `${kind}: "${text.textContent}"`).not.toMatch(/\p{L}/u);
+      expect(container.textContent, kind).not.toContain('…');
+      for (const tag of container.querySelectorAll<HTMLElement>('.lf-chart-tag')) {
+        expect(tag.style.maxInlineSize, `${kind} ${tag.textContent}`).toMatch(/%$/);
+        expect(tag.getAttribute('data-copy-role')).toBe('data');
+      }
+      unmount();
+    }
+    // A diagram's node names and a category axis are tags, whole.
+    const { container } = render(<TeachingChart kind="flowchart" data={chartDataSchema.parse(sample('flowchart'))} title="Flow" locale="en-US" />);
+    expect([...container.querySelectorAll('.lf-chart-tag')].map((node) => node.textContent)).toEqual(expect.arrayContaining(['Income', 'Save', 'Spend', 'yes', 'no']));
   });
 
   it('keeps chart words inside the Copy Budget in three locales', () => {

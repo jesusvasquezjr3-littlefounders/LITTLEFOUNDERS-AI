@@ -1,7 +1,7 @@
-import { useId, useState, type ReactNode } from 'react';
+import { useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import type { Locale } from '../../design/copyBudget';
 import { Button } from '../../design/controls';
-import { chartFacts, chartTable, chartTree, fitLabel, hierarchyValue, shares, valueExtent, waterfallSteps, type ChartData, type ChartKind } from './chartModel.generated';
+import { chartFacts, chartTable, chartTree, hierarchyValue, shares, valueExtent, waterfallSteps, type ChartData, type ChartKind } from './chartModel.generated';
 import './charts.css';
 
 /*
@@ -11,9 +11,31 @@ import './charts.css';
  * Show-as-table rows and the accessible description carry the same numbers.
  * Each chart is one role="img" with a name and a description, can be read as
  * a table, draws up to three series in sky, mint and berry with a pattern as
- * a second channel (solid, stripes, dots), and shortens a label that does not
- * fit (the table keeps it whole). No stock chart library, no animation.
+ * a second channel (solid, stripes, dots). No stock chart library, no animation.
+ *
+ * GAP-FIX-R3 (Bible 02 D1 and rule 1; 05 §5): words are never cut. Every word
+ * label (categories, lanes, nodes, bones, point labels) is HTML placed over
+ * the SVG in the viewBox's proportions, at caption size, and wraps within the
+ * room its mark gives it. The SVG carries marks, numerals and single symbols
+ * only. A label that still does not fit (a word wider than its room, more
+ * lines than its room holds, outside the drawing, or over another label) is
+ * not drawn: the chart draws fewer labels and the Show-as-table rows carry
+ * every one, never an ellipsis.
  */
+
+/** One word label over the drawing, in viewBox units. */
+export interface ChartTag {
+  key: string; text: string; x: number; y: number;
+  /** The width the label may wrap within. */
+  room: number;
+  align?: 'start' | 'middle' | 'end'; valign?: 'top' | 'middle' | 'bottom';
+  /** How many lines the room holds. */
+  lines?: number;
+  /** A link or cause label: quieter than a mark's own name. */
+  edge?: boolean;
+}
+type Tags = ChartTag[];
+const tag = (out: Tags, value: ChartTag): null => { out.push(value); return null; };
 
 export const chartCopy: Record<Locale, { showTable: string; showChart: string; table: string; category: string; value: string; target: string; delta: string; total: string; from: string; to: string; each: (n: string) => string }> = {
   'en-US': { showTable: 'Show as table', showChart: 'Show chart', table: 'Chart data', category: 'Item', value: 'Value', target: 'Goal', delta: 'Change', total: 'Total', from: 'From', to: 'To', each: (n) => `Each icon is ${n}` },
@@ -42,6 +64,10 @@ export function TeachingChart({ kind, data, title, locale, embedded = false }: {
   const number = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
   const facts = chartFacts(kind, data).map((fact) => `${fact.label}: ${number.format(fact.value)}`).join('; ');
   const model = chartTable(kind, data);
+  const canvas = useRef<HTMLDivElement>(null);
+  useFittedTags(canvas);
+  const labels: Tags = [];
+  const drawing = table ? null : draw(kind, data, id, locale, labels);
   return <figure className="lf-chart" data-chart-kind={kind}>
     <figcaption className="lf-chart-head"><span data-copy-role="heading">{title}</span>
       {embedded ? null : <Button onClick={() => setTable((value) => !value)}>{table ? t.showChart : t.showTable}</Button>}</figcaption>
@@ -51,13 +77,62 @@ export function TeachingChart({ kind, data, title, locale, embedded = false }: {
         ? <th key={index} scope="row" data-copy-role="data">{cell}</th>
         : <td key={index} data-copy-role="data">{typeof cell === 'number' ? number.format(cell) : cell}</td>)}</tr>)}</tbody>
     </table> : <div className="lf-chart-plot" role="img" aria-label={title} aria-describedby={`${id}-desc`} data-copy-role="data">
-      {/* 05 §5: words are HTML over the SVG (`tags`), the SVG itself carries marks, numerals and symbols. */}
-      <div className="lf-chart-canvas"><svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false"><Patterns prefix={id} />{draw(kind, data, id, locale)}</svg>{tags(kind, data)}</div>
+      {/* 05 §5: words are HTML over the SVG (`labels`), the SVG itself carries marks, numerals and symbols. */}
+      <div ref={canvas} className="lf-chart-canvas"><svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false"><Patterns prefix={id} />{drawing}</svg>
+        {labels.map((label) => <ChartLabel key={label.key} label={label} />)}</div>
       <p id={`${id}-desc`} className="lf-visually-hidden">{facts}</p>
       {legend(kind, data, id)}
       {kind === 'pictogram' && data.icon_value ? <p className="lf-chart-note" data-copy-role="data">{t.each(number.format(data.icon_value))}</p> : null}
     </div>}
   </figure>;
+}
+
+const SHIFT = { start: '0%', middle: '-50%', end: '-100%', top: '0%', bottom: '-100%' } as const;
+
+function ChartLabel({ label }: { label: ChartTag }) {
+  const align = label.align ?? 'middle'; const valign = label.valign ?? 'middle';
+  const style: CSSProperties = {
+    left: `${label.x / W * 100}%`, top: `${label.y / H * 100}%`, maxInlineSize: `${Math.max(0, label.room) / W * 100}%`,
+    transform: `translate(${SHIFT[align]}, ${valign === 'middle' ? '-50%' : SHIFT[valign]})`,
+  };
+  return <span className={`lf-chart-tag${label.edge ? ' lf-chart-tag--edge' : ''}`} data-copy-role="data" data-align={align}
+    data-lines={label.lines ?? 2} style={style}>{label.text}</span>;
+}
+
+/**
+ * Draws fewer labels, never shorter ones: after layout, a label whose longest
+ * word is wider than its room, that needs more lines than its room holds, that
+ * leaves the drawing or that lands on an earlier label is hidden
+ * (`data-fit="no"`). Re-measured on resize and when the web fonts arrive.
+ */
+function useFittedTags(canvas: React.RefObject<HTMLDivElement>) {
+  useLayoutEffect(() => {
+    const host = canvas.current;
+    if (!host) return;
+    let live = true;
+    const fit = () => {
+      if (!live) return;
+      const box = host.getBoundingClientRect();
+      if (box.width === 0) return;
+      const placed: DOMRect[] = [];
+      let dropped = 0;
+      for (const element of host.querySelectorAll<HTMLElement>('.lf-chart-tag')) {
+        const rect = element.getBoundingClientRect();
+        const lineHeight = parseFloat(getComputedStyle(element).lineHeight) || 16;
+        const lines = Number(element.dataset.lines ?? 2);
+        const fits = element.scrollWidth <= element.clientWidth + 1 && rect.height <= lines * lineHeight + 1
+          && rect.left >= box.left - 1 && rect.right <= box.right + 1
+          && !placed.some((other) => rect.left < other.right && rect.right > other.left && rect.top < other.bottom && rect.bottom > other.top);
+        if (fits) { placed.push(rect); element.removeAttribute('data-fit'); } else { element.dataset.fit = 'no'; dropped += 1; }
+      }
+      host.dataset.labelsDropped = String(dropped);
+    };
+    fit();
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(fit);
+    observer?.observe(host);
+    void document.fonts?.ready.then(fit);
+    return () => { live = false; observer?.disconnect(); };
+  });
 }
 
 function legend(kind: ChartKind, data: ChartData, prefix: string): ReactNode {
@@ -71,14 +146,17 @@ function legend(kind: ChartKind, data: ChartData, prefix: string): ReactNode {
 const scaleY = (value: number, [low, high]: [number, number]) => H - PAD - (value - low) / (high - low) * (H - 2 * PAD);
 const scaleX = (value: number, [low, high]: [number, number]) => PAD + (value - low) / (high - low) * (W - 2 * PAD);
 
-function axisLabels(data: ChartData, horizontal = false): ReactNode {
+/** Category names: under each column (wrapping within its band), or above each bar of a horizontal chart. */
+function axisLabels(data: ChartData, out: Tags, horizontal = false): ReactNode {
   const n = Math.max(1, data.categories.length);
-  return data.categories.map((c, i) => horizontal
-    ? <text key={c.id} x={PAD - 4} y={PAD + (i + 0.5) * (H - 2 * PAD) / n} textAnchor="end" dominantBaseline="middle" className="lf-chart-label">{fitLabel(c.label, 8)}</text>
-    : <text key={c.id} x={PAD + (i + 0.5) * (W - 2 * PAD) / n} y={H - 8} textAnchor="middle" className="lf-chart-label">{fitLabel(c.label, 10)}</text>);
+  for (const [i, c] of data.categories.entries()) {
+    if (horizontal) tag(out, { key: `cat:${c.id}`, text: c.label, x: PAD, y: PAD + i * (H - 2 * PAD) / n + 1, room: W - 2 * PAD, align: 'start', valign: 'top', lines: 1 });
+    else tag(out, { key: `cat:${c.id}`, text: c.label, x: PAD + (i + 0.5) * (W - 2 * PAD) / n, y: H - PAD + 3, room: (W - 2 * PAD) / n - 2, valign: 'top' });
+  }
+  return null;
 }
 
-function draw(kind: ChartKind, data: ChartData, prefix: string, locale: Locale): ReactNode {
+function draw(kind: ChartKind, data: ChartData, prefix: string, locale: Locale, out: Tags): ReactNode {
   const n = Math.max(1, data.categories.length);
   const band = (W - 2 * PAD) / n;
   const extent = valueExtent(kind, data);
@@ -111,24 +189,25 @@ function draw(kind: ChartKind, data: ChartData, prefix: string, locale: Locale):
         const points = values.map((v, i) => { run += v; return `${PAD + (i + 0.5) * band},${H - PAD - run / total * (H - 2 * PAD)}`; });
         return <polyline points={points.join(' ')} className="lf-chart-line" stroke={HUES[2]} />;
       })() : null;
-      return <><line x1={PAD} x2={W - PAD} y1={zeroY} y2={zeroY} className="lf-chart-axis" />{bars}{pareto}{axisLabels(data)}</>;
+      return <><line x1={PAD} x2={W - PAD} y1={zeroY} y2={zeroY} className="lf-chart-axis" />{bars}{pareto}{axisLabels(data, out)}</>;
     }
     case 'bar': {
       const [low, high] = extent;
       const bandY = (H - 2 * PAD) / n;
       return <>{data.categories.map((c, i) => data.series.map((s, k) => {
-        const h = bandY * 0.7 / data.series.length;
+        // The name sits above its bar (a word never squeezes into the left margin).
+        const h = bandY * 0.45 / data.series.length;
         const value = s.values[i] ?? 0;
         const x0 = scaleX(0, [low, high]); const x1 = scaleX(value, [low, high]);
-        return <rect key={`${c.id}-${s.id}`} x={Math.min(x0, x1)} y={PAD + i * bandY + bandY * 0.15 + k * h} width={Math.abs(x1 - x0)} height={h} fill={fillOf(prefix, k)} />;
-      }))}{axisLabels(data, true)}</>;
+        return <rect key={`${c.id}-${s.id}`} x={Math.min(x0, x1)} y={PAD + i * bandY + bandY * 0.5 + k * h} width={Math.abs(x1 - x0)} height={h} fill={fillOf(prefix, k)} />;
+      }))}{axisLabels(data, out, true)}</>;
     }
     case 'waterfall': {
       const steps = waterfallSteps(data);
       return <><line x1={PAD} x2={W - PAD} y1={zeroY} y2={zeroY} className="lf-chart-axis" />
         {steps.map((step, i) => { const y0 = scaleY(step.start, extent); const y1 = scaleY(step.end, extent);
           return <rect key={data.categories[i]!.id} x={PAD + i * band + band * 0.15} y={Math.min(y0, y1)} width={band * 0.7} height={Math.max(1, Math.abs(y1 - y0))} fill={fillOf(prefix, step.delta < 0 ? 2 : 1)} />; })}
-        {axisLabels(data)}</>;
+        {axisLabels(data, out)}</>;
     }
     case 'pie': case 'donut': {
       const parts = shares(data.series[0]!.values);
@@ -152,7 +231,7 @@ function draw(kind: ChartKind, data: ChartData, prefix: string, locale: Locale):
     case 'pictogram': {
       const each = data.icon_value ?? 1; const rowH = (H - 2 * 10) / n;
       return <>{data.categories.map((c, i) => <g key={c.id}>
-        <text x={4} y={10 + (i + 0.5) * rowH} dominantBaseline="middle" className="lf-chart-label">{fitLabel(c.label, 8)}</text>
+        {tag(out, { key: `cat:${c.id}`, text: c.label, x: 4, y: 10 + (i + 0.5) * rowH, room: 70, align: 'start' })}
         {Array.from({ length: Math.round((data.series[0]!.values[i] ?? 0) / each) }, (_, k) => <circle key={k} cx={80 + k * 12} cy={10 + (i + 0.5) * rowH} r="5" fill={fillOf(prefix, i)} className="lf-chart-icon" />)}
       </g>)}</>;
     }
@@ -182,7 +261,7 @@ function draw(kind: ChartKind, data: ChartData, prefix: string, locale: Locale):
       const cx = W / 2; const cy = H / 2; const r = 70; const max = Math.max(...data.series.flatMap((s) => s.values), 1);
       const point = (i: number, v: number) => `${cx + r * v / max * Math.cos(-Math.PI / 2 + i * 2 * Math.PI / n)},${cy + r * v / max * Math.sin(-Math.PI / 2 + i * 2 * Math.PI / n)}`;
       return <>{data.categories.map((c, i) => <g key={c.id}><line x1={cx} y1={cy} x2={point(i, max).split(',')[0]} y2={point(i, max).split(',')[1]} className="lf-chart-axis" />
-        <text x={point(i, max * 1.18).split(',')[0]} y={point(i, max * 1.18).split(',')[1]} textAnchor="middle" className="lf-chart-label">{fitLabel(c.label, 8)}</text></g>)}
+        {tag(out, { key: `cat:${c.id}`, text: c.label, x: Number(point(i, max * 1.2).split(',')[0]), y: Number(point(i, max * 1.2).split(',')[1]), room: 80 })}</g>)}
         {data.series.map((s, k) => <polygon key={s.id} points={s.values.map((v, i) => point(i, v)).join(' ')} fill={fillOf(prefix, k)} fillOpacity={0.45} stroke={HUES[k]} className="lf-chart-area" />)}</>;
     }
     case 'line': case 'area': case 'time-series': case 'step': case 'slope': case 'sparkline': case 'stacked-area': case 'stacked-area-100': {
@@ -201,7 +280,7 @@ function draw(kind: ChartKind, data: ChartData, prefix: string, locale: Locale):
           <polyline points={line} className="lf-chart-line" stroke={HUES[k]} strokeDasharray={k === 1 ? '6 3' : k === 2 ? '2 3' : undefined} />
           {kind === 'slope' || kind === 'time-series' ? pts.map(([px, py], i) => <circle key={i} cx={px} cy={py} r="3.5" fill={HUES[k]} />) : null}</g>;
       });
-      return <>{kind === 'sparkline' ? null : <line x1={PAD} x2={W - PAD} y1={zeroY} y2={zeroY} className="lf-chart-axis" />}{stacked ? [...shapes].reverse() : shapes}{kind === 'sparkline' ? null : axisLabels(data)}</>;
+      return <>{kind === 'sparkline' ? null : <line x1={PAD} x2={W - PAD} y1={zeroY} y2={zeroY} className="lf-chart-axis" />}{stacked ? [...shapes].reverse() : shapes}{kind === 'sparkline' ? null : axisLabels(data, out)}</>;
     }
     case 'calendar-heatmap': {
       const days = data.days ?? []; const max = Math.max(1, ...days.map((d) => d.value)); const size = 18;
@@ -217,15 +296,15 @@ function draw(kind: ChartKind, data: ChartData, prefix: string, locale: Locale):
         {points.map((p, i) => <circle key={p.id} cx={scaleX(p.x, xs)} cy={scaleY(p.y, ys)} r={kind === 'bubble' ? 4 + 14 * Math.sqrt((p.size ?? 1) / maxSize) : 5}
           fill={fillOf(prefix, i)} fillOpacity={0.75} />)}</>;
     }
-    case 'sankey': return sankey(data, prefix);
-    case 'flowchart': case 'decision-tree': case 'tree': case 'org-chart': return diagram(kind === 'org-chart' ? 'tree' : kind, data);
-    default: return situational(kind, data, prefix, extent);
+    case 'sankey': return sankey(data, prefix, out);
+    case 'flowchart': case 'decision-tree': case 'tree': case 'org-chart': return diagram(kind === 'org-chart' ? 'tree' : kind, data, out);
+    default: return situational(kind, data, prefix, extent, out);
   }
 }
 
 /* ── GAP-FIX-R2 (B.7 part 1): the remaining Appendix A situational kinds ─── */
 
-function situational(kind: ChartKind, data: ChartData, prefix: string, extent: [number, number]): ReactNode {
+function situational(kind: ChartKind, data: ChartData, prefix: string, extent: [number, number], out: Tags): ReactNode {
   const n = Math.max(1, data.categories.length);
   switch (kind) {
     case 'candlestick': {
@@ -235,7 +314,7 @@ function situational(kind: ChartKind, data: ChartData, prefix: string, extent: [
         const top = scaleY(Math.max(r.open, r.close), extent); const bottom = scaleY(Math.min(r.open, r.close), extent);
         return <g key={r.id}><line x1={x} x2={x} y1={scaleY(r.high, extent)} y2={scaleY(r.low, extent)} className="lf-chart-stem" />
           <rect x={x - band * 0.3} y={top} width={band * 0.6} height={Math.max(1, bottom - top)} fill={up ? 'var(--surface)' : fillOf(prefix, 2)} stroke={up ? HUES[0] : HUES[2]} strokeWidth="2" />
-          <text x={x} y={H - 8} textAnchor="middle" className="lf-chart-label">{fitLabel(r.label, 6)}</text></g>; })}</>;
+          {tag(out, { key: `row:${r.id}`, text: r.label, x, y: H - PAD + 3, room: band - 2, valign: 'top' })}</g>; })}</>;
     }
     case 'box-plot': {
       const rows = data.boxes ?? []; const band = (W - 2 * PAD) / Math.max(1, rows.length);
@@ -245,7 +324,7 @@ function situational(kind: ChartKind, data: ChartData, prefix: string, extent: [
           <line x1={x - w / 4} x2={x + w / 4} y1={scaleY(r.min, extent)} y2={scaleY(r.min, extent)} className="lf-chart-stem" />
           <rect x={x - w / 2} y={scaleY(r.q3, extent)} width={w} height={Math.max(1, scaleY(r.q1, extent) - scaleY(r.q3, extent))} fill={fillOf(prefix, i)} fillOpacity={0.6} />
           <line x1={x - w / 2} x2={x + w / 2} y1={scaleY(r.median, extent)} y2={scaleY(r.median, extent)} className="lf-chart-target" />
-          <text x={x} y={H - 8} textAnchor="middle" className="lf-chart-label">{fitLabel(r.label, 8)}</text></g>; })}</>;
+          {tag(out, { key: `row:${r.id}`, text: r.label, x, y: H - PAD + 3, room: band - 2, valign: 'top' })}</g>; })}</>;
     }
     case 'marimekko': {
       // Column width is the column's share of the whole; each stack is 100% of its column.
@@ -255,7 +334,7 @@ function situational(kind: ChartKind, data: ChartData, prefix: string, extent: [
         return <g key={c.id}>{data.series.map((series, k) => { const share = (series.values[i] ?? 0) / (totals[i] || 1);
           const y0 = scaleY(top, [0, 1]); top += share; const y1 = scaleY(top, [0, 1]);
           return <rect key={series.id} x={x} y={y1} width={Math.max(0, width - 2)} height={Math.max(0, y0 - y1)} fill={fillOf(prefix, k)} />; })}
-          <text x={x + width / 2} y={H - 8} textAnchor="middle" className="lf-chart-label">{fitLabel(c.label, 8)}</text></g>; })}</>;
+          {tag(out, { key: `cat:${c.id}`, text: c.label, x: x + width / 2, y: H - PAD + 3, room: width - 2, valign: 'top' })}</g>; })}</>;
     }
     case 'bump': {
       const k = data.series.length; const x = (i: number) => PAD + i * (W - 2 * PAD) / Math.max(1, n - 1);
@@ -264,7 +343,7 @@ function situational(kind: ChartKind, data: ChartData, prefix: string, extent: [
         <polyline points={series.values.map((rank, i) => `${x(i)},${y(rank)}`).join(' ')} className="lf-chart-line" stroke={HUES[j]} strokeDasharray={j === 1 ? '6 3' : j === 2 ? '2 3' : undefined} />
         {series.values.map((rank, i) => <circle key={i} cx={x(i)} cy={y(rank)} r="5" fill={fillOf(prefix, j)} />)}</g>)}
         {Array.from({ length: k }, (_, r) => <text key={r} x={PAD - 10} y={y(r + 1)} textAnchor="end" dominantBaseline="middle" className="lf-chart-label">{r + 1}</text>)}
-        {axisLabels(data)}</>;
+        {axisLabels(data, out)}</>;
     }
     case 'connected-scatter': {
       const points = data.points ?? [];
@@ -273,7 +352,8 @@ function situational(kind: ChartKind, data: ChartData, prefix: string, extent: [
       return <><line x1={PAD} x2={W - PAD} y1={H - PAD} y2={H - PAD} className="lf-chart-axis" /><line x1={PAD} x2={PAD} y1={PAD} y2={H - PAD} className="lf-chart-axis" />
         <polyline points={points.map((p) => `${scaleX(p.x, xs)},${scaleY(p.y, ys)}`).join(' ')} className="lf-chart-line" stroke={HUES[0]} />
         {points.map((p, i) => <g key={p.id}><circle cx={scaleX(p.x, xs)} cy={scaleY(p.y, ys)} r={i === points.length - 1 ? 6 : 4} fill={fillOf(prefix, i === points.length - 1 ? 2 : 0)} />
-          {i === 0 || i === points.length - 1 ? <text x={scaleX(p.x, xs) + 7} y={scaleY(p.y, ys) - 6} className="lf-chart-label">{fitLabel(p.label, 8)}</text> : null}</g>)}</>;
+          {i === 0 || i === points.length - 1 ? tag(out, { key: `pt:${p.id}`, text: p.label, x: scaleX(p.x, xs) + (scaleX(p.x, xs) > W / 2 ? -7 : 7), y: scaleY(p.y, ys) - 6,
+            room: 96, align: scaleX(p.x, xs) > W / 2 ? 'end' : 'start', valign: 'bottom', lines: 1 }) : null}</g>)}</>;
     }
     case 'venn': {
       const sets = data.categories; const r = sets.length === 2 ? 58 : 50;
@@ -286,39 +366,39 @@ function situational(kind: ChartKind, data: ChartData, prefix: string, extent: [
         {(data.regions ?? []).map((region) => { const [x, y] = at(region.sets);
           return <text key={[...region.sets].sort().join('+')} x={x} y={y} textAnchor="middle" dominantBaseline="middle" className="lf-chart-stat lf-chart-stat--small">{region.value}</text>; })}</>;
     }
-    case 'treemap': case 'icicle': case 'sunburst': return hierarchy(kind, data, prefix);
-    case 'swimlane': return swimlane(data);
-    case 'ishikawa': return fishbone(data);
-    case 'mind-map': return mindMap(data, prefix);
+    case 'treemap': case 'icicle': case 'sunburst': return hierarchy(kind, data, prefix, out);
+    case 'swimlane': return swimlane(data, out);
+    case 'ishikawa': return fishbone(data, out);
+    case 'mind-map': return mindMap(data, prefix, out);
     default: return null;
   }
 }
 
-function hierarchy(kind: ChartKind, data: ChartData, prefix: string): ReactNode {
+function hierarchy(kind: ChartKind, data: ChartData, prefix: string, out: Tags): ReactNode {
   const tree = chartTree(data);
   if (typeof tree === 'string') return null;
   const value = (id: string) => hierarchyValue(data, id, tree.children);
   const label = (id: string) => data.nodes?.find((node) => node.id === id)?.label ?? id;
   const top = tree.children.get(tree.root) ?? [];
-  const out: ReactNode[] = [];
+  const marks: ReactNode[] = [];
   if (kind === 'treemap') {
     // Slice-and-dice: top-level groups across, their children down, each group one hue with its pattern.
     let x = PAD / 2; const total = value(tree.root) || 1;
     top.forEach((group, g) => { const width = (W - PAD) * value(group) / total; let y = 8; const kids = tree.children.get(group) ?? [group];
       kids.forEach((kid) => { const height = (H - 16) * value(kid) / (value(group) || 1);
-        out.push(<g key={kid}><rect x={x} y={y} width={Math.max(0, width - 2)} height={Math.max(0, height - 2)} fill={fillOf(prefix, g)} fillOpacity={0.75} className="lf-chart-tile" />
-          {width > 36 && height > 16 ? <text x={x + 4} y={y + 12} className="lf-chart-label">{fitLabel(label(kid), Math.max(3, Math.floor(width / 7)))}</text> : null}</g>); y += height; });
+        marks.push(<g key={kid}><rect x={x} y={y} width={Math.max(0, width - 2)} height={Math.max(0, height - 2)} fill={fillOf(prefix, g)} fillOpacity={0.75} className="lf-chart-tile" />
+          {width > 36 && height > 16 ? tag(out, { key: `node:${kid}`, text: label(kid), x: x + 4, y: y + 3, room: width - 8, align: 'start', valign: 'top', lines: Math.max(1, Math.floor((height - 6) / 15)) }) : null}</g>); y += height; });
       x += width; });
-    return <>{out}</>;
+    return <>{marks}</>;
   }
   if (kind === 'icicle') {
     const rowH = (H - 16) / (Math.max(...tree.depth.values()) + 1);
     const place = (id: string, x: number, width: number, g: number) => { const d = tree.depth.get(id)!;
-      out.push(<g key={id}><rect x={x} y={8 + d * rowH} width={Math.max(0, width - 2)} height={rowH - 2} fill={d === 0 ? 'var(--sunken)' : fillOf(prefix, g)} fillOpacity={d === 0 ? 1 : 0.9 - d * 0.15} className="lf-chart-tile" />
-        {width > 30 ? <text x={x + 4} y={8 + d * rowH + rowH / 2} dominantBaseline="middle" className="lf-chart-label">{fitLabel(label(id), Math.max(3, Math.floor(width / 7)))}</text> : null}</g>);
+      marks.push(<g key={id}><rect x={x} y={8 + d * rowH} width={Math.max(0, width - 2)} height={rowH - 2} fill={d === 0 ? 'var(--sunken)' : fillOf(prefix, g)} fillOpacity={d === 0 ? 1 : 0.9 - d * 0.15} className="lf-chart-tile" />
+        {width > 30 ? tag(out, { key: `node:${id}`, text: label(id), x: x + 4, y: 8 + d * rowH + rowH / 2, room: width - 8, align: 'start', lines: Math.max(1, Math.floor((rowH - 6) / 15)) }) : null}</g>);
       let left = x; for (const kid of tree.children.get(id) ?? []) { const w = width * value(kid) / (value(id) || 1); place(kid, left, w, d === 0 ? (tree.children.get(id) ?? []).indexOf(kid) : g); left += w; } };
     place(tree.root, PAD / 2, W - PAD, 0);
-    return <>{out}</>;
+    return <>{marks}</>;
   }
   // Sunburst: rings by depth, the root a centre disc.
   const cx = W / 2; const cy = H / 2; const ring = 26;
@@ -327,27 +407,27 @@ function hierarchy(kind: ChartKind, data: ChartData, prefix: string): ReactNode 
     if (a1 - a0 >= Math.PI * 2 - 1e-6) return `M ${p(r1, 0)} A ${r1} ${r1} 0 1 1 ${p(r1, Math.PI)} A ${r1} ${r1} 0 1 1 ${p(r1, 0)} M ${p(r0, 0)} A ${r0} ${r0} 0 1 0 ${p(r0, Math.PI)} A ${r0} ${r0} 0 1 0 ${p(r0, 0)} Z`;
     return `M ${p(r0, a0)} L ${p(r1, a0)} A ${r1} ${r1} 0 ${large} 1 ${p(r1, a1)} L ${p(r0, a1)} A ${r0} ${r0} 0 ${large} 0 ${p(r0, a0)} Z`; };
   const place = (id: string, a0: number, a1: number, g: number) => { const d = tree.depth.get(id)!;
-    if (d > 0) out.push(<path key={id} d={arc(18 + (d - 1) * ring, 18 + d * ring - 2, a0, a1)} fill={fillOf(prefix, g)} fillOpacity={1 - (d - 1) * 0.2} className="lf-chart-slice" />);
+    if (d > 0) marks.push(<path key={id} d={arc(18 + (d - 1) * ring, 18 + d * ring - 2, a0, a1)} fill={fillOf(prefix, g)} fillOpacity={1 - (d - 1) * 0.2} className="lf-chart-slice" />);
     let start = a0; for (const kid of tree.children.get(id) ?? []) { const span = (a1 - a0) * value(kid) / (value(id) || 1); place(kid, start, start + span, d === 0 ? (tree.children.get(id) ?? []).indexOf(kid) : g); start += span; } };
   place(tree.root, -Math.PI / 2, Math.PI * 1.5, 0);
-  return <><circle cx={cx} cy={cy} r={16} fill="var(--sunken)" />{out}</>;
+  return <><circle cx={cx} cy={cy} r={16} fill="var(--sunken)" />{marks}</>;
 }
 
-function swimlane(data: ChartData): ReactNode {
+function swimlane(data: ChartData, out: Tags): ReactNode {
   const lanes = data.categories; const nodes = data.nodes ?? []; const links = data.links ?? [];
   const laneH = (H - 8) / Math.max(1, lanes.length); const order = new Map(nodes.map((node, i) => [node.id, i]));
-  const box = { w: 64, h: 22 }; const colW = (W - 70 - box.w) / Math.max(1, nodes.length - 1);
+  const box = { w: 64, h: Math.min(32, laneH - 6) }; const colW = (W - 70 - box.w) / Math.max(1, nodes.length - 1);
   const at = (id: string) => { const node = nodes.find((item) => item.id === id)!; const lane = lanes.findIndex((l) => l.id === node.lane);
     return { x: 62 + order.get(id)! * colW, y: 4 + lane * laneH + laneH / 2 - box.h / 2 }; };
   return <>{lanes.map((lane, i) => <g key={lane.id}><rect x={2} y={4 + i * laneH} width={W - 4} height={laneH - 2} className="lf-chart-lane" />
-    <text x={6} y={4 + i * laneH + laneH / 2} dominantBaseline="middle" className="lf-chart-label">{fitLabel(lane.label, 8)}</text></g>)}
+    {tag(out, { key: `lane:${lane.id}`, text: lane.label, x: 6, y: 4 + i * laneH + laneH / 2, room: 52, align: 'start', lines: Math.max(1, Math.floor((laneH - 4) / 15)) })}</g>)}
     {links.map((l, i) => { const a = at(l.from); const b = at(l.to);
       return <line key={i} x1={a.x + box.w} y1={a.y + box.h / 2} x2={b.x} y2={b.y + box.h / 2} className="lf-chart-edge" />; })}
     {nodes.map((node) => { const p = at(node.id); return <g key={node.id} className="lf-chart-box lf-chart-box--step"><rect x={p.x} y={p.y} width={box.w} height={box.h} rx="6" />
-      <text x={p.x + box.w / 2} y={p.y + box.h / 2} textAnchor="middle" dominantBaseline="middle" className="lf-chart-label">{fitLabel(node.label, 9)}</text></g>; })}</>;
+      {tag(out, { key: `node:${node.id}`, text: node.label, x: p.x + box.w / 2, y: p.y + box.h / 2, room: box.w - 4, lines: Math.max(1, Math.floor(box.h / 15)) })}</g>; })}</>;
 }
 
-function fishbone(data: ChartData): ReactNode {
+function fishbone(data: ChartData, out: Tags): ReactNode {
   const tree = chartTree(data);
   if (typeof tree === 'string') return null;
   const label = (id: string) => data.nodes?.find((node) => node.id === id)?.label ?? id;
@@ -355,17 +435,17 @@ function fishbone(data: ChartData): ReactNode {
   const per = Math.ceil(bones.length / 2); const step = (head - 30) / Math.max(1, per);
   return <><line x1={20} x2={head} y1={spineY} y2={spineY} className="lf-chart-spine" />
     <g className="lf-chart-box lf-chart-box--outcome"><rect x={head} y={spineY - 16} width={64} height={32} rx="4" />
-      <text x={head + 32} y={spineY} textAnchor="middle" dominantBaseline="middle" className="lf-chart-label">{fitLabel(label(tree.root), 9)}</text></g>
+      {tag(out, { key: `node:${tree.root}`, text: label(tree.root), x: head + 32, y: spineY, room: 60 })}</g>
     {bones.map((bone, i) => { const up = i % 2 === 0; const x = 40 + Math.floor(i / 2) * step + step * 0.6; const y = up ? 22 : H - 22;
       return <g key={bone}><line x1={x - 30} y1={y} x2={x} y2={spineY} className="lf-chart-edge" />
-        <text x={x - 30} y={up ? y - 6 : y + 12} textAnchor="middle" className="lf-chart-label">{fitLabel(label(bone), 10)}</text>
+        {tag(out, { key: `node:${bone}`, text: label(bone), x: x - 30, y: up ? y - 3 : y + 3, room: step * 0.9, valign: up ? 'bottom' : 'top', lines: 1 })}
         {(tree.children.get(bone) ?? []).map((cause, k) => { const t = (k + 1) / ((tree.children.get(bone) ?? []).length + 1);
           const cx2 = x - 30 + 30 * t; const cy2 = y + (spineY - y) * t;
           return <g key={cause}><line x1={cx2 - 26} x2={cx2} y1={cy2} y2={cy2} className="lf-chart-edge" />
-            <text x={cx2 - 28} y={cy2} textAnchor="end" dominantBaseline="middle" className="lf-chart-edge-label">{fitLabel(label(cause), 8)}</text></g>; })}</g>; })}</>;
+            {tag(out, { key: `node:${cause}`, text: label(cause), x: cx2 - 28, y: cy2, room: 60, align: 'end', lines: 1, edge: true })}</g>; })}</g>; })}</>;
 }
 
-function mindMap(data: ChartData, prefix: string): ReactNode {
+function mindMap(data: ChartData, prefix: string, out: Tags): ReactNode {
   const tree = chartTree(data);
   if (typeof tree === 'string') return null;
   const cx = W / 2; const cy = H / 2; const pos = new Map<string, [number, number]>([[tree.root, [cx, cy]]]);
@@ -380,7 +460,7 @@ function mindMap(data: ChartData, prefix: string): ReactNode {
     return <line key={i} x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} className="lf-chart-edge" />; })}
     {(data.nodes ?? []).map((node) => { const [x, y] = pos.get(node.id)!; const root = node.id === tree.root;
       return <g key={node.id}><ellipse cx={x} cy={y} rx={root ? 36 : 30} ry={root ? 16 : 12} fill={root ? 'var(--sunken)' : fillOf(prefix, Math.max(0, branch(node.id)))} fillOpacity={root ? 1 : 0.45} className="lf-chart-bubble" />
-        <text x={x} y={y} textAnchor="middle" dominantBaseline="middle" className="lf-chart-label">{fitLabel(node.label, root ? 10 : 8)}</text></g>; })}</>;
+        {tag(out, { key: `node:${node.id}`, text: node.label, x, y, room: root ? 70 : 58 })}</g>; })}</>;
 }
 
 /** Layered positions: a node's column is its longest path from a start. */
@@ -395,7 +475,7 @@ function layers(nodes: NonNullable<ChartData['nodes']>, links: NonNullable<Chart
   return out;
 }
 
-type SankeyLayout = { paths: string[]; nodes: { id: string; label: string; x: number; y: number; height: number; last: boolean }[] };
+type SankeyLayout = { paths: string[]; nodes: { id: string; label: string; x: number; y: number; height: number; last: boolean; room: number }[] };
 
 function sankeyLayout(data: ChartData): SankeyLayout {
   const nodes = data.nodes ?? []; const links = data.links ?? [];
@@ -416,26 +496,22 @@ function sankeyLayout(data: ChartData): SankeyLayout {
     return `M ${x0} ${y0} C ${mid} ${y0}, ${mid} ${y1}, ${x1} ${y1} L ${x1} ${y1 + h} C ${mid} ${y1 + h}, ${mid} ${y0 + h}, ${x0} ${y0 + h} Z`;
   });
   return { paths, nodes: nodes.map((node) => { const p = pos.get(node.id)!;
-    return { id: node.id, label: node.label, x: colX(p.col, p.cols), y: y.get(node.id)!, height: Math.max(2, through(node.id) * scale), last: p.col === p.cols - 1 }; }) };
+    return { id: node.id, label: node.label, x: colX(p.col, p.cols), y: y.get(node.id)!, height: Math.max(2, through(node.id) * scale), last: p.col === p.cols - 1,
+      room: (W - 60) / Math.max(1, p.cols - 1) - 18 }; }) };
 }
 
-function sankey(data: ChartData, prefix: string): ReactNode {
+function sankey(data: ChartData, prefix: string, out: Tags): ReactNode {
   const layout = sankeyLayout(data);
+  for (const node of layout.nodes) tag(out, { key: `node:${node.id}`, text: node.label, x: node.last ? node.x - 4 : node.x + 14, y: node.y + node.height / 2,
+    room: node.room, align: node.last ? 'end' : 'start' });
   return <>{layout.paths.map((d, i) => <path key={i} d={d} fill={fillOf(prefix, i)} fillOpacity={0.55} />)}
     {layout.nodes.map((node) => <rect key={node.id} x={node.x} y={node.y} width="10" height={node.height} className="lf-chart-node" />)}</>;
 }
 
-/** The HTML labels over the SVG (05 §5), placed in the viewBox's own proportions so they sit where the SVG text sat. */
-function tags(kind: ChartKind, data: ChartData): ReactNode {
-  if (kind !== 'sankey') return null;
-  return sankeyLayout(data).nodes.map((node) => <span key={node.id} className="lf-chart-tag" data-copy-role="data" data-anchor={node.last ? 'end' : 'start'}
-    style={{ insetInlineStart: `${(node.last ? node.x - 4 : node.x + 14) / W * 100}%`, insetBlockStart: `${(node.y + node.height / 2) / H * 100}%` }}>{node.label}</span>);
-}
-
-function diagram(kind: ChartKind, data: ChartData): ReactNode {
+function diagram(kind: ChartKind, data: ChartData, out: Tags): ReactNode {
   const nodes = data.nodes ?? []; const links = data.links ?? [];
   const pos = layers(nodes, links);
-  const box = { w: 78, h: 26 };
+  const box = { w: 78, h: 32 };
   // Top-down for trees and decision trees, left-right for flowcharts.
   const at = (nodeId: string) => { const p = pos.get(nodeId)!;
     return kind === 'flowchart' ? { x: 8 + p.col * (W - box.w - 16) / Math.max(1, p.cols - 1), y: 10 + (p.row + 0.5) * (H - 20) / p.rows - box.h / 2 }
@@ -444,8 +520,8 @@ function diagram(kind: ChartKind, data: ChartData): ReactNode {
     const x1 = a.x + (kind === 'flowchart' ? box.w : box.w / 2); const y1 = a.y + (kind === 'flowchart' ? box.h / 2 : box.h);
     const x2 = b.x + (kind === 'flowchart' ? 0 : box.w / 2); const y2 = b.y + (kind === 'flowchart' ? box.h / 2 : 0);
     return <g key={i}><line x1={x1} y1={y1} x2={x2} y2={y2} className="lf-chart-edge" />
-      {l.label ? <text x={(x1 + x2) / 2} y={(y1 + y2) / 2 - 3} textAnchor="middle" className="lf-chart-edge-label">{fitLabel(l.label, 8)}</text> : null}</g>; })}
+      {l.label ? tag(out, { key: `link:${i}`, text: l.label, x: (x1 + x2) / 2, y: (y1 + y2) / 2 - 2, room: 56, valign: 'bottom', lines: 1, edge: true }) : null}</g>; })}
     {nodes.map((node) => { const p = at(node.id);
       return <g key={node.id} className={`lf-chart-box lf-chart-box--${node.kind ?? 'step'}`}><rect x={p.x} y={p.y} width={box.w} height={box.h} rx={node.kind === 'question' ? 2 : 10} />
-        <text x={p.x + box.w / 2} y={p.y + box.h / 2} textAnchor="middle" dominantBaseline="middle" className="lf-chart-label">{fitLabel(node.label, 12)}</text></g>; })}</>;
+        {tag(out, { key: `node:${node.id}`, text: node.label, x: p.x + box.w / 2, y: p.y + box.h / 2, room: box.w - 4 })}</g>; })}</>;
 }

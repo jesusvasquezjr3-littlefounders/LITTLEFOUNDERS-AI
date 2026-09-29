@@ -257,8 +257,10 @@ export function installAudit() {
   const SHAPES = 'line,path,rect,circle,ellipse,polyline,polygon';
   function boards() {
     fresh();
-    const out = { count: 0, lowContrast: [], svgWords: [], labelOutside: [], reservedSeries: [], dragHit: [], dragNoAlternative: [] };
-    const list = ROOTS().flatMap((root) => [...root.querySelectorAll('.lf-learning-board')]).filter(visible);
+    const out = { count: 0, lowContrast: [], svgWords: [], labelOutside: [], reservedSeries: [], dragHit: [], dragNoAlternative: [], chartLabelCut: [], chartLabelSmall: [] };
+    // GAP-FIX-R3: a teaching chart (`.lf-chart`) is a board too, wherever it sits (a lesson segment, the Mentor board).
+    const list = ROOTS().flatMap((root) => [...root.querySelectorAll('.lf-learning-board, .lf-chart')])
+      .filter((node) => !(node.matches('.lf-chart') && node.parentElement?.closest('.lf-learning-board'))).filter(visible);
     for (const board of list) {
       out.count++;
       const ground = groundOf(board), box = board.getBoundingClientRect();
@@ -287,6 +289,13 @@ export function installAudit() {
         if (/\p{L}{2,}/u.test(value) || value.length > 8) out.svgWords.push(`${name} "${value.slice(0, 24)}"`);
         const r = text.getBoundingClientRect();
         if (r.left < box.left - 0.5 || r.right > box.right + 0.5 || r.top < box.top - 0.5 || r.bottom > box.bottom + 0.5) out.labelOutside.push(`${name} "${value.slice(0, 24)}"`);
+      }
+      // 02 D1 / 05 §5 (GAP-FIX-R3): a chart's word labels are whole HTML at caption size (14 px or more), never cut.
+      for (const tag of board.querySelectorAll('.lf-chart-tag')) {
+        if (!visible(tag)) continue;
+        const value = (tag.textContent || '').trim();
+        if (/…$|\.\.\.$/.test(value) || tag.scrollWidth > tag.clientWidth + 1) out.chartLabelCut.push(`${name} "${value.slice(0, 24)}"`);
+        if (parseFloat(getComputedStyle(tag).fontSize) < 13.5) out.chartLabelSmall.push(`${name} "${value.slice(0, 24)}" ${getComputedStyle(tag).fontSize}`);
       }
       // 05 §2: only sky, mint and berry encode a data series; the reserved hues keep their meanings.
       const reserved = RESERVED.map((token) => [token, resolveColor(board, `var(--${token})`)]).filter(([, c]) => c && c[3] > 0);
