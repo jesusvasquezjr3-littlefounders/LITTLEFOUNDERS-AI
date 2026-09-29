@@ -28,7 +28,7 @@
     "noGoal": "Sem meta",
     "submit": "Adicionar moedas",
     "saving": "Salvando…",
-    "added": "Você adicionou {n} moedas.",
+    "result": "Você adicionou {n} moedas: {save} para Poupar, {spend} para Gastar, {share} para Compartilhar.",
     "goalReached": "Meta alcançada: {goal}.",
     "invalidAmount": "Digite de 1 a 1000 moedas.",
     "splitMismatch": "Primeiro divida as {n} moedas.",

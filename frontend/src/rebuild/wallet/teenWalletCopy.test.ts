@@ -29,7 +29,8 @@ function roleOf(key: string): CopyRole {
 }
 
 const fillAll = (text: string) => text.replace('{n}', '12').replace('{saved}', '4').replace('{target}', '10').replace('{goal}', 'Headphones')
-  .replace('{name}', 'Ana').replace('{note}', 'gift');
+  .replace('{name}', 'Ana').replace('{note}', 'gift')
+  .replace('{save}', '6').replace('{spend}', '4').replace('{share}', '2');
 const files = { 'en-US': en, 'es-MX': es, 'pt-BR': pt } as const;
 
 describe('teen wallet copy', () => {

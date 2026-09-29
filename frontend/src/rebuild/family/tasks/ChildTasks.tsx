@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
-import { Chip, Copy, DashboardLayout, EmptyState, RewardChip } from '../../design/controls';
+import { Chip, Copy, DashboardLayout, EmptyState, InlineNotice, RewardChip } from '../../design/controls';
 import type { ConsoleTransport } from '../console/consoleApi';
 import { ConsoleLink, FailureState, PageLoading, type ConsoleLocale, type PageFailure } from '../console/consoleParts';
 import { DEFAULT_REGISTER, REGISTER_BAND, type MoneyRegister } from '../moneyRegister';
@@ -50,8 +50,11 @@ export interface ChildTasksSlots {
   history: ReactNode;
   /** S07.5 (D.17, D.18): mark one chore done, with an optional note. `changed` re-reads this board. */
   done: (task: Task, changed: () => void) => ReactNode;
-  /** S07.4 (D.13): split one approved chore's coins. */
-  split: (task: Task, changed: () => void) => ReactNode;
+  /**
+   * S07.4 (D.13): split one approved chore's coins. `settled` takes the written result of a confirmed split
+   * ("Done: 5 to Save, 4 to Spend, 1 to Share."): this board keeps it in view and re-reads (the payout then leaves).
+   */
+  split: (task: Task, settled: (result: string) => void) => ReactNode;
   /** S07.5 (D.18): ask for one reward, with a reason; `affordable` is what the Spend pocket covers now. */
   ask: (reward: Reward, affordable: boolean, changed: () => void) => ReactNode;
 }
@@ -77,6 +80,8 @@ export function ChildTasks({ copy, locale, dark, transport, photos, onNavigate, 
   const [version, setVersion] = useState(0);
   // A chore marked done in this visit keeps its "done" control, so its answer (sent, or counted at once) stays in view and announced.
   const [marked, setMarked] = useState<ReadonlySet<string>>(new Set());
+  // Bible 02 §9.2 / K18: the last confirmed split's result, held here because the payout's own slot leaves on the re-read.
+  const [splitResult, setSplitResult] = useState<string | null>(null);
   const generation = useRef(0);
 
   const read = useCallback(async () => {
@@ -103,6 +108,7 @@ export function ChildTasks({ copy, locale, dark, transport, photos, onNavigate, 
   }, [transport]);
 
   const changed = useCallback(() => setVersion((value) => value + 1), []);
+  const settled = useCallback((result: string) => { setSplitResult(result); setVersion((value) => value + 1); }, []);
 
   const root = (body: ReactNode) => <div className="lf-rebuild lf-family-console lf-family-money" data-screen="child-tasks" data-theme={dark ? 'dark' : 'light'}
     data-age-band={REGISTER_BAND[register]} data-register={register} lang={locale}>
@@ -123,9 +129,11 @@ export function ChildTasks({ copy, locale, dark, transport, photos, onNavigate, 
   const chores = childChores(board.tasks);
   return root(<DashboardLayout
     primary={<>
+      {/* A status, never a celebration (a split is not an OD-7 milestone): it outlives the payout it confirms. */}
+      {splitResult ? <div className="lf-money-slot" data-family-part="split-result"><InlineNotice tone="success" live>{splitResult}</InlineNotice></div> : null}
       {/* Each waiting payout already says what it is and how many coins wait ("10 coins to split"): the group is named, not titled, to keep the first view short (06 §3.1). */}
       {chores.toSplit.length > 0 ? <section className="lf-console-group" data-family-part="payouts" aria-label={copy.payoutsTitle}>
-        {chores.toSplit.map((task) => <div key={task.id} className="lf-money-slot" data-task-id={task.id}>{slots.split(task, changed)}</div>)}
+        {chores.toSplit.map((task) => <div key={task.id} className="lf-money-slot" data-task-id={task.id}>{slots.split(task, settled)}</div>)}
       </section> : null}
       <Group id="chores" heading={copy.choresTitle}>
         {chores.todo.length === 0 ? <Copy role="body">{copy.empty}</Copy> : <ul className="lf-console-list">

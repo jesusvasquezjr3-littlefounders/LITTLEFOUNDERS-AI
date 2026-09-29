@@ -38,7 +38,6 @@
 [data-pocket='save'] { --pocket: var(--mint); --pocket-soft: var(--mint-soft); }
 [data-pocket='spend'] { --pocket: var(--sky); --pocket-soft: var(--sky-soft); }
 [data-pocket='share'] { --pocket: var(--berry); --pocket-soft: var(--berry-soft); }
-.lf-teen-wallet-swatch { inline-size: 16px; block-size: 16px; border-radius: var(--rounded-full); background: var(--pocket); flex-shrink: 0; }
 .lf-teen-wallet-amount { font-family: Fredoka, sans-serif; font-weight: 600; white-space: nowrap; }
 .lf-teen-wallet-amount--credit { color: var(--success-strong); }
 .lf-teen-wallet-muted { color: var(--content-muted); }
@@ -51,7 +50,7 @@
 .lf-teen-wallet-form, .lf-teen-wallet-split { display: grid; gap: var(--spacing-4); min-inline-size: 0; border: 0; margin: 0; padding: 0; }
 .lf-teen-wallet legend { padding: 0; margin-block-end: var(--spacing-2); font-weight: 800; }
 .lf-teen-wallet-split-row { display: flex; align-items: flex-end; gap: var(--spacing-3); padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--pocket-soft); }
-.lf-teen-wallet-split-row .lf-teen-wallet-swatch { margin-block-end: var(--spacing-5); }
+.lf-teen-wallet-split-row .lf-pocket-mark { margin-block-end: var(--spacing-2); }
 .lf-teen-wallet-split-row .lf-input-field { flex: 1 1 auto; }
 /* The shared field and segmented track sit on sunken by default; on a pocket's soft row or a sunken list row they read by the surface fill instead. */
 .lf-teen-wallet :is(.lf-teen-wallet-split-row, .lf-teen-wallet-list li) .lf-input,

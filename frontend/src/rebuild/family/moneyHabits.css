@@ -14,7 +14,6 @@
   background: var(--pocket-soft);
   color: var(--content);
 }
-.lf-money-habits-swatch { inline-size: 16px; block-size: 16px; border-radius: var(--rounded-full); background: var(--pocket); flex-shrink: 0; }
 .lf-money-habits-pocket-name { flex: 1 1 6rem; font-weight: 800; }
 .lf-money-habits-count { min-inline-size: 3ch; text-align: center; font: 700 1.5rem/1 Fredoka, sans-serif; font-variant-numeric: tabular-nums; }
 /* D.13 pocket rows: the shared Stepper (usual split) or a typed count with −/+ (a payout) takes the rest of the row. */
@@ -63,3 +62,12 @@
 /* GAP-FIX-R1: the one Save/Spend/Share split shared by the Wallet and the lesson board. */
 .lf-pocket-split { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
 .lf-pocket-split-left { margin: 0; font-weight: 800; }
+/* GAP-FIX-R4 (02 §4.3): the split bar under the pocket rows. Segments sized by count, separated by gaps, pocket hues by token, no border (02 §4.4). */
+.lf-split-bar { display: flex; gap: var(--spacing-1); block-size: var(--spacing-3); min-inline-size: 0; }
+.lf-split-bar-part { flex: 0 1 0; min-inline-size: 0; border-radius: var(--rounded-full); }
+.lf-split-bar-part[data-empty='true'] { display: none; }
+.lf-split-bar-part[data-split-segment='save'] { background: var(--mint); }
+.lf-split-bar-part[data-split-segment='spend'] { background: var(--sky); }
+.lf-split-bar-part[data-split-segment='share'] { background: var(--berry); }
+.lf-split-bar-part[data-split-segment='left'] { background: var(--sunken); }
+@media (prefers-reduced-motion: no-preference) { .lf-split-bar-part { transition: flex-grow var(--dur-micro) var(--ease-standard); } }

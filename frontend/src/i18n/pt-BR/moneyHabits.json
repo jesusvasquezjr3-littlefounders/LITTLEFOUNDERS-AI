@@ -17,7 +17,7 @@
     "saving": "Adicionando…",
     "cancel": "Agora não",
     "mismatch": "Divida as {count} moedas primeiro.",
-    "added": "Moedas adicionadas.",
+    "result": "Pronto: {save} para Poupar, {spend} para Gastar, {share} para Compartilhar.",
     "frozen": "Sua conta está em pausa.",
     "failed": "Não funcionou. Tente de novo.",
     "loading": "Carregando sua divisão…",

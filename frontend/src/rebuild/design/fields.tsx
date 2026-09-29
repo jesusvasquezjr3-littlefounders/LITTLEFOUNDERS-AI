@@ -114,7 +114,15 @@ export function Checkbox({ label, help, error, ...props }: Omit<InputHTMLAttribu
   </div>;
 }
 
-export interface ChoiceOption<T extends string> { value: T; label: string; disabled?: boolean }
+export interface ChoiceOption<T extends string> {
+  value: T; label: string; disabled?: boolean;
+  /**
+   * A decorative identity mark drawn beside the label in a SegmentedControl
+   * option (02 §4.3: a wallet pocket is colour, icon and label at once). The
+   * node must be aria-hidden; the label still names the option.
+   */
+  art?: ReactNode;
+}
 
 /** "Choose one" is a rounded rectangle with a ring-and-dot mark (02 §9.5 shape table). */
 export function RadioGroup<T extends string>({ legend, help, error, name, options, value, onValueChange, disabled }: {
@@ -205,6 +213,7 @@ export function SegmentedControl<T extends string>({ legend, legendHidden = fals
         <input type="radio" className="lf-segmented-input" name={name} value={option.value} checked={value === option.value}
           disabled={option.disabled} onChange={() => onValueChange(option.value)} />
         {value === option.value ? <Glyph name="check" /> : null}
+        {option.art ?? null}
         <span data-copy-role="option">{option.label}</span>
       </label>)}
     </div>

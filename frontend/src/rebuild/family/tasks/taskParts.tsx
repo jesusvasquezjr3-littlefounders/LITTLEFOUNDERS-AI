@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Art, Button, ButtonGroup, Chip, ChipGroup, CoinAmount, Dialog, InlineNotice, LoadingState, Pill, RewardChip, type StatusTone } from '../../design/controls';
+import { Button, ButtonGroup, Chip, ChipGroup, CoinAmount, Dialog, InlineNotice, LoadingState, Pill, RewardChip, type StatusTone } from '../../design/controls';
 import type { GlyphName } from '../../design/glyphs';
 import type en from '../../../i18n/en-US/rebuild-family.json';
 import { fill } from '../console/consoleParts';
+import { PocketMark } from '../PocketMark';
 import type { PhotoPort, Pockets, Task, TaskStatus } from './tasksApi';
 
 /*
@@ -141,7 +142,7 @@ export function PocketRow({ pockets, copy, heading, note, action }: {
     {note ? <p className="lf-console-muted" data-copy-role="body">{note}</p> : null}
     <ul>
       {POCKETS.map((pocket) => <li key={pocket} data-pocket={pocket}>
-        <Art assetId={`pocket.${pocket}.icon`} />
+        <PocketMark pocket={pocket} size="lg" />
         <span data-copy-role="option">{copy[pocket]}</span>
         <CoinAmount className="lf-money-pocket-amount">{coinWord(copy, pockets[pocket])}</CoinAmount>
       </li>)}

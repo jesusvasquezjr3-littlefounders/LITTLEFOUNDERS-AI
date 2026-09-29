@@ -28,7 +28,7 @@
     "noGoal": "Sin meta",
     "submit": "Agregar monedas",
     "saving": "Guardando…",
-    "added": "Agregaste {n} monedas.",
+    "result": "Agregaste {n} monedas: {save} a Ahorrar, {spend} a Gastar, {share} a Compartir.",
     "goalReached": "Meta cumplida: {goal}.",
     "invalidAmount": "Escribe de 1 a 1000 monedas.",
     "splitMismatch": "Primero reparte las {n} monedas.",

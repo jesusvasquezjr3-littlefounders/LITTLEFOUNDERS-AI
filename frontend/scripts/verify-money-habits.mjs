@@ -269,6 +269,8 @@ try {
     await enter();
     await wait(`!document.querySelector('[data-money-habits=split-chooser]') && !document.querySelector('[data-money-habits=allocation]')`);
     assert.deepEqual(state.posts.at(-1), { method: 'POST', path: `/tasks/${taskId}/allocate`, body: { save: 5, spend: 4, share: 1, goalId: null } });
+    // Bible 02 section 9.2 / K18 (GAP-FIX-R4): the payout left the board, and the board still states the result, as a status only.
+    await wait(`document.querySelector('[data-family-part="split-result"]')?.innerText.includes(${JSON.stringify(fill(sc.result, { save: 5, spend: 4, share: 1 }))})`);
 
     // ── Child: the usual split out of 10 (D.13) ──
     const us = copy.usualSplit;
@@ -327,7 +329,7 @@ try {
     await wait(`[...${inPanel('teen')}.querySelectorAll('.lf-teen-wallet-split-row input')].map(i=>i.value).join('/') === '6/5/1'`);
     assert.ok((await text('teen')).includes(teenCopy.income.usualNote));
     await click('teen', teenCopy.income.submit);
-    await wait(`${inPanel('teen')}.innerText.includes(${JSON.stringify(fill(teenCopy.income.added, { n: 12 }))})`);
+    await wait(`${inPanel('teen')}.innerText.includes(${JSON.stringify(fill(teenCopy.income.result, { n: 12, save: 6, spend: 5, share: 1 }))})`);
     assert.deepEqual(state.posts.at(-1), { method: 'POST', path: '/wallet/income', body: { source: 'allowance', save: 6, spend: 5, share: 1, goalId: null } });
     await click('teen', sh.heading);
     await ready('share-giving');

@@ -63,6 +63,7 @@ export const REGISTER_POLICY: Record<string, { policy: 'register' | 'neutral' | 
   SavingsGoals: { policy: 'register', why: 'draws GoalProgress in the reader\'s register' },
   SavingsBonusExplainer: { policy: 'register', why: 'D.11 framing, plus the "out of 100" bridge for the transition register' },
   SplitChooser: { policy: 'neutral', why: 'places whole coins of one payout; no ratio is shown' },
+  PocketMark: { policy: 'neutral', why: 'only the icon of a pocket; it carries no words and no numbers, so it reads the same at every age' },
   PocketSplit: { policy: 'neutral', why: 'the shared Save/Spend/Share rows; its caller passes the written value of each count, so the register framing stays with UsualSplit, SplitChooser and the lesson board' },
   ChoreStreak: { policy: 'neutral', why: 'counts days; milestones are OD-7\'s closed list at every age' },
   ChoreDone: { policy: 'neutral', why: 'marks a chore done with an optional note; no numbers' },

@@ -6,6 +6,7 @@ import '../design/system.css';
 import './familyHub.css';
 import './familyMoney.css';
 import './moneyHabits.css';
+import { PocketMark } from './PocketMark';
 
 /*
  * S07.4 (D.14): the Share pocket's real destination, for the child (Appendix
@@ -98,7 +99,7 @@ export function ShareGiving({ copy, teenCopy, locale, dark, available, view, loa
 
   return <section className="lf-rebuild lf-family-hub lf-money-habits" data-money-habits="share-giving" data-theme={dark ? 'dark' : 'light'} lang={locale}
     aria-labelledby={ids.heading} data-pocket="share">
-    <h2 id={ids.heading} data-copy-role="heading">{copy.heading}</h2>
+    <div className="lf-pocket-heading"><PocketMark pocket="share" /><h2 id={ids.heading} data-copy-role="heading">{copy.heading}</h2></div>
     <Copy role="body">{selfDirected ? teenCopy.body : copy.body}</Copy>
     <span className="lf-money-habits-chip" data-copy-role="body">{selfDirected ? teenCopy.honest : copy.honest}</span>
     {failed ? <ErrorState heading={copy.failed} retryLabel={copy.retry} retryingLabel={copy.loading} onRetry={onRetry} />

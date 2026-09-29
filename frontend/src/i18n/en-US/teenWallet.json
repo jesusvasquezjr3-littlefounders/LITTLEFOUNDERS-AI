@@ -28,7 +28,7 @@
     "noGoal": "No goal",
     "submit": "Add coins",
     "saving": "Saving…",
-    "added": "Added {n} coins.",
+    "result": "Added {n} coins: {save} to Save, {spend} to Spend, {share} to Share.",
     "goalReached": "Goal reached: {goal}.",
     "invalidAmount": "Enter 1 to 1000 coins.",
     "splitMismatch": "Split all {n} coins first.",

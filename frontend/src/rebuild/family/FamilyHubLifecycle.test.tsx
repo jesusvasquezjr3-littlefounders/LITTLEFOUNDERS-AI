@@ -184,6 +184,22 @@ describe('WalletCorrections (manual adjustment, goal withdrawal, delivery)', () 
     everyTextHasARole(view.container);
   });
 
+  it('marks every pocket choice and every past correction with the pocket icon (02 §4.3)', () => {
+    const { view } = renderWc();
+    const form = screen.getByRole('form', { name: en.walletCorrections.adjustHeading });
+    for (const pocket of ['save', 'spend', 'share'] as const) {
+      const option = within(form).getByRole('radio', { name: en.walletCorrections[pocket] }).closest('label') as HTMLElement;
+      expect(option.querySelector(`[data-pocket-mark="${pocket}"]`)).toHaveAttribute('aria-hidden', 'true');
+    }
+    fireEvent.click(screen.getByRole('button', { name: en.walletCorrections.moveOut }));
+    const move = screen.getByRole('form', { name: en.walletCorrections.moveOut });
+    expect((within(move).getByRole('radio', { name: en.walletCorrections.toSave }).closest('label') as HTMLElement).querySelector('[data-pocket-mark="save"]')).not.toBeNull();
+    expect((within(move).getByRole('radio', { name: en.walletCorrections.toSpend }).closest('label') as HTMLElement).querySelector('[data-pocket-mark="spend"]')).not.toBeNull();
+    const row = view.container.querySelector('[data-action-kind="manual_adjustment"]') as HTMLElement;
+    expect(row).toHaveAttribute('data-pocket', 'spend');
+    expect(row.querySelector('[data-pocket-mark="spend"]')).not.toBeNull();
+  });
+
   it('reports a failed load with retry and hides every form', () => {
     const { props } = renderWc({ failed: true });
     expect(screen.getByRole('alert')).toHaveTextContent(en.walletCorrections.failed);
@@ -216,6 +232,17 @@ describe('WalletActivity (the child sees every Tutor reason)', () => {
     expect(within(view.container.querySelector('[data-ledger-reason="task_approved"]') as HTMLElement).queryByText(/Why:/)).toBeNull();
     expect(within(view.container.querySelector('[data-redemption-status="fulfilled"]') as HTMLElement).getByText(en.walletActivity.fulfilled)).toBeVisible();
     expect(within(view.container.querySelector('[data-redemption-status="approved"]') as HTMLElement).getByText(en.walletActivity.rewardUntitled)).toBeVisible();
+    everyTextHasARole(view.container);
+  });
+
+  it('marks each movement with its pocket icon beside the pocket word (02 §4.3)', () => {
+    const view = render(<WalletActivity copy={en.walletActivity} locale="en-US" dark={false} open loading={false} failed={false} entries={entries} rewards={[]}
+      onToggle={vi.fn()} onRetry={vi.fn()} />);
+    for (const entry of entries) {
+      const line = view.container.querySelector(`[data-ledger-reason="${entry.reason}"]`) as HTMLElement;
+      expect(line).toHaveAttribute('data-pocket', entry.bucket);
+      expect(line.querySelector(`[data-pocket-mark="${entry.bucket}"]`)).toHaveAttribute('aria-hidden', 'true');
+    }
     everyTextHasARole(view.container);
   });
 

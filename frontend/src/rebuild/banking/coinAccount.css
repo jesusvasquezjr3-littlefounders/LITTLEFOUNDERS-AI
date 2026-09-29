@@ -35,8 +35,9 @@
 .lf-coin-pockets [data-pocket='save'], .lf-coin-lines [data-pocket='save'] { --pocket-soft: var(--mint-soft); }
 .lf-coin-pockets [data-pocket='spend'], .lf-coin-lines [data-pocket='spend'] { --pocket-soft: var(--sky-soft); }
 .lf-coin-pockets [data-pocket='share'], .lf-coin-lines [data-pocket='share'] { --pocket-soft: var(--berry-soft); }
-.lf-family-hub .lf-coin-pockets li { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-1) var(--spacing-3); background: var(--pocket-soft, var(--surface)); }
+.lf-family-hub .lf-coin-pockets li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-1) var(--spacing-3); background: var(--pocket-soft, var(--surface)); }
 .lf-coin-pocket-name { flex: 1 1 6rem; font-weight: 800; }
+.lf-coin-line-label { flex: 1 1 8rem; min-inline-size: 0; }
 .lf-coin-pocket-count { font: 700 1.25rem/1.2 Fredoka, sans-serif; font-variant-numeric: tabular-nums; }
 .lf-coin-limit { padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--surface); }
 .lf-coin-meter { block-size: 12px; border-radius: var(--rounded-full); background: var(--sunken); overflow: hidden; }
@@ -46,6 +47,6 @@
 .lf-coin-totals div { display: grid; gap: var(--spacing-1); padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--surface); min-inline-size: 0; }
 .lf-coin-totals dt { margin: 0; font-weight: 800; overflow-wrap: anywhere; }
 .lf-coin-totals dd { margin: 0; font: 700 1.25rem/1.2 Fredoka, sans-serif; font-variant-numeric: tabular-nums; }
-.lf-family-hub .lf-coin-lines li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--spacing-2); background: var(--pocket-soft, var(--surface)); }
+.lf-family-hub .lf-coin-lines li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2); background: var(--pocket-soft, var(--surface)); }
 .lf-coin-account .lf-button:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 3px; }
 .lf-coin-confirm { display: grid; gap: var(--spacing-3); padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--surface); }

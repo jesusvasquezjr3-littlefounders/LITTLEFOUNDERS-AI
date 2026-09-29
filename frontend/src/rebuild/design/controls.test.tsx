@@ -248,7 +248,7 @@ describe('numeric controls', () => {
     const css = readFileSync(join(process.cwd(), 'src/rebuild/design/controls.css'), 'utf8');
     const compact = css.slice(css.indexOf('@container app (max-width: 639px) {\n  .lf-rebuild .lf-segmented--compact'));
     // Phone width only; the option keeps its 48 px floor in both directions (min-block-size and the label floor).
-    expect(compact).toMatch(/\.lf-segmented--compact \.lf-segmented-option > span \{ min-inline-size: calc\(var\(--target-min\) - var\(--spacing-2\) \* 2\); \}/);
+    expect(compact).toMatch(/\.lf-segmented--compact \.lf-segmented-option > span\[data-copy-role\] \{ min-inline-size: calc\(var\(--target-min\) - var\(--spacing-2\) \* 2\); \}/);
     expect(compact.slice(0, compact.indexOf('\n}'))).not.toMatch(/min-block-size/);
   });
 

@@ -24,7 +24,7 @@ const ROLE: Record<string, Record<string, CopyRole>> = {
   split: {
     heading: 'heading', usual: 'body', use: 'action', change: 'action', save: 'option', spend: 'option', share: 'option', more: 'action', less: 'action',
     left: 'data', placed: 'data', toGoal: 'body', noGoal: 'option', submit: 'action', saving: 'action', cancel: 'action', mismatch: 'body',
-    added: 'body', frozen: 'body', failed: 'body', loading: 'body', retry: 'action', ready: 'data', splitNow: 'action',
+    result: 'body', frozen: 'body', failed: 'body', loading: 'body', retry: 'action', ready: 'data', splitNow: 'action',
   },
   usualSplit: {
     open: 'action', close: 'action', heading: 'heading', body: 'body', tenths: 'data', suggested: 'action', submit: 'action', saving: 'action',

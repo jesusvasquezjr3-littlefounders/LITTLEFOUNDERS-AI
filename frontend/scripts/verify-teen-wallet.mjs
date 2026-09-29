@@ -243,7 +243,7 @@ try {
     await choose(copy.income.toGoal, goalId);
     await audit('income form');
     await enterOn(copy.income.submit);
-    await wait(`${has(copy.income.added.replace('{n}', '12'))} && ${has(copy.income.goalReached.replace('{goal}', 'Headphones'))}`);
+    await wait(`${has(copy.income.result.replace('{n}', '12').replace('{save}', '6').replace('{spend}', '4').replace('{share}', '2'))} && ${has(copy.income.goalReached.replace('{goal}', 'Headphones'))}`);
     assert.deepEqual(state.posts, [{ method: 'POST', path: '/wallet/income', body: { source: 'gift', save: 6, spend: 4, share: 2, goalId } }]);
     await wait(has(copy.page.total.replace('{n}', '28')));
     assert.ok(!(await page.evaluate(`/confetti|celebrat/i.test(${ROOT}.innerHTML) || !!${ROOT}.querySelector('canvas')`)), 'no celebration');

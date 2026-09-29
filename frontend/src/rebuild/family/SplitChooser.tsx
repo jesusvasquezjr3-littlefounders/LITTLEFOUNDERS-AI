@@ -70,7 +70,7 @@ export function SplitChooser({ copy, locale, dark, amount, usual, goals, busy, n
     <form onSubmit={(event) => submit(event, editing ? split : suggested)} noValidate>
       {/* Bible 05 §7: the same pocket rows the lesson's allocation board uses. */}
       <PocketSplit mode={editing ? 'typed' : 'readonly'} labels={label} values={editing ? split : suggested} disabled={busy}
-        max={(bucket) => split[bucket] + Math.max(0, left)} typedMax={amount}
+        max={(bucket) => split[bucket] + Math.max(0, left)} typedMax={amount} total={amount}
         stepLabels={(bucket) => ({ decrease: fill(copy.less, { pocket: label[bucket] }), increase: fill(copy.more, { pocket: label[bucket] }) })}
         onChange={set} remaining={editing ? (left === 0 ? copy.placed : fill(copy.left, { count: left })) : null} />
       {active.length > 0 && (editing ? split : suggested).save > 0 && <SelectField label={copy.toGoal} value={goalId} disabled={busy}

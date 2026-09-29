@@ -1,5 +1,6 @@
 import { Button, Copy, InlineNotice, LoadingState } from '../design/controls';
 import type { Bucket, LedgerEntry, RedemptionStatus } from './familyHubApi';
+import { PocketMark } from './PocketMark';
 import '../design/tokens.css';
 import '../design/system.css';
 import './familyHub.css';
@@ -47,9 +48,9 @@ export function WalletActivity({ copy, locale, dark, open, loading, failed, entr
         <InlineNotice tone="error" live>{copy.failed}</InlineNotice>
         <Button onClick={onRetry}>{copy.retry}</Button>
       </> : loading ? <LoadingState label={copy.loading} lines={2} /> : <>
-        {entries.length === 0 ? <Copy role="body">{copy.empty}</Copy> : <ul>{entries.map((e) => <li key={e.id} data-ledger-reason={e.reason}>
+        {entries.length === 0 ? <Copy role="body">{copy.empty}</Copy> : <ul>{entries.map((e) => <li key={e.id} data-ledger-reason={e.reason} data-pocket={e.bucket}>
           <div className="lf-family-hub-row">
-            <Copy role="option">{label(e)}</Copy>
+            <span className="lf-pocket-heading"><PocketMark pocket={e.bucket} size="sm" /><Copy role="option">{label(e)}</Copy></span>
             <span data-copy-role="data" className={`lf-family-hub-amount${e.amount > 0 ? ' lf-family-hub-amount--credit' : ''}`}>
               {e.amount > 0 ? `+${e.amount}` : `−${Math.abs(e.amount)}`} {bucketLabel(e.bucket)}
             </span>

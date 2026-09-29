@@ -42,4 +42,35 @@ describe('the shared pocket split', () => {
     fireEvent.click(screen.getByRole('button', { name: 'More share' }));
     expect(onChange).toHaveBeenLastCalledWith('share', 1);
   });
+
+  // GAP-FIX-R4 (Frontend Bible 02 §4.3): colour, icon and label at once, and the split bar under the rows.
+  for (const mode of ['stepper', 'typed', 'readonly'] as const) {
+    it(`marks each pocket with its own icon in ${mode} mode`, () => {
+      render(<PocketSplit mode={mode} labels={labels} values={{ save: 5, spend: 4, share: 1 }} max={() => 10}
+        stepLabels={() => ({ decrease: 'Less', increase: 'More' })} onChange={vi.fn()} />);
+      for (const pocket of ['save', 'spend', 'share']) {
+        const row = document.querySelector(`[data-pocket="${pocket}"]`)!;
+        expect(row.querySelector(`img[data-asset-id="pocket.${pocket}.icon"]`)).not.toBeNull();
+        expect(row.textContent).toContain(labels[pocket as keyof typeof labels]);
+      }
+    });
+  }
+
+  it('draws the split bar: three decorative segments sized by the counts, plus the unplaced rest', () => {
+    const { rerender } = render(<PocketSplit mode="typed" labels={labels} values={{ save: 5, spend: 4, share: 1 }} max={() => 10} total={10}
+      stepLabels={() => ({ decrease: 'Less', increase: 'More' })} onChange={vi.fn()} />);
+    const bar = document.querySelector('[data-split-bar]') as HTMLElement;
+    expect(bar).toHaveAttribute('aria-hidden', 'true');
+    const parts = () => [...bar.querySelectorAll<HTMLElement>('[data-split-segment]')].map((s) => [s.dataset.splitSegment, s.style.flexGrow, s.dataset.empty ?? '']);
+    expect(parts()).toEqual([['save', '5', ''], ['spend', '4', ''], ['share', '1', '']]);
+    rerender(<PocketSplit mode="typed" labels={labels} values={{ save: 7, spend: 0, share: 1 }} max={() => 10} total={10}
+      stepLabels={() => ({ decrease: 'Less', increase: 'More' })} onChange={vi.fn()} />);
+    expect(parts()).toEqual([['save', '7', ''], ['spend', '0', 'true'], ['share', '1', ''], ['left', '2', '']]);
+  });
+
+  it('leaves the bar out where the caller draws its own teaching chart (the lesson board)', () => {
+    render(<PocketSplit mode="stepper" bar={false} labels={labels} values={{ save: 1, spend: 1, share: 1 }} max={() => 3}
+      stepLabels={() => ({ decrease: 'Less', increase: 'More' })} onChange={vi.fn()} />);
+    expect(document.querySelector('[data-split-bar]')).toBeNull();
+  });
 });

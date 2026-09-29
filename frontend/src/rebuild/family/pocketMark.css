@@ -1,0 +1,7 @@
+/* The pocket identity mark (02 §4.3): the pocket's own icon at three sizes on the spacing scale. Tokens only. */
+.lf-rebuild .lf-pocket-mark { display: inline-flex; flex: none; align-items: center; justify-content: center; }
+.lf-rebuild .lf-pocket-mark--sm .lf-art { inline-size: var(--spacing-6); block-size: var(--spacing-6); }
+.lf-rebuild .lf-pocket-mark--md .lf-art { inline-size: var(--spacing-8); block-size: var(--spacing-8); }
+.lf-rebuild .lf-pocket-mark--lg .lf-art { inline-size: var(--target-min); block-size: var(--target-min); }
+/* A pocket's own section heading carries its mark beside the word (the Share places, D.14). */
+.lf-rebuild .lf-pocket-heading { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); min-inline-size: 0; }

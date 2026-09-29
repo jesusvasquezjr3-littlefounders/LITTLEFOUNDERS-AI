@@ -172,7 +172,7 @@
   cursor: pointer;
 }
 /* Never narrower than a target, even for a one-character option such as "2" (02 §8): the words keep a floor inside the padding. */
-.lf-rebuild .lf-segmented-option > span { min-inline-size: calc(var(--target-min) - var(--spacing-4) * 2); text-align: center; }
+.lf-rebuild .lf-segmented-option > span[data-copy-role] { min-inline-size: calc(var(--target-min) - var(--spacing-4) * 2); text-align: center; }
 .lf-rebuild .lf-segmented-input { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; margin: 0; opacity: 0; cursor: pointer; }
 .lf-rebuild .lf-segmented-option:has(.lf-segmented-input:checked) { background: var(--primary); color: var(--on-primary); }
 /*
@@ -182,7 +182,7 @@
 @container app (max-width: 639px) {
   .lf-rebuild .lf-segmented--compact .lf-segmented-options { gap: var(--spacing-1); }
   .lf-rebuild .lf-segmented--compact .lf-segmented-option { gap: var(--spacing-1); padding: var(--spacing-2); }
-  .lf-rebuild .lf-segmented--compact .lf-segmented-option > span { min-inline-size: calc(var(--target-min) - var(--spacing-2) * 2); }
+  .lf-rebuild .lf-segmented--compact .lf-segmented-option > span[data-copy-role] { min-inline-size: calc(var(--target-min) - var(--spacing-2) * 2); }
   .lf-rebuild .lf-segmented--compact .lf-segmented-option .lf-system-glyph { inline-size: var(--spacing-4); block-size: var(--spacing-4); }
 }
 .lf-rebuild .lf-segmented-option:has(.lf-segmented-input:disabled) { color: var(--content-disabled); cursor: default; }
