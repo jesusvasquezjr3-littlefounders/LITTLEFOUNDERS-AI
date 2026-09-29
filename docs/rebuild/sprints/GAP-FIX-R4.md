@@ -64,3 +64,30 @@ merge.
 - The full `audit:rebuild` matrix across every lane at merge, and the owner's visual review of the rebuilt boards.
 - The Mentor's own use of the new diagnostic codes (the Mentor lane owns it).
 - The ten owner questions above.
+
+## Checkpoint F4-learning-finish
+
+Final summary of the learning lane. Implementation and local verification only; nothing is accepted or released, and nothing was pushed.
+
+- **Sync.** `codex/spec-migration-s02` (14232a10) was already merged into the lane. There were no conflicts.
+- **Adversarial pass over the 11 gaps.**
+  - Every gap is built end to end, as the table above shows.
+  - Time on task is checked at the Core boundary. Negative, over 7200, fractional and text values are refused with a 400, and nothing is recorded (`learnV2Mixed.test.ts`). The write goes through a service-role function that sets the time once, only on the learner's own receipt or view.
+  - The Delayed Retention and Time-to-Mastery breakdowns sit behind the staff `view_analytics` permission.
+  - The rebuilt boards import no legacy component.
+  - New copy exists in EN, es-MX and pt-BR, and the i18n gate is green.
+- **Fixed in this pass.** The full frontend suite found three class hooks that the lane added but no stylesheet defined: `lf-op-chart-table`, `lf-pz-plot` and `lf-move-to-button` (`designClasses.test.ts`). Nothing selected them, so they were removed. Rendering does not change.
+- **Verification (one full run per touched service).**
+  - Core: type-check, lint and 3,497 tests pass. The 4 placement E2E tests skip without a cluster; they ran 4/4 against the lane cluster at F4-learning.
+  - Frontend: type-check and lint pass. 3,266 of 3,267 tests passed on the full run. The one red was the class-hook finding above. After the fix, it and the affected board suites pass.
+  - Forge: type-check, lint and 839 tests pass.
+  - Database: migration, phase and lifecycle checks pass, and 58 node tests pass. `railway-migrate.test.mjs` hangs on this Windows machine and was stopped. It spawns `bash`, which resolves to WSL here (the known trap). The lane did not touch that test or its runner, and it runs on Linux in CI.
+  - Root: `spec:check` and `secrets:check` pass.
+- **Still open.**
+  - The first production release's Delayed Retention baseline and its log row.
+  - The first CI runs of `learning-db-verify` and the placement E2E.
+  - The full `audit:rebuild` matrix at merge.
+  - The owner's visual review of the rebuilt boards.
+  - The Mentor lane's use of the new diagnostic codes.
+  - Renumbering migrations 0235-0237 at merge. 0237 must deploy before the Core release that grades the new steps.
+  - The ten owner questions listed above.

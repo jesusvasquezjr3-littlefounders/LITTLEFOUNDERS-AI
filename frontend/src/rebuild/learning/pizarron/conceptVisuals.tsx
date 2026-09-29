@@ -28,7 +28,7 @@ const place = (x: number, y: number) => ({ insetInlineStart: `${Math.max(0, Math
 function Plot({ name, label, interactive, children, labels, overlay }: {
   name: string; label: string; interactive: boolean; children: ReactNode; labels: ReactNode; overlay?: ReactNode;
 }) {
-  return <div className="lf-pz lf-pz-plot" role={interactive ? 'group' : 'img'} aria-label={label} data-pizarron={name} data-interactive={interactive ? 'true' : undefined}>
+  return <div className="lf-pz" role={interactive ? 'group' : 'img'} aria-label={label} data-pizarron={name} data-interactive={interactive ? 'true' : undefined}>
     <div className="lf-pz-plot-area">
       <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <line className="lf-op-axis" x1="0" y1={H} x2={W} y2={H} /><line className="lf-op-axis" x1="0" y1="0" x2="0" y2={H} />

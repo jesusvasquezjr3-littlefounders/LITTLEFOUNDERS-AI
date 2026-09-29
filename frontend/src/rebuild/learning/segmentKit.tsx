@@ -203,7 +203,7 @@ export function MoveToChoice<T extends string>({ locale, item, options, onChange
   const t = copy[locale];
   return <div className="lf-move-to">
     <Menu label={item ? `${item.label}: ${t.moveTo}` : t.moveTo} items={options.map((option) => ({ id: option.value, label: option.label, onSelect: () => onChange(option.value) }))}
-      trigger={(props) => <Button {...props} size="sm" variant="secondary" disabled={disabled || item === null} className="lf-move-to-button"
+      trigger={(props) => <Button {...props} size="sm" variant="secondary" disabled={disabled || item === null}
         aria-label={item ? `${item.label}: ${t.moveTo}` : t.moveTo}>{t.moveTo}</Button>} />
   </div>;
 }

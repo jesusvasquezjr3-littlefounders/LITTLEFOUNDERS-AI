@@ -65,7 +65,7 @@ export function GuidedSandbox({ goalLabel, goal, cues, children }: {
  */
 export function ChartOrTable({ chart, table, labels }: { chart: ReactNode; table: ReactNode; labels: { showTable: string; showChart: string } }) {
   const [asTable, setAsTable] = useState(false);
-  return <div className="lf-op lf-op-chart-table" data-operation="operation.show-table.v1">
+  return <div className="lf-op" data-operation="operation.show-table.v1">
     {asTable ? table : chart}
     <Button size="sm" variant="sky" className="lf-learning-view-toggle" onClick={() => setAsTable((value) => !value)}>
       {asTable ? labels.showChart : labels.showTable}</Button>
