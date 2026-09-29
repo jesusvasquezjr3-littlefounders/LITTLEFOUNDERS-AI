@@ -78,6 +78,9 @@ function lowestAge(ages: string): number | null {
   return match ? Number(match[1]) : null;
 }
 
+/** Bible 06 "ages 6–9": a tier whose youngest age is at most this gets the young limits. */
+export const YOUNG_AUDIENCE_MAX_AGE = 9;
+
 /**
  * Resolves the budget audience for a catalog tier. Conservative on purpose: a
  * tier whose range reaches below 10 (tier2 is 8–10) serves 8- and 9-year-olds,
@@ -88,6 +91,6 @@ export function audienceForTier(taxonomy: TaxonomyFile | undefined, tier: string
   const ages = taxonomy?.age_tiers[tier]?.ages;
   if (!ages) return { young: true, label: `${tier} (ages unknown: 6–9 limits applied)` };
   const lowest = lowestAge(ages);
-  const young = lowest === null || lowest <= 9;
+  const young = lowest === null || lowest <= YOUNG_AUDIENCE_MAX_AGE;
   return { young, label: `${tier} ages ${ages}${young ? ' (6–9 limits)' : ''}` };
 }
