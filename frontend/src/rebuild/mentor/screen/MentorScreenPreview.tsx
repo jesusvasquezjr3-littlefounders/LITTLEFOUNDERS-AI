@@ -21,6 +21,7 @@ import type { MentorPhase } from './useMentorSession';
  *            replay | roleplay | first-visit
  *   ?board=<whiteboard kind>  ?character=  ?companion=  ?light=  ?guardian=1  ?mic=on|off|consent|policy
  *   ?sheet=transcript|grown-up|chooser|personalise|map|notebook|history  ?data=ready|empty|failed|loading
+ *   ?replies=1 (the likely-answer chips)  ?recap=1 (the OD-28 recap's 'Finish now' chip)  ?dialog=start-over (GAP-FIX-R5)
  */
 
 const CATALOG: TutorCatalog = {
@@ -119,7 +120,8 @@ export function MentorScreenPreview({ locale, theme, ageBand, params }: { locale
     calibrationSaving: false, calibrationError: false, starting: false, startError: state === 'limit' ? 'SESSION_LIMIT' : null,
     socket, turn, speechUrl: null, audioKey: 3, speaking: false, awaitingReply: state === 'thinking', replyTimedOut: false, resuming: false, ending: false,
     history: [{ speaker: 'tutor', text: TURNS[locale].ask, seq: 1 }, { speaker: 'learner', text: locale === 'en-US' ? 'Save them' : locale === 'es-MX' ? 'Ahorrarlas' : 'Poupar', seq: 2 }, { speaker: 'tutor', text, seq: 3 }],
-    recapOpen: false,
+    // GAP-FIX-R5 (08 §10 item 5): the recap's one 'Finish now' chip, so the Copy Budget and Text Fit audits measure it.
+    recapOpen: params.get('recap') === '1' && phase === 'conversing',
     closing: phase === 'closing' ? { sessionId: 'preview', script: state === 'closing-safety' ? 'safety_stop' : 'completed', effort: 'recovered', topic: state === 'closing-safety' ? null : (copy.mentorSessionEnd as { previewTopic?: string }).previewTopic ?? null } : null,
     mic: { present: mic === 'on' && (phase === 'openings' || phase === 'conversing'), blockedBy: mic === 'consent' ? 'CONSENT_REQUIRED' : mic === 'policy' ? 'POLICY_BLOCKED' : mic === 'off' ? 'VOICE_UNAVAILABLE' : null,
       denied: false, recording, microphone: { subscribe: (listener) => { listener(0.6); return noop; } } },
@@ -130,7 +132,8 @@ export function MentorScreenPreview({ locale, theme, ageBand, params }: { locale
   return <div className="lf-rebuild" data-theme={theme} lang={locale} data-age-band={ageBand}>
     <RebuildProvider environment={{ theme, locale, ageBand }} labels={{ dismiss: copy.mentorScreen.sheetClose }}>
       <MentorScreen session={session} copy={copy} locale={locale} theme={theme} guardianLink={params.get('guardian') === '1'}
-        onLeave={noop} onPath={noop} initialSheet={SHEETS[params.get('sheet') ?? ''] ?? null} initialReplay={replay} roleplayFrozen={state === 'roleplay'} />
+        onLeave={noop} onPath={noop} initialSheet={SHEETS[params.get('sheet') ?? ''] ?? null} initialReplay={replay} roleplayFrozen={state === 'roleplay'}
+        initialConfirmRestart={params.get('dialog') === 'start-over' && phase === 'conversing'} />
     </RebuildProvider>
   </div>;
 }

@@ -5,6 +5,7 @@ import ptCore from '../../i18n/pt-BR/rebuild-core.json';
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { RebuildRoot, SkipLink, useDocumentMeta } from '../design/controls';
 import { noteRouteChange } from '../design/motion';
+import { LessonStageRequestHost } from './lessonStage';
 import './lessonLayer.css';
 
 const skipLabel: Record<Locale, string> = { 'en-US': enCore.appShell.skip, 'es-MX': esCore.appShell.skip, 'pt-BR': ptCore.appShell.skip };
@@ -57,7 +58,8 @@ export function LessonLayer({ theme, locale, ageBand, pageTitle, screen, childre
   return <RebuildRoot theme={theme} locale={locale} ageBand={ageBand}>
     <div ref={layer} className="lf-lesson-layer" data-shell="lesson" data-lesson-screen={screen} lang={locale}>
       <SkipLink label={skipLabel[locale]} target={mainId} />
-      {children}
+      {/* GAP-FIX-R5: one stage-request store above the lesson and the guided-review offer beside it (08 §3, §11). */}
+      <LessonStageRequestHost>{children}</LessonStageRequestHost>
     </div>
   </RebuildRoot>;
 }

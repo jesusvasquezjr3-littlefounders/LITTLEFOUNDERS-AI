@@ -72,3 +72,10 @@
   min-inline-size: 0;
 }
 .lf-memory-note-actions > * { flex: 1 1 auto; }
+/* GAP-FIX-R5: the secondary "Delete this note" action under the current note. */
+.lf-memory-current-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  min-inline-size: 0;
+}

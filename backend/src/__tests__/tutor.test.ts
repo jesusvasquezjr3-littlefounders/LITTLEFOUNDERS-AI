@@ -3453,6 +3453,209 @@ describe('the LEARNER store parks for SELF review when the learner is an indepen
 });
 
 /*
+ * GAP-FIX-R5 (C.4, OD-18, S01.4): a STORED memory note can be deleted by its
+ * reviewer — the note's owner when their notes are self-reviewed (or an adult
+ * with direct control), and a verified guardian for a linked child. Every
+ * other population is refused at the server boundary, before any write.
+ */
+describe('DELETE a stored Mentor memory note (C.4 / OD-18 deletion mechanism)', () => {
+  const TEEN = '77777777-7777-4777-8777-777777777777';
+  const OTHER_TEEN = '66666666-6666-4666-8666-666666666666';
+  const STRANGER = '99999999-9999-4999-8999-999999999999';
+  const NOTE = 'Le gustan los ejemplos con monedas.';
+  const link = { parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' };
+
+  /*
+   * guardian_links honours its filters here (the suite's default stub answers
+   * every query with every row), so "a teen who is nobody's guardian" and "an
+   * adult with no link to this child" are real refusals, not fixture luck.
+   */
+  function world(opts: {
+    roles?: { role: string }[];
+    declaredAgeBand?: string;
+    links?: (typeof link)[];
+    memory?: Record<string, { store: string; content: string }[]>;
+    clearOutcome?: string;
+    memoryReadFails?: boolean;
+    restFailures?: string[];
+  }) {
+    const cleared: Record<string, unknown>[] = [];
+    const calls = stub({
+      roles: opts.roles,
+      declaredAgeBand: opts.declaredAgeBand as StubOpts['declaredAgeBand'],
+      restFailures: opts.restFailures,
+      intercept: (url, method, body) => {
+        if (url.includes('/rest/v1/guardian_links')) {
+          const parent = /parent_user_id=eq\.([^&]+)/.exec(url)?.[1];
+          const kid = /kid_user_id=eq\.([^&]+)/.exec(url)?.[1];
+          const rows = (opts.links ?? []).filter((l) => (!parent || l.parent_user_id === parent) && (!kid || l.kid_user_id === kid));
+          return jsonResponse(200, rows);
+        }
+        if (url.includes('/rest/v1/learner_memory?')) {
+          if (opts.memoryReadFails) return new Response(null, { status: 500 });
+          const user = /user_id=eq\.([^&]+)/.exec(url)?.[1] ?? '';
+          return jsonResponse(200, opts.memory?.[user] ?? []);
+        }
+        if (url.includes('/rpc/clear_learner_memory')) {
+          cleared.push(JSON.parse(String(body ?? '{}')) as Record<string, unknown>);
+          return jsonResponse(200, opts.clearOutcome ?? 'deleted');
+        }
+        if (url.includes('/rest/v1/audit_logs') && method === 'POST') return new Response(null, { status: 201 });
+        return null;
+      },
+    });
+    return { calls, cleared };
+  }
+
+  const teen = { roles: [{ role: 'universal' }], declaredAgeBand: '13_to_17' };
+  const del = (path: string, sub: string, body: object = { expected: NOTE }) =>
+    request(createApp()).delete(`/api/v1/tutor${path}`).set('Authorization', `Bearer ${mintToken({ sub })}`).send(body);
+
+  describe('DELETE /tutor/memory/:store (the note owner)', () => {
+    it("deletes an independent teen's own stored note, stamped as a self-deletion", async () => {
+      const { cleared } = world({ ...teen, memory: { [TEEN]: [{ store: 'learner', content: NOTE }] } });
+      const response = await del('/memory/learner', TEEN);
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual({ deleted: true, store: 'learner' });
+      expect(cleared).toEqual([{ p_user: TEEN, p_store: 'learner', p_expected: NOTE, p_actor: 'learner-self-deleted', p_decided_by: TEEN }]);
+    });
+
+    it("deletes the pedagogy note too — both of C.4's notes are the teen's to remove", async () => {
+      const { cleared } = world({ ...teen, memory: { [TEEN]: [{ store: 'pedagogy', content: NOTE }] } });
+      const response = await del('/memory/pedagogy', TEEN);
+      expect(response.status).toBe(200);
+      expect(cleared[0]?.p_store).toBe('pedagogy');
+    });
+
+    it('lets a screened adult delete their own note (direct control)', async () => {
+      const { cleared } = world({ roles: [{ role: 'universal' }], declaredAgeBand: 'adult', memory: { [STRANGER]: [{ store: 'learner', content: NOTE }] } });
+      const response = await del('/memory/learner', STRANGER);
+      expect(response.status).toBe(200);
+      expect(cleared).toHaveLength(1);
+    });
+
+    it("refuses a linked child — their notes are their verified Tutor's to delete", async () => {
+      const { cleared } = world({ ...teen, links: [link], memory: { [KID]: [{ store: 'learner', content: NOTE }] } });
+      const response = await del('/memory/learner', KID);
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('GUARDIAN_MANAGED');
+      expect(cleared).toEqual([]);
+    });
+
+    it('refuses a kid-role account with no guardian link (the conservative hold stays guardian-reviewed)', async () => {
+      const { cleared } = world({ roles: [{ role: 'kid' }], links: [], memory: { [KID]: [{ store: 'learner', content: NOTE }] } });
+      const response = await del('/memory/learner', KID);
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('GUARDIAN_MANAGED');
+      expect(cleared).toEqual([]);
+    });
+
+    it('refuses an account with no reviewer (under-13 evidence, no link): fail closed', async () => {
+      const { cleared } = world({ roles: [{ role: 'universal' }], declaredAgeBand: 'under_13', memory: { [TEEN]: [{ store: 'learner', content: NOTE }] } });
+      const response = await del('/memory/learner', TEEN);
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('AGE_EVIDENCE_REQUIRED');
+      expect(cleared).toEqual([]);
+    });
+
+    it('answers 502 when eligibility or the note cannot be read — never a delete by default, never a 404', async () => {
+      const eligibility = world({ ...teen, restFailures: ['account_age_declarations'], memory: { [TEEN]: [{ store: 'learner', content: NOTE }] } });
+      const first = await del('/memory/learner', TEEN);
+      expect(first.status).toBe(502);
+      expect(eligibility.cleared).toEqual([]);
+
+      const read = world({ ...teen, memoryReadFails: true });
+      const second = await del('/memory/learner', TEEN);
+      expect(second.status).toBe(502);
+      expect(second.body.error.code).toBe('DATA_UNAVAILABLE');
+      expect(read.cleared).toEqual([]);
+    });
+
+    it('answers 409 when the note changed since it was read — before the write, and when the database compare loses a race', async () => {
+      const before = world({ ...teen, memory: { [TEEN]: [{ store: 'learner', content: 'Una nota más nueva.' }] } });
+      const stale = await del('/memory/learner', TEEN);
+      expect(stale.status).toBe(409);
+      expect(stale.body.error.code).toBe('NOTE_OUT_OF_DATE');
+      expect(before.cleared).toEqual([]);
+
+      world({ ...teen, memory: { [TEEN]: [{ store: 'learner', content: NOTE }] }, clearOutcome: 'conflict' });
+      const race = await del('/memory/learner', TEEN);
+      expect(race.status).toBe(409);
+      expect(race.body.error.code).toBe('NOTE_OUT_OF_DATE');
+    });
+
+    it('answers 404 when there is no note, 502 on an unknown database word, 400 on a bad store or body', async () => {
+      world({ ...teen });
+      expect((await del('/memory/learner', TEEN)).status).toBe(404);
+      world({ ...teen, memory: { [TEEN]: [{ store: 'learner', content: NOTE }] }, clearOutcome: 'maybe' });
+      expect((await del('/memory/learner', TEEN)).status).toBe(502);
+      world({ ...teen });
+      expect((await del('/memory/diary', TEEN)).status).toBe(400);
+      expect((await del('/memory/learner', TEEN, {})).status).toBe(400);
+      expect((await del('/memory/learner', TEEN, { expected: NOTE, userId: OTHER_TEEN })).status).toBe(400);
+    });
+  });
+
+  describe('DELETE /tutor/kids/:kidUserId/memory/:store (the verified Tutor)', () => {
+    it("deletes a linked child's note, stamped as a guardian deletion, and audits it without the text", async () => {
+      const { calls, cleared } = world({ links: [link], memory: { [KID]: [{ store: 'learner', content: NOTE }] } });
+      const response = await del(`/kids/${KID}/memory/learner`, PARENT);
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual({ deleted: true, store: 'learner' });
+      expect(cleared).toEqual([{ p_user: KID, p_store: 'learner', p_expected: NOTE, p_actor: 'guardian-deleted', p_decided_by: PARENT }]);
+      const audit = calls.find((c) => c.method === 'POST' && c.url.includes('/audit_logs'));
+      expect(JSON.parse(String(audit?.body ?? '{}'))).toMatchObject({
+        actor_id: PARENT,
+        action: 'mentor.memory_note.deleted_by_guardian',
+        detail: { learner: KID, store: 'learner' },
+      });
+      expect(String(audit?.body)).not.toContain(NOTE);
+    });
+
+    it("refuses another teen reaching for someone else's child", async () => {
+      const { cleared } = world({ ...teen, links: [link], memory: { [KID]: [{ store: 'learner', content: NOTE }] } });
+      const response = await del(`/kids/${KID}/memory/learner`, OTHER_TEEN);
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('FORBIDDEN');
+      expect(cleared).toEqual([]);
+    });
+
+    it('refuses an adult with no verified link to this child', async () => {
+      const { cleared } = world({ roles: [{ role: 'parent' }], links: [link], memory: { [KID]: [{ store: 'learner', content: NOTE }] } });
+      const response = await del(`/kids/${KID}/memory/learner`, STRANGER);
+      expect(response.status).toBe(403);
+      expect(cleared).toEqual([]);
+    });
+
+    it('refuses a Tutor for a kid who has no verified link at all', async () => {
+      const { cleared } = world({ links: [], memory: { [KID]: [{ store: 'learner', content: NOTE }] } });
+      const response = await del(`/kids/${KID}/memory/learner`, PARENT);
+      expect(response.status).toBe(403);
+      expect(cleared).toEqual([]);
+    });
+
+    it('refuses the child deleting through the guardian route', async () => {
+      const { cleared } = world({ links: [link], memory: { [KID]: [{ store: 'learner', content: NOTE }] } });
+      const response = await del(`/kids/${KID}/memory/learner`, KID);
+      expect(response.status).toBe(403);
+      expect(cleared).toEqual([]);
+    });
+
+    it('answers 502 when guardianship cannot be verified, and 409 on a stale note', async () => {
+      const outage = world({ restFailures: ['guardian_links'], memory: { [KID]: [{ store: 'learner', content: NOTE }] } });
+      expect((await del(`/kids/${KID}/memory/learner`, PARENT)).status).toBe(502);
+      expect(outage.cleared).toEqual([]);
+
+      const stale = world({ links: [link], memory: { [KID]: [{ store: 'learner', content: 'Otra nota.' }] } });
+      const response = await del(`/kids/${KID}/memory/learner`, PARENT);
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('NOTE_OUT_OF_DATE');
+      expect(stale.cleared).toEqual([]);
+    });
+  });
+});
+
+/*
  * Class V artifacts (migration 0069, TUTOR_INSTRUMENTS.md §3.6): the first
  * state a learner keeps on purpose. `plan` is a whiteboard snapshot Oracle
  * saves via `POST /turns`'s own `savePlan` flag; `notebook` is a board the

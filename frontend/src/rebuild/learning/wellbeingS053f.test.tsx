@@ -148,6 +148,16 @@ describe('B.26 and OD-1: the guided-review offer', () => {
     expect(onDecline).toHaveBeenCalledTimes(2);
   });
 
+  // GAP-FIX-R5 (Bible 08 §4: "an offer with two equal choices, never a default-accepted path"; D9).
+  it.each(['young', 'teen'] as const)('%s: gives both choices equal weight and focuses neither', (register) => {
+    const { container } = render(<GuidedReviewOffer offer={OFFER} locale="en-US" register={register} dark={false} onReview={() => {}} onDecline={() => {}} />);
+    const choices = [...container.querySelectorAll<HTMLButtonElement>('.lf-guided-review-actions button')];
+    expect(choices.map((button) => button.dataset.offerChoice)).toEqual(['review', 'keep-going']);
+    expect(choices[0]!.className).toBe(choices[1]!.className);
+    expect(choices[0]!.className).not.toMatch(/accent|success|danger/);
+    expect(choices.some((button) => document.activeElement === button)).toBe(false);
+  });
+
   it('accepts only Core\'s offer shape', () => {
     expect(guidedReviewOfferSchema.safeParse(OFFER).success).toBe(true);
     for (const bad of [{ ...OFFER, misses: 2 }, { ...OFFER, skill_key: '../admin' }, { ...OFFER, character: 'bot' }, { ...OFFER, lives: 3 }, null]) {

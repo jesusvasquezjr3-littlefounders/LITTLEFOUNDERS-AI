@@ -6,7 +6,7 @@ import type { Locale } from '../design/copyBudget';
 import { Button, Menu, MentorAvatar, ProgressBar, TextField, type ChipDrag } from '../design/controls';
 import { findMentorAvatar, MENTOR_NAMES } from '../design/assets';
 import { LessonFeedback } from './LessonFeedback';
-import { LessonStageSlot } from './lessonStage';
+import { LessonStageSlot, useLessonStageRequest } from './lessonStage';
 import type { LessonMentorStage } from './lessonDocument';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { parseLocaleNumber } from './v2VisualScorer.generated';
@@ -60,6 +60,8 @@ export function NarrationControl({ segmentId, locale }: { segmentId: string; loc
   const src = narrationAudio?.[segmentId];
   const [playing, setPlaying] = useState(false);
   useEffect(() => () => stopLessonNarration(), [segmentId]);
+  // GAP-FIX-R5 (08 §11): the character speaks for exactly as long as its line plays.
+  useLessonStageRequest('speaking', playing);
   if (!src || lessonSoundMuted()) return null;
   const t = copy[locale];
   const toggle = () => {

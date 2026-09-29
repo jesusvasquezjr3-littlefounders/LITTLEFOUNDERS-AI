@@ -373,7 +373,16 @@
     "allDone": "Tudo em dia.",
     "loadFailed": "As notas não carregaram. Tente de novo.",
     "loading": "Carregando a nota…",
-    "retry": "Tentar de novo"
+    "retry": "Tentar de novo",
+    "deleteNote": "Excluir esta nota",
+    "deleteTitle": "Excluir esta nota?",
+    "deleteBody": "O Mentor a esquece. Não dá para desfazer.",
+    "deleteKeep": "Manter",
+    "deleteConfirm": "Excluir",
+    "deleteDeleting": "Excluindo…",
+    "noteGone": "Nota excluída. O Mentor não a usa mais.",
+    "deleteFailed": "Não excluiu. Tente de novo.",
+    "deleteChanged": "A nota mudou. Esta é a atual."
   },
   "familyTasks": {
     "title": "Tarefas",

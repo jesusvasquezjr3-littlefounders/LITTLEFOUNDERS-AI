@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { Button, Copy, InlineNotice, LoadingState } from '../design/controls';
+import { useEffect, useRef, useState } from 'react';
+import { Button, ConfirmDialog, Copy, InlineNotice, LoadingState } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './memorySelfReview.css';
@@ -20,6 +20,12 @@ import './memorySelfReview.css';
  * action ("Delete") is a secondary button, not an error fill, because the
  * proposal was never applied to anything - rejecting it destroys no stored
  * data (Bible 02 §9.5 reserves the error hue for destructive actions).
+ *
+ * GAP-FIX-R5 (C.4 self-review/deletion mechanism, OD-18, S01.4): a STORED
+ * note is deletable too. "Delete this note" is a secondary action beside the
+ * current note; it opens the rebuilt ConfirmDialog, whose confirm is the
+ * error-hued destructive button (02 §9.5: the error hue is always behind a
+ * confirmation), and a status line reports the outcome afterwards.
  */
 
 export type MemoryStore = 'learner' | 'pedagogy';
@@ -61,9 +67,20 @@ export interface MemorySelfReviewCopy {
   changed: string;
   outOfDate: string;
   decisionFailed: string;
+  deleteNote: string;
+  deleteTitle: string;
+  deleteBody: string;
+  deleteKeep: string;
+  deleteConfirm: string;
+  deleteDeleting: string;
+  noteGone: string;
+  deleteFailed: string;
 }
 
-export function MemorySelfReview({ copy, locale, dark, phase, notes, current, deciding, settled, failedId, notice, noticeKind, onDecide, onRetry }: {
+/** The outcome of deleting a stored note in this visit, per store. */
+export type NoteDeletion = 'deleted' | 'failed';
+
+export function MemorySelfReview({ copy, locale, dark, phase, notes, current, deciding, settled, failedId, notice, noticeKind, onDecide, onRetry, deletions = {}, onDeleteNote }: {
   copy: MemorySelfReviewCopy;
   locale: string;
   dark: boolean;
@@ -81,8 +98,19 @@ export function MemorySelfReview({ copy, locale, dark, phase, notes, current, de
   noticeKind: 'alert' | 'status' | null;
   onDecide: (id: string, verdict: Verdict) => void;
   onRetry: () => void;
+  /** Stored notes deleted (or refused) in this visit; each store says so under its note. */
+  deletions?: Partial<Record<MemoryStore, NoteDeletion>>;
+  /** Deletes the stored note the teen confirmed. Absent: no delete control is offered. */
+  onDeleteNote?: (store: MemoryStore) => Promise<void>;
 }) {
   const root = useRef<HTMLElement>(null);
+  const [confirming, setConfirming] = useState<MemoryStore | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  async function confirmDelete() {
+    if (!confirming || !onDeleteNote || deleting) return;
+    setDeleting(true);
+    try { await onDeleteNote(confirming); } finally { setDeleting(false); setConfirming(null); }
+  }
   const lastAction = useRef<HTMLButtonElement | null>(null);
   /*
    * When a decision settles, the pressed button is replaced by a status line,
@@ -112,6 +140,11 @@ export function MemorySelfReview({ copy, locale, dark, phase, notes, current, de
           <div className="lf-memory-current">
             <Copy role="body">{copy.currentLabel}</Copy>
             {now === null ? <Copy role="body">{copy.currentEmpty}</Copy> : <Copy role="data">{now}</Copy>}
+            {now !== null && onDeleteNote ? <div className="lf-memory-current-actions">
+              <Button aria-haspopup="dialog" data-memory-delete={store} onClick={() => setConfirming(store)}>{copy.deleteNote}</Button>
+            </div> : null}
+            {deletions[store] === 'deleted' ? <InlineNotice tone="success" live>{copy.noteGone}</InlineNotice>
+              : deletions[store] === 'failed' ? <InlineNotice tone="error" live>{copy.deleteFailed}</InlineNotice> : null}
           </div>
           {waiting.length === 0 ? (now === null ? null : <Copy role="body">{copy.empty}</Copy>) : (
             <ul className="lf-memory-queue">
@@ -144,6 +177,9 @@ export function MemorySelfReview({ copy, locale, dark, phase, notes, current, de
           )}
         </div>;
       })}
+      <ConfirmDialog open={confirming !== null} destructive heading={copy.deleteTitle} consequence={copy.deleteBody}
+        keepLabel={copy.deleteKeep} confirmLabel={copy.deleteConfirm} pendingLabel={copy.deleteDeleting} pending={deleting}
+        onKeep={() => setConfirming(null)} onConfirm={() => void confirmDelete()} />
     </>}
   </section>;
 }
