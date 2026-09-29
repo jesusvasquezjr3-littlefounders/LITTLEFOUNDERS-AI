@@ -516,7 +516,8 @@
     "saved": "Guardado.",
     "failed": "Este cambio no se guardó. Inténtalo de nuevo.",
     "offline": "No tienes conexión. No se guardó nada.",
-    "notEligible": "Esta opción no está disponible para tu cuenta ahora."
+    "notEligible": "Esta opción no está disponible para tu cuenta ahora.",
+    "consentRequired": "Primero un Tutor debe permitirlo."
   },
   "ageRecord": {
     "title": "Tu grupo de edad",

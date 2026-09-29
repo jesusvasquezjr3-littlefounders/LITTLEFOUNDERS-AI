@@ -18,7 +18,14 @@ boundary (migration teen_discoverable_profile):
     flagged handle), with no sweep;
   - a follow into a discoverable teen still needs the teen's consent
     (SUBJECT_CONSENT_REQUIRED, E.8 unchanged);
-  - no browser role can call the functions or read the table.
+  - no browser role can call the functions or read the table;
+  - OD-9 section 4.2 (GAP-FIX-R3, migration discoverable_profile_data_practice):
+    for a migrated teen the OD-9 consent step marked, the registered practice
+    'sharing.discoverable_profile' must apply. Without a verified Tutor's
+    specific consent an otherwise eligible teen is not eligible, is refused by
+    name (DATA_PRACTICE_CONSENT_REQUIRED), cannot consent alone, and an opt-in
+    recorded before the marking lapses by itself; with the consent it applies
+    as for anyone, and a revoked consent hides the profile at once.
 
 Configuration (defaults match the repo's owned audit cluster):
   LF_PG_PSQL   path to psql      (default <repo>/.codex/audit-db/pgsql/bin/psql.exe)
@@ -116,7 +123,7 @@ try:
     check(f'all {len(migrations)} migrations apply in order on PostgreSQL {run("SHOW server_version")}')
 
     names = ('teen16', 'teen17_dob', 'teen15', 'teen_nomonth', 'teen_in16month', 'flagteen', 'kid16', 'parent',
-             'origin', 'adult', 'stranger', 'guest')
+             'origin', 'adult', 'stranger', 'guest', 'migrated', 'migrated_alone')
     I = {name: str(uuid.uuid4()) for name in names}
     run('INSERT INTO auth.users (id, email, is_anonymous) VALUES ' + ', '.join(
         f"('{v}', '{k}@example.com', {'true' if k == 'guest' else 'false'})" for k, v in I.items()) + ';')
@@ -133,6 +140,8 @@ try:
         ('{I['teen17_dob']}', '13_to_17', NULL),
         ('{I['flagteen']}', '13_to_17', {month('17 years')}),
         ('{I['origin']}', '13_to_17', {month('16 years 6 months')}),
+        ('{I['migrated']}', '13_to_17', {month('16 years 5 months')}),
+        ('{I['migrated_alone']}', '13_to_17', {month('17 years 1 month')}),
         ('{I['adult']}', 'adult', NULL), ('{I['stranger']}', 'adult', NULL);
     UPDATE profiles SET birth_date = ((now() AT TIME ZONE 'UTC')::date - interval '17 years')::date WHERE user_id = '{I['teen17_dob']}';
     INSERT INTO account_safety_origins (user_id) VALUES ('{I['origin']}');
@@ -140,7 +149,8 @@ try:
     INSERT INTO parent_verifications (user_id, status, method, given_names, surnames, birth_date)
         VALUES ('{I['parent']}', 'verified', 'local-ocr', 'P', 'One', '1985-03-01');
     INSERT INTO guardian_links (parent_user_id, kid_user_id, verification_status, verified_at) VALUES
-        ('{I['parent']}', '{I['kid16']}', 'verified', now()), ('{I['parent']}', '{I['origin']}', 'verified', now());
+        ('{I['parent']}', '{I['kid16']}', 'verified', now()), ('{I['parent']}', '{I['origin']}', 'verified', now()),
+        ('{I['parent']}', '{I['migrated']}', 'verified', now());
     INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{I['kid16']}', 'kid', '{I['parent']}');
     UPDATE profiles SET birth_date = ((now() AT TIME ZONE 'UTC')::date - interval '16 years 6 months')::date WHERE user_id = '{I['kid16']}';
     """)
@@ -182,7 +192,61 @@ try:
     assert run(audit) == '2'
     check('the opt-in lapses by itself when eligibility does (a flagged profile is hidden at once, no sweep); turning it off always works and is audited; an unchanged answer writes nothing')
 
+    # OD-9 4.2: the discoverable profile is a registered sharing surface a Tutor answers.
+    assert service("SELECT kind || '|' || consent_source || '|' || teen_self_consent FROM data_practices WHERE key = 'sharing.discoverable_profile'") \
+        == 'sharing_surface|data_practice_consents|false'
+    # Before the consent step marks anyone, a self-registered 16-17 (one with a
+    # linked Tutor, one independent) is eligible as before and opts in.
+    for name in ('migrated', 'migrated_alone'):
+        assert service(f"SELECT teen_discoverable_eligible('{I[name]}')") == 't', name
+        assert service(f"SELECT set_teen_profile_discoverable('{I[name]}', true)") == 't', name
+        assert visible(I['stranger'], I[name]), name
+    check('OD-9 4.2: sharing.discoverable_profile is registered as a Tutor-answered sharing surface, and an account the consent step did not mark is unaffected')
+
+    before = run(audit)
+    run(f"INSERT INTO legacy_consent_subjects (user_id, age_class) VALUES ('{I['migrated']}', 'teen'), ('{I['migrated_alone']}', 'teen')")
+    for name in ('migrated', 'migrated_alone'):
+        assert service(f"SELECT teen_discoverable_base_eligible('{I[name]}')") == 't', name
+        assert service(f"SELECT data_practice_applies('{I[name]}', 'sharing.discoverable_profile')") == 'f', name
+        assert service(f"SELECT teen_discoverable_eligible('{I[name]}')") == 'f', name
+        assert service(f"SELECT teen_profile_discoverable('{I[name]}')") == 'f', name
+        for viewer in ('stranger', 'teen15', 'adult'):
+            assert not visible(I[viewer], I[name]), (viewer, name)
+        rejected(f"SET ROLE service_role; SELECT set_teen_profile_discoverable('{I[name]}', true)", 'DATA_PRACTICE_CONSENT_REQUIRED')
+    assert run(audit) == before
+    assert run(f"SELECT count(*) FROM teen_profile_discoverability WHERE discoverable AND user_id IN ('{I['migrated']}', '{I['migrated_alone']}')") == '2'
+    check('a marked migrated 16-17 without the consent is not eligible: an earlier opt-in lapses by itself (hidden from every viewer, no sweep, the stored choice kept) and turning it on is refused by name, DATA_PRACTICE_CONSENT_REQUIRED, with nothing written')
+
+    # The teen cannot consent alone (teen_self_consent false), with or without a Tutor; nor can an unrelated adult.
+    for name in ('migrated', 'migrated_alone'):
+        rejected(f"SET ROLE service_role; SELECT data_practice_set_consent('{I[name]}', '{I[name]}', 'sharing.discoverable_profile', true, 1)", 'DATA_PRACTICE_NOT_ALLOWED')
+    rejected(f"SET ROLE service_role; SELECT data_practice_set_consent('{I['migrated_alone']}', '{I['stranger']}', 'sharing.discoverable_profile', true, 1)", 'DATA_PRACTICE_NOT_ALLOWED')
+    rejected(f"SET ROLE service_role; SELECT set_teen_profile_discoverable('{I['teen15']}', true)", 'DISCOVERABLE_NOT_ELIGIBLE')
+    assert service(f"SELECT teen_discoverable_eligible('{I['migrated_alone']}')") == 'f'
+    check('the migrated teen cannot give the consent alone, nor can an unrelated adult; a marked independent teen with no verified Tutor stays private; an ineligible 13-15 keeps DISCOVERABLE_NOT_ELIGIBLE')
+
+    state = json.loads(service(f"SELECT data_practice_state('{I['migrated']}')"))
+    practice = next(p for p in state['practices'] if p['key'] == 'sharing.discoverable_profile')
+    assert state['migrated'] and state['has_tutor'] and practice['applies'] is False and practice['self_grantable'] is False
+    service(f"SELECT data_practice_set_consent('{I['migrated']}', '{I['parent']}', 'sharing.discoverable_profile', true, 1)")
+    assert service(f"SELECT data_practice_applies('{I['migrated']}', 'sharing.discoverable_profile')") == 't'
+    assert service(f"SELECT teen_discoverable_eligible('{I['migrated']}')") == 't'
+    assert service(f"SELECT teen_profile_discoverable('{I['migrated']}')") == 't'
+    assert visible(I['stranger'], I['migrated'])
+    assert run(f"SELECT count(*) FROM audit_logs WHERE action = 'data_practice.granted' AND subject = '{I['migrated']}' AND detail->>'practice' = 'sharing.discoverable_profile'") == '1'
+    check('the data-practice state lists the practice for the linked verified Tutor; once the Tutor consents (audited) the teen is eligible, and the choice the teen made earlier applies again')
+
+    service(f"SELECT data_practice_set_consent('{I['migrated']}', '{I['parent']}', 'sharing.discoverable_profile', false, NULL)")
+    assert service(f"SELECT teen_profile_discoverable('{I['migrated']}')") == 'f'
+    assert not visible(I['stranger'], I['migrated'])
+    count = run(audit)
+    assert service(f"SELECT set_teen_profile_discoverable('{I['migrated']}', false)") == 'f'
+    assert run(audit) == str(int(count) + 1)
+    rejected(f"SET ROLE service_role; SELECT set_teen_profile_discoverable('{I['migrated']}', true)", 'DATA_PRACTICE_CONSENT_REQUIRED')
+    check('a revoked consent hides the profile at once; turning it off still works and is audited, and turning it on is refused again by name')
+
     for role in ('anon', 'authenticated'):
+        rejected(f"SET ROLE {role}; SELECT teen_discoverable_base_eligible('{I['teen16']}')", 'permission denied')
         for fn in (f"teen_discoverable_eligible('{I['teen16']}')", f"teen_profile_discoverable('{I['teen16']}')",
                    f"set_teen_profile_discoverable('{I['teen16']}', true)"):
             rejected(f"SET ROLE {role}; SELECT {fn}", 'permission denied')

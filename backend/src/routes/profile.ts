@@ -197,8 +197,8 @@ export function ownProfileRouter(): Router {
     // S-03 (OD-27): only a teen can have (or be offered) the discoverable
     // choice; an unreadable answer reads as private and not offered.
     const discoverability = tier === 'teen'
-      ? await readTeenDiscoverability(user.id) ?? { eligible: false, enabled: false }
-      : { eligible: false, enabled: false };
+      ? await readTeenDiscoverability(user.id) ?? { eligible: false, enabled: false, reason: null }
+      : { eligible: false, enabled: false, reason: null };
     return ok(res, {
       ...publicShape(profiles[0], avatars?.[0]?.options ?? {}),
       email: user.email,
@@ -217,7 +217,9 @@ export function ownProfileRouter(): Router {
       social: {
         tier,
         privateProfile: tier !== 'adult' && !discoverability.enabled,
-        discoverable: { canChoose: discoverability.eligible, enabled: discoverability.enabled },
+        // OD-9 4.2: `reason` names why an otherwise eligible teen is not
+        // offered it (DATA_PRACTICE_CONSENT_REQUIRED); null otherwise.
+        discoverable: { canChoose: discoverability.eligible, enabled: discoverability.enabled, reason: discoverability.reason },
       },
       // E.13: the owner (a minor) learns which field hides their profile.
       profileReview: minor
@@ -232,7 +234,9 @@ export function ownProfileRouter(): Router {
    * works), audited in the database transaction. Children, 13-to-15-year-olds,
    * a teen whose age evidence cannot prove 16 (no birth month or birth date),
    * a flagged profile and every adult are refused turning it on. Private is
-   * the default and nothing turns it on but this call.
+   * the default and nothing turns it on but this call. OD-9 4.2: a migrated
+   * teen whose Tutor has not consented to 'sharing.discoverable_profile' is
+   * refused by name (DATA_PRACTICE_CONSENT_REQUIRED).
    */
   router.put('/discoverable', async (req, res) => {
     const parsed = z.object({ discoverable: z.boolean() }).strict().safeParse(req.body);
@@ -241,10 +245,11 @@ export function ownProfileRouter(): Router {
     if (user.isGuest) return fail(res, 403, 'DISCOVERABLE_NOT_ELIGIBLE', 'Only 16 and 17 year olds can choose this');
     const outcome = await setTeenProfileDiscoverable(user.id, parsed.data.discoverable);
     if (outcome === 'not-eligible') return fail(res, 403, 'DISCOVERABLE_NOT_ELIGIBLE', 'Only 16 and 17 year olds can choose this');
+    if (outcome === 'consent-required') return fail(res, 403, 'DATA_PRACTICE_CONSENT_REQUIRED', 'A Tutor must allow this first');
     if (outcome !== 'saved') return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not save the choice');
     const state = await readTeenDiscoverability(user.id);
     if (!state) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not confirm the choice');
-    return ok(res, { discoverable: { canChoose: state.eligible, enabled: state.enabled } });
+    return ok(res, { discoverable: { canChoose: state.eligible, enabled: state.enabled, reason: state.reason } });
   });
 
   router.patch('/', async (req, res) => {

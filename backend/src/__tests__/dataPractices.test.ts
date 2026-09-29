@@ -198,8 +198,9 @@ describe('the enforcement migration covers every registered practice', () => {
    * after the registry creates that ties TWO accounts together (two or more
    * references to auth.users) must be mapped here to a registered practice
    * that some migration enforces through data_practice_applies, or be
-   * exempted with the reason. Teen discoverable (0184, before the registry)
-   * joins this rule once the owner answers its open question.
+   * exempted with the reason. The sharing surfaces created BEFORE the
+   * registry, which that scan cannot see, are mapped by hand in
+   * PRE_REGISTRY_SURFACES below and held to the same rule.
    */
   const TWO_ACCOUNT_TABLES: Record<string, string | { exempt: string }> = {
     data_practice_consents: { exempt: 'the consent record itself (subject and grantor)' },
@@ -208,6 +209,31 @@ describe('the enforcement migration covers every registered practice', () => {
     coop_goal_guardian_consents: 'sharing.cooperative_goals',
     account_deletion_guardian_notices: { exempt: 'the owner-mandated D-14 (b) notice to an already verified Tutor of a linked teen\'s own deletion: ids only, read only by that Tutor, gone with the account; a safeguard, not a sharing surface' },
   };
+  /*
+   * OD-27 (2) / S-03: the 16-17 discoverable profile (teen_discoverable_profile,
+   * merged before the registry) exposes the whole profile to every signed-in
+   * account and to lists. GAP-FIX-R3 registered it; its eligibility, the one
+   * gate every visibility read and the setter pass, must ask the practice.
+   */
+  const PRE_REGISTRY_SURFACES: Record<string, { practice: string; enforcedIn: string }> = {
+    teen_profile_discoverability: { practice: 'sharing.discoverable_profile', enforcedIn: 'teen_discoverable_eligible' },
+  };
+  it('every sharing surface created before the registry is registered, and its gate asks the practice in the latest definition', () => {
+    const dir = join(root, 'database/migrations');
+    const files = readdirSync(dir).filter((f) => f.endsWith('.sql')).sort();
+    const all = files.map((f) => readFileSync(join(dir, f), 'utf8').split('\r\n').join('\n'));
+    const registered = new Map(all.flatMap((sql) => [...sql.matchAll(/^\s+\('([a-z][a-z0-9_.-]+)', '([a-z_]+)', '[a-z0-9_]+', '[^']+', '([a-z_]+)', (true|false),/gm)]
+      .map((m) => [m[1]!, { kind: m[2]!, source: m[3]!, teenSelf: m[4] === 'true' }] as const)));
+    for (const [table, { practice, enforcedIn }] of Object.entries(PRE_REGISTRY_SURFACES)) {
+      expect(all.some((sql) => sql.includes(`CREATE TABLE IF NOT EXISTS public.${table} (`)), `${table} exists`).toBe(true);
+      // A sharing surface a Tutor answers, never the teen alone (OD-10, the conservative option).
+      expect(registered.get(practice), `${table} -> ${practice} is registered`).toEqual({ kind: 'sharing_surface', source: 'data_practice_consents', teenSelf: false });
+      const latest = all.filter((sql) => sql.includes(`FUNCTION public.${enforcedIn}(`)).at(-1)!;
+      const body = latest.slice(latest.indexOf(`FUNCTION public.${enforcedIn}(`));
+      expect(body.slice(0, body.indexOf('$$;', body.indexOf('$$') + 2)), `${enforcedIn} enforces ${practice}`).toContain(`data_practice_applies(p_user, '${practice}')`);
+    }
+  });
+
   it('every table tying two accounts, created at or after the registry, names a registered and enforced practice', () => {
     const dir = join(root, 'database/migrations');
     const files = readdirSync(dir).filter((f) => f.endsWith('.sql')).sort();

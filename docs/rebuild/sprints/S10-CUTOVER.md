@@ -240,7 +240,7 @@ Nothing else was found missing: no legacy UI file is unreachable, no rebuilt fil
 - **Kid money home.** The lane added `MyDataPracticesPanel` to `KidBankingHome.tsx`, which the integration branch deleted (the rebuilt Coins surface). The panel now renders in `BankingPage.tsx`'s `research` slot beside `MyResearchPanel`. The teen wallet's `aside` gained it as well.
 - **REQUIREMENTS.md.** Rows A.2, A.3, A.4, A.5, B.6, F.2 and H.1 keep the integration branch's newer status with the S10.1/S10.3 notes and evidence links appended; H.5 merged cleanly with its S10.2 note.
 - **Checks on the merged tree:** typecheck:all, lint:all, backend (3,036 tests) and frontend (3,423 tests) suites, spec:check, secrets:check, the i18n gate and the database gates (44 node tests including od9 and backup-crypto) pass. `scripts/railway-migrate.test.mjs` still produces no output within 90 seconds on this Windows machine and was not completed; it remains open.
-- **Open (not a merge defect):** OD-27's teen discoverable profile (0184) is a teen-own opt-in and is not in the 14-practice registry; whether it counts as a rebuild data practice for a migrated teen is an owner question.
+- **Open (not a merge defect):** OD-27's teen discoverable profile (0184) is a teen-own opt-in and is not in the 14-practice registry; whether it counts as a rebuild data practice for a migrated teen is an owner question. *Closed by [GAP-FIX-R3 F3-data-platform](GAP-FIX-R3.md#f3-data-platform): OD-9 section 4.2 names any new sharing surface, so it is registered as `sharing.discoverable_profile` (Tutor-answered) and enforced in `teen_discoverable_eligible`.*
 
 ## Merge integration, legacy UI lane (S10L.1 to S10L.3, into codex/spec-migration-s02)
 

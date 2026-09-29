@@ -33,6 +33,8 @@ export const PRACTICES = [
   ['sharing.social_connections', false], ['sharing.learning_family_bridge', false],
   // Registered after S10.3 by the cooperative_goals_data_practice migration (OD-27 (1)).
   ['sharing.cooperative_goals', false],
+  // Registered after S10.3 by the discoverable_profile_data_practice migration (OD-27 (2), GAP-FIX-R3).
+  ['sharing.discoverable_profile', false],
 ];
 
 export function mulberry32(seed) {
