@@ -26,12 +26,13 @@ import type { NarrationUnit, ScreenBlock } from './lessonModel.js';
 export const REDUNDANCY_THRESHOLD = 0.6;
 /** A differentiated script that adds less than this share of new words is not a differentiation. */
 export const SCRIPT_REPEAT_THRESHOLD = 0.8;
-const MIN_RUN = 3;
+/** The shortest run of consecutive words that counts as verbatim (Block B threshold log). */
+export const VERBATIM_RUN_WORDS = 3;
 
-/** Share of `screen` tokens covered by common runs of ≥ MIN_RUN tokens (or the whole block when shorter). */
+/** Share of `screen` tokens covered by common runs of ≥ VERBATIM_RUN_WORDS tokens (or the whole block when shorter). */
 export function verbatimCoverage(screen: readonly string[], spoken: readonly string[]): number {
   if (screen.length === 0 || spoken.length === 0) return 0;
-  const minRun = Math.min(MIN_RUN, screen.length);
+  const minRun = Math.min(VERBATIM_RUN_WORDS, screen.length);
   const covered = new Array<boolean>(screen.length).fill(false);
   let previous = new Array<number>(spoken.length + 1).fill(0);
   for (let i = 1; i <= screen.length; i += 1) {

@@ -12,8 +12,12 @@ const job = (name, stale, extra = {}) => ({ job: name, stale, lastRunAt: null, h
 const checks = (overdue = 0) => ({ overdue, windowDays: 30 });
 const reviews = (due = 0) => ({ due, windowDays: 90 });
 const retention = (stale = false) => job('tutor_retention', stale);
-const extras = { tutorRetention: retention(), contentRetroChecks: checks(), accessReviews: reviews() };
-const healthy = { data: { jobs: [job('vault_backup', false), job('pulse_backup', false), job('vault_drift', false)], anyStale: false, ...extras }, error: null };
+const deletions = (stuck = 0) => ({ stuck, afterHours: 24 });
+const extras = { tutorRetention: retention(), contentRetroChecks: checks(), accessReviews: reviews(), accountDeletionFailures: deletions() };
+// GAP-FIX-R6: the family-data jobs, fresh; the tests below that build their own jobs list keep them.
+const FAMILY_JOBS = ['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune'];
+const familyJobs = () => FAMILY_JOBS.map((name) => job(name, false));
+const healthy = { data: { jobs: [job('vault_backup', false), job('pulse_backup', false), job('vault_drift', false), ...familyJobs()], anyStale: false, ...extras }, error: null };
 
 function run(body) {
   const dir = mkdtempSync(join(tmpdir(), 'ops-watch-'));
@@ -29,12 +33,12 @@ function run(body) {
 }
 
 test('a healthy status passes and notifies nobody', () => {
-  assert.deepEqual(evaluateOpsStatus(healthy), { ok: true, stale: [], errors: [], overdueChecks: 0, dueReviews: 0 });
+  assert.deepEqual(evaluateOpsStatus(healthy), { ok: true, stale: [], errors: [], overdueChecks: 0, dueReviews: 0, stuckDeletions: 0 });
   assert.deepEqual(run(healthy), { code: 0, notice: null });
 });
 
 test('a stale job fails the watch and writes the notice a human receives', () => {
-  const body = { data: { jobs: [job('vault_backup', true, { lastAttemptAt: '2026-09-25T08:00:00Z', lastAttemptOk: false }), job('pulse_backup', false), job('vault_drift', false)], ...extras } };
+  const body = { data: { jobs: [job('vault_backup', true, { lastAttemptAt: '2026-09-25T08:00:00Z', lastAttemptOk: false }), job('pulse_backup', false), job('vault_drift', false), ...familyJobs()], ...extras } };
   const result = run(body);
   assert.equal(result.code, 1);
   assert.match(result.notice, /vault_backup\*\*: last successful run 50 h ago \(window 36 h\)/);
@@ -44,15 +48,15 @@ test('a stale job fails the watch and writes the notice a human receives', () =>
 test('a reply without the stale boolean, a missing job or an error page is refused, never read as healthy', () => {
   assert.equal(run('<html>502 Bad Gateway</html>').code, 1);
   assert.equal(run({ data: null, error: { code: 'DATA_UNAVAILABLE' } }).code, 1);
-  const missing = evaluateOpsStatus({ data: { jobs: [job('vault_backup', false), job('pulse_backup', false)], ...extras } });
+  const missing = evaluateOpsStatus({ data: { jobs: [job('vault_backup', false), job('pulse_backup', false), ...familyJobs()], ...extras } });
   assert.equal(missing.ok, false);
   assert.deepEqual(missing.errors, ['vault_drift: missing from the reply']);
-  const noFlag = evaluateOpsStatus({ data: { jobs: [job('vault_backup', false), job('pulse_backup', false), { job: 'vault_drift' }], ...extras } });
+  const noFlag = evaluateOpsStatus({ data: { jobs: [job('vault_backup', false), job('pulse_backup', false), { job: 'vault_drift' }, ...familyJobs()], ...extras } });
   assert.deepEqual(noFlag.errors, ["vault_drift: the reply carries no 'stale' boolean"]);
 });
 
 test('the notice names the run when the workflow passes its URL', () => {
-  const notice = buildNotification({ stale: [job('vault_drift', true)], errors: [], overdueChecks: 0, dueReviews: 0 }, 'https://example.test/run/1');
+  const notice = buildNotification({ stale: [job('vault_drift', true)], errors: [], overdueChecks: 0, dueReviews: 0, stuckDeletions: 0 }, 'https://example.test/run/1');
   assert.match(notice, /Run: https:\/\/example\.test\/run\/1/);
 });
 
@@ -61,7 +65,7 @@ test('G.2: an overdue retroactive release check fails the watch and is named; a 
   const result = run(overdue);
   assert.equal(result.code, 1);
   assert.match(result.notice, /content_retro_checks\*\*: 2 retroactive release check\(s\) past the 30-day window/);
-  const noCount = evaluateOpsStatus({ data: { jobs: healthy.data.jobs, tutorRetention: retention(), accessReviews: reviews() } });
+  const noCount = evaluateOpsStatus({ data: { jobs: healthy.data.jobs, tutorRetention: retention(), accessReviews: reviews(), accountDeletionFailures: deletions() } });
   assert.equal(noCount.ok, false);
   assert.deepEqual(noCount.errors, ["content_retro_checks: the reply carries no 'overdue' count"]);
 });
@@ -100,5 +104,34 @@ test('G.4: a reply without the due count, or with a malformed one, is refused', 
     const result = evaluateOpsStatus({ data: { ...healthy.data, accessReviews: { due, windowDays: 90 } } });
     assert.equal(result.ok, false);
     assert.deepEqual(result.errors, ["access_reviews: the reply carries no 'due' count"]);
+  }
+});
+
+test('H.4 (GAP-FIX-R6): each family-data job that goes quiet fails the watch and is named in the notice', () => {
+  for (const name of FAMILY_JOBS) {
+    const jobs = healthy.data.jobs.map((entry) => (entry.job === name ? job(name, true) : entry));
+    const result = run({ data: { ...healthy.data, jobs, anyStale: true } });
+    assert.equal(result.code, 1, name);
+    assert.ok(result.notice.includes(`**${name}**: last successful run 50 h ago (window 36 h)`), name);
+    assert.match(result.notice, /family data outlives the period families were promised/);
+  }
+});
+
+test('H.4 (GAP-FIX-R6): a reply missing a family-data job is refused, never read as healthy', () => {
+  for (const name of FAMILY_JOBS) {
+    const result = evaluateOpsStatus({ data: { ...healthy.data, jobs: healthy.data.jobs.filter((entry) => entry.job !== name) } });
+    assert.equal(result.ok, false);
+    assert.deepEqual(result.errors, [`${name}: missing from the reply`]);
+  }
+});
+
+test('E.6 (GAP-FIX-R6): an erasure stalled past a day fails the watch; a reply without the count is refused', () => {
+  const result = run({ data: { ...healthy.data, accountDeletionFailures: deletions(2) } });
+  assert.equal(result.code, 1);
+  assert.match(result.notice, /\*\*account_deletion_failures\*\*: 2 account erasure\(s\) with a step failed more than 24 h ago/);
+  const { accountDeletionFailures: _drop, ...without } = healthy.data;
+  assert.deepEqual(evaluateOpsStatus({ data: without }).errors, ["account_deletion_failures: the reply carries no 'stuck' count"]);
+  for (const stuck of [-1, 0.5, '1', null]) {
+    assert.deepEqual(evaluateOpsStatus({ data: { ...healthy.data, accountDeletionFailures: { stuck, afterHours: 24 } } }).errors, ["account_deletion_failures: the reply carries no 'stuck' count"]);
   }
 });

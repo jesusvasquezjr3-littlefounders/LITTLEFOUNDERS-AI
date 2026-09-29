@@ -166,6 +166,32 @@ test('E.12: the brand position must stay written', () => {
   expectFailure([['docs/product-audit/COSMIC_NARRATIVE.md', 'A small, safe way to say hello to people you already know', 'A fun place to meet new friends']], /the E\.12 position itself/);
 });
 
+test('E.12, Appendix J 1.4: the brand position must stay current with OD-27 (1) and (2)', () => {
+  const narrative = 'docs/product-audit/COSMIC_NARRATIVE.md';
+  // The pre-OD-27 claim that a teen approves every viewer returns while the discoverable profile exists.
+  expectFailure([[narrative, "A teen's profile is private by default,", 'A teen chooses, one by one, who may see them. A teen\'s profile is private by default,']], /approves every viewer one by one/);
+  // The 16-17 opt-in, its default and its off switch each must be named.
+  expectFailure([[narrative, 'At 16 or 17, a teen may choose', 'An older teen may choose']], /16-17 discoverable-profile opt-in/);
+  expectFailure([[narrative, "A teen's profile is private by default,", "A teen's profile starts closed,"]], /private by default/);
+  expectFailure([[narrative, 'can turn that off at any time', 'can change it']], /turn the discoverable profile off/);
+  // The cooperative goals and their no-ranking rule must be named.
+  expectFailure([[narrative, 'work toward a small goal together with', 'work toward a small goal alongside']], /teen cooperative goals/);
+  expectFailure([[narrative, 'with no rankings and no score', 'with no score'], [narrative, 'A goal together has no rankings,', 'A goal together is small,']], /cooperative goals have no rankings/);
+  // Before the discoverable profile exists, the old sentence is not flagged: the check follows the shipped schema.
+  const discoverable = 'database/migrations/' + readdirSync(join(root, 'database/migrations')).find((f) => f.endsWith('_teen_discoverable_profile.sql'));
+  const source = readFileSync(join(root, discoverable), 'utf8');
+  const narrativeSource = readFileSync(join(root, narrative), 'utf8');
+  try {
+    writeFileSync(join(root, discoverable), source.replaceAll('teen_profile_discoverable(', 'teen_profile_findable('));
+    writeFileSync(join(root, narrative), narrativeSource.replace("A teen's profile is private by default,", 'A teen chooses, one by one, who may see them. A teen\'s profile is private by default,'));
+    const failures = checkSocialGovernance(root, { today: TODAY });
+    assert.ok(!failures.some((f) => /one by one/.test(f)), JSON.stringify(failures, null, 1));
+  } finally {
+    writeFileSync(join(root, discoverable), source);
+    writeFileSync(join(root, narrative), narrativeSource);
+  }
+});
+
 test('L-04: a looser eligibility, a bigger group, a free-text column, a loose body, an unswept class or a missing policy note fails', () => {
   // The orchestrator renumbers migrations at merge: find them by name, never by number.
   const named = (suffix) => 'database/migrations/' + readdirSync(join(root, 'database/migrations')).find((f) => f.endsWith(suffix));

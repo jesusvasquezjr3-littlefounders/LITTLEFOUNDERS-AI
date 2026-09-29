@@ -357,6 +357,24 @@ export function checkSocialGovernance(root, { today = new Date() } = {}) {
       ['follower count', 'no comparison count (E.9)'],
       ['law 5', 'the Law 5 grounding'],
     ]) if (!section.includes(needle)) failures.push(`COSMIC_NARRATIVE.md §6 must state ${why} ("${needle}")`);
+    // GAP-FIX-R6 (E.12, Appendix J 1.4 "present and current"; A.1: no copy describes behaviour that does not exist).
+    // The position must describe the shipped social layer: once the OD-27 (2) discoverable profile exists it may
+    // not claim a teen approves every viewer, and it must name the 16-17 opt-in; once the OD-27 (1) cooperative
+    // goals exist it must name them and their no-ranking rule.
+    if (latestDefinition(root, 'teen_profile_discoverable')) {
+      if (/one by one,? who may see (them|their)/.test(section)) failures.push('COSMIC_NARRATIVE.md §6 claims a teen approves every viewer one by one, which the OD-27 (2) discoverable profile contradicts');
+      for (const [needle, why] of [
+        ['private by default', 'that a teen\'s profile is private by default (OD-27 (2))'],
+        ['16 or 17', 'the 16-17 discoverable-profile opt-in (OD-27 (2))'],
+        ['turn that off', 'that the teen can turn the discoverable profile off (OD-27 (2))'],
+      ]) if (!section.includes(needle)) failures.push(`COSMIC_NARRATIVE.md §6 must state ${why} ("${needle}")`);
+    }
+    if (latestDefinition(root, 'coop_goal_eligible')) {
+      for (const [needle, why] of [
+        ['small goal together', 'the teen cooperative goals (OD-27 (1))'],
+        ['no rankings', 'that cooperative goals have no rankings (OD-27 (1))'],
+      ]) if (!section.includes(needle)) failures.push(`COSMIC_NARRATIVE.md §6 must state ${why} ("${needle}")`);
+    }
   }
 
   // ── 5. L-04 (OD-27 (1)): teen cooperative goals ─────────────────────────
