@@ -3,9 +3,9 @@ import {
   Button, Card, Chip, DataTable, EmptyState, InlineNotice, List, ListRow, ProgressBar, SegmentedControl, SelectField, Sheet, type TableColumn,
 } from '../../design/controls';
 import {
-  alertsFor, GENERATION_VIEWS, isAnalytics, isCoach, isComparison, isLiveStatus, isOverview, isRunDetail, isSlotDetail, isSnapshots, LIVE_STAGES,
+  alertsFor, GENERATION_VIEWS, isAnalytics, isCoach, isCoachAction, isComparison, isLiveStatus, isOverview, isRunDetail, isSlotDetail, isSnapshots, LIVE_STAGES,
   POLL_MS, processed, RUBRIC_DIMENSIONS, slotLeaf, sortRuns, stageOf,
-  type Alert, type Analytics, type GenerationView, type LiveFeed, type LiveRun, type RunSummary, type Slot,
+  type Alert, type Analytics, type CoachAction, type GenerationView, type LiveFeed, type LiveRun, type RunSummary, type Slot,
 } from './generationApi';
 import { useStaffRead, type StaffApi } from './staffConsoleApi';
 import { CopyId, Facts, LoadFailure, Loading, Metrics, ShareBars, StaffPage, useFormats } from './ConsoleParts';
@@ -535,6 +535,32 @@ function CoachView({ api }: { api: StaffApi }) {
       extra: typeof min === 'number' ? fill(t.body.lowest, { n: money.score(min) }) : undefined }] : [];
   });
   const perLesson = report.outcomes.published > 0 ? report.cost.totalUsd / report.outcomes.published : null;
+  // Core sends facts only; every word is this locale's and every number is Intl-formatted (02 section 1.2, rule 16).
+  const actions = report.proposedActions.filter(isCoachAction);
+  const coachLines = (action: CoachAction): { label: string; proposal: string; evidence: string[] } => {
+    if (action.tag === 'cost:cache') {
+      const { cacheHitPct, wastedUsd } = action.params;
+      return { label: t.option.coach_cache, proposal: t.body.coachCacheProposal,
+        evidence: [fill(t.body.coachCacheEvidence, { share: money.pct(cacheHitPct), cost: money.usd(wastedUsd) })] };
+    }
+    if (action.tag === 'failure:stage') {
+      const { stage, count, total } = action.params;
+      const name = stageLabel(copy, stageOf(stage));
+      return { label: fill(t.option.coach_stage, { stage: name }), proposal: fill(t.body.coachStageProposal, { stage: name }),
+        evidence: [fill(t.body.coachStageEvidence, { n: format.number(count), total: format.number(total), share: money.share(total > 0 ? count / total : 0) })] };
+    }
+    if (action.tag === 'cost:perLesson') {
+      const p = action.params;
+      return { label: t.option.coach_perLesson, proposal: t.body.coachLessonProposal, evidence: [
+        fill(t.body.coachLessonEvidence, { cost: money.usd(p.usdPerLesson), published: format.number(p.published) }),
+        fill(t.body.coachLessonImages, { inherited: format.number(p.inherited), billed: format.number(p.billed) }),
+      ] };
+    }
+    const { dimension, mean, min, n } = action.params;
+    const name = dimensionLabel(copy, dimension);
+    return { label: fill(t.option.coach_judge, { dimension: name }), proposal: fill(t.body.coachJudgeProposal, { dimension: name }),
+      evidence: [fill(t.body.coachJudgeEvidence, { value: money.score(mean), n: format.number(n), low: money.score(min ?? mean) })] };
+  };
   return <div className="lf-staff-section" data-view="coach">
     <Card heading={t.heading.coach}>
       <p data-copy-role="body">{`${report.courseSlug ? `${report.courseSlug} · ` : ''}${fill(t.body.runsAnalyzed, { n: format.number(report.runsAnalyzed) })}`}</p>
@@ -582,14 +608,17 @@ function CoachView({ api }: { api: StaffApi }) {
           : t.body.notAvailable },
       ]} />
     </Card>
-    {report.proposedActions.length ? <Card heading={t.heading.actions}>
+    {actions.length ? <Card heading={t.heading.actions}>
       <p data-copy-role="body" className="lf-staff-muted">{t.body.actionsNote}</p>
       <ul className="lf-staff-proposals">
-        {report.proposedActions.map((action, index) => <li key={index} data-tag={action.tag}>
-          <p data-copy-role="data" className="lf-staff-tag">{action.tag}</p>
-          <p data-copy-role="data">{action.proposal}</p>
-          <p data-copy-role="data" className="lf-staff-muted">{action.evidence}</p>
-        </li>)}
+        {actions.map((action, index) => {
+          const line = coachLines(action);
+          return <li key={index} data-tag={action.tag}>
+            <p data-copy-role="option" className="lf-staff-tag">{line.label}</p>
+            <p data-copy-role="body">{line.proposal}</p>
+            {line.evidence.map((text) => <p key={text} data-copy-role="body" className="lf-staff-muted">{text}</p>)}
+          </li>;
+        })}
       </ul>
     </Card> : failures === 0 ? <InlineNotice tone="success">{t.body.allClear}</InlineNotice> : null}
   </div>;

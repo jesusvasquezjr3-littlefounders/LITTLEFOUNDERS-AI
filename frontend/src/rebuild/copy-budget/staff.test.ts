@@ -20,12 +20,14 @@ describe('rebuild-staff copy budget', () => {
       const longestGrant = longest([...Object.values(consoleCopy.roleNames.option), ...Object.values(consoleCopy.permissions.option)]);
       const longestJob = longest(Object.entries(consoleCopy.support.option).filter(([key]) => key.startsWith('job_')).map(([, value]) => value));
       const longestDimension = longest(Object.entries(consoleCopy.generation.option).filter(([key]) => key.startsWith('dim_')).map(([, value]) => value));
+      // F4-staff-ops: the coach's localized proposals name a pipeline stage and a lowest judge score.
+      const longestStage = longest(Object.entries(consoleCopy.generation.option).filter(([key]) => key.startsWith('stage_')).map(([, value]) => value));
       for (const [path, text] of flatten(strings.staffConsole!)) {
         const role = path.split('.')[1];
         expect(['action', 'heading', 'body', 'option'], `staffConsole.${path}`).toContain(role);
         const filled = text.replace(/\{role\}/g, longestRole).replace(/\{name\}/g, 'Ana').replace(/\{(?:date|from|to)\}/g, 'Sep 12, 2026')
           .replace(/\{(?:n|start|end|total|shown|open|visitors|accounts|bucket)\}/g, '12').replace(/\{id\}/g, '1a2b3c4d')
-          .replace(/\{share\}/g, '50%').replace(/\{dimension\}/g, longestDimension)
+          .replace(/\{share\}/g, '50%').replace(/\{dimension\}/g, longestDimension).replace(/\{stage\}/g, longestStage).replace(/\{low\}/g, '4.25')
           .replace(/\{(?:cost|spent|latest|average)\}/g, '12,345.67 USD').replace(/\{(?:progress|target)\}/g, '100%')
           .replace(/\{(?:topics|lessons|published|failed|skipped|done|passed|inherited|billed)\}/g, '1,234').replace(/\{value\}/g, '4.25')
           // W2T.3: Analytics & Health and Learning intel. A place is the longest country name we list; a list of places, two of them;

@@ -530,8 +530,15 @@ describe('S7 Generation: run history, trends and the coach', () => {
     render(<Frame><StaffGeneration api={api} initialView="coach" pollMs={60_000} /></Frame>);
     expect(await screen.findByText(c.generation.body.deterministic)).toBeInTheDocument();
     const proposals = screen.getByRole('region', { name: c.generation.heading.actions });
+    // F4-staff-ops: Core sends facts; the console writes every word in the viewer's locale and drops an unknown tag.
     expect(proposals.querySelectorAll('[data-tag]')).toHaveLength(2);
-    expect(proposals).toHaveTextContent('6 of 9 judging failures cite it');
+    expect(proposals.querySelector('[data-tag="future:unknown"]')).toBeNull();
+    expect(proposals).toHaveTextContent('Judge score: Kid safety');
+    expect(proposals).toHaveTextContent('Review the playbook section and judge anchors for Kid safety.');
+    expect(proposals).toHaveTextContent('Mean 3.20 of 5 over 9 lessons; lowest 2.00.');
+    expect(proposals).toHaveTextContent('Cache hits: 22.4%. Uncached tokens cost about $11.30.');
+    expect(proposals.textContent).not.toMatch(/[—–]|judge:|cost:/);
+    for (const node of proposals.querySelectorAll('[data-tag] p')) expect(node.getAttribute('data-copy-role')).not.toBe('data');
   });
 });
 

@@ -178,7 +178,31 @@ export interface CoachReport {
   };
   cost: { totalUsd: number; totalTokens: number; cacheHitPct: number };
   images: { generated: number; billed: number; inherited: number };
-  proposedActions: { tag: string; proposal: string; evidence: string }[];
+  /** Structured facts per action (F4-staff-ops); read them through isCoachAction, which drops a tag this console does not know. */
+  proposedActions: unknown[];
+}
+
+/*
+ * Bible 02 section 1.2 and rule 16 (F4-staff-ops): Core sends each proposed
+ * action as a tag and numbers only; the console writes the proposal and its
+ * evidence in the viewer's locale and formats the numbers with Intl.
+ */
+export type CoachAction =
+  | { tag: 'cost:cache'; params: { cacheHitPct: number; wastedUsd: number } }
+  | { tag: `judge:${string}`; params: { dimension: string; mean: number; min: number | null; n: number } }
+  | { tag: 'failure:stage'; params: { stage: string; count: number; total: number } }
+  | { tag: 'cost:perLesson'; params: { usdPerLesson: number; totalUsd: number; published: number; inherited: number; billed: number } };
+
+export function isCoachAction(value: unknown): value is CoachAction {
+  if (!isRecord(value) || !isString(value.tag) || !isRecord(value.params)) return false;
+  const p = value.params;
+  if (value.tag === 'cost:cache') return isNumber(p.cacheHitPct) && isNumber(p.wastedUsd);
+  if (value.tag.startsWith('judge:')) return isString(p.dimension) && isNumber(p.mean) && isNullableNumber(p.min) && isNumber(p.n);
+  if (value.tag === 'failure:stage') return isString(p.stage) && isNumber(p.count) && isNumber(p.total);
+  if (value.tag === 'cost:perLesson') {
+    return isNumber(p.usdPerLesson) && isNumber(p.totalUsd) && isNumber(p.published) && isNumber(p.inherited) && isNumber(p.billed);
+  }
+  return false;
 }
 export const isCoach = (value: unknown): value is CoachReport => isRecord(value) && isNumber(value.runsAnalyzed) && isRecord(value.outcomes)
   && isCounts(value.failureHeatmap) && Array.isArray(value.topErrors) && isRecord(value.judge) && isRecord(value.judge.cyclesHistogram)

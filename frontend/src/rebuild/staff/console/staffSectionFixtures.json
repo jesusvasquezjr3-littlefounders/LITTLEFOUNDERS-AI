@@ -1319,13 +1319,15 @@
       "proposedActions": [
         {
           "tag": "judge:kid_safety",
-          "proposal": "Add a borrowing-without-permission counterexample to the safety rubric prompt.",
-          "evidence": "6 of 9 judging failures cite it (runs of 18 and 25 September)."
+          "params": { "dimension": "kid_safety", "mean": 3.2, "min": 2, "n": 9 }
         },
         {
           "tag": "cost:cache",
-          "proposal": "Move the localization glossary ahead of the lesson in the prompt.",
-          "evidence": "Cache hits fell from 80% to 72% over the last four runs."
+          "params": { "cacheHitPct": 22.4, "wastedUsd": 11.3 }
+        },
+        {
+          "tag": "future:unknown",
+          "params": { "anything": 1 }
         }
       ]
     }

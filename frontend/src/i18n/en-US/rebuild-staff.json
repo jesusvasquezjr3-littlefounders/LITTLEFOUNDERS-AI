@@ -949,6 +949,15 @@
         "noErrors": "No recurring errors.",
         "allClear": "No issues found. The pipeline runs clean.",
         "actionsNote": "Each proposal cites its evidence. Apply it in a reviewed change.",
+        "coachCacheProposal": "Put static prompt blocks first and each lesson's part last.",
+        "coachCacheEvidence": "Cache hits: {share}. Uncached tokens cost about {cost}.",
+        "coachJudgeProposal": "Review the playbook section and judge anchors for {dimension}.",
+        "coachJudgeEvidence": "Mean {value} of 5 over {n} lessons; lowest {low}.",
+        "coachStageProposal": "Review how the {stage} stage retries and gates lessons.",
+        "coachStageEvidence": "{n} of {total} failures ({share}) happened at this stage.",
+        "coachLessonProposal": "Check that image reuse is on and the prompt prefix is static.",
+        "coachLessonEvidence": "{cost} per lesson over {published} lessons.",
+        "coachLessonImages": "{inherited} images reused, {billed} billed.",
         "cycle1": "One cycle",
         "cycle2": "Two cycles",
         "cycle3": "Three or more",
@@ -994,7 +1003,11 @@
         "stage_publishing": "Publishing",
         "stage_published": "Published",
         "stage_skipped": "Skipped",
-        "stage_unknown": "Unknown stage"
+        "stage_unknown": "Unknown stage",
+        "coach_cache": "Prompt cache",
+        "coach_judge": "Judge score: {dimension}",
+        "coach_stage": "Failures in {stage}",
+        "coach_perLesson": "Cost per lesson"
       },
       "action": {
         "refresh": "Refresh"

@@ -949,6 +949,15 @@
         "noErrors": "Nenhum erro recorrente.",
         "allClear": "Nenhum problema encontrado. O processo roda limpo.",
         "actionsNote": "Cada proposta cita sua evidência. Aplique numa mudança revisada.",
+        "coachCacheProposal": "Coloque primeiro os blocos fixos do prompt e no fim a parte de cada lição.",
+        "coachCacheEvidence": "Acertos de cache: {share}. Os tokens sem cache custam cerca de {cost}.",
+        "coachJudgeProposal": "Revise a seção do playbook e as âncoras do juiz para {dimension}.",
+        "coachJudgeEvidence": "Média de {value} sobre 5 em {n} lições; mínimo {low}.",
+        "coachStageProposal": "Revise como a etapa {stage} repete e filtra lições.",
+        "coachStageEvidence": "{n} de {total} falhas ({share}) ocorreram nesta etapa.",
+        "coachLessonProposal": "Confira se o reuso de imagens está ativo e o prefixo do prompt é fixo.",
+        "coachLessonEvidence": "{cost} por lição em {published} lições.",
+        "coachLessonImages": "{inherited} imagens reutilizadas, {billed} cobradas.",
         "cycle1": "Um ciclo",
         "cycle2": "Dois ciclos",
         "cycle3": "Três ou mais",
@@ -994,7 +1003,11 @@
         "stage_publishing": "Publicação",
         "stage_published": "Publicadas",
         "stage_skipped": "Puladas",
-        "stage_unknown": "Etapa desconhecida"
+        "stage_unknown": "Etapa desconhecida",
+        "coach_cache": "Cache de prompts",
+        "coach_judge": "Nota do juiz: {dimension}",
+        "coach_stage": "Falhas em {stage}",
+        "coach_perLesson": "Custo por lição"
       },
       "action": {
         "refresh": "Atualizar"
