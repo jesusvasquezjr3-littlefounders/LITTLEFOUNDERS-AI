@@ -92,8 +92,8 @@ first; all three were real.
 - One look at 320 px (headless Chromium, CDP capture): the es-MX learner bar
   and the pt-BR dark Tutor bar sit on one row with `data-icons='all'` and only
   the current label visible.
-- Root `spec:check`, `secrets:check` and the i18n gate: see the commit's
-  checkpoint (no copy key changed in this lane).
+- Root `spec:check` (exit 0) and `secrets:check` OK. The i18n gate was not
+  needed: no copy key changed in this lane.
 
 ### Decisions taken with the SPEC's conservative default (owner questions)
 
