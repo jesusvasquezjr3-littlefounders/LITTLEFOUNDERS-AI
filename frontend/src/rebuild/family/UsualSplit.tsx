@@ -71,7 +71,7 @@ export function UsualSplit({ copy, locale, dark, open, loading, failed, value, b
         : loading || !tenths || !value ? <LoadingState label={copy.loading} lines={2} /> : <>
         <Copy role="body">{copy.body}</Copy>
         {/* Bible 05 §7: the same pocket rows the lesson's allocation board uses. The + bound is what is still unplaced. */}
-        <PocketSplit mode="stepper" stepperClassName="lf-money-habits-stepper" labels={label} values={tenths} disabled={busy}
+        <PocketSplit mode="stepper" stepperClassName="lf-money-habits-stepper" labels={label} values={tenths} disabled={busy} total={10}
           max={(bucket) => Math.min(10, tenths[bucket] + Math.max(0, 10 - placed))}
           valueText={(bucket, count) => fill(copy.tenths, { count, pct: count * 10 })}
           stepLabels={(bucket) => ({ decrease: fill(copy.less, { pocket: label[bucket] }), increase: fill(copy.more, { pocket: label[bucket] }) })}

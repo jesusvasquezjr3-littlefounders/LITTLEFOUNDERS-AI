@@ -17,7 +17,7 @@
     "saving": "Adding…",
     "cancel": "Not now",
     "mismatch": "Place all {count} coins first.",
-    "added": "Coins added.",
+    "result": "Done: {save} to Save, {spend} to Spend, {share} to Share.",
     "frozen": "Your account is on hold.",
     "failed": "That did not work. Try again.",
     "loading": "Getting your split…",

@@ -17,7 +17,7 @@
     "saving": "Agregando…",
     "cancel": "Ahora no",
     "mismatch": "Reparte las {count} monedas primero.",
-    "added": "Monedas agregadas.",
+    "result": "Listo: {save} a Ahorrar, {spend} a Gastar, {share} a Compartir.",
     "frozen": "Tu cuenta está en pausa.",
     "failed": "No funcionó. Intenta otra vez.",
     "loading": "Cargando tu reparto…",

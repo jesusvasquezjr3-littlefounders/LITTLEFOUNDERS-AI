@@ -114,7 +114,26 @@ describe('TeenWallet', () => {
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: en.income.submit })); });
     const posts = calls.filter((c) => c.method === 'POST');
     expect(posts).toEqual([{ path: '/wallet/income', method: 'POST', body: { source: 'gift', save: 6, spend: 4, share: 2, goalId: GOAL } }]);
-    expect(await screen.findByText('Added 12 coins.')).toBeVisible();
+    // Bible 02 §9.2 / K18 (GAP-FIX-R4): the confirmation names where every coin went, as a status only (no celebration).
+    expect(await screen.findByText('Added 12 coins: 6 to Save, 4 to Spend, 2 to Share.')).toBeVisible();
+    expect(document.querySelector('[data-celebration]')).toBeNull();
+  });
+
+  it('draws the split bar under the income pockets, live, and marks every pocket with its own icon (02 §4.3)', async () => {
+    const { session } = fakeSession();
+    renderWallet(session);
+    await ready();
+    fireEvent.click(screen.getByRole('button', { name: en.income.open }));
+    fireEvent.change(screen.getByLabelText(en.income.amount), { target: { value: '12' } });
+    const bar = document.querySelector('[data-split-bar]') as HTMLElement;
+    expect(bar).toHaveAttribute('aria-hidden', 'true');
+    const grow = () => [...bar.querySelectorAll<HTMLElement>('[data-split-segment]')].map((s) => `${s.dataset.splitSegment}:${s.style.flexGrow}`);
+    expect(grow()).toEqual(['save:6', 'spend:5', 'share:1']);
+    fireEvent.change(screen.getByLabelText(en.page.save), { target: { value: '2' } });
+    expect(grow()).toEqual(['save:2', 'spend:5', 'share:1', 'left:4']);
+    for (const pocket of document.querySelectorAll('[data-teen-wallet="root"] [data-pocket]')) {
+      expect(pocket.querySelector(`img[data-asset-id="pocket.${pocket.getAttribute('data-pocket')}.icon"]`), pocket.outerHTML.slice(0, 80)).not.toBeNull();
+    }
   });
 
   it('asks to split every coin before sending anything, and validates the amount', async () => {
@@ -145,7 +164,7 @@ describe('TeenWallet', () => {
     fireEvent.change(screen.getByLabelText(en.income.amount), { target: { value: '3' } });
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: en.income.submit })); });
     expect(screen.getByRole('alert')).toHaveTextContent(en.income.frozen);
-    expect(screen.queryByText('Added 3 coins.')).toBeNull();
+    expect(screen.queryByText(/^Added 3 coins/)).toBeNull();
   });
 
   it('announces a goal the income reached in the income notice (the celebration belongs to the goal, once)', async () => {

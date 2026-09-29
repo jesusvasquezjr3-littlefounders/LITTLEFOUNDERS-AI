@@ -80,6 +80,11 @@ const ready = {
  * a deliberate press reveals is layered copy (06 §4), measured by every other rule (roles, text fit, proportion).
  */
 const opens = (selector) => [selector, { open: [selector], firstView: false }];
+/* GAP-FIX-R4 (Bible 02 §9.2, K18): open the waiting payout, keep the usual split; the board then states the result as a status. */
+const splitPress = (screen) => {
+  const open = `[data-screen="${screen}"] [data-family-part="payouts"] [data-allocation-state="closed"] button`;
+  return [open, { open: [open, `[data-screen="${screen}"] [data-money-habits="split-chooser"] button[type="submit"]`], firstView: false }];
+};
 
 export const states = [
   app('/family@two-children', `/family?child=${KID_A}`, 'family-two', ready.console, { readyAlso: '[data-console-part="picker"]' }),
@@ -111,6 +116,7 @@ export const states = [
   app('/tasks@tutor-empty', '/tasks', 'money-tutor-empty', '[data-screen="tutor-tasks"] .lf-state--empty'),
   app('/tasks@tutor-offline', '/tasks', 'money-tutor-offline', '[data-screen="tutor-tasks"] .lf-state--error'),
   app('/tasks@child', '/tasks', 'money-child', ready.childTasks, { readyAlso: '[data-family-part="payouts"]' }),
+  app('/tasks@split-confirmed', '/tasks', 'money-child', ...splitPress('child-tasks')),
   app('/tasks@child-new', '/tasks', 'money-child-new', '[data-screen="child-tasks"] [data-family-part="chores"]'),
   app('/tasks@child-offline', '/tasks', 'money-child-offline', '[data-screen="child-tasks"] .lf-state--error'),
   app('/tasks@teen-linked', '/tasks', 'money-teen-linked', ready.childTasks),
@@ -118,6 +124,7 @@ export const states = [
   app('/family-wallet@tutor-open-card', `/family-wallet?child=${KID_A}`, 'money-tutor-new', '[data-family-part="open-card"]'),
   app('/family-wallet@tutor-offline', '/family-wallet', 'money-tutor-offline', '[data-screen="tutor-coins"] .lf-state--error'),
   app('/family-wallet@child', '/family-wallet', 'money-child', ready.childCoins, { readyAlso: '[data-family-part="payouts"]' }),
+  app('/family-wallet@split-confirmed', '/family-wallet', 'money-child', ...splitPress('child-coins')),
   app('/family-wallet@child-card', '/family-wallet', 'money-child', ...opens('[data-family-part="card-look"] button')),
   app('/family-wallet@teen-linked', '/family-wallet', 'money-teen-linked', ready.childCoins),
   app('/wallet@teen', '/wallet', 'money-teen', '[data-teen-wallet="root"] [data-pocket="save"]'),
@@ -381,6 +388,9 @@ function money({ spec, family, locale, path, request, ok }) {
     return ok({ account: { ...legacyAccount(w), nickname: sent.nickname, cardDesign: sent.cardDesign } });
   }
   if (/^\/tasks\/[^/]+\/evidence$/.test(path)) return { status: 404, body: { data: null, error: { code: 'NOT_FOUND', message: 'Synthetic' } } };
+  // GAP-FIX-R4: a split the child confirms (Core's answer shapes; this synthetic Core keeps no state, so the payout re-reads unchanged).
+  if (/^\/tasks\/[^/]+\/allocate$/.test(path) && request.method === 'POST') return ok({ allocated: true, goal: null });
+  if (/^\/banking\/wallet\/pending-credits\/[^/]+\/allocate$/.test(path) && request.method === 'POST') return ok({ allocated: true });
   if (path === '/banking/wallet/pending-credits') return ok({ credits: fresh ? [] : [{ id: '99999999-9999-4999-8999-999999999990', amount: 10, source: 'allowance', createdAt: T }] });
   if (path === '/banking/overview') return ok({ register, account: card(w), pockets: { save: 20, spend: 12, share: 3 }, pendingCredits: fresh ? 0 : 1,
     spendLimit: limit(register), statement: statement(register) });

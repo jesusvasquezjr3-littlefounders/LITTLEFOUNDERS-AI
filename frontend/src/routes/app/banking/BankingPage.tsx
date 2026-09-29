@@ -10,6 +10,7 @@ import { MyDataPracticesPanel } from '../family/DataPracticePanels';
 import { ShareDestinationsPanel } from '../family/ShareDestinationsPanel';
 import { WalletCorrectionsPanel } from '../family/WalletCorrectionsPanel';
 import { AllocationPanel } from '../tasks/AllocationPanel';
+import { splitResultText } from '../family/moneyHabitsCopy';
 import { DecisionQueuePanel } from '../tasks/DecisionQueuePanel';
 import { SavingsGoalsPanel } from '../tasks/SavingsGoalsPanel';
 import { UsualSplitPanel } from '../tasks/UsualSplitPanel';
@@ -119,8 +120,9 @@ function ChildCoinsRoute({ familyCoins }: { familyCoins: boolean }) {
       // S07.6 (D.7, D.12): the practice card, the freeze, the pockets, the limit and this month, in the child's register.
       account: (version) => <CoinAccountPanel token={token} refreshKey={version + moneyVersion} onChanged={() => setMoneyVersion((value) => value + 1)} />,
       // S07.4 (D.13): an allowance arrives pre-split by the child's own usual split; keeping it is one tap.
-      split: (credit, frozen, changed) => <AllocationPanel token={token} kind="credit" id={credit.id} amount={credit.amount} frozen={frozen}
-        onDone={() => { setMoneyVersion((value) => value + 1); changed(); }} />,
+      // The board states the result (Bible 02 §9.2); a goal it reached celebrates on the goals panel, which re-reads (OD-7).
+      split: (credit, frozen, settled) => <AllocationPanel token={token} kind="credit" id={credit.id} amount={credit.amount} frozen={frozen}
+        onDone={(split) => { setMoneyVersion((value) => value + 1); settled(splitResultText(locale, split)); }} />,
       usualSplit: <UsualSplitPanel token={token} />,
       // S07.3 (D.11): the child's own bonus, in the framing their age calls for.
       bonus: <SavingsBonusPanel token={token} />,

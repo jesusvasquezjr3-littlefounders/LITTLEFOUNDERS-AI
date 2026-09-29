@@ -15,6 +15,8 @@ import { GoalProgress, type GoalProgressCopy } from '../family/GoalProgress';
 import { GoalNextStep, type GoalNextStepCopy } from '../family/GoalNextStep';
 import { ShareGiving, type ShareGivingCopy, type ShareTeenCopy } from '../family/ShareGiving';
 import { UsualSplit, type UsualSplitCopy } from '../family/UsualSplit';
+import { PocketMark } from '../family/PocketMark';
+import { SplitBar } from '../family/PocketSplit';
 import type { TeenWalletScreenCopy } from '../family/tasks/taskParts';
 import '../design/tokens.css';
 import '../design/system.css';
@@ -55,7 +57,7 @@ type Group<K extends string> = Record<K, string>;
 export interface TeenWalletCopy {
   page: Group<'title' | 'sub' | 'simulation' | 'loading' | 'failed' | 'retry' | 'total' | 'save' | 'spend' | 'share' | 'sections' | 'close'>;
   income: Group<'open' | 'heading' | 'amount' | 'source' | 'allowance' | 'gift' | 'earned' | 'split' | 'left' | 'done' | 'toGoal' | 'noGoal'
-    | 'submit' | 'saving' | 'added' | 'goalReached' | 'invalidAmount' | 'splitMismatch' | 'frozen' | 'failed' | 'useUsual' | 'usualNote'>;
+    | 'submit' | 'saving' | 'result' | 'goalReached' | 'invalidAmount' | 'splitMismatch' | 'frozen' | 'failed' | 'useUsual' | 'usualNote'>;
   goals: Group<'open' | 'heading' | 'empty' | 'name' | 'target' | 'create' | 'created' | 'invalid' | 'progress' | 'reached' | 'archived' | 'move'
     | 'moveAmount' | 'destination' | 'toSpend' | 'toSave' | 'confirmMove' | 'moved' | 'moveTooMany' | 'archive' | 'archivedNotice' | 'failed'>;
   rewards: Group<'open' | 'heading' | 'empty' | 'name' | 'cost' | 'create' | 'created' | 'invalid' | 'price' | 'use' | 'used' | 'notEnough' | 'limit'
@@ -234,15 +236,17 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
       return;
     }
     const chosenGoal = parts.save > 0 && goalId ? goalId : null;
+    // Bible 02 §9.2 / K18: the confirmation states where every coin went, not only the total.
+    const placed = fill(copy.income.result, { n: total, save: parts.save, spend: parts.spend, share: parts.share });
     let reachedGoal: string | null = null;
     const ok = await act(async () => {
       const result = await logIncome({ source, save: parts.save!, spend: parts.spend!, share: parts.share!, goalId: chosenGoal }, session);
       if (result.ok && result.data.goal?.status === 'reached') reachedGoal = result.data.goal.title;
       return result;
-    }, fill(copy.income.added, { n: total }), { ACCOUNT_FROZEN: copy.income.frozen }, copy.income.failed);
+    }, placed, { ACCOUNT_FROZEN: copy.income.frozen }, copy.income.failed);
     if (ok) {
       setAmount(''); setSplit({ save: '', spend: '', share: '' }); setSplitTouched(false); setGoalId('');
-      if (reachedGoal) setNotice({ text: `${fill(copy.income.added, { n: total })} ${fill(copy.income.goalReached, { goal: reachedGoal })}`, error: false });
+      if (reachedGoal) setNotice({ text: `${placed} ${fill(copy.income.goalReached, { goal: reachedGoal })}`, error: false });
     }
   }
 
@@ -384,7 +388,7 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
         <p className="lf-teen-wallet-total"><CoinAmount size="lg">{fill(copy.page.total, { n: balanceTotal })}</CoinAmount></p>
         <ul className="lf-teen-wallet-pockets">
           {(['save', 'spend', 'share'] as const).map((bucket) => <li key={bucket} data-pocket={bucket}>
-            <span className="lf-teen-wallet-swatch" aria-hidden="true" />
+            <PocketMark pocket={bucket} />
             <span data-copy-role="option">{pocket[bucket]}</span>
             <CoinAmount className="lf-teen-wallet-amount">{fill(copy.page.total, { n: balances[bucket] })}</CoinAmount>
           </li>)}
@@ -407,10 +411,12 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
             <legend data-copy-role="body">{copy.income.split}</legend>
             {total !== null && total > 0 && !splitTouched && <p data-copy-role="body" className="lf-teen-wallet-muted">{copy.income.usualNote}</p>}
             {(['save', 'spend', 'share'] as const).map((bucket) => <div key={bucket} data-pocket={bucket} className="lf-teen-wallet-split-row">
-              <span className="lf-teen-wallet-swatch" aria-hidden="true" />
+              <PocketMark pocket={bucket} />
               <CountField label={pocket[bucket]} value={split[bucket]} max={1000} disabled={busy}
                 onChange={(value) => { setSplitTouched(true); setSplit((current) => ({ ...current, [bucket]: value })); }} />
             </div>)}
+            {/* 02 §4.3: the split bar under the pocket rows, live as the counts change. */}
+            {total !== null && total > 0 ? <SplitBar values={{ save: parts.save ?? 0, spend: parts.spend ?? 0, share: parts.share ?? 0 }} total={total} /> : null}
             {splitTouched && <div className="lf-actions"><Button disabled={busy} onClick={() => applyUsualSplit(total)}>{copy.income.useUsual}</Button></div>}
             <p data-copy-role="data" aria-live="polite">{total !== null && left === 0 && total > 0 ? copy.income.done : fill(copy.income.left, { n: Math.max(left, 0) })}</p>
           </fieldset>

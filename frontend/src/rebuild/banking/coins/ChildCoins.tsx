@@ -35,8 +35,11 @@ import '../../family/tasks/money.css';
 
 export interface ChildCoinsSlots {
   account: (version: number) => ReactNode;
-  /** `frozen`: a freeze holds the split (D.1), and the split surface says so before the child tries. */
-  split: (credit: PendingCredit, frozen: boolean, changed: () => void) => ReactNode;
+  /**
+   * `frozen`: a freeze holds the split (D.1), and the split surface says so before the child tries. `settled` takes the
+   * written result of a confirmed split: this board keeps it in view and re-reads (the allowance then leaves).
+   */
+  split: (credit: PendingCredit, frozen: boolean, settled: (result: string) => void) => ReactNode;
   usualSplit: ReactNode;
   bonus: ReactNode;
   goals: (version: number) => ReactNode;
@@ -67,6 +70,8 @@ export function ChildCoins({ copy, colours, locale, dark, transport, onNavigate,
   const [register, setRegister] = useState<MoneyRegister>(DEFAULT_REGISTER);
   const [retrying, setRetrying] = useState(false);
   const [version, setVersion] = useState(0);
+  // Bible 02 §9.2 / K18: the last confirmed split's result, held here because the allowance's own slot leaves on the re-read.
+  const [splitResult, setSplitResult] = useState<string | null>(null);
   const generation = useRef(0);
 
   const read = useCallback(async () => {
@@ -93,6 +98,7 @@ export function ChildCoins({ copy, colours, locale, dark, transport, onNavigate,
   }, [transport]);
 
   const changed = useCallback(() => setVersion((value) => value + 1), []);
+  const settled = useCallback((result: string) => { setSplitResult(result); setVersion((value) => value + 1); }, []);
 
   const root = (body: ReactNode) => <div className="lf-rebuild lf-family-console lf-family-money" data-screen="child-coins" data-theme={dark ? 'dark' : 'light'}
     data-age-band={REGISTER_BAND[register]} data-register={register} lang={locale}>
@@ -113,9 +119,11 @@ export function ChildCoins({ copy, colours, locale, dark, transport, onNavigate,
   return root(<DashboardLayout
     primary={<>
       <div className="lf-money-slot" data-family-part="account">{slots.account(version)}</div>
+      {/* A status, never a celebration (a split is not an OD-7 milestone): it outlives the allowance it confirms. */}
+      {splitResult ? <div className="lf-money-slot" data-family-part="split-result"><InlineNotice tone="success" live>{splitResult}</InlineNotice></div> : null}
       {/* Each waiting allowance says how many coins wait: the group is named, not titled, to keep the first view short (06 §3.1). */}
       {coins.credits.length > 0 ? <section className="lf-console-group" data-family-part="payouts" aria-label={copy.payoutsTitle}>
-        {coins.credits.map((credit) => <div key={credit.id} className="lf-money-slot" data-credit-id={credit.id}>{slots.split(credit, coins.card?.frozen ?? false, changed)}</div>)}
+        {coins.credits.map((credit) => <div key={credit.id} className="lf-money-slot" data-credit-id={credit.id}>{slots.split(credit, coins.card?.frozen ?? false, settled)}</div>)}
       </section> : null}
       <div className="lf-money-slot">{slots.usualSplit}</div>
       <div className="lf-money-slot">{slots.bonus}</div>

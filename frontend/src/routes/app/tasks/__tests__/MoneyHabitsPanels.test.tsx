@@ -53,8 +53,11 @@ describe('AllocationPanel (D.13)', () => {
     expect(mockApi).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: en.split.splitNow }));
     fireEvent.click(await screen.findByRole('button', { name: en.split.use }));
-    await waitFor(() => expect(onDone).toHaveBeenCalledWith(expect.objectContaining({ id: GOAL, status: 'reached' })));
+    await waitFor(() => expect(onDone).toHaveBeenCalledWith({ save: 5, spend: 4, share: 1 }, expect.objectContaining({ id: GOAL, status: 'reached' })));
     expect(posted(`/tasks/${TASK}/allocate`)[0]![1]).toEqual({ token: 't', method: 'POST', body: { save: 5, spend: 4, share: 1, goalId: null } });
+    // Settled: the payout never offers the split again, even before the host's re-read removes it (GAP-FIX-R4).
+    expect(screen.queryByRole('button', { name: en.split.use })).toBeNull();
+    expect(screen.queryByRole('button', { name: en.split.splitNow })).toBeNull();
   });
 
   it('splits an allowance through the banking route and shows a freeze as a refusal', async () => {

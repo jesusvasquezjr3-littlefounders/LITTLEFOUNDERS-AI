@@ -1,6 +1,7 @@
 import { useId, useState } from 'react';
 import { Button, CoinAmount, Copy, InlineNotice, LoadingState } from '../design/controls';
 import type { MoneyRegister } from '../family/moneyRegister';
+import { PocketMark } from '../family/PocketMark';
 import { shiftMonth, STATEMENT_MONTHS_BACK, type CoinAccountView, type FreezeHold, type Month, type MonthLine } from './bankingApi';
 import '../design/tokens.css';
 import '../design/system.css';
@@ -135,6 +136,7 @@ export function CoinAccount({ copy, register, locale, dark, view, loading, faile
         <h3 data-copy-role="heading">{copy.pockets}</h3>
         <ul>
           {POCKETS.map((pocket) => <li key={pocket} data-pocket={pocket}>
+            <PocketMark pocket={pocket} />
             <span data-copy-role="body" className="lf-coin-pocket-name">{copy[pocket]}</span>
             <CoinAmount className="lf-coin-pocket-count">{count(view.pockets[pocket])}</CoinAmount>
             {register !== 'young' && copy.pocketDetail && total > 0 && <span data-copy-role="data" className="lf-family-hub-muted">
@@ -198,7 +200,8 @@ function MonthStatement({ copy, locale, headingId, current, month, onMonth }: {
         </dl>
         {statement.lines && statement.lines.length > 0 && <ul className="lf-coin-lines">
           {statement.lines.map((line) => <li key={line.id} data-pocket={line.bucket}>
-            <span data-copy-role="body">{lineLabel(copy, line)}</span>
+            <PocketMark pocket={line.bucket} size="sm" />
+            <span data-copy-role="body" className="lf-coin-line-label">{lineLabel(copy, line)}</span>
             <span data-copy-role="data" className={line.amount >= 0 ? 'lf-family-hub-amount lf-family-hub-amount--credit' : 'lf-family-hub-amount'}>
               {line.amount >= 0 ? '+' : ''}{number.format(line.amount)}</span>
           </li>)}

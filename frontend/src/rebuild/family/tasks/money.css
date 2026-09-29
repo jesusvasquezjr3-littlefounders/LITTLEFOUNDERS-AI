@@ -17,7 +17,7 @@
 .lf-family-money .lf-money-pockets > h2 { font: var(--type-title); }
 .lf-family-money .lf-money-pockets > ul { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
-.lf-family-money .lf-money-pockets li { display: flex; align-items: center; gap: var(--spacing-3); min-inline-size: 0; min-block-size: var(--target-min);
+.lf-family-money .lf-money-pockets li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); min-inline-size: 0; min-block-size: var(--target-min);
   padding: var(--spacing-2) var(--spacing-4); border-radius: var(--rounded-md); background: var(--pocket-soft); color: var(--content); }
 .lf-family-money [data-pocket='save'] { --pocket-soft: var(--mint-soft); }
 .lf-family-money [data-pocket='spend'] { --pocket-soft: var(--sky-soft); }

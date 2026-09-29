@@ -9,6 +9,7 @@ import { useConsoleEnvironment, useConsoleTransport } from '../family/consoleSes
 import { CoachingTipPanel } from '../family/GovernancePanels';
 import { useWalletAccess } from '../wallet/useWalletAccess';
 import { AllocationPanel } from './AllocationPanel';
+import { splitResultText } from '../family/moneyHabitsCopy';
 import { ChoreComposerPanel } from './ChoreComposerPanel';
 import { ChoreStreakPanel } from './ChoreStreakPanel';
 import { DecisionQueuePanel } from './DecisionQueuePanel';
@@ -112,8 +113,9 @@ function ChildTasksRoute() {
         setVoiceVersion((value) => value + 1);
         changed();
       }} />,
-      split: (task, changed) => <AllocationPanel token={token} kind="task" id={task.id} amount={task.rewardCoins} title={task.title}
-        onDone={() => { setMoneyVersion((value) => value + 1); changed(); }} />,
+      // The board states the result (Bible 02 §9.2); a goal it reached celebrates on the goals panel, which re-reads (OD-7).
+      split: (task, settled) => <AllocationPanel token={token} kind="task" id={task.id} amount={task.rewardCoins} title={task.title}
+        onDone={(split) => { setMoneyVersion((value) => value + 1); settled(splitResultText(locale, split)); }} />,
       ask: (reward, affordable, changed) => <RewardAskPanel token={token} catalogId={reward.id} title={reward.title} disabled={!affordable}
         onAsked={(answer) => {
           setVoiceVersion((value) => value + 1);

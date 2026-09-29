@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { IconButton, Stepper, TextField } from '../design/controls';
 import { BUCKETS, type Bucket, type Split } from './moneyHabitsApi';
+import { PocketMark } from './PocketMark';
 import './moneyHabits.css';
 
 /*
@@ -8,17 +9,23 @@ import './moneyHabits.css';
  * chooser and the usual split) and the lesson allocation board (Frontend
  * Bible 05 §7 Money row: "the save/spend/share split reuses the Wallet's own
  * component"; GAP-FIX-R1). One presentational component so the lesson and the
- * real Wallet teach one interaction: each pocket's hue swatch, its name, and a
+ * real Wallet teach one interaction: each pocket's own icon (PocketMark, 02
+ * §4.3: colour, icon and label at once), its name, and a
  * count changed with the shared Stepper (−/+ together, a bound disables its
  * button) or typed with −/+ beside it for large payouts; optionally the
- * remaining-coins line. The caller keeps its own rules (grading and
+ * remaining-coins line. Under the rows, the split bar (02 §4.3: "The split
+ * bar under the pockets separates segments with gaps and always sits beside
+ * labelled steppers"): one hue segment per pocket sized by its count, plus
+ * what is still unplaced, updated live and decorative (the rows say every
+ * number). A caller that draws its own teaching chart (the lesson board)
+ * turns the bar off. The caller keeps its own rules (grading and
  * checkpoints for a lesson, payout totals for the Wallet) and only hands the
  * rows their values and bounds.
  */
 
 export type PocketSplitMode = 'stepper' | 'typed' | 'readonly';
 
-export function PocketSplit({ mode, labels, values, max, typedMax, step = 1, disabled = false, valueText, stepLabels, onChange, remaining, rowExtra, className, stepperClassName }: {
+export function PocketSplit({ mode, labels, values, max, typedMax, step = 1, disabled = false, valueText, stepLabels, onChange, remaining, rowExtra, bar = true, total, className, stepperClassName }: {
   mode: PocketSplitMode;
   labels: Record<Bucket, string>;
   values: Split;
@@ -36,13 +43,17 @@ export function PocketSplit({ mode, labels, values, max, typedMax, step = 1, dis
   remaining?: string | null;
   /** A line under a row's count (the transition register's "out of 100"). */
   rowExtra?: (bucket: Bucket) => ReactNode;
+  /** The split bar under the rows (default on). */
+  bar?: boolean;
+  /** What the bar measures against (a payout's coins, 10 tenths); the unplaced rest is its own segment. Defaults to the sum. */
+  total?: number;
   className?: string;
   stepperClassName?: string;
 }) {
   return <div className={`lf-pocket-split${className ? ` ${className}` : ''}`} data-pocket-split={mode}>
     <ul className="lf-money-habits-pockets">
       {BUCKETS.map((bucket) => <li key={bucket} data-pocket={bucket}>
-        <span className="lf-money-habits-swatch" aria-hidden="true" />
+        <PocketMark pocket={bucket} />
         {mode === 'stepper' ? <Stepper className={stepperClassName} valuePlacement="label" label={labels[bucket]} value={values[bucket]}
           valueText={valueText?.(bucket, values[bucket])} min={0} max={Math.max(values[bucket], max(bucket))} step={step} disabled={disabled}
           onValueChange={(next) => onChange(bucket, next)} labels={stepLabels(bucket)} />
@@ -63,6 +74,18 @@ export function PocketSplit({ mode, labels, values, max, typedMax, step = 1, dis
         {rowExtra?.(bucket)}
       </li>)}
     </ul>
+    {bar ? <SplitBar values={values} total={total} /> : null}
     {remaining ? <p className="lf-pocket-split-left" data-copy-role="data" aria-live="polite">{remaining}</p> : null}
+  </div>;
+}
+
+/** The split bar: a segment per pocket, sized by its count, gaps between; the unplaced rest in the sunken fill. Decorative. */
+export function SplitBar({ values, total }: { values: Split; total?: number }) {
+  const placed = values.save + values.spend + values.share;
+  const rest = Math.max(0, (total ?? placed) - placed);
+  return <div className="lf-split-bar" aria-hidden="true" data-split-bar="">
+    {BUCKETS.map((bucket) => <span key={bucket} className="lf-split-bar-part" data-split-segment={bucket} data-empty={values[bucket] > 0 ? undefined : 'true'}
+      style={{ flexGrow: values[bucket] }} />)}
+    {rest > 0 ? <span className="lf-split-bar-part" data-split-segment="left" style={{ flexGrow: rest }} /> : null}
   </div>;
 }

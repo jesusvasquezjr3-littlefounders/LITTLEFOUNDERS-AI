@@ -12,7 +12,10 @@ import { moneyHabitsCopy } from '../family/moneyHabitsCopy';
  * (kind 'task') or an allowance (kind 'credit'). Closed, it is one line with
  * "Split them"; open, it loads the child's usual split and active goals and
  * offers the pre-split payout. The server records the default and the
- * choice. A refusal is shown, never an assumed success. This wrapper holds
+ * choice. A refusal is shown, never an assumed success. A confirmed split is
+ * reported to the host through `onDone(split, goal)`: the payout leaves the
+ * board on the re-read that follows, so the host (not this per-payout slot)
+ * states the result (Bible 02 §9.2, K18; GAP-FIX-R4). This wrapper holds
  * only the data and the transport: every state it shows is a rebuilt
  * component (AllocationStates, SplitChooser), so no rebuilt class name is
  * written in the legacy tree.
@@ -25,7 +28,8 @@ export function AllocationPanel({ token, kind, id, amount, title, frozen = false
   /** The chore's title, when it is a chore reward. */
   title?: string;
   frozen?: boolean;
-  onDone: (goal: HabitGoal | null) => void;
+  /** The split Core accepted (whole coins per pocket) and the goal it moved, if any. */
+  onDone: (split: Split, goal: HabitGoal | null) => void;
 }) {
   const { i18n } = useTranslation();
   const { isDark } = useTheme();
@@ -36,6 +40,7 @@ export function AllocationPanel({ token, kind, id, amount, title, frozen = false
   const [usual, setUsual] = useState<Split | null>(null);
   const [goals, setGoals] = useState<HabitGoal[]>([]);
   const [busy, setBusy] = useState(false);
+  const [settled, setSettled] = useState(false);
   const [notice, setNotice] = useState<{ text: string; error: boolean } | null>(null);
   const generation = useRef(0);
   useEffect(() => () => { generation.current++; }, []);
@@ -63,10 +68,13 @@ export function AllocationPanel({ token, kind, id, amount, title, frozen = false
       setNotice({ text: result.code === 'ACCOUNT_FROZEN' ? copy.frozen : result.code === 'CONFLICT' ? copy.mismatch.replace('{count}', String(amount)) : copy.failed, error: true });
       return;
     }
-    setNotice({ text: copy.added, error: false });
-    onDone((result.data as { goal?: HabitGoal | null }).goal ?? null);
+    // The host states the result at board level; this payout is settled, so it never offers the split again
+    // (even if the re-read that removes it fails).
+    setSettled(true);
+    onDone(split, (result.data as { goal?: HabitGoal | null }).goal ?? null);
   }
 
+  if (settled) return null;
   if (!open || state === 'failed' || state === 'loading' || !usual) {
     return <AllocationStates state={!open ? 'closed' : state === 'failed' ? 'failed' : 'loading'} copy={copy} locale={locale} dark={isDark}
       amount={amount} title={title} frozen={frozen} onOpen={() => setOpen(true)} onRetry={() => void load()} />;
