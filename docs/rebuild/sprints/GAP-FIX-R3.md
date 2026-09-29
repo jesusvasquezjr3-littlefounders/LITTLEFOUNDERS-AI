@@ -100,3 +100,82 @@ the age record; `families.privacyBody` still promised a per-child switch;
 - Production: GoTrue's handling of the sentinel ban and the refresh refusal
   are verified by contract (GoTrue source) and by Core's re-check, not on the
   deployed GoTrue; the backfill runs on apply.
+
+## Checkpoint F3-identity-site-finish
+
+Lane finish. `codex/spec-migration-s02` merged in (already up to date, no
+conflicts). The adversarial pass over the lane's commits found two items
+that were still half-built and built them:
+
+| # | SPEC clause | What was built | Where |
+|---|---|---|---|
+| 7 | A.1 (FAQ `cancelTutor`: paused at once); Appendix M 2.1 criterion 2 | A live Mentor session opened before the pause no longer runs until it ends. Core `GET /tutor/internal/admission/:userId` (internal key; the same read as `requireActiveAccount`; 503 when unreadable). Oracle `admitTurn` asks before every learner message that spends a model turn (text, edit, grade, goal, check-in, session-end answer) and before a clip reaches STT, for minors (only a kid-role account is ever paused). Suspended: an `ACCOUNT_SUSPENDED` frame, every socket and park of that account on the replica dropped, close 4001. Unreadable: only that turn is refused (`SERVICE_DEGRADED`, no model or STT call), the session stays. 404 (Core predates the route): the pause stays Core's alone, as before. The Mentor client (`useTutorSocket`, and the Mentor's own `coreApi` copy, which had never raised it) dispatches the shared `lf:account-suspended` event, so the shell drops the session and shows the paused screen | `backend/src/routes/tutor.ts`, `oracle/src/core/client.ts`, `oracle/src/ws/server.ts`, `frontend/src/rebuild/mentor/session/coreApi.ts`, `useTutorSocket.ts` |
+| 8 | A.2; A.5; E.4; OD-3 section 2; Appendix M 1.2 | Tutors verified before `guard_parent_verification_age` existed while their own age record says a minor are found and measured, never demoted silently (the record itself may be the error). Migration `tutor_age_record_review`: `list_minor_record_tutors()` (service role; parent role plus a kid role, an under-13 origin or an effective band of under 13 or 13 to 17, the guard's own predicate). Core flags each in `/admin/users` (`ageRecordMinor`; the directory fails closed when the list is unreadable) and adds the release gate `tutor_adult_age_record` to the identity metrics (misses while any remain; counts only). The staff Users list shows an "Age record under 18" chip, and the details sheet a note next to the existing audited revocation; copy in EN, es-MX, pt-BR | `database/migrations/0229_tutor_age_record_review.sql`, `backend/src/services/tutorAgeRecord.ts`, `adminData.ts`, `identityMetrics.ts`, `frontend/src/rebuild/staff/console/StaffUsers.tsx`, `staffConsoleApi.ts`, `src/i18n/*/rebuild-staff.json`, staff fixtures |
+
+### Verification (local, finish)
+
+- Backend: `type-check`, `lint`, full unit suite (148 files, 3,385 tests,
+  1 skipped). New: `staffOps` (the gate misses with one minor-record Tutor
+  and names no account; 502 when the list is unreadable or malformed),
+  `admin` (the directory flag; 502 when the list is unreadable),
+  `accountAdmission` (the internal admission route: paused, active, teen
+  with the marker, 503 on an unreadable marker or roles, key and id
+  refused before any read).
+- Oracle: `type-check`, `lint`, full unit suite (65 files, 1,742 tests).
+  New in `hardening.test.ts`: a paused child's next typed turn is refused
+  before any model call and the socket closes 4001; a paused child's clip
+  never reaches STT; an unreadable answer refuses only that turn and the
+  session continues; a 404 leaves the pause to Core.
+- Frontend: `type-check`, `lint`, full unit suite (273 files). New: the
+  socket hook and the Mentor Core client raise the shared event only for
+  `ACCOUNT_SUSPENDED`; `lib/api.test.ts` pins the two event names equal;
+  the staff Users list shows the flag in the row and the details sheet.
+- Native PostgreSQL 17.6 (port 15900, 229 migrations):
+  `verify-staff-ops-postgres.py` 21 checks, the new one listing exactly the
+  flagged guest, the upgraded flagged account and the declared teen (never
+  the teen made 18 by birth month or the adult), for the service role only.
+- Root: `spec:check`, `secrets:check`, `check-i18n.sh`, `tools:test` (400
+  tests). `database` package: `check-migrations` (229 files), the phase and
+  family-lifecycle checks and the 48 `node --test` tests pass;
+  `railway-migrate.test.mjs` did not finish on this Windows machine (see
+  open items).
+
+### Lane summary
+
+All six audited gaps (A.1 pause, A.1 90-day deletion, A.2/A.5/E.4 minors kept
+out of ID verification, the Families privacy line, H.1 first-session
+disclosure, the email exclamation rule) are implemented and locally
+verified, plus the two finish items above. REQUIREMENTS rows A.1, A.2, A.5,
+E.4, E.6 and H.1 are updated; none is accepted.
+
+Migrations (renumbered by the orchestrator at merge):
+`0228_identity_enforcement.sql` (expand, 22,143 bytes) and
+`0229_tutor_age_record_review.sql` (expand, no table).
+
+### Open items (final)
+
+- Owner questions 1 to 3 of the F3-identity-site checkpoint stand (uniform
+  sign-in answer for a banned child, dismissible first-session disclosure,
+  an uncached admission read per request). The Oracle check adds one Core
+  read per model-spending turn of a minor.
+- Deploy order: Core (admission route) before Oracle. An Oracle deployed
+  first treats Core's 404 as "Core enforces the pause alone", so nothing
+  breaks.
+- A session parked on ANOTHER Oracle replica is not dropped by the pause
+  (the service runs one replica; no token can resume it, Core mints none).
+- Staff still decide each flagged Tutor (revoke, or settle an E.4 age
+  correction); the release gate stays missed until they do.
+- `requiresMinorMentorSafeguards` does not read the age record for a parent
+  role (a change that moves the Family router's verified-adult gate and
+  ~100 existing tests); the flag and the gate cover the cohort until then.
+- GoTrue's handling of the sentinel ban is verified against GoTrue source
+  and backed by Core's re-check, not on the deployed GoTrue.
+- `database/scripts/railway-migrate.test.mjs` did not complete here: once
+  it failed in its confirm-apply scenario (status 3840) midway through the
+  fake per-file transport loop while other suites ran, once it stalled for
+  over 14 minutes in a fake `railway ssh` shell and was stopped. It drives
+  the whole migration list through fake Railway binaries and never reads a
+  migration's SQL; the orchestrator should run it on its gate run (or CI).
+- Orchestrator gates still to run: browser matrices, text-fit, proportion
+  and copy-budget audits (the teen disclosure sheet, the `minor` verify
+  outcome, the staff Users flag), `test:all`.
