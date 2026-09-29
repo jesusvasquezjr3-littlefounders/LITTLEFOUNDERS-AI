@@ -104,9 +104,28 @@ to retain because an active guardian consent admitted them at the source.
 
 - **Warehouse alerts notify, not just record.** A triggered alert is written
   to `alert_history` AND delivered through its configured channel (webhook
-  POST, or an internal email through the email-server). Delivery is
-  best-effort and loudly logged; the durable trigger row exists regardless.
-  Unconfigured channels warn loudly rather than pretending delivery.
+  POST, or an internal email through the email-server); the durable trigger
+  row exists regardless. Since gap-fix round 6 (H.3, Block H "no alert may be
+  built to record without a real consumer"):
+  - an alert can only be created (`POST /alerts`) or switched back on
+    (`PATCH /alerts/:id` to `active`) on a channel dataintel has configured
+    (`ALERT_WEBHOOK_URL`, or `ALERT_EMAIL_SERVER_URL` + `ALERT_EMAIL_INTERNAL_KEY`
+    + `ALERT_EMAIL_TO`); otherwise 409 `ALERT_CHANNEL_UNCONFIGURED`.
+    `GET /alerts/channels` (and the staff console, Learning intel,
+    Experiments & alerts, "Alert channels") says which are set up;
+  - a failed send is retried up to 3 times (2 s, then 8 s apart; a network
+    error, a timeout, 408, 425, 429 or 5xx is retried, any other 4xx is not)
+    and every attempt is a row in `alert_delivery_attempts`; the trigger row
+    keeps the final outcome and `delivery_attempts`;
+  - a trigger that still reached nobody (failed, unconfigured because the
+    channel was removed later, or no outcome recorded 15 minutes after it) is
+    listed by `GET /alerts/undelivered?hours=36`. Core's operations status
+    carries it as `alerts.undelivered` (window: `ALERT_UNDELIVERED_WINDOW_HOURS`
+    in `backend/src/services/warehouseAlerts.ts`), `ops-job-watch` fails on
+    any, names each one on the `ops-watchdog` issue (the escalation channel),
+    and refuses a reply without the count (an unreadable warehouse);
+  - the staff Reports, Support view shows the same count on the watchdog
+    card.
 - **Half-built mechanisms may not ship.** The async export-job endpoints were
   removed (no processor ever advanced them — creating a permanently-pending
   job is now impossible; the direct synchronous export surface is the only
@@ -134,7 +153,8 @@ to retain because an active guardian consent admitted them at the source.
   - `.github/workflows/ops-job-watch.yml` (daily, 10:00 UTC) reads the
     status from inside the container, fails when any of the four jobs is
     stale, a retroactive release check is overdue (G.2), an elevated grant
-    is due for review (G.4, section 2) or the reply is unreadable, and opens
+    is due for review (G.4, section 2), a warehouse alert notified nobody
+    (H.3, above) or the reply is unreadable, and opens
     or comments on the `ops-watchdog` GitHub issue, so a human is notified;
   - `.github/workflows/content-retro-checks.yml` (weekly, Monday 05:00 UTC)
     runs the retroactive release check itself inside its 30-day window and
@@ -143,7 +163,8 @@ to retain because an active guardian consent admitted them at the source.
   - the simulated-failure drill (`npm --prefix backend run ops:drill`, also a
     unit test) proves, for each of the four jobs, that a stale trail produces
     `stale: true`, a failed watcher and the notice; it also drills an overdue
-    retroactive check and a due access review.
+    retroactive check, a due access review and an undelivered warehouse
+    alert (`alerts_undelivered`).
   Remaining for the ops owner: the first scheduled runs in production and a
   drill run against the deployed Core.
 

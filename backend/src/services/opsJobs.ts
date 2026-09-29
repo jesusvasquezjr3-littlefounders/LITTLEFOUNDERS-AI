@@ -3,6 +3,7 @@ import { insertAuditLog, serviceRest } from './supabaseRest.js';
 import { getOverdueRetroChecks, RETRO_CHECK_DAYS } from './contentRelease.js';
 import { getTutorRetentionStatus, RETENTION_STALE_HOURS, type TutorRetentionStatus } from './tutorData.js';
 import { ACCESS_REVIEW_CADENCE_DAYS, getAccessReviewCounts } from './adminData.js';
+import { getUndeliveredAlerts, type UndeliveredAlertsStatus } from './warehouseAlerts.js';
 
 /*
  * H.4 and Appendix O 1.3 / 2.3: the watchdog-plus-notification pattern the
@@ -38,6 +39,12 @@ import { ACCESS_REVIEW_CADENCE_DAYS, getAccessReviewCounts } from './adminData.j
  * superadmin to open Roles & Access. It also carries `total` (every elevated
  * grant held), which the calendar-quarter review issue
  * (access-review-quarterly.yml) puts in front of the staff/access owner.
+ *
+ * H.3 (GAP-FIX-R6): the warehouse alert triggers that reached nobody in the
+ * last 36 hours ride here as `alerts.undelivered` (services/warehouseAlerts.ts),
+ * so an alert that notified nobody fails the watch and is named on the
+ * watchdog issue. An unreadable warehouse is `undelivered: null`, which the
+ * watcher refuses, without hiding the other jobs' verdicts.
  */
 
 export const OPS_JOBS = ['vault_backup', 'pulse_backup', 'vault_drift'] as const;
@@ -150,6 +157,8 @@ export interface OpsStatus {
   anyStale: boolean;
   contentRetroChecks: ContentRetroCheckStatus;
   accessReviews: AccessReviewDueStatus;
+  /** H.3: warehouse alert triggers that notified nobody (null count = the warehouse was not read). */
+  alerts: UndeliveredAlertsStatus;
 }
 
 /**
@@ -160,6 +169,7 @@ export async function getOpsJobStatus(now: Date = new Date()): Promise<OpsStatus
   const overdue = getOverdueRetroChecks();
   const retention = getTutorRetentionStatus(now);
   const accessCounts = getAccessReviewCounts(ACCESS_REVIEW_CADENCE_DAYS);
+  const undeliveredAlerts = getUndeliveredAlerts();
   const reads = await Promise.all(
     OPS_JOBS.flatMap((job) => {
       const action = encodeURIComponent(opsJobAction(job));
@@ -176,7 +186,7 @@ export async function getOpsJobStatus(now: Date = new Date()): Promise<OpsStatus
     const attempt = parsed[index * 2 + 1]!;
     return judgeOpsJob(job, ok.success ? ok.data[0] : undefined, attempt.success ? attempt.data[0] : undefined, now);
   });
-  const [overdueChecks, retentionStatus, access] = await Promise.all([overdue, retention, accessCounts]);
+  const [overdueChecks, retentionStatus, access, alerts] = await Promise.all([overdue, retention, accessCounts, undeliveredAlerts]);
   if (overdueChecks === null || retentionStatus === null || access === null) return null;
   const tutorRetention = retentionAsJob(retentionStatus);
   return {
@@ -185,5 +195,6 @@ export async function getOpsJobStatus(now: Date = new Date()): Promise<OpsStatus
     anyStale: jobs.some((job) => job.stale) || tutorRetention.stale,
     contentRetroChecks: { overdue: overdueChecks, windowDays: RETRO_CHECK_DAYS },
     accessReviews: { due: access.due, total: access.total, windowDays: ACCESS_REVIEW_CADENCE_DAYS },
+    alerts,
   };
 }

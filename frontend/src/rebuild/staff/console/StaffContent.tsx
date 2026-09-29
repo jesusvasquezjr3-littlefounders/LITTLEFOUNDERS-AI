@@ -9,8 +9,9 @@ import { LearningQualityPanel, type DecisionOutcome } from '../../learning/Learn
 import type { ReviewDecisionBody } from '../../learning/learningQualityReport';
 import {
   audioAssets, CONTENT_VIEWS, COURSE_STATUSES, imageAssets, isBypassReport, isContentData, isLessonDetail, isLiveQueue, isLiveStatus, isPacks,
-  isPendingVersions, isReviewQueue, lessonParts, partTitle, releaseRefusal, riskCategory, versionRefusal, versionTitle, type ContentView,
-  type Course, type LessonDetail, type LiveSegment, type PendingVersion, type ReleaseRefusalKey, type RetroCheck, type RetroState, type ReviewLesson,
+  isPendingVersions, isReviewQueue, isVersionDocument, lessonParts, partTitle, previewGradePath, previewVerdict, releaseRefusal, riskCategory,
+  versionDocumentPath, versionRefusal, versionTitle, type ContentView, type Course, type LessonDetail, type LessonDocumentRow, type LiveSegment,
+  type PendingVersion, type PreviewVerdict, type ReleaseRefusalKey, type RetroCheck, type RetroState, type ReviewLesson,
 } from './contentApi';
 import { useStaffRead, type StaffApi } from './staffConsoleApi';
 import { CopyId, Facts, LoadFailure, Loading, Metrics, ShareBars, StaffPage, useFormats } from './ConsoleParts';
@@ -29,7 +30,8 @@ import { fill, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
  *                      release through release_lesson) or send it back.
  *   Live updates       G.2: a new Forge version of a lesson that is already
  *                      live waits here for a staff release (Core re-runs the
- *                      course verification) or a rejection with a reason;
+ *                      course verification) or a rejection with a reason,
+ *                      after the reviewer has played it (GAP-FIX-R6);
  *                      below it, every skipped release check with its 30-day
  *                      retroactive check and Appendix N 1.2's two rates.
  *   Mentor activities  C.5's live-content status, the sampled live Mentor
@@ -43,12 +45,59 @@ import { fill, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
  * the page never substitutes for that.
  */
 
-/** The learner's lesson player, handed in by the route host (the rebuilt console never imports the player itself). */
+/**
+ * The learner's own lesson renderer, handed in by the route host (the rebuilt
+ * console never imports a player itself). GAP-FIX-R6 (02 rule 23, D13, OD-24):
+ * the host follows the learner route's split. A v2 document (schema 2) plays in
+ * the rebuilt lesson view; only a v1 document (schema 1) plays in the legacy
+ * v1 player, the one sanctioned island. Any other schema has no preview.
+ */
 export interface LessonPreviewRequest {
-  lessonId: string; locale: string; document: Record<string, unknown>; audio: Record<string, unknown>;
-  labels: { start: string; next: string; loading: string }; onExit: () => void;
+  lessonId: string; locale: string; schemaVersion: number; document: Record<string, unknown>; audio: Record<string, unknown>;
+  /** v2: the compact Mentor stage and the narration Core delivers beside the document. */
+  mentorStage?: unknown; narrationAudio?: unknown;
+  /** v2: checks an answer through Core with the learner's scorer, recording nothing; throws when Core cannot answer. */
+  grade: (segmentId: string, answer: unknown) => Promise<PreviewVerdict>;
+  labels: { start: string; next: string; loading: string; dialog: string; bar: string; close: string }; onExit: () => void;
 }
 export type LessonPreviewRenderer = (request: LessonPreviewRequest) => ReactNode;
+/** The schemas a lesson preview exists for: 1 (the legacy island, OD-24) and 2 (the rebuilt view). */
+export const PREVIEW_SCHEMAS: readonly number[] = [1, 2];
+
+/** GAP-FIX-R6: the preview's grader, bound to one document (the named version, or the served document in its locale). */
+function previewGrader(api: StaffApi, lessonId: string, row: Pick<LessonDocumentRow, 'locale' | 'documentVersionId'>) {
+  return async (segmentId: string, answer: unknown): Promise<PreviewVerdict> => {
+    const result = await api.post<unknown>(previewGradePath(lessonId), {
+      locale: row.locale, segment_id: segmentId, answer, ...(row.documentVersionId ? { document_version_id: row.documentVersionId } : {}),
+    });
+    const verdict = result.ok ? previewVerdict(result.data) : null;
+    if (!verdict) throw new Error(result.ok ? 'Malformed preview verdict' : result.code);
+    return verdict;
+  };
+}
+
+/** One request for the host's renderer, from a served document row. */
+function previewRequest(copy: ConsoleCopy, api: StaffApi, lessonId: string, row: LessonDocumentRow, onExit: () => void): LessonPreviewRequest {
+  const t = copy.content;
+  return {
+    lessonId, locale: row.locale, schemaVersion: row.schemaVersion, document: row.document, audio: row.audio ?? {},
+    mentorStage: row.mentorStage, narrationAudio: row.narrationAudio, grade: previewGrader(api, lessonId, row),
+    labels: { start: t.action.startPreview, next: t.action.nextPreview, loading: t.body.previewLoading, dialog: t.heading.preview, bar: t.body.previewBar, close: t.action.closePreview },
+    onExit,
+  };
+}
+
+/** The preview panel of a sheet: what opening it does, whether a learner can get this document at all, and the button. */
+function PreviewPanel({ row, available, onOpen }: { row: LessonDocumentRow; available: boolean; onOpen: () => void }) {
+  const { copy } = useConsoleCopy();
+  const t = copy.content;
+  const canPreview = available && PREVIEW_SCHEMAS.includes(row.schemaVersion);
+  return <div className="lf-staff-stack" data-inspect="preview" data-schema={row.schemaVersion}>
+    <p data-copy-role="body">{!canPreview ? t.body.previewUnavailable : row.schemaVersion === 2 ? t.body.previewHelpV2 : t.body.previewHelp}</p>
+    {row.schemaVersion === 2 && row.playable === false ? <InlineNotice tone="error">{t.body.notPlayable}</InlineNotice> : null}
+    {canPreview ? <div><Button variant="brand" onClick={onOpen}>{t.action.openPlayer}</Button></div> : null}
+  </div>;
+}
 
 function statusChip(copy: ConsoleCopy, status: string) {
   const t = copy.content.option;
@@ -275,11 +324,8 @@ function LessonSheet({ api, lessonId, onClose, onDecided, renderLessonPreview }:
   };
   const close = onClose;
 
-  if (previewing && row && data && renderLessonPreview) {
-    return <>{renderLessonPreview({
-      lessonId: data.id, locale: row.locale, document: row.document, audio: row.audio ?? {},
-      labels: { start: t.action.startPreview, next: t.action.nextPreview, loading: t.body.previewLoading }, onExit: () => setPreviewing(false),
-    })}</>;
+  if (previewing && row && data && renderLessonPreview && PREVIEW_SCHEMAS.includes(row.schemaVersion)) {
+    return <>{renderLessonPreview(previewRequest(copy, api, data.id, row, () => setPreviewing(false)))}</>;
   }
 
   return <><Sheet open onClose={close} heading={t.heading.lesson} closeLabel={copy.common.action.close}>
@@ -313,10 +359,7 @@ function LessonSheet({ api, lessonId, onClose, onDecided, renderLessonPreview }:
                 onValueChange={setDocumentLocale} options={data.documents.map((entry) => ({ value: entry.locale, label: entry.locale }))} /> : null}
               <SegmentedControl legend={t.body.inspect} name={`${name}-inspect`} value={inspect} onValueChange={setInspect}
                 options={(['preview', 'parts', 'media', 'data'] as const).map((value) => ({ value, label: t.option[value] }))} />
-              {inspect === 'preview' ? <div className="lf-staff-stack" data-inspect="preview">
-                <p data-copy-role="body">{renderLessonPreview ? t.body.previewHelp : t.body.previewUnavailable}</p>
-                {renderLessonPreview ? <div><Button variant="brand" onClick={() => setPreviewing(true)}>{t.action.openPlayer}</Button></div> : null}
-              </div> : null}
+              {inspect === 'preview' ? <PreviewPanel row={row} available={!!renderLessonPreview} onOpen={() => setPreviewing(true)} /> : null}
               {inspect === 'parts' ? <div className="lf-staff-stack" data-inspect="parts">
                 <h3 data-copy-role="heading" className="lf-staff-subheading">{t.heading.parts}</h3>
                 {parts.length === 0 ? <p data-copy-role="body">{t.body.noParts}</p>
@@ -390,10 +433,16 @@ function ReviewView({ api, onChanged, renderLessonPreview }: { api: StaffApi; on
 /*  Live updates (G.2, Appendix N 1.2)                                       */
 /* ------------------------------------------------------------------------- */
 
-function VersionSheet({ api, version, onClose, onDecided }: { api: StaffApi; version: PendingVersion; onClose: () => void; onDecided: () => void }) {
+function VersionSheet({ api, version, onClose, onDecided, renderLessonPreview }: {
+  api: StaffApi; version: PendingVersion; onClose: () => void; onDecided: () => void; renderLessonPreview?: LessonPreviewRenderer;
+}) {
   const { copy, locale } = useConsoleCopy();
   const format = useFormats(locale);
   const t = copy.content;
+  // GAP-FIX-R6: the version is played before it is released or rejected (G.2, Appendix C Part 3 Stage 3).
+  const read = useStaffRead(api, versionDocumentPath(version.lessonId, version.documentVersionId), isVersionDocument);
+  const versionDocument = read.load.state === 'ready' ? read.load.data : null;
+  const [previewing, setPreviewing] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState('');
@@ -419,6 +468,9 @@ function VersionSheet({ api, version, onClose, onDecided }: { api: StaffApi; ver
     settle(result, t.body.versionRejected);
   };
   const reasonOk = reason.trim().length >= 10 && reason.trim().length <= 600;
+  if (previewing && versionDocument && renderLessonPreview && PREVIEW_SCHEMAS.includes(versionDocument.schemaVersion)) {
+    return <>{renderLessonPreview(previewRequest(copy, api, version.lessonId, versionDocument, () => setPreviewing(false)))}</>;
+  }
   return <><Sheet open onClose={onClose} heading={t.heading.version} closeLabel={copy.common.action.close}>
     <div className="lf-staff-sheet" data-sheet="version">
       <Facts items={[
@@ -428,6 +480,11 @@ function VersionSheet({ api, version, onClose, onDecided }: { api: StaffApi; ver
         { id: 'submitted', label: t.body.submitted, value: format.dateTime(version.submittedAt, copy.common.body.notAvailable) },
       ]} />
       <InlineNotice tone="info">{t.body.releaseCheckNote}</InlineNotice>
+      <section className="lf-staff-stack" aria-label={t.heading.preview} data-section="version-preview">
+        {read.load.state === 'loading' ? <Loading />
+          : read.load.state === 'error' ? <LoadFailure code={read.load.code} onRetry={read.reload} />
+            : versionDocument ? <PreviewPanel row={versionDocument} available={!!renderLessonPreview} onOpen={() => setPreviewing(true)} /> : null}
+      </section>
       {decided ? null : <div className="lf-staff-actions">
         <Button variant="success" aria-haspopup="dialog" disabled={pending} onClick={() => setConfirming(true)}>{t.action.release}</Button>
         <Button aria-expanded={rejecting} disabled={pending} onClick={() => setRejecting(!rejecting)}>{t.action.reject}</Button>
@@ -492,7 +549,7 @@ function RetroChecks({ api }: { api: StaffApi }) {
   </section>;
 }
 
-function UpdatesView({ api }: { api: StaffApi }) {
+function UpdatesView({ api, renderLessonPreview }: { api: StaffApi; renderLessonPreview?: LessonPreviewRenderer }) {
   const { copy, locale } = useConsoleCopy();
   const format = useFormats(locale);
   const t = copy.content;
@@ -523,7 +580,7 @@ function UpdatesView({ api }: { api: StaffApi }) {
             : <DataTable caption={t.heading.updates} columns={columns} rows={versions} rowKey={(entry) => entry.requestId} />}
     </section>
     <RetroChecks api={api} />
-    {version ? <VersionSheet key={version.requestId} api={api} version={version} onClose={close} onDecided={() => setDirty(true)} /> : null}
+    {version ? <VersionSheet key={version.requestId} api={api} version={version} onClose={close} onDecided={() => setDirty(true)} renderLessonPreview={renderLessonPreview} /> : null}
   </div>;
 }
 
@@ -692,7 +749,7 @@ export function StaffContent({ api, initialView = 'courses', renderLessonPreview
       options={CONTENT_VIEWS.map((value) => ({ value, label: t.option[value] }))} />
     {view === 'courses' ? (data && summary ? <>{incidentsSection}<CoursesView api={api} courses={data.courses} summary={summary} onChanged={content.reload} /></> : null)
       : view === 'review' ? <ReviewView api={api} onChanged={content.reload} renderLessonPreview={renderLessonPreview} />
-        : view === 'updates' ? <UpdatesView api={api} />
+        : view === 'updates' ? <UpdatesView api={api} renderLessonPreview={renderLessonPreview} />
         : view === 'live' ? <LiveView api={api} />
           : <QualityView api={api} />}
   </StaffPage>;

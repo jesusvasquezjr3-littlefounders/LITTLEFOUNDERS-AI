@@ -1,8 +1,8 @@
-import { stripAnswers } from './lessonDocument.js';
 import { z } from 'zod';
+import { staffLessonDocument, type StaffLessonDocument } from './staffLessonPreview.js';
 import {
   countServiceRows,
-  getLessonDocumentLocales,
+  getEffectiveLessonDocumentLocales,
   grantRole,
   grantAdminPermission,
   serviceRest,
@@ -783,20 +783,21 @@ export async function listReviewLessons(): Promise<AdminReviewLesson[] | null> {
     });
 }
 
-export interface AdminLessonDocument {
-  locale: string;
-  schemaVersion: number;
-  document: Record<string, unknown>;
-  audio: Record<string, unknown>;
-}
+/** GAP-FIX-R6: the document the learner is served, as the staff preview renders it (staffLessonPreview.ts). */
+export type AdminLessonDocument = StaffLessonDocument;
 
 export interface AdminReviewLessonDetail extends AdminReviewLesson {
   documents: AdminLessonDocument[];
 }
 
+/**
+ * GAP-FIX-R6: the review reads the documents a learner would be served (the
+ * same selection as GET /learn/lessons/:id: an activated v2 version wins,
+ * otherwise the v1 row), so the reviewer approves what a child will see.
+ */
 export async function getReviewLessonDetail(lessonId: string): Promise<AdminReviewLessonDetail | null> {
   const rows = await loadCourseHierarchyRows();
-  const documents = await getLessonDocumentLocales(lessonId);
+  const documents = await getEffectiveLessonDocumentLocales(lessonId);
   if (!rows || !documents) return null;
   const lesson = rows.lessons.find((row) => row.id === lessonId);
   if (!lesson) return null;
@@ -820,12 +821,7 @@ export async function getReviewLessonDetail(lessonId: string): Promise<AdminRevi
     estimatedMinutes: lesson.estimated_minutes,
     createdAt: lesson.created_at,
     locales: documents.map((document) => document.locale),
-    documents: documents.map((document) => ({
-      locale: document.locale,
-      schemaVersion: document.schema_version,
-      document: stripAnswers(document.document),
-      audio: document.audio,
-    })),
+    documents: documents.map((document) => staffLessonDocument(document, lessonId)),
   };
 }
 

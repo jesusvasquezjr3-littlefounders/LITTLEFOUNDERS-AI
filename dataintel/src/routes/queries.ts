@@ -758,10 +758,18 @@ export function intelRouter(): Router {
 
   // ═══ Alerts ════════════════════════════════════════════════════════
 
+  /*
+   * H.3 (GAP-FIX-R6; Block H: no alert may be built to record without a real
+   * consumer): an alert is created only on a channel this deployment can
+   * deliver through. GET /alerts/channels says which ones those are.
+   */
   router.post('/alerts', async (req, res) => {
     try {
       const parsed = alertSchema.safeParse(req.body);
       if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.message);
+      if (!alerts.isChannelConfigured(parsed.data.channel)) {
+        return fail(res, 409, 'ALERT_CHANNEL_UNCONFIGURED', `The ${parsed.data.channel} channel is not configured on this deployment; an alert on it would notify nobody`);
+      }
       const result = await alerts.createAlert(parsed.data);
       if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Failed to create alert');
       return ok(res, result, 201);
@@ -797,12 +805,41 @@ export function intelRouter(): Router {
     }
   });
 
+  /** H.3 (GAP-FIX-R6): the delivery channels this deployment has, so the console shows them. */
+  router.get('/alerts/channels', (_req, res) => ok(res, alerts.configuredChannels()));
+
+  /*
+   * H.3 (GAP-FIX-R6): the triggers of the last `hours` (1-168, default 36)
+   * that reached nobody. Core reads it for GET /internal/ops/job-status
+   * (`alerts.undelivered`), which ops-job-watch fails on.
+   */
+  router.get('/alerts/undelivered', async (req, res) => {
+    try {
+      const hours = z.coerce.number().int().min(1).max(168).default(36).parse(req.query.hours ?? '36');
+      const result = await alerts.undeliveredAlerts(hours);
+      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Undelivered alerts unavailable');
+      return ok(res, result);
+    } catch (err) {
+      if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);
+      return fail(res, 500, 'INTERNAL', (err as Error).message);
+    }
+  });
+
   router.patch('/alerts/:id', async (req, res) => {
     try {
       const id = z.string().uuid().parse(req.params.id);
       const parsed = alertPatchSchema.safeParse(req.body);
       if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.message);
       const { status } = parsed.data;
+      // H.3 (GAP-FIX-R6): an alert whose channel is gone cannot be switched back on.
+      if (status === 'active') {
+        const current = await alerts.getAlert(id);
+        if (current === undefined) return fail(res, 502, 'DATA_UNAVAILABLE', 'Alert unavailable');
+        if (current === null) return fail(res, 404, 'NOT_FOUND', 'Alert not found');
+        if (!alerts.isChannelConfigured(current.channel)) {
+          return fail(res, 409, 'ALERT_CHANNEL_UNCONFIGURED', `The ${current.channel} channel is not configured on this deployment; this alert would notify nobody`);
+        }
+      }
       const result = await alerts.updateAlertStatus(id, status);
       if (result === null) return fail(res, 404, 'NOT_FOUND', 'Alert not found');
       return ok(res, result);

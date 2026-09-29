@@ -15,8 +15,10 @@ const Env = z.object({
   SYNC_INTERVAL_MS: z.coerce.number().int().positive().default(300_000),
 
   // H.3: alert triggers must notify a human, not just record a row. Optional
-  // delivery channels; when absent the matching channel degrades to a logged
-  // warning (the trigger is still recorded) rather than pretending delivery.
+  // delivery channels: an alert can only be created or re-activated on a
+  // channel that is configured here (409 ALERT_CHANNEL_UNCONFIGURED). If a
+  // channel is removed later, its triggers record `unconfigured` and surface
+  // as undelivered on Core's operations watchdog.
   ALERT_WEBHOOK_URL: z.string().url().optional(),
   ALERT_EMAIL_SERVER_URL: z.string().url().optional(),
   ALERT_EMAIL_INTERNAL_KEY: z.string().min(1).optional(),

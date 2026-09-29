@@ -340,6 +340,8 @@ function stubData(
         }
         return Promise.resolve(jsonResponse(200, [REVIEW_LESSON]));
       }
+      // GAP-FIX-R6: the review reads the served documents: no activated v2 version here, so the v1 row.
+      if (url.includes('/rest/v1/lesson_document_version_current')) return Promise.resolve(jsonResponse(200, []));
       if (url.includes('/rest/v1/lesson_documents')) return Promise.resolve(jsonResponse(200, [LESSON_DOCUMENT]));
       if (url.includes('/rest/v1/audit_logs')) {
         if (method === 'POST') return Promise.resolve(new Response(null, { status: options.auditInsertStatus ?? 204 }));

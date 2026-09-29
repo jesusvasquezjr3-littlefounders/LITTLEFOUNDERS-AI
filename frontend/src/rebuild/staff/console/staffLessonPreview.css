@@ -1,0 +1,13 @@
+/* GAP-FIX-R6: the staff v2 lesson preview (StaffLessonPreview.tsx). A full-viewport modal layer: the learner's
+   lesson layer fills it and scrolls inside it, under a staff bar that stays in view. Tokens only, logical
+   properties only, no motion of its own (the lesson's own motion follows the reduced-motion rules). */
+
+.lf-rebuild .lf-staff-lesson-preview { overflow-y: auto; overscroll-behavior: contain; background: var(--surface); }
+.lf-rebuild .lf-staff-lesson-preview-frame { display: grid; grid-template-rows: auto 1fr; min-block-size: 100%; }
+.lf-rebuild .lf-staff-lesson-preview-bar {
+  position: sticky; inset-block-start: 0; z-index: 1;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-3);
+  padding-block: var(--spacing-2); padding-inline: var(--spacing-4);
+  background: var(--raised); color: var(--content); box-shadow: var(--elevation-card);
+}
+.lf-rebuild .lf-staff-lesson-preview-bar p { font: var(--type-label); min-inline-size: 0; }

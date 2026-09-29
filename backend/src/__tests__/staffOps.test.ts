@@ -61,6 +61,8 @@ interface World {
   calls?: { url: string; method: string; body?: string }[];
   /** G.2: content_bypass_metrics (the overdue retroactive checks the watchdog reads). */
   bypassMetrics?: { status: number; body: unknown };
+  /** H.3: dataintel's undelivered alert triggers (GET /api/v1/intel/alerts/undelivered). */
+  undelivered?: { status: number; body: unknown };
 }
 
 function stub(world: World = {}) {
@@ -82,6 +84,9 @@ function stub(world: World = {}) {
     if (url.includes('/rest/v1/rpc/content_bypass_metrics')) {
       return Promise.resolve(jsonResponse(world.bypassMetrics?.status ?? 200, world.bypassMetrics?.body
         ?? [{ publish_actions: 4, bypasses: 1, decided: 1, unverified: 0, complete: 1, overdue_open: 0 }]));
+    }
+    if (url.includes('/api/v1/intel/alerts/undelivered')) {
+      return Promise.resolve(jsonResponse(world.undelivered?.status ?? 200, world.undelivered?.body ?? { data: { hours: 36, count: 0, alerts: [] }, error: null }));
     }
     if (url.includes('/rest/v1/audit_logs')) {
       if (world.auditStatus) return Promise.resolve(new Response(null, { status: world.auditStatus }));
@@ -255,6 +260,26 @@ describe('H.4 — the operations heartbeat and watchdog', () => {
     expect((await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key())).status).toBe(502);
     stub({ reviews: { status: 200, body: { cadenceDays: 90, total: 'many' } } });
     expect((await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key())).status).toBe(502);
+  });
+
+  it('H.3: carries the warehouse alert triggers that notified nobody; an unreadable warehouse is a null count, never zero and never a 502', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    const failed = { alertId: 'a1', name: 'dau drop', channel: 'webhook', triggeredAt: '2026-09-29T08:00:00Z', status: 'failed', error: 'HTTP 502', attempts: 3 };
+    stub({ calls, undelivered: { status: 200, body: { data: { hours: 36, count: 1, alerts: [failed] }, error: null } } });
+    const res = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+    expect(res.status).toBe(200);
+    expect(res.body.data.alerts).toEqual({ undelivered: 1, windowHours: 36, alerts: [failed] });
+    const read = calls.find((call) => call.url.includes('/alerts/undelivered'))!;
+    expect(read.url).toContain('hours=36');
+    stub();
+    expect((await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key())).body.data.alerts)
+      .toEqual({ undelivered: 0, windowHours: 36, alerts: [] });
+    for (const undelivered of [{ status: 502, body: { data: null, error: { code: 'DATA_UNAVAILABLE' } } }, { status: 200, body: { data: { count: 'x' }, error: null } }]) {
+      stub({ undelivered });
+      const down = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+      expect(down.status).toBe(200);
+      expect(down.body.data.alerts).toEqual({ undelivered: null, windowHours: 36, alerts: [] });
+    }
   });
 
   it('refuses the internal status without the internal key', async () => {

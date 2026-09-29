@@ -116,14 +116,40 @@ describe('staff console routes (W2T.1)', () => {
     expect(await hook!.api.post('/admin/tutor/packs/x/status', { status: 'published' })).toEqual({ ok: false, code: 'PACK_CONTRACT_FAILED', failures: ['tier 1 is below tier_min 2'] });
   });
 
-  it("the lesson preview is the learner's own player in preview mode: nothing graded", async () => {
+  const previewLabels = { start: 'Start', next: 'Next', loading: 'Opening', dialog: 'Lesson preview', bar: 'Staff preview', close: 'Close preview' };
+  const grade = vi.fn(async () => ({ verdict: 'met' as const }));
+
+  it("the v1 lesson preview is the learner's own v1 player in preview mode: nothing graded (OD-24)", async () => {
     const onExit = vi.fn();
-    render(<>{renderLessonPreview({ lessonId: 'l1', locale: 'es-MX', document: { segments: [] }, audio: {}, labels: { start: 'Start', next: 'Next', loading: 'Opening' }, onExit })}</>);
+    render(<>{renderLessonPreview({ lessonId: 'l1', locale: 'es-MX', schemaVersion: 1, document: { segments: [] }, audio: {}, grade, labels: previewLabels, onExit })}</>);
     await screen.findByTestId('lesson-player');
     const props = player.mock.calls.at(-1)![0] as { preview: boolean; previewStartLabel: string; grader: { grade: () => Promise<unknown> }; onExit: () => void };
     expect(props.preview).toBe(true);
     expect(props.previewStartLabel).toBe('Start');
     await expect(props.grader.grade()).rejects.toThrow('Preview mode does not grade');
     expect(props.onExit).toBe(onExit);
+  });
+
+  it('GAP-FIX-R6: a v2 document never mounts the legacy player; it plays in the rebuilt lesson view (02 rule 23, OD-24)', async () => {
+    player.mockClear();
+    const { allocationPilotDocument } = await import('@/rebuild/learning/AllocationBoard');
+    render(<RebuildRoot theme="light" locale="en-US"><RebuildProvider environment={{ theme: 'light', locale: 'en-US' }} labels={{ dismiss: 'Dismiss' }}>
+      {renderLessonPreview({ lessonId: 'l1', locale: 'en-US', schemaVersion: 2, document: allocationPilotDocument('en-US', '6-9') as Record<string, unknown>,
+        audio: {}, grade, labels: previewLabels, onExit: vi.fn() })}
+    </RebuildProvider></RebuildRoot>);
+    // The rebuilt view is a lazy chunk: its first import in a cold test worker can take seconds.
+    const dialog = await screen.findByRole('dialog', { name: 'Lesson preview' }, { timeout: 20_000 });
+    expect(dialog.querySelector('[data-shell="lesson"]')).not.toBeNull();
+    expect(screen.queryByTestId('lesson-player')).toBeNull();
+    expect(player).not.toHaveBeenCalled();
+    // No legacy global sheet came with it.
+    expect(document.querySelector('style[data-legacy-island]')).toBeNull();
+  }, 30_000);
+
+  it('GAP-FIX-R6: a schema with no learner renderer has no preview', () => {
+    player.mockClear();
+    const { container } = render(<>{renderLessonPreview({ lessonId: 'l1', locale: 'en-US', schemaVersion: 3, document: {}, audio: {}, grade, labels: previewLabels, onExit: vi.fn() })}</>);
+    expect(container.innerHTML).toBe('');
+    expect(player).not.toHaveBeenCalled();
   });
 });

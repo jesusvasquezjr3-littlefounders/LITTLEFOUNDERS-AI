@@ -426,6 +426,22 @@ describe('Learning intel S6 with Insights S8 (W2T.3)', () => {
     await waitFor(() => expect(container.querySelector('[data-failure="loadFailed"]')).not.toBeNull());
   });
 
+  it('H.3 (GAP-FIX-R6): shows which alert channels are set up, and a failed read is its own state', async () => {
+    const { api, gets } = fakeApi();
+    render(<Frame><StaffIntel api={api} viewer={ANALYST} initialView="operations" /></Frame>);
+    const card = (await screen.findByRole('heading', { name: n.heading.channels })).closest('section')!;
+    expect(within(card).getByText(n.body.channelsIntro)).toBeInTheDocument();
+    const webhook = await within(card).findByText(n.option.channel_webhook);
+    expect(webhook.closest('div')!.parentElement).toHaveTextContent(n.option.channel_ready);
+    expect(within(card).getByText(n.option.channel_email).closest('div')!.parentElement).toHaveTextContent(n.option.delivery_unconfigured);
+    expect(gets).toContain('/admin/intel/alerts/channels');
+    cleanup();
+    const down = fakeApi((path) => (path === '/admin/intel/alerts/channels' ? fail('DATA_UNAVAILABLE') : undefined));
+    render(<Frame><StaffIntel api={down.api} viewer={ANALYST} initialView="operations" /></Frame>);
+    const failed = (await screen.findByRole('heading', { name: n.heading.channels })).closest('section')!;
+    await waitFor(() => expect(failed.querySelector('[data-failure="loadFailed"]')).not.toBeNull());
+  });
+
   it('Overview: the teen and guest disclosure coverage (Appendix O 1.1) against its 100% target, for the chosen window', async () => {
     const { api, gets } = fakeApi();
     render(<Frame><StaffIntel api={api} viewer={ANALYST} /></Frame>);

@@ -55,6 +55,10 @@ function answer(path: string): StaffResult<unknown> | undefined {
     '/admin/content/lesson-versions': sections.lessonVersions, '/admin/content/bypass-checks': sections.bypassChecks,
   };
   if (route in table) return ok(table[route]);
+  // GAP-FIX-R6: the second lesson in the queue is a v2 lesson; a pending version's document for its preview.
+  const second = sections.moderation.lessons[1]!;
+  if (route === `/admin/moderation/${second.id}`) return ok({ ...LESSON, ...second, documents: sections.lessonDocumentsV2 });
+  if (/^\/admin\/content\/lessons\/[^/]+\/versions\/[^/]+$/.test(route)) return ok({ ...sections.versionDocument, lessonId: route.split('/')[4], documentVersionId: route.split('/')[6] });
   if (route.startsWith('/admin/generation/runs/')) return ok(g.runDetail);
   if (route.startsWith('/admin/generation/slots/')) return ok(g.slotDetail);
   if (route.startsWith('/admin/generation/snapshots/')) return ok(g.snapshots);
@@ -137,6 +141,33 @@ describe('G.2 Live updates: a live lesson changes only on a staff release; skipp
     fireEvent.click(submit);
     await waitFor(() => expect(posts).toEqual([{ path: `${base}/reject`, body: { reason: 'The example uses a foreign currency.' } }]));
     expect(await screen.findByText(c.content.body.versionRejected)).toBeInTheDocument();
+  });
+
+  it('GAP-FIX-R6: the version is played before the decision, in the renderer, its answers checked against that version', async () => {
+    const preview = vi.fn((request: LessonPreviewRequest) => <div data-testid="player"><button type="button" onClick={request.onExit}>exit</button></div>);
+    const { api, gets, posts } = fakeApi((path) => (path.endsWith('/preview-grade') ? ok({ verdict: { correct: true, score: 100 }, recorded: false }) : undefined));
+    render(<Frame><StaffContent api={api} initialView="updates" renderLessonPreview={preview} /></Frame>);
+    const details = await openVersion();
+    const panel = await within(details).findByText(c.content.body.previewHelpV2);
+    expect(gets).toContain(base);
+    fireEvent.click(within(panel.closest('[data-inspect="preview"]') as HTMLElement).getByRole('button', { name: c.content.action.openPlayer }));
+    expect(await screen.findByTestId('player')).toBeInTheDocument();
+    const request = preview.mock.calls.at(-1)![0];
+    expect(request).toMatchObject({ lessonId: VERSION.lessonId, schemaVersion: 2, locale: 'es-MX' });
+    expect(await request.grade('allocate-01', { save: 4, spend: 8, share: 0 })).toEqual({ verdict: 'met' });
+    expect(posts).toEqual([{ path: `/admin/content/lessons/${VERSION.lessonId}/preview-grade`,
+      body: { locale: 'es-MX', segment_id: 'allocate-01', answer: { save: 4, spend: 8, share: 0 }, document_version_id: VERSION.documentVersionId } }]);
+    fireEvent.click(screen.getByRole('button', { name: 'exit' }));
+    expect(await screen.findByRole('dialog', { name: c.content.heading.version })).toBeInTheDocument();
+  });
+
+  it('GAP-FIX-R6: a version whose document cannot be read says so, and the decision stays available', async () => {
+    const { api } = fakeApi((path) => (path === base ? fail('DATA_UNAVAILABLE') : undefined));
+    render(<Frame><StaffContent api={api} initialView="updates" renderLessonPreview={() => null} /></Frame>);
+    const details = await openVersion();
+    const section = details.querySelector('[data-section="version-preview"]') as HTMLElement;
+    expect(await within(section).findByText(c.common.heading.loadFailed)).toBeInTheDocument();
+    expect(within(details).getByRole('button', { name: c.content.action.release })).toBeEnabled();
   });
 
   it('shows the empty states, and a failed read of the checks is an error, never a calm zero', async () => {
@@ -276,10 +307,57 @@ describe('S2 Content: the lesson review queue', () => {
     const request = preview.mock.calls.at(-1)![0];
     expect(request.locale).toBe('es-MX');
     expect(request.document).toEqual(LESSON.documents[1]!.document);
-    expect(request.labels).toEqual({ start: c.content.action.startPreview, next: c.content.action.nextPreview, loading: c.content.body.previewLoading });
+    expect(request.schemaVersion).toBe(1);
+    expect(request.labels).toEqual({ start: c.content.action.startPreview, next: c.content.action.nextPreview, loading: c.content.body.previewLoading,
+      dialog: c.content.heading.preview, bar: c.content.body.previewBar, close: c.content.action.closePreview });
     expect(screen.queryByRole('dialog')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'exit' }));
     expect(await screen.findByRole('dialog', { name: c.content.heading.lesson })).toBeInTheDocument();
+  });
+
+  async function openSecond(api: StaffApi, renderLessonPreview: (request: LessonPreviewRequest) => ReactNode) {
+    render(<Frame><StaffContent api={api} initialView="review" renderLessonPreview={renderLessonPreview} /></Frame>);
+    const table = await screen.findByRole('table', { name: c.content.heading.review });
+    fireEvent.click(within(within(table).getAllByRole('row')[2]!).getByRole('button', { name: c.common.action.open }));
+    return screen.findByRole('dialog', { name: c.content.heading.lesson });
+  }
+
+  it('GAP-FIX-R6: a v2 lesson goes to the renderer as schema 2 with Core\'s stage projection; each answer is checked by Core, nothing recorded', async () => {
+    const preview = vi.fn((request: LessonPreviewRequest) => <div data-testid="player" data-schema={request.schemaVersion} />);
+    const fake = fakeApi((path) => (path.endsWith('/preview-grade') ? ok({ verdict: { correct: false, score: 0, diagnostic: 'save-below-minimum' }, recorded: false }) : undefined));
+    const details = await openSecond(fake.api, preview);
+    expect(await within(details).findByText(c.content.body.previewHelpV2)).toBeInTheDocument();
+    fireEvent.click(within(details).getByRole('button', { name: c.content.action.openPlayer }));
+    expect(await screen.findByTestId('player')).toHaveAttribute('data-schema', '2');
+    const request = preview.mock.calls.at(-1)![0];
+    const v2 = sections.lessonDocumentsV2[0]!;
+    expect(request).toMatchObject({ schemaVersion: 2, locale: 'en-US', mentorStage: v2.mentorStage, document: v2.document });
+    expect(await request.grade('allocate-01', { save: 2, spend: 10, share: 0 })).toEqual({ verdict: 'review', diagnostic: 'save-below-minimum' });
+    expect(fake.posts).toEqual([{ path: `/admin/content/lessons/${sections.moderation.lessons[1]!.id}/preview-grade`,
+      body: { locale: 'en-US', segment_id: 'allocate-01', answer: { save: 2, spend: 10, share: 0 }, document_version_id: v2.documentVersionId } }]);
+  });
+
+  it('GAP-FIX-R6: a grade Core refuses is an error for the board, never a silent pass', async () => {
+    const preview = vi.fn((request: LessonPreviewRequest) => <div data-testid="player" data-schema={request.schemaVersion} />);
+    const fake = fakeApi((path) => (path.endsWith('/preview-grade') ? fail('UNSUPPORTED_LESSON') : undefined));
+    const details = await openSecond(fake.api, preview);
+    fireEvent.click(within(details).getByRole('button', { name: c.content.action.openPlayer }));
+    await screen.findByTestId('player');
+    await expect(preview.mock.calls.at(-1)![0].grade('allocate-01', {})).rejects.toThrow('UNSUPPORTED_LESSON');
+  });
+
+  it('GAP-FIX-R6: a v2 document Core would refuse to a learner is flagged, and a schema with no renderer has no player button', async () => {
+    const second = sections.moderation.lessons[1]!.id;
+    const flagged = fakeApi((path) => (path === `/admin/moderation/${second}`
+      ? ok({ ...LESSON, ...sections.moderation.lessons[1], documents: [{ ...sections.lessonDocumentsV2[0], playable: false }] }) : undefined));
+    const details = await openSecond(flagged.api, () => null);
+    expect(await within(details).findByText(c.content.body.notPlayable)).toBeInTheDocument();
+    cleanup();
+    const future = fakeApi((path) => (path === `/admin/moderation/${second}`
+      ? ok({ ...LESSON, ...sections.moderation.lessons[1], documents: [{ ...sections.lessonDocumentsV2[0], schemaVersion: 3 }] }) : undefined));
+    const later = await openSecond(future.api, () => null);
+    expect(await within(later).findByText(c.content.body.previewUnavailable)).toBeInTheDocument();
+    expect(within(later).queryByRole('button', { name: c.content.action.openPlayer })).toBeNull();
   });
 
   it('without a player (the preview entry) says so instead of offering a dead button', async () => {

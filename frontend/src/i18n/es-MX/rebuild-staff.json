@@ -693,7 +693,8 @@
         "updates": "Versiones nuevas de lecciones publicadas",
         "version": "Detalles de la versión",
         "confirmRelease": "¿Publicar esta versión para los alumnos?",
-        "checks": "Revisiones de publicación omitidas"
+        "checks": "Revisiones de publicación omitidas",
+        "preview": "Vista previa de la lección"
       },
       "body": {
         "incidents": "Los estudiantes no pudieron abrirlos.",
@@ -802,7 +803,10 @@
         "check": "Revisión",
         "reasonLogged": "Motivo registrado",
         "yes": "Sí",
-        "no": "No"
+        "no": "No",
+        "previewHelpV2": "Abre la lección como la ve el estudiante. Revisa respuestas sin guardarlas.",
+        "previewBar": "Vista previa del equipo. No se guarda nada.",
+        "notPlayable": "Los estudiantes aún no pueden abrirla: su clave de respuestas no coincide."
       },
       "option": {
         "courses": "Cursos",
@@ -844,7 +848,8 @@
         "fullSize": "Tamaño completo",
         "release": "Publicar",
         "reject": "Rechazar",
-        "rejectVersion": "Rechazar versión"
+        "rejectVersion": "Rechazar versión",
+        "closePreview": "Cerrar vista previa"
       }
     },
     "generation": {
@@ -1332,7 +1337,8 @@
         "skills": "Habilidades",
         "trend": "Tendencia",
         "disclosure": "Elección de adolescentes e invitados",
-        "delivery": "Entrega de alertas"
+        "delivery": "Entrega de alertas",
+        "channels": "Canales de alerta"
       },
       "body": {
         "view": "Vista",
@@ -1460,7 +1466,8 @@
         "lastDelivery": "Última entrega",
         "deliveryReason": "Motivo",
         "noDelivery": "Ninguna aún",
-        "noReason": "Ninguno"
+        "noReason": "Ninguno",
+        "channelsIntro": "Una alerta necesita un canal configurado."
       },
       "option": {
         "view_overview": "Resumen",
@@ -1517,7 +1524,8 @@
         "delivery_failed": "Fallida",
         "delivery_unconfigured": "Sin configurar",
         "status_met": "En la meta",
-        "status_missed": "Bajo la meta"
+        "status_missed": "Bajo la meta",
+        "channel_ready": "Configurado"
       }
     },
     "programme": {
@@ -1898,7 +1906,9 @@
         "jobsIntro": "Tareas diarias. Si una se detiene, avisa al equipo.",
         "jobStaleHelp": "{job} no se ejecuta desde hace {n} horas. Revisa su flujo.",
         "lastAttemptFailed": "El último intento falló.",
-        "lastAttempt": "Último intento"
+        "lastAttempt": "Último intento",
+        "alertsUndelivered": "{n} alertas recientes no llegaron a nadie. Revisa los canales de alerta.",
+        "alertsUnread": "No se pudieron leer las alertas de datos."
       },
       "option": {
         "by_tutor": "Tutor",
@@ -1909,7 +1919,10 @@
         "fresh": "En marcha",
         "job_vault_backup": "Respaldo de la base de datos",
         "job_pulse_backup": "Respaldo de analítica",
-        "job_vault_drift": "Revisión de cambios del esquema"
+        "job_vault_drift": "Revisión de cambios del esquema",
+        "job_alerts": "Alertas de datos",
+        "alertsDelivered": "Todas entregadas",
+        "alertsUndelivered": "Sin entregar"
       },
       "action": {
         "lookUp": "Buscar",

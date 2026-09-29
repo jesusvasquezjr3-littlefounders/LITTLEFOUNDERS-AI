@@ -304,6 +304,18 @@ const isNullableTime = (value: unknown): value is string | null => value === nul
 const isOpsJob = (value: unknown): value is OpsJob => isRecord(value) && (OPS_JOB_NAMES as readonly unknown[]).includes(value.job)
   && isNullableTime(value.lastRunAt) && (value.hoursSinceLastRun === null || isNumber(value.hoursSinceLastRun)) && isNullableTime(value.lastAttemptAt)
   && (value.lastAttemptOk === null || typeof value.lastAttemptOk === 'boolean') && isNumber(value.staleAfterHours) && typeof value.stale === 'boolean';
+/**
+ * H.3 (GAP-FIX-R6): warehouse alert triggers in the window that notified
+ * nobody (Core's services/warehouseAlerts.ts). `undelivered: null` is a
+ * warehouse Core could not read, never "all delivered".
+ */
+export interface UndeliveredAlerts { undelivered: number | null; windowHours: number; alerts: unknown[] }
+export const undeliveredAlertsOf = (value: unknown): UndeliveredAlerts | null => {
+  if (!isRecord(value) || !isRecord(value.alerts)) return null;
+  const { undelivered, windowHours, alerts } = value.alerts;
+  if (!(undelivered === null || (isNumber(undelivered) && undelivered >= 0)) || !isNumber(windowHours)) return null;
+  return { undelivered, windowHours, alerts: Array.isArray(alerts) ? alerts : [] };
+};
 /** A reply without every watched job, or without its `stale` boolean, is an error state, never "healthy". */
 export const isOpsJobs = (value: unknown): value is { jobs: OpsJob[]; anyStale: boolean } => isRecord(value) && Array.isArray(value.jobs)
   && value.jobs.every(isOpsJob) && OPS_JOB_NAMES.every((name) => (value.jobs as OpsJob[]).some((job) => job.job === name)) && typeof value.anyStale === 'boolean';

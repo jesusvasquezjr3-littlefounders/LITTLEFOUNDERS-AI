@@ -123,24 +123,42 @@ export function StaffEmailsRoute() {
 /*
  * W2T.2: Content, Generation and Mentor quality.
  *
- * The lesson review's preview is the LEARNER'S OWN PLAYER, not a console
- * imitation of it: a reviewer approves what a child will see. Until Lane 2
- * rebuilds the lesson player, that is the Lesson Engine's LessonPlayer in its
- * preview mode (nothing graded, saved or tracked), loaded only when a
- * reviewer opens it. The rebuilt console never imports it (02 rule 23); this
- * host hands it in, and follows the learner route when the player is rebuilt.
+ * The lesson review's preview is the LEARNER'S OWN RENDERER, not a console
+ * imitation of it: a reviewer approves what a child will see. GAP-FIX-R6
+ * (02 rule 23, D13, OD-24): this host follows the learner route's split
+ * (routes/app/learn/LessonRoute.tsx, isLegacyLessonDocument):
+ *
+ *   schema 2  the rebuilt lesson view (rebuild/staff/console/StaffLessonPreview),
+ *             each answer checked by Core with nothing recorded;
+ *   schema 1  the v1 catalog's legacy LessonPlayer in its preview mode
+ *             (nothing graded, saved or tracked), the one sanctioned island,
+ *             with its legacy global sheet scoped to it (ScopedLessonPlayer);
+ *   anything else  no preview.
+ *
+ * Both load only when a reviewer opens a preview. The rebuilt console never
+ * imports the legacy player (02 rule 23); agent/tools/check-product-spec.mjs
+ * pins that the legacy player is reached from here only behind schema 1.
  */
 // The legacy global sheet the v1 player needs ships and lives with the preview only (ScopedLessonPlayer):
 // never with the console, and never after the reviewer closes the preview.
-const LessonPlayer = lazy(() => import('./ScopedLessonPlayer'));
+const LegacyLessonPlayer = lazy(() => import('./ScopedLessonPlayer'));
+const RebuiltLessonPreview = lazy(() => import('@/rebuild/staff/console/StaffLessonPreview'));
 const PREVIEW_GRADER: Grader = { grade: async () => { throw new Error('Preview mode does not grade'); } };
 
-export const renderLessonPreview: LessonPreviewRenderer = ({ lessonId, document, audio, labels, onExit }) => (
-  <Suspense fallback={<p role="status" className="lf-staff-preview-loading">{labels.loading}</p>}>
-    <LessonPlayer document={document as unknown as LessonDocument} lessonId={lessonId} audio={audio as unknown as AudioManifest}
-      grader={PREVIEW_GRADER} preview previewStartLabel={labels.start} previewNextLabel={labels.next} onExit={onExit} />
-  </Suspense>
-);
+export const renderLessonPreview: LessonPreviewRenderer = (request) => {
+  const loading = <p role="status" className="lf-staff-preview-loading">{request.labels.loading}</p>;
+  if (request.schemaVersion === 2) {
+    return <Suspense fallback={loading}><RebuiltLessonPreview request={request} /></Suspense>;
+  }
+  if (request.schemaVersion === 1) {
+    const { lessonId, document, audio, labels, onExit } = request;
+    return <Suspense fallback={loading}>
+      <LegacyLessonPlayer document={document as unknown as LessonDocument} lessonId={lessonId} audio={audio as unknown as AudioManifest}
+        grader={PREVIEW_GRADER} preview previewStartLabel={labels.start} previewNextLabel={labels.next} onExit={onExit} />
+    </Suspense>;
+  }
+  return null;
+};
 
 export function StaffContentRoute() {
   const [params] = useSearchParams();

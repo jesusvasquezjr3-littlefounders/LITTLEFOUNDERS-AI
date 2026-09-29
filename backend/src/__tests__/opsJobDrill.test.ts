@@ -51,7 +51,17 @@ describe('the simulated job-failure drill', () => {
     expect(result.passed).toBe(true);
   }, 30_000);
 
+  it('H.3 (GAP-FIX-R6): a warehouse alert that notified nobody fails the watch and is named on the watchdog issue', async () => {
+    const result = await runOpsJobDrill('alerts_undelivered', new Date('2026-09-27T12:00:00Z'));
+    expect(result.stale).toBe(true);
+    expect(result.watcherExit).toBe(1);
+    expect(result.notice).toContain('**alerts.undelivered**: 1 warehouse alert trigger(s) in the last 36 h notified nobody (H.3)');
+    expect(result.notice).toContain('"dau drop" (webhook) at 2026-09-27T08:00:00.000Z: failed, HTTP 502, 3 attempt(s)');
+    expect(result.notice).not.toContain('**vault_backup**');
+    expect(result.passed).toBe(true);
+  }, 30_000);
+
   it('the drill covers the three Appendix O 1.3 jobs and every other watched condition', () => {
-    expect(DRILL_TARGETS).toEqual(expect.arrayContaining([...OPS_JOBS, 'tutor_retention', 'content_retro_checks', 'access_reviews']));
+    expect(DRILL_TARGETS).toEqual(expect.arrayContaining([...OPS_JOBS, 'tutor_retention', 'content_retro_checks', 'access_reviews', 'alerts_undelivered']));
   });
 });
