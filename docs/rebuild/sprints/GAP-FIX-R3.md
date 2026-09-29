@@ -60,5 +60,71 @@ So a self-registered teen that `od9 consent --apply` marks in
 ### Open items
 
 - `database/types/database.ts` does not yet declare `teen_discoverable_base_eligible`. Regenerate with the official generator after the merge, together with the other lanes' schema.
-- The profile audit lane driver (`frontend/scripts/audits/lanes/profile.mjs`) does not capture the consent-required card state. No browser capture was taken in this checkpoint (speed mode).
+- The profile audit lane driver did not capture the consent-required card state. Resolved at the lane finish (below).
 - Acceptance and release remain.
+
+## F3-data-platform lane finish
+
+Branch `codex/spec-fix3dataplat`, synced with `codex/spec-migration-s02`
+(already up to date, no conflicts).
+
+### Final summary
+
+The one audited gap is closed in code: the 16-17 discoverable profile
+(OD-27 (2), S-03) is the registered OD-9 section 4.2 practice
+`sharing.discoverable_profile`, a Tutor-answered sharing surface (OD-10). The
+database is the authority (eligibility, setter and every visibility read ask
+the practice); Core names the one missing condition and maps the refusal to
+403 `DATA_PRACTICE_CONSENT_REQUIRED`; the Family Hub consent panel lists the
+practice for a linked verified Tutor; Settings says "A Tutor must allow this
+first." with no switch. Everything else answers as before until the OD-9
+consent step marks migrated children at the cutover.
+
+### Adversarial pass (against the SPEC scope)
+
+- Authorization at the server: the setter refuses in the database, Core maps
+  the refusal, and nothing in Core or the SPA reads `teen_profile_discoverability`
+  directly (only the three database functions do). The teen cannot answer the
+  practice alone and an unrelated adult cannot answer it (native PostgreSQL
+  checks, F3-data-platform). The Family Hub routes take the practice key from
+  the database registry, not a Core allowlist.
+- Rebuilt UI: `DiscoverableCard` uses only the shared controls (`Card`,
+  `Copy`, `InlineNotice`, `Switch`, `ConfirmDialog`); no legacy component.
+- Copy: the Settings line and the practice label exist in EN, es-MX and pt-BR
+  (i18n gate identical key sets); "Tutor" is the verified parent only.
+- Built at the finish: the profile audit lane driver now reaches the
+  consent-required state (`app:/profile/settings@teen-consent-required`,
+  scenario `settings-teen-consent`, ready on the card's notice).
+
+### Verification at the finish
+
+- Native PostgreSQL 17.6: as recorded in F3-data-platform (verifier 11/11,
+  OD-9 proof 15/15); no SQL changed since.
+- Backend: type-check, lint, full unit suite (147 files, 3342 tests passed,
+  1 skipped).
+- Frontend: type-check, lint, full unit suite (271 of 272 files passed in the
+  full run; `App.test.tsx`, untouched, timed out once at 5 s under the
+  concurrent backend suite and passed when rerun alone). ESLint on the edited
+  audit driver.
+- Database: `npm test` checks and node tests passed (`check-migrations`,
+  `check-migration-phase`, `check-family-lifecycle`, 48 node tests including
+  the OD-9 and social-db suites). `railway-migrate.test.mjs` (untouched, a
+  fake-CLI test that spawns bash per scenario) was still running after more
+  than 40 minutes, alongside the same test from four other lanes; its result
+  is not claimed here.
+- Root: `spec:check`, `secrets:check`, `social:check` (and its 23 tests), the
+  i18n gate.
+- Bible audits on the real app (lane Vite on 5970, synthetic Core) for
+  `app:/profile/settings@teen-consent-required`: text fit 96, proportion 24
+  and copy budget 24 configurations (3 locales x 2 themes x 4 widths), no
+  findings, no JS errors.
+
+### Still open
+
+- `database/types/database.ts` does not declare
+  `teen_discoverable_base_eligible`; regenerate with the official generator
+  after the merge.
+- Owner questions 1 (Tutor-only consent for a marked independent teen) and 2
+  (a consent revives an earlier opt-in) above; the conservative defaults are
+  implemented.
+- Acceptance and release of E.8 / OD-9 4.2 for this surface.
