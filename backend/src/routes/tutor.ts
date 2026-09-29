@@ -26,6 +26,7 @@ import {
   SESSION_OPENINGS,
   SessionEndReportBody,
 } from '../services/pedagogy/sessionEnd.js';
+import { getMasteryKillSwitch } from '../services/pedagogy/mentorIntegrity.js';
 import {
   BehavioralTelemetryReportBody,
   CONTEXT_OPTIONAL_FIELDS,
@@ -694,6 +695,15 @@ function internalRouter(): Router {
      */
     const spacedReviewSwitch = accepts.has('spacedReviewMode') ? await getSpacedReviewKillSwitch() : null;
     /*
+     * C.10 Appendix F Stage 7: the Extended Mastery Engine's automatic
+     * rollback — the `kc.key`s reverted to the single-observation baseline
+     * until an operator resolves the trip. SERVER-SIDE ONLY: Oracle's
+     * controller reads it and it never enters the sealed model context. A
+     * failed read rolls back only what the audit trail already holds (never a
+     * guess), and Oracle adds the operator's env list to it.
+     */
+    const masterySwitch = accepts.has('corroborationRollbackKcKeys') ? await getMasteryKillSwitch() : null;
+    /*
      * C.17: the dialogue register. The band is derived HERE from Core's own
      * age evidence (the birth date never travels); the variant comes from the
      * adults-only H.7 experiment or is the SPEC's calibrated default. Anything
@@ -808,6 +818,7 @@ function internalRouter(): Router {
       ...(spacedReviewSwitch !== null ? { spacedReviewMode: spacedReviewSwitch.mode } : {}),
       ...(accepts.has('dialogueCalibration') ? { dialogueCalibration } : {}),
       ...(accepts.has('canary') ? { canary } : {}),
+      ...(masterySwitch !== null ? { corroborationRollbackKcKeys: masterySwitch.kcKeys } : {}),
     });
   });
 

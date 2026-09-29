@@ -391,6 +391,26 @@
       "origin": "human",
       "pedagogicalReviewer": "pending",
       "safetyTrustLead": "pending"
+    },
+    {
+      "component": "mentor.non_negotiables",
+      "hash": "039484518839658fb477256ab6367a025b0a7743e10b1a791ec9a94a9202667a",
+      "files": 9,
+      "date": "2026-09-29",
+      "change": "GAP-FIX-R4 F4-mentor: Appendix F Part 3 Stage 7 Extended Mastery Engine automatic rollback. Core computes the reversal rate and corroboration compliance per KC (20-declaration floor per KC), getMasteryKillSwitch trips per KC, writes mentor.kill_switch.mastery.triggered, holds until mentor.kill_switch.mastery.resolved; Oracle receives corroborationRollbackKcKeys (negotiated, server-side only) and the controller applies its union with TUTOR_CORROBORATION_ROLLBACK_KC_KEYS, logged once per session. No threshold value changed.",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "measurement.stage7_and_thresholds",
+      "hash": "aaa68afc04135b5238d477afa9c409ee85762edb002b7cbe5a3d955950da13c9",
+      "files": 9,
+      "date": "2026-09-29",
+      "change": "GAP-FIX-R4 F4-mentor: Appendix F Part 3 Stage 7 Extended Mastery Engine automatic rollback. Core computes the reversal rate and corroboration compliance per KC (20-declaration floor per KC), getMasteryKillSwitch trips per KC, writes mentor.kill_switch.mastery.triggered, holds until mentor.kill_switch.mastery.resolved; Oracle receives corroborationRollbackKcKeys (negotiated, server-side only) and the controller applies its union with TUTOR_CORROBORATION_ROLLBACK_KC_KEYS, logged once per session. No threshold value changed.",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
     }
   ]
 }

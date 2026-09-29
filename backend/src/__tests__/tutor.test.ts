@@ -6693,3 +6693,76 @@ describe('GET /tutor/kids/:kidUserId/mastery and /tutor/mastery (the evidence be
     expect(step?.url).toContain(`user_id=eq.${KID}`);
   });
 });
+
+describe('C.10 Appendix F Stage 7 — the Extended Mastery Engine rollback reaches Oracle (GAP-FIX-R4)', () => {
+  const KC_ID = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
+  beforeEach(async () => {
+    const { resetMasteryKillSwitchCache } = await import('../services/pedagogy/mentorIntegrity.js');
+    resetMasteryKillSwitchCache();
+  });
+  const at = (daysAgo: number) => new Date(Date.now() - daysAgo * 86_400_000).toISOString();
+  const declaration = (i: number) => ({
+    user_id: `learner-${i}`,
+    kc_id: KC_ID,
+    strategy: 'CELEBRATE',
+    strategy_before: 'SOCRATIC',
+    evidence_rule: 'mastery',
+    evidence_observations: 2,
+    evidence_required: 2,
+    mastery_revoked: false,
+    created_at: at(20),
+  });
+  const revocation = (i: number) => ({ ...declaration(i), strategy: 'SPACED', evidence_rule: null, evidence_observations: null, evidence_required: null, mastery_revoked: true, created_at: at(19) });
+
+  async function contextWithMastery(opts: { fields: string; audit?: unknown[]; trajectory?: unknown[] | 'fail' }) {
+    const calls = stub({
+      session: [SESSION_ROW],
+      intercept: (url, method) => {
+        if (method === 'GET' && url.includes('/rest/v1/audit_logs')) return jsonResponse(200, opts.audit ?? []);
+        if (method === 'GET' && url.includes('/rest/v1/tutor_trajectory_step') && url.includes('evidence_required')) {
+          return opts.trajectory === 'fail' ? new Response(null, { status: 500 }) : jsonResponse(200, opts.trajectory ?? []);
+        }
+        if (method === 'GET' && url.includes('/rest/v1/kc?select=id,key')) return jsonResponse(200, [{ id: KC_ID, key: 'money.coins.count' }]);
+        return null;
+      },
+    });
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .set('x-oracle-context-fields', opts.fields);
+    const audits = calls.filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/audit_logs'));
+    return { response, calls, audits };
+  }
+
+  it('sends the tripped kc keys to an Oracle that announced the field, and logs the trip', async () => {
+    const trajectory = [...Array.from({ length: 20 }, (_, i) => declaration(i)), revocation(0), revocation(1)];
+    const { response, audits } = await contextWithMastery({ fields: 'corroborationRollbackKcKeys', trajectory });
+    expect(response.status).toBe(200);
+    expect(response.body.data.corroborationRollbackKcKeys).toEqual(['money.coins.count']);
+    expect(audits).toHaveLength(1);
+    const row = JSON.parse(String(audits[0]!.body));
+    expect(row).toMatchObject({ actor_id: null, action: 'mentor.kill_switch.mastery.triggered' });
+    expect(row.detail.kcKeys).toEqual(['money.coins.count']);
+    expect(JSON.stringify(row.detail)).not.toMatch(/learner-|nickname/i);
+  });
+
+  it('sends an empty list on a healthy window, and nothing is logged', async () => {
+    const { response, audits } = await contextWithMastery({ fields: 'corroborationRollbackKcKeys', trajectory: Array.from({ length: 20 }, (_, i) => declaration(i)) });
+    expect(response.body.data.corroborationRollbackKcKeys).toEqual([]);
+    expect(audits).toEqual([]);
+  });
+
+  it('a failed read does not trip it: the session still opens, nothing is logged', async () => {
+    const { response, audits } = await contextWithMastery({ fields: 'corroborationRollbackKcKeys', trajectory: 'fail' });
+    expect(response.status).toBe(200);
+    expect(response.body.data.corroborationRollbackKcKeys).toEqual([]);
+    expect(audits).toEqual([]);
+  });
+
+  it('an Oracle that did not announce the field gets neither the field nor the kill-switch reads', async () => {
+    const { response, calls } = await contextWithMastery({ fields: 'opening' });
+    expect(response.status).toBe(200);
+    expect('corroborationRollbackKcKeys' in response.body.data).toBe(false);
+    expect(calls.some((c) => c.url.includes('mentor.kill_switch.mastery'))).toBe(false);
+  });
+});
