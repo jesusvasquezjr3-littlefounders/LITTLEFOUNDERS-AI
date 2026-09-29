@@ -15,6 +15,9 @@ export interface FamilyCopy {
   tray: string; total: string; price: string; paid: string; change: string; fewer: string; more: string;
   next: string; whatHappened: string;
   countUp: string; sayCount: string; say: string; cues: string;
+  // GAP-FIX-R4 (Appendix P L5, L10): choose the diagram, flag regions, the conclusion, the rule switch, dragging.
+  sentence: string; pickDiagram: string; relationOverlap: string; relationSubset: string; relationDisjoint: string;
+  occupied: string; conclusion: string; necessarily: string; possibly: string; never: string; newRule: string; place: string;
 }
 
 export const familyCopy: Record<Locale, FamilyCopy> = {
@@ -27,6 +30,9 @@ export const familyCopy: Record<Locale, FamilyCopy> = {
     tray: 'Money tray', total: 'Total', price: 'Price', paid: 'Paid', change: 'Change to give', fewer: 'Fewer', more: 'More',
     next: 'Next', whatHappened: 'What happened',
     countUp: 'Counting up', sayCount: 'Say the count', say: 'Say it', cues: 'Cues',
+    sentence: 'The sentence', pickDiagram: 'Which picture fits?', relationOverlap: 'Circles cross', relationSubset: 'One inside the other',
+    relationDisjoint: 'Circles apart', occupied: 'Which parts hold something?', conclusion: 'Does it follow?', necessarily: 'Must be true',
+    possibly: 'Might be true', never: "Can't be true", newRule: 'New rule', place: 'Things to place',
   },
   'es-MX': {
     rule: 'La regla', cards: 'Tarjetas',
@@ -37,6 +43,9 @@ export const familyCopy: Record<Locale, FamilyCopy> = {
     tray: 'Bandeja de dinero', total: 'Total', price: 'Precio', paid: 'Pagado', change: 'Cambio a dar', fewer: 'Menos', more: 'Más',
     next: 'Siguiente', whatHappened: 'Qué pasó',
     countUp: 'Contando hacia arriba', sayCount: 'Di la cuenta', say: 'Dilo', cues: 'Señales',
+    sentence: 'La frase', pickDiagram: '¿Qué dibujo encaja?', relationOverlap: 'Círculos cruzados', relationSubset: 'Uno dentro del otro',
+    relationDisjoint: 'Círculos separados', occupied: '¿Qué partes tienen algo?', conclusion: '¿Se sigue?', necessarily: 'Tiene que ser cierto',
+    possibly: 'Puede ser cierto', never: 'No puede ser cierto', newRule: 'Nueva regla', place: 'Cosas para colocar',
   },
   'pt-BR': {
     rule: 'A regra', cards: 'Cartas',
@@ -47,6 +56,9 @@ export const familyCopy: Record<Locale, FamilyCopy> = {
     tray: 'Bandeja de dinheiro', total: 'Total', price: 'Preço', paid: 'Pago', change: 'Troco a dar', fewer: 'Menos', more: 'Mais',
     next: 'Próximo', whatHappened: 'O que aconteceu',
     countUp: 'Contando para cima', sayCount: 'Diga a conta', say: 'Dizer', cues: 'Sinais',
+    sentence: 'A frase', pickDiagram: 'Qual figura combina?', relationOverlap: 'Círculos cruzados', relationSubset: 'Um dentro do outro',
+    relationDisjoint: 'Círculos separados', occupied: 'Quais partes têm algo?', conclusion: 'Isso decorre?', necessarily: 'Tem de ser verdade',
+    possibly: 'Pode ser verdade', never: 'Não pode ser verdade', newRule: 'Nova regra', place: 'Coisas para colocar',
   },
 };
 
@@ -59,4 +71,6 @@ export const familyCopyRoles: Record<keyof FamilyCopy, CopyRole> = {
   tray: 'heading', total: 'body', price: 'body', paid: 'body', change: 'body', fewer: 'action', more: 'action',
   next: 'action', whatHappened: 'heading',
   countUp: 'body', sayCount: 'body', say: 'action', cues: 'body',
+  sentence: 'heading', pickDiagram: 'heading', relationOverlap: 'option', relationSubset: 'option', relationDisjoint: 'option',
+  occupied: 'heading', conclusion: 'heading', necessarily: 'option', possibly: 'option', never: 'option', newRule: 'heading', place: 'heading',
 };

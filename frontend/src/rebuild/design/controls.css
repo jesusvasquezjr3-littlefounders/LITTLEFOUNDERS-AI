@@ -482,3 +482,7 @@
   .lf-rebuild .lf-picture-option { border: 2px solid ButtonText; }
   .lf-rebuild .lf-picture-option:has(.lf-picture-input:checked) { border-color: Highlight; }
 }
+
+/* GAP-FIX-R4 (Bible 05 §4): a chip the learner can drag onto a board region; the page does not scroll under the finger. */
+.lf-rebuild .lf-choice-chip--drag { touch-action: none; cursor: grab; }
+.lf-rebuild .lf-choice-chip--drag[aria-pressed='true'] { cursor: grabbing; }

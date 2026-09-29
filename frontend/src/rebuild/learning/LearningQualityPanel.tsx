@@ -35,10 +35,14 @@ type Copy = {
   detection: (dPrime: string, responses: number) => string; detectionNone: string;
   /** GAP-FIX-R3 (Appendix P L1, Part 4.5): the rule-card selection codes by name. */
   selection: string; selectionCode: Record<SelectionCode, string>;
+  /** GAP-FIX-R4 (Appendix P L5, L10): the Euler and rule-switch codes by name. */
+  reasoningCodes: string; reasoningCode: Record<ReasoningCode, string>;
 };
 
 const SELECTION_CODES = ['confirmation_bias', 'p_only_missing_not_q', 'matching', 'not_p_checked', 'all_cards'] as const;
 type SelectionCode = (typeof SELECTION_CODES)[number];
+const REASONING_CODES = ['occupancy', 'conclusion', 'rule_switch'] as const;
+type ReasoningCode = (typeof REASONING_CODES)[number];
 
 const copy: Record<Locale, Copy> = {
   'en-US': {
@@ -65,6 +69,7 @@ const copy: Record<Locale, Copy> = {
     detection: (d, n) => `Scam spotting d′ ${d} over ${n} answers.`, detectionNone: 'No scam-spotting answers in this window.',
     selection: 'Rule-card choices', selectionCode: { confirmation_bias: 'Looked for agreeing cards', p_only_missing_not_q: 'Stopped at the first card',
       matching: 'Matched the rule words', not_p_checked: 'Turned a card that cannot break it', all_cards: 'Turned every card' },
+    reasoningCodes: 'Diagram and sorting choices', reasoningCode: { occupancy: 'Marked the wrong parts', conclusion: 'Drew the wrong conclusion', rule_switch: 'Kept the old rule' },
   },
   'es-MX': {
     title: 'Calidad del aprendizaje', intro: (l, u) => `La práctica debe lograr ${l}-${u}% de aciertos al primer intento por lección.`,
@@ -88,6 +93,7 @@ const copy: Record<Locale, Copy> = {
     detection: (d, n) => `Detección de estafas d′ ${d} en ${n} respuestas.`, detectionNone: 'No hay respuestas de detección de estafas en este periodo.',
     selection: 'Elecciones con tarjetas de regla', selectionCode: { confirmation_bias: 'Buscó tarjetas que coinciden', p_only_missing_not_q: 'Se quedó en la primera tarjeta',
       matching: 'Eligió las palabras de la regla', not_p_checked: 'Volteó una que no la rompe', all_cards: 'Volteó todas las tarjetas' },
+    reasoningCodes: 'Elecciones en diagramas y clasificación', reasoningCode: { occupancy: 'Marcó partes equivocadas', conclusion: 'Sacó una conclusión equivocada', rule_switch: 'Siguió con la regla anterior' },
     restDays: (k, n) => `Los días de descanso mantuvieron ${k} de ${n} rachas con un día sin práctica.`, restDaysNone: 'No hubo días sin práctica en este periodo.',
     lever: { path: 'Elección de ruta', mentor: 'Elección de Mentor', pace: 'Elección de ritmo' }, adoption: (e, o) => `${e} de ${o} lo eligieron por su cuenta.`, adoptionNone: 'Sin datos en este periodo.',
   },
@@ -113,6 +119,7 @@ const copy: Record<Locale, Copy> = {
     detection: (d, n) => `Detecção de golpes d′ ${d} em ${n} respostas.`, detectionNone: 'Nenhuma resposta de detecção de golpes neste período.',
     selection: 'Escolhas nas cartas de regra', selectionCode: { confirmation_bias: 'Procurou cartas que concordam', p_only_missing_not_q: 'Parou na primeira carta',
       matching: 'Escolheu as palavras da regra', not_p_checked: 'Virou uma que não a quebra', all_cards: 'Virou todas as cartas' },
+    reasoningCodes: 'Escolhas em diagramas e separação', reasoningCode: { occupancy: 'Marcou partes erradas', conclusion: 'Tirou a conclusão errada', rule_switch: 'Manteve a regra antiga' },
     restDays: (k, n) => `Os dias de descanso mantiveram ${k} de ${n} sequências com um dia sem prática.`, restDaysNone: 'Nenhum dia sem prática neste período.',
     lever: { path: 'Escolha de trilha', mentor: 'Escolha de Mentor', pace: 'Escolha de ritmo' }, adoption: (e, o) => `${e} de ${o} escolheram por conta própria.`, adoptionNone: 'Sem dados neste período.',
   },
@@ -226,6 +233,7 @@ export function LearningQualityPanel({ state, locale, dark, onRetry, onSync, onR
 function V2Signals({ signals, t, percent, nameOf }: { signals: NonNullable<LearningQualityReport['v2Signals']>; t: Copy; percent: Intl.NumberFormat; nameOf: (id: string) => string }) {
   const kcs = [...new Set(signals.transfer.map((row) => row.kc))];
   const selection = signals.errorSplit.byDiagnostic.filter((row) => (SELECTION_CODES as readonly string[]).includes(row.diagnostic));
+  const reasoning = signals.errorSplit.byDiagnostic.filter((row) => (REASONING_CODES as readonly string[]).includes(row.diagnostic));
   const share = (kc: string, role: 'practice' | 'transfer') => {
     const row = signals.transfer.find((item) => item.kc === kc && item.item_role === role);
     return row && row.first_attempts > 0 ? percent.format(row.success_share) : '-';
@@ -238,6 +246,11 @@ function V2Signals({ signals, t, percent, nameOf }: { signals: NonNullable<Learn
       <p className="lf-quality-name" data-copy-role="data">{t.selection}</p>
       <ul className="lf-quality-list">{selection.map((row) => <li key={row.diagnostic} className="lf-quality-row">
         <p data-copy-role="data">{t.selectionCode[row.diagnostic as SelectionCode]}: {row.errors}</p></li>)}</ul>
+    </> : null}
+    {reasoning.length ? <>
+      <p className="lf-quality-name" data-copy-role="data">{t.reasoningCodes}</p>
+      <ul className="lf-quality-list">{reasoning.map((row) => <li key={row.diagnostic} className="lf-quality-row">
+        <p data-copy-role="data">{t.reasoningCode[row.diagnostic as ReasoningCode]}: {row.errors}</p></li>)}</ul>
     </> : null}
     <p className="lf-quality-name" data-copy-role="data">{t.unaided}</p>
     <ul className="lf-quality-list">{signals.firstUnaided.map((row) => <li key={row.stage} className="lf-quality-row"><p data-copy-role="data">{t.stage[row.stage]}: {row.learners}</p></li>)}</ul>

@@ -292,6 +292,10 @@
     "updateBody": "Há uma versão nova. Recarregue para continuar aprendendo.",
     "reload": "Recarregar",
     "moveTo": "Mover para",
+    "reset": "Recomeçar",
+    "showTable": "Ver como tabela",
+    "showChart": "Ver como gráfico",
+    "dragHint": "Arraste, ou toque num cartão e depois no lugar.",
     "mentorHeading": "Seu Mentor"
   }
 }

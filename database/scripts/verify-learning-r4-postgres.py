@@ -1,4 +1,4 @@
-"""Gap-fix round 4, learning lane (Appendix C 1.1 Delayed Retention and Time-to-Mastery by age band; Appendix C 1.2 Session Efficiency with v2 time on task), against real PostgreSQL.
+"""Gap-fix round 4, learning lane (Appendix C 1.1 Delayed Retention and Time-to-Mastery by age band; Appendix C 1.2 Session Efficiency with v2 time on task; Appendix P L5/L10 diagnostic codes), against real PostgreSQL.
 
 Runs against an OWNED native PostgreSQL cluster (never the shared Supabase dev
 stack): creates a throwaway database, installs a minimal Supabase shim,
@@ -184,6 +184,20 @@ try:
     rejected("SET ROLE authenticated; SELECT * FROM learning_kc_learner_age_bands(now());", 'permission denied')
     check('learning_kc_learner_age_bands reads the declared band, then the birth date, else unknown; service role only')
 
+    # ── 0237: the L5 / L10 diagnostic codes ──
+    for index, code in enumerate(['occupancy', 'conclusion', 'rule_switch']):
+        run(f"""SET session_replication_role = replica;
+            INSERT INTO lesson_v2_grade_receipts (jti, user_id, run_id, document_version_id, segment_id, verdict)
+            VALUES ('jti-r4-code-{index:013d}', '{users['c']}', '{uuid.uuid4()}', '{uuid.uuid4()}', 'logic-01', '{{"correct": false, "score": 0, "diagnostic": "{code}"}}'::jsonb);""")
+    rejected(f"""SET session_replication_role = replica;
+        INSERT INTO lesson_v2_grade_receipts (jti, user_id, run_id, document_version_id, segment_id, verdict)
+        VALUES ('jti-r4-code-bad0000001', '{users['c']}', '{uuid.uuid4()}', '{uuid.uuid4()}', 'logic-01', '{{"correct": false, "score": 0, "diagnostic": "syllogism"}}'::jsonb);""",
+        'lesson_v2_grade_receipts_signals_check')
+    split = dict((row.split('|')[1], row.split('|')[0]) for row in run(
+        "SET ROLE service_role; SELECT family || '|' || diagnostic FROM learning_error_family_split(now() - interval '1 day', now() + interval '1 day');").splitlines())
+    assert split.get('rule_switch') == 'structure' and split.get('occupancy') == 'answer' and split.get('conclusion') == 'answer', split
+    check('the receipt CHECK admits the occupancy, conclusion and rule_switch codes (and still refuses an unknown one); rule_switch is a structure error')
+
     # ── 0236: v2 time on task ──
     learner, other = users['a'], users['b']
     run_id, version = str(uuid.uuid4()), str(uuid.uuid4())
@@ -201,7 +215,7 @@ try:
         rejected(f"SET ROLE service_role; SELECT record_v2_time_on_task('{learner}', '{run_id}', 'intro-01', NULL, {bad});", 'Invalid time on task')
     rejected("UPDATE lesson_v2_segment_views SET time_spent_seconds = 7201", 'check')
     assert run("SELECT string_agg(time_spent_seconds::text, ',' ORDER BY segment_id) FROM (SELECT segment_id, time_spent_seconds FROM lesson_v2_grade_receipts UNION ALL SELECT segment_id, time_spent_seconds FROM lesson_v2_segment_views) s") == '30,45'
-    assert run("SELECT verdict::text FROM lesson_v2_grade_receipts") == '{"score": 100, "correct": true}'
+    assert run("SELECT verdict::text FROM lesson_v2_grade_receipts WHERE jti = 'jti-time-000000000000001'") == '{"score": 100, "correct": true}'
     rejected(f"SET ROLE authenticated; SELECT record_v2_time_on_task('{learner}', '{run_id}', 'intro-01', NULL, 1);", 'permission denied')
     check('record_v2_time_on_task sets a bounded time once on the learner\'s own receipt or view; the verdict is untouched')
 

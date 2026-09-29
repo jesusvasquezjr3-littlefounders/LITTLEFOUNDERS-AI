@@ -92,7 +92,8 @@ describe('v2 write and publish', () => {
   });
 
   it('writes each market its own answer keys when the plan gives a rubric per market (B.16)', () => {
-    const plan = planOf('v2-first-release-mixed');
+    // GAP-FIX-R4: the $1 tray is a 6-9 kind (Appendix P), so it lives in the young money lesson.
+    const plan = planOf('v2-first-release-young-money');
     const coins = plan.segments.find((s) => s.id === 'coins-01')!;
     coins.rubric_by_locale = { 'en-US': { target_minor: 17, fewest: true }, 'es-MX': { target_minor: 18, fewest: true }, 'pt-BR': { target_minor: 16, fewest: true } };
     delete coins.rubric;

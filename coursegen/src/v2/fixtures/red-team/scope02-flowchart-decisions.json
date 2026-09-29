@@ -1,0 +1,195 @@
+{
+  "expected_gate": 1,
+  "note": "Bible 05 §7 / Appendix P L6: a 6-9 flowchart has at most 3 decisions; this one has 4",
+  "plan": {
+    "plan_version": 1,
+    "course_id": "financial-education",
+    "pathway_id": "financial-young",
+    "chapter_id": "coins-and-change",
+    "lesson_id": "v2-red-team-scope-flowchart-decisions",
+    "age_band": "6-9",
+    "eligibility": {
+      "minimum_age": 7,
+      "maximum_age": 9
+    },
+    "knowledge_component_ids": [
+      "kc-decision-steps"
+    ],
+    "adventure_scene_id": "diorama-a",
+    "brief": "Dina cuenta monedas en su puesto de limonada, da cambio contando hacia arriba, ordena cosas en dos círculos y decide si comprar un juguete.",
+    "title": {
+      "en-US": "Coins at the stand",
+      "es-MX": "Monedas en el puesto",
+      "pt-BR": "Moedas na barraca"
+    },
+    "new_concepts": [
+      "kc-decision-steps"
+    ],
+    "regional": {
+      "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+    },
+    "segments": [
+      {
+        "id": "walk-01",
+        "type": "money.spend-decision.v2",
+        "grading": "server",
+        "visual": {
+          "type": "decision-tree"
+        },
+        "knowledge_component_id": "kc-decision-steps",
+        "payload": {
+          "start": "q-need",
+          "nodes": [
+            {
+              "id": "q-need",
+              "kind": "question",
+              "yes": "q-price",
+              "no": "out-wait"
+            },
+            {
+              "id": "q-price",
+              "kind": "question",
+              "yes": "q-saved",
+              "no": "out-wait"
+            },
+            {
+              "id": "q-saved",
+              "kind": "question",
+              "yes": "q-ask",
+              "no": "out-save"
+            },
+            {
+              "id": "q-ask",
+              "kind": "question",
+              "yes": "out-buy",
+              "no": "out-wait"
+            },
+            {
+              "id": "out-wait",
+              "kind": "outcome"
+            },
+            {
+              "id": "out-save",
+              "kind": "outcome"
+            },
+            {
+              "id": "out-buy",
+              "kind": "outcome"
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "case-toy"
+            }
+          ]
+        },
+        "rubric": {
+          "paths": {
+            "case-toy": [
+              "q-need",
+              "q-price",
+              "q-saved",
+              "q-ask",
+              "out-buy"
+            ]
+          }
+        },
+        "copy": {
+          "en-US": {
+            "prompt": "Walk the chart for a new toy.",
+            "nodes": [
+              {
+                "label": "Do I need it?"
+              },
+              {
+                "label": "Is it a fair price?"
+              },
+              {
+                "label": "Did I save enough?"
+              },
+              {
+                "label": "Did a grown-up say yes?"
+              },
+              {
+                "label": "Wait"
+              },
+              {
+                "label": "Keep saving"
+              },
+              {
+                "label": "Buy it"
+              }
+            ],
+            "scenarios": [
+              {
+                "label": "A new toy"
+              }
+            ]
+          },
+          "es-MX": {
+            "prompt": "Recorre el diagrama para un juguete nuevo.",
+            "nodes": [
+              {
+                "label": "¿Lo necesito?"
+              },
+              {
+                "label": "¿Es buen precio?"
+              },
+              {
+                "label": "¿Ahorré suficiente?"
+              },
+              {
+                "label": "¿Un adulto dijo que sí?"
+              },
+              {
+                "label": "Esperar"
+              },
+              {
+                "label": "Seguir ahorrando"
+              },
+              {
+                "label": "Comprarlo"
+              }
+            ],
+            "scenarios": [
+              {
+                "label": "Un juguete nuevo"
+              }
+            ]
+          },
+          "pt-BR": {
+            "prompt": "Percorra o diagrama para um brinquedo novo.",
+            "nodes": [
+              {
+                "label": "Eu preciso?"
+              },
+              {
+                "label": "O preço é justo?"
+              },
+              {
+                "label": "Guardei o suficiente?"
+              },
+              {
+                "label": "Um adulto disse sim?"
+              },
+              {
+                "label": "Esperar"
+              },
+              {
+                "label": "Continuar guardando"
+              },
+              {
+                "label": "Comprar"
+              }
+            ],
+            "scenarios": [
+              {
+                "label": "Um brinquedo novo"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

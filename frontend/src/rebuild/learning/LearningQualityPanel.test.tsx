@@ -32,6 +32,21 @@ describe('S05.3d staff learning-quality panel', () => {
     }
   });
 
+  it('GAP-FIX-R4: names the Euler occupancy and conclusion codes and the rule-switch code', () => {
+    const v2Signals = { transfer: [], firstUnaided: [], detection: [],
+      errorSplit: { structure: 2, answer: 3, byDiagnostic: [
+        { family: 'structure', diagnostic: 'rule_switch', errors: 2 }, { family: 'answer', diagnostic: 'occupancy', errors: 2 }, { family: 'answer', diagnostic: 'conclusion', errors: 1 }] } };
+    for (const [locale, name, first] of [['en-US', 'Diagram and sorting choices', 'Kept the old rule: 2'], ['es-MX', 'Elecciones en diagramas y clasificación', 'Siguió con la regla anterior: 2'],
+      ['pt-BR', 'Escolhas em diagramas e separação', 'Manteve a regra antiga: 2']] as const) {
+      const { unmount } = render(<LearningQualityPanel state={{ status: 'ready', report: { ...learningQualityFixture(), v2Signals } }} locale={locale} dark={false}
+        onRetry={() => {}} onSync={async () => true} onResolve={async () => 'resolved'} />);
+      expect(screen.getByText(name)).toBeTruthy();
+      expect(screen.getByText(first)).toBeTruthy();
+      expect(document.body.textContent).not.toMatch(/rule_switch|\boccupancy\b/);
+      unmount();
+    }
+  });
+
   it('offers only decisions that move a lesson toward its band and enforces the note and guard rails before sending', async () => {
     const onResolve = vi.fn(async (): Promise<DecisionOutcome> => 'resolved');
     const onRetry = vi.fn();

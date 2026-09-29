@@ -4015,8 +4015,7 @@
       },
       "knowledge_component_ids": [
         "kc-needs-wants",
-        "kc-message-safety",
-        "kc-count-coins"
+        "kc-message-safety"
       ],
       "adventure_scene_id": "diorama-b",
       "title": "Market day choices",
@@ -4029,8 +4028,6 @@
         "operation.justify-choice.v1",
         "visual.message-list.v1",
         "operation.flag-item.v1",
-        "visual.coin-tray.v1",
-        "operation.count-money.v1",
         "visual.story-scene.v1",
         "operation.choose-option.v1"
       ],
@@ -4162,37 +4159,6 @@
           "knowledge_component_id": "kc-message-safety"
         },
         {
-          "id": "coins-01",
-          "type": "money.coin-tray.v2",
-          "grading": "server",
-          "prompt": "Pay 17 coins with the fewest pieces.",
-          "visual": {
-            "type": "coin-tray"
-          },
-          "payload": {
-            "currency": "coins",
-            "denominations": [
-              {
-                "value_minor": 10,
-                "kind": "coin",
-                "available": 3
-              },
-              {
-                "value_minor": 5,
-                "kind": "coin",
-                "available": 3
-              },
-              {
-                "value_minor": 1,
-                "kind": "coin",
-                "available": 6
-              }
-            ]
-          },
-          "item_role": "practice",
-          "knowledge_component_id": "kc-count-coins"
-        },
-        {
           "id": "story-01",
           "type": "story.branch.v2",
           "grading": "server",
@@ -4253,10 +4219,6 @@
           "msg-code"
         ]
       },
-      "coins-01": {
-        "target_minor": 17,
-        "fewest": true
-      },
       "story-01": {
         "acceptable_choice_ids": [
           "opt-list",
@@ -4285,8 +4247,7 @@
       },
       "knowledge_component_ids": [
         "kc-needs-wants",
-        "kc-message-safety",
-        "kc-count-coins"
+        "kc-message-safety"
       ],
       "adventure_scene_id": "diorama-b",
       "title": "Decisiones de mercado",
@@ -4299,8 +4260,6 @@
         "operation.justify-choice.v1",
         "visual.message-list.v1",
         "operation.flag-item.v1",
-        "visual.coin-tray.v1",
-        "operation.count-money.v1",
         "visual.story-scene.v1",
         "operation.choose-option.v1"
       ],
@@ -4432,37 +4391,6 @@
           "knowledge_component_id": "kc-message-safety"
         },
         {
-          "id": "coins-01",
-          "type": "money.coin-tray.v2",
-          "grading": "server",
-          "prompt": "Paga 17 monedas con la menor cantidad de piezas.",
-          "visual": {
-            "type": "coin-tray"
-          },
-          "payload": {
-            "currency": "coins",
-            "denominations": [
-              {
-                "value_minor": 10,
-                "kind": "coin",
-                "available": 3
-              },
-              {
-                "value_minor": 5,
-                "kind": "coin",
-                "available": 3
-              },
-              {
-                "value_minor": 1,
-                "kind": "coin",
-                "available": 6
-              }
-            ]
-          },
-          "item_role": "practice",
-          "knowledge_component_id": "kc-count-coins"
-        },
-        {
           "id": "story-01",
           "type": "story.branch.v2",
           "grading": "server",
@@ -4523,10 +4451,6 @@
           "msg-code"
         ]
       },
-      "coins-01": {
-        "target_minor": 17,
-        "fewest": true
-      },
       "story-01": {
         "acceptable_choice_ids": [
           "opt-list",
@@ -4555,8 +4479,7 @@
       },
       "knowledge_component_ids": [
         "kc-needs-wants",
-        "kc-message-safety",
-        "kc-count-coins"
+        "kc-message-safety"
       ],
       "adventure_scene_id": "diorama-b",
       "title": "Escolhas na feira",
@@ -4569,8 +4492,6 @@
         "operation.justify-choice.v1",
         "visual.message-list.v1",
         "operation.flag-item.v1",
-        "visual.coin-tray.v1",
-        "operation.count-money.v1",
         "visual.story-scene.v1",
         "operation.choose-option.v1"
       ],
@@ -4702,37 +4623,6 @@
           "knowledge_component_id": "kc-message-safety"
         },
         {
-          "id": "coins-01",
-          "type": "money.coin-tray.v2",
-          "grading": "server",
-          "prompt": "Pague 17 moedas com o menor número de peças.",
-          "visual": {
-            "type": "coin-tray"
-          },
-          "payload": {
-            "currency": "coins",
-            "denominations": [
-              {
-                "value_minor": 10,
-                "kind": "coin",
-                "available": 3
-              },
-              {
-                "value_minor": 5,
-                "kind": "coin",
-                "available": 3
-              },
-              {
-                "value_minor": 1,
-                "kind": "coin",
-                "available": 6
-              }
-            ]
-          },
-          "item_role": "practice",
-          "knowledge_component_id": "kc-count-coins"
-        },
-        {
           "id": "story-01",
           "type": "story.branch.v2",
           "grading": "server",
@@ -4793,10 +4683,6 @@
           "msg-code"
         ]
       },
-      "coins-01": {
-        "target_minor": 17,
-        "fewest": true
-      },
       "story-01": {
         "acceptable_choice_ids": [
           "opt-list",
@@ -4826,8 +4712,7 @@
       "knowledge_component_ids": [
         "kc-conditional-check",
         "kc-sets",
-        "kc-decision-steps",
-        "kc-make-change"
+        "kc-decision-steps"
       ],
       "adventure_scene_id": "diorama-a",
       "title": "Think it through",
@@ -4845,9 +4730,6 @@
         "operation.justify-choice.v1",
         "visual.message-list.v1",
         "operation.flag-item.v1",
-        "visual.coin-tray.v1",
-        "operation.count-money.v1",
-        "operation.make-change.v1",
         "visual.dialogue.v1",
         "operation.choose-option.v1",
         "visual.would-you-rather.v1"
@@ -4920,6 +4802,46 @@
               }
             ]
           },
+          "knowledge_component_id": "kc-sets"
+        },
+        {
+          "id": "euler-02",
+          "type": "logic.euler.v2",
+          "grading": "server",
+          "prompt": "Pick the picture for the sentence, then place each kid.",
+          "visual": {
+            "type": "euler"
+          },
+          "payload": {
+            "choose_relation": true,
+            "mark_occupancy": true,
+            "sets": [
+              {
+                "id": "set-savers",
+                "label": "Saves all"
+              },
+              {
+                "id": "set-spenders",
+                "label": "Spends all"
+              }
+            ],
+            "items": [
+              {
+                "id": "item-ana",
+                "label": "Ana saves all"
+              },
+              {
+                "id": "item-leo",
+                "label": "Leo spends all"
+              },
+              {
+                "id": "item-sam",
+                "label": "Sam splits"
+              }
+            ],
+            "sentence": "No one spends every coin and saves every coin."
+          },
+          "item_role": "transfer",
           "knowledge_component_id": "kc-sets"
         },
         {
@@ -5043,6 +4965,14 @@
               {
                 "id": "item-seven",
                 "label": "7 coins"
+              },
+              {
+                "id": "item-ten",
+                "label": "10 coins"
+              },
+              {
+                "id": "item-three",
+                "label": "3 coins"
               }
             ],
             "reasons": [
@@ -5054,7 +4984,20 @@
                 "id": "why-one-left",
                 "label": "One is left over"
               }
-            ]
+            ],
+            "switch_after": 2,
+            "second_bins": [
+              {
+                "id": "bin-big",
+                "label": "More than 5"
+              },
+              {
+                "id": "bin-small",
+                "label": "5 or fewer"
+              }
+            ],
+            "second_rule": "New rule: more than 5 coins, or 5 or fewer?",
+            "rule": "Sort the coin piles by even or odd."
           },
           "knowledge_component_id": "kc-sets"
         },
@@ -5085,39 +5028,6 @@
               }
             ]
           }
-        },
-        {
-          "id": "change-01",
-          "type": "money.making-change.v2",
-          "grading": "server",
-          "prompt": "A juice costs 13 coins and you got 20. Give the change.",
-          "visual": {
-            "type": "coin-tray"
-          },
-          "payload": {
-            "currency": "coins",
-            "denominations": [
-              {
-                "value_minor": 10,
-                "kind": "coin",
-                "available": 3
-              },
-              {
-                "value_minor": 5,
-                "kind": "coin",
-                "available": 3
-              },
-              {
-                "value_minor": 1,
-                "kind": "coin",
-                "available": 6
-              }
-            ],
-            "price_minor": 13,
-            "paid_minor": 20
-          },
-          "item_role": "transfer",
-          "knowledge_component_id": "kc-make-change"
         },
         {
           "id": "reply-01",
@@ -5185,6 +5095,19 @@
           "item-button": "neither"
         }
       },
+      "euler-02": {
+        "relation": "disjoint",
+        "regions": {
+          "item-ana": "first",
+          "item-leo": "second",
+          "item-sam": "neither"
+        },
+        "occupied": [
+          "first",
+          "second",
+          "neither"
+        ]
+      },
       "flow-01": {
         "paths": {
           "case-stormy": [
@@ -5214,6 +5137,18 @@
               "bin": "bin-odd",
               "reason": "why-one-left"
             }
+          ],
+          "item-ten": [
+            {
+              "bin": "bin-big",
+              "reason": "why-pairs"
+            }
+          ],
+          "item-three": [
+            {
+              "bin": "bin-small",
+              "reason": "why-one-left"
+            }
           ]
         }
       },
@@ -5221,9 +5156,6 @@
         "scam_ids": [
           "msg-free"
         ]
-      },
-      "change-01": {
-        "change_minor": 7
       },
       "reply-01": {
         "acceptable_choice_ids": [
@@ -5260,8 +5192,7 @@
       "knowledge_component_ids": [
         "kc-conditional-check",
         "kc-sets",
-        "kc-decision-steps",
-        "kc-make-change"
+        "kc-decision-steps"
       ],
       "adventure_scene_id": "diorama-a",
       "title": "Piénsalo bien",
@@ -5279,9 +5210,6 @@
         "operation.justify-choice.v1",
         "visual.message-list.v1",
         "operation.flag-item.v1",
-        "visual.coin-tray.v1",
-        "operation.count-money.v1",
-        "operation.make-change.v1",
         "visual.dialogue.v1",
         "operation.choose-option.v1",
         "visual.would-you-rather.v1"
@@ -5354,6 +5282,46 @@
               }
             ]
           },
+          "knowledge_component_id": "kc-sets"
+        },
+        {
+          "id": "euler-02",
+          "type": "logic.euler.v2",
+          "grading": "server",
+          "prompt": "Elige el dibujo de la frase y coloca a cada niño.",
+          "visual": {
+            "type": "euler"
+          },
+          "payload": {
+            "choose_relation": true,
+            "mark_occupancy": true,
+            "sets": [
+              {
+                "id": "set-savers",
+                "label": "Ahorra todo"
+              },
+              {
+                "id": "set-spenders",
+                "label": "Gasta todo"
+              }
+            ],
+            "items": [
+              {
+                "id": "item-ana",
+                "label": "Ana ahorra todo"
+              },
+              {
+                "id": "item-leo",
+                "label": "Leo gasta todo"
+              },
+              {
+                "id": "item-sam",
+                "label": "Sam reparte"
+              }
+            ],
+            "sentence": "Nadie gasta todas sus monedas y ahorra todas a la vez."
+          },
+          "item_role": "transfer",
           "knowledge_component_id": "kc-sets"
         },
         {
@@ -5477,6 +5445,14 @@
               {
                 "id": "item-seven",
                 "label": "7 monedas"
+              },
+              {
+                "id": "item-ten",
+                "label": "10 monedas"
+              },
+              {
+                "id": "item-three",
+                "label": "3 monedas"
               }
             ],
             "reasons": [
@@ -5488,7 +5464,20 @@
                 "id": "why-one-left",
                 "label": "Sobra una"
               }
-            ]
+            ],
+            "switch_after": 2,
+            "second_bins": [
+              {
+                "id": "bin-big",
+                "label": "Más de 5"
+              },
+              {
+                "id": "bin-small",
+                "label": "5 o menos"
+              }
+            ],
+            "second_rule": "Nueva regla: ¿más de 5 monedas o 5 o menos?",
+            "rule": "Ordena las pilas de monedas en par o impar."
           },
           "knowledge_component_id": "kc-sets"
         },
@@ -5519,39 +5508,6 @@
               }
             ]
           }
-        },
-        {
-          "id": "change-01",
-          "type": "money.making-change.v2",
-          "grading": "server",
-          "prompt": "Un jugo cuesta 13 monedas y te dieron 20. Da el cambio.",
-          "visual": {
-            "type": "coin-tray"
-          },
-          "payload": {
-            "currency": "coins",
-            "denominations": [
-              {
-                "value_minor": 10,
-                "kind": "coin",
-                "available": 3
-              },
-              {
-                "value_minor": 5,
-                "kind": "coin",
-                "available": 3
-              },
-              {
-                "value_minor": 1,
-                "kind": "coin",
-                "available": 6
-              }
-            ],
-            "price_minor": 13,
-            "paid_minor": 20
-          },
-          "item_role": "transfer",
-          "knowledge_component_id": "kc-make-change"
         },
         {
           "id": "reply-01",
@@ -5619,6 +5575,19 @@
           "item-button": "neither"
         }
       },
+      "euler-02": {
+        "relation": "disjoint",
+        "regions": {
+          "item-ana": "first",
+          "item-leo": "second",
+          "item-sam": "neither"
+        },
+        "occupied": [
+          "first",
+          "second",
+          "neither"
+        ]
+      },
       "flow-01": {
         "paths": {
           "case-stormy": [
@@ -5648,6 +5617,18 @@
               "bin": "bin-odd",
               "reason": "why-one-left"
             }
+          ],
+          "item-ten": [
+            {
+              "bin": "bin-big",
+              "reason": "why-pairs"
+            }
+          ],
+          "item-three": [
+            {
+              "bin": "bin-small",
+              "reason": "why-one-left"
+            }
           ]
         }
       },
@@ -5655,9 +5636,6 @@
         "scam_ids": [
           "msg-free"
         ]
-      },
-      "change-01": {
-        "change_minor": 7
       },
       "reply-01": {
         "acceptable_choice_ids": [
@@ -5694,8 +5672,7 @@
       "knowledge_component_ids": [
         "kc-conditional-check",
         "kc-sets",
-        "kc-decision-steps",
-        "kc-make-change"
+        "kc-decision-steps"
       ],
       "adventure_scene_id": "diorama-a",
       "title": "Pense com calma",
@@ -5713,9 +5690,6 @@
         "operation.justify-choice.v1",
         "visual.message-list.v1",
         "operation.flag-item.v1",
-        "visual.coin-tray.v1",
-        "operation.count-money.v1",
-        "operation.make-change.v1",
         "visual.dialogue.v1",
         "operation.choose-option.v1",
         "visual.would-you-rather.v1"
@@ -5788,6 +5762,46 @@
               }
             ]
           },
+          "knowledge_component_id": "kc-sets"
+        },
+        {
+          "id": "euler-02",
+          "type": "logic.euler.v2",
+          "grading": "server",
+          "prompt": "Escolha a figura da frase e coloque cada criança.",
+          "visual": {
+            "type": "euler"
+          },
+          "payload": {
+            "choose_relation": true,
+            "mark_occupancy": true,
+            "sets": [
+              {
+                "id": "set-savers",
+                "label": "Guarda tudo"
+              },
+              {
+                "id": "set-spenders",
+                "label": "Gasta tudo"
+              }
+            ],
+            "items": [
+              {
+                "id": "item-ana",
+                "label": "Ana guarda tudo"
+              },
+              {
+                "id": "item-leo",
+                "label": "Leo gasta tudo"
+              },
+              {
+                "id": "item-sam",
+                "label": "Sam divide"
+              }
+            ],
+            "sentence": "Ninguém gasta todas as moedas e guarda todas ao mesmo tempo."
+          },
+          "item_role": "transfer",
           "knowledge_component_id": "kc-sets"
         },
         {
@@ -5911,6 +5925,14 @@
               {
                 "id": "item-seven",
                 "label": "7 moedas"
+              },
+              {
+                "id": "item-ten",
+                "label": "10 moedas"
+              },
+              {
+                "id": "item-three",
+                "label": "3 moedas"
               }
             ],
             "reasons": [
@@ -5922,7 +5944,20 @@
                 "id": "why-one-left",
                 "label": "Sobra uma"
               }
-            ]
+            ],
+            "switch_after": 2,
+            "second_bins": [
+              {
+                "id": "bin-big",
+                "label": "Mais de 5"
+              },
+              {
+                "id": "bin-small",
+                "label": "5 ou menos"
+              }
+            ],
+            "second_rule": "Nova regra: mais de 5 moedas ou 5 ou menos?",
+            "rule": "Separe as pilhas de moedas em par ou ímpar."
           },
           "knowledge_component_id": "kc-sets"
         },
@@ -5953,39 +5988,6 @@
               }
             ]
           }
-        },
-        {
-          "id": "change-01",
-          "type": "money.making-change.v2",
-          "grading": "server",
-          "prompt": "Um suco custa 13 moedas e você recebeu 20. Dê o troco.",
-          "visual": {
-            "type": "coin-tray"
-          },
-          "payload": {
-            "currency": "coins",
-            "denominations": [
-              {
-                "value_minor": 10,
-                "kind": "coin",
-                "available": 3
-              },
-              {
-                "value_minor": 5,
-                "kind": "coin",
-                "available": 3
-              },
-              {
-                "value_minor": 1,
-                "kind": "coin",
-                "available": 6
-              }
-            ],
-            "price_minor": 13,
-            "paid_minor": 20
-          },
-          "item_role": "transfer",
-          "knowledge_component_id": "kc-make-change"
         },
         {
           "id": "reply-01",
@@ -6053,6 +6055,19 @@
           "item-button": "neither"
         }
       },
+      "euler-02": {
+        "relation": "disjoint",
+        "regions": {
+          "item-ana": "first",
+          "item-leo": "second",
+          "item-sam": "neither"
+        },
+        "occupied": [
+          "first",
+          "second",
+          "neither"
+        ]
+      },
       "flow-01": {
         "paths": {
           "case-stormy": [
@@ -6082,6 +6097,18 @@
               "bin": "bin-odd",
               "reason": "why-one-left"
             }
+          ],
+          "item-ten": [
+            {
+              "bin": "bin-big",
+              "reason": "why-pairs"
+            }
+          ],
+          "item-three": [
+            {
+              "bin": "bin-small",
+              "reason": "why-one-left"
+            }
           ]
         }
       },
@@ -6089,9 +6116,6 @@
         "scam_ids": [
           "msg-free"
         ]
-      },
-      "change-01": {
-        "change_minor": 7
       },
       "reply-01": {
         "acceptable_choice_ids": [
@@ -15167,6 +15191,1065 @@
       },
       "bar-answer-pw-01": {
         "target": 43
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-first-release-young-money",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "coins-and-change",
+      "lesson_id": "v2-first-release-young-money",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 7,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-count-coins",
+        "kc-make-change",
+        "kc-sets",
+        "kc-decision-steps"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Coins at the stand",
+      "required_capabilities": [
+        "visual.coin-tray.v1",
+        "operation.count-money.v1",
+        "operation.make-change.v1",
+        "visual.euler.v1",
+        "operation.place-in-region.v1",
+        "operation.move-menu.v1",
+        "visual.sort-bins.v1",
+        "operation.sort-to-bin.v1",
+        "operation.justify-choice.v1"
+      ],
+      "segments": [
+        {
+          "id": "coins-01",
+          "type": "money.coin-tray.v2",
+          "grading": "server",
+          "prompt": "Pay 17 coins with the fewest pieces.",
+          "visual": {
+            "type": "coin-tray"
+          },
+          "payload": {
+            "currency": "coins",
+            "denominations": [
+              {
+                "value_minor": 10,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 5,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 1,
+                "kind": "coin",
+                "available": 6
+              }
+            ]
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-count-coins"
+        },
+        {
+          "id": "change-01",
+          "type": "money.making-change.v2",
+          "grading": "server",
+          "prompt": "A juice costs 13 coins and you got 20. Give the change.",
+          "visual": {
+            "type": "coin-tray"
+          },
+          "payload": {
+            "currency": "coins",
+            "denominations": [
+              {
+                "value_minor": 10,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 5,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 1,
+                "kind": "coin",
+                "available": 6
+              }
+            ],
+            "price_minor": 13,
+            "paid_minor": 20
+          },
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-make-change"
+        },
+        {
+          "id": "euler-young",
+          "type": "logic.euler.v2",
+          "grading": "server",
+          "prompt": "Place each thing in the circles.",
+          "visual": {
+            "type": "euler"
+          },
+          "payload": {
+            "relation": "overlap",
+            "sets": [
+              {
+                "id": "set-round",
+                "label": "Round"
+              },
+              {
+                "id": "set-shiny",
+                "label": "Shiny"
+              }
+            ],
+            "items": [
+              {
+                "id": "item-coin",
+                "label": "Coin"
+              },
+              {
+                "id": "item-ball",
+                "label": "Ball"
+              },
+              {
+                "id": "item-spoon",
+                "label": "Spoon"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-sets"
+        },
+        {
+          "id": "sort-young",
+          "type": "logic.sort-by-rule.v2",
+          "grading": "server",
+          "prompt": "Sort the coin piles.",
+          "visual": {
+            "type": "sort-bins"
+          },
+          "payload": {
+            "bins": [
+              {
+                "id": "bin-even",
+                "label": "Even"
+              },
+              {
+                "id": "bin-odd",
+                "label": "Odd"
+              }
+            ],
+            "items": [
+              {
+                "id": "item-two",
+                "label": "2 coins"
+              },
+              {
+                "id": "item-five",
+                "label": "5 coins"
+              }
+            ],
+            "reasons": [
+              {
+                "id": "why-pairs",
+                "label": "They make pairs"
+              },
+              {
+                "id": "why-one-left",
+                "label": "One is left over"
+              }
+            ],
+            "rule": "Even or odd?"
+          },
+          "knowledge_component_id": "kc-sets"
+        }
+      ]
+    },
+    "answer_keys": {
+      "coins-01": {
+        "target_minor": 17,
+        "fewest": true
+      },
+      "change-01": {
+        "change_minor": 7
+      },
+      "euler-young": {
+        "regions": {
+          "item-coin": "both",
+          "item-ball": "first",
+          "item-spoon": "second"
+        }
+      },
+      "sort-young": {
+        "accepted": {
+          "item-two": [
+            {
+              "bin": "bin-even",
+              "reason": "why-pairs"
+            }
+          ],
+          "item-five": [
+            {
+              "bin": "bin-odd",
+              "reason": "why-one-left"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-first-release-young-money",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "coins-and-change",
+      "lesson_id": "v2-first-release-young-money",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 7,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-count-coins",
+        "kc-make-change",
+        "kc-sets",
+        "kc-decision-steps"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Monedas en el puesto",
+      "required_capabilities": [
+        "visual.coin-tray.v1",
+        "operation.count-money.v1",
+        "operation.make-change.v1",
+        "visual.euler.v1",
+        "operation.place-in-region.v1",
+        "operation.move-menu.v1",
+        "visual.sort-bins.v1",
+        "operation.sort-to-bin.v1",
+        "operation.justify-choice.v1"
+      ],
+      "segments": [
+        {
+          "id": "coins-01",
+          "type": "money.coin-tray.v2",
+          "grading": "server",
+          "prompt": "Paga 17 monedas con la menor cantidad de piezas.",
+          "visual": {
+            "type": "coin-tray"
+          },
+          "payload": {
+            "currency": "coins",
+            "denominations": [
+              {
+                "value_minor": 10,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 5,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 1,
+                "kind": "coin",
+                "available": 6
+              }
+            ]
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-count-coins"
+        },
+        {
+          "id": "change-01",
+          "type": "money.making-change.v2",
+          "grading": "server",
+          "prompt": "Un jugo cuesta 13 monedas y te dieron 20. Da el cambio.",
+          "visual": {
+            "type": "coin-tray"
+          },
+          "payload": {
+            "currency": "coins",
+            "denominations": [
+              {
+                "value_minor": 10,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 5,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 1,
+                "kind": "coin",
+                "available": 6
+              }
+            ],
+            "price_minor": 13,
+            "paid_minor": 20
+          },
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-make-change"
+        },
+        {
+          "id": "euler-young",
+          "type": "logic.euler.v2",
+          "grading": "server",
+          "prompt": "Coloca cada cosa en los círculos.",
+          "visual": {
+            "type": "euler"
+          },
+          "payload": {
+            "relation": "overlap",
+            "sets": [
+              {
+                "id": "set-round",
+                "label": "Redondo"
+              },
+              {
+                "id": "set-shiny",
+                "label": "Brillante"
+              }
+            ],
+            "items": [
+              {
+                "id": "item-coin",
+                "label": "Moneda"
+              },
+              {
+                "id": "item-ball",
+                "label": "Pelota"
+              },
+              {
+                "id": "item-spoon",
+                "label": "Cuchara"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-sets"
+        },
+        {
+          "id": "sort-young",
+          "type": "logic.sort-by-rule.v2",
+          "grading": "server",
+          "prompt": "Ordena las pilas de monedas.",
+          "visual": {
+            "type": "sort-bins"
+          },
+          "payload": {
+            "bins": [
+              {
+                "id": "bin-even",
+                "label": "Par"
+              },
+              {
+                "id": "bin-odd",
+                "label": "Impar"
+              }
+            ],
+            "items": [
+              {
+                "id": "item-two",
+                "label": "2 monedas"
+              },
+              {
+                "id": "item-five",
+                "label": "5 monedas"
+              }
+            ],
+            "reasons": [
+              {
+                "id": "why-pairs",
+                "label": "Forman pares"
+              },
+              {
+                "id": "why-one-left",
+                "label": "Sobra una"
+              }
+            ],
+            "rule": "¿Par o impar?"
+          },
+          "knowledge_component_id": "kc-sets"
+        }
+      ]
+    },
+    "answer_keys": {
+      "coins-01": {
+        "target_minor": 17,
+        "fewest": true
+      },
+      "change-01": {
+        "change_minor": 7
+      },
+      "euler-young": {
+        "regions": {
+          "item-coin": "both",
+          "item-ball": "first",
+          "item-spoon": "second"
+        }
+      },
+      "sort-young": {
+        "accepted": {
+          "item-two": [
+            {
+              "bin": "bin-even",
+              "reason": "why-pairs"
+            }
+          ],
+          "item-five": [
+            {
+              "bin": "bin-odd",
+              "reason": "why-one-left"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-first-release-young-money",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "coins-and-change",
+      "lesson_id": "v2-first-release-young-money",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 7,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-count-coins",
+        "kc-make-change",
+        "kc-sets",
+        "kc-decision-steps"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Moedas na barraca",
+      "required_capabilities": [
+        "visual.coin-tray.v1",
+        "operation.count-money.v1",
+        "operation.make-change.v1",
+        "visual.euler.v1",
+        "operation.place-in-region.v1",
+        "operation.move-menu.v1",
+        "visual.sort-bins.v1",
+        "operation.sort-to-bin.v1",
+        "operation.justify-choice.v1"
+      ],
+      "segments": [
+        {
+          "id": "coins-01",
+          "type": "money.coin-tray.v2",
+          "grading": "server",
+          "prompt": "Pague 17 moedas com o menor número de peças.",
+          "visual": {
+            "type": "coin-tray"
+          },
+          "payload": {
+            "currency": "coins",
+            "denominations": [
+              {
+                "value_minor": 10,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 5,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 1,
+                "kind": "coin",
+                "available": 6
+              }
+            ]
+          },
+          "item_role": "practice",
+          "knowledge_component_id": "kc-count-coins"
+        },
+        {
+          "id": "change-01",
+          "type": "money.making-change.v2",
+          "grading": "server",
+          "prompt": "Um suco custa 13 moedas e você recebeu 20. Dê o troco.",
+          "visual": {
+            "type": "coin-tray"
+          },
+          "payload": {
+            "currency": "coins",
+            "denominations": [
+              {
+                "value_minor": 10,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 5,
+                "kind": "coin",
+                "available": 3
+              },
+              {
+                "value_minor": 1,
+                "kind": "coin",
+                "available": 6
+              }
+            ],
+            "price_minor": 13,
+            "paid_minor": 20
+          },
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-make-change"
+        },
+        {
+          "id": "euler-young",
+          "type": "logic.euler.v2",
+          "grading": "server",
+          "prompt": "Coloque cada coisa nos círculos.",
+          "visual": {
+            "type": "euler"
+          },
+          "payload": {
+            "relation": "overlap",
+            "sets": [
+              {
+                "id": "set-round",
+                "label": "Redondo"
+              },
+              {
+                "id": "set-shiny",
+                "label": "Brilhante"
+              }
+            ],
+            "items": [
+              {
+                "id": "item-coin",
+                "label": "Moeda"
+              },
+              {
+                "id": "item-ball",
+                "label": "Bola"
+              },
+              {
+                "id": "item-spoon",
+                "label": "Colher"
+              }
+            ]
+          },
+          "knowledge_component_id": "kc-sets"
+        },
+        {
+          "id": "sort-young",
+          "type": "logic.sort-by-rule.v2",
+          "grading": "server",
+          "prompt": "Separe as pilhas de moedas.",
+          "visual": {
+            "type": "sort-bins"
+          },
+          "payload": {
+            "bins": [
+              {
+                "id": "bin-even",
+                "label": "Par"
+              },
+              {
+                "id": "bin-odd",
+                "label": "Ímpar"
+              }
+            ],
+            "items": [
+              {
+                "id": "item-two",
+                "label": "2 moedas"
+              },
+              {
+                "id": "item-five",
+                "label": "5 moedas"
+              }
+            ],
+            "reasons": [
+              {
+                "id": "why-pairs",
+                "label": "Formam pares"
+              },
+              {
+                "id": "why-one-left",
+                "label": "Sobra uma"
+              }
+            ],
+            "rule": "Par ou ímpar?"
+          },
+          "knowledge_component_id": "kc-sets"
+        }
+      ]
+    },
+    "answer_keys": {
+      "coins-01": {
+        "target_minor": 17,
+        "fewest": true
+      },
+      "change-01": {
+        "change_minor": 7
+      },
+      "euler-young": {
+        "regions": {
+          "item-coin": "both",
+          "item-ball": "first",
+          "item-spoon": "second"
+        }
+      },
+      "sort-young": {
+        "accepted": {
+          "item-two": [
+            {
+              "bin": "bin-even",
+              "reason": "why-pairs"
+            }
+          ],
+          "item-five": [
+            {
+              "bin": "bin-odd",
+              "reason": "why-one-left"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-logic-syllogism",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "clear-thinking-teen",
+      "lesson_id": "v2-logic-syllogism",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-sets",
+        "kc-conditional-check"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Does it follow?",
+      "required_capabilities": [
+        "visual.euler.v1",
+        "operation.place-in-region.v1",
+        "operation.move-menu.v1",
+        "visual.rule-cards.v1",
+        "operation.flip-card.v1"
+      ],
+      "segments": [
+        {
+          "id": "syllogism-01",
+          "type": "logic.euler.v2",
+          "grading": "server",
+          "prompt": "All subscriptions are recurring costs. Some recurring costs are hidden.",
+          "visual": {
+            "type": "euler"
+          },
+          "payload": {
+            "relation": "subset",
+            "sets": [
+              {
+                "id": "set-subs",
+                "label": "Subscriptions"
+              },
+              {
+                "id": "set-recurring",
+                "label": "Recurring costs"
+              }
+            ],
+            "items": [
+              {
+                "id": "item-stream",
+                "label": "Video stream"
+              },
+              {
+                "id": "item-rent",
+                "label": "Rent"
+              },
+              {
+                "id": "item-gift",
+                "label": "A gift"
+              }
+            ],
+            "mark_occupancy": true,
+            "conclusion": {
+              "statement": "Some subscriptions are hidden."
+            }
+          },
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-sets"
+        },
+        {
+          "id": "cards-teen",
+          "type": "logic.rule-checker.v2",
+          "grading": "server",
+          "prompt": "Which cards must you turn to test the rule?",
+          "visual": {
+            "type": "rule-cards"
+          },
+          "payload": {
+            "rule_kind": "abstract",
+            "cards": [
+              {
+                "id": "card-a",
+                "face": "A"
+              },
+              {
+                "id": "card-k",
+                "face": "K"
+              },
+              {
+                "id": "card-four",
+                "face": "4"
+              },
+              {
+                "id": "card-seven",
+                "face": "7"
+              }
+            ],
+            "rule": "If a card has a vowel on one side, it has an even number on the other."
+          },
+          "knowledge_component_id": "kc-conditional-check"
+        }
+      ]
+    },
+    "answer_keys": {
+      "syllogism-01": {
+        "regions": {
+          "item-stream": "both",
+          "item-rent": "second",
+          "item-gift": "neither"
+        },
+        "occupied": [
+          "both",
+          "second",
+          "neither"
+        ],
+        "conclusion": "possibly"
+      },
+      "cards-teen": {
+        "must_flip_ids": [
+          "card-a",
+          "card-seven"
+        ],
+        "roles": {
+          "card-a": "p",
+          "card-k": "not_p",
+          "card-four": "q",
+          "card-seven": "not_q"
+        }
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-logic-syllogism",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "clear-thinking-teen",
+      "lesson_id": "v2-logic-syllogism",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-sets",
+        "kc-conditional-check"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "¿Se sigue?",
+      "required_capabilities": [
+        "visual.euler.v1",
+        "operation.place-in-region.v1",
+        "operation.move-menu.v1",
+        "visual.rule-cards.v1",
+        "operation.flip-card.v1"
+      ],
+      "segments": [
+        {
+          "id": "syllogism-01",
+          "type": "logic.euler.v2",
+          "grading": "server",
+          "prompt": "Todas las suscripciones son gastos fijos. Algunos gastos fijos están ocultos.",
+          "visual": {
+            "type": "euler"
+          },
+          "payload": {
+            "relation": "subset",
+            "sets": [
+              {
+                "id": "set-subs",
+                "label": "Suscripciones"
+              },
+              {
+                "id": "set-recurring",
+                "label": "Gastos fijos"
+              }
+            ],
+            "items": [
+              {
+                "id": "item-stream",
+                "label": "Video en línea"
+              },
+              {
+                "id": "item-rent",
+                "label": "Renta"
+              },
+              {
+                "id": "item-gift",
+                "label": "Un regalo"
+              }
+            ],
+            "mark_occupancy": true,
+            "conclusion": {
+              "statement": "Algunas suscripciones están ocultas."
+            }
+          },
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-sets"
+        },
+        {
+          "id": "cards-teen",
+          "type": "logic.rule-checker.v2",
+          "grading": "server",
+          "prompt": "¿Qué tarjetas debes voltear para probar la regla?",
+          "visual": {
+            "type": "rule-cards"
+          },
+          "payload": {
+            "rule_kind": "abstract",
+            "cards": [
+              {
+                "id": "card-a",
+                "face": "A"
+              },
+              {
+                "id": "card-k",
+                "face": "K"
+              },
+              {
+                "id": "card-four",
+                "face": "4"
+              },
+              {
+                "id": "card-seven",
+                "face": "7"
+              }
+            ],
+            "rule": "Si una tarjeta tiene una vocal de un lado, tiene un número par del otro."
+          },
+          "knowledge_component_id": "kc-conditional-check"
+        }
+      ]
+    },
+    "answer_keys": {
+      "syllogism-01": {
+        "regions": {
+          "item-stream": "both",
+          "item-rent": "second",
+          "item-gift": "neither"
+        },
+        "occupied": [
+          "both",
+          "second",
+          "neither"
+        ],
+        "conclusion": "possibly"
+      },
+      "cards-teen": {
+        "must_flip_ids": [
+          "card-a",
+          "card-seven"
+        ],
+        "roles": {
+          "card-a": "p",
+          "card-k": "not_p",
+          "card-four": "q",
+          "card-seven": "not_q"
+        }
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-logic-syllogism",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "clear-thinking-teen",
+      "lesson_id": "v2-logic-syllogism",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-sets",
+        "kc-conditional-check"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Isso decorre?",
+      "required_capabilities": [
+        "visual.euler.v1",
+        "operation.place-in-region.v1",
+        "operation.move-menu.v1",
+        "visual.rule-cards.v1",
+        "operation.flip-card.v1"
+      ],
+      "segments": [
+        {
+          "id": "syllogism-01",
+          "type": "logic.euler.v2",
+          "grading": "server",
+          "prompt": "Toda assinatura é um gasto fixo. Alguns gastos fixos são ocultos.",
+          "visual": {
+            "type": "euler"
+          },
+          "payload": {
+            "relation": "subset",
+            "sets": [
+              {
+                "id": "set-subs",
+                "label": "Assinaturas"
+              },
+              {
+                "id": "set-recurring",
+                "label": "Gastos fixos"
+              }
+            ],
+            "items": [
+              {
+                "id": "item-stream",
+                "label": "Streaming"
+              },
+              {
+                "id": "item-rent",
+                "label": "Aluguel"
+              },
+              {
+                "id": "item-gift",
+                "label": "Um presente"
+              }
+            ],
+            "mark_occupancy": true,
+            "conclusion": {
+              "statement": "Algumas assinaturas são ocultas."
+            }
+          },
+          "item_role": "transfer",
+          "knowledge_component_id": "kc-sets"
+        },
+        {
+          "id": "cards-teen",
+          "type": "logic.rule-checker.v2",
+          "grading": "server",
+          "prompt": "Quais cartas você precisa virar para testar a regra?",
+          "visual": {
+            "type": "rule-cards"
+          },
+          "payload": {
+            "rule_kind": "abstract",
+            "cards": [
+              {
+                "id": "card-a",
+                "face": "A"
+              },
+              {
+                "id": "card-k",
+                "face": "K"
+              },
+              {
+                "id": "card-four",
+                "face": "4"
+              },
+              {
+                "id": "card-seven",
+                "face": "7"
+              }
+            ],
+            "rule": "Se uma carta tem uma vogal de um lado, tem um número par do outro."
+          },
+          "knowledge_component_id": "kc-conditional-check"
+        }
+      ]
+    },
+    "answer_keys": {
+      "syllogism-01": {
+        "regions": {
+          "item-stream": "both",
+          "item-rent": "second",
+          "item-gift": "neither"
+        },
+        "occupied": [
+          "both",
+          "second",
+          "neither"
+        ],
+        "conclusion": "possibly"
+      },
+      "cards-teen": {
+        "must_flip_ids": [
+          "card-a",
+          "card-seven"
+        ],
+        "roles": {
+          "card-a": "p",
+          "card-k": "not_p",
+          "card-four": "q",
+          "card-seven": "not_q"
+        }
       }
     }
   }

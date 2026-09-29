@@ -17,7 +17,9 @@ import {
 const here = (path: string) => fileURLToPath(new URL(path, import.meta.url));
 const read = (path: string) => readFileSync(here(path), 'utf8');
 const learningDir = here('../');
-const boardFiles = readdirSync(learningDir).filter((name) => /Board\.tsx$/.test(name) && !name.startsWith('TeachingChart'));
+const boardFiles = [...readdirSync(learningDir).filter((name) => /Board\.tsx$/.test(name) && !name.startsWith('TeachingChart')),
+  // GAP-FIX-R4: the family, build and concept boards and the operation primitives are held to the same rule.
+  'familyBoards.tsx', 'buildBoards.tsx', 'conceptBoards.tsx', 'operations/operations.tsx'];
 
 describe('one component set for lessons and the Mentor (B.7)', () => {
   it('finds the lesson boards it audits', () => {

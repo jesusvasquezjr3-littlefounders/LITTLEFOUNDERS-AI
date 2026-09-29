@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from 'react';
+import { useId, type PointerEvent, type ReactNode } from 'react';
 import type { CopyRole } from './copyBudget';
 import { Glyph, type GlyphName } from './glyphs';
 import { Button } from './buttons';
@@ -53,9 +53,20 @@ export function ChipGroup({ label, children }: { label?: string; children: React
   return <div className="lf-chip-group" role={label ? 'group' : undefined} aria-label={label}>{children}</div>;
 }
 
-/** A pressable filter or pick chip; selection adds a check, not just a colour. */
-export function ChoiceChip({ selected, onToggle, children, disabled }: { selected: boolean; onToggle: () => void; children: ReactNode; disabled?: boolean }) {
-  return <button type="button" className="lf-choice-chip" aria-pressed={selected} disabled={disabled} data-copy-role="option" onClick={onToggle} onPointerDown={withPressFeedback()}>
+/** Pointer handlers a board adds to a chip the learner can also drag (Bible 05 §4, GAP-FIX-R4). */
+export interface ChipDrag {
+  onPointerDown: (event: PointerEvent<HTMLButtonElement>) => void; onPointerMove: (event: PointerEvent<HTMLButtonElement>) => void;
+  onPointerUp: (event: PointerEvent<HTMLButtonElement>) => void; onPointerCancel: (event: PointerEvent<HTMLButtonElement>) => void;
+}
+
+/**
+ * A pressable filter or pick chip; selection adds a check, not just a colour.
+ * `drag` makes it an object the learner can drag onto a board region; pressing
+ * it still picks it up for the tap path (tap the object, then the place).
+ */
+export function ChoiceChip({ selected, onToggle, children, disabled, drag }: { selected: boolean; onToggle: () => void; children: ReactNode; disabled?: boolean; drag?: ChipDrag }) {
+  return <button type="button" className={`lf-choice-chip${drag ? ' lf-choice-chip--drag' : ''}`} aria-pressed={selected} disabled={disabled} data-copy-role="option" onClick={onToggle}
+    onPointerDown={withPressFeedback(drag?.onPointerDown)} onPointerMove={drag?.onPointerMove} onPointerUp={drag?.onPointerUp} onPointerCancel={drag?.onPointerCancel}>
     {selected ? <Glyph name="check" /> : null}<span>{children}</span>
   </button>;
 }

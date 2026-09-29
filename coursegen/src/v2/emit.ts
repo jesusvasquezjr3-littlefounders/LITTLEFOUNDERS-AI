@@ -24,6 +24,7 @@ import { loadMarketInventory, type MarketInventory } from '../contentGates/regio
 import { isNonCopyKey, requiredCapabilities, V2_ID, V2_LOCALES, type V2Locale, type V2PublicDocument, type V2Segment } from './contract.js';
 import { analyzeV2Plan, runV2DocumentGates, type V2Finding } from './gates.js';
 import type { V2LessonPlan, V2PlanSegment } from './plan.js';
+import { v2AgeScopeProblem, v2PayloadScopeProblem } from './v2SegmentFamilies.generated.js';
 
 export interface EmittedV2Document {
   lesson_id: string;
@@ -138,6 +139,12 @@ export function emitV2Lesson(plan: V2LessonPlan, options: { versionId: string; m
     if (new Set(shapes).size !== 1) {
       problems.push({ gate: 1, segmentId: segment.id, message: 'the three markets do not fill the same copy fields' });
     }
+    // GAP-FIX-R4 (Appendix P Parts 1-3 ages column, Part 4.10; Bible 05 §7): the same age scope and content
+    // rules Core enforces on delivery (the byte-for-byte copy of Core's families), so Forge never emits them.
+    const visual = segment.visual as { type: string };
+    const scopeKey = segment.type === 'money.allocation.v2' && visual.type !== 'stacked-bar' ? `${segment.type}:${visual.type}` : segment.type;
+    const scope = v2AgeScopeProblem(scopeKey, plan) ?? v2PayloadScopeProblem({ type: segment.type, visual, payload: segment.payload }, plan.age_band);
+    if (scope) problems.push({ gate: 1, segmentId: segment.id, message: `age scope: ${scope}` });
   }
 
   // B.16 / F-06: each market's answer keys come from its own rubric when the plan gives one per market.

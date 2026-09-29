@@ -1,0 +1,158 @@
+{
+  "expected_gate": 1,
+  "note": "Appendix P L5: syllogism conclusions are for ages 13-17; a 10-12 lesson cannot ship one",
+  "plan": {
+    "plan_version": 1,
+    "course_id": "financial-education",
+    "pathway_id": "financial-10-12",
+    "chapter_id": "clear-thinking-teen",
+    "lesson_id": "v2-red-team-scope-syllogism-tween",
+    "age_band": "10-12",
+    "eligibility": {
+      "minimum_age": 10,
+      "maximum_age": 12
+    },
+    "knowledge_component_ids": [
+      "kc-sets"
+    ],
+    "adventure_scene_id": "diorama-b",
+    "brief": "Rho revisa si una conclusión sobre suscripciones se sigue de dos frases y prueba una regla abstracta con tarjetas.",
+    "title": {
+      "en-US": "Does it follow?",
+      "es-MX": "¿Se sigue?",
+      "pt-BR": "Isso decorre?"
+    },
+    "new_concepts": [
+      "kc-sets"
+    ],
+    "regional": {
+      "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+    },
+    "segments": [
+      {
+        "id": "syllogism-01",
+        "type": "logic.euler.v2",
+        "grading": "server",
+        "visual": {
+          "type": "euler"
+        },
+        "item_role": "transfer",
+        "knowledge_component_id": "kc-sets",
+        "payload": {
+          "relation": "subset",
+          "sets": [
+            {
+              "id": "set-subs"
+            },
+            {
+              "id": "set-recurring"
+            }
+          ],
+          "items": [
+            {
+              "id": "item-stream"
+            },
+            {
+              "id": "item-rent"
+            },
+            {
+              "id": "item-gift"
+            }
+          ],
+          "mark_occupancy": true,
+          "conclusion": {}
+        },
+        "rubric": {
+          "regions": {
+            "item-stream": "both",
+            "item-rent": "second",
+            "item-gift": "neither"
+          },
+          "occupied": [
+            "both",
+            "second",
+            "neither"
+          ],
+          "conclusion": "possibly"
+        },
+        "copy": {
+          "en-US": {
+            "prompt": "All subscriptions are recurring costs. Some recurring costs are hidden.",
+            "sets": [
+              {
+                "label": "Subscriptions"
+              },
+              {
+                "label": "Recurring costs"
+              }
+            ],
+            "items": [
+              {
+                "label": "Video stream"
+              },
+              {
+                "label": "Rent"
+              },
+              {
+                "label": "A gift"
+              }
+            ],
+            "conclusion": {
+              "statement": "Some subscriptions are hidden."
+            }
+          },
+          "es-MX": {
+            "prompt": "Todas las suscripciones son gastos fijos. Algunos gastos fijos están ocultos.",
+            "sets": [
+              {
+                "label": "Suscripciones"
+              },
+              {
+                "label": "Gastos fijos"
+              }
+            ],
+            "items": [
+              {
+                "label": "Video en línea"
+              },
+              {
+                "label": "Renta"
+              },
+              {
+                "label": "Un regalo"
+              }
+            ],
+            "conclusion": {
+              "statement": "Algunas suscripciones están ocultas."
+            }
+          },
+          "pt-BR": {
+            "prompt": "Toda assinatura é um gasto fixo. Alguns gastos fixos são ocultos.",
+            "sets": [
+              {
+                "label": "Assinaturas"
+              },
+              {
+                "label": "Gastos fixos"
+              }
+            ],
+            "items": [
+              {
+                "label": "Streaming"
+              },
+              {
+                "label": "Aluguel"
+              },
+              {
+                "label": "Um presente"
+              }
+            ],
+            "conclusion": {
+              "statement": "Algumas assinaturas são ocultas."
+            }
+          }
+        }
+      }
+    ]
+  }
+}

@@ -4,11 +4,12 @@ import { AnswerChoice, Button, ChoiceChip, RadioGroup, SegmentedControl, Stepper
 import { familyCopy } from './familyCopy';
 import type { LessonClientDocument, LessonClientSegment } from './lessonDocument';
 import type { LessonSequenceControl } from './lessonSequence';
-import { BoardShell, GradedFoot, MoveToChoice, NarrationControl, NumberAnswer, useLessonMentor, useSegmentGrade, ViewedFoot, type OnGradeSegment } from './segmentKit';
+import { BoardShell, GradedFoot, MoveToChoice, NarrationControl, NumberAnswer, playerCopy, useDragPlace, useLessonMentor, useSegmentGrade, ViewedFoot, type OnGradeSegment } from './segmentKit';
+import { CoinGroupsVisual, SortBinsVisual, TextCardsVisual, VennVisual, type VennRegionKey } from './pizarron';
 import './familyBoards.css';
 import { TeachingChart } from './charts/TeachingChart';
 import { FlowchartBuildBoard } from './buildBoards';
-import type { FlowchartPayload } from './v2SegmentFamilies.generated';
+import { eulerRegions, sortPhaseBins, type FlowchartPayload } from './v2SegmentFamilies.generated';
 
 /*
  * GAP-FIX-R1 learning: the first-release logic and money boards (Appendix P
@@ -25,7 +26,7 @@ interface BoardProps<T extends LessonClientSegment['type']> {
   document: LessonClientDocument; segment: Seg<T>; onBack: () => void; sequence?: LessonSequenceControl; onGrade?: OnGradeSegment;
 }
 
-/* L1: turn over exactly the cards that could break the rule. */
+/* L1: turn over exactly the cards that could break the rule. The cards are the shared Pizarrón text cards (B.7). */
 export function RuleCardsBoard({ document, segment, onBack, sequence, onGrade }: BoardProps<'logic.rule-checker.v2'>) {
   const t = familyCopy[document.locale];
   const [flipped, setFlipped] = useState<string[]>([]);
@@ -33,13 +34,18 @@ export function RuleCardsBoard({ document, segment, onBack, sequence, onGrade }:
   const toggle = (id: string) => { grading.reset(); setFlipped((current) => current.includes(id) ? current.filter((value) => value !== id) : [...current, id]); };
   return <BoardShell screen="rule-cards" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
+    onReset={() => { grading.reset(); setFlipped([]); }} resetDisabled={flipped.length === 0 || grading.pending || grading.met}
     foot={<GradedFoot locale={document.locale} grading={grading} canCheck={flipped.length > 0} sequence={sequence} onCheck={() => grading.check({ flipped })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-rule`}>
       <h2 id={`${segment.id}-rule`} data-copy-role="heading">{t.rule}</h2>
       <p className="lf-family-rule" data-copy-role="prompt">{segment.payload.rule}</p>
-      <h3 data-copy-role="heading">{t.cards}</h3>
+      <TextCardsVisual label={`${t.cards}: ${segment.payload.cards.map((card) => card.face).join(', ')}`}
+        cards={segment.payload.cards.map((card) => ({ id: card.id, title: card.face, lines: [], marked: flipped.includes(card.id) }))} />
+    </section>
+    <section className="lf-learning-control-strip" aria-labelledby={`${segment.id}-cards`}>
+      <h3 id={`${segment.id}-cards`} data-copy-role="heading">{t.cards}</h3>
       {/* Each card is the shared pick chip: a turned card gains a check, never colour alone (02 rule 23). */}
-      <div className="lf-rule-cards" role="group" aria-label={t.cards}>
+      <div className="lf-rule-cards" role="group" aria-labelledby={`${segment.id}-cards`}>
         {segment.payload.cards.map((card) => <ChoiceChip key={card.id} selected={flipped.includes(card.id)}
           disabled={grading.pending || grading.met} onToggle={() => toggle(card.id)}>{card.face}</ChoiceChip>)}
       </div>
@@ -47,53 +53,94 @@ export function RuleCardsBoard({ document, segment, onBack, sequence, onGrade }:
   </BoardShell>;
 }
 
-/* L5: place items in an Euler diagram drawn in its declared relation. */
+/*
+ * L5 (GAP-FIX-R4, Appendix P L5 "Place items; pick the diagram that matches a
+ * sentence"; graded on the item->region map, the region occupancy flags and the
+ * chosen conclusion): the learner may first choose which of the three diagrams
+ * matches the sentence, then drags each item into a region of the shared
+ * Pizarrón Euler picture (VennVisual, B.7) or taps it then its region, or uses
+ * the "Move to" menu (Bible 05 §4); then flags the regions that hold
+ * something, and for a syllogism says whether the conclusion must, might or
+ * cannot be true. Core holds every answer.
+ */
 type Region = 'first' | 'second' | 'both' | 'neither';
+type Relation = 'overlap' | 'subset' | 'disjoint';
+const REGION_KEY: Record<Region, VennRegionKey> = { first: 'left', second: 'right', both: 'both', neither: 'neither' };
+const KEY_REGION: Record<VennRegionKey, Region> = { left: 'first', right: 'second', both: 'both', neither: 'neither' };
 export function EulerBoard({ document, segment, onBack, sequence, onGrade }: BoardProps<'logic.euler.v2'>) {
   const t = familyCopy[document.locale];
-  const { relation, sets, items } = segment.payload;
+  const { sets, items } = segment.payload;
+  const choose = segment.payload.choose_relation === true;
+  const [relation, setRelation] = useState<Relation | null>(segment.payload.relation ?? null);
   const [placed, setPlaced] = useState<Record<string, Region>>({});
+  const [occupied, setOccupied] = useState<Region[]>([]);
+  const [conclusion, setConclusion] = useState<'necessarily' | 'possibly' | 'never' | null>(null);
   const grading = useSegmentGrade(segment.id, onGrade);
-  const allowed: Region[] = relation === 'subset' ? ['second', 'both', 'neither'] : relation === 'disjoint' ? ['first', 'second', 'neither'] : ['first', 'second', 'both', 'neither'];
+  const locked = grading.pending || grading.met;
+  const allowed: Region[] = relation ? eulerRegions(relation) : [];
+  const place = (item: string, region: Region) => {
+    if (!allowed.includes(region)) return;
+    grading.reset();
+    setPlaced((current) => ({ ...current, [item]: region }));
+  };
+  const dnd = useDragPlace<Region>(place, locked || relation === null);
+  const pick = (next: Relation) => {
+    grading.reset();
+    setRelation(next);
+    const regions = eulerRegions(next);
+    setPlaced((current) => Object.fromEntries(Object.entries(current).filter(([, region]) => regions.includes(region))));
+    setOccupied((current) => current.filter((region) => regions.includes(region)));
+  };
   const regionLabel = (region: Region) => region === 'first' ? t.onlyIn.replace('{set}', sets[0].label) : region === 'second' ? t.onlyIn.replace('{set}', sets[1].label)
     : region === 'both' ? (relation === 'subset' ? sets[0].label : t.both) : t.neither;
-  const complete = items.every((item) => placed[item.id] !== undefined);
-  const summary = `${t.diagram}. ${allowed.map((region) => `${regionLabel(region)}: ${items.filter((item) => placed[item.id] === region).map((item) => item.label).join(', ') || '0'}`).join('. ')}`;
-  const inRegion = (region: Region) => items.filter((item) => placed[item.id] === region);
+  const inRegion = (region: Region) => items.filter((item) => placed[item.id] === region).map((item) => item.label);
+  const complete = relation !== null && items.every((item) => placed[item.id] !== undefined) && (!segment.payload.conclusion || conclusion !== null);
+  const changed = (choose && relation !== null) || Object.keys(placed).length > 0 || occupied.length > 0 || conclusion !== null;
+  const reset = () => { grading.reset(); setRelation(segment.payload.relation ?? null); setPlaced({}); setOccupied([]); setConclusion(null); dnd.clear(); };
+  const answer = { placements: placed, ...(choose ? { relation } : {}), ...(segment.payload.mark_occupancy ? { occupied } : {}),
+    ...(segment.payload.conclusion ? { conclusion } : {}) };
+  const relations: Array<{ value: Relation; label: string }> = [
+    { value: 'overlap', label: t.relationOverlap }, { value: 'subset', label: t.relationSubset }, { value: 'disjoint', label: t.relationDisjoint }];
   return <BoardShell screen="euler" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
-    foot={<GradedFoot locale={document.locale} grading={grading} canCheck={complete} sequence={sequence} onCheck={() => grading.check({ placements: placed })} />}>
-    <section className="lf-learning-board lf-family-board" aria-label={t.diagram}>
-      <div className={`lf-euler lf-euler--${relation}`} role="img" aria-label={summary}>
-        <svg viewBox="0 0 320 180" aria-hidden="true" focusable="false">
-          {relation === 'subset' ? <>
-            <ellipse cx="160" cy="90" rx="150" ry="84" className="lf-euler-set lf-euler-set--second" />
-            <ellipse cx="160" cy="98" rx="70" ry="44" className="lf-euler-set lf-euler-set--first" />
-          </> : relation === 'disjoint' ? <>
-            <circle cx="80" cy="90" r="72" className="lf-euler-set lf-euler-set--first" />
-            <circle cx="240" cy="90" r="72" className="lf-euler-set lf-euler-set--second" />
-          </> : <>
-            <circle cx="120" cy="90" r="80" className="lf-euler-set lf-euler-set--first" />
-            <circle cx="200" cy="90" r="80" className="lf-euler-set lf-euler-set--second" />
-          </>}
-        </svg>
-        <div className="lf-euler-labels" aria-hidden="true">
-          <span className="lf-euler-set-label lf-euler-set-label--first" data-copy-role="data">{sets[0].label}</span>
-          <span className="lf-euler-set-label lf-euler-set-label--second" data-copy-role="data">{sets[1].label}</span>
-        </div>
+    onReset={reset} resetDisabled={!changed || locked}
+    foot={<GradedFoot locale={document.locale} grading={grading} canCheck={complete} sequence={sequence} onCheck={() => grading.check(answer)} />}>
+    {choose ? <section className="lf-learning-control-strip" aria-labelledby={`${segment.id}-sentence`}>
+      <h2 id={`${segment.id}-sentence`} data-copy-role="heading">{t.sentence}</h2>
+      <p className="lf-family-rule" data-copy-role="prompt">{segment.payload.sentence}</p>
+      <RadioGroup legend={t.pickDiagram} name={`${segment.id}-relation`} disabled={locked} value={relation} options={relations} onValueChange={pick} />
+    </section> : null}
+    {relation ? <section className="lf-learning-board lf-family-board" aria-label={t.diagram}>
+      <VennVisual label={t.diagram} relation={relation} leftLabel={regionLabel('first')} rightLabel={regionLabel('second')} bothLabel={regionLabel('both')}
+        neitherLabel={t.neither}
+        regions={Object.fromEntries(allowed.map((region) => [REGION_KEY[region], { count: String(inRegion(region).length), items: inRegion(region) }]))}
+        targetProps={(key) => { const region = KEY_REGION[key]; return region && allowed.includes(region) ? dnd.target(region) : undefined; }} />
+      <h3 data-copy-role="heading">{t.place}</h3>
+      <p className="lf-learning-hint" data-copy-role="body">{playerCopy(document.locale).dragHint}</p>
+      <div className="lf-drag-chips" role="group" aria-label={t.place}>
+        {items.map((item) => <ChoiceChip key={item.id} {...dnd.chip(item.id)} disabled={locked}>{item.label}</ChoiceChip>)}
       </div>
-      <div className="lf-euler-regions">
-        {allowed.map((region) => <div key={region} className={`lf-euler-region lf-euler-region--${region}`}>
-          <strong data-copy-role="option">{regionLabel(region)}</strong>
-          <span data-copy-role="data">{inRegion(region).map((item) => item.label).join(', ')}</span>
-        </div>)}
-      </div>
-    </section>
-    <section className="lf-learning-control-strip" aria-label={t.pickBin}>
+    </section> : null}
+    {relation ? <section className="lf-learning-control-strip" aria-label={t.pickBin}>
       {items.map((item) => <MoveToChoice key={item.id} locale={document.locale} label={item.label} value={placed[item.id] ?? null}
-        disabled={grading.pending || grading.met} options={allowed.map((region) => ({ value: region, label: regionLabel(region) }))}
-        onChange={(region) => { grading.reset(); setPlaced((current) => ({ ...current, [item.id]: region })); }} />)}
-    </section>
+        disabled={locked} options={allowed.map((region) => ({ value: region, label: regionLabel(region) }))}
+        onChange={(region) => place(item.id, region)} />)}
+    </section> : null}
+    {relation && segment.payload.mark_occupancy ? <section className="lf-learning-control-strip" aria-labelledby={`${segment.id}-occupied`}>
+      <h3 id={`${segment.id}-occupied`} data-copy-role="heading">{t.occupied}</h3>
+      <div className="lf-rule-cards" role="group" aria-labelledby={`${segment.id}-occupied`}>
+        {allowed.map((region) => <ChoiceChip key={region} selected={occupied.includes(region)} disabled={locked}
+          onToggle={() => { grading.reset(); setOccupied((current) => current.includes(region) ? current.filter((value) => value !== region) : [...current, region]); }}>
+          {regionLabel(region)}</ChoiceChip>)}
+      </div>
+    </section> : null}
+    {relation && segment.payload.conclusion ? <section className="lf-learning-control-strip" aria-labelledby={`${segment.id}-conclusion`}>
+      <h3 id={`${segment.id}-conclusion`} data-copy-role="heading">{t.conclusion}</h3>
+      <p className="lf-family-rule" data-copy-role="prompt">{segment.payload.conclusion.statement}</p>
+      <RadioGroup legend={t.conclusion} name={`${segment.id}-conclusion-choice`} disabled={locked} value={conclusion}
+        options={[{ value: 'necessarily', label: t.necessarily }, { value: 'possibly', label: t.possibly }, { value: 'never', label: t.never }] as const}
+        onValueChange={(value) => { grading.reset(); setConclusion(value); }} />
+    </section> : null}
   </BoardShell>;
 }
 
@@ -107,7 +154,8 @@ function WalkFlowchartBoard({ document, segment, onBack, sequence, onGrade }: Bo
   const t = familyCopy[document.locale];
   const { start, nodes, scenarios } = segment.payload as FlowchartPayload;
   const byId = useMemo(() => new Map(nodes.map((node) => [node.id, node])), [nodes]);
-  const [paths, setPaths] = useState<Record<string, string[]>>(() => Object.fromEntries(scenarios.map((scenario) => [scenario.id, [start]])));
+  const fresh = () => Object.fromEntries(scenarios.map((scenario) => [scenario.id, [start]]));
+  const [paths, setPaths] = useState<Record<string, string[]>>(fresh);
   const [active, setActive] = useState(scenarios[0]!.id);
   const [showAll, setShowAll] = useState(false);
   const grading = useSegmentGrade(segment.id, onGrade);
@@ -116,8 +164,10 @@ function WalkFlowchartBoard({ document, segment, onBack, sequence, onGrade }: Bo
   const done = (scenarioId: string) => byId.get(paths[scenarioId]!.at(-1)!)?.kind === 'outcome';
   const step = (next: string | undefined) => { if (!next) return; grading.reset(); setPaths((value) => ({ ...value, [active]: [...value[active]!, next] })); };
   const restart = () => { grading.reset(); setPaths((value) => ({ ...value, [active]: [start] })); };
+  const changed = Object.values(paths).some((value) => value.length > 1);
   return <BoardShell screen={segment.type === 'money.spend-decision.v2' ? 'spend-decision' : 'flowchart'} locale={document.locale} title={document.title} segment={segment}
     onBack={onBack} sequence={sequence} finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
+    onReset={() => { grading.reset(); setPaths(fresh()); setActive(scenarios[0]!.id); }} resetDisabled={!changed || grading.pending || grading.met}
     foot={<GradedFoot locale={document.locale} grading={grading} canCheck={scenarios.every((scenario) => done(scenario.id))} sequence={sequence}
       onCheck={() => grading.check({ paths })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-case`}>
@@ -151,37 +201,70 @@ function WalkFlowchartBoard({ document, segment, onBack, sequence, onGrade }: Bo
   </BoardShell>;
 }
 
-/* L10 / $10: sort each item into a bin (one is "it depends") and say why. */
+/*
+ * L10 / $10: sort each item into a bin and say why; a bin may be "it depends".
+ * GAP-FIX-R4 (Appendix P L10 "the rule changes mid-task"): with a switch, the
+ * items after `switch_after` are sorted by the new rule into the second bin
+ * set, shown once the first rule's items are sorted. Items are dragged onto
+ * the shared Pizarrón bins (SortBinsVisual, B.7), tapped then their bin, or
+ * moved with the "Move to" menu.
+ */
 export function SortBinsBoard({ document, segment, onBack, sequence, onGrade }: BoardProps<'logic.sort-by-rule.v2' | 'money.needs-wants.v2'>) {
   const t = familyCopy[document.locale];
-  const { bins, items, reasons } = segment.payload;
+  const p = segment.payload;
+  const { items, reasons } = p;
   const [bin, setBin] = useState<Record<string, string>>({});
   const [reason, setReason] = useState<Record<string, string>>({});
   const grading = useSegmentGrade(segment.id, onGrade);
-  const complete = items.every((item) => bin[item.id] && reason[item.id]);
   const locked = grading.pending || grading.met;
+  const switchAt = p.switch_after ?? items.length;
+  const firstItems = items.slice(0, switchAt);
+  const secondItems = items.slice(switchAt);
+  const firstDone = firstItems.every((item) => bin[item.id] && reason[item.id]);
+  const phaseBins = (itemId: string) => sortPhaseBins(p, itemId);
+  const place = (item: string, target: string) => {
+    if (!phaseBins(item).some((value) => value.id === target)) return;
+    grading.reset();
+    setBin((current) => ({ ...current, [item]: target }));
+  };
+  const dnd = useDragPlace<string>(place, locked);
+  const complete = items.every((item) => bin[item.id] && reason[item.id]);
+  const changed = Object.keys(bin).length > 0 || Object.keys(reason).length > 0;
+  const visual = (bins: typeof p.bins, phaseItems: typeof items, label: string) => <SortBinsVisual label={label}
+    bins={bins.map((value) => ({ id: value.id, label: value.label, marked: value.id === p.depends_bin_id,
+      items: phaseItems.filter((item) => bin[item.id] === value.id).map((item) => item.label) }))}
+    targetProps={(id) => dnd.target(id)} />;
+  const itemControls = (phaseItems: typeof items) => phaseItems.map((item) => <div key={item.id} className="lf-sort-item">
+    <MoveToChoice locale={document.locale} label={item.label} value={bin[item.id] ?? null} disabled={locked}
+      options={phaseBins(item.id).map((value) => ({ value: value.id, label: value.label }))} onChange={(value) => place(item.id, value)} />
+    {bin[item.id] ? <RadioGroup legend={t.why} name={`${segment.id}-${item.id}-why`} disabled={locked} value={reason[item.id] ?? null}
+      options={reasons.map((value) => ({ value: value.id, label: value.label }))}
+      onValueChange={(value) => { grading.reset(); setReason((current) => ({ ...current, [item.id]: value })); }} /> : null}
+  </div>);
+  const chips = (phaseItems: typeof items) => <div className="lf-drag-chips" role="group" aria-label={t.place}>
+    {phaseItems.map((item) => <ChoiceChip key={item.id} {...dnd.chip(item.id)} disabled={locked}>{item.label}</ChoiceChip>)}
+  </div>;
   return <BoardShell screen={segment.type === 'money.needs-wants.v2' ? 'needs-wants' : 'sort-bins'} locale={document.locale} title={document.title} segment={segment}
     onBack={onBack} sequence={sequence} finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
+    onReset={() => { grading.reset(); setBin({}); setReason({}); dnd.clear(); }} resetDisabled={!changed || locked}
     foot={<GradedFoot locale={document.locale} grading={grading} canCheck={complete} sequence={sequence}
       onCheck={() => grading.check({ placements: Object.fromEntries(items.map((item) => [item.id, { bin: bin[item.id], reason: reason[item.id] }])) })} />}>
-    <section className="lf-learning-board lf-family-board" aria-label={t.bins}>
-      <div className="lf-sort-bins">
-        {bins.map((value) => <div key={value.id} className={`lf-sort-bin${value.id === segment.payload.depends_bin_id ? ' lf-sort-bin--depends' : ''}`}>
-          <h2 data-copy-role="heading">{value.label}</h2>
-          <ul>{items.filter((item) => bin[item.id] === value.id).map((item) => <li key={item.id} data-copy-role="option">{item.label}</li>)}</ul>
-        </div>)}
-      </div>
+    <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-bins`}>
+      <h2 id={`${segment.id}-bins`} data-copy-role="heading">{p.rule ?? t.bins}</h2>
+      {visual(p.bins, firstItems, p.rule ?? t.bins)}
+      <p className="lf-learning-hint" data-copy-role="body">{playerCopy(document.locale).dragHint}</p>
+      {chips(firstItems)}
     </section>
-    <section className="lf-learning-control-strip" aria-label={t.pickBin}>
-      {items.map((item) => <div key={item.id} className="lf-sort-item">
-        <MoveToChoice locale={document.locale} label={item.label} value={bin[item.id] ?? null} disabled={locked}
-          options={bins.map((value) => ({ value: value.id, label: value.label }))}
-          onChange={(value) => { grading.reset(); setBin((current) => ({ ...current, [item.id]: value })); }} />
-        {bin[item.id] ? <RadioGroup legend={t.why} name={`${segment.id}-${item.id}-why`} disabled={locked} value={reason[item.id] ?? null}
-          options={reasons.map((value) => ({ value: value.id, label: value.label }))}
-          onValueChange={(value) => { grading.reset(); setReason((current) => ({ ...current, [item.id]: value })); }} /> : null}
-      </div>)}
-    </section>
+    <section className="lf-learning-control-strip" aria-label={t.pickBin}>{itemControls(firstItems)}</section>
+    {p.second_bins && secondItems.length > 0 && firstDone ? <>
+      <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-new-rule`} aria-live="polite">
+        <h2 id={`${segment.id}-new-rule`} data-copy-role="heading">{t.newRule}</h2>
+        <p className="lf-family-rule" data-copy-role="prompt">{p.second_rule}</p>
+        {visual(p.second_bins, secondItems, p.second_rule ?? t.newRule)}
+        {chips(secondItems)}
+      </section>
+      <section className="lf-learning-control-strip" aria-label={t.pickBin}>{itemControls(secondItems)}</section>
+    </> : null}
   </BoardShell>;
 }
 
@@ -198,8 +281,10 @@ export function MessageListBoard({ document, segment, onBack, sequence, onGrade 
     const now = current[message] ?? [];
     return { ...current, [message]: now.includes(cue) ? now.filter((value) => value !== cue) : [...now, cue] };
   }); };
+  const changed = flagged.length > 0 || Object.values(ticks).some((value) => value.length > 0);
   return <BoardShell screen={segment.type === 'money.scam-check.v2' ? 'scam-check' : 'scam-spotter'} locale={document.locale} title={document.title} segment={segment}
     onBack={onBack} sequence={sequence} finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
+    onReset={() => { grading.reset(); setFlagged([]); setTicks({}); }} resetDisabled={!changed || grading.pending || grading.met}
     foot={<GradedFoot locale={document.locale} grading={grading} canCheck sequence={sequence} onCheck={() => grading.check(cueList ? { flagged, cues: ticks } : { flagged })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-messages`}>
       <h2 id={`${segment.id}-messages`} data-copy-role="heading">{t.messages}</h2>
@@ -223,12 +308,20 @@ export function MessageListBoard({ document, segment, onBack, sequence, onGrade 
   </BoardShell>;
 }
 
-/* $1 / $2: coins and bills in integer minor units; the total is always the sum of the tray. */
+/*
+ * $1 / $2: coins and bills in integer minor units; the total is always the sum
+ * of the tray. GAP-FIX-R4 (Bible 05 §2 and §7 Money): the tray is drawn with
+ * the shared Pizarrón coin piles (CoinGroupsVisual, B.7): reward coins with the
+ * ridge outline, notes as a simplified token of the same family, one pile per
+ * denomination, filling live as the steppers change; for $2 the running
+ * count-up sits beside the tray. Never the Wallet's save and spend hues.
+ */
 const localCurrency: Record<Locale, string> = { 'en-US': 'USD', 'es-MX': 'MXN', 'pt-BR': 'BRL' };
 export function CoinTrayBoard({ document, segment, onBack, sequence, onGrade }: BoardProps<'money.coin-tray.v2' | 'money.making-change.v2'>) {
   const t = familyCopy[document.locale];
   const { denominations, currency } = segment.payload;
-  const [counts, setCounts] = useState<Record<string, number>>(() => Object.fromEntries(denominations.map((d) => [String(d.value_minor), 0])));
+  const empty = () => Object.fromEntries(denominations.map((d) => [String(d.value_minor), 0]));
+  const [counts, setCounts] = useState<Record<string, number>>(empty);
   const grading = useSegmentGrade(segment.id, onGrade);
   const format = useMemo(() => {
     const money = new Intl.NumberFormat(document.locale, { style: 'currency', currency: localCurrency[document.locale] });
@@ -242,8 +335,13 @@ export function CoinTrayBoard({ document, segment, onBack, sequence, onGrade }: 
   const [saying, setSaying] = useState<string | null>(null);
   const coins = Object.values(counts).reduce((sum, count) => sum + count, 0);
   const awaiting = change !== null && said.length < coins;
+  const locked = grading.pending || grading.met;
+  const countUp = change ? <div className="lf-coin-count-up">
+    <p data-copy-role="data">{t.countUp}: {said.length ? said.map((value) => format(value)).join(', ') : '…'}</p>
+  </div> : null;
   return <BoardShell screen={change ? 'making-change' : 'coin-tray'} locale={document.locale} title={document.title} segment={segment}
     onBack={onBack} sequence={sequence} finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
+    onReset={() => { grading.reset(); setCounts(empty()); setSaid([]); setSaying(null); }} resetDisabled={coins === 0 || locked}
     foot={<GradedFoot locale={document.locale} grading={grading} canCheck={total > 0 && !awaiting} sequence={sequence}
       onCheck={() => grading.check(change ? { counts, sequence: said } : { counts })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-tray`}>
@@ -252,21 +350,23 @@ export function CoinTrayBoard({ document, segment, onBack, sequence, onGrade }: 
         <div><dt data-copy-role="body">{t.price}</dt><dd data-copy-role="data">{format(change.price_minor)}</dd></div>
         <div><dt data-copy-role="body">{t.paid}</dt><dd data-copy-role="data">{format(change.paid_minor)}</dd></div>
       </dl> : null}
+      <CoinGroupsVisual label={`${t.tray}. ${change ? t.change : t.total}: ${format(total)}`} aside={countUp}
+        groups={denominations.map((d) => ({ id: String(d.value_minor), label: format(d.value_minor), kind: d.kind, count: counts[String(d.value_minor)] ?? 0,
+          subtotal: format(d.value_minor * (counts[String(d.value_minor)] ?? 0)) }))} />
+      <p className="lf-coin-total" role="status" data-copy-role="body"><strong>{change ? t.change : t.total}:</strong> {format(total)}</p>
+    </section>
+    <section className="lf-learning-control-strip" aria-label={t.tray}>
       <div className="lf-coin-tray">
-        {denominations.map((d) => <div key={d.value_minor} className={d.kind === 'bill' ? 'lf-coin lf-coin--bill' : 'lf-coin lf-coin--coin'}>
+        {denominations.map((d) => <div key={d.value_minor} className="lf-coin">
           <Stepper label={format(d.value_minor)} valuePlacement="label" min={0} max={d.available} value={counts[String(d.value_minor)] ?? 0}
-            disabled={grading.pending || grading.met || awaiting} labels={{ decrease: t.fewer, increase: t.more }}
-            onValueChange={(value) => { grading.reset(); if (change && value < (counts[String(d.value_minor)] ?? 0)) { setSaid([]); setCounts(Object.fromEntries(denominations.map((item) => [String(item.value_minor), 0]))); return; }
+            disabled={locked || awaiting} labels={{ decrease: t.fewer, increase: t.more }}
+            onValueChange={(value) => { grading.reset(); if (change && value < (counts[String(d.value_minor)] ?? 0)) { setSaid([]); setCounts(empty()); return; }
               setCounts((current) => ({ ...current, [String(d.value_minor)]: value })); }} />
         </div>)}
       </div>
-      <p className="lf-coin-total" role="status" data-copy-role="body"><strong>{change ? t.change : t.total}:</strong> {format(total)}</p>
-      {change ? <div className="lf-coin-count-up">
-        <p data-copy-role="data">{t.countUp}: {said.length ? said.map((value) => format(value)).join(', ') : '…'}</p>
-        {awaiting ? <><NumberAnswer label={t.sayCount} locale={document.locale} onChange={setSaying} disabled={grading.pending || grading.met} />
-          <Button variant="sky" disabled={saying === null || !Number.isSafeInteger(Number(saying))}
-            onClick={() => { setSaid((current) => [...current, currency === 'local' ? Math.round(Number(saying) * 100) : Number(saying)]); }}>{t.say}</Button></> : null}
-      </div> : null}
+      {change && awaiting ? <div className="lf-coin-count-up"><NumberAnswer label={t.sayCount} locale={document.locale} onChange={setSaying} disabled={locked} />
+        <Button variant="sky" disabled={saying === null || !Number.isSafeInteger(Number(saying))}
+          onClick={() => { setSaid((current) => [...current, currency === 'local' ? Math.round(Number(saying) * 100) : Number(saying)]); }}>{t.say}</Button></div> : null}
     </section>
   </BoardShell>;
 }

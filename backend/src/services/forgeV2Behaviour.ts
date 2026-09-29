@@ -288,12 +288,39 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
         ...(roles ? { expectDiagnostic: (r: Json) => selectionDiagnostic((r.flipped as string[]).map((card) => roles[card]!), r.flipped.length === ids.length) } : {}) };
     }
     case 'logic.euler.v2': {
-      const allowed = p.relation === 'subset' ? ['second', 'both', 'neither'] : p.relation === 'disjoint' ? ['first', 'second', 'neither'] : ['first', 'second', 'both', 'neither'];
-      const forbidden = ['first', 'second', 'both', 'neither'].find((region) => !allowed.includes(region));
+      // GAP-FIX-R4 (Appendix P L5): every diagram the learner may choose, every placement it allows, every occupancy
+      // flag set and every conclusion; each wrong part stores its own code (structure, partial, occupancy, conclusion).
+      const regionsOf = (relation: string) => relation === 'subset' ? ['second', 'both', 'neither'] : relation === 'disjoint' ? ['first', 'second', 'neither'] : ['first', 'second', 'both', 'neither'];
+      const relations = p.choose_relation ? ['overlap', 'subset', 'disjoint'] : [p.relation as string];
       const items = (p.items as Json[]).map((item) => item.id as string);
-      return { inRange: product(items.map(() => allowed)).map((regions) => ({ placements: Object.fromEntries(items.map((id, index) => [id, regions[index]])) })),
-        invalid: forbidden ? [{ placements: Object.fromEntries(items.map((id) => [id, forbidden])) }] : [{ placements: {} }],
-        expectMet: (r) => items.every((id) => r.placements[id] === rubric.regions[id]) };
+      const keyRelation = (p.choose_relation ? rubric.relation : p.relation) as string;
+      const extras = (relation: string): Json[] => {
+        const occupied = p.mark_occupancy ? subsets(regionsOf(relation)) : [null];
+        const conclusions = p.conclusion ? ['necessarily', 'possibly', 'never'] : [null];
+        return occupied.flatMap((flags) => conclusions.map((conclusion) => ({ ...(p.choose_relation ? { relation } : {}),
+          ...(flags ? { occupied: flags } : {}), ...(conclusion ? { conclusion } : {}) })));
+      };
+      const inRange = sample(relations.flatMap((relation) => product(items.map(() => regionsOf(relation))).flatMap((regions) => extras(relation)
+        .map((extra) => ({ placements: Object.fromEntries(items.map((id, index) => [id, regions[index]])), ...extra })))), MAX_STATES);
+      // The key's own answer is always swept, so reachability is tested even when sampled.
+      inRange.push({ placements: rubric.regions, ...(p.choose_relation ? { relation: keyRelation } : {}),
+        ...(p.mark_occupancy ? { occupied: rubric.occupied } : {}), ...(p.conclusion ? { conclusion: rubric.conclusion } : {}) });
+      const forbidden = ['first', 'second', 'both', 'neither'].find((region) => !regionsOf(relations[0]!).includes(region));
+      const base = { ...(p.choose_relation ? { relation: relations[0] } : {}), ...(p.mark_occupancy ? { occupied: [] } : {}), ...(p.conclusion ? { conclusion: 'possibly' } : {}) };
+      return { inRange,
+        invalid: [forbidden ? { placements: Object.fromEntries(items.map((id) => [id, forbidden])), ...base } : { placements: {}, ...base },
+          ...(p.conclusion ? [{ placements: rubric.regions, ...base, conclusion: 'maybe' }] : []),
+          ...(p.choose_relation ? [{ placements: rubric.regions, ...base, relation: 'venn' }] : [])],
+        expectMet: (r) => (!p.choose_relation || r.relation === keyRelation) && items.every((id) => r.placements[id] === rubric.regions[id])
+          && (!p.mark_occupancy || sameSet(r.occupied, rubric.occupied)) && (!p.conclusion || r.conclusion === rubric.conclusion),
+        expectDiagnostic: (r: Json) => {
+          if (p.choose_relation && r.relation !== keyRelation) return 'structure';
+          const wrong = items.filter((id) => r.placements[id] !== rubric.regions[id]).length;
+          if (wrong > 0) return wrong < items.length ? 'partial' : 'structure';
+          if (p.mark_occupancy && !sameSet(r.occupied, rubric.occupied)) return 'occupancy';
+          if (p.conclusion && r.conclusion !== rubric.conclusion) return 'conclusion';
+          return null;
+        } };
     }
     case 'logic.flowchart.v2':
     case 'money.spend-decision.v2': {
@@ -313,14 +340,27 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     }
     case 'logic.sort-by-rule.v2':
     case 'money.needs-wants.v2': {
-      const pairs = (p.bins as Json[]).flatMap((bin) => (p.reasons as Json[]).map((reason) => ({ bin: bin.id, reason: reason.id })));
+      // GAP-FIX-R4 (Appendix P L10): with a rule switch, each item's pairs come from its own phase's bins.
       const items = (p.items as Json[]).map((item) => item.id as string);
+      const switchAt = (p.switch_after ?? items.length) as number;
+      const pairsFor = (index: number) => ((index >= switchAt ? p.second_bins : p.bins) as Json[])
+        .flatMap((bin) => (p.reasons as Json[]).map((reason) => ({ bin: bin.id, reason: reason.id })));
       const accepted = rubric.accepted as Record<string, Json[]>;
-      const inRange: Json[] = product(items.map(() => pairs)).map((chosen) => ({ placements: Object.fromEntries(items.map((id, index) => [id, chosen[index]])) }));
+      const inRange: Json[] = product(items.map((_, index) => pairsFor(index))).map((chosen) => ({ placements: Object.fromEntries(items.map((id, index) => [id, chosen[index]])) }));
       // Always include the rubric's own accepted placement, so reachability is tested even when sampled.
       inRange.push({ placements: Object.fromEntries(items.map((id) => [id, accepted[id]![0]])) });
-      return { inRange, invalid: [{ placements: Object.fromEntries(items.map((id) => [id, { bin: 'no-bin', reason: pairs[0]!.reason }])) }],
-        expectMet: (r) => items.every((id) => accepted[id]!.some((pair) => pair.bin === r.placements[id].bin && pair.reason === r.placements[id].reason)) };
+      const pass = (r: Json, id: string) => accepted[id]!.some((pair) => pair.bin === r.placements[id].bin && pair.reason === r.placements[id].reason);
+      const binOk = (r: Json, id: string) => accepted[id]!.some((pair) => pair.bin === r.placements[id].bin);
+      return { inRange,
+        invalid: [{ placements: Object.fromEntries(items.map((id) => [id, { bin: 'no-bin', reason: pairsFor(0)[0]!.reason }])) },
+          // An item after the switch placed in a first-phase bin is not a sort the board offers.
+          ...(p.switch_after !== undefined ? [{ placements: Object.fromEntries(items.map((id) => [id, pairsFor(0)[0]])) }] : [])],
+        expectMet: (r) => items.every((id) => pass(r, id)),
+        expectDiagnostic: (r: Json) => {
+          if (items.slice(0, switchAt).some((id) => !binOk(r, id))) return 'bin';
+          if (items.slice(switchAt).some((id) => !binOk(r, id))) return 'rule_switch';
+          return items.every((id) => pass(r, id)) ? null : 'reason';
+        } };
     }
     case 'logic.scam-spotter.v2':
     case 'money.scam-check.v2': {

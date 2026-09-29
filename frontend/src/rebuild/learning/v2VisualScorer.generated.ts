@@ -311,11 +311,18 @@ export const V2_SELECTION_CODES = ['confirmation_bias', 'p_only_missing_not_q', 
  * verdict. `structure`, `path` and `bin` are structure errors (the learner
  * built the wrong model); every other non-`none` code is an answer error.
  */
+/**
+ * GAP-FIX-R4 (Appendix P L5 and L10): `occupancy` (the regions marked as
+ * holding something) and `conclusion` (the syllogism's necessarily / possibly
+ * / never) are answer errors; `rule_switch` (the first rule sorted right, the
+ * items after the switch sorted wrong) is a structure error.
+ */
+export const V2_REASONING_CODES = ['occupancy', 'conclusion', 'rule_switch'] as const;
 export const V2_DIAGNOSTIC_CODES = ['none', 'structure', 'value', 'partial', 'miss', 'false_alarm', 'path', 'outcome', 'bin', 'reason', 'tolerance', 'count_from_zero',
-  ...V2_SELECTION_CODES] as const;
+  ...V2_SELECTION_CODES, ...V2_REASONING_CODES] as const;
 export type V2Diagnostic = (typeof V2_DIAGNOSTIC_CODES)[number];
 export function v2DiagnosticFamily(code: V2Diagnostic): 'structure' | 'answer' | null {
-  return code === 'none' ? null : code === 'structure' || code === 'path' || code === 'bin' ? 'structure' : 'answer';
+  return code === 'none' ? null : code === 'structure' || code === 'path' || code === 'bin' || code === 'rule_switch' ? 'structure' : 'answer';
 }
 
 /** Signal-detection counts for the scam families (Part 7: hits, false alarms, d′). */
@@ -471,31 +478,104 @@ function choiceGrade(payload: unknown, response: unknown, rubric: unknown, maxim
   return rubric.acceptable_choice_ids.includes(response.choice) ? grade('met') : grade('review', 'outcome');
 }
 
+/**
+ * L10 / $10: each item's (bin, reason) against its accepted pairs. With a rule
+ * switch (GAP-FIX-R4, Appendix P L10 "the rule changes mid-task"), items from
+ * `switchAfter` on belong to the second bin set, and each phase is graded:
+ * a first phase sorted right with a wrong bin after the switch is `rule_switch`.
+ */
 function sortGrade(payload: unknown, response: unknown, rubric: unknown): V2Grade {
-  if (!fields(payload, ['binIds', 'itemIds', 'reasonIds']) || !strings(payload.binIds, 2, 4) || !strings(payload.itemIds, 2, 8) || !strings(payload.reasonIds, 2, 5)
+  const switched = record(payload) && Object.hasOwn(payload, 'switchAfter');
+  if (!fields(payload, switched ? ['binIds', 'itemIds', 'reasonIds', 'switchAfter', 'secondBinIds'] : ['binIds', 'itemIds', 'reasonIds'])
+    || !strings(payload.binIds, 2, 4) || !strings(payload.itemIds, 2, 8) || !strings(payload.reasonIds, 2, 5)
     || !fields(response, ['placements']) || !record(response.placements)) return INVALID;
   const { binIds, itemIds, reasonIds } = payload as { binIds: string[]; itemIds: string[]; reasonIds: string[] };
+  const switchAt = switched ? (payload as { switchAfter: unknown }).switchAfter : itemIds.length;
+  const secondBins = switched ? (payload as { secondBinIds: unknown }).secondBinIds : [];
+  if (!whole(switchAt) || switchAt < 1 || switchAt > itemIds.length || (switched && (switchAt >= itemIds.length || !strings(secondBins, 2, 4)))) return INVALID;
+  if (new Set([...binIds, ...(secondBins as string[])]).size !== binIds.length + (secondBins as string[]).length) return INVALID;
+  const phaseBins = (index: number) => (index >= switchAt ? secondBins as string[] : binIds);
   const placements = response.placements;
   if (Object.keys(placements).length !== itemIds.length) return INVALID;
-  for (const item of itemIds) {
+  for (const [index, item] of itemIds.entries()) {
     const placed = placements[item];
     if (!fields(placed, ['bin', 'reason']) || typeof placed.bin !== 'string' || typeof placed.reason !== 'string'
-      || !binIds.includes(placed.bin) || !reasonIds.includes(placed.reason)) return INVALID;
+      || !phaseBins(index).includes(placed.bin) || !reasonIds.includes(placed.reason)) return INVALID;
   }
   if (rubric === undefined) return grade('valid');
   if (!fields(rubric, ['accepted']) || !record(rubric.accepted) || Object.keys(rubric.accepted).length !== itemIds.length) return INVALID;
   const accepted = rubric.accepted;
-  let binMiss = false; let reasonMiss = false;
-  for (const item of itemIds) {
+  const miss = [{ bin: false, reason: false }, { bin: false, reason: false }];
+  for (const [index, item] of itemIds.entries()) {
     const pairs = accepted[item];
     if (!Array.isArray(pairs) || pairs.length < 1 || pairs.length > 4 || pairs.some((pair) => !fields(pair, ['bin', 'reason'])
-      || !binIds.includes(pair.bin as string) || !reasonIds.includes(pair.reason as string))) return INVALID;
+      || !phaseBins(index).includes(pair.bin as string) || !reasonIds.includes(pair.reason as string))) return INVALID;
     const placed = placements[item] as { bin: string; reason: string };
+    const phase = miss[index >= switchAt ? 1 : 0]!;
     const sameBin = pairs.filter((pair) => (pair as { bin: string }).bin === placed.bin);
-    if (sameBin.length === 0) binMiss = true;
-    else if (!sameBin.some((pair) => (pair as { reason: string }).reason === placed.reason)) reasonMiss = true;
+    if (sameBin.length === 0) phase.bin = true;
+    else if (!sameBin.some((pair) => (pair as { reason: string }).reason === placed.reason)) phase.reason = true;
   }
-  return !binMiss && !reasonMiss ? grade('met') : grade('review', binMiss ? 'bin' : 'reason');
+  const [first, second] = miss as [{ bin: boolean; reason: boolean }, { bin: boolean; reason: boolean }];
+  if (first.bin) return grade('review', 'bin');
+  if (second.bin) return grade('review', 'rule_switch');
+  return first.reason || second.reason ? grade('review', 'reason') : grade('met');
+}
+
+const EULER_RELATION_IDS = ['overlap', 'subset', 'disjoint'] as const;
+const EULER_CONCLUSION_IDS = ['necessarily', 'possibly', 'never'] as const;
+function eulerRegionsFor(relation: string): string[] {
+  // Impossible states: nothing is only-in-A when A sits inside B; nothing is in both when they never meet.
+  return relation === 'subset' ? ['second', 'both', 'neither'] : relation === 'disjoint' ? ['first', 'second', 'neither'] : ['first', 'second', 'both', 'neither'];
+}
+
+/**
+ * L5 (GAP-FIX-R4, Appendix P L5): graded on the item->region map, the region
+ * occupancy flags and the chosen conclusion. With `chooseRelation` the learner
+ * also picked the diagram: a wrong diagram is a `structure` error, graded
+ * first; then the placements (`partial` / `structure`), then the occupancy
+ * flags (`occupancy`), then the conclusion (`conclusion`).
+ */
+function eulerGrade(payload: unknown, response: unknown, rubric: unknown): V2Grade {
+  if (!record(payload) || !strings(payload.itemIds, 2, 6)) return INVALID;
+  const choose = payload.chooseRelation === true;
+  const occupancy = payload.occupancy === true;
+  const concluding = payload.conclusion === true;
+  const payloadFields = [choose ? 'chooseRelation' : 'relation', 'itemIds', ...(occupancy ? ['occupancy'] : []), ...(concluding ? ['conclusion'] : [])];
+  if (!fields(payload, payloadFields) || (!choose && !EULER_RELATION_IDS.includes(payload.relation as never))) return INVALID;
+  const responseFields = ['placements', ...(choose ? ['relation'] : []), ...(occupancy ? ['occupied'] : []), ...(concluding ? ['conclusion'] : [])];
+  if (!fields(response, responseFields) || !record(response.placements)) return INVALID;
+  const relation = choose ? response.relation : payload.relation;
+  if (typeof relation !== 'string' || !EULER_RELATION_IDS.includes(relation as never)) return INVALID;
+  const items = payload.itemIds as string[];
+  const placements = response.placements;
+  const allowed = eulerRegionsFor(relation);
+  if (Object.keys(placements).length !== items.length || items.some((item) => typeof placements[item] !== 'string' || !allowed.includes(placements[item] as string))) return INVALID;
+  const regionSet = (value: unknown, regions: string[]) => Array.isArray(value) && value.length <= regions.length && new Set(value).size === value.length
+    && value.every((region) => typeof region === 'string' && regions.includes(region));
+  if (occupancy && !regionSet(response.occupied, allowed)) return INVALID;
+  if (concluding && !EULER_CONCLUSION_IDS.includes(response.conclusion as never)) return INVALID;
+  if (rubric === undefined) return grade('valid');
+  const rubricFields = ['regions', ...(choose ? ['relation'] : []), ...(occupancy ? ['occupied'] : []), ...(concluding ? ['conclusion'] : [])];
+  if (!fields(rubric, rubricFields) || !record(rubric.regions) || Object.keys(rubric.regions).length !== items.length) return INVALID;
+  const keyRelation = choose ? rubric.relation : payload.relation;
+  if (typeof keyRelation !== 'string' || !EULER_RELATION_IDS.includes(keyRelation as never)) return INVALID;
+  const keyAllowed = eulerRegionsFor(keyRelation);
+  const regions = rubric.regions;
+  if (items.some((item) => !keyAllowed.includes(regions[item] as string))) return INVALID;
+  // A region holding an item is occupied: the key's flags must include every region its items sit in.
+  if (occupancy && (!regionSet(rubric.occupied, keyAllowed) || items.some((item) => !(rubric.occupied as string[]).includes(regions[item] as string)))) return INVALID;
+  if (concluding && !EULER_CONCLUSION_IDS.includes(rubric.conclusion as never)) return INVALID;
+  if (choose && relation !== keyRelation) return grade('review', 'structure');
+  const wrong = items.filter((item) => placements[item] !== regions[item]).length;
+  if (wrong > 0) return grade('review', wrong < items.length ? 'partial' : 'structure');
+  if (occupancy) {
+    const marked = new Set(response.occupied as string[]);
+    const key = rubric.occupied as string[];
+    if (marked.size !== key.length || key.some((region) => !marked.has(region))) return grade('review', 'occupancy');
+  }
+  if (concluding && response.conclusion !== rubric.conclusion) return grade('review', 'conclusion');
+  return grade('met');
 }
 
 function detectionGrade(payload: unknown, response: unknown, rubric: unknown): V2Grade {
@@ -1008,22 +1088,7 @@ function scoreV2ExtendedDetailed(kind: V2VisualKind, payload: unknown, response:
       const selection = roles ? selectionDiagnostic([...flipped].map((card) => roles[card]!), cards.length === flipped.size) : null;
       return grade('review', selection ?? (missing && extra ? 'partial' : missing ? 'miss' : 'false_alarm'));
     }
-    case 'logic.euler.v2': {
-      if (!fields(payload, ['relation', 'itemIds']) || !strings(payload.itemIds, 2, 6) || !fields(response, ['placements']) || !record(response.placements)) return INVALID;
-      const relation = payload.relation;
-      if (relation !== 'overlap' && relation !== 'subset' && relation !== 'disjoint') return INVALID;
-      const items = payload.itemIds as string[];
-      const placements = response.placements;
-      // Impossible states: nothing is only-in-A when A sits inside B; nothing is in both when they never meet.
-      const allowed = relation === 'subset' ? ['second', 'both', 'neither'] : relation === 'disjoint' ? ['first', 'second', 'neither'] : ['first', 'second', 'both', 'neither'];
-      if (Object.keys(placements).length !== items.length || items.some((item) => typeof placements[item] !== 'string' || !allowed.includes(placements[item] as string))) return INVALID;
-      if (rubric === undefined) return grade('valid');
-      if (!fields(rubric, ['regions']) || !record(rubric.regions) || Object.keys(rubric.regions).length !== items.length) return INVALID;
-      const regions = rubric.regions;
-      if (items.some((item) => !allowed.includes(regions[item] as string))) return INVALID;
-      const wrong = items.filter((item) => placements[item] !== regions[item]).length;
-      return wrong === 0 ? grade('met') : grade('review', wrong < items.length ? 'partial' : 'structure');
-    }
+    case 'logic.euler.v2': return eulerGrade(payload, response, rubric);
     case 'logic.flowchart.v2':
     case 'money.spend-decision.v2': {
       if (record(payload) && payload.mode === 'build') return builtFlowGrade(payload, response, rubric);

@@ -1,0 +1,79 @@
+{
+  "expected_gate": 1,
+  "note": "Appendix P $1: the coin tray is for ages 6-9; a teen lesson cannot ship it",
+  "plan": {
+    "plan_version": 1,
+    "course_id": "financial-education",
+    "pathway_id": "financial-13-17",
+    "chapter_id": "coins-and-change",
+    "lesson_id": "v2-red-team-scope-coin-tray-teen",
+    "age_band": "13-17",
+    "eligibility": {
+      "minimum_age": 13,
+      "maximum_age": 17
+    },
+    "knowledge_component_ids": [
+      "kc-count-coins"
+    ],
+    "adventure_scene_id": "diorama-a",
+    "brief": "Dina cuenta monedas en su puesto de limonada, da cambio contando hacia arriba, ordena cosas en dos círculos y decide si comprar un juguete.",
+    "title": {
+      "en-US": "Coins at the stand",
+      "es-MX": "Monedas en el puesto",
+      "pt-BR": "Moedas na barraca"
+    },
+    "new_concepts": [
+      "kc-count-coins"
+    ],
+    "regional": {
+      "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+    },
+    "segments": [
+      {
+        "id": "coins-01",
+        "type": "money.coin-tray.v2",
+        "grading": "server",
+        "visual": {
+          "type": "coin-tray"
+        },
+        "item_role": "practice",
+        "knowledge_component_id": "kc-count-coins",
+        "payload": {
+          "currency": "coins",
+          "denominations": [
+            {
+              "value_minor": 10,
+              "kind": "coin",
+              "available": 3
+            },
+            {
+              "value_minor": 5,
+              "kind": "coin",
+              "available": 3
+            },
+            {
+              "value_minor": 1,
+              "kind": "coin",
+              "available": 6
+            }
+          ]
+        },
+        "rubric": {
+          "target_minor": 17,
+          "fewest": true
+        },
+        "copy": {
+          "en-US": {
+            "prompt": "Pay 17 coins with the fewest pieces."
+          },
+          "es-MX": {
+            "prompt": "Paga 17 monedas con la menor cantidad de piezas."
+          },
+          "pt-BR": {
+            "prompt": "Pague 17 moedas com o menor número de peças."
+          }
+        }
+      }
+    ]
+  }
+}

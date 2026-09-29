@@ -38,8 +38,10 @@ describe('Appendix P age scope (GAP-FIX-R2)', () => {
       expect(v2AgeScopeProblem(key, { age_band: 'adult', eligibility: { minimum_age: 18, maximum_age: 119 } }) === null, `${key} adult`).toBe(scope.adult);
       expect(v2AgeScopeProblem(key, { age_band: 'adult', eligibility: { minimum_age: 17, maximum_age: 119 } }), `${key} adult minor`).not.toBeNull();
     }
+    // GAP-FIX-R4: the logic tasks and scam spotting also open to adults (Appendix P's evidence was gathered with adults).
     expect(Object.entries(V2_AGE_SCOPE).filter(([, scope]) => scope.adult).map(([key]) => key).sort()).toEqual([
-      'logic.rule-builder.v2', 'math.ratio-table.v2', 'math.worked-example.v2', 'money.allocation.v2:donut', 'money.running-ledger.v2',
+      'logic.euler.v2', 'logic.flowchart.v2', 'logic.rule-builder.v2', 'logic.rule-checker.v2', 'logic.scam-spotter.v2', 'math.ratio-table.v2',
+      'math.worked-example.v2', 'money.allocation.v2:donut', 'money.running-ledger.v2', 'money.scam-check.v2', 'money.spend-decision.v2',
       'money.unit-price.v2', 'visual.growth-comparison.v2', 'visual.percent-grid.v2', 'visual.tax-bracket.v2',
     ]);
   });
@@ -61,6 +63,69 @@ describe('Appendix P age scope (GAP-FIX-R2)', () => {
     const ratio = (band: string) => v2PayloadScopeProblem({ type: 'math.ratio-table.v2', visual: { type: 'ratio-table' }, payload: { currency: 'local' } }, band);
     expect(ratio('10-12')).not.toBeNull();
     expect(ratio('adult')).toBeNull();
+  });
+
+  it('GAP-FIX-R4: every first-release kind has its Appendix P range (M2, L1, L5, L6, L10, L12, $1, $2, $9, $10, $11)', () => {
+    expect(Object.fromEntries(['math.number-line.whole.v2', 'logic.rule-checker.v2', 'logic.euler.v2', 'logic.flowchart.v2', 'money.spend-decision.v2',
+      'logic.sort-by-rule.v2', 'money.needs-wants.v2', 'logic.scam-spotter.v2', 'money.scam-check.v2', 'money.coin-tray.v2', 'money.making-change.v2']
+      .map((key) => [key, V2_AGE_SCOPE[key]?.ages]))).toEqual({
+      'math.number-line.whole.v2': [6, 9], 'logic.rule-checker.v2': [6, 17], 'logic.euler.v2': [6, 17], 'logic.flowchart.v2': [7, 17],
+      'money.spend-decision.v2': [7, 17], 'logic.sort-by-rule.v2': [6, 12], 'money.needs-wants.v2': [6, 12], 'logic.scam-spotter.v2': [10, 17],
+      'money.scam-check.v2': [10, 17], 'money.coin-tray.v2': [6, 9], 'money.making-change.v2': [7, 10],
+    });
+    // The two populations the audit named: scam classification for 6-9, and the 6-9 coin tray for a teen or an adult.
+    const at = (band: string, low: number, high: number) => ({ age_band: band, eligibility: { minimum_age: low, maximum_age: high } });
+    expect(v2AgeScopeProblem('money.scam-check.v2', at('6-9', 6, 9))).not.toBeNull();
+    expect(v2AgeScopeProblem('logic.scam-spotter.v2', at('6-9', 8, 9))).not.toBeNull();
+    expect(v2AgeScopeProblem('money.coin-tray.v2', at('13-17', 13, 17))).not.toBeNull();
+    expect(v2AgeScopeProblem('money.coin-tray.v2', at('adult', 18, 119))).not.toBeNull();
+    expect(v2AgeScopeProblem('money.coin-tray.v2', at('6-9', 6, 9))).toBeNull();
+  });
+
+  it('GAP-FIX-R4: refuses the content an age band may not see (Bible 05 §7 Logic row; Appendix P L1, L5, L6, L10)', () => {
+    const scope = (type: string, visual: string, payload: Record<string, unknown>, band: string) => v2PayloadScopeProblem({ type, visual: { type: visual }, payload }, band);
+    const walk = (questions: number) => ({ nodes: [...Array.from({ length: questions }, (_, i) => ({ id: `q${i}`, kind: 'question' })), { id: 'o', kind: 'outcome' }] });
+    // L6 / $9: at most 3 decisions for 6-9; older learners may walk longer charts.
+    expect(scope('logic.flowchart.v2', 'flowchart', walk(3), '6-9')).toBeNull();
+    expect(scope('logic.flowchart.v2', 'flowchart', walk(4), '6-9')).toMatch(/at most 3 decisions/);
+    expect(scope('money.spend-decision.v2', 'decision-tree', walk(4), '6-9')).toMatch(/at most 3 decisions/);
+    expect(scope('money.spend-decision.v2', 'decision-tree', walk(6), '10-12')).toBeNull();
+    // Bible 05 §7: 2 inputs for 10-12 (the rule builder's AND/OR joins two conditions).
+    const conditions = (n: number) => ({ level: 'connective', conditions: Array.from({ length: n }, (_, i) => ({ id: `c${i}` })) });
+    expect(scope('logic.rule-builder.v2', 'rule-builder', conditions(2), '10-12')).toBeNull();
+    expect(scope('logic.rule-builder.v2', 'rule-builder', conditions(3), '10-12')).toMatch(/at most 2 inputs/);
+    expect(scope('logic.rule-builder.v2', 'rule-builder', { ...conditions(3), level: 'nested' }, '13-17')).toBeNull();
+    // L1: abstract and causal rules from 13.
+    expect(scope('logic.rule-checker.v2', 'rule-cards', { rule_kind: 'abstract' }, '10-12')).not.toBeNull();
+    expect(scope('logic.rule-checker.v2', 'rule-cards', { rule_kind: 'causal' }, '6-9')).not.toBeNull();
+    expect(scope('logic.rule-checker.v2', 'rule-cards', { rule_kind: 'permission' }, '6-9')).toBeNull();
+    expect(scope('logic.rule-checker.v2', 'rule-cards', { rule_kind: 'abstract' }, '13-17')).toBeNull();
+    // L5: 6-9 two circles; nesting, choosing the diagram and occupancy from 10; syllogism conclusions from 13.
+    expect(scope('logic.euler.v2', 'euler', { relation: 'overlap' }, '6-9')).toBeNull();
+    expect(scope('logic.euler.v2', 'euler', { relation: 'subset' }, '6-9')).not.toBeNull();
+    expect(scope('logic.euler.v2', 'euler', { choose_relation: true }, '6-9')).not.toBeNull();
+    expect(scope('logic.euler.v2', 'euler', { relation: 'overlap', mark_occupancy: true }, '6-9')).not.toBeNull();
+    expect(scope('logic.euler.v2', 'euler', { relation: 'subset', mark_occupancy: true }, '10-12')).toBeNull();
+    expect(scope('logic.euler.v2', 'euler', { relation: 'subset', conclusion: { statement: 'x' } }, '10-12')).toMatch(/13 and up/);
+    expect(scope('logic.euler.v2', 'euler', { relation: 'subset', conclusion: { statement: 'x' } }, '13-17')).toBeNull();
+    expect(scope('logic.euler.v2', 'euler', { relation: 'subset', conclusion: { statement: 'x' } }, 'adult')).toBeNull();
+    // L10: 6-9 sort by a single rule (no switch, no "it depends"); both open at 10.
+    expect(scope('logic.sort-by-rule.v2', 'sort-bins', { switch_after: 2 }, '6-9')).toMatch(/single rule/);
+    expect(scope('logic.sort-by-rule.v2', 'sort-bins', { depends_bin_id: 'bin-x' }, '6-9')).toMatch(/single rule/);
+    expect(scope('logic.sort-by-rule.v2', 'sort-bins', { switch_after: 2, depends_bin_id: 'bin-x' }, '10-12')).toBeNull();
+    // $10 keeps "it depends" at 6-9 (Appendix P $10: "It depends is a valid bin").
+    expect(scope('money.needs-wants.v2', 'sort-bins', { depends_bin_id: 'bin-x' }, '6-9')).toBeNull();
+  });
+
+  it('GAP-FIX-R4: Core refuses the red-team documents at the delivery boundary', () => {
+    const row = (lessonId: string) => rows.find((item) => item.document.lesson_id === lessonId)!.document;
+    const young = row('v2-first-release-young-money');
+    expect(v2PublicLessonSchema.safeParse(young).success).toBe(true);
+    const asTeen = { ...young, age_band: '13-17', eligibility: { minimum_age: 13, maximum_age: 17 } };
+    expect(v2PublicLessonSchema.safeParse(asTeen).success).toBe(false);
+    const teen = row('v2-logic-syllogism');
+    expect(v2PublicLessonSchema.safeParse(teen).success).toBe(true);
+    expect(v2PublicLessonSchema.safeParse({ ...teen, age_band: '10-12', eligibility: { minimum_age: 10, maximum_age: 12 } }).success).toBe(false);
   });
 
   it('red-teams every Forge fixture: moved outside its kinds’ ranges, Core refuses the document', () => {

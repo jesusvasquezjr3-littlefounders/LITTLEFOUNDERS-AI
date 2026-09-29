@@ -55,19 +55,51 @@ function uniqueIds(values: ReadonlyArray<{ id: string }>): boolean {
 export const RULE_CARD_ROLES = ['p', 'not_p', 'q', 'not_q'] as const;
 export type RuleCardRole = (typeof RULE_CARD_ROLES)[number];
 
-/** L1: a conditional rule and the cards that could break it; the learner flips the ones that must be checked. */
+/**
+ * L1: a conditional rule and the cards that could break it; the learner flips
+ * the ones that must be checked. `rule_kind` (GAP-FIX-R4, Appendix P L1 ages
+ * column): 6-12 use permission rules only; abstract and causal rules open at
+ * 13 (v2PayloadScopeProblem). Absent: a permission rule.
+ */
+export const RULE_KINDS = ['permission', 'abstract', 'causal'] as const;
 export const ruleCheckerPayload = z.object({
   rule: label(160),
+  rule_kind: z.enum(RULE_KINDS).optional(),
   cards: z.array(z.object({ id, face: label(24) }).strict()).min(3).max(6),
 }).strict().refine((value) => uniqueIds(value.cards), 'Invalid rule cards');
 
-/** L5: two sets drawn as an Euler diagram in a declared relation; items are placed in regions. */
+/**
+ * L5: two sets drawn as an Euler diagram; items are placed in regions.
+ * GAP-FIX-R4 (Appendix P L5 "Place items; pick the diagram that matches a
+ * sentence"; graded on "item->region map; region occupancy flags; chosen
+ * conclusion"; syllogisms for 13-17):
+ * - either the payload declares the `relation`, or `choose_relation` asks the
+ *   learner to pick which of the three diagrams matches the `sentence` (the
+ *   right one is in the private rubric);
+ * - `mark_occupancy` asks the learner to mark which regions hold something
+ *   (the rubric's `occupied`);
+ * - `conclusion` (13-17 and adults) asks whether its statement follows
+ *   necessarily, possibly or never (the rubric's `conclusion`).
+ */
 export const EULER_REGIONS = ['first', 'second', 'both', 'neither'] as const;
+export const EULER_RELATIONS = ['overlap', 'subset', 'disjoint'] as const;
+export const EULER_CONCLUSIONS = ['necessarily', 'possibly', 'never'] as const;
 export const eulerPayload = z.object({
-  relation: z.enum(['overlap', 'subset', 'disjoint']),
+  relation: z.enum(EULER_RELATIONS).optional(),
+  choose_relation: z.literal(true).optional(),
+  sentence: label(200).optional(),
   sets: z.tuple([option, option]),
   items: z.array(option).min(2).max(6),
-}).strict().refine((value) => uniqueIds([...value.sets, ...value.items]), 'Invalid Euler items');
+  mark_occupancy: z.literal(true).optional(),
+  conclusion: z.object({ statement: label(200) }).strict().optional(),
+}).strict().refine((value) => uniqueIds([...value.sets, ...value.items])
+  && (value.relation === undefined) === (value.choose_relation === true)
+  && (value.choose_relation !== true || value.sentence !== undefined), 'Invalid Euler items');
+
+/** The regions a relation can hold: nothing is only-in-A when A sits inside B; nothing is in both when they never meet. */
+export function eulerRegions(relation: (typeof EULER_RELATIONS)[number]): Array<(typeof EULER_REGIONS)[number]> {
+  return relation === 'subset' ? ['second', 'both', 'neither'] : relation === 'disjoint' ? ['first', 'second', 'neither'] : ['first', 'second', 'both', 'neither'];
+}
 
 /** L6 / $9: a steppable flowchart or decision tree walked once per scenario. */
 const flowNode = z.object({
@@ -105,14 +137,36 @@ function validFlowchart(value: { start: string; nodes: Array<{ id: string; kind:
   return visit(value.start) && state.size === value.nodes.length;
 }
 
-/** L10 / $10: sort items into bins by a rule and say why; one bin is "it depends". */
+/**
+ * L10 / $10: sort items into bins by a rule and say why; one bin may be "it
+ * depends". GAP-FIX-R4 (Appendix P L10 "6-9 single rule; 10-12 rule switch
+ * and 'it depends'"; "the rule changes mid-task"): `depends_bin_id` is
+ * optional (a 6-9 single-rule sort has none), and `switch_after` with
+ * `second_bins` (and the new rule's `second_rule` text) changes the rule
+ * after that many items: the items from that index on go into the second bin
+ * set. The rubric names each item's accepted (bin, reason) pairs from its own
+ * phase; Core grades each phase.
+ */
 export const sortBinsPayload = z.object({
+  rule: label(160).optional(),
   bins: z.array(option).min(2).max(4),
-  depends_bin_id: id,
+  depends_bin_id: id.optional(),
   items: z.array(option).min(2).max(8),
   reasons: z.array(option).min(2).max(5),
-}).strict().refine((value) => uniqueIds([...value.bins, ...value.items, ...value.reasons])
-  && value.bins.some((bin) => bin.id === value.depends_bin_id), 'Invalid sort bins');
+  switch_after: z.number().int().min(1).max(7).optional(),
+  second_rule: label(160).optional(),
+  second_bins: z.array(option).min(2).max(4).optional(),
+}).strict().refine((value) => uniqueIds([...value.bins, ...(value.second_bins ?? []), ...value.items, ...value.reasons])
+  && (value.depends_bin_id === undefined || value.bins.some((bin) => bin.id === value.depends_bin_id))
+  && (value.switch_after === undefined) === (value.second_bins === undefined)
+  && (value.switch_after === undefined) === (value.second_rule === undefined)
+  && (value.switch_after === undefined || value.switch_after < value.items.length), 'Invalid sort bins');
+
+/** The bins an item may go into: its phase's set (GAP-FIX-R4 rule switch). */
+export function sortPhaseBins<T extends { id: string }>(payload: { bins: T[]; second_bins?: T[]; switch_after?: number; items: Array<{ id: string }> }, itemId: string): T[] {
+  const index = payload.items.findIndex((item) => item.id === itemId);
+  return payload.switch_after !== undefined && payload.second_bins && index >= payload.switch_after ? payload.second_bins : payload.bins;
+}
 
 /** L12 / $11: messages to classify; genuine messages are always in the set (enforced by the rubric). */
 export const messageListPayload = z.object({
@@ -277,7 +331,12 @@ const flowRubric = z.union([
 ]);
 export const V2_FAMILY_RUBRICS = {
   'logic.rule-checker.v2': z.object({ must_flip_ids: ids(1, 5), roles: z.record(id, z.enum(RULE_CARD_ROLES)).optional() }).strict(),
-  'logic.euler.v2': z.object({ regions: z.record(id, z.enum(EULER_REGIONS)) }).strict(),
+  'logic.euler.v2': z.object({
+    regions: z.record(id, z.enum(EULER_REGIONS)),
+    relation: z.enum(EULER_RELATIONS).optional(),
+    occupied: z.array(z.enum(EULER_REGIONS)).max(4).optional(),
+    conclusion: z.enum(EULER_CONCLUSIONS).optional(),
+  }).strict(),
   'logic.flowchart.v2': flowRubric,
   'money.spend-decision.v2': flowRubric,
   'logic.sort-by-rule.v2': z.object({ accepted: z.record(id, z.array(z.object({ bin: id, reason: id }).strict()).min(1).max(4)) }).strict(),
@@ -301,7 +360,12 @@ export const V2_FAMILY_RUBRICS = {
 export function v2FamilyScorerPayload(segment: V2FamilySegment): Record<string, unknown> {
   switch (segment.type) {
     case 'logic.rule-checker.v2': return { cardIds: segment.payload.cards.map((card) => card.id) };
-    case 'logic.euler.v2': return { relation: segment.payload.relation, itemIds: segment.payload.items.map((item) => item.id) };
+    case 'logic.euler.v2': return {
+      ...(segment.payload.relation ? { relation: segment.payload.relation } : { chooseRelation: true }),
+      itemIds: segment.payload.items.map((item) => item.id),
+      ...(segment.payload.mark_occupancy ? { occupancy: true } : {}),
+      ...(segment.payload.conclusion ? { conclusion: true } : {}),
+    };
     case 'logic.flowchart.v2':
     case 'money.spend-decision.v2': return 'mode' in segment.payload ? {
       mode: 'build', questionIds: segment.payload.questions.map((item) => item.id), outcomeIds: segment.payload.outcomes.map((item) => item.id),
@@ -314,6 +378,8 @@ export function v2FamilyScorerPayload(segment: V2FamilySegment): Record<string, 
     case 'money.needs-wants.v2': return {
       binIds: segment.payload.bins.map((bin) => bin.id), itemIds: segment.payload.items.map((item) => item.id),
       reasonIds: segment.payload.reasons.map((reason) => reason.id),
+      ...(segment.payload.switch_after !== undefined && segment.payload.second_bins
+        ? { switchAfter: segment.payload.switch_after, secondBinIds: segment.payload.second_bins.map((bin) => bin.id) } : {}),
     };
     case 'logic.scam-spotter.v2':
     case 'money.scam-check.v2': return { messageIds: segment.payload.messages.map((message) => message.id),
@@ -339,7 +405,9 @@ export function v2FamilyScorerPayload(segment: V2FamilySegment): Record<string, 
 export function v2FamilySampleResponse(segment: V2FamilySegment): unknown {
   switch (segment.type) {
     case 'logic.rule-checker.v2': return { flipped: [segment.payload.cards[0]!.id] };
-    case 'logic.euler.v2': return { placements: Object.fromEntries(segment.payload.items.map((item) => [item.id, 'neither'])) };
+    case 'logic.euler.v2': return { placements: Object.fromEntries(segment.payload.items.map((item) => [item.id, 'neither'])),
+      ...(segment.payload.choose_relation ? { relation: 'overlap' } : {}), ...(segment.payload.mark_occupancy ? { occupied: ['neither'] } : {}),
+      ...(segment.payload.conclusion ? { conclusion: 'possibly' } : {}) };
     case 'logic.flowchart.v2':
     case 'money.spend-decision.v2': {
       if ('mode' in segment.payload) return { tree: { q: segment.payload.questions[0]!.id, yes: { o: segment.payload.outcomes[0]!.id }, no: { o: segment.payload.outcomes[1]!.id } } };
@@ -351,7 +419,7 @@ export function v2FamilySampleResponse(segment: V2FamilySegment): unknown {
     }
     case 'logic.sort-by-rule.v2':
     case 'money.needs-wants.v2': return { placements: Object.fromEntries(segment.payload.items.map((item) => [item.id,
-      { bin: segment.payload.bins[0]!.id, reason: segment.payload.reasons[0]!.id }])) };
+      { bin: sortPhaseBins(segment.payload, item.id)[0]!.id, reason: segment.payload.reasons[0]!.id }])) };
     case 'logic.scam-spotter.v2':
     case 'money.scam-check.v2': return { flagged: [], ...(segment.payload.cues ? { cues: {} } : {}) };
     case 'money.coin-tray.v2': return { counts: Object.fromEntries(segment.payload.denominations.map((d) => [String(d.value_minor), 0])) };
@@ -467,6 +535,19 @@ export const V2_AGE_SCOPE: Readonly<Record<string, { ages: readonly [number, num
   'math.cpa-count.v2': { ages: [6, 12], adult: false }, // M1: 6-9, and 10-12 for new topics
   'money.allocation.v2:waffle': { ages: [6, 9], adult: false }, // $3 via M6 at 6-9
   'money.allocation.v2:donut': { ages: [10, 17], adult: true }, // $3 via M14-M15 at 10+
+  // GAP-FIX-R4 (Appendix P Parts 1-3 ages column, Part 4.10, OD-16): every other first-release kind.
+  // `adult` follows Appendix P's evidence column: the logic tasks and scam spotting were studied with adults.
+  'math.number-line.whole.v2': { ages: [6, 9], adult: false }, // M2
+  'logic.rule-checker.v2': { ages: [6, 17], adult: true }, // L1: 6-9 permission rules; 13-17 abstract and causal
+  'logic.euler.v2': { ages: [6, 17], adult: true }, // L5: 6-9 two circles; 10-12 nesting; 13-17 syllogisms
+  'logic.flowchart.v2': { ages: [7, 17], adult: true }, // L6: 7-9 at most 3 decisions; 13-17 build their own
+  'money.spend-decision.v2': { ages: [7, 17], adult: true }, // $9 (on L6, L2)
+  'logic.sort-by-rule.v2': { ages: [6, 12], adult: false }, // L10: 6-9 single rule; 10-12 rule switch and "it depends"
+  'money.needs-wants.v2': { ages: [6, 12], adult: false }, // $10
+  'logic.scam-spotter.v2': { ages: [10, 17], adult: true }, // L12
+  'money.scam-check.v2': { ages: [10, 17], adult: true }, // $11
+  'money.coin-tray.v2': { ages: [6, 9], adult: false }, // $1
+  'money.making-change.v2': { ages: [7, 10], adult: false }, // $2
 };
 
 const BAND_AGES: Readonly<Record<string, readonly [number, number]>> = { '6-9': [6, 9], '10-12': [10, 12], '13-17': [13, 17], adult: [18, 119] };
@@ -504,8 +585,33 @@ export function v2PayloadScopeProblem(segment: { type: string; visual: { type: s
   if ((segment.type === 'logic.flowchart.v2' || segment.type === 'money.spend-decision.v2') && payload.mode === 'build' && ageBand !== '13-17' && ageBand !== 'adult') {
     return 'Building a flowchart is open to ages 13 and up';
   }
+  // ($1/$2 trays may show the market's real money: Appendix P allows localised currency in recognition tasks.)
   if ((segment.type === 'math.ratio-table.v2' || segment.type === 'money.unit-price.v2') && payload.currency === 'local' && ageBand !== 'adult') {
     return 'Children count LittleFounders coins';
+  }
+  // GAP-FIX-R4 (Bible 05 §7 Logic row, Appendix P L6): a 6-9 flowchart walk has at most 3 decision points.
+  if ((segment.type === 'logic.flowchart.v2' || segment.type === 'money.spend-decision.v2') && Array.isArray(payload.nodes) && ageBand === '6-9'
+    && (payload.nodes as Array<{ kind?: unknown }>).filter((node) => node.kind === 'question').length > 3) {
+    return 'A flowchart for ages 6-9 has at most 3 decisions';
+  }
+  // Bible 05 §7 Logic row: at most 2 inputs for ages 10-12 (the L2 rule builder's AND/OR joins two conditions).
+  if (segment.type === 'logic.rule-builder.v2' && ageBand === '10-12' && Array.isArray(payload.conditions) && payload.conditions.length > 2) {
+    return 'A rule for ages 10-12 has at most 2 inputs';
+  }
+  // L1: 6-12 check permission rules only; abstract and causal rules open at 13.
+  if (segment.type === 'logic.rule-checker.v2' && payload.rule_kind !== undefined && payload.rule_kind !== 'permission' && (ageBand === '6-9' || ageBand === '10-12')) {
+    return 'Abstract and causal rules are open to ages 13 and up';
+  }
+  if (segment.type === 'logic.euler.v2') {
+    const young = ageBand === '6-9';
+    // L5: 6-9 place items in two circles (overlapping or apart); nesting, choosing the diagram and region flags open at 10.
+    if (young && (payload.relation === 'subset' || payload.choose_relation === true || payload.mark_occupancy === true)) return 'Nested circles and choosing the diagram open at 10';
+    // L5: syllogisms (the conclusion step) are for 13-17 and adults.
+    if (payload.conclusion !== undefined && (young || ageBand === '10-12')) return 'Syllogism conclusions are open to ages 13 and up';
+  }
+  // L10: 6-9 sort by a single rule; the rule switch and the "it depends" bin open at 10.
+  if (segment.type === 'logic.sort-by-rule.v2' && ageBand === '6-9' && (payload.switch_after !== undefined || payload.depends_bin_id !== undefined)) {
+    return 'Ages 6-9 sort by a single rule';
   }
   return null;
 }

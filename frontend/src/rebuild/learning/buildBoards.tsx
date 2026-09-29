@@ -36,6 +36,8 @@ export function UnitPriceBoard({ document, segment, onBack, sequence, onGrade }:
   const grading = useSegmentGrade(segment.id, onGrade);
   const [prices, setPrices] = useState<Record<string, string | null>>({});
   const [choice, setChoice] = useState<string | null>(null);
+  // GAP-FIX-R4 (Bible 05 §3): Reset remounts the typed answers (they keep their own text) and clears the choice.
+  const [round, setRound] = useState(0);
   const format = useMemo(() => {
     const money = new Intl.NumberFormat(document.locale, { style: 'currency', currency: localCurrency[document.locale], maximumFractionDigits: 2 });
     const plain = new Intl.NumberFormat(document.locale, { maximumFractionDigits: 2 });
@@ -49,8 +51,10 @@ export function UnitPriceBoard({ document, segment, onBack, sequence, onGrade }:
   const complete = offers.every((offer) => typeof prices[offer.id] === 'string') && choice !== null;
   const locked = grading.pending || grading.met;
   const perUnit = `${t.per} ${unit}`;
+  const typedAny = offers.some((offer) => prices[offer.id] !== undefined && prices[offer.id] !== null);
   return <BoardShell screen="unit-price" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={grading.met} verdict={verdictOf(grading)}
+    onReset={() => { grading.reset(); setPrices({}); setChoice(null); setRound((value) => value + 1); }} resetDisabled={(!typedAny && choice === null) || locked}
     foot={<GradedFoot locale={document.locale} grading={grading} canCheck={complete} sequence={sequence}
       onCheck={() => grading.check({ unit_prices: Object.fromEntries(offers.map((offer) => [offer.id, prices[offer.id]])), choice })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-offers`}>
@@ -63,7 +67,7 @@ export function UnitPriceBoard({ document, segment, onBack, sequence, onGrade }:
         ], unit: { label: perUnit, value: prices[offer.id] ? format(Number(prices[offer.id])) : '?' } }))} />
     </section>
     <section className="lf-learning-control-strip" aria-label={perUnit}>
-      {offers.map((offer) => <OfferPrice key={offer.id} label={`${offer.label}: ${perUnit}`} locale={document.locale} disabled={locked} onPrice={onPrice(offer.id)} />)}
+      {offers.map((offer) => <OfferPrice key={`${offer.id}-${round}`} label={`${offer.label}: ${perUnit}`} locale={document.locale} disabled={locked} onPrice={onPrice(offer.id)} />)}
       <RadioGroup legend={t.better} name={`${segment.id}-better`} disabled={locked} value={choice}
         options={offers.map((offer) => ({ value: offer.id, label: offer.label }))} onValueChange={(value) => { grading.reset(); setChoice(value); }} />
     </section>
@@ -121,8 +125,15 @@ export function RuleBuilderBoard({ document, segment, onBack, sequence, onGrade 
   // A link appears once the literal before it is in play; its literal appears once the link is AND or OR.
   const shown = (index: number) => index === 0 || ops.slice(0, index - 1).every((op) => op !== 'none');
   const ruleLine = `${t.ifWord} ${expr ? ruleText(expr, label, t) : '?'} ${t.thenWord} ${actionLabel(then)} ${t.elseWord} ${actionLabel(otherwise)}`;
+  const changed = literals.some((literal) => literal.cond !== null || literal.not) || ops.some((op) => op !== 'none') || then !== null || otherwise !== null || ran;
+  const reset = () => {
+    touch();
+    setLiterals(Array.from({ length: slots }, () => ({ cond: null, not: false })));
+    setOps(Array.from({ length: slots - 1 }, () => 'none' as Op));
+    setThen(null); setOtherwise(null);
+  };
   return <BoardShell screen="rule-builder" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
-    finished={grading.met} verdict={verdictOf(grading)}
+    finished={grading.met} verdict={verdictOf(grading)} onReset={reset} resetDisabled={!changed || locked}
     foot={<GradedFoot locale={document.locale} grading={grading} canCheck={complete} sequence={sequence}
       onCheck={() => grading.check({ rule: { if: expr, then, else: otherwise } })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-rule`}>
@@ -207,6 +218,7 @@ export function FlowchartBuildBoard({ document, segment, onBack, sequence, onGra
   };
   return <BoardShell screen={segment.type === 'money.spend-decision.v2' ? 'spend-decision-build' : 'flowchart-build'} locale={document.locale} title={document.title}
     segment={segment} onBack={onBack} sequence={sequence} finished={grading.met} verdict={verdictOf(grading)}
+    onReset={() => { grading.reset(); setTested(false); setDraft(EMPTY); }} resetDisabled={(draft.kind === 'empty' && !tested) || locked}
     foot={<GradedFoot locale={document.locale} grading={grading} canCheck={tree !== null} sequence={sequence} onCheck={() => grading.check({ tree })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-chart`}>
       <h2 id={`${segment.id}-chart`} data-copy-role="heading">{t.chart}</h2>

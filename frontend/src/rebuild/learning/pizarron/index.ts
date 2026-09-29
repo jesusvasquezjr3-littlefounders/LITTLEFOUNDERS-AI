@@ -15,11 +15,14 @@ export {
   FunctionMachineVisual, GoalBulletVisual, GrowthCompareVisual, NumberAxisVisual, PercentGridVisual, SavingsLineVisual, StackedSlicesVisual,
 } from './lessonVisuals';
 export type { ComparePoint, LinePoint, PocketAmount, RuleCondition, StackSlice, WalletPocket } from './lessonVisuals';
+// GAP-FIX-R4 (B.7): the concept pictures, shared with the Mentor's board.
+export { RiskReturnVisual, StackedColumnsVisual, SupplyDemandVisual } from './conceptVisuals';
+export type { Column, ColumnPart, PlotLine, PlotPoint } from './conceptVisuals';
 // Bible 05 §5 (GAP-FIX-R2): KaTeX notation, loaded only when a board shows notation.
 export { MathExpression, localizeTex } from './MathExpression';
 export type {
   ChanceOutcome, CoinGroup, GrowthSeries, LedgerEntry, LineJump, LineMark, PictographRow, RatioGroup, RatioLine, RatioTick, SeriesBarRow, SeriesTone,
-  SortBin, TallyRow, TapeRow, TapeSegment, TextCard, WaffleCategory, WorkedStep, WorkedStepRow,
+  SortBin, TallyRow, TapeRow, TapeSegment, TextCard, WaffleCategory, WorkedStep, WorkedStepRow, DropTargetProps, VennRegionKey,
 } from './visuals';
 
 export const PIZARRON_VISUALS = [
@@ -33,5 +36,7 @@ export const PIZARRON_VISUALS = [
   'SavingsLineVisual', 'StackedSlicesVisual',
   // Notation (GAP-FIX-R2).
   'MathExpression',
+  // The concept pictures (GAP-FIX-R4).
+  'RiskReturnVisual', 'StackedColumnsVisual', 'SupplyDemandVisual',
 ] as const;
 export type PizarronVisualName = (typeof PIZARRON_VISUALS)[number];

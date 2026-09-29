@@ -1,0 +1,368 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "coins-and-change",
+  "lesson_id": "v2-first-release-young-money",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 7,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-count-coins",
+    "kc-make-change",
+    "kc-sets",
+    "kc-decision-steps"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Dina cuenta monedas en su puesto de limonada, da cambio contando hacia arriba, ordena cosas en dos círculos y decide si comprar un juguete.",
+  "title": {
+    "en-US": "Coins at the stand",
+    "es-MX": "Monedas en el puesto",
+    "pt-BR": "Moedas na barraca"
+  },
+  "new_concepts": [
+    "kc-count-coins",
+    "kc-make-change"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "coins-01",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "kc-count-coins",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 6
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 17,
+        "fewest": true
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Pay 17 coins with the fewest pieces."
+        },
+        "es-MX": {
+          "prompt": "Paga 17 monedas con la menor cantidad de piezas."
+        },
+        "pt-BR": {
+          "prompt": "Pague 17 moedas com o menor número de peças."
+        }
+      }
+    },
+    {
+      "id": "change-01",
+      "type": "money.making-change.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "kc-make-change",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 6
+          }
+        ],
+        "price_minor": 13,
+        "paid_minor": 20
+      },
+      "rubric": {
+        "change_minor": 7
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A juice costs 13 coins and you got 20. Give the change."
+        },
+        "es-MX": {
+          "prompt": "Un jugo cuesta 13 monedas y te dieron 20. Da el cambio."
+        },
+        "pt-BR": {
+          "prompt": "Um suco custa 13 moedas e você recebeu 20. Dê o troco."
+        }
+      }
+    },
+    {
+      "id": "euler-young",
+      "type": "logic.euler.v2",
+      "grading": "server",
+      "visual": {
+        "type": "euler"
+      },
+      "knowledge_component_id": "kc-sets",
+      "payload": {
+        "relation": "overlap",
+        "sets": [
+          {
+            "id": "set-round"
+          },
+          {
+            "id": "set-shiny"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-coin"
+          },
+          {
+            "id": "item-ball"
+          },
+          {
+            "id": "item-spoon"
+          }
+        ]
+      },
+      "rubric": {
+        "regions": {
+          "item-coin": "both",
+          "item-ball": "first",
+          "item-spoon": "second"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Place each thing in the circles.",
+          "sets": [
+            {
+              "label": "Round"
+            },
+            {
+              "label": "Shiny"
+            }
+          ],
+          "items": [
+            {
+              "label": "Coin"
+            },
+            {
+              "label": "Ball"
+            },
+            {
+              "label": "Spoon"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Coloca cada cosa en los círculos.",
+          "sets": [
+            {
+              "label": "Redondo"
+            },
+            {
+              "label": "Brillante"
+            }
+          ],
+          "items": [
+            {
+              "label": "Moneda"
+            },
+            {
+              "label": "Pelota"
+            },
+            {
+              "label": "Cuchara"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada coisa nos círculos.",
+          "sets": [
+            {
+              "label": "Redondo"
+            },
+            {
+              "label": "Brilhante"
+            }
+          ],
+          "items": [
+            {
+              "label": "Moeda"
+            },
+            {
+              "label": "Bola"
+            },
+            {
+              "label": "Colher"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sort-young",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "knowledge_component_id": "kc-sets",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-even"
+          },
+          {
+            "id": "bin-odd"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-two"
+          },
+          {
+            "id": "item-five"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-pairs"
+          },
+          {
+            "id": "why-one-left"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-two": [
+            {
+              "bin": "bin-even",
+              "reason": "why-pairs"
+            }
+          ],
+          "item-five": [
+            {
+              "bin": "bin-odd",
+              "reason": "why-one-left"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sort the coin piles.",
+          "rule": "Even or odd?",
+          "bins": [
+            {
+              "label": "Even"
+            },
+            {
+              "label": "Odd"
+            }
+          ],
+          "items": [
+            {
+              "label": "2 coins"
+            },
+            {
+              "label": "5 coins"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "They make pairs"
+            },
+            {
+              "label": "One is left over"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ordena las pilas de monedas.",
+          "rule": "¿Par o impar?",
+          "bins": [
+            {
+              "label": "Par"
+            },
+            {
+              "label": "Impar"
+            }
+          ],
+          "items": [
+            {
+              "label": "2 monedas"
+            },
+            {
+              "label": "5 monedas"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Forman pares"
+            },
+            {
+              "label": "Sobra una"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Separe as pilhas de moedas.",
+          "rule": "Par ou ímpar?",
+          "bins": [
+            {
+              "label": "Par"
+            },
+            {
+              "label": "Ímpar"
+            }
+          ],
+          "items": [
+            {
+              "label": "2 moedas"
+            },
+            {
+              "label": "5 moedas"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Formam pares"
+            },
+            {
+              "label": "Sobra uma"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

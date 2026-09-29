@@ -199,3 +199,23 @@
 .lf-math .katex { font-size: 1.15em; color: inherit; }
 .lf-math-katex, .lf-math-fallback { display: inline-block; max-inline-size: 100%; }
 .lf-math-fallback { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* GAP-FIX-R4: notes in the coin family (Bible 05 §2, §7 Money): a simplified reward token with the ridge outline. */
+.lf-pz-coin-bill { inline-size: 30px; block-size: 16px; border-radius: var(--rounded-sm); background: var(--reward); box-shadow: inset 0 0 0 2px var(--reward-ridge); }
+/* The Euler layouts and a board's drop targets (Bible 05 §4: the region highlights while an object is carried). */
+.lf-pz-venn-regions[data-regions='2'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.lf-pz-venn-regions[data-regions='4'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.lf-pz [data-drop-target] { min-block-size: var(--target-base); border-radius: var(--rounded-md); padding: var(--spacing-2); box-shadow: inset 0 0 0 2px var(--outline); }
+.lf-pz [data-drop-target][data-drop-selected='true'] { box-shadow: inset 0 0 0 3px var(--primary-strong); background: var(--primary-soft); }
+.lf-pz [data-drop-target][data-drop-armed='true'] { cursor: pointer; }
+
+/* GAP-FIX-R4 (Bible 05 §5): concept plots. Marks in the SVG; every word an HTML label over it, 14 px, wrapping. */
+.lf-pz-plot-area { position: relative; margin-block: 1.75rem; margin-inline-start: 0.5rem; }
+.lf-pz-plot-area svg { display: block; inline-size: 100%; block-size: auto; aspect-ratio: 3 / 2; max-block-size: 280px; overflow: visible; }
+.lf-pz-plot-labels { position: absolute; inset: 0; pointer-events: none; }
+.lf-pz-plot-label { position: absolute; transform: translate(6px, -110%); max-inline-size: 42%; font-size: .875rem; font-weight: 700; line-height: 1.2; overflow-wrap: anywhere; }
+.lf-pz-plot-axis { position: absolute; font-size: .875rem; font-weight: 700; max-inline-size: 60%; overflow-wrap: anywhere; }
+.lf-pz-plot-axis--x { inset-inline-end: 0; inset-block-start: calc(100% + 4px); text-align: end; }
+.lf-pz-plot-axis--y { inset-inline-start: 0; inset-block-end: calc(100% + 4px); }
+.lf-growth-compare-chart { position: relative; }
+.lf-pz-threshold-label { position: absolute; inset-inline-start: 10%; transform: translateY(-110%); font-size: .875rem; font-weight: 700; max-inline-size: 60%; overflow-wrap: anywhere; }

@@ -4,13 +4,13 @@
   "plan": {
     "plan_version": 1,
     "course_id": "financial-education",
-    "pathway_id": "financial-10-12",
+    "pathway_id": "financial-young",
     "chapter_id": "clear-thinking",
     "lesson_id": "v2-red-team-gate03-currency-facts",
-    "age_band": "10-12",
+    "age_band": "6-9",
     "eligibility": {
-      "minimum_age": 10,
-      "maximum_age": 12
+      "minimum_age": 7,
+      "maximum_age": 9
     },
     "knowledge_component_ids": [
       "kc-make-change"
@@ -91,13 +91,13 @@
         },
         "copy": {
           "en-US": {
-            "prompt": "At the yard sale a juice costs 13; you paid 20. Give change."
+            "prompt": "At the yard sale, juice costs 13. You paid 20."
           },
           "es-MX": {
-            "prompt": "En el tianguis un jugo cuesta 13; pagaste 20. Da el cambio."
+            "prompt": "En el tianguis, un jugo cuesta 13. Pagaste 20."
           },
           "pt-BR": {
-            "prompt": "Na feira livre um suco custa 13; você pagou 20. Dê o troco."
+            "prompt": "Na feira livre, um suco custa 13. Você pagou 20."
           }
         }
       }

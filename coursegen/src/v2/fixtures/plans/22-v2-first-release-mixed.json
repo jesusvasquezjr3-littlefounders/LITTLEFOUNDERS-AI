@@ -11,8 +11,7 @@
   },
   "knowledge_component_ids": [
     "kc-needs-wants",
-    "kc-message-safety",
-    "kc-count-coins"
+    "kc-message-safety"
   ],
   "adventure_scene_id": "diorama-b",
   "mentor_stage": {
@@ -391,51 +390,6 @@
         }
       },
       "item_phase": "pre"
-    },
-    {
-      "id": "coins-01",
-      "type": "money.coin-tray.v2",
-      "grading": "server",
-      "visual": {
-        "type": "coin-tray"
-      },
-      "item_role": "practice",
-      "knowledge_component_id": "kc-count-coins",
-      "payload": {
-        "currency": "coins",
-        "denominations": [
-          {
-            "value_minor": 10,
-            "kind": "coin",
-            "available": 3
-          },
-          {
-            "value_minor": 5,
-            "kind": "coin",
-            "available": 3
-          },
-          {
-            "value_minor": 1,
-            "kind": "coin",
-            "available": 6
-          }
-        ]
-      },
-      "rubric": {
-        "target_minor": 17,
-        "fewest": true
-      },
-      "copy": {
-        "en-US": {
-          "prompt": "Pay 17 coins with the fewest pieces."
-        },
-        "es-MX": {
-          "prompt": "Paga 17 monedas con la menor cantidad de piezas."
-        },
-        "pt-BR": {
-          "prompt": "Pague 17 moedas com o menor número de peças."
-        }
-      }
     },
     {
       "id": "story-01",

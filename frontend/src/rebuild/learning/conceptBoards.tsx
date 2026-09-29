@@ -4,9 +4,10 @@ import { TeachingChart } from './charts/TeachingChart';
 import { conceptCopy, conceptMoney, conceptPercent, fill } from './conceptCopy';
 import type { LessonClientDocument, LessonClientSegment } from './lessonDocument';
 import type { LessonSequenceControl } from './lessonSequence';
-import { BeforeAfter, CurveShift, DragPoint, GhostTracePlot, GuidedSandbox, ReactiveText, ScaleToggle, ThresholdPlot, TradeOffChooser, useGhost, WhatIfBranch } from './operations/operations';
-import { polyline, tokensLeft } from './operations/operationsModel';
-import { BoardShell, GradedFoot, NumberAnswer, useSegmentGrade, ViewedFoot, type OnGradeSegment } from './segmentKit';
+import { BeforeAfter, ChartOrTable, CurveShift, DragPoint, GhostTracePlot, GuidedSandbox, ReactiveText, ScaleToggle, ThresholdPlot, TradeOffChooser, useGhost, WhatIfBranch } from './operations/operations';
+import { tokensLeft } from './operations/operationsModel';
+import { GrowthLinesVisual, RiskReturnVisual, StackedColumnsVisual, SupplyDemandVisual } from './pizarron';
+import { BoardShell, GradedFoot, NumberAnswer, playerCopy, useSegmentGrade, ViewedFoot, type OnGradeSegment } from './segmentKit';
 import { amortizationSchedule, compoundValue, equilibrium, lemonadeDay, payoff, portfolio, type PayoffResult } from './v2ConceptBoards.generated';
 import './conceptBoards.css';
 
@@ -24,6 +25,17 @@ interface BoardProps<T extends LessonClientSegment['type']> {
   document: LessonClientDocument; segment: Seg<T>; onBack: () => void; sequence?: LessonSequenceControl; onGrade?: OnGradeSegment;
 }
 const verdictOf = (grading: ReturnType<typeof useSegmentGrade>) => grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null;
+/** Bible 05 §3/§6 (GAP-FIX-R4): the "Show as table" labels of the player, in the lesson's locale. */
+const tableLabels = (locale: LessonClientDocument['locale']) => ({ showTable: playerCopy(locale).showTable, showChart: playerCopy(locale).showChart });
+/** A two-or-more column data table for a concept chart (the same numbers the chart draws). */
+function DataTable({ label, columns, rows }: { label: string; columns: readonly string[]; rows: ReadonlyArray<{ id: string | number; cells: readonly string[] }> }) {
+  return <table className="lf-learning-table" aria-label={label}>
+    <thead><tr>{columns.map((column) => <th key={column} scope="col" data-copy-role="data">{column}</th>)}</tr></thead>
+    <tbody>{rows.map((row) => <tr key={row.id}>{row.cells.map((cell, index) => index === 0
+      ? <th key={index} scope="row" data-label={columns[0]} data-copy-role="data">{cell}</th>
+      : <td key={index} data-label={columns[index]} data-copy-role="data">{cell}</td>)}</tr>)}</tbody>
+  </table>;
+}
 /** A typed canonical amount in the board's unit: whole coins, or minor units of the market currency. */
 function toMinor(canonical: string | null, currency: 'coins' | 'local'): string | null {
   if (canonical === null) return null;
@@ -45,25 +57,23 @@ export function AmortizationBoard({ document, segment, onBack, sequence, onGrade
   const row = month > 0 ? rows[month - 1]! : null;
   const before = month <= 1 ? p.principal_minor : rows[month - 2]!.balance;
   const hideAfter = graded && !grading.met;
-  const maxPayment = Math.max(...rows.map((r) => r.payment), 1);
   const go = (next: number) => { grading.reset(); setMonth(Math.min(rows.length, Math.max(0, next))); };
   const balance = toMinor(typed, p.currency);
+  // The table never shows a balance the learner is asked for.
+  const shownRows = rows.filter((r) => !hideAfter || r.month < month);
   return <BoardShell screen="amortization" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={graded ? grading.met : true} verdict={verdictOf(grading)}
+    onReset={() => go(0)} resetDisabled={month === 0 || grading.pending || grading.met}
     foot={graded ? <GradedFoot locale={document.locale} grading={grading} canCheck={month > 0 && balance !== null} sequence={sequence} onCheck={() => grading.check({ month, balance })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} ready={month > 0} />}>
     <section className="lf-learning-board lf-concept-board" aria-label={t.schedule} data-operation="operation.step-replay.v1">
-      <svg className="lf-concept-bars" viewBox={`0 0 ${rows.length * 12} 80`} preserveAspectRatio="none" aria-hidden="true">
-        {rows.map((r, index) => {
-          const h = r.payment / maxPayment * 76; const hi = r.interest / maxPayment * 76;
-          return <g key={r.month} data-current={r.month === month || undefined} className="lf-concept-bar">
-            <rect className="lf-concept-bar-principal" x={index * 12 + 1} y={80 - h} width="10" height={h - hi} />
-            <rect className="lf-concept-bar-interest" x={index * 12 + 1} y={80 - hi} width="10" height={hi} />
-          </g>;
-        })}
-      </svg>
-      <ul className="lf-concept-legend"><li data-copy-role="data"><i className="lf-concept-key lf-concept-key--interest" aria-hidden="true" />{t.interest}</li>
-        <li data-copy-role="data"><i className="lf-concept-key lf-concept-key--principal" aria-hidden="true" />{t.toLoan}</li></ul>
+      <ChartOrTable labels={tableLabels(document.locale)}
+        chart={<StackedColumnsVisual label={`${t.schedule}. ${fill(t.monthN, { n: month })}`}
+          keys={[{ id: 'interest', label: t.interest, series: 'berry' }, { id: 'principal', label: t.toLoan, series: 'sky' }]}
+          columns={rows.map((r) => ({ id: String(r.month), current: r.month === month,
+            parts: [{ id: 'interest', value: r.interest, series: 'berry' as const }, { id: 'principal', value: r.principal, series: 'sky' as const }] }))} />}
+        table={<DataTable label={t.schedule} columns={[t.month, t.payment, t.interest, t.toLoan, t.balanceAfter]}
+          rows={shownRows.map((r) => ({ id: r.month, cells: [String(r.month), money(r.payment), money(r.interest), money(r.principal), money(r.balance)] }))} />} />
       <Slider label={t.month} valueText={fill(t.monthN, { n: month })} min={0} max={rows.length} value={month} onValueChange={go}
         stepLabels={{ decrease: t.less, increase: t.more }} />
       <dl className="lf-concept-facts" aria-live="polite">
@@ -99,28 +109,38 @@ export function SupplyDemandBoard({ document, segment, onBack, sequence, onGrade
   const set = (curve: 'demand' | 'supply', value: number) => { grading.reset(); setShift((s) => ({ ...s, [curve]: value })); };
   const qd = Math.min(qMax, a / p.demand.slope);
   const qs = Math.min(qMax, Math.max(0, (pMax - c) / p.supply.slope));
+  const nx = (q: number) => q / qMax; const ny = (value: number) => value / pMax;
+  const moved = shift.demand !== 0 || shift.supply !== 0;
   return <BoardShell screen="supply-demand" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={graded ? grading.met : true} verdict={verdictOf(grading)}
+    onReset={() => { grading.reset(); setShift({ demand: 0, supply: 0 }); setPrice(null); }} resetDisabled={(!moved && price === null) || grading.pending || grading.met}
     foot={graded ? <GradedFoot locale={document.locale} grading={grading} canCheck={price !== null} sequence={sequence}
       onCheck={() => grading.check({ demand_shift: shift.demand, supply_shift: shift.supply, price })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} ready={shift.demand !== 0 || shift.supply !== 0} />}>
     <section className="lf-learning-board lf-concept-board">
+      {/* GAP-FIX-R4 (B.7; Bible 05 §5, §6): the shared Pizarrón picture; words are HTML; the handles are pointer-only
+          inside the aria-hidden drawing, and the steppers below are the accessible way to move each curve. */}
       <figure className="lf-op">
-        <svg viewBox={`-30 -10 ${W + 40} ${H + 30}`} role="img" aria-label={`${t.market}. ${t.priceNow}: ${number.format(eq.price)}. ${p.labels.quantity}: ${number.format(eq.quantity)}.`}>
-          <line className="lf-op-axis" x1="0" y1={H} x2={W} y2={H} /><line className="lf-op-axis" x1="0" y1="0" x2="0" y2={H} />
-          <text className="lf-op-label" x={W - 60} y={H + 18}>{p.labels.quantity}</text>
-          <text className="lf-op-label" x="-28" y="-2">{p.labels.price}</text>
-          <line className="lf-op-line" x1={x(0)} y1={y(a)} x2={x(qd)} y2={y(a - p.demand.slope * qd)} />
-          <line className="lf-op-line lf-op-line--second" x1={x(0)} y1={y(c)} x2={x(qs)} y2={y(c + p.supply.slope * qs)} />
-          <text className="lf-op-label" x={x(qd * 0.1) + 4} y={y(a - p.demand.slope * qd * 0.1) - 10}>{p.labels.demand}</text>
-          <text className="lf-op-label" x={x(qs * 0.9) - 30} y={y(c + p.supply.slope * qs * 0.9) - 10}>{p.labels.supply}</text>
-          <line className="lf-concept-guide" x1="0" y1={y(eq.price)} x2={x(eq.quantity)} y2={y(eq.price)} />
-          <circle className="lf-concept-eq" cx={x(eq.quantity)} cy={y(eq.price)} r="6" />
-          <DragPoint x={x(qd * 0.2)} y={y(a - p.demand.slope * qd * 0.2)} axis="y" length={unit * 2 * p.max_shift} value={shift.demand} min={-p.max_shift} max={p.max_shift}
-            label={fill(t.shift, { x: p.labels.demand })} valueText={fill(t.shiftValue, { n: shift.demand })} onChange={(value) => set('demand', value)} disabled={grading.met} />
-          <DragPoint x={x(qs * 0.8)} y={y(c + p.supply.slope * qs * 0.8)} axis="y" length={unit * 2 * p.max_shift} value={shift.supply} min={-p.max_shift} max={p.max_shift}
-            label={fill(t.shift, { x: p.labels.supply })} valueText={fill(t.shiftValue, { n: shift.supply })} onChange={(value) => set('supply', value)} disabled={grading.met} />
-        </svg>
+        <ChartOrTable labels={tableLabels(document.locale)}
+          chart={<SupplyDemandVisual label={`${t.market}. ${t.priceNow}: ${number.format(eq.price)}. ${p.labels.quantity}: ${number.format(eq.quantity)}.`}
+            xLabel={p.labels.quantity} yLabel={p.labels.price} point={{ x: nx(eq.quantity), y: ny(eq.price) }}
+            lines={[
+              { id: 'demand', label: p.labels.demand, series: 'sky', from: { x: 0, y: ny(a) }, to: { x: nx(qd), y: ny(a - p.demand.slope * qd) },
+                labelAt: { x: nx(qd * 0.1), y: ny(a - p.demand.slope * qd * 0.1) } },
+              { id: 'supply', label: p.labels.supply, series: 'berry', from: { x: 0, y: ny(c) }, to: { x: nx(qs), y: ny(c + p.supply.slope * qs) },
+                labelAt: { x: nx(qs * 0.7), y: ny(c + p.supply.slope * qs * 0.7) } },
+            ]}
+            overlay={<>
+              <DragPoint presentational x={x(qd * 0.2)} y={y(a - p.demand.slope * qd * 0.2)} axis="y" length={unit * 2 * p.max_shift} value={shift.demand} min={-p.max_shift} max={p.max_shift}
+                label={fill(t.shift, { x: p.labels.demand })} valueText={fill(t.shiftValue, { n: shift.demand })} onChange={(value) => set('demand', value)} disabled={grading.met} />
+              <DragPoint presentational x={x(qs * 0.8)} y={y(c + p.supply.slope * qs * 0.8)} axis="y" length={unit * 2 * p.max_shift} value={shift.supply} min={-p.max_shift} max={p.max_shift}
+                label={fill(t.shift, { x: p.labels.supply })} valueText={fill(t.shiftValue, { n: shift.supply })} onChange={(value) => set('supply', value)} disabled={grading.met} />
+            </>} />}
+          table={<DataTable label={t.market} columns={['', p.labels.quantity, p.labels.price]} rows={[
+            { id: 'demand', cells: [p.labels.demand, number.format(0), number.format(a)] },
+            { id: 'supply', cells: [p.labels.supply, number.format(0), number.format(c)] },
+            { id: 'now', cells: [t.priceNow, number.format(eq.quantity), number.format(eq.price)] },
+          ]} />} />
         <figcaption className="lf-op-status" aria-live="polite" data-copy-role="data">{`${t.priceNow}: ${number.format(eq.price)}`}</figcaption>
       </figure>
       <div className="lf-concept-controls">
@@ -148,6 +168,7 @@ export function OpportunityCostBoard({ document, segment, onBack, sequence }: Bo
   const left = tokensLeft(p.options, picked, p.tokens);
   const done = picked.length > 0 && p.options.every((option) => picked.includes(option.id) || option.cost > left);
   return <BoardShell screen="opportunity-cost" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
+    onReset={() => setPicked([])} resetDisabled={picked.length === 0}
     finished={done} foot={<ViewedFoot locale={document.locale} sequence={sequence} ready={done} />}>
     <section className="lf-learning-board lf-concept-board">
       <TradeOffChooser legend={t.choose} tokens={p.tokens} options={p.options} picked={picked} onChange={setPicked}
@@ -175,8 +196,10 @@ export function InflationBoard({ document, segment, onBack, sequence, onGrade }:
   const cost = compoundValue(p.price_minor, rate, years);
   const top = compoundValue(p.price_minor, p.max_rate_bps, extent);
   const change = (id: string, value: number) => { grading.reset(); if (id === 'rate') setRate(value); else setYears(value); };
+  const changed = rate !== p.min_rate_bps || years !== p.min_years || scale !== 'near' || later || guess !== p.price_minor;
+  const reset = () => { grading.reset(); setRate(p.min_rate_bps); setYears(p.min_years); setScale('near'); setLater(false); setGuess(p.price_minor); };
   return <BoardShell screen="inflation" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
-    finished={graded ? grading.met : true} verdict={verdictOf(grading)}
+    finished={graded ? grading.met : true} verdict={verdictOf(grading)} onReset={reset} resetDisabled={!changed || grading.pending || grading.met}
     foot={graded ? <GradedFoot locale={document.locale} grading={grading} canCheck sequence={sequence} onCheck={() => grading.check({ rateBps: rate, years, predictionMinor: guess })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} />}>
     <section className="lf-learning-board lf-concept-board" data-operation="operation.parameter-slider.v1">
@@ -186,10 +209,12 @@ export function InflationBoard({ document, segment, onBack, sequence, onGrade }:
         t.sentence[2],
       ]} />
       <div data-operation="operation.scale-toggle.v1"><ScaleToggle legend={t.view} value={scale} onChange={setScale} options={[{ value: 'near', label: t.near }, { value: 'far', label: t.far }]} /></div>
-      {hide ? null : <svg className="lf-concept-line" viewBox="-4 -4 308 128" role="img" aria-label={`${money(series[0]!)} → ${money(series[series.length - 1]!)}`}>
-        <line className="lf-op-axis" x1="0" y1="120" x2="300" y2="120" />
-        <polyline className="lf-op-line" points={polyline(series, 300, 120, top)} />
-      </svg>}
+      {/* GAP-FIX-R4 (B.7): the price line is the shared Pizarrón growth lines, with its table one press away. */}
+      {hide ? null : <ChartOrTable labels={tableLabels(document.locale)}
+        chart={<GrowthLinesVisual label={`${money(series[0]!)} → ${money(series[series.length - 1]!)}`} max={top}
+          series={[{ id: 'price', label: t.price, values: series, endText: money(series[series.length - 1]!), series: 'sky' }]}
+          startLabel={t.today} endLabel={fill(t.laterN, { n: extent })} maxText={money(top)} />}
+        table={<DataTable label={t.growth} columns={[t.years, t.price]} rows={series.map((value, year) => ({ id: year, cells: [String(year), money(value)] }))} />} />}
       <BeforeAfter label={t.later} stateLabels={{ on: fill(t.laterN, { n: years }), off: t.today }} value={later} onChange={setLater}
         before={<p data-copy-role="data">{fill(t.costsThen, { x: money(p.price_minor) })}</p>}
         after={<p data-copy-role="data">{fill(t.costsThen, { x: hide ? t.hidden : money(cost) })}</p>} />
@@ -213,16 +238,23 @@ export function RuleOf72Board({ document, segment, onBack, sequence, onGrade }: 
   const horizon = Math.min(100, Math.ceil(7_200 / p.min_rate_bps) + 4);
   const values = useMemo(() => Array.from({ length: horizon + 1 }, (_, year) => compoundValue(p.principal_minor, rate, year)), [horizon, p.principal_minor, rate]);
   const estimate = new Intl.NumberFormat(document.locale, { maximumFractionDigits: 1 }).format(7_200 / rate);
+  const money = conceptMoney(document.locale, 'coins');
+  const revealed = !graded || grading.met;
   return <BoardShell screen="rule-of-72" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={graded ? grading.met : true} verdict={verdictOf(grading)}
+    onReset={() => { grading.reset(); setRate(p.min_rate_bps); setGuess(10); }} resetDisabled={(rate === p.min_rate_bps && guess === 10) || grading.pending || grading.met}
     foot={graded ? <GradedFoot locale={document.locale} grading={grading} canCheck sequence={sequence} onCheck={() => grading.check({ rateBps: rate, years: guess })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} />}>
     <section className="lf-learning-board lf-concept-board" data-operation="operation.parameter-slider.v1">
       <Slider label={t.growthRate} valueText={fill(t.perYear, { n: percent(rate) })} min={p.min_rate_bps} max={p.max_rate_bps} step={p.rate_step_bps} value={rate}
         onValueChange={(value) => { grading.reset(); setRate(value); }} stepLabels={{ decrease: t.less, increase: t.more }} disabled={grading.met} />
       <p className="lf-concept-rule" data-copy-role="data">{fill(t.ruleEstimate, { n: estimate })}</p>
-      <ThresholdPlot values={values} threshold={p.principal_minor * 2} max={Math.max(...values, p.principal_minor * 2)} revealed={!graded || grading.met} title={t.growth}
-        labels={{ threshold: t.doubleLine, crossed: (n) => fill(t.doublesAt, { n }), notYet: t.notYet }} />
+      <ChartOrTable labels={tableLabels(document.locale)}
+        chart={<ThresholdPlot values={values} threshold={p.principal_minor * 2} max={Math.max(...values, p.principal_minor * 2)} revealed={revealed} title={t.growth}
+          labels={{ threshold: t.doubleLine, crossed: (n) => fill(t.doublesAt, { n }), notYet: t.notYet }} />}
+        // The table lists the growth, never the doubling year the learner is asked for until Core has met it.
+        table={<DataTable label={t.growth} columns={[t.years, t.growth]} rows={values.map((value, year) => ({ id: year,
+          cells: [String(year), revealed || value < p.principal_minor * 2 ? money(value) : t.hidden] }))} />} />
     </section>
     {graded ? <section className="lf-learning-control-strip">
       <Stepper label={t.guessYears} value={guess} min={1} max={100} onValueChange={(value) => { grading.reset(); setGuess(value); }} labels={{ decrease: t.less, increase: t.more }} disabled={grading.met} />
@@ -247,6 +279,7 @@ export function DebtPayoffBoard({ document, segment, onBack, sequence, onGrade }
   const firstName = (run: PayoffResult) => p.debts.find((d) => d.id === run.order[0])?.label ?? '';
   return <BoardShell screen="debt-payoff" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={graded ? grading.met : chosen !== null} verdict={verdictOf(grading)}
+    onReset={() => { grading.reset(); setChosen(null); }} resetDisabled={chosen === null || grading.pending || grading.met}
     foot={graded ? <GradedFoot locale={document.locale} grading={grading} canCheck={chosen !== null} sequence={sequence} onCheck={() => grading.check({ strategy: chosen })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} ready={chosen !== null} />}>
     <section className="lf-learning-board lf-concept-board">
@@ -257,8 +290,11 @@ export function DebtPayoffBoard({ document, segment, onBack, sequence, onGrade }
           <div><dt data-copy-role="data">{t.totalInterest}</dt><dd data-copy-role="data">{money(runs[id].totalInterest)}</dd></div>
           <div><dt data-copy-role="data">{t.firstPaid}</dt><dd data-copy-role="data">{`${firstName(runs[id])} · ${fill(t.monthN, { n: runs[id].firstClearMonth })}`}</dd></div>
         </dl>} />
-      <GhostTracePlot current={trace} ghost={ghost} max={start} count={count} title={t.balanceTrace}
-        labels={{ current: t.thisRun, ghost: t.ghost, summary: chosen ? fill(t.traceSummary, { n: runs[chosen].months }) : '' }} />
+      <ChartOrTable labels={tableLabels(document.locale)}
+        chart={<GhostTracePlot current={trace} ghost={ghost} max={start} count={count} title={t.balanceTrace}
+          labels={{ current: t.thisRun, ghost: t.ghost, summary: chosen ? fill(t.traceSummary, { n: runs[chosen].months }) : '' }} />}
+        table={<DataTable label={t.balanceTrace} columns={[t.month, t.thisRun, ...(ghost ? [t.ghost] : [])]}
+          rows={trace.map((value, month) => ({ id: month, cells: [String(month), money(value), ...(ghost ? [ghost[month] === undefined ? '' : money(ghost[month]!)] : [])] }))} />} />
     </section>
   </BoardShell>;
 }
@@ -286,7 +322,8 @@ export function DiversificationBoard({ document, segment, onBack, sequence, onGr
   const graded = segment.grading === 'server';
   const point = portfolio(p.assets, weights);
   const maxRisk = Math.max(...p.assets.map((a) => a.risk_bps), 1); const maxReturn = Math.max(...p.assets.map((a) => a.return_bps), 1);
-  const X = (risk: number) => risk / maxRisk * 260; const Y = (ret: number) => 150 - ret / maxReturn * 140;
+  const X = (risk: number) => risk / maxRisk * 0.9; const Y = (ret: number) => ret / maxReturn * 0.9;
+  const initial = () => Object.fromEntries(ids.map((id, index) => [id, index === 0 ? 100 : 0]));
   const move = (id: string, value: number) => {
     grading.reset();
     const direction = value > (weights[id] ?? 0) ? 1 : -1;
@@ -294,6 +331,7 @@ export function DiversificationBoard({ document, segment, onBack, sequence, onGr
   };
   return <BoardShell screen="diversification" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={graded ? grading.met : true} verdict={verdictOf(grading)}
+    onReset={() => { grading.reset(); setWeights(initial()); }} resetDisabled={weights[ids[0]!] === 100 || grading.pending || grading.met}
     foot={graded ? <GradedFoot locale={document.locale} grading={grading} canCheck sequence={sequence} onCheck={() => grading.check({ weights })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} />}>
     <section className="lf-learning-board lf-concept-board">
@@ -303,13 +341,13 @@ export function DiversificationBoard({ document, segment, onBack, sequence, onGr
         <p data-copy-role="data">{fill(t.total, { n: Object.values(weights).reduce((sum, w) => sum + w, 0) })}</p>
       </div>
       <figure className="lf-op" data-operation="operation.linked-representations.v1">
-        <svg viewBox="-24 -10 300 184" role="img" aria-label={`${t.portfolioPoint}. ${t.risk}: ${percent(point.riskBps)}. ${t.return}: ${percent(point.returnBps)}.`}>
-          <line className="lf-op-axis" x1="0" y1="150" x2="270" y2="150" /><line className="lf-op-axis" x1="0" y1="0" x2="0" y2="150" />
-          <text className="lf-op-label" x="230" y="166">{t.risk}</text><text className="lf-op-label" x="-22" y="-2">{t.return}</text>
-          {p.assets.map((asset) => <g key={asset.id}><circle className="lf-concept-asset" cx={X(asset.risk_bps)} cy={Y(asset.return_bps)} r="4" />
-            <text className="lf-op-label" x={X(asset.risk_bps) + 6} y={Y(asset.return_bps) - 6}>{asset.label}</text></g>)}
-          <circle className="lf-concept-eq" cx={X(point.riskBps)} cy={Y(point.returnBps)} r="8" />
-        </svg>
+        <ChartOrTable labels={tableLabels(document.locale)}
+          chart={<RiskReturnVisual label={`${t.portfolioPoint}. ${t.risk}: ${percent(point.riskBps)}. ${t.return}: ${percent(point.returnBps)}.`}
+            xLabel={t.risk} yLabel={t.return} marked={{ x: X(point.riskBps), y: Y(point.returnBps) }}
+            points={p.assets.map((asset) => ({ id: asset.id, label: asset.label, x: X(asset.risk_bps), y: Y(asset.return_bps) }))} />}
+          table={<DataTable label={t.portfolioPoint} columns={['', t.risk, t.return]} rows={[
+            ...p.assets.map((asset) => ({ id: asset.id, cells: [asset.label, percent(asset.risk_bps), percent(asset.return_bps)] })),
+            { id: 'mix', cells: [t.portfolioPoint, percent(point.riskBps), percent(point.returnBps)] }]} />} />
         <figcaption className="lf-op-status" aria-live="polite" data-copy-role="data">{`${t.risk}: ${percent(point.riskBps)} · ${t.return}: ${percent(point.returnBps)}`}</figcaption>
       </figure>
     </section>
@@ -335,6 +373,7 @@ export function LemonadeStandBoard({ document, segment, onBack, sequence, onGrad
   const open = () => { grading.reset(); setDays((current) => [...current, { day: current.length + 1, price, cups, sold: today.sold, profit: today.profit }].slice(-30)); };
   return <BoardShell screen="lemonade-stand" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={graded ? grading.met : days.length > 0} verdict={verdictOf(grading)}
+    onReset={() => { grading.reset(); setPrice(0); setCups(0); setDays([]); }} resetDisabled={(price === 0 && cups === 0 && days.length === 0) || grading.pending || grading.met}
     foot={graded ? <GradedFoot locale={document.locale} grading={grading} canCheck={days.length > 0} sequence={sequence} onCheck={() => grading.check({ price, cups })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} ready={days.length > 0} />}>
     <section className="lf-learning-board lf-concept-board">
