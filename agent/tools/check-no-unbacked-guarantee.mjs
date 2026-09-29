@@ -20,7 +20,11 @@
 //     reward waits for your approval" once D.17 pre-approves small ones)
 //     reappears anywhere in its namespace, in any locale;
 //   - any package depends on a payment, card-issuing or bank-linking SDK
-//     (the simulation claim, "no bank or card behind it", would stop being true).
+//     (the simulation claim, "no bank or card behind it", would stop being true);
+//   - a database proof (database/scripts/*.py) is not one the Block D runner
+//     executes (database/scripts/family-db-verify.mjs BLOCK_D, run in CI on
+//     every build): a proof this gate only reads for a string is not a proof
+//     (Appendix H 2.2 D.1(d), GAP-FIX-R3).
 // It runs in the unfiltered repo gates: the evidence spans database/,
 // backend/, frontend/ and docs/, and any of them can change alone.
 
@@ -77,11 +81,21 @@ function lookup(json, path) {
   return path.split('.').reduce((node, key) => (node && typeof node === 'object' ? node[key] : undefined), json);
 }
 
+/** The verifiers the Block D runner executes: the literal members of `export const BLOCK_D = [...]`. */
+export function runnerProofs(source) {
+  const m = /export const BLOCK_D = \[([^\]]*)\]/.exec(source ?? '');
+  return m ? [...m[1].matchAll(/'([^']+\.py)'/g)].map((x) => x[1]) : null;
+}
+
+export const RUNNER = 'database/scripts/family-db-verify.mjs';
+
 /** Pure check over in-memory inputs, so the gate can be tested against known-bad fixtures. */
 export function checkControls({ registry, readFile, migrations, rebuiltSources, locales, packages }) {
   const failures = [];
   const ids = new Set();
   const holds = [];
+  const ciRun = runnerProofs(readFile(RUNNER));
+  if (ciRun === null) failures.push(`${RUNNER}: BLOCK_D not found; no database proof is run in CI`);
   for (const control of registry.controls ?? []) {
     const id = control.id;
     if (!id || ids.has(id)) failures.push(`control "${id}": missing or duplicate id`);
@@ -99,6 +113,8 @@ export function checkControls({ registry, readFile, migrations, rebuiltSources, 
         const text = readFile(evidence.file);
         if (text === null) failures.push(`${id}: ${evidence.file} does not exist`);
         else if (!text.includes(evidence.contains)) failures.push(`${id}: ${evidence.file} no longer contains "${evidence.contains}"`);
+        const proof = /^database\/scripts\/([^/]+\.py)$/.exec(evidence.file)?.[1];
+        if (proof && ciRun && !ciRun.includes(proof)) failures.push(`${id}: ${evidence.file} is a database proof ${RUNNER} does not run, so CI never executes it`);
       } else failures.push(`${id}: an evidence entry names neither a file nor a function`);
     }
     for (const key of control.ui ?? []) {

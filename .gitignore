@@ -102,3 +102,7 @@ audiogen/src/samples/
 
 # Per-worktree Vite/test caches for parallel lane checkouts
 .lane-cache/
+
+# Python bytecode (database/scripts verifiers import a shared helper, lf_pg_replay.py)
+__pycache__/
+*.pyc

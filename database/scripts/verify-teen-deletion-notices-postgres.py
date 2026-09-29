@@ -15,12 +15,18 @@ Cluster selection (never the shared Docker stack):
   LF_PG_PORT  loopback port (default 15483)
   LF_PG_USER  superuser (default audit_owner)
   LF_PG_REPORT report path (default audit-results/gap-fix-r2-teen-deletion-notices-postgres.json)
+  LF_PG_FULL_CHAIN=1  also apply every later migration, so a later
+               redefinition must keep these checks true (family-db-verify.mjs
+               sets it; the replay then re-applies only what redefines these
+               objects, lf_pg_replay.replay_set)
 """
 from pathlib import Path
 import json
 import os
 import subprocess
 import uuid
+
+from lf_pg_replay import assert_unchanged, fingerprint, replay_set
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNTIME = ROOT / '.codex/audit-db'
@@ -30,6 +36,8 @@ USER = os.environ.get('LF_PG_USER', 'audit_owner')
 REPORT = Path(os.environ.get('LF_PG_REPORT', str(ROOT / 'audit-results/gap-fix-r2-teen-deletion-notices-postgres.json')))
 MIGRATIONS = sorted((ROOT / 'database/migrations').glob('*.sql'))
 PART = next(m for m in MIGRATIONS if m.name.endswith('_teen_deletion_guardian_notices.sql'))
+FULL_CHAIN = os.environ.get('LF_PG_FULL_CHAIN') == '1'
+LATER = [m for m in MIGRATIONS if m.name > PART.name] if FULL_CHAIN else []
 BASE = [str(BIN / 'psql.exe' if (BIN / 'psql.exe').exists() else BIN / 'psql'), '-X', '-h', '127.0.0.1', '-p', PORT,
         '-U', USER, '-v', 'ON_ERROR_STOP=1', '-Atq']
 SHIM = (ROOT / 'database/scripts/verify-money-presentation-postgres.py').read_text(encoding='utf-8').split('SHIM = """', 1)[1].split('"""', 1)[0]
@@ -118,7 +126,8 @@ service(db, f"SELECT public.cancel_account_deletion('{ids['teen2']}')")
 check(f'the gap, reproduced before the migration: a linked teen\'s self-deletion request ({before["status"]}, 14 days) writes nothing a '
       f'Tutor could read and no notice audit row')
 
-sql(PART.read_text(encoding='utf-8'), db)
+for migration in [PART, *LATER]:
+    sql(migration.read_text(encoding='utf-8'), db)
 teen, a, b = ids['teen'], ids['tutor_a'], ids['tutor_b']
 
 row = request(db, teen)
@@ -168,7 +177,11 @@ assert sql(f"SELECT count(*) FROM public.account_deletion_guardian_notices WHERE
 check('a new request after a cancel is a new deletion and tells the Tutors again; the erasure (auth.users removed) takes the teen\'s '
       'notices with the account')
 
-sql(PART.read_text(encoding='utf-8'), db)
+before_replay = fingerprint(sql, db) if FULL_CHAIN else None
+for migration in (replay_set(MIGRATIONS, [PART]) if FULL_CHAIN else [PART]):
+    sql(migration.read_text(encoding='utf-8'), db)
+if FULL_CHAIN:
+    assert_unchanged(before_replay, fingerprint(sql, db))
 assert sql("SELECT count(*) FROM pg_trigger WHERE tgname = 'trg_notify_guardians_of_teen_deletion'", db) == '1'
 check('replay: applying the migration again keeps one trigger and every guard')
 

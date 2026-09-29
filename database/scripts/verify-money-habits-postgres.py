@@ -28,6 +28,8 @@ import os
 import subprocess
 import uuid
 
+from lf_pg_replay import assert_unchanged, fingerprint, replay_set
+
 ROOT = Path(__file__).resolve().parents[2]
 RUNTIME = ROOT / '.codex/audit-db'
 BIN = Path(os.environ.get('LF_PG_BIN', str(RUNTIME / 'pgsql/bin')))
@@ -107,6 +109,21 @@ TARGET = MIGRATIONS[-1] if FULL_CHAIN else PARTS[-1]
 def apply_parts(database):
     for part in [*PARTS, *LATER]:
         sql(part.read_text(encoding='utf-8'), database)
+
+
+def replay_parts(database):
+    """The replay step. Over the whole chain (LF_PG_FULL_CHAIN=1) it re-applies
+    the parts plus every later migration that redefines what they define
+    (lf_pg_replay.replay_set), never the unrelated rest of the chain (an
+    expand step cannot run after its own contract step), and asserts every
+    function, trigger, policy and grant is left exactly as the chain left it."""
+    if not FULL_CHAIN:
+        apply_parts(database)
+        return
+    before = fingerprint(sql, database)
+    for part in replay_set(MIGRATIONS, PARTS):
+        sql(part.read_text(encoding='utf-8'), database)
+    assert_unchanged(before, fingerprint(sql, database))
 
 
 def claims(uid, role):
@@ -304,11 +321,14 @@ for silent in [kid9, teen_off]:
 assert balance(db, kid9, 'save') == 6 and balance(db, teen_off, 'save') == 5
 # The consent store failing never blocks a coin: the event is dropped, the split lands.
 before_down = events(db, kid14)
+# Restored below from the live definition, never by replaying an older migration (over the whole chain that would put an
+# older body back and every later check would test code production no longer runs).
+live_gate = sql("SELECT pg_get_functiondef('public.family_analytics_admitted(uuid)'::regprocedure)", db)
 sql("CREATE OR REPLACE FUNCTION public.family_analytics_admitted(p_user uuid) RETURNS boolean LANGUAGE plpgsql STABLE AS $$ BEGIN RAISE EXCEPTION 'CONSENT_STORE_DOWN'; END $$;", db)
 t_down = approved_task(db, pa, kid14, 3)
 assert service(db, f"SELECT public.allocate_task_reward('{t_down}', '{kid14}', 2, 1, 0, '{kid14}', NULL)") == 't'
 assert events(db, kid14) == before_down and service(db, f"SELECT sum(amount) FROM public.wallet_ledger WHERE task_id = '{t_down}'") == '3'
-sql(PARTS[0].read_text(encoding='utf-8'), db)
+sql(live_gate + ';', db)
 assert service(db, f"SELECT public.family_analytics_admitted('{kid14}')") == 't'
 engagement = service(db, "SELECT string_agg(source || '=' || allocations || '/' || kept_default || '/' || adjusted, ' ' ORDER BY source) FROM public.family_split_engagement(now() - interval '1 hour')")
 assert engagement == 'allowance=2/2/0 income=1/0/1 task=2/1/1', engagement
@@ -536,7 +556,7 @@ snapshot = lambda: service(db, "SELECT (SELECT count(*) FROM public.family_money
                                "(SELECT count(*) FROM public.share_destinations) || '/' || (SELECT count(*) FROM public.goal_next_steps) || '/' || "
                                "(SELECT count(*) FROM public.wallet_split_preferences) || '/' || (SELECT count(*) FROM public.wallet_ledger)")
 before_replay = snapshot()
-apply_parts(db)
+replay_parts(db)
 assert snapshot() == before_replay, (before_replay, snapshot())
 refused(lambda: service(db, f"SELECT public.set_wallet_usual_split('{kid9}', '{pa}', 100, 0, 0)"), 'SPLIT_OWNER_ONLY')
 refused(lambda: service(db, f"SELECT public.share_gift_settle('{gift}', '{pa}', 'returned', 'x')"), 'SHARE_GIFT_SETTLED')

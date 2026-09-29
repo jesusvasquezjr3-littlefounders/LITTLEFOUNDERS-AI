@@ -21,6 +21,10 @@ Cluster selection (never the shared Docker stack):
   LF_PG_USER  superuser (default audit_owner)
   LF_PG_DATA  the data directory the server must report (ownership check)
   LF_PG_REPORT report path (default audit-results/s07-family-governance-postgres.json)
+  LF_PG_FULL_CHAIN=1  also apply every later migration, so a later
+               redefinition must keep these checks true (family-db-verify.mjs
+               sets it; the replay then re-applies only what redefines these
+               objects, lf_pg_replay.replay_set)
 """
 from pathlib import Path
 import json
@@ -28,6 +32,8 @@ import os
 import re
 import subprocess
 import uuid
+
+from lf_pg_replay import assert_unchanged, fingerprint, replay_set
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNTIME = ROOT / '.codex/audit-db'
@@ -40,6 +46,8 @@ MIGRATIONS = sorted((ROOT / 'database/migrations').glob('*.sql'))
 S07_7_PARTS = ['_family_erasure_provenance.sql', '_parent_coaching.sql', '_money_bridge.sql',
                '_family_research_instrumentation.sql', '_family_data_retention.sql']
 PARTS = [next(m for m in MIGRATIONS if m.name.endswith(suffix)) for suffix in S07_7_PARTS]
+FULL_CHAIN = os.environ.get('LF_PG_FULL_CHAIN') == '1'
+LATER = [m for m in MIGRATIONS if m.name > PARTS[-1].name] if FULL_CHAIN else []
 BASE = [str(BIN / 'psql.exe' if (BIN / 'psql.exe').exists() else BIN / 'psql'), '-X', '-h', '127.0.0.1', '-p', PORT,
         '-U', USER, '-v', 'ON_ERROR_STOP=1', '-Atq']
 UUID_TEXT = re.compile(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', re.I)
@@ -97,8 +105,21 @@ def fresh(upto):
 
 
 def apply_parts(database):
-    for part in PARTS:
+    for part in [*PARTS, *LATER]:
         sql(part.read_text(encoding='utf-8'), database)
+
+
+def replay_parts(database):
+    """The replay step. Over the whole chain it re-applies the parts plus every later
+    migration that redefines what they define (lf_pg_replay.replay_set) and asserts
+    every function, trigger, policy and grant is left exactly as the chain left it."""
+    if not FULL_CHAIN:
+        apply_parts(database)
+        return
+    before = fingerprint(sql, database)
+    for part in replay_set(MIGRATIONS, PARTS):
+        sql(part.read_text(encoding='utf-8'), database)
+    assert_unchanged(before, fingerprint(sql, database))
 
 
 def claims(uid, role):
@@ -557,7 +578,7 @@ check('D.22: no browser session calls a research function or reads a research ta
 # ── 7. Replay ──────────────────────────────────────────────────────────────
 counts_before = sql("SELECT (SELECT count(*) FROM public.parent_coaching_deliveries) || '/' || (SELECT count(*) FROM public.money_bridge_progress)"
                     " || '/' || (SELECT count(*) FROM public.family_research_consents) || '/' || (SELECT count(*) FROM public.family_retention_runs)", db)
-apply_parts(db)
+replay_parts(db)
 counts_after = sql("SELECT (SELECT count(*) FROM public.parent_coaching_deliveries) || '/' || (SELECT count(*) FROM public.money_bridge_progress)"
                    " || '/' || (SELECT count(*) FROM public.family_research_consents) || '/' || (SELECT count(*) FROM public.family_retention_runs)", db)
 assert counts_before == counts_after, (counts_before, counts_after)

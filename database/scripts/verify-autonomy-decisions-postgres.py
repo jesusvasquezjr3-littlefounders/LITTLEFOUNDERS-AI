@@ -29,6 +29,8 @@ import os
 import subprocess
 import uuid
 
+from lf_pg_replay import assert_unchanged, fingerprint, replay_set
+
 ROOT = Path(__file__).resolve().parents[2]
 RUNTIME = ROOT / '.codex/audit-db'
 BIN = Path(os.environ.get('LF_PG_BIN', str(RUNTIME / 'pgsql/bin')))
@@ -109,6 +111,21 @@ TARGET = MIGRATIONS[-1] if FULL_CHAIN else PARTS[-1]
 def apply_parts(database):
     for part in [*PARTS, *LATER]:
         sql(part.read_text(encoding='utf-8'), database)
+
+
+def replay_parts(database):
+    """The replay step. Over the whole chain (LF_PG_FULL_CHAIN=1) it re-applies
+    the parts plus every later migration that redefines what they define
+    (lf_pg_replay.replay_set), never the unrelated rest of the chain (an
+    expand step cannot run after its own contract step), and asserts every
+    function, trigger, policy and grant is left exactly as the chain left it."""
+    if not FULL_CHAIN:
+        apply_parts(database)
+        return
+    before = fingerprint(sql, database)
+    for part in replay_set(MIGRATIONS, PARTS):
+        sql(part.read_text(encoding='utf-8'), database)
+    assert_unchanged(before, fingerprint(sql, database))
 
 
 def claims(uid, role):
@@ -650,7 +667,7 @@ counts = lambda: sql("SELECT (SELECT count(*) FROM public.family_decisions) || '
                      "|| (SELECT count(*) FROM public.family_autonomy_levels) || '/' || (SELECT count(*) FROM public.family_talk_nudges) || '/' "
                      "|| (SELECT count(*) FROM public.family_autonomy_eligibility_log)", db)
 before_replay = counts()
-apply_parts(db)
+replay_parts(db)
 assert counts() == before_replay, (before_replay, counts())
 after_replay = chore(db, pa, kid9, 1)
 refused(lambda: decide_task(db, after_replay, pa, 'cancelled', 'redo', 'Not now'), 'DECISION_REASON_NOT_ACTIONABLE')

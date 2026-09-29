@@ -21,9 +21,10 @@ Cluster selection (never the shared Docker stack):
   LF_PG_DATA  the data directory the server must report (ownership check)
   LF_PG_REPORT report path (default audit-results/s07-family-state-postgres.json)
   LF_PG_FULL_CHAIN=1  run every check over the WHOLE migration chain (later
-               migrations included) and replay every migration from the first
-               S07.1 part on, so a later redefinition of an S07.1 function is
-               regression-tested against the same checks
+               migrations included), so a later redefinition of an S07.1
+               function is regression-tested against the same checks, and
+               replay the S07.1 parts plus every later migration that redefines
+               what they define (lf_pg_replay.replay_set)
 """
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -31,6 +32,8 @@ import json
 import os
 import subprocess
 import uuid
+
+from lf_pg_replay import assert_unchanged, fingerprint, replay_set
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNTIME = ROOT / '.codex/audit-db'
@@ -45,7 +48,9 @@ S07_PARTS = ['_family_hub_state_machine.sql', '_family_hub_transition_guards.sql
 PARTS = [next(m for m in MIGRATIONS if m.name.endswith(suffix)) for suffix in S07_PARTS]
 FULL_CHAIN = os.environ.get('LF_PG_FULL_CHAIN') == '1'
 TARGET = MIGRATIONS[-1] if FULL_CHAIN else PARTS[-1]
-REPLAY = MIGRATIONS[MIGRATIONS.index(PARTS[0]):] if FULL_CHAIN else PARTS
+# Over the whole chain: the parts plus every later migration that redefines what they
+# define, never the unrelated rest (an expand step cannot run after its own contract step).
+REPLAY = replay_set(MIGRATIONS, PARTS) if FULL_CHAIN else PARTS
 BASE = [str(BIN / 'psql.exe' if (BIN / 'psql.exe').exists() else BIN / 'psql'), '-X', '-h', '127.0.0.1', '-p', PORT,
         '-U', USER, '-v', 'ON_ERROR_STOP=1', '-Atq']
 
@@ -104,8 +109,13 @@ def fresh(upto):
 
 
 def replay(database):
+    """Over the whole chain, every function, trigger, policy and grant must come out
+    of the replay exactly as the chain left it (lf_pg_replay)."""
+    before = fingerprint(sql, database) if FULL_CHAIN else None
     for part in REPLAY:
         sql(part.read_text(encoding='utf-8'), database)
+    if FULL_CHAIN:
+        assert_unchanged(before, fingerprint(sql, database))
 
 
 def claims(uid, role):
@@ -440,7 +450,7 @@ before_replay = counts()
 replay(db)
 assert counts() == before_replay
 refused(lambda: browser(db, kid, f"UPDATE public.tasks SET status = 'approved' WHERE id = '{task}'"), 'permission denied')
-check(f'replay: re-applying {"every migration from the first S07.1 part on" if FULL_CHAIN else "the five S07.1 migrations"} preserves ledger/actions/links ({before_replay}) and the lockdown')
+check(f'replay: re-applying {f"the S07.1 parts and the later migrations that redefine them ({len(REPLAY)} files)" if FULL_CHAIN else "the five S07.1 migrations"} preserves ledger/actions/links ({before_replay}) and the lockdown')
 
 # ── Pre-existing behavior observed (outside this checkpoint) ────────────────
 lonely_parent, lonely_kid = str(uuid.uuid4()), str(uuid.uuid4())

@@ -277,3 +277,43 @@ jobs:
           name: tier-compliance-audit
           path: tier-compliance.json
           if-no-files-found: ignore
+
+  # Appendix H 2.2 D.1(d) (GAP-FIX-R3): the Freeze-Enforcement Verification is
+  # "green in CI on every build", and Appendix H 1.3 re-proves it and the
+  # Unauthorized State-Transition check per release. A Core-only release
+  # changes nothing under database/, so database-ci.yml would not run; this
+  # unfiltered job re-proves every Block D database guarantee over the whole
+  # migration chain on every push and pull request. (database-ci.yml runs the
+  # same job, where a red proof also stops a migration from auto-applying.)
+  family-db-verify:
+    name: Block D database proofs (freeze, state machine, wallet) over the full chain
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Block D database proofs
+        env:
+          LF_PG_PORT: '5432'
+          LF_PG_USER: postgres
+          LF_PG_PSQL: psql
+          LF_PG_DATA: /var/lib/postgresql/data
+          LF_PG_VERIFY_JOBS: '3'
+        run: node database/scripts/family-db-verify.mjs
