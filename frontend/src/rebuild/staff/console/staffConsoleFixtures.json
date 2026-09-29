@@ -140,7 +140,8 @@
       "roles": [
         "parent"
       ],
-      "verification": "staff-granted"
+      "verification": "staff-granted",
+      "ageRecordMinor": true
     },
     {
       "userId": "44444444-4444-4444-8444-444444444444",

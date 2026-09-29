@@ -9,6 +9,7 @@ import type {
   WordTiming,
 } from './types';
 import type { CharacterAction, CharacterEmotion } from './vocabulary';
+import { announceAccountSuspended } from './coreApi';
 
 /*
  * The live session, as a hook.
@@ -575,6 +576,9 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
               setMicrophone(false);
               setMicRevoked(true);
             }
+            // A.1 (F3-identity-site): Oracle ended this session because the
+            // account was paused; the shell drops the session and shows why.
+            if (message.code === 'ACCOUNT_SUSPENDED') announceAccountSuspended();
             break;
         }
       };

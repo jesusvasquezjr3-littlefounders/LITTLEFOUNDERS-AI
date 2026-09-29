@@ -3,6 +3,7 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 import { jsonResponse, mintToken } from './helpers.js';
 import { readAccountAdmission } from '../middleware/accountAdmission.js';
+import { getConfig } from '../config.js';
 
 /*
  * F3-identity-site (A.1 FAQ 'cancelTutor', Appendix M Part 2.1 criterion 2,
@@ -140,6 +141,41 @@ describe('a paused child is refused on every product path, not only on /auth/me'
     const res = await request(createApp()).post('/api/v1/tutor/internal/evaluation/run').set(bearer()).send({});
     expect(res.status).toBe(403);
     expect(res.body.error.code).toBe('FORBIDDEN');
+    expect(calls).toEqual([]);
+  });
+});
+
+describe('Oracle mid-session admission (GET /tutor/internal/admission/:userId)', () => {
+  const internal = () => ({ 'x-internal-api-key': getConfig().INTERNAL_API_KEY });
+  const path = `/api/v1/tutor/internal/admission/${KID}`;
+
+  it('tells Oracle a paused child is no longer admitted, so a session opened before the pause ends on its next turn', async () => {
+    stub();
+    const res = await request(createApp()).get(path).set(internal());
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ active: false });
+  });
+
+  it('answers active with no marker, and for a teen with the marker (Option B)', async () => {
+    stub({ marker: 'none' });
+    expect((await request(createApp()).get(path).set(internal())).body.data).toEqual({ active: true });
+    stub({ roles: ['universal'] });
+    expect((await request(createApp()).get(path).set(internal())).body.data).toEqual({ active: true });
+  });
+
+  it('answers 503, never active, when the marker or the roles cannot be read', async () => {
+    stub({ marker: 'unreadable' });
+    const marker = await request(createApp()).get(path).set(internal());
+    expect(marker.status).toBe(503);
+    expect(marker.body.error.code).toBe('ACCOUNT_STATE_UNAVAILABLE');
+    stub({ roles: null });
+    expect((await request(createApp()).get(path).set(internal())).status).toBe(503);
+  });
+
+  it('refuses a caller without the internal key and a malformed id before any read', async () => {
+    const calls = stub();
+    expect((await request(createApp()).get(path).set(bearer())).status).toBe(403);
+    expect((await request(createApp()).get('/api/v1/tutor/internal/admission/not-a-uuid').set(internal())).status).toBe(400);
     expect(calls).toEqual([]);
   });
 });

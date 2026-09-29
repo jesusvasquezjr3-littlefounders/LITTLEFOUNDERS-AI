@@ -11,6 +11,7 @@ import {
   serviceRest,
   serviceRestRaw,
 } from './supabaseRest.js';
+import { listMinorRecordTutors } from './tutorAgeRecord.js';
 
 /*
  * Staff-console data plane (routes/admin.ts). Reads here use the service role
@@ -114,6 +115,12 @@ export interface AdminUser {
   roles: string[];
   /** A.5: null = no verification row; 'id-verified' = latest row is local-ocr verified; 'staff-granted' = latest verified row via another method (or parent role with no verification row — distinguished where it matters); 'revoked' = latest row revoked. */
   verification: 'id-verified' | 'staff-granted' | 'revoked' | null;
+  /**
+   * A.2, A.5, OD-3 section 2 (F3-identity-site): true when the account holds
+   * the parent role while its own age record says a minor. Staff review it
+   * (revoke, or settle an E.4 age correction); it is never demoted silently.
+   */
+  ageRecordMinor: boolean;
 }
 
 export async function listAdminUsers(): Promise<AdminUser[] | null> {
@@ -140,6 +147,10 @@ export async function listAdminUsers(): Promise<AdminUser[] | null> {
     method: string;
   }>('/parent_verifications?select=user_id,status,method&order=created_at.desc,id.desc');
   if (!verificationRows) return null;
+  // A.2/A.5: a Tutor whose age record says a minor is flagged for review; an
+  // unreadable answer fails the directory rather than hiding the flag.
+  const minorRecord = await listMinorRecordTutors();
+  if (!minorRecord) return null;
   const latestVerification = new Map<string, { status: 'verified' | 'revoked'; method: string }>();
   for (const row of verificationRows) {
     if (!latestVerification.has(row.user_id)) latestVerification.set(row.user_id, { status: row.status, method: row.method });
@@ -168,6 +179,7 @@ export async function listAdminUsers(): Promise<AdminUser[] | null> {
       birthDate: p.birth_date,
       roles,
       verification,
+      ageRecordMinor: minorRecord.has(p.user_id),
     };
   });
 }

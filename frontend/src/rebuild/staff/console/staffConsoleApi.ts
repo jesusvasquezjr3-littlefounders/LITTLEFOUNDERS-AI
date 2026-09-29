@@ -135,10 +135,13 @@ export interface StaffUser {
   birthDate: string | null;
   roles: string[];
   verification?: Verification | null;
+  /** A.2/A.5 (F3-identity-site): the account holds the parent role while its own age record says a minor. */
+  ageRecordMinor?: boolean;
 }
 const isUser = (u: unknown): u is StaffUser => isRecord(u) && isString(u.userId) && isString(u.displayName) && isNullableString(u.username)
   && isString(u.locale) && isString(u.createdAt) && isNullableString(u.birthDate) && arrayOf(u.roles, isString)
-  && (u.verification === undefined || u.verification === null || (VERIFICATIONS as readonly unknown[]).includes(u.verification));
+  && (u.verification === undefined || u.verification === null || (VERIFICATIONS as readonly unknown[]).includes(u.verification))
+  && (u.ageRecordMinor === undefined || typeof u.ageRecordMinor === 'boolean');
 export const isUsers = (value: unknown): value is { users: StaffUser[] } => isRecord(value) && arrayOf(value.users, isUser);
 
 export interface TimelineDay { date: string; count: number }

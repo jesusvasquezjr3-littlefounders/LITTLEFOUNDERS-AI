@@ -244,7 +244,7 @@ type OverviewStub = {
 function stubData(
   callerRole: 'admin' | 'superadmin' | 'universal',
   capture?: { calls: { url: string; method: string; body?: string }[] },
-  options: { releaseRefusal?: { code: string; message: string }; auditInsertStatus?: number; overview?: OverviewStub; permissions?: string[]; permissionStatus?: number; courseAssemblyIncidents?: { course_id: string; occurrence_count: number; first_seen_at: string; last_seen_at: string }[] } = {},
+  options: { releaseRefusal?: { code: string; message: string }; auditInsertStatus?: number; overview?: OverviewStub; permissions?: string[]; permissionStatus?: number; minorRecord?: string[]; minorRecordStatus?: number; courseAssemblyIncidents?: { course_id: string; occurrence_count: number; first_seen_at: string; last_seen_at: string }[] } = {},
 ) {
   const overviewProfiles = options.overview?.profiles ?? [PROFILE];
   const overviewRoles = options.overview?.roles ?? [{ user_id: ADMIN_ID, role: 'admin' }, { user_id: ADMIN_ID, role: 'universal' }];
@@ -281,6 +281,11 @@ function stubData(
       // A.5: the users directory now projects each account's latest
       // verification row; the stub serves an empty verification history.
       if (url.includes('/rest/v1/parent_verifications')) return Promise.resolve(jsonResponse(200, []));
+      // A.2/A.5 (F3-identity-site): Tutors whose own age record says a minor.
+      if (url.includes('/rest/v1/rpc/list_minor_record_tutors')) {
+        if (options.minorRecordStatus) return Promise.resolve(jsonResponse(options.minorRecordStatus, { message: 'unavailable' }));
+        return Promise.resolve(jsonResponse(200, (options.minorRecord ?? []).map((user_id) => ({ user_id }))));
+      }
       if (url.includes('/rest/v1/rpc/release_lesson')) {
         return Promise.resolve(jsonResponse(200, [{
           ok: !options.releaseRefusal,
@@ -453,6 +458,18 @@ describe('GET /api/v1/admin/users', () => {
     const res = await request(createApp()).get('/api/v1/admin/users').set('Authorization', staffAuth('admin'));
     expect(res.status).toBe(200);
     expect(res.body.data.users[0]).toMatchObject({ userId: ADMIN_ID, displayName: 'Staff', roles: ['admin', 'universal'] });
+  });
+
+  it('A.2/A.5: flags a Tutor whose own age record says a minor, and fails closed when that list is unreadable', async () => {
+    stubData('admin', undefined, { minorRecord: [ADMIN_ID] });
+    const flagged = await request(createApp()).get('/api/v1/admin/users').set('Authorization', staffAuth('admin'));
+    expect(flagged.status).toBe(200);
+    expect(flagged.body.data.users[0]).toMatchObject({ userId: ADMIN_ID, ageRecordMinor: true });
+    stubData('admin');
+    const clean = await request(createApp()).get('/api/v1/admin/users').set('Authorization', staffAuth('admin'));
+    expect(clean.body.data.users[0]).toMatchObject({ ageRecordMinor: false });
+    stubData('admin', undefined, { minorRecordStatus: 503 });
+    expect((await request(createApp()).get('/api/v1/admin/users').set('Authorization', staffAuth('admin'))).status).toBe(502);
   });
 
   it('uses paged upstream reads so the directory and its statistics are not capped at 100 users', async () => {

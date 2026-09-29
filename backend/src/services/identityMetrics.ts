@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { serviceRest } from './supabaseRest.js';
+import { listMinorRecordTutors } from './tutorAgeRecord.js';
 
 /*
  * Appendix M Part 1 (1.1-1.4), Part 2.1 criterion 3 ("Measured") and Part 3
@@ -105,7 +106,13 @@ function metric(
 }
 
 /** Pure: the report for one set of counts. */
-export function buildIdentityReport(c: IdentityCounts, days: number, discovery: OnboardingDiscoveryCounts): IdentityMetricsReport {
+export function buildIdentityReport(
+  c: IdentityCounts,
+  days: number,
+  discovery: OnboardingDiscoveryCounts,
+  /** Tutors (parent role) whose own age record says a minor: public.list_minor_record_tutors. */
+  minorRecordTutors = 0,
+): IdentityMetricsReport {
   const entry = c.entryCapture;
   const newCreated = entry.email.created + entry.google.created + entry.guest.created;
   const newCaptured = entry.email.captured + entry.google.captured + entry.guest.captured;
@@ -145,6 +152,12 @@ export function buildIdentityReport(c: IdentityCounts, days: number, discovery: 
     metric('verification_status_differentiation', '1.2', 'A.5', 'release_gate', tags.holders - tags.untagged, tags.holders, {
       idVerified: tags.idVerified, staffGranted: tags.staffGranted, revoked: tags.revoked, untagged: tags.untagged,
     }),
+    // A.2, A.5, OD-3 section 2 (F3-identity-site): every Tutor's own age
+    // record is an adult's. A holder whose record says a minor (verified
+    // before guard_parent_verification_age existed) misses the gate until
+    // staff revoke the role or settle an E.4 age correction.
+    metric('tutor_adult_age_record', '1.2', 'A.2, A.5', 'release_gate', Math.max(0, tags.holders - minorRecordTutors), tags.holders,
+      { minorRecord: minorRecordTutors }),
     metric('staff_grant_justification_completeness', '1.2', 'A.5', 'release_gate', c.staffGrantJustification.justified,
       c.staffGrantJustification.staffGranted, { justificationsInWindow: c.staffGrantJustification.justificationsInWindow }),
     metric('revocation_path_utilization', '1.2', 'A.5', 'diagnostic', c.revocation.auditedRevocations, c.revocation.revokedRows, {
@@ -179,14 +192,17 @@ export function buildIdentityReport(c: IdentityCounts, days: number, discovery: 
 
 export async function getIdentityMetrics(days: number, now: Date = new Date()): Promise<IdentityMetricsReport | null> {
   const from = new Date(now.getTime() - days * 86_400_000).toISOString();
-  const [raw, rawDiscovery] = await Promise.all([
+  const [raw, rawDiscovery, minorRecord] = await Promise.all([
     serviceRest<unknown>('/rpc/identity_metrics', {
       method: 'POST',
       body: JSON.stringify({ p_from: from, p_to: now.toISOString() }),
     }),
     serviceRest<unknown>('/rpc/onboarding_discovery_metrics', { method: 'POST', body: '{}' }),
+    listMinorRecordTutors(),
   ]);
   const parsed = Counts.safeParse(raw);
   const discovery = DiscoveryCounts.safeParse(rawDiscovery);
-  return parsed.success && discovery.success ? buildIdentityReport(parsed.data, days, discovery.data) : null;
+  return parsed.success && discovery.success && minorRecord
+    ? buildIdentityReport(parsed.data, days, discovery.data, minorRecord.size)
+    : null;
 }

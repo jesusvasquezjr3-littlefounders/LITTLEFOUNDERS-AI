@@ -5,6 +5,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
 import { authedUser, requireAuth, requireInternalKey } from '../middleware/auth.js';
+import { readAccountAdmission } from '../middleware/accountAdmission.js';
 import { fail, ok } from '../lib/http.js';
 import { getRolesForGate } from '../services/insights.js';
 import { resolveMentorSafety } from '../services/mentorSafety.js';
@@ -1902,6 +1903,22 @@ function internalRouter(): Router {
       return ok(res, { recorded: false, costUsd: null });
     }
     return ok(res, { recorded: true, costUsd: total });
+  });
+
+  /*
+   * A.1 (FAQ 'cancelTutor': paused at once), Appendix M 2.1 criterion 2
+   * (F3-identity-site finish): Oracle asks before each learner turn of a
+   * minor's live session whether the account is still admitted, so a session
+   * opened before the pause ends on the next turn instead of running until it
+   * closes on its own. Same read as requireActiveAccount: 'suspended' only for
+   * a kid-role account with the marker; 503 when the marker cannot be read.
+   */
+  router.get('/admission/:userId', async (req, res) => {
+    const userId = z.string().uuid().safeParse(req.params.userId);
+    if (!userId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
+    const admission = await readAccountAdmission(userId.data).catch(() => 'unavailable' as const);
+    if (admission === 'unavailable') return fail(res, 503, 'ACCOUNT_STATE_UNAVAILABLE', 'Could not confirm the account is active');
+    return ok(res, { active: admission === 'active' });
   });
 
   router.get('/consent/:userId', async (req, res) => {

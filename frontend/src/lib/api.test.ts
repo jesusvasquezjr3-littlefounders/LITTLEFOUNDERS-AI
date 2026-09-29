@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ACCOUNT_SUSPENDED_EVENT, api } from './api';
+import { ACCOUNT_SUSPENDED_EVENT as MENTOR_ACCOUNT_SUSPENDED_EVENT } from '@/rebuild/mentor/session/coreApi';
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -39,5 +40,9 @@ describe('A.1: a paused child hears it on any route (F3-identity-site)', () => {
     } finally {
       window.removeEventListener(ACCOUNT_SUSPENDED_EVENT, heard);
     }
+  });
+
+  it('shares one event name with the Mentor session client, which keeps its own copy (Bible 02 rule 23)', () => {
+    expect(MENTOR_ACCOUNT_SUSPENDED_EVENT).toBe(ACCOUNT_SUSPENDED_EVENT);
   });
 });

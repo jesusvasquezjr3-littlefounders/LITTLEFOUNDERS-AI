@@ -5,6 +5,7 @@ import { WebSocketServer, type WebSocket } from 'ws';
 import { looksLikeSupabaseJwt, verifySessionToken } from '../session/token.js';
 import { acquireLock, releaseLock, renewLock } from '../lib/lock.js';
 import {
+  checkAccountAdmission,
   checkVoiceConsent,
   closeSession,
   fetchSessionContext,
@@ -2184,6 +2185,58 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
   await deliver(live, await live.orchestrator.greet(Date.now(), live.session.opening ?? 'greeting'));
 }
 
+/**
+ * A.1 (FAQ 'cancelTutor': "your child's account is paused at once"),
+ * Appendix M 2.1 criterion 2, F3-identity-site finish.
+ *
+ * Core pauses a kid-role account the moment its last verified Tutor link is
+ * gone: sign-in, refresh, the session-token mint and every Core route refuse
+ * it. A live socket opened BEFORE the pause holds a token Core already
+ * minted, so without this it ran until it ended on its own. Every learner
+ * message that spends a turn on a model now asks Core first (minors only:
+ * only a kid-role account is ever paused). A paused account's sessions on
+ * this replica end at once: an ACCOUNT_SUSPENDED frame, then the socket
+ * closes UNAUTHORIZED and nothing is parked for a resume (Core would mint
+ * no token for one anyway); the SPA's next Core call lands on the paused
+ * screen. An unreadable answer refuses THIS turn (no model call) and keeps
+ * the session, so a Core blip is a retry, never a pass. A 404 means Core
+ * predates the route (deploy ordering): the pause is then enforced by Core
+ * alone, as before.
+ *
+ * The audio paths are admitted inside `handleAudioClip`, after the clip is
+ * assembled: awaiting here, before `learner_audio_commit` takes its chunks,
+ * would let a following `learner_audio_begin` reset the clip mid-await.
+ */
+const ADMITTED_TURN_MESSAGES: ReadonlySet<string> = new Set([
+  'session_end_response',
+  'check_in_response',
+  'goal_response',
+  'segment_graded',
+  'learner_text',
+  'learner_edit',
+]);
+
+async function admitTurn(live: Live): Promise<boolean> {
+  if (!live.session.isMinor) return true;
+  const admission = await checkAccountAdmission(live.session.userId);
+  if (admission === 'active' || admission === 'unsupported') return true;
+  if (admission === 'unavailable') {
+    send(live.socket, {
+      type: 'error',
+      code: 'SERVICE_DEGRADED',
+      message: 'Could not confirm the account is active. Try again.',
+    });
+    return false;
+  }
+  send(live.socket, {
+    type: 'error',
+    code: 'ACCOUNT_SUSPENDED',
+    message: 'This account is paused until a Tutor supervises it again.',
+  });
+  dropSessionsForUser(live.session.userId, CLOSE_CODES.UNAUTHORIZED, 'account paused');
+  return false;
+}
+
 async function onMessage(live: Live, raw: string): Promise<void> {
   let parsedJson: unknown;
   try {
@@ -2201,6 +2254,8 @@ async function onMessage(live: Live, raw: string): Promise<void> {
 
   // A ping proves the tab is open; every other frame proves a person is in it.
   if (message.data.type !== 'ping') live.lastActivityAtMs = Date.now();
+
+  if (ADMITTED_TURN_MESSAGES.has(message.data.type) && !(await admitTurn(live))) return;
 
   switch (message.data.type) {
     case 'ping': {
@@ -2609,6 +2664,9 @@ async function handleAudioClip(live: Live, audio: Buffer, mimeType: string, onse
     });
     return;
   }
+  // A.1 (F3-identity-site): a paused account's clip never reaches the STT
+  // provider — see `admitTurn`.
+  if (!(await admitTurn(live))) return;
   // Fresh, BEFORE anything is sent to the STT provider — see
   // `refreshMicConsent`'s own comment for why this cannot live only inside
   // `handleLearnerTurn`, downstream of `transcribe()`.
@@ -3508,6 +3566,16 @@ export const WS_PATH = '/ws/tutor';
  * with no token that could resume it (Core mints none for an erased account).
  */
 export function terminateSessionsForUser(userId: string): { live: number; parked: number } {
+  return dropSessionsForUser(userId, CLOSE_CODES.NORMAL, 'account removed');
+}
+
+/**
+ * Ends every live socket and parked session of one account on this replica
+ * without the ordinary endings (see `terminateSessionsForUser`). Shared by
+ * erasure (E.6) and the pause (A.1, `admitTurn`), which differ only in the
+ * close code the client sees.
+ */
+function dropSessionsForUser(userId: string, code: number, reason: string): { live: number; parked: number } {
   let live = 0;
   let parked = 0;
   for (const entry of [...liveSessions.values()]) {
@@ -3518,7 +3586,7 @@ export function terminateSessionsForUser(userId: string): { live: number; parked
     liveSessions.delete(entry.session.sessionId);
     entry.speech.memo.clear();
     void releaseLock(sessionLockKey(entry.session.sessionId), entry.lockOwner);
-    entry.socket.close(CLOSE_CODES.NORMAL, 'account removed');
+    entry.socket.close(code, reason);
     live += 1;
   }
   for (const [sessionId, entry] of [...parkedSessions.entries()]) {

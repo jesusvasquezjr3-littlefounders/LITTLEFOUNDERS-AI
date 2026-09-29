@@ -422,10 +422,12 @@
         "consequence": "{name} perde o status verificado. O motivo fica auditado.",
         "revoked": "Verificação revogada.",
         "revokeFailed": "Não foi possível revogar. Tente de novo.",
-        "noVerification": "Esta conta não tem verificação de responsável."
+        "noVerification": "Esta conta não tem verificação de responsável.",
+        "ageRecordMinor": "A idade registrada é menor de 18. Revise a idade ou revogue."
       },
       "option": {
         "id-verified": "Verificado por documento",
+        "ageRecordMinor": "Idade registrada menor de 18",
         "staff-granted": "Concedido pela equipe",
         "revoked": "Revogado",
         "none": "Nenhuma",
@@ -1940,6 +1942,7 @@
         "entry_path_age_capture": "Contas novas com idade registrada",
         "undated_account_backlog": "Contas antigas sem idade",
         "verification_status_differentiation": "Tutores marcados por documento ou pela equipe",
+        "tutor_adult_age_record": "Tutores com idade registrada adulta",
         "staff_grant_justification_completeness": "Permissões de Tutor da equipe com motivo",
         "revocation_path_utilization": "Revogações com motivo auditado",
         "kid_email_change_restriction": "Contas infantis sem troca de e-mail",

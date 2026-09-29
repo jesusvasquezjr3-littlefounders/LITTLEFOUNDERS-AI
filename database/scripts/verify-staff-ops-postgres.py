@@ -207,8 +207,20 @@ try:
         assert scalar(f"SELECT count(*) FROM parent_verifications WHERE user_id = '{A[name]}' AND status = 'verified'") == '0'
     for name in ('teen_due', 'adult_ok'):
         service(verified.format(A[name]))
-    run(f"DELETE FROM auth.users WHERE id IN ({', '.join(repr(v) for v in A.values())});")
     check('a verified ID check cannot be written or updated into place for a flagged guest, an upgraded flagged account or a declared teen (so none gains the parent role); an adult and a teen whose birth month made them 18 can')
+
+    # F3-identity-site finish: Tutors verified BEFORE the guard existed keep the
+    # role (a superuser insert stands in for that history); list_minor_record_tutors
+    # names exactly the ones whose own age record says a minor, for staff review.
+    before = set(run('SET ROLE service_role; SELECT user_id FROM list_minor_record_tutors();').split())
+    run('INSERT INTO user_roles (user_id, role, granted_by) VALUES ' + ', '.join(
+        f"('{A[name]}', 'parent', NULL)" for name in ('flag_guest', 'flag_upgraded', 'teen', 'teen_due', 'adult_ok')) + ';')
+    listed = set(run('SET ROLE service_role; SELECT user_id FROM list_minor_record_tutors();').split()) - before
+    assert listed == {A['flag_guest'], A['flag_upgraded'], A['teen']}, listed
+    for role in ('anon', 'authenticated'):
+        rejected(f'SET ROLE {role}; SELECT * FROM list_minor_record_tutors();', 'permission denied')
+    run(f"DELETE FROM auth.users WHERE id IN ({', '.join(repr(v) for v in A.values())});")
+    check('list_minor_record_tutors names a Tutor with an under-13 origin or a declared teen band (never one made 18 by birth month, never an adult), for the service role only')
 
     # ── G.3: live-activity verdicts and pack decisions ───────────────────
     session = run(f"INSERT INTO tutor_sessions (user_id, locale, tier, character, diorama, intent) VALUES ('{I['plain']}', 'en-US', 2, 'rho', 'a', 'open') RETURNING id;").splitlines()[-1]

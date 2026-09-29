@@ -37,6 +37,17 @@ export function verificationChip(copy: ConsoleCopy, verification: Verification) 
   return <Chip tone="error" glyph="cross">{label}</Chip>;
 }
 
+/**
+ * A.2, A.5, OD-3 section 2 (F3-identity-site): a Tutor whose own age record
+ * says a minor (verified before the database refused such checks). Staff
+ * review it: revoke here, or settle an age correction. Never demoted silently.
+ */
+function verificationCell(copy: ConsoleCopy, user: StaffUser) {
+  const chip = user.verification ? verificationChip(copy, user.verification) : copy.users.option.none;
+  if (!user.ageRecordMinor) return chip;
+  return <span className="lf-staff-chips">{chip}<Chip tone="warning" glyph="warning">{copy.users.option.ageRecordMinor}</Chip></span>;
+}
+
 function Funnel({ api }: { api: StaffApi }) {
   const { copy, locale } = useConsoleCopy();
   const format = useFormats(locale);
@@ -98,6 +109,7 @@ function UserDetails({ api, user, onClose, onRevoked }: { api: StaffApi; user: S
       <section className="lf-staff-section" aria-labelledby={`verification-${user.userId}`}>
         <h3 id={`verification-${user.userId}`} data-copy-role="heading" className="lf-staff-subheading">{t.heading.verification}</h3>
         {verification ? <div>{verificationChip(copy, verification)}</div> : <p data-copy-role="body">{t.body.noVerification}</p>}
+        {user.ageRecordMinor && state !== 'done' ? <InlineNotice tone="info">{t.body.ageRecordMinor}</InlineNotice> : null}
         {verification === 'id-verified' || verification === 'staff-granted' ? <div className="lf-staff-form" data-form="revoke">
           <TextAreaField label={t.body.reasonLabel} help={t.body.reasonHelp} data-copy-role="data" value={reason} rows={3}
             maxLength={REVOKE_REASON.max} onChange={(event) => { setReason(event.target.value); setState('idle'); }} />
@@ -161,7 +173,7 @@ export function StaffUsers({ api, viewer }: { api: StaffApi; viewer: StaffViewer
     { key: 'username', label: t.body.username, value: (user) => (user.username ? `@${user.username}` : ''), ugc: true },
     { key: 'roles', label: t.body.roles, value: (user) => user.roles.map((item) => labelOf(copy.roleNames.option, item)).join(', ') },
     { key: 'language', label: t.body.language, value: (user) => labelOf(t.option, user.locale) },
-    { key: 'verification', label: t.body.verificationCol, value: (user) => (user.verification ? verificationChip(copy, user.verification) : t.option.none) },
+    { key: 'verification', label: t.body.verificationCol, value: (user) => verificationCell(copy, user) },
     { key: 'joined', label: t.body.joined, value: (user) => format.date(user.createdAt, copy.common.body.notAvailable) },
     { key: 'details', label: copy.common.body.details, value: (user) => <Button size="sm" onClick={() => setSelected(user.userId)}>{copy.common.action.open}</Button> },
   ];
