@@ -179,6 +179,95 @@ describe('learner shell', () => {
   });
 });
 
+/*
+ * 02 §7 rule 9 at a 320 px container. jsdom has no container queries, so the test applies the shell sheet's own
+ * `@container app (max-width: 359px)` block (read from shells.css, not copied) as a plain stylesheet: exactly
+ * what a 320 px `app` container turns on. The real-Chrome audit (audit:text-fit at 320 px) measures the layout.
+ */
+function compactRules() {
+  const css = readFileSync(resolve(__dirname, 'shells.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  const start = css.indexOf('@container app (max-width: 359px)');
+  expect(start).toBeGreaterThan(-1);
+  let depth = 0, cursor = css.indexOf('{', start);
+  const open = cursor;
+  for (; cursor < css.length; cursor++) {
+    if (css[cursor] === '{') depth++;
+    if (css[cursor] === '}' && --depth === 0) break;
+  }
+  // `:has()` (the bar's insets) is left out: jsdom's selector engine does not evaluate it, and it changes no visibility.
+  // The `.lf-rebuild` scope is the app's root (ShellRoot), which a component render has no need of.
+  return css.slice(open + 1, cursor).split('}').filter((rule) => rule.trim() && !rule.includes(':has('))
+    .map((rule) => `${rule.replace(/\.lf-rebuild\s+/g, '')}}`).join(' ');
+}
+function atCompactContainer() {
+  const style = document.createElement('style');
+  style.textContent = compactRules();
+  document.head.append(style);
+  return () => style.remove();
+}
+const labelShown = (link: Element) => getComputedStyle(link.querySelector('.lf-nav-label')!).clipPath !== 'inset(50%)';
+const marked: ShellNavItem[] = [
+  { id: 'learn', label: 'Aprender', href: '?page=learn', iconAssetId: 'nav.icon.learn' },
+  { id: 'tasks', label: 'Tarefas', href: '?page=tasks', iconAssetId: 'nav.icon.tasks' },
+  { id: 'wallet', label: 'Carteira', href: '?page=wallet', iconAssetId: 'nav.icon.wallet' },
+  { id: 'profile', label: 'Perfil', href: '?page=profile', iconAssetId: 'nav.icon.profile' },
+];
+
+describe('compact tab bar at a 320 px container (02 §7 rule 9)', () => {
+  let restore: () => void = () => undefined;
+  beforeEach(() => { restore = atCompactContainer(); });
+  afterEach(() => restore());
+
+  it('every tab has its own mark, so only the current tab shows its label; every name stays in the accessibility tree', () => {
+    render(wrap(<LearnerShell appName="LittleFounders" pageTitle="Tarefas" routeKey="tasks" locale="pt-BR" labels={labels} current="tasks"
+      items={marked} mentor={{ href: '?page=mentor', name: 'Mentor', character: 'dina' }}><h1 data-copy-role="heading">Tarefas</h1></LearnerShell>));
+    const bar = document.querySelector('.lf-tabbar .lf-nav-list--tab')!;
+    expect(bar).toHaveAttribute('data-icons', 'all');
+    const links = [...bar.querySelectorAll('a')];
+    expect(links.map((link) => link.querySelector('img')?.getAttribute('src'))).toEqual([
+      '/rebuild/art/nav-learn.svg', '/rebuild/mentor-avatars/dina-light.png', '/rebuild/art/nav-tasks.svg', '/rebuild/art/nav-wallet.svg', '/rebuild/art/nav-profile.svg']);
+    expect(links.filter(labelShown).map((link) => link.textContent)).toEqual(['Tarefas']);
+    const tabbar = within(document.querySelector('.lf-tabbar') as HTMLElement);
+    for (const name of ['Aprender', 'Dina', 'Tarefas', 'Carteira', 'Perfil']) expect(tabbar.getByRole('link', { name })).toBeInTheDocument();
+    // The marks are decorative: the word is the name, never the picture (07 §8).
+    for (const image of bar.querySelectorAll('img.lf-nav-icon')) { expect(image).toHaveAttribute('alt', ''); expect(image).toHaveAttribute('aria-hidden', 'true'); }
+  });
+
+  it('the Mentor tab before a character is chosen has no stand-in picture and keeps its word (02 rule 21)', () => {
+    render(wrap(<LearnerShell appName="LittleFounders" pageTitle="Aprender" routeKey="learn" locale="pt-BR" labels={labels} current="learn"
+      items={marked} mentor={{ href: '?page=mentor', name: 'Mentor', character: null }}><h1 data-copy-role="heading">Aprender</h1></LearnerShell>));
+    const bar = document.querySelector('.lf-tabbar .lf-nav-list--tab')!;
+    expect(bar).toHaveAttribute('data-icons', 'all');
+    const links = [...bar.querySelectorAll('a')];
+    expect(links.filter(labelShown).map((link) => link.textContent)).toEqual(['Aprender', 'Mentor']);
+    expect(links[1]!.querySelector('img, svg, [data-slot]')).toBeNull();
+  });
+
+  it('a tab without a registered mark keeps every label visible (the labels wrap instead)', () => {
+    render(wrap(<LearnerShell appName="LittleFounders" pageTitle="Aprender" routeKey="learn" locale="pt-BR" labels={labels} current="learn"
+      items={[...marked.slice(0, 3), { ...marked[3]!, iconAssetId: 'nav.icon.missing' }]} mentor={{ href: '?page=mentor', name: 'Mentor', character: 'zara' }}>
+      <h1 data-copy-role="heading">Aprender</h1></LearnerShell>));
+    const bar = document.querySelector('.lf-tabbar .lf-nav-list--tab')!;
+    expect(bar).toHaveAttribute('data-icons', 'partial');
+    expect([...bar.querySelectorAll('a')].every(labelShown)).toBe(true);
+  });
+
+  it('the Tutor console tab bar compacts the same way', () => {
+    const tutorItems: ShellNavItem[] = [
+      { id: 'family', label: 'Família', href: '?page=family', iconAssetId: 'nav.icon.family' },
+      { id: 'tasks', label: 'Tarefas', href: '?page=tasks', iconAssetId: 'nav.icon.tasks' },
+      { id: 'banking', label: 'Moedas', href: '?page=banking', iconAssetId: 'nav.icon.coins' },
+      { id: 'learn', label: 'Aprender', href: '?page=learn', iconAssetId: 'nav.icon.learn' },
+      { id: 'profile', label: 'Perfil', href: '?page=profile', iconAssetId: 'nav.icon.profile' },
+    ];
+    render(wrap(<TutorShell appName="LittleFounders" pageTitle="Família" routeKey="family" locale="pt-BR" labels={{ ...labels, menu: 'Menu', close: 'Fechar' }}
+      roleLabel="Tutor" current="family" items={tutorItems}><h1 data-copy-role="heading">Família</h1></TutorShell>));
+    const bar = document.querySelector('.lf-tabbar .lf-nav-list--tab')!;
+    expect(bar).toHaveAttribute('data-icons', 'all');
+    expect([...bar.querySelectorAll('a')].filter(labelShown).map((link) => link.textContent)).toEqual(['Família']);
+  });
+});
+
 describe('console shells', () => {
   const consoleLabels = { ...labels, menu: 'Menu', close: 'Fechar' };
   it('the Tutor console names the verified parent and uses the tab bar for up to five destinations', () => {

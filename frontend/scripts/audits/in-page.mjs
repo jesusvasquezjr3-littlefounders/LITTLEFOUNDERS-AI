@@ -12,8 +12,9 @@
  *     ellipsis, line-clamp, text clipped by `overflow`, text outside the
  *     viewport, a word wider than its box (canvas-measured), targets under
  *     48 px, page-level horizontal scroll — plus 02 rule 19: visible text with
- *     no declared `data-copy-role`. A scroll container that scrolls is not a
- *     clip; hiding text with `overflow: hidden` is.
+ *     no declared `data-copy-role`, and 02 rule 11: visible text under the
+ *     14 px floor. A scroll container that scrolls is not a clip; hiding text
+ *     with `overflow: hidden` is.
  *   - +40% text: the reference's pseudo-locale (`stressify`: every string
  *     gains 40% of its own words), applied to the rendered text nodes, numbers
  *     excepted, and restored after the measurement.
@@ -69,6 +70,8 @@ export function installAudit() {
         const r = el.getBoundingClientRect();
         const inScroller = (() => { for (let n = el.parentElement; n; n = n.parentElement) { const s = getComputedStyle(n); if (scrolls(s.overflowX)) return true; } return false; })();
         if (!inScroller && (r.left < -0.5 || r.right > innerWidth + 0.5)) out.push(['outside-frame-x', `${label(el)} l=${r.left.toFixed(0)} r=${(r.right - innerWidth).toFixed(0)}`]);
+        // 02 rule 11: visible text never falls below 14 px (SVG text, sized in its drawing's own units, is left to the board audit).
+        if (parseFloat(cs.fontSize) < 13.95) out.push(['font<14px', `${label(el)} ${parseFloat(cs.fontSize).toFixed(2)}px`]);
         // 02 rule 19: every string declares its role. Symbols and numbers alone (a stepper's minus) carry no words to budget.
         if (/\p{L}/u.test(el.textContent) && !el.closest('[data-copy-role]') && !el.closest('[aria-hidden="true"]')) out.push(['no-copy-role', label(el)]);
         let box = el; while (box && getComputedStyle(box).display === 'inline') box = box.parentElement;
@@ -153,7 +156,7 @@ export function installAudit() {
 
   function proportion() {
     fresh();
-    const SCALE = [12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 60, 64, 72, 96];
+    const SCALE = [14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 60, 64, 72, 96];
     const els = all().filter((e) => !e.closest('svg') && visible(e));
     const out = { spacing: new Map(), font: new Map(), measure: [], uniform: [], sizes: new Set(), radii: new Set(), gaps: 0, pairs: [] };
     const offGrid = (v) => v > 2 && Math.abs(v / 4 - Math.round(v / 4)) > 0.02;

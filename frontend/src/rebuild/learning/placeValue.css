@@ -7,9 +7,9 @@
 .lf-place-value-group { display: grid; grid-template-rows: auto 1fr; gap: var(--spacing-2); min-inline-size: 0; }
 .lf-place-value-group > span { font-size: .875rem; font-weight: 800; }
 .lf-place-value-rods, .lf-place-value-ones { display: flex; flex-wrap: wrap; align-content: start; gap: var(--spacing-1); }
-.lf-place-value-rod { display: flex; flex-direction: column; inline-size: 16px; border-radius: 4px; overflow: hidden; }
+.lf-place-value-rod { display: flex; flex-direction: column; gap: 1px; inline-size: 16px; border-radius: 4px; overflow: hidden; }
 /* Tens are the second series: mint with its diagonal pattern channel (05 §2). */
-.lf-place-value-rod i { display: block; inline-size: 16px; block-size: 12px; background-color: var(--mint-strong); background-image: repeating-linear-gradient(135deg, transparent 0 4px, var(--surface) 4px 6px); border-block-end: 1px solid var(--surface); }
+.lf-place-value-rod i { display: block; inline-size: 16px; block-size: 12px; background-color: var(--mint-strong); background-image: repeating-linear-gradient(135deg, transparent 0 4px, var(--surface) 4px 6px); }
 .lf-place-value-ones { display: grid; grid-template-columns: repeat(5, 16px); grid-auto-rows: 16px; }
 .lf-place-value-ones i { display: block; inline-size: 16px; block-size: 16px; border-radius: 4px; background: var(--sky-strong); }
 .lf-place-value-controls { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }

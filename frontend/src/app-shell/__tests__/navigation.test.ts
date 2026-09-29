@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { resolveManifestAsset } from '@/rebuild/design/assets';
 import { permittedStaffItems, STAFF_PERMISSIONS, type StaffNavItem, type StaffPermission } from '@/rebuild/design/controls';
 import { rebuildNamespaceCopy } from '@/i18n/rebuild';
 import { STAFF_ROUTE_GRANTS } from '@/app-routes/staffGrants';
@@ -139,6 +140,34 @@ describe('navigation copy (OD-6, OD-13)', () => {
       // "Tutor" names only the verified parent: the role pill and the way into verification.
       const withTutor = Object.entries(copy.nav).filter(([, label]) => /tutor/i.test(label)).map(([key]) => key);
       expect(withTutor).toEqual(['becomeTutor']);
+    }
+  });
+});
+
+describe('navigation marks (02 section 7 rule 9; 07 section 1 class B)', () => {
+  const all = [...Object.values(SLOTS), ...STAFF_SLOTS];
+  it('gives every learner, Tutor and staff slot its own registered, decorative navigation mark', () => {
+    for (const slot of all) {
+      const asset = resolveManifestAsset(slot.iconAssetId);
+      expect(asset, slot.id).not.toBeNull();
+      expect(asset!.slot, slot.id).toBe('nav.icon');
+      expect(asset!.type, slot.id).toBe('svg');
+      expect(asset!.modes, slot.id).toBe('both');
+      expect(asset!.altKey, slot.id).toBe('decorative');
+    }
+  });
+
+  it('never gives two different destinations the same mark (the child coin card and the teen wallet are both "Wallet")', () => {
+    const byIcon = new Map<string, Set<string>>();
+    for (const slot of all) byIcon.set(slot.iconAssetId, (byIcon.get(slot.iconAssetId) ?? new Set()).add(slot.label));
+    for (const [icon, labels] of byIcon) expect([...labels], icon).toHaveLength(1);
+  });
+
+  it('every shell a person can get has a mark on each of its items', () => {
+    const accounts = [account(['kid'], wallet('managed_child', true)), account(['universal'], wallet('teen', true)), account(['universal']),
+      account(['parent', 'admin'], wallet(null), ['manage_users']), account(['superadmin'])];
+    for (const person of accounts) for (const slot of [...learnerNav(person), ...tutorNav(person), ...staffNav(person).map((entry) => entry.slot)]) {
+      expect(resolveManifestAsset(slot.iconAssetId), slot.id).not.toBeNull();
     }
   });
 });

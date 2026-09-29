@@ -13,7 +13,8 @@
 .lf-flow-cases { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
 .lf-flow-path { display: grid; gap: var(--spacing-2); padding-inline-start: var(--spacing-5); }
 .lf-flow-node { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--spacing-2); padding: var(--spacing-2) var(--spacing-3); border-radius: var(--rounded-sm); background: var(--sunken); }
-.lf-flow-node--outcome { background: var(--mint-soft, var(--sunken)); border: 2px solid var(--mint-strong); font-weight: 800; }
+/* An outcome is told apart by its fill, its word and its weight, never by a line around it (02 §4.4). */
+.lf-flow-node--outcome { background: var(--mint-soft); color: var(--content); font-weight: 800; }
 .lf-flow-table { inline-size: 100%; border-collapse: collapse; }
 .lf-flow-table th, .lf-flow-table td { padding: var(--spacing-2); border-block-end: 1px solid var(--outline); text-align: start; }
 .lf-sort-bins { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--spacing-3); }

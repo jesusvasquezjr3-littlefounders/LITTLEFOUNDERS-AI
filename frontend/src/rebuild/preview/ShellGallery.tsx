@@ -4,6 +4,7 @@ import {
   TutorShell, type ShellNavItem, type SingleStateHue, type StaffGrants, type StaffNavItem,
 } from '../design/controls';
 import type { Locale } from '../design/copyBudget';
+import { NAV_MARKS } from '../design/navMarks';
 import type { GalleryCopy, SystemCopy } from './OverlayGallery';
 import './gallery.css';
 
@@ -11,6 +12,11 @@ export type ShellKind = 'learner' | 'teen' | 'tutor' | 'staff' | 'staff-limited'
 export const SHELL_KINDS: readonly ShellKind[] = ['learner', 'teen', 'tutor', 'staff', 'staff-limited', 'site', 'auth', 'single', 'table'];
 
 const APP = 'LittleFounders';
+const PREVIEW_MARKS: Record<string, string> = {
+  learn: NAV_MARKS.learn, tasks: NAV_MARKS.tasks, wallet: NAV_MARKS.wallet, profile: NAV_MARKS.profile, family: NAV_MARKS.family,
+  progress: NAV_MARKS.learn, settings: NAV_MARKS.profile, overview: NAV_MARKS.overview, users: NAV_MARKS.users, content: NAV_MARKS.content,
+  insights: NAV_MARKS.intel, reports: NAV_MARKS.reports, audit: NAV_MARKS.audit, emails: NAV_MARKS.emails,
+};
 const members = [
   { name: 'Sofía', role: 'learner', status: 'active' },
   { name: 'Alessandro_Bartolomeo_Villanueva_Rodriguez_2014', role: 'learner', status: 'invited' },
@@ -34,7 +40,9 @@ export function ShellGallery({ kind, t, s, locale, onGallery }: {
     setPage(next);
   };
   const href = (id: string) => `?${new URLSearchParams({ ...Object.fromEntries(new URLSearchParams(location.search)), page: id }).toString()}`;
-  const item = (id: string, label: string): ShellNavItem => ({ id, label, href: href(id) });
+  // Each preview destination wears the class B navigation mark of its real slot (app-shell/navigation.ts), so the
+  // compact tab bar below 360 px (02 section 7 rule 9) shows here as it does on the real routes.
+  const item = (id: string, label: string): ShellNavItem => ({ id, label, href: href(id), iconAssetId: PREVIEW_MARKS[id] });
   const labels = { skip: t.skip, navigation: t.navigation };
   const common = { appName: APP, routeKey: `${kind}:${page}`, locale, onNavigate: navigate };
   const back = <Button size="sm" onClick={onGallery}>{t.allComponents}</Button>;

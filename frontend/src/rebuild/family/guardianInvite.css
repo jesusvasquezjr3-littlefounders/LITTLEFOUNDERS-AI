@@ -2,4 +2,4 @@
 .lf-guardian-invite p, .lf-guardian-invite h2 { margin: 0; }
 .lf-guardian-invite-link { display: grid; gap: .75rem; }
 .lf-guardian-invite-link-row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
-.lf-guardian-invite-link-value { min-inline-size: 0; overflow-wrap: anywhere; font-size: .8rem; }
+.lf-guardian-invite-link-value { min-inline-size: 0; overflow-wrap: anywhere; font: var(--type-caption); }

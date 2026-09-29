@@ -202,7 +202,8 @@ const REVIEW = new Set(['draft', 'approved', 'retired']);
 // W2 profile lane: the cartoon avatar parts and the profile covers (E.12) are two more families of our own, each with its first-asset style review.
 // Gap-fix round 2 (02 D8, 07 §1): `brand` holds the one own-asset mark the favicons, app icons and structured-data logo are drawn from.
 // Gap-fix round 2: the OD-20 achievement image's marks are a family of their own (`achievement-share`), drawn by Depot.
-const FAMILIES = new Set(['character-renders', 'badges', 'course-icons', 'pockets', 'empty-states', 'scenes', 'task-categories', 'coins', 'celebration-motion', 'avatar-parts', 'profile-covers', 'sounds', 'brand', 'achievement-share']);
+// Gap-fix round 3 (02 section 7 rule 9, 07 section 1): the class B navigation marks of the shells (`navigation`, slot `nav.icon`).
+const FAMILIES = new Set(['character-renders', 'badges', 'course-icons', 'pockets', 'empty-states', 'scenes', 'task-categories', 'coins', 'celebration-motion', 'avatar-parts', 'profile-covers', 'sounds', 'brand', 'achievement-share', 'navigation']);
 const BUDGET_KB = { svg: 6, webp: 120, png: 120, lottie: 150, render: 150, wav: 32 };
 const RASTER = new Set(['png', 'render', 'webp']);
 let ocrRead = 0;
@@ -318,7 +319,7 @@ const pattern = (literal) => new RegExp(`^${literal.split(/\$\{[^}]*\}/).map((pa
 const pathRefs = [], idRefs = [];
 for (const [file, text] of sources) {
   for (const m of text.matchAll(/['"`](\/rebuild\/[^'"`\s]+?\.(?:png|webp|svg|json|lottie))['"`]/g)) pathRefs.push({ file, literal: m[1], re: pattern(m[1]) });
-  for (const m of text.matchAll(/['"`]((?:lesson|mentor|badge|course|pocket|empty|scene|task|coin|money|celebration)\.[a-z0-9.${}-]+)['"`]/g)) {
+  for (const m of text.matchAll(/['"`]((?:lesson|mentor|badge|course|pocket|empty|scene|task|coin|money|celebration|nav)\.[a-z0-9.${}-]+)['"`]/g)) {
     if (!isTranslationKey(m[1])) idRefs.push({ file, literal: m[1], re: pattern(m[1]) });
   }
 }
@@ -525,7 +526,7 @@ for (const asset of classB) {
 const live = classB.filter((asset) => asset.reviewStatus !== 'retired');
 for (const ref of pathRefs) if (!live.some((asset) => ref.re.test(asset.path))) fail(`${ref.file} references an unregistered or retired asset: ${ref.literal}`);
 for (const ref of soundRefs) if (!live.some((asset) => asset.type === 'wav' && asset.path === ref.literal)) fail(`${ref.file} references an unregistered or retired sound: ${ref.literal}`);
-for (const ref of idRefs) if (ref.literal.includes('.') && /^(lesson|mentor)\.[a-z]+\.[a-z]/.test(ref.literal) && !live.some((asset) => ref.re.test(asset.id))) {
+for (const ref of idRefs) if (ref.literal.includes('.') && /^(lesson|mentor|nav)\.[a-z]+\.[a-z]/.test(ref.literal) && !live.some((asset) => ref.re.test(asset.id))) {
   fail(`${ref.file} references an unregistered or retired asset id: ${ref.literal}`);
 }
 // Both colour modes (07 §3): per slot and subject, a `both` asset or a light/dark pair.

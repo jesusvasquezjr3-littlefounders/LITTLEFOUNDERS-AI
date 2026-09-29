@@ -1,5 +1,6 @@
 import { STAFF_ROUTE_GRANTS, type StaffGrant } from '@/app-routes/staffGrants';
 import { FAMILY_WALLET_PATH, LEGACY_FAMILY_WALLET_PATH } from '@/rebuild/banking/walletPath';
+import { NAV_MARKS } from '@/rebuild/design/navMarks';
 import { APP_HOME } from './home';
 
 /*
@@ -32,6 +33,11 @@ export interface NavSlot<Label extends string = AppNavLabel> {
   label: Label;
   path: string;
   owner: Lane;
+  /**
+   * The slot's class B navigation mark (07 section 1, manifest slot `nav.icon`). Every slot has one, so the
+   * phone tab bar can show inactive tabs as 48 px icons below a 360 px container (02 section 7 rule 9).
+   */
+  iconAssetId: string;
 }
 
 /** What the shells know about the signed-in account. Display only: the guards and Core decide access. */
@@ -47,38 +53,38 @@ export interface ShellAccount {
  * ------------------------------------------------------------------------- */
 
 export const SLOTS = {
-  learn: { id: 'learn', label: 'learn', path: '/learn', owner: 'learn' },
-  tasks: { id: 'tasks', label: 'tasks', path: '/tasks', owner: 'family' },
+  learn: { id: 'learn', label: 'learn', path: '/learn', owner: 'learn', iconAssetId: NAV_MARKS.learn },
+  tasks: { id: 'tasks', label: 'tasks', path: '/tasks', owner: 'family', iconAssetId: NAV_MARKS.tasks },
   /** The independent teen's personal wallet (OD-3 Option B). */
-  teenWallet: { id: 'wallet', label: 'wallet', path: '/wallet', owner: 'family' },
+  teenWallet: { id: 'wallet', label: 'wallet', path: '/wallet', owner: 'family', iconAssetId: NAV_MARKS.wallet },
   /** A parent-created child's coin card: their wallet. */
-  childWallet: { id: 'banking', label: 'wallet', path: FAMILY_WALLET_PATH, owner: 'family' },
+  childWallet: { id: 'banking', label: 'wallet', path: FAMILY_WALLET_PATH, owner: 'family', iconAssetId: NAV_MARKS.wallet },
   /** A teen who linked a verified parent: the family wallet beside their own wallet ("Family wallet", OD-28). */
-  familyCoins: { id: 'banking', label: 'familyCoins', path: FAMILY_WALLET_PATH, owner: 'family' },
+  familyCoins: { id: 'banking', label: 'familyCoins', path: FAMILY_WALLET_PATH, owner: 'family', iconAssetId: NAV_MARKS.familyCoins },
   /** The verified parent's view of the family's coin cards: the Wallet (OD-28), labelled with the glossary term. */
-  coins: { id: 'banking', label: 'coins', path: FAMILY_WALLET_PATH, owner: 'family' },
-  family: { id: 'family', label: 'family', path: '/family', owner: 'family' },
+  coins: { id: 'banking', label: 'coins', path: FAMILY_WALLET_PATH, owner: 'family', iconAssetId: NAV_MARKS.coins },
+  family: { id: 'family', label: 'family', path: '/family', owner: 'family', iconAssetId: NAV_MARKS.family },
   /** An adult who is not yet a verified parent: the way into Tutor verification. */
-  becomeTutor: { id: 'become-tutor', label: 'becomeTutor', path: '/verify-parent', owner: 'site' },
-  profile: { id: 'profile', label: 'profile', path: '/profile', owner: 'profile' },
-  staff: { id: 'staff', label: 'staff', path: '/admin', owner: 'staff' },
-  backToApp: { id: 'back-to-app', label: 'backToApp', path: APP_HOME, owner: 'core' },
+  becomeTutor: { id: 'become-tutor', label: 'becomeTutor', path: '/verify-parent', owner: 'site', iconAssetId: NAV_MARKS.becomeTutor },
+  profile: { id: 'profile', label: 'profile', path: '/profile', owner: 'profile', iconAssetId: NAV_MARKS.profile },
+  staff: { id: 'staff', label: 'staff', path: '/admin', owner: 'staff', iconAssetId: NAV_MARKS.staff },
+  backToApp: { id: 'back-to-app', label: 'backToApp', path: APP_HOME, owner: 'core', iconAssetId: NAV_MARKS.backToApp },
 } as const satisfies Record<string, NavSlot>;
 
 /** Staff console sections in menu order; one per page of app-routes/staffGrants.ts that is not a redirect (tested). */
 export const STAFF_SLOTS: readonly NavSlot<StaffNavLabel>[] = [
-  { id: 'overview', label: 'overview', path: '/admin', owner: 'staff' },
-  { id: 'content', label: 'content', path: '/admin/content', owner: 'staff' },
-  { id: 'users', label: 'users', path: '/admin/users', owner: 'staff' },
-  { id: 'ageCorrections', label: 'ageCorrections', path: '/admin/age-corrections', owner: 'staff' },
-  { id: 'emails', label: 'emails', path: '/admin/emails', owner: 'staff' },
-  { id: 'analytics', label: 'analytics', path: '/admin/analytics', owner: 'staff' },
-  { id: 'intel', label: 'intel', path: '/admin/intel', owner: 'staff' },
-  { id: 'mentorQuality', label: 'mentorQuality', path: '/admin/mentor-quality', owner: 'staff' },
-  { id: 'generation', label: 'generation', path: '/admin/generation', owner: 'staff' },
-  { id: 'audit', label: 'audit', path: '/admin/audit', owner: 'staff' },
-  { id: 'reports', label: 'reports', path: '/admin/reports', owner: 'staff' },
-  { id: 'roles', label: 'roles', path: '/admin/roles', owner: 'staff' },
+  { id: 'overview', label: 'overview', path: '/admin', owner: 'staff', iconAssetId: NAV_MARKS.overview },
+  { id: 'content', label: 'content', path: '/admin/content', owner: 'staff', iconAssetId: NAV_MARKS.content },
+  { id: 'users', label: 'users', path: '/admin/users', owner: 'staff', iconAssetId: NAV_MARKS.users },
+  { id: 'ageCorrections', label: 'ageCorrections', path: '/admin/age-corrections', owner: 'staff', iconAssetId: NAV_MARKS.ageCorrections },
+  { id: 'emails', label: 'emails', path: '/admin/emails', owner: 'staff', iconAssetId: NAV_MARKS.emails },
+  { id: 'analytics', label: 'analytics', path: '/admin/analytics', owner: 'staff', iconAssetId: NAV_MARKS.analytics },
+  { id: 'intel', label: 'intel', path: '/admin/intel', owner: 'staff', iconAssetId: NAV_MARKS.intel },
+  { id: 'mentorQuality', label: 'mentorQuality', path: '/admin/mentor-quality', owner: 'staff', iconAssetId: NAV_MARKS.mentorQuality },
+  { id: 'generation', label: 'generation', path: '/admin/generation', owner: 'staff', iconAssetId: NAV_MARKS.generation },
+  { id: 'audit', label: 'audit', path: '/admin/audit', owner: 'staff', iconAssetId: NAV_MARKS.audit },
+  { id: 'reports', label: 'reports', path: '/admin/reports', owner: 'staff', iconAssetId: NAV_MARKS.reports },
+  { id: 'roles', label: 'roles', path: '/admin/roles', owner: 'staff', iconAssetId: NAV_MARKS.roles },
 ];
 
 /* ---------------------------------------------------------------------------
