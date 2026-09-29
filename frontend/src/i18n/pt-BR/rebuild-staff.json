@@ -435,8 +435,8 @@
         "signups": "Cadastros",
         "reasonLabel": "Motivo",
         "reasonHelp": "De 10 a 300 caracteres. Vai para o registro de auditoria.",
-        "consequence": "{name} perde o status verificado. O motivo fica auditado.",
-        "revoked": "Verificação revogada.",
+        "consequence": "{name} perde verificação e vínculos de Tutor. O motivo fica auditado.",
+        "revoked": "Verificação revogada. Acesso de Tutor encerrado; crianças sem Tutor em pausa.",
         "revokeFailed": "Não foi possível revogar. Tente de novo.",
         "noVerification": "Esta conta não tem verificação de responsável.",
         "ageRecordMinor": "A idade registrada é menor de 18. Revise a idade ou revogue."

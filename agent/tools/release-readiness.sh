@@ -51,6 +51,10 @@ node agent/tools/check-block-d-research.mjs --strict
 node agent/tools/check-block-d-thresholds.mjs --strict
 node agent/tools/check-no-unbacked-guarantee.mjs --strict
 node agent/tools/check-block-d-scope.mjs --strict
+# Appendix M Part 3 Stage 6 (GAP-FIX-R6): nor on an overdue quarterly Block A
+# identity recalibration (docs/operations/IDENTITY-RECALIBRATION-LOG.md), and
+# the log's thresholds must match the metrics Core reports.
+node agent/tools/identity-review-cadence.mjs --strict
 # Appendix J 1.3 / DoD 2.1(2): the data-gateway half of the social release
 # gate. Every native-PostgreSQL social verifier (and the teen discoverable,
 # cooperative goals and account-erasure ones) against the full migration

@@ -435,8 +435,8 @@
         "signups": "Registros",
         "reasonLabel": "Motivo",
         "reasonHelp": "De 10 a 300 caracteres. Queda en el registro de auditoría.",
-        "consequence": "{name} pierde el estado verificado. El motivo queda auditado.",
-        "revoked": "Verificación revocada.",
+        "consequence": "{name} pierde verificación y vínculos de Tutor. El motivo queda auditado.",
+        "revoked": "Verificación revocada. Acceso de Tutor terminado; niños sin Tutor en pausa.",
         "revokeFailed": "No se pudo revocar. Intenta de nuevo.",
         "noVerification": "Esta cuenta no tiene verificación de padre.",
         "ageRecordMinor": "La edad registrada es menor de 18. Revisa la edad o revoca."

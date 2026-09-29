@@ -477,6 +477,16 @@ describe('GET /api/v1/tasks/streak (kid)', () => {
 });
 
 describe('POST /api/v1/tasks/:id/approve (parent)', () => {
+  // A.5 (GAP-FIX-R6): staff revoked this adult's verification. The database's
+  // revoke_parent_verification removed the parent role and revoked every
+  // verified link in the same transaction, so the direct API call is refused.
+  it('403s a Tutor whose verification staff revoked (the parent role is gone) and decides nothing', async () => {
+    stub({ task: { ...defaultTask(), status: 'done' }, roles: ['universal'], parentsKids: [] });
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, { reflection: 'skipped' });
+    expect(res.status).toBe(403);
+    expect(vi.mocked(fetch).mock.calls.some(([url]) => String(url).includes('/rpc/family_decide_task'))).toBe(false);
+  });
+
   it('404s approving a task belonging to a child not verified under this parent', async () => {
     stub({ task: { ...defaultTask(), status: 'done' }, parentsKids: [OTHER_KID_ID] });
     const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, { reflection: 'skipped' });

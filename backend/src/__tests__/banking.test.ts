@@ -304,6 +304,15 @@ describe('POST /api/v1/banking/accounts/:kidId/freeze and /account/freeze', () =
     expect(res.body.data.account.frozen).toBe(true);
   });
 
+  // A.5 (GAP-FIX-R6): a Tutor whose verification staff revoked lost the
+  // parent role in the same transaction; a direct call cannot freeze a card.
+  it('403s a Tutor whose verification staff revoked and writes nothing', async () => {
+    stub({ account: defaultAccount(), roles: ['universal'] });
+    const res = await postAsParent(`/api/v1/banking/accounts/${KID_ID}/freeze`, { frozen: true });
+    expect(res.status).toBe(403);
+    expect(vi.mocked(fetch).mock.calls.some(([, init]) => (init?.method ?? 'GET') !== 'GET')).toBe(false);
+  });
+
   it('a kid can freeze their own card', async () => {
     stub({ account: defaultAccount(), roles: ['kid'] });
     const res = await postAsKid('/api/v1/banking/account/freeze', { frozen: true });

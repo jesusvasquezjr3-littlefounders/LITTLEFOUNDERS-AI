@@ -1,0 +1,77 @@
+name: Quarterly Block A identity recalibration
+
+# Appendix M Part 3 Stage 6 (Post-Launch Recalibration: "Trust/Identity Lead,
+# on a quarterly cadence, consistent with Appendices H, J, and L"). GAP-FIX-R6
+# identity-site.
+#
+# Two triggers, as for the Block D reviews:
+#   - per release: agent/tools/release-readiness.sh runs
+#     identity-review-cadence.mjs --strict, which fails while the review is
+#     past the due date docs/operations/IDENTITY-RECALIBRATION-LOG.md states;
+#   - per calendar quarter (THIS workflow): on 1 January, April, July and
+#     October it opens the quarter's issue, labelled `identity-review`, for the
+#     Trust/Identity Lead: the last human review, the next due date, every
+#     release-gate metric and, when a staff console identity report is
+#     attached (the optional `report` input of a manual run: the JSON of
+#     GET /api/v1/admin/analytics/identity), every gate reading missed or no data.
+#
+# Nothing is read from Core or production by this workflow: the schedule lives
+# in the repo's log and a report is only what a person attaches. A malformed
+# log or report still opens the issue and turns the run red.
+#
+# agent/tools/identity-review-cadence.test.mjs pins the schedule, the tool
+# call and the notification.
+
+on:
+  schedule:
+    - cron: '0 9 1 1,4,7,10 *'
+  workflow_dispatch:
+    inputs:
+      report:
+        description: 'Optional: the JSON of the staff console identity report (GET /api/v1/admin/analytics/identity?days=90)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  open-review:
+    name: Open the quarter's Block A recalibration
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Write the review issue
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REPORT: ${{ inputs.report }}
+        run: |
+          set -euo pipefail
+          if [ -n "${REPORT:-}" ]; then
+            printf '%s' "$REPORT" > identity-report.json
+            node agent/tools/identity-review-cadence.mjs --issue-file issue.md --title-file title.txt --report identity-report.json
+          else
+            node agent/tools/identity-review-cadence.mjs --issue-file issue.md --title-file title.txt
+          fi
+
+      - name: Open the review issue for the owner
+        if: always() && hashFiles('issue.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          title=$(cat title.txt)
+          existing=$(gh issue list --state open --label identity-review --search "\"$title\" in:title" --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "${existing:-}" ]; then
+            gh issue comment "$existing" --body-file issue.md
+          else
+            gh label create identity-review --color 1D76DB --description 'Appendix M Stage 6 quarterly Block A recalibration' 2>/dev/null || true
+            gh issue create --title "$title" --label identity-review --body-file issue.md
+          fi

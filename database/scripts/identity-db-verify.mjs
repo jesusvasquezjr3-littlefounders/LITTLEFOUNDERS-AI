@@ -42,6 +42,9 @@ export const BLOCK_A = [
   'verify-age-birth-month-postgres.py',
   // S-06 (OD-28): the verified Tutor's rename of a flagged child handle.
   'verify-kid-username-change-postgres.py',
+  // A.5 / A.1 (GAP-FIX-R6): a staff revocation ends the Tutor's role, links
+  // and invites, pauses an unsupervised child, and leaves no path back.
+  'verify-tutor-revocation-postgres.py',
 ];
 
 /** Every verifier runs over the whole chain. */

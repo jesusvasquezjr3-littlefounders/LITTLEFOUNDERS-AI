@@ -58,6 +58,12 @@ jobs:
       - name: Block D thresholds agree across the log, Core and the migrations
         run: node agent/tools/check-block-d-thresholds.mjs
 
+      # Appendix M Part 3 Stage 6 (GAP-FIX-R6): every Block A metric Core
+      # reports has one row, of the same kind, in the identity recalibration
+      # log; an overdue quarterly review warns here and fails in release readiness.
+      - name: Block A identity recalibration log matches Core's metrics
+        run: node agent/tools/identity-review-cadence.mjs
+
       # S07.6 (D.7): no control a family sees may imply a guarantee the system
       # does not enforce. docs/operations/block-d-controls.json names each
       # control's enforcing SQL and its adversarial proof; the gate fails when

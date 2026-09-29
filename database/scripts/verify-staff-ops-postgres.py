@@ -325,7 +325,9 @@ try:
     email = m['entryCapture']['email']
     assert email['created'] >= 1 and email['captured'] >= 1, email
     assert m['undatedBacklog'] == {'existing': 1, 'undated': 1}, m['undatedBacklog']
-    assert m['parentTags'] == {'holders': 4, 'idVerified': 1, 'staffGranted': 1, 'revoked': 1, 'untagged': 1}, m['parentTags']
+    # GAP-FIX-R6 identity-site (tutor_revocation_cascade): the revocation above
+    # also removed the revokee's parent role, so no holder is tagged revoked.
+    assert m['parentTags'] == {'holders': 3, 'idVerified': 1, 'staffGranted': 1, 'revoked': 0, 'untagged': 1}, m['parentTags']
     assert m['staffGrantJustification']['staffGranted'] == 2 and m['staffGrantJustification']['justified'] == 1, m['staffGrantJustification']
     assert m['revocation']['revokedRows'] == 1 and m['revocation']['auditedRevocations'] == 1, m['revocation']
     assert m['kidEmail'] == {'kids': 2, 'restricted': 1, 'refusalsInWindow': 1}, m['kidEmail']

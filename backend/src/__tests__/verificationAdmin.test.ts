@@ -185,6 +185,18 @@ describe('parent-role staff grant justification (A.5)', () => {
     expect(refused.status).toBe(409);
     expect(refused.body.error.code).toBe('ROLE_REJECTED');
   });
+
+  // A.5 (GAP-FIX-R6): tutor_revocation_cascade refuses the parent role for an
+  // adult whose latest verification is revoked, the staff grant included.
+  it('answers 409 PARENT_VERIFICATION_REVOKED when staff try to re-grant a revoked Tutor', async () => {
+    stub({ roles: ['superadmin'], rpc: { status: 403, body: { code: '42501', message: "PARENT_ROLE_REVOKED: this adult's verification was revoked by staff" } } });
+    const res = await request(createApp())
+      .post('/api/v1/admin/roles/grant')
+      .set('Authorization', `Bearer ${superadminToken()}`)
+      .send({ userId: TARGET_ID, role: 'parent', justification: 'Support case: parent re-verified in person.' });
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('PARENT_VERIFICATION_REVOKED');
+  });
 });
 
 describe('admin users list verification projection (A.5)', () => {

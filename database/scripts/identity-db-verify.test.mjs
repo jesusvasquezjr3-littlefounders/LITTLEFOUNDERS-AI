@@ -24,6 +24,7 @@ const EXPECTED = [
   'verify-age-correction-postgres.py',
   'verify-age-birth-month-postgres.py',
   'verify-kid-username-change-postgres.py',
+  'verify-tutor-revocation-postgres.py',
 ];
 
 /**
@@ -44,6 +45,11 @@ const GUARDS = [
   { fn: 'decide_age_correction', clause: 'E.4 / A.4', verifier: 'verify-age-correction-postgres.py', proof: 'decide_age_correction' },
   { fn: 'promote_age_declaration', clause: 'OD-28', verifier: 'verify-age-birth-month-postgres.py', proof: 'promote_age_declaration' },
   { fn: 'guardian_rename_flagged_child', clause: 'S-06', verifier: 'verify-kid-username-change-postgres.py', proof: 'guardian_rename_flagged_child' },
+  { fn: 'revoke_parent_verification', clause: 'A.5 / A.1', verifier: 'verify-tutor-revocation-postgres.py', proof: 'childrenPaused' },
+  { fn: 'end_revoked_tutor_powers', clause: 'A.5', verifier: 'verify-tutor-revocation-postgres.py', proof: 'end_revoked_tutor_powers' },
+  { fn: 'guard_guardian_link_state', clause: 'A.5', verifier: 'verify-tutor-revocation-postgres.py', proof: 'GUARDIAN_LINK_TUTOR_REVOKED' },
+  { fn: 'guard_parent_verification_revoked', clause: 'A.5', verifier: 'verify-tutor-revocation-postgres.py', proof: 'PARENT_VERIFICATION_REVOKED' },
+  { fn: 'enforce_parent_role_provenance', clause: 'A.5 (revocation)', verifier: 'verify-tutor-revocation-postgres.py', proof: 'PARENT_ROLE_REVOKED' },
 ];
 
 test('every Block A verifier exists and is listed once', () => {
