@@ -10,7 +10,7 @@ This README is the single operational document of the repo: everything essential
 
 Follow the specification's precedence: owner decisions, product requirements and appendices, Frontend Bible, then the visual reference with its recorded deviations excluded. Reviews are historical only. The frontend is rebuilt from scratch; the backend and existing user data are migrated. Critical live defects remain a separate immediate workstream. Read the [implementation baseline](docs/rebuild/BASELINE.md) for source mappings, verified gaps and sequencing. The owner confirmed **web with a future mobile wrapper** on 21 September 2026 (OD-12).
 
-Track ongoing work in the [migration sprints](docs/rebuild/SPRINTS.md) and [requirement ledger](docs/rebuild/REQUIREMENTS.md). Each checkpoint records separate product and frontend verification against the SPEC. Implementation, local verification, acceptance and production release are distinct states; no requirement closes without its evidence and applicable reviews.
+Track ongoing work in the [migration sprints](docs/rebuild/SPRINTS.md) and [requirement ledger](docs/rebuild/REQUIREMENTS.md). The state on 28 September 2026 (every requirement implemented and locally verified, none accepted) and the ordered steps that remain before production are in the [completion report](docs/rebuild/COMPLETION-REPORT.md). Each checkpoint records separate product and frontend verification against the SPEC. Implementation, local verification, acceptance and production release are distinct states; no requirement closes without its evidence and applicable reviews.
 
 **Staged social rollout dependency:** the rebuilt Core block and unfollow paths require migrations `0098_atomic_social_blocks.sql` and `0099_atomic_social_unfollow.sql` before deployment. Block insertion now relies on its database transaction for bidirectional follow cleanup and request revocation. Unfollow uses a session-owned RPC to revoke requests and remove the edge atomically; direct browser DELETE is withdrawn. Both migrations are classified as contract and require operator review; do not deploy the Core change against an older schema. The current approval-visibility adapter additionally requires `has_current_social_approval` from migration `0100_approved_social_visibility.sql`; it must not be deployed before that schema dependency. The social decision workflow remains unaccepted; see the S02 evidence and remaining lifecycle gates before activation.
 
@@ -160,6 +160,26 @@ The rebuilt frontend (`docs/littlefounders-spec/`, OD-2/OD-15) is built by paral
 - **Preview entry: `frontend/src/rebuild/preview/registry/<lane>.tsx`.** Each lane registers its `rebuild.html?screen=` screens in its own registry; `Preview.tsx` only composes them, and a screen id may be registered once.
 - **Audits: `frontend/scripts/audits/lanes/<lane>.mjs`.** Each lane declares its audited states, its synthetic-Core scenarios and the Core answers only its routes need; `audit:rebuild` composes them and refuses a state id or scenario declared twice.
 - **The 3D stage bridge** (`agent/tools/check-product-spec.mjs`): a rebuilt file may import only `src/rebuild` and `src/i18n`, except two named stage files that may import the 3D renderer, its quality probe and the theme context: `rebuild/learning/CompactMentorStage.tsx` and the Mentor lane's future `rebuild/mentor/MentorStage.tsx`.
+
+### Commands added by the SPEC migration
+
+Most of the migration's commands appear in the tables below, each beside the area it gates. These are the rest.
+
+| Command (directory) | What it does |
+|---|---|
+| `npm run staff-constraints:check` (root) | G.6 and Appendix N 1.3. Follows every function the staff router reaches and fails on a transcript or per-account wallet read, an impersonation name or token minting. It is part of `spec:check` and repo-gates, and its self-tests run in `tools:test`. |
+| `REBUILD_URL=http://localhost:<port> npm run verify:learn-pages` (`frontend/`) | Real-Chrome matrix of the rebuilt learner pages (L1 to L4) on their real routes, answered by the synthetic Core: 3 locales, 2 modes, 4 widths, normal and 140% text. |
+| `REBUILD_URL=… npm run verify:profile-screens` (`frontend/`) | The same matrix for the profile, look editor, Settings and people screens (P1 to P8). |
+| `REBUILD_URL=… npm run verify:staff-console` (`frontend/`) | The same matrix for every staff console section, with each grant population. |
+| `REBUILD_URL=… npm run verify:worked-example`, `verify:function-machine`, `verify:cpa-fading` (`frontend/`) | Dedicated browser matrices for the M9/M10 worked example, the M13 function machine and the M1 concrete, pictorial and abstract progression boards. |
+| `npm run seo:icons` (`frontend/`) | Regenerates every favicon, app icon and the JSON-LD logo from `brand.mark` (`public/rebuild/brand/mark.svg`). Run it after the mark changes. `seo:check` refuses a legacy logo or an off-token colour. |
+| `npm run ops:drill` (`backend/`) | H.4 and Appendix O 2.3: a simulated failure drill for each watched scheduled job, plus G.2's overdue retroactive release check. It runs locally, reads nothing and spends nothing. |
+| `npm run content:retro-checks [-- --list]` (`coursegen/`) | G.2 and Appendix N 2.3(b). Runs `verify:course` for each course with an open retroactive release check (opened by every bypass of the release check). A complete, current verification closes the course's checks in Vault. |
+| `npm run v2:author -- --skeleton <plan.json> --out <plan.json> --dry-run` (`coursegen/`) | Authors v2 lesson plans with zero spend from a committed plan. Without `--dry-run` it is a paid, owner-run command and refuses to start without an owner-approved `--max-usd` ceiling (OD-23). Runbook: `docs/content/FORGE-V2-RELEASE.md`. |
+| `npm run v2:publish -- --plans <dir> --course <slug> --run-id <id> --out <dir> [--dry-run]` (`coursegen/`) | Publishes v2 plans through `verify:course` and Vault's reviewed `publish_v2_lesson_version`, per market. It never spends. A publication on a live lesson waits for a staff release from the Content page. |
+| `npm run od9:backup -- keygen\|encrypt\|decrypt\|verify …` (`database/`) | H.5: encrypts a `pg_dump -Fc` file with AES-256-GCM, writes a manifest with both digests and the key fingerprint, and checks both on restore. Used by the cutover runbook and `od9:rehearse`. |
+
+The local completion state, the evidence and the order of the remaining non-engineering steps are in `docs/rebuild/COMPLETION-REPORT.md`.
 
 ## Mandatory testing — before every commit
 
