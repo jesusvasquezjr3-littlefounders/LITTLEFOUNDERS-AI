@@ -10,7 +10,10 @@ import { buildNotification, evaluateOpsStatus } from './ops-job-watch.mjs';
 const TOOL = fileURLToPath(new URL('./ops-job-watch.mjs', import.meta.url));
 const job = (name, stale, extra = {}) => ({ job: name, stale, lastRunAt: null, hoursSinceLastRun: stale ? 50 : 3, staleAfterHours: 36, lastAttemptAt: null, lastAttemptOk: null, ...extra });
 const checks = (overdue = 0) => ({ overdue, windowDays: 30 });
-const healthy = { data: { jobs: [job('vault_backup', false), job('pulse_backup', false), job('vault_drift', false)], anyStale: false, contentRetroChecks: checks() }, error: null };
+const reviews = (due = 0) => ({ due, windowDays: 90 });
+const retention = (stale = false) => job('tutor_retention', stale);
+const extras = { tutorRetention: retention(), contentRetroChecks: checks(), accessReviews: reviews() };
+const healthy = { data: { jobs: [job('vault_backup', false), job('pulse_backup', false), job('vault_drift', false)], anyStale: false, ...extras }, error: null };
 
 function run(body) {
   const dir = mkdtempSync(join(tmpdir(), 'ops-watch-'));
@@ -26,12 +29,12 @@ function run(body) {
 }
 
 test('a healthy status passes and notifies nobody', () => {
-  assert.deepEqual(evaluateOpsStatus(healthy), { ok: true, stale: [], errors: [], overdueChecks: 0 });
+  assert.deepEqual(evaluateOpsStatus(healthy), { ok: true, stale: [], errors: [], overdueChecks: 0, dueReviews: 0 });
   assert.deepEqual(run(healthy), { code: 0, notice: null });
 });
 
 test('a stale job fails the watch and writes the notice a human receives', () => {
-  const body = { data: { jobs: [job('vault_backup', true, { lastAttemptAt: '2026-09-25T08:00:00Z', lastAttemptOk: false }), job('pulse_backup', false), job('vault_drift', false)], contentRetroChecks: checks() } };
+  const body = { data: { jobs: [job('vault_backup', true, { lastAttemptAt: '2026-09-25T08:00:00Z', lastAttemptOk: false }), job('pulse_backup', false), job('vault_drift', false)], ...extras } };
   const result = run(body);
   assert.equal(result.code, 1);
   assert.match(result.notice, /vault_backup\*\*: last successful run 50 h ago \(window 36 h\)/);
@@ -41,15 +44,15 @@ test('a stale job fails the watch and writes the notice a human receives', () =>
 test('a reply without the stale boolean, a missing job or an error page is refused, never read as healthy', () => {
   assert.equal(run('<html>502 Bad Gateway</html>').code, 1);
   assert.equal(run({ data: null, error: { code: 'DATA_UNAVAILABLE' } }).code, 1);
-  const missing = evaluateOpsStatus({ data: { jobs: [job('vault_backup', false), job('pulse_backup', false)], contentRetroChecks: checks() } });
+  const missing = evaluateOpsStatus({ data: { jobs: [job('vault_backup', false), job('pulse_backup', false)], ...extras } });
   assert.equal(missing.ok, false);
   assert.deepEqual(missing.errors, ['vault_drift: missing from the reply']);
-  const noFlag = evaluateOpsStatus({ data: { jobs: [job('vault_backup', false), job('pulse_backup', false), { job: 'vault_drift' }], contentRetroChecks: checks() } });
+  const noFlag = evaluateOpsStatus({ data: { jobs: [job('vault_backup', false), job('pulse_backup', false), { job: 'vault_drift' }], ...extras } });
   assert.deepEqual(noFlag.errors, ["vault_drift: the reply carries no 'stale' boolean"]);
 });
 
 test('the notice names the run when the workflow passes its URL', () => {
-  const notice = buildNotification({ stale: [job('vault_drift', true)], errors: [], overdueChecks: 0 }, 'https://example.test/run/1');
+  const notice = buildNotification({ stale: [job('vault_drift', true)], errors: [], overdueChecks: 0, dueReviews: 0 }, 'https://example.test/run/1');
   assert.match(notice, /Run: https:\/\/example\.test\/run\/1/);
 });
 
@@ -58,7 +61,44 @@ test('G.2: an overdue retroactive release check fails the watch and is named; a 
   const result = run(overdue);
   assert.equal(result.code, 1);
   assert.match(result.notice, /content_retro_checks\*\*: 2 retroactive release check\(s\) past the 30-day window/);
-  const noCount = evaluateOpsStatus({ data: { jobs: healthy.data.jobs } });
+  const noCount = evaluateOpsStatus({ data: { jobs: healthy.data.jobs, tutorRetention: retention(), accessReviews: reviews() } });
   assert.equal(noCount.ok, false);
   assert.deepEqual(noCount.errors, ["content_retro_checks: the reply carries no 'overdue' count"]);
+});
+
+test('Appendix O 1.3: a stale Mentor retention sweep fails the watch and is named in the notice a human receives', () => {
+  const body = { data: { ...healthy.data, tutorRetention: retention(true), anyStale: true } };
+  const result = run(body);
+  assert.equal(result.code, 1);
+  assert.match(result.notice, /\*\*tutor_retention\*\*: last successful run 50 h ago \(window 36 h\)/);
+  assert.match(result.notice, /outlive its 90-day window/);
+});
+
+test('Appendix O 1.3: a reply without the retention sweep, or with it under another name, is refused, never read as healthy', () => {
+  const { tutorRetention: _drop, ...withoutRetention } = healthy.data;
+  const missing = evaluateOpsStatus({ data: withoutRetention });
+  assert.equal(missing.ok, false);
+  assert.deepEqual(missing.errors, ['tutor_retention: missing from the reply']);
+  const renamed = evaluateOpsStatus({ data: { ...healthy.data, tutorRetention: job('vault_backup', true) } });
+  assert.equal(renamed.ok, false);
+  assert.deepEqual(renamed.errors, ['tutor_retention: missing from the reply']);
+  const noFlag = evaluateOpsStatus({ data: { ...healthy.data, tutorRetention: { job: 'tutor_retention' } } });
+  assert.deepEqual(noFlag.errors, ["tutor_retention: the reply carries no 'stale' boolean"]);
+});
+
+test('G.4: an elevated grant past the 90-day access review fails the watch and tells the access owner', () => {
+  const result = run({ data: { ...healthy.data, accessReviews: reviews(3) } });
+  assert.equal(result.code, 1);
+  assert.match(result.notice, /\*\*access_reviews\*\*: 3 elevated staff grant\(s\) past the 90-day access review \(G\.4\)/);
+  assert.match(result.notice, /Roles & Access/);
+});
+
+test('G.4: a reply without the due count, or with a malformed one, is refused', () => {
+  const { accessReviews: _drop, ...withoutReviews } = healthy.data;
+  assert.deepEqual(evaluateOpsStatus({ data: withoutReviews }).errors, ["access_reviews: the reply carries no 'due' count"]);
+  for (const due of [-1, 1.5, '2', null]) {
+    const result = evaluateOpsStatus({ data: { ...healthy.data, accessReviews: { due, windowDays: 90 } } });
+    assert.equal(result.ok, false);
+    assert.deepEqual(result.errors, ["access_reviews: the reply carries no 'due' count"]);
+  }
 });

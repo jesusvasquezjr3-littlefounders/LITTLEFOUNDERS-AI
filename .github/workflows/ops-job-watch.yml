@@ -21,8 +21,24 @@ name: Operations job watch
 # The same notice is proven locally by the simulated-failure drill
 # (backend: npm run ops:drill).
 #
-# 10:00 UTC: after the drift probe (07:30), the Vault backup (08:00) and the
-# Pulse backup (08:30) have had time to finish and record themselves.
+# GAP-FIX-R3: Appendix O 1.3 names three jobs that each need a watchdog AND
+# an external notification: the Mentor retention sweep, the backup and the
+# drift probe. The retention sweep is the fourth watched job here: Core's
+# status carries it as `tutorRetention`, built from getTutorRetentionStatus()
+# (its 36-hour window keeps its one home in backend/src/services/tutorData.ts),
+# so a stale sweep opens or comments on the same `ops-watchdog` issue.
+# tutor-retention-watch.yml still fails its own run at 06:00; this is the path
+# that reaches a human.
+#
+# The same reply carries two more conditions a human must act on:
+# `contentRetroChecks.overdue` (G.2, a retroactive release check past its 30
+# days) and `accessReviews.due` (G.4, an elevated staff grant past the 90-day
+# access review, so the staff/access owner is told without first opening
+# Roles & Access). Any of them fails this run and is named in the notice.
+#
+# 10:00 UTC: after the retention sweep (03:00), the drift probe (07:30), the
+# Vault backup (08:00) and the Pulse backup (08:30) have had time to finish
+# and record themselves.
 
 on:
   schedule:
@@ -35,7 +51,7 @@ permissions:
 
 jobs:
   watch:
-    name: Fail and notify if a backup or the drift probe has gone quiet
+    name: Fail and notify if a backup, the drift probe or the retention sweep has gone quiet, or an access review is due
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

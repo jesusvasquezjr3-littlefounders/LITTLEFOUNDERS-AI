@@ -173,8 +173,8 @@ Most of the migration's commands appear in the tables below, each beside the are
 | `REBUILD_URL=… npm run verify:staff-console` (`frontend/`) | The same matrix for every staff console section, with each grant population. |
 | `REBUILD_URL=… npm run verify:worked-example`, `verify:function-machine`, `verify:cpa-fading` (`frontend/`) | Dedicated browser matrices for the M9/M10 worked example, the M13 function machine and the M1 concrete, pictorial and abstract progression boards. |
 | `npm run seo:icons` (`frontend/`) | Regenerates every favicon, app icon and the JSON-LD logo from `brand.mark` (`public/rebuild/brand/mark.svg`). Run it after the mark changes. `seo:check` refuses a legacy logo or an off-token colour. |
-| `npm run ops:drill` (`backend/`) | H.4 and Appendix O 2.3: a simulated failure drill for each watched scheduled job, plus G.2's overdue retroactive release check. It runs locally, reads nothing and spends nothing. |
-| `npm run content:retro-checks [-- --list]` (`coursegen/`) | G.2 and Appendix N 2.3(b). Runs `verify:course` for each course with an open retroactive release check (opened by every bypass of the release check). A complete, current verification closes the course's checks in Vault. |
+| `npm run ops:drill` (`backend/`) | H.4 and Appendix O 2.3: a simulated failure drill for each watched scheduled job (both backups, the drift probe and the Mentor retention sweep), plus G.2's overdue retroactive release check and G.4's due access review. It runs locally, reads nothing and spends nothing. |
+| `npm run content:retro-checks [-- --list]` (`coursegen/`) | G.2 and Appendix N 2.3(b). Runs `verify:course` for each course with an open retroactive release check (opened by every bypass of the release check). A complete, current verification closes the course's checks in Vault. Scheduled weekly by `content-retro-checks.yml`. |
 | `npm run v2:author -- --skeleton <plan.json> --out <plan.json> --dry-run` (`coursegen/`) | Authors v2 lesson plans with zero spend from a committed plan. Without `--dry-run` it is a paid, owner-run command and refuses to start without an owner-approved `--max-usd` ceiling (OD-23). Runbook: `docs/content/FORGE-V2-RELEASE.md`. |
 | `npm run v2:publish -- --plans <dir> --course <slug> --run-id <id> --out <dir> [--dry-run]` (`coursegen/`) | Publishes v2 plans through `verify:course` and Vault's reviewed `publish_v2_lesson_version`, per market. It never spends. A publication on a live lesson waits for a staff release from the Content page. |
 | `npm run od9:backup -- keygen\|encrypt\|decrypt\|verify …` (`database/`) | H.5: encrypts a `pg_dump -Fc` file with AES-256-GCM, writes a manifest with both digests and the key fingerprint, and checks both on restore. Used by the cutover runbook and `od9:rehearse`. |
@@ -456,12 +456,13 @@ RAILWAY_TOKEN=… RAILWAY_SSH_KEY_PATH=~/.ssh/id_ed25519 \
 
 ## Scheduled production jobs
 
-Twelve workflows run against production on a schedule with no external alerting — a missed or failed run surfaces only as a red GitHub run, so someone has to look. Several of them are promises to users, not maintenance:
+Fourteen workflows run against production on a schedule. A stale backup, drift probe or retention sweep, an overdue retroactive release check or a due staff access review reaches a human through `ops-job-watch.yml`, which opens or comments on the `ops-watchdog` GitHub issue; any other missed or failed run surfaces only as a red GitHub run, so someone has to look. Several of them are promises to users, not maintenance:
 
 | Workflow | When (UTC) | What it holds up |
 |---|---|---|
 | `tutor-retention.yml` | 03:00 daily | The AI Tutor's 90-day data-retention promise. **Legally load-bearing** — this is the sweep itself |
-| `tutor-retention-watch.yml` | 06:00 daily | Notices when the sweep above stops running. A silent sweep failure otherwise looks identical to a sweep with nothing to delete |
+| `tutor-retention-watch.yml` | 06:00 daily | Notices when the sweep above stops running. A silent sweep failure otherwise looks identical to a sweep with nothing to delete. The human notification is `ops-job-watch.yml` |
+| `content-retro-checks.yml` | Mon 05:00 | G.2: runs Forge `verify:course` for every course with an open retroactive release check, inside its 30-day window; a failure comments on the `ops-watchdog` issue |
 | `badge-link-retirement.yml` | 03:30 daily | F.2 under OD-20: deletes the Depot image of every dead legacy badge link (revoked, expired, post-cutover; all of them after 24 Oct 2026) so an image never outlives its link. Runs until the dated removal in `docs/rebuild/policies/ACHIEVEMENT-SHARING.md` deletes it |
 | `account-deletion.yml` | 03:45 daily | E.6: erases every self-service deletion whose 14-day grace period ended, re-checks deletions held by an open safety review and retries any failed erasure step (Oracle, Core, Depot, warehouse). **A promise to users** — the stated deletion date and the 48-hour completion SLA in `docs/rebuild/policies/ACCOUNT-DELETION.md` depend on it |
 | `social-retention.yml` | 04:15 daily | E.11: applies the social-graph retention policy (`docs/rebuild/policies/SOCIAL-GOVERNANCE.md` §3): expires unanswered connection requests after 30 days, deletes closed requests, report notes, resolved reports and cases, and read or stale safety notices past their windows (never an audit entry: `audit_logs` stays append-only), and removes any follow that exposes a child without a current guardian's approval. **A promise to users** — the FAQ states these windows. Needs the hand-applied `social_graph_retention` migration; until then it fails loudly and deletes nothing |
@@ -470,6 +471,7 @@ Twelve workflows run against production on a schedule with no external alerting 
 | `vault-drift.yml` | 07:30 daily | Whether production's schema is where the repo thinks it is |
 | `vault-backup.yml` | 08:00 daily | Vault `pg_dump` → Depot volume |
 | `pulse-backup.yml` | 08:30 daily | Pulse `pg_dump` → Depot volume |
+| `ops-job-watch.yml` | 10:00 daily | H.4: fails and notifies the `ops-watchdog` issue when a backup, the drift probe or the retention sweep is stale, a retroactive release check is overdue or a staff access review is due |
 | `nsm-weekly-export.yml` | Mon 08:00 | Raw export of the events the North Star Metric is computed from |
 | `tutor-skill-curation.yml` | Mon 09:20 | Proposes what to author next from the live curriculum. Propose-only — it writes nothing to the catalogue |
 

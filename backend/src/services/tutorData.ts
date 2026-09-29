@@ -2661,7 +2661,7 @@ export interface TutorRetentionStatus {
  * a long batch that ran past midnight — without hiding an ACTUALLY missed
  * night, which is the one thing this exists to catch.
  */
-const RETENTION_STALE_HOURS = 36;
+export const RETENTION_STALE_HOURS = 36;
 
 interface AuditLogRow {
   created_at: string;
@@ -2677,7 +2677,7 @@ interface AuditLogRow {
  * different, and differently alarming, claim than the one that would actually
  * be true.
  */
-export async function getTutorRetentionStatus(): Promise<TutorRetentionStatus | null> {
+export async function getTutorRetentionStatus(now: Date = new Date()): Promise<TutorRetentionStatus | null> {
   const rows = await serviceRest<AuditLogRow[]>(
     `/audit_logs?action=eq.${es(RETENTION_SWEEP_AUDIT_ACTION)}` +
       `&select=created_at,detail&order=created_at.desc&limit=1`,
@@ -2687,7 +2687,7 @@ export async function getTutorRetentionStatus(): Promise<TutorRetentionStatus | 
   const last = rows[0];
   if (!last) return { lastRunAt: null, hoursSinceLastRun: null, stale: true, lastRunDetail: null };
 
-  const hoursSinceLastRun = (Date.now() - new Date(last.created_at).getTime()) / (1000 * 60 * 60);
+  const hoursSinceLastRun = (now.getTime() - new Date(last.created_at).getTime()) / (1000 * 60 * 60);
   return {
     lastRunAt: last.created_at,
     hoursSinceLastRun,

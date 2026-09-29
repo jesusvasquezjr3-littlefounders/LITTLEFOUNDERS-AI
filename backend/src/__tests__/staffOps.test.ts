@@ -203,6 +203,44 @@ describe('H.4 — the operations heartbeat and watchdog', () => {
     expect((await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key())).status).toBe(502);
   });
 
+  it('Appendix O 1.3: carries the Mentor retention sweep as a watched job, from the same trail and window as its own route', async () => {
+    stub({ audit: { 'tutor.retention.swept': [{ created_at: hoursAgo(40), detail: { sessionsDeleted: 2 } }] } });
+    const res = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+    expect(res.status).toBe(200);
+    expect(res.body.data.tutorRetention).toMatchObject({
+      job: 'tutor_retention', stale: true, staleAfterHours: 36, lastAttemptOk: true, lastRunDetail: { sessionsDeleted: 2 },
+    });
+    expect(res.body.data.anyStale).toBe(true);
+    // The heartbeat jobs list is unchanged: the staff console shows the sweep on its own card.
+    expect((res.body.data.jobs as { job: string }[]).map((j) => j.job)).toEqual(['vault_backup', 'pulse_backup', 'vault_drift']);
+    stub({ audit: { 'tutor.retention.swept': [{ created_at: hoursAgo(5), detail: {} }] } });
+    const fresh = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+    expect(fresh.body.data.tutorRetention).toMatchObject({ stale: false });
+    stub();
+    const never = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+    expect(never.body.data.tutorRetention).toMatchObject({ stale: true, lastRunAt: null, lastAttemptOk: null });
+  });
+
+  it('G.4: carries the elevated grants past the 90-day access review, and an unreadable count is a 502', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ calls, reviews: { status: 200, body: { cadenceDays: 90, total: 3, stale: 2, reviewedEver: 1, grants: [] } } });
+    const res = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+    expect(res.status).toBe(200);
+    expect(res.body.data.accessReviews).toEqual({ due: 2, windowDays: 90 });
+    const rpc = calls.find((call) => call.url.includes('/rpc/staff_access_review_status'));
+    expect(JSON.parse(rpc!.body!)).toEqual({ p_cadence_days: 90 });
+    stub({ reviews: { status: 500, body: null } });
+    expect((await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key())).status).toBe(502);
+    stub({ reviews: { status: 200, body: { cadenceDays: 90, total: 'many' } } });
+    expect((await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key())).status).toBe(502);
+  });
+
+  it('refuses the internal status without the internal key', async () => {
+    stub();
+    expect((await request(createApp()).get('/api/v1/internal/ops/job-status')).status).toBe(403);
+    expect((await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', 'wrong-key-0000000000000000')).status).toBe(403);
+  });
+
   it('shows staff the same status behind manage_support, and a failed read is a 502', async () => {
     stub({ permissions: ['view_analytics'] });
     expect((await request(createApp()).get('/api/v1/admin/ops/job-status').set('Authorization', auth())).status).toBe(403);
