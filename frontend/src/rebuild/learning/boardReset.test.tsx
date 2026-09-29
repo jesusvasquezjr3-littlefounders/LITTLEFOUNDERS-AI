@@ -25,17 +25,30 @@ vi.mock('../../tutor-scene/TutorStage', () => ({ TutorStage: () => <div data-tes
 const noop = () => {};
 const reset = () => screen.getByRole('button', { name: 'Reset' });
 
+/** GAP-FIX-R3 (M7): builds the pilot's bars the way a learner does, slot by slot ("Ana has 12 more than Leo; together 50"). */
+async function buildPilotBars() {
+  fireEvent.click(screen.getByRole('button', { name: 'Two bars to compare' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Add the total' }));
+  const pick = async (slot: string, item: string) => {
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(`^${slot}:`) }));
+    fireEvent.click(await screen.findByRole('menuitem', { name: item }));
+  };
+  await pick('Shorter bar', '? Leo');
+  await pick('Difference', '12 more: 12');
+  await pick('Both together', 'Together: 50');
+}
+
 describe('Reset on every manipulable board (Bible 05 §3)', () => {
-  it('bar model: restores the comparison model and clears a review', async () => {
+  it('bar model: empties the board the learner built and clears a review', async () => {
     const grade = vi.fn(() => 'review' as const);
     render(<LessonDocumentView raw={barModelPilotDocument('en-US')} locale="en-US" ageBand="10-12" onBack={noop} onGradeBarModel={grade} />);
     expect(reset()).toBeDisabled();
-    fireEvent.click(screen.getByRole('radio', { name: 'Part and whole' }));
+    await buildPilotBars();
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    expect(await screen.findByText('Try a different model.')).toBeTruthy();
+    expect(await screen.findByText('Look at the bars again.')).toBeTruthy();
     fireEvent.click(reset());
-    expect(screen.getByRole('radio', { name: 'Comparison' })).toBeChecked();
-    expect(screen.queryByText('Try a different model.')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Two bars to compare' })).toBeTruthy();
+    expect(screen.queryByText('Look at the bars again.')).toBeNull();
     expect(reset()).toBeDisabled();
   });
 

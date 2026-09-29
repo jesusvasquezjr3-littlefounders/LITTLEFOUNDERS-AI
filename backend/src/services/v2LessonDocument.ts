@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { growthComparison } from './v2GrowthComparison.js';
-import { gradeV2Response, scoreV2Judgment, scoreV2Visual, type V2CueHits, type V2Detection, type V2Diagnostic, type V2JudgmentQuality, type V2VisualKind } from './v2VisualScorer.js';
+import { barModelUnknown, gradeV2Response, scoreV2Judgment, scoreV2Visual, type V2CueHits, type V2Detection, type V2Diagnostic, type V2JudgmentQuality, type V2VisualKind } from './v2VisualScorer.js';
 import { conceptAllowed, conceptSampleResponse, gradeConcept, V2_CONCEPT_RUBRICS, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptSegment } from './v2ConceptBoards.js';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './v2ChartModel.js';
 import { v2ScorerPayload } from './v2ScorerPayload.js';
-import { longArithmeticSchema, mathNotation, NOTATION_CAPABILITY, placeValuePayload, SCHEMA_DIAGRAM_RUBRICS, schemaDiagramPayload, V2_FAMILY_RUBRICS, v2AgeScopeProblem, v2FamilySampleResponse, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras, type V2FamilySegment } from './v2SegmentFamilies.js';
+import { BAR_MODEL_RUBRICS, barModelPayload, longArithmeticSchema, mathNotation, NOTATION_CAPABILITY, placeValuePayload, SCHEMA_DIAGRAM_RUBRICS, schemaDiagramPayload, V2_FAMILY_RUBRICS, v2AgeScopeProblem, v2FamilySampleResponse, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras, type V2FamilySegment } from './v2SegmentFamilies.js';
 
 /*
  * Core's independently authored copy of the public v2 lesson contract.
@@ -94,7 +94,7 @@ const fractionArea = z.object({
       'Invalid fraction area',
     ),
 }).strict();
-const barModelPayload = z.object({ whole: positive.max(100), difference: positive.max(99), knownLabel: z.string().trim().min(1).max(40), unknownLabel: z.string().trim().min(1).max(40), spokenText: z.string().trim().min(1).max(120) }).strict().refine((v) => v.difference < v.whole, 'Invalid bar model');
+// M7 (GAP-FIX-R3): a schema-neutral payload from v2SegmentFamilies (the text's quantities and the unknown's label); the model and the slots are private.
 const barModelStructure = z.object({ ...base, type: z.literal('math.bar-model.structure.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('bar-model') }).strict(), payload: barModelPayload }).strict();
 const barModelAnswer = z.object({ ...base, type: z.literal('math.bar-model.answer.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('bar-model') }).strict(), payload: barModelPayload }).strict();
 // M8 (GAP-FIX-R2): a schema-neutral payload from v2SegmentFamilies; the schema and the slot places are private.
@@ -398,8 +398,7 @@ const rubricByKind = {
   'math.number-line.whole.v2': z.object({ target: nonnegative }).strict(),
   'math.number-line.fraction.v2': z.object({ targetNumerator: nonnegative, targetDenominator: positive.max(12), toleranceUnits: nonnegative.max(2) }).strict(),
   'math.fraction-area.v2': z.object({ targetNumerator: nonnegative, targetDenominator: positive.min(2).max(6) }).strict(),
-  'math.bar-model.structure.v2': z.object({ model: z.literal('comparison') }).strict(),
-  'math.bar-model.answer.v2': z.object({ target: nonnegative.max(100) }).strict(),
+  ...BAR_MODEL_RUBRICS,
   ...SCHEMA_DIAGRAM_RUBRICS,
   'math.worked-example.v2': z.object({ expectedValues: z.record(z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/), z.string().trim().min(1).max(40)) }).strict(),
   'math.function-machine.v2': z.object({ multiplier: positive.max(12), offset: nonnegative.max(100), heldOutInputs: z.array(nonnegative.max(24)).min(2).max(4) }).strict()
@@ -473,7 +472,7 @@ export function validateV2LessonForGrading(document: unknown, answerKeys: unknow
       : item.type === 'math.number-line.whole.v2' ? item.payload.hops ? { value: String(item.payload.initial + item.payload.hops[0]!), hops: [item.payload.hops[0]!] } : { value: String(item.payload.minimum) }
         : item.type === 'math.number-line.fraction.v2' ? { value: '0/1' }
           : item.type === 'math.fraction-area.v2' ? { n: 0, d: item.payload.minimumParts }
-            : item.type === 'math.bar-model.structure.v2' ? { model: 'comparison' }
+            : item.type === 'math.bar-model.structure.v2' ? barModelSampleBuild(item.payload.quantities.map((quantity) => quantity.id))
                 : item.type === 'math.schema-diagram.structure.v2' ? { schema: 'change' }
                 : item.type === 'math.schema-diagram.slots.v2' ? { schema: 'group', slots: { part: item.payload.quantities[0].id, other: item.payload.quantities[1].id, total: 'unknown' } }
                   : item.type === 'math.worked-example.v2' ? { values: Object.fromEntries(item.payload.response_step_ids.map((stepId) => [stepId, '0'])) }
@@ -483,6 +482,7 @@ export function validateV2LessonForGrading(document: unknown, answerKeys: unknow
                   : v2SampleResponse(item);
     if (!rubric.success || scoreV2Visual(item.type as V2VisualKind, scorerPayload(item), sample, rubric.data) === 'invalid') return null;
   }
+  if (!barModelKeysAgree(parsed.data, keys)) return null;
   return parsed.data;
 }
 
@@ -523,6 +523,32 @@ export function gradeV2Visual(document: V2PublicLesson, answerKeys: Record<strin
   // B.12: the same signed response yields a judgment, never folded into the score.
   const judgment = scoreV2Judgment(segment.type, scorerPayload(segment as ServerSegment), response, rubric.data);
   return judgment === 'invalid' ? null : { ...graded, judgment };
+}
+
+/** A complete (not necessarily right) M7 build over the text's quantities: the contract's sample response. */
+function barModelSampleBuild(quantityIds: string[]): { model: 'part-whole'; slots: Record<string, string> } {
+  return { model: 'part-whole', slots: { 'part-a': quantityIds[0]!, 'part-b': 'unknown', whole: quantityIds[1]!, ...(quantityIds[2] ? { 'part-c': quantityIds[2] } : {}) } };
+}
+
+/**
+ * M7 (GAP-FIX-R3): the arithmetic step answers the structure it follows. Its
+ * text quantities are the structure step's, and its key is the value of the
+ * unknown the structure key determines (a key the model cannot reach is a
+ * content defect, refused before any learner sees it).
+ */
+function barModelKeysAgree(document: V2PublicLesson, keys: Record<string, unknown>): boolean {
+  const segments = document.segments;
+  for (const [index, segment] of segments.entries()) {
+    if (segment.type !== 'math.bar-model.answer.v2') continue;
+    const structure = segments[index - 1];
+    if (!structure || structure.type !== 'math.bar-model.structure.v2') return false;
+    const quantities = (value: typeof segment.payload) => value.quantities.map((item) => `${item.id}:${item.value}`).join('|');
+    if (quantities(segment.payload) !== quantities(structure.payload)) return false;
+    const key = keys[structure.id] as { model: string; slots: Record<string, string | null> };
+    const unknown = barModelUnknown(key.model, key.slots, { ids: structure.payload.quantities.map((item) => item.id), values: structure.payload.quantities.map((item) => item.value) });
+    if (unknown === null || (keys[segment.id] as { target: number }).target !== unknown) return false;
+  }
+  return true;
 }
 
 /** M7 arithmetic cannot be submitted until Core has recorded the preceding structure receipt. */

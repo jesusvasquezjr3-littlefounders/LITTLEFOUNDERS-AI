@@ -44,6 +44,8 @@
 .lf-pz-track { display: flex; overflow: hidden; }
 .lf-pz-track .lf-pz-seg { position: relative; display: grid; place-items: center; min-inline-size: 2px; border-radius: 0; border-inline-end: 2px solid var(--surface); }
 .lf-pz-seg--unknown { background: var(--surface) !important; border: 3px dashed var(--edge) !important; }
+/* GAP-FIX-R3 (M7 build): a slot the learner has not filled yet: an outline, never a fill or a number. */
+.lf-pz-seg--empty { background: transparent !important; border: 2px dotted var(--outline) !important; }
 .lf-pz-seg-text { padding: 0 var(--spacing-1); border-radius: var(--rounded-sm); background: var(--surface); color: var(--content); font-style: normal; font-size: .875rem; font-weight: 800; white-space: nowrap; }
 .lf-pz-row-total { color: var(--content-muted); }
 

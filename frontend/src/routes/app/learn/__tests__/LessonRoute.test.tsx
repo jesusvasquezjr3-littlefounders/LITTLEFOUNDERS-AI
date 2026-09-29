@@ -101,6 +101,20 @@ beforeEach(async () => {
 
 afterEach(() => vi.unstubAllGlobals());
 
+/** GAP-FIX-R3 (M7): builds the pilot's bars the way a learner does, slot by slot ("Ana has 12 more than Leo; together 50"). */
+async function buildPilotBars() {
+  fireEvent.click(screen.getByRole('button', { name: 'Two bars to compare' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Add the total' }));
+  const pick = async (slot: string, item: string) => {
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(`^${slot}:`) }));
+    fireEvent.click(await screen.findByRole('menuitem', { name: item }));
+  };
+  await pick('Shorter bar', '? Leo');
+  await pick('Difference', '12 more: 12');
+  await pick('Both together', 'Together: 50');
+}
+const PILOT_BUILD = { model: 'comparison', slots: { smaller: 'unknown', larger: null, difference: 'ana-more', total: 'together' } };
+
 describe('LessonRoute', () => {
   it('retains the completion run and payload after a failed save and route remount', async () => {
     const lesson = { data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null };
@@ -457,12 +471,14 @@ describe('LessonRoute', () => {
       .mockResolvedValueOnce({ data: { score: 100, passed: true }, error: null });
 
     renderLessonRoute(['/learn/lesson/lesson-1']);
+    await screen.findByRole('button', { name: 'Two bars to compare' });
+    await buildPilotBars();
     fireEvent.click(await screen.findByRole('button', { name: 'Check' }));
     await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid',
-      segment_id: 'bar-structure-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'structure-token', answer: { model: 'comparison' },
+      segment_id: 'bar-structure-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'structure-token', answer: PILOT_BUILD,
     } })));
     fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
-    fireEvent.change(await screen.findByLabelText('How many coins does the smaller bar show?'), { target: { value: '19' } });
+    fireEvent.change(await screen.findByLabelText('Your answer'), { target: { value: '19' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid',
       segment_id: 'bar-answer-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'answer-token', answer: { value: '19' },
@@ -568,7 +584,7 @@ describe('LessonRoute', () => {
     renderLessonRoute(['/learn/lesson/lesson-1']);
     expect(await screen.findByRole('heading', { name: 'Solve the model' })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Build the model' })).toBeNull();
-    fireEvent.change(screen.getByLabelText('How many coins does the smaller bar show?'), { target: { value: '19' } });
+    fireEvent.change(screen.getByLabelText('Your answer'), { target: { value: '19' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: expect.objectContaining({
       segment_id: 'bar-answer-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'answer-token', answer: { value: '19' },

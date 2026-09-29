@@ -16,6 +16,22 @@ describe('S05.3d staff learning-quality panel', () => {
     expect(document.body.textContent).not.toMatch(/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}/);
   });
 
+  it('GAP-FIX-R3: names the L1 rule-card selection codes in the structure-vs-answer split', () => {
+    const v2Signals = { transfer: [], firstUnaided: [], detection: [],
+      errorSplit: { structure: 1, answer: 7, byDiagnostic: [
+        { family: 'answer', diagnostic: 'confirmation_bias', errors: 4 }, { family: 'answer', diagnostic: 'p_only_missing_not_q', errors: 2 },
+        { family: 'answer', diagnostic: 'value', errors: 1 }, { family: 'structure', diagnostic: 'structure', errors: 1 }] } };
+    for (const [locale, name, first] of [['en-US', 'Rule-card choices', 'Looked for agreeing cards: 4'], ['es-MX', 'Elecciones con tarjetas de regla', 'Buscó tarjetas que coinciden: 4'],
+      ['pt-BR', 'Escolhas nas cartas de regra', 'Procurou cartas que concordam: 4']] as const) {
+      const { unmount } = render(<LearningQualityPanel state={{ status: 'ready', report: { ...learningQualityFixture(), v2Signals } }} locale={locale} dark={false}
+        onRetry={() => {}} onSync={async () => true} onResolve={async () => 'resolved'} />);
+      expect(screen.getByText(name)).toBeTruthy();
+      expect(screen.getByText(first)).toBeTruthy();
+      expect(document.body.textContent).not.toContain('confirmation_bias');
+      unmount();
+    }
+  });
+
   it('offers only decisions that move a lesson toward its band and enforces the note and guard rails before sending', async () => {
     const onResolve = vi.fn(async (): Promise<DecisionOutcome> => 'resolved');
     const onRetry = vi.fn();

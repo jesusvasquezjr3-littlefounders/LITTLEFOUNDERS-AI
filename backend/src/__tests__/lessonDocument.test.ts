@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { completableSegmentIds, findGradingSegment, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
-import { v2PublicLessonSchema } from '../services/v2LessonDocument.js';
+import { v2PublicLessonSchema, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
 
 const rows = [
   { lesson_id: 'l1', locale: 'en-US', schema_version: 1, document: { locale: 'en-US' }, answer_keys: {}, audio: {}, updated_at: '2026-08-01T00:00:00Z' },
@@ -163,7 +163,7 @@ describe('v2 public lesson capabilities', () => {
   });
 
   it('requires M7 to keep structure and arithmetic distinct in an ordered tween-only pair', () => {
-    const payload = { whole: 50, difference: 12, knownLabel: 'Ana', unknownLabel: 'Leo', spokenText: 'fifty minus twelve' };
+    const payload = { quantities: [{ id: 'together', value: 50, label: 'Together' }, { id: 'ana-more', value: 12, label: '12 more' }], unknownLabel: 'Leo', spokenText: 'fifty minus twelve' };
     const document = { schema_version: 2, course_id: 'financial-education', pathway_id: 'financial-10-12', chapter_id: 'compare-savings', lesson_id: 'bar-model-pilot', version_id: 'revision-001', locale: 'en-US', age_band: '10-12', eligibility: { minimum_age: 10, maximum_age: 12 }, knowledge_component_ids: ['kc-compare-quantities'], adventure_scene_id: 'diorama-a', title: 'Compare two savings', required_capabilities: ['visual.bar-model.v1', 'operation.build-slots.v1', 'operation.structure-check.v1', 'operation.number-input.v1'], segments: [{ id: 'bar-structure-01', type: 'math.bar-model.structure.v2', grading: 'server', prompt: 'Choose the model.', visual: { type: 'bar-model' }, payload }, { id: 'bar-answer-01', type: 'math.bar-model.answer.v2', grading: 'server', prompt: 'Solve it.', visual: { type: 'bar-model' }, payload }] };
     expect(v2PublicLessonSchema.safeParse(document).success).toBe(true);
     // Appendix P M7 is 8-13 (GAP-FIX-R2).
@@ -171,6 +171,24 @@ describe('v2 public lesson capabilities', () => {
     expect(v2PublicLessonSchema.safeParse({ ...document, eligibility: { minimum_age: 7, maximum_age: 12 } }).success).toBe(false);
     expect(v2PublicLessonSchema.safeParse({ ...document, segments: [document.segments[1], document.segments[0]] }).success).toBe(false);
     expect(v2PublicLessonSchema.safeParse({ ...document, segments: [document.segments[0]] }).success).toBe(false);
+  });
+
+  it('M7 (GAP-FIX-R3): the payload is schema-neutral; the model, the slots and a key the model reaches are private and checked', () => {
+    const payload = { quantities: [{ id: 'saved-may', value: 18, label: 'May' }, { id: 'saved-june', value: 25, label: 'June' }], unknownLabel: 'In all', spokenText: 'eighteen plus twenty five' };
+    const document = { schema_version: 2, course_id: 'financial-education', pathway_id: 'financial-young', chapter_id: 'saving-basics', lesson_id: 'bar-model-two-months', version_id: 'revision-001', locale: 'en-US', age_band: '6-9', eligibility: { minimum_age: 8, maximum_age: 9 }, knowledge_component_ids: ['kc-join-amounts'], adventure_scene_id: 'diorama-b', title: 'Two months of saving', required_capabilities: ['visual.bar-model.v1', 'operation.build-slots.v1', 'operation.structure-check.v1', 'operation.number-input.v1'], segments: [{ id: 'bar-structure-01', type: 'math.bar-model.structure.v2', grading: 'server', prompt: 'Build the bars.', visual: { type: 'bar-model' }, payload }, { id: 'bar-answer-01', type: 'math.bar-model.answer.v2', grading: 'server', prompt: 'How many in all?', visual: { type: 'bar-model' }, payload }] };
+    const keys = { 'bar-structure-01': { model: 'part-whole', slots: { 'part-a': 'saved-may', 'part-b': 'saved-june', whole: 'unknown' } }, 'bar-answer-01': { target: 43 } };
+    const grade = (answerKeys: unknown) => validateV2LessonForGrading(document, answerKeys, { lessonId: 'bar-model-two-months', locale: 'en-US' });
+    expect(grade(keys)).not.toBeNull();
+    // The old comparison-only payload and rubric no longer exist.
+    expect(v2PublicLessonSchema.safeParse({ ...document, segments: document.segments.map((segment) => ({ ...segment, payload: { whole: 50, difference: 12, knownLabel: 'Ana', unknownLabel: 'Leo', spokenText: 'x' } })) }).success).toBe(false);
+    expect(grade({ ...keys, 'bar-structure-01': { model: 'comparison' } })).toBeNull();
+    // A key the model cannot reach, a structure that contradicts itself, or a slot outside the model is refused.
+    expect(grade({ ...keys, 'bar-answer-01': { target: 42 } })).toBeNull();
+    expect(grade({ ...keys, 'bar-structure-01': { model: 'part-whole', slots: { 'part-a': 'saved-june', 'part-b': 'unknown', whole: 'saved-may' } } })).toBeNull();
+    expect(grade({ ...keys, 'bar-structure-01': { model: 'part-whole', slots: { 'part-a': 'saved-may', 'part-b': 'saved-june', whole: 'unknown', larger: null } } })).toBeNull();
+    expect(grade({ ...keys, 'bar-structure-01': { model: 'part-whole', slots: { 'part-a': 'saved-may', 'part-b': 'saved-june', whole: null } } })).toBeNull();
+    // The structure never reaches the delivered document: nothing in it names a model or a slot.
+    expect(JSON.stringify(document)).not.toMatch(/part-whole|comparison|"slots"/);
   });
 
   it('requires M8 to keep its change schema, slots and answer in the exact 10–12 order', () => {

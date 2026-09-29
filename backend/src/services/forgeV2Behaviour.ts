@@ -14,17 +14,24 @@
 //     regions, paths, bins, scam sets), exactly those states are met;
 //   - no permitted state throws, and none is refused as malformed;
 //   - off-grid, out-of-range and conservation-breaking states are refused;
-//   - the board's initial state (where the payload declares one) is not met.
+//   - the board's initial state (where the payload declares one) is not met;
+//   - where the rubric names a closed diagnostic for a wrong state (L1 card
+//     roles, GAP-FIX-R3), every such state stores exactly that code.
 // A document that fails blocks review; the report carries the pass rate.
 
 import { gradeV2Visual, type V2PublicLesson } from './v2LessonDocument.js';
+import { selectionDiagnostic } from './v2VisualScorer.js';
 import { amortizationSchedule } from './v2ConceptBoards.js';
 import { longArithmeticSteps, placeValueScorerPayload, SCHEMA_KINDS, SCHEMA_SLOTS, type PlaceValuePayload } from './v2SegmentFamilies.js';
 
 type Json = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 const MAX_STATES = 20_000;
 
-interface Space { inRange: unknown[]; invalid: unknown[]; initial?: unknown; expectMet?: (response: Json) => boolean }
+interface Space {
+  inRange: unknown[]; invalid: unknown[]; initial?: unknown; expectMet?: (response: Json) => boolean;
+  /** The diagnostic a wrong state must store (null: not checked for this state). */
+  expectDiagnostic?: (response: Json) => string | null;
+}
 
 const range = (from: number, to: number, step = 1): number[] => {
   const out: number[] = [];
@@ -75,6 +82,29 @@ function replayPlace(start: { hundreds: number; tens: number; ones: number }, tr
     else { if (hundreds < 1 || tens > 9) return null; hundreds -= 1; tens += 10; }
   }
   return { hundreds, tens, ones };
+}
+
+/**
+ * M7: every complete bar-model build over the text's quantities: each model,
+ * with and without its optional slot, every quantity and the unknown placed
+ * once; only a comparison bar may stay without a number.
+ */
+function barModelBuilds(ids: string[]): Json[] {
+  const items = [...ids, 'unknown'];
+  const models: Array<{ model: string; slots: string[]; nullable: boolean }> = [
+    { model: 'part-whole', slots: ['part-a', 'part-b', 'whole'], nullable: false }, { model: 'part-whole', slots: ['part-a', 'part-b', 'part-c', 'whole'], nullable: false },
+    { model: 'comparison', slots: ['smaller', 'larger', 'difference'], nullable: true }, { model: 'comparison', slots: ['smaller', 'larger', 'difference', 'total'], nullable: true },
+  ];
+  const out: Json[] = [];
+  const place = (model: string, slots: string[], nullable: boolean, index: number, left: string[], built: Json) => {
+    if (index === slots.length) { if (left.length === 0) out.push({ model, slots: { ...built } }); return; }
+    const slot = slots[index]!;
+    const optionalTotal = slot === 'total';
+    for (const item of left) place(model, slots, nullable, index + 1, left.filter((value) => value !== item), { ...built, [slot]: item });
+    if (nullable && !optionalTotal) place(model, slots, nullable, index + 1, left, { ...built, [slot]: null });
+  };
+  for (const { model, slots, nullable } of models) place(model, slots, nullable, 0, items, {});
+  return out;
 }
 
 /** Every built chart of distinct questions (depth at most the question count), each leaf an outcome. */
@@ -147,10 +177,23 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
       return { inRange: range(p.minimumParts, p.maximumParts).flatMap((d) => range(0, d).map((n) => ({ n, d }))),
         invalid: [{ n: 0, d: p.maximumParts + 1 }, { n: 3, d: 2 }, { n: -1, d: p.minimumParts }],
         initial: { n: p.initialShaded, d: p.initialParts } };
-    case 'math.bar-model.structure.v2':
-      return { inRange: [{ model: 'comparison' }, { model: 'part-whole' }], invalid: [{ model: 'guess' }] };
-    case 'math.bar-model.answer.v2':
-      return { inRange: range(0, p.whole).map((value) => ({ value: String(value) })), invalid: [{ value: String(p.whole + 1) }, { value: '-3' }] };
+    case 'math.bar-model.structure.v2': {
+      // M7 (GAP-FIX-R3): every complete build of both models, from an empty board.
+      const ids = (p.quantities as Json[]).map((item) => item.id as string);
+      const builds = barModelBuilds(ids);
+      const parts = (slots: Json) => ['part-a', 'part-b', 'part-c'].filter((slot) => slot in slots).map((slot) => slots[slot]).sort().join('|');
+      return { inRange: builds, initial: { model: null, slots: {} },
+        invalid: [{ model: null, slots: {} }, { model: 'part-whole', slots: { 'part-a': ids[0], 'part-b': ids[1], whole: null } },
+          { model: 'comparison', slots: { smaller: ids[0], larger: ids[0], difference: 'unknown' } }, { model: 'tape', slots: {} }],
+        expectMet: (r) => r.model === rubric.model && (r.model === 'part-whole'
+          ? r.slots.whole === rubric.slots.whole && parts(r.slots) === parts(rubric.slots)
+          : sameSet(Object.keys(r.slots), Object.keys(rubric.slots)) && Object.keys(r.slots).every((slot) => r.slots[slot] === rubric.slots[slot])) };
+    }
+    case 'math.bar-model.answer.v2': {
+      const bound = 2 * (p.quantities as Json[]).reduce((sum, item) => sum + (item.value as number), 0);
+      return { inRange: range(0, bound).map((value) => ({ value: String(value) })), invalid: [{ value: String(bound + 1) }, { value: '-3' }], initial: { value: '' },
+        expectMet: (r) => Number(r.value) === rubric.target };
+    }
     case 'math.schema-diagram.structure.v2':
       return { inRange: SCHEMA_KINDS.map((schema) => ({ schema })), invalid: [{ schema: 'combine' }, {}], expectMet: (r) => r.schema === rubric.schema };
     case 'math.schema-diagram.slots.v2': {
@@ -237,9 +280,12 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
         invalid: [{ entries: Array.from({ length: p.maxEntries + 1 }, () => 'sale'), balance: '0' }, { entries: ['refund'], balance: '0' }] };
     }
     case 'logic.rule-checker.v2': {
+      // Every flip set, so every role combination (GAP-FIX-R3): with roles, each named pattern stores its own code.
       const ids = (p.cards as Json[]).map((card) => card.id as string);
+      const roles = rubric.roles as Record<string, string> | undefined;
       return { inRange: subsets(ids, 1).map((flipped) => ({ flipped })), invalid: [{ flipped: [] }, { flipped: ['not-a-card'] }],
-        expectMet: (r) => sameSet(r.flipped, rubric.must_flip_ids) };
+        expectMet: (r) => sameSet(r.flipped, rubric.must_flip_ids),
+        ...(roles ? { expectDiagnostic: (r: Json) => selectionDiagnostic((r.flipped as string[]).map((card) => roles[card]!), r.flipped.length === ids.length) } : {}) };
     }
     case 'logic.euler.v2': {
       const allowed = p.relation === 'subset' ? ['second', 'both', 'neither'] : p.relation === 'disjoint' ? ['first', 'second', 'neither'] : ['first', 'second', 'both', 'neither'];
@@ -405,6 +451,11 @@ export function checkV2Behaviour(document: V2PublicLesson, answerKeys: Record<st
       if (result === 'met') met += 1; else review += 1;
       if (space.expectMet && space.expectMet(response as Json) !== (result === 'met')) {
         problems.push(`the met set differs from the rubric's accepted answers at ${JSON.stringify(response).slice(0, 120)}`); break;
+      }
+      const wanted = result === 'review' ? space.expectDiagnostic?.(response as Json) ?? null : null;
+      if (wanted !== null) {
+        const stored = gradeV2Visual(document, answerKeys, segment.id, response)?.diagnostic;
+        if (stored !== wanted) { problems.push(`the diagnostic ${String(stored)} differs from the rubric's ${wanted} at ${JSON.stringify(response).slice(0, 120)}`); break; }
       }
     }
     if (met === 0) problems.push('the target is unreachable: no permitted state is met');

@@ -79,7 +79,7 @@ export function SeriesBarsVisual({ label, rows }: { label: string; rows: readonl
 
 // ── Tape / bar model: rows of proportional segments ─────────────────────────
 
-export interface TapeSegment { id: string; label: string; value: string; share: number; series: SeriesTone; unknown?: boolean; marked?: boolean }
+export interface TapeSegment { id: string; label: string; value: string; share: number; series: SeriesTone; unknown?: boolean; marked?: boolean; empty?: boolean }
 export interface TapeRow { id: string; label: string; segments: readonly TapeSegment[]; tag?: string; total?: string }
 
 /**
@@ -94,7 +94,7 @@ export function BarModelVisual({ label, rows, note }: { label: string; rows: rea
       <span data-copy-role="data">{row.label}{row.total ? <span className="lf-pz-row-total" data-copy-role="data"> {row.total}</span> : null}</span>
       <div className="lf-bar-model-track lf-pz-track">
         {row.segments.map((segment) => <i key={segment.id}
-          className={`lf-pz-seg lf-pz-fill--${segment.series}${segment.unknown ? ' lf-pz-seg--unknown' : ''}`}
+          className={`lf-pz-seg lf-pz-fill--${segment.series}${segment.unknown ? ' lf-pz-seg--unknown' : ''}${segment.empty ? ' lf-pz-seg--empty' : ''}`}
           data-marked={segment.marked ? 'true' : undefined} style={{ inlineSize: pct(segment.share) }}>
           {segment.unknown || segment.value !== '' ? <span className="lf-pz-seg-text" data-copy-role="data">{segment.unknown ? '?' : segment.value}</span> : null}
         </i>)}

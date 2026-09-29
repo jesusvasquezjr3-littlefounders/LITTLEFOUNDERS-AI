@@ -266,8 +266,9 @@ export const learnPreviewScreens: PreviewRegistry = {
   barmodel: framed(({ locale, ageBand, go }) => <LessonDocumentView key={`barmodel:${locale}:${ageBand}`} raw={ageBand === '10-12' ? barModelPilotDocument(locale) : null} locale={locale} ageBand={ageBand} onBack={() => go('home')}
     onGradeBarModel={(answer, segmentId) => {
       const kind = segmentId === 'bar-structure-01' ? 'math.bar-model.structure.v2' : 'math.bar-model.answer.v2';
-      const rubric = segmentId === 'bar-structure-01' ? { model: 'comparison' } : { target: 19 };
-      return verdict(scoreV2Visual(kind, { whole: 50, difference: 12 }, answer, rubric));
+      // GAP-FIX-R3 (M7): the pilot's private key, a comparison with its total ("Ana has 12 more than Leo; together 50").
+      const rubric = segmentId === 'bar-structure-01' ? { model: 'comparison', slots: { smaller: 'unknown', larger: null, difference: 'ana-more', total: 'together' } } : { target: 19 };
+      return verdict(scoreV2Visual(kind, { quantityIds: ['together', 'ana-more'], values: [50, 12] }, answer, rubric));
     }} />),
   schemadiagram: framed(({ locale, ageBand, go }) => <LessonDocumentView key={`schemadiagram:${locale}:${ageBand}`} raw={ageBand === '10-12' ? schemaDiagramPilotDocument(locale) : null} locale={locale} ageBand={ageBand} onBack={() => go('home')}
     onGradeSchemaDiagram={(answer, segmentId) => {

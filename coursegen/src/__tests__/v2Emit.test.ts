@@ -109,10 +109,10 @@ describe('the v2 red team (Appendix C DoD "Gated")', () => {
 describe('the emitter refuses structural defects before any gate', () => {
   it('refuses a learner-visible string left in the locale-neutral payload', () => {
     const plan = clone(planById.get('v2-bar-model')!);
-    plan.segments[0]!.payload.knownLabel = 'Ana';
+    plan.segments[0]!.payload.unknownLabel = 'Leo';
     const result = emitV2Lesson(plan, { versionId: 'forge-test' });
     expect(result.ok).toBe(false);
-    expect(result.problems.some((p) => p.gate === 1 && /knownLabel/.test(p.message))).toBe(true);
+    expect(result.problems.some((p) => p.gate === 1 && /unknownLabel/.test(p.message))).toBe(true);
   });
 
   it('refuses markets that fill different copy fields', () => {

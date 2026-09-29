@@ -46,6 +46,15 @@ function uniqueIds(values: ReadonlyArray<{ id: string }>): boolean {
 
 /* ── Logic (Appendix P Part 8: L1, L5, L6, L10, L12) ─────────────────────── */
 
+/**
+ * L1 (GAP-FIX-R3, Appendix P L1 and Part 4.5): each card's logical role
+ * against the rule "if P then Q", kept in the PRIVATE rubric only. The
+ * roles let the scorer store a selection-task diagnostic ({P, Q} is
+ * confirmation bias) instead of a generic miss.
+ */
+export const RULE_CARD_ROLES = ['p', 'not_p', 'q', 'not_q'] as const;
+export type RuleCardRole = (typeof RULE_CARD_ROLES)[number];
+
 /** L1: a conditional rule and the cards that could break it; the learner flips the ones that must be checked. */
 export const ruleCheckerPayload = z.object({
   rule: label(160),
@@ -267,7 +276,7 @@ const flowRubric = z.union([
   z.object({ cases: z.array(z.object({ answers: z.record(id, z.boolean()), outcome: id }).strict()).min(5).max(10) }).strict(),
 ]);
 export const V2_FAMILY_RUBRICS = {
-  'logic.rule-checker.v2': z.object({ must_flip_ids: ids(1, 5) }).strict(),
+  'logic.rule-checker.v2': z.object({ must_flip_ids: ids(1, 5), roles: z.record(id, z.enum(RULE_CARD_ROLES)).optional() }).strict(),
   'logic.euler.v2': z.object({ regions: z.record(id, z.enum(EULER_REGIONS)) }).strict(),
   'logic.flowchart.v2': flowRubric,
   'money.spend-decision.v2': flowRubric,
@@ -577,6 +586,48 @@ export const SCHEMA_DIAGRAM_RUBRICS = {
   'math.schema-diagram.answer.v2': z.object({ target: z.number().int().nonnegative().max(10_000_000_000) }).strict(),
 } as const;
 export function schemaDiagramScorerPayload(payload: SchemaDiagramPayload): { quantityIds: string[]; values: number[] } {
+  return { quantityIds: payload.quantities.map((item) => item.id), values: payload.quantities.map((item) => item.value) };
+}
+
+/* ── M7 bar models: part-whole and comparison, built by the learner (GAP-FIX-R3) ── */
+
+/**
+ * Appendix P M7 (Part 1; Part 4.1 and 4.5; Bible 05 §4 Build and §7): the
+ * child builds the bars from the text. The public payload is schema-neutral
+ * (like M8): the two or three quantities the text gives and the label of the
+ * unknown. The private rubric names the model and the expected structure:
+ * which slot of which bar each quantity labels and which slot is the unknown;
+ * the relative lengths follow from the quantities and are checked for
+ * consistency by the canonical scorer (`solveBarModel`).
+ *
+ *   part-whole   one bar split into parts: part-a, part-b (part-c added by
+ *                the learner) and the whole bracketed over it;
+ *   comparison   two bars: the smaller bar, the larger bar (the smaller
+ *                length plus a difference segment), and a total bracket
+ *                over both the learner may add.
+ *
+ * In a comparison a bar may carry no number (null): "Ana has 12 more than
+ * Leo; together 50" labels the difference and the total, and asks for Leo.
+ */
+export const BAR_MODELS = ['part-whole', 'comparison'] as const;
+export type BarModelKind = (typeof BAR_MODELS)[number];
+export const BAR_MODEL_SLOTS: Readonly<Record<BarModelKind, { required: readonly string[]; optional: readonly string[] }>> = {
+  'part-whole': { required: ['part-a', 'part-b', 'whole'], optional: ['part-c'] },
+  comparison: { required: ['smaller', 'larger', 'difference'], optional: ['total'] },
+};
+export const barModelPayload = z.object({
+  quantities: z.array(quantity).min(2).max(3),
+  unknownLabel: label(40),
+  spokenText: label(120),
+}).strict().refine((value) => new Set(value.quantities.map((item) => item.id)).size === value.quantities.length
+  && value.quantities.every((item) => item.id !== 'unknown'), 'Invalid bar-model quantities');
+export type BarModelPayload = z.infer<typeof barModelPayload>;
+const barSlot = z.union([id, z.literal('unknown'), z.null()]);
+export const BAR_MODEL_RUBRICS = {
+  'math.bar-model.structure.v2': z.object({ model: z.enum(BAR_MODELS), slots: z.record(z.string(), barSlot) }).strict(),
+  'math.bar-model.answer.v2': z.object({ target: z.number().int().positive().max(1_000_000) }).strict(),
+} as const;
+export function barModelScorerPayload(payload: BarModelPayload): { quantityIds: string[]; values: number[] } {
   return { quantityIds: payload.quantities.map((item) => item.id), values: payload.quantities.map((item) => item.value) };
 }
 

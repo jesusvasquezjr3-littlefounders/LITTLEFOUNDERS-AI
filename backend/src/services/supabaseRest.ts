@@ -2,6 +2,7 @@ import { projectAvatarOptions } from './profileShape.js';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
 import { BADGE_LINK_CUTOVER, badgeLinksRetired } from './badgeLinkWindow.js';
+import { V2_DIAGNOSTIC_CODES } from './v2VisualScorer.js';
 
 const UUID = z.string().uuid();
 const eu = (val: string) => encodeURIComponent(UUID.parse(val).toString());
@@ -999,8 +1000,8 @@ const V2GradeReceipt = z.union([
   z.object({ replayed: z.boolean(), verdict: z.object({ correct: z.boolean(), score: z.number().int().min(0).max(100),
     // B.12: present only on a reasoning answer; the database CHECK pins the shape.
     judgment: z.object({ quality: z.enum(['sound', 'partial', 'unsupported']) }).strict().optional(),
-    // GAP-FIX-R1: the closed diagnostic code and the help-ladder steps used (the SQL CHECK pins both).
-    diagnostic: z.enum(['none', 'structure', 'value', 'partial', 'miss', 'false_alarm', 'path', 'outcome', 'bin', 'reason', 'tolerance']).optional(),
+    // GAP-FIX-R1: the closed diagnostic code and the help-ladder steps used (the SQL CHECK pins both). One list with the scorer.
+    diagnostic: z.enum(V2_DIAGNOSTIC_CODES).optional(),
     hints_used: z.number().int().min(0).max(2).optional() }), retry_jti: z.string().optional() }),
   z.object({ blocked: z.literal(true) }),
 ]);

@@ -36,6 +36,20 @@ type Pilot = ReturnType<typeof allocationPilotDocument> & { title: string; segme
 const pilot = () => structuredClone(allocationPilotDocument('en-US', '6-9')) as Pilot;
 const noop = () => {};
 
+/** GAP-FIX-R3 (M7): builds the pilot's bars the way a learner does, slot by slot ("Ana has 12 more than Leo; together 50"). */
+async function buildPilotBars() {
+  fireEvent.click(screen.getByRole('button', { name: 'Two bars to compare' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Add the total' }));
+  const pick = async (slot: string, item: string) => {
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(`^${slot}:`) }));
+    fireEvent.click(await screen.findByRole('menuitem', { name: item }));
+  };
+  await pick('Shorter bar', '? Leo');
+  await pick('Difference', '12 more: 12');
+  await pick('Both together', 'Together: 50');
+}
+const PILOT_BUILD = { model: 'comparison', slots: { smaller: 'unknown', larger: null, difference: 'ana-more', total: 'together' } };
+
 /** The lesson foot's feedback region; steppers' written values are status regions too, so it is found by its hook. */
 const feedbackRegion = () => {
   const region = document.querySelector<HTMLElement>('.lf-learning-feedback');
@@ -490,6 +504,7 @@ describe('versioned pilot document renderer', () => {
     expect(await screen.findByText('We could not check that. Try again.')).toBeTruthy();
 
     rerender(<LessonDocumentView raw={barModelPilotDocument('en-US')} locale="en-US" ageBand="10-12" onBack={noop} onGradeBarModel={rejected} />);
+    await buildPilotBars();
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     expect(await screen.findByText('We could not check that. Try again.')).toBeTruthy();
 
@@ -539,9 +554,10 @@ describe('versioned pilot document renderer', () => {
     let resolveBar: (result: 'met') => void = () => {};
     const barGrade = vi.fn(() => new Promise<'met'>((resolve) => { resolveBar = resolve; }));
     const { rerender } = render(<LessonDocumentView raw={barModelPilotDocument('en-US')} locale="en-US" ageBand="10-12" onBack={noop} onGradeBarModel={barGrade} />);
+    await buildPilotBars();
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
-    expect(screen.getByRole('radio', { name: 'Comparison' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /^Shorter bar:/ })).toBeDisabled();
     await waitFor(() => expect(barGrade).toHaveBeenCalledTimes(1));
     await act(async () => { resolveBar('met'); await Promise.resolve(); await Promise.resolve(); });
 
@@ -611,24 +627,75 @@ describe('versioned pilot document renderer', () => {
     expect(grade).toHaveBeenCalledTimes(1);
   });
 
-  it('keeps M7 arithmetic behind the separately graded comparison structure', async () => {
+  it('keeps M7 arithmetic behind the separately graded structure the learner builds (GAP-FIX-R3)', async () => {
     const grade = vi.fn((answer: Record<string, unknown>, id: string) => id === 'bar-structure-01'
-      ? answer.model === 'comparison' ? 'met' as const : 'review' as const
+      ? JSON.stringify(answer) === JSON.stringify({ model: 'comparison', slots: { smaller: 'unknown', larger: null, difference: 'ana-more', total: 'together' } }) ? 'met' as const : 'review' as const
       : answer.value === '19' ? 'met' as const : 'review' as const);
     render(<LessonDocumentView raw={barModelPilotDocument('en-US')} locale="en-US" ageBand="10-12" onBack={noop} onGradeBarModel={grade} />);
     expect(screen.getByRole('heading', { name: 'Build the model' })).toBeTruthy();
-    expect(screen.queryByLabelText('How many coins does the smaller bar show?')).toBeNull();
+    // Bible 05 §7: the board starts empty and nothing is selected; Check waits for a complete build.
+    expect(screen.getByText('Add bars to start.')).toBeTruthy();
+    expect(document.querySelector('.lf-bar-model-row')).toBeNull();
+    expect(screen.queryByRole('radio')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
+    expect(screen.queryByLabelText('Your answer')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Two bars to compare' }));
+    expect(document.querySelectorAll('.lf-bar-model-row')).toHaveLength(2);
+    expect(document.querySelectorAll('.lf-pz-seg--empty').length).toBeGreaterThan(0);
+    expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
+    // A wrong but complete build is a structure review.
+    fireEvent.click(screen.getByRole('button', { name: /^Shorter bar:/ }));
+    fireEvent.click(await screen.findByRole('menuitem', { name: '12 more: 12' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Longer bar:/ }));
+    fireEvent.click(await screen.findByRole('menuitem', { name: 'Together: 50' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Difference:/ }));
+    fireEvent.click(await screen.findByRole('menuitem', { name: '? Leo' }));
+    expect(document.querySelector('.lf-pz-seg--unknown')?.textContent).toBe('?');
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    expect(await screen.findByText('Look at the bars again.')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+    await buildPilotBars();
+    // Show as table lists every piece the learner built, and never an answer.
     fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
-    expect(screen.getByRole('table', { name: 'Build the model' })).toHaveTextContent('Smaller barUnknown');
-    expect(screen.queryByText('38')).toBeNull();
+    expect(screen.getByRole('table', { name: 'Build the model' })).toHaveTextContent('Shorter barLeo: ?');
+    expect(screen.queryByText('19')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Show model' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(grade).toHaveBeenNthCalledWith(2, PILOT_BUILD, 'bar-structure-01', expect.anything()));
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Correct'));
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     expect(screen.getByText('Solve the model')).toBeTruthy();
-    fireEvent.change(screen.getByLabelText('How many coins does the smaller bar show?'), { target: { value: '19' } });
+    // The arithmetic step draws the bars the learner built.
+    expect(document.querySelectorAll('.lf-bar-model-row')).toHaveLength(2);
+    fireEvent.change(screen.getByLabelText('Your answer'), { target: { value: '19' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    await waitFor(() => expect(grade).toHaveBeenNthCalledWith(2, { value: '19' }, 'bar-answer-01', expect.anything()));
+    await waitFor(() => expect(grade).toHaveBeenNthCalledWith(3, { value: '19' }, 'bar-answer-01', expect.anything()));
+  });
+
+  it('M7 part-whole: one bar in parts, a third part, the whole as the unknown, keyboard pickers (GAP-FIX-R3)', async () => {
+    const onGradeBarModel = vi.fn(() => 'met' as const);
+    const raw = barModelPilotDocument('en-US') as { segments: Array<{ payload: unknown }> };
+    const payload = { quantities: [{ id: 'saved-may', value: 18, label: 'May' }, { id: 'saved-june', value: 25, label: 'June' }, { id: 'saved-july', value: 7, label: 'July' }], unknownLabel: 'In all', spokenText: 'three months' };
+    const lesson = { ...raw, segments: raw.segments.map((segment) => ({ ...segment, payload })) };
+    render(<LessonDocumentView raw={lesson} locale="en-US" ageBand="10-12" onBack={noop} onGradeBarModel={onGradeBarModel} />);
+    fireEvent.click(screen.getByRole('button', { name: 'One bar in parts' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Add a part' }));
+    const pick = async (slot: string, item: string) => {
+      const trigger = screen.getByRole('button', { name: new RegExp(`^${slot}:`) });
+      // 05 §4: Enter (or ArrowDown) on a slot opens its picker.
+      fireEvent.keyDown(trigger, { key: 'ArrowDown' });
+      fireEvent.click(await screen.findByRole('menuitem', { name: item }));
+    };
+    await pick('Part 1', 'May: 18');
+    await pick('Part 2', 'June: 25');
+    await pick('Part 3', 'July: 7');
+    await pick('Whole', '? In all');
+    // The lengths follow the quantities placed: 18, 25 and 7 of 50.
+    const widths = [...document.querySelectorAll<HTMLElement>('.lf-bar-model-track .lf-pz-seg')].map((node) => Math.round(parseFloat(node.style.inlineSize)));
+    expect(widths).toEqual([36, 50, 14]);
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(onGradeBarModel).toHaveBeenCalledWith({ model: 'part-whole', slots: { 'part-a': 'saved-may', 'part-b': 'saved-june', 'part-c': 'saved-july', whole: 'unknown' } },
+      'bar-structure-01', expect.anything()));
   });
 
   it('keeps M8 schema choice, slots, and arithmetic in separate steps', async () => {

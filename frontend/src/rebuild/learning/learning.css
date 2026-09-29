@@ -34,6 +34,13 @@
 .lf-bar-model-track i { display: block; min-block-size: inherit; }
 .lf-bar-model-track b { position: absolute; inset-inline-end: var(--spacing-2); inset-block-start: 50%; transform: translateY(-50%); color: var(--on-mint); }
 @container app (max-width: 420px) { .lf-bar-model-row { grid-template-columns: 1fr; gap: var(--spacing-1); } }
+/* GAP-FIX-R3 (M7 build, 05 §4): the learner adds bars, then fills each slot from its own picker; every control keeps the 48 px target and wraps. */
+.lf-bar-model-start { margin: 0; color: var(--content-muted, var(--content)); overflow-wrap: anywhere; }
+.lf-bar-model-build { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-bar-model-add { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
+.lf-bar-model-slots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-bar-model-slot { inline-size: 100%; justify-content: start; text-align: start; white-space: normal; overflow-wrap: anywhere; }
+.lf-bar-model-slot[data-filled='true'] { box-shadow: inset 0 0 0 2px var(--primary-strong); }
 .lf-schema-diagram { display: grid; grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr) 24px minmax(0, 1fr); align-items: center; gap: var(--spacing-2); }
 .lf-schema-slot { display: grid; min-block-size: var(--target-base); gap: var(--spacing-1); padding: var(--spacing-2); border-radius: var(--rounded-md); background: var(--primary-soft); color: var(--primary-strong); min-inline-size: 0; overflow-wrap: anywhere; }
 .lf-schema-slot strong { font-family: Fredoka, sans-serif; font-size: 1.5rem; line-height: 1; }

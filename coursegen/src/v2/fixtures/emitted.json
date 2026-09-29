@@ -1128,14 +1128,23 @@
           "id": "bar-structure-01",
           "type": "math.bar-model.structure.v2",
           "grading": "server",
-          "prompt": "Ana saved 50 coins, 12 more than Leo. Choose the model.",
+          "prompt": "Ana saved 50 coins, 12 more than Leo. Build the bars.",
           "visual": {
             "type": "bar-model"
           },
           "payload": {
-            "whole": 50,
-            "difference": 12,
-            "knownLabel": "Ana",
+            "quantities": [
+              {
+                "id": "ana-saved",
+                "value": 50,
+                "label": "Ana"
+              },
+              {
+                "id": "ana-more",
+                "value": 12,
+                "label": "12 more"
+              }
+            ],
             "unknownLabel": "Leo",
             "spokenText": "fifty and twelve more"
           }
@@ -1149,9 +1158,18 @@
             "type": "bar-model"
           },
           "payload": {
-            "whole": 50,
-            "difference": 12,
-            "knownLabel": "Ana",
+            "quantities": [
+              {
+                "id": "ana-saved",
+                "value": 50,
+                "label": "Ana"
+              },
+              {
+                "id": "ana-more",
+                "value": 12,
+                "label": "12 more"
+              }
+            ],
             "unknownLabel": "Leo",
             "spokenText": "fifty minus twelve"
           }
@@ -1160,7 +1178,12 @@
     },
     "answer_keys": {
       "bar-structure-01": {
-        "model": "comparison"
+        "model": "comparison",
+        "slots": {
+          "larger": "ana-saved",
+          "difference": "ana-more",
+          "smaller": "unknown"
+        }
       },
       "bar-answer-01": {
         "target": 38
@@ -1201,14 +1224,23 @@
           "id": "bar-structure-01",
           "type": "math.bar-model.structure.v2",
           "grading": "server",
-          "prompt": "Ana ahorró 50 monedas, 12 más que Leo. Elige el modelo.",
+          "prompt": "Ana ahorró 50 monedas, 12 más que Leo. Arma las barras.",
           "visual": {
             "type": "bar-model"
           },
           "payload": {
-            "whole": 50,
-            "difference": 12,
-            "knownLabel": "Ana",
+            "quantities": [
+              {
+                "id": "ana-saved",
+                "value": 50,
+                "label": "Ana"
+              },
+              {
+                "id": "ana-more",
+                "value": 12,
+                "label": "12 más"
+              }
+            ],
             "unknownLabel": "Leo",
             "spokenText": "cincuenta y doce más"
           }
@@ -1222,9 +1254,18 @@
             "type": "bar-model"
           },
           "payload": {
-            "whole": 50,
-            "difference": 12,
-            "knownLabel": "Ana",
+            "quantities": [
+              {
+                "id": "ana-saved",
+                "value": 50,
+                "label": "Ana"
+              },
+              {
+                "id": "ana-more",
+                "value": 12,
+                "label": "12 más"
+              }
+            ],
             "unknownLabel": "Leo",
             "spokenText": "cincuenta menos doce"
           }
@@ -1233,7 +1274,12 @@
     },
     "answer_keys": {
       "bar-structure-01": {
-        "model": "comparison"
+        "model": "comparison",
+        "slots": {
+          "larger": "ana-saved",
+          "difference": "ana-more",
+          "smaller": "unknown"
+        }
       },
       "bar-answer-01": {
         "target": 38
@@ -1274,14 +1320,23 @@
           "id": "bar-structure-01",
           "type": "math.bar-model.structure.v2",
           "grading": "server",
-          "prompt": "Ana guardou 50 moedas, 12 a mais que Leo. Escolha o modelo.",
+          "prompt": "Ana guardou 50 moedas, 12 a mais que Leo. Monte as barras.",
           "visual": {
             "type": "bar-model"
           },
           "payload": {
-            "whole": 50,
-            "difference": 12,
-            "knownLabel": "Ana",
+            "quantities": [
+              {
+                "id": "ana-saved",
+                "value": 50,
+                "label": "Ana"
+              },
+              {
+                "id": "ana-more",
+                "value": 12,
+                "label": "12 a mais"
+              }
+            ],
             "unknownLabel": "Leo",
             "spokenText": "cinquenta e doze a mais"
           }
@@ -1295,9 +1350,18 @@
             "type": "bar-model"
           },
           "payload": {
-            "whole": 50,
-            "difference": 12,
-            "knownLabel": "Ana",
+            "quantities": [
+              {
+                "id": "ana-saved",
+                "value": 50,
+                "label": "Ana"
+              },
+              {
+                "id": "ana-more",
+                "value": 12,
+                "label": "12 a mais"
+              }
+            ],
             "unknownLabel": "Leo",
             "spokenText": "cinquenta menos doze"
           }
@@ -1306,7 +1370,12 @@
     },
     "answer_keys": {
       "bar-structure-01": {
-        "model": "comparison"
+        "model": "comparison",
+        "slots": {
+          "larger": "ana-saved",
+          "difference": "ana-more",
+          "smaller": "unknown"
+        }
       },
       "bar-answer-01": {
         "target": 38
@@ -5101,7 +5170,13 @@
         "must_flip_ids": [
           "card-even",
           "card-blue"
-        ]
+        ],
+        "roles": {
+          "card-even": "p",
+          "card-odd": "not_p",
+          "card-red": "q",
+          "card-blue": "not_q"
+        }
       },
       "euler-01": {
         "regions": {
@@ -5529,7 +5604,13 @@
         "must_flip_ids": [
           "card-even",
           "card-blue"
-        ]
+        ],
+        "roles": {
+          "card-even": "p",
+          "card-odd": "not_p",
+          "card-red": "q",
+          "card-blue": "not_q"
+        }
       },
       "euler-01": {
         "regions": {
@@ -5957,7 +6038,13 @@
         "must_flip_ids": [
           "card-even",
           "card-blue"
-        ]
+        ],
+        "roles": {
+          "card-even": "p",
+          "card-odd": "not_p",
+          "card-red": "q",
+          "card-blue": "not_q"
+        }
       },
       "euler-01": {
         "regions": {
@@ -14786,6 +14873,300 @@
         "acceptable_choice_ids": [
           "ans-five"
         ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-bar-model-join",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "saving-basics",
+      "lesson_id": "v2-bar-model-join",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 8,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-join-amounts"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Two months of saving",
+      "required_capabilities": [
+        "visual.bar-model.v1",
+        "operation.build-slots.v1",
+        "operation.structure-check.v1",
+        "operation.number-input.v1"
+      ],
+      "segments": [
+        {
+          "id": "bar-structure-pw-01",
+          "type": "math.bar-model.structure.v2",
+          "grading": "server",
+          "prompt": "Mia saved 18 coins in May, 25 in June. Build the bars.",
+          "visual": {
+            "type": "bar-model"
+          },
+          "payload": {
+            "quantities": [
+              {
+                "id": "saved-may",
+                "value": 18,
+                "label": "May"
+              },
+              {
+                "id": "saved-june",
+                "value": 25,
+                "label": "June"
+              }
+            ],
+            "unknownLabel": "In all",
+            "spokenText": "eighteen and twenty five"
+          },
+          "knowledge_component_id": "kc-join-amounts"
+        },
+        {
+          "id": "bar-answer-pw-01",
+          "type": "math.bar-model.answer.v2",
+          "grading": "server",
+          "prompt": "How many coins did Mia save in all?",
+          "visual": {
+            "type": "bar-model"
+          },
+          "payload": {
+            "quantities": [
+              {
+                "id": "saved-may",
+                "value": 18,
+                "label": "May"
+              },
+              {
+                "id": "saved-june",
+                "value": 25,
+                "label": "June"
+              }
+            ],
+            "unknownLabel": "In all",
+            "spokenText": "eighteen plus twenty five"
+          },
+          "knowledge_component_id": "kc-join-amounts"
+        }
+      ]
+    },
+    "answer_keys": {
+      "bar-structure-pw-01": {
+        "model": "part-whole",
+        "slots": {
+          "part-a": "saved-may",
+          "part-b": "saved-june",
+          "whole": "unknown"
+        }
+      },
+      "bar-answer-pw-01": {
+        "target": 43
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-bar-model-join",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "saving-basics",
+      "lesson_id": "v2-bar-model-join",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 8,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-join-amounts"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Dos meses de ahorro",
+      "required_capabilities": [
+        "visual.bar-model.v1",
+        "operation.build-slots.v1",
+        "operation.structure-check.v1",
+        "operation.number-input.v1"
+      ],
+      "segments": [
+        {
+          "id": "bar-structure-pw-01",
+          "type": "math.bar-model.structure.v2",
+          "grading": "server",
+          "prompt": "Mia ahorró 18 monedas en mayo y 25 en junio. Arma las barras.",
+          "visual": {
+            "type": "bar-model"
+          },
+          "payload": {
+            "quantities": [
+              {
+                "id": "saved-may",
+                "value": 18,
+                "label": "Mayo"
+              },
+              {
+                "id": "saved-june",
+                "value": 25,
+                "label": "Junio"
+              }
+            ],
+            "unknownLabel": "En total",
+            "spokenText": "dieciocho y veinticinco"
+          },
+          "knowledge_component_id": "kc-join-amounts"
+        },
+        {
+          "id": "bar-answer-pw-01",
+          "type": "math.bar-model.answer.v2",
+          "grading": "server",
+          "prompt": "¿Cuántas monedas ahorró Mia en total?",
+          "visual": {
+            "type": "bar-model"
+          },
+          "payload": {
+            "quantities": [
+              {
+                "id": "saved-may",
+                "value": 18,
+                "label": "Mayo"
+              },
+              {
+                "id": "saved-june",
+                "value": 25,
+                "label": "Junio"
+              }
+            ],
+            "unknownLabel": "En total",
+            "spokenText": "dieciocho más veinticinco"
+          },
+          "knowledge_component_id": "kc-join-amounts"
+        }
+      ]
+    },
+    "answer_keys": {
+      "bar-structure-pw-01": {
+        "model": "part-whole",
+        "slots": {
+          "part-a": "saved-may",
+          "part-b": "saved-june",
+          "whole": "unknown"
+        }
+      },
+      "bar-answer-pw-01": {
+        "target": 43
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-bar-model-join",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "saving-basics",
+      "lesson_id": "v2-bar-model-join",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 8,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-join-amounts"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Dois meses de poupança",
+      "required_capabilities": [
+        "visual.bar-model.v1",
+        "operation.build-slots.v1",
+        "operation.structure-check.v1",
+        "operation.number-input.v1"
+      ],
+      "segments": [
+        {
+          "id": "bar-structure-pw-01",
+          "type": "math.bar-model.structure.v2",
+          "grading": "server",
+          "prompt": "Mia guardou 18 moedas em maio e 25 em junho. Monte as barras.",
+          "visual": {
+            "type": "bar-model"
+          },
+          "payload": {
+            "quantities": [
+              {
+                "id": "saved-may",
+                "value": 18,
+                "label": "Maio"
+              },
+              {
+                "id": "saved-june",
+                "value": 25,
+                "label": "Junho"
+              }
+            ],
+            "unknownLabel": "No total",
+            "spokenText": "dezoito e vinte e cinco"
+          },
+          "knowledge_component_id": "kc-join-amounts"
+        },
+        {
+          "id": "bar-answer-pw-01",
+          "type": "math.bar-model.answer.v2",
+          "grading": "server",
+          "prompt": "Quantas moedas Mia guardou no total?",
+          "visual": {
+            "type": "bar-model"
+          },
+          "payload": {
+            "quantities": [
+              {
+                "id": "saved-may",
+                "value": 18,
+                "label": "Maio"
+              },
+              {
+                "id": "saved-june",
+                "value": 25,
+                "label": "Junho"
+              }
+            ],
+            "unknownLabel": "No total",
+            "spokenText": "dezoito mais vinte e cinco"
+          },
+          "knowledge_component_id": "kc-join-amounts"
+        }
+      ]
+    },
+    "answer_keys": {
+      "bar-structure-pw-01": {
+        "model": "part-whole",
+        "slots": {
+          "part-a": "saved-may",
+          "part-b": "saved-june",
+          "whole": "unknown"
+        }
+      },
+      "bar-answer-pw-01": {
+        "target": 43
       }
     }
   }

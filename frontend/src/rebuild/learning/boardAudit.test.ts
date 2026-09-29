@@ -21,7 +21,9 @@ describe('teaching-board audit rules (Bible 05 §8)', () => {
   it('measures every board in the page and runs in the pre-merge proportion pass', () => {
     const page = read('scripts/audits/in-page.mjs');
     expect(page).toMatch(/function boards\(\)/);
-    expect(page).toMatch(/querySelectorAll\('\.lf-learning-board'\)/);
+    // GAP-FIX-R3: teaching charts are measured as boards too, wherever they sit.
+    expect(page).toMatch(/querySelectorAll\('\.lf-learning-board, \.lf-chart'\)/);
+    expect(page).toMatch(/chartLabelCut/);
     expect(page).toMatch(/boardMotion/);
     expect(page).toMatch(/textFit, proportion, motion, boards,/);
     expect(read('scripts/audit-rebuild.mjs')).toMatch(/res\.board = await page\.evaluate\('window\.__lfAudit\.boards\(\)'\)/);

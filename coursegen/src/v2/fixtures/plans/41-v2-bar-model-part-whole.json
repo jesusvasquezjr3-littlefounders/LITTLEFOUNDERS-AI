@@ -1,0 +1,165 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "saving-basics",
+  "lesson_id": "v2-bar-model-join",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 8,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-join-amounts"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Mia junta lo que ahorró en mayo y en junio y arma las barras para saber cuánto tiene en total.",
+  "title": {
+    "en-US": "Two months of saving",
+    "es-MX": "Dos meses de ahorro",
+    "pt-BR": "Dois meses de poupança"
+  },
+  "new_concepts": [
+    "kc-join-amounts"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "bar-structure-pw-01",
+      "type": "math.bar-model.structure.v2",
+      "grading": "server",
+      "visual": {
+        "type": "bar-model"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "saved-may",
+            "value": 18
+          },
+          {
+            "id": "saved-june",
+            "value": 25
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mia saved 18 coins in May, 25 in June. Build the bars.",
+          "quantities": [
+            {
+              "label": "May"
+            },
+            {
+              "label": "June"
+            }
+          ],
+          "unknownLabel": "In all",
+          "spokenText": "eighteen and twenty five"
+        },
+        "es-MX": {
+          "prompt": "Mia ahorró 18 monedas en mayo y 25 en junio. Arma las barras.",
+          "quantities": [
+            {
+              "label": "Mayo"
+            },
+            {
+              "label": "Junio"
+            }
+          ],
+          "unknownLabel": "En total",
+          "spokenText": "dieciocho y veinticinco"
+        },
+        "pt-BR": {
+          "prompt": "Mia guardou 18 moedas em maio e 25 em junho. Monte as barras.",
+          "quantities": [
+            {
+              "label": "Maio"
+            },
+            {
+              "label": "Junho"
+            }
+          ],
+          "unknownLabel": "No total",
+          "spokenText": "dezoito e vinte e cinco"
+        }
+      },
+      "rubric": {
+        "model": "part-whole",
+        "slots": {
+          "part-a": "saved-may",
+          "part-b": "saved-june",
+          "whole": "unknown"
+        }
+      },
+      "knowledge_component_id": "kc-join-amounts"
+    },
+    {
+      "id": "bar-answer-pw-01",
+      "type": "math.bar-model.answer.v2",
+      "grading": "server",
+      "visual": {
+        "type": "bar-model"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "saved-may",
+            "value": 18
+          },
+          {
+            "id": "saved-june",
+            "value": 25
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "How many coins did Mia save in all?",
+          "quantities": [
+            {
+              "label": "May"
+            },
+            {
+              "label": "June"
+            }
+          ],
+          "unknownLabel": "In all",
+          "spokenText": "eighteen plus twenty five"
+        },
+        "es-MX": {
+          "prompt": "¿Cuántas monedas ahorró Mia en total?",
+          "quantities": [
+            {
+              "label": "Mayo"
+            },
+            {
+              "label": "Junio"
+            }
+          ],
+          "unknownLabel": "En total",
+          "spokenText": "dieciocho más veinticinco"
+        },
+        "pt-BR": {
+          "prompt": "Quantas moedas Mia guardou no total?",
+          "quantities": [
+            {
+              "label": "Maio"
+            },
+            {
+              "label": "Junho"
+            }
+          ],
+          "unknownLabel": "No total",
+          "spokenText": "dezoito mais vinte e cinco"
+        }
+      },
+      "rubric": {
+        "target": 43
+      },
+      "knowledge_component_id": "kc-join-amounts"
+    }
+  ]
+}

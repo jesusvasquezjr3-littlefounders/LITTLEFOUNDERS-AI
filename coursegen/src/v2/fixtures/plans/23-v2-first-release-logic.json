@@ -17,7 +17,7 @@
       "id": "cards-01", "type": "logic.rule-checker.v2", "grading": "server", "visual": { "type": "rule-cards" },
       "item_role": "practice", "knowledge_component_id": "kc-conditional-check",
       "payload": { "cards": [{ "id": "card-even" }, { "id": "card-odd" }, { "id": "card-red" }, { "id": "card-blue" }] },
-      "rubric": { "must_flip_ids": ["card-even", "card-blue"] },
+      "rubric": { "must_flip_ids": ["card-even", "card-blue"], "roles": { "card-even": "p", "card-odd": "not_p", "card-red": "q", "card-blue": "not_q" } },
       "copy": {
         "en-US": { "prompt": "Which cards must you turn to test the rule?", "rule": "If a card shows an even number, its back is red.",
           "cards": [{ "face": "8" }, { "face": "5" }, { "face": "Red" }, { "face": "Blue" }] },
