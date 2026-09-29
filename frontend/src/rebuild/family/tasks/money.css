@@ -47,3 +47,17 @@
 .lf-rebuild .lf-money-colours .lf-choice-chip > span { display: inline-flex; align-items: center; gap: var(--spacing-2); }
 /* A form inside a dialog (the child's card name and colour): the dialog is a body-level layer, outside the screen's own root. */
 .lf-rebuild .lf-money-dialog-form { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+
+/* GAP-FIX-R6: the Tutor's read of one child's coins (the month summary and the latest history), under the pockets. */
+.lf-family-money .lf-money-coins { min-inline-size: 0; }
+.lf-family-money .lf-money-month { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-family-money .lf-money-totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr)); gap: var(--spacing-2); margin: 0; }
+.lf-family-money .lf-money-totals div { display: grid; gap: var(--spacing-1); min-inline-size: 0; padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-family-money .lf-money-totals dt { margin: 0; font: var(--type-label); overflow-wrap: anywhere; }
+.lf-family-money .lf-money-totals dd { margin: 0; font: var(--type-numeral); font-variant-numeric: tabular-nums; }
+.lf-family-money .lf-money-lines { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-family-money .lf-money-lines li { display: grid; gap: var(--spacing-1); min-inline-size: 0; padding: var(--spacing-2) var(--spacing-4); border-radius: var(--rounded-md);
+  background: var(--pocket-soft); color: var(--content); overflow-wrap: anywhere; }
+.lf-family-money .lf-money-line { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2) var(--spacing-3); min-inline-size: 0; }
+.lf-family-money .lf-money-line-label { flex: 1 1 8rem; min-inline-size: 0; }
+.lf-family-money .lf-money-line-amount { font: var(--type-label); white-space: nowrap; }

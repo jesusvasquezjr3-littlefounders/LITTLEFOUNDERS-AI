@@ -301,6 +301,8 @@ Stage 2 gates that belong to other lanes (B.26/B.27 shame language beyond B.11 e
 
 ## Threshold Recalibration Log (Appendix C Part 1.3)
 
+The machine-checked log of record is now [`docs/operations/BLOCK-B-THRESHOLD-LOG.md`](../../operations/BLOCK-B-THRESHOLD-LOG.md) (GAP-FIX-R6): it holds these values with their constants, a review due date and the review history, and `agent/tools/check-block-b-thresholds.mjs` fails when they drift. This table is the initial record.
+
 Every number below is a starting point, reviewed at least quarterly in the first year and whenever a review-queue sample shows a systematic false block or false pass. A change is recorded here with its date and evidence; the lexicon is part of this log.
 
 | Threshold | Value | Source | Last reviewed |

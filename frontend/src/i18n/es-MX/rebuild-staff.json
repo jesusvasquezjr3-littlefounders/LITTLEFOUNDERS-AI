@@ -1899,7 +1899,8 @@
         "jobsIntro": "Tareas diarias. Si una se detiene, avisa al equipo.",
         "jobStaleHelp": "{job} no se ejecuta desde hace {n} horas. Revisa su flujo.",
         "lastAttemptFailed": "El último intento falló.",
-        "lastAttempt": "Último intento"
+        "lastAttempt": "Último intento",
+        "deletionsStuck": "Eliminaciones detenidas por más de {hours} horas: {n}. Revisa el paso fallido."
       },
       "option": {
         "by_tutor": "Tutor",
@@ -1910,7 +1911,12 @@
         "fresh": "En marcha",
         "job_vault_backup": "Respaldo de la base de datos",
         "job_pulse_backup": "Respaldo de analítica",
-        "job_vault_drift": "Revisión de cambios del esquema"
+        "job_vault_drift": "Revisión de cambios del esquema",
+        "job_learning_retention": "Limpieza de días de práctica",
+        "job_insights_prune": "Limpieza de eventos de aprendizaje",
+        "job_account_deletions": "Eliminación de cuentas",
+        "job_family_retention": "Limpieza de datos familiares",
+        "job_social_retention": "Limpieza de datos de amistades"
       },
       "action": {
         "lookUp": "Buscar",

@@ -20,7 +20,7 @@ SPEC clauses:
 
 Three migrations. The orchestrator renumbers them at merge.
 
-- `0247_lesson_pedagogical_reviews.sql` (expand):
+- `0248_lesson_pedagogical_reviews.sql` (expand):
   - `stage3_review_items()` defines the ten items: six checks and four questions. Only four items accept `not_applicable`: check 6 (B.28) and the B.24, B.12 and B.11 questions, because the SPEC scopes each of them ("where this lesson involves the Mentor", "where required").
   - `lesson_stage3_fingerprint(lesson)` is a digest of every v1 document and answer key (without Echo's audio stamps) and every current v2 pointer.
   - The `lesson_pedagogical_reviews` table is append-only and covers one of two subjects: a lesson's current fingerprint, or one immutable v2 version.
@@ -30,10 +30,10 @@ Three migrations. The orchestrator renumbers them at merge.
   - The `lesson_stage3_review_items` table holds Forge's flags. Each flag takes one resolution (acceptable or needs change) plus a note, and cannot be edited afterwards.
   - `record_forge_stage3_items` records the flags. It is service-role only and idempotent per open flag.
   - `stage3_open_items` and `stage3_release_refusal` complete the storage layer. RLS is on and no browser role has a grant.
-- `0248_lesson_pedagogical_review_writer.sql` (expand):
+- `0249_lesson_pedagogical_review_writer.sql` (expand):
   - `record_lesson_pedagogical_review(actor, …)` is the one writer. It re-checks the actor (manage_content), the fingerprint the reviewer read, the author, the ten items and exactly one resolution per open flag. It then derives pass or fail and commits the review, the resolutions and `content.stage3_review.recorded` together.
   - `lesson_stage3_review_state` is what the form reads.
-- `0249_stage3_review_release_gate.sql` (contract, applied after the Core and console release):
+- `0250_stage3_review_release_gate.sql` (contract, applied after the Core and console release):
   - One trigger fires on a lesson moving to `published`, which covers `release_course`, `release_lesson` and any other writer.
   - A second trigger fires on a live v2 pointer move, which covers `release_lesson_version` and `emergency_activate_lesson_version`.
   - Both raise `STAGE3_REVIEW_REQUIRED` and roll the whole release back unless the latest review of that exact content passed and no Forge flag is open.

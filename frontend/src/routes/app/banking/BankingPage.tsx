@@ -93,7 +93,8 @@ function TutorCoinsRoute() {
         // S07.3 (D.11): the bonus in the framing the child's age calls for.
         bonus: <SavingsBonusSettingsPanel kidUserId={child.userId} kidName={name} token={token} />,
         // S07.1 (D.5, OD-21): coin corrections, goal moves and delivered rewards, with every goal's provenance (D.16).
-        corrections: <WalletCorrectionsPanel {...common} kidName={name} />,
+        // GAP-FIX-R6: a correction or a goal move re-reads the Wallet's read of this child's coins.
+        corrections: <WalletCorrectionsPanel {...common} kidName={name} onChanged={changed} />,
         // S07.4 (D.13, D.14): the Share places this Tutor chose, and the child's usual split.
         share: <ShareDestinationsPanel {...common} kidName={name} />,
       };

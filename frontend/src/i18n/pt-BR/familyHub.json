@@ -82,7 +82,8 @@
     "byYou": "Por você",
     "byOther": "Por outro Tutor",
     "kindAdjust": "Correção",
-    "kindGoal": "Tirado de uma meta"
+    "kindGoal": "Tirado de uma meta",
+    "pocketNow": "Neste bolso agora: {count}"
   },
   "walletActivity": {
     "open": "Meu histórico",

@@ -159,6 +159,29 @@ describe('WalletCorrections (manual adjustment, goal withdrawal, delivery)', () 
     await vi.waitFor(() => expect(props.onAdjust).toHaveBeenCalledWith({ bucket: 'save', amount: -4, reason: 'Counted twice' }));
   });
 
+  // GAP-FIX-R6 (D.5, Law 5): the chosen pocket's coins stand beside the correction; an overdraw is stopped before a round trip.
+  it("shows the chosen pocket's coins and stops a removal larger than the pocket", async () => {
+    const { props } = renderWc({ pockets: { save: 3, spend: 20, share: 0 } });
+    const form = screen.getByRole('form', { name: en.walletCorrections.adjustHeading });
+    expect(within(form).getByText('In this pocket now: 20')).toHaveAttribute('data-pocket-now', 'spend');
+    fireEvent.click(within(form).getByRole('radio', { name: en.walletCorrections.save }));
+    expect(within(form).getByText('In this pocket now: 3')).toHaveAttribute('data-copy-role', 'data');
+    fireEvent.click(within(form).getByRole('radio', { name: en.walletCorrections.remove }));
+    fireEvent.change(within(form).getByLabelText(en.walletCorrections.amount), { target: { value: '4' } });
+    fireEvent.change(within(form).getByLabelText(en.walletCorrections.reason), { target: { value: 'Counted twice' } });
+    fireEvent.click(within(form).getByRole('button', { name: en.walletCorrections.submit }));
+    expect(await within(form).findByRole('alert')).toHaveTextContent(en.walletCorrections.insufficient);
+    expect(props.onAdjust).not.toHaveBeenCalled();
+    fireEvent.change(within(form).getByLabelText(en.walletCorrections.amount), { target: { value: '3' } });
+    fireEvent.click(within(form).getByRole('button', { name: en.walletCorrections.submit }));
+    await vi.waitFor(() => expect(props.onAdjust).toHaveBeenCalledWith({ bucket: 'save', amount: -3, reason: 'Counted twice' }));
+  });
+
+  it('keeps the correction usable when the pockets could not be read', () => {
+    renderWc({ pockets: null });
+    expect(screen.queryByText(/In this pocket now/)).toBeNull();
+  });
+
   it('offers to move coins only out of goals that hold coins, with a required reason and destination', async () => {
     const { props } = renderWc();
     expect(screen.queryByText('Empty')).toBeNull();

@@ -2,9 +2,10 @@ import { DRILL_TARGETS, runOpsJobDrill } from './opsJobDrill.js';
 
 /*
  * `npm run ops:drill` — H.4 / Appendix O 2.3's simulated job-failure drill,
- * once per watched job (the backups, the drift probe and the Mentor retention
- * sweep), plus G.2's overdue retroactive release check and G.4's due access
- * review (see opsJobDrill.ts). Local, read-nothing, zero spend.
+ * once per watched job (the backups, the drift probe, the Mentor retention
+ * sweep, and the account-deletion, family, social and learning retention
+ * sweeps and the insights prune), plus G.2's overdue retroactive release
+ * check, G.4's due access review and E.6's stalled erasure (see opsJobDrill.ts). Local, read-nothing, zero spend.
  */
 async function main(): Promise<void> {
   let failed = 0;

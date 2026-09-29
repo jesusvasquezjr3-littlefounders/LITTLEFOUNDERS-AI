@@ -5,6 +5,7 @@ import { WalletCorrections, type DeliverableReward, type Notice } from '@/rebuil
 import {
   fetchGuardianActions,
   fetchKidGoals,
+  fetchKidPockets,
   fetchKidRedemptions,
   fetchOwnCatalog,
   fulfillRedemption,
@@ -13,6 +14,7 @@ import {
   type Bucket,
   type GuardianAction,
   type KidGoal,
+  type KidPockets,
 } from '@/rebuild/family/familyHubApi';
 import { hubSession } from './familyHubSession';
 import { moneyHabitsCopy } from './moneyHabitsCopy';
@@ -25,14 +27,16 @@ import pt from '@/i18n/pt-BR/familyHub.json';
  * adjustment and goal withdrawal (guardian-only, audited, required reason)
  * and reward delivery (redemption 'fulfilled'). Every write is re-read
  * afterwards so the surface shows what the server holds, not an optimistic
- * guess.
+ * guess. GAP-FIX-R6: the child's pockets are read beside the correction,
+ * and a write that moved coins tells the screen (`onChanged`) so the
+ * Wallet's read of this child's coins re-reads too.
  */
 
-export function WalletCorrectionsPanel(props: { kidUserId: string; kidName: string; token: string | null }) {
+export function WalletCorrectionsPanel(props: { kidUserId: string; kidName: string; token: string | null; onChanged?: () => void }) {
   return <ScopedWalletCorrections key={`${props.kidUserId}:${props.token}`} {...props} />;
 }
 
-function ScopedWalletCorrections({ kidUserId, kidName, token }: { kidUserId: string; kidName: string; token: string | null }) {
+function ScopedWalletCorrections({ kidUserId, kidName, token, onChanged }: { kidUserId: string; kidName: string; token: string | null; onChanged?: () => void }) {
   const { i18n } = useTranslation();
   const { isDark } = useTheme();
   const locale = i18n.resolvedLanguage ?? 'en-US';
@@ -45,6 +49,7 @@ function ScopedWalletCorrections({ kidUserId, kidName, token }: { kidUserId: str
   const [goals, setGoals] = useState<KidGoal[]>([]);
   const [rewards, setRewards] = useState<DeliverableReward[]>([]);
   const [history, setHistory] = useState<GuardianAction[]>([]);
+  const [pockets, setPockets] = useState<KidPockets | null>(null);
   const generation = useRef(0);
   useEffect(() => () => { generation.current++; }, []);
 
@@ -52,11 +57,12 @@ function ScopedWalletCorrections({ kidUserId, kidName, token }: { kidUserId: str
     const current = ++generation.current;
     setLoading(true); setFailed(false);
     if (!keepNotice) setNotice(null);
-    const [goalsRes, redemptionsRes, catalogRes, historyRes] = await Promise.all([
+    const [goalsRes, redemptionsRes, catalogRes, historyRes, pocketsRes] = await Promise.all([
       fetchKidGoals(kidUserId, hubSession(token)),
       fetchKidRedemptions(kidUserId, hubSession(token)),
       fetchOwnCatalog(hubSession(token)),
       fetchGuardianActions(kidUserId, hubSession(token)),
+      fetchKidPockets(kidUserId, hubSession(token)),
     ]);
     if (current !== generation.current) return;
     setLoading(false);
@@ -69,6 +75,8 @@ function ScopedWalletCorrections({ kidUserId, kidName, token }: { kidUserId: str
       .filter((r) => r.status === 'approved')
       .map((r) => ({ id: r.id, title: titles.get(r.catalogId) ?? null, approvedAt: r.decidedAt ?? r.createdAt })));
     setHistory(historyRes.data.actions);
+    // The pockets are context for the form, never a precondition: an unreadable read hides the line, Core still refuses an overdraw.
+    setPockets(pocketsRes.ok ? pocketsRes.data.balances : null);
   }
 
   const refusal: Record<string, string> = {
@@ -84,7 +92,7 @@ function ScopedWalletCorrections({ kidUserId, kidName, token }: { kidUserId: str
     const result = await postWalletAdjustment(kidUserId, input, hubSession(token));
     setBusy(false);
     setNotice(result.ok ? { text: copy.saved, error: false } : { text: refusal[result.code] ?? copy.saveFailed, error: true });
-    if (result.ok) void load(true);
+    if (result.ok) { void load(true); onChanged?.(); }
     return result.ok;
   }
 
@@ -94,7 +102,7 @@ function ScopedWalletCorrections({ kidUserId, kidName, token }: { kidUserId: str
     const result = await postGoalWithdrawal(kidUserId, goalId, input, hubSession(token));
     setBusy(false);
     setNotice(result.ok ? { text: copy.moved, error: false } : { text: refusal[result.code] ?? copy.saveFailed, error: true });
-    if (result.ok) void load(true);
+    if (result.ok) { void load(true); onChanged?.(); }
     return result.ok;
   }
 
@@ -114,6 +122,6 @@ function ScopedWalletCorrections({ kidUserId, kidName, token }: { kidUserId: str
   }
 
   return <WalletCorrections copy={copy} progressCopy={moneyHabitsCopy(locale).goalProgressTutor} locale={locale} dark={isDark} kidName={kidName} open={open} loading={loading} failed={failed}
-    goals={goals} rewards={rewards} history={history} busy={busy} notice={notice}
+    goals={goals} rewards={rewards} history={history} pockets={pockets} busy={busy} notice={notice}
     onToggle={toggle} onRetry={() => void load()} onAdjust={adjust} onWithdraw={withdraw} onDeliver={(id) => void deliver(id)} />;
 }
