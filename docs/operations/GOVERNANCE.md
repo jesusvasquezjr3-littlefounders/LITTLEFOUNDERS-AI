@@ -51,6 +51,24 @@ GET route and asserts none of them reads or returns those fields.
   and last kept review is older than 90 days (family roles are never listed),
   each with "Keep access", and shows the Appendix N numbers from the log:
   Access-Review Cadence Compliance (target 100%) and the stale-grant count.
+- **Review trigger.** The review does not wait for a superadmin to open Roles
+  & Access. Core's `GET /api/v1/internal/ops/job-status` carries
+  `accessReviews: { due, windowDays: 90 }` from
+  `staff_access_review_status(90)`, and `ops-job-watch.yml` (daily, 10:00
+  UTC) fails and opens or comments on the `ops-watchdog` GitHub issue while
+  any elevated grant is due, naming the count and the Roles & Access card.
+  The staff/access owner watches that issue; it is commented on every day
+  until each due grant is kept or revoked. The drill
+  (`npm --prefix backend run ops:drill`, target `access_reviews`) proves it.
+- **Calendar trigger.** On 1 January, April, July and October at 09:00 UTC,
+  `access-review-quarterly.yml` opens the quarter's review issue
+  ("Quarterly access review: YYYY-Qn", label `access-review`) for the
+  staff/access owner, with the elevated grants held (`accessReviews.total`)
+  and the number already due, and the steps: review every grant against
+  actual usage on Roles & Access, keep or revoke each, close the issue. It
+  opens even when nothing is due. An unreadable status still opens the issue
+  and turns the run red. `agent/tools/access-review-quarterly.test.mjs` pins
+  the schedule, the tool and the notification.
 - **Grant discipline.** A parent-role staff grant requires a mandatory audited
   justification (A.5), committed with the role in one transaction
   (`grant_parent_role_with_justification`); the database refuses a parent role
@@ -94,10 +112,18 @@ to retain because an active guardian consent admitted them at the source.
   job is now impossible; the direct synchronous export surface is the only
   one). The `task_view` and `tutor_open` events, previously catalogued with
   no emitter, now emit from the tasks boards and the Mentor experience.
-- **Watchdog coverage (H.4).** The AI Mentor retention sweep has a watchdog
-  plus a staff-console status, and the same pattern now covers the daily Vault
-  backup, the daily Pulse backup and the schema drift probe:
-  - each job ends with `scripts/ops-heartbeat.sh`, which records
+- **Watchdog coverage (H.4).** Four scheduled jobs are watched, each with a
+  watchdog and a notification to a human (Appendix O 1.3 names the first
+  three): the AI Mentor 90-day retention sweep, the daily Vault backup, the
+  daily Pulse backup and the schema drift probe:
+  - the retention sweep records its own trail (`tutor.retention.swept`, on
+    every purge that reaches the database) and keeps its 36-hour window in
+    `RETENTION_STALE_HOURS` (`backend/src/services/tutorData.ts`); Core's
+    job status carries it as the `tutor_retention` job (`tutorRetention`),
+    built from `getTutorRetentionStatus()`. `tutor-retention-watch.yml`
+    (06:00 UTC) still fails its own run early; the human notification is the
+    watchdog issue below;
+  - each of the other three ends with `scripts/ops-heartbeat.sh`, which records
     `ops.<job>.completed` (with `ok`) through Core's internal
     `POST /api/v1/internal/ops/heartbeat`; a heartbeat Core does not confirm
     fails the job;
@@ -106,12 +132,18 @@ to retain because an active guardian consent admitted them at the source.
     retention sweep; the window (36 hours for each daily job) has one home,
     `OPS_JOB_STALE_HOURS` in `backend/src/services/opsJobs.ts`;
   - `.github/workflows/ops-job-watch.yml` (daily, 10:00 UTC) reads the
-    status from inside the container, fails when a job is stale or the reply
-    is unreadable, and opens or comments on the `ops-watchdog` GitHub issue,
-    so a human is notified;
+    status from inside the container, fails when any of the four jobs is
+    stale, a retroactive release check is overdue (G.2), an elevated grant
+    is due for review (G.4, section 2) or the reply is unreadable, and opens
+    or comments on the `ops-watchdog` GitHub issue, so a human is notified;
+  - `.github/workflows/content-retro-checks.yml` (weekly, Monday 05:00 UTC)
+    runs the retroactive release check itself inside its 30-day window and
+    comments on the same issue when a course's verification fails (G.2, see
+    `docs/content/FORGE-V2-RELEASE.md`);
   - the simulated-failure drill (`npm --prefix backend run ops:drill`, also a
-    unit test) proves, for each job, that a stale heartbeat produces
-    `stale: true` and the notice.
+    unit test) proves, for each of the four jobs, that a stale trail produces
+    `stale: true`, a failed watcher and the notice; it also drills an overdue
+    retroactive check and a due access review.
   Remaining for the ops owner: the first scheduled runs in production and a
   drill run against the deployed Core.
 

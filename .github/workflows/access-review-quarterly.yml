@@ -1,0 +1,100 @@
+name: Quarterly access review
+
+# G.4 / Appendix N 1.1: "a periodic access-review cadence - proposed:
+# quarterly, calendar-triggered, owned by the staff/access owner".
+#
+# Two triggers, one review:
+#   - per grant: ops-job-watch.yml fails daily while any elevated grant is past
+#     its rolling 90 days (Core's accessReviews.due), on the ops-watchdog issue;
+#   - per calendar quarter (THIS workflow): on 1 January, April, July and
+#     October it opens the quarter's review issue, labelled `access-review`,
+#     with the number of elevated grants held and the number already due, so
+#     the staff/access owner reviews every grant against actual usage.
+#
+# The counts come from Core (GET /api/v1/internal/ops/job-status, built from
+# staff_access_review_status); agent/tools/access-review-quarterly.mjs never
+# re-derives them. An unreadable reply still opens the issue (the review is
+# due regardless) and turns the run red.
+#
+# agent/tools/access-review-quarterly.test.mjs pins the schedule, the tool
+# call and the notification.
+
+on:
+  schedule:
+    - cron: '0 9 1 1,4,7,10 *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  open-review:
+    name: Open the quarter's staff access review
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli@5.43.1
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
+          chmod 600 ~/.ssh/railway_key
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            LogLevel ERROR
+          CONFIG
+          chmod 600 ~/.ssh/config
+
+      - name: Ask Core for the access-review counts
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Same single-argument base64 route as ops-job-watch.yml:
+          # $INTERNAL_API_KEY and $PORT expand in the container, never here.
+          script='curl -sS'
+          script="$script"' -H "x-internal-api-key: $INTERNAL_API_KEY"'
+          script="$script"' "http://127.0.0.1:${PORT:-4000}/api/v1/internal/ops/job-status"'
+          b64=$(printf '%s' "$script" | base64 | tr -d '\n')
+          body=''
+          for attempt in 1 2 3; do
+            if body=$(railway ssh --service littlefounders-backend -i ~/.ssh/railway_key -- sh -c "echo $b64 | base64 -d | sh" 2>&1); then break; fi
+            echo "attempt ${attempt} failed:" >&2
+            printf '%s\n' "$body" | head -5 >&2
+            body=''
+            sleep 20
+          done
+          # An empty or foreign reply is written as-is: the tool still writes
+          # the issue and fails the run.
+          printf '%s' "$body" > status.json
+
+      - name: Write the review issue
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node agent/tools/access-review-quarterly.mjs --status-file status.json --issue-file issue.md --title-file title.txt
+
+      - name: Open the review issue for the staff/access owner
+        if: always() && hashFiles('issue.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          title=$(cat title.txt)
+          existing=$(gh issue list --state open --label access-review --search "\"$title\" in:title" --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "${existing:-}" ]; then
+            gh issue comment "$existing" --body-file issue.md
+          else
+            gh label create access-review --color 5319E7 --description 'G.4 quarterly staff access review' 2>/dev/null || true
+            gh issue create --title "$title" --label access-review --body-file issue.md
+          fi

@@ -34,6 +34,13 @@ name: Tutor retention watch
 # container and calling 127.0.0.1 with the `INTERNAL_API_KEY` already in that
 # process's environment copies nothing anywhere.
 #
+# WHO IS TOLD. A failed scheduled run alone notifies nobody (Appendix O 1.3
+# requires an external notification to a human). The notification path is
+# ops-job-watch.yml (10:00 UTC): Core's /internal/ops/job-status carries this
+# same status as the `tutor_retention` watched job, and a stale sweep there
+# opens or comments on the `ops-watchdog` GitHub issue. This run stays as the
+# early, same-morning signal in the Actions tab.
+#
 # IT RUNS AFTER THE SWEEP, NOT BESIDE IT. 06:00 UTC is three hours past the
 # 03:00 purge — long enough for a slow run to finish and be recorded, early
 # enough that a missed night is known the same morning.

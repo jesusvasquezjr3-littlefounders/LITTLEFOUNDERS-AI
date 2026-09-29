@@ -1,0 +1,113 @@
+name: Content retroactive release checks
+
+# G.2 / Appendix N 1.2 and 2.3(b): THE FOLLOW-UP MECHANISM THAT ACTUALLY RUNS.
+#
+# Every bypass of the release check (a justified database-owner patch of a
+# live document, a Superadmin's emergency activation, a legacy publication on
+# a live lesson) opens a row in Vault's `content_retro_checks`, due 30 days
+# later. Appendix N 2.3(b) requires a mechanism that RUNS the bypassed
+# release verification retroactively inside that window, not only a report
+# once it has passed. Forge's `content:retro-checks` (coursegen/src/
+# retroChecks.ts) is that run: it reads the open checks, runs `verify:course`
+# for each course once, and reads them back; a complete, current
+# verification closes the course's checks in Vault (`content.retro_check_closed`).
+#
+# CADENCE: weekly, Monday 05:00 UTC. A bypass made on any day is verified
+# within 7 days, which leaves at least three more weekly runs (and a human
+# fix in between) before the 30-day window closes. The watchdog
+# (ops-job-watch.yml, daily) still alerts on any check that passes 30 days.
+#
+# A HUMAN IS TOLD. When a course's verification fails, a check cannot be
+# attached to a course, or Vault cannot be read, the run fails AND opens or
+# comments on the `ops-watchdog` GitHub issue with the command's output (the
+# same issue the operations watchdog uses), so a failed run is never the only
+# record.
+#
+# CREDENTIALS: the service-role pattern of the other Vault-reading workflows
+# (tutor-content-bridge.yml, mentor-live-content-monitor.yml): SUPABASE_URL
+# and SUPABASE_SERVICE_ROLE_KEY are read from the Core service's Railway
+# variables with the RAILWAY_TOKEN secret, never stored as repository secrets
+# and never printed.
+#
+# ZERO SPEND (OD-23): verify:course reads Vault and writes one attestation row
+# per course; no model, image or voice call.
+
+on:
+  schedule:
+    - cron: '0 5 * * 1' # 05:00 UTC every Monday
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: content-retro-checks
+  cancel-in-progress: false
+
+env:
+  ENVIRONMENT: production
+
+jobs:
+  retro-checks:
+    name: Run the bypassed release verification for every course with an open check
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install the Railway CLI
+        run: npm i -g @railway/cli@5.43.1
+
+      - name: Run content:retro-checks against Vault
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+          read_var() {
+            railway variable list --service littlefounders-backend --environment "$ENVIRONMENT" --json 2>/dev/null \
+              | jq -r --arg k "$1" '.[$k] // ""'
+          }
+          SUPABASE_URL="$(read_var SUPABASE_URL)"
+          SUPABASE_SERVICE_ROLE_KEY="$(read_var SUPABASE_SERVICE_ROLE_KEY)"
+          for v in SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY; do
+            if [ -z "${!v}" ]; then
+              echo "::error::backend variable $v is empty" | tee retro-checks.log
+              exit 1
+            fi
+          done
+          echo "::add-mask::$SUPABASE_SERVICE_ROLE_KEY"
+          export SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY
+          npm ci --prefix coursegen --no-audit --no-fund >/dev/null
+          npm --prefix coursegen run content:retro-checks 2>&1 | tee retro-checks.log
+
+      - name: Notify a human
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          {
+            echo "The weekly retroactive release check (G.2, Appendix N 2.3(b)) failed: a course's \`verify:course\` failed, an open check has no course, or Vault could not be read. The course's checks stay open and the watchdog alerts once they pass 30 days."
+            echo ""
+            echo '```'
+            tail -n 60 retro-checks.log 2>/dev/null || echo "The run produced no output; see the run log."
+            echo '```'
+            echo ""
+            echo "Runbook: docs/content/FORGE-V2-RELEASE.md (the 30-day retroactive check)."
+            echo ""
+            echo "Run: $RUN_URL"
+          } > notice.md
+          title='Operations watchdog: a scheduled job has gone quiet'
+          existing=$(gh issue list --state open --label ops-watchdog --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "${existing:-}" ]; then
+            gh issue comment "$existing" --body-file notice.md
+          else
+            gh label create ops-watchdog --color B60205 --description 'H.4 operations watchdog' 2>/dev/null || true
+            gh issue create --title "$title" --label ops-watchdog --body-file notice.md
+          fi

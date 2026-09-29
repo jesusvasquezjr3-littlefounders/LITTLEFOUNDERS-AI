@@ -598,6 +598,21 @@ export async function getAccessReviewStatus(cadenceDays = ACCESS_REVIEW_CADENCE_
   };
 }
 
+/**
+ * G.4 (Appendix N 1.1): how many elevated grants are held (`total`) and how
+ * many are past the review cadence (`due`), for the operations watchdog and
+ * the quarterly review issue (services/opsJobs.ts). The same database verdict
+ * the Roles & Access card lists; null when the read failed, never 0.
+ */
+export async function getAccessReviewCounts(cadenceDays = ACCESS_REVIEW_CADENCE_DAYS): Promise<{ due: number; total: number } | null> {
+  const raw = await serviceRest<unknown>('/rpc/staff_access_review_status', {
+    method: 'POST',
+    body: JSON.stringify({ p_cadence_days: cadenceDays }),
+  });
+  const parsed = ReviewStatus.safeParse(raw);
+  return parsed.success ? { due: parsed.data.stale, total: parsed.data.total } : null;
+}
+
 export type AccessReviewOutcome = 'recorded' | 'not_held' | 'rejected' | 'unavailable';
 
 export async function recordAccessReview(input: {
