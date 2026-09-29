@@ -165,5 +165,7 @@ export function isNonCopyKey(key: string): boolean {
     // GAP-FIX-R2 charts: a swimlane node's lane and a Venn region's set list are ids.
     || key === 'lane' || key === 'sets'
     // TeX notation is locale-neutral data (spokenText carries the words).
-    || key === 'notation';
+    || key === 'notation'
+    // GAP-FIX-R5 (M3): the numbers a fraction line compares or shows as equivalents are data; the board formats them per locale.
+    || key === 'compare_values' || key === 'equivalent_values';
 }

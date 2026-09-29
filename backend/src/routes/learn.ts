@@ -1231,6 +1231,8 @@ export function learnRouter(): Router {
         ...(graded.detection ? { detection: graded.detection } : {}),
         // L12 / $11 (GAP-FIX-R2): cue ticks are stored as a diagnostic; d′ is still computed from detection alone.
         ...(graded.cues ? { cues: graded.cues } : {}),
+        // M2/M3 (GAP-FIX-R5, Appendix P Part 4.6): the placement error as a share of the line, beside the tolerance verdict.
+        ...(graded.pae !== undefined ? { pae: graded.pae } : {}),
         // Appendix P Part 8 (GAP-FIX-R2): scorer parity, pre/post phase and the representation variant.
         ...(parsed.data.client_verdict ? { client_agree: parsed.data.client_verdict === 'valid' } : {}),
         ...(gradedSegment.item_phase ? { item_phase: gradedSegment.item_phase } : {}),

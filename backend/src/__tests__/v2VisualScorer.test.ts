@@ -37,7 +37,9 @@ describe('canonical v2 visual scorer', () => {
     expect(scoreV2Visual('math.number-line.fraction.v2', payload, { value: '3/4' })).toBe('valid');
     expect(scoreV2Visual('math.number-line.fraction.v2', payload, { value: '6/8' }, rubric)).toBe('met');
     expect(scoreV2Visual('math.number-line.fraction.v2', payload, { value: '1/2' }, rubric)).toBe('review');
-    for (const value of ['0.75', '3/5', '-1/4']) expect(scoreV2Visual('math.number-line.fraction.v2', payload, { value }, rubric)).toBe('invalid');
+    // GAP-FIX-R5 (M3): a locale-parsed decimal on the snap grid is graded as an exact rational; off-grid and negative values stay refused.
+    expect(scoreV2Visual('math.number-line.fraction.v2', payload, { value: '0.75' }, rubric)).toBe('met');
+    for (const value of ['0.7', '3/5', '-1/4', '-0.25', '0,75']) expect(scoreV2Visual('math.number-line.fraction.v2', payload, { value }, rubric)).toBe('invalid');
     expect(scoreV2Visual('math.number-line.fraction.v2', payload, { value: '4/4' }, rubric)).toBe('review');
     expect(scoreV2Visual('math.number-line.fraction.v2', payload, { value: '3/4' }, { ...rubric, targetDenominator: 0 })).toBe('invalid');
   });

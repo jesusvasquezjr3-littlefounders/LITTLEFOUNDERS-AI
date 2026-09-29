@@ -9,7 +9,7 @@ import { Button } from '../design/controls';
 import { AllocationBoard } from './AllocationBoard';
 import { GrowthBoard } from './GrowthBoard';
 import { GoalBulletBoard } from './GoalBulletBoard';
-import { NumberLineBoard } from './NumberLineBoard';
+import { NumberLineBoard, type NumberLineAnswer } from './NumberLineBoard';
 import { PercentGridBoard } from './PercentGridBoard';
 import { PlaceValueBoard } from './PlaceValueBoard';
 import { SavingsRuleBoard } from './SavingsRuleBoard';
@@ -17,7 +17,7 @@ import { RunningLedgerBoard } from './RunningLedgerBoard';
 import { GrowthComparisonBoard } from './GrowthComparisonBoard';
 import { RatioTableBoard } from './RatioTableBoard';
 import { TaxBracketBoard } from './TaxBracketBoard';
-import { FractionNumberLineBoard } from './FractionNumberLineBoard';
+import { FractionNumberLineBoard, type FractionLineAnswer } from './FractionNumberLineBoard';
 import { FractionAreaBoard } from './FractionAreaBoard';
 import { BarModelBoard } from './BarModelBoard';
 import { SchemaDiagramBoard } from './SchemaDiagramBoard';
@@ -36,7 +36,9 @@ import { LessonPlayerProvider, playerCopy, type SegmentGrade } from './segmentKi
 
 export type CheckResult = 'invalid' | 'incomplete' | 'review' | 'met';
 export type OnGrade = (answer: Allocation, segmentId: string, document: LessonClientDocument) => CheckResult | Promise<CheckResult>;
-export type OnGradeNumberLine = (answer: { value: string }, segmentId: string, document: LessonClientDocument) => 'invalid' | 'met' | 'review' | Promise<'invalid' | 'met' | 'review'>;
+/** M1/M2/M3 answers: one value, counting-on hops, placed items, or a fraction line's pair (GAP-FIX-R5). */
+export type NumberLineGradeAnswer = NumberLineAnswer | FractionLineAnswer;
+export type OnGradeNumberLine = (answer: NumberLineGradeAnswer, segmentId: string, document: LessonClientDocument) => 'invalid' | 'met' | 'review' | Promise<'invalid' | 'met' | 'review'>;
 export type OnGradeFractionArea = (answer: { n: number; d: number }, segmentId: string, document: LessonClientDocument) => 'invalid' | 'met' | 'review' | Promise<'invalid' | 'met' | 'review'>;
 export type OnGradeBarModel = (answer: Record<string, unknown>, segmentId: string, document: LessonClientDocument) => 'invalid' | 'met' | 'review' | Promise<'invalid' | 'met' | 'review'>;
 export type OnGradeSchemaDiagram = (answer: Record<string, unknown>, segmentId: string, document: LessonClientDocument) => 'invalid' | 'met' | 'review' | Promise<'invalid' | 'met' | 'review'>;

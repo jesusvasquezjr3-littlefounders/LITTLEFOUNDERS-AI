@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { growthComparison } from './v2GrowthComparison.js';
-import { barModelUnknown, gradeV2Response, scoreV2Judgment, scoreV2Visual, type V2CueHits, type V2Detection, type V2Diagnostic, type V2JudgmentQuality, type V2VisualKind } from './v2VisualScorer.js';
+import { barModelUnknown, gradeV2Response, lineUnits, scoreV2Judgment, scoreV2Visual, type V2CueHits, type V2Detection, type V2Diagnostic, type V2JudgmentQuality, type V2VisualKind } from './v2VisualScorer.js';
 import { conceptAllowed, conceptSampleResponse, gradeConcept, V2_CONCEPT_RUBRICS, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptSegment } from './v2ConceptBoards.js';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './v2ChartModel.js';
 import { v2ScorerPayload } from './v2ScorerPayload.js';
@@ -38,6 +38,10 @@ export type V2MentorStage = z.infer<typeof v2MentorStageSchema>;
 const eligibility = z.object({ minimum_age: z.number().int().min(0).max(119), maximum_age: z.number().int().min(0).max(119) }).strict()
   .refine((value) => value.minimum_age <= value.maximum_age, 'Invalid age eligibility');
 const positive = z.number().int().positive().safe();
+/** M3 (GAP-FIX-R5): a number a fraction line shows, as a fraction or a decimal (locale-neutral data, formatted by the board). */
+const lineNumber = z.string().regex(/^((0|[1-9]\d{0,2})\/([1-9]\d{0,2})|(0|[1-9]\d{0,2})(\.\d{1,6})?)$/);
+/** Appendix P Parts 4.6 and 7.2 (GAP-FIX-R5): a tolerance on error as a share of the line (0 = exact). */
+const toleranceShare = z.number().min(0).max(0.2);
 const nonnegative = z.number().int().nonnegative().safe();
 const base = { id, prompt: z.string().trim().min(1).max(500), ...v2SegmentExtras };
 /** Appendix P Parts 1/4.2/7: these visuals may be server-graded (with a private rubric) or explored ungraded. */
@@ -71,20 +75,36 @@ const savingsLine = z.object({
 const numberLine = z.object({
   ...base, type: z.literal('math.number-line.whole.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('number-line') }).strict(),
   // M2 (GAP-FIX-R2): `hops` turns on board-game counting on from the current square (the hop sizes offered).
-  payload: z.object({ minimum: nonnegative, maximum: positive, step: positive, initial: nonnegative, hops: z.array(positive).min(1).max(3).optional() }).strict()
+  // M2 (GAP-FIX-R5): `items` places two to four labelled items; Core grades their order, then each one's PAE.
+  // The bounded ranges (0-10, 0-100, 0-1000) are v2PayloadScopeProblem's, shared with the browser and Forge.
+  payload: z.object({ minimum: nonnegative, maximum: positive, step: positive, initial: nonnegative, hops: z.array(positive).min(1).max(3).optional(),
+    items: z.array(z.object({ id, label: z.string().trim().min(1).max(40) }).strict()).min(2).max(4).optional() }).strict()
     .refine((v) => v.maximum > v.minimum && (v.maximum - v.minimum) % v.step === 0 && v.initial >= v.minimum
       && v.initial <= v.maximum && (v.initial - v.minimum) % v.step === 0
-      && (v.hops === undefined || (new Set(v.hops).size === v.hops.length && v.hops.every((hop) => hop % v.step === 0 && hop < v.maximum - v.minimum))), 'Invalid number line range'),
+      && (v.hops === undefined || (new Set(v.hops).size === v.hops.length && v.hops.every((hop) => hop % v.step === 0 && hop < v.maximum - v.minimum)))
+      && (v.items === undefined || (v.hops === undefined && new Set(v.items.map((item) => item.id)).size === v.items.length)), 'Invalid number line range'),
 }).strict();
 const fractionNumberLine = z.object({
   ...base, type: z.literal('math.number-line.fraction.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('number-line') }).strict(),
+  // M3 (GAP-FIX-R5): `compare_values` asks which of two numbers is larger (or the same) after placing both;
+  // `equivalent_values` asks for two forms of one number (2/4 and 1/2, 3/5 and 0.6) to land on one point.
   payload: z.object({ maximumWhole: z.union([z.literal(1), z.literal(2)]), divisions: positive.max(12), initialUnits: nonnegative,
-    spokenText: z.string().trim().min(1).max(120) }).strict()
+    spokenText: z.string().trim().min(1).max(120), compare_values: z.tuple([lineNumber, lineNumber]).optional(),
+    equivalent_values: z.tuple([lineNumber, lineNumber]).optional() }).strict()
     .refine(
-      (v) => v.divisions >= 2 && v.initialUnits <= v.maximumWhole * v.divisions,
+      (v) => v.divisions >= 2 && v.initialUnits <= v.maximumWhole * v.divisions && fractionLinePairOk(v),
       'Invalid fraction number line',
     ),
 }).strict();
+/** M3's pair: both on the snap grid and written differently; equivalents are one number, a comparison's two may be. */
+function fractionLinePairOk(v: { maximumWhole: number; divisions: number; compare_values?: [string, string]; equivalent_values?: [string, string] }): boolean {
+  if (v.compare_values && v.equivalent_values) return false;
+  const pair = v.compare_values ?? v.equivalent_values;
+  if (!pair) return true;
+  const a = lineUnits(pair[0], v.maximumWhole, v.divisions);
+  const b = lineUnits(pair[1], v.maximumWhole, v.divisions);
+  return a !== null && b !== null && pair[0] !== pair[1] && (v.compare_values !== undefined || a === b);
+}
 const fractionArea = z.object({
   ...base, type: z.literal('math.fraction-area.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('fraction-area') }).strict(),
   payload: z.object({ minimumParts: positive.min(2).max(6), maximumParts: positive.min(2).max(6), initialParts: positive.min(2).max(6),
@@ -395,8 +415,17 @@ export const v2PublicLessonSchema = z.object({
 
 const rubricByKind = {
   'money.allocation.v2': z.object({ minimumSave: nonnegative }).strict(),
-  'math.number-line.whole.v2': z.object({ target: nonnegative }).strict(),
-  'math.number-line.fraction.v2': z.object({ targetNumerator: nonnegative, targetDenominator: positive.max(12), toleranceUnits: nonnegative.max(2) }).strict(),
+  // M2 (GAP-FIX-R5): one target, or one per placed item, each with the PAE tolerance; counting on keeps `{ target }`.
+  'math.number-line.whole.v2': z.union([
+    z.object({ target: nonnegative, tolerance_share: toleranceShare.optional() }).strict(),
+    z.object({ targets: z.record(id, nonnegative), tolerance_share: toleranceShare.optional() }).strict(),
+  ]),
+  // M3 (GAP-FIX-R5): a placement target, a comparison key (the true one, checked), or the equivalents' tolerance.
+  'math.number-line.fraction.v2': z.union([
+    z.object({ targetNumerator: nonnegative, targetDenominator: positive.max(12), toleranceUnits: nonnegative.max(2) }).strict(),
+    z.object({ choice: z.enum(['first', 'second', 'same']), toleranceUnits: nonnegative.max(2) }).strict(),
+    z.object({ toleranceUnits: nonnegative.max(2) }).strict(),
+  ]),
   'math.fraction-area.v2': z.object({ targetNumerator: nonnegative, targetDenominator: positive.min(2).max(6) }).strict(),
   ...BAR_MODEL_RUBRICS,
   ...SCHEMA_DIAGRAM_RUBRICS,
@@ -413,7 +442,8 @@ const rubricByKind = {
   'math.ratio-table.v2': z.object({ target_packs: positive.max(8) }).strict(),
   'visual.percent-grid.v2': z.object({ target_percent: nonnegative.max(100) }).strict(),
   'visual.growth-comparison.v2': z.object({ tolerance_minor: nonnegative }).strict(),
-  'visual.tax-bracket.v2': z.object({ income_minor: nonnegative }).strict(),
+  // M20 (GAP-FIX-R5): the average rate is typed as a percent; the key accepts it within this many basis points (default 50).
+  'visual.tax-bracket.v2': z.object({ income_minor: nonnegative, average_tolerance_bps: nonnegative.max(100).optional() }).strict(),
   'logic.savings-rule.v2': z.object({ comparator: z.enum(['>=', '>', '<=', '<']), threshold: nonnegative.max(200), link: z.enum(['and', 'or', 'none']),
     held_out: z.array(z.object({ saved: nonnegative.max(200), goal_day: z.boolean() }).strict()).min(2).max(8) }).strict(),
   'visual.goal-bullet.v2': z.object({ minimum_value: nonnegative }).strict(),
@@ -432,6 +462,8 @@ export type V2GradeResult = {
   diagnostic: V2Diagnostic; detection?: V2Detection;
   /** L12 / $11 (GAP-FIX-R2): cue ticks against the key, a diagnostic beside d′. */
   cues?: V2CueHits;
+  /** M2/M3 (GAP-FIX-R5): the placement error as a share of the line, stored on the receipt. */
+  pae?: number;
 };
 
 /** The canonical scorer accepts only the semantic fields, never renderer metadata. */
@@ -469,8 +501,10 @@ export function validateV2LessonForGrading(document: unknown, answerKeys: unknow
       continue;
     }
     const sample = item.type === 'money.allocation.v2' ? { save: 0, spend: item.payload.total, share: 0 }
-      : item.type === 'math.number-line.whole.v2' ? item.payload.hops ? { value: String(item.payload.initial + item.payload.hops[0]!), hops: [item.payload.hops[0]!] } : { value: String(item.payload.minimum) }
-        : item.type === 'math.number-line.fraction.v2' ? { value: '0/1' }
+      : item.type === 'math.number-line.whole.v2' ? item.payload.hops ? { value: String(item.payload.initial + item.payload.hops[0]!), hops: [item.payload.hops[0]!] }
+        : item.payload.items ? { placements: Object.fromEntries(item.payload.items.map((entry) => [entry.id, String(item.payload.minimum)])) } : { value: String(item.payload.minimum) }
+        : item.type === 'math.number-line.fraction.v2' ? item.payload.compare_values ? { placements: { first: '0/1', second: '0/1' }, choice: 'same' }
+          : item.payload.equivalent_values ? { placements: { first: '0/1', second: '0/1' } } : { value: '0/1' }
           : item.type === 'math.fraction-area.v2' ? { n: 0, d: item.payload.minimumParts }
             : item.type === 'math.bar-model.structure.v2' ? barModelSampleBuild(item.payload.quantities.map((quantity) => quantity.id))
                 : item.type === 'math.schema-diagram.structure.v2' ? { schema: 'change' }
@@ -494,7 +528,7 @@ function v2SampleResponse(item: ServerSegment): unknown {
     case 'math.ratio-table.v2': return { packs: item.payload.minimumPacks, price: '0' };
     case 'visual.percent-grid.v2': return { percent: item.payload.initialPercent, amount: '0' };
     case 'visual.growth-comparison.v2': return { rateBps: item.payload.initialRateBps, years: item.payload.initialYears, predictionMinor: item.payload.principalMinor };
-    case 'visual.tax-bracket.v2': return { incomeMinor: item.payload.initialIncomeMinor, taxMinor: '0', marginalBps: 0 };
+    case 'visual.tax-bracket.v2': return { incomeMinor: item.payload.initialIncomeMinor, taxMinor: '0', marginalBps: 0, averageBps: 0 };
     case 'logic.savings-rule.v2': return { comparator: '>=', threshold: 0, link: 'none' };
     case 'visual.goal-bullet.v2': return { value: item.payload.initial };
     case 'money.running-ledger.v2': return { entries: [], balance: String(item.payload.initial) };
@@ -518,7 +552,8 @@ export function gradeV2Visual(document: V2PublicLesson, answerKeys: Record<strin
   const verdict = detailed.verdict;
   if (verdict === 'invalid' || verdict === 'valid') return null;
   const graded: V2GradeResult = { score: verdict === 'met' ? 100 : 0, correct: verdict === 'met', document, segmentId, diagnostic: detailed.diagnostic,
-    ...(detailed.detection ? { detection: detailed.detection } : {}), ...(detailed.cues ? { cues: detailed.cues } : {}) };
+    ...(detailed.detection ? { detection: detailed.detection } : {}), ...(detailed.cues ? { cues: detailed.cues } : {}),
+    ...(detailed.pae !== undefined ? { pae: detailed.pae } : {}) };
   if (segment.type !== 'reasoning.decide-justify.v2') return graded;
   // B.12: the same signed response yields a judgment, never folded into the score.
   const judgment = scoreV2Judgment(segment.type, scorerPayload(segment as ServerSegment), response, rubric.data);

@@ -609,6 +609,10 @@ export function v2PayloadScopeProblem(segment: { type: string; visual: { type: s
     // L5: syllogisms (the conclusion step) are for 13-17 and adults.
     if (payload.conclusion !== undefined && (young || ageBand === '10-12')) return 'Syllogism conclusions are open to ages 13 and up';
   }
+  // M2 (GAP-FIX-R5; Appendix P M2 "bounded: 0-10, 0-100, 0-1000", Part 4.9 "bounded number lines only").
+  if (segment.type === 'math.number-line.whole.v2' && (payload.minimum !== 0 || ![10, 100, 1000].includes(payload.maximum as number))) {
+    return 'A whole-number line runs 0-10, 0-100 or 0-1000';
+  }
   // L10: 6-9 sort by a single rule; the rule switch and the "it depends" bin open at 10.
   if (segment.type === 'logic.sort-by-rule.v2' && ageBand === '6-9' && (payload.switch_after !== undefined || payload.depends_bin_id !== undefined)) {
     return 'Ages 6-9 sort by a single rule';

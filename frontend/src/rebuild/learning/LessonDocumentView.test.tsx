@@ -4,7 +4,7 @@ import { allocationPilotDocument, donutPilotDocument, wafflePilotDocument } from
 import { growthPilotDocument } from './GrowthBoard';
 import { ratioTablePilotDocument } from './RatioTableBoard';
 import { numberLinePilotDocument } from './NumberLineBoard';
-import { LessonDocumentView } from './LessonDocumentView';
+import { LessonDocumentView, type NumberLineGradeAnswer } from './LessonDocumentView';
 import { sequencePilotDocument } from './sequencePilotDocument';
 import { goalBulletPilotDocument } from './GoalBulletBoard';
 import { percentGridPilotDocument } from './PercentGridBoard';
@@ -249,7 +249,7 @@ describe('versioned pilot document renderer', () => {
 
   it('renders M1 as concrete, pictorial, then abstract while carrying one semantic answer', async () => {
     vi.useFakeTimers();
-    const grade = vi.fn((answer: { value: string }) => answer.value === '7' ? 'met' as const : 'review' as const);
+    const grade = vi.fn((answer: NumberLineGradeAnswer) => 'value' in answer && answer.value === '7' ? 'met' as const : 'review' as const);
     render(<LessonDocumentView raw={cpaFadingPilotDocument('en-US')} locale="en-US" ageBand="6-9" onBack={noop} onGradeNumberLine={grade} />);
     expect(screen.getByText('Build it')).toBeTruthy();
     expect(screen.getByRole('img', { name: 'four plus three' })).toBeTruthy();
@@ -273,7 +273,7 @@ describe('versioned pilot document renderer', () => {
 
   it('allows an M1 review to fade forward and finishes only after the abstract response', async () => {
     vi.useFakeTimers();
-    const grade = vi.fn((_answer: { value: string }, segmentId: string) => segmentId === 'cpa-abstract-01' ? 'met' as const : 'review' as const);
+    const grade = vi.fn((_answer: NumberLineGradeAnswer, segmentId: string) => segmentId === 'cpa-abstract-01' ? 'met' as const : 'review' as const);
     const onComplete = vi.fn(async () => true);
     render(<LessonDocumentView raw={cpaFadingPilotDocument('en-US')} locale="en-US" ageBand="6-9" onBack={noop}
       onGradeNumberLine={grade} onComplete={onComplete} />);
@@ -299,7 +299,7 @@ describe('versioned pilot document renderer', () => {
 
   it('renders a bounded number line, checks a semantic point, and refuses a missing grader', async () => {
     const document = numberLinePilotDocument('en-US', '6-9');
-    const onGradeNumberLine = vi.fn(({ value }: { value: string }) => value === '7' ? 'met' as const : 'review' as const);
+    const onGradeNumberLine = vi.fn((answer: NumberLineGradeAnswer) => 'value' in answer && answer.value === '7' ? 'met' as const : 'review' as const);
     const { rerender } = render(<LessonDocumentView raw={document} locale="en-US" ageBand="6-9" onBack={noop} onGradeNumberLine={onGradeNumberLine} />);
     expect(screen.getByRole('slider')).toBeTruthy();
     fireEvent.change(screen.getByRole('slider'), { target: { value: '7' } });

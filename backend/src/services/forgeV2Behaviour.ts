@@ -142,6 +142,88 @@ function money(denominations: Json[], limit = MAX_STATES): Json[] {
   return product(lists, limit).map((counts) => ({ counts: Object.fromEntries(denominations.map((d, index) => [String(d.value_minor), counts[index]])) }));
 }
 
+/*
+ * M2 and M3 (GAP-FIX-R5; Appendix P M2, M3, Parts 4.6 and 7.2): the spaces
+ * below compute what should be met from the payload and rubric alone (PAE in
+ * whole basis points, order by strict pairwise comparison, fractions as snap
+ * units), independently of the scorer they check.
+ */
+const within = (value: number, target: number, span: number, share: number | undefined) =>
+  Math.abs(value - target) * 10_000 <= Math.round((share ?? 0) * 10_000) * span;
+
+function wholeLineSpace(p: Json, rubric: Json): Space {
+  const span = p.maximum - p.minimum;
+  const grid = range(p.minimum, p.maximum, p.step);
+  const invalidValues = [String(p.maximum + p.step), '-1', ...(p.step > 1 ? [String(p.minimum + 1)] : []), '7.0', '3/4'];
+  if (!p.items) {
+    return { inRange: grid.map((value) => ({ value: String(value) })), invalid: invalidValues.map((value) => ({ value })),
+      initial: { value: String(p.initial) }, expectMet: (r) => within(Number(r.value), rubric.target, span, rubric.tolerance_share) };
+  }
+  // Ordered items: each item on a sampled grid that keeps its target and both tolerance edges, crossed with the others.
+  const ids = (p.items as Json[]).map((item) => item.id as string);
+  const reach = Math.floor(Math.round((rubric.tolerance_share ?? 0) * 10_000) * span / 10_000);
+  const perItem = ids.map((item) => {
+    const target = rubric.targets[item] as number;
+    const keep = [target, target - reach, target + reach, target - reach - p.step, target + reach + p.step].filter((value) => value >= p.minimum && value <= p.maximum);
+    return [...new Set([...sample(grid, 8), ...keep])].sort((a, b) => a - b);
+  });
+  const inRange = product(perItem).map((values) => ({ placements: Object.fromEntries(ids.map((item, index) => [item, String(values[index])])) }));
+  const at = (r: Json) => ids.map((item) => Number(r.placements[item]));
+  const targets = ids.map((item) => rubric.targets[item] as number);
+  const ordered = (values: number[]) => targets.every((a, i) => targets.every((b, j) => a >= b || values[i]! < values[j]!));
+  return { inRange,
+    invalid: [{ placements: Object.fromEntries(ids.slice(1).map((item) => [item, String(p.minimum)])) },
+      { placements: Object.fromEntries(ids.map((item) => [item, String(p.maximum + p.step)])) },
+      { placements: { ...Object.fromEntries(ids.map((item) => [item, String(p.minimum)])), 'not-an-item': String(p.minimum) } },
+      { value: String(p.minimum) }],
+    initial: { placements: Object.fromEntries(ids.map((item) => [item, String(p.initial)])) },
+    expectMet: (r) => ordered(at(r)) && at(r).every((value, index) => within(value, targets[index]!, span, rubric.tolerance_share)),
+    expectDiagnostic: (r) => ordered(at(r)) ? 'tolerance' : 'structure' };
+}
+
+function fractionLineSpace(p: Json, rubric: Json): Space {
+  const total = p.maximumWhole * p.divisions;
+  const units = range(0, total);
+  const fraction = (value: number) => `${value}/${p.divisions}`;
+  // The decimal form of a snap point, when it terminates (the learner may type it).
+  const decimal = (value: number): string | null => {
+    for (let places = 0; places <= 3; places += 1) {
+      const scaled = value * 10 ** places;
+      if (scaled % p.divisions === 0) {
+        const digits = String(scaled / p.divisions).padStart(places + 1, '0');
+        return places === 0 ? digits : `${digits.slice(0, -places)}.${digits.slice(-places)}`.replace(/\.?0+$/, '');
+      }
+    }
+    return null;
+  };
+  // The snap units of a public value ("3/4" or "0.6").
+  const unitsOf = (text: string): number => {
+    if (text.includes('/')) { const [n, d] = text.split('/').map(Number); return n! * p.divisions / d!; }
+    return Math.round(Number(text) * p.divisions);
+  };
+  const offGrid = [`${total + 1}/${p.divisions}`, '0.0001', `1/${p.divisions * 7 + 1}`, String(p.maximumWhole + 1)];
+  const pair = (p.compare_values ?? p.equivalent_values) as string[] | undefined;
+  if (!pair) {
+    const target = rubric.targetNumerator * p.divisions / rubric.targetDenominator;
+    const forms = units.flatMap((value) => [fraction(value), ...(decimal(value) !== null ? [decimal(value)!] : [])]);
+    return { inRange: forms.map((value) => ({ value })), invalid: offGrid.map((value) => ({ value })), initial: { value: fraction(p.initialUnits) },
+      expectMet: (r) => Math.abs(unitsOf(r.value) - target) <= rubric.toleranceUnits };
+  }
+  const [a, b] = pair.map(unitsOf) as [number, number];
+  const tol = rubric.toleranceUnits as number;
+  const placements = product([units, units]).map(([first, second]) => ({ first: fraction(first!), second: fraction(second!) }));
+  if (p.compare_values) {
+    const truth = a > b ? 'first' : a < b ? 'second' : 'same';
+    return { inRange: placements.flatMap((placed) => ['first', 'second', 'same'].map((choice) => ({ placements: placed, choice }))),
+      invalid: [{ placements: placements[0] }, { placements: placements[0], choice: 'bigger' }, { placements: { first: offGrid[1], second: fraction(0) }, choice: 'same' }],
+      expectMet: (r) => Math.abs(unitsOf(r.placements.first) - a) <= tol && Math.abs(unitsOf(r.placements.second) - b) <= tol && r.choice === truth };
+  }
+  return { inRange: placements.map((placed) => ({ placements: placed })),
+    invalid: [{ placements: { first: fraction(a) } }, { placements: { first: offGrid[0], second: fraction(a) } }, { value: fraction(a) }],
+    initial: { placements: { first: fraction(p.initialUnits), second: fraction(p.initialUnits) } },
+    expectMet: (r) => r.placements.first === r.placements.second && Math.abs(unitsOf(r.placements.first) - a) <= tol };
+}
+
 /** The permitted input space of one server-graded segment, from its payload bounds and (for accepted-answer rubrics) its rubric. */
 export function behaviourSpace(segment: Json, rubric: Json): Space | null {
   const p = segment.payload as Json;
@@ -166,13 +248,9 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
           invalid: [{ value: String(p.initial), hops: [] }, { value: String(p.initial + 1 + (p.hops as number[])[0]!), hops: [(p.hops as number[])[0]] }, { value: String(p.initial) }],
           expectMet: (r) => Number(r.value) === rubric.target };
       }
-      return { inRange: range(p.minimum, p.maximum, p.step).map((value) => ({ value: String(value) })),
-        invalid: [{ value: String(p.maximum + p.step) }, { value: '-1' }, ...(p.step > 1 ? [{ value: String(p.minimum + 1) }] : []), { value: '7.0' }],
-        initial: { value: String(p.initial) } };
+      return wholeLineSpace(p, rubric);
     case 'math.number-line.fraction.v2':
-      return { inRange: range(0, p.maximumWhole * p.divisions).map((units) => ({ value: `${units}/${p.divisions}` })),
-        invalid: [{ value: `${p.maximumWhole * p.divisions + 1}/${p.divisions}` }, { value: '0.5' }, { value: `1/${p.divisions * 7 + 1}` }],
-        initial: { value: `${p.initialUnits}/${p.divisions}` } };
+      return fractionLineSpace(p, rubric);
     case 'math.fraction-area.v2':
       return { inRange: range(p.minimumParts, p.maximumParts).flatMap((d) => range(0, d).map((n) => ({ n, d }))),
         invalid: [{ n: 0, d: p.maximumParts + 1 }, { n: 3, d: 2 }, { n: -1, d: p.minimumParts }],
@@ -263,8 +341,21 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
         for (const b of p.brackets as Json[]) { const upper = b.upToMinor ?? income; tax += Math.round(Math.max(0, Math.min(income, upper) - lower) * b.rateBasisPoints / 10_000); if (b.upToMinor === null) break; lower = b.upToMinor; }
         return tax;
       };
-      return { inRange: incomes.flatMap((incomeMinor) => rates.flatMap((marginalBps) => [owed(incomeMinor), owed(incomeMinor) + 1].map((tax) => ({ incomeMinor, taxMinor: String(tax), marginalBps })))),
-        invalid: [{ incomeMinor: p.maximumIncomeMinor + p.incomeStepMinor, taxMinor: '0', marginalBps: 0 }] };
+      // M20 (GAP-FIX-R5): tax owed, the marginal rate and the average rate, each right or wrong, at every sampled income.
+      const average = (income: number) => income === 0 ? 0 : Math.round(owed(income) * 10_000 / income);
+      const marginalAt = (income: number) => {
+        let lower = 0; let rate = 0;
+        for (const b of p.brackets as Json[]) { if (income > lower) rate = b.rateBasisPoints; if (b.upToMinor === null) break; lower = b.upToMinor; }
+        return rate;
+      };
+      const tolerance = rubric.average_tolerance_bps ?? 50;
+      return { inRange: incomes.flatMap((incomeMinor) => rates.flatMap((marginalBps) => [owed(incomeMinor), owed(incomeMinor) + 1].flatMap((tax) =>
+        [average(incomeMinor), Math.min(10_000, average(incomeMinor) + tolerance + 1)].map((averageBps) => ({ incomeMinor, taxMinor: String(tax), marginalBps, averageBps }))))),
+        invalid: [{ incomeMinor: p.maximumIncomeMinor + p.incomeStepMinor, taxMinor: '0', marginalBps: 0, averageBps: 0 },
+          { incomeMinor: rubric.income_minor, taxMinor: String(owed(rubric.income_minor)), marginalBps: marginalAt(rubric.income_minor) },
+          { incomeMinor: rubric.income_minor, taxMinor: '0', marginalBps: 0, averageBps: 10_001 }],
+        expectMet: (r) => r.incomeMinor === rubric.income_minor && Number(r.taxMinor) === owed(r.incomeMinor) && r.marginalBps === marginalAt(r.incomeMinor)
+          && Math.abs(r.averageBps - average(r.incomeMinor)) <= tolerance };
     }
     case 'logic.savings-rule.v2':
       return { inRange: product<string | number>([['>=', '>', '<=', '<'], range(0, p.goal * 2), ['and', 'or', 'none']]).map(([comparator, threshold, link]) => ({ comparator, threshold, link })),

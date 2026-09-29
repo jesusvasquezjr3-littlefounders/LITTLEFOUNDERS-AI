@@ -630,10 +630,10 @@
         "maximum_age": 9
       },
       "knowledge_component_ids": [
-        "kc-count-to-twenty"
+        "kc-number-magnitude"
       ],
       "adventure_scene_id": "diorama-a",
-      "title": "Find the coins",
+      "title": "Coins on the line",
       "required_capabilities": [
         "visual.number-line.v1",
         "operation.place-point.v1"
@@ -643,22 +643,60 @@
           "id": "number-line-01",
           "type": "math.number-line.whole.v2",
           "grading": "server",
-          "prompt": "Liruf has 12 coins. Mark 12 on the line.",
+          "prompt": "Liruf has 37 coins. Mark 37 on the line.",
           "visual": {
             "type": "number-line"
           },
           "payload": {
             "minimum": 0,
-            "maximum": 20,
+            "maximum": 100,
             "step": 1,
             "initial": 0
+          }
+        },
+        {
+          "id": "number-line-02",
+          "type": "math.number-line.whole.v2",
+          "grading": "server",
+          "prompt": "Dina has 20 coins, Zara 45, Liruf 80. Place each one.",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+            "initial": 0,
+            "items": [
+              {
+                "id": "coins-dina",
+                "label": "Dina"
+              },
+              {
+                "id": "coins-zara",
+                "label": "Zara"
+              },
+              {
+                "id": "coins-liruf",
+                "label": "Liruf"
+              }
+            ]
           }
         }
       ]
     },
     "answer_keys": {
       "number-line-01": {
-        "target": 12
+        "target": 37,
+        "tolerance_share": 0.05
+      },
+      "number-line-02": {
+        "targets": {
+          "coins-dina": 20,
+          "coins-zara": 45,
+          "coins-liruf": 80
+        },
+        "tolerance_share": 0.05
       }
     }
   },
@@ -681,10 +719,10 @@
         "maximum_age": 9
       },
       "knowledge_component_ids": [
-        "kc-count-to-twenty"
+        "kc-number-magnitude"
       ],
       "adventure_scene_id": "diorama-a",
-      "title": "Encuentra las monedas",
+      "title": "Monedas en la recta",
       "required_capabilities": [
         "visual.number-line.v1",
         "operation.place-point.v1"
@@ -694,22 +732,60 @@
           "id": "number-line-01",
           "type": "math.number-line.whole.v2",
           "grading": "server",
-          "prompt": "Liruf tiene 12 monedas. Marca 12 en la recta.",
+          "prompt": "Liruf tiene 37 monedas. Marca 37 en la recta.",
           "visual": {
             "type": "number-line"
           },
           "payload": {
             "minimum": 0,
-            "maximum": 20,
+            "maximum": 100,
             "step": 1,
             "initial": 0
+          }
+        },
+        {
+          "id": "number-line-02",
+          "type": "math.number-line.whole.v2",
+          "grading": "server",
+          "prompt": "Dina tiene 20 monedas, Zara 45, Liruf 80. Coloca a cada uno.",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+            "initial": 0,
+            "items": [
+              {
+                "id": "coins-dina",
+                "label": "Dina"
+              },
+              {
+                "id": "coins-zara",
+                "label": "Zara"
+              },
+              {
+                "id": "coins-liruf",
+                "label": "Liruf"
+              }
+            ]
           }
         }
       ]
     },
     "answer_keys": {
       "number-line-01": {
-        "target": 12
+        "target": 37,
+        "tolerance_share": 0.05
+      },
+      "number-line-02": {
+        "targets": {
+          "coins-dina": 20,
+          "coins-zara": 45,
+          "coins-liruf": 80
+        },
+        "tolerance_share": 0.05
       }
     }
   },
@@ -732,10 +808,10 @@
         "maximum_age": 9
       },
       "knowledge_component_ids": [
-        "kc-count-to-twenty"
+        "kc-number-magnitude"
       ],
       "adventure_scene_id": "diorama-a",
-      "title": "Encontre as moedas",
+      "title": "Moedas na reta",
       "required_capabilities": [
         "visual.number-line.v1",
         "operation.place-point.v1"
@@ -745,22 +821,60 @@
           "id": "number-line-01",
           "type": "math.number-line.whole.v2",
           "grading": "server",
-          "prompt": "Liruf tem 12 moedas. Marque 12 na reta.",
+          "prompt": "Liruf tem 37 moedas. Marque 37 na reta.",
           "visual": {
             "type": "number-line"
           },
           "payload": {
             "minimum": 0,
-            "maximum": 20,
+            "maximum": 100,
             "step": 1,
             "initial": 0
+          }
+        },
+        {
+          "id": "number-line-02",
+          "type": "math.number-line.whole.v2",
+          "grading": "server",
+          "prompt": "Dina tem 20 moedas, Zara 45, Liruf 80. Coloque cada um.",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "minimum": 0,
+            "maximum": 100,
+            "step": 1,
+            "initial": 0,
+            "items": [
+              {
+                "id": "coins-dina",
+                "label": "Dina"
+              },
+              {
+                "id": "coins-zara",
+                "label": "Zara"
+              },
+              {
+                "id": "coins-liruf",
+                "label": "Liruf"
+              }
+            ]
           }
         }
       ]
     },
     "answer_keys": {
       "number-line-01": {
-        "target": 12
+        "target": 37,
+        "tolerance_share": 0.05
+      },
+      "number-line-02": {
+        "targets": {
+          "coins-dina": 20,
+          "coins-zara": 45,
+          "coins-liruf": 80
+        },
+        "tolerance_share": 0.05
       }
     }
   },
@@ -808,6 +922,44 @@
             "initialUnits": 0,
             "spokenText": "three quarters"
           }
+        },
+        {
+          "id": "fraction-line-02",
+          "type": "math.number-line.fraction.v2",
+          "grading": "server",
+          "prompt": "Place 2/5 and 0.5. Which is larger?",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "maximumWhole": 1,
+            "divisions": 10,
+            "initialUnits": 0,
+            "compare_values": [
+              "2/5",
+              "0.5"
+            ],
+            "spokenText": "two fifths and zero point five"
+          }
+        },
+        {
+          "id": "fraction-line-03",
+          "type": "math.number-line.fraction.v2",
+          "grading": "server",
+          "prompt": "Place 3/5 and 0.6. Do they meet?",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "maximumWhole": 1,
+            "divisions": 10,
+            "initialUnits": 0,
+            "equivalent_values": [
+              "3/5",
+              "0.6"
+            ],
+            "spokenText": "three fifths and zero point six"
+          }
         }
       ]
     },
@@ -815,6 +967,13 @@
       "fraction-line-01": {
         "targetNumerator": 3,
         "targetDenominator": 4,
+        "toleranceUnits": 0
+      },
+      "fraction-line-02": {
+        "choice": "second",
+        "toleranceUnits": 0
+      },
+      "fraction-line-03": {
         "toleranceUnits": 0
       }
     }
@@ -863,6 +1022,44 @@
             "initialUnits": 0,
             "spokenText": "tres cuartos"
           }
+        },
+        {
+          "id": "fraction-line-02",
+          "type": "math.number-line.fraction.v2",
+          "grading": "server",
+          "prompt": "Ubica 2/5 y 0.5. ¿Cuál es mayor?",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "maximumWhole": 1,
+            "divisions": 10,
+            "initialUnits": 0,
+            "compare_values": [
+              "2/5",
+              "0.5"
+            ],
+            "spokenText": "dos quintos y cero punto cinco"
+          }
+        },
+        {
+          "id": "fraction-line-03",
+          "type": "math.number-line.fraction.v2",
+          "grading": "server",
+          "prompt": "Ubica 3/5 y 0.6. ¿Se juntan?",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "maximumWhole": 1,
+            "divisions": 10,
+            "initialUnits": 0,
+            "equivalent_values": [
+              "3/5",
+              "0.6"
+            ],
+            "spokenText": "tres quintos y cero punto seis"
+          }
         }
       ]
     },
@@ -870,6 +1067,13 @@
       "fraction-line-01": {
         "targetNumerator": 3,
         "targetDenominator": 4,
+        "toleranceUnits": 0
+      },
+      "fraction-line-02": {
+        "choice": "second",
+        "toleranceUnits": 0
+      },
+      "fraction-line-03": {
         "toleranceUnits": 0
       }
     }
@@ -918,6 +1122,44 @@
             "initialUnits": 0,
             "spokenText": "três quartos"
           }
+        },
+        {
+          "id": "fraction-line-02",
+          "type": "math.number-line.fraction.v2",
+          "grading": "server",
+          "prompt": "Marque 2/5 e 0,5. Qual é maior?",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "maximumWhole": 1,
+            "divisions": 10,
+            "initialUnits": 0,
+            "compare_values": [
+              "2/5",
+              "0.5"
+            ],
+            "spokenText": "dois quintos e zero vírgula cinco"
+          }
+        },
+        {
+          "id": "fraction-line-03",
+          "type": "math.number-line.fraction.v2",
+          "grading": "server",
+          "prompt": "Marque 3/5 e 0,6. Eles se encontram?",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "maximumWhole": 1,
+            "divisions": 10,
+            "initialUnits": 0,
+            "equivalent_values": [
+              "3/5",
+              "0.6"
+            ],
+            "spokenText": "três quintos e zero vírgula seis"
+          }
         }
       ]
     },
@@ -925,6 +1167,13 @@
       "fraction-line-01": {
         "targetNumerator": 3,
         "targetDenominator": 4,
+        "toleranceUnits": 0
+      },
+      "fraction-line-02": {
+        "choice": "second",
+        "toleranceUnits": 0
+      },
+      "fraction-line-03": {
         "toleranceUnits": 0
       }
     }
@@ -7977,7 +8226,7 @@
           "id": "adult-tax-01",
           "type": "visual.tax-bracket.v2",
           "grading": "server",
-          "prompt": "Move the income to 45000 coins. What is the tax and the top rate?",
+          "prompt": "Move the income to 45000 coins. Find the tax, the top rate and the average rate.",
           "visual": {
             "type": "stacked-bar"
           },
@@ -8126,7 +8375,8 @@
     },
     "answer_keys": {
       "adult-tax-01": {
-        "income_minor": 45000
+        "income_minor": 45000,
+        "average_tolerance_bps": 50
       },
       "adult-growth-01": {
         "tolerance_minor": 5000
@@ -8203,7 +8453,7 @@
           "id": "adult-tax-01",
           "type": "visual.tax-bracket.v2",
           "grading": "server",
-          "prompt": "Mueve el ingreso a 45000 monedas. ¿Cuánto impuesto y qué tasa más alta?",
+          "prompt": "Mueve el ingreso a 45000 monedas. Halla el impuesto, la tasa más alta y la tasa promedio.",
           "visual": {
             "type": "stacked-bar"
           },
@@ -8352,7 +8602,8 @@
     },
     "answer_keys": {
       "adult-tax-01": {
-        "income_minor": 45000
+        "income_minor": 45000,
+        "average_tolerance_bps": 50
       },
       "adult-growth-01": {
         "tolerance_minor": 5000
@@ -8429,7 +8680,7 @@
           "id": "adult-tax-01",
           "type": "visual.tax-bracket.v2",
           "grading": "server",
-          "prompt": "Mova a renda para 45000 moedas. Qual o imposto e a maior alíquota?",
+          "prompt": "Mova a renda para 45000 moedas. Ache o imposto, a maior alíquota e a alíquota média.",
           "visual": {
             "type": "stacked-bar"
           },
@@ -8578,7 +8829,8 @@
     },
     "answer_keys": {
       "adult-tax-01": {
-        "income_minor": 45000
+        "income_minor": 45000,
+        "average_tolerance_bps": 50
       },
       "adult-growth-01": {
         "tolerance_minor": 5000

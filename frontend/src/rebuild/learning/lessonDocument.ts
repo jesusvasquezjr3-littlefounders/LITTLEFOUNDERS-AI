@@ -3,6 +3,7 @@ import { growthComparison } from './growthComparisonModel.generated';
 import { barModelPayload, longArithmeticSchema, mathNotation, NOTATION_CAPABILITY, placeValuePayload, schemaDiagramPayload, v2AgeScopeProblem, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras } from './v2SegmentFamilies.generated';
 import { conceptAllowed, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptType } from './v2ConceptBoards.generated';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './charts/chartModel.generated';
+import { lineUnits } from './v2VisualScorer.generated';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/);
 const locale = z.enum(['en-US', 'es-MX', 'pt-BR']);
@@ -40,6 +41,8 @@ const eligibility = z.object({ minimum_age: z.number().int().min(0).max(119), ma
   .refine((value) => value.minimum_age <= value.maximum_age, 'Invalid age eligibility');
 const positiveInteger = z.number().int().positive().safe();
 const nonnegativeInteger = z.number().int().nonnegative().safe();
+/** M3 (GAP-FIX-R5): mirrors Core's `lineNumber`, a fraction or decimal a fraction line shows. */
+const lineNumber = z.string().regex(/^((0|[1-9]\d{0,2})\/([1-9]\d{0,2})|(0|[1-9]\d{0,2})(\.\d{1,6})?)$/);
 
 const segmentBase = { id, prompt: z.string().trim().min(1).max(500), ...v2SegmentExtras };
 /** Appendix P Parts 1/4.2/7: these visuals may be server-graded or explored ungraded (Core's `optionalServer`). */
@@ -68,12 +71,14 @@ const numberLineSegment = z.object({
   type: z.literal('math.number-line.whole.v2'),
   grading: z.literal('server'),
   visual: z.object({ type: z.literal('number-line') }).strict(),
-  // M2 (GAP-FIX-R2): mirrors Core's optional count-on hop sizes.
+  // M2 (GAP-FIX-R2): mirrors Core's optional count-on hop sizes; (GAP-FIX-R5) and its ordered labelled items.
   payload: z.object({ minimum: nonnegativeInteger, maximum: positiveInteger, step: positiveInteger, initial: nonnegativeInteger,
-    hops: z.array(positiveInteger).min(1).max(3).optional() }).strict()
+    hops: z.array(positiveInteger).min(1).max(3).optional(),
+    items: z.array(z.object({ id, label: z.string().trim().min(1).max(40) }).strict()).min(2).max(4).optional() }).strict()
     .refine((value) => value.maximum > value.minimum && (value.maximum - value.minimum) % value.step === 0
       && value.initial >= value.minimum && value.initial <= value.maximum && (value.initial - value.minimum) % value.step === 0
-      && (value.hops === undefined || (new Set(value.hops).size === value.hops.length && value.hops.every((hop) => hop % value.step === 0 && hop < value.maximum - value.minimum))),
+      && (value.hops === undefined || (new Set(value.hops).size === value.hops.length && value.hops.every((hop) => hop % value.step === 0 && hop < value.maximum - value.minimum)))
+      && (value.items === undefined || (value.hops === undefined && new Set(value.items.map((item) => item.id)).size === value.items.length)),
     'Invalid number-line range'),
 }).strict();
 
@@ -82,14 +87,26 @@ const fractionNumberLineSegment = z.object({
   type: z.literal('math.number-line.fraction.v2'),
   grading: z.literal('server'),
   visual: z.object({ type: z.literal('number-line') }).strict(),
+  // M3 (GAP-FIX-R5): mirrors Core's comparison and equivalents pairs.
   payload: z.object({
     maximumWhole: z.union([z.literal(1), z.literal(2)]), divisions: positiveInteger.max(12), initialUnits: nonnegativeInteger,
-    spokenText: z.string().trim().min(1).max(120),
+    spokenText: z.string().trim().min(1).max(120), compare_values: z.tuple([lineNumber, lineNumber]).optional(),
+    equivalent_values: z.tuple([lineNumber, lineNumber]).optional(),
   }).strict().refine(
-    (value) => value.divisions >= 2 && value.initialUnits <= value.maximumWhole * value.divisions,
+    (value) => value.divisions >= 2 && value.initialUnits <= value.maximumWhole * value.divisions && fractionLinePairOk(value),
     'Invalid fraction number-line range',
   ),
 }).strict();
+
+/** Mirrors Core: both numbers on the snap grid and written differently; equivalents name one number. */
+function fractionLinePairOk(v: { maximumWhole: number; divisions: number; compare_values?: [string, string]; equivalent_values?: [string, string] }): boolean {
+  if (v.compare_values && v.equivalent_values) return false;
+  const pair = v.compare_values ?? v.equivalent_values;
+  if (!pair) return true;
+  const a = lineUnits(pair[0], v.maximumWhole, v.divisions);
+  const b = lineUnits(pair[1], v.maximumWhole, v.divisions);
+  return a !== null && b !== null && pair[0] !== pair[1] && (v.compare_values !== undefined || a === b);
+}
 
 const fractionAreaSegment = z.object({
   ...segmentBase,

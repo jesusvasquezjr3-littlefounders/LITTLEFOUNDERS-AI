@@ -1,0 +1,62 @@
+{
+  "expected_gate": 1,
+  "note": "Appendix P M2: whole-number lines are bounded 0-10, 0-100 or 0-1000 (Part 4.9 \"bounded number lines only\"); the old 0-20 counting line cannot ship",
+  "plan": {
+    "plan_version": 1,
+    "course_id": "financial-education",
+    "pathway_id": "financial-young",
+    "chapter_id": "counting-coins",
+    "lesson_id": "v2-red-team-scope-number-line-unbounded",
+    "age_band": "6-9",
+    "eligibility": {
+      "minimum_age": 6,
+      "maximum_age": 9
+    },
+    "knowledge_component_ids": [
+      "kc-count-to-twenty"
+    ],
+    "adventure_scene_id": "diorama-a",
+    "brief": "Liruf cuenta cuantas monedas lleva y las ubica en una recta.",
+    "title": {
+      "en-US": "Find the coins",
+      "es-MX": "Encuentra las monedas",
+      "pt-BR": "Encontre as moedas"
+    },
+    "new_concepts": [
+      "kc-count-to-twenty"
+    ],
+    "regional": {
+      "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+    },
+    "segments": [
+      {
+        "id": "number-line-01",
+        "type": "math.number-line.whole.v2",
+        "grading": "server",
+        "visual": {
+          "type": "number-line"
+        },
+        "payload": {
+          "minimum": 0,
+          "maximum": 20,
+          "step": 1,
+          "initial": 0
+        },
+        "copy": {
+          "en-US": {
+            "prompt": "Liruf has 12 coins. Mark 12 on the line."
+          },
+          "es-MX": {
+            "prompt": "Liruf tiene 12 monedas. Marca 12 en la recta."
+          },
+          "pt-BR": {
+            "prompt": "Liruf tem 12 moedas. Marque 12 na reta."
+          }
+        },
+        "rubric": {
+          "target": 12
+        }
+      }
+    ]
+  }
+}
