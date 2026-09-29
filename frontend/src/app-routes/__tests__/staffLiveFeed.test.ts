@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { createLiveFeed } from '../staffLiveFeed';
+import { staffViewer } from '@/rebuild/staff/console/staffConsoleApi';
+
+const CONTENT = staffViewer(['admin'], ['manage_content']);
 
 /*
  * REGRESSION COVER FOR A LATCHING REALTIME FAILURE, carried over from the
@@ -52,12 +55,24 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 describe('the Generation page\'s Realtime feed', () => {
   it('is absent where the public Supabase variables are not deployed (Core polling alone)', () => {
-    expect(createLiveFeed(() => null, async () => 'token')).toBeUndefined();
+    expect(createLiveFeed(() => null, async () => 'token', CONTENT)).toBeUndefined();
+  });
+
+  // G.1 (F4-staff-ops): the table's RLS admits only a superadmin or an admin
+  // holding manage_content; any other viewer never attempts the subscription.
+  it('is never attempted for a viewer without manage_content', () => {
+    for (const viewer of [staffViewer(['admin'], []), staffViewer(['admin'], ['view_analytics', 'manage_support', 'manage_users']), staffViewer(['parent'], ['manage_content'])]) {
+      const getClient = vi.fn(() => fakeClient().client);
+      expect(createLiveFeed(getClient, async () => 'token', viewer)).toBeUndefined();
+      expect(getClient).not.toHaveBeenCalled();
+    }
+    expect(createLiveFeed(() => fakeClient().client, async () => 'token', staffViewer(['superadmin'], []))).toBeDefined();
+    expect(createLiveFeed(() => fakeClient().client, async () => 'token', CONTENT)).toBeDefined();
   });
 
   it('reconnects across remounts instead of latching on a reused topic, and maps pushed rows', async () => {
     const { client, removed, channels } = fakeClient();
-    const feed = createLiveFeed(() => client, async () => 'token')!;
+    const feed = createLiveFeed(() => client, async () => 'token', CONTENT)!;
     const statuses: string[] = [];
     const runs: string[] = [];
     const removedRuns: string[] = [];
@@ -83,7 +98,7 @@ describe('the Generation page\'s Realtime feed', () => {
     const { client } = fakeClient();
     client.realtime.setAuth.mockRejectedValueOnce(new Error('realtime auth refused'));
     const statuses: string[] = [];
-    const stop = createLiveFeed(() => client, async () => 'token')!.subscribe({ onRun: () => {}, onRemove: () => {}, onStatus: (status) => statuses.push(status) });
+    const stop = createLiveFeed(() => client, async () => 'token', CONTENT)!.subscribe({ onRun: () => {}, onRemove: () => {}, onStatus: (status) => statuses.push(status) });
     await flush();
     expect(statuses).toEqual(['failed']);
     stop();

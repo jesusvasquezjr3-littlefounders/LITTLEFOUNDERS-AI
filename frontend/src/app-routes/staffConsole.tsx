@@ -149,9 +149,9 @@ export function StaffContentRoute() {
 
 export function StaffGenerationRoute() {
   const { getToken } = useAuth();
-  const { api } = useStaffConsole();
+  const { api, viewer } = useStaffConsole();
   const [params] = useSearchParams();
-  const liveFeed = useMemo(() => createLiveFeed(getSupabaseClient, getToken), [getToken]);
+  const liveFeed = useMemo(() => createLiveFeed(getSupabaseClient, getToken, viewer), [getToken, viewer]);
   return <StaffGeneration api={api} liveFeed={liveFeed} initialView={generationView(params.get('view'))} />;
 }
 
