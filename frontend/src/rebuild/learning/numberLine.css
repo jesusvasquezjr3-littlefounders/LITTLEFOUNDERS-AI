@@ -20,6 +20,6 @@
 /* M2 ordered items (GAP-FIX-R5): one marker per labelled item; the item being moved is the strong one. */
 .lf-number-line-marker--item { background: var(--sky-strong); }
 .lf-number-line-marker--item[data-active="true"] { z-index: 1; background: var(--primary-strong); }
-.lf-number-line-marker-label { position: absolute; inset-block-end: calc(100% + 2px); inset-inline-start: 50%; transform: translateX(-50%); color: var(--content); font-size: .75rem; font-weight: 800; white-space: nowrap; }
+.lf-number-line-marker-label { position: absolute; inset-block-end: calc(100% + 2px); inset-inline-start: 50%; transform: translateX(-50%); color: var(--content); font: var(--type-caption); white-space: nowrap; }
 /* M3 (GAP-FIX-R5): the second point of a comparison or an equivalents pair. */
 .lf-number-line-marker--second { background: var(--sky-strong); }

@@ -18,7 +18,7 @@
 // Mentor character's presence and voice, the reward framing and the social
 // mechanics allowed. It never changes tokens, components or shapes.
 
-export const LEARNER_REGISTER_POLICY_VERSION = '2026-09-29.1';
+export const LEARNER_REGISTER_POLICY_VERSION = '2026-09-24.1';
 
 export type LearnerRegister = 'young' | 'transition' | 'teen' | 'adult';
 export type RegisterCopyBand = '6-9' | '10-12' | '13-17' | 'adult';

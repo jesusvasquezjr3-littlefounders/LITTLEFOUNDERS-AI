@@ -61,6 +61,9 @@
     "contentGap": "More lessons for your age are coming.",
     "building": "Voices and pictures coming soon.",
     "moreTitle": "More to open",
+    "pickTitle": "Or pick this one",
+    "exploreTitle": "Explore further",
+    "exploreNote": "Optional. It never changes your progress.",
     "showMore": "Show more",
     "showLess": "Show less",
     "waiting": "{n} more open as you learn.",
@@ -69,7 +72,8 @@
       "review": "Review",
       "review-due": "Time to review",
       "bridge": "Extra help",
-      "known": "You know this"
+      "known": "You know this",
+      "enrichment": "Go deeper"
     },
     "extra": "Extra",
     "skillsTitle": "Skills on this path",
@@ -295,6 +299,9 @@
     "showTable": "Show as table",
     "showChart": "Show as chart",
     "dragHint": "Drag, or tap a card and then its place.",
-    "mentorHeading": "Your Mentor"
+    "mentorHeading": "Your Mentor",
+    "approachPrompt": "Choose how to practice.",
+    "approachStart": "Start",
+    "approachFailed": "Could not save your choice. Try again."
   }
 }

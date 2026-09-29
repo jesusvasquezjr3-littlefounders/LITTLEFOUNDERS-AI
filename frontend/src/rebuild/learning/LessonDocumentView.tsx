@@ -33,6 +33,8 @@ import { V2_CONCEPT_TYPES } from './v2ConceptBoards.generated';
 import { RuleBuilderBoard, UnitPriceBoard } from './buildBoards';
 import { ChartBoard, CoinTrayBoard, EulerBoard, FlowchartBoard, MentorEpisodeBoard, MentorTurnBoard, MessageListBoard, RuleCardsBoard, SortBinsBoard, StoryChoiceBoard } from './familyBoards';
 import { LessonPlayerProvider, playerCopy, type SegmentGrade } from './segmentKit';
+import { ApproachChoiceBoard } from './ApproachChoiceBoard';
+import { v2ApproachOf, v2SegmentsForApproach } from './v2SegmentFamilies.generated';
 
 export type CheckResult = 'invalid' | 'incomplete' | 'review' | 'met';
 export type OnGrade = (answer: Allocation, segmentId: string, document: LessonClientDocument) => CheckResult | Promise<CheckResult>;
@@ -49,6 +51,8 @@ export type OnGradeReasoning = (answer: { choice: string; reason: string }, segm
 export type OnGradeAny = (answer: unknown, segmentId: string, document: LessonClientDocument) => SegmentGrade | Promise<SegmentGrade>;
 /** GAP-FIX-R1 (OD-17): Core's view receipt for a non-scored step; false keeps the learner on the step. */
 export type OnView = (segmentId: string, document: LessonClientDocument) => Promise<boolean>;
+/** GAP-FIX-R5 (B.24): pin the learner's approach with Core; the pinned id, or null when it could not be saved. */
+export type OnChooseApproach = (approachId: string, document: LessonClientDocument) => Promise<string | null>;
 const copy = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 
 /** The kinds introduced for the first release: each needs the generic grader when graded. */
@@ -109,7 +113,7 @@ function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumbe
  * (Core validates them). A segment this build cannot render, or a document it
  * cannot parse because it is newer, is the B.4 update-required screen.
  */
-export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onHelpUsed, onComplete, metSegmentIds = [], attemptedSegmentIds = [], viewedSegmentIds = [], mentorStage = null, adventureTheme = null, theme = 'light', previewSequence = false, narrationAudio }: {
+export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onHelpUsed, onComplete, metSegmentIds = [], attemptedSegmentIds = [], viewedSegmentIds = [], mentorStage = null, adventureTheme = null, theme = 'light', previewSequence = false, narrationAudio, approachId = null, onChooseApproach }: {
   raw: unknown; locale: Locale; ageBand: AgeBand; onBack: () => void; onGrade?: OnGrade; onGradeNumberLine?: OnGradeNumberLine; onGradeFractionArea?: OnGradeFractionArea; onGradeBarModel?: OnGradeBarModel; onGradeSchemaDiagram?: OnGradeSchemaDiagram; onGradeWorkedExample?: OnGradeWorkedExample; onGradeReasoning?: OnGradeReasoning;
   onGradeAny?: OnGradeAny; onView?: OnView; onHelpUsed?: (segmentId: string, steps: number) => void;
   metSegmentIds?: string[];
@@ -119,6 +123,9 @@ export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGr
   mentorStage?: LessonMentorStage | null; adventureTheme?: AdventureTheme | null; theme?: 'light' | 'dark'; previewSequence?: boolean;
   /** B.18 (GAP-FIX-R3): Core's resolved narration, segment id -> public URL. */
   narrationAudio?: Readonly<Record<string, string>>;
+  /** GAP-FIX-R5 (B.24): the approach Core pinned on this run (null before choosing), and how to pin one. */
+  approachId?: string | null;
+  onChooseApproach?: OnChooseApproach;
 }) {
   const loaded = loadLessonClientDocument(raw);
   if (loaded.status !== 'ready') return loaded.status === 'upgrade-required' ? <UpdateRequired locale={locale} onBack={onBack} /> : unavailable(locale, onBack, 'invalid');
@@ -131,12 +138,12 @@ export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGr
       <ValidatedLessonView key={lessonVersionKey(loaded.document)} document={loaded.document} onBack={onBack} onGrade={onGrade}
         onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning}
         onGradeAny={onGradeAny} onView={onView} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} viewedSegmentIds={viewedSegmentIds}
-        mentorStage={mentorStage} theme={theme} previewSequence={previewSequence} />
+        mentorStage={mentorStage} theme={theme} previewSequence={previewSequence} approachId={approachId} onChooseApproach={onChooseApproach} />
     </LessonPlayerProvider>
   </LessonStageProvider>;
 }
 
-function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onComplete, metSegmentIds, attemptedSegmentIds, viewedSegmentIds, mentorStage, theme, previewSequence }: {
+function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onComplete, metSegmentIds, attemptedSegmentIds, viewedSegmentIds, mentorStage, theme, previewSequence, approachId, onChooseApproach }: {
   document: LessonClientDocument; onBack: () => void; onGrade?: OnGrade; onGradeNumberLine?: OnGradeNumberLine; onGradeFractionArea?: OnGradeFractionArea; onGradeBarModel?: OnGradeBarModel; onGradeSchemaDiagram?: OnGradeSchemaDiagram; onGradeWorkedExample?: OnGradeWorkedExample; onGradeReasoning?: OnGradeReasoning;
   onGradeAny?: OnGradeAny; onView?: OnView;
   metSegmentIds: string[];
@@ -144,8 +151,21 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
   viewedSegmentIds: string[];
   onComplete?: () => Promise<boolean>;
   mentorStage: LessonMentorStage | null; theme: 'light' | 'dark'; previewSequence: boolean;
+  approachId: string | null; onChooseApproach?: OnChooseApproach;
 }) {
   const [viewFailed, setViewFailed] = useState(false);
+  /*
+   * GAP-FIX-R5 (B.24, Block B autonomy): a lesson with approaches plays the
+   * steps before its chains, then asks which strategy to practise, then plays
+   * only the chosen chain and the steps after it. Before the choice the played
+   * list stops at the chains; the total counts the suggested chain.
+   */
+  const approaches = document.approaches;
+  const [chosen, setChosen] = useState<string | null>(approaches && approachId && approaches.options.some((option) => option.id === approachId) ? approachId : null);
+  const chainStart = approaches ? document.segments.findIndex((item) => v2ApproachOf(approaches, item.id) !== null) : -1;
+  const segments = !approaches ? document.segments
+    : chosen ? v2SegmentsForApproach(document.segments, approaches, chosen) : document.segments.slice(0, Math.max(0, chainStart));
+  const total = approaches && !chosen ? v2SegmentsForApproach(document.segments, approaches, approaches.options[0]!.id).length : segments.length;
   const [index, setIndex] = useState(() => {
     const restored = new Set([...metSegmentIds, ...viewedSegmentIds]);
     // M1 reviews are valid experiences for the next representation, but never
@@ -158,25 +178,36 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
         .map((stage) => stage.segment_id));
       for (const id of attemptedSegmentIds) if (!finalStageIds.has(id)) restored.add(id);
     }
-    const firstPending = document.segments.findIndex((item) => !restored.has(item.id));
-    return firstPending === -1 ? document.segments.length : firstPending;
+    const firstPending = segments.findIndex((item) => !restored.has(item.id));
+    return firstPending === -1 ? segments.length : firstPending;
   });
   useLayoutEffect(() => { try { window.scrollTo(0, 0); } catch { /* jsdom has no scroll implementation */ } }, [index]);
-  const segment = document.segments[index];
+  const segment = segments[index];
   // Every multi-step document, and every authenticated one, advances through the same sequence control.
   const sequence = (document.segments.length > 1 || !!onComplete || previewSequence)
-    ? { index, total: document.segments.length, onAdvance: () => {
+    ? { index, total, onAdvance: () => {
       void (async () => {
         // A non-scored step is recorded with Core before the learner moves on (version-pinned completion).
         if (segment && segment.grading === 'none' && onView && !(await onView(segment.id, document))) { setViewFailed(true); return; }
         setViewFailed(false);
-        setIndex((current) => Math.min(current + 1, document.segments.length));
+        setIndex((current) => Math.min(current + 1, segments.length));
       })();
     } } : undefined;
   // 04 §4.1: one exercise replaces another with the exercise slide; the first one is simply there.
-  return <SequenceTransition step={segment ? `${lessonVersionKey(document)}:${segment.id}` : `${lessonVersionKey(document)}:end`}>{board()}</SequenceTransition>;
+  const choosing = !segment && !!approaches && !chosen;
+  return <SequenceTransition step={segment ? `${lessonVersionKey(document)}:${segment.id}` : `${lessonVersionKey(document)}:${choosing ? 'approach' : 'end'}`}>{board()}</SequenceTransition>;
 
   function board(): ReactNode {
+  if (choosing && approaches) {
+    // A preview has no run to pin: the pick stays local.
+    const choose = async (id: string) => {
+      const pinned = onChooseApproach ? await onChooseApproach(id, document) : id;
+      if (!pinned || !approaches.options.some((option) => option.id === pinned)) return false;
+      setChosen(pinned);
+      return true;
+    };
+    return <ApproachChoiceBoard document={{ ...document, approaches }} onBack={onBack} sequence={sequence} onChoose={choose} />;
+  }
   if (!segment) return <V2SequenceEnd locale={document.locale} onBack={onBack} onComplete={onComplete} />;
   const key = `${lessonVersionKey(document)}:${segment.id}`;
   const view = renderSegment(segment, key);

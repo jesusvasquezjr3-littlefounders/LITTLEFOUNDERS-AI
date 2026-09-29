@@ -383,6 +383,38 @@ describe('LessonRoute', () => {
     })));
   });
 
+  it('GAP-FIX-R5 (B.24): pins the learner’s approach with Core before its chain and grades only that chain', async () => {
+    const story = (id: string, scene: string, save: string) => ({ id, type: 'story.branch.v2', grading: 'server', prompt: 'What do you do?', visual: { type: 'story-scene' },
+      payload: { scene, options: [{ id: 'opt-save', label: save }, { id: 'opt-spend', label: 'Spend all now' }] } });
+    const document = {
+      schema_version: 2, course_id: 'financial-education', pathway_id: 'financial-10-12', chapter_id: 'saving-basics', lesson_id: 'approach-lesson',
+      version_id: 'approach-rev-1', locale: 'en-US', age_band: '10-12', eligibility: { minimum_age: 10, maximum_age: 12 }, knowledge_component_ids: ['kc-saving-goal'],
+      adventure_scene_id: 'diorama-a', title: 'Plan your saving', required_capabilities: ['visual.story-scene.v1', 'operation.choose-option.v1'],
+      segments: [story('story-a', 'List what you need first.', 'List it'), story('story-b', 'Split coins into jars.', 'Fill the jars')],
+      approaches: { options: [{ id: 'approach-list', label: 'Make a list', segment_ids: ['story-a'] }, { id: 'approach-jars', label: 'Use jars', segment_ids: ['story-b'] }] },
+    };
+    const runId = '99999999-9999-4999-8999-999999999999';
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: { run_id: runId, version_id: 'approach-rev-1', expires_at: '2026-09-24T12:00:00.000Z', resumed: false, met_segment_ids: [],
+        approach_id: null, attempt_tokens: { 'story-a': 'token-a', 'story-b': 'token-b' } }, error: null })
+      .mockResolvedValueOnce({ data: { approach_id: 'approach-jars' }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    expect(await screen.findByText('Choose how to practice.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Use jars/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith(`/learn/lessons/lesson-1/v2-runs/${runId}/approach`, expect.objectContaining({
+      method: 'POST', token: 'token-123', body: { approach_id: 'approach-jars' },
+    })));
+    fireEvent.click(await screen.findByRole('button', { name: 'Fill the jars' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({
+      body: expect.objectContaining({ segment_id: 'story-b', attempt_token: 'token-b' }),
+    })));
+    expect(screen.queryByText('List what you need first.')).toBeNull();
+  });
+
   it('B.12/B.5: grades a reasoning answer through its signed token and renders the Core replay receipt', async () => {
     const document = decideJustifyPilotDocument('en-US', '10-12') as { version_id: string };
     const runId = '99999999-9999-4999-8999-999999999999';

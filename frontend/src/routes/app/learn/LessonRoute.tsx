@@ -9,7 +9,7 @@ import { checkpointKey, newCheckpoint, readCheckpoint, writeCheckpoint, type Les
 import type { LessonDocument } from '@/lesson-engine/core/types';
 import { useTheme } from '@/theme/useTheme';
 import { AuthenticatedLessonDocument, lessonDocumentFrame } from '@/rebuild/learning/AuthenticatedLessonDocument';
-import type { OnGrade, OnGradeAny, OnGradeBarModel, OnGradeFractionArea, OnGradeNumberLine, OnGradeReasoning, OnGradeSchemaDiagram, OnGradeWorkedExample, OnView } from '@/rebuild/learning/LessonDocumentView';
+import type { OnChooseApproach, OnGrade, OnGradeAny, OnGradeBarModel, OnGradeFractionArea, OnGradeNumberLine, OnGradeReasoning, OnGradeSchemaDiagram, OnGradeWorkedExample, OnView } from '@/rebuild/learning/LessonDocumentView';
 import { LessonResultView } from '@/rebuild/learning/LessonResultView';
 import type { JudgmentQuality } from '@/rebuild/learning/DecisionReasonsBoard';
 import { LessonEligibilityStateView, type LessonEligibilityState } from '@/rebuild/learning/LessonEligibilityStateView';
@@ -105,6 +105,8 @@ interface V2RunResponse {
   attempted_segment_ids?: string[];
   viewed_segment_ids?: string[];
   attempt_tokens: Record<string, string>;
+  /** GAP-FIX-R5 (B.24): present when the lesson offers approaches; null until the learner chooses. */
+  approach_id?: string | null;
 }
 
 interface V2Attempt {
@@ -114,6 +116,8 @@ interface V2Attempt {
   metSegmentIds: string[];
   attemptedSegmentIds: string[];
   viewedSegmentIds: string[];
+  /** GAP-FIX-R5: the pinned approach, or null before choosing (lessons without approaches: null). */
+  approachId: string | null;
 }
 
 interface LocationState {
@@ -324,6 +328,21 @@ function LessonRouteSession() {
     });
     return !error;
   }, [getToken, lessonId, state]);
+  // GAP-FIX-R5 (B.24, Block B autonomy): the learner's approach, pinned on the run by Core before its chain is played.
+  const chooseApproachV2: OnChooseApproach = useCallback(async (approachId, document) => {
+    const attempt = state.status === 'ready' ? state.v2Attempt : null;
+    const token = await getToken();
+    if (!attempt || attempt.versionId !== document.version_id || !token) return null;
+    const { data, error } = await api<{ approach_id: string }>(`/learn/lessons/${lessonId}/v2-runs/${attempt.runId}/approach`, {
+      method: 'POST', token, body: { approach_id: approachId },
+    });
+    const pinned = !error && typeof data?.approach_id === 'string' ? data.approach_id : null;
+    if (pinned) {
+      setState((current) => current.status === 'ready' && current.v2Attempt?.runId === attempt.runId
+        ? { ...current, v2Attempt: { ...current.v2Attempt, approachId: pinned } } : current);
+    }
+    return pinned;
+  }, [getToken, lessonId, state]);
   const helpUsed = useCallback((segmentId: string, steps: number) => {
     hintsRef.current[segmentId] = Math.max(hintsRef.current[segmentId] ?? 0, Math.min(2, steps));
   }, []);
@@ -405,7 +424,8 @@ function LessonRouteSession() {
       onGradeReasoning={state.v2Attempt ? gradeV2Reasoning : undefined} onGradeAny={state.v2Attempt ? gradeV2Any : undefined}
       onView={state.v2Attempt ? viewV2 : undefined} onHelpUsed={helpUsed}
       onComplete={state.v2Attempt ? completeV2 : undefined} metSegmentIds={state.v2Attempt?.metSegmentIds}
-      attemptedSegmentIds={state.v2Attempt?.attemptedSegmentIds} viewedSegmentIds={state.v2Attempt?.viewedSegmentIds} />,
+      attemptedSegmentIds={state.v2Attempt?.attemptedSegmentIds} viewedSegmentIds={state.v2Attempt?.viewedSegmentIds}
+      approachId={state.v2Attempt?.approachId ?? null} onChooseApproach={state.v2Attempt ? chooseApproachV2 : undefined} />,
     { locale: frame.locale, ageBand: frame.ageBand, pageTitle: frame.title ?? lessonTitle });
   }
 
@@ -441,7 +461,11 @@ function validateV2Attempt(document: LessonClientDocument, value: V2RunResponse 
   if (value.viewed_segment_ids !== undefined
     && (!Array.isArray(value.viewed_segment_ids) || value.viewed_segment_ids.some((id) => typeof id !== 'string' || !viewable.includes(id)))) return null;
   const viewedSegmentIds = [...new Set(value.viewed_segment_ids ?? [])].sort();
-  return { runId: value.run_id, versionId: value.version_id, tokens: value.attempt_tokens, metSegmentIds, attemptedSegmentIds, viewedSegmentIds };
+  // GAP-FIX-R5: a pinned approach must be one this document offers; a lesson without approaches never carries one.
+  const offered = document.approaches?.options.map((option) => option.id) ?? [];
+  if (value.approach_id !== undefined && value.approach_id !== null && (typeof value.approach_id !== 'string' || !offered.includes(value.approach_id))) return null;
+  const approachId = typeof value.approach_id === 'string' ? value.approach_id : null;
+  return { runId: value.run_id, versionId: value.version_id, tokens: value.attempt_tokens, metSegmentIds, attemptedSegmentIds, viewedSegmentIds, approachId };
 }
 
 /** A recovery projection cannot skip a CPA experience and jump the learner ahead. */

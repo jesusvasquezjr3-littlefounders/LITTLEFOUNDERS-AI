@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { growthComparison } from './growthComparisonModel.generated';
-import { barModelPayload, longArithmeticSchema, mathNotation, NOTATION_CAPABILITY, placeValuePayload, schemaDiagramPayload, v2AgeScopeProblem, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras } from './v2SegmentFamilies.generated';
+import { barModelPayload, longArithmeticSchema, mathNotation, NOTATION_CAPABILITY, placeValuePayload, schemaDiagramPayload, v2AgeScopeProblem, v2ApproachesProblem, v2ApproachesSchema, v2ApproachOf, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras } from './v2SegmentFamilies.generated';
+import { autonomyOfferForBand } from '../design/learnerRegisterPolicy.generated';
 import { conceptAllowed, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptType } from './v2ConceptBoards.generated';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './charts/chartModel.generated';
 import { lineUnits } from './v2VisualScorer.generated';
@@ -438,6 +439,8 @@ export const lessonClientDocumentSchema = z.object({
   segments: z.array(segment).min(1).max(80),
   representation_progressions: z.array(representationProgression).min(1).max(20).optional(),
   mentor_stage: mentorStageSchema.optional(),
+  // B.24 / Product 10 Block B autonomy (GAP-FIX-R5, Core's v2ApproachesSchema): equally valid graded chains; the learner picks one.
+  approaches: v2ApproachesSchema.optional(),
 }).strict().superRefine((document, ctx) => {
   const ids = new Set<string>();
   for (const [index, value] of document.segments.entries()) {
@@ -504,6 +507,18 @@ export const lessonClientDocumentSchema = z.object({
   for (const capability of declared) {
     if (!expected.has(capability)) {
       ctx.addIssue({ code: 'custom', path: ['required_capabilities'], message: 'Unexpected capability declaration' });
+    }
+  }
+  // GAP-FIX-R5 (Core's v2PublicLessonSchema): the register decides who is offered the approach choice; chains complete and gradable.
+  const approachProblem = v2ApproachesProblem(document, autonomyOfferForBand(document.age_band).approach);
+  if (approachProblem) ctx.addIssue({ code: 'custom', path: ['approaches'], message: approachProblem });
+  for (const [index, value] of document.segments.entries()) {
+    const previous = document.segments[index - 1];
+    const gated = (value.type === 'math.bar-model.answer.v2' && previous?.type === 'math.bar-model.structure.v2')
+      || (value.type === 'math.schema-diagram.slots.v2' && previous?.type === 'math.schema-diagram.structure.v2')
+      || (value.type === 'math.schema-diagram.answer.v2' && previous?.type === 'math.schema-diagram.slots.v2');
+    if (gated && previous && v2ApproachOf(document.approaches, value.id) !== v2ApproachOf(document.approaches, previous.id)) {
+      ctx.addIssue({ code: 'custom', path: ['approaches'], message: 'A gated step and the step before it belong to the same approach' });
     }
   }
 });

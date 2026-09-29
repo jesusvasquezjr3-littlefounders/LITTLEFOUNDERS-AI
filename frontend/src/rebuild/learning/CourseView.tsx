@@ -180,6 +180,7 @@ function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly
   const FIRST_ITEMS = firstItems(pathway.learnerStage);
   const visibleItems = allItems ? others : others.slice(0, FIRST_ITEMS);
   const visibleSkills = allSkills ? path.skills : path.skills.slice(0, FIRST_SKILLS);
+  const moreTitle = path.autonomy.path === 'binary' && others.length < 2 ? t.pickTitle : t.moreTitle;
   const openChapters = path.chapters.filter((chapter): chapter is typeof chapter & { access: 'pathway' | 'optional' } => chapter.access !== 'closed');
   const closedCount = path.chapters.length - openChapters.length;
   // A plain next step needs no tag; only a different reason is named (review, extra help, already known, extra chapter).
@@ -212,12 +213,23 @@ function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly
     {pathway.badge.contentGap && pathway.basis !== 'unavailable' ? <p className="lf-course-path-note" data-copy-role="body">{t.contentGap}</p> : null}
     {offers.map((offer) => <OfferCard key={offer.key} offer={offer} t={t} locale={locale} onAnswer={() => keep(offer)} />)}
     {!pathway.placementRequired && others.length > 0 ? <section className="lf-course-path-section" aria-labelledby={`${ids}-more`}>
-      <h2 id={`${ids}-more`} data-copy-role="heading">{t.moreTitle}</h2>
-      <div className="lf-course-path-items"><List label={t.moreTitle}>
+      {/* GAP-FIX-R5 (Block B autonomy, 6-9): Core offers a simple binary pick, so the second step is the one alternative. */}
+      <h2 id={`${ids}-more`} data-copy-role="heading">{moreTitle}</h2>
+      <div className="lf-course-path-items"><List label={moreTitle}>
         {visibleItems.map((item) => <ListRow key={item.lessonId} title={text(item.topicTitle)} titleRole="option" onPress={() => open(item.lessonId)}
           supporting={reasonLabel(item) ? <span className={`lf-course-path-tag lf-course-path-tag--${item.access === 'optional' && item.reason === 'next' ? 'optional' : item.reason}`}>{reasonLabel(item)}</span> : undefined} />)}
       </List></div>
       {others.length > FIRST_ITEMS ? <Button aria-expanded={allItems} onClick={() => setAllItems(!allItems)}>{allItems ? t.showLess : t.showMore}</Button> : null}
+    </section> : null}
+
+    {/* GAP-FIX-R5 (Block B autonomy, 13-17 and adults; B.24): optional depth lessons, never counted toward progress or badges. */}
+    {!pathway.placementRequired && path.autonomy.enrichment && path.enrichment.length > 0 ? <section className="lf-course-path-section" aria-labelledby={`${ids}-explore`} data-lever="enrichment">
+      <h2 id={`${ids}-explore`} data-copy-role="heading">{t.exploreTitle}</h2>
+      <p className="lf-course-path-note" data-copy-role="body">{t.exploreNote}</p>
+      <div className="lf-course-path-items"><List label={t.exploreTitle}>
+        {path.enrichment.map((item) => <ListRow key={item.lessonId} title={text(item.lessonTitle) || text(item.topicTitle)} titleRole="option" onPress={() => open(item.lessonId)}
+          supporting={<span className="lf-course-path-tag lf-course-path-tag--optional">{t.reasons.enrichment}</span>} />)}
+      </List></div>
     </section> : null}
 
     <section className="lf-course-path-section" aria-labelledby={`${ids}-chapters`}>
