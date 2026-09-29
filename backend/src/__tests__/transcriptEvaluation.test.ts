@@ -114,6 +114,16 @@ describe('C.21 deterministic scorer on the fixture set', () => {
     expect(tell(null)?.outcome).toBe('not_applicable');
   });
 
+  it('gap-fix round 6: controlling language is scored for a teen or adult in EITHER A/B arm, never for a child', () => {
+    const base = TRANSCRIPT_FIXTURES.find((f) => f.id === 'es-tell-honored')!.bundle;
+    const controlling = (dialogue: SessionBundle['dialogue']) => scoreSession({ ...base, dialogue }).find((s) => s.criterion === 'controlling_language');
+    const row = { tell_requests: 0, tell_delivered: 0, tell_withdrawn: 0 };
+    expect(controlling({ ...row, variant: 'control', band: 'teen', controlling_delivered: 1 })).toMatchObject({ outcome: 'fail', numerator: 1 });
+    expect(controlling({ ...row, variant: 'control', band: 'adult', controlling_delivered: 0 })?.outcome).toBe('pass');
+    expect(controlling({ ...row, variant: 'calibrated', band: 'teen', controlling_delivered: 1 })?.outcome).toBe('fail');
+    expect(controlling({ ...row, variant: 'control', band: 'tween', controlling_delivered: 1 })?.outcome).toBe('not_applicable');
+  });
+
   it('keeps numerator within denominator for every score', () => {
     for (const f of TRANSCRIPT_FIXTURES) {
       for (const s of scoreSession(f.bundle)) expect(s.numerator, `${f.id}/${s.criterion}`).toBeLessThanOrEqual(s.denominator);

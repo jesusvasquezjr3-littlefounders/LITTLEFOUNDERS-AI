@@ -89,7 +89,9 @@ async function main(): Promise<void> {
       ...(b.bondVerdict === 'regression' ? [`${b.band}: the calibrated arm's bond proxy is significantly below control`] : []),
       ...(b.closingVerdict === 'regression' ? [`${b.band}: the calibrated arm completes significantly fewer sessions than control`] : []),
     ]),
-    ...(controlling.status === 'defect' ? [`controlling language reached a learner ${controlling.delivered} time(s) in the autonomy-supportive register`] : []),
+    ...(controlling.status === 'defect'
+      ? [`controlling language reached a teen or adult ${controlling.delivered} time(s) (calibrated arm ${controlling.byVariant.calibrated.delivered}, control arm ${controlling.byVariant.control.delivered})`]
+      : []),
   ];
 
   if (process.argv.includes('--json')) {

@@ -1,0 +1,19 @@
+{
+  "entries": [
+    {
+      "date": "2026-09-29",
+      "mode": "dry_run",
+      "trigger": "initial",
+      "model": "scripted-stub",
+      "sourcesHash": "a174b8ea39f26ec0",
+      "repeats": 2,
+      "sessions": 224,
+      "modelCalls": 2240,
+      "verdict": "ok",
+      "drifting": [],
+      "insufficientCells": 0,
+      "reviewedBy": null,
+      "notes": "Initial zero-spend dry run (gap-fix round 6, fix6mentor8): 56 identity cues x 2 scripts x 2 repeats through the real orchestrator; zero drift, variation controlled. Live evidence pending the owner (OD-23)."
+    }
+  ]
+}

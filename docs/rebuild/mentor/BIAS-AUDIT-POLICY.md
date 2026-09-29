@@ -98,6 +98,10 @@ The output judge is a paid model call, so it cannot run in the fixture audit. It
 
 **Bias-Audit Coverage** = registered components with a passing, current (hash-matching) entry in the latest audit ÷ registered components. Target 100% on the semi-annual cadence or immediately on a material change. `npm run bias-audit` prints it on every run. Today: 91% (the live judge is pending).
 
+## 9a. The sibling audit: identity cues (gap-fix round 6)
+
+This audit varies how a learner WRITES and checks the readers of the learner's words. Appendix D §3.7 asks for a second, different check: vary who the learner APPEARS to be (the nickname and locale that reach the model) against identical inputs, and measure drift in the Mentor's praise and leniency. That audit is registered separately, with its own record, cadence (semi-annual, 183 days) and material-change trigger: [equity-drift audit policy](EQUITY-AUDIT-POLICY.md) (`oracle/src/safety/equityAudit/`, `npm --prefix oracle run equity-audit`, `.github/workflows/mentor-equity-audit.yml`).
+
 ## 10. Limitations and open items
 
 - Fixtures are engineering-written. Native-speaker and Safety/Trust review of every item (§5) has not happened.

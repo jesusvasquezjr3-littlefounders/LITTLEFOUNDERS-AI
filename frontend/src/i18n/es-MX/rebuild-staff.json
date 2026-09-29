@@ -181,10 +181,12 @@
         "agreement": "Acuerdo del juez de conversaciones"
       },
       "governance": {
-        "tier_compliance": "Reglas de nivel cumplidas"
+        "tier_compliance": "Reglas de nivel cumplidas",
+        "threshold_review": "Umbrales revisados a tiempo"
       },
       "safety": {
         "fracture_closure": "Salvaguardas por edad, no por rol",
+        "equity_drift": "Mismo trato para cada nombre",
         "age_tier_calibration": "Edades desconocidas calibradas antes"
       },
       "evaluation": {

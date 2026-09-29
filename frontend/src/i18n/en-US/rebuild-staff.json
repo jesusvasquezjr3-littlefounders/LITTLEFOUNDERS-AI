@@ -181,10 +181,12 @@
         "agreement": "Transcript judge agreement"
       },
       "governance": {
-        "tier_compliance": "Tier rules followed"
+        "tier_compliance": "Tier rules followed",
+        "threshold_review": "Thresholds reviewed on time"
       },
       "safety": {
         "fracture_closure": "Safeguards follow age, not role",
+        "equity_drift": "Same feedback for every name",
         "age_tier_calibration": "Unknown ages calibrated first"
       },
       "evaluation": {

@@ -433,11 +433,29 @@ export function summarizeObservational(rows: CalibrationOutcomeRow[]): {
   return { byBand, preC17Baseline: armStats(rows.filter((r) => r.band === null)) };
 }
 
-/** The auditable style constraint: controlling language that reached a learner in the autonomy register. */
-export function summarizeControllingLanguage(rows: CalibrationOutcomeRow[]): { sessions: number; delivered: number; status: 'ok' | 'defect' | 'insufficient_data' } {
-  const autonomy = rows.filter((r) => r.variant === 'calibrated' && (r.band === 'teen' || r.band === 'adult'));
-  const delivered = autonomy.reduce((sum, r) => sum + (r.controlling_delivered ?? 0), 0);
-  return { sessions: autonomy.length, delivered, status: autonomy.length === 0 ? 'insufficient_data' : delivered > 0 ? 'defect' : 'ok' };
+/**
+ * The auditable style constraint: controlling language that reached a teen or
+ * an adult. Gap-fix round 6: the gate follows the band in BOTH arms (OD-26
+ * put teens in the control arm), so a control-arm delivery is a defect too,
+ * and the per-arm counts make the two arms comparable. Sessions recorded
+ * before that change carry 0 for the control arm (it was never checked).
+ */
+export function summarizeControllingLanguage(rows: CalibrationOutcomeRow[]): {
+  sessions: number;
+  delivered: number;
+  status: 'ok' | 'defect' | 'insufficient_data';
+  byVariant: Record<DialogueVariant, { sessions: number; delivered: number }>;
+} {
+  const autonomy = rows.filter((r) => r.variant !== null && (r.band === 'teen' || r.band === 'adult'));
+  const count = (list: CalibrationOutcomeRow[]) => list.reduce((sum, r) => sum + (r.controlling_delivered ?? 0), 0);
+  const delivered = count(autonomy);
+  const byVariant = Object.fromEntries(
+    DIALOGUE_VARIANTS.map((v) => {
+      const arm = autonomy.filter((r) => r.variant === v);
+      return [v, { sessions: arm.length, delivered: count(arm) }];
+    }),
+  ) as Record<DialogueVariant, { sessions: number; delivered: number }>;
+  return { sessions: autonomy.length, delivered, status: autonomy.length === 0 ? 'insufficient_data' : delivered > 0 ? 'defect' : 'ok', byVariant };
 }
 
 // ── 5. Stage 7 ───────────────────────────────────────────────────────────────

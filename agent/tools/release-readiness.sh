@@ -51,6 +51,13 @@ node agent/tools/check-block-d-research.mjs --strict
 node agent/tools/check-block-d-thresholds.mjs --strict
 node agent/tools/check-no-unbacked-guarantee.mjs --strict
 node agent/tools/check-block-d-scope.mjs --strict
+# Appendix F 1.4 / Part 3 Stage 7 (gap-fix round 6): nor on an overdue quarterly
+# human review of the Mentor's (Block C) Threshold Recalibration Log.
+node agent/tools/check-mentor-thresholds.mjs --strict
+# Appendix D 3.7 / C.18 / C.20 (gap-fix round 6): the zero-spend equity-drift
+# dry run passes, and no material change, overdue cadence or open live drift
+# finding is outstanding (the paid live run stays owner-run, OD-23).
+npm --prefix oracle run equity-audit -- --check
 # Appendix C 1.3 / Stage 6 (GAP-FIX-R6): nor on an overdue Block B threshold
 # review or Age-Band Register Differentiation Audit (MN-03), each due by
 # docs/operations/BLOCK-B-THRESHOLD-LOG.md (block-b-review-cadence.mjs).

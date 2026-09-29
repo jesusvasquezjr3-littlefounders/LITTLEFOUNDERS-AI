@@ -1,0 +1,64 @@
+name: Quarterly Mentor threshold review
+
+# Appendix F §1.4 (Threshold Recalibration Log, Block C: "Every threshold
+# reviewed at least once per defined cadence (proposed: quarterly for the
+# first year)") and Part 3 Stage 7 (the kill switches run "on the cadence
+# defined in the Threshold Recalibration Log"); C.10 recalibrates each
+# threshold together with the metric that watches it.
+#
+# Two triggers, as for the Block D reviews:
+#   - per release: agent/tools/release-readiness.sh runs
+#     check-mentor-thresholds.mjs --strict, which fails while the review is
+#     past the due date the log states (its "Review schedule" section);
+#   - per calendar quarter (THIS workflow): on 1 January, April, July and
+#     October it opens the quarter's issue, labelled `mentor-threshold-review`,
+#     for the Pedagogical Reviewer and the Safety/Trust Lead with the last
+#     human review and the next due date.
+#
+# Nothing is read from Core or production: the schedule lives in
+# docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md. A malformed log still
+# opens the issue (the review is due regardless) and turns the run red.
+#
+# agent/tools/mentor-thresholds-quarterly.test.mjs pins the schedule, the
+# tool call and the notification.
+
+on:
+  schedule:
+    - cron: '0 9 1 1,4,7,10 *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  open-review:
+    name: Open the quarter's Mentor threshold review
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Write the review issue
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node agent/tools/mentor-thresholds-quarterly.mjs --issue-file issue.md --title-file title.txt
+
+      - name: Open the review issue for the owners
+        if: always() && hashFiles('issue.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          title=$(cat title.txt)
+          existing=$(gh issue list --state open --label mentor-threshold-review --search "\"$title\" in:title" --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "${existing:-}" ]; then
+            gh issue comment "$existing" --body-file issue.md
+          else
+            gh label create mentor-threshold-review --color 5319E7 --description 'Appendix F 1.4 quarterly Mentor threshold review' 2>/dev/null || true
+            gh issue create --title "$title" --label mentor-threshold-review --body-file issue.md
+          fi

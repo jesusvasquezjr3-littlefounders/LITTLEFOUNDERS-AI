@@ -171,6 +171,9 @@ export function checkReviewCalibrationParity(read, migrationSql) {
   const oracleReport = [...(zodFields(src.dialogue, 'export const DialogueCalibrationSchema') ?? []), ...(interfaceFields(src.dialogue, 'DialogueCalibrationReport') ?? [])];
   fields('dialogue calibration report', oracleReport.length > 4 ? oracleReport : null, zodFields(src.coreDialogue, 'export const DialogueCalibrationReportBody'));
 
+  // ── C.17 Tier 1: the teen/adult controlling-language gate follows the band in BOTH arms ──
+  problems.push(...controllingGateProblems(src.dialogue));
+
   // ── OD-23 / OD-26 / H.7: adults, teens and tweens for C.17; never a young child ──
   const bandsBlock = /MENTOR_DIALOGUE_EXPERIMENT_BANDS:\s*z([\s\S]*?)\n {2}\/\/|MENTOR_DIALOGUE_EXPERIMENT_BANDS:\s*z([\s\S]*?)\),\n/.exec(src.coreConfig);
   const bandsDefault = /MENTOR_DIALOGUE_EXPERIMENT_BANDS:\s*z[\s\S]*?\.default\('([^']*)'\)/.exec(src.coreConfig)?.[1];
@@ -204,6 +207,40 @@ export function checkReviewCalibrationParity(read, migrationSql) {
   return problems;
 }
 
+/**
+ * C.17 / Appendix D §3.6 / the Tier 1 rule "the teen/adult register never
+ * delivers controlling language silently". Since OD-26 a teen can be in the
+ * control arm, so the gate must be keyed on the band and on in both arms:
+ * CONTROLLING_GATE_BANDS names teen and adult, and every `controllingGate:`
+ * a policy branch returns is `controllingGateFor(band)`, never a literal or
+ * a variant-derived value.
+ */
+export function controllingGateProblems(dialogueSource) {
+  const problems = [];
+  const where = FILES.dialogue;
+  const bandsMatch = /CONTROLLING_GATE_BANDS(?::[^=]*)?=\s*\[([^\]]*)\]/.exec(dialogueSource);
+  const bands = bandsMatch ? quoted(bandsMatch[1]) : null;
+  if (!bands || !bands.includes('teen') || !bands.includes('adult')) {
+    problems.push(`${where}: CONTROLLING_GATE_BANDS must name teen and adult (C.17 Tier 1), found ${bands ? bands.join(', ') || 'none' : 'none'}`);
+  }
+  if (!/export function controllingGateFor\(band: DialogueBand\): boolean \{\s*return CONTROLLING_GATE_BANDS\.includes\(band\);\s*\}/.test(dialogueSource)) {
+    problems.push(`${where}: controllingGateFor(band) must return CONTROLLING_GATE_BANDS.includes(band) and read nothing else (the gate follows the band, never the variant)`);
+  }
+  const start = dialogueSource.indexOf('export function dialoguePolicy(');
+  const end = start === -1 ? -1 : dialogueSource.indexOf('\n}\n', start);
+  const body = start === -1 || end === -1 ? '' : dialogueSource.slice(start, end);
+  const assignments = [...body.matchAll(/controllingGate:\s*([^,\n]+),/g)].map((m) => m[1].trim());
+  if (!/if \(variant === 'control'\)/.test(body) || assignments.length < 2) {
+    problems.push(`${where}: could not read the controlling gate of both arms in dialoguePolicy()`);
+  }
+  for (const value of assignments) {
+    if (value !== 'controllingGateFor(band)') {
+      problems.push(`${where}: dialoguePolicy() sets controllingGate to \`${value}\` — every arm must use controllingGateFor(band), or a teen or adult in the control arm gets controlling language uncaught and uncounted (C.17, OD-26)`);
+    }
+  }
+  return problems;
+}
+
 export function readMigration() {
   const dir = path.join(ROOT, 'database/migrations');
   const file = readdirSync(dir).find((f) => f.endsWith('_mentor_spaced_review_and_dialogue_calibration.sql'));
@@ -220,7 +257,7 @@ function main() {
     return;
   }
   console.log(
-    'review-calibration:check OK — Oracle, Core and the migration agree on the routing rule and its record, the dialogue register and its record; the C.17 experiment enrols adults, teens and tweens only, never a young child (OD-26)',
+    'review-calibration:check OK — Oracle, Core and the migration agree on the routing rule and its record, the dialogue register and its record; the teen/adult controlling-language gate runs in both arms; the C.17 experiment enrols adults, teens and tweens only, never a young child (OD-26)',
   );
 }
 

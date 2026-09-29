@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   bandFromTier,
+  CONTROLLING_GATE_BANDS,
+  controllingGateFor,
   controllingLanguage,
   DialogueCalibrationRecorder,
   DialogueCalibrationSnapshotSchema,
@@ -85,9 +87,19 @@ describe('dialoguePolicy — the four registers and the control arm', () => {
       expect(p.levelWording).toEqual(HINT_LEVEL_WORDING);
       expect(p.registerNote).toBeNull();
       expect(p.askBeforePacing).toBe(false);
-      expect(p.controllingGate).toBe(false);
       expect(p.strategyOverlay('RESCUE')).toBeNull();
     }
+  });
+
+  it('the controlling-language gate follows the band in BOTH arms (C.17 Tier 1, OD-26 opened the control arm to teens)', () => {
+    expect(CONTROLLING_GATE_BANDS).toEqual(['teen', 'adult']);
+    for (const variant of ['calibrated', 'control'] as const) {
+      expect(dialoguePolicy('teen', variant).controllingGate).toBe(true);
+      expect(dialoguePolicy('adult', variant).controllingGate).toBe(true);
+      expect(dialoguePolicy('tween', variant).controllingGate).toBe(false);
+      expect(dialoguePolicy('young_child', variant).controllingGate).toBe(false);
+    }
+    for (const band of DIALOGUE_BANDS) expect(controllingGateFor(band)).toBe(band === 'teen' || band === 'adult');
   });
 
   it('no register note names an age, a band or the learner — it says how to speak, not who they are', () => {

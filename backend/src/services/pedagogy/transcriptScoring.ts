@@ -248,9 +248,11 @@ export function scoreSession(bundle: SessionBundle): CriterionScore[] {
       : verdict('goal_agreement', alliance.goal_agreement === 'agreed' || alliance.goal_agreement === 'renegotiated' ? 1 : 0, 1),
   );
 
-  // C.17: controlling language that reached a teen or adult in the autonomy register.
+  // C.17: controlling language that reached a teen or adult. Gap-fix round 6:
+  // the gate follows the band in BOTH A/B arms (OD-26 put teens in the
+  // control arm), so a control-arm session is scored too.
   const d = bundle.dialogue;
-  const autonomy = d !== null && d.variant === 'calibrated' && (d.band === 'teen' || d.band === 'adult');
+  const autonomy = d !== null && d.variant !== null && (d.band === 'teen' || d.band === 'adult');
   scores.push(autonomy ? verdict('controlling_language', Math.min(d!.controlling_delivered ?? 0, tutorTurns.length), tutorTurns.length) : verdict('controlling_language', 0, 0));
 
   // C.13 non-negotiable: "just tell me" is always honoured (hard invariant, rules-scored).

@@ -30,7 +30,7 @@ describe('the spaced-review router and the dialogue calibration against the simu
       'late_session_struggler',
       'near_miss_slipper',
     ]);
-    expect(c.map((x) => x.persona).sort()).toEqual(['adult_control', 'polite_teen', 'reactant_teen', 'young_hint_seeker']);
+    expect(c.map((x) => x.persona).sort()).toEqual(['adult_control', 'polite_teen', 'reactant_teen', 'teen_control', 'young_hint_seeker']);
     expect(ok).toBe(true);
   });
 
@@ -63,7 +63,7 @@ describe('every persona can turn red (mutation checks)', () => {
   it('gaming_rapid_guesser: a zero gap counts every massed miss as spaced', () => {
     expect(runReviewPersona(review('gaming_rapid_guesser'), { ...T, reexposureGapTurns: 0, maxReexposuresPerKc: 99 }).problems).not.toEqual([]);
   });
-  it('reactant_teen: the control policy in its place misses every controlling draft', () => {
+  it('reactant_teen: the control policy in its place is not autonomy-supportive (no ask-first, no option wording)', () => {
     expect(runCalibrationPersona(calibration('reactant_teen'), (band) => dialoguePolicy(band, 'control')).problems).not.toEqual([]);
   });
   it('young_hint_seeker: the full ladder in its place takes four requests to the tell', () => {
@@ -71,6 +71,14 @@ describe('every persona can turn red (mutation checks)', () => {
   });
   it('adult_control: the calibrated policy in its place is not the control arm', () => {
     expect(runCalibrationPersona(calibration('adult_control'), (band) => dialoguePolicy(band, 'calibrated')).problems).not.toEqual([]);
+  });
+  it('teen_control: a gate keyed on the variant (the pre-fix policy) lets every order through the control arm', () => {
+    const variantKeyed = (band: Parameters<typeof dialoguePolicy>[0], variant: Parameters<typeof dialoguePolicy>[1]) => ({
+      ...dialoguePolicy(band, variant),
+      controllingGate: variant === 'calibrated' && (band === 'teen' || band === 'adult'),
+    });
+    expect(runCalibrationPersona(calibration('teen_control'), variantKeyed).problems).toHaveLength(3);
+    expect(runCalibrationPersona(calibration('adult_control'), variantKeyed).problems).not.toEqual([]);
   });
   it('polite_teen: a gate that flags every sentence turns it red', () => {
     const noisy = (band: Parameters<typeof dialoguePolicy>[0], variant: Parameters<typeof dialoguePolicy>[1]) => dialoguePolicy(band, variant);

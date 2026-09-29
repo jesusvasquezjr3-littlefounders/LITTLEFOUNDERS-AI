@@ -380,7 +380,7 @@ export const CALIBRATION_PERSONAS: CalibrationPersona[] = [
   },
   {
     name: 'adult_control',
-    why: 'the A/B control arm must be the uniform pre-C.17 register',
+    why: 'the A/B control arm must be the uniform pre-C.17 register, and still never deliver controlling language silently',
     band: 'adult',
     variant: 'control',
     drafts: ['You have to save half before you spend.'],
@@ -388,10 +388,28 @@ export const CALIBRATION_PERSONAS: CalibrationPersona[] = [
     stuckMisses: 2,
     check: (r) => {
       const problems: string[] = [];
-      if (r.caught.some((c) => c !== null)) problems.push('the control arm ran the controlling-language gate');
+      if (r.caught.some((c) => c === null)) problems.push('the control arm skipped the controlling-language gate (it follows the band, not the variant)');
       if (r.rungs.join(',') !== 'indirect,misconception,fill_blank,tell') problems.push(`control rungs ${r.rungs.join(',')}, expected the full ladder`);
       if (r.stuckMoves[1] !== 'style_change') problems.push('the control arm did not keep the unilateral change of approach');
       if (r.policy.registerNote !== null) problems.push('the control arm carries a register note');
+      return problems;
+    },
+  },
+  {
+    name: 'teen_control',
+    why: 'OD-26 lets a teen reach the control arm: the Tier 1 controlling-language gate still catches every order',
+    band: 'teen',
+    variant: 'control',
+    drafts: ['You have to save half before you spend.', 'Tienes que ahorrar la mitad primero.', 'Você precisa guardar metade antes.'],
+    hintRequests: 0,
+    stuckMisses: 0,
+    check: (r) => {
+      const problems: string[] = [];
+      r.caught.forEach((c, i) => {
+        if (c === null) problems.push(`controlling draft ${i + 1} was not caught in the control arm`);
+      });
+      if (r.policy.registerNote !== null) problems.push('the control arm carries a register note');
+      if (r.policy.askBeforePacing) problems.push('the control arm runs ask-first pacing');
       return problems;
     },
   },

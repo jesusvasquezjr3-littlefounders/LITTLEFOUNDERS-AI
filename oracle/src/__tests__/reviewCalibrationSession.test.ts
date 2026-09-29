@@ -295,19 +295,62 @@ describe('C.17 — the register follows the band, and the band never reaches the
     expect(o.dialogueCalibrationReport).toMatchObject({ ladderRungs: 4, hintRequests: 3 });
   });
 
-  it('the control arm is the uniform pre-C.17 register: no note, no gate, the full ladder', async () => {
+  it('the control arm is the uniform pre-C.17 register: no note, the full ladder', async () => {
     const o = new TutorOrchestrator(
       { ...BASE, dialogueCalibration: calibrated('adult', { variant: 'control' }) },
       Date.now(),
       silent,
     );
-    fetchMock.mockImplementationOnce(async () => modelReplies({ ...TURN, say: 'You have to divide the money into four parts.' }));
-    const outcome = (await o.handleLearnerText('how do I split it', tick()))!;
-    expect(outcome.emission.turn.say).toBe('You have to divide the money into four parts.');
+    await o.handleLearnerText('how do I split it', tick());
     expect(lastModelBody()).not.toContain('Dialogue register');
     await o.handleLearnerText('I need help', tick());
     expect(lastModelBody()).toContain('give an indirect hint that points at the idea without naming it');
     expect(o.dialogueCalibrationReport).toMatchObject({ variant: 'control', ladderRungs: 5, controllingCaught: 0 });
+  });
+
+  /*
+   * OD-26 opened the C.17 experiment to teens, so a 13-17 learner can be in
+   * the control arm. The Tier 1 rule "the teen/adult register never delivers
+   * controlling language silently" holds in both arms: caught, repaired
+   * once, counted in tutor_dialogue_calibration.
+   */
+  for (const band of ['teen', 'adult'] as const) {
+    it(`a ${band} in the CONTROL arm: controlling language is caught, repaired once and counted`, async () => {
+      const o = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated(band, { variant: 'control' }) }, clock, silent);
+      fetchMock.mockImplementationOnce(async () => modelReplies({ ...TURN, say: 'You have to divide the money into four parts.' }));
+      fetchMock.mockImplementationOnce(async () => modelReplies({ ...TURN, say: 'You could try splitting the money into four parts. Want to?' }));
+      const outcome = (await o.handleLearnerText('how do I split my allowance', tick()))!;
+      expect(outcome.emission.turn.say).toBe('You could try splitting the money into four parts. Want to?');
+      const [first, retry] = bodies();
+      expect(first).not.toContain('Dialogue register');
+      expect(retry).toContain('used controlling language');
+      expect(o.dialogueCalibrationReport).toMatchObject({ band, variant: 'control', controllingCaught: 1, controllingDelivered: 0 });
+      expect(o.closeRecord('completed').dialogueCalibration).toMatchObject({ variant: 'control', controllingCaught: 1 });
+    });
+
+    it(`a ${band} in the CONTROL arm: a phrase that survives the retry is delivered and COUNTED`, async () => {
+      const o = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated(band, { variant: 'control' }) }, clock, silent);
+      fetchMock.mockImplementation(async () => modelReplies({ ...TURN, say: 'Você precisa dividir em quatro partes.' }));
+      await o.handleLearnerText('how do I split my allowance', tick());
+      expect(o.dialogueCalibrationReport).toMatchObject({ variant: 'control', controllingCaught: 1, controllingDelivered: 1 });
+    });
+  }
+
+  it('the operator kill switch (control for everyone) keeps the teen gate on', async () => {
+    process.env.TUTOR_DIALOGUE_CALIBRATION = 'off';
+    const { resetConfigCache } = await import('../env.js');
+    resetConfigCache();
+    const o = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated('teen') }, clock, silent);
+    fetchMock.mockImplementationOnce(async () => modelReplies({ ...TURN, say: 'You need to count up from the price.' }));
+    await o.handleLearnerText('hello', tick());
+    expect(o.dialogueCalibrationReport).toMatchObject({ variant: 'control', assignment: 'operator_off', controllingCaught: 1 });
+  });
+
+  it('a tween in the control arm is not gated (the gate is the teen/adult register only)', async () => {
+    const o = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated('tween', { variant: 'control' }) }, clock, silent);
+    fetchMock.mockImplementationOnce(async () => modelReplies({ ...TURN, say: 'You have to divide the money into four parts.' }));
+    await o.handleLearnerText('how do I split it', tick());
+    expect(o.dialogueCalibrationReport).toMatchObject({ band: 'tween', controllingCaught: 0 });
   });
 
   it('the ask-first register offers an adaptation instead of changing the approach on its own', async () => {

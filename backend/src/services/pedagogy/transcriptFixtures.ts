@@ -301,11 +301,12 @@ export const TRANSCRIPT_FIXTURES: TranscriptFixture[] = [
       firings: [],
       alliance: { learner_turns: 4, goal_agreement: 'unconfirmed' },
       selfExplanation: [{ mode: 'act', first_quality: 'filler' }],
+      // Gap-fix round 6: a teen in the control arm is gated and scored like the calibrated arm.
       dialogue: { variant: 'control', band: 'teen', controlling_delivered: 0 },
     },
     expected: {
       answer_reveal: 'pass', false_affirmation: 'pass', praise_specificity: 'observed', emotion_label: 'pass', hint_repeat: 'not_applicable',
-      closing_script: 'pass', check_in: 'not_applicable', goal_agreement: 'fail', controlling_language: 'not_applicable',
+      closing_script: 'pass', check_in: 'not_applicable', goal_agreement: 'fail', controlling_language: 'pass',
       self_explanation: 'observed', tell_honored: 'not_applicable', scaffold_quality: 'observed',
     },
   },

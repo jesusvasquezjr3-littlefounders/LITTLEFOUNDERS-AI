@@ -55,7 +55,9 @@ The belief is read before the miss because the miss itself drags the posterior d
 | Rung wording | direct, "let's do this one together" | original | offered as options, with a reason | as teen | original |
 | Register note on every model turn | short concrete steps, model then do it together | recognition tied to the step; a choice of approach | autonomy-supportive: choices, reasons, acknowledge their view, ASK before changing pace; never "you need to / have to / must / should"; never childish | direct, respectful of time; no controlling phrasing | none |
 | Pacing changes | as before | as before | ask first: a stuck skill gets an accept/decline offer instead of a unilateral change of approach; RESCUE/FADED/WORKED ask before making it easier | as teen | as before (unilateral change, then offer) |
-| Controlling-language check | — | — | caught on every model turn, all four personas, three locales; repaired once; a survival is delivered and counted | as teen | — |
+| Controlling-language check | — | — | caught on every model turn, all four personas, three locales; repaired once; a survival is delivered and counted | as teen | follows the band: a teen or adult in the control arm is checked, repaired and counted exactly as above |
+
+**The gate follows the band, not the variant (gap-fix round 6).** Before OD-26 only adults could be in the control arm; OD-26 opened it to teens, and a variant-keyed gate let "you have to…" reach a 13-17 learner uncaught, unrepaired and uncounted. `CONTROLLING_GATE_BANDS` (teen, adult) and `controllingGateFor(band)` now set the gate in both arms, including the operator's `off` switch. The control arm keeps what the experiment compares (the uniform ladder and wording, no register note, no ask-first pacing), and both arms now report comparable `controllingCaught` / `controllingDelivered` counts in `tutor_dialogue_calibration`. `npm run review-calibration:check` fails if a policy branch sets the gate any other way.
 
 "You need to" in a question ("do you need to see it again?") or an impersonal teaching statement ("hay que sumar") is not flagged; the check reads declarative second-person sentences only (Reeve and Jang's controlling markers).
 
@@ -74,8 +76,8 @@ Operator switches in Oracle: `TUTOR_SPACED_REVIEW=act|shadow|off` (Core's verdic
 
 - Spaced-Review Routing Accuracy: `tutor_review_routing`, `tutor:spaced-review-report`, the quarterly workflow, and the Stage 7 verdict.
 - Age-Band Calibration A/B Outcome: `tutor_dialogue_calibration` joined with `tutor_session_alliance.bond_proxy` and `tutor_sessions.closing_script`; `tutor:dialogue-calibration-report`.
-- Stage 2 simulated learners (`oracle/src/tutor/reviewCalibrationGym.ts`, in `npm run gym:pedagogy`): near-miss slipper, late-session struggler, far-below learner, forgetting reviewer, gaming rapid guesser (C.11); reactant teen, polite teen (the over-correction check), young hint seeker, adult control (C.17). Each persona is proven able to turn red.
-- `npm run review-calibration:check` (in `repo-gates.yml`) keeps Oracle, Core and the migration identical, including the rule's thresholds Core re-evaluates, and holds the OD-23 guard on the experiment's default bands.
+- Stage 2 simulated learners (`oracle/src/tutor/reviewCalibrationGym.ts`, in `npm run gym:pedagogy`): near-miss slipper, late-session struggler, far-below learner, forgetting reviewer, gaming rapid guesser (C.11); reactant teen, polite teen (the over-correction check), young hint seeker, adult control, teen control (the gate in the control arm) (C.17). Each persona is proven able to turn red.
+- `npm run review-calibration:check` (in `repo-gates.yml`) keeps Oracle, Core and the migration identical, including the rule's thresholds Core re-evaluates, and holds the OD-23 guard on the experiment's default bands and the Tier 1 rule that the teen/adult controlling-language gate runs in both arms.
 
 ## 6. What reaches the model, stated plainly
 
