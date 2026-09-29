@@ -23,6 +23,8 @@ B.14's Forge gate for lesson content is not built in this branch. It belongs to 
 
 **Coverage.** The gate fails if a surface under `scope.surfaces` names a `rebuild-family.json` group, or loads an i18next namespace, that is not in scope. A lane that adds copy must add it to the scope in the same change.
 
+The same engine reads a second scope file for the profile and social-layer copy (GAP-FIX-R4): see [SOCIAL-COPY-TONE-GATE.md](SOCIAL-COPY-TONE-GATE.md). The optional `scope.coverage`, `scope.complete` and `scope.accessors` fields it uses are described there.
+
 Core's own error messages are English developer diagnostics. A family never reads them: the legacy error banner and every rebuilt surface resolve the error *code* to copy. So the gate fails instead if a Family Hub or banking surface starts rendering a raw `error.message`.
 
 | Category | Why | Examples caught |

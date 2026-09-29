@@ -70,11 +70,6 @@ function dateOf(iso: string, locale: Locale): string {
   return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(date);
 }
 
-function names(people: TogetherPerson[], locale: Locale, t: Copy): string {
-  const list = people.map((p) => (p.isSelf ? t.you : p.displayName || p.username));
-  return new Intl.ListFormat(locale, { style: 'long', type: 'conjunction' }).format(list);
-}
-
 export function TogetherView(props: TogetherViewProps) {
   const { locale, dark, state, fixture = false } = props;
   const t = learnCopy[locale].together;
@@ -88,7 +83,7 @@ export function TogetherView(props: TogetherViewProps) {
         : status === 'offline' || status === 'error' ? <ErrorState heading={t.errorTitle} body={status === 'offline' ? t.offlineBody : t.errorBody}
           retryLabel={t.retry} retryingLabel={t.retrying} retrying={props.retrying} onRetry={props.onRetry} />
           : state.status !== 'ready' || !state.value.eligible
-            ? <EmptyState heading={t.closedTitle} body={`${t.closedBody} ${t.closedHint}`} />
+            ? <EmptyState heading={t.closedTitle} body={t.closedBody} action={<p className="lf-state-body" data-copy-role="body">{t.closedHint}</p>} />
             : <Ready {...props} value={state.value} t={t} />}
     </div>
   </div>;
@@ -112,7 +107,6 @@ function Ready(props: TogetherViewProps & { value: Extract<TogetherState, { stat
         {value.invitations.map((invitation) => <li key={invitation.goalId}>
           <Card tone="sky" heading={fill(t.goalLine, { n: invitation.target, date: dateOf(invitation.endsAt, locale) })} headingLevel={3} as="article">
             {invitation.invitedBy ? <p data-copy-role="body">{fill(t.invitedBy, { name: invitation.invitedBy.displayName || invitation.invitedBy.username })}</p> : null}
-            {invitation.members.length > 0 ? <p data-copy-role="body">{fill(t.withPeople, { names: names(invitation.members, locale, t) })}</p> : null}
             <People people={invitation.members} t={t} label={t.membersTitle} />
             <Answer {...props} goalId={invitation.goalId} onDone={say} />
           </Card>
@@ -122,7 +116,8 @@ function Ready(props: TogetherViewProps & { value: Extract<TogetherState, { stat
 
     <section className="lf-together-section" aria-labelledby={`${headingId}-goals`}>
       <h2 id={`${headingId}-goals`} data-copy-role="heading">{t.goalsTitle}</h2>
-      {value.goals.length === 0 && !creating ? <EmptyState heading={t.emptyTitle} body={t.emptyBody} /> : null}
+      {/* An invitation above already says what to do first (06 §3.1): the empty state waits until nothing is asked. */}
+      {value.goals.length === 0 && value.invitations.length === 0 && !creating ? <EmptyState heading={t.emptyTitle} body={t.emptyBody} /> : null}
       <ul className="lf-together-list">
         {value.goals.map((goal) => <li key={goal.id}><GoalCard {...props} goal={goal} onDone={say} /></li>)}
       </ul>

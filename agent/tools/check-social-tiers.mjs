@@ -47,6 +47,15 @@ import { fileURLToPath } from 'node:url';
  *      those unfollows; Core serves the end and report routes with the
  *      session guardian and records each removed edge; and the Family graph
  *      and safety notices offer both actions.
+ *   9. E.2 / Law 5 / OD-27 (1) (GAP-FIX-R4 social): the verified Tutor sees
+ *      a parent-created child's goals together. The latest
+ *      coop_goal_guardian_goals checks the verified link and the guardian tier
+ *      (a self-registered teen's goals stay its own, OD-3 Option B),
+ *      reconciles first and returns no progress; Core serves it behind the
+ *      guardian check, names people only through the discovery check and
+ *      re-checks the link after the read; the guardian history reads every
+ *      social.coop_* action the policy lists; and the Family card and the
+ *      history render both.
  */
 
 /** The nine Appendix J Part 1.1-1.2 metrics for E.1-E.5. Dropping one fails social:check. */
@@ -207,6 +216,26 @@ export function checkSocialTiers(root) {
     if (!/<ConnectionActions\b/.test(source)) failures.push(`${surface}: the Family surface no longer offers the Tutor's connection actions (E.1/E.3/E.13)`);
   }
 
+  // 9. E.2 / Law 5: the Tutor sees the child's goals together, and the history carries them.
+  const guardianGoals = latestDefinition(root, 'coop_goal_guardian_goals');
+  for (const needle of ["verification_status = 'verified'", "'COOP_GUARDIAN_NOT_LINKED'", "social_tier(p_kid) IS DISTINCT FROM 'guardian'", "'COOP_NOT_ALLOWED'", 'coop_goal_reconcile(']) {
+    if (!guardianGoals || !guardianGoals.body.includes(needle)) failures.push(`${guardianGoals?.file ?? 'database/migrations'}: the latest coop_goal_guardian_goals no longer carries ${needle} (E.2, OD-3 Option B)`);
+  }
+  if (guardianGoals && /coop_goal_done|'done'|'progress'/.test(guardianGoals.body)) failures.push(`${guardianGoals.file}: coop_goal_guardian_goals returns progress; the Tutor sees members and statuses only (OD-27 (1))`);
+  if (!/router\.get\('\/kids\/:kidId\/coop-goals'[\s\S]*?guardKid\(req, res\)[\s\S]*?tier !== 'guardian'[\s\S]*?readCoopGuardianGoals\(guardian, kidId\)[\s\S]*?mayDiscoverProfile\(guardian, id\)[\s\S]*?if \(!await guardKid\(req, res\)\) return res;/.test(family)) {
+    failures.push('backend/src/routes/family.ts: GET /kids/:kidId/coop-goals must check the guardian, refuse a self-managed teen, read as the session guardian, name people only through the discovery check and re-check the link after the read (E.2)');
+  }
+  const rest = (() => { try { return read(root, 'backend/src/services/supabaseRest.ts'); } catch { return ''; } })();
+  const coopActions = /COOP_AUDIT_ACTIONS = \[([\s\S]*?)\] as const/.exec(rest)?.[1] ?? '';
+  for (const action of ['social.coop_goal_created', 'social.coop_member_invited', 'social.coop_member_joined', 'social.coop_member_ended', 'social.coop_goal_closed']) {
+    if (!coopActions.includes(`'${action}'`)) failures.push(`backend/src/services/supabaseRest.ts: the guardian history no longer reads ${action} (E.2)`);
+  }
+  if (!/export async function getGuardianSocialAuditPage[\s\S]*?COOP_AUDIT_ACTIONS[\s\S]*?or\(actor_id\.eq\./.test(rest)) failures.push('backend/src/services/supabaseRest.ts: getGuardianSocialAuditPage must read the goals-together rows where the child is the actor or the subject (E.2)');
+  const coopCard = (() => { try { return read(root, 'frontend/src/rebuild/family/CoopGoalsConsent.tsx'); } catch { return ''; } })();
+  if (!/data-coop-goal=/.test(coopCard) || !/copy\.privatePerson/.test(coopCard)) failures.push("frontend/src/rebuild/family/CoopGoalsConsent.tsx: the Tutor card no longer lists the child's goals and who is in them (E.2)");
+  const history = (() => { try { return read(root, 'frontend/src/rebuild/social/SocialHistory.tsx'); } catch { return ''; } })();
+  if (!/COOP_HISTORY_ACTIONS/.test(history) || !/coopSentence\(entry\)/.test(history)) failures.push('frontend/src/rebuild/social/SocialHistory.tsx: the Family history no longer renders goals-together events (E.2)');
+
   // 5. The written policy.
   let policy = '';
   try { policy = read(root, 'docs/rebuild/policies/SOCIAL-TIERS.md'); } catch { failures.push('docs/rebuild/policies/SOCIAL-TIERS.md: the social-tier policy is missing'); }
@@ -218,6 +247,7 @@ export function checkSocialTiers(root) {
       if (!policy.includes(tier)) failures.push(`docs/rebuild/policies/SOCIAL-TIERS.md: the tier table lacks the ${tier.replaceAll('|', '').trim()} row`);
     }
     if (!policy.includes('### 1.1 A discoverable profile at 16 or 17 (S-03, OD-27)')) failures.push('docs/rebuild/policies/SOCIAL-TIERS.md: missing the 16-17 discoverable-profile section (S-03, OD-27)');
+    if (!policy.includes('**The Tutor sees the goals (E.2, Law 5; GAP-FIX-R4).**')) failures.push("docs/rebuild/policies/SOCIAL-TIERS.md: missing the Tutor's view of goals together (E.2, GAP-FIX-R4)");
   }
 
   return failures;

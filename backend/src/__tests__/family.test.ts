@@ -342,7 +342,51 @@ describe('E.2 guardian social history', () => {
     expect(res.body.data).toEqual({ entries: [{ id: 1, actorId: null, action: 'social.follow', sourceId: KID_ID, targetId: PARENT_ID, createdAt: entry.created_at, sourceName: null, targetName: null, actorName: null }], nextOffset: null });
     expect(auditReads[0]).toContain(`follower_id.eq.${KID_ID}`);
     expect(auditReads[0]).toContain(`blocked_id.eq.${KID_ID}`);
-    expect(auditReads[0]).toContain('action=in.(social.follow,social.unfollow,social.block,social.unblock)');
+    expect(auditReads[0]).toContain('action=in.(social.follow,social.unfollow,social.block,social.unblock,social.coop_goal_created,');
+  });
+  describe('goals together in the history (GAP-FIX-R4, E.2)', () => {
+    const GOAL_ID = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
+    const OTHER_GOAL = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
+    const coop = (over: Record<string, unknown>) => ({ id: 5, actor_id: KID_ID, action: 'social.coop_member_joined', subject: KID_ID,
+      detail: { origin: 'database-function', goal_id: GOAL_ID, secret: 'must never escape' }, created_at: '2026-09-22T00:00:00Z', ...over });
+    beforeEach(() => {
+      db.coop_goal_members = [{ goal_id: GOAL_ID, user_id: KID_ID, status: 'active', joined_at: '2026-09-20T00:00:00Z' },
+        { goal_id: OTHER_GOAL, user_id: STRANGER_KID, status: 'active', joined_at: '2026-09-20T00:00:00Z' }];
+    });
+    it('reads the child own goal events and the closing of a goal the child was in, with fixed fields only', async () => {
+      rows = [
+        coop({ id: 9, actor_id: null, action: 'social.coop_goal_closed', subject: GOAL_ID, detail: { origin: 'database-function', goal_id: GOAL_ID, reason: 'ended' } }),
+        coop({ id: 8, actor_id: null, action: 'social.coop_member_ended', detail: { origin: 'database-function', goal_id: GOAL_ID, reason: 'connection_ended' } }),
+        coop({ id: 7, action: 'social.coop_goal_created', detail: { origin: 'database-function', goal_id: GOAL_ID, kind: 'lessons', target: 10, days: 14 } }),
+        coop({ id: 6, action: 'social.coop_member_invited', subject: PARENT_ID }),
+        entry,
+      ];
+      const res = await auth(request(createApp()).get(endpoint));
+      expect(res.status).toBe(200);
+      expect(res.body.data.entries.map((e: { id: number }) => e.id)).toEqual([9, 8, 7, 6, 1]);
+      expect(res.body.data.entries[0]).toEqual({ id: 9, actorId: null, action: 'social.coop_goal_closed', sourceId: null, targetId: null, createdAt: '2026-09-22T00:00:00Z',
+        goalId: GOAL_ID, reason: 'ended', target: null, sourceName: null, targetName: null, actorName: null });
+      expect(res.body.data.entries[1]).toMatchObject({ action: 'social.coop_member_ended', sourceId: null, targetId: KID_ID, reason: 'connection_ended' });
+      expect(res.body.data.entries[2]).toMatchObject({ action: 'social.coop_goal_created', sourceId: KID_ID, target: 10 });
+      expect(res.body.data.entries[3]).toMatchObject({ action: 'social.coop_member_invited', sourceId: KID_ID, targetId: PARENT_ID });
+      expect(JSON.stringify(res.body)).not.toContain('must never escape');
+      expect(auditReads[0]).toContain(`or(actor_id.eq.${KID_ID},subject.eq.${KID_ID})`);
+      expect(auditReads[0]).toContain(`and(action.eq.social.coop_goal_closed,subject.in.(${GOAL_ID}))`);
+      expect(auditReads[0]).not.toContain(OTHER_GOAL);
+      expect(decodeURIComponent(auditReads[0]!)).toContain('detail->>origin=in.(database-trigger,database-function)');
+    });
+    it('drops a goal event about another family, even when the transport returns it', async () => {
+      rows = [coop({ actor_id: STRANGER_KID, subject: STRANGER_KID }), coop({ id: 4, action: 'social.coop_goal_closed', actor_id: null, subject: OTHER_GOAL })];
+      const res = await auth(request(createApp()).get(endpoint));
+      expect(res.status).toBe(200);
+      expect(res.body.data.entries).toEqual([]);
+    });
+    it('refuses an unknown reason or origin instead of guessing', async () => {
+      rows = [coop({ detail: { origin: 'database-function', goal_id: GOAL_ID, reason: 'free text' } })];
+      expect((await auth(request(createApp()).get(endpoint))).status).toBe(502);
+      rows = [coop({ detail: { origin: 'database-trigger', goal_id: GOAL_ID } })];
+      expect((await auth(request(createApp()).get(endpoint))).status).toBe(502);
+    });
   });
   it.each(['pending', 'revoked'])('denies a %s guardian without reading logs', async status => {
     db.guardian_links[0]!.verification_status = status;
@@ -549,5 +593,68 @@ describe('POST /api/v1/family/kids/:kidId/analytics-consent — under 13 (A.1, H
       String(input).includes('/account_safety_origins?') ? Promise.resolve(new Response('', { status: 500 })) : realFetch(input, init)));
     expect((await grant()).status).toBe(502);
     expect(db.analytics_consents).toEqual([]);
+  });
+});
+
+
+describe('E.2 / Law 5: the Tutor sees the goals together of a child (GAP-FIX-R4)', () => {
+  const endpoint = `/api/v1/family/kids/${KID_ID}/coop-goals`;
+  const FRIEND = '77777777-7777-4777-8777-777777777777';
+  const GOAL_ID = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
+  const goals = [{ id: GOAL_ID, kind: 'lessons', target: 10, startsAt: '2026-09-20T00:00:00Z', endsAt: '2026-10-04T00:00:00Z', startedByChild: true, childStatus: 'active',
+    people: [{ userId: FRIEND, status: 'active' }, { userId: STRANGER_KID, status: 'invited' }, { userId: PARENT_ID, status: 'ended' }] }];
+  const rpcCalls = () => ((db.__rpc_calls ?? []) as { name: string; body: unknown }[]).filter((c) => c.name === 'coop_goal_guardian_goals');
+  beforeEach(() => {
+    db.user_roles.push({ user_id: KID_ID, role: 'kid' }, { user_id: STRANGER_KID, role: 'kid' }, { user_id: FRIEND, role: 'universal' });
+    db.social_tiers = [{ user_id: FRIEND, tier: 'adult' }];
+    db.profiles.push({ user_id: FRIEND, display_name: 'Leo' }, { user_id: STRANGER_KID, display_name: 'Protected name' }, { user_id: PARENT_ID, display_name: 'Guardian' });
+    db.__rpc = [{ name: 'coop_goal_guardian_goals', body: goals }];
+  });
+  it('lists each open goal with its window, target and each person as a name (or none) and a status, and no progress', async () => {
+    const res = await auth(request(createApp()).get(endpoint));
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ goals: [{ id: GOAL_ID, kind: 'lessons', target: 10, startsAt: '2026-09-20T00:00:00Z', endsAt: '2026-10-04T00:00:00Z',
+      startedByChild: true, childStatus: 'joined',
+      people: [{ name: 'Leo', status: 'joined' }, { name: null, status: 'asked' }, { name: 'Guardian', status: 'left' }] }] });
+    expect(JSON.stringify(res.body)).not.toContain('Protected name');
+    expect(JSON.stringify(res.body)).not.toContain(FRIEND);
+    expect(JSON.stringify(res.body)).not.toMatch(/done|progress|rank/);
+    expect(rpcCalls()[0]!.body).toEqual({ p_guardian: PARENT_ID, p_kid: KID_ID });
+  });
+  it('keeps the goals of a self-registered teen its own (OD-3 Option B), before the read', async () => {
+    db.user_roles = db.user_roles.filter((row) => !(row.user_id === KID_ID && row.role === 'kid'));
+    db.social_tiers = [{ user_id: KID_ID, tier: 'teen' }];
+    const res = await auth(request(createApp()).get(endpoint));
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('ACCOUNT_SELF_MANAGED');
+    expect(rpcCalls()).toEqual([]);
+  });
+  it('refuses an unrelated guardian and a pending link without reading', async () => {
+    expect((await auth(request(createApp()).get(`/api/v1/family/kids/${STRANGER_KID}/coop-goals`))).status).toBe(404);
+    db.guardian_links[0]!.verification_status = 'pending';
+    expect((await auth(request(createApp()).get(endpoint))).status).toBe(404);
+    expect(rpcCalls()).toEqual([]);
+  });
+  it('refuses a parent without current adult verification', async () => {
+    db.parent_verifications = [];
+    expect((await auth(request(createApp()).get(endpoint))).status).toBe(403);
+    expect(rpcCalls()).toEqual([]);
+  });
+  it('maps the database refusals and refuses a malformed answer', async () => {
+    db.__rpc = [{ name: 'coop_goal_guardian_goals', status: 400, body: { code: 'P0001', message: 'COOP_GUARDIAN_NOT_LINKED' } }];
+    expect((await auth(request(createApp()).get(endpoint))).status).toBe(404);
+    db.__rpc = [{ name: 'coop_goal_guardian_goals', status: 400, body: { code: 'P0001', message: 'COOP_NOT_ALLOWED' } }];
+    expect((await auth(request(createApp()).get(endpoint))).body.error.code).toBe('ACCOUNT_SELF_MANAGED');
+    db.__rpc = [{ name: 'coop_goal_guardian_goals', body: [{ ...goals[0], done: 4 }] }];
+    expect((await auth(request(createApp()).get(endpoint))).status).toBe(502);
+  });
+  it('refuses caller-supplied filters and discards the read after the link is revoked', async () => {
+    expect((await auth(request(createApp()).get(`${endpoint}?kid=${STRANGER_KID}`))).status).toBe(400);
+    const fake = createFakeFetch(db);
+    vi.stubGlobal('fetch', async (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
+      if (String(input).includes('/rpc/coop_goal_guardian_goals')) db.guardian_links[0]!.verification_status = 'revoked';
+      return fake(input, init);
+    });
+    expect((await auth(request(createApp()).get(endpoint))).status).toBe(404);
   });
 });

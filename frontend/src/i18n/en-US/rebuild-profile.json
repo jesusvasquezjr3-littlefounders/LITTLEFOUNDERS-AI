@@ -114,7 +114,7 @@
     "back": "Go back",
     "working": "Working…",
     "wrongPassword": "That password is not right. Try again.",
-    "reauth": "For your safety, sign in again first.",
+    "reauth": "To confirm it is you, sign in again first.",
     "signInAgain": "Sign in again",
     "failed": "We could not do that. Try again.",
     "loading": "Loading…",

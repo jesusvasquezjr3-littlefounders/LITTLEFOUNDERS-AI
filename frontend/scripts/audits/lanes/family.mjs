@@ -39,6 +39,10 @@ export const scenarios = {
   'family-mentor-boards': tutor({ kids: 'two', boards: 'drawn' }),
   // GAP-FIX-R2 (D-14 (b)): the linked teen (KID_B) asked to delete their own account; the Tutor is told (notify only).
   'family-deletion-notice': tutor({ kids: 'two', deletionNotice: true }),
+  // GAP-FIX-R4 (OD-27 (1), E.2): goals together for a parent-created 15-year-old, on with open goals, off, and a 12-year-old it is not offered to.
+  'family-coop': tutor({ kids: 'coopTeen', coop: 'on' }),
+  'family-coop-off': tutor({ kids: 'coopTeen', coop: 'off' }),
+  'family-coop-young': tutor({ kids: 'coopYoung' }),
   // W2F.2: Tasks (F4) and coins (F5) for the Tutor, the child boards and the teen wallet (verify-family-money-screens.mjs).
   'money-tutor': tutor({ kids: 'two', money: 'full' }),
   'money-tutor-new': tutor({ kids: 'two', money: 'new' }),
@@ -86,6 +90,21 @@ const splitPress = (screen) => {
   return [open, { open: [open, `[data-screen="${screen}"] [data-money-habits="split-chooser"] button[type="submit"]`], firstView: false }];
 };
 
+/* GAP-FIX-R4: the controls that open the Connections panels (each a lazy panel behind its own toggle) and the row actions. */
+const SOCIAL = {
+  graph: '.lf-social-graph:not([data-social-audit]) > button[aria-expanded]',
+  requests: '[data-social-audit="requests"] > button[aria-expanded]',
+  history: '[data-social-audit="history"] > button[aria-expanded]',
+  notices: '.lf-social-notices > button[aria-expanded]',
+  badges: '[data-share-audit="badges"] > button[aria-expanded]',
+  end: '.lf-social-graph:not([data-social-audit]) [data-social-actions] > .lf-button--danger',
+  report: '.lf-social-graph:not([data-social-audit]) [data-social-actions] > button[aria-haspopup="dialog"]:not(.lf-button--danger)',
+  // The session token arrives after the console renders, and every token-bound panel remounts when it does (a press before that
+  // is lost with the old mount). The goals-together card's answered paragraph proves the remount happened; its failed state is a notice.
+  settled: '[data-console-part="coop-goals"] p[data-copy-role="body"]:not(.lf-notice)',
+};
+const opensSettled = (selector, open = [selector]) => [selector, { open, firstView: false, readyAlso: SOCIAL.settled }];
+
 export const states = [
   app('/family@two-children', `/family?child=${KID_A}`, 'family-two', ready.console, { readyAlso: '[data-console-part="picker"]' }),
   app('/family@teen-selected', `/family?child=${KID_B}`, 'family-two', `[data-console-control="manage-child"][data-self-managed="true"]`),
@@ -95,7 +114,8 @@ export const states = [
   app('/family@one-child', '/family', 'family-one', ready.console),
   // GAP-FIX-R3: a Tutor mints the second-Tutor invite; the link it shows carries a localized name and the data role.
   app('/family@invite-link', '/family', 'family-one', '[data-invite-control="toggle"]',
-    { open: ['[data-invite-control="toggle"]', '[data-invite-control="mint"]'], firstView: false, readyAlso: ready.console }),
+    // GAP-FIX-R4: pressed only after the token-bound panels remount (SOCIAL.settled); a press before that was lost at random.
+    { open: ['[data-invite-control="toggle"]', '[data-invite-control="mint"]'], firstView: false, readyAlso: [ready.console, SOCIAL.settled] }),
   app('/family@manage-open', '/family', 'family-one', ...opens('[data-console-control="manage-child"] button')),
   app('/family@username-flagged', '/family', 'family-flagged', ...opens('[data-console-control="manage-child"] button')),
   app('/family@add-child', '/family', 'family-empty', ...opens('[data-console-control="add-child"] button')),
@@ -110,6 +130,19 @@ export const states = [
   app('/family/:kid/tutor@boards', `/family/${KID_A}/tutor`, 'family-mentor-boards', ...opens('[data-console-part="sessions"] [data-session-id] button')),
   app('/family/:kid/tutor@quiet', `/family/${KID_A}/tutor`, 'family-mentor-quiet', ready.mentor),
   app('/family/:kid/tutor@forbidden', `/family/${KID_A}/tutor`, 'family-mentor-forbidden', '[data-screen="child-mentor"] .lf-state--empty'),
+  // GAP-FIX-R4 (Bible 02 §7, 03 §5, 06 §3; E.1-E.3, OD-27 (1)): the child's Connections slot opened panel by panel, the aside's safety
+  // notices, the GAP-FIX-R3 end-connection confirmation and report dialog, the older badge links, and the goals-together card in each state.
+  app('/family@connections-graph', `/family?child=${KID_A}`, 'family-two', ...opensSettled(SOCIAL.graph)),
+  app('/family@connections-graph-self-managed', `/family?child=${KID_B}`, 'family-two', ...opensSettled(SOCIAL.graph)),
+  app('/family@connections-requests', `/family?child=${KID_A}`, 'family-two', ...opensSettled(SOCIAL.requests)),
+  app('/family@connections-history', `/family?child=${KID_A}`, 'family-two', ...opensSettled(SOCIAL.history)),
+  app('/family@social-notices', `/family?child=${KID_A}`, 'family-two', ...opensSettled(SOCIAL.notices)),
+  app('/family@connection-end-confirm', `/family?child=${KID_A}`, 'family-two', ...opensSettled(SOCIAL.graph, [SOCIAL.graph, SOCIAL.end])),
+  app('/family@connection-report', `/family?child=${KID_A}`, 'family-two', ...opensSettled(SOCIAL.graph, [SOCIAL.graph, SOCIAL.report])),
+  app('/family@badge-links', `/family?child=${KID_A}`, 'family-two', ...opensSettled(SOCIAL.badges)),
+  app('/family@coop-goals-consent', '/family', 'family-coop', '[data-console-part="coop-goals"] [data-coop-part="goals"] [data-coop-goal]'),
+  app('/family@coop-goals-off', '/family', 'family-coop-off', '[data-console-part="coop-goals"] [role="switch"]'),
+  app('/family@coop-goals-not-teen', '/family', 'family-coop-young', '[data-console-part="coop-goals"] p[data-copy-role="body"]'),
   // W2F.2: Tasks (F4) and coins (F5), both sides, and the teen wallet.
   app('/tasks@tutor', '/tasks', 'money-tutor', ready.tutorTasks, { readyAlso: '[data-family-part="rewards"] li' }),
   app('/tasks@tutor-add-reward', '/tasks', 'money-tutor', ...opens('[data-family-part="rewards"] > .lf-button-group button')),
@@ -139,6 +172,8 @@ const KIDS = {
   one: [kid({})],
   flagged: [kid({ profileReview: { flagged: true, fields: ['username'] } })],
   none: [],
+  coopTeen: [kid({ displayName: 'Valentina', username: 'vale_2011', pendingApprovalCount: 0 })],
+  coopYoung: [kid({ displayName: 'Nico', username: 'nico_2014', pendingApprovalCount: 0 })],
 };
 
 const TITLES = {
@@ -284,6 +319,67 @@ export function respond({ core, spec, locale, path, request, ok }) {
       choice: CHOICES[locale][1], recordedAt: T }], hasMore: false });
   if (/^\/family\/learning\/kids\/[^/]+\/streak$/.test(path)) return ok({ streak: { model: 'rest-days-v1', status: 'open', current: 4, best: 9, daysPracticed: 21,
     restDaysLeft: 1, lastActiveDate: '2026-09-24', pause: null } });
+  if (family.kids) {
+    const answer = social({ family, locale, path, request, ok });
+    if (answer !== undefined) return answer;
+  }
+  return undefined;
+}
+
+// ── GAP-FIX-R4: the Connections slot, the safety notices and goals together, in Core's real shapes ─────────────
+
+const FRIEND = (n) => `bbbbbbbb-bbbb-4bbb-8bbb-00000000000${n}`;
+const friend = (n, displayName, username) => ({ userId: FRIEND(n), displayName, username, avatarOptions: {}, isTutor: false });
+const PEOPLE = { followers: [friend(1, 'Leo', 'leo_reads'), friend(2, 'Mar', 'mar_2015')], following: [friend(1, 'Leo', 'leo_reads'), friend(3, 'Sol', 'sol_sings')] };
+const at = (day) => `2026-09-${String(day).padStart(2, '0')}T16:00:00.000Z`;
+const socialHistory = () => [
+  { id: 9, actorId: null, action: 'social.coop_goal_closed', sourceId: null, targetId: null, createdAt: at(24), goalId: GOAL, reason: 'ended', target: null, sourceName: null, targetName: null, actorName: null },
+  { id: 8, actorId: FRIEND(1), action: 'social.coop_member_ended', sourceId: FRIEND(1), targetId: KID_A, createdAt: at(23), goalId: GOAL, reason: 'removed', target: null,
+    sourceName: 'Leo', targetName: 'Sofía', actorName: 'Leo' },
+  { id: 7, actorId: KID_A, action: 'social.coop_member_invited', sourceId: KID_A, targetId: FRIEND(2), createdAt: at(22), goalId: GOAL, reason: null, target: null,
+    sourceName: 'Sofía', targetName: null, actorName: 'Sofía' },
+  { id: 6, actorId: KID_A, action: 'social.coop_goal_created', sourceId: KID_A, targetId: KID_A, createdAt: at(22), goalId: GOAL, reason: null, target: 10,
+    sourceName: 'Sofía', targetName: 'Sofía', actorName: 'Sofía' },
+  { id: 5, actorId: FRIEND(9), action: 'social.coop_guardian_enabled', sourceId: FRIEND(9), targetId: KID_A, createdAt: at(21), goalId: null, reason: null, target: null,
+    sourceName: 'Ana', targetName: 'Sofía', actorName: 'Ana' },
+  { id: 4, actorId: KID_A, action: 'social.follow', sourceId: KID_A, targetId: FRIEND(1), createdAt: at(20), sourceName: 'Sofía', targetName: 'Leo', actorName: 'Sofía' },
+  { id: 3, actorId: KID_A, action: 'social.block', sourceId: KID_A, targetId: FRIEND(4), createdAt: at(19), sourceName: 'Sofía', targetName: null, actorName: 'Sofía' },
+];
+const BADGE = { 'en-US': 'Seven-day streak', 'es-MX': 'Racha de siete días', 'pt-BR': 'Sequência de sete dias' };
+const coopView = (family) => family.coop === 'on' ? { ageFits: true, enabled: true, openGoals: 2 }
+  : family.coop === 'off' ? { ageFits: true, enabled: false, openGoals: 0 } : { ageFits: false, enabled: false, openGoals: 0 };
+const coopGoals = (family) => family.coop !== 'on' ? [] : [
+  { id: GOAL, kind: 'lessons', target: 10, startsAt: at(20), endsAt: '2026-10-04T16:00:00.000Z', startedByChild: true, childStatus: 'joined',
+    people: [{ name: 'Leo', status: 'joined' }, { name: null, status: 'asked' }, { name: 'Mar', status: 'left' }] },
+  { id: '77777777-7777-4777-8777-777777777771', kind: 'lessons', target: 5, startsAt: at(24), endsAt: '2026-10-01T16:00:00.000Z', startedByChild: false,
+    childStatus: 'asked', people: [{ name: 'Sol', status: 'joined' }] },
+];
+
+/** The Family Connections panels (E.1-E.3), the aside's safety notices, the older badge links (OD-20) and goals together (OD-27 (1)). */
+function social({ family, locale, path, request, ok }) {
+  const get = request.method === 'GET';
+  const kidOf = (suffix) => path.match(new RegExp(`^/family/kids/([^/]+)${suffix}$`))?.[1];
+  const graphKid = kidOf('/social');
+  if (graphKid && get) {
+    const direction = new URL(request.url).searchParams.get('direction') === 'following' ? 'following' : 'followers';
+    // A parent-created child's connections are the Tutor's to end; a self-registered teen decides its own (E.8).
+    return ok({ users: PEOPLE[direction], nextOffset: null, canEnd: graphKid !== KID_B });
+  }
+  if (kidOf('/social/requests') && get) return ok({ requests: [
+    { requestId: '99999999-9999-4999-8999-999999999991', requesterId: FRIEND(5), requesterName: 'Nico', requestedAt: at(24), status: 'pending' },
+    { requestId: '99999999-9999-4999-8999-999999999992', requesterId: FRIEND(6), requesterName: null, requestedAt: at(23), status: 'pending' },
+  ], nextOffset: null });
+  if (kidOf('/social/audit') && get) return ok({ entries: socialHistory(), nextOffset: null });
+  if (path === '/family/social-notices' && get) return ok({ notices: [
+    { noticeId: '99999999-9999-4999-8999-999999999993', kidUserId: KID_A, subjectId: FRIEND(1), subjectName: 'Leo', canEnd: true, createdAt: at(24) },
+    { noticeId: '99999999-9999-4999-8999-999999999994', kidUserId: KID_A, subjectId: FRIEND(7), subjectName: null, canEnd: false, createdAt: at(22) },
+  ], nextOffset: null });
+  if (kidOf('/badges') && get) return ok({ shares: [{ token: 'auditShareToken0123456789ab', achievementLabel: BADGE[locale], createdAt: at(18), expiresAt: '2026-10-18T16:00:00.000Z' }] });
+  if (/^\/family\/kids\/[^/]+\/social\/connections\/[^/]+$/.test(path) && request.method === 'DELETE') return ok({ ended: true, removed: 2 });
+  if (/^\/family\/kids\/[^/]+\/social\/connections\/[^/]+\/report$/.test(path) && request.method === 'POST') return ok({ reported: true, reportId: '99999999-9999-4999-8999-999999999995' });
+  if (/^\/family\/coop-goals\/kids\/[^/]+$/.test(path) && get) return ok(coopView(family));
+  const coopKid = kidOf('/coop-goals');
+  if (coopKid && get) return coopKid === KID_B ? refuse(403, 'ACCOUNT_SELF_MANAGED') : ok({ goals: coopGoals(family) });
   return undefined;
 }
 

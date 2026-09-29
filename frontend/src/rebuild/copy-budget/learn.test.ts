@@ -84,7 +84,7 @@ const lesson: Record<string, CopyRole> = { pageTitle: 'heading', resultTitle: 'h
 const together: Record<string, CopyRole> = {
   title: 'heading', intro: 'body', rules: 'body', back: 'action', loading: 'body', errorTitle: 'heading', errorBody: 'body', offlineBody: 'body',
   retry: 'action', retrying: 'action', closedTitle: 'heading', closedBody: 'body', closedHint: 'body', invitationsTitle: 'heading',
-  invitedBy: 'body', goalLine: 'heading', withPeople: 'body', join: 'action', decline: 'action', goalsTitle: 'heading', progressLabel: 'body',
+  invitedBy: 'body', goalLine: 'heading', join: 'action', decline: 'action', goalsTitle: 'heading', progressLabel: 'body',
   progressValue: 'data', reached: 'body', membersTitle: 'heading', you: 'data', waiting: 'body', invite: 'action', remove: 'action',
   withdraw: 'action', leave: 'action', report: 'action', leaveTitle: 'heading', leaveBody: 'body', leaveYes: 'action', stay: 'action',
   removeTitle: 'heading', removeBody: 'body', removeYes: 'action', newTitle: 'heading', newTarget: 'body', lessonsOption: 'option',

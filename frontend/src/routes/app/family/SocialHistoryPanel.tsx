@@ -3,12 +3,13 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme/useTheme';
 import { api } from '@/lib/api';
-import { SocialHistory, type SocialHistoryEntry } from '@/rebuild/social/SocialHistory';
+import { COOP_HISTORY_ACTIONS, FOLLOW_HISTORY_ACTIONS, SocialHistory, type SocialHistoryEntry } from '@/rebuild/social/SocialHistory';
 import en from '@/i18n/en-US/rebuild-family.json';
 import es from '@/i18n/es-MX/rebuild-family.json';
 import pt from '@/i18n/pt-BR/rebuild-family.json';
 
 interface Page { entries: SocialHistoryEntry[]; nextOffset: number | null }
+const ACTIONS: readonly string[] = [...FOLLOW_HISTORY_ACTIONS, ...COOP_HISTORY_ACTIONS];
 export function SocialHistoryPanel(props: { kidUserId: string; token: string | null }) {
   return <ScopedSocialHistory key={`${props.kidUserId}:${props.token}`} {...props} />;
 }
@@ -31,7 +32,7 @@ function ScopedSocialHistory({ kidUserId, token }: { kidUserId: string; token: s
       if (current !== generation.current) return;
       if (result.error || !result.data) throw new Error('Graph unavailable');
       const data = result.data;
-      if (!Array.isArray(data.entries) || !data.entries.every(entry => Number.isSafeInteger(entry.id) && ['social.follow', 'social.unfollow', 'social.block', 'social.unblock'].includes(entry.action) && (entry.sourceName === null || typeof entry.sourceName === 'string') && (entry.targetName === null || typeof entry.targetName === 'string') && Number.isFinite(Date.parse(entry.createdAt))) ||
+      if (!Array.isArray(data.entries) || !data.entries.every(entry => Number.isSafeInteger(entry.id) && ACTIONS.includes(entry.action) && (entry.reason === undefined || entry.reason === null || typeof entry.reason === 'string') && (entry.sourceName === null || typeof entry.sourceName === 'string') && (entry.targetName === null || typeof entry.targetName === 'string') && Number.isFinite(Date.parse(entry.createdAt))) ||
         !(data.nextOffset === null || (Number.isInteger(data.nextOffset) && data.nextOffset > offset))) throw new Error('Invalid history response');
       setPage(previous => ({ entries: Array.from(new Map([...(offset ? previous.entries : []), ...data.entries].map(entry => [entry.id, entry])).values()), nextOffset: data.nextOffset }));
     } catch {

@@ -492,24 +492,93 @@ export async function getSocialDisplayNames(ids: string[]) {
   return parsed.success ? parsed.data.filter(row => unique.includes(row.user_id)) : null;
 }
 
+const FOLLOW_AUDIT_ACTIONS = ['social.follow', 'social.unfollow', 'social.block', 'social.unblock'] as const;
+/**
+ * OD-27 (1) goals together, as coop_goal_log writes them (migrations
+ * teen_cooperative_goals, teen_cooperative_goal_actions): the actor, the
+ * member (subject) or, for a closed goal, the goal id as subject.
+ */
+export const COOP_AUDIT_ACTIONS = [
+  'social.coop_goal_created', 'social.coop_member_invited', 'social.coop_member_joined', 'social.coop_member_ended',
+  'social.coop_goal_closed', 'social.coop_guardian_enabled', 'social.coop_guardian_disabled',
+] as const;
+export const COOP_END_REASON_CODES = [
+  'declined', 'withdrawn', 'left', 'removed', 'lapsed', 'connection_ended', 'no_longer_eligible', 'guardian_off', 'goal_closed',
+] as const;
+const COOP_CLOSE_REASONS = ['ended', 'too_small', 'empty'] as const;
+
 const SocialAuditRow = z.object({
   id: z.number().int().nonnegative().refine(Number.isSafeInteger),
   actor_id: UUID.nullable(),
-  action: z.enum(['social.follow', 'social.unfollow', 'social.block', 'social.unblock']),
+  action: z.enum(FOLLOW_AUDIT_ACTIONS),
   detail: z.object({ origin: z.literal('database-trigger'), follower_id: UUID.optional(), followed_id: UUID.optional(), blocker_id: UUID.optional(), blocked_id: UUID.optional() }),
   created_at: z.string().datetime({ offset: true }),
 });
+const CoopAuditRow = z.object({
+  id: z.number().int().nonnegative().refine(Number.isSafeInteger),
+  actor_id: UUID.nullable(),
+  action: z.enum(COOP_AUDIT_ACTIONS),
+  subject: z.string(),
+  // Only these fixed fields are read; anything else in the detail never leaves Core.
+  detail: z.object({
+    origin: z.literal('database-function'),
+    goal_id: UUID.nullable().optional(),
+    reason: z.enum([...COOP_END_REASON_CODES, ...COOP_CLOSE_REASONS]).optional(),
+    target: z.number().int().positive().optional(),
+  }),
+  created_at: z.string().datetime({ offset: true }),
+});
 
-/** Only fixed social participant fields reach Family; arbitrary audit detail never does. */
-export async function getGuardianSocialAuditPage(kidId: string, offset: number) {
+export type GuardianSocialAuditEntry = {
+  id: number; actorId: string | null; action: (typeof FOLLOW_AUDIT_ACTIONS)[number] | (typeof COOP_AUDIT_ACTIONS)[number];
+  sourceId: string | null; targetId: string | null; createdAt: string;
+  goalId?: string | null; reason?: string | null; target?: number | null;
+};
+
+/** The goals the child joined and was still in when they closed (or still is): at most the 100 most recent. */
+async function getKidCoopGoalIds(kidId: string): Promise<string[] | null> {
+  const raw = await rest<unknown>(`/coop_goal_members?user_id=eq.${eu(kidId)}&status=eq.active&select=goal_id,user_id&order=joined_at.desc&limit=100`, serviceToken());
+  const parsed = z.array(z.object({ goal_id: UUID, user_id: UUID })).max(100).safeParse(raw);
+  return parsed.success ? parsed.data.filter((row) => row.user_id === kidId).map((row) => row.goal_id) : null;
+}
+
+/**
+ * Only fixed social participant fields reach Family; arbitrary audit detail never does.
+ * E.2 (GAP-FIX-R4): the history also carries the child's goals-together events, where
+ * the child is the actor or the subject, and the closing of a goal the child was in.
+ */
+export async function getGuardianSocialAuditPage(kidId: string, offset: number): Promise<{ entries: GuardianSocialAuditEntry[]; nextOffset: number | null } | null> {
   const id = eu(kidId);
+  const goals = await getKidCoopGoalIds(kidId);
+  if (goals === null) return null;
+  const coop = `and(action.in.(${COOP_AUDIT_ACTIONS.join(',')}),or(actor_id.eq.${id},subject.eq.${id}))`;
+  const closed = goals.length > 0 ? `,and(action.eq.social.coop_goal_closed,subject.in.(${goals.map(eu).join(',')}))` : '';
   const raw = await rest<unknown[]>(
-    `/audit_logs?select=id,actor_id,action,detail,created_at&action=in.(social.follow,social.unfollow,social.block,social.unblock)&detail->>origin=eq.database-trigger&or=(detail->>follower_id.eq.${id},detail->>followed_id.eq.${id},detail->>blocker_id.eq.${id},detail->>blocked_id.eq.${id})&order=id.desc&offset=${offset}&limit=${LIST_LIMIT + 1}`,
+    `/audit_logs?select=id,actor_id,action,subject,detail,created_at&action=in.(${[...FOLLOW_AUDIT_ACTIONS, ...COOP_AUDIT_ACTIONS].join(',')})`
+      + `&detail->>origin=in.(database-trigger,database-function)`
+      + `&or=(detail->>follower_id.eq.${id},detail->>followed_id.eq.${id},detail->>blocker_id.eq.${id},detail->>blocked_id.eq.${id},${coop}${closed})`
+      + `&order=id.desc&offset=${offset}&limit=${LIST_LIMIT + 1}`,
     serviceToken(),
   );
   if (raw === null) return null;
-  const entries = [];
+  const goalSet = new Set(goals);
+  const entries: GuardianSocialAuditEntry[] = [];
   for (const value of raw.slice(0, LIST_LIMIT)) {
+    const action = (value as { action?: unknown } | null)?.action;
+    if (typeof action === 'string' && (COOP_AUDIT_ACTIONS as readonly string[]).includes(action)) {
+      const parsed = CoopAuditRow.safeParse(value);
+      if (!parsed.success) return null;
+      const row = parsed.data;
+      const closedGoal = row.action === 'social.coop_goal_closed';
+      // Defense in depth: a transport/filter defect must not expose another family's log.
+      if (closedGoal ? !goalSet.has(row.subject) : row.actor_id !== kidId && row.subject !== kidId) continue;
+      const person = !closedGoal && UUID.safeParse(row.subject).success ? row.subject : null;
+      entries.push({
+        id: row.id, actorId: row.actor_id, action: row.action, sourceId: row.actor_id, targetId: person, createdAt: row.created_at,
+        goalId: row.detail.goal_id ?? (closedGoal ? row.subject : null), reason: row.detail.reason ?? null, target: row.detail.target ?? null,
+      });
+      continue;
+    }
     const parsed = SocialAuditRow.safeParse(value);
     if (!parsed.success) return null;
     const row = parsed.data;

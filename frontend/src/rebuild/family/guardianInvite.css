@@ -3,3 +3,5 @@
 .lf-guardian-invite-link { display: grid; gap: .75rem; }
 .lf-guardian-invite-link-row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
 .lf-guardian-invite-link-value { min-inline-size: 0; overflow-wrap: anywhere; font: var(--type-caption); letter-spacing: var(--type-caption-tracking); }
+/* GAP-FIX-R4: the audit found the invite notice ran 88-89 characters wide in es-MX and pt-BR on a tablet column (03 §3 measure). */
+.lf-guardian-invite .lf-notice { max-inline-size: 30rem; }

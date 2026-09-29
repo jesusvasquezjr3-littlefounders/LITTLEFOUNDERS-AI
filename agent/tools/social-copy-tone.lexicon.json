@@ -1,0 +1,342 @@
+{
+  "about": "GAP-FIX-R4 (Appendix J Part 3 Stage 4, F.3, Law 2): the social-layer tone gate's scope, lexicon and reviewed exceptions. The same engine as the D.8 Family Hub gate (agent/tools/check-family-copy-tone.mjs) reads this file through agent/tools/check-social-copy-tone.mjs. It covers the profile and social copy: every group of rebuild-profile.json, the OD-27 (1) goals-together copy, and the Family connection panels. docs/operations/SOCIAL-COPY-TONE-GATE.md explains how to change it. An exception needs a reason a reviewer can check.",
+  "version": 1,
+  "scope": {
+    "namespaces": [],
+    "subtrees": [
+      "rebuild-profile:analyticsChoice",
+      "rebuild-profile:privateProfile",
+      "rebuild-profile:teenConnections",
+      "rebuild-profile:profileSafety",
+      "rebuild-profile:memorySelfReview",
+      "rebuild-profile:accountDeletion",
+      "rebuild-profile:ownProfile",
+      "rebuild-profile:lookEditor",
+      "rebuild-profile:settings",
+      "rebuild-profile:publicProfile",
+      "rebuild-profile:report",
+      "rebuild-profile:peopleList",
+      "rebuild-profile:discoverable",
+      "rebuild-profile:ageRecord",
+      "rebuild-learn:together",
+      "rebuild-learn:home.togetherTitle",
+      "rebuild-learn:home.together",
+      "rebuild-learn:home.togetherAsked",
+      "rebuild-family:socialGraph",
+      "rebuild-family:socialHistory",
+      "rebuild-family:socialRequests",
+      "rebuild-family:socialNotices",
+      "rebuild-family:socialConnectionActions",
+      "rebuild-family:familyCoopGoals",
+      "rebuild-family:badgeShares",
+      "rebuild-family:achievementShare"
+    ],
+    "errorCodes": [],
+    "coverage": [
+      "rebuild-profile",
+      "rebuild-family"
+    ],
+    "complete": [
+      "rebuild-profile"
+    ],
+    "accessors": [
+      {
+        "namespace": "rebuild-learn",
+        "pattern": "learnCopy\\[[^\\]]+\\]\\.(\\w+)"
+      }
+    ],
+    "surfaces": [
+      "frontend/src/rebuild/social",
+      "frontend/src/rebuild/account",
+      "frontend/src/routes/app/profile",
+      "frontend/src/app-routes/TogetherRoute.tsx",
+      "frontend/src/rebuild/learning/TogetherView.tsx",
+      "frontend/src/rebuild/learning/together.ts"
+    ],
+    "surfacesWhy": "The profile, people-list, connection, report and account screens (rebuild/social, rebuild/account and their routes), and /learn/together (OD-27 (1)). A person reads only these surfaces' own copy; the gate fails if one of them starts rendering a raw Core message.",
+    "subtreesWhy": "Every group of rebuild-profile.json is in scope (scope.complete: a new group fails until it is listed), plus rebuild-learn.json `together` and the learner-home card's three together keys and the Family connection groups of rebuild-family.json, which the D.8 gate also reads under its own lexicon. A social surface that names a rebuild-profile or rebuild-family group outside this list fails (scope.coverage), so a later lane cannot add social copy the gate never reads."
+  },
+  "categories": {
+    "guarantee": {
+      "why": "D.7 and Block E: no social copy may promise a safety, privacy or protection outcome the system does not enforce (a report is read by people; a private profile is a setting, not a guarantee).",
+      "en-US": [
+        "guarantee[sd]?",
+        "safe",
+        "safely",
+        "safer",
+        "secure[sd]?",
+        "securely",
+        "protected",
+        "protects?",
+        "protection",
+        "always private",
+        "completely private",
+        "fully private",
+        "100% private",
+        "no one will ever",
+        "nobody will ever",
+        "never be seen",
+        "risk-free"
+      ],
+      "es-MX": [
+        "garantiza\\w*",
+        "garant[ií]as?",
+        "segur[oa]s?",
+        "seguridad",
+        "protegid[oa]s?",
+        "protecci[oó]n",
+        "protege",
+        "totalmente privad[oa]",
+        "siempre privad[oa]",
+        "nadie (?:podr[aá]|va a) (?:nunca|jam[aá]s)",
+        "sin riesgo"
+      ],
+      "pt-BR": [
+        "garant\\w*",
+        "segur[oa]s?",
+        "seguran[cç]a",
+        "protegid[oa]s?",
+        "prote[cç][aã]o",
+        "protege",
+        "totalmente privad[oa]",
+        "sempre privad[oa]",
+        "ningu[eé]m (?:nunca|jamais)",
+        "sem risco"
+      ]
+    },
+    "messaging": {
+      "why": "E.10: there is no messaging between accounts. Social copy may not offer, imply or name a chat, a message, an inbox or a reply.",
+      "en-US": [
+        "chats?",
+        "chatting",
+        "messages?",
+        "messaging",
+        "DMs?",
+        "direct message",
+        "inbox",
+        "texts? (?:them|him|her|you|me)",
+        "repl(?:y|ies) to",
+        "comments?",
+        "send (?:a )?note to"
+      ],
+      "es-MX": [
+        "chat(?:s|ear)?",
+        "mensajes?",
+        "mensajer[ií]a",
+        "bandeja de entrada",
+        "escr[ií]bele",
+        "responde a",
+        "comentarios?"
+      ],
+      "pt-BR": [
+        "chat(?:s)?",
+        "mensage(?:m|ns)",
+        "caixa de entrada",
+        "escreva para",
+        "responda a",
+        "coment[aá]rios?"
+      ]
+    },
+    "glossary": {
+      "why": "Owner log §5, the controlled glossary: the verified parent is the Tutor, never a guardian or a legal representative; the AI is the Mentor, never a bot, an assistant or an AI tutor; coins, never money.",
+      "en-US": [
+        "guardians?",
+        "legal guardians?",
+        "AI tutor",
+        "chat ?bot",
+        "bots?",
+        "assistant",
+        "money"
+      ],
+      "es-MX": [
+        "tutor legal",
+        "tutor IA",
+        "tutor de IA",
+        "apoderad[oa]",
+        "asistente",
+        "bots?",
+        "dinero"
+      ],
+      "pt-BR": [
+        "respons[aá]vel legal",
+        "tutor IA",
+        "tutor de IA",
+        "assistente",
+        "bots?",
+        "dinheiro"
+      ]
+    },
+    "bank_register": {
+      "why": "Law 2: social copy never slips into a bank's voice (a transaction, funds, fees, a balance, a declined request).",
+      "en-US": [
+        "funds",
+        "transactions?",
+        "fees?",
+        "overdraft",
+        "balance",
+        "account holder",
+        "debit(?:ed)?",
+        "credit card",
+        "interest rate",
+        "declined",
+        "denied",
+        "processed"
+      ],
+      "es-MX": [
+        "fondos",
+        "transacci[oó]n(?:es)?",
+        "comisi[oó]n(?:es)?",
+        "saldo",
+        "titular de la cuenta",
+        "d[eé]bito",
+        "tarjeta de cr[eé]dito",
+        "tasa de inter[eé]s",
+        "denegad[oa]s?",
+        "procesad[oa]"
+      ],
+      "pt-BR": [
+        "fundos",
+        "transa[cç][aã]o",
+        "transa[cç][oõ]es",
+        "tarifas?",
+        "saldo",
+        "titular da conta",
+        "d[eé]bito",
+        "cart[aã]o de cr[eé]dito",
+        "taxa de juros",
+        "negad[oa]s?",
+        "processad[oa]"
+      ]
+    },
+    "legal_register": {
+      "why": "Law 2 and Block E: a report, a removal or a deletion is explained plainly, never in a legal or disciplinary register.",
+      "en-US": [
+        "pursuant",
+        "hereby",
+        "herein",
+        "notwithstanding",
+        "liabilit(?:y|ies)",
+        "liable",
+        "terms of service",
+        "violat(?:e|es|ed|ing|ion|ions)",
+        "infring\\w*",
+        "non-?compliance",
+        "penalt(?:y|ies)",
+        "sanctions?",
+        "prohibited",
+        "offen[cs]es?",
+        "disciplinary"
+      ],
+      "es-MX": [
+        "conforme a",
+        "por medio de la presente",
+        "responsabilidad legal",
+        "t[eé]rminos de servicio",
+        "infracci[oó]n(?:es)?",
+        "incumplimiento",
+        "sanci[oó]n(?:es)?",
+        "penalizaci[oó]n",
+        "prohibid[oa]",
+        "violaci[oó]n"
+      ],
+      "pt-BR": [
+        "nos termos de",
+        "pela presente",
+        "responsabilidade legal",
+        "termos de servi[cç]o",
+        "infra[cç][aã]o",
+        "infra[cç][oõ]es",
+        "descumprimento",
+        "san[cç][aã]o",
+        "san[cç][oõ]es",
+        "penalidade",
+        "proibid[oa]",
+        "viola[cç][aã]o"
+      ]
+    },
+    "shouting": {
+      "why": "Law 2: a mentor never shouts: no stacked exclamation marks, no words in capitals, no raw error codes.",
+      "patterns": [
+        "!!",
+        "\\b[A-Z]{4,}\\b",
+        "\\b[A-Z]+_[A-Z_]+\\b"
+      ],
+      "allowCaps": [
+        "FAQ",
+        "LF"
+      ]
+    }
+  },
+  "exceptions": [
+    {
+      "key": "rebuild-profile:analyticsChoice.excluded",
+      "category": "messaging",
+      "why": "The H.1 analytics disclosure lists what the events never contain (message text, voice, passwords); it names data that is excluded and offers no messaging."
+    },
+    {
+      "key": "rebuild-profile:analyticsChoice.safety",
+      "category": "guarantee",
+      "why": "The H.1 disclosure says moderation safety records stay on whatever the analytics choice; it states why an enforced retention exists (the safety records are kept regardless), not an outcome."
+    },
+    {
+      "key": "rebuild-profile:teenConnections.declined",
+      "category": "bank_register",
+      "why": "A teen said no to a connection request (E.8), a decision about a person, not a money transaction; the same reading as the reviewed family exception for socialRequests.deny."
+    },
+    {
+      "key": "rebuild-family:socialRequests.denied",
+      "category": "bank_register",
+      "why": "Confirms a Tutor refused a friend request for their child, a decision about a person, not a money transaction (the same exception the D.8 gate holds)."
+    },
+    {
+      "key": "rebuild-profile:discoverable.rules",
+      "category": "messaging",
+      "why": "Tells a 16-17 teen that nobody can message them even when discoverable, which E.10 enforces: there is no messaging surface at all."
+    },
+    {
+      "key": "rebuild-learn:together.rules",
+      "category": "messaging",
+      "why": "The OD-27 (1) goals-together rule says there is no chat; E.10 enforces it (no free text on a goal, strict Core bodies)."
+    },
+    {
+      "key": "rebuild-family:familyCoopGoals.rules",
+      "category": "messaging",
+      "why": "The Tutor opt-in card says goals together have no chat; E.10 enforces it (no free text on a goal, strict Core bodies)."
+    },
+    {
+      "key": "rebuild-profile:accountDeletion.heldBody",
+      "category": "guarantee",
+      "why": "In es-MX and pt-BR \"reporte de seguridad\" / \"denuncia de segurança\" names the safety report under review; it describes an event and promises nothing."
+    },
+    {
+      "key": "rebuild-profile:publicProfile.safetyTitle",
+      "category": "guarantee",
+      "why": "The es-MX/pt-BR section label \"Seguridad\" / \"Segurança\" heads the report and block controls on a profile; it names a set of controls and promises nothing."
+    },
+    {
+      "key": "rebuild-profile:report.body",
+      "category": "guarantee",
+      "why": "The report note names who reads it, \"our safety team\" (\"equipo de seguridad\" / \"equipe de segurança\"); it names people and promises nothing."
+    },
+    {
+      "key": "rebuild-learn:together.reported",
+      "category": "guarantee",
+      "why": "Confirms a report from inside a goal reached the safety team (\"equipo de seguridad\" / \"equipe de segurança\"); it names who reads it and promises nothing."
+    },
+    {
+      "key": "rebuild-family:socialNotices.title",
+      "category": "guarantee",
+      "why": "The es-MX/pt-BR heading of the child safety notices list; it names a list of moderation notices and promises nothing (the same exception the D.8 gate holds)."
+    },
+    {
+      "key": "rebuild-family:socialNotices.empty",
+      "category": "guarantee",
+      "why": "The empty state of the child safety notices list; it names a list and promises nothing (the same exception the D.8 gate holds)."
+    },
+    {
+      "key": "rebuild-family:socialConnectionActions.reported",
+      "category": "guarantee",
+      "why": "Confirms a Tutor report reached the safety team (\"equipo de seguridad\" / \"equipe de segurança\"); it names who reads the report and promises nothing."
+    }
+  ]
+}

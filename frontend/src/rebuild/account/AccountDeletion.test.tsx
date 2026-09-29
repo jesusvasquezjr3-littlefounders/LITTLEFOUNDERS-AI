@@ -84,7 +84,7 @@ describe('AccountDeletion', () => {
     expect(screen.getByRole('alert').textContent).toBe('That password is not right. Try again.');
     expect(screen.getByLabelText('Password').getAttribute('aria-invalid')).toBe('true');
     rerender(<AccountDeletion copy={en.accountDeletion} locale="en-US" dark={false} view={ready({ step: 'confirm', reauth: 'recent_sign_in', error: 'reauth' })} onSignIn={onSignIn} />);
-    expect(screen.getByRole('alert').textContent).toBe('For your safety, sign in again first.');
+    expect(screen.getByRole('alert').textContent).toBe('To confirm it is you, sign in again first.');
     fireEvent.click(screen.getByRole('button', { name: 'Sign in again' }));
     expect(onSignIn).toHaveBeenCalledOnce();
   });

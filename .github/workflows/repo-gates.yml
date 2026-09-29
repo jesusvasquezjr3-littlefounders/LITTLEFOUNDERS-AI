@@ -75,6 +75,14 @@ jobs:
       - name: Family Hub and banking copy passes the tone gate
         run: node agent/tools/check-family-copy-tone.mjs
 
+      # GAP-FIX-R4 (Appendix J Part 3 Stage 4, F.3): the same engine over the
+      # profile and social-layer copy (every rebuild-profile group, the
+      # goals-together copy, the Family connection panels): no unbacked
+      # safety promise, no messaging vocabulary (E.10), the glossary, no bank
+      # or legal register. Also part of spec:check.
+      - name: Profile and social-layer copy passes the tone gate
+        run: node agent/tools/check-social-copy-tone.mjs
+
       # S07.6 (D.6): the staff family-engagement insight's keys are written in
       # four places (the database function, its probe, Core, the console);
       # D.6 was exactly those drifting apart.

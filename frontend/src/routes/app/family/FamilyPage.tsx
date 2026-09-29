@@ -83,7 +83,7 @@ export function FamilyPage() {
         <SocialHistoryPanel {...common} />
         <BadgeSharesPanel {...common} />
         {/* L-04 (OD-27 (1)): goals together for a child aged 13 to 17, off until the Tutor turns it on. */}
-        <CoopGoalsConsentPanel {...common} kidName={name} />
+        <CoopGoalsConsentPanel {...common} kidName={name} selfManaged={child.accountType === 'teen'} />
       </>,
       // S07.7 (D.22): the Tutor's research answer for this child.
       // S10.3 (OD-9 4.2): a migrated child's specific consent to each practice the rebuild introduced (renders nothing otherwise).
