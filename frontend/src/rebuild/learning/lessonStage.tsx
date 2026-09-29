@@ -1,7 +1,8 @@
-import { createContext, useContext, type CSSProperties, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import type { AgeBand } from '../design/copyBudget';
 import { Art } from '../design/controls';
 import { REGISTERS, registerForCopyBand } from '../design/learnerRegisterPolicy.generated';
+import { lessonStageStateFor, type LessonStageRequests } from '../mentor/stageStates';
 import { CompactMentorStage } from './CompactMentorStage';
 import type { AdventureTheme, LessonMentorStage } from './lessonDocument';
 import { sceneAssetId } from './territory';
@@ -23,6 +24,47 @@ interface LessonStage { stage: LessonMentorStage | null; ageBand: AgeBand; theme
 const LessonStageContext = createContext<LessonStage | null>(null);
 
 /*
+ * GAP-FIX-R5 (Bible 08 §11 "the same states as section 3": the character
+ * introduces the question, reacts to answers and demonstrates beside the
+ * board; 08 §3 "encouraging when offering a guided review"). Parts of the
+ * lesson that are not the board's verdict ask the stage for a state: the
+ * narration control while the Mentor's line plays (speaking), a worked example
+ * or a step replay while it is on screen (demonstrating), the guided-review
+ * offer while it is open (encouraging). Requests are counted per state, so two
+ * requesters never cancel each other. The store sits in the lesson layer, above
+ * both the lesson and the offer (the offer is the layer's sibling of the
+ * board); a lesson rendered without the layer (a preview) gets its own store.
+ */
+export type LessonStageRequest = keyof LessonStageRequests;
+type RequestCounts = Record<LessonStageRequest, number>;
+const NO_REQUESTS: RequestCounts = { speaking: 0, demonstrating: 0, encouraging: 0 };
+const RequestAddContext = createContext<((request: LessonStageRequest) => () => void) | null>(null);
+const RequestCountsContext = createContext<RequestCounts>(NO_REQUESTS);
+
+export function LessonStageRequestHost({ children }: { children: ReactNode }) {
+  const [counts, setCounts] = useState<RequestCounts>(NO_REQUESTS);
+  const add = useCallback((request: LessonStageRequest) => {
+    setCounts((current) => ({ ...current, [request]: current[request] + 1 }));
+    let released = false;
+    return () => {
+      if (released) return;
+      released = true;
+      setCounts((current) => ({ ...current, [request]: Math.max(0, current[request] - 1) }));
+    };
+  }, []);
+  return <RequestAddContext.Provider value={add}><RequestCountsContext.Provider value={counts}>{children}</RequestCountsContext.Provider></RequestAddContext.Provider>;
+}
+
+/** Asks the lesson's compact stage for `request` while `active`; a no-op outside a lesson. */
+export function useLessonStageRequest(request: LessonStageRequest, active = true): void {
+  const add = useContext(RequestAddContext);
+  useEffect(() => (active && add ? add(request) : undefined), [add, request, active]);
+}
+
+/** The introduction hold when a segment opens (the board remounts per segment): the Mentor introduces the question. */
+export const LESSON_STAGE_INTRO_MS = 2000;
+
+/*
  * B.8 (GAP-FIX-R1, reworked in GAP-FIX-R3): the lesson inherits its
  * adventure's scene. Core projects the chapter's closed-enum theme beside
  * `mentor_stage`; the slot draws `scene.<theme>.art` as the BACKDROP of the one
@@ -35,7 +77,10 @@ const LessonStageContext = createContext<LessonStage | null>(null);
 export function LessonStageProvider({ stage, ageBand, theme, adventureTheme = null, children }: {
   stage: LessonMentorStage | null; ageBand: AgeBand; theme: 'light' | 'dark'; adventureTheme?: AdventureTheme | null; children: ReactNode;
 }) {
-  return <LessonStageContext.Provider value={stage || adventureTheme ? { stage, ageBand, theme, adventureTheme } : null}>{children}</LessonStageContext.Provider>;
+  const hosted = useContext(RequestAddContext) !== null;
+  const value = useMemo(() => (stage || adventureTheme ? { stage, ageBand, theme, adventureTheme } : null), [stage, ageBand, theme, adventureTheme]);
+  const provided = <LessonStageContext.Provider value={value}>{children}</LessonStageContext.Provider>;
+  return hosted ? provided : <LessonStageRequestHost>{provided}</LessonStageRequestHost>;
 }
 
 /** The board's own verdict, read only as met or a miss; anything else is a neutral stage. Never a celebration (D7). */
@@ -50,12 +95,22 @@ export function useLessonStagePresent(): boolean {
 
 export function LessonStageSlot({ verdict }: { verdict?: unknown }) {
   const value = useContext(LessonStageContext);
+  const counts = useContext(RequestCountsContext);
+  const [intro, setIntro] = useState(true);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setIntro(false), LESSON_STAGE_INTRO_MS);
+    return () => window.clearTimeout(timer);
+  }, []);
   if (!value) return null;
+  const state = lessonStageStateFor(stageVerdict(verdict), {
+    intro,
+    requests: { speaking: counts.speaking > 0, demonstrating: counts.demonstrating > 0, encouraging: counts.encouraging > 0 },
+  });
   const scene = value.adventureTheme ? sceneAssetId(value.adventureTheme) : null;
   // Decorative: the lesson title names the place; the scene only sets it (07 §8).
   const backdrop = scene ? <Art assetId={scene} /> : null;
   if (value.stage) {
-    return <CompactMentorStage ageBand={value.ageBand} theme={value.theme} verdict={stageVerdict(verdict)}
+    return <CompactMentorStage ageBand={value.ageBand} theme={value.theme} verdict={stageVerdict(verdict)} state={state}
       character={value.stage.character} scene={value.stage.scene} backdrop={backdrop} />;
   }
   if (!backdrop) return null;

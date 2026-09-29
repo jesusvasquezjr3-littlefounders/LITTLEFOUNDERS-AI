@@ -9,7 +9,7 @@ import { WorkedStepsList, MathExpression } from './pizarron';
 import { useSingleActiveGrade } from './useSingleActiveGrade';
 import './learning.css';
 import './stepReplay.css';
-import { LessonStageSlot } from './lessonStage';
+import { LessonStageSlot, useLessonStageRequest } from './lessonStage';
 import { playerCopy, SegmentPrompt } from './segmentKit';
 import { LongArithmeticLayout } from './LongArithmeticLayout';
 import { parseLocaleNumber } from './v2VisualScorer.generated';
@@ -43,6 +43,8 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
   sequence?: LessonSequenceControl;
 }) {
   const t = copy[document.locale];
+  // GAP-FIX-R5 (08 §11): while a worked example is on screen the Mentor demonstrates beside the board.
+  useLessonStageRequest('demonstrating');
   const steps = segment.payload.steps;
   const fadeAt = steps.length - segment.payload.fade_count;
   const [index, setIndex] = useState(0);

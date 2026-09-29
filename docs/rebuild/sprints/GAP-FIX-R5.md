@@ -48,3 +48,32 @@ the Core release that serves the two routes.
 Remaining: an adult has no screen for their own notes (the API admits them;
 no SPEC surface asks for one). Assistive-technology and device evidence and
 human review, as for the rest of C.4.
+
+### Gap 2: the lesson's compact Mentor follows the lesson; the offer's choices are equal (Bible 08 §11, §3, §4; D9; B.8)
+
+Verified first: `LessonStageSlot({ verdict })` passed only the verdict,
+`CompactMentorStage` played `lessonStateFor(verdict)` (idle, acknowledging or
+encouraging), `NarrationControl`, `WorkedExampleBoard` and `StepReplay` never
+informed the stage, the guided-review offer rendered as the lesson layer's
+sibling of the board (outside any stage context), and its choices were an
+`accent` button and a default one.
+
+| SPEC clause | What was built | Where |
+|---|---|---|
+| 08 §11 ("the same states as section 3": introduces, reacts, demonstrates beside the board); 08 §3 (encouraging when offering a guided review) | A counted stage-request store (`LessonStageRequestHost`, `useLessonStageRequest`) in the lesson layer, above both the lesson and the offer (a lesson without the layer gets its own). `NarrationControl` requests `speaking` while its line plays; `StepReplay` and `WorkedExampleBoard` request `demonstrating` while on screen; `GuidedReviewOffer` requests `encouraging` while open. The slot adds a 2 s introduction (`speaking`) when a segment mounts (boards remount per segment). `lessonStageStateFor` resolves: verdict reaction, then the offer, then speaking, then demonstrating, then idle; no path returns `celebrating` | `frontend/src/rebuild/learning/lessonStage.tsx`, `LessonLayer.tsx`, `segmentKit.tsx`, `StepReplay.tsx`, `WorkedExampleBoard.tsx`, `GuidedReviewOffer.tsx`, `CompactMentorStage.tsx`, `frontend/src/rebuild/mentor/stageStates.ts` |
+| 08 §4 (two equal choices, never a default-accepted path); D9 | Both offer choices are the same (secondary) variant and size, marked `data-offer-choice`; neither takes focus | `GuidedReviewOffer.tsx` |
+| 08 §7 (the still fallback shows the state the stage is in) | No new stills were needed: the GAP-FIX-R2 band stills already cover speaking (`ambient.idle.happy`) and demonstrating (`teach.explain`) for every character, both modes and both band shapes; a new unit test pins that every state a lesson can request has its band still | `frontend/src/rebuild/mentor/__tests__/stageStills.test.ts` |
+| Verification harness | `verify-compact-stage.mjs` records every state the band shows from the first frame and adds five checks (intro, worked example light and dark, offer young and teen: settled state, the states seen, no celebration, equal and unfocused 48 px+ choices); `STAGE_ONLY=states` runs just these. Previews: `screen=workedexample&stage=1`, `screen=lesson&stage=1&offer=1` | `frontend/scripts/verify-compact-stage.mjs`, `frontend/src/rebuild/preview/registry/learn.tsx` |
+
+Verification (local): `lessonStage.test.tsx` (7: intro then rest, verdict
+wins, replay demonstrates and stops, a worked example demonstrates, narration
+speaks exactly while playing, the offer beside the lesson encourages, counted
+requests), `stageStates.test.ts` (13, the precedence and no celebration over
+every combination), `stageStills.test.ts` (18), `wellbeingS053f.test.tsx`
+(19, equal and unfocused choices in both registers), and the lesson player,
+layer, authenticated-document and board-reset suites (all pass).
+`verify-compact-stage.mjs` against the lane's dev server: the five new state
+checks pass (the band was seen `speaking` then `idle`; `speaking` then
+`demonstrating` with the `teach.explain` still; `encouraging` with
+`feedback.retry.gentle` (6-9) and `ambient.listen` (13-17), choices 56 px and
+equal).

@@ -5,7 +5,21 @@ import { launchBrowser, openPage } from './lesson-engine/browser.mjs';
 const output = resolve('../audit-results/rebuild-stage');
 mkdirSync(output, { recursive: true });
 const browser = await launchBrowser(mkdtempSync(join(output, 'chrome-')));
-const cases = [
+/*
+ * GAP-FIX-R5 (Bible 08 §11 "the same states as section 3"; 08 §3; 08 §4): beyond the verdict reactions, the band
+ * introduces a segment (speaking), demonstrates beside a worked example (demonstrating) and encourages while the
+ * guided-review offer is open, whose two choices carry equal weight. Every state the band shows is recorded from the
+ * first frame (a MutationObserver), so a short intro hold is seen however long the renderer takes; none may be
+ * `celebrating`. STAGE_ONLY=states runs just these checks.
+ */
+const stateCases = [
+  { name: 'intro-young', query: 'screen=lesson&age=6-9&stage=1', settle: 'idle', saw: 'speaking' },
+  { name: 'worked-example-tween', query: 'screen=workedexample&age=10-12&stage=1', settle: 'demonstrating', saw: 'speaking' },
+  { name: 'worked-example-tween-dark', query: 'screen=workedexample&age=10-12&stage=1', settle: 'demonstrating', saw: 'speaking', dark: true },
+  { name: 'offer-young', query: 'screen=lesson&age=6-9&stage=1&offer=1', settle: 'encouraging', offer: true },
+  { name: 'offer-teen', query: 'screen=lesson&age=13-17&stage=1&offer=1', settle: 'encouraging', offer: true },
+];
+const allCases = [
   { name: 'young-phone', width: 375, height: 740, age: '6-9', dark: false },
   { name: 'young-phone-dark', width: 375, height: 740, age: '6-9', dark: true },
   { name: 'young-phone-reduced', width: 375, height: 740, age: '6-9', dark: false, reduced: true },
@@ -23,10 +37,11 @@ const cases = [
   { name: 'adult-desktop-dark', width: 1280, height: 800, age: 'adult', dark: true },
   { name: 'adult-desktop-dark-reduced', width: 1280, height: 800, age: 'adult', dark: true, reduced: true },
 ];
+const cases = process.env.STAGE_ONLY === 'states' ? [] : allCases;
 let failures = 0;
 /** Bible 08 §11: the phone band's share of the viewport height, by register. */
 const bandCap = (age) => (age === '6-9' ? .3 : age === '10-12' ? .25 : .15);
-const page = await openPage(browser.browser, cases[0]);
+const page = await openPage(browser.browser, allCases[0]);
 async function click(selector) {
   const point = await page.evaluate(`(() => {
     const control = document.querySelector(${JSON.stringify(selector)});
@@ -42,6 +57,7 @@ async function click(selector) {
 }
 try {
   await page.send('Page.addScriptToEvaluateOnNewDocument', { source: "window.__stageErrors=[];window.addEventListener('error',e=>window.__stageErrors.push(String(e.error?.stack||e.message)));window.addEventListener('unhandledrejection',e=>window.__stageErrors.push(String(e.reason?.stack||e.reason)));" });
+  await page.send('Page.addScriptToEvaluateOnNewDocument', { source: "window.__stageStates=[];new MutationObserver(()=>{for(const n of document.querySelectorAll('.lf-mentor-band[data-mentor-state]')){const v=n.dataset.mentorState;if(window.__stageStates.at(-1)!==v)window.__stageStates.push(v);}}).observe(document,{subtree:true,childList:true,attributes:true,attributeFilter:['data-mentor-state']});" });
   await page.send('Page.addScriptToEvaluateOnNewDocument', { source: "if(location.search.includes('lowPower=1')) { Object.defineProperty(navigator,'deviceMemory',{get:()=>2}); Object.defineProperty(navigator,'hardwareConcurrency',{get:()=>2}); }" });
   for (const scenario of cases) {
       page.errors.length = 0;
@@ -88,6 +104,34 @@ try {
         await click('.lf-learning-actions .lf-button--accent');
         if (!await page.evaluate("document.querySelector('.lf-mentor-band')?.dataset.mentorState === 'encouraging'")) failures++;
       }
+  }
+  for (const scenario of stateCases) {
+    page.errors.length = 0;
+    page.failedRequests.length = 0;
+    await page.send('Emulation.setDeviceMetricsOverride', { width: 375, height: 740, deviceScaleFactor: 1, mobile: true });
+    await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: scenario.dark ? 'dark' : 'light' }, { name: 'prefers-reduced-motion', value: 'no-preference' }] });
+    await page.send('Page.navigate', { url: `${process.env.REBUILD_URL ?? 'http://127.0.0.1:5190'}/rebuild.html?locale=en-US&theme=${scenario.dark ? 'dark' : 'light'}&${scenario.query}` });
+    // The intro hold is 2 s from mount; wait past it for the settled state.
+    for (let n = 0; n < 600; n++) {
+      if (await page.evaluate(`document.querySelector('.lf-mentor-band')?.dataset.mentorState === ${JSON.stringify(scenario.settle)} && (window.__stageStates?.length ?? 0) > 0`)) break;
+      await new Promise((done) => setTimeout(done, 50));
+    }
+    await new Promise((done) => setTimeout(done, 2600));
+    const state = await page.evaluate(`(() => {
+      const band = document.querySelector('.lf-mentor-band');
+      const choices = [...document.querySelectorAll('.lf-guided-review-actions button')];
+      return { shown: band?.dataset.mentorState ?? null, seen: window.__stageStates ?? [], still: band?.dataset.stillPose ?? null,
+        choices: choices.map((b) => ({ className: b.className, focused: document.activeElement === b, height: b.getBoundingClientRect().height })),
+        horizontalOverflow: document.documentElement.scrollWidth > innerWidth, errors: window.__stageErrors ?? [] };
+    })()`);
+    const shot = await page.send('Page.captureScreenshot', { format: 'png' });
+    writeFileSync(join(output, `state-${scenario.name}.png`), Buffer.from(shot.data, 'base64'));
+    const offerOk = !scenario.offer || (state.choices.length === 2 && state.choices[0].className === state.choices[1].className
+      && !state.choices.some((c) => c.focused) && state.choices.every((c) => c.height >= 48));
+    const ok = state.shown === scenario.settle && (!scenario.saw || state.seen.includes(scenario.saw)) && !state.seen.includes('celebrating')
+      && offerOk && !state.horizontalOverflow && !state.errors.length && !page.errors.length && !page.failedRequests.length;
+    if (!ok) failures++;
+    console.log(`${ok ? 'PASS' : 'FAIL'} state:${scenario.name} ${JSON.stringify({ state, consoleErrors: page.errors, failedRequests: page.failedRequests })}`);
   }
 } finally {
   await page.send('Browser.close').catch(() => {});

@@ -4,6 +4,7 @@ import type { Locale } from '../design/copyBudget';
 import { Button } from '../design/controls';
 import { REGISTERS, type LearnerRegister } from '../design/learnerRegisterPolicy.generated';
 import { MENTOR_NAMES } from './motivation';
+import { useLessonStageRequest } from './lessonStage';
 import '../design/tokens.css';
 import '../design/system.css';
 import './register.css';
@@ -23,6 +24,12 @@ import './register.css';
  * that leaves the lesson usable behind it; Escape declines. It sits on the
  * neutral surface and never uses the error hue: it is an offer, not an error.
  * Presentation only: the host owns transport and navigation.
+ *
+ * GAP-FIX-R5 (Bible 08 §4: "an offer with two equal choices, never a
+ * default-accepted path"; 08 §3; D9): both choices are the same variant and
+ * size, and neither takes focus when the offer opens. While it is open the
+ * lesson's compact Mentor is `encouraging` (08 §3: "when offering a guided
+ * review").
  */
 
 export const guidedReviewOfferSchema = z.object({
@@ -71,6 +78,7 @@ export function GuidedReviewOffer({ offer, locale, register, dark, onReview, onD
   const skill = offer.skill ? offer.skill.charAt(0).toLocaleLowerCase(locale) + offer.skill.slice(1) : null;
   const titleId = useId();
   const decline = useRef(onDecline);
+  useLessonStageRequest('encouraging');
   decline.current = onDecline;
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') decline.current(); };
@@ -86,8 +94,8 @@ export function GuidedReviewOffer({ offer, locale, register, dark, onReview, onD
         <h2 id={titleId} data-copy-role="data">{name}</h2>
         <p data-copy-role="mentor" aria-live="polite">{t.line(skill)}</p>
         <div className="lf-guided-review-actions">
-          <Button variant="accent" onClick={() => onReview(offer.skill_key)}>{t.review(name)}</Button>
-          <Button onClick={onDecline}>{t.keepGoing}</Button>
+          <Button data-offer-choice="review" onClick={() => onReview(offer.skill_key)}>{t.review(name)}</Button>
+          <Button data-offer-choice="keep-going" onClick={onDecline}>{t.keepGoing}</Button>
         </div>
       </div>
     </section>

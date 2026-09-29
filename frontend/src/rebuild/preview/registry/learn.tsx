@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useState, type ReactElement, type ReactNode } from 'react';
 import { allocationPilotDocument, donutPilotDocument, wafflePilotDocument } from '../../learning/AllocationBoard';
 import { growthPilotDocument } from '../../learning/GrowthBoard';
 import { learningFixtures } from '../../learning/allocationFixtures';
@@ -51,6 +51,7 @@ import { LearningRhythmView } from '../../learning/LearningRhythmView';
 import { milestoneReceipt, rhythmPreviewStates } from '../../learning/motivationFixtures';
 import { RegisterGraduationView } from '../../learning/RegisterGraduationView';
 import { GuidedReviewOffer } from '../../learning/GuidedReviewOffer';
+import { LessonStageRequestHost } from '../../learning/lessonStage';
 import { framed, type PreviewContext, type PreviewRegistry } from './types';
 import v2FixtureDocuments from '../fixtures/v2FixtureDocuments.generated.json';
 import { segmentCapabilities, type LessonClientSegment } from '../../learning/lessonDocument';
@@ -66,6 +67,10 @@ import { segmentCapabilities, type LessonClientSegment } from '../../learning/le
  * server-resolved projection instead.
  */
 export const PREVIEW_MENTOR_STAGE: LessonMentorStage = { character: 'dina', scene: 'diorama-a' };
+
+/** The lesson with the guided-review offer beside it, in one stage-request store (the lesson layer's arrangement). */
+const withOffer = (open: boolean, lesson: ReactElement, offer: ReactElement) => open
+  ? <LessonStageRequestHost>{lesson}{offer}</LessonStageRequestHost> : lesson;
 
 type Verdict = 'met' | 'review' | 'invalid';
 const verdict = (result: string): Verdict => result === 'met' || result === 'review' ? result : 'invalid';
@@ -150,14 +155,17 @@ export const learnPreviewScreens: PreviewRegistry = {
   loaderror: transport,
   upgrade: refusal,
   invalid: refusal,
-  lesson: framed(({ locale, ageBand, theme, params, go }) => <LessonDocumentView key={`${locale}:${ageBand}`} raw={allocationPilotDocument(locale, ageBand)} locale={locale} ageBand={ageBand}
+  // GAP-FIX-R5 (08 §3, §11): `?offer=1` opens the guided-review offer beside the lesson, in one stage-request store as the
+  // lesson layer holds it, so the compact Mentor is `encouraging` while it is open (verify-compact-stage.mjs).
+  lesson: framed(({ locale, ageBand, theme, register, params, go }) => withOffer(params.get('offer') === '1', <LessonDocumentView key={`${locale}:${ageBand}`} raw={allocationPilotDocument(locale, ageBand)} locale={locale} ageBand={ageBand}
     theme={theme} onBack={() => go('home')} mentorStage={params.get('stage') === '1' ? PREVIEW_MENTOR_STAGE : null}
     // GAP-FIX-R3 (08 §11): `?adventure=<theme>` draws the adventure scene as the band's backdrop (the compact-stage audit's theme states).
     adventureTheme={loadAdventureThemeProjection(params.get('adventure'))}
     onGrade={(allocation) => {
       const item = learningFixtures[ageBand].item;
       return verdict(scoreV2Visual('money.allocation.v2', { total: item.total, step: item.step }, allocation, { minimumSave: item.minimumSave }));
-    }} />),
+    }} />, <GuidedReviewOffer key={`offer:${locale}:${register}`} fixture locale={locale} dark={theme === 'dark'} register={register}
+      offer={{ skill_key: 'financial-education/saving-goal', misses: 3, character: 'dina', skill: null }} onReview={() => go('home')} onDecline={() => go('home')} />)),
   waffle: framed(({ locale, ageBand, go }) => <LessonDocumentView key={`waffle:${locale}:${ageBand}`}
     raw={ageBand === '6-9' ? wafflePilotDocument(locale) : null} locale={locale} ageBand={ageBand}
     onBack={() => go('home')} onGrade={(allocation) => verdict(scoreV2Visual('money.allocation.v2', { total: 10, step: 1 }, allocation, { minimumSave: 3 }))} />),
@@ -300,7 +308,8 @@ export const learnPreviewScreens: PreviewRegistry = {
         ? { schema: 'change', slots: { start: 'earned', change: 'spent', result: 'unknown' } } : { target: 15 };
       return verdict(scoreV2Visual(kind, { quantityIds: ['earned', 'spent'], values: [24, 9] }, answer, rubric));
     }} />),
-  workedexample: framed(({ locale, ageBand, params, go }) => <LessonDocumentView key={'workedexample:' + locale + ':' + ageBand + ':' + params.get('fade') + ':' + params.get('notation')}
+  workedexample: framed(({ locale, ageBand, theme, params, go }) => <LessonDocumentView key={'workedexample:' + locale + ':' + ageBand + ':' + params.get('fade') + ':' + params.get('notation')}
+    theme={theme} mentorStage={params.get('stage') === '1' ? PREVIEW_MENTOR_STAGE : null}
     raw={params.get('notation') === '1' ? notationPilotDocument(locale) : ageBand === '10-12' ? workedExamplePilotDocument(locale, params.get('fade') === '1' ? 1 : 0) : null}
     locale={locale} ageBand={ageBand} onBack={() => go('home')}
     onGradeWorkedExample={(answer) => verdict(scoreV2Visual('math.worked-example.v2',
