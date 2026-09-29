@@ -9,6 +9,7 @@ import { TeachingChartBoard } from './TeachingChartBoard';
 import './learning.css';
 import { LessonStageSlot } from './lessonStage';
 import { GradedFoot, NumberAnswer, SegmentPrompt, useSegmentGrade, type OnGradeSegment, gradeStageVerdict } from './segmentKit';
+import { namedFeedback } from './namedFeedback';
 
 import { RatioLinesVisual } from './pizarron';
 
@@ -101,7 +102,7 @@ export function RatioTableBoard({ document, segment, onBack, sequence, onGrade }
             stepLabels={{ decrease: '−', increase: '+' }} />}
         </TeachingChartBoard>
         {graded ? <><NumberAnswer label={t.total} locale={document.locale} onChange={setTyped} disabled={grading.pending || grading.met} />
-          <GradedFoot locale={document.locale} grading={grading} canCheck={typed !== null} sequence={sequence} onCheck={() => grading.check({ packs, price: typed })} /></> : null}
+          <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'ratio-table')} feedback={segment.feedback} canCheck={typed !== null} sequence={sequence} onCheck={() => grading.check({ packs, price: typed })} /></> : null}
         {sequence && !graded ? <footer className="lf-ratio-foot"><Button variant="accent" disabled={!changed} onClick={sequence.onAdvance}>{t.continue}</Button></footer> : null}
       </div>
     </div>

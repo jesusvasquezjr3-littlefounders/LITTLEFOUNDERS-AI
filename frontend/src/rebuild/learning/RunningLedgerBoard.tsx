@@ -13,6 +13,7 @@ import './runningLedger.css';
 import './stepReplay.css';
 import { LessonStageSlot } from './lessonStage';
 import { GradedFoot, NumberAnswer, SegmentPrompt, useSegmentGrade, type OnGradeSegment, gradeStageVerdict } from './segmentKit';
+import { namedFeedback } from './namedFeedback';
 
 
 type LedgerSegment = Extract<LessonClientSegment, { type: 'money.running-ledger.v2' }>;
@@ -112,7 +113,7 @@ export function RunningLedgerBoard({ document, segment, onBack, sequence, onGrad
             labels={{ step: t.step, previous: t.previous, next: t.next, play: t.play, pause: t.pause }} /> : null}
         </div> : null}
         {graded ? <><NumberAnswer label={t.balance} locale={document.locale} onChange={setTyped} disabled={grading.pending || grading.met} />
-          <GradedFoot locale={document.locale} grading={grading} canCheck={typed !== null && entries.length > 0 && replayIndex === null} sequence={sequence}
+          <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'running-ledger')} feedback={segment.feedback} canCheck={typed !== null && entries.length > 0 && replayIndex === null} sequence={sequence}
             onCheck={() => grading.check({ entries: entries.map((entry) => entry.amount > 0 ? 'sale' : 'cost'), balance: typed })} /></> : null}
         <footer className="lf-ledger-foot"><p role="status" aria-live="polite" data-copy-role="body">
           {t.balance}: <strong data-copy-role="data">{hide ? '?' : balanceText(snapshot.balance)}</strong> · {hide ? '' : position}

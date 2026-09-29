@@ -40,15 +40,15 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Zara spent three quarters of her coins. Place it.",
+          "prompt": "Zara spent three quarters of her coins. Place it.", "feedback": {"met": "You split the whole into quarters and counted three of them.", "not_yet": "Not yet. Split the whole into four equal parts first."},
           "spokenText": "three quarters"
         },
         "es-MX": {
-          "prompt": "Zara gastó tres cuartos de sus monedas. Ubícalo.",
+          "prompt": "Zara gastó tres cuartos de sus monedas. Ubícalo.", "feedback": {"met": "Dividiste el entero en cuartos y contaste tres.", "not_yet": "Todavía no. Primero divide el entero en cuatro partes iguales."},
           "spokenText": "tres cuartos"
         },
         "pt-BR": {
-          "prompt": "Zara gastou três quartos das moedas. Marque na reta.",
+          "prompt": "Zara gastou três quartos das moedas. Marque na reta.", "feedback": {"met": "Você dividiu o inteiro em quartos e contou três.", "not_yet": "Ainda não. Primeiro divida o inteiro em quatro partes iguais."},
           "spokenText": "três quartos"
         }
       },
@@ -76,15 +76,15 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Place 2/5 and 0.5. Which is larger?",
+          "prompt": "Place 2/5 and 0.5. Which is larger?", "feedback": {"met": "You placed both numbers on one line and compared their places.", "not_yet": "Not yet. Write the decimal as a fraction, then compare."},
           "spokenText": "two fifths and zero point five"
         },
         "es-MX": {
-          "prompt": "Ubica 2/5 y 0.5. ¿Cuál es mayor?",
+          "prompt": "Ubica 2/5 y 0.5. ¿Cuál es mayor?", "feedback": {"met": "Pusiste los dos números en una recta y comparaste sus lugares.", "not_yet": "Todavía no. Escribe el decimal como fracción y luego compara."},
           "spokenText": "dos quintos y cero punto cinco"
         },
         "pt-BR": {
-          "prompt": "Marque 2/5 e 0,5. Qual é maior?",
+          "prompt": "Marque 2/5 e 0,5. Qual é maior?", "feedback": {"met": "Você pôs os dois números na mesma reta e comparou os lugares.", "not_yet": "Ainda não. Escreva o decimal como fração e depois compare."},
           "spokenText": "dois quintos e zero vírgula cinco"
         }
       },
@@ -111,15 +111,15 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Place 3/5 and 0.6. Do they meet?",
+          "prompt": "Place 3/5 and 0.6. Do they meet?", "feedback": {"met": "You showed that a fraction and a decimal can name one point.", "not_yet": "Not yet. Write both in tenths, then compare."},
           "spokenText": "three fifths and zero point six"
         },
         "es-MX": {
-          "prompt": "Ubica 3/5 y 0.6. ¿Se juntan?",
+          "prompt": "Ubica 3/5 y 0.6. ¿Se juntan?", "feedback": {"met": "Mostraste que una fracción y un decimal pueden nombrar el mismo punto.", "not_yet": "Todavía no. Escribe los dos en décimos y compara."},
           "spokenText": "tres quintos y cero punto seis"
         },
         "pt-BR": {
-          "prompt": "Marque 3/5 e 0,6. Eles se encontram?",
+          "prompt": "Marque 3/5 e 0,6. Eles se encontram?", "feedback": {"met": "Você mostrou que uma fração e um decimal podem nomear o mesmo ponto.", "not_yet": "Ainda não. Escreva os dois em décimos e compare."},
           "spokenText": "três quintos e zero vírgula seis"
         }
       },

@@ -77,7 +77,7 @@
         },
         "copy": {
           "en-US": {
-            "prompt": "All subscriptions are recurring costs. Some recurring costs are hidden.",
+            "prompt": "All subscriptions are recurring costs. Some recurring costs are hidden.", "feedback": {"met": "You checked each step against the rule.", "not_yet": "Not yet. Check each step again."},
             "sets": [
               {
                 "label": "Subscriptions"
@@ -102,7 +102,7 @@
             }
           },
           "es-MX": {
-            "prompt": "Todas las suscripciones son gastos fijos. Algunos gastos fijos están ocultos.",
+            "prompt": "Todas las suscripciones son gastos fijos. Algunos gastos fijos están ocultos.", "feedback": {"met": "Revisaste cada paso con la regla.", "not_yet": "Todavía no. Revisa cada paso otra vez."},
             "sets": [
               {
                 "label": "Suscripciones"
@@ -127,7 +127,7 @@
             }
           },
           "pt-BR": {
-            "prompt": "Toda assinatura é um gasto fixo. Alguns gastos fixos são ocultos.",
+            "prompt": "Toda assinatura é um gasto fixo. Alguns gastos fixos são ocultos.", "feedback": {"met": "Você conferiu cada passo com a regra.", "not_yet": "Ainda não. Confira cada passo de novo."},
             "sets": [
               {
                 "label": "Assinaturas"

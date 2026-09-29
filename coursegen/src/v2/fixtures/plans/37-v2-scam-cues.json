@@ -75,7 +75,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Mark tricks and their cues.",
+          "prompt": "Mark tricks and their cues.", "feedback": {"met": "You flagged the tricks and named the cues that gave them away.", "not_yet": "Not yet. Look for requests for passwords, codes or prizes."},
           "messages": [
             {
               "sender": "Unknown number",
@@ -103,7 +103,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Marca trampas y señales.",
+          "prompt": "Marca trampas y señales.", "feedback": {"met": "Marcaste los engaños y nombraste las señales que los delataron.", "not_yet": "Todavía no. Busca pedidos de contraseñas, códigos o premios."},
           "messages": [
             {
               "sender": "Número desconocido",
@@ -131,7 +131,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Marque golpes e sinais.",
+          "prompt": "Marque golpes e sinais.", "feedback": {"met": "Você marcou os golpes e apontou os sinais que os denunciaram.", "not_yet": "Ainda não. Procure pedidos de senhas, códigos ou prêmios."},
           "messages": [
             {
               "sender": "Número desconhecido",

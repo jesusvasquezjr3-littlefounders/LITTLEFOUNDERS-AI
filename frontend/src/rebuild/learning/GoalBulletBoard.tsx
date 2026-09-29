@@ -10,6 +10,7 @@ import './learning.css';
 import './goalBullet.css';
 import { LessonStageSlot } from './lessonStage';
 import { GradedFoot, SegmentPrompt, useSegmentGrade, type OnGradeSegment, gradeStageVerdict } from './segmentKit';
+import { namedFeedback } from './namedFeedback';
 
 
 type GoalBulletSegment = Extract<LessonClientSegment, { type: 'visual.goal-bullet.v2' }>;
@@ -88,7 +89,7 @@ export function GoalBulletBoard({ document, segment, onBack, sequence, onGrade }
             max={maximum} step={step} value={saved} onValueChange={setAmount}
             stepLabels={{ decrease: t.less, increase: t.more }} />}
         </TeachingChartBoard>
-        {graded ? <GradedFoot locale={document.locale} grading={grading} canCheck={saved !== initial} sequence={sequence} onCheck={() => grading.check({ value: saved })} /> : null}
+        {graded ? <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'goal-bullet')} feedback={segment.feedback} canCheck={saved !== initial} sequence={sequence} onCheck={() => grading.check({ value: saved })} /> : null}
         <footer className="lf-goal-foot"><div role="status" className="lf-goal-outcome">
           <span data-copy-role="body">{left === 0 ? t.reached : t.remaining}</span><strong data-copy-role="data">{left === 0 ? amount(saved) : amount(left)}</strong>
         </div>{sequence && !graded ? <Button variant="accent" disabled={saved === initial} onClick={sequence.onAdvance}>{t.continue}</Button> : null}</footer>

@@ -9,20 +9,21 @@ import { SCHEMA_KINDS, SCHEMA_SLOTS, type SchemaKind } from './v2SegmentFamilies
 import { SchemaSlotsVisual } from './pizarron';
 import './learning.css';
 import { LessonStageSlot } from './lessonStage';
-import { SegmentPrompt } from './segmentKit';
+import { SegmentPrompt, verdictBannerText } from './segmentKit';
+import { namedFeedback } from './namedFeedback';
 
 type Segment = Extract<LessonClientSegment, { type: 'math.schema-diagram.structure.v2' | 'math.schema-diagram.slots.v2' | 'math.schema-diagram.answer.v2' }>;
 type Verdict = 'invalid' | 'met' | 'review';
 type SlotName = 'start' | 'change' | 'result' | 'part' | 'other' | 'total' | 'larger' | 'smaller' | 'difference' | 'rate' | 'count';
 
 type Labels = {
-  reset: string; back: string; choose: string; fill: string; solve: string; check: string; continue: string; correct: string; retry: string;
+  reset: string; back: string; choose: string; fill: string; solve: string; check: string; continue: string;
   unavailable: string; answer: string; story: string; unknown: string; schemas: Record<SchemaKind, string>; slots: Record<SlotName, string>;
   shapes: Record<SchemaKind, string>;
 };
 const copy: Record<Locale, Labels> = {
   'en-US': { reset: 'Reset', back: 'Back', choose: 'Choose the schema', fill: 'Fill the schema', solve: 'Solve the schema', check: 'Check',
-    continue: 'Continue', correct: 'Correct', retry: 'Try a different answer.', unavailable: 'We could not check that. Try again.',
+    continue: 'Continue', unavailable: 'We could not check that. Try again.',
     answer: 'Your answer', story: 'Story numbers', unknown: '?',
     schemas: { change: 'Change', group: 'Group', compare: 'Compare', ratio: 'Ratio' },
     slots: { start: 'Start', change: 'Change', result: 'Result', part: 'Part', other: 'Other part', total: 'Total', larger: 'Larger',
@@ -30,7 +31,7 @@ const copy: Record<Locale, Labels> = {
     shapes: { change: 'A start, then a change, gives the result.', group: 'Two parts make one total.',
       compare: 'The larger minus the smaller is the difference.', ratio: 'The amount per one, times how many, is the total.' } },
   'es-MX': { reset: 'Restablecer', back: 'Volver', choose: 'Elige el esquema', fill: 'Llena el esquema', solve: 'Resuelve el esquema', check: 'Comprobar',
-    continue: 'Continuar', correct: 'Correcto', retry: 'Prueba otra respuesta.', unavailable: 'No pudimos comprobarlo. Intenta otra vez.',
+    continue: 'Continuar', unavailable: 'No pudimos comprobarlo. Intenta otra vez.',
     answer: 'Tu respuesta', story: 'Números de la historia', unknown: '?',
     schemas: { change: 'Cambio', group: 'Grupo', compare: 'Comparación', ratio: 'Razón' },
     slots: { start: 'Inicio', change: 'Cambio', result: 'Resultado', part: 'Parte', other: 'Otra parte', total: 'Total', larger: 'Mayor',
@@ -38,7 +39,7 @@ const copy: Record<Locale, Labels> = {
     shapes: { change: 'Un inicio y un cambio dan el resultado.', group: 'Dos partes forman un total.',
       compare: 'El mayor menos el menor es la diferencia.', ratio: 'Lo que vale uno, por cuántos, es el total.' } },
   'pt-BR': { reset: 'Recomeçar', back: 'Voltar', choose: 'Escolha o esquema', fill: 'Preencha o esquema', solve: 'Resolva o esquema', check: 'Conferir',
-    continue: 'Continuar', correct: 'Correto', retry: 'Tente outra resposta.', unavailable: 'Não foi possível conferir. Tente de novo.',
+    continue: 'Continuar', unavailable: 'Não foi possível conferir. Tente de novo.',
     answer: 'Sua resposta', story: 'Números da história', unknown: '?',
     schemas: { change: 'Mudança', group: 'Grupo', compare: 'Comparação', ratio: 'Razão' },
     slots: { start: 'Início', change: 'Mudança', result: 'Resultado', part: 'Parte', other: 'Outra parte', total: 'Total', larger: 'Maior',
@@ -109,7 +110,7 @@ export function SchemaDiagramBoard({ document, segment, onBack, onGrade, sequenc
         {phase === 'answer' ? <TextField label={t.answer} inputMode="numeric" pattern="[0-9]*" autoComplete="off" disabled={pending} value={answer}
           onChange={(event) => change(() => setAnswer(event.target.value))} /> : null}
       </div>
-      <footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === 'met' ? t.correct : verdict === 'review' ? t.retry : verdict === 'unavailable' ? t.unavailable : null}</LessonFeedback>
+      <footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === null ? null : verdictBannerText(document.locale, verdict, namedFeedback(document.locale, phase === 'structure' ? 'schema-structure' : phase === 'slots' ? 'schema-slots' : 'schema-answer'), segment.feedback)}</LessonFeedback>
         <div className="lf-learning-actions"><Button variant="accent" onClick={submit} disabled={pending || (verdict !== 'met' && response === null)}>{verdict === 'met' ? t.continue : t.check}</Button></div></footer>
     </div>
   </div></main>;

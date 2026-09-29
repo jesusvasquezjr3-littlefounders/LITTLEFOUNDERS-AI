@@ -351,6 +351,10 @@
             "total": 60,
             "step": 5,
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "Your split saves at least a third and uses every coin.",
+            "not_yet": "Not yet. Check that savings reach a third of the coins."
           }
         }
       ]
@@ -401,6 +405,10 @@
             "total": 60,
             "step": 5,
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "Tu reparto ahorra al menos un tercio y usa todas las monedas.",
+            "not_yet": "Todavía no. Revisa que el ahorro llegue a un tercio de las monedas."
           }
         }
       ]
@@ -451,6 +459,10 @@
             "total": 60,
             "step": 5,
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "Sua divisão guarda pelo menos um terço e usa todas as moedas.",
+            "not_yet": "Ainda não. Confira se a poupança chega a um terço das moedas."
           }
         }
       ]
@@ -921,6 +933,10 @@
             "divisions": 4,
             "initialUnits": 0,
             "spokenText": "three quarters"
+          },
+          "feedback": {
+            "met": "You split the whole into quarters and counted three of them.",
+            "not_yet": "Not yet. Split the whole into four equal parts first."
           }
         },
         {
@@ -940,6 +956,10 @@
               "0.5"
             ],
             "spokenText": "two fifths and zero point five"
+          },
+          "feedback": {
+            "met": "You placed both numbers on one line and compared their places.",
+            "not_yet": "Not yet. Write the decimal as a fraction, then compare."
           }
         },
         {
@@ -959,6 +979,10 @@
               "0.6"
             ],
             "spokenText": "three fifths and zero point six"
+          },
+          "feedback": {
+            "met": "You showed that a fraction and a decimal can name one point.",
+            "not_yet": "Not yet. Write both in tenths, then compare."
           }
         }
       ]
@@ -1021,6 +1045,10 @@
             "divisions": 4,
             "initialUnits": 0,
             "spokenText": "tres cuartos"
+          },
+          "feedback": {
+            "met": "Dividiste el entero en cuartos y contaste tres.",
+            "not_yet": "Todavía no. Primero divide el entero en cuatro partes iguales."
           }
         },
         {
@@ -1040,6 +1068,10 @@
               "0.5"
             ],
             "spokenText": "dos quintos y cero punto cinco"
+          },
+          "feedback": {
+            "met": "Pusiste los dos números en una recta y comparaste sus lugares.",
+            "not_yet": "Todavía no. Escribe el decimal como fracción y luego compara."
           }
         },
         {
@@ -1059,6 +1091,10 @@
               "0.6"
             ],
             "spokenText": "tres quintos y cero punto seis"
+          },
+          "feedback": {
+            "met": "Mostraste que una fracción y un decimal pueden nombrar el mismo punto.",
+            "not_yet": "Todavía no. Escribe los dos en décimos y compara."
           }
         }
       ]
@@ -1121,6 +1157,10 @@
             "divisions": 4,
             "initialUnits": 0,
             "spokenText": "três quartos"
+          },
+          "feedback": {
+            "met": "Você dividiu o inteiro em quartos e contou três.",
+            "not_yet": "Ainda não. Primeiro divida o inteiro em quatro partes iguais."
           }
         },
         {
@@ -1140,6 +1180,10 @@
               "0.5"
             ],
             "spokenText": "dois quintos e zero vírgula cinco"
+          },
+          "feedback": {
+            "met": "Você pôs os dois números na mesma reta e comparou os lugares.",
+            "not_yet": "Ainda não. Escreva o decimal como fração e depois compare."
           }
         },
         {
@@ -1159,6 +1203,10 @@
               "0.6"
             ],
             "spokenText": "três quintos e zero vírgula seis"
+          },
+          "feedback": {
+            "met": "Você mostrou que uma fração e um decimal podem nomear o mesmo ponto.",
+            "not_yet": "Ainda não. Escreva os dois em décimos e compare."
           }
         }
       ]
@@ -1396,6 +1444,10 @@
             ],
             "unknownLabel": "Leo",
             "spokenText": "fifty and twelve more"
+          },
+          "feedback": {
+            "met": "Your bars show Ana's as Leo's plus the extra part.",
+            "not_yet": "Not yet. Ana has more, so her bar is longer."
           }
         },
         {
@@ -1421,6 +1473,10 @@
             ],
             "unknownLabel": "Leo",
             "spokenText": "fifty minus twelve"
+          },
+          "feedback": {
+            "met": "You took the extra part away from Ana's bar to find Leo's.",
+            "not_yet": "Not yet. Leo's bar is Ana's without the extra part."
           }
         }
       ]
@@ -1492,6 +1548,10 @@
             ],
             "unknownLabel": "Leo",
             "spokenText": "cincuenta y doce más"
+          },
+          "feedback": {
+            "met": "Tus barras muestran la de Ana como la de Leo más la parte extra.",
+            "not_yet": "Todavía no. Ana tiene más, así que su barra es más larga."
           }
         },
         {
@@ -1517,6 +1577,10 @@
             ],
             "unknownLabel": "Leo",
             "spokenText": "cincuenta menos doce"
+          },
+          "feedback": {
+            "met": "Quitaste la parte extra a la barra de Ana para hallar la de Leo.",
+            "not_yet": "Todavía no. La barra de Leo es la de Ana sin la parte extra."
           }
         }
       ]
@@ -1588,6 +1652,10 @@
             ],
             "unknownLabel": "Leo",
             "spokenText": "cinquenta e doze a mais"
+          },
+          "feedback": {
+            "met": "Suas barras mostram a de Ana como a de Leo mais a parte extra.",
+            "not_yet": "Ainda não. Ana tem mais, então a barra dela é mais longa."
           }
         },
         {
@@ -1613,6 +1681,10 @@
             ],
             "unknownLabel": "Leo",
             "spokenText": "cinquenta menos doze"
+          },
+          "feedback": {
+            "met": "Você tirou a parte extra da barra de Ana para achar a de Leo.",
+            "not_yet": "Ainda não. A barra de Leo é a de Ana sem a parte extra."
           }
         }
       ]
@@ -1684,6 +1756,10 @@
             ],
             "unknownLabel": "Left",
             "spokenText": "twenty four minus nine"
+          },
+          "feedback": {
+            "met": "You saw a change story: coins came in, then some went out.",
+            "not_yet": "Not yet. Ask whether something changed or two groups joined."
           }
         },
         {
@@ -1709,6 +1785,10 @@
             ],
             "unknownLabel": "Left",
             "spokenText": "twenty four minus nine"
+          },
+          "feedback": {
+            "met": "Each number sits in the box for its role in the story.",
+            "not_yet": "Not yet. Match each number to what it counts."
           }
         },
         {
@@ -1734,6 +1814,10 @@
             ],
             "unknownLabel": "Left",
             "spokenText": "twenty four minus nine"
+          },
+          "feedback": {
+            "met": "You took what was spent away from what was earned.",
+            "not_yet": "Not yet. Start with what was earned and remove what was spent."
           }
         }
       ]
@@ -1808,6 +1892,10 @@
             ],
             "unknownLabel": "Queda",
             "spokenText": "veinticuatro menos nueve"
+          },
+          "feedback": {
+            "met": "Viste una historia de cambio: entraron monedas y luego salieron algunas.",
+            "not_yet": "Todavía no. Pregúntate si algo cambió o si se juntaron dos grupos."
           }
         },
         {
@@ -1833,6 +1921,10 @@
             ],
             "unknownLabel": "Queda",
             "spokenText": "veinticuatro menos nueve"
+          },
+          "feedback": {
+            "met": "Cada número quedó en la caja de su papel en la historia.",
+            "not_yet": "Todavía no. Relaciona cada número con lo que cuenta."
           }
         },
         {
@@ -1858,6 +1950,10 @@
             ],
             "unknownLabel": "Queda",
             "spokenText": "veinticuatro menos nueve"
+          },
+          "feedback": {
+            "met": "Restaste lo gastado de lo ganado.",
+            "not_yet": "Todavía no. Empieza con lo ganado y quita lo gastado."
           }
         }
       ]
@@ -1932,6 +2028,10 @@
             ],
             "unknownLabel": "Sobra",
             "spokenText": "vinte e quatro menos nove"
+          },
+          "feedback": {
+            "met": "Você viu uma história de mudança: moedas entraram e depois algumas saíram.",
+            "not_yet": "Ainda não. Pergunte se algo mudou ou se dois grupos se juntaram."
           }
         },
         {
@@ -1957,6 +2057,10 @@
             ],
             "unknownLabel": "Sobra",
             "spokenText": "vinte e quatro menos nove"
+          },
+          "feedback": {
+            "met": "Cada número ficou na caixa do seu papel na história.",
+            "not_yet": "Ainda não. Ligue cada número ao que ele conta."
           }
         },
         {
@@ -1982,6 +2086,10 @@
             ],
             "unknownLabel": "Sobra",
             "spokenText": "vinte e quatro menos nove"
+          },
+          "feedback": {
+            "met": "Você tirou o que foi gasto do que foi ganho.",
+            "not_yet": "Ainda não. Comece com o que foi ganho e tire o que foi gasto."
           }
         }
       ]
@@ -3289,6 +3397,10 @@
               "discount-subtract",
               "sale-price"
             ]
+          },
+          "feedback": {
+            "met": "You found the discount first, then took it off the price.",
+            "not_yet": "Not yet. Work out the discount, then subtract it from the price."
           }
         }
       ]
@@ -3370,6 +3482,10 @@
               "discount-subtract",
               "sale-price"
             ]
+          },
+          "feedback": {
+            "met": "Calculaste primero el descuento y luego lo restaste del precio.",
+            "not_yet": "Todavía no. Calcula el descuento y luego réstalo del precio."
           }
         }
       ]
@@ -3451,6 +3567,10 @@
               "discount-subtract",
               "sale-price"
             ]
+          },
+          "feedback": {
+            "met": "Você calculou primeiro o desconto e depois tirou do preço.",
+            "not_yet": "Ainda não. Calcule o desconto e depois tire do preço."
           }
         }
       ]
@@ -3521,6 +3641,10 @@
             "multiplierMaximum": 9,
             "offsetMaximum": 50,
             "notation": true
+          },
+          "feedback": {
+            "met": "You tested inputs and found the rule that fits every one.",
+            "not_yet": "Not yet. Compare how much the output grows each week."
           }
         }
       ]
@@ -3593,6 +3717,10 @@
             "multiplierMaximum": 9,
             "offsetMaximum": 50,
             "notation": true
+          },
+          "feedback": {
+            "met": "Probaste entradas y hallaste la regla que funciona con todas.",
+            "not_yet": "Todavía no. Compara cuánto crece la salida cada semana."
           }
         }
       ]
@@ -3665,6 +3793,10 @@
             "multiplierMaximum": 9,
             "offsetMaximum": 50,
             "notation": true
+          },
+          "feedback": {
+            "met": "Você testou entradas e achou a regra que serve para todas.",
+            "not_yet": "Ainda não. Compare quanto a saída cresce a cada semana."
           }
         }
       ]
@@ -4067,6 +4199,10 @@
               }
             ],
             "reasonPrompt": "Why is that a good choice?"
+          },
+          "feedback": {
+            "met": "You chose with your goal in mind and gave a fitting reason.",
+            "not_yet": "Not yet. Pick the reason that connects to your goal."
           }
         }
       ]
@@ -4147,6 +4283,10 @@
               }
             ],
             "reasonPrompt": "¿Por qué es buena decisión?"
+          },
+          "feedback": {
+            "met": "Elegiste pensando en la meta y diste una razón que encaja.",
+            "not_yet": "Todavía no. Elige la razón que se conecta con tu meta."
           }
         }
       ]
@@ -4227,6 +4367,10 @@
               }
             ],
             "reasonPrompt": "Por que é uma boa escolha?"
+          },
+          "feedback": {
+            "met": "Você escolheu pensando na meta e deu um motivo que combina.",
+            "not_yet": "Ainda não. Escolha o motivo ligado à sua meta."
           }
         }
       ]
@@ -4368,6 +4512,10 @@
           "help": [
             "Ask: could the family go without it this week?"
           ],
+          "feedback": {
+            "met": "Each item is in its group with a reason that fits it.",
+            "not_yet": "Not yet. Ask if you use it daily or just enjoy it."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-needs-wants"
         },
@@ -4398,6 +4546,10 @@
               }
             ]
           },
+          "feedback": {
+            "met": "You flagged the messages that ask for secrets and trusted the rest.",
+            "not_yet": "Not yet. Look for messages that ask for a password or code."
+          },
           "item_role": "transfer",
           "item_phase": "pre",
           "knowledge_component_id": "kc-message-safety"
@@ -4422,6 +4574,10 @@
               }
             ],
             "scene": "Next market day you have 10 coins again."
+          },
+          "feedback": {
+            "met": "Your choice uses what you learned last market day.",
+            "not_yet": "Not yet. Think about what went wrong last time."
           }
         }
       ],
@@ -4595,6 +4751,10 @@
           "help": [
             "Pregunta: ¿la familia podría pasar sin eso esta semana?"
           ],
+          "feedback": {
+            "met": "Cada cosa está en su grupo con una razón que le queda.",
+            "not_yet": "Todavía no. Pregúntate si lo usas cada día o solo te divierte."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-needs-wants"
         },
@@ -4625,6 +4785,10 @@
               }
             ]
           },
+          "feedback": {
+            "met": "Marcaste los mensajes que piden secretos y confiaste en los demás.",
+            "not_yet": "Todavía no. Busca mensajes que piden una contraseña o un código."
+          },
           "item_role": "transfer",
           "item_phase": "pre",
           "knowledge_component_id": "kc-message-safety"
@@ -4649,6 +4813,10 @@
               }
             ],
             "scene": "El próximo día de mercado tienes otra vez 10 monedas."
+          },
+          "feedback": {
+            "met": "Tu elección usa lo que aprendiste el último día de mercado.",
+            "not_yet": "Todavía no. Piensa en qué salió mal la última vez."
           }
         }
       ],
@@ -4822,6 +4990,10 @@
           "help": [
             "Pergunte: a família ficaria sem isso esta semana?"
           ],
+          "feedback": {
+            "met": "Cada item está no seu grupo com um motivo que combina.",
+            "not_yet": "Ainda não. Pergunte se você usa todo dia ou só acha divertido."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-needs-wants"
         },
@@ -4852,6 +5024,10 @@
               }
             ]
           },
+          "feedback": {
+            "met": "Você marcou as mensagens que pedem segredos e confiou nas outras.",
+            "not_yet": "Ainda não. Procure mensagens que pedem senha ou código."
+          },
           "item_role": "transfer",
           "item_phase": "pre",
           "knowledge_component_id": "kc-message-safety"
@@ -4876,6 +5052,10 @@
               }
             ],
             "scene": "Na próxima feira você tem 10 moedas de novo."
+          },
+          "feedback": {
+            "met": "Sua escolha usa o que você aprendeu no último dia de feira.",
+            "not_yet": "Ainda não. Pense no que deu errado da última vez."
           }
         }
       ],
@@ -4998,6 +5178,10 @@
             ],
             "rule": "If a card shows an even number, its back is red."
           },
+          "feedback": {
+            "met": "You turned only the cards that could break the rule.",
+            "not_yet": "Not yet. Ask which cards could break the rule."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-conditional-check"
         },
@@ -5035,6 +5219,10 @@
                 "label": "Button"
               }
             ]
+          },
+          "feedback": {
+            "met": "You placed each thing knowing every coin is also money.",
+            "not_yet": "Not yet. Check each thing: is it money, is it a coin?"
           },
           "knowledge_component_id": "kc-sets"
         },
@@ -5075,6 +5263,10 @@
             ],
             "sentence": "No one spends every coin and saves every coin."
           },
+          "feedback": {
+            "met": "You matched the picture to the sentence and placed each kid.",
+            "not_yet": "Not yet. Ask if anyone can be in both groups."
+          },
           "item_role": "transfer",
           "knowledge_component_id": "kc-sets"
         },
@@ -5113,6 +5305,10 @@
                 "label": "A stormy day"
               }
             ]
+          },
+          "feedback": {
+            "met": "You answered each question for a stormy day and followed its arrow.",
+            "not_yet": "Not yet. Answer the first question for a stormy day."
           },
           "knowledge_component_id": "kc-decision-steps"
         },
@@ -5163,6 +5359,10 @@
                 "label": "A new ball"
               }
             ]
+          },
+          "feedback": {
+            "met": "You asked if you need it before asking if you can pay.",
+            "not_yet": "Not yet. Your ball still works, so start with need."
           },
           "item_role": "transfer",
           "knowledge_component_id": "kc-decision-steps"
@@ -5233,6 +5433,10 @@
             "second_rule": "New rule: more than 5 coins, or 5 or fewer?",
             "rule": "Sort the coin piles by even or odd."
           },
+          "feedback": {
+            "met": "You sorted by pairs, then switched when the rule changed.",
+            "not_yet": "Not yet. Try making pairs, and reread the rule when it changes."
+          },
           "knowledge_component_id": "kc-sets"
         },
         {
@@ -5261,6 +5465,10 @@
                 "text": "Want to play after school?"
               }
             ]
+          },
+          "feedback": {
+            "met": "You spotted that a free prize should never cost you money.",
+            "not_yet": "Not yet. Look for a message that wants money for a prize."
           }
         },
         {
@@ -5284,6 +5492,10 @@
             ],
             "speaker": "Customer",
             "line": "Can I pay you tomorrow?"
+          },
+          "feedback": {
+            "met": "Your reply keeps the deal fair and safe for your stand.",
+            "not_yet": "Not yet. Think about who should agree before you wait for money."
           }
         },
         {
@@ -5305,6 +5517,10 @@
                 "label": "Three stickers next week"
               }
             ]
+          },
+          "feedback": {
+            "met": "You compared now with later and how much more waiting gives.",
+            "not_yet": "Not yet. Compare how many you get now and later."
           }
         }
       ]
@@ -5478,6 +5694,10 @@
             ],
             "rule": "Si una tarjeta muestra un número par, su reverso es rojo."
           },
+          "feedback": {
+            "met": "Volteaste solo las tarjetas que podían romper la regla.",
+            "not_yet": "Todavía no. Pregúntate qué tarjetas podrían romper la regla."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-conditional-check"
         },
@@ -5515,6 +5735,10 @@
                 "label": "Botón"
               }
             ]
+          },
+          "feedback": {
+            "met": "Ubicaste cada cosa sabiendo que toda moneda también es dinero.",
+            "not_yet": "Todavía no. Revisa si cada cosa es dinero y si es moneda."
           },
           "knowledge_component_id": "kc-sets"
         },
@@ -5555,6 +5779,10 @@
             ],
             "sentence": "Nadie gasta todas sus monedas y ahorra todas a la vez."
           },
+          "feedback": {
+            "met": "Elegiste el dibujo que encaja con la frase y ubicaste a cada quien.",
+            "not_yet": "Todavía no. Pregúntate si alguien puede estar en los dos grupos."
+          },
           "item_role": "transfer",
           "knowledge_component_id": "kc-sets"
         },
@@ -5593,6 +5821,10 @@
                 "label": "Un día de tormenta"
               }
             ]
+          },
+          "feedback": {
+            "met": "Respondiste cada pregunta para un día de tormenta y seguiste su flecha.",
+            "not_yet": "Todavía no. Responde la primera pregunta pensando en un día de tormenta."
           },
           "knowledge_component_id": "kc-decision-steps"
         },
@@ -5643,6 +5875,10 @@
                 "label": "Un balón nuevo"
               }
             ]
+          },
+          "feedback": {
+            "met": "Preguntaste si lo necesitas antes de ver si te alcanza.",
+            "not_yet": "Todavía no. Tu pelota todavía sirve, así que empieza por la necesidad."
           },
           "item_role": "transfer",
           "knowledge_component_id": "kc-decision-steps"
@@ -5713,6 +5949,10 @@
             "second_rule": "Nueva regla: ¿más de 5 monedas o 5 o menos?",
             "rule": "Ordena las pilas de monedas en par o impar."
           },
+          "feedback": {
+            "met": "Ordenaste por parejas y cambiaste cuando cambió la regla.",
+            "not_yet": "Todavía no. Intenta formar parejas y relee la regla cuando cambie."
+          },
           "knowledge_component_id": "kc-sets"
         },
         {
@@ -5741,6 +5981,10 @@
                 "text": "¿Jugamos después de clases?"
               }
             ]
+          },
+          "feedback": {
+            "met": "Notaste que un premio gratis nunca debería costarte dinero.",
+            "not_yet": "Todavía no. Busca un mensaje que pide dinero por un premio."
           }
         },
         {
@@ -5764,6 +6008,10 @@
             ],
             "speaker": "Cliente",
             "line": "¿Te puedo pagar mañana?"
+          },
+          "feedback": {
+            "met": "Tu respuesta mantiene el trato justo y seguro para tu puesto.",
+            "not_yet": "Todavía no. Piensa quién debe estar de acuerdo antes de esperar el pago."
           }
         },
         {
@@ -5785,6 +6033,10 @@
                 "label": "Tres estampas la próxima semana"
               }
             ]
+          },
+          "feedback": {
+            "met": "Comparaste ahora con después y cuánto más te da esperar.",
+            "not_yet": "Todavía no. Compara cuántas recibes ahora y cuántas después."
           }
         }
       ]
@@ -5958,6 +6210,10 @@
             ],
             "rule": "Se uma carta mostra um número par, o verso é vermelho."
           },
+          "feedback": {
+            "met": "Você virou só as cartas que podiam quebrar a regra.",
+            "not_yet": "Ainda não. Pergunte quais cartas poderiam quebrar a regra."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-conditional-check"
         },
@@ -5995,6 +6251,10 @@
                 "label": "Botão"
               }
             ]
+          },
+          "feedback": {
+            "met": "Você colocou cada coisa sabendo que toda moeda também é dinheiro.",
+            "not_yet": "Ainda não. Veja se cada coisa é dinheiro e se é moeda."
           },
           "knowledge_component_id": "kc-sets"
         },
@@ -6035,6 +6295,10 @@
             ],
             "sentence": "Ninguém gasta todas as moedas e guarda todas ao mesmo tempo."
           },
+          "feedback": {
+            "met": "Você escolheu a figura que combina com a frase e colocou cada pessoa.",
+            "not_yet": "Ainda não. Pergunte se alguém pode estar nos dois grupos."
+          },
           "item_role": "transfer",
           "knowledge_component_id": "kc-sets"
         },
@@ -6073,6 +6337,10 @@
                 "label": "Um dia de tempestade"
               }
             ]
+          },
+          "feedback": {
+            "met": "Você respondeu cada pergunta para um dia de tempestade e seguiu a seta.",
+            "not_yet": "Ainda não. Responda a primeira pergunta pensando num dia de tempestade."
           },
           "knowledge_component_id": "kc-decision-steps"
         },
@@ -6123,6 +6391,10 @@
                 "label": "Uma bola nova"
               }
             ]
+          },
+          "feedback": {
+            "met": "Você perguntou se precisa antes de ver se dá para pagar.",
+            "not_yet": "Ainda não. Sua bola ainda funciona, então comece pela necessidade."
           },
           "item_role": "transfer",
           "knowledge_component_id": "kc-decision-steps"
@@ -6193,6 +6465,10 @@
             "second_rule": "Nova regra: mais de 5 moedas ou 5 ou menos?",
             "rule": "Separe as pilhas de moedas em par ou ímpar."
           },
+          "feedback": {
+            "met": "Você separou por pares e mudou quando a regra mudou.",
+            "not_yet": "Ainda não. Tente formar pares e releia a regra quando ela mudar."
+          },
           "knowledge_component_id": "kc-sets"
         },
         {
@@ -6221,6 +6497,10 @@
                 "text": "Vamos brincar depois da aula?"
               }
             ]
+          },
+          "feedback": {
+            "met": "Você percebeu que um prêmio grátis nunca deveria custar dinheiro.",
+            "not_yet": "Ainda não. Procure uma mensagem que pede dinheiro por um prêmio."
           }
         },
         {
@@ -6244,6 +6524,10 @@
             ],
             "speaker": "Cliente",
             "line": "Posso te pagar amanhã?"
+          },
+          "feedback": {
+            "met": "Sua resposta deixa o acordo justo e seguro para a sua barraca.",
+            "not_yet": "Ainda não. Pense em quem deve concordar antes de esperar o pagamento."
           }
         },
         {
@@ -6265,6 +6549,10 @@
                 "label": "Três figurinhas semana que vem"
               }
             ]
+          },
+          "feedback": {
+            "met": "Você comparou agora com depois e quanto mais a espera dá.",
+            "not_yet": "Ainda não. Compare quantas você ganha agora e depois."
           }
         }
       ]
@@ -6510,6 +6798,10 @@
               "prompt": "What is the balance at the end?"
             },
             "title": "How the balance changed"
+          },
+          "feedback": {
+            "met": "You followed each step of the chart to the final balance.",
+            "not_yet": "Not yet. Add the rises and take away the drops in order."
           },
           "item_role": "practice",
           "knowledge_component_id": "kc-running-balance"
@@ -6807,6 +7099,10 @@
             },
             "title": "Cómo cambió el saldo"
           },
+          "feedback": {
+            "met": "Seguiste cada paso de la gráfica hasta el saldo final.",
+            "not_yet": "Todavía no. Suma las subidas y resta las bajadas en orden."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-running-balance"
         },
@@ -7103,6 +7399,10 @@
             },
             "title": "Como o saldo mudou"
           },
+          "feedback": {
+            "met": "Você seguiu cada passo do gráfico até o saldo final.",
+            "not_yet": "Ainda não. Some as subidas e tire as descidas, em ordem."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-running-balance"
         },
@@ -7327,6 +7627,10 @@
           "help": [
             "Start with what was owed, then take away what paid off the loan."
           ],
+          "feedback": {
+            "met": "You tracked how each payment shrinks what is still owed.",
+            "not_yet": "Not yet. Each month, only the part past interest lowers the loan."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-amortization"
         },
@@ -7355,6 +7659,10 @@
               "demand": "Want to buy",
               "supply": "Want to sell"
             }
+          },
+          "feedback": {
+            "met": "You shifted demand for the heat wave and read the new price.",
+            "not_yet": "Not yet. Ask which line more buyers would move."
           },
           "item_role": "practice",
           "knowledge_component_id": "kc-supply-demand"
@@ -7419,6 +7727,10 @@
             "prediction_step_minor": 10,
             "prediction_max_minor": 2000
           },
+          "feedback": {
+            "met": "Your guess grew the price year on year, not just once.",
+            "not_yet": "Not yet. Each year's rise applies to the new, higher price."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-inflation"
         },
@@ -7440,6 +7752,10 @@
           "help": [
             "Divide 72 by the yearly rate."
           ],
+          "feedback": {
+            "met": "You divided 72 by the growth rate to estimate the doubling.",
+            "not_yet": "Not yet. Divide 72 by the yearly rate."
+          },
           "item_role": "transfer",
           "knowledge_component_id": "kc-rule-of-72"
         },
@@ -7470,6 +7786,10 @@
                 "label": "Loan"
               }
             ]
+          },
+          "feedback": {
+            "met": "You compared total interest and saw which order costs less.",
+            "not_yet": "Not yet. Look at which plan pays the highest rate first."
           },
           "item_role": "practice",
           "knowledge_component_id": "kc-debt-payoff"
@@ -7505,6 +7825,10 @@
             ],
             "step": 10
           },
+          "feedback": {
+            "met": "Your mix keeps risk low enough while still meeting the return goal.",
+            "not_yet": "Not yet. Balance the mix until both limits are met."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-diversification"
         },
@@ -7529,6 +7853,10 @@
           "help": [
             "A lower price sells more cups, but each cup earns less."
           ],
+          "feedback": {
+            "met": "You tested prices and cups until the stand earned its goal.",
+            "not_yet": "Not yet. Change one thing a day and compare the profit."
+          },
           "item_role": "transfer",
           "knowledge_component_id": "kc-unit-economics"
         }
@@ -7634,6 +7962,10 @@
           "help": [
             "Empieza con lo que se debía y resta el abono a la deuda."
           ],
+          "feedback": {
+            "met": "Seguiste cómo cada pago reduce lo que aún se debe.",
+            "not_yet": "Todavía no. Cada mes, solo lo que pasa del interés baja la deuda."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-amortization"
         },
@@ -7662,6 +7994,10 @@
               "demand": "Quieren comprar",
               "supply": "Quieren vender"
             }
+          },
+          "feedback": {
+            "met": "Moviste la demanda por la ola de calor y leíste el nuevo precio.",
+            "not_yet": "Todavía no. Pregúntate qué línea moverían más compradores."
           },
           "item_role": "practice",
           "knowledge_component_id": "kc-supply-demand"
@@ -7726,6 +8062,10 @@
             "prediction_step_minor": 10,
             "prediction_max_minor": 2000
           },
+          "feedback": {
+            "met": "Tu estimación hizo crecer el precio año tras año, no una sola vez.",
+            "not_yet": "Todavía no. Cada aumento se aplica al precio nuevo, más alto."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-inflation"
         },
@@ -7747,6 +8087,10 @@
           "help": [
             "Divide 72 entre la tasa anual."
           ],
+          "feedback": {
+            "met": "Dividiste 72 entre la tasa para estimar cuándo se duplica.",
+            "not_yet": "Todavía no. Divide 72 entre la tasa anual."
+          },
           "item_role": "transfer",
           "knowledge_component_id": "kc-rule-of-72"
         },
@@ -7777,6 +8121,10 @@
                 "label": "Préstamo"
               }
             ]
+          },
+          "feedback": {
+            "met": "Comparaste el interés total y viste qué orden cuesta menos.",
+            "not_yet": "Todavía no. Mira qué plan paga primero la tasa más alta."
           },
           "item_role": "practice",
           "knowledge_component_id": "kc-debt-payoff"
@@ -7812,6 +8160,10 @@
             ],
             "step": 10
           },
+          "feedback": {
+            "met": "Tu mezcla mantiene el riesgo bajo y aun así alcanza la meta de ganancia.",
+            "not_yet": "Todavía no. Ajusta la mezcla hasta cumplir los dos límites."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-diversification"
         },
@@ -7836,6 +8188,10 @@
           "help": [
             "Un precio bajo vende más vasos, pero cada vaso gana menos."
           ],
+          "feedback": {
+            "met": "Probaste precios y vasos hasta que el puesto alcanzó su meta.",
+            "not_yet": "Todavía no. Cambia una cosa por día y compara la ganancia."
+          },
           "item_role": "transfer",
           "knowledge_component_id": "kc-unit-economics"
         }
@@ -7941,6 +8297,10 @@
           "help": [
             "Comece com a dívida e tire o que foi abatido."
           ],
+          "feedback": {
+            "met": "Você acompanhou como cada pagamento reduz o que ainda se deve.",
+            "not_yet": "Ainda não. A cada mês, só o que passa dos juros reduz a dívida."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-amortization"
         },
@@ -7969,6 +8329,10 @@
               "demand": "Querem comprar",
               "supply": "Querem vender"
             }
+          },
+          "feedback": {
+            "met": "Você moveu a demanda pela onda de calor e leu o novo preço.",
+            "not_yet": "Ainda não. Pergunte qual linha mais compradores moveriam."
           },
           "item_role": "practice",
           "knowledge_component_id": "kc-supply-demand"
@@ -8033,6 +8397,10 @@
             "prediction_step_minor": 10,
             "prediction_max_minor": 2000
           },
+          "feedback": {
+            "met": "Seu palpite fez o preço crescer ano após ano, não uma vez só.",
+            "not_yet": "Ainda não. Cada aumento vale sobre o preço novo, mais alto."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-inflation"
         },
@@ -8054,6 +8422,10 @@
           "help": [
             "Divida 72 pela taxa anual."
           ],
+          "feedback": {
+            "met": "Você dividiu 72 pela taxa para estimar quando dobra.",
+            "not_yet": "Ainda não. Divida 72 pela taxa anual."
+          },
           "item_role": "transfer",
           "knowledge_component_id": "kc-rule-of-72"
         },
@@ -8084,6 +8456,10 @@
                 "label": "Empréstimo"
               }
             ]
+          },
+          "feedback": {
+            "met": "Você comparou os juros totais e viu qual ordem custa menos.",
+            "not_yet": "Ainda não. Veja qual plano paga primeiro a taxa mais alta."
           },
           "item_role": "practice",
           "knowledge_component_id": "kc-debt-payoff"
@@ -8119,6 +8495,10 @@
             ],
             "step": 10
           },
+          "feedback": {
+            "met": "Sua mistura mantém o risco baixo e ainda atinge a meta de retorno.",
+            "not_yet": "Ainda não. Ajuste a mistura até cumprir os dois limites."
+          },
           "item_role": "practice",
           "knowledge_component_id": "kc-diversification"
         },
@@ -8143,6 +8523,10 @@
           "help": [
             "Um preço menor vende mais copos, mas cada copo rende menos."
           ],
+          "feedback": {
+            "met": "Você testou preços e copos até a barraca atingir a meta.",
+            "not_yet": "Ainda não. Mude uma coisa por dia e compare o lucro."
+          },
           "item_role": "transfer",
           "knowledge_component_id": "kc-unit-economics"
         }
@@ -8249,6 +8633,10 @@
                 "rateBasisPoints": 3000
               }
             ]
+          },
+          "feedback": {
+            "met": "You taxed each slice at its own rate and averaged the whole.",
+            "not_yet": "Not yet. Only income above each line pays that line's rate."
           }
         },
         {
@@ -8271,6 +8659,10 @@
             "initialYears": 10,
             "predictionStepMinor": 1000,
             "predictionMaximumMinor": 1000000
+          },
+          "feedback": {
+            "met": "You predicted growth on growth, not the same gain each year.",
+            "not_yet": "Not yet. Compound growth adds interest on past interest."
           }
         },
         {
@@ -8287,6 +8679,10 @@
             "initialPercent": 0,
             "mode": "discount",
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "You shaded the discount share and found its amount in coins.",
+            "not_yet": "Not yet. Shade one square for each percent off."
           }
         },
         {
@@ -8302,6 +8698,10 @@
             "sale": 5,
             "cost": 3,
             "maxEntries": 6
+          },
+          "feedback": {
+            "met": "You logged each sale and cost and kept a running balance.",
+            "not_yet": "Not yet. Add each sale and subtract each cost as you go."
           }
         },
         {
@@ -8338,6 +8738,10 @@
               "discount-subtract",
               "sale-price"
             ]
+          },
+          "feedback": {
+            "met": "You found the discount first, then took it off the price.",
+            "not_yet": "Not yet. Work out the discount, then subtract it from the price."
           }
         },
         {
@@ -8355,6 +8759,10 @@
             "maximumPacks": 6,
             "initialPacks": 2,
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "You scaled the price by the same factor as the boxes.",
+            "not_yet": "Not yet. Multiply the box price by the number of boxes."
           }
         },
         {
@@ -8369,6 +8777,10 @@
             "total": 100,
             "step": 10,
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "Your plan saves the goal amount and assigns every coin.",
+            "not_yet": "Not yet. Move coins into savings until you reach the goal."
           }
         }
       ]
@@ -8476,6 +8888,10 @@
                 "rateBasisPoints": 3000
               }
             ]
+          },
+          "feedback": {
+            "met": "Gravaste cada tramo con su tasa y calculaste el promedio del total.",
+            "not_yet": "Todavía no. Solo el ingreso sobre cada límite paga esa tasa."
           }
         },
         {
@@ -8498,6 +8914,10 @@
             "initialYears": 10,
             "predictionStepMinor": 1000,
             "predictionMaximumMinor": 1000000
+          },
+          "feedback": {
+            "met": "Predijiste crecimiento sobre crecimiento, no la misma ganancia cada año.",
+            "not_yet": "Todavía no. El interés compuesto suma interés sobre el interés anterior."
           }
         },
         {
@@ -8514,6 +8934,10 @@
             "initialPercent": 0,
             "mode": "discount",
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "Sombreaste la parte del descuento y hallaste su valor en monedas.",
+            "not_yet": "Todavía no. Sombrea un cuadro por cada punto de descuento."
           }
         },
         {
@@ -8529,6 +8953,10 @@
             "sale": 5,
             "cost": 3,
             "maxEntries": 6
+          },
+          "feedback": {
+            "met": "Registraste cada venta y costo y llevaste el saldo al día.",
+            "not_yet": "Todavía no. Suma cada venta y resta cada costo sobre la marcha."
           }
         },
         {
@@ -8565,6 +8993,10 @@
               "discount-subtract",
               "sale-price"
             ]
+          },
+          "feedback": {
+            "met": "Calculaste primero el descuento y luego lo restaste del precio.",
+            "not_yet": "Todavía no. Calcula el descuento y luego réstalo del precio."
           }
         },
         {
@@ -8582,6 +9014,10 @@
             "maximumPacks": 6,
             "initialPacks": 2,
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "Escalaste el precio por el mismo factor que las cajas.",
+            "not_yet": "Todavía no. Multiplica el precio de una caja por el número de cajas."
           }
         },
         {
@@ -8596,6 +9032,10 @@
             "total": 100,
             "step": 10,
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "Tu plan ahorra la meta y asigna cada moneda.",
+            "not_yet": "Todavía no. Pasa monedas al ahorro hasta llegar a la meta."
           }
         }
       ]
@@ -8703,6 +9143,10 @@
                 "rateBasisPoints": 3000
               }
             ]
+          },
+          "feedback": {
+            "met": "Você tributou cada faixa com sua alíquota e tirou a média do total.",
+            "not_yet": "Ainda não. Só a renda acima de cada limite paga essa alíquota."
           }
         },
         {
@@ -8725,6 +9169,10 @@
             "initialYears": 10,
             "predictionStepMinor": 1000,
             "predictionMaximumMinor": 1000000
+          },
+          "feedback": {
+            "met": "Você previu crescimento sobre crescimento, não o mesmo ganho todo ano.",
+            "not_yet": "Ainda não. Juros compostos somam juros sobre os juros anteriores."
           }
         },
         {
@@ -8741,6 +9189,10 @@
             "initialPercent": 0,
             "mode": "discount",
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "Você sombreou a parte do desconto e achou o valor em moedas.",
+            "not_yet": "Ainda não. Pinte um quadrado para cada ponto de desconto."
           }
         },
         {
@@ -8756,6 +9208,10 @@
             "sale": 5,
             "cost": 3,
             "maxEntries": 6
+          },
+          "feedback": {
+            "met": "Você registrou cada venda e custo e manteve o saldo em dia.",
+            "not_yet": "Ainda não. Some cada venda e tire cada custo pelo caminho."
           }
         },
         {
@@ -8792,6 +9248,10 @@
               "discount-subtract",
               "sale-price"
             ]
+          },
+          "feedback": {
+            "met": "Você calculou primeiro o desconto e depois tirou do preço.",
+            "not_yet": "Ainda não. Calcule o desconto e depois tire do preço."
           }
         },
         {
@@ -8809,6 +9269,10 @@
             "maximumPacks": 6,
             "initialPacks": 2,
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "Você escalou o preço pelo mesmo fator das caixas.",
+            "not_yet": "Ainda não. Multiplique o preço de uma caixa pelo número de caixas."
           }
         },
         {
@@ -8823,6 +9287,10 @@
             "total": 100,
             "step": 10,
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "Seu plano guarda a meta e distribui todas as moedas.",
+            "not_yet": "Ainda não. Passe moedas para a poupança até chegar à meta."
           }
         }
       ]
@@ -9316,6 +9784,10 @@
             "maximumPacks": 5,
             "initialPacks": 1,
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "You scaled the price by the same factor as the packs.",
+            "not_yet": "Not yet. Find the price of one pack first."
           }
         },
         {
@@ -9330,6 +9802,10 @@
             "total": 40,
             "step": 2,
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "Your plan saves the goal amount and assigns every coin.",
+            "not_yet": "Not yet. Move coins into savings until you reach the goal."
           }
         }
       ]
@@ -9390,6 +9866,10 @@
             "maximumPacks": 5,
             "initialPacks": 1,
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "Escalaste el precio por el mismo factor que los paquetes.",
+            "not_yet": "Todavía no. Primero halla el precio de un paquete."
           }
         },
         {
@@ -9404,6 +9884,10 @@
             "total": 40,
             "step": 2,
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "Tu plan ahorra la meta y asigna cada moneda.",
+            "not_yet": "Todavía no. Pasa monedas al ahorro hasta llegar a la meta."
           }
         }
       ]
@@ -9464,6 +9948,10 @@
             "maximumPacks": 5,
             "initialPacks": 1,
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "Você escalou o preço pelo mesmo fator dos pacotes.",
+            "not_yet": "Ainda não. Primeiro ache o preço de um pacote."
           }
         },
         {
@@ -9478,6 +9966,10 @@
             "total": 40,
             "step": 2,
             "currency": "coins"
+          },
+          "feedback": {
+            "met": "Seu plano guarda a meta e distribui todas as moedas.",
+            "not_yet": "Ainda não. Passe moedas para a poupança até chegar à meta."
           }
         }
       ]
@@ -9544,6 +10036,10 @@
             ],
             "unknownLabel": "All together",
             "spokenText": "eighteen plus seven"
+          },
+          "feedback": {
+            "met": "You saw two groups joining into one total.",
+            "not_yet": "Not yet. Ask if the coins change or two groups join."
           }
         },
         {
@@ -9569,6 +10065,10 @@
             ],
             "unknownLabel": "All together",
             "spokenText": "eighteen plus seven"
+          },
+          "feedback": {
+            "met": "Each number sits in the box for its role in the story.",
+            "not_yet": "Not yet. Match each number to what it counts."
           }
         },
         {
@@ -9594,6 +10094,10 @@
             ],
             "unknownLabel": "All together",
             "spokenText": "eighteen plus seven"
+          },
+          "feedback": {
+            "met": "You added the two parts to find the whole.",
+            "not_yet": "Not yet. Put both parts together."
           }
         },
         {
@@ -9619,6 +10123,10 @@
             ],
             "unknownLabel": "How many more",
             "spokenText": "forty minus twenty six"
+          },
+          "feedback": {
+            "met": "You saw a comparison: how much more one has than the other.",
+            "not_yet": "Not yet. Ask if the story compares two amounts."
           }
         },
         {
@@ -9644,6 +10152,10 @@
             ],
             "unknownLabel": "How many more",
             "spokenText": "forty minus twenty six"
+          },
+          "feedback": {
+            "met": "Each number sits in the box for its role in the story.",
+            "not_yet": "Not yet. Match each number to what it counts."
           }
         },
         {
@@ -9669,6 +10181,10 @@
             ],
             "unknownLabel": "How many more",
             "spokenText": "forty minus twenty six"
+          },
+          "feedback": {
+            "met": "You found the gap by taking the smaller amount from the larger.",
+            "not_yet": "Not yet. Subtract the smaller amount from the larger one."
           }
         },
         {
@@ -9694,6 +10210,10 @@
             ],
             "unknownLabel": "Total cost",
             "spokenText": "six coins times five tickets"
+          },
+          "feedback": {
+            "met": "You saw equal groups: the same price for every ticket.",
+            "not_yet": "Not yet. Look for the same amount repeated."
           }
         },
         {
@@ -9719,6 +10239,10 @@
             ],
             "unknownLabel": "Total cost",
             "spokenText": "six coins times five tickets"
+          },
+          "feedback": {
+            "met": "Each number sits in the box for its role in the story.",
+            "not_yet": "Not yet. Match each number to what it counts."
           }
         },
         {
@@ -9744,6 +10268,10 @@
             ],
             "unknownLabel": "Total cost",
             "spokenText": "six coins times five tickets"
+          },
+          "feedback": {
+            "met": "You multiplied the price of one ticket by the number bought.",
+            "not_yet": "Not yet. Multiply the price per ticket by the tickets."
           }
         }
       ]
@@ -9846,6 +10374,10 @@
             ],
             "unknownLabel": "En total",
             "spokenText": "dieciocho más siete"
+          },
+          "feedback": {
+            "met": "Viste dos grupos que se juntan en un total.",
+            "not_yet": "Todavía no. Pregúntate si las monedas cambian o si se juntan dos grupos."
           }
         },
         {
@@ -9871,6 +10403,10 @@
             ],
             "unknownLabel": "En total",
             "spokenText": "dieciocho más siete"
+          },
+          "feedback": {
+            "met": "Cada número quedó en la caja de su papel en la historia.",
+            "not_yet": "Todavía no. Relaciona cada número con lo que cuenta."
           }
         },
         {
@@ -9896,6 +10432,10 @@
             ],
             "unknownLabel": "En total",
             "spokenText": "dieciocho más siete"
+          },
+          "feedback": {
+            "met": "Sumaste las dos partes para hallar el total.",
+            "not_yet": "Todavía no. Junta las dos partes."
           }
         },
         {
@@ -9921,6 +10461,10 @@
             ],
             "unknownLabel": "Cuántas más",
             "spokenText": "cuarenta menos veintiséis"
+          },
+          "feedback": {
+            "met": "Viste una comparación: cuánto más tiene uno que el otro.",
+            "not_yet": "Todavía no. Pregúntate si la historia compara dos cantidades."
           }
         },
         {
@@ -9946,6 +10490,10 @@
             ],
             "unknownLabel": "Cuántas más",
             "spokenText": "cuarenta menos veintiséis"
+          },
+          "feedback": {
+            "met": "Cada número quedó en la caja de su papel en la historia.",
+            "not_yet": "Todavía no. Relaciona cada número con lo que cuenta."
           }
         },
         {
@@ -9971,6 +10519,10 @@
             ],
             "unknownLabel": "Cuántas más",
             "spokenText": "cuarenta menos veintiséis"
+          },
+          "feedback": {
+            "met": "Hallaste la diferencia restando la cantidad menor de la mayor.",
+            "not_yet": "Todavía no. Resta la cantidad menor de la mayor."
           }
         },
         {
@@ -9996,6 +10548,10 @@
             ],
             "unknownLabel": "Costo total",
             "spokenText": "seis monedas por cinco boletos"
+          },
+          "feedback": {
+            "met": "Viste grupos iguales: el mismo precio por cada boleto.",
+            "not_yet": "Todavía no. Busca la misma cantidad repetida."
           }
         },
         {
@@ -10021,6 +10577,10 @@
             ],
             "unknownLabel": "Costo total",
             "spokenText": "seis monedas por cinco boletos"
+          },
+          "feedback": {
+            "met": "Cada número quedó en la caja de su papel en la historia.",
+            "not_yet": "Todavía no. Relaciona cada número con lo que cuenta."
           }
         },
         {
@@ -10046,6 +10606,10 @@
             ],
             "unknownLabel": "Costo total",
             "spokenText": "seis monedas por cinco boletos"
+          },
+          "feedback": {
+            "met": "Multiplicaste el precio de un boleto por los que se compraron.",
+            "not_yet": "Todavía no. Multiplica el precio por boleto por los boletos."
           }
         }
       ]
@@ -10148,6 +10712,10 @@
             ],
             "unknownLabel": "No total",
             "spokenText": "dezoito mais sete"
+          },
+          "feedback": {
+            "met": "Você viu dois grupos que se juntam num total.",
+            "not_yet": "Ainda não. Pergunte se as moedas mudam ou se dois grupos se juntam."
           }
         },
         {
@@ -10173,6 +10741,10 @@
             ],
             "unknownLabel": "No total",
             "spokenText": "dezoito mais sete"
+          },
+          "feedback": {
+            "met": "Cada número ficou na caixa do seu papel na história.",
+            "not_yet": "Ainda não. Ligue cada número ao que ele conta."
           }
         },
         {
@@ -10198,6 +10770,10 @@
             ],
             "unknownLabel": "No total",
             "spokenText": "dezoito mais sete"
+          },
+          "feedback": {
+            "met": "Você somou as duas partes para achar o total.",
+            "not_yet": "Ainda não. Junte as duas partes."
           }
         },
         {
@@ -10223,6 +10799,10 @@
             ],
             "unknownLabel": "Quantas a mais",
             "spokenText": "quarenta menos vinte e seis"
+          },
+          "feedback": {
+            "met": "Você viu uma comparação: quanto um tem a mais que o outro.",
+            "not_yet": "Ainda não. Pergunte se a história compara duas quantidades."
           }
         },
         {
@@ -10248,6 +10828,10 @@
             ],
             "unknownLabel": "Quantas a mais",
             "spokenText": "quarenta menos vinte e seis"
+          },
+          "feedback": {
+            "met": "Cada número ficou na caixa do seu papel na história.",
+            "not_yet": "Ainda não. Ligue cada número ao que ele conta."
           }
         },
         {
@@ -10273,6 +10857,10 @@
             ],
             "unknownLabel": "Quantas a mais",
             "spokenText": "quarenta menos vinte e seis"
+          },
+          "feedback": {
+            "met": "Você achou a diferença tirando a quantia menor da maior.",
+            "not_yet": "Ainda não. Tire a quantia menor da maior."
           }
         },
         {
@@ -10298,6 +10886,10 @@
             ],
             "unknownLabel": "Custo total",
             "spokenText": "seis moedas vezes cinco ingressos"
+          },
+          "feedback": {
+            "met": "Você viu grupos iguais: o mesmo preço para cada ingresso.",
+            "not_yet": "Ainda não. Procure a mesma quantia repetida."
           }
         },
         {
@@ -10323,6 +10915,10 @@
             ],
             "unknownLabel": "Custo total",
             "spokenText": "seis moedas vezes cinco ingressos"
+          },
+          "feedback": {
+            "met": "Cada número ficou na caixa do seu papel na história.",
+            "not_yet": "Ainda não. Ligue cada número ao que ele conta."
           }
         },
         {
@@ -10348,6 +10944,10 @@
             ],
             "unknownLabel": "Custo total",
             "spokenText": "seis moedas vezes cinco ingressos"
+          },
+          "feedback": {
+            "met": "Você multiplicou o preço de um ingresso pela quantidade comprada.",
+            "not_yet": "Ainda não. Multiplique o preço por ingresso pelos ingressos."
           }
         }
       ]
@@ -10452,6 +11052,10 @@
             ],
             "unitLabel": "sticker"
           },
+          "feedback": {
+            "met": "You found the price of one of each and compared them.",
+            "not_yet": "Not yet. Divide each price by how many it holds."
+          },
           "variant": "ratio-lines"
         },
         {
@@ -10485,6 +11089,10 @@
               }
             ],
             "unitLabel": "apple"
+          },
+          "feedback": {
+            "met": "You found the price of one of each and compared them.",
+            "not_yet": "Not yet. Divide each price by how many it holds."
           },
           "item_role": "transfer",
           "variant": "ratio-lines"
@@ -10564,6 +11172,10 @@
             ],
             "unitLabel": "estampa"
           },
+          "feedback": {
+            "met": "Hallaste el precio de una unidad de cada opción y los comparaste.",
+            "not_yet": "Todavía no. Divide cada precio entre cuántas unidades trae."
+          },
           "variant": "ratio-lines"
         },
         {
@@ -10597,6 +11209,10 @@
               }
             ],
             "unitLabel": "manzana"
+          },
+          "feedback": {
+            "met": "Hallaste el precio de una unidad de cada opción y los comparaste.",
+            "not_yet": "Todavía no. Divide cada precio entre cuántas unidades trae."
           },
           "item_role": "transfer",
           "variant": "ratio-lines"
@@ -10676,6 +11292,10 @@
             ],
             "unitLabel": "figurinha"
           },
+          "feedback": {
+            "met": "Você achou o preço de uma unidade de cada opção e comparou.",
+            "not_yet": "Ainda não. Divida cada preço por quantas unidades vêm."
+          },
           "variant": "ratio-lines"
         },
         {
@@ -10709,6 +11329,10 @@
               }
             ],
             "unitLabel": "maçã"
+          },
+          "feedback": {
+            "met": "Você achou o preço de uma unidade de cada opção e comparou.",
+            "not_yet": "Ainda não. Divida cada preço por quantas unidades vêm."
           },
           "item_role": "transfer",
           "variant": "ratio-lines"
@@ -11101,6 +11725,10 @@
                 "label": "Enough coins and wanted"
               }
             ]
+          },
+          "feedback": {
+            "met": "Your rule buys only when both conditions are true.",
+            "not_yet": "Not yet. Test your rule on each practice case."
           }
         }
       ]
@@ -11227,6 +11855,10 @@
                 "label": "Monedas suficientes y lo quiere"
               }
             ]
+          },
+          "feedback": {
+            "met": "Tu regla compra solo cuando las dos condiciones se cumplen.",
+            "not_yet": "Todavía no. Prueba tu regla con cada caso de práctica."
           }
         }
       ]
@@ -11353,6 +11985,10 @@
                 "label": "Moedas suficientes e quer"
               }
             ]
+          },
+          "feedback": {
+            "met": "Sua regra compra só quando as duas condições são verdadeiras.",
+            "not_yet": "Ainda não. Teste sua regra em cada caso de prática."
           }
         }
       ]
@@ -11476,6 +12112,10 @@
                 "label": "On sale, wanted, short of coins"
               }
             ]
+          },
+          "feedback": {
+            "met": "Your rule waits for a sale even when you can pay.",
+            "not_yet": "Not yet. Test your rule on the practice case."
           }
         }
       ]
@@ -11619,6 +12259,10 @@
                 "label": "En oferta, deseado, sin monedas"
               }
             ]
+          },
+          "feedback": {
+            "met": "Tu regla espera una oferta aunque te alcance el dinero.",
+            "not_yet": "Todavía no. Prueba tu regla con el caso de práctica."
           }
         }
       ]
@@ -11762,6 +12406,10 @@
                 "label": "Em promoção, desejado, sem moedas"
               }
             ]
+          },
+          "feedback": {
+            "met": "Sua regra espera uma promoção mesmo quando dá para pagar.",
+            "not_yet": "Ainda não. Teste sua regra no caso de prática."
           }
         }
       ]
@@ -11904,6 +12552,10 @@
                 "label": "New shoes"
               }
             ]
+          },
+          "feedback": {
+            "met": "Your chart sends every case to a sensible result.",
+            "not_yet": "Not yet. Test your chart on the practice case."
           }
         }
       ]
@@ -12023,6 +12675,10 @@
                 "label": "Tenis nuevos"
               }
             ]
+          },
+          "feedback": {
+            "met": "Tu diagrama lleva cada caso a un resultado sensato.",
+            "not_yet": "Todavía no. Prueba tu diagrama con el caso de práctica."
           }
         }
       ]
@@ -12142,6 +12798,10 @@
                 "label": "Tênis novo"
               }
             ]
+          },
+          "feedback": {
+            "met": "Seu diagrama leva cada caso a um resultado sensato.",
+            "not_yet": "Ainda não. Teste seu diagrama no caso de prática."
           }
         }
       ]
@@ -12422,6 +13082,10 @@
               }
             ]
           },
+          "feedback": {
+            "met": "You flagged the tricks and named the cues that gave them away.",
+            "not_yet": "Not yet. Look for requests for passwords, codes or prizes."
+          },
           "item_phase": "post",
           "knowledge_component_id": "kc-message-safety"
         }
@@ -12514,6 +13178,10 @@
               }
             ]
           },
+          "feedback": {
+            "met": "Marcaste los engaños y nombraste las señales que los delataron.",
+            "not_yet": "Todavía no. Busca pedidos de contraseñas, códigos o premios."
+          },
           "item_phase": "post",
           "knowledge_component_id": "kc-message-safety"
         }
@@ -12605,6 +13273,10 @@
                 "label": "Código"
               }
             ]
+          },
+          "feedback": {
+            "met": "Você marcou os golpes e apontou os sinais que os denunciaram.",
+            "not_yet": "Ainda não. Procure pedidos de senhas, códigos ou prêmios."
           },
           "item_phase": "post",
           "knowledge_component_id": "kc-message-safety"
@@ -12719,6 +13391,10 @@
               "prompt": "Which day closed lower than it opened?"
             },
             "title": "Share price by day"
+          },
+          "feedback": {
+            "met": "You compared each day's close with its open.",
+            "not_yet": "Not yet. A day closes lower when its candle body falls."
           }
         },
         {
@@ -13095,6 +13771,10 @@
               "prompt": "¿Qué día cerró más bajo de lo que abrió?"
             },
             "title": "Precio por día"
+          },
+          "feedback": {
+            "met": "Comparaste el cierre de cada día con su apertura.",
+            "not_yet": "Todavía no. Un día cierra más bajo cuando su vela baja."
           }
         },
         {
@@ -13471,6 +14151,10 @@
               "prompt": "Que dia fechou abaixo da abertura?"
             },
             "title": "Preço por dia"
+          },
+          "feedback": {
+            "met": "Você comparou o fechamento de cada dia com a abertura.",
+            "not_yet": "Ainda não. Um dia fecha mais baixo quando o corpo da vela desce."
           }
         },
         {
@@ -14515,6 +15199,10 @@
               "prompt": "How many save and budget?"
             },
             "title": "Our class"
+          },
+          "feedback": {
+            "met": "You counted only the people inside both circles.",
+            "not_yet": "Not yet. Count just the part where the circles overlap."
           }
         },
         {
@@ -14785,6 +15473,10 @@
               "prompt": "¿Cuántos ahorran y planean?"
             },
             "title": "Nuestro grupo"
+          },
+          "feedback": {
+            "met": "Contaste solo a las personas dentro de los dos círculos.",
+            "not_yet": "Todavía no. Cuenta solo la parte donde los círculos se cruzan."
           }
         },
         {
@@ -15055,6 +15747,10 @@
               "prompt": "Quantos poupam e planejam?"
             },
             "title": "Nossa turma"
+          },
+          "feedback": {
+            "met": "Você contou só as pessoas dentro dos dois círculos.",
+            "not_yet": "Ainda não. Conte só a parte onde os círculos se cruzam."
           }
         },
         {
@@ -16138,6 +16834,10 @@
               "statement": "Some subscriptions are hidden."
             }
           },
+          "feedback": {
+            "met": "You placed each thing and tested the conclusion against the premises.",
+            "not_yet": "Not yet. Do the premises force it, or only allow it?"
+          },
           "item_role": "transfer",
           "knowledge_component_id": "kc-sets"
         },
@@ -16170,6 +16870,10 @@
               }
             ],
             "rule": "If a card has a vowel on one side, it has an even number on the other."
+          },
+          "feedback": {
+            "met": "You turned only the cards that could break the rule.",
+            "not_yet": "Not yet. Ask which cards could break the rule."
           },
           "knowledge_component_id": "kc-conditional-check"
         }
@@ -16274,6 +16978,10 @@
               "statement": "Algunas suscripciones están ocultas."
             }
           },
+          "feedback": {
+            "met": "Ubicaste cada cosa y pusiste a prueba la conclusión con las premisas.",
+            "not_yet": "Todavía no. ¿Las premisas la obligan o solo la permiten?"
+          },
           "item_role": "transfer",
           "knowledge_component_id": "kc-sets"
         },
@@ -16306,6 +17014,10 @@
               }
             ],
             "rule": "Si una tarjeta tiene una vocal de un lado, tiene un número par del otro."
+          },
+          "feedback": {
+            "met": "Volteaste solo las tarjetas que podían romper la regla.",
+            "not_yet": "Todavía no. Pregúntate qué tarjetas podrían romper la regla."
           },
           "knowledge_component_id": "kc-conditional-check"
         }
@@ -16410,6 +17122,10 @@
               "statement": "Algumas assinaturas são ocultas."
             }
           },
+          "feedback": {
+            "met": "Você colocou cada coisa e testou a conclusão com as premissas.",
+            "not_yet": "Ainda não. As premissas obrigam a conclusão ou só permitem?"
+          },
           "item_role": "transfer",
           "knowledge_component_id": "kc-sets"
         },
@@ -16442,6 +17158,10 @@
               }
             ],
             "rule": "Se uma carta tem uma vogal de um lado, tem um número par do outro."
+          },
+          "feedback": {
+            "met": "Você virou só as cartas que podiam quebrar a regra.",
+            "not_yet": "Ainda não. Pergunte quais cartas poderiam quebrar a regra."
           },
           "knowledge_component_id": "kc-conditional-check"
         }
@@ -16529,6 +17249,10 @@
             ],
             "unknownLabel": "Leo",
             "spokenText": "fifty and twelve more"
+          },
+          "feedback": {
+            "met": "Your bars show Ana's as Leo's plus the extra part.",
+            "not_yet": "Not yet. Ana has more, so her bar is longer."
           }
         },
         {
@@ -16554,6 +17278,10 @@
             ],
             "unknownLabel": "Leo",
             "spokenText": "fifty minus twelve"
+          },
+          "feedback": {
+            "met": "You took the extra part away from Ana's bar to find Leo's.",
+            "not_yet": "Not yet. Leo's bar is Ana's without the extra part."
           }
         },
         {
@@ -16579,6 +17307,10 @@
             ],
             "unknownLabel": "How many more",
             "spokenText": "forty minus twenty six"
+          },
+          "feedback": {
+            "met": "You saw a comparison: how much more one has than the other.",
+            "not_yet": "Not yet. Ask if the story compares two amounts."
           }
         },
         {
@@ -16604,6 +17336,10 @@
             ],
             "unknownLabel": "How many more",
             "spokenText": "forty minus twenty six"
+          },
+          "feedback": {
+            "met": "Each number sits in the box for its role in the story.",
+            "not_yet": "Not yet. Match each number to what it counts."
           }
         },
         {
@@ -16629,6 +17365,10 @@
             ],
             "unknownLabel": "How many more",
             "spokenText": "forty minus twenty six"
+          },
+          "feedback": {
+            "met": "You found the gap by taking the smaller amount from the larger.",
+            "not_yet": "Not yet. Subtract the smaller amount from the larger one."
           }
         }
       ],
@@ -16736,6 +17476,10 @@
             ],
             "unknownLabel": "Leo",
             "spokenText": "cincuenta y doce más"
+          },
+          "feedback": {
+            "met": "Tus barras muestran la de Ana como la de Leo más la parte extra.",
+            "not_yet": "Todavía no. Ana tiene más, así que su barra es más larga."
           }
         },
         {
@@ -16761,6 +17505,10 @@
             ],
             "unknownLabel": "Leo",
             "spokenText": "cincuenta menos doce"
+          },
+          "feedback": {
+            "met": "Quitaste la parte extra a la barra de Ana para hallar la de Leo.",
+            "not_yet": "Todavía no. La barra de Leo es la de Ana sin la parte extra."
           }
         },
         {
@@ -16786,6 +17534,10 @@
             ],
             "unknownLabel": "Cuántas más",
             "spokenText": "cuarenta menos veintiséis"
+          },
+          "feedback": {
+            "met": "Viste una comparación: cuánto más tiene uno que el otro.",
+            "not_yet": "Todavía no. Pregúntate si la historia compara dos cantidades."
           }
         },
         {
@@ -16811,6 +17563,10 @@
             ],
             "unknownLabel": "Cuántas más",
             "spokenText": "cuarenta menos veintiséis"
+          },
+          "feedback": {
+            "met": "Cada número quedó en la caja de su papel en la historia.",
+            "not_yet": "Todavía no. Relaciona cada número con lo que cuenta."
           }
         },
         {
@@ -16836,6 +17592,10 @@
             ],
             "unknownLabel": "Cuántas más",
             "spokenText": "cuarenta menos veintiséis"
+          },
+          "feedback": {
+            "met": "Hallaste la diferencia restando la cantidad menor de la mayor.",
+            "not_yet": "Todavía no. Resta la cantidad menor de la mayor."
           }
         }
       ],
@@ -16943,6 +17703,10 @@
             ],
             "unknownLabel": "Leo",
             "spokenText": "cinquenta e doze a mais"
+          },
+          "feedback": {
+            "met": "Suas barras mostram a de Ana como a de Leo mais a parte extra.",
+            "not_yet": "Ainda não. Ana tem mais, então a barra dela é mais longa."
           }
         },
         {
@@ -16968,6 +17732,10 @@
             ],
             "unknownLabel": "Leo",
             "spokenText": "cinquenta menos doze"
+          },
+          "feedback": {
+            "met": "Você tirou a parte extra da barra de Ana para achar a de Leo.",
+            "not_yet": "Ainda não. A barra de Leo é a de Ana sem a parte extra."
           }
         },
         {
@@ -16993,6 +17761,10 @@
             ],
             "unknownLabel": "Quantas a mais",
             "spokenText": "quarenta menos vinte e seis"
+          },
+          "feedback": {
+            "met": "Você viu uma comparação: quanto um tem a mais que o outro.",
+            "not_yet": "Ainda não. Pergunte se a história compara duas quantidades."
           }
         },
         {
@@ -17018,6 +17790,10 @@
             ],
             "unknownLabel": "Quantas a mais",
             "spokenText": "quarenta menos vinte e seis"
+          },
+          "feedback": {
+            "met": "Cada número ficou na caixa do seu papel na história.",
+            "not_yet": "Ainda não. Ligue cada número ao que ele conta."
           }
         },
         {
@@ -17043,6 +17819,10 @@
             ],
             "unknownLabel": "Quantas a mais",
             "spokenText": "quarenta menos vinte e seis"
+          },
+          "feedback": {
+            "met": "Você achou a diferença tirando a quantia menor da maior.",
+            "not_yet": "Ainda não. Tire a quantia menor da maior."
           }
         }
       ],

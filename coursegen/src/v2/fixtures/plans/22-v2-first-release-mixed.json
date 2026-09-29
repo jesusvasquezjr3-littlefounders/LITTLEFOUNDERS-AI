@@ -175,7 +175,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Sort each thing and pick why.",
+          "prompt": "Sort each thing and pick why.", "feedback": {"met": "Each item is in its group with a reason that fits it.", "not_yet": "Not yet. Ask if you use it daily or just enjoy it."},
           "help": [
             "Ask: could the family go without it this week?"
           ],
@@ -214,7 +214,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Ordena cada cosa y elige por qué.",
+          "prompt": "Ordena cada cosa y elige por qué.", "feedback": {"met": "Cada cosa está en su grupo con una razón que le queda.", "not_yet": "Todavía no. Pregúntate si lo usas cada día o solo te divierte."},
           "help": [
             "Pregunta: ¿la familia podría pasar sin eso esta semana?"
           ],
@@ -253,7 +253,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Separe cada coisa e escolha por quê.",
+          "prompt": "Separe cada coisa e escolha por quê.", "feedback": {"met": "Cada item está no seu grupo com um motivo que combina.", "not_yet": "Ainda não. Pergunte se você usa todo dia ou só acha divertido."},
           "help": [
             "Pergunte: a família ficaria sem isso esta semana?"
           ],
@@ -323,7 +323,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Mark the tricks.",
+          "prompt": "Mark the tricks.", "feedback": {"met": "You flagged the messages that ask for secrets and trusted the rest.", "not_yet": "Not yet. Look for messages that ask for a password or code."},
           "messages": [
             {
               "sender": "Unknown number",
@@ -340,7 +340,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Marca las trampas.",
+          "prompt": "Marca las trampas.", "feedback": {"met": "Marcaste los mensajes que piden secretos y confiaste en los demás.", "not_yet": "Todavía no. Busca mensajes que piden una contraseña o un código."},
           "messages": [
             {
               "sender": "Número desconocido",
@@ -357,7 +357,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Marque as armadilhas.",
+          "prompt": "Marque as armadilhas.", "feedback": {"met": "Você marcou as mensagens que pedem segredos e confiou nas outras.", "not_yet": "Ainda não. Procure mensagens que pedem senha ou código."},
           "messages": [
             {
               "sender": "Número desconhecido",
@@ -401,7 +401,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "What do you do next time?",
+          "prompt": "What do you do next time?", "feedback": {"met": "Your choice uses what you learned last market day.", "not_yet": "Not yet. Think about what went wrong last time."},
           "scene": "Next market day you have 10 coins again.",
           "options": [
             {
@@ -413,7 +413,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "¿Qué haces la próxima vez?",
+          "prompt": "¿Qué haces la próxima vez?", "feedback": {"met": "Tu elección usa lo que aprendiste el último día de mercado.", "not_yet": "Todavía no. Piensa en qué salió mal la última vez."},
           "scene": "El próximo día de mercado tienes otra vez 10 monedas.",
           "options": [
             {
@@ -425,7 +425,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "O que você faz da próxima vez?",
+          "prompt": "O que você faz da próxima vez?", "feedback": {"met": "Sua escolha usa o que você aprendeu no último dia de feira.", "not_yet": "Ainda não. Pense no que deu errado da última vez."},
           "scene": "Na próxima feira você tem 10 moedas de novo.",
           "options": [
             {

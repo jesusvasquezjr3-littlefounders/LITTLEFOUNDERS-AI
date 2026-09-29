@@ -10,7 +10,8 @@ import { useSingleActiveGrade } from './useSingleActiveGrade';
 import './learning.css';
 import './stepReplay.css';
 import { LessonStageSlot, useLessonStageRequest } from './lessonStage';
-import { playerCopy, SegmentPrompt } from './segmentKit';
+import { playerCopy, SegmentPrompt, verdictBannerText } from './segmentKit';
+import { namedFeedback } from './namedFeedback';
 import { LongArithmeticLayout } from './LongArithmeticLayout';
 import { parseLocaleNumber } from './v2VisualScorer.generated';
 
@@ -19,17 +20,17 @@ type Verdict = 'invalid' | 'met' | 'review';
 
 const copy: Record<Locale, {
   reset: string; back: string; example: string; step: string; previous: string; next: string; play: string; pause: string;
-  predict: string; predictHint: string; result: string; reveal: string; faded: string; input: string; complete: string; check: string; continue: string; correct: string; retry: string; unavailable: string;
+  predict: string; predictHint: string; result: string; reveal: string; faded: string; input: string; complete: string; check: string; continue: string; unavailable: string;
 }> = {
   'en-US': { reset: 'Reset', back: 'Back', example: 'Worked example', step: 'Step', previous: 'Previous', next: 'Next', play: 'Play', pause: 'Pause',
     predict: 'Predict the next result', predictHint: 'Write a result before revealing the next step.', result: 'Result', reveal: 'Show next step',
-    faded: 'Your turn', input: 'Write the result', complete: 'Review the steps whenever you need.', check: 'Check', continue: 'Continue', correct: 'Correct', retry: 'Try the values again.', unavailable: 'We could not check that. Try again.' },
+    faded: 'Your turn', input: 'Write the result', complete: 'Review the steps whenever you need.', check: 'Check', continue: 'Continue', unavailable: 'We could not check that. Try again.' },
   'es-MX': { reset: 'Restablecer', back: 'Volver', example: 'Ejemplo resuelto', step: 'Paso', previous: 'Anterior', next: 'Siguiente', play: 'Reproducir', pause: 'Pausar',
     predict: 'Predice el siguiente resultado', predictHint: 'Escribe un resultado antes de mostrar el siguiente paso.', result: 'Resultado', reveal: 'Mostrar siguiente paso',
-    faded: 'Tu turno', input: 'Escribe el resultado', complete: 'Revisa los pasos cuando lo necesites.', check: 'Comprobar', continue: 'Continuar', correct: 'Correcto', retry: 'Revisa los valores e intenta otra vez.', unavailable: 'No pudimos comprobarlo. Intenta otra vez.' },
+    faded: 'Tu turno', input: 'Escribe el resultado', complete: 'Revisa los pasos cuando lo necesites.', check: 'Comprobar', continue: 'Continuar', unavailable: 'No pudimos comprobarlo. Intenta otra vez.' },
   'pt-BR': { reset: 'Recomeçar', back: 'Voltar', example: 'Exemplo resolvido', step: 'Etapa', previous: 'Anterior', next: 'Próxima', play: 'Reproduzir', pause: 'Pausar',
     predict: 'Preveja o próximo resultado', predictHint: 'Escreva um resultado antes de mostrar a próxima etapa.', result: 'Resultado', reveal: 'Mostrar próxima etapa',
-    faded: 'Sua vez', input: 'Escreva o resultado', complete: 'Revise as etapas quando precisar.', check: 'Conferir', continue: 'Continuar', correct: 'Correto', retry: 'Revise os valores e tente novamente.', unavailable: 'Não foi possível conferir. Tente de novo.' },
+    faded: 'Sua vez', input: 'Escreva o resultado', complete: 'Revise as etapas quando precisar.', check: 'Conferir', continue: 'Continuar', unavailable: 'Não foi possível conferir. Tente de novo.' },
 };
 
 /**
@@ -114,7 +115,7 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
           </div> : index < steps.length - 1 ? <div className="lf-worked-example-prediction">
             <Button variant="accent" disabled={!values[steps[index + 1]?.id ?? '']?.trim()} onClick={revealNext}>{t.reveal}</Button>
           </div> : <div className="lf-worked-example-complete"><p data-copy-role="body">{t.complete}</p>
-            <LessonFeedback verdict={verdict}>{verdict === 'met' ? t.correct : verdict === 'review' ? t.retry : verdict === 'unavailable' ? t.unavailable : null}</LessonFeedback>
+            <LessonFeedback verdict={verdict}>{verdict === null ? null : verdictBannerText(document.locale, verdict, namedFeedback(document.locale, 'worked-example'), segment.feedback)}</LessonFeedback>
             <Button variant="accent" disabled={pending || !complete} onClick={submit}>{verdict === 'met' && sequence ? t.continue : t.check}</Button>
           </div>}
         </div>

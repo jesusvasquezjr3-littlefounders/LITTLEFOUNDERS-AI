@@ -29,9 +29,19 @@ const option = z.object({ id, label: label(80) }).strict();
  * - `item_role`: practice or transfer (Appendix C 1.1 transfer success).
  * - `knowledge_component_id`: the KC this item evidences; it must be one of
  *   the document's `knowledge_component_ids`.
+ * - `feedback` (GAP-FIX-R6; B.20, Bible 02 §9.2, Appendix B §1.8, B.23):
+ *   the author's banner text for a graded step, in the document's locale.
+ *   `met` names what the learner did right; `not_yet` is a hint. Public and
+ *   answerless (it travels with the segment, never with the answer key):
+ *   `v2FeedbackProblem` refuses a number the step does not already show.
  */
+export const v2SegmentFeedback = z.object({ met: label(160).optional(), not_yet: label(160).optional() }).strict()
+  .refine((value) => value.met !== undefined || value.not_yet !== undefined, 'Feedback needs met or not_yet');
+export type V2SegmentFeedback = z.infer<typeof v2SegmentFeedback>;
+
 export const v2SegmentExtras = {
   help: z.array(label(160)).min(1).max(2).optional(),
+  feedback: v2SegmentFeedback.optional(),
   item_role: z.enum(['practice', 'transfer']).optional(),
   knowledge_component_id: id.optional(),
   // Appendix P Part 8 (GAP-FIX-R2): L12/$11 items before and after the lesson (d-prime pre/post),
@@ -862,4 +872,54 @@ export function v2SegmentsForApproach<T extends { id: string }>(segments: readon
     const chain = v2ApproachOf(approaches, segment.id);
     return chain === null || chain === approachId;
   });
+}
+
+/*
+ * GAP-FIX-R6 (B.20, B.23, Bible 02 §9.2, Appendix B §1.8): the authoring rules
+ * for a step's `feedback`, run by Forge before emitting and by Core's
+ * forge-v2:check over what Forge emitted. Delivery never requires it: a board
+ * without authored feedback falls back to its own named confirmation.
+ *
+ * - Feedback sits only on a server-graded step (an ungraded step shows no verdict).
+ * - From age 10 (the transition, teen and adult registers take no praise at
+ *   face value) every graded step carries `feedback.met` naming what was done.
+ * - Answerless: the text is public before the learner answers, so it may not
+ *   carry a number the step does not already show (a computed result would
+ *   give the answer away). A whole payload number also counts in hundredths
+ *   (minor units, basis points), the form a banner reads it in.
+ */
+const FEEDBACK_DIGITS = /\d+/g;
+function publicDigits(node: unknown, out: Set<string>): void {
+  if (typeof node === 'number' && Number.isFinite(node)) {
+    for (const run of String(node).match(FEEDBACK_DIGITS) ?? []) out.add(run);
+    if (Number.isInteger(node)) for (const run of `${node / 100} ${(node / 100).toFixed(2)}`.match(FEEDBACK_DIGITS) ?? []) out.add(run);
+  } else if (typeof node === 'string') {
+    for (const run of node.match(FEEDBACK_DIGITS) ?? []) out.add(run);
+  } else if (Array.isArray(node)) {
+    for (const item of node) publicDigits(item, out);
+  } else if (node && typeof node === 'object') {
+    for (const value of Object.values(node)) publicDigits(value, out);
+  }
+}
+
+export function v2FeedbackProblems(document: {
+  age_band: string;
+  segments: ReadonlyArray<{ id: string; grading: string; prompt?: string; payload?: unknown; help?: readonly string[]; feedback?: V2SegmentFeedback }>;
+}): string[] {
+  const problems: string[] = [];
+  for (const segment of document.segments) {
+    const feedback = segment.feedback;
+    if (feedback && segment.grading !== 'server') problems.push(`${segment.id}: feedback on an ungraded step is never shown`);
+    if (segment.grading === 'server' && document.age_band !== '6-9' && !feedback?.met) {
+      problems.push(`${segment.id}: a graded step for ages 10 and up needs feedback.met naming what the learner did right (B.20, B.23)`);
+    }
+    if (!feedback) continue;
+    const shown = new Set<string>();
+    publicDigits([segment.prompt, segment.payload, segment.help], shown);
+    for (const [field, text] of Object.entries(feedback)) {
+      const extra = (text ?? '').match(FEEDBACK_DIGITS)?.filter((run) => !/^0+$/.test(run) && !shown.has(run)) ?? [];
+      if (extra.length) problems.push(`${segment.id}: feedback.${field} shows ${extra.join(', ')}, a number the step does not show (answerless feedback)`);
+    }
+  }
+  return problems;
 }

@@ -67,7 +67,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Wait for a sale even when you have enough. Build it.",
+          "prompt": "Wait for a sale even when you have enough. Build it.", "feedback": {"met": "Your rule waits for a sale even when you can pay.", "not_yet": "Not yet. Test your rule on the practice case."},
           "conditions": [
             {
               "label": "I have enough coins"
@@ -94,7 +94,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Espera la oferta aunque te alcance. Ármala.",
+          "prompt": "Espera la oferta aunque te alcance. Ármala.", "feedback": {"met": "Tu regla espera una oferta aunque te alcance el dinero.", "not_yet": "Todavía no. Prueba tu regla con el caso de práctica."},
           "conditions": [
             {
               "label": "Tengo monedas suficientes"
@@ -121,7 +121,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Espere a promoção mesmo tendo o bastante. Monte.",
+          "prompt": "Espere a promoção mesmo tendo o bastante. Monte.", "feedback": {"met": "Sua regra espera uma promoção mesmo quando dá para pagar.", "not_yet": "Ainda não. Teste sua regra no caso de prática."},
           "conditions": [
             {
               "label": "Tenho moedas suficientes"

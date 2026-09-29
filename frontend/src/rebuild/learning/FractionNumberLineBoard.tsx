@@ -8,7 +8,8 @@ import { useSingleActiveGrade } from './useSingleActiveGrade';
 import './learning.css';
 import './numberLine.css';
 import { LessonStageSlot } from './lessonStage';
-import { NumberAnswer, SegmentPrompt } from './segmentKit';
+import { NumberAnswer, SegmentPrompt, verdictBannerText } from './segmentKit';
+import { namedFeedback } from './namedFeedback';
 import { FractionCellsVisual, NumberAxisVisual } from './pizarron';
 import { lineUnits } from './v2VisualScorer.generated';
 import { formatLineNumber, fractionName } from './fractionName';
@@ -16,14 +17,14 @@ import { formatLineNumber, fractionName } from './fractionName';
 type Segment = Extract<LessonClientSegment, { type: 'math.number-line.fraction.v2' }>;
 /** M3 answers (GAP-FIX-R5): one number (a fraction, or a typed decimal parsed for the locale), or two placed points and, for a comparison, the choice. */
 export type FractionLineAnswer = { value: string } | { placements: { first: string; second: string }; choice?: 'first' | 'second' | 'same' };
-type Copy = { back: string; explore: string; board: string; line: string; area: string; place: string; reset: string; left: string; right: string; estimate: string; representation: string; value: string; showTable: string; showVisual: string; check: string; continue: string; correct: string; retry: string; unavailable: string;
+type Copy = { back: string; explore: string; board: string; line: string; area: string; place: string; reset: string; left: string; right: string; estimate: string; representation: string; value: string; showTable: string; showVisual: string; check: string; continue: string; unavailable: string;
   typeIt: string; move: string; larger: string; same: string; onePoint: string };
 const copy: Record<Locale, Copy> = {
-  'en-US': { back: 'Back', explore: 'Explore', board: 'Fraction board', line: 'Number line', area: 'Equal parts', place: 'Place the fraction', reset: 'Reset', left: 'Move left', right: 'Move right', estimate: 'Choose a place', representation: 'Representation', value: 'Value', showTable: 'Show as table', showVisual: 'Show board', check: 'Check', continue: 'Continue', correct: 'Correct', retry: 'Try a different place.', unavailable: 'We could not check that. Try again.',
+  'en-US': { back: 'Back', explore: 'Explore', board: 'Fraction board', line: 'Number line', area: 'Equal parts', place: 'Place the fraction', reset: 'Reset', left: 'Move left', right: 'Move right', estimate: 'Choose a place', representation: 'Representation', value: 'Value', showTable: 'Show as table', showVisual: 'Show board', check: 'Check', continue: 'Continue', unavailable: 'We could not check that. Try again.',
     typeIt: 'Or type the number', move: 'Point to move', larger: 'Which is larger?', same: 'Same size', onePoint: 'Place both. Do they meet?' },
-  'es-MX': { back: 'Volver', explore: 'Explorar', board: 'Pizarrón de fracciones', line: 'Recta numérica', area: 'Partes iguales', place: 'Coloca la fracción', reset: 'Restablecer', left: 'Mover a la izquierda', right: 'Mover a la derecha', estimate: 'Elige un lugar', representation: 'Representación', value: 'Valor', showTable: 'Ver tabla', showVisual: 'Ver pizarrón', check: 'Comprobar', continue: 'Continuar', correct: 'Correcto', retry: 'Prueba otro lugar.', unavailable: 'No pudimos comprobarlo. Intenta otra vez.',
+  'es-MX': { back: 'Volver', explore: 'Explorar', board: 'Pizarrón de fracciones', line: 'Recta numérica', area: 'Partes iguales', place: 'Coloca la fracción', reset: 'Restablecer', left: 'Mover a la izquierda', right: 'Mover a la derecha', estimate: 'Elige un lugar', representation: 'Representación', value: 'Valor', showTable: 'Ver tabla', showVisual: 'Ver pizarrón', check: 'Comprobar', continue: 'Continuar', unavailable: 'No pudimos comprobarlo. Intenta otra vez.',
     typeIt: 'O escribe el número', move: 'Punto que mueves', larger: '¿Cuál es mayor?', same: 'Mismo tamaño', onePoint: 'Coloca los dos. ¿Se juntan?' },
-  'pt-BR': { back: 'Voltar', explore: 'Explorar', board: 'Quadro de frações', line: 'Reta numérica', area: 'Partes iguais', place: 'Coloque a fração', reset: 'Recomeçar', left: 'Mover à esquerda', right: 'Mover à direita', estimate: 'Escolha um lugar', representation: 'Representação', value: 'Valor', showTable: 'Ver tabela', showVisual: 'Ver quadro', check: 'Conferir', continue: 'Continuar', correct: 'Correto', retry: 'Tente outro lugar.', unavailable: 'Não foi possível conferir. Tente de novo.',
+  'pt-BR': { back: 'Voltar', explore: 'Explorar', board: 'Quadro de frações', line: 'Reta numérica', area: 'Partes iguais', place: 'Coloque a fração', reset: 'Recomeçar', left: 'Mover à esquerda', right: 'Mover à direita', estimate: 'Escolha um lugar', representation: 'Representação', value: 'Valor', showTable: 'Ver tabela', showVisual: 'Ver quadro', check: 'Conferir', continue: 'Continuar', unavailable: 'Não foi possível conferir. Tente de novo.',
     typeIt: 'Ou digite o número', move: 'Ponto que você move', larger: 'Qual é maior?', same: 'Mesmo tamanho', onePoint: 'Coloque os dois. Eles se encontram?' },
 };
 
@@ -82,5 +83,5 @@ export function FractionNumberLineBoard({ document, segment, onBack, onGrade, se
       {!pair ? <NumberAnswer label={t.typeIt} locale={locale} onChange={onTyped} disabled={pending} /> : null}
       {comparing ? <SegmentedControl legend={t.larger} name={`${segment.id}-larger`} value={choice} disabled={pending} onValueChange={(value) => { setVerdict(null); setChoice(value); }}
         options={[{ value: 'first', label: pointLabel('first') }, { value: 'second', label: pointLabel('second') }, { value: 'same', label: t.same }]} /> : null}
-    </div></div><footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === 'met' ? t.correct : verdict === 'review' ? t.retry : verdict === 'unavailable' ? t.unavailable : null}</LessonFeedback><div className="lf-learning-actions"><Button variant="accent" disabled={pending || !canCheck} onClick={submit}>{verdict === 'met' && sequence ? t.continue : t.check}</Button></div></footer></div></div></main>;
+    </div></div><footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === null ? null : verdictBannerText(document.locale, verdict, namedFeedback(document.locale, 'fraction-line', { value: pair ? new Intl.ListFormat(locale, { type: 'conjunction' }).format([pointLabel('first'), pointLabel('second')]) : fraction(units.first) }), segment.feedback)}</LessonFeedback><div className="lf-learning-actions"><Button variant="accent" disabled={pending || !canCheck} onClick={submit}>{verdict === 'met' && sequence ? t.continue : t.check}</Button></div></footer></div></div></main>;
 }

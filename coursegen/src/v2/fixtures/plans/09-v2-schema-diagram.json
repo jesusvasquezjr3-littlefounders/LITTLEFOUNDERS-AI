@@ -47,7 +47,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Leo earned 24 coins and spent 9. Choose the schema.",
+          "prompt": "Leo earned 24 coins and spent 9. Choose the schema.", "feedback": {"met": "You saw a change story: coins came in, then some went out.", "not_yet": "Not yet. Ask whether something changed or two groups joined."},
           "quantities": [
             {
               "label": "Earned"
@@ -60,7 +60,7 @@
           "spokenText": "twenty four minus nine"
         },
         "es-MX": {
-          "prompt": "Leo ganó 24 monedas y gastó 9. Elige el esquema.",
+          "prompt": "Leo ganó 24 monedas y gastó 9. Elige el esquema.", "feedback": {"met": "Viste una historia de cambio: entraron monedas y luego salieron algunas.", "not_yet": "Todavía no. Pregúntate si algo cambió o si se juntaron dos grupos."},
           "quantities": [
             {
               "label": "Ganado"
@@ -73,7 +73,7 @@
           "spokenText": "veinticuatro menos nueve"
         },
         "pt-BR": {
-          "prompt": "Leo ganhou 24 moedas e gastou 9. Escolha o esquema.",
+          "prompt": "Leo ganhou 24 moedas e gastou 9. Escolha o esquema.", "feedback": {"met": "Você viu uma história de mudança: moedas entraram e depois algumas saíram.", "not_yet": "Ainda não. Pergunte se algo mudou ou se dois grupos se juntaram."},
           "quantities": [
             {
               "label": "Ganho"
@@ -111,7 +111,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Put each number in its box.",
+          "prompt": "Put each number in its box.", "feedback": {"met": "Each number sits in the box for its role in the story.", "not_yet": "Not yet. Match each number to what it counts."},
           "quantities": [
             {
               "label": "Earned"
@@ -124,7 +124,7 @@
           "spokenText": "twenty four minus nine"
         },
         "es-MX": {
-          "prompt": "Pon cada número en su caja.",
+          "prompt": "Pon cada número en su caja.", "feedback": {"met": "Cada número quedó en la caja de su papel en la historia.", "not_yet": "Todavía no. Relaciona cada número con lo que cuenta."},
           "quantities": [
             {
               "label": "Ganado"
@@ -137,7 +137,7 @@
           "spokenText": "veinticuatro menos nueve"
         },
         "pt-BR": {
-          "prompt": "Coloque cada número na sua caixa.",
+          "prompt": "Coloque cada número na sua caixa.", "feedback": {"met": "Cada número ficou na caixa do seu papel na história.", "not_yet": "Ainda não. Ligue cada número ao que ele conta."},
           "quantities": [
             {
               "label": "Ganho"
@@ -180,7 +180,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "How many coins are left?",
+          "prompt": "How many coins are left?", "feedback": {"met": "You took what was spent away from what was earned.", "not_yet": "Not yet. Start with what was earned and remove what was spent."},
           "quantities": [
             {
               "label": "Earned"
@@ -193,7 +193,7 @@
           "spokenText": "twenty four minus nine"
         },
         "es-MX": {
-          "prompt": "¿Cuántas monedas quedan?",
+          "prompt": "¿Cuántas monedas quedan?", "feedback": {"met": "Restaste lo gastado de lo ganado.", "not_yet": "Todavía no. Empieza con lo ganado y quita lo gastado."},
           "quantities": [
             {
               "label": "Ganado"
@@ -206,7 +206,7 @@
           "spokenText": "veinticuatro menos nueve"
         },
         "pt-BR": {
-          "prompt": "Quantas moedas sobraram?",
+          "prompt": "Quantas moedas sobraram?", "feedback": {"met": "Você tirou o que foi gasto do que foi ganho.", "not_yet": "Ainda não. Comece com o que foi ganho e tire o que foi gasto."},
           "quantities": [
             {
               "label": "Ganho"

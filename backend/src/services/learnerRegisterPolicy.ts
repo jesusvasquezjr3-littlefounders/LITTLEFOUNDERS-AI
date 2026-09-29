@@ -457,8 +457,10 @@ export function findLexicons(text: string, lexicons: readonly LexiconId[]): Lexi
 /**
  * Feedback that praises with nothing named ("Great job!", "¡Excelente!").
  * Past the young register, praise must name the step or skill (B.20, B.23).
+ * GAP-FIX-R6: a bare verdict ("Correct", "That works.", "¡Exacto!") names
+ * nothing either, so it counts as generic too.
  */
-const GENERIC_PRAISE = /^[\s¡!¿]*(?:(?:great|good|nice|awesome|amazing|perfect|excellent|fantastic|wonderful|super)(?: (?:job|work))?|well done|way to go|you did it|(?:muy )?bien(?: hecho)?|excelente|genial|perfecto|increíble|fantástico|lo lograste|muito bem|parabéns|ótimo|excelente|perfeito|incrível|mandou bem|conseguiu)[\s.!]*$/iu;
+const GENERIC_PRAISE = /^[\s¡!¿]*(?:(?:great|good|nice|awesome|amazing|perfect|excellent|fantastic|wonderful|super)(?: (?:job|work))?|well done|way to go|you did it|(?:that's |that is )?(?:correct|right)|that works|(?:muy )?bien(?: hecho)?|excelente|genial|perfecto|increíble|fantástico|lo lograste|(?:es )?correcto|exacto|así es|eso (?:es|funciona)|muito bem|parabéns|ótimo|excelente|perfeito|incrível|mandou bem|conseguiu|(?:está )?(?:correto|certo)|isso (?:mesmo|funciona)|exato)[\s.!]*$/iu;
 
 export function isGenericPraise(text: string): boolean {
   return GENERIC_PRAISE.test(text.trim());

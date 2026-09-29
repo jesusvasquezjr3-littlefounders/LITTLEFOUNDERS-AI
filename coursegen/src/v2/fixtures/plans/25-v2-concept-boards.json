@@ -54,19 +54,19 @@
    },
    "copy": {
     "en-US": {
-     "prompt": "Scrub to month 6. How much is still owed after that payment?",
+     "prompt": "Scrub to month 6. How much is still owed after that payment?", "feedback": {"met": "You tracked how each payment shrinks what is still owed.", "not_yet": "Not yet. Each month, only the part past interest lowers the loan."},
      "help": [
       "Start with what was owed, then take away what paid off the loan."
      ]
     },
     "es-MX": {
-     "prompt": "Avanza al mes 6. ¿Cuánto se debe después de ese pago?",
+     "prompt": "Avanza al mes 6. ¿Cuánto se debe después de ese pago?", "feedback": {"met": "Seguiste cómo cada pago reduce lo que aún se debe.", "not_yet": "Todavía no. Cada mes, solo lo que pasa del interés baja la deuda."},
      "help": [
       "Empieza con lo que se debía y resta el abono a la deuda."
      ]
     },
     "pt-BR": {
-     "prompt": "Avance até o mês 6. Quanto ainda se deve depois desse pagamento?",
+     "prompt": "Avance até o mês 6. Quanto ainda se deve depois desse pagamento?", "feedback": {"met": "Você acompanhou como cada pagamento reduz o que ainda se deve.", "not_yet": "Ainda não. A cada mês, só o que passa dos juros reduz a dívida."},
      "help": [
       "Comece com a dívida e tire o que foi abatido."
      ]
@@ -100,7 +100,7 @@
    },
    "copy": {
     "en-US": {
-     "prompt": "A heat wave: more people want lemonade. Move one curve one step, then say what the price does.",
+     "prompt": "A heat wave: more people want lemonade. Move one curve one step, then say what the price does.", "feedback": {"met": "You shifted demand for the heat wave and read the new price.", "not_yet": "Not yet. Ask which line more buyers would move."},
      "labels": {
       "price": "Price",
       "quantity": "Cups",
@@ -109,7 +109,7 @@
      }
     },
     "es-MX": {
-     "prompt": "Hace mucho calor: más gente quiere limonada. Mueve una curva un paso y di qué pasa con el precio.",
+     "prompt": "Hace mucho calor: más gente quiere limonada. Mueve una curva un paso y di qué pasa con el precio.", "feedback": {"met": "Moviste la demanda por la ola de calor y leíste el nuevo precio.", "not_yet": "Todavía no. Pregúntate qué línea moverían más compradores."},
      "labels": {
       "price": "Precio",
       "quantity": "Vasos",
@@ -118,7 +118,7 @@
      }
     },
     "pt-BR": {
-     "prompt": "Uma onda de calor: mais gente quer limonada. Mova uma curva um passo e diga o que acontece com o preço.",
+     "prompt": "Uma onda de calor: mais gente quer limonada. Mova uma curva um passo e diga o que acontece com o preço.", "feedback": {"met": "Você moveu a demanda pela onda de calor e leu o novo preço.", "not_yet": "Ainda não. Pergunte qual linha mais compradores moveriam."},
      "labels": {
       "price": "Preço",
       "quantity": "Copos",
@@ -250,13 +250,13 @@
    },
    "copy": {
     "en-US": {
-     "prompt": "Pick a yearly price rise and a number of years. Guess what a 100-coin item will cost."
+     "prompt": "Pick a yearly price rise and a number of years. Guess what a 100-coin item will cost.", "feedback": {"met": "Your guess grew the price year on year, not just once.", "not_yet": "Not yet. Each year's rise applies to the new, higher price."}
     },
     "es-MX": {
-     "prompt": "Elige cuánto suben los precios al año y cuántos años. Calcula cuánto costará algo de 100 monedas."
+     "prompt": "Elige cuánto suben los precios al año y cuántos años. Calcula cuánto costará algo de 100 monedas.", "feedback": {"met": "Tu estimación hizo crecer el precio año tras año, no una sola vez.", "not_yet": "Todavía no. Cada aumento se aplica al precio nuevo, más alto."}
     },
     "pt-BR": {
-     "prompt": "Escolha a alta de preços por ano e quantos anos. Calcule quanto vai custar algo de 100 moedas."
+     "prompt": "Escolha a alta de preços por ano e quantos anos. Calcule quanto vai custar algo de 100 moedas.", "feedback": {"met": "Seu palpite fez o preço crescer ano após ano, não uma vez só.", "not_yet": "Ainda não. Cada aumento vale sobre o preço novo, mais alto."}
     }
    }
   },
@@ -281,19 +281,19 @@
    },
    "copy": {
     "en-US": {
-     "prompt": "Pick a growth rate. Use the rule of 72 to guess the years to double.",
+     "prompt": "Pick a growth rate. Use the rule of 72 to guess the years to double.", "feedback": {"met": "You divided 72 by the growth rate to estimate the doubling.", "not_yet": "Not yet. Divide 72 by the yearly rate."},
      "help": [
       "Divide 72 by the yearly rate."
      ]
     },
     "es-MX": {
-     "prompt": "Elige una tasa de crecimiento. Usa la regla del 72 para calcular los años para duplicar.",
+     "prompt": "Elige una tasa de crecimiento. Usa la regla del 72 para calcular los años para duplicar.", "feedback": {"met": "Dividiste 72 entre la tasa para estimar cuándo se duplica.", "not_yet": "Todavía no. Divide 72 entre la tasa anual."},
      "help": [
       "Divide 72 entre la tasa anual."
      ]
     },
     "pt-BR": {
-     "prompt": "Escolha uma taxa de crescimento. Use a regra do 72 para calcular os anos para dobrar.",
+     "prompt": "Escolha uma taxa de crescimento. Use a regra do 72 para calcular os anos para dobrar.", "feedback": {"met": "Você dividiu 72 pela taxa para estimar quando dobra.", "not_yet": "Ainda não. Divida 72 pela taxa anual."},
      "help": [
       "Divida 72 pela taxa anual."
      ]
@@ -332,7 +332,7 @@
    },
    "copy": {
     "en-US": {
-     "prompt": "Try both plans. Which one pays the least interest?",
+     "prompt": "Try both plans. Which one pays the least interest?", "feedback": {"met": "You compared total interest and saw which order costs less.", "not_yet": "Not yet. Look at which plan pays the highest rate first."},
      "debts": [
       {
        "label": "Card"
@@ -343,7 +343,7 @@
      ]
     },
     "es-MX": {
-     "prompt": "Prueba los dos planes. ¿Cuál paga menos interés?",
+     "prompt": "Prueba los dos planes. ¿Cuál paga menos interés?", "feedback": {"met": "Comparaste el interés total y viste qué orden cuesta menos.", "not_yet": "Todavía no. Mira qué plan paga primero la tasa más alta."},
      "debts": [
       {
        "label": "Tarjeta"
@@ -354,7 +354,7 @@
      ]
     },
     "pt-BR": {
-     "prompt": "Teste os dois planos. Qual paga menos juros?",
+     "prompt": "Teste os dois planos. Qual paga menos juros?", "feedback": {"met": "Você comparou os juros totais e viu qual ordem custa menos.", "not_yet": "Ainda não. Veja qual plano paga primeiro a taxa mais alta."},
      "debts": [
       {
        "label": "Cartão"
@@ -401,7 +401,7 @@
    },
    "copy": {
     "en-US": {
-     "prompt": "Spread your money so risk is at most 10% and return is at least 4.5%.",
+     "prompt": "Spread your money so risk is at most 10% and return is at least 4.5%.", "feedback": {"met": "Your mix keeps risk low enough while still meeting the return goal.", "not_yet": "Not yet. Balance the mix until both limits are met."},
      "assets": [
       {
        "label": "Stocks"
@@ -415,7 +415,7 @@
      ]
     },
     "es-MX": {
-     "prompt": "Reparte tu dinero para que el riesgo sea máximo 10% y el rendimiento al menos 4.5%.",
+     "prompt": "Reparte tu dinero para que el riesgo sea máximo 10% y el rendimiento al menos 4.5%.", "feedback": {"met": "Tu mezcla mantiene el riesgo bajo y aun así alcanza la meta de ganancia.", "not_yet": "Todavía no. Ajusta la mezcla hasta cumplir los dos límites."},
      "assets": [
       {
        "label": "Acciones"
@@ -429,7 +429,7 @@
      ]
     },
     "pt-BR": {
-     "prompt": "Divida seu dinheiro para o risco ficar em no máximo 10% e o retorno em pelo menos 4,5%.",
+     "prompt": "Divida seu dinheiro para o risco ficar em no máximo 10% e o retorno em pelo menos 4,5%.", "feedback": {"met": "Sua mistura mantém o risco baixo e ainda atinge a meta de retorno.", "not_yet": "Ainda não. Ajuste a mistura até cumprir os dois limites."},
      "assets": [
       {
        "label": "Ações"
@@ -468,19 +468,19 @@
    },
    "copy": {
     "en-US": {
-     "prompt": "Run your stand for a few days. Find a price and cup count that earns at least 250 coins.",
+     "prompt": "Run your stand for a few days. Find a price and cup count that earns at least 250 coins.", "feedback": {"met": "You tested prices and cups until the stand earned its goal.", "not_yet": "Not yet. Change one thing a day and compare the profit."},
      "help": [
       "A lower price sells more cups, but each cup earns less."
      ]
     },
     "es-MX": {
-     "prompt": "Abre tu puesto unos días. Encuentra un precio y vasos que ganen al menos 250 monedas.",
+     "prompt": "Abre tu puesto unos días. Encuentra un precio y vasos que ganen al menos 250 monedas.", "feedback": {"met": "Probaste precios y vasos hasta que el puesto alcanzó su meta.", "not_yet": "Todavía no. Cambia una cosa por día y compara la ganancia."},
      "help": [
       "Un precio bajo vende más vasos, pero cada vaso gana menos."
      ]
     },
     "pt-BR": {
-     "prompt": "Abra sua barraca por alguns dias. Ache um preço e copos que rendam pelo menos 250 moedas.",
+     "prompt": "Abra sua barraca por alguns dias. Ache um preço e copos que rendam pelo menos 250 moedas.", "feedback": {"met": "Você testou preços e copos até a barraca atingir a meta.", "not_yet": "Ainda não. Mude uma coisa por dia e compare o lucro."},
      "help": [
       "Um preço menor vende mais copos, mas cada copo rende menos."
      ]

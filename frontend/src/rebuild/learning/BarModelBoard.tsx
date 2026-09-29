@@ -7,7 +7,8 @@ import { type LessonSequenceControl } from './lessonSequence';
 import { useSingleActiveGrade } from './useSingleActiveGrade';
 import './learning.css';
 import { LessonStageSlot } from './lessonStage';
-import { SegmentPrompt } from './segmentKit';
+import { SegmentPrompt, verdictBannerText } from './segmentKit';
+import { namedFeedback } from './namedFeedback';
 import { BarModelVisual, type TapeRow, type TapeSegment } from './pizarron';
 import { solveBarModel } from './v2VisualScorer.generated';
 
@@ -37,25 +38,25 @@ const ORDER: Record<Model, SlotName[]> = { 'part-whole': ['part-a', 'part-b', 'p
 const EMPTY: BarBuild = { model: null, slots: {} };
 
 type Copy = {
-  reset: string; back: string; model: string; answer: string; check: string; continue: string; correct: string; retry: string; retryAnswer: string; unavailable: string;
+  reset: string; back: string; model: string; answer: string; check: string; continue: string; unavailable: string;
   input: string; showTable: string; showVisual: string; start: string; partsBar: string; compareBars: string; addPart: string; addTotal: string;
   piece: string; holds: string; empty: string; noNumber: string; remove: string; unknown: string; pick: (slot: string) => string; slot: Record<SlotName, string>;
 };
 const copy: Record<Locale, Copy> = {
-  'en-US': { reset: 'Reset', back: 'Back', model: 'Build the model', answer: 'Solve the model', check: 'Check', continue: 'Continue', correct: 'Correct',
-    retry: 'Look at the bars again.', retryAnswer: 'Try again.', unavailable: 'We could not check that. Try again.', input: 'Your answer',
+  'en-US': { reset: 'Reset', back: 'Back', model: 'Build the model', answer: 'Solve the model', check: 'Check', continue: 'Continue',
+    unavailable: 'We could not check that. Try again.', input: 'Your answer',
     showTable: 'Show as table', showVisual: 'Show model', start: 'Add bars to start.', partsBar: 'One bar in parts', compareBars: 'Two bars to compare',
     addPart: 'Add a part', addTotal: 'Add the total', piece: 'Piece', holds: 'Holds', empty: 'Empty', noNumber: 'No number', remove: 'Remove', unknown: 'Unknown',
     pick: (slot) => `${slot}: choose`,
     slot: { 'part-a': 'Part 1', 'part-b': 'Part 2', 'part-c': 'Part 3', whole: 'Whole', smaller: 'Shorter bar', larger: 'Longer bar', difference: 'Difference', total: 'Both together' } },
-  'es-MX': { reset: 'Restablecer', back: 'Volver', model: 'Construye el modelo', answer: 'Resuelve el modelo', check: 'Comprobar', continue: 'Continuar', correct: 'Correcto',
-    retry: 'Revisa las barras otra vez.', retryAnswer: 'Intenta otra vez.', unavailable: 'No pudimos comprobarlo. Intenta otra vez.', input: 'Tu respuesta',
+  'es-MX': { reset: 'Restablecer', back: 'Volver', model: 'Construye el modelo', answer: 'Resuelve el modelo', check: 'Comprobar', continue: 'Continuar',
+    unavailable: 'No pudimos comprobarlo. Intenta otra vez.', input: 'Tu respuesta',
     showTable: 'Ver tabla', showVisual: 'Ver modelo', start: 'Agrega barras para empezar.', partsBar: 'Una barra en partes', compareBars: 'Dos barras para comparar',
     addPart: 'Agregar una parte', addTotal: 'Agregar el total', piece: 'Pieza', holds: 'Contiene', empty: 'Vacía', noNumber: 'Sin número', remove: 'Quitar', unknown: 'Incógnita',
     pick: (slot) => `${slot}: elegir`,
     slot: { 'part-a': 'Parte 1', 'part-b': 'Parte 2', 'part-c': 'Parte 3', whole: 'Total', smaller: 'Barra corta', larger: 'Barra larga', difference: 'Diferencia', total: 'Las dos juntas' } },
-  'pt-BR': { reset: 'Recomeçar', back: 'Voltar', model: 'Monte o modelo', answer: 'Resolva o modelo', check: 'Conferir', continue: 'Continue', correct: 'Correto',
-    retry: 'Olhe as barras de novo.', retryAnswer: 'Tente de novo.', unavailable: 'Não foi possível conferir. Tente de novo.', input: 'Sua resposta',
+  'pt-BR': { reset: 'Recomeçar', back: 'Voltar', model: 'Monte o modelo', answer: 'Resolva o modelo', check: 'Conferir', continue: 'Continue',
+    unavailable: 'Não foi possível conferir. Tente de novo.', input: 'Sua resposta',
     showTable: 'Ver tabela', showVisual: 'Ver modelo', start: 'Adicione barras para começar.', partsBar: 'Uma barra em partes', compareBars: 'Duas barras para comparar',
     addPart: 'Adicionar uma parte', addTotal: 'Adicionar o total', piece: 'Peça', holds: 'Contém', empty: 'Vazia', noNumber: 'Sem número', remove: 'Tirar', unknown: 'Incógnita',
     pick: (slot) => `${slot}: escolher`,
@@ -163,7 +164,7 @@ export function BarModelBoard({ document, segment, onBack, onGrade, sequence }: 
           <Button variant="sky" size="sm" className="lf-learning-view-toggle" onClick={() => setShowTable((current) => !current)}>{showTable ? t.showVisual : t.showTable}</Button></div>
         {pieces}
       </div>
-      <footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === 'met' ? t.correct : verdict === 'review' ? (structure ? t.retry : t.retryAnswer) : verdict === 'unavailable' ? t.unavailable : null}</LessonFeedback>
+      <footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === null ? null : verdictBannerText(document.locale, verdict, namedFeedback(document.locale, structure ? 'bar-model-structure' : 'bar-model-answer'), segment.feedback)}</LessonFeedback>
         <div className="lf-learning-actions"><Button variant="accent" onClick={submit} disabled={pending || verdict !== 'met' && !complete}>{verdict === 'met' ? t.continue : t.check}</Button></div></footer>
     </div>
   </div></main>;

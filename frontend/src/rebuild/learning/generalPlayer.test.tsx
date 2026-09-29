@@ -160,7 +160,7 @@ describe('general v2 player', () => {
     await moveTo('Car', 'In neither');
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(onGradeAny).toHaveBeenCalledWith({ placements: { 'item-rex': 'both', 'item-car': 'neither' } }, 'euler-01', expect.anything()));
-    expect(await screen.findByText('Not yet. Check how you set it up.')).toBeTruthy();
+    expect(await screen.findByText('Not yet. Check each item against both circles.')).toBeTruthy();
   });
 
   it('GAP-FIX-R4: a 6-9 lesson may not nest circles; the browser refuses it the way Core does', () => {

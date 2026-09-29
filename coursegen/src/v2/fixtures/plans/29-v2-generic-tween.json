@@ -44,13 +44,13 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Two pencils cost 8 coins. How much do 3 packs cost?"
+          "prompt": "Two pencils cost 8 coins. How much do 3 packs cost?", "feedback": {"met": "You scaled the price by the same factor as the packs.", "not_yet": "Not yet. Find the price of one pack first."}
         },
         "es-MX": {
-          "prompt": "Dos lápices cuestan 8 monedas. ¿Cuánto cuestan 3 paquetes?"
+          "prompt": "Dos lápices cuestan 8 monedas. ¿Cuánto cuestan 3 paquetes?", "feedback": {"met": "Escalaste el precio por el mismo factor que los paquetes.", "not_yet": "Todavía no. Primero halla el precio de un paquete."}
         },
         "pt-BR": {
-          "prompt": "Dois lápis custam 8 moedas. Quanto custam 3 pacotes?"
+          "prompt": "Dois lápis custam 8 moedas. Quanto custam 3 pacotes?", "feedback": {"met": "Você escalou o preço pelo mesmo fator dos pacotes.", "not_yet": "Ainda não. Primeiro ache o preço de um pacote."}
         }
       },
       "rubric": {
@@ -71,13 +71,13 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Split 40 coins. Save 10 or more."
+          "prompt": "Split 40 coins. Save 10 or more.", "feedback": {"met": "Your plan saves the goal amount and assigns every coin.", "not_yet": "Not yet. Move coins into savings until you reach the goal."}
         },
         "es-MX": {
-          "prompt": "Reparte 40 monedas. Guarda 10 o más."
+          "prompt": "Reparte 40 monedas. Guarda 10 o más.", "feedback": {"met": "Tu plan ahorra la meta y asigna cada moneda.", "not_yet": "Todavía no. Pasa monedas al ahorro hasta llegar a la meta."}
         },
         "pt-BR": {
-          "prompt": "Divida 40 moedas. Guarde 10 ou mais."
+          "prompt": "Divida 40 moedas. Guarde 10 ou mais.", "feedback": {"met": "Seu plano guarda a meta e distribui todas as moedas.", "not_yet": "Ainda não. Passe moedas para a poupança até chegar à meta."}
         }
       },
       "rubric": {

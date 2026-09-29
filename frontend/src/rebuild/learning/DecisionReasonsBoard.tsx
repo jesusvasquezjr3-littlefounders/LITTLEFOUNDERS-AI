@@ -8,7 +8,8 @@ import { useSingleActiveGrade } from './useSingleActiveGrade';
 import './learning.css';
 import './decisionReasons.css';
 import { LessonStageSlot } from './lessonStage';
-import { SegmentPrompt } from './segmentKit';
+import { SegmentPrompt, verdictBannerText } from './segmentKit';
+import { namedFeedback } from './namedFeedback';
 
 /*
  * B.12 (Law 4, S05.3d): decide, then say why. The learner picks a decision
@@ -24,19 +25,16 @@ export type JudgmentQuality = 'sound' | 'partial' | 'unsupported';
 export type ReasoningGrade = { verdict: 'invalid' | 'met' | 'review'; judgment?: JudgmentQuality };
 
 export const decisionReasonsCopy: Record<Locale, {
-  back: string; board: string; choice: string; check: string; continue: string; met: string; review: string;
+  back: string; board: string; choice: string; check: string; continue: string;
   sound: string; partial: string; unsupported: string; unavailable: string;
 }> = {
   'en-US': { back: 'Back', board: 'Decide and explain', choice: 'Your choice', check: 'Check', continue: 'Continue',
-    met: 'That choice works.', review: 'Look again at what matters most.',
     sound: 'Your reason explains it well.', partial: 'Your reason explains part of it.',
     unsupported: 'Try a reason that explains your choice.', unavailable: 'We could not check that. Try again.' },
   'es-MX': { back: 'Volver', board: 'Decide y explica', choice: 'Tu decisión', check: 'Comprobar', continue: 'Continuar',
-    met: 'Esa decisión funciona.', review: 'Mira otra vez qué importa más.',
     sound: 'Tu razón lo explica bien.', partial: 'Tu razón explica una parte.',
     unsupported: 'Prueba una razón que explique tu decisión.', unavailable: 'No pudimos comprobarlo. Intenta otra vez.' },
   'pt-BR': { back: 'Voltar', board: 'Decida e explique', choice: 'Sua escolha', check: 'Conferir', continue: 'Continuar',
-    met: 'Essa escolha funciona.', review: 'Veja de novo o que importa mais.',
     sound: 'Seu motivo explica bem.', partial: 'Seu motivo explica uma parte.',
     unsupported: 'Tente um motivo que explique sua escolha.', unavailable: 'Não foi possível conferir. Tente de novo.' },
 };
@@ -88,7 +86,8 @@ export function DecisionReasonsBoard({ document, segment, onBack, onGrade, seque
       <footer className="lf-learning-foot">
         {/* Two lines: the decision's verdict on the shared feedback row, then the reason's quality, which never changes the score. */}
         <LessonFeedback verdict={result === null ? null : result === 'unavailable' ? 'unavailable' : result.verdict}>
-          {result === null ? null : result === 'unavailable' ? t.unavailable : result.verdict === 'met' ? t.met : t.review}</LessonFeedback>
+          {result === null ? null : result === 'unavailable' ? t.unavailable
+            : verdictBannerText(document.locale, result.verdict === 'met' ? 'met' : 'review', namedFeedback(document.locale, 'decide-justify'), segment.feedback)}</LessonFeedback>
         {result !== null && result !== 'unavailable' && result.judgment ? <div className="lf-reasoning-judgment" data-judgment={result.judgment}>
           <InlineNotice tone={result.judgment === 'sound' ? 'success' : 'info'} live>{t[result.judgment]}</InlineNotice></div> : null}
         <div className="lf-learning-actions"><Button variant="accent" disabled={pending || (!met && (!choice || !reason))} onClick={submit}>

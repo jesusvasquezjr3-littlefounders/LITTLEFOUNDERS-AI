@@ -11,6 +11,7 @@ import type { LessonMentorStage } from './lessonDocument';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { parseLocaleNumber } from './v2VisualScorer.generated';
 import { useSingleActiveGrade } from './useSingleActiveGrade';
+import type { NamedFeedback } from './namedFeedback';
 import { lessonSoundMuted, playLessonNarration, stopLessonNarration } from './lessonCue';
 import './segmentKit.css';
 
@@ -27,6 +28,9 @@ import './segmentKit.css';
  *   what Core will compare. The board submits the canonical string only.
  * - `GradedFoot` / `ViewedFoot`: the one feedback row and action for graded and
  *   non-scored steps, so every board advances the general player the same way.
+ *   GAP-FIX-R6 (B.20, Bible 02 §9.2): the success banner names what was done
+ *   right and "not yet" carries a hint: the author's `feedback` when the
+ *   document has it, else the board's own named confirmation (namedFeedback.ts).
  */
 
 const copy = { 'en-US': en.player, 'es-MX': es.player, 'pt-BR': pt.player };
@@ -144,11 +148,19 @@ export function NumberAnswer({ label, locale, onChange, disabled }: { label: str
   </div>;
 }
 
-function reviewText(locale: Locale, diagnostic: string | undefined): string {
-  const t = copy[locale];
-  if (diagnostic === 'structure' || diagnostic === 'path' || diagnostic === 'bin' || diagnostic === 'rule_switch') return t.reviewStructure;
-  if (diagnostic && diagnostic !== 'none' && diagnostic !== 'outcome') return t.reviewAnswer;
-  return t.review;
+/** GAP-FIX-R6: a graded step's authored banner text (v2 `feedback`, in the document's locale). */
+export type SegmentFeedback = { met?: string; not_yet?: string };
+
+/**
+ * B.20 / Bible 02 §9.2 / Appendix B §1.8 (GAP-FIX-R6): the one banner text of
+ * a graded verdict, for every graded board. Met names what the learner did
+ * right; a miss is "not yet" with a hint. The author's feedback wins; the
+ * board's named confirmation (built from its graded state) is the fallback,
+ * so no board ever answers a correct step with a bare "Correct".
+ */
+export function verdictBannerText(locale: Locale, verdict: 'met' | 'review' | 'unavailable', named: NamedFeedback, feedback?: SegmentFeedback): string {
+  if (verdict === 'unavailable') return copy[locale].unavailable;
+  return verdict === 'met' ? feedback?.met ?? named.met : feedback?.not_yet ?? named.hint;
 }
 
 /**
@@ -175,15 +187,17 @@ export function useSegmentGrade(segmentId: string, onGrade: OnGradeSegment | und
   return { pending, result, check, reset: () => setResult(null), met: result !== null && result !== 'unavailable' && result.verdict === 'met' };
 }
 
-export function GradedFoot({ locale, grading, canCheck, onCheck, sequence }: {
+export function GradedFoot({ locale, grading, canCheck, onCheck, sequence, named, feedback }: {
   locale: Locale; grading: ReturnType<typeof useSegmentGrade>; canCheck: boolean; onCheck: () => void; sequence?: LessonSequenceControl;
+  /** The board's named confirmation and hint (namedFeedback.ts), used when the segment has no authored feedback. */
+  named: NamedFeedback; feedback?: SegmentFeedback;
 }) {
   const t = copy[locale];
   const { result, pending, met } = grading;
   const verdict = result === null ? null : result === 'unavailable' ? 'unavailable' : result.verdict === 'met' ? 'met' : 'review';
   return <footer className="lf-learning-foot">
     <LessonFeedback verdict={verdict}>
-      {result === null ? null : result === 'unavailable' ? t.unavailable : result.verdict === 'met' ? t.met : reviewText(locale, result.diagnostic)}
+      {verdict === null ? null : verdictBannerText(locale, verdict, named, feedback)}
     </LessonFeedback>
     <div className="lf-learning-actions">
       {met ? (sequence ? <Button variant="accent" onClick={sequence.onAdvance}>{t.continue}</Button> : null)

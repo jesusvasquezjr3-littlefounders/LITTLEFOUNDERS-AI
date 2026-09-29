@@ -11,6 +11,7 @@ import './learning.css';
 import './percentGrid.css';
 import { LessonStageSlot } from './lessonStage';
 import { GradedFoot, NumberAnswer, SegmentPrompt, useSegmentGrade, type OnGradeSegment, gradeStageVerdict } from './segmentKit';
+import { namedFeedback } from './namedFeedback';
 
 
 type PercentSegment = Extract<LessonClientSegment, { type: 'visual.percent-grid.v2' }>;
@@ -94,7 +95,7 @@ export function PercentGridBoard({ document, segment, onBack, sequence, onGrade 
             stepLabels={{ decrease: t.less, increase: t.more }} />}
         </TeachingChartBoard>
         {graded ? <><NumberAnswer label={changed} locale={document.locale} onChange={setTyped} disabled={grading.pending || grading.met} />
-          <GradedFoot locale={document.locale} grading={grading} canCheck={typed !== null} sequence={sequence} onCheck={() => grading.check({ percent, amount: typed })} /></> : null}
+          <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'percent-grid', { percent })} feedback={segment.feedback} canCheck={typed !== null} sequence={sequence} onCheck={() => grading.check({ percent, amount: typed })} /></> : null}
         {graded && !grading.met ? null : <footer className="lf-percent-foot"><div className="lf-percent-outcome" role="status" aria-live="polite">
           <span data-copy-role="body">{t.final}</span><strong data-copy-role="data">{amount(outcome?.final ?? 0)}</strong></div>
           {sequence && !graded ? <Button variant="accent" disabled={percent === initialPercent} onClick={sequence.onAdvance}>{t.continue}</Button> : null}</footer>}

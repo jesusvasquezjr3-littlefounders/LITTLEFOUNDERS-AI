@@ -97,12 +97,13 @@ function mergeCopy(payload: unknown, copy: unknown, where: string, problems: str
 }
 
 function buildSegment(segment: V2PlanSegment, locale: V2Locale, problems: string[]): V2Segment {
-  const { prompt, help, ...rest } = segment.copy[locale];
+  const { prompt, help, feedback, ...rest } = segment.copy[locale];
   const where = `segments.${segment.id}.copy.${locale}`;
   const payload = mergeCopy(segment.payload, rest, where, problems) as Record<string, unknown>;
   return {
     id: segment.id, type: segment.type, grading: segment.grading, prompt, visual: { ...segment.visual }, payload,
     ...(help ? { help: [...help] } : {}),
+    ...(feedback ? { feedback: { ...feedback } } : {}),
     ...(segment.item_role ? { item_role: segment.item_role } : {}),
     ...(segment.item_phase ? { item_phase: segment.item_phase } : {}),
     ...(segment.variant ? { variant: segment.variant } : {}),

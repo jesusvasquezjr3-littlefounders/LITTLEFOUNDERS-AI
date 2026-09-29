@@ -74,7 +74,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Ana saved 50 coins, 12 more than Leo. Build the bars.",
+          "prompt": "Ana saved 50 coins, 12 more than Leo. Build the bars.", "feedback": {"met": "Your bars show Ana's as Leo's plus the extra part.", "not_yet": "Not yet. Ana has more, so her bar is longer."},
           "quantities": [
             {
               "label": "Ana"
@@ -87,7 +87,7 @@
           "spokenText": "fifty and twelve more"
         },
         "es-MX": {
-          "prompt": "Ana ahorró 50 monedas, 12 más que Leo. Arma las barras.",
+          "prompt": "Ana ahorró 50 monedas, 12 más que Leo. Arma las barras.", "feedback": {"met": "Tus barras muestran la de Ana como la de Leo más la parte extra.", "not_yet": "Todavía no. Ana tiene más, así que su barra es más larga."},
           "quantities": [
             {
               "label": "Ana"
@@ -100,7 +100,7 @@
           "spokenText": "cincuenta y doce más"
         },
         "pt-BR": {
-          "prompt": "Ana guardou 50 moedas, 12 a mais que Leo. Monte as barras.",
+          "prompt": "Ana guardou 50 moedas, 12 a mais que Leo. Monte as barras.", "feedback": {"met": "Suas barras mostram a de Ana como a de Leo mais a parte extra.", "not_yet": "Ainda não. Ana tem mais, então a barra dela é mais longa."},
           "quantities": [
             {
               "label": "Ana"
@@ -143,7 +143,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "How many coins did Leo save?",
+          "prompt": "How many coins did Leo save?", "feedback": {"met": "You took the extra part away from Ana's bar to find Leo's.", "not_yet": "Not yet. Leo's bar is Ana's without the extra part."},
           "quantities": [
             {
               "label": "Ana"
@@ -156,7 +156,7 @@
           "spokenText": "fifty minus twelve"
         },
         "es-MX": {
-          "prompt": "¿Cuántas monedas ahorró Leo?",
+          "prompt": "¿Cuántas monedas ahorró Leo?", "feedback": {"met": "Quitaste la parte extra a la barra de Ana para hallar la de Leo.", "not_yet": "Todavía no. La barra de Leo es la de Ana sin la parte extra."},
           "quantities": [
             {
               "label": "Ana"
@@ -169,7 +169,7 @@
           "spokenText": "cincuenta menos doce"
         },
         "pt-BR": {
-          "prompt": "Quantas moedas Leo guardou?",
+          "prompt": "Quantas moedas Leo guardou?", "feedback": {"met": "Você tirou a parte extra da barra de Ana para achar a de Leo.", "not_yet": "Ainda não. A barra de Leo é a de Ana sem a parte extra."},
           "quantities": [
             {
               "label": "Ana"
@@ -207,7 +207,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Rho saved 40 coins and Zara 26. Choose the schema.",
+          "prompt": "Rho saved 40 coins and Zara 26. Choose the schema.", "feedback": {"met": "You saw a comparison: how much more one has than the other.", "not_yet": "Not yet. Ask if the story compares two amounts."},
           "quantities": [
             {
               "label": "Rho saved"
@@ -220,7 +220,7 @@
           "spokenText": "forty minus twenty six"
         },
         "es-MX": {
-          "prompt": "Rho ahorró 40 monedas y Zara 26. Elige el esquema.",
+          "prompt": "Rho ahorró 40 monedas y Zara 26. Elige el esquema.", "feedback": {"met": "Viste una comparación: cuánto más tiene uno que el otro.", "not_yet": "Todavía no. Pregúntate si la historia compara dos cantidades."},
           "quantities": [
             {
               "label": "Rho ahorró"
@@ -233,7 +233,7 @@
           "spokenText": "cuarenta menos veintiséis"
         },
         "pt-BR": {
-          "prompt": "Rho guardou 40 moedas e Zara 26. Escolha o esquema.",
+          "prompt": "Rho guardou 40 moedas e Zara 26. Escolha o esquema.", "feedback": {"met": "Você viu uma comparação: quanto um tem a mais que o outro.", "not_yet": "Ainda não. Pergunte se a história compara duas quantidades."},
           "quantities": [
             {
               "label": "Rho guardou"
@@ -271,7 +271,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Put each number in its box.",
+          "prompt": "Put each number in its box.", "feedback": {"met": "Each number sits in the box for its role in the story.", "not_yet": "Not yet. Match each number to what it counts."},
           "quantities": [
             {
               "label": "Rho saved"
@@ -284,7 +284,7 @@
           "spokenText": "forty minus twenty six"
         },
         "es-MX": {
-          "prompt": "Pon cada número en su caja.",
+          "prompt": "Pon cada número en su caja.", "feedback": {"met": "Cada número quedó en la caja de su papel en la historia.", "not_yet": "Todavía no. Relaciona cada número con lo que cuenta."},
           "quantities": [
             {
               "label": "Rho ahorró"
@@ -297,7 +297,7 @@
           "spokenText": "cuarenta menos veintiséis"
         },
         "pt-BR": {
-          "prompt": "Coloque cada número na sua caixa.",
+          "prompt": "Coloque cada número na sua caixa.", "feedback": {"met": "Cada número ficou na caixa do seu papel na história.", "not_yet": "Ainda não. Ligue cada número ao que ele conta."},
           "quantities": [
             {
               "label": "Rho guardou"
@@ -340,7 +340,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "How many more did Rho save?",
+          "prompt": "How many more did Rho save?", "feedback": {"met": "You found the gap by taking the smaller amount from the larger.", "not_yet": "Not yet. Subtract the smaller amount from the larger one."},
           "quantities": [
             {
               "label": "Rho saved"
@@ -353,7 +353,7 @@
           "spokenText": "forty minus twenty six"
         },
         "es-MX": {
-          "prompt": "¿Cuántas más ahorró Rho?",
+          "prompt": "¿Cuántas más ahorró Rho?", "feedback": {"met": "Hallaste la diferencia restando la cantidad menor de la mayor.", "not_yet": "Todavía no. Resta la cantidad menor de la mayor."},
           "quantities": [
             {
               "label": "Rho ahorró"
@@ -366,7 +366,7 @@
           "spokenText": "cuarenta menos veintiséis"
         },
         "pt-BR": {
-          "prompt": "Quantas a mais Rho guardou?",
+          "prompt": "Quantas a mais Rho guardou?", "feedback": {"met": "Você achou a diferença tirando a quantia menor da maior.", "not_yet": "Ainda não. Tire a quantia menor da maior."},
           "quantities": [
             {
               "label": "Rho guardou"

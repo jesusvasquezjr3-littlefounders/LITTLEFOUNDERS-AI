@@ -64,13 +64,13 @@
         },
         "copy": {
           "en-US": {
-            "prompt": "Pay 17 coins with the fewest pieces."
+            "prompt": "Pay 17 coins with the fewest pieces.", "feedback": {"met": "You checked each step against the rule.", "not_yet": "Not yet. Check each step again."}
           },
           "es-MX": {
-            "prompt": "Paga 17 monedas con la menor cantidad de piezas."
+            "prompt": "Paga 17 monedas con la menor cantidad de piezas.", "feedback": {"met": "Revisaste cada paso con la regla.", "not_yet": "Todavía no. Revisa cada paso otra vez."}
           },
           "pt-BR": {
-            "prompt": "Pague 17 moedas com o menor número de peças."
+            "prompt": "Pague 17 moedas com o menor número de peças.", "feedback": {"met": "Você conferiu cada passo com a regra.", "not_yet": "Ainda não. Confira cada passo de novo."}
           }
         }
       }

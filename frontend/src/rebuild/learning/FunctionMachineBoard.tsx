@@ -7,17 +7,18 @@ import type { LessonSequenceControl } from './lessonSequence';
 import { useSingleActiveGrade } from './useSingleActiveGrade';
 import './learning.css';
 import { LessonStageSlot } from './lessonStage';
-import { SegmentPrompt } from './segmentKit';
+import { SegmentPrompt, verdictBannerText } from './segmentKit';
+import { namedFeedback } from './namedFeedback';
 import { FunctionMachineVisual, MathExpression } from './pizarron';
 
 type Segment = Extract<LessonClientSegment, { type: 'math.function-machine.v2' }>;
 type Verdict = 'invalid' | 'met' | 'review';
 
-type Copy = Record<'reset' | 'back' | 'board' | 'try' | 'run' | 'input' | 'output' | 'rule' | 'multiplier' | 'offset' | 'check' | 'continue' | 'correct' | 'retry' | 'unavailable', string> & { spoken: (a: string, b: string) => string };
+type Copy = Record<'reset' | 'back' | 'board' | 'try' | 'run' | 'input' | 'output' | 'rule' | 'multiplier' | 'offset' | 'check' | 'continue' | 'unavailable', string> & { spoken: (a: string, b: string) => string };
 const copy: Record<Locale, Copy> = {
-  'en-US': { reset: 'Reset', back: 'Back', board: 'Function machine', try: 'Try an input', run: 'Run', input: 'Input', output: 'Output', rule: 'What is the rule?', multiplier: 'Multiply by', offset: 'Then add', check: 'Check rule', continue: 'Continue', correct: 'Correct', retry: 'Try another rule.', unavailable: 'We could not check that. Try again.', spoken: (a, b) => `f of x equals ${a} times x plus ${b}` },
-  'es-MX': { reset: 'Restablecer', back: 'Volver', board: 'Máquina de funciones', try: 'Prueba una entrada', run: 'Ejecutar', input: 'Entrada', output: 'Salida', rule: '¿Cuál es la regla?', multiplier: 'Multiplica por', offset: 'Luego suma', check: 'Comprobar regla', continue: 'Continuar', correct: 'Correcto', retry: 'Prueba otra regla.', unavailable: 'No pudimos comprobarlo. Intenta otra vez.', spoken: (a, b) => `f de x es igual a ${a} por x más ${b}` },
-  'pt-BR': { reset: 'Recomeçar', back: 'Voltar', board: 'Máquina de funções', try: 'Teste uma entrada', run: 'Executar', input: 'Entrada', output: 'Saída', rule: 'Qual é a regra?', multiplier: 'Multiplique por', offset: 'Depois some', check: 'Conferir regra', continue: 'Continuar', correct: 'Correto', retry: 'Tente outra regra.', unavailable: 'Não foi possível conferir. Tente de novo.', spoken: (a, b) => `f de x é igual a ${a} vezes x mais ${b}` },
+  'en-US': { reset: 'Reset', back: 'Back', board: 'Function machine', try: 'Try an input', run: 'Run', input: 'Input', output: 'Output', rule: 'What is the rule?', multiplier: 'Multiply by', offset: 'Then add', check: 'Check rule', continue: 'Continue', unavailable: 'We could not check that. Try again.', spoken: (a, b) => `f of x equals ${a} times x plus ${b}` },
+  'es-MX': { reset: 'Restablecer', back: 'Volver', board: 'Máquina de funciones', try: 'Prueba una entrada', run: 'Ejecutar', input: 'Entrada', output: 'Salida', rule: '¿Cuál es la regla?', multiplier: 'Multiplica por', offset: 'Luego suma', check: 'Comprobar regla', continue: 'Continuar', unavailable: 'No pudimos comprobarlo. Intenta otra vez.', spoken: (a, b) => `f de x es igual a ${a} por x más ${b}` },
+  'pt-BR': { reset: 'Recomeçar', back: 'Voltar', board: 'Máquina de funções', try: 'Teste uma entrada', run: 'Executar', input: 'Entrada', output: 'Saída', rule: 'Qual é a regra?', multiplier: 'Multiplique por', offset: 'Depois some', check: 'Conferir regra', continue: 'Continuar', unavailable: 'Não foi possível conferir. Tente de novo.', spoken: (a, b) => `f de x é igual a ${a} vezes x mais ${b}` },
 };
 
 export function FunctionMachineBoard({ document, segment, onBack, onGrade, sequence }: { document: LessonClientDocument; segment: Segment; onBack: () => void; onGrade: (answer: { multiplier: string; offset: string }, segmentId: string) => Verdict | Promise<Verdict>; sequence?: LessonSequenceControl }) {
@@ -54,7 +55,7 @@ export function FunctionMachineBoard({ document, segment, onBack, onGrade, seque
           {segment.payload.notation && /^(0|[1-9]\d*)$/.test(multiplier) && /^(0|[1-9]\d*)$/.test(offset)
             ? <MathExpression tex={`f(x) = ${multiplier} \\times x + ${offset}`} spokenText={t.spoken(multiplier, offset)} fallback={`f(x) = ${multiplier} × x + ${offset}`} locale={document.locale} block /> : null}</div>
       </div>
-      <footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === 'met' ? t.correct : verdict === 'review' ? t.retry : verdict === 'unavailable' ? t.unavailable : null}</LessonFeedback><div className="lf-learning-actions"><Button variant="accent" disabled={pending || !valid} onClick={submit}>{verdict === 'met' && sequence ? t.continue : t.check}</Button></div></footer>
+      <footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === null ? null : verdictBannerText(document.locale, verdict, namedFeedback(document.locale, 'function-machine'), segment.feedback)}</LessonFeedback><div className="lf-learning-actions"><Button variant="accent" disabled={pending || !valid} onClick={submit}>{verdict === 'met' && sequence ? t.continue : t.check}</Button></div></footer>
     </div>
   </div></main>;
 }

@@ -340,7 +340,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Count who is in both circles.",
+          "prompt": "Count who is in both circles.", "feedback": {"met": "You counted only the people inside both circles.", "not_yet": "Not yet. Count just the part where the circles overlap."},
           "title": "Our class",
           "data": {
             "categories": [
@@ -368,7 +368,7 @@
           }
         },
         "es-MX": {
-          "prompt": "Cuenta a quienes están en ambos.",
+          "prompt": "Cuenta a quienes están en ambos.", "feedback": {"met": "Contaste solo a las personas dentro de los dos círculos.", "not_yet": "Todavía no. Cuenta solo la parte donde los círculos se cruzan."},
           "title": "Nuestro grupo",
           "data": {
             "categories": [
@@ -396,7 +396,7 @@
           }
         },
         "pt-BR": {
-          "prompt": "Conte quem está nos dois.",
+          "prompt": "Conte quem está nos dois.", "feedback": {"met": "Você contou só as pessoas dentro dos dois círculos.", "not_yet": "Ainda não. Conte só a parte onde os círculos se cruzam."},
           "title": "Nossa turma",
           "data": {
             "categories": [

@@ -70,7 +70,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Buy only if you have enough AND really want it.",
+          "prompt": "Buy only if you have enough AND really want it.", "feedback": {"met": "Your rule buys only when both conditions are true.", "not_yet": "Not yet. Test your rule on each practice case."},
           "conditions": [
             {
               "label": "I have enough coins"
@@ -97,7 +97,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Compra solo si te alcanza Y lo quieres de verdad.",
+          "prompt": "Compra solo si te alcanza Y lo quieres de verdad.", "feedback": {"met": "Tu regla compra solo cuando las dos condiciones se cumplen.", "not_yet": "Todavía no. Prueba tu regla con cada caso de práctica."},
           "conditions": [
             {
               "label": "Tengo monedas suficientes"
@@ -124,7 +124,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Compre só se tiver o bastante E quiser muito.",
+          "prompt": "Compre só se tiver o bastante E quiser muito.", "feedback": {"met": "Sua regra compra só quando as duas condições são verdadeiras.", "not_yet": "Ainda não. Teste sua regra em cada caso de prática."},
           "conditions": [
             {
               "label": "Tenho moedas suficientes"

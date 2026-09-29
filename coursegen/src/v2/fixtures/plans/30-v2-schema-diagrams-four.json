@@ -47,7 +47,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Ana keeps 18 coins in a jar and 7 in a box. Choose the schema.",
+          "prompt": "Ana keeps 18 coins in a jar and 7 in a box. Choose the schema.", "feedback": {"met": "You saw two groups joining into one total.", "not_yet": "Not yet. Ask if the coins change or two groups join."},
           "quantities": [
             {
               "label": "In the jar"
@@ -60,7 +60,7 @@
           "spokenText": "eighteen plus seven"
         },
         "es-MX": {
-          "prompt": "Ana guarda 18 monedas en un frasco y 7 en una caja. Elige el esquema.",
+          "prompt": "Ana guarda 18 monedas en un frasco y 7 en una caja. Elige el esquema.", "feedback": {"met": "Viste dos grupos que se juntan en un total.", "not_yet": "Todavía no. Pregúntate si las monedas cambian o si se juntan dos grupos."},
           "quantities": [
             {
               "label": "En el frasco"
@@ -73,7 +73,7 @@
           "spokenText": "dieciocho más siete"
         },
         "pt-BR": {
-          "prompt": "Ana guarda 18 moedas num pote e 7 numa caixa. Escolha o esquema.",
+          "prompt": "Ana guarda 18 moedas num pote e 7 numa caixa. Escolha o esquema.", "feedback": {"met": "Você viu dois grupos que se juntam num total.", "not_yet": "Ainda não. Pergunte se as moedas mudam ou se dois grupos se juntam."},
           "quantities": [
             {
               "label": "No pote"
@@ -111,7 +111,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Put each number in its box.",
+          "prompt": "Put each number in its box.", "feedback": {"met": "Each number sits in the box for its role in the story.", "not_yet": "Not yet. Match each number to what it counts."},
           "quantities": [
             {
               "label": "In the jar"
@@ -124,7 +124,7 @@
           "spokenText": "eighteen plus seven"
         },
         "es-MX": {
-          "prompt": "Pon cada número en su caja.",
+          "prompt": "Pon cada número en su caja.", "feedback": {"met": "Cada número quedó en la caja de su papel en la historia.", "not_yet": "Todavía no. Relaciona cada número con lo que cuenta."},
           "quantities": [
             {
               "label": "En el frasco"
@@ -137,7 +137,7 @@
           "spokenText": "dieciocho más siete"
         },
         "pt-BR": {
-          "prompt": "Coloque cada número na sua caixa.",
+          "prompt": "Coloque cada número na sua caixa.", "feedback": {"met": "Cada número ficou na caixa do seu papel na história.", "not_yet": "Ainda não. Ligue cada número ao que ele conta."},
           "quantities": [
             {
               "label": "No pote"
@@ -180,7 +180,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "How many coins in all?",
+          "prompt": "How many coins in all?", "feedback": {"met": "You added the two parts to find the whole.", "not_yet": "Not yet. Put both parts together."},
           "quantities": [
             {
               "label": "In the jar"
@@ -193,7 +193,7 @@
           "spokenText": "eighteen plus seven"
         },
         "es-MX": {
-          "prompt": "¿Cuántas monedas hay en total?",
+          "prompt": "¿Cuántas monedas hay en total?", "feedback": {"met": "Sumaste las dos partes para hallar el total.", "not_yet": "Todavía no. Junta las dos partes."},
           "quantities": [
             {
               "label": "En el frasco"
@@ -206,7 +206,7 @@
           "spokenText": "dieciocho más siete"
         },
         "pt-BR": {
-          "prompt": "Quantas moedas ao todo?",
+          "prompt": "Quantas moedas ao todo?", "feedback": {"met": "Você somou as duas partes para achar o total.", "not_yet": "Ainda não. Junte as duas partes."},
           "quantities": [
             {
               "label": "No pote"
@@ -244,7 +244,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Rho saved 40 coins and Zara 26. Choose the schema.",
+          "prompt": "Rho saved 40 coins and Zara 26. Choose the schema.", "feedback": {"met": "You saw a comparison: how much more one has than the other.", "not_yet": "Not yet. Ask if the story compares two amounts."},
           "quantities": [
             {
               "label": "Rho saved"
@@ -257,7 +257,7 @@
           "spokenText": "forty minus twenty six"
         },
         "es-MX": {
-          "prompt": "Rho ahorró 40 monedas y Zara 26. Elige el esquema.",
+          "prompt": "Rho ahorró 40 monedas y Zara 26. Elige el esquema.", "feedback": {"met": "Viste una comparación: cuánto más tiene uno que el otro.", "not_yet": "Todavía no. Pregúntate si la historia compara dos cantidades."},
           "quantities": [
             {
               "label": "Rho ahorró"
@@ -270,7 +270,7 @@
           "spokenText": "cuarenta menos veintiséis"
         },
         "pt-BR": {
-          "prompt": "Rho guardou 40 moedas e Zara 26. Escolha o esquema.",
+          "prompt": "Rho guardou 40 moedas e Zara 26. Escolha o esquema.", "feedback": {"met": "Você viu uma comparação: quanto um tem a mais que o outro.", "not_yet": "Ainda não. Pergunte se a história compara duas quantidades."},
           "quantities": [
             {
               "label": "Rho guardou"
@@ -308,7 +308,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Put each number in its box.",
+          "prompt": "Put each number in its box.", "feedback": {"met": "Each number sits in the box for its role in the story.", "not_yet": "Not yet. Match each number to what it counts."},
           "quantities": [
             {
               "label": "Rho saved"
@@ -321,7 +321,7 @@
           "spokenText": "forty minus twenty six"
         },
         "es-MX": {
-          "prompt": "Pon cada número en su caja.",
+          "prompt": "Pon cada número en su caja.", "feedback": {"met": "Cada número quedó en la caja de su papel en la historia.", "not_yet": "Todavía no. Relaciona cada número con lo que cuenta."},
           "quantities": [
             {
               "label": "Rho ahorró"
@@ -334,7 +334,7 @@
           "spokenText": "cuarenta menos veintiséis"
         },
         "pt-BR": {
-          "prompt": "Coloque cada número na sua caixa.",
+          "prompt": "Coloque cada número na sua caixa.", "feedback": {"met": "Cada número ficou na caixa do seu papel na história.", "not_yet": "Ainda não. Ligue cada número ao que ele conta."},
           "quantities": [
             {
               "label": "Rho guardou"
@@ -377,7 +377,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "How many more did Rho save?",
+          "prompt": "How many more did Rho save?", "feedback": {"met": "You found the gap by taking the smaller amount from the larger.", "not_yet": "Not yet. Subtract the smaller amount from the larger one."},
           "quantities": [
             {
               "label": "Rho saved"
@@ -390,7 +390,7 @@
           "spokenText": "forty minus twenty six"
         },
         "es-MX": {
-          "prompt": "¿Cuántas más ahorró Rho?",
+          "prompt": "¿Cuántas más ahorró Rho?", "feedback": {"met": "Hallaste la diferencia restando la cantidad menor de la mayor.", "not_yet": "Todavía no. Resta la cantidad menor de la mayor."},
           "quantities": [
             {
               "label": "Rho ahorró"
@@ -403,7 +403,7 @@
           "spokenText": "cuarenta menos veintiséis"
         },
         "pt-BR": {
-          "prompt": "Quantas a mais Rho guardou?",
+          "prompt": "Quantas a mais Rho guardou?", "feedback": {"met": "Você achou a diferença tirando a quantia menor da maior.", "not_yet": "Ainda não. Tire a quantia menor da maior."},
           "quantities": [
             {
               "label": "Rho guardou"
@@ -441,7 +441,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Each ticket costs 6 coins. Liruf buys 5. Choose the schema.",
+          "prompt": "Each ticket costs 6 coins. Liruf buys 5. Choose the schema.", "feedback": {"met": "You saw equal groups: the same price for every ticket.", "not_yet": "Not yet. Look for the same amount repeated."},
           "quantities": [
             {
               "label": "Coins per ticket"
@@ -454,7 +454,7 @@
           "spokenText": "six coins times five tickets"
         },
         "es-MX": {
-          "prompt": "Cada boleto cuesta 6 monedas. Liruf compra 5. Elige el esquema.",
+          "prompt": "Cada boleto cuesta 6 monedas. Liruf compra 5. Elige el esquema.", "feedback": {"met": "Viste grupos iguales: el mismo precio por cada boleto.", "not_yet": "Todavía no. Busca la misma cantidad repetida."},
           "quantities": [
             {
               "label": "Monedas por boleto"
@@ -467,7 +467,7 @@
           "spokenText": "seis monedas por cinco boletos"
         },
         "pt-BR": {
-          "prompt": "Cada ingresso custa 6 moedas. Liruf compra 5. Escolha o esquema.",
+          "prompt": "Cada ingresso custa 6 moedas. Liruf compra 5. Escolha o esquema.", "feedback": {"met": "Você viu grupos iguais: o mesmo preço para cada ingresso.", "not_yet": "Ainda não. Procure a mesma quantia repetida."},
           "quantities": [
             {
               "label": "Moedas por ingresso"
@@ -505,7 +505,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Put each number in its box.",
+          "prompt": "Put each number in its box.", "feedback": {"met": "Each number sits in the box for its role in the story.", "not_yet": "Not yet. Match each number to what it counts."},
           "quantities": [
             {
               "label": "Coins per ticket"
@@ -518,7 +518,7 @@
           "spokenText": "six coins times five tickets"
         },
         "es-MX": {
-          "prompt": "Pon cada número en su caja.",
+          "prompt": "Pon cada número en su caja.", "feedback": {"met": "Cada número quedó en la caja de su papel en la historia.", "not_yet": "Todavía no. Relaciona cada número con lo que cuenta."},
           "quantities": [
             {
               "label": "Monedas por boleto"
@@ -531,7 +531,7 @@
           "spokenText": "seis monedas por cinco boletos"
         },
         "pt-BR": {
-          "prompt": "Coloque cada número na sua caixa.",
+          "prompt": "Coloque cada número na sua caixa.", "feedback": {"met": "Cada número ficou na caixa do seu papel na história.", "not_yet": "Ainda não. Ligue cada número ao que ele conta."},
           "quantities": [
             {
               "label": "Moedas por ingresso"
@@ -574,7 +574,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "What do the tickets cost?",
+          "prompt": "What do the tickets cost?", "feedback": {"met": "You multiplied the price of one ticket by the number bought.", "not_yet": "Not yet. Multiply the price per ticket by the tickets."},
           "quantities": [
             {
               "label": "Coins per ticket"
@@ -587,7 +587,7 @@
           "spokenText": "six coins times five tickets"
         },
         "es-MX": {
-          "prompt": "¿Cuánto cuestan los boletos?",
+          "prompt": "¿Cuánto cuestan los boletos?", "feedback": {"met": "Multiplicaste el precio de un boleto por los que se compraron.", "not_yet": "Todavía no. Multiplica el precio por boleto por los boletos."},
           "quantities": [
             {
               "label": "Monedas por boleto"
@@ -600,7 +600,7 @@
           "spokenText": "seis monedas por cinco boletos"
         },
         "pt-BR": {
-          "prompt": "Quanto custam os ingressos?",
+          "prompt": "Quanto custam os ingressos?", "feedback": {"met": "Você multiplicou o preço de um ingresso pela quantidade comprada.", "not_yet": "Ainda não. Multiplique o preço por ingresso pelos ingressos."},
           "quantities": [
             {
               "label": "Moedas por ingresso"

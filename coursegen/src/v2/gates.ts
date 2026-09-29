@@ -137,6 +137,11 @@ export function v2TextBlocks(document: V2DocumentLike): V2TextBlock[] {
     if (typeof segment.prompt === 'string') blocks.push({ segmentId, path: 'prompt', role: 'prompt', text: segment.prompt });
     // Help ladder steps are spoken by the Mentor in one speech-plate turn each.
     if (Array.isArray(segment.help)) segment.help.forEach((step, index) => { if (typeof step === 'string') blocks.push({ segmentId, path: `help[${index}]`, role: 'mentor', text: step }); });
+    // GAP-FIX-R6 (B.20, Bible 02 §9.2): the feedback banner is one body string per verdict.
+    const feedback = segment.feedback as Record<string, unknown> | undefined;
+    if (feedback && typeof feedback === 'object') for (const key of ['met', 'not_yet']) {
+      if (typeof feedback[key] === 'string') blocks.push({ segmentId, path: `feedback.${key}`, role: 'body', text: feedback[key] as string });
+    }
     const strings: Array<{ path: string; key: string; text: string }> = [];
     // A narration script is heard, never shown: the redundancy gate reads it, the Copy Budget does not.
     const payload = segment.payload && typeof segment.payload === 'object' ? { ...(segment.payload as Record<string, unknown>) } : segment.payload;

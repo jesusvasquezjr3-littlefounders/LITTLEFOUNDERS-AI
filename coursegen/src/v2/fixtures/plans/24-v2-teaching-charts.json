@@ -32,11 +32,11 @@
         "question": { "options": [{ "id": "opt-45" }, { "id": "opt-55" }, { "id": "opt-35" }] } },
       "rubric": { "acceptable_choice_ids": ["opt-45"] },
       "copy": {
-        "en-US": { "prompt": "Read the steps from left to right.", "title": "How the balance changed", "data": { "categories": [{ "label": "Allowance" }, { "label": "Snacks" }, { "label": "Gift" }, { "label": "Chores" }], "series": [{ "label": "Change" }] },
+        "en-US": { "prompt": "Read the steps from left to right.", "feedback": {"met": "You followed each step of the chart to the final balance.", "not_yet": "Not yet. Add the rises and take away the drops in order."}, "title": "How the balance changed", "data": { "categories": [{ "label": "Allowance" }, { "label": "Snacks" }, { "label": "Gift" }, { "label": "Chores" }], "series": [{ "label": "Change" }] },
           "question": { "prompt": "What is the balance at the end?", "options": [{ "label": "45 coins" }, { "label": "55 coins" }, { "label": "35 coins" }] } },
-        "es-MX": { "prompt": "Lee los pasos de izquierda a derecha.", "title": "Cómo cambió el saldo", "data": { "categories": [{ "label": "Domingo" }, { "label": "Botanas" }, { "label": "Regalo" }, { "label": "Tareas" }], "series": [{ "label": "Cambio" }] },
+        "es-MX": { "prompt": "Lee los pasos de izquierda a derecha.", "feedback": {"met": "Seguiste cada paso de la gráfica hasta el saldo final.", "not_yet": "Todavía no. Suma las subidas y resta las bajadas en orden."}, "title": "Cómo cambió el saldo", "data": { "categories": [{ "label": "Domingo" }, { "label": "Botanas" }, { "label": "Regalo" }, { "label": "Tareas" }], "series": [{ "label": "Cambio" }] },
           "question": { "prompt": "¿Cuál es el saldo al final?", "options": [{ "label": "45 monedas" }, { "label": "55 monedas" }, { "label": "35 monedas" }] } },
-        "pt-BR": { "prompt": "Leia os passos da esquerda para a direita.", "title": "Como o saldo mudou", "data": { "categories": [{ "label": "Mesada" }, { "label": "Lanches" }, { "label": "Presente" }, { "label": "Tarefas" }], "series": [{ "label": "Mudança" }] },
+        "pt-BR": { "prompt": "Leia os passos da esquerda para a direita.", "feedback": {"met": "Você seguiu cada passo do gráfico até o saldo final.", "not_yet": "Ainda não. Some as subidas e tire as descidas, em ordem."}, "title": "Como o saldo mudou", "data": { "categories": [{ "label": "Mesada" }, { "label": "Lanches" }, { "label": "Presente" }, { "label": "Tarefas" }], "series": [{ "label": "Mudança" }] },
           "question": { "prompt": "Qual é o saldo no final?", "options": [{ "label": "45 moedas" }, { "label": "55 moedas" }, { "label": "35 moedas" }] } }
       }
     },

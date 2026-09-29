@@ -225,7 +225,7 @@ describe('versioned pilot document renderer', () => {
     expect(screen.getByRole('table', { name: 'Function machine' })).toHaveTextContent('InputOutput1?2203?');
     fireEvent.click(screen.getByRole('button', { name: 'Check rule' }));
     await waitFor(() => expect(grade).toHaveBeenCalledWith({ multiplier: '5', offset: '10' }, 'function-machine-01', expect.anything()));
-    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Correct'));
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Your rule fits every input you tried.'));
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     expect(await screen.findByRole('heading', { name: 'Lesson ready' })).toBeTruthy();
     rerender(<LessonDocumentView raw={functionMachinePilotDocument('en-US')} locale="en-US" ageBand="13-17"
@@ -244,7 +244,7 @@ describe('versioned pilot document renderer', () => {
     expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
     await waitFor(() => expect(grade).toHaveBeenCalledTimes(1));
     await act(async () => { resolveGrade('met'); await Promise.resolve(); await Promise.resolve(); });
-    expect(screen.getByText('You found it.')).toBeTruthy();
+    expect(screen.getByText('You counted both groups and named the total.')).toBeTruthy();
   });
 
   it('renders M1 as concrete, pictorial, then abstract while carrying one semantic answer', async () => {
@@ -256,7 +256,7 @@ describe('versioned pilot document renderer', () => {
     fireEvent.change(screen.getByRole('textbox', { name: 'Your answer' }), { target: { value: '7' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await act(async () => { await Promise.resolve(); });
-    expect(screen.getByText('You found it.')).toBeTruthy();
+    expect(screen.getByText('You counted both groups and named the total.')).toBeTruthy();
     expect(document.querySelector('.lf-cpa-transition--leaving')).toBeNull();
     await act(async () => { await vi.advanceTimersByTimeAsync(400); });
     expect(document.querySelector('.lf-cpa-transition--leaving')).toBeTruthy();
@@ -470,7 +470,7 @@ describe('versioned pilot document renderer', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(grade).toHaveBeenCalledWith({ value: '3/4' }, 'fraction-01', expect.anything()));
     await waitFor(() => expect(screen.getByText('3/4 = 0.75')).toBeTruthy());
-    expect(screen.getByRole('status')).toHaveTextContent('Correct');
+    expect(screen.getByRole('status')).toHaveTextContent('You placed 3/4 by counting equal steps.');
     rerender(<LessonDocumentView raw={document} locale="en-US" ageBand="13-17" onBack={noop} onGradeNumberLine={grade} />);
     expect(screen.getByText('This lesson cannot open.')).toBeTruthy();
   });
@@ -610,7 +610,7 @@ describe('versioned pilot document renderer', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Shaded parts: More' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(grade).toHaveBeenCalledWith({ n: 1, d: 2 }, 'fraction-area-01', expect.anything()));
-    await waitFor(() => expect(feedbackRegion()).toHaveTextContent('Correct'));
+    await waitFor(() => expect(feedbackRegion()).toHaveTextContent('You split the whole into 2 equal parts and shaded 1.'));
   });
 
   it('lets an authenticated M6 result reach the lesson finish action without a second grade', async () => {
@@ -652,7 +652,7 @@ describe('versioned pilot document renderer', () => {
     fireEvent.click(await screen.findByRole('menuitem', { name: '? Leo' }));
     expect(document.querySelector('.lf-pz-seg--unknown')?.textContent).toBe('?');
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    expect(await screen.findByText('Look at the bars again.')).toBeTruthy();
+    expect(await screen.findByText('Not yet. Decide which bar is longer, then add the parts.')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
     await buildPilotBars();
     // Show as table lists every piece the learner built, and never an answer.
@@ -662,7 +662,7 @@ describe('versioned pilot document renderer', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Show model' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(grade).toHaveBeenNthCalledWith(2, PILOT_BUILD, 'bar-structure-01', expect.anything()));
-    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Correct'));
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Your bars show how the amounts in the story fit together.'));
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     expect(screen.getByText('Solve the model')).toBeTruthy();
     // The arithmetic step draws the bars the learner built.
@@ -710,7 +710,7 @@ describe('versioned pilot document renderer', () => {
     expect(screen.queryByRole('group', { name: 'Start' })).toBeNull();
     fireEvent.click(screen.getByRole('radio', { name: 'Change' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Correct'));
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('You matched the story to the schema that fits it.'));
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     fireEvent.click(screen.getByRole('radio', { name: 'Change' }));
     fireEvent.click(within(screen.getByRole('group', { name: 'Start' })).getByRole('radio', { name: 'Earned 24' }));

@@ -55,7 +55,8 @@ describe('the committed v2 plans', () => {
       for (const segment of plan.segments.filter((s) => s.rubric)) {
         const emitted = row.document.segments.find((s) => s.id === segment.id)!;
         // GAP-FIX-R1: the optional help ladder, item role and KC ride beside the six base fields; nothing else does.
-        const optional = ['help', 'item_role', 'knowledge_component_id', 'item_phase', 'variant'];
+        // GAP-FIX-R6 (B.20): the authored feedback banner rides beside them too.
+        const optional = ['help', 'feedback', 'item_role', 'knowledge_component_id', 'item_phase', 'variant'];
         expect(Object.keys(emitted).filter((key) => !optional.includes(key)).sort()).toEqual(['grading', 'id', 'payload', 'prompt', 'type', 'visual']);
         for (const key of Object.keys(segment.rubric!)) {
           if (!(key in segment.payload)) expect(emitted.payload).not.toHaveProperty(key);
@@ -82,7 +83,7 @@ describe('the v2 red team (Appendix C DoD "Gated")', () => {
 
   it('has one sample per content gate that applies to v2', () => {
     const gates = samples.map((file) => (JSON.parse(readFileSync(path.join(RED_TEAM, file), 'utf8')) as { expected_gate: number }).expected_gate);
-    expect(gates.sort((a, b) => a - b)).toEqual([1, 1, 1, 1, 1, 2, 3, 4, 12, 13, 14, 15, 16, 18, 18]);
+    expect(gates.sort((a, b) => a - b)).toEqual([1, 1, 1, 1, 1, 2, 3, 4, 12, 13, 14, 15, 16, 18, 18, 19]);
   });
 
   it.each(samples)('%s blocks on exactly its own gate and emits nothing', (file) => {
@@ -101,7 +102,7 @@ describe('the v2 red team (Appendix C DoD "Gated")', () => {
     expect(run.documents).toEqual([]);
     expect(run.results).toHaveLength(samples.length);
     const blockedGates = run.results.map((result) => [...new Set(result.problems.map((problem) => problem.gate))]);
-    expect(blockedGates.flat().sort((a, b) => a - b)).toEqual([1, 1, 1, 1, 1, 2, 3, 4, 12, 13, 14, 15, 16, 18, 18]);
+    expect(blockedGates.flat().sort((a, b) => a - b)).toEqual([1, 1, 1, 1, 1, 2, 3, 4, 12, 13, 14, 15, 16, 18, 18, 19]);
     expect(blockedGates.every((gates) => gates.length === 1)).toBe(true);
   });
 });

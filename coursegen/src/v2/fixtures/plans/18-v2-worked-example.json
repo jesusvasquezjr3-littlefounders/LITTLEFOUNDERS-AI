@@ -53,7 +53,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Follow the discount step by step.",
+          "prompt": "Follow the discount step by step.", "feedback": {"met": "You found the discount first, then took it off the price.", "not_yet": "Not yet. Work out the discount, then subtract it from the price."},
           "steps": [
             {
               "expression": "20% × 50",
@@ -73,7 +73,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Sigue el descuento paso a paso.",
+          "prompt": "Sigue el descuento paso a paso.", "feedback": {"met": "Calculaste primero el descuento y luego lo restaste del precio.", "not_yet": "Todavía no. Calcula el descuento y luego réstalo del precio."},
           "steps": [
             {
               "expression": "20% × 50",
@@ -93,7 +93,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Siga o desconto passo a passo.",
+          "prompt": "Siga o desconto passo a passo.", "feedback": {"met": "Você calculou primeiro o desconto e depois tirou do preço.", "not_yet": "Ainda não. Calcule o desconto e depois tire do preço."},
           "steps": [
             {
               "expression": "20% × 50",

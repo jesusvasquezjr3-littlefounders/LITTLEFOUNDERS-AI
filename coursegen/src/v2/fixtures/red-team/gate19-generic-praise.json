@@ -1,0 +1,73 @@
+{
+  "expected_gate": 19,
+  "note": "B.20 / B.23: from age 10 a correct answer names what was done right; a bare verdict or generic praise blocks",
+  "plan": {
+    "plan_version": 1,
+    "course_id": "financial-education",
+    "pathway_id": "financial-10-12",
+    "chapter_id": "budget-parts",
+    "lesson_id": "v2-red-team-gate19-generic-praise",
+    "age_band": "10-12",
+    "eligibility": {
+      "minimum_age": 10,
+      "maximum_age": 12
+    },
+    "knowledge_component_ids": [
+      "kc-budget-parts"
+    ],
+    "adventure_scene_id": "diorama-a",
+    "brief": "Rho divide sesenta monedas del mes y compara las partes en un circulo.",
+    "title": {
+      "en-US": "Your month in a circle",
+      "es-MX": "Tu mes en un círculo",
+      "pt-BR": "Seu mês em um círculo"
+    },
+    "new_concepts": [
+      "kc-budget-parts"
+    ],
+    "regional": {
+      "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+    },
+    "segments": [
+      {
+        "id": "allocate-donut-01",
+        "type": "money.allocation.v2",
+        "grading": "server",
+        "visual": {
+          "type": "donut"
+        },
+        "payload": {
+          "total": 60,
+          "step": 5,
+          "currency": "coins"
+        },
+        "copy": {
+          "en-US": {
+            "prompt": "Split 60 coins for the month. Save at least a third.",
+            "feedback": {
+              "met": "Correct",
+              "not_yet": "Not yet. Check that savings reach a third of the coins."
+            }
+          },
+          "es-MX": {
+            "prompt": "Reparte 60 monedas del mes. Guarda al menos un tercio.",
+            "feedback": {
+              "met": "¡Excelente!",
+              "not_yet": "Todavía no. Revisa que el ahorro llegue a un tercio de las monedas."
+            }
+          },
+          "pt-BR": {
+            "prompt": "Divida 60 moedas do mês. Guarde pelo menos um terço.",
+            "feedback": {
+              "met": "Isso funciona.",
+              "not_yet": "Ainda não. Confira se a poupança chega a um terço das moedas."
+            }
+          }
+        },
+        "rubric": {
+          "minimumSave": 20
+        }
+      }
+    ]
+  }
+}

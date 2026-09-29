@@ -12,6 +12,7 @@ import './placeValue.css';
 import './stepReplay.css';
 import { LessonStageSlot } from './lessonStage';
 import { GradedFoot, NumberAnswer, SegmentPrompt, useSegmentGrade, type OnGradeSegment, gradeStageVerdict } from './segmentKit';
+import { namedFeedback } from './namedFeedback';
 
 
 type PlaceValueSegment = Extract<LessonClientSegment, { type: 'math.place-value.v2' }>;
@@ -119,7 +120,7 @@ export function PlaceValueBoard({ document, segment, onBack, sequence, onGrade }
         {graded ? <div className="lf-learning-control-strip">{threePlaces ? <NumberAnswer label={t.hundreds} locale={document.locale} onChange={setHundredsTyped} disabled={grading.pending || grading.met} /> : null}
           <NumberAnswer label={t.tens} locale={document.locale} onChange={setTensTyped} disabled={grading.pending || grading.met} />
           <NumberAnswer label={t.ones} locale={document.locale} onChange={setOnesTyped} disabled={grading.pending || grading.met} /></div> : null}
-        {graded ? <GradedFoot locale={document.locale} grading={grading} canCheck={tensTyped !== null && onesTyped !== null && (!threePlaces || hundredsTyped !== null) && replayIndex === null} sequence={sequence}
+        {graded ? <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'place-value')} feedback={segment.feedback} canCheck={tensTyped !== null && onesTyped !== null && (!threePlaces || hundredsTyped !== null) && replayIndex === null} sequence={sequence}
           onCheck={() => grading.check({ trades, hundreds: threePlaces ? hundredsTyped : '0', tens: tensTyped, ones: onesTyped })} /> : null}
         <footer className="lf-place-value-foot"><p className="lf-place-value-equivalence" role="status" aria-live="polite"
           data-copy-role="data">{state.result && state.mode === 'subtract' ? `${t.result}: ${state.result.hundreds * 100 + state.result.tens * 10 + state.result.ones}`

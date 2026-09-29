@@ -54,7 +54,7 @@
         },
         "copy": {
           "en-US": {
-            "prompt": "Follow the discount step by step.",
+            "prompt": "Follow the discount step by step.", "feedback": {"met": "You checked each step against the rule.", "not_yet": "Not yet. Check each step again."},
             "steps": [
               {
                 "expression": "20% × 50",
@@ -74,7 +74,7 @@
             ]
           },
           "es-MX": {
-            "prompt": "Sigue el descuento paso a paso.",
+            "prompt": "Sigue el descuento paso a paso.", "feedback": {"met": "Revisaste cada paso con la regla.", "not_yet": "Todavía no. Revisa cada paso otra vez."},
             "steps": [
               {
                 "expression": "20% × 50",
@@ -94,7 +94,7 @@
             ]
           },
           "pt-BR": {
-            "prompt": "Siga o desconto passo a passo.",
+            "prompt": "Siga o desconto passo a passo.", "feedback": {"met": "Você conferiu cada passo com a regra.", "not_yet": "Ainda não. Confira cada passo de novo."},
             "steps": [
               {
                 "expression": "20% × 50",

@@ -52,10 +52,10 @@ describe('Reset on every manipulable board (Bible 05 §3)', () => {
     expect(reset()).toBeDisabled();
     await buildPilotBars();
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    expect(await screen.findByText('Look at the bars again.')).toBeTruthy();
+    expect(await screen.findByText('Not yet. Decide which bar is longer, then add the parts.')).toBeTruthy();
     fireEvent.click(reset());
     expect(screen.getByRole('button', { name: 'Two bars to compare' })).toBeTruthy();
-    expect(screen.queryByText('Look at the bars again.')).toBeNull();
+    expect(screen.queryByText('Not yet. Decide which bar is longer, then add the parts.')).toBeNull();
     expect(reset()).toBeDisabled();
   });
 

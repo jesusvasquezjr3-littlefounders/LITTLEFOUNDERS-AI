@@ -1,7 +1,8 @@
 // GAP-FIX-R2 learning: the Stage 2 gates carried over to v2 documents
 // (Appendix C Part 3 Stage 2; B.22, B.26, B.27; G.2 no exempt path).
 import { describe, expect, it } from 'vitest';
-import { evaluateExpression, loadCarriedCourseData, runV2CarriedGates, v2ArithmeticGate, v2RewardAndWellbeingGates, v2VocabularyGate } from '../v2/carriedGates.js';
+import { evaluateExpression, loadCarriedCourseData, runV2CarriedGates, v2AgeRegisterGate, v2ArithmeticGate, v2RewardAndWellbeingGates, v2VocabularyGate } from '../v2/carriedGates.js';
+import { v2TextBlocks } from '../v2/gates.js';
 import { V2_MANIFEST_GATES } from '../v2/release.js';
 
 const document = (segments: unknown[], extra: Record<string, unknown> = {}) => ({
@@ -53,8 +54,40 @@ describe('v2 carried gates', () => {
 
   it('runs every carried gate in one pass and lists them in the v2 publication manifest', () => {
     expect(runV2CarriedGates(document([allocation('Split 12 coins.')])).problems).toEqual([]);
-    for (const id of ['forge.gate.02.age-vocabulary', 'forge.gate.03.currency-facts', 'forge.gate.04.arithmetic', 'forge.gate.17.reward-mechanics', 'forge.gate.18.wellbeing-language']) {
+    for (const id of ['forge.gate.02.age-vocabulary', 'forge.gate.03.currency-facts', 'forge.gate.04.arithmetic', 'forge.gate.17.reward-mechanics', 'forge.gate.18.wellbeing-language', 'forge.gate.19.age-register']) {
       expect(V2_MANIFEST_GATES).toContain(id);
     }
+  });
+
+  /*
+   * GAP-FIX-R6 (B.20, B.23; Bible 02 §9.2; Appendix B §1.8): gate 19 now runs on v2 documents. From age 10 every
+   * graded step names what was done right in `feedback.met`, generic praise (a bare "Correct" included) blocks,
+   * the feedback strings are budgeted body copy, and gate 18's shame screen reads them too.
+   */
+  const tween = { age_band: '10-12', eligibility: { minimum_age: 10, maximum_age: 12 } };
+  const withFeedback = (feedback: Record<string, string>) => ({ ...allocation('Split 12 coins. Save at least 3.'), feedback });
+  it('gate 19 requires named feedback on every graded v2 step from age 10, and not below', () => {
+    expect(v2AgeRegisterGate(document([allocation('Split 12 coins.')], tween))).toEqual([
+      expect.objectContaining({ gate: 19, severity: 'block', segmentId: 'allocate-01', message: expect.stringMatching(/needs feedback\.met/) })]);
+    expect(v2AgeRegisterGate(document([withFeedback({ met: 'Your plan saves the goal and uses every coin.' })], tween))).toEqual([]);
+    expect(v2AgeRegisterGate(document([allocation('Split 12 coins.')]))).toEqual([]);
+  });
+
+  it('gate 19 blocks praise that names nothing and a number the step does not show; gate 18 screens feedback for shame', () => {
+    for (const met of ['Great job!', 'Correct', 'That works.']) {
+      expect(v2AgeRegisterGate(document([withFeedback({ met })], tween)).map((item) => `${item.gate}:${item.severity}`), met).toContain('19:block');
+    }
+    expect(v2AgeRegisterGate(document([withFeedback({ met: 'You saved 9 of them.' })], tween))).toEqual([
+      expect.objectContaining({ gate: 19, severity: 'block', message: expect.stringMatching(/feedback\.met shows 9/) })]);
+    expect(v2RewardAndWellbeingGates(document([withFeedback({ met: 'Your plan saves the goal.', not_yet: "Not yet. You're not a saver." })], tween))
+      .some((item) => item.gate === 18 && item.severity === 'block')).toBe(true);
+  });
+
+  it('counts both feedback lines as body copy under the Copy Budget', () => {
+    const blocks = v2TextBlocks(document([withFeedback({ met: 'Your plan saves the goal.', not_yet: 'Not yet. Move coins into savings.' })], tween));
+    expect(blocks.filter((block) => block.path.startsWith('feedback.'))).toEqual([
+      { segmentId: 'allocate-01', path: 'feedback.met', role: 'body', text: 'Your plan saves the goal.' },
+      { segmentId: 'allocate-01', path: 'feedback.not_yet', role: 'body', text: 'Not yet. Move coins into savings.' },
+    ]);
   });
 });

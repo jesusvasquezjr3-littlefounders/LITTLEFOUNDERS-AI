@@ -54,7 +54,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "You have 12 coins. A kite costs 20.",
+          "prompt": "You have 12 coins. A kite costs 20.", "feedback": {"met": "You chose with your goal in mind and gave a fitting reason.", "not_yet": "Not yet. Pick the reason that connects to your goal."},
           "choices": [
             { "label": "Save 4 coins" },
             { "label": "Spend all now" }
@@ -67,7 +67,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Tienes 12 monedas. Un papalote cuesta 20.",
+          "prompt": "Tienes 12 monedas. Un papalote cuesta 20.", "feedback": {"met": "Elegiste pensando en la meta y diste una razón que encaja.", "not_yet": "Todavía no. Elige la razón que se conecta con tu meta."},
           "choices": [
             { "label": "Guardar 4 monedas" },
             { "label": "Gastar todo ahora" }
@@ -80,7 +80,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Você tem 12 moedas. Uma pipa custa 20.",
+          "prompt": "Você tem 12 moedas. Uma pipa custa 20.", "feedback": {"met": "Você escolheu pensando na meta e deu um motivo que combina.", "not_yet": "Ainda não. Escolha o motivo ligado à sua meta."},
           "choices": [
             { "label": "Guardar 4 moedas" },
             { "label": "Gastar tudo agora" }

@@ -137,7 +137,8 @@ export function NumberLineBoard({ document, segment, onBack, onGrade, sequence }
           </div>
         </div>
         <footer className="lf-learning-foot">
-          <LessonFeedback verdict={verdict}>{verdict ? `${t[verdict]} ${readout}.` : null}</LessonFeedback>
+          {/* GAP-FIX-R6 (B.20): the author's feedback, else the board's line naming where the point landed. */}
+          <LessonFeedback verdict={verdict}>{verdict === 'met' && segment.feedback?.met ? segment.feedback.met : verdict === 'review' && segment.feedback?.not_yet ? segment.feedback.not_yet : verdict ? `${t[verdict]} ${readout}.` : null}</LessonFeedback>
           <div className="lf-learning-actions"><Button variant="accent" disabled={pending || !ready} onClick={check}>{pending ? t.checking : verdict === 'met' ? sequence ? t.continue : t.again : t.check}</Button></div>
         </footer>
       </div>

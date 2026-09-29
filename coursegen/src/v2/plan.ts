@@ -24,11 +24,17 @@ const localized = <T extends z.ZodType>(value: T) =>
 
 /**
  * Learner-visible strings of one segment in one market: the prompt, the
- * optional help ladder (up to two Mentor turns, shown on request), plus string
- * fields merged into the payload.
+ * optional help ladder (up to two Mentor turns, shown on request), the
+ * optional feedback banner (GAP-FIX-R6, B.20: `met` names what was done right,
+ * `not_yet` is a hint), plus string fields merged into the payload.
  */
+const feedbackLine = z.string().trim().min(1).max(160);
 const segmentCopySchema = z
-  .object({ prompt: z.string().trim().min(1).max(500), help: z.array(z.string().trim().min(1).max(160)).min(1).max(2).optional() })
+  .object({
+    prompt: z.string().trim().min(1).max(500),
+    help: z.array(z.string().trim().min(1).max(160)).min(1).max(2).optional(),
+    feedback: z.object({ met: feedbackLine.optional(), not_yet: feedbackLine.optional() }).strict().optional(),
+  })
   .catchall(z.unknown());
 
 export const v2PlanSegmentSchema = z

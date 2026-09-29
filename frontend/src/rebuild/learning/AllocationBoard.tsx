@@ -235,7 +235,8 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
           </>}
         </TeachingChartBoard>
         <footer className="lf-learning-foot">
-          <LessonFeedback verdict={verdict}>{verdict ? t[verdict] : null}</LessonFeedback>
+          {/* GAP-FIX-R6 (B.20): the author's feedback names what was done; the board's own met and hint lines are the fallback. */}
+          <LessonFeedback verdict={verdict}>{verdict === 'met' ? segment.feedback?.met ?? t.met : verdict === 'review' ? segment.feedback?.not_yet ?? t.review : verdict ? t[verdict] : null}</LessonFeedback>
           <div className="lf-learning-actions">
             <Button variant="accent" disabled={pending} onClick={check}>{pending ? t.checking : verdict === 'met' ? sequence ? t.continue : t.again : t.check}</Button>
           </div>
