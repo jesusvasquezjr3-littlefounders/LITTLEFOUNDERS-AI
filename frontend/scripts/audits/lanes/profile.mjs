@@ -14,12 +14,18 @@ import { app, preview } from './helpers.mjs';
  */
 export const lane = 'profile';
 
+const TEEN_REQUEST_REPORT = '[data-social-audit="teen-connections"] [data-request-actions] > button[aria-haspopup="dialog"]:not(.lf-button--danger)';
+const TEEN_REQUEST_BLOCK = '[data-social-audit="teen-connections"] [data-request-actions] > .lf-button--danger';
+
 export const states = [
   // P1 /profile
   app('/profile@adult', '/profile', 'profile-adult', '[data-screen="own-profile"] .lf-profile-stats', { readyAlso: '[data-screen="own-profile"] .lf-profile-badge' }),
   app('/profile@tutor', '/profile', 'profile-tutor', '[data-screen="own-profile"] .lf-pill'),
   app('/profile@teen-flagged', '/profile', 'profile-teen', '[data-screen="own-profile"] .lf-profile-stats',
     { readyAlso: ['[data-social-audit="profile-safety"]', '[data-social-audit="teen-connections"] .lf-social-tier-list li'] }),
+  // GAP-FIX-R5 social (E.3, OD-8, D-19): the teen reports or blocks a requester from its own queue; each dialog opened by a real press.
+  app('/profile@teen-request-report', '/profile', 'profile-teen', TEEN_REQUEST_REPORT, { open: [TEEN_REQUEST_REPORT], firstView: false }),
+  app('/profile@teen-request-block', '/profile', 'profile-teen', TEEN_REQUEST_BLOCK, { open: [TEEN_REQUEST_BLOCK], firstView: false }),
   app('/profile@kid-6-9', '/profile', 'profile-kid', '[data-screen="own-profile"][data-age-band="6-9"] .lf-profile-stats'),
   app('/profile@guest', '/profile', 'profile-guest', '[data-screen="own-profile"] .lf-profile-stats'),
   // P2 /profile/avatar
@@ -159,6 +165,11 @@ export function respond({ spec, locale, path, request, ok }) {
   }
   if (path === '/profile/connection-requests' && request.method === 'GET') return ok({ nextOffset: null, requests: spec.teenRequests
     ? [{ requestId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', requestedAt: '2026-09-24T10:00:00Z', requester: { username: 'omar_valdes_rios', displayName: 'Omar Alejandro Valdés' } }] : [] });
+  // GAP-FIX-R5 social (E.3): the teen's queue report and block, answered by request id as Core would.
+  const queueAction = /^\/profile\/connection-requests\/([^/]+)\/(report|block)$/.exec(path);
+  if (queueAction && request.method === 'POST') {
+    return queueAction[2] === 'report' ? { status: 201, body: { data: { requestId: queueAction[1], reported: true, reportId: '55555555-5555-4555-8555-555555555556' }, error: null } } : ok({ requestId: queueAction[1], blocked: true });
+  }
   // W2P.2: the people lists and other people's profiles, answered by the viewer's tier as Core would (E.1, E.5, E.8, E.9).
   const viewerTier = spec.profile?.social?.tier ?? 'adult';
   if ((path === '/profile/followers' || path === '/profile/following') && request.method === 'GET') {

@@ -20,8 +20,9 @@ describe('rebuild-profile copy budget', () => {
         expectFits(text, role, locale, '6-9', `privateProfile.${key}`);
       }
       for (const [key, text] of group('teenConnections')) {
-        const role = key === 'title' || key === 'followersTitle' ? 'heading'
-          : ['retry', 'accept', 'decline', 'more', 'remove'].includes(key) ? 'action' : 'body';
+        // GAP-FIX-R5 social (E.3): report and block per request; the block confirmation is a heading and its buttons.
+        const role = key === 'title' || key === 'followersTitle' || key === 'blockTitle' ? 'heading'
+          : ['retry', 'accept', 'decline', 'more', 'remove', 'report', 'block', 'blockKeep', 'blockConfirm', 'blocking'].includes(key) ? 'action' : 'body';
         expectFits(text, role, locale, '13-17', `teenConnections.${key}`);
       }
       // E.13: a child reads its own notice, so the youngest band applies.

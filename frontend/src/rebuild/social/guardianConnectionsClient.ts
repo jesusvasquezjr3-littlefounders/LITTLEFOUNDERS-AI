@@ -28,3 +28,15 @@ export async function guardianReportConnection(send: Send, kidUserId: string, us
     { token, method: 'POST', body: note === null ? { category } : { category, note } });
   return result.data?.reported === true;
 }
+
+/**
+ * E.3 from the Tutor's request queue (GAP-FIX-R5 social): report the requester
+ * of a request addressed to this child. Core admits a pending request or one
+ * closed without a connection in the last 30 days; success is its exact receipt.
+ */
+export async function guardianReportRequest(send: Send, kidUserId: string, requestId: string, category: ReportCategory, note: string | null, token: string): Promise<boolean> {
+  const result = await send<{ requestId?: unknown; reported?: unknown }>(
+    `/family/kids/${encodeURIComponent(kidUserId)}/social/requests/${encodeURIComponent(requestId)}/report`,
+    { token, method: 'POST', body: note === null ? { category } : { category, note } });
+  return !result.error && result.data?.reported === true && result.data.requestId === requestId;
+}

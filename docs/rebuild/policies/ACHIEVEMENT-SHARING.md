@@ -36,7 +36,17 @@ Directly under each Share button, bound to it with `aria-describedby`, in the Me
 | es-MX | Recibes una imagen con su nombre de pila. No se crea ningún enlace. | Quien la reciba puede conservarla. Muestra el nombre LittleFounders. |
 | pt-BR | Você recebe uma imagem com o primeiro nome. Nenhum link é criado. | Quem receber pode guardá-la. Ela mostra o nome LittleFounders. |
 
-It names what is created (a picture with the first name), what is not (a link), the part no one can undo (a sent picture stays with whoever received it; this replaces F.2's third-party caching caveat, which no longer applies to new shares) and the brand exposure (our name is on it). It does not mention expiry or revocation, because the image flow has neither. The legacy-link panel says those links stop working on their date.
+It names what is created (a picture with the first name), what is not (a link), the part no one can undo (a sent picture stays with whoever received it; for new shares this takes the place of F.2's third-party caching caveat, which has no link to cache) and the brand exposure (our name is on it). It does not mention expiry or revocation, because the image flow has neither. The legacy-link panel says those links stop working on their date.
+
+**Legacy links: the cached-preview caveat is accepted and disclosed for legacy links (F.2 (b), GAP-FIX-R5).** Links issued before the OD-20 cutover stay live until 24 October 2026, and F.2's revocation is still their control. A preview a messaging app (WhatsApp, iMessage and the like) built from such a link before it was revoked lives on that app's servers or the recipient's device, where revocation cannot reach it. The team accepts that residual exposure for the remaining legacy links, and the Family revoke panel (`BadgeShares.tsx`) tells the parent in their language, beside the list and again in the revoke receipt:
+
+| Locale | Beside the list (`badgeShares.cachedPreview`) | After a revoke (`badgeShares.revoked`) |
+|---|---|---|
+| en-US | Apps that already showed a preview of a link may keep it. | Link revoked. Previews other apps already made may stay. |
+| es-MX | Las apps que ya mostraron la vista previa de un enlace pueden conservarla. | Enlace revocado. Las vistas previas que otras apps ya hicieron pueden quedarse. |
+| pt-BR | Apps que já mostraram a prévia de um link podem guardá-la. | Link revogado. Prévias que outros apps já fizeram podem continuar. |
+
+`sharing:check` keeps both lines, in all three locales, and this paragraph until `BADGE_LINK_ROUTE_RETIRES_AT`; after that no legacy link resolves and the pin lifts.
 
 Every screen that can start a share carries both lines beside each button and binds them with `aria-describedby`, so a screen reader hears the disclosure at the point of action too. `sharing:check` enforces it (Appendix L "Point-of-Share Disclosure": displayed on 100% of share actions): a screen that calls the image transport must render both lines and one description per share button, the rebuilt `AchievementShare` must bind its own, and both lines must exist in all three locales (S08.8).
 

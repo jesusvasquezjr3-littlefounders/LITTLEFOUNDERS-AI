@@ -51,7 +51,9 @@
     "decisionFailed": "Não foi possível salvar. Tente novamente.",
     "conflict": "A solicitação mudou.",
     "approved": "Conexão aprovada.",
-    "denied": "Solicitação recusada."
+    "denied": "Solicitação recusada.",
+    "report": "Denunciar",
+    "reported": "Denúncia enviada à nossa equipe de segurança."
   },
   "badgeShares": {
     "title": "Links anteriores",
@@ -62,10 +64,11 @@
     "retry": "Tentar novamente",
     "revoke": "Revogar link",
     "revoking": "Revogando…",
-    "revoked": "Link revogado.",
+    "revoked": "Link revogado. Prévias que outros apps já fizeram podem continuar.",
     "revokeFailed": "Não foi possível revogar. Tente novamente.",
     "expires": "Expira em {date}",
-    "legacyNote": "Os links anteriores deixam de funcionar na data indicada."
+    "legacyNote": "Os links anteriores deixam de funcionar na data indicada.",
+    "cachedPreview": "Apps que já mostraram a prévia de um link podem guardá-la."
   },
   "achievementShare": {
     "share": "Compartilhar conquista",

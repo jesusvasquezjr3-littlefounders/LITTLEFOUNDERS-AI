@@ -23,6 +23,11 @@ import { fileURLToPath } from 'node:url';
  *   5. The written policy exists and names the standing constraints (F.6).
  *   6. Every share action carries F.3's point-of-action disclosure, bound to
  *      its button, in every locale.
+ *   7. F.2 (b) / F.3 (GAP-FIX-R5): until the legacy links retire, the revoke
+ *      surface tells the parent that a preview a messaging app cached before
+ *      revocation may persist there, beside the list and again after a
+ *      revoke, in every locale, and the policy records the caveat as accepted
+ *      and disclosed.
  */
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -115,6 +120,47 @@ export function checkAchievementSharing(root) {
   //    "Point-of-Share Disclosure": displayed on 100% of share actions).
   failures.push(...disclosureFailures(root));
 
+  // 7. The cached-preview caveat stays disclosed while any legacy link lives.
+  failures.push(...cachedPreviewFailures(root, retires));
+
+  return failures;
+}
+
+/** The word each locale's disclosure names the cached preview with. */
+const PREVIEW_WORD = { 'en-US': 'preview', 'es-MX': 'previa', 'pt-BR': 'prévia' };
+export const CACHED_PREVIEW_POLICY = 'accepted and disclosed for legacy links';
+
+/*
+ * 7. F.2 (b): revocation of a legacy link is "not done" until the team has
+ * accepted, and disclosed to the parent per F.3, that a preview a
+ * third-party messaging app cached before revocation may persist there.
+ * OD-20 keeps F.2's revocation as the control for those links until
+ * BADGE_LINK_ROUTE_RETIRES_AT, so until then the Family revoke panel must
+ * render the caveat beside the list (badgeShares.cachedPreview) and repeat
+ * it in the revoke receipt (badgeShares.revoked), in all three locales.
+ * After the retirement no legacy link resolves and the pin lifts.
+ */
+export function cachedPreviewFailures(root, retires, now = Date.now()) {
+  if (retires && now >= Date.parse(retires)) return [];
+  const failures = [];
+  const panel = (() => { try { return read(root, 'frontend/src/rebuild/family/BadgeShares.tsx'); } catch { return ''; } })();
+  if (!/\bcachedPreview: string;/.test(panel) || !/\{copy\.cachedPreview\}/.test(panel) || !/\{copy\.legacyNote\}/.test(panel)) {
+    failures.push('frontend/src/rebuild/family/BadgeShares.tsx: the legacy-link panel must render badgeShares.cachedPreview beside legacyNote until the links retire (F.2 (b), F.3)');
+  }
+  for (const [locale, word] of Object.entries(PREVIEW_WORD)) {
+    let group = {};
+    try { group = JSON.parse(read(root, `frontend/src/i18n/${locale}/rebuild-family.json`))?.badgeShares ?? {}; } catch { /* reported below */ }
+    for (const key of ['cachedPreview', 'revoked']) {
+      const text = group[key];
+      if (typeof text !== 'string' || !text.toLowerCase().includes(word)) {
+        failures.push(`frontend/src/i18n/${locale}/rebuild-family.json: badgeShares.${key} must disclose that a preview other apps cached may stay (F.2 (b), F.3)`);
+      }
+    }
+  }
+  const policy = (() => { try { return read(root, 'docs/rebuild/policies/ACHIEVEMENT-SHARING.md'); } catch { return ''; } })();
+  if (!policy.toLowerCase().includes(CACHED_PREVIEW_POLICY)) {
+    failures.push(`docs/rebuild/policies/ACHIEVEMENT-SHARING.md must record the cached-preview caveat as "${CACHED_PREVIEW_POLICY}" (F.2 (b))`);
+  }
   return failures;
 }
 
@@ -183,6 +229,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     console.error(failures.join('\n'));
     process.exitCode = 1;
   } else {
-    console.log('Achievement sharing OK: window parity, no public-link path, no viewer reach, brand position, policy and standing constraints, disclosure on every share action.');
+    console.log('Achievement sharing OK: window parity, no public-link path, no viewer reach, brand position, policy and standing constraints, disclosure on every share action, cached-preview caveat on the legacy-link panel.');
   }
 }

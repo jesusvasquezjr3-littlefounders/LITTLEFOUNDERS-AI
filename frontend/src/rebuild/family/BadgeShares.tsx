@@ -36,6 +36,8 @@ export interface BadgeSharesCopy {
   revokeFailed: string;
   expires: string;
   legacyNote: string;
+  /** F.2 (b) / F.3: a preview a messaging app cached before revocation may persist there. Disclosed until the links retire. */
+  cachedPreview: string;
 }
 
 export function BadgeShares({ copy, locale, dark, open, shares, loading, failed, revokingToken, notice, revokeFailed, onRevoke, onToggle, onRetry }: {
@@ -67,6 +69,7 @@ export function BadgeShares({ copy, locale, dark, open, shares, loading, failed,
     {open && <>
       <Copy role="heading" as="h2">{copy.title}</Copy>
       <Copy role="body">{copy.legacyNote}</Copy>
+      <Copy role="body">{copy.cachedPreview}</Copy>
       {notice && <InlineNotice tone={revokeFailed ? 'error' : 'info'} live>{notice}</InlineNotice>}
       {revokingToken && <InlineNotice tone="info" live>{copy.revoking}</InlineNotice>}
       {failed ? <><InlineNotice tone="error" live>{copy.failed}</InlineNotice><Button onClick={onRetry}>{copy.retry}</Button></> : <>

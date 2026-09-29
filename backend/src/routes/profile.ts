@@ -7,6 +7,7 @@ import {
   MINOR_SOCIAL_TIERS,
   decideTeenConnection,
   getPendingTeenRequests,
+  getTeenActionableRequest,
   hasPendingTeenRequest,
   readSocialTier,
   removeSocialFollower,
@@ -361,6 +362,62 @@ export function ownProfileRouter(): Router {
     if (result === 'review') return fail(res, 403, 'PROFILE_REVIEW_REQUIRED', 'Change your name before you connect');
     if (result === 'unavailable') return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not confirm the decision');
     return ok(res, { requestId: id.data, status: result });
+  });
+
+  /*
+   * E.3 from the teen's own queue (GAP-FIX-R5 social; OD-8's report action
+   * for unwanted contact; D-19: adults may ask a teen to connect, and the
+   * E.3 pattern trigger is one of the limits on them). The teen reports or
+   * blocks the requester of a request addressed to the session, pending or
+   * closed without a connection in the last 30 days, by request id: no
+   * profile visibility is needed to protect oneself. Both feed the pattern
+   * trigger (a report through its transaction, a block through the audited
+   * blocks trigger), and a block also closes the request.
+   */
+  const QueueReportBody = z.object({
+    category: z.enum(SOCIAL_REPORT_CATEGORIES),
+    note: z.string().trim().min(1).max(SOCIAL_REPORT_NOTE_MAX).optional(),
+  }).strict();
+
+  async function queueRequester(req: { params: Record<string, string | undefined>; query: Record<string, unknown> }, res: Parameters<typeof fail>[0], userId: string): Promise<string | null> {
+    const id = z.string().uuid().safeParse(req.params.requestId);
+    if (!id.success || Object.keys(req.query).length > 0) {
+      fail(res, 400, 'VALIDATION_ERROR', 'Choose a valid connection request');
+      return null;
+    }
+    const request = await getTeenActionableRequest(id.data, userId);
+    if (request === null) {
+      fail(res, 502, 'DATA_UNAVAILABLE', 'Could not check the connection request');
+      return null;
+    }
+    if (request === 'not-found' || request.requesterId === userId) {
+      fail(res, 404, 'NOT_FOUND', 'No such connection request');
+      return null;
+    }
+    return request.requesterId;
+  }
+
+  router.post('/connection-requests/:requestId/report', async (req, res) => {
+    const body = QueueReportBody.safeParse(req.body);
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a report reason');
+    const user = authedUser(res);
+    const requester = await queueRequester(req, res, user.id);
+    if (!requester) return res;
+    const result = await submitSocialReport(user.id, requester, body.data.category, body.data.note ?? null);
+    if (result === 'invalid') return fail(res, 400, 'VALIDATION_ERROR', 'This report cannot be recorded');
+    if (result === 'unavailable') return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the report');
+    return ok(res, { requestId: req.params.requestId, reported: true, reportId: result.id }, 201);
+  });
+
+  router.post('/connection-requests/:requestId/block', async (req, res) => {
+    const body = z.object({}).strict().safeParse(req.body ?? {});
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'No body fields are accepted');
+    const user = authedUser(res);
+    const requester = await queueRequester(req, res, user.id);
+    if (!requester) return res;
+    const done = await blockUser(user.accessToken, user.id, requester);
+    if (!done) return fail(res, 502, 'INTERNAL', 'Could not block this account');
+    return ok(res, { requestId: req.params.requestId, blocked: true });
   });
 
   /** E.8: the followed account removes a follower (the teen manages its own connections). */

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { askToConnect, decideTeenRequest, getFollowers, getTeenRequests, removeFollower } from './teenConnectionsClient';
+import { askToConnect, blockTeenRequest, decideTeenRequest, getFollowers, getTeenRequests, removeFollower, reportTeenRequest } from './teenConnectionsClient';
 
 /* E.8 client layer: only a validated answer is ever a success. */
 
@@ -50,5 +50,28 @@ describe('teen connections client', () => {
     expect((await askToConnect(transport(202, { data: { requestId: ID, status: 'pending', following: true, decidedBy: 'subject' } }).t, 'rio')).ok).toBe(false);
     expect(await askToConnect(transport(409, { data: null, error: { code: 'SOCIAL_REQUEST_COOLDOWN' } }).t, 'rio')).toEqual({ ok: false, code: 'SOCIAL_REQUEST_COOLDOWN' });
     expect(await askToConnect({ baseUrl: 'http://core', token: 't', fetchImpl: (async () => { throw new Error('offline'); }) as unknown as typeof fetch }, 'rio')).toEqual({ ok: false, code: 'UNAVAILABLE' });
+  });
+
+  // E.3 from the teen's queue (GAP-FIX-R5 social): by request id, confirmed only by a matching receipt.
+  it('reports and blocks a requester by request id, confirmed only by a matching receipt', async () => {
+    const report = transport(201, { data: { requestId: ID, reported: true, reportId: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' } });
+    expect(await reportTeenRequest(report.t, ID, 'unwanted_contact', null)).toEqual({ ok: true, value: 'reported' });
+    expect(report.fetchImpl.mock.calls[0]![0]).toBe(`http://core/api/v1/profile/connection-requests/${ID}/report`);
+    expect(JSON.parse(String(report.fetchImpl.mock.calls[0]![1]!.body))).toEqual({ category: 'unwanted_contact' });
+    const withNote = transport(201, { data: { requestId: ID, reported: true } });
+    await reportTeenRequest(withNote.t, ID, 'other', 'Kept asking');
+    expect(JSON.parse(String(withNote.fetchImpl.mock.calls[0]![1]!.body))).toEqual({ category: 'other', note: 'Kept asking' });
+    expect((await reportTeenRequest(transport(201, { data: { requestId: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', reported: true } }).t, ID, 'other', null)).ok).toBe(false);
+    expect((await reportTeenRequest(transport(200, { data: { requestId: ID, reported: true } }).t, ID, 'other', null)).ok).toBe(false);
+    expect(await reportTeenRequest(transport(404, { data: null, error: { code: 'NOT_FOUND' } }).t, ID, 'other', null)).toEqual({ ok: false, code: 'NOT_FOUND' });
+    const block = transport(200, { data: { requestId: ID, blocked: true } });
+    expect(await blockTeenRequest(block.t, ID)).toEqual({ ok: true, value: 'blocked' });
+    expect(block.fetchImpl.mock.calls[0]![0]).toBe(`http://core/api/v1/profile/connection-requests/${ID}/block`);
+    expect((await blockTeenRequest(transport(200, { data: { requestId: ID, blocked: false } }).t, ID)).ok).toBe(false);
+    expect(await blockTeenRequest(transport(502, { data: null, error: { code: 'INTERNAL' } }).t, ID)).toEqual({ ok: false, code: 'INTERNAL' });
+    const never = transport(200, {});
+    expect(await reportTeenRequest(never.t, '../other', 'other', null)).toEqual({ ok: false, code: 'VALIDATION_ERROR' });
+    expect(await blockTeenRequest(never.t, 'omar')).toEqual({ ok: false, code: 'VALIDATION_ERROR' });
+    expect(never.fetchImpl).not.toHaveBeenCalled();
   });
 });

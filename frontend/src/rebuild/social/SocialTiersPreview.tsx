@@ -28,6 +28,8 @@ export function SocialTiersPreview({ locale, theme, state }: { locale: Locale; t
   const t = locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en;
   const dark = theme === 'dark';
   const noop = () => undefined;
+  const sent = () => Promise.resolve(true);
+  const done = () => Promise.resolve();
   const cardState: Record<string, PrivateRequestState> = { card: 'idle', cardPending: 'pending', cardFailed: 'failed', cardCooldown: 'cooldown', cardManaged: 'idle' };
   let body;
   if (state && state in cardState) {
@@ -40,10 +42,10 @@ export function SocialTiersPreview({ locale, theme, state }: { locale: Locale; t
       fields={['username', 'displayName']} name="Beto" />;
   } else {
     const empty = state === 'teenEmpty';
-    body = <TeenConnections copy={t.teenConnections} locale={locale} dark={dark}
+    body = <TeenConnections copy={t.teenConnections} reportCopy={t.report} locale={locale} dark={dark}
       requests={empty ? [] : REQUESTS} followers={empty ? [] : FOLLOWERS} loading={false} failed={state === 'teenFailed'}
       busy={state === 'teenBusy'} notice={state === 'teenBusy' ? null : state === 'teen' ? { tone: 'status', text: t.teenConnections.accepted } : null}
-      hasMore={!empty} onDecide={noop} onRemove={noop} onRetry={noop} onMore={noop} />;
+      hasMore={!empty} onDecide={noop} onReport={sent} onBlock={done} onRemove={noop} onRetry={noop} onMore={noop} />;
   }
   return <div className="lf-rebuild" data-screen="social-tiers-preview" data-theme={theme} lang={locale}>
     <main className="lf-preview" data-surface="app">

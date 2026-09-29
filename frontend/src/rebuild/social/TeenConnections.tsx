@@ -1,5 +1,6 @@
 import { useEffect, useRef, type MouseEvent } from 'react';
-import { Button, Copy, InlineNotice, LoadingState } from '../design/controls';
+import { Button, Copy, DestructiveAction, InlineNotice, LoadingState } from '../design/controls';
+import { ReportDialog, type ReportCategory, type ReportCopy } from './ReportDialog';
 import '../design/tokens.css';
 import '../design/system.css';
 import './socialTiers.css';
@@ -10,6 +11,10 @@ import './socialTiers.css';
  * remove anyone who follows them. No guardian is asked (OD-3: none exists in
  * this flow), and no count of anything is shown (E.9): these are people to
  * decide about, not a number to grow.
+ * E.3 (GAP-FIX-R5 social; OD-8, D-19): an inbound request is the first
+ * unwanted-contact event, so each one can also be reported (the bounded
+ * report dialog) or blocked (behind a confirmation) right here, without
+ * opening the requester's profile. Both reach Core by request id.
  * Copy-only, no transport: the route wrapper owns the data plane.
  */
 
@@ -18,14 +23,17 @@ export interface TeenConnectionsCopy {
   accept: string; decline: string; saving: string; accepted: string; declined: string; decisionFailed: string;
   conflict: string; review: string; more: string; followersTitle: string; noFollowers: string; remove: string;
   removed: string; removeFailed: string;
+  report: string; reported: string; block: string; blockTitle: string; blockBody: string; blockKeep: string;
+  blockConfirm: string; blocking: string; blocked: string; blockFailed: string;
 }
 
 export interface TeenRequestView { requestId: string; requestedAt: string; username: string | null; displayName: string | null }
 export interface FollowerView { username: string; displayName: string }
 export interface TeenNotice { tone: 'status' | 'alert'; text: string }
 
-export function TeenConnections({ copy, locale, dark, discoverable = false, requests, followers, loading, failed, busy, notice, hasMore, onDecide, onRemove, onRetry, onMore }: {
+export function TeenConnections({ copy, reportCopy, locale, dark, discoverable = false, requests, followers, loading, failed, busy, notice, hasMore, onDecide, onReport, onBlock, onRemove, onRetry, onMore }: {
   copy: TeenConnectionsCopy;
+  reportCopy: ReportCopy;
   locale: string;
   dark: boolean;
   /** OD-27 (2): a 16-17-year-old who chose to be found; the intro no longer says private. */
@@ -38,6 +46,10 @@ export function TeenConnections({ copy, locale, dark, discoverable = false, requ
   notice: TeenNotice | null;
   hasMore: boolean;
   onDecide: (requestId: string, decision: 'accept' | 'decline') => void;
+  /** E.3: true only on Core's receipt; the dialog keeps what was chosen otherwise. */
+  onReport: (requestId: string, category: ReportCategory, note: string | null) => Promise<boolean>;
+  /** Runs after the confirmation; the route says whether it landed. */
+  onBlock: (requestId: string) => Promise<void>;
   onRemove: (username: string) => void;
   onRetry: () => void;
   onMore: () => void;
@@ -69,9 +81,12 @@ export function TeenConnections({ copy, locale, dark, discoverable = false, requ
           {request.username && <p className="ugc lf-social-tier-handle" data-copy-role="data">@{request.username}</p>}
           <time dateTime={request.requestedAt} data-copy-role="data">{date.format(new Date(request.requestedAt))}</time>
         </div>
-        <div className="lf-social-tier-actions">
+        <div className="lf-social-tier-actions" role="group" aria-label={request.displayName || copy.title} data-request-actions={request.requestId}>
           <Button variant="accent" disabled={busy || loading} onClick={(event) => act(event, () => onDecide(request.requestId, 'accept'))}>{copy.accept}</Button>
           <Button disabled={busy || loading} onClick={(event) => act(event, () => onDecide(request.requestId, 'decline'))}>{copy.decline}</Button>
+          <ReportDialog copy={reportCopy} triggerLabel={copy.report} disabled={busy || loading} onSend={(category, note) => onReport(request.requestId, category, note)} />
+          <DestructiveAction label={copy.block} disabled={busy || loading} onConfirm={() => onBlock(request.requestId)}
+            confirm={{ heading: copy.blockTitle, consequence: copy.blockBody, keepLabel: copy.blockKeep, confirmLabel: copy.blockConfirm, pendingLabel: copy.blocking }} />
         </div>
       </li>)}</ul>
       {!loading && requests.length === 0 && <Copy role="body">{copy.empty}</Copy>}

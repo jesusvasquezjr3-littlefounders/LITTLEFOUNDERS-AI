@@ -54,7 +54,17 @@
     "remove": "Remove",
     "removed": "Removed. They no longer see your profile.",
     "removeFailed": "Not removed. Try again.",
-    "introDiscoverable": "People can find your profile. You choose who connects."
+    "introDiscoverable": "People can find your profile. You choose who connects.",
+    "report": "Report",
+    "reported": "Report sent to our safety team.",
+    "block": "Block",
+    "blockTitle": "Block this account?",
+    "blockBody": "They can't ask again or see your profile. Unblock anytime in Settings.",
+    "blockKeep": "Cancel",
+    "blockConfirm": "Block",
+    "blocking": "Blocking",
+    "blocked": "Blocked. They cannot ask to connect again.",
+    "blockFailed": "Not blocked. Try again."
   },
   "profileSafety": {
     "title": "Your name needs a change",

@@ -76,6 +76,29 @@ export async function decideTeenRequest(transport: Transport, requestId: string,
   return { ok: false, code: answer.status === 200 ? 'UNAVAILABLE' : errorCode(answer.envelope) };
 }
 
+/**
+ * E.3 from the teen's own queue (GAP-FIX-R5 social): report the requester of a
+ * request addressed to the session. Only a 201 receipt naming the same request confirms it.
+ */
+export async function reportTeenRequest(transport: Transport, requestId: string, category: string, note: string | null): Promise<Result<'reported'>> {
+  if (!UUID.test(requestId)) return { ok: false, code: 'VALIDATION_ERROR' };
+  const answer = await call(transport, `/profile/connection-requests/${requestId}/report`, 'POST', note === null ? { category } : { category, note });
+  if (!answer) return { ok: false, code: 'UNAVAILABLE' };
+  const data = answer.envelope.data;
+  if (answer.status === 201 && isRecord(data) && data.requestId === requestId && data.reported === true) return { ok: true, value: 'reported' };
+  return { ok: false, code: answer.status === 201 ? 'UNAVAILABLE' : errorCode(answer.envelope) };
+}
+
+/** Block the requester of a request addressed to the session. Only a receipt naming the same request confirms it. */
+export async function blockTeenRequest(transport: Transport, requestId: string): Promise<Result<'blocked'>> {
+  if (!UUID.test(requestId)) return { ok: false, code: 'VALIDATION_ERROR' };
+  const answer = await call(transport, `/profile/connection-requests/${requestId}/block`, 'POST', {});
+  if (!answer) return { ok: false, code: 'UNAVAILABLE' };
+  const data = answer.envelope.data;
+  if (answer.status === 200 && isRecord(data) && data.requestId === requestId && data.blocked === true) return { ok: true, value: 'blocked' };
+  return { ok: false, code: answer.status === 200 ? 'UNAVAILABLE' : errorCode(answer.envelope) };
+}
+
 /** The session's followers (already filtered by Core to accounts it may see). */
 export async function getFollowers(transport: Transport): Promise<Result<Follower[]>> {
   const answer = await call(transport, '/profile/followers', 'GET');

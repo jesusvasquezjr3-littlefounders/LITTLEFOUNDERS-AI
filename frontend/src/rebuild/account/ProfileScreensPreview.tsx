@@ -72,9 +72,9 @@ export function OwnProfilePreview({ locale, theme, state }: { locale: Locale; th
   const name = state ?? 'adult';
   const view: OwnProfileView = name === 'loading' ? { kind: 'loading' } : name === 'failed' || name === 'offline'
     ? { kind: 'failed', offline: name === 'offline', retrying: false } : { kind: 'ready', data: profileData(name) };
-  const connections = name === 'teen' || name === 'teenFlagged' ? <TeenConnections copy={t.teenConnections} locale={locale} dark={dark}
+  const connections = name === 'teen' || name === 'teenFlagged' ? <TeenConnections copy={t.teenConnections} reportCopy={t.report} locale={locale} dark={dark}
     requests={[{ requestId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', requestedAt: '2026-09-24T10:00:00Z', username: 'omar_valdes_rios', displayName: 'Omar Alejandro Valdés' }]}
-    followers={[]} loading={false} failed={false} busy={false} notice={null} hasMore={false} onDecide={noop} onRemove={noop} onRetry={noop} onMore={noop} /> : null;
+    followers={[]} loading={false} failed={false} busy={false} notice={null} hasMore={false} onDecide={noop} onReport={() => Promise.resolve(true)} onBlock={() => Promise.resolve()} onRemove={noop} onRetry={noop} onMore={noop} /> : null;
   const safety = name === 'teenFlagged' ? <ProfileSafetyNotice copy={t.profileSafety} locale={locale} dark={dark} audience="self" fields={['username']} /> : null;
   return <Page locale={locale} theme={theme} screen="own-profile">
     <OwnProfile copy={t.ownProfile} locale={locale} dark={dark} ageBand={name === 'kid' ? '6-9' : undefined} view={view} origin="https://littlefounders.ai"

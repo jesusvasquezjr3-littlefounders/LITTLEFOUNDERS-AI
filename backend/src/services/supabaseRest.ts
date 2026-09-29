@@ -483,6 +483,46 @@ export async function getPendingSocialRequests(kidId: string, offset: number) {
   return { requests: rows.slice(0, LIST_LIMIT).filter(row => row.kid_user_id === kidId).map(row => ({ requestId: row.id, requesterId: row.requester_id, requestedAt: row.requested_at, status: row.status })), nextOffset: rows.length > LIST_LIMIT ? offset + LIST_LIMIT : null };
 }
 
+/*
+ * E.3 from a request queue (GAP-FIX-R5 social; OD-8's "report action for
+ * unwanted contact"; D-19). An inbound connection request is the first
+ * unwanted-contact event, so the person deciding it can report the requester
+ * (and a teen can block them) from the queue itself: while the request is
+ * pending, and for 30 days after it was closed without a connection (the
+ * same window as the teen decline cooldown), so a decline is not the end of
+ * the path to act on a concern.
+ */
+export const SOCIAL_REQUEST_ACTION_DAYS = 30;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** Whether a request row still admits a report (or a block) from its queue. */
+export function requestStillActionable(status: string, decidedAt: string | null, closedWithoutConnection: readonly string[], now = Date.now()): boolean {
+  if (status === 'pending') return true;
+  if (!closedWithoutConnection.includes(status) || decidedAt === null) return false;
+  const at = Date.parse(decidedAt);
+  return Number.isFinite(at) && now - at <= SOCIAL_REQUEST_ACTION_DAYS * DAY_MS;
+}
+
+/** A guardian-decided request closed without a connection: denied, or revoked by a block or a withdrawal. */
+export const GUARDIAN_REQUEST_CLOSED = ['denied', 'revoked'] as const;
+
+/**
+ * The requester of a connection request addressed to THIS child that the
+ * guardian may still report: pending, or closed without a connection in the
+ * last 30 days. 'not-found' for anything else (another child's request, an
+ * approved one, an old one); null when the row cannot be read.
+ */
+export async function getGuardianReportableRequest(requestId: string, kidId: string): Promise<{ requesterId: string } | 'not-found' | null> {
+  if (!UUID.safeParse(requestId).success || !UUID.safeParse(kidId).success) return null;
+  const raw = await rest<unknown>(`/social_connection_requests?id=eq.${eu(requestId)}&kid_user_id=eq.${eu(kidId)}&select=id,requester_id,kid_user_id,status,decided_at&limit=1`, serviceToken());
+  const rows = z.array(z.object({ id: UUID, requester_id: UUID, kid_user_id: UUID, status: z.string(), decided_at: z.string().datetime({ offset: true }).nullable() })).max(1).safeParse(raw);
+  if (!rows.success) return null;
+  const row = rows.data[0];
+  if (!row) return 'not-found';
+  if (row.id !== requestId || row.kid_user_id !== kidId) return null;
+  return requestStillActionable(row.status, row.decided_at, GUARDIAN_REQUEST_CLOSED) ? { requesterId: row.requester_id } : 'not-found';
+}
+
 /** Bounded display-name lookup for already-authorized social-history participants. */
 export async function getSocialDisplayNames(ids: string[]) {
   if (ids.length === 0) return [];
