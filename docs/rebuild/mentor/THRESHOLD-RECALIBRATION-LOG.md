@@ -4,6 +4,26 @@ This is the maintained document that Appendix F §1.4 requires. It extends Appen
 
 Governance: the values marked Tier 1 are never-automate constraints under C.22. Changing them requires sign-off from the Pedagogical Reviewer and the Safety/Trust Lead.
 
+## Review schedule
+
+Appendix F §1.4 and Part 3 Stage 7 require every threshold in this log to be reviewed at least once per cadence, and C.10 requires each threshold to be recalibrated together with the metric that watches it. The lines below are machine-read by `agent/tools/check-mentor-thresholds.mjs` (gap-fix round 6):
+
+- Reviewers: Pedagogical Reviewer and Safety/Trust Lead
+- Cadence: quarterly (every 90 days) during the first year, then yearly once four human reviews are recorded
+- **First human review due: 2026-12-23** (one quarter after this log was created on 2026-09-24; the Mentor is live, so the quarter runs from the log, not from a future release)
+- Last human review: none
+- Next human review due: 2026-12-23
+
+Only a `human` row in the review history below counts as the review, and its `By` cell must name both reviewers. An `engineering` row records what a lane did and never counts. After recording a human review, update the "Last human review" and "Next human review due" lines: the gate recomputes both from the history and fails when they disagree. `spec:check` warns when the review is overdue; `release:readiness` runs the gate with `--strict` and fails. `.github/workflows/mentor-thresholds-quarterly.yml` opens the quarter's review issue for both reviewers on the first day of each calendar quarter.
+
+## Review history
+
+| Date | Kind | Scope | Decision | By |
+|---|---|---|---|---|
+| 2026-09-29 | engineering | Review schedule | Schedule, due dates and gate added (gap-fix round 6, mentor lane). No threshold was reviewed; every value stays "proposed, pending calibration". | Engineering (fix6mentor8 lane) |
+
+## Thresholds
+
 | Threshold | Value | Tier | Where enforced | Source | Status |
 |---|---|---|---|---|---|
 | Corroborating-evidence requirement: consecutive qualifying observations before a mastery declaration or a remediation/rescue trigger | 2 | 1 | `oracle/src/tutor/controller.ts` `CORROBORATION_MIN_OBSERVATIONS`; env `TUTOR_CORROBORATION_MIN_OBSERVATIONS` (2–5; below 2 refuses to boot); Core `bkt.ts` `MASTERY_CORROBORATION_MIN` for the map and planner | Product C.10 (applies as written per owner log §5, line on C.10 two observations) | Proposed, pending calibration; introduced 2026-09-24 (S06.3) |
@@ -42,6 +62,11 @@ Governance: the values marked Tier 1 are never-automate constraints under C.22. 
 | Minimum evaluated turns before the report reads the Default-to-Inaction Rate | 300 | 3 | Core `behavioralTelemetry.ts` `reportMinEvaluatedTurns` | Engineering default (statistical floor) | Proposed |
 | Bias-audit cadence (C.20) | 183 days (semi-annual), or immediately on a material change | 2 | `oracle/src/safety/biasAudit/auditLog.ts` `CADENCE_DAYS`; `biasAudit.test.ts`; `.github/workflows/mentor-bias-audit.yml` | Appendix F §1.3 Bias-Audit Coverage | Proposed, pending calibration (SPEC value) |
 | Bias-Audit Coverage target | 100% of registered components | 1 | `auditLog.ts` `coverage` | Appendix F §1.3 | Fixed by the SPEC; 93% today with the three S06.5 readers registered (live judge pending, OD-23) |
+| Equity-drift audit tolerances (Appendix D §3.7): the largest allowed spread between name groups (gender, origin within a locale; the three locales) for praise rate; generic-praise share; sycophantic-draft rate; correction rate; unsanctioned-reveal rate | 0.10; 0.15; 0.05; 0.10; 0.05 | 2 | `oracle/src/safety/equityAudit/audit.ts` `EQUITY_TOLERANCES` | Appendix D §3.7 ("measure feedback-content drift"); C.20 Law 5 | Pre-registered before any live run; proposed, pending calibration; introduced 2026-09-29 (gap-fix round 6) |
+| Equity-drift audit: minimum denominator per compared group; replays per cue and script (dry run; live) | 30; 2; 5 | 3 | `audit.ts` `EQUITY_MIN_SAMPLE`, `DEFAULT_REPEATS` | Engineering default (statistical floor; live sampling variance) | Proposed, pending calibration with the first live runs |
+| Equity-drift audit cadence | 183 days (semi-annual), or immediately on a material change (prompt builder, model call, C.18 readers, the audit's cues and scripts) or a model change | 2 | `oracle/src/safety/equityAudit/auditLog.ts` `CADENCE_DAYS`, `AUDITED_SOURCES`; `.github/workflows/mentor-equity-audit.yml`; `release:readiness` | Appendix D §3.7; aligned with the C.20 bias audit | Proposed, pending calibration; introduced 2026-09-29 (gap-fix round 6) |
+| Equity-drift live finding | 0 open (a drifting live run stays open until a later live run passes) | 1 | `auditLog.ts` `checkEquity`; C.24 `safety.equity_drift` | Appendix D §3.7; Appendix E §3.1 Tier 3 disparity flagging | Fixed by design; no live run yet (OD-23) |
+| Threshold-log review cadence (this log) | 90 days during the first year, then 365 days after four human reviews; first due 2026-12-23 | 2 | this log's "Review schedule"; `agent/tools/check-mentor-thresholds.mjs` (`--strict` in `release:readiness`); `.github/workflows/mentor-thresholds-quarterly.yml`; C.24 `governance.threshold_review` | Appendix F §1.4 ("quarterly for the first year"), Part 3 Stage 7 | Proposed (SPEC value); introduced 2026-09-29 (gap-fix round 6) |
 | Self-explanation: prompts per session; learner turns between two prompts (counted from the end of the previous move) | 4; 3 | 2 | `oracle/src/tutor/selfExplanation.ts` `SELF_EXPLANATION_DEFAULTS` | Appendix D §3.3 ("default to 'why did you pick that?'"), bounded so it never becomes an interrogation | Proposed, pending calibration; introduced 2026-09-25 (S06.5) |
 | Self-explanation quality check: a reply of this many words or fewer that names no idea is filler | 3 | 2 | `oracle/src/tutor/explanationLexicon.ts` `classifyExplanation` | Appendix D §3.3 ("filler, e.g. 'because it's right'") | Proposed, pending calibration |
 | Self-explanation follow-ups before the Mentor states the reason | 1 (never a loop) | 1 | `selfExplanation.ts` `readReply` | Appendix D §3.3 ("a targeted follow-up rather than accepted at face value") | Fixed by design; changing it is a Tier 1 decision |
@@ -157,3 +182,4 @@ Record every Stage 7 rollback here: date, knowledge components (`TUTOR_CORROBORA
 | 2026-09-28 | Added the course-lesson evidence switch (P-09, GAP-FIX-R3): course grades feed the Mentor's mastery model only under the accepted pathway engine and `COURSE_LESSON_EVIDENCE = on`, with the shadow-run calibration it must pass first. Previous value: recorded unconditionally (GAP-FIX-R1) | `backend/src/__tests__/courseLessonEvidenceGate.test.ts`, `learnV2Mixed.test.ts` | Pending (Pedagogical Reviewer, Safety/Trust Lead) |
 | 2026-09-28 | Added the C.22 Stage 5 canary share ceiling and the canary-vs-control reading, the C.1 Age-Tier Calibration Coverage invariant and the C.2-C.4 Fracture-Closure Verification (gap-fix round 3, mentor lane) | [Gap-fix round 3 record](../sprints/GAP-FIX-R3.md#checkpoint-f3-mentor); `mentorQuality.test.ts`; `mentorCanary.test.ts`; `check-mentor-minor-safeguards.test.mjs`; `verify-mentor-f3-postgres.py` | Pending (Pedagogical Reviewer and Safety/Trust Lead) |
 | 2026-09-29 | Delayed Retention redefined to Appendix C §1.1 (review cards 30/60/90 days after first mastery, per KC) with the release-over-release non-decline rule and the release baseline table; Time-to-Mastery by KC and age band; v2 time on task in the Session Efficiency Ratio. Previous values: Delayed Retention was diagnostic over v1 review topics; the efficiency numerator was v1 attempts only (gap-fix round 4, learning lane) | [Gap-fix round 4 record](../sprints/GAP-FIX-R4.md#checkpoint-f4-learning); `mentorQuality.test.ts`; `evaluationLoop.test.ts`; `learnV2Mixed.test.ts`; `verify-learning-r4-postgres.py` | Pending (Pedagogical Reviewer and Safety/Trust Lead) |
+| 2026-09-29 | Added the equity-drift audit tolerances, sample floor, repeats and cadence (Appendix D §3.7) and this log's own review schedule (Appendix F §1.4); C.17's controlling-language gate now follows the band in both A/B arms (a Tier 1 constraint, no threshold value changed) (gap-fix round 6, mentor lane) | [Lane record](../sprints/gap-fix-r6/fix6mentor8.md); `equityAudit.test.ts`; `check-mentor-thresholds.test.mjs`; `dialogueCalibration.test.ts` | Pending (Pedagogical Reviewer and Safety/Trust Lead) |

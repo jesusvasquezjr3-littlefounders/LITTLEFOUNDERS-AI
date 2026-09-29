@@ -181,10 +181,12 @@
         "agreement": "Concordância do juiz de conversas"
       },
       "governance": {
-        "tier_compliance": "Regras de nível cumpridas"
+        "tier_compliance": "Regras de nível cumpridas",
+        "threshold_review": "Limiares revisados no prazo"
       },
       "safety": {
         "fracture_closure": "Salvaguardas por idade, não por papel",
+        "equity_drift": "Mesmo retorno para cada nome",
         "age_tier_calibration": "Idades desconhecidas calibradas antes"
       },
       "evaluation": {

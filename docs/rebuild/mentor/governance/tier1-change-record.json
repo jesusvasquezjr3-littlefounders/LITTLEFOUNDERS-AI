@@ -441,6 +441,66 @@
       "origin": "human",
       "pedagogicalReviewer": "pending",
       "safetyTrustLead": "pending"
+    },
+    {
+      "component": "mentor.non_negotiables",
+      "hash": "cbae5815050aa896068d7e709afcdda806bc7fa76d58640f14966d884aa1afbd",
+      "files": 9,
+      "date": "2026-09-29",
+      "change": "Gap-fix round 6 (fix6mentor8), C.17 Tier 1: orchestrator.ts comment only; the controlling-language gate it reads (dialoguePolicy.controllingGate) now follows the band in both A/B arms (dialogueCalibration.ts, Tier 2). No behaviour of this component's own code changed",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "evaluation.stage2_and_bias_audit",
+      "hash": "5e102286e3303d9ec392b2b36f6c977d2c15a39517a84984af8f61152ee34d9c",
+      "files": 16,
+      "date": "2026-09-29",
+      "change": "Gap-fix round 6 (fix6mentor8): Appendix D 3.7 equity-drift audit added (oracle/src/safety/equityAudit/: identity cues, scripted sessions, harness through the real orchestrator, drift report, record/cadence/material-change log); C.17 Stage 2 personas: adult_control now requires the controlling-language gate in the control arm, new teen_control persona",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "evaluation.rubric_and_judges",
+      "hash": "d0d9ef0504a88759b5d78fffd5b2b0e4935a73614565327224305d9bb66bc52f",
+      "files": 8,
+      "date": "2026-09-29",
+      "change": "Gap-fix round 6 (fix6mentor8), C.17: transcriptScoring scores controlling_language for a teen or adult in either A/B arm (the gate follows the band since OD-26); fixture en-goal-unconfirmed (teen, control arm) now expects pass instead of not_applicable. Rubric text and hash unchanged",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "measurement.stage7_and_thresholds",
+      "hash": "c346da965f91b8b61c858b3f0a3ce21719ecf6c9a0f958b4a9d06d4e84ff0336",
+      "files": 9,
+      "date": "2026-09-29",
+      "change": "Gap-fix round 6 (fix6mentor8), C.24: two external signals registered in mentorQuality.ts, safety.equity_drift (Appendix D 3.7, Safety/Trust Lead) and governance.threshold_review (Appendix F 1.4 quarterly threshold-log review); no threshold value changed",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "governance.model",
+      "hash": "1b9e967bbcb8fd6afa5d59b2858e150472f1cf46c0a273115f896f6db96dbceb",
+      "files": 9,
+      "date": "2026-09-29",
+      "change": "Gap-fix round 6 (fix6mentor8): registry classifies oracle/src/safety/equityAudit/** under the Tier 1 component evaluation.stage2_and_bias_audit",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "safety.judge",
+      "hash": "de67ac5900ab6ab35490f773bf3de59e5d277d3b8faf3767b17d5a40f1e16505",
+      "files": 8,
+      "date": "2026-09-29",
+      "change": "Found unrecorded at integration base 41c4bfb0 (gap-fix round 6, fix6mentor8 lane): commit 95944ae6 (C.4 / OD-18 / S01.4, delete a stored Mentor memory note) changed agent/tools/check-mentor-minor-safeguards.mjs without a change-record row. Recorded here with its origin; this lane did not change the component",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
     }
   ]
 }

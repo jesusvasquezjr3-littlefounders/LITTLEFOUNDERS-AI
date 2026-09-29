@@ -523,6 +523,20 @@ describe('GAP-FIX-R2: the per-release manual audits and Parent Time-to-Value (Ap
   });
 });
 
+describe('gap-fix round 6: the equity-drift audit and the threshold-review cadence on the C.24 dashboard', () => {
+  it('registers safety.equity_drift (Appendix D 3.7, Safety/Trust Lead) and governance.threshold_review (Appendix F 1.4) as external, zero-tolerance signals', () => {
+    expect(SIGNALS.find((s) => s.id === 'safety.equity_drift')).toMatchObject({
+      category: 'safety_governance', requirement: 'C.18', owner: 'safety_trust_lead', instrumented: 'external', threshold: { kind: 'zero_tolerance', value: 0 },
+    });
+    expect(SIGNALS.find((s) => s.id === 'safety.equity_drift')?.pending).toMatch(/equity-audit -- --check/);
+    expect(SIGNALS.find((s) => s.id === 'governance.threshold_review')).toMatchObject({
+      category: 'pipeline', owner: 'pedagogical_lead', instrumented: 'external', threshold: { kind: 'zero_tolerance', value: 0 },
+    });
+    expect(SIGNALS.find((s) => s.id === 'governance.threshold_review')?.pending).toMatch(/check-mentor-thresholds\.mjs --strict/);
+    for (const id of ['safety.equity_drift', 'governance.threshold_review']) expect(readingOf(evaluateSignals(empty()), id).status).toBe('external');
+  });
+});
+
 describe('GAP-FIX-R3: the C.1-C.4 safety metrics and the Stage 5 canary reading (Appendix F 1.3, Part 3)', () => {
   it('registers Fracture-Closure Verification (external, zero tolerance) and Age-Tier Calibration Coverage (hard invariant 100%) for the Safety and Trust lead', () => {
     expect(SIGNALS.find((s) => s.id === 'safety.fracture_closure')).toMatchObject({

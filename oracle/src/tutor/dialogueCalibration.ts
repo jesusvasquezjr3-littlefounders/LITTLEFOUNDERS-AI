@@ -32,8 +32,10 @@ import { HINT_LEVELS, HINT_LEVEL_WORDING, type HintLevel } from './hintLadder.js
  * variant arrives from Core (`dialogueCalibration` in the session context):
  * `calibrated` (the policy above) or `control` (the uniform, pre-C.17
  * register every learner had before). Core assigns it through the H.7
- * experiment runtime and, per OD-23, enrols ADULTS ONLY until Product and
- * Legal widen the ages — every minor receives the SPEC's calibrated default.
+ * experiment runtime; OD-26 opened enrolment to adults, teens (their own
+ * analytics opt-in) and tweens (a verified guardian's consent), and children
+ * 6-9 always receive the SPEC's calibrated default. In either arm, a teen or
+ * adult turn still runs the controlling-language gate (CONTROLLING_GATE_BANDS).
  *
  * PRIVACY. The band never enters the sealed model context (still 14 fields,
  * `tier` unchanged). The register note is a fixed, band-free style
@@ -156,9 +158,31 @@ export interface DialoguePolicy {
 }
 
 /**
+ * The bands whose turns always run the controlling-language gate, in BOTH
+ * arms of the C.17 experiment (C.17; Appendix D §3.6; the Tier 1 rule "the
+ * teen/adult register never delivers controlling language silently").
+ *
+ * The gate follows the BAND, never the variant. Before OD-26 only adults
+ * could reach the control arm; OD-26 opened C.17 to teens (and tweens), so a
+ * 13-17 learner can now be assigned `control`, and a variant-keyed gate let
+ * "you have to…" reach them uncaught, unrepaired and uncounted. The control
+ * arm keeps what the experiment compares (the uniform ladder, wording, no
+ * register note, no ask-first pacing); the gate is a style constraint, and it
+ * also makes the controlling-language counts comparable between the arms.
+ * `review-calibration:check` fails if a policy branch stops using it.
+ */
+export const CONTROLLING_GATE_BANDS: readonly DialogueBand[] = ['teen', 'adult'];
+
+/** Whether a band's model turns are checked for controlling language (both arms). */
+export function controllingGateFor(band: DialogueBand): boolean {
+  return CONTROLLING_GATE_BANDS.includes(band);
+}
+
+/**
  * The policy for a band and variant. `control` is the uniform register every
  * learner had before C.17: the full ladder, the original wording, no note,
- * no ask-first, no controlling-language gate.
+ * no ask-first. The controlling-language gate is NOT part of the register
+ * being compared: it follows the band in both arms (`controllingGateFor`).
  */
 export function dialoguePolicy(band: DialogueBand, variant: DialogueVariant): DialoguePolicy {
   if (variant === 'control') {
@@ -169,7 +193,7 @@ export function dialoguePolicy(band: DialogueBand, variant: DialogueVariant): Di
       levelWording: HINT_LEVEL_WORDING,
       registerNote: null,
       askBeforePacing: false,
-      controllingGate: false,
+      controllingGate: controllingGateFor(band),
       strategyOverlay: () => null,
     };
   }
@@ -181,7 +205,7 @@ export function dialoguePolicy(band: DialogueBand, variant: DialogueVariant): Di
     levelWording: band === 'young_child' ? YOUNG_CHILD_WORDING : autonomy ? AUTONOMY_WORDING : HINT_LEVEL_WORDING,
     registerNote: REGISTER_NOTES[band],
     askBeforePacing: autonomy,
-    controllingGate: autonomy,
+    controllingGate: controllingGateFor(band),
     strategyOverlay: (strategy) => {
       if (autonomy && (strategy === 'RESCUE' || strategy === 'FADED' || strategy === 'WORKED')) return ASK_FIRST_OVERLAY;
       if (band === 'young_child' && (strategy === 'SOCRATIC' || strategy === 'FLUENCY' || strategy === 'SPACED')) {

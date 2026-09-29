@@ -1,0 +1,48 @@
+name: Mentor equity-drift audit cadence
+
+# APPENDIX D §3.7 / C.18 / C.20 LAW 5: THE EQUITY-DRIFT AUDIT, AS A RUN
+# SOMEBODY SEES.
+#
+# The Mentor's praise and feedback must not drift with the identity cues a
+# learner presents. `oracle/src/safety/equityAudit/` replays identical
+# scripted sessions through the real orchestrator, varying only the nickname
+# and the locale, and scores every Mentor turn with the deterministic C.18
+# readers (policy: docs/rebuild/mentor/EQUITY-AUDIT-POLICY.md). Three rules
+# make the audit due, and this monthly run fails, visibly, on each:
+#
+#   MATERIAL CHANGE  the prompt builder, the model call, the C.18 readers or
+#                    the audit's own cues, scripts and harness changed since
+#                    the last recorded run;
+#   CADENCE          the last recorded run is older than the semi-annual
+#                    cadence (proposed, pending calibration);
+#   OPEN FINDING     the latest live run drifted.
+#
+# The run here is the zero-spend dry run (a cue-blind scripted model): no
+# network, no model, no secrets. The paid live run (`--live`) is owner-run and
+# never runs here (OD-23); while it is pending the check prints a warning.
+
+on:
+  schedule:
+    - cron: '0 9 2 * *' # 09:00 UTC on the 2nd of every month
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: oracle
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: oracle/package-lock.json
+      - run: npm ci
+      - name: Equity-drift dry run, material-change and cadence check
+        run: npm run equity-audit -- --check

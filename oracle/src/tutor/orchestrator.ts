@@ -4123,11 +4123,13 @@ export class TutorOrchestrator {
              */
             const falseFamiliarity = this.alliance.requiresFreshStart && claimsSharedHistory(parsed.turn.say);
             /*
-             * C.17: IN THE AUTONOMY-SUPPORTIVE REGISTER (teens, adults) THE
-             * MENTOR NEVER ORDERS. "You need to", "you have to", "you must",
-             * "you should" and their es-MX/pt-BR forms (Reeve & Jang's
-             * controlling-language markers) are caught on every model turn,
-             * across all four personas, and repaired once. A style fault, not a
+             * C.17: TO A TEEN OR AN ADULT THE MENTOR NEVER ORDERS, IN EITHER
+             * ARM OF THE EXPERIMENT (the gate follows the band, not the
+             * variant: OD-26 lets a teen reach the control arm). "You need
+             * to", "you have to", "you must", "you should" and their
+             * es-MX/pt-BR forms (Reeve & Jang's controlling-language markers)
+             * are caught on every model turn, across all four personas, and
+             * repaired once. A style fault, not a
              * false verdict: if it survives the retry the turn is delivered and
              * the survival is counted (`controllingDelivered`), never hidden.
              */

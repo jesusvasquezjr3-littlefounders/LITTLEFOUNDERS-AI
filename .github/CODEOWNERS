@@ -33,6 +33,10 @@
 /agent/tools/check-judge-calibration-parity.mjs @jesusvasquezjr3-littlefounders
 /agent/tools/check-mentor-canary-parity.mjs @jesusvasquezjr3-littlefounders
 /agent/tools/check-mentor-minor-safeguards.mjs @jesusvasquezjr3-littlefounders
+/agent/tools/check-mentor-thresholds.mjs  @jesusvasquezjr3-littlefounders
+/agent/tools/mentor-thresholds-quarterly.mjs @jesusvasquezjr3-littlefounders
+/docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md @jesusvasquezjr3-littlefounders
+/.github/workflows/mentor-thresholds-quarterly.yml @jesusvasquezjr3-littlefounders
 
 # This file and the ruleset it depends on
 /.github/CODEOWNERS                       @jesusvasquezjr3-littlefounders

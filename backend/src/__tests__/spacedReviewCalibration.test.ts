@@ -514,7 +514,27 @@ describe('the Age-Band Calibration A/B Outcome', () => {
       { band: 'teen', variant: 'calibrated', assignment: 'not_eligible', bond_proxy: null, closing_script: null, controlling_delivered: 1 },
       { band: 'young_child', variant: 'calibrated', assignment: 'not_eligible', bond_proxy: null, closing_script: null, controlling_delivered: 0 },
     ];
-    expect(summarizeControllingLanguage(rows)).toEqual({ sessions: 1, delivered: 1, status: 'defect' });
+    expect(summarizeControllingLanguage(rows)).toEqual({
+      sessions: 1,
+      delivered: 1,
+      status: 'defect',
+      byVariant: { calibrated: { sessions: 1, delivered: 1 }, control: { sessions: 0, delivered: 0 } },
+    });
+  });
+
+  it('gap-fix round 6: a teen or adult in the CONTROL arm counts too (the gate follows the band), per arm', () => {
+    const rows: CalibrationOutcomeRow[] = [
+      { band: 'teen', variant: 'control', assignment: 'experiment', bond_proxy: null, closing_script: null, controlling_delivered: 2 },
+      { band: 'adult', variant: 'control', assignment: 'experiment', bond_proxy: null, closing_script: null, controlling_delivered: 0 },
+      { band: 'teen', variant: 'calibrated', assignment: 'experiment', bond_proxy: null, closing_script: null, controlling_delivered: 0 },
+      { band: 'tween', variant: 'control', assignment: 'experiment', bond_proxy: null, closing_script: null, controlling_delivered: 5 },
+    ];
+    expect(summarizeControllingLanguage(rows)).toEqual({
+      sessions: 3,
+      delivered: 2,
+      status: 'defect',
+      byVariant: { calibrated: { sessions: 1, delivered: 0 }, control: { sessions: 2, delivered: 2 } },
+    });
   });
 });
 

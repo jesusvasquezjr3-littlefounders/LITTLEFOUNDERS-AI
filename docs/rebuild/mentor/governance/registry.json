@@ -72,7 +72,7 @@
       "requirements": ["C.20", "C.21"],
       "owner": "safety_trust_lead",
       "policy": "docs/rebuild/mentor/BIAS-AUDIT-POLICY.md",
-      "paths": ["oracle/src/tutor/*Gym.ts", "oracle/src/safety/biasAudit/**"],
+      "paths": ["oracle/src/tutor/*Gym.ts", "oracle/src/safety/biasAudit/**", "oracle/src/safety/equityAudit/**"],
       "hashExclude": ["oracle/src/safety/biasAudit/audit-log.json"],
       "examples": [
         "Removing a simulated persona or relaxing what it must see",

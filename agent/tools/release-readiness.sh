@@ -51,6 +51,13 @@ node agent/tools/check-block-d-research.mjs --strict
 node agent/tools/check-block-d-thresholds.mjs --strict
 node agent/tools/check-no-unbacked-guarantee.mjs --strict
 node agent/tools/check-block-d-scope.mjs --strict
+# Appendix F 1.4 / Part 3 Stage 7 (gap-fix round 6): nor on an overdue quarterly
+# human review of the Mentor's (Block C) Threshold Recalibration Log.
+node agent/tools/check-mentor-thresholds.mjs --strict
+# Appendix D 3.7 / C.18 / C.20 (gap-fix round 6): the zero-spend equity-drift
+# dry run passes, and no material change, overdue cadence or open live drift
+# finding is outstanding (the paid live run stays owner-run, OD-23).
+npm --prefix oracle run equity-audit -- --check
 # Appendix J 1.3 / DoD 2.1(2): the data-gateway half of the social release
 # gate. Every native-PostgreSQL social verifier (and the teen discoverable,
 # cooperative goals and account-erasure ones) against the full migration

@@ -98,3 +98,29 @@ test('RED (OD-26) when a tween could be enrolled on a guess or without the guard
 test('RED when no migration exists at all', () => {
   assert.deepEqual(checkReviewCalibrationParity(readReal, null), ['database/migrations: no *_mentor_spaced_review_and_dialogue_calibration.sql migration found']);
 });
+
+test('C.17 Tier 1: RED when the control arm turns the teen/adult controlling-language gate off', () => {
+  const problems = checkReviewCalibrationParity(
+    patched(FILES.dialogue, '      askBeforePacing: false,\n      controllingGate: controllingGateFor(band),', '      askBeforePacing: false,\n      controllingGate: false,'),
+    sql,
+  );
+  assert.ok(problems.some((p) => p.includes('controllingGate to `false`')), problems.join('\n'));
+});
+
+test('C.17 Tier 1: RED when the gate is keyed on the variant or drops a band', () => {
+  const autonomy = checkReviewCalibrationParity(
+    patched(FILES.dialogue, '    controllingGate: controllingGateFor(band),\n    strategyOverlay: (strategy)', '    controllingGate: autonomy,\n    strategyOverlay: (strategy)'),
+    sql,
+  );
+  assert.ok(autonomy.some((p) => p.includes('controllingGate to `autonomy`')));
+  const narrowed = checkReviewCalibrationParity(
+    patched(FILES.dialogue, "CONTROLLING_GATE_BANDS: readonly DialogueBand[] = ['teen', 'adult'];", "CONTROLLING_GATE_BANDS: readonly DialogueBand[] = ['adult'];"),
+    sql,
+  );
+  assert.ok(narrowed.some((p) => p.includes('CONTROLLING_GATE_BANDS must name teen and adult')));
+  const variantKeyed = checkReviewCalibrationParity(
+    patched(FILES.dialogue, 'return CONTROLLING_GATE_BANDS.includes(band);', "return CONTROLLING_GATE_BANDS.includes(band) && variant === 'calibrated';"),
+    sql,
+  );
+  assert.ok(variantKeyed.some((p) => p.includes('controllingGateFor(band) must return')));
+});
