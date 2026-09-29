@@ -11,6 +11,27 @@
         "es-MX": ["gastar necesita tu aprobación primero", "lo apruebas antes de que llegue", "esperando su aprobación antes de ser tuyo", "la meta de alguien más"],
         "pt-BR": ["gastar precisa da sua aprovação antes", "aprova antes de chegar até ele", "esperando a aprovação dele antes de ser seu", "a meta de outra pessoa"]
       }
+    },
+    {
+      "namespace": "rebuild-site",
+      "why": "A.1 and owner answer H-20: usage data is never collected under 13, so no per-child analytics switch exists for a child under 13 (ChildControls hides it; POST /family/kids/:kidId/analytics-consent answers 403 ANALYTICS_NOT_COLLECTED_UNDER_13). The Families page promised a switch for every child until gap-fix round 3 (F3-identity-site item 4).",
+      "phrases": {
+        "en-US": ["stay off for each child until you turn them on"],
+        "es-MX": ["sigue apagada para cada hijo hasta que tú la activas"],
+        "pt-BR": ["fica desligada para cada filho até você ativá-la"]
+      }
+    }
+  ],
+  "sharedStatements": [
+    {
+      "id": "under13_usage_data",
+      "why": "A.1 and owner answer H-20: the public Families page and the FAQ make the same analytics promise, so both must carry the same under-13 statement; a public line may not drift back to a per-child switch the product does not ship.",
+      "keys": ["rebuild-site:families.privacyBody", "rebuild-site:faq.items.analyticsToggle.answer"],
+      "phrases": {
+        "en-US": "Under 13, we never collect usage data",
+        "es-MX": "Con menores de 13 años nunca recopilamos datos de uso",
+        "pt-BR": "Com menores de 13 anos, nunca coletamos dados de uso"
+      }
     }
   ],
   "controls": [

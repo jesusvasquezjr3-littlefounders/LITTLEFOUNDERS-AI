@@ -95,6 +95,27 @@ test('holds the rebuilt public site to the same retired claims (W2 Lane 1)', () 
   assert.match(failures[0], /^rebuild-site:extra\.note \(es-MX\) says "gastar necesita tu aprobación primero"/);
 });
 
+test('holds the Families privacy line to the FAQ under-13 statement, and catches the retired per-child switch (F3-identity-site)', () => {
+  const retired = mutate((live) => ({
+    locales: (locale, ns) => {
+      const copy = live.locales(locale, ns);
+      if (locale !== 'en-US' || ns !== 'rebuild-site') return copy;
+      return { ...copy, families: { ...copy.families, privacyBody: 'Usage analytics stay off for each child until you turn them on.' } };
+    },
+  }));
+  assert.ok(retired.some((f) => f.startsWith('rebuild-site:families.privacyBody (en-US) says "stay off for each child until you turn them on"')), retired.join('\n'));
+  assert.ok(retired.some((f) => f.startsWith('rebuild-site:families.privacyBody (en-US) no longer says "Under 13, we never collect usage data"')), retired.join('\n'));
+  const drifted = mutate((live) => ({
+    locales: (locale, ns) => {
+      const copy = live.locales(locale, ns);
+      if (locale !== 'pt-BR' || ns !== 'rebuild-site') return copy;
+      return { ...copy, faq: { ...copy.faq, items: { ...copy.faq.items, analyticsToggle: { ...copy.faq.items.analyticsToggle, answer: 'Você decide.' } } } };
+    },
+  }));
+  assert.equal(drifted.length, 1, drifted.join('\n'));
+  assert.match(drifted[0], /^rebuild-site:faq\.items\.analyticsToggle\.answer \(pt-BR\) no longer says "Com menores de 13 anos, nunca coletamos dados de uso"/);
+});
+
 test('flattens copy to dotted keys', () => {
   assert.deepEqual(flatStrings({ a: { b: 'x', c: ['y'] }, d: 1 }), [['a.b', 'x'], ['a.c.0', 'y']]);
 });

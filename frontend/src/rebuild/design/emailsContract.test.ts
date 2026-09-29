@@ -91,6 +91,12 @@ describe('account emails on the one design system (OD-4, 02 D8)', () => {
       expect(found).toEqual([]);
       expect(source).not.toContain('—');
     });
+
+    it('has no exclamation mark in any locale: every account email reaches adults and parents (06 section 5 rule 7)', () => {
+      const texts = [...body(source).matchAll(TRIPLE)].flatMap(([, es, pt, en]) => [en!, es!, pt!].map(decode));
+      expect(texts.length).toBeGreaterThan(0);
+      expect(texts.filter((text) => /[!¡]/u.test(text))).toEqual([]);
+    });
   });
 
   it('is designed for dark mode as well: the scheme is declared and every painted class has its dark token (OD-28, V-14)', () => {

@@ -19,6 +19,8 @@
 //   - a retired claim (a promise the product stopped backing, such as "every
 //     reward waits for your approval" once D.17 pre-approves small ones)
 //     reappears anywhere in its namespace, in any locale;
+//   - two public strings that share one statement (the Families page and the
+//     FAQ answer on under-13 usage data) stop carrying it in any locale;
 //   - any package depends on a payment, card-issuing or bank-linking SDK
 //     (the simulation claim, "no bank or card behind it", would stop being true).
 // It runs in the unfiltered repo gates: the evidence spans database/,
@@ -133,6 +135,26 @@ export function checkControls({ registry, readFile, migrations, rebuiltSources, 
       for (const phrase of retired.phrases?.[locale] ?? []) {
         const hit = strings.find(([, text]) => text.toLowerCase().includes(phrase.toLowerCase()));
         if (hit) failures.push(`${retired.namespace}:${hit[0]} (${locale}) says "${phrase}", a claim the product no longer backs: ${retired.why}`);
+      }
+    }
+  }
+  // F3-identity-site: a promise made on two public surfaces (the Families page
+  // and the FAQ answer it restates) must keep the same statement in every
+  // locale, so one of them cannot drift back to a control that does not ship.
+  for (const shared of registry.sharedStatements ?? []) {
+    if (!Array.isArray(shared.keys) || shared.keys.length < 2) failures.push(`${shared.id}: a shared statement needs two or more copy keys`);
+    for (const locale of LOCALES) {
+      const phrase = shared.phrases?.[locale];
+      if (typeof phrase !== 'string' || phrase.trim() === '') {
+        failures.push(`${shared.id}: no ${locale} statement`);
+        continue;
+      }
+      for (const key of shared.keys ?? []) {
+        const [ns, path] = key.split(':');
+        const value = lookup(locales(locale, ns), path);
+        if (typeof value !== 'string' || !value.toLowerCase().includes(phrase.toLowerCase())) {
+          failures.push(`${key} (${locale}) no longer says "${phrase}", the statement it shares with ${shared.keys.filter((other) => other !== key).join(', ')}: ${shared.why}`);
+        }
       }
     }
   }
