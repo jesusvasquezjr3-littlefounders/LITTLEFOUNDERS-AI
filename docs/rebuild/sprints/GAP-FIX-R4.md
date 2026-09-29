@@ -105,3 +105,44 @@ None.
 - `audit:rebuild` itself (dev server plus Chrome) is still not a step of
   `release-readiness.sh` or CI; the route-coverage test guarantees the state
   exists, not that the run happened.
+
+## Checkpoint F4-design-system-finish
+
+Lane finish for `codex/spec-fix4designsy`.
+
+- **Sync**: merged `codex/spec-migration-s02`; already up to date (no other
+  lane had merged since the lane branched), so no conflicts and no new
+  mounted route for the route-coverage test to cover.
+- **Adversarial pass** over the two gaps: every learner shell root carries the
+  band Core decides (tutor and staff consoles `adult`); the Mentor screen and
+  the lesson layer declare their own band on their own roots; onboarding
+  declares `6-9` until an age is known. The only client input is the band Core
+  returns (`GET /learn/register`, validated by the strict register schema), so
+  there is no new server boundary to authorize. No legacy component; copy in
+  EN, es-MX and pt-BR.
+- **Defect found by the full suite and fixed**: the previous checkpoint
+  removed the goals-together CSS rules while `TogetherView` still used the
+  new `lf-together-hint` class, which no stylesheet defined
+  (`designClasses.test.ts`). It is now defined in `together.css` (muted body
+  text, tokens only).
+
+### Verification (local)
+
+- Frontend `type-check` and `lint`: pass.
+- Full frontend unit suite once (278 files, 3,206 tests): one red,
+  `designClasses.test.ts` (the missing class above); after the fix that file
+  and `Together.test.tsx` pass (17 tests).
+- Root `spec:check`, `secrets:check`, `bash agent/tools/check-i18n.sh`: pass.
+
+### Final summary
+
+Both audited design-system gaps are implemented and locally verified, not
+accepted: (1) the learner's age band on the app root with the
+`age-band-missing` audit rule, and (2) audit states on the real routes of
+goals together, age corrections, account deletion and the badge link, with a
+route-coverage test that fails when a mounted route has none. Migrations:
+none. Open items are unchanged from the previous checkpoint: the full
+`audit:rebuild` matrix (386 states) for the merge gate, `audit:rebuild` not yet
+a step of CI or `release:readiness`, the badge ready state retiring on
+2026-10-24, and a merge check for any lane editing `TogetherView` or the
+together copy keys (`rules` and `withPeople` removed, `manage` added).

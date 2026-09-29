@@ -4,6 +4,7 @@
 .lf-together-inner > * { min-inline-size: 0; }
 .lf-together-top { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); }
 .lf-together-intro { font-weight: 700; }
+.lf-together-hint { color: var(--content-muted); }
 .lf-together-section { display: grid; gap: var(--spacing-3); }
 .lf-together-section h2 { font-size: 1.25rem; }
 .lf-together-list { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
