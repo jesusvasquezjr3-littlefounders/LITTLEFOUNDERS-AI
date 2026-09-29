@@ -119,6 +119,17 @@
     "signReview": "Firmar revisión",
     "reviewSigned": "Revisión firmada.",
     "reviewAlready": "Ya se firmó esta semana.",
+    "breakdown": {
+      "show": "Ver desglose",
+      "hide": "Ocultar desglose",
+      "window": "{kc}, {days} días",
+      "band": "Edades {band}",
+      "adult": "Adultos",
+      "unknown": "Edad desconocida",
+      "skill": "{kc}",
+      "baseline": "Comparado con la versión {release}",
+      "noBaseline": "Aún no hay versión registrada. Este periodo fija la base."
+    },
     "signal": {
       "mastery": {
         "corroboration_compliance": "Dominio respaldado por dos respuestas",

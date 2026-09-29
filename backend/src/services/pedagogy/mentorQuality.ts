@@ -83,7 +83,8 @@ export type FlagStatus = (typeof FLAG_STATUSES)[number];
 export type SignalStatus = 'ok' | 'breach' | 'insufficient_data' | 'diagnostic' | 'unavailable' | 'not_instrumented' | 'external';
 
 /** 'trend': Appendix C's "hold steady or improve" metrics, judged by classifyTrend (engagementHealth.ts). */
-export type ThresholdKind = CriterionKind | 'relative_drop' | 'band' | 'trend' | 'none';
+/** 'release_non_decline': Appendix C 1.1 Delayed Retention, per KC against the latest recorded release (release 1 is the baseline). */
+export type ThresholdKind = CriterionKind | 'relative_drop' | 'band' | 'trend' | 'release_non_decline' | 'none';
 
 export interface SignalDefinition {
   id: string;
@@ -137,6 +138,14 @@ export const MENTOR_QUALITY_THRESHOLDS = {
   practiceMinAttempts: 30,
   /** Mastery for Time-to-Mastery: the Mentor's mastery display posterior. */
   masteryPosterior: 0.85,
+  /**
+   * Appendix C 1.1 Delayed Retention (GAP-FIX-R4): "no decline release over
+   * release". A KC x window whose correct share falls more than this
+   * (absolute) below the latest recorded release is a decline, judged only
+   * when both periods saw at least `retentionMinLearners` learners in it.
+   */
+  retentionDeclineTolerance: 0.05,
+  retentionMinLearners: 20,
   /**
    * B.28 engagement health (Appendix C §1.2): the last 4 weeks against the 4
    * before; a move of more than 10% in the metric's bad direction is a
@@ -245,9 +254,10 @@ export const SIGNALS: readonly SignalDefinition[] = [
   // GAP-FIX-R3 (Appendix F Stage 5): each running canary against its matched control, so a person reads canary-arm transcripts before release.
   { id: 'canary.arm_comparison', category: 'pipeline', requirement: 'C.22', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.disparityMinSample, source: 'tutor_sessions.canary_arm with the rules-scored transcripts of each arm (npm run tutor:canary-report draws the reading sample)', instrumented: 'yes' },
   // ── Appendix C §1.1 learning outcomes ──
-  { id: 'learning.delayed_retention', category: 'learning_outcome', requirement: 'B.6', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'spaced-review first attempts (admin_retention_at_distance)', instrumented: 'yes' },
+  // GAP-FIX-R4: the SPEC's definition (review cards 30/60/90 days after first mastery, per KC), judged release over release.
+  { id: 'learning.delayed_retention', category: 'learning_outcome', requirement: 'B.6', owner: 'pedagogical_lead', threshold: { kind: 'release_non_decline', value: T.retentionDeclineTolerance }, minSample: T.retentionMinLearners, source: 'learning_delayed_retention: first spaced review 30/60/90 days after first mastery, per KC; against learning_retention_release_baseline (the latest recorded release)', instrumented: 'yes' },
   { id: 'learning.practice_success_band', category: 'learning_outcome', requirement: 'B.19', owner: 'pedagogical_lead', threshold: { kind: 'band', value: T.practiceBand.low, upper: T.practiceBand.high }, minSample: T.practiceMinAttempts, source: 'kc_attempt (Mentor practice)', instrumented: 'yes' },
-  { id: 'learning.time_to_mastery', category: 'learning_outcome', requirement: 'B.19', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'kc_attempt (attempts to the mastery posterior)', instrumented: 'yes' },
+  { id: 'learning.time_to_mastery', category: 'learning_outcome', requirement: 'B.19', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'kc_attempt, every evidence source (attempts to the mastery posterior), per KC and per age band (learning_kc_learner_age_bands)', instrumented: 'yes' },
   { id: 'learning.transfer_success', category: 'learning_outcome', requirement: 'B.7', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'v2 grade receipts tagged practice or transfer (learning_transfer_success)', instrumented: 'yes' },
   // Appendix C: "the two signals should meaningfully diverge" — a floor on the divergent share (learningQuality.ts).
   { id: 'learning.judgment_quality', category: 'learning_outcome', requirement: 'B.12', owner: 'pedagogical_lead', threshold: { kind: 'floor', value: JUDGMENT_DIVERGENCE_FLOOR }, minSample: JUDGMENT_MIN_ATTEMPTS, source: 'learning_judgment_differentiation (0129)', instrumented: 'yes' },
@@ -307,9 +317,21 @@ export interface AuditRow {
 export interface KcAttemptRow {
   user_id: string;
   kc_id: string;
+  /** The KC's catalog key, for a readable breakdown (absent: the id is shown). */
+  kc_key?: string;
+  /** kc_attempt.source; the practice band reads Mentor practice ('segment_grade') only. Absent: Mentor practice. */
+  source?: string;
   correct: boolean;
   p_known_after: number | string;
   created_at: string;
+}
+
+/** One KC x window of learning_delayed_retention (0235), or of a recorded release. */
+export interface RetentionCell {
+  kc_key: string;
+  window_days: number;
+  learners: number;
+  correct: number;
 }
 
 export interface QualitySources {
@@ -335,7 +357,12 @@ export interface QualitySources {
   killSwitchAudit: AuditRow[] | null;
   completeness: { active: number; current: number } | null;
   kcAttempts: KcAttemptRow[] | null;
-  retention: { bucket: string; n: number; avg_first_attempt_score: number }[] | null;
+  /** Appendix C 1.1 Delayed Retention (0235) over the current period: since the latest recorded release (or the window). */
+  retention: RetentionCell[] | null;
+  /** GAP-FIX-R4: the latest recorded release's frozen cells (null: no release recorded yet, or the read failed). */
+  retentionBaseline?: { releaseId: string; cells: RetentionCell[] } | null;
+  /** GAP-FIX-R4: each learner's age band (0235 learning_kc_learner_age_bands) for Time-to-Mastery. Optional. */
+  ageBands?: { user_id: string; age_band: string }[] | null;
   /**
    * Appendix C 1.1 / 1.2 sources the Learning Quality tab already reads
    * (learningQuality.ts, engagementHealth.ts); each is null when its read failed.
@@ -735,16 +762,8 @@ function evaluateOne(
         sourceLatestAt: latest(src.ladder.map((r) => r.created_at)),
       });
     }
-    case 'learning.delayed_retention': {
-      if (src.retention === null) return unavailable(def);
-      const n = src.retention.reduce((s, b) => s + b.n, 0);
-      return reading(def.id, {
-        status: n === 0 ? 'insufficient_data' : 'diagnostic',
-        value: n === 0 ? null : src.retention.reduce((s, b) => s + b.avg_first_attempt_score * b.n, 0) / n / 100,
-        sample: n,
-        breakdown: src.retention.map((b) => ({ key: `days:${b.bucket}`, value: b.avg_first_attempt_score / 100, sample: b.n, status: 'diagnostic' as const })),
-      });
-    }
+    case 'learning.delayed_retention':
+      return retentionReading(def, src, anomalies, unavailable);
     case 'learning.practice_success_band':
     case 'learning.time_to_mastery':
       return practiceReading(def, src, anomalies, unavailable);
@@ -977,15 +996,75 @@ function frictionReading(def: SignalDefinition, src: QualitySources, anomalies: 
   });
 }
 
+/**
+ * Appendix C 1.1 Delayed Retention Rate (GAP-FIX-R4): the share of learners
+ * answering the review card correctly 30 / 60 / 90 days after first mastery,
+ * per KC. Target: the first recorded release is the baseline, then no decline
+ * release over release. Each KC x window of the current period is compared
+ * with the latest recorded release; a fall of more than the tolerance, with
+ * enough learners on both sides, is a breach for that cell.
+ */
+function retentionReading(def: SignalDefinition, src: QualitySources, anomalies: Anomaly[], unavailable: (d: SignalDefinition) => SignalReading): SignalReading {
+  if (src.retention === null) return unavailable(def);
+  const cells = src.retention.filter((c) => c.learners > 0);
+  const learners = cells.reduce((s, c) => s + c.learners, 0);
+  const correct = cells.reduce((s, c) => s + c.correct, 0);
+  const baseline = src.retentionBaseline ?? null;
+  const base = new Map((baseline?.cells ?? []).map((c) => [`${c.kc_key}|${c.window_days}`, c]));
+  let compared = 0;
+  let declined = 0;
+  const breakdown: Breakdown[] = cells
+    .map((c): Breakdown => {
+      const share = c.correct / c.learners;
+      const prior = base.get(`${c.kc_key}|${c.window_days}`);
+      const key = `kc:${c.kc_key}/days:${c.window_days}`;
+      if (!prior || prior.learners < T.retentionMinLearners || c.learners < T.retentionMinLearners) {
+        return { key, value: share, sample: c.learners, status: baseline ? 'insufficient_data' : 'diagnostic' };
+      }
+      compared += 1;
+      const priorShare = prior.correct / prior.learners;
+      if (share < priorShare - T.retentionDeclineTolerance) {
+        declined += 1;
+        anomalies.push(anomalyFor(def, 'relative_drop', key, share, priorShare, { learners: c.learners, baselineLearners: prior.learners, release: baseline!.releaseId }));
+        return { key, value: share, sample: c.learners, status: 'breach' };
+      }
+      return { key, value: share, sample: c.learners, status: 'ok' };
+    })
+    .sort((a, b) => a.key.localeCompare(b.key, 'en', { numeric: true }));
+  // No release recorded yet: this period is the release-1 baseline being established (diagnostic, never a pass).
+  const status: SignalStatus = learners === 0 ? 'insufficient_data'
+    : !baseline ? 'diagnostic'
+      : declined > 0 ? 'breach' : compared > 0 ? 'ok' : 'insufficient_data';
+  return reading(def.id, {
+    status,
+    value: learners === 0 ? null : correct / learners,
+    sample: learners,
+    breakdown,
+    detail: { baselineRelease: baseline?.releaseId ?? null, kcs: new Set(cells.map((c) => c.kc_key)).size, compared, declined },
+  });
+}
+
+/** Age bands Time-to-Mastery is segmented by (Appendix C 1.1), in display order. */
+export const MASTERY_AGE_BANDS = ['6-9', '10-12', '13-17', 'adult', 'unknown'] as const;
+
+const median = (values: number[]): number | null => {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2;
+};
+
 function practiceReading(def: SignalDefinition, src: QualitySources, anomalies: Anomaly[], unavailable: (d: SignalDefinition) => SignalReading): SignalReading {
   if (src.kcAttempts === null) return unavailable(def);
   const sourceLatestAt = latest(src.kcAttempts.map((r) => r.created_at));
   if (def.id === 'learning.practice_success_band') {
-    const n = src.kcAttempts.length;
-    const correct = src.kcAttempts.filter((r) => r.correct).length;
+    // B.19's band is about practice exercises: the Mentor's graded practice, not course-lesson evidence.
+    const practice = src.kcAttempts.filter((r) => (r.source ?? 'segment_grade') === 'segment_grade');
+    const n = practice.length;
+    const correct = practice.filter((r) => r.correct).length;
     const rate = n === 0 ? null : correct / n;
     const outside: Breakdown[] = [];
-    for (const [kc, rs] of groupBy(src.kcAttempts, (r) => r.kc_id)) {
+    for (const [kc, rs] of groupBy(practice, (r) => r.kc_key ?? r.kc_id)) {
       if (rs.length < T.practiceMinAttempts) continue;
       const r = rs.filter((x) => x.correct).length / rs.length;
       if (r < T.practiceBand.low || r > T.practiceBand.high) outside.push({ key: `kc:${kc}`, value: r, sample: rs.length, status: 'breach' });
@@ -994,17 +1073,36 @@ function practiceReading(def: SignalDefinition, src: QualitySources, anomalies: 
     if (status === 'breach') anomalies.push(anomalyFor(def, 'threshold_breach', 'all', rate, rate! < T.practiceBand.low ? T.practiceBand.low : T.practiceBand.high, { attempts: n }));
     return reading(def.id, { status, value: rate, sample: n, breakdown: outside.slice(0, 20), detail: { kcsOutsideBand: outside.length }, sourceLatestAt });
   }
-  // Time-to-Mastery: attempts until the posterior first reaches the bar, for
-  // learner × KC pairs whose FIRST attempt is inside the window (diagnostic).
+  // Time-to-Mastery (Appendix C 1.1, diagnostic): attempts until the
+  // posterior first reaches the bar, per learner x KC in the window, from
+  // every evidence source (B.6: one mastery model). The median overall, and
+  // per KC and per age band (GAP-FIX-R4), to be read beside the practice band.
+  const bands = new Map((src.ageBands ?? []).map((r) => [r.user_id, r.age_band]));
   const pairs = groupBy([...src.kcAttempts].sort((a, b) => a.created_at.localeCompare(b.created_at)), (r) => `${r.user_id}|${r.kc_id}`);
   const counts: number[] = [];
+  const byKc = new Map<string, number[]>();
+  const byBand = new Map<string, number[]>();
   for (const rs of pairs.values()) {
     const at = rs.findIndex((r) => Number(r.p_known_after) >= T.masteryPosterior);
-    if (at >= 0) counts.push(at + 1);
+    if (at < 0) continue;
+    counts.push(at + 1);
+    const kc = rs[0]!.kc_key ?? rs[0]!.kc_id;
+    byKc.set(kc, [...(byKc.get(kc) ?? []), at + 1]);
+    const band = bands.get(rs[0]!.user_id) ?? 'unknown';
+    byBand.set(band, [...(byBand.get(band) ?? []), at + 1]);
   }
-  counts.sort((a, b) => a - b);
-  const median = counts.length === 0 ? null : counts.length % 2 === 1 ? counts[(counts.length - 1) / 2]! : (counts[counts.length / 2 - 1]! + counts[counts.length / 2]!) / 2;
-  return reading(def.id, { status: counts.length === 0 ? 'insufficient_data' : 'diagnostic', value: median, sample: counts.length, detail: { pairs: pairs.size }, sourceLatestAt });
+  const breakdown: Breakdown[] = [
+    ...MASTERY_AGE_BANDS.filter((b) => byBand.has(b)).map((b): Breakdown => ({ key: `band:${b}`, value: median(byBand.get(b)!), sample: byBand.get(b)!.length, status: 'diagnostic' })),
+    ...[...byKc.keys()].sort().map((kc): Breakdown => ({ key: `kc:${kc}`, value: median(byKc.get(kc)!), sample: byKc.get(kc)!.length, status: 'diagnostic' })),
+  ];
+  return reading(def.id, {
+    status: counts.length === 0 ? 'insufficient_data' : 'diagnostic',
+    value: median(counts),
+    sample: counts.length,
+    breakdown,
+    detail: { pairs: pairs.size, kcs: byKc.size, ageBands: src.ageBands ? 'read' : 'unavailable' },
+    sourceLatestAt,
+  });
 }
 
 // ── Appendix C 1.1 / 1.2 signals the Learning Quality tab already computes ─

@@ -54,6 +54,7 @@ import {
   type KcAttemptRow,
   type LearningSignalSources,
   type QualitySources,
+  type RetentionCell,
   type ScoreRow,
   type SignalReading,
   type WindowSessionRow,
@@ -223,6 +224,32 @@ async function rpcRows<T>(name: string, body: Record<string, unknown>, schema: z
   return parsed.success ? parsed.data : null;
 }
 
+const RetentionRows = z.array(z.object({ kc_key: z.string(), window_days: count, learners: count, correct: count }));
+
+/**
+ * Appendix C 1.1 Delayed Retention (GAP-FIX-R4, 0235). The latest recorded
+ * release's frozen cells are the comparison; the current period runs from
+ * that release's period end (the reviews this release has seen so far), or
+ * over the dashboard window when no release is recorded yet (the release-1
+ * baseline being established). Each read that fails is null.
+ */
+export async function readDelayedRetention(since: Date, now: Date): Promise<{ current: RetentionCell[] | null; baseline: { releaseId: string; cells: RetentionCell[] } | null }> {
+  const recorded = await serviceRest<unknown>(
+    '/learning_retention_release_baseline?select=release_id,kc_key,window_days,learners,correct,period_end,recorded_at&order=recorded_at.desc,kc_key.asc&limit=3000',
+  );
+  const rows = z.array(z.object({ release_id: z.string(), period_end: z.string(), recorded_at: z.string() }).and(RetentionRows.element)).safeParse(recorded);
+  const latestRelease = rows.success && rows.data.length > 0 ? rows.data[0]!.release_id : null;
+  const baselineRows = rows.success && latestRelease ? rows.data.filter((r) => r.release_id === latestRelease) : [];
+  const periodStart = baselineRows.length > 0 ? baselineRows.reduce((m, r) => (r.period_end > m ? r.period_end : m), baselineRows[0]!.period_end) : since.toISOString();
+  const current = await rpcRows('learning_delayed_retention', { p_since: periodStart, p_until: now.toISOString(), p_mastery: T.masteryPosterior }, RetentionRows);
+  return {
+    current,
+    baseline: latestRelease
+      ? { releaseId: latestRelease, cells: baselineRows.map(({ kc_key, window_days, learners, correct }) => ({ kc_key, window_days, learners, correct })) }
+      : null,
+  };
+}
+
 /**
  * C.24 consolidates what the Learning Quality tab already computes (Appendix
  * C 1.1 and 1.2): the same RPCs learningQuality.ts and engagementHealth.ts
@@ -273,7 +300,7 @@ export async function collectSources(now: Date): Promise<QualitySources> {
   const [
     sessions, scores, priorScores, firings, endSignals, alliance, allianceBaseline, renegotiations,
     trajectory, routing, dialogue, ladder, gate, killSwitchAudit, activeRows, profiles, kcAttempts, retention, judgeCalibrations, learning, transfer,
-    releaseAudits, parentTimeToValue, canaryArms, ageCalibration,
+    releaseAudits, parentTimeToValue, canaryArms, ageCalibration, ageBands,
   ] = await Promise.all([
     readAll<WindowSessionRow>(
       `/tutor_sessions?select=id,character,tier,locale,ended_at,turn_count,evaluation_rubric_hash,close_reason,closing_script,opening,end_signal_evaluated,telemetry_mode,telemetry_evaluated_turns,telemetry_action_turns` +
@@ -302,8 +329,10 @@ export async function collectSources(now: Date): Promise<QualitySources> {
     readAll<AuditRow>(`/audit_logs?select=action,created_at,detail&action=like.mentor.kill_switch.*&order=created_at.asc`),
     readAll<{ user_id: string }>(`/tutor_sessions?select=user_id&started_at=gte.${iso(currentProfiles)}&order=started_at.asc`),
     countServiceRows(`/learner_disposition_profile?updated_at=gte.${iso(currentProfiles)}&select=user_id`),
-    readAll<KcAttemptRow>(`/kc_attempt?select=user_id,kc_id,correct,p_known_after,created_at&source=eq.segment_grade&created_at=gte.${iso(since)}&order=created_at.asc`),
-    serviceRest<{ bucket: string; n: number; avg_first_attempt_score: number }[]>('/rpc/admin_retention_at_distance', { method: 'POST', body: '{}' }),
+    // Every evidence source (B.6: one mastery model); the practice band keeps to Mentor practice by `source`.
+    readAll<KcAttemptRow & { kc?: { key: string } | null }>(`/kc_attempt?select=user_id,kc_id,source,correct,p_known_after,created_at,kc(key)&created_at=gte.${iso(since)}&order=created_at.asc`),
+    // GAP-FIX-R4 (Appendix C 1.1): Delayed Retention per KC, against the latest recorded release (0235).
+    readDelayedRetention(since, now),
     readCalibrationRows(),
     collectLearningSignals(now),
     // GAP-FIX-R1 (Appendix C 1.1): v2 practice vs transfer first-try success (0207).
@@ -320,6 +349,8 @@ export async function collectSources(now: Date): Promise<QualitySources> {
     ),
     // GAP-FIX-R3 (C.1, Appendix F 1.3): Age-Tier Calibration Coverage over the window (0232).
     readAgeCalibrationCoverage(since, now),
+    // GAP-FIX-R4 (Appendix C 1.1): Time-to-Mastery by age band; bands only (0235).
+    rpcRows('learning_kc_learner_age_bands', { p_since: iso(since) }, z.array(z.object({ user_id: z.string(), age_band: z.string() }))),
   ]);
   const arms = canaryArms === null ? null : CanaryArmRows.safeParse(canaryArms);
   const audits = ReleaseAuditRows.safeParse(releaseAudits);
@@ -348,8 +379,10 @@ export async function collectSources(now: Date): Promise<QualitySources> {
     judgeCalibrations,
     killSwitchAudit,
     completeness: activeRows === null || profiles === null ? null : { active: new Set(activeRows.map((r) => r.user_id)).size, current: profiles },
-    kcAttempts,
-    retention: Array.isArray(retention) ? retention : null,
+    kcAttempts: kcAttempts === null ? null : kcAttempts.map(({ kc, ...row }) => (kc?.key ? { ...row, kc_key: kc.key } : row)),
+    retention: retention.current,
+    retentionBaseline: retention.baseline,
+    ageBands,
     learning,
     transfer: Array.isArray(transfer) ? transfer.map((r) => ({ ...r, first_attempts: Number(r.first_attempts), successes: Number(r.successes) })) : null,
     releaseAudits: audits.success ? audits.data : null,

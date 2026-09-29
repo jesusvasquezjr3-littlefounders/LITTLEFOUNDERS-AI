@@ -1,4 +1,4 @@
-import type { DashboardSignal, MentorQualityDashboardData, OwnerRole, SignalCategory, SignalStatus } from './mentorQualityApi';
+import type { DashboardSignal, MentorQualityDashboardData, OwnerRole, SignalCategory, SignalReading, SignalStatus } from './mentorQualityApi';
 
 /*
  * C.24 preview fixtures for the isolated staff surface (`?screen=staff-mentor-quality`).
@@ -101,6 +101,28 @@ const READINGS: Record<string, [SignalStatus, number | null, number]> = {
   'engagement.autonomy_adoption': ['insufficient_data', null, 0],
 };
 
+/** GAP-FIX-R4 (Appendix C 1.1): the per-KC / window and per-age-band rows the dashboard lists. */
+const BREAKDOWNS: Record<string, { rows: SignalReading['breakdown']; detail?: SignalReading['detail'] }> = {
+  'learning.delayed_retention': {
+    detail: { baselineRelease: '2026.09.1' },
+    rows: [
+      { key: 'kc:money.saving-basics/days:30', value: 0.82, sample: 64, status: 'ok' },
+      { key: 'kc:money.saving-basics/days:60', value: 0.71, sample: 41, status: 'breach' },
+      { key: 'kc:money.saving-basics/days:90', value: 0.69, sample: 12, status: 'insufficient_data' },
+      { key: 'kc:entrepreneurship.pricing-a-product/days:30', value: 0.77, sample: 38, status: 'ok' },
+    ],
+  },
+  'learning.time_to_mastery': {
+    rows: [
+      { key: 'band:6-9', value: 6, sample: 44, status: 'diagnostic' },
+      { key: 'band:10-12', value: 5, sample: 71, status: 'diagnostic' },
+      { key: 'band:13-17', value: 4.5, sample: 60, status: 'diagnostic' },
+      { key: 'band:unknown', value: 5, sample: 37, status: 'diagnostic' },
+      { key: 'kc:money.saving-basics', value: 4, sample: 90, status: 'diagnostic' },
+    ],
+  },
+};
+
 export function previewMentorQuality(options: { fresh?: string | null; viewer?: string | null; empty?: boolean } = {}): MentorQualityDashboardData {
   const now = Date.parse('2026-09-25T12:00:00Z');
   const ageHours = options.fresh === 'stale' ? 30 : options.fresh === 'never' ? null : 2;
@@ -113,7 +135,7 @@ export function previewMentorQuality(options: { fresh?: string | null; viewer?: 
       const r = READINGS[id];
       return {
         id, category, ownerRole, instrumented, requirement: 'C.24', threshold: { kind: 'diagnostic', value: null }, pending: null,
-        reading: ageHours === null || !r ? null : { id, status: r[0], value: r[1], sample: r[2], breakdown: [] },
+        reading: ageHours === null || !r ? null : { id, status: r[0], value: r[1], sample: r[2], breakdown: BREAKDOWNS[id]?.rows ?? [], ...(BREAKDOWNS[id]?.detail ? { detail: BREAKDOWNS[id]!.detail } : {}) },
         stale: ageHours === null || ageHours > 24,
       };
     }),

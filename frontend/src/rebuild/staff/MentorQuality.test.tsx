@@ -128,6 +128,25 @@ describe('MentorQualityDashboard', () => {
     }
   });
 
+  it('GAP-FIX-R4: lists Delayed Retention per KC and window against its release, and Time-to-Mastery per age band', () => {
+    const { container } = renderDashboard();
+    const retention = container.querySelector('[data-signal="learning.delayed_retention"]')!;
+    const toggle = retention.querySelector('button')!;
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    fireEvent.click(toggle);
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    expect(retention.textContent).toContain('money.saving-basics, 60 days');
+    expect(retention.textContent).toContain('Compared with release 2026.09.1');
+    expect(retention.querySelector('[data-key="kc:money.saving-basics/days:60"]')?.getAttribute('data-status')).toBe('breach');
+    const mastery = container.querySelector('[data-signal="learning.time_to_mastery"]')!;
+    fireEvent.click(mastery.querySelector('button')!);
+    expect(mastery.textContent).toContain('Ages 6-9');
+    expect(mastery.textContent).toContain('Age not known');
+    // Every breakdown string exists in every locale; a signal without a listed breakdown shows no toggle.
+    for (const copy of Object.values(COPY)) for (const value of Object.values(copy.breakdown)) expect(value.length).toBeGreaterThan(0);
+    expect(container.querySelector('[data-signal="learning.practice_success_band"] button')).toBeNull();
+  });
+
   it('signs the weekly review for a role the reader owns, and says when it was already signed', async () => {
     const onReview = vi.fn(async () => 'already' as const);
     renderDashboard({ onReview });

@@ -124,6 +124,56 @@ describe('C.24 registry', () => {
   });
 });
 
+describe('GAP-FIX-R4: Delayed Retention as Appendix C 1.1 defines it', () => {
+  const cell = (kc: string, days: number, learners: number, correct: number) => ({ kc_key: kc, window_days: days, learners, correct });
+
+  it('is judged release over release, not diagnostic', () => {
+    const def = SIGNALS.find((s) => s.id === 'learning.delayed_retention')!;
+    expect(def.threshold).toEqual({ kind: 'release_non_decline', value: T.retentionDeclineTolerance });
+    expect(def.minSample).toBe(T.retentionMinLearners);
+    expect(def.source).toMatch(/learning_delayed_retention/);
+    expect(def.source).not.toMatch(/admin_retention_at_distance/);
+  });
+
+  it('with no recorded release, reads the period as the release-1 baseline being set (diagnostic, never a pass)', () => {
+    const r = evaluateSignals({ ...empty(), retention: [cell('money.saving', 30, 40, 32), cell('money.saving', 60, 10, 6)], retentionBaseline: null });
+    const reading = readingOf(r, 'learning.delayed_retention');
+    expect(reading).toMatchObject({ status: 'diagnostic', value: 38 / 50, sample: 50 });
+    expect(reading.detail).toMatchObject({ baselineRelease: null, kcs: 1 });
+    expect(reading.breakdown.map((b) => [b.key, b.status])).toEqual([['kc:money.saving/days:30', 'diagnostic'], ['kc:money.saving/days:60', 'diagnostic']]);
+    expect(r.anomalies.filter((a) => a.signalId === 'learning.delayed_retention')).toEqual([]);
+  });
+
+  it('breaches one KC x window that fell more than the tolerance below the latest release, and passes a flat one', () => {
+    const r = evaluateSignals({
+      ...empty(),
+      retention: [cell('money.saving', 30, 40, 28), cell('money.saving', 90, 30, 24), cell('money.pricing', 60, 25, 20), cell('money.pricing', 30, 5, 0)],
+      retentionBaseline: { releaseId: '2026.09.1', cells: [cell('money.saving', 30, 50, 40), cell('money.saving', 90, 30, 24), cell('money.pricing', 60, 30, 23), cell('money.pricing', 30, 30, 24)] },
+    });
+    const reading = readingOf(r, 'learning.delayed_retention');
+    expect(reading.status).toBe('breach');
+    const byKey = Object.fromEntries(reading.breakdown.map((b) => [b.key, b.status]));
+    // 70% against 80%: a decline. 80% against 80%: flat is the floor. 80% against 76.7%: an improvement. 5 learners: too few to judge.
+    expect(byKey).toEqual({
+      'kc:money.pricing/days:30': 'insufficient_data', 'kc:money.pricing/days:60': 'ok',
+      'kc:money.saving/days:30': 'breach', 'kc:money.saving/days:90': 'ok',
+    });
+    const flags = r.anomalies.filter((a) => a.signalId === 'learning.delayed_retention');
+    expect(flags).toHaveLength(1);
+    expect(flags[0]).toMatchObject({ kind: 'relative_drop', scope: 'kc:money.saving/days:30', value: 0.7, threshold: 0.8, owner: 'pedagogical_lead', requirement: 'B.6' });
+    // The flag scope fits the flag table's CHECK (0145).
+    expect(flags[0]!.scope).toMatch(/^[a-z]+(:[A-Za-z0-9_.:-]+)?(\/[a-z]+:[A-Za-z0-9_.:-]+)*$/);
+  });
+
+  it('is ok when every compared cell held, and unavailable when the read failed', () => {
+    const held = evaluateSignals({ ...empty(), retention: [cell('money.saving', 30, 40, 31)], retentionBaseline: { releaseId: 'r1', cells: [cell('money.saving', 30, 40, 32)] } });
+    expect(readingOf(held, 'learning.delayed_retention').status).toBe('ok');
+    const failed = evaluateSignals({ ...empty(), retention: null });
+    expect(readingOf(failed, 'learning.delayed_retention').status).toBe('unavailable');
+    expect(failed.anomalies.some((a) => a.signalId === 'learning.delayed_retention' && a.kind === 'source_unavailable')).toBe(true);
+  });
+});
+
 describe('C.24 consolidates the Learning Quality tab (Appendix C 1.1 and 1.2)', () => {
   const week = (i: number) => new Date(Date.UTC(2026, 5, 1 + i * 7)).toISOString().slice(0, 10);
   const learning = (patch: Partial<QualitySources['learning']>): QualitySources => ({ ...empty(), learning: { ...empty().learning, ...patch } });
@@ -333,6 +383,29 @@ describe('C.24 non-rubric signals', () => {
     expect(readingOf(r, 'learning.time_to_mastery').status).toBe('diagnostic');
     // u0, u1 reach the bar on their 2nd attempt, u2, u3 on their 1st: median 1.5.
     expect(readingOf(r, 'learning.time_to_mastery').value).toBe(1.5);
+  });
+
+  it('GAP-FIX-R4: reads Time-to-Mastery per KC and per age band, from every evidence source', () => {
+    const at = (user: string, kc: string, p: number, source = 'segment_grade') => ({ user_id: user, kc_id: `id-${kc}`, kc_key: kc, source, correct: true, p_known_after: p, created_at: recent(3) });
+    const attempts = [
+      at('a', 'money.saving', 0.5), at('a', 'money.saving', 0.9),
+      at('b', 'money.saving', 0.4, 'course_lesson'), at('b', 'money.saving', 0.6, 'course_lesson'), at('b', 'money.saving', 0.9, 'course_lesson'),
+      at('c', 'money.pricing', 0.95), at('d', 'money.pricing', 0.3),
+    ];
+    const r = evaluateSignals({ ...empty(), kcAttempts: attempts, ageBands: [{ user_id: 'a', age_band: '6-9' }, { user_id: 'b', age_band: '6-9' }, { user_id: 'c', age_band: '13-17' }] });
+    const ttm = readingOf(r, 'learning.time_to_mastery');
+    expect(ttm).toMatchObject({ status: 'diagnostic', value: 2, sample: 3 });
+    expect(ttm.breakdown).toEqual([
+      { key: 'band:6-9', value: 2.5, sample: 2, status: 'diagnostic' },
+      { key: 'band:13-17', value: 1, sample: 1, status: 'diagnostic' },
+      { key: 'kc:money.pricing', value: 1, sample: 1, status: 'diagnostic' },
+      { key: 'kc:money.saving', value: 2.5, sample: 2, status: 'diagnostic' },
+    ]);
+    // A learner with no age record reads as unknown, never as a guessed band.
+    const unknown = evaluateSignals({ ...empty(), kcAttempts: attempts, ageBands: null });
+    expect(readingOf(unknown, 'learning.time_to_mastery').breakdown[0]).toMatchObject({ key: 'band:unknown', sample: 3 });
+    // The practice band keeps to the Mentor's graded practice: course-lesson evidence is not a practice exercise.
+    expect(readingOf(r, 'learning.practice_success_band').sample).toBe(4);
   });
 
   it('never reports a diagnostic signal as a breach on its own', () => {

@@ -22,6 +22,7 @@ import { REGISTERS } from '@/rebuild/design/learnerRegisterPolicy.generated';
 import { learnCopy } from '@/rebuild/learning/learnCopy';
 import { loadLessonClientDocument, type LessonClientDocument } from '@/rebuild/learning/lessonDocument';
 import { clientScorerVerdict } from '@/rebuild/learning/clientScorerVerdict';
+import { createTimeOnTask, watchTimeOnTask, type TimeOnTaskClock } from '@/rebuild/learning/timeOnTask';
 import { GuidedReviewOffer, guidedReviewOfferSchema, type GuidedReviewOfferValue } from '@/rebuild/learning/GuidedReviewOffer';
 import { fetchLearnerRegister, registerForBand, registerOf, type RegisterState } from '@/rebuild/learning/learnerRegister';
 import { clearCoursesCache } from './coursesCache';
@@ -141,6 +142,18 @@ function LessonRouteSession() {
   const v2EnteredAt = useRef(Date.now());
   // Bible 08 §11 / B.10: help-ladder steps opened per segment, sent with its next grade.
   const hintsRef = useRef<Record<string, number>>({});
+  // GAP-FIX-R4 (Appendix C 1.2; Appendix P Part 7.5): time on each v2 step, idle capped, sent beside its Check or
+  // Continue as an analytics field only (Core never grades on it).
+  const timeOnTask = useRef<TimeOnTaskClock | null>(null);
+  useEffect(() => {
+    const clock = createTimeOnTask(undefined, document.visibilityState !== 'hidden');
+    timeOnTask.current = clock;
+    const stop = watchTimeOnTask(clock);
+    return () => {
+      stop();
+      timeOnTask.current = null;
+    };
+  }, [lessonId]);
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [loadRevision, setLoadRevision] = useState(0);
   const retry = useCallback(() => setLoadRevision((revision) => revision + 1), []);
@@ -243,6 +256,11 @@ function LessonRouteSession() {
     };
   }, [lessonId, getToken, loadRevision]);
 
+  // The first step is shown once the lesson is ready and the recall is done: loading and recall time are not time on task.
+  useEffect(() => {
+    if (state.status === 'ready' && recallDone) timeOnTask.current?.take();
+  }, [state.status, recallDone]);
+
   // W2L.3: an offline screen retries by itself when the connection comes back; the button stays for the learner.
   const offline = state.status === 'error' && state.offline;
   useEffect(() => {
@@ -259,10 +277,12 @@ function LessonRouteSession() {
     if (!attemptToken || !token) throw new Error('No lesson attempt token');
     const hints = hintsRef.current[segmentId];
     const parity = clientScorerVerdict(document, segmentId, answer);
+    const seconds = timeOnTask.current?.take();
     const { data, error } = await api<{ verdict: { correct: boolean; score: number; judgment?: { quality?: unknown }; diagnostic?: unknown }; replayed: boolean; retry_attempt_token?: string; guided_review?: unknown }>(`/learn/lessons/${lessonId}/grade`, {
       method: 'POST', token, body: { segment_id: segmentId, answer, run_id: attempt.runId, attempt_token: attemptToken, ...(hints ? { hints_used: hints } : {}),
         // Appendix P Part 8 (GAP-FIX-R2): the browser scorer's advisory reading; Core only records whether it agreed.
-        ...(parity ? { client_verdict: parity } : {}) },
+        ...(parity ? { client_verdict: parity } : {}),
+        ...(seconds !== undefined ? { time_spent_seconds: seconds } : {}) },
     });
     if (error || !data || (data.verdict.score !== 0 && data.verdict.score !== 100)) throw new Error('Could not grade v2 segment');
     const offer = guidedReviewOfferSchema.safeParse(data.guided_review);
@@ -298,8 +318,9 @@ function LessonRouteSession() {
     const attempt = state.status === 'ready' ? state.v2Attempt : null;
     const token = await getToken();
     if (!attempt || attempt.versionId !== document.version_id || !token) return false;
+    const seconds = timeOnTask.current?.take();
     const { error } = await api<{ recorded: boolean }>(`/learn/lessons/${lessonId}/v2-runs/${attempt.runId}/views`, {
-      method: 'POST', token, body: { segment_id: segmentId },
+      method: 'POST', token, body: { segment_id: segmentId, ...(seconds !== undefined ? { time_spent_seconds: seconds } : {}) },
     });
     return !error;
   }, [getToken, lessonId, state]);

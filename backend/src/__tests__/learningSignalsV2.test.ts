@@ -1,4 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { readdirSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
 import { loadV2LearningSignals } from '../services/learningQuality.js';
 import { evaluateSignals, type QualitySources } from '../services/pedagogy/mentorQuality.js';
@@ -48,6 +51,39 @@ describe('v2 learning signals', () => {
     expect(reading.breakdown.map((b) => b.key)).toEqual(['kc:kc-a/practice', 'kc:kc-a/transfer']);
     const failed = evaluateSignals({ ...(baseSources()), transfer: null } as QualitySources).readings.find((r) => r.id === 'learning.transfer_success');
     expect(failed?.status).toBe('unavailable');
+  });
+});
+
+describe('GAP-FIX-R4: Session Efficiency counts v2 lesson work (Appendix C 1.2, Appendix P Part 7.5)', () => {
+  const dir = join(dirname(fileURLToPath(import.meta.url)), '../../../database/migrations');
+  const files = readdirSync(dir).filter((f) => f.endsWith('.sql')).sort();
+  const sql = (name: string) => readFileSync(join(dir, name), 'utf8').split(String.fromCharCode(13)).join('');
+  /** The body of the LAST migration that defines a function: the one production runs. */
+  const latest = (fn: string) => {
+    const file = [...files].reverse().find((f) => sql(f).includes(`FUNCTION public.${fn}(`))!;
+    const text = sql(file);
+    const start = text.indexOf(`FUNCTION public.${fn}(`);
+    return { file, body: text.slice(start, text.indexOf('$$;', text.indexOf('$$', start) + 2)) };
+  };
+
+  it('sums graded seconds from the v1 attempts and the v2 receipts and views', () => {
+    const { body } = latest('learning_session_efficiency');
+    for (const table of ['lesson_segment_attempts', 'lesson_v2_grade_receipts', 'lesson_v2_segment_views']) expect(body).toContain(`public.${table}`);
+    expect(body.match(/time_spent_seconds/g)?.length).toBeGreaterThanOrEqual(3);
+    // Still capped at the day's visible session time.
+    expect(body).toContain('LEAST(COALESCE(g.seconds, 0), s.seconds)');
+  });
+
+  it('keeps time on task out of every grading and completion function', () => {
+    for (const fn of ['record_v2_lesson_grade', 'record_v2_lesson_grade_ordered', 'record_v2_lesson_grade_retry', 'record_v2_cpa_grade_retry', 'complete_v2_lesson', 'complete_v2_mixed_lesson']) {
+      const found = [...files].reverse().find((f) => sql(f).includes(`FUNCTION public.${fn}(`));
+      if (!found) continue;
+      expect(latest(fn).body, fn).not.toContain('time_spent_seconds');
+    }
+    // The one writer sets it once, only while NULL, bounded 0-7200.
+    const { body } = latest('record_v2_time_on_task');
+    expect(body).toContain('time_spent_seconds IS NULL');
+    expect(body).toContain('NOT BETWEEN 0 AND 7200');
   });
 });
 

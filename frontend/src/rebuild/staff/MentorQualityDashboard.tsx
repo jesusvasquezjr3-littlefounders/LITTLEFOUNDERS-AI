@@ -82,7 +82,22 @@ export interface MentorQualityCopy {
   reviewSigned: string;
   reviewAlready: string;
   signal: Record<string, Record<string, string>>;
+  /** GAP-FIX-R4 (Appendix C 1.1): the per-KC / per-window and per-age-band rows of the learning signals. */
+  breakdown: {
+    show: string;
+    hide: string;
+    window: string;
+    band: string;
+    adult: string;
+    unknown: string;
+    skill: string;
+    baseline: string;
+    noBaseline: string;
+  };
 }
+
+/** Signals whose breakdown the dashboard lists (Appendix C 1.1: per KC and window, per KC and age band). */
+export const BREAKDOWN_SIGNALS: readonly string[] = ['learning.delayed_retention', 'learning.time_to_mastery'];
 
 export type FlagActionResult = 'done' | 'not_owner' | 'changed' | 'failed';
 export type ReviewActionResult = 'done' | 'already' | 'not_owner' | 'failed';
@@ -198,6 +213,38 @@ export function MentorQualityFlags({ copy, locale, dark, data, onAcknowledge, on
   </Panel>;
 }
 
+/** A breakdown key in words: `kc:<key>/days:<n>`, `kc:<key>`, `band:<band>`. The KC key is catalog data. */
+export function breakdownLabel(copy: MentorQualityCopy, key: string): string {
+  const parts = Object.fromEntries(key.split('/').map((p) => [p.slice(0, p.indexOf(':')), p.slice(p.indexOf(':') + 1)]));
+  if (parts.band) return parts.band === 'adult' ? copy.breakdown.adult : parts.band === 'unknown' ? copy.breakdown.unknown : fill(copy.breakdown.band, { band: parts.band });
+  if (parts.kc && parts.days) return fill(copy.breakdown.window, { kc: parts.kc, days: parts.days });
+  if (parts.kc) return fill(copy.breakdown.skill, { kc: parts.kc });
+  return key;
+}
+
+function SignalBreakdown({ copy, locale, signal }: { copy: MentorQualityCopy; locale: string; signal: DashboardSignal }) {
+  const [open, setOpen] = useState(false);
+  const id = useId();
+  const rows = signal.reading?.breakdown ?? [];
+  if (!BREAKDOWN_SIGNALS.includes(signal.id) || rows.length === 0) return null;
+  const baseline = signal.reading?.detail?.baselineRelease;
+  return <div className="lf-quality-breakdown">
+    <Button size="sm" variant="secondary" aria-expanded={open} aria-controls={id} onClick={() => setOpen((o) => !o)}>{open ? copy.breakdown.hide : copy.breakdown.show}</Button>
+    <div id={id} hidden={!open}>
+      {signal.id === 'learning.delayed_retention'
+        ? <p data-copy-role="body" className="lf-quality-muted">{typeof baseline === 'string' ? fill(copy.breakdown.baseline, { release: baseline }) : copy.breakdown.noBaseline}</p> : null}
+      <ul className="lf-quality-breakdown-list">
+        {rows.map((row) => <li key={row.key} data-key={row.key} data-status={row.status}>
+          <span data-copy-role="body">{breakdownLabel(copy, row.key)}</span>
+          {row.value !== null ? <span data-copy-role="data" className="lf-quality-data">{formatValue(signal.id, row.value, locale)}</span> : null}
+          <span data-copy-role="body" className="lf-quality-muted">{fill(copy.sample, { n: row.sample })}</span>
+          <span data-copy-role="body" className="lf-quality-status">{row.status === 'ok' || row.status === 'breach' ? <StatusMark correct={row.status === 'ok'} /> : null}{copy.signalStatus[row.status]}</span>
+        </li>)}
+      </ul>
+    </div>
+  </div>;
+}
+
 function SignalRow({ copy, locale, signal }: { copy: MentorQualityCopy; locale: string; signal: DashboardSignal }) {
   const status: SignalStatus | null = signal.instrumented === 'not_instrumented' ? 'not_instrumented'
     : signal.instrumented === 'external' ? 'external' : signal.reading?.status ?? null;
@@ -213,6 +260,7 @@ function SignalRow({ copy, locale, signal }: { copy: MentorQualityCopy; locale: 
       {signal.reading && status !== 'not_instrumented' && status !== 'external' && signal.reading.sample > 0
         ? <span data-copy-role="body" className="lf-quality-muted">{fill(copy.sample, { n: signal.reading.sample })}</span> : null}
       <span data-copy-role="body" className="lf-quality-muted">{copy.ownerRole[signal.ownerRole]}</span>
+      <SignalBreakdown copy={copy} locale={locale} signal={signal} />
     </dd>
   </div>;
 }

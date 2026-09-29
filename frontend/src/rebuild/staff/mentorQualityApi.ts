@@ -78,6 +78,8 @@ export interface SignalReading {
   value: number | null;
   sample: number;
   breakdown: { key: string; value: number | null; sample: number; status: SignalStatus }[];
+  /** Small closed-vocabulary numbers (e.g. the retention baseline release). Absent from older snapshots. */
+  detail?: Record<string, number | string | null>;
 }
 
 export interface DashboardSignal {

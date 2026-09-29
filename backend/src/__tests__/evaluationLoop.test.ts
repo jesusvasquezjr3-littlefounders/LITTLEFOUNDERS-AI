@@ -29,6 +29,9 @@ interface World {
   /** GAP-FIX-R3: the mentor_age_calibration_coverage answer and the canary-arm sessions. */
   ageCoverage?: unknown[];
   canaryArms?: unknown[];
+  /** GAP-FIX-R4: the recorded release rows and the current Delayed Retention cells. */
+  retentionBaseline?: unknown[];
+  retention?: unknown[];
 }
 
 function stubPostgrest(world: World, calls: Call[]) {
@@ -84,6 +87,8 @@ function stubPostgrest(world: World, calls: Call[]) {
         return Promise.resolve(new Response(null, { status: 204 }));
       }
       if (url.includes('/rest/v1/rpc/mentor_age_calibration_coverage')) return Promise.resolve(jsonResponse(200, world.ageCoverage ?? []));
+      if (url.includes('/rest/v1/learning_retention_release_baseline')) return Promise.resolve(jsonResponse(200, world.retentionBaseline ?? []));
+      if (url.includes('/rest/v1/rpc/learning_delayed_retention')) return Promise.resolve(jsonResponse(200, world.retention ?? []));
       if (url.includes('/rest/v1/tutor_sessions?select=id,canary_proposal_id')) return Promise.resolve(jsonResponse(200, world.canaryArms ?? []));
       if (url.includes('/rest/v1/rpc/')) return Promise.resolve(jsonResponse(200, []));
       if (url.includes('/rest/v1/')) return Promise.resolve(jsonResponse(200, []));
@@ -153,6 +158,29 @@ describe('C.21 the evaluation pass', () => {
     expect(flags.find((f) => f.signal_id === 'safety.age_tier_calibration')).toMatchObject({ kind: 'threshold_breach', owner_role: 'safety_trust_lead', severity: 'urgent', requirement: 'C.1' });
     const snapshot = JSON.parse(calls.find((c) => c.url.includes('mentor_quality_snapshot') && c.method === 'POST')!.body!) as { signals: { id: string; reading?: { status: string } }[] };
     expect(snapshot.signals.map((s) => s.id)).toEqual(expect.arrayContaining(['safety.fracture_closure', 'safety.age_tier_calibration', 'canary.arm_comparison']));
+  });
+
+  it('GAP-FIX-R4: reads Delayed Retention since the latest recorded release and judges it against that release', async () => {
+    const calls: Call[] = [];
+    const base = (kc: string, learners: number, correct: number, release = '2026.09.1', periodEnd = '2026-09-10T00:00:00Z') =>
+      ({ release_id: release, kc_key: kc, window_days: 30, learners, correct, period_end: periodEnd, recorded_at: periodEnd });
+    stubPostgrest({
+      backlog: [],
+      retentionBaseline: [base('money.saving', 40, 36), base('money.pricing', 40, 30), base('money.saving', 40, 20, '2026.08.1', '2026-08-01T00:00:00Z')],
+      retention: [{ kc_id: 'k1', kc_key: 'money.saving', window_days: 30, learners: 40, correct: 28, correct_share: 0.7 }],
+    }, calls);
+    await runEvaluationPass({ now: NOW, trigger: 'operator' });
+    const rpc = calls.find((c) => c.url.includes('/rpc/learning_delayed_retention'))!;
+    expect(JSON.parse(rpc.body!)).toEqual({ p_since: '2026-09-10T00:00:00Z', p_until: NOW.toISOString(), p_mastery: 0.85 });
+    // Time-to-Mastery reads every evidence source with the KC key, and the age bands (bands only).
+    const attempts = calls.find((c) => c.url.includes('/rest/v1/kc_attempt?'))!;
+    expect(attempts.url).toContain('kc(key)');
+    expect(attempts.url).not.toContain('source=eq.');
+    expect(calls.some((c) => c.url.includes('/rpc/learning_kc_learner_age_bands'))).toBe(true);
+    expect(calls.some((c) => c.url.includes('admin_retention_at_distance'))).toBe(false);
+    const flags = calls.filter((c) => c.url.includes('mentor_quality_flag') && c.method === 'POST').map((c) => JSON.parse(c.body!) as Record<string, unknown>);
+    // 70% against the latest release's 90% (never the older release's 50%).
+    expect(flags.find((f) => f.signal_id === 'learning.delayed_retention')).toMatchObject({ kind: 'relative_drop', scope: 'kc:money.saving/days:30', owner_role: 'pedagogical_lead' });
   });
 
   it('scores NOTHING from a batch whose honesty ledger could not be read (a missing ledger would read as clean)', async () => {
