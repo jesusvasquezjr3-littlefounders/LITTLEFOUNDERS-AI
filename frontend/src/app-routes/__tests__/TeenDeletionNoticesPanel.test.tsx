@@ -27,7 +27,7 @@ describe('TeenDeletionNoticesPanel (D-14 (b))', () => {
     mocks.api.mockResolvedValue({ data: { notices: [NOTICE] }, error: null });
     const { container } = render(<TeenDeletionNoticesPanel token="jwt" />);
     expect(await screen.findByRole('heading', { name: copy.title })).toBeVisible();
-    expect(screen.getByText('Mateo asked to delete their account. It is deleted on October 12, 2026.')).toBeVisible();
+    expect(screen.getByText('Mateo asked to delete their account. Deletion date: October 12, 2026.')).toBeVisible();
     expect(screen.getByText('Mateo can keep it by signing in before then.')).toBeVisible();
     expect(screen.queryByRole('button')).toBeNull();
     expect(container.querySelector('[data-deletion-notice]')).not.toBeNull();

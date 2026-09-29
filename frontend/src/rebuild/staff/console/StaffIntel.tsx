@@ -609,18 +609,6 @@ function OperationsView({ api }: { api: StaffApi }) {
     : <Chip tone="sky" glyph="info">{status(value)}</Chip>);
   return <div className="lf-staff-section">
     <InlineNotice tone="info">{t.body.readOnly}</InlineNotice>
-    <Card heading={t.heading.delivery}>
-      <p data-copy-role="body" className="lf-staff-muted">{fill(t.body.deliveryIntro, { n: format.number(DELIVERY_WINDOW_DAYS) })}</p>
-      {delivery.load.state === 'loading' ? <Loading />
-        : delivery.load.state === 'error' ? <LoadFailure code={delivery.load.code} onRetry={delivery.reload} />
-          : delivery.load.state === 'ready' ? <Facts items={[
-            { id: 'delivered', label: t.body.delivered, value: fill(t.body.ofTotal, { n: format.number(delivery.load.data.delivered), total: format.number(delivery.load.data.triggered) }) },
-            { id: 'deliveryRate', label: t.body.deliveryRate, value: <TargetValue value={delivery.load.data.rate} target={delivery.load.data.target} /> },
-            { id: 'deliveryFailed', label: t.body.deliveryFailed, value: format.number(delivery.load.data.failed) },
-            { id: 'deliveryUnconfigured', label: t.body.deliveryUnconfigured, value: format.number(delivery.load.data.unconfigured) },
-            { id: 'deliveryPending', label: t.body.deliveryPending, value: format.number(delivery.load.data.pending) },
-          ]} /> : null}
-    </Card>
     <div className="lf-staff-pair">
       <section className="lf-staff-section" aria-label={t.heading.experiments}>
         {experiments.load.state === 'loading' ? <Loading />
@@ -650,6 +638,18 @@ function OperationsView({ api }: { api: StaffApi }) {
               ]} /> : null}
       </section>
     </div>
+    <Card heading={t.heading.delivery}>
+      <p data-copy-role="body" className="lf-staff-muted">{fill(t.body.deliveryIntro, { n: format.number(DELIVERY_WINDOW_DAYS) })}</p>
+      {delivery.load.state === 'loading' ? <Loading />
+        : delivery.load.state === 'error' ? <LoadFailure code={delivery.load.code} onRetry={delivery.reload} />
+          : delivery.load.state === 'ready' ? <Facts items={[
+            { id: 'delivered', label: t.body.delivered, value: fill(t.body.ofTotal, { n: format.number(delivery.load.data.delivered), total: format.number(delivery.load.data.triggered) }) },
+            { id: 'deliveryRate', label: t.body.deliveryRate, value: <TargetValue value={delivery.load.data.rate} target={delivery.load.data.target} /> },
+            { id: 'deliveryFailed', label: t.body.deliveryFailed, value: format.number(delivery.load.data.failed) },
+            { id: 'deliveryUnconfigured', label: t.body.deliveryUnconfigured, value: format.number(delivery.load.data.unconfigured) },
+            { id: 'deliveryPending', label: t.body.deliveryPending, value: format.number(delivery.load.data.pending) },
+          ]} /> : null}
+    </Card>
   </div>;
 }
 

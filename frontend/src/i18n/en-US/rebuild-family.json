@@ -577,7 +577,7 @@
   },
   "familyDeletionNotices": {
     "title": "Account deletion",
-    "body": "{name} asked to delete their account. It is deleted on {date}.",
+    "body": "{name} asked to delete their account. Deletion date: {date}.",
     "keep": "{name} can keep it by signing in before then.",
     "failed": "Account notices did not load.",
     "retry": "Try again"
