@@ -14,8 +14,14 @@ import { app, preview } from './helpers.mjs';
  */
 export const lane = 'profile';
 
+/** The account-settings preview states that show one Settings card in each of its states (GAP-FIX-R6 social). */
+export const SETTINGS_FOCUS_STATES = ['ageTeenBand', 'ageAdultByMonth', 'ageForm', 'agePending', 'ageApproved', 'ageRejected',
+  'discoverableConfirming', 'discoverableEnabled', 'discoverableSaving', 'discoverableFailed'];
+
 const TEEN_REQUEST_REPORT = '[data-social-audit="teen-connections"] [data-request-actions] > button[aria-haspopup="dialog"]:not(.lf-button--danger)';
 const TEEN_REQUEST_BLOCK = '[data-social-audit="teen-connections"] [data-request-actions] > .lf-button--danger';
+const AGE_CORRECTION_OPEN = '[data-setting="age-record"] button[aria-expanded="false"]';
+const DISCOVERABLE_SWITCH = '[data-setting="discoverable"] [role="switch"][aria-checked="false"]';
 
 export const states = [
   // P1 /profile
@@ -45,6 +51,22 @@ export const states = [
   // OD-9 4.2 (GAP-FIX-R3): a migrated 16-17 whose Tutor has not consented to the discoverable profile: no switch, one line.
   app('/profile/settings@teen-consent-required', '/profile/settings', 'settings-teen-consent', '[data-setting="discoverable"] .lf-notice--info',
     { readyAlso: ['[data-screen="settings"] .lf-settings-form'] }),
+  // GAP-FIX-R6 social (E.4 as amended by OD-3; S-04, OD-28): the age card in every kind Core answers, and the
+  // staff-reviewed correction: the form opened by a real press on "Request a correction", and a pending request.
+  app('/profile/settings@teen-age-correction', '/profile/settings', 'settings-teen', AGE_CORRECTION_OPEN,
+    { readyAlso: ['[data-setting="age-record"][data-age-record="teenBand"]'], open: [AGE_CORRECTION_OPEN], firstView: false }),
+  app('/profile/settings@teen-age-correction-pending', '/profile/settings', 'settings-teen-correction-pending',
+    '[data-setting="age-record"][data-correction="pending"] .lf-notice', { readyAlso: ['[data-screen="settings"] .lf-settings-form'] }),
+  app('/profile/settings@teen-age-month', '/profile/settings', 'settings-teen-month', '[data-setting="age-record"][data-age-record="teenMonth"]',
+    { readyAlso: ['[data-screen="settings"] .lf-settings-form'] }),
+  app('/profile/settings@adult-by-month', '/profile/settings', 'settings-adult-by-month', '[data-setting="age-record"][data-age-record="adultByMonth"]',
+    { readyAlso: ['[data-screen="settings"] .lf-settings-form', '.lf-analytics-choice [role="switch"]'] }),
+  // GAP-FIX-R6 social (OD-27 (2), S-03): the confirmation a 16-17-year-old answers before becoming findable, opened by
+  // a real press on the switch, and the card while the choice is on.
+  app('/profile/settings@teen-discoverable-confirm', '/profile/settings', 'settings-teen', DISCOVERABLE_SWITCH,
+    { open: [DISCOVERABLE_SWITCH], firstView: false }),
+  app('/profile/settings@teen-discoverable-on', '/profile/settings', 'settings-teen-discoverable-on',
+    '[data-setting="discoverable"] [role="switch"][aria-checked="true"]', { readyAlso: ['[data-screen="settings"] .lf-settings-form'] }),
   app('/profile/settings@kid-6-9', '/profile/settings', 'profile-kid', '[data-screen="settings"][data-age-band="6-9"] [data-field="username"]',
     { readyAlso: ['.lf-disposition dl', '.lf-account-deletion'] }),
   app('/profile/settings@guest', '/profile/settings', 'profile-guest', '[data-screen="settings"] .lf-card--primary', { readyAlso: ['.lf-account-deletion'] }),
@@ -71,6 +93,10 @@ export const states = [
   ...['loading', 'failed', 'offline', 'noUsername', 'noBadges', 'copied'].map((state) => preview(`own-profile@${state}`, { screen: 'own-profile', state })),
   ...['saving', 'failed', 'loadFailed', 'offline'].map((state) => preview(`look-editor@${state}`, { screen: 'look-editor', state })),
   ...['editing', 'errors', 'loading', 'failed'].map((state) => preview(`account-settings@${state}`, { screen: 'account-settings', state })),
+  // GAP-FIX-R6 social (E.4/OD-3, S-04, OD-27 (2)): every age-card kind and correction receipt, and every state of the
+  // discoverable card, by fixture. The correction form is opened by a real press, as a person opens it.
+  ...SETTINGS_FOCUS_STATES.filter((state) => state !== 'ageForm').map((state) => preview(`account-settings@${state}`, { screen: 'account-settings', state })),
+  preview('account-settings@ageForm', { screen: 'account-settings', state: 'ageForm' }, { open: [AGE_CORRECTION_OPEN] }),
   ...['childSubject', 'asked', 'privateAsked', 'followFailed', 'askFailed', 'reported', 'blockFailed', 'noBadges', 'loading', 'failed', 'offline']
     .map((state) => preview(`public-profile@${state}`, { screen: 'public-profile', state })),
   // The three dialogs of P6: the report, the block confirmation and the confirmation before leaving a child's or a private teen's profile.
@@ -99,7 +125,9 @@ const profile = (extra) => ({ displayName: 'María Fernanda de la Cruz Villanuev
  * `profile` and `blocked` extend synthetic-core's default own profile (`isTutor`
  * is Core's OD-6 verdict on the owner, W2P.3); `deletion`
  * is what GET /account/deletion answers; `disposition` whether the learner has a
- * profile yet; `memory` whether GET /tutor/memory-proposals is theirs (OD-18).
+ * profile yet; `memory` whether GET /tutor/memory-proposals is theirs (OD-18);
+ * `ageCorrection` the status of the latest E.4 correction request (absent:
+ * never asked); `ageScreen` what the age answer adds (see synthetic-core).
  */
 export const scenarios = {
   'settings-teen': { population: 'independent teen 16-17', guest: false, ageBand: '13-17', memory: true,
@@ -110,6 +138,20 @@ export const scenarios = {
   'settings-teen-undecided': { population: 'independent teen 16-17, no analytics choice on file', guest: false, ageBand: '13-17', memory: true,
     analyticsDisclosed: false, profile: profile({ displayName: 'Rio Montes', username: 'rio_montes', birthDate: '2009-06-02',
       social: { tier: 'teen', privateProfile: true, discoverable: { canChoose: true, enabled: false } } }), deletion: 'grace' },
+  // GAP-FIX-R6 social: the same teen with a correction request staff have not decided yet (E.4 as amended by OD-3).
+  'settings-teen-correction-pending': { population: 'independent teen 16-17, age correction pending staff review', guest: false, ageBand: '13-17',
+    ageCorrection: 'pending', profile: profile({ displayName: 'Rio Montes', username: 'rio_montes', birthDate: '2009-06-02',
+      social: { tier: 'teen', privateProfile: true, discoverable: { canChoose: true, enabled: false } } }), deletion: 'grace' },
+  // S-04 (OD-28): a teen whose birth month the age screen kept, and one who moved to the adult tier by it.
+  'settings-teen-month': { population: 'independent teen 16-17 with a birth month on file', guest: false, ageBand: '13-17',
+    ageScreen: { birthMonthRecorded: true, adultByBirthMonth: false }, profile: profile({ displayName: 'Rio Montes', username: 'rio_montes', birthDate: null,
+      social: { tier: 'teen', privateProfile: true, discoverable: { canChoose: true, enabled: false } } }), deletion: 'grace' },
+  'settings-adult-by-month': { population: 'self-registered teen who reached the adult tier by birth month', guest: false, ageBand: 'adult',
+    ageScreen: { birthMonthRecorded: true, adultByBirthMonth: true }, profile: profile({ displayName: 'Rio Montes', username: 'rio_montes', birthDate: null }), deletion: 'grace' },
+  // OD-27 (2): a 17-year-old who turned the discoverable profile on (Core: privateProfile false while it is on).
+  'settings-teen-discoverable-on': { population: 'independent teen 16-17, discoverable profile on', guest: false, ageBand: '13-17',
+    profile: profile({ displayName: 'Rio Montes', username: 'rio_montes', birthDate: '2009-06-02',
+      social: { tier: 'teen', privateProfile: false, discoverable: { canChoose: true, enabled: true } } }), deletion: 'grace' },
   'settings-teen-consent': { population: 'migrated teen 16-17, Tutor consent to the discoverable profile missing (OD-9 4.2)', guest: false, ageBand: '13-17',
     profile: profile({ displayName: 'Rio Montes', username: 'rio_montes', birthDate: '2009-06-02',
       social: { tier: 'teen', privateProfile: true, discoverable: { canChoose: false, enabled: false, reason: 'DATA_PRACTICE_CONSENT_REQUIRED' } } }), deletion: 'grace' },
@@ -154,6 +196,17 @@ const SUBJECTS = {
 const MEMORY_NOTE = { 'en-US': 'Saving for a bike.', 'es-MX': 'Ahorra para una bici.', 'pt-BR': 'Poupa para uma bicicleta.' };
 const refuse = (status, code) => ({ status, body: { data: null, error: { code, message: 'Synthetic refusal' } } });
 
+/** Core's own view of an account's latest correction request (backend services/ageCorrection.ts, OwnCorrection). */
+const correctionRequest = (status) => ({ id: '77777777-7777-4777-8777-777777777777', status, requestedBand: 'adult',
+  reason: status === 'approved' ? 'evidence_verified' : status === 'rejected' ? 'evidence_missing' : null,
+  createdAt: '2026-09-22T10:00:00Z', decidedAt: status === 'pending' ? null : '2026-09-24T10:00:00Z' });
+
+/** GET /account/age-correction for a scenario, with Core's eligibility rule (routes/account.ts). */
+export function correctionAnswer(spec) {
+  const eligible = !spec.guest && !(spec.roles ?? []).includes('kid') && spec.ageBand !== undefined && spec.ageBand !== '6-9' && spec.ageBand !== '10-12';
+  return { eligible, request: spec.ageCorrection ? correctionRequest(spec.ageCorrection) : null };
+}
+
 function deletionAnswer(kind) {
   if (kind === 'kid') return { deletion: null, eligibility: { allowed: false, reason: 'kid' } };
   const guest = kind === 'guest';
@@ -173,6 +226,10 @@ export function respond({ spec, locale, path, request, ok }) {
   if (path === '/account/deletion' && request.method === 'GET') {
     return ok(deletionAnswer(spec.deletion ?? ((spec.roles ?? []).includes('kid') ? 'kid' : spec.guest ? 'guest' : 'grace')));
   }
+  // GAP-FIX-R6 social (E.4 as amended by OD-3): /account/age-correction as Core answers it. A guest, a parent-created
+  // child and an under-13 origin may not ask; any other screened account may, with its latest request (`ageCorrection`).
+  if (path === '/account/age-correction' && request.method === 'GET') return ok(correctionAnswer(spec));
+  if (path === '/account/age-correction' && request.method === 'POST') return { status: 201, body: { data: { eligible: true, request: correctionRequest('pending') }, error: null } };
   if (path === '/profile/connection-requests' && request.method === 'GET') return ok({ nextOffset: null, requests: spec.teenRequests
     ? [{ requestId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', requestedAt: '2026-09-24T10:00:00Z', requester: { username: 'omar_valdes_rios', displayName: 'Omar Alejandro Valdés' } }] : [] });
   // GAP-FIX-R5 social (E.3): the teen's queue report and block, answered by request id as Core would.

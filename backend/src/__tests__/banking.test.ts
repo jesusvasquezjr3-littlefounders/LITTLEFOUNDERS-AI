@@ -503,6 +503,51 @@ describe('GET /api/v1/banking/statement/:kidId and /statement (kid)', () => {
     expect(res.body.data.statement.entries.map((e: { note: string | null }) => e.note)).toEqual([null, 'Bought the bike', 'Bought the bike', 'Lost game fee']);
   });
 
+  // GAP-FIX-R6 (OD-3 §2, Law 5): the Tutor reads a child's month on the Wallet screen, a linked teen's own entries included.
+  const monthOf = (by: number) => {
+    const now = new Date();
+    const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + by, 1));
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+  };
+
+  it("gives the verified Tutor the child's month in full detail, self-directed entries included", async () => {
+    const now = new Date().toISOString();
+    stub({
+      ledgerRows: [
+        { bucket: 'spend', amount: 12, created_at: now, reason: 'self_income' },
+        { bucket: 'spend', amount: -4, created_at: now, reason: 'personal_reward' },
+        { bucket: 'save', amount: -3, created_at: now, reason: 'goal_release' },
+        { bucket: 'spend', amount: 3, created_at: now, reason: 'goal_release' },
+      ],
+    });
+    const res = await asParent(`/api/v1/banking/statement/${KID_ID}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.statement).toMatchObject({ month: monthOf(0), earned: 12, spent: 4, adjusted: 0, given: 0, saved: -3 });
+    expect(res.body.data.statement.entries.map((e: { reason: string }) => e.reason)).toEqual(['self_income', 'personal_reward', 'goal_release', 'goal_release']);
+  });
+
+  it.each([[0], [-1], [-23]])('admits a month %i months from this one', async (by) => {
+    stub();
+    const res = await asParent(`/api/v1/banking/statement/${KID_ID}?month=${monthOf(by)}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.statement.month).toBe(monthOf(by));
+  });
+
+  it.each([['next month', monthOf(1)], ['past the paging window', monthOf(-24)], ['no such month', '2026-13'], ['month zero', '2026-00']])(
+    'refuses %s before reading anything', async (_label, month) => {
+      stub();
+      expect((await asParent(`/api/v1/banking/statement/${KID_ID}?month=${month}`)).status).toBe(400);
+    });
+
+  it('refuses another family, a child and an extra query parameter', async () => {
+    stub({ parentsKids: [OTHER_KID_ID] });
+    expect((await asParent(`/api/v1/banking/statement/${KID_ID}`)).status).toBe(404);
+    stub({ roles: ['kid'] });
+    expect((await asKid(`/api/v1/banking/statement/${KID_ID}`)).status).toBe(403);
+    stub();
+    expect((await asParent(`/api/v1/banking/statement/${KID_ID}?month=${monthOf(0)}&kid=${OTHER_KID_ID}`)).status).toBe(400);
+  });
+
   it('refuses a statement whose guardian reasons cannot be read', async () => {
     stub({
       roles: ['kid'],

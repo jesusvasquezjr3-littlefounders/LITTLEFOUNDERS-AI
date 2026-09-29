@@ -6,7 +6,7 @@ Branch `codex/spec-fix6identi7`. Status of both items: **implemented and locally
 
 **The gap was real.** `revoke_parent_verification` (0193) only wrote the `revoked` verification row and its audit row. The adult kept the `parent` role and every verified guardian link. Every Core surface that checks only `requireRole(['parent'])` plus a verified link kept serving them: tasks, banking, family governance, and the child's Mentor transcripts and memory notes. Their children stayed linked as `verified`, so the A.1 pause never reached a child whose only Tutor was revoked. The new verifier reproduces this on the pre-migration chain before it proves the fix.
 
-**Built.** This is enforced at the database boundary, where every Core route already reads roles and verified links on each request. Migration `0247_tutor_revocation_cascade.sql` (`contract`; the orchestrator renumbers it at merge) does the following:
+**Built.** This is enforced at the database boundary, where every Core route already reads roles and verified links on each request. Migration `0248_tutor_revocation_cascade.sql` (`contract`; the orchestrator renumbers it at merge) does the following:
 
 - `tutor_verification_revoked(user)` checks whether the latest verification row is `revoked` (latest row wins, as in Core's `readAdultVerificationStatus`).
 - `end_revoked_tutor_powers(user, actor)` is internal; no API role can call it. It does three things:

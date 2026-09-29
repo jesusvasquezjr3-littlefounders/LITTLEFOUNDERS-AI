@@ -294,7 +294,10 @@ export const isRetentionSweep = (value: unknown): value is RetentionSweep => isR
 /* ---- H.4 operations watchdog (manage_support) --------------------------------- */
 
 export const OPS_JOBS_PATH = '/admin/ops/job-status';
-export const OPS_JOB_NAMES = ['vault_backup', 'pulse_backup', 'vault_drift'] as const;
+/** GAP-FIX-R6: the family-data jobs (account deletion, family, social and learning retention, the insights prune) are watched too. */
+export const OPS_JOB_NAMES = [
+  'vault_backup', 'pulse_backup', 'vault_drift', 'learning_retention', 'insights_prune', 'account_deletions', 'family_retention', 'social_retention',
+] as const;
 export type OpsJobName = (typeof OPS_JOB_NAMES)[number];
 export interface OpsJob {
   job: OpsJobName; lastRunAt: string | null; hoursSinceLastRun: number | null; lastAttemptAt: string | null;
@@ -304,9 +307,14 @@ const isNullableTime = (value: unknown): value is string | null => value === nul
 const isOpsJob = (value: unknown): value is OpsJob => isRecord(value) && (OPS_JOB_NAMES as readonly unknown[]).includes(value.job)
   && isNullableTime(value.lastRunAt) && (value.hoursSinceLastRun === null || isNumber(value.hoursSinceLastRun)) && isNullableTime(value.lastAttemptAt)
   && (value.lastAttemptOk === null || typeof value.lastAttemptOk === 'boolean') && isNumber(value.staleAfterHours) && typeof value.stale === 'boolean';
-/** A reply without every watched job, or without its `stale` boolean, is an error state, never "healthy". */
-export const isOpsJobs = (value: unknown): value is { jobs: OpsJob[]; anyStale: boolean } => isRecord(value) && Array.isArray(value.jobs)
-  && value.jobs.every(isOpsJob) && OPS_JOB_NAMES.every((name) => (value.jobs as OpsJob[]).some((job) => job.job === name)) && typeof value.anyStale === 'boolean';
+/** E.6: erasures whose step failed more than `afterHours` ago and never completed. */
+export interface DeletionFailures { stuck: number; afterHours: number }
+const isDeletionFailures = (value: unknown): value is DeletionFailures => isRecord(value)
+  && isNumber(value.stuck) && Number.isInteger(value.stuck) && value.stuck >= 0 && isNumber(value.afterHours);
+/** A reply without every watched job, its `stale` boolean or the stalled-erasure count is an error state, never "healthy". */
+export const isOpsJobs = (value: unknown): value is { jobs: OpsJob[]; anyStale: boolean; accountDeletionFailures: DeletionFailures } => isRecord(value)
+  && Array.isArray(value.jobs) && value.jobs.every(isOpsJob) && OPS_JOB_NAMES.every((name) => (value.jobs as OpsJob[]).some((job) => job.job === name))
+  && typeof value.anyStale === 'boolean' && isDeletionFailures(value.accountDeletionFailures);
 
 /* ---- Appendix M Part 1: identity metrics (view_analytics) ----------------------- */
 

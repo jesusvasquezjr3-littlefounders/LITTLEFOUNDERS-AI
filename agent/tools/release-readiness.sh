@@ -55,6 +55,10 @@ node agent/tools/check-block-d-scope.mjs --strict
 # identity recalibration (docs/operations/IDENTITY-RECALIBRATION-LOG.md), and
 # the log's thresholds must match the metrics Core reports.
 node agent/tools/identity-review-cadence.mjs --strict
+# Appendix C 1.3 / Stage 6 (GAP-FIX-R6): nor on an overdue Block B threshold
+# review or Age-Band Register Differentiation Audit (MN-03), each due by
+# docs/operations/BLOCK-B-THRESHOLD-LOG.md (block-b-review-cadence.mjs).
+node agent/tools/check-block-b-thresholds.mjs --strict
 # Appendix J 1.3 / DoD 2.1(2): the data-gateway half of the social release
 # gate. Every native-PostgreSQL social verifier (and the teen discoverable,
 # cooperative goals and account-erasure ones) against the full migration
