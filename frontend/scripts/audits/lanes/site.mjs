@@ -70,6 +70,12 @@ export const states = [
   // An account Core has not screened opens verification: the age question inside the sign-in shell (one <main>).
   app('/verify-parent@age-embedded', '/verify-parent', 'age-screen', '[data-shell="auth"] .lf-age-date'),
   app('/upgrade-account@upgrade', '/upgrade-account', 'identity-guest', '[data-shell="auth"] [data-screen="upgrade-account"]'),
+  // GAP-FIX-R5 (A.1, D.3): a Tutor invite's landing, for each person who can open the link. A verified Tutor is sent
+  // on to /family?join= (the family lane's route), so no state of theirs lands here.
+  app('/join/:token@signed-out', '/join/auditInviteToken0123456789', null, '[data-shell="auth"] [data-screen="join-invite"] [data-join="signup"]'),
+  app('/join/:token@verify', '/join/auditInviteToken0123456789', 'identity-adult', '[data-shell="auth"] [data-screen="join-invite-verify"] [data-join="verify"]'),
+  app('/join/:token@child', '/join/auditInviteToken0123456789', 'identity-kid', '[data-shell="auth"] [data-screen="join-invite-child"]'),
+  app('/join/:token@invalid', '/join/not-a-token', null, '[data-shell="auth"] [data-screen="join-invite-invalid"]'),
   app('/onboarding@onboarding-welcome', '/onboarding', 'identity-new-guest', '[data-screen="onboarding"][data-step="welcome"]'),
   app('/onboarding@onboarding-name', '/onboarding', 'identity-new-guest', '[data-screen="onboarding"][data-step="welcome"]', { open: ['[data-onboarding="start"]'] }),
   // The states a real route cannot be made to show on demand, in the frame they have on the route.
@@ -102,6 +108,8 @@ export const scenarios = {
   'identity-adult': { population: 'adult, not verified', guest: false, ageBand: 'adult', verification: { verified: false } },
   // A verified parent: Core's status, not the role, says "already a Tutor".
   'identity-tutor': { population: 'verified parent (Tutor)', guest: false, ageBand: 'adult', roles: ['parent'], verification: { verified: true } },
+  // GAP-FIX-R5: a parent-created child (kid role) who opens a Tutor invite link.
+  'identity-kid': { population: 'parent-created child 10-12', guest: false, roles: ['kid'], ageBand: '10-12' },
   // A guest who finished onboarding and saves their progress (A6); screened as a teen.
   'identity-guest': { population: 'guest (screened 13-17)', guest: true, ageBand: '13-17' },
   // A guest refused at sign-up (A.2) on their first run: screened under 13, onboarding not done.

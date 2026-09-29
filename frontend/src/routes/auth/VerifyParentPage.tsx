@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/app-shell/home';
+import { familyJoinPath, pendingInvite } from '@/auth/pendingInvite';
 import { useShellLocale, useShellNavigate } from '@/app-shell/ShellRoot';
 import { api } from '@/lib/api';
 import { failureCode } from './failureCode';
@@ -18,6 +19,10 @@ import { VERIFICATION_CHECKS, VerifyParentScreen, type VerificationCheck, type V
  * never succeed; an account whose age record is under 18 (AGE_RECORD_MINOR)
  * is sent to the staff-reviewed age correction; any other failure is a retry,
  * never a verdict.
+ *
+ * GAP-FIX-R5 (A.1, D.3): a person who came from a Tutor invite link
+ * (auth/pendingInvite.ts) is sent on to that invite, `/family?join=TOKEN`,
+ * instead of the bare Family page, once verified or already a Tutor.
  */
 type Verdict = { verified: boolean; checks?: Record<string, boolean> };
 
@@ -35,6 +40,7 @@ export function VerifyParentPage() {
   const { getToken, refreshMe } = useAuth();
   const [view, setView] = useState<VerifyView>({ kind: 'checking' });
   const [attempt, setAttempt] = useState(0);
+  const [invite] = useState(() => pendingInvite());
 
   useEffect(() => {
     let cancelled = false;
@@ -72,7 +78,7 @@ export function VerifyParentPage() {
     setView({ kind: 'form', pending: false, errorCode: null, failedChecks: VERIFICATION_CHECKS.filter((check) => data.checks?.[check] === false) });
   }
 
-  return <VerifyParentScreen locale={locale} view={view} homeHref={APP_HOME} familyHref="/family" onNavigate={onNavigate}
+  return <VerifyParentScreen locale={locale} view={view} homeHref={APP_HOME} familyHref={invite ? familyJoinPath(invite) : '/family'} inviteWaiting={invite !== null} onNavigate={onNavigate}
     onRetryStatus={() => { setView({ kind: 'status-error', retrying: true }); setAttempt((n) => n + 1); }}
     onStart={() => setView({ kind: 'form', pending: false, errorCode: null, failedChecks: null })}
     onSubmit={(values) => void submit(values, view.kind === 'form' ? view.failedChecks : null)} />;

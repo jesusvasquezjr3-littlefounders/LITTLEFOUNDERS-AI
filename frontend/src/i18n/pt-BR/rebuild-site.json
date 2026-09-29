@@ -454,7 +454,24 @@
     "retryHint": "Tente uma foto mais nítida ou outro documento.",
     "helpBody": "Uma pessoa pode conferir para você.",
     "writeToUs": "Escreva para nós",
-    "supportEmail": "informame@littlefounders.ai"
+    "supportEmail": "informame@littlefounders.ai",
+    "openInvite": "Abrir o convite"
+  },
+  "authJoin": {
+    "title": "Você recebeu um convite para ser Tutor",
+    "body": "Entre ou crie uma conta. Depois verifique seu documento para aceitar.",
+    "create": "Criar conta",
+    "login": "Entrar",
+    "verifyTitle": "Verifique seu documento para aceitar",
+    "verifyBody": "Só um Tutor verificado pode entrar nesta família.",
+    "verify": "Torne-se Tutor",
+    "otherAccount": "Usar outra conta",
+    "childTitle": "Este convite é para um adulto",
+    "childBody": "Envie este link para seu responsável.",
+    "invalidTitle": "Este link de convite não funciona",
+    "invalidBody": "Peça um link novo. Cada um funciona uma vez, por 7 dias.",
+    "home": "Ir para o início",
+    "checking": "Conferindo sua conta…"
   },
   "onboardingFlow": {
     "title": "Primeiros passos",
@@ -502,5 +519,10 @@
     "expiredTitle": "Este link de selo expirou",
     "expiredBody": "Links de selos expiram. Você ainda pode ver como a LittleFounders funciona.",
     "howItWorks": "Como funciona"
+  },
+  "siteHeroArt": {
+    "landing": "Dina, da equipe de Mentores, sorrindo",
+    "howItWorks": "Dr. Rho, da equipe de Mentores, explicando",
+    "families": "Zara, da equipe de Mentores, cumprimentando"
   }
 }

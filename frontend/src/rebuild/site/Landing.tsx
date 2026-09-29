@@ -1,5 +1,5 @@
 import type { Locale } from '../design/copyBudget';
-import { MentorCast, SiteHero, SiteLink, SiteSection, StartButton, siteCopy, type Navigate, type StartAction } from './blocks';
+import { MentorCast, SiteHero, SiteHeroArt, SiteLink, SiteSection, StartButton, siteCopy, type Navigate, type StartAction } from './blocks';
 
 /*
  * M1, the landing page, rebuilt on the public-site shell (W2 Lane 1).
@@ -17,12 +17,17 @@ import { MentorCast, SiteHero, SiteLink, SiteSection, StartButton, siteCopy, typ
  * Mentor renders), the explorable concept graph (decoration, and it moved
  * three idle loops onto one screen, 02 §9.4), and the "Free to stay" line
  * (OD-5). The one sourced statistic stays, with its source.
+ *
+ * GAP-FIX-R5 (03 §3.3, 07 §1 class B): the hero art is a portrait 4:5 scene,
+ * Dina on the Diorama rendered from her real model, reaching into the next
+ * section on wide screens; the four Mentors' renders moved to the Mentors
+ * section below, where the page introduces them.
  */
 export function Landing({ locale, start, onNavigate, onSecondary }: { locale: Locale; start: StartAction; onNavigate?: Navigate; onSecondary?: () => void }) {
   const copy = siteCopy(locale);
   const l = copy.landing;
   return <div className="lf-site-page" data-screen="landing">
-    <SiteHero art={<MentorCast label={copy.site.mentorsLabel} />}>
+    <SiteHero art={<SiteHeroArt scene="landing" locale={locale} />} overlap>
       <h1 data-copy-role="brand">{l.title}</h1>
       <p className="lf-site-lead" data-copy-role="brand">{l.lead}</p>
       <div className="lf-site-cta-row">
@@ -32,8 +37,9 @@ export function Landing({ locale, start, onNavigate, onSecondary }: { locale: Lo
       <p className="lf-site-note" data-copy-role="body">{l.note}</p>
     </SiteHero>
 
-    <SiteSection tone="tight" heading={l.mentorsTitle}>
-      <p data-copy-role="body">{l.mentorsBody}</p>
+    <SiteSection tone="tight" heading={l.mentorsTitle} split="start">
+      <div className="lf-site-split-copy"><p data-copy-role="body">{l.mentorsBody}</p></div>
+      <MentorCast label={copy.site.mentorsLabel} size="md" />
     </SiteSection>
 
     <SiteSection tone="soft" className="lf-site-fact">

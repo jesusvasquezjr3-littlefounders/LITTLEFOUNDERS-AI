@@ -1,4 +1,6 @@
-import { Navigate, Route, useLocation } from 'react-router-dom';
+import { Navigate, Route, useLocation, useSearchParams } from 'react-router-dom';
+import { useAuth } from '@/auth/AuthContext';
+import { joinPath } from '@/auth/pendingInvite';
 import { FAMILY_WALLET_PATH } from '@/rebuild/banking/walletPath';
 import { RequireRole } from '@/auth/RequireRole';
 import { FamilyPage } from '@/routes/app/family/FamilyPage';
@@ -21,13 +23,29 @@ function LegacyWalletRedirect() {
   return <Navigate replace to={`${FAMILY_WALLET_PATH}${search}${hash}`} />;
 }
 
+/**
+ * `/family` for the verified parent (Tutor). GAP-FIX-R5 (A.1, D.3): an invite
+ * link opened by anyone else (`?join=TOKEN`, the older link form) goes to the
+ * invite's landing with its token, never to Learn with the token dropped.
+ */
+function FamilyRoute() {
+  const [params] = useSearchParams();
+  const join = params.get('join');
+  const { session, roles, meLoaded } = useAuth();
+  if (join !== null) {
+    if (session === undefined || (session && !meLoaded)) return null; // roles still loading
+    if (!roles.includes('parent')) return <Navigate to={joinPath(join)} replace />;
+  }
+  return <RequireRole role="parent"><FamilyPage /></RequireRole>;
+}
+
 export const familyShellRoutes = (
   <>
     <Route path="tasks" element={<RequireWalletAccess mode="familyMoney"><TasksPage /></RequireWalletAccess>} />
     <Route path={FAMILY_WALLET_PATH.slice(1)} element={<RequireWalletAccess mode="familyMoney"><BankingPage /></RequireWalletAccess>} />
     <Route path="banking" element={<LegacyWalletRedirect />} />
     <Route path="wallet" element={<RequireWalletAccess mode="teen"><TeenWalletPage /></RequireWalletAccess>} />
-    <Route path="family" element={<RequireRole role="parent"><FamilyPage /></RequireRole>} />
+    <Route path="family" element={<FamilyRoute />} />
     <Route path="family/:kidId/territory" element={<RequireRole role="parent"><KidTerritoryPage /></RequireRole>} />
     {/* Parent visibility into a child's Mentor conversations is a product
         invariant (§1.9), not a feature — same parent gate, and Core

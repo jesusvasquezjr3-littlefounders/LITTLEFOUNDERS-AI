@@ -14,6 +14,7 @@ import type { Session, Transport } from '@/rebuild/wallet/walletApi';
 import en from '@/i18n/en-US/teenWallet.json';
 import es from '@/i18n/es-MX/teenWallet.json';
 import pt from '@/i18n/pt-BR/teenWallet.json';
+import { joinPath } from '@/auth/pendingInvite';
 
 /*
  * /wallet — S07.2 (D.3, OD-3 Option B): the self-registered teen's personal
@@ -48,7 +49,7 @@ export function TeenWalletPage() {
   // W2F.2: the design system's page states (offline, refused, failed), and the page's companions beside the wallet.
   return <TeenWallet copy={copy} habits={moneyHabitsInRegister(locale, 'teen')} locale={locale} dark={isDark} session={session} tasksHref="/tasks"
     onOpenTasks={() => navigate('/tasks')} onAccessChanged={invalidateWalletAccess}
-    inviteLinkFor={(token) => `${window.location.origin}/family?join=${encodeURIComponent(token)}`}
+    inviteLinkFor={(token) => `${window.location.origin}${joinPath(token)}`}
     copyText={async (text) => {
       try { await navigator.clipboard.writeText(text); return true; } catch { return false; }
     }}

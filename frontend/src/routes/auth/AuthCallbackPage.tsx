@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/app-shell/home';
+import { continueAfterSignIn } from '@/auth/pendingInvite';
 import { useShellLocale, useShellNavigate } from '@/app-shell/ShellRoot';
 import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
 import { playPlatformSound } from '@/lib/sound';
@@ -56,7 +57,8 @@ export function AuthCallbackPage() {
       configureInsights({ enabled: analyticsEnabled, getToken });
       trackInsight(newAccount ? 'signup_complete' : 'login_complete', { routeClass: 'marketing' });
       void flushInsights();
-      navigate(APP_HOME, { replace: true });
+      // GAP-FIX-R5: a pending Tutor invite continues on its landing (the Google round trip keeps no router state).
+      navigate(continueAfterSignIn(undefined, APP_HOME), { replace: true });
     });
   }, [completeOAuth, getToken, navigate]);
 

@@ -38,6 +38,12 @@
 @container app (max-width: 399px) {
   .lf-rebuild .lf-site-hero-art { order: -1; }
 }
+/* GAP-FIX-R5: the hero scene is portrait 4:5 (03 §3.3). Small above the copy on a phone, so the heading stays in the first view. */
+.lf-rebuild .lf-site-hero-scene { display: block; inline-size: 100%; max-inline-size: min(100%, 320px); }
+.lf-rebuild .lf-site-hero-scene img { display: block; inline-size: 100%; block-size: auto; aspect-ratio: 4 / 5; border-radius: var(--rounded-xl); }
+@container app (max-width: 399px) {
+  .lf-rebuild .lf-site-hero-scene { max-inline-size: min(100%, 200px); }
+}
 
 /* ---- The four Mentors (real-model renders) ---- */
 .lf-rebuild .lf-site-cast { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-4); inline-size: 100%; }
@@ -143,6 +149,9 @@ body:has([data-consent-banner]) .lf-rebuild .lf-sticky-action { visibility: hidd
   .lf-rebuild .lf-site-page { gap: var(--spacing-10); }
   .lf-rebuild .lf-site-hero[data-layout='hero'] { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; gap: var(--spacing-10); }
   .lf-rebuild .lf-site-hero-art .lf-avatar--lg { inline-size: var(--spacing-32); block-size: var(--spacing-32); }
+  .lf-rebuild .lf-site-hero-scene { max-inline-size: 100%; }
+  /* The portrait art reaches past the hero into the next section's top (03 §3.3: allowed to overlap by design). */
+  .lf-rebuild .lf-site-hero--overlap .lf-site-hero-art { position: relative; z-index: 1; align-self: end; margin-block-end: calc(-1 * var(--spacing-16)); }
   .lf-rebuild .lf-site-section--split { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: var(--spacing-10); align-items: start; }
   .lf-rebuild .lf-site-section--split-end { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
   .lf-rebuild .lf-site-section--split > h2 { grid-column: 1 / -1; }

@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { GuardianInviteJoin, GuardianInvitePanel } from '../GuardianInvitePanel';
+import { pendingInvite, rememberInvite } from '@/auth/pendingInvite';
 
 /*
  * A.1's second-verified-guardian surfaces: the mint panel creates the
@@ -20,7 +21,7 @@ const stableGetToken = () => Promise.resolve('session');
 vi.mock('@/auth/AuthContext', () => ({ useAuth: () => ({ getToken: stableGetToken }) }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ i18n: { resolvedLanguage: 'en-US' } }) }));
 
-beforeEach(() => mockApi.mockReset());
+beforeEach(() => { mockApi.mockReset(); window.localStorage.clear(); });
 Object.defineProperty(window, 'location', { value: { origin: 'https://app.test' }, writable: true });
 
 describe('GuardianInvitePanel', () => {
@@ -30,7 +31,8 @@ describe('GuardianInvitePanel', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Invite a Tutor' }));
     fireEvent.click(screen.getByRole('button', { name: 'Create invite link' }));
     const link = await screen.findByLabelText('Invite link');
-    expect(link).toHaveTextContent('https://app.test/family?join=');
+    // GAP-FIX-R5: the link opens the invite landing, which needs no role and keeps the token through verification.
+    expect(link).toHaveTextContent(`https://app.test/join/${'a'.repeat(32)}`);
     // 02 rule 11 and 06 §7: the link is data at the 14 px caption size, named by the localized linkLabel (no hard-coded English).
     expect(link).toHaveAttribute('data-copy-role', 'data');
     expect(link).toHaveClass('lf-guardian-invite-link-value');
@@ -46,7 +48,7 @@ describe('GuardianInvitePanel', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Create invite link' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Could not create the invite. Try again.');
     expect(screen.queryByLabelText('Invite link')).toBeNull();
-    expect(screen.queryByText(/family\?join=/)).toBeNull();
+    expect(screen.queryByText(/\/join\//)).toBeNull();
   });
 });
 
@@ -85,6 +87,24 @@ describe('GuardianInviteJoin', () => {
     render(<GuardianInviteJoin inviteToken={'b'.repeat(32)} />);
     expect(await screen.findByText('This invite is no longer valid.')).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Join' })).toBeNull();
+  });
+
+  it('stops carrying an invite once it is accepted or no longer valid (GAP-FIX-R5)', async () => {
+    rememberInvite('a'.repeat(32));
+    mockApi.mockResolvedValueOnce({ data: { displayName: 'Ana' }, error: null })
+      .mockResolvedValueOnce({ data: { linked: false, status: 'pending' }, error: null });
+    const accepted = render(<GuardianInviteJoin inviteToken={'a'.repeat(32)} />);
+    await screen.findByText(/You were invited to supervise Ana/);
+    expect(pendingInvite()).toBe('a'.repeat(32));
+    fireEvent.click(screen.getByRole('button', { name: 'Join' }));
+    await screen.findByText("Joined. The child's Tutor will confirm you next.");
+    expect(pendingInvite()).toBeNull();
+    accepted.unmount();
+    rememberInvite('b'.repeat(32));
+    mockApi.mockResolvedValue({ data: null, error: { code: 'NOT_FOUND' } });
+    render(<GuardianInviteJoin inviteToken={'b'.repeat(32)} />);
+    await screen.findByText('This invite is no longer valid.');
+    expect(pendingInvite()).toBeNull();
   });
 
   it('refuses a malformed token shape without calling the API', async () => {

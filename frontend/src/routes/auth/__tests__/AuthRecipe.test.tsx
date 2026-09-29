@@ -51,7 +51,7 @@ describe('Sign-in recipe (A1–A7)', () => {
   it('every sign-in route mounts inside the one sign-in shell, with no legacy body around it', () => {
     const routes = read('app-routes', 'site.tsx');
     const inShell = routes.slice(routes.indexOf('export const siteAuthRoutes'), routes.indexOf('export const siteStandaloneRoutes'));
-    for (const path of ['login', 'signup', 'forgot-password', 'reset-password', 'auth/callback', 'verify-parent', 'upgrade-account']) {
+    for (const path of ['login', 'signup', 'forgot-password', 'reset-password', 'auth/callback', 'verify-parent', 'upgrade-account', 'join/:token']) {
       expect(inShell, `${path} is a sign-in shell route`).toContain(`path="${path}"`);
     }
     const app = read('App.tsx');

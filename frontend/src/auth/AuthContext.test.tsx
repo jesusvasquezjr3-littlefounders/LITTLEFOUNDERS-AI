@@ -2,6 +2,7 @@ import { ANALYTICS_POLICY_SIGNAL } from '@/lib/analyticsPolicySignal';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { AuthProvider, useAuth } from './AuthContext';
+import { pendingInvite, rememberInvite } from './pendingInvite';
 
 /*
  * login()/signup()/completeOAuth() persist a new session and call loadMe()
@@ -140,6 +141,20 @@ describe('AuthContext — session isolation under delayed responses', () => {
     expect(result.current.adminPermissions).toEqual(['manage_users']);
     await act(async () => { await result.current.logout(); });
     expect(result.current.adminPermissions).toEqual([]);
+  });
+
+  it('forgets a pending Tutor invite on logout, so a shared device never hands it to the next account (GAP-FIX-R5)', async () => {
+    vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL) => {
+      if (String(input).includes('/auth/login')) return Promise.resolve(loginResponse('adult'));
+      if (String(input).includes('/auth/me')) return Promise.resolve(jsonResponse({ data: { profile: null, roles: ['universal'], analyticsEnabled: false }, error: null }));
+      return Promise.resolve(jsonResponse({ data: {}, error: null }));
+    }));
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+    await act(async () => { await result.current.login('adult@example.com', 'password123'); });
+    rememberInvite('inviteToken0123456789ab');
+    expect(pendingInvite()).toBe('inviteToken0123456789ab');
+    await act(async () => { await result.current.logout(); });
+    expect(pendingInvite()).toBeNull();
   });
 
   it('fails closed on staff grants when a later profile refresh is unavailable', async () => {

@@ -103,12 +103,37 @@ export function SiteSection({ tone = 'default', heading, headingId, children, sp
  * real-model Mentor renders); an interactive demo belongs in its own section,
  * never above the page's heading on a phone. Without art the hero is one column.
  */
-export function SiteHero({ children, art }: { children: ReactNode; art?: ReactNode }) {
+export function SiteHero({ children, art, overlap = false }: { children: ReactNode; art?: ReactNode; overlap?: boolean }) {
   if (!art) return <section className="lf-site-hero lf-site-hero--solo" data-section><div className="lf-site-hero-copy">{children}</div></section>;
-  return <section className="lf-site-hero" data-layout="hero" data-section>
+  // `overlap`: the portrait art reaches into the next section on wide screens (03 §3.3).
+  return <section className={`lf-site-hero${overlap ? ' lf-site-hero--overlap' : ''}`} data-layout="hero" data-section>
     <div className="lf-site-hero-copy">{children}</div>
     <div className="lf-site-hero-art">{art}</div>
   </section>;
+}
+
+/** The public pages that carry a hero scene (GAP-FIX-R5). */
+export type SiteHeroScene = 'landing' | 'how-it-works' | 'families';
+const HERO_ALT: Record<SiteHeroScene, 'landing' | 'howItWorks' | 'families'> = { landing: 'landing', 'how-it-works': 'howItWorks', families: 'families' };
+
+/**
+ * A page's hero scene (03 §3.3: portrait 4:5, allowed to overlap into the next
+ * section; 07 §1 class B): a real-model render of one Mentor on the Diorama in
+ * a catalogue pose (scripts/render-site-hero.mjs), in the page's colour mode,
+ * WebP at 1x/2x/3x with a PNG fallback, registered in the asset manifest
+ * (`site.hero.*`, a `scenes` draft until the owner's style review). No text is
+ * drawn in it; its accessible name is translated copy (07 §8).
+ */
+export function SiteHeroArt({ scene, locale }: { scene: SiteHeroScene; locale: Locale }) {
+  const { theme } = useRebuildEnvironment();
+  const mode = theme === 'dark' ? 'dark' : 'light';
+  const alt = siteCopy(locale).siteHeroArt[HERO_ALT[scene]];
+  // Each density is its own literal path, so the asset gate can match every registered file to its reference.
+  const webp = [[`/rebuild/site-hero/${scene}-${mode}.webp`, '1x'], [`/rebuild/site-hero/${scene}-${mode}@2x.webp`, '2x'], [`/rebuild/site-hero/${scene}-${mode}@3x.webp`, '3x']];
+  return <picture className="lf-site-hero-scene" data-hero-scene={scene}>
+    <source type="image/webp" srcSet={webp.map(([path, density]) => `${path} ${density}`).join(', ')} />
+    <img src={`/rebuild/site-hero/${scene}-${mode}.png`} alt={alt} width={480} height={600} decoding="async" data-slot="site.hero" />
+  </picture>;
 }
 
 /**
