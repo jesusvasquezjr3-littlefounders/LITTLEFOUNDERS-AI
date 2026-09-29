@@ -77,8 +77,14 @@ state; a visual pass of the new row actions in the browser matrices.
   now walks the row, the confirm dialog and the report dialog.
 - **Verification.** Backend: type-check, lint and the full unit suite (148
   files passed, 1 skipped). Frontend: type-check, lint and the full unit
-  suite. Database: `npm test`. Root: `spec:check`, `secrets:check`,
-  `social:check`.
+  suite (272 of 273 files passed in the full run; the one red,
+  `rebuild/assets/assetGate.test.ts`, was a 90 s timeout under other lanes'
+  load and passes alone, 13/13). Database: every `npm test` step up to
+  the migrator passed (migrations, phase, family lifecycle, 48 node tests);
+  `railway-migrate.test.mjs` (a fully stubbed transport test this lane did
+  not touch) was stopped after 55 minutes still in scenario 2 of 13 with
+  every lane running it at once, so it is left to the orchestrator's merge
+  run. Root: `spec:check`, `secrets:check`, `social:check`.
 - **Status.** E.1, E.2, E.3 and E.13 stay "Implemented and locally verified;
   not accepted". Still open: a visual pass of the new actions in the browser
   matrices (the two Family social verifiers do not click them yet), and
