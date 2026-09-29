@@ -72,6 +72,9 @@ export async function loadLessonFixtures(page, locales) {
   })()`);
 }
 
+/** The register policy version Core and the UI share (rebuild/design/learnerRegisterPolicy.generated.ts). */
+const REGISTER_POLICY_VERSION = '2026-09-24.1';
+
 const AGE_BANDS = { '6-9': 'under_13', '10-12': 'under_13', '13-17': '13_to_17', adult: 'adult' };
 
 /**
@@ -122,6 +125,8 @@ function respond(core, path, request, unknownRequests) {
     profile: { display_name: 'Synthetic', ...(spec.username ? { username: spec.username } : {}), locale, theme, cover: {} }, roles: spec.roles ?? ['universal'],
     adminPermissions: spec.adminPermissions ?? [], avatarOptions: {},
     analyticsEnabled: false, isGuest: spec.guest, newAccount: false, onboardingComplete: spec.onboarded ?? !spec.guest,
+    // E.6: a scenario whose account has a scheduled deletion (`accountDeletion`: { status, scheduledFor }).
+    ...(spec.accountDeletion ? { accountDeletion: spec.accountDeletion } : {}),
   });
   if (path === '/auth/age-screen') return ok(spec.ageBand
     ? { required: false, ageBand: AGE_BANDS[spec.ageBand], protectedOrigin: spec.ageBand !== 'adult' && spec.ageBand !== '13-17' }
@@ -138,6 +143,10 @@ function respond(core, path, request, unknownRequests) {
     const answer = lane.respond({ core, spec, scenario, locale, theme, fixtures, path, request, ok });
     if (answer !== undefined) return answer;
   }
+  // B.23: the learner shell reads the register once for its root's age band (GAP-FIX-R4, 06 §7). A lane that owns a
+  // scenario's register answers it above; any other signed-in scenario gets the register of its age.
+  const register = { '6-9': 'young', '10-12': 'transition', '13-17': 'teen', adult: 'adult' }[spec.ageBand];
+  if (path === '/learn/register' && request.method === 'GET' && register) return ok({ register, copy_band: spec.ageBand, policy_version: REGISTER_POLICY_VERSION, graduation: null });
   unknownRequests.add(`${request.method} ${path} (${scenario})`);
   return ok({});
 }

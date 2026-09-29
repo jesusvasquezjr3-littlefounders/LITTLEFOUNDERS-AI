@@ -82,10 +82,10 @@ const lesson: Record<string, CopyRole> = { pageTitle: 'heading', resultTitle: 'h
  * names is the verified parent (glossary), never the Mentor.
  */
 const together: Record<string, CopyRole> = {
-  title: 'heading', intro: 'body', rules: 'body', back: 'action', loading: 'body', errorTitle: 'heading', errorBody: 'body', offlineBody: 'body',
+  title: 'heading', intro: 'body', back: 'action', loading: 'body', errorTitle: 'heading', errorBody: 'body', offlineBody: 'body',
   retry: 'action', retrying: 'action', closedTitle: 'heading', closedBody: 'body', closedHint: 'body', invitationsTitle: 'heading',
   invitedBy: 'body', goalLine: 'heading', join: 'action', decline: 'action', goalsTitle: 'heading', progressLabel: 'body',
-  progressValue: 'data', reached: 'body', membersTitle: 'heading', you: 'data', waiting: 'body', invite: 'action', remove: 'action',
+  progressValue: 'data', reached: 'body', membersTitle: 'heading', manage: 'action', you: 'data', waiting: 'body', invite: 'action', remove: 'action',
   withdraw: 'action', leave: 'action', report: 'action', leaveTitle: 'heading', leaveBody: 'body', leaveYes: 'action', stay: 'action',
   removeTitle: 'heading', removeBody: 'body', removeYes: 'action', newTitle: 'heading', newTarget: 'body', lessonsOption: 'option',
   newDays: 'body', daysOption: 'option', newPeople: 'body', peopleHelp: 'body', noPeople: 'body', start: 'action', starting: 'action',

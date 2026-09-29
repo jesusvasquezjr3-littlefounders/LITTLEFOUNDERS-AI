@@ -24,7 +24,12 @@ const preferences = vi.hoisted(() => ({ value: { character: 'dina', personalized
 
 vi.mock('@/auth/AuthContext', () => ({ useAuth: () => auth }));
 vi.mock('@/routes/app/wallet/useWalletAccess', () => ({ useWalletAccess: () => wallet.value }));
-vi.mock('@/lib/api', () => ({ api: vi.fn(async () => (preferences.error ? { data: null, error: preferences.error } : { data: preferences.value, error: null })) }));
+// B.23: Core's register for the learner shell's age band (GAP-FIX-R4); null answers with an error.
+const register = vi.hoisted(() => ({ value: { register: 'young', copy_band: '6-9', policy_version: '2026-09-24.1', graduation: null } as unknown }));
+vi.mock('@/lib/api', () => ({ api: vi.fn(async (path: string) => {
+  if (path === '/learn/register') return register.value ? { data: register.value, error: null } : { data: null, error: { code: 'DATA_UNAVAILABLE' } };
+  return preferences.error ? { data: null, error: preferences.error } : { data: preferences.value, error: null };
+}) }));
 
 let userSeq = 0;
 beforeEach(() => {
@@ -36,6 +41,7 @@ beforeEach(() => {
   wallet.value = { loaded: true, holder: 'managed_child', familyChild: true };
   preferences.value = { character: 'dina', personalized: true };
   preferences.error = null;
+  register.value = { register: 'young', copy_band: '6-9', policy_version: '2026-09-24.1', graduation: null };
 });
 
 function renderApp(path: string, layout: 'app' | 'staff' = 'app') {
@@ -140,5 +146,39 @@ describe('the staff console', () => {
     const rail = screen.getAllByRole('navigation')[0]!;
     expect(within(rail).getByRole('link', { name: 'Roles & Access' })).toHaveAttribute('href', '/admin/roles');
     expect(within(rail).getByRole('link', { name: 'Overview' })).toHaveAttribute('aria-current', 'page');
+  });
+});
+
+describe('the age band on the shell root (Bible 06 §7, GAP-FIX-R4)', () => {
+  const root = (container: HTMLElement) => container.querySelector('.lf-rebuild');
+
+  it("carries the learner's band as Core's register gives it", async () => {
+    auth.roles = ['universal'];
+    wallet.value = { loaded: true, holder: 'teen', familyChild: false };
+    register.value = { register: 'teen', copy_band: '13-17', policy_version: '2026-09-24.1', graduation: null };
+    const { container } = renderApp('/learn');
+    await waitFor(() => expect(root(container)).toHaveAttribute('data-age-band', '13-17'));
+  });
+
+  it('reads as the youngest band while the register is unknown or Core cannot give one', async () => {
+    register.value = null;
+    const { container } = renderApp('/learn');
+    expect(root(container)).toHaveAttribute('data-age-band', '6-9');
+    await waitFor(() => expect(root(container)).toHaveAttribute('data-age-band', '6-9'));
+  });
+
+  it('refuses a register answer whose band and register disagree (the youngest band stays)', async () => {
+    register.value = { register: 'young', copy_band: 'adult', policy_version: '2026-09-24.1', graduation: null };
+    const { container } = renderApp('/learn');
+    await waitFor(() => expect(screen.getByText('Learn page')).toBeInTheDocument());
+    expect(root(container)).toHaveAttribute('data-age-band', '6-9');
+  });
+
+  it('gives the Tutor console and the staff console the adult band', () => {
+    auth.roles = ['parent'];
+    wallet.value = { loaded: true, holder: null, familyChild: false };
+    expect(root(renderApp('/family').container)).toHaveAttribute('data-age-band', 'adult');
+    auth.roles = ['superadmin'];
+    expect(root(renderApp('/admin', 'staff').container)).toHaveAttribute('data-age-band', 'adult');
   });
 });

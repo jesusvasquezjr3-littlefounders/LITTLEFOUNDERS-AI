@@ -882,3 +882,200 @@ Three audited gaps are closed, each implemented and locally verified, and none i
   output; `bash` from a native process resolves to WSL here). It is left
   open for a Linux or CI run. The browser matrices and `audit:rebuild` were
   not run in this merge step.
+
+## Checkpoint F4-design-system
+
+Branch `codex/spec-fix4designsy`. Two audited gaps in the design-system area.
+Both were checked in the code first and both were real.
+
+### What was built
+
+1. **The learner's age band on the app root** (Bible 06 §7, 06 §3.1, 02 D11
+   and rule 19). `ShellRoot` never passed an `ageBand`, so no mounted shell
+   root carried `data-age-band`, and a 6-9 child's journal and rhythm were
+   budgeted as adult pages (40 first-view words instead of 25).
+   - `frontend/src/app-shell/useLearnerBand.ts` reads Core's register
+     (`GET /learn/register`, B.23) once per account for the learner shell; the
+     youngest band while unknown or when Core cannot answer, remembered across
+     the shell's remounts. `AppShellLayout` passes it through `ShellRoot` to
+     `RebuildRoot` (and the environment); the Tutor console and the staff
+     console carry `adult`.
+   - `DecisionJournalView` and `LearningRhythmView` declare `data-age-band`
+     (their routes read the band the shell resolved; the preview passes its
+     `age`). The lesson route's opening, recall and refusal screens now carry
+     the learner's band too (they carried none; found by the new rule).
+   - Audit rule `age-band-missing` (`scripts/audits/rules.mjs`, fed the
+     scenario's band by `audit-rebuild.mjs`): a real route signed in as a 6-9
+     learner that measures no young block is a finding. New state
+     `/learn/journal@child`; the synthetic journal answer now says
+     `sharedWithTutor` for a parent-created child under 13 (OD-27 (3)).
+   - Copy fixed to the 6-9 first view: the journal's Tutor line is now
+     "Your Tutor sees your choices." (26 to 23 words, EN).
+2. **Four mounted screens in no audit state** (02 §7 item 10, 06 §7, 03 §5).
+   - `learn.mjs`: `/learn/together` ready, empty, reached (independent teen)
+     and closed (parent-created teen, no Tutor opt-in), plus previews
+     `together@13-17` and `together-closed@13-17`.
+   - `staff.mjs`: `/admin/age-corrections` queue, request sheet (superadmin and
+     a `manage_users`-only admin) and empty queue.
+   - `core.mjs`: `/account-deletion` scheduled, held, kept (one press),
+     signed out after confirming and deleted, plus preview `account-deletion`
+     processing, unavailable and loading on the screen layout. The router
+     hand-off states use a new driver field `pushState` (router state pushed
+     once the app has mounted, as `navigate(path, { state })` does).
+   - `site.mjs`: `/badge/:token` expired and ready, signed out (new scenario
+     field `signedOut`: Core answered for a visitor with no session). The ready
+     state is declared only until the route's retirement date
+     (`BADGE_LINK_ROUTE_RETIRES_AT`), after which every link reads as expired.
+   - The synthetic Core answers `/learn/register` for any scenario from its
+     age and `/auth/me` carries a scenario's `accountDeletion`.
+   - Findings fixed: goals together exceeded the 40-word first view (58, 41,
+     46 and 54 words) and the closed body joined two ideas (16 words). The
+     intro and rules became one line ("Just your group. No scores, no chat."),
+     the invitation card lost the repeated "With {names}" line, the members
+     subhead went (the list keeps its accessible name), and asking, removing,
+     reporting and leaving sit behind one "Manage goal" disclosure (06 §3.1:
+     a second step, not more text); the closed hint is its own line. The badge
+     page's two body strings were over 12 words and its text was centred on a
+     single-state screen; both copy strings were shortened and the text is
+     left-aligned.
+   - A defect the audit found: a signed-in reload of `/account-deletion`
+     rendered before Core's `/auth/me` answered and bounced the holder to the
+     public landing page. `AccountDeletionStatus` now waits for `meLoaded`.
+   - **Gate**: `src/app-routes/__tests__/auditCoverage.test.tsx` builds the
+     route table from the same fragments `App.tsx` mounts and fails when a
+     mounted route has no real-route audit state (react-router decides where
+     each state's address lands) unless it carries a written reason (three
+     redirects). It runs in the frontend suite, so in CI and in
+     `release:readiness` (`test:all`).
+
+### Verification (local)
+
+- `npm run audit:rebuild` over the 26 new or changed states, full matrix
+  (3 locales x 2 modes x 320/375/768/1280): text fit 2,496, proportion 624,
+  copy budget 624 configurations; after the badge fix, 0 findings and no JS
+  errors. The 33 real routes signed in as a 6-9 learner, copy budget at
+  375 px EN: 0 findings after the lesson-layer fix (4 states had reported
+  `age-band-missing`).
+- Frontend `type-check`, `lint`; focused vitest (43 files, 342 tests: app
+  shell, app routes, audit rules, together, journal, rhythm, learn routes,
+  account deletion, copy-budget suites, site, marketing, account, preview).
+- Root `spec:check`, `secrets:check`, `bash agent/tools/check-i18n.sh`: pass.
+
+### Decisions taken with the SPEC's conservative default (owner questions)
+
+- The badge-link page is audited at the app budget (it renders on the
+  single-state shell, like the not-found and suspended screens), not the site
+  budget (whose 3:1 hero ratio fits a marketing page). Its copy also fits the
+  site budget the unit copy test applies.
+- Goals together keeps its management actions one press away behind "Manage
+  goal" rather than splitting the page into more steps.
+
+### Migrations
+
+None.
+
+### Open items
+
+- The full `audit:rebuild` matrix over every state (386) was not re-run by the
+  lane; the orchestrator's merge gate runs it. The shell band now applies to
+  every learner page, so a 6-9 page that relied on an absent band would show
+  up there (none did among the 33 young real routes measured).
+- `audit:rebuild` itself (dev server plus Chrome) is still not a step of
+  `release-readiness.sh` or CI; the route-coverage test guarantees the state
+  exists, not that the run happened.
+
+## Checkpoint F4-design-system-finish
+
+Lane finish for `codex/spec-fix4designsy`.
+
+- **Sync**: merged `codex/spec-migration-s02`; already up to date (no other
+  lane had merged since the lane branched), so no conflicts and no new
+  mounted route for the route-coverage test to cover.
+- **Adversarial pass** over the two gaps: every learner shell root carries the
+  band Core decides (tutor and staff consoles `adult`); the Mentor screen and
+  the lesson layer declare their own band on their own roots; onboarding
+  declares `6-9` until an age is known. The only client input is the band Core
+  returns (`GET /learn/register`, validated by the strict register schema), so
+  there is no new server boundary to authorize. No legacy component; copy in
+  EN, es-MX and pt-BR.
+- **Defect found by the full suite and fixed**: the previous checkpoint
+  removed the goals-together CSS rules while `TogetherView` still used the
+  new `lf-together-hint` class, which no stylesheet defined
+  (`designClasses.test.ts`). It is now defined in `together.css` (muted body
+  text, tokens only).
+
+### Verification (local)
+
+- Frontend `type-check` and `lint`: pass.
+- Full frontend unit suite once (278 files, 3,206 tests): one red,
+  `designClasses.test.ts` (the missing class above); after the fix that file
+  and `Together.test.tsx` pass (17 tests).
+- Root `spec:check`, `secrets:check`, `bash agent/tools/check-i18n.sh`: pass.
+
+### Final summary
+
+Both audited design-system gaps are implemented and locally verified, not
+accepted: (1) the learner's age band on the app root with the
+`age-band-missing` audit rule, and (2) audit states on the real routes of
+goals together, age corrections, account deletion and the badge link, with a
+route-coverage test that fails when a mounted route has none. Migrations:
+none. Open items are unchanged from the previous checkpoint: the full
+`audit:rebuild` matrix (386 states) for the merge gate, `audit:rebuild` not yet
+a step of CI or `release:readiness`, the badge ready state retiring on
+2026-10-24, and a merge check for any lane editing `TogetherView` or the
+together copy keys (`rules` and `withPeople` removed, `manage` added).
+
+### F4-design-system: merge integration
+
+Merged `codex/spec-fix4designsy` into `codex/spec-migration-s02` after the
+social lane. No migrations, so nothing was renumbered. The social lane and
+this lane both reworked `/learn/together` and both added its audit states, so
+the conflicts were overlapping work, not independent edits. Each was resolved
+as a union:
+
+1. **Two synthetic `/coop-goals` fixtures, one shadowing the other.** The
+   social lane's `togetherAnswer` (kinds `goals`, `invited`, `closed`) sat in
+   `respondLearnerPages`. This lane's `coopGoals` (kinds `ready`, `empty`,
+   `reached`, `closed`) sat first in `respond` and answered for any scenario
+   with `together` set. Merged as is, it would have answered the social
+   lane's `goals` and `invited` scenarios with the wrong shape, so
+   `/learn/together@invitation` would never have found its invitation card.
+   Now one `togetherAnswer` serves every kind (the `ready`, `empty` and
+   `reached` kinds come from `coopGoals`), and one `togetherCandidates`
+   answers `/coop-goals/candidates` (Core's `403 COOP_NOT_ELIGIBLE` for a
+   closed kind), from both call sites.
+2. **Two states named `/learn/together@closed`.** The social lane's is the
+   6-9 child; this lane's is the parent-created 13-17 teen without the Tutor
+   opt-in. The lane's state is now `/learn/together@closed-teen`. All 441
+   states have unique ids, and every state's scenario exists.
+3. **`/learn/together@report` pressed a button that is now hidden.** The
+   social lane's state pressed the second button of the goal actions; this
+   lane moved report, invite and leave behind the 'Manage goal' disclosure.
+   The state now waits for the Manage button, presses it, then presses report
+   in the opened group (`TOGETHER.manage`, then `TOGETHER.report`).
+4. **Intro copy.** Both lanes shortened the goals-together first view: the
+   social lane kept `intro` and `rules` as two lines, and this lane folded
+   them into one `intro` and removed `rules`. The single line is kept, and it
+   also keeps the social lane's "ranks": EN "Just your group. No scores,
+   ranks or chat.", es-MX "Solo tu grupo. Sin puntajes, rankings ni chat.",
+   pt-BR "Só seu grupo. Sem pontuação, ranking ou chat." (8 words each).
+5. **The social copy tone gate's reviewed exception pointed at a removed key.**
+   The E.10 "no chat" exception moved from `rebuild-learn:together.rules`
+   to `rebuild-learn:together.intro`, because the intro now says it. The gate's
+   test that removes the exception to prove it matters now removes the intro
+   exception.
+6. **The closed state.** Both lanes split the closed hint onto its own line.
+   This lane's version is kept: the hint is a sibling line with
+   `lf-together-hint`, not inside the empty state's action slot.
+7. **Docs.** `REQUIREMENTS.md`: the design-system paragraph and the B.23 row
+   keep both lanes' notes. The lane record keeps every checkpoint.
+
+Checks on the merged tree: `typecheck:all` and `lint:all` pass; the frontend
+suite passes (285 files, 3,313 tests, including `auditCoverage.test.tsx` and
+`Together.test.tsx`); `spec:check`, `secrets:check` and the i18n gate pass;
+the social and family copy tone gates and their tests pass (60 tests). Not
+run in this merge step: the browser matrices and `audit:rebuild`. The merged
+`/learn/together` first view (the social lane's states over this lane's
+layout, plus the one-word-longer intro) has not been measured against the
+40-word cap in a browser. The full 441-state `audit:rebuild` run is still
+owed to the merge gate.

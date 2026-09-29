@@ -497,10 +497,10 @@
   "badgeLanding": {
     "loading": "Carregando a conquista",
     "title": "{name} conquistou {achievement}",
-    "body": "A LittleFounders ensina crianças sobre dinheiro e negócios com histórias, jogos e um Mentor que responde.",
+    "body": "Crianças aprendem dinheiro e negócios com histórias, jogos e um Mentor.",
     "imageAlt": "Selo de conquista de {name}: {achievement}",
     "expiredTitle": "Este link de selo expirou",
-    "expiredBody": "Links de selos param de funcionar depois de um tempo. Você ainda pode ver como a LittleFounders funciona.",
+    "expiredBody": "Links de selos expiram. Você ainda pode ver como a LittleFounders funciona.",
     "howItWorks": "Como funciona"
   }
 }

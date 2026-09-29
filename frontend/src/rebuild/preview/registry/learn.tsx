@@ -203,7 +203,7 @@ export const learnPreviewScreens: PreviewRegistry = {
   }),
   recall: framed(({ locale, theme, params, go }) => <NarrativeRecallView key={`recall:${locale}`} fixture locale={locale} dark={theme === 'dark'}
     recall={recallFixture(locale, params.get('changed') !== '0')} onContinue={() => go('home')} />),
-  journal: framed(({ locale, theme, params, go }) => <LearnPreviewHost><DecisionJournalView key={`journal:${locale}:${params.get('journal')}`} fixture locale={locale} dark={theme === 'dark'}
+  journal: framed(({ locale, theme, ageBand, params, go }) => <LearnPreviewHost><DecisionJournalView key={`journal:${locale}:${params.get('journal')}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand}
     state={journalPreviewStates(locale)[params.get('journal') ?? 'list'] ?? journalPreviewStates(locale).list!}
     onBack={() => go('home')} onRetry={() => go('journal')} onMore={() => {}}
     onClear={async () => true} onBridge={async (_id, _answer, goal) => (goal ? 'goal' : 'done')} onOpenWallet={() => go('home')} /></LearnPreviewHost>),
@@ -231,7 +231,7 @@ export const learnPreviewScreens: PreviewRegistry = {
       const judgment = scoreV2Judgment('reasoning.decide-justify.v2', payload, answer, DECIDE_JUSTIFY_PILOT_RUBRIC);
       return { verdict: verdict(outcome), ...(judgment === 'invalid' ? {} : { judgment }) };
     }} />),
-  rhythm: framed(({ locale, theme, params, go }) => <LearnPreviewHost><LearningRhythmView key={`rhythm:${locale}:${params.get('rhythm')}`} fixture locale={locale} dark={theme === 'dark'}
+  rhythm: framed(({ locale, theme, ageBand, params, go }) => <LearnPreviewHost><LearningRhythmView key={`rhythm:${locale}:${params.get('rhythm')}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand}
     state={rhythmPreviewStates[params.get('rhythm') ?? 'open'] ?? rhythmPreviewStates.open!}
     onBack={() => go('home')} onRetry={() => {}} onOpenPath={() => {}} onOpenMentor={() => {}}
     onSavePace={async (goal) => ({ goal, chosen: true, passedToday: 1, goalMet: goal <= 1 })} /></LearnPreviewHost>),

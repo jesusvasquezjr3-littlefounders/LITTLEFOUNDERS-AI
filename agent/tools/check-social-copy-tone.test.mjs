@@ -119,9 +119,9 @@ test('a stale exception fails, so it cannot excuse the next string', () => {
 });
 
 test('removing a reviewed exception brings its finding back', () => {
-  const lexicon = { ...live.lexicon, exceptions: live.lexicon.exceptions.filter((e) => e.key !== 'rebuild-learn:together.rules') };
+  const lexicon = { ...live.lexicon, exceptions: live.lexicon.exceptions.filter((e) => e.key !== 'rebuild-learn:together.intro') };
   const { failures } = checkTone({ ...live, lexicon });
-  assert.ok(failures.some((f) => f.startsWith('rebuild-learn:together.rules [en-US] messaging')), failures.join('\n'));
+  assert.ok(failures.some((f) => f.startsWith('rebuild-learn:together.intro [en-US] messaging')), failures.join('\n'));
 });
 
 test('B.14 UI lexicon runs as the b14_ui category', () => {

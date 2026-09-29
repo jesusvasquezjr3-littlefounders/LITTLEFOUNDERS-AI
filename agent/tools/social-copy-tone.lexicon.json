@@ -294,7 +294,7 @@
       "why": "Tells a 16-17 teen that nobody can message them even when discoverable, which E.10 enforces: there is no messaging surface at all."
     },
     {
-      "key": "rebuild-learn:together.rules",
+      "key": "rebuild-learn:together.intro",
       "category": "messaging",
       "why": "The OD-27 (1) goals-together rule says there is no chat; E.10 enforces it (no free text on a goal, strict Core bodies)."
     },

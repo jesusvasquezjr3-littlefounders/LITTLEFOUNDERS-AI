@@ -14,9 +14,17 @@ export const SENTENCES = { heading: 1, body: 2, prompt: 2, option: 1, mentor: 2,
 export const FOLD = 740;
 const factor = (locale) => (locale.startsWith('en') ? 1 : 1.25);
 
-/** Copy budget findings for one measured state (copy-budget-audit.reference.mjs rules). */
-export function copyFindings(result, state, locale, { firstView }) {
+/**
+ * Copy budget findings for one measured state (copy-budget-audit.reference.mjs rules). `band` is the age band of
+ * the person an authenticated real-route state is signed in as (its synthetic-Core scenario), when there is one.
+ */
+export function copyFindings(result, state, locale, { firstView, band }) {
   const findings = [];
+  // 06 §7 (GAP-FIX-R4): in production the root carries data-age-band, so a 6-9 learner's page is measured at the
+  // 6-9 limits. A real route signed in as a 6-9 learner where no block reads young is budgeted as an adult page.
+  if (band === '6-9' && result.blocks.length && !result.blocks.some((block) => block.young)) {
+    findings.push(['age-band-missing', `a 6-9 learner's page carries no data-age-band="6-9": it would be budgeted at the ${state.budget} limits`]);
+  }
   const limit = (block, role) => {
     const base = { ...BUDGETS[block.site ? 'site' : state.budget], ...(!block.site && block.young ? YOUNG : {}) };
     return Math.ceil((base[role in base ? role : 'body']) * factor(locale));

@@ -5,6 +5,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { useTheme } from '@/theme/useTheme';
 import type { Locale } from '@/rebuild/design/copyBudget';
+import { useRebuildEnvironment } from '@/rebuild/design/layers';
 import { answerSelfBridge, clearJournal, fetchJournal, type JournalState, type NarrativeTransport } from '@/rebuild/learning/narrative';
 import { DecisionJournalView } from '@/rebuild/learning/DecisionJournalView';
 
@@ -21,6 +22,8 @@ export function DecisionJournalRoute() {
   const { i18n } = useTranslation();
   const { isDark } = useTheme();
   const { getToken } = useAuth();
+  // Bible 06 §7 (GAP-FIX-R4): the band the learner shell resolved once from Core's register; the youngest outside it.
+  const ageBand = useRebuildEnvironment().ageBand ?? '6-9';
   const [state, setState] = useState<JournalState>({ status: 'loading' });
   const [revision, setRevision] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -46,7 +49,7 @@ export function DecisionJournalRoute() {
     if (next.status === 'ready') setState({ ...state, entries: [...state.entries, ...next.entries], hasMore: next.hasMore });
   }
 
-  return <DecisionJournalView state={state} locale={locale} dark={isDark} loadingMore={loadingMore}
+  return <DecisionJournalView state={state} locale={locale} dark={isDark} ageBand={ageBand} loadingMore={loadingMore}
     onBack={() => navigate('/learn')}
     onRetry={() => setRevision((n) => n + 1)}
     onMore={() => void more()}

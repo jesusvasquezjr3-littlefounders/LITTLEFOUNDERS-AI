@@ -6,6 +6,7 @@ import { useWalletAccess } from '@/routes/app/wallet/useWalletAccess';
 import { LearnerShell, StaffShell, STAFF_PERMISSIONS, TutorShell, type ShellNavItem, type StaffGrants, type StaffNavItem, type StaffPermission } from '@/rebuild/design/controls';
 import { appShellKind, currentSlot, learnerNav, MENTOR_PATH, staffNav, tutorNav, type NavSlot, type ShellAccount } from './navigation';
 import { ShellRoot, useShellCopy, useShellLocale, useShellNavigate } from './ShellRoot';
+import { useLearnerBand } from './useLearnerBand';
 import { useMentorCharacter } from './useMentorCharacter';
 import { TeenAnalyticsDisclosure } from './TeenAnalyticsDisclosure';
 
@@ -61,6 +62,9 @@ export function AppShellLayout() {
   const account = useShellAccount();
   const kind = appShellKind(account);
   const character = useMentorCharacter(kind === 'learner' && !redirect);
+  // Bible 06 §7 (GAP-FIX-R4): the learner's band on the shell root, so every learner page and the shell chrome
+  // are budgeted at the learner's age; the Tutor console serves a verified parent, always an adult.
+  const learnerBand = useLearnerBand(kind === 'learner' && !redirect);
   const copy = useShellCopy().appShell;
   const locale = useShellLocale();
   const navigate = useShellNavigate();
@@ -78,7 +82,7 @@ export function AppShellLayout() {
   // Every page is rebuilt (02 rule 23, D13): the shell's <main> owns the content box and the route entrance.
   // The key keeps a page's own state from surviving a move to another address on the same route.
   const body = <Fragment key={pathname}><Outlet /></Fragment>;
-  return <ShellRoot>
+  return <ShellRoot ageBand={kind === 'tutor' ? 'adult' : learnerBand}>
     {kind === 'tutor'
       ? <TutorShell {...common} roleLabel={copy.tutorRole}
         labels={{ skip: copy.skip, navigation: copy.navigation, menu: copy.menu, close: copy.close }}>{body}</TutorShell>
@@ -114,7 +118,8 @@ export function StaffShellLayout() {
     ...(grant ? { permission: grant as StaffPermission | readonly StaffPermission[] } : {}),
   }));
   const current = currentSlot(pathname, entries.map(({ slot }) => slot));
-  return <ShellRoot>
+  // The staff console serves staff, adults only (Bible 06 §7: the root carries the band).
+  return <ShellRoot ageBand="adult">
     <StaffShell appName={APP_NAME} pageTitle={items.find((item) => item.id === current)?.label ?? copy.staffRole} routeKey={pathname}
       locale={locale} onNavigate={navigate} current={current} items={items} grants={staffGrants(roles, adminPermissions)}
       roleLabel={copy.staffRole} labels={{ skip: copy.skip, navigation: copy.navigation, menu: copy.menu, close: copy.close }}>

@@ -74,8 +74,28 @@ describe('TogetherView (L-04)', () => {
     await waitFor(() => expect(props.onStart).toHaveBeenCalledWith(10, 14, ['luz']));
   });
 
+  it('keeps asking, removing, reporting and leaving one press away (06 §3.1 layering)', () => {
+    view();
+    for (const name of [t.leave, t.report, t.invite, t.remove, t.withdraw]) expect(screen.queryByRole('button', { name })).toBeNull();
+    const manage = screen.getByRole('button', { name: t.manage });
+    expect(manage).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.click(manage);
+    expect(manage).toHaveAttribute('aria-expanded', 'true');
+    for (const name of [t.leave, t.report, t.invite, t.remove, t.withdraw]) expect(screen.getByRole('button', { name })).toBeInTheDocument();
+    fireEvent.click(manage);
+    expect(screen.queryByRole('button', { name: t.leave })).toBeNull();
+  });
+
+  it('an ineligible learner is told the way in on its own line', () => {
+    view({ state: { status: 'ready', value: { ...value, eligible: false, goals: [], invitations: [] } } });
+    const hint = screen.getByText(t.closedHint);
+    expect(hint).toHaveAttribute('data-copy-role', 'body');
+    expect(screen.getByText(t.closedBody)).not.toBe(hint);
+  });
+
   it('leaving asks first, and says what happens', async () => {
     const props = view();
+    fireEvent.click(screen.getByRole('button', { name: t.manage }));
     fireEvent.click(screen.getByRole('button', { name: t.leave }));
     const dialog = await screen.findByRole('alertdialog');
     expect(within(dialog).getByText(t.leaveBody)).toBeInTheDocument();
@@ -85,6 +105,7 @@ describe('TogetherView (L-04)', () => {
 
   it('reports someone in the goal with a category, and can leave in the same step', async () => {
     const props = view();
+    fireEvent.click(screen.getByRole('button', { name: t.manage }));
     fireEvent.click(screen.getByRole('button', { name: t.report }));
     const dialog = await screen.findByRole('dialog');
     fireEvent.click(within(dialog).getByRole('radio', { name: en.report.categories.harassment }));
