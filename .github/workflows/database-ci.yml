@@ -103,3 +103,43 @@ jobs:
           LF_PG_DATA: /var/lib/postgresql/data
           LF_PG_VERIFY_JOBS: '3'
         run: node database/scripts/family-db-verify.mjs
+
+  # A migration cannot auto-apply (database-cd.yml) past a red Block G/H proof.
+  # Appendix N 1.1 / 1.2 / 2.3 and Appendix O 1.1 / 2.2(b), Part 3 Stage 2 of
+  # both (GAP-FIX-R4): the staff console and analytics database proofs (the
+  # parent grant and staff decisions, content release, the live-document
+  # guard, course publication, the G.1 grant RLS and the Generation read path,
+  # the H.1 disclosure coverage, the kid and teen consent gate, the release
+  # audits) run over the WHOLE migration chain on a PostgreSQL 17 service
+  # container. The runner and its self-test: database/scripts/staff-analytics-db-verify*.mjs.
+  staff-db-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Block G/H database proofs
+        env:
+          LF_PG_PORT: '5432'
+          LF_PG_USER: postgres
+          LF_PG_PSQL: psql
+          LF_PG_DATA: /var/lib/postgresql/data
+          LF_PG_VERIFY_JOBS: '3'
+        run: node database/scripts/staff-analytics-db-verify.mjs

@@ -25,7 +25,8 @@ in order, then at the enforcing boundary:
   - a check past 30 days is overdue, and content_bypass_metrics counts it;
   - no browser role reads the new tables or calls the new functions.
 
-Configuration: LF_PG_PSQL, LF_PG_PORT, LF_PG_USER, LF_PG_KEEP.
+Configuration: LF_PG_PSQL, LF_PG_PORT, LF_PG_USER, LF_PG_KEEP. Run by
+database/scripts/staff-analytics-db-verify.mjs.
 """
 
 import os
@@ -125,7 +126,9 @@ try:
     verify = lambda: run(f"INSERT INTO course_release_verifications (course_id, checks, content_watermark) VALUES ('{I['course']}', '[{all_gates}]'::jsonb, forge_release_content_watermark('{I['course']}')) ON CONFLICT (course_id) DO UPDATE SET checks = EXCLUDED.checks, content_watermark = EXCLUDED.content_watermark")
     verify()
 
-    gate_ids = run("SELECT gate_id FROM forge_release_gates WHERE gate_number IN (1, 11, 12, 13, 14, 15, 16) OR gate_id = 'forge.release.v2-content' ORDER BY gate_id").splitlines()
+    # The gates a v2 manifest must carry are read from the database (forge_v2_manifest_gates),
+    # never listed here: a later migration that adds one would otherwise break this proof unseen.
+    gate_ids = run("SELECT gate_id FROM forge_release_gates WHERE gate_id IN (SELECT gate_id FROM forge_v2_manifest_gates) ORDER BY gate_id").splitlines()
     gates = ', '.join('{"gate": "%s", "ok": true}' % gate for gate in gate_ids)
 
     def publish(version_id):
