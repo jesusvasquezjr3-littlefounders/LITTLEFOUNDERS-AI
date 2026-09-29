@@ -576,8 +576,11 @@
     transition-duration: 500ms !important;
   }
 
-  html {
-    scroll-behavior: smooth;
+  /* 04 section 3: smooth scrolling only for a reader who has not asked for reduced motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
   }
 
   body {

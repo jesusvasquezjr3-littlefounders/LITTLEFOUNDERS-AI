@@ -6,11 +6,19 @@ on:
     paths:
       - 'filebase/**'
       - 'database/types/**'
+      # The achievement image mirrors the Bible 02 tokens and the registered share marks (badgeDesign.test.ts).
+      - 'frontend/src/rebuild/design/tokens.css'
+      - 'frontend/src/rebuild/assets/manifest.json'
+      - 'frontend/public/rebuild/art/share-achievement-*.svg'
       - '.github/workflows/filebase-ci.yml'
   pull_request:
     paths:
       - 'filebase/**'
       - 'database/types/**'
+      # The achievement image mirrors the Bible 02 tokens and the registered share marks (badgeDesign.test.ts).
+      - 'frontend/src/rebuild/design/tokens.css'
+      - 'frontend/src/rebuild/assets/manifest.json'
+      - 'frontend/public/rebuild/art/share-achievement-*.svg'
       - '.github/workflows/filebase-ci.yml'
 
 jobs:

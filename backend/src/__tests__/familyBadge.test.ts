@@ -52,10 +52,10 @@ describe('POST /api/v1/family/kids/:kidId/achievement-image', () => {
     expect(text).not.toContain('utm_campaign');
   });
 
-  it('localizes the server-derived label and passes the locale to the renderer', async () => {
+  it('localizes the server-derived label and kicker and passes the locale to the renderer', async () => {
     const calls = stubAchievementTransport({ courseBadges: COMPLETED });
     await post({ kind: 'course_badge', courseSlug: 'financial-education', locale: 'es-MX', handoff: 'download' });
-    expect(rendererBody(calls)).toEqual({ kind: 'course_badge', label: 'Educación Financiera', firstName: 'Sofía', locale: 'es-MX' });
+    expect(rendererBody(calls)).toEqual({ kind: 'course_badge', label: 'Educación Financiera', firstName: 'Sofía', locale: 'es-MX', kicker: 'Insignia ganada' });
   });
 
   it('builds streak and goal labels server-side, in coins never money', async () => {
@@ -72,12 +72,12 @@ describe('POST /api/v1/family/kids/:kidId/achievement-image', () => {
     expect(rendererBody(calls).label).toBe('Ahorró 50 monedas para "A bike"');
   });
 
-  it('shortens a label past the renderer ceiling instead of failing', async () => {
+  it('replaces a label past the renderer ceiling with the generic one instead of failing or cutting it (02 D1)', async () => {
     const calls = stubAchievementTransport({
       goal: { id: GOAL_ID, kid_user_id: KID_ID, title: 'x'.repeat(60), target: 50, icon: 'bike', status: 'reached', created_at: '2026-09-01', reached_at: '2026-09-08' },
     });
     expect((await post({ kind: 'goal_reached', goalId: GOAL_ID, locale: 'en-US', handoff: 'download' })).status).toBe(200);
-    expect((rendererBody(calls).label as string).length).toBe(80);
+    expect(rendererBody(calls).label).toBe('Saved 50 coins for a goal');
   });
 
   it('records one share initiated by hand-off and kind — no user, kid or image identifier', async () => {

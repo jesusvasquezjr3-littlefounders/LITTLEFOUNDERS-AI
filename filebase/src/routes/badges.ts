@@ -23,15 +23,20 @@ import { renderBadgePng } from '../lib/badge.js';
  * expires (Core's F.2 purge and sweep).
  */
 
-// F.6 standing constraint: first name, server-derived label, kind and the
-// image's own language — nothing else. `.strict()` refuses an age band, a
-// surname, a photo reference or any other extra field instead of ignoring it.
+// F.6 standing constraint: first name, server-derived label, kind, the
+// image's own language and Core's localized kicker — nothing else.
+// `.strict()` refuses an age band, a surname, a photo reference or any other
+// extra field instead of ignoring it.
 const RenderBody = z
   .object({
     kind: z.enum(['course_badge', 'streak', 'goal_reached']),
     label: z.string().min(1).max(80),
     firstName: z.string().min(1).max(40),
     locale: z.enum(['en-US', 'es-MX', 'pt-BR']),
+    // Fixed copy from Core (06 section 5.7: calm, so never an exclamation mark).
+    // Optional only so Depot can deploy before the Core that sends it; the image
+    // then has no kicker line (it never falls back to copy of Depot's own).
+    kicker: z.string().min(1).max(40).refine((text) => !/[!¡]/.test(text), 'The kicker carries no exclamation mark').optional(),
   })
   .strict();
 

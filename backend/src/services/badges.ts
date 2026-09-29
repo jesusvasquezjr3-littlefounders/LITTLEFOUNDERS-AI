@@ -66,6 +66,8 @@ export interface AchievementImageParams {
   label: string;
   firstName: string;
   locale: AchievementLocale;
+  /** The localized line above the name (services/achievementImageCopy.ts); Depot holds no copy of its own. */
+  kicker: string;
 }
 
 const PNG_MAGIC = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);

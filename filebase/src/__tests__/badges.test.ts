@@ -2,7 +2,8 @@ import { readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
-import { wrapLabel } from '../lib/badge.js';
+import { fittedNameSize, layoutLabel, measure, wrapLabel } from '../lib/badge.js';
+import { BADGE_DESIGN } from '../lib/badgeDesign.generated.js';
 import { KEY } from './helpers.js';
 
 /*
@@ -36,7 +37,7 @@ function storedEntries(): string[] {
   }
 }
 
-const VALID = { kind: 'streak', label: '7-day streak', firstName: 'Sofía', locale: 'en-US' };
+const VALID = { kind: 'streak', label: '7-day streak', firstName: 'Sofía', locale: 'en-US', kicker: 'Learning streak' };
 
 describe('POST /api/v1/badges/render', () => {
   it('rejects a missing internal API key', async () => {
@@ -69,11 +70,11 @@ describe('POST /api/v1/badges/render', () => {
       }
     }
     const en = await render(app, VALID);
-    const es = await render(app, { ...VALID, locale: 'es-MX' });
+    const es = await render(app, { ...VALID, locale: 'es-MX', kicker: 'Racha de aprendizaje', label: 'Racha de 7 días' });
     expect((en.body as Buffer).equals(es.body as Buffer)).toBe(false);
   });
 
-  it('refuses any field beyond kind, label, first name and locale (F.6 minimization)', async () => {
+  it('refuses any field beyond kind, label, first name, locale and kicker (F.6 minimization)', async () => {
     const app = createApp();
     for (const extra of [{ ageBand: '6-8' }, { surname: 'García' }, { photoUrl: 'https://x.test/p.png' }, { bucket: 'badges' }]) {
       const res = await request(app).post('/api/v1/badges/render').set('x-internal-api-key', KEY()).send({ ...VALID, ...extra });
@@ -84,10 +85,25 @@ describe('POST /api/v1/badges/render', () => {
 
   it('refuses an unknown kind, an over-long name and a missing locale', async () => {
     const app = createApp();
-    for (const body of [{ ...VALID, kind: 'not-a-kind' }, { ...VALID, firstName: 'x'.repeat(41) }, { kind: 'streak', label: 'x', firstName: 'x' }]) {
+    for (const body of [
+      { ...VALID, kind: 'not-a-kind' },
+      { ...VALID, firstName: 'x'.repeat(41) },
+      { kind: 'streak', label: 'x', firstName: 'x' },
+      { ...VALID, label: 'x'.repeat(81) },
+      // 06 section 5.7: calm copy, so a kicker with an exclamation mark is refused.
+      { ...VALID, kicker: 'Streak!' },
+      { ...VALID, kicker: '¡Racha' },
+    ]) {
       const res = await request(app).post('/api/v1/badges/render').set('x-internal-api-key', KEY()).send(body);
-      expect(res.status).toBe(400);
+      expect(res.status, JSON.stringify(body)).toBe(400);
     }
+  });
+
+  it('still renders without a kicker (Depot deploys before the Core that sends one)', async () => {
+    const withoutKicker: Partial<typeof VALID> = { ...VALID };
+    delete withoutKicker.kicker;
+    const res = await render(createApp(), withoutKicker);
+    expect(res.status).toBe(200);
   });
 
   it('XML-escapes a name that could break the SVG document', async () => {
@@ -115,19 +131,40 @@ describe('POST /api/v1/badges (retired compose-and-store)', () => {
   });
 });
 
-describe('wrapLabel (the image is the whole artifact, so nothing may clip)', () => {
-  it('keeps short labels on one line and wraps long ones at word boundaries', () => {
+describe('label layout (02 D1: the image is the whole artifact, so nothing is clipped or cut)', () => {
+  it('keeps short labels on one line and wraps long ones at word boundaries, by measured width', () => {
     expect(wrapLabel('7-day streak')).toEqual(['7-day streak']);
-    const lines = wrapLabel('Saved 50 coins for "A new bicycle for the summer holidays"');
+    const text = 'Saved 50 coins for "A new bicycle for the summer holidays at the lake"';
+    const lines = wrapLabel(text);
     expect(lines.length).toBeGreaterThan(1);
-    expect(lines.every((line) => [...line].length <= 30)).toBe(true);
-    expect(lines.join(' ')).toBe('Saved 50 coins for "A new bicycle for the summer holidays"');
+    expect(lines.every((line) => measure(BADGE_DESIGN.faces.body, line, 52) <= 920)).toBe(true);
+    expect(lines.join(' ')).toBe(text);
   });
 
-  it('hard-splits an unbroken word and caps an 80-char label at four lines', () => {
-    expect(wrapLabel('x'.repeat(80)).every((line) => [...line].length <= 30)).toBe(true);
-    const capped = wrapLabel('word '.repeat(40).trim());
-    expect(capped.length).toBeLessThanOrEqual(4);
+  it('hard-splits an unbroken word and never drops a character or adds an ellipsis', () => {
+    const word = 'x'.repeat(80);
+    const lines = wrapLabel(word);
+    expect(lines.join('')).toBe(word);
+    expect(lines.every((line) => measure(BADGE_DESIGN.faces.body, line, 52) <= 920)).toBe(true);
+    const many = 'word '.repeat(40).trim();
+    const layout = layoutLabel(many);
+    expect(layout.lines.join(' ')).toBe(many);
+    expect(layout.lines.some((line) => line.includes('…'))).toBe(false);
+  });
+
+  it('shrinks the label step-wise only when it needs more lines than the area holds', () => {
+    expect(layoutLabel('7-day streak').size).toBe(52);
+    const long = Array.from({ length: 16 }, () => 'Wwwwwwwwwwwwwwww').join(' ');
+    const layout = layoutLabel(long);
+    expect(layout.size).toBeLessThan(52);
+    expect(layout.lines.join(' ')).toBe(long);
+  });
+
+  it('shrinks a long first name to fit one line', () => {
+    expect(fittedNameSize('Ana')).toBe(104);
+    const size = fittedNameSize('Maximilianoooooooooooooooooooooooooooooo'.slice(0, 40));
+    expect(size).toBeLessThan(104);
+    expect(size).toBeGreaterThanOrEqual(48);
   });
 
   it('renders the longest accepted name and label', async () => {
@@ -135,4 +172,3 @@ describe('wrapLabel (the image is the whole artifact, so nothing may clip)', () 
     expect(res.status).toBe(200);
   });
 });
-

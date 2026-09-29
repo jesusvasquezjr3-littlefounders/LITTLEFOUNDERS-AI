@@ -121,13 +121,14 @@ describe('F.6 constraint 2: server-side verification of the achievement', () => 
 });
 
 describe('F.6 constraint 3: first name, label and image only', () => {
-  it('sends Depot exactly kind, server label, FIRST name and locale — no surname, age or identifier', async () => {
+  it('sends Depot exactly kind, server label, FIRST name, locale and Core kicker — no surname, age or identifier', async () => {
     const calls = stubAchievementTransport({ streakDays: 9, displayName: '  Sofía   García López ' });
     expect((await post()).status).toBe(200);
     const render = calls.find((c) => c.url.includes('/api/v1/badges/render'));
     const body = JSON.parse(render?.body ?? '{}') as Record<string, unknown>;
-    expect(Object.keys(body).sort()).toEqual(['firstName', 'kind', 'label', 'locale']);
+    expect(Object.keys(body).sort()).toEqual(['firstName', 'kicker', 'kind', 'label', 'locale']);
     expect(body.firstName).toBe('Sofía');
+    expect(body.kicker).toBe('Learning streak');
     expect(JSON.stringify(body)).not.toMatch(/García|López|2017|birth|age|kid|user|photo|url/i);
   });
 
@@ -145,6 +146,22 @@ describe('F.6 constraint 3: first name, label and image only', () => {
     expect(await label('Escuela Primaria Juárez', 'es-MX')).toBe('Ahorró 50 monedas para una meta');
     expect(await label('Instagram da Sofia', 'pt-BR')).toBe('Poupou 50 moedas para uma meta');
     expect(await label('A new bike', 'en-US')).toBe('Saved 50 coins for "A new bike"');
+  });
+
+  it('replaces an over-long title whole with the generic label, never an ellipsis (02 D1)', async () => {
+    const longTitle = 'A brand new red bicycle with a basket, a bell and two spare tyres for summer';
+    const goalCalls = stubAchievementTransport({ goal: { id: GOAL_ID, kid_user_id: KID_ID, title: longTitle, target: 50, icon: 'bike', status: 'reached', created_at: '2026-09-01', reached_at: '2026-09-08' } });
+    expect((await post({ body: { kind: 'goal_reached', goalId: GOAL_ID, locale: 'es-MX', handoff: 'download' } })).status).toBe(200);
+    const goalBody = JSON.parse(goalCalls.find((c) => c.url.includes('/api/v1/badges/render'))?.body ?? '{}') as { label: string; kicker: string };
+    expect(goalBody.label).toBe('Ahorró 50 monedas para una meta');
+    expect(goalBody.kicker).toBe('Meta alcanzada');
+
+    const courseCalls = stubAchievementTransport({ courseBadges: [{ course_slug: 'long', course_title: { 'pt-BR': 'x'.repeat(81) }, badge_asset: 'b', completed_at: '2026-09-01' }] });
+    expect((await post({ body: { kind: 'course_badge', courseSlug: 'long', locale: 'pt-BR', handoff: 'download' } })).status).toBe(200);
+    const courseBody = JSON.parse(courseCalls.find((c) => c.url.includes('/api/v1/badges/render'))?.body ?? '{}') as { label: string; kicker: string };
+    expect(courseBody.label).toBe('Concluiu um curso');
+    expect(courseBody.kicker).toBe('Insígnia conquistada');
+    for (const call of [...goalCalls, ...courseCalls]) expect(call.body ?? '').not.toContain('…');
   });
 
   it('caps the first name at 40 characters', () => {

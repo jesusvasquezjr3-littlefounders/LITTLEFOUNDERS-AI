@@ -5,6 +5,14 @@ import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { firstNameOnly, purgeBadgeImageIfUnreferenced, renderAchievementImage } from '../services/badges.js';
 import { recordParentJourneyEvent } from '../services/parentTimeToValue.js';
+import {
+  ACHIEVEMENT_KICKERS,
+  COURSE_BADGE_GENERIC_LABELS,
+  fitAchievementLabel,
+  GOAL_REACHED_GENERIC_LABELS,
+  GOAL_REACHED_LABELS,
+  STREAK_LABELS,
+} from '../services/achievementImageCopy.js';
 import { acceptGuardianInvite, createGuardianInvite, getGuardianInvitePreview } from '../services/guardianLifecycle.js';
 import {
   decideGuardianLink,
@@ -797,34 +805,13 @@ export function familyRouter(): Router {
    *      a goal only if it is this kid's and `reached`, a streak built from
    *      the stored stat and only at MIN_SHAREABLE_STREAK_DAYS or more.
    *   3. First-name-only minimization — Depot receives exactly kind, label,
-   *      FIRST name and locale; its schema refuses anything else.
+   *      FIRST name, locale and the localized kicker; its schema refuses
+   *      anything else.
    */
-  const STREAK_LABELS: Record<'en-US' | 'es-MX' | 'pt-BR', (days: number) => string> = {
-    'en-US': (d) => `${d}-day streak`,
-    'es-MX': (d) => `Racha de ${d} días`,
-    'pt-BR': (d) => `Sequência de ${d} dias`,
-  };
   // Below this, a shared badge would read as noise rather than an
   // achievement. A product judgment call, not a technical one — easy to
   // retune without touching the renderer.
   const MIN_SHAREABLE_STREAK_DAYS = 3;
-
-  // Family Hub (0079) — a reached savings goal uses the same image renderer.
-  // "coins", never money (owner glossary §5).
-  const GOAL_REACHED_LABELS: Record<'en-US' | 'es-MX' | 'pt-BR', (title: string, target: number) => string> = {
-    'en-US': (title, target) => `Saved ${target} coins for "${title}"`,
-    'es-MX': (title, target) => `Ahorró ${target} monedas para "${title}"`,
-    'pt-BR': (title, target) => `Poupou ${target} moedas para "${title}"`,
-  };
-  // F.6 minimization: a goal title is free text a family member typed, and
-  // the picture cannot be recalled once sent. A title that carries a
-  // contact, link, handle, platform, school, place or birth year (the E.13
-  // classifier) is left out and the label names the goal generically.
-  const GOAL_REACHED_GENERIC_LABELS: Record<'en-US' | 'es-MX' | 'pt-BR', (target: number) => string> = {
-    'en-US': (target) => `Saved ${target} coins for a goal`,
-    'es-MX': (target) => `Ahorró ${target} monedas para una meta`,
-    'pt-BR': (target) => `Poupou ${target} moedas para uma meta`,
-  };
 
   const AchievementImageRequest = z
     .object({
@@ -865,7 +852,7 @@ export function familyRouter(): Router {
       const earned = completed.find((c) => c.course_slug === courseSlug);
       if (!earned) return fail(res, 403, 'FORBIDDEN', 'This course badge has not been earned yet');
       const titles = earned.course_title as Record<string, string>;
-      label = titles[locale] ?? titles['en-US'] ?? Object.values(titles)[0] ?? courseSlug;
+      label = fitAchievementLabel(titles[locale] ?? titles['en-US'] ?? Object.values(titles)[0] ?? courseSlug, COURSE_BADGE_GENERIC_LABELS[locale]);
     } else if (kind === 'goal_reached') {
       if (!goalId) return fail(res, 400, 'VALIDATION_ERROR', 'goalId is required for a goal_reached badge');
       const goal = await getGoalById(goalId);
@@ -875,9 +862,8 @@ export function familyRouter(): Router {
       if (!goal || goal.kid_user_id !== kidId || goal.status !== 'reached') {
         return fail(res, 403, 'FORBIDDEN', 'This goal has not been reached yet');
       }
-      label = profileFieldFlags(goal.title).length > 0
-        ? GOAL_REACHED_GENERIC_LABELS[locale](goal.target)
-        : GOAL_REACHED_LABELS[locale](goal.title, goal.target);
+      const generic = GOAL_REACHED_GENERIC_LABELS[locale](goal.target);
+      label = profileFieldFlags(goal.title).length > 0 ? generic : fitAchievementLabel(GOAL_REACHED_LABELS[locale](goal.title, goal.target), generic);
     } else {
       const statsRows = await getKidLearningStats(kidId);
       if (!statsRows) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load learning stats');
@@ -887,10 +873,8 @@ export function familyRouter(): Router {
       }
       label = STREAK_LABELS[locale](streakDays);
     }
-    // Depot's label ceiling; a longer goal title is shortened, never refused.
-    if (label.length > 80) label = `${label.slice(0, 79)}…`;
-
-    const png = await renderAchievementImage({ kind, label, firstName, locale });
+    // 02 D1: an over-long title was replaced whole by the generic label above, never cut with an ellipsis.
+    const png = await renderAchievementImage({ kind, label, firstName, locale, kicker: ACHIEVEMENT_KICKERS[locale][kind] });
     if (!png) return fail(res, 502, DATA_UNAVAILABLE, 'Could not render the achievement image');
 
     // Re-verify the guardian link after the reads, same posture as the
