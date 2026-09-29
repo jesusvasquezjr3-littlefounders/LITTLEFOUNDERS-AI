@@ -319,6 +319,10 @@ the code first and all four were real.
   no text in any raster), `secrets:check`, `check-i18n.sh`: pass. The invite
   route adapter moved from `routes/auth/` to `app-routes/` because the legacy
   UI freeze refuses new files under `src/routes/`.
+- Synced with `codex/spec-migration-s02` (at `f1e5726d`, round 5 mentor and
+  data-platform merged): frontend type-check, i18n, legacy UI gate,
+  `auditCoverage.test.tsx` and `JoinInvite.test.tsx` re-run green after the
+  merge.
 - Earlier in the lane: the new identity audit states in item 2 passed text
   fit, proportion and copy budget (3 locales x 2 modes x 4 widths); the SEO
   gate and its mutation test pass.
