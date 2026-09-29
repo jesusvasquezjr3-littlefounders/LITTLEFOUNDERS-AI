@@ -333,11 +333,95 @@ export function checkStaffStandingConstraints(root = ROOT, { allowlist = ALLOWLI
   return failures;
 }
 
+// ── H.5 (b) / Appendix O 1.2: the incident-response plan is present and current ──
+//
+// "Incident-Response & Breach-Notification Plan Existence and Currency":
+// present, with an internal notification chain, and reviewed on a defined
+// recurring cadence (annually at minimum, or after any actual incident). The
+// plan is docs/operations/GOVERNANCE.md section 5. This fails when that
+// section has no internal chain naming each role with a channel and a time
+// limit, no review cadence (annual and after every incident), no
+// "Last reviewed: YYYY-MM-DD" line, or a date older than 366 days (or in the
+// future).
+
+export const GOVERNANCE_DOC = 'docs/operations/GOVERNANCE.md';
+export const INCIDENT_CHAIN_ROLES = ['Owner', 'Engineering lead', 'Safety/Trust lead', 'Legal'];
+export const INCIDENT_REVIEW_MAX_DAYS = 366;
+const CHANNEL = /ops-watchdog|direct message|phone/i;
+const TIME_LIMIT = /within \d+ (?:minutes?|hours?)/i;
+
+/** Section 5 of the governance record, or null when it is missing. */
+export function incidentSection(text) {
+  const start = text.search(/^## 5\. Incident response\b/m);
+  if (start === -1) return null;
+  const rest = text.slice(start + 1);
+  const next = rest.search(/^## /m);
+  return next === -1 ? text.slice(start) : text.slice(start, start + 1 + next);
+}
+
+export function incidentPlanFailures(text, now = new Date()) {
+  const section = incidentSection(text);
+  if (!section) return [`${GOVERNANCE_DOC} has no "## 5. Incident response" section (H.5)`];
+  const failures = [];
+  const chainAt = section.search(/\*\*Internal notification chain\.\*\*/);
+  if (chainAt === -1) {
+    failures.push(`${GOVERNANCE_DOC} section 5 has no "Internal notification chain" (H.5 (b): who inside the company is notified)`);
+  } else {
+    const end = section.indexOf('\n- **', chainAt + 1);
+    const chain = section.slice(chainAt, end === -1 ? undefined : end);
+    // Each numbered step runs to the next one (the last to the end of the bullet).
+    const starts = [...chain.matchAll(/^\s*\d+\.\s+\*\*([^*]+)\*\*:/gm)];
+    const items = starts.map((m, k) => ({
+      role: m[1].trim(),
+      body: chain.slice(m.index + m[0].length, k + 1 < starts.length ? starts[k + 1].index : undefined),
+    }));
+    const roles = items.map((item) => item.role);
+    if (roles.join('|') !== INCIDENT_CHAIN_ROLES.join('|')) {
+      failures.push(`${GOVERNANCE_DOC} section 5 internal notification chain must name, in order, ${INCIDENT_CHAIN_ROLES.join(', ')} (found: ${roles.join(', ') || 'none'})`);
+    }
+    for (const item of items) {
+      if (!CHANNEL.test(item.body)) failures.push(`${GOVERNANCE_DOC} section 5: the ${item.role} step names no channel (ops-watchdog issue, direct message or phone)`);
+      if (!TIME_LIMIT.test(item.body)) failures.push(`${GOVERNANCE_DOC} section 5: the ${item.role} step has no time limit ("within N hours")`);
+    }
+  }
+  const reviewAt = section.search(/\*\*Plan review\.\*\*/);
+  const review = reviewAt === -1 ? '' : section.slice(reviewAt);
+  if (reviewAt === -1) {
+    failures.push(`${GOVERNANCE_DOC} section 5 has no "Plan review" cadence (Appendix O 1.2)`);
+  } else {
+    if (!/once\s+a\s+year|annual/i.test(review)) failures.push(`${GOVERNANCE_DOC} section 5 plan review must be at least annual (Appendix O 1.2)`);
+    if (!/after\s+every\s+(?:actual\s+)?incident/i.test(review)) failures.push(`${GOVERNANCE_DOC} section 5 plan review must also follow every actual incident (Appendix O 1.2)`);
+    if (!/Owner of the review:\s*\S/i.test(review)) failures.push(`${GOVERNANCE_DOC} section 5 plan review names no owner`);
+  }
+  const dated = /Last reviewed:\s*(\d{4})-(\d{2})-(\d{2})\b/.exec(review);
+  if (!dated) {
+    failures.push(`${GOVERNANCE_DOC} section 5 has no "Last reviewed: YYYY-MM-DD" line under the plan review`);
+  } else {
+    const reviewed = Date.UTC(Number(dated[1]), Number(dated[2]) - 1, Number(dated[3]));
+    const iso = new Date(reviewed).toISOString().slice(0, 10);
+    if (Number.isNaN(reviewed) || iso !== `${dated[1]}-${dated[2]}-${dated[3]}`) {
+      failures.push(`${GOVERNANCE_DOC} section 5 "Last reviewed" is not a real date (${dated[0]})`);
+    } else {
+      const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+      const age = Math.round((today - reviewed) / 86_400_000);
+      if (age < 0) failures.push(`${GOVERNANCE_DOC} section 5 "Last reviewed" (${iso}) is in the future`);
+      else if (age > INCIDENT_REVIEW_MAX_DAYS) failures.push(`${GOVERNANCE_DOC} section 5 was last reviewed ${age} days ago (${iso}); the plan is reviewed at least every ${INCIDENT_REVIEW_MAX_DAYS} days (Appendix O 1.2)`);
+    }
+  }
+  return failures;
+}
+
+export function checkIncidentResponsePlan(root = ROOT, now = new Date()) {
+  const path = join(root, GOVERNANCE_DOC);
+  if (!existsSync(path)) return [`${GOVERNANCE_DOC} is missing (H.5 incident-response plan)`];
+  return incidentPlanFailures(readFileSync(path, 'utf8').replace(/\r\n/g, '\n'), now);
+}
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const failures = checkStaffStandingConstraints();
+  const failures = [...checkStaffStandingConstraints(), ...checkIncidentResponsePlan()];
   if (failures.length > 0) {
     for (const failure of failures) console.error(`FAIL: ${failure}`);
     process.exit(1);
   }
-  console.log('staff standing constraints OK (G.6): no staff route reaches a Mentor transcript or a per-account wallet table, no impersonation or login-as capability, no token minted for another account');
+  console.log('staff standing constraints OK (G.6): no staff route reaches a Mentor transcript or a per-account wallet table, no impersonation or login-as capability, no token minted for another account; incident-response plan (H.5) has its internal chain and a current review');
 }

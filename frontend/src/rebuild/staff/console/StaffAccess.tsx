@@ -29,7 +29,9 @@ import { fill, labelOf, useConsoleCopy } from './staffConsoleCopy';
  *     permissions, never a family role), aged from the later of the grant and
  *     its last kept review. "Keep access" records the review (audited by
  *     Core in the same transaction); the card shows the on-time share and the
- *     stale count from the review log.
+ *     stale count from the review log. Removing an elevated grant here is
+ *     also a review decision: Vault's revoke_staff_grant records 'revoked'
+ *     in that log, with this superadmin as the audit actor (GAP-FIX-R5).
  *
  * Removing a role is destructive and always behind a keep-first confirmation.
  * The database's role triggers are the last word: a refusal says so.

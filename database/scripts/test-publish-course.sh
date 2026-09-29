@@ -15,7 +15,8 @@ run_case() (
     sql="$(cat)"
     [[ "$*" == *"-v slug=$slug"* ]] || { echo 'slug was not bound as a psql variable' >&2; return 1; }
     [[ "$sql" == *"WHERE slug = :'slug'"* ]] || { echo 'slug was not SQL-escaped by psql' >&2; return 1; }
-    [[ "$sql" == *'public.release_course(target.id)'* ]] || { echo 'release preflight was bypassed' >&2; return 1; }
+    [[ "$sql" == *'public.release_course(actor.id, target.id)'* ]] || { echo 'release preflight was bypassed' >&2; return 1; }
+    [[ "$*" == *"-v actor=${LF_RELEASE_ACTOR:-}"* ]] || { echo 'the release actor was not bound as a psql variable' >&2; return 1; }
     [[ ! "${sql,,}" =~ update[[:space:]]+(courses|adventures|sagas|topics|lessons) ]] || {
       echo 'direct status update returned' >&2
       return 1
@@ -40,5 +41,15 @@ if run_case '' 'missing-course' >/dev/null 2>&1; then
   exit 1
 fi
 run_case 't|RELEASED|Course hierarchy released.|1|1|1|1' "quoted'course" >/dev/null
+# G.3: a release without a staff actor holding the content permission.
+if run_case 'f|FORBIDDEN|Only staff with the content permission may release a course.|0|0|0|0' 'safe-course' >/dev/null 2>&1; then
+  echo 'a release refused for its actor was reported as released' >&2
+  exit 1
+fi
+LF_RELEASE_ACTOR=00000000-0000-4000-8000-000000000001 run_case 't|RELEASED|Course hierarchy released.|1|1|1|1' 'safe-course' >/dev/null
+if LF_RELEASE_ACTOR="x'; drop table courses; --" run_case 't|RELEASED|Course hierarchy released.|1|1|1|1' 'safe-course' >/dev/null 2>&1; then
+  echo 'a non-uuid release actor was accepted' >&2
+  exit 1
+fi
 
-echo 'publish-course boundary OK — verified release, unverified and incomplete-gate refusals, missing slug and quoted slug'
+echo 'publish-course boundary OK — verified release with a bound staff actor, unverified, incomplete-gate and actor refusals, missing slug and quoted slug'

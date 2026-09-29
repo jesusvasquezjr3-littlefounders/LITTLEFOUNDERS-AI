@@ -187,6 +187,39 @@ to retain because an active guardian consent admitted them at the source.
 - **Breach notification** follows the same timeline: affected families first,
   then any regulator per applicable law, with the notice written by
   Product + Legal.
+- **Internal notification chain.** Whoever discovers a suspected security
+  incident or breach (a person, a failed watchdog, an alert) notifies these
+  roles in this order. Each clock runs from discovery, not from
+  confirmation. Every step is recorded on the `ops-watchdog` GitHub issue
+  (a new comment, or a new issue labelled `ops-watchdog` titled
+  "Incident: ..."), which carries no personal data of any family, only what
+  was affected and the time of each step; the direct message or phone call
+  is what makes sure a person saw it.
+  1. **Owner**: within 1 hour of discovery, by phone call (a direct message
+     when the call is not answered) plus the `ops-watchdog` issue. The owner
+     is the decision-maker for the whole response.
+  2. **Engineering lead**: within 1 hour of discovery, by direct message plus
+     the `ops-watchdog` issue; leads containment (step 1 of the baseline).
+  3. **Safety/Trust lead**: within 4 hours of discovery, by direct message
+     plus the `ops-watchdog` issue; decides severity with Engineering (step 2)
+     and owns the family notice.
+  4. **Legal**: within 24 hours of discovery, by direct message or phone plus
+     a link to the `ops-watchdog` issue; within 4 hours when a minor's data
+     may be involved. Legal decides any regulator notice and co-writes the
+     family notice with Product.
+  A step whose person does not acknowledge within its limit escalates to the
+  next role in the chain and to the owner. Nobody outside this chain is told
+  before the owner decides, and no personal data travels in chat.
+- **Plan review.** This incident-response and breach-notification plan (the
+  baseline, the breach notice and the chain above) is reviewed at least once
+  a year (366 days at most between reviews) and again after every actual
+  incident, as part of its post-mortem. Owner of the review: the Safety/Trust
+  lead, with the Engineering lead and Legal. Each review updates the date
+  below; `npm run spec:check` (`agent/tools/check-staff-standing-constraints.mjs`)
+  fails when the chain, the cadence or the date is missing, or when the date
+  is more than 366 days old.
+  Last reviewed: 2026-09-29 (GAP-FIX-R5 staff-ops: the chain and the cadence
+  were added; the names behind each role are the owner's to confirm).
 
 ## 6. Experimentation eligibility (H.7)
 

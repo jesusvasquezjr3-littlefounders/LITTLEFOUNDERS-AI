@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { checkStaffStandingConstraints, mask, topLevelSymbols } from './check-staff-standing-constraints.mjs';
+import { readFileSync } from 'node:fs';
+import { checkIncidentResponsePlan, checkStaffStandingConstraints, incidentPlanFailures, mask, topLevelSymbols } from './check-staff-standing-constraints.mjs';
 
 /*
  * G.6 / Appendix N 1.3: the gate must SEE a planted violation, not only pass
@@ -88,4 +89,38 @@ test('the lexer ignores comments and regex literals, and finds functions with ob
   assert.deepEqual([...symbols.keys()], ['re', 'f', 'g']);
   const [start, end] = symbols.get('f');
   assert.ok(src.slice(start, end).trimEnd().endsWith('}'));
+});
+
+// H.5 (b) / Appendix O 1.2: the incident-response plan names its internal
+// chain and is reviewed on a cadence. The gate must SEE each planted gap.
+const REAL_GOVERNANCE = readFileSync(new URL('../../docs/operations/GOVERNANCE.md', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+const REVIEWED = /Last reviewed: (\d{4}-\d{2}-\d{2})/.exec(REAL_GOVERNANCE)[1];
+const dayAfter = (iso, days) => new Date(Date.parse(`${iso}T12:00:00Z`) + days * 86_400_000);
+
+test('the real incident-response plan passes on the day it was reviewed and 366 days later', () => {
+  // The real tree is checked against today by `npm run spec:check`; here the clock is pinned.
+  assert.deepEqual(checkIncidentResponsePlan(undefined, dayAfter(REVIEWED, 30)), []);
+  assert.deepEqual(incidentPlanFailures(REAL_GOVERNANCE, dayAfter(REVIEWED, 0)), []);
+  assert.deepEqual(incidentPlanFailures(REAL_GOVERNANCE, dayAfter(REVIEWED, 366)), []);
+});
+
+test('a plan last reviewed more than 366 days ago, or in the future, fails', () => {
+  assert.match(incidentPlanFailures(REAL_GOVERNANCE, dayAfter(REVIEWED, 367)).join('\n'), /last reviewed 367 days ago/);
+  assert.match(incidentPlanFailures(REAL_GOVERNANCE, dayAfter(REVIEWED, -1)).join('\n'), /is in the future/);
+  const bogus = REAL_GOVERNANCE.replace(`Last reviewed: ${REVIEWED}`, 'Last reviewed: 2026-02-30');
+  assert.match(incidentPlanFailures(bogus, dayAfter(REVIEWED, 0)).join('\n'), /not a real date/);
+});
+
+test('a plan without the chain, a role, a channel, a time limit, the cadence or the date fails', () => {
+  const at = dayAfter(REVIEWED, 0);
+  const failures = (text) => incidentPlanFailures(text, at).join('\n');
+  assert.match(failures(REAL_GOVERNANCE.replace('**Internal notification chain.**', '**Who we tell.**')), /no "Internal notification chain"/);
+  assert.match(failures(REAL_GOVERNANCE.replace(/^ {2}4\. \*\*Legal\*\*:/m, '  4. **Counsel**:')), /must name, in order, Owner, Engineering lead, Safety\/Trust lead, Legal/);
+  assert.match(failures(REAL_GOVERNANCE.replace(/(\*\*Safety\/Trust lead\*\*: within 4 hours of discovery), by direct message\s+plus the `ops-watchdog` issue;/, '$1;')), /Safety\/Trust lead step names no channel/);
+  assert.match(failures(REAL_GOVERNANCE.replace('**Engineering lead**: within 1 hour of discovery', '**Engineering lead**: promptly')), /Engineering lead step has no time limit/);
+  assert.match(failures(REAL_GOVERNANCE.replace('**Plan review.**', '**Plan.**')), /no "Plan review" cadence/);
+  assert.match(failures(REAL_GOVERNANCE.replace('at least once\n  a year', 'now and then')), /must be at least annual/);
+  assert.match(failures(REAL_GOVERNANCE.replace('and again after every actual\n  incident', 'and whenever convenient')), /must also follow every actual incident/);
+  assert.match(failures(REAL_GOVERNANCE.replace(/Last reviewed: \d{4}-\d{2}-\d{2}/, 'Reviewed recently')), /no "Last reviewed: YYYY-MM-DD" line/);
+  assert.match(failures(REAL_GOVERNANCE.replace('## 5. Incident response', '## 5. Backups')), /no "## 5\. Incident response" section/);
 });
