@@ -270,7 +270,9 @@ export function generateLegacyFixture({ seed = 20260927, randomFamilies = 12 } =
   };
   [kidA1, kidC, teen, ...randomKids.filter(() => rand() < 0.5)].forEach(mentor);
 
+  const familyKids = []; // [kid, parentId] of every kid with a Family Hub record
   const family = (k, parentId) => {
+    familyKids.push([k, parentId]);
     const goalReached = uuid();
     const goalActive = uuid();
     sql.push(`INSERT INTO public.savings_goals (id, kid_user_id, title, target, icon, status, reached_at) VALUES (${q(goalReached)}, ${q(k.id)}, 'Kite', 30, 'toy', 'reached', ${ts(12)}), (${q(goalActive)}, ${q(k.id)}, 'Bike', 200, 'bike', 'active', NULL);`);
@@ -304,6 +306,35 @@ export function generateLegacyFixture({ seed = 20260927, randomFamilies = 12 } =
   share(kidA1, parentA.id, 90);
   share(kidA2, parentA.id, 3);
   share(kidC, parentC.id, 45);
+
+  // ── Coins owed but not split yet (OD-9 section 4.1) ────────────────────
+  // The legacy platform keeps them outside wallet_ledger until the child
+  // splits them: allowance payouts in pending_credits (0081) and approved
+  // chores with allocated = false (0075). Some are already split (allocated,
+  // with their ledger rows); the rest are owed. kid_a_one and kid_c always
+  // hold unsplit allowance, so the proof's negative control has a target.
+  const owed = new Map(); // userId -> coins owed
+  const owe = (k, coins) => owed.set(k.id, (owed.get(k.id) ?? 0) + coins);
+  let pendingCredits = 0;
+  let owedTasks = 0;
+  const pendingCredit = (k, parentId, allocated) => {
+    const amount = int(2, 15);
+    pendingCredits += 1;
+    sql.push(`INSERT INTO public.pending_credits (id, kid_user_id, amount, source, allocated, created_at) VALUES (${q(uuid())}, ${q(k.id)}, ${amount}, 'allowance', ${allocated}, ${ts(int(1, 60))});`);
+    if (allocated) sql.push(`INSERT INTO public.wallet_ledger (kid_user_id, bucket, amount, reason, created_by, created_at) VALUES (${q(k.id)}, 'spend', ${amount}, 'allowance', ${q(parentId)}, ${ts(int(1, 60))});`);
+    else owe(k, amount);
+  };
+  for (const [k, parentId] of familyKids) {
+    const unsplit = k === kidC ? 2 : k === kidA1 ? 1 : rand() < 0.6 ? 1 : 0;
+    for (let n = 0; n < unsplit; n++) pendingCredit(k, parentId, false);
+    if (rand() < 0.4) pendingCredit(k, parentId, true);
+    if (rand() < 0.5) {
+      const coins = int(4, 12);
+      owedTasks += 1;
+      owe(k, coins);
+      sql.push(`INSERT INTO public.tasks (id, assigned_by, assigned_to, title, status, reward_coins, allocated) VALUES (${q(uuid())}, ${q(parentId)}, ${q(k.id)}, 'Feed the cat', 'approved', ${coins}, false);`);
+    }
+  }
 
   // ── Expectations, computed independently of the toolkit's SQL ─────────
   const all = [...accounts.values()];
@@ -359,6 +390,9 @@ export function generateLegacyFixture({ seed = 20260927, randomFamilies = 12 } =
       consent,
       shares: shares.map((s) => ({ id: s.id, expiredByDefault: s.createdDaysAgo >= 30 })),
       kcIdByKey: Object.fromEntries(kcId),
+      owed: Object.fromEntries(owed),
+      pendingCredits,
+      owedTasks,
     },
   };
 }

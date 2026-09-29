@@ -193,3 +193,48 @@ test('retire-catalog SQL archives only, refuses before kc-credit, and never dele
   const migration = readFileSync(new URL(guard, dir), 'utf8');
   for (const table of ['lessons', 'topics', 'courses']) assert.match(migration, new RegExp(String.raw`BEFORE DELETE ON public\.${table}\b`));
 });
+
+test('coins owed but not split yet are inventoried and spot-checked (OD-9 section 4.1, 4.5)', () => {
+  const inventory = readFileSync(new URL('./sql/10_inventory.sql', import.meta.url), 'utf8');
+  const category = (name) => {
+    const start = inventory.indexOf(`('${name}', `);
+    assert.ok(start >= 0, `${name} category exists`);
+    return inventory.slice(start, inventory.indexOf('$q$)', start));
+  };
+  assert.match(category('pending_coins'), /'public\.pending_credits', ARRAY\['id', 'kid_user_id', 'amount', 'source', 'allocated', 'created_at'\]/);
+  assert.match(category('pending_coins'), /jsonb_build_array\(id, amount, source, allocated, created_at\)[\s\S]*ORDER BY id[\s\S]*GROUP BY kid_user_id/);
+  assert.match(category('owed_task_rewards'), /WHERE status = 'approved' AND NOT allocated AND reward_coins > 0 GROUP BY assigned_to/);
+  assert.match(category('chore_history'), /'reward_coins', 'allocated'/);
+  assert.match(category('chore_history'), /jsonb_build_array\(id, assigned_by, title, status, reward_coins, allocated,/);
+
+  const spot = readFileSync(new URL('./sql/50_spot_check.sql', import.meta.url), 'utf8');
+  const item = spot.slice(spot.indexOf("'owed coins (unsplit)'"), spot.indexOf('WHERE o.total > 0'));
+  assert.match(item, /public\.pending_credits pc WHERE pc\.kid_user_id = x\.user_id AND NOT pc\.allocated/);
+  assert.match(item, /t\.status = 'approved' AND NOT t\.allocated AND t\.reward_coins > 0/);
+});
+
+test('the fixture holds owed coins and its expectation matches the SQL it writes', () => {
+  const { legacySql, expectations: X } = generateLegacyFixture();
+  const owed = {};
+  let credits = 0;
+  let tasks = 0;
+  for (const m of legacySql.matchAll(/INSERT INTO public\.pending_credits \(id, kid_user_id, amount, source, allocated, created_at\) VALUES \('[^']+', '([^']+)', (\d+), 'allowance', (true|false),/g)) {
+    credits += 1;
+    if (m[3] === 'false') owed[m[1]] = (owed[m[1]] ?? 0) + Number(m[2]);
+  }
+  for (const m of legacySql.matchAll(/INSERT INTO public\.tasks \(id, assigned_by, assigned_to, title, status, reward_coins, allocated\) VALUES \('[^']+', '[^']+', '([^']+)', '[^']+', 'approved', (\d+), false\)/g)) {
+    tasks += 1;
+    owed[m[1]] = (owed[m[1]] ?? 0) + Number(m[2]);
+  }
+  assert.deepEqual(owed, X.owed);
+  assert.equal(credits, X.pendingCredits);
+  assert.equal(tasks, X.owedTasks);
+  assert.ok(tasks > 0, 'some approved chore rewards are unsplit');
+  assert.match(legacySql, /'allowance', true,/, 'an already split payout is kept too');
+  // The proof's negative control deletes one of kid_c's two unsplit payouts; kid_a_one always holds one.
+  const unsplitOf = (uid) => legacySql.split('\n').filter((l) => l.startsWith('INSERT INTO public.pending_credits') && l.includes(`'${uid}'`) && l.includes("'allowance', false,")).length;
+  assert.equal(unsplitOf(X.ids.kid_c), 2);
+  assert.ok(X.owed[X.ids.kid_a_one] > 0);
+  // Families without a Family Hub record owe nothing.
+  assert.equal(X.owed[X.ids.teen_indie], undefined);
+});

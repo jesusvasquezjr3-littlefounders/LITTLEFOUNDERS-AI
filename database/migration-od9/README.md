@@ -15,7 +15,7 @@ Lane record: [`docs/rebuild/sprints/S10-CUTOVER.md`](../../docs/rebuild/sprints/
 | `sql/30_kc_credit.sql` | OD-24: completed legacy topics credit the KCs they teach (`public.legacy_kc_credits`); legacy course badges are frozen (Rule B5). |
 | `sql/40_consent.sql` | Section 4.2: which migrated children lack a specific consent for each practice the rebuild introduced; apply marks them so the product enforces it. |
 | `sql/60_retire_catalog.sql` | OD-24: archive the legacy catalog after the KC credit, refusing before it; never delete. |
-| `sql/50_spot_check.sql` | Section 4.5: readable values (balances per pocket, streaks, XP, badges, reached goals, lessons passed, usernames) of a deterministic family sample, and the side-by-side comparison a person signs. |
+| `sql/50_spot_check.sql` | Section 4.5: readable values (balances per pocket, coins owed but not split yet, streaks, XP, badges, reached goals, lessons passed, usernames) of a deterministic family sample, and the side-by-side comparison a person signs. |
 | `backup-crypto.mjs` | H.5: encrypts a `pg_dump -Fc` file (AES-256-GCM, format LFBK1, manifest with digests and key fingerprint), decrypts and verifies it (`npm run od9:backup -- <keygen\|encrypt\|decrypt\|verify>`). |
 | `rehearse-cutover.mjs` | The full local cutover rehearsal (`npm run od9:rehearse`): freeze, inventory, encrypted backup, verification, plan, migrations, toolkit, reconcile, smoke, switch, post-release, restore; timed. |
 | `fixtures/generate-legacy-fixture.mjs` | Deterministic synthetic legacy dataset (no real data) with independently computed expectations. |
@@ -34,7 +34,7 @@ Each step is safe to repeat. Every correction step has a dry run (no product row
 
 1. **Restore a copy** of the legacy database and rehearse the whole procedure on it. Never run a first apply on production. For the real cutover, hold the legacy platform read-only from step 3 to step 9: ordinary activity between the two inventories (a lesson passed, a coin earned) would show up in the comparison as a change.
 2. `od9 install` — creates or refreshes the `od9` schema. Works on the legacy schema.
-3. `od9 inventory --label before` — on the legacy database, before any rebuild migration. Captures 16 categories: lesson progress, placement credits, placement records, XP, learning streak, chore streak, coin balances, the coin ledger, course badges, savings goals (reached goals are the goal badges), chore history, rewards, Mentor plans, notebooks, memory and mastery; plus every username and guardian link.
+3. `od9 inventory --label before` — on the legacy database, before any rebuild migration. Captures 18 categories: lesson progress, placement credits, placement records, XP, learning streak, chore streak, coin balances, the coin ledger, course badges, savings goals (reached goals are the goal badges), chore history (with whether each reward was split), coins owed but not split yet (`pending_coins`: every allowance payout in `pending_credits`, split or not; `owed_task_rewards`: approved chores whose reward is still unsplit), rewards, Mentor plans, notebooks, memory and mastery; plus every username and guardian link. Owed coins live outside `wallet_ledger` until the child splits them, so the two ledger categories alone would not see them lost or split twice.
 4. Apply the migration chain (the operator's normal migration procedure), then `npm run seed:kc` in `backend/`.
 5. `od9 install` again (the functions may have changed with the toolkit version).
 6. `od9 defects`, review the report, then `od9 defects --apply`.

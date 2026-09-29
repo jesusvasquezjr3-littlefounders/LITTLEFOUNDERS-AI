@@ -46,9 +46,22 @@ VALUES
     ('savings_goals', 'public.savings_goals', ARRAY['id', 'kid_user_id', 'title', 'target', 'icon', 'status', 'created_at', 'reached_at'],
      $q$SELECT kid_user_id AS uid, count(*) AS n, md5(string_agg(jsonb_build_array(id, title, target, icon, status, created_at, reached_at)::text, ',' ORDER BY id)) AS h
         FROM public.savings_goals GROUP BY kid_user_id$q$),
-    ('chore_history', 'public.tasks', ARRAY['id', 'assigned_by', 'assigned_to', 'title', 'status', 'reward_coins', 'recurrence', 'due_at', 'created_at'],
-     $q$SELECT assigned_to AS uid, count(*) AS n, md5(string_agg(jsonb_build_array(id, assigned_by, title, status, reward_coins, recurrence, due_at, created_at)::text, ',' ORDER BY id)) AS h
+    -- allocated: whether the child has split the reward yet (0075). A reward
+    -- approved but not split is coins owed, kept outside wallet_ledger.
+    ('chore_history', 'public.tasks', ARRAY['id', 'assigned_by', 'assigned_to', 'title', 'status', 'reward_coins', 'allocated', 'recurrence', 'due_at', 'created_at'],
+     $q$SELECT assigned_to AS uid, count(*) AS n, md5(string_agg(jsonb_build_array(id, assigned_by, title, status, reward_coins, allocated, recurrence, due_at, created_at)::text, ',' ORDER BY id)) AS h
         FROM public.tasks GROUP BY assigned_to$q$),
+    -- Coins a child is owed but has not split yet (section 4.1: coins must
+    -- not be lost). They live outside wallet_ledger until the split, so the
+    -- two coin categories above never see them. pending_credits (0081) are
+    -- allowance and bonus payouts, split or not; owed_task_rewards are the
+    -- approved chores whose reward is still unsplit.
+    ('pending_coins', 'public.pending_credits', ARRAY['id', 'kid_user_id', 'amount', 'source', 'allocated', 'created_at'],
+     $q$SELECT kid_user_id AS uid, count(*) AS n, md5(string_agg(jsonb_build_array(id, amount, source, allocated, created_at)::text, ',' ORDER BY id)) AS h
+        FROM public.pending_credits GROUP BY kid_user_id$q$),
+    ('owed_task_rewards', 'public.tasks', ARRAY['id', 'assigned_to', 'status', 'reward_coins', 'allocated'],
+     $q$SELECT assigned_to AS uid, count(*) AS n, md5(string_agg(jsonb_build_array(id, reward_coins)::text, ',' ORDER BY id)) AS h
+        FROM public.tasks WHERE status = 'approved' AND NOT allocated AND reward_coins > 0 GROUP BY assigned_to$q$),
     ('rewards', 'public.redemptions', ARRAY['id', 'catalog_id', 'kid_user_id', 'status', 'created_at', 'decided_at'],
      $q$SELECT kid_user_id AS uid, count(*) AS n, md5(string_agg(jsonb_build_array(id, catalog_id, status, created_at, decided_at)::text, ',' ORDER BY id)) AS h
         FROM public.redemptions GROUP BY kid_user_id$q$),

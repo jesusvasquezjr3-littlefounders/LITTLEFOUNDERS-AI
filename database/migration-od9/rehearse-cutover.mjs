@@ -19,7 +19,8 @@
 //   R11 post-release post-switch inventory equals "after"; findings queue
 //   R11b retire      od9 retire-catalog: archive the legacy catalog, compare
 //   R12 restore      the rollback: decrypt the backup into a fresh database,
-//                    which must equal the pre-migration state
+//                    which must equal the pre-migration state; negative
+//                    controls (a streak, one unsplit allowance payout)
 //
 // Cluster: LF_PG_BIN (directory with psql, pg_dump, pg_restore), LF_PG_PORT,
 // LF_PG_USER, LF_PG_DATA (the data directory the server must report).
@@ -143,6 +144,8 @@ try {
     cli(db, { command: 'install' });
     const before = cli(db, { command: 'inventory', label: 'before' });
     assert.deepEqual(before.rows.filter((r) => r.status !== 'captured'), [], 'every promised category is readable');
+    assert.equal(Number(before.rows.find((r) => r.category === 'pending_coins').total_rows), X.pendingCredits);
+    assert.equal(Number(before.rows.find((r) => r.category === 'owed_task_rewards').total_rows), X.owedTasks);
     const spot = cli(db, { command: 'spot-check', label: 'before', families: 5 });
     assert.ok(spot.accounts >= 5);
     check(`before inventory: ${before.rows.length} categories and identifier sets, no gap; spot sample of ${spot.families} families (${spot.accounts} accounts, ${spot.rows.length} readable values)`);
@@ -302,7 +305,24 @@ try {
     const tamper = cli(restoredDb, { command: 'spot-check', label: 'tamper', from: 'before' });
     assert.equal(tamper.ok, false);
     assert.deepEqual(tamper.rows.filter((r) => r.verdict !== 'same').map((r) => `${r.user_id}:${r.item}`), [`${sampled}:learning_streak (current/best)`]);
-    check(`restore:the encrypted backup decrypts and restores into a fresh database that equals the pre-migration state (${verdict.families.same}/${verdict.families.total} families, no rebuild table, no finding, every spot value); negative control: one extra day on one sampled best streak fails the spot check at exactly that value`);
+    sql(`UPDATE public.learning_stats SET longest_streak = longest_streak - 1 WHERE user_id = '${sampled}'`, restoredDb);
+    // Negative control (section 4.1): one sampled child's unsplit allowance payout deleted.
+    const owedKid = sql(`SELECT s.user_id FROM od9.spot_values s WHERE s.label = 'before' AND s.item = 'owed coins (unsplit)'
+      AND EXISTS (SELECT 1 FROM public.pending_credits p WHERE p.kid_user_id = s.user_id AND NOT p.allocated) ORDER BY s.user_id LIMIT 1`, restoredDb);
+    assert.ok(owedKid, 'the spot sample holds a child with unsplit allowance');
+    const owedBefore = Number(sql(`SELECT value FROM od9.spot_values WHERE label = 'before' AND user_id = '${owedKid}' AND item = 'owed coins (unsplit)'`, restoredDb));
+    const [creditId, amount] = sql(`SELECT id || '|' || amount FROM public.pending_credits WHERE kid_user_id = '${owedKid}' AND NOT allocated ORDER BY id LIMIT 1`, restoredDb).split('|');
+    sql(`DELETE FROM public.pending_credits WHERE id = '${creditId}'`, restoredDb);
+    cli(restoredDb, { command: 'inventory', label: 'owed_tamper' });
+    const lost = cli(restoredDb, { command: 'compare', before: 'restored', after: 'owed_tamper' });
+    assert.equal(lost.ok, false);
+    const familyKey = sql(`SELECT family_key FROM od9.inventory WHERE label = 'restored' AND user_id = '${owedKid}' LIMIT 1`, restoredDb);
+    assert.deepEqual(lost.failures.map((f) => `${f.scope}:${f.category}:${f.subject}`).sort(), [`account:pending_coins:${owedKid}`, `family:all:${familyKey}`].sort());
+    const owedSpot = cli(restoredDb, { command: 'spot-check', label: 'owed_tamper', from: 'before' });
+    assert.equal(owedSpot.ok, false);
+    assert.deepEqual(owedSpot.rows.filter((r) => r.verdict !== 'same').map((r) => `${r.user_id}:${r.item}:${r.verdict}`),
+      [`${owedKid}:owed coins (unsplit):${owedBefore === Number(amount) ? 'missing_after' : 'changed'}`]);
+    check(`restore:the encrypted backup decrypts and restores into a fresh database that equals the pre-migration state (${verdict.families.same}/${verdict.families.total} families, no rebuild table, no finding, every spot value); negative control: one extra day on one sampled best streak fails the spot check at exactly that value, and one deleted unsplit allowance payout fails the comparison exactly at that child's pending_coins and family and the spot check exactly at that child's owed coins`);
     return { families: `${verdict.families.same}/${verdict.families.total}` };
   });
 

@@ -1,5 +1,6 @@
--- OD-9 section 4.5: per-family spot checks on balances, streaks and badges,
--- signed off by a person before the legacy platform is switched off.
+-- OD-9 section 4.5: per-family spot checks on balances (split and still owed),
+-- streaks and badges, signed off by a person before the legacy platform is
+-- switched off.
 --
 -- The inventory proves equality with checksums; a reviewer needs numbers.
 -- capture_spot_check records readable values for a deterministic sample of
@@ -61,6 +62,14 @@ BEGIN
         FROM public.kid_task_streaks ks WHERE ks.kid_user_id = x.user_id
         UNION ALL
         SELECT 'coins:' || w.bucket, sum(w.amount)::text FROM public.wallet_ledger w WHERE w.kid_user_id = x.user_id GROUP BY w.bucket
+        UNION ALL
+        -- Coins owed but not split yet: unallocated payouts plus approved,
+        -- unallocated chore rewards. Outside wallet_ledger until the split.
+        SELECT 'owed coins (unsplit)', o.total::text
+        FROM (SELECT COALESCE((SELECT sum(pc.amount) FROM public.pending_credits pc WHERE pc.kid_user_id = x.user_id AND NOT pc.allocated), 0)
+                   + COALESCE((SELECT sum(t.reward_coins) FROM public.tasks t
+                               WHERE t.assigned_to = x.user_id AND t.status = 'approved' AND NOT t.allocated AND t.reward_coins > 0), 0) AS total) o
+        WHERE o.total > 0
         UNION ALL
         SELECT 'lessons_passed', count(*)::text FROM public.lesson_progress lp WHERE lp.user_id = x.user_id AND lp.passed HAVING count(*) > 0
         UNION ALL
