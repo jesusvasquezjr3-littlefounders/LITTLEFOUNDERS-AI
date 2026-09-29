@@ -51,7 +51,7 @@ describe('general v2 player', () => {
     expect(played).toEqual([]);
     fireEvent.click(screen.getByRole('button', { name: 'Listen' }));
     expect(played).toEqual(['https://cdn.littlefounders.test/audio/intro-01.mp3']);
-    expect(screen.getByRole('button', { name: 'Stop' }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('button', { name: 'Stop' })).toBeTruthy();
     unmount();
     // No resolvable audio: the text-only plate, no control.
     const { unmount: second } = render(<LessonDocumentView raw={doc} locale="en-US" ageBand="6-9" onBack={noop} onGradeAny={async () => ({ verdict: 'met' as const })} />);

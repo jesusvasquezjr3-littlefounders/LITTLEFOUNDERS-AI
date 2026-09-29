@@ -66,7 +66,7 @@ export function NarrationControl({ segmentId, locale }: { segmentId: string; loc
     if (playing) { stopLessonNarration(); setPlaying(false); return; }
     setPlaying(playLessonNarration(src, () => setPlaying(false)));
   };
-  return <Button variant="sky" size="sm" className="lf-narration-control" aria-pressed={playing} onClick={toggle}>{playing ? t.stopListening : t.listen}</Button>;
+  return <Button variant="sky" size="sm" className="lf-narration-control" onClick={toggle}>{playing ? t.stopListening : t.listen}</Button>;
 }
 
 /** The learner's own Mentor for this lesson (Core's projection), or null in a preview. */
