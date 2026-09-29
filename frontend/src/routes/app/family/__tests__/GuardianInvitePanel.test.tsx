@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { GuardianInviteJoin, GuardianInvitePanel } from '../GuardianInvitePanel';
@@ -27,7 +29,13 @@ describe('GuardianInvitePanel', () => {
     render(<GuardianInvitePanel kidUserId="kid" token="session" />);
     fireEvent.click(screen.getByRole('button', { name: 'Invite a Tutor' }));
     fireEvent.click(screen.getByRole('button', { name: 'Create invite link' }));
-    expect(await screen.findByLabelText('Invite link')).toHaveTextContent('https://app.test/family?join=');
+    const link = await screen.findByLabelText('Invite link');
+    expect(link).toHaveTextContent('https://app.test/family?join=');
+    // 02 rule 11 and 06 §7: the link is data at the 14 px caption size, named by the localized linkLabel (no hard-coded English).
+    expect(link).toHaveAttribute('data-copy-role', 'data');
+    expect(link).toHaveClass('lf-guardian-invite-link-value');
+    expect(readFileSync(resolve(__dirname, '../../../../rebuild/family/guardianInvite.css'), 'utf8'))
+      .toMatch(/\.lf-guardian-invite-link-value \{[^}]*font: var\(--type-caption\);/);
     expect(mockApi).toHaveBeenCalledWith('/family/kids/kid/guardian-invite', { method: 'POST', token: 'session' });
   });
 
@@ -38,6 +46,7 @@ describe('GuardianInvitePanel', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Create invite link' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Could not create the invite. Try again.');
     expect(screen.queryByLabelText('Invite link')).toBeNull();
+    expect(screen.queryByText(/family\?join=/)).toBeNull();
   });
 });
 

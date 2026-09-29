@@ -3,7 +3,7 @@
 .lf-number-line-track { stroke: var(--edge); stroke-width: 2; vector-effect: non-scaling-stroke; }
 .lf-number-line-tick { stroke: var(--edge); stroke-width: 2; vector-effect: non-scaling-stroke; }
 .lf-number-line-slider { position: absolute; z-index: 1; top: 20px; left: calc(8% - 16px); inline-size: calc(84% + 32px); block-size: var(--target-lg); margin: 0; opacity: 0; cursor: pointer; }
-.lf-number-line-marker { position: absolute; top: 52px; inline-size: 32px; block-size: 32px; border: 3px solid var(--surface); border-radius: 50%; background: var(--primary-strong); transform: translate(-50%, -50%); pointer-events: none; }
+.lf-number-line-marker { position: absolute; top: 52px; inline-size: 32px; block-size: 32px; border-radius: 50%; background: var(--primary-strong); transform: translate(-50%, -50%); pointer-events: none; }
 .lf-number-line-slider:focus-visible + .lf-number-line-marker { outline: 3px solid var(--primary-strong); outline-offset: 4px; }
 .lf-number-line-labels { display: flex; justify-content: space-between; padding-inline: var(--spacing-6); font-size: .875rem; font-weight: 800; }
 .lf-number-line-hint { color: var(--content-muted); font-size: .875rem; font-weight: 800; text-align: end; }

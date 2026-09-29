@@ -2,12 +2,12 @@
 .lf-streak-strip { margin-block: var(--spacing-2); }
 .lf-streak-strip-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--spacing-1); list-style: none; padding: 0; margin: 0; }
 .lf-streak-day { display: grid; justify-items: center; gap: var(--spacing-1); }
-.lf-streak-dot { display: grid; place-items: center; inline-size: 32px; block-size: 32px; border-radius: 50%; border: 2px solid var(--outline); background: var(--surface); color: var(--on-primary); }
+.lf-streak-dot { display: grid; place-items: center; inline-size: 32px; block-size: 32px; border-radius: 50%; border: 2px solid var(--edge); background: var(--surface); color: var(--on-primary); }
 .lf-streak-dot .lf-system-glyph { inline-size: 18px; block-size: 18px; }
 .lf-streak-day--practiced .lf-streak-dot { background: var(--mint-strong); border-color: var(--mint-strong); }
 .lf-streak-day--rest .lf-streak-dot { background: linear-gradient(90deg, var(--sky-strong) 50%, var(--surface) 50%); border-color: var(--sky-strong); }
 .lf-streak-day--paused .lf-streak-dot { border-radius: var(--rounded-sm); background: var(--sunken); border-color: var(--content-muted); color: var(--content); }
 .lf-streak-day--open .lf-streak-dot, .lf-streak-day--today .lf-streak-dot { background: transparent; }
 .lf-streak-day--current .lf-streak-dot { box-shadow: 0 0 0 3px var(--primary-strong); }
-.lf-streak-weekday { font-size: .8125rem; font-weight: 800; }
+.lf-streak-weekday { font: var(--type-caption); }
 /* The wave-in is the shared Wave pattern (design/motion.css), fired only on a real route entry. */

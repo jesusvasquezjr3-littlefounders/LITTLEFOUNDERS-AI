@@ -44,7 +44,7 @@ function useSignedInFrame(): ReactNode | null {
 }
 
 function toItems<Label extends string>(slots: readonly NavSlot<Label>[], label: (slot: NavSlot<Label>) => string): ShellNavItem[] {
-  return slots.map((slot) => ({ id: slot.id, label: label(slot), href: slot.path }));
+  return slots.map((slot) => ({ id: slot.id, label: label(slot), href: slot.path, iconAssetId: slot.iconAssetId }));
 }
 
 /** A public profile's page title is its handle; any other page is titled by its navigation slot. */
@@ -109,7 +109,7 @@ export function StaffShellLayout() {
 
   const entries = staffNav({ roles, adminPermissions });
   const items: StaffNavItem[] = entries.map(({ slot, grant }) => ({
-    id: slot.id, href: slot.path,
+    id: slot.id, href: slot.path, iconAssetId: slot.iconAssetId,
     label: slot.label === 'backToApp' ? copy.nav.backToApp : copy.staff[slot.label],
     ...(grant ? { permission: grant as StaffPermission | readonly StaffPermission[] } : {}),
   }));

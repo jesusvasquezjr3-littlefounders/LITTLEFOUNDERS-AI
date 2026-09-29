@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { Button, ErrorState, InlineNotice, LoadingState, SegmentedControl, TextField } from '../design/controls';
+import { Button, ErrorState, InlineNotice, LoadingState, SegmentedControl, TextAreaField, TextField } from '../design/controls';
 import {
   bandInsideGuardRails, decisionsFor, learningQualityReportSchema,
   type LearningQualityReport, type ReviewDecision, type ReviewDecisionBody,
@@ -279,9 +279,8 @@ function ReviewForm({ locale, name, review, t, onResolve, onResolved }: {
       <TextField label={t.lower} inputMode="numeric" value={lower} onChange={(event) => setLower(event.target.value.replace(/\D/g, '').slice(0, 2))} />
       <TextField label={t.upper} inputMode="numeric" value={upper} onChange={(event) => setUpper(event.target.value.replace(/\D/g, '').slice(0, 2))} />
     </div> : null}
-    <label className="lf-quality-note" data-copy-role="body">{t.note}
-      <textarea value={note} maxLength={600} aria-describedby={`${id}-hint`} onChange={(event) => setNote(event.target.value)} /></label>
-    <p id={`${id}-hint`} data-copy-role="body">{t.noteHint}</p>
+    {/* The system text area (02 rule 23, §3 input: a sunken fill, no resting line), with its hint as the field's help. */}
+    <TextAreaField label={t.note} help={t.noteHint} value={note} maxLength={600} onChange={(event) => setNote(event.target.value)} />
     {status === 'band' || status === 'conflict' || status === 'error' ? <InlineNotice tone="error" live>
       {status === 'band' ? t.bandInvalid : status === 'conflict' ? t.conflict : t.retry}</InlineNotice> : null}
     <div className="lf-actions"><Button type="submit" variant="accent" disabled={!ready || status === 'saving'}>{status === 'saving' ? t.recording : t.record}</Button></div>

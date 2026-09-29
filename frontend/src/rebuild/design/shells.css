@@ -162,10 +162,18 @@
 }
 .lf-rebuild[data-theme='dark'] .lf-nav-list--tab { background: var(--raised); }
 
-/* Below 360 px, when every tab has its own icon, only the current tab keeps a visible label (02 §7 rule 9). */
+/*
+ * Below 360 px, when every tab has its own icon, inactive tabs become 48 px icon targets and only the current tab
+ * keeps a visible label (02 §7 rule 9). The hidden label stays in the accessibility tree as the link's name. The
+ * unchosen Mentor tab (no picture, 02 rule 21) keeps its word. The bar gives the current label the room the
+ * insets would take; the 8 px gap between targets stays (03 §3.4).
+ */
 @container app (max-width: 359px) {
-  .lf-rebuild .lf-nav-list--tab[data-icons='all'] > .lf-nav-entry:not(:has([aria-current='page'])) { flex: 0 0 var(--target-min); }
-  .lf-rebuild .lf-nav-list--tab[data-icons='all'] .lf-nav-link:not([aria-current='page']) .lf-nav-label {
+  .lf-rebuild .lf-tabbar:has(> .lf-nav-list--tab[data-icons='all']) { padding-inline: max(var(--spacing-2), env(safe-area-inset-left)) max(var(--spacing-2), env(safe-area-inset-right)); }
+  .lf-rebuild .lf-nav-list--tab[data-icons='all'] { padding: var(--spacing-1); }
+  .lf-rebuild .lf-nav-list--tab[data-icons='all'] > .lf-nav-entry:not([data-current]):not([data-keep-label]) { flex: 0 0 var(--target-min); }
+  .lf-rebuild .lf-nav-list--tab[data-icons='all'] > .lf-nav-entry[data-current] > .lf-nav-link { padding-inline: 0; }
+  .lf-rebuild .lf-nav-list--tab[data-icons='all'] > .lf-nav-entry:not([data-current]):not([data-keep-label]) .lf-nav-label {
     position: absolute;
     inline-size: 2px;
     block-size: 2px;

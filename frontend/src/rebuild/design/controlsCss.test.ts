@@ -295,3 +295,120 @@ describe('Text Fit Contract across every rebuilt stylesheet (02 §7 rules 1-4)',
     expect(offences).toEqual([]);
   });
 });
+
+/*
+ * Gap-fix round 3: the flat, token-only contract of the shared sheets, widened to every rebuilt stylesheet
+ * (Bible 02 rules 2, 10 and 11, §4.4, §3 input and type tokens; 07 §3 token colours). The feature sheets had
+ * drifted: an off-token relief ridge on the CPA counters, a line around a filled flowchart outcome, an outlined
+ * branch card, a raw outlined textarea and 12-13 px text.
+ */
+describe('flat, token-only contract across every rebuilt stylesheet (02 rules 2, 10, 11; §4.4; 07 §3)', () => {
+  const walk = (dir: string): string[] => readdirSync(dir, { withFileTypes: true })
+    .flatMap((entry) => (entry.isDirectory() ? walk(join(dir, entry.name)) : entry.name.endsWith('.css') ? [join(dir, entry.name)] : []));
+  const sheets = walk(local('..')).map((file) => ({ file: file.slice(file.lastIndexOf('rebuild')).replace(/\\/g, '/'), css: withoutComments(readFileSync(file, 'utf8')) }));
+  const declarations = (body: string) => body.split(';').map((part) => part.trim()).filter(Boolean).map((part) => {
+    const colon = part.indexOf(':');
+    return { prop: part.slice(0, colon).trim().toLowerCase(), value: part.slice(colon + 1).trim() };
+  });
+  /** Every `@rule { … }` and plain rule, innermost blocks included (container and media queries hold rules too). */
+  const everyRule = (css: string) => rules(css);
+  const HUE = 'primary|accent|reward|success|error|sky|mint|berry|warning';
+
+  it('reads the whole rebuilt tree', () => {
+    expect(sheets.length).toBeGreaterThan(60);
+  });
+
+  it('names colours only through tokens: literals live in the token sheets alone', () => {
+    // tokens.css and document.css define the palette; system.css defines two shadow tokens from it.
+    const TOKEN_SHEETS = new Set(['rebuild/design/tokens.css', 'rebuild/design/document.css']);
+    const offences: string[] = [];
+    for (const { file, css } of sheets) {
+      if (TOKEN_SHEETS.has(file)) continue;
+      for (const { selector, body } of everyRule(css)) for (const { prop, value } of declarations(body)) {
+        if (!/#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|hwb|oklch|oklab|lab|lch|color)\(/i.test(value)) continue;
+        if (file === 'rebuild/design/system.css' && prop.startsWith('--')) continue;
+        offences.push(`${file}: ${selector} { ${prop}: ${value} }`);
+      }
+    }
+    expect(offences).toEqual([]);
+  });
+
+  it('never fakes depth with an inset relief ridge (02 rules 2 and 10)', () => {
+    // A ridge is an inset shadow with a vertical offset; a focus or error ring (`inset 0 0 0 …`) has none.
+    const offences = sheets.flatMap(({ file, css }) => [...css.matchAll(/inset\s+-?\d*\.?\d+(?:px|rem|em)?\s+(-?\d*\.?\d+)(?:px|rem|em)?/g)]
+      .filter((match) => Number(match[1]) !== 0).map((match) => `${file}: ${match[0]}`));
+    expect(offences).toEqual([]);
+  });
+
+  it('never draws a line around a component with its own hue fill (02 §4.4)', () => {
+    const offences: string[] = [];
+    for (const { file, css } of sheets) for (const { selector, body } of everyRule(css)) {
+      // Keyboard focus is an interaction state, not decoration (02 §4.4 case 2).
+      if (/:focus/.test(selector)) continue;
+      const decls = declarations(body);
+      const filled = decls.some(({ prop, value }) => (prop === 'background' || prop === 'background-color') && new RegExp(`^var\\(--(?:${HUE})(?:-strong|-soft|-ridge)?\\)`).test(value));
+      if (!filled) continue;
+      for (const { prop, value } of decls) {
+        if (!/^(?:border|outline)(?:-(?:inline|block|top|right|bottom|left)(?:-(?:start|end))?)?(?:-(?:width|style))?$/.test(prop)) continue;
+        if (/^(?:0|0px|none|transparent)\b/.test(value)) continue;
+        offences.push(`${file}: ${selector} { ${prop}: ${value} }`);
+      }
+    }
+    expect(offences).toEqual([]);
+  });
+
+  it('never sets HTML text below the 14 px floor (02 rule 11)', () => {
+    // SVG text is sized in its drawing's own units (a rule that paints with `fill`); the board audit measures it.
+    // `.lf-chart-tag` is the teaching charts' own open gap (12 px tags), closed in the charts lane, not here.
+    const ALLOWED = new Set(['.lf-chart-tag']);
+    const offences: string[] = [];
+    for (const { file, css } of sheets) for (const { selector, body } of everyRule(css)) {
+      if (ALLOWED.has(selector) || /(?:^|;)\s*fill\s*:/.test(body)) continue;
+      for (const { prop, value } of declarations(body)) {
+        if (prop !== 'font-size' && prop !== 'font') continue;
+        const size = /(\d*\.?\d+)(rem|px)\b/.exec(value);
+        if (!size) continue;
+        const px = Number(size[1]) * (size[2] === 'rem' ? 16 : 1);
+        if (px < 14) offences.push(`${file}: ${selector} { ${prop}: ${value} }`);
+      }
+    }
+    expect(offences).toEqual([]);
+  });
+
+  it('never truncates text: no text-overflow and no line clamp (02 §7 rule 1)', () => {
+    expect(sheets.filter(({ css }) => /text-overflow|line-clamp/.test(css)).map(({ file }) => file)).toEqual([]);
+  });
+
+  it('uses gradients only as hard-stop pattern fills, the second channel of a series (05 §2), never as a shade', () => {
+    /** The top-level comma-separated arguments of `name(…)` at `start`. */
+    const args = (text: string, start: number) => {
+      const parts: string[] = [];
+      let depth = 0, current = '';
+      for (let i = text.indexOf('(', start) + 1; i < text.length; i++) {
+        const ch = text[i]!;
+        if (ch === '(') depth++;
+        if (ch === ')') { if (depth === 0) { parts.push(current.trim()); break; } depth--; }
+        if (ch === ',' && depth === 0) { parts.push(current.trim()); current = ''; } else current += ch;
+      }
+      return parts;
+    };
+    const offences: string[] = [];
+    for (const { file, css } of sheets) for (const match of css.matchAll(/(?:repeating-)?(?:linear|radial|conic)-gradient\(/g)) {
+      const stops = args(css, match.index!).filter((part) => /^(?:var\(|transparent\b|currentcolor\b)/i.test(part)).map((part) => {
+        const colour = /^(var\([^)]*\)|\w+)/.exec(part)![1]!;
+        const positions = [...part.slice(colour.length).matchAll(/(-?\d*\.?\d+)(px|%)/g)].map((p) => ({ n: Number(p[1]), unit: p[2] }));
+        return { colour, positions };
+      });
+      // A hard stop: where the colour changes, the next stop starts where the previous one ended (1 px of anti-aliasing allowed).
+      let smooth = false;
+      for (let i = 1; i < stops.length; i++) {
+        const prev = stops[i - 1]!, next = stops[i]!;
+        if (prev.colour === next.colour) continue;
+        const end = prev.positions.at(-1), start = next.positions[0];
+        if (!end || !start || end.unit !== start.unit || start.n - end.n > (start.unit === 'px' ? 1 : 0)) smooth = true;
+      }
+      if (smooth || stops.length < 2) offences.push(`${file}: ${css.slice(match.index!, match.index! + 90)}`);
+    }
+    expect(offences).toEqual([]);
+  });
+});

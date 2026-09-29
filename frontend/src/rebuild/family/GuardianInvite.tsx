@@ -70,6 +70,7 @@ export function GuardianInviteMint({ copy, locale, dark, open, creating, link, c
       {link !== null && <div className="lf-guardian-invite-link">
         <Copy role="body">{copy.linkReady}</Copy>
         <div className="lf-guardian-invite-link-row">
+          {/* The link is data, never budgeted copy (06 §7); its name is the localized guardianInvite.linkLabel, never hard-coded English. */}
           <span className="lf-guardian-invite-link-value" aria-label={copy.linkLabel} data-copy-role="data">{link}</span>
           <Button onClick={onCopy}>{copied ? copy.copied : copy.copy}</Button>
         </div>

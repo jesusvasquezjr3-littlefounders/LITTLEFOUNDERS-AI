@@ -15,13 +15,9 @@
 .lf-quality-flag { padding: var(--spacing-2) var(--spacing-3); border-radius: var(--rounded-md); background: var(--accent-soft); color: var(--content); font-weight: 700; }
 .lf-quality-review { padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); }
 .lf-quality-form { display: grid; gap: var(--spacing-3); }
-/* The decisions are the shared SegmentedControl; the band limits are shared TextFields, side by side when they fit. */
+/* The decisions are the shared SegmentedControl; the band limits are shared TextFields, side by side when they fit; the note is the shared TextAreaField. */
 .lf-quality-decisions { min-inline-size: 0; }
 .lf-quality-band { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: var(--spacing-3); }
-.lf-quality-note { display: grid; gap: var(--spacing-1); font-weight: 700; }
-.lf-quality textarea { min-block-size: var(--target-base); padding: var(--spacing-2) var(--spacing-3); border: 2px solid var(--outline); border-radius: var(--rounded-md); background: var(--surface); color: var(--content); font: inherit; }
-.lf-quality textarea { min-block-size: 96px; resize: vertical; }
-.lf-quality :is(textarea):focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 3px; }
 @container (min-width: 720px) {
   .lf-quality-row { grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) minmax(0, 1.4fr) auto; align-items: center; column-gap: var(--spacing-3); }
   .lf-quality-row:has(> :nth-child(3):last-child) { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) auto; }

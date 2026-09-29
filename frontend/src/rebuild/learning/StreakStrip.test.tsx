@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { checkCopy } from '../design/copyBudget';
@@ -30,5 +32,14 @@ describe('the weekly streak strip', () => {
         expect(text).not.toMatch(/freeze|congel/i);
       }
     }
+  });
+
+  it('draws its visible weekday letters at the 14 px caption size, never below the floor (02 rule 11)', () => {
+    const { container } = render(<StreakStrip week={[...week]} locale="es-MX" today="2026-09-24" />);
+    const letters = [...container.querySelectorAll('.lf-streak-weekday')];
+    expect(letters).toHaveLength(7);
+    for (const letter of letters) expect(letter).toHaveAttribute('data-copy-role', 'data');
+    const css = readFileSync(resolve(__dirname, 'streakStrip.css'), 'utf8');
+    expect(css).toMatch(/\.lf-streak-weekday \{ font: var\(--type-caption\); \}/);
   });
 });

@@ -11,15 +11,17 @@
 .lf-op-flag-stem { stroke: var(--berry-strong); stroke-width: 2; }
 .lf-op-flag-dot { fill: var(--berry-strong); stroke: var(--surface); stroke-width: 2; }
 .lf-op-branch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: var(--spacing-3); }
-.lf-op-branch-card { border: 2px solid var(--outline); border-radius: var(--rounded-md); padding: var(--spacing-3); background: var(--surface); display: grid; gap: var(--spacing-2); }
-.lf-op-branch-card[data-chosen] { border-color: var(--primary-strong); border-width: 3px; }
+/* A neutral surface card: separated by the elevation shadow, never an outline (02 §4.4). The chosen branch wears the 3 px selection ring (05 §2 `selected`). */
+.lf-op-branch-card { border-radius: var(--rounded-md); padding: var(--spacing-3); background: var(--surface); box-shadow: var(--elevation-card); display: grid; gap: var(--spacing-2); }
+.lf-op-branch-card[data-chosen] { box-shadow: var(--elevation-card), 0 0 0 3px var(--primary-strong); }
 .lf-op-branch-card h3 { margin: 0; font-size: 1rem; }
 .lf-op-toggle-panel { border-radius: var(--rounded-md); background: var(--sunken); padding: var(--spacing-3); }
 .lf-op-goal { margin: 0; }
 .lf-op-cues { margin: 0; padding-inline-start: var(--spacing-4); display: grid; gap: var(--spacing-1); }
 .lf-op-token-row { display: flex; flex-wrap: wrap; gap: var(--spacing-1); }
-.lf-op-token { inline-size: 20px; block-size: 20px; border-radius: 50%; background: var(--mint-strong); border: 2px solid var(--content); }
-.lf-op-token[data-spent] { background: transparent; border-style: dashed; border-color: var(--content-muted); }
+/* A token is a flat fill; a spent token has no fill of its own, so its dashed edge line is its only boundary (02 §4.4 case 1). */
+.lf-op-token { inline-size: 20px; block-size: 20px; border-radius: 50%; background: var(--mint-strong); }
+.lf-op-token[data-spent] { background: transparent; border: 2px dashed var(--edge); }
 .lf-op-token-options { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
 .lf-op-gave-up h3 { margin: 0; font-size: 1rem; }
 .lf-op-gave-up ul { margin: 0; padding-inline-start: var(--spacing-4); }

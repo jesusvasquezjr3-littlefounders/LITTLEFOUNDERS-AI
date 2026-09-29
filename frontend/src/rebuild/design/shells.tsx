@@ -104,18 +104,35 @@ export function BrandMark({ name, href, onNavigate }: { name: string; href?: str
     : <span className="lf-brand-mark" data-copy-role="brand">{name}</span>;
 }
 
-function NavIcon({ assetId }: { assetId?: string }) {
-  const asset = assetId ? resolveManifestAsset(assetId) : null;
-  return asset ? <img className="lf-nav-icon" src={asset.path} alt="" aria-hidden="true" data-asset-id={asset.id} /> : null;
+function NavIcon({ asset }: { asset: NonNullable<ReturnType<typeof resolveManifestAsset>> }) {
+  return <img className="lf-nav-icon" src={asset.path} alt="" aria-hidden="true" data-asset-id={asset.id} />;
 }
 
-interface NavEntry extends ShellNavItem { icon?: ReactNode; labelRole?: 'action' | 'data' }
+interface NavEntry extends ShellNavItem {
+  icon?: ReactNode;
+  labelRole?: 'action' | 'data';
+  /**
+   * The entry keeps its visible word in the compact tab bar. Only the Mentor tab before a character is chosen:
+   * it has no picture (never a stand-in, 02 rule 21), so its word is its only visible mark.
+   */
+  keepLabel?: boolean;
+}
+
+/**
+ * `data-icons='all'` switches on the compact phone tab bar below a 360 px container (02 section 7 rule 9): every
+ * entry has its own mark, or is the unchosen Mentor, which keeps its word. The current entry is marked on its
+ * list item, so the compact rule needs no `:has()`.
+ */
+export function navIconCoverage(items: readonly Pick<NavEntry, 'icon' | 'keepLabel'>[]): 'all' | 'partial' {
+  return items.length > 0 && items.every((item) => item.icon || item.keepLabel) ? 'all' : 'partial';
+}
 
 function NavLinks({ items, current, variant, onNavigate, onFollow }: {
   items: readonly NavEntry[]; current: string; variant: 'tab' | 'rail' | 'sheet'; onNavigate?: (href: string) => void; onFollow?: () => void;
 }) {
-  return <ul className={`lf-nav-list lf-nav-list--${variant}`} data-icons={items.every((item) => item.icon) ? 'all' : 'partial'}>
-    {items.map((item) => <li key={item.id} className="lf-nav-entry">
+  return <ul className={`lf-nav-list lf-nav-list--${variant}`} data-icons={navIconCoverage(items)}>
+    {items.map((item) => <li key={item.id} className="lf-nav-entry" data-current={item.id === current ? '' : undefined}
+      data-keep-label={item.keepLabel ? '' : undefined}>
       <a className={`lf-nav-link lf-nav-link--${variant}`} href={item.href} aria-current={item.id === current ? 'page' : undefined}
         data-nav-id={item.id} onClick={linkHandler(item.href, onNavigate, onFollow)}>
         {item.icon ? <span className="lf-nav-icon-slot">{item.icon}</span> : null}
@@ -125,8 +142,12 @@ function NavLinks({ items, current, variant, onNavigate, onFollow }: {
   </ul>;
 }
 
+/** Each item's class B mark, resolved from the manifest; an id the manifest does not hold (or a retired one) gives no icon. */
 function withIcons(items: readonly ShellNavItem[]): NavEntry[] {
-  return items.map((item) => ({ ...item, icon: item.iconAssetId ? <NavIcon assetId={item.iconAssetId} /> : undefined }));
+  return items.map((item) => {
+    const asset = item.iconAssetId ? resolveManifestAsset(item.iconAssetId) : null;
+    return { ...item, icon: asset ? <NavIcon asset={asset} /> : undefined };
+  });
 }
 
 /** Shared frame pieces: skip link, document meta, route focus and the <main> element. */
@@ -161,8 +182,10 @@ export interface LearnerShellProps extends ShellCommonProps {
  * The learner app: a bottom tab bar docked in the thumb zone on phones and
  * tablets (03 §3.4), a side rail from an 840 px container. Below 360 px, when
  * every tab has its own icon, inactive tabs become 48 px icons and only the
- * current tab keeps a visible label (02 §7 rule 9); without icons the labels
- * wrap instead of shrinking.
+ * current tab keeps a visible label (02 §7 rule 9); the name of every tab
+ * stays in the accessibility tree. The Mentor tab before a character is chosen
+ * has no picture (02 rule 21), so it keeps its word too. Without icons the
+ * labels wrap instead of shrinking.
  */
 export function LearnerShell({ items, mentor, mentorIndex = 1, current, labels, onNavigate, children, ...frame }: LearnerShellProps) {
   const { mainId, main } = useShellFrame(frame);
@@ -170,7 +193,7 @@ export function LearnerShell({ items, mentor, mentorIndex = 1, current, labels, 
   const avatarId = mentor.character ? findMentorAvatar(mentor.character, theme) : null;
   const mentorEntry: NavEntry = {
     id: 'mentor', label: mentor.character ? MENTOR_NAMES[mentor.character] : mentor.name, href: mentor.href, labelRole: mentor.character ? 'data' : 'action',
-    icon: avatarId ? <MentorAvatar renderId={avatarId} label={null} size="xs" /> : undefined,
+    icon: avatarId ? <MentorAvatar renderId={avatarId} label={null} size="xs" /> : undefined, keepLabel: !avatarId,
   };
   const entries = withIcons(items);
   entries.splice(Math.min(Math.max(mentorIndex, 0), entries.length), 0, mentorEntry);
