@@ -9,7 +9,7 @@ describe('rebuild-profile copy budget', () => {
     it(`fits its budgets in ${locale}`, () => {
       expectBudgetedGroups(strings, ['analyticsChoice', 'privateProfile', 'teenConnections', 'profileSafety', 'memorySelfReview', 'accountDeletion', 'ownProfile', 'lookEditor', 'settings', 'publicProfile', 'report', 'peopleList', 'discoverable', 'ageRecord']);
       for (const [key, text] of group('analyticsChoice')) {
-        const role = key === 'title' ? 'heading' : key === 'label' ? 'option' : ['on', 'off', 'retry'].includes(key) ? 'action' : 'body';
+        const role = key === 'title' ? 'heading' : key === 'label' ? 'option' : ['on', 'off', 'retry', 'keepOff', 'turnOn', 'later'].includes(key) ? 'action' : 'body';
         expectFits(text, role, locale, '13-17', `analyticsChoice.${key}`);
       }
       // S-04 (OD-28, E.4): the locked age card is shown only to a self-managed teen (or one who moved to adult at 18).

@@ -7,6 +7,7 @@ import { LearnerShell, StaffShell, STAFF_PERMISSIONS, TutorShell, type ShellNavI
 import { appShellKind, currentSlot, learnerNav, MENTOR_PATH, staffNav, tutorNav, type NavSlot, type ShellAccount } from './navigation';
 import { ShellRoot, useShellCopy, useShellLocale, useShellNavigate } from './ShellRoot';
 import { useMentorCharacter } from './useMentorCharacter';
+import { TeenAnalyticsDisclosure } from './TeenAnalyticsDisclosure';
 
 /*
  * The signed-in shells on real routes (W2 Lane 0), replacing the legacy
@@ -83,6 +84,8 @@ export function AppShellLayout() {
         labels={{ skip: copy.skip, navigation: copy.navigation, menu: copy.menu, close: copy.close }}>{body}</TutorShell>
       : <LearnerShell {...common} labels={{ skip: copy.skip, navigation: copy.navigation }}
         mentor={{ href: MENTOR_PATH, name: copy.mentor, character }}>{body}</LearnerShell>}
+    {/* H.1, Appendix O 2.2(a) (F3-identity-site): a self-registered teen's first-session analytics choice. */}
+    {kind === 'learner' ? <TeenAnalyticsDisclosure /> : null}
   </ShellRoot>;
 }
 

@@ -33,6 +33,20 @@ it('retains the confirmed choice on failure, then clears queued events on confir
   await waitFor(() => expect(control).toHaveAttribute('aria-checked', 'false'));
   expect(mocks.configure).toHaveBeenCalledWith({ enabled: false, getToken: mocks.getToken });
 });
+// F3-identity-site (H.1, Appendix O 2.2(a)): with no choice on file there is no flip.
+it('offers two explicit answers until a choice is on file, and records an informed "off" without passing through "on"', async () => {
+  const undecided = { data: { enabled: false, canManage: true, disclosed: false }, error: null };
+  mocks.api.mockResolvedValueOnce(undecided).mockResolvedValueOnce(state(false));
+  render(<TeenAnalyticsSetting />);
+  const keepOff = await screen.findByRole('button', { name: 'Keep it off' });
+  expect(screen.getByRole('button', { name: 'Turn it on' })).toBeInTheDocument();
+  expect(screen.queryByRole('switch')).toBeNull();
+  fireEvent.click(keepOff);
+  expect(await screen.findByRole('switch')).toHaveAttribute('aria-checked', 'false');
+  expect(mocks.api).toHaveBeenLastCalledWith('/auth/analytics-preference', { token: 'synthetic', method: 'PUT', body: { enabled: false } });
+  expect(mocks.api.mock.calls.filter(([, options]) => (options as { method?: string }).method === 'PUT')).toHaveLength(1);
+  expect(mocks.configure).toHaveBeenCalledWith({ enabled: false, getToken: mocks.getToken });
+});
 it('does not invent a switch state after a failed read and offers recovery', async () => {
   mocks.api.mockResolvedValueOnce(failure).mockResolvedValueOnce(state()); render(<TeenAnalyticsSetting />);
   await screen.findByRole('alert'); expect(screen.queryByRole('switch')).toBeNull();

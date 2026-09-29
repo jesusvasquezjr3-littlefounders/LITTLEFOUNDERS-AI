@@ -15,7 +15,11 @@
     "saving": "Salvando…",
     "unavailable": "Não conseguimos carregar sua escolha. Tente novamente.",
     "failed": "A alteração não foi salva. Tente novamente.",
-    "retry": "Tentar novamente"
+    "retry": "Tentar novamente",
+    "choose": "Fica desativado até você escolher. Você pode mudar isso nas Configurações.",
+    "keepOff": "Manter desativado",
+    "turnOn": "Ativar",
+    "later": "Decidir depois"
   },
   "privateProfile": {
     "title": "Este perfil é privado",
