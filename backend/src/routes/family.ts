@@ -39,6 +39,7 @@ import { getChildRoleHolders, selfIssuedInviteIds } from '../services/teenWallet
 import { resolveLocalToday } from '../services/choreStreak.js';
 import { dataPracticeApplies } from '../services/dataPractices.js';
 import { noteSocialProtectionEvent } from '../services/socialProtection.js';
+import { readSocialTier } from '../services/socialTier.js';
 import { readStreakStates } from '../services/choreStreakData.js';
 import {
   getConsentsForKids,
@@ -58,6 +59,12 @@ import {
   getSocialDisplayNames,
   getPendingSocialRequests,
   decideSocialConnectionForKid,
+  guardianEndSocialConnection,
+  hasGuardianSocialNotice,
+  isSocialConnection,
+  submitSocialReport,
+  SOCIAL_REPORT_CATEGORIES,
+  SOCIAL_REPORT_NOTE_MAX,
   getKidLearningStats,
   getKidLessonProgress,
   getKidProfiles,
@@ -477,14 +484,77 @@ export function familyRouter(): Router {
       offset: z.coerce.number().int().min(0).max(100000).default(0),
     }).strict().safeParse(req.query);
     if (!query.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a social list and valid page');
-    const page = await getGuardianSocialPage(kidId, query.data.direction, query.data.offset);
-    if (!page) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load social connections');
+    const [page, kidTier] = await Promise.all([getGuardianSocialPage(kidId, query.data.direction, query.data.offset), readSocialTier(kidId)]);
+    if (!page || kidTier === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load social connections');
     const users = await visibleSocialUsers(authedUser(res).id, page.users);
     // Recheck after service reads: revocation must not knowingly release a cached graph.
     if (!await guardKid(req, res)) return res;
     // Appendix J (E.2, Family-Panel Social Visibility Adoption): a first page is one view.
     if (query.data.offset === 0) noteSocialProtectionEvent('family_social_panel_view', authedUser(res).id, kidId);
-    return ok(res, { users, nextOffset: page.nextOffset });
+    // E.1/E.13: the Tutor ends a guardian-tier child's connections; a
+    // self-registered teen decides its own (E.8), so its list stays read-only.
+    return ok(res, { users, nextOffset: page.nextOffset, canEnd: kidTier === 'guardian' });
+  });
+
+  /*
+   * E.1/E.13 (GAP-FIX-R3 social): the approval gate works both ways. The
+   * verified Tutor ends a connection of their child, in both directions; the
+   * database transaction re-checks the guardian, revokes the approval (a new
+   * follow needs a fresh one) and writes the audit row. Only a current
+   * connection can be ended: anything else is a 404, never a hint that the
+   * account exists.
+   */
+  router.delete('/kids/:kidId/social/connections/:userId', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const other = z.string().uuid().safeParse(req.params.userId);
+    if (!other.success || other.data === kidId || Object.keys(req.query).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a valid connection');
+    const connected = await isSocialConnection(kidId, other.data);
+    if (connected === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check the connection');
+    if (!connected) return fail(res, 404, NOT_FOUND, 'No such connection');
+    const guardian = authedUser(res).id;
+    const result = await guardianEndSocialConnection(guardian, kidId, other.data);
+    if (result === 'forbidden') return fail(res, 403, 'GUARDIAN_DECISION_FORBIDDEN', 'Current guardian verification is required');
+    if (result === 'self-managed') return fail(res, 403, 'ACCOUNT_SELF_MANAGED', 'This teen manages their own connections');
+    if (result === 'invalid') return fail(res, 400, 'VALIDATION_ERROR', 'Choose a valid connection');
+    if (result === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not confirm the connection ended');
+    if (result.removed === 0) return fail(res, 404, NOT_FOUND, 'No such connection');
+    // Appendix J (E.2 audit completeness): each removed edge is an unfollow,
+    // reconciled with its trigger audit row and the guardian_ended row.
+    for (let edge = 0; edge < result.removed; edge++) noteSocialProtectionEvent('unfollow', guardian, kidId);
+    if (!await guardKid(req, res)) return res;
+    return ok(res, { ended: true, removed: result.removed });
+  });
+
+  /*
+   * E.3 from the guardian's side: report an account on the child's
+   * followers/following list, or named in one of this guardian's safety
+   * notices for the child. The guardian is the reporter; the report takes
+   * the same transaction as any other (staff queue, notices, pattern).
+   */
+  const GuardianReportBody = z.object({
+    category: z.enum(SOCIAL_REPORT_CATEGORIES),
+    note: z.string().trim().min(1).max(SOCIAL_REPORT_NOTE_MAX).optional(),
+  }).strict();
+
+  router.post('/kids/:kidId/social/connections/:userId/report', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const other = z.string().uuid().safeParse(req.params.userId);
+    const body = GuardianReportBody.safeParse(req.body);
+    if (!other.success || !body.success || Object.keys(req.query).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a report reason');
+    const guardian = authedUser(res).id;
+    if (other.data === kidId || other.data === guardian) return fail(res, 400, 'VALIDATION_ERROR', 'This account cannot be reported here');
+    const [connected, noticed] = await Promise.all([isSocialConnection(kidId, other.data), hasGuardianSocialNotice(guardian, kidId, other.data)]);
+    if (connected !== true && noticed !== true) {
+      if (connected === null || noticed === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check the connection');
+      return fail(res, 404, NOT_FOUND, 'No such connection');
+    }
+    const result = await submitSocialReport(guardian, other.data, body.data.category, body.data.note ?? null);
+    if (result === 'invalid') return fail(res, 400, 'VALIDATION_ERROR', 'This report cannot be recorded');
+    if (result === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the report');
+    if (!await guardKid(req, res)) return res;
+    return ok(res, { reported: true, reportId: result.id }, 201);
   });
 
   /*
@@ -504,7 +574,20 @@ export function familyRouter(): Router {
     const names = await getSocialDisplayNames(visible.filter((id): id is string => id !== null));
     if (!names) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load notice participants');
     const nameById = new Map(names.map((row) => [row.user_id, row.display_name]));
-    return ok(res, { ...page, notices: page.notices.map((notice) => ({ ...notice, subjectName: nameById.get(notice.subjectId) ?? null })) });
+    // E.1/E.13: a named account still connected to a guardian-tier child can
+    // be ended from the notice itself. Unreadable evidence is a 502, never a
+    // silently missing action.
+    const named = page.notices.filter((notice) => nameById.has(notice.subjectId));
+    const kidIds = [...new Set(named.map((notice) => notice.kidUserId))];
+    const tiers = new Map(await Promise.all(kidIds.map(async (id) => [id, await readSocialTier(id)] as const)));
+    const pairs = [...new Map(named.map((notice) => [`${notice.kidUserId}:${notice.subjectId}`, notice])).entries()];
+    const links = new Map(await Promise.all(pairs.map(async ([pair, notice]) => [pair, await isSocialConnection(notice.kidUserId, notice.subjectId)] as const)));
+    if ([...tiers.values()].includes(null) || [...links.values()].includes(null)) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load notice participants');
+    return ok(res, { ...page, notices: page.notices.map((notice) => ({
+      ...notice,
+      subjectName: nameById.get(notice.subjectId) ?? null,
+      canEnd: nameById.has(notice.subjectId) && tiers.get(notice.kidUserId) === 'guardian' && links.get(`${notice.kidUserId}:${notice.subjectId}`) === true,
+    })) });
   });
 
   const UpdateKid = z.object({

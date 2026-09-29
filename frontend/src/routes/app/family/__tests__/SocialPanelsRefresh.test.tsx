@@ -10,7 +10,7 @@ vi.mock('@/theme/useTheme', () => ({ useTheme: () => ({ isDark: false }) }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ i18n: { resolvedLanguage: 'en-US' } }) }));
 let decided: boolean;
 let failure: boolean;
-const graph = (name: string) => ({ data: { users: [{ userId: name, displayName: name, username: null }], nextOffset: null }, error: null });
+const graph = (name: string) => ({ data: { users: [{ userId: name, displayName: name, username: null }], nextOffset: null, canEnd: true }, error: null });
 beforeEach(() => {
   decided = false; failure = false; mockApi.mockReset();
   mockApi.mockImplementation(async (path: string) => {
@@ -20,7 +20,7 @@ beforeEach(() => {
     }
     if (path.includes('/social/requests')) return { data: { requests: decided ? [] : [{ requestId: 'request', requesterName: 'Requester', status: 'pending', requestedAt: '2026-09-21T00:00:00Z' }], nextOffset: null }, error: null };
     if (path.includes('/social/audit')) return { data: { entries: decided ? [{ id: 1, action: 'social.follow', sourceName: 'New history member', targetName: 'Child', createdAt: '2026-09-21T00:00:00Z' }] : [], nextOffset: null }, error: null };
-    return decided ? graph('New graph member') : { data: { users: [], nextOffset: null }, error: null };
+    return decided ? graph('New graph member') : { data: { users: [], nextOffset: null, canEnd: true }, error: null };
   });
 });
 function mount() { render(<><SocialRequestsPanel kidUserId="kid" token="session" /><SocialGraphPanel kidUserId="kid" token="session" /><SocialHistoryPanel kidUserId="kid" token="session" /></>); }

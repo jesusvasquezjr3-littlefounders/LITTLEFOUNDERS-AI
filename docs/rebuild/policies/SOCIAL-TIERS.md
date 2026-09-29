@@ -54,6 +54,12 @@ Owner decision OD-27 (1), 27 September 2026: teens 13 to 17 get one peer mechani
 - **Retention (E.11).** [SOCIAL-GOVERNANCE.md §3.2](SOCIAL-GOVERNANCE.md#32-retention), "Cooperative goals (L-04)".
 - **Gate.** `npm run guardrails:check` section 5 (part of `spec:check`) and `rewards:check` rule 4; `database/scripts/verify-coop-goals-postgres.py` proves the database half on PostgreSQL.
 
+### 1.3 The Tutor ends or reports a child's connection (E.1, E.3, E.13; GAP-FIX-R3)
+
+- **Rule.** For a guardian-tier child, the verified Tutor who can approve a connection can also end it, in both directions, from the Family list or from a safety notice that names the account. Ending revokes the approval, so any new follow needs a fresh one. The Tutor can also report the account (the guardian is the reporter; same queue, notices and pattern evaluation as any report). A self-registered teen's list stays read-only to its linked parent: the teen decides its own connections.
+- **Where.** `public.guardian_end_social_connection` (service role only: current guardian and latest adult verification re-checked under the pair locks, one `social.connection_revoked` audit row with reason `guardian_ended`); Core `DELETE /family/kids/:kidId/social/connections/:userId` and `POST .../report`; `rebuild/social/ConnectionActions.tsx`.
+- **Gate.** `social:check` section 8; `database/scripts/verify-social-guardian-end-postgres.py`.
+
 ## 2. No comparison count (E.9)
 
 Decision: follower and following counts are removed from every profile surface. They are not made opt-in. E.9 allows either; removal is the conservative answer, and Appendix I Part 4 identifies the count as the one comparison-to-others metric on the profile.

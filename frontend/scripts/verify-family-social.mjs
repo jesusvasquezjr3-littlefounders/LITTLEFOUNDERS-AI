@@ -28,10 +28,10 @@ page.ws.addEventListener('message',async({data})=>{
    else if(url.pathname.endsWith('/family/kids'))body.data={kids:[{userId:kid,displayName:'Synthetic child',username:'synthetic',analyticsConsent:false,pendingApprovalCount:0,walletTotal:0,taskStreakDays:0}]};
    else if(url.pathname.endsWith('/social')){
     reads++;
-    if(url.searchParams.get('direction')==='following')body.data={users:[member('Following connection')],nextOffset:null};
+    if(url.searchParams.get('direction')==='following')body.data={users:[member('Following connection')],nextOffset:null,canEnd:false};
     else if(url.searchParams.get('offset')==='60'&&!failedPage){failedPage=true;status=502;body={data:null,error:{code:'DATA_UNAVAILABLE',message:'Synthetic failure'}};}
-    else if(url.searchParams.get('offset')==='60')body.data={users:[member('Last connection')],nextOffset:null};
-    else body.data={users:[member('First connection')],nextOffset:60};
+    else if(url.searchParams.get('offset')==='60')body.data={users:[member('Last connection')],nextOffset:null,canEnd:false};
+    else body.data={users:[member('First connection')],nextOffset:60,canEnd:false};
    }
    else if(url.pathname.endsWith('/analytics/tracking-decision'))body.data={excluded:true,degraded:false};
 

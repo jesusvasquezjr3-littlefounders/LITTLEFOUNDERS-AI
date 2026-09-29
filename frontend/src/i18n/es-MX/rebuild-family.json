@@ -76,6 +76,19 @@
     "body": "Un reporte involucró a uno de tus hijos.",
     "bodyNamed": "Un reporte involucró a {name}."
   },
+  "socialConnectionActions": {
+    "endAction": "Terminar conexión",
+    "endHeading": "¿Terminar la conexión con {name}?",
+    "endConsequence": "Dejarán de seguirse. Volver a conectar necesitará tu aprobación.",
+    "endKeep": "Mantener conexión",
+    "endConfirm": "Terminar conexión",
+    "endPending": "Terminando",
+    "ended": "Conexión terminada.",
+    "endGone": "Esta conexión ya había terminado.",
+    "endFailed": "La conexión no se terminó. Intenta de nuevo.",
+    "report": "Reportar",
+    "reported": "Reporte enviado a nuestro equipo de seguridad."
+  },
   "guardianInvite": {
     "title": "Invitar a un segundo Tutor",
     "open": "Invitar a un Tutor",

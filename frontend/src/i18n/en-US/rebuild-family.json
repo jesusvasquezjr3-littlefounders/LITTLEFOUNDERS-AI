@@ -76,6 +76,19 @@
     "body": "A report involved one of your kids.",
     "bodyNamed": "A report involved {name}."
   },
+  "socialConnectionActions": {
+    "endAction": "End connection",
+    "endHeading": "End connection with {name}?",
+    "endConsequence": "They stop following each other. Connecting again needs your approval.",
+    "endKeep": "Keep connection",
+    "endConfirm": "End connection",
+    "endPending": "Ending",
+    "ended": "Connection ended.",
+    "endGone": "This connection already ended.",
+    "endFailed": "The connection was not ended. Try again.",
+    "report": "Report",
+    "reported": "Report sent to our safety team."
+  },
   "guardianInvite": {
     "title": "Invite a second Tutor",
     "open": "Invite a Tutor",

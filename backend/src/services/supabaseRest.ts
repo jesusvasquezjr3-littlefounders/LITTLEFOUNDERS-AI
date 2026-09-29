@@ -421,6 +421,60 @@ export async function decideSocialConnectionForKid(requestId: string, kidId: str
   return 'unavailable';
 }
 
+/**
+ * Whether the two accounts share a follow in either direction (null: unreadable).
+ * Two single-direction reads, each validated, so a malformed answer is never
+ * mistaken for "not connected".
+ */
+export async function isSocialConnection(kidId: string, otherId: string): Promise<boolean | null> {
+  if (!UUID.safeParse(kidId).success || !UUID.safeParse(otherId).success) return null;
+  const Edge = z.array(z.object({ follower_id: UUID, followed_id: UUID })).max(1);
+  const [inbound, outbound] = await Promise.all([
+    rest<unknown>(`/follows?follower_id=eq.${eu(otherId)}&followed_id=eq.${eu(kidId)}&select=follower_id,followed_id&limit=1`, serviceToken()),
+    rest<unknown>(`/follows?follower_id=eq.${eu(kidId)}&followed_id=eq.${eu(otherId)}&select=follower_id,followed_id&limit=1`, serviceToken()),
+  ]);
+  const a = Edge.safeParse(inbound);
+  const b = Edge.safeParse(outbound);
+  if (!a.success || !b.success) return null;
+  const match = (rows: { follower_id: string; followed_id: string }[], from: string, to: string) =>
+    rows.some(row => row.follower_id === from && row.followed_id === to);
+  return match(a.data, otherId, kidId) || match(b.data, kidId, otherId);
+}
+
+export type GuardianEndOutcome = { removed: number } | 'forbidden' | 'self-managed' | 'invalid' | 'unavailable';
+
+/**
+ * The verified Tutor ends a child's connection (E.1/E.13): the service-only
+ * guardian_end_social_connection transaction re-checks the guardian, removes
+ * the follow both ways, revokes the approval and writes the audit row.
+ * `removed` is the number of follow edges removed (0: not a current connection).
+ */
+export async function guardianEndSocialConnection(guardianId: string, kidId: string, otherId: string): Promise<GuardianEndOutcome> {
+  if (![guardianId, kidId, otherId].every(id => UUID.safeParse(id).success)) return 'invalid';
+  const result = await restRaw('/rpc/guardian_end_social_connection', serviceToken(), {
+    method: 'POST', body: JSON.stringify({ p_guardian: guardianId, p_kid: kidId, p_other: otherId }),
+  });
+  if (result.ok) {
+    const removed = z.number().int().min(0).max(2).safeParse(result.body);
+    return removed.success ? { removed: removed.data } : 'unavailable';
+  }
+  const error = z.object({ code: z.literal('P0001'), message: z.string() }).safeParse(result.body);
+  if (!error.success) return 'unavailable';
+  if (error.data.message === 'GUARDIAN_DECISION_FORBIDDEN') return 'forbidden';
+  if (error.data.message === 'SOCIAL_SELF_MANAGED') return 'self-managed';
+  if (error.data.message === 'INVALID_SOCIAL_END') return 'invalid';
+  return 'unavailable';
+}
+
+/** Whether this guardian holds an E.3 safety notice about `subjectId` for this child (null: unreadable). */
+export async function hasGuardianSocialNotice(guardianId: string, kidId: string, subjectId: string): Promise<boolean | null> {
+  if (![guardianId, kidId, subjectId].every(id => UUID.safeParse(id).success)) return null;
+  const raw = await rest<unknown>(`/social_safety_notices?guardian_id=eq.${eu(guardianId)}&kid_user_id=eq.${eu(kidId)}&subject_id=eq.${eu(subjectId)}&select=id,guardian_id,kid_user_id,subject_id&limit=1`, serviceToken());
+  const parsed = z.array(z.object({ id: UUID, guardian_id: UUID, kid_user_id: UUID, subject_id: UUID })).max(1).safeParse(raw);
+  if (!parsed.success) return null;
+  return parsed.data.some(row => row.guardian_id === guardianId && row.kid_user_id === kidId && row.subject_id === subjectId);
+}
+
 export async function getPendingSocialRequests(kidId: string, offset: number) {
   const raw = await rest<unknown>(`/social_connection_requests?kid_user_id=eq.${eu(kidId)}&status=eq.pending&select=id,requester_id,kid_user_id,status,requested_at&order=requested_at.asc,id.asc&offset=${offset}&limit=${LIST_LIMIT + 1}`, serviceToken());
   const parsed = z.array(z.object({ id: UUID, requester_id: UUID, kid_user_id: UUID, status: z.literal('pending'), requested_at: z.string().datetime({ offset: true }) })).safeParse(raw);

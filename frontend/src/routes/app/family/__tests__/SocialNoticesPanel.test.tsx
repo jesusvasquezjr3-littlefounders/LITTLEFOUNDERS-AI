@@ -20,6 +20,7 @@ const notice = {
   subjectId: 'subject',
   subjectName: null as string | null,
   createdAt: '2026-09-01T00:00:00Z',
+  canEnd: false,
 };
 const response = (notices = [notice]) => ({ data: { notices }, error: null });
 beforeEach(() => mockApi.mockReset());

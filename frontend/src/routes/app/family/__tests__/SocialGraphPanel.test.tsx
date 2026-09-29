@@ -6,7 +6,7 @@ vi.mock('@/lib/api', () => ({ api: mockApi }));
 vi.mock('@/theme/useTheme', () => ({ useTheme: () => ({ isDark: false }) }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ i18n: { resolvedLanguage: 'en-US' } }) }));
 const member = (name: string) => ({ userId: name, displayName: name, username: name.toLowerCase() });
-const response = (name: string, nextOffset: number | null = null) => ({ data: { users: [member(name)], nextOffset }, error: null });
+const response = (name: string, nextOffset: number | null = null, canEnd = false) => ({ data: { users: [member(name)], nextOffset, canEnd }, error: null });
 beforeEach(() => mockApi.mockReset());
 const open = () => fireEvent.click(screen.getByRole('button', { name: 'Social connections' }));
 describe('guardian social panel', () => {

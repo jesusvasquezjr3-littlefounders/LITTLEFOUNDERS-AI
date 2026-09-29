@@ -76,6 +76,19 @@
     "body": "Um relato envolveu um de seus filhos.",
     "bodyNamed": "Um relato envolveu {name}."
   },
+  "socialConnectionActions": {
+    "endAction": "Encerrar conexão",
+    "endHeading": "Encerrar a conexão com {name}?",
+    "endConsequence": "Eles deixarão de se seguir. Reconectar precisará da sua aprovação.",
+    "endKeep": "Manter conexão",
+    "endConfirm": "Encerrar conexão",
+    "endPending": "Encerrando",
+    "ended": "Conexão encerrada.",
+    "endGone": "Esta conexão já tinha sido encerrada.",
+    "endFailed": "A conexão não foi encerrada. Tente novamente.",
+    "report": "Denunciar",
+    "reported": "Denúncia enviada à nossa equipe de segurança."
+  },
   "guardianInvite": {
     "title": "Convidar um segundo Tutor",
     "open": "Convidar um Tutor",

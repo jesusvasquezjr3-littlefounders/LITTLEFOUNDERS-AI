@@ -6,6 +6,11 @@ import { SocialNotices, type SocialNoticeEntry } from '@/rebuild/social/SocialNo
 import en from '@/i18n/en-US/rebuild-family.json';
 import es from '@/i18n/es-MX/rebuild-family.json';
 import pt from '@/i18n/pt-BR/rebuild-family.json';
+import enProfile from '@/i18n/en-US/rebuild-profile.json';
+import esProfile from '@/i18n/es-MX/rebuild-profile.json';
+import ptProfile from '@/i18n/pt-BR/rebuild-profile.json';
+import { publishSocialUpdate, subscribeTokenSocialUpdates } from './socialUpdates';
+import { guardianEndConnection, guardianReportConnection } from '@/rebuild/social/guardianConnectionsClient';
 
 /*
  * E.3's Family-panel data plane for the rebuild SocialNotices surface: loads
@@ -21,6 +26,7 @@ function isValidNotice(value: unknown): value is SocialNoticeEntry {
     && typeof notice.kidUserId === 'string'
     && typeof notice.subjectId === 'string'
     && (notice.subjectName === null || typeof notice.subjectName === 'string')
+    && typeof notice.canEnd === 'boolean'
     && typeof notice.createdAt === 'string' && Number.isFinite(Date.parse(notice.createdAt));
 }
 
@@ -31,8 +37,13 @@ export function SocialNoticesPanel(props: { token: string | null }) {
 function ScopedSocialNotices({ token }: { token: string | null }) {
   const { i18n } = useTranslation(); const { isDark } = useTheme();
   const locale = i18n.resolvedLanguage ?? 'en-US';
-  const copy = (locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en).socialNotices;
+  const family = locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en;
+  const copy = family.socialNotices;
+  const actionsCopy = family.socialConnectionActions;
+  const reportCopy = (locale === 'es-MX' ? esProfile : locale === 'pt-BR' ? ptProfile : enProfile).report;
   const [open, setOpen] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [notice, setNotice] = useState<{ text: string; error: boolean } | null>(null);
   const [notices, setNotices] = useState<SocialNoticeEntry[]>([]);
   const [loading, setLoading] = useState(false); const [failed, setFailed] = useState(false);
   const generation = useRef(0); const busy = useRef(false);
@@ -63,8 +74,31 @@ function ScopedSocialNotices({ token }: { token: string | null }) {
     generation.current++; busy.current = false; setNotices([]); void load();
   }
   function close() {
-    generation.current++; busy.current = false; setOpen(false); setNotices([]); setFailed(false); setLoading(false);
+    generation.current++; busy.current = false; setOpen(false); setNotices([]); setFailed(false); setLoading(false); setNotice(null);
   }
+  // A connection ended anywhere in the Family panel changes which notices can still end one.
+  const openRef = useRef(open);
+  openRef.current = open;
+  useEffect(() => subscribeTokenSocialUpdates(token, () => { if (openRef.current) reload(); }));
+  // E.1/E.13: end or report the account a notice names, for that notice's child.
+  const actions = (kidUserId: string) => ({
+    copy: actionsCopy, reportCopy, busyId,
+    onEnd: async (userId: string) => {
+      if (busyId || !token) return;
+      setBusyId(userId); setNotice(null);
+      const outcome = await guardianEndConnection(api, kidUserId, userId, token);
+      setBusyId(null);
+      setNotice(outcome === 'ended' ? { text: actionsCopy.ended, error: false } : outcome === 'gone' ? { text: actionsCopy.endGone, error: false } : { text: actionsCopy.endFailed, error: true });
+      if (outcome !== 'failed') publishSocialUpdate(kidUserId, token);
+    },
+    onReport: async (userId: string, category: Parameters<typeof guardianReportConnection>[3], note: string | null) => {
+      if (!token) return false;
+      const sent = await guardianReportConnection(api, kidUserId, userId, category, note, token);
+      if (sent) setNotice({ text: actionsCopy.reported, error: false });
+      return sent;
+    },
+  });
   return <SocialNotices copy={copy} locale={locale} dark={isDark} open={open} notices={notices} loading={loading} failed={failed}
+    actions={actions} notice={notice}
     onOpen={() => { setOpen(true); reload(); }} onClose={close} onRetry={reload} />;
 }

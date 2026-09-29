@@ -33,7 +33,7 @@ page.ws.addEventListener('message',async({data})=>{
     else if(writes===4){queue=[];status=409;body={data:null,error:{code:'SOCIAL_DECISION_CONFLICT',message:'Another guardian decided'}};}
     else {queue=queue.filter(item=>item.requestId!==selected);body.data={requestId:selected,status:choice==='approve'?'approved':'denied'};}
    }
-   else if(url.pathname.endsWith('/social')){graphReads++;body.data={users:writes>=2?[{userId:id,displayName:'New graph member',username:null}]:[],nextOffset:null};}
+   else if(url.pathname.endsWith('/social')){graphReads++;body.data={users:writes>=2?[{userId:id,displayName:'New graph member',username:null}]:[],nextOffset:null,canEnd:true};}
    else if(url.pathname.endsWith('/social/audit')){historyReads++;body.data={entries:writes>=2?[{id:1,action:'social.follow',sourceName:'New history member',targetName:'Child',createdAt:'2026-09-21T00:00:00Z'}]:[],nextOffset:null};}
    else if(url.pathname.endsWith('/analytics/tracking-decision'))body.data={excluded:true,degraded:false};
 

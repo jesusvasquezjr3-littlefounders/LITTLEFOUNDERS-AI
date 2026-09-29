@@ -2,6 +2,7 @@ import { Button, Copy, InlineNotice, LoadingState } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './socialNotices.css';
+import { ConnectionActions, type ConnectionActionHandlers } from './ConnectionActions';
 
 /*
  * E.3's guardian-facing safety notices: the Family panel shows, per verified
@@ -19,6 +20,8 @@ export interface SocialNoticeEntry {
   subjectId: string;
   subjectName: string | null;
   createdAt: string;
+  /** Core's word that this named account is still connected to a guardian-tier child (E.1/E.13). */
+  canEnd: boolean;
 }
 
 export interface SocialNoticesCopy {
@@ -32,7 +35,7 @@ export interface SocialNoticesCopy {
   bodyNamed: string;
 }
 
-export function SocialNotices({ copy, locale, dark, open, notices, loading, failed, onOpen, onClose, onRetry }: {
+export function SocialNotices({ copy, locale, dark, open, notices, loading, failed, actions, notice = null, onOpen, onClose, onRetry }: {
   copy: SocialNoticesCopy;
   locale: string;
   dark: boolean;
@@ -40,6 +43,9 @@ export function SocialNotices({ copy, locale, dark, open, notices, loading, fail
   notices: SocialNoticeEntry[];
   loading: boolean;
   failed: boolean;
+  /** GAP-FIX-R3 social: a notice that names an account offers the Tutor's actions (keyed by the notice's child). */
+  actions?: (kidUserId: string) => ConnectionActionHandlers;
+  notice?: { text: string; error: boolean } | null;
   onOpen: () => void;
   onClose: () => void;
   onRetry: () => void;
@@ -50,9 +56,11 @@ export function SocialNotices({ copy, locale, dark, open, notices, loading, fail
     {open && <>
       <Copy role="heading" as="h2">{copy.title}</Copy>
       {failed ? <><InlineNotice tone="error" live>{copy.failed}</InlineNotice><Button onClick={onRetry}>{copy.retry}</Button></> : <>
-        <ul>{notices.map(notice => <li key={notice.noticeId}>
-          <Copy role="body">{notice.subjectName !== null ? copy.bodyNamed.replace('{name}', notice.subjectName) : copy.body}</Copy>
-          <Copy role="body">{date.format(new Date(notice.createdAt))}</Copy>
+        {notice && <InlineNotice tone={notice.error ? 'error' : 'info'} live>{notice.text}</InlineNotice>}
+        <ul>{notices.map(entry => <li key={entry.noticeId}>
+          <Copy role="body">{entry.subjectName !== null ? copy.bodyNamed.replace('{name}', entry.subjectName) : copy.body}</Copy>
+          <Copy role="body">{date.format(new Date(entry.createdAt))}</Copy>
+          {actions && entry.subjectName !== null && <ConnectionActions actions={actions(entry.kidUserId)} userId={entry.subjectId} name={entry.subjectName} canEnd={entry.canEnd} />}
         </li>)}</ul>
         {!loading && notices.length === 0 && <Copy role="body">{copy.empty}</Copy>}
         {loading && <LoadingState label={copy.loading} lines={2} />}

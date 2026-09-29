@@ -244,7 +244,7 @@ describe('E.2 guardian social graph', () => {
   it('returns whitelisted connected users for the verified guardian', async () => {
     const res = await auth(request(createApp()).get(endpoint));
     expect(res.status).toBe(200);
-    expect(res.body.data).toEqual({ users: [{ userId: PARENT_ID, displayName: 'Guardian', username: 'guardian', avatarOptions: {}, isTutor: true }], nextOffset: null });
+    expect(res.body.data).toEqual({ users: [{ userId: PARENT_ID, displayName: 'Guardian', username: 'guardian', avatarOptions: {}, isTutor: true }], nextOffset: null, canEnd: false });
   });
   it.each(['pending', 'revoked'])('refuses a %s guardian link', async status => {
     db.guardian_links[0]!.verification_status = status;

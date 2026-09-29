@@ -34,6 +34,7 @@
       "rebuild-family:socialHistory",
       "rebuild-family:socialRequests",
       "rebuild-family:socialNotices",
+      "rebuild-family:socialConnectionActions",
       "rebuild-family:familyDeletionNotices"
     ],
     "errorCodes": [],
@@ -318,6 +319,11 @@
       "key": "rebuild-family:socialNotices.empty",
       "category": "guarantee",
       "why": "The empty state of the child safety notices list (\"no safety notices\"); it names a list and promises nothing."
+    },
+    {
+      "key": "rebuild-family:socialConnectionActions.reported",
+      "category": "guarantee",
+      "why": "Confirms a Tutor's report reached the safety team (\"equipo de seguridad\" / \"equipe de segurança\", the same name the profile and lesson report copy uses); it names who reads the report and promises nothing."
     }
   ]
 }
