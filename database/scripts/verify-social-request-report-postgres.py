@@ -1,4 +1,4 @@
-"""E.3 from the request queues (GAP-FIX-R5 social, OD-8, D-19), against real PostgreSQL.
+"""E.3 from the request queues (GAP-FIX-R5 social, OD-8), against real PostgreSQL.
 
 An inbound connection request is the first unwanted-contact event. Core now
 lets the person deciding one report the requester from the queue (the Tutor

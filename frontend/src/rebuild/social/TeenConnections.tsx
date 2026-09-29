@@ -14,7 +14,9 @@ import './socialTiers.css';
  * E.3 (GAP-FIX-R5 social; OD-8, D-19): an inbound request is the first
  * unwanted-contact event, so each one can also be reported (the bounded
  * report dialog) or blocked (behind a confirmation) right here, without
- * opening the requester's profile. Both reach Core by request id.
+ * opening the requester's profile. Both reach Core by request id. A decline
+ * is not the end of that path: the request just declined keeps Report and
+ * Block beside the receipt (Core admits both for 30 days).
  * Copy-only, no transport: the route wrapper owns the data plane.
  */
 
@@ -31,7 +33,7 @@ export interface TeenRequestView { requestId: string; requestedAt: string; usern
 export interface FollowerView { username: string; displayName: string }
 export interface TeenNotice { tone: 'status' | 'alert'; text: string }
 
-export function TeenConnections({ copy, reportCopy, locale, dark, discoverable = false, requests, followers, loading, failed, busy, notice, hasMore, onDecide, onReport, onBlock, onRemove, onRetry, onMore }: {
+export function TeenConnections({ copy, reportCopy, locale, dark, discoverable = false, requests, followers, loading, failed, busy, notice, hasMore, closedRequestId = null, onDecide, onReport, onBlock, onRemove, onRetry, onMore }: {
   copy: TeenConnectionsCopy;
   reportCopy: ReportCopy;
   locale: string;
@@ -45,6 +47,8 @@ export function TeenConnections({ copy, reportCopy, locale, dark, discoverable =
   busy: boolean;
   notice: TeenNotice | null;
   hasMore: boolean;
+  /** E.3: the request the teen just declined, still reportable and blockable beside the receipt. */
+  closedRequestId?: string | null;
   onDecide: (requestId: string, decision: 'accept' | 'decline') => void;
   /** E.3: true only on Core's receipt; the dialog keeps what was chosen otherwise. */
   onReport: (requestId: string, category: ReportCategory, note: string | null) => Promise<boolean>;
@@ -70,6 +74,11 @@ export function TeenConnections({ copy, reportCopy, locale, dark, discoverable =
     <Copy role="heading" as="h2">{copy.title}</Copy>
     <Copy role="body">{discoverable && copy.introDiscoverable ? copy.introDiscoverable : copy.intro}</Copy>
     {notice && <InlineNotice tone={notice.tone === 'alert' ? 'error' : 'info'} live>{notice.text}</InlineNotice>}
+    {closedRequestId && !failed && <div className="lf-social-tier-actions" role="group" aria-label={copy.declined} data-closed-request-actions={closedRequestId}>
+      <ReportDialog copy={reportCopy} triggerLabel={copy.report} disabled={busy || loading} onSend={(category, note) => onReport(closedRequestId, category, note)} />
+      <DestructiveAction label={copy.block} disabled={busy || loading} onConfirm={() => onBlock(closedRequestId)}
+        confirm={{ heading: copy.blockTitle, consequence: copy.blockBody, keepLabel: copy.blockKeep, confirmLabel: copy.blockConfirm, pendingLabel: copy.blocking }} />
+    </div>}
     {busy && <InlineNotice tone="info" live>{copy.saving}</InlineNotice>}
     {failed ? <div className="lf-social-tier-row">
       <InlineNotice tone="error" live>{copy.failed}</InlineNotice>

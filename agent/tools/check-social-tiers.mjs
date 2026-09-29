@@ -64,7 +64,8 @@ import { fileURLToPath } from 'node:url';
  *      on the teen's own queue (the session, admitted by the request addressed
  *      to it, never by profile visibility); both admit a request closed
  *      without a connection for 30 days; both queues render the report dialog
- *      and the teen's a confirmed block; and the PostgreSQL proof that queue
+ *      and the teen's a confirmed block, also for the request just denied or
+ *      declined (beside the receipt); and the PostgreSQL proof that queue
  *      reports and blocks feed the E.3 pattern trigger is in the social gate.
  */
 
@@ -257,10 +258,14 @@ export function checkSocialTiers(root) {
   }
   if (!/export const SOCIAL_REQUEST_ACTION_DAYS = 30;/.test(rest)) failures.push('backend/src/services/supabaseRest.ts: a closed request must stay reportable for 30 days (SOCIAL_REQUEST_ACTION_DAYS, E.3)');
   const guardianQueue = (() => { try { return read(root, 'frontend/src/rebuild/social/SocialRequests.tsx'); } catch { return ''; } })();
-  if (!/<ReportDialog\b[\s\S]*?onReport\(request\.requestId,/.test(guardianQueue)) failures.push("frontend/src/rebuild/social/SocialRequests.tsx: the Tutor's request queue must offer the report dialog on every request (E.3, OD-8)");
+  if (!/<ReportDialog\b[^\n]*onReport\(request\.requestId,/.test(guardianQueue)) failures.push("frontend/src/rebuild/social/SocialRequests.tsx: the Tutor's request queue must offer the report dialog on every request (E.3, OD-8)");
+  if (!/<ReportDialog\b[^\n]*onReport\(closedRequestId,/.test(guardianQueue)) failures.push("frontend/src/rebuild/social/SocialRequests.tsx: the request the Tutor just denied must stay reportable beside the receipt (E.3, 30-day window)");
   const teenQueue = (() => { try { return read(root, 'frontend/src/rebuild/social/TeenConnections.tsx'); } catch { return ''; } })();
-  if (!/<ReportDialog\b[\s\S]*?onReport\(request\.requestId,/.test(teenQueue) || !/<DestructiveAction\b[\s\S]*?onBlock\(request\.requestId\)/.test(teenQueue)) {
+  if (!/<ReportDialog\b[^\n]*onReport\(request\.requestId,/.test(teenQueue) || !/<DestructiveAction\b[^\n]*onBlock\(request\.requestId\)/.test(teenQueue)) {
     failures.push("frontend/src/rebuild/social/TeenConnections.tsx: the teen's request queue must offer the report dialog and a confirmed block on every request (E.3, D-19)");
+  }
+  if (!/<ReportDialog\b[^\n]*onReport\(closedRequestId,/.test(teenQueue) || !/<DestructiveAction\b[^\n]*onBlock\(closedRequestId\)/.test(teenQueue)) {
+    failures.push("frontend/src/rebuild/social/TeenConnections.tsx: the request the teen just declined must stay reportable and blockable beside the receipt (E.3, 30-day window)");
   }
   const queueProof = (() => { try { return read(root, 'database/scripts/verify-social-request-report-postgres.py'); } catch { return ''; } })();
   if (!/evaluate_social_pattern/.test(queueProof) || !/request_teen_connection/.test(queueProof)) {

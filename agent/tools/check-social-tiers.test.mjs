@@ -282,8 +282,10 @@ test('E.3 (GAP-FIX-R5): a request queue without its report (or the teen block), 
   withFixture((root) => edit(root, 'backend/src/routes/profile.ts', 'blockUser(user.accessToken, user.id, requester)', 'blockUser(user.accessToken, requester, user.id)'), /the teen's queue must report and block/);
   withFixture((root) => edit(root, 'backend/src/routes/profile.ts', 'getTeenActionableRequest(id.data, userId)', 'getTeenActionableRequest(id.data, String(req.query.subject))'), /the teen's queue must report and block/);
   withFixture((root) => edit(root, 'backend/src/services/supabaseRest.ts', 'SOCIAL_REQUEST_ACTION_DAYS = 30;', 'SOCIAL_REQUEST_ACTION_DAYS = 1;'), /reportable for 30 days/);
-  withFixture((root) => edit(root, 'frontend/src/rebuild/social/SocialRequests.tsx', '<ReportDialog ', '<span '), /Tutor's request queue must offer the report dialog/);
-  withFixture((root) => edit(root, 'frontend/src/rebuild/social/TeenConnections.tsx', '<DestructiveAction ', '<Button '), /teen's request queue must offer the report dialog and a confirmed block/);
+  withFixture((root) => edit(root, 'frontend/src/rebuild/social/SocialRequests.tsx', 'onReport(request.requestId,', 'onReport(String(requests[0]?.requestId),'), /Tutor's request queue must offer the report dialog/);
+  withFixture((root) => edit(root, 'frontend/src/rebuild/social/TeenConnections.tsx', 'onBlock(request.requestId)', 'undefined'), /teen's request queue must offer the report dialog and a confirmed block/);
+  withFixture((root) => edit(root, 'frontend/src/rebuild/social/SocialRequests.tsx', 'onReport(closedRequestId,', 'onReport(String(requests[0]?.requestId),'), /the Tutor just denied must stay reportable/);
+  withFixture((root) => edit(root, 'frontend/src/rebuild/social/TeenConnections.tsx', 'onBlock(closedRequestId)', 'undefined'), /the teen just declined must stay reportable and blockable/);
   withFixture((root) => rmSync(join(root, 'database/scripts/verify-social-request-report-postgres.py')), /feed the E\.3 pattern trigger is missing/);
   withFixture((root) => edit(root, 'docs/rebuild/policies/SOCIAL-TIERS.md', '**Report and block from the request queues (E.3, D-19; GAP-FIX-R5).**', '**Queues.**'), /request-queue report and block/);
 });

@@ -111,3 +111,28 @@ it('keeps the report dialog open with its choice when the receipt does not match
   expect(screen.getByRole('radio', { name: 'Harassment or bullying' })).toBeChecked();
   expect(screen.queryByText('Report sent to our safety team.')).toBeNull();
 });
+// E.3 after a denial (GAP-FIX-R5 social finish): the request just denied keeps a Report action beside the receipt; Core admits it for 30 days.
+it('keeps the denied request reportable beside the receipt until it is reported', async () => {
+  mockApi.mockResolvedValueOnce(response()).mockResolvedValueOnce({ data: { requestId: 'request', status: 'denied' }, error: null })
+    .mockResolvedValueOnce(response([])).mockResolvedValueOnce({ data: { requestId: 'request', reported: true, reportId: 'r2' }, error: null });
+  render(<SocialRequestsPanel kidUserId="kid" token="session" />); open(); await screen.findByText('Requester');
+  fireEvent.click(screen.getByRole('button', { name: 'Deny' }));
+  expect(await screen.findByText('No pending requests.')).toBeVisible();
+  expect(screen.getByText('Request denied.')).toBeVisible();
+  const closed = document.querySelector('[data-closed-request-actions="request"]') as HTMLElement;
+  expect(closed).not.toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Report' }));
+  fireEvent.click(await screen.findByRole('radio', { name: 'Unwanted contact' }));
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Send report' })); });
+  expect(mockApi).toHaveBeenLastCalledWith('/family/kids/kid/social/requests/request/report', { token: 'session', method: 'POST', body: { category: 'unwanted_contact' } });
+  expect(await screen.findByText('Report sent to our safety team.')).toBeVisible();
+  expect(document.querySelector('[data-closed-request-actions]')).toBeNull();
+});
+it('offers no report beside an approval receipt', async () => {
+  mockApi.mockResolvedValueOnce(response()).mockResolvedValueOnce({ data: { requestId: 'request', status: 'approved' }, error: null }).mockResolvedValueOnce(response([]));
+  render(<SocialRequestsPanel kidUserId="kid" token="session" />); open(); await screen.findByText('Requester');
+  fireEvent.click(screen.getByRole('button', { name: 'Approve' }));
+  expect(await screen.findByText('Connection approved.')).toBeVisible();
+  expect(document.querySelector('[data-closed-request-actions]')).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Report' })).toBeNull();
+});

@@ -11,14 +11,18 @@ import { ReportDialog, type ReportCategory, type ReportCopy } from './ReportDial
  * reported: an inbound request is the first unwanted-contact event, so the
  * queue carries E.3's path to act on a concern (OD-8, D-19) with the same
  * bounded dialog as a profile. Reporting does not decide the request; the
- * Tutor still approves or denies it. Copy-only, no transport.
+ * Tutor still approves or denies it. A denial is not the end of that path:
+ * the request the Tutor just denied keeps a Report action beside the receipt
+ * (Core admits it for 30 days). Copy-only, no transport.
  */
 export interface PendingConnection { requestId: string; requesterName: string | null; requestedAt: string; status: 'pending' }
 export interface RequestsCopy { title: string; close: string; loading: string; failed: string; empty: string; retry: string; more: string; hidden: string; pending: string; approve: string; deny: string; saving: string; decisionFailed: string; conflict: string; approved: string; denied: string; report: string; reported: string }
-export function SocialRequests({ copy, reportCopy, locale, dark, open, requests, loading, failed, hasMore, deciding, notice, decisionFailed, onDecision, onReport, onToggle, onMore, onRetry }: {
+export function SocialRequests({ copy, reportCopy, locale, dark, open, requests, loading, failed, hasMore, deciding, notice, decisionFailed, closedRequestId = null, onDecision, onReport, onToggle, onMore, onRetry }: {
   copy: RequestsCopy; reportCopy: ReportCopy; locale: string; dark: boolean; open: boolean; requests: PendingConnection[];
   /** E.3: true only on Core's receipt; the dialog keeps what was chosen otherwise. */
   onReport: (requestId: string, category: ReportCategory, note: string | null) => Promise<boolean>;
+  /** E.3: the request the Tutor just denied, still reportable beside the receipt. */
+  closedRequestId?: string | null;
   deciding: boolean; notice: string | null; decisionFailed: boolean; onDecision: (id: string, decision: 'approve' | 'deny') => void;
   loading: boolean; failed: boolean; hasMore: boolean; onToggle: () => void; onMore: () => void; onRetry: () => void;
 }) {
@@ -36,6 +40,9 @@ export function SocialRequests({ copy, reportCopy, locale, dark, open, requests,
     {open && <>
       <Copy role="heading" as="h2">{copy.title}</Copy>
       {notice && <InlineNotice tone={decisionFailed ? 'error' : 'info'} live>{notice}</InlineNotice>}
+      {closedRequestId && !deciding && <div className="lf-social-request-actions" role="group" aria-label={copy.denied} data-closed-request-actions={closedRequestId}>
+        <ReportDialog copy={reportCopy} triggerLabel={copy.report} disabled={loading} onSend={(category, note) => onReport(closedRequestId, category, note)} />
+      </div>}
       {deciding && <InlineNotice tone="info" live>{copy.saving}</InlineNotice>}
       {failed ? <><InlineNotice tone="error" live>{copy.failed}</InlineNotice><Button onClick={onRetry}>{copy.retry}</Button></> : <>
         <ul>{requests.map(request => <li key={request.requestId}>

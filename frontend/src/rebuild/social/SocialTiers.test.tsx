@@ -106,6 +106,32 @@ describe('TeenConnections (E.8 self-managed tier)', () => {
     everyTextHasRole(container);
   });
 
+  // E.3 after a decline (GAP-FIX-R5 social finish): the request just declined keeps Report and Block beside the receipt.
+  it.each(Object.entries(LOCALES))('keeps a just-declined request reportable and blockable in %s', async (locale, strings) => {
+    const closedId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+    const onReport = vi.fn(() => Promise.resolve(true));
+    const onBlock = vi.fn(() => Promise.resolve());
+    const { container } = render(<TeenConnections copy={strings.teenConnections} locale={locale} dark={false} {...base} requests={[]} reportCopy={strings.report}
+      notice={{ tone: 'status', text: strings.teenConnections.declined }} closedRequestId={closedId}
+      onDecide={() => undefined} onRemove={() => undefined} onReport={onReport} onBlock={onBlock} />);
+    const closed = within(container.querySelector(`[data-closed-request-actions="${closedId}"]`) as HTMLElement);
+    fireEvent.click(closed.getByRole('button', { name: strings.teenConnections.report }));
+    const dialog = within(await screen.findByRole('dialog', { name: strings.report.title }));
+    fireEvent.click(dialog.getByRole('radio', { name: strings.report.categories.harassment }));
+    await act(async () => { fireEvent.click(dialog.getByRole('button', { name: strings.report.send })); });
+    expect(onReport).toHaveBeenCalledWith(closedId, 'harassment', null);
+    fireEvent.click(closed.getByRole('button', { name: strings.teenConnections.block }));
+    const confirm = within(await screen.findByRole('alertdialog'));
+    await act(async () => { fireEvent.click(confirm.getByRole('button', { name: strings.teenConnections.blockConfirm })); });
+    expect(onBlock).toHaveBeenCalledWith(closedId);
+    everyTextHasRole(container);
+  });
+
+  it('offers no closed-request actions without a just-declined request', () => {
+    const { container } = render(<TeenConnections copy={en.teenConnections} locale="en-US" dark={false} {...base} onDecide={() => undefined} onRemove={() => undefined} />);
+    expect(container.querySelector('[data-closed-request-actions]')).toBeNull();
+  });
+
   it('shows empty and failed states with a retry', () => {
     const onRetry = vi.fn();
     const { unmount } = render(<TeenConnections copy={en.teenConnections} locale="en-US" dark={false} {...base} requests={[]} followers={[]} onDecide={() => undefined} onRemove={() => undefined} />);
