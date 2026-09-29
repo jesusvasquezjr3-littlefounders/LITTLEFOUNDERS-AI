@@ -422,10 +422,12 @@
         "consequence": "{name} loses verified status. The reason is audited.",
         "revoked": "Verification revoked.",
         "revokeFailed": "Could not revoke. Try again.",
-        "noVerification": "This account has no parent verification."
+        "noVerification": "This account has no parent verification.",
+        "ageRecordMinor": "The age record says under 18. Review the age or revoke."
       },
       "option": {
         "id-verified": "ID-verified",
+        "ageRecordMinor": "Age record under 18",
         "staff-granted": "Staff-granted",
         "revoked": "Revoked",
         "none": "None",
@@ -1940,6 +1942,7 @@
         "entry_path_age_capture": "New accounts with an age on file",
         "undated_account_backlog": "Older accounts with no age",
         "verification_status_differentiation": "Tutors tagged ID-verified or staff-granted",
+        "tutor_adult_age_record": "Tutors whose age record is adult",
         "staff_grant_justification_completeness": "Staff Tutor grants with a reason",
         "revocation_path_utilization": "Revocations with an audited reason",
         "kid_email_change_restriction": "Child accounts with email change locked",

@@ -60,3 +60,13 @@ export function erasureStubResponse(url: string, opts: { coreFails?: boolean; su
   if (url.includes('/api/v1/intel/erasure')) return jsonResponse(200, { data: {}, error: null });
   return null;
 }
+
+/**
+ * F3-identity-site (A.1): Core asks, ahead of every product router, whether
+ * the caller is a paused child (middleware/accountAdmission.ts). Suites whose
+ * stubs predate that read answer "no pause marker" here; the refusals and the
+ * fail-closed read are covered in accountAdmission.test.ts.
+ */
+export function admissionStubResponse(url: string): Response | null {
+  return url.includes('/rest/v1/profiles?') && url.includes('suspended_at=not.is.null') ? jsonResponse(200, []) : null;
+}

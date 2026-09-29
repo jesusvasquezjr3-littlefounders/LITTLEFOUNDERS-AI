@@ -10,7 +10,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { api, type ApiError } from '@/lib/api';
+import { ACCOUNT_SUSPENDED_EVENT, api, type ApiError } from '@/lib/api';
 import { getAnonId } from '@/lib/visitor';
 import { clearCoursesCache } from '@/routes/app/learn/coursesCache';
 import { clearLessonCheckpoints } from '@/lesson-engine/player/checkpoint';
@@ -223,7 +223,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (sessionRef.current !== current) return null;
       // Let the caller surface a temporary API failure and retry; a missing
       // token would leave token-gated screens waiting indefinitely.
-      if (error && error.code !== 'UNAUTHORIZED') return current;
+      // A paused child's refresh is refused for good (A.1): drop it like an expired one.
+      if (error && error.code !== 'UNAUTHORIZED' && error.code !== 'ACCOUNT_SUSPENDED') return current;
       const next = data?.session ? toStored(data.session) : null;
       persist(next);
       return next;
@@ -340,6 +341,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       window.clearInterval(timer);
     };
   }, [getToken, loadMe]);
+
+  // A.1 (F3-identity-site): any Core route may answer ACCOUNT_SUSPENDED; the
+  // session is dropped at once and the shell lands on the paused screen.
+  useEffect(() => {
+    const onSuspended = () => {
+      meVersion.current += 1;
+      persist(null);
+      setSuspended(true);
+      setMeLoaded(true);
+    };
+    window.addEventListener(ACCOUNT_SUSPENDED_EVENT, onSuspended);
+    return () => window.removeEventListener(ACCOUNT_SUSPENDED_EVENT, onSuspended);
+  }, [persist]);
 
   // Restore once on mount.
   useEffect(() => {

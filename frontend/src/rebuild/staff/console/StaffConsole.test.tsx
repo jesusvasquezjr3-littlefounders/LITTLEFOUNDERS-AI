@@ -142,7 +142,7 @@ describe('S1 Overview: mixed by the current grants (G.1)', () => {
 const USERS = [
   { userId: USER, displayName: 'Alessandro_Bartolomeo_Villanueva_Rodriguez_2014', username: 'ale', locale: 'es-MX', createdAt: '2026-07-12T00:00:00Z', birthDate: '2016-08-08', roles: ['kid'], verification: null },
   { userId: OTHER, displayName: 'Paula Tutor', username: 'paula', locale: 'en-US', createdAt: '2026-07-13T00:00:00Z', birthDate: null, roles: ['parent', 'universal'], verification: 'staff-granted' },
-  { userId: '33333333-3333-4333-8333-333333333333', displayName: 'Iván', username: null, locale: 'pt-BR', createdAt: '2026-07-14T00:00:00Z', birthDate: null, roles: ['parent'], verification: 'id-verified' },
+  { userId: '33333333-3333-4333-8333-333333333333', displayName: 'Iván', username: null, locale: 'pt-BR', createdAt: '2026-07-14T00:00:00Z', birthDate: null, roles: ['parent'], verification: 'id-verified', ageRecordMinor: true },
 ];
 function usersApi(revoke: StaffResult<unknown> = ok({ verification: 'revoked' })) {
   return fakeApi((path) => {
@@ -181,6 +181,20 @@ describe('S3 Users (A.5)', () => {
     await screen.findByText('3 of 3 accounts');
     expect(screen.getByText(c.users.option['staff-granted'])).toBeTruthy();
     expect(screen.getByText(c.users.option['id-verified'])).toBeTruthy();
+  });
+
+  it('A.2/A.5: flags a Tutor whose age record says under 18, in the list and in the details, next to the revocation', async () => {
+    const { api } = usersApi();
+    render(<Frame><StaffUsers api={api} viewer={viewer('manage_users')} /></Frame>);
+    await screen.findByText('3 of 3 accounts');
+    expect(screen.getAllByText(c.users.option.ageRecordMinor)).toHaveLength(1);
+    fireEvent.click(screen.getAllByText(c.common.action.open)[1]!);
+    expect(within(await screen.findByRole('dialog')).queryByText(c.users.body.ageRecordMinor)).toBeNull();
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: c.common.action.close }));
+    fireEvent.click(screen.getAllByText(c.common.action.open)[2]!);
+    const sheet = await screen.findByRole('dialog');
+    expect(within(sheet).getByText(c.users.body.ageRecordMinor)).toBeTruthy();
+    expect(within(sheet).getByRole('button', { name: c.users.action.revoke })).toBeTruthy();
   });
 
   it('filters the directory and clears the filters', async () => {

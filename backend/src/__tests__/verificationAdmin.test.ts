@@ -48,6 +48,8 @@ function stub(opts: StubOpts = {}) {
       if (url.includes('/rest/v1/rpc/grant_parent_role_with_justification')) {
         return Promise.resolve(jsonResponse(opts.rpc?.status ?? 200, opts.rpc?.body ?? 'granted'));
       }
+      // A.2/A.5 (F3-identity-site): Tutors whose own age record says a minor.
+      if (url.includes('/rest/v1/rpc/list_minor_record_tutors')) return Promise.resolve(jsonResponse(200, []));
       if (url.includes('/rest/v1/rpc/revoke_parent_verification')) {
         return Promise.resolve(jsonResponse(opts.rpc?.status ?? 200, opts.rpc?.body ?? 'revoked'));
       }

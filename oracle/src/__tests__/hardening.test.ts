@@ -36,6 +36,8 @@ let oraclePort = 0;
 /** Shaped per test. */
 let nextTurn: Record<string, unknown>;
 let consentBody: unknown;
+/** Core's A.1 admission answer (GET /tutor/internal/admission/:userId): a status and a raw body. */
+let admission: { status: number; body: unknown };
 let counts: { model: number; judge: number; stt: number; tts: number; segments: number };
 
 function readBody(req: IncomingMessage): Promise<string> {
@@ -88,6 +90,10 @@ function startFakeCore(): Promise<Server> {
         }
         if (url.includes('/turns')) return json(res, { recorded: true });
         if (url.includes('/flags')) return json(res, { recorded: true });
+        if (url.includes('/admission/')) {
+          res.writeHead(admission.status, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify(admission.body));
+        }
         if (url.includes('/consent/')) {
           // Written raw so a test can hand back an envelope that does not parse,
           // which is the shape a real Core outage produces.
@@ -285,6 +291,7 @@ afterAll(async () => {
 beforeEach(() => {
   nextTurn = cleanTurn();
   consentBody = { data: { active: true }, error: null };
+  admission = { status: 200, body: { data: { active: true }, error: null } };
   counts = { model: 0, judge: 0, stt: 0, tts: 0, segments: 0 };
 });
 
@@ -622,6 +629,75 @@ describe('revocation takes effect on the NEXT turn, as promised', () => {
     // rely on `counts.stt` rather than a real transcript to see past.)
     expect(messages.some((m) => m.code === 'CONSENT_REVOKED')).toBe(true);
   }, 15_000);
+});
+
+/*
+ * A.1 (FAQ 'cancelTutor': "paused at once"), F3-identity-site finish: a live
+ * session opened before the child's last Tutor link went away used to run
+ * until it ended on its own, because Core had already minted its token.
+ */
+describe('a paused account ends its live session on the next turn', () => {
+  const pause = async (socket: WebSocket) => {
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'hola' }));
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    socket.removeAllListeners('message');
+    await new Promise((resolve) => setTimeout(resolve, 750));
+    admission = { status: 200, body: { data: { active: false }, error: null } };
+  };
+  const closed = (socket: WebSocket) => new Promise<number>((resolve) => socket.once('close', (code) => resolve(code)));
+
+  it('refuses the next typed turn before any model call and closes the socket UNAUTHORIZED', async () => {
+    const socket = await openReady();
+    await pause(socket);
+    const before = counts.model;
+    const ended = closed(socket);
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'otra vez' }));
+    const messages = await collect(socket, (m) => m.some((x) => x.type === 'error'));
+    expect(messages.find((m) => m.type === 'error')).toMatchObject({ code: 'ACCOUNT_SUSPENDED' });
+    expect(await ended).toBe(4001);
+    expect(counts.model).toBe(before);
+  });
+
+  it('never sends a paused child’s clip to the STT provider', async () => {
+    const socket = await openReady();
+    await pause(socket);
+    const ended = closed(socket);
+    socket.send(JSON.stringify({
+      type: 'learner_audio',
+      audio: Buffer.from('fake-webm-bytes').toString('base64'),
+      mimeType: 'audio/webm;codecs=opus',
+    }));
+    const messages = await collect(socket, (m) => m.some((x) => x.type === 'error'));
+    expect(messages.some((m) => m.code === 'ACCOUNT_SUSPENDED')).toBe(true);
+    expect(await ended).toBe(4001);
+    expect(counts.stt).toBe(0);
+  }, 15_000);
+
+  it('refuses only the turn, and keeps the session, when Core cannot say', async () => {
+    const socket = await openReady();
+    await pause(socket);
+    admission = { status: 503, body: { data: null, error: { code: 'ACCOUNT_STATE_UNAVAILABLE', message: 'down' } } };
+    const before = counts.model;
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'otra vez' }));
+    const refused = await collect(socket, (m) => m.some((x) => x.type === 'error'));
+    expect(refused.find((m) => m.type === 'error')).toMatchObject({ code: 'SERVICE_DEGRADED' });
+    expect(counts.model).toBe(before);
+    socket.removeAllListeners('message');
+    await new Promise((resolve) => setTimeout(resolve, 750));
+    admission = { status: 200, body: { data: { active: true }, error: null } };
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'ya' }));
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    expect(socket.readyState).toBe(WebSocket.OPEN);
+    socket.close();
+  });
+
+  it('leaves the pause to Core when Core predates the route (404)', async () => {
+    const socket = await openReady();
+    admission = { status: 404, body: { data: null, error: { code: 'NOT_FOUND', message: 'no route' } } };
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'hola' }));
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    socket.close();
+  });
 });
 
 describe('an unreadable consent answer is not a granted one', () => {

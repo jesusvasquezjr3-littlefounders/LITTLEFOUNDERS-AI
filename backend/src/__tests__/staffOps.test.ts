@@ -52,6 +52,8 @@ interface World {
   permissions?: string[];
   identity?: { status: number; body: unknown };
   discovery?: { status: number; body: unknown };
+  /** public.list_minor_record_tutors: Tutors whose own age record says a minor. */
+  minorRecord?: { status: number; body: unknown };
   audit?: Record<string, { created_at: string; detail: Record<string, unknown> }[]>;
   auditStatus?: number;
   reviews?: { status: number; body: unknown };
@@ -72,6 +74,7 @@ function stub(world: World = {}) {
       return Promise.resolve(jsonResponse(200, (world.permissions ?? ['view_analytics', 'manage_support']).map((permission) => ({ user_id: STAFF_ID, permission }))));
     }
     if (url.includes('/rest/v1/rpc/identity_metrics')) return Promise.resolve(jsonResponse(world.identity?.status ?? 200, world.identity?.body ?? COUNTS));
+    if (url.includes('/rest/v1/rpc/list_minor_record_tutors')) return Promise.resolve(jsonResponse(world.minorRecord?.status ?? 200, world.minorRecord?.body ?? []));
     if (url.includes('/rest/v1/rpc/onboarding_discovery_metrics')) return Promise.resolve(jsonResponse(world.discovery?.status ?? 200, world.discovery?.body ?? DISCOVERY));
     if (url.includes('/rest/v1/rpc/staff_access_review_status')) return Promise.resolve(jsonResponse(world.reviews?.status ?? 200, world.reviews?.body ?? { cadenceDays: 90, total: 0, stale: 0, reviewedEver: 0, grants: [] }));
     if (url.includes('/rest/v1/rpc/record_staff_access_review')) return Promise.resolve(jsonResponse(world.reviewRpc?.status ?? 200, world.reviewRpc?.body ?? 'recorded'));
@@ -106,7 +109,7 @@ describe('Appendix M Part 1 — GET /api/v1/admin/analytics/identity', () => {
     expect(Object.keys(byId)).toEqual([
       'guest_origin_flag_coverage', 'onboarding_discovery_unconsented', 'flag_persistence_through_upgrade', 'post_callback_age_screen_completion',
       'under13_google_reclassification', 'entry_path_age_capture', 'undated_account_backlog',
-      'verification_status_differentiation', 'staff_grant_justification_completeness', 'revocation_path_utilization',
+      'verification_status_differentiation', 'tutor_adult_age_record', 'staff_grant_justification_completeness', 'revocation_path_utilization',
       'kid_email_change_restriction', 'faq_claim_parity', 'schema_field_utilization',
     ]);
     expect(byId.guest_origin_flag_coverage).toMatchObject({ kind: 'release_gate', target: 1, value: 1, status: 'met' });
@@ -148,7 +151,26 @@ describe('Appendix M Part 1 — GET /api/v1/admin/analytics/identity', () => {
   it('computes rates from counts and marks an empty population as no data', () => {
     const report = buildIdentityReport({ ...COUNTS, guestOrigin: { requested: 0, flagged: 0, flaggedGuestsCreated: 0 } }, 30, DISCOVERY);
     expect(report.metrics.find((m) => m.id === 'guest_origin_flag_coverage')).toMatchObject({ value: null, status: 'no_data' });
-    expect(report.releaseGate).toMatchObject({ total: 11, noData: 1 });
+    expect(report.releaseGate).toMatchObject({ total: 12, noData: 1 });
+  });
+
+  it('A.2/A.5: misses the Tutor age-record gate while a Tutor holds a minor age record, and names no account', async () => {
+    stub({ minorRecord: { status: 200, body: [{ user_id: OTHER_ID }] } });
+    const res = await request(createApp()).get('/api/v1/admin/analytics/identity').set('Authorization', auth());
+    expect(res.status).toBe(200);
+    const gate = (res.body.data.metrics as { id: string }[]).find((m) => m.id === 'tutor_adult_age_record');
+    expect(gate).toMatchObject({ kind: 'release_gate', part: '1.2', numerator: 4, denominator: 5, status: 'missed', detail: { minorRecord: 1 } });
+    expect(JSON.stringify(res.body.data)).not.toContain(OTHER_ID);
+    stub();
+    const clean = await request(createApp()).get('/api/v1/admin/analytics/identity').set('Authorization', auth());
+    expect((clean.body.data.metrics as { id: string }[]).find((m) => m.id === 'tutor_adult_age_record')).toMatchObject({ value: 1, status: 'met' });
+  });
+
+  it('A.2/A.5: answers 502, never "no minor Tutors", when the age-record list is unreadable or malformed', async () => {
+    stub({ minorRecord: { status: 500, body: null } });
+    expect((await request(createApp()).get('/api/v1/admin/analytics/identity').set('Authorization', auth())).status).toBe(502);
+    stub({ minorRecord: { status: 200, body: [{ user_id: 'not-a-uuid' }] } });
+    expect((await request(createApp()).get('/api/v1/admin/analytics/identity').set('Authorization', auth())).status).toBe(502);
   });
 
   it('misses the A.2 target when one flagged account has a stored discovery answer', () => {

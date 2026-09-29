@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
-import { jsonResponse, mintToken } from './helpers.js';
+import { admissionStubResponse, jsonResponse, mintToken } from './helpers.js';
 
 /*
  * S07.2 — D.3 (OD-3 Option B) at the Core boundary. Populations: an eligible
@@ -65,6 +65,8 @@ function stub(opts: Opts = {}) {
   const calls: Call[] = [];
   vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
+    const admission = admissionStubResponse(url);
+    if (admission) return Promise.resolve(admission);
     const method = init?.method ?? 'GET';
     calls.push({ url, method, body: init?.body ? JSON.parse(String(init.body)) as unknown : undefined });
     const rpc = url.match(/\/rest\/v1\/rpc\/([a-z_]+)/)?.[1];

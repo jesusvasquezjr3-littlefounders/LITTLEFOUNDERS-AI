@@ -18,6 +18,9 @@ import { IdDocumentField } from './IdDocumentField';
  *     screen offers the support address and no form;
  *   - a child account cannot verify as an adult (Core answers FORBIDDEN): the
  *     screen says who can, and offers no retry that could never succeed;
+ *   - an account whose own age record is under 18 (AGE_RECORD_MINOR, F3):
+ *     no form; the way out is the staff-reviewed age correction in Settings,
+ *     or a person when the record cannot be corrected there;
  *   - the steps are explained before the form opens, and the privacy promise
  *     (the photo is checked in memory and never kept) comes first on the form;
  *   - no document-type field (A.5: a declaration that cannot be checked against
@@ -37,14 +40,15 @@ export type VerifyView =
   | { kind: 'status-error'; retrying: boolean }
   | { kind: 'revoked' }
   | { kind: 'ineligible' }
+  | { kind: 'minor' }
   | { kind: 'verified' }
   | { kind: 'intro' }
     /** `failedChecks`: null until Core returns a verdict; then the checks it reported as failed (possibly none named). */
   | { kind: 'form'; pending: boolean; errorCode: string | null; failedChecks: readonly VerificationCheck[] | null }
   | { kind: 'success' };
 
-export function VerifyParentScreen({ locale, view, homeHref, familyHref, onRetryStatus, onStart, onSubmit, onNavigate }: {
-  locale: Locale; view: VerifyView; homeHref: string; familyHref: string;
+export function VerifyParentScreen({ locale, view, homeHref, familyHref, settingsHref = '/profile/settings', onRetryStatus, onStart, onSubmit, onNavigate }: {
+  locale: Locale; view: VerifyView; homeHref: string; familyHref: string; settingsHref?: string;
   onRetryStatus: () => void; onStart: () => void; onSubmit: (values: VerifyValues) => void; onNavigate?: Navigate;
 }) {
   const copy = identityCopy(locale);
@@ -68,6 +72,11 @@ export function VerifyParentScreen({ locale, view, homeHref, familyHref, onRetry
       </div>;
     case 'revoked':
       return <AuthOutcome screen="verify-revoked" title={v.revokedTitle} lead={<p className="lf-auth-lead" data-copy-role="body">{v.revokedBody}</p>}>
+        <p className="lf-auth-switch">{support}</p>
+      </AuthOutcome>;
+    case 'minor':
+      return <AuthOutcome screen="verify-minor" title={v.minorTitle} lead={<p className="lf-auth-lead" data-copy-role="body">{v.minorBody}</p>}>
+        <AuthSwitch label={v.openSettings} href={settingsHref} onNavigate={onNavigate} />
         <p className="lf-auth-switch">{support}</p>
       </AuthOutcome>;
     case 'ineligible':

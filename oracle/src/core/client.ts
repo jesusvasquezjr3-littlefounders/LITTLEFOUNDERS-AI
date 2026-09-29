@@ -272,6 +272,13 @@ const Envelope = <T extends z.ZodTypeAny>(inner: T) =>
     error: z.object({ code: z.string(), message: z.string() }).nullable(),
   });
 
+/** A non-2xx answer from Core; the status lets a caller tell "Core predates this route" (404) from an outage. */
+class CoreStatusError extends Error {
+  constructor(path: string, readonly status: number) {
+    super(`core ${path} responded ${status}`);
+  }
+}
+
 async function coreFetch(path: string, init: RequestInit = {}): Promise<unknown> {
   const config = getConfig();
   const response = await withTimeout(
@@ -286,7 +293,7 @@ async function coreFetch(path: string, init: RequestInit = {}): Promise<unknown>
     config.CORE_TIMEOUT_MS,
     `core ${path}`,
   );
-  if (!response.ok) throw new Error(`core ${path} responded ${response.status}`);
+  if (!response.ok) throw new CoreStatusError(path, response.status);
   return response.json();
 }
 
@@ -978,6 +985,27 @@ export async function recallOwnHistory(
     return parsed.success && parsed.data.data !== null ? parsed.data.data.excerpts : [];
   } catch {
     return [];
+  }
+}
+
+/**
+ * A.1 (FAQ 'cancelTutor': paused at once), F3-identity-site finish: whether
+ * Core still admits this learner's account. 'suspended' only for a kid-role
+ * account whose last verified Tutor link is gone. 'unsupported' when Core
+ * answers 404 (a Core deployed before the route; the pause is still enforced
+ * at Core's door and on every Core route); 'unavailable' for anything else
+ * that is not a clean answer.
+ */
+export type AccountAdmission = 'active' | 'suspended' | 'unsupported' | 'unavailable';
+
+export async function checkAccountAdmission(userId: string): Promise<AccountAdmission> {
+  try {
+    const body = await coreFetch(`/tutor/internal/admission/${encodeURIComponent(userId)}`);
+    const parsed = Envelope(z.object({ active: z.boolean() })).safeParse(body);
+    if (!parsed.success || parsed.data.error || !parsed.data.data) return 'unavailable';
+    return parsed.data.data.active ? 'active' : 'suspended';
+  } catch (error) {
+    return error instanceof CoreStatusError && error.status === 404 ? 'unsupported' : 'unavailable';
   }
 }
 

@@ -10,7 +10,7 @@ import {
 import { COACHING_REFLECTION_WINDOW_MINUTES, COACHING_TIPS, REFLECTIONS, reviewedTipIds } from '../services/parentCoaching.js';
 import { MONEY_BRIDGE_MIN_AGE } from '../services/moneyBridge.js';
 import { RESEARCH_DISCLOSURE_VERSION } from '../services/familyResearch.js';
-import { jsonResponse, mintToken } from './helpers.js';
+import { admissionStubResponse, jsonResponse, mintToken } from './helpers.js';
 
 /*
  * S07.7 at the Core boundary.
@@ -77,6 +77,8 @@ function stub(rpc: Record<string, Reply | ((body: Record<string, unknown>) => Re
   const calls: Call[] = [];
   vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
+    const admission = admissionStubResponse(url);
+    if (admission) return Promise.resolve(admission);
     const method = init?.method ?? 'GET';
     const body = init?.body ? JSON.parse(String(init.body)) as Record<string, unknown> : undefined;
     calls.push({ url, method, body });

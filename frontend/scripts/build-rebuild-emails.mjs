@@ -86,6 +86,9 @@ function localized(copy, pick) {
     const value = pick(copy[locale]);
     if (typeof value !== 'string' || !value) throw new Error(`Missing email copy for ${locale}`);
     if (value.includes('{{') || value.includes('}}')) throw new Error(`Email copy may not contain template syntax: ${value}`);
+    // Bible 06 section 5 rule 7: no exclamation marks in parent, staff or error copy, and every
+    // account email reaches adults and parents. `--check` (spec:check) runs this too.
+    if (/[!¡]/u.test(value)) throw new Error(`Email copy may not contain an exclamation mark (06 section 5 rule 7): ${value}`);
     return escape(value);
   });
   return `{{ if eq $l "es-MX" }}${es}{{ else if eq $l "pt-BR" }}${pt}{{ else }}${en}{{ end }}`;

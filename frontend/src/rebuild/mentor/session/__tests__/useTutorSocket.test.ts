@@ -315,3 +315,44 @@ describe('GAP-FIX-R2: a turn\'s reply chips', () => {
     expect(result.current.turn?.replies).toEqual([]);
   });
 });
+
+/*
+ * A.1 (F3-identity-site): Oracle ends a live session the moment Core says the
+ * child's account is paused. The hook raises the same window event Core's
+ * ACCOUNT_SUSPENDED answer raises everywhere else, so the shell drops the
+ * session and shows the paused screen instead of a generic error.
+ */
+describe('a paused account', () => {
+  it('announces ACCOUNT_SUSPENDED from the socket with the shared event, and nothing for other errors', async () => {
+    // lib/api.test.ts pins this copy equal to the shell's own event name.
+    const { ACCOUNT_SUSPENDED_EVENT } = await import('../coreApi');
+    const heard = vi.fn();
+    window.addEventListener(ACCOUNT_SUSPENDED_EVENT, heard);
+    renderHook(() => useTutorSocket('ws://oracle.test/ws/tutor?token=abc'));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    act(() => {
+      FakeSocket.last?.onmessage?.({ data: JSON.stringify({ type: 'error', code: 'SERVICE_DEGRADED', message: 'x' }) });
+    });
+    expect(heard).not.toHaveBeenCalled();
+    act(() => {
+      FakeSocket.last?.onmessage?.({ data: JSON.stringify({ type: 'error', code: 'ACCOUNT_SUSPENDED', message: 'paused' }) });
+    });
+    expect(heard).toHaveBeenCalledTimes(1);
+    window.removeEventListener(ACCOUNT_SUSPENDED_EVENT, heard);
+  });
+
+  it('announces it from a Mentor Core call too', async () => {
+    const { api, ACCOUNT_SUSPENDED_EVENT } = await import('../coreApi');
+    const heard = vi.fn();
+    window.addEventListener(ACCOUNT_SUSPENDED_EVENT, heard);
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(new Response(JSON.stringify({
+      data: null, error: { code: 'ACCOUNT_SUSPENDED', message: 'paused' },
+    }), { status: 403 }))));
+    const result = await api('/tutor/sessions', { method: 'POST', body: {} });
+    expect(result.error?.code).toBe('ACCOUNT_SUSPENDED');
+    expect(heard).toHaveBeenCalledTimes(1);
+    window.removeEventListener(ACCOUNT_SUSPENDED_EVENT, heard);
+  });
+});

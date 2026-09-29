@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { randomUUID } from 'node:crypto';
 import { createApp } from '../app.js';
-import { jsonResponse, mintToken } from './helpers.js';
+import { admissionStubResponse, jsonResponse, mintToken } from './helpers.js';
 import { computeNextRunAt } from '../routes/banking.js';
 
 /*
@@ -57,6 +57,8 @@ function stub(opts: StubOptions = {}) {
     'fetch',
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
+      const admission = admissionStubResponse(url);
+      if (admission) return Promise.resolve(admission);
       const method = init?.method ?? 'GET';
 
       if (url.includes('/rest/v1/user_roles?user_id=eq.') && method === 'GET') {

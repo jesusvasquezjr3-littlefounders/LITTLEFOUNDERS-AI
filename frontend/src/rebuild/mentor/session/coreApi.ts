@@ -9,6 +9,18 @@
 
 export const BASE_URL: string = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:4000';
 
+/**
+ * A.1 (F3-identity-site): the same window event `lib/api.ts` dispatches when
+ * Core answers ACCOUNT_SUSPENDED (a child whose last verified Tutor link is
+ * gone). AuthContext listens for it, drops the session and shows the paused
+ * screen. Kept as its own copy for the reason above; a test pins the two equal.
+ */
+export const ACCOUNT_SUSPENDED_EVENT = 'lf:account-suspended';
+
+export function announceAccountSuspended(): void {
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event(ACCOUNT_SUSPENDED_EVENT));
+}
+
 export interface ApiError {
   code: string;
   message: string;
@@ -58,6 +70,7 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<Ap
     if (body.data === null && error && typeof error === 'object'
       && 'code' in error && typeof error.code === 'string'
       && 'message' in error && typeof error.message === 'string') {
+      if (error.code === 'ACCOUNT_SUSPENDED') announceAccountSuspended();
       return { data: null, error: error as ApiError };
     }
   } else if (res.ok && body.data !== null && body.data !== undefined) {

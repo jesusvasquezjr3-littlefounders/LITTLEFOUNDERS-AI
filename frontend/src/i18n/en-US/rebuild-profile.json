@@ -15,7 +15,11 @@
     "saving": "Saving…",
     "unavailable": "We could not load your choice. Try again.",
     "failed": "This change was not saved. Try again.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "choose": "It stays off until you choose. Settings can change it later.",
+    "keepOff": "Keep it off",
+    "turnOn": "Turn it on",
+    "later": "Decide later"
   },
   "privateProfile": {
     "title": "This profile is private",

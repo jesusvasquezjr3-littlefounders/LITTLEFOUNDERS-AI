@@ -27,6 +27,9 @@ interface StubOptions {
   calls?: string[];
   /** Bodies of every service-role write, so a test can assert what is stored. */
   writes?: { url: string; body: unknown }[];
+  /** F3-identity-site: the account's age record (default: a declared adult). `null` band = never screened; 'unreadable' = the read fails. */
+  ageBand?: 'under_13' | '13_to_17' | 'adult' | null | 'unreadable';
+  origin?: boolean;
 }
 
 function stubBackends(opts: StubOptions = {}) {
@@ -35,6 +38,12 @@ function stubBackends(opts: StubOptions = {}) {
     'fetch',
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
+      if (url.includes('/account_age_declarations?')) {
+        if (opts.ageBand === 'unreadable') return Promise.resolve(jsonResponse(500, { message: 'down' }));
+        const band = opts.ageBand === undefined ? 'adult' : opts.ageBand;
+        return Promise.resolve(jsonResponse(200, band === null ? [] : [{ declared_age_band: band, declared_birth_month: null, promoted_to_adult_at: null }]));
+      }
+      if (url.includes('/account_safety_origins?')) return Promise.resolve(jsonResponse(200, opts.origin ? [{ under13_origin: true }] : []));
       if (url.includes('/parent_verifications?')) return Promise.resolve(jsonResponse(200, opts.verificationRows !== undefined ? opts.verificationRows : opts.currentVerified ? [{ status: 'verified', method: 'local-ocr', birth_date: '1988-02-14' }] : []));
       calls.push(`${init?.method ?? 'GET'} ${url}`);
       if (url.startsWith('http://guardian.test/')) {
@@ -188,5 +197,52 @@ describe('POST /api/v1/verification/parent', () => {
     expect(stored.length).toBe(1);
     expect(Object.keys(stored[0]!.body as Record<string, unknown>)).not.toContain('address');
     expect(JSON.stringify(writes)).not.toContain('Siempre Viva');
+  });
+});
+
+describe('F3-identity-site: a self-typed ID check never outranks a minor age record (A.2, A.5, E.4, OD-3)', () => {
+  const populations: [string, StubOptions, boolean][] = [
+    ['a flagged age-refusal guest', { existingRoles: ['universal'], ageBand: null, origin: true }, true],
+    ['an upgraded flagged account', { existingRoles: ['universal'], ageBand: 'adult', origin: true }, false],
+    ['a declared under-13 account', { existingRoles: ['universal'], ageBand: 'under_13' }, false],
+    ['a declared teen', { existingRoles: ['universal'], ageBand: '13_to_17' }, false],
+  ];
+
+  it.each(populations)('refuses %s with AGE_RECORD_MINOR before Guardian, and grants no parent role', async (_name, opts, guest) => {
+    const writes: { url: string; body: unknown }[] = [];
+    const calls = stubBackends({ ...opts, writes });
+    const token = mintToken({ sub: randomUUID(), ...(guest ? { is_anonymous: true } : {}) });
+    const read = await request(createApp()).get('/api/v1/verification/parent').set('Authorization', `Bearer ${token}`);
+    expect(read.status).toBe(403);
+    expect(read.body.error.code).toBe('AGE_RECORD_MINOR');
+    const res = await post(token);
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('AGE_RECORD_MINOR');
+    expect(calls.some((c) => c.includes('guardian.test'))).toBe(false);
+    expect(writes).toEqual([]);
+    expect(calls.some((c) => c.startsWith('POST ') && (c.includes('/user_roles') || c.includes('/parent_verifications')))).toBe(false);
+  });
+
+  it('asks an unscreened account for its age first (AGE_SCREEN_REQUIRED), before Guardian', async () => {
+    const calls = stubBackends({ existingRoles: ['universal'], ageBand: null });
+    const res = await post(mintToken({ sub: randomUUID() }));
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('AGE_SCREEN_REQUIRED');
+    expect(calls.some((c) => c.includes('guardian.test'))).toBe(false);
+  });
+
+  it('fails closed when the age record cannot be read', async () => {
+    const calls = stubBackends({ existingRoles: ['universal'], ageBand: 'unreadable' });
+    const res = await post(mintToken({ sub: randomUUID() }));
+    expect(res.status).toBe(502);
+    expect(calls.some((c) => c.includes('guardian.test'))).toBe(false);
+  });
+
+  it('still verifies a declared adult', async () => {
+    const calls = stubBackends({ existingRoles: ['universal'], ageBand: 'adult' });
+    const res = await post(mintToken({ sub: randomUUID() }));
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ verified: true, role: 'parent' });
+    expect(calls.some((c) => c.includes('guardian.test'))).toBe(true);
   });
 });

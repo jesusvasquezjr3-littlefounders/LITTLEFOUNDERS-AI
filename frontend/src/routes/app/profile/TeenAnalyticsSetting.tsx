@@ -1,90 +1,33 @@
-import { ANALYTICS_POLICY_SIGNAL, announceAnalyticsPolicyChange } from '@/lib/analyticsPolicySignal';
-import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { useTheme } from '@/theme/useTheme';
-import { api } from '@/lib/api';
-import { configureInsights } from '@/lib/insights';
 import { AnalyticsChoice } from '@/rebuild/privacy/AnalyticsChoice';
 import en from '@/i18n/en-US/rebuild-profile.json';
 import es from '@/i18n/es-MX/rebuild-profile.json';
 import pt from '@/i18n/pt-BR/rebuild-profile.json';
+import { useTeenAnalyticsPreference } from '@/app-shell/useTeenAnalyticsPreference';
 
-// `dialogueExperiment` (M-12, OD-26): this toggle is also the consent for the Mentor's hint-style test; absent = not said.
-interface Preference { canManage: boolean; enabled: boolean; disclosed: boolean; dialogueExperiment?: boolean }
-const valid = (value: Preference | null): value is Preference => !!value && typeof value.canManage === 'boolean' && typeof value.enabled === 'boolean' && typeof value.disclosed === 'boolean';
+/** The copy of the analytics choice in the shell's language. */
+export function analyticsChoiceCopy(locale: string) {
+  return (locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en).analyticsChoice;
+}
+
 export function TeenAnalyticsSetting() {
   const { session, isGuest } = useAuth();
   return !session || isGuest ? null : <AccountAnalyticsSetting key={session.user.id} />;
 }
+/*
+ * The Settings card. Until a choice is on file (Core's `disclosed`) it offers
+ * the same two explicit answers as the first-session step, never the switch:
+ * a flip from nothing could only record "on" (F3-identity-site).
+ */
 function AccountAnalyticsSetting() {
-  const { getToken, refreshMe } = useAuth();
   const { i18n } = useTranslation(); const { isDark } = useTheme();
-  const [preference, setPreference] = useState<Preference | null>(null);
-  const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<'read' | 'write' | null>(null);
-  const [attempt, setAttempt] = useState(0); const generation = useRef(0);
-  const writePending = useRef(false); const refreshRequested = useRef(false);
-  useEffect(() => {
-    const invalidate = (event: StorageEvent) => {
-      if (event.key !== ANALYTICS_POLICY_SIGNAL) return;
-      if (writePending.current) refreshRequested.current = true;
-      else setAttempt(value => value + 1);
-    };
-    window.addEventListener('storage', invalidate);
-    return () => window.removeEventListener('storage', invalidate);
-  }, []);
-  useEffect(() => {
-    const current = ++generation.current; setLoading(true); setSaving(false); setError(null);
-    void (async () => {
-      const token = await getToken();
-      if (current !== generation.current) return;
-      const result = token ? await api<Preference>('/auth/analytics-preference', { token }) : null;
-      if (current !== generation.current) return;
-      setLoading(false);
-      if (!valid(result?.data ?? null)) { setError('read'); return; }
-      setPreference(result!.data);
-    })();
-    return () => { generation.current += 1; };
-  }, [getToken, attempt]);
-  const toggle = async () => {
-    if (!preference?.canManage || loading || writePending.current) return;
-    const current = generation.current; const enabled = !preference.enabled;
-    writePending.current = true;
-    setSaving(true); setError(null);
-    try {
-      const token = await getToken();
-      if (current !== generation.current) return;
-      const result = token ? await api<Preference>('/auth/analytics-preference', { token, method: 'PUT', body: { enabled } }) : null;
-      if (current !== generation.current) return;
-      // A signal during the write cannot cancel a mutation already sent to Core.
-      // Read again after it settles instead of painting an earlier GET response.
-      if (refreshRequested.current) {
-        announceAnalyticsPolicyChange();
-        await refreshMe();
-        return;
-      }
-      if (!valid(result?.data ?? null) || !result!.data?.canManage || result!.data.enabled !== enabled || !result!.data.disclosed) {
-        setError('write'); return;
-      }
-      // Clear queued and token-waiting optional events before reflecting revocation.
-      if (!enabled) configureInsights({ enabled: false, getToken });
-      setPreference(result!.data);
-      announceAnalyticsPolicyChange();
-      await refreshMe();
-    } finally {
-      writePending.current = false;
-      if (current === generation.current) {
-        if (refreshRequested.current) {
-          refreshRequested.current = false;
-          setAttempt(value => value + 1);
-        } else setSaving(false);
-      }
-    }
-  };
+  const { preference, loading, saving, error, choose, toggle, retry } = useTeenAnalyticsPreference();
   if (!loading && !error && preference?.canManage === false) return null;
   const locale = i18n.resolvedLanguage ?? 'en-US';
-  return <AnalyticsChoice copy={(locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en).analyticsChoice}
+  return <AnalyticsChoice copy={analyticsChoiceCopy(locale)}
     locale={locale} dark={isDark} enabled={preference?.enabled ?? false} experiment={preference?.dialogueExperiment === true} loading={loading} saving={saving} error={error}
-    onToggle={() => void toggle()} onRetry={() => setAttempt(value => value + 1)} />;
+    decided={preference?.disclosed ?? true} onChoose={(enabled) => void choose(enabled)}
+    onToggle={() => void toggle()} onRetry={retry} />;
 }

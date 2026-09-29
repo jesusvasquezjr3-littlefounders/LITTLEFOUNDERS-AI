@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
-import { mintToken } from './helpers.js';
+import { admissionStubResponse, mintToken } from './helpers.js';
 import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
 import { COURSE_ID, COURSE_SLUG, LESSON_1_ID, LESSON_2_ID, TOPIC_ID, makeDb } from './learnFixtures.js';
 
@@ -341,9 +341,20 @@ describe('GET /api/v1/learn/courses', () => {
   });
 
   it('502s when PostgREST is unreachable', async () => {
-    vi.stubGlobal('fetch', vi.fn(() => Promise.reject(new Error('down'))));
+    // The pause check (A.1) answers first; every read after it is down.
+    vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL) => {
+      const admission = admissionStubResponse(String(input));
+      return admission ? Promise.resolve(admission) : Promise.reject(new Error('down'));
+    }));
     const res = await auth(request(createApp()).get('/api/v1/learn/courses'));
     expect(res.status).toBe(502);
+  });
+
+  it('503s, never a pass, when the pause check itself cannot be read (A.1)', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.reject(new Error('down'))));
+    const res = await auth(request(createApp()).get('/api/v1/learn/courses'));
+    expect(res.status).toBe(503);
+    expect(res.body.error.code).toBe('ACCOUNT_STATE_UNAVAILABLE');
   });
 
   /*

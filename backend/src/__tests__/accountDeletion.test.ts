@@ -35,7 +35,10 @@ interface Fake {
   calls: string[];
   kidLinks: Map<string, string[]>; // kid -> verified guardians
   openCase: Set<string>;
-  fail: Partial<Record<'oracle' | 'core' | 'depot' | 'dataintel' | 'roles' | 'deletionRead' | 'links', boolean>>;
+  fail: Partial<Record<'oracle' | 'core' | 'depot' | 'dataintel' | 'roles' | 'deletionRead' | 'links' | 'suspensions', boolean>>;
+  // A.1 (F3-identity-site): kid -> profiles.suspended_at.
+  suspended: Map<string, string>;
+  suspensionArgs: Record<string, unknown>[];
   // D-14 (b): what the database trigger writes for a linked teen's own request (request id, Tutor).
   notices: { request: string; guardian: string }[];
   depotPaths: string[];
@@ -148,6 +151,20 @@ function install(): void {
       if (Array.isArray(body.p_depot_paths)) row.depot_paths = body.p_depot_paths as string[];
       return jsonResponse(200, true);
     }
+    if (url.endsWith('/rest/v1/rpc/list_expired_kid_suspensions')) {
+      // The SQL filter (window, kid role, no verified link, no open request) is
+      // proven on PostgreSQL by verify-account-erasure-postgres.py. This fake
+      // applies the window and the open request only, so the tests below can
+      // prove that Core re-reads the links before it erases anything.
+      fake.suspensionArgs.push(body);
+      if (fake.fail.suspensions) return jsonResponse(500, { message: 'db down' });
+      const days = Number(body.p_older_than_days);
+      return jsonResponse(200, [...fake.suspended.entries()]
+        .filter(([kid, at]) => fake.accounts.has(kid) && Date.parse(at) <= Date.now() - days * 86_400_000
+          && !fake.rows.some((r) => r.subject_id === kid && ['pending', 'processing', 'held'].includes(r.status)))
+        .slice(0, Number(body.p_limit))
+        .map(([kid, at]) => ({ user_id: kid, suspended_at: at })));
+    }
     if (url.endsWith('/rest/v1/rpc/erase_account_data')) {
       const row = fake.rows.find((r) => r.id === body.p_request);
       if (!row || row.status !== 'processing') return p0001('ERASURE_NOT_CLAIMED');
@@ -194,7 +211,10 @@ function install(): void {
 }
 
 beforeEach(() => {
-  fake = { accounts: new Map(), rows: [], audits: [], calls: [], kidLinks: new Map(), openCase: new Set(), fail: {}, depotPaths: [], revoked: [], notices: [] };
+  fake = {
+    accounts: new Map(), rows: [], audits: [], calls: [], kidLinks: new Map(), openCase: new Set(), fail: {}, depotPaths: [], revoked: [], notices: [],
+    suspended: new Map(), suspensionArgs: [],
+  };
   install();
 });
 afterEach(() => {
@@ -561,5 +581,64 @@ describe('the daily sweep (POST /api/v1/internal/account-deletions/run)', () => 
   it('an unreadable request list is a 502, never "nothing to do"', async () => {
     fake.fail.deletionRead = true;
     expect((await sweep()).status).toBe(502);
+  });
+
+  describe('A.1: a child paused 90 days is erased without signing in again (F3-identity-site)', () => {
+    const daysAgo = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString();
+
+    it('erases an expired suspension through the E.6 lifecycle, audited, with no session involved', async () => {
+      const kid = person({ roles: ['kid'], band: null });
+      fake.suspended.set(kid, daysAgo(91));
+      const res = await sweep();
+      expect(res.status).toBe(200);
+      expect(res.body.data).toMatchObject({ suspensionsExpired: 1, suspensionsErased: 1, suspensionsKept: 0 });
+      expect(fake.accounts.has(kid)).toBe(false);
+      expect(fake.rows.find((r) => r.subject_id === kid)).toMatchObject({ population: 'kid', initiated_by: 'suspension_expiry', status: 'completed' });
+      expect(fake.suspensionArgs[0]).toMatchObject({ p_older_than_days: 90 });
+      const ran = fake.audits.find((a) => a.action === 'account_deletions.sweep_ran');
+      expect(ran?.detail).toMatchObject({ suspensionsExpired: 1, suspensionsErased: 1 });
+      expect(fake.calls.some((c) => c.includes('/auth/v1/token'))).toBe(false);
+    });
+
+    it('keeps a child paused less than 90 days', async () => {
+      const kid = person({ roles: ['kid'], band: null });
+      fake.suspended.set(kid, daysAgo(89));
+      const res = await sweep();
+      expect(res.body.data).toMatchObject({ suspensionsExpired: 0, suspensionsErased: 0 });
+      expect(fake.accounts.has(kid)).toBe(true);
+    });
+
+    it('keeps a child a Tutor linked again, even if the candidate list still named it', async () => {
+      const kid = person({ roles: ['kid'], band: null });
+      fake.suspended.set(kid, daysAgo(120));
+      fake.kidLinks.set(kid, [randomUUID()]);
+      const res = await sweep();
+      expect(res.body.data).toMatchObject({ suspensionsExpired: 1, suspensionsErased: 0, suspensionsKept: 1 });
+      expect(fake.accounts.has(kid)).toBe(true);
+      expect(fake.calls.some((c) => c.includes('rpc/request_account_deletion'))).toBe(false);
+    });
+
+    it('never erases when the link set cannot be read', async () => {
+      const kid = person({ roles: ['kid'], band: null });
+      fake.suspended.set(kid, daysAgo(120));
+      fake.fail.links = true;
+      const res = await sweep();
+      expect(res.body.data).toMatchObject({ suspensionsExpired: 1, suspensionsErased: 0, suspensionsKept: 1 });
+      expect(fake.accounts.has(kid)).toBe(true);
+      expect(fake.calls.some((c) => c.includes('rpc/request_account_deletion') || c.includes('rpc/erase_account_data'))).toBe(false);
+    });
+
+    it('an unreadable candidate list still runs the due requests, then answers 502 and records no suspension coverage', async () => {
+      const waiting = person({ roles: ['universal'], band: 'adult', email: 'w2@example.com' });
+      await del(as(waiting, { amr: fresh() }));
+      fake.rows[0]!.scheduled_for = new Date(Date.now() - 1000).toISOString();
+      fake.fail.suspensions = true;
+      const res = await sweep();
+      expect(res.status).toBe(502);
+      expect(fake.accounts.has(waiting)).toBe(false);
+      const ran = fake.audits.find((a) => a.action === 'account_deletions.sweep_ran');
+      expect(ran?.detail).toMatchObject({ suspensionsUnreadable: true, completed: 1 });
+      expect(ran?.detail).not.toHaveProperty('suspensionsExpired');
+    });
   });
 });

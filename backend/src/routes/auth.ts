@@ -12,6 +12,7 @@ import * as gotrue from '../services/gotrue.js';
 import { markUnder13Origin } from '../services/ageOrigin.js';
 import { birthMonthToKeep, declaredBandForDate, readAgeScreen, recordAgeScreen } from '../services/ageScreen.js';
 import { enforceKidSuspensionAtAdmission } from '../services/guardianLifecycle.js';
+import { ACCOUNT_SUSPENDED_MESSAGE, answerAdmission, readAccountAdmission } from '../middleware/accountAdmission.js';
 import { readOpenDeletion } from '../services/accountDeletion.js';
 import { attributeSignup, hasActiveAnalyticsConsent } from '../services/insights.js';
 import { getOnboardingResponse, getOwnAdminPermissions, getOwnAvatar, getOwnProfile, getOwnRoles, insertAuditLog } from '../services/supabaseRest.js';
@@ -171,6 +172,27 @@ function sessionPayload(s: Partial<gotrue.GotrueSession>) {
         user: s.user ? { id: s.user.id, email: s.user.email, metadata: s.user.user_metadata ?? {} } : null,
       }
     : null;
+}
+
+/**
+ * A.1 (F3-identity-site): a session GoTrue has just issued (sign-in or
+ * refresh) reaches the client only for an active account. A paused child's
+ * sessions are all revoked; when the marker cannot be read, only the new
+ * session ends and the caller retries (fail closed, never a pass).
+ */
+async function admitNewSession(res: Parameters<typeof fail>[0], session: Partial<gotrue.GotrueSession>): Promise<boolean> {
+  const userId = session.user?.id;
+  if (!userId || !session.access_token) return true;
+  const admission = await readAccountAdmission(userId);
+  if (admission === 'active') return true;
+  if (admission === 'suspended') {
+    const revoked = await gotrue.adminRevokeUserSessions(userId);
+    if (revoked.error) console.error(`[backend] session revocation FAILED for paused account user=${userId} at sign-in`);
+  } else {
+    await gotrue.signOut(session.access_token, 'local');
+  }
+  answerAdmission(res, admission);
+  return false;
 }
 
 export function authRouter(): Router {
@@ -364,9 +386,20 @@ export function authRouter(): Router {
     const email = identifier.includes('@') ? identifier : kidEmail(identifier.toLowerCase());
     const { data, error } = await gotrue.signInWithPassword(email, parsed.data.password);
     if (error) {
+      /*
+       * A.1 + E.1: GoTrue refuses a paused child's account BEFORE it checks the
+       * password, so its "banned" answer proves nothing about the caller. It
+       * gets the same uniform INVALID_CREDENTIALS as every other failed probe;
+       * naming the pause here would tell anyone holding a username that the
+       * child's Tutor is gone.
+       */
+      if (error.code === 'ACCOUNT_SUSPENDED') return fail(res, 401, 'INVALID_CREDENTIALS', 'Invalid login credentials');
       const status = error.code === 'INVALID_CREDENTIALS' || error.code === 'EMAIL_NOT_CONFIRMED' ? 401 : error.status >= 500 ? 502 : error.status;
       return fail(res, status, error.code, error.message);
     }
+    // The password was right: a paused child (the GoTrue ban missing, e.g. a
+    // stack before the identity_enforcement migration) gets no session.
+    if (!(await admitNewSession(res, data))) return;
     return ok(res, { session: sessionPayload(data) });
   });
 
@@ -374,7 +407,10 @@ export function authRouter(): Router {
     const parsed = RefreshBody.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'refreshToken is required');
     const { data, error } = await gotrue.refreshSession(parsed.data.refreshToken);
+    // A refresh token is the holder's own credential, so the pause may be named.
+    if (error?.code === 'ACCOUNT_SUSPENDED') return fail(res, 403, 'ACCOUNT_SUSPENDED', ACCOUNT_SUSPENDED_MESSAGE);
     if (error) return fail(res, 401, 'UNAUTHORIZED', 'Session expired — sign in again');
+    if (!(await admitNewSession(res, data))) return;
     return ok(res, { session: sessionPayload(data) });
   });
 

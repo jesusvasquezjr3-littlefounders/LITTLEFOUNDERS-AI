@@ -55,6 +55,18 @@ it.each([{ failRead: true }, { failWrite: true }, { staleRead: true }])('does no
 it.each([{ band: 'adult' }, { band: 'under_13' }, { origin: true }, { roles: ['kid', 'universal'] }])('cannot override another population or guardian policy %j', async options => {
   const writes = fixture(options); expect((await auth(request(createApp()).put(route)).send({ enabled: true })).status).toBe(403); expect(writes).toEqual([]);
 });
+// F3-identity-site (H.1, Appendix O 2.2(a)): the first-session step's "Keep it off".
+it('records a first choice of off directly (disclosed, not enabled) and then admits no optional event', async () => {
+  const writes = fixture(); const app = createApp();
+  expect((await auth(request(app).get(route))).body.data).toMatchObject({ disclosed: false, enabled: false });
+  const res = await auth(request(app).put(route)).send({ enabled: false });
+  expect(res.status).toBe(200);
+  expect(res.body.data).toMatchObject({ canManage: true, enabled: false, disclosed: true });
+  expect(writes.filter(w => w.url.includes('/rpc/set_teen_analytics_preference')).map(w => w.body)).toEqual([{ p_user_id: USER, p_enabled: false }]);
+  const ingest = await auth(request(app).post('/api/v1/events')).send({ events: [{ event: 'nav_view', routeClass: 'learn' }] });
+  expect(ingest.status).toBe(202);
+  expect(writes.some(w => w.url.includes('/learning_events'))).toBe(false);
+});
 it('does not let a guest opt into identified analytics', async () => {
   const writes = fixture(); expect((await auth(request(createApp()).put(route), true).send({ enabled: true })).status).toBe(403); expect(writes).toEqual([]);
 });

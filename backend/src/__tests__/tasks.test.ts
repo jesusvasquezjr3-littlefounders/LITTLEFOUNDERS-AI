@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { randomUUID } from 'node:crypto';
 import { createApp } from '../app.js';
-import { jsonResponse, mintToken } from './helpers.js';
+import { admissionStubResponse, jsonResponse, mintToken } from './helpers.js';
 
 /*
  * /api/v1/tasks — FAMILY_HUB.md's earn/allocate/goal/redeem loop.
@@ -81,6 +81,8 @@ function stub(opts: StubOptions = {}) {
     'fetch',
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
+      const admission = admissionStubResponse(url);
+      if (admission) return Promise.resolve(admission);
       const method = init?.method ?? 'GET';
       if (opts.writes && init?.body) {
         opts.writes.push({ url, method, body: JSON.parse(String(init.body)) as unknown });

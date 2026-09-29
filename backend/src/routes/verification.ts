@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, type Response } from 'express';
 import multer from 'multer';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
@@ -12,6 +12,36 @@ import {
 import { getRolesForGate } from '../services/insights.js';
 import { recordParentJourneyEvent } from '../services/parentTimeToValue.js';
 import { readAdultVerificationStatus } from '../services/mentorSafety.js';
+import { readAgeScreen } from '../services/ageScreen.js';
+
+/*
+ * F3-identity-site (A.2, A.5, E.4, OD-3 section 2): an ID check typed and
+ * photographed by the account holder never outranks the account's own age
+ * record. An account whose record says under 13 (the under-13 origin of an
+ * age-refusal guest or an under-13 declaration, which survives an upgrade) or
+ * 13 to 17 cannot become a Tutor here: that would switch off the Mentor's
+ * minor safeguards while every age system still treats the person as a child.
+ * Only the staff-reviewed age correction (POST /account/age-correction) moves
+ * a declared teen; an under-13 record goes to support. The database refuses
+ * the same row (migration identity_enforcement, guard_parent_verification_age).
+ * Fails closed: an unreadable record is a 502, never a pass.
+ */
+async function refuseMinorAgeRecord(res: Response, userId: string): Promise<boolean> {
+  const age = await readAgeScreen(userId);
+  if (!age) {
+    fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the age record');
+    return true;
+  }
+  if (age.required) {
+    fail(res, 403, 'AGE_SCREEN_REQUIRED', 'Answer the age question before verifying');
+    return true;
+  }
+  if (age.protectedOrigin || age.ageBand === 'under_13' || age.ageBand === '13_to_17') {
+    fail(res, 403, 'AGE_RECORD_MINOR', "This account's age record is under 18; only a staff-reviewed correction changes it");
+    return true;
+  }
+  return false;
+}
 
 /*
  * POST /api/v1/verification/parent — the universal → parent (Tutor) upgrade.
@@ -72,6 +102,7 @@ export function verificationRouter(): Router {
     if (!status) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify identity status');
     if (status === 'revoked') return fail(res, 403, 'PARENT_VERIFICATION_REVOKED', 'Revoked verification requires staff review');
     if (status === 'ineligible') return fail(res, 403, 'FORBIDDEN', 'A child account cannot verify as an adult');
+    if (await refuseMinorAgeRecord(res, user.id)) return;
     return ok(res, { verified: status === 'verified' });
   });
 
@@ -87,6 +118,7 @@ export function verificationRouter(): Router {
     const roles = await getRolesForGate(user.id);
     if (!roles) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify identity status');
     if (roles.includes('kid')) return fail(res, 403, 'FORBIDDEN', 'A child account cannot verify as an adult');
+    if (await refuseMinorAgeRecord(res, user.id)) return;
     const status = await readAdultVerificationStatus(user.id, roles);
     if (!status) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify identity status');
     if (status === 'revoked') return fail(res, 403, 'PARENT_VERIFICATION_REVOKED', 'Revoked verification requires staff review');

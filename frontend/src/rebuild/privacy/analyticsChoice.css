@@ -9,3 +9,11 @@
   display: grid;
   gap: .75rem;
 }
+
+/* Inside the first-session sheet (F3-identity-site): the sheet is the surface. */
+.lf-rebuild.lf-analytics-choice.lf-analytics-choice--plain {
+  margin-block-start: 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+}

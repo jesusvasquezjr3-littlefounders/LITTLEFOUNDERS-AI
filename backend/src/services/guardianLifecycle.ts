@@ -14,10 +14,13 @@ import { eraseNow } from './accountDeletion.js';
  *
  * 2. A kid whose last verified guardian link disappears is suspended
  *    immediately and deleted if nothing reactivates it within 90 days. The
- *    suspension marker is written by migration 0110's trigger; the 90-day
- *    deletion is lazy (no scheduler exists in this stack): evaluated at the
- *    kid's own session boundary by `purgeExpiredKidSuspension`, which hard
- *    deletes only when the window has passed AND no verified link exists.
+ *    suspension marker (and, since identity_enforcement, the GoTrue ban) is
+ *    written by migration 0110's trigger. The 90-day deletion runs in two
+ *    places, both through `purgeExpiredKidSuspension`, which hard deletes
+ *    only when the window has passed AND no verified link exists: the daily
+ *    account-deletion sweep (`listExpiredKidSuspensions`, so a child who never
+ *    signs in again is still erased; F3-identity-site) and the kid's own
+ *    session boundary (GET /auth/me).
  */
 
 export const GUARDIAN_INVITE_LIFETIME_MS = 7 * 24 * 60 * 60 * 1000;
@@ -129,6 +132,26 @@ export async function purgeExpiredKidSuspension(userId: string, suspendedAt: str
   // any remaining cleanup is resumed by the daily sweep.
   const erased = await eraseNow({ subjectId: userId, population: 'kid', initiatedBy: 'suspension_expiry', actorId: null });
   return erased !== 'unavailable' && erased !== 'staff' && erased.accountErased ? 'deleted' : 'unknown';
+}
+
+const ExpiredSuspensions = z.array(z.object({
+  user_id: z.string().uuid(),
+  suspended_at: z.string().datetime({ offset: true }),
+}));
+
+/**
+ * The scheduled purge's candidates (migration identity_enforcement): kid-role
+ * accounts paused at least KID_SUSPENSION_DELETE_DAYS ago with no verified
+ * link and no open deletion request. `null` = unreadable, never "none".
+ */
+export async function listExpiredKidSuspensions(limit: number): Promise<{ userId: string; suspendedAt: string }[] | null> {
+  const raw = await serviceRestRaw('/rpc/list_expired_kid_suspensions', {
+    method: 'POST',
+    body: JSON.stringify({ p_older_than_days: KID_SUSPENSION_DELETE_DAYS, p_limit: limit }),
+  });
+  if (!raw.ok) return null;
+  const parsed = ExpiredSuspensions.safeParse(raw.body);
+  return parsed.success ? parsed.data.map((row) => ({ userId: row.user_id, suspendedAt: row.suspended_at })) : null;
 }
 
 /**

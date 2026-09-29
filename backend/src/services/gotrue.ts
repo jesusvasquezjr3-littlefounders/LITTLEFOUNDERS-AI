@@ -45,6 +45,10 @@ function normalizeError(status: number, body: Record<string, unknown>): GotrueEr
   if (lower.includes('already registered') || lower.includes('already been registered')) code = 'EMAIL_IN_USE';
   else if (lower.includes('invalid login credentials') || lower.includes('invalid credentials')) code = 'INVALID_CREDENTIALS';
   else if (lower.includes('not confirmed')) code = 'EMAIL_NOT_CONFIRMED';
+  // A.1 (F3-identity-site): the pause bans a child's account at GoTrue. GoTrue
+  // checks the ban BEFORE the password, so callers must not echo this code to
+  // an unauthenticated sign-in (routes/auth.ts keeps /login uniform, E.1).
+  else if (body.error_code === 'user_banned' || lower.includes('banned')) code = 'ACCOUNT_SUSPENDED';
   else if (status === 429) code = 'RATE_LIMITED';
   else if (status >= 400 && status < 500) code = 'VALIDATION_ERROR';
   return { status, code, message };
@@ -276,8 +280,9 @@ export function refreshSession(refreshToken: string): Promise<GotrueResult<Gotru
   });
 }
 
-export function signOut(accessToken: string): Promise<GotrueResult<Record<string, never>>> {
-  return gotrue('/logout', {
+/** `local` ends only this session; GoTrue's default (`global`) ends every session of the user. */
+export function signOut(accessToken: string, scope?: 'local' | 'global'): Promise<GotrueResult<Record<string, never>>> {
+  return gotrue(scope ? `/logout?scope=${scope}` : '/logout', {
     method: 'POST',
     headers: { ...authHeaders(), Authorization: `Bearer ${accessToken}` },
   });

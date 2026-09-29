@@ -130,6 +130,17 @@ try:
     assert report['teens']['covered'] == 3 and report['teens']['measuredWithoutOptIn'] == 1, report['teens']
     check('a teen measured without an opt-in stays uncovered after recording a choice (a disclosure that gates nothing is not coverage)')
 
+    # F3-identity-site (H.1, Appendix O 2.2(a)): the first-session step's "Keep off"
+    # is the teen's first recorded choice. It writes the version-1 row with
+    # enabled = false, admits no optional event, and makes the teen covered.
+    run(f"SELECT public.set_teen_analytics_preference('{U['teen_none']}', false)")
+    assert run(f"SELECT enabled::text || '/' || disclosure_version FROM teen_analytics_preferences WHERE user_id = '{U['teen_none']}'") == 'false/1'
+    run(f"INSERT INTO learning_events (user_id, role, event) VALUES ('{U['teen_none']}', 'universal', 'page_view')")
+    assert run(f"SELECT count(*) FROM learning_events WHERE user_id = '{U['teen_none']}'") == '0'
+    report = json.loads(run(f"SET ROLE service_role; SELECT public.analytics_disclosure_coverage({WINDOW})").splitlines()[-1])
+    assert report['teens']['covered'] == 4 and report['teens']['optedOut'] == 3, report['teens']
+    check('a first choice of "Keep off" records the version-1 disclosure off, admits no optional event, and counts the teen as covered')
+
     # A guest measured past the gate is counted, never hidden.
     run(f"SET session_replication_role = replica; INSERT INTO learning_events (user_id, role, event) VALUES ('{U['guest']}', 'anon', 'page_view')")
     report = json.loads(run(f"SET ROLE service_role; SELECT public.analytics_disclosure_coverage({WINDOW})").splitlines()[-1])

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { api } from './api';
+import { ACCOUNT_SUSPENDED_EVENT, api } from './api';
+import { ACCOUNT_SUSPENDED_EVENT as MENTOR_ACCOUNT_SUSPENDED_EVENT } from '@/rebuild/mentor/session/coreApi';
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -20,5 +21,28 @@ describe('Core response envelope', () => {
     expect(await api('/tutor')).toEqual(body);
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ data: { courses: [] }, error: null }))));
     expect(await api('/learn/courses')).toEqual({ data: { courses: [] }, error: null });
+  });
+});
+
+describe('A.1: a paused child hears it on any route (F3-identity-site)', () => {
+  it('announces ACCOUNT_SUSPENDED from any Core route, and only that code', async () => {
+    const heard = vi.fn();
+    window.addEventListener(ACCOUNT_SUSPENDED_EVENT, heard);
+    try {
+      const paused = { data: null, error: { code: 'ACCOUNT_SUSPENDED', message: 'paused' } };
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify(paused), { status: 403 })));
+      expect((await api('/learn/courses')).error?.code).toBe('ACCOUNT_SUSPENDED');
+      expect(heard).toHaveBeenCalledTimes(1);
+      const other = { data: null, error: { code: 'FORBIDDEN', message: 'no' } };
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify(other), { status: 403 })));
+      await api('/wallet/access');
+      expect(heard).toHaveBeenCalledTimes(1);
+    } finally {
+      window.removeEventListener(ACCOUNT_SUSPENDED_EVENT, heard);
+    }
+  });
+
+  it('shares one event name with the Mentor session client, which keeps its own copy (Bible 02 rule 23)', () => {
+    expect(MENTOR_ACCOUNT_SUSPENDED_EVENT).toBe(ACCOUNT_SUSPENDED_EVENT);
   });
 });

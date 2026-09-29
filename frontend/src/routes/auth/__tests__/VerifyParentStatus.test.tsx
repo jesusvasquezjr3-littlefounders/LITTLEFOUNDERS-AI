@@ -42,6 +42,17 @@ it('tells a child account who can verify, with no retry that could never succeed
   expect(screen.queryByRole('button', { name: v.ready })).not.toBeInTheDocument();
 });
 
+it('sends an account whose age record is under 18 to the age review, with no form (F3-identity-site)', async () => {
+  mocks.api.mockResolvedValue({ data: null, error: { code: 'AGE_RECORD_MINOR', message: 'Age record is a minor' } });
+  mount();
+  await screen.findByRole('heading', { level: 1, name: v.minorTitle });
+  expect(screen.getByText(v.minorBody)).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: v.openSettings })).toHaveAttribute('href', '/profile/settings');
+  expect(screen.getByRole('link', { name: v.supportEmail })).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: v.ready })).not.toBeInTheDocument();
+  expect(document.querySelector('input[type=file]')).toBeNull();
+});
+
 it('does not display an already-verified claim based on the parent role', async () => {
   mocks.api.mockResolvedValue({ data: { verified: false }, error: null });
   mount();

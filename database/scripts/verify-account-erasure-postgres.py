@@ -67,9 +67,12 @@ DO $$ BEGIN
 END $$;
 CREATE SCHEMA auth;
 CREATE TABLE auth.users (id uuid PRIMARY KEY, email text, raw_user_meta_data jsonb DEFAULT '{}'::jsonb,
-    created_at timestamptz DEFAULT now(), is_anonymous boolean DEFAULT false);
+    created_at timestamptz DEFAULT now(), is_anonymous boolean DEFAULT false, banned_until timestamptz);
 CREATE TABLE auth.audit_log_entries (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), payload json, created_at timestamptz DEFAULT now());
 CREATE TABLE auth.sessions (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE);
+-- GoTrue's shape: user_id is text, and a refresh token belongs to a session.
+CREATE TABLE auth.refresh_tokens (id bigserial PRIMARY KEY, token text, user_id varchar(255),
+    revoked boolean DEFAULT false, session_id uuid REFERENCES auth.sessions(id) ON DELETE CASCADE);
 CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
 CREATE FUNCTION auth.role() RETURNS text LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('request.jwt.claim.role', true), '') $$;
 GRANT USAGE ON SCHEMA public, auth TO anon, authenticated, service_role;
@@ -181,6 +184,8 @@ try:
     INSERT INTO auth.audit_log_entries (payload) VALUES (json_build_object('actor_id', '{P1}', 'actor_username', 'Parent.One@example.com')),
         (json_build_object('actor_id', '{ADULT}'));
     INSERT INTO auth.sessions (user_id) VALUES ('{P1}');
+    WITH s AS (INSERT INTO auth.sessions (user_id) VALUES ('{K1}'), ('{K2}') RETURNING id, user_id)
+        INSERT INTO auth.refresh_tokens (token, user_id, session_id) SELECT 'rt-' || user_id, user_id::text, id FROM s;
     INSERT INTO audit_logs (actor_id, action, subject, detail) VALUES ('{P1}', 'family.kid_created', '{K1}', '{{}}');
     """)
     # K1's Mentor session audio: one object only K1 references, one another learner's turn shares.
@@ -269,6 +274,26 @@ try:
     assert sorted(row['depot_paths']) == sorted([f"badges/{'b' * 64}.png", f"task-evidence/{'e' * 64}.jpg"]), row['depot_paths']
     assert row['anon_ids'] == [ANON], row['anon_ids']
     check('erasing a last-Tutor parent deletes the account and its sessions, suspends the child it supervised alone (A.1), leaves the co-supervised child active')
+
+    # F3-identity-site: the pause is enforced at GoTrue, not only on one Core read.
+    assert run(f"SELECT banned_until = '9999-12-31 00:00:00+00' FROM auth.users WHERE id = '{K1}'") == 't'
+    assert run(f"SELECT count(*) FROM auth.sessions WHERE user_id = '{K1}'") == '0'
+    assert run(f"SELECT count(*) FROM auth.refresh_tokens WHERE user_id = '{K1}'") == '0'
+    assert run(f"SELECT banned_until IS NULL FROM auth.users WHERE id = '{K2}'") == 't'
+    assert run(f"SELECT count(*) FROM auth.sessions WHERE user_id = '{K2}'") == '1'
+    assert run(f"SELECT count(*) FROM auth.refresh_tokens WHERE user_id = '{K2}'") == '1'
+    check('the paused child is banned at GoTrue (sign-in and refresh refused) and its sessions and refresh tokens are gone; the co-supervised child keeps its session')
+
+    # F3-identity-site: the scheduled 90-day purge reads its candidates without any sign-in.
+    def expired(days=90):
+        return service(f"SELECT coalesce(string_agg(user_id::text, ','), '') FROM list_expired_kid_suspensions({days}, 50)")
+    assert expired() == '', 'a pause of minutes is not a 90-day candidate'
+    run(f"UPDATE profiles SET suspended_at = now() - interval '91 days' WHERE user_id = '{K1}'")
+    assert expired() == K1, expired()
+    rejected("SET ROLE service_role; SELECT * FROM list_expired_kid_suspensions(30, 50)", 'SUSPENSION_WINDOW_TOO_SHORT')
+    for role in ('anon', 'authenticated'):
+        rejected(f"SET ROLE {role}; SELECT * FROM list_expired_kid_suspensions(90, 50)", 'permission denied')
+    check('list_expired_kid_suspensions names a kid paused 90+ days with no verified link, never a recent pause, never under 90 days, never to a browser role')
     check('child records survive with the departed adult cleared (ledger, account open/freeze, allowance, bonus, spend limit still active, redemption decision, Family Hub transition audit); the voice consent it granted ends')
     check('non-cascading rows are removed (converted visitor and its events, mail by id and by address case-insensitively, GoTrue audit entries); audit actor ids are cleared while subjects remain')
     check('the Depot and warehouse inventory (evidence, legacy badge image, anonymous ids) is stored on the request in the same transaction')
@@ -295,6 +320,7 @@ try:
     # A.1's 90-day purge of the suspended child goes through the same erasure.
     purge = json.loads(service(f"SELECT row_to_json(r) FROM request_account_deletion('{K1}', 'kid', 'suspension_expiry', 0, NULL) r"))
     service(f"SELECT claim_account_deletion('{purge['id']}')")
+    assert expired() == '', 'an open deletion request takes the child off the candidate list'
     kid_counts = json.loads(service(f"SELECT erase_account_data('{purge['id']}')"))
     assert kid_counts['account'] == 1 and kid_counts['learner_memory_ledger'] == 1, kid_counts
     assert kid_counts['depot_objects'] == 1 and kid_counts['depot_shared_kept'] == 1, kid_counts
@@ -350,6 +376,33 @@ try:
     rejected("DELETE FROM immut_probe", 'immutable')
     run("UPDATE immut_probe SET created_by = NULL")
     check('outside an erasure the guards still refuse; the kid/admin/lesson-version relaxations accept only a provenance id being cleared')
+
+    # F3-identity-site: a newly verified link lifts the ban; a teen is never banned; another ban is kept.
+    P3, K5, TEEN = (str(uuid.uuid4()) for _ in range(3))
+    run(f"""
+    INSERT INTO auth.users (id, email) VALUES ('{P3}', 'p3@example.com'), ('{K5}', 'k5@kids.invalid'), ('{TEEN}', 'teen@example.com');
+    INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{P3}', 'parent', NULL);
+    INSERT INTO account_age_declarations (user_id, declared_age_band) VALUES ('{TEEN}', '13_to_17');
+    INSERT INTO guardian_links (parent_user_id, kid_user_id, verification_status, verified_at) VALUES
+        ('{P3}', '{K5}', 'verified', now()), ('{P3}', '{TEEN}', 'verified', now());
+    INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{K5}', 'kid', '{P3}');
+    INSERT INTO auth.sessions (user_id) VALUES ('{K5}'), ('{TEEN}');
+    """)
+    gone3 = json.loads(service(f"SELECT row_to_json(r) FROM request_account_deletion('{P3}', 'parent', 'self', 0, '{P3}') r"))
+    service(f"SELECT claim_account_deletion('{gone3['id']}')")
+    service(f"SELECT erase_account_data('{gone3['id']}')")
+    assert run(f"SELECT suspended_at IS NOT NULL AND banned_until IS NOT NULL FROM profiles JOIN auth.users u ON u.id = user_id WHERE user_id = '{K5}'") == 't'
+    assert run(f"SELECT suspended_at IS NOT NULL FROM profiles WHERE user_id = '{TEEN}'") == 't'
+    assert run(f"SELECT banned_until IS NULL FROM auth.users WHERE id = '{TEEN}'") == 't'
+    assert run(f"SELECT count(*) FROM auth.sessions WHERE user_id = '{TEEN}'") == '1'
+    run(f"INSERT INTO guardian_links (parent_user_id, kid_user_id, verification_status, verified_at) VALUES ('{P2}', '{K5}', 'verified', now())")
+    assert run(f"SELECT suspended_at IS NULL FROM profiles WHERE user_id = '{K5}'") == 't'
+    assert run(f"SELECT banned_until IS NULL FROM auth.users WHERE id = '{K5}'") == 't'
+    run(f"UPDATE auth.users SET banned_until = '2031-01-01 00:00:00+00' WHERE id = '{K5}'")
+    run(f"SELECT set_kid_sign_in_ban('{K5}', false)")
+    assert run(f"SELECT banned_until = '2031-01-01 00:00:00+00' FROM auth.users WHERE id = '{K5}'") == 't'
+    rejected(f"SET ROLE service_role; SELECT set_kid_sign_in_ban('{K5}', true)", 'permission denied')
+    check('a newly verified link reactivates the child and lifts the pause ban; a self-registered teen who loses a link is marked but never banned (Option B); a ban set for another reason is never lifted; only the triggers can ban')
 
     print(json.dumps({'database': database, 'checks': checks}, indent=2))
     print(f'account-erasure PostgreSQL verification OK — {len(checks)} checks')
