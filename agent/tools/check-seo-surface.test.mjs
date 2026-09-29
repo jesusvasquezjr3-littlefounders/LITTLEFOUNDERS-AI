@@ -212,3 +212,28 @@ test('the agent-text audit catches an em dash, a lowercase tutor and an AI Tutor
   assert.ok(auditAgentText('Habla con la IA-Tutor', 'x').some((p) => p.includes('calls the AI a Tutor')));
   assert.equal(auditAgentText('the tutors and tutores', 'x').length, 2);
 });
+
+// GAP-FIX-R5 (OD-27 (3), OD-18, A.1): the brief promised that "the Tutor can see
+// everything their child does" and that parent visibility is "a permanent
+// property of the product". A teen's story choices stay private, so the claim
+// is refused, and the shipped files are proven to fail when it comes back.
+test('the agent-text audit refuses a total-visibility claim, and the shipped brief fails when the old sentence returns', () => {
+  const old = 'and the Tutor can see everything their child does, every Mentor conversation included.';
+  const found = auditAgentText(old, 'x');
+  assert.ok(found.some((p) => p.includes('"see everything"')));
+  assert.ok(found.some((p) => p.includes('"everything their child does"')));
+  assert.ok(auditAgentText('parent visibility is a permanent property of the product', 'x').some((p) => p.includes('permanent property')));
+  assert.deepEqual(auditAgentText('a teen\'s story choices stay private; the Tutor approves what the Mentor remembers', 'x'), []);
+  for (const locale of site.SITE.locales) {
+    const brief = seo.renderLlmsTxt(locale);
+    const full = seo.renderLlmsFullTxt(locale);
+    assert.doesNotMatch(brief, /everything their child|permanent property/);
+    assert.match(brief, /a teen's story choices stay private/);
+    // Mutation: the old sentence put back into what ships is caught in both files.
+    for (const [label, text] of [['llms.txt', brief], ['llms-full.txt', full]]) {
+      const mutated = text.replace('and children learn inside it.', `and children learn inside it, ${old}`);
+      assert.notEqual(mutated, text, `${label} (${locale}) still carries the sentence the mutation replaces`);
+      assert.ok(auditAgentText(mutated, label).length >= 2, `${label} (${locale}) mutation not caught`);
+    }
+  }
+});
