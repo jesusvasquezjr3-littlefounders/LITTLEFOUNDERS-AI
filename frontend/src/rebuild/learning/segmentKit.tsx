@@ -149,6 +149,16 @@ function reviewText(locale: Locale, diagnostic: string | undefined): string {
   return t.review;
 }
 
+/**
+ * B.8 / Bible 08 §11 (GAP-FIX-R5): the verdict the compact Mentor stage
+ * reacts to, from a graded step's server result. Met or a miss only; a
+ * pending, unavailable or refused check leaves the stage neutral. Every graded
+ * board passes it to `LessonStageSlot` (a static check pins this).
+ */
+export function gradeStageVerdict(result: SegmentGrade | 'unavailable' | null): 'met' | 'review' | null {
+  return result === null || result === 'unavailable' ? null : result.verdict === 'met' ? 'met' : result.verdict === 'review' ? 'review' : null;
+}
+
 /** The check row of a graded step: one grade in flight, the shared feedback banner, then Continue once met. */
 export function useSegmentGrade(segmentId: string, onGrade: OnGradeSegment | undefined) {
   const { pending, grade } = useSingleActiveGrade();

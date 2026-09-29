@@ -10,7 +10,7 @@ import './learning.css';
 import './growthComparison.css';
 import { LessonStageSlot } from './lessonStage';
 import { LessonFeedback } from './LessonFeedback';
-import { playerCopy, SegmentPrompt, useSegmentGrade, type OnGradeSegment } from './segmentKit';
+import { playerCopy, SegmentPrompt, useSegmentGrade, type OnGradeSegment, gradeStageVerdict } from './segmentKit';
 
 
 type ComparisonSegment = Extract<LessonClientSegment, { type: 'visual.growth-comparison.v2' }>;
@@ -119,7 +119,7 @@ export function GrowthComparisonBoard({ document, segment, onBack, sequence, onG
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
         {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.explore} value={sequenceProgress(sequence, committed !== null)} max={100} valueText={`${sequenceProgress(sequence, committed !== null)}%`} /> : null}<span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span>
-      </header><LessonStageSlot />
+      </header><LessonStageSlot verdict={gradeStageVerdict(grading.result)} />
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1>
           <SegmentPrompt segment={segment} locale={document.locale} /></div>
