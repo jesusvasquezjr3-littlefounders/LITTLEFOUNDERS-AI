@@ -54,6 +54,7 @@
     "identity:db-verify": "node database/scripts/identity-db-verify.mjs",
     "staff:db-verify": "node database/scripts/staff-analytics-db-verify.mjs",
     "learning:db-verify": "node database/scripts/learning-db-verify.mjs",
+    "rebuild:audit-gate": "npm --prefix frontend run audit:gate -- --suite all",
     "schema-fields:check": "node agent/tools/check-schema-fields.mjs",
     "guardrails:check": "node agent/tools/check-social-governance.mjs",
     "glossary:check": "node agent/tools/check-wallet-glossary.mjs",

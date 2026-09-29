@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 /*
- * The boot veil (/DESIGN.md §Motion recipe 11) lives in index.html, so its
+ * The boot veil (Bible 02 rule 2, D13, rule 23; 04 §2) lives in index.html, so its
  * values sit OUTSIDE the module graph every other test can reach: nothing
  * imports it, nothing type-checks it, and a change to the palette or to the
  * prerenderer cannot break it loudly. That makes it exactly the shape §1.14
@@ -30,10 +30,6 @@ function token(name: string, dark = false): string {
   return match![1]!;
 }
 
-function rgbOf(hex: string): string {
-  return [1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16)).join(', ');
-}
-
 describe('boot veil — the ground colour (02 D4)', () => {
   it('is the design token --base for light', () => {
     expect(token('--base')).toBe('#f4f5fd');
@@ -44,10 +40,112 @@ describe('boot veil — the ground colour (02 D4)', () => {
     expect(HTML).toContain(`--lf-boot-ground: ${token('--base', true)};`);
   });
 
-  it('blooms in --primary, not the legacy indigo', () => {
-    expect(HTML).toContain(`--lf-boot-bloom: rgba(${rgbOf(token('--primary'))}, 0.16);`);
-    expect(HTML).toContain(`--lf-boot-bloom: rgba(${rgbOf(token('--primary'))}, 0.18);`);
+  it('carries no legacy indigo and no bloom colour', () => {
     expect(HTML).not.toMatch(/#f8fafc|#0a0e1a|79, 70, 229|129, 140, 248/);
+    expect(HTML).not.toMatch(/--lf-boot-bloom|lf-boot-breathe/);
+  });
+});
+
+/** One motion token's raw value in the light block (04 §2: durations and easings are mode-independent). */
+function motionToken(name: string): string {
+  const start = TOKENS.indexOf('.lf-rebuild {');
+  const block = TOKENS.slice(start, TOKENS.indexOf('}', start));
+  const match = block.match(new RegExp(`${name}: ([^;]+);`));
+  expect(match, `${name} not found`).not.toBeNull();
+  return match![1]!.trim();
+}
+
+/** The inline stylesheet, comments removed: the one stylesheet of the product outside src/. */
+const VEIL_CSS = (() => {
+  const open = HTML.indexOf('<style>');
+  const close = HTML.indexOf('</style>', open);
+  expect(open, 'inline <style> not found').toBeGreaterThan(-1);
+  return HTML.slice(open + '<style>'.length, close).replace(/\/\*[\s\S]*?\*\//g, '');
+})();
+
+/** The body of `@media (prefers-reduced-motion: no-preference) { ... }`, by brace depth. */
+function noPreferenceBlocks(css: string): { inside: string; outside: string } {
+  let inside = '';
+  let outside = css;
+  const head = /@media\s*\(prefers-reduced-motion:\s*no-preference\)\s*\{/g;
+  for (let match = head.exec(outside); match; match = head.exec(outside)) {
+    let depth = 1;
+    let at = match.index + match[0].length;
+    while (depth > 0 && at < outside.length) {
+      if (outside[at] === '{') depth++;
+      if (outside[at] === '}') depth--;
+      at++;
+    }
+    inside += outside.slice(match.index + match[0].length, at - 1);
+    outside = outside.slice(0, match.index) + outside.slice(at);
+    head.lastIndex = match.index;
+  }
+  return { inside, outside };
+}
+
+describe('boot veil — rebuilt from the Bible, never the legacy glass (02 rule 2, D13, rule 23)', () => {
+  it('declares no backdrop-filter, filter, gradient or shadow anywhere in the inline stylesheet', () => {
+    expect(VEIL_CSS).not.toMatch(/backdrop-filter|(?:^|[\s;{])filter\s*:/m);
+    expect(VEIL_CSS).not.toMatch(/(?:linear|radial|conic)-gradient\(/);
+    expect(VEIL_CSS).not.toMatch(/box-shadow|text-shadow/);
+  });
+
+  it('has no escape hatch left over from the blur (@supports, !important)', () => {
+    expect(VEIL_CSS).not.toMatch(/@supports|!important/);
+  });
+
+  it('paints nothing on the ground: no pseudo-element bloom', () => {
+    expect(VEIL_CSS).not.toMatch(/#lf-boot::?(?:after|before)/);
+  });
+});
+
+describe('boot veil — motion on the 04 §2 tokens only', () => {
+  it('dissolves in --dur-transition, leaving on --ease-exit and arriving on --ease-enter', () => {
+    expect(motionToken('--dur-transition')).toBe('380ms');
+    expect(VEIL_CSS).toContain(`--lf-boot-dissolve: ${motionToken('--dur-transition')};`);
+    expect(VEIL_CSS).toContain(`--lf-boot-exit: ${motionToken('--ease-exit')};`);
+    expect(VEIL_CSS).toContain(`--lf-boot-enter: ${motionToken('--ease-enter')};`);
+    expect(VEIL_CSS).toMatch(/html\[data-lf-boot='off'\] #lf-boot \{[^}]*animation: lf-boot-out var\(--lf-boot-dissolve\) var\(--lf-boot-exit\)/);
+    expect(VEIL_CSS).toMatch(/html\[data-lf-boot='off'\] #root \{[^}]*animation: lf-boot-in var\(--lf-boot-dissolve\) var\(--lf-boot-enter\)/);
+  });
+
+  it('writes no duration literal except the dissolve token copy and the fail-open deadline', () => {
+    const rest = VEIL_CSS.replace(/--lf-boot-dissolve: \d+ms;/, '').replace(/--lf-boot-deadline: \d+s;/, '');
+    expect(rest.match(/(?<![\w-])\d+(?:\.\d+)?m?s\b/g) ?? []).toEqual([]);
+  });
+
+  it('writes no easing that is not a token: every cubic-bezier is --ease-exit or --ease-enter, and no keyword curve', () => {
+    const allowed = new Set([motionToken('--ease-exit'), motionToken('--ease-enter')]);
+    const curves = VEIL_CSS.match(/cubic-bezier\([^)]*\)/g) ?? [];
+    expect(curves.length).toBeGreaterThan(0);
+    expect(curves.filter((curve) => !allowed.has(curve))).toEqual([]);
+    const animations = [...VEIL_CSS.matchAll(/animation(?:-timing-function)?\s*:\s*([^;]+);/g)].map((m) => m[1]!);
+    for (const value of animations) expect(value).not.toMatch(/\b(?:ease|ease-in|ease-out|ease-in-out|linear)\b|steps\(|infinite/);
+  });
+
+  it('moves only inside prefers-reduced-motion: no-preference; outside it, only the step-end deadline timer', () => {
+    const { inside, outside } = noPreferenceBlocks(VEIL_CSS);
+    expect(inside).toMatch(/lf-boot-out/);
+    expect(inside).toMatch(/lf-boot-in /);
+    const outsideAnimations = [...outside.matchAll(/(?:^|[\s;{])(animation|transition)(?:-[a-z-]+)?\s*:\s*([^;]+);/gm)].map((m) => `${m[1]}: ${m[2]!.trim()}`);
+    expect(outsideAnimations.sort()).toEqual([
+      'animation: lf-boot-hold var(--lf-boot-deadline) step-end both',
+      'animation: lf-boot-wait var(--lf-boot-deadline) step-end both',
+    ]);
+    // A reduced-motion override would mean the recipe itself moves (04 §3 wants the animation absent).
+    expect(VEIL_CSS).not.toMatch(/prefers-reduced-motion:\s*reduce/);
+  });
+
+  it('animates opacity and nothing else', () => {
+    const frames = [...VEIL_CSS.matchAll(/@keyframes [\w-]+ \{([\s\S]*?)\n {6}\}/g)].map((m) => m[1]!);
+    expect(frames).toHaveLength(4);
+    const properties = frames.flatMap((body) => [...body.matchAll(/([a-z-]+)\s*:/g)].map((m) => m[1]));
+    expect([...new Set(properties)]).toEqual(['opacity']);
+  });
+
+  it('never hand-copies a second dissolve duration into the release script', () => {
+    // A parse failure means no dissolve to wait for, never a remembered legacy number.
+    expect(HTML).toContain("getPropertyValue('--lf-boot-dissolve')) || 0;");
   });
 });
 

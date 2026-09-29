@@ -1,5 +1,5 @@
 /*
- * Releasing the boot veil (/DESIGN.md §Motion recipe 11).
+ * Releasing the boot veil (Bible 02 rule 2, 04 §2; the recipe is in index.html).
  *
  * index.html arms the veil before the first paint and owns the release ITSELF
  * (`window.__lfBoot.release`), so the dissolve's duration is read from the

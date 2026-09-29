@@ -36,8 +36,13 @@ const CHROME_CANDIDATES = [
   '/usr/bin/chromium-browser',
 ].filter(Boolean)
 
+/** The first Chrome or Chromium on this machine (CHROME_PATH first), or null when there is none. */
+export function findChrome() {
+  return CHROME_CANDIDATES.find((path) => existsSync(path)) ?? null
+}
+
 function chromeBinary() {
-  const found = CHROME_CANDIDATES.find((path) => existsSync(path))
+  const found = findChrome()
   if (!found) {
     throw new Error(
       `No Chrome or Chromium found. Set CHROME_PATH to its executable.\nLooked in:\n  ${CHROME_CANDIDATES.join('\n  ')}`,

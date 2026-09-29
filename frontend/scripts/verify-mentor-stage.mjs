@@ -245,9 +245,11 @@ try {
           assert.equal(s.data.fallback, fallback);
           assert.ok(!s.canvas, 'the renderer is not loaded');
           assert.ok(s.still?.loaded, 'the still loaded');
-          assert.equal(s.still.src, `/rebuild/mentor-chooser/liruf-${theme}.png`, 'a render of the same character on its Diorama, in this mode (W2M.3)');
+          // W3M.1: the full stage's still is the same character in the pose its state plays (listening:
+          // ambient.listen), one real-model render per pose and mode, never the chooser portrait.
+          assert.equal(s.still.src, `/rebuild/mentor-stage/liruf-ambient-listen-${theme}.png`, 'a render of the same character on its Diorama, in the pose of its state, in this mode (W2M.3, W3M.1)');
           assert.equal(s.still.alt, '');
-          assert.equal(s.data.stillPose, 'ambient.idle', 'the stage says which pose the still shows');
+          assert.equal(s.data.stillPose, 'ambient.listen', 'the stage says which pose the still shows');
           assert.equal(s.label, `Liruf, ${copy[locale].states.listening}`);
           if (locale === 'en-US' && flag === 'lowPower') await shot(`still-${theme}`);
         });
