@@ -282,3 +282,35 @@ describe('exports carry OUR OWN audience, not only Plausible', () => {
     expect(buffer.byteLength).toBeGreaterThan(0);
   });
 });
+
+// GAP-FIX-R4 (F4-staff-ops): the spreadsheet exports follow the same wording
+// rules as the PDF (Bible 02 rule 16): no em dash and no ellipsis in any cell,
+// the caveats and the first-party notes included.
+describe('export wording (02 rule 16)', () => {
+  const WORST: PlausibleReportData = {
+    ...REPORT,
+    rangeDrift: { askedFor: ['2026-07-15', '2026-08-13'], answeredFor: ['2026-07-16', '2026-08-13'] },
+    imports: { importsIncluded: false, importsSkipReason: 'filtered by page', importsWarning: null, queried: ['2026-07-15', '2026-08-13'] },
+    breakdownsWithoutImports: ['source'],
+    firstParty: { ...REPORT.firstParty!, conversionRate: null, externalShare: null },
+  };
+
+  it('no CSV cell carries an em dash or an ellipsis, with every caveat and note present', () => {
+    for (const report of [WORST, { ...WORST, firstParty: null }]) {
+      const csv = renderAnalyticsReportCsv(report);
+      expect(csv).toContain('WINDOW MISMATCH');
+      expect(csv).not.toMatch(/[—…]/);
+    }
+  });
+
+  it('no XLSX cell carries an em dash or an ellipsis', async () => {
+    for (const report of [WORST, { ...WORST, firstParty: null }]) {
+      const buffer = await renderAnalyticsReportXlsx(report);
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(buffer as unknown as Parameters<typeof workbook.xlsx.load>[0]);
+      const flat = workbook.worksheets.map((sheet) => JSON.stringify(sheet.getSheetValues())).join('\n');
+      expect(flat).toContain('WINDOW MISMATCH');
+      expect(flat).not.toMatch(/[—…]/);
+    }
+  });
+});

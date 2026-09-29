@@ -46,6 +46,8 @@ interface ReportStrings {
   to: string;
   filters: string;
   none: string;
+  /** A breakdown with no rows for the window. */
+  noData: string;
   trafficTitle: string;
   trafficSub: string;
   compositionTitle: string;
@@ -79,7 +81,7 @@ interface ReportStrings {
 
 const STRINGS: Record<ReportLocale, ReportStrings> = {
   'en-US': {
-    ownTitle: 'Our own audience', ownSub: 'Every session the product recorded — not only consented marketing visitors',
+    ownTitle: 'Our own audience', ownSub: 'Every session the product recorded, not only consented marketing visitors',
     ownAnon: 'Anonymous sessions', ownReg: 'Registered sessions', ownStaff: 'Staff sessions', ownExternal: 'Not staff',
     ownAccounts: 'Accounts created', ownObserved: 'Signups the funnel saw', ownVisitors: 'Anonymous visitors', ownConverted: 'Became accounts',
     ownNoData: 'no data', ownUnavailable: 'The first-party views could not be read for this report. This is not zero.',
@@ -89,7 +91,7 @@ const STRINGS: Record<ReportLocale, ReportStrings> = {
     noComparison: 'no comparison', vsPrevious: 'vs previous', rank: '#', label: 'LABEL',
     page: 'Page', of: 'of', confidential: 'Confidential | Internal use only',
     audiences: { marketing: 'Marketing', sales: 'Sales', frontend: 'Frontend', full: 'Full' },
-    window: 'Window', to: 'to', filters: 'Filters', none: 'none',
+    window: 'Window', to: 'to', filters: 'Filters', none: 'none', noData: 'No data for this period.',
     trafficTitle: 'Traffic over time', trafficSub: 'Daily visitors with pageview volume',
     compositionTitle: 'Audience composition', compositionSub: 'The most useful segments for the selected report',
     dailyTotals: 'Daily totals in the series', peakDay: 'Peak visitor day',
@@ -97,12 +99,12 @@ const STRINGS: Record<ReportLocale, ReportStrings> = {
     dimensions: { page: 'Top pages', source: 'Top sources', referrer: 'Top referrers', channel: 'Channels', country: 'Countries', region: 'Regions', device: 'Devices', browser: 'Browsers', os: 'Operating systems', entry_page: 'Entry pages', exit_page: 'Exit pages', utm_source: 'UTM sources', utm_medium: 'UTM mediums', utm_campaign: 'UTM campaigns' },
     caveats: 'How to read these figures',
     noImportsHeadline: 'Headline totals exclude historical imported traffic.',
-    noImportsIn: (sections) => `These sections cover natively tracked visits only and will not sum to the headline total: ${sections}. Imported history cannot be broken down by page — this is not a gap in tracking.`,
+    noImportsIn: (sections) => `These sections cover natively tracked visits only and will not sum to the headline total: ${sections}. Imported history cannot be broken down by page, so this is not a gap in tracking.`,
     sessionMetricsNative: 'Bounce rate and visit duration are measured on natively tracked visits only; imported historical traffic carries no session metrics.',
     windowMismatch: (asked, answered) => `Window mismatch: requested ${asked}, but the analytics API answered for ${answered}. Read every figure as describing the second window and report this.`,
   },
   'es-MX': {
-    ownTitle: 'Nuestra propia audiencia', ownSub: 'Cada sesión que el producto registró — no sólo visitantes de marketing con consentimiento',
+    ownTitle: 'Nuestra propia audiencia', ownSub: 'Cada sesión que el producto registró, no sólo visitantes de marketing con consentimiento',
     ownAnon: 'Sesiones anónimas', ownReg: 'Sesiones registradas', ownStaff: 'Sesiones del staff', ownExternal: 'Que no es staff',
     ownAccounts: 'Cuentas creadas', ownObserved: 'Registros que vio el embudo', ownVisitors: 'Visitantes anónimos', ownConverted: 'Se hicieron cuenta',
     ownNoData: 'sin datos', ownUnavailable: 'No se pudieron leer las vistas de primera parte para este reporte. Esto no es cero.',
@@ -112,7 +114,7 @@ const STRINGS: Record<ReportLocale, ReportStrings> = {
     noComparison: 'sin comparación', vsPrevious: 'vs anterior', rank: '#', label: 'ETIQUETA',
     page: 'Página', of: 'de', confidential: 'Confidencial | Uso interno',
     audiences: { marketing: 'Marketing', sales: 'Ventas', frontend: 'Frontend', full: 'Completo' },
-    window: 'Ventana', to: 'a', filters: 'Filtros', none: 'ninguno',
+    window: 'Ventana', to: 'a', filters: 'Filtros', none: 'ninguno', noData: 'Sin datos para este periodo.',
     trafficTitle: 'Tráfico en el tiempo', trafficSub: 'Visitantes diarios con volumen de páginas vistas',
     compositionTitle: 'Composición de la audiencia', compositionSub: 'Los segmentos más útiles para este reporte',
     dailyTotals: 'Totales diarios de la serie', peakDay: 'Día pico de visitantes',
@@ -120,12 +122,12 @@ const STRINGS: Record<ReportLocale, ReportStrings> = {
     dimensions: { page: 'Páginas principales', source: 'Fuentes principales', referrer: 'Referencias principales', channel: 'Canales', country: 'Países', region: 'Regiones', device: 'Dispositivos', browser: 'Navegadores', os: 'Sistemas operativos', entry_page: 'Páginas de entrada', exit_page: 'Páginas de salida', utm_source: 'Fuentes UTM', utm_medium: 'Medios UTM', utm_campaign: 'Campañas UTM' },
     caveats: 'Cómo leer estas cifras',
     noImportsHeadline: 'Los totales principales excluyen el tráfico histórico importado.',
-    noImportsIn: (sections) => `Estas secciones cubren únicamente visitas medidas de forma nativa y no sumarán el total principal: ${sections}. El histórico importado no se puede desglosar por página — no es una falla de medición.`,
+    noImportsIn: (sections) => `Estas secciones cubren únicamente visitas medidas de forma nativa y no sumarán el total principal: ${sections}. El histórico importado no se puede desglosar por página, así que no es una falla de medición.`,
     sessionMetricsNative: 'La tasa de rebote y la duración se miden solo sobre visitas nativas; el tráfico histórico importado no aporta métricas de sesión.',
     windowMismatch: (asked, answered) => `Ventana discordante: se solicitó ${asked}, pero la API de analítica respondió por ${answered}. Lee cada cifra como si describiera la segunda ventana y reporta esto.`,
   },
   'pt-BR': {
-    ownTitle: 'Nosso próprio público', ownSub: 'Cada sessão que o produto registrou — não apenas visitantes de marketing com consentimento',
+    ownTitle: 'Nosso próprio público', ownSub: 'Cada sessão que o produto registrou, não apenas visitantes de marketing com consentimento',
     ownAnon: 'Sessões anônimas', ownReg: 'Sessões registradas', ownStaff: 'Sessões da equipe', ownExternal: 'Que não é equipe',
     ownAccounts: 'Contas criadas', ownObserved: 'Cadastros que o funil viu', ownVisitors: 'Visitantes anônimos', ownConverted: 'Viraram contas',
     ownNoData: 'sem dados', ownUnavailable: 'Não foi possível ler as visões de primeira parte para este relatório. Isto não é zero.',
@@ -135,7 +137,7 @@ const STRINGS: Record<ReportLocale, ReportStrings> = {
     noComparison: 'sem comparação', vsPrevious: 'vs anterior', rank: '#', label: 'RÓTULO',
     page: 'Página', of: 'de', confidential: 'Confidencial | Uso interno',
     audiences: { marketing: 'Marketing', sales: 'Vendas', frontend: 'Frontend', full: 'Completo' },
-    window: 'Janela', to: 'a', filters: 'Filtros', none: 'nenhum',
+    window: 'Janela', to: 'a', filters: 'Filtros', none: 'nenhum', noData: 'Sem dados para este período.',
     trafficTitle: 'Tráfego ao longo do tempo', trafficSub: 'Visitantes diários com volume de visualizações',
     compositionTitle: 'Composição do público', compositionSub: 'Os segmentos mais úteis para este relatório',
     dailyTotals: 'Totais diários da série', peakDay: 'Dia de pico de visitantes',
@@ -143,7 +145,7 @@ const STRINGS: Record<ReportLocale, ReportStrings> = {
     dimensions: { page: 'Páginas principais', source: 'Fontes principais', referrer: 'Referências principais', channel: 'Canais', country: 'Países', region: 'Regiões', device: 'Dispositivos', browser: 'Navegadores', os: 'Sistemas operacionais', entry_page: 'Páginas de entrada', exit_page: 'Páginas de saída', utm_source: 'Fontes UTM', utm_medium: 'Meios UTM', utm_campaign: 'Campanhas UTM' },
     caveats: 'Como ler estes números',
     noImportsHeadline: 'Os totais principais excluem o tráfego histórico importado.',
-    noImportsIn: (sections) => `Estas seções cobrem apenas visitas medidas nativamente e não somarão o total principal: ${sections}. O histórico importado não pode ser detalhado por página — não é uma falha de medição.`,
+    noImportsIn: (sections) => `Estas seções cobrem apenas visitas medidas nativamente e não somarão o total principal: ${sections}. O histórico importado não pode ser detalhado por página, então não é uma falha de medição.`,
     sessionMetricsNative: 'A taxa de rejeição e a duração são medidas apenas em visitas nativas; o tráfego histórico importado não fornece métricas de sessão.',
     windowMismatch: (asked, answered) => `Janela divergente: solicitou-se ${asked}, mas a API de análise respondeu por ${answered}. Leia cada número como descrevendo a segunda janela e reporte isto.`,
   },
@@ -158,6 +160,10 @@ interface ReportContext {
   locale: ReportLocale;
   s: ReportStrings;
   int: Intl.NumberFormat;
+  /** A share given as 0-1. */
+  pct: Intl.NumberFormat;
+  /** A signed change given as 0-1 (+12.5%, -3%). */
+  signedPct: Intl.NumberFormat;
   date: Intl.DateTimeFormat;
   shortDate: Intl.DateTimeFormat;
 }
@@ -167,6 +173,8 @@ function contextFor(locale: ReportLocale): ReportContext {
     locale,
     s: STRINGS[locale],
     int: new Intl.NumberFormat(locale),
+    pct: new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 1 }),
+    signedPct: new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 1, signDisplay: 'exceptZero' }),
     date: new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', year: 'numeric' }),
     shortDate: new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }),
   };
@@ -232,7 +240,13 @@ function registerFonts(doc: PDFKit.PDFDocument): void {
 
 const MARGIN = 48;
 const BOTTOM_MARGIN = 64; // reserves the footer band
-const ROW_H = 18;
+const ROW_H = 22;
+/*
+ * The smallest text the report sets: 10.5 pt is the 14 px floor of Bible 02
+ * rule 11 (1 px = 0.75 pt). Every body line, label, axis tick, caveat and
+ * footer uses it; headings and figures are larger.
+ */
+export const TEXT = 10.5;
 
 
 function formatDuration(seconds: number): string {
@@ -291,45 +305,27 @@ function drawHeader(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plausible
   // asset that a build step might not copy into the deployed image.
   doc.rect(0, 0, doc.page.width, 6).fill(ACCENT);
   drawLogo(doc, MARGIN, 34);
-  doc
-    .font(HEADING)
-    .fontSize(13)
-    .fillColor(ACCENT_STRONG)
-    .text(`${ctx.s.title}: ${ctx.s.audiences[data.audience]}`, MARGIN, 76, { lineBreak: false });
-  doc
-    .font(BODY)
-    .fontSize(9)
-    .fillColor(MUTED)
-    .text(`${ctx.s.periods[data.period]}  |  ${ctx.s.generated} ${formatDate(ctx, data.generatedAt.slice(0, 10))}  |  ${ctx.s.source}`, MARGIN, 96, {
-      lineBreak: false,
-    });
+  const width = contentWidth(doc);
+  doc.font(HEADING).fontSize(13).fillColor(ACCENT_STRONG)
+    .text(`${ctx.s.title}: ${ctx.s.audiences[data.audience]}`, MARGIN, 76, { width });
+  doc.font(BODY).fontSize(TEXT).fillColor(MUTED)
+    .text(`${ctx.s.periods[data.period]}  |  ${ctx.s.generated} ${formatDate(ctx, data.generatedAt.slice(0, 10))}  |  ${ctx.s.source}`, MARGIN, doc.y + 2, { width });
   /*
    * The window comes from the RESOLVED range, not from the first and last
-   * points of the series. Those are the days that had traffic — printing them
+   * points of the series. Those are the days that had traffic; printing them
    * as "the data range" silently shrank the reported window whenever the
    * period began or ended quietly, which is exactly when someone is trying to
    * work out whether a campaign did anything.
    */
-  doc
-    .font(BODY_BOLD)
-    .fontSize(8)
-    .fillColor(ACCENT_STRONG)
-    .text(`${ctx.s.window}: ${formatDate(ctx, data.from)} ${ctx.s.to} ${formatDate(ctx, data.to)}`, MARGIN, 108, { lineBreak: false });
-
+  doc.font(BODY_BOLD).fontSize(TEXT).fillColor(ACCENT_STRONG)
+    .text(`${ctx.s.window}: ${formatDate(ctx, data.from)} ${ctx.s.to} ${formatDate(ctx, data.to)}`, MARGIN, doc.y + 2, { width });
+  // Every filter is printed whole; a long list wraps (02 section 7 rule 1: text never truncates).
   const filterText = data.appliedFilters.length ? `${ctx.s.filters}: ${data.appliedFilters.join('  AND  ')}` : `${ctx.s.filters}: ${ctx.s.none}`;
-  doc
-    .font(BODY)
-    .fontSize(8)
-    .fillColor(MUTED)
-    .text(filterText, MARGIN, 119, { lineBreak: false, width: contentWidth(doc), ellipsis: true });
+  doc.font(BODY).fontSize(TEXT).fillColor(MUTED).text(filterText, MARGIN, doc.y + 2, { width });
 
-  doc
-    .moveTo(MARGIN, 133)
-    .lineTo(doc.page.width - MARGIN, 133)
-    .lineWidth(1)
-    .strokeColor(RULE)
-    .stroke();
-  doc.y = 147;
+  const ruleY = doc.y + 6;
+  doc.moveTo(MARGIN, ruleY).lineTo(doc.page.width - MARGIN, ruleY).lineWidth(1).strokeColor(RULE).stroke();
+  doc.y = ruleY + 14;
 }
 
 /**
@@ -367,7 +363,7 @@ export function drawLogo(doc: PDFKit.PDFDocument, x: number, y: number): void {
 
 /**
  * Percent change against the previous window. `null` when there is nothing to
- * compare (all-time, or the comparison read failed) — printed as a dash, never
+ * compare (all-time, or the comparison read failed): printed as text, never
  * as 0%, which would assert a flat trend nobody measured.
  */
 function changeOf(current: number, previous: number | undefined): number | null {
@@ -380,66 +376,58 @@ function drawKpiBlock(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plausib
   const cards = [
     { label: ctx.s.visitors, value: ctx.int.format(aggregate.visitors), change: changeOf(aggregate.visitors, previous?.visitors), higherIsBetter: true },
     { label: ctx.s.pageviews, value: ctx.int.format(aggregate.pageviews), change: changeOf(aggregate.pageviews, previous?.pageviews), higherIsBetter: true },
-    { label: ctx.s.bounceRate, value: `${Math.round(aggregate.bounceRate * 10) / 10}%`, change: changeOf(aggregate.bounceRate, previous?.bounceRate), higherIsBetter: false },
+    { label: ctx.s.bounceRate, value: ctx.pct.format(aggregate.bounceRate / 100), change: changeOf(aggregate.bounceRate, previous?.bounceRate), higherIsBetter: false },
     { label: ctx.s.avgDuration, value: formatDuration(aggregate.visitDuration), change: changeOf(aggregate.visitDuration, previous?.visitDuration), higherIsBetter: true },
-  ];
+  ].map((card) => ({
+    ...card,
+    label: card.label.toUpperCase(),
+    changeText: card.change === null ? ctx.s.noComparison : `${ctx.signedPct.format(card.change)} ${ctx.s.vsPrevious}`,
+  }));
   const gap = 12;
   const w = (contentWidth(doc) - gap * (cards.length - 1)) / cards.length;
-  const h = 64;
+  const inner = w - 20;
+  // Every card is as tall as its longest wrapped label and change line: nothing is cut to fit a fixed box.
+  doc.font(BODY).fontSize(TEXT);
+  const labelH = Math.max(...cards.map((card) => doc.heightOfString(card.label, { width: inner })));
+  const changeH = Math.max(...cards.map((card) => doc.heightOfString(card.changeText, { width: inner })));
+  const valueH = 22;
+  const h = 11 + labelH + 4 + valueH + 4 + changeH + 10;
+  ensureRoom(doc, h + 22);
   const top = doc.y;
   cards.forEach((card, i) => {
     const x = MARGIN + i * (w + gap);
     doc.roundedRect(x, top, w, h, 6).lineWidth(1).strokeColor(RULE).stroke();
     doc.rect(x, top + 8, 3, h - 16).fill(i === 0 ? ACCENT : RULE);
-    doc.font(BODY).fontSize(8).fillColor(MUTED).text(card.label.toUpperCase(), x + 12, top + 11, {
-      width: w - 20,
-      lineBreak: false,
-    });
-    doc.font(HEADING).fontSize(16).fillColor(INK).text(card.value, x + 12, top + 25, {
-      width: w - 20,
-      lineBreak: false,
-    });
+    doc.font(BODY).fontSize(TEXT).fillColor(MUTED).text(card.label, x + 12, top + 11, { width: inner });
+    doc.font(HEADING).fontSize(16).fillColor(INK).text(card.value, x + 12, top + 15 + labelH, { width: inner });
     // Direction is coloured by whether the movement is GOOD, not by its sign:
     // a bounce rate falling 20% is a win and must not print in red.
-    const changeText =
-      card.change === null
-        ? ctx.s.noComparison
-        : `${card.change >= 0 ? '+' : ''}${(card.change * 100).toFixed(1)}% ${ctx.s.vsPrevious}`;
-    const tone =
-      card.change === null ? MUTED : (card.change >= 0) === card.higherIsBetter ? SUCCESS : ERROR;
-    doc.font(BODY).fontSize(7.5).fillColor(tone).text(changeText, x + 12, top + 46, {
-      width: w - 20,
-      lineBreak: false,
-    });
+    const tone = card.change === null ? MUTED : (card.change >= 0) === card.higherIsBetter ? SUCCESS : ERROR;
+    doc.font(BODY).fontSize(TEXT).fillColor(tone).text(card.changeText, x + 12, top + 19 + labelH + valueH, { width: inner });
   });
   doc.y = top + h + 22;
 }
 
 function drawSectionTitle(doc: PDFKit.PDFDocument, title: string, subtitle?: string): void {
-  ensureRoom(doc, subtitle ? 42 : 28);
+  const width = contentWidth(doc);
+  doc.font(BODY).fontSize(TEXT);
+  const subtitleH = subtitle ? doc.heightOfString(subtitle, { width }) : 0;
+  ensureRoom(doc, 28 + subtitleH + 8);
   const y = doc.y;
-  doc.font(HEADING).fontSize(14).fillColor(INK).text(title, MARGIN, y, { lineBreak: false });
+  doc.font(HEADING).fontSize(14).fillColor(INK).text(title, MARGIN, y, { width });
+  const underline = Math.max(doc.y, y + 19);
+  doc.moveTo(MARGIN, underline).lineTo(MARGIN + 46, underline).lineWidth(2).strokeColor(ACCENT).stroke();
   /*
-   * The subtitle starts after the MEASURED title, not at a fixed offset. It
-   * used to be pinned to MARGIN + 58, so every title longer than 58pt (which
-   * is all of them: "Traffic over time", "Audience composition") had its
-   * subtitle printed straight through it.
+   * The subtitle sits on its own line under the title and wraps to the full
+   * width. It used to share the title's line and was cut with an ellipsis
+   * whenever a locale's title or subtitle ran long (02 section 7 rule 1).
    */
-  const titleWidth = doc.widthOfString(title);
-  doc.moveTo(MARGIN, y + 19).lineTo(MARGIN + 46, y + 19).lineWidth(2).strokeColor(ACCENT).stroke();
   if (subtitle) {
-    const subtitleX = MARGIN + titleWidth + 12;
-    doc
-      .font(BODY)
-      .fontSize(8)
-      .fillColor(MUTED)
-      .text(subtitle, subtitleX, y + 5, {
-        lineBreak: false,
-        width: Math.max(doc.page.width - MARGIN - subtitleX, 40),
-        ellipsis: true,
-      });
+    doc.font(BODY).fontSize(TEXT).fillColor(MUTED).text(subtitle, MARGIN, underline + 6, { width });
+    doc.y += 8;
+  } else {
+    doc.y = underline + 10;
   }
-  doc.y = y + (subtitle ? 32 : 28);
 }
 
 function drawTrendChart(doc: PDFKit.PDFDocument, ctx: ReportContext, data: PlausibleReportData): void {
@@ -447,26 +435,27 @@ function drawTrendChart(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plaus
   if (series.length === 0) return;
   const firstSeriesPoint = series[0];
   if (!firstSeriesPoint) return;
-  const chartH = 158;
+  const chartH = 170;
   const chartW = contentWidth(doc);
-  ensureRoom(doc, chartH + 72);
+  ensureRoom(doc, chartH + 110);
   drawSectionTitle(doc, ctx.s.trafficTitle, ctx.s.trafficSub);
 
   const top = doc.y;
   doc.fillOpacity(1).roundedRect(MARGIN, top, chartW, chartH, 8).fill(SOFT_ACCENT);
-  const plotX = MARGIN + 34;
+  const axisW = 44;
+  const plotX = MARGIN + axisW + 6;
   const plotY = top + 18;
-  const plotW = chartW - 48;
-  const plotH = chartH - 46;
+  const plotW = chartW - axisW - 20;
+  const plotH = chartH - 52;
   const maxValue = Math.max(...series.flatMap((point) => [point.visitors, point.pageviews]), 1);
   const yFor = (value: number) => plotY + plotH - (value / maxValue) * plotH;
   const xFor = (index: number) => plotX + (series.length === 1 ? plotW / 2 : (index / (series.length - 1)) * plotW);
 
-  doc.font(BODY).fontSize(7).fillColor(MUTED);
+  doc.font(BODY).fontSize(TEXT).fillColor(MUTED);
   for (const ratio of [0, 0.5, 1]) {
     const y = plotY + plotH - ratio * plotH;
     doc.moveTo(plotX, y).lineTo(plotX + plotW, y).lineWidth(0.5).strokeColor(RULE).stroke();
-    doc.text(ctx.int.format(Math.round(maxValue * ratio)), MARGIN, y - 4, { width: 28, align: 'right', lineBreak: false });
+    doc.text(ctx.int.format(Math.round(maxValue * ratio)), MARGIN + 2, y - 6, { width: axisW, align: 'right', lineBreak: false });
   }
 
   const barW = Math.max(1.5, Math.min(7, (plotW / series.length) * 0.58));
@@ -491,44 +480,45 @@ function drawTrendChart(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plaus
   doc.lineWidth(2).strokeColor(ACCENT_STRONG).stroke();
   doc.restore();
 
-  doc.font(BODY).fontSize(7).fillColor(MUTED);
+  doc.font(BODY).fontSize(TEXT).fillColor(MUTED);
   const labelIndexes = [...new Set([0, Math.floor((series.length - 1) / 2), series.length - 1])];
   labelIndexes.forEach((index) => {
     const x = xFor(index);
     const point = series[index];
-    if (point) doc.text(formatShortDate(ctx, point.date), x - 28, plotY + plotH + 8, { width: 56, align: 'center', lineBreak: false });
+    if (point) doc.text(formatShortDate(ctx, point.date), x - 40, plotY + plotH + 8, { width: 80, align: 'center', lineBreak: false });
   });
 
   /*
-   * The legend sits BELOW the plotted card, not inside it.
-   *
-   * It used to be drawn at `chartH - 16`, i.e. on top of the x-axis labels,
-   * so "Visitantes" and the first date printed over each other. Localised
-   * labels made it worse rather than caused it: "Páginas vistas" is nearly
-   * twice the width of "Pageviews", so a layout tuned to English text
-   * collided as soon as the report could speak anything else. Positions are
-   * measured from the rendered strings instead of hardcoded offsets.
+   * The legend sits BELOW the plotted card, not inside it, and its positions
+   * are measured from the rendered strings: "Páginas vistas" is nearly twice
+   * the width of "Pageviews", so a layout tuned to English text collided as
+   * soon as the report could speak anything else.
    */
   const legendY = top + chartH + 8;
-  doc.font(BODY).fontSize(8);
+  doc.font(BODY).fontSize(TEXT);
   const visitorsW = doc.widthOfString(ctx.s.visitors);
-  doc.circle(MARGIN + 16, legendY + 3, 3).fill(ACCENT_STRONG);
+  doc.circle(MARGIN + 16, legendY + 6, 3.5).fill(ACCENT_STRONG);
   doc.fillColor(MUTED).text(ctx.s.visitors, MARGIN + 24, legendY, { lineBreak: false });
-  const swatchX = MARGIN + 24 + visitorsW + 14;
-  doc.fillOpacity(0.45).rect(swatchX, legendY + 1, 7, 7).fill(ACCENT);
-  doc.fillOpacity(1).fillColor(MUTED).text(ctx.s.pageviews, swatchX + 13, legendY, { lineBreak: false });
-  doc.y = top + chartH + 30;
+  const swatchX = MARGIN + 24 + visitorsW + 16;
+  doc.fillOpacity(0.45).rect(swatchX, legendY + 2, 8, 8).fill(ACCENT);
+  doc.fillOpacity(1).fillColor(MUTED).text(ctx.s.pageviews, swatchX + 14, legendY, { lineBreak: false });
+  doc.y = legendY + 22;
 
   const totalVisitors = series.reduce((sum, point) => sum + point.visitors, 0);
   const totalPageviews = series.reduce((sum, point) => sum + point.pageviews, 0);
   const peak = series.reduce((best, point) => (point.visitors > best.visitors ? point : best), firstSeriesPoint);
-  doc.font(BODY).fontSize(8).fillColor(MUTED).text(
+  doc.font(BODY).fontSize(TEXT).fillColor(MUTED).text(
     `${ctx.s.dailyTotals}: ${ctx.int.format(totalVisitors)} ${ctx.s.visitors.toLowerCase()} | ${ctx.int.format(totalPageviews)} ${ctx.s.pageviews.toLowerCase()} | ${ctx.s.peakDay}: ${formatDate(ctx, peak.date)}`,
     MARGIN,
     doc.y,
-    { lineBreak: false },
+    { width: chartW },
   );
-  doc.y += 22;
+  doc.y += 18;
+}
+
+/** The label a breakdown row prints: its own text, or the locale's word for none. */
+function rowLabel(ctx: ReportContext, label: string): string {
+  return label || ctx.s.none;
 }
 
 function drawSnapshotBars(doc: PDFKit.PDFDocument, ctx: ReportContext, data: PlausibleReportData): void {
@@ -537,131 +527,142 @@ function drawSnapshotBars(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Pla
   if (dimensions.length === 0) return;
   const gap = 14;
   const cardW = (contentWidth(doc) - gap) / 2;
-  const cardH = 142;
-  ensureRoom(doc, cardH * Math.ceil(dimensions.length / 2) + 64);
-  drawSectionTitle(doc, ctx.s.compositionTitle, ctx.s.compositionSub);
-  const startY = doc.y;
-  dimensions.forEach((dimension, index) => {
-    const rows = (data.breakdowns[dimension] ?? []).slice(0, 5);
-    const column = index % 2;
-    const row = Math.floor(index / 2);
-    const x = MARGIN + column * (cardW + gap);
-    const y = startY + row * (cardH + gap);
-    doc.roundedRect(x, y, cardW, cardH, 7).fill(column === 0 ? SOFT_SURFACE : SOFT_ACCENT);
-    doc.font(HEADING).fontSize(10).fillColor(INK).text(ctx.s.dimensions[dimension], x + 12, y + 12, { lineBreak: false });
-    const max = Math.max(...rows.map((item) => item.visitors), 1);
-    rows.forEach((item, rowIndex) => {
-      const rowY = y + 35 + rowIndex * 19;
-      const labelW = cardW - 88;
-      const label = fitLabel(doc, item.label || '(none)', labelW);
-      doc.font(BODY).fontSize(7.5).fillColor(MUTED).text(label, x + 12, rowY, { width: labelW, lineBreak: false });
-      doc.roundedRect(x + 12, rowY + 10, cardW - 74, 3, 1.5).fill(RULE);
-      doc.roundedRect(x + 12, rowY + 10, Math.max(3, ((cardW - 74) * item.visitors) / max), 3, 1.5).fill(column === 0 ? ACCENT_STRONG : ACCENT);
-      numberCell(doc, ctx, item.visitors, x + cardW - 54, rowY - 1, 42);
-    });
+  const bodyTop = 38;
+  const numW = 64;
+  const labelW = cardW - 24 - numW - 8;
+  /*
+   * A card is as tall as its rows, and each label wraps to its full text. A
+   * card holds up to five rows while it stays under MAX_CARD; a row that
+   * would push it past that is left out, with every row after it, so the
+   * snapshot keeps its ranking and never cuts a label to make room (02
+   * section 7 rule 1). The full breakdown tables below list every row.
+   */
+  const MAX_CARD = 320;
+  const cards = dimensions.map((dimension) => {
+    const all = (data.breakdowns[dimension] ?? []).slice(0, 5);
+    doc.font(BODY).fontSize(TEXT);
+    const rows: { item: PlausibleBreakdownRow; label: string; height: number }[] = [];
+    let used = 0;
+    for (const item of all) {
+      const label = rowLabel(ctx, item.label);
+      const height = doc.heightOfString(label, { width: labelW }) + 12;
+      if (bodyTop + used + height + 10 > MAX_CARD) break;
+      rows.push({ item, label, height });
+      used += height;
+    }
+    return { dimension, rows, max: Math.max(...all.map((item) => item.visitors), 1), height: Math.max(bodyTop + used + 10, 80) };
   });
-  doc.y = startY + Math.ceil(dimensions.length / 2) * cardH + Math.max(0, Math.ceil(dimensions.length / 2) - 1) * gap + 18;
-}
 
-/** One right-aligned numeric cell — single line, clipped to its column. */
-function numberCell(doc: PDFKit.PDFDocument, ctx: ReportContext, value: number, x: number, y: number, width: number): void {
-  doc.text(ctx.int.format(value), x, y, { width, align: 'right', lineBreak: false });
-}
-
-/** Trim a label (with ellipsis) so it can never overflow its column. */
-function fitLabel(doc: PDFKit.PDFDocument, text: string, maxWidth: number): string {
-  const clean = text;
-  if (doc.widthOfString(clean) <= maxWidth) return clean;
-  let trimmed = clean;
-  while (trimmed.length > 1 && doc.widthOfString(`${trimmed}…`) > maxWidth) {
-    trimmed = trimmed.slice(0, -1);
+  const firstPair = Math.max(...cards.slice(0, 2).map((card) => card.height));
+  ensureRoom(doc, firstPair + 64);
+  drawSectionTitle(doc, ctx.s.compositionTitle, ctx.s.compositionSub);
+  for (let start = 0; start < cards.length; start += 2) {
+    const pair = cards.slice(start, start + 2);
+    const cardH = Math.max(...pair.map((card) => card.height));
+    ensureRoom(doc, cardH + gap);
+    const y = doc.y;
+    pair.forEach(({ dimension, rows, max }, column) => {
+      const x = MARGIN + column * (cardW + gap);
+      doc.roundedRect(x, y, cardW, cardH, 7).fill(column === 0 ? SOFT_SURFACE : SOFT_ACCENT);
+      doc.font(HEADING).fontSize(12).fillColor(INK).text(ctx.s.dimensions[dimension], x + 12, y + 12, { width: cardW - 24, lineBreak: false });
+      let rowY = y + bodyTop;
+      for (const { item, label, height } of rows) {
+        doc.font(BODY).fontSize(TEXT).fillColor(MUTED).text(label, x + 12, rowY, { width: labelW });
+        const barY = rowY + height - 9;
+        doc.roundedRect(x + 12, barY, labelW, 3, 1.5).fill(RULE);
+        doc.roundedRect(x + 12, barY, Math.max(3, (labelW * item.visitors) / max), 3, 1.5).fill(column === 0 ? ACCENT_STRONG : ACCENT);
+        doc.font(BODY).fontSize(TEXT).fillColor(MUTED);
+        numberCell(doc, ctx, item.visitors, x + cardW - 12 - numW, rowY, numW);
+        rowY += height;
+      }
+    });
+    doc.y = y + cardH + gap;
   }
-  return `${trimmed}…`;
+  doc.y += 4;
+}
+
+/** One right-aligned numeric cell, as wide as the column; a number is never cut. */
+function numberCell(doc: PDFKit.PDFDocument, ctx: ReportContext, value: number, x: number, y: number, width: number): void {
+  doc.text(ctx.int.format(value), x, y, { width, align: 'right' });
 }
 
 function drawBreakdownSection(doc: PDFKit.PDFDocument, ctx: ReportContext, title: string, rows: PlausibleBreakdownRow[]): void {
-  // Column layout: rank | label (flexible) | visitors | pageviews.
-  const rankW = 28;
-  const numW = 78;
+  // Column layout: rank | label (flexible, wraps) | visitors | pageviews.
+  const rankW = 32;
+  const numW = 84;
   const labelW = contentWidth(doc) - rankW - numW * 2;
   const labelX = MARGIN + rankW;
   const visitorsX = labelX + labelW;
   const pageviewsX = visitorsX + numW;
+  const labelInner = labelW - 8;
 
   const drawColumnHeads = (): void => {
     const y = doc.y;
-    doc.font(BODY_BOLD).fontSize(8).fillColor(MUTED);
+    doc.font(BODY_BOLD).fontSize(TEXT).fillColor(MUTED);
     doc.text(ctx.s.rank, MARGIN, y, { width: rankW - 6, lineBreak: false });
-    doc.text(ctx.s.label, labelX, y, { width: labelW - 8, lineBreak: false });
-    doc.text(ctx.s.visitors.toUpperCase(), visitorsX, y, { width: numW, align: 'right', lineBreak: false });
-    doc.text(ctx.s.pageviews.toUpperCase(), pageviewsX, y, { width: numW, align: 'right', lineBreak: false });
-    doc
-      .moveTo(MARGIN, y + 12)
-      .lineTo(doc.page.width - MARGIN, y + 12)
-      .lineWidth(1)
-      .strokeColor(RULE)
-      .stroke();
-    doc.y = y + ROW_H;
+    doc.text(ctx.s.label, labelX, y, { width: labelInner });
+    const labelBottom = doc.y;
+    doc.text(ctx.s.visitors.toUpperCase(), visitorsX, y, { width: numW, align: 'right' });
+    const visitorsBottom = doc.y;
+    doc.text(ctx.s.pageviews.toUpperCase(), pageviewsX, y, { width: numW, align: 'right' });
+    const bottom = Math.max(labelBottom, visitorsBottom, doc.y, y + ROW_H - 4);
+    doc.moveTo(MARGIN, bottom + 2).lineTo(doc.page.width - MARGIN, bottom + 2).lineWidth(1).strokeColor(RULE).stroke();
+    doc.y = bottom + 8;
   };
 
   // Heading + column heads + first row travel together across page breaks.
-  ensureRoom(doc, 30 + ROW_H * 2);
+  ensureRoom(doc, 34 + ROW_H * 3);
   const headingY = doc.y;
-  doc.font(HEADING).fontSize(12).fillColor(INK).text(title, MARGIN, headingY, { lineBreak: false });
-  doc
-    .moveTo(MARGIN, headingY + 17)
-    .lineTo(MARGIN + 42, headingY + 17)
-    .lineWidth(2)
-    .strokeColor(ACCENT)
-    .stroke();
-  doc.y = headingY + 26;
+  doc.font(HEADING).fontSize(12).fillColor(INK).text(title, MARGIN, headingY, { width: contentWidth(doc) });
+  const underline = Math.max(doc.y, headingY + 17);
+  doc.moveTo(MARGIN, underline).lineTo(MARGIN + 42, underline).lineWidth(2).strokeColor(ACCENT).stroke();
+  doc.y = underline + 9;
   drawColumnHeads();
 
   if (rows.length === 0) {
-    doc.font(BODY).fontSize(9).fillColor(MUTED).text('No data for this period.', MARGIN, doc.y, { lineBreak: false });
-    doc.y += ROW_H + 10;
+    doc.font(BODY).fontSize(TEXT).fillColor(MUTED).text(ctx.s.noData, MARGIN, doc.y, { width: contentWidth(doc) });
+    doc.y += 14;
     return;
   }
 
   rows.forEach((row, i) => {
-    if (doc.y + ROW_H > pageBottom(doc)) {
+    // A row is as tall as its wrapped label: the whole label is printed, never trimmed.
+    const label = rowLabel(ctx, row.label);
+    doc.font(BODY).fontSize(TEXT);
+    const rowH = Math.max(ROW_H, doc.heightOfString(label, { width: labelInner }) + 8);
+    if (doc.y + rowH > pageBottom(doc)) {
       doc.addPage();
       drawColumnHeads();
     }
     const y = doc.y;
-    doc.font(BODY).fontSize(9).fillColor(MUTED);
+    doc.font(BODY).fontSize(TEXT).fillColor(MUTED);
     doc.text(String(i + 1), MARGIN, y, { width: rankW - 6, lineBreak: false });
     doc.fillColor(INK);
-    doc.text(fitLabel(doc, row.label || '(none)', labelW - 8), labelX, y, { width: labelW - 8, lineBreak: false });
+    doc.text(label, labelX, y, { width: labelInner });
     numberCell(doc, ctx, row.visitors, visitorsX, y, numW);
     numberCell(doc, ctx, row.pageviews, pageviewsX, y, numW);
-    doc
-      .moveTo(MARGIN, y + ROW_H - 5)
-      .lineTo(doc.page.width - MARGIN, y + ROW_H - 5)
-      .lineWidth(0.5)
-      .strokeColor(RULE)
-      .stroke();
-    doc.y = y + ROW_H;
+    doc.moveTo(MARGIN, y + rowH - 4).lineTo(doc.page.width - MARGIN, y + rowH - 4).lineWidth(0.5).strokeColor(RULE).stroke();
+    doc.y = y + rowH;
   });
   doc.y += 14;
 }
 
 /**
- * The caveats block — what these numbers do and do not cover.
+ * The caveats block: what these numbers do and do not cover.
  *
  * Placed at the END, after every table it qualifies, because a reader who has
  * seen a breakdown that does not add up to the headline needs the explanation
- * to be somewhere they will still be reading. The alternative — leaving it
- * out — produced two confident and entirely wrong conclusions in an outside
- * review on 2026-08-25, both of which named tracking failures that never
- * happened (WALKTHROUGH, 2026-08-27).
+ * to be somewhere they will still be reading. Leaving it out produced two
+ * confident and entirely wrong conclusions in an outside review on
+ * 2026-08-25, both of which named tracking failures that never happened
+ * (WALKTHROUGH, 2026-08-27).
  */
 /*
  * Our own audience, on the page that leaves the building.
  *
  * The rest of this report is Plausible: anonymous, consented visitors on
  * marketing pages. That is a narrower measurement than any reader assumes, and
- * a PDF is exactly where an unstated narrowing does its damage — it gets
+ * a PDF is exactly where an unstated narrowing does its damage: it gets
  * forwarded, quoted and acted on months later with no chance to ask.
  *
  * So the first-party figures travel with it, and the gap between accounts
@@ -670,18 +671,19 @@ function drawBreakdownSection(doc: PDFKit.PDFDocument, ctx: ReportContext, title
  */
 function drawOwnAudience(doc: PDFKit.PDFDocument, ctx: ReportContext, data: PlausibleReportData): void {
   const fp = data.firstParty;
-  ensureRoom(doc, 150);
+  ensureRoom(doc, 170);
   drawSectionTitle(doc, ctx.s.ownTitle, ctx.s.ownSub);
+  const width = contentWidth(doc);
 
   if (!fp) {
     // Unread is not zero, and the report says which one this is.
-    doc.font(BODY).fontSize(9).fillColor(MUTED);
-    doc.text(ctx.s.ownUnavailable, doc.page.margins.left, doc.y, { width: contentWidth(doc) });
+    doc.font(BODY).fontSize(TEXT).fillColor(MUTED);
+    doc.text(ctx.s.ownUnavailable, MARGIN, doc.y, { width });
     doc.moveDown(1);
     return;
   }
 
-  const pctOf = (v: number | null) => (v === null ? ctx.s.ownNoData : `${(v * 100).toFixed(1)}%`);
+  const pctOf = (v: number | null) => (v === null ? ctx.s.ownNoData : ctx.pct.format(v));
   const cells: [string, string][] = [
     [ctx.s.ownAnon, ctx.int.format(fp.sessions.anonymous)],
     [ctx.s.ownReg, ctx.int.format(fp.sessions.registered)],
@@ -693,25 +695,29 @@ function drawOwnAudience(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plau
     [ctx.s.ownConverted, ctx.int.format(fp.anonymousConverted)],
   ];
 
-  const width = contentWidth(doc);
   const perRow = 4;
   const cellW = width / perRow;
-  const top = doc.y;
-  cells.forEach(([label, value], index) => {
-    const col = index % perRow;
-    const row = Math.floor(index / perRow);
-    const x = doc.page.margins.left + col * cellW;
-    const y = top + row * 46;
-    doc.font(HEADING).fontSize(15).fillColor(INK);
-    doc.text(value, x, y, { width: cellW - 8 });
-    doc.font(BODY).fontSize(8).fillColor(MUTED);
-    doc.text(label, x, y + 19, { width: cellW - 8 });
-  });
-  doc.y = top + Math.ceil(cells.length / perRow) * 46 + 4;
+  let top = doc.y;
+  for (let start = 0; start < cells.length; start += perRow) {
+    const rowCells = cells.slice(start, start + perRow);
+    doc.font(BODY).fontSize(TEXT);
+    const labelH = Math.max(...rowCells.map(([label]) => doc.heightOfString(label, { width: cellW - 8 })));
+    const rowH = 21 + labelH + 10;
+    ensureRoom(doc, rowH);
+    if (doc.y < top) top = doc.y;
+    rowCells.forEach(([label, value], col) => {
+      const x = MARGIN + col * cellW;
+      doc.font(HEADING).fontSize(15).fillColor(INK).text(value, x, top, { width: cellW - 8 });
+      doc.font(BODY).fontSize(TEXT).fillColor(MUTED).text(label, x, top + 21, { width: cellW - 8 });
+    });
+    top += rowH;
+    doc.y = top;
+  }
+  doc.y = top + 4;
 
   if (fp.unobserved > 0) {
-    doc.font(BODY).fontSize(8).fillColor(MUTED);
-    doc.text(ctx.s.ownGap, doc.page.margins.left, doc.y, { width });
+    doc.font(BODY).fontSize(TEXT).fillColor(MUTED);
+    doc.text(ctx.s.ownGap, MARGIN, doc.y, { width });
     doc.moveDown(0.8);
   }
 }
@@ -740,23 +746,25 @@ function drawCaveats(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plausibl
 
   // Keep the block whole: a caveat split across a page break reads as two
   // half-sentences, and the warning line must never be the orphan.
-  const estimated = 26 + lines.length * 26;
+  const width = contentWidth(doc);
+  doc.font(BODY).fontSize(TEXT);
+  const estimated = 30 + lines.reduce((sum, line) => sum + doc.heightOfString(`•  ${line.text}`, { width }) + 5, 0);
   if (doc.y + estimated > doc.page.height - BOTTOM_MARGIN) doc.addPage();
 
-  doc.font(HEADING).fontSize(11).fillColor(INK).text(ctx.s.caveats, MARGIN, doc.y);
+  doc.font(HEADING).fontSize(12).fillColor(INK).text(ctx.s.caveats, MARGIN, doc.y, { width });
   doc.y += 6;
 
   for (const line of lines) {
     doc
       .font(line.warn ? BODY_BOLD : BODY)
-      .fontSize(8)
+      .fontSize(TEXT)
       .fillColor(line.warn ? WARNING : MUTED)
-      .text(`•  ${line.text}`, MARGIN, doc.y, { width: contentWidth(doc) });
-    doc.y += 4;
+      .text(`•  ${line.text}`, MARGIN, doc.y, { width });
+    doc.y += 5;
   }
 }
 
-/** Footer pass over the buffered pages — needs the final page count. */
+/** Footer pass over the buffered pages: it needs the final page count. */
 function drawFooters(doc: PDFKit.PDFDocument, ctx: ReportContext): void {
   const range = doc.bufferedPageRange();
   for (let i = range.start; i < range.start + range.count; i += 1) {
@@ -768,12 +776,12 @@ function drawFooters(doc: PDFKit.PDFDocument, ctx: ReportContext): void {
     doc.page.margins.bottom = 0;
     doc
       .font(BODY)
-      .fontSize(8)
+      .fontSize(TEXT)
       .fillColor(MUTED)
       .text(
         `${ctx.s.page} ${i + 1} ${ctx.s.of} ${range.count}  |  ${ctx.s.confidential}`,
         MARGIN,
-        doc.page.height - 34,
+        doc.page.height - 36,
         { width: doc.page.width - MARGIN * 2, align: 'center', lineBreak: false },
       );
     doc.page.margins.bottom = savedBottom;
@@ -792,7 +800,7 @@ export function renderAnalyticsReportPdf(
       margins: { top: MARGIN, bottom: BOTTOM_MARGIN, left: MARGIN, right: MARGIN },
       bufferPages: true,
       info: {
-        Title: `LittleFounders — ${ctx.s.title} (${ctx.s.audiences[data.audience]}, ${data.period})`,
+        Title: `LittleFounders: ${ctx.s.title} (${ctx.s.audiences[data.audience]}, ${ctx.s.periods[data.period]})`,
         Author: 'LittleFounders',
       },
     });

@@ -1,6 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import PDFDocument from 'pdfkit';
-import { drawLogo, LOGO_WORDMARK, renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
+import { drawLogo, LOGO_WORDMARK, renderAnalyticsReportPdf, REPORT_LOCALES, TEXT, type ReportLocale } from '../services/analyticsReport.js';
 import type { PlausibleReportData } from '../services/pulse.js';
 
 /*
@@ -90,5 +93,76 @@ describe('renderAnalyticsReportPdf', () => {
     const empty: PlausibleReportData = { ...DATA, timeseries: [], breakdowns: {}, previous: null };
     const pdf = await renderAnalyticsReportPdf(empty, 'es-MX');
     expect(pdf.subarray(0, 5).toString()).toBe('%PDF-');
+  });
+});
+
+/*
+ * GAP-FIX-R4 (F4-staff-ops): Bible 02 section 7 rule 1 (text never truncates
+ * or ends in an ellipsis), rule 16 (no em dash in copy), rule 11 (the 14 px
+ * floor, 10.5 pt) and section 1.2 (every word in the report's locale). Every
+ * string the renderer draws and every size it sets are recorded while a
+ * worst-case report renders in each locale.
+ */
+const LONG_LABEL = 'https://www.example.com/blog/how-families-start-saving/' + 'a-very-long-campaign-landing-page-path-that-keeps-going-'.repeat(3)
+  + ' and then a sentence with many ordinary words that has to wrap across several lines of its column without being cut';
+const WORST: PlausibleReportData = {
+  ...DATA,
+  firstParty: {
+    sessions: { anonymous: 1200, registered: 300, staff: 40 }, externalShare: 0.97, accountsCreated: 25, signupObserved: 19,
+    unobserved: 6, anonymousVisitors: 900, anonymousConverted: 12, conversionRate: 0.013,
+  },
+  appliedFilters: Array.from({ length: 8 }, (_, i) => `visit:country==${'Somewhere-with-a-long-name-'.repeat(2)}${i}`),
+  breakdowns: {
+    country: [{ label: LONG_LABEL, visitors: 900, pageviews: 1800, bounceRate: 40, visitDuration: 80 }, { label: '', visitors: 20, pageviews: 30, bounceRate: 50, visitDuration: 10 }],
+    source: [{ label: 'Direct / None', visitors: 500, pageviews: 900, bounceRate: 40, visitDuration: 80 }],
+    page: [
+      { label: LONG_LABEL, visitors: 40, pageviews: 56, bounceRate: 41, visitDuration: 90 },
+      { label: '', visitors: 4, pageviews: 5, bounceRate: 41, visitDuration: 90 },
+      ...Array.from({ length: 60 }, (_, i) => ({ label: `/lesson/${i}`, visitors: 60 - i, pageviews: 70 - i, bounceRate: 30, visitDuration: 60 })),
+    ],
+    referrer: [],
+  },
+  imports: { importsIncluded: false, importsSkipReason: null, importsWarning: null, queried: ['2026-07-16', '2026-08-14'] },
+  breakdownsWithoutImports: ['page'],
+  rangeDrift: { askedFor: ['2026-07-16', '2026-08-14'], answeredFor: ['2026-07-17', '2026-08-14'] },
+};
+const NONE: Record<ReportLocale, string> = { 'en-US': 'none', 'es-MX': 'ninguno', 'pt-BR': 'nenhum' };
+
+describe('the report text rules (02 section 7 rule 1, rules 11 and 16, section 1.2)', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  for (const locale of REPORT_LOCALES) {
+    it(`${locale}: every label whole, no ellipsis, no em dash, no untranslated "(none)", no text under 10.5 pt`, async () => {
+      const text = vi.spyOn(PDFDocument.prototype, 'text');
+      const size = vi.spyOn(PDFDocument.prototype, 'fontSize');
+      const pdf = await renderAnalyticsReportPdf(WORST, locale);
+      expect(pdf.subarray(0, 5).toString()).toBe('%PDF-');
+      const drawn = text.mock.calls.map((call) => String(call[0]));
+      const options = text.mock.calls.map((call) => call.find((arg, i) => i > 0 && typeof arg === 'object' && arg !== null) as PDFKit.Mixins.TextOptions | undefined);
+      expect(drawn.length).toBeGreaterThan(50);
+      for (const line of drawn) {
+        expect(line, line).not.toContain('…');
+        expect(line, line).not.toContain('—');
+        expect(line, line).not.toContain('(none)');
+      }
+      expect(options.some((o) => o?.ellipsis)).toBe(false);
+      // The long label is drawn whole, in the composition card and the breakdown table alike.
+      expect(drawn.filter((line) => line === LONG_LABEL).length).toBeGreaterThanOrEqual(2);
+      // An empty label reads as the locale's own word.
+      expect(drawn).toContain(NONE[locale]);
+      const sizes = size.mock.calls.map((call) => Number(call[0]));
+      expect(sizes.length).toBeGreaterThan(20);
+      expect(sizes.filter((n) => n < TEXT)).toEqual([]);
+    });
+  }
+
+  it('the 14 px floor is 10.5 pt, and no string or document title in the source carries an em dash', () => {
+    expect(TEXT).toBe(10.5);
+    const here = dirname(fileURLToPath(import.meta.url));
+    const code = readFileSync(resolve(here, '../services/analyticsReport.ts'), 'utf8')
+      .split('\n').filter((line) => !/^\s*(\*|\/\/|\/\*)/.test(line)).join('\n');
+    expect(code).not.toMatch(/'[^'\n]*—[^'\n]*'|`[^`]*—[^`]*`/);
+    expect(code).not.toContain("'(none)'");
+    expect(code).not.toContain('ellipsis');
   });
 });
