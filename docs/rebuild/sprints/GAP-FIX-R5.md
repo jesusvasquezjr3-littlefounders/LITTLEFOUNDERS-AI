@@ -60,6 +60,15 @@ code first and each was real:
   FORBIDDEN mapping, every revoke outcome). Frontend `type-check`.
 - `node --test agent/tools/check-staff-standing-constraints.test.mjs` (10),
   root `spec:check`, `secrets:check`. No copy changed (no i18n run needed).
+- Finish pass (after the lane was stopped): stale lane test processes were
+  stopped, the 0242 header was declared `contract` so `check-migration-phase`
+  agrees with its SQL, and the branch was merged with the integration
+  branch (already up to date). Re-run green: `check-migrations`,
+  `check-migration-phase` (+ phase and auto-apply gate tests, 20), the
+  publish CLI test, backend `type-check`, `lint`, `admin.test.ts` (116),
+  `check-staff-standing-constraints` tests (10), `spec:check`,
+  `secrets:check`. The native PostgreSQL verifiers were not re-run: only a
+  comment header changed since their 16 + 30 and 9/9 passes.
 
 ### Remaining
 
