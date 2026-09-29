@@ -38,3 +38,26 @@ None.
 
 - First CI run of the two `family-db-verify` jobs: confirm on the runner that the Ubuntu `psql` is found on PATH (the runner derives `LF_PG_BIN` from it) and record the job's duration.
 - The freeze proof is about 5 to 9 minutes on this machine under load. It is the slowest single verifier with the autonomy one; `LF_PG_VERIFY_JOBS` (3 in CI) bounds the job, and the timeout is 60 minutes.
+- Pre-existing, not from this lane: the migration chain cannot be replayed wholesale because of its expand/contract pairs (0199 after 0200). Any other verifier that replays "every migration from X on" will break the same way; `lf_pg_replay.replay_set()` is the shared fix.
+
+## Checkpoint F3-family-finish (lane summary)
+
+**Sync.** `codex/spec-migration-s02` merged into the lane branch: already up to date, no conflicts.
+
+**Adversarial pass against the two audited gaps.**
+
+- Gap 1 (D.1; Appendix H 1.3, 2.2 D.1(d), Part 3 Stage 2 and 7). The enforcement lives in the database functions and triggers, which is the server boundary. The proof covers the child, Tutor, stranger and anon roles on both the service and browser paths. It runs in `database-ci.yml`, where a red proof blocks the auto-apply, in the unfiltered `repo-gates.yml` and in release readiness. Nothing is missing.
+- Gap 2 (Bible 06, OD-28). The label is localized in all three locales, the copy role is declared, and only shared controls are used, no legacy component. One defect found and fixed: the minted link used a raw `font-size: .8rem`, which is below the smallest type token and breaks the tokens-only rule. It now uses `var(--type-caption)` with its tracking token (`frontend/src/rebuild/family/guardianInvite.css`). This closes the proportion concern left open at F3-family.
+
+**Final state.**
+
+| Gap | Implementation | Local verification | Acceptance / release |
+|---|---|---|---|
+| 1: D.1 freeze and Block D proofs in CI and release | Done | `family:db-verify` passed 11/11 over the whole chain (F3-family); runner self-tests green | Not accepted. The first CI run has not been observed. |
+| 2: invite link label and copy role | Done | Component tests in all three locales; type-check, lint, the full frontend suite and the i18n gate green | Not accepted. The `/family@invite-link` audit state has not been run through `audit:rebuild`. |
+
+**Verification at finish.** Frontend: type-check, lint and the full vitest suite. `database/`: `npm test`. Root: `tools:test`, `spec:check`, `secrets:check` and the i18n gate. Migrations: none.
+
+**Still open.** The first CI run of both `family-db-verify` jobs: confirm that `psql` is found on the runner's PATH and record the duration. The `/family@invite-link` audit state has not been run through `audit:rebuild`. The browser journey of the frozen card stays with the orchestrator's browser matrices.
+
+**Owner question.** Should the Block D proofs run twice on a push that touches `database/`? The conservative default keeps both runs (Appendix H 2.2 D.1(d), "green in CI on every build").
