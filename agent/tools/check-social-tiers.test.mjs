@@ -153,6 +153,14 @@ test('S-03: a later eligibility function that drops the 16+ proof, the teen tier
   }
 });
 
+test('OD-9 4.2: an eligibility function that drops the discoverable-profile consent, or a setter that stops naming it, fails', () => {
+  const body = "SELECT public.social_tier(p_user) = 'teen' AND public.age_at_least_by_birth_month(p_user, 16) OR interval '16 years' IS NOT NULL AND NOT public.profile_fields_flagged(p_user)";
+  withFixture((root) => laterMigration(root, `-- @phase: contract\nCREATE OR REPLACE FUNCTION public.teen_discoverable_eligible(p_user uuid)\nRETURNS boolean LANGUAGE sql AS $$ ${body}; $$;\n`),
+    /no longer requires data_practice_applies\(p_user, 'sharing\.discoverable_profile'\)/);
+  withFixture((root) => laterMigration(root, `-- @phase: contract\nCREATE OR REPLACE FUNCTION public.set_teen_profile_discoverable(p_user uuid, p_discoverable boolean)\nRETURNS boolean LANGUAGE plpgsql AS $$ BEGIN IF p_discoverable AND NOT public.teen_discoverable_eligible(p_user) THEN RAISE EXCEPTION 'DISCOVERABLE_NOT_ELIGIBLE'; END IF; INSERT INTO public.audit_logs DEFAULT VALUES; RETURN p_discoverable; END; $$;\n`),
+    /name a missing OD-9 consent/);
+});
+
 test('S-03: a discoverable reader that stops re-checking eligibility, or an unaudited setter, fails', () => {
   withFixture((root) => laterMigration(root, `-- @phase: contract\nCREATE OR REPLACE FUNCTION public.teen_profile_discoverable(p_user uuid)\nRETURNS boolean LANGUAGE sql AS $$ SELECT true; $$;\n`), /must re-check eligibility on every read/);
   withFixture((root) => laterMigration(root, `-- @phase: contract\nCREATE OR REPLACE FUNCTION public.set_teen_profile_discoverable(p_user uuid, p_discoverable boolean)\nRETURNS boolean LANGUAGE sql AS $$ SELECT p_discoverable; $$;\n`), /must refuse an ineligible opt-in and audit every change/);

@@ -36,7 +36,8 @@
     "sharing": {
       "social_connections": "Connections with approved friends",
       "learning_family_bridge": "Lesson ideas for the family",
-      "cooperative_goals": "Goals together with mutual friends"
+      "cooperative_goals": "Goals together with mutual friends",
+      "discoverable_profile": "A profile others can find"
     },
     "research": { "family_longitudinal": "Research, in its own section" }
   },

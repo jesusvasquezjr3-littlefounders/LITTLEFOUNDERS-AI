@@ -520,7 +520,8 @@
     "saved": "Saved.",
     "failed": "This change was not saved. Try again.",
     "offline": "You are offline. Nothing was saved.",
-    "notEligible": "This choice is not available for your account now."
+    "notEligible": "This choice is not available for your account now.",
+    "consentRequired": "A Tutor must allow this first."
   },
   "ageRecord": {
     "title": "Your age group",

@@ -271,4 +271,35 @@ describe('Settings (P3): a 16-17-year-old\'s choice to be found (OD-27 (2))', ()
     expect(within(section).queryByRole('switch')).toBeNull();
     expect(within(section).getByText('Your profile is private. Only people you accept can see it.')).toBeInTheDocument();
   });
+
+  // OD-9 4.2 (GAP-FIX-R3): a migrated teen whose Tutor has not consented yet.
+  it('says a Tutor must allow it first, with no switch, when Core names the missing consent', async () => {
+    routes['GET /profile'] = TEEN({ canChoose: false, enabled: false, reason: 'DATA_PRACTICE_CONSENT_REQUIRED' });
+    renderSettings();
+    const section = await card();
+    expect(within(section).getByText('A Tutor must allow this first.')).toBeInTheDocument();
+    expect(within(section).queryByRole('switch')).toBeNull();
+    expect(within(section).getByText('Your profile is private. Only people you accept can see it.')).toBeInTheDocument();
+    expect(put()).toEqual([]);
+  });
+
+  it('an unknown reason names nothing and offers nothing', async () => {
+    routes['GET /profile'] = TEEN({ canChoose: false, enabled: false, reason: 'SOMETHING_ELSE' });
+    const view = renderSettings();
+    await screen.findByLabelText('Name');
+    expect(screen.queryByText('Who can find you')).toBeNull();
+    view.unmount();
+  });
+
+  it('hides the switch and says a Tutor must allow it when Core refuses for the missing consent', async () => {
+    routes['GET /profile'] = TEEN({ canChoose: true, enabled: false });
+    routes['PUT /profile/discoverable'] = refuse('DATA_PRACTICE_CONSENT_REQUIRED');
+    renderSettings();
+    const section = await card();
+    fireEvent.click(within(section).getByRole('switch', { name: 'Let people find my profile' }));
+    fireEvent.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Turn on' }));
+    expect(await within(section).findByText('A Tutor must allow this first.')).toBeInTheDocument();
+    expect(within(section).getAllByText('A Tutor must allow this first.')).toHaveLength(1);
+    expect(within(section).queryByRole('switch')).toBeNull();
+  });
 });

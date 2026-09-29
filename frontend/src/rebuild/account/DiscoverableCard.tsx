@@ -11,21 +11,31 @@ import { Card, ConfirmDialog, Copy, InlineNotice, Switch } from '../design/contr
  * turning it off is one press. What does not change is said on the card:
  * people still ask before they follow (the teen decides, E.8), and nobody can
  * write to them (E.10). Copy-only, no transport: the route owns the data plane.
+ *
+ * OD-9 section 4.2 (GAP-FIX-R3): for a migrated teen, being discoverable is a
+ * data practice a Tutor must consent to first. Core names that reason
+ * (`reason: 'consentRequired'`) only when it is the one thing missing; the
+ * card then shows, without a switch, that a Tutor must allow it first.
  */
 
 export interface DiscoverableCopy {
   title: string; privateBody: string; onBody: string; rules: string; label: string; on: string; off: string;
   confirmTitle: string; confirmBody: string; confirmKeep: string; confirmYes: string;
-  saving: string; saved: string; failed: string; offline: string; notEligible: string;
+  saving: string; saved: string; failed: string; offline: string; notEligible: string; consentRequired: string;
 }
 
-export type DiscoverableStatus = 'saved' | 'failed' | 'offline' | 'notEligible' | null;
+export type DiscoverableStatus = 'saved' | 'failed' | 'offline' | 'notEligible' | 'consentRequired' | null;
 
-export interface DiscoverableView { enabled: boolean; canChoose: boolean; confirming: boolean; saving: boolean; status: DiscoverableStatus }
+/** Why an otherwise eligible teen is not offered the choice (OD-9 4.2). */
+export type DiscoverableReason = 'consentRequired' | null;
 
-/** Shown only where Core offers the choice, or while it is on. */
-export function discoverableVisible(state: { enabled: boolean; canChoose: boolean } | null): boolean {
-  return !!state && (state.canChoose || state.enabled);
+export interface DiscoverableView {
+  enabled: boolean; canChoose: boolean; reason: DiscoverableReason; confirming: boolean; saving: boolean; status: DiscoverableStatus;
+}
+
+/** Shown only where Core offers the choice, while it is on, or where a Tutor's consent is the one thing missing. */
+export function discoverableVisible(state: { enabled: boolean; canChoose: boolean; reason: DiscoverableReason } | null): boolean {
+  return !!state && (state.canChoose || state.enabled || state.reason === 'consentRequired');
 }
 
 export function DiscoverableCard({ copy, view, onToggle, onConfirm, onKeep }: {
@@ -39,7 +49,10 @@ export function DiscoverableCard({ copy, view, onToggle, onConfirm, onKeep }: {
   const notice = view.status === 'saved' ? <InlineNotice tone="success">{copy.saved}</InlineNotice>
     : view.status === 'failed' ? <InlineNotice tone="error">{copy.failed}</InlineNotice>
       : view.status === 'offline' ? <InlineNotice tone="error">{copy.offline}</InlineNotice>
-        : view.status === 'notEligible' ? <InlineNotice tone="info">{copy.notEligible}</InlineNotice> : null;
+        : view.status === 'notEligible' ? <InlineNotice tone="info">{copy.notEligible}</InlineNotice>
+          : view.status === 'consentRequired' ? <InlineNotice tone="info">{copy.consentRequired}</InlineNotice> : null;
+  // The standing reason, when no switch is offered and no receipt already says it.
+  const waiting = !view.canChoose && !view.enabled && view.reason === 'consentRequired' && view.status !== 'consentRequired';
   return <Card heading={copy.title}>
     <div className="lf-settings-form" data-setting="discoverable">
       <Copy role="body">{view.enabled ? copy.onBody : copy.privateBody}</Copy>
@@ -48,6 +61,7 @@ export function DiscoverableCard({ copy, view, onToggle, onConfirm, onKeep }: {
         ? <Switch label={copy.label} checked={view.enabled} pending={view.saving} stateLabels={{ on: copy.on, off: copy.off }}
           disabled={!view.enabled && !view.canChoose} onCheckedChange={onToggle} />
         : null}
+      {waiting ? <InlineNotice tone="info">{copy.consentRequired}</InlineNotice> : null}
       <div className="lf-account-live" aria-live="polite">
         {view.saving ? <InlineNotice tone="info">{copy.saving}</InlineNotice> : notice}
       </div>

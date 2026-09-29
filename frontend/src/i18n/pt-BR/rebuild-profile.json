@@ -520,7 +520,8 @@
     "saved": "Salvo.",
     "failed": "Esta mudança não foi salva. Tente de novo.",
     "offline": "Você está sem conexão. Nada foi salvo.",
-    "notEligible": "Esta opção não está disponível para sua conta agora."
+    "notEligible": "Esta opção não está disponível para sua conta agora.",
+    "consentRequired": "Primeiro um Tutor precisa permitir."
   },
   "ageRecord": {
     "title": "Sua faixa de idade",

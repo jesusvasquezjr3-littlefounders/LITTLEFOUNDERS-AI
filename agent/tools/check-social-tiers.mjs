@@ -27,7 +27,8 @@ import { fileURLToPath } from 'node:url';
  *      write guard on profiles is in place.
  *   5. The written policy states the tier table, the E.9 decision and the
  *      E.13 field audit.
- *   6. S-03 (OD-27 (2)): the 16-17 discoverable-profile opt-in stays narrow.
+ *   6. S-03 (OD-27 (2)): the 16-17 discoverable-profile opt-in stays narrow,
+ *      and applies to a migrated child only with the specific OD-9 consent.
  *      The latest eligibility function still requires the teen tier, proven
  *      16+ age evidence and an unflagged profile; the latest visibility
  *      function consults only the eligibility-checked reader; Core's teen case
@@ -150,13 +151,16 @@ export function checkSocialTiers(root) {
 
   // 6. S-03 (OD-27 (2)): the discoverable opt-in, only for a proven 16-17-year-old teen.
   const eligibleSql = latestDefinition(root, 'teen_discoverable_eligible');
-  for (const needle of ["social_tier(p_user) = 'teen'", 'age_at_least_by_birth_month(p_user, 16)', "interval '16 years'", 'NOT public.profile_fields_flagged(p_user)']) {
+  // OD-9 4.2 (GAP-FIX-R3): a new sharing surface applies to a migrated child only with its specific consent.
+  for (const needle of ["social_tier(p_user) = 'teen'", 'age_at_least_by_birth_month(p_user, 16)', "interval '16 years'", 'NOT public.profile_fields_flagged(p_user)',
+    "data_practice_applies(p_user, 'sharing.discoverable_profile')"]) {
     if (!eligibleSql || !eligibleSql.body.includes(needle)) failures.push(`${eligibleSql?.file ?? 'database/migrations'}: the latest teen_discoverable_eligible no longer requires ${needle} (S-03, OD-27)`);
   }
   const discoverableSql = latestDefinition(root, 'teen_profile_discoverable');
   if (!discoverableSql || !discoverableSql.body.includes('teen_discoverable_eligible(p_user)')) failures.push(`${discoverableSql?.file ?? 'database/migrations'}: teen_profile_discoverable must re-check eligibility on every read (S-03)`);
   const setSql = latestDefinition(root, 'set_teen_profile_discoverable');
   if (!setSql || !setSql.body.includes('DISCOVERABLE_NOT_ELIGIBLE') || !setSql.body.includes('audit_logs')) failures.push(`${setSql?.file ?? 'database/migrations'}: set_teen_profile_discoverable must refuse an ineligible opt-in and audit every change (S-03)`);
+  if (!setSql || !setSql.body.includes('teen_discoverable_eligible(p_user)') || !setSql.body.includes('DATA_PRACTICE_CONSENT_REQUIRED')) failures.push(`${setSql?.file ?? 'database/migrations'}: set_teen_profile_discoverable must refuse what teen_discoverable_eligible refuses and name a missing OD-9 consent (DATA_PRACTICE_CONSENT_REQUIRED)`);
   if (visible && /teen_profile_discoverable|teen_discoverable/.test(visible.body) && !/teen_profile_discoverable\(p_subject\)/.test(visible.body)) failures.push(`${visible.file}: social_subject_visible may consult only teen_profile_discoverable(p_subject) (S-03)`);
   if (visible && /teen_profile_discoverable\(p_subject\)/.test(visible.body) && !/NOT public\.profile_fields_flagged\(p_subject\) AND \([\s\S]*teen_profile_discoverable\(p_subject\)/.test(visible.body)) failures.push(`${visible.file}: a discoverable teen must stay behind the E.13 flag check (S-03)`);
   const teenCase = /case 'teen':([\s\S]*?)return 'card';/.exec(visibility)?.[1] ?? '';

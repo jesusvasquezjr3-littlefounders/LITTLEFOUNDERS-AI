@@ -350,7 +350,7 @@ Nine audited gaps, each verified in the code before it was fixed. All nine were 
 ### Owner questions (conservative default implemented)
 
 1. **Self-registered migrated teens and goals together.** `sharing.cooperative_goals` is Tutor-only (`teen_self_consent = false`, like `sharing.social_connections`), so a self-registered 13-17 account the OD-9 step marks as a migrated child cannot take part until a verified Tutor consents. Should a teen with no Tutor be able to consent to this one practice themselves (H.1's self-managed model)?
-2. **Teen discoverable profile (0184).** Not yet registered as a data practice; the new two-account pin records it as pending the owner's answer to the open question on it.
+2. **Teen discoverable profile (0184).** Not yet registered as a data practice; the new two-account pin records it as pending the owner's answer to the open question on it. *Resolved in [GAP-FIX-R3 F3-data-platform](GAP-FIX-R3.md#f3-data-platform): registered as `sharing.discoverable_profile` and enforced, the conservative default (OD-10).*
 3. **Retire-catalog comparison baseline.** The task named "compare against before". At T plus 7 days ordinary activity has changed promised records since the before inventory, so the command compares a `pre_retire` snapshot taken immediately before archiving with the `retired` one (the proof also compares before with after, as before). Confirm this is the intended check.
 
 ### Remaining

@@ -30,6 +30,9 @@ export const states = [
     { readyAlso: ['[data-screen="settings"] .lf-settings-blocked li', '.lf-disposition dl', '.lf-account-deletion', '.lf-session-preferences'] }),
   app('/profile/settings@teen', '/profile/settings', 'settings-teen', '.lf-analytics-choice [role="switch"]',
     { readyAlso: ['.lf-memory-self-review .lf-memory-note', '[data-screen="settings"] .lf-settings-form', '.lf-disposition dl', '[data-setting="discoverable"] [role="switch"]'] }),
+  // OD-9 4.2 (GAP-FIX-R3): a migrated 16-17 whose Tutor has not consented to the discoverable profile: no switch, one line.
+  app('/profile/settings@teen-consent-required', '/profile/settings', 'settings-teen-consent', '[data-setting="discoverable"] .lf-notice--info',
+    { readyAlso: ['[data-screen="settings"] .lf-settings-form'] }),
   app('/profile/settings@kid-6-9', '/profile/settings', 'profile-kid', '[data-screen="settings"][data-age-band="6-9"] [data-field="username"]',
     { readyAlso: ['.lf-disposition dl', '.lf-account-deletion'] }),
   app('/profile/settings@guest', '/profile/settings', 'profile-guest', '[data-screen="settings"] .lf-card--primary', { readyAlso: ['.lf-account-deletion'] }),
@@ -91,6 +94,9 @@ export const scenarios = {
     profile: profile({ displayName: 'Rio Montes', username: 'rio_montes', birthDate: '2009-06-02',
       // OD-27 (2): a 17-year-old Core offers the choice to be found; private until they turn it on.
       social: { tier: 'teen', privateProfile: true, discoverable: { canChoose: true, enabled: false } } }), deletion: 'grace' },
+  'settings-teen-consent': { population: 'migrated teen 16-17, Tutor consent to the discoverable profile missing (OD-9 4.2)', guest: false, ageBand: '13-17',
+    profile: profile({ displayName: 'Rio Montes', username: 'rio_montes', birthDate: '2009-06-02',
+      social: { tier: 'teen', privateProfile: true, discoverable: { canChoose: false, enabled: false, reason: 'DATA_PRACTICE_CONSENT_REQUIRED' } } }), deletion: 'grace' },
   'profile-adult': { population: 'adult', guest: false, ageBand: 'adult', mentor: 'liruf', profile: profile({ birthDate: null }), blocked: BLOCKED, deletion: 'grace' },
   'profile-tutor': { population: 'verified parent (Tutor)', guest: false, ageBand: 'adult', roles: ['parent'], profile: profile({ displayName: 'Jesús Vásquez', isTutor: true }), deletion: 'grace' },
   'profile-teen': { population: 'independent teen 13-17, E.13-flagged handle', guest: false, ageBand: '13-17', mentor: 'dina', teenRequests: true,
