@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { useTheme } from '@/theme/useTheme';
-import { decideMemoryNote, getOwnPendingMemoryNotes, type PendingMemoryNote, type PendingMemoryNotes } from '@/rebuild/mentor/session/tutorApi';
-import { MemorySelfReview, type SettledVerdict, type Verdict } from '@/rebuild/memory/MemorySelfReview';
+import { decideMemoryNote, deleteOwnMemoryNote, getOwnPendingMemoryNotes, type PendingMemoryNote, type PendingMemoryNotes } from '@/rebuild/mentor/session/tutorApi';
+import { MemorySelfReview, type MemoryStore, type NoteDeletion, type SettledVerdict, type Verdict } from '@/rebuild/memory/MemorySelfReview';
 import en from '@/i18n/en-US/rebuild-profile.json';
 import es from '@/i18n/es-MX/rebuild-profile.json';
 import pt from '@/i18n/pt-BR/rebuild-profile.json';
@@ -25,6 +25,10 @@ import pt from '@/i18n/pt-BR/rebuild-profile.json';
  * A read failure is a failure state with retry, never an empty queue: those
  * are the same screen with opposite meanings. A 409 (already decided / out
  * of date) refreshes the queue instead of claiming the decision landed.
+ *
+ * GAP-FIX-R5 (C.4, OD-18): the teen can also DELETE a stored note. The call
+ * names the exact text on screen, so a note that changed in the meantime is
+ * never removed unseen: Core answers 409 and the queue reloads with a notice.
  */
 
 const isProposal = (value: unknown): value is PendingMemoryNote => {
@@ -65,6 +69,7 @@ function AccountMemoryReview() {
   const [failedId, setFailedId] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [noticeKind, setNoticeKind] = useState<'alert' | 'status' | null>(null);
+  const [deletions, setDeletions] = useState<Partial<Record<MemoryStore, NoteDeletion>>>({});
   const generation = useRef(0);
 
   useEffect(() => {
@@ -73,6 +78,7 @@ function AccountMemoryReview() {
     setDeciding(null);
     setSettled({});
     setFailedId(null);
+    setDeletions({});
     // A conflict notice set just before this reload must survive it.
     void (async () => {
       try {
@@ -138,11 +144,47 @@ function AccountMemoryReview() {
     }
   }
 
+  async function deleteNote(store: MemoryStore) {
+    const expected = queue?.current[store];
+    if (!expected) return;
+    const current = generation.current;
+    setNotice(null);
+    setNoticeKind(null);
+    setDeletions((prev) => ({ ...prev, [store]: undefined }));
+    try {
+      const token = await getToken();
+      if (current !== generation.current) return;
+      if (!token) { setPhase('hidden'); return; }
+      const result = await deleteOwnMemoryNote(token, store, expected);
+      if (current !== generation.current) return;
+      if (result.error?.code === 'GUARDIAN_MANAGED' || result.error?.code === 'AGE_EVIDENCE_REQUIRED' || result.error?.code === 'UNAUTHORIZED') {
+        // No longer this teen's to decide: re-confirm eligibility from the server.
+        setAttempt((value) => value + 1);
+        return;
+      }
+      if (result.error?.code === 'NOTE_OUT_OF_DATE' || result.error?.code === 'NOT_FOUND') {
+        setNotice(copy.changed);
+        setNoticeKind('alert');
+        setAttempt((value) => value + 1);
+        return;
+      }
+      if (result.error || !result.data?.deleted) {
+        setDeletions((prev) => ({ ...prev, [store]: 'failed' }));
+        return;
+      }
+      setDeletions((prev) => ({ ...prev, [store]: 'deleted' }));
+      setQueue((prev) => prev ? { notes: prev.notes, current: { ...prev.current, [store]: null } } : prev);
+    } catch {
+      if (current === generation.current) setDeletions((prev) => ({ ...prev, [store]: 'failed' }));
+    }
+  }
+
   if (phase === 'hidden') return null;
   return <MemorySelfReview copy={copy} locale={locale} dark={isDark}
     phase={phase === 'loading' ? 'loading' : phase === 'failed' ? 'failed' : 'ready'}
     notes={queue?.notes ?? []} current={queue?.current ?? { learner: null, pedagogy: null }}
     deciding={deciding} settled={settled} failedId={failedId} notice={notice} noticeKind={noticeKind}
     onDecide={(id, verdict) => void decide(id, verdict)}
+    deletions={deletions} onDeleteNote={deleteNote}
     onRetry={() => { setNotice(null); setNoticeKind(null); setAttempt((value) => value + 1); }} />;
 }

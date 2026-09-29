@@ -449,6 +449,21 @@ export async function decideMemoryNote(transport: ConsoleTransport, noteId: stri
   return result.code === 'NOTE_OUT_OF_DATE' || result.code === 'ALREADY_DECIDED' ? 'stale' : 'failed';
 }
 
+/**
+ * GAP-FIX-R5 (C.4, OD-18): the verified Tutor deletes a STORED note. `expected`
+ * is the note the Tutor was shown; Core deletes only while the note still
+ * reads exactly that, and re-checks the verified link on every call.
+ * 'stale': the note changed (or is already gone) since it was read.
+ */
+export type MemoryDeletion = 'deleted' | 'stale' | 'failed';
+
+export async function deleteMemoryNote(transport: ConsoleTransport, kidId: string, store: MemoryStore, expected: string): Promise<MemoryDeletion> {
+  const result = await call(transport, `/tutor/kids/${kid(kidId)}/memory/${store}`,
+    (data): data is { deleted: true } => isObject(data) && data.deleted === true, { method: 'DELETE', body: { expected } });
+  if (result.ok) return 'deleted';
+  return result.code === 'NOTE_OUT_OF_DATE' || result.code === 'NOT_FOUND' ? 'stale' : 'failed';
+}
+
 // C.7: the learner disposition profile, read by the verified Tutor.
 
 const HELP = ['independent', 'hint_seeking', 'tell_early', 'unknown'];

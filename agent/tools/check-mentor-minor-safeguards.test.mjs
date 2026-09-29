@@ -106,3 +106,27 @@ test('the parsers: comments never count, the condition is the if around the test
   assert.equal(isSole("!roles.includes('kid')"), true);
   assert.equal(isSole("roles.includes('kid') || guardians.length > 0"), false);
 });
+
+test('RED when deleting a stored note stops reading classifyMemoryReview or the guardian link (GAP-FIX-R5, C.4 / OD-18)', () => {
+  failing(
+    patched(FILES.tutor, "const reviewer = await classifyMemoryReview(user.id);\n    if (reviewer === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve memory review eligibility');\n    if (reviewer === 'guardian-review') return fail(res, 403, 'GUARDIAN_MANAGED', 'A verified Tutor manages these notes');",
+      "const reviewer = 'self-review' as string;"),
+    'memory-review',
+    'DELETE /memory/:store no longer reads classifyMemoryReview',
+  );
+  failing(
+    patched(FILES.tutor, "if (reviewer === 'hold') return fail(res, 403, 'AGE_EVIDENCE_REQUIRED', 'Complete the age check first');\n    const refused", 'const refused'),
+    'memory-review',
+    'no longer refuses the hold population',
+  );
+  failing(
+    patched(FILES.tutor, "router.delete('/memory/:store'", "router.delete('/memory-note/:store'"),
+    'memory-review',
+    "DELETE /memory/:store route is gone",
+  );
+  failing(
+    patched(FILES.tutor, "    if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');\n    const refused = await clearNote(", '    const refused = await clearNote('),
+    'memory-review',
+    'no longer re-checks the verified guardian link',
+  );
+});

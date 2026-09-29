@@ -60,6 +60,38 @@ export const states = [
   screen('roleplay-dina-zara-6-9', { age: '6-9', character: 'dina', companion: 'zara', state: 'roleplay' }, { readyAll: ['[data-roleplay] .lf-mentor-plate-speaker'] }),
   screen('roleplay-rho-adult', { age: 'adult', character: 'rho', state: 'roleplay' }, { readyAll: ['[data-roleplay] .lf-mentor-plate-speaker'] }),
   screen('first-visit-chooser-rho-6-9', { age: '6-9', character: 'rho', state: 'first-visit' }, { readyAll: ['[role="dialog"] .lf-list'] }),
+  /* GAP-FIX-R5 (08 §10 item 5, 08 §4, 02 §7 item 10, 06 §7, 03 §5): every mounted Mentor screen state the three audits did not
+     measure, spread over the child bands: the goal-agreement chips (C.15), the stop-or-continue choice (C.8/C.12), the likely-answer
+     chips (08 §2 layer 5), the 'Thinking' status plate, the microphone level, the live error notice, the transcript and grown-up
+     sheets, the OD-28 recap's 'Finish now' chip and the start-over ConfirmDialog. */
+  screen('goal-dina-6-9', { age: '6-9', character: 'dina', state: 'goal' }, { readyAll: ['[data-screen="mentor-goal-check"] [data-goal]'] }),
+  screen('goal-rho-13-17', { age: '13-17', character: 'rho', state: 'goal' }, { readyAll: ['[data-screen="mentor-goal-check"] [data-goal]'] }),
+  screen('session-end-liruf-6-9', { age: '6-9', character: 'liruf', state: 'session-end' }, { readyAll: ['[data-screen="mentor-session-end-choice"] button'] }),
+  screen('session-end-zara-10-12', { age: '10-12', character: 'zara', state: 'session-end' }, { readyAll: ['[data-screen="mentor-session-end-choice"] button'] }),
+  screen('replies-6-9', { age: '6-9', character: 'dina', state: 'conversing', replies: '1' }, { readyAll: ['[data-reply]'] }),
+  screen('replies-rho-13-17', { age: '13-17', character: 'rho', state: 'conversing', replies: '1' }, { readyAll: ['[data-reply]'] }),
+  screen('thinking-zara-6-9', { age: '6-9', character: 'zara', state: 'thinking' }, { readyAll: ['.lf-mentor-plate[data-plate="status"]'] }),
+  screen('thinking-rho-13-17', { age: '13-17', character: 'rho', state: 'thinking' }, { readyAll: ['.lf-mentor-plate[data-plate="status"]'] }),
+  screen('recording-dina-6-9', { age: '6-9', character: 'dina', state: 'recording' }, { readyAll: ['.lf-mentor-level'] }),
+  screen('recording-liruf-10-12', { age: '10-12', character: 'liruf', state: 'recording' }, { readyAll: ['.lf-mentor-level'] }),
+  screen('error-liruf-6-9', { age: '6-9', character: 'liruf', state: 'error' }, { readyAll: ['.lf-mentor-screen [role="alert"]'] }),
+  screen('error-zara-13-17', { age: '13-17', character: 'zara', state: 'error' }, { readyAll: ['.lf-mentor-screen [role="alert"]'] }),
+  screen('transcript-dina-6-9', { age: '6-9', character: 'dina', state: 'conversing', sheet: 'transcript' }, { readyAll: ['[role="dialog"] .lf-mentor-transcript'] }),
+  screen('transcript-rho-10-12', { age: '10-12', character: 'rho', state: 'conversing', sheet: 'transcript' }, { readyAll: ['[role="dialog"] .lf-mentor-transcript'] }),
+  screen('grown-up-6-9', { age: '6-9', character: 'dina', state: 'openings', sheet: 'grown-up', guardian: '1' }, { readyAll: ['[role="dialog"] .lf-sheet-body p'] }),
+  screen('recap-dina-6-9', { age: '6-9', character: 'dina', state: 'conversing', recap: '1' }, { readyAll: ['[data-finish-now]'] }),
+  screen('recap-zara-13-17', { age: '13-17', character: 'zara', state: 'conversing', recap: '1' }, { readyAll: ['[data-finish-now]'] }),
+  screen('start-over-liruf-10-12', { age: '10-12', character: 'liruf', state: 'conversing', dialog: 'start-over' }, { readyAll: ['[role="alertdialog"] [data-confirm="confirm"]'] }),
+  screen('start-over-rho-13-17', { age: '13-17', character: 'rho', state: 'conversing', dialog: 'start-over' }, { readyAll: ['[role="alertdialog"] [data-confirm="confirm"]'] }),
+  /* GAP-FIX-R5: the four standalone Mentor preview screens (preview/registry/mentor.tsx), which were in no lane. */
+  ...['completed', 'interrupted', 'learner_left', 'safety_stop'].map((script, n) => preview(`mentor-session-end@${script}-${['6-9', '10-12', '13-17', '6-9'][n]}`,
+    { screen: 'mentor-session-end', age: ['6-9', '10-12', '13-17', '6-9'][n], script }, { readyAll: [`[data-closing-script="${script}"] h2`] })),
+  preview('mentor-goal-check@6-9', { screen: 'mentor-goal-check', age: '6-9' }, { readyAll: ['[data-goal="agree"]'] }),
+  preview('mentor-goal-check@13-17', { screen: 'mentor-goal-check', age: '13-17' }, { readyAll: ['[data-goal="agree"]'] }),
+  preview('mentor-alliance-check@completed-10-12', { screen: 'mentor-alliance-check', age: '10-12', script: 'completed' }, { readyAll: ['[data-bond]'] }),
+  preview('mentor-alliance-check@safety-stop-6-9', { screen: 'mentor-alliance-check', age: '6-9', script: 'safety_stop' }, { readyAll: ['[data-screen="mentor-alliance-check"]'] }),
+  preview('mentor-profile@own-13-17', { screen: 'mentor-profile', age: '13-17', audience: 'own' }, { readyAll: ['[data-screen="mentor-profile"] h2'] }),
+  preview('mentor-profile@child-adult', { screen: 'mentor-profile', age: 'adult', audience: 'child' }, { readyAll: ['[data-screen="mentor-profile"] h2'] }),
   /* The real route, signed in: a child in a family, an independent teen and an adult, answered by the synthetic Core. */
   app('/tutor@mentor-screen-child', '/tutor', 'mentor-screen-child', '.lf-mentor-screen[data-phase="openings"]'),
   app('/tutor@mentor-screen-teen', '/tutor', 'mentor-screen-teen', '.lf-mentor-screen[data-phase="openings"]'),

@@ -34,7 +34,9 @@
  *                    preflight, the voice-consent read) takes the resolved
  *                    indicator, or asks about a guardian's own child.
  *   memory-review    C.4: every memory-review decision compares a value bound
- *                    from classifyMemoryReview.
+ *                    from classifyMemoryReview; deleting a stored note reads
+ *                    it for the owner (refusing guardian-review and hold) and
+ *                    re-checks the verified guardian link for a Tutor.
  *   oracle-admission C.2/C.3: Oracle's moderation mode, microphone and resume
  *                    posture read only the context's `isMinor`; no role, age
  *                    band or birth date reaches Oracle's admission code.
@@ -271,6 +273,28 @@ export function auditMinorSafeguards(read, { allowlist = ALLOWLIST } = {}) {
   for (const m of tutor.matchAll(/(\w+)\s*[!=]==\s*'(guardian-review|self-review|adult-direct|hold)'/g)) {
     if (classifier && m.index >= classifier.start && m.index < classifier.end) continue;
     if (!bound.has(m[1])) reviewFindings.push(`${FILES.tutor}:${tutor.slice(0, m.index).split('\n').length}: a memory-review decision on ${m[1]}, which is not bound from classifyMemoryReview`);
+  }
+  // GAP-FIX-R5 (C.4, OD-18): deleting a STORED note is a memory-review decision too.
+  // The owner's delete reads classifyMemoryReview for the caller and refuses the
+  // guardian-reviewed and held populations; the guardian's delete re-checks the
+  // verified link on every call.
+  const ownDelete = /router\.delete\(\s*'\/memory\/:store'[\s\S]*?\n {2}\}\);/.exec(tutor)?.[0];
+  if (!ownDelete) reviewFindings.push(`${FILES.tutor}: the note owner's DELETE /memory/:store route is gone — a stored note must stay deletable (C.4, OD-18)`);
+  else {
+    const binding = /\b(?:const|let)\s+(\w+)\s*=\s*await\s+classifyMemoryReview\(user\.id\)/.exec(ownDelete);
+    if (!binding) reviewFindings.push(`${FILES.tutor}: DELETE /memory/:store no longer reads classifyMemoryReview for the caller`);
+    else {
+      for (const refused of ['guardian-review', 'hold']) {
+        if (!new RegExp(`if \\(${binding[1]} === '${refused}'\\) return fail\\(res, 403`).test(ownDelete)) {
+          reviewFindings.push(`${FILES.tutor}: DELETE /memory/:store no longer refuses the ${refused} population with 403`);
+        }
+      }
+    }
+  }
+  const guardianDelete = /router\.delete\(\s*'\/kids\/:kidUserId\/memory\/:store'[\s\S]*?\n {2}\}\);/.exec(tutor)?.[0];
+  if (!guardianDelete) reviewFindings.push(`${FILES.tutor}: the guardian's DELETE /kids/:kidUserId/memory/:store route is gone (C.4, OD-18)`);
+  else if (!/await isVerifiedGuardian\(user\.id, kidUserId\.data\)[\s\S]*if \(!guardian\) return fail\(res, 403/.test(guardianDelete)) {
+    reviewFindings.push(`${FILES.tutor}: DELETE /kids/:kidUserId/memory/:store no longer re-checks the verified guardian link`);
   }
   checks.push(check('memory-review', 'C.4', 'Every memory-review decision comes from classifyMemoryReview', reviewFindings));
 

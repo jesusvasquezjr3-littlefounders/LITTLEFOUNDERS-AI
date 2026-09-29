@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Slider } from '../design/controls';
+import { useLessonStageRequest } from './lessonStage';
 
 export interface StepReplayLabels {
   previous: string;
@@ -17,6 +18,8 @@ export function StepReplay({ steps, index, onChange, labels }: {
   labels: StepReplayLabels;
 }) {
   const [playing, setPlaying] = useState(false);
+  // GAP-FIX-R5 (08 §11): a replayed step on screen is the Mentor demonstrating beside the board.
+  useLessonStageRequest('demonstrating');
 
   useEffect(() => {
     if (!playing || index >= steps) return;

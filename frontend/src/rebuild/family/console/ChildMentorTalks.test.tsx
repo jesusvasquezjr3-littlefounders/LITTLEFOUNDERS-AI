@@ -234,6 +234,55 @@ describe('ChildMentorTalks (F3): the note, the profile, the kept boards, the sta
     await screen.findByText(notes.allDone);
   });
 
+  // GAP-FIX-R5 (C.4, OD-18, S01.4): the Tutor can delete the note in force, not only refuse a suggestion.
+  it('deletes the note in force only after the ConfirmDialog, naming the exact text, then says so', async () => {
+    let deleted = false;
+    const { transport } = setup({
+      [`GET /tutor/kids/${KID_A}/memory-proposals`]: () => ok(deleted
+        ? notesWire({ current: { learner: 'Loves bikes.', pedagogy: null }, proposals: notesWire().proposals.slice(0, 2) })
+        : notesWire()),
+      [`DELETE /tutor/kids/${KID_A}/memory/pedagogy`]: () => { deleted = true; return ok({ deleted: true, store: 'pedagogy' }); },
+    });
+    await screen.findByRole('heading', { level: 3, name: notes.pedagogyStore });
+    const pedagogy = document.querySelector('.lf-console-note-store[data-memory-store="pedagogy"]') as HTMLElement;
+    const trigger = within(pedagogy).getByRole('button', { name: notes.deleteNote });
+    expect(trigger).toHaveAttribute('aria-haspopup', 'dialog');
+    expect(trigger.className).not.toMatch(/danger/);
+    fireEvent.click(trigger);
+    let dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: notes.deleteKeep }));
+    expect(transport.calls.some((call) => call.method === 'DELETE' && call.path.includes('/memory/'))).toBe(false);
+    fireEvent.click(trigger);
+    dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: notes.deleteConfirm }));
+    await screen.findByText(notes.noteGone);
+    const call = transport.calls.find((entry) => entry.method === 'DELETE' && entry.path.endsWith('/memory/pedagogy'));
+    expect(call?.body).toEqual({ expected: 'Short steps help.' });
+    // The queue was re-read: the suggestion written against the deleted note is gone with it.
+    await waitFor(() => expect(document.querySelector('[data-memory-note="n3"]')).toBeNull());
+    const after = document.querySelector('.lf-console-note-store[data-memory-store="pedagogy"]') as HTMLElement;
+    expect(within(after).getByText(notes.currentEmpty)).toBeInTheDocument();
+  });
+
+  it('tells a note that changed before the delete and a failed delete apart', async () => {
+    setup({
+      [`GET /tutor/kids/${KID_A}/memory-proposals`]: ok(notesWire()),
+      [`DELETE /tutor/kids/${KID_A}/memory/learner`]: refuse('NOTE_OUT_OF_DATE'),
+      [`DELETE /tutor/kids/${KID_A}/memory/pedagogy`]: refuse('DATA_UNAVAILABLE'),
+    });
+    await screen.findByRole('heading', { level: 3, name: notes.pedagogyStore });
+    for (const store of ['learner', 'pedagogy'] as const) {
+      const group = document.querySelector(`.lf-console-note-store[data-memory-store="${store}"]`) as HTMLElement;
+      fireEvent.click(within(group).getByRole('button', { name: notes.deleteNote }));
+      const dialog = await screen.findByRole('alertdialog');
+      fireEvent.click(within(dialog).getByRole('button', { name: notes.deleteConfirm }));
+      await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
+    }
+    expect(await screen.findByText(notes.deleteChanged)).toBeInTheDocument();
+    expect(screen.getByText(notes.deleteFailed)).toBeInTheDocument();
+    expect(screen.queryByText(notes.noteGone)).toBeNull();
+  });
+
   it('reads the child\'s learning profile in closed labels and lets the Tutor reset it', async () => {
     const { transport } = setup({ [`DELETE /tutor/kids/${KID_A}/disposition`]: ok({ reset: true }) });
     await screen.findByRole('heading', { name: profile.titleChild });

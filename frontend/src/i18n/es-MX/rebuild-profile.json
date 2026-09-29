@@ -87,7 +87,15 @@
     "deleted": "Nota eliminada.",
     "changed": "La nota cambió. La recargamos.",
     "outOfDate": "Desactualizada",
-    "decisionFailed": "No pudimos guardarlo. Intenta otra vez."
+    "decisionFailed": "No pudimos guardarlo. Intenta otra vez.",
+    "deleteNote": "Eliminar esta nota",
+    "deleteTitle": "¿Eliminar esta nota?",
+    "deleteBody": "Tu Mentor la olvida. No se puede deshacer.",
+    "deleteKeep": "Conservarla",
+    "deleteConfirm": "Eliminar",
+    "deleteDeleting": "Eliminando…",
+    "noteGone": "Nota eliminada. Tu Mentor ya no la usa.",
+    "deleteFailed": "No pudimos eliminarla. Intenta otra vez."
   },
   "accountDeletion": {
     "title": "Eliminar tu cuenta",

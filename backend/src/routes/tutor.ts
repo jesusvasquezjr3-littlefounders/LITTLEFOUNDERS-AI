@@ -102,6 +102,7 @@ import {
   listPendingLearnerMemoryProposals,
   getLearnerMemoryProposal,
   decideLearnerMemoryProposal,
+  clearLearnerMemory,
   type LearnerMemoryProposalRow,
   searchOwnTurns,
   // Class V artifacts (migration 0069, TUTOR_INSTRUMENTS.md §3.6).
@@ -4588,6 +4589,86 @@ export function tutorRouter(): Router {
       applied: outcome === 'written' || outcome === 'unchanged',
       store: proposal.store === 'pedagogy' ? 'pedagogy' : 'learner',
     });
+  });
+
+  /*
+   * GAP-FIX-R5 (C.4, OD-18, S01.4): a STORED note can be deleted, not only a
+   * proposed one. Before this, a note already in learner_memory (every note
+   * written for a universal-role teen before OD-18, and every note a reviewer
+   * approved and later regretted) was readable by the teen and the guardian
+   * and removable by neither, while Core read it into every session. The same
+   * reviewer rule as the proposal decision and the C.7 disposition reset:
+   *
+   *   DELETE /memory/:store              the note's owner, admitted only when
+   *                                      classifyMemoryReview answers
+   *                                      self-review (an independent teen) or
+   *                                      adult-direct (an adult keeps direct
+   *                                      control). A guardian-reviewed child's
+   *                                      note is their verified Tutor's to
+   *                                      delete; a hold has no reviewer.
+   *   DELETE /kids/:kidUserId/memory/:store
+   *                                      a verified guardian of that learner,
+   *                                      re-checked on every call.
+   *
+   * The body names the text the reviewer was shown (`expected`): the delete is
+   * a compare-and-delete in the database, so a note that changed since it was
+   * read is never removed unseen (409 NOTE_OUT_OF_DATE). A read failure is
+   * 502, never a 404 (§1.14).
+   */
+  const MemoryStoreParam = z.enum(['learner', 'pedagogy']);
+  const ClearBody = z.object({ expected: z.string().min(1).max(2200) }).strict();
+
+  type ClearRefusal = { status: 404 | 409 | 502; code: string; message: string };
+  const clearNote = async (
+    subject: string,
+    store: 'learner' | 'pedagogy',
+    expected: string,
+    actor: 'learner-self-deleted' | 'guardian-deleted',
+    decidedBy: string,
+  ): Promise<ClearRefusal | null> => {
+    const current = await getLearnerMemory(subject);
+    if (current === null) return { status: 502, code: 'DATA_UNAVAILABLE', message: 'Could not read the note' };
+    const stale: ClearRefusal = { status: 409, code: 'NOTE_OUT_OF_DATE', message: 'The note changed since it was read' };
+    const absent: ClearRefusal = { status: 404, code: NOT_FOUND, message: 'There is no note to delete' };
+    if (current[store] === null) return absent;
+    if (current[store] !== expected) return stale;
+    const outcome = await clearLearnerMemory({ userId: subject, store, expected, actor, decidedBy });
+    if (outcome === null) return { status: 502, code: 'DATA_UNAVAILABLE', message: 'Could not delete the note' };
+    if (outcome === 'conflict') return stale;
+    if (outcome === 'absent') return absent;
+    return null;
+  };
+
+  router.delete('/memory/:store', async (req, res) => {
+    const store = MemoryStoreParam.safeParse(req.params.store);
+    if (!store.success) return fail(res, 400, VALIDATION, 'store must be learner or pedagogy');
+    const body = ClearBody.safeParse(req.body);
+    if (!body.success) return fail(res, 400, VALIDATION, 'expected must name the note being deleted');
+    const user = authedUser(res);
+    const reviewer = await classifyMemoryReview(user.id);
+    if (reviewer === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve memory review eligibility');
+    if (reviewer === 'guardian-review') return fail(res, 403, 'GUARDIAN_MANAGED', 'A verified Tutor manages these notes');
+    if (reviewer === 'hold') return fail(res, 403, 'AGE_EVIDENCE_REQUIRED', 'Complete the age check first');
+    const refused = await clearNote(user.id, store.data, body.data.expected, 'learner-self-deleted', user.id);
+    if (refused) return fail(res, refused.status, refused.code, refused.message);
+    return ok(res, { deleted: true, store: store.data });
+  });
+
+  router.delete('/kids/:kidUserId/memory/:store', async (req, res) => {
+    const kidUserId = z.string().uuid().safeParse(req.params.kidUserId);
+    if (!kidUserId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
+    const store = MemoryStoreParam.safeParse(req.params.store);
+    if (!store.success) return fail(res, 400, VALIDATION, 'store must be learner or pedagogy');
+    const body = ClearBody.safeParse(req.body);
+    if (!body.success) return fail(res, 400, VALIDATION, 'expected must name the note being deleted');
+    const user = authedUser(res);
+    const guardian = await isVerifiedGuardian(user.id, kidUserId.data);
+    if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
+    if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
+    const refused = await clearNote(kidUserId.data, store.data, body.data.expected, 'guardian-deleted', user.id);
+    if (refused) return fail(res, refused.status, refused.code, refused.message);
+    await insertAuditLog(user.id, 'mentor.memory_note.deleted_by_guardian', 'tutor', { learner: kidUserId.data, store: store.data });
+    return ok(res, { deleted: true, store: store.data });
   });
 
   // ── Class V artifacts: plan & notebook (migration 0069, TUTOR_INSTRUMENTS.md §3.6) ──

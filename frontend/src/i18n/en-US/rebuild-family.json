@@ -373,7 +373,16 @@
     "allDone": "All caught up.",
     "loadFailed": "Notes did not load. Try again.",
     "loading": "Loading the note…",
-    "retry": "Try again"
+    "retry": "Try again",
+    "deleteNote": "Delete this note",
+    "deleteTitle": "Delete this note?",
+    "deleteBody": "The Mentor forgets it. You cannot undo this.",
+    "deleteKeep": "Keep it",
+    "deleteConfirm": "Delete",
+    "deleteDeleting": "Deleting…",
+    "noteGone": "Note deleted. The Mentor no longer uses it.",
+    "deleteFailed": "That did not delete. Try again.",
+    "deleteChanged": "The note changed. Here it is now."
   },
   "familyTasks": {
     "title": "Tasks",
