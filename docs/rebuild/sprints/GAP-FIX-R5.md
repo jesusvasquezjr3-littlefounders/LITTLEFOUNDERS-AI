@@ -60,6 +60,8 @@ link checks) and, for the child, a Tutor's freeze (`canChange`).
   (three locales, two themes, 320/375/768/1280) did not complete on this
   shared machine and was not rerun under speed mode. The orchestrator's
   final audit run is the evidence for the 21 new states.
+- Sync: merged with `codex/spec-migration-s02` at `5bb4dead` (no
+  conflicts); no migration in this lane.
 
 ### Owner questions (conservative default applied)
 
