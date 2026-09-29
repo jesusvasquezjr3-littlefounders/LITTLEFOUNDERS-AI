@@ -54,7 +54,7 @@ npm run od9 -- inventory --label before
 npm run od9 -- spot-check --label before --families 10
 ```
 
-The inventory must report every category `captured` (no `absent:` line). The spot check draws a deterministic sample of families and records their readable values (balances per pocket, coins owed but not split yet, streaks, XP, badges, reached goals, lessons passed, usernames).
+The inventory must report every category `captured` (no `absent:` line). The spot check draws a deterministic sample of families and records their readable values (balances per pocket, coins owed but not split yet, the allowance and savings bonus rate a Tutor promised, streaks, XP, badges, reached goals, lessons passed, usernames).
 
 ### Step 3. Backup
 

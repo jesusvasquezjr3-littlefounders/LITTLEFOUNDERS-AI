@@ -62,6 +62,23 @@ VALUES
     ('owed_task_rewards', 'public.tasks', ARRAY['id', 'assigned_to', 'status', 'reward_coins', 'allocated'],
      $q$SELECT assigned_to AS uid, count(*) AS n, md5(string_agg(jsonb_build_array(id, reward_coins)::text, ',' ORDER BY id)) AS h
         FROM public.tasks WHERE status = 'approved' AND NOT allocated AND reward_coins > 0 GROUP BY assigned_to$q$),
+    -- Coins a Tutor promised for later (section 4.1: "nothing is lost that a
+    -- family was promised"): the recurring allowance (0081) with its amount,
+    -- cadence, on/off and next payout, and the savings bonus rule.
+    ('allowance_promise', 'public.allowance_rules', ARRAY['id', 'kid_user_id', 'parent_user_id', 'amount', 'frequency', 'anchor_day', 'active', 'next_run_at', 'created_at'],
+     $q$SELECT kid_user_id AS uid, count(*) AS n, md5(string_agg(jsonb_build_array(id, parent_user_id, amount, frequency, anchor_day, active, next_run_at, created_at)::text, ',' ORDER BY id)) AS h
+        FROM public.allowance_rules GROUP BY kid_user_id$q$),
+    -- 0159 deliberately moves an under-13 child's percentage bonus to the
+    -- fixed per-ten ratio (switching off a rate below it) and keeps the
+    -- agreed rate in reframed_from_rate_bp. The promise hashed here is the
+    -- agreed rate (read through to_jsonb, so the query also runs on the
+    -- legacy schema, where that column does not exist yet), the Tutor, the
+    -- schedule and the creation time; `active` is left out because that
+    -- reframe changes it on purpose.
+    ('savings_bonus_promise', 'public.savings_bonus_rules', ARRAY['kid_user_id', 'parent_user_id', 'rate_bp', 'next_run_at', 'created_at'],
+     $q$SELECT r.kid_user_id AS uid, count(*) AS n,
+               md5(string_agg(jsonb_build_array(r.parent_user_id, COALESCE((to_jsonb(r) ->> 'reframed_from_rate_bp')::integer, r.rate_bp), r.next_run_at, r.created_at)::text, ',' ORDER BY r.created_at)) AS h
+        FROM public.savings_bonus_rules r GROUP BY r.kid_user_id$q$),
     ('rewards', 'public.redemptions', ARRAY['id', 'catalog_id', 'kid_user_id', 'status', 'created_at', 'decided_at'],
      $q$SELECT kid_user_id AS uid, count(*) AS n, md5(string_agg(jsonb_build_array(id, catalog_id, status, created_at, decided_at)::text, ',' ORDER BY id)) AS h
         FROM public.redemptions GROUP BY kid_user_id$q$),

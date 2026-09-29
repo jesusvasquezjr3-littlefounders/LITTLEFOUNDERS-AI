@@ -146,6 +146,8 @@ try {
     assert.deepEqual(before.rows.filter((r) => r.status !== 'captured'), [], 'every promised category is readable');
     assert.equal(Number(before.rows.find((r) => r.category === 'pending_coins').total_rows), X.pendingCredits);
     assert.equal(Number(before.rows.find((r) => r.category === 'owed_task_rewards').total_rows), X.owedTasks);
+    assert.equal(Number(before.rows.find((r) => r.category === 'allowance_promise').total_rows), Object.keys(X.allowance).length);
+    assert.equal(Number(before.rows.find((r) => r.category === 'savings_bonus_promise').total_rows), Object.keys(X.bonus).length);
     const spot = cli(db, { command: 'spot-check', label: 'before', families: 5 });
     assert.ok(spot.accounts >= 5);
     check(`before inventory: ${before.rows.length} categories and identifier sets, no gap; spot sample of ${spot.families} families (${spot.accounts} accounts, ${spot.rows.length} readable values)`);

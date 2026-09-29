@@ -92,4 +92,91 @@ No migration: the toolkit is installed by `od9 install`, not by the chain.
 
 ### Owner questions
 
+None (see the lane finish below).
+
+## Checkpoint F5-data-platform-finish
+
+Lane finish: sync with `codex/spec-migration-s02` (already up to date, no
+conflict), an adversarial pass over the lane against OD-9 section 4.1 and
+4.5, and the full `database` suite.
+
+### Adversarial pass: what was still missing
+
+Section 4.1 reads "nothing is lost that a family was promised", and the
+lane's first checkpoint covered coins earned but not split. Coins a Tutor
+promised for later were still invisible: `public.allowance_rules` (the
+recurring allowance: amount, cadence, on/off, next payout) and
+`public.savings_bonus_rules` (0081). A cutover that dropped or changed a
+child's allowance would have passed `compare` and the sign-off sheet.
+
+- `sql/10_inventory.sql`: `allowance_promise` hashes every allowance rule
+  per child (id, Tutor, amount, frequency, anchor day, active, next run,
+  created). `savings_bonus_promise` hashes the Tutor, the agreed rate, the
+  next run and the creation time. 0159 deliberately moves an under-13
+  child's percentage bonus to the fixed per-ten ratio (switching off a rate
+  below it) and keeps the agreed rate in `reframed_from_rate_bp`; the
+  category reads that rate through `to_jsonb` (so it also runs on the
+  legacy schema, where the column does not exist) and leaves `active` out,
+  because that reframe changes it on purpose. 20 categories.
+- `sql/50_spot_check.sql`: `allowance promised` (for example `12 weekly`,
+  `(paused)` when off) and `savings bonus promised (basis points)`.
+- Fixture: allowance rules for about half the Family Hub children (always
+  `kid_c`) and bonus rules for about a third (always `kid_a_one`, aged 8,
+  at 500 bp, which 0159 reframes). New expectations `allowance` and `bonus`.
+- `prove-od9-postgres.mjs`: counts and spot values before and after the
+  full chain; asserts 0159 really reframed `kid_a_one` (500 to 1000) while
+  the inventory and the sheet still read 500; negative control: lowering
+  `kid_c`'s allowance by one coin fails `compare` at exactly
+  `account:allowance_promise:<kid_c>` and that family, and the spot check
+  at exactly that child's allowance.
+- `rehearse-cutover.mjs` R2 checks both counts. `od9.test.mjs`: two new
+  tests pin the categories, the spot items and the fixture's expectations.
+
+Not added: `spend_limits` (a control on spending, not coins owed or
+promised) and `banking_accounts` (card nickname and design); both are
+still covered by the chain's own tests, not by the OD-9 inventory.
+
+### Verification (local)
+
+- `node --test migration-od9/od9.test.mjs`: 19 pass (2 new); the database
+  checks and node tests of `npm test` (74) pass. The
+  `railway-migrate.test.mjs` fake-transport harness (untouched) is left to
+  the merge gates.
+- `npm run od9:prove` on the lane's native PostgreSQL 17.6 (port 15970):
+  19 checks pass over the full chain (82 legacy migrations, then 158). The
+  before inventory holds 20 categories; 20 `pending_credits` rows, 11
+  unsplit chore rewards (18 children owe 192 coins), 10 allowance rules and
+  5 savings bonus rules, all read the same after the chain; 24/24 families
+  identical, 346/346 spot values identical; `kid_a_one`'s 500 bp bonus is
+  reframed by 0159 to 1000 and still reads 500. Negative controls: a
+  deleted 12-coin payout fails at exactly `kid_c`'s `pending_coins`, its
+  family and its owed coins (21 to 9); a one-coin lower allowance fails at
+  exactly `kid_c`'s `allowance_promise`, its family and its allowance
+  (35 monthly to 34 monthly).
+- `npm run od9:rehearse` (default 12 random families): R0 to R12 pass
+  (13 checks, 66 s; R2 22 categories and identifier sets, R8 24/24
+  families and 116/116 spot values, R12 restore 24/24).
+- Root `npm run spec:check` and `npm run secrets:check`: pass.
+
+### Lane summary
+
+- One audited gap (OD-9 section 4.1 and 4.5, S10.1a): coins owed but not
+  split and coins promised for later are now inventoried, hashed per child
+  and family, shown on the section 4.5 sign-off sheet, held by the
+  synthetic fixture and proven on native PostgreSQL with a negative control
+  per kind. No migration (the toolkit is installed by `od9 install`), no UI,
+  no copy.
+- Status: implemented and locally verified; not accepted, not released.
+
+### Remaining
+
+- The production cutover run and the person's section 4.5 signature are
+  owner steps.
+- The toolkit does not reconcile a payout against the rule that produced it
+  (`pending_credits.source_ref` is informational in 0081 and not hashed).
+- A savings bonus switched off by something other than 0159 is not
+  detected (`active` is not hashed; see above).
+
+### Owner questions
+
 None.

@@ -336,6 +336,28 @@ export function generateLegacyFixture({ seed = 20260927, randomFamilies = 12 } =
     }
   }
 
+  // ── Coins promised for later (OD-9 section 4.1) ──────────────────────
+  // A Tutor's recurring allowance and savings bonus rule (0081). kid_c always
+  // has an allowance (the negative control's target); kid_a_one (8) always
+  // has a 5% bonus, which 0159 reframes for an under-13 child, so the proof
+  // shows the agreed rate survives that deliberate change.
+  const allowance = {}; // userId -> 'amount frequency[ (paused)]', as the spot check prints it
+  const bonus = {}; // userId -> agreed rate in basis points
+  for (const [k, parentId] of familyKids) {
+    if (k === kidC || rand() < 0.5) {
+      const amount = int(5, 50);
+      const frequency = pick(['weekly', 'biweekly', 'monthly']);
+      const active = k === kidC || rand() < 0.8;
+      allowance[k.id] = `${amount} ${frequency}${active ? '' : ' (paused)'}`;
+      sql.push(`INSERT INTO public.allowance_rules (kid_user_id, parent_user_id, amount, frequency, anchor_day, active, next_run_at, created_at) VALUES (${q(k.id)}, ${q(parentId)}, ${amount}, ${q(frequency)}, ${int(0, 28)}, ${active}, ${ts(int(150, 200))}, ${ts(int(1, 60))});`);
+    }
+    if (k === kidA1 || rand() < 0.3) {
+      const rate = k === kidA1 ? 500 : pick([0, 500, 1000, 1500]);
+      bonus[k.id] = rate;
+      sql.push(`INSERT INTO public.savings_bonus_rules (kid_user_id, parent_user_id, rate_bp, active, next_run_at, created_at) VALUES (${q(k.id)}, ${q(parentId)}, ${rate}, ${rand() < 0.8}, ${ts(int(150, 200))}, ${ts(int(1, 60))});`);
+    }
+  }
+
   // ── Expectations, computed independently of the toolkit's SQL ─────────
   const all = [...accounts.values()];
   const complete = (userId, t) => t.lessons.every((l) => passed.get(userId)?.has(l) || credited.get(userId)?.has(l));
@@ -393,6 +415,8 @@ export function generateLegacyFixture({ seed = 20260927, randomFamilies = 12 } =
       owed: Object.fromEntries(owed),
       pendingCredits,
       owedTasks,
+      allowance,
+      bonus,
     },
   };
 }

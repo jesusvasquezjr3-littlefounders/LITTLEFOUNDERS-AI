@@ -1,4 +1,5 @@
--- OD-9 section 4.5: per-family spot checks on balances (split and still owed),
+-- OD-9 section 4.5: per-family spot checks on balances (split, still owed and
+-- promised for later: allowance and savings bonus),
 -- streaks and badges, signed off by a person before the legacy platform is
 -- switched off.
 --
@@ -70,6 +71,14 @@ BEGIN
                    + COALESCE((SELECT sum(t.reward_coins) FROM public.tasks t
                                WHERE t.assigned_to = x.user_id AND t.status = 'approved' AND NOT t.allocated AND t.reward_coins > 0), 0) AS total) o
         WHERE o.total > 0
+        UNION ALL
+        -- Coins promised for later: the allowance and the savings bonus rate
+        -- the Tutor agreed (the pre-0159 rate when 0159 reframed it).
+        SELECT 'allowance promised', ar.amount || ' ' || ar.frequency || CASE WHEN ar.active THEN '' ELSE ' (paused)' END
+        FROM public.allowance_rules ar WHERE ar.kid_user_id = x.user_id
+        UNION ALL
+        SELECT 'savings bonus promised (basis points)', COALESCE((to_jsonb(sb) ->> 'reframed_from_rate_bp')::integer, sb.rate_bp)::text
+        FROM public.savings_bonus_rules sb WHERE sb.kid_user_id = x.user_id
         UNION ALL
         SELECT 'lessons_passed', count(*)::text FROM public.lesson_progress lp WHERE lp.user_id = x.user_id AND lp.passed HAVING count(*) > 0
         UNION ALL

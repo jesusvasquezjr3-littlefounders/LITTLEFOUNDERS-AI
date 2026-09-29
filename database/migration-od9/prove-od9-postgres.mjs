@@ -107,6 +107,15 @@ try {
   const spotBefore = cli({ command: 'spot-check', label: 'before', families: 500 });
   assert.deepEqual(owedOf(spotBefore.rows), X.owed);
   check(`owed coins (section 4.1, 4.5): the before inventory counts ${X.pendingCredits} pending_credits rows (split or not) and ${X.owedTasks} approved, unsplit chore rewards; the spot sheet over every family reads each child's unsplit coins exactly as the fixture computed them (${Object.keys(X.owed).length} children, ${Object.values(X.owed).reduce((a, b) => a + b, 0)} coins)`);
+  // Section 4.1: coins promised for later (allowance and savings bonus rules).
+  assert.equal(Number(category('allowance_promise').total_rows), Object.keys(X.allowance).length);
+  assert.equal(Number(category('savings_bonus_promise').total_rows), Object.keys(X.bonus).length);
+  const promisesOf = (rows) => ({
+    allowance: Object.fromEntries(rows.filter((r) => r.item === 'allowance promised').map((r) => [r.user_id, r.after_value])),
+    bonus: Object.fromEntries(rows.filter((r) => r.item === 'savings bonus promised (basis points)').map((r) => [r.user_id, Number(r.after_value)])),
+  });
+  assert.deepEqual(promisesOf(spotBefore.rows), { allowance: X.allowance, bonus: X.bonus });
+  check(`promised coins (section 4.1, 4.5): the before inventory counts ${Object.keys(X.allowance).length} allowance rules and ${Object.keys(X.bonus).length} savings bonus rules; the spot sheet reads every child's allowance and agreed bonus rate exactly as the fixture wrote them`);
   for (const command of ['defects', 'kc-credit', 'consent']) refused(() => cli({ command }), 'OD9_REBUILD_SCHEMA_REQUIRED');
   check('defects, kc-credit and consent refuse the legacy schema (OD9_REBUILD_SCHEMA_REQUIRED) instead of half-applying');
 
@@ -290,7 +299,11 @@ try {
   const spotAfter = cli({ command: 'spot-check', label: 'after', from: 'before' });
   assert.equal(spotAfter.ok, true, JSON.stringify(spotAfter.rows.filter((r) => r.verdict !== 'same').slice(0, 5)));
   assert.deepEqual(owedOf(spotAfter.rows), X.owed);
-  check(`after the full chain, every correction, the KC credit and the retirement of the whole legacy catalog (archived, never deleted): 0 failures; ${verdict.families.same}/${verdict.families.total} families identical; every category equal (${verdict.categories.map((c) => `${c.category} ${c.before_rows}`).join(', ')}); every username and guardian link unchanged; spot check ${spotAfter.same}/${spotAfter.rows.length} values identical, owed coins included`);
+  assert.deepEqual(promisesOf(spotAfter.rows), { allowance: X.allowance, bonus: X.bonus });
+  // 0159 reframed kid_a_one's 5% bonus to the per-ten ratio on purpose; the
+  // agreed rate is what the inventory and the spot sheet compare.
+  assert.equal(sql(`SELECT reframed_from_rate_bp || '|' || rate_bp FROM public.savings_bonus_rules WHERE kid_user_id = '${id.kid_a_one}'`, db), '500|1000');
+  check(`after the full chain, every correction, the KC credit and the retirement of the whole legacy catalog (archived, never deleted): 0 failures; ${verdict.families.same}/${verdict.families.total} families identical; every category equal (${verdict.categories.map((c) => `${c.category} ${c.before_rows}`).join(', ')}); every username and guardian link unchanged; spot check ${spotAfter.same}/${spotAfter.rows.length} values identical, owed and promised coins included (kid_a_one's 5% bonus reframed by 0159 to the per-ten ratio still reads as the agreed 500 bp)`);
 
   // Negative control: one changed streak and one changed username must fail.
   sql(`SET session_replication_role = replica;
@@ -318,6 +331,21 @@ try {
   assert.deepEqual(owedSpot.rows.filter((r) => r.verdict !== 'same').map((r) => `${r.user_id}:${r.item}:${r.before_value}:${r.after_value}`),
     [`${id.kid_c}:owed coins (unsplit):${X.owed[id.kid_c]}:${X.owed[id.kid_c] - Number(lostAmount)}`]);
   check(`negative control: deleting one unsplit allowance payout (${lostAmount} coins) fails the comparison exactly at that child's pending_coins and its family, and the spot check exactly at that child's owed coins (${X.owed[id.kid_c]} before, ${X.owed[id.kid_c] - Number(lostAmount)} after)`);
+
+  // Negative control (section 4.1): one promised allowance lowered by a coin.
+  cli({ command: 'spot-check', label: 'pre_promise', families: 500 });
+  sql(`SET session_replication_role = replica; UPDATE public.allowance_rules SET amount = amount - 1 WHERE kid_user_id = '${id.kid_c}';`, db);
+  cli({ command: 'inventory', label: 'promise_tamper' });
+  const promiseTamper = cli({ command: 'compare', before: 'owed_tamper', after: 'promise_tamper' });
+  assert.equal(promiseTamper.ok, false);
+  assert.deepEqual(promiseTamper.failures.map((f) => `${f.scope}:${f.category}:${f.subject}`).sort(),
+    [`account:allowance_promise:${id.kid_c}`, `family:all:${familyOf(id.kid_c)}`].sort());
+  const promiseSpot = cli({ command: 'spot-check', label: 'promise_tamper', from: 'pre_promise' });
+  assert.equal(promiseSpot.ok, false);
+  const lowered = X.allowance[id.kid_c].replace(/^\d+/, (n) => String(Number(n) - 1));
+  assert.deepEqual(promiseSpot.rows.filter((r) => r.verdict !== 'same').map((r) => `${r.user_id}:${r.item}:${r.before_value}:${r.after_value}`),
+    [`${id.kid_c}:allowance promised:${X.allowance[id.kid_c]}:${lowered}`]);
+  check(`negative control: lowering one child's promised allowance by one coin fails the comparison exactly at that child's allowance_promise and its family, and the spot check exactly at that child's allowance (${X.allowance[id.kid_c]} before, ${lowered} after)`);
 
   // Without this lane's badge-reader fix, archiving would hide frozen badges.
   const hidden = sql(`SELECT count(*) FROM public.course_pathway_badges b JOIN public.courses c ON c.id = b.course_id WHERE c.status = 'archived'`, db);
