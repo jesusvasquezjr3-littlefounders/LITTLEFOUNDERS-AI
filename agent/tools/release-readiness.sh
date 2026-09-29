@@ -72,6 +72,14 @@ npm run staff:db-verify
 # pathway, completion, the course release gate) over the whole migration
 # chain; a machine with no PostgreSQL prints SKIP.
 npm run learning:db-verify
+# Frontend Bible 02 §7 item 10, 03 §5, 05 §8, 06 §7 and 08 §9 (GAP-FIX-R5):
+# the text-fit, proportion (with the teaching-board rules and the motion
+# budget) and copy-budget audits over every rebuilt state in 3 locales x 2
+# modes x 4 widths, then the Mentor-stage verifier, on a local Vite dev server
+# with every Core request answered by the synthetic Core (nothing leaves the
+# machine). Reports: audit-results/rebuild-audits/ and
+# audit-results/mentor-stage/. A machine with no Chrome prints SKIP.
+npm run rebuild:audit-gate
 
 npm --prefix coursegen run catalog:check -- "curriculum/$COURSE"
 npm --prefix coursegen run graph:check -- "$COURSE"

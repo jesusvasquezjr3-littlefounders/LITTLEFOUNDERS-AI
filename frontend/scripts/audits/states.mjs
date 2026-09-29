@@ -36,6 +36,22 @@ export function extraRoutes(value = process.env.AUDIT_ROUTES) {
     .map((path) => ({ id: `app:${path}`, entry: 'app', path, budget: 'app', firstView: true, catalogue: false }));
 }
 
+/**
+ * One shard of the state list for a split run (AUDIT_SHARD=k/n, 1 <= k <= n):
+ * round robin by position, so the n shards are disjoint, their union is the
+ * whole list, and the heavy authenticated routes spread across every shard.
+ * CI runs the full matrix as n parallel jobs and `audits/merge-shards.mjs`
+ * proves the union is complete; a split run never trims the state set.
+ */
+export function shardStates(states, spec = process.env.AUDIT_SHARD) {
+  if (spec === undefined || spec === null || String(spec).trim() === '') return states;
+  const match = /^(\d+)\/(\d+)$/.exec(String(spec).trim());
+  const index = match ? Number(match[1]) : NaN;
+  const count = match ? Number(match[2]) : NaN;
+  if (!match || count < 1 || index < 1 || index > count) throw new Error(`AUDIT_SHARD must be k/n with 1 <= k <= n, got "${spec}"`);
+  return states.filter((_, position) => position % count === index - 1);
+}
+
 /** The URL of one state in one locale and theme. */
 export function stateUrl(origin, state, locale, theme) {
   if (state.entry === 'app') {

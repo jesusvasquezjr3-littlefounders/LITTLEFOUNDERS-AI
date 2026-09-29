@@ -44,6 +44,8 @@
     "audit:proportion": "node scripts/audit-rebuild.mjs proportion",
     "audit:copy-budget": "node scripts/audit-rebuild.mjs copy-budget",
     "audit:rebuild": "node scripts/audit-rebuild.mjs all",
+    "audit:gate": "node scripts/rebuild-audit-gate.mjs",
+    "audit:merge": "node scripts/audits/merge-shards.mjs",
     "assets:check": "node scripts/check-rebuild-assets.mjs",
     "emails:build": "node scripts/build-rebuild-emails.mjs",
     "emails:check": "node scripts/build-rebuild-emails.mjs --check",

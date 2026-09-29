@@ -88,8 +88,9 @@ jobs:
   # verify:tutor-ui and verify:tutor-a11y used to run here too, against the
   # legacy Tutor lab (/dev/tutor-lab). That lab and the legacy Tutor UI it
   # mounted were removed in S10L.1 (OD-2, Frontend Bible 02 rule 23); the
-  # rebuilt Mentor stage is verified by scripts/verify-mentor-stage.mjs and the
-  # rebuild audits.
+  # rebuilt Mentor stage is verified by scripts/verify-mentor-stage.mjs (the
+  # last step of this job, headless on the software GL path, Bible 08 §9) and
+  # the rebuilt screens by the Bible audits (the rebuild-audits job below).
   #
   # Its own job because it takes ~20 minutes or more, and `needs: ci` so a push
   # that fails type-check does not also pay for it.
@@ -130,3 +131,110 @@ jobs:
         env:
           CHROME_PATH: /usr/bin/google-chrome
         run: npm run verify:lesson-engine
+      # Bible 08 §7, §9, §10: the one Mentor stage in real Chrome, rendering
+      # the real models on the real Dioramas (software GL, no GPU) at every
+      # locale, mode and width, every state x character, the reduced-motion,
+      # low-power, no-WebGL and data-saver stills, the compact band on the real
+      # lesson route and the performance fallback. rebuild-audit-gate.mjs starts
+      # its own dev server; every Core request is answered by the synthetic
+      # Core, so nothing leaves the runner.
+      - name: Mentor stage — the one stage, every state, mode and width (08 §9)
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: node scripts/rebuild-audit-gate.mjs --suite mentor-stage --require-chrome
+      - name: Upload the Mentor-stage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mentor-stage
+          path: audit-results/mentor-stage/**/report.json
+          if-no-files-found: warn
+
+  # ── The Frontend Bible audits (GAP-FIX-R5) ─────────────────────────────────
+  #
+  # Bible 02 §7 item 10 and 06 §7: a new or translated string must pass the
+  # Text Fit and Copy Budget audits before merge; 03 §5 the proportion audit;
+  # 05 §8 the teaching-board rules (carried by the proportion pass, with the
+  # 02 §9.4 motion budget). scripts/audit-rebuild.mjs measures every state in
+  # scripts/audits/states.mjs (441 when this job was added, and
+  # auditCoverage.test.tsx forces a state for every mounted route) in 3 locales
+  # x 2 modes x 320/375/768/1280 px, on a Vite dev server, with every Core
+  # request answered by scripts/audits/synthetic-core.mjs: no Core, database or
+  # provider is contacted. frontend-cd deploys only a green frontend CI, so a
+  # string over budget, a truncation or an off-grid spacing value can no
+  # longer reach production with every gate green.
+  #
+  # The full matrix is about 150 minutes on a 16-thread developer machine, so
+  # it runs as 12 parallel round-robin shards of the state list (AUDIT_SHARD),
+  # never a trimmed state set: the report job below merges the 12 reports and
+  # fails unless every state was measured exactly once over the full matrix.
+  # A shared 4-vCPU runner is a loaded machine by the driver's own definition,
+  # so each shard runs 2 pages and gives a state up to 60 s to become ready
+  # (AUDIT_READY_MS; the measurement itself does not change).
+  rebuild-audits:
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      # The Mentor-stage and lesson states render the real characters out of
+      # gitignored public/scenes/ (see browser-gates above).
+      - run: npm run scenes:fetch
+      - name: Bible audits — text fit, proportion, copy budget, board rules (shard ${{ matrix.shard }} of 12)
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+          AUDIT_SHARD: ${{ matrix.shard }}/12
+          AUDIT_WORKERS: '2'
+          AUDIT_READY_MS: '60000'
+        run: node scripts/rebuild-audit-gate.mjs --suite audits --require-chrome
+      - name: Upload the shard's audit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rebuild-audits-shard-${{ matrix.shard }}
+          path: audit-results/rebuild-audits/*.json
+          if-no-files-found: error
+
+  # Merges the 12 shard reports into the evidence a checkpoint cites, and
+  # refuses a split run that did not cover the whole gate (a missing shard, a
+  # state measured twice or never, a narrowed locale/theme/width list, or two
+  # states in different shards rendering identical markup).
+  rebuild-audits-report:
+    needs: rebuild-audits
+    if: ${{ always() && needs.rebuild-audits.result != 'skipped' && needs.rebuild-audits.result != 'cancelled' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: rebuild-audits-shard-*
+          path: audit-results/shards
+      - name: Merge the shard reports (every state, once, over the full matrix)
+        run: node scripts/audits/merge-shards.mjs ../audit-results/shards --out ../audit-results/rebuild-audits
+      - name: Upload the merged audit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rebuild-audits
+          path: audit-results/rebuild-audits/*.json
+          if-no-files-found: warn

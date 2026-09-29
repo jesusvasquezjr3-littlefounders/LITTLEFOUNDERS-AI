@@ -3,7 +3,7 @@ import { join, resolve } from 'node:path';
 import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.mjs';
 import { installAudit } from './audits/in-page.mjs';
 import { aggregate, copyFindings, FOLD, proportionFindings } from './audits/rules.mjs';
-import { extraRoutes, LOCALES, STATES, stateUrl, THEMES, WIDTHS } from './audits/states.mjs';
+import { extraRoutes, LOCALES, shardStates, STATES, stateUrl, THEMES, WIDTHS } from './audits/states.mjs';
 import { installSyntheticCore, loadLessonFixtures, SCENARIOS, sessionStorageScript, signedOutStorageScript } from './audits/synthetic-core.mjs';
 
 /*
@@ -44,7 +44,11 @@ import { installSyntheticCore, loadLessonFixtures, SCENARIOS, sessionStorageScri
  *   AUDIT_THEMES, AUDIT_WIDTHS, AUDIT_ROUTES=/some/route (extra real-app routes),
  *   AUDIT_WORKERS (parallel pages, default 3), AUDIT_READY_MS (how long a state may take to become ready,
  *   default 15000; raise it only on a saturated shared machine, and say so in the evidence).
+ * Split run (the full set, never a trimmed one): AUDIT_SHARD=k/n measures the k-th of n round-robin shards
+ * of the state list; `node scripts/audits/merge-shards.mjs <dir>` merges the n reports and fails unless
+ * every state was measured exactly once over the full locale, theme and width matrix.
  * Reports: audit-results/rebuild-audits/<audit>.json. Exit 0 clean, 1 findings, 2 setup error.
+ * The gate that starts Vite and runs this (CI, release readiness): scripts/rebuild-audit-gate.mjs.
  */
 const AUDITS = ['text-fit', 'proportion', 'copy-budget'];
 const requested = process.argv[2] ?? 'all';
@@ -54,8 +58,12 @@ const origin = process.env.REBUILD_URL ?? 'http://localhost:5310';
 const list = (name, fallback) => process.env[name]?.split(',').map((v) => v.trim()).filter(Boolean) ?? fallback;
 const locales = list('AUDIT_LOCALES', LOCALES), themes = list('AUDIT_THEMES', THEMES), widths = list('AUDIT_WIDTHS', WIDTHS.map(String)).map(Number);
 const filters = list('AUDIT_STATES', null);
-const states = [...STATES, ...extraRoutes()].filter((state) => !filters || filters.some((f) => (f.endsWith('*') ? state.id.startsWith(f.slice(0, -1)) : state.id === f)));
-if (!states.length) { console.error('No state matches AUDIT_STATES'); process.exit(2); }
+let states;
+try {
+  states = shardStates([...STATES, ...extraRoutes()].filter((state) => !filters || filters.some((f) => (f.endsWith('*') ? state.id.startsWith(f.slice(0, -1)) : state.id === f))));
+} catch (error) { console.error(error.message); process.exit(2); }
+if (!states.length) { console.error('No state matches AUDIT_STATES and AUDIT_SHARD'); process.exit(2); }
+const shard = process.env.AUDIT_SHARD?.trim() || null;
 const output = resolve('../audit-results/rebuild-audits');
 mkdirSync(output, { recursive: true });
 
@@ -229,10 +237,12 @@ try {
   for (const audit of active) {
     const groups = aggregate(rows[audit]);
     writeFileSync(join(output, `${audit}.json`), JSON.stringify({
-      audit, origin, date: new Date().toISOString(), states: states.map((s) => s.id), locales, themes, widths,
+      audit, origin, date: new Date().toISOString(), shard, filtered: Boolean(filters), states: states.map((s) => s.id), locales, themes, widths,
       configurations: configurations[audit], findings: rows[audit].length, groups, jsErrors,
       authenticated: states.filter((s) => s.scenario).map((s) => ({ state: s.id, population: SCENARIOS[s.scenario].population })),
       unansweredCoreRequests: [...unknownRequests].sort(),
+      // [signature, state] per measured page: merge-shards.mjs repeats the identical-markup check across shards.
+      signatures: [...signatures],
     }, null, 1));
     const matrix = audit === 'text-fit' ? 'x normal/+40% text x normal/WCAG 1.4.12 spacing' : 'x normal text';
     console.log(`\n${audit.toUpperCase()}: ${configurations[audit]} configurations (${states.length} states x ${locales.length} locales x ${themes.length} themes x up to ${widths.length} widths ${matrix})`);
