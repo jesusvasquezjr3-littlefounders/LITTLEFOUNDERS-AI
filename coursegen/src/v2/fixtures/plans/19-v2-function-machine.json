@@ -54,13 +54,13 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Try each week, then guess the rule."
+          "prompt": "Try each week, then guess the rule.", "feedback": {"met": "You tested inputs and found the rule that fits every one.", "not_yet": "Not yet. Compare how much the output grows each week."}
         },
         "es-MX": {
-          "prompt": "Prueba cada semana y adivina la regla."
+          "prompt": "Prueba cada semana y adivina la regla.", "feedback": {"met": "Probaste entradas y hallaste la regla que funciona con todas.", "not_yet": "Todavía no. Compara cuánto crece la salida cada semana."}
         },
         "pt-BR": {
-          "prompt": "Teste cada semana e descubra a regra."
+          "prompt": "Teste cada semana e descubra a regra.", "feedback": {"met": "Você testou entradas e achou a regra que serve para todas.", "not_yet": "Ainda não. Compare quanto a saída cresce a cada semana."}
         }
       },
       "rubric": {

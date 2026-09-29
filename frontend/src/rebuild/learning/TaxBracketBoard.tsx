@@ -12,6 +12,7 @@ import './taxBracket.css';
 import { LessonStageSlot } from './lessonStage';
 import type { LessonSequenceControl } from './lessonSequence';
 import { GradedFoot, NumberAnswer, SegmentPrompt, useSegmentGrade, type OnGradeSegment, gradeStageVerdict } from './segmentKit';
+import { namedFeedback } from './namedFeedback';
 import { playerCopy, SegmentProgress } from './segmentKit';
 const playerContinue = (locale: Locale) => playerCopy(locale).continue;
 
@@ -55,7 +56,7 @@ export function TaxBracketBoard({ document, segment, onBack, sequence, onGrade }
       <SegmentedControl legend={t.marginal} name={`${segment.id}-marginal`} value={marginal} onValueChange={(value) => { grading.reset(); setMarginal(value); }}
         options={p.brackets.map((bracket) => ({ value: String(bracket.rateBasisPoints), label: rate(bracket.rateBasisPoints) }))} />
       <NumberAnswer label={t.averagePercent} locale={document.locale} onChange={setAverageTyped} disabled={grading.pending || grading.met} /></div> : null}
-    {graded ? <GradedFoot locale={document.locale} grading={grading} canCheck={typedMinor !== null && marginal !== null && averageBps !== null && averageBps <= 10_000} sequence={sequence}
+    {graded ? <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'tax-bracket')} feedback={segment.feedback} canCheck={typedMinor !== null && marginal !== null && averageBps !== null && averageBps <= 10_000} sequence={sequence}
       onCheck={() => grading.check({ incomeMinor: income, taxMinor: typedMinor, marginalBps: Number(marginal), averageBps })} />
       : sequence ? <footer className="lf-learning-foot"><div className="lf-learning-actions"><Button variant="accent" onClick={sequence.onAdvance}>{playerContinue(document.locale)}</Button></div></footer> : null}
     </div></div></main>;

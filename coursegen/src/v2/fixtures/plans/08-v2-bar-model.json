@@ -47,7 +47,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Ana saved 50 coins, 12 more than Leo. Build the bars.",
+          "prompt": "Ana saved 50 coins, 12 more than Leo. Build the bars.", "feedback": {"met": "Your bars show Ana's as Leo's plus the extra part.", "not_yet": "Not yet. Ana has more, so her bar is longer."},
           "quantities": [
             {
               "label": "Ana"
@@ -60,7 +60,7 @@
           "spokenText": "fifty and twelve more"
         },
         "es-MX": {
-          "prompt": "Ana ahorró 50 monedas, 12 más que Leo. Arma las barras.",
+          "prompt": "Ana ahorró 50 monedas, 12 más que Leo. Arma las barras.", "feedback": {"met": "Tus barras muestran la de Ana como la de Leo más la parte extra.", "not_yet": "Todavía no. Ana tiene más, así que su barra es más larga."},
           "quantities": [
             {
               "label": "Ana"
@@ -73,7 +73,7 @@
           "spokenText": "cincuenta y doce más"
         },
         "pt-BR": {
-          "prompt": "Ana guardou 50 moedas, 12 a mais que Leo. Monte as barras.",
+          "prompt": "Ana guardou 50 moedas, 12 a mais que Leo. Monte as barras.", "feedback": {"met": "Suas barras mostram a de Ana como a de Leo mais a parte extra.", "not_yet": "Ainda não. Ana tem mais, então a barra dela é mais longa."},
           "quantities": [
             {
               "label": "Ana"
@@ -116,7 +116,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "How many coins did Leo save?",
+          "prompt": "How many coins did Leo save?", "feedback": {"met": "You took the extra part away from Ana's bar to find Leo's.", "not_yet": "Not yet. Leo's bar is Ana's without the extra part."},
           "quantities": [
             {
               "label": "Ana"
@@ -129,7 +129,7 @@
           "spokenText": "fifty minus twelve"
         },
         "es-MX": {
-          "prompt": "¿Cuántas monedas ahorró Leo?",
+          "prompt": "¿Cuántas monedas ahorró Leo?", "feedback": {"met": "Quitaste la parte extra a la barra de Ana para hallar la de Leo.", "not_yet": "Todavía no. La barra de Leo es la de Ana sin la parte extra."},
           "quantities": [
             {
               "label": "Ana"
@@ -142,7 +142,7 @@
           "spokenText": "cincuenta menos doce"
         },
         "pt-BR": {
-          "prompt": "Quantas moedas Leo guardou?",
+          "prompt": "Quantas moedas Leo guardou?", "feedback": {"met": "Você tirou a parte extra da barra de Ana para achar a de Leo.", "not_yet": "Ainda não. A barra de Leo é a de Ana sem a parte extra."},
           "quantities": [
             {
               "label": "Ana"

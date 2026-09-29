@@ -23,7 +23,17 @@
 //   gate 17 (reward mechanic) runRewardMechanicGate over the raw document;
 //   gate 18 (wellbeing)       runWellbeingLanguageGate (self-global,
 //                             family-finance moralizing, loss and purchase
-//                             lures) over the raw document.
+//                             lures) over the raw document, the step
+//                             `feedback` banners included;
+//   gate 19 (age register)    GAP-FIX-R6 (B.20, B.23): runAgeRegisterGate over
+//                             the raw document for the eligibility's ages
+//                             (a register's forbidden lexicon, praise that
+//                             names nothing from age 10), plus Core's
+//                             v2FeedbackProblems: every graded step for ages
+//                             10 and up names what was done right in
+//                             `feedback.met`, feedback sits only on graded
+//                             steps, and it carries no number the step does
+//                             not show (answerless).
 
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -32,12 +42,13 @@ import { parse as parseYaml } from 'yaml';
 import type { GateProblem } from '../pipeline/gates.js';
 import { buildForbiddenRegex, normalizeText } from '../pipeline/gates.js';
 import { runRewardMechanicGate } from '../pipeline/rewardMechanicGate.js';
-import { runWellbeingLanguageGate } from '../pipeline/wellbeingGates.js';
+import { runAgeRegisterGate, runWellbeingLanguageGate } from '../pipeline/wellbeingGates.js';
+import { v2FeedbackProblems } from './v2SegmentFamilies.generated.js';
 import { factsFileSchema, taxonomyFileSchema, type FactsFile, type TaxonomyFile } from '../catalog/schema.js';
 import { isNonCopyKey } from './contract.js';
 
 type Json = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-export interface V2Finding { gate: 2 | 3 | 4 | 17 | 18; severity: 'block' | 'review'; segmentId?: string; message: string }
+export interface V2Finding { gate: 2 | 3 | 4 | 17 | 18 | 19; severity: 'block' | 'review'; segmentId?: string; message: string }
 export interface CarriedCourseData { taxonomy?: TaxonomyFile; facts?: FactsFile }
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -240,10 +251,26 @@ export function v2RewardAndWellbeingGates(document: Json): V2Finding[] {
   ];
 }
 
+/** Gate 19 over the raw v2 document: the age register (B.23) and the authored feedback rules (B.20). */
+export function v2AgeRegisterGate(document: Json): V2Finding[] {
+  const eligibility = document.eligibility as { minimum_age?: unknown; maximum_age?: unknown } | undefined;
+  const ages = typeof eligibility?.minimum_age === 'number' && typeof eligibility.maximum_age === 'number'
+    ? `${eligibility.minimum_age}-${Math.min(99, eligibility.maximum_age)}` : undefined;
+  const register = runAgeRegisterGate(document, V2_SKIP_KEYS, ages);
+  const at = (finding: { segmentId?: string }) => finding.segmentId ? { segmentId: finding.segmentId } : {};
+  const segments = Array.isArray(document.segments) ? document.segments : [];
+  const feedback = typeof document.age_band === 'string' ? v2FeedbackProblems({ age_band: document.age_band, segments }) : [];
+  return [
+    ...register.blocking.map((finding) => ({ gate: 19 as const, severity: 'block' as const, ...at(finding), message: `${finding.path}: ${finding.message}` })),
+    ...register.review.map((finding) => ({ gate: 19 as const, severity: 'review' as const, ...at(finding), message: `${finding.path}: ${finding.message}` })),
+    ...feedback.map((message) => ({ gate: 19 as const, severity: 'block' as const, segmentId: message.slice(0, message.indexOf(':')), message })),
+  ];
+}
+
 /** All carried gates for one emitted document. */
 export function runV2CarriedGates(document: Json, answerKeys?: Json): { problems: GateProblem[]; review: V2Finding[] } {
   const data = loadCarriedCourseData(String(document.course_id ?? ''));
-  const findings = [...v2VocabularyGate(document, data), ...v2FactGate(document, data), ...v2ArithmeticGate(document, answerKeys), ...v2RewardAndWellbeingGates(document)];
+  const findings = [...v2VocabularyGate(document, data), ...v2FactGate(document, data), ...v2ArithmeticGate(document, answerKeys), ...v2RewardAndWellbeingGates(document), ...v2AgeRegisterGate(document)];
   return {
     problems: findings.filter((item) => item.severity === 'block').map((item) => ({ gate: item.gate, ...(item.segmentId ? { segmentId: item.segmentId } : {}), message: item.message })),
     review: findings.filter((item) => item.severity === 'review'),

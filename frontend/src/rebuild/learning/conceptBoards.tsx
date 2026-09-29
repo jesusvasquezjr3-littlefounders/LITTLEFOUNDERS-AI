@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { AnswerChoice, Button, Slider, Stepper } from '../design/controls';
 import { TeachingChart } from './charts/TeachingChart';
 import { conceptCopy, conceptMoney, conceptPercent, fill } from './conceptCopy';
+import { namedFeedback } from './namedFeedback';
 import type { LessonClientDocument, LessonClientSegment } from './lessonDocument';
 import type { LessonSequenceControl } from './lessonSequence';
 import { BeforeAfter, ChartOrTable, CurveShift, DragPoint, GhostTracePlot, GuidedSandbox, ReactiveText, ScaleToggle, ThresholdPlot, TradeOffChooser, useGhost, WhatIfBranch } from './operations/operations';
@@ -64,7 +65,7 @@ export function AmortizationBoard({ document, segment, onBack, sequence, onGrade
   return <BoardShell screen="amortization" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={graded ? grading.met : true} verdict={verdictOf(grading)}
     onReset={() => go(0)} resetDisabled={month === 0 || grading.pending || grading.met}
-    foot={graded ? <GradedFoot locale={document.locale} grading={grading} canCheck={month > 0 && balance !== null} sequence={sequence} onCheck={() => grading.check({ month, balance })} />
+    foot={graded ? <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'amortization', { month })} feedback={segment.feedback} canCheck={month > 0 && balance !== null} sequence={sequence} onCheck={() => grading.check({ month, balance })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} ready={month > 0} />}>
     <section className="lf-learning-board lf-concept-board" aria-label={t.schedule} data-operation="operation.step-replay.v1">
       <ChartOrTable labels={tableLabels(document.locale)}
@@ -114,7 +115,7 @@ export function SupplyDemandBoard({ document, segment, onBack, sequence, onGrade
   return <BoardShell screen="supply-demand" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={graded ? grading.met : true} verdict={verdictOf(grading)}
     onReset={() => { grading.reset(); setShift({ demand: 0, supply: 0 }); setPrice(null); }} resetDisabled={(!moved && price === null) || grading.pending || grading.met}
-    foot={graded ? <GradedFoot locale={document.locale} grading={grading} canCheck={price !== null} sequence={sequence}
+    foot={graded ? <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'supply-demand')} feedback={segment.feedback} canCheck={price !== null} sequence={sequence}
       onCheck={() => grading.check({ demand_shift: shift.demand, supply_shift: shift.supply, price })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} ready={shift.demand !== 0 || shift.supply !== 0} />}>
     <section className="lf-learning-board lf-concept-board">
@@ -200,7 +201,7 @@ export function InflationBoard({ document, segment, onBack, sequence, onGrade }:
   const reset = () => { grading.reset(); setRate(p.min_rate_bps); setYears(p.min_years); setScale('near'); setLater(false); setGuess(p.price_minor); };
   return <BoardShell screen="inflation" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={graded ? grading.met : true} verdict={verdictOf(grading)} onReset={reset} resetDisabled={!changed || grading.pending || grading.met}
-    foot={graded ? <GradedFoot locale={document.locale} grading={grading} canCheck sequence={sequence} onCheck={() => grading.check({ rateBps: rate, years, predictionMinor: guess })} />
+    foot={graded ? <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'inflation')} feedback={segment.feedback} canCheck sequence={sequence} onCheck={() => grading.check({ rateBps: rate, years, predictionMinor: guess })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} />}>
     <section className="lf-learning-board lf-concept-board" data-operation="operation.parameter-slider.v1">
       <ReactiveText labels={{ decrease: t.less, increase: t.more }} onChange={change} result={hide ? t.hidden : money(cost)} parts={[
@@ -243,7 +244,7 @@ export function RuleOf72Board({ document, segment, onBack, sequence, onGrade }: 
   return <BoardShell screen="rule-of-72" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={graded ? grading.met : true} verdict={verdictOf(grading)}
     onReset={() => { grading.reset(); setRate(p.min_rate_bps); setGuess(10); }} resetDisabled={(rate === p.min_rate_bps && guess === 10) || grading.pending || grading.met}
-    foot={graded ? <GradedFoot locale={document.locale} grading={grading} canCheck sequence={sequence} onCheck={() => grading.check({ rateBps: rate, years: guess })} />
+    foot={graded ? <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'rule-of-72', { years: guess })} feedback={segment.feedback} canCheck sequence={sequence} onCheck={() => grading.check({ rateBps: rate, years: guess })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} />}>
     <section className="lf-learning-board lf-concept-board" data-operation="operation.parameter-slider.v1">
       <Slider label={t.growthRate} valueText={fill(t.perYear, { n: percent(rate) })} min={p.min_rate_bps} max={p.max_rate_bps} step={p.rate_step_bps} value={rate}
@@ -280,7 +281,7 @@ export function DebtPayoffBoard({ document, segment, onBack, sequence, onGrade }
   return <BoardShell screen="debt-payoff" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={graded ? grading.met : chosen !== null} verdict={verdictOf(grading)}
     onReset={() => { grading.reset(); setChosen(null); }} resetDisabled={chosen === null || grading.pending || grading.met}
-    foot={graded ? <GradedFoot locale={document.locale} grading={grading} canCheck={chosen !== null} sequence={sequence} onCheck={() => grading.check({ strategy: chosen })} />
+    foot={graded ? <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'debt-payoff')} feedback={segment.feedback} canCheck={chosen !== null} sequence={sequence} onCheck={() => grading.check({ strategy: chosen })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} ready={chosen !== null} />}>
     <section className="lf-learning-board lf-concept-board">
       <WhatIfBranch legend={t.strategy} chosen={chosen} onChoose={(id) => { grading.reset(); setChosen(id); }} disabled={grading.met}
@@ -332,7 +333,7 @@ export function DiversificationBoard({ document, segment, onBack, sequence, onGr
   return <BoardShell screen="diversification" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={graded ? grading.met : true} verdict={verdictOf(grading)}
     onReset={() => { grading.reset(); setWeights(initial()); }} resetDisabled={weights[ids[0]!] === 100 || grading.pending || grading.met}
-    foot={graded ? <GradedFoot locale={document.locale} grading={grading} canCheck sequence={sequence} onCheck={() => grading.check({ weights })} />
+    foot={graded ? <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'diversification')} feedback={segment.feedback} canCheck sequence={sequence} onCheck={() => grading.check({ weights })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} />}>
     <section className="lf-learning-control-strip" aria-label={t.portfolioPoint}>
       {/* Bible 05 §3: the tap and keyboard controls sit in the strip under the board, not on it. */}
@@ -377,7 +378,7 @@ export function LemonadeStandBoard({ document, segment, onBack, sequence, onGrad
   return <BoardShell screen="lemonade-stand" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={graded ? grading.met : days.length > 0} verdict={verdictOf(grading)}
     onReset={() => { grading.reset(); setPrice(0); setCups(0); setDays([]); }} resetDisabled={(price === 0 && cups === 0 && days.length === 0) || grading.pending || grading.met}
-    foot={graded ? <GradedFoot locale={document.locale} grading={grading} canCheck={days.length > 0} sequence={sequence} onCheck={() => grading.check({ price, cups })} />
+    foot={graded ? <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'lemonade-stand')} feedback={segment.feedback} canCheck={days.length > 0} sequence={sequence} onCheck={() => grading.check({ price, cups })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} ready={days.length > 0} />}>
     <section className="lf-learning-board lf-concept-board">
       <GuidedSandbox cues={[

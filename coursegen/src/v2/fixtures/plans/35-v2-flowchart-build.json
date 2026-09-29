@@ -66,7 +66,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Build a chart and test it.",
+          "prompt": "Build a chart and test it.", "feedback": {"met": "Your chart sends every case to a sensible result.", "not_yet": "Not yet. Test your chart on the practice case."},
           "questions": [
             {
               "label": "Do I need it?"
@@ -93,7 +93,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Arma un diagrama y pruébalo.",
+          "prompt": "Arma un diagrama y pruébalo.", "feedback": {"met": "Tu diagrama lleva cada caso a un resultado sensato.", "not_yet": "Todavía no. Prueba tu diagrama con el caso de práctica."},
           "questions": [
             {
               "label": "¿Lo necesito?"
@@ -120,7 +120,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Monte um diagrama e teste.",
+          "prompt": "Monte um diagrama e teste.", "feedback": {"met": "Seu diagrama leva cada caso a um resultado sensato.", "not_yet": "Ainda não. Teste seu diagrama no caso de prática."},
           "questions": [
             {
               "label": "Eu preciso?"

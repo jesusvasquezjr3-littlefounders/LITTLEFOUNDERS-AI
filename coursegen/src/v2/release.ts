@@ -43,7 +43,7 @@ const repoRoot = path.resolve(here, '../../..');
 export const V2_MANIFEST_GATES = RELEASE_CHECK_IDS
   .filter((id) => ['forge.gate.01.contract', 'forge.gate.02.age-vocabulary', 'forge.gate.03.currency-facts', 'forge.gate.04.arithmetic',
     'forge.gate.11.redundancy', 'forge.gate.12.tone', 'forge.gate.13.copy-budget', 'forge.gate.14.concept-cap', 'forge.gate.15.mentor-misjudgment',
-    'forge.gate.16.regional-adaptation', 'forge.gate.17.reward-mechanics', 'forge.gate.18.wellbeing-language', 'forge.release.v2-content'].includes(id));
+    'forge.gate.16.regional-adaptation', 'forge.gate.17.reward-mechanics', 'forge.gate.18.wellbeing-language', 'forge.gate.19.age-register', 'forge.release.v2-content'].includes(id));
 
 export interface V2PublishCall { lessonId: string; locale: string; versionId: string; body: Record<string, unknown> }
 

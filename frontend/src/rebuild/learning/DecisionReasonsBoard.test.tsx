@@ -29,7 +29,7 @@ describe('B.12 decide-and-justify board', () => {
       const t = decisionReasonsCopy[locale];
       for (const key of ['back', 'check', 'continue'] as const) expect(checkCopy(t[key], 'action', { locale, ageBand: '6-9', surface: 'app' }), key).toEqual([]);
       for (const key of ['board', 'choice'] as const) expect(checkCopy(t[key], 'heading', { locale, ageBand: '6-9', surface: 'app' }), key).toEqual([]);
-      for (const key of ['met', 'review', 'sound', 'partial', 'unsupported', 'unavailable'] as const) {
+      for (const key of ['sound', 'partial', 'unsupported', 'unavailable'] as const) {
         expect(checkCopy(t[key], 'body', { locale, ageBand: '6-9', surface: 'app' }), key).toEqual([]);
       }
       const pilot = decideJustifyPilotDocument(locale, '6-9') as { title: string; segments: { prompt: string; payload: { reasonPrompt: string; choices: { label: string }[]; reasons: { label: string }[] } }[] };
@@ -57,7 +57,7 @@ describe('B.12 decide-and-justify board', () => {
     expect(check).toBeDisabled();
     fireEvent.click(screen.getByRole('button', { name: 'It gets me closer' }));
     fireEvent.click(check);
-    expect(await screen.findByText('Look again at what matters most.')).toBeInTheDocument();
+    expect(await screen.findByText('Not yet. Look again at what matters most.')).toBeInTheDocument();
     // Sound reasoning behind a choice that does not work: Law 4 sees both.
     expect(screen.getByText('Your reason explains it well.')).toBeInTheDocument();
     expect(grade).toHaveBeenLastCalledWith({ choice: 'spend-all', reason: 'reason-goal' });
@@ -65,7 +65,7 @@ describe('B.12 decide-and-justify board', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save 4 coins' }));
     fireEvent.click(screen.getByRole('button', { name: 'I just picked one' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    expect(await screen.findByText('That choice works.')).toBeInTheDocument();
+    expect(await screen.findByText('Your choice and your reason both point to the goal.')).toBeInTheDocument();
     expect(screen.getByText('Try a reason that explains your choice.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save 4 coins' })).toBeDisabled();
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));

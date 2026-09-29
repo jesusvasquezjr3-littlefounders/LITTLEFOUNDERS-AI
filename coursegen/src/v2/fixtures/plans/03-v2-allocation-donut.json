@@ -40,13 +40,13 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Split 60 coins for the month. Save at least a third."
+          "prompt": "Split 60 coins for the month. Save at least a third.", "feedback": {"met": "Your split saves at least a third and uses every coin.", "not_yet": "Not yet. Check that savings reach a third of the coins."}
         },
         "es-MX": {
-          "prompt": "Reparte 60 monedas del mes. Guarda al menos un tercio."
+          "prompt": "Reparte 60 monedas del mes. Guarda al menos un tercio.", "feedback": {"met": "Tu reparto ahorra al menos un tercio y usa todas las monedas.", "not_yet": "Todavía no. Revisa que el ahorro llegue a un tercio de las monedas."}
         },
         "pt-BR": {
-          "prompt": "Divida 60 moedas do mês. Guarde pelo menos um terço."
+          "prompt": "Divida 60 moedas do mês. Guarde pelo menos um terço.", "feedback": {"met": "Sua divisão guarda pelo menos um terço e usa todas as moedas.", "not_yet": "Ainda não. Confira se a poupança chega a um terço das moedas."}
         }
       },
       "rubric": {

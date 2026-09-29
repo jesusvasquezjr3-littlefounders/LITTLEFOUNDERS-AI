@@ -7,7 +7,9 @@
 // Used by scripts/forge-v2-check.ts (npm run forge-v2:check) and its test.
 
 import { checkV2Behaviour } from './forgeV2Behaviour.js';
+import { isGenericPraise } from './learnerRegisterPolicy.js';
 import { validateV2LessonForGrading } from './v2LessonDocument.js';
+import { v2FeedbackProblems } from './v2SegmentFamilies.js';
 
 export interface ForgeV2Row {
   lesson_id?: unknown;
@@ -39,6 +41,14 @@ export function checkForgeV2Rows(rows: unknown): string[] {
     if (!document || document.version_id !== row.version_id) problems.push(`${where}: row version_id must match the document's`);
     const parsed = validateV2LessonForGrading(row.document, row.answer_keys, { lessonId: row.lesson_id, locale: row.locale });
     if (!parsed) { problems.push(`${where}: refused by Core's v2 contract (validateV2LessonForGrading)`); continue; }
+    // GAP-FIX-R6 (B.20, B.23, Bible 02 §9.2): authored feedback names what was done right from age 10, never
+    // praises with nothing named, and gives no answer away.
+    for (const problem of v2FeedbackProblems(parsed)) problems.push(`${where}: feedback, ${problem}`);
+    if (parsed.age_band !== '6-9') {
+      for (const segment of parsed.segments) {
+        if (segment.feedback?.met && isGenericPraise(segment.feedback.met)) problems.push(`${where}: feedback, ${segment.id}: "${segment.feedback.met}" praises with nothing named (B.20, B.23)`);
+      }
+    }
     // GAP-FIX-R1: the interactive-behaviour gate over the full permitted input range, on the authoritative scorer.
     for (const report of checkV2Behaviour(parsed, row.answer_keys as Record<string, unknown>)) {
       for (const problem of report.problems) problems.push(`${where}: interactive-behaviour gate, ${report.segmentId} (${report.type}): ${problem}`);

@@ -10,7 +10,8 @@ import './learning.css';
 import './growthComparison.css';
 import { LessonStageSlot } from './lessonStage';
 import { LessonFeedback } from './LessonFeedback';
-import { playerCopy, SegmentPrompt, useSegmentGrade, type OnGradeSegment, gradeStageVerdict } from './segmentKit';
+import { SegmentPrompt, useSegmentGrade, verdictBannerText, type OnGradeSegment, gradeStageVerdict } from './segmentKit';
+import { namedFeedback } from './namedFeedback';
 
 
 type ComparisonSegment = Extract<LessonClientSegment, { type: 'visual.growth-comparison.v2' }>;
@@ -77,7 +78,6 @@ export function GrowthComparisonBoard({ document, segment, onBack, sequence, onG
   const t = copy[locale];
   const grading = useSegmentGrade(segment.id, onGrade);
   const graded = segment.grading === 'server' && !!onGrade;
-  const player = playerCopy(locale);
   const scaleName = useId();
   const p = segment.payload;
   const initialPrediction = p.principalMinor;
@@ -158,7 +158,7 @@ export function GrowthComparisonBoard({ document, segment, onBack, sequence, onG
         </div> : null}
         <footer className="lf-learning-foot">
           {graded ? <LessonFeedback verdict={result === null ? null : result === 'unavailable' ? 'unavailable' : result.verdict === 'met' ? 'met' : 'review'}>
-            {result === null ? null : result === 'unavailable' ? player.unavailable : result.verdict === 'met' ? player.met : player.reviewAnswer}</LessonFeedback> : null}
+            {result === null ? null : verdictBannerText(locale, result === 'unavailable' ? 'unavailable' : result.verdict === 'met' ? 'met' : 'review', namedFeedback(locale, 'growth-comparison'), segment.feedback)}</LessonFeedback> : null}
           <div className="lf-learning-actions"><Button variant={committed === null || sequence ? 'accent' : undefined}
             disabled={(committed === null && prediction === p.principalMinor) || grading.pending}
             onClick={() => committed === null ? commit() : sequence && (!graded || grading.met) ? sequence.onAdvance() : reset()}>

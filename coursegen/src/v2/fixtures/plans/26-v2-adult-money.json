@@ -61,13 +61,13 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Move the income to 45000 coins. Find the tax, the top rate and the average rate."
+          "prompt": "Move the income to 45000 coins. Find the tax, the top rate and the average rate.", "feedback": {"met": "You taxed each slice at its own rate and averaged the whole.", "not_yet": "Not yet. Only income above each line pays that line's rate."}
         },
         "es-MX": {
-          "prompt": "Mueve el ingreso a 45000 monedas. Halla el impuesto, la tasa más alta y la tasa promedio."
+          "prompt": "Mueve el ingreso a 45000 monedas. Halla el impuesto, la tasa más alta y la tasa promedio.", "feedback": {"met": "Gravaste cada tramo con su tasa y calculaste el promedio del total.", "not_yet": "Todavía no. Solo el ingreso sobre cada límite paga esa tasa."}
         },
         "pt-BR": {
-          "prompt": "Mova a renda para 45000 moedas. Ache o imposto, a maior alíquota e a alíquota média."
+          "prompt": "Mova a renda para 45000 moedas. Ache o imposto, a maior alíquota e a alíquota média.", "feedback": {"met": "Você tributou cada faixa com sua alíquota e tirou a média do total.", "not_yet": "Ainda não. Só a renda acima de cada limite paga essa alíquota."}
         }
       },
       "rubric": {
@@ -97,13 +97,13 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Predict the compound total, then reveal both curves."
+          "prompt": "Predict the compound total, then reveal both curves.", "feedback": {"met": "You predicted growth on growth, not the same gain each year.", "not_yet": "Not yet. Compound growth adds interest on past interest."}
         },
         "es-MX": {
-          "prompt": "Predice el total compuesto y luego revela ambas curvas."
+          "prompt": "Predice el total compuesto y luego revela ambas curvas.", "feedback": {"met": "Predijiste crecimiento sobre crecimiento, no la misma ganancia cada año.", "not_yet": "Todavía no. El interés compuesto suma interés sobre el interés anterior."}
         },
         "pt-BR": {
-          "prompt": "Preveja o total composto e depois revele as duas curvas."
+          "prompt": "Preveja o total composto e depois revele as duas curvas.", "feedback": {"met": "Você previu crescimento sobre crescimento, não o mesmo ganho todo ano.", "not_yet": "Ainda não. Juros compostos somam juros sobre os juros anteriores."}
         }
       },
       "rubric": {
@@ -126,13 +126,13 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "A coat costs 200 coins with 30% off. Shade the discount."
+          "prompt": "A coat costs 200 coins with 30% off. Shade the discount.", "feedback": {"met": "You shaded the discount share and found its amount in coins.", "not_yet": "Not yet. Shade one square for each percent off."}
         },
         "es-MX": {
-          "prompt": "Un abrigo cuesta 200 monedas con 30% de descuento. Sombrea el descuento."
+          "prompt": "Un abrigo cuesta 200 monedas con 30% de descuento. Sombrea el descuento.", "feedback": {"met": "Sombreaste la parte del descuento y hallaste su valor en monedas.", "not_yet": "Todavía no. Sombrea un cuadro por cada punto de descuento."}
         },
         "pt-BR": {
-          "prompt": "Um casaco custa 200 moedas com 30% de desconto. Pinte o desconto."
+          "prompt": "Um casaco custa 200 moedas com 30% de desconto. Pinte o desconto.", "feedback": {"met": "Você sombreou a parte do desconto e achou o valor em moedas.", "not_yet": "Ainda não. Pinte um quadrado para cada ponto de desconto."}
         }
       },
       "rubric": {
@@ -154,13 +154,13 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Start with 10 coins. Log sales of 5 and costs of 3 until you have 14."
+          "prompt": "Start with 10 coins. Log sales of 5 and costs of 3 until you have 14.", "feedback": {"met": "You logged each sale and cost and kept a running balance.", "not_yet": "Not yet. Add each sale and subtract each cost as you go."}
         },
         "es-MX": {
-          "prompt": "Empieza con 10 monedas. Anota ventas de 5 y gastos de 3 hasta tener 14."
+          "prompt": "Empieza con 10 monedas. Anota ventas de 5 y gastos de 3 hasta tener 14.", "feedback": {"met": "Registraste cada venta y costo y llevaste el saldo al día.", "not_yet": "Todavía no. Suma cada venta y resta cada costo sobre la marcha."}
         },
         "pt-BR": {
-          "prompt": "Comece com 10 moedas. Anote vendas de 5 e custos de 3 até ter 14."
+          "prompt": "Comece com 10 moedas. Anote vendas de 5 e custos de 3 até ter 14.", "feedback": {"met": "Você registrou cada venda e custo e manteve o saldo em dia.", "not_yet": "Ainda não. Some cada venda e tire cada custo pelo caminho."}
         }
       },
       "rubric": {
@@ -194,7 +194,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Follow the discount step by step.",
+          "prompt": "Follow the discount step by step.", "feedback": {"met": "You found the discount first, then took it off the price.", "not_yet": "Not yet. Work out the discount, then subtract it from the price."},
           "steps": [
             {
               "expression": "20% × 50",
@@ -214,7 +214,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Sigue el descuento paso a paso.",
+          "prompt": "Sigue el descuento paso a paso.", "feedback": {"met": "Calculaste primero el descuento y luego lo restaste del precio.", "not_yet": "Todavía no. Calcula el descuento y luego réstalo del precio."},
           "steps": [
             {
               "expression": "20% × 50",
@@ -234,7 +234,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Siga o desconto passo a passo.",
+          "prompt": "Siga o desconto passo a passo.", "feedback": {"met": "Você calculou primeiro o desconto e depois tirou do preço.", "not_yet": "Ainda não. Calcule o desconto e depois tire do preço."},
           "steps": [
             {
               "expression": "20% × 50",
@@ -278,13 +278,13 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "A box of 4 filters costs 12 coins. How much do 5 boxes cost?"
+          "prompt": "A box of 4 filters costs 12 coins. How much do 5 boxes cost?", "feedback": {"met": "You scaled the price by the same factor as the boxes.", "not_yet": "Not yet. Multiply the box price by the number of boxes."}
         },
         "es-MX": {
-          "prompt": "Una caja de 4 filtros cuesta 12 monedas. ¿Cuánto cuestan 5 cajas?"
+          "prompt": "Una caja de 4 filtros cuesta 12 monedas. ¿Cuánto cuestan 5 cajas?", "feedback": {"met": "Escalaste el precio por el mismo factor que las cajas.", "not_yet": "Todavía no. Multiplica el precio de una caja por el número de cajas."}
         },
         "pt-BR": {
-          "prompt": "Uma caixa com 4 filtros custa 12 moedas. Quanto custam 5 caixas?"
+          "prompt": "Uma caixa com 4 filtros custa 12 moedas. Quanto custam 5 caixas?", "feedback": {"met": "Você escalou o preço pelo mesmo fator das caixas.", "not_yet": "Ainda não. Multiplique o preço de uma caixa pelo número de caixas."}
         }
       },
       "rubric": {
@@ -305,13 +305,13 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Split 100 coins of pay. Save 20 or more."
+          "prompt": "Split 100 coins of pay. Save 20 or more.", "feedback": {"met": "Your plan saves the goal amount and assigns every coin.", "not_yet": "Not yet. Move coins into savings until you reach the goal."}
         },
         "es-MX": {
-          "prompt": "Reparte 100 monedas de sueldo. Guarda 20 o más."
+          "prompt": "Reparte 100 monedas de sueldo. Guarda 20 o más.", "feedback": {"met": "Tu plan ahorra la meta y asigna cada moneda.", "not_yet": "Todavía no. Pasa monedas al ahorro hasta llegar a la meta."}
         },
         "pt-BR": {
-          "prompt": "Divida 100 moedas de salário. Guarde 20 ou mais."
+          "prompt": "Divida 100 moedas de salário. Guarde 20 ou mais.", "feedback": {"met": "Seu plano guarda a meta e distribui todas as moedas.", "not_yet": "Ainda não. Passe moedas para a poupança até chegar à meta."}
         }
       },
       "rubric": {

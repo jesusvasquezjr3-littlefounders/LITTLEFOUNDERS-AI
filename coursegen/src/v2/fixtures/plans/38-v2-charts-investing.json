@@ -76,7 +76,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Read each candle: open, high, low, close.",
+          "prompt": "Read each candle: open, high, low, close.", "feedback": {"met": "You compared each day's close with its open.", "not_yet": "Not yet. A day closes lower when its candle body falls."},
           "title": "Share price by day",
           "data": {
             "ohlc": [
@@ -107,7 +107,7 @@
           }
         },
         "es-MX": {
-          "prompt": "Lee cada vela: apertura, máximo, mínimo, cierre.",
+          "prompt": "Lee cada vela: apertura, máximo, mínimo, cierre.", "feedback": {"met": "Comparaste el cierre de cada día con su apertura.", "not_yet": "Todavía no. Un día cierra más bajo cuando su vela baja."},
           "title": "Precio por día",
           "data": {
             "ohlc": [
@@ -138,7 +138,7 @@
           }
         },
         "pt-BR": {
-          "prompt": "Leia cada vela: abertura, máxima, mínima, fechamento.",
+          "prompt": "Leia cada vela: abertura, máxima, mínima, fechamento.", "feedback": {"met": "Você comparou o fechamento de cada dia com a abertura.", "not_yet": "Ainda não. Um dia fecha mais baixo quando o corpo da vela desce."},
           "title": "Preço por dia",
           "data": {
             "ohlc": [

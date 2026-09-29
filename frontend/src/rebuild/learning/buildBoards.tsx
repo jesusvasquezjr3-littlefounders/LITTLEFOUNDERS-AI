@@ -6,6 +6,7 @@ import type { LessonClientDocument, LessonClientSegment } from './lessonDocument
 import type { LessonSequenceControl } from './lessonSequence';
 import { RatioLinesVisual } from './pizarron';
 import { BoardShell, GradedFoot, NumberAnswer, useSegmentGrade, type OnGradeSegment } from './segmentKit';
+import { namedFeedback } from './namedFeedback';
 import type { FlowTree, RuleExpr } from './v2SegmentFamilies.generated';
 import './familyBoards.css';
 
@@ -55,7 +56,7 @@ export function UnitPriceBoard({ document, segment, onBack, sequence, onGrade }:
   return <BoardShell screen="unit-price" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={grading.met} verdict={verdictOf(grading)}
     onReset={() => { grading.reset(); setPrices({}); setChoice(null); setRound((value) => value + 1); }} resetDisabled={(!typedAny && choice === null) || locked}
-    foot={<GradedFoot locale={document.locale} grading={grading} canCheck={complete} sequence={sequence}
+    foot={<GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'unit-price')} feedback={segment.feedback} canCheck={complete} sequence={sequence}
       onCheck={() => grading.check({ unit_prices: Object.fromEntries(offers.map((offer) => [offer.id, prices[offer.id]])), choice })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-offers`}>
       <h2 id={`${segment.id}-offers`} data-copy-role="heading">{t.offers}</h2>
@@ -134,7 +135,7 @@ export function RuleBuilderBoard({ document, segment, onBack, sequence, onGrade 
   };
   return <BoardShell screen="rule-builder" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={grading.met} verdict={verdictOf(grading)} onReset={reset} resetDisabled={!changed || locked}
-    foot={<GradedFoot locale={document.locale} grading={grading} canCheck={complete} sequence={sequence}
+    foot={<GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'rule-builder')} feedback={segment.feedback} canCheck={complete} sequence={sequence}
       onCheck={() => grading.check({ rule: { if: expr, then, else: otherwise } })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-rule`}>
       <h2 id={`${segment.id}-rule`} data-copy-role="heading">{t.rule}</h2>
@@ -219,7 +220,7 @@ export function FlowchartBuildBoard({ document, segment, onBack, sequence, onGra
   return <BoardShell screen={segment.type === 'money.spend-decision.v2' ? 'spend-decision-build' : 'flowchart-build'} locale={document.locale} title={document.title}
     segment={segment} onBack={onBack} sequence={sequence} finished={grading.met} verdict={verdictOf(grading)}
     onReset={() => { grading.reset(); setTested(false); setDraft(EMPTY); }} resetDisabled={(draft.kind === 'empty' && !tested) || locked}
-    foot={<GradedFoot locale={document.locale} grading={grading} canCheck={tree !== null} sequence={sequence} onCheck={() => grading.check({ tree })} />}>
+    foot={<GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'flowchart-build')} feedback={segment.feedback} canCheck={tree !== null} sequence={sequence} onCheck={() => grading.check({ tree })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-chart`}>
       <h2 id={`${segment.id}-chart`} data-copy-role="heading">{t.chart}</h2>
       <ul className="lf-flow-build">{node(draft, [], [], t.start)}</ul>

@@ -11,6 +11,7 @@ import './learning.css';
 import './savingsRule.css';
 import { LessonStageSlot } from './lessonStage';
 import { GradedFoot, SegmentPrompt, useSegmentGrade, type OnGradeSegment, gradeStageVerdict } from './segmentKit';
+import { namedFeedback } from './namedFeedback';
 
 type SavingsRuleSegment = Extract<LessonClientSegment, { type: 'logic.savings-rule.v2' }>;
 type Labels = { reset: string; back: string; explore: string; progress: string; board: string; showTable: string; showChart: string;
@@ -114,7 +115,7 @@ export function SavingsRuleBoard({ document, segment, onBack, sequence, onGrade 
             options={document.age_band === '6-9' ? [{ value: 'none' as const, label: t.savedOnly }]
               : [{ value: 'and' as const, label: t.and }, { value: 'or' as const, label: t.or }, { value: 'none' as const, label: t.savedOnly }]} />
         </section> : null}
-        {graded ? <GradedFoot locale={document.locale} grading={grading} canCheck={comparator !== null && ruleLink !== null} sequence={sequence}
+        {graded ? <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'savings-rule')} feedback={segment.feedback} canCheck={comparator !== null && ruleLink !== null} sequence={sequence}
           onCheck={() => grading.check({ comparator, threshold, link: ruleLink })} /> : null}
         <footer className="lf-rule-foot"><p role="status" aria-live="polite" data-copy-role="body">{resultLabel}</p>
           {sequence && !graded ? <Button variant="accent" disabled={!link || caseIndex !== cases.length - 1}

@@ -68,7 +68,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Which cards must you turn to test the rule?",
+          "prompt": "Which cards must you turn to test the rule?", "feedback": {"met": "You turned only the cards that could break the rule.", "not_yet": "Not yet. Ask which cards could break the rule."},
           "rule": "If a card shows an even number, its back is red.",
           "cards": [
             {
@@ -86,7 +86,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "¿Qué tarjetas debes voltear para probar la regla?",
+          "prompt": "¿Qué tarjetas debes voltear para probar la regla?", "feedback": {"met": "Volteaste solo las tarjetas que podían romper la regla.", "not_yet": "Todavía no. Pregúntate qué tarjetas podrían romper la regla."},
           "rule": "Si una tarjeta muestra un número par, su reverso es rojo.",
           "cards": [
             {
@@ -104,7 +104,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Quais cartas você precisa virar para testar a regra?",
+          "prompt": "Quais cartas você precisa virar para testar a regra?", "feedback": {"met": "Você virou só as cartas que podiam quebrar a regra.", "not_yet": "Ainda não. Pergunte quais cartas poderiam quebrar a regra."},
           "rule": "Se uma carta mostra um número par, o verso é vermelho.",
           "cards": [
             {
@@ -162,7 +162,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Every coin is money. Place each thing.",
+          "prompt": "Every coin is money. Place each thing.", "feedback": {"met": "You placed each thing knowing every coin is also money.", "not_yet": "Not yet. Check each thing: is it money, is it a coin?"},
           "sets": [
             {
               "label": "Coins"
@@ -184,7 +184,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Toda moneda es dinero. Coloca cada cosa.",
+          "prompt": "Toda moneda es dinero. Coloca cada cosa.", "feedback": {"met": "Ubicaste cada cosa sabiendo que toda moneda también es dinero.", "not_yet": "Todavía no. Revisa si cada cosa es dinero y si es moneda."},
           "sets": [
             {
               "label": "Monedas"
@@ -206,7 +206,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Toda moeda é dinheiro. Coloque cada coisa.",
+          "prompt": "Toda moeda é dinheiro. Coloque cada coisa.", "feedback": {"met": "Você colocou cada coisa sabendo que toda moeda também é dinheiro.", "not_yet": "Ainda não. Veja se cada coisa é dinheiro e se é moeda."},
           "sets": [
             {
               "label": "Moedas"
@@ -276,7 +276,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Pick the picture for the sentence, then place each kid.",
+          "prompt": "Pick the picture for the sentence, then place each kid.", "feedback": {"met": "You matched the picture to the sentence and placed each kid.", "not_yet": "Not yet. Ask if anyone can be in both groups."},
           "sentence": "No one spends every coin and saves every coin.",
           "sets": [
             {
@@ -299,7 +299,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Elige el dibujo de la frase y coloca a cada niño.",
+          "prompt": "Elige el dibujo de la frase y coloca a cada niño.", "feedback": {"met": "Elegiste el dibujo que encaja con la frase y ubicaste a cada quien.", "not_yet": "Todavía no. Pregúntate si alguien puede estar en los dos grupos."},
           "sentence": "Nadie gasta todas sus monedas y ahorra todas a la vez.",
           "sets": [
             {
@@ -322,7 +322,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Escolha a figura da frase e coloque cada criança.",
+          "prompt": "Escolha a figura da frase e coloque cada criança.", "feedback": {"met": "Você escolheu a figura que combina com a frase e colocou cada pessoa.", "not_yet": "Ainda não. Pergunte se alguém pode estar nos dois grupos."},
           "sentence": "Ninguém gasta todas as moedas e guarda todas ao mesmo tempo.",
           "sets": [
             {
@@ -388,7 +388,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Follow the chart for a stormy day.",
+          "prompt": "Follow the chart for a stormy day.", "feedback": {"met": "You answered each question for a stormy day and followed its arrow.", "not_yet": "Not yet. Answer the first question for a stormy day."},
           "nodes": [
             {
               "label": "Is it raining?"
@@ -407,7 +407,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Sigue el diagrama para un día de tormenta.",
+          "prompt": "Sigue el diagrama para un día de tormenta.", "feedback": {"met": "Respondiste cada pregunta para un día de tormenta y seguiste su flecha.", "not_yet": "Todavía no. Responde la primera pregunta pensando en un día de tormenta."},
           "nodes": [
             {
               "label": "¿Está lloviendo?"
@@ -426,7 +426,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Siga o diagrama para um dia de tempestade.",
+          "prompt": "Siga o diagrama para um dia de tempestade.", "feedback": {"met": "Você respondeu cada pergunta para um dia de tempestade e seguiu a seta.", "not_yet": "Ainda não. Responda a primeira pergunta pensando num dia de tempestade."},
           "nodes": [
             {
               "label": "Está chovendo?"
@@ -499,7 +499,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "You want a new ball. Yours still works.",
+          "prompt": "You want a new ball. Yours still works.", "feedback": {"met": "You asked if you need it before asking if you can pay.", "not_yet": "Not yet. Your ball still works, so start with need."},
           "nodes": [
             {
               "label": "Do I need it?"
@@ -524,7 +524,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Quieres un balón nuevo. El tuyo aún sirve.",
+          "prompt": "Quieres un balón nuevo. El tuyo aún sirve.", "feedback": {"met": "Preguntaste si lo necesitas antes de ver si te alcanza.", "not_yet": "Todavía no. Tu pelota todavía sirve, así que empieza por la necesidad."},
           "nodes": [
             {
               "label": "¿Lo necesito?"
@@ -549,7 +549,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Você quer uma bola nova. A sua ainda funciona.",
+          "prompt": "Você quer uma bola nova. A sua ainda funciona.", "feedback": {"met": "Você perguntou se precisa antes de ver se dá para pagar.", "not_yet": "Ainda não. Sua bola ainda funciona, então comece pela necessidade."},
           "nodes": [
             {
               "label": "Eu preciso?"
@@ -658,7 +658,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Sort the coin piles by the rule.",
+          "prompt": "Sort the coin piles by the rule.", "feedback": {"met": "You sorted by pairs, then switched when the rule changed.", "not_yet": "Not yet. Try making pairs, and reread the rule when it changes."},
           "bins": [
             {
               "label": "Even"
@@ -704,7 +704,7 @@
           "rule": "Sort the coin piles by even or odd."
         },
         "es-MX": {
-          "prompt": "Ordena las pilas de monedas con la regla.",
+          "prompt": "Ordena las pilas de monedas con la regla.", "feedback": {"met": "Ordenaste por parejas y cambiaste cuando cambió la regla.", "not_yet": "Todavía no. Intenta formar parejas y relee la regla cuando cambie."},
           "bins": [
             {
               "label": "Par"
@@ -750,7 +750,7 @@
           "rule": "Ordena las pilas de monedas en par o impar."
         },
         "pt-BR": {
-          "prompt": "Separe as pilhas de moedas pela regra.",
+          "prompt": "Separe as pilhas de moedas pela regra.", "feedback": {"met": "Você separou por pares e mudou quando a regra mudou.", "not_yet": "Ainda não. Tente formar pares e releia a regra quando ela mudar."},
           "bins": [
             {
               "label": "Par"
@@ -824,7 +824,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Which message is a trick?",
+          "prompt": "Which message is a trick?", "feedback": {"met": "You spotted that a free prize should never cost you money.", "not_yet": "Not yet. Look for a message that wants money for a prize."},
           "messages": [
             {
               "sender": "Prize Club",
@@ -841,7 +841,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "¿Qué mensaje es una trampa?",
+          "prompt": "¿Qué mensaje es una trampa?", "feedback": {"met": "Notaste que un premio gratis nunca debería costarte dinero.", "not_yet": "Todavía no. Busca un mensaje que pide dinero por un premio."},
           "messages": [
             {
               "sender": "Club de Premios",
@@ -858,7 +858,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Qual mensagem é uma armadilha?",
+          "prompt": "Qual mensagem é uma armadilha?", "feedback": {"met": "Você percebeu que um prêmio grátis nunca deveria custar dinheiro.", "not_yet": "Ainda não. Procure uma mensagem que pede dinheiro por um prêmio."},
           "messages": [
             {
               "sender": "Clube de Prêmios",
@@ -901,7 +901,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "How do you answer?",
+          "prompt": "How do you answer?", "feedback": {"met": "Your reply keeps the deal fair and safe for your stand.", "not_yet": "Not yet. Think about who should agree before you wait for money."},
           "speaker": "Customer",
           "line": "Can I pay you tomorrow?",
           "replies": [
@@ -914,7 +914,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "¿Cómo respondes?",
+          "prompt": "¿Cómo respondes?", "feedback": {"met": "Tu respuesta mantiene el trato justo y seguro para tu puesto.", "not_yet": "Todavía no. Piensa quién debe estar de acuerdo antes de esperar el pago."},
           "speaker": "Cliente",
           "line": "¿Te puedo pagar mañana?",
           "replies": [
@@ -927,7 +927,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Como você responde?",
+          "prompt": "Como você responde?", "feedback": {"met": "Sua resposta deixa o acordo justo e seguro para a sua barraca.", "not_yet": "Ainda não. Pense em quem deve concordar antes de esperar o pagamento."},
           "speaker": "Cliente",
           "line": "Posso te pagar amanhã?",
           "replies": [
@@ -966,7 +966,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Would you rather?",
+          "prompt": "Would you rather?", "feedback": {"met": "You compared now with later and how much more waiting gives.", "not_yet": "Not yet. Compare how many you get now and later."},
           "options": [
             {
               "label": "One sticker now"
@@ -977,7 +977,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "¿Qué prefieres?",
+          "prompt": "¿Qué prefieres?", "feedback": {"met": "Comparaste ahora con después y cuánto más te da esperar.", "not_yet": "Todavía no. Compara cuántas recibes ahora y cuántas después."},
           "options": [
             {
               "label": "Una estampa ahora"
@@ -988,7 +988,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "O que você prefere?",
+          "prompt": "O que você prefere?", "feedback": {"met": "Você comparou agora com depois e quanto mais a espera dá.", "not_yet": "Ainda não. Compare quantas você ganha agora e depois."},
           "options": [
             {
               "label": "Uma figurinha agora"

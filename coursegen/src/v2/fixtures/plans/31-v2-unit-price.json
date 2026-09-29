@@ -50,7 +50,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Find the price per sticker, then pick the better buy.",
+          "prompt": "Find the price per sticker, then pick the better buy.", "feedback": {"met": "You found the price of one of each and compared them.", "not_yet": "Not yet. Divide each price by how many it holds."},
           "unitLabel": "sticker",
           "offers": [
             {
@@ -62,7 +62,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Halla el precio por estampa y elige la mejor compra.",
+          "prompt": "Halla el precio por estampa y elige la mejor compra.", "feedback": {"met": "Hallaste el precio de una unidad de cada opción y los comparaste.", "not_yet": "Todavía no. Divide cada precio entre cuántas unidades trae."},
           "unitLabel": "estampa",
           "offers": [
             {
@@ -74,7 +74,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Ache o preço por figurinha e escolha a melhor compra.",
+          "prompt": "Ache o preço por figurinha e escolha a melhor compra.", "feedback": {"met": "Você achou o preço de uma unidade de cada opção e comparou.", "not_yet": "Ainda não. Divida cada preço por quantas unidades vêm."},
           "unitLabel": "figurinha",
           "offers": [
             {
@@ -124,7 +124,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Three bags of apples. Which apple costs least?",
+          "prompt": "Three bags of apples. Which apple costs least?", "feedback": {"met": "You found the price of one of each and compared them.", "not_yet": "Not yet. Divide each price by how many it holds."},
           "unitLabel": "apple",
           "offers": [
             {
@@ -139,7 +139,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Tres bolsas de manzanas. ¿Cuál manzana cuesta menos?",
+          "prompt": "Tres bolsas de manzanas. ¿Cuál manzana cuesta menos?", "feedback": {"met": "Hallaste el precio de una unidad de cada opción y los comparaste.", "not_yet": "Todavía no. Divide cada precio entre cuántas unidades trae."},
           "unitLabel": "manzana",
           "offers": [
             {
@@ -154,7 +154,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Três sacos de maçãs. Qual maçã custa menos?",
+          "prompt": "Três sacos de maçãs. Qual maçã custa menos?", "feedback": {"met": "Você achou o preço de uma unidade de cada opção e comparou.", "not_yet": "Ainda não. Divida cada preço por quantas unidades vêm."},
           "unitLabel": "maçã",
           "offers": [
             {

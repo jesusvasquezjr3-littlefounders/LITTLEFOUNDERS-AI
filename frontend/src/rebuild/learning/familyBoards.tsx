@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
 import { AnswerChoice, Button, ChoiceChip, RadioGroup, SegmentedControl, Stepper } from '../design/controls';
 import { familyCopy } from './familyCopy';
+import { namedFeedback } from './namedFeedback';
 import type { LessonClientDocument, LessonClientSegment } from './lessonDocument';
 import type { LessonSequenceControl } from './lessonSequence';
 import { BoardShell, GradedFoot, MoveToChoice, NarrationControl, NumberAnswer, playerCopy, useDragPlace, useLessonMentor, useSegmentGrade, ViewedFoot, type OnGradeSegment } from './segmentKit';
@@ -35,7 +36,7 @@ export function RuleCardsBoard({ document, segment, onBack, sequence, onGrade }:
   return <BoardShell screen="rule-cards" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
     onReset={() => { grading.reset(); setFlipped([]); }} resetDisabled={flipped.length === 0 || grading.pending || grading.met}
-    foot={<GradedFoot locale={document.locale} grading={grading} canCheck={flipped.length > 0} sequence={sequence} onCheck={() => grading.check({ flipped })} />}>
+    foot={<GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'rule-cards')} feedback={segment.feedback} canCheck={flipped.length > 0} sequence={sequence} onCheck={() => grading.check({ flipped })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-rule`}>
       <h2 id={`${segment.id}-rule`} data-copy-role="heading">{t.rule}</h2>
       <p className="lf-family-rule" data-copy-role="prompt">{segment.payload.rule}</p>
@@ -104,7 +105,7 @@ export function EulerBoard({ document, segment, onBack, sequence, onGrade }: Boa
   return <BoardShell screen="euler" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
     onReset={reset} resetDisabled={!changed || locked}
-    foot={<GradedFoot locale={document.locale} grading={grading} canCheck={complete} sequence={sequence} onCheck={() => grading.check(answer)} />}>
+    foot={<GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'euler')} feedback={segment.feedback} canCheck={complete} sequence={sequence} onCheck={() => grading.check(answer)} />}>
     {choose ? <section className="lf-learning-control-strip" aria-labelledby={`${segment.id}-sentence`}>
       <h2 id={`${segment.id}-sentence`} data-copy-role="heading">{t.sentence}</h2>
       <p className="lf-family-rule" data-copy-role="prompt">{segment.payload.sentence}</p>
@@ -165,7 +166,7 @@ function WalkFlowchartBoard({ document, segment, onBack, sequence, onGrade }: Bo
   return <BoardShell screen={segment.type === 'money.spend-decision.v2' ? 'spend-decision' : 'flowchart'} locale={document.locale} title={document.title} segment={segment}
     onBack={onBack} sequence={sequence} finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
     onReset={() => { grading.reset(); setPaths(fresh()); setActive(scenarios[0]!.id); }} resetDisabled={!changed || grading.pending || grading.met}
-    foot={<GradedFoot locale={document.locale} grading={grading} canCheck={scenarios.every((scenario) => done(scenario.id))} sequence={sequence}
+    foot={<GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'flowchart-walk')} feedback={segment.feedback} canCheck={scenarios.every((scenario) => done(scenario.id))} sequence={sequence}
       onCheck={() => grading.check({ paths })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-case`}>
       {scenarios.length > 1 ? <div className="lf-flow-cases" role="group" aria-label={t.caseLabel}>
@@ -248,7 +249,7 @@ export function SortBinsBoard({ document, segment, onBack, sequence, onGrade }: 
   return <BoardShell screen={segment.type === 'money.needs-wants.v2' ? 'needs-wants' : 'sort-bins'} locale={document.locale} title={document.title} segment={segment}
     onBack={onBack} sequence={sequence} finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
     onReset={() => { grading.reset(); setBin({}); setReason({}); dnd.clear(); }} resetDisabled={!changed || locked}
-    foot={<GradedFoot locale={document.locale} grading={grading} canCheck={complete} sequence={sequence}
+    foot={<GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'sort-bins')} feedback={segment.feedback} canCheck={complete} sequence={sequence}
       onCheck={() => grading.check({ placements: Object.fromEntries(items.map((item) => [item.id, { bin: bin[item.id], reason: reason[item.id] }])) })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-bins`}>
       <h2 id={`${segment.id}-bins`} data-copy-role="heading">{t.bins}</h2>
@@ -292,7 +293,7 @@ export function MessageListBoard({ document, segment, onBack, sequence, onGrade 
   return <BoardShell screen={segment.type === 'money.scam-check.v2' ? 'scam-check' : 'scam-spotter'} locale={document.locale} title={document.title} segment={segment}
     onBack={onBack} sequence={sequence} finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
     onReset={() => { grading.reset(); setFlagged([]); setTicks({}); }} resetDisabled={!changed || grading.pending || grading.met}
-    foot={<GradedFoot locale={document.locale} grading={grading} canCheck sequence={sequence} onCheck={() => grading.check(cueList ? { flagged, cues: ticks } : { flagged })} />}>
+    foot={<GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'scam')} feedback={segment.feedback} canCheck sequence={sequence} onCheck={() => grading.check(cueList ? { flagged, cues: ticks } : { flagged })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-messages`}>
       <h2 id={`${segment.id}-messages`} data-copy-role="heading">{t.messages}</h2>
       <ul className="lf-message-list">
@@ -350,7 +351,7 @@ export function CoinTrayBoard({ document, segment, onBack, sequence, onGrade }: 
   return <BoardShell screen={change ? 'making-change' : 'coin-tray'} locale={document.locale} title={document.title} segment={segment}
     onBack={onBack} sequence={sequence} finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
     onReset={() => { grading.reset(); setCounts(empty()); setSaid([]); setSaying(null); }} resetDisabled={coins === 0 || locked}
-    foot={<GradedFoot locale={document.locale} grading={grading} canCheck={total > 0 && !awaiting} sequence={sequence}
+    foot={<GradedFoot locale={document.locale} grading={grading} named={change ? namedFeedback(document.locale, 'making-change', { price: format(change.price_minor), paid: format(change.paid_minor) }) : namedFeedback(document.locale, 'coin-tray', { total: format(total) })} feedback={segment.feedback} canCheck={total > 0 && !awaiting} sequence={sequence}
       onCheck={() => grading.check(change ? { counts, sequence: said } : { counts })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-tray`}>
       <h2 id={`${segment.id}-tray`} data-copy-role="heading">{t.tray}</h2>
@@ -386,7 +387,7 @@ export function StoryChoiceBoard({ document, segment, onBack, sequence, onGrade 
   const options = segment.type === 'story.dialogue-choice.v2' ? segment.payload.replies : segment.payload.options;
   return <BoardShell screen={segment.type.replace('.v2', '').replace('.', '-')} locale={document.locale} title={document.title} segment={segment}
     onBack={onBack} sequence={sequence} finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
-    foot={<GradedFoot locale={document.locale} grading={grading} canCheck={choice !== null} sequence={sequence} onCheck={() => grading.check({ choice })} />}>
+    foot={<GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'story')} feedback={segment.feedback} canCheck={choice !== null} sequence={sequence} onCheck={() => grading.check({ choice })} />}>
     <section className="lf-learning-board lf-family-board lf-story-board">
       {segment.type === 'story.branch.v2' ? <p className="lf-story-scene" data-copy-role="narrative">{segment.payload.scene}</p> : null}
       {segment.type === 'story.dialogue-choice.v2' ? <div className="lf-speech-plate"><span className="lf-speech-plate-name" data-copy-role="data">{segment.payload.speaker}</span>
@@ -441,7 +442,7 @@ export function ChartBoard({ document, segment, onBack, sequence, onGrade }: Boa
   const question = segment.payload.question;
   return <BoardShell screen={`chart-${segment.visual.type}`} locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={question ? grading.met : true} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
-    foot={question ? <GradedFoot locale={document.locale} grading={grading} canCheck={choice !== null} sequence={sequence} onCheck={() => grading.check({ choice })} />
+    foot={question ? <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'chart-question')} feedback={segment.feedback} canCheck={choice !== null} sequence={sequence} onCheck={() => grading.check({ choice })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} />}>
     <section className="lf-learning-board lf-family-board">
       <TeachingChart kind={segment.visual.type} data={segment.payload.data} title={segment.payload.title} locale={document.locale} />

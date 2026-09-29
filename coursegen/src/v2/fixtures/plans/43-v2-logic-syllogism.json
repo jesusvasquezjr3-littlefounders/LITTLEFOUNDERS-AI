@@ -75,7 +75,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "All subscriptions are recurring costs. Some recurring costs are hidden.",
+          "prompt": "All subscriptions are recurring costs. Some recurring costs are hidden.", "feedback": {"met": "You placed each thing and tested the conclusion against the premises.", "not_yet": "Not yet. Do the premises force it, or only allow it?"},
           "sets": [
             {
               "label": "Subscriptions"
@@ -100,7 +100,7 @@
           }
         },
         "es-MX": {
-          "prompt": "Todas las suscripciones son gastos fijos. Algunos gastos fijos están ocultos.",
+          "prompt": "Todas las suscripciones son gastos fijos. Algunos gastos fijos están ocultos.", "feedback": {"met": "Ubicaste cada cosa y pusiste a prueba la conclusión con las premisas.", "not_yet": "Todavía no. ¿Las premisas la obligan o solo la permiten?"},
           "sets": [
             {
               "label": "Suscripciones"
@@ -125,7 +125,7 @@
           }
         },
         "pt-BR": {
-          "prompt": "Toda assinatura é um gasto fixo. Alguns gastos fixos são ocultos.",
+          "prompt": "Toda assinatura é um gasto fixo. Alguns gastos fixos são ocultos.", "feedback": {"met": "Você colocou cada coisa e testou a conclusão com as premissas.", "not_yet": "Ainda não. As premissas obrigam a conclusão ou só permitem?"},
           "sets": [
             {
               "label": "Assinaturas"
@@ -190,7 +190,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Which cards must you turn to test the rule?",
+          "prompt": "Which cards must you turn to test the rule?", "feedback": {"met": "You turned only the cards that could break the rule.", "not_yet": "Not yet. Ask which cards could break the rule."},
           "rule": "If a card has a vowel on one side, it has an even number on the other.",
           "cards": [
             {
@@ -208,7 +208,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "¿Qué tarjetas debes voltear para probar la regla?",
+          "prompt": "¿Qué tarjetas debes voltear para probar la regla?", "feedback": {"met": "Volteaste solo las tarjetas que podían romper la regla.", "not_yet": "Todavía no. Pregúntate qué tarjetas podrían romper la regla."},
           "rule": "Si una tarjeta tiene una vocal de un lado, tiene un número par del otro.",
           "cards": [
             {
@@ -226,7 +226,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Quais cartas você precisa virar para testar a regra?",
+          "prompt": "Quais cartas você precisa virar para testar a regra?", "feedback": {"met": "Você virou só as cartas que podiam quebrar a regra.", "not_yet": "Ainda não. Pergunte quais cartas poderiam quebrar a regra."},
           "rule": "Se uma carta tem uma vogal de um lado, tem um número par do outro.",
           "cards": [
             {
