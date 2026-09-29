@@ -94,6 +94,10 @@ async function publish(args: Args): Promise<number> {
   for (const pending of result.pendingApproval ?? []) {
     console.log(`v2:publish: ${pending.lessonId} ${pending.locale} ${pending.versionId} waits for a staff release (staff console, Content, Live updates)`);
   }
+  // Appendix C Stage 3 (GAP-FIX-R6): every flag a human must judge, recorded for the Stage 3 pedagogical review.
+  for (const record of result.stage3 ?? []) {
+    console.log(`v2:publish: ${record.lessonId} ${record.locale} ${record.versionId}: ${record.items.length} Stage 3 review flag(s)${dryRun ? '' : ' recorded'}; a Stage 3 review resolves them before release`);
+  }
   return 0;
 }
 

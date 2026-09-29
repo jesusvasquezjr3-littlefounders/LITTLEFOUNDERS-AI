@@ -108,7 +108,9 @@ try:
     check(f'all {len(migrations)} migrations apply in order on PostgreSQL {run("SHOW server_version")}')
 
     I = {k: str(uuid.uuid4()) for k in ('boss', 'editor', 'analyst', 'course', 'adv', 'saga', 'topic', 'lesson', 'old')}
-    run(f"""
+    # The fixture lesson is live before this proof starts: its pointer is set under the owner's justified
+    # bypass of the Stage 3 gate (GAP-FIX-R6, stage3_review_release_gate).
+    run(f"""BEGIN; SET LOCAL lf.bypass_justification = 'Fixture: the lesson is live before this proof starts';
     INSERT INTO auth.users (id, email) VALUES ('{I['boss']}', 'boss@littlefounders.ai'), ('{I['editor']}', 'editor@littlefounders.ai'), ('{I['analyst']}', 'analyst@littlefounders.ai');
     INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{I['boss']}', 'superadmin', NULL), ('{I['editor']}', 'admin', '{I['boss']}'), ('{I['analyst']}', 'admin', '{I['boss']}');
     INSERT INTO admin_permissions (user_id, permission) VALUES ('{I['editor']}', 'manage_content'), ('{I['analyst']}', 'view_analytics');
@@ -121,7 +123,14 @@ try:
         VALUES ('{I['old']}', '{I['lesson']}', 'es-MX', 'old-rev-001', 2, '{{}}', '{{}}');
     INSERT INTO lesson_document_version_current (lesson_id, locale, document_version_id) VALUES ('{I['lesson']}', 'es-MX', '{I['old']}');
     INSERT INTO lesson_documents (lesson_id, locale, document) VALUES ('{I['lesson']}', 'es-MX', '{{"segments": [{{"id": "s1", "prompt": "Hola"}}]}}');
-    """)
+    COMMIT;""")
+
+    # GAP-FIX-R6: a live lesson's new version goes live only with a passing Stage 3 review of that version,
+    # recorded by a content admin who did not author it (verify-stage3-review-postgres.py proves the gate).
+    def stage3_pass(version):
+        code = service(f"""SELECT code FROM record_lesson_pedagogical_review('{I['editor']}', '{I['lesson']}', '{version}', NULL, '{I['boss']}',
+            (SELECT jsonb_object_agg(item, jsonb_build_object('result', 'pass', 'finding', 'Meets the Block B standard for this lesson.')) FROM stage3_review_items()), '[]'::jsonb)""")
+        assert code == 'RECORDED', code
     all_gates = run("SELECT string_agg(format('{\"gate\": \"%s\", \"ok\": true}', gate_id), ',') FROM forge_release_gates")
     verify = lambda: run(f"INSERT INTO course_release_verifications (course_id, checks, content_watermark) VALUES ('{I['course']}', '[{all_gates}]'::jsonb, forge_release_content_watermark('{I['course']}')) ON CONFLICT (course_id) DO UPDATE SET checks = EXCLUDED.checks, content_watermark = EXCLUDED.content_watermark")
     verify()
@@ -156,6 +165,7 @@ try:
     stale = service(f"SELECT code FROM release_lesson_version('{I['editor']}', '{I['lesson']}', '{new}')")
     assert stale == 'VERIFICATION_REQUIRED', stale
     verify()
+    stage3_pass(new)
     assert service(f"SELECT code FROM release_lesson_version('{I['editor']}', '{I['lesson']}', '{new}')") == 'RELEASED'
     assert current() == 'new-rev-001'
     assert run(f"SELECT activated_by FROM lesson_document_version_current WHERE lesson_id = '{I['lesson']}' AND locale = 'es-MX'") == I['editor']
@@ -180,6 +190,7 @@ try:
     assert service(f"SELECT code FROM emergency_activate_lesson_version('{I['boss']}', '{I['lesson']}', '{third}', 'urgent')") == 'JUSTIFICATION_REQUIRED'
     assert service(f"SELECT code FROM emergency_activate_lesson_version('{I['boss']}', '{I['lesson']}', '{third}', NULL)") == 'JUSTIFICATION_REQUIRED'
     assert current() == 'new-rev-001'
+    stage3_pass(third)
     assert service(f"SELECT code FROM emergency_activate_lesson_version('{I['boss']}', '{I['lesson']}', '{third}', '{why}')") == 'ACTIVATED'
     assert current() == 'new-rev-003'
     assert run(f"SELECT justification FROM content_retro_checks WHERE action = 'content.v2_emergency_activation'") == why

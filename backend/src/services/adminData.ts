@@ -9,6 +9,7 @@ import {
   serviceRestRaw,
 } from './supabaseRest.js';
 import { listMinorRecordTutors } from './tutorAgeRecord.js';
+import { STAGE3_REFUSAL, stage3RefusalMessage } from './pedagogicalReview.js';
 
 /*
  * Staff-console data plane (routes/admin.ts). Reads here use the service role
@@ -707,6 +708,22 @@ function statusReceipt(rows: StatusMoveRow[] | null): CourseStatusResult {
 }
 
 /**
+ * A release RPC's receipt. GAP-FIX-R6 (Appendix C Part 3 Stage 3): Vault's
+ * release gate raises STAGE3_REVIEW_REQUIRED, rolling the whole release back,
+ * when a lesson would go live without a passing Stage 3 pedagogical review of
+ * its current content; that refusal is a named 'blocked', any other failure
+ * stays 'unavailable'.
+ */
+async function releaseReceipt(fn: 'release_course' | 'release_lesson', body: Record<string, string>): Promise<CourseStatusResult> {
+  const raw = await serviceRestRaw(`/rpc/${fn}`, { method: 'POST', body: JSON.stringify(body) });
+  if (!raw.ok) {
+    const stage3 = stage3RefusalMessage(raw.body);
+    return stage3 === null ? { outcome: 'unavailable' } : { outcome: 'blocked', code: STAGE3_REFUSAL, message: stage3 };
+  }
+  return statusReceipt(raw.body as CourseReleaseRow[] | LessonReleaseRow[] | null);
+}
+
+/**
  * A publish click is a human approval, but it must release the complete
  * hierarchy atomically. Directly PATCHing courses.status left every child in
  * draft/review, making the course appear released to staff while remaining
@@ -721,11 +738,7 @@ function statusReceipt(rows: StatusMoveRow[] | null): CourseStatusResult {
  */
 export async function setCourseStatus(courseId: string, status: CourseStatus, actorId: string): Promise<CourseStatusResult> {
   if (status === 'published') {
-    const rows = await serviceRest<CourseReleaseRow[]>('/rpc/release_course', {
-      method: 'POST',
-      body: JSON.stringify({ p_actor: actorId, p_course_id: courseId }),
-    });
-    return statusReceipt(rows);
+    return releaseReceipt('release_course', { p_actor: actorId, p_course_id: courseId });
   }
   const rows = await serviceRest<StatusMoveRow[]>('/rpc/set_course_status', {
     method: 'POST',
@@ -857,11 +870,7 @@ interface LessonReleaseRow {
  */
 export async function setLessonStatus(lessonId: string, status: LessonStatus, actorId: string): Promise<CourseStatusResult> {
   if (status === 'published') {
-    const rows = await serviceRest<LessonReleaseRow[]>('/rpc/release_lesson', {
-      method: 'POST',
-      body: JSON.stringify({ p_actor: actorId, p_lesson_id: lessonId }),
-    });
-    return statusReceipt(rows);
+    return releaseReceipt('release_lesson', { p_actor: actorId, p_lesson_id: lessonId });
   }
   const rows = await serviceRest<StatusMoveRow[]>('/rpc/set_lesson_status', {
     method: 'POST',

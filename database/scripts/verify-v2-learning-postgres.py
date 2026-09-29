@@ -205,7 +205,8 @@ try:
     manifest = f'{{"lesson_id": "{lesson}", "locale": "es-MX", "version_id": "{pub_version}", "core_contract": true, "interactive_behaviour": true, "run_id": "audit", "checks": [{gates}]}}'
     short = manifest.replace(gates, as_checks(gate_ids[1:]))
     call = lambda m: f"SET ROLE service_role; SELECT publish_v2_lesson_version('{lesson}', 'es-MX', '{pub_version}', '{doc}'::jsonb, '{{}}'::jsonb, '{m}'::jsonb)"
-    run(f"UPDATE lessons SET status = 'published' WHERE id = '{lesson}'")
+    # The fixture lesson is live before this proof starts: the owner's justified bypass of the Stage 3 gate (GAP-FIX-R6).
+    run(f"BEGIN; SET LOCAL lf.bypass_justification = 'Fixture: the lesson is live before this proof starts'; UPDATE lessons SET status = 'published' WHERE id = '{lesson}'; COMMIT;")
     rejected(f"SET ROLE service_role; INSERT INTO lesson_document_version_current (lesson_id, locale, document_version_id) VALUES ('{lesson}', 'en-US', '{version}')",
              'reviewed publication transaction')
     check('a direct pointer move on a published lesson is still refused')

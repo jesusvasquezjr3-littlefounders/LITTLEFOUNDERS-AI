@@ -123,6 +123,7 @@ import {
   syncPracticeReviews,
 } from '../services/learningQuality.js';
 import { DEFECT_KINDS, recordContentDefectEscape } from '../services/learningQaSignals.js';
+import { getStage3State, recordStage3Review, Stage3ReviewBody, STAGE3_RECORD_REFUSALS } from '../services/pedagogicalReview.js';
 import { getFamilyStateIntegrity } from '../services/familyLifecycle.js';
 import { readRetentionCompliance } from '../services/familyRetention.js';
 import { readCoachingDelivery, readReflectionRate } from '../services/parentCoaching.js';
@@ -1785,6 +1786,9 @@ export function adminRouter(): Router {
     // G.3 (GAP-FIX-R5): Vault re-checks the staff actor of every status
     // decision (superadmin, or admin with manage_content).
     FORBIDDEN: { status: 403, code: 'FORBIDDEN' },
+    // GAP-FIX-R6 (Appendix C Part 3 Stage 3): Vault's release gate refuses content
+    // no passing Stage 3 pedagogical review covers; the release rolled back whole.
+    STAGE3_REVIEW_REQUIRED: { status: 409, code: 'RELEASE_STAGE3_REVIEW_REQUIRED' },
   };
 
   router.get('/content', async (_req, res) => {
@@ -1856,6 +1860,44 @@ export function adminRouter(): Router {
     const body = RejectVersionBody.safeParse(req.body);
     if (!params.success || !body.success) return fail(res, 400, 'VALIDATION_ERROR', 'lessonId and versionId must be uuids and the reason 10-600 characters');
     return versionOutcome(res, await rejectLessonVersion(authedUser(res).id, params.data.lessonId, params.data.versionId, body.data.reason), params.data, 'rejected');
+  });
+
+  // ── Appendix C Part 3 Stage 3: the pedagogical review of a lesson or a version ──
+  /*
+   * GAP-FIX-R6. The Pedagogical Reviewer (manage_content, never the Content
+   * Author of the same content) answers the six Block B checks and the four
+   * Stage 3 questions, each with a named finding, and resolves every Stage 3
+   * flag Forge raised. GET serves what the form needs for the lesson's current
+   * content, or for one v2 version (?versionId=, the G.2 queue); POST records
+   * the review. Vault re-checks everything and derives pass or fail; a release
+   * of content no passing review covers is refused (RELEASE_STAGE3_REVIEW_REQUIRED).
+   */
+  const Stage3Query = z.object({ versionId: z.string().uuid().optional() }).strict();
+  router.get('/content/lessons/:lessonId/pedagogical-review', async (req, res) => {
+    const lessonId = z.string().uuid().safeParse(req.params.lessonId);
+    const query = Stage3Query.safeParse(req.query);
+    if (!lessonId.success || !query.success) return fail(res, 400, 'VALIDATION_ERROR', 'lessonId and versionId must be uuids');
+    const state = await getStage3State(lessonId.data, query.data.versionId ?? null, authedUser(res).id);
+    if (state === 'not_found') return fail(res, 404, 'NOT_FOUND', 'No such lesson or version');
+    if (!state) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the Stage 3 review');
+    ok(res, state);
+  });
+
+  router.post('/content/lessons/:lessonId/pedagogical-review', async (req, res) => {
+    const actor = authedUser(res);
+    const lessonId = z.string().uuid().safeParse(req.params.lessonId);
+    const body = Stage3ReviewBody.safeParse(req.body);
+    if (!lessonId.success || !body.success) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'Every check needs a result and a finding of 10-600 characters, and every Forge item a resolution and a note');
+    }
+    if (body.data.authorId === actor.id) return fail(res, 409, 'STAGE3_SELF_REVIEW', 'The Pedagogical Reviewer is never the Content Author of the same content');
+    const outcome = await recordStage3Review(actor.id, lessonId.data, body.data);
+    if (outcome.outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the Stage 3 review');
+    if (outcome.outcome === 'refused') {
+      const refusal = STAGE3_RECORD_REFUSALS[outcome.code] ?? { status: 409, code: 'STAGE3_REVIEW_REFUSED' };
+      return fail(res, refusal.status, refusal.code, outcome.message);
+    }
+    ok(res, { reviewId: outcome.reviewId, result: outcome.result });
   });
 
   /*

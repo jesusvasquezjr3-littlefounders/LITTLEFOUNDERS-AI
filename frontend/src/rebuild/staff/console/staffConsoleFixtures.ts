@@ -153,6 +153,12 @@ export function sectionAnswer(route: string, query: URLSearchParams, empty: bool
   if (/^\/admin\/content\/lessons\/[^/]+\/versions\/[^/]+$/.test(route)) {
     return ok({ ...sections.versionDocument, lessonId: route.split('/')[4], documentVersionId: route.split('/')[6] });
   }
+  // Appendix C Stage 3 (GAP-FIX-R6): the pedagogical review of a lesson, or of one version with ?versionId=.
+  if (route.endsWith('/pedagogical-review')) {
+    const versionId = query.get('versionId');
+    return ok(versionId ? { ...sections.stage3Review, subject: 'version', fingerprint: null, documentVersionId: versionId, locale: 'es-MX',
+      versionId: 'forge-v2-2026-09-27-run-0042', latest: null, refusal: 'no Stage 3 pedagogical review covers this content' } : sections.stage3Review);
+  }
   if (route === '/admin/content/bypass-checks') {
     return ok(empty ? { windowDays: 90, retroCheckDays: 30, bypassRate: null, completenessRate: null,
       counts: { publishActions: 0, bypasses: 0, decided: 0, unverified: 0, complete: 0, pending: 0, overdue: 0 }, checks: [] } : sections.bypassChecks);

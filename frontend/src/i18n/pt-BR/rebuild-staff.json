@@ -808,7 +808,8 @@
         "no": "Não",
         "previewHelpV2": "Abre a lição como o aluno a vê. Confere respostas sem salvar.",
         "previewBar": "Prévia da equipe. Nada é salvo.",
-        "notPlayable": "Os alunos ainda não podem abri-la: o gabarito não corresponde."
+        "notPlayable": "Os alunos ainda não podem abri-la: o gabarito não corresponde.",
+        "releaseStage3Required": "Precisa de uma revisão da etapa 3 aprovada. Registre na lição."
       },
       "option": {
         "courses": "Cursos",
@@ -2053,6 +2054,73 @@
         "reject": "Recusar",
         "keep": "Manter pendente",
         "saving": "Salvando"
+      }
+    },
+    "stage3": {
+      "heading": {
+        "review": "Revisão pedagógica da etapa 3",
+        "form": "Registrar a revisão",
+        "checks": "As seis verificações",
+        "questions": "Perguntas da revisão",
+        "forgeItems": "Alertas do Forge a resolver",
+        "latest": "Última revisão"
+      },
+      "body": {
+        "intro": "Outra pessoa verifica este conteúdo antes que qualquer criança o veja.",
+        "passed": "Aprovada",
+        "failed": "Não aprovada",
+        "needed": "Falta a revisão",
+        "noneYet": "Nenhuma revisão cobre este conteúdo ainda.",
+        "failedNote": "A última revisão não foi aprovada. A publicação continua bloqueada.",
+        "itemsOpen": "Há alertas do Forge abertos. Uma nova revisão precisa resolvê-los.",
+        "passedNote": "Uma revisão aprovada cobre este conteúdo. Ele pode ser publicado.",
+        "findings": "Achados",
+        "recorded": "Registrada",
+        "openFlags": "Alertas do Forge abertos",
+        "version": "Versão",
+        "author": "Autor do conteúdo",
+        "authorHelp": "A pessoa que escreveu este conteúdo. Nunca você.",
+        "authorFixed": "Esta versão registra o próprio autor.",
+        "authorPick": "Escolha o autor",
+        "noAuthors": "Nenhuma outra conta da equipe pode ser nomeada como autor.",
+        "finding": "Achado",
+        "findingHelp": "Diga o que você viu, em 10 a 600 caracteres.",
+        "note": "Nota de resolução",
+        "gate": "Verificação do Forge {n}",
+        "incomplete": "Responda cada verificação com um achado antes de salvar.",
+        "recordedPass": "Revisão salva. Foi aprovada, então este conteúdo pode ser publicado.",
+        "recordedFail": "Revisão salva. Não foi aprovada, então a publicação continua bloqueada.",
+        "contentChanged": "O conteúdo mudou. Recarregue e revise de novo.",
+        "selfReview": "Você escreveu este conteúdo. Peça outra pessoa revisora.",
+        "authorRequired": "Escolha o autor do conteúdo.",
+        "authorNotStaff": "O autor precisa ser uma conta da equipe.",
+        "authorMismatch": "Esta versão já registra o autor.",
+        "forgeUnresolved": "Resolva uma vez cada alerta do Forge aberto.",
+        "invalid": "Cada verificação precisa de um resultado e de um achado.",
+        "q_working_memory": "As ideias novas respeitam o limite da idade, cada uma com apoio visual.",
+        "q_feedback_scope": "O retorno julga a ação, nunca a criança. Sem sinais de vergonha.",
+        "q_reward_autonomy": "As recompensas reconhecem decisões reais e existe uma escolha real.",
+        "q_practice_zone": "A prática fica perto de 70 a 85 por cento de acertos, não garantida.",
+        "q_age_register": "O tom, a presença do Mentor e as recompensas combinam com esta idade.",
+        "q_resolution_efficiency": "Os momentos do Mentor se resolvem com eficiência, sem esticar a conversa.",
+        "q_register_genuine": "O registro é de fato adequado à idade, não só cumpre a regra.",
+        "q_autonomy_real": "O mecanismo de escolha é real, não cosmético.",
+        "q_reasoning_authentic": "O exercício de raciocínio avalia o raciocínio, não acertos disfarçados.",
+        "q_mentor_fallibility": "O Mentor mostra um erro real e como se recupera quando necessário."
+      },
+      "option": {
+        "pass": "Aprovado",
+        "fail": "Reprovado",
+        "not_applicable": "Não se aplica",
+        "acceptable": "Aceitável",
+        "needs_change": "Precisa mudar"
+      },
+      "action": {
+        "open": "Registrar revisão",
+        "hide": "Ocultar formulário",
+        "save": "Salvar revisão",
+        "saving": "Salvando",
+        "reload": "Recarregar"
       }
     }
   }

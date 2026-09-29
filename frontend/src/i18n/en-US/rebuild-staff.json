@@ -808,7 +808,8 @@
         "no": "No",
         "previewHelpV2": "Plays the lesson as learners see it. Answers are checked, not saved.",
         "previewBar": "Staff preview. Nothing is saved.",
-        "notPlayable": "Learners cannot open this yet: its answer key does not match."
+        "notPlayable": "Learners cannot open this yet: its answer key does not match.",
+        "releaseStage3Required": "Needs a passing Stage 3 review. Record it in the lesson."
       },
       "option": {
         "courses": "Courses",
@@ -2053,6 +2054,73 @@
         "reject": "Reject",
         "keep": "Keep pending",
         "saving": "Saving"
+      }
+    },
+    "stage3": {
+      "heading": {
+        "review": "Stage 3 pedagogical review",
+        "form": "Record the review",
+        "checks": "The six checks",
+        "questions": "Reviewer questions",
+        "forgeItems": "Forge flags to resolve",
+        "latest": "Latest review"
+      },
+      "body": {
+        "intro": "A second person checks this content before any child sees it.",
+        "passed": "Passed",
+        "failed": "Did not pass",
+        "needed": "Review needed",
+        "noneYet": "No review covers this content yet.",
+        "failedNote": "The latest review did not pass. Release stays blocked.",
+        "itemsOpen": "Forge flags are still open. A new review must resolve them.",
+        "passedNote": "A passing review covers this content. It may be released.",
+        "findings": "Findings",
+        "recorded": "Recorded",
+        "openFlags": "Open Forge flags",
+        "version": "Version",
+        "author": "Content author",
+        "authorHelp": "The person who wrote this content. Never you.",
+        "authorFixed": "This version records its own author.",
+        "authorPick": "Choose the author",
+        "noAuthors": "No other staff account can be named as author.",
+        "finding": "Finding",
+        "findingHelp": "Name what you saw, in 10 to 600 characters.",
+        "note": "Resolution note",
+        "gate": "Forge gate {n}",
+        "incomplete": "Answer every check with a finding before saving.",
+        "recordedPass": "Review saved. It passed, so this content may be released.",
+        "recordedFail": "Review saved. It did not pass, so release stays blocked.",
+        "contentChanged": "The content changed. Reload it and review it again.",
+        "selfReview": "You wrote this content. Ask another reviewer.",
+        "authorRequired": "Choose the content author.",
+        "authorNotStaff": "The author must be a staff account.",
+        "authorMismatch": "This version already records its author.",
+        "forgeUnresolved": "Resolve every open Forge flag once.",
+        "invalid": "Every check needs a result and a finding.",
+        "q_working_memory": "New ideas stay within the age limit, each with a visual.",
+        "q_feedback_scope": "Feedback judges the action, never the child. No shame cues.",
+        "q_reward_autonomy": "Rewards recognize real decisions, and a real choice exists.",
+        "q_practice_zone": "Practice sits near 70 to 85 percent success, not certain.",
+        "q_age_register": "Tone, Mentor presence and rewards fit this age band.",
+        "q_resolution_efficiency": "Mentor moments resolve efficiently instead of stretching the talk.",
+        "q_register_genuine": "The register is truly right for the age, not just compliant.",
+        "q_autonomy_real": "The choice mechanism is real, not cosmetic.",
+        "q_reasoning_authentic": "The reasoning exercise grades reasoning, not correctness in disguise.",
+        "q_mentor_fallibility": "The Mentor shows a real misjudgment and recovery where required."
+      },
+      "option": {
+        "pass": "Pass",
+        "fail": "Fail",
+        "not_applicable": "Not applicable",
+        "acceptable": "Acceptable",
+        "needs_change": "Needs change"
+      },
+      "action": {
+        "open": "Record review",
+        "hide": "Hide form",
+        "save": "Save review",
+        "saving": "Saving",
+        "reload": "Reload"
       }
     }
   }

@@ -169,6 +169,15 @@ try:
     verify = lambda: run(f"UPDATE course_release_verifications SET checks = '[{gates}]'::jsonb, content_watermark = forge_release_content_watermark('{I['course']}') WHERE course_id = '{I['course']}';")
     verify()
 
+    # GAP-FIX-R6 (stage3_review_release_gate): a lesson goes live only with a passing Stage 3 review of its
+    # current content, recorded by a content admin who did not author it. The Stage 3 proof itself is
+    # verify-stage3-review-postgres.py; here each lesson is reviewed before its release.
+    def stage3_pass(key):
+        code = service(f"""SELECT code FROM record_lesson_pedagogical_review('{I['editor']}', '{I[key]}', NULL, lesson_stage3_fingerprint('{I[key]}'), '{I['boss']}',
+            (SELECT jsonb_object_agg(item, jsonb_build_object('result', 'pass', 'finding', 'Meets the Block B standard for this lesson.')) FROM stage3_review_items()), '[]'::jsonb)""")
+        assert code == 'RECORDED', code
+    stage3_pass('lesson')
+
     # G.3: an admin without the content permission is refused before anything moves.
     forbidden = release(actor=I['analyst'])
     assert forbidden[0:2] == ['f', 'FORBIDDEN'], forbidden
@@ -214,6 +223,7 @@ try:
     run(f"""INSERT INTO lessons (id, topic_id, position, slug, status) VALUES ('{I['lesson2']}', '{I['topic']}', 2, 'pub-lesson-2', 'review');
         INSERT INTO lesson_documents (lesson_id, locale, document) SELECT '{I['lesson2']}', l, '{{"segments": []}}' FROM unnest(ARRAY['en-US', 'es-MX', 'pt-BR']) AS l;""")
     verify()
+    stage3_pass('lesson2')
     assert service(f"SELECT code FROM release_lesson('{I['analyst']}', '{I['lesson2']}')") == 'FORBIDDEN'
     assert status('lessons', 'lesson2') == 'review'
     audit_outage('admin.lesson.release')

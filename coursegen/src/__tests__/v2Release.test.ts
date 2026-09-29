@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { authorV2Plan, fixtureResponder, mergeAuthoredCopy, skeletonOf } from '../v2/author.js';
 import { emitV2Lesson } from '../v2/emit.js';
 import { loadV2Plans, type V2LessonPlan } from '../v2/plan.js';
-import { narrationWithoutAudio, releaseV2Lessons, V2_MANIFEST_GATES } from '../v2/release.js';
+import { narrationWithoutAudio, releaseV2Lessons, stage3ItemsFor, V2_MANIFEST_GATES } from '../v2/release.js';
 
 /*
  * GAP-FIX-R1 learning (OD-17, OD-23, OD-24, F-06/B.16): the v2 authoring
@@ -77,7 +77,7 @@ describe('v2 write and publish', () => {
     const done = await releaseV2Lessons([plan], { runId: 'r1', outDir: tmp(), courseSlug: 'money', dryRun: false,
       deps: { coreCheck: () => ({ ok: true, output: '' }), verifyCourse: () => ({ ok: true, output: '' }), rpc } });
     expect(done.stage).toBe('done');
-    expect(rpc).toHaveBeenCalledTimes(3);
+    expect(rpc.mock.calls.filter((c) => (c as unknown[])[0] === 'publish_v2_lesson_version')).toHaveLength(3);
     expect(rpc.mock.calls[0]![0]).toBe('publish_v2_lesson_version');
     expect(done.pendingApproval).toEqual([]);
   });
@@ -122,5 +122,51 @@ describe('B.18 narration audio at release (GAP-FIX-R3)', () => {
       .filter((segment) => segment.payload?.narration?.audio_ref).map((segment) => [segment.payload.narration.audio_ref, `/audio/${segment.id}.mp3`])));
     expect(narrationWithoutAudio(withRef as typeof emitted, refs)).toEqual([]);
     expect(narrationWithoutAudio(withRef as typeof emitted, {})[0]).toMatch(/has no generated asset/);
+  });
+});
+
+describe('Appendix C Stage 3 review flags at release (GAP-FIX-R6)', () => {
+  const coreCheck = () => ({ ok: true, output: '' });
+  const verifyCourse = () => ({ ok: true, output: '' });
+  const review = [
+    { gate: 17 as const, severity: 'review' as const, message: 'mystery-reward language "surprise"', segmentId: 'intro-01' },
+    { gate: 14 as const, severity: 'review' as const, message: 'introduces 4 new concepts, above the 6-9 target of 3' },
+    { gate: 12 as const, severity: 'review' as const, message: 'hype tone', locale: 'es-MX' as const },
+    { gate: 14 as const, severity: 'review' as const, message: 'introduces 4 new concepts, above the 6-9 target of 3' },
+  ];
+
+  it('gives each market its own flags plus the plan-level ones, once, naming the segment', () => {
+    expect(stage3ItemsFor(review, 'en-US')).toEqual([
+      { gate: 17, message: 'intro-01: mystery-reward language "surprise"' },
+      { gate: 14, message: 'introduces 4 new concepts, above the 6-9 target of 3' },
+    ]);
+    expect(stage3ItemsFor(review, 'es-MX').map((item) => item.gate)).toEqual([17, 14, 12]);
+    expect(stage3ItemsFor([{ gate: 18, severity: 'review', message: 'x'.repeat(700) }], 'pt-BR')[0]!.message).toHaveLength(600);
+  });
+
+  it('records the flags of each published version in Vault after its publication, and stops when Vault cannot record them', async () => {
+    const plan = planOf('v2-goal-bullet');
+    const dry = await releaseV2Lessons([plan], { runId: 'r6', outDir: tmp(), courseSlug: 'money', dryRun: true, deps: { coreCheck } });
+    const flagged = dry.stage3 ?? [];
+    // The plan declares itself market-neutral (gate 16): a plan-level flag each market's version carries.
+    expect(flagged.map((entry) => entry.locale).sort()).toEqual(['en-US', 'es-MX', 'pt-BR']);
+    expect(flagged[0]!.items[0]).toMatchObject({ gate: 16 });
+    const rpc = vi.fn<(fn: string, body: Record<string, unknown>) => Promise<{ ok: boolean; status: number; body: unknown }>>(async () => ({ ok: true, status: 200, body: 1 }));
+    const done = await releaseV2Lessons([plan], { runId: 'r6', outDir: tmp(), courseSlug: 'money', dryRun: false, deps: { coreCheck, verifyCourse, rpc } });
+    expect(done.stage).toBe('done');
+    const recorded = rpc.mock.calls.filter(([fn]) => fn === 'record_forge_stage3_items');
+    expect(recorded).toHaveLength(flagged.length);
+    for (const [, body] of recorded) {
+      const record = flagged.find((entry) => entry.lessonId === body.p_lesson_id && entry.locale === body.p_locale)!;
+      expect(body).toEqual({ p_lesson_id: record.lessonId, p_locale: record.locale, p_version_id: record.versionId, p_run_id: 'r6', p_items: record.items });
+      const publishIndex = rpc.mock.calls.findIndex(([fn, b]) => fn === 'publish_v2_lesson_version' && b.p_locale === body.p_locale);
+      expect(publishIndex).toBeLessThan(rpc.mock.calls.findIndex(([, b]) => b === body));
+    }
+    {
+      const failing = vi.fn(async (fn: string) => (fn === 'record_forge_stage3_items' ? { ok: false, status: 500, body: null } : { ok: true, status: 200, body: {} }));
+      const stopped = await releaseV2Lessons([plan], { runId: 'r6', outDir: tmp(), courseSlug: 'money', dryRun: false, deps: { coreCheck, verifyCourse, rpc: failing } });
+      expect(stopped).toMatchObject({ ok: false, stage: 'publish' });
+      expect(stopped.problems[0]).toMatch(/Stage 3 review flag/);
+    }
   });
 });
