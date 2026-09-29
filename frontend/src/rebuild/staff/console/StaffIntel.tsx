@@ -4,10 +4,10 @@ import {
   type StatusTone, type TableColumn,
 } from '../../design/controls';
 import {
-  churnBuckets, cohortGrid, cohortWeeks, customWindow, EXPORT_ROLES, GRANULARITIES, INTEL_PRESETS, INTEL_VIEWS, isAlerts, isAnomalies, isChurn, isCohorts,
-  isExperiments, isFamilies, isFunnel, isIntelSummary, isLearnerDetail, isLearningOverview, isSkillHealth, isStaffExclusion, isTrend,
+  churnBuckets, cohortGrid, cohortWeeks, customWindow, DELIVERY_WINDOW_DAYS, EXPORT_ROLES, GRANULARITIES, INTEL_PRESETS, INTEL_VIEWS, isAlertDelivery, isAlerts,
+  isAnomalies, isChurn, isCohorts, isDisclosureCoverage, isExperiments, isFamilies, isFunnel, isIntelSummary, isLearnerDetail, isLearningOverview, isSkillHealth, isStaffExclusion, isTrend,
   isUserNames, rawExportPath, summaryDays, titleIn, TREND_METRICS, windowQuery,
-  type Attention, type CourseHealth, type EvidenceStatus, type Granularity, type IntelView, type IntelWindow, type LearnerProfile, type LessonHealth,
+  type Attention, type CourseHealth, type DeliveryStatus, type EvidenceStatus, type Granularity, type IntelView, type IntelWindow, type LearnerProfile, type LessonHealth,
   type TrendMetric,
 } from './intelApi';
 import { INSTRUMENTED_EVENTS } from './usageShared';
@@ -24,7 +24,9 @@ import { FamilyMetricsView } from './StaffProgramme';
  * exports carry the same window, so a file cannot describe another period.
  *
  *   Overview     daily, weekly and monthly users, events, week-1 retention,
- *                activation, the consent coverage, a trend whose metric and
+ *                activation, the consent coverage (children, and H.1's teen
+ *                and guest disclosure against its 100% target, Appendix O
+ *                1.1), a trend whose metric and
  *                grain really change the read (the legacy selectors changed
  *                nothing), the activation funnel, who reaches what, and the
  *                unresolved anomalies.
@@ -36,7 +38,9 @@ import { FamilyMetricsView } from './StaffProgramme';
  *                whole-population rate.
  *   People       churn risk, worst first, with no names (the legacy
  *                engagement ranking of learners is not rebuilt: DP-05).
- *   Experiments & alerts   what is configured, read-only.
+ *   Experiments & alerts   what is configured, read-only, with each alert's
+ *                latest delivery outcome and the month's delivery rate
+ *                against its 100% target (H.3, Appendix O 1.3).
  *
  * H.1 and D.6: rates are the whole population's; per-child rows are only for
  * children the consent gate admits and carry no identity. G.6: nothing here
@@ -128,6 +132,19 @@ function ExportButtons({ api, span }: { api: StaffApi; span: IntelWindow }) {
   </div>;
 }
 
+/** A rate against its target (Appendix O): the share, the target, and a verdict chip. */
+function TargetValue({ value, target }: { value: number | null; target: number }) {
+  const { copy, locale } = useConsoleCopy();
+  const format = useFormats(locale);
+  const t = copy.intel;
+  if (value === null) return <>{t.body.noData}</>;
+  const met = value >= target;
+  return <span className="lf-staff-inline">
+    <span>{fill(t.body.againstTarget, { share: format.percent(value), target: format.percent(target) })}</span>
+    {met ? <Chip tone="success" glyph="check">{t.option.status_met}</Chip> : <Chip tone="error" glyph="cross">{t.option.status_missed}</Chip>}
+  </span>;
+}
+
 /* ------------------------------------------------------------------------- */
 /*  Overview                                                                  */
 /* ------------------------------------------------------------------------- */
@@ -145,6 +162,7 @@ function OverviewView({ api, span }: { api: StaffApi; span: IntelWindow }) {
   const days = summaryDays(span);
   const summary = useStaffRead(api, `/admin/intel/metrics/summary?days=${days}`, isIntelSummary);
   const families = useStaffRead(api, '/admin/insights/families?limit=100', isFamilies);
+  const disclosure = useStaffRead(api, `/admin/analytics/consent-coverage?days=${Math.min(366, Math.max(1, span.days))}`, isDisclosureCoverage);
   const trend = useStaffRead(api, `/admin/intel/metrics/trends?metric=${metric}&granularity=${grain}&days=${days}`, isTrend);
   const funnel = useStaffRead(api, `/admin/intel/funnels/activation?${windowQuery(span)}`, isFunnel);
   const anomalies = useStaffRead(api, '/admin/intel/anomalies/active', isAnomalies);
@@ -214,6 +232,21 @@ function OverviewView({ api, span }: { api: StaffApi; span: IntelWindow }) {
           : families.load.state === 'ready' ? <Facts items={[
             { id: 'consented', label: t.body.consented, value: fill(t.body.ofTotal, { n: format.number(families.load.data.consent.kidsConsented), total: format.number(families.load.data.consent.kidsTotal) }) },
             { id: 'coverage', label: t.body.coverage, value: families.load.data.consent.kidsTotal > 0 ? format.percent(families.load.data.consent.kidsConsented / families.load.data.consent.kidsTotal) : t.body.noData },
+          ]} /> : null}
+    </Card>
+    <Card heading={t.heading.disclosure}>
+      <p data-copy-role="body" className="lf-staff-muted">{t.body.disclosureIntro}</p>
+      {disclosure.load.state === 'loading' ? <Loading />
+        : disclosure.load.state === 'error' ? <LoadFailure code={disclosure.load.code} onRetry={disclosure.reload} />
+          : disclosure.load.state === 'ready' ? <Facts items={[
+            { id: 'disclosureCovered', label: t.body.disclosureCovered, value: fill(t.body.ofTotal, { n: format.number(disclosure.load.data.covered), total: format.number(disclosure.load.data.population) }) },
+            { id: 'disclosureCoverage', label: t.body.disclosureCoverage, value: <TargetValue value={disclosure.load.data.coverage} target={disclosure.load.data.target} /> },
+            { id: 'teensActive', label: t.body.teensActive, value: format.number(disclosure.load.data.teens.active) },
+            { id: 'guestsActive', label: t.body.guestsActive, value: format.number(disclosure.load.data.guests.active) },
+            { id: 'measuredWithoutChoice', label: t.body.measuredWithoutChoice, value: fill(t.body.ofTotal, {
+              n: format.number(disclosure.load.data.gap?.measured ?? disclosure.load.data.teens.measuredWithoutOptIn + disclosure.load.data.guests.measured),
+              total: format.number(disclosure.load.data.population),
+            }) },
           ]} /> : null}
     </Card>
     {data ? <Card heading={t.heading.adoption}>
@@ -563,11 +596,31 @@ function OperationsView({ api }: { api: StaffApi }) {
   const t = copy.intel;
   const experiments = useStaffRead(api, '/admin/intel/experiments', isExperiments);
   const alerts = useStaffRead(api, '/admin/intel/alerts', isAlerts);
+  const delivery = useStaffRead(api, `/admin/intel/alerts/delivery?days=${DELIVERY_WINDOW_DAYS}`, isAlertDelivery);
+  const deliveryChip = (value: DeliveryStatus | null | undefined) => {
+    if (!value) return <>{t.body.noDelivery}</>;
+    const label = t.option[`delivery_${value}`];
+    return value === 'delivered' ? <Chip tone="success" glyph="check">{label}</Chip>
+      : value === 'failed' ? <Chip tone="error" glyph="cross">{label}</Chip>
+        : <Chip tone="warning" glyph="info">{label}</Chip>;
+  };
   const status = (value: string) => labelOf(t.option as Record<string, string>, `status_${value}`).replace(/^status_/, '');
   const statusChip = (value: string) => (value === 'running' || value === 'active' ? <Chip tone="success" glyph="check">{status(value)}</Chip>
     : <Chip tone="sky" glyph="info">{status(value)}</Chip>);
   return <div className="lf-staff-section">
     <InlineNotice tone="info">{t.body.readOnly}</InlineNotice>
+    <Card heading={t.heading.delivery}>
+      <p data-copy-role="body" className="lf-staff-muted">{fill(t.body.deliveryIntro, { n: format.number(DELIVERY_WINDOW_DAYS) })}</p>
+      {delivery.load.state === 'loading' ? <Loading />
+        : delivery.load.state === 'error' ? <LoadFailure code={delivery.load.code} onRetry={delivery.reload} />
+          : delivery.load.state === 'ready' ? <Facts items={[
+            { id: 'delivered', label: t.body.delivered, value: fill(t.body.ofTotal, { n: format.number(delivery.load.data.delivered), total: format.number(delivery.load.data.triggered) }) },
+            { id: 'deliveryRate', label: t.body.deliveryRate, value: <TargetValue value={delivery.load.data.rate} target={delivery.load.data.target} /> },
+            { id: 'deliveryFailed', label: t.body.deliveryFailed, value: format.number(delivery.load.data.failed) },
+            { id: 'deliveryUnconfigured', label: t.body.deliveryUnconfigured, value: format.number(delivery.load.data.unconfigured) },
+            { id: 'deliveryPending', label: t.body.deliveryPending, value: format.number(delivery.load.data.pending) },
+          ]} /> : null}
+    </Card>
     <div className="lf-staff-pair">
       <section className="lf-staff-section" aria-label={t.heading.experiments}>
         {experiments.load.state === 'loading' ? <Loading />
@@ -592,6 +645,8 @@ function OperationsView({ api }: { api: StaffApi }) {
                 { key: 'channel', label: t.body.channel, value: (a) => labelOf(t.option as Record<string, string>, `channel_${a.channel}`).replace(/^channel_/, '') },
                 { key: 'status', label: t.body.status, value: (a) => statusChip(a.status) },
                 { key: 'last', label: t.body.lastTriggered, value: (a) => format.dateTime(a.lastTriggeredAt ?? null, t.body.never) },
+                { key: 'delivery', label: t.body.lastDelivery, value: (a) => deliveryChip(a.lastDeliveryStatus) },
+                { key: 'reason', label: t.body.deliveryReason, value: (a) => a.lastDeliveryError ?? t.body.noReason, ugc: true },
               ]} /> : null}
       </section>
     </div>

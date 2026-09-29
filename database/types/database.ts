@@ -41,6 +41,52 @@ export type Database = {
           },
         ]
       }
+      account_deletion_guardian_notices: {
+        Row: {
+          created_at: string
+          guardian_user_id: string
+          id: string
+          request_id: string
+          teen_user_id: string
+        }
+        Insert: {
+          created_at?: string
+          guardian_user_id: string
+          id?: string
+          request_id: string
+          teen_user_id: string
+        }
+        Update: {
+          created_at?: string
+          guardian_user_id?: string
+          id?: string
+          request_id?: string
+          teen_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_deletion_guardian_notices_guardian_user_id_fkey"
+            columns: ["guardian_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "account_deletion_guardian_notices_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "account_deletion_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_deletion_guardian_notices_teen_user_id_fkey"
+            columns: ["teen_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       account_deletion_requests: {
         Row: {
           anon_ids: Json
@@ -244,6 +290,60 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dataintel_lessons_sync"
             referencedColumns: ["course_id"]
+          },
+        ]
+      }
+      age_correction_requests: {
+        Row: {
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          from_age_band: string
+          id: string
+          reason_code: string | null
+          requested_age_band: string
+          requested_birth_month: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          from_age_band: string
+          id?: string
+          reason_code?: string | null
+          requested_age_band: string
+          requested_birth_month?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          from_age_band?: string
+          id?: string
+          reason_code?: string | null
+          requested_age_band?: string
+          requested_birth_month?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "age_correction_requests_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "age_correction_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -606,7 +706,6 @@ export type Database = {
       banking_accounts: {
         Row: {
           card_design: string
-          display_number: string
           frozen: boolean
           frozen_at: string | null
           frozen_by: string | null
@@ -617,7 +716,6 @@ export type Database = {
         }
         Insert: {
           card_design?: string
-          display_number: string
           frozen?: boolean
           frozen_at?: string | null
           frozen_by?: string | null
@@ -628,7 +726,6 @@ export type Database = {
         }
         Update: {
           card_design?: string
-          display_number?: string
           frozen?: boolean
           frozen_at?: string | null
           frozen_by?: string | null
@@ -778,6 +875,98 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dataintel_users_sync"
             referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      content_defect_escapes: {
+        Row: {
+          defect_kind: string
+          gate_id: string
+          id: string
+          lesson_id: string
+          reported_at: string
+          reported_by: string | null
+        }
+        Insert: {
+          defect_kind: string
+          gate_id: string
+          id?: string
+          lesson_id: string
+          reported_at?: string
+          reported_by?: string | null
+        }
+        Update: {
+          defect_kind?: string
+          gate_id?: string
+          id?: string
+          lesson_id?: string
+          reported_at?: string
+          reported_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_defect_escapes_gate_id_fkey"
+            columns: ["gate_id"]
+            isOneToOne: false
+            referencedRelation: "forge_release_gates"
+            referencedColumns: ["gate_id"]
+          },
+          {
+            foreignKeyName: "content_defect_escapes_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      content_retro_checks: {
+        Row: {
+          action: string
+          audit_log_id: number
+          closed_at: string | null
+          closing_verified_at: string | null
+          course_id: string | null
+          due_at: string
+          id: number
+          justification: string | null
+          lesson_id: string | null
+          locale: string | null
+          occurred_at: string
+        }
+        Insert: {
+          action: string
+          audit_log_id: number
+          closed_at?: string | null
+          closing_verified_at?: string | null
+          course_id?: string | null
+          due_at: string
+          id?: never
+          justification?: string | null
+          lesson_id?: string | null
+          locale?: string | null
+          occurred_at: string
+        }
+        Update: {
+          action?: string
+          audit_log_id?: number
+          closed_at?: string | null
+          closing_verified_at?: string | null
+          course_id?: string | null
+          due_at?: string
+          id?: never
+          justification?: string | null
+          lesson_id?: string | null
+          locale?: string | null
+          occurred_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_retro_checks_audit_log_id_fkey"
+            columns: ["audit_log_id"]
+            isOneToOne: true
+            referencedRelation: "audit_logs"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2298,6 +2487,29 @@ export type Database = {
         }
         Relationships: []
       }
+      forge_v2_manifest_gates: {
+        Row: {
+          added_at: string
+          gate_id: string
+        }
+        Insert: {
+          added_at?: string
+          gate_id: string
+        }
+        Update: {
+          added_at?: string
+          gate_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forge_v2_manifest_gates_gate_id_fkey"
+            columns: ["gate_id"]
+            isOneToOne: true
+            referencedRelation: "forge_release_gates"
+            referencedColumns: ["gate_id"]
+          },
+        ]
+      }
       generation_heartbeat_snapshots: {
         Row: {
           active_slots: number
@@ -2881,6 +3093,7 @@ export type Database = {
           misconception_id: string | null
           p_known_after: number
           p_known_before: number
+          receipt_key: string | null
           review_tier: string | null
           score: number | null
           segment_id: string | null
@@ -2897,6 +3110,7 @@ export type Database = {
           misconception_id?: string | null
           p_known_after: number
           p_known_before: number
+          receipt_key?: string | null
           review_tier?: string | null
           score?: number | null
           segment_id?: string | null
@@ -2913,6 +3127,7 @@ export type Database = {
           misconception_id?: string | null
           p_known_after?: number
           p_known_before?: number
+          receipt_key?: string | null
           review_tier?: string | null
           score?: number | null
           segment_id?: string | null
@@ -3373,6 +3588,7 @@ export type Database = {
           proposed: string
           session_id: string | null
           status: string
+          store: string
           user_id: string
         }
         Insert: {
@@ -3386,6 +3602,7 @@ export type Database = {
           proposed: string
           session_id?: string | null
           status?: string
+          store?: string
           user_id: string
         }
         Update: {
@@ -3399,6 +3616,7 @@ export type Database = {
           proposed?: string
           session_id?: string | null
           status?: string
+          store?: string
           user_id?: string
         }
         Relationships: [
@@ -3739,6 +3957,32 @@ export type Database = {
             foreignKeyName: "learning_pace_preferences_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      learning_practice_days: {
+        Row: {
+          local_date: string
+          recorded_at: string
+          user_id: string
+        }
+        Insert: {
+          local_date: string
+          recorded_at?: string
+          user_id: string
+        }
+        Update: {
+          local_date?: string
+          recorded_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_practice_days_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "dataintel_users_sync"
             referencedColumns: ["user_id"]
           },
@@ -4483,6 +4727,7 @@ export type Database = {
       lesson_v2_runs: {
         Row: {
           completed_at: string | null
+          cpa_entry_stage: string | null
           document_version_id: string
           expires_at: string
           id: string
@@ -4493,6 +4738,7 @@ export type Database = {
         }
         Insert: {
           completed_at?: string | null
+          cpa_entry_stage?: string | null
           document_version_id: string
           expires_at: string
           id?: string
@@ -4503,6 +4749,7 @@ export type Database = {
         }
         Update: {
           completed_at?: string | null
+          cpa_entry_stage?: string | null
           document_version_id?: string
           expires_at?: string
           id?: string
@@ -4542,6 +4789,129 @@ export type Database = {
           },
           {
             foreignKeyName: "lesson_v2_runs_version_identity_fkey"
+            columns: ["document_version_id", "lesson_id", "locale"]
+            isOneToOne: false
+            referencedRelation: "lesson_document_versions"
+            referencedColumns: ["id", "lesson_id", "locale"]
+          },
+        ]
+      }
+      lesson_v2_segment_views: {
+        Row: {
+          created_at: string
+          document_version_id: string
+          run_id: string
+          segment_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_version_id: string
+          run_id: string
+          segment_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          document_version_id?: string
+          run_id?: string
+          segment_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_v2_segment_views_document_version_id_fkey"
+            columns: ["document_version_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_document_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_v2_segment_views_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_v2_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_v2_segment_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      lesson_version_activation_requests: {
+        Row: {
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          document_sha256: string
+          document_version_id: string
+          id: string
+          lesson_id: string
+          locale: string
+          manifest_sha256: string
+          run_id: string | null
+          status: string
+          version_id: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          document_sha256: string
+          document_version_id: string
+          id?: string
+          lesson_id: string
+          locale: string
+          manifest_sha256: string
+          run_id?: string | null
+          status?: string
+          version_id: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          document_sha256?: string
+          document_version_id?: string
+          id?: string
+          lesson_id?: string
+          locale?: string
+          manifest_sha256?: string
+          run_id?: string | null
+          status?: string
+          version_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_version_activation_requests_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "lesson_version_activation_requests_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["lesson_id"]
+          },
+          {
+            foreignKeyName: "lesson_version_activation_requests_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_version_activation_requests_version_fkey"
             columns: ["document_version_id", "lesson_id", "locale"]
             isOneToOne: false
             referencedRelation: "lesson_document_versions"
@@ -5738,6 +6108,47 @@ export type Database = {
           },
         ]
       }
+      release_audit_results: {
+        Row: {
+          audit_kind: string
+          finding_count: number
+          id: string
+          note: string | null
+          recorded_at: string
+          release_id: string
+          result: string
+          reviewer_id: string | null
+        }
+        Insert: {
+          audit_kind: string
+          finding_count: number
+          id?: string
+          note?: string | null
+          recorded_at?: string
+          release_id: string
+          result: string
+          reviewer_id?: string | null
+        }
+        Update: {
+          audit_kind?: string
+          finding_count?: number
+          id?: string
+          note?: string | null
+          recorded_at?: string
+          release_id?: string
+          result?: string
+          reviewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "release_audit_results_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       sagas: {
         Row: {
           adventure_id: string
@@ -6128,6 +6539,33 @@ export type Database = {
           },
         ]
       }
+      social_protection_counters: {
+        Row: {
+          day: string
+          event: string
+          n: number
+          related: boolean
+          subject_tier: string
+          viewer_tier: string
+        }
+        Insert: {
+          day: string
+          event: string
+          n?: number
+          related: boolean
+          subject_tier: string
+          viewer_tier: string
+        }
+        Update: {
+          day?: string
+          event?: string
+          n?: number
+          related?: boolean
+          subject_tier?: string
+          viewer_tier?: string
+        }
+        Relationships: []
+      }
       social_reports: {
         Row: {
           category: string
@@ -6374,6 +6812,47 @@ export type Database = {
           {
             foreignKeyName: "spend_limits_parent_user_id_fkey"
             columns: ["parent_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      staff_access_reviews: {
+        Row: {
+          grant_key: string
+          id: string
+          kind: string
+          note: string | null
+          outcome: string
+          reviewed_at: string
+          reviewed_by: string
+          subject_user_id: string
+        }
+        Insert: {
+          grant_key: string
+          id?: string
+          kind: string
+          note?: string | null
+          outcome: string
+          reviewed_at?: string
+          reviewed_by: string
+          subject_user_id: string
+        }
+        Update: {
+          grant_key?: string
+          id?: string
+          kind?: string
+          note?: string | null
+          outcome?: string
+          reviewed_at?: string
+          reviewed_by?: string
+          subject_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_access_reviews_subject_user_id_fkey"
+            columns: ["subject_user_id"]
             isOneToOne: false
             referencedRelation: "dataintel_users_sync"
             referencedColumns: ["user_id"]
@@ -6820,6 +7299,8 @@ export type Database = {
         Row: {
           assignment: string
           band: string
+          budget_caught: number | null
+          budget_delivered: number | null
           character: string
           controlling_caught: number
           controlling_delivered: number
@@ -6829,14 +7310,20 @@ export type Database = {
           id: string
           ladder_rungs: number
           pacing_offers: number
+          self_naming_caught: number | null
+          self_naming_delivered: number | null
           session_id: string | null
+          tell_delivered: number | null
           tell_requests: number
+          tell_withdrawn: number | null
           unilateral_style_changes: number
           variant: string
         }
         Insert: {
           assignment: string
           band: string
+          budget_caught?: number | null
+          budget_delivered?: number | null
           character: string
           controlling_caught: number
           controlling_delivered: number
@@ -6846,14 +7333,20 @@ export type Database = {
           id?: string
           ladder_rungs: number
           pacing_offers: number
+          self_naming_caught?: number | null
+          self_naming_delivered?: number | null
           session_id?: string | null
+          tell_delivered?: number | null
           tell_requests: number
+          tell_withdrawn?: number | null
           unilateral_style_changes: number
           variant: string
         }
         Update: {
           assignment?: string
           band?: string
+          budget_caught?: number | null
+          budget_delivered?: number | null
           character?: string
           controlling_caught?: number
           controlling_delivered?: number
@@ -6863,8 +7356,12 @@ export type Database = {
           id?: string
           ladder_rungs?: number
           pacing_offers?: number
+          self_naming_caught?: number | null
+          self_naming_delivered?: number | null
           session_id?: string | null
+          tell_delivered?: number | null
           tell_requests?: number
+          tell_withdrawn?: number | null
           unilateral_style_changes?: number
           variant?: string
         }
@@ -7851,6 +8348,7 @@ export type Database = {
           created_at: string
           difficulty: number
           event_kind: string
+          evidence_discounted: string | null
           evidence_observations: number | null
           evidence_required: number | null
           evidence_rule: string | null
@@ -7872,6 +8370,7 @@ export type Database = {
           created_at?: string
           difficulty: number
           event_kind: string
+          evidence_discounted?: string | null
           evidence_observations?: number | null
           evidence_required?: number | null
           evidence_rule?: string | null
@@ -7893,6 +8392,7 @@ export type Database = {
           created_at?: string
           difficulty?: number
           event_kind?: string
+          evidence_discounted?: string | null
           evidence_observations?: number | null
           evidence_required?: number | null
           evidence_rule?: string | null
@@ -8980,6 +9480,10 @@ export type Database = {
         }
         Returns: Json
       }
+      activate_lesson_version_request: {
+        Args: { p_actor: string; p_request_id: string }
+        Returns: undefined
+      }
       add_tutor_session_cost: {
         Args: { p_amount: number; p_session_id: string }
         Returns: number
@@ -9033,6 +9537,10 @@ export type Database = {
           p_task_id: string
         }
         Returns: boolean
+      }
+      analytics_disclosure_coverage: {
+        Args: { p_from: string; p_to: string }
+        Returns: Json
       }
       avatar_options_valid: { Args: { p_options: Json }; Returns: boolean }
       award_tutor_xp: {
@@ -9177,6 +9685,65 @@ export type Database = {
         }
         Returns: Json
       }
+      complete_v2_mixed_lesson: {
+        Args: {
+          p_document_version_id: string
+          p_lesson_id: string
+          p_local_date: string
+          p_minutes: number
+          p_required_segment_ids: string[]
+          p_run_id: string
+          p_user_id: string
+          p_viewed_segment_ids: string[]
+          p_xp: number
+        }
+        Returns: Json
+      }
+      content_bypass_checks: {
+        Args: { p_days: number }
+        Returns: {
+          action: string
+          closed_at: string
+          closing_verified_at: string
+          course_id: string
+          due_at: string
+          id: number
+          justified: boolean
+          lesson_id: string
+          locale: string
+          occurred_at: string
+          state: string
+        }[]
+      }
+      content_bypass_metrics: {
+        Args: { p_days: number }
+        Returns: {
+          bypasses: number
+          complete: number
+          decided: number
+          overdue_open: number
+          publish_actions: number
+          unverified: number
+        }[]
+      }
+      content_course_of_lesson: { Args: { p_lesson: string }; Returns: string }
+      content_defect_escape_rate: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          escapes: number
+          gate_id: string
+          published_versions: number
+        }[]
+      }
+      content_is_release_bypass: {
+        Args: { p_action: string; p_detail: Json }
+        Returns: boolean
+      }
+      content_release_actor_allowed: {
+        Args: { p_actor: string }
+        Returns: boolean
+      }
+      content_retro_check_days: { Args: never; Returns: number }
       coop_goal_candidates: { Args: { p_user: string }; Returns: string[] }
       coop_goal_child_teen: { Args: { p_user: string }; Returns: boolean }
       coop_goal_close: {
@@ -9246,6 +9813,15 @@ export type Database = {
         Returns: Json
       }
       data_practice_state: { Args: { p_subject: string }; Returns: Json }
+      decide_age_correction: {
+        Args: {
+          p_approve: boolean
+          p_reason: string
+          p_request: string
+          p_staff: string
+        }
+        Returns: string
+      }
       decide_coop_goal_invitation: {
         Args: { p_accept: boolean; p_goal: string; p_user: string }
         Returns: string
@@ -9288,6 +9864,19 @@ export type Database = {
         Returns: Json
       }
       effective_age_band: { Args: { p_user: string }; Returns: string }
+      emergency_activate_lesson_version: {
+        Args: {
+          p_actor: string
+          p_document_version_id: string
+          p_justification: string
+          p_lesson_id: string
+        }
+        Returns: {
+          code: string
+          message: string
+          ok: boolean
+        }[]
+      }
       end_coop_goal_membership: {
         Args: { p_actor: string; p_goal: string; p_member: string }
         Returns: string
@@ -9716,6 +10305,10 @@ export type Database = {
           total: number
         }[]
       }
+      grant_parent_role_with_justification: {
+        Args: { p_actor: string; p_justification: string; p_user: string }
+        Returns: string
+      }
       guardian_adjust_wallet: {
         Args: {
           p_actor: string
@@ -9726,6 +10319,7 @@ export type Database = {
         }
         Returns: string
       }
+      guardian_deletion_notices: { Args: { p_guardian: string }; Returns: Json }
       guardian_end_chore_streak_pause: {
         Args: { p_actor: string; p_pause: string }
         Returns: string
@@ -9780,6 +10374,10 @@ export type Database = {
       has_data_practice_consent: {
         Args: { p_practice: string; p_subject: string }
         Returns: boolean
+      }
+      identity_metrics: {
+        Args: { p_from: string; p_to: string }
+        Returns: Json
       }
       insert_tutor_live_segment_checked: {
         Args: {
@@ -9878,6 +10476,59 @@ export type Database = {
           offered: number
         }[]
       }
+      learning_cpa_entry_stage_distribution: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          entry_stage: string
+          runs: number
+        }[]
+      }
+      learning_cue_hits: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          false_ticks: number
+          hits: number
+          missed: number
+          responses: number
+        }[]
+      }
+      learning_detection_cells: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          correct_rejections: number
+          false_alarms: number
+          hits: number
+          lesson_id: string
+          misses: number
+          responses: number
+        }[]
+      }
+      learning_detection_cells_by_phase: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          correct_rejections: number
+          false_alarms: number
+          hits: number
+          item_phase: string
+          misses: number
+          responses: number
+        }[]
+      }
+      learning_error_family_split: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          diagnostic: string
+          errors: number
+          family: string
+        }[]
+      }
+      learning_first_unaided_stage_distribution: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          learners: number
+          stage: string
+        }[]
+      }
       learning_judgment_differentiation: {
         Args: { p_since: string; p_until: string }
         Returns: {
@@ -9894,6 +10545,14 @@ export type Database = {
       learning_narrative_metrics: {
         Args: { p_since: string; p_until: string }
         Returns: Json
+      }
+      learning_qa_rates: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          detail: string
+          event: string
+          events: number
+        }[]
       }
       learning_replay_notice_display_rate: {
         Args: { p_since: string; p_until: string }
@@ -9913,6 +10572,15 @@ export type Database = {
           utilization_rate: number
         }[]
       }
+      learning_scorer_parity: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          agreed: number
+          agreement_share: number
+          graded: number
+          reported: number
+        }[]
+      }
       learning_session_efficiency: {
         Args: { p_since: string; p_until: string }
         Returns: {
@@ -9927,9 +10595,45 @@ export type Database = {
         Args: { p_after: string; p_before: string; p_user_id: string }
         Returns: string[]
       }
+      learning_transfer_success: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          first_attempts: number
+          item_role: string
+          kc: string
+          success_share: number
+          successes: number
+        }[]
+      }
+      learning_variant_transfer: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          first_attempts: number
+          kc: string
+          success_share: number
+          successes: number
+          variant: string
+        }[]
+      }
       legacy_kc_credit_covers: {
         Args: { p_kc_id: string; p_stage: string; p_user_id: string }
         Returns: boolean
+      }
+      lesson_document_without_audio_stamps: {
+        Args: { p_document: Json }
+        Returns: Json
+      }
+      lesson_version_request_for_decision: {
+        Args: { p_document_version_id: string; p_lesson_id: string }
+        Returns: {
+          course_id: string
+          document_sha256: string
+          lesson_status: string
+          locale: string
+          request_id: string
+          request_status: string
+          version_id: string
+        }[]
       }
       mark_under13_origin: { Args: { p_user_id: string }; Returns: boolean }
       mentor_resolution_efficiency: {
@@ -9980,6 +10684,7 @@ export type Database = {
         }
         Returns: Json
       }
+      onboarding_discovery_metrics: { Args: never; Returns: Json }
       parent_coaching_deliver: {
         Args: { p_now?: string; p_tips: string[]; p_tutor: string }
         Returns: Json
@@ -10014,6 +10719,16 @@ export type Database = {
           p: Database["public"]["Tables"]["parent_coaching_deliveries"]["Row"]
         }
         Returns: Json
+      }
+      parent_time_to_value: {
+        Args: { p_since: string; p_until: string }
+        Returns: {
+          median_seconds: number
+          p75_seconds: number
+          reached: number
+          signups: number
+          within_target: number
+        }[]
       }
       practice_difficulty_actor_allowed: {
         Args: { p_actor: string }
@@ -10051,6 +10766,17 @@ export type Database = {
         Args: { p_retain_days?: number }
         Returns: number
       }
+      publish_v2_lesson_version: {
+        Args: {
+          p_answer_keys: Json
+          p_document: Json
+          p_lesson_id: string
+          p_locale: string
+          p_release_manifest: Json
+          p_version_id: string
+        }
+        Returns: Json
+      }
       purge_closed_learning_bridge_prompts: {
         Args: { p_days: number }
         Returns: number
@@ -10083,6 +10809,15 @@ export type Database = {
             }
             Returns: string
           }
+      record_content_defect_escape: {
+        Args: {
+          p_actor: string
+          p_defect_kind: string
+          p_gate_id: string
+          p_lesson_id: string
+        }
+        Returns: string
+      }
       record_course_assembly_incident: {
         Args: { p_course_id: string }
         Returns: undefined
@@ -10150,6 +10885,17 @@ export type Database = {
         Args: { p_calibration: Json; p_strata: Json }
         Returns: string
       }
+      record_release_audit: {
+        Args: {
+          p_actor: string
+          p_findings: number
+          p_kind: string
+          p_note: string
+          p_release_id: string
+          p_result: string
+        }
+        Returns: string
+      }
       record_savings_bonus_explanation: {
         Args: {
           p_answer: number
@@ -10158,6 +10904,21 @@ export type Database = {
           p_user: string
         }
         Returns: boolean
+      }
+      record_social_protection_event: {
+        Args: { p_event: string; p_subject: string; p_viewer: string }
+        Returns: undefined
+      }
+      record_staff_access_review: {
+        Args: {
+          p_actor: string
+          p_grant_key: string
+          p_kind: string
+          p_note: string
+          p_outcome: string
+          p_subject: string
+        }
+        Returns: string
       }
       record_staff_insight_check: {
         Args: { p_insight: string; p_outcome: string; p_source: string }
@@ -10237,6 +10998,15 @@ export type Database = {
         }
         Returns: Json
       }
+      record_v2_segment_view: {
+        Args: {
+          p_document_version_id: string
+          p_run_id: string
+          p_segment_id: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
       record_wallet_split: {
         Args: {
           p_goal_id: string
@@ -10251,6 +11021,19 @@ export type Database = {
       refresh_insights_rollups: {
         Args: { window_days?: number }
         Returns: string
+      }
+      reject_lesson_version: {
+        Args: {
+          p_actor: string
+          p_document_version_id: string
+          p_lesson_id: string
+          p_reason: string
+        }
+        Returns: {
+          code: string
+          message: string
+          ok: boolean
+        }[]
       }
       release_course: {
         Args: { p_course_id: string }
@@ -10269,6 +11052,18 @@ export type Database = {
         Returns: {
           code: string
           lessons_published: number
+          message: string
+          ok: boolean
+        }[]
+      }
+      release_lesson_version: {
+        Args: {
+          p_actor: string
+          p_document_version_id: string
+          p_lesson_id: string
+        }
+        Returns: {
+          code: string
           message: string
           ok: boolean
         }[]
@@ -10310,6 +11105,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      request_age_correction: {
+        Args: { p_age_band: string; p_birth_month: string; p_user: string }
+        Returns: string
+      }
       request_social_connection: {
         Args: { p_kid_user_id: string; p_requester_id: string }
         Returns: string
@@ -10338,6 +11137,10 @@ export type Database = {
       revoke_own_guardian_link: {
         Args: { p_actor: string; p_kid_user_id: string }
         Returns: boolean
+      }
+      revoke_parent_verification: {
+        Args: { p_actor: string; p_reason: string; p_user: string }
+        Returns: string
       }
       run_due_scheduled_credits: {
         Args: { p_kid_user_id: string }
@@ -10403,6 +11206,16 @@ export type Database = {
         Args: { p_discoverable: boolean; p_user: string }
         Returns: boolean
       }
+      set_tutor_pack_status: {
+        Args: {
+          p_actor: string
+          p_content_hash: string
+          p_from: string
+          p_pack_id: string
+          p_to: string
+        }
+        Returns: Json
+      }
       set_wallet_usual_split: {
         Args: {
           p_actor: string
@@ -10467,10 +11280,32 @@ export type Database = {
         Returns: boolean
       }
       social_messaging_surfaces: { Args: never; Returns: Json }
+      social_pattern_qualifies: {
+        Args: { p_subject: string }
+        Returns: boolean
+      }
+      social_protection_count: {
+        Args: {
+          p_event: string
+          p_related: boolean
+          p_subject_tier: string
+          p_viewer_tier: string
+        }
+        Returns: undefined
+      }
+      social_protection_metrics: { Args: { p_days: number }; Returns: Json }
+      social_protection_related: {
+        Args: { p_subject: string; p_viewer: string }
+        Returns: boolean
+      }
       social_retention_windows: { Args: never; Returns: Json }
       social_safety_metrics: { Args: never; Returns: Json }
       social_subject_visible: { Args: { p_subject: string }; Returns: boolean }
       social_tier: { Args: { p_user: string }; Returns: string }
+      staff_access_review_status: {
+        Args: { p_cadence_days?: number }
+        Returns: Json
+      }
       staff_insight_uptime: {
         Args: { p_insight: string; p_since: string }
         Returns: {
@@ -10545,6 +11380,7 @@ export type Database = {
         }
         Returns: string
       }
+      sweep_learning_practice_days: { Args: never; Returns: number }
       sync_practice_difficulty_reviews: {
         Args: { p_now: string; p_window_days: number }
         Returns: number

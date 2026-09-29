@@ -1297,7 +1297,9 @@
         "readiness": "Cómo van los estudiantes",
         "skillHealth": "Habilidades por dominio",
         "skills": "Habilidades",
-        "trend": "Tendencia"
+        "trend": "Tendencia",
+        "disclosure": "Elección de adolescentes e invitados",
+        "delivery": "Entrega de alertas"
       },
       "body": {
         "view": "Vista",
@@ -1408,7 +1410,24 @@
         "never": "Nunca",
         "exportIntro": "El mismo periodo y las mismas cifras, como archivo. Sin la actividad del personal.",
         "noData": "Sin datos",
-        "noChurn": "No hay riesgo de abandono registrado en este periodo."
+        "noChurn": "No hay riesgo de abandono registrado en este periodo.",
+        "disclosureIntro": "Adolescentes que vieron la opción de analítica. Los invitados no envían eventos.",
+        "disclosureCovered": "Cubiertos",
+        "disclosureCoverage": "Cobertura",
+        "againstTarget": "{share} · meta {target}",
+        "teensActive": "Adolescentes activos",
+        "guestsActive": "Invitados activos",
+        "measuredWithoutChoice": "Medidos sin elegir",
+        "deliveryIntro": "Alertas que llegaron a una persona en los últimos {n} días.",
+        "delivered": "Entregadas",
+        "deliveryRate": "Tasa de entrega",
+        "deliveryFailed": "Fallidas",
+        "deliveryUnconfigured": "Sin canal configurado",
+        "deliveryPending": "En espera",
+        "lastDelivery": "Última entrega",
+        "deliveryReason": "Motivo",
+        "noDelivery": "Ninguna aún",
+        "noReason": "Ninguno"
       },
       "option": {
         "view_overview": "Resumen",
@@ -1460,7 +1479,12 @@
         "format_json": "JSON",
         "allEvents": "Todos los eventos",
         "anonymous": "Anónimos",
-        "view_families": "Familias"
+        "view_families": "Familias",
+        "delivery_delivered": "Entregada",
+        "delivery_failed": "Fallida",
+        "delivery_unconfigured": "Sin configurar",
+        "status_met": "En la meta",
+        "status_missed": "Bajo la meta"
       }
     },
     "programme": {

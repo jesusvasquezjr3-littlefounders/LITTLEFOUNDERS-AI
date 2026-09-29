@@ -618,3 +618,113 @@ human spot-check of the tone gate; migrations 0215/0216 renumbered at merge.
   frontend 3,118 passed, database `npm test` green (226 migrations, 48 node
   tests, railway-migrate integration OK), `tools:test` 399 of 399 after the
   change-record fix. No browser matrices were run at this merge.
+
+## F2-data-platform
+
+Branch `codex/spec-fix2dataplat`. Two audited SPEC gaps. Both were checked in
+the code first, and both were real.
+
+### What was built
+
+| # | SPEC clause | Gap confirmed in code | What was built | Where |
+|---|---|---|---|---|
+| 1 | D.7 (Product 10 Block D; GAP-FIX-R1 F1-family.3); CLAUDE.md rule on generated types | `database/types/database.ts` still declared `banking_accounts.display_number` (required on Insert) although migrations `0211`/`0212` drop it. The file also lacked every table and function added since the last regeneration | Regenerated with the official generator, not edited by hand: `supabase/postgres-meta` v0.99.0 (the version behind CLI 2.117.0, the S01 regeneration), public schema, one-to-one detection on. It ran against a throwaway database on this lane's own native PostgreSQL 17.6 cluster, with the Supabase shim, every migration and the migration ledger table that `local-stack.sh`/`disposable-stack.sh` create. The shared Docker stack was not touched. The diff only adds: the 3 removed lines are `display_number` in Row, Insert and Update. New tables: `age_correction_requests`, `learning_practice_days`, `lesson_v2_segment_views`, `social_protection_counters` and `staff_access_reviews`, plus 20 functions, among them `identity_metrics`, `analytics_disclosure_coverage` and `record_staff_access_review` | `database/types/database.ts` |
+| 2a | H.1; Appendix O 1.1 (Teen/Guest Consent-Adjacent Disclosure Coverage), 2.1(3) | No Core or database metric computed the teen/guest disclosure share. `identityMetrics.ts` covers A.2 only | `analytics_disclosure_coverage(p_from, p_to)` is SECURITY DEFINER, service_role only and returns counts only. **Active** means an account created, signed in, holding a session touched, or writing a learning event in the window; GoTrue's optional columns are read through `to_jsonb`. **Teens** are self-registered accounts: not anonymous, no kid role, `effective_age_band` = `13_to_17`. A teen is **covered** when a disclosure choice is on file or a protected under-13 origin suppresses analytics, and no event was admitted in the window without an opt-in. A disclosure that gates nothing is not coverage. A **guest** is covered because its protected origin suppresses analytics (trigger 0090). A guest with an admitted event is counted as measured and uncovered. Core `GET /api/v1/admin/analytics/consent-coverage?days=` (view_analytics) returns the rate against the 100% target with a met, missed or no_data verdict. A malformed answer gives a 502, never zeros | `database/migrations/0227_analytics_disclosure_coverage.sql`, `backend/src/services/disclosureCoverage.ts`, `backend/src/routes/admin.ts` |
+| 2b | H.3; Appendix O 1.3 (Alert-to-Notification Delivery Rate) | dataintel stored `delivery_status` for each trigger, but no aggregate existed. The staff Intel alerts table dropped the delivery fields (`isAlerts`) and never read history | dataintel `alertDeliveryRate(days)` counts triggers in the window as delivered, failed, unconfigured or pending, with rate = delivered / triggered. The rate is null when nothing fired, and the target is 1. `GET /api/v1/intel/alerts/delivery?days=` (1-365) exposes it, and Core's existing read-only `/admin/intel` proxy (view_analytics) reaches it. `listAlerts` now carries each alert's latest `lastDeliveryStatus` and `lastDeliveryError` | `dataintel/src/services/alerts.ts`, `dataintel/src/routes/queries.ts` |
+| 2c | Appendix O 2.1(3): shown to staff | Neither metric was on any staff page | Learning intel, Overview gets a "Teen and guest choice" card: covered of population, coverage against the 100% target with an On target or Below target chip, active teens, active guests and the count measured without a choice. It follows the page window. Learning intel, Experiments & alerts gets an "Alert delivery" card: delivered of triggered, the rate against 100%, failed, no channel set up and waiting, over a fixed 30-day window (the view has no window control by design). The alerts table gains Last delivery (Delivered, Failed or Not set up chip, or None yet) and Reason columns. Copy is in EN, es-MX and pt-BR within the adult Copy Budget; tokens only; the chips pair a glyph with the words | `frontend/src/rebuild/staff/console/StaffIntel.tsx`, `intelApi.ts`, `staffConsole.css`, `frontend/src/i18n/*/rebuild-staff.json`, fixtures |
+
+### Verification (local)
+
+- Native PostgreSQL 17.6 (this lane's cluster, port 15850): `database/scripts/verify-analytics-disclosure-postgres.py` applies all 215 migrations and passes 7 checks. Trigger 0090 admits an opted-in teen's event and drops a guest's and an undisclosed teen's. There are 5 active teens: the kid-role account, the adult and the inactive teen are excluded. 3 are covered (opted in, opted out, protected origin). A teen measured without an opt-in stays uncovered even after recording a choice. A guest with a leaked event counts as measured. No account id leaves the function. An inverted window is refused, and anon and authenticated cannot execute it.
+- dataintel: `alert-delivery-rate.test.ts` (7, real in-memory DuckDB: counts, window, empty, bounds, latest outcome per alert, route envelope, 400/401), plus `alert-delivery.test.ts` and `intel.test.ts`, all green.
+- Core: `appendixOMetrics.test.ts` (7). It covers the rate and verdict, and the refusals before any read: bad window, unknown field, no view_analytics, parent, learner, no session. It also covers the 502 on malformed and failed reads, and the delivery rate through the proxy, with a refusal before the warehouse is reached.
+- Frontend: `StaffInsights.test.tsx` (33, 4 new), the staff console suites and the staff copy budget (EN, es-MX, pt-BR; `{target}` added to the placeholder fill).
+- `typecheck:all` (all 10 packages with the script, against the regenerated types), lint in frontend, backend and dataintel, `spec:check`, `secrets:check` and the i18n gate all passed. In `database` `npm test`, `check-migrations` (215 files, RLS, size cap) and `check-migration-phase` passed, and so did the 48 node tests. `railway-migrate.test.mjs`, the fake-transport integration run that spawns a shell per migration, did not finish within 8 minutes. The machine was running the same test from other lanes in parallel at the time. This lane does not touch that runner.
+
+### Remains
+
+- Acceptance and release of both metrics. Appendix O's DoD needs 100% held for a full release cycle on real data; nothing here is measured on production.
+- Choices the SPEC leaves open (conservative defaults, listed as owner questions): the activity signal for "active in the window" is sign-in, session, creation or an event, because no product-session table exists. A 13-17 account with a protected under-13 origin counts as covered by suppression. Guests count as covered by suppression, as the checkpoint states.
+- The `/admin/intel@operations` audit state and the Overview card were not run through the browser audit matrix (the orchestrator runs it at merge).
+- The migration is numbered `0215` in this worktree; the orchestrator renumbers it at merge, and `database/types/database.ts` should be regenerated again after the merge if other lanes add schema.
+
+## F2-data-platform-finish
+
+Lane close-out for `codex/spec-fix2dataplat`.
+
+- **Sync.** `codex/spec-migration-s02` had no new commits, so the merge was
+  already up to date and no conflicts arose.
+- **Adversarial pass against the two audited gaps.** D.7 is closed by the
+  regenerated types. For H.1 and H.3, authorization holds at the server: the
+  Core route sits behind `view_analytics`, validates the query strictly and
+  refuses before any read. dataintel is internal-only and reached through the
+  existing read-only proxy. The SQL function is service_role only and returns
+  counts only. The UI uses only the shared rebuild controls, declares
+  `data-copy-role`, and has copy in all three locales. One mandated metric was
+  still missing: Appendix O 1.1's second row, the **Consent-Gate Population
+  Gap Rate** (teens and guests measured with no consent-adjacent mechanism,
+  target zero). It is now built. `buildDisclosureCoverage` returns
+  `gap: { measured, rate, target: 0, status }`, where measured is teens with an
+  event admitted without an opt-in plus guests with an admitted event, and rate
+  is measured over the same active population. The Learning intel card shows
+  "measured without a choice" as n of the population, with no new copy. The
+  frontend guard accepts and validates `gap`, and the fixture carries it.
+- **Verification (local).** type-check and lint pass in backend, dataintel and
+  frontend. `spec:check` and `secrets:check` pass. Core `appendixOMetrics.test.ts`
+  has a new gap-rate case, and the staff console and copy-budget suites
+  (16 files, 182 tests) pass. Full unit suites: dataintel 220/222 on the loaded
+  run; the 2 reds were 5 s timeouts in `experiments-stats.test.ts`, a file this
+  lane does not touch, and it passes alone. Backend 3212/3217 on the loaded
+  run: the reds were the pre-fix gap test (fixed; `appendixOMetrics` 8/8)
+  and 5 s timeouts in `auth.test.ts` and `wellbeingS053f.test.ts`, both green
+  alone. Frontend 3024/3038: `App`, `StaffSections`, `AuthLayout` and
+  `LookEditorRoute` are green alone (61/61). `assetGate.test.ts` times out at
+  90 s per case even alone while other lanes load the machine; running
+  `check-rebuild-assets.mjs` directly on the tree passes (OCR of 118 rasters
+  took about 3 minutes). This lane touches no asset.
+- **Remains.** Renumber `0215` at merge and regenerate
+  `database/types/database.ts` on the merged tree, using postgres-meta v0.99.0
+  against the full chain plus the `schema_migrations` ledger. Run the browser
+  audit matrix for the Learning intel Overview card and `/admin/intel@operations`.
+  Rerun `database/scripts/railway-migrate.test.mjs` on a quiet machine.
+  Acceptance and release of H.1 and H.3 need 100% coverage and 0% gap held for
+  a release cycle on production data, and a production alert channel (H.3).
+- **Owner questions (conservative defaults implemented).** "Active in the
+  window" means sign-in, session, creation or a learning event, because no
+  product-session table exists. A 13-17 account with a protected under-13
+  origin counts as covered by suppression. Guests count as covered by
+  suppression unless an event was admitted.
+
+### F2-data-platform merge integration
+
+- Migration renumbered to follow the integration branch's `0226`:
+  `0215_analytics_disclosure_coverage` -> `0227`. It defines only the new
+  `analytics_disclosure_coverage` function, so no other lane's SQL object is
+  redefined and no reconciling migration is needed. 5,431 bytes, under the cap.
+- Conflicts: `REQUIREMENTS.md` D.7 keeps this lane's types note and gains the
+  GAP-FIX-R2 link; D.8 keeps the family lane's row; H.1 keeps the identity-site
+  note and appends this lane's Appendix O 1.1 note and link. This record kept
+  every lane's section and appended this lane's two.
+- `database/types/database.ts` regenerated on the merged tree (227 migrations)
+  with the same generator image the lane used,
+  `public.ecr.aws/supabase/postgres-meta:v0.99.0` (public schema, one-to-one
+  detection on), against a throwaway native PostgreSQL 17.6 database with the
+  Supabase shim, the full chain and the `schema_migrations` ledger table. The
+  diff against the lane's file only adds (the other lanes' 0215-0226 tables and
+  functions, among them `account_deletion_guardian_notices`,
+  `content_retro_checks`, `release_audit_results` and `parent_time_to_value`).
+  Note: the npm package `@supabase/postgres-meta@0.99.0` is not the same build
+  as the v0.99.0 image; it emits `NonNullable<Json>` and
+  `Args: Record<PropertyKey, never>`. Use the image.
+- `verify-analytics-disclosure-postgres.py` passes its 7 checks on the merged
+  chain (all 227 migrations apply on PostgreSQL 17.6).
+- Checks on the merged tree: `typecheck:all`, `lint:all`, `spec:check`,
+  `secrets:check`, the i18n gate, and the backend, dataintel and frontend unit
+  suites passed (frontend includes `assetGate.test.ts`).
+- `database` `npm test`: `check-migrations` (227 files), `check-migration-phase`,
+  the family lifecycle check and the node tests passed. The last step,
+  `railway-migrate.test.mjs` (fake transport, one shell per migration), did not
+  finish: one run was cut by an outer 580 s timeout and a solo rerun on a
+  quiet machine by a 15-minute one, with no output either time. This merge
+  does not touch the runner; its run time on the 227-migration chain is still
+  open.

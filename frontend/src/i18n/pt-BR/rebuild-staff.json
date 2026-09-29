@@ -1297,7 +1297,9 @@
         "readiness": "Como os estudantes estão indo",
         "skillHealth": "Habilidades por domínio",
         "skills": "Habilidades",
-        "trend": "Tendência"
+        "trend": "Tendência",
+        "disclosure": "Escolha de adolescentes e convidados",
+        "delivery": "Entrega de alertas"
       },
       "body": {
         "view": "Visão",
@@ -1408,7 +1410,24 @@
         "never": "Nunca",
         "exportIntro": "O mesmo período e os mesmos números, em arquivo. Sem a atividade da equipe.",
         "noData": "Sem dados",
-        "noChurn": "Nenhum risco de abandono registrado neste período."
+        "noChurn": "Nenhum risco de abandono registrado neste período.",
+        "disclosureIntro": "Adolescentes que viram a escolha de análise. Convidados não enviam eventos.",
+        "disclosureCovered": "Cobertos",
+        "disclosureCoverage": "Cobertura",
+        "againstTarget": "{share} · meta {target}",
+        "teensActive": "Adolescentes ativos",
+        "guestsActive": "Convidados ativos",
+        "measuredWithoutChoice": "Medidos sem escolha",
+        "deliveryIntro": "Alertas que chegaram a uma pessoa nos últimos {n} dias.",
+        "delivered": "Entregues",
+        "deliveryRate": "Taxa de entrega",
+        "deliveryFailed": "Com falha",
+        "deliveryUnconfigured": "Sem canal configurado",
+        "deliveryPending": "Aguardando",
+        "lastDelivery": "Última entrega",
+        "deliveryReason": "Motivo",
+        "noDelivery": "Nenhuma ainda",
+        "noReason": "Nenhum"
       },
       "option": {
         "view_overview": "Visão geral",
@@ -1460,7 +1479,12 @@
         "format_json": "JSON",
         "allEvents": "Todos os eventos",
         "anonymous": "Anônimos",
-        "view_families": "Famílias"
+        "view_families": "Famílias",
+        "delivery_delivered": "Entregue",
+        "delivery_failed": "Com falha",
+        "delivery_unconfigured": "Sem configurar",
+        "status_met": "Na meta",
+        "status_missed": "Abaixo da meta"
       }
     },
     "programme": {

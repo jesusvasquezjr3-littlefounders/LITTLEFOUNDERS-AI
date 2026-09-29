@@ -35,6 +35,7 @@ import {
 import { getAchievementSharingMetrics } from '../services/achievementSharingMetrics.js';
 import { getAccountDeletionMetrics } from '../services/accountDeletionMetrics.js';
 import { getIdentityMetrics } from '../services/identityMetrics.js';
+import { getDisclosureCoverage } from '../services/disclosureCoverage.js';
 import { getOpsJobStatus } from '../services/opsJobs.js';
 import {
   BYPASS_WINDOW_DAYS,
@@ -631,6 +632,21 @@ export function adminRouter(): Router {
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer from 1 to 366');
     const report = await getIdentityMetrics(parsed.data.days);
     if (!report) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load identity metrics');
+    return ok(res, report);
+  });
+
+  /*
+   * Appendix O Part 1.1 (H.1): Teen/Guest Consent-Adjacent Disclosure
+   * Coverage over the last `days`, against its 100% target
+   * (public.analytics_disclosure_coverage). Counts only; guarded by the
+   * '/analytics' view_analytics mount. A malformed answer fails the read.
+   */
+  const ConsentCoverageQuery = z.object({ days: z.coerce.number().int().min(1).max(366).default(30) }).strict();
+  router.get('/analytics/consent-coverage', async (req, res) => {
+    const parsed = ConsentCoverageQuery.safeParse(req.query);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer from 1 to 366');
+    const report = await getDisclosureCoverage(parsed.data.days);
+    if (!report) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load disclosure coverage');
     return ok(res, report);
   });
 

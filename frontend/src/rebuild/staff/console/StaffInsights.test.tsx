@@ -426,6 +426,50 @@ describe('Learning intel S6 with Insights S8 (W2T.3)', () => {
     await waitFor(() => expect(container.querySelector('[data-failure="loadFailed"]')).not.toBeNull());
   });
 
+  it('Overview: the teen and guest disclosure coverage (Appendix O 1.1) against its 100% target, for the chosen window', async () => {
+    const { api, gets } = fakeApi();
+    render(<Frame><StaffIntel api={api} viewer={ANALYST} /></Frame>);
+    const card = (await screen.findByRole('heading', { name: n.heading.disclosure })).closest('section')!;
+    expect(await within(card).findByText('59 of 60')).toBeInTheDocument();
+    expect(within(card).getByText('98.3% · target 100%')).toBeInTheDocument();
+    expect(within(card).getByText(n.option.status_missed)).toBeInTheDocument();
+    expect(gets).toContain('/admin/analytics/consent-coverage?days=30');
+    fireEvent.change(screen.getByLabelText(n.body.period), { target: { value: '90' } });
+    await waitFor(() => expect(gets).toContain('/admin/analytics/consent-coverage?days=90'));
+  });
+
+  it('Overview: a failed disclosure read is its own error, never a guessed 100%', async () => {
+    const { api } = fakeApi((path) => (path.startsWith('/admin/analytics/consent-coverage') ? { ok: true, data: { covered: 'all' } } : undefined));
+    render(<Frame><StaffIntel api={api} viewer={ANALYST} /></Frame>);
+    const card = (await screen.findByRole('heading', { name: n.heading.disclosure })).closest('section')!;
+    await waitFor(() => expect(card.querySelector('[data-failure="loadFailed"]')).not.toBeNull());
+    expect(within(card).queryByText(n.option.status_met)).toBeNull();
+  });
+
+  it('Experiments and alerts: the delivery rate (Appendix O 1.3) against its target, and each alert latest delivery outcome (H.3)', async () => {
+    const { api, gets } = fakeApi();
+    render(<Frame><StaffIntel api={api} viewer={ANALYST} initialView="operations" /></Frame>);
+    const card = (await screen.findByRole('heading', { name: n.heading.delivery })).closest('section')!;
+    expect(await within(card).findByText('3 of 5')).toBeInTheDocument();
+    expect(within(card).getByText('60% · target 100%')).toBeInTheDocument();
+    expect(within(card).getByText(n.option.status_missed)).toBeInTheDocument();
+    expect(gets).toContain('/admin/intel/alerts/delivery?days=30');
+    const table = await screen.findByRole('table', { name: n.heading.alerts });
+    const rows = within(table).getAllByRole('row');
+    expect(rows[1]!.textContent).toContain(n.body.noDelivery);
+    expect(rows[2]!.textContent).toContain(n.option.delivery_failed);
+    expect(rows[2]!.textContent).toContain('HTTP 500');
+  });
+
+  it('Experiments and alerts: nothing fired is no data, never a met target', async () => {
+    const { api } = fakeApi((path) => (path.startsWith('/admin/intel/alerts/delivery')
+      ? { ok: true, data: { ...insight.intel.alertDelivery, triggered: 0, delivered: 0, failed: 0, unconfigured: 0, rate: null } } : undefined));
+    render(<Frame><StaffIntel api={api} viewer={ANALYST} initialView="operations" /></Frame>);
+    const card = (await screen.findByRole('heading', { name: n.heading.delivery })).closest('section')!;
+    expect(await within(card).findByText(n.body.noData)).toBeInTheDocument();
+    expect(within(card).queryByText(n.option.status_met)).toBeNull();
+  });
+
   it('a malformed warehouse answer is an error state, never a guessed zero', async () => {
     const { api } = fakeApi((path) => (route(path) === '/admin/intel/metrics/summary' ? { ok: true, data: { dau: 'many' } } : undefined));
     const { container } = render(<Frame><StaffIntel api={api} viewer={ANALYST} /></Frame>);
