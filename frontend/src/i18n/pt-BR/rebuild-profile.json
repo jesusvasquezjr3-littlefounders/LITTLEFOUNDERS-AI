@@ -114,7 +114,7 @@
     "back": "Voltar",
     "working": "Processando…",
     "wrongPassword": "Essa senha não está correta. Tente novamente.",
-    "reauth": "Para sua segurança, entre de novo primeiro.",
+    "reauth": "Para confirmar que é você, entre de novo primeiro.",
     "signInAgain": "Entrar de novo",
     "failed": "Não conseguimos fazer isso. Tente novamente.",
     "loading": "Carregando…",

@@ -104,9 +104,10 @@ The independence ladder and the decision record (S07.5, D.17/D.18) require six m
 
 The nightly `insights-maintenance.yml` calls `probe_family_engagement_insight(400)` once the migration is applied. Verify on a native PostgreSQL 17 cluster you own with `python database/scripts/verify-money-presentation-postgres.py` (same `LF_PG_*` variables as above).
 
-Three gates run in the unfiltered repo gates, each with self-tests in `npm run tools:test`:
+Four gates run in the unfiltered repo gates, each with self-tests in `npm run tools:test`:
 - `node agent/tools/check-no-unbacked-guarantee.mjs` (D.7): every control a family sees is listed in `docs/operations/block-d-controls.json` with its enforcing SQL and adversarial proof;
 - `node agent/tools/check-family-copy-tone.mjs [--report <path>]` (D.8): the Family Hub and banking tone gate, which prints the Tone-Gate Pass Rate;
+- `node agent/tools/check-social-copy-tone.mjs [--report <path>]` (Appendix J Part 3 Stage 4, GAP-FIX-R4): the same engine over the profile and social-layer copy (also in `spec:check`); see `docs/operations/SOCIAL-COPY-TONE-GATE.md`;
 - `node agent/tools/check-family-engagement-contract.mjs` (D.6): the insight's keys agree across the database, Core and the staff console.
 
 The principles and procedures are in `docs/operations/NO-UNBACKED-GUARANTEE.md` (with the quarterly audit log), `docs/operations/FAMILY-COPY-TONE-GATE.md` and `docs/operations/FAMILY-AGE-REGISTERS.md`.

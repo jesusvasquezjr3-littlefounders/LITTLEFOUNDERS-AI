@@ -30,10 +30,17 @@
 // namespace a surface loads must be in scope; otherwise a lane could add copy
 // the gate never reads.
 //
+// The engine is shared: check-social-copy-tone.mjs (GAP-FIX-R4, Appendix J
+// Part 3 Stage 4) runs it with agent/tools/social-copy-tone.lexicon.json. A
+// scope file may also name `coverage` (namespaces whose groups a surface may
+// only name when in scope; default rebuild-family), `complete` (namespaces
+// whose every group must be listed) and `accessors` ({ namespace, pattern }:
+// the group a surface reads through an accessor such as learnCopy[l].together).
+//
 // It also reports Appendix H's Tone-Gate Pass Rate (Diagnostic): the share of
 // in-scope strings that pass. `--report <path>` writes it as JSON.
 
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -93,7 +100,7 @@ export function findings(text, locale, lexicon) {
 }
 
 /** Pure check over in-memory inputs, so the gate can be tested against known-bad fixtures. */
-export function checkTone({ lexicon, readLocale, surfaceSources = [] }) {
+export function checkTone({ lexicon, readLocale, surfaceSources = [], lexiconPath = LEXICON }) {
   const strings = [];
   const add = (key, locale, text) => strings.push({ key, locale, text });
   for (const locale of LOCALES) {
@@ -131,18 +138,39 @@ export function checkTone({ lexicon, readLocale, surfaceSources = [] }) {
   }
   // A family reads only in-scope copy: no Family Hub or banking surface renders a raw Core message.
   for (const [file, source] of surfaceSources) {
-    if (/\berror\??\.message\b/.test(source)) failures.push(`${file}: renders a raw Core error message; map the code to copy instead`);
+    // Comparing a message (the offline probe) is not rendering it.
+    if (/\berror\??\.message\b(?!\s*[!=]==)/.test(source)) failures.push(`${file}: renders a raw Core error message; map the code to copy instead`);
   }
-  // Coverage: no surface renders a rebuild-family group or an i18next namespace the gate never reads.
-  const groups = Object.keys(readLocale('en-US', 'rebuild-family') ?? {});
-  const scopedGroups = new Set(lexicon.scope.subtrees.filter((s) => s.startsWith('rebuild-family:')).map((s) => s.slice('rebuild-family:'.length).split('.')[0]));
+  // Coverage: no surface renders a group of a covered namespace (scope.coverage, default rebuild-family)
+  // or an i18next namespace the gate never reads; and every group of a `scope.complete` namespace is in
+  // scope, even one no surface names yet.
   const scopedNamespaces = new Set([...lexicon.scope.namespaces, ...lexicon.scope.subtrees.map((s) => s.split(':')[0])]);
+  const groupsOf = (ns) => new Set(lexicon.scope.subtrees.filter((s) => s.startsWith(`${ns}:`)).map((s) => s.slice(ns.length + 1).split('.')[0]));
   const unread = new Map();
-  for (const [file, source] of surfaceSources) {
-    for (const g of groups) if (!scopedGroups.has(g) && new RegExp(`\\b${g}\\b`).test(source)) unread.set(`rebuild-family:${g}`, file);
-    for (const m of source.matchAll(/useTranslation\(\s*\[?\s*['"]([\w-]+)['"]/g)) if (!scopedNamespaces.has(m[1])) unread.set(m[1], file);
+  for (const ns of lexicon.scope.coverage ?? ['rebuild-family']) {
+    if (lexicon.scope.namespaces.includes(ns)) continue;
+    const groups = Object.keys(readLocale('en-US', ns) ?? {});
+    const scopedGroups = groupsOf(ns);
+    for (const [file, source] of surfaceSources) {
+      for (const g of groups) if (!scopedGroups.has(g) && new RegExp(`\\b${g}\\b`).test(source)) unread.set(`${ns}:${g}`, file);
+    }
   }
-  for (const [group, file] of unread) failures.push(`${file}: renders ${group}, which is outside the tone gate's scope; add it to scope in ${LEXICON}`);
+  for (const [file, source] of surfaceSources) {
+    for (const m of source.matchAll(/useTranslation\(\s*\[?\s*['"]([\w-]+)['"]/g)) if (!scopedNamespaces.has(m[1])) unread.set(m[1], file);
+    // A namespace whose group names are ordinary words (rebuild-learn: back, home, lesson) is covered by
+    // the accessor a surface reads it through instead (e.g. learnCopy[locale].together).
+    for (const { namespace, pattern } of lexicon.scope.accessors ?? []) {
+      const scopedGroups = groupsOf(namespace);
+      for (const m of source.matchAll(new RegExp(pattern, 'g'))) if (!scopedGroups.has(m[1])) unread.set(`${namespace}:${m[1]}`, file);
+    }
+  }
+  for (const [group, file] of unread) failures.push(`${file}: renders ${group}, which is outside the tone gate's scope; add it to scope in ${lexiconPath}`);
+  for (const ns of lexicon.scope.complete ?? []) {
+    const listed = groupsOf(ns);
+    for (const g of Object.keys(readLocale('en-US', ns) ?? {})) {
+      if (!listed.has(g)) failures.push(`${ns}:${g} is a copy group outside the tone gate's scope; add it to scope in ${lexiconPath}`);
+    }
+  }
   return { checked: strings.length, passed, failures };
 }
 
@@ -153,20 +181,28 @@ function walk(dir) {
 export const B14_TONE = 'coursegen/src/contentGates/tone.ts';
 
 /** The lexicon file plus B.14's UI phrases as the folded `b14_ui` category. */
-export function loadLexicon(root = ROOT) {
-  const lexicon = JSON.parse(readFileSync(join(root, LEXICON), 'utf8'));
+export function loadLexicon(root = ROOT, lexiconPath = LEXICON) {
+  const lexicon = JSON.parse(readFileSync(join(root, lexiconPath), 'utf8'));
   const b14 = parseB14Lexicon(readFileSync(join(root, B14_TONE), 'utf8'));
   if (LOCALES.some((l) => !(b14[l]?.length > 0))) throw new Error(`${B14_TONE}: could not read TONE_LEXICON for every locale`);
   lexicon.categories.b14_ui = { why: "B.14's UI tone lexicon (Law 2), shared with Forge's system-copy gate.", folded: true, ...b14 };
   return lexicon;
 }
 
-export function liveInputs(root = ROOT) {
-  const lexicon = loadLexicon(root);
+/** A `scope.surfaces` entry is a directory (walked) or a single file. */
+function surfaceFiles(root, entry) {
+  const path = join(root, entry);
+  return statSync(path).isDirectory() ? walk(path) : [path];
+}
+
+/** The live inputs for one scope file: the family scope by default, the social-layer scope for check-social-copy-tone.mjs. */
+export function liveInputs(root = ROOT, lexiconPath = LEXICON) {
+  const lexicon = loadLexicon(root, lexiconPath);
   return {
     lexicon,
+    lexiconPath,
     readLocale: (locale, ns) => { try { return JSON.parse(readFileSync(join(root, 'frontend/src/i18n', locale, `${ns}.json`), 'utf8')); } catch { return null; } },
-    surfaceSources: (lexicon.scope.surfaces ?? []).flatMap((dir) => walk(join(root, dir)))
+    surfaceSources: (lexicon.scope.surfaces ?? []).flatMap((entry) => surfaceFiles(root, entry))
       .filter((f) => /\.(tsx?|mjs)$/.test(f) && !/\.test\.tsx?$/.test(f))
       .map((f) => [f.slice(root.length).replace(/\\/g, '/'), readFileSync(f, 'utf8')]),
   };
