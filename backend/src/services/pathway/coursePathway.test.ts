@@ -426,3 +426,74 @@ describe('cross-surface consistency: the Mentor map and the course path never di
     }
   }, 60_000);
 });
+
+/*
+ * GAP-FIX-R5 (Product 10 Block B "Age-band registers" autonomy column; B.24):
+ * the register decides the levers the path offers. 6-9 picks between two
+ * recommended next steps; 13-17 and adults also get optional depth lessons
+ * ("Explore further") that never count toward progress, badges or unlocks.
+ */
+describe('GAP-FIX-R5: register-driven autonomy on the course path', () => {
+  function withEnrichment(): { built: Built; enrichmentId: string } {
+    const built = staged();
+    const topicId = 'kids/s1/t1';
+    const enrichmentId = `${topicId}#deep`;
+    built.lessons.push({ id: enrichmentId, topic_id: topicId, position: 3, slug: 'deep', title: { 'en-US': 'deep' }, difficulty: 2, xp_total: 10, estimated_minutes: 4, optional_enrichment: true });
+    return { built, enrichmentId };
+  }
+
+  it('the linear tree never counts or unlocks an enrichment lesson', () => {
+    const { built, enrichmentId } = withEnrichment();
+    const tree = linearTree(built, lessonsOf(built, 'kids').filter((id) => !id.endsWith('#deep')));
+    expect(stateOf(tree, enrichmentId)).toBe('locked');
+    const topic = tree.adventures[0]!.sagas[0]!.topics[0]!;
+    expect(topic.state).toBe('completed');
+    expect(tree.adventures[0]!.progress).toEqual({ passed: 6, total: 6, pct: 100 });
+  });
+
+  it('a teen is offered the enrichment lesson once its topic is reached; a child never is', () => {
+    const { built, enrichmentId } = withEnrichment();
+    const teen = applyCoursePathway(linearTree(built), inputs(built, ageOf(15)));
+    expect(teen.pathway.autonomy).toMatchObject({ path: 'open', approach: true, enrichment: true });
+    expect(teen.pathway.enrichment.map((item) => item.lessonId)).toEqual([enrichmentId]);
+    expect(teen.pathway.enrichment[0]).toMatchObject({ reason: 'enrichment', access: 'optional' });
+    expect(stateOf(teen, enrichmentId)).toBe('available');
+    expect(teen.nextLessonId).not.toBe(enrichmentId);
+
+    const child = applyCoursePathway(linearTree(built), inputs(built, ageOf(8)));
+    expect(child.pathway.autonomy).toMatchObject({ path: 'binary', approach: false, enrichment: false });
+    expect(child.pathway.enrichment).toEqual([]);
+    expect(stateOf(child, enrichmentId)).toBe('locked');
+    const projection = projectCoursePath(child, new Map());
+    expect(projection.enrichment).toEqual([]);
+    expect(projection.autonomy.path).toBe('binary');
+  });
+
+  it('a teen completes the whole pathway without ever playing the enrichment lesson', () => {
+    const { built, enrichmentId } = withEnrichment();
+    const { played, tree } = playToCompletion(built, ageOf(15));
+    expect(played).not.toContain(enrichmentId);
+    expect(tree.nextLessonId).toBeNull();
+    // Passing the depth lesson later changes no progress.
+    const before = tree.adventures.map((a) => a.progress);
+    const after = applyCoursePathway(linearTree(built, [...played, enrichmentId]), inputs(built, ageOf(15)));
+    expect(after.adventures.map((a) => a.progress)).toEqual(before);
+    expect(after.pathway.enrichment).toEqual([]);
+  });
+
+  it('6-9: the projection offers at most two next steps, the recommendation first', () => {
+    const wide = buildCourse([{ slug: 'kids', row: { age_tier: 'tier1' }, sagas: [
+      { slug: 's1', topics: [{ slug: 't1', teaches: ['kc.a'] }] },
+      { slug: 's2', topics: [{ slug: 't2', teaches: ['kc.x'] }] },
+      { slug: 's3', topics: [{ slug: 't3', teaches: ['kc.y'] }] },
+    ] }]);
+    const child = applyCoursePathway(linearTree(wide), inputs(wide, ageOf(8)));
+    const teen = applyCoursePathway(linearTree(wide), inputs(wide, ageOf(15)));
+    const pathwayItems = (tree: PathwayCourseTree) => projectCoursePath(tree, new Map()).items.filter((item) => item.access === 'pathway');
+    expect(teen.pathway.frontier.length).toBeGreaterThan(2);
+    const young = pathwayItems(child);
+    expect(young.length).toBeLessThanOrEqual(2);
+    expect(young[0]!.lessonId).toBe(child.pathway.frontier[0]!.lessonId);
+    expect(new Set(young.map((item) => item.topicId)).size).toBe(young.length);
+  });
+});

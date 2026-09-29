@@ -33,6 +33,8 @@
 --   * learning_autonomy_adoption: two more rows, 'approach' (of the approach
 --     choices, the share away from the suggestion) and 'enrichment' (of the
 --     learners offered enrichment in the window, the share who opened one).
+--   * get_completed_course_badges (0186's body, one filter added): a course's
+--     live badge never waits for an optional enrichment lesson.
 
 ALTER TABLE public.lessons ADD COLUMN IF NOT EXISTS optional_enrichment boolean NOT NULL DEFAULT false;
 
@@ -221,3 +223,70 @@ $$;
 
 REVOKE ALL ON FUNCTION public.learning_autonomy_adoption(timestamptz, timestamptz) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.learning_autonomy_adoption(timestamptz, timestamptz) TO service_role;
+
+-- 0186's get_completed_course_badges, unchanged except that optional enrichment is never required for the badge.
+CREATE OR REPLACE FUNCTION public.get_completed_course_badges(
+    p_user_id uuid
+)
+RETURNS TABLE (
+    course_slug text,
+    course_title jsonb,
+    badge_asset text,
+    completed_at timestamptz
+)
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+    WITH live AS (
+        SELECT
+            c.id AS course_id,
+            MAX(COALESCE(lp.completed_at, pc.created_at)) AS completed_at
+        FROM public.courses c
+        JOIN public.adventures a ON a.course_id = c.id
+        JOIN public.sagas s ON s.adventure_id = a.id
+        JOIN public.topics t ON t.saga_id = s.id
+        JOIN public.lessons l ON l.topic_id = t.id
+        LEFT JOIN public.lesson_progress lp
+            ON lp.lesson_id = l.id
+           AND lp.user_id = p_user_id
+           AND lp.passed = true
+        LEFT JOIN public.placement_credits pc
+            ON pc.lesson_id = l.id
+           AND pc.user_id = p_user_id
+        WHERE c.status = 'published'
+          AND c.badge_asset IS NOT NULL
+          AND l.status <> 'archived'
+          AND NOT l.optional_enrichment
+        GROUP BY c.id
+        HAVING COUNT(DISTINCT l.id) > 0
+           AND COUNT(DISTINCT COALESCE(lp.lesson_id, pc.lesson_id)) = COUNT(DISTINCT l.id)
+    ),
+    stored AS (
+        SELECT b.course_id, MIN(b.earned_at) AS completed_at
+        FROM public.course_pathway_badges b
+        JOIN public.courses c ON c.id = b.course_id
+        WHERE b.user_id = p_user_id
+          AND c.status IN ('published', 'archived')
+        GROUP BY b.course_id
+    ),
+    earned AS (
+        SELECT course_id, completed_at FROM live
+        UNION ALL
+        SELECT course_id, completed_at FROM stored
+    )
+    SELECT
+        c.slug,
+        c.title,
+        c.badge_asset,
+        MIN(e.completed_at) AS completed_at
+    FROM earned e
+    JOIN public.courses c ON c.id = e.course_id
+    WHERE c.badge_asset IS NOT NULL
+    GROUP BY c.id, c.slug, c.title, c.badge_asset, c.position
+    ORDER BY MIN(e.completed_at) DESC NULLS LAST, c.position ASC, c.id ASC;
+$$;
+
+REVOKE ALL ON FUNCTION public.get_completed_course_badges(uuid) FROM public, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.get_completed_course_badges(uuid) TO service_role;

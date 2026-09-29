@@ -16,7 +16,8 @@ enforcing boundary (migrations v2_number_line_pae, learning_autonomy_levers):
     unless the run pinned that chain; a segment outside the chains is open;
   - learning_events admits approach_choice, enrichment_offer, enrichment_open;
   - learning_autonomy_adoption reports path, pace, Mentor, approach and
-    enrichment rows.
+    enrichment rows;
+  - get_completed_course_badges never waits for an optional enrichment lesson.
 
 Configuration: LF_PG_PSQL, LF_PG_PORT, LF_PG_USER, LF_PG_KEEP, LF_PG_REPORT
 (see verify-teen-discoverable-postgres.py).
@@ -163,6 +164,21 @@ try:
         VALUES ('jti-r5-chain-00000000001', '{learner}', '{first}', '{version}', 'bar-02', '{{"correct": true, "score": 100}}'::jsonb);""",
              'This step belongs to an approach the run did not choose')
     check('a view or grade receipt inside an approach chain needs the run to have pinned that chain; steps outside the chains stay open')
+
+    # ── the live course badge never waits for optional enrichment ──
+    B = {k: str(uuid.uuid4()) for k in ('course', 'adv', 'saga', 'topic', 'required', 'deep')}
+    run(f"""SET session_replication_role = replica;
+        INSERT INTO courses (id, slug, status, badge_asset) VALUES ('{B['course']}', 'r5-course', 'published', 'course-badges/r5.png');
+        INSERT INTO adventures (id, course_id, position, slug, theme, status) VALUES ('{B['adv']}', '{B['course']}', 1, 'r5-adv', 'archipelago', 'published');
+        INSERT INTO sagas (id, adventure_id, position, slug, status) VALUES ('{B['saga']}', '{B['adv']}', 1, 'r5-saga', 'published');
+        INSERT INTO topics (id, saga_id, position, slug, status) VALUES ('{B['topic']}', '{B['saga']}', 1, 'r5-topic', 'published');
+        INSERT INTO lessons (id, topic_id, position, slug, status) VALUES ('{B['required']}', '{B['topic']}', 1, 'r5-required', 'published');
+        INSERT INTO lessons (id, topic_id, position, slug, status, optional_enrichment) VALUES ('{B['deep']}', '{B['topic']}', 2, 'r5-deep', 'published', true);
+        INSERT INTO lesson_progress (user_id, lesson_id, passed, completed_at) VALUES ('{learner}', '{B['required']}', true, now());""")
+    badges = run(f"SET ROLE service_role; SELECT string_agg(course_slug, ',') FROM get_completed_course_badges('{learner}');")
+    assert badges == 'r5-course', badges
+    assert run(f"SET ROLE service_role; SELECT count(*) FROM get_completed_course_badges('{other}');") == '0'
+    check('get_completed_course_badges awards the live badge once every required lesson is passed; an unplayed enrichment lesson never blocks it')
 
     # ── learning_events and the adoption metric ──
     run(f"""ALTER TABLE learning_events DISABLE TRIGGER USER;
