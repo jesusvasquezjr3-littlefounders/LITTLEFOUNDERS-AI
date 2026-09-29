@@ -779,7 +779,7 @@ export class TutorOrchestrator {
      * clamped to their approved bounds; an unknown key refuses the whole
      * canary (the approved defaults run and no arm is reported).
      */
-    this.canary = applyCanary(session.canary ?? null);
+    this.canary = applyCanary(session.canary ?? null, { isMinor: session.isMinor });
     if (this.canary.refused !== null) {
       console.error(`[tutor] canary ${session.canary?.proposalId ?? '?'} refused for session ${session.sessionId}: ${this.canary.refused}`);
     }

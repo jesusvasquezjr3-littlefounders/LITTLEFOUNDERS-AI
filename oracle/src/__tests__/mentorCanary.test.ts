@@ -22,6 +22,7 @@ const REGISTRY = JSON.parse(
 ) as { tier2Parameters: { id: string; object: string; field: string; bounds: [number, number]; integer: boolean }[] };
 
 const PROPOSAL = 'P-2026-10-01-latency-z';
+const ADULT = { isMinor: false } as const;
 
 const SESSION: SessionContext = {
   sessionId: '11111111-1111-4111-8111-111111111111',
@@ -78,7 +79,7 @@ describe('applyCanary', () => {
   });
 
   it('a canary arm moves exactly the named parameters and reports the arm', () => {
-    const c = applyCanary({ proposalId: PROPOSAL, arm: 'canary', overrides: { 'telemetry.latencyZ': 1.7, 'alliance.renegotiateAfterDeclines': 3 } });
+    const c = applyCanary({ proposalId: PROPOSAL, arm: 'canary', overrides: { 'telemetry.latencyZ': 1.7, 'alliance.renegotiateAfterDeclines': 3 } }, ADULT);
     expect(c.telemetry.latencyZ).toBe(1.7);
     expect(c.alliance.renegotiateAfterDeclines).toBe(3);
     expect({ ...c.telemetry, latencyZ: TELEMETRY_DEFAULTS.latencyZ }).toEqual(TELEMETRY_DEFAULTS);
@@ -93,22 +94,38 @@ describe('applyCanary', () => {
     expect(clampTier2('telemetry.latencyZ', 0.1)).toBe(1);
     expect(clampTier2('selfExplanation.maxPerSession', 40)).toBe(6);
     expect(clampTier2('telemetry.minChannels', 2.6)).toBe(3);
-    const c = applyCanary({ proposalId: PROPOSAL, arm: 'canary', overrides: { 'telemetry.maxCheckIns': 12, 'selfExplanation.minSpacingTurns': -4 } });
+    const c = applyCanary({ proposalId: PROPOSAL, arm: 'canary', overrides: { 'telemetry.maxCheckIns': 12, 'selfExplanation.minSpacingTurns': -4 } }, ADULT);
     expect(c.telemetry.maxCheckIns).toBe(3);
     expect(c.selfExplanation.minSpacingTurns).toBe(2);
   });
 
   it('refuses the WHOLE canary when any key is not a registered Tier 2 parameter', () => {
     for (const key of ['telemetry.windowSize', 'moderation.skip', 'corroborationMinObservations', '__proto__', 'constructor']) {
-      const c = applyCanary({ proposalId: PROPOSAL, arm: 'canary', overrides: { 'telemetry.latencyZ': 1.7, [key]: 1 } });
+      const c = applyCanary({ proposalId: PROPOSAL, arm: 'canary', overrides: { 'telemetry.latencyZ': 1.7, [key]: 1 } }, ADULT);
       expect(c.report, key).toBeNull();
       expect(c.refused, key).toMatch(/not a registered Tier 2 parameter/);
       expect(c.telemetry, key).toEqual(TELEMETRY_DEFAULTS);
     }
   });
 
+  it('refuses any canary, control arm included, for a session in the minor posture (OD-23)', () => {
+    const arms: { proposalId: string; arm: 'canary' | 'control'; overrides: Record<string, number> }[] = [
+      { proposalId: PROPOSAL, arm: 'canary', overrides: { 'telemetry.latencyZ': 1.7 } },
+      { proposalId: PROPOSAL, arm: 'control', overrides: {} },
+    ];
+    for (const canary of arms) {
+      const c = applyCanary(canary, { isMinor: true });
+      expect(c.report, canary.arm).toBeNull();
+      expect(c.applied, canary.arm).toEqual({});
+      expect(c.refused, canary.arm).toMatch(/minor posture/);
+      expect(c.telemetry, canary.arm).toEqual(TELEMETRY_DEFAULTS);
+    }
+    // No posture given: the safe default (minor) applies.
+    expect(applyCanary({ proposalId: PROPOSAL, arm: 'canary', overrides: { 'telemetry.latencyZ': 1.7 } }).report).toBeNull();
+  });
+
   it('the control arm runs the defaults and reports the control arm', () => {
-    const c = applyCanary({ proposalId: PROPOSAL, arm: 'control', overrides: {} });
+    const c = applyCanary({ proposalId: PROPOSAL, arm: 'control', overrides: {} }, ADULT);
     expect(c.telemetry).toEqual(TELEMETRY_DEFAULTS);
     expect(c.report).toEqual({ proposalId: PROPOSAL, arm: 'control' });
   });
@@ -162,5 +179,16 @@ describe('the orchestrator', () => {
     );
     expect('canary' in refused.closeRecord('completed')).toBe(false);
     expect(configsOf(refused).telemetry).toEqual(TELEMETRY_DEFAULTS);
+  });
+
+  it('a minor-posture session runs the defaults and reports no arm, whatever Core sent', () => {
+    const minor = new TutorOrchestrator(
+      { ...SESSION, isMinor: true, canary: { proposalId: PROPOSAL, arm: 'canary', overrides: { 'telemetry.latencyZ': 1.7 } } },
+      1_000,
+      silent,
+    );
+    expect(configsOf(minor).telemetry).toEqual(TELEMETRY_DEFAULTS);
+    expect(configsOf(minor).refused).toMatch(/minor posture/);
+    expect('canary' in minor.closeRecord('completed')).toBe(false);
   });
 });

@@ -13,7 +13,10 @@
  *   - a value outside the registry bounds is CLAMPED to them (and an integer
  *     parameter rounded), so no configuration can push a parameter past what
  *     the leads approved;
- *   - the control arm carries no override and runs the defaults.
+ *   - the control arm carries no override and runs the defaults;
+ *   - a session in the minor posture (`session.isMinor`) REFUSES any canary,
+ *     control arm included (OD-23: experiments are adults only). Core never
+ *     sends one to a minor; this is the second, independent fence.
  *
  * The id / bounds table is generated from the registry
  * (`tier2Parameters.generated.ts`, `npm run canary:check`). This file is
@@ -80,9 +83,11 @@ const defaults = (): Omit<CanaryConfigs, 'report' | 'applied' | 'refused'> => ({
  * The three Tier 2 config objects this session runs with. Never throws; an
  * absent or refused canary is exactly the approved defaults.
  */
-export function applyCanary(canary: MentorCanary | null | undefined): CanaryConfigs {
+export function applyCanary(canary: MentorCanary | null | undefined, posture: { isMinor: boolean } = { isMinor: true }): CanaryConfigs {
   const base = defaults();
   if (!canary) return { ...base, report: null, applied: {}, refused: null };
+  // OD-23: never for a session in the minor posture, whatever Core sent. The default posture is the safe one.
+  if (posture.isMinor) return { ...base, report: null, applied: {}, refused: 'the session is in the minor posture (OD-23: adults only)' };
   const unknown = Object.keys(canary.overrides).filter((key) => !isTier2(key));
   if (unknown.length > 0) {
     return { ...base, report: null, applied: {}, refused: `not a registered Tier 2 parameter: ${unknown.join(', ')}` };

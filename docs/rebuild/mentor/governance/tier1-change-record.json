@@ -371,6 +371,26 @@
       "origin": "human",
       "pedagogicalReviewer": "pending",
       "safetyTrustLead": "pending"
+    },
+    {
+      "component": "governance.model",
+      "hash": "dc9ef88eb0dfb070b3c962b39033f0211e4252156dd5af1d5b017389fc5612b7",
+      "files": 9,
+      "date": "2026-09-29",
+      "change": "C.22 Stage 5, OD-23: Oracle refuses any Mentor canary (control arm included) for a session in the minor posture; applyCanary defaults to the minor posture when none is given. Second fence behind Core's verified-adult eligibility.",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "mentor.non_negotiables",
+      "hash": "29bfb9861a26eb4639891baa36092ecbf8fa71d142f1fb4b81e271d8f059a4e4",
+      "files": 9,
+      "date": "2026-09-29",
+      "change": "C.22 Stage 5, OD-23: Oracle refuses any Mentor canary (control arm included) for a session in the minor posture; applyCanary defaults to the minor posture when none is given. Second fence behind Core's verified-adult eligibility.",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
     }
   ]
 }

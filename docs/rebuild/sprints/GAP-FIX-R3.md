@@ -65,3 +65,65 @@ Tier 1 change-record rows were recorded for `safety.judge`, `mentor.non_negotiab
 - No canary has run. The first real proposal through Stage 5 is the acceptance evidence for C.22.
 - `safety.age_tier_calibration` needs production data. `safety.fracture_closure` is external: its evidence is the release-readiness JSON.
 - Tier 1 sign-offs for the four recorded rows are pending: the Pedagogical Reviewer and the Safety and Trust Lead.
+
+## Checkpoint F3-mentor-finish (lane close)
+
+Sync: `codex/spec-migration-s02` merged into `codex/spec-fix3mentor` with no
+new commits to take (already up to date). No uncommitted work was left in the
+worktree.
+
+### Adversarial pass against the two audited gaps
+
+- **Gap 1 (C.22 Stage 5 canary delivery).** Every mandated piece exists: the
+  manifest, the generated bounds tables and their parity gate, Core's
+  verified-adult assignment with the exposure recorded first, Oracle's closed
+  context field with clamping and whole-canary refusal, the stored arm, the
+  gate that checks delivery, the canary-against-control signal and the reader's
+  sample. One hole was found and closed: Oracle trusted Core alone for OD-23. A
+  context that carried a canary for a minor-posture session would have run it.
+  `applyCanary` now takes the session posture and refuses any canary, control
+  arm included, when `session.isMinor` is true, and it defaults to the minor
+  posture when none is given. Two new Oracle tests pin it (the function and the
+  orchestrator: defaults run, no arm reported). Because `oracle/src/tutor/`
+  files are Tier 1, change-record rows were recorded for `governance.model` and
+  `mentor.non_negotiables` (sign-offs pending).
+- **Gap 2 (C.1 to C.4 metrics).** The Fracture-Closure gate, the coverage RPC
+  and both safety signals are in place and gated; nothing half-built was found.
+- Authorization stays at the server: Core decides eligibility and the arm, and
+  Oracle refuses independently. No rebuilt UI was added beyond staff fixtures
+  and labels, which exist in EN, es-MX and pt-BR.
+
+### Final verification (local)
+
+- Type-check and lint clean in `oracle`, `backend`, `dataintel` and `frontend`.
+- Full unit suites, once each: Oracle 66 files, 1757 tests; Core 148 files,
+  3369 tests (1 skipped, the Postgres-only placement test); dataintel 18 files,
+  226 tests; frontend 272 files, 3126 tests; `database`: `check-migrations`
+  (229 files), `check-migration-phase`, `check-family-lifecycle` and the 48
+  `node --test` tests green (`railway-migrate.test.mjs`, which only spawns the
+  dry-run script, is slow on Windows; see the lane report). No `.boot-test-`
+  process was left.
+- Root: `tools:test` 418 tests (the one red was the Tier 1 change record before
+  the rows above were recorded; `check-mentor-governance.test.mjs` then ran 28 of
+  28 green), `spec:check`, `secrets:check`, `canary:check`,
+  `minor-safeguards:check` and `governance:check` green.
+
+### Lane summary
+
+Built: the C.22 Stage 5 canary delivery path end to end (manifest, Core
+assignment for verified adults only, Oracle application with two independent
+OD-23 fences, stored arm, delivery-checking governance gate, canary-against-
+control signal, reader sample) and the Appendix F section 1.3 safety metrics
+(Fracture-Closure Verification gate for C.2 to C.4, the C.1 calibration
+coverage RPC, and both safety signals on the Mentor-quality dashboard).
+Migrations: `0228_mentor_canary_arm.sql`,
+`0229_mentor_age_calibration_coverage.sql` (renumbered at merge). Nothing is
+accepted or released.
+
+Still open: `database/types/database.ts` not regenerated for the two
+migrations; no canary has run (the first real Tier 2 proposal through Stage 5 is
+C.22's acceptance evidence); `safety.age_tier_calibration` needs production
+data; six Tier 1 change-record rows from this lane await both leads'
+sign-offs; there is no experiment-console screen to create a `mentor.canary`
+experiment (staff use the experiment API). Owner questions are the six listed
+under F3-mentor.
