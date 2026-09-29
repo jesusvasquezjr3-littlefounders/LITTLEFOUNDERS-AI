@@ -15,6 +15,9 @@ import { listMinorRecordTutors } from './tutorAgeRecord.js';
  * Suppression, AI Mentor Fail-Closed, Unconsented Analytics, Age-Screen
  * Bypass, Unauthorized Kid Email Change) are test suites, not data: they are
  * listed with the suite that proves them, never given a fabricated rate.
+ * The database halves run every release through `npm run identity:db-verify`
+ * (database CI, the repo gates and release readiness; GAP-FIX-R4), and
+ * database/scripts/identity-db-verify.test.mjs pins these entries to it.
  *
  * Counts only: no account id reaches the console. A malformed or missing
  * answer fails the whole read (§1.14), never renders zeros.
@@ -85,9 +88,9 @@ export type OnboardingDiscoveryCounts = z.infer<typeof DiscoveryCounts>;
 export const IDENTITY_ADVERSARIAL = [
   { id: 'flagged_session_microphone', requirement: 'A.2', suite: 'backend/src/__tests__/tutor.test.ts (flagged-origin session: microphone POLICY_BLOCKED)' },
   { id: 'flagged_session_fail_closed', requirement: 'A.2', suite: 'backend/src/__tests__/tutor.test.ts (flagged-origin session treated as a minor in every Oracle preflight)' },
-  { id: 'flagged_session_unconsented_analytics', requirement: 'A.2', suite: 'backend/src/__tests__/ageUpgradeChain.test.ts and database/scripts/verify-origin-postgres.py' },
+  { id: 'flagged_session_unconsented_analytics', requirement: 'A.2', suite: 'backend/src/__tests__/ageUpgradeChain.test.ts; npm run identity:db-verify (database/scripts/verify-origin-postgres.py: guard_optional_learning_event over the whole migration chain)' },
   { id: 'age_screen_bypass', requirement: 'A.3', suite: 'backend/src/__tests__/ageScreen.test.ts' },
-  { id: 'kid_email_change_unauthorized', requirement: 'A.6', suite: 'backend/src/__tests__/verificationAdmin.test.ts (KID_EMAIL_FORBIDDEN)' },
+  { id: 'kid_email_change_unauthorized', requirement: 'A.6', suite: 'backend/src/__tests__/verificationAdmin.test.ts (KID_EMAIL_FORBIDDEN); npm run identity:db-verify (database/scripts/verify-kid-email-guard-postgres.py: guard_kid_email on auth.users, the path GoTrue takes through Kong)' },
 ] as const;
 
 function metric(

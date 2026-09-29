@@ -96,6 +96,7 @@ describe('GET /api/v1/badges/:token', () => {
       achievementKind: 'streak',
       achievementLabel: '7-day streak',
       imageUrl: 'http://localhost:4006/files/badges/hash.png',
+      locale: 'en-US',
     });
     expect(JSON.stringify(res.body)).not.toContain('should-never-leave-core');
   });
@@ -165,5 +166,61 @@ describe('GET /api/v1/badges/:token', () => {
     expect(res.body.error.code).toBe('GONE');
     expect(res.headers['cache-control']).toBe('no-store');
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+/*
+ * GAP-FIX-R4 (Bible 02 section 1.2): the unfurl picks its copy by the locale
+ * the label was written in. A legacy row stores none, so Core reads the
+ * sharing Tutor's profile locale, then the child's, and answers one of the
+ * three product locales, en-US otherwise. Only the locale column is read.
+ */
+describe('GET /api/v1/badges/:token locale', () => {
+  const PARENT = '11111111-1111-4111-8111-111111111111';
+  const KID = '22222222-2222-4222-8222-222222222222';
+
+  function stubWithProfiles(profiles: unknown[] | null) {
+    const fetchMock = vi.fn((input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes('/rest/v1/badge_shares?token=eq.')) {
+        return Promise.resolve(jsonResponse(200, [row({ kid_user_id: KID, created_by: PARENT })]));
+      }
+      if (url.includes('/rest/v1/profiles?')) {
+        return Promise.resolve(profiles === null ? new Response('boom', { status: 500 }) : jsonResponse(200, profiles));
+      }
+      return Promise.resolve(new Response(null, { status: 404 }));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    return fetchMock;
+  }
+
+  it("answers the sharing Tutor's locale, reading only the locale column", async () => {
+    const fetchMock = stubWithProfiles([{ user_id: KID, locale: 'pt-BR' }, { user_id: PARENT, locale: 'es-MX' }]);
+    const res = await request(createApp()).get(`/api/v1/badges/${'a'.repeat(32)}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.locale).toBe('es-MX');
+    const profileUrl = fetchMock.mock.calls.map(([input]) => String(input)).find((url) => url.includes('/rest/v1/profiles?'));
+    expect(profileUrl).toContain('select=user_id,locale');
+    expect(profileUrl).not.toContain('display_name');
+    expect(JSON.stringify(res.body)).not.toContain(PARENT);
+    expect(JSON.stringify(res.body)).not.toContain(KID);
+  });
+
+  it("falls back to the child's locale when the Tutor's profile gives none", async () => {
+    stubWithProfiles([{ user_id: KID, locale: 'pt-BR' }]);
+    const res = await request(createApp()).get(`/api/v1/badges/${'a'.repeat(32)}`);
+    expect(res.body.data.locale).toBe('pt-BR');
+  });
+
+  it('answers en-US for a locale outside the three, or when the profile read fails, and still serves the share', async () => {
+    stubWithProfiles([{ user_id: PARENT, locale: 'fr-FR' }]);
+    const unknown = await request(createApp()).get(`/api/v1/badges/${'a'.repeat(32)}`);
+    expect(unknown.status).toBe(200);
+    expect(unknown.body.data.locale).toBe('en-US');
+
+    stubWithProfiles(null);
+    const failed = await request(createApp()).get(`/api/v1/badges/${'a'.repeat(32)}`);
+    expect(failed.status).toBe(200);
+    expect(failed.body.data.locale).toBe('en-US');
   });
 });
