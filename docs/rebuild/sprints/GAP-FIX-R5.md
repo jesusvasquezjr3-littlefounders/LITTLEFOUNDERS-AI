@@ -289,3 +289,101 @@ still covered by the chain's own tests, not by the OD-9 inventory.
 ### Owner questions
 
 None.
+
+## Checkpoint F5-learning
+
+Branch `codex/spec-fix5learning`. Three audited gaps. Each was checked in the
+code first and each was real. Migration numbers below are provisional; the
+orchestrator renumbers at merge.
+
+### Gap 1: number lines and the tax board grade what Appendix P says (Appendix P M2, M3, M20; Parts 4.6, 7.2; B.7 part 3)
+
+Verified first: M2 graded `value === rubric.target` (no tolerance, one item),
+M3 had one fraction and refused decimals, and M20 never asked for the average
+rate.
+
+| SPEC clause | What was built | Where |
+|---|---|---|
+| M2, Part 4.6, Part 7.2 | Rubric `{ target, tolerance_share }`: PAE = abs(value - target) / (max - min), met at or under the tolerance, in whole basis points. Optional ordered-items mode (`items`, response `{ placements }`, key `{ targets, tolerance_share }`): order first (`structure`), then each item's PAE (`tolerance`). Lines bounded 0-10, 0-100, 0-1000 (`v2PayloadScopeProblem`, shared by Core, the browser and Forge). Counting on keeps its exact landing square | `backend/src/services/v2LessonDocument.ts`, `v2VisualScorer.ts` (+ generated browser copy), `v2SegmentFamilies.ts`, `forgeV2Behaviour.ts`, `frontend/src/rebuild/learning/NumberLineBoard.tsx` |
+| M3, Bible 05 §6 | Locale-parsed decimals graded as exact rationals on the snap grid; a compare mode (place both, pick the larger or "same") and an equivalents mode (two forms land on one point); aria-valuetext names the fraction per locale (`fractionName.ts`) | `FractionNumberLineBoard.tsx`, `fractionName.ts`, Core scorer |
+| M20 | `averageBps` in the answer and the key (`average_tolerance_bps`, default 50); `partial` when some of the three values are right; the three-field answer is refused; the board asks the average rate in its graded foot | `v2VisualScorer.ts`, `TaxBracketBoard.tsx` |
+| Receipt diagnostic | `pae` (0-1, four decimals) stored beside the verdict, never a grading input | `database/migrations/0242_v2_number_line_pae.sql` |
+
+Forge: plans 05, 06 and 26 exercise every mode; red-team
+`scope04-number-line-unbounded` blocks on gate 1; the behaviour gate
+enumerates the new modes. The number-line marker label now uses the caption
+token (the 14 px floor).
+
+### Gap 2: the lesson Mentor reacts on every graded board (B.8, OD-15, OD-19, Bible 08 §11)
+
+Verified first: nine graded boards mounted `LessonStageSlot` with no verdict.
+TaxBracket (M20), PlaceValue (M5), RatioTable (M14), PercentGrid (M15),
+GrowthComparison (M19/$8), RunningLedger ($5), SavingsRule (L2), GoalBullet and
+DecisionReasons (B.12) now pass `gradeStageVerdict(result)` (met or a miss
+only; `unavailable` stays idle). `stageVerdict.test.tsx` drives met, review and
+unavailable through every board (acknowledging, encouraging, idle; never
+celebrating) and fails statically when a graded board mounts the slot or
+`BoardShell` without a verdict.
+
+### Gap 3: the per-band autonomy mechanisms, built (Product 10 Block B "Age-band registers" autonomy column; B.24; B.23; Appendix C 1.2)
+
+Verified first: `REGISTERS[band].autonomy` had no reader; there was no
+approach choice and no enrichment track, and the adoption metric counted path,
+pace and Mentor only.
+
+| SPEC clause | What was built | Where |
+|---|---|---|
+| Autonomy column (6-9 binary topic choice, 10-12 approach, 13-17 path/pace plus enrichment) | `AUTONOMY_OFFERS` / `autonomyOffer(register)` read from `REGISTERS[register].autonomy`; Mentor and pace stay open to every band. `/learn/rhythm` lists the caller's own levers; the course path carries `autonomy`; 6-9 gets two next steps (the recommendation, then a different topic) | `backend/src/services/learnerRegisterPolicy.ts` (+ 2 generated copies), `autonomy.ts`, `routes/learnMotivation.ts`, `pathway/coursePathway.ts`, `coursePathProjection.ts` |
+| B.24 "two equally-valid strategies" (10-12 and older) | v2 `approaches`: two or three named, contiguous chains for one skill, each with a graded step, no fading stage, gated steps inside one chain; refused below 10 (Core, browser, Forge). `POST /learn/lessons/:id/v2-runs/:runId/approach` pins the pick once (`pin_v2_run_approach`, service role); grading, views and completion follow the pinned chain only (409 `APPROACH_REQUIRED`, `APPROACH_MISMATCH`, `APPROACH_CHOSEN`); triggers refuse a chain receipt or view outside the pinned chain and any change of a pinned approach | `v2SegmentFamilies.ts`, `v2LessonDocument.ts`, `routes/learn.ts`, `supabaseRest.ts`, `database/migrations/0243_learning_autonomy_levers.sql` |
+| Lesson surface | "Choose how to practice" step after the steps before the chains (equal options, no right answer marked); a failed pin keeps the learner on it with a notice; a resumed run goes to its pinned chain | `frontend/src/rebuild/learning/ApproachChoiceBoard.tsx`, `LessonDocumentView.tsx`, `lessonDocument.ts`, `routes/app/learn/LessonRoute.tsx` |
+| B.24 "optional enrichment content" (13-17, adults) | `lessons.optional_enrichment` (Forge blueprint `optional_enrichment`; a topic keeps one required lesson): outside topic, saga, chapter and course progress, unlock order, pathway completion, badges (Core and `get_completed_course_badges`) and OD-25 offers; served only where the register offers enrichment; the linear engine never serves it. Course screen "Explore further" group with a "never changes your progress" note | `courseTree.ts`, `coursePathway.ts`, `coursegen/src/catalog/schema.ts`, `pipeline/publish.ts`, `CourseView.tsx`, `coursePath.ts` |
+| Appendix C 1.2 Autonomy Mechanism Adoption Rate | Server-only events `approach_choice` (1 = away from the suggested first approach), `enrichment_offer` (once per learner, course and day), `enrichment_open`; `learning_autonomy_adoption` adds `approach` and `enrichment` rows; the staff learning-quality panel shows them | migration, `insights.ts`, `learningQuality.ts`, `LearningQualityPanel.tsx`, `usageShared.ts` |
+| Forge | Plan field `approaches` (label per market, a Copy Budget option); the emitter runs Core's check; plan `44-v2-approach-choice` (bars or a diagram for one comparison skill); red-team `scope05-approach-young` blocks on gate 1 | `coursegen/src/v2/plan.ts`, `emit.ts`, `gates.ts`, `contract.ts`, fixtures |
+
+Copy (en-US, es-MX, pt-BR): "Choose how to practice" / "Elige cómo
+practicar" / "Escolha como praticar", "Start", the pin failure, "Explore
+further" / "Explora más" / "Explore mais" with its note, "Go deeper", and "Or
+pick this one" for a 6-9 learner with one alternative. The register policy
+version stays `2026-09-24.1` (no copy or register reading changed).
+
+### Verification (local)
+
+Backend: `learnV2Approaches.test.ts` (contract refusals: 6-9, ungraded chain,
+shared or unknown segment, one option, duplicate label; the route: malformed,
+unknown, extra field, switched, another learner's run, non-uuid run,
+unauthenticated, completed run, a lesson without approaches; grade and
+complete through the pinned chain only), `coursePathway.test.ts` (4 new:
+enrichment never counts or unlocks, offered to a teen and never to a child,
+never needed to finish, 6-9 two next steps), `motivationS053e.test.ts` (levers
+per register; the mapping pinned), `v2NumberLinesTaxR5.test.ts`, the v2 scorer
+suites, `learnV2Mixed`, `learn.test.ts`. Frontend: `approachChoice.test.tsx`,
+`CourseView.test.tsx` (2 new), `LessonRoute.test.tsx` (the pin reaches Core,
+only the chosen chain grades), `numberLinesR5.test.tsx`,
+`stageVerdict.test.tsx`; the rebuilt learning, preview and learn-route suites
+pass (614). Coursegen: all 60 files (844) including the emit and red-team
+tests; `forge-v2:check` passes Core's contract on the refreshed emitted
+fixture (132 rows, 255 graded segments). Database: `npm test` (74) and
+`verify-learning-r5-postgres.py` on the lane's PostgreSQL 17.6 cluster over
+all migrations (the pae CHECK; the enrichment default; the insert, pin, change
+and completed-run guards; chain receipts and views; the course badge without
+enrichment; the three events and five adoption rows), plus `verify-v2-learning`
+and `verify-learning-r2` over the whole chain. type-check and lint in backend,
+frontend and coursegen; `spec:check`, `secrets:check`, `check-i18n.sh`. No
+browser run (the orchestrator runs the UI audit).
+
+### Remaining
+
+- No real catalog lesson declares approaches or enrichment yet: the fixtures
+  prove the path; authoring them is content work.
+- The adoption baseline, and product and pedagogical review (acceptance).
+- `database/types/database.ts` is not regenerated here (no Supabase CLI run in
+  a lane); Core reads `optional_enrichment` and `approach_id` through its own
+  row types.
+- Both migrations are declared contract and are applied by hand before the
+  Core release that reads them.
+
+### Owner questions
+
+- Mentor choice and the daily pace plan stay open to 6-9 as well (they were
+  the release-1 levers for every band; the register table names only the
+  added mechanism). Conservative default kept; the owner may narrow them.
