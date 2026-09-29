@@ -83,7 +83,8 @@ const AGE_BANDS = { '6-9': 'under_13', '10-12': 'under_13', '13-17': '13_to_17',
  * safeguard follows age, not role): a guest before the age screen, a
  * parent-created child, an independent teen, an adult, a verified Tutor, a
  * staff member. Optional fields: `roles` (default ['universal']),
- * `adminPermissions`, `username`.
+ * `adminPermissions`, `username`, `analyticsDisclosed` (default true) and
+ * `ageScreenError` (Core's age answer unreadable).
  */
 export const SCENARIOS = LANE_SCENARIOS;
 
@@ -128,10 +129,14 @@ function respond(core, path, request, unknownRequests) {
     // E.6: a scenario whose account has a scheduled deletion (`accountDeletion`: { status, scheduledFor }).
     ...(spec.accountDeletion ? { accountDeletion: spec.accountDeletion } : {}),
   });
+  // GAP-FIX-R5: `ageScreenError` makes Core's age answer unreadable (the age question's error state).
+  if (path === '/auth/age-screen' && spec.ageScreenError) return { status: 502, body: { data: null, error: { code: 'INTERNAL', message: 'Synthetic: unreadable' } } };
   if (path === '/auth/age-screen') return ok(spec.ageBand
     ? { required: false, ageBand: AGE_BANDS[spec.ageBand], protectedOrigin: spec.ageBand !== 'adult' && spec.ageBand !== '13-17' }
     : { required: true, ageBand: null, protectedOrigin: false });
-  if (path === '/auth/analytics-preference') return ok({ canManage: spec.ageBand === '13-17', enabled: false, disclosed: true });
+  // GAP-FIX-R5 (H.1): `analyticsDisclosed: false` is a self-registered teen with no analytics choice on file, so the
+  // first-session disclosure sheet and the Settings card's two answers render; every other scenario has decided.
+  if (path === '/auth/analytics-preference') return ok({ canManage: spec.ageBand === '13-17', enabled: false, disclosed: spec.analyticsDisclosed ?? true });
   if (path === '/analytics/tracking-decision') return ok({ excluded: false, degraded: false });
   if (path === '/events') return ok({ accepted: 0 });
   // A scenario may add to (or override) the default own profile and blocked list: `profile`, `blocked` (the profile lane's P1-P3 states).

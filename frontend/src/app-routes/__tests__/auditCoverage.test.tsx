@@ -11,6 +11,7 @@ import { mentorStandaloneRoutes } from '../mentor';
 import { profileShellRoutes } from '../profile';
 import { siteAccountRoutes, siteAuthRoutes, sitePageRoutes, siteStandaloneRoutes } from '../site';
 import { staffShellRoutes } from '../staff';
+import { AGE_SCREEN_PREVIEW_STATES, IDENTITY_PREVIEW_VIEWS } from '@/rebuild/preview/registry/site';
 
 /*
  * GAP-FIX-R4 (Bible 02 §7 item 10, 06 §7, 03 §5; CLAUDE.md: text fit, proportion
@@ -48,7 +49,7 @@ function flatten(routes: RouteObject[], parent = ''): string[] {
 const routes = createRoutesFromChildren(<>{Object.values(FRAGMENTS)}</>);
 const mounted = [...new Set(flatten(routes))];
 
-type AuditState = { id: string; entry: string; path?: string; pushState?: { path: string } };
+type AuditState = { id: string; entry: string; path?: string; pushState?: { path: string }; query?: Record<string, string>; scenario?: string | null };
 function laneStates(): AuditState[] {
   // The lane files resolve fixtures by file URL, so they load in Node itself, as the audit driver loads them.
   const script = "const m = await import('./scripts/audits/lanes/index.mjs'); console.log(JSON.stringify(m.LANE_STATES));";
@@ -81,5 +82,29 @@ describe('every mounted route is in the rebuilt-app audits', () => {
 
   it('keeps each exemption pointing at a route that exists and is not audited', () => {
     for (const route of Object.keys(NO_SCREEN)) expect(mounted).toContain(route);
+  });
+});
+
+/*
+ * GAP-FIX-R5: a route can be audited while a state inside it never is. The
+ * identity preview's verify-minor view, the offline sign-in copy and the age
+ * question's askTutor and error states were mounted and never measured.
+ * Every state a preview screen of the identity lane offers is audited.
+ */
+describe('every identity preview state is in the rebuilt-app audits', () => {
+  const previews = laneStates().filter((state) => state.entry === 'preview');
+  it('audits each identity view', () => {
+    const audited = new Set(previews.filter((state) => state.query?.screen === 'identity').map((state) => state.query!.view));
+    expect(IDENTITY_PREVIEW_VIEWS.filter((view) => !audited.has(view))).toEqual([]);
+  });
+  it('audits each age-screen state, in preview and on a real route', () => {
+    const audited = new Set(previews.filter((state) => state.query?.screen === 'age-screen').map((state) => state.query!.state));
+    expect(AGE_SCREEN_PREVIEW_STATES.filter((state) => !audited.has(state))).toEqual([]);
+    const ids = laneStates().map((state) => state.id);
+    expect(ids).toEqual(expect.arrayContaining(['app:/learn@age-ask-tutor', 'app:/learn@age-error']));
+  });
+  it('audits the teen analytics disclosure sheet and the undecided Settings card', () => {
+    const ids = laneStates().map((state) => state.id);
+    expect(ids).toEqual(expect.arrayContaining(['app:/learn@teen-analytics-disclosure', 'app:/profile/settings@teen-undecided']));
   });
 });
