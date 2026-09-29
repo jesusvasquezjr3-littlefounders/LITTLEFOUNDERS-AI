@@ -10,7 +10,7 @@
  *
  * Self-contained except for the synced segment families module.
  */
-import { placeValueScorerPayload, schemaDiagramScorerPayload, v2FamilyScorerPayload, type PlaceValuePayload, type SchemaDiagramPayload, type V2FamilySegment } from './v2SegmentFamilies.generated';
+import { barModelScorerPayload, placeValueScorerPayload, schemaDiagramScorerPayload, v2FamilyScorerPayload, type BarModelPayload, type PlaceValuePayload, type SchemaDiagramPayload, type V2FamilySegment } from './v2SegmentFamilies.generated';
 
 type Loose = { type: string; payload: Record<string, any> }; // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -28,7 +28,7 @@ export function v2ScorerPayload(segment: Loose): Record<string, unknown> | null 
     case 'math.number-line.fraction.v2': return { maximumWhole: p.maximumWhole, divisions: p.divisions };
     case 'math.fraction-area.v2': return { minimumParts: p.minimumParts, maximumParts: p.maximumParts };
     case 'math.bar-model.structure.v2':
-    case 'math.bar-model.answer.v2': return { whole: p.whole, difference: p.difference };
+    case 'math.bar-model.answer.v2': return barModelScorerPayload(p as BarModelPayload);
     case 'math.schema-diagram.structure.v2':
     case 'math.schema-diagram.slots.v2':
     case 'math.schema-diagram.answer.v2': return schemaDiagramScorerPayload(p as SchemaDiagramPayload);

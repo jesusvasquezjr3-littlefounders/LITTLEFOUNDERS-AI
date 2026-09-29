@@ -84,6 +84,8 @@ export function boardFindings(res) {
     if (board.reservedSeries.length) add('board-series-reserved-hue', board.reservedSeries);
     if (board.dragHit.length) add('board-draggable-hit<64', board.dragHit);
     if (board.dragNoAlternative.length) add('board-draggable-without-tap-alternative', board.dragNoAlternative);
+    if (board.chartLabelCut?.length) add('chart-label-truncated', board.chartLabelCut);
+    if (board.chartLabelSmall?.length) add('chart-label<14px', board.chartLabelSmall);
   }
   if (res.boardMotion?.length) add('board-animation-outside-allowed', res.boardMotion);
   return findings;

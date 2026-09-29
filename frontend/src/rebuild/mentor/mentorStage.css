@@ -16,6 +16,9 @@
 .lf-mentor-stage--compact { block-size: var(--lf-mentor-band-size, 96px); background: var(--primary); }
 
 .lf-mentor-stage-scene { position: absolute; inset: 0; }
+/* GAP-FIX-R3 (08 §11): the lesson's adventure scene as the band's own backdrop, under the scene layer. */
+.lf-mentor-stage-backdrop { position: absolute; inset: 0; }
+.lf-mentor-stage-backdrop .lf-art { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; max-inline-size: none; object-fit: cover; }
 .lf-mentor-stage-live { position: absolute; inset: 0; opacity: 0; }
 .lf-mentor-stage-live[data-visible='true'] { opacity: 1; }
 .lf-mentor-stage-canvas { position: absolute !important; inset: 0; inline-size: 100%; block-size: 100%; overflow: hidden; }

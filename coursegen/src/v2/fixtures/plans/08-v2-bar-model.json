@@ -34,31 +34,65 @@
         "type": "bar-model"
       },
       "payload": {
-        "whole": 50,
-        "difference": 12
+        "quantities": [
+          {
+            "id": "ana-saved",
+            "value": 50
+          },
+          {
+            "id": "ana-more",
+            "value": 12
+          }
+        ]
       },
       "copy": {
         "en-US": {
-          "prompt": "Ana saved 50 coins, 12 more than Leo. Choose the model.",
-          "knownLabel": "Ana",
+          "prompt": "Ana saved 50 coins, 12 more than Leo. Build the bars.",
+          "quantities": [
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "12 more"
+            }
+          ],
           "unknownLabel": "Leo",
           "spokenText": "fifty and twelve more"
         },
         "es-MX": {
-          "prompt": "Ana ahorró 50 monedas, 12 más que Leo. Elige el modelo.",
-          "knownLabel": "Ana",
+          "prompt": "Ana ahorró 50 monedas, 12 más que Leo. Arma las barras.",
+          "quantities": [
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "12 más"
+            }
+          ],
           "unknownLabel": "Leo",
           "spokenText": "cincuenta y doce más"
         },
         "pt-BR": {
-          "prompt": "Ana guardou 50 moedas, 12 a mais que Leo. Escolha o modelo.",
-          "knownLabel": "Ana",
+          "prompt": "Ana guardou 50 moedas, 12 a mais que Leo. Monte as barras.",
+          "quantities": [
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "12 a mais"
+            }
+          ],
           "unknownLabel": "Leo",
           "spokenText": "cinquenta e doze a mais"
         }
       },
       "rubric": {
-        "model": "comparison"
+        "model": "comparison",
+        "slots": {
+          "larger": "ana-saved",
+          "difference": "ana-more",
+          "smaller": "unknown"
+        }
       }
     },
     {
@@ -69,25 +103,54 @@
         "type": "bar-model"
       },
       "payload": {
-        "whole": 50,
-        "difference": 12
+        "quantities": [
+          {
+            "id": "ana-saved",
+            "value": 50
+          },
+          {
+            "id": "ana-more",
+            "value": 12
+          }
+        ]
       },
       "copy": {
         "en-US": {
           "prompt": "How many coins did Leo save?",
-          "knownLabel": "Ana",
+          "quantities": [
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "12 more"
+            }
+          ],
           "unknownLabel": "Leo",
           "spokenText": "fifty minus twelve"
         },
         "es-MX": {
           "prompt": "¿Cuántas monedas ahorró Leo?",
-          "knownLabel": "Ana",
+          "quantities": [
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "12 más"
+            }
+          ],
           "unknownLabel": "Leo",
           "spokenText": "cincuenta menos doce"
         },
         "pt-BR": {
           "prompt": "Quantas moedas Leo guardou?",
-          "knownLabel": "Ana",
+          "quantities": [
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "12 a mais"
+            }
+          ],
           "unknownLabel": "Leo",
           "spokenText": "cinquenta menos doze"
         }

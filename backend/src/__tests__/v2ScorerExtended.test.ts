@@ -134,6 +134,40 @@ describe('first-release logic and money families (Appendix P Part 8)', () => {
     expect(scoreV2Visual('logic.rule-checker.v2', payload, { flipped: ['card-even'] }, { must_flip_ids: payload.cardIds })).toBe('invalid');
   });
 
+  it('L1 with private card roles stores the selection-task code (GAP-FIX-R3; Appendix P L1, Part 4.5)', () => {
+    const payload = { cardIds: ['card-even', 'card-odd', 'card-red', 'card-blue'] };
+    const roles = { 'card-even': 'p', 'card-odd': 'not_p', 'card-red': 'q', 'card-blue': 'not_q' };
+    const rubric = { must_flip_ids: ['card-even', 'card-blue'], roles };
+    const code = (flipped: string[]) => gradeV2Response('logic.rule-checker.v2', payload, { flipped }, rubric).diagnostic;
+    expect(scoreV2Visual('logic.rule-checker.v2', payload, { flipped: ['card-blue', 'card-even'] }, rubric)).toBe('met');
+    expect(code(['card-even', 'card-red'])).toBe('confirmation_bias');
+    expect(code(['card-even'])).toBe('p_only_missing_not_q');
+    expect(code(['card-red'])).toBe('matching');
+    expect(code(['card-even', 'card-odd'])).toBe('not_p_checked');
+    expect(code(['card-odd'])).toBe('not_p_checked');
+    expect(code(['card-even', 'card-odd', 'card-red', 'card-blue'])).toBe('all_cards');
+    // No named pattern: the generic code stays.
+    expect(code(['card-blue'])).toBe('miss');
+    expect(code(['card-blue', 'card-red'])).toBe('partial');
+    expect(code(['card-even', 'card-blue', 'card-red'])).toBe('false_alarm');
+    // Every selection code is an answer error in the structure-vs-answer split.
+    for (const selection of ['confirmation_bias', 'p_only_missing_not_q', 'matching', 'not_p_checked', 'all_cards'] as const) expect(v2DiagnosticFamily(selection)).toBe('answer');
+  });
+
+  it('L1 refuses card roles that disagree with the cards to turn, miss a card, or lack a P or not-Q card', () => {
+    const payload = { cardIds: ['card-even', 'card-odd', 'card-red', 'card-blue'] };
+    const answer = { flipped: ['card-even'] };
+    const bad = [
+      { must_flip_ids: ['card-even', 'card-red'], roles: { 'card-even': 'p', 'card-odd': 'not_p', 'card-red': 'q', 'card-blue': 'not_q' } },
+      { must_flip_ids: ['card-even', 'card-blue'], roles: { 'card-even': 'p', 'card-odd': 'not_p', 'card-blue': 'not_q' } },
+      { must_flip_ids: ['card-even', 'card-blue'], roles: { 'card-even': 'p', 'card-odd': 'not_p', 'card-red': 'q', 'card-blue': 'not_q', 'card-green': 'q' } },
+      { must_flip_ids: ['card-even'], roles: { 'card-even': 'p', 'card-odd': 'not_p', 'card-red': 'q', 'card-blue': 'q' } },
+      { must_flip_ids: ['card-even', 'card-blue'], roles: { 'card-even': 'p', 'card-odd': 'maybe', 'card-red': 'q', 'card-blue': 'not_q' } },
+      { must_flip_ids: ['card-even', 'card-blue'], roles: ['p', 'not_p', 'q', 'not_q'] },
+    ];
+    for (const rubric of bad) expect(scoreV2Visual('logic.rule-checker.v2', payload, answer, rubric), JSON.stringify(rubric)).toBe('invalid');
+  });
+
   it('L5 rejects impossible Euler regions for the declared relation', () => {
     const payload = { relation: 'subset', itemIds: ['item-dog', 'item-cat', 'item-car'] };
     const rubric = { regions: { 'item-dog': 'both', 'item-cat': 'second', 'item-car': 'neither' } };

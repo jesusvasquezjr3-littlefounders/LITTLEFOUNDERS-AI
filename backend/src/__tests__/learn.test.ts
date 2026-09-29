@@ -81,7 +81,7 @@ function v2FractionAreaDocument() {
 const v2FractionAreaKeys = { 'fraction-area-01': { targetNumerator: 1, targetDenominator: 2 } };
 
 function v2BarModelDocument() {
-  const payload = { whole: 50, difference: 12, knownLabel: 'Ana', unknownLabel: 'Leo', spokenText: 'fifty minus twelve' };
+  const payload = { quantities: [{ id: 'together', value: 50, label: 'Together' }, { id: 'ana-more', value: 12, label: '12 more' }], unknownLabel: 'Leo', spokenText: 'fifty minus twelve' };
   return {
     schema_version: 2,
     course_id: 'financial-education', pathway_id: 'financial-10-12', chapter_id: 'compare-savings',
@@ -96,7 +96,9 @@ function v2BarModelDocument() {
   };
 }
 
-const v2BarModelKeys = { 'bar-structure-01': { model: 'comparison' }, 'bar-answer-01': { target: 19 } };
+// M7 (GAP-FIX-R3): "Ana has 12 more than Leo; together 50" — a comparison with its total bracket; Ana's bar carries no number.
+const barBuild = { model: 'comparison', slots: { smaller: 'unknown', larger: null, difference: 'ana-more', total: 'together' } };
+const v2BarModelKeys = { 'bar-structure-01': barBuild, 'bar-answer-01': { target: 19 } };
 
 function v2SchemaDiagramDocument() {
   const payload = { quantities: [{ id: 'earned', value: 24, label: 'Earned' }, { id: 'spent', value: 9, label: 'Spent' }], unknownLabel: 'Left over', spokenText: 'twenty-four minus nine equals fifteen' };
@@ -582,13 +584,19 @@ describe('GET /api/v1/learn/lessons/:id', () => {
     expect(res.body.data.mentor_stage).toEqual({ character: 'rho', scene: 'diorama-b' });
   });
 
-  it('omits the projection when the document does not declare a mentor stage', async () => {
+  it('B.8 (GAP-FIX-R3): projects the Mentor on the lesson adventure scene when the document declares no stage', async () => {
     activateMutableV2AllocationWithStage(undefined);
+    db.tutor_preferences = [{ user_id: userId, character: 'zara', companion: 'liruf', diorama: 'diorama-a', backdrop: 'auto', nickname: null, adaptations: [], updated_at: '2026-09-24T00:00:00.000Z' }];
 
     const res = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
 
     expect(res.status).toBe(200);
-    expect(res.body.data).not.toHaveProperty('mentor_stage');
+    expect(res.body.data.mentor_stage).toEqual({ character: 'zara', scene: (db.lesson_documents[0]!.document as { adventure_scene_id: string }).adventure_scene_id });
+    // An adventure scene outside the approved catalog still stages the Mentor, on the catalog's first scene.
+    db.lesson_documents[0]!.document = { ...(db.lesson_documents[0]!.document as Record<string, unknown>), adventure_scene_id: 'harbor-night' };
+    const off = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
+    expect(off.status).toBe(200);
+    expect(off.body.data.mentor_stage).toEqual({ character: 'zara', scene: 'diorama-a' });
   });
 
   it('omits the projection rather than a wrong character when the preference read fails', async () => {
@@ -901,7 +909,7 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
 
     const structure = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
       segment_id: 'bar-structure-01', run_id: started.body.data.run_id,
-      attempt_token: started.body.data.attempt_tokens['bar-structure-01'], answer: { model: 'comparison' },
+      attempt_token: started.body.data.attempt_tokens['bar-structure-01'], answer: barBuild,
     });
     expect(structure.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
 
@@ -1329,7 +1337,7 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
     expect(started.body.data.attempt_tokens).toEqual({ 'bar-structure-01': expect.any(String), 'bar-answer-01': expect.any(String) });
     expect(JSON.stringify(started.body)).not.toContain('target');
     const structure = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'bar-structure-01', run_id: started.body.data.run_id, attempt_token: started.body.data.attempt_tokens['bar-structure-01'], answer: { model: 'comparison' },
+      segment_id: 'bar-structure-01', run_id: started.body.data.run_id, attempt_token: started.body.data.attempt_tokens['bar-structure-01'], answer: barBuild,
     });
     expect(structure.body.data.verdict).toMatchObject({ correct: true, score: 100 });
     const answer = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({

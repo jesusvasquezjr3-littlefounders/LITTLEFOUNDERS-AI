@@ -4,6 +4,7 @@ import { growthPilotDocument } from '../../learning/GrowthBoard';
 import { learningFixtures } from '../../learning/allocationFixtures';
 import { scoreV2Judgment, scoreV2Visual } from '../../learning/v2VisualScorer.generated';
 import { LessonDocumentView } from '../../learning/LessonDocumentView';
+import { loadAdventureThemeProjection } from '../../learning/lessonDocument';
 import { numberLinePilotDocument } from '../../learning/NumberLineBoard';
 import { sequencePilotDocument } from '../../learning/sequencePilotDocument';
 import { LessonResultView } from '../../learning/LessonResultView';
@@ -128,6 +129,8 @@ export const learnPreviewScreens: PreviewRegistry = {
   invalid: refusal,
   lesson: framed(({ locale, ageBand, theme, params, go }) => <LessonDocumentView key={`${locale}:${ageBand}`} raw={allocationPilotDocument(locale, ageBand)} locale={locale} ageBand={ageBand}
     theme={theme} onBack={() => go('home')} mentorStage={params.get('stage') === '1' ? PREVIEW_MENTOR_STAGE : null}
+    // GAP-FIX-R3 (08 §11): `?adventure=<theme>` draws the adventure scene as the band's backdrop (the compact-stage audit's theme states).
+    adventureTheme={loadAdventureThemeProjection(params.get('adventure'))}
     onGrade={(allocation) => {
       const item = learningFixtures[ageBand].item;
       return verdict(scoreV2Visual('money.allocation.v2', { total: item.total, step: item.step }, allocation, { minimumSave: item.minimumSave }));
@@ -263,8 +266,9 @@ export const learnPreviewScreens: PreviewRegistry = {
   barmodel: framed(({ locale, ageBand, go }) => <LessonDocumentView key={`barmodel:${locale}:${ageBand}`} raw={ageBand === '10-12' ? barModelPilotDocument(locale) : null} locale={locale} ageBand={ageBand} onBack={() => go('home')}
     onGradeBarModel={(answer, segmentId) => {
       const kind = segmentId === 'bar-structure-01' ? 'math.bar-model.structure.v2' : 'math.bar-model.answer.v2';
-      const rubric = segmentId === 'bar-structure-01' ? { model: 'comparison' } : { target: 19 };
-      return verdict(scoreV2Visual(kind, { whole: 50, difference: 12 }, answer, rubric));
+      // GAP-FIX-R3 (M7): the pilot's private key, a comparison with its total ("Ana has 12 more than Leo; together 50").
+      const rubric = segmentId === 'bar-structure-01' ? { model: 'comparison', slots: { smaller: 'unknown', larger: null, difference: 'ana-more', total: 'together' } } : { target: 19 };
+      return verdict(scoreV2Visual(kind, { quantityIds: ['together', 'ana-more'], values: [50, 12] }, answer, rubric));
     }} />),
   schemadiagram: framed(({ locale, ageBand, go }) => <LessonDocumentView key={`schemadiagram:${locale}:${ageBand}`} raw={ageBand === '10-12' ? schemaDiagramPilotDocument(locale) : null} locale={locale} ageBand={ageBand} onBack={() => go('home')}
     onGradeSchemaDiagram={(answer, segmentId) => {

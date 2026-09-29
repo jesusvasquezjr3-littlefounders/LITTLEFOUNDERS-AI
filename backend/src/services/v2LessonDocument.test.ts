@@ -150,7 +150,8 @@ describe('v2 mentor stage contract (OD-19 / S05.2bh)', () => {
     const withoutStage = validateV2LessonForGrading(allocationDocument, allocationKeys, { lessonId: 'pilot-allocation', locale: 'es-MX' });
     expect(withoutStage).not.toBeNull();
     if (!withoutStage) return;
-    expect(projectV2MentorStage(withoutStage, 'zara')).toBeNull();
+    // B.8 (GAP-FIX-R3): without authored metadata the Mentor still stands on the lesson's own adventure scene.
+    expect(projectV2MentorStage(withoutStage, 'zara')).toEqual({ character: 'zara', scene: withoutStage.adventure_scene_id });
   });
 
   it('strips the authored mentor stage from the delivered document and leaves other documents untouched', () => {

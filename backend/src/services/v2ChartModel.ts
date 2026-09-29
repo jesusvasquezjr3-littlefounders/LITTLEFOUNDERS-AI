@@ -319,10 +319,11 @@ export function valueExtent(kind: ChartKind, data: ChartData): [number, number] 
   return [low, high === low ? low + 1 : high];
 }
 
-/** Bible 05 overflow rule: a label longer than the chart can hold is shortened in the drawing; the table and the description keep it whole. */
-export function fitLabel(text: string, room = 14): string {
-  return text.length <= room ? text : `${text.slice(0, room - 1).trimEnd()}…`;
-}
+/*
+ * Bible 05 §5 and 02 D1 (GAP-FIX-R3): a chart never shortens a word label.
+ * Words are HTML over the drawing and wrap; when there is no room the
+ * renderer draws fewer labels and the Show-as-table rows carry every one.
+ */
 
 /** The numbers the accessible description reads, in document order. */
 export function chartFacts(kind: ChartKind, data: ChartData): Array<{ label: string; value: number }> {

@@ -4,6 +4,7 @@ import { checkCopy } from '../design/copyBudget';
 import { familyCopy, familyCopyRoles } from './familyCopy';
 import { LessonDocumentView } from './LessonDocumentView';
 import { loadLessonClientDocument } from './lessonDocument';
+import { loadNarrationAudio } from './AuthenticatedLessonDocument';
 
 /*
  * GAP-FIX-R1 learning: the general ordered-segment player (OD-17, B.7), the
@@ -37,6 +38,38 @@ function mixed(segments: unknown[], capabilities: string[]) {
 const lessonDoc = () => mixed(structuredClone([intro, cards, story]), ['visual.speech-plate.v1', 'visual.rule-cards.v1', 'operation.flip-card.v1', 'visual.story-scene.v1', 'operation.choose-option.v1']);
 
 describe('general v2 player', () => {
+  it('B.18 (GAP-FIX-R3): plays the differentiated narration on request, with the plate as caption; silent with the sound off or no audio', async () => {
+    const played: string[] = [];
+    class FakeAudio { src: string; onended: (() => void) | null = null; constructor(src: string) { this.src = src; played.push(src); } play() { return Promise.resolve(); } pause() {} }
+    vi.stubGlobal('Audio', FakeAudio);
+    const voiced = { ...intro, payload: { ...intro.payload, narration: { mode: 'differentiated', script: 'Today we plan how to save for a kite, one week at a time.', audio_ref: 'intro-01-voice' } } };
+    const doc = mixed([voiced, story], ['visual.speech-plate.v1', 'visual.story-scene.v1', 'operation.choose-option.v1']);
+    const { unmount } = render(<LessonDocumentView raw={doc} locale="en-US" ageBand="6-9" onBack={noop} onGradeAny={async () => ({ verdict: 'met' as const })}
+      narrationAudio={{ 'intro-01': 'https://cdn.littlefounders.test/audio/intro-01.mp3' }} />);
+    // The caption is the plate; nothing plays until the learner asks.
+    expect(screen.getByText('Let us save for a kite together.')).toBeTruthy();
+    expect(played).toEqual([]);
+    fireEvent.click(screen.getByRole('button', { name: 'Listen' }));
+    expect(played).toEqual(['https://cdn.littlefounders.test/audio/intro-01.mp3']);
+    expect(screen.getByRole('button', { name: 'Stop' })).toBeTruthy();
+    unmount();
+    // No resolvable audio: the text-only plate, no control.
+    const { unmount: second } = render(<LessonDocumentView raw={doc} locale="en-US" ageBand="6-9" onBack={noop} onGradeAny={async () => ({ verdict: 'met' as const })} />);
+    expect(screen.queryByRole('button', { name: 'Listen' })).toBeNull();
+    second();
+    // The sound off switch wins.
+    window.localStorage.setItem('lf_sound_muted', '1');
+    render(<LessonDocumentView raw={doc} locale="en-US" ageBand="6-9" onBack={noop} onGradeAny={async () => ({ verdict: 'met' as const })}
+      narrationAudio={{ 'intro-01': 'https://cdn.littlefounders.test/audio/intro-01.mp3' }} />);
+    expect(screen.queryByRole('button', { name: 'Listen' })).toBeNull();
+    window.localStorage.removeItem('lf_sound_muted');
+    vi.unstubAllGlobals();
+    // Core's map is re-checked in the browser: only ids to https or same-origin paths survive.
+    expect(loadNarrationAudio({ 'intro-01': 'https://a.test/x.mp3', 'wrap-01': '/audio/w.mp3', 'bad-01': 'javascript:alert(1)', 'x': 'https://a.test/y.mp3', 'num-01': 3 }))
+      .toEqual({ 'intro-01': 'https://a.test/x.mp3', 'wrap-01': '/audio/w.mp3' });
+    expect(loadNarrationAudio(['https://a.test/x.mp3'])).toEqual({});
+  });
+
   it('parses a mixed document with the new families and refuses an unknown KC', () => {
     expect(loadLessonClientDocument(lessonDoc()).status).toBe('ready');
     const bad = lessonDoc();
@@ -55,8 +88,8 @@ describe('general v2 player', () => {
     expect(screen.getAllByText('Dina asks').length).toBeGreaterThan(0);
     expect(screen.getByText('Let us save for a kite together.')).toBeTruthy();
     expect(screen.getByText('1 of 3')).toBeTruthy();
-    // B.8: the adventure scene band sits in the stage slot, outside the board.
-    expect(document.querySelector('[data-adventure-theme="archipelago"]')).toBeTruthy();
+    // B.8 / 08 §11 (GAP-FIX-R3): the adventure scene is the backdrop of the one Mentor band, outside the board.
+    expect(document.querySelector('.lf-learning-inner > .lf-mentor-band .lf-mentor-stage-backdrop [data-asset-id="scene.archipelago.art"]')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     await waitFor(() => expect(screen.getByText('2 of 3')).toBeTruthy());
     expect(onView).toHaveBeenCalledWith('intro-01', expect.objectContaining({ lesson_id: 'mixed-lesson' }));

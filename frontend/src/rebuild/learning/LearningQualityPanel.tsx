@@ -33,7 +33,12 @@ type Copy = {
   signals: string; signalsPending: string; transfer: (kc: string, practice: string, transfer: string) => string; transferNone: string;
   errorSplit: (structure: number, answer: number) => string; errorNone: string; unaided: string; stage: Record<'concrete' | 'pictorial' | 'abstract', string>;
   detection: (dPrime: string, responses: number) => string; detectionNone: string;
+  /** GAP-FIX-R3 (Appendix P L1, Part 4.5): the rule-card selection codes by name. */
+  selection: string; selectionCode: Record<SelectionCode, string>;
 };
+
+const SELECTION_CODES = ['confirmation_bias', 'p_only_missing_not_q', 'matching', 'not_p_checked', 'all_cards'] as const;
+type SelectionCode = (typeof SELECTION_CODES)[number];
 
 const copy: Record<Locale, Copy> = {
   'en-US': {
@@ -58,6 +63,8 @@ const copy: Record<Locale, Copy> = {
     errorSplit: (s, a) => `${s} setup errors, ${a} number errors on first tries.`, errorNone: 'No first-try errors in this window.',
     unaided: 'First success without help', stage: { concrete: 'Objects', pictorial: 'Pictures', abstract: 'Symbols' },
     detection: (d, n) => `Scam spotting d′ ${d} over ${n} answers.`, detectionNone: 'No scam-spotting answers in this window.',
+    selection: 'Rule-card choices', selectionCode: { confirmation_bias: 'Looked for agreeing cards', p_only_missing_not_q: 'Stopped at the first card',
+      matching: 'Matched the rule words', not_p_checked: 'Turned a card that cannot break it', all_cards: 'Turned every card' },
   },
   'es-MX': {
     title: 'Calidad del aprendizaje', intro: (l, u) => `La práctica debe lograr ${l}-${u}% de aciertos al primer intento por lección.`,
@@ -79,6 +86,8 @@ const copy: Record<Locale, Copy> = {
     errorSplit: (s, a) => `${s} errores de planteamiento, ${a} de números al primer intento.`, errorNone: 'No hay errores al primer intento en este periodo.',
     unaided: 'Primer acierto sin ayuda', stage: { concrete: 'Objetos', pictorial: 'Dibujos', abstract: 'Símbolos' },
     detection: (d, n) => `Detección de estafas d′ ${d} en ${n} respuestas.`, detectionNone: 'No hay respuestas de detección de estafas en este periodo.',
+    selection: 'Elecciones con tarjetas de regla', selectionCode: { confirmation_bias: 'Buscó tarjetas que coinciden', p_only_missing_not_q: 'Se quedó en la primera tarjeta',
+      matching: 'Eligió las palabras de la regla', not_p_checked: 'Volteó una que no la rompe', all_cards: 'Volteó todas las tarjetas' },
     restDays: (k, n) => `Los días de descanso mantuvieron ${k} de ${n} rachas con un día sin práctica.`, restDaysNone: 'No hubo días sin práctica en este periodo.',
     lever: { path: 'Elección de ruta', mentor: 'Elección de Mentor', pace: 'Elección de ritmo' }, adoption: (e, o) => `${e} de ${o} lo eligieron por su cuenta.`, adoptionNone: 'Sin datos en este periodo.',
   },
@@ -102,6 +111,8 @@ const copy: Record<Locale, Copy> = {
     errorSplit: (s, a) => `${s} erros de montagem, ${a} de números na primeira tentativa.`, errorNone: 'Nenhum erro na primeira tentativa neste período.',
     unaided: 'Primeiro acerto sem ajuda', stage: { concrete: 'Objetos', pictorial: 'Figuras', abstract: 'Símbolos' },
     detection: (d, n) => `Detecção de golpes d′ ${d} em ${n} respostas.`, detectionNone: 'Nenhuma resposta de detecção de golpes neste período.',
+    selection: 'Escolhas nas cartas de regra', selectionCode: { confirmation_bias: 'Procurou cartas que concordam', p_only_missing_not_q: 'Parou na primeira carta',
+      matching: 'Escolheu as palavras da regra', not_p_checked: 'Virou uma que não a quebra', all_cards: 'Virou todas as cartas' },
     restDays: (k, n) => `Os dias de descanso mantiveram ${k} de ${n} sequências com um dia sem prática.`, restDaysNone: 'Nenhum dia sem prática neste período.',
     lever: { path: 'Escolha de trilha', mentor: 'Escolha de Mentor', pace: 'Escolha de ritmo' }, adoption: (e, o) => `${e} de ${o} escolheram por conta própria.`, adoptionNone: 'Sem dados neste período.',
   },
@@ -214,6 +225,7 @@ export function LearningQualityPanel({ state, locale, dark, onRetry, onSync, onR
 
 function V2Signals({ signals, t, percent, nameOf }: { signals: NonNullable<LearningQualityReport['v2Signals']>; t: Copy; percent: Intl.NumberFormat; nameOf: (id: string) => string }) {
   const kcs = [...new Set(signals.transfer.map((row) => row.kc))];
+  const selection = signals.errorSplit.byDiagnostic.filter((row) => (SELECTION_CODES as readonly string[]).includes(row.diagnostic));
   const share = (kc: string, role: 'practice' | 'transfer') => {
     const row = signals.transfer.find((item) => item.kc === kc && item.item_role === role);
     return row && row.first_attempts > 0 ? percent.format(row.success_share) : '-';
@@ -222,6 +234,11 @@ function V2Signals({ signals, t, percent, nameOf }: { signals: NonNullable<Learn
     {kcs.length === 0 ? <p data-copy-role="body">{t.transferNone}</p>
       : <ul className="lf-quality-list">{kcs.map((kc) => <li key={kc} className="lf-quality-row"><p data-copy-role="data">{t.transfer(kc, share(kc, 'practice'), share(kc, 'transfer'))}</p></li>)}</ul>}
     <p data-copy-role="body">{signals.errorSplit.structure + signals.errorSplit.answer === 0 ? t.errorNone : t.errorSplit(signals.errorSplit.structure, signals.errorSplit.answer)}</p>
+    {selection.length ? <>
+      <p className="lf-quality-name" data-copy-role="data">{t.selection}</p>
+      <ul className="lf-quality-list">{selection.map((row) => <li key={row.diagnostic} className="lf-quality-row">
+        <p data-copy-role="data">{t.selectionCode[row.diagnostic as SelectionCode]}: {row.errors}</p></li>)}</ul>
+    </> : null}
     <p className="lf-quality-name" data-copy-role="data">{t.unaided}</p>
     <ul className="lf-quality-list">{signals.firstUnaided.map((row) => <li key={row.stage} className="lf-quality-row"><p data-copy-role="data">{t.stage[row.stage]}: {row.learners}</p></li>)}</ul>
     {signals.detection.length === 0 ? <p data-copy-role="body">{t.detectionNone}</p>

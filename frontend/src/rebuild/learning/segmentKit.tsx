@@ -11,6 +11,7 @@ import type { LessonMentorStage } from './lessonDocument';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { parseLocaleNumber } from './v2VisualScorer.generated';
 import { useSingleActiveGrade } from './useSingleActiveGrade';
+import { lessonSoundMuted, playLessonNarration, stopLessonNarration } from './lessonCue';
 import './segmentKit.css';
 
 /*
@@ -38,11 +39,34 @@ interface LessonPlayerContextValue {
   stage: LessonMentorStage | null;
   theme: 'light' | 'dark';
   onHelpUsed?: (segmentId: string, steps: number) => void;
+  /** B.18 (GAP-FIX-R3): Core's resolved narration, segment id -> public URL (prompt audio only). */
+  narrationAudio?: Readonly<Record<string, string>>;
 }
 const LessonPlayerContext = createContext<LessonPlayerContextValue>({ stage: null, theme: 'light' });
 
-export function LessonPlayerProvider({ stage, theme, onHelpUsed, children }: LessonPlayerContextValue & { children: ReactNode }) {
-  return <LessonPlayerContext.Provider value={{ stage, theme, onHelpUsed }}>{children}</LessonPlayerContext.Provider>;
+export function LessonPlayerProvider({ stage, theme, onHelpUsed, narrationAudio, children }: LessonPlayerContextValue & { children: ReactNode }) {
+  return <LessonPlayerContext.Provider value={{ stage, theme, onHelpUsed, narrationAudio }}>{children}</LessonPlayerContext.Provider>;
+}
+
+/**
+ * B.8 / B.18 (GAP-FIX-R3): the Mentor's differentiated narration for one
+ * segment. "Narration explains, text labels": the plate on screen stays the
+ * caption, and the learner presses Listen to hear the fuller script. Nothing
+ * renders when Core resolved no audio (the text-only fallback) or when the
+ * sound off switch is on; it never autoplays; leaving the segment stops it.
+ */
+export function NarrationControl({ segmentId, locale }: { segmentId: string; locale: Locale }) {
+  const { narrationAudio } = useContext(LessonPlayerContext);
+  const src = narrationAudio?.[segmentId];
+  const [playing, setPlaying] = useState(false);
+  useEffect(() => () => stopLessonNarration(), [segmentId]);
+  if (!src || lessonSoundMuted()) return null;
+  const t = copy[locale];
+  const toggle = () => {
+    if (playing) { stopLessonNarration(); setPlaying(false); return; }
+    setPlaying(playLessonNarration(src, () => setPlaying(false)));
+  };
+  return <Button variant="sky" size="sm" className="lf-narration-control" onClick={toggle}>{playing ? t.stopListening : t.listen}</Button>;
 }
 
 /** The learner's own Mentor for this lesson (Core's projection), or null in a preview. */

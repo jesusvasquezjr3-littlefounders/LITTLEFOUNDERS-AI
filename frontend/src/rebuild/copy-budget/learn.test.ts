@@ -13,6 +13,7 @@ const flat: Record<string, CopyRole> = { lessonInvalid: 'heading', back: 'action
  * counter, and the B.4 update-required screen.
  */
 const player: Record<string, CopyRole> = {
+  listen: 'action', stopListening: 'action',
   asks: 'body', help: 'action', moreHelp: 'action', closeHelp: 'action', readsAs: 'body', notNumber: 'body', check: 'action', continue: 'action',
   met: 'body', review: 'body', reviewStructure: 'body', reviewAnswer: 'body', unavailable: 'body', step: 'data', progress: 'body',
   viewFailed: 'body', updateTitle: 'heading', updateBody: 'body', reload: 'action', moveTo: 'action', mentorHeading: 'heading',
@@ -48,7 +49,7 @@ const course: Record<string, CopyRole> = {
   earlyTitle: 'heading', earlyAsk: 'body', earlyYes: 'action', earlyDone: 'body', masteryTitle: 'heading', masteryAsk: 'body',
   masteryYes: 'action', notNow: 'action', masteryDone: 'body', saveFailed: 'body',
   // W3L.1 (OD-25): what each offer means, the skills it rests on, and the recorded "no".
-  earlyMeans: 'body', earlyShowed: 'body', masteryMeans: 'body', masteryNo: 'action', masteryDeclined: 'body',
+  earlyMeans: 'body', earlyShowed: 'body', earlyMoreOne: 'action', earlyMoreOther: 'action', earlySkillsTitle: 'heading', earlySkillsClose: 'action', masteryMeans: 'body', masteryNo: 'action', masteryDeclined: 'body',
 };
 /*
  * W2L.2: the course world (L3, TerritoryMapView.tsx) and the placement flow

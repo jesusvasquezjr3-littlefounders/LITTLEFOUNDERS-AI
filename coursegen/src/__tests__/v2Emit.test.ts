@@ -109,10 +109,10 @@ describe('the v2 red team (Appendix C DoD "Gated")', () => {
 describe('the emitter refuses structural defects before any gate', () => {
   it('refuses a learner-visible string left in the locale-neutral payload', () => {
     const plan = clone(planById.get('v2-bar-model')!);
-    plan.segments[0]!.payload.knownLabel = 'Ana';
+    plan.segments[0]!.payload.unknownLabel = 'Leo';
     const result = emitV2Lesson(plan, { versionId: 'forge-test' });
     expect(result.ok).toBe(false);
-    expect(result.problems.some((p) => p.gate === 1 && /knownLabel/.test(p.message))).toBe(true);
+    expect(result.problems.some((p) => p.gate === 1 && /unknownLabel/.test(p.message))).toBe(true);
   });
 
   it('refuses markets that fill different copy fields', () => {
@@ -180,6 +180,17 @@ describe('the v2 content gates', () => {
     unstaged.segments = unstaged.segments.filter((segment) => segment.type !== 'voice.mentor-episode.v2');
     expect(analyzeV2Plan(unstaged).findings.some((f) => f.gate === 15 && f.severity === 'block')).toBe(true);
     expect(emitV2Lesson(staged, { versionId: 'forge-test' }).ok).toBe(true);
+  });
+
+  it('B.8 / OD-19 (GAP-FIX-R3): blocks a document whose Mentor stage has no approved scene (gate 15)', () => {
+    const base = { locale: 'en-US', age_band: '10-12', title: 'Fine', segments: [] };
+    const stageProblems = (document: Record<string, unknown>) => runV2DocumentGates(document as never).problems.filter((p) => p.gate === 15);
+    expect(stageProblems({ ...base, adventure_scene_id: 'diorama-b' })).toEqual([]);
+    expect(stageProblems({ ...base, adventure_scene_id: 'harbor-night', mentor_stage: { character: 'rho', scene: 'diorama-a' } })).toEqual([]);
+    expect(stageProblems({ ...base, adventure_scene_id: 'harbor-night' })[0]?.message).toMatch(/no approved scene/);
+    expect(stageProblems({ ...base, adventure_scene_id: 'diorama-a', mentor_stage: { character: 'rho', scene: 'moon' } })).toHaveLength(1);
+    // Every committed plan stages its Mentor.
+    for (const plan of planById.values()) expect(emitV2Lesson(clone(plan), { versionId: 'forge-test' }).problems.filter((p) => p.gate === 15)).toEqual([]);
   });
 
   it('block local-currency amounts in a lesson declared market-neutral', () => {

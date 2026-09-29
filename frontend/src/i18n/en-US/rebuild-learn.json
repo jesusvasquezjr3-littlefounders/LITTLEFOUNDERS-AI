@@ -117,6 +117,10 @@
     "earlyAsk": "You mastered what {chapter} needs. Open it early?",
     "earlyMeans": "It is from the next stage. It stays extra, at your pace.",
     "earlyShowed": "You showed",
+    "earlyMoreOne": "and {n} more",
+    "earlyMoreOther": "and {n} more",
+    "earlySkillsTitle": "What you showed",
+    "earlySkillsClose": "Close",
     "earlyYes": "Yes, open it",
     "earlyDone": "Open. It is an extra, at your pace.",
     "masteryTitle": "Shown with your Mentor",
@@ -266,6 +270,8 @@
     "reported": "Thanks. Our safety team will look."
   },
   "player": {
+    "listen": "Listen",
+    "stopListening": "Stop",
     "asks": "{name} asks",
     "help": "Help",
     "moreHelp": "More help",

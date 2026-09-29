@@ -79,18 +79,22 @@ export function scoreV2Visual(kind: V2VisualKind, payload: unknown, response: un
       return response.n * rubric.targetDenominator === rubric.targetNumerator * response.d ? 'met' : 'review';
     }
     case 'math.bar-model.structure.v2': {
-      if (!fields(payload, ['whole', 'difference']) || !whole(payload.whole) || !whole(payload.difference) || payload.whole <= payload.difference
-        || !fields(response, ['model']) || (response.model !== 'comparison' && response.model !== 'part-whole')) return 'invalid';
+      // M7 (GAP-FIX-R3): the learner builds the bars from the text; the model and every slot are graded.
+      const quantities = barQuantities(payload);
+      if (!quantities || !fields(response, ['model', 'slots']) || !barBuild(response.model, response.slots, quantities.ids)) return 'invalid';
       if (rubric === undefined) return 'valid';
-      if (!fields(rubric, ['model']) || rubric.model !== 'comparison') return 'invalid';
-      return response.model === rubric.model ? 'met' : 'review';
+      if (!fields(rubric, ['model', 'slots']) || !barBuild(rubric.model, rubric.slots, quantities.ids)
+        || barModelUnknown(rubric.model as string, rubric.slots as BarSlots, quantities) === null) return 'invalid';
+      return sameBarBuild(response.model as string, response.slots as BarSlots, rubric.model as string, rubric.slots as BarSlots) ? 'met' : 'review';
     }
     case 'math.bar-model.answer.v2': {
-      if (!fields(payload, ['whole', 'difference']) || !whole(payload.whole) || !whole(payload.difference) || payload.whole <= payload.difference
-        || !fields(response, ['value']) || typeof response.value !== 'string' || !/^(0|[1-9]\d*)$/.test(response.value)) return 'invalid';
-      const value = Number(response.value); if (!whole(value) || value > payload.whole) return 'invalid';
+      const quantities = barQuantities(payload);
+      if (!quantities || !fields(response, ['value']) || typeof response.value !== 'string' || !/^(0|[1-9]\d*)$/.test(response.value)) return 'invalid';
+      // Every unknown a two- or three-quantity bar model can hold is at most twice their sum (the total of two bars).
+      const bound = 2 * quantities.values.reduce((sum, value) => sum + value, 0);
+      const value = Number(response.value); if (!whole(value) || value > bound) return 'invalid';
       if (rubric === undefined) return 'valid';
-      if (!fields(rubric, ['target']) || !whole(rubric.target) || rubric.target < 0 || rubric.target > payload.whole) return 'invalid';
+      if (!fields(rubric, ['target']) || !whole(rubric.target) || rubric.target < 1 || rubric.target > bound) return 'invalid';
       return value === rubric.target ? 'met' : 'review';
     }
     case 'math.schema-diagram.structure.v2': {
@@ -291,11 +295,24 @@ export function sameAnswer(given: string, expected: string): boolean {
 }
 
 /**
+ * L1 selection-task codes (GAP-FIX-R3; Appendix P L1, Part 4.5), read from
+ * the private card roles against "if P then Q" (the right set is P and not-Q):
+ *   confirmation_bias      {P, Q}: looked for cases that agree with the rule;
+ *   p_only_missing_not_q   {P}: checked the rule's case, missed the not-Q card;
+ *   matching               {Q}: picked the card that matches the rule's words;
+ *   not_p_checked          any other set with not-P (e.g. {P, not-P}): turned a card that cannot break the rule;
+ *   all_cards              every card: no selection.
+ * Any other wrong set keeps the generic partial / miss / false_alarm.
+ */
+export const V2_SELECTION_CODES = ['confirmation_bias', 'p_only_missing_not_q', 'matching', 'not_p_checked', 'all_cards'] as const;
+
+/**
  * Appendix P Part 4.5: a closed diagnostic vocabulary stored beside each
  * verdict. `structure`, `path` and `bin` are structure errors (the learner
  * built the wrong model); every other non-`none` code is an answer error.
  */
-export const V2_DIAGNOSTIC_CODES = ['none', 'structure', 'value', 'partial', 'miss', 'false_alarm', 'path', 'outcome', 'bin', 'reason', 'tolerance', 'count_from_zero'] as const;
+export const V2_DIAGNOSTIC_CODES = ['none', 'structure', 'value', 'partial', 'miss', 'false_alarm', 'path', 'outcome', 'bin', 'reason', 'tolerance', 'count_from_zero',
+  ...V2_SELECTION_CODES] as const;
 export type V2Diagnostic = (typeof V2_DIAGNOSTIC_CODES)[number];
 export function v2DiagnosticFamily(code: V2Diagnostic): 'structure' | 'answer' | null {
   return code === 'none' ? null : code === 'structure' || code === 'path' || code === 'bin' ? 'structure' : 'answer';
@@ -337,6 +354,35 @@ function strings(value: unknown, min: number, max: number): value is string[] {
 function onGrid(value: unknown, minimum: number, maximum: number, step: number): value is number {
   return whole(value) && whole(minimum) && whole(maximum) && whole(step) && step > 0 && value >= minimum && value <= maximum && (value - minimum) % step === 0;
 }
+/**
+ * The rule-checker's private roles, when the rubric carries them: every card
+ * has exactly one role, the rule has a P and a not-Q card, and the cards that
+ * must be turned are exactly the P and not-Q cards. Anything else is a
+ * malformed rubric. `null` = an older rubric without roles (generic codes).
+ */
+function ruleCardRoles(rubric: Record<string, unknown>, cards: string[], need: Set<string>): Record<string, string> | null | 'invalid' {
+  if (rubric.roles === undefined) return null;
+  const roles = rubric.roles;
+  if (!record(roles) || Object.keys(roles).length !== cards.length || cards.some((card) => !['p', 'not_p', 'q', 'not_q'].includes(roles[card] as string))) return 'invalid';
+  const values = cards.map((card) => roles[card] as string);
+  if (!values.includes('p') || !values.includes('not_q')) return 'invalid';
+  const breakers = cards.filter((card) => roles[card] === 'p' || roles[card] === 'not_q');
+  if (breakers.length !== need.size || breakers.some((card) => !need.has(card))) return 'invalid';
+  return roles as Record<string, string>;
+}
+
+/** Maps a wrong flipped set, by role, to its closed selection-task code (null: no named pattern). */
+export function selectionDiagnostic(flippedRoles: string[], everyCard: boolean): (typeof V2_SELECTION_CODES)[number] | null {
+  if (everyCard) return 'all_cards';
+  const set = new Set(flippedRoles);
+  const only = (...wanted: string[]) => set.size === wanted.length && wanted.every((role) => set.has(role));
+  if (only('p', 'q')) return 'confirmation_bias';
+  if (only('p')) return 'p_only_missing_not_q';
+  if (only('q')) return 'matching';
+  if (set.has('not_p')) return 'not_p_checked';
+  return null;
+}
+
 const grade = (verdict: V2VisualVerdict, diagnostic: V2Diagnostic = verdict === 'met' ? 'none' : 'value'): V2Grade => ({ verdict, diagnostic });
 const INVALID: V2Grade = { verdict: 'invalid', diagnostic: 'none' };
 
@@ -695,6 +741,93 @@ function builtFlowGrade(payload: Record<string, unknown>, response: unknown, rub
 }
 
 /* M8 schema diagrams (GAP-FIX-R2): four schemas, three slots each. */
+/* M7 bar models (GAP-FIX-R3): the built structure, its consistency and its unknown. */
+export type BarSlots = Record<string, string | null>;
+const BAR_SLOT_NAMES: Readonly<Record<string, { required: readonly string[]; optional: readonly string[] }>> = {
+  'part-whole': { required: ['part-a', 'part-b', 'whole'], optional: ['part-c'] },
+  comparison: { required: ['smaller', 'larger', 'difference'], optional: ['total'] },
+};
+/**
+ * The model's length relations, each sum(coefficient x slot) = 0. A part the
+ * build left out drops its term; a comparison without its total bracket drops
+ * the relations that name the total.
+ */
+const BAR_RELATIONS: Readonly<Record<string, ReadonlyArray<Readonly<Record<string, number>>>>> = {
+  'part-whole': [{ whole: 1, 'part-a': -1, 'part-b': -1, 'part-c': -1 }],
+  comparison: [{ larger: 1, smaller: -1, difference: -1 }, { total: 1, larger: -1, smaller: -1 }, { total: 1, smaller: -2, difference: -1 }, { total: 1, larger: -2, difference: 1 }],
+};
+function barQuantities(payload: unknown): { ids: string[]; values: number[] } | null {
+  if (!fields(payload, ['quantityIds', 'values']) || !strings(payload.quantityIds, 2, 3) || !Array.isArray(payload.values) || payload.values.length !== payload.quantityIds.length
+    || payload.values.some((value) => !whole(value) || value < 1 || value > 100_000) || payload.quantityIds.includes('unknown')
+    || new Set(payload.quantityIds).size !== payload.quantityIds.length) return null;
+  return { ids: payload.quantityIds as string[], values: payload.values as number[] };
+}
+/**
+ * A complete build: the model's required slots (and any optional one the
+ * learner added), each quantity placed exactly once and the unknown exactly
+ * once. Only a comparison bar may carry no number (null).
+ */
+export function barBuild(model: unknown, slots: unknown, quantityIds: readonly string[]): boolean {
+  if (typeof model !== 'string' || !Object.hasOwn(BAR_SLOT_NAMES, model) || !record(slots)) return false;
+  const names = BAR_SLOT_NAMES[model]!;
+  const keys = Object.keys(slots);
+  if (names.required.some((name) => !keys.includes(name)) || keys.some((key) => !names.required.includes(key) && !names.optional.includes(key))) return false;
+  for (const key of keys) {
+    const value = slots[key];
+    if (value === null) { if (model !== 'comparison' || !names.required.includes(key)) return false; continue; }
+    if (typeof value !== 'string' || (value !== 'unknown' && !quantityIds.includes(value))) return false;
+  }
+  const placed = Object.values(slots);
+  return placed.filter((value) => value === 'unknown').length === 1 && quantityIds.every((quantityId) => placed.filter((value) => value === quantityId).length === 1);
+}
+/**
+ * The lengths a build implies, from the quantities it names: every slot the
+ * relations can determine, each a positive whole number, with every relation
+ * whose slots are all known holding. Null when the build contradicts itself
+ * (a part longer than its whole, a smaller bar longer than the larger one).
+ */
+export function solveBarModel(model: string, slots: BarSlots, quantities: { ids: readonly string[]; values: readonly number[] }): Record<string, number> | null {
+  const relations = BAR_RELATIONS[model];
+  if (!relations) return null;
+  const known: Record<string, number> = {};
+  for (const [slot, value] of Object.entries(slots)) {
+    const index = value === null || value === 'unknown' ? -1 : quantities.ids.indexOf(value);
+    if (index >= 0) known[slot] = quantities.values[index]!;
+  }
+  const present = new Set(Object.keys(slots));
+  const active = relations.filter((relation) => model !== 'comparison' || Object.keys(relation).every((slot) => present.has(slot)))
+    .map((relation) => Object.fromEntries(Object.entries(relation).filter(([slot]) => present.has(slot))));
+  for (let progress = true; progress;) {
+    progress = false;
+    for (const relation of active) {
+      const open = Object.keys(relation).filter((slot) => known[slot] === undefined);
+      const sum = Object.entries(relation).reduce((total, [slot, coefficient]) => total + (known[slot] === undefined ? 0 : coefficient * known[slot]!), 0);
+      if (open.length === 0) { if (sum !== 0) return null; continue; }
+      if (open.length !== 1) continue;
+      const value = -sum / relation[open[0]!]!;
+      if (!whole(value) || value < 1) return null;
+      known[open[0]!] = value; progress = true;
+    }
+  }
+  return known;
+}
+/** The unknown's value in a build, or null when the build cannot determine it consistently. */
+export function barModelUnknown(model: string, slots: BarSlots, quantities: { ids: readonly string[]; values: readonly number[] }): number | null {
+  const unknownSlot = Object.keys(slots).find((slot) => slots[slot] === 'unknown');
+  const solved = unknownSlot ? solveBarModel(model, slots, quantities) : null;
+  return solved && unknownSlot && solved[unknownSlot] !== undefined ? solved[unknownSlot]! : null;
+}
+/** The same model and the same slots; a part-whole's parts compare as a set (their order on the bar is free). */
+function sameBarBuild(model: string, slots: BarSlots, keyModel: string, key: BarSlots): boolean {
+  if (model !== keyModel) return false;
+  if (model === 'part-whole') {
+    const parts = (build: BarSlots) => ['part-a', 'part-b', 'part-c'].filter((slot) => Object.hasOwn(build, slot)).map((slot) => build[slot]).sort().join('|');
+    return slots.whole === key.whole && parts(slots) === parts(key);
+  }
+  const keys = new Set([...Object.keys(slots), ...Object.keys(key)]);
+  return [...keys].every((slot) => Object.hasOwn(slots, slot) && Object.hasOwn(key, slot) && slots[slot] === key[slot]);
+}
+
 const SCHEMAS: readonly string[] = ['change', 'group', 'compare', 'ratio'];
 const SCHEMA_SLOT_NAMES: Readonly<Record<string, readonly string[]>> = {
   change: ['start', 'change', 'result'], group: ['part', 'other', 'total'], compare: ['larger', 'smaller', 'difference'], ratio: ['rate', 'count', 'total'],
@@ -864,12 +997,16 @@ function scoreV2ExtendedDetailed(kind: V2VisualKind, payload: unknown, response:
         || response.flipped.some((card) => !(payload.cardIds as string[]).includes(card))) return INVALID;
       if (rubric === undefined) return grade('valid');
       const cards = payload.cardIds as string[];
-      if (!fields(rubric, ['must_flip_ids']) || !strings(rubric.must_flip_ids, 1, cards.length - 1) || rubric.must_flip_ids.some((card) => !cards.includes(card))) return INVALID;
+      if (!fields(rubric, record(rubric) && rubric.roles !== undefined ? ['must_flip_ids', 'roles'] : ['must_flip_ids']) || !strings(rubric.must_flip_ids, 1, cards.length - 1) || rubric.must_flip_ids.some((card) => !cards.includes(card))) return INVALID;
       const need = new Set(rubric.must_flip_ids);
+      const roles = ruleCardRoles(rubric, cards, need);
+      if (roles === 'invalid') return INVALID;
       const flipped = new Set(response.flipped as string[]);
       const missing = [...need].some((card) => !flipped.has(card));
       const extra = [...flipped].some((card) => !need.has(card));
-      return !missing && !extra ? grade('met') : grade('review', missing && extra ? 'partial' : missing ? 'miss' : 'false_alarm');
+      if (!missing && !extra) return grade('met');
+      const selection = roles ? selectionDiagnostic([...flipped].map((card) => roles[card]!), cards.length === flipped.size) : null;
+      return grade('review', selection ?? (missing && extra ? 'partial' : missing ? 'miss' : 'false_alarm'));
     }
     case 'logic.euler.v2': {
       if (!fields(payload, ['relation', 'itemIds']) || !strings(payload.itemIds, 2, 6) || !fields(response, ['placements']) || !record(response.placements)) return INVALID;

@@ -4,7 +4,7 @@ import { AnswerChoice, Button, ChoiceChip, RadioGroup, SegmentedControl, Stepper
 import { familyCopy } from './familyCopy';
 import type { LessonClientDocument, LessonClientSegment } from './lessonDocument';
 import type { LessonSequenceControl } from './lessonSequence';
-import { BoardShell, GradedFoot, MoveToChoice, NumberAnswer, useLessonMentor, useSegmentGrade, ViewedFoot, type OnGradeSegment } from './segmentKit';
+import { BoardShell, GradedFoot, MoveToChoice, NarrationControl, NumberAnswer, useLessonMentor, useSegmentGrade, ViewedFoot, type OnGradeSegment } from './segmentKit';
 import './familyBoards.css';
 import { TeachingChart } from './charts/TeachingChart';
 import { FlowchartBuildBoard } from './buildBoards';
@@ -300,6 +300,7 @@ export function MentorTurnBoard({ document, segment, onBack, sequence }: BoardPr
       {mentor ? <span className="lf-speech-plate-name" data-copy-role="data">{mentor.name}</span> : null}
       <p data-copy-role="mentor">{segment.payload.line}</p>
     </div>
+    <NarrationControl segmentId={segment.id} locale={document.locale} />
   </BoardShell>;
 }
 
@@ -320,6 +321,7 @@ export function MentorEpisodeBoard({ document, segment, onBack, sequence }: Boar
         </li>)}
       </ol>
       {shown < lines.length ? <Button variant="sky" onClick={() => setShown((value) => value + 1)}>{t.next}</Button> : null}
+      <NarrationControl segmentId={segment.id} locale={document.locale} />
     </section>
   </BoardShell>;
 }

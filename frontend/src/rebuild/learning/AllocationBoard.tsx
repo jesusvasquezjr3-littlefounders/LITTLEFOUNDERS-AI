@@ -11,6 +11,7 @@ import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { TeachingChartBoard } from './TeachingChartBoard';
 import { AllocationDonutVisual, AllocationStackVisual, AllocationWaffleVisual } from './pizarron';
 import { CompactMentorStage } from './CompactMentorStage';
+import { LessonStageSlot, useLessonStagePresent } from './lessonStage';
 import { SegmentPrompt } from './segmentKit';
 import './learning.css';
 
@@ -140,6 +141,7 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
   });
   const [tableMode, setTableMode] = useState(false);
   const [verdict, setVerdict] = useState<CheckResult | 'unavailable' | null>(null);
+  const stagePresent = useLessonStagePresent();
   const [pending, setPending] = useState(false);
   const requestId = useRef(0);
   useEffect(() => {
@@ -179,7 +181,7 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
     } catch { if (requestId.current === currentRequest) { setPending(false); setVerdict('unavailable'); } }
   };
 
-  return <main className={`lf-learning${mentorStage ? ' lf-learning--with-stage' : ''}${tableMode ? ' lf-learning--table' : ''}`}
+  return <main className={`lf-learning${mentorStage || stagePresent ? ' lf-learning--with-stage' : ''}${tableMode ? ' lf-learning--table' : ''}`}
     data-surface="app" data-screen="lesson">
     <div className="lf-learning-inner">
       <header className="lf-learning-top">
@@ -187,7 +189,9 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
         <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, verdict === 'met')} max={100} valueText={`${sequenceProgress(sequence, verdict === 'met')}%`} />
         <span data-copy-role="data">{sequence ? `${sequence.index + 1}/${sequence.total}` : t.lesson}</span>
       </header>
-      {mentorStage ? <CompactMentorStage ageBand={ageBand} theme={theme} verdict={verdict === 'unavailable' ? null : verdict} character={mentorStage.character} scene={mentorStage.scene} /> : null}
+      {/* Inside a lesson the one slot draws the band (with the adventure scene as its backdrop); a standalone board keeps its own. */}
+      {stagePresent ? <LessonStageSlot verdict={verdict === 'unavailable' ? null : verdict} />
+        : mentorStage ? <CompactMentorStage ageBand={ageBand} theme={theme} verdict={verdict === 'unavailable' ? null : verdict} character={mentorStage.character} scene={mentorStage.scene} /> : null}
       <div className="lf-learning-content">
         <div className="lf-learning-intro">
           <h1 data-copy-role="heading">{document.title}</h1>

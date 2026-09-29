@@ -117,6 +117,10 @@
     "earlyAsk": "Você dominou o que {chapter} precisa. Abrir antes?",
     "earlyMeans": "É da próxima etapa. Fica como extra, no seu ritmo.",
     "earlyShowed": "Você mostrou",
+    "earlyMoreOne": "e mais {n}",
+    "earlyMoreOther": "e mais {n}",
+    "earlySkillsTitle": "O que você mostrou",
+    "earlySkillsClose": "Fechar",
     "earlyYes": "Sim, abrir",
     "earlyDone": "Aberto. É extra, no seu ritmo.",
     "masteryTitle": "Mostrado com seu Mentor",
@@ -266,6 +270,8 @@
     "reported": "Obrigado. Nossa equipe de segurança vai olhar."
   },
   "player": {
+    "listen": "Ouvir",
+    "stopListening": "Parar",
     "asks": "{name} pergunta",
     "help": "Ajuda",
     "moreHelp": "Mais ajuda",

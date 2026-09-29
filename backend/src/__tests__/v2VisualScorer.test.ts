@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { gradeV2Response, scoreV2Visual } from '../services/v2VisualScorer.js';
+import { barModelUnknown, gradeV2Response, scoreV2Visual } from '../services/v2VisualScorer.js';
 
 describe('canonical v2 visual scorer', () => {
   it('checks every complete 12-coin allocation and refuses impossible responses', () => {
@@ -53,11 +53,40 @@ describe('canonical v2 visual scorer', () => {
   });
 
   it('keeps M7 structure and arithmetic as distinct semantic scores', () => {
-    const payload = { whole: 50, difference: 12 };
-    expect(scoreV2Visual('math.bar-model.structure.v2', payload, { model: 'comparison' }, { model: 'comparison' })).toBe('met');
+    // "Ana has 12 more than Leo; together 50": a comparison with its total; Ana's bar carries no number.
+    const payload = { quantityIds: ['together', 'ana-more'], values: [50, 12] };
+    const key = { model: 'comparison', slots: { smaller: 'unknown', larger: null, difference: 'ana-more', total: 'together' } };
+    expect(scoreV2Visual('math.bar-model.structure.v2', payload, key, key)).toBe('met');
     expect(scoreV2Visual('math.bar-model.answer.v2', payload, { value: '19' }, { target: 19 })).toBe('met');
-    expect(scoreV2Visual('math.bar-model.answer.v2', payload, { value: '18' }, { target: 19 })).toBe('review');
-    expect(scoreV2Visual('math.bar-model.structure.v2', payload, { model: 'part-whole' }, { model: 'comparison' })).toBe('review');
+    expect(gradeV2Response('math.bar-model.answer.v2', payload, { value: '18' }, { target: 19 })).toEqual({ verdict: 'review', diagnostic: 'value' });
+    // A wrong model or a wrong slot is a structure error.
+    expect(gradeV2Response('math.bar-model.structure.v2', payload, { model: 'part-whole', slots: { 'part-a': 'ana-more', 'part-b': 'unknown', whole: 'together' } }, key))
+      .toEqual({ verdict: 'review', diagnostic: 'structure' });
+    expect(gradeV2Response('math.bar-model.structure.v2', payload, { model: 'comparison', slots: { smaller: null, larger: 'unknown', difference: 'ana-more', total: 'together' } }, key))
+      .toEqual({ verdict: 'review', diagnostic: 'structure' });
+    expect(barModelUnknown(key.model, key.slots, { ids: payload.quantityIds, values: payload.values })).toBe(19);
+  });
+
+  it('M7 (GAP-FIX-R3): part-whole builds, parts in any order, three parts, and the refused incomplete builds', () => {
+    const payload = { quantityIds: ['saved-may', 'saved-june'], values: [18, 25] };
+    const key = { model: 'part-whole', slots: { 'part-a': 'saved-may', 'part-b': 'saved-june', whole: 'unknown' } };
+    expect(scoreV2Visual('math.bar-model.structure.v2', payload, key, key)).toBe('met');
+    expect(scoreV2Visual('math.bar-model.structure.v2', payload, { model: 'part-whole', slots: { 'part-a': 'saved-june', 'part-b': 'saved-may', whole: 'unknown' } }, key)).toBe('met');
+    expect(scoreV2Visual('math.bar-model.structure.v2', payload, { model: 'part-whole', slots: { 'part-a': 'saved-may', 'part-b': 'unknown', whole: 'saved-june' } }, key)).toBe('review');
+    expect(barModelUnknown('part-whole', key.slots, { ids: payload.quantityIds, values: payload.values })).toBe(43);
+    const three = { quantityIds: ['coins-a', 'coins-b', 'coins-c'], values: [5, 7, 20] };
+    const threeKey = { model: 'part-whole', slots: { 'part-a': 'coins-a', 'part-b': 'coins-b', 'part-c': 'unknown', whole: 'coins-c' } };
+    expect(scoreV2Visual('math.bar-model.structure.v2', three, threeKey, threeKey)).toBe('met');
+    expect(barModelUnknown('part-whole', threeKey.slots, { ids: three.quantityIds, values: three.values })).toBe(8);
+    // The board starts empty: an empty, partial or duplicated build is not an answer.
+    for (const response of [{ model: null, slots: {} }, { model: 'part-whole', slots: { 'part-a': 'saved-may', 'part-b': 'saved-june', whole: null } },
+      { model: 'part-whole', slots: { 'part-a': 'saved-may', 'part-b': 'saved-may', whole: 'unknown' } }, { model: 'comparison', slots: { smaller: 'saved-may', larger: 'saved-june' } },
+      { model: 'part-whole', slots: { 'part-a': 'saved-may', 'part-b': 'saved-june', whole: 'unknown' }, score: 100 }, { model: 'tape', slots: {} }]) {
+      expect(scoreV2Visual('math.bar-model.structure.v2', payload, response, key), JSON.stringify(response)).toBe('invalid');
+    }
+    // A rubric whose lengths contradict each other (a part longer than its whole) is refused.
+    expect(scoreV2Visual('math.bar-model.structure.v2', payload, key, { model: 'part-whole', slots: { 'part-a': 'saved-june', 'part-b': 'unknown', whole: 'saved-may' } })).toBe('invalid');
+    expect(scoreV2Visual('math.bar-model.structure.v2', payload, key, { model: 'comparison', slots: { smaller: 'saved-june', larger: 'saved-may', difference: 'unknown' } })).toBe('invalid');
   });
 
   it('keeps M8 schema, slots, and answer as three semantic scores', () => {

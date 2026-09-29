@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { growthComparison } from './growthComparisonModel.generated';
-import { longArithmeticSchema, mathNotation, NOTATION_CAPABILITY, placeValuePayload, schemaDiagramPayload, v2AgeScopeProblem, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras } from './v2SegmentFamilies.generated';
+import { barModelPayload, longArithmeticSchema, mathNotation, NOTATION_CAPABILITY, placeValuePayload, schemaDiagramPayload, v2AgeScopeProblem, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras } from './v2SegmentFamilies.generated';
 import { conceptAllowed, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptType } from './v2ConceptBoards.generated';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './charts/chartModel.generated';
 
@@ -105,8 +105,7 @@ const fractionAreaSegment = z.object({
     'Invalid fraction-area range',
   ),
 }).strict();
-const barModelPayload = z.object({ whole: positiveInteger.max(100), difference: positiveInteger.max(99), knownLabel: z.string().trim().min(1).max(40), unknownLabel: z.string().trim().min(1).max(40), spokenText: z.string().trim().min(1).max(120) }).strict()
-  .refine((value) => value.difference < value.whole, 'Invalid bar-model range');
+// M7 (GAP-FIX-R3): the schema-neutral payload is the synced families module's (the text's quantities and the unknown's label).
 const barModelStructureSegment = z.object({ ...segmentBase, type: z.literal('math.bar-model.structure.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('bar-model') }).strict(), payload: barModelPayload }).strict();
 const barModelAnswerSegment = z.object({ ...segmentBase, type: z.literal('math.bar-model.answer.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('bar-model') }).strict(), payload: barModelPayload }).strict();
 // M8 (GAP-FIX-R2): Core's schema-neutral payload (v2SegmentFamilies); the schema and slot places stay private.

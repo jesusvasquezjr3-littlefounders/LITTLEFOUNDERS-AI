@@ -81,6 +81,8 @@ interface LessonResponse {
   document: unknown;
   /** Echo's narration manifest for a v1 lesson; the legacy island reads it. */
   audio?: unknown;
+  /** B.18 (GAP-FIX-R3): a v2 lesson's resolved narration, segment id -> public URL (Core resolves `audio_ref` against the manifest). */
+  narration_audio?: unknown;
   mentor_stage?: unknown;
   /** B.8 (GAP-FIX-R1): the lesson's adventure scene theme, a closed enum. */
   adventure_theme?: unknown;
@@ -91,7 +93,7 @@ interface LessonResponse {
 type LoadState =
   | { status: 'loading' }
   | { status: 'error'; code: string; offline: boolean }
-  | { status: 'ready'; document: unknown; locale: string; audio: unknown; mentorStage: unknown; adventureTheme: unknown; v2Attempt: V2Attempt | null; recall: NarrativeRecall | null; courseSlug: string | null };
+  | { status: 'ready'; document: unknown; locale: string; audio: unknown; narrationAudio: unknown; mentorStage: unknown; adventureTheme: unknown; v2Attempt: V2Attempt | null; recall: NarrativeRecall | null; courseSlug: string | null };
 
 interface V2RunResponse {
   run_id: string;
@@ -201,7 +203,7 @@ function LessonRouteSession() {
         return;
       }
       const servedSlug = typeof data.lesson?.course_slug === 'string' && /^[a-z0-9][a-z0-9-]{0,79}$/.test(data.lesson.course_slug) ? data.lesson.course_slug : null;
-      const ready = { document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, adventureTheme: data.adventure_theme,
+      const ready = { document: data.document, locale: data.locale, audio: data.audio ?? {}, narrationAudio: data.narration_audio, mentorStage: data.mentor_stage, adventureTheme: data.adventure_theme,
         recall: parseNarrativeRecall(data.narrative_recall), courseSlug: servedSlug };
       if (isLegacyLessonDocument(data.document)) {
         checkpoint.current = reconcileLegacyCheckpoint(checkpoint.current, data.document);
@@ -372,7 +374,7 @@ function LessonRouteSession() {
 
   if (!isLegacyLessonDocument(state.document)) {
     const frame = lessonDocumentFrame(state.document, state.locale);
-    return layer('lesson', <AuthenticatedLessonDocument raw={state.document} responseLocale={state.locale} mentorStage={state.mentorStage} adventureTheme={state.adventureTheme} theme={theme} onBack={goBack}
+    return layer('lesson', <AuthenticatedLessonDocument raw={state.document} responseLocale={state.locale} mentorStage={state.mentorStage} adventureTheme={state.adventureTheme} narrationAudio={state.narrationAudio} theme={theme} onBack={goBack}
       onGrade={state.v2Attempt ? gradeV2 : undefined} onGradeNumberLine={state.v2Attempt ? gradeV2NumberLine : undefined}
       onGradeFractionArea={state.v2Attempt ? gradeV2FractionArea : undefined} onGradeBarModel={state.v2Attempt ? gradeV2BarModel : undefined}
       onGradeSchemaDiagram={state.v2Attempt ? gradeV2SchemaDiagram : undefined} onGradeWorkedExample={state.v2Attempt ? gradeV2WorkedExample : undefined}

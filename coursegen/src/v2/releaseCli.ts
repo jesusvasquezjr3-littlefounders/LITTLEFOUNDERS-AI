@@ -81,12 +81,16 @@ async function publish(args: Args): Promise<number> {
     const text = await res.text();
     return { ok: res.ok, status: res.status, body: text ? JSON.parse(text) as unknown : null };
   };
+  // B.18 (GAP-FIX-R3): `--audio-manifest <file>` (audio_ref -> asset) checks differentiated narration; `--require-narration-audio` blocks on a gap.
+  const audioManifest = typeof args['audio-manifest'] === 'string' ? JSON.parse(readFileSync(path.resolve(args['audio-manifest']), 'utf8')) as Record<string, unknown> : {};
   const result = await releaseV2Lessons(loaded.map((entry) => entry.plan!), {
     runId: args['run-id'], outDir: path.resolve(args.out), courseSlug: args.course, dryRun, deps: rpc ? { rpc } : {},
+    audioManifest, requireNarrationAudio: args['require-narration-audio'] === true,
   });
   if (!result.ok) { console.error(`v2:publish: stopped at ${result.stage}:\n  ${result.problems.join('\n  ')}`); return 1; }
   console.log(`v2:publish: ${result.stage} — ${result.documents.length} document(s), ${result.calls.length} publication call(s)${dryRun ? ' written to publish-calls.json, nothing sent' : ' accepted by Vault'}`);
   // G.2: a live lesson's new version waits for a human staff release.
+  for (const gap of result.narrationWithoutAudio ?? []) console.log(`v2:publish: narration flagged: ${gap}`);
   for (const pending of result.pendingApproval ?? []) {
     console.log(`v2:publish: ${pending.lessonId} ${pending.locale} ${pending.versionId} waits for a staff release (staff console, Content, Live updates)`);
   }

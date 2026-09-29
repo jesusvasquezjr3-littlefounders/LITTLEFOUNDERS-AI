@@ -309,6 +309,23 @@ describe('OD-25: the learner answers the one-stage-early and the Mentor-mastery 
     expect(within(screen.getByRole('region', { name: 'Ready for more' })).getByText('Open. It is an extra, at your pace.')).toBeTruthy();
   });
 
+  it('02 D1 / 06 §4: five prerequisite skills are never cut with an ellipsis; the rest open in a Details sheet', async () => {
+    const ready = offers as Extract<typeof offers, { status: 'ready' }>;
+    const path = ready.detail.engine === 'pathway' ? ready.detail.path : null;
+    const names = ['Save for later', 'Needs and wants', 'Count coins', 'Make change', 'Plan a budget'];
+    const five = names.map((name, index) => ({ key: `money.s${index}`, title: { 'en-US': name, 'es-MX': name, 'pt-BR': name } }));
+    const state: CourseViewProps['state'] = { status: 'ready', detail: { engine: 'pathway',
+      path: { ...path!, earlyAccess: [{ ...path!.earlyAccess[0]!, prerequisiteSkills: five }] } } };
+    view(state, { onOpenEarly: vi.fn(async () => 'done' as const), onAcceptMastery: vi.fn(async () => 'done' as const) });
+    const early = screen.getByRole('region', { name: 'Ready for more' });
+    expect(early.textContent).not.toContain('…');
+    expect(within(early).getByText('Save for later, Needs and wants, Count coins')).toBeTruthy();
+    fireEvent.click(within(early).getByRole('button', { name: 'and 2 more' }));
+    const sheet = await screen.findByRole('dialog', { name: 'What you showed' });
+    for (const name of names) expect(within(sheet).getByText(name)).toBeTruthy();
+    expect(sheet.textContent).not.toContain('…');
+  });
+
   it('without handlers (an older host) and without offers, nothing is asked', () => {
     const { unmount } = view(offers);
     expect(screen.queryByRole('region', { name: 'Ready for more' })).toBeNull();
