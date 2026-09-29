@@ -172,6 +172,10 @@
       "governance": {
         "tier_compliance": "Tier rules followed"
       },
+      "safety": {
+        "fracture_closure": "Safeguards follow age, not role",
+        "age_tier_calibration": "Unknown ages calibrated first"
+      },
       "evaluation": {
         "coverage": "Sessions scored"
       },
@@ -182,7 +186,8 @@
         "pass_rate": "Simulated learner checks"
       },
       "canary": {
-        "regression_rate": "Canary rollbacks"
+        "regression_rate": "Canary rollbacks",
+        "arm_comparison": "Canary against control"
       },
       "learning": {
         "delayed_retention": "Remembered weeks later",

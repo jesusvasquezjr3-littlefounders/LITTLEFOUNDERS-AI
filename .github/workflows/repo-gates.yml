@@ -226,6 +226,20 @@ jobs:
       - name: Judge calibration standard agrees across every copy (Tier 1 floors guard)
         run: node agent/tools/check-judge-calibration-parity.mjs
 
+      # C.22 / Appendix F Stage 5 (GAP-FIX-R3): the canary delivery path. The
+      # registry's Tier 2 bounds, the canary manifest, the tables generated
+      # into Core and Oracle, the arm vocabulary and the migration CHECK must
+      # agree, or a canary is counted that no session could have run.
+      - name: Mentor canary delivery path agrees across every copy (Stage 5)
+        run: node agent/tools/check-mentor-canary-parity.mjs
+
+      # C.2 / C.3 / C.4, Appendix F 1.3 Fracture-Closure Verification
+      # (GAP-FIX-R3): every voice, moderation-mode and memory-review decision
+      # keys off the minor indicator or a guardian link, never the kid role
+      # alone. Also inside spec:check; named here so a red is legible.
+      - name: Minor safeguards key off the minor indicator, never the kid role alone (Fracture-Closure)
+        run: node agent/tools/check-mentor-minor-safeguards.mjs --report=fracture-closure.json
+
       # The agent/tools/*.test.mjs suite existed but ran in NO workflow, so it
       # rotted unnoticed. A gate nobody runs is documentation, not enforcement.
       - name: Repo tool self-tests

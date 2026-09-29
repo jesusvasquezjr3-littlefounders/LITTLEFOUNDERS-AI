@@ -75,6 +75,8 @@ const ORCHESTRATOR_EXCLUDED: Record<string, string> = {
     'C.7 derived at construction from the pinned SessionContext.dispositionProfile the park record carries — rebuilt identically on the far side, not session state',
   dialoguePolicy:
     'C.17 derived at construction from the pinned SessionContext.dialogueCalibration (or its tier fallback) the park record carries — rebuilt identically on the far side, not session state',
+  canary:
+    'C.22 Stage 5 derived at construction from the pinned SessionContext.canary the park record carries (the Tier 2 configs and the arm) — rebuilt identically on the far side, not session state',
 };
 
 /** The same, for `PedagogicalController`. */

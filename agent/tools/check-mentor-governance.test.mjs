@@ -261,6 +261,16 @@ test('RED on an undeclared repo-writing workflow, and on a declared one whose sc
 // ── proposals ────────────────────────────────────────────────────────────────
 
 const SHA = 'a'.repeat(64);
+const EXP = '55555555-5555-4555-8555-000000000001';
+/** canaries.json: the running mentor.canary experiment that delivers the proposal's parameter change. */
+const MANIFEST = {
+  kind: 'mentor-canary-manifest',
+  version: 1,
+  target: 'mentor.canary',
+  surface: 'tutor',
+  maxShare: 0.1,
+  canaries: [{ experimentId: EXP, proposalId: 'P-2026-10-01-latency', share: 0.05, status: 'running', overrides: { latencyZ: 1.7 } }],
+};
 function proposal(over = {}) {
   return {
     kind: 'mentor-change-proposal',
@@ -274,7 +284,8 @@ function proposal(over = {}) {
     stage2: { date: '2026-10-01', reportSha256: SHA, personas: { frustrated: 'pass', disengaging: 'pass', gaming: 'pass', reactant_teen: 'pass', masking: 'pass' }, failures: [] },
     stage3: { judgeId: 'transcript_judge', calibrationId: 'cal-1', judgeModel: 'qwen3-max', judgePromptHash: SHA, scoredAt: '2026-10-02T10:00:00Z', criteria: ['emotion_label'], verdict: 'pass', verifiedWith: 'npm --prefix backend run tutor:judge-calibration -- --verify-proposal=x' },
     stage4: null,
-    stage5: null,
+    parameterChanges: { latencyZ: 1.7 },
+    stage5: { experimentId: EXP },
     stage6: null,
     ...over,
   };
@@ -282,52 +293,101 @@ function proposal(over = {}) {
 
 test('a Tier 2 automated proposal clears Stages 0–3 for canary; release needs the canary and the metric', () => {
   const reg = registry();
-  assert.deepEqual(evaluateProposal(proposal(), reg), { computedTier: 'tier_2', violations: [], missing: [], releaseReady: true });
-  const released = evaluateProposal(proposal({ status: 'released' }), reg);
+  assert.deepEqual(evaluateProposal(proposal(), reg, MANIFEST), { computedTier: 'tier_2', violations: [], missing: [], releaseReady: true });
+  const released = evaluateProposal(proposal({ status: 'released' }), reg, MANIFEST);
   assert.ok(released.missing.some((m) => m.startsWith('stage5')));
   assert.ok(released.missing.some((m) => m.startsWith('stage6')));
-  const full = evaluateProposal(proposal({ status: 'released', stage5: { experimentId: 'exp-1', reader: 'Ana P.', date: '2026-10-05', transcriptsRead: 20, outcome: 'clear' }, stage6: { releasedAt: '2026-10-06', metrics: ['rubric.emotion_label'] } }), reg);
+  const full = evaluateProposal(proposal({ status: 'released', stage5: { experimentId: EXP, reader: 'Ana P.', date: '2026-10-05', transcriptsRead: 20, outcome: 'clear' }, stage6: { releasedAt: '2026-10-06', metrics: ['rubric.emotion_label'] } }), reg, MANIFEST);
   assert.equal(full.releaseReady, true);
-  const tooFew = evaluateProposal(proposal({ status: 'released', stage5: { experimentId: 'exp-1', reader: 'Ana P.', date: '2026-10-05', transcriptsRead: 5, outcome: 'clear' }, stage6: { releasedAt: '2026-10-06', metrics: ['x'] } }), reg);
+  const tooFew = evaluateProposal(proposal({ status: 'released', stage5: { experimentId: EXP, reader: 'Ana P.', date: '2026-10-05', transcriptsRead: 5, outcome: 'clear' }, stage6: { releasedAt: '2026-10-06', metrics: ['x'] } }), reg, MANIFEST);
   assert.ok(tooFew.missing.some((m) => m.startsWith('stage5')));
 });
 
 test('an uncalibrated Stage 3 routes to Stage 4; a Stage 2 failure returns to Stage 1', () => {
   const reg = registry();
-  const noJudge = evaluateProposal(proposal({ stage3: null }), reg);
+  const noJudge = evaluateProposal(proposal({ stage3: null }), reg, MANIFEST);
   assert.ok(noJudge.missing.some((m) => m.includes('stage4')));
-  const reviewed = evaluateProposal(proposal({ stage3: null, stage4: { pedagogicalReviewer: 'Ana P.', safetyTrustLead: 'Luis S.', date: '2026-10-02', addresses: 'Checks the reactant-teen register does not become controlling at 1.7.' } }), reg);
+  const reviewed = evaluateProposal(proposal({ stage3: null, stage4: { pedagogicalReviewer: 'Ana P.', safetyTrustLead: 'Luis S.', date: '2026-10-02', addresses: 'Checks the reactant-teen register does not become controlling at 1.7.' } }), reg, MANIFEST);
   assert.equal(reviewed.releaseReady, true);
-  const failed = evaluateProposal(proposal({ stage2: { ...proposal().stage2, personas: { ...proposal().stage2.personas, masking: 'fail' }, failures: [] } }), reg);
+  const failed = evaluateProposal(proposal({ stage2: { ...proposal().stage2, personas: { ...proposal().stage2.personas, masking: 'fail' }, failures: [] } }), reg, MANIFEST);
   assert.ok(failed.violations.some((v) => v.includes('itemized failure report')));
   assert.ok(failed.violations.some((v) => v.includes('returns to Stage 1')));
-  const missingPersona = evaluateProposal(proposal({ stage2: { ...proposal().stage2, personas: { frustrated: 'pass' } } }), reg);
+  const missingPersona = evaluateProposal(proposal({ stage2: { ...proposal().stage2, personas: { frustrated: 'pass' } } }), reg, MANIFEST);
   assert.ok(missingPersona.missing.some((m) => m.includes('masking')));
 });
 
 test('never automate: an automated proposal touching Tier 1 or the live axis is a violation; a weaker declared tier is refused', () => {
   const reg = registry();
-  assert.ok(evaluateProposal(proposal({ paths: ['svc/safety/judge.ts'], declaredTier: 'tier_1', stage3: null }), reg).violations.some((v) => v.includes('never automate')));
-  assert.ok(evaluateProposal(proposal({ paths: ['svc/tutor/live.ts'], declaredTier: 'live_content_judging', stage3: null }), reg).violations.some((v) => v.includes('never automate')));
-  assert.ok(evaluateProposal(proposal({ origin: 'human', paths: ['svc/tutor/prompt.ts', 'svc/safety/judge.ts'] }), reg).violations.some((v) => v.includes('declared tier_2, but the paths make it tier_1')));
+  assert.ok(evaluateProposal(proposal({ paths: ['svc/safety/judge.ts'], declaredTier: 'tier_1', stage3: null }), reg, MANIFEST).violations.some((v) => v.includes('never automate')));
+  assert.ok(evaluateProposal(proposal({ paths: ['svc/tutor/live.ts'], declaredTier: 'live_content_judging', stage3: null }), reg, MANIFEST).violations.some((v) => v.includes('never automate')));
+  assert.ok(evaluateProposal(proposal({ origin: 'human', paths: ['svc/tutor/prompt.ts', 'svc/safety/judge.ts'] }), reg, MANIFEST).violations.some((v) => v.includes('declared tier_2, but the paths make it tier_1')));
 });
 
 test('a human Tier 1 proposal bypasses Stage 3 and needs two DISTINCT reviewers', () => {
   const reg = registry();
-  const t1 = proposal({ origin: 'human', paths: ['svc/safety/judge.ts'], declaredTier: 'tier_1' });
-  assert.ok(evaluateProposal(t1, reg).violations.some((v) => v.includes('bypasses Stage 3')));
-  const same = evaluateProposal({ ...t1, stage3: null, stage4: { pedagogicalReviewer: 'Ana P.', safetyTrustLead: 'ana p.', date: '2026-10-02', addresses: 'The refusal list keeps every harm category the audit covers.' } }, reg);
+  const t1 = proposal({ origin: 'human', paths: ['svc/safety/judge.ts'], declaredTier: 'tier_1', parameterChanges: undefined, stage5: null });
+  assert.ok(evaluateProposal(t1, reg, MANIFEST).violations.some((v) => v.includes('bypasses Stage 3')));
+  const same = evaluateProposal({ ...t1, stage3: null, stage4: { pedagogicalReviewer: 'Ana P.', safetyTrustLead: 'ana p.', date: '2026-10-02', addresses: 'The refusal list keeps every harm category the audit covers.' } }, reg, MANIFEST);
   assert.ok(same.violations.some((v) => v.includes('two distinct reviewers')));
-  const ok = evaluateProposal({ ...t1, stage3: null, stage4: { pedagogicalReviewer: 'Ana P.', safetyTrustLead: 'Luis S.', date: '2026-10-02', addresses: 'The refusal list keeps every harm category the audit covers.' } }, reg);
+  const ok = evaluateProposal({ ...t1, stage3: null, stage4: { pedagogicalReviewer: 'Ana P.', safetyTrustLead: 'Luis S.', date: '2026-10-02', addresses: 'The refusal list keeps every harm category the audit covers.' } }, reg, MANIFEST);
   assert.deepEqual(ok.violations, []);
 });
 
 test('checkProposals refuses a status the stages do not support, and a file not named by its id', () => {
   const reg = registry();
   const bad = [{ file: 'docs/rebuild/mentor/governance/proposals/P-2026-10-01-other.json', record: proposal({ status: 'released' }) }];
-  const problems = checkProposals(reg, bad);
+  const problems = checkProposals(reg, bad, MANIFEST);
   assert.ok(problems.some((p) => p.includes('file name must be the proposal id')));
   assert.ok(problems.some((p) => p.includes('status released but missing stage5')));
+});
+
+test('GAP-FIX-R3 Stage 5 delivery: the experiment must be a mentor.canary canary that delivers exactly this proposal parameter changes', () => {
+  const reg = registry();
+  const cleared = evaluateProposal(proposal(), reg, MANIFEST);
+  assert.deepEqual(cleared.violations, []);
+  const red = (over, manifest, text) => {
+    const r = evaluateProposal(proposal(over), reg, manifest);
+    assert.ok(r.violations.some((v) => v.includes(text)), `${text}: ${JSON.stringify(r.violations)}`);
+  };
+  // An experiment the manifest does not list could not have delivered anything.
+  red({ stage5: { experimentId: '66666666-6666-4666-8666-666666666666' } }, MANIFEST, 'no real session could have received this change');
+  // The canary delivers other values, or another proposal.
+  red({}, { ...MANIFEST, canaries: [{ ...MANIFEST.canaries[0], overrides: { latencyZ: 1.8 } }] }, "are not the proposal's parameterChanges");
+  red({}, { ...MANIFEST, canaries: [{ ...MANIFEST.canaries[0], overrides: { latencyZ: 1.7, other: 2 } }] }, "are not the proposal's parameterChanges");
+  red({}, { ...MANIFEST, canaries: [{ ...MANIFEST.canaries[0], proposalId: 'P-2026-10-02-other' }] }, 'delivers P-2026-10-02-other, not this proposal');
+  // A change that is not a registered Tier 2 parameter has no delivery path.
+  red({ parameterChanges: undefined }, MANIFEST, 'declares no parameterChanges');
+  // A proposal still in canary needs its canary running.
+  red({}, { ...MANIFEST, canaries: [{ ...MANIFEST.canaries[0], status: 'concluded' }] }, 'is concluded');
+  // A manifest that is missing, or targets something else.
+  red({}, null, 'is missing or malformed');
+  red({}, { ...MANIFEST, target: 'mentor.dialogue-register' }, 'does not target mentor.canary');
+  // No experiment at all: missing, not cleared.
+  assert.ok(evaluateProposal(proposal({ stage5: null }), reg, MANIFEST).missing.some((m) => m.startsWith('stage5.experimentId')));
+  // A released proposal keeps a CONCLUDED canary as its evidence.
+  const released = evaluateProposal(proposal({
+    status: 'released',
+    stage5: { experimentId: EXP, reader: 'Ana P.', date: '2026-10-05', transcriptsRead: 20, outcome: 'clear' },
+    stage6: { releasedAt: '2026-10-06', metrics: ['canary.arm_comparison'] },
+  }), reg, { ...MANIFEST, canaries: [{ ...MANIFEST.canaries[0], status: 'concluded' }] });
+  assert.equal(released.releaseReady, true);
+  // A Tier 3 (reporting-only) change needs no canary.
+  assert.deepEqual(evaluateProposal(proposal({ paths: ['svc/tutor/reportLoop.ts'], declaredTier: 'tier_3', parameterChanges: undefined, stage5: null }), reg, MANIFEST).missing, []);
+});
+
+test('GAP-FIX-R3 parameterChanges: registered Tier 2 parameters only, inside their bounds, in a file the proposal names', () => {
+  const reg = registry({ tier2Parameters: [{ id: 'latencyZ', file: 'svc/tutor/prompt.ts', object: 'DEFAULTS', field: 'latencyZ', bounds: [1, 2.5], integer: false }, { id: 'checks', file: 'svc/tutor/prompt.ts', object: 'DEFAULTS', field: 'checks', bounds: [1, 3], integer: true }] });
+  const red = (changes, text) => {
+    const r = evaluateProposal(proposal({ status: 'draft', parameterChanges: changes }), reg, MANIFEST);
+    assert.ok(r.violations.some((v) => v.includes(text)), `${text}: ${JSON.stringify(r.violations)}`);
+  };
+  red({ windowSize: 5 }, 'not a registered Tier 2 parameter');
+  red({ latencyZ: 3 }, 'outside its approved bounds');
+  red({ checks: 2.5 }, 'must be an integer');
+  red({ latencyZ: '1.7' }, 'must be a number');
+  red({}, 'must name at least one Tier 2 parameter');
+  const elsewhere = evaluateProposal(proposal({ status: 'draft', paths: ['svc/tutor/reportLoop.ts'], declaredTier: 'tier_3' }), reg, MANIFEST);
+  assert.ok(elsewhere.violations.some((v) => v.includes('which the proposal does not name in paths')));
 });
 
 test('Canary Regression Rate comes from the Stage 5 outcomes', () => {
@@ -346,19 +406,19 @@ test('RED when an automated commit touches Tier 1, or governed files without a c
   const reg = registry();
   const bot = { sha: 'b'.repeat(40), name: 'dependabot[bot]', email: '49699333+dependabot[bot]@users.noreply.github.com', body: 'bump', files: ['svc/safety/judge.ts'] };
   assert.ok(isAutomated(bot));
-  assert.ok(checkCommits([bot], reg, []).some((p) => p.includes('never automated')));
+  assert.ok(checkCommits([bot], reg, [], MANIFEST).some((p) => p.includes('never automated')));
   const trailer = { sha: 'c'.repeat(40), name: 'mentor-loop', email: 'loop@example.com', body: 'Tune\n\nMentor-Change-Origin: automated', files: ['svc/tutor/prompt.ts'] };
-  assert.ok(checkCommits([trailer], reg, []).some((p) => p.includes('without a Mentor-Proposal record')));
+  assert.ok(checkCommits([trailer], reg, [], MANIFEST).some((p) => p.includes('without a Mentor-Proposal record')));
   const cited = { ...trailer, body: `${trailer.body}\nMentor-Proposal: P-2026-10-01-latency` };
   const records = [{ file: 'x', record: proposal() }];
-  assert.deepEqual(checkCommits([cited], reg, records), []);
+  assert.deepEqual(checkCommits([cited], reg, records, MANIFEST), []);
   const outside = { ...cited, files: ['svc/tutor/prompt.ts', 'svc/tutor/reportLoop.ts'] };
-  assert.ok(checkCommits([outside], reg, records).some((p) => p.includes('does not name')));
+  assert.ok(checkCommits([outside], reg, records, MANIFEST).some((p) => p.includes('does not name')));
   const draft = [{ file: 'x', record: proposal({ status: 'draft' }) }];
-  assert.ok(checkCommits([cited], reg, draft).some((p) => p.includes('has not cleared its stages')));
+  assert.ok(checkCommits([cited], reg, draft, MANIFEST).some((p) => p.includes('has not cleared its stages')));
   // A human commit, and an automated commit outside the governed roots, are not fenced.
-  assert.deepEqual(checkCommits([{ ...bot, name: 'Ana', email: 'ana@example.com' }], reg, []), []);
-  assert.deepEqual(checkCommits([{ ...bot, files: ['pulse/Dockerfile'] }], reg, []), []);
+  assert.deepEqual(checkCommits([{ ...bot, name: 'Ana', email: 'ana@example.com' }], reg, [], MANIFEST), []);
+  assert.deepEqual(checkCommits([{ ...bot, files: ['pulse/Dockerfile'] }], reg, [], MANIFEST), []);
 });
 
 // ── finer boundaries: Tier 1 at declaration level (OD-28, owner review M-19) ─
@@ -545,16 +605,16 @@ test('once both leads sign, the Tier 1 hash, the fence and the bounds follow eac
 test('the automated-origin fence reads the declarations a commit changed', () => {
   const signed = splitRegistry({ signed: true });
   const bot = { sha: 'd'.repeat(40), name: 'mentor-loop', email: 'loop@example.com', body: 'Tune pace\n\nMentor-Change-Origin: automated\nMentor-Proposal: P-2026-10-01-latency', files: ['svc/tutor/mixed.ts'] };
-  const records = [{ file: 'x', record: proposal({ paths: ['svc/tutor/mixed.ts#PACE_MS'] }) }];
+  const records = [{ file: 'x', record: proposal({ paths: ['svc/tutor/mixed.ts#PACE_MS', 'svc/tutor/prompt.ts'] }) }];
   // Only the Tier 2 declaration changed, under a cleared proposal naming it: allowed.
-  assert.deepEqual(checkCommits([{ ...bot, symbolChanges: { 'svc/tutor/mixed.ts': ['PACE_MS'] } }], signed, records), []);
+  assert.deepEqual(checkCommits([{ ...bot, symbolChanges: { 'svc/tutor/mixed.ts': ['PACE_MS'] } }], signed, records, MANIFEST), []);
   // The same commit also touching the Tier 1 declaration, or the imports: never automated.
   for (const changed of [['PACE_MS', 'neverRevealOnFirstAsk'], [MODULE_SYMBOL]]) {
-    const problems = checkCommits([{ ...bot, symbolChanges: { 'svc/tutor/mixed.ts': changed } }], signed, records);
+    const problems = checkCommits([{ ...bot, symbolChanges: { 'svc/tutor/mixed.ts': changed } }], signed, records, MANIFEST);
     assert.ok(problems.some((p) => p.includes('never automated')), changed.join());
   }
   // Unknown declaration-level changes fall back to the file, whose strictest claimant is Tier 1.
-  assert.ok(checkCommits([bot], signed, records).some((p) => p.includes('never automated')));
+  assert.ok(checkCommits([bot], signed, records, MANIFEST).some((p) => p.includes('never automated')));
   // While the carve-out is unsigned, even the Tier 2 declaration is Tier 1.
-  assert.ok(checkCommits([{ ...bot, symbolChanges: { 'svc/tutor/mixed.ts': ['PACE_MS'] } }], splitRegistry(), records).some((p) => p.includes('never automated')));
+  assert.ok(checkCommits([{ ...bot, symbolChanges: { 'svc/tutor/mixed.ts': ['PACE_MS'] } }], splitRegistry(), records, MANIFEST).some((p) => p.includes('never automated')));
 });

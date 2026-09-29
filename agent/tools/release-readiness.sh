@@ -28,6 +28,14 @@ node agent/tools/check-dark-patterns.mjs --release
 # component's current version and every governance decision must carry both
 # sign-offs (Pedagogical Reviewer, Safety/Trust Lead) before a release.
 npm run governance:check -- --release
+# C.2 / C.3 / C.4, Appendix F 1.3 Fracture-Closure Verification (GAP-FIX-R3):
+# every voice, moderation-mode and memory-review safeguard keys off the minor
+# indicator or a guardian link, never the kid role alone. The pass/fail JSON is
+# the release evidence behind the dashboard's safety.fracture_closure signal.
+mkdir -p coursegen/runs
+npm run minor-safeguards:check -- --report="coursegen/runs/fracture-closure-${RUN_SUFFIX}.json"
+# C.22 / Appendix F Stage 5: the canary delivery path agrees across every copy.
+npm run canary:check
 npm run judge-calibration:check
 npm run i18n:check
 npm run deps:check
@@ -61,3 +69,4 @@ npm --prefix audiogen run narrate:all -- --course "$COURSE" --dry-run
 echo ""
 echo "release-readiness OK — no deployment, migration, publication, or paid API call was performed"
 echo "dry-run evidence: coursegen/runs/$RUN_ID and coursegen/runs/$TRACK_ID"
+echo "fracture-closure audit: coursegen/runs/fracture-closure-${RUN_SUFFIX}.json"

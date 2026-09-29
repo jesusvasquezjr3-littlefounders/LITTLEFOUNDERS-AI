@@ -46,6 +46,7 @@ import { summarizeLadder, type LadderEventRow } from './liveContentGovernance.js
 import { summarizeDefaultToInaction, TELEMETRY_THRESHOLDS, type TelemetrySessionRow } from './behavioralTelemetry.js';
 import { summarizeTriggerRate, type ClosedSessionRow, type SignalEventRow } from './sessionEnd.js';
 import { judgeTrust, type CalibrationRecordRow } from './judgeCalibration.js';
+import { summarizeCanaryArms } from './mentorCanary.js';
 import { classifyTrend, TREND_MIN_WEEKLY_SAMPLE, TREND_TOLERANCE, TREND_WINDOW_WEEKS, type TrendStatus } from '../engagementHealth.js';
 import { JUDGMENT_DIVERGENCE_FLOOR, JUDGMENT_MIN_ATTEMPTS } from '../learningQuality.js';
 
@@ -233,11 +234,16 @@ export const SIGNALS: readonly SignalDefinition[] = [
   { id: 'bias_audit.coverage', category: 'safety_governance', requirement: 'C.20', owner: 'safety_trust_lead', threshold: { kind: 'floor', value: 1 }, minSample: 1, source: 'Oracle bias audit', pending: 'npm --prefix oracle run bias-audit; .github/workflows/mentor-bias-audit.yml', instrumented: 'external' },
   { id: 'transcript_judge.agreement', category: 'safety_governance', requirement: 'C.23', owner: 'safety_trust_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'mentor_judge_calibration (the transcript judge: latest calibration and spot checks)', instrumented: 'yes' },
   { id: 'governance.tier_compliance', category: 'safety_governance', requirement: 'C.22', owner: 'safety_trust_lead', threshold: { kind: 'zero_tolerance', value: 0 }, minSample: 0, source: 'the repository gate (Tier 1 change record, automated-origin fence)', pending: 'npm run governance:check -- --release (release-readiness); the repo-gates workflow on every push', instrumented: 'external' },
+  // GAP-FIX-R3 (Appendix F 1.3): the only Part 1 metrics for C.1-C.4.
+  { id: 'safety.fracture_closure', category: 'safety_governance', requirement: 'C.2', owner: 'safety_trust_lead', threshold: { kind: 'zero_tolerance', value: 0 }, minSample: 0, source: 'the per-release Fracture-Closure Verification: every C.2/C.3/C.4 safeguard keys off the minor indicator or a guardian link, never the kid role alone', pending: 'npm run minor-safeguards:check -- --report=<file> (release-readiness); the repo-gates workflow on every push', instrumented: 'external' },
+  { id: 'safety.age_tier_calibration', category: 'safety_governance', requirement: 'C.1', owner: 'safety_trust_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'mentor_age_calibration_coverage: unknown-age sessions with the explicit calibration before they started', instrumented: 'yes' },
   // ── Appendix F §1.4 QA and pipeline ──
   { id: 'evaluation.coverage', category: 'pipeline', requirement: 'C.21', owner: 'engineering_lead', threshold: { kind: 'floor', value: T.coverageFloor }, minSample: T.coverageMinSessions, source: 'tutor_sessions.evaluation_rubric_hash', instrumented: 'yes' },
   { id: 'content_ladder.distribution', category: 'pipeline', requirement: 'C.6', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'tutor_content_ladder_events', instrumented: 'yes' },
   { id: 'simulated_student.pass_rate', category: 'pipeline', requirement: 'C.21', owner: 'engineering_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 0, source: 'Oracle pedagogy gym', pending: 'npm --prefix oracle run gym:pedagogy (CI)', instrumented: 'external' },
   { id: 'canary.regression_rate', category: 'pipeline', requirement: 'C.22', owner: 'engineering_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 0, source: 'Stage 5 outcomes in the change-proposal records', pending: 'npm run governance:check -- --report (docs/rebuild/mentor/governance/proposals)', instrumented: 'external' },
+  // GAP-FIX-R3 (Appendix F Stage 5): each running canary against its matched control, so a person reads canary-arm transcripts before release.
+  { id: 'canary.arm_comparison', category: 'pipeline', requirement: 'C.22', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.disparityMinSample, source: 'tutor_sessions.canary_arm with the rules-scored transcripts of each arm (npm run tutor:canary-report draws the reading sample)', instrumented: 'yes' },
   // ── Appendix C §1.1 learning outcomes ──
   { id: 'learning.delayed_retention', category: 'learning_outcome', requirement: 'B.6', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'spaced-review first attempts (admin_retention_at_distance)', instrumented: 'yes' },
   { id: 'learning.practice_success_band', category: 'learning_outcome', requirement: 'B.19', owner: 'pedagogical_lead', threshold: { kind: 'band', value: T.practiceBand.low, upper: T.practiceBand.high }, minSample: T.practiceMinAttempts, source: 'kc_attempt (Mentor practice)', instrumented: 'yes' },
@@ -341,6 +347,24 @@ export interface QualitySources {
   releaseAudits?: ReleaseAuditRow[] | null;
   /** GAP-FIX-R2 (Appendix C 1.2): parent_time_to_value over the window. Optional: absent before the loop reads it. */
   parentTimeToValue?: { signups: number; reached: number; medianSeconds: number | null; p75Seconds: number | null; withinTarget: number } | null;
+  /** GAP-FIX-R3 (C.22 Stage 5): sessions of the window that ran a canary arm. Optional: absent before the loop reads it. */
+  canaryArms?: CanaryArmRow[] | null;
+  /** GAP-FIX-R3 (C.1, Appendix F 1.3): mentor_age_calibration_coverage over the window. Optional: absent before the loop reads it. */
+  ageCalibration?: AgeCalibrationCoverage | null;
+}
+
+export interface CanaryArmRow {
+  id: string;
+  canary_proposal_id: string;
+  canary_arm: 'canary' | 'control';
+  ended_at: string | null;
+}
+
+export interface AgeCalibrationCoverage {
+  sessions: number;
+  unknownAgeSessions: number;
+  calibratedBeforeStart: number;
+  coverage: number | null;
 }
 
 export interface ReleaseAuditRow {
@@ -774,9 +798,76 @@ function evaluateOne(
         detail: { signups: p.signups, reached: p.reached, p75Seconds: p.p75Seconds, withinTarget: p.withinTarget },
       });
     }
+    case 'safety.age_tier_calibration': {
+      // null = the read failed; undefined = a source set built before the loop read it (no evidence yet).
+      if (src.ageCalibration === null) return unavailable(def);
+      const c = src.ageCalibration ?? { sessions: 0, unknownAgeSessions: 0, calibratedBeforeStart: 0, coverage: null };
+      const missed = c.unknownAgeSessions - c.calibratedBeforeStart;
+      const status: SignalStatus = c.unknownAgeSessions === 0 ? 'insufficient_data' : missed > 0 ? 'breach' : 'ok';
+      if (status === 'breach') {
+        anomalies.push(anomalyFor(def, 'threshold_breach', 'all', c.coverage, 1, { unknownAgeSessions: c.unknownAgeSessions, uncalibrated: missed }));
+      }
+      return reading(def.id, {
+        status,
+        value: c.coverage,
+        sample: c.unknownAgeSessions,
+        detail: { sessions: c.sessions, unknownAgeSessions: c.unknownAgeSessions, uncalibrated: missed },
+      });
+    }
+    case 'canary.arm_comparison':
+      return canaryReading(def, src, anomalies, unavailable);
     default:
       return reading(def.id, { status: 'not_instrumented' });
   }
+}
+
+/**
+ * GAP-FIX-R3 (C.22, Appendix F Part 3 Stage 5): each running canary against
+ * its matched control arm, on the rules-scored transcripts of each arm (a
+ * session that failed any rules criterion counts once). A canary arm clearly
+ * worse than its control (the disparity rule: ratio, gap and sample on both
+ * sides) opens a flag for the pedagogical lead: a person reads canary-arm
+ * transcripts (`npm run tutor:canary-report -- --proposal=<id> --sample=20`)
+ * before the proposal may be released or must be rolled back.
+ */
+function canaryReading(def: SignalDefinition, src: QualitySources, anomalies: Anomaly[], unavailable: (d: SignalDefinition) => SignalReading): SignalReading {
+  if (src.canaryArms === null || src.scores === null) return unavailable(def);
+  const arms = src.canaryArms ?? [];
+  if (arms.length === 0) return reading(def.id, { status: 'insufficient_data', detail: { canaries: 0 } });
+  const breakdown: Breakdown[] = [];
+  let regressions = 0;
+  const proposals = [...groupBy(arms, (r) => r.canary_proposal_id)].sort(([a], [b]) => a.localeCompare(b));
+  for (const [proposalId, rows] of proposals) {
+    const summary = summarizeCanaryArms(rows, src.scores);
+    const canary = { sessions: summary.canary.sessions, n: summary.canary.scored, hits: summary.canary.failing };
+    const control = { sessions: summary.control.sessions, n: summary.control.scored, hits: summary.control.failing };
+    const regression = disparities([
+      { key: 'canary', hits: canary.hits, n: canary.n },
+      { key: 'control', hits: control.hits, n: control.n },
+    ]).find((d) => d.key === 'canary');
+    const enough = canary.n >= def.minSample && control.n >= def.minSample;
+    const armStatus: SignalStatus = regression ? 'breach' : enough ? 'diagnostic' : 'insufficient_data';
+    for (const [arm, stats] of [['canary', canary], ['control', control]] as const) {
+      breakdown.push({ key: `proposal:${proposalId}/arm:${arm}`, value: stats.n === 0 ? null : stats.hits / stats.n, sample: stats.n, status: arm === 'canary' ? armStatus : 'diagnostic' });
+    }
+    if (regression) {
+      regressions += 1;
+      anomalies.push(anomalyFor(def, 'threshold_breach', `proposal:${proposalId}`, regression.rate, regression.rest, {
+        canarySessions: canary.sessions,
+        controlSessions: control.sessions,
+        canaryScored: canary.n,
+        controlScored: control.n,
+      }));
+    }
+  }
+  return reading(def.id, {
+    status: regressions > 0 ? 'breach' : 'diagnostic',
+    value: regressions,
+    sample: arms.filter((r) => r.canary_arm === 'canary').length,
+    breakdown,
+    detail: { canaries: proposals.length, regressions, canarySessions: arms.filter((r) => r.canary_arm === 'canary').length, controlSessions: arms.filter((r) => r.canary_arm === 'control').length },
+    sourceLatestAt: latest(arms.map((r) => r.ended_at)),
+  });
 }
 
 /**

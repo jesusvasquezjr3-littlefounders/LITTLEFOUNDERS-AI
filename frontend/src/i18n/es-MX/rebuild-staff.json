@@ -172,6 +172,10 @@
       "governance": {
         "tier_compliance": "Reglas de nivel cumplidas"
       },
+      "safety": {
+        "fracture_closure": "Salvaguardas por edad, no por rol",
+        "age_tier_calibration": "Edades desconocidas calibradas antes"
+      },
       "evaluation": {
         "coverage": "Sesiones evaluadas"
       },
@@ -182,7 +186,8 @@
         "pass_rate": "Pruebas con estudiantes simulados"
       },
       "canary": {
-        "regression_rate": "Reversiones en prueba limitada"
+        "regression_rate": "Reversiones en prueba limitada",
+        "arm_comparison": "Prueba limitada frente a control"
       },
       "learning": {
         "delayed_retention": "Recordado semanas después",

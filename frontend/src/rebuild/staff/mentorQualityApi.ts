@@ -162,5 +162,5 @@ export async function signWeeklyReview(token: string, role: OwnerRole, note?: st
 }
 
 /** Signals whose value is a count or a score, not a share (so never shown as a percentage). */
-export const COUNT_SIGNALS: readonly string[] = ['kill_switch.open', 'dialogue.ab_outcome', 'learning.time_to_mastery', 'engagement.mentor_resolution'];
+export const COUNT_SIGNALS: readonly string[] = ['kill_switch.open', 'dialogue.ab_outcome', 'learning.time_to_mastery', 'engagement.mentor_resolution', 'canary.arm_comparison'];
 export const SCORE_SIGNALS: readonly string[] = ['alliance.bond_proxy'];

@@ -46,6 +46,8 @@ export const CONTEXT_OPTIONAL_FIELDS = [
   // C.11 / C.17 (S06.10/S06.11): see services/pedagogy/spacedReview.ts and dialogueCalibration.ts.
   'spacedReviewMode',
   'dialogueCalibration',
+  // C.22 Stage 5 (GAP-FIX-R3): the canary arm; see services/pedagogy/mentorCanary.ts.
+  'canary',
 ] as const;
 
 export const TELEMETRY_CHANNELS = [

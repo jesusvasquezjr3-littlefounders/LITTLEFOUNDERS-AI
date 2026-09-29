@@ -11,6 +11,21 @@ import { GRADERS } from '../lesson-contract/registry.js';
 import { resetKillSwitchCache } from '../services/pedagogy/behavioralTelemetry.js';
 import { resetLiveContentGateCache } from '../services/pedagogy/liveContentGovernance.js';
 
+/*
+ * GAP-FIX-R3 (C.22 Stage 5): the generated canary manifest is empty in the
+ * repository, so the route tests run against two canaries. Only a request
+ * that announces the `canary` context field ever reads it.
+ */
+vi.mock('../services/pedagogy/mentorCanaryTables.generated.js', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../services/pedagogy/mentorCanaryTables.generated.js')>()),
+  MENTOR_CANARIES: [
+    // In the learner's pool (draw 0.177 < 2 x 0.1).
+    { experimentId: '55555555-5555-4555-8555-000000000001', proposalId: 'P-2026-10-01-latency-z', share: 0.1, overrides: { 'telemetry.latencyZ': 1.7 } },
+    // Outside it (draw 0.323).
+    { experimentId: '55555555-5555-4555-8555-000000000000', proposalId: 'P-2026-10-02-unsampled', share: 0.1, overrides: { 'alliance.maxRenegotiations': 3 } },
+  ],
+}));
+
 // Each scenario is an independent learner journey; hundreds of tests must not
 // consume one shared loopback client's rate budget across unrelated scenarios.
 beforeEach(() => {
@@ -6244,6 +6259,106 @@ describe('C.11 / C.17 — the spaced-review routing, the dialogue register and t
     const audit = calls.filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/audit_logs')).map((c) => JSON.parse(String(c.body)));
     expect(audit).toEqual([expect.objectContaining({ action: 'mentor.kill_switch.dialogue_calibration.triggered' })]);
     expect(audit[0].detail.regressions).toEqual([{ band: 'adult', outcome: 'bond_proxy' }]);
+  });
+
+  // ── C.22 Stage 5: the Mentor canary (GAP-FIX-R3) ──
+
+  describe('C.22 Stage 5 — the canary arm in the negotiated context and at close', () => {
+    const IN_POOL = '55555555-5555-4555-8555-000000000001';
+    const VERIFIED_ADULT = {
+      session: [{ ...SESSION_ROW, tier: 3 }],
+      declaredAgeBand: 'adult' as const,
+      profile: { ...KID_PROFILE, birth_date: '1990-01-01' },
+      roles: [{ role: 'parent' }],
+      parentVerifications: [{ status: 'verified', method: 'local-ocr', birth_date: '1990-01-01' }],
+    };
+    const canaryAssign = (experimentId: string) => ({ experimentId, variant: 'B', surface: 'tutor', target: 'mentor.canary' });
+    const canaryCalls = (calls: { url: string; body?: string }[]) =>
+      calls.filter((c) => (c.url.includes(ASSIGN) || c.url.includes(EXPOSE)) && String(c.body).includes('mentor.canary'));
+
+    it('a verified adult in the pool gets the canary arm with its overrides, and the exposure is recorded first', async () => {
+      const { response, calls } = await contextFor({
+        ...VERIFIED_ADULT,
+        fields: 'canary',
+        runtime: { assignments: [canaryAssign(IN_POOL)], exposure: canaryAssign(IN_POOL) },
+      });
+      expect(response.status).toBe(200);
+      expect(response.body.data.canary).toEqual({ proposalId: 'P-2026-10-01-latency-z', arm: 'canary', overrides: { 'telemetry.latencyZ': 1.7 } });
+      const exposure = calls.find((c) => c.url.includes(EXPOSE));
+      expect(JSON.parse(String(exposure?.body))).toMatchObject({ surface: 'tutor', target: 'mentor.canary', experimentId: IN_POOL, age: 36 });
+      // Never in what reaches the model: no birth date, no role, no age travels.
+      expect(JSON.stringify(response.body.data.canary)).not.toMatch(/1990|parent|age/);
+    });
+
+    it('the control arm (variant A) carries no override', async () => {
+      const control = { ...canaryAssign(IN_POOL), variant: 'A' };
+      const { response } = await contextFor({ ...VERIFIED_ADULT, fields: 'canary', runtime: { assignments: [control], exposure: control } });
+      expect(response.body.data.canary).toEqual({ proposalId: 'P-2026-10-01-latency-z', arm: 'control', overrides: {} });
+    });
+
+    it.each([
+      ['the parent-created under-13 kid', {}],
+      ['an independent teen with their own analytics opt-in', {
+        session: [{ ...SESSION_ROW, tier: 3 }], declaredAgeBand: '13_to_17' as const, profile: { ...KID_PROFILE, birth_date: null }, roles: [{ role: 'universal' }],
+        intercept: (url: string) => (url.includes('/teen_analytics_preferences?') ? jsonResponse(200, [{ enabled: true, disclosure_version: 1 }]) : null),
+      }],
+      ['a declared adult without ID verification', { session: [{ ...SESSION_ROW, tier: 3 }], declaredAgeBand: 'adult' as const, profile: { ...KID_PROFILE, birth_date: null }, roles: [{ role: 'universal' }] }],
+      ['a parent whose ID verification was revoked', { ...VERIFIED_ADULT, parentVerifications: [{ status: 'revoked', method: 'local-ocr', birth_date: null }] }],
+      ['a kid-role account with a verified-looking record', { ...VERIFIED_ADULT, roles: [{ role: 'kid' }, { role: 'parent' }] }],
+    ])('%s: never assigned, never exposed (OD-23)', async (_name, population) => {
+      const { response, calls } = await contextFor({
+        session: [SESSION_ROW],
+        ...population,
+        fields: 'canary',
+        runtime: { assignments: [canaryAssign(IN_POOL)], exposure: canaryAssign(IN_POOL) },
+      } as Parameters<typeof contextFor>[0]);
+      expect(response.status).toBe(200);
+      expect(response.body.data.canary).toBeNull();
+      expect(canaryCalls(calls)).toEqual([]);
+    });
+
+    it('a verified adult outside the pool, with no running canary, or with a failed runtime: no canary, no exposure', async () => {
+      const outside = await contextFor({
+        ...VERIFIED_ADULT,
+        fields: 'canary',
+        runtime: { assignments: [canaryAssign('55555555-5555-4555-8555-000000000000')], exposure: canaryAssign('55555555-5555-4555-8555-000000000000') },
+      });
+      expect(outside.response.body.data.canary).toBeNull();
+      expect(outside.calls.some((c) => c.url.includes(EXPOSE))).toBe(false);
+      const unlisted = await contextFor({
+        ...VERIFIED_ADULT,
+        fields: 'canary',
+        runtime: { assignments: [canaryAssign('66666666-6666-4666-8666-666666666666')] },
+      });
+      expect(unlisted.response.body.data.canary).toBeNull();
+      expect(unlisted.calls.some((c) => c.url.includes(EXPOSE))).toBe(false);
+      const failed = await contextFor({ ...VERIFIED_ADULT, fields: 'canary', runtime: { assignments: 'fail' } });
+      expect(failed.response.status).toBe(200);
+      expect(failed.response.body.data.canary).toBeNull();
+    });
+
+    it('an Oracle that did not announce the field gets none, and no assignment is asked for', async () => {
+      const { response, calls } = await contextFor({ ...VERIFIED_ADULT, fields: 'dialogueCalibration', runtime: { assignments: [canaryAssign(IN_POOL)] } });
+      expect(response.body.data).not.toHaveProperty('canary');
+      expect(canaryCalls(calls)).toEqual([]);
+    });
+
+    it('stores the arm Oracle reports at close, once', async () => {
+      const calls = stub({ session: [SESSION_ROW] });
+      expect((await close(closeBody({ canary: { proposalId: 'P-2026-10-01-latency-z', arm: 'canary' } }))).status).toBe(200);
+      const patch = calls.find((c) => c.method === 'PATCH' && c.url.includes('/rest/v1/tutor_sessions?id=eq.') && String(c.body).includes('canary_arm'));
+      expect(patch?.url).toContain('canary_proposal_id=is.null');
+      expect(JSON.parse(String(patch?.body))).toEqual({ canary_proposal_id: 'P-2026-10-01-latency-z', canary_arm: 'canary' });
+    });
+
+    it('refuses a proposal the manifest does not run (nothing stored) and a malformed arm (400)', async () => {
+      const unknown = stub({ session: [SESSION_ROW] });
+      expect((await close(closeBody({ canary: { proposalId: 'P-2026-10-09-not-running', arm: 'canary' } }))).status).toBe(200);
+      expect(unknown.some((c) => c.method === 'PATCH' && String(c.body).includes('canary_arm'))).toBe(false);
+      stub({ session: [SESSION_ROW] });
+      expect((await close(closeBody({ canary: { proposalId: 'P-2026-10-01-latency-z', arm: 'treatment' } }))).status).toBe(400);
+      expect((await close(closeBody({ canary: { proposalId: 'P-2026-10-01-latency-z', arm: 'canary', overrides: {} } }))).status).toBe(400);
+    });
   });
 });
 

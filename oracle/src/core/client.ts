@@ -20,6 +20,7 @@ import type { SelfExplanationReport } from '../tutor/selfExplanation.js';
 import { DispositionProfileSchema, type DispositionObservation } from '../tutor/dispositionProfile.js';
 import type { SpacedReviewReport } from '../tutor/spacedReview.js';
 import { DialogueCalibrationSchema, type DialogueCalibrationReport } from '../tutor/dialogueCalibration.js';
+import { MentorCanarySchema, type MentorCanaryReport } from '../tutor/mentorCanary.js';
 
 /*
  * Oracle talks to Core, and to nothing else that holds a learner's data.
@@ -241,6 +242,17 @@ export const SessionContextSchema = z
      * (the tier fallback applies). OPTIONAL: negotiated.
      */
     dialogueCalibration: DialogueCalibrationSchema.nullable().optional(),
+    /*
+     * C.22 / Appendix F Stage 5: this learner's arm of a running Mentor
+     * canary (an adults-only H.7 experiment, target `mentor.canary`), with the
+     * proposal it delivers and, for the canary arm, the registered Tier 2
+     * parameter overrides. SERVER-SIDE ONLY: it sets three config objects in
+     * the orchestrator (tutor/mentorCanary.ts clamps every value to the
+     * registry bounds and refuses any other key) and is never a field of the
+     * sealed model context. Null or absent: no canary, the approved defaults.
+     * OPTIONAL: negotiated.
+     */
+    canary: MentorCanarySchema.nullable().optional(),
   })
   .strict();
 
@@ -262,6 +274,7 @@ export const CONTEXT_OPTIONAL_FIELDS = [
   'allianceMode',
   'spacedReviewMode',
   'dialogueCalibration',
+  'canary',
 ] as const;
 
 export type SessionContext = z.infer<typeof SessionContextSchema>;
@@ -489,6 +502,12 @@ export interface CloseSessionInput {
    * language caught and delivered, pacing offers vs unilateral changes).
    */
   dialogueCalibration?: DialogueCalibrationReport;
+  /**
+   * C.22 Stage 5: the canary arm this session actually ran (Core stores it on
+   * the session row for the canary-vs-control reading). Absent when no
+   * canary applied, including a refused one.
+   */
+  canary?: MentorCanaryReport;
 }
 
 /**

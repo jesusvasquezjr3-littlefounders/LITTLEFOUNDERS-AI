@@ -41,7 +41,7 @@ describe('context optional fields', () => {
     expect(await fetchSessionContext(CONTEXT.sessionId)).not.toBeNull();
     const headers = (fetchMock.mock.calls[0] as unknown as [string, RequestInit])[1].headers as Record<string, string>;
     expect(headers['x-oracle-context-fields']).toBe(
-      'opening,behavioralTelemetryMode,dispositionProfile,allianceContinuity,allianceMode,spacedReviewMode,dialogueCalibration',
+      'opening,behavioralTelemetryMode,dispositionProfile,allianceContinuity,allianceMode,spacedReviewMode,dialogueCalibration,canary',
     );
     expect(headers['x-internal-api-key']).toBeDefined();
     expect(CONTEXT_OPTIONAL_FIELDS).toEqual([
@@ -52,6 +52,7 @@ describe('context optional fields', () => {
       'allianceMode',
       'spacedReviewMode',
       'dialogueCalibration',
+      'canary',
     ]);
   });
 
