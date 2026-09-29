@@ -33,6 +33,8 @@ import './coinAccount.css';
 
 export interface CoinAccountCopy {
   heading: string; practice: string; coinsOnly: string; frozen: string; notFrozen: string; byYou: string; byTutor: string; whileFrozen: string; whatHolds: string;
+  /** GAP-FIX-R5: the details toggle while frozen (who froze it, what pauses, who can lift it), 06 §4.4. */
+  whyFrozen: string;
   holdRewards: string; holdSplits: string; holdCredits: string; holdShare: string; nothingLost: string; freeze: string; unfreeze: string; onlyTutor: string;
   pockets: string; save: string; spend: string; share: string; coins: string; pocketDetail?: string; limitHeading: string; limitWeekly: string;
   limitMonthly: string; limitWhy: string; limitWhen: string; monthHeading: string; prevMonth: string; nextMonth: string; monthFailed: string; earned: string; spent: string; saved: string; given: string;
@@ -113,22 +115,25 @@ export function CoinAccount({ copy, register, locale, dark, view, loading, faile
         <Copy role="body">{copy.coinsOnly}</Copy>
 
         <section className="lf-coin-freeze" data-control="freeze" data-frozen={card.freeze.frozen} data-by={card.freeze.by ?? 'none'} aria-labelledby={ids.holds}>
-          {card.freeze.frozen && <Copy role="body">{card.freeze.by === 'you' ? copy.byYou : copy.byTutor}</Copy>}
-          {/* W2F.2 (06 §4 layering): while nothing is frozen, what a freeze pauses is one press away, so the page's first view stays
-              within the child's budget; while frozen it is always shown. The list is the server's, never copy's (D.7). */}
-          {!card.freeze.frozen && <div className="lf-family-hub-actions"><Button size="sm" aria-expanded={holdsOpen} aria-controls={ids.list}
-            onClick={() => setHoldsOpen((open) => !open)}>{copy.whatHolds}</Button></div>}
-          <div id={ids.list} hidden={!card.freeze.frozen && !holdsOpen}>
+          {/* W2F.2 (06 §4 layering): what a freeze pauses is one press away, so the page's first view stays within the child's
+              budget. GAP-FIX-R5: that now holds while frozen too (the audited frozen first view read 40 words against the 6-9
+              budget of 25). The first view says the card is frozen; "Why?" (06 §4.4) opens who froze it, what pauses, that
+              waiting coins wait and, for a Tutor's freeze, that only the Tutor can lift it. There is no Unfreeze control unless
+              the server says this reader may lift it. The list is the server's, never copy's (D.7). */}
+          <div className="lf-family-hub-actions"><Button size="sm" aria-expanded={holdsOpen} aria-controls={ids.list} data-freeze-control="holds"
+            onClick={() => setHoldsOpen((open) => !open)}>{card.freeze.frozen ? copy.whyFrozen : copy.whatHolds}</Button></div>
+          <div id={ids.list} hidden={!holdsOpen}>
+            {card.freeze.frozen && <Copy role="body">{card.freeze.by === 'you' ? copy.byYou : copy.byTutor}</Copy>}
             <p id={ids.holds} data-copy-role="body">{copy.whileFrozen}</p>
             <ul className="lf-coin-holds">
               {card.freeze.holds.map((hold) => <li key={hold} data-hold={hold} data-control={`freeze.${hold}`}><span data-copy-role="body">{copy[HOLD_KEY[hold]]}</span></li>)}
             </ul>
             <Copy role="body">{copy.nothingLost}</Copy>
+            {view.pendingCredits > 0 && card.freeze.frozen && <Copy role="body">{copy.waitingFrozen}</Copy>}
+            {!card.freeze.canChange && <p data-control="freeze.owner" data-copy-role="body">{copy.onlyTutor}</p>}
           </div>
-          {card.freeze.canChange
-            ? <div className="lf-family-hub-actions"><Button variant={card.freeze.frozen ? 'success' : 'secondary'} disabled={busy} data-control="freeze.owner"
-                onClick={() => onFreeze(!card.freeze.frozen)}>{card.freeze.frozen ? copy.unfreeze : copy.freeze}</Button></div>
-            : <p data-control="freeze.owner" data-copy-role="body">{copy.onlyTutor}</p>}
+          {card.freeze.canChange && <div className="lf-family-hub-actions"><Button variant={card.freeze.frozen ? 'success' : 'secondary'} disabled={busy}
+            data-control="freeze.owner" onClick={() => onFreeze(!card.freeze.frozen)}>{card.freeze.frozen ? copy.unfreeze : copy.freeze}</Button></div>}
         </section>
       </> : <Copy role="body">{copy.noAccount}</Copy>}
 
@@ -145,11 +150,13 @@ export function CoinAccount({ copy, register, locale, dark, view, loading, faile
           </li>)}
         </ul>
         {/* W2F.2: no "N coins wait" line: `pendingCredits` counts payouts, not coins ("1 coins wait" for a 10-coin allowance), and the
-            wallet screen shows each waiting payout with its real coins right below the card. The freeze's hold on them is still said. */}
-        {view.pendingCredits > 0 && card?.freeze.frozen && <Copy role="body">{copy.waitingFrozen}</Copy>}
+            wallet screen shows each waiting payout with its real coins (and "on hold") right below the card. The freeze's hold on
+            them is said with what a freeze pauses (GAP-FIX-R5). */}
       </section>
 
-      {view.spendLimit.configured && <section className="lf-coin-limit" data-control="spend_limit" aria-labelledby={ids.limit}>
+      {/* GAP-FIX-R5 (D.7): while a freeze holds reward requests, "you can spend N more" would promise what the server refuses, so the
+          limit is not stated until the freeze ends (the Tutor still sees and sets it; nothing about it changes). */}
+      {view.spendLimit.configured && !(card?.freeze.frozen && card.freeze.holds.includes('rewards')) && <section className="lf-coin-limit" data-control="spend_limit" aria-labelledby={ids.limit}>
         <h3 id={ids.limit} data-copy-role="heading">{copy.limitHeading}</h3>
         <Copy role="body">{fill(view.spendLimit.period === 'weekly' ? copy.limitWeekly : copy.limitMonthly, {
           remaining: number.format(view.spendLimit.remaining), used: number.format(view.spendLimit.used ?? 0), cap: number.format(view.spendLimit.cap ?? 0),

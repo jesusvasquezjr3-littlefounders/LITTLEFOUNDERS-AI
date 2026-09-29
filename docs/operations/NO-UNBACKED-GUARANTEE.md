@@ -36,6 +36,8 @@ A surface marks the element with `data-control="<id>"`. `node agent/tools/check-
 
 Owner: the Pedagogical Lead with the Engineering Lead (Appendix H, Stage 0 pairing), plus one reviewer who did not build the change. Cadence: quarterly, and before any release that adds or changes a control in this domain.
 
+**First human review due: 2027-01-15** (one quarter after the release planned to ship S07.3, as the threshold log). The due date is machine-read (`agent/tools/block-d-review-cadence.mjs`): only a row of kind `human` counts as the review; a row of kind `engineering` records what a lane did and never does. After a human audit the next is due 90 days later. `check-no-unbacked-guarantee.mjs` warns when the audit is overdue and fails with `--strict` (release readiness); `.github/workflows/block-d-reviews-quarterly.yml` opens the quarter's review issue on the first day of each calendar quarter.
+
 Checklist, on the running product in all three locales, light and dark, at 375 and 1280 px:
 1. Open the child's Banking page in each age register (young, transition, teen) and the Tutor's Banking page.
 2. For every visible control, find its registry entry and read its claim. Then do what the page implies in a real test family: freeze and try to request a reward, split coins, give Share coins, and wait for an allowance; exceed the spending limit; as a child, try to lift a Tutor's freeze. Record whether each claim held.
@@ -45,10 +47,10 @@ Checklist, on the running product in all three locales, light and dark, at 375 a
 
 ## Audit log
 
-| Date | Scope | By | Result |
-|---|---|---|---|
-| 2026-09-24 | Engineering pre-audit at S07.6 of the legacy and rebuilt Banking pages. This is **not** the human audit Appendix H asks for; that is still open. | Engineering (S07 lane) | 8 findings. All fixed in S07.6 except the unrendered legacy `display_number` column, removed in gap-fix round 1 (below) |
-| 2026-09-24 | Engineering lane review at S07.8 of the marketing site's Family Hub claims (`marketing.json`, three locales) against the controls as built in S07.1-S07.7. Also **not** the human audit. | Engineering (S07 lane) | 3 findings, all fixed in S07.8 (below the first list) |
+| Date | Kind | Scope | By | Result |
+|---|---|---|---|---|
+| 2026-09-24 | engineering | Engineering pre-audit at S07.6 of the legacy and rebuilt Banking pages. This is **not** the human audit Appendix H asks for; that is still open. | Engineering (S07 lane) | 8 findings. All fixed in S07.6 except the unrendered legacy `display_number` column, removed in gap-fix round 1 (below) |
+| 2026-09-24 | engineering | Engineering lane review at S07.8 of the marketing site's Family Hub claims (`marketing.json`, three locales) against the controls as built in S07.1-S07.7. Also **not** the human audit. | Engineering (S07 lane) | 3 findings, all fixed in S07.8 (below the first list) |
 
 Findings of the 2026-09-24 pre-audit:
 

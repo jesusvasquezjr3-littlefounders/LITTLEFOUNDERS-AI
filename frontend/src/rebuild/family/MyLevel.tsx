@@ -90,7 +90,7 @@ export function MyLevel({ copy, levels, locale, dark, view, loading, failed, bus
           </div>
         </form> : <>
           {a.next.eligible && <Copy role="body">{copy.ready}</Copy>}
-          <div className="lf-family-hub-actions"><Button variant={a.next.eligible ? 'accent' : 'secondary'} disabled={busy} onClick={() => setAsking(true)}>{copy.ask}</Button></div>
+          <div className="lf-family-hub-actions"><Button variant={a.next.eligible ? 'accent' : 'secondary'} data-level-control="ask" disabled={busy} onClick={() => setAsking(true)}>{copy.ask}</Button></div>
         </>}
       </section> : <Copy role="body">{copy.top}</Copy>}
 
@@ -100,7 +100,7 @@ export function MyLevel({ copy, levels, locale, dark, view, loading, failed, bus
           <Button disabled={busy} onClick={() => { onStepDown(); setConfirming(false); }}>{copy.confirm}</Button>
           <Button variant="accent" disabled={busy} onClick={() => setConfirming(false)}>{copy.stay}</Button>
         </div>
-      </div> : <div className="lf-family-hub-actions"><Button disabled={busy} onClick={() => setConfirming(true)}>{copy.stepDown}</Button></div>)}
+      </div> : <div className="lf-family-hub-actions"><Button data-level-control="step-down" disabled={busy} onClick={() => setConfirming(true)}>{copy.stepDown}</Button></div>)}
     </>}
   </section>;
 }

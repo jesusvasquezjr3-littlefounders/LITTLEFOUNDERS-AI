@@ -6,6 +6,8 @@ Appendix H (Part 1.4, "Threshold Recalibration Log (Block D)") requires every Bl
 
 Owner of the review: the Pedagogical Lead (Appendix H, Stage 7), with Product. Cadence: quarterly for the first year after release, then yearly. The first review is due one quarter after the release that ships S07.3.
 
+**First human review due: 2027-01-15** (one quarter after the release planned to ship S07.3; move it with the release date, never past it). The due date is machine-read (`agent/tools/block-d-review-cadence.mjs`): only a row of kind `human` counts as the review; a row of kind `engineering` records what a lane did and never does. After a human review the next is due 90 days later, and 365 days later once four human reviews (the first year) are recorded. `check-block-d-thresholds.mjs` warns when the review is overdue and fails with `--strict` (release readiness); `.github/workflows/block-d-reviews-quarterly.yml` opens the quarter's review issue on the first day of each calendar quarter.
+
 ## Current values
 
 | Key | Value | Requirement | Source of the value | Enforced in Core | Enforced in the database |
@@ -67,13 +69,13 @@ Owner of the review: the Pedagogical Lead (Appendix H, Stage 7), with Product. C
 
 ## Review history
 
-| Date | Keys | Decision | By |
-|---|---|---|---|
-| 2026-09-24 | All rows | Initial values recorded with S07.3. The rest-day count and milestones come from the Bible and OD-7; the per-ten ratio and the 13-year cutoff come from the SPEC; the pause bounds and the contribution cap are Engineering proposals awaiting Product review. | Engineering (S07 lane) |
-| 2026-09-25 | `split.*`, `share.*`, `next_goal.*`, `post_goal.*`, `redemption_timing.*`, `money_events.retention_days` | Initial values recorded with S07.4. The recommended split, the Share limits and windows and the metric bins are Engineering proposals awaiting Product review; the retention bound reuses the learning-events bound. | Engineering (S07 lane) |
-| 2026-09-24 | `autonomy.*`, `decisions.*`, `talk.*` | Initial values recorded with S07.5 (D.17, D.18). Every value is an Engineering proposal awaiting Product and Safety review: Appendix G supports gradual, volitional fading and a mandatory actionable reason, but gives no number for any of them. | Engineering (S07 lane) |
-| 2026-09-24 | `register.*`, `engagement.active_days`, `staff_insight.retention_days` | Initial values recorded with S07.6 (D.6, D.12). The 10-year register cutoff follows Appendix G §1.5 and B.23's graduation; the teen cutoff is D.11's by construction; the active window, the teen's statement lines and the check retention are Engineering proposals awaiting Product review. | Engineering (S07 lane) |
-| 2026-09-24 | `bridge.min_age`, `coaching.reflection_window_minutes`, `research.*` | Initial values recorded with S07.7 (D.19, D.22, D.23). Every value is an Engineering proposal awaiting Product review; the bridge age also needs Legal's view per market. The retention periods of D.21 are policy, not thresholds: they live in docs/operations/block-d-retention.json and FAMILY-DATA-RETENTION.md, checked by their own gate. | Engineering (S07 lane) |
+| Date | Kind | Keys | Decision | By |
+|---|---|---|---|---|
+| 2026-09-24 | engineering | All rows | Initial values recorded with S07.3. The rest-day count and milestones come from the Bible and OD-7; the per-ten ratio and the 13-year cutoff come from the SPEC; the pause bounds and the contribution cap are Engineering proposals awaiting Product review. | Engineering (S07 lane) |
+| 2026-09-25 | engineering | `split.*`, `share.*`, `next_goal.*`, `post_goal.*`, `redemption_timing.*`, `money_events.retention_days` | Initial values recorded with S07.4. The recommended split, the Share limits and windows and the metric bins are Engineering proposals awaiting Product review; the retention bound reuses the learning-events bound. | Engineering (S07 lane) |
+| 2026-09-24 | engineering | `autonomy.*`, `decisions.*`, `talk.*` | Initial values recorded with S07.5 (D.17, D.18). Every value is an Engineering proposal awaiting Product and Safety review: Appendix G supports gradual, volitional fading and a mandatory actionable reason, but gives no number for any of them. | Engineering (S07 lane) |
+| 2026-09-24 | engineering | `register.*`, `engagement.active_days`, `staff_insight.retention_days` | Initial values recorded with S07.6 (D.6, D.12). The 10-year register cutoff follows Appendix G §1.5 and B.23's graduation; the teen cutoff is D.11's by construction; the active window, the teen's statement lines and the check retention are Engineering proposals awaiting Product review. | Engineering (S07 lane) |
+| 2026-09-24 | engineering | `bridge.min_age`, `coaching.reflection_window_minutes`, `research.*` | Initial values recorded with S07.7 (D.19, D.22, D.23). Every value is an Engineering proposal awaiting Product review; the bridge age also needs Legal's view per market. The retention periods of D.21 are policy, not thresholds: they live in docs/operations/block-d-retention.json and FAMILY-DATA-RETENTION.md, checked by their own gate. | Engineering (S07 lane) |
 
 ## What a recalibration looks at
 

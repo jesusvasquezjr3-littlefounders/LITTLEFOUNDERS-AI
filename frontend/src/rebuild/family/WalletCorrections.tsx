@@ -156,7 +156,7 @@ export function WalletCorrections({ copy, progressCopy, locale, dark, kidName, o
                 <Button type="submit" variant="accent" disabled={busy} onClick={remember}>{copy.moveOut}</Button>
                 <Button disabled={busy} onClick={() => { setGoalId(null); setGoalError(null); }}>{copy.close}</Button>
               </div>
-            </form> : <Button disabled={busy} onClick={(event) => { remember(event); setGoalId(goal.id); setGoalAmount(''); setGoalReason(''); setGoalError(null); setDestination('spend'); }}>{copy.moveOut}</Button>}
+            </form> : <Button data-goal-control="move-out" disabled={busy} onClick={(event) => { remember(event); setGoalId(goal.id); setGoalAmount(''); setGoalReason(''); setGoalError(null); setDestination('spend'); }}>{copy.moveOut}</Button>}
           </li>)}</ul>}
         </section>
 

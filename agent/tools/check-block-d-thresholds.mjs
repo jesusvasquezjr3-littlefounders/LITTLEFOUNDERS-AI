@@ -10,10 +10,15 @@
 // unfiltered repo gates, so a migration-only or doc-only change is checked
 // too; backend/src/__tests__/blockDThresholds.test.ts checks the same values
 // against the live Core constants.
+//
+// GAP-FIX-R5 (Appendix H Part 1.4): the log's human review has a due date
+// (block-d-review-cadence.mjs). An overdue review warns here and fails with
+// --strict, which release readiness passes.
 
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { checkReviewCadence, reportCadence, REVIEWS } from './block-d-review-cadence.mjs';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const LOG = 'docs/operations/BLOCK-D-THRESHOLD-LOG.md';
@@ -152,10 +157,14 @@ export function liveInputs(root = ROOT) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const failures = checkThresholds(liveInputs());
-  if (failures.length > 0) {
+  const strict = process.argv.includes('--strict');
+  const inputs = liveInputs();
+  const failures = checkThresholds(inputs);
+  const cadence = checkReviewCadence({ markdown: inputs.log, review: REVIEWS.find((r) => r.id === 'thresholds'), today: new Date().toISOString().slice(0, 10), strict });
+  const late = reportCadence(cadence);
+  if (failures.length > 0 || late) {
     for (const failure of failures) console.error(`FAIL: ${failure}`);
     process.exit(1);
   }
-  console.log(`block-d-thresholds OK — ${RULES.length} thresholds agree across the log, Core and the migrations`);
+  console.log(`block-d-thresholds OK — ${RULES.length} thresholds agree across the log, Core and the migrations; next human review due ${cadence.schedule.due}${strict ? ' (not overdue)' : ''}`);
 }

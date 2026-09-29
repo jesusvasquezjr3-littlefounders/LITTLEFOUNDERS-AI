@@ -26,13 +26,18 @@
 //   - a database proof (database/scripts/*.py) is not one the Block D runner
 //     executes (database/scripts/family-db-verify.mjs BLOCK_D, run in CI on
 //     every build): a proof this gate only reads for a string is not a proof
-//     (Appendix H 2.2 D.1(d), GAP-FIX-R3).
+//     (Appendix H 2.2 D.1(d), GAP-FIX-R3);
+//   - (GAP-FIX-R5, Appendix H Part 1.3) the audit log's rows carry no Kind or
+//     the log states no first due date; the quarterly human audit is overdue
+//     under --strict (release readiness), a warning otherwise
+//     (block-d-review-cadence.mjs).
 // It runs in the unfiltered repo gates: the evidence spans database/,
 // backend/, frontend/ and docs/, and any of them can change alone.
 
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { checkReviewCadence, reportCadence, REVIEWS } from './block-d-review-cadence.mjs';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 export const REGISTRY = 'docs/operations/block-d-controls.json';
@@ -217,11 +222,15 @@ export function liveInputs(root = ROOT) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const strict = process.argv.includes('--strict');
   const inputs = liveInputs();
   const failures = checkControls(inputs);
-  if (failures.length > 0) {
+  // GAP-FIX-R5 (Appendix H Part 1.3): the quarterly human audit has a due date; overdue warns, and fails with --strict (release readiness).
+  const cadence = checkReviewCadence({ markdown: inputs.readFile('docs/operations/NO-UNBACKED-GUARANTEE.md'), review: REVIEWS.find((r) => r.id === 'no-unbacked-guarantee'),
+    today: new Date().toISOString().slice(0, 10), strict });
+  if (reportCadence(cadence) || failures.length > 0) {
     for (const failure of failures) console.error(`FAIL: ${failure}`);
     process.exit(1);
   }
-  console.log(`no-unbacked-guarantee OK — ${inputs.registry.controls.length} controls, each enforced and proved; freeze holds agree; ${inputs.rebuiltSources.length} rebuilt surfaces declare only registered controls`);
+  console.log(`no-unbacked-guarantee OK — ${inputs.registry.controls.length} controls, each enforced and proved; freeze holds agree; ${inputs.rebuiltSources.length} rebuilt surfaces declare only registered controls; next human audit due ${cadence.schedule.due}${strict ? ' (not overdue)' : ''}`);
 }
