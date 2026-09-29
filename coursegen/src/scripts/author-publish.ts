@@ -199,6 +199,7 @@ async function main(): Promise<void> {
           slug: slot.lesson.slug,
           renamedFrom: slot.lesson.renamed_from,
           position: slot.lesson.position,
+          ...(slot.lesson.optional_enrichment !== undefined ? { optionalEnrichment: slot.lesson.optional_enrichment } : {}),
           difficulty: slot.lesson.difficulty,
           estimatedMinutes: documents['es-MX']!.meta.estimated_minutes,
           cast: documents['es-MX']!.meta.cast,

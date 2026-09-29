@@ -1,4 +1,6 @@
 import type { PathwayView } from './pathway/coursePathway.js';
+import { binaryFrontier } from './pathway/coursePathProjection.js';
+import { autonomyOffer, type LearnerRegister } from './learnerRegisterPolicy.js';
 
 /*
  * B.24 (S05.3e): the learner's real autonomy levers.
@@ -24,8 +26,29 @@ import type { PathwayView } from './pathway/coursePathway.js';
  * design-review checklist). The Appendix C adoption metric
  * (learning_autonomy_adoption) reports these three levers only.
  */
-export const AUTONOMY_LEVERS = ['path', 'mentor', 'pace'] as const;
+/*
+ * GAP-FIX-R5 (Product 10 Block B "Age-band registers", autonomy column; B.24):
+ * two more levers, offered by register (learnerRegisterPolicy.AUTONOMY_OFFERS,
+ * read from REGISTERS[register].autonomy):
+ *   approach    which of two or three equally valid, fully graded strategies
+ *               to practise (a v2 document's `approaches`), from 10;
+ *   enrichment  optional depth lessons on the course path, never required,
+ *               for 13-17 and adults.
+ * And the path lever narrows to a binary pick of two recommended next topics
+ * for 6-9 (the young register's 'topic' mechanism).
+ */
+export const AUTONOMY_LEVERS = ['path', 'approach', 'enrichment', 'mentor', 'pace'] as const;
 export type AutonomyLever = (typeof AUTONOMY_LEVERS)[number];
+
+/**
+ * The levers a register offers, in registry order (REGISTERS[register].autonomy
+ * through AUTONOMY_OFFERS): path, Mentor and pace for every band (path is the
+ * binary pick for 6-9), approach from 10-12, enrichment for 13-17 and adults.
+ */
+export function offeredLevers(register: LearnerRegister): AutonomyLever[] {
+  const offer = autonomyOffer(register);
+  return AUTONOMY_LEVERS.filter((lever) => (lever === 'approach' || lever === 'enrichment' ? offer[lever] : true));
+}
 
 /** Personalization that is NOT an autonomy lever. Listed so a review can check it is never counted. */
 export const COSMETIC_PERSONALIZATION = ['avatar', 'nickname', 'backdrop'] as const;
@@ -56,8 +79,10 @@ export function paceStatus(preference: { daily_lesson_goal: number } | null, pas
  * took something other than the recommendation. `null` when the path offered
  * no choice (fewer than two lessons, or the lesson is not on the frontier).
  */
-export function pathChoice(view: Pick<PathwayView, 'frontier' | 'optional'>, lessonId: string): { exercised: boolean } | null {
-  const options = [...new Set([...view.frontier, ...view.optional].map((item) => item.lessonId))];
+export function pathChoice(view: Pick<PathwayView, 'frontier' | 'optional'> & { autonomy?: PathwayView['autonomy'] }, lessonId: string): { exercised: boolean } | null {
+  // 6-9: the choice offered was the binary pick, so only its two lessons are a path choice.
+  const frontier = view.autonomy?.path === 'binary' ? binaryFrontier(view.frontier) : view.frontier;
+  const options = [...new Set([...frontier, ...view.optional].map((item) => item.lessonId))];
   if (options.length < 2 || !options.includes(lessonId)) return null;
   const recommended = view.frontier[0]?.lessonId ?? null;
   return { exercised: recommended !== lessonId };

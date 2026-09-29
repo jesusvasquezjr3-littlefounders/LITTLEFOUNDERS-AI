@@ -1,6 +1,7 @@
 import type { Localized } from '../pedagogy/kcData.js';
 import type { PathwayCourseTree, PathwayFrontierItem, PathwayItemReason } from './coursePathway.js';
 import type { ChapterAccess, KcSatisfaction, PathwayBasis, PathwayStage } from './pathwayPolicy.js';
+import type { AutonomyOffer } from '../learnerRegisterPolicy.js';
 
 /*
  * B.6 / S05.3b — GET /learn/courses/:slug/path. The rebuilt course path needs
@@ -38,6 +39,14 @@ export interface CoursePathProjection {
     lessonId: string; lessonTitle: Json; topicId: string; topicTitle: Json; chapterId: string;
     reason: PathwayItemReason; access: 'pathway' | 'optional'; estimatedMinutes: number; recommended: boolean;
   }>;
+  /**
+   * GAP-FIX-R5 (B.24, Block B autonomy): the levers the learner's register
+   * offers. With `path: 'binary'` (6-9) `items` carries two next steps to pick
+   * between (the recommendation first), never the whole frontier.
+   */
+  autonomy: AutonomyOffer;
+  /** GAP-FIX-R5: "Explore further" — optional depth lessons, only where the register offers enrichment. */
+  enrichment: CoursePathProjection['items'];
   blocked: Array<{ topicId: string; topicTitle: Json; chapterId: string; missingSkills: SkillRef[]; missingTopics: Array<{ id: string; title: Json }> }>;
   skills: Array<SkillRef & { shown: KcSatisfaction }>;
   /** OD-25: a chapter one stage up that mastery can open (the learner confirms), or has opened. */
@@ -94,7 +103,10 @@ export function projectCoursePath(tree: PathwayCourseTree, kcTitles: ReadonlyMap
       state: adventure.state,
       progress: adventure.progress,
     })),
-    items: [...view.frontier, ...view.optional, ...view.known].map(item),
+    // 6-9 (register mechanism 'topic'): a simple binary choice of the next topic, two recommended frontier items.
+    items: [...(view.autonomy.path === 'binary' ? binaryFrontier(view.frontier) : view.frontier), ...view.optional, ...view.known].map(item),
+    autonomy: view.autonomy,
+    enrichment: view.enrichment.map(item),
     blocked: view.blocked.map((b) => ({
       topicId: b.topicId,
       topicTitle: topicIndex.get(b.topicId)?.title ?? {},
@@ -108,4 +120,13 @@ export function projectCoursePath(tree: PathwayCourseTree, kcTitles: ReadonlyMap
     masteryOffers: view.masteryOffers.map((o) => ({ topicId: o.topicId, topicTitle: topicIndex.get(o.topicId)?.title ?? {}, chapterId: o.chapterId, skills: o.skills.map(skill) })),
     masteryCreditedTopicIds: view.masteryCredited,
   };
+}
+
+/** The two next steps a 6-9 learner picks between: the recommendation, then the next pathway item (a different topic). */
+export function binaryFrontier(frontier: readonly PathwayFrontierItem[]): PathwayFrontierItem[] {
+  const pathway = frontier.filter((entry) => entry.access === 'pathway');
+  const first = pathway[0];
+  if (!first) return frontier.slice(0, 2);
+  const second = pathway.find((entry) => entry.topicId !== first.topicId) ?? frontier.find((entry) => entry.lessonId !== first.lessonId);
+  return second ? [first, second] : [first];
 }

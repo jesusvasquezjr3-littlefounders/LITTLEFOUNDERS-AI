@@ -29,7 +29,7 @@ type Copy = {
   signal: Record<LearningQualityReport['judgment'][number]['status'], string>;
   replay: string; replayRate: (shown: number, total: number) => string; replayNone: string; replayLow: string;
   motivation: string; motivationPending: string; restDays: (kept: number, lapsed: number) => string; restDaysNone: string;
-  lever: Record<'path' | 'mentor' | 'pace', string>; adoption: (exercised: number, offered: number) => string; adoptionNone: string;
+  lever: Record<'path' | 'approach' | 'enrichment' | 'mentor' | 'pace', string>; adoption: (exercised: number, offered: number) => string; adoptionNone: string;
   signals: string; signalsPending: string; transfer: (kc: string, practice: string, transfer: string) => string; transferNone: string;
   errorSplit: (structure: number, answer: number) => string; errorNone: string; unaided: string; stage: Record<'concrete' | 'pictorial' | 'abstract', string>;
   detection: (dPrime: string, responses: number) => string; detectionNone: string;
@@ -61,7 +61,7 @@ const copy: Record<Locale, Copy> = {
     replay: 'Replay notice', replayRate: (s, n) => `${s} of ${n} lower replays showed the saved best.`, replayNone: 'No lower replays in this window.', replayLow: 'Below the 100% target.',
     motivation: 'Motivation signals', motivationPending: 'Available once the motivation migration is applied.',
     restDays: (k, n) => `Rest days kept ${k} of ${n} streaks that met a missed day.`, restDaysNone: 'No missed days in this window.',
-    lever: { path: 'Path choice', mentor: 'Mentor choice', pace: 'Pace choice' }, adoption: (e, o) => `${e} of ${o} chose it themselves.`, adoptionNone: 'No data in this window.',
+    lever: { path: 'Path choice', approach: 'Approach choice', enrichment: 'Explore further', mentor: 'Mentor choice', pace: 'Pace choice' }, adoption: (e, o) => `${e} of ${o} chose it themselves.`, adoptionNone: 'No data in this window.',
     signals: 'Lesson signals', signalsPending: 'Available once the lesson signals migration is applied.',
     transfer: (kc, p, t) => `${kc}: practice ${p}, transfer ${t}.`, transferNone: 'No tagged practice or transfer items in this window.',
     errorSplit: (s, a) => `${s} setup errors, ${a} number errors on first tries.`, errorNone: 'No first-try errors in this window.',
@@ -95,7 +95,7 @@ const copy: Record<Locale, Copy> = {
       matching: 'Eligió las palabras de la regla', not_p_checked: 'Volteó una que no la rompe', all_cards: 'Volteó todas las tarjetas' },
     reasoningCodes: 'Elecciones en diagramas y clasificación', reasoningCode: { occupancy: 'Marcó partes equivocadas', conclusion: 'Sacó una conclusión equivocada', rule_switch: 'Siguió con la regla anterior' },
     restDays: (k, n) => `Los días de descanso mantuvieron ${k} de ${n} rachas con un día sin práctica.`, restDaysNone: 'No hubo días sin práctica en este periodo.',
-    lever: { path: 'Elección de ruta', mentor: 'Elección de Mentor', pace: 'Elección de ritmo' }, adoption: (e, o) => `${e} de ${o} lo eligieron por su cuenta.`, adoptionNone: 'Sin datos en este periodo.',
+    lever: { path: 'Elección de ruta', approach: 'Elección de estrategia', enrichment: 'Explorar más', mentor: 'Elección de Mentor', pace: 'Elección de ritmo' }, adoption: (e, o) => `${e} de ${o} lo eligieron por su cuenta.`, adoptionNone: 'Sin datos en este periodo.',
   },
   'pt-BR': {
     title: 'Qualidade da aprendizagem', intro: (l, u) => `A prática deve ter ${l}-${u}% de acertos na primeira tentativa por lição.`,
@@ -121,7 +121,7 @@ const copy: Record<Locale, Copy> = {
       matching: 'Escolheu as palavras da regra', not_p_checked: 'Virou uma que não a quebra', all_cards: 'Virou todas as cartas' },
     reasoningCodes: 'Escolhas em diagramas e separação', reasoningCode: { occupancy: 'Marcou partes erradas', conclusion: 'Tirou a conclusão errada', rule_switch: 'Manteve a regra antiga' },
     restDays: (k, n) => `Os dias de descanso mantiveram ${k} de ${n} sequências com um dia sem prática.`, restDaysNone: 'Nenhum dia sem prática neste período.',
-    lever: { path: 'Escolha de trilha', mentor: 'Escolha de Mentor', pace: 'Escolha de ritmo' }, adoption: (e, o) => `${e} de ${o} escolheram por conta própria.`, adoptionNone: 'Sem dados neste período.',
+    lever: { path: 'Escolha de trilha', approach: 'Escolha de estratégia', enrichment: 'Explorar mais', mentor: 'Escolha de Mentor', pace: 'Escolha de ritmo' }, adoption: (e, o) => `${e} de ${o} escolheram por conta própria.`, adoptionNone: 'Sem dados neste período.',
   },
 };
 

@@ -78,6 +78,9 @@ export const RECORDABLE_EVENTS = [
   // Appendix C 1.2 Parent Time-to-Value (GAP-FIX-R2, *_parent_time_to_value.sql).
   // Both written by Core only (SERVER_ONLY_EVENTS), once per account.
   'parent_signup_completed', 'parent_first_value',
+  // B.24 / Block B autonomy levers (GAP-FIX-R5, *_learning_autonomy_levers.sql).
+  // All three written by Core only (SERVER_ONLY_EVENTS).
+  'approach_choice', 'enrichment_offer', 'enrichment_open',
 ] as const;
 
 /**
@@ -86,6 +89,7 @@ export const RECORDABLE_EVENTS = [
  */
 export const SERVER_ONLY_EVENTS: ReadonlySet<string> = new Set([
   'replay_below_best', 'streak_rest_day', 'streak_restart', 'path_choice', 'parent_signup_completed', 'parent_first_value',
+  'approach_choice', 'enrichment_offer', 'enrichment_open',
   ...LEARN_QA_EVENTS,
 ]);
 

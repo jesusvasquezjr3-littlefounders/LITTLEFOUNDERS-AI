@@ -56,7 +56,7 @@ export const learningQualityReportSchema = z.object({
   motivation: z.object({
     restDays: z.object({ learners_with_lapse: count, kept_by_rest_days: count, restarted: count,
       utilization_rate: z.number().min(0).max(1).nullable(), rest_days_used: count }),
-    autonomy: z.array(z.object({ lever: z.enum(['path', 'mentor', 'pace']), offered: count, exercised: count,
+    autonomy: z.array(z.object({ lever: z.enum(['path', 'approach', 'enrichment', 'mentor', 'pace']), offered: count, exercised: count,
       adoption_rate: z.number().min(0).max(1).nullable() })),
   }).nullable().optional(),
   /*

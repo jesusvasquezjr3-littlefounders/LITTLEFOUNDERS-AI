@@ -35,7 +35,8 @@ import {
   type LearnerPathwayContext,
 } from '../services/pathway/pathwayData.js';
 import { chapterPolicy, coursePrerequisiteDecision, resolvePathway } from '../services/pathway/pathwayPolicy.js';
-import { gradeV2Visual, projectAdventureTheme, projectV2MentorStage, v2NarrationAudio, v2ViewedSegmentIds, stripV2MentorStage, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, v2CpaSkippedSegmentIds, v2FirstUnaidedStage, v2GradePrerequisiteSegmentId, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
+import { v2ApproachOf } from '../services/v2SegmentFamilies.js';
+import { gradeV2Visual, v2ApproachIds, v2ApproachRefusal, projectAdventureTheme, projectV2MentorStage, v2NarrationAudio, v2ViewedSegmentIds, stripV2MentorStage, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, v2CpaSkippedSegmentIds, v2FirstUnaidedStage, v2GradePrerequisiteSegmentId, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
 import { mintLessonAttemptToken, reissueLessonAttemptToken, verifyLessonAttemptToken } from '../services/lessonAttemptToken.js';
 import { getOwnLearnerIntelligence, recordExperimentExposure } from '../services/learningIntel.js';
 import { learnRegisterRouter } from './learnRegister.js';
@@ -58,6 +59,7 @@ import {
   createV2LessonRun,
   getV2LessonAttemptNoncesForRecovery,
   getV2LessonRunForRecovery,
+  pinV2RunApproach,
   getV2MetSegmentReceiptsForRecovery,
   recordLessonGrade,
   recordV2CpaGrade,
@@ -483,7 +485,7 @@ function groupBy<T, K>(rows: readonly T[], key: (row: T) => K): Map<K, T[]> {
 }
 
 interface LessonContext {
-  lessonRow: { id: string; slug: string; title: Record<string, unknown>; difficulty: number; xp_total: number; estimated_minutes: number };
+  lessonRow: { id: string; slug: string; title: Record<string, unknown>; difficulty: number; xp_total: number; estimated_minutes: number; optional_enrichment?: boolean };
   topic: { id: string; slug: string; title?: unknown };
   course: CourseHierarchyRow;
   tree: LearnerCourseTree;
@@ -520,7 +522,7 @@ async function resolveLessonContext(accessToken: string, userId: string, lessonI
  */
 export function recordServerLearnEvent(
   user: AuthedUser,
-  event: 'replay_below_best' | 'streak_rest_day' | 'streak_restart' | 'path_choice' | LearnQaEvent,
+  event: 'replay_below_best' | 'streak_rest_day' | 'streak_restart' | 'path_choice' | 'approach_choice' | 'enrichment_offer' | 'enrichment_open' | LearnQaEvent,
   lessonId: string | null,
   extra: { value?: number; clientEventId?: string; segmentId?: string } = {},
 ): void {
@@ -803,7 +805,14 @@ export function learnRouter(): Router {
     const entry = await courseEntry(user, course, res.locals.ageScreen as AgeScreenState);
     if (entry.kind === 'refused') return fail(res, entry.status, entry.code, entry.message, entry.details);
     if (!entry.load.tree.pathway || !entry.load.pathway) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
-    return ok(res, projectCoursePath(entry.load.tree as PathwayCourseTree, entry.load.pathway.kcTitles));
+    const projection = projectCoursePath(entry.load.tree as PathwayCourseTree, entry.load.pathway.kcTitles);
+    // GAP-FIX-R5 (B.24; Appendix C 1.2 adoption): the denominator of the enrichment lever, once per learner, course and day.
+    if (projection.enrichment.length > 0) {
+      recordServerLearnEvent(user, 'enrichment_offer', null, {
+        clientEventId: deterministicEventId(`enrichment_offer:${user.id}:${course.id}:${new Date().toISOString().slice(0, 10)}`),
+      });
+    }
+    return ok(res, projection);
   });
 
   /*
@@ -961,6 +970,13 @@ export function learnRouter(): Router {
         clientEventId: deterministicEventId(`path_choice:${user.id}:${lessonId}:${new Date().toISOString().slice(0, 10)}`),
       });
     }
+    // GAP-FIX-R5 (B.24): opening an optional depth lesson is the enrichment lever, once per learner, lesson and day.
+    if (ctx.lessonRow.optional_enrichment === true) {
+      recordServerLearnEvent(user, 'enrichment_open', lessonId, {
+        value: 1,
+        clientEventId: deterministicEventId(`enrichment_open:${user.id}:${lessonId}:${new Date().toISOString().slice(0, 10)}`),
+      });
+    }
 
     return ok(res, {
       lesson: {
@@ -1060,6 +1076,8 @@ export function learnRouter(): Router {
             .map((receipt) => receipt.segment_id)])];
           return ok(res, {
             run_id: prior.id, version_id: document.version_id, expires_at: prior.expires_at, resumed: true, met_segment_ids: metSegmentIds,
+            // GAP-FIX-R5 (B.24): the approach this run pinned, so the player resumes that chain (null before choosing).
+            ...(document.approaches ? { approach_id: prior.approach_id ?? null } : {}),
             attempted_segment_ids: attemptedSegmentIds,
             viewed_segment_ids: viewedSegmentIds,
             attempt_tokens: Object.fromEntries(serverSegmentIds.map((segmentId, index) => [segmentId, reissued[index]!.token])),
@@ -1103,11 +1121,60 @@ export function learnRouter(): Router {
       expires_at: expiresAt,
       resumed: false,
       met_segment_ids: [],
+      ...(document.approaches ? { approach_id: null } : {}),
       attempted_segment_ids: v2CpaSkippedSegmentIds(document, cpaEntryStage),
       viewed_segment_ids: [],
       ...(cpaEntryStage ? { cpa_entry_stage: cpaEntryStage } : {}),
       attempt_tokens: Object.fromEntries(issued.map((item) => [item.segmentId, item.token])),
     });
+  });
+
+  /*
+   * 4a. POST /lessons/:id/v2-runs/:runId/approach — GAP-FIX-R5 (Product 10
+   * Block B "Age-band registers" autonomy; B.24): the learner chooses which of
+   * the lesson's equally valid approach chains to practise. Core checks the
+   * run is theirs and open, the pinned document offers that approach (and its
+   * age band offers the lever: the contract refuses approaches below 10), and
+   * pins it once through pin_v2_run_approach. The first pin wins: a replay of
+   * the same choice answers the same, a different later choice is 409. The
+   * adoption signal is approach_choice (1 = not the suggested first approach).
+   */
+  const ApproachBody = z.object({ approach_id: z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/) }).strict();
+  router.post('/lessons/:id/v2-runs/:runId/approach', async (req, res) => {
+    const parsed = ApproachBody.safeParse(req.body);
+    const runId = z.string().uuid().safeParse(req.params.runId);
+    if (!parsed.success || !runId.success) return fail(res, 400, 'VALIDATION_ERROR', 'Invalid input');
+    const user = authedUser(res);
+    const lessonId = req.params.id as string;
+    const ctx = await resolveLessonContext(user.accessToken, user.id, lessonId, res.locals.ageScreen as AgeScreenState);
+    if (ctx === 'unreachable') return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+    if (ctx === 'not_found') return fail(res, 404, NOT_FOUND, 'No such lesson');
+    const refusal = lessonAdmissionRefusal(ctx.tree, lessonId);
+    if (refusal) return fail(res, 403, refusal.code, refusal.message);
+    const run = await getV2LessonRunForRecovery(user.id, lessonId, runId.data);
+    if (run === undefined) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+    if (!run || run.completed_at) return fail(res, 409, 'UNSUPPORTED_LESSON', 'This lesson run is not available');
+    const version = await getV2LessonDocumentVersion(run.document_version_id);
+    if (version === undefined) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+    if (!version || version.lesson_id !== lessonId) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
+    const profiles = await getFullOwnProfile(user.accessToken, user.id);
+    if (!hasV2LessonEligibility(res, version.schema_version, version.document, profiles?.[0]?.birth_date)) return;
+    const document = validateV2LessonForGrading(stripAnswers(version.document), version.answer_keys, { lessonId, locale: version.locale });
+    if (!document) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
+    const offered = v2ApproachIds(document);
+    if (!offered.includes(parsed.data.approach_id)) return fail(res, 400, 'VALIDATION_ERROR', 'This lesson offers no such approach');
+    if (run.approach_id && run.approach_id !== parsed.data.approach_id) return fail(res, 409, 'APPROACH_CHOSEN', 'This run already chose its approach');
+    const pinned = run.approach_id ?? await pinV2RunApproach({ p_user_id: user.id, p_run_id: run.id, p_approach_id: parsed.data.approach_id });
+    if (pinned === undefined) return fail(res, 502, 'INTERNAL', 'Could not record this choice');
+    if (pinned === null) return fail(res, 409, 'UNSUPPORTED_LESSON', 'This lesson run is not available');
+    if (pinned !== parsed.data.approach_id) return fail(res, 409, 'APPROACH_CHOSEN', 'This run already chose its approach');
+    if (!run.approach_id) {
+      recordServerLearnEvent(user, 'approach_choice', lessonId, {
+        value: offered.indexOf(pinned) > 0 ? 1 : 0,
+        clientEventId: deterministicEventId(`approach_choice:${user.id}:${run.id}`),
+      });
+    }
+    return ok(res, { approach_id: pinned });
   });
 
   // 4b. POST /lessons/:id/v2-runs/:runId/views — GAP-FIX-R1 (OD-17, B.7):
@@ -1134,6 +1201,9 @@ export function learnRouter(): Router {
     const document = validateV2LessonForGrading(stripAnswers(version.document), version.answer_keys, { lessonId, locale: version.locale });
     if (!document) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
     if (!v2ViewedSegmentIds(document).includes(parsed.data.segment_id)) return fail(res, 400, 'VALIDATION_ERROR', 'This step is not a viewed step');
+    // GAP-FIX-R5 (B.24): a step inside an approach chain counts only for the approach this run chose.
+    const viewRefusal = v2ApproachRefusal(document, parsed.data.segment_id, run.approach_id);
+    if (viewRefusal) return fail(res, 409, viewRefusal, viewRefusal === 'APPROACH_REQUIRED' ? 'Choose how to practise first' : 'This step belongs to another approach');
     const stored = await recordV2SegmentView({ p_user_id: user.id, p_run_id: run.id, p_document_version_id: run.document_version_id, p_segment_id: parsed.data.segment_id });
     if (!stored) return fail(res, 502, 'INTERNAL', 'Could not record this step');
     // Best-effort and after the view: time never decides whether the step counts.
@@ -1209,6 +1279,13 @@ export function learnRouter(): Router {
         uid: user.id, vid: picked.document_version_id, lid: lessonId, loc: document.locale, sid: segmentId, rid: parsed.data.run_id,
       });
       if (verified.status !== 'valid') return fail(res, 403, 'INVALID_ATTEMPT_TOKEN', 'This lesson attempt is no longer valid');
+      // GAP-FIX-R5 (B.24): a segment inside an approach chain is graded only under the approach the run pinned.
+      if (v2ApproachOf(document.approaches, segmentId) !== null) {
+        const pinnedRun = await getV2LessonRunForRecovery(user.id, lessonId, parsed.data.run_id);
+        if (pinnedRun === undefined) return fail(res, 502, 'INTERNAL', 'Could not read this lesson attempt');
+        const approachRefusal = v2ApproachRefusal(document, segmentId, pinnedRun?.approach_id);
+        if (approachRefusal) return fail(res, 409, approachRefusal, approachRefusal === 'APPROACH_REQUIRED' ? 'Choose how to practise first' : 'This step belongs to another approach');
+      }
       const graded = gradeV2Visual(document, picked.answer_keys as Record<string, unknown>, segmentId, answer);
       if (!graded) {
         // Part 8: a browser that read the refused answer as valid disagreed with Core; the miss is counted.
@@ -1425,8 +1502,10 @@ export function learnRouter(): Router {
       if (!hasV2LessonEligibility(res, version.schema_version, version.document, profiles?.[0]?.birth_date)) return;
       const document = validateV2LessonForGrading(stripAnswers(version.document), version.answer_keys, { lessonId, locale: version.locale });
       if (!document) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
-      const requiredSegmentIds = v2CompletionRequiredSegmentIds(document);
-      const viewedSegmentIds = v2ViewedSegmentIds(document);
+      // GAP-FIX-R5 (B.24): a lesson with approaches completes through the chosen chain; without a choice there is nothing to complete.
+      if (document.approaches && !run.approach_id) return fail(res, 409, 'APPROACH_REQUIRED', 'Choose how to practise first');
+      const requiredSegmentIds = v2CompletionRequiredSegmentIds(document, run.approach_id ?? null);
+      const viewedSegmentIds = v2ViewedSegmentIds(document, run.approach_id ?? null);
       // GAP-FIX-R1 (OD-17): met receipts for graded steps, view receipts for the rest.
       const completion = await completeV2MixedLesson({
         p_user_id: user.id, p_lesson_id: lessonId, p_run_id: run.id, p_document_version_id: run.document_version_id,

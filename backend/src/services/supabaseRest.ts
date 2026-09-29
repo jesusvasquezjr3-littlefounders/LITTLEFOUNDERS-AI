@@ -890,9 +890,11 @@ export interface LessonHierarchyRow {
   difficulty: number;
   xp_total: number;
   estimated_minutes: number;
+  /** GAP-FIX-R5 (B.24, Block B autonomy): depth/enrichment, never required for progress, badges or OD-25 unlocks. */
+  optional_enrichment?: boolean;
 }
 
-const LESSON_FIELDS = 'id,topic_id,position,slug,title,difficulty,xp_total,estimated_minutes';
+const LESSON_FIELDS = 'id,topic_id,position,slug,title,difficulty,xp_total,estimated_minutes,optional_enrichment';
 
 export function getLessonsByTopicIds(accessToken: string, topicIds: string[]): Promise<LessonHierarchyRow[] | null> {
   if (topicIds.length === 0) return Promise.resolve([]);
@@ -1068,12 +1070,14 @@ export interface V2LessonRunRecoveryRow {
   expires_at: string;
   completed_at: string | null;
   cpa_entry_stage?: 'concrete' | 'pictorial' | 'abstract' | null;
+  /** GAP-FIX-R5 (B.24): the approach chain the learner pinned on this run, or null before choosing. */
+  approach_id?: string | null;
 }
 
 /** Service-only lookup for a checkpointed run; it never exposes the row to the browser. */
 export async function getV2LessonRunForRecovery(userId: string, lessonId: string, runId: string): Promise<V2LessonRunRecoveryRow | null | undefined> {
   const rows = await rest<V2LessonRunRecoveryRow[]>(
-    `/lesson_v2_runs?id=eq.${eu(runId)}&user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}&select=id,user_id,lesson_id,locale,document_version_id,expires_at,completed_at,cpa_entry_stage`,
+    `/lesson_v2_runs?id=eq.${eu(runId)}&user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}&select=id,user_id,lesson_id,locale,document_version_id,expires_at,completed_at,cpa_entry_stage,approach_id`,
     serviceToken(),
   );
   if (rows === null) return undefined;
@@ -1150,6 +1154,18 @@ export async function recordV2SegmentView(payload: { p_user_id: string; p_run_id
 export async function recordV2TimeOnTask(payload: { p_user_id: string; p_run_id: string; p_segment_id: string; p_receipt_jti: string | null; p_seconds: number }): Promise<boolean> {
   const result = await rest<unknown>('/rpc/record_v2_time_on_task', serviceToken(), { method: 'POST', body: JSON.stringify(payload) });
   return result === true;
+}
+
+/**
+ * GAP-FIX-R5 (B.24): pin the learner's approach on the run (pin_v2_run_approach,
+ * service role). Answers the pinned approach (an earlier pin wins), null when
+ * the database refused the choice, undefined when it could not be reached.
+ */
+export async function pinV2RunApproach(payload: { p_user_id: string; p_run_id: string; p_approach_id: string }): Promise<string | null | undefined> {
+  const result = await restRaw('/rpc/pin_v2_run_approach', serviceToken(), { method: 'POST', body: JSON.stringify(payload) });
+  if (!result.ok) return result.status >= 500 || result.status === 0 ? undefined : null;
+  const body = result.body as unknown;
+  return typeof body === 'string' ? body : null;
 }
 
 /** Client-safe resume projection of the non-scored segments already acted on in a run. */

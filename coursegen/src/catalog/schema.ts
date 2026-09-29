@@ -172,6 +172,15 @@ export const lessonBlueprintSchema = z.object({
    * after the rename has shipped everywhere.
    */
   renamed_from: slugSchema.optional(),
+  /**
+   * B.24 / Product 10 Block B autonomy (GAP-FIX-R5): an optional depth or
+   * enrichment lesson. Core serves it on the course path as optional ("Explore
+   * further") to the registers whose mechanism offers enrichment (13-17,
+   * adults) and never counts it toward progress, badges or OD-25 unlocks
+   * (lessons.optional_enrichment, migration *_learning_autonomy_levers.sql).
+   * A topic keeps at least one required lesson.
+   */
+  optional_enrichment: z.boolean().optional(),
   micro_objective: z.string().min(1).max(300),
   narrative_beat: z.string().min(1).max(600),
   difficulty: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]),
@@ -342,6 +351,10 @@ export const topicBlueprintSchema = z
     /** Optional, teaching topics only (§3.2) — hand-authored placement-quiz probe override; Forge authors one automatically when absent. */
     placement_probe: placementProbeCatalogSchema.optional(),
     lessons: z.array(lessonBlueprintSchema).min(1),
+  })
+  .refine((t) => t.lessons.some((lesson) => lesson.optional_enrichment !== true), {
+    message: 'a topic needs at least one required lesson; optional enrichment never stands alone (B.24)',
+    path: ['lessons'],
   })
   .refine((t) => t.kind === 'teaching' || (t.review_of !== undefined && t.review_of.length > 0), {
     message: 'review-kind topics (review_spaced/review_interleaved/review_quest) require a non-empty review_of',

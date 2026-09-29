@@ -20,7 +20,7 @@ test('every learning verifier exists and is listed once', () => {
   for (const name of LEARNING) assert.ok(files.includes(name), `${name} is missing from database/scripts`);
   assert.equal(new Set(LEARNING).size, LEARNING.length);
   for (const name of ['verify-placement-postgres.py', 'verify-v2-learning-postgres.py', 'verify-learning-r2-postgres.py', 'verify-learning-r3-postgres.py',
-    'verify-learning-r4-postgres.py', 'verify-pathway-od25-postgres.py', 'verify-completion-postgres.py', 'verify-course-publish-postgres.py']) {
+    'verify-learning-r4-postgres.py', 'verify-learning-r5-postgres.py', 'verify-pathway-od25-postgres.py', 'verify-completion-postgres.py', 'verify-course-publish-postgres.py']) {
     assert.ok(LEARNING.includes(name), name);
   }
 });

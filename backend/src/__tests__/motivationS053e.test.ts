@@ -7,7 +7,8 @@ import type { FakeDb, FakeRow } from './fakePostgrest.js';
 import { createFakeFetch } from './fakePostgrest.js';
 import { createNarrativeFakeFetch } from './narrativeFakeRpc.js';
 import { LESSON_1_ID, makeDb } from './learnFixtures.js';
-import { AUTONOMY_LEVERS, COSMETIC_PERSONALIZATION, pathChoice, paceStatus } from '../services/autonomy.js';
+import { AUTONOMY_LEVERS, COSMETIC_PERSONALIZATION, offeredLevers, pathChoice, paceStatus } from '../services/autonomy.js';
+import { AUTONOMY_OFFERS, LEARNER_REGISTERS, REGISTERS } from '../services/learnerRegisterPolicy.js';
 import { CELEBRATION_MILESTONES, badgeEarnedNow, completionCelebrations, courseCompletedNow } from '../services/celebrationBudget.js';
 import { RECORDABLE_EVENTS, SERVER_ONLY_EVENTS } from '../services/insights.js';
 
@@ -228,7 +229,8 @@ describe('B.21 — the habit streak: rest days, a resting run, and the permanent
     expect(new Set(res.body.data.streak.week.map((day: { state: string }) => day.state))).not.toContain('rest');
     expect(res.body.data.streak.week.find((day: { date: string }) => day.date === TODAY).state).toBe('today');
     expect(stats(ADULT)).toEqual(before);
-    expect(res.body.data.levers).toEqual(['path', 'mentor', 'pace']);
+    // GAP-FIX-R5: an adult's register ('full') offers every lever.
+    expect(res.body.data.levers).toEqual(['path', 'approach', 'enrichment', 'mentor', 'pace']);
     expect(JSON.stringify(res.body.data)).not.toMatch(/avatar/);
   });
 
@@ -365,8 +367,29 @@ describe('B.24 — the learner\'s own pace, and autonomy that is never an avatar
     expect(built.db.learning_pace_preferences ?? []).toEqual([]);
   });
 
-  it('the lever registry is path, Mentor and pace; cosmetic personalization is never a lever', () => {
-    expect(AUTONOMY_LEVERS).toEqual(['path', 'mentor', 'pace']);
+  it('GAP-FIX-R5: /learn/rhythm lists the levers of the register the caller is in (6-9 binary path, 13-17 enrichment)', async () => {
+    const kid = await get(KID7, `/learn/rhythm?local_date=${TODAY}`);
+    expect(kid.status, JSON.stringify(kid.body)).toBe(200);
+    expect(kid.body.data.levers).toEqual(['path', 'mentor', 'pace']);
+    expect(kid.body.data.autonomy).toMatchObject({ path: 'binary', approach: false, enrichment: false });
+    const teen = await get(TEEN15, `/learn/rhythm?local_date=${TODAY}`);
+    expect(teen.body.data.levers).toEqual(['path', 'approach', 'enrichment', 'mentor', 'pace']);
+    expect(teen.body.data.autonomy).toMatchObject({ path: 'open', approach: true, enrichment: true });
+  });
+
+  it('GAP-FIX-R5: the register-to-lever mapping reads REGISTERS[register].autonomy (Product 10 Block B autonomy column)', () => {
+    expect(Object.fromEntries(LEARNER_REGISTERS.map((register) => [register, REGISTERS[register].autonomy])))
+      .toEqual({ young: 'topic', transition: 'approach', teen: 'path-pace', adult: 'full' });
+    expect(offeredLevers('young')).toEqual(['path', 'mentor', 'pace']);
+    expect(AUTONOMY_OFFERS.topic.path).toBe('binary');
+    expect(offeredLevers('transition')).toEqual(['path', 'approach', 'mentor', 'pace']);
+    expect(offeredLevers('teen')).toEqual(['path', 'approach', 'enrichment', 'mentor', 'pace']);
+    expect(offeredLevers('adult')).toEqual(['path', 'approach', 'enrichment', 'mentor', 'pace']);
+    for (const register of LEARNER_REGISTERS) expect(offeredLevers(register)).not.toContain('avatar');
+  });
+
+  it('the lever registry is path, approach, enrichment, Mentor and pace; cosmetic personalization is never a lever', () => {
+    expect(AUTONOMY_LEVERS).toEqual(['path', 'approach', 'enrichment', 'mentor', 'pace']);
     for (const cosmetic of COSMETIC_PERSONALIZATION) expect(AUTONOMY_LEVERS as readonly string[]).not.toContain(cosmetic);
     expect(paceStatus({ daily_lesson_goal: 9 }, 5)).toMatchObject({ goal: 1 });
     const item = (lessonId: string) => ({ lessonId, topicId: 't', chapterId: 'c', reason: 'next' as const, access: 'pathway' as const });

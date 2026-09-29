@@ -119,6 +119,8 @@ export interface V2PublicDocument {
   segments: V2Segment[];
   representation_progressions?: unknown[];
   mentor_stage?: { character: string; scene: string };
+  /** B.24 / Block B autonomy (GAP-FIX-R5): two or three equally valid, fully graded chains for one skill (10+). */
+  approaches?: { options: Array<{ id: string; label: string; segment_ids: string[] }> };
 }
 
 /**

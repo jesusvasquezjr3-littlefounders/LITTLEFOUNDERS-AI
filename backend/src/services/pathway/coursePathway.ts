@@ -1,4 +1,5 @@
 import type { AdventureNode, CourseTree, LessonNode, TopicNode } from '../courseTree.js';
+import { autonomyOffer, type AutonomyOffer, type LearnerRegister } from '../learnerRegisterPolicy.js';
 import type { LessonState } from '../unlockRules.js';
 import {
   chapterPolicy,
@@ -60,6 +61,14 @@ export interface PathwayView {
   optional: PathwayFrontierItem[];
   /** Topics whose skills are already shown (course or Mentor) but that are not the next step of their saga (F8). */
   known: PathwayFrontierItem[];
+  /**
+   * GAP-FIX-R5 (B.24, Block B autonomy "optional depth/enrichment tracks"):
+   * enrichment lessons open now, served only where the learner's register
+   * offers enrichment (13-17, adults). Never required, never counted.
+   */
+  enrichment: PathwayFrontierItem[];
+  /** GAP-FIX-R5: the levers the learner's register offers (REGISTERS[register].autonomy). */
+  autonomy: AutonomyOffer;
   blocked: PathwayBlockedItem[];
   /** Unsatisfied prerequisites taught only outside the pathway: suggested, never required (F2, F5). */
   advisorySkills: string[];
@@ -90,7 +99,7 @@ export interface PathwayView {
   graphPriorFraction: number | null;
 }
 
-export type PathwayItemReason = FrontierItem['reason'] | 'known';
+export type PathwayItemReason = FrontierItem['reason'] | 'known' | 'enrichment';
 
 export interface PathwayEarlyAccess {
   chapterId: string;
@@ -190,6 +199,7 @@ function chaptersFromTree(tree: CourseTree, inputs: CoursePathwayInputs): {
           // OD-25: a topic the learner accepted as done on Mentor mastery reads as credited, like a placement credit.
           const masteryCredited = inputs.masteryCreditedTopicIds?.has(topic.id) ?? false;
           for (const lesson of topic.lessons) {
+            if (lesson.optionalEnrichment) continue;
             if (lesson.placementCredited || (masteryCredited && lesson.state !== 'passed')) credited.add(lesson.id);
             else if (lesson.state === 'passed') passed.add(lesson.id);
           }
@@ -198,7 +208,8 @@ function chaptersFromTree(tree: CourseTree, inputs: CoursePathwayInputs): {
             path,
             position: topic.position,
             kind: (['teaching', 'review_spaced', 'review_interleaved', 'review_quest'] as const).find((k) => k === topic.kind) ?? 'teaching',
-            lessonIds: byPosition(topic.lessons).map((l) => l.id),
+            // GAP-FIX-R5: an enrichment lesson is never one of the lessons a topic requires (progress, badges, OD-25).
+            lessonIds: byPosition(topic.lessons).filter((l) => !l.optionalEnrichment).map((l) => l.id),
             hardPrerequisites: topic.prerequisites.filter((p) => p.strength === 'hard').map((p) => p.path),
             reviewOf: topic.reviewOf,
           };
@@ -350,6 +361,36 @@ function masteryOffers(
   return out;
 }
 
+/** The register a pathway stage reads (the stages are the registers' bands). */
+const STAGE_REGISTER: Readonly<Record<PathwayStage, LearnerRegister>> = { child: 'young', tween: 'transition', teen: 'teen', adult: 'adult' };
+
+/**
+ * GAP-FIX-R5: the enrichment lessons open now. A topic's enrichment opens once
+ * the learner has reached it (it is on the frontier, known or complete) in a
+ * chapter they may play; a passed enrichment lesson is not offered again.
+ */
+function enrichmentItems(tree: CourseTree, access: ReadonlyMap<string, ChapterAccess>, reached: ReadonlySet<string>, evidence: LearnerEvidence,
+  chapters: readonly PathwayChapter[]): PathwayFrontierItem[] {
+  const out: PathwayFrontierItem[] = [];
+  const topics = new Map(chapters.flatMap((chapter) => chapter.sagas.flatMap((saga) => saga.topics.map((topic) => [topic.id, topic] as const))));
+  for (const adventure of byPosition(tree.adventures)) {
+    const chapterAccess = access.get(adventure.id) ?? 'closed';
+    if (chapterAccess === 'closed') continue;
+    for (const saga of byPosition(adventure.sagas)) {
+      for (const topic of byPosition(saga.topics)) {
+        const pathwayTopic = topics.get(topic.id);
+        const complete = pathwayTopic ? topicCompletion(pathwayTopic, evidence).complete : false;
+        if (!reached.has(topic.id) && !complete) continue;
+        for (const lesson of byPosition(topic.lessons)) {
+          if (!lesson.optionalEnrichment || lesson.state === 'passed') continue;
+          out.push({ lessonId: lesson.id, topicId: topic.id, chapterId: adventure.id, reason: 'enrichment', access: 'optional' });
+        }
+      }
+    }
+  }
+  return out;
+}
+
 /** Apply the pathway engine to an assembled tree. The input tree is not mutated. */
 export function applyCoursePathway(tree: CourseTree, inputs: CoursePathwayInputs): PathwayCourseTree {
   const { chapters, kcsByPath, topicIdByPath, evidence } = chaptersFromTree(tree, inputs);
@@ -369,12 +410,16 @@ export function applyCoursePathway(tree: CourseTree, inputs: CoursePathwayInputs
   const legacyStage = legacyCourseStage(chapters.map((c) => c.policy));
   const stage = resolution.pathwayStage;
   const placementRequired = stage !== null && !inputs.placedStages.has(stage) && !(inputs.hasLegacyPlacement && legacyStage === stage);
+  // GAP-FIX-R5 (B.24): the register decides the levers; enrichment only where it offers depth tracks.
+  const autonomy = autonomyOffer(STAGE_REGISTER[resolution.learnerStage]);
+  const reached = new Set([...frontier.items, ...optional, ...known].map((i) => i.topicId));
+  const enrichment = autonomy.enrichment ? enrichmentItems(tree, access, reached, evidence, chapters) : [];
 
   // Lesson states: the frontier's first pathway item is `current`, every other
   // offered lesson is `available`, passed and credited lessons stay `passed`,
   // and everything else — every lesson of a closed chapter included — is locked.
   const recommended = frontier.items.find((i) => i.access === 'pathway')?.lessonId ?? null;
-  const openLessons = new Set([...frontier.items, ...optional, ...known].map((i) => i.lessonId));
+  const openLessons = new Set([...frontier.items, ...optional, ...known, ...enrichment].map((i) => i.lessonId));
   const lessonState = (lesson: LessonNode, chapterAccess: ChapterAccess): LessonState => {
     if (lesson.state === 'passed' || evidence.creditedLessonIds.has(lesson.id)) return 'passed';
     if (chapterAccess === 'closed') return 'locked';
@@ -398,7 +443,7 @@ export function applyCoursePathway(tree: CourseTree, inputs: CoursePathwayInputs
         })) };
       }),
     }));
-    const lessonIds = sagas.flatMap((s) => s.topics.flatMap((t) => t.lessons));
+    const lessonIds = sagas.flatMap((s) => s.topics.flatMap((t) => t.lessons.filter((l) => !l.optionalEnrichment)));
     const complete = lessonIds.length > 0 && lessonIds.every((l) => l.state === 'passed');
     return {
       ...adventure,
@@ -419,6 +464,8 @@ export function applyCoursePathway(tree: CourseTree, inputs: CoursePathwayInputs
     frontier: frontier.items.map(toItem),
     optional: optional.map(toItem),
     known,
+    enrichment,
+    autonomy,
     blocked: frontier.blocked.map((b) => ({
       topicId: topicIdByPath.get(b.topicPath) ?? b.topicPath,
       missingSkills: b.missingKcs,

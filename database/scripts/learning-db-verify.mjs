@@ -30,6 +30,7 @@ export const LEARNING = [
   'verify-learning-r2-postgres.py',
   'verify-learning-r3-postgres.py',
   'verify-learning-r4-postgres.py',
+  'verify-learning-r5-postgres.py',
   'verify-pathway-od25-postgres.py',
   'verify-completion-postgres.py',
   'verify-course-publish-postgres.py',

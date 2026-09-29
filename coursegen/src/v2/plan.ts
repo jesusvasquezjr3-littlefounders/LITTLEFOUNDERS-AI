@@ -89,6 +89,18 @@ export const v2LessonPlanSchema = z
       z.object({ scenarios: localized(marketScenarioSchema) }).strict(),
     ]),
     representation_progressions: z.array(z.unknown()).max(20).optional(),
+    /**
+     * B.24 / Product 10 Block B autonomy (GAP-FIX-R5): two or three named,
+     * equally valid strategy chains for the same skill; the learner chooses
+     * one before practice. The label is copy (one per market); the chain is
+     * the segment ids, contiguous and each with a graded step (the emitter
+     * runs Core's v2ApproachesProblem, and the register decides who may be
+     * offered it: 10-12 and older).
+     */
+    approaches: z
+      .object({ options: z.array(z.object({ id, label: localized(z.string().trim().min(1).max(40)), segment_ids: z.array(id).min(1).max(12) }).strict()).min(2).max(3) })
+      .strict()
+      .optional(),
     segments: z.array(v2PlanSegmentSchema).min(1).max(80),
   })
   .strict();

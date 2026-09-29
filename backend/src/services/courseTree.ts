@@ -75,6 +75,8 @@ export interface LessonRowLite {
   difficulty: number;
   xp_total: number;
   estimated_minutes: number;
+  /** GAP-FIX-R5 (0242): depth/enrichment; never counted toward progress, badges or unlock order. */
+  optional_enrichment?: boolean;
 }
 
 export interface ProgressRowLite {
@@ -106,6 +108,14 @@ export interface LessonNode {
    * actually played: never fabricated XP, never a lesson_progress row.
    */
   placementCredited: boolean;
+  /**
+   * GAP-FIX-R5 (B.24, Block B autonomy): an optional depth/enrichment lesson.
+   * Outside every required count: unlock order, topic, saga, chapter and
+   * course progress, badges and OD-25 offers. The pathway engine serves it as
+   * optional to the registers whose mechanism offers enrichment; the linear
+   * engine never serves it (it stays locked unless already passed).
+   */
+  optionalEnrichment?: boolean;
 }
 
 /**
@@ -225,6 +235,7 @@ export function assembleCourseTree(
     for (const saga of byPosition(sagasByAdventure.get(adventure.id) ?? [])) {
       for (const topic of byPosition(topicsBySaga.get(saga.id) ?? [])) {
         for (const lesson of byPosition(lessonsByTopic.get(topic.id) ?? [])) {
+          if (lesson.optional_enrichment) continue;
           flatLessons.push({ id: lesson.id });
           ownLessonIds.push(lesson.id);
         }
@@ -250,13 +261,15 @@ export function assembleCourseTree(
           difficulty: lesson.difficulty,
           xp_total: lesson.xp_total,
           estimated_minutes: lesson.estimated_minutes,
-          state: lessonStates.get(lesson.id) ?? 'locked',
+          state: lesson.optional_enrichment ? (passedLessonIds.has(lesson.id) ? 'passed' : 'locked') : lessonStates.get(lesson.id) ?? 'locked',
           bestScore: bestScoreByLesson.get(lesson.id) ?? 0,
           placementCredited: placementCreditedLessonIds.has(lesson.id),
+          ...(lesson.optional_enrichment ? { optionalEnrichment: true } : {}),
         }));
-        const passedCount = lessons.filter((l) => l.state === 'passed').length;
+        const required = lessons.filter((l) => !l.optionalEnrichment);
+        const passedCount = required.filter((l) => l.state === 'passed').length;
         const state: TopicState =
-          lessons.length > 0 && passedCount === lessons.length ? 'completed' : passedCount > 0 ? 'in-progress' : 'not-started';
+          required.length > 0 && passedCount === required.length ? 'completed' : passedCount > 0 ? 'in-progress' : 'not-started';
         return {
           id: topic.id,
           slug: topic.slug,
@@ -270,7 +283,7 @@ export function assembleCourseTree(
           lessons,
         };
       });
-      const sagaLessonIds = topics.flatMap((t) => t.lessons.map((l) => l.id));
+      const sagaLessonIds = topics.flatMap((t) => t.lessons.filter((l) => !l.optionalEnrichment).map((l) => l.id));
       return {
         id: saga.id,
         slug: saga.slug,

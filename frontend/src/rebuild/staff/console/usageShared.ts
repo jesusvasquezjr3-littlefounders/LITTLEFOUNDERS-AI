@@ -75,6 +75,10 @@ export const INSTRUMENTED_EVENTS = [
   // their first read of a linked child's progress or weekly narrative.
   'parent_signup_completed',
   'parent_first_value',
+  // B.24 autonomy levers (GAP-FIX-R5): the approach choice, an enrichment offer and an enrichment lesson opened; Core only.
+  'approach_choice',
+  'enrichment_offer',
+  'enrichment_open',
 ] as const;
 
 /**

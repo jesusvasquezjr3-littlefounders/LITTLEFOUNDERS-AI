@@ -4,7 +4,8 @@ import { barModelUnknown, gradeV2Response, lineUnits, scoreV2Judgment, scoreV2Vi
 import { conceptAllowed, conceptSampleResponse, gradeConcept, V2_CONCEPT_RUBRICS, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptSegment } from './v2ConceptBoards.js';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './v2ChartModel.js';
 import { v2ScorerPayload } from './v2ScorerPayload.js';
-import { BAR_MODEL_RUBRICS, barModelPayload, longArithmeticSchema, mathNotation, NOTATION_CAPABILITY, placeValuePayload, SCHEMA_DIAGRAM_RUBRICS, schemaDiagramPayload, V2_FAMILY_RUBRICS, v2AgeScopeProblem, v2FamilySampleResponse, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras, type V2FamilySegment } from './v2SegmentFamilies.js';
+import { autonomyOfferForBand } from './learnerRegisterPolicy.js';
+import { BAR_MODEL_RUBRICS, barModelPayload, longArithmeticSchema, mathNotation, NOTATION_CAPABILITY, placeValuePayload, SCHEMA_DIAGRAM_RUBRICS, schemaDiagramPayload, V2_FAMILY_RUBRICS, v2AgeScopeProblem, v2FamilySampleResponse, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras, v2ApproachesProblem, v2ApproachesSchema, v2ApproachOf, v2SegmentsForApproach, type V2FamilySegment } from './v2SegmentFamilies.js';
 
 /*
  * Core's independently authored copy of the public v2 lesson contract.
@@ -343,6 +344,8 @@ export const v2PublicLessonSchema = z.object({
   required_capabilities: z.array(id).min(1), segments: z.array(segment).min(1).max(80),
   representation_progressions: z.array(representationProgression).min(1).max(20).optional(),
   mentor_stage: v2MentorStageSchema.optional(),
+  // B.24 / Block B autonomy (GAP-FIX-R5): two or three equally valid, fully graded chains for one skill; the learner picks one.
+  approaches: v2ApproachesSchema.optional(),
 }).strict().superRefine((document, ctx) => {
   const segmentIds = new Set<string>();
   const declared = new Set(document.required_capabilities);
@@ -410,6 +413,19 @@ export const v2PublicLessonSchema = z.object({
   }
   for (const capability of declared) {
     if (!expected.has(capability)) ctx.addIssue({ code: 'custom', path: ['required_capabilities'], message: 'Unexpected capability' });
+  }
+  // GAP-FIX-R5: the register decides who is offered the approach choice; each chain must be complete and gradable.
+  const approachProblem = v2ApproachesProblem(document, autonomyOfferForBand(document.age_band).approach);
+  if (approachProblem) ctx.addIssue({ code: 'custom', path: ['approaches'], message: approachProblem });
+  // A step gated on the one before it (M7/M8) lives in the same chain as that step.
+  for (const [index, value] of document.segments.entries()) {
+    const previous = document.segments[index - 1];
+    const gated = (value.type === 'math.bar-model.answer.v2' && previous?.type === 'math.bar-model.structure.v2')
+      || (value.type === 'math.schema-diagram.slots.v2' && previous?.type === 'math.schema-diagram.structure.v2')
+      || (value.type === 'math.schema-diagram.answer.v2' && previous?.type === 'math.schema-diagram.slots.v2');
+    if (gated && v2ApproachOf(document.approaches, value.id) !== v2ApproachOf(document.approaches, previous!.id)) {
+      ctx.addIssue({ code: 'custom', path: ['approaches'], message: 'A gated step and the step before it belong to the same approach' });
+    }
   }
 });
 
@@ -638,11 +654,12 @@ export function v2CpaSkippedSegmentIds(document: V2PublicLesson, entryStage: 'co
  * experiences and diagnostics, so a review there must not make completion
  * impossible after the learner correctly completes the abstract stage.
  */
-export function v2CompletionRequiredSegmentIds(document: V2PublicLesson): string[] {
+export function v2CompletionRequiredSegmentIds(document: V2PublicLesson, approachId: string | null = null): string[] {
   const cpaStages = document.representation_progressions?.flatMap((progression) => progression.stages) ?? [];
   const cpaStageIds = new Set(cpaStages.map((stage) => stage.segment_id));
   const finalCpaStageIds = new Set(cpaStages.filter((stage) => stage.stage === 'abstract').map((stage) => stage.segment_id));
-  return document.segments
+  // GAP-FIX-R5 (B.24): only the chosen approach's chain, plus every segment outside the chains.
+  return v2SegmentsForApproach(document.segments, document.approaches, approachId)
     .filter((segment) => segment.grading === 'server' && (!cpaStageIds.has(segment.id) || finalCpaStageIds.has(segment.id)))
     .map((segment) => segment.id);
 }
@@ -719,6 +736,23 @@ export function stripV2MentorStage(document: unknown): unknown {
  * learner to act on (Mentor turns, explored visuals). Completion needs a view
  * receipt for each, and a met receipt for every server-graded step.
  */
-export function v2ViewedSegmentIds(document: V2PublicLesson): string[] {
-  return document.segments.filter((segment) => segment.grading === 'none').map((segment) => segment.id);
+export function v2ViewedSegmentIds(document: V2PublicLesson, approachId: string | null = null): string[] {
+  return v2SegmentsForApproach(document.segments, document.approaches, approachId).filter((segment) => segment.grading === 'none').map((segment) => segment.id);
+}
+
+/**
+ * GAP-FIX-R5 (B.24): why a run may not act on a segment of an approach chain,
+ * or null. A segment outside every chain is always open; a chain segment needs
+ * the run to have pinned that chain's approach first.
+ */
+export function v2ApproachRefusal(document: V2PublicLesson, segmentId: string, pinned: string | null | undefined): 'APPROACH_REQUIRED' | 'APPROACH_MISMATCH' | null {
+  const chain = v2ApproachOf(document.approaches, segmentId);
+  if (chain === null) return null;
+  if (!pinned) return 'APPROACH_REQUIRED';
+  return pinned === chain ? null : 'APPROACH_MISMATCH';
+}
+
+/** The approach ids a document offers, first = the suggested one (B.24 adoption counts a pick away from it). */
+export function v2ApproachIds(document: V2PublicLesson): string[] {
+  return document.approaches?.options.map((option) => option.id) ?? [];
 }

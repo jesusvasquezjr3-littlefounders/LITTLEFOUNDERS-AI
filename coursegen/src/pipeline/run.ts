@@ -668,6 +668,7 @@ async function processSlot(
           slug: slot.lesson.slug,
           renamedFrom: slot.lesson.renamed_from,
           position: slot.lesson.position,
+          ...(slot.lesson.optional_enrichment !== undefined ? { optionalEnrichment: slot.lesson.optional_enrichment } : {}),
           difficulty: slot.lesson.difficulty,
           estimatedMinutes: documents[AUTHORING_LOCALE]!.meta.estimated_minutes,
           cast: documents[AUTHORING_LOCALE]!.meta.cast,

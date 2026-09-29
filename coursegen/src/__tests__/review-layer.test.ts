@@ -68,6 +68,14 @@ describe('reviewOfPathSchema', () => {
   });
 });
 
+describe('GAP-FIX-R5 (B.24): optional enrichment lessons in the blueprint', () => {
+  it('accepts an enrichment lesson beside a required one, and refuses a topic of enrichment only', () => {
+    const lessons = [baseLesson(1), { ...baseLesson(2), optional_enrichment: true }];
+    expect(topicBlueprintSchema.safeParse(baseTopicFields({ lessons })).success).toBe(true);
+    expect(topicBlueprintSchema.safeParse(baseTopicFields({ lessons: [{ ...baseLesson(1), optional_enrichment: true }] })).success).toBe(false);
+  });
+});
+
 describe('topicBlueprintSchema kind/review_of rules', () => {
   it('defaults kind to teaching with no review_of', () => {
     const parsed = topicBlueprintSchema.safeParse(baseTopicFields());

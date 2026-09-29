@@ -82,7 +82,7 @@ describe('the v2 red team (Appendix C DoD "Gated")', () => {
 
   it('has one sample per content gate that applies to v2', () => {
     const gates = samples.map((file) => (JSON.parse(readFileSync(path.join(RED_TEAM, file), 'utf8')) as { expected_gate: number }).expected_gate);
-    expect(gates.sort((a, b) => a - b)).toEqual([1, 1, 1, 1, 2, 3, 4, 12, 13, 14, 15, 16, 18, 18]);
+    expect(gates.sort((a, b) => a - b)).toEqual([1, 1, 1, 1, 1, 2, 3, 4, 12, 13, 14, 15, 16, 18, 18]);
   });
 
   it.each(samples)('%s blocks on exactly its own gate and emits nothing', (file) => {
@@ -101,8 +101,47 @@ describe('the v2 red team (Appendix C DoD "Gated")', () => {
     expect(run.documents).toEqual([]);
     expect(run.results).toHaveLength(samples.length);
     const blockedGates = run.results.map((result) => [...new Set(result.problems.map((problem) => problem.gate))]);
-    expect(blockedGates.flat().sort((a, b) => a - b)).toEqual([1, 1, 1, 1, 2, 3, 4, 12, 13, 14, 15, 16, 18, 18]);
+    expect(blockedGates.flat().sort((a, b) => a - b)).toEqual([1, 1, 1, 1, 1, 2, 3, 4, 12, 13, 14, 15, 16, 18, 18]);
     expect(blockedGates.every((gates) => gates.length === 1)).toBe(true);
+  });
+});
+
+describe('GAP-FIX-R5 (B.24, Product 10 Block B autonomy): the approach choice', () => {
+  const approachPlan = () => plans.find((entry) => entry.plan?.lesson_id === 'v2-approach-choice')!.plan!;
+
+  it('emits a 10-12 lesson whose two equally valid chains are named per market, with the public ids of each chain', () => {
+    const result = emitV2Lesson(approachPlan(), { versionId: 'forge-approach' });
+    expect(result.problems).toEqual([]);
+    const labels = result.documents.map((row) => row.document.approaches!.options.map((option) => option.label));
+    expect(labels).toEqual([['Draw bars', 'Use a diagram'], ['Dibuja barras', 'Usa un diagrama'], ['Desenhe barras', 'Use um diagrama']]);
+    for (const row of result.documents) {
+      expect(row.document.approaches!.options.map((option) => option.segment_ids)).toEqual([
+        ['bar-structure-01', 'bar-answer-01'], ['compare-structure-01', 'compare-slots-01', 'compare-answer-01'],
+      ]);
+    }
+  });
+
+  it('blocks a chain without a graded step, a chain split apart, a segment in two chains and an unknown segment', () => {
+    const base = approachPlan();
+    const variants: Array<[string, (options: NonNullable<typeof base.approaches>['options']) => void]> = [
+      ['a segment in two chains', (options) => { options[1]!.segment_ids = ['bar-answer-01', ...options[1]!.segment_ids]; }],
+      ['an unknown segment', (options) => { options[0]!.segment_ids = ['bar-structure-01', 'nowhere-01']; }],
+      ['a chain out of order', (options) => { options[0]!.segment_ids = ['bar-answer-01', 'bar-structure-01']; }],
+    ];
+    for (const [name, mutate] of variants) {
+      const plan = JSON.parse(JSON.stringify(base)) as typeof base;
+      mutate(plan.approaches!.options);
+      const result = emitV2Lesson(plan, { versionId: 'forge-approach' });
+      expect(result.ok, name).toBe(false);
+      expect(result.problems.some((problem) => problem.gate === 1 && /approaches: /.test(problem.message)), name).toBe(true);
+    }
+  });
+
+  it('holds approach labels to the Copy Budget as options', () => {
+    const plan = JSON.parse(JSON.stringify(approachPlan())) as ReturnType<typeof approachPlan>;
+    plan.approaches!.options[0]!.label['en-US'] = 'Draw a bar, then a bar, and then add up';
+    const result = emitV2Lesson(plan, { versionId: 'forge-approach' });
+    expect(result.problems.some((problem) => problem.gate === 13 && problem.locale === 'en-US')).toBe(true);
   });
 });
 
