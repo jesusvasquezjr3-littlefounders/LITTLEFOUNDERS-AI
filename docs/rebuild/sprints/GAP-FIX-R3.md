@@ -59,3 +59,28 @@ connection for their child but could not end or report it.
 
 Acceptance and release evidence for E.1-E.3 and E.13 as the requirement rows
 state; a visual pass of the new row actions in the browser matrices.
+
+## Checkpoint F3-social-finish (lane summary)
+
+- **Sync.** `codex/spec-migration-s02` was already contained in the lane
+  (merge: "Already up to date"); no conflicts.
+- **Adversarial pass against the one audited gap (end/report a child's
+  connection).** Authorization sits at the server: both routes run `guardKid`
+  before and after the write, the database function re-checks the current
+  guardian under the pair locks, and every refused population (unrelated or
+  stale guardian, self-managed teen, self or malformed target, non-connection,
+  anon/authenticated callers) has a Core test and a PostgreSQL check. The
+  rebuilt UI uses only the shared `DestructiveAction` and the existing
+  `ReportDialog`; nothing under `rebuild/` imports the legacy app. Copy exists
+  in en-US, es-MX and pt-BR. One gap closed here: no test proved that the new
+  row actions and both dialogs declare `data-copy-role` (02 rule 19); a test
+  now walks the row, the confirm dialog and the report dialog.
+- **Verification.** Backend: type-check, lint and the full unit suite (148
+  files passed, 1 skipped). Frontend: type-check, lint and the full unit
+  suite. Database: `npm test`. Root: `spec:check`, `secrets:check`,
+  `social:check`.
+- **Status.** E.1, E.2, E.3 and E.13 stay "Implemented and locally verified;
+  not accepted". Still open: a visual pass of the new actions in the browser
+  matrices (the two Family social verifiers do not click them yet), and
+  acceptance and release evidence. Owner questions 1-5 above stand, with the
+  conservative defaults implemented.

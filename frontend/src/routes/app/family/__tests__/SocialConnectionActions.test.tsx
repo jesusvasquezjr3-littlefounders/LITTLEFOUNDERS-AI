@@ -86,7 +86,31 @@ describe('Family social list', () => {
     expect(await screen.findByText('Report sent to our safety team.')).toBeVisible();
     expect(writes()).toEqual([['/family/kids/kid-id/social/connections/other-id/report', { token: 'session', method: 'POST', body: { category: 'harassment' } }]]);
   });
+
+  it('every string of the actions and both dialogs declares its copy role (02 rule 19)', async () => {
+    await openGraph(true);
+    const row = screen.getByRole('group', { name: 'Zed' });
+    expectCopyRoles(row);
+    fireEvent.click(within(row).getByRole('button', { name: 'End connection' }));
+    expectCopyRoles(await screen.findByRole('alertdialog'));
+    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Keep connection' }));
+    fireEvent.click(within(screen.getByRole('group', { name: 'Zed' })).getByRole('button', { name: 'Report' }));
+    expectCopyRoles(await screen.findByRole('dialog'));
+    expect(writes()).toEqual([]);
+  });
 });
+
+/** Every visible string and control sits inside an element that declares its copy role. */
+function expectCopyRoles(container: HTMLElement) {
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    if (!node.textContent?.trim()) continue;
+    expect(node.parentElement!.closest('[data-copy-role]'), `"${node.textContent}" has no copy role`).not.toBeNull();
+  }
+  for (const control of container.querySelectorAll('button, a')) {
+    expect(control.closest('[data-copy-role]') ?? control.querySelector('[data-copy-role]'), control.outerHTML).not.toBeNull();
+  }
+}
 
 describe('Safety notices', () => {
   const notice = { noticeId: 'n1', kidUserId: 'kid-id', subjectId: 'other-id', subjectName: 'Zed', createdAt: '2026-09-01T00:00:00Z', canEnd: true };
