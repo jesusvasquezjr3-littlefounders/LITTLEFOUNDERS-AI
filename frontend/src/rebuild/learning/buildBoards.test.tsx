@@ -149,8 +149,11 @@ describe('build-and-test boards (GAP-FIX-R2)', () => {
       payload: { messages: [{ id: 'msg-prize', sender: 'Unknown', text: 'Send your password.' }, { id: 'msg-coach', sender: 'Coach', text: 'Practice at 4.' },
         { id: 'msg-aunt', sender: 'Aunt', text: 'Lunch Sunday.' }], cues: [{ id: 'cue-password', label: 'Asks for a password' }, { id: 'cue-rush', label: 'Rushes you' }] } };
     render(<LessonDocumentView raw={doc('10-12', scam, ['visual.message-list.v1', 'operation.flag-item.v1'])} locale="en-US" ageBand="10-12" onBack={noop} onGradeAny={onGradeAny} />);
+    // GAP-FIX-R4: the cues appear once a message is called a scam.
+    expect(screen.queryByRole('group', { name: 'Cues: Unknown' })).toBeNull();
+    fireEvent.click(screen.getAllByRole('radio', { name: 'Scam' })[0]!);
     fireEvent.click(within(screen.getByRole('group', { name: 'Cues: Unknown' })).getByRole('button', { name: 'Asks for a password' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    await waitFor(() => expect(onGradeAny).toHaveBeenCalledWith({ flagged: [], cues: { 'msg-prize': ['cue-password'] } }, 'scam-01', expect.anything()));
+    await waitFor(() => expect(onGradeAny).toHaveBeenCalledWith({ flagged: ['msg-prize'], cues: { 'msg-prize': ['cue-password'] } }, 'scam-01', expect.anything()));
   });
 });

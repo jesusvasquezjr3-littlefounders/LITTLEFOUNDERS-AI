@@ -25,6 +25,13 @@ vi.mock('../../tutor-scene/TutorStage', () => ({ TutorStage: () => <div data-tes
 const noop = () => {};
 const reset = () => screen.getByRole('button', { name: 'Reset' });
 
+/** The "Move to…" menu (Bible 05 §4, GAP-FIX-R4): open an item's menu, choose a region or bin. */
+async function moveTo(item: string, target: string) {
+  fireEvent.click(screen.getByRole('button', { name: item }));
+  fireEvent.click(screen.getByRole('button', { name: `${item}: Move to` }));
+  fireEvent.click(await screen.findByRole('menuitem', { name: target }));
+}
+
 /** GAP-FIX-R3 (M7): builds the pilot's bars the way a learner does, slot by slot ("Ana has 12 more than Leo; together 50"). */
 async function buildPilotBars() {
   fireEvent.click(screen.getByRole('button', { name: 'Two bars to compare' }));
@@ -153,12 +160,12 @@ describe('Reset on the family and build boards (GAP-FIX-R4, Bible 05 §3)', () =
     expect(document.querySelector('[data-pizarron="text-cards"]')).not.toBeNull();
   });
 
-  it('sort bins: empties every bin and reason', () => {
+  it('sort bins: empties every bin and reason', async () => {
     const sort = { id: 'sort-01', type: 'money.needs-wants.v2', grading: 'server', prompt: 'Sort them.', visual: { type: 'sort-bins' },
       payload: { bins: [{ id: 'bin-need', label: 'Need' }, { id: 'bin-want', label: 'Want' }], items: [{ id: 'i-bread', label: 'Bread' }, { id: 'i-toy', label: 'Toy' }],
         reasons: [{ id: 'why-a', label: 'Every day' }, { id: 'why-b', label: 'For fun' }] } };
     render(<LessonDocumentView raw={familyLesson(sort, ['visual.sort-bins.v1', 'operation.sort-to-bin.v1', 'operation.move-menu.v1', 'operation.justify-choice.v1'])} locale="en-US" ageBand="10-12" onBack={noop} onGradeAny={vi.fn()} />);
-    fireEvent.click(screen.getAllByRole('radio', { name: 'Need' })[0]!);
+    await moveTo('Bread', 'Need');
     expect(document.querySelector('[data-drop-target="bin-need"]')!.textContent).toContain('Bread');
     fireEvent.click(reset());
     expect(document.querySelector('[data-drop-target="bin-need"]')!.textContent).not.toContain('Bread');

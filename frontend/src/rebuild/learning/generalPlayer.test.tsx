@@ -37,6 +37,13 @@ function mixed(segments: unknown[], capabilities: string[]) {
 }
 const lessonDoc = () => mixed(structuredClone([intro, cards, story]), ['visual.speech-plate.v1', 'visual.rule-cards.v1', 'operation.flip-card.v1', 'visual.story-scene.v1', 'operation.choose-option.v1']);
 
+/** The "Move to…" menu (Bible 05 §4, GAP-FIX-R4): open an item's menu, choose a region or bin. */
+async function moveTo(item: string, target: string) {
+  fireEvent.click(screen.getByRole('button', { name: item }));
+  fireEvent.click(screen.getByRole('button', { name: `${item}: Move to` }));
+  fireEvent.click(await screen.findByRole('menuitem', { name: target }));
+}
+
 describe('general v2 player', () => {
   it('B.18 (GAP-FIX-R3): plays the differentiated narration on request, with the plate as caption; silent with the sound off or no audio', async () => {
     const played: string[] = [];
@@ -145,9 +152,12 @@ describe('general v2 player', () => {
     const tween = { ...mixed([euler], ['visual.euler.v1', 'operation.place-in-region.v1', 'operation.move-menu.v1']), age_band: '10-12', eligibility: { minimum_age: 10, maximum_age: 12 } };
     render(<LessonDocumentView raw={tween} locale="en-US" ageBand="10-12" onBack={noop} onGradeAny={onGradeAny} />);
     // A subset has no "only Dogs" region.
-    expect(screen.queryByRole('radio', { name: 'Only Dogs' })).toBeNull();
-    fireEvent.click(screen.getAllByRole('radio', { name: 'Dogs' })[0]!);
-    fireEvent.click(screen.getAllByRole('radio', { name: 'In neither' })[1]!);
+    fireEvent.click(screen.getByRole('button', { name: 'Rex' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Rex: Move to' }));
+    expect(await screen.findByRole('menuitem', { name: 'Dogs' })).toBeTruthy();
+    expect(screen.queryByRole('menuitem', { name: 'Only Dogs' })).toBeNull();
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Dogs' }));
+    await moveTo('Car', 'In neither');
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(onGradeAny).toHaveBeenCalledWith({ placements: { 'item-rex': 'both', 'item-car': 'neither' } }, 'euler-01', expect.anything()));
     expect(await screen.findByText('Not yet. Check how you set it up.')).toBeTruthy();
@@ -175,14 +185,14 @@ describe('general v2 player', () => {
     expect(diagram.getAttribute('data-pizarron')).toBe('venn');
     expect(diagram.closest('[role="img"]')).toBeNull();
     // Circles apart have no "both" region to place into.
-    expect(screen.queryByRole('radio', { name: 'In both' })).toBeNull();
+    expect(diagram.querySelector('[data-drop-target="both"]')).toBeNull();
     // Tap path: press the chip, then its region.
     fireEvent.click(screen.getByRole('button', { name: 'Ana' }));
     expect(screen.getByRole('button', { name: 'Ana' }).getAttribute('aria-pressed')).toBe('true');
     fireEvent.click(diagram.querySelector('[data-drop-target="first"]')!);
     expect(diagram.querySelector('[data-drop-target="first"]')!.textContent).toContain('Ana');
     // Keyboard path: the "Move to" menu.
-    fireEvent.click(screen.getAllByRole('radio', { name: 'Only Spends all' })[1]!);
+    await moveTo('Leo', 'Only Spends all');
     fireEvent.click(screen.getByRole('button', { name: 'Only Saves all' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(onGradeAny).toHaveBeenCalledWith({ placements: { 'item-ana': 'first', 'item-leo': 'second' }, relation: 'disjoint', occupied: ['first'] },
@@ -228,12 +238,15 @@ describe('general v2 player', () => {
       age_band: '10-12', eligibility: { minimum_age: 10, maximum_age: 12 } };
     render(<LessonDocumentView raw={tween} locale="en-US" ageBand="10-12" onBack={noop} onGradeAny={onGradeAny} />);
     expect(screen.queryByText('Big or small?')).toBeNull();
-    fireEvent.click(screen.getByRole('radio', { name: 'Even' }));
+    await moveTo('4 coins', 'Even');
     fireEvent.click(screen.getByRole('radio', { name: 'Pairs' }));
     expect(screen.getByText('Big or small?')).toBeTruthy();
     // After the switch the item's bins are the new rule's only.
-    expect(screen.queryAllByRole('radio', { name: 'Even' })).toHaveLength(1);
-    fireEvent.click(screen.getByRole('radio', { name: 'Big' }));
+    fireEvent.click(screen.getByRole('button', { name: '10 coins' }));
+    fireEvent.click(screen.getByRole('button', { name: '10 coins: Move to' }));
+    expect(await screen.findByRole('menuitem', { name: 'Big' })).toBeTruthy();
+    expect(screen.queryByRole('menuitem', { name: 'Even' })).toBeNull();
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Big' }));
     fireEvent.click(screen.getAllByRole('radio', { name: 'Many' })[1]!);
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(onGradeAny).toHaveBeenCalledWith({ placements: { 'i-4': { bin: 'bin-even', reason: 'why-a' }, 'i-10': { bin: 'bin-big', reason: 'why-b' } } },

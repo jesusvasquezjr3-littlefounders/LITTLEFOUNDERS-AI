@@ -3,7 +3,7 @@ import en from '../../i18n/en-US/rebuild-learn.json';
 import es from '../../i18n/es-MX/rebuild-learn.json';
 import pt from '../../i18n/pt-BR/rebuild-learn.json';
 import type { Locale } from '../design/copyBudget';
-import { Button, MentorAvatar, ProgressBar, SegmentedControl, TextField, type ChipDrag } from '../design/controls';
+import { Button, Menu, MentorAvatar, ProgressBar, TextField, type ChipDrag } from '../design/controls';
 import { findMentorAvatar, MENTOR_NAMES } from '../design/assets';
 import { LessonFeedback } from './LessonFeedback';
 import { LessonStageSlot } from './lessonStage';
@@ -189,17 +189,22 @@ export function ViewedFoot({ locale, sequence, ready = true }: { locale: Locale;
   </div></footer>;
 }
 
-/** Keyboard and tap alternative to dragging: a "Move to" menu of the board's regions or bins. */
-export function MoveToChoice<T extends string>({ locale, label, options, value, onChange, disabled }: {
-  locale: Locale; label: string; options: ReadonlyArray<{ value: T; label: string }>; value: T | null; onChange: (value: T) => void; disabled?: boolean;
+/**
+ * Keyboard and tap alternative to dragging (Bible 05 §4): the object the
+ * learner picked up (a pressed chip: Enter or Space on it, or a tap) goes to
+ * the place chosen in one shared "Move to…" menu (WAI-ARIA menu button) of
+ * the board's regions or bins. GAP-FIX-R4: one menu per board, not one set of
+ * regions repeated under every item, so the first view stays in budget; the
+ * menu names the carried item and is off until something is picked up.
+ */
+export function MoveToChoice<T extends string>({ locale, item, options, onChange, disabled }: {
+  locale: Locale; item: { label: string } | null; options: ReadonlyArray<{ value: T; label: string }>; onChange: (value: T) => void; disabled?: boolean;
 }) {
-  const name = useId();
   const t = copy[locale];
-  // The shared single-choice control (02 rule 23): one radio group per item, named by the item.
   return <div className="lf-move-to">
-    <span className="lf-move-to-hint" data-copy-role="data" aria-hidden="true">{t.moveTo}</span>
-    <SegmentedControl className="lf-move-to-options" legend={label} name={name} size="compact" options={options} value={value}
-      disabled={disabled} onValueChange={onChange} />
+    <Menu label={item ? `${item.label}: ${t.moveTo}` : t.moveTo} items={options.map((option) => ({ id: option.value, label: option.label, onSelect: () => onChange(option.value) }))}
+      trigger={(props) => <Button {...props} size="sm" variant="secondary" disabled={disabled || item === null} className="lf-move-to-button"
+        aria-label={item ? `${item.label}: ${t.moveTo}` : t.moveTo}>{t.moveTo}</Button>} />
   </div>;
 }
 

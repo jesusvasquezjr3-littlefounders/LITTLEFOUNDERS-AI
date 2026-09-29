@@ -52,6 +52,8 @@ import { milestoneReceipt, rhythmPreviewStates } from '../../learning/motivation
 import { RegisterGraduationView } from '../../learning/RegisterGraduationView';
 import { GuidedReviewOffer } from '../../learning/GuidedReviewOffer';
 import { framed, type PreviewContext, type PreviewRegistry } from './types';
+import v2FixtureDocuments from '../fixtures/v2FixtureDocuments.generated.json';
+import { segmentCapabilities, type LessonClientSegment } from '../../learning/lessonDocument';
 
 /*
  * Lane 2 (learn): the lesson player in every state, the teaching boards at the
@@ -121,7 +123,28 @@ const board = (build: (context: PreviewContext) => unknown) => framed((context) 
   return <LessonDocumentView key={`${screen}:${locale}:${ageBand}`} raw={build(context)} locale={locale} ageBand={ageBand} onBack={() => go('home')} />;
 });
 
+/*
+ * GAP-FIX-R4 (Appendix P Part 8 DoD; Bible 05 §8): one Forge fixture segment
+ * staged as its own lesson, `?seg=<lesson id>:<segment id>`, at the age band
+ * its lesson serves (null at any other age). The documents are the emitter's
+ * own output (agent/tools/sync-v2-preview-fixtures.mjs), so the audits measure
+ * the logic, money, story, Mentor, chart and concept boards as learners get them.
+ */
+type FixtureDocument = Record<string, unknown> & { age_band: string; segments: Array<{ id: string }> };
+export function previewFixtureSegment(locale: string, ageBand: string, seg: string | null): unknown {
+  const [lesson, segmentId] = (seg ?? '').split(':');
+  const doc = (v2FixtureDocuments as unknown as Record<string, Record<string, FixtureDocument>>)[lesson ?? '']?.[locale];
+  if (!doc || doc.age_band !== ageBand) return null;
+  const segment = doc.segments.find((item) => item.id === segmentId);
+  if (!segment) return null;
+  return { ...doc, segments: [segment], required_capabilities: [...new Set(segmentCapabilities(segment as unknown as LessonClientSegment))] };
+}
+
 export const learnPreviewScreens: PreviewRegistry = {
+  // The preview holds no rubric: a Check answers "not yet" so the board's feedback row is measured too.
+  fixture: framed(({ screen, locale, ageBand, params, go }) => <LessonDocumentView key={`${screen}:${locale}:${ageBand}:${params.get('seg')}`}
+    raw={previewFixtureSegment(locale, ageBand, params.get('seg'))} locale={locale} ageBand={ageBand} onBack={() => go('home')}
+    onGradeAny={async () => ({ verdict: 'review' as const })} />),
   opening: transport,
   offline: transport,
   loaderror: transport,

@@ -26,8 +26,40 @@ const PANEL = { firstView: false, catalogue: true };
 // The lesson result is centred on purpose, as the reference proportion audit exempts its `result` route.
 const CENTRED = { centred: true };
 
+/*
+ * GAP-FIX-R4 (Appendix P Part 8 DoD; Bible 05 §8): every v2 kind the preview
+ * could not render before, staged from its Forge fixture at the age its lesson
+ * serves (registry `fixture`, `?seg=<lesson>:<segment>`), so the text-fit,
+ * proportion, copy-budget and boards() passes measure them: the logic, money,
+ * story and Mentor families, the build boards, one chart per chart group and
+ * every concept board (whose operation primitives they compose).
+ */
+export const fixtureSurfaces = [
+  ['rulecards', 'v2-first-release-logic:cards-01', '10-12'], ['rulecards-abstract', 'v2-logic-syllogism:cards-teen', '13-17'],
+  ['euler-young', 'v2-first-release-young-money:euler-young', '6-9'], ['euler-nested', 'v2-first-release-logic:euler-01', '10-12'],
+  ['euler-choose', 'v2-first-release-logic:euler-02', '10-12'], ['euler-syllogism', 'v2-logic-syllogism:syllogism-01', '13-17'],
+  ['flowchart-walk', 'v2-first-release-logic:flow-01', '10-12'], ['spend-walk', 'v2-first-release-logic:spend-01', '10-12'],
+  ['spend-build', 'v2-flowchart-build:flow-build-01', '13-17'],
+  ['sort-young', 'v2-first-release-young-money:sort-young', '6-9'], ['sort-switch', 'v2-first-release-logic:sort-01', '10-12'],
+  ['needs-wants', 'v2-first-release-mixed:sort-01', '10-12'],
+  ['scam-spotter', 'v2-first-release-logic:spot-01', '10-12'], ['scam-check', 'v2-first-release-mixed:messages-01', '10-12'],
+  ['scam-cues', 'v2-scam-cues:messages-cues-01', '10-12'],
+  ['coin-tray', 'v2-first-release-young-money:coins-01', '6-9'], ['making-change', 'v2-first-release-young-money:change-01', '6-9'],
+  ['story-branch', 'v2-first-release-mixed:story-01', '10-12'], ['story-dialogue', 'v2-first-release-logic:reply-01', '10-12'],
+  ['story-rather', 'v2-first-release-logic:rather-01', '10-12'],
+  ['mentor-turn', 'v2-first-release-mixed:intro-01', '10-12'], ['mentor-episode', 'v2-first-release-mixed:episode-01', '10-12'],
+  ['unit-price', 'v2-unit-price:unit-price-01', '10-12'], ['decide-justify', 'v2-decide-justify:decide-01', '10-12'],
+  ['chart-waterfall', 'v2-teaching-charts:balance-01', '13-17'], ['chart-candlestick', 'v2-charts-investing:candle-01', '13-17'],
+  ['chart-org', 'v2-charts-entrepreneurship:org-01', '13-17'], ['chart-swimlane', 'v2-charts-tween:swim-01', '10-12'],
+  ['concept-amortization', 'v2-concept-boards:loan-01', '13-17'], ['concept-supply-demand', 'v2-concept-boards:market-01', '13-17'],
+  ['concept-opportunity', 'v2-concept-boards:tokens-01', '13-17'], ['concept-inflation', 'v2-concept-boards:prices-01', '13-17'],
+  ['concept-rule-of-72', 'v2-concept-boards:double-01', '13-17'], ['concept-debt', 'v2-concept-boards:debts-01', '13-17'],
+  ['concept-diversification', 'v2-concept-boards:mix-01', '13-17'], ['concept-lemonade', 'v2-concept-boards:stand-01', '13-17'],
+];
+
 export const states = [
   ...lessonSurfaces.flatMap(([screen, ages]) => ages.map((age) => preview(`${screen}@${age}`, { screen, age }, PANELS.has(screen) ? PANEL : screen.startsWith('result') ? CENTRED : {}))),
+  ...fixtureSurfaces.map(([name, seg, age]) => preview(`fixture-${name}@${age}`, { screen: 'fixture', age, seg })),
   // The lesson route mounts the rebuilt lesson inside the design-system root (S03.6): every screen it can show.
   app('/learn/lesson@goal-6-9', '/learn/lesson/audit-goal', 'lesson-goal', '[data-screen="goal"]'),
   app('/learn/lesson@allocation-adult', '/learn/lesson/audit-allocation', 'lesson-allocation', '[data-screen="lesson"]'),

@@ -111,13 +111,13 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "A juice costs 13 coins and you got 20. Give the change."
+          "prompt": "Give the change."
         },
         "es-MX": {
-          "prompt": "Un jugo cuesta 13 monedas y te dieron 20. Da el cambio."
+          "prompt": "Da el cambio."
         },
         "pt-BR": {
-          "prompt": "Um suco custa 13 moedas e você recebeu 20. Dê o troco."
+          "prompt": "Dê o troco."
         }
       }
     },
@@ -160,7 +160,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Place each thing in the circles.",
+          "prompt": "Place each thing.",
           "sets": [
             {
               "label": "Round"
@@ -182,7 +182,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Coloca cada cosa en los círculos.",
+          "prompt": "Coloca cada cosa.",
           "sets": [
             {
               "label": "Redondo"
@@ -204,7 +204,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Coloque cada coisa nos círculos.",
+          "prompt": "Coloque cada coisa.",
           "sets": [
             {
               "label": "Redondo"
@@ -279,7 +279,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Sort the coin piles.",
+          "prompt": "Sort the piles.",
           "rule": "Even or odd?",
           "bins": [
             {
@@ -307,7 +307,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Ordena las pilas de monedas.",
+          "prompt": "Ordena las pilas.",
           "rule": "¿Par o impar?",
           "bins": [
             {
@@ -335,7 +335,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "Separe as pilhas de moedas.",
+          "prompt": "Separe as pilhas.",
           "rule": "Par ou ímpar?",
           "bins": [
             {

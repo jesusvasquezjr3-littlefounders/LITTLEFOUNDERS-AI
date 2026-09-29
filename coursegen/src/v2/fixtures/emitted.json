@@ -4126,7 +4126,7 @@
           "id": "messages-01",
           "type": "money.scam-check.v2",
           "grading": "server",
-          "prompt": "Mark the messages that are tricks.",
+          "prompt": "Mark the tricks.",
           "visual": {
             "type": "message-list"
           },
@@ -4135,22 +4135,17 @@
               {
                 "id": "msg-prize",
                 "sender": "Unknown number",
-                "text": "You won 500 coins! Send your password to claim them."
+                "text": "You won 500 coins! Send your password."
               },
               {
                 "id": "msg-coach",
                 "sender": "Coach Ana",
-                "text": "Practice moves to 4 pm on Friday."
+                "text": "Practice is at 4 pm Friday."
               },
               {
                 "id": "msg-code",
                 "sender": "Game Team",
-                "text": "Share the code we sent you so we can fix your account."
-              },
-              {
-                "id": "msg-aunt",
-                "sender": "Aunt Rosa",
-                "text": "See you at lunch on Sunday."
+                "text": "Send us the code we texted you."
               }
             ]
           },
@@ -4358,7 +4353,7 @@
           "id": "messages-01",
           "type": "money.scam-check.v2",
           "grading": "server",
-          "prompt": "Marca los mensajes que son trampas.",
+          "prompt": "Marca las trampas.",
           "visual": {
             "type": "message-list"
           },
@@ -4367,22 +4362,17 @@
               {
                 "id": "msg-prize",
                 "sender": "Número desconocido",
-                "text": "¡Ganaste 500 monedas! Envía tu contraseña para cobrarlas."
+                "text": "¡Ganaste 500 monedas! Envía tu contraseña."
               },
               {
                 "id": "msg-coach",
                 "sender": "Entrenadora Ana",
-                "text": "El entrenamiento pasa a las 4 pm el viernes."
+                "text": "El entrenamiento es el viernes a las 4 pm."
               },
               {
                 "id": "msg-code",
                 "sender": "Equipo del juego",
-                "text": "Comparte el código que te enviamos para arreglar tu cuenta."
-              },
-              {
-                "id": "msg-aunt",
-                "sender": "Tía Rosa",
-                "text": "Nos vemos en la comida del domingo."
+                "text": "Envíanos el código que te mandamos."
               }
             ]
           },
@@ -4590,7 +4580,7 @@
           "id": "messages-01",
           "type": "money.scam-check.v2",
           "grading": "server",
-          "prompt": "Marque as mensagens que são armadilhas.",
+          "prompt": "Marque as armadilhas.",
           "visual": {
             "type": "message-list"
           },
@@ -4599,22 +4589,17 @@
               {
                 "id": "msg-prize",
                 "sender": "Número desconhecido",
-                "text": "Você ganhou 500 moedas! Envie sua senha para receber."
+                "text": "Você ganhou 500 moedas! Envie sua senha."
               },
               {
                 "id": "msg-coach",
                 "sender": "Técnica Ana",
-                "text": "O treino passa para as 16h na sexta."
+                "text": "O treino é sexta às 16h."
               },
               {
                 "id": "msg-code",
                 "sender": "Equipe do jogo",
-                "text": "Compartilhe o código que enviamos para arrumar sua conta."
-              },
-              {
-                "id": "msg-aunt",
-                "sender": "Tia Rosa",
-                "text": "Até o almoço de domingo."
+                "text": "Envie o código que mandamos."
               }
             ]
           },
@@ -11627,7 +11612,7 @@
           "id": "flow-build-01",
           "type": "money.spend-decision.v2",
           "grading": "server",
-          "prompt": "Build a chart that decides any purchase. Test it.",
+          "prompt": "Build a chart and test it.",
           "visual": {
             "type": "decision-tree"
           },
@@ -11640,7 +11625,7 @@
               },
               {
                 "id": "afford",
-                "label": "Can I afford it this week?"
+                "label": "Can I afford it?"
               }
             ],
             "outcomes": [
@@ -11664,7 +11649,7 @@
                   "need-it": true,
                   "afford": false
                 },
-                "label": "New shoes, short this week"
+                "label": "New shoes"
               }
             ]
           }
@@ -11746,7 +11731,7 @@
           "id": "flow-build-01",
           "type": "money.spend-decision.v2",
           "grading": "server",
-          "prompt": "Arma un diagrama que decida cualquier compra. Pruébalo.",
+          "prompt": "Arma un diagrama y pruébalo.",
           "visual": {
             "type": "decision-tree"
           },
@@ -11759,7 +11744,7 @@
               },
               {
                 "id": "afford",
-                "label": "¿Me alcanza esta semana?"
+                "label": "¿Me alcanza?"
               }
             ],
             "outcomes": [
@@ -11783,7 +11768,7 @@
                   "need-it": true,
                   "afford": false
                 },
-                "label": "Zapatos nuevos, sin dinero hoy"
+                "label": "Tenis nuevos"
               }
             ]
           }
@@ -11865,7 +11850,7 @@
           "id": "flow-build-01",
           "type": "money.spend-decision.v2",
           "grading": "server",
-          "prompt": "Monte um diagrama que decida qualquer compra. Teste.",
+          "prompt": "Monte um diagrama e teste.",
           "visual": {
             "type": "decision-tree"
           },
@@ -11878,7 +11863,7 @@
               },
               {
                 "id": "afford",
-                "label": "Dá para pagar nesta semana?"
+                "label": "Cabe no bolso?"
               }
             ],
             "outcomes": [
@@ -11902,7 +11887,7 @@
                   "need-it": true,
                   "afford": false
                 },
-                "label": "Tênis novo, sem dinheiro agora"
+                "label": "Tênis novo"
               }
             ]
           }
@@ -12148,7 +12133,7 @@
           "id": "messages-cues-01",
           "type": "money.scam-check.v2",
           "grading": "server",
-          "prompt": "Mark the tricks and tick the cues you saw.",
+          "prompt": "Mark tricks and their cues.",
           "visual": {
             "type": "message-list"
           },
@@ -12157,36 +12142,31 @@
               {
                 "id": "msg-prize",
                 "sender": "Unknown number",
-                "text": "You won 500 coins! Send your password to claim them."
+                "text": "You won 500 coins! Send your password."
               },
               {
                 "id": "msg-coach",
                 "sender": "Coach Ana",
-                "text": "Practice moves to 4 pm on Friday."
+                "text": "Practice is at 4 pm Friday."
               },
               {
                 "id": "msg-code",
                 "sender": "Game Team",
-                "text": "Share the code we sent you so we can fix your account."
-              },
-              {
-                "id": "msg-aunt",
-                "sender": "Aunt Rosa",
-                "text": "See you at lunch on Sunday."
+                "text": "Send us the code we texted you."
               }
             ],
             "cues": [
               {
                 "id": "cue-password",
-                "label": "Asks for a password"
+                "label": "Password"
               },
               {
                 "id": "cue-prize",
-                "label": "Too-good prize"
+                "label": "Big prize"
               },
               {
                 "id": "cue-code",
-                "label": "Asks for a code"
+                "label": "Code"
               }
             ]
           },
@@ -12245,7 +12225,7 @@
           "id": "messages-cues-01",
           "type": "money.scam-check.v2",
           "grading": "server",
-          "prompt": "Marca las trampas y las señales que viste.",
+          "prompt": "Marca trampas y señales.",
           "visual": {
             "type": "message-list"
           },
@@ -12254,36 +12234,31 @@
               {
                 "id": "msg-prize",
                 "sender": "Número desconocido",
-                "text": "¡Ganaste 500 monedas! Envía tu contraseña para cobrarlas."
+                "text": "¡Ganaste 500 monedas! Envía tu contraseña."
               },
               {
                 "id": "msg-coach",
                 "sender": "Entrenadora Ana",
-                "text": "El entrenamiento pasa a las 4 pm el viernes."
+                "text": "El entrenamiento es el viernes a las 4 pm."
               },
               {
                 "id": "msg-code",
                 "sender": "Equipo del juego",
-                "text": "Comparte el código que te enviamos para arreglar tu cuenta."
-              },
-              {
-                "id": "msg-aunt",
-                "sender": "Tía Rosa",
-                "text": "Nos vemos en la comida del domingo."
+                "text": "Envíanos el código que te mandamos."
               }
             ],
             "cues": [
               {
                 "id": "cue-password",
-                "label": "Pide contraseña"
+                "label": "Contraseña"
               },
               {
                 "id": "cue-prize",
-                "label": "Premio increíble"
+                "label": "Gran premio"
               },
               {
                 "id": "cue-code",
-                "label": "Pide un código"
+                "label": "Código"
               }
             ]
           },
@@ -12342,7 +12317,7 @@
           "id": "messages-cues-01",
           "type": "money.scam-check.v2",
           "grading": "server",
-          "prompt": "Marque as armadilhas e os sinais que viu.",
+          "prompt": "Marque golpes e sinais.",
           "visual": {
             "type": "message-list"
           },
@@ -12351,36 +12326,31 @@
               {
                 "id": "msg-prize",
                 "sender": "Número desconhecido",
-                "text": "Você ganhou 500 moedas! Envie sua senha para receber."
+                "text": "Você ganhou 500 moedas! Envie sua senha."
               },
               {
                 "id": "msg-coach",
                 "sender": "Técnica Ana",
-                "text": "O treino passa para as 16h na sexta."
+                "text": "O treino é sexta às 16h."
               },
               {
                 "id": "msg-code",
                 "sender": "Equipe do jogo",
-                "text": "Compartilhe o código que enviamos para arrumar sua conta."
-              },
-              {
-                "id": "msg-aunt",
-                "sender": "Tia Rosa",
-                "text": "Até o almoço de domingo."
+                "text": "Envie o código que mandamos."
               }
             ],
             "cues": [
               {
                 "id": "cue-password",
-                "label": "Pede senha"
+                "label": "Senha"
               },
               {
                 "id": "cue-prize",
-                "label": "Prêmio bom demais"
+                "label": "Prêmio grande"
               },
               {
                 "id": "cue-code",
-                "label": "Pede um código"
+                "label": "Código"
               }
             ]
           },
@@ -15267,7 +15237,7 @@
           "id": "change-01",
           "type": "money.making-change.v2",
           "grading": "server",
-          "prompt": "A juice costs 13 coins and you got 20. Give the change.",
+          "prompt": "Give the change.",
           "visual": {
             "type": "coin-tray"
           },
@@ -15300,7 +15270,7 @@
           "id": "euler-young",
           "type": "logic.euler.v2",
           "grading": "server",
-          "prompt": "Place each thing in the circles.",
+          "prompt": "Place each thing.",
           "visual": {
             "type": "euler"
           },
@@ -15337,7 +15307,7 @@
           "id": "sort-young",
           "type": "logic.sort-by-rule.v2",
           "grading": "server",
-          "prompt": "Sort the coin piles.",
+          "prompt": "Sort the piles.",
           "visual": {
             "type": "sort-bins"
           },
@@ -15484,7 +15454,7 @@
           "id": "change-01",
           "type": "money.making-change.v2",
           "grading": "server",
-          "prompt": "Un jugo cuesta 13 monedas y te dieron 20. Da el cambio.",
+          "prompt": "Da el cambio.",
           "visual": {
             "type": "coin-tray"
           },
@@ -15517,7 +15487,7 @@
           "id": "euler-young",
           "type": "logic.euler.v2",
           "grading": "server",
-          "prompt": "Coloca cada cosa en los círculos.",
+          "prompt": "Coloca cada cosa.",
           "visual": {
             "type": "euler"
           },
@@ -15554,7 +15524,7 @@
           "id": "sort-young",
           "type": "logic.sort-by-rule.v2",
           "grading": "server",
-          "prompt": "Ordena las pilas de monedas.",
+          "prompt": "Ordena las pilas.",
           "visual": {
             "type": "sort-bins"
           },
@@ -15701,7 +15671,7 @@
           "id": "change-01",
           "type": "money.making-change.v2",
           "grading": "server",
-          "prompt": "Um suco custa 13 moedas e você recebeu 20. Dê o troco.",
+          "prompt": "Dê o troco.",
           "visual": {
             "type": "coin-tray"
           },
@@ -15734,7 +15704,7 @@
           "id": "euler-young",
           "type": "logic.euler.v2",
           "grading": "server",
-          "prompt": "Coloque cada coisa nos círculos.",
+          "prompt": "Coloque cada coisa.",
           "visual": {
             "type": "euler"
           },
@@ -15771,7 +15741,7 @@
           "id": "sort-young",
           "type": "logic.sort-by-rule.v2",
           "grading": "server",
-          "prompt": "Separe as pilhas de moedas.",
+          "prompt": "Separe as pilhas.",
           "visual": {
             "type": "sort-bins"
           },

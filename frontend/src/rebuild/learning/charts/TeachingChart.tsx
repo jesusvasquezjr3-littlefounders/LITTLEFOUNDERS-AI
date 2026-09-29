@@ -120,7 +120,11 @@ function useFittedTags(canvas: React.RefObject<HTMLDivElement>) {
         const rect = element.getBoundingClientRect();
         const lineHeight = parseFloat(getComputedStyle(element).lineHeight) || 16;
         const lines = Number(element.dataset.lines ?? 2);
-        const fits = element.scrollWidth <= element.clientWidth + 1 && rect.height <= lines * lineHeight + 1
+        // The text's own extent, not the rounded scroll width: a word 0.6 px wider than its room still overflows it.
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        const inked = range.getBoundingClientRect?.().width ?? 0;
+        const fits = element.scrollWidth <= element.clientWidth + 1 && inked <= rect.width + 0.25 && rect.height <= lines * lineHeight + 1
           && rect.left >= box.left - 1 && rect.right <= box.right + 1
           && !placed.some((other) => rect.left < other.right && rect.right > other.left && rect.top < other.bottom && rect.bottom > other.top);
         if (fits) { placed.push(rect); element.removeAttribute('data-fit'); } else { element.dataset.fit = 'no'; dropped += 1; }
@@ -131,7 +135,13 @@ function useFittedTags(canvas: React.RefObject<HTMLDivElement>) {
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(fit);
     observer?.observe(host);
     void document.fonts?.ready.then(fit);
-    return () => { live = false; observer?.disconnect(); };
+    // GAP-FIX-R4 (WCAG 1.4.12): a user style sheet that widens letter or word spacing changes no box size, so a
+    // style added to the page (or a style on the root) re-measures the labels too.
+    const styles = typeof MutationObserver === 'undefined' ? null : new MutationObserver(fit);
+    styles?.observe(document.head, { childList: true, subtree: true, characterData: true });
+    styles?.observe(document.documentElement, { attributes: true, attributeFilter: ['style', 'class'] });
+    styles?.observe(host, { characterData: true, subtree: true });
+    return () => { live = false; observer?.disconnect(); styles?.disconnect(); };
   });
 }
 
@@ -419,7 +429,8 @@ function swimlane(data: ChartData, out: Tags): ReactNode {
   const box = { w: 64, h: Math.min(32, laneH - 6) }; const colW = (W - 70 - box.w) / Math.max(1, nodes.length - 1);
   const at = (id: string) => { const node = nodes.find((item) => item.id === id)!; const lane = lanes.findIndex((l) => l.id === node.lane);
     return { x: 62 + order.get(id)! * colW, y: 4 + lane * laneH + laneH / 2 - box.h / 2 }; };
-  return <>{lanes.map((lane, i) => <g key={lane.id}><rect x={2} y={4 + i * laneH} width={W - 4} height={laneH - 2} className="lf-chart-lane" />
+  // The lane bands are the ground the steps sit on, not data marks (05 §2): decoration for the board audit.
+  return <>{lanes.map((lane, i) => <g key={lane.id}><rect x={2} y={4 + i * laneH} width={W - 4} height={laneH - 2} className="lf-chart-lane" data-board-decoration="lane" />
     {tag(out, { key: `lane:${lane.id}`, text: lane.label, x: 6, y: 4 + i * laneH + laneH / 2, room: 52, align: 'start', lines: Math.max(1, Math.floor((laneH - 4) / 15)) })}</g>)}
     {links.map((l, i) => { const a = at(l.from); const b = at(l.to);
       return <line key={i} x1={a.x + box.w} y1={a.y + box.h / 2} x2={b.x} y2={b.y + box.h / 2} className="lf-chart-edge" />; })}

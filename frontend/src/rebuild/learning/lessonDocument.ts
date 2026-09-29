@@ -439,13 +439,7 @@ export const lessonClientDocumentSchema = z.object({
   }
   const expected = new Set<string>();
   for (const [index, value] of document.segments.entries()) {
-    const needed: readonly string[] = value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar'
-      ? [`visual.${value.visual.type}.v1`, 'operation.reallocate.v1']
-      : value.type === 'visual.chart.v2' ? [`visual.${value.visual.type}.v1`, ...REQUIRED_SEGMENT_CAPABILITIES[value.type], ...(value.payload.question ? ['operation.choose-option.v1'] : [])]
-        : (value.type === 'logic.flowchart.v2' || value.type === 'money.spend-decision.v2') && 'mode' in value.payload ? [...REQUIRED_SEGMENT_CAPABILITIES[value.type], 'operation.build-flowchart.v1']
-          : (value.type === 'math.worked-example.v2' && value.payload.steps.some((step) => step.notation)) || (value.type === 'math.function-machine.v2' && value.payload.notation)
-            ? [...REQUIRED_SEGMENT_CAPABILITIES[value.type], NOTATION_CAPABILITY]
-            : REQUIRED_SEGMENT_CAPABILITIES[value.type];
+    const needed = segmentCapabilities(value);
     if (value.type === 'visual.chart.v2' && !chartAllowed(value.visual.type, document.age_band, document.course_id)) {
       ctx.addIssue({ code: 'custom', path: ['segments', index, 'visual'], message: 'This chart kind is not open to this age pathway or subject' });
     }
@@ -512,6 +506,22 @@ export function ageEligibilityForBand(value: z.infer<typeof ageBand>): z.infer<t
 
 export type LessonLoadResult = { status: 'ready'; document: LessonClientDocument }
   | { status: 'upgrade-required' | 'invalid'; reason: string };
+
+/**
+ * The renderer capabilities one segment needs (the kind's list, plus the drawn
+ * chart kind, the build mode or notation). The document must declare exactly
+ * the union over its segments. GAP-FIX-R4: exported so the preview can stage
+ * one Forge fixture segment as its own lesson for the audits.
+ */
+export function segmentCapabilities(value: LessonClientSegment): readonly string[] {
+  return value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar'
+    ? [`visual.${value.visual.type}.v1`, 'operation.reallocate.v1']
+    : value.type === 'visual.chart.v2' ? [`visual.${value.visual.type}.v1`, ...REQUIRED_SEGMENT_CAPABILITIES[value.type], ...(value.payload.question ? ['operation.choose-option.v1'] : [])]
+      : (value.type === 'logic.flowchart.v2' || value.type === 'money.spend-decision.v2') && 'mode' in value.payload ? [...REQUIRED_SEGMENT_CAPABILITIES[value.type], 'operation.build-flowchart.v1']
+        : (value.type === 'math.worked-example.v2' && value.payload.steps.some((step) => step.notation)) || (value.type === 'math.function-machine.v2' && value.payload.notation)
+          ? [...REQUIRED_SEGMENT_CAPABILITIES[value.type], NOTATION_CAPABILITY]
+          : REQUIRED_SEGMENT_CAPABILITIES[value.type];
+}
 
 /** Fail closed: an unknown segment or missing capability cannot become a passing lesson. */
 export function loadLessonClientDocument(raw: unknown, capabilities: readonly string[] = LESSON_CLIENT_CAPABILITIES): LessonLoadResult {

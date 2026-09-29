@@ -44,9 +44,6 @@
           },
           {
             "id": "msg-code"
-          },
-          {
-            "id": "msg-aunt"
           }
         ],
         "cues": [
@@ -78,98 +75,86 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Mark the tricks and tick the cues you saw.",
+          "prompt": "Mark tricks and their cues.",
           "messages": [
             {
               "sender": "Unknown number",
-              "text": "You won 500 coins! Send your password to claim them."
+              "text": "You won 500 coins! Send your password."
             },
             {
               "sender": "Coach Ana",
-              "text": "Practice moves to 4 pm on Friday."
+              "text": "Practice is at 4 pm Friday."
             },
             {
               "sender": "Game Team",
-              "text": "Share the code we sent you so we can fix your account."
-            },
-            {
-              "sender": "Aunt Rosa",
-              "text": "See you at lunch on Sunday."
+              "text": "Send us the code we texted you."
             }
           ],
           "cues": [
             {
-              "label": "Asks for a password"
+              "label": "Password"
             },
             {
-              "label": "Too-good prize"
+              "label": "Big prize"
             },
             {
-              "label": "Asks for a code"
+              "label": "Code"
             }
           ]
         },
         "es-MX": {
-          "prompt": "Marca las trampas y las señales que viste.",
+          "prompt": "Marca trampas y señales.",
           "messages": [
             {
               "sender": "Número desconocido",
-              "text": "¡Ganaste 500 monedas! Envía tu contraseña para cobrarlas."
+              "text": "¡Ganaste 500 monedas! Envía tu contraseña."
             },
             {
               "sender": "Entrenadora Ana",
-              "text": "El entrenamiento pasa a las 4 pm el viernes."
+              "text": "El entrenamiento es el viernes a las 4 pm."
             },
             {
               "sender": "Equipo del juego",
-              "text": "Comparte el código que te enviamos para arreglar tu cuenta."
-            },
-            {
-              "sender": "Tía Rosa",
-              "text": "Nos vemos en la comida del domingo."
+              "text": "Envíanos el código que te mandamos."
             }
           ],
           "cues": [
             {
-              "label": "Pide contraseña"
+              "label": "Contraseña"
             },
             {
-              "label": "Premio increíble"
+              "label": "Gran premio"
             },
             {
-              "label": "Pide un código"
+              "label": "Código"
             }
           ]
         },
         "pt-BR": {
-          "prompt": "Marque as armadilhas e os sinais que viu.",
+          "prompt": "Marque golpes e sinais.",
           "messages": [
             {
               "sender": "Número desconhecido",
-              "text": "Você ganhou 500 moedas! Envie sua senha para receber."
+              "text": "Você ganhou 500 moedas! Envie sua senha."
             },
             {
               "sender": "Técnica Ana",
-              "text": "O treino passa para as 16h na sexta."
+              "text": "O treino é sexta às 16h."
             },
             {
               "sender": "Equipe do jogo",
-              "text": "Compartilhe o código que enviamos para arrumar sua conta."
-            },
-            {
-              "sender": "Tia Rosa",
-              "text": "Até o almoço de domingo."
+              "text": "Envie o código que mandamos."
             }
           ],
           "cues": [
             {
-              "label": "Pede senha"
+              "label": "Senha"
             },
             {
-              "label": "Prêmio bom demais"
+              "label": "Prêmio grande"
             },
             {
-              "label": "Pede um código"
+              "label": "Código"
             }
           ]
         }

@@ -334,12 +334,15 @@ export function DiversificationBoard({ document, segment, onBack, sequence, onGr
     onReset={() => { grading.reset(); setWeights(initial()); }} resetDisabled={weights[ids[0]!] === 100 || grading.pending || grading.met}
     foot={graded ? <GradedFoot locale={document.locale} grading={grading} canCheck sequence={sequence} onCheck={() => grading.check({ weights })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} />}>
-    <section className="lf-learning-board lf-concept-board">
+    <section className="lf-learning-control-strip" aria-label={t.portfolioPoint}>
+      {/* Bible 05 §3: the tap and keyboard controls sit in the strip under the board, not on it. */}
       <div className="lf-concept-controls" data-operation="operation.reallocate.v1">
         {p.assets.map((asset) => <Stepper key={asset.id} label={fill(t.weight, { x: asset.label })} valuePlacement="label" value={weights[asset.id] ?? 0} valueText={`${weights[asset.id] ?? 0}%`}
           min={0} max={100} step={p.step} onValueChange={(value) => move(asset.id, value)} labels={{ decrease: t.less, increase: t.more }} disabled={grading.met} />)}
         <p data-copy-role="data">{fill(t.total, { n: Object.values(weights).reduce((sum, w) => sum + w, 0) })}</p>
       </div>
+    </section>
+    <section className="lf-learning-board lf-concept-board">
       <figure className="lf-op" data-operation="operation.linked-representations.v1">
         <ChartOrTable labels={tableLabels(document.locale)}
           chart={<RiskReturnVisual label={`${t.portfolioPoint}. ${t.risk}: ${percent(point.riskBps)}. ${t.return}: ${percent(point.returnBps)}.`}

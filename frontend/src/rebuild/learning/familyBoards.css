@@ -30,7 +30,7 @@
 /* GAP-FIX-R2: the build-and-test boards ($6 offers, L2 rule builder, L6/$9 built chart). */
 .lf-rule-line { font-weight: 800; overflow-wrap: anywhere; }
 .lf-rule-practice { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
-.lf-rule-card { display: grid; gap: var(--spacing-1); padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); overflow-wrap: anywhere; }
+.lf-rule-card { display: grid; gap: var(--spacing-1); padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); overflow-wrap: anywhere; max-inline-size: 48ch; }
 .lf-rule-slot { display: grid; gap: var(--spacing-2); }
 .lf-flow-build, .lf-flow-branches { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
 .lf-flow-branches { padding-inline-start: var(--spacing-4); border-inline-start: 2px solid var(--outline); }
@@ -43,5 +43,5 @@
    and notes there (Bible 05 §2: never the Wallet's save and spend hues). What stays here is the board's own layout:
    the chips the learner drags or taps, and the control strip under the board. */
 .lf-drag-chips { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
-.lf-learning-hint { color: var(--content-muted); }
+.lf-family-board .lf-learning-actions { gap: var(--spacing-3); }
 .lf-board-controls { display: flex; flex-wrap: wrap; gap: var(--spacing-3); align-items: center; }

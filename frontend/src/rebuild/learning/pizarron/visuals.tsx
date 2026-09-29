@@ -376,7 +376,8 @@ export function CoinGroupsVisual({ label, groups, total, arrow = false, aside }:
         <span className="lf-pz-coin-pile" aria-hidden="true">
           {Array.from({ length: Math.min(20, Math.max(0, group.count)) }, (_, index) => <span key={index} className={group.kind === 'bill' ? 'lf-pz-coin-bill' : 'lf-pz-coin'} />)}
         </span>
-        <span data-copy-role="data">{group.count} × {group.label}{group.subtotal ? ` = ${group.subtotal}` : ''}</span>
+        {/* An empty pile names only its denomination (the count arrives with the first piece). */}
+        <span data-copy-role="data">{group.count > 0 ? `${group.count} × ${group.label}${group.subtotal ? ` = ${group.subtotal}` : ''}` : group.label}</span>
       </div>)}
       {aside}
     </div>
@@ -511,7 +512,7 @@ export function VennVisual({ label, leftLabel, rightLabel, bothLabel, neitherLab
     const content = regions[key] ?? { count: '0', items: [] };
     const extra = targetProps?.(key);
     return <div key={key} {...extra} className={`lf-pz-venn-region lf-pz-venn-region--${key}${extra?.className ? ` ${extra.className}` : ''}`}>
-      <strong data-copy-role="data">{names[key]} · {content.count}</strong>
+      <strong data-copy-role="data">{content.count ? `${names[key]} · ${content.count}` : names[key]}</strong>
       <ul>{content.items.map((item, index) => <li key={index} data-copy-role="data">{item}</li>)}</ul>
     </div>;
   };

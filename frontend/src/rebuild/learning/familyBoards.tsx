@@ -113,18 +113,15 @@ export function EulerBoard({ document, segment, onBack, sequence, onGrade }: Boa
     {relation ? <section className="lf-learning-board lf-family-board" aria-label={t.diagram}>
       <VennVisual label={t.diagram} relation={relation} leftLabel={regionLabel('first')} rightLabel={regionLabel('second')} bothLabel={regionLabel('both')}
         neitherLabel={t.neither}
-        regions={Object.fromEntries(allowed.map((region) => [REGION_KEY[region], { count: String(inRegion(region).length), items: inRegion(region) }]))}
+        regions={Object.fromEntries(allowed.map((region) => [REGION_KEY[region], { count: inRegion(region).length ? String(inRegion(region).length) : '', items: inRegion(region) }]))}
         targetProps={(key) => { const region = KEY_REGION[key]; return region && allowed.includes(region) ? dnd.target(region) : undefined; }} />
-      <h3 data-copy-role="heading">{t.place}</h3>
-      <p className="lf-learning-hint" data-copy-role="body">{playerCopy(document.locale).dragHint}</p>
-      <div className="lf-drag-chips" role="group" aria-label={t.place}>
+      <p id={`${segment.id}-drag`} className="lf-visually-hidden" data-copy-role="body">{playerCopy(document.locale).dragHint}</p>
+      <div className="lf-drag-chips" role="group" aria-label={t.place} aria-describedby={`${segment.id}-drag`}>
         {items.map((item) => <ChoiceChip key={item.id} {...dnd.chip(item.id)} disabled={locked}>{item.label}</ChoiceChip>)}
+        <MoveToChoice locale={document.locale} item={items.find((item) => item.id === dnd.carried) ?? null} disabled={locked}
+          options={allowed.map((region) => ({ value: region, label: regionLabel(region) }))}
+          onChange={(region) => { if (dnd.carried) place(dnd.carried, region); dnd.clear(); }} />
       </div>
-    </section> : null}
-    {relation ? <section className="lf-learning-control-strip" aria-label={t.pickBin}>
-      {items.map((item) => <MoveToChoice key={item.id} locale={document.locale} label={item.label} value={placed[item.id] ?? null}
-        disabled={locked} options={allowed.map((region) => ({ value: region, label: regionLabel(region) }))}
-        onChange={(region) => place(item.id, region)} />)}
     </section> : null}
     {relation && segment.payload.mark_occupancy ? <section className="lf-learning-control-strip" aria-labelledby={`${segment.id}-occupied`}>
       <h3 id={`${segment.id}-occupied`} data-copy-role="heading">{t.occupied}</h3>
@@ -234,25 +231,30 @@ export function SortBinsBoard({ document, segment, onBack, sequence, onGrade }: 
     bins={bins.map((value) => ({ id: value.id, label: value.label, marked: value.id === p.depends_bin_id,
       items: phaseItems.filter((item) => bin[item.id] === value.id).map((item) => item.label) }))}
     targetProps={(id) => dnd.target(id)} />;
-  const itemControls = (phaseItems: typeof items) => phaseItems.map((item) => <div key={item.id} className="lf-sort-item">
-    <MoveToChoice locale={document.locale} label={item.label} value={bin[item.id] ?? null} disabled={locked}
-      options={phaseBins(item.id).map((value) => ({ value: value.id, label: value.label }))} onChange={(value) => place(item.id, value)} />
-    {bin[item.id] ? <RadioGroup legend={t.why} name={`${segment.id}-${item.id}-why`} disabled={locked} value={reason[item.id] ?? null}
+  const itemControls = (phaseItems: typeof items) => phaseItems.filter((item) => bin[item.id]).map((item) => <div key={item.id} className="lf-sort-item">
+    <RadioGroup legend={`${t.why} ${item.label}`} name={`${segment.id}-${item.id}-why`} disabled={locked} value={reason[item.id] ?? null}
       options={reasons.map((value) => ({ value: value.id, label: value.label }))}
-      onValueChange={(value) => { grading.reset(); setReason((current) => ({ ...current, [item.id]: value })); }} /> : null}
+      onValueChange={(value) => { grading.reset(); setReason((current) => ({ ...current, [item.id]: value })); }} />
   </div>);
-  const chips = (phaseItems: typeof items) => <div className="lf-drag-chips" role="group" aria-label={t.place}>
-    {phaseItems.map((item) => <ChoiceChip key={item.id} {...dnd.chip(item.id)} disabled={locked}>{item.label}</ChoiceChip>)}
-  </div>;
+  const chips = (phaseItems: typeof items) => {
+    const carried = phaseItems.find((item) => item.id === dnd.carried) ?? null;
+    return <div className="lf-drag-chips" role="group" aria-label={t.place} aria-describedby={`${segment.id}-drag`}>
+      {phaseItems.map((item) => <ChoiceChip key={item.id} {...dnd.chip(item.id)} disabled={locked}>{item.label}</ChoiceChip>)}
+      <MoveToChoice locale={document.locale} item={carried} disabled={locked}
+        options={(carried ? phaseBins(carried.id) : []).map((value) => ({ value: value.id, label: value.label }))}
+        onChange={(value) => { if (carried) place(carried.id, value); dnd.clear(); }} />
+    </div>;
+  };
   return <BoardShell screen={segment.type === 'money.needs-wants.v2' ? 'needs-wants' : 'sort-bins'} locale={document.locale} title={document.title} segment={segment}
     onBack={onBack} sequence={sequence} finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
     onReset={() => { grading.reset(); setBin({}); setReason({}); dnd.clear(); }} resetDisabled={!changed || locked}
     foot={<GradedFoot locale={document.locale} grading={grading} canCheck={complete} sequence={sequence}
       onCheck={() => grading.check({ placements: Object.fromEntries(items.map((item) => [item.id, { bin: bin[item.id], reason: reason[item.id] }])) })} />}>
     <section className="lf-learning-board lf-family-board" aria-labelledby={`${segment.id}-bins`}>
-      <h2 id={`${segment.id}-bins`} data-copy-role="heading">{p.rule ?? t.bins}</h2>
+      <h2 id={`${segment.id}-bins`} data-copy-role="heading">{t.bins}</h2>
+      {p.rule ? <p className="lf-family-rule" data-copy-role="prompt">{p.rule}</p> : null}
       {visual(p.bins, firstItems, p.rule ?? t.bins)}
-      <p className="lf-learning-hint" data-copy-role="body">{playerCopy(document.locale).dragHint}</p>
+      <p id={`${segment.id}-drag`} className="lf-visually-hidden" data-copy-role="body">{playerCopy(document.locale).dragHint}</p>
       {chips(firstItems)}
     </section>
     <section className="lf-learning-control-strip" aria-label={t.pickBin}>{itemControls(firstItems)}</section>
@@ -273,7 +275,12 @@ export function MessageListBoard({ document, segment, onBack, sequence, onGrade 
   const t = familyCopy[document.locale];
   const [flagged, setFlagged] = useState<string[]>([]);
   const grading = useSegmentGrade(segment.id, onGrade);
-  const set = (id: string, scam: boolean) => { grading.reset(); setFlagged((current) => scam ? [...new Set([...current, id])] : current.filter((value) => value !== id)); };
+  const set = (id: string, scam: boolean) => {
+    grading.reset();
+    setFlagged((current) => scam ? [...new Set([...current, id])] : current.filter((value) => value !== id));
+    // A message called fine again keeps no cue ticks.
+    if (!scam) setTicks((current) => (current[id] ? Object.fromEntries(Object.entries(current).filter(([key]) => key !== id)) : current));
+  };
   // L12 (GAP-FIX-R2): "tick which cues fired" per message; stored as a diagnostic beside the flag decision.
   const cueList = segment.payload.cues;
   const [ticks, setTicks] = useState<Record<string, string[]>>({});
@@ -292,12 +299,13 @@ export function MessageListBoard({ document, segment, onBack, sequence, onGrade 
         {segment.payload.messages.map((message) => {
           const scam = flagged.includes(message.id);
           return <li key={message.id} className={`lf-message${scam ? ' lf-message--flagged' : ''}`}>
-            <span className="lf-message-from" data-copy-role="data">{t.from}: {message.sender}</span>
+            <span className="lf-message-from" data-copy-role="data">{message.sender}</span>
             <p data-copy-role="body">{message.text}</p>
             <SegmentedControl className="lf-message-actions" legend={message.sender} legendHidden name={`${segment.id}-${message.id}`} size="compact"
               options={[{ value: 'scam', label: t.scam }, { value: 'safe', label: t.notScam }]} value={scam ? 'scam' : 'safe'}
               disabled={grading.pending || grading.met} onValueChange={(value) => set(message.id, value === 'scam')} />
-            {cueList ? <div className="lf-message-cues" role="group" aria-label={`${t.cues}: ${message.sender}`}>
+            {/* GAP-FIX-R4: the cues are what made the learner call it a scam, so they appear once it is flagged. */}
+            {cueList && scam ? <div className="lf-message-cues" role="group" aria-label={`${t.cues}: ${message.sender}`}>
               {cueList.map((cue) => <ChoiceChip key={cue.id} selected={(ticks[message.id] ?? []).includes(cue.id)} disabled={grading.pending || grading.met}
                 onToggle={() => tick(message.id, cue.id)}>{cue.label}</ChoiceChip>)}
             </div> : null}
