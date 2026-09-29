@@ -103,7 +103,7 @@ try:
         run(f"INSERT INTO auth.users (id, email) VALUES ('{uid}', '{name}@example.com');")
     learner, other = users['learner'], users['other']
 
-    # ── 0241: the placement error on the receipt ──
+    # ── v2_number_line_pae: the placement error on the receipt ──
     def receipt(jti, verdict, run_id=None, version=None, segment='line-01'):
         return f"""SET session_replication_role = replica;
             INSERT INTO lesson_v2_grade_receipts (jti, user_id, run_id, document_version_id, segment_id, verdict)
@@ -114,7 +114,7 @@ try:
         rejected(receipt(f'jti-r5-pae-bad000000000{index}', f'{{"correct": false, "score": 0, "pae": {bad}}}'), 'lesson_v2_grade_receipts_signals_check')
     check('the receipt CHECK admits pae as a number in 0-1 and refuses one outside it or as a string')
 
-    # ── 0242: the approach lever ──
+    # ── learning_autonomy_levers: the approach lever ──
     assert run("SELECT column_default FROM information_schema.columns WHERE table_name = 'lessons' AND column_name = 'optional_enrichment'") == 'false'
     check('lessons.optional_enrichment exists and defaults to false (no existing lesson changes)')
 

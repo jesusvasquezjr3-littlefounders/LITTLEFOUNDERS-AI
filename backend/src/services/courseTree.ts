@@ -75,7 +75,7 @@ export interface LessonRowLite {
   difficulty: number;
   xp_total: number;
   estimated_minutes: number;
-  /** GAP-FIX-R5 (0242): depth/enrichment; never counted toward progress, badges or unlock order. */
+  /** GAP-FIX-R5 (*_learning_autonomy_levers.sql): depth/enrichment; never counted toward progress, badges or unlock order. */
   optional_enrichment?: boolean;
 }
 
