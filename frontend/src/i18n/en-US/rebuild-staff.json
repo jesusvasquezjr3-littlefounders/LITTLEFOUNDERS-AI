@@ -437,8 +437,8 @@
         "signups": "Signups",
         "reasonLabel": "Reason",
         "reasonHelp": "10 to 300 characters. It goes to the audit log.",
-        "consequence": "{name} loses verified status. The reason is audited.",
-        "revoked": "Verification revoked.",
+        "consequence": "{name} loses verification and every Tutor link. The reason is audited.",
+        "revoked": "Verification revoked. Tutor access ended; unsupervised children are paused.",
         "revokeFailed": "Could not revoke. Try again.",
         "noVerification": "This account has no parent verification.",
         "ageRecordMinor": "The age record says under 18. Review the age or revoke."

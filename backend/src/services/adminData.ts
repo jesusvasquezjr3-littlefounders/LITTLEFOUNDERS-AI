@@ -513,7 +513,12 @@ function dbRefusal(body: unknown): { code: string; message: string } | null {
  * 17). The database refuses before any write (staff_parent_grant_age_guard);
  * the age record is corrected through the E.4 review, never by a grant.
  */
-export type ParentGrantOutcome = 'granted' | 'already_granted' | 'invalid' | 'minor_record' | 'rejected' | 'unavailable';
+/*
+ * 'revoked' (GAP-FIX-R6 identity-site, A.5): staff revoked this adult's
+ * verification; the database refuses the parent role on every path, the
+ * staff grant included (tutor_revocation_cascade, PARENT_ROLE_REVOKED).
+ */
+export type ParentGrantOutcome = 'granted' | 'already_granted' | 'invalid' | 'minor_record' | 'revoked' | 'rejected' | 'unavailable';
 
 export async function grantParentRoleWithJustification(userId: string, actorId: string, justification: string): Promise<ParentGrantOutcome> {
   const { ok, body } = await serviceRestRaw('/rpc/grant_parent_role_with_justification', {
@@ -524,6 +529,7 @@ export async function grantParentRoleWithJustification(userId: string, actorId: 
     const refusal = dbRefusal(body);
     if (!refusal) return 'unavailable';
     if (refusal.message.includes('PARENT_GRANT_JUSTIFICATION_REQUIRED')) return 'invalid';
+    if (refusal.message.includes('PARENT_ROLE_REVOKED')) return 'revoked';
     return refusal.message.includes('PARENT_GRANT_MINOR_RECORD') ? 'minor_record' : 'rejected';
   }
   return body === 'granted' || body === 'already_granted' ? body : 'unavailable';

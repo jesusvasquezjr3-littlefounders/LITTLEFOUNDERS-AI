@@ -1742,7 +1742,11 @@ export function adminRouter(): Router {
   // fraud report. The database writes the revoked row (latest-row-wins
   // resolver) and the audit row carrying the deciding actor and reason in ONE
   // transaction (revoke_parent_verification); a write Core cannot confirm
-  // answers 502, never 'revoked'.
+  // answers 502, never 'revoked'. GAP-FIX-R6: the same transaction ends the
+  // Tutor's powers (tutor_revocation_cascade): every verified guardian link is
+  // revoked, open invites are withdrawn and the parent role is removed, so
+  // every requireRole(['parent']) and verified-link check refuses the adult
+  // and a child left with no verified guardian is paused (A.1).
   const VerificationRevokeSchema = z.object({
     reason: z.string().trim().min(10).max(300),
   }).strict();
@@ -2376,6 +2380,8 @@ export function adminRouter(): Router {
       // OD-3 section 2: the age record outranks the grant (kid role, under-13
       // origin, declared minor band). Correct the record in the E.4 age review.
       if (outcome === 'minor_record') return fail(res, 409, 'AGE_RECORD_MINOR', 'The account age record is a minor record; correct it through the age review first');
+      // A.5 (GAP-FIX-R6): a revoked verification is not cleared by a staff grant.
+      if (outcome === 'revoked') return fail(res, 409, 'PARENT_VERIFICATION_REVOKED', 'Staff revoked the verification of this adult; the parent role cannot be granted again');
       if (outcome === 'rejected') return fail(res, 409, 'ROLE_REJECTED', 'The database rejected this role change (see role invariants)');
       if (outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not confirm the grant and its justification');
       return ok(res, { userId: parsed.data.userId, role: 'parent', granted: true });

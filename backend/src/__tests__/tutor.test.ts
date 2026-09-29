@@ -4180,6 +4180,53 @@ describe('POST /api/v1/tutor/internal/trajectory — V4 harness backlog (traject
   });
 });
 
+/*
+ * A.5 / Appendix M Part 2.1 criterion 2 (GAP-FIX-R6 identity-site): after a
+ * staff revocation the database holds the adult's links as 'revoked' (and no
+ * parent role). guardian_links honours every filter here, so these prove that
+ * the child's Mentor transcripts and memory notes are read and decided only
+ * through VERIFIED links: a revoked link is not a side door.
+ */
+describe('A.5: a Tutor whose verification staff revoked', () => {
+  const REVOKED_PROPOSAL = '56565656-5656-4565-8565-565656565656';
+  const revokedLink = { parent_user_id: PARENT, kid_user_id: KID, verification_status: 'revoked' };
+  const afterRevocation = (extra: Partial<StubOpts> = {}) => stub({
+    ...extra,
+    intercept: (url) => {
+      if (!url.includes('/rest/v1/guardian_links')) return null;
+      const parent = /parent_user_id=eq\.([^&]+)/.exec(url)?.[1];
+      const kid = /kid_user_id=eq\.([^&]+)/.exec(url)?.[1];
+      const status = /verification_status=eq\.([^&]+)/.exec(url)?.[1];
+      return jsonResponse(200, [revokedLink].filter((l) =>
+        (!parent || l.parent_user_id === parent) && (!kid || l.kid_user_id === kid) && (!status || l.verification_status === status)));
+    },
+  });
+
+  it("refuses the child's Mentor sessions and safety flags", async () => {
+    afterRevocation();
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/kids/${KID}/sessions`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+    expect(response.status).toBe(403);
+    expect(response.body.error.code).toBe('FORBIDDEN');
+  });
+
+  it("refuses a decision on the child's memory note and decides nothing", async () => {
+    const calls = afterRevocation({
+      memoryProposals: [{
+        id: REVOKED_PROPOSAL, user_id: KID, proposed: 'Le gustan los caballos.', expected_before: null, session_id: SESSION,
+        status: 'pending', decided_by: null, decided_at: null, created_at: '2026-09-01T10:00:00Z',
+      }],
+    });
+    const response = await request(createApp())
+      .post(`/api/v1/tutor/memory-proposals/${REVOKED_PROPOSAL}/decision`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+      .send({ verdict: 'approved' });
+    expect(response.status).toBe(403);
+    expect(calls.some((c) => c.url.includes('/rpc/decide_learner_memory_proposal'))).toBe(false);
+  });
+});
+
 describe('guardian visibility', () => {
   it('refuses a stranger', async () => {
     stub({ guardianLinks: [] });

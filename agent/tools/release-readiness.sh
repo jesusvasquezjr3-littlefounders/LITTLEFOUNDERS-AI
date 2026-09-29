@@ -58,6 +58,10 @@ node agent/tools/check-mentor-thresholds.mjs --strict
 # dry run passes, and no material change, overdue cadence or open live drift
 # finding is outstanding (the paid live run stays owner-run, OD-23).
 npm --prefix oracle run equity-audit -- --check
+# Appendix M Part 3 Stage 6 (GAP-FIX-R6): nor on an overdue quarterly Block A
+# identity recalibration (docs/operations/IDENTITY-RECALIBRATION-LOG.md), and
+# the log's thresholds must match the metrics Core reports.
+node agent/tools/identity-review-cadence.mjs --strict
 # Appendix C 1.3 / Stage 6 (GAP-FIX-R6): nor on an overdue Block B threshold
 # review or Age-Band Register Differentiation Audit (MN-03), each due by
 # docs/operations/BLOCK-B-THRESHOLD-LOG.md (block-b-review-cadence.mjs).
