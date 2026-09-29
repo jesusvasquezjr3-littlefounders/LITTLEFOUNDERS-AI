@@ -1,7 +1,8 @@
 -- 0242_staff_grant_revocation.sql — GAP-FIX-R5 staff-ops: a staff role or
 -- permission revocation is audited under the superadmin who made it, and an
 -- elevated revocation enters the access-review log.
--- @phase: expand
+-- @phase: contract
+-- @after-release: none required in practice; the phase classifier flags the DELETE statements inside revoke_staff_grant's body, which remove only the one grant a superadmin names through the new function, and no running Core calls it yet. Applying it deletes nothing. An older Core's direct DELETE keeps working; its revocations are then recorded with a NULL actor instead of the granter's (the granter moves to detail.grantedBy). Apply it BEFORE the Core release of GAP-FIX-R5 staff-ops, whose /roles/revoke and /roles/permissions/revoke call revoke_staff_grant (without it they answer 502 and nothing is revoked).
 --
 -- Product G.1 (permissions "stored, displayed, and audited"), Law 5 ("know,
 -- precisely, who can see what internally"), G.4 and Appendix N 1.1
@@ -33,8 +34,9 @@
 --    'not_held'. The existing role triggers (superadmin domain, kid guardian,
 --    parent cascade, admin grant) still apply and still refuse.
 --
--- Additive: an older Core that still DELETEs directly keeps working (its
--- revocations are now recorded with a NULL actor instead of the granter's).
+-- Declared contract only for the classifier (see @after-release): an older
+-- Core that still DELETEs directly keeps working (its revocations are now
+-- recorded with a NULL actor instead of the granter's).
 -- Proven on native PostgreSQL by database/scripts/verify-staff-ops-postgres.py.
 
 CREATE OR REPLACE FUNCTION public.audit_role_change()
