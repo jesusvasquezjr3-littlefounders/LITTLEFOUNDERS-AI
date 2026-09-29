@@ -66,6 +66,11 @@ the product and could not pass (below).
   spend (OD-23 is about paid generation), but it is a recurring cost the
   owner should know about.
 
+### Commits
+
+- `92f48a9e` fix(frontend): rebuild the boot veil from the Bible, without the legacy glass
+- `5085caa9` ci(frontend): run the Bible audits and the Mentor-stage verifier in CI and release readiness
+
 ### Migrations
 
 None.
