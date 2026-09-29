@@ -53,3 +53,27 @@ merge.
 - The narration audio itself (a paid audiogen run, OD-23); until then every v2 plate is text-only.
 - Browser matrices and `audit:rebuild` over the new bar-model build, the chart labels and the stage theme states. No chart screenshot was taken in the lane (no preview surface renders `visual.chart.v2` alone).
 - The Mentor reading the new selection codes in its own decisions (the receipts carry them; the Mentor lane owns its use).
+
+## Checkpoint F3-learning-finish
+
+Lane close-out for `codex/spec-fix3learning`.
+
+- **Sync.** `codex/spec-migration-s02` had not moved (tip `f2f8e0f4`, the lane's base): the merge was a no-op, with no conflicts.
+- **Adversarial pass over the eight gaps.** No gap was mandated and missing or half-built. Every gap is closed in code with the defaults above. The server enforces authorization: the M7 model and slots and the L1 card roles live only in the private rubric. The scorer payload carries only the text's quantities. Core refuses an M7 answer key its structure cannot reach. Narration URLs resolve only for ungraded, Mentor-voiced segments on the authenticated lesson route. Course-lesson evidence is gated at its single entry point. No rebuilt file this lane touched imports a legacy component. The new copy ("and N more", the selection codes on the staff panel) exists in en-US, es-MX and pt-BR, and the i18n gate is green.
+- **Full unit suites, once per touched service** (VITEST 3 threads/forks):
+  - Core: 148 files passed and 1 skipped (Postgres-only); 3,343 tests.
+  - Forge: 60 files, 836 tests.
+  - Frontend: 271 of 272 files, 3,132 of 3,133 tests. The red was `src/rebuild/assets/assetGate.test.ts` › "caps the glyph set…", a 90 s timeout in a file this lane did not touch. Rerun alone, it passed (13/13).
+  - `database`: `check-migrations` (228 files), `check-migration-phase`, `check-family-lifecycle` and the 48 node tests are green. `railway-migrate.test.mjs` never finishes on this machine: it produced no output in 9 min 50 s alone, and another lane's run is hung the same way. It is not touched by this lane (it only gains one more migration to walk). CI's Linux runner is its judge.
+  - `type-check` and `lint` are clean in backend, coursegen and frontend.
+- **Root:** `spec:check`, `secrets:check` and the i18n gate are green.
+
+### Final summary
+
+All eight audited learning gaps are implemented and locally verified: M7 learner-built bar models, a Mentor on every v2 lesson, the adventure scene inside the one band, the v2 narration channel, L1 selection-task diagnostics, uncut chart labels, the OD-25 skill list, and P-09 evidence gating. None is accepted or released. There is one migration, `0228_v2_selection_task_diagnostics.sql`, which the orchestrator renumbers at merge. Still open:
+
+- The narration audio, which needs a paid audiogen run (OD-23).
+- The browser matrices and `audit:rebuild` at merge.
+- A visual check of the chart labels.
+- The Mentor's own use of the selection codes, which the Mentor lane owns.
+- The six owner questions above.
