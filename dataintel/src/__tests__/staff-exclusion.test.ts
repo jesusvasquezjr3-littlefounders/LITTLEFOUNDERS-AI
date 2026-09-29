@@ -182,10 +182,12 @@ describe('no analytical query reaches around the views', () => {
    * the one deliberate staff-inspection service that exists so the console can
    * DISCLOSE how much it filtered (services/staffAudit.ts). The E.6 account
    * erasure (services/erasure.ts) is a writer too: it must DELETE from the
-   * physical tables, since a view would leave rows behind. Anything else
-   * reading a *_raw table is a metric quietly counting the platform team.
+   * physical tables, since a view would leave rows behind. The H.2 warehouse
+   * retention (services/warehouseRetention.ts) deletes from them for the same reason.
+   * Anything else reading a *_raw table is a metric quietly counting the
+   * platform team.
    */
-  const ALLOWED = new Set(['db/sync.ts', 'db/duckdb.ts', 'services/staffAudit.ts', 'services/erasure.ts']);
+  const ALLOWED = new Set(['db/sync.ts', 'db/duckdb.ts', 'services/staffAudit.ts', 'services/erasure.ts', 'services/warehouseRetention.ts']);
 
   function sourceFiles(dir: string, prefix = ''): string[] {
     return readdirSync(dir).flatMap((entry) => {
