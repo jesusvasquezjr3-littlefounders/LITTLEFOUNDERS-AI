@@ -110,6 +110,12 @@ export interface PublishInput {
     difficulty: 1 | 2 | 3 | 4 | 5;
     estimatedMinutes: number;
     cast: string[];
+    /**
+     * GAP-FIX-R5 (B.24): the blueprint's optional_enrichment. Written only when
+     * the blueprint declares it, so a Vault before the autonomy-levers
+     * migration keeps accepting every other publish.
+     */
+    optionalEnrichment?: boolean;
   };
   /** The full, atomically releasable locale bundle for this slot. */
   documents: Partial<Record<LessonLocale, LessonDocumentParsed>>;
@@ -322,6 +328,7 @@ export async function publishLessonSlot(input: PublishInput): Promise<PublishRes
         xp_total: xpTotal,
         estimated_minutes: input.lesson.estimatedMinutes,
         cast: input.lesson.cast,
+        ...(input.lesson.optionalEnrichment !== undefined ? { optional_enrichment: input.lesson.optionalEnrichment } : {}),
         status,
       },
     ],

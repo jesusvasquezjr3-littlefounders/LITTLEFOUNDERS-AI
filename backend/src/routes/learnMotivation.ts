@@ -2,7 +2,10 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser } from '../middleware/auth.js';
-import { AUTONOMY_LEVERS, PACE_GOALS, paceStatus } from '../services/autonomy.js';
+import { offeredLevers, PACE_GOALS, paceStatus } from '../services/autonomy.js';
+import type { AgeScreenState } from '../services/ageScreen.js';
+import { resolveLearnerRegister } from '../services/learnerRegister.js';
+import { autonomyOffer } from '../services/learnerRegisterPolicy.js';
 import { habitStateFromStats, pausedDays, readHabitStreak, streakWeek, type StreakDay, type StreakReadModel } from '../services/habitStreak.js';
 import { isCalendarDate } from '../services/streak.js';
 import { getHabitStreakRow, getPacePreference, getPracticeDays, getStreakPauses, upsertPacePreference, type StreakPauseRow } from '../services/supabaseRest.js';
@@ -17,9 +20,13 @@ import { getTutorPreferences } from '../services/tutorData.js';
  *        today, open, paused, resting), with the best streak, the days
  *        practised and the rest days left this week. A read never rewrites
  *        the stored streak (OD-9).
- * B.24 — the learner's three autonomy levers: path (the course path's
+ * B.24 — the learner's autonomy levers: path (the course path's
  *        frontier, B.6), Mentor (the character they chose) and pace (their
- *        own daily plan, which only they can set; a guardian cannot).
+ *        own daily plan, which only they can set; a guardian cannot), plus
+ *        the register's own mechanism (GAP-FIX-R5, Product 10 Block B): the
+ *        binary next-topic pick for 6-9, the approach choice from 10-12 and
+ *        optional enrichment for 13-17 and adults. `levers` lists what the
+ *        caller's register offers, never what another band gets.
  */
 
 const DATA_UNAVAILABLE = 'DATA_UNAVAILABLE';
@@ -70,16 +77,18 @@ export function learnMotivationRouter(): Router {
     if (!query.success) return fail(res, 400, 'VALIDATION_ERROR', 'local_date must be YYYY-MM-DD');
     const user = authedUser(res);
     const today = query.data.local_date ?? serverToday();
-    const [streak, row, pace, mentor] = await Promise.all([
+    const [streak, row, pace, mentor, register] = await Promise.all([
       loadStreakView(user.id, today), getHabitStreakRow(user.id), getPacePreference(user.id), getTutorPreferences(user.id),
+      resolveLearnerRegister(user.id, res.locals.ageScreen as AgeScreenState),
     ]);
-    if (!streak || !row || pace === undefined || !mentor) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load your rhythm');
+    if (!streak || !row || pace === undefined || !mentor || !register) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load your rhythm');
     const passedToday = row.last_active_date === today ? row.day_lessons_passed : 0;
     return ok(res, {
       streak,
       pace: paceStatus(pace, passedToday),
       mentor: { character: mentor.character, chosen: mentor.updated_at !== EPOCH },
-      levers: AUTONOMY_LEVERS,
+      levers: offeredLevers(register),
+      autonomy: autonomyOffer(register),
     });
   });
 

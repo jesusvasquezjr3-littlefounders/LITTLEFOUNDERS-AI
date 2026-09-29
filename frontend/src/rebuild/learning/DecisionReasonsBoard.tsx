@@ -65,7 +65,7 @@ export function DecisionReasonsBoard({ document, segment, onBack, onGrade, seque
   const pick = (setter: (id: string) => void, id: string) => { setter(id); setResult(null); };
 
   return <main className="lf-learning lf-learning--reasoning" data-surface="app" data-screen="decision-reasons"><div className="lf-learning-inner">
-    <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button><span data-copy-role="data">{t.board}</span></header><LessonStageSlot />
+    <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button><span data-copy-role="data">{t.board}</span></header><LessonStageSlot verdict={result === null || result === 'unavailable' ? null : result.verdict} />
     <div className="lf-learning-content">
       <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><SegmentPrompt segment={segment} locale={document.locale} /></div>
       <section className="lf-learning-board lf-reasoning-board" aria-labelledby="reasoning-choice-title">

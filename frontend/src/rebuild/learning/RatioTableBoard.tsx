@@ -8,7 +8,7 @@ import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { TeachingChartBoard } from './TeachingChartBoard';
 import './learning.css';
 import { LessonStageSlot } from './lessonStage';
-import { GradedFoot, NumberAnswer, SegmentPrompt, useSegmentGrade, type OnGradeSegment } from './segmentKit';
+import { GradedFoot, NumberAnswer, SegmentPrompt, useSegmentGrade, type OnGradeSegment, gradeStageVerdict } from './segmentKit';
 
 import { RatioLinesVisual } from './pizarron';
 
@@ -76,7 +76,7 @@ export function RatioTableBoard({ document, segment, onBack, sequence, onGrade }
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
         {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, changed)} max={100} valueText={`${sequenceProgress(sequence, changed)}%`} /> : null}
         <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.practice}</span>
-      </header><LessonStageSlot />
+      </header><LessonStageSlot verdict={gradeStageVerdict(grading.result)} />
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><SegmentPrompt segment={segment} locale={document.locale} /></div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart}

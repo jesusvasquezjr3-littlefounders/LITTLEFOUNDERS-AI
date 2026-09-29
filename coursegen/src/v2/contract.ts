@@ -119,6 +119,8 @@ export interface V2PublicDocument {
   segments: V2Segment[];
   representation_progressions?: unknown[];
   mentor_stage?: { character: string; scene: string };
+  /** B.24 / Block B autonomy (GAP-FIX-R5): two or three equally valid, fully graded chains for one skill (10+). */
+  approaches?: { options: Array<{ id: string; label: string; segment_ids: string[] }> };
 }
 
 /**
@@ -165,5 +167,7 @@ export function isNonCopyKey(key: string): boolean {
     // GAP-FIX-R2 charts: a swimlane node's lane and a Venn region's set list are ids.
     || key === 'lane' || key === 'sets'
     // TeX notation is locale-neutral data (spokenText carries the words).
-    || key === 'notation';
+    || key === 'notation'
+    // GAP-FIX-R5 (M3): the numbers a fraction line compares or shows as equivalents are data; the board formats them per locale.
+    || key === 'compare_values' || key === 'equivalent_values';
 }

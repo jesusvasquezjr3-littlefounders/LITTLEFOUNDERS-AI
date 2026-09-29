@@ -9,7 +9,7 @@ import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import './learning.css';
 import './goalBullet.css';
 import { LessonStageSlot } from './lessonStage';
-import { GradedFoot, SegmentPrompt, useSegmentGrade, type OnGradeSegment } from './segmentKit';
+import { GradedFoot, SegmentPrompt, useSegmentGrade, type OnGradeSegment, gradeStageVerdict } from './segmentKit';
 
 
 type GoalBulletSegment = Extract<LessonClientSegment, { type: 'visual.goal-bullet.v2' }>;
@@ -71,7 +71,7 @@ export function GoalBulletBoard({ document, segment, onBack, sequence, onGrade }
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
         {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, saved !== initial)} max={100} valueText={`${sequenceProgress(sequence, saved !== initial)}%`} /> : null}
-        <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header><LessonStageSlot />
+        <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header><LessonStageSlot verdict={gradeStageVerdict(grading.result)} />
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><SegmentPrompt segment={segment} locale={document.locale} /></div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart} columns={[t.category, t.value]}

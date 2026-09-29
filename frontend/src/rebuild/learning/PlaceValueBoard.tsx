@@ -11,7 +11,7 @@ import './learning.css';
 import './placeValue.css';
 import './stepReplay.css';
 import { LessonStageSlot } from './lessonStage';
-import { GradedFoot, NumberAnswer, SegmentPrompt, useSegmentGrade, type OnGradeSegment } from './segmentKit';
+import { GradedFoot, NumberAnswer, SegmentPrompt, useSegmentGrade, type OnGradeSegment, gradeStageVerdict } from './segmentKit';
 
 
 type PlaceValueSegment = Extract<LessonClientSegment, { type: 'math.place-value.v2' }>;
@@ -89,7 +89,7 @@ export function PlaceValueBoard({ document, segment, onBack, sequence, onGrade }
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
         {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={progress} max={100} valueText={`${progress}%`} /> : null}
-        <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header><LessonStageSlot />
+        <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header><LessonStageSlot verdict={gradeStageVerdict(grading.result)} />
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1>
           <SegmentPrompt segment={segment} locale={document.locale} /></div>

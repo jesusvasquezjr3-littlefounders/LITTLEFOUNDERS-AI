@@ -56,6 +56,7 @@ export interface V2DocumentLike {
   age_band?: unknown;
   title?: unknown;
   segments?: unknown;
+  approaches?: unknown;
 }
 
 export interface V2TextBlock {
@@ -127,6 +128,9 @@ function payloadStrings(node: unknown, pathSoFar: string, key: string, out: Arra
 export function v2TextBlocks(document: V2DocumentLike): V2TextBlock[] {
   const blocks: V2TextBlock[] = [];
   if (typeof document.title === 'string') blocks.push({ segmentId: '(title)', path: 'title', role: 'heading', text: document.title });
+  // GAP-FIX-R5 (B.24): an approach's name is a choice the learner reads, an option under the Copy Budget.
+  const approaches = (document.approaches as { options?: Array<{ label?: unknown }> } | undefined)?.options ?? [];
+  approaches.forEach((option, index) => { if (typeof option.label === 'string') blocks.push({ segmentId: '(approaches)', path: `approaches.options[${index}].label`, role: 'option', text: option.label }); });
   const segments = Array.isArray(document.segments) ? (document.segments as Array<Record<string, unknown>>) : [];
   for (const segment of segments) {
     const segmentId = typeof segment.id === 'string' ? segment.id : '(segment)';

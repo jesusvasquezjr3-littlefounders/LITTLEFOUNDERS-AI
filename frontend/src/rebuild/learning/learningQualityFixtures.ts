@@ -32,6 +32,9 @@ export function learningQualityFixture(): Record<string, unknown> {
       restDays: { learners_with_lapse: 40, kept_by_rest_days: 31, restarted: 12, utilization_rate: 0.775, rest_days_used: 52 },
       autonomy: [
         { lever: 'path' as const, offered: 120, exercised: 34, adoption_rate: 0.2833 },
+        // GAP-FIX-R5: the approach choice (10+) and optional enrichment (13+).
+        { lever: 'approach' as const, offered: 60, exercised: 21, adoption_rate: 0.35 },
+        { lever: 'enrichment' as const, offered: 30, exercised: 12, adoption_rate: 0.4 },
         { lever: 'pace' as const, offered: 80, exercised: 22, adoption_rate: 0.275 },
         { lever: 'mentor' as const, offered: 80, exercised: 51, adoption_rate: 0.6375 },
       ],

@@ -1,0 +1,387 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "compare-savings",
+  "lesson_id": "v2-approach-choice",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-compare-quantities"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Ana y Leo comparan sus ahorros; cada quien elige como resolverlo: con barras o con un diagrama.",
+  "title": {
+    "en-US": "Two ways to compare",
+    "es-MX": "Dos formas de comparar",
+    "pt-BR": "Duas formas de comparar"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "approaches": {
+    "options": [
+      {
+        "id": "approach-bars",
+        "label": {
+          "en-US": "Draw bars",
+          "es-MX": "Dibuja barras",
+          "pt-BR": "Desenhe barras"
+        },
+        "segment_ids": [
+          "bar-structure-01",
+          "bar-answer-01"
+        ]
+      },
+      {
+        "id": "approach-diagram",
+        "label": {
+          "en-US": "Use a diagram",
+          "es-MX": "Usa un diagrama",
+          "pt-BR": "Use um diagrama"
+        },
+        "segment_ids": [
+          "compare-structure-01",
+          "compare-slots-01",
+          "compare-answer-01"
+        ]
+      }
+    ]
+  },
+  "segments": [
+    {
+      "id": "bar-structure-01",
+      "type": "math.bar-model.structure.v2",
+      "grading": "server",
+      "visual": {
+        "type": "bar-model"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "ana-saved",
+            "value": 50
+          },
+          {
+            "id": "ana-more",
+            "value": 12
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Ana saved 50 coins, 12 more than Leo. Build the bars.",
+          "quantities": [
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "12 more"
+            }
+          ],
+          "unknownLabel": "Leo",
+          "spokenText": "fifty and twelve more"
+        },
+        "es-MX": {
+          "prompt": "Ana ahorró 50 monedas, 12 más que Leo. Arma las barras.",
+          "quantities": [
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "12 más"
+            }
+          ],
+          "unknownLabel": "Leo",
+          "spokenText": "cincuenta y doce más"
+        },
+        "pt-BR": {
+          "prompt": "Ana guardou 50 moedas, 12 a mais que Leo. Monte as barras.",
+          "quantities": [
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "12 a mais"
+            }
+          ],
+          "unknownLabel": "Leo",
+          "spokenText": "cinquenta e doze a mais"
+        }
+      },
+      "rubric": {
+        "model": "comparison",
+        "slots": {
+          "larger": "ana-saved",
+          "difference": "ana-more",
+          "smaller": "unknown"
+        }
+      }
+    },
+    {
+      "id": "bar-answer-01",
+      "type": "math.bar-model.answer.v2",
+      "grading": "server",
+      "visual": {
+        "type": "bar-model"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "ana-saved",
+            "value": 50
+          },
+          {
+            "id": "ana-more",
+            "value": 12
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "How many coins did Leo save?",
+          "quantities": [
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "12 more"
+            }
+          ],
+          "unknownLabel": "Leo",
+          "spokenText": "fifty minus twelve"
+        },
+        "es-MX": {
+          "prompt": "¿Cuántas monedas ahorró Leo?",
+          "quantities": [
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "12 más"
+            }
+          ],
+          "unknownLabel": "Leo",
+          "spokenText": "cincuenta menos doce"
+        },
+        "pt-BR": {
+          "prompt": "Quantas moedas Leo guardou?",
+          "quantities": [
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "12 a mais"
+            }
+          ],
+          "unknownLabel": "Leo",
+          "spokenText": "cinquenta menos doze"
+        }
+      },
+      "rubric": {
+        "target": 38
+      }
+    },
+    {
+      "id": "compare-structure-01",
+      "type": "math.schema-diagram.structure.v2",
+      "grading": "server",
+      "visual": {
+        "type": "schema-diagram"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "rho",
+            "value": 40
+          },
+          {
+            "id": "zara",
+            "value": 26
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho saved 40 coins and Zara 26. Choose the schema.",
+          "quantities": [
+            {
+              "label": "Rho saved"
+            },
+            {
+              "label": "Zara saved"
+            }
+          ],
+          "unknownLabel": "How many more",
+          "spokenText": "forty minus twenty six"
+        },
+        "es-MX": {
+          "prompt": "Rho ahorró 40 monedas y Zara 26. Elige el esquema.",
+          "quantities": [
+            {
+              "label": "Rho ahorró"
+            },
+            {
+              "label": "Zara ahorró"
+            }
+          ],
+          "unknownLabel": "Cuántas más",
+          "spokenText": "cuarenta menos veintiséis"
+        },
+        "pt-BR": {
+          "prompt": "Rho guardou 40 moedas e Zara 26. Escolha o esquema.",
+          "quantities": [
+            {
+              "label": "Rho guardou"
+            },
+            {
+              "label": "Zara guardou"
+            }
+          ],
+          "unknownLabel": "Quantas a mais",
+          "spokenText": "quarenta menos vinte e seis"
+        }
+      },
+      "rubric": {
+        "schema": "compare"
+      }
+    },
+    {
+      "id": "compare-slots-01",
+      "type": "math.schema-diagram.slots.v2",
+      "grading": "server",
+      "visual": {
+        "type": "schema-diagram"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "rho",
+            "value": 40
+          },
+          {
+            "id": "zara",
+            "value": 26
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Put each number in its box.",
+          "quantities": [
+            {
+              "label": "Rho saved"
+            },
+            {
+              "label": "Zara saved"
+            }
+          ],
+          "unknownLabel": "How many more",
+          "spokenText": "forty minus twenty six"
+        },
+        "es-MX": {
+          "prompt": "Pon cada número en su caja.",
+          "quantities": [
+            {
+              "label": "Rho ahorró"
+            },
+            {
+              "label": "Zara ahorró"
+            }
+          ],
+          "unknownLabel": "Cuántas más",
+          "spokenText": "cuarenta menos veintiséis"
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada número na sua caixa.",
+          "quantities": [
+            {
+              "label": "Rho guardou"
+            },
+            {
+              "label": "Zara guardou"
+            }
+          ],
+          "unknownLabel": "Quantas a mais",
+          "spokenText": "quarenta menos vinte e seis"
+        }
+      },
+      "rubric": {
+        "schema": "compare",
+        "slots": {
+          "larger": "rho",
+          "smaller": "zara",
+          "difference": "unknown"
+        }
+      }
+    },
+    {
+      "id": "compare-answer-01",
+      "type": "math.schema-diagram.answer.v2",
+      "grading": "server",
+      "visual": {
+        "type": "schema-diagram"
+      },
+      "payload": {
+        "quantities": [
+          {
+            "id": "rho",
+            "value": 40
+          },
+          {
+            "id": "zara",
+            "value": 26
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "How many more did Rho save?",
+          "quantities": [
+            {
+              "label": "Rho saved"
+            },
+            {
+              "label": "Zara saved"
+            }
+          ],
+          "unknownLabel": "How many more",
+          "spokenText": "forty minus twenty six"
+        },
+        "es-MX": {
+          "prompt": "¿Cuántas más ahorró Rho?",
+          "quantities": [
+            {
+              "label": "Rho ahorró"
+            },
+            {
+              "label": "Zara ahorró"
+            }
+          ],
+          "unknownLabel": "Cuántas más",
+          "spokenText": "cuarenta menos veintiséis"
+        },
+        "pt-BR": {
+          "prompt": "Quantas a mais Rho guardou?",
+          "quantities": [
+            {
+              "label": "Rho guardou"
+            },
+            {
+              "label": "Zara guardou"
+            }
+          ],
+          "unknownLabel": "Quantas a mais",
+          "spokenText": "quarenta menos vinte e seis"
+        }
+      },
+      "rubric": {
+        "target": 14
+      }
+    }
+  ]
+}

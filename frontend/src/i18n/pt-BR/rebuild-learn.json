@@ -61,6 +61,9 @@
     "contentGap": "Em breve, mais lições para sua idade.",
     "building": "Vozes e imagens chegam em breve.",
     "moreTitle": "Mais para abrir",
+    "pickTitle": "Ou escolha esta",
+    "exploreTitle": "Explore mais",
+    "exploreNote": "Opcional. Não muda seu progresso.",
     "showMore": "Ver mais",
     "showLess": "Ver menos",
     "waiting": "Mais {n} abrem enquanto você aprende.",
@@ -69,7 +72,8 @@
       "review": "Revisão",
       "review-due": "Hora de revisar",
       "bridge": "Ajuda extra",
-      "known": "Você já sabe"
+      "known": "Você já sabe",
+      "enrichment": "Aprofunde"
     },
     "extra": "Extra",
     "skillsTitle": "Habilidades desta trilha",
@@ -295,6 +299,9 @@
     "showTable": "Ver como tabela",
     "showChart": "Ver como gráfico",
     "dragHint": "Arraste, ou toque num cartão e depois no lugar.",
-    "mentorHeading": "Seu Mentor"
+    "mentorHeading": "Seu Mentor",
+    "approachPrompt": "Escolha como praticar.",
+    "approachStart": "Começar",
+    "approachFailed": "Não foi possível salvar sua escolha. Tente de novo."
   }
 }

@@ -1402,12 +1402,16 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
       attempt_token: started.body.data.attempt_tokens['place-01'], answer: { value: '6' },
     });
     expect(reviewed.body.data).toMatchObject({ verdict: { correct: false, score: 0 }, retry_attempt_token: expect.any(String) });
+    // GAP-FIX-R5 (Appendix P M2, Part 4.6): the receipt stores the position error as a share of the line; the client never sees it.
+    expect((db.lesson_v2_grade_receipts as Array<{ verdict: Record<string, unknown> }>).at(-1)!.verdict).toMatchObject({ diagnostic: 'tolerance', pae: 0.1 });
+    expect(reviewed.body.data.verdict).not.toHaveProperty('pae');
 
     const met = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
       segment_id: 'place-01', run_id: started.body.data.run_id,
       attempt_token: reviewed.body.data.retry_attempt_token, answer: { value: '7' },
     });
     expect(met.body.data).toMatchObject({ verdict: { correct: true, score: 100 }, replayed: false });
+    expect((db.lesson_v2_grade_receipts as Array<{ verdict: Record<string, unknown> }>).at(-1)!.verdict).toMatchObject({ diagnostic: 'none', pae: 0 });
 
     const complete = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({
       run_id: started.body.data.run_id, seconds_spent: 60, local_date: '2026-09-22',

@@ -57,6 +57,75 @@
         "targetDenominator": 4,
         "toleranceUnits": 0
       }
+    },
+    {
+      "id": "fraction-line-02",
+      "type": "math.number-line.fraction.v2",
+      "grading": "server",
+      "visual": {
+        "type": "number-line"
+      },
+      "payload": {
+        "maximumWhole": 1,
+        "divisions": 10,
+        "initialUnits": 0,
+        "compare_values": [
+          "2/5",
+          "0.5"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Place 2/5 and 0.5. Which is larger?",
+          "spokenText": "two fifths and zero point five"
+        },
+        "es-MX": {
+          "prompt": "Ubica 2/5 y 0.5. ¿Cuál es mayor?",
+          "spokenText": "dos quintos y cero punto cinco"
+        },
+        "pt-BR": {
+          "prompt": "Marque 2/5 e 0,5. Qual é maior?",
+          "spokenText": "dois quintos e zero vírgula cinco"
+        }
+      },
+      "rubric": {
+        "choice": "second",
+        "toleranceUnits": 0
+      }
+    },
+    {
+      "id": "fraction-line-03",
+      "type": "math.number-line.fraction.v2",
+      "grading": "server",
+      "visual": {
+        "type": "number-line"
+      },
+      "payload": {
+        "maximumWhole": 1,
+        "divisions": 10,
+        "initialUnits": 0,
+        "equivalent_values": [
+          "3/5",
+          "0.6"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Place 3/5 and 0.6. Do they meet?",
+          "spokenText": "three fifths and zero point six"
+        },
+        "es-MX": {
+          "prompt": "Ubica 3/5 y 0.6. ¿Se juntan?",
+          "spokenText": "tres quintos y cero punto seis"
+        },
+        "pt-BR": {
+          "prompt": "Marque 3/5 e 0,6. Eles se encontram?",
+          "spokenText": "três quintos e zero vírgula seis"
+        }
+      },
+      "rubric": {
+        "toleranceUnits": 0
+      }
     }
   ]
 }

@@ -61,17 +61,18 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Move the income to 45000 coins. What is the tax and the top rate?"
+          "prompt": "Move the income to 45000 coins. Find the tax, the top rate and the average rate."
         },
         "es-MX": {
-          "prompt": "Mueve el ingreso a 45000 monedas. ¿Cuánto impuesto y qué tasa más alta?"
+          "prompt": "Mueve el ingreso a 45000 monedas. Halla el impuesto, la tasa más alta y la tasa promedio."
         },
         "pt-BR": {
-          "prompt": "Mova a renda para 45000 moedas. Qual o imposto e a maior alíquota?"
+          "prompt": "Mova a renda para 45000 moedas. Ache o imposto, a maior alíquota e a alíquota média."
         }
       },
       "rubric": {
-        "income_minor": 45000
+        "income_minor": 45000,
+        "average_tolerance_bps": 50
       }
     },
     {

@@ -128,6 +128,39 @@ describe('course screen under the pathway engine (B.6)', () => {
     expect(screen.queryByRole('region', { name: 'Mais para abrir' })).toBeNull();
   });
 
+  it('GAP-FIX-R5 (Block B autonomy): 6-9 picks between two next steps; 13-17 and adults may explore optional depth lessons', () => {
+    const binary = childPathFixture();
+    binary.items = binary.items.slice(0, 2);
+    const { onNavigate } = view({ status: 'ready', detail: { engine: 'pathway', path: binary } });
+    const pick = screen.getByRole('region', { name: 'Or pick this one' });
+    fireEvent.click(within(pick).getByRole('button', { name: /Needs and wants/ }));
+    expect(onNavigate).toHaveBeenLastCalledWith('/learn/lesson/l-2', { courseSlug: 'financial-education' });
+    // A child is never offered the enrichment track, even if a payload carried one.
+    expect(screen.queryByRole('region', { name: 'Explore further' })).toBeNull();
+    const forged = childPathFixture();
+    forged.enrichment = adultPathFixture().enrichment;
+    view({ status: 'ready', detail: { engine: 'pathway', path: forged } });
+    expect(screen.queryByRole('region', { name: 'Explore further' })).toBeNull();
+  });
+
+  it('GAP-FIX-R5: "Explore further" lists optional depth lessons, says they never change progress, and opens the one chosen', () => {
+    const { onNavigate } = view({ status: 'ready', detail: { engine: 'pathway', path: adultPathFixture() } });
+    const explore = screen.getByRole('region', { name: 'Explore further' });
+    expect(within(explore).getByText('Optional. It never changes your progress.')).toBeTruthy();
+    expect(within(explore).getByText('Go deeper')).toBeTruthy();
+    fireEvent.click(within(explore).getByRole('button', { name: /Plan for a surprise bill/ }));
+    expect(onNavigate).toHaveBeenLastCalledWith('/learn/lesson/a-deep', { courseSlug: 'financial-education' });
+    // An older Core sends neither field: the open path, no enrichment.
+    const older = adultPathFixture() as unknown as Record<string, unknown>;
+    delete older.autonomy;
+    delete older.enrichment;
+    expect(parseCoursePath(older)).toMatchObject({ autonomy: { path: 'open', enrichment: false }, enrichment: [] });
+    // An enrichment row that claims to be required is refused as a whole.
+    const forged = adultPathFixture() as unknown as { enrichment: Array<Record<string, unknown>> };
+    forged.enrichment[0]!.access = 'pathway';
+    expect(parseCoursePath(forged)).toBeNull();
+  });
+
   it('states a finished path and its badge plainly, without a celebration effect', () => {
     const { container } = view(coursePathPreviewStates.complete!);
     expect(screen.getByRole('heading', { name: 'Path complete' })).toBeTruthy();

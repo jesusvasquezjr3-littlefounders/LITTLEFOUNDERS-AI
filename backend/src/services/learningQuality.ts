@@ -122,7 +122,8 @@ const RestDayRow = z.object({
   utilization_rate: z.coerce.number().min(0).max(1).nullable(), rest_days_used: count,
 });
 const AutonomyRow = z.object({
-  lever: z.enum(['path', 'mentor', 'pace']), offered: count, exercised: count,
+  // GAP-FIX-R5 (B.24, Block B autonomy): approach and enrichment join path, Mentor and pace.
+  lever: z.enum(['path', 'approach', 'enrichment', 'mentor', 'pace']), offered: count, exercised: count,
   adoption_rate: z.coerce.number().min(0).max(1).nullable(),
 });
 export type MotivationMetrics = { restDays: z.infer<typeof RestDayRow>; autonomy: z.infer<typeof AutonomyRow>[] };

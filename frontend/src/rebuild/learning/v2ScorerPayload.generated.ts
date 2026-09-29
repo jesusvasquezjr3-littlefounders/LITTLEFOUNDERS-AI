@@ -24,8 +24,10 @@ export function v2ScorerPayload(segment: Loose): Record<string, unknown> | null 
   if (FAMILY_KINDS.has(segment.type)) return v2FamilyScorerPayload(segment as unknown as V2FamilySegment);
   switch (segment.type) {
     case 'money.allocation.v2': return { total: p.total, step: p.step };
-    case 'math.number-line.whole.v2': return { minimum: p.minimum, maximum: p.maximum, step: p.step, ...(p.hops ? { initial: p.initial, hops: p.hops } : {}) };
-    case 'math.number-line.fraction.v2': return { maximumWhole: p.maximumWhole, divisions: p.divisions };
+    case 'math.number-line.whole.v2': return { minimum: p.minimum, maximum: p.maximum, step: p.step, ...(p.hops ? { initial: p.initial, hops: p.hops } : {}),
+      ...(p.items ? { itemIds: (p.items as Array<{ id: string }>).map((item) => item.id) } : {}) };
+    case 'math.number-line.fraction.v2': return { maximumWhole: p.maximumWhole, divisions: p.divisions,
+      ...(p.compare_values ? { compare_values: p.compare_values } : {}), ...(p.equivalent_values ? { equivalent_values: p.equivalent_values } : {}) };
     case 'math.fraction-area.v2': return { minimumParts: p.minimumParts, maximumParts: p.maximumParts };
     case 'math.bar-model.structure.v2':
     case 'math.bar-model.answer.v2': return barModelScorerPayload(p as BarModelPayload);

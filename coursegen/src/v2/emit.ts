@@ -24,7 +24,8 @@ import { loadMarketInventory, type MarketInventory } from '../contentGates/regio
 import { isNonCopyKey, requiredCapabilities, V2_ID, V2_LOCALES, type V2Locale, type V2PublicDocument, type V2Segment } from './contract.js';
 import { analyzeV2Plan, runV2DocumentGates, type V2Finding } from './gates.js';
 import type { V2LessonPlan, V2PlanSegment } from './plan.js';
-import { v2AgeScopeProblem, v2PayloadScopeProblem } from './v2SegmentFamilies.generated.js';
+import { v2AgeScopeProblem, v2ApproachesProblem, v2PayloadScopeProblem } from './v2SegmentFamilies.generated.js';
+import { autonomyOfferForBand } from '../pipeline/learnerRegisterPolicy.generated.js';
 
 export interface EmittedV2Document {
   lesson_id: string;
@@ -174,7 +175,11 @@ export function emitV2Lesson(plan: V2LessonPlan, options: { versionId: string; m
       segments,
       ...(plan.representation_progressions ? { representation_progressions: plan.representation_progressions } : {}),
       ...(plan.mentor_stage ? { mentor_stage: { ...plan.mentor_stage } } : {}),
+      ...(plan.approaches ? { approaches: { options: plan.approaches.options.map((option) => ({ id: option.id, label: option.label[locale], segment_ids: [...option.segment_ids] })) } } : {}),
     };
+    // GAP-FIX-R5 (B.24, Block B autonomy): every approach chain complete and gradable, offered only where the register allows it.
+    const approachProblem = v2ApproachesProblem(document as Parameters<typeof v2ApproachesProblem>[0], autonomyOfferForBand(plan.age_band).approach);
+    if (approachProblem) problems.push({ gate: 1, locale, message: `approaches: ${approachProblem}` });
     const report = runV2DocumentGates(document, policy.regional, markets, answerKeysFor(locale));
     for (const problem of report.problems) problems.push({ ...problem, locale });
     for (const finding of report.review) review.push({ ...finding, locale });

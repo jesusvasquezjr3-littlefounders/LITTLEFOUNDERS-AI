@@ -50,6 +50,9 @@ export function childPathFixture(): CoursePath {
       skill('money.needs', loc('Needs and wants', 'Necesidades y deseos', 'Necessidades e desejos'), 'none'),
       skill('money.change', loc('Make change', 'Dar cambio', 'Dar troco'), 'none'),
     ],
+    // GAP-FIX-R5: the young register's mechanism is a binary pick of the next topic; no enrichment track.
+    autonomy: { path: 'binary', approach: false, enrichment: false, mentor: true, pace: true },
+    enrichment: [],
     earlyAccess: [], masteryOffers: [], masteryCreditedTopicIds: [],
   };
 }
@@ -82,6 +85,10 @@ export function adultPathFixture(): CoursePath {
       skill('life.cushion', loc('Keep a cushion', 'Tener un colchón', 'Ter uma reserva'), 'none'),
       skill('life.compare', loc('Compare prices', 'Comparar precios', 'Comparar preços'), 'none'),
     ],
+    // GAP-FIX-R5: an adult has every lever, and one optional depth lesson is open.
+    autonomy: { path: 'open', approach: true, enrichment: true, mentor: true, pace: true },
+    enrichment: [{ ...item('a-deep', loc('A monthly plan', 'Un plan mensual', 'Um plano mensal'), loc('Plan for a surprise bill', 'Planea un gasto sorpresa', 'Planeje uma conta surpresa'), 'ch-adults', 'next', 'optional'),
+      reason: 'enrichment' as const, access: 'optional' as const }],
     earlyAccess: [], masteryOffers: [], masteryCreditedTopicIds: [],
   };
 }

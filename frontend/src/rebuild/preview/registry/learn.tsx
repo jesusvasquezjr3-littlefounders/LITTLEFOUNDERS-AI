@@ -182,8 +182,8 @@ export const learnPreviewScreens: PreviewRegistry = {
     }} />),
   numberline: framed(({ locale, ageBand, go }) => <LessonDocumentView key={`numberline:${locale}:${ageBand}`}
     raw={ageBand === '6-9' || ageBand === '10-12' ? numberLinePilotDocument(locale, ageBand) : null} locale={locale} ageBand={ageBand}
-    onBack={() => go('home')} onGradeNumberLine={({ value }) => verdict(scoreV2Visual('math.number-line.whole.v2', { minimum: 0, maximum: ageBand === '6-9' ? 10 : 100, step: 1 },
-      { value }, { target: ageBand === '6-9' ? 7 : 37 }))} />),
+    onBack={() => go('home')} onGradeNumberLine={(answer) => verdict(scoreV2Visual('math.number-line.whole.v2', { minimum: 0, maximum: ageBand === '6-9' ? 10 : 100, step: 1 },
+      answer, { target: ageBand === '6-9' ? 7 : 37, tolerance_share: 0.05 }))} />),
   // The S05.3b course path's fixtures, now on the one course screen (W2L.1) under the pathway engine.
   coursepath: framed(({ locale, theme, ageBand, params, go }) => <LearnPreviewHost><CourseView key={`coursepath:${locale}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand}
     slug="financial-education" state={coursePathPreviewStates[params.get('path') ?? 'child'] ?? coursePathPreviewStates.child!}
@@ -290,7 +290,7 @@ export const learnPreviewScreens: PreviewRegistry = {
   taxbracket: board(({ locale, ageBand }) => ageBand === '13-17' ? taxBracketPilotDocument(locale) : null),
   fractionline: framed(({ locale, ageBand, go }) => <LessonDocumentView key={`fractionline:${locale}:${ageBand}`}
     raw={ageBand === '10-12' ? fractionNumberLinePilotDocument(locale) : null} locale={locale} ageBand={ageBand} onBack={() => go('home')}
-    onGradeNumberLine={({ value }) => verdict(scoreV2Visual('math.number-line.fraction.v2', { maximumWhole: 1, divisions: 4 }, { value }, { targetNumerator: 3, targetDenominator: 4, toleranceUnits: 0 }))} />),
+    onGradeNumberLine={(answer) => verdict(scoreV2Visual('math.number-line.fraction.v2', { maximumWhole: 1, divisions: 4 }, answer, { targetNumerator: 3, targetDenominator: 4, toleranceUnits: 0 }))} />),
   fractionarea: framed(({ locale, ageBand, go }) => <LessonDocumentView key={`fractionarea:${locale}:${ageBand}`}
     raw={ageBand === '6-9' ? fractionAreaPilotDocument(locale) : null} locale={locale} ageBand={ageBand} onBack={() => go('home')}
     onGradeFractionArea={({ n, d }) => verdict(scoreV2Visual('math.fraction-area.v2', { minimumParts: 2, maximumParts: 6 }, { n, d }, { targetNumerator: 1, targetDenominator: 2 }))} />),

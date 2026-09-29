@@ -427,6 +427,19 @@ export function createFakeFetch(db: FakeDb): typeof fetch {
       }
       return respond(200, true);
     }
+    // GAP-FIX-R5 (*_learning_autonomy_levers.sql): pin the learner's approach once; a later pin answers the first.
+    if (table === 'rpc/pin_v2_run_approach' && method === 'POST') {
+      const p = JSON.parse(String(init?.body)) as FakeRow;
+      const run = (db.lesson_v2_runs ?? []).find(row => row.id === p.p_run_id);
+      if (!run || run.user_id !== p.p_user_id) return respond(400, { message: 'Unknown lesson run' });
+      if (typeof run.approach_id === 'string') return respond(200, run.approach_id);
+      if (run.completed_at !== undefined && run.completed_at !== null) return respond(400, { message: 'A completed run cannot choose an approach' });
+      const version = (db.lesson_document_versions ?? []).find(row => row.id === run.document_version_id);
+      const options = ((version?.document as FakeRow | undefined)?.approaches as { options?: Array<{ id: string }> } | undefined)?.options ?? [];
+      if (!options.some(option => option.id === p.p_approach_id)) return respond(400, { message: 'This lesson offers no such approach' });
+      run.approach_id = p.p_approach_id;
+      return respond(200, p.p_approach_id);
+    }
     // GAP-FIX-R4 (0238): time on task, set once on the learner's own receipt or view.
     if (table === 'rpc/record_v2_time_on_task' && method === 'POST') {
       const p = JSON.parse(String(init?.body)) as FakeRow;

@@ -139,6 +139,37 @@ export function registerForCopyBand(band: RegisterCopyBand): LearnerRegister {
   return LEARNER_REGISTERS.find((register) => REGISTERS[register].copyBand === band) ?? 'young';
 }
 
+/**
+ * B.24 / Product 10 Block B "Age-band registers", autonomy column (GAP-FIX-R5):
+ * which levers each register's autonomy mechanism OFFERS. Core serves the
+ * choices and the course screen shows them from this table only.
+ *   topic      (6-9)   simple binary choices: which of two recommended topics next;
+ *   approach   (10-12) choice of approach or strategy, not just topic order, with the open path;
+ *   path-pace  (13-17) real path and pacing choice, and optional depth/enrichment tracks (with approach);
+ *   full       (adult) every lever.
+ * Mentor choice and the learner's daily pace plan stay open to every band: they
+ * were the release-1 levers for everyone, and a younger learner keeps a
+ * stopping point they chose (the owner may narrow this; see GAP-FIX-R5).
+ */
+export type AutonomyLever = 'path' | 'approach' | 'enrichment' | 'mentor' | 'pace';
+export interface AutonomyOffer { path: 'binary' | 'open'; approach: boolean; enrichment: boolean; mentor: true; pace: true }
+export const AUTONOMY_OFFERS: Readonly<Record<RegisterSpec['autonomy'], AutonomyOffer>> = {
+  topic: { path: 'binary', approach: false, enrichment: false, mentor: true, pace: true },
+  approach: { path: 'open', approach: true, enrichment: false, mentor: true, pace: true },
+  'path-pace': { path: 'open', approach: true, enrichment: true, mentor: true, pace: true },
+  full: { path: 'open', approach: true, enrichment: true, mentor: true, pace: true },
+};
+
+/** The levers a register offers, read from its own `autonomy` mechanism. */
+export function autonomyOffer(register: LearnerRegister): AutonomyOffer {
+  return AUTONOMY_OFFERS[REGISTERS[register].autonomy];
+}
+
+/** The levers a v2 document's age band offers (the approach choice opens at 10). */
+export function autonomyOfferForBand(band: RegisterCopyBand): AutonomyOffer {
+  return autonomyOffer(registerForCopyBand(band));
+}
+
 /** Every register an inclusive age range touches (a Forge tier such as "8-10" spans two). */
 export function registersForAgeRange(min: number, max: number | null): LearnerRegister[] {
   return LEARNER_REGISTERS.filter((register) => {

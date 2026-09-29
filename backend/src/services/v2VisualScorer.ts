@@ -37,36 +37,10 @@ export function scoreV2Visual(kind: V2VisualKind, payload: unknown, response: un
         || rubric.minimumSave < 0 || rubric.minimumSave > payload.total || rubric.minimumSave % payload.step !== 0) return 'invalid';
       return (response.save as number) >= rubric.minimumSave ? 'met' : 'review';
     }
-    case 'math.number-line.whole.v2': {
-      // M2 / $2 (GAP-FIX-R2): board-game counting on from the current square, graded as a hop sequence.
-      if (fields(payload, ['minimum', 'maximum', 'step', 'initial', 'hops'])) return countOnVerdict(payload, response, rubric);
-      if (!fields(payload, ['minimum', 'maximum', 'step']) || !whole(payload.minimum) || payload.minimum < 0
-        || !whole(payload.maximum) || payload.maximum <= payload.minimum || !whole(payload.step) || payload.step <= 0
-        || (payload.maximum - payload.minimum) % payload.step !== 0 || !fields(response, ['value'])
-        || typeof response.value !== 'string' || !/^(0|[1-9]\d*)$/.test(response.value)) return 'invalid';
-      const value = Number(response.value);
-      if (!whole(value) || value < payload.minimum || value > payload.maximum || (value - payload.minimum) % payload.step !== 0) return 'invalid';
-      if (rubric === undefined) return 'valid';
-      if (!fields(rubric, ['target']) || !whole(rubric.target) || rubric.target < payload.minimum
-        || rubric.target > payload.maximum || (rubric.target - payload.minimum) % payload.step !== 0) return 'invalid';
-      return value === rubric.target ? 'met' : 'review';
-    }
-    case 'math.number-line.fraction.v2': {
-      if (!fields(payload, ['maximumWhole', 'divisions']) || !whole(payload.maximumWhole) || (payload.maximumWhole !== 1 && payload.maximumWhole !== 2)
-        || !whole(payload.divisions) || payload.divisions < 2 || payload.divisions > 12 || !fields(response, ['value'])
-        || typeof response.value !== 'string' || !/^(0|[1-9]\d*)\/(0|[1-9]\d*)$/.test(response.value)) return 'invalid';
-      const [numerator, denominator] = response.value.split('/').map(Number);
-      if (!whole(numerator) || !whole(denominator) || denominator <= 0 || numerator > payload.maximumWhole * denominator
-        || numerator * payload.divisions % denominator !== 0) return 'invalid';
-      const units = numerator * payload.divisions / denominator;
-      if (!whole(units) || units < 0 || units > payload.maximumWhole * payload.divisions) return 'invalid';
-      if (rubric === undefined) return 'valid';
-      if (!fields(rubric, ['targetNumerator', 'targetDenominator', 'toleranceUnits']) || !whole(rubric.targetNumerator)
-        || !whole(rubric.targetDenominator) || rubric.targetDenominator <= 0 || !whole(rubric.toleranceUnits) || rubric.toleranceUnits < 0
-        || rubric.targetNumerator > payload.maximumWhole * rubric.targetDenominator || rubric.targetNumerator * payload.divisions % rubric.targetDenominator !== 0) return 'invalid';
-      const targetUnits = rubric.targetNumerator * payload.divisions / rubric.targetDenominator;
-      return Math.abs(units - targetUnits) <= rubric.toleranceUnits ? 'met' : 'review';
-    }
+    // M2 (GAP-FIX-R5): PAE within a tolerance, ordered items, or counting on (Appendix P M2, Parts 4.6 and 7.2).
+    case 'math.number-line.whole.v2': return wholeLineGrade(payload, response, rubric).verdict;
+    // M3 (GAP-FIX-R5): a fraction or decimal placed on the snap grid, a comparison, or two equivalent forms on one point.
+    case 'math.number-line.fraction.v2': return fractionLineGrade(payload, response, rubric).verdict;
     case 'math.fraction-area.v2': {
       if (!fields(payload, ['minimumParts', 'maximumParts']) || !whole(payload.minimumParts) || !whole(payload.maximumParts)
         || payload.minimumParts < 2 || payload.maximumParts > 6 || payload.minimumParts > payload.maximumParts
@@ -350,7 +324,11 @@ function probit(p: number): number {
 
 /** L12 / $11 (GAP-FIX-R2): which cues the learner ticked against the key; a diagnostic that never changes d′ or the score. */
 export interface V2CueHits { hits: number; missed: number; false_ticks: number }
-export interface V2Grade { verdict: V2VisualVerdict; diagnostic: V2Diagnostic; detection?: V2Detection; cues?: V2CueHits }
+export interface V2Grade {
+  verdict: V2VisualVerdict; diagnostic: V2Diagnostic; detection?: V2Detection; cues?: V2CueHits;
+  /** M2/M3 (GAP-FIX-R5, Appendix P Part 4.6): the largest placement error as a share of the line, four decimals. */
+  pae?: number;
+}
 
 const NUMBER_TEXT = /^-?(0|[1-9]\d*)(\.\d+)?$/;
 function numberText(value: unknown): value is string { return typeof value === 'string' && value.length <= 40 && NUMBER_TEXT.test(value); }
@@ -400,7 +378,7 @@ function compoundMinor(principal: number, rateBps: number, years: number): numbe
   return value > BigInt(Number.MAX_SAFE_INTEGER) ? null : Number(value);
 }
 
-function taxOwed(income: number, brackets: unknown): { tax: number; marginal: number } | null {
+function taxOwed(income: number, brackets: unknown): { tax: number; marginal: number; average: number } | null {
   if (!Array.isArray(brackets) || brackets.length < 2 || brackets.length > 6) return null;
   let lower = 0; let tax = 0; let marginal = 0;
   for (const [index, bracket] of brackets.entries()) {
@@ -413,7 +391,8 @@ function taxOwed(income: number, brackets: unknown): { tax: number; marginal: nu
     if (upper === null) break;
     lower = upper as number;
   }
-  return { tax, marginal };
+  // M20 (GAP-FIX-R5): the average rate, rounded basis points of tax / income (the model's own rounding).
+  return { tax, marginal, average: income === 0 ? 0 : Math.round(tax * 10_000 / income) };
 }
 
 type RuleLink = 'and' | 'or' | 'none';
@@ -633,8 +612,8 @@ export function gradeV2Response(kind: V2VisualKind, payload: unknown, response: 
     // M8: a slot step built on the wrong schema is a structure error; the right schema with misplaced quantities is a value error.
     case 'math.schema-diagram.slots.v2': return grade(verdict, verdict === 'met' ? 'none'
       : (response as { schema: string }).schema !== (rubric as { schema: string }).schema ? 'structure' : 'value');
-    case 'math.number-line.whole.v2':
-    case 'math.number-line.fraction.v2': return grade(verdict, verdict === 'met' ? 'none' : 'tolerance');
+    case 'math.number-line.whole.v2': return wholeLineGrade(payload, response, rubric);
+    case 'math.number-line.fraction.v2': return fractionLineGrade(payload, response, rubric);
     case 'reasoning.decide-justify.v2': return grade(verdict, verdict === 'met' ? 'none' : 'outcome');
     case 'math.worked-example.v2': {
       if (verdict === 'met') return grade('met');
@@ -648,23 +627,162 @@ export function gradeV2Response(kind: V2VisualKind, payload: unknown, response: 
 }
 
 
-/* ── M2 counting on, $2 counting up, L12 cue ticks (GAP-FIX-R2) ─────────────── */
+/* ── M2 and M3 number lines (GAP-FIX-R2, GAP-FIX-R5) ─────────────────────────── */
 
-function countOnVerdict(payload: Record<string, unknown>, response: unknown, rubric: unknown): V2VisualVerdict {
+/*
+ * Appendix P M2 grades "position error as a share of the line (PAE) within a
+ * tolerance; order of placed items"; M3 grades "placement error; comparison
+ * choice; equivalents land on one point"; Part 7.2 names the rubric
+ * `{ target, tolerance, snap }` (the snap is the payload's step or divisions).
+ * Everything is compared in whole numbers: a tolerance share is whole basis
+ * points of the line, and fractions and decimals are exact rationals.
+ */
+
+/** A tolerance share of the line (0 to 0.2, at most four decimals) as whole basis points; absent = exact. */
+function toleranceBps(value: unknown): number | null {
+  if (value === undefined) return 0;
+  if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 0.2) return null;
+  const bps = Math.round(value * 10_000);
+  return Math.abs(value * 10_000 - bps) < 1e-6 ? bps : null;
+}
+/** |value - target| / span <= bps / 10000, in whole numbers. */
+function withinShare(value: number, target: number, span: number, bps: number): boolean { return Math.abs(value - target) * 10_000 <= bps * span; }
+/** PAE to four decimals, for the receipt. */
+function paeOf(value: number, target: number, span: number): number { return Math.round(Math.abs(value - target) * 10_000 / span) / 10_000; }
+/** Only these keys, the required ones present. */
+function keysIn(value: unknown, required: readonly string[], optional: readonly string[] = []): value is Record<string, unknown> {
+  return record(value) && required.every((name) => Object.hasOwn(value, name)) && Object.keys(value).every((name) => required.includes(name) || optional.includes(name));
+}
+const WHOLE_TEXT = /^(0|[1-9]\d{0,5})$/;
+const LINE_ITEM = /^[a-z0-9][a-z0-9._:-]{2,100}$/;
+
+/** M2: one point, several ordered items, or counting on from the current square (GAP-FIX-R2). */
+function wholeLineGrade(payload: unknown, response: unknown, rubric: unknown): V2Grade {
+  if (fields(payload, ['minimum', 'maximum', 'step', 'initial', 'hops'])) return countOnGrade(payload, response, rubric);
+  const itemIds = record(payload) && Object.hasOwn(payload, 'itemIds') ? payload.itemIds : undefined;
+  if (!(itemIds === undefined ? fields(payload, ['minimum', 'maximum', 'step']) : fields(payload, ['minimum', 'maximum', 'step', 'itemIds']))) return INVALID;
+  const { minimum, maximum, step } = payload as Record<string, unknown>;
+  if (!whole(minimum) || minimum < 0 || !whole(maximum) || maximum <= minimum || !whole(step) || step <= 0 || (maximum - minimum) % step !== 0) return INVALID;
+  const span = maximum - minimum;
+  const point = (text: unknown): number | null => typeof text === 'string' && WHOLE_TEXT.test(text) && onGrid(Number(text), minimum, maximum, step) ? Number(text) : null;
+  if (itemIds === undefined) {
+    if (!fields(response, ['value'])) return INVALID;
+    const value = point(response.value);
+    if (value === null) return INVALID;
+    if (rubric === undefined) return grade('valid');
+    if (!keysIn(rubric, ['target'], ['tolerance_share']) || !onGrid(rubric.target, minimum, maximum, step)) return INVALID;
+    const bps = toleranceBps(rubric.tolerance_share);
+    if (bps === null) return INVALID;
+    const pae = paeOf(value, rubric.target, span);
+    return withinShare(value, rubric.target, span, bps) ? { ...grade('met'), pae } : { ...grade('review', 'tolerance'), pae };
+  }
+  // Ordered items: every item placed on the grid; the order of the placed values first, then each one's PAE.
+  if (!Array.isArray(itemIds) || itemIds.length < 2 || itemIds.length > 4 || !itemIds.every((item) => typeof item === 'string' && LINE_ITEM.test(item))
+    || new Set(itemIds).size !== itemIds.length || !fields(response, ['placements']) || !fields(response.placements, itemIds as string[])) return INVALID;
+  const ids = itemIds as string[];
+  const placed = ids.map((item) => point((response.placements as Record<string, unknown>)[item]));
+  if (placed.some((value) => value === null)) return INVALID;
+  if (rubric === undefined) return grade('valid');
+  if (!keysIn(rubric, ['targets'], ['tolerance_share']) || !fields(rubric.targets, ids)) return INVALID;
+  const targets = ids.map((item) => (rubric.targets as Record<string, unknown>)[item]);
+  const bps = toleranceBps(rubric.tolerance_share);
+  if (bps === null || !targets.every((target) => onGrid(target, minimum, maximum, step)) || new Set(targets).size !== targets.length) return INVALID;
+  const values = placed as number[]; const keys = targets as number[];
+  // Order: every pair the key orders must be placed in the same strict order.
+  const ordered = keys.every((a, i) => keys.every((b, j) => a >= b || values[i]! < values[j]!));
+  const pae = Math.max(...values.map((value, index) => paeOf(value, keys[index]!, span)));
+  if (!ordered) return { ...grade('review', 'structure'), pae };
+  return values.every((value, index) => withinShare(value, keys[index]!, span, bps)) ? { ...grade('met'), pae } : { ...grade('review', 'tolerance'), pae };
+}
+
+/** M2 / $2 counting on (GAP-FIX-R2): the point is where the hops from the current square land; the target is exact. */
+function countOnGrade(payload: Record<string, unknown>, response: unknown, rubric: unknown): V2Grade {
   const { minimum, maximum, step, initial, hops } = payload as Record<string, unknown>;
   if (!whole(minimum) || minimum < 0 || !whole(maximum) || maximum <= minimum || !whole(step) || step <= 0 || !onGrid(initial, minimum, maximum, step)
     || !Array.isArray(hops) || hops.length < 1 || hops.length > 3 || hops.some((hop) => !whole(hop) || hop <= 0 || hop % step !== 0)
     || !fields(response, ['value', 'hops']) || typeof response.value !== 'string' || !/^(0|[1-9]\d*)$/.test(response.value)
     || !Array.isArray(response.hops) || response.hops.length < 1 || response.hops.length > 40
-    || response.hops.some((hop) => !(hops as number[]).includes(hop as number))) return 'invalid';
+    || response.hops.some((hop) => !(hops as number[]).includes(hop as number))) return INVALID;
   const value = Number(response.value);
   // Conservation: the point is always where the hops from the current square land.
   const landed = (response.hops as number[]).reduce((sum, hop) => sum + hop, initial);
-  if (value !== landed || value > maximum) return 'invalid';
-  if (rubric === undefined) return 'valid';
-  if (!fields(rubric, ['target']) || !onGrid(rubric.target, initial, maximum, step) || rubric.target === initial) return 'invalid';
-  return value === rubric.target ? 'met' : 'review';
+  if (value !== landed || value > maximum) return INVALID;
+  if (rubric === undefined) return grade('valid');
+  if (!fields(rubric, ['target']) || !onGrid(rubric.target, initial, maximum, step) || rubric.target === initial) return INVALID;
+  const pae = paeOf(value, rubric.target, maximum - minimum);
+  return value === rubric.target ? { ...grade('met'), pae } : { ...grade('review', 'tolerance'), pae };
 }
+
+const LINE_NUMBER = /^((0|[1-9]\d{0,2})\/([1-9]\d{0,2})|(0|[1-9]\d{0,2})(\.\d{1,6})?)$/;
+/**
+ * A fraction ("3/4") or canonical decimal ("0.75") as whole snap units on a
+ * 0..maximumWhole line cut into `divisions` per whole; null when it is not a
+ * number, is off the line or falls between two snap points. The browser sends
+ * a typed decimal already parsed for its locale (`parseLocaleNumber`).
+ */
+export function lineUnits(text: unknown, maximumWhole: number, divisions: number): number | null {
+  if (typeof text !== 'string' || !LINE_NUMBER.test(text)) return null;
+  const value = rational(text);
+  if (!value || value.n < 0n || value.n * BigInt(divisions) % value.d !== 0n) return null;
+  const units = Number(value.n * BigInt(divisions) / value.d);
+  return units <= maximumWhole * divisions ? units : null;
+}
+const COMPARE_CHOICES = ['first', 'second', 'same'];
+
+/** M3: one placement, a comparison of two numbers, or two equivalent forms that must land on one point. */
+function fractionLineGrade(payload: unknown, response: unknown, rubric: unknown): V2Grade {
+  if (!keysIn(payload, ['maximumWhole', 'divisions'], ['compare_values', 'equivalent_values']) || (payload.maximumWhole !== 1 && payload.maximumWhole !== 2)
+    || !whole(payload.divisions) || payload.divisions < 2 || payload.divisions > 12
+    || (Object.hasOwn(payload, 'compare_values') && Object.hasOwn(payload, 'equivalent_values'))) return INVALID;
+  const maximumWhole = payload.maximumWhole as number; const divisions = payload.divisions;
+  const total = maximumWhole * divisions;
+  const units = (text: unknown) => lineUnits(text, maximumWhole, divisions);
+  const pair = (payload.compare_values ?? payload.equivalent_values) as unknown;
+  if (pair === undefined) {
+    if (!fields(response, ['value'])) return INVALID;
+    const value = units(response.value);
+    if (value === null) return INVALID;
+    if (rubric === undefined) return grade('valid');
+    if (!fields(rubric, ['targetNumerator', 'targetDenominator', 'toleranceUnits']) || !whole(rubric.targetNumerator) || rubric.targetNumerator < 0
+      || !whole(rubric.targetDenominator) || rubric.targetDenominator <= 0 || !whole(rubric.toleranceUnits) || rubric.toleranceUnits < 0 || rubric.toleranceUnits > 2) return INVALID;
+    const target = units(`${rubric.targetNumerator}/${rubric.targetDenominator}`);
+    if (target === null) return INVALID;
+    const pae = paeOf(value, target, total);
+    return Math.abs(value - target) <= rubric.toleranceUnits ? { ...grade('met'), pae } : { ...grade('review', 'tolerance'), pae };
+  }
+  // Both numbers are public (they are the question) and must sit on the snap grid.
+  if (!Array.isArray(pair) || pair.length !== 2) return INVALID;
+  const targets = pair.map(units);
+  if (targets.some((value) => value === null)) return INVALID;
+  const [a, b] = targets as [number, number];
+  const comparing = Object.hasOwn(payload, 'compare_values');
+  if (!comparing && a !== b) return INVALID;
+  if (!(comparing ? fields(response, ['placements', 'choice']) : fields(response, ['placements']))) return INVALID;
+  const answer = response as Record<string, unknown>;
+  if (!fields(answer.placements, ['first', 'second']) || (comparing && (typeof answer.choice !== 'string' || !COMPARE_CHOICES.includes(answer.choice)))) return INVALID;
+  const first = units(answer.placements.first);
+  const second = units(answer.placements.second);
+  if (first === null || second === null) return INVALID;
+  if (rubric === undefined) return grade('valid');
+  if (!(comparing ? fields(rubric, ['choice', 'toleranceUnits']) : fields(rubric, ['toleranceUnits']))) return INVALID;
+  const key = rubric as Record<string, unknown>;
+  const tolerance = key.toleranceUnits;
+  if (!whole(tolerance) || tolerance < 0 || tolerance > 2) return INVALID;
+  const pae = Math.max(paeOf(first, a, total), paeOf(second, b, total));
+  const firstRight = Math.abs(first - a) <= tolerance; const secondRight = Math.abs(second - b) <= tolerance;
+  if (comparing) {
+    // The key must be the true comparison of the two public numbers; anything else is a content defect.
+    const truth = a > b ? 'first' : a < b ? 'second' : 'same';
+    if (key.choice !== truth) return INVALID;
+    if (!firstRight || !secondRight) return { ...grade('review', firstRight || secondRight ? 'partial' : 'tolerance'), pae };
+    return answer.choice === truth ? { ...grade('met'), pae } : { ...grade('review', 'value'), pae };
+  }
+  // Equivalents: both forms within tolerance AND on one point.
+  if (firstRight && secondRight && first === second) return { ...grade('met'), pae };
+  return { ...grade('review', firstRight || secondRight ? 'partial' : 'tolerance'), pae };
+}
+
+/* ── $2 counting up, L12 cue ticks (GAP-FIX-R2) ─────────────────────────────── */
 
 /** The counting-up sequence: strictly rising totals, each one coin more, the coins exactly the tray. */
 function countUp(denominations: Array<{ value: number }>, counts: Record<string, number>, sequence: unknown, price: number, paid: number): 'from_price' | 'from_zero' | 'wrong' | null {
@@ -1020,19 +1138,23 @@ function scoreV2ExtendedDetailed(kind: V2VisualKind, payload: unknown, response:
       return Math.abs(response.predictionMinor - actual) <= rubric.tolerance_minor ? grade('met') : grade('review', 'tolerance');
     }
     case 'visual.tax-bracket.v2': {
-      // M20: tax owed and the marginal rate at the asked income.
+      // M20 (Appendix P: "tax owed; marginal and average rates"; GAP-FIX-R5): all three at the asked income.
       if (!fields(payload, ['minimumIncomeMinor', 'maximumIncomeMinor', 'incomeStepMinor', 'brackets']) || !whole(payload.minimumIncomeMinor) || !whole(payload.maximumIncomeMinor)
         || !whole(payload.incomeStepMinor) || payload.incomeStepMinor <= 0
-        || !fields(response, ['incomeMinor', 'taxMinor', 'marginalBps']) || !onGrid(response.incomeMinor, payload.minimumIncomeMinor, payload.maximumIncomeMinor, payload.incomeStepMinor)
-        || !numberText(response.taxMinor) || !whole(response.marginalBps) || response.marginalBps < 0 || response.marginalBps > 10_000) return INVALID;
+        || !fields(response, ['incomeMinor', 'taxMinor', 'marginalBps', 'averageBps']) || !onGrid(response.incomeMinor, payload.minimumIncomeMinor, payload.maximumIncomeMinor, payload.incomeStepMinor)
+        || !numberText(response.taxMinor) || !whole(response.marginalBps) || response.marginalBps < 0 || response.marginalBps > 10_000
+        || !whole(response.averageBps) || response.averageBps < 0 || response.averageBps > 10_000) return INVALID;
       const owed = taxOwed(response.incomeMinor, payload.brackets);
       if (!owed) return INVALID;
       if (rubric === undefined) return grade('valid');
-      if (!fields(rubric, ['income_minor']) || !onGrid(rubric.income_minor, payload.minimumIncomeMinor, payload.maximumIncomeMinor, payload.incomeStepMinor)) return INVALID;
+      // The average rate is typed as a percent, so the key accepts it within half a point by default (at most one point).
+      if (!keysIn(rubric, ['income_minor'], ['average_tolerance_bps']) || !onGrid(rubric.income_minor, payload.minimumIncomeMinor, payload.maximumIncomeMinor, payload.incomeStepMinor)
+        || (rubric.average_tolerance_bps !== undefined && !onGrid(rubric.average_tolerance_bps, 0, 100, 1))) return INVALID;
       if (response.incomeMinor !== rubric.income_minor) return grade('review', 'structure');
-      const taxRight = sameAnswer(response.taxMinor, String(owed.tax));
-      const rateRight = response.marginalBps === owed.marginal;
-      return taxRight && rateRight ? grade('met') : grade('review', taxRight || rateRight ? 'partial' : 'value');
+      const averageTolerance = (rubric.average_tolerance_bps as number | undefined) ?? 50;
+      const right = [sameAnswer(response.taxMinor, String(owed.tax)), response.marginalBps === owed.marginal, Math.abs(response.averageBps - owed.average) <= averageTolerance];
+      const count = right.filter(Boolean).length;
+      return count === 3 ? grade('met') : grade('review', count > 0 ? 'partial' : 'value');
     }
     case 'logic.savings-rule.v2': {
       // L2 (Part 4.6): the learner's rule is compiled and run on held-out cases, never matched as text.

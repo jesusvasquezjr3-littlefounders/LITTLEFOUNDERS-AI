@@ -17,6 +17,11 @@ const stage = z.enum(['child', 'tween', 'teen', 'adult']);
 const localized = z.record(z.string(), z.unknown());
 const progress = z.object({ passed: z.number().int().nonnegative(), total: z.number().int().nonnegative(), pct: z.number().min(0).max(100) });
 const skillRef = z.object({ key: z.string().min(1), title: localized });
+const pathItem = z.object({
+  lessonId: z.string().min(1), lessonTitle: localized, topicId: z.string().min(1), topicTitle: localized, chapterId: z.string(),
+  reason: z.enum(['next', 'review', 'review-due', 'bridge', 'known', 'enrichment']), access: z.enum(['pathway', 'optional']),
+  estimatedMinutes: z.number().nonnegative(), recommended: z.boolean(),
+});
 
 export const coursePathSchema = z.object({
   course: z.object({ slug: z.string().min(1), title: localized, badgeAsset: z.string().nullable(), progress }),
@@ -34,11 +39,17 @@ export const coursePathSchema = z.object({
     access: z.enum(['pathway', 'optional', 'closed']), stage: stage.nullable(),
     state: z.enum(['locked', 'available', 'completed']), progress,
   })),
-  items: z.array(z.object({
-    lessonId: z.string().min(1), lessonTitle: localized, topicId: z.string().min(1), topicTitle: localized, chapterId: z.string(),
-    reason: z.enum(['next', 'review', 'review-due', 'bridge', 'known']), access: z.enum(['pathway', 'optional']),
-    estimatedMinutes: z.number().nonnegative(), recommended: z.boolean(),
-  })),
+  items: z.array(pathItem),
+  /*
+   * GAP-FIX-R5 (Product 10 Block B autonomy column, B.24): the levers the
+   * learner's register offers (6-9: a binary pick of two next steps; 13-17 and
+   * adults: optional depth lessons), and those depth lessons ("Explore
+   * further"), never required. Absent from an older Core: the open path, no
+   * enrichment.
+   */
+  autonomy: z.object({ path: z.enum(['binary', 'open']), approach: z.boolean(), enrichment: z.boolean(), mentor: z.literal(true), pace: z.literal(true) }).strict()
+    .default({ path: 'open', approach: false, enrichment: false, mentor: true, pace: true }),
+  enrichment: z.array(pathItem.extend({ reason: z.literal('enrichment'), access: z.literal('optional') })).default([]),
   blocked: z.array(z.object({ topicId: z.string(), topicTitle: localized, chapterId: z.string(), missingSkills: z.array(skillRef), missingTopics: z.array(z.object({ id: z.string(), title: localized })) })),
   skills: z.array(skillRef.extend({ shown: z.enum(['course', 'mentor', 'none']) })),
   /*

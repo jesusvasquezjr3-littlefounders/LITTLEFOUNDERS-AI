@@ -609,6 +609,10 @@ export function v2PayloadScopeProblem(segment: { type: string; visual: { type: s
     // L5: syllogisms (the conclusion step) are for 13-17 and adults.
     if (payload.conclusion !== undefined && (young || ageBand === '10-12')) return 'Syllogism conclusions are open to ages 13 and up';
   }
+  // M2 (GAP-FIX-R5; Appendix P M2 "bounded: 0-10, 0-100, 0-1000", Part 4.9 "bounded number lines only").
+  if (segment.type === 'math.number-line.whole.v2' && (payload.minimum !== 0 || ![10, 100, 1000].includes(payload.maximum as number))) {
+    return 'A whole-number line runs 0-10, 0-100 or 0-1000';
+  }
   // L10: 6-9 sort by a single rule; the rule switch and the "it depends" bin open at 10.
   if (segment.type === 'logic.sort-by-rule.v2' && ageBand === '6-9' && (payload.switch_after !== undefined || payload.depends_bin_id !== undefined)) {
     return 'Ages 6-9 sort by a single rule';
@@ -776,3 +780,86 @@ export function texProblem(tex: string): string | null {
   return depth === 0 ? null : 'Unbalanced braces';
 }
 export const mathNotation = z.string().trim().min(1).max(200).refine((value) => texProblem(value) === null, 'Invalid notation');
+
+/* ── B.24 approach choice (GAP-FIX-R5 learning) ───────────────────────────── */
+
+/**
+ * Product 10 Block B "Age-band registers" (autonomy: 10-12 "choice of
+ * approach/strategy, not just topic order"; 13-17 and adults keep it) and
+ * B.24 ("choosing which of two equally-valid strategies to practice next"):
+ * a v2 document may declare two or three named alternative segment chains for
+ * the same skill. The learner chooses one before practice, Core pins it on the
+ * run and grades that chain only; completion needs the chosen chain and every
+ * segment outside the chains. The labels are copy; the ids are data.
+ */
+const approachOption = z.object({
+  id,
+  label: z.string().trim().min(1).max(40),
+  segment_ids: z.array(id).min(1).max(12),
+}).strict();
+export const v2ApproachesSchema = z.object({ options: z.array(approachOption).min(2).max(3) }).strict();
+export type V2Approaches = z.infer<typeof v2ApproachesSchema>;
+
+/**
+ * Why a document's approach chains are not a valid choice, or null. `open` is
+ * whether the document's age band offers the approach lever (the register
+ * policy's `autonomyOfferForBand(band).approach`, computed by the caller). Every
+ * chain is complete and gradable: its segments exist, belong to no other chain,
+ * sit together (the chains form one block, each chain contiguous inside it),
+ * include at least one server-graded step, and teach the same skill as the
+ * other chains; no chain holds an M1 fading stage.
+ */
+export function v2ApproachesProblem(document: {
+  knowledge_component_ids: readonly string[];
+  segments: ReadonlyArray<{ id: string; grading: string; knowledge_component_id?: string }>;
+  representation_progressions?: ReadonlyArray<{ stages: ReadonlyArray<{ segment_id: string }> }>;
+  approaches?: V2Approaches;
+}, open: boolean): string | null {
+  const approaches = document.approaches;
+  if (!approaches) return null;
+  if (!open) return 'The approach choice opens at age 10 (the register autonomy mechanism)';
+  const options = approaches.options;
+  if (new Set(options.map((option) => option.id)).size !== options.length) return 'Duplicate approach id';
+  if (new Set(options.map((option) => option.label.toLocaleLowerCase('en-US'))).size !== options.length) return 'Duplicate approach label';
+  const position = new Map(document.segments.map((segment, index) => [segment.id, index]));
+  const claimed = new Set<string>();
+  const primary = document.knowledge_component_ids[0];
+  const kcs = new Set<string | undefined>();
+  const staged = new Set((document.representation_progressions ?? []).flatMap((progression) => progression.stages.map((stage) => stage.segment_id)));
+  const spans: Array<[number, number]> = [];
+  for (const option of options) {
+    const indexes = option.segment_ids.map((segmentId) => position.get(segmentId));
+    if (indexes.some((index) => index === undefined)) return 'An approach names a segment the lesson does not have';
+    for (const segmentId of option.segment_ids) {
+      if (claimed.has(segmentId)) return 'A segment belongs to two approaches';
+      claimed.add(segmentId);
+      if (staged.has(segmentId)) return 'A fading stage cannot sit inside an approach';
+    }
+    const sorted = (indexes as number[]).slice().sort((a, b) => a - b);
+    if (sorted.some((index, i) => i > 0 && index !== sorted[i - 1]! + 1) || sorted.some((index, i) => index !== (indexes as number[])[i])) {
+      return 'An approach must be one run of segments, in order';
+    }
+    const chain = sorted.map((index) => document.segments[index]!);
+    if (!chain.some((segment) => segment.grading === 'server')) return 'Every approach needs a graded step';
+    for (const segment of chain) kcs.add(segment.knowledge_component_id ?? primary);
+    spans.push([sorted[0]!, sorted.at(-1)!]);
+  }
+  if (kcs.size !== 1) return 'Every approach must practise the same skill';
+  const ordered = spans.slice().sort((a, b) => a[0] - b[0]);
+  if (ordered.some((span, i) => i > 0 && span[0] !== ordered[i - 1]![1] + 1)) return 'The approaches must sit together, one after another';
+  return null;
+}
+
+/** The approach whose chain holds a segment, or null for a segment every learner plays. */
+export function v2ApproachOf(approaches: V2Approaches | undefined, segmentId: string): string | null {
+  return approaches?.options.find((option) => option.segment_ids.includes(segmentId))?.id ?? null;
+}
+
+/** The segments a learner plays under an approach (null: before choosing, or a document without approaches): the rest are skipped. */
+export function v2SegmentsForApproach<T extends { id: string }>(segments: readonly T[], approaches: V2Approaches | undefined, approachId: string | null): T[] {
+  if (!approaches) return [...segments];
+  return segments.filter((segment) => {
+    const chain = v2ApproachOf(approaches, segment.id);
+    return chain === null || chain === approachId;
+  });
+}

@@ -95,11 +95,12 @@ describe('formerly ungraded visuals are server-graded with impossible-state reje
     expect(scoreV2Visual('visual.growth-comparison.v2', payload, { rateBps: 550, years: 10, predictionMinor: 16_300 }, { tolerance_minor: 100 })).toBe('invalid');
   });
 
-  it('M20 grades tax owed and the marginal rate', () => {
+  it('M20 grades tax owed, the marginal rate and the average rate (GAP-FIX-R5)', () => {
     const payload = { minimumIncomeMinor: 0, maximumIncomeMinor: 100_000, incomeStepMinor: 1_000,
       brackets: [{ upToMinor: 20_000, rateBasisPoints: 0 }, { upToMinor: 50_000, rateBasisPoints: 1_000 }, { upToMinor: null, rateBasisPoints: 2_000 }] };
-    expect(scoreV2Visual('visual.tax-bracket.v2', payload, { incomeMinor: 60_000, taxMinor: '5000', marginalBps: 2_000 }, { income_minor: 60_000 })).toBe('met');
-    expect(gradeV2Response('visual.tax-bracket.v2', payload, { incomeMinor: 60_000, taxMinor: '5000', marginalBps: 1_000 }, { income_minor: 60_000 }).diagnostic).toBe('partial');
+    // 60 000: tax 5 000, marginal 20%, average 5 000 / 60 000 = 8.33% (833 bps).
+    expect(scoreV2Visual('visual.tax-bracket.v2', payload, { incomeMinor: 60_000, taxMinor: '5000', marginalBps: 2_000, averageBps: 833 }, { income_minor: 60_000 })).toBe('met');
+    expect(gradeV2Response('visual.tax-bracket.v2', payload, { incomeMinor: 60_000, taxMinor: '5000', marginalBps: 1_000, averageBps: 833 }, { income_minor: 60_000 }).diagnostic).toBe('partial');
   });
 
   it('L2 compiles the learner rule and runs it on held-out cases (Part 4.6)', () => {
