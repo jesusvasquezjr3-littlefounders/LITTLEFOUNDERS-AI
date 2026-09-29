@@ -5,7 +5,7 @@ import en from '../../../i18n/en-US/rebuild-mentor.json';
 import es from '../../../i18n/es-MX/rebuild-mentor.json';
 import pt from '../../../i18n/pt-BR/rebuild-mentor.json';
 import {
-  animationLevelFor, CLOSING_SCRIPTS, lessonStateFor, MENTOR_STAGE_POSES, MENTOR_STAGE_STATES, resolveMentorPose,
+  animationLevelFor, CLOSING_SCRIPTS, lessonStageStateFor, lessonStateFor, MENTOR_STAGE_POSES, MENTOR_STAGE_STATES, resolveMentorPose,
 } from '../stageStates';
 
 const BANDS: AgeBand[] = ['6-9', '10-12', '13-17', 'adult'];
@@ -95,5 +95,21 @@ describe('Mentor stage states (Frontend Bible 08 §3)', () => {
     expect(lessonStateFor(null)).toBe('idle');
     expect(lessonStateFor('met')).toBe('acknowledging');
     for (const miss of ['review', 'incomplete', 'invalid'] as const) expect(lessonStateFor(miss)).toBe('encouraging');
+  });
+
+  it('GAP-FIX-R5 (08 §11, §3): a lesson also introduces, speaks, demonstrates and offers; a verdict wins; never a celebration', () => {
+    const none = { speaking: false, demonstrating: false, encouraging: false };
+    expect(lessonStageStateFor(null)).toBe('idle');
+    expect(lessonStageStateFor(null, { intro: true })).toBe('speaking');
+    expect(lessonStageStateFor(null, { requests: { ...none, speaking: true } })).toBe('speaking');
+    expect(lessonStageStateFor(null, { requests: { ...none, demonstrating: true } })).toBe('demonstrating');
+    expect(lessonStageStateFor(null, { intro: true, requests: { ...none, demonstrating: true } })).toBe('speaking');
+    expect(lessonStageStateFor(null, { requests: { speaking: true, demonstrating: true, encouraging: true } })).toBe('encouraging');
+    expect(lessonStageStateFor('met', { intro: true, requests: { speaking: true, demonstrating: true, encouraging: true } })).toBe('acknowledging');
+    expect(lessonStageStateFor('review', { intro: true })).toBe('encouraging');
+    const every = [null, 'met', 'review', 'incomplete', 'invalid'] as const;
+    for (const verdict of every) for (const intro of [false, true]) for (const speaking of [false, true]) for (const demonstrating of [false, true]) for (const encouraging of [false, true]) {
+      expect(lessonStageStateFor(verdict, { intro, requests: { speaking, demonstrating, encouraging } })).not.toBe('celebrating');
+    }
   });
 });

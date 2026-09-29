@@ -373,7 +373,16 @@
     "allDone": "Todo al día.",
     "loadFailed": "Las notas no cargaron. Intenta de nuevo.",
     "loading": "Cargando la nota…",
-    "retry": "Intentar de nuevo"
+    "retry": "Intentar de nuevo",
+    "deleteNote": "Eliminar esta nota",
+    "deleteTitle": "¿Eliminar esta nota?",
+    "deleteBody": "El Mentor la olvida. No se puede deshacer.",
+    "deleteKeep": "Conservarla",
+    "deleteConfirm": "Eliminar",
+    "deleteDeleting": "Eliminando…",
+    "noteGone": "Nota eliminada. El Mentor ya no la usa.",
+    "deleteFailed": "No se eliminó. Intenta de nuevo.",
+    "deleteChanged": "La nota cambió. Esta es la actual."
   },
   "familyTasks": {
     "title": "Tareas",

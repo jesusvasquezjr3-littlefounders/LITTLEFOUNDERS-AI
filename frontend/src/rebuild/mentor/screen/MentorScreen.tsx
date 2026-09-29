@@ -223,6 +223,8 @@ export interface MentorScreenProps {
   initialReplay?: { summary: SessionSummary; beats: ReplayBeat[] } | null;
   /** Hold a roleplay scene on its current beat (the development preview and its audits). */
   roleplayFrozen?: boolean;
+  /** The start-over ConfirmDialog open from the first render (the development preview and its audits, GAP-FIX-R5). */
+  initialConfirmRestart?: boolean;
 }
 
 export type MentorSheet = 'transcript' | 'grownUp' | 'chooser' | 'personalise' | 'map' | 'notebook' | 'history';
@@ -389,7 +391,7 @@ function ReplayControls({ copy, clock, total, sound, name, onTalk }: {
   </div>;
 }
 
-export function MentorScreen({ session, copy: all, locale, theme, guardianLink, onLeave, onPath, initialSheet = null, initialReplay = null, roleplayFrozen = false }: MentorScreenProps) {
+export function MentorScreen({ session, copy: all, locale, theme, guardianLink, onLeave, onPath, initialSheet = null, initialReplay = null, roleplayFrozen = false, initialConfirmRestart = false }: MentorScreenProps) {
   const copy = all.mentorScreen;
   const dark = theme === 'dark';
   const root = useRef<HTMLDivElement>(null);
@@ -402,7 +404,7 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
   const [choosing, setChoosing] = useState<MentorCharacter | null>(null);
   const [chooseFailed, setChooseFailed] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [confirmRestart, setConfirmRestart] = useState(false);
+  const [confirmRestart, setConfirmRestart] = useState(initialConfirmRestart);
   /** The last finished activity's result, shown until the next activity or the learner's next word (T1c). */
   const [activityResult, setActivityResult] = useState<ActivityOutcome | null>(null);
   const turn = session.phase === 'conversing' ? session.turn : null;

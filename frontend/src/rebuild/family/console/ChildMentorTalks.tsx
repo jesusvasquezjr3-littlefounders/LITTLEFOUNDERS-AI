@@ -1,12 +1,12 @@
 import { Component, useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
-import { Button, ButtonGroup, Card, Chip, Copy, EmptyState, InlineNotice, LoadingState, type GlyphName, type StatusTone } from '../../design/controls';
+import { Button, ButtonGroup, Card, Chip, ConfirmDialog, Copy, EmptyState, InlineNotice, LoadingState, type GlyphName, type StatusTone } from '../../design/controls';
 import { DispositionSummary, type DispositionSummaryCopy } from '../../mentor/DispositionSummary';
 import { MentorDecisions, type MasteryEvidence, type MentorDecisionsCopy } from '../../mentor/MentorDecisions';
 import type { DispositionSummaryData } from '../../mentor/allianceApi';
 import { MentorBoard, type MentorBoardCopy } from '../../mentor/screen/MentorBoard';
 import {
-  childName, decideMemoryNote, MEMORY_STORES, fetchChildren, fetchMentorDecisions, fetchDisposition, fetchKeptBoards, fetchMemoryNotes, fetchMentorHistory, fetchTranscript, resetDisposition,
-  type BoardNote, type ConsoleTransport, type KeptBoards, type MemoryDecision, type MemoryNotes as Notes, type MentorHistory, type MentorSession,
+  childName, decideMemoryNote, deleteMemoryNote, MEMORY_STORES, fetchChildren, fetchMentorDecisions, fetchDisposition, fetchKeptBoards, fetchMemoryNotes, fetchMentorHistory, fetchTranscript, resetDisposition,
+  type BoardNote, type ConsoleTransport, type KeptBoards, type MemoryDecision, type MemoryDeletion, type MemoryNotes as Notes, type MemoryStore, type MentorHistory, type MentorSession,
   type SafetyFlag, type TranscriptBeat,
 } from './consoleApi';
 import { MicrophoneConsent } from './ChildControls';
@@ -35,6 +35,9 @@ import './console.css';
  *      Mentor reads before each talk. The current note and what a suggestion
  *      would replace are both shown; a suggestion written against an older
  *      note is marked before anyone taps, and Core refuses it independently.
+ *      The current note itself can be deleted (GAP-FIX-R5, C.4, OD-18):
+ *      a secondary action behind the rebuilt ConfirmDialog, then a status
+ *      line. Core deletes only the exact note on screen.
  *   3. The microphone consent (the same deliberate two-step control as the
  *      Family console).
  *   4. How the child learns (C.7): the disposition profile in closed labels,
@@ -277,12 +280,34 @@ type NotesLoad = { status: 'loading' } | { status: 'failed' } | { status: 'ready
 function MemoryNotesReview({ kidId, copy, locale, transport }: { kidId: string; copy: MemoryNotesCopy; locale: string; transport: ConsoleTransport }) {
   const [load, setLoad] = useState<NotesLoad>({ status: 'loading' });
   const [decided, setDecided] = useState<Record<string, MemoryDecision | 'busy'>>({});
-  const read = useCallback(async () => {
-    setLoad({ status: 'loading' });
+  const [deletions, setDeletions] = useState<Partial<Record<MemoryStore, MemoryDeletion>>>({});
+  const [confirming, setConfirming] = useState<MemoryStore | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const read = useCallback(async (quiet = false) => {
+    if (!quiet) setLoad({ status: 'loading' });
     const result = await fetchMemoryNotes(transport, kidId);
-    setLoad(result.ok ? { status: 'ready', notes: result.data } : { status: 'failed' });
+    // A quiet refresh after a delete keeps the page if the re-read fails; the status line already says what happened.
+    if (result.ok) setLoad({ status: 'ready', notes: result.data });
+    else if (!quiet) setLoad({ status: 'failed' });
   }, [transport, kidId]);
   useEffect(() => { void read(); }, [read]);
+
+  async function confirmDelete() {
+    if (!confirming || deleting || load.status !== 'ready') return;
+    const store = confirming;
+    const expected = load.notes.current[store];
+    if (!expected) { setConfirming(null); return; }
+    setDeleting(true);
+    try {
+      const outcome = await deleteMemoryNote(transport, kidId, store, expected);
+      setDeletions((previous) => ({ ...previous, [store]: outcome }));
+      // The database closed the suggestions written against the deleted note; the queue is re-read to show it.
+      if (outcome !== 'failed') await read(true);
+    } finally {
+      setDeleting(false);
+      setConfirming(null);
+    }
+  }
 
   async function decide(noteId: string, verdict: 'approved' | 'rejected') {
     if (decided[noteId]) return;
@@ -293,7 +318,8 @@ function MemoryNotesReview({ kidId, copy, locale, transport }: { kidId: string; 
   }
 
   const date = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' });
-  const nothing = load.status === 'ready' && load.notes.proposals.length === 0 && MEMORY_STORES.every((store) => load.notes.current[store] === null);
+  // A note deleted in this visit keeps its store on screen, so the status line that says so stays readable.
+  const nothing = load.status === 'ready' && load.notes.proposals.length === 0 && MEMORY_STORES.every((store) => load.notes.current[store] === null && !deletions[store]);
   return <Card as="div">
     <section className="lf-console-group" aria-labelledby="child-mentor-notes" data-console-part="memory-notes" aria-busy={load.status === 'loading'}>
       <h2 id="child-mentor-notes" data-copy-role="heading">{copy.title}</h2>
@@ -313,6 +339,12 @@ function MemoryNotesReview({ kidId, copy, locale, transport }: { kidId: string; 
               <div className="lf-console-note-now">
                 <span className="lf-console-speaker" data-copy-role="body">{copy.current}</span>
                 {current ? <span className="lf-console-ugc" data-copy-role="data">{current}</span> : <Copy role="body">{copy.currentEmpty}</Copy>}
+                {current ? <ButtonGroup>
+                  <Button size="sm" aria-haspopup="dialog" data-memory-delete={store} onClick={() => setConfirming(store)}>{copy.deleteNote}</Button>
+                </ButtonGroup> : null}
+                {deletions[store] === 'deleted' ? <InlineNotice tone="success" live>{copy.noteGone}</InlineNotice>
+                  : deletions[store] === 'stale' ? <InlineNotice tone="info" live>{copy.deleteChanged}</InlineNotice>
+                    : deletions[store] === 'failed' ? <InlineNotice tone="error" live>{copy.deleteFailed}</InlineNotice> : null}
               </div>
               {waiting.length === 0 ? (current === null ? null : <Copy role="body">{copy.empty}</Copy>) : <ul className="lf-console-list">
                 {waiting.map((note) => {
@@ -345,6 +377,9 @@ function MemoryNotesReview({ kidId, copy, locale, transport }: { kidId: string; 
           {load.notes.proposals.length > 0 && load.notes.proposals.every((note) => decided[note.id] && decided[note.id] !== 'busy')
             ? <Copy role="body">{copy.allDone}</Copy> : null}
         </>}
+      <ConfirmDialog open={confirming !== null} destructive heading={copy.deleteTitle} consequence={copy.deleteBody}
+        keepLabel={copy.deleteKeep} confirmLabel={copy.deleteConfirm} pendingLabel={copy.deleteDeleting} pending={deleting}
+        onKeep={() => setConfirming(null)} onConfirm={() => void confirmDelete()} />
     </section>
   </Card>;
 }

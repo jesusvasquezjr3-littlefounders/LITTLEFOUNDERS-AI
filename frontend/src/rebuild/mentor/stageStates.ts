@@ -146,3 +146,34 @@ export type LessonVerdict = 'met' | 'review' | 'incomplete' | 'invalid' | null;
 export function lessonStateFor(verdict: LessonVerdict): MentorStageState {
   return verdict === null ? 'idle' : verdict === 'met' ? 'acknowledging' : 'encouraging';
 }
+
+/**
+ * GAP-FIX-R5 (Bible 08 §11, §3, §4; B.8): what the lesson asks of the compact
+ * stage besides a verdict. `speaking` while the Mentor's narration plays (and
+ * the short introduction hold when a segment opens), `demonstrating` while a
+ * worked example or a step replay is on screen, `encouraging` while the
+ * guided-review offer is open (08 §3: "when offering a guided review (D9)").
+ */
+export interface LessonStageRequests {
+  speaking: boolean;
+  demonstrating: boolean;
+  encouraging: boolean;
+}
+
+export const NO_LESSON_STAGE_REQUESTS: LessonStageRequests = { speaking: false, demonstrating: false, encouraging: false };
+
+/**
+ * The compact stage's state in a lesson. A verdict reaction wins (08 §11: the
+ * stage reacts to answers), then an open offer, then the Mentor speaking (its
+ * narration, or the introduction of a new segment), then a demonstration
+ * beside the board; otherwise idle. No path returns `celebrating` (OD-7).
+ */
+export function lessonStageStateFor(verdict: LessonVerdict, { intro = false, requests = NO_LESSON_STAGE_REQUESTS }: {
+  intro?: boolean; requests?: LessonStageRequests;
+} = {}): MentorStageState {
+  if (verdict !== null) return lessonStateFor(verdict);
+  if (requests.encouraging) return 'encouraging';
+  if (requests.speaking || intro) return 'speaking';
+  if (requests.demonstrating) return 'demonstrating';
+  return 'idle';
+}

@@ -113,4 +113,17 @@ describe('findStageStills: the full stage acknowledging state (08 §11)', () => 
       expect(still.base).toMatchObject({ id: `mentor.${character}.stage.${pose}.light`, poseId: pose, fit: 'cover' });
     }
   });
+
+  it('GAP-FIX-R5 (08 §11): the compact band has a still of every state a lesson can request, in its register, for every character', () => {
+    const lessonStates = ['idle', 'speaking', 'demonstrating', 'encouraging', 'acknowledging'] as const;
+    for (const character of MENTOR_CHARACTERS) for (const theme of ['light', 'dark'] as const) {
+      for (const [band, ageBand] of [['young', '6-9'], ['teen', '13-17']] as const) {
+        for (const state of lessonStates) {
+          const { pose } = resolveMentorPose({ state, ageBand });
+          const set = findStageStills({ character, poseId: pose.id, theme, size: 'compact', band });
+          expect(set?.base.poseId, `${character} ${theme} ${band} ${state}`).toBe(pose.id);
+        }
+      }
+    }
+  });
 });
