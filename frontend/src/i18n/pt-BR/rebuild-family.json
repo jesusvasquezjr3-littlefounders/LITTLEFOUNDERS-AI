@@ -22,7 +22,18 @@
     "follow": "começou a seguir",
     "unfollow": "deixou de seguir",
     "block": "bloqueou",
-    "unblock": "desbloqueou"
+    "unblock": "desbloqueou",
+    "coopCreated": "{source} começou uma meta em equipe.",
+    "coopInvited": "{source} convidou {target} para uma meta em equipe.",
+    "coopJoined": "{target} entrou em uma meta em equipe.",
+    "coopLeft": "{target} saiu de uma meta em equipe.",
+    "coopRemoved": "{source} tirou {target} de uma meta em equipe.",
+    "coopDeclined": "{target} disse não a uma meta em equipe.",
+    "coopWithdrawn": "{source} cancelou o convite para {target}.",
+    "coopEnded": "{target} não está mais em uma meta em equipe.",
+    "coopClosed": "Uma meta em equipe terminou.",
+    "coopOn": "{source} ligou as metas em equipe.",
+    "coopOff": "{source} desligou as metas em equipe."
   },
   "socialRequests": {
     "title": "Solicitações de conexão",
@@ -587,7 +598,18 @@
     "loading": "Carregando metas em equipe",
     "failed": "Não foi possível carregar. Tente de novo.",
     "retry": "Tentar de novo",
-    "saveFailed": "Não foi possível salvar. Tente de novo."
+    "saveFailed": "Não foi possível salvar. Tente de novo.",
+    "goalsTitle": "Metas agora",
+    "goalLine": "{n} lições juntos até {date}",
+    "startedBy": "{name} começou esta meta.",
+    "asked": "{name} recebeu um convite.",
+    "people": "Pessoas nesta meta",
+    "statusAsked": "Com convite",
+    "statusJoined": "Entrou",
+    "statusLeft": "Saiu",
+    "privatePerson": "Conta privada",
+    "noGoals": "{name} não está em nenhuma meta agora.",
+    "goalsFailed": "Não foi possível carregar as metas. Tente de novo."
   },
   "familyDeletionNotices": {
     "title": "Exclusão de conta",

@@ -216,6 +216,28 @@ try:
     assert service(f"SELECT end_coop_goal_membership('{I['kid16']}', '{g2}', '{I['kid16']}')") == 'left'
     assert run(f"SELECT status FROM coop_goals WHERE id = '{g2}'") == 'closed'
     g3 = goal('kid15', ['kid16'], 5, 7)
+    # GAP-FIX-R4 (E.2, Law 5): the verified Tutor sees the child's open goals and who is in them, never a number per person.
+    seen = json.loads(service(f"SELECT coop_goal_guardian_goals('{I['parent']}', '{I['kid15']}')"))
+    assert [(v['id'], v['childStatus'], v['startedByChild'], v['target']) for v in seen] == [(g3, 'active', True, 5)], seen
+    assert seen[0]['people'] == [{'userId': I['kid16'], 'status': 'invited'}], seen
+    assert 'done' not in json.dumps(seen) and 'progress' not in json.dumps(seen)
+    asked = json.loads(service(f"SELECT coop_goal_guardian_goals('{I['parent']}', '{I['kid16']}')"))
+    assert [(v['id'], v['childStatus'], v['startedByChild']) for v in asked] == [(g3, 'invited', False)]
+    assert asked[0]['people'] == [{'userId': I['kid15'], 'status': 'active'}]
+    assert service(f"SELECT decide_coop_goal_invitation('{I['kid16']}', '{g3}', true)") == 'accepted'
+    seen = json.loads(service(f"SELECT coop_goal_guardian_goals('{I['parent']}', '{I['kid15']}')"))
+    assert seen[0]['people'] == [{'userId': I['kid16'], 'status': 'active'}]
+    assert json.loads(service(f"SELECT coop_goal_guardian_goals('{I['parent']}', '{I['kid10']}')")) == []
+    rejected(f"SET ROLE service_role; SELECT coop_goal_guardian_goals('{I['adult']}', '{I['kid15']}')", 'COOP_GUARDIAN_NOT_LINKED')
+    rejected(f"SET ROLE service_role; SELECT coop_goal_guardian_goals('{I['parent']}', '{I['ana']}')", 'COOP_GUARDIAN_NOT_LINKED')
+    # A self-registered teen who linked a Tutor keeps its goals its own (OD-3 Option B).
+    run(f"INSERT INTO guardian_links (parent_user_id, kid_user_id, verification_status, verified_at) VALUES ('{I['parent']}', '{I['ana']}', 'verified', now())")
+    assert service(f"SELECT social_tier('{I['ana']}')") == 'teen'
+    rejected(f"SET ROLE service_role; SELECT coop_goal_guardian_goals('{I['parent']}', '{I['ana']}')", 'COOP_NOT_ALLOWED')
+    run(f"DELETE FROM guardian_links WHERE parent_user_id = '{I['parent']}' AND kid_user_id = '{I['ana']}'")
+    for role in ('anon', 'authenticated'):
+        rejected(f"SET ROLE {role}; SELECT coop_goal_guardian_goals('{I['parent']}', '{I['kid15']}')", 'permission denied')
+    check('the verified Tutor reads the child\'s open goals (target, window, who started it, the child\'s status and each other person as asked or joined, no progress); an unlinked adult and a self-registered teen\'s linked Tutor are refused; no browser role can call it')
     assert service(f"SELECT set_coop_goal_guardian_consent('{I['parent']}', '{I['kid15']}', false)") == 'f'
     assert run(f"SELECT end_reason FROM coop_goal_members WHERE goal_id = '{g3}' AND user_id = '{I['kid15']}'") == 'guardian_off'
     assert run(f"SELECT status FROM coop_goals WHERE id = '{g3}'") == 'closed'

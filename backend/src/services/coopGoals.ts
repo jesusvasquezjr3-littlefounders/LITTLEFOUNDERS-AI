@@ -161,6 +161,28 @@ export async function readCoopGuardianView(guardianId: string, kidId: string): P
   });
 }
 
+/*
+ * E.2 / Law 5 (GAP-FIX-R4): the verified Tutor's read of a parent-created
+ * child's open goals (migration coop_goal_guardian_goals). The database
+ * checks the verified link and the guardian tier (a self-registered teen's
+ * goals stay its own, OD-3 Option B), reconciles first, and returns no
+ * progress at all: no group total, no per-member number (OD-27 (1)).
+ */
+export const CoopGuardianGoals = z.array(z.object({
+  id: UUID, kind: Kind, target: Target, startsAt: Instant, endsAt: Instant, startedByChild: z.boolean(),
+  childStatus: z.enum(['invited', 'active']),
+  people: z.array(z.object({ userId: UUID, status: z.enum(['invited', 'active', 'ended']) }).strict()).max(COOP_MAX_MEMBERS * 4),
+}).strict()).max(50);
+export type CoopGuardianGoals = z.infer<typeof CoopGuardianGoals>;
+
+export async function readCoopGuardianGoals(guardianId: string, kidId: string): Promise<CoopResult<CoopGuardianGoals>> {
+  if (!ids(guardianId, kidId)) return { ok: false, refusal: 'invalid' };
+  return call('coop_goal_guardian_goals', { p_guardian: guardianId, p_kid: kidId }, (body) => {
+    const parsed = CoopGuardianGoals.safeParse(body);
+    return parsed.success ? parsed.data : null;
+  });
+}
+
 export async function setCoopGuardianConsent(guardianId: string, kidId: string, enabled: boolean): Promise<CoopResult<boolean>> {
   if (!ids(guardianId, kidId)) return { ok: false, refusal: 'invalid' };
   return call('set_coop_goal_guardian_consent', { p_guardian: guardianId, p_kid: kidId, p_enabled: enabled }, (body) => (body === enabled ? enabled : null));

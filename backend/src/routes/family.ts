@@ -40,6 +40,7 @@ import { resolveLocalToday } from '../services/choreStreak.js';
 import { dataPracticeApplies } from '../services/dataPractices.js';
 import { noteSocialProtectionEvent } from '../services/socialProtection.js';
 import { readSocialTier } from '../services/socialTier.js';
+import { readCoopGuardianGoals } from '../services/coopGoals.js';
 import { readStreakStates } from '../services/choreStreakData.js';
 import {
   getConsentsForKids,
@@ -463,16 +464,56 @@ export function familyRouter(): Router {
     if (!query.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a valid audit page');
     const page = await getGuardianSocialAuditPage(kidId, query.data.offset);
     if (!page) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load social history');
-    const ids = [...new Set(page.entries.flatMap(entry => [entry.sourceId, entry.targetId, ...(entry.actorId ? [entry.actorId] : [])]))];
+    const ids = [...new Set(page.entries.flatMap(entry => [entry.sourceId, entry.targetId, entry.actorId].filter((id): id is string => id !== null)))];
     const visible = await Promise.all(ids.map(async id => await mayDiscoverProfile(authedUser(res).id, id) ? id : null));
     const names = await getSocialDisplayNames(visible.filter((id): id is string => id !== null));
     if (!names) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load social participants');
     const nameById = new Map(names.map(row => [row.user_id, row.display_name]));
     if (!await guardKid(req, res)) return res;
+    const nameOf = (id: string | null) => (id ? nameById.get(id) ?? null : null);
     return ok(res, { ...page, entries: page.entries.map(entry => ({ ...entry,
-      sourceName: nameById.get(entry.sourceId) ?? null,
-      targetName: nameById.get(entry.targetId) ?? null,
-      actorName: entry.actorId ? nameById.get(entry.actorId) ?? null : null,
+      sourceName: nameOf(entry.sourceId),
+      targetName: nameOf(entry.targetId),
+      actorName: nameOf(entry.actorId),
+    })) });
+  });
+
+  /*
+   * E.2 / Law 5 (GAP-FIX-R4): the goals together a parent-created child is
+   * asked to or in, and with whom, for the verified Tutor (OD-27 (1): every
+   * connection rule still applies, so the parent stays in the room). Each
+   * other person is named only through the same E.1 discovery check the
+   * history uses; everyone else stays "a private account". No progress of any
+   * kind (no group total, no per-member number). A self-registered teen's
+   * goals are its own (OD-3 Option B): ACCOUNT_SELF_MANAGED, the database
+   * refuses it too. The link is re-checked after the reads.
+   */
+  router.get('/kids/:kidId/coop-goals', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    if (Object.keys(req.query).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'This read takes no filters');
+    const tier = await readSocialTier(kidId);
+    if (tier === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the account type');
+    if (tier !== 'guardian') return fail(res, 403, 'ACCOUNT_SELF_MANAGED', 'This teen manages their own goals');
+    const guardian = authedUser(res).id;
+    const goals = await readCoopGuardianGoals(guardian, kidId);
+    if (!goals.ok) {
+      if (goals.refusal === 'guardian-not-linked') return fail(res, 404, NOT_FOUND, 'No such child for this account');
+      if (goals.refusal === 'not-allowed') return fail(res, 403, 'ACCOUNT_SELF_MANAGED', 'This teen manages their own goals');
+      return fail(res, 502, DATA_UNAVAILABLE, 'Could not load goals together');
+    }
+    const ids = [...new Set(goals.value.flatMap((goal) => goal.people.map((person) => person.userId)))];
+    const visible = await Promise.all(ids.map(async (id) => await mayDiscoverProfile(guardian, id) ? id : null));
+    const names = await getSocialDisplayNames(visible.filter((id): id is string => id !== null));
+    if (!names) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load goal members');
+    const nameById = new Map(names.map((row) => [row.user_id, row.display_name]));
+    if (!await guardKid(req, res)) return res;
+    const STATUS = { invited: 'asked', active: 'joined', ended: 'left' } as const;
+    return ok(res, { goals: goals.value.map((goal) => ({
+      id: goal.id, kind: goal.kind, target: goal.target, startsAt: goal.startsAt, endsAt: goal.endsAt,
+      startedByChild: goal.startedByChild, childStatus: goal.childStatus === 'active' ? 'joined' : 'asked',
+      // Ids stay in Core: the Tutor reads a name (or nothing) and a status.
+      people: goal.people.map((person) => ({ name: nameById.get(person.userId) ?? null, status: STATUS[person.status] })),
     })) });
   });
 

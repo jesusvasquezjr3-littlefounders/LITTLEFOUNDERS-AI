@@ -24,6 +24,9 @@ const FILES = [
   'frontend/src/rebuild/social/ConnectionActions.tsx',
   'frontend/src/rebuild/social/SocialGraph.tsx',
   'frontend/src/rebuild/social/SocialNotices.tsx',
+  'frontend/src/rebuild/social/SocialHistory.tsx',
+  'frontend/src/rebuild/family/CoopGoalsConsent.tsx',
+  'backend/src/services/supabaseRest.ts',
   ...SOCIAL_SCREENS,
   'database/scripts/fixtures/profile-field-safety-cases.json',
   'docs/rebuild/policies/SOCIAL-TIERS.md',
@@ -246,4 +249,26 @@ test('Appendix J: audit completeness that stops reconciling guardian-ended unfol
     const at = sql.indexOf('FUNCTION public.social_protection_metrics(');
     writeFileSync(path, sql.slice(0, at) + sql.slice(at).replaceAll("'guardian_ended'", "'other_reason'"));
   }, /no longer reconciles guardian-ended unfollows/);
+});
+
+const LATER = (body) => `CREATE OR REPLACE FUNCTION public.coop_goal_guardian_goals(p_guardian uuid, p_kid uuid)
+RETURNS jsonb LANGUAGE sql AS $$ ${body} $$;`;
+
+test('E.2 (GAP-FIX-R4): a later guardian goals read without the tier check, or with progress, fails', () => {
+  withFixture((root) => writeFileSync(join(root, 'database/migrations', '9999_later.sql'), LATER("SELECT '[]'::jsonb")),
+    /coop_goal_guardian_goals no longer carries social_tier\(p_kid\) IS DISTINCT FROM 'guardian'/);
+  withFixture((root) => writeFileSync(join(root, 'database/migrations', '9999_later.sql'), LATER("SELECT jsonb_build_object('done', public.coop_goal_done(p_kid))")), /returns progress/);
+});
+
+test('E.2 (GAP-FIX-R4): a Core goals route that skips the tier check, the discovery check or the re-check fails', () => {
+  withFixture((root) => edit(root, 'backend/src/routes/family.ts', "if (tier !== 'guardian') return fail(res, 403, 'ACCOUNT_SELF_MANAGED'", "if (tier === 'closed') return fail(res, 403, 'ACCOUNT_SELF_MANAGED'"), /GET \/kids\/:kidId\/coop-goals must check/);
+  withFixture((root) => edit(root, 'backend/src/routes/family.ts', 'await mayDiscoverProfile(guardian, id) ? id : null));\n    const names = await getSocialDisplayNames(visible.filter((id): id is string => id !== null));\n    if (!names) return fail(res, 502, DATA_UNAVAILABLE, \'Could not load goal members\');',
+    'id));\n    const names = await getSocialDisplayNames(visible.filter((id): id is string => id !== null));\n    if (!names) return fail(res, 502, DATA_UNAVAILABLE, \'Could not load goal members\');'), /GET \/kids\/:kidId\/coop-goals must check/);
+});
+
+test('E.2 (GAP-FIX-R4): a history that drops a goals-together action, or a card that stops listing goals, fails', () => {
+  withFixture((root) => edit(root, 'backend/src/services/supabaseRest.ts', "'social.coop_member_joined', ", ''), /no longer reads social\.coop_member_joined/);
+  withFixture((root) => edit(root, 'frontend/src/rebuild/family/CoopGoalsConsent.tsx', 'data-coop-goal=', 'data-goal='), /no longer lists the child's goals/);
+  withFixture((root) => edit(root, 'frontend/src/rebuild/social/SocialHistory.tsx', 'const sentence = coopSentence(entry);', "const sentence = null as null | 'coopClosed';"), /no longer renders goals-together events/);
+  withFixture((root) => edit(root, 'docs/rebuild/policies/SOCIAL-TIERS.md', '**The Tutor sees the goals (E.2, Law 5; GAP-FIX-R4).**', '**Goals.**'), /missing the Tutor's view of goals together/);
 });
