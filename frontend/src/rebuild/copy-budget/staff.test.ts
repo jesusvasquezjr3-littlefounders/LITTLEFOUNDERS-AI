@@ -37,7 +37,9 @@ describe('rebuild-staff copy budget', () => {
           .replace(/\{(?:converted|events|sessions|accounts|learners|peak|latest)\}/g, '12,345').replace(/\{change\}/g, '+1,234')
           .replace(/\{grant\}/g, longestGrant).replace(/\{job\}/g, longestJob).replace(/\{(?:met|num|den)\}/g, '12,345')
           // G.2 (GAP-FIX-R2): the retroactive release-check window, in days.
-          .replace(/\{days\}/g, '365');
+          .replace(/\{days\}/g, '365')
+          // E.6 (GAP-FIX-R6): the stalled-erasure window, in hours.
+          .replace(/\{hours\}/g, '168');
         expect(filled, `staffConsole.${path} has an unfilled placeholder`).not.toMatch(/\{\w+\}/);
         expectFits(filled, role as 'action' | 'heading' | 'body' | 'option', locale, 'adult', `staffConsole.${path}`);
       }

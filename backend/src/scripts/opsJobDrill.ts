@@ -3,7 +3,11 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { getOpsJobStatus, OPS_JOB_STALE_HOURS, opsJobAction, type OpsJob } from '../services/opsJobs.js';
+import {
+  DELETION_STEP_FAILED_AUDIT_ACTION, getOpsJobStatus, HEARTBEAT_JOBS, OPS_JOB_STALE_HOURS, OPS_JOBS, opsJobAction,
+  SOCIAL_RETENTION_SWEEP_AUDIT_ACTION, type HeartbeatJob, type OpsJob,
+} from '../services/opsJobs.js';
+import { ACCOUNT_DELETION_SWEEP_AUDIT_ACTION } from '../routes/account.js';
 import { RETENTION_SWEEP_AUDIT_ACTION, RETENTION_STALE_HOURS } from '../services/tutorData.js';
 
 /*
@@ -22,11 +26,16 @@ import { RETENTION_SWEEP_AUDIT_ACTION, RETENTION_STALE_HOURS } from '../services
  * The drill passes only when all three hold for the failed job. The fetch
  * replacement lives only for the duration of step 2.
  *
- * Targets: the three heartbeat jobs; `tutor_retention`, the Mentor 90-day
- * retention sweep (its `tutor.retention.swept` trail simulated stale, Appendix
- * O 2.3(b) names it); `content_retro_checks` (G.2, an overdue retroactive
- * release check); `access_reviews` (G.4, an elevated grant past the 90-day
- * access review).
+ * Targets: every watched job in services/opsJobs.ts OPS_JOBS (the backups,
+ * the drift probe, and since GAP-FIX-R6 the learning retention sweep, the
+ * insights prune, the account-deletion sweep, the family retention sweep and
+ * the social retention sweep, each with its own trail simulated stale);
+ * `tutor_retention`, the Mentor 90-day retention sweep (its
+ * `tutor.retention.swept` trail simulated stale, Appendix O 2.3(b) names it);
+ * `content_retro_checks` (G.2, an overdue retroactive release check);
+ * `access_reviews` (G.4, an elevated grant past the 90-day access review);
+ * `account_deletion_failures` (E.6, an erasure whose step failed more than a
+ * day ago and never completed).
  */
 
 const TOOL = resolve(dirname(fileURLToPath(import.meta.url)), '../../../agent/tools/ops-job-watch.mjs');
@@ -39,8 +48,10 @@ export interface DrillResult {
   passed: boolean;
 }
 
-export type DrillTarget = OpsJob | 'tutor_retention' | 'content_retro_checks' | 'access_reviews';
-export const DRILL_TARGETS: readonly DrillTarget[] = ['vault_backup', 'pulse_backup', 'vault_drift', 'tutor_retention', 'content_retro_checks', 'access_reviews'];
+export type DrillTarget = OpsJob | 'tutor_retention' | 'content_retro_checks' | 'access_reviews' | 'account_deletion_failures';
+export const DRILL_TARGETS: readonly DrillTarget[] = [...OPS_JOBS, 'tutor_retention', 'content_retro_checks', 'access_reviews', 'account_deletion_failures'];
+const CONDITIONS: readonly DrillTarget[] = ['content_retro_checks', 'access_reviews', 'account_deletion_failures'];
+const DRILL_REQUEST = '00000000-0000-4000-8000-00000000d11e';
 
 const metricsRow = (overdue: number) => [{ publish_actions: 3, bypasses: 1, decided: 1, unverified: overdue, complete: 1 - overdue, overdue_open: overdue }];
 const reviewStatus = (due: number) => ({
@@ -52,24 +63,20 @@ const json = (body: unknown) => new Response(JSON.stringify(body), { status: 200
 /** The audit action whose trail the drill makes stale, or null for a target that is not a scheduled job. */
 function staleAction(job: DrillTarget): string | null {
   if (job === 'tutor_retention') return RETENTION_SWEEP_AUDIT_ACTION;
-  if (job === 'content_retro_checks' || job === 'access_reviews') return null;
-  return opsJobAction(job);
+  if (job === 'account_deletions') return ACCOUNT_DELETION_SWEEP_AUDIT_ACTION;
+  if (job === 'social_retention') return SOCIAL_RETENTION_SWEEP_AUDIT_ACTION;
+  if ((HEARTBEAT_JOBS as readonly string[]).includes(job)) return opsJobAction(job as HeartbeatJob);
+  // family_retention is read from family_retention_runs; the conditions are not scheduled jobs.
+  return null;
 }
 
 function staleHours(job: DrillTarget): number {
   if (job === 'tutor_retention') return RETENTION_STALE_HOURS;
-  if (job === 'content_retro_checks' || job === 'access_reviews') return 0;
-  return OPS_JOB_STALE_HOURS[job];
+  if (CONDITIONS.includes(job)) return 0;
+  return OPS_JOB_STALE_HOURS[job as OpsJob];
 }
 
-const NOTICE_MARK: Record<DrillTarget, string> = {
-  vault_backup: '**vault_backup**',
-  pulse_backup: '**pulse_backup**',
-  vault_drift: '**vault_drift**',
-  tutor_retention: '**tutor_retention**',
-  content_retro_checks: 'retroactive release check',
-  access_reviews: '**access_reviews**',
-};
+const noticeMark = (job: DrillTarget): string => (job === 'content_retro_checks' ? 'retroactive release check' : `**${job}**`);
 
 export async function runOpsJobDrill(job: DrillTarget, now: Date = new Date()): Promise<DrillResult> {
   const staleAt = new Date(now.getTime() - (staleHours(job) + 12) * 3_600_000).toISOString();
@@ -82,7 +89,16 @@ export async function runOpsJobDrill(job: DrillTarget, now: Date = new Date()): 
     if (url.includes('/rpc/content_bypass_metrics')) return json(metricsRow(job === 'content_retro_checks' ? 1 : 0));
     // G.4: an elevated grant past the 90-day access review.
     if (url.includes('/rpc/staff_access_review_status')) return json(reviewStatus(job === 'access_reviews' ? 1 : 0));
+    // D.21: the family retention sweep's own run table.
+    if (url.includes('/family_retention_runs')) {
+      return json([{ ran_at: job === 'family_retention' ? staleAt : freshAt, removed: {}, evidence_cleared: 0, evidence_failed: 0 }]);
+    }
+    // E.6: an erasure still processing whose step failed more than a day ago.
+    if (url.includes('/account_deletion_requests')) return json(job === 'account_deletion_failures' ? [{ id: DRILL_REQUEST }] : []);
     const action = /action=eq\.([^&]+)/.exec(url)?.[1] ?? '';
+    if (action === DELETION_STEP_FAILED_AUDIT_ACTION) {
+      return json(job === 'account_deletion_failures' ? [{ detail: { request_id: DRILL_REQUEST, step: 'depot', reason: 'unreachable' } }] : []);
+    }
     return json([{ created_at: target !== null && action === target ? staleAt : freshAt, detail: { ok: true } }]);
   }) as typeof fetch;
   let status;
@@ -93,6 +109,7 @@ export async function runOpsJobDrill(job: DrillTarget, now: Date = new Date()): 
   }
   const stale = job === 'content_retro_checks' ? (status?.contentRetroChecks.overdue ?? 0) > 0
     : job === 'access_reviews' ? (status?.accessReviews.due ?? 0) > 0
+      : job === 'account_deletion_failures' ? (status?.accountDeletionFailures.stuck ?? 0) > 0
       : job === 'tutor_retention' ? status?.tutorRetention.stale ?? false
         : status?.jobs.find((entry) => entry.job === job)?.stale ?? false;
 
@@ -108,7 +125,7 @@ export async function runOpsJobDrill(job: DrillTarget, now: Date = new Date()): 
     } catch {
       notice = null;
     }
-    const passed = stale && watcher.status === 1 && notice !== null && notice.includes(NOTICE_MARK[job]);
+    const passed = stale && watcher.status === 1 && notice !== null && notice.includes(noticeMark(job));
     return { job, stale, watcherExit: watcher.status, notice, passed };
   } finally {
     rmSync(dir, { recursive: true, force: true });
