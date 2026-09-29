@@ -1,0 +1,65 @@
+name: Quarterly Block D reviews
+
+# Appendix H Part 1.4 (Threshold Recalibration Log: "every threshold reviewed
+# at least once per defined cadence (proposed: quarterly for the first
+# year)") and Part 1.3 (No-Unbacked-Guarantee Audit and Scope-Disclosure
+# Presence & Accuracy Audit: "scheduled manual audit (quarterly, proposed)").
+#
+# Two triggers, as for the staff access review:
+#   - per release: agent/tools/release-readiness.sh runs
+#     check-block-d-thresholds.mjs, check-no-unbacked-guarantee.mjs and
+#     check-block-d-scope.mjs with --strict, which fail while a review is past
+#     the due date its own log states (agent/tools/block-d-review-cadence.mjs);
+#   - per calendar quarter (THIS workflow): on 1 January, April, July and
+#     October it opens the quarter's issue, labelled `block-d-review`, listing
+#     the three reviews with their owners (the Pedagogical Lead with Product;
+#     the Pedagogical Lead with the Engineering Lead; Product with the
+#     Pedagogical Lead), the last human review and the next due date.
+#
+# Nothing is read from Core or production: the schedule lives in the repo's
+# logs. A malformed log still opens the issue (the reviews are due regardless)
+# and turns the run red.
+#
+# agent/tools/block-d-reviews-quarterly.test.mjs pins the schedule, the tool
+# call and the notification.
+
+on:
+  schedule:
+    - cron: '0 9 1 1,4,7,10 *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  open-reviews:
+    name: Open the quarter's Block D reviews
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Write the review issue
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node agent/tools/block-d-reviews-quarterly.mjs --issue-file issue.md --title-file title.txt
+
+      - name: Open the review issue for the owners
+        if: always() && hashFiles('issue.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          title=$(cat title.txt)
+          existing=$(gh issue list --state open --label block-d-review --search "\"$title\" in:title" --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "${existing:-}" ]; then
+            gh issue comment "$existing" --body-file issue.md
+          else
+            gh label create block-d-review --color 0E8A16 --description 'Appendix H quarterly Block D reviews' 2>/dev/null || true
+            gh issue create --title "$title" --label block-d-review --body-file issue.md
+          fi

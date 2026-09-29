@@ -180,9 +180,9 @@ export function DecisionQueue({ copy, notYetCopy, reflectionCopy, levelNames, ki
           {open(c.id, ['approveChore', 'sendBack', 'remove'])
             ? decide(TASK_REASON_CODES)
             : <div className="lf-family-hub-actions">
-              <Button variant="success" disabled={busy || (c.requiresEvidence && !c.hasEvidence)} onClick={() => reflect({ kind: 'approveChore', chore: c }, c.assignedTo)}>{copy.approve}</Button>
-              <Button disabled={busy} onClick={() => reflect({ kind: 'sendBack', chore: c }, c.assignedTo)}>{copy.sendBack}</Button>
-              <Button disabled={busy} onClick={() => reflect({ kind: 'remove', chore: c }, c.assignedTo)}>{copy.remove}</Button>
+              <Button variant="success" data-queue-answer="yes" disabled={busy || (c.requiresEvidence && !c.hasEvidence)} onClick={() => reflect({ kind: 'approveChore', chore: c }, c.assignedTo)}>{copy.approve}</Button>
+              <Button data-queue-answer="not-yet" disabled={busy} onClick={() => reflect({ kind: 'sendBack', chore: c }, c.assignedTo)}>{copy.sendBack}</Button>
+              <Button data-queue-answer="remove" disabled={busy} onClick={() => reflect({ kind: 'remove', chore: c }, c.assignedTo)}>{copy.remove}</Button>
             </div>}
           <SuccessWipe active={wipe?.id === c.id} label={c.title} onDone={wipeDone} />
         </li>)}{wipe?.list === 'chores' && !queue.chores.some((c) => c.id === wipe.id) ? approvedRow(wipe) : null}</ul>
@@ -201,8 +201,8 @@ export function DecisionQueue({ copy, notYetCopy, reflectionCopy, levelNames, ki
           {open(r.id, ['approveReward', 'deny'])
             ? decide(REWARD_REASON_CODES)
             : <div className="lf-family-hub-actions">
-              <Button variant="success" disabled={busy} onClick={() => reflect({ kind: 'approveReward', reward: r }, r.kidUserId)}>{copy.approve}</Button>
-              <Button disabled={busy} onClick={() => reflect({ kind: 'deny', reward: r }, r.kidUserId)}>{copy.deny}</Button>
+              <Button variant="success" data-queue-answer="yes" disabled={busy} onClick={() => reflect({ kind: 'approveReward', reward: r }, r.kidUserId)}>{copy.approve}</Button>
+              <Button data-queue-answer="not-yet" disabled={busy} onClick={() => reflect({ kind: 'deny', reward: r }, r.kidUserId)}>{copy.deny}</Button>
             </div>}
           <SuccessWipe active={wipe?.id === r.id} label={r.title ?? ''} onDone={wipeDone} />
         </li>)}{wipe?.list === 'rewards' && !queue.rewards.some((r) => r.id === wipe.id) ? approvedRow(wipe) : null}</ul>
@@ -216,8 +216,8 @@ export function DecisionQueue({ copy, notYetCopy, reflectionCopy, levelNames, ki
           {open(q.id, ['grant', 'decline'])
             ? decide(LEVEL_REQUEST_REASON_CODES)
             : <div className="lf-family-hub-actions">
-              <Button variant="success" disabled={busy} onClick={() => reflect({ kind: 'grant', requestId: q.id, level: q.level }, q.kidUserId)}>{copy.grant}</Button>
-              <Button disabled={busy} onClick={() => reflect({ kind: 'decline', requestId: q.id }, q.kidUserId)}>{copy.deny}</Button>
+              <Button variant="success" data-queue-answer="yes" disabled={busy} onClick={() => reflect({ kind: 'grant', requestId: q.id, level: q.level }, q.kidUserId)}>{copy.grant}</Button>
+              <Button data-queue-answer="not-yet" disabled={busy} onClick={() => reflect({ kind: 'decline', requestId: q.id }, q.kidUserId)}>{copy.deny}</Button>
             </div>}
         </li>)}</ul>
       </section>}
@@ -230,8 +230,8 @@ export function DecisionQueue({ copy, notYetCopy, reflectionCopy, levelNames, ki
           {open(d.id, ['confirm', 'question'])
             ? decide(d.subject === 'task' ? TASK_REASON_CODES : REVIEW_REWARD_REASON_CODES)
             : <div className="lf-family-hub-actions">
-              <Button variant="success" disabled={busy} onClick={() => reflect({ kind: 'confirm', review: d }, d.kidUserId)}>{copy.looksGood}</Button>
-              <Button disabled={busy} onClick={() => reflect({ kind: 'question', review: d }, d.kidUserId)}>{copy.question}</Button>
+              <Button variant="success" data-queue-answer="yes" disabled={busy} onClick={() => reflect({ kind: 'confirm', review: d }, d.kidUserId)}>{copy.looksGood}</Button>
+              <Button data-queue-answer="not-yet" disabled={busy} onClick={() => reflect({ kind: 'question', review: d }, d.kidUserId)}>{copy.question}</Button>
             </div>}
         </li>)}</ul>
       </section>}
@@ -245,7 +245,7 @@ export function DecisionQueue({ copy, notYetCopy, reflectionCopy, levelNames, ki
           </div>
           {open(c.id, ['remove'])
             ? decide(TASK_REASON_CODES)
-            : <div className="lf-family-hub-actions"><Button disabled={busy} onClick={() => reflect({ kind: 'remove', chore: c }, c.assignedTo)}>{copy.remove}</Button></div>}
+            : <div className="lf-family-hub-actions"><Button data-queue-answer="remove" disabled={busy} onClick={() => reflect({ kind: 'remove', chore: c }, c.assignedTo)}>{copy.remove}</Button></div>}
         </li>)}</ul>
       </section>}
     </>}

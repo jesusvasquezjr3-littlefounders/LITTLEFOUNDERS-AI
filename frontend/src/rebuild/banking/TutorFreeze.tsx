@@ -66,11 +66,13 @@ export function TutorFreeze({ copy, name, locale, dark, view, loading, failed, b
         <Copy role="body">{copy.practice}</Copy>
         <section className="lf-coin-freeze" data-control="freeze" data-frozen={card.freeze.frozen} data-by={card.freeze.by ?? 'none'} aria-labelledby={holdsId}>
           {card.freeze.frozen && <Copy role="body">{card.freeze.by === 'you' ? copy.byYou : card.freeze.by === 'child' ? fill(copy.byChild, { name }) : copy.byTutor}</Copy>}
-          {/* W2F.2 (06 §4 layering): what a freeze holds is always shown while frozen and at the point of action (the confirmation), and
-              one press away otherwise, so the page's first view stays within budget. The list is the server's, never copy's (D.7). */}
-          {!card.freeze.frozen && !confirming && <div className="lf-family-hub-actions"><Button size="sm" aria-expanded={holdsOpen} aria-controls={listId}
-            onClick={() => setHoldsOpen((open) => !open)}>{copy.whatHolds}</Button></div>}
-          <div id={listId} hidden={!card.freeze.frozen && !confirming && !holdsOpen}>
+          {/* W2F.2 (06 §4 layering): what a freeze holds is always shown at the point of action (the confirmation), and one press
+              away otherwise, so the page's first view stays within budget. GAP-FIX-R5: one press away while frozen too (the audited
+              frozen first view read 57 words against 40); the first view keeps the state, who froze it and Unfreeze. The list is the
+              server's, never copy's (D.7). */}
+          {!confirming && <div className="lf-family-hub-actions"><Button size="sm" aria-expanded={holdsOpen} aria-controls={listId}
+            data-freeze-control="holds" onClick={() => setHoldsOpen((open) => !open)}>{copy.whatHolds}</Button></div>}
+          <div id={listId} hidden={!confirming && !holdsOpen}>
             <p id={holdsId} data-copy-role="body">{copy.whileFrozen}</p>
             <ul className="lf-coin-holds">
               {card.freeze.holds.map((hold) => <li key={hold} data-hold={hold} data-control={`freeze.${hold}`}><span data-copy-role="body">{copy[HOLD_KEY[hold]]}</span></li>)}
@@ -87,7 +89,7 @@ export function TutorFreeze({ copy, name, locale, dark, view, loading, failed, b
                 <Button disabled={busy} onClick={() => setConfirming(false)}>{copy.cancel}</Button>
               </div>
             </div>
-            : <div className="lf-family-hub-actions"><Button disabled={busy} onClick={() => setConfirming(true)}>{copy.freeze}</Button></div>}
+            : <div className="lf-family-hub-actions"><Button data-freeze-control="ask" disabled={busy} onClick={() => setConfirming(true)}>{copy.freeze}</Button></div>}
         </section>
       </>}
     </>}

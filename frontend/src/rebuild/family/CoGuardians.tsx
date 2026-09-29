@@ -73,7 +73,7 @@ export function CoGuardians({ copy, locale, dark, kidName, open, guardians, load
               <Button disabled={busy} onClick={(e) => act(e, onLeaveConfirm)}>{copy.leaveConfirm}</Button>
             </div>
           </div>
-        </div> : <Button disabled={busy} onClick={(e) => act(e, onLeaveStart)}>{copy.leave}</Button>)
+        </div> : <Button data-guardian-control="leave" disabled={busy} onClick={(e) => act(e, onLeaveStart)}>{copy.leave}</Button>)
           : <Copy role="body">{copy.leaveLast}</Copy>)}
       </>}
     </>}

@@ -249,8 +249,12 @@ try {
     reset(); role = 'teen'; register = 'teen'; state.frozen = true; state.frozenBy = 'tutor';
     await load('/banking', teenId); await ready('child'); await page.evaluate(axeSource);
     const te = c.teen;
-    await has('child', fill(te.limitWeekly, { used: 15, cap: 20, pct: 75, remaining: 5 }));
-    await has('child', te.byTutor); await has('child', te.onlyTutor); await has('child', te.lineBonus);
+    // GAP-FIX-R5 (D.7, 06 §4.4): while a freeze holds reward requests the page does not say what is left to spend, and who froze
+    // it and who can lift it are one press away ("Why?").
+    await has('child', te.lineBonus);
+    assert.ok(!(await text('child')).includes(fill(te.limitWeekly, { used: 15, cap: 20, pct: 75, remaining: 5 })), 'A frozen card still said what is left to spend');
+    await click('child', te.whyFrozen);
+    await has('child', te.byTutor); await has('child', te.onlyTutor);
     assert.equal(await page.evaluate(`[...${inPanel('child')}.querySelectorAll('button')].some(b => b.textContent.trim() === ${JSON.stringify(te.unfreeze)})`), false, 'A child was offered a way to lift a Tutor freeze');
     geometry.teen = await audit('child');
     await shot(`${width}-teen-tutor-freeze`, 'child');

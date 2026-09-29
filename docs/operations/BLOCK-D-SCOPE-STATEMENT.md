@@ -52,8 +52,10 @@ A person (Product with the Pedagogical Lead) checks, once a quarter and before a
 
 Target: zero violations. A violation is fixed in the material, never by softening this statement.
 
+**First human review due: 2027-01-15** (one quarter after the release planned to ship S07.3, as the threshold log). The due date is machine-read (`agent/tools/block-d-review-cadence.mjs`): only a row of kind `human` counts as the review; a row of kind `engineering` records what a lane did and never does. After a human audit the next is due 90 days later. `check-block-d-scope.mjs` warns when the audit is overdue and fails with `--strict` (release readiness); `.github/workflows/block-d-reviews-quarterly.yml` opens the quarter's review issue on the first day of each calendar quarter.
+
 ## Audit log
 
-| Date | Scope | Findings | By |
-|---|---|---|---|
-| 2026-09-24 | Engineering pre-audit of the rebuilt Family Hub and Banking surfaces and `marketing.json` in three locales | No surface or marketing string claims credit, debt, compound-interest, investing or insurance coverage; the only mentions of credit and loans in `marketing.json` are the Terms' statement that LittleFounders grants none. The statement is mounted on the three pages. This entry does not replace the first human audit. | Engineering (S07 lane) |
+| Date | Kind | Scope | Findings | By |
+|---|---|---|---|---|
+| 2026-09-24 | engineering | Engineering pre-audit of the rebuilt Family Hub and Banking surfaces and `marketing.json` in three locales | No surface or marketing string claims credit, debt, compound-interest, investing or insurance coverage; the only mentions of credit and loans in `marketing.json` are the Terms' statement that LittleFounders grants none. The statement is mounted on the three pages. This entry does not replace the first human audit. | Engineering (S07 lane) |

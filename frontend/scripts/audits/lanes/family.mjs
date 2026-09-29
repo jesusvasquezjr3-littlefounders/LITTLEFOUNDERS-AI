@@ -55,6 +55,11 @@ export const scenarios = {
     wallet: { holder: 'teen', familyChild: true }, family: { money: 'full', register: 'teen' } },
   'money-teen': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', roles: ['universal'], wallet: { holder: 'teen', familyChild: false },
     family: { money: 'full', register: 'teen' } },
+  // GAP-FIX-R5 (D.1, D.7): a card a Tutor froze, read by the child, and a card the child froze, read by the Tutor.
+  'money-child-frozen': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], family: { money: 'full', register: 'young', frozen: 'tutor' } },
+  'money-tutor-frozen': tutor({ kids: 'two', money: 'full', frozen: 'child' }),
+  // GAP-FIX-R5 (D.17): a child at level 2, who may step down on their own.
+  'money-child-level2': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], family: { money: 'full', register: 'young', autonomy: 'level2' } },
   'money-teen-offline': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', roles: ['universal'], wallet: { holder: 'teen', familyChild: false },
     family: { money: 'offline', register: 'teen' } },
   // Everyone else meets the parent gate (RequireRole): the console never renders for them (verify-family-console.mjs).
@@ -107,6 +112,32 @@ const SOCIAL = {
 };
 const opensSettled = (selector, open = [selector]) => [selector, { open, firstView: false, readyAlso: SOCIAL.settled }];
 
+/*
+ * GAP-FIX-R5 (Bible 02 §7 item 10, 03 §5, 06 §7; Appendix H Part 3 Stage 4): the Block D panels that render only after a press.
+ * Each per-child panel on /family loads when its toggle is pressed and remounts when the session token arrives, so each is
+ * pressed only once SOCIAL.settled proves the remount happened. The queue, the child's asks and the Wallet panels are pressed
+ * once the control that opens them is on the page (it renders only after the token-bound read answered).
+ */
+const PANEL = {
+  corrections: '[data-family-hub="wallet-corrections"] > button[aria-expanded]',
+  pauses: '[data-family-money="streak-pauses"] > button[aria-expanded]',
+  share: '[data-money-habits="share-destinations"] > button[aria-expanded]',
+  ladder: '[data-autonomy="ladder"] > button[aria-expanded]',
+  tutors: '[data-family-hub="co-guardians"] > button[aria-expanded]',
+  research: '[data-governance="research"] button[aria-expanded]',
+  policy: '[data-governance="data-policy"] button[aria-expanded]',
+  bonus: '[data-family-money="bonus-settings"] > button[aria-expanded]',
+};
+const QUEUE = {
+  yes: '[data-autonomy="queue"] [data-queue="rewards"] li button[data-queue-answer="yes"]',
+  notYet: '[data-autonomy="queue"] [data-queue="rewards"] li button[data-queue-answer="not-yet"]',
+  // The reflective prompt's plain continue (nothing written: 'skipped'), which opens the reason form after a "not yet".
+  reflect: '[data-autonomy="queue"] [data-reflection="step"] button[data-reflection-choice]',
+};
+/** The Tutor's freeze card has loaded (it reads only once the session token is there, so every token-keyed panel has remounted). */
+const TUTOR_CARD = '[data-coin-account="tutor"] [data-control="freeze"]';
+const opensAfter = (settled, selector, open = [selector]) => [selector, { open, firstView: false, readyAlso: settled }];
+
 export const states = [
   app('/family@two-children', `/family?child=${KID_A}`, 'family-two', ready.console, { readyAlso: '[data-console-part="picker"]' }),
   app('/family@teen-selected', `/family?child=${KID_B}`, 'family-two', `[data-console-control="manage-child"][data-self-managed="true"]`),
@@ -144,20 +175,50 @@ export const states = [
   // GAP-FIX-R5 social (E.3, OD-8, D-19): the report dialog opened from a pending connection request.
   app('/family@connection-request-report', `/family?child=${KID_A}`, 'family-two', ...opensSettled(SOCIAL.requests, [SOCIAL.requests, SOCIAL.requestReport])),
   app('/family@badge-links', `/family?child=${KID_A}`, 'family-two', ...opensSettled(SOCIAL.badges)),
+  // GAP-FIX-R5 (D.5, D.2, D.14, D.17, OD-21, D.22, D.21): every per-child Block D panel opened, the goal-move form, stepping away.
+  app('/family@wallet-corrections', `/family?child=${KID_A}`, 'family-two', ...opensSettled(PANEL.corrections)),
+  app('/family@goal-move', `/family?child=${KID_A}`, 'family-two',
+    ...opensSettled(PANEL.corrections, [PANEL.corrections, '[data-family-hub="wallet-corrections"] button[data-goal-control="move-out"]'])),
+  app('/family@streak-pauses', `/family?child=${KID_A}`, 'family-two', ...opensSettled(PANEL.pauses)),
+  app('/family@share-destinations', `/family?child=${KID_A}`, 'family-two', ...opensSettled(PANEL.share)),
+  app('/family@autonomy-ladder', `/family?child=${KID_A}`, 'family-two', ...opensSettled(PANEL.ladder)),
+  app('/family@co-tutors', `/family?child=${KID_A}`, 'family-two', ...opensSettled(PANEL.tutors)),
+  app('/family@co-tutors-leave', `/family?child=${KID_A}`, 'family-two',
+    ...opensSettled(PANEL.tutors, [PANEL.tutors, '[data-family-hub="co-guardians"] button[data-guardian-control="leave"]'])),
+  app('/family@research-consent', `/family?child=${KID_A}`, 'family-two', ...opensSettled(PANEL.research)),
+  app('/family@data-policy', `/family?child=${KID_A}`, 'family-two', ...opensSettled(PANEL.policy)),
   app('/family@coop-goals-consent', '/family', 'family-coop', '[data-console-part="coop-goals"] [data-coop-part="goals"] [data-coop-goal]'),
   app('/family@coop-goals-off', '/family', 'family-coop-off', '[data-console-part="coop-goals"] [role="switch"]'),
   app('/family@coop-goals-not-teen', '/family', 'family-coop-young', '[data-console-part="coop-goals"] p[data-copy-role="body"]'),
   // W2F.2: Tasks (F4) and coins (F5), both sides, and the teen wallet.
   app('/tasks@tutor', '/tasks', 'money-tutor', ready.tutorTasks, { readyAlso: '[data-family-part="rewards"] li' }),
   app('/tasks@tutor-add-reward', '/tasks', 'money-tutor', ...opens('[data-family-part="rewards"] > .lf-button-group button')),
+  // GAP-FIX-R5 (D.23, D.18): a yes opens the reflective prompt; a "not yet" goes through the prompt to the reason form.
+  app('/tasks@queue-reflection', '/tasks', 'money-tutor', ...opens(QUEUE.yes)),
+  app('/tasks@queue-not-yet', '/tasks', 'money-tutor', QUEUE.notYet, { open: [QUEUE.notYet, QUEUE.reflect], firstView: false }),
   app('/tasks@tutor-empty', '/tasks', 'money-tutor-empty', '[data-screen="tutor-tasks"] .lf-state--empty'),
   app('/tasks@tutor-offline', '/tasks', 'money-tutor-offline', '[data-screen="tutor-tasks"] .lf-state--error'),
   app('/tasks@child', '/tasks', 'money-child', ready.childTasks, { readyAlso: '[data-family-part="payouts"]' }),
   app('/tasks@split-confirmed', '/tasks', 'money-child', ...splitPress('child-tasks')),
+  // GAP-FIX-R5 (D.18, D.17): the child's reward ask with its reasons, the ask for the next level, and stepping down.
+  app('/tasks@reward-ask', '/tasks', 'money-child', ...opens('[data-autonomy="reward-ask"] button[data-reward-ask="open"]:not([disabled])')),
+  app('/tasks@level-ask', '/tasks', 'money-child', ...opens('[data-autonomy="my-level"] button[data-level-control="ask"]')),
+  app('/tasks@level-step-down', '/tasks', 'money-child-level2', ...opens('[data-autonomy="my-level"] button[data-level-control="step-down"]')),
   app('/tasks@child-new', '/tasks', 'money-child-new', '[data-screen="child-tasks"] [data-family-part="chores"]'),
   app('/tasks@child-offline', '/tasks', 'money-child-offline', '[data-screen="child-tasks"] .lf-state--error'),
   app('/tasks@teen-linked', '/tasks', 'money-teen-linked', ready.childTasks),
   app('/family-wallet@tutor', `/family-wallet?child=${KID_A}`, 'money-tutor', ready.tutorCoins, { readyAlso: '[data-family-part="limit"]' }),
+  // GAP-FIX-R5 (D.11, D.7): the bonus settings in the young framing (KID_A) and the teen framing (KID_B), and the freeze confirmation.
+  app('/family-wallet@bonus-settings', `/family-wallet?child=${KID_A}`, 'money-tutor', ...opensAfter(TUTOR_CARD, PANEL.bonus)),
+  app('/family-wallet@bonus-settings-teen', `/family-wallet?child=${KID_B}`, 'money-tutor', ...opensAfter(TUTOR_CARD, PANEL.bonus)),
+  app('/family-wallet@freeze-confirm', `/family-wallet?child=${KID_A}`, 'money-tutor', ...opens(`${TUTOR_CARD} button[data-freeze-control="ask"]`)),
+  // GAP-FIX-R5 (D.1, D.7): a frozen card, for the Tutor (the child froze it) and for the child (a Tutor froze it).
+  app('/family-wallet@tutor-frozen', `/family-wallet?child=${KID_A}`, 'money-tutor-frozen', `${TUTOR_CARD}[data-frozen="true"][data-by="child"]`),
+  app('/family-wallet@child-frozen', '/family-wallet', 'money-child-frozen', '[data-coin-account="child"] [data-control="freeze"][data-frozen="true"][data-by="tutor"]',
+    { readyAlso: ready.childCoins }),
+  // The details a frozen card keeps one press away (06 §4.4): who froze it, what pauses, that waiting coins wait, who can lift it.
+  app('/family-wallet@child-frozen-why', '/family-wallet', 'money-child-frozen', ...opens('[data-coin-account="child"] button[data-freeze-control="holds"]')),
+  app('/family-wallet@tutor-frozen-holds', `/family-wallet?child=${KID_A}`, 'money-tutor-frozen', ...opens(`${TUTOR_CARD}[data-frozen="true"] button[data-freeze-control="holds"]`)),
   app('/family-wallet@tutor-open-card', `/family-wallet?child=${KID_A}`, 'money-tutor-new', '[data-family-part="open-card"]'),
   app('/family-wallet@tutor-offline', '/family-wallet', 'money-tutor-offline', '[data-screen="tutor-coins"] .lf-state--error'),
   app('/family-wallet@child', '/family-wallet', 'money-child', ready.childCoins, { readyAlso: '[data-family-part="payouts"]' }),
@@ -275,7 +336,8 @@ export function respond({ core, spec, locale, path, request, ok }) {
   }
   if (path === '/learn/courses') return ok({ courses: family.courses === 'none' ? [] : [{ slug: 'money-basics', title: TITLES.course }] });
   if (/^\/family\/kids\/[^/]+\/courses\/money-basics\/territory$/.test(path)) return family.territory === 'forbidden' ? refuse(403, 'FORBIDDEN') : ok(TERRITORY);
-  if (/^\/tasks\/[^/]+\/goals$/.test(path) && get) return ok({ goals: [{ id: GOAL, title: locale === 'en-US' ? 'Bike' : 'Bici', status: 'reached', target: 20 }] });
+  // A child's goals as Core returns them to a Tutor (with provenance, D.16): one reached (the console's shareable picture), one still saving.
+  if (/^\/tasks\/[^/]+\/goals$/.test(path) && get) return ok({ goals: kidGoals(locale) });
   if (/^\/tutor\/kids\/[^/]+\/sessions$/.test(path)) return family.history === 'forbidden' ? refuse(403, 'FORBIDDEN') : ok(history(locale, family.history === 'quiet'));
   const sessionMatch = path.match(/^\/tutor\/sessions\/([^/]+)$/);
   if (sessionMatch) return ok(transcript(locale, sessionMatch[1], family.boards === 'drawn'));
@@ -326,7 +388,85 @@ export function respond({ core, spec, locale, path, request, ok }) {
   if (family.kids) {
     const answer = social({ family, locale, path, request, ok });
     if (answer !== undefined) return answer;
+    const blockD = tutorBlockD({ locale, path, request, ok });
+    if (blockD !== undefined) return blockD;
   }
+  return undefined;
+}
+
+// ── GAP-FIX-R5: the Tutor-side Block D reads behind each per-child panel, in Core's real shapes ─────────────
+
+const KID_ROUTE = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
+const LINK = (n) => `cccccccc-cccc-4ccc-8ccc-00000000000${n}`;
+const ACTION = (n) => `dddddddd-dddd-4ddd-8ddd-00000000000${n}`;
+const PLACE = (n) => `88888888-8888-4888-8888-88888888888${n}`;
+const GIFT = (n) => `99999999-9999-4999-8999-99999999998${n}`;
+const GOAL_SAVING = '66666666-6666-4666-8666-666666666667';
+/** What a Tutor typed (reasons, notes, places): user content, in each locale. */
+const TYPED = {
+  'en-US': { goal: 'Bike', helmet: 'Helmet', adjust: 'Coins from grandma', move: 'The helmet costs more than we thought', place: 'Food bank', park: 'Park cleanup',
+    given: 'We gave it together on Saturday', level: 'You finished every chore this month' },
+  'es-MX': { goal: 'Bici', helmet: 'Casco', adjust: 'Monedas de la abuela', move: 'El casco cuesta más de lo que pensamos', place: 'Banco de alimentos',
+    park: 'Limpieza del parque', given: 'Lo entregamos juntos el sábado', level: 'Terminaste todas tus tareas este mes' },
+  'pt-BR': { goal: 'Bicicleta', helmet: 'Capacete', adjust: 'Moedas da vovó', move: 'O capacete custa mais do que pensamos', place: 'Banco de alimentos',
+    park: 'Limpeza do parque', given: 'Entregamos juntos no sábado', level: 'Você terminou todas as tarefas este mês' },
+};
+const typed = (locale) => TYPED[locale] ?? TYPED['en-US'];
+const kidGoals = (locale) => [
+  { id: GOAL, title: typed(locale).goal, target: 20, icon: 'bike', status: 'reached', reachedAt: T, followsGoalId: null, saved: 20,
+    progress: { own: 16, bonus: 2, family: 2, total: 20 }, nextStep: null },
+  { id: GOAL_SAVING, title: typed(locale).helmet, target: 30, icon: 'star', status: 'active', reachedAt: null, followsGoalId: GOAL, saved: 12,
+    progress: { own: 9, bonus: 1, family: 2, total: 12 }, nextStep: null },
+];
+/** OD-21: this Tutor, a second verified Tutor, a pending second Tutor waiting for a decision, and one who stepped away. */
+const guardians = () => [
+  { linkId: LINK(1), displayName: 'Ana', status: 'verified', isMe: true, since: '2026-03-02T10:00:00.000Z', decidedAt: '2026-03-02T10:00:00.000Z', revokedAt: null },
+  { linkId: LINK(2), displayName: 'Carlos', status: 'verified', isMe: false, since: '2026-04-11T10:00:00.000Z', decidedAt: '2026-04-12T10:00:00.000Z', revokedAt: null },
+  { linkId: LINK(3), displayName: 'Lucía', status: 'pending', isMe: false, since: at(24), decidedAt: null, revokedAt: null },
+  { linkId: LINK(4), displayName: null, status: 'revoked', isMe: false, since: '2026-05-01T10:00:00.000Z', decidedAt: '2026-05-02T10:00:00.000Z', revokedAt: at(10) },
+];
+const guardianActions = (locale) => [
+  { id: ACTION(1), kind: 'goal_withdrawal', bucket: 'save', goalId: GOAL_SAVING, amount: 4, reason: typed(locale).move, byMe: false, createdAt: at(23) },
+  { id: ACTION(2), kind: 'manual_adjustment', bucket: 'spend', goalId: null, amount: 5, reason: typed(locale).adjust, byMe: true, createdAt: at(21) },
+];
+const kidShare = (locale) => ({
+  destinations: [
+    { id: PLACE(1), title: typed(locale).place, kind: 'charity', chosenBy: 'tutor', status: 'active', createdAt: T },
+    { id: PLACE(2), title: typed(locale).park, kind: 'community', chosenBy: 'holder', status: 'active', createdAt: T },
+  ],
+  gifts: [
+    { id: GIFT(1), destinationId: PLACE(1), amount: 3, status: 'pledged', pledgedAt: at(24), settledAt: null, settledBy: null, note: null },
+    { id: GIFT(2), destinationId: PLACE(2), amount: 2, status: 'given', pledgedAt: at(12), settledAt: at(14), settledBy: 'tutor', note: typed(locale).given },
+  ],
+});
+/** D.17: a child at level 2 with a pre-approved limit, the next level not yet reached. */
+const LEVEL2 = { inFamily: true, level: 2, storedLevel: 2, levelSince: '2026-08-30T10:00:00.000Z', preapprovedLimit: 10, preapprovedCap: 20,
+  unlocks: { selfLogContributions: true, selfLogMaxCoins: null },
+  next: { level: 3, eligible: false, age: { value: 9, min: 10, ok: false }, approved: { value: 12, min: 20 }, notApproved: { value: 1, maxPct: 25, ok: true },
+    daysAtLevel: { value: 27, min: 60, ok: false }, windowDays: 60 }, request: null };
+/** The Tutor's own change, with the reason the child reads. */
+const levelChanges = (locale) => [{ id: ACTION(3), fromLevel: 1, toLevel: 2, fromLimit: 0, toLimit: 10, by: 'tutor', byMe: true, reasonCode: null,
+  reason: typed(locale).level, createdAt: '2026-08-30T10:00:00.000Z' }];
+const KID_STREAK = { status: 'alive', current: 4, best: 9, totalDays: 30, restDaysLeftThisWeek: 1, restDaysPerWeek: 2, pausedUntil: null, today: '2026-09-26' };
+const KID_PAUSES = [{ id: '77777777-7777-4777-8777-777777777772', startsOn: '2026-10-10', endsOn: '2026-10-17', state: 'upcoming' }];
+
+/** The reads behind the Tutor's per-child Block D panels (Family console and Wallet), made only once a panel is opened. */
+function tutorBlockD({ locale, path, request, ok }) {
+  if (request.method !== 'GET') return undefined;
+  const kid = (pattern) => path.match(new RegExp(`^${pattern.replace('KID', `(${KID_ROUTE})`)}$`))?.[1];
+  if (kid('/family/kids/KID/guardians')) return ok({ guardians: guardians() });
+  if (kid('/tasks/KID/wallet/guardian-actions')) return ok({ actions: guardianActions(locale) });
+  // The Tutor's reward requests for one child: one approved and waiting to be delivered, one still asked.
+  if (path === '/tasks/redemptions') return ok({ redemptions: [
+    rewardRequest({ id: '77777777-7777-4777-8777-777777777773', status: 'approved', decidedAt: at(24), decidedBy: PARENT }),
+    rewardRequest({}),
+  ] });
+  if (path === '/tasks/catalog') return ok({ items: rewards(WORDS[locale] ?? WORDS['en-US']) });
+  if (kid('/tasks/KID/streak')) return ok({ streak: KID_STREAK, pauses: KID_PAUSES });
+  if (kid('/tasks/KID/share')) return ok(kidShare(locale));
+  if (kid('/tasks/KID/wallet/split')) return ok(SPLIT);
+  if (kid('/tasks/KID/autonomy')) return ok({ autonomy: LEVEL2, changes: levelChanges(locale) });
+  if (kid('/family-hub/kids/KID/research')) return ok(RESEARCH);
   return undefined;
 }
 
@@ -419,8 +559,16 @@ const rewards = (w) => [
 const rewardRequest = (over) => ({ id: '77777777-7777-4777-8777-777777777777', catalogId: REWARD_ID(1), kidUserId: KID_A, status: 'requested', createdAt: T, decidedAt: null,
   decidedBy: null, fulfilledAt: null, childReasonKind: 'saved_for_it', childNote: null, ...over });
 const HOLDS = ['rewards', 'splits', 'credits', 'share'];
-const card = (w) => ({ nickname: w.card, design: 'ocean', simulated: true, freeze: { frozen: false, by: null, since: null, holds: HOLDS, canChange: true } });
-const legacyAccount = (w) => ({ nickname: w.card, cardDesign: 'ocean', frozen: false, frozenBy: null, frozenAt: null, openedAt: T });
+/*
+ * `frozen` (GAP-FIX-R5, D.1/D.7) names who froze the card: 'tutor' is read by the child (who cannot lift it), 'child' is read by
+ * the Tutor (who always can). Core phrases the author from the reader's side ('you' for the reader's own freeze).
+ */
+const freeze = (frozen) => frozen === 'tutor' ? { frozen: true, by: 'tutor', since: at(25), holds: HOLDS, canChange: false }
+  : frozen === 'child' ? { frozen: true, by: 'child', since: at(25), holds: HOLDS, canChange: true }
+    : { frozen: false, by: null, since: null, holds: HOLDS, canChange: true };
+const card = (w, frozen) => ({ nickname: w.card, design: 'ocean', simulated: true, freeze: freeze(frozen) });
+const legacyAccount = (w, frozen) => ({ nickname: w.card, cardDesign: 'ocean', frozen: Boolean(frozen), frozenBy: frozen === 'tutor' ? PARENT : frozen ? KID_A : null,
+  frozenAt: frozen ? at(25) : null, openedAt: T });
 const goal = (w) => ({ id: GOAL, kidUserId: KID_A, title: w.goal, target: 40, icon: 'bike', status: 'active', createdAt: T, reachedAt: null, followsGoalId: null, saved: 16,
   progress: { own: 12, bonus: 2, family: 2, total: 16 }, nextStep: null });
 const statement = (register) => register === 'young' ? { month: '2026-09', earned: 30, spent: 10, saved: 20 }
@@ -452,8 +600,14 @@ function money({ spec, family, locale, path, request, ok }) {
     if (path === '/tasks/decisions/queue') return ok({ chores: [tasks(w, false)[1]], openChores: [tasks(w, false)[0]],
       rewards: [{ ...rewardRequest({}), title: w.dinner, cost: 15 }], reviews: [], nudges: [], levelRequests: [] });
     const account = path.match(/^\/banking\/accounts\/([^/]+)$/);
-    if (account && get) return ok({ account: fresh && account[1] === KID_A ? null : legacyAccount(w) });
-    if (/^\/banking\/accounts\/[^/]+\/freeze$/.test(path) && get) return ok({ register: 'young', account: card(w) });
+    if (account && get) return ok({ account: fresh && account[1] === KID_A ? null : legacyAccount(w, family.frozen) });
+    const frozenKid = path.match(/^\/banking\/accounts\/([^/]+)\/freeze$/)?.[1];
+    if (frozenKid && get) return ok({ register: frozenKid === KID_B ? 'teen' : 'young', account: card(w, family.frozen) });
+    // D.11: the bonus in the framing the child's age calls for (per ten coins for a young child, a percentage for a teen).
+    const bonusKid = path.match(/^\/banking\/savings-bonus\/([^/]+)$/)?.[1];
+    if (bonusKid && bonusKid !== 'example' && get) return ok(bonusKid === KID_B
+      ? { framing: 'percent', perTen: null, maxRateBp: 2000, rule: { rateBp: 1000, active: true, nextRunAt: '2026-10-01T00:00:00.000Z' } }
+      : { framing: 'per_ten', perTen: { unit: 10, coins: 1 }, maxRateBp: null, rule: { rateBp: 1000, active: true, nextRunAt: '2026-10-01T00:00:00.000Z' } });
     if (/^\/banking\/allowance\/[^/]+$/.test(path) && get) return ok({ rule: { amount: 10, frequency: 'weekly', anchorDay: 5, active: true, nextRunAt: '2026-10-02T00:00:00.000Z' } });
     if (/^\/banking\/spend-limit\/[^/]+$/.test(path) && get) return ok({ status: { configured: true, period: 'weekly', cap: 50, used: 20, remaining: 30 } });
     // The writes a journey presses (verify-family-money-screens.mjs records their bodies); Core's answer shapes.
@@ -473,18 +627,19 @@ function money({ spec, family, locale, path, request, ok }) {
   if (offline && ['/tasks/mine', '/banking/account', '/wallet/access', '/tasks/wallet'].includes(path)) return { fail: 'InternetDisconnected' };
   if (path === '/banking/register') return ok({ register });
   if (path === '/tasks/mine') return ok({ tasks: tasks(w, fresh).filter((t) => t.assignedTo === KID_A) });
-  if (path === '/tasks/wallet') return ok({ balances: { save: 20, spend: 12, share: 3 } });
+  // Spend covers the cheaper reward and not the dearer one, so the child meets both an ask and a "not enough yet" (D.18).
+  if (path === '/tasks/wallet') return ok({ balances: { save: 20, spend: 16, share: 3 } });
   if (path === '/tasks/catalog/available') return ok({ items: fresh ? [] : rewards(w).map((r) => ({ ...r, active: true })) });
   if (path === '/tasks/redemptions/mine') return ok({ redemptions: [] });
   if (path === '/tasks/wallet/ledger') return ok({ entries: [] });
   if (path === '/tasks/streak') return ok({ streak: STREAK });
-  if (path === '/tasks/autonomy' && get) return ok({ autonomy: AUTONOMY, changes: [] });
+  if (path === '/tasks/autonomy' && get) return ok({ autonomy: family.autonomy === 'level2' ? LEVEL2 : AUTONOMY, changes: [] });
   if (path === '/tasks/decisions/mine') return ok({ decisions: [] });
   if (path === '/tasks/goals' && get) return ok({ goals: fresh ? [] : [goal(w)] });
   if (path === '/tasks/wallet/split' && get) return ok(SPLIT);
   if (path === '/tasks/share' && get) return ok({ destinations: fresh ? [] : [{ id: '88888888-8888-4888-8888-888888888888', title: w.place, kind: 'charity',
     chosenBy: 'tutor', status: 'active', createdAt: T }], gifts: [] });
-  if (path === '/banking/account' && get) return ok({ account: legacyAccount(w) });
+  if (path === '/banking/account' && get) return ok({ account: legacyAccount(w, family.frozen) });
   if (path === '/banking/account' && request.method === 'PATCH') {
     const sent = request.postData ? JSON.parse(request.postData) : {};
     return ok({ account: { ...legacyAccount(w), nickname: sent.nickname, cardDesign: sent.cardDesign } });
@@ -494,7 +649,7 @@ function money({ spec, family, locale, path, request, ok }) {
   if (/^\/tasks\/[^/]+\/allocate$/.test(path) && request.method === 'POST') return ok({ allocated: true, goal: null });
   if (/^\/banking\/wallet\/pending-credits\/[^/]+\/allocate$/.test(path) && request.method === 'POST') return ok({ allocated: true });
   if (path === '/banking/wallet/pending-credits') return ok({ credits: fresh ? [] : [{ id: '99999999-9999-4999-8999-999999999990', amount: 10, source: 'allowance', createdAt: T }] });
-  if (path === '/banking/overview') return ok({ register, account: card(w), pockets: { save: 20, spend: 12, share: 3 }, pendingCredits: fresh ? 0 : 1,
+  if (path === '/banking/overview') return ok({ register, account: card(w, family.frozen), pockets: { save: 20, spend: 16, share: 3 }, pendingCredits: fresh ? 0 : 1,
     spendLimit: limit(register), statement: statement(register) });
   if (path === '/banking/savings-bonus' && get) return ok(register === 'teen'
     ? { framing: 'percent', perTen: null, maxRateBp: 2000, rule: { rateBp: 1000, active: true, nextRunAt: T }, saved: 20, nextBonus: 2, example: { shown: true, completed: true } }

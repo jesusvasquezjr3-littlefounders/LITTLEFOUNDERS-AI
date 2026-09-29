@@ -221,4 +221,15 @@ describe('Block D threshold log (Appendix H Part 1.4)', () => {
   it('keeps a review history with a dated first entry', () => {
     expect(log).toMatch(/## Review history[\s\S]*\| 2026-09-24 \|/);
   });
+
+  // GAP-FIX-R5 (Appendix H 1.4): the human review has a machine-read due date, and every history row says whether it was one
+  // (agent/tools/block-d-review-cadence.mjs computes the date; release readiness fails when it has passed).
+  it('states when the human review is due, and marks each history row engineering or human', () => {
+    expect(log).toMatch(/First human review due: \d{4}-\d{2}-\d{2}/);
+    const history = log.slice(log.indexOf('## Review history'));
+    expect(history).toMatch(/^\| Date \| Kind \|/m);
+    const rows = history.split('\n').filter((line) => /^\| \d{4}-\d{2}-\d{2} \|/.test(line));
+    expect(rows.length).toBeGreaterThan(0);
+    for (const row of rows) expect(row).toMatch(/^\| \d{4}-\d{2}-\d{2} \| (engineering|human) \|/);
+  });
 });

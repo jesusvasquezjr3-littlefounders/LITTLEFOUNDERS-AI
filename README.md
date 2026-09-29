@@ -127,7 +127,7 @@ Nightly jobs: `.github/workflows/family-retention.yml` (03:15 UTC) calls Core's 
 
 Four gates run in the unfiltered repo gates, each with self-tests in `npm run tools:test`:
 - `node agent/tools/check-block-d-research.mjs [--strict]` (D.9): Appendix G traceability, the claims boundary (no "proven" in app or marketing copy) and OD-23's no-experiment-column rule; `--strict`, run by `npm run release:readiness`, fails on an overdue recalibration;
-- `node agent/tools/check-block-d-scope.mjs` (D.20): the scope statement stays true and mounted;
+- `node agent/tools/check-block-d-scope.mjs [--strict]` (D.20): the scope statement stays true and mounted; like `check-block-d-thresholds.mjs [--strict]` and `check-no-unbacked-guarantee.mjs [--strict]`, it reads its log's human-review due date (`agent/tools/block-d-review-cadence.mjs`: only `human` rows count, quarterly; the threshold log goes yearly after the first four), warns when overdue and fails with `--strict`, which `npm run release:readiness` passes to all three;
 - `node agent/tools/check-block-d-retention.mjs` (D.21): every Block D table has a retention class and the periods agree everywhere;
 - `node agent/tools/check-parent-coaching-tips.mjs [--hash <id>]` (D.23): a tip is sent only after the Pedagogical Lead's review, bound to its copy by the hash `--hash` prints.
 
@@ -459,7 +459,7 @@ RAILWAY_TOKEN=… RAILWAY_SSH_KEY_PATH=~/.ssh/id_ed25519 \
 
 ## Scheduled production jobs
 
-Fifteen workflows run against production on a schedule. A stale backup, drift probe or retention sweep, an overdue retroactive release check or a due staff access review reaches a human through `ops-job-watch.yml`, which opens or comments on the `ops-watchdog` GitHub issue; any other missed or failed run surfaces only as a red GitHub run, so someone has to look. Several of them are promises to users, not maintenance:
+Sixteen workflows run on a schedule. A stale backup, drift probe or retention sweep, an overdue retroactive release check or a due staff access review reaches a human through `ops-job-watch.yml`, which opens or comments on the `ops-watchdog` GitHub issue; any other missed or failed run surfaces only as a red GitHub run, so someone has to look. Several of them are promises to users, not maintenance:
 
 | Workflow | When (UTC) | What it holds up |
 |---|---|---|
@@ -476,6 +476,7 @@ Fifteen workflows run against production on a schedule. A stale backup, drift pr
 | `pulse-backup.yml` | 08:30 daily | Pulse `pg_dump` → Depot volume |
 | `ops-job-watch.yml` | 10:00 daily | H.4: fails and notifies the `ops-watchdog` issue when a backup, the drift probe or the retention sweep is stale, a retroactive release check is overdue or a staff access review is due |
 | `access-review-quarterly.yml` | 09:00 on 1 Jan, Apr, Jul, Oct | G.4: opens the quarter's `access-review` issue for the staff/access owner with the elevated grants held and the number already due |
+| `block-d-reviews-quarterly.yml` | 09:00 on 1 Jan, Apr, Jul, Oct | Appendix H 1.3/1.4: opens the quarter's `block-d-review` issue listing the threshold recalibration, the no-unbacked-guarantee audit and the scope-disclosure audit, each with its owner, last human review and next due date (read from the logs; release readiness fails while one is overdue) |
 | `nsm-weekly-export.yml` | Mon 08:00 | Raw export of the events the North Star Metric is computed from |
 | `tutor-skill-curation.yml` | Mon 09:20 | Proposes what to author next from the live curriculum. Propose-only — it writes nothing to the catalogue |
 

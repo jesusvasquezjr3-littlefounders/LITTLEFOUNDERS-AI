@@ -146,6 +146,37 @@ describe('CoinAccount (D.7, D.12)', () => {
     expect(tutor.onFreeze).not.toHaveBeenCalled();
   });
 
+  // GAP-FIX-R5 (06 §3.1, §4.4; D.7): the frozen first view fits the 6-9 budget; "Why?" opens who froze it, what pauses and who can lift it.
+  it('keeps a Tutor freeze\'s details one press away and never offers the child a way to lift it', () => {
+    const view = { ...views.young, pendingCredits: 1, account: { ...views.young.account!, freeze: freeze(true, 'tutor') } };
+    const { container } = renderAccount('young', view);
+    expect(within(container.querySelector('[data-control="simulation"]') as HTMLElement).getByText('Frozen')).toBeInTheDocument();
+    const why = screen.getByRole('button', { name: 'Why?' });
+    const panel = document.getElementById(why.getAttribute('aria-controls')!)!;
+    expect(why).toHaveAttribute('aria-expanded', 'false');
+    expect(panel).not.toBeVisible();
+    expect(within(panel).getByText('Your Tutor froze it.')).toBeInTheDocument();
+    expect(within(panel).getByText(copyEn.young.onlyTutor)).toHaveAttribute('data-control', 'freeze.owner');
+    expect(within(panel).getByText(copyEn.young.waitingFrozen)).toBeInTheDocument();
+    expect(panel.querySelectorAll('[data-hold]')).toHaveLength(FREEZE_HOLDS.length);
+    fireEvent.click(why);
+    expect(why).toHaveAttribute('aria-expanded', 'true');
+    expect(panel).toBeVisible();
+    expect(screen.queryByRole('button', { name: 'Unfreeze' })).toBeNull();
+    everyTextHasARole(container);
+    everyControlIsRegistered(container);
+  });
+
+  it('does not say what is left to spend while a freeze holds reward requests, and says it again once it does not', () => {
+    const frozen = renderAccount('young', { ...views.young, account: { ...views.young.account!, freeze: freeze(true, 'you') } });
+    expect(frozen.container.querySelector('[data-control="spend_limit"]')).toBeNull();
+    expect(screen.queryByText('You can spend 5 more coins for now.')).toBeNull();
+    frozen.unmount();
+    const partial = { ...freeze(true, 'you'), holds: FREEZE_HOLDS.filter((h) => h !== 'rewards') };
+    renderAccount('young', { ...views.young, account: { ...views.young.account!, freeze: partial } });
+    expect(screen.getByText('You can spend 5 more coins for now.')).toBeInTheDocument();
+  });
+
   it('asks before nothing: a child freezes in one tap and the page re-reads', () => {
     const { onFreeze } = renderAccount('transition');
     fireEvent.click(screen.getByRole('button', { name: 'Freeze' }));
@@ -224,14 +255,21 @@ describe('TutorFreeze (D.7)', () => {
     const { container, rerender } = render(<TutorFreeze copy={copyEn.tutor} name="Ana" locale="en-US" dark view={tutorView(false, null)} loading={false} failed={false}
       busy={false} notice={null} onRetry={() => undefined} onFreeze={onFreeze} />);
     expect(screen.getByText('Ana sees the ages 10-12 view.')).toBeInTheDocument();
+    expect(container.querySelector('.lf-coin-holds')).not.toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Freeze' }));
     expect(onFreeze).not.toHaveBeenCalled();
+    expect(container.querySelector('.lf-coin-holds')).toBeVisible();
     fireEvent.click(within(screen.getByRole('group')).getByRole('button', { name: 'Freeze' }));
     expect(onFreeze).toHaveBeenCalledWith(true);
     rerender(<TutorFreeze copy={copyEn.tutor} name="Ana" locale="en-US" dark view={tutorView(true, 'child')} loading={false} failed={false}
       busy={false} notice={null} onRetry={() => undefined} onFreeze={onFreeze} />);
     expect(screen.getByText('Ana froze it.')).toBeInTheDocument();
     expect(screen.getByText('A freeze moves no coins.')).toBeInTheDocument();
+    // GAP-FIX-R5 (06 §3.1): while frozen, what a freeze holds is one press away; it is shown at the confirmation (the point of action).
+    const holds = screen.getByRole('button', { name: 'What it holds' });
+    expect(document.getElementById(holds.getAttribute('aria-controls')!)).not.toBeVisible();
+    fireEvent.click(holds);
+    expect(document.getElementById(holds.getAttribute('aria-controls')!)).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Unfreeze' }));
     expect(onFreeze).toHaveBeenLastCalledWith(false);
     everyTextHasARole(container);

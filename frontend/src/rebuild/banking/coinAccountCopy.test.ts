@@ -25,7 +25,7 @@ type Group = 'young' | 'transition' | 'teen' | 'tutor';
 const BAND: Record<Group, AgeBand> = { young: '6-9', transition: '10-12', teen: '13-17', tutor: 'adult' };
 const ROLE: Record<string, CopyRole> = {
   heading: 'heading', practice: 'body', coinsOnly: 'body', frozen: 'body', notFrozen: 'body', byYou: 'body', byTutor: 'body', byChild: 'body',
-  whileFrozen: 'body', whatHolds: 'action', holdRewards: 'body', holdSplits: 'body', holdCredits: 'body', holdShare: 'body', nothingLost: 'body', noCoinsMoved: 'body',
+  whileFrozen: 'body', whatHolds: 'action', whyFrozen: 'action', holdRewards: 'body', holdSplits: 'body', holdCredits: 'body', holdShare: 'body', nothingLost: 'body', noCoinsMoved: 'body',
   freeze: 'action', unfreeze: 'action', onlyTutor: 'body', pockets: 'heading', save: 'body', spend: 'body', share: 'body', coins: 'data',
   pocketDetail: 'data', limitHeading: 'heading', limitWeekly: 'body', limitMonthly: 'body', limitWhy: 'body', limitWhen: 'body', monthHeading: 'heading', prevMonth: 'action', nextMonth: 'action', monthFailed: 'body',
   earned: 'body', spent: 'body', saved: 'body', given: 'body', adjusted: 'body', waiting: 'body', waitingFrozen: 'body', noAccount: 'body',

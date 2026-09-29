@@ -45,6 +45,12 @@ npm run test:all
 bash agent/tools/run-all.sh build
 # S07.7 (D.9): a release cannot ship on an overdue Appendix G recalibration.
 node agent/tools/check-block-d-research.mjs --strict
+# Appendix H 1.3 / 1.4 (GAP-FIX-R5): nor on an overdue quarterly human review:
+# the threshold recalibration, the no-unbacked-guarantee audit and the
+# scope-disclosure audit, each due by its own log (block-d-review-cadence.mjs).
+node agent/tools/check-block-d-thresholds.mjs --strict
+node agent/tools/check-no-unbacked-guarantee.mjs --strict
+node agent/tools/check-block-d-scope.mjs --strict
 # Appendix J 1.3 / DoD 2.1(2): the data-gateway half of the social release
 # gate. Every native-PostgreSQL social verifier (and the teen discoverable,
 # cooperative goals and account-erasure ones) against the full migration

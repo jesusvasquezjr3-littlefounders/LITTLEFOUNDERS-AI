@@ -17,12 +17,16 @@
 //     (the statement would then be false in the other direction);
 //   - the public FAQ answer (S07.8) leaves its page or stops naming an
 //     exclusion in any locale;
-//   - the quarterly human audit log has no dated entry.
+//   - the quarterly human audit log has no dated entry;
+//   - (GAP-FIX-R5, Appendix H Part 1.3) the audit log's rows carry no Kind or
+//     no first due date; the human audit is overdue under --strict (release
+//     readiness), a warning otherwise (block-d-review-cadence.mjs).
 // It runs in the unfiltered repo gates.
 
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { checkReviewCadence, reportCadence, REVIEWS } from './block-d-review-cadence.mjs';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 export const REGISTRY = 'docs/operations/block-d-scope.json';
@@ -130,11 +134,14 @@ export function liveInputs(root = ROOT) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const strict = process.argv.includes('--strict');
   const inputs = liveInputs();
   const failures = checkScope(inputs);
-  if (failures.length > 0) {
+  const cadence = checkReviewCadence({ markdown: inputs.readFile(STATEMENT), review: REVIEWS.find((r) => r.id === 'scope-disclosure'),
+    today: new Date().toISOString().slice(0, 10), strict });
+  if (reportCadence(cadence) || failures.length > 0) {
     for (const failure of failures) console.error(`FAIL: ${failure}`);
     process.exit(1);
   }
-  console.log(`block-d-scope OK — ${inputs.registry.teaches.length} practised lines backed by code, ${inputs.registry.notAttempted.length} exclusions (${inputs.registry.requiredConcepts.join(', ')}) in three locales; mounted on ${inputs.registry.mounts.length} pages and ${(inputs.registry.publicAnswers ?? []).length} public FAQ answer; no lending, interest, insurance or investing mechanic in the schema`);
+  console.log(`block-d-scope OK — ${inputs.registry.teaches.length} practised lines backed by code, ${inputs.registry.notAttempted.length} exclusions (${inputs.registry.requiredConcepts.join(', ')}) in three locales; mounted on ${inputs.registry.mounts.length} pages and ${(inputs.registry.publicAnswers ?? []).length} public FAQ answer; no lending, interest, insurance or investing mechanic in the schema; next human audit due ${cadence.schedule.due}${strict ? ' (not overdue)' : ''}`);
 }

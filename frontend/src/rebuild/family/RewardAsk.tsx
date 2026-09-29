@@ -17,6 +17,9 @@ import './familyAutonomy.css';
  * S03.6: the reasons are the shared RadioGroup; a missing pick is a retry
  * notice and a limit or hold is information, never the error hue (SH-02);
  * only a failed request is an error.
+ *
+ * GAP-FIX-R5 (03 §3, at most three accent buttons a screen): the ask that opens the form is a plain button, since one sits
+ * on every reward the child can afford; the accent belongs to the form's send, one at a time.
  */
 
 export interface RewardAskCopy {
@@ -62,7 +65,7 @@ export function RewardAsk({ copy, title, locale, dark, busy, disabled, result, o
           <Button type="submit" variant="accent" pending={busy} pendingLabel={copy.asking}>{copy.send}</Button>
           <Button disabled={busy} onClick={() => { setOpen(false); setKind(null); setNote(''); setMissing(false); }}>{copy.cancel}</Button>
         </div>
-      </form> : <div className="lf-family-hub-actions"><Button variant="accent" disabled={busy || disabled} onClick={() => setOpen(true)}>{copy.ask}</Button></div>}
+      </form> : <div className="lf-family-hub-actions"><Button data-reward-ask="open" disabled={busy || disabled} onClick={() => setOpen(true)}>{copy.ask}</Button></div>}
     {problem && <InlineNotice tone={result === 'failed' ? 'error' : 'info'} live>{problem}</InlineNotice>}
   </div>;
 }
