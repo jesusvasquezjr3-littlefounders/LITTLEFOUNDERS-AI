@@ -12,9 +12,17 @@
  * nonce, a v1 completion by its run. A key already on file never moves the
  * posterior again (0206's partial unique index is the database backstop).
  * Best-effort like every pedagogy step: a failure here never fails a grade.
+ *
+ * GAP-FIX-R3 (P-09 "after policy acceptance and calibration"; D-06; OD-22):
+ * gated at this single entry point. Nothing is recorded unless the B.6
+ * pathway policy is accepted (COURSE_PATHWAY_ENGINE = 'pathway') and the
+ * calibration switch COURSE_LESSON_EVIDENCE is 'on'. Under the default linear
+ * engine, or with the switch off, a course grade never moves the Mentor's
+ * picture of the learner.
  */
 
 import type { SegmentBase } from '../../lesson-contract/core/types.js';
+import { getConfig } from '../../config.js';
 import { getV2PriorFirstUnaidedStage, serviceRest } from '../supabaseRest.js';
 import { topicTeaches } from '../narrative/narrativeData.js';
 import { recordAttempt, type AttemptOutcome } from './recordAttempt.js';
@@ -29,10 +37,17 @@ export function courseReceiptKey(kind: 'v1' | 'v2', id: string): string | null {
   return RECEIPT_KEY.test(key) ? key : null;
 }
 
+/** P-09: course lessons count as Mentor evidence only after policy acceptance and calibration. */
+export function courseLessonEvidenceEnabled(): boolean {
+  const config = getConfig();
+  return config.COURSE_PATHWAY_ENGINE === 'pathway' && config.COURSE_LESSON_EVIDENCE === 'on';
+}
+
 export async function recordCourseLessonEvidence(input: {
   userId: string; topicId: string; receiptKey: string | null; score: number;
-}): Promise<AttemptOutcome | 'duplicate' | null> {
+}): Promise<AttemptOutcome | 'duplicate' | 'disabled' | null> {
   try {
+    if (!courseLessonEvidenceEnabled()) return 'disabled';
     if (!input.receiptKey || !RECEIPT_KEY.test(input.receiptKey)) return null;
     const teaches = await topicTeaches([input.topicId]);
     // topicTeaches orders the primary link first; a topic with no teaching link records nothing.

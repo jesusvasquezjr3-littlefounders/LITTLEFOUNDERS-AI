@@ -107,6 +107,14 @@ const Env = z.object({
   // acceptance and after the migrations are applied, never a deploy by accident.
   COURSE_PATHWAY_ENGINE: z.enum(['linear', 'pathway']).default('linear'),
 
+  // Owner review P-09 (GAP-FIX-R3): a graded course lesson may feed the
+  // Mentor's mastery model (source 'course_lesson', migration 0206) only after
+  // the B.6 pathway policy is accepted (COURSE_PATHWAY_ENGINE = 'pathway') AND
+  // this calibration switch is on. It stays 'off' until the calibration named in
+  // docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md has passed and an
+  // operator turns it on; never a deploy by accident.
+  COURSE_LESSON_EVIDENCE: z.enum(['off', 'on']).default('off'),
+
   // C.11 (Appendix D §2.4): the cross-session scheduler's SHORT HORIZON, in
   // minutes. A graded attempt within this long of the card's last counted
   // (spaced) review is a within-session re-exposure: a success does not grow

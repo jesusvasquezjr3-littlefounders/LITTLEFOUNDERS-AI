@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
+import { resetConfigForTests } from '../config.js';
 import { mintToken } from './helpers.js';
 import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
 import { LESSON_1_ID, TOPIC_ID, makeDb } from './learnFixtures.js';
@@ -135,7 +136,14 @@ describe('mixed v2 documents (general player, version-pinned completion)', () =>
     expect(stray.status).toBe(400);
   });
 
-  it('P-09: a graded course lesson is evidence on the topic primary KC, once per receipt, in the Mentor mastery model', async () => {
+  function evidenceSwitches(engine: 'linear' | 'pathway', evidence: 'off' | 'on' | undefined): void {
+    vi.stubEnv('COURSE_PATHWAY_ENGINE', engine);
+    if (evidence) vi.stubEnv('COURSE_LESSON_EVIDENCE', evidence);
+    resetConfigForTests();
+  }
+  afterEach(() => { vi.unstubAllEnvs(); resetConfigForTests(); });
+
+  async function gradeOnce(): Promise<Array<Record<string, unknown>>> {
     const kcId = 'abababab-abab-4bab-8bab-abababababab';
     db.topic_knowledge_components = [{ topic_id: TOPIC_ID, kc_id: kcId, role: 'teaches', is_primary: true }];
     db.kc = [{ id: kcId, key: 'saving-goal', strand: 'money', title: { 'en-US': 'Saving goal' }, objective: {}, tier_min: 1, p_l0: 0.2, p_t: 0.15, p_g: 0.2, p_s: 0.1,
@@ -146,15 +154,15 @@ describe('mixed v2 documents (general player, version-pinned completion)', () =>
     const started = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
     const body = { segment_id: 'story-01', run_id: started.body.data.run_id, attempt_token: started.body.data.attempt_tokens['story-01'], answer: { choice: 'opt-save' } };
     expect((await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send(body)).status).toBe(200);
-    // A network retry replays the same receipt: no second evidence row, no second posterior move.
-    expect((await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send(body)).body.data.replayed).toBe(true);
-    const attempts = db.kc_attempt as Array<Record<string, unknown>>;
-    expect(attempts).toHaveLength(1);
-    expect(attempts[0]).toMatchObject({ kc_id: kcId, source: 'course_lesson', correct: true, receipt_key: expect.stringMatching(/^v2:/) });
-    // The Mentor's map now reads the same mastery the course path reads.
-    const mastery = (db.learner_kc_mastery as Array<Record<string, unknown>>).find((row) => row.kc_id === kcId);
-    expect(Number(mastery?.p_known)).toBeGreaterThan(0.2);
-    expect(Number(mastery?.p_known)).toBe(Number(attempts[0]!.p_known_after));
-    expect((db.memory_card as Array<Record<string, unknown>>).some((row) => row.kc_id === kcId)).toBe(true);
+    return db.kc_attempt as Array<Record<string, unknown>>;
+  }
+
+  it('P-09 / D-06: under the default linear engine a course grade writes no Mentor evidence, even with the calibration switch on', async () => {
+    evidenceSwitches('linear', undefined);
+    expect(await gradeOnce()).toHaveLength(0);
+    evidenceSwitches('linear', 'on');
+    expect(await gradeOnce()).toHaveLength(0);
+    expect(db.learner_kc_mastery).toHaveLength(0);
+    expect(db.memory_card).toHaveLength(0);
   });
 });

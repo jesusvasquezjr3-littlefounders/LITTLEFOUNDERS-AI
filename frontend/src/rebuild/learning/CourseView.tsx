@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { Button, ButtonLink, EmptyState, InlineNotice, List, ListRow, ProgressBar, Skeleton, StatusMark } from '../design/controls';
+import { Sheet } from '../design/overlays';
 import '../design/tokens.css';
 import '../design/system.css';
 import './learnerPage.css';
@@ -209,7 +210,7 @@ function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly
   const keep = (offer: Offer) => setKept((prev) => (prev.some((entry) => entry.key === offer.key) ? prev : [...prev, offer]));
   return <>
     {pathway.badge.contentGap && pathway.basis !== 'unavailable' ? <p className="lf-course-path-note" data-copy-role="body">{t.contentGap}</p> : null}
-    {offers.map((offer) => <OfferCard key={offer.key} offer={offer} t={t} onAnswer={() => keep(offer)} />)}
+    {offers.map((offer) => <OfferCard key={offer.key} offer={offer} t={t} locale={locale} onAnswer={() => keep(offer)} />)}
     {!pathway.placementRequired && others.length > 0 ? <section className="lf-course-path-section" aria-labelledby={`${ids}-more`}>
       <h2 id={`${ids}-more`} data-copy-role="heading">{t.moreTitle}</h2>
       <div className="lf-course-path-items"><List label={t.moreTitle}>
@@ -270,7 +271,7 @@ const SHOWN_SKILLS = 3;
  * the offer no longer stands: the refresh drops it. After an answer the card
  * takes focus, so a keyboard learner hears what it did.
  */
-function OfferCard({ offer, t, onAnswer }: { offer: Offer; t: Copy; onAnswer: () => void }) {
+function OfferCard({ offer, t, locale, onAnswer }: { offer: Offer; t: Copy; locale: Locale; onAnswer: () => void }) {
   const { kind } = offer;
   const headingId = useId();
   const card = useRef<HTMLElement>(null);
@@ -289,7 +290,6 @@ function OfferCard({ offer, t, onAnswer }: { offer: Offer; t: Copy; onAnswer: ()
   }
   const yesLabel = kind === 'early' ? t.earlyYes : t.masteryYes;
   const noLabel = kind === 'mastery' && offer.onNo ? t.masteryNo : t.notNow;
-  const skills = offer.skills.slice(0, SHOWN_SKILLS).join(', ') + (offer.skills.length > SHOWN_SKILLS ? '…' : '');
   return <section ref={card} tabIndex={-1} className={`lf-course-path-offer lf-course-path-offer--${kind}`} aria-labelledby={headingId}
     data-offer={kind} data-answer={answered ? state : undefined}>
     <h2 id={headingId} data-copy-role="heading">{kind === 'early' ? t.earlyTitle : t.masteryTitle}</h2>
@@ -299,7 +299,7 @@ function OfferCard({ offer, t, onAnswer }: { offer: Offer; t: Copy; onAnswer: ()
       : state === 'declined' ? <InlineNotice tone="info" live>{t.masteryDeclined}</InlineNotice> : <>
         {/* What saying yes means: OD-25's confirmation is an informed one. */}
         <p className="lf-course-path-offer-means" data-copy-role="body">{kind === 'early' ? t.earlyMeans : t.masteryMeans}</p>
-        {skills ? <p className="lf-course-path-offer-skills"><span data-copy-role="body">{t.earlyShowed}</span>{' '}<span data-copy-role="data">{skills}</span></p> : null}
+        <OfferSkills skills={offer.skills} t={t} locale={locale} />
         {state === 'failed' ? <InlineNotice tone="error" live>{t.saveFailed}</InlineNotice> : null}
         <div className="lf-actions">
           <Button variant="accent" pending={state === 'busy-yes'} pendingLabel={yesLabel} disabled={busy} onClick={() => void answer(true)}>{yesLabel}</Button>
@@ -307,6 +307,25 @@ function OfferCard({ offer, t, onAnswer }: { offer: Offer; t: Copy; onAnswer: ()
         </div>
       </>}
   </section>;
+}
+
+/**
+ * What the learner showed, never cut by the system (02 D1, rule 1): up to
+ * three skills inline, and past that a localized count ("and 2 more") that
+ * opens a Details sheet with the whole list (06 §4 item 4).
+ */
+function OfferSkills({ skills, t, locale }: { skills: string[]; t: Copy; locale: Locale }) {
+  const [open, setOpen] = useState(false);
+  if (skills.length === 0) return null;
+  const rest = skills.length - SHOWN_SKILLS;
+  return <p className="lf-course-path-offer-skills">
+    <span data-copy-role="body">{t.earlyShowed}</span>{' '}
+    <span data-copy-role="data">{skills.slice(0, SHOWN_SKILLS).join(', ')}</span>
+    {rest > 0 ? <>{' '}<Button size="sm" aria-haspopup="dialog" onClick={() => setOpen(true)}>{plural(locale, rest, t.earlyMoreOne, t.earlyMoreOther)}</Button>
+      <Sheet open={open} onClose={() => setOpen(false)} heading={t.earlySkillsTitle} closeLabel={t.earlySkillsClose}>
+        <ul className="lf-course-path-offer-skill-list">{skills.map((skill) => <li key={skill} data-copy-role="data">{skill}</li>)}</ul>
+      </Sheet></> : null}
+  </p>;
 }
 
 function LinearChapters({ tree, slug, locale, t, links, onNavigate }: { tree: CourseTree; slug: string; locale: Locale; t: Copy; links: LearnLinks; onNavigate: LearnNavigate }) {
