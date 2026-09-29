@@ -19,6 +19,8 @@ const player: Record<string, CopyRole> = {
   viewFailed: 'body', updateTitle: 'heading', updateBody: 'body', reload: 'action', moveTo: 'action', mentorHeading: 'heading',
   // GAP-FIX-R4 (Bible 05 §3, §4): the board control strip (Reset, Show as table) and the drag-or-tap hint.
   reset: 'action', showTable: 'action', showChart: 'action', dragHint: 'body',
+  // GAP-FIX-R5 (B.24): the approach choice (ApproachChoiceBoard.tsx): its prompt, Start, and the save-failed notice.
+  approachPrompt: 'prompt', approachStart: 'action', approachFailed: 'body',
 };
 
 /*
@@ -52,6 +54,8 @@ const course: Record<string, CopyRole> = {
   masteryYes: 'action', notNow: 'action', masteryDone: 'body', saveFailed: 'body',
   // W3L.1 (OD-25): what each offer means, the skills it rests on, and the recorded "no".
   earlyMeans: 'body', earlyShowed: 'body', earlyMoreOne: 'action', earlyMoreOther: 'action', earlySkillsTitle: 'heading', earlySkillsClose: 'action', masteryMeans: 'body', masteryNo: 'action', masteryDeclined: 'body',
+  // The course path's binary pick and optional explore list (CourseView.tsx), budgeted as rendered.
+  pickTitle: 'heading', exploreTitle: 'heading', exploreNote: 'body',
 };
 /*
  * W2L.2: the course world (L3, TerritoryMapView.tsx) and the placement flow

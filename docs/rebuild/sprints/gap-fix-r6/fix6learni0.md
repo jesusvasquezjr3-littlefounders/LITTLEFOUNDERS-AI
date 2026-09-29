@@ -53,9 +53,8 @@ Verified real before fixing. Every `GradedFoot` board showed `player.met` ("That
   - Focused suites pass: backend v2, forge, learning signals and wellbeing (20 files); coursegen v2, gate, register and release (14 files); frontend learning and preview (all files touched).
   - `forge-v2:check`: 132 rows OK.
   - Also run: `type-check` and `lint` in backend, coursegen and frontend; root `spec:check`, `secrets:check`, `check-i18n.sh`.
-- Pre-existing reds, not from this lane:
-  - `copy-budget/learn.test.ts` does not budget the `course.exploreNote`, `exploreTitle` and `pickTitle` keys. It fails at the base commit.
-  - `copy-budget/site.test.ts` also fails. It reads only site copy, which this lane does not touch.
+- Red found at the base commit and fixed here: `copy-budget/learn.test.ts` did not budget `course.exploreNote`, `exploreTitle` and `pickTitle` (CourseView) or `player.approachPrompt`, `approachStart` and `approachFailed` (GAP-FIX-R5 approach choice). They are now budgeted by the role they render with, and the test passes.
+- Red not from this lane: `copy-budget/site.test.ts`. It reads only site copy, which this lane does not touch.
 
 ### Open
 
