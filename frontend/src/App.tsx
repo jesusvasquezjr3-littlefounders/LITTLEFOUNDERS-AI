@@ -60,7 +60,7 @@ export function App() {
 
   /*
    * Dissolve the boot veil index.html armed before the first paint
-   * (/DESIGN.md §Motion recipe 11). Here rather than in main.tsx because an
+   * (Bible 02 rule 2, 04 §2; see index.html). Here rather than in main.tsx because an
    * effect at the app root is the first moment React has actually COMMITTED —
    * calling it beside createRoot().render() would only mean "render was
    * requested", which under concurrent rendering can be several frames early,
