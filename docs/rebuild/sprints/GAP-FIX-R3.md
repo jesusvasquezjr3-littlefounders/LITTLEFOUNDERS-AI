@@ -122,3 +122,31 @@ first; all three were real.
 ### Migrations
 
 None.
+
+### Lane finish (F3-design-system-finish)
+
+- **Sync.** `codex/spec-migration-s02` merged: already up to date, so there
+  was nothing to resolve.
+- **Adversarial pass against the three gaps.** 02 §7 rule 9 asks that below
+  360 px inactive tabs become 48 px icon buttons, only the active tab shows its
+  label, and every name stays available to assistive tech. The lane does that
+  for every learner, Tutor and staff slot. The one exception is the unchosen
+  Mentor, which keeps its word because rule 21 forbids a stand-in. The 14 px
+  floor holds on the two mounted offenders, and the audit now reports any
+  visible text under 14 px. Every rebuilt stylesheet sits under the flat,
+  token-only contract. No legacy component is used: the note field is the
+  shared `TextAreaField`. No copy key changed, and the lane has no server
+  surface, so no authorization boundary is involved. Nothing was missing.
+- **Full frontend unit suite, run once.** Frontend `type-check` and `lint` are
+  clean. `vitest run` (3 threads): 272 of 273 files and 3142 of 3143 tests
+  passed. The one red was a 90 s per-test timeout in
+  `src/rebuild/assets/assetGate.test.ts`, on the Mentor-avatar mutation case,
+  while other lanes were loading the machine. Run alone, the file passed 13 of
+  13 in 923 s. Several of its cases take 100-140 s alone, so the file is close
+  to its own budget under load. That is a harness-time risk, not a product
+  defect; see the open items. Root `spec:check` (exit 0), `secrets:check` and
+  `check-rebuild-assets.mjs` are OK.
+- **Status.** Implemented and locally verified. Not accepted and not released.
+  Still open: the owner's style review of the `navigation` family, the teen's
+  six-entry bar (a product call), the charts' 12 px tags (learning lane), a
+  human review, and the asset-gate file's timing under load.
