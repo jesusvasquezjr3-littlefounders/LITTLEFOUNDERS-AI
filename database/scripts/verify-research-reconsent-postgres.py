@@ -16,6 +16,8 @@ Cluster selection (never the shared Docker stack):
   LF_PG_PORT  loopback port (default 15483)
   LF_PG_USER  superuser (default audit_owner)
   LF_PG_REPORT report path (default audit-results/gap-fix-r2-research-reconsent-postgres.json)
+  LF_PG_FULL_CHAIN=1  also apply every later migration, so a later
+               redefinition must keep these checks true (family-db-verify.mjs sets it)
 """
 from pathlib import Path
 import json
@@ -31,6 +33,7 @@ USER = os.environ.get('LF_PG_USER', 'audit_owner')
 REPORT = Path(os.environ.get('LF_PG_REPORT', str(ROOT / 'audit-results/gap-fix-r2-research-reconsent-postgres.json')))
 MIGRATIONS = sorted((ROOT / 'database/migrations').glob('*.sql'))
 PART = next(m for m in MIGRATIONS if m.name.endswith('_family_research_reconsent_at_18.sql'))
+LATER = [m for m in MIGRATIONS if m.name > PART.name] if os.environ.get('LF_PG_FULL_CHAIN') == '1' else []
 BASE = [str(BIN / 'psql.exe' if (BIN / 'psql.exe').exists() else BIN / 'psql'), '-X', '-h', '127.0.0.1', '-p', PORT,
         '-U', USER, '-v', 'ON_ERROR_STOP=1', '-Atq']
 SHIM = (ROOT / 'database/scripts/verify-money-presentation-postgres.py').read_text(encoding='utf-8').split('SHIM = """', 1)[1].split('"""', 1)[0]
@@ -121,7 +124,8 @@ refused(lambda: consent(db, teen, teen), 'RESEARCH_CONSENT_NOT_ALLOWED')
 check('the gap, reproduced before the migration: at 18 the Tutor\'s yes lapses (participating, grantor tutor, adult, not recorded), '
       'the young adult is no longer a wallet holder, and their own yes is refused RESEARCH_CONSENT_NOT_ALLOWED')
 
-sql(PART.read_text(encoding='utf-8'), db)
+for migration in [PART, *LATER]:
+    sql(migration.read_text(encoding='utf-8'), db)
 
 refused(lambda: consent(db, teen, tutor), 'RESEARCH_CONSENT_NOT_ALLOWED')
 refused(lambda: consent(db, ids['teen17'], ids['teen17']), 'RESEARCH_CONSENT_NOT_ALLOWED')

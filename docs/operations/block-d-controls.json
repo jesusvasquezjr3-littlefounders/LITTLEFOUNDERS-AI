@@ -1,5 +1,5 @@
 {
-  "about": "S07.6 (D.7): every control a family sees in the Wallet and the Family Hub, what the product may say it does, where the system enforces it and which adversarial test proves it. agent/tools/check-no-unbacked-guarantee.mjs fails CI when an enforcement or a proof is missing, when the latest definition of an enforcing SQL function no longer carries its guard, when a surface declares a data-control that is not listed here, or when Core's or the client's freeze holds differ from the holds listed here. Rationale: docs/operations/NO-UNBACKED-GUARANTEE.md.",
+  "about": "S07.6 (D.7): every control a family sees in the Wallet and the Family Hub, what the product may say it does, where the system enforces it and which adversarial test proves it. agent/tools/check-no-unbacked-guarantee.mjs fails CI when an enforcement or a proof is missing, when the latest definition of an enforcing SQL function no longer carries its guard, when a surface declares a data-control that is not listed here, or when Core's or the client's freeze holds differ from the holds listed here, or when a database proof (database/scripts/*.py) is not one database/scripts/family-db-verify.mjs runs: those proofs run over the whole migration chain in CI on every build (database-ci.yml and repo-gates.yml, job family-db-verify) and in release readiness (npm run family:db-verify), so a proof here is executed, not only read for a string. Rationale: docs/operations/NO-UNBACKED-GUARANTEE.md.",
   "version": 1,
   "forbiddenDependencies": ["stripe", "@stripe/stripe-js", "@stripe/react-stripe-js", "paypal", "@paypal/checkout-server-sdk", "@paypal/react-paypal-js", "braintree", "@adyen/api-library", "@adyen/adyen-web", "plaid", "react-plaid-link", "marqeta", "square", "checkout-sdk-node", "mercadopago", "@mercadopago/sdk-react", "pagarme", "unit-finance", "synctera", "galileo"],
   "retiredClaims": [
@@ -58,7 +58,7 @@
         { "file": "backend/src/middleware/bankingFreeze.ts", "contains": "'ACCOUNT_FROZEN'" }
       ],
       "provedBy": [
-        { "file": "database/scripts/verify-freeze-postgres.py", "contains": "raise AssertionError('Frozen request was accepted')" },
+        { "file": "database/scripts/verify-freeze-postgres.py", "contains": "for fn, guard in ENFORCING.items():" },
         { "file": "frontend/src/routes/app/banking/__tests__/BankingPage.test.tsx", "contains": "preserves the pending credit and explains the hold" }
       ],
       "ui": ["coinAccount:young.whileFrozen", "coinAccount:young.nothingLost", "coinAccount:transition.whileFrozen", "coinAccount:transition.nothingLost", "coinAccount:teen.whileFrozen", "coinAccount:teen.nothingLost", "coinAccount:tutor.whileFrozen", "coinAccount:tutor.nothingLost", "coinAccount:tutor.noCoinsMoved"]
@@ -73,7 +73,7 @@
         { "fn": "guard_redemption_state", "contains": "banking_movement_allowed(NEW.kid_user_id)" }
       ],
       "provedBy": [
-        { "file": "database/scripts/verify-freeze-postgres.py", "contains": "INSERT INTO redemptions(kid_user_id,catalog_id)" },
+        { "file": "database/scripts/verify-freeze-postgres.py", "contains": "family_decide_redemption('{waiting}', '{pa}', true, NULL, NULL, NULL)\"), 'ACCOUNT_FROZEN')" },
         { "file": "backend/src/__tests__/banking.test.ts", "contains": "toBe('ACCOUNT_FROZEN')" }
       ],
       "ui": ["coinAccount:young.holdRewards", "coinAccount:transition.holdRewards", "coinAccount:teen.holdRewards", "coinAccount:tutor.holdRewards"]
@@ -87,7 +87,7 @@
         { "fn": "allocate_pending_credit", "contains": "banking_movement_allowed(p_kid_user_id)" }
       ],
       "provedBy": [
-        { "file": "database/scripts/verify-freeze-postgres.py", "contains": "assert allocate()=='f'" },
+        { "file": "database/scripts/verify-freeze-postgres.py", "contains": "allocate_task_reward('{bonus_task}', '{kid}', 4, 4, 2, '{kid}', NULL)\") == 'f'" },
         { "file": "frontend/src/routes/app/banking/__tests__/BankingPage.test.tsx", "contains": "resumes the split only after the child's own freeze is lifted and re-read" }
       ],
       "ui": ["coinAccount:young.holdSplits", "coinAccount:transition.holdSplits", "coinAccount:teen.holdSplits", "coinAccount:tutor.holdSplits", "coinAccount:young.waitingFrozen", "coinAccount:transition.waitingFrozen", "coinAccount:teen.waitingFrozen"]
@@ -100,7 +100,7 @@
         { "fn": "run_due_scheduled_credits", "contains": "banking_movement_allowed(p_kid_user_id)" }
       ],
       "provedBy": [
-        { "file": "database/scripts/verify-freeze-postgres.py", "contains": "run_due_scheduled_credits('{kid}');\")=='0'" },
+        { "file": "database/scripts/verify-freeze-postgres.py", "contains": "run_due_scheduled_credits('{kid}')\") == '0'" },
         { "file": "backend/src/__tests__/banking.test.ts", "contains": "D.1 does not advance scheduled allowances while the account is frozen" }
       ],
       "ui": ["coinAccount:young.holdCredits", "coinAccount:transition.holdCredits", "coinAccount:teen.holdCredits", "coinAccount:tutor.holdCredits"]
@@ -113,7 +113,8 @@
         { "fn": "guard_share_gift", "contains": "'ACCOUNT_FROZEN'" }
       ],
       "provedBy": [
-        { "file": "database/scripts/verify-money-habits-postgres.py", "contains": "share and the freeze (D.1)" }
+        { "file": "database/scripts/verify-money-habits-postgres.py", "contains": "share and the freeze (D.1)" },
+        { "file": "database/scripts/verify-freeze-postgres.py", "contains": "share_gift_pledge('{kid}', '{dest}', 1)\"), 'ACCOUNT_FROZEN')" }
       ],
       "ui": ["coinAccount:young.holdShare", "coinAccount:transition.holdShare", "coinAccount:teen.holdShare", "coinAccount:tutor.holdShare"]
     },
@@ -126,6 +127,7 @@
       ],
       "provedBy": [
         { "file": "database/scripts/verify-family-state-machine-postgres.py", "contains": "'FREEZE_OWNED_BY_GUARDIAN')" },
+        { "file": "database/scripts/verify-freeze-postgres.py", "contains": "frozen_by = '{kid}' WHERE kid_user_id = '{kid}'\"), 'FREEZE_OWNED_BY_GUARDIAN')" },
         { "file": "backend/src/__tests__/banking.test.ts", "contains": "toBe('GUARDIAN_FREEZE')" },
         { "file": "backend/src/__tests__/moneyPresentation.test.ts", "contains": "a child may lift only a freeze they set" }
       ],

@@ -50,6 +50,11 @@ node agent/tools/check-block-d-research.mjs --strict
 # cooperative goals and account-erasure ones) against the full migration
 # chain, on a throwaway cluster; a machine with no PostgreSQL prints SKIP.
 npm run social:db-verify
+# Appendix H 1.3 / 2.2 D.1(d) (GAP-FIX-R3): the Block D database proofs, the
+# Freeze-Enforcement Verification and the Unauthorized State-Transition check
+# among them, re-run over the whole migration chain for every release; a
+# machine with no PostgreSQL prints SKIP.
+npm run family:db-verify
 
 npm --prefix coursegen run catalog:check -- "curriculum/$COURSE"
 npm --prefix coursegen run graph:check -- "$COURSE"

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { checkControls, declaredControls, flatStrings, holdsIn, latestFunctionBody, liveInputs } from './check-no-unbacked-guarantee.mjs';
+import { checkControls, declaredControls, flatStrings, holdsIn, latestFunctionBody, liveInputs, runnerProofs } from './check-no-unbacked-guarantee.mjs';
 
 /*
  * D.7's gate must see every way a control becomes cosmetic: a later migration
@@ -61,6 +61,19 @@ test('catches a deleted proof', () => {
     readFile: (path) => path.endsWith('verify-freeze-postgres.py') ? '' : live.readFile(path),
   }));
   assert.ok(failures.some((f) => f.startsWith('freeze: database/scripts/verify-freeze-postgres.py no longer contains')), failures.join('\n'));
+});
+
+test('catches a database proof the Block D runner does not execute (GAP-FIX-R3)', () => {
+  const failures = mutate((live) => ({
+    readFile: (path) => path.endsWith('family-db-verify.mjs')
+      ? live.readFile(path).replace("  'verify-freeze-postgres.py',\n", '')
+      : live.readFile(path),
+  }));
+  assert.ok(failures.includes('freeze: database/scripts/verify-freeze-postgres.py is a database proof database/scripts/family-db-verify.mjs does not run, so CI never executes it'),
+    failures.join('\n'));
+  const unwired = mutate((live) => ({ readFile: (path) => (path.endsWith('family-db-verify.mjs') ? '' : live.readFile(path)) }));
+  assert.ok(unwired.includes('database/scripts/family-db-verify.mjs: BLOCK_D not found; no database proof is run in CI'), unwired.join('\n'));
+  assert.deepEqual(runnerProofs("export const BLOCK_D = [\n  'verify-a-postgres.py',\n  'verify-b-postgres.py',\n];"), ['verify-a-postgres.py', 'verify-b-postgres.py']);
 });
 
 test('catches a claim\'s copy missing in one locale', () => {

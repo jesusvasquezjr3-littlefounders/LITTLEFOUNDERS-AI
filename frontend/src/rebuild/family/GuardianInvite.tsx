@@ -24,6 +24,8 @@ export interface GuardianInviteCopy {
   invite: string;
   inviting: string;
   linkReady: string;
+  /** The accessible name of the minted link (Bible 06: never a hardcoded English label). */
+  linkLabel: string;
   copy: string;
   copied: string;
   failed: string;
@@ -59,16 +61,16 @@ export function GuardianInviteMint({ copy, locale, dark, open, creating, link, c
   onCopy: () => void;
 }) {
   return <section className="lf-rebuild lf-guardian-invite" data-theme={dark ? 'dark' : 'light'} lang={locale} aria-label={copy.title}>
-    <Button aria-expanded={open} onClick={open ? onClose : onOpen}>{open ? copy.close : copy.open}</Button>
+    <Button aria-expanded={open} onClick={open ? onClose : onOpen} data-invite-control="toggle">{open ? copy.close : copy.open}</Button>
     {open && <>
       <Copy role="heading" as="h2">{copy.title}</Copy>
       {notice && <InlineNotice tone={noticeIsError ? 'error' : 'info'} live>{notice}</InlineNotice>}
-      {link === null && !creating && <Button onClick={onMint}>{copy.invite}</Button>}
+      {link === null && !creating && <Button onClick={onMint} data-invite-control="mint">{copy.invite}</Button>}
       {creating && <InlineNotice tone="info" live>{copy.inviting}</InlineNotice>}
       {link !== null && <div className="lf-guardian-invite-link">
         <Copy role="body">{copy.linkReady}</Copy>
         <div className="lf-guardian-invite-link-row">
-          <span className="lf-guardian-invite-link-value" aria-label="invite link">{link}</span>
+          <span className="lf-guardian-invite-link-value" aria-label={copy.linkLabel} data-copy-role="data">{link}</span>
           <Button onClick={onCopy}>{copied ? copy.copied : copy.copy}</Button>
         </div>
       </div>}

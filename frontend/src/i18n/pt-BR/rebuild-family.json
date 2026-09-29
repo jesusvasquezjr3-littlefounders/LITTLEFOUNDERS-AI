@@ -83,6 +83,7 @@
     "invite": "Criar link de convite",
     "inviting": "Criando…",
     "linkReady": "Envie este link ao segundo Tutor. Ele funciona uma vez e expira em 7 dias.",
+    "linkLabel": "Link de convite",
     "copy": "Copiar link",
     "copied": "Link copiado.",
     "failed": "Não foi possível criar o convite. Tente novamente.",

@@ -88,6 +88,9 @@ export const states = [
   app('/family@story-choices', `/family?child=${KID_A}`, 'family-two', ...opens('[data-screen="child-decisions"] .lf-child-decisions-head button')),
   app('/family@teen-deletion-notice', `/family?child=${KID_A}`, 'family-deletion-notice', '[data-family-part="deletion-notices"] [data-deletion-notice]'),
   app('/family@one-child', '/family', 'family-one', ready.console),
+  // GAP-FIX-R3: a Tutor mints the second-Tutor invite; the link it shows carries a localized name and the data role.
+  app('/family@invite-link', '/family', 'family-one', '[data-invite-control="toggle"]',
+    { open: ['[data-invite-control="toggle"]', '[data-invite-control="mint"]'], firstView: false, readyAlso: ready.console }),
   app('/family@manage-open', '/family', 'family-one', ...opens('[data-console-control="manage-child"] button')),
   app('/family@username-flagged', '/family', 'family-flagged', ...opens('[data-console-control="manage-child"] button')),
   app('/family@add-child', '/family', 'family-empty', ...opens('[data-console-control="add-child"] button')),
@@ -264,6 +267,8 @@ export function respond({ core, spec, locale, path, request, ok }) {
   if (path === '/family-hub/deletion-notices' && get) return ok({ notices: family.deletionNotice
     ? [{ id: '77777777-7777-4777-8777-777777777777', teenUserId: KID_B, displayName: 'Mateo', scheduledFor: '2026-10-12T10:00:00.000Z', notifiedAt: T }] : [] });
   if (path === '/family/guardian-links/mine') return ok({ links: [] });
+  // GAP-FIX-R3: Core's mint answer (201 { token, expiresAt }); the page builds the link from the token.
+  if (/^\/family\/kids\/[^/]+\/guardian-invite$/.test(path) && request.method === 'POST') return ok({ token: 'auditInviteToken0123456789ab', expiresAt: '2026-09-27T10:00:00.000Z' });
   if (/^\/family\/learning\/kids\/[^/]+\/bridges$/.test(path)) return ok({ prompts: [] });
   // OD-27 (3): a parent-created child under 13 shares the chosen options; a teen's journal is private (Core's JOURNAL_PRIVATE).
   const decisions = path.match(/^\/family\/learning\/kids\/([^/]+)\/decisions$/)?.[1];

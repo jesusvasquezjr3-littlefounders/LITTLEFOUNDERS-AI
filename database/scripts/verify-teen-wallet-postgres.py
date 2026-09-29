@@ -34,6 +34,8 @@ import os
 import subprocess
 import uuid
 
+from lf_pg_replay import assert_unchanged, fingerprint, replay_set
+
 ROOT = Path(__file__).resolve().parents[2]
 RUNTIME = ROOT / '.codex/audit-db'
 BIN = Path(os.environ.get('LF_PG_BIN', str(RUNTIME / 'pgsql/bin')))
@@ -47,10 +49,13 @@ S07_2_PARTS = ['_independent_teen_wallet_schema.sql', '_independent_teen_wallet_
 PARTS = [next(m for m in MIGRATIONS if m.name.endswith(suffix)) for suffix in S07_2_PARTS]
 # LF_PG_FULL_CHAIN=1 runs every S07.2 check over the WHOLE migration chain
 # (later checkpoints redefine the ledger guard and teen_log_income; the S07.2
-# rules must still hold), and replays every migration from the first S07.2 part.
+# rules must still hold), and replays the S07.2 parts plus every later migration
+# that redefines what they define (lf_pg_replay.replay_set).
 FULL_CHAIN = os.environ.get('LF_PG_FULL_CHAIN') == '1'
 TARGET = MIGRATIONS[-1] if FULL_CHAIN else PARTS[-1]
-REPLAY = MIGRATIONS[MIGRATIONS.index(PARTS[0]):] if FULL_CHAIN else PARTS
+# Over the whole chain: the parts plus every later migration that redefines what they
+# define, never the unrelated rest (an expand step cannot run after its own contract step).
+REPLAY = replay_set(MIGRATIONS, PARTS) if FULL_CHAIN else PARTS
 BASE = [str(BIN / 'psql.exe' if (BIN / 'psql.exe').exists() else BIN / 'psql'), '-X', '-h', '127.0.0.1', '-p', PORT,
         '-U', USER, '-v', 'ON_ERROR_STOP=1', '-Atq']
 
@@ -109,8 +114,13 @@ def fresh(upto):
 
 
 def replay(database):
+    """Over the whole chain, every function, trigger, policy and grant must come out
+    of the replay exactly as the chain left it (lf_pg_replay)."""
+    before = fingerprint(sql, database) if FULL_CHAIN else None
     for part in REPLAY:
         sql(part.read_text(encoding='utf-8'), database)
+    if FULL_CHAIN:
+        assert_unchanged(before, fingerprint(sql, database))
 
 
 def claims(uid, role):
