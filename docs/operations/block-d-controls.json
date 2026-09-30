@@ -20,6 +20,20 @@
         "es-MX": ["sigue apagada para cada hijo hasta que tú la activas"],
         "pt-BR": ["fica desligada para cada filho até você ativá-la"]
       }
+    },
+    {
+      "namespace": "rebuild-site",
+      "why": "A.1, Appendix M 1.4 FAQ-claim parity and OD-3 section 2 (gap-fix round 8, fix8identi0): a child under 13 can hold an account of their own. The refused child's flagged guest may save their progress through POST /auth/upgrade, and a first Google sign-in that declares under 13 is kept and reclassified; both keep the A.2 origin marker and its safeguards (A.2 flag persistence, A.3 reclassification). So the FAQ may not say that only a Tutor creates an under-13 account, and the refusal sheet may not say that a parent must create the child's own account.",
+      "because": [
+        { "file": "backend/src/routes/auth.ts", "contains": "router.post('/upgrade'" },
+        { "file": "backend/src/__tests__/ageUpgradeChain.test.ts", "contains": "completes the upgrade in place but never attributes a flagged guest" },
+        { "fn": "record_age_declaration", "contains": "mark_under13_origin" }
+      ],
+      "phrases": {
+        "en-US": ["under 13, a tutor creates the account", "only a tutor creates", "only a parent creates", "a parent can create your own account"],
+        "es-MX": ["antes de los 13, un tutor crea la cuenta", "solo un tutor crea", "solo un adulto crea", "un adulto puede crear tu propia cuenta"],
+        "pt-BR": ["antes dos 13, um tutor cria a conta", "só um tutor cria", "só um adulto cria", "um adulto pode criar sua própria conta"]
+      }
     }
   ],
   "sharedStatements": [

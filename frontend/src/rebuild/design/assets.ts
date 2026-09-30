@@ -60,3 +60,15 @@ export function findMentorAvatar(character: MentorCharacter, theme: 'light' | 'd
     && (entry.modes === theme || entry.modes === 'both') && resolveMentorRender(entry.id) !== null);
   return match?.id ?? null;
 }
+
+/**
+ * The avatar render of one Mentor character in one catalogue pose for a colour
+ * mode, or null when no such render is registered. Same refusals as
+ * `resolveMentorRender`: square, transparent, the character's own model.
+ * Callers fall back to `findMentorAvatar` (the idle render), never a stand-in.
+ */
+export function findMentorAvatarInPose(character: MentorCharacter, theme: 'light' | 'dark', poseId: string): string | null {
+  const match = assets.find((entry) => entry.type === 'render' && entry.character === character && entry.slot === MENTOR_AVATAR_SLOT
+    && entry.poseId === poseId && (entry.modes === theme || entry.modes === 'both') && resolveMentorRender(entry.id) !== null);
+  return match?.id ?? null;
+}

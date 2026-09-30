@@ -124,7 +124,7 @@ import {
 } from '../services/learningQuality.js';
 import { DEFECT_KINDS, GATE_REVIEW_OUTCOMES, recordContentDefectEscape, resolveGateEffectivenessReview } from '../services/learningQaSignals.js';
 import { getStage3State, recordStage3Review, Stage3ReviewBody, STAGE3_RECORD_REFUSALS } from '../services/pedagogicalReview.js';
-import { getFamilyStateIntegrity } from '../services/familyLifecycle.js';
+import { readFamilyStateIntegrity } from '../services/familyLifecycle.js';
 import { readRetentionCompliance } from '../services/familyRetention.js';
 import { readCoachingDelivery, readReflectionRate } from '../services/parentCoaching.js';
 import { readBridgeEngagement } from '../services/moneyBridge.js';
@@ -1344,16 +1344,9 @@ export function adminRouter(): Router {
   router.get('/family/state-integrity', async (req, res) => {
     const q = FamilyIntegrityQuery.safeParse(req.query);
     if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
-    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
-    const rows = await getFamilyStateIntegrity(since);
-    if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the integrity metric');
-    const tables = rows.map((r) => ({ table: r.table_name, transitions: r.transitions, outsideService: r.outside_service }));
-    return ok(res, {
-      since: since.toISOString(),
-      tables,
-      transitions: tables.reduce((sum, t) => sum + t.transitions, 0),
-      outsideService: tables.reduce((sum, t) => sum + t.outsideService, 0),
-    });
+    const metric = await readFamilyStateIntegrity(new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000));
+    if (metric === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the integrity metric');
+    return ok(res, metric);
   });
 
   /*

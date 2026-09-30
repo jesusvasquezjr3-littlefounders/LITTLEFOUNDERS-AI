@@ -38,7 +38,7 @@ Built:
   - the `OpsJobsCard` shows an "unreadable" notice instead of "has not run in N hours";
   - new copy: `job_warehouse_retention` and `jobUnread` in EN, es-MX and pt-BR;
   - the fixtures are updated.
-- **Docs**: GOVERNANCE.md section 3 (a failed run is logged, and the log has a consumer) and section 4 (ten watched jobs, a table row and the judging rule).
+- **Docs**: GOVERNANCE.md section 3 (a failed run is logged, and the log has a consumer) and section 4 (a table row and the judging rule; eleven watched jobs after the merge with fix8staffo3's `badge_link_retirement`).
 
 Decision (conservative default, not an owner question): the window stays at 36 h, the one logged H.4 calibration value (`STAFF-OPS-RECALIBRATION-LOG.md`, pinned by `staff-ops-review-cadence.mjs`). A failed attempt is stale at once instead of waiting for a shorter window.
 
@@ -60,7 +60,7 @@ Verified real: 28 workflows carry `schedule:`. The runbook named 18 plus the `tu
 
 Built:
 
-- **CUTOVER-RUNBOOK.md step 1** now freezes 26 workflows plus `database-cd.yml`. It leaves the two watchdogs enabled: `tutor-retention-watch` and `ops-job-watch`.
+- **CUTOVER-RUNBOOK.md step 1** now freezes 27 workflows plus `database-cd.yml` (26 at first; the merge brought fix8family2's `family-integrity-watch`, which the new test caught on its first post-merge run). It leaves the two watchdogs enabled: `tutor-retention-watch` and `ops-job-watch`.
   - The posture of `ops-job-watch` is stated: it reads only, and it names a paused job only after 36 h without a success. So a short window stays quiet, while a long window, or a job left disabled after the switch, gets reported.
   - The operator logs any such comment and closes the issue after the first green watch.
 - **Step 9 item 4** re-enables every step 1 workflow in order (the sweeps with family deadlines first, then the backups and the drift probe, then the rest, then `database-cd.yml`), and confirms with `gh workflow list --all`.
@@ -88,7 +88,13 @@ Built:
 
 No migrations: the warehouse is DuckDB (schema.sql with its evolution block). No browser run, per speed mode.
 
+## Merge with codex/spec-migration-s02
+
+Conflicts with fix8staffo3 (which added `badge_link_retirement` as a watched job in the same places) and fix8design7 (REQUIREMENTS H.1) were resolved as unions: both jobs are in `OPS_JOB_STALE_HOURS`, `WATCHED_JOBS`, the drill tests, `OPS_JOB_NAMES`, the console fixtures and the locale files (merged with `json3way.py`). GOVERNANCE.md section 4 now counts eleven watched jobs, and the H.4 requirement row carries both lanes' sentences and links.
+
 ## Open
+
+- Owner question: `family-integrity-watch` only reads, but it is frozen during the cutover window and re-enabled 24 hours after the freeze is lifted. Otherwise the migration's own non-`service_role` writes would open a false Block D Stage 7 revert candidate. Conservative default implemented. The alternative is to leave it enabled and record the migration's rows on its issue.
 
 - Production: the first `ops-job-watch` run that reads the deployed dataintel, and a drill against the deployed Core (ops owner, as for the other H.4 jobs).
 - Deploy order when this ships: dataintel before Core. A Core that reaches an older dataintel without the route reads it as unreadable, so the watch fails loudly until dataintel is deployed. That fails closed and is intended.

@@ -40,10 +40,6 @@ export const SCAN_ROOTS = ['backend/src', 'frontend/src', 'oracle/src', 'courseg
 
 /** Closed allowlist: path -> the one non-reward purpose of its randomness. */
 export const RANDOMNESS_ALLOWLIST = {
-  'frontend/src/components/characters/DinaCharacter.tsx': 'blink timing of a legacy 2D character (idle animation)',
-  'frontend/src/components/characters/DrRhoCharacter.tsx': 'blink timing of a legacy 2D character (idle animation)',
-  'frontend/src/components/characters/LirufCharacter.tsx': 'blink timing of a legacy 2D character (idle animation)',
-  'frontend/src/components/characters/ZaraVexCharacter.tsx': 'blink timing of a legacy 2D character (idle animation)',
   'frontend/src/lib/avatarOptions.ts': 'the avatar "randomize" button draws a cosmetic look; nothing is earned, withheld or unlocked by chance',
   'backend/src/routes/tutor.ts': 'staff live-review sampling of Mentor sessions (quality assurance, no learner-facing outcome)',
   'backend/src/services/supabaseRest.ts': 'the simulated card\'s display number (an identifier, not a value)',

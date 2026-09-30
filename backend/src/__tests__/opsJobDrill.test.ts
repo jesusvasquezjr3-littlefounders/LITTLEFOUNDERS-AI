@@ -80,8 +80,18 @@ describe('the simulated job-failure drill', () => {
     expect(result.passed).toBe(true);
   }, 30_000);
 
+  it('F.2 under OD-20 (GAP-FIX-R8, owner answer D-08): a badge sweep that runs but keeps failing to purge goes stale and notifies a human', async () => {
+    const result = await runOpsJobDrill('badge_link_retirement', new Date('2026-09-27T12:00:00Z'));
+    expect(result.stale).toBe(true);
+    expect(result.watcherExit).toBe(1);
+    expect(result.notice).toContain('**badge_link_retirement**: last successful run 48 h ago (window 36 h); last attempt 2026-09-27T10:00:00.000Z (failed)');
+    expect(result.notice).toContain('legacy badge-image purge');
+    expect(result.notice).not.toContain('**vault_backup**');
+    expect(result.passed).toBe(true);
+  }, 30_000);
+
   it('the drill covers the three Appendix O 1.3 jobs, the family-data jobs and every other watched condition', () => {
-    expect(OPS_JOBS).toEqual(expect.arrayContaining(['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune', 'warehouse_retention']));
+    expect(OPS_JOBS).toEqual(expect.arrayContaining(['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune', 'warehouse_retention', 'badge_link_retirement']));
     expect(DRILL_TARGETS).toEqual(expect.arrayContaining([...OPS_JOBS, 'tutor_retention', 'content_retro_checks', 'access_reviews', 'account_deletion_failures', 'alerts_undelivered']));
   });
 });

@@ -1617,7 +1617,8 @@
         "scoreRefused": "Your access does not allow scoring.",
         "scoreGone": "This reason left the sample. Refresh.",
         "familiesIntro": "Counts only, never a person.",
-        "group": "Group"
+        "group": "Group",
+        "bridgePaired": "Review together with Lessons turned into real tasks, from Mentor quality."
       },
       "option": {
         "yes": "Yes",
@@ -1865,7 +1866,11 @@
         "v_later_date": "Later",
         "v_not_suitable": "Not suitable",
         "v_talk_first": "Talk first",
-        "v_practice_more": "Practice more"
+        "v_practice_more": "Practice more",
+        "bridgeConversionRate": "Lessons turned into real tasks",
+        "bridgePromptsOffered": "Real-task prompts offered",
+        "bridgePromptsConverted": "Done within 7 days",
+        "bridgeConversionWindow": "Window in days"
       },
       "action": {
         "actionable": "Actionable",
@@ -1936,7 +1941,8 @@
         "job_account_deletions": "Account deletions",
         "job_family_retention": "Family data cleanup",
         "job_social_retention": "Friends data cleanup",
-        "job_warehouse_retention": "Analytics data cleanup"
+        "job_warehouse_retention": "Analytics data cleanup",
+        "job_badge_link_retirement": "Old badge link images"
       },
       "action": {
         "lookUp": "Look up",

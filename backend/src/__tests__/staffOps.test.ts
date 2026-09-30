@@ -3,7 +3,7 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 import { getConfig } from '../config.js';
 import { buildIdentityReport, type IdentityCounts, type OnboardingDiscoveryCounts } from '../services/identityMetrics.js';
-import { judgeOpsJob, judgeWarehouseRetention, OPS_JOB_STALE_HOURS } from '../services/opsJobs.js';
+import { judgeOpsJob, judgeWarehouseRetention, OPS_JOB_STALE_HOURS, runSucceeded } from '../services/opsJobs.js';
 import { parseWarehouseMaintenance } from '../services/warehouseMaintenance.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
@@ -128,6 +128,7 @@ function stub(world: World = {}) {
       let rows = world.audit?.[action] ?? [];
       if (url.includes('detail->>ok=eq.true')) rows = rows.filter((r) => r.detail.ok === true);
       if (url.includes('detail->>suspensionsUnreadable=is.null')) rows = rows.filter((r) => r.detail.suspensionsUnreadable === undefined);
+      if (url.includes('detail->>failed=eq.0')) rows = rows.filter((r) => r.detail.failed === 0);
       return Promise.resolve(jsonResponse(200, rows.slice(0, 1)));
     }
     throw new Error(`staffOps.test: unexpected ${method} ${url}`);
@@ -307,6 +308,7 @@ describe('H.4 — the operations heartbeat and watchdog', () => {
     // The staff console shows the Mentor sweep on its own card, so it is not in `jobs`.
     expect((res.body.data.jobs as { job: string }[]).map((j) => j.job)).toEqual([
       'vault_backup', 'pulse_backup', 'vault_drift', 'learning_retention', 'insights_prune', 'account_deletions', 'family_retention', 'social_retention',
+      'badge_link_retirement',
       'warehouse_retention',
     ]);
     stub({ audit: { 'tutor.retention.swept': [{ created_at: hoursAgo(5), detail: {} }] } });
@@ -428,7 +430,7 @@ describe('H.4 — the operations heartbeat and watchdog', () => {
     const actions = calls.filter((c) => c.method === 'POST' && c.url.includes('/audit_logs')).map((c) => JSON.parse(c.body!).action);
     expect(actions).toEqual(['ops.learning_retention.completed', 'ops.insights_prune.completed']);
     // A trail job keeps its own record: a heartbeat can never fake one.
-    for (const job of ['account_deletions', 'family_retention', 'social_retention', 'tutor_retention']) {
+    for (const job of ['account_deletions', 'family_retention', 'social_retention', 'tutor_retention', 'badge_link_retirement']) {
       expect((await request(createApp()).post('/api/v1/internal/ops/heartbeat').set('x-internal-api-key', key()).send({ job, ok: true })).status).toBe(400);
     }
   });
@@ -453,6 +455,43 @@ describe('H.4 — the operations heartbeat and watchdog', () => {
     expect(jobs.insights_prune).toMatchObject({ stale: true, lastRunAt: null, lastAttemptAt: null });
     expect(res.body.data.anyStale).toBe(true);
     expect(res.body.data.accountDeletionFailures).toEqual({ stuck: 0, afterHours: 24 });
+  });
+
+  it('GAP-FIX-R8 (F.2 under OD-20, D-08): judges the legacy badge-image purge from its own trail; a page that failed to purge is a failed attempt', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ calls, audit: { 'badge_links.images_swept': [
+      { created_at: hoursAgo(2), detail: { scanned: 4, purged: 2, stillReferenced: 0, failed: 2, limit: 500, offset: 0, retired: false } },
+      { created_at: hoursAgo(26), detail: { scanned: 3, purged: 3, stillReferenced: 0, failed: 0, limit: 500, offset: 0, retired: false } },
+    ] } });
+    const res = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+    expect(res.status).toBe(200);
+    const jobs = Object.fromEntries((res.body.data.jobs as { job: string }[]).map((j) => [j.job, j]));
+    expect(jobs.badge_link_retirement).toMatchObject({ stale: false, staleAfterHours: 36, lastAttemptOk: false, lastRunDetail: { failed: 0, purged: 3 } });
+    // The clean-run read filters on the failure count; the attempt read does not.
+    const reads = calls.filter((c) => c.url.includes('action=eq.badge_links.images_swept')).map((c) => c.url);
+    expect(reads.some((url) => url.includes('detail->>failed=eq.0'))).toBe(true);
+    expect(reads.some((url) => !url.includes('detail->>failed=eq.0'))).toBe(true);
+    // A sweep that keeps failing goes stale exactly like one that stopped.
+    stub({ audit: { 'badge_links.images_swept': [
+      { created_at: hoursAgo(3), detail: { scanned: 1, purged: 0, stillReferenced: 0, failed: 1 } },
+      { created_at: hoursAgo(40), detail: { scanned: 1, purged: 1, stillReferenced: 0, failed: 0 } },
+    ] } });
+    const failing = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+    const failingJob = (failing.body.data.jobs as { job: string; stale: boolean }[]).find((j) => j.job === 'badge_link_retirement');
+    expect(failingJob).toMatchObject({ stale: true, lastAttemptOk: false });
+    expect(failing.body.data.anyStale).toBe(true);
+    // Never ran is stale too, never healthy.
+    stub();
+    const never = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+    expect((never.body.data.jobs as { job: string }[]).find((j) => j.job === 'badge_link_retirement')).toMatchObject({ stale: true, lastRunAt: null, lastAttemptAt: null });
+  });
+
+  it('GAP-FIX-R8: runSucceeded counts a badge sweep page only when nothing failed', () => {
+    expect(runSucceeded('badge_link_retirement', { scanned: 2, purged: 2, failed: 0 })).toBe(true);
+    expect(runSucceeded('badge_link_retirement', { scanned: 2, purged: 1, failed: 1 })).toBe(false);
+    expect(runSucceeded('badge_link_retirement', { scanned: 2 })).toBe(false);
+    expect(runSucceeded('badge_link_retirement', null)).toBe(false);
+    expect(OPS_JOB_STALE_HOURS.badge_link_retirement).toBe(36);
   });
 
   it('GAP-FIX-R6: a family run table that cannot be read is a 502, never "never ran"', async () => {

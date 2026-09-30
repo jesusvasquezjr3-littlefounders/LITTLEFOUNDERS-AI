@@ -83,19 +83,14 @@ const CONSUMERS: Record<string, { gate: RegExp; reason: string }> = {
 
 /*
  * Definitions and legacy exceptions, closed. Token and keyframe DEFINITIONS
- * are not effects firing. The four legacy 2D characters bounce when tapped
- * (a character reaction, not a reward); they are retired with the legacy UI
- * (Bible 02 rule 21: Mentor characters are 3D renders only) and nothing new
- * may join them.
+ * are not effects firing. The four legacy 2D characters that once bounced
+ * when tapped were deleted in gap-fix round 8 (Bible 02 rule 21: Mentor
+ * characters are 3D renders only), and nothing new may join this list.
  */
 const DEFINITIONS: Record<string, string> = {
   'index.css': 'legacy keyframes and the --lf-ease-tactile token (definitions only; .lf-land has no consumer)',
   'rebuild/design/system.css': 'the --ease-spring and --dur-celebration tokens (definitions only)',
   'rebuild/design/tokens.css': 'the generated Bible 02 token sheet: the --ease-spring and --dur-celebration tokens (definitions only)',
-  'components/characters/DinaCharacter.tsx': 'legacy 2D character tap reaction, retired in wave 2',
-  'components/characters/DrRhoCharacter.tsx': 'legacy 2D character tap reaction, retired in wave 2',
-  'components/characters/LirufCharacter.tsx': 'legacy 2D character tap reaction, retired in wave 2',
-  'components/characters/ZaraVexCharacter.tsx': 'legacy 2D character tap reaction, retired in wave 2',
 };
 
 const MOUNTS: Record<string, string[]> = {
@@ -166,8 +161,7 @@ describe('B.20 celebration budget: static scan of every celebration effect', () 
 
   it('the definitions list is closed', () => {
     expect(Object.keys(DEFINITIONS).sort()).toEqual([
-      'components/characters/DinaCharacter.tsx', 'components/characters/DrRhoCharacter.tsx', 'components/characters/LirufCharacter.tsx',
-      'components/characters/ZaraVexCharacter.tsx', 'index.css', 'rebuild/design/system.css', 'rebuild/design/tokens.css',
+      'index.css', 'rebuild/design/system.css', 'rebuild/design/tokens.css',
     ]);
   });
 });

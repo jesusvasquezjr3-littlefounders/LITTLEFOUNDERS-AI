@@ -146,16 +146,18 @@ to retain because an active guardian consent admitted them at the source.
   job is now impossible; the direct synchronous export surface is the only
   one). The `task_view` and `tutor_open` events, previously catalogued with
   no emitter, now emit from the tasks boards and the Mentor experience.
-- **Watchdog coverage (H.4 and the Block H non-negotiable).** Ten scheduled
+- **Watchdog coverage (H.4 and the Block H non-negotiable).** Eleven scheduled
   jobs are watched, each with a watchdog and a notification to a human.
   Appendix O 1.3 names the first three; the Block H standard adds every job
-  whose silent failure would harm family data (GAP-FIX-R6, and the warehouse
-  maintenance in GAP-FIX-R8):
+  whose silent failure would harm family data (GAP-FIX-R6, and GAP-FIX-R8 for
+  the warehouse maintenance and for the legacy badge-image purge that owner
+  answer D-08 approved):
 
   | Job (`job`) | Workflow (UTC) | Trail Core reads |
   |---|---|---|
   | `tutor_retention` | `tutor-retention.yml` 03:00 | `tutor.retention.swept` audit rows |
   | `family_retention` (D.21) | `family-retention.yml` 03:15 | `family_retention_runs.ran_at` |
+  | `badge_link_retirement` (F.2 under OD-20; D-08) | `badge-link-retirement.yml` 03:30 | `badge_links.images_swept` audit rows (one per swept page); a page with `failed > 0` is a failed attempt, because that child's achievement image still resolves. Watched until the dated removal of the workflow |
   | `account_deletions` (E.6, A.1's 90-day paused child) | `account-deletion.yml` 03:45 | `account_deletions.sweep_ran` audit rows; a run with `suspensionsUnreadable` is a failed attempt |
   | `social_retention` (E.11) | `social-retention.yml` 04:15 | `social_retention.sweep_ran` audit rows (written by the database in the sweep's transaction) |
   | `learning_retention` (400-day practice days) | `learning-retention.yml` 04:30 | heartbeat `ops.learning_retention.completed` |
@@ -205,8 +207,9 @@ to retain because an active guardian consent admitted them at the source.
     comments on the same issue when a course's verification fails (G.2, see
     `docs/content/FORGE-V2-RELEASE.md`);
   - the simulated-failure drill (`npm --prefix backend run ops:drill`, also a
-    unit test) proves, for each of the ten jobs, that a stale trail produces
-    `stale: true`, a failed watcher and the notice; it also drills a stalled
+    unit test) proves, for each of the eleven jobs, that a stale trail produces
+    `stale: true`, a failed watcher and the notice (for the badge-image purge,
+    a sweep that still runs daily but keeps failing to purge); it also drills a stalled
     erasure, an overdue retroactive check, a due access review and an
     undelivered warehouse alert (`alerts_undelivered`).
   Remaining for the ops owner: the first scheduled runs in production and a

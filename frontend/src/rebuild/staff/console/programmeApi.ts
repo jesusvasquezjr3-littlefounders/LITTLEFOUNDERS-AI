@@ -46,6 +46,18 @@ export interface MetricRows {
 
 export type MetricTarget = 'zero' | 'full' | 'true';
 
+/**
+ * A reading from another part of the SPEC that must be reviewed TOGETHER with
+ * this metric (Appendix H 1.1: the Real-World Bridge Engagement Rate beside
+ * Appendix C's Conversion Rate). Core serves it in the same payload, so the
+ * card never shows one half alone; `note` is its explanation key in
+ * `programme.body`.
+ */
+export interface MetricPair {
+  note: string;
+  facts: readonly MetricField[];
+}
+
 export interface MetricSpec {
   id: string;
   path: (days: number) => string;
@@ -54,6 +66,7 @@ export interface MetricSpec {
   target?: MetricTarget;
   facts: readonly MetricField[];
   rows?: readonly MetricRows[];
+  paired?: MetricPair;
 }
 
 const f = (key: string, kind: FieldKind, path: string | readonly string[] = key, optional = false): MetricField =>
@@ -130,9 +143,14 @@ export const FAMILY_METRICS: Record<FamilyGroup, readonly MetricSpec[]> = {
       facts: [f('eligible', 'count'), f('delivered', 'count'), f('opened', 'count'), f('openRate', 'rate'), f('reviewedTips', 'count'), f('draftedTips', 'count')] },
     { id: 'reflections', path: withDays('/admin/family/coaching-reflections'), headline: f('firedRate', 'rate'),
       facts: [f('tutorDecisions', 'count'), f('withReflection', 'count'), f('written', 'count'), f('shared', 'count'), f('skipped', 'count')] },
+    // D.19 engagement, paired with B.13's conversion rate (Appendix H 1.1, GAP-FIX-R8): the same reading as
+    // learning.bridge_conversion on Mentor quality, over that dashboard's window.
     { id: 'bridge', path: fixed('/admin/family/bridge-engagement'), facts: [f('minAge', 'count')],
       rows: [{ caption: 'bridgeRows', path: ['moments'], label: 'milestone', labelKey: 'milestone',
-        columns: [f('eligible', 'count'), f('engaged', 'count'), f('engagementRate', 'rate')] }] },
+        columns: [f('eligible', 'count'), f('engaged', 'count'), f('engagementRate', 'rate')] }],
+      paired: { note: 'bridgePaired', facts: [
+        f('bridgeConversionRate', 'rate', ['conversion', 'conversionRate']), f('bridgePromptsOffered', 'count', ['conversion', 'offered']),
+        f('bridgePromptsConverted', 'count', ['conversion', 'converted']), f('bridgeConversionWindow', 'count', ['conversion', 'windowDays'])] } },
     { id: 'research', path: fixed('/admin/family/research-completeness'), facts: [f('windowMonths', 'count'), f('minTenureMonths', 'count')],
       rows: [{ caption: 'researchRows', path: ['cohorts'], label: 'cohort', labelKey: 'cohort',
         columns: [f('longTenure', 'count'), f('enrolled', 'count'), f('coverage', 'rate'), f('completeness', 'rate')] }] },
@@ -231,7 +249,7 @@ function fieldValue(data: unknown, field: MetricField): unknown {
 export function metricGuard(spec: MetricSpec) {
   return (value: unknown): value is Record<string, unknown> => {
     if (!isRecord(value)) return false;
-    const fields = [...(spec.headline ? [spec.headline] : []), ...spec.facts];
+    const fields = [...(spec.headline ? [spec.headline] : []), ...spec.facts, ...(spec.paired?.facts ?? [])];
     if (!fields.every((field) => fieldValid(field, fieldValue(value, field)))) return false;
     return (spec.rows ?? []).every((rows) => {
       const list = pick(value, rows.path);
@@ -297,10 +315,12 @@ export const OPS_JOBS_PATH = '/admin/ops/job-status';
 /**
  * GAP-FIX-R6: the family-data jobs (account deletion, family, social and learning retention, the insights prune) are watched too.
  * GAP-FIX-R8: so is the analytics warehouse's 400-day prune and erasure re-apply (`warehouse_retention`, read from dataintel).
+ * GAP-FIX-R8 (F.2 under OD-20, D-08): so is the daily legacy badge-image purge.
  */
 export const OPS_JOB_NAMES = [
   'vault_backup', 'pulse_backup', 'vault_drift', 'learning_retention', 'insights_prune', 'account_deletions', 'family_retention', 'social_retention',
   'warehouse_retention',
+  'badge_link_retirement',
 ] as const;
 export type OpsJobName = (typeof OPS_JOB_NAMES)[number];
 export interface OpsJob {

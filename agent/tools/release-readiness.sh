@@ -89,6 +89,12 @@ npm run social:db-verify
 # among them, re-run over the whole migration chain for every release; a
 # machine with no PostgreSQL prints SKIP.
 npm run family:db-verify
+# Appendix H 1.3 / 1.4 / Part 3 Stage 7 (gap-fix round 8): the same two
+# metrics read from PRODUCTION since the last release tag. Any table with a
+# transition outside the service role, or any Block D row past its retention
+# period, fails here, naming the table. Read only, with SUPABASE_URL and
+# SUPABASE_SERVICE_ROLE_KEY; a machine without them prints SKIP.
+node agent/tools/check-family-production-integrity.mjs --strict
 # Appendix M Part 2.1 criterion 2 / Part 3 Stage 2 (GAP-FIX-R4): the age and
 # identity adversarial checks hold through every path, every release. The
 # Block A database proofs (flagged sessions record no optional analytics, 1.1;

@@ -74,6 +74,12 @@ export function MetricCard({ api, spec, days }: { api: StaffApi; spec: MetricSpe
             <Facts items={[...(spec.headline ? [spec.headline] : []), ...spec.facts].map((field) => ({
               id: field.key, label: optionLabel(copy, field.key), value: formatField(field, readField(data, field), copy, format),
             }))} />
+            {spec.paired ? <div className="lf-staff-section" data-paired={spec.id}>
+              <p data-copy-role="body" className="lf-staff-muted">{labelOf(t.body as Record<string, string>, spec.paired.note)}</p>
+              <Facts items={spec.paired.facts.map((field) => ({
+                id: field.key, label: optionLabel(copy, field.key), value: formatField(field, readField(data, field), copy, format),
+              }))} />
+            </div> : null}
             {(spec.rows ?? []).map((rows) => {
               const list = (pick(data, rows.path) as Record<string, unknown>[]) ?? [];
               const caption = labelOf(t.heading as Record<string, string>, rows.caption);

@@ -1617,7 +1617,8 @@
         "scoreRefused": "Tu acceso no permite calificar.",
         "scoreGone": "Este motivo salió de la muestra. Actualiza.",
         "familiesIntro": "Solo conteos, nunca una persona.",
-        "group": "Grupo"
+        "group": "Grupo",
+        "bridgePaired": "Revísalo junto con Lecciones convertidas en tareas reales, de Calidad del Mentor."
       },
       "option": {
         "yes": "Sí",
@@ -1865,7 +1866,11 @@
         "v_later_date": "Más adelante",
         "v_not_suitable": "No adecuado",
         "v_talk_first": "Hablar antes",
-        "v_practice_more": "Practicar más"
+        "v_practice_more": "Practicar más",
+        "bridgeConversionRate": "Lecciones convertidas en tareas reales",
+        "bridgePromptsOffered": "Sugerencias de tareas reales ofrecidas",
+        "bridgePromptsConverted": "Hechas en 7 días",
+        "bridgeConversionWindow": "Ventana en días"
       },
       "action": {
         "actionable": "Accionable",
@@ -1936,7 +1941,8 @@
         "job_account_deletions": "Eliminación de cuentas",
         "job_family_retention": "Limpieza de datos familiares",
         "job_social_retention": "Limpieza de datos de amistades",
-        "job_warehouse_retention": "Limpieza de datos de analítica"
+        "job_warehouse_retention": "Limpieza de datos de analítica",
+        "job_badge_link_retirement": "Imágenes de enlaces de insignias antiguos"
       },
       "action": {
         "lookUp": "Buscar",

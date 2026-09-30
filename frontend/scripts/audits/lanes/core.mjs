@@ -97,8 +97,9 @@ export function respond({ spec, path, request, ok }) {
   if (path === '/learn/courses' && !spec.family && !spec.shelf) return ok({ courses: [] });
   if (path === '/family/kids' && !spec.family) return ok({ kids: [] });
   if (path === '/family/guardian-links/mine' && !spec.family) return ok({ links: [] });
-  // S10.3 (OD-9): no audited population is a migrated child, so no data practice asks for a specific consent.
-  if (request.method === 'GET' && (path === '/family-hub/data-practices/me' || /^\/family-hub\/kids\/[^/]+\/data-practices$/.test(path))) {
+  // S10.3 (OD-9): a population is not a migrated child unless its scenario declares `dataPractices` (GAP-FIX-R8: the family lane's
+  // migrated child, its Tutor and a migrated teen, answered in lanes/family.mjs); no other data practice asks for a specific consent.
+  if (request.method === 'GET' && !spec.dataPractices && (path === '/family-hub/data-practices/me' || /^\/family-hub\/kids\/[^/]+\/data-practices$/.test(path))) {
     return ok({ migrated: false, hasTutor: Boolean(spec.roles?.includes('kid')), practices: [] });
   }
   // E.6: "Keep account" cancels the scheduled deletion.
