@@ -33,16 +33,22 @@ Times are from the rehearsal at the largest synthetic volume (section S10.2 of t
 Nothing a family was promised may change between the two inventories: an ordinary lesson or coin between them would show up in the comparison as a change.
 
 1. Stop the automatic migration path and every scheduled job, so nothing runs in the window. On 29 September 2026 that is `database-cd.yml` plus the scheduled workflows `access-review-quarterly`, `account-deletion`, `badge-link-retirement`, `block-b-reviews-quarterly`, `block-d-reviews-quarterly`, `block-e-reviews-quarterly`, `content-retro-checks`, `family-integrity-watch`, `family-retention`, `identity-recalibration-quarterly`, `insights-maintenance`, `learning-retention`, `mentor-bias-audit`, `mentor-equity-audit`, `mentor-evaluation-loop`, `mentor-live-content-monitor`, `mentor-review-routing-audit`, `mentor-thresholds-quarterly`, `nsm-weekly-export`, `pulse-backup`, `social-retention`, `staff-ops-recalibration-quarterly`, `tutor-content-bridge`, `tutor-retention`, `tutor-skill-curation`, `vault-backup` and `vault-drift` (`gh workflow disable <file>` for each). Leave the two watchdogs, `tutor-retention-watch` and `ops-job-watch`, enabled. Neither writes to the database: each reads Core's status and fails or notifies. Expect `tutor-retention-watch` to report the pause. Expect `ops-job-watch` (daily, 10:00 UTC; H.4) to name each paused job as stale on the `ops-watchdog` issue only once that job has had no successful run for 36 hours. A short window stays quiet. A window that runs long, or a job left disabled after step 9, is exactly what it should report. Record any such comment in the window log and close the issue after the first green watch that follows step 9. `family-integrity-watch` also only reads, but it is frozen: it reads the last day of `family_state_audit`, where the migration's own writes are not `service_role` transitions and would open a false Block D Stage 7 revert candidate. The list is pinned: `database/migration-od9/cutover-freeze.test.mjs` (in `npm --prefix database test`) fails when a workflow with a `schedule:` trigger is neither in this list nor one of the two watchdogs. The window's own backup (step 3) replaces the daily one.
-2. Make the application roles read-only (the Supabase login roles every product write goes through), then restart those services so pooled connections pick it up:
+2. Make every product write path read-only, then restart `rest`, `auth` and `storage` so pooled connections pick it up. `.github/workflows/cutover.yml` (`step=freeze`) applies this exact text (`freeze_sql`), restarts the services and runs item 3:
    ```sql
+   CREATE SCHEMA IF NOT EXISTS lf_cutover;
+   -- lf_cutover.freeze_request(): PostgREST's pre-request function. It sets the
+   -- request's transaction read-only, unless the JWT is service_role with the
+   -- claim lf_cutover = 'window' (the window's own token, below).
+   ALTER ROLE authenticator SET pgrst.db_pre_request = 'lf_cutover.freeze_request';
    ALTER ROLE authenticator SET default_transaction_read_only = on;
    ALTER ROLE supabase_auth_admin SET default_transaction_read_only = on;
    ALTER ROLE supabase_storage_admin SET default_transaction_read_only = on;
+   NOTIFY pgrst, 'reload config';
    ```
-   The operator's role (`supabase_admin`) is not affected. Restart the `rest`, `auth` and `storage` services.
-3. **Verify the freeze.** A write through PostgREST with the service key (for example a no-op update of one test account's `learning_stats`) must fail with `cannot execute UPDATE in a read-only transaction`. If it succeeds, the freeze did not take: stop here.
+   The role settings alone are not a freeze. GoTrue (`supabase_auth_admin`) and Storage (`supabase_storage_admin`) open plain transactions, so the read-only default stops them. PostgREST opens every write as an explicit `READ WRITE` transaction, which overrides that default: the production-copy rehearsal of 30 September 2026 watched a service-key write go through (HTTP 204) with all three roles read-only. The pre-request function closes that path for every key PostgREST accepts (anon, a family session, the service key of Core and every internal service), and reads keep working. The one exemption is a `service_role` JWT carrying `lf_cutover: window`, signed with the project's JWT secret, which the workflow mints for the window's own `seed:kc` (step 5.4); only a holder of that secret can make one. The operator's role (`supabase_admin`) is not affected, so the migrations, the OD-9 toolkit and the reconcile run as usual.
+3. **Verify the freeze.** Two no-op writes through PostgREST (an update of `learning_stats` that matches no row). With the service key it must fail with `cannot execute UPDATE in a read-only transaction`; with the window's token it must succeed. If the first succeeds, the freeze did not take; if the second fails, `seed:kc` cannot run: in either case stop here and lift the freeze (step 9.1).
 
-The rehearsal freezes the whole database with `ALTER DATABASE … SET default_transaction_read_only = on` and gives the operator's sessions an explicit override; both application roles it tested were refused. Production freezes the login roles instead, because Supabase's own services reach the database through them.
+The rehearsal on the restored copy (`cutover.yml`, `step=rehearse`) applies the same `freeze_sql` to the copy, runs both verification writes through a PostgREST container, runs `seed:kc` with the window's token under the freeze and proves the freeze still holds afterwards.
 
 ### Step 2. Before inventory
 
@@ -74,7 +80,7 @@ Section 3 of the backup document: decrypt, `pg_restore --list`, restore into a s
    RAILWAY_TOKEN=… RAILWAY_SSH_KEY_PATH=… npm --prefix database run db:railway:migrate -- --confirm-production
    ```
    Tick each file on `plan-NNNN.md` as its receipt appears. The Railway CLI does not return remote exit codes: read the output.
-4. `npm run seed:kc` in `backend/` (the KC graph the OD-24 credit maps onto).
+4. `npm run seed:kc` in `backend/` (the KC graph the OD-24 credit maps onto). It writes through PostgREST, so inside the freeze it runs with the window's token as its service key (`cutover.yml`, `step=seed-kc`, does this when production is frozen).
 
 **Decision point B:** a migration failed. Its own transaction rolled back. If only expand migrations have been applied, the legacy platform can be reopened on this schema (roll back the service deploys, lift the freeze). Once any contract migration is in, the legacy code cannot run on the schema: fix forward within the window, or restore (backup document, section 5).
 
@@ -117,7 +123,7 @@ Reads only; the freeze stays on.
 
 ### Step 9. Switch
 
-1. Lift the freeze: `ALTER ROLE <role> RESET default_transaction_read_only;` for the three roles, then restart `rest`, `auth` and `storage`.
+1. Lift the freeze: `ALTER ROLE authenticator RESET pgrst.db_pre_request;`, `ALTER ROLE <role> RESET default_transaction_read_only;` for the three roles and `NOTIFY pgrst, 'reload config'`, then restart `rest`, `auth` and `storage`. Once a service-key write goes through again, drop the function and its schema (`DROP FUNCTION lf_cutover.freeze_request(); DROP SCHEMA lf_cutover;`). `cutover.yml` (`step=unfreeze`) does all of it in that order.
 2. Promote the frontend release (Vercel), confirm the build actually happened (a push does not imply a deploy).
 3. One real write as the QA family (complete a lesson) succeeds.
 4. Re-enable every workflow disabled in step 1 (`gh workflow enable <file>`), the retention and deletion sweeps first because their promises to families have dates: `account-deletion`, `family-retention`, `social-retention`, `learning-retention`, `tutor-retention` and `insights-maintenance`, then the backups and the drift probe (`vault-backup`, `pulse-backup`, `vault-drift`), then the rest of the step 1 list except `family-integrity-watch`, then `database-cd.yml`. Re-enable `family-integrity-watch` once 24 hours have passed since step 2's freeze was lifted, so its one-day read no longer covers the migration's writes. Confirm with `gh workflow list --all` that none of them is still disabled. `ops-job-watch` stayed enabled and names any sweep that is still quiet 36 hours later.
