@@ -13,6 +13,8 @@ import { namedFeedback } from './namedFeedback';
 
 import { RatioLinesVisual } from './pizarron';
 
+const localCurrency: Record<Locale, string> = { 'en-US': 'USD', 'es-MX': 'MXN', 'pt-BR': 'BRL' };
+
 type CopySet = {
   back: string; practice: string; board: string; showTable: string; showChart: string; packs: string; pack: string;
   items: string; coins: string; total: string; unit: string; unitPrice: string; ratioLines: string; dragPair: string; reset: string;
@@ -61,7 +63,13 @@ export function RatioTableBoard({ document, segment, onBack, sequence, onGrade }
   const allRows = useMemo(() => ratioTableRows(segment.payload, segment.payload.maximumPacks) ?? [], [segment.payload]);
   const rows = allRows.slice(0, packs);
   const current = rows.at(-1);
-  const amount = (value: number) => `${value} ${t.coins}`;
+  // M14 (Appendix P): children count LittleFounders coins; only the adult pathway may price in the market's currency
+  // (v2PayloadScopeProblem), so the payload's currency, not the band, decides the unit.
+  const currency = segment.payload.currency;
+  const money = useMemo(() => new Intl.NumberFormat(document.locale, currency === 'local'
+    ? { style: 'currency', currency: localCurrency[document.locale], currencyDisplay: 'code', maximumFractionDigits: 2 }
+    : { maximumFractionDigits: 2 }), [document.locale, currency]);
+  const amount = (value: number) => currency === 'local' ? money.format(value) : `${money.format(value)} ${t.coins}`;
   const changed = packs !== segment.payload.initialPacks;
   const pairPosition = `${(packs - segment.payload.minimumPacks) / (segment.payload.maximumPacks - segment.payload.minimumPacks) * 100}%`;
   const movePair = (event: PointerEvent<HTMLButtonElement>) => {

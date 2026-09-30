@@ -214,6 +214,8 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
   return viewFailed ? <>{view}<div className="lf-learning-view-failed"><InlineNotice tone="error" live>{playerCopy(document.locale).viewFailed}</InlineNotice></div></> : view;
 
   function renderSegment(segment: LessonClientSegment, key: string) {
+  // B.7 part 3 / Appendix P Parts 1-3 / OD-16 (gap-fix round 7): who may see a kind is decided once, by the shared
+  // V2_AGE_SCOPE that loadLessonClientDocument (and Core) already ran. The player never adds a stricter band guard.
   const any = onGradeAny ? (answer: unknown, id: string) => onGradeAny(answer, id, document) : undefined;
   switch (segment.type) {
     case 'money.unit-price.v2': return <UnitPriceBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
@@ -248,22 +250,16 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
     case 'visual.savings-line.v2': return <GrowthBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
     case 'visual.goal-bullet.v2': return <GoalBulletBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
     case 'visual.percent-grid.v2': return <PercentGridBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
-    case 'math.place-value.v2': return document.age_band !== '6-9' ? unavailable(document.locale, onBack)
-      : <PlaceValueBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
-    case 'logic.savings-rule.v2': return document.age_band !== '10-12' ? unavailable(document.locale, onBack)
-      : <SavingsRuleBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
-    case 'money.running-ledger.v2': return document.age_band !== '13-17' ? unavailable(document.locale, onBack)
-      : <RunningLedgerBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
-    case 'visual.growth-comparison.v2': return document.age_band !== '13-17' ? unavailable(document.locale, onBack)
-      : <GrowthComparisonBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
-    case 'math.ratio-table.v2': return document.age_band !== '10-12' ? unavailable(document.locale, onBack)
-      : <RatioTableBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
-    case 'visual.tax-bracket.v2': return document.age_band !== '13-17' ? unavailable(document.locale, onBack)
-      : <TaxBracketBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
-    case 'math.worked-example.v2': return document.age_band !== '10-12' || !onGradeWorkedExample ? unavailable(document.locale, onBack)
+    case 'math.place-value.v2': return <PlaceValueBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'logic.savings-rule.v2': return <SavingsRuleBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'money.running-ledger.v2': return <RunningLedgerBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'visual.growth-comparison.v2': return <GrowthComparisonBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'math.ratio-table.v2': return <RatioTableBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'visual.tax-bracket.v2': return <TaxBracketBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
+    case 'math.worked-example.v2': return !onGradeWorkedExample ? unavailable(document.locale, onBack)
       : <WorkedExampleBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence}
         onGrade={(answer, id) => onGradeWorkedExample(answer, id, document)} />;
-    case 'math.function-machine.v2': return document.age_band !== '10-12' || !onGradeBarModel ? unavailable(document.locale, onBack)
+    case 'math.function-machine.v2': return !onGradeBarModel ? unavailable(document.locale, onBack)
       : <FunctionMachineBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence}
         onGrade={(answer, id) => onGradeBarModel(answer, id, document)} />;
     case 'math.cpa-count.v2': return !onGradeNumberLine || !sequence ? unavailable(document.locale, onBack)
@@ -273,11 +269,9 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
       document={document} segment={segment} onBack={onBack} sequence={sequence}
       onGrade={(answer, segmentId) => onGradeNumberLine(answer, segmentId, document)} />
       : unavailable(document.locale, onBack);
-    case 'math.number-line.fraction.v2': return document.age_band !== '10-12' ? unavailable(document.locale, onBack)
-      : onGradeNumberLine ? <FractionNumberLineBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence}
+    case 'math.number-line.fraction.v2': return onGradeNumberLine ? <FractionNumberLineBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence}
         onGrade={(answer, segmentId) => onGradeNumberLine(answer, segmentId, document)} /> : unavailable(document.locale, onBack);
-    case 'math.fraction-area.v2': return document.age_band !== '6-9' ? unavailable(document.locale, onBack)
-      : onGradeFractionArea ? <FractionAreaBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence}
+    case 'math.fraction-area.v2': return onGradeFractionArea ? <FractionAreaBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence}
         onGrade={(answer, segmentId) => onGradeFractionArea(answer, segmentId, document)} /> : unavailable(document.locale, onBack);
     case 'reasoning.decide-justify.v2': return onGradeReasoning ? <DecisionReasonsBoard key={key} document={document} segment={segment} onBack={onBack}
       sequence={sequence} onGrade={(answer, id) => onGradeReasoning(answer, id, document)} /> : unavailable(document.locale, onBack, 'upgrade');
