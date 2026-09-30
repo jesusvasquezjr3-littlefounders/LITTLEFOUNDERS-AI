@@ -74,6 +74,11 @@ node agent/tools/check-block-b-thresholds.mjs --strict
 # quarterly Block E threshold recalibration or regulatory watch-list re-check,
 # each due by docs/rebuild/policies/SOCIAL-GOVERNANCE.md §1.2 and §1.3.
 node agent/tools/block-e-review-cadence.mjs --strict
+# Appendix N and O Part 3 Stage 6 (gap-fix round 7): nor on an overdue
+# quarterly Block G (Platform Lead) or Block H (Data/Privacy Lead)
+# recalibration, due by docs/operations/STAFF-OPS-RECALIBRATION-LOG.md, whose
+# thresholds and calibration values must match the code.
+node agent/tools/staff-ops-review-cadence.mjs --strict
 # Appendix J 1.3 / DoD 2.1(2): the data-gateway half of the social release
 # gate. Every native-PostgreSQL social verifier (and the teen discoverable,
 # cooperative goals and account-erasure ones) against the full migration

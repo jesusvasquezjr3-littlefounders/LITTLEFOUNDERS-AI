@@ -294,3 +294,38 @@ to retain because an active guardian consent admitted them at the source.
   exposures additionally require the existing consent gate.
 - No live experiment currently reaches any user; this policy applies from the
   first wired experiment onward.
+
+## 7. Post-launch recalibration (Appendix N and O, Part 3 Stage 6)
+
+- **One threshold log for both blocks:**
+  `docs/operations/STAFF-OPS-RECALIBRATION-LOG.md`. It lists every Appendix N
+  and O Part 1 metric with its kind (release gate, diagnostic or
+  documentation), target and code source. It also records the calibration
+  values: the G.2 30-day retroactive window, the G.4 90-day access-review
+  cadence, the 36-hour watchdog and undelivered-alert windows, the 24-hour
+  stalled erasure, and the H.7 age floors. The owner decision log (section 8)
+  sends these values through this log.
+- **Owners and cadence.** Quarterly for each block:
+  - Block G: the Platform Lead reviews access-review compliance, bypass-path
+    usage and Audit Log completeness;
+  - Block H: the Data/Privacy Lead reviews consent coverage, alert delivery,
+    watchdog drill results and retention-policy currency.
+  The first human review is due 2026-12-31. This is separate from the
+  per-grant access review of section 2.
+- **Enforced.** `agent/tools/staff-ops-review-cadence.mjs` runs in `npm run
+  spec:check`. It fails when the log drifts from the code: a missing or
+  unknown metric, a source that no longer exists, or a calibration value that
+  differs from the constant or migration. With `--strict` (release readiness)
+  it also fails while either review is overdue.
+  `.github/workflows/staff-ops-recalibration-quarterly.yml` opens the
+  quarter's `staff-ops-review` issue on 1 January, April, July and October.
+  The issue lists every release-gate metric and asks for the quarterly
+  simulated job-failure drill (`npm --prefix backend run ops:drill`,
+  Appendix O 1.3).
+- **Stage 6 rollback rule.** A regression in any of these five metrics is
+  rolled back at once, never patched under pressure:
+  - the Cosmetic-Permission Regression Test;
+  - the Release-Verification Bypass Rate;
+  - the Kid-Role Consent Gate Regression Check;
+  - the Alert-to-Notification Delivery Rate;
+  - Watchdog Coverage.

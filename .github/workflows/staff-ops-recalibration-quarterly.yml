@@ -1,0 +1,68 @@
+name: Quarterly Blocks G and H recalibration
+
+# Appendix N Part 3 Stage 6 (Platform Lead) and Appendix O Part 3 Stage 6
+# (Data/Privacy Lead): Post-Launch Recalibration "on a quarterly cadence,
+# consistent with Appendices H, J, L and M". Appendix O 1.3: the simulated
+# job-failure drill runs "quarterly otherwise". Gap-fix round 7, staff-ops.
+#
+# Two triggers, as for Block A (identity-recalibration-quarterly.yml):
+#   - per release: agent/tools/release-readiness.sh runs
+#     staff-ops-review-cadence.mjs --strict, which fails while either block's
+#     review is past the due date docs/operations/STAFF-OPS-RECALIBRATION-LOG.md
+#     states;
+#   - per calendar quarter (THIS workflow): on 1 January, April, July and
+#     October it opens the quarter's issue, labelled `staff-ops-review`, for
+#     both leads: each block's last human review and next due date, every
+#     release-gate metric, the calibration values, the Stage 6 rollback rule
+#     and the reminder to run the simulated job-failure drill
+#     (npm --prefix backend run ops:drill).
+#
+# This is not the per-grant access review: access-review-quarterly.yml opens
+# that one (G.4). Nothing here reads Core or production; the schedule lives in
+# the repo's log. A malformed log still opens the issue and turns the run red.
+#
+# agent/tools/staff-ops-review-cadence.test.mjs pins the schedule, the tool
+# call and the notification.
+
+on:
+  schedule:
+    - cron: '0 9 1 1,4,7,10 *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  open-review:
+    name: Open the quarter's Blocks G and H recalibration
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Write the review issue
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          node agent/tools/staff-ops-review-cadence.mjs --issue-file issue.md --title-file title.txt
+
+      - name: Open the review issue for the Platform Lead and the Data/Privacy Lead
+        if: always() && hashFiles('issue.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          title=$(cat title.txt)
+          existing=$(gh issue list --state open --label staff-ops-review --search "\"$title\" in:title" --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "${existing:-}" ]; then
+            gh issue comment "$existing" --body-file issue.md
+          else
+            gh label create staff-ops-review --color 5319E7 --description 'Appendix N and O Stage 6 quarterly Blocks G and H recalibration' 2>/dev/null || true
+            gh issue create --title "$title" --label staff-ops-review --body-file issue.md
+          fi
