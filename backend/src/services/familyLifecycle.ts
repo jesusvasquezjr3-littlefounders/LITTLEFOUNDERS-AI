@@ -201,3 +201,27 @@ export async function getFamilyStateIntegrity(since: Date): Promise<IntegrityRow
   const parsed = z.array(IntegrityRow).safeParse(raw.body);
   return parsed.success ? parsed.data : null;
 }
+
+export interface FamilyStateIntegrity {
+  since: string;
+  tables: { table: string; transitions: number; outsideService: number }[];
+  transitions: number;
+  outsideService: number;
+}
+
+/**
+ * The D.4 metric as staff (GET /admin/family/state-integrity) and the daily
+ * production watch (GET /internal/ops/family-integrity, gap-fix round 8) both
+ * read it: one shape, so the watch never re-derives what the console shows.
+ */
+export async function readFamilyStateIntegrity(since: Date): Promise<FamilyStateIntegrity | null> {
+  const rows = await getFamilyStateIntegrity(since);
+  if (rows === null) return null;
+  const tables = rows.map((r) => ({ table: r.table_name, transitions: r.transitions, outsideService: r.outside_service }));
+  return {
+    since: since.toISOString(),
+    tables,
+    transitions: tables.reduce((sum, t) => sum + t.transitions, 0),
+    outsideService: tables.reduce((sum, t) => sum + t.outsideService, 0),
+  };
+}
