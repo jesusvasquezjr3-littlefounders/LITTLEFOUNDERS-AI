@@ -284,11 +284,13 @@ jobs:
           }
           # A service_role JWT carrying lf_cutover=window, which the freeze lets
           # write (seed:kc, and the freeze's second verification write). $1 is
-          # the JWT secret. Masked before anything can print it.
+          # the JWT secret. Masked before anything can print it; the mask goes to
+          # stderr (as backend_var's does) because callers capture stdout, and
+          # a mask line captured with the token corrupts the header it is sent in.
           cutover_token() {
             local t
             t="$(node "$LF/jwt.mjs" "$1" service_role cutover)"
-            echo "::add-mask::$t"
+            echo "::add-mask::$t" >&2
             printf '%s' "$t"
           }
 
@@ -764,9 +766,12 @@ jobs:
             files="$(find database/migrations -maxdepth 1 -name '[0-9][0-9][0-9][0-9]_*.sql' | wc -l)"
             echo "ledger receipts $ledger, migration files $files"
             [ "$ledger" -ge "$files" ]
-            code="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$PROXY_PORT/rest/v1/data_practices?select=key&limit=1" \
-              -H "apikey: $(anon_jwt)" -H "Authorization: Bearer $(anon_jwt)")"
-            echo "PostgREST read of the migrated schema: HTTP $code"
+            # Core's shape: the anon key at the gateway, the service key as the
+            # bearer. data_practices is not granted to anon (0186), so an anon
+            # read is a 404 by design, not a smoke signal.
+            code="$(curl -s -o "$LF/probe.json" -w '%{http_code}' "http://127.0.0.1:$PROXY_PORT/rest/v1/data_practices?select=key&limit=1" \
+              -H "apikey: $(anon_jwt)" -H "Authorization: Bearer $(service_jwt)")"
+            echo "PostgREST read of the migrated schema: HTTP $code $( [ "$code" = 200 ] || probe_detail)"
             [ "$code" = 200 ]
           }
           # Step 9.1 on the copy.
@@ -1094,9 +1099,11 @@ jobs:
           grep -q '^pending ' "$LF/ledger.txt" && { echo "migrations pending:"; grep '^pending ' "$LF/ledger.txt"; fail=1; } || echo "Ledger current."
           od9_prod findings | grep -Ev '"report"' || fail=1
           echo "Unreleased legacy consent subjects: $(echo 'SELECT count(*) FROM public.legacy_consent_subjects WHERE released_at IS NULL;' | prod_sql)"
-          url="$(backend_var SUPABASE_URL)"; anon="$(backend_var SUPABASE_ANON_KEY)"
-          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$url/rest/v1/data_practices?select=key&limit=1" -H "apikey: $anon" -H "Authorization: Bearer $anon")
-          echo "PostgREST read of the migrated schema: $code"; [ "$code" = 200 ] || fail=1
+          # Core's shape (anon key at the gateway, service key as the bearer):
+          # data_practices is not granted to anon (0186), so an anon read 404s.
+          url="$(backend_var SUPABASE_URL)"; anon="$(backend_var SUPABASE_ANON_KEY)"; key="$(backend_var SUPABASE_SERVICE_ROLE_KEY)"
+          code=$(curl -s -o "$LF/probe.json" -w '%{http_code}' --max-time 20 "$url/rest/v1/data_practices?select=key&limit=1" -H "apikey: $anon" -H "Authorization: Bearer $key")
+          echo "PostgREST read of the migrated schema: $code $( [ "$code" = 200 ] || probe_detail)"; rm -f "$LF/probe.json"; [ "$code" = 200 ] || fail=1
           echo "Still to do by a person (runbook step 8): the QA-family checks in the browser and the QA child's consent toggle."
           [ "$fail" = 0 ] || die "a smoke check failed (decision point D)"
 
