@@ -1594,6 +1594,7 @@
         "coachingDelivery": "Tutores que podían recibir un consejo, y quiénes lo recibieron y abrieron.",
         "reflections": "Decisiones de Tutores con la pregunta de reflexión antes.",
         "bridge": "Aprendices elegibles que participaron en cada momento de dinero.",
+        "bridgePaired": "Revísalo junto con Lecciones convertidas en tareas reales, de Calidad del Mentor.",
         "research": "Cobertura y completitud de los datos de investigación a largo plazo.",
         "socialSafety": "Niveles, revisiones y consentimiento adolescente.",
         "socialGovernance": "Filas fuera de plazo, superficies de mensajes y archivos subidos.",
@@ -1731,6 +1732,10 @@
         "minAge": "Edad mínima",
         "engaged": "Participaron",
         "engagementRate": "Participación",
+        "bridgeConversionRate": "Lecciones convertidas en tareas reales",
+        "bridgePromptsOffered": "Sugerencias de tareas reales ofrecidas",
+        "bridgePromptsConverted": "Hechas en 7 días",
+        "bridgeConversionWindow": "Ventana en días",
         "windowMonths": "Meses medidos",
         "minTenureMonths": "Antigüedad mínima, meses",
         "longTenure": "Antigüedad larga",
@@ -1934,7 +1939,8 @@
         "job_insights_prune": "Limpieza de eventos de aprendizaje",
         "job_account_deletions": "Eliminación de cuentas",
         "job_family_retention": "Limpieza de datos familiares",
-        "job_social_retention": "Limpieza de datos de amistades"
+        "job_social_retention": "Limpieza de datos de amistades",
+        "job_badge_link_retirement": "Imágenes de enlaces de insignias antiguos"
       },
       "action": {
         "lookUp": "Buscar",

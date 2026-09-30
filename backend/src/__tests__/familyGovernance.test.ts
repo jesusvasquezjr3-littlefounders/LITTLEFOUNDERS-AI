@@ -9,6 +9,7 @@ import {
 } from '../services/familyRetention.js';
 import { COACHING_REFLECTION_WINDOW_MINUTES, COACHING_TIPS, REFLECTIONS, reviewedTipIds } from '../services/parentCoaching.js';
 import { MONEY_BRIDGE_MIN_AGE } from '../services/moneyBridge.js';
+import { MENTOR_QUALITY_THRESHOLDS } from '../services/pedagogy/mentorQuality.js';
 import { RESEARCH_DISCLOSURE_VERSION } from '../services/familyResearch.js';
 import { admissionStubResponse, jsonResponse, mintToken } from './helpers.js';
 
@@ -549,7 +550,10 @@ describe('S07.7 metrics (analytics staff)', () => {
     }],
     ['/admin/family/coaching-delivery?period=2026-09', { parent_coaching_delivery_rate: { status: 200, body: [{ period: '2026-09-01', eligible: 0, delivered: 0, opened: 0, dismissed: 0 }] } }],
     ['/admin/family/coaching-reflections?days=30', { parent_coaching_reflection_rate: { status: 200, body: [{ tutor_decisions: 4, with_reflection: 3, written: 1, shared: 1, skipped: 1 }] } }],
-    ['/admin/family/bridge-engagement', { money_bridge_engagement: { status: 200, body: ['all', 'first_pay', 'first_account', 'first_budget'].map((m) => ({ milestone: m, eligible: 4, engaged: 1, arrived: 1, completed: 0 })) } }],
+    ['/admin/family/bridge-engagement', {
+      money_bridge_engagement: { status: 200, body: ['all', 'first_pay', 'first_account', 'first_budget'].map((m) => ({ milestone: m, eligible: 4, engaged: 1, arrived: 1, completed: 0 })) },
+      learning_narrative_metrics: { status: 200, body: { journal_entries_recorded: 3, journal_entries_resurfaced: 1, bridge_prompts_offered: 25, bridge_prompts_converted_7d: 5, bridge_self_commitments: 2 } },
+    }],
     ['/admin/family/research-completeness', { family_research_completeness: { status: 200, body: [
       { cohort: 'all', long_tenure: 10, enrolled: 4, measurable: 2, complete: 1 }, { cohort: 'bridge_age', long_tenure: 0, enrolled: 0, measurable: 0, complete: 0 }] } }],
   ];
@@ -569,6 +573,33 @@ describe('S07.7 metrics (analytics staff)', () => {
     expect(reflections).toMatchObject({ tutorDecisions: 4, withReflection: 3, firedRate: 0.75 });
     expect((completeness as { cohorts: Record<string, unknown>[] }).cohorts[0]).toMatchObject({ coverage: 0.4, completeness: 0.5 });
     expect((completeness as { cohorts: Record<string, unknown>[] }).cohorts[1]).toMatchObject({ coverage: null, completeness: null });
+  });
+
+  it('Appendix H 1.1 (GAP-FIX-R8): the engagement rate carries the B.13 conversion rate over the Mentor-quality window, to be reviewed together', async () => {
+    const calls = stub(METRICS.find(([path]) => path === '/admin/family/bridge-engagement')![1]);
+    const before = Date.now();
+    const res = await app().get('/api/v1/admin/family/bridge-engagement').set('Authorization', auth(ANALYST));
+    expect(res.status).toBe(200);
+    expect(res.body.data.moments[0]).toMatchObject({ milestone: 'all', eligible: 4, engaged: 1, engagementRate: 0.25 });
+    expect(res.body.data.conversion).toEqual({
+      requirement: 'B.13', metric: 'learning.bridge_conversion', windowDays: MENTOR_QUALITY_THRESHOLDS.windowDays,
+      offered: 25, converted: 5, selfCommitments: 2, conversionRate: 0.2, minSample: MENTOR_QUALITY_THRESHOLDS.narrativeMinSample, sufficient: true,
+    });
+    // The same RPC and window the Mentor-quality dashboard reads for learning.bridge_conversion.
+    const read = rpcCalls(calls, 'learning_narrative_metrics')[0]!.body as { p_since: string; p_until: string };
+    expect(Date.parse(read.p_until) - Date.parse(read.p_since)).toBe(MENTOR_QUALITY_THRESHOLDS.windowDays * 86_400_000);
+    expect(Date.parse(read.p_until)).toBeGreaterThanOrEqual(before);
+    // No prompt offered is no rate (never 0%), and a thin sample says so.
+    stub({ ...METRICS.find(([path]) => path === '/admin/family/bridge-engagement')![1],
+      learning_narrative_metrics: { status: 200, body: { bridge_prompts_offered: 0, bridge_prompts_converted_7d: 0, bridge_self_commitments: 0 } } });
+    expect((await app().get('/api/v1/admin/family/bridge-engagement').set('Authorization', auth(ANALYST))).body.data.conversion)
+      .toMatchObject({ offered: 0, conversionRate: null, sufficient: false });
+    // Either half unreadable is a 502: one half alone is the independent review Appendix H rules out.
+    stub({ money_bridge_engagement: METRICS.find(([path]) => path === '/admin/family/bridge-engagement')![1].money_bridge_engagement! });
+    expect((await app().get('/api/v1/admin/family/bridge-engagement').set('Authorization', auth(ANALYST))).status).toBe(502);
+    stub({ ...METRICS.find(([path]) => path === '/admin/family/bridge-engagement')![1],
+      learning_narrative_metrics: { status: 200, body: { bridge_prompts_offered: 'many' } } });
+    expect((await app().get('/api/v1/admin/family/bridge-engagement').set('Authorization', auth(ANALYST))).status).toBe(502);
   });
 
   it('refuses support-only staff, a parent and a child before any metric read, and bad windows', async () => {

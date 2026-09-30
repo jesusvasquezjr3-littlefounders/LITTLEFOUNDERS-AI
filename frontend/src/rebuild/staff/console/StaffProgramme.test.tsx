@@ -74,9 +74,10 @@ describe('programme metric descriptions', () => {
         const c = copy.staffConsole.programme;
         expect(c.heading[spec.id as keyof typeof c.heading], `${spec.id} heading`).toBeTruthy();
         expect(c.body[spec.id as keyof typeof c.body], `${spec.id} body`).toBeTruthy();
-        for (const field of [...(spec.headline ? [spec.headline] : []), ...spec.facts, ...(spec.rows ?? []).flatMap((rows) => rows.columns)]) {
+        for (const field of [...(spec.headline ? [spec.headline] : []), ...spec.facts, ...(spec.rows ?? []).flatMap((rows) => rows.columns), ...(spec.paired?.facts ?? [])]) {
           expect(c.option[field.key as keyof typeof c.option], `${spec.id}.${field.key}`).toBeTruthy();
         }
+        if (spec.paired) expect(c.body[spec.paired.note as keyof typeof c.body], `${spec.id} paired note`).toBeTruthy();
         for (const rows of spec.rows ?? []) expect(c.heading[rows.caption as keyof typeof c.heading], rows.caption).toBeTruthy();
       }
     }
@@ -123,6 +124,29 @@ describe('Learning intel → Families (view_analytics)', () => {
     expect(await screen.findByRole('heading', { name: p.heading.teenWallet })).toBeTruthy();
     expect(gets.some((path) => path === '/admin/family/teen-wallet-adoption?days=30')).toBe(true);
     expect(await screen.findByText(p.option.v_transition)).toBeTruthy();
+  });
+
+  it('Appendix H 1.1 (GAP-FIX-R8): the bridge engagement card shows the B.13 conversion rate beside it, and a payload without it is an error', async () => {
+    const { api } = fakeApi();
+    render(<Frame><StaffIntel api={api} viewer={ANALYST} initialView="families" /></Frame>);
+    await screen.findByRole('heading', { name: p.heading.stateIntegrity });
+    fireEvent.click(screen.getByRole('radio', { name: p.option.group_coaching }));
+    const card = (await screen.findByRole('heading', { name: p.heading.bridge })).closest('section')!;
+    const paired = await waitFor(() => { const el = card.querySelector<HTMLElement>('[data-paired="bridge"]'); if (!el) throw new Error('no pair'); return el; });
+    expect(within(paired).getByText(p.body.bridgePaired)).toBeTruthy();
+    expect(paired.querySelector('[data-fact="bridgeConversionRate"] dd')!.textContent).toMatch(/22/);
+    expect(paired.querySelector('[data-fact="bridgePromptsOffered"] dd')!.textContent).toBe('41');
+    expect(paired.querySelector('[data-fact="bridgePromptsConverted"] dd')!.textContent).toBe('9');
+    expect(paired.querySelector('[data-fact="bridgeConversionWindow"] dd')!.textContent).toBe('30');
+    // The engagement table is on the same card.
+    expect(within(card).getByText(p.heading.bridgeRows)).toBeTruthy();
+    const spec = FAMILY_METRICS.coaching.find((metric) => metric.id === 'bridge')!;
+    const ready = programme.routes['/admin/family/bridge-engagement'];
+    const { conversion: _conversion, ...engagementOnly } = ready;
+    expect(metricGuard(spec)(engagementOnly)).toBe(false);
+    expect(metricGuard(spec)({ ...ready, conversion: { ...ready.conversion, offered: null } })).toBe(false);
+    // No prompt offered is no data, never 0%.
+    expect(metricGuard(spec)({ ...ready, conversion: { ...ready.conversion, offered: 0, converted: 0, conversionRate: null } })).toBe(true);
   });
 
   it('a malformed metric is an error with a retry, the others still render', async () => {
@@ -243,11 +267,11 @@ describe('Reports → Support tools (manage_support)', () => {
     expect(ok).toHaveTextContent(s.option.alertsDelivered);
   });
 
-  it('lists the family-data jobs and names stalled erasures in words (H.4, E.6, GAP-FIX-R6)', async () => {
+  it('lists the family-data jobs and names stalled erasures in words (H.4, E.6, GAP-FIX-R6; the badge-image purge, GAP-FIX-R8)', async () => {
     const { api } = fakeApi();
     render(<Frame><StaffReports api={api} initialView="support" /></Frame>);
     const jobs = await waitFor(() => { const el = document.querySelector<HTMLElement>('[data-tool="ops-jobs"]'); if (!el) throw new Error('no card'); return el; });
-    for (const name of ['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune'] as const) {
+    for (const name of ['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune', 'badge_link_retirement'] as const) {
       await within(jobs).findByText(s.option[`job_${name}`]);
       expect(jobs.querySelector(`[data-job="${name}"]`)!.getAttribute('data-stale')).toBe('false');
     }
