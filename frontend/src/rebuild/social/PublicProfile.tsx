@@ -55,7 +55,8 @@ export interface PublicPerson {
   badges: { slug: string; title: string; completedAt: string | null }[];
 }
 
-export type RequestStatus = 'idle' | 'saving' | 'pending' | 'failed' | 'cooldown' | 'limit' | 'connected' | 'review';
+/** `handle`: the viewer has no @username yet, and a teen decides only about someone it can identify (GAP-FIX-R8 social). */
+export type RequestStatus = 'idle' | 'saving' | 'pending' | 'failed' | 'cooldown' | 'limit' | 'connected' | 'review' | 'handle';
 
 /** How this viewer may connect, from Core's `connection` mode (E.1, E.8). */
 export type ConnectView =
@@ -259,6 +260,7 @@ function Connect({ copy, connect, onFollow, onUnfollow, onAsk, onNavigate }: {
       {notice ? <InlineNotice tone={status === 'connected' ? 'success' : 'info'}>{notice}</InlineNotice> : null}
       {status === 'failed' ? <InlineNotice tone="error">{copy.askFailed}</InlineNotice> : null}
       {status === 'review' ? <InlineNotice tone="error">{copy.askReview}</InlineNotice> : null}
+      {status === 'handle' ? <InlineNotice tone="error">{copy.askHandle}</InlineNotice> : null}
     </div>
   </div>;
 }

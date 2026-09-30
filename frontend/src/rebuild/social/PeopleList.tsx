@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type enProfile from '../../i18n/en-US/rebuild-profile.json';
-import { Button, Card, ConfirmDialog, EmptyState, ErrorState, InlineNotice, LoadingState, Pill } from '../design/controls';
+import { Button, Card, ConfirmDialog, DestructiveAction, EmptyState, ErrorState, InlineNotice, LoadingState, Pill } from '../design/controls';
+import { ReportDialog, type ReportCategory, type ReportCopy } from './ReportDialog';
 import { CartoonAvatar } from '../account/avatar/CartoonAvatar';
 import type { AvatarLook } from '../account/avatar/avatarKit';
 import { BackLink, followInApp } from '../account/navLink';
@@ -28,6 +29,11 @@ import './people.css';
  *   - A child's own lists say who approves their connections (E.1).
  *   - A guest has no social layer (OD-3): the list says so.
  *   - Another person's lists (P7, P8) are read-only and name whose they are.
+ *   - GAP-FIX-R8 social (E.3 on a list entry, E.8): on the viewer's own lists
+ *     every row, one without a @username included, also carries Report and
+ *     Block (behind a confirmation). They reach Core by user id, so a
+ *     connection is always manageable by the person it connects to, even when
+ *     there is no profile to open.
  *
  * Presentation only: the route owns the data and passes a view.
  */
@@ -46,8 +52,14 @@ export type PeopleView =
 /** What a row's one action does: unfollow (own following), remove (a teen's own followers), or nothing. */
 export type RowAction = 'unfollow' | 'remove' | null;
 export interface PeopleNotice { tone: 'success' | 'error'; text: string }
+/** E.3 on the viewer's own lists: report (true only on Core's receipt) and block (after the confirmation). */
+export interface RowSafety {
+  reportCopy: ReportCopy;
+  onReport: (person: PersonRow, category: ReportCategory, note: string | null) => Promise<boolean>;
+  onBlock: (person: PersonRow) => Promise<void>;
+}
 
-export function PeopleList({ copy, locale, dark, ageBand, list, owner, view, action, confirmUnfollow = false, busyId, notice, onAct, onRetry, onNavigate }: {
+export function PeopleList({ copy, locale, dark, ageBand, list, owner, view, action, confirmUnfollow = false, safety, busyId, notice, onAct, onRetry, onNavigate }: {
   copy: PeopleListCopy;
   locale: string;
   dark: boolean;
@@ -59,6 +71,8 @@ export function PeopleList({ copy, locale, dark, ageBand, list, owner, view, act
   action: RowAction;
   /** Ask before an unfollow (a child whose connections its Tutor manages, E.1). */
   confirmUnfollow?: boolean;
+  /** Report and Block on each row; offered on the viewer's own lists only. */
+  safety?: RowSafety;
   busyId: string | null;
   notice: PeopleNotice | null;
   onAct: (person: PersonRow) => void;
@@ -118,9 +132,16 @@ export function PeopleList({ copy, locale, dark, ageBand, list, owner, view, act
                     <ul className="lf-people-list" aria-label={title}>
                       {view.people.map((person, index) => <li key={person.userId} className="lf-people-row">
                         <Person person={person} tutorLabel={copy.tutor} onNavigate={onNavigate} />
-                        {action && person.username ? <Button size="sm" disabled={busyId !== null && busyId !== person.userId}
-                          pending={busyId === person.userId} pendingLabel={action === 'unfollow' ? copy.unfollowing : copy.removing}
-                          onClick={() => press(person, index)}>{action === 'unfollow' ? copy.unfollow : copy.remove}</Button> : null}
+                        {action || (own && safety) ? <div className="lf-people-actions" role="group" aria-label={person.displayName || person.username || title}>
+                          {action ? <Button size="sm" disabled={busyId !== null && busyId !== person.userId}
+                            pending={busyId === person.userId} pendingLabel={action === 'unfollow' ? copy.unfollowing : copy.removing}
+                            onClick={() => press(person, index)}>{action === 'unfollow' ? copy.unfollow : copy.remove}</Button> : null}
+                          {own && safety ? <>
+                            <ReportDialog copy={safety.reportCopy} triggerLabel={copy.report} size="sm" disabled={busyId !== null} onSend={(category, note) => safety.onReport(person, category, note)} />
+                            <DestructiveAction label={copy.block} size="sm" disabled={busyId !== null} onConfirm={() => { lastActed.current = index; return safety.onBlock(person); }}
+                              confirm={{ heading: copy.blockTitle, consequence: copy.blockBody, keepLabel: copy.blockKeep, confirmLabel: copy.blockConfirm, pendingLabel: copy.blocking }} />
+                          </> : null}
+                        </div> : null}
                       </li>)}
                     </ul>
                   </Card>}

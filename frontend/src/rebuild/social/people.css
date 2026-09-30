@@ -50,6 +50,8 @@
 .lf-people-text { display: grid; gap: var(--spacing-1); justify-items: start; min-inline-size: 0; }
 .lf-people-name { font: var(--type-label); overflow-wrap: anywhere; }
 .lf-people-handle { font: var(--type-caption); color: var(--content-muted); overflow-wrap: anywhere; }
+/* GAP-FIX-R8 social: a row's own actions (unfollow or remove, report, block) wrap together under the person on a narrow column. */
+.lf-people-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2); min-inline-size: 0; }
 
 /* Dark mode has no elevation: a secondary button inside a raised row steps down to the page's base (as on the own profile). */
 .lf-account-screen[data-theme='dark'] .lf-people-row .lf-button--secondary:not(:disabled) { background: var(--base); }

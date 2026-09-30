@@ -9,6 +9,7 @@ import {
   getPendingTeenRequests,
   getTeenActionableRequest,
   hasPendingTeenRequest,
+  readOwnConnection,
   readSocialTier,
   removeSocialFollower,
   requestTeenConnection,
@@ -434,6 +435,85 @@ export function ownProfileRouter(): Router {
     return ok(res, { removed: true });
   });
 
+  /*
+   * E.3 and E.8 by user id (GAP-FIX-R8 social; Block E Standard component 2;
+   * Appendix J 2.1 criterion 2). The session's own connections are addressed
+   * by the user id Core already sends on every list row, so an account
+   * without a @username (the default for a new account) can still be removed,
+   * unfollowed, reported and blocked by the person it is connected to.
+   * Admission is a connection with the session, read from the graph: a follow
+   * edge in either direction or an accepted teen consent either way (Remove
+   * needs the follower edge, Unfollow the following edge). Anything else,
+   * including the session's own id, is the same 404 the username routes give,
+   * so an id discovers nothing. The writes are the ones the username routes
+   * use: remove_social_follower, withdraw_social_connection (the session's
+   * token), submit_social_report (the session is always the reporter) and the
+   * session's own audited block write.
+   */
+  type Need = 'follower' | 'following' | 'any';
+  async function ownConnection(req: { params: Record<string, string | undefined>; query: Record<string, unknown> }, res: Parameters<typeof fail>[0], sessionId: string, need: Need): Promise<string | null> {
+    const id = z.string().uuid().safeParse(req.params.userId);
+    if (!id.success || Object.keys(req.query).length > 0) {
+      fail(res, 400, 'VALIDATION_ERROR', 'Choose a valid connection');
+      return null;
+    }
+    const connection = await readOwnConnection(sessionId, id.data);
+    if (connection === null) {
+      fail(res, 502, 'DATA_UNAVAILABLE', 'Could not check the connection');
+      return null;
+    }
+    const admitted = need === 'any' ? connection.follower || connection.following || connection.teenAccepted : connection[need];
+    if (id.data === sessionId || !admitted) {
+      fail(res, 404, 'NOT_FOUND', 'No such connection');
+      return null;
+    }
+    return id.data;
+  }
+
+  router.delete('/followers/id/:userId', async (req, res) => {
+    const user = authedUser(res);
+    const follower = await ownConnection(req, res, user.id, 'follower');
+    if (!follower) return res;
+    const removed = await removeSocialFollower(user.id, follower);
+    if (removed === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not remove this follower');
+    if (!removed) return fail(res, 404, 'NOT_FOUND', 'No such connection');
+    return ok(res, { userId: follower, removed: true });
+  });
+
+  router.delete('/following/id/:userId', async (req, res) => {
+    const user = authedUser(res);
+    const followed = await ownConnection(req, res, user.id, 'following');
+    if (!followed) return res;
+    const done = await deleteFollow(user.accessToken, user.id, followed);
+    if (!done) return fail(res, 502, 'INTERNAL', 'Could not unfollow');
+    // Appendix J (E.2 audit completeness): a real unfollow, reconciled with its audit row.
+    noteSocialProtectionEvent('unfollow', user.id, followed);
+    return ok(res, { userId: followed, following: false });
+  });
+
+  router.post('/connections/:userId/report', async (req, res) => {
+    const body = QueueReportBody.safeParse(req.body);
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a report reason');
+    const user = authedUser(res);
+    const subject = await ownConnection(req, res, user.id, 'any');
+    if (!subject) return res;
+    const result = await submitSocialReport(user.id, subject, body.data.category, body.data.note ?? null);
+    if (result === 'invalid') return fail(res, 400, 'VALIDATION_ERROR', 'This report cannot be recorded');
+    if (result === 'unavailable') return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the report');
+    return ok(res, { userId: subject, reported: true, reportId: result.id }, 201);
+  });
+
+  router.post('/connections/:userId/block', async (req, res) => {
+    const body = z.object({}).strict().safeParse(req.body ?? {});
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'No body fields are accepted');
+    const user = authedUser(res);
+    const subject = await ownConnection(req, res, user.id, 'any');
+    if (!subject) return res;
+    const done = await blockUser(user.accessToken, user.id, subject);
+    if (!done) return fail(res, 502, 'INTERNAL', 'Could not block this account');
+    return ok(res, { userId: subject, blocked: true });
+  });
+
   return router;
 }
 
@@ -570,6 +650,13 @@ export function publicProfilesRouter(): Router {
     if (subjectTier !== 'teen') return fail(res, 400, 'VALIDATION_ERROR', 'This connection does not use approval');
     // E.8: the teen decides. A child cannot ask (its Tutor manages its connections).
     if (viewerTier === 'guardian') return fail(res, 403, 'GUARDIAN_MANAGED_CONNECTIONS', 'A Tutor manages this account\'s connections');
+    // GAP-FIX-R8 social (E.3, E.8): the teen decides about someone they can
+    // identify and open by handle, so an account without a @username (the
+    // default for a new account) chooses one before it can ask. Edges formed
+    // before this rule stay manageable through the id routes.
+    const own = await getFullOwnProfile(user.accessToken, user.id);
+    if (!own?.[0]) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not check your profile');
+    if (!own[0].username) return fail(res, 409, 'USERNAME_REQUIRED', 'Choose a @username before you ask');
     const outcome = await requestTeenConnection(user.id, profile.user_id);
     switch (outcome.status) {
       case 'pending':

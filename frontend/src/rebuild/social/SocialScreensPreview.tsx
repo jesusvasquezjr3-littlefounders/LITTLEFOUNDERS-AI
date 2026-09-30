@@ -82,10 +82,13 @@ const PEOPLE: PersonRow[] = [
   { userId: 'u1', displayName: 'Bartolomeo Alessandro Rodríguez Villanueva', username: 'bartolomeo_villa', look: MARTA, tutor: false },
   { userId: 'u2', displayName: 'Jesús Vásquez', username: 'jesus_v', look: resolveLook({}, 'jesus'), tutor: true },
   { userId: 'u3', displayName: 'Luz', username: 'luz', look: RIO, tutor: false },
+  // GAP-FIX-R8 social: an account without a @username is a row like any other (no profile link; actions by user id).
+  { userId: 'u4', displayName: 'Patricia Guadalupe Hernández Solís', username: null, look: resolveLook({}, 'patricia'), tutor: false },
 ];
 
 export function PeopleListPreview({ locale, theme, state }: { locale: Locale; theme: 'light' | 'dark'; state: string | null }) {
   const t = PROFILE[locale].peopleList;
+  const reportCopy = PROFILE[locale].report;
   const name = state ?? 'followers';
   const list = /[Ff]ollowing|unfollow/.test(name) ? 'following' : 'followers';
   const owner = name.startsWith('public') || name === 'emptyPublic' || name === 'unavailable' ? 'maria_fernanda_22' : 'self';
@@ -96,6 +99,7 @@ export function PeopleListPreview({ locale, theme, state }: { locale: Locale; th
   const notice: PeopleNotice | null = name === 'unfollowed' ? { tone: 'success', text: t.unfollowed } : name === 'unfollowFailed' ? { tone: 'error', text: t.unfollowFailed } : null;
   return <Page locale={locale} theme={theme} screen="people-list">
     <PeopleList copy={t} locale={locale} dark={theme === 'dark'} ageBand={name === 'kidFollowing' ? '6-9' : undefined} list={list} owner={owner} view={view}
-      action={action} confirmUnfollow={name === 'kidFollowing'} busyId={null} notice={notice} onAct={noop} onRetry={noop} onNavigate={noop} />
+      action={action} confirmUnfollow={name === 'kidFollowing'}
+      safety={owner === 'self' ? { reportCopy, onReport: async () => true, onBlock: async () => undefined } : undefined} busyId={null} notice={notice} onAct={noop} onRetry={noop} onNavigate={noop} />
   </Page>;
 }

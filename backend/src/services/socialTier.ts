@@ -149,6 +149,40 @@ export async function hasPendingTeenRequest(requesterId: string, subjectId: stri
   return parsed.success ? parsed.data.length === 1 : null;
 }
 
+export interface OwnConnection { follower: boolean; following: boolean; teenAccepted: boolean }
+
+/**
+ * E.3 and E.8 by user id (GAP-FIX-R8 social): how `otherId` is connected to
+ * the session. `follower` (they follow the session), `following` (the session
+ * follows them) and `teenAccepted` (an accepted teen consent in either
+ * direction). The session's own id routes act only on such a connection, so an
+ * account without a @username stays removable, reportable and blockable by the
+ * person it is connected to, and an id with no edge discovers nothing. The
+ * session is always the caller's own id, never one the browser names. null
+ * when any read fails (a failed read never becomes "connected").
+ */
+export async function readOwnConnection(sessionId: string, otherId: string): Promise<OwnConnection | null> {
+  if (!UUID.safeParse(sessionId).success || !UUID.safeParse(otherId).success) return null;
+  if (sessionId === otherId) return { follower: false, following: false, teenAccepted: false };
+  const e = encodeURIComponent;
+  const edge = (from: string, to: string) => serviceRest<unknown>(`/follows?follower_id=eq.${e(from)}&followed_id=eq.${e(to)}&select=follower_id,followed_id&limit=1`);
+  const accepted = (requester: string, subject: string) => serviceRest<unknown>(
+    `/social_consent_requests?requester_id=eq.${e(requester)}&subject_id=eq.${e(subject)}&status=eq.accepted&select=requester_id,subject_id,status&limit=1`,
+  );
+  const [inbound, outbound, askedSession, askedOther] = await Promise.all([
+    edge(otherId, sessionId), edge(sessionId, otherId), accepted(otherId, sessionId), accepted(sessionId, otherId),
+  ]);
+  const Edge = z.array(z.object({ follower_id: UUID, followed_id: UUID })).max(1);
+  const Consent = z.array(z.object({ requester_id: UUID, subject_id: UUID, status: z.literal('accepted') })).max(1);
+  const rows = [Edge.safeParse(inbound), Edge.safeParse(outbound), Consent.safeParse(askedSession), Consent.safeParse(askedOther)] as const;
+  if (!rows[0].success || !rows[1].success || !rows[2].success || !rows[3].success) return null;
+  const follower = rows[0].data.some((row) => row.follower_id === otherId && row.followed_id === sessionId);
+  const following = rows[1].data.some((row) => row.follower_id === sessionId && row.followed_id === otherId);
+  const teenAccepted = rows[2].data.some((row) => row.requester_id === otherId && row.subject_id === sessionId)
+    || rows[3].data.some((row) => row.requester_id === sessionId && row.subject_id === otherId);
+  return { follower, following, teenAccepted };
+}
+
 /** The followed account removes one of its followers. true removed, false no such follower, null failure. */
 export async function removeSocialFollower(subjectId: string, followerId: string): Promise<boolean | null> {
   if (!UUID.safeParse(subjectId).success || !UUID.safeParse(followerId).success) return null;

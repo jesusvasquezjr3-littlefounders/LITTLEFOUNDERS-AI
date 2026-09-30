@@ -441,6 +441,7 @@
     "askLimit": "Há muitos pedidos esperando. Tente depois.",
     "askConnected": "Vocês já estão conectados.",
     "askReview": "Primeiro mude seu nome em Configurações.",
+    "askHandle": "Primeiro escolha seu @usuário em Configurações.",
     "managed": "Seu Tutor cuida das suas conexões.",
     "privateTitle": "Este perfil é privado",
     "privateBody": "Só quem a pessoa aceitar pode ver.",
@@ -520,7 +521,17 @@
     "leaveTitle": "Deixar de seguir?",
     "leaveBody": "Para seguir de novo, talvez você tenha que pedir outra vez.",
     "leaveKeep": "Cancelar",
-    "leaveConfirm": "Deixar de seguir"
+    "leaveConfirm": "Deixar de seguir",
+    "report": "Denunciar",
+    "reported": "Denúncia enviada. Obrigado.",
+    "block": "Bloquear",
+    "blockTitle": "Bloquear esta conta?",
+    "blockBody": "Vocês não vão se ver. Dá para desbloquear em Configurações.",
+    "blockKeep": "Cancelar",
+    "blockConfirm": "Bloquear",
+    "blocking": "Bloqueando",
+    "blocked": "Bloqueado. Vocês não vão mais se ver.",
+    "blockFailed": "Não deu para bloquear. Tente de novo."
   },
   "discoverable": {
     "title": "Quem pode te encontrar",

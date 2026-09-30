@@ -17,6 +17,9 @@ import './socialTiers.css';
  * opening the requester's profile. Both reach Core by request id. A decline
  * is not the end of that path: the request just declined keeps Report and
  * Block beside the receipt (Core admits both for 30 days).
+ * GAP-FIX-R8 social (E.3, E.8): every follower is listed, one without a
+ * @username included, and each can be removed, reported or blocked here by
+ * user id: a connection is always manageable by the person it connects to.
  * Copy-only, no transport: the route wrapper owns the data plane.
  */
 
@@ -30,10 +33,10 @@ export interface TeenConnectionsCopy {
 }
 
 export interface TeenRequestView { requestId: string; requestedAt: string; username: string | null; displayName: string | null }
-export interface FollowerView { username: string; displayName: string }
+export interface FollowerView { userId: string; username: string | null; displayName: string }
 export interface TeenNotice { tone: 'status' | 'alert'; text: string }
 
-export function TeenConnections({ copy, reportCopy, locale, dark, discoverable = false, requests, followers, loading, failed, busy, notice, hasMore, closedRequestId = null, onDecide, onReport, onBlock, onRemove, onRetry, onMore }: {
+export function TeenConnections({ copy, reportCopy, locale, dark, discoverable = false, requests, followers, loading, failed, busy, notice, hasMore, closedRequestId = null, onDecide, onReport, onBlock, onRemove, onReportFollower, onBlockFollower, onRetry, onMore }: {
   copy: TeenConnectionsCopy;
   reportCopy: ReportCopy;
   locale: string;
@@ -54,7 +57,12 @@ export function TeenConnections({ copy, reportCopy, locale, dark, discoverable =
   onReport: (requestId: string, category: ReportCategory, note: string | null) => Promise<boolean>;
   /** Runs after the confirmation; the route says whether it landed. */
   onBlock: (requestId: string) => Promise<void>;
-  onRemove: (username: string) => void;
+  /** A follower, by user id (GAP-FIX-R8 social): handle-less followers are addressable too. */
+  onRemove: (userId: string) => void;
+  /** E.3 on a list entry: true only on Core's receipt. */
+  onReportFollower: (userId: string, category: ReportCategory, note: string | null) => Promise<boolean>;
+  /** Runs after the confirmation; the route says whether it landed. */
+  onBlockFollower: (userId: string) => Promise<void>;
   onRetry: () => void;
   onMore: () => void;
 }) {
@@ -102,13 +110,16 @@ export function TeenConnections({ copy, reportCopy, locale, dark, discoverable =
       {loading && <LoadingState label={copy.loading} lines={2} />}
       {hasMore && <Button disabled={busy || loading} onClick={onMore}>{copy.more}</Button>}
       <Copy role="heading" as="h2">{copy.followersTitle}</Copy>
-      <ul className="lf-social-tier-list">{followers.map((follower) => <li key={follower.username}>
+      <ul className="lf-social-tier-list">{followers.map((follower) => <li key={follower.userId}>
         <div className="lf-social-tier-who">
           <p className="ugc" data-copy-role="data">{follower.displayName}</p>
-          <p className="ugc lf-social-tier-handle" data-copy-role="data">@{follower.username}</p>
+          {follower.username && <p className="ugc lf-social-tier-handle" data-copy-role="data">@{follower.username}</p>}
         </div>
-        <div className="lf-social-tier-actions">
-          <Button disabled={busy || loading} onClick={(event) => act(event, () => onRemove(follower.username))}>{copy.remove}</Button>
+        <div className="lf-social-tier-actions" role="group" aria-label={follower.displayName || copy.followersTitle} data-follower-actions={follower.userId}>
+          <Button disabled={busy || loading} onClick={(event) => act(event, () => onRemove(follower.userId))}>{copy.remove}</Button>
+          <ReportDialog copy={reportCopy} triggerLabel={copy.report} disabled={busy || loading} onSend={(category, note) => onReportFollower(follower.userId, category, note)} />
+          <DestructiveAction label={copy.block} disabled={busy || loading} onConfirm={() => onBlockFollower(follower.userId)}
+            confirm={{ heading: copy.blockTitle, consequence: copy.blockBody, keepLabel: copy.blockKeep, confirmLabel: copy.blockConfirm, pendingLabel: copy.blocking }} />
         </div>
       </li>)}</ul>
       {!loading && followers.length === 0 && <Copy role="body">{copy.noFollowers}</Copy>}

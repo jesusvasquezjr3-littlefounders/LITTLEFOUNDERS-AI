@@ -151,6 +151,15 @@ describe('public profile (P6)', () => {
     expect(container.textContent).not.toMatch(/\d/);
   });
 
+  // GAP-FIX-R8 social (E.3, E.8): the teen decides only about someone it can identify by handle.
+  it('an account without a @username is told to choose one before it asks a teen, and may ask again', async () => {
+    core({ 'GET /profiles/rio': ok(card()), 'POST /profiles/rio/connection-request': refuse('USERNAME_REQUIRED') });
+    renderAt('/@rio');
+    fireEvent.click(await screen.findByRole('button', { name: 'Ask to connect' }));
+    expect(await screen.findByText('Choose a @username in Settings first.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Ask to connect' })).toBeEnabled();
+  });
+
   it('a pending ask stays pending when the teen has not decided yet', async () => {
     core({ 'GET /profiles/rio': ok(card({ requestPending: true })) });
     renderAt('/@rio');
