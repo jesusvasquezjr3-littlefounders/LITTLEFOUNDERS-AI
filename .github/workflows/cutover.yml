@@ -375,6 +375,30 @@ jobs:
               -c "ALTER SYSTEM SET cron.launch_active_jobs = off" -c "SELECT pg_reload_conf()" >/dev/null \
               || echo "note: cron.launch_active_jobs is not settable on this image; the restored databases are not the cron database, so no job is scheduled there"
             echo "Copy up: $(docker exec "$COPY_DB" psql -U supabase_admin -d postgres -tAXc 'SHOW server_version')"
+            copy_roles
+          }
+          # Production has roles a fresh image does not (supabase_realtime_admin,
+          # which the Realtime service creates on its first start, is one): a
+          # restore then fails to hand those roles their objects and grants.
+          # Every production role name missing on the copy is created there,
+          # NOLOGIN, before anything is restored. Names only; no attribute, no
+          # password leaves production.
+          prod_roles() {
+            echo "SELECT rolname FROM pg_roles WHERE rolname !~ '^pg_' ORDER BY 1;" | prod_sql > "$LF/prod.roles" \
+              || die "could not read production's role names"
+            [ -s "$LF/prod.roles" ] || die "production returned no role names"
+          }
+          copy_roles() {
+            [ -s "$LF/prod.roles" ] || die "production's role names were not read (prod_roles)"
+            local r made=""
+            while IFS= read -r r; do
+              [ -n "$r" ] || continue
+              [[ "$r" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || die "unexpected production role name shape"
+              [ "$(echo "SELECT count(*) FROM pg_roles WHERE rolname = '$r';" | copy_admin postgres)" = 1 ] && continue
+              echo "CREATE ROLE \"$r\" NOLOGIN;" | copy_admin postgres || die "could not create role $r on the copy"
+              made="$made $r"
+            done < "$LF/prod.roles"
+            echo "Roles created on the copy to match production:${made:- none}"
           }
           copy_admin() { docker exec -i "$COPY_DB" psql -U supabase_admin -d "${1:-postgres}" -qAtX -v ON_ERROR_STOP=1; }
 
@@ -557,6 +581,7 @@ jobs:
           [[ "$prod_version" =~ ^[0-9]+$ ]] || die "could not read production's server version"
           echo "$prod_version" > "$LF/prod.version"
           echo "Production server_version_num: $prod_version"
+          prod_roles
           echo "Production ledger (read-only dry run):"
           RAILWAY_SSH_KEY_PATH="$KEY" bash database/scripts/railway-migrate.sh --dry-run | tee "$LF/prod-dryrun.txt" | grep -Ev '^skip ' || true
           grep -q '^OK: dry-run complete' "$LF/prod-dryrun.txt" || die "the production dry run did not complete"
@@ -929,6 +954,7 @@ jobs:
           . "$RUNNER_TEMP/lf/lib.sh"
           set -e
           node database/migration-od9/backup-crypto.mjs decrypt --in "$LF/cutover.dump.lfbk" --out "$LF/verify.dump" --key-file "$RUNNER_TEMP/backup.key" >/dev/null
+          prod_roles
           copy_up
           copy_restore "$LF/verify.dump" backup_check || die "the backup did not restore (decision point A: lift the freeze, move the window)"
           export LF_COPY_DB=backup_check
