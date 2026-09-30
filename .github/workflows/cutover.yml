@@ -1,0 +1,1011 @@
+name: Cutover (operator)
+
+# The hands of docs/operations/CUTOVER-RUNBOOK.md and BACKUP-RESTORE-ROLLBACK.md.
+# One dispatch runs one runbook step against production, at the commit `ref`
+# (the release being cut over). Nothing here runs on a schedule or on a push.
+#
+# WHY A WORKFLOW. The Railway credentials live only as repository secrets, and
+# production data must never leave GitHub's runners or the production project:
+# every dump, every per-account OD-9 report and every restored copy exists on
+# the runner only, encrypted where it is stored (the Depot volume), and is
+# deleted when the job ends, whatever the outcome.
+#
+# STEPS, in window order (runbook section):
+#   rehearse   Before the window, item 1. Read-only on production: one pg_dump.
+#              The dump is encrypted at once, restored on the runner into a
+#              disposable container built from database/railway/db/Dockerfile
+#              (the image production's db service runs) on a network with no
+#              egress, and the whole window is replayed on that copy: freeze
+#              and its verification write, before inventory and spot check,
+#              window backup and its verification, the migration plan, every
+#              pending migration through railway-migrate.sh itself (a shim
+#              stands in for `railway ssh`), seed:kc through PostgREST, the
+#              OD-9 toolkit (dry run, apply, re-apply), reconcile, smoke
+#              checks, the switch, and a restore of the window backup. Prints
+#              PASS/FAIL per phase with timings.
+#   freeze     Step 1: checks the step 1.1 workflows are disabled, makes the
+#              three Supabase login roles read-only, restarts rest/auth/storage
+#              and proves a service-key write through PostgREST is refused.
+#   backup     Steps 2-4: od9 install, before inventory and spot check, the
+#              encrypted cutover backup on /data/backups, and its verification
+#              (decrypt, restore into a disposable copy, compare with before).
+#   migrate    Step 5: railway-migrate.sh --dry-run, the plan check, then
+#              --confirm-production. Refuses without the freeze and a verified
+#              backup taken after it.
+#   seed-kc    Step 5.4: `npm run seed:kc` in backend/ (tutor-deploy.yml's).
+#   od9        Step 6: install, then defects, kc-credit and consent as dry runs;
+#              with od9_apply=true each dry run is followed by its --apply.
+#   reconcile  Step 7: after inventory, compare, spot check (exit 1 on a loss).
+#   smoke      Step 8: reads only.
+#   unfreeze   Step 9.1: resets the three roles, restarts the services and
+#              proves a write goes through again.
+#   status     Read-only: freeze state, markers, ledger, od9 labels, backups.
+#
+# ZERO SPEND (OD-23): no step calls a paid model, image or voice provider.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: 'Runbook step to run'
+        required: true
+        default: status
+        type: choice
+        options:
+          - rehearse
+          - freeze
+          - backup
+          - migrate
+          - seed-kc
+          - od9
+          - reconcile
+          - smoke
+          - unfreeze
+          - status
+      ref:
+        description: 'Commit (SHA) of the release being cut over; the migrations, toolkit and seed come from it'
+        required: true
+        type: string
+      cutover_at:
+        description: 'od9 only: the freeze time (ISO 8601, UTC) printed by the freeze step. Empty = read it from the freeze marker'
+        required: false
+        default: ''
+        type: string
+      od9_apply:
+        description: 'od9 only: false = dry runs only; true = each dry run followed by its --apply'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+# Two steps never overlap, and a running step is never cancelled by the next
+# dispatch: a half-applied step is resumed by re-dispatching it, never killed.
+concurrency:
+  group: cutover-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  run:
+    name: 'Cutover - ${{ inputs.step }}'
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      ENVIRONMENT: production
+      STEP: ${{ inputs.step }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install the Railway CLI and write the SSH key
+        run: |
+          set -euo pipefail
+          npm i -g @railway/cli@5.43.1 >/dev/null
+          railway --version
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
+          chmod 600 ~/.ssh/railway_key
+          # LogLevel ERROR: the transport parses stdout, and ssh's "Permanently
+          # added" warning would otherwise be read as a query result
+          # (database-cd.yml, railway-migrate.sh).
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            LogLevel ERROR
+          CONFIG
+          chmod 600 ~/.ssh/config
+          echo "Release under cutover: $(git rev-parse HEAD)"
+
+      - name: Write the backup encryption key
+        run: |
+          set -euo pipefail
+          # H.5: no key, no dump. Every dump and report is encrypted with it
+          # before it is stored anywhere.
+          printf '%s' "${{ secrets.BACKUP_ENCRYPTION_KEY }}" > "$RUNNER_TEMP/backup.key"
+          chmod 600 "$RUNNER_TEMP/backup.key"
+          test -s "$RUNNER_TEMP/backup.key"
+
+      # ── Shared tools (no secret is written into any of them) ─────────────
+      - name: Prepare the operator tools
+        run: |
+          set -euo pipefail
+          LF="$RUNNER_TEMP/lf"
+          mkdir -p "$LF/pgbin-prod" "$LF/pgbin-copy" "$LF/shim" "$LF/od9"
+          chmod 700 "$LF"
+
+          cat > "$LF/lib.sh" <<'LIB'
+          # Sourced by every step. Functions only; nothing runs on source.
+          set -uo pipefail
+          LF="$RUNNER_TEMP/lf"
+          KEY="$HOME/.ssh/railway_key"
+          SENTINEL=LF_CUTOVER_OK
+          COPY_IMAGE=lf-vault-db:cutover
+          COPY_NET=lf-cutover-internal
+          COPY_DB=lf-cutover-db
+          COPY_REST=lf-cutover-rest
+          REST_PORT=54330
+          PROXY_PORT=54321
+          FROZEN_ROLES="authenticator supabase_auth_admin supabase_storage_admin"
+
+          die() { echo "::error::$*"; exit 1; }
+
+          # psql and ssh chatter out of a merged transport output (the filter of
+          # database/scripts/railway-migrate.sh, which this mirrors).
+          clean_output() {
+            grep -Fvx "$SENTINEL" \
+              | grep -Ev '^(psql:[^ ]* )?(NOTICE|WARNING|DETAIL|HINT|CONTEXT):' \
+              | grep -Ev '^Warning: Permanently added .* to the list of known hosts\.$' || true
+          }
+
+          # SQL on stdin, run on production as supabase_admin through the proven
+          # single-argument transport. `railway ssh` exits 0 when the remote
+          # command fails, so success is the sentinel and the absence of ERROR.
+          prod_sql() {
+            local sql b64 out
+            sql="$(cat)"
+            sql="$sql
+          \\echo $SENTINEL"
+            b64="$(printf '%s' "$sql" | base64 -w0)"
+            out="$(railway ssh --service db -i "$KEY" \
+              "echo $b64 | base64 -d | psql -U supabase_admin -d postgres -t -A -v ON_ERROR_STOP=1 -f -" 2>&1 | tr -d '\r')" \
+              || { echo "prod_sql: the Railway transport failed" >&2; return 1; }
+            if printf '%s\n' "$out" | grep -q 'ERROR:'; then
+              printf '%s\n' "$out" | grep 'ERROR:' | cut -c1-300 >&2
+              return 1
+            fi
+            printf '%s\n' "$out" | grep -Fq "$SENTINEL" \
+              || { echo "prod_sql: success sentinel missing (transport exit codes are untrustworthy)" >&2; return 1; }
+            printf '%s\n' "$out" | clean_output
+          }
+
+          # "authenticator=on supabase_auth_admin=on ..." for the three login roles.
+          freeze_state() {
+            prod_sql <<'SQL' | tr '\n' ' '
+          SELECT r.rolname || '=' || CASE WHEN EXISTS (
+                   SELECT 1 FROM pg_db_role_setting s
+                   WHERE s.setrole = r.oid AND s.setdatabase = 0
+                     AND 'default_transaction_read_only=on' = ANY (s.setconfig)) THEN 'on' ELSE 'off' END
+          FROM pg_roles r
+          WHERE r.rolname IN ('authenticator', 'supabase_auth_admin', 'supabase_storage_admin')
+          ORDER BY 1;
+          SQL
+          }
+          is_frozen() {
+            local state
+            state="$(freeze_state)" || return 2
+            echo "Freeze state: $state"
+            [ "$(printf '%s' "$state" | grep -o '=on' | wc -l)" -eq 3 ]
+          }
+
+          # Depot (filebase) volume: the cutover markers live in /data/cutover.
+          filebase_cmd() { railway ssh --service filebase -i "$KEY" -- "$@" 2>&1 | tr -d '\r' | clean_output; }
+          filebase_write() { # stdin -> /data/cutover/$1, then read back
+            local name="$1" body
+            body="$(cat)"
+            filebase_cmd mkdir -p /data/cutover >/dev/null
+            printf '%s\n' "$body" | railway ssh --service filebase -i "$KEY" -- sh -c "cat > /data/cutover/$name" >/dev/null 2>&1
+            [ "$(filebase_cmd cat "/data/cutover/$name" | head -n1)" = "$(printf '%s\n' "$body" | head -n1)" ] \
+              || die "could not write the marker /data/cutover/$name"
+          }
+
+          # A backend (Core) Railway variable, masked before anything can print it.
+          backend_var() {
+            local v
+            v="$(railway variable list --service littlefounders-backend --environment "$ENVIRONMENT" --json 2>/dev/null \
+                  | jq -r --arg k "$1" '.[$k] // ""')"
+            [ -n "$v" ] && echo "::add-mask::$v" >&2
+            printf '%s' "$v"
+          }
+
+          # The step 1.3 verification write: a no-op PATCH (it matches no row)
+          # through PostgREST with the service key. Prints the HTTP code and
+          # PostgREST's error code/message only, never a row.
+          probe_write() { # $1 base URL (…/rest/v1), $2 service key
+            curl -sS -o "$LF/probe.json" -w '%{http_code}' --max-time 30 -X PATCH \
+              "$1/learning_stats?user_id=eq.00000000-0000-0000-0000-000000000000" \
+              -H "apikey: $2" -H "Authorization: Bearer $2" \
+              -H 'Content-Type: application/json' -H 'Prefer: return=minimal' \
+              --data '{"xp_points":0}' 2>/dev/null || true
+          }
+          probe_detail() { jq -r '"\(.code // "") \(.message // "")"' "$LF/probe.json" 2>/dev/null | cut -c1-200; }
+
+          restart_services() {
+            local svc
+            for svc in rest auth storage; do
+              echo "Restarting $svc"
+              railway redeploy --service "$svc" --environment "$ENVIRONMENT" --yes </dev/null 2>&1 | tail -3 || true
+            done
+            for svc in rest auth storage; do
+              local i state=""
+              for i in $(seq 1 60); do
+                state="$(railway status --environment "$ENVIRONMENT" --json 2>/dev/null | jq -r --arg s "$svc" --arg env "$ENVIRONMENT" '
+                  .environments.edges[]? | select(.node.name == $env) | .node.serviceInstances.edges[]?.node
+                  | select(.serviceName == $s) | (.latestDeployment.status // "UNKNOWN")')"
+                case "$state" in SUCCESS|SLEEPING) break ;; esac
+                sleep 10
+              done
+              echo "$svc: $state"
+              case "$state" in SUCCESS|SLEEPING) ;; *) die "$svc did not come back ($state)" ;; esac
+            done
+          }
+
+          # ── The disposable copy (runner only, no egress) ──────────────────
+          copy_up() {
+            docker build -q -t "$COPY_IMAGE" database/railway/db >/dev/null || die "could not build the Vault db image"
+            docker network create --internal "$COPY_NET" >/dev/null
+            local pw jwt
+            pw="$(openssl rand -hex 24)"; jwt="$(openssl rand -hex 32)"
+            printf '%s' "$pw" > "$LF/copy.pw"; printf '%s' "$jwt" > "$LF/copy.jwt"; chmod 600 "$LF/copy.pw" "$LF/copy.jwt"
+            # The environment the Supabase compose file gives its db service.
+            docker run -d --name "$COPY_DB" --network "$COPY_NET" --shm-size=1g \
+              -e POSTGRES_PASSWORD="$pw" -e PGPASSWORD="$pw" -e POSTGRES_DB=postgres -e PGDATABASE=postgres \
+              -e POSTGRES_HOST=/var/run/postgresql -e PGPORT=5432 -e POSTGRES_PORT=5432 \
+              -e JWT_SECRET="$jwt" -e JWT_EXP=3600 "$COPY_IMAGE" >/dev/null
+            # Ready = the entrypoint finished its init scripts and restarted the
+            # server for real (the init runs on a temporary server first).
+            local i ready=0
+            for i in $(seq 1 180); do
+              [ "$(docker inspect -f '{{.State.Running}}' "$COPY_DB" 2>/dev/null)" = true ] || die "the copy's db container stopped during init"
+              if docker logs "$COPY_DB" 2>&1 | grep -q 'init process complete' \
+                 && [ "$(docker exec "$COPY_DB" psql -U supabase_admin -d postgres -tAXc \
+                        "SELECT 1 FROM pg_database WHERE datname = '_supabase'" 2>/dev/null)" = 1 ]; then
+                ready=1; break
+              fi
+              sleep 2
+            done
+            [ "$ready" = 1 ] || die "the copy's db never became ready"
+            # pg_cron must never run a production job on the copy (the copy has
+            # no egress either, so pg_net cannot reach anything).
+            docker exec "$COPY_DB" psql -U supabase_admin -d postgres -qAtX -v ON_ERROR_STOP=1 \
+              -c "ALTER SYSTEM SET cron.launch_active_jobs = off" -c "SELECT pg_reload_conf()" >/dev/null \
+              || echo "note: cron.launch_active_jobs is not settable on this image; the restored databases are not the cron database, so no job is scheduled there"
+            echo "Copy up: $(docker exec "$COPY_DB" psql -U supabase_admin -d postgres -tAXc 'SHOW server_version')"
+          }
+          copy_admin() { docker exec -i "$COPY_DB" psql -U supabase_admin -d "${1:-postgres}" -qAtX -v ON_ERROR_STOP=1; }
+
+          # Restore a plaintext dump (deleted from the runner as soon as it is in
+          # the container) into a fresh database. Prints object identities only
+          # (pg_restore's "from TOC entry <id>; <oid> <oid> <desc> <tag> <owner>"
+          # lines), never an error's text, which can quote a row. Fails when the
+          # archive cannot be listed, on a fatal error, or on any TABLE, TABLE
+          # DATA or SEQUENCE SET entry that failed, except pg_cron's own (job,
+          # job_run_details and their sequences: the extension exists only in
+          # the cron database, so it cannot be restored into another one).
+          copy_restore() { # $1 dump on the runner, $2 database name
+            local dump="$1" db="$2" rc=0 err="$LF/restore-$2.err" toc n bad
+            echo "CREATE DATABASE $db TEMPLATE template0" | copy_admin postgres || die "could not create $db"
+            docker cp "$dump" "$COPY_DB:/tmp/restore.dump" >/dev/null
+            rm -f "$dump"
+            docker exec "$COPY_DB" pg_restore --list /tmp/restore.dump > /dev/null \
+              || { docker exec "$COPY_DB" rm -f /tmp/restore.dump; echo "pg_restore --list cannot read the archive"; return 1; }
+            docker exec "$COPY_DB" pg_restore -U supabase_admin -d "$db" /tmp/restore.dump 2> "$err" || rc=$?
+            docker exec "$COPY_DB" rm -f /tmp/restore.dump
+            toc="$(grep -E '^pg_restore: from TOC entry' "$err" | sed -E 's/^pg_restore: from TOC entry //' || true)"
+            n="$(grep -Eo 'errors ignored on restore: [0-9]+' "$err" | grep -Eo '[0-9]+$' || echo 0)"
+            bad="$(printf '%s\n' "$toc" | grep -E '; [0-9]+ [0-9]+ (TABLE DATA|TABLE|SEQUENCE SET) ' \
+                     | grep -Ev '; [0-9]+ [0-9]+ (TABLE DATA|TABLE|SEQUENCE SET) (job|job_run_details|jobid_seq|runid_seq) ' || true)"
+            rm -f "$err"
+            echo "pg_restore into $db: exit $rc, $n error(s) ignored"
+            [ -n "$toc" ] && printf '%s\n' "$toc" | sed 's/^/  restore issue: /' | head -80
+            if [ "$rc" -ne 0 ] && [ "$n" = 0 ]; then echo "pg_restore failed before restoring anything"; return 1; fi
+            if [ -n "$bad" ]; then echo "tables or table data did not restore:"; printf '%s\n' "$bad" | sed 's/^/  /'; return 1; fi
+            return 0
+          }
+
+          copy_down() {
+            docker rm -f "$COPY_REST" "$COPY_DB" >/dev/null 2>&1 || true
+            docker network rm "$COPY_NET" >/dev/null 2>&1 || true
+            docker image rm -f "$COPY_IMAGE" >/dev/null 2>&1 || true
+            rm -f "$LF/copy.pw" "$LF/copy.jwt"
+          }
+
+          # od9 through the toolkit's own CLI; reports stay on the runner.
+          od9() { node database/migration-od9/od9.mjs "$@" --out "$LF/od9"; }
+          od9_prod() { LF_PG_BIN="$LF/pgbin-prod" od9 "$@"; }
+          od9_copy() { LF_PG_BIN="$LF/pgbin-copy" od9 "$@"; }
+          # Every category captured, printed as counts only.
+          inventory_ok() { # $1 label
+            node -e '
+              const rows = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).rows ?? [];
+              let absent = 0;
+              for (const r of rows) {
+                const status = String(r.status ?? "");
+                if (status.startsWith("absent")) absent++;
+                console.log(`  ${String(r.category).padEnd(34)} ${status}`);
+              }
+              if (!rows.length) { console.log("  (no categories returned)"); process.exit(1); }
+              process.exit(absent ? 1 : 0);
+            ' "$LF/od9/inventory-$1.json"
+          }
+
+          # Store an encrypted bundle of the od9 reports on the Depot volume, so
+          # the reviewer can read them (with the key) without them leaving the
+          # production project.
+          store_reports() { # $1 tag
+            [ -n "$(ls -A "$LF/od9" 2>/dev/null)" ] || return 0
+            local bundle="$LF/od9-$1-$(date -u +%Y%m%d-%H%M%S).tar"
+            tar -C "$LF/od9" -cf "$bundle" .
+            node database/migration-od9/backup-crypto.mjs encrypt --in "$bundle" --out "$bundle.lfbk" --key-file "$RUNNER_TEMP/backup.key" >/dev/null
+            test ! -e "$bundle" || die "the report bundle stayed in plaintext"
+            filebase_cmd mkdir -p /data/cutover >/dev/null
+            local part
+            for part in "$bundle.lfbk" "$bundle.lfbk.manifest.json"; do
+              cat "$part" | railway ssh --service filebase -i "$KEY" -- sh -c "cat > /data/cutover/$(basename "$part")" >/dev/null 2>&1
+            done
+            echo "Reports stored encrypted: /data/cutover/$(basename "$bundle").lfbk"
+            rm -f "$bundle.lfbk" "$bundle.lfbk.manifest.json"
+          }
+          LIB
+
+          # od9 against production: psql's stdin goes to the db container as a
+          # file (the stdin shape proven by the backup uploads), then psql runs
+          # it through the single-argument shape; success is judged like
+          # prod_sql. Only od9's own flags are forwarded; -d is ignored (the
+          # database is always production's `postgres`).
+          cat > "$LF/pgbin-prod/psql" <<'SH'
+          #!/usr/bin/env bash
+          set -uo pipefail
+          . "$RUNNER_TEMP/lf/lib.sh"
+          args=()
+          while [ $# -gt 0 ]; do
+            case "$1" in
+              -d) shift 2 ;;
+              *) [[ "$1" =~ ^[A-Za-z0-9_=-]+$ ]] || { echo "psql (production): unsupported argument" >&2; exit 2; }
+                 args+=("$1"); shift ;;
+            esac
+          done
+          id="od9-$(date +%s%N)"
+          tmp="$(mktemp)"
+          cat > "$tmp"
+          printf '\n\\echo %s\n' "$SENTINEL" >> "$tmp"
+          cat "$tmp" | railway ssh --service db -i "$KEY" -- sh -c "cat > /tmp/$id.sql" >/dev/null 2>&1
+          rm -f "$tmp"
+          out="$(railway ssh --service db -i "$KEY" \
+            "psql -U supabase_admin -d postgres ${args[*]} -f /tmp/$id.sql; rm -f /tmp/$id.sql" 2>&1 | tr -d '\r')" \
+            || { echo "psql (production): the Railway transport failed" >&2; exit 3; }
+          if printf '%s\n' "$out" | grep -q 'ERROR:'; then printf '%s\n' "$out" | grep 'ERROR:' | cut -c1-300 >&2; exit 3; fi
+          printf '%s\n' "$out" | grep -Fqx "$SENTINEL" || { echo "psql (production): success sentinel missing" >&2; exit 4; }
+          printf '%s\n' "$out" | clean_output
+          SH
+
+          # od9 against the disposable copy.
+          cat > "$LF/pgbin-copy/psql" <<'SH'
+          #!/usr/bin/env bash
+          exec docker exec -i lf-cutover-db psql -U supabase_admin -d "${LF_COPY_DB:-rehearsal}" "$@"
+          SH
+
+          # REHEARSAL ONLY: stands in for `railway ssh --service db -i KEY "<cmd>"`
+          # so database/scripts/railway-migrate.sh runs unchanged against the copy.
+          # It knows no other command and no other service, and it is only on
+          # PATH in the step that replays the window on the copy, which carries
+          # no Railway token.
+          cat > "$LF/shim/railway" <<'SH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          [ "${1:-}" = ssh ] || { echo "rehearsal shim: refusing 'railway $*'" >&2; exit 97; }
+          shift
+          svc="" cmd=""
+          while [ $# -gt 0 ]; do
+            case "$1" in
+              --service) svc="$2"; shift 2 ;;
+              -i) shift 2 ;;
+              --) shift; cmd="$*"; break ;;
+              *) cmd="$1"; shift ;;
+            esac
+          done
+          [ "$svc" = db ] || { echo "rehearsal shim: only the db service exists here" >&2; exit 97; }
+          cmd="${cmd//-d postgres /-d ${LF_COPY_DB:-rehearsal} }"
+          # Like the Railway CLI, the local exit code says nothing about the
+          # remote command: railway-migrate.sh judges the output.
+          docker exec -i lf-cutover-db sh -c "$cmd" || true
+          SH
+          : > "$LF/shim/no-key"
+
+          # Supabase's gateway path (/rest/v1) in front of the copy's PostgREST.
+          cat > "$LF/rest-proxy.mjs" <<'JS'
+          import http from 'node:http';
+          const [listen, target] = process.argv.slice(2).map(Number);
+          http.createServer((req, res) => {
+            const path = req.url.startsWith('/rest/v1') ? req.url.slice('/rest/v1'.length) || '/' : req.url;
+            const up = http.request({ host: '127.0.0.1', port: target, method: req.method, path, headers: { ...req.headers, host: `127.0.0.1:${target}` } },
+              (r) => { res.writeHead(r.statusCode ?? 502, r.headers); r.pipe(res); });
+            up.on('error', (e) => { res.writeHead(502); res.end(e.message); });
+            req.pipe(up);
+          }).listen(listen, '127.0.0.1');
+          JS
+
+          # HS256 keys for the copy's PostgREST (its own random secret).
+          cat > "$LF/jwt.mjs" <<'JS'
+          import { createHmac } from 'node:crypto';
+          const [secret, role] = process.argv.slice(2);
+          const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
+          const now = Math.floor(Date.now() / 1000);
+          const unsigned = `${b64({ alg: 'HS256', typ: 'JWT' })}.${b64({ role, iss: 'supabase', iat: now, exp: now + 6 * 3600 })}`;
+          process.stdout.write(`${unsigned}.${createHmac('sha256', secret).update(unsigned).digest('base64url')}`);
+          JS
+
+          chmod +x "$LF/pgbin-prod/psql" "$LF/pgbin-copy/psql" "$LF/shim/railway"
+
+      # ── REHEARSE — production is only read ───────────────────────────────
+      - name: 'Rehearse: read production (server version and one pg_dump)'
+        if: inputs.step == 'rehearse'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          . "$RUNNER_TEMP/lf/lib.sh"
+          set -e
+          start=$(date +%s)
+          prod_version="$(echo 'SHOW server_version_num;' | prod_sql | tr -d '[:space:]')"
+          [[ "$prod_version" =~ ^[0-9]+$ ]] || die "could not read production's server version"
+          echo "$prod_version" > "$LF/prod.version"
+          echo "Production server_version_num: $prod_version"
+          echo "Production ledger (read-only dry run):"
+          RAILWAY_SSH_KEY_PATH="$KEY" bash database/scripts/railway-migrate.sh --dry-run | tee "$LF/prod-dryrun.txt" | grep -Ev '^skip ' || true
+          grep -q '^OK: dry-run complete' "$LF/prod-dryrun.txt" || die "the production dry run did not complete"
+          # vault-backup.yml's commands. The remote file is removed at once and
+          # the pulled one is encrypted before anything else happens.
+          DUMP="$LF/rehearsal-$(date -u +%Y%m%d-%H%M%S).dump"
+          railway ssh --service db -i "$KEY" -- pg_dump -U supabase_admin -d postgres -Fc -f /tmp/rehearsal.dump
+          railway ssh --service db -i "$KEY" -- cat /tmp/rehearsal.dump > "$DUMP"
+          railway ssh --service db -i "$KEY" -- rm -f /tmp/rehearsal.dump
+          test -s "$DUMP" || die "the dump is empty: the remote pg_dump failed"
+          head -c 5 "$DUMP" | grep -q PGDMP || die "the pulled file is not a pg_dump custom archive"
+          echo "Dump pulled: $(wc -c < "$DUMP") bytes"
+          node database/migration-od9/backup-crypto.mjs encrypt --in "$DUMP" --out "$LF/rehearsal.dump.lfbk" --key-file "$RUNNER_TEMP/backup.key" >/dev/null
+          test ! -e "$DUMP"
+          test -s "$LF/rehearsal.dump.lfbk"
+          printf 'read_production\tPASS\t%s\n' "$(( $(date +%s) - start ))" > "$LF/timings.tsv"
+
+      - name: 'Rehearse: replay the whole window on a disposable copy'
+        if: inputs.step == 'rehearse'
+        timeout-minutes: 300
+        run: |
+          . "$RUNNER_TEMP/lf/lib.sh"
+          # No Railway token here: the only `railway` on PATH is the shim.
+          unset RAILWAY_TOKEN
+          export PATH="$LF/shim:$PATH" RAILWAY_TOKEN=rehearsal-shim-without-production-access
+          export RAILWAY_SSH_KEY_PATH="$LF/shim/no-key" RAILWAY_SSH_RETRY_SECONDS=1 LF_COPY_DB=rehearsal
+          FAILED=0 BLOCKED=0
+          phase() { # phase NAME soft|hard FUNCTION
+            local name="$1" kind="$2" fn="$3" t0 rc
+            if [ "$BLOCKED" = 1 ]; then printf '%s\tSKIP\t0\n' "$name" >> "$LF/timings.tsv"; echo "== $name: SKIP"; return 0; fi
+            echo "::group::$name"
+            t0=$(date +%s)
+            ( set -eo pipefail; "$fn" ); rc=$?
+            echo "::endgroup::"
+            if [ "$rc" = 0 ]; then printf '%s\tPASS\t%s\n' "$name" "$(( $(date +%s) - t0 ))" >> "$LF/timings.tsv"; echo "== $name: PASS"
+            else
+              printf '%s\tFAIL\t%s\n' "$name" "$(( $(date +%s) - t0 ))" >> "$LF/timings.tsv"; echo "== $name: FAIL"
+              FAILED=1; [ "$kind" = hard ] && BLOCKED=1
+            fi
+            return 0
+          }
+          service_jwt() { node "$LF/jwt.mjs" "$(cat "$LF/copy.jwt")" service_role; }
+          anon_jwt() { node "$LF/jwt.mjs" "$(cat "$LF/copy.jwt")" anon; }
+          rest_restart() {
+            docker restart "$COPY_REST" >/dev/null
+            local i
+            for i in $(seq 1 60); do
+              [ "$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$REST_PORT/" -H "Authorization: Bearer $(anon_jwt)")" = 200 ] && return 0
+              sleep 2
+            done
+            return 1
+          }
+
+          p_copy_up() {
+            copy_up
+            v_copy="$(docker exec "$COPY_DB" psql -U supabase_admin -d postgres -tAXc 'SHOW server_version_num')"
+            v_prod="$(cat "$LF/prod.version")"
+            echo "copy $v_copy, production $v_prod"
+            [ "${v_copy:0:2}" = "${v_prod:0:2}" ] || { echo "major version differs"; return 1; }
+          }
+          p_restore() {
+            node database/migration-od9/backup-crypto.mjs decrypt --in "$LF/rehearsal.dump.lfbk" --out "$LF/rehearsal.dump" --key-file "$RUNNER_TEMP/backup.key" >/dev/null
+            copy_restore "$LF/rehearsal.dump" rehearsal
+          }
+          p_rest_up() {
+            docker run -d --name "$COPY_REST" -p "127.0.0.1:$REST_PORT:3000" \
+              -e PGRST_DB_URI="postgres://authenticator:$(cat "$LF/copy.pw")@$COPY_DB:5432/rehearsal" \
+              -e PGRST_DB_SCHEMAS=public -e PGRST_DB_ANON_ROLE=anon -e PGRST_JWT_SECRET="$(cat "$LF/copy.jwt")" \
+              postgrest/postgrest:v14.12 >/dev/null
+            docker network connect "$COPY_NET" "$COPY_REST"
+            nohup node "$LF/rest-proxy.mjs" "$PROXY_PORT" "$REST_PORT" > /dev/null 2>&1 &
+            echo $! > "$LF/proxy.pid"
+            rest_restart
+          }
+          # Step 1: freeze the copy exactly as production is frozen, then the
+          # verification write that must fail.
+          p_freeze() {
+            for r in $FROZEN_ROLES; do echo "ALTER ROLE $r SET default_transaction_read_only = on;"; done | copy_admin postgres
+            rest_restart
+            code="$(probe_write "http://127.0.0.1:$PROXY_PORT/rest/v1" "$(service_jwt)")"
+            echo "verification write: HTTP $code $(probe_detail)"
+            grep -q 'read-only transaction' "$LF/probe.json" || { echo "FREEZE DID NOT TAKE: a service-key write through PostgREST was not refused (runbook step 1.3 would stop here)"; return 1; }
+          }
+          p_before() {
+            od9_copy install
+            od9_copy inventory --label before >/dev/null
+            inventory_ok before
+            od9_copy spot-check --label before --families 10 | grep -E '"(ok|families|accounts)"'
+          }
+          # Steps 3-4 on the copy: the window backup, encrypted, then verified.
+          p_backup() {
+            docker exec "$COPY_DB" pg_dump -U supabase_admin -d rehearsal -Fc -f /tmp/window.dump
+            docker cp "$COPY_DB:/tmp/window.dump" "$LF/window.dump" >/dev/null
+            docker exec "$COPY_DB" rm -f /tmp/window.dump
+            test -s "$LF/window.dump"
+            node database/migration-od9/backup-crypto.mjs encrypt --in "$LF/window.dump" --out "$LF/window.dump.lfbk" --key-file "$RUNNER_TEMP/backup.key" >/dev/null
+            test ! -e "$LF/window.dump"
+            node database/migration-od9/backup-crypto.mjs decrypt --in "$LF/window.dump.lfbk" --out "$LF/verify.dump" --key-file "$RUNNER_TEMP/backup.key" >/dev/null
+            copy_restore "$LF/verify.dump" backup_check
+            od9_copy inventory --label backup_check --db backup_check >/dev/null
+            od9_copy compare --before before --after backup_check --db backup_check | grep -E '"(ok|failures|families)"'
+            od9_copy spot-check --label backup_check --from before --db backup_check | grep -E '"(ok|changed|missing)"'
+          }
+          # Step 5: the plan, then every pending file through railway-migrate.sh.
+          p_plan() {
+            bash database/scripts/railway-migrate.sh --dry-run > "$LF/copy-dryrun.txt"
+            grep -q '^OK: dry-run complete' "$LF/copy-dryrun.txt"
+            hwm="$(grep -E '^skip [0-9]{4}_' "$LF/copy-dryrun.txt" | tail -n1 | cut -c6-9)"
+            [ -n "$hwm" ] || hwm=0000
+            echo "$hwm" > "$LF/hwm"
+            echo "high-water mark $hwm; $(grep -c '^pending ' "$LF/copy-dryrun.txt" || true) pending"
+            diff <(sed -n 's/^pending //p' "$LF/prod-dryrun.txt") <(sed -n 's/^pending //p' "$LF/copy-dryrun.txt") \
+              || { echo "the copy's pending list differs from production's"; return 1; }
+            node database/scripts/check-migration-phase.mjs >/dev/null
+            od9 plan --applied-through "$hwm" | grep -E '"(ok|pending|expand|contract)"'
+            node -e '
+              const plan = require(process.argv[1]);
+              const dry = require("fs").readFileSync(process.argv[2], "utf8").split("\n").filter((l) => l.startsWith("pending ")).map((l) => l.slice(8));
+              const files = plan.pending.map((p) => p.file);
+              if (!plan.ok || JSON.stringify(files) !== JSON.stringify(dry)) { console.log("the dry run does not list exactly the plan"); process.exit(1); }
+            ' "$LF/od9/plan-$hwm.json" "$LF/copy-dryrun.txt"
+          }
+          p_migrate() {
+            bash database/scripts/railway-migrate.sh --confirm-production | grep -Ev '^skip '
+            bash database/scripts/railway-migrate.sh --dry-run > "$LF/copy-after.txt"
+            ! grep -q '^pending ' "$LF/copy-after.txt"
+          }
+          # Step 5.4 under the freeze, as the runbook orders it.
+          p_seed() {
+            npm ci --prefix backend --no-audit --no-fund >/dev/null
+            SUPABASE_URL="http://127.0.0.1:$PROXY_PORT" SUPABASE_ANON_KEY="$(anon_jwt)" SUPABASE_SERVICE_ROLE_KEY="$(service_jwt)" \
+              SUPABASE_JWT_SECRET="$(cat "$LF/copy.jwt")" INTERNAL_API_KEY="$(openssl rand -hex 16)" TUTOR_SESSION_SECRET="$(openssl rand -hex 24)" \
+              npm run --prefix backend seed:kc > "$LF/seed.log" 2>&1 && { tail -n 5 "$LF/seed.log"; return 0; }
+            tail -n 15 "$LF/seed.log" | cut -c1-300
+            if grep -q 'read-only transaction' "$LF/seed.log"; then
+              echo "RUNBOOK CONFLICT: seed:kc writes through PostgREST, which the step 1 freeze refuses (step 5.4 runs inside the freeze)."
+              echo "Proving the seed itself on the copy with the freeze lifted, then freezing again."
+              for r in $FROZEN_ROLES; do echo "ALTER ROLE $r RESET default_transaction_read_only;"; done | copy_admin postgres
+              rest_restart
+              SUPABASE_URL="http://127.0.0.1:$PROXY_PORT" SUPABASE_ANON_KEY="$(anon_jwt)" SUPABASE_SERVICE_ROLE_KEY="$(service_jwt)" \
+                SUPABASE_JWT_SECRET="$(cat "$LF/copy.jwt")" INTERNAL_API_KEY="$(openssl rand -hex 16)" TUTOR_SESSION_SECRET="$(openssl rand -hex 24)" \
+                npm run --prefix backend seed:kc > "$LF/seed2.log" 2>&1 && echo "seed:kc succeeds once the freeze is lifted" || { tail -n 15 "$LF/seed2.log" | cut -c1-300; }
+              for r in $FROZEN_ROLES; do echo "ALTER ROLE $r SET default_transaction_read_only = on;"; done | copy_admin postgres
+              rest_restart
+            fi
+            return 1
+          }
+          p_od9() {
+            od9_copy install
+            for s in defects kc-credit consent; do
+              extra=(); [ "$s" = kc-credit ] || extra=(--cutover "$(cat "$LF/freeze-at")")
+              echo "-- $s (dry run)"; od9_copy "$s" "${extra[@]}" | grep -Ev '"report"'
+              echo "-- $s --apply";   od9_copy "$s" "${extra[@]}" --apply | grep -Ev '"report"'
+              echo "-- $s --apply again (idempotent)"; od9_copy "$s" "${extra[@]}" --apply | grep -Ev '"report"'
+            done
+          }
+          p_reconcile() {
+            od9_copy inventory --label after >/dev/null
+            inventory_ok after
+            od9_copy compare --before before --after after | grep -Ev '"report"'
+            od9_copy spot-check --label after --from before | grep -E '"(ok|same|changed|missing|newAfter)"'
+          }
+          p_smoke() {
+            od9_copy findings | grep -Ev '"report"'
+            subjects="$(echo "SELECT count(*) FROM public.legacy_consent_subjects WHERE released_at IS NULL;" | copy_admin rehearsal)"
+            children="$(jq -r '.children' "$LF/od9/consent-apply.json")"
+            echo "legacy_consent_subjects unreleased: $subjects; consent step children: $children"
+            [ "$subjects" = "$children" ]
+            ledger="$(echo 'SELECT count(*) FROM public.schema_migrations;' | copy_admin rehearsal)"
+            files="$(find database/migrations -maxdepth 1 -name '[0-9][0-9][0-9][0-9]_*.sql' | wc -l)"
+            echo "ledger receipts $ledger, migration files $files"
+            [ "$ledger" -ge "$files" ]
+            code="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$PROXY_PORT/rest/v1/data_practices?select=key&limit=1" \
+              -H "apikey: $(anon_jwt)" -H "Authorization: Bearer $(anon_jwt)")"
+            echo "PostgREST read of the migrated schema: HTTP $code"
+            [ "$code" = 200 ]
+          }
+          # Step 9.1 on the copy.
+          p_switch() {
+            for r in $FROZEN_ROLES; do echo "ALTER ROLE $r RESET default_transaction_read_only;"; done | copy_admin postgres
+            rest_restart
+            code="$(probe_write "http://127.0.0.1:$PROXY_PORT/rest/v1" "$(service_jwt)")"
+            echo "write after the switch: HTTP $code $(probe_detail)"
+            case "$code" in 2??) ;; *) return 1 ;; esac
+          }
+          # Backup document section 4: the window backup restores to the state
+          # the before inventory describes.
+          p_restore_rehearsal() {
+            node database/migration-od9/backup-crypto.mjs decrypt --in "$LF/window.dump.lfbk" --out "$LF/restored.dump" --key-file "$RUNNER_TEMP/backup.key" >/dev/null
+            copy_restore "$LF/restored.dump" restored
+            od9_copy inventory --label restored --db restored >/dev/null
+            od9_copy compare --before before --after restored --db restored | grep -E '"(ok|failures|families)"'
+            n="$(echo 'SELECT count(*) FROM od9.findings;' | copy_admin restored)"
+            echo "od9.findings in the restored copy: $n"
+            [ "$n" = 0 ]
+          }
+
+          date -u +%Y-%m-%dT%H:%M:%SZ > "$LF/freeze-at"
+          phase 'start the copy (same image as production db)' hard p_copy_up
+          phase 'restore the production dump'                  hard p_restore
+          phase 'PostgREST on the copy'                        hard p_rest_up
+          phase 'step 1: freeze and its verification write'    soft p_freeze
+          phase 'step 2: before inventory and spot check'      hard p_before
+          phase 'steps 3-4: window backup and verification'    hard p_backup
+          phase 'step 5: migration plan'                       hard p_plan
+          phase 'step 5: apply every pending migration'        hard p_migrate
+          phase 'step 5.4: seed:kc (under the freeze)'         soft p_seed
+          phase 'step 6: OD-9 toolkit (dry run, apply, again)' hard p_od9
+          phase 'step 7: reconcile'                            soft p_reconcile
+          phase 'step 8: smoke checks (database)'              soft p_smoke
+          phase 'step 9: switch (lift the freeze)'             soft p_switch
+          phase 'rollback: restore the window backup'          soft p_restore_rehearsal
+          exit 0
+
+      - name: 'Rehearse: summary'
+        if: ${{ always() && inputs.step == 'rehearse' }}
+        run: |
+          LF="$RUNNER_TEMP/lf"
+          [ -s "$LF/timings.tsv" ] || { echo "::error::no phase ran"; exit 1; }
+          {
+            echo "### Cutover rehearsal on a restored copy of production"
+            echo ""
+            echo "| Phase | Result | Seconds |"
+            echo "|---|---|---|"
+            awk -F'\t' '{ printf "| %s | %s | %s |\n", $1, $2, $3 }' "$LF/timings.tsv"
+            echo ""
+            total=$(awk -F'\t' '{ s += $3 } END { print s }' "$LF/timings.tsv")
+            if grep -qP '\t(FAIL|SKIP)\t' "$LF/timings.tsv"; then echo "**REHEARSAL: FAIL** (${total}s)"; else echo "**REHEARSAL: PASS** (${total}s)"; fi
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+          ! grep -qP '\t(FAIL|SKIP)\t' "$LF/timings.tsv"
+
+      # ── FREEZE (runbook step 1) ──────────────────────────────────────────
+      - name: 'Freeze: the step 1.1 workflows are disabled'
+        if: inputs.step == 'freeze'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # database-cd.yml plus every scheduled workflow except the two
+          # read-only watchdogs (the list cutover-freeze.test.mjs pins).
+          required="database-cd.yml $(grep -l '^[[:space:]]*schedule:' .github/workflows/*.yml | xargs -n1 basename \
+            | grep -Ev '^(tutor-retention-watch|ops-job-watch)\.yml$' | tr '\n' ' ')"
+          gh workflow list --all --json path,state --limit 200 -R "$GITHUB_REPOSITORY" > wf.json
+          active=""
+          for f in $required; do
+            state="$(jq -r --arg p ".github/workflows/$f" '.[] | select(.path == $p) | .state' wf.json)"
+            echo "$f: ${state:-not on the default branch}"
+            [ "$state" = active ] && active="$active $f"
+          done
+          rm -f wf.json
+          [ -z "$active" ] || { echo "::error::disable these first (runbook step 1.1):$active"; exit 1; }
+
+      - name: 'Freeze: read-only login roles, restart, verification write'
+        if: inputs.step == 'freeze'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          . "$RUNNER_TEMP/lf/lib.sh"
+          set -e
+          at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          prod_sql <<'SQL' >/dev/null
+          ALTER ROLE authenticator SET default_transaction_read_only = on;
+          ALTER ROLE supabase_auth_admin SET default_transaction_read_only = on;
+          ALTER ROLE supabase_storage_admin SET default_transaction_read_only = on;
+          SQL
+          is_frozen || die "the role settings did not take"
+          restart_services
+          url="$(backend_var SUPABASE_URL)"; key="$(backend_var SUPABASE_SERVICE_ROLE_KEY)"
+          [ -n "$url" ] && [ -n "$key" ] || die "could not read Core's SUPABASE_URL / service key"
+          code="$(probe_write "$url/rest/v1" "$key")"
+          echo "Verification write: HTTP $code $(probe_detail)"
+          if ! grep -q 'read-only transaction' "$LF/probe.json"; then
+            rm -f "$LF/probe.json"
+            die "THE FREEZE DID NOT TAKE (runbook step 1.3): stop here. Dispatch step=unfreeze to reset the roles."
+          fi
+          rm -f "$LF/probe.json"
+          printf '%s\n' "$at" | filebase_write freeze-at
+          {
+            echo "### Frozen at $at"
+            echo "Pass \`cutover_at: $at\` to the od9 step (or leave it empty: it reads this marker)."
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      # ── BACKUP (runbook steps 2-4) ───────────────────────────────────────
+      - name: 'Backup: before inventory and spot check (step 2)'
+        if: inputs.step == 'backup'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          . "$RUNNER_TEMP/lf/lib.sh"
+          set -e
+          is_frozen || die "production is not frozen: run step=freeze first (the backup must hold exactly the frozen state)"
+          od9_prod install
+          od9_prod inventory --label before >/dev/null
+          inventory_ok before || die "the before inventory has an absent category (runbook step 2)"
+          od9_prod spot-check --label before --families 10 | grep -E '"(ok|families|accounts)"'
+          store_reports before
+
+      - name: 'Backup: encrypted cutover backup (step 3)'
+        if: inputs.step == 'backup'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -s "$RUNNER_TEMP/backup.key"
+          FILE="cutover-$(date -u +%Y%m%d-%H%M%S).dump"
+          railway ssh --service db -i ~/.ssh/railway_key -- \
+            pg_dump -U supabase_admin -d postgres -Fc -f /tmp/cutover.dump
+          railway ssh --service db -i ~/.ssh/railway_key -- \
+            cat /tmp/cutover.dump > "$FILE"
+          railway ssh --service db -i ~/.ssh/railway_key -- rm -f /tmp/cutover.dump
+          test -s "$FILE"
+          head -c 5 "$FILE" | grep -q PGDMP
+          node database/migration-od9/backup-crypto.mjs encrypt --in "$FILE" --out "$FILE.lfbk" --key-file "$RUNNER_TEMP/backup.key"
+          test -s "$FILE.lfbk"
+          test -s "$FILE.lfbk.manifest.json"
+          test ! -e "$FILE"
+          for PART in "$FILE.lfbk" "$FILE.lfbk.manifest.json"; do
+            cat "$PART" | railway ssh --service filebase -i ~/.ssh/railway_key -- \
+              sh -c "cat > /data/backups/$PART"
+          done
+          stored="$(railway ssh --service filebase -i ~/.ssh/railway_key -- wc -c "/data/backups/$FILE.lfbk" 2>&1 | tr -d '\r' | grep -Eo '^[0-9]+' || true)"
+          [ "$stored" = "$(wc -c < "$FILE.lfbk")" ] || { echo "::error::the stored backup does not match the encrypted file"; exit 1; }
+          mv "$FILE.lfbk" "$RUNNER_TEMP/lf/cutover.dump.lfbk"
+          mv "$FILE.lfbk.manifest.json" "$RUNNER_TEMP/lf/cutover.dump.lfbk.manifest.json"
+          echo "$FILE" > "$RUNNER_TEMP/lf/cutover.name"
+          echo "Cutover backup: /data/backups/$FILE.lfbk ($stored encrypted bytes)" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "Keep a second copy off-platform (backup document section 2): an owner step."
+
+      # Cutover backups are kept 90 days (the daily ones 30).
+      - name: 'Backup: prune old cutover backups'
+        if: inputs.step == 'backup'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+          railway ssh --service filebase -i ~/.ssh/railway_key -- \
+            find /data/backups -name 'cutover-*.dump.lfbk' -mtime +90 -delete
+          railway ssh --service filebase -i ~/.ssh/railway_key -- \
+            find /data/backups -name 'cutover-*.dump.lfbk.manifest.json' -mtime +90 -delete
+
+      - name: 'Backup: verify the backup on a disposable copy (step 4)'
+        if: inputs.step == 'backup'
+        timeout-minutes: 120
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          . "$RUNNER_TEMP/lf/lib.sh"
+          set -e
+          node database/migration-od9/backup-crypto.mjs decrypt --in "$LF/cutover.dump.lfbk" --out "$LF/verify.dump" --key-file "$RUNNER_TEMP/backup.key" >/dev/null
+          copy_up
+          copy_restore "$LF/verify.dump" backup_check || die "the backup did not restore (decision point A: lift the freeze, move the window)"
+          export LF_COPY_DB=backup_check
+          od9_copy inventory --label backup_check >/dev/null
+          od9_copy compare --before before --after backup_check | grep -E '"(ok|failures|families)"' \
+            || die "the backup does not match the before inventory (decision point A)"
+          od9_copy spot-check --label backup_check --from before | grep -E '"(ok|changed|missing)"' \
+            || die "the backup's spot check differs (decision point A)"
+          copy_down
+          printf '%s verified %s\n' "$(cat "$LF/cutover.name").lfbk" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" | filebase_write backup-verified
+          echo "Backup verified: restore, compare and spot check against before all passed (decision point A: go)." | tee -a "$GITHUB_STEP_SUMMARY"
+
+      # ── MIGRATE (runbook step 5) ─────────────────────────────────────────
+      - name: 'Migrate: dry run, plan, apply'
+        if: inputs.step == 'migrate'
+        timeout-minutes: 330
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_SSH_KEY_PATH: /home/runner/.ssh/railway_key
+        run: |
+          . "$RUNNER_TEMP/lf/lib.sh"
+          set -e
+          is_frozen || die "production is not frozen (runbook step 1)"
+          verified="$(filebase_cmd find /data/cutover -name backup-verified -newer /data/cutover/freeze-at)"
+          [ "$verified" = /data/cutover/backup-verified ] || die "no backup verified after the freeze (runbook steps 3-4): never migrate without one"
+          echo "Backup: $(filebase_cmd cat /data/cutover/backup-verified)"
+          node database/scripts/check-migration-phase.mjs
+          bash database/scripts/railway-migrate.sh --dry-run | tee "$LF/dryrun.txt" | grep -Ev '^skip '
+          grep -q '^OK: dry-run complete' "$LF/dryrun.txt" || die "the dry run did not complete"
+          hwm="$(grep -E '^skip [0-9]{4}_' "$LF/dryrun.txt" | tail -n1 | cut -c6-9)"
+          od9 plan --applied-through "${hwm:-0000}"
+          node -e '
+            const plan = require(process.argv[1]);
+            const dry = require("fs").readFileSync(process.argv[2], "utf8").split("\n").filter((l) => l.startsWith("pending ")).map((l) => l.slice(8));
+            if (!plan.ok || JSON.stringify(plan.pending.map((p) => p.file)) !== JSON.stringify(dry)) { console.log("::error::the dry run does not list exactly the plan"); process.exit(1); }
+            console.log(`dry run = plan: ${dry.length} file(s)`);
+          ' "$LF/od9/plan-${hwm:-0000}.json" "$LF/dryrun.txt"
+          bash database/scripts/railway-migrate.sh --confirm-production | grep -Ev '^skip '
+          bash database/scripts/railway-migrate.sh --dry-run | tee "$LF/after.txt" | tail -n 2
+          ! grep -q '^pending ' "$LF/after.txt" || die "migrations are still pending after applying"
+          echo "Ledger current (decision point B passed)." | tee -a "$GITHUB_STEP_SUMMARY"
+
+      # ── SEED-KC (runbook step 5.4) — tutor-deploy.yml's step ─────────────
+      - name: 'Seed the KC graph'
+        if: inputs.step == 'seed-kc'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          . "$RUNNER_TEMP/lf/lib.sh"
+          set -e
+          is_frozen && echo "note: production is frozen; seed:kc writes through PostgREST (see the rehearsal's step 5.4 result)" || true
+          export SUPABASE_URL="$(backend_var SUPABASE_URL)"
+          export SUPABASE_ANON_KEY="$(backend_var SUPABASE_ANON_KEY)"
+          export SUPABASE_SERVICE_ROLE_KEY="$(backend_var SUPABASE_SERVICE_ROLE_KEY)"
+          export SUPABASE_JWT_SECRET="$(backend_var SUPABASE_JWT_SECRET)"
+          export INTERNAL_API_KEY="$(backend_var INTERNAL_API_KEY)"
+          export TUTOR_SESSION_SECRET="$(backend_var TUTOR_SESSION_SECRET)"
+          for v in SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY SUPABASE_JWT_SECRET INTERNAL_API_KEY TUTOR_SESSION_SECRET; do
+            [ -n "${!v}" ] || die "backend variable $v is empty"
+          done
+          echo "Seeding the KC graph against $SUPABASE_URL"
+          npm ci --prefix backend --no-audit --no-fund >/dev/null
+          npm run --prefix backend seed:kc
+
+      # ── OD9 (runbook step 6) ─────────────────────────────────────────────
+      - name: 'OD-9 toolkit'
+        if: inputs.step == 'od9'
+        timeout-minutes: 120
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          CUTOVER_AT: ${{ inputs.cutover_at }}
+          OD9_APPLY: ${{ inputs.od9_apply }}
+        run: |
+          . "$RUNNER_TEMP/lf/lib.sh"
+          set -e
+          is_frozen || die "production is not frozen (runbook step 1): the toolkit runs inside the window"
+          [ -n "$CUTOVER_AT" ] || CUTOVER_AT="$(filebase_cmd cat /data/cutover/freeze-at | head -n1)"
+          [[ "$CUTOVER_AT" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?Z$ ]] || die "cutover_at must be the freeze time in ISO 8601 UTC"
+          echo "Cutover instant: $CUTOVER_AT; apply: $OD9_APPLY"
+          od9_prod install
+          for s in defects kc-credit consent; do
+            extra=(); [ "$s" = kc-credit ] || extra=(--cutover "$CUTOVER_AT")
+            echo "== $s (dry run)"
+            od9_prod "$s" "${extra[@]}" | grep -Ev '"report"'
+            if [ "$OD9_APPLY" = true ]; then
+              echo "== $s --apply"
+              od9_prod "$s" "${extra[@]}" --apply | grep -Ev '"report"'
+            fi
+          done
+          od9_prod findings | grep -Ev '"report"'
+          store_reports "od9-$([ "$OD9_APPLY" = true ] && echo apply || echo dryrun)"
+
+      # ── RECONCILE (runbook step 7) ───────────────────────────────────────
+      - name: 'Reconcile'
+        if: inputs.step == 'reconcile'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          . "$RUNNER_TEMP/lf/lib.sh"
+          set -e
+          od9_prod inventory --label after >/dev/null
+          inventory_ok after || die "the after inventory has an absent category"
+          rc=0
+          od9_prod compare --before before --after after | grep -Ev '"report"' || rc=1
+          od9_prod spot-check --label after --from before | grep -E '"(ok|same|changed|missing|newAfter)"' || rc=1
+          store_reports reconcile
+          [ "$rc" = 0 ] || die "decision point C: a promised record changed or was lost; no switch (reports stored encrypted on the Depot volume)"
+          echo "Reconcile passed; the reviewer signs spot-check-after.md from the stored bundle (section 4.5)." | tee -a "$GITHUB_STEP_SUMMARY"
+
+      # ── SMOKE (runbook step 8) — reads only ──────────────────────────────
+      - name: 'Smoke checks'
+        if: inputs.step == 'smoke'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          . "$RUNNER_TEMP/lf/lib.sh"
+          fail=0
+          is_frozen || echo "note: production is not frozen"
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://api-b2c.littlefounders.ai/health)
+          echo "Core /health: $code"; [ "$code" = 200 ] || fail=1
+          oracle="$(railway variable list --service littlefounders-backend --environment "$ENVIRONMENT" --json 2>/dev/null | jq -r '.ORACLE_PUBLIC_URL // ""')"
+          if [ -n "$oracle" ]; then
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$oracle/health"); echo "Oracle /health: $code"; [ "$code" = 200 ] || fail=1
+          fi
+          echo "Service deployments:"
+          railway status --environment "$ENVIRONMENT" --json 2>/dev/null | jq -r --arg env "$ENVIRONMENT" '
+            .environments.edges[]? | select(.node.name == $env) | .node.serviceInstances.edges[]?.node
+            | "  \(.serviceName): \(.latestDeployment.status // "none")"' | sort | tee "$LF/services.txt"
+          grep -Ev ': (SUCCESS|SLEEPING)$' "$LF/services.txt" && fail=1 || true
+          RAILWAY_SSH_KEY_PATH="$KEY" bash database/scripts/railway-migrate.sh --dry-run > "$LF/ledger.txt" || fail=1
+          grep -q '^pending ' "$LF/ledger.txt" && { echo "migrations pending:"; grep '^pending ' "$LF/ledger.txt"; fail=1; } || echo "Ledger current."
+          od9_prod findings | grep -Ev '"report"' || fail=1
+          echo "Unreleased legacy consent subjects: $(echo 'SELECT count(*) FROM public.legacy_consent_subjects WHERE released_at IS NULL;' | prod_sql)"
+          url="$(backend_var SUPABASE_URL)"; anon="$(backend_var SUPABASE_ANON_KEY)"
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$url/rest/v1/data_practices?select=key&limit=1" -H "apikey: $anon" -H "Authorization: Bearer $anon")
+          echo "PostgREST read of the migrated schema: $code"; [ "$code" = 200 ] || fail=1
+          echo "Still to do by a person (runbook step 8): the QA-family checks in the browser and the QA child's consent toggle."
+          [ "$fail" = 0 ] || die "a smoke check failed (decision point D)"
+
+      # ── UNFREEZE (runbook step 9.1) ──────────────────────────────────────
+      - name: 'Unfreeze: reset the roles, restart, a write goes through'
+        if: inputs.step == 'unfreeze'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          . "$RUNNER_TEMP/lf/lib.sh"
+          set -e
+          prod_sql <<'SQL' >/dev/null
+          ALTER ROLE authenticator RESET default_transaction_read_only;
+          ALTER ROLE supabase_auth_admin RESET default_transaction_read_only;
+          ALTER ROLE supabase_storage_admin RESET default_transaction_read_only;
+          SQL
+          state="$(freeze_state)"; echo "Freeze state: $state"
+          printf '%s' "$state" | grep -q '=on' && die "a role is still read-only"
+          restart_services
+          url="$(backend_var SUPABASE_URL)"; key="$(backend_var SUPABASE_SERVICE_ROLE_KEY)"
+          code="$(probe_write "$url/rest/v1" "$key")"
+          echo "Write after lifting the freeze: HTTP $code $(probe_detail)"
+          rm -f "$LF/probe.json"
+          case "$code" in 2??) ;; *) die "writes still fail after lifting the freeze" ;; esac
+          lifted="$(date -u +%Y%m%d-%H%M%S)"
+          filebase_cmd mv /data/cutover/freeze-at "/data/cutover/freeze-at.lifted-$lifted" >/dev/null || true
+          {
+            echo "### Freeze lifted at $lifted (UTC)"
+            echo "Next (runbook step 9): promote the frontend and confirm the Vercel build happened; one real QA-family write;"
+            echo "re-enable the step 1.1 workflows, retention and deletion sweeps first; family-integrity-watch 24 hours later."
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      # ── STATUS — mutates nothing ─────────────────────────────────────────
+      - name: 'Status'
+        if: inputs.step == 'status'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_SSH_KEY_PATH: /home/runner/.ssh/railway_key
+        run: |
+          . "$RUNNER_TEMP/lf/lib.sh"
+          is_frozen && echo "Production is FROZEN" || echo "Production is not frozen"
+          echo "Markers: $(filebase_cmd ls -l /data/cutover 2>/dev/null | tr '\n' ';')"
+          echo "Cutover backups: $(filebase_cmd find /data/backups -name 'cutover-*.dump.lfbk' | tr '\n' ' ')"
+          bash database/scripts/railway-migrate.sh --dry-run | grep -Ev '^skip ' || true
+          echo "od9 inventories (label: accounts):"
+          prod_sql <<'SQL' || echo "  (no od9 schema yet)"
+          SELECT '  ' || label || ': ' || count(DISTINCT user_id) FROM od9.inventory GROUP BY label ORDER BY 1;
+          SQL
+
+      # H.5: the key, every dump (plaintext or ciphertext), every report and
+      # the disposable copy leave the runner on every outcome.
+      - name: Remove the backup key, every dump, report and copy
+        if: always()
+        run: rm -f "$RUNNER_TEMP/backup.key" ./*.dump ./*.dump.lfbk ./*.dump.lfbk.manifest.json; docker rm -f lf-cutover-rest lf-cutover-db >/dev/null 2>&1; docker network rm lf-cutover-internal >/dev/null 2>&1; kill "$(cat "$RUNNER_TEMP/lf/proxy.pid" 2>/dev/null)" 2>/dev/null; rm -rf "$RUNNER_TEMP/lf" audit-results/od9 ~/.ssh/railway_key; true
