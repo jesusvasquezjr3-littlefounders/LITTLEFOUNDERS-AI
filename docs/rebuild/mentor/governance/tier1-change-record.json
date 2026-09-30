@@ -501,6 +501,16 @@
       "origin": "human",
       "pedagogicalReviewer": "pending",
       "safetyTrustLead": "pending"
+    },
+    {
+      "component": "measurement.stage7_and_thresholds",
+      "hash": "c68dd2efc284d6926910eaed0e5b6812e585b7060e1437fc2a9e5dbc1dae3caf",
+      "files": 9,
+      "date": "2026-09-30",
+      "change": "Gap-fix round 7 (fix7learni1), Appendix C 1.1 / B.9: mentorQuality.ts decisionJournalReading adds decision-journal coverage (journaled / made, baseline release-1) next to the resurfacing rate in the learning.decision_journal breakdown; diagnostic only, no anomaly, no threshold value changed",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
     }
   ]
 }
