@@ -148,7 +148,7 @@
       },
       "ages": {
         "question": "What ages is this for?",
-        "answer": "Kids and teens, about 6 to 17. Under 13, a Tutor creates the account; teens can also sign up on their own."
+        "answer": "Kids and teens, 6 to 17. A Tutor can create a child's account; a child under 13 can also sign up, with the strictest safeguards."
       },
       "whatIsTutor": {
         "question": "What is a Tutor account?",
@@ -365,7 +365,7 @@
     "whyTitle": "Learning as a guest",
     "whyNoEmail": "A guest needs no email or password.",
     "whySafety": "The microphone stays off. The Mentor follows the strictest safety rules.",
-    "whyParent": "A parent can create your own account later.",
+    "whyParent": "You can save your progress later, with these same protections.",
     "close": "Close"
   },
   "authForgot": {

@@ -129,6 +129,42 @@ test('holds the Families privacy line to the FAQ under-13 statement, and catches
   assert.match(drifted[0], /^rebuild-site:faq\.items\.analyticsToggle\.answer \(pt-BR\) no longer says "Com menores de 13 anos, nunca coletamos dados de uso"/);
 });
 
+test('holds the FAQ and the refusal sheet to what the under-13 account paths do (gap-fix round 8, A.1)', () => {
+  // The FAQ may not say again that only a Tutor creates an under-13 account.
+  const faq = mutate((live) => ({
+    locales: (locale, ns) => {
+      const copy = live.locales(locale, ns);
+      if (locale !== 'es-MX' || ns !== 'rebuild-site') return copy;
+      return { ...copy, faq: { ...copy.faq, items: { ...copy.faq.items, ages: { ...copy.faq.items.ages, answer: 'Niños y adolescentes. Antes de los 13, un Tutor crea la cuenta.' } } } };
+    },
+  }));
+  assert.equal(faq.length, 1, faq.join('\n'));
+  assert.match(faq[0], /^rebuild-site:faq\.items\.ages\.answer \(es-MX\) says "antes de los 13, un tutor crea la cuenta"/);
+  // Nor may the refusal sheet tell the child a parent must create their own account.
+  const sheet = mutate((live) => ({
+    locales: (locale, ns) => {
+      const copy = live.locales(locale, ns);
+      if (locale !== 'en-US' || ns !== 'rebuild-site') return copy;
+      return { ...copy, authSignup: { ...copy.authSignup, whyParent: 'A parent can create your own account later.' } };
+    },
+  }));
+  assert.equal(sheet.length, 1, sheet.join('\n'));
+  assert.match(sheet[0], /^rebuild-site:authSignup\.whyParent \(en-US\) says "a parent can create your own account"/);
+  // A later refusal of the flagged guest's upgrade (the stricter OD-3 reading) removes the capability: the gate asks for the copy review.
+  const refused = mutate((live) => ({
+    readFile: (path) => (path === 'backend/src/routes/auth.ts'
+      ? live.readFile(path).replace("router.post('/upgrade'", "router.post('/upgrade-refused'")
+      : live.readFile(path)),
+  }));
+  assert.equal(refused.length, 1, refused.join('\n'));
+  assert.match(refused[0], /^retired claim \(rebuild-site\): backend\/src\/routes\/auth\.ts no longer contains "router\.post\('\/upgrade'"/);
+  const google = mutate((live) => ({
+    migrations: [...live.migrations, { name: '9999_regression.sql', sql: 'CREATE OR REPLACE FUNCTION public.record_age_declaration(p_user_id uuid, p_age_band text) RETURNS text LANGUAGE plpgsql AS $$ BEGIN RETURN p_age_band; END; $$;' }],
+  }));
+  assert.equal(google.length, 1, google.join('\n'));
+  assert.match(google[0], /^retired claim \(rebuild-site\): public\.record_age_declaration no longer contains "mark_under13_origin"/);
+});
+
 test('flattens copy to dotted keys', () => {
   assert.deepEqual(flatStrings({ a: { b: 'x', c: ['y'] }, d: 1 }), [['a.b', 'x'], ['a.c.0', 'y']]);
 });
