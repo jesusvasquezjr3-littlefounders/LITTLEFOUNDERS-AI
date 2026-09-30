@@ -33,7 +33,8 @@ name: Cutover (operator)
 #              encrypted cutover backup on /data/backups, and its verification
 #              (decrypt, restore into a disposable copy, compare with before).
 #   migrate    Step 5: railway-migrate.sh --dry-run, the plan check, then
-#              --confirm-production. Refuses without the freeze and a verified
+#              --confirm-production, then a restart of rest and a read of a
+#              migrated table. Refuses without the freeze and a verified
 #              backup taken after it.
 #   seed-kc    Step 5.4: `npm run seed:kc` in backend/ (tutor-deploy.yml's).
 #   od9        Step 6: install, then defects, kc-credit and consent as dry runs;
@@ -326,13 +327,13 @@ jobs:
           }
           probe_detail() { jq -r '"\(.code // "") \(.message // "")"' "$LF/probe.json" 2>/dev/null | cut -c1-200; }
 
-          restart_services() {
-            local svc
-            for svc in rest auth storage; do
+          restart_services() { # [service ...], default rest auth storage
+            local svc list="${*:-rest auth storage}"
+            for svc in $list; do
               echo "Restarting $svc"
               railway redeploy --service "$svc" --environment "$ENVIRONMENT" --yes </dev/null 2>&1 | tail -3 || true
             done
-            for svc in rest auth storage; do
+            for svc in $list; do
               local i state=""
               for i in $(seq 1 60); do
                 state="$(railway status --environment "$ENVIRONMENT" --json 2>/dev/null | jq -r --arg s "$svc" --arg env "$ENVIRONMENT" '
@@ -754,20 +755,30 @@ jobs:
           # without a restart, or Core's first request after the deploy fails.
           cache_read() {
             curl -s -o "$LF/probe.json" -w '%{http_code}' "http://127.0.0.1:$PROXY_PORT/rest/v1/data_practices?select=key&limit=1" \
-              -H "apikey: $(anon_jwt)" -H "Authorization: Bearer $(service_jwt)"
+              -H "apikey: $(anon_jwt)" -H "Authorization: Bearer $(service_jwt)" || true
           }
+          # First a diagnosis (did the migrations' own NOTIFY reach PostgREST;
+          # does an explicit one), then what the production migrate step does:
+          # restart rest and require the migrated table. The phase is judged on
+          # that last read only.
           schema_cache_current() {
             local i code=""
             for i in $(seq 1 30); do code="$(cache_read)"; [ "$code" = 200 ] && break; sleep 2; done
             echo "PostgREST read of a migrated table 60 s after the last migration: HTTP $code $( [ "$code" = 200 ] || probe_detail)"
-            [ "$code" = 200 ] && return 0
-            echo "PostgREST log (last 40 lines):"
-            docker logs --tail 40 "$COPY_REST" 2>&1 | cut -c1-300 | sed 's/^/  /'
-            echo "NOTIFY pgrst, 'reload schema';" | copy_admin rehearsal
+            if [ "$code" != 200 ]; then
+              echo "::warning::PostgREST did not reload its schema cache from the migrations' NOTIFY"
+              echo "PostgREST log (last 40 lines):"
+              docker logs --tail 40 "$COPY_REST" 2>&1 | cut -c1-300 | sed 's/^/  /'
+              echo "NOTIFY pgrst, 'reload schema';" | copy_admin rehearsal
+              for i in $(seq 1 15); do code="$(cache_read)"; [ "$code" = 200 ] && break; sleep 2; done
+              echo "after an explicit NOTIFY: HTTP $code $( [ "$code" = 200 ] || probe_detail)"
+              docker logs --tail 10 "$COPY_REST" 2>&1 | cut -c1-300 | sed 's/^/  /'
+            fi
+            rest_restart
             for i in $(seq 1 15); do code="$(cache_read)"; [ "$code" = 200 ] && break; sleep 2; done
-            echo "after an explicit NOTIFY: HTTP $code $( [ "$code" = 200 ] || probe_detail)"
-            docker logs --tail 10 "$COPY_REST" 2>&1 | cut -c1-300 | sed 's/^/  /'
-            return 1
+            echo "after restarting rest (the production migrate step's action): HTTP $code $( [ "$code" = 200 ] || probe_detail)"
+            [ "$code" = 200 ] || docker logs --tail 20 "$COPY_REST" 2>&1 | cut -c1-300 | sed 's/^/  /'
+            [ "$code" = 200 ]
           }
           # Step 5.4 under the freeze, as the runbook orders it.
           # Under the freeze, with the window's token, as the seed-kc step runs
@@ -1043,7 +1054,19 @@ jobs:
           bash database/scripts/railway-migrate.sh --confirm-production | grep -Ev '^skip '
           bash database/scripts/railway-migrate.sh --dry-run | tee "$LF/after.txt" | tail -n 2
           ! grep -q '^pending ' "$LF/after.txt" || die "migrations are still pending after applying"
-          echo "Ledger current (decision point B passed)." | tee -a "$GITHUB_STEP_SUMMARY"
+          # PostgREST must serve the migrated schema before anything is
+          # deployed on it: restart rest (the rehearsal's migrate phase does the
+          # same) and read a table the migrations created, as Core reads.
+          restart_services rest
+          url="$(backend_var SUPABASE_URL)"; anon="$(backend_var SUPABASE_ANON_KEY)"; key="$(backend_var SUPABASE_SERVICE_ROLE_KEY)"
+          code=""
+          for i in $(seq 1 30); do
+            code=$(curl -s -o "$LF/probe.json" -w '%{http_code}' --max-time 20 "$url/rest/v1/data_practices?select=key&limit=1" -H "apikey: $anon" -H "Authorization: Bearer $key") || true
+            [ "$code" = 200 ] && break; sleep 2
+          done
+          echo "PostgREST read of a migrated table: $code $( [ "$code" = 200 ] || probe_detail)"; rm -f "$LF/probe.json"
+          [ "$code" = 200 ] || die "PostgREST does not serve the migrated schema after a restart (decision point B)"
+          echo "Ledger current, PostgREST serves the migrated schema (decision point B passed)." | tee -a "$GITHUB_STEP_SUMMARY"
 
       # ── SEED-KC (runbook step 5.4) — tutor-deploy.yml's step ─────────────
       - name: 'Seed the KC graph'
