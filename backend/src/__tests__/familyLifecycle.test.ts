@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
+import { getConfig } from '../config.js';
 import { admissionStubResponse, jsonResponse, mintToken } from './helpers.js';
 
 /*
@@ -441,5 +442,55 @@ describe('GET /api/v1/admin/family/state-integrity (D.4 metric)', () => {
     stub({ staffGrants: ['view_analytics'], rpc: { family_state_integrity: { status: 200, body: [{ nope: 1 }] } } });
     expect((await request(createApp()).get('/api/v1/admin/family/state-integrity?days=0').set('Authorization', as(STAFF))).status).toBe(400);
     expect((await request(createApp()).get('/api/v1/admin/family/state-integrity').set('Authorization', as(STAFF))).status).toBe(502);
+  });
+});
+
+describe('GET /api/v1/internal/ops/family-integrity (gap-fix round 8: the daily production watch, Appendix H Stage 7)', () => {
+  const key = () => getConfig().INTERNAL_API_KEY;
+  const rows = [
+    { table_name: 'banking_accounts', transitions: 2, outside_service: 0 },
+    { table_name: 'tasks', transitions: 9, outside_service: 1 },
+  ];
+  const retention = {
+    family_retention_compliance: { status: 200, body: [{ data_class: 'records', table_name: 'tasks', retain_days: 400, overdue: 0 }] },
+    family_retention_last_run: { status: 200, body: null },
+  };
+
+  it('serves the same D.4 shape staff read, over one day by default, with the retention audit', async () => {
+    const calls = stub({ rpc: { family_state_integrity: { status: 200, body: rows }, ...retention } });
+    const res = await request(createApp()).get('/api/v1/internal/ops/family-integrity').set('x-internal-api-key', key());
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({
+      days: 1,
+      stateIntegrity: { transitions: 11, outsideService: 1, tables: [
+        { table: 'banking_accounts', transitions: 2, outsideService: 0 },
+        { table: 'tasks', transitions: 9, outsideService: 1 },
+      ] },
+      retention: { pass: true, overdue: 0, tables: [{ dataClass: 'records', table: 'tasks', retainDays: 400, overdue: 0 }] },
+    });
+    const since = (calls.find((c) => c.url.includes('/rpc/family_state_integrity'))!.body as { p_since: string }).p_since;
+    expect(Date.now() - Date.parse(since)).toBeGreaterThanOrEqual(24 * 60 * 60 * 1000 - 5000);
+    expect(Date.now() - Date.parse(since)).toBeLessThan(24 * 60 * 60 * 1000 + 60000);
+  });
+
+  it('refuses every caller without the internal key: no key, a wrong key, and every signed-in population', async () => {
+    const calls = stub({ staffGrants: ['view_analytics'], rpc: { family_state_integrity: { status: 200, body: rows }, ...retention } });
+    expect((await request(createApp()).get('/api/v1/internal/ops/family-integrity')).status).toBe(403);
+    expect((await request(createApp()).get('/api/v1/internal/ops/family-integrity').set('x-internal-api-key', 'not-the-key')).status).toBe(403);
+    for (const who of [STAFF, PARENT, KID, TEEN]) {
+      expect((await request(createApp()).get('/api/v1/internal/ops/family-integrity').set('Authorization', as(who))).status).toBe(403);
+    }
+    expect(calls.some((c) => c.url.includes('/rpc/family_state_integrity'))).toBe(false);
+  });
+
+  it('validates the window, fails closed on an unreadable metric and reports an unreadable audit as null', async () => {
+    stub({ rpc: { family_state_integrity: { status: 200, body: rows } } });
+    expect((await request(createApp()).get('/api/v1/internal/ops/family-integrity?days=0').set('x-internal-api-key', key())).status).toBe(400);
+    expect((await request(createApp()).get('/api/v1/internal/ops/family-integrity?days=1&x=1').set('x-internal-api-key', key())).status).toBe(400);
+    const partial = await request(createApp()).get('/api/v1/internal/ops/family-integrity?days=7').set('x-internal-api-key', key());
+    expect(partial.status).toBe(200);
+    expect(partial.body.data).toMatchObject({ days: 7, retention: null, stateIntegrity: { outsideService: 1 } });
+    stub({ rpc: { family_state_integrity: { status: 200, body: [{ nope: 1 }] }, ...retention } });
+    expect((await request(createApp()).get('/api/v1/internal/ops/family-integrity').set('x-internal-api-key', key())).status).toBe(502);
   });
 });

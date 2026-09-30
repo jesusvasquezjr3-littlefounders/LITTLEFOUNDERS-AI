@@ -1,0 +1,115 @@
+name: Family integrity watch
+
+# Gap-fix round 8: Appendix H 1.3 (D.4, "Unauthorized State-Transition Rate":
+# zero) and Part 3 Stage 7 (a structural or safety change is REVERTED, not
+# patched forward, when that metric regresses after a release), read from
+# production every day.
+#
+# The database records every accepted chore, goal, redemption, guardian-link
+# and freeze transition with the request role that caused it
+# (public.family_state_audit). A row whose role is not `service_role` is a
+# transition that bypassed Core's service layer. `npm run family:db-verify`
+# proves the mechanism on a throwaway cluster; release readiness reads the
+# production count since the last release tag
+# (agent/tools/check-family-production-integrity.mjs --strict). This job reads
+# the last day, so a regression between releases is not left for the next one.
+#
+# It asks Core from INSIDE the Core container, like ops-job-watch.yml: the
+# admin route (/admin/family/state-integrity) needs a staff session, so Core
+# serves the same metric at GET /api/v1/internal/ops/family-integrity behind
+# the INTERNAL_API_KEY already in that process's environment. The key and port
+# expand there, never on this runner.
+#
+# THE JUDGE HAS ONE HOME: check-family-production-integrity.mjs --watch. An
+# outside-service transition on any table fails this run and writes the notice;
+# an empty or foreign reply fails too (an unreadable metric is not zero).
+# Overdue retention rows are printed as a warning here (the nightly sweep and
+# ops-job-watch.yml own them) and fail at release.
+#
+# A HUMAN IS TOLD: on failure this job opens (or comments on) one GitHub issue
+# labelled `block-d-stage7`, titled "Block D Stage 7: revert candidate" with
+# the table and the window, which notifies the repository's watchers. The
+# Engineering Lead and the Pedagogical Lead decide the revert on that issue
+# (docs/operations/NO-UNBACKED-GUARANTEE.md, "Production integrity").
+#
+# 10:30 UTC: after ops-job-watch.yml (10:00).
+
+on:
+  schedule:
+    - cron: '30 10 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    name: Fail and open the Stage 7 revert decision if a family state transition bypassed the service layer
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli@5.43.1
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
+          chmod 600 ~/.ssh/railway_key
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            LogLevel ERROR
+          CONFIG
+          chmod 600 ~/.ssh/config
+
+      - name: Ask Core for the last day's state transitions
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+          script='curl -sS'
+          script="$script"' -H "x-internal-api-key: $INTERNAL_API_KEY"'
+          script="$script"' "http://127.0.0.1:${PORT:-4000}/api/v1/internal/ops/family-integrity?days=1"'
+          b64=$(printf '%s' "$script" | base64 | tr -d '\n')
+          body=''
+          for attempt in 1 2 3; do
+            if body=$(railway ssh --service littlefounders-backend -i ~/.ssh/railway_key -- sh -c "echo $b64 | base64 -d | sh" 2>&1); then break; fi
+            echo "attempt ${attempt} failed:" >&2
+            printf '%s\n' "$body" | head -5 >&2
+            body=''
+            sleep 20
+          done
+          # An empty or foreign reply is written as-is: the judge refuses it.
+          printf '%s' "$body" > reply.json
+          printf 'family-integrity: %s\n' "$body"
+
+      - name: Judge the reply
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node agent/tools/check-family-production-integrity.mjs --watch --export=reply.json --notify-file=notice.md
+
+      - name: Open the Stage 7 revert decision
+        if: failure() && hashFiles('notice.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          title=$(head -1 notice.md | sed 's/^# //')
+          tail -n +2 notice.md > body.md
+          existing=$(gh issue list --state open --label block-d-stage7 --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "${existing:-}" ]; then
+            { printf '**%s**\n' "$title"; cat body.md; } > comment.md
+            gh issue comment "$existing" --body-file comment.md
+          else
+            gh label create block-d-stage7 --color B60205 --description 'Appendix H Part 3 Stage 7: family state-integrity regression' 2>/dev/null || true
+            gh issue create --title "$title" --label block-d-stage7 --body-file body.md
+          fi
