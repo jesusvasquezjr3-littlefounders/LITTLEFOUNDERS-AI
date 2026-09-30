@@ -95,6 +95,8 @@ const REQUEST_REFUSALS: Record<string, RequestStatus> = {
   SOCIAL_REQUEST_LIMIT: 'limit',
   SOCIAL_ALREADY_CONNECTED: 'connected',
   PROFILE_REVIEW_REQUIRED: 'review',
+  // GAP-FIX-R8 social: an account without a @username chooses one before it asks a teen.
+  USERNAME_REQUIRED: 'handle',
 };
 
 export function PublicProfileRoute() {

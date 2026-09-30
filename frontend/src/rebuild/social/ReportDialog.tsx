@@ -16,10 +16,12 @@ export const REPORT_CATEGORIES = ['unwanted_contact', 'harassment', 'inappropria
 export type ReportCategory = (typeof REPORT_CATEGORIES)[number];
 export const REPORT_NOTE_MAX = 140;
 
-export function ReportDialog({ copy, triggerLabel, onSend, disabled = false }: {
+export function ReportDialog({ copy, triggerLabel, onSend, disabled = false, size }: {
   copy: ReportCopy; triggerLabel: string; onSend: (category: ReportCategory, note: string | null) => Promise<boolean>;
   /** The trigger waits while another action on the same row is in flight. */
   disabled?: boolean;
+  /** The trigger's size, to match the row it sits in (a people-list row uses `sm`). */
+  size?: 'sm' | 'md' | 'lg';
 }) {
   const name = useId();
   const [open, setOpen] = useState(false);
@@ -40,7 +42,7 @@ export function ReportDialog({ copy, triggerLabel, onSend, disabled = false }: {
   };
 
   return <>
-    <Button aria-haspopup="dialog" disabled={disabled} onClick={() => setOpen(true)}>{triggerLabel}</Button>
+    <Button aria-haspopup="dialog" size={size} disabled={disabled} onClick={() => setOpen(true)}>{triggerLabel}</Button>
     <Dialog open={open} heading={copy.title} description={copy.body} onClose={sending ? undefined : close}
       actions={<>
         <Button onClick={close} disabled={sending}>{copy.cancel}</Button>

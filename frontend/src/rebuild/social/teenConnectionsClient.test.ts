@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { askToConnect, blockTeenRequest, decideTeenRequest, getFollowers, getTeenRequests, removeFollower, reportTeenRequest } from './teenConnectionsClient';
+import { askToConnect, blockConnection, blockTeenRequest, decideTeenRequest, getFollowers, getTeenRequests, removeFollower, reportConnection, reportTeenRequest, unfollowConnection } from './teenConnectionsClient';
 
 /* E.8 client layer: only a validated answer is ever a success. */
 
@@ -35,13 +35,44 @@ describe('teen connections client', () => {
     expect(never.fetchImpl).not.toHaveBeenCalled();
   });
 
-  it('lists followers that can be addressed and removes one by handle', async () => {
-    expect(await getFollowers(transport(200, { data: { users: [{ displayName: 'Omar', username: 'omar' }, { displayName: 'No handle', username: null }] } }).t))
-      .toEqual({ ok: true, value: [{ username: 'omar', displayName: 'Omar' }] });
-    const removal = transport(200, { data: { removed: true } });
-    expect(await removeFollower(removal.t, 'omar')).toEqual({ ok: true, value: 'removed' });
-    expect(removal.fetchImpl.mock.calls[0]![0]).toBe('http://core/api/v1/profile/followers/omar');
-    expect((await removeFollower(transport(200, {}).t, 'Bad Name')).ok).toBe(false);
+  // GAP-FIX-R8 social (E.3, E.8): a follower without a @username is listed and addressed by user id.
+  it('lists every follower, handle-less ones included, and removes one by user id', async () => {
+    const OMAR = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
+    const PAT = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
+    expect(await getFollowers(transport(200, { data: { users: [{ userId: OMAR, displayName: 'Omar', username: 'omar' }, { userId: PAT, displayName: 'Pat', username: null }] } }).t))
+      .toEqual({ ok: true, value: [{ userId: OMAR, username: 'omar', displayName: 'Omar' }, { userId: PAT, username: null, displayName: 'Pat' }] });
+    // A row Core cannot address is a malformed answer, never a dropped person.
+    expect((await getFollowers(transport(200, { data: { users: [{ displayName: 'Pat', username: null }] } }).t)).ok).toBe(false);
+    expect((await getFollowers(transport(200, { data: { users: [{ userId: 'nope', displayName: 'Pat', username: null }] } }).t)).ok).toBe(false);
+    const removal = transport(200, { data: { userId: PAT, removed: true } });
+    expect(await removeFollower(removal.t, PAT)).toEqual({ ok: true, value: 'removed' });
+    expect(removal.fetchImpl.mock.calls[0]![0]).toBe(`http://core/api/v1/profile/followers/id/${PAT}`);
+    expect((await removeFollower(transport(200, { data: { userId: OMAR, removed: true } }).t, PAT)).ok).toBe(false);
+    expect(await removeFollower(transport(404, { data: null, error: { code: 'NOT_FOUND' } }).t, PAT)).toEqual({ ok: false, code: 'NOT_FOUND' });
+    const never = transport(200, {});
+    expect(await removeFollower(never.t, 'omar')).toEqual({ ok: false, code: 'VALIDATION_ERROR' });
+    expect(never.fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('reports, blocks and unfollows a connection by user id, confirmed only by a receipt naming it', async () => {
+    const PAT = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
+    const report = transport(201, { data: { userId: PAT, reported: true, reportId: ID } });
+    expect(await reportConnection(report.t, PAT, 'unwanted_contact', null)).toEqual({ ok: true, value: 'reported' });
+    expect(report.fetchImpl.mock.calls[0]![0]).toBe(`http://core/api/v1/profile/connections/${PAT}/report`);
+    expect(JSON.parse(String(report.fetchImpl.mock.calls[0]![1]!.body))).toEqual({ category: 'unwanted_contact' });
+    expect((await reportConnection(transport(200, { data: { userId: PAT, reported: true } }).t, PAT, 'other', null)).ok).toBe(false);
+    const block = transport(200, { data: { userId: PAT, blocked: true } });
+    expect(await blockConnection(block.t, PAT)).toEqual({ ok: true, value: 'blocked' });
+    expect(block.fetchImpl.mock.calls[0]![0]).toBe(`http://core/api/v1/profile/connections/${PAT}/block`);
+    expect((await blockConnection(transport(200, { data: { userId: ID, blocked: true } }).t, PAT)).ok).toBe(false);
+    const unfollow = transport(200, { data: { userId: PAT, following: false } });
+    expect(await unfollowConnection(unfollow.t, PAT)).toEqual({ ok: true, value: 'unfollowed' });
+    expect(unfollow.fetchImpl.mock.calls[0]![0]).toBe(`http://core/api/v1/profile/following/id/${PAT}`);
+    const never = transport(200, {});
+    for (const result of [await reportConnection(never.t, '../x', 'other', null), await blockConnection(never.t, 'omar'), await unfollowConnection(never.t, 'omar')]) {
+      expect(result).toEqual({ ok: false, code: 'VALIDATION_ERROR' });
+    }
+    expect(never.fetchImpl).not.toHaveBeenCalled();
   });
 
   it('asks to connect and accepts only a pending receipt with no follow', async () => {

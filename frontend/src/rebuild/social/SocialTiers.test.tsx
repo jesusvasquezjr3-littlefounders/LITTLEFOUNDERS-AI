@@ -59,9 +59,10 @@ describe('PrivateProfile (E.8 private teen card)', () => {
 
 describe('TeenConnections (E.8 self-managed tier)', () => {
   const requests = [{ requestId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', requestedAt: '2026-09-24T10:00:00Z', username: 'omar', displayName: 'Omar' }];
-  const followers = [{ username: 'luz', displayName: 'Luz' }];
+  const followers = [{ userId: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc', username: 'luz', displayName: 'Luz' }];
   const base = { requests, followers, loading: false, failed: false, busy: false, notice: null, hasMore: false, onRetry: () => undefined, onMore: () => undefined,
-    reportCopy: en.report, onReport: () => Promise.resolve(true), onBlock: () => Promise.resolve() };
+    reportCopy: en.report, onReport: () => Promise.resolve(true), onBlock: () => Promise.resolve(),
+    onReportFollower: () => Promise.resolve(true), onBlockFollower: () => Promise.resolve() };
 
   it.each(Object.entries(LOCALES))('lets the teen accept, decline and remove in %s, with no count', (locale, strings) => {
     const onDecide = vi.fn();
@@ -71,7 +72,7 @@ describe('TeenConnections (E.8 self-managed tier)', () => {
     fireEvent.click(screen.getByRole('button', { name: strings.teenConnections.decline }));
     fireEvent.click(screen.getByRole('button', { name: strings.teenConnections.remove }));
     expect(onDecide.mock.calls).toEqual([[requests[0]!.requestId, 'accept'], [requests[0]!.requestId, 'decline']]);
-    expect(onRemove).toHaveBeenCalledWith('luz');
+    expect(onRemove).toHaveBeenCalledWith(followers[0]!.userId);
     everyTextHasRole(container);
     // Only the request date may carry digits: no follower or request count anywhere.
     const withoutDates = [...container.querySelectorAll('p, h2, button')].map((element) => element.textContent ?? '').join(' ');
@@ -124,6 +125,32 @@ describe('TeenConnections (E.8 self-managed tier)', () => {
     const confirm = within(await screen.findByRole('alertdialog'));
     await act(async () => { fireEvent.click(confirm.getByRole('button', { name: strings.teenConnections.blockConfirm })); });
     expect(onBlock).toHaveBeenCalledWith(closedId);
+    everyTextHasRole(container);
+  });
+
+  // GAP-FIX-R8 social (E.3, E.8): a follower without a @username is listed, and removable, reportable and blockable by user id.
+  it.each(Object.entries(LOCALES))('lists a handle-less follower and lets the teen remove, report and block it in %s', async (locale, strings) => {
+    const pat = { userId: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd', username: null, displayName: 'Pat' };
+    const onRemove = vi.fn();
+    const onReportFollower = vi.fn(() => Promise.resolve(true));
+    const onBlockFollower = vi.fn(() => Promise.resolve());
+    const { container } = render(<TeenConnections copy={strings.teenConnections} locale={locale} dark={false} {...base} requests={[]} followers={[pat]} reportCopy={strings.report}
+      onDecide={() => undefined} onRemove={onRemove} onReportFollower={onReportFollower} onBlockFollower={onBlockFollower} />);
+    expect(screen.getByText('Pat')).toBeInTheDocument();
+    expect(container.textContent).not.toContain('@');
+    const row = within(container.querySelector(`[data-follower-actions="${pat.userId}"]`) as HTMLElement);
+    fireEvent.click(row.getByRole('button', { name: strings.teenConnections.remove }));
+    expect(onRemove).toHaveBeenCalledWith(pat.userId);
+    fireEvent.click(row.getByRole('button', { name: strings.teenConnections.report }));
+    const dialog = within(await screen.findByRole('dialog', { name: strings.report.title }));
+    fireEvent.click(dialog.getByRole('radio', { name: strings.report.categories.unwanted_contact }));
+    await act(async () => { fireEvent.click(dialog.getByRole('button', { name: strings.report.send })); });
+    expect(onReportFollower).toHaveBeenCalledWith(pat.userId, 'unwanted_contact', null);
+    fireEvent.click(row.getByRole('button', { name: strings.teenConnections.block }));
+    const confirm = within(await screen.findByRole('alertdialog'));
+    expect(onBlockFollower).not.toHaveBeenCalled();
+    await act(async () => { fireEvent.click(confirm.getByRole('button', { name: strings.teenConnections.blockConfirm })); });
+    expect(onBlockFollower).toHaveBeenCalledWith(pat.userId);
     everyTextHasRole(container);
   });
 

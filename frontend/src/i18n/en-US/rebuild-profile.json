@@ -441,6 +441,7 @@
     "askLimit": "Too many requests are waiting. Try later.",
     "askConnected": "You are already connected.",
     "askReview": "Change your name in Settings first.",
+    "askHandle": "Choose a @username in Settings first.",
     "managed": "Your Tutor handles your connections.",
     "privateTitle": "This profile is private",
     "privateBody": "Only people they accept can see it.",
@@ -520,7 +521,17 @@
     "leaveTitle": "Stop following?",
     "leaveBody": "To follow again, you might have to ask again.",
     "leaveKeep": "Cancel",
-    "leaveConfirm": "Unfollow"
+    "leaveConfirm": "Unfollow",
+    "report": "Report",
+    "reported": "Report sent. Thank you.",
+    "block": "Block",
+    "blockTitle": "Block this account?",
+    "blockBody": "You will not see each other. You can unblock in Settings.",
+    "blockKeep": "Cancel",
+    "blockConfirm": "Block",
+    "blocking": "Blocking",
+    "blocked": "Blocked. You will not see each other.",
+    "blockFailed": "Could not block. Try again."
   },
   "discoverable": {
     "title": "Who can find you",

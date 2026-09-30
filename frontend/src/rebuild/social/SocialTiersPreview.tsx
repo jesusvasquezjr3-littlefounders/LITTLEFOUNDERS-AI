@@ -17,7 +17,11 @@ const REQUESTS = [
   { requestId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', requestedAt: '2026-09-24T10:00:00Z', username: 'omar_valdes_rios', displayName: 'Omar Alejandro Valdés' },
   { requestId: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', requestedAt: '2026-09-23T18:30:00Z', username: 'luz', displayName: 'Luz' },
 ];
-const FOLLOWERS = [{ username: 'maria_fernanda_22', displayName: 'María Fernanda de la Cruz' }];
+// GAP-FIX-R8 social: a follower without a @username is listed and actionable like any other.
+const FOLLOWERS = [
+  { userId: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc', username: 'maria_fernanda_22', displayName: 'María Fernanda de la Cruz' },
+  { userId: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd', username: null, displayName: 'Patricia Guadalupe Hernández Solís' },
+];
 
 export const SOCIAL_TIERS_PREVIEW_STATES = [
   'card', 'cardPending', 'cardFailed', 'cardCooldown', 'cardManaged', 'managedNote',
@@ -45,7 +49,7 @@ export function SocialTiersPreview({ locale, theme, state }: { locale: Locale; t
     body = <TeenConnections copy={t.teenConnections} reportCopy={t.report} locale={locale} dark={dark}
       requests={empty ? [] : REQUESTS} followers={empty ? [] : FOLLOWERS} loading={false} failed={state === 'teenFailed'}
       busy={state === 'teenBusy'} notice={state === 'teenBusy' ? null : state === 'teen' ? { tone: 'status', text: t.teenConnections.accepted } : null}
-      hasMore={!empty} onDecide={noop} onReport={sent} onBlock={done} onRemove={noop} onRetry={noop} onMore={noop} />;
+      hasMore={!empty} onDecide={noop} onReport={sent} onBlock={done} onRemove={noop} onReportFollower={sent} onBlockFollower={done} onRetry={noop} onMore={noop} />;
   }
   return <div className="lf-rebuild" data-screen="social-tiers-preview" data-theme={theme} lang={locale}>
     <main className="lf-preview" data-surface="app">

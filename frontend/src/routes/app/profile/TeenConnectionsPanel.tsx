@@ -4,7 +4,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { useTheme } from '@/theme/useTheme';
 import { BASE_URL } from '@/lib/api';
 import { TeenConnections, type FollowerView, type TeenNotice, type TeenRequestView } from '@/rebuild/social/TeenConnections';
-import { blockTeenRequest, decideTeenRequest, getFollowers, getTeenRequests, removeFollower, reportTeenRequest } from '@/rebuild/social/teenConnectionsClient';
+import { blockConnection, blockTeenRequest, decideTeenRequest, getFollowers, getTeenRequests, removeFollower, reportConnection, reportTeenRequest } from '@/rebuild/social/teenConnectionsClient';
 import type { ReportCategory } from '@/rebuild/social/ReportDialog';
 import en from '@/i18n/en-US/rebuild-profile.json';
 import es from '@/i18n/es-MX/rebuild-profile.json';
@@ -116,14 +116,42 @@ function Scoped({ discoverable }: { discoverable: boolean }) {
     setNotice({ tone: 'alert', text: copy.blockFailed });
   }
 
-  async function remove(username: string) {
+  // GAP-FIX-R8 social (E.3, E.8): a follower, handle-less or not, is reported and blocked by user id.
+  async function reportFollower(userId: string, category: ReportCategory, note: string | null): Promise<boolean> {
+    const current = generation.current;
+    const token = await getToken();
+    const result = token ? await reportConnection({ baseUrl: BASE_URL, token }, userId, category, note) : { ok: false as const, code: 'UNAUTHORIZED' };
+    if (current !== generation.current) return result.ok;
+    if (result.ok) setNotice({ tone: 'status', text: copy.reported });
+    return result.ok;
+  }
+
+  async function blockFollower(userId: string) {
     if (busy) return;
     setBusy(true);
     setNotice(null);
     setClosedRequestId(null);
     const current = generation.current;
     const token = await getToken();
-    const result = token ? await removeFollower({ baseUrl: BASE_URL, token }, username) : { ok: false as const, code: 'UNAUTHORIZED' };
+    const result = token ? await blockConnection({ baseUrl: BASE_URL, token }, userId) : { ok: false as const, code: 'UNAUTHORIZED' };
+    if (current !== generation.current) return;
+    setBusy(false);
+    if (result.ok || result.code === 'NOT_FOUND') {
+      setNotice({ tone: 'status', text: result.ok ? copy.blocked : copy.conflict });
+      void load(0);
+      return;
+    }
+    setNotice({ tone: 'alert', text: copy.blockFailed });
+  }
+
+  async function remove(userId: string) {
+    if (busy) return;
+    setBusy(true);
+    setNotice(null);
+    setClosedRequestId(null);
+    const current = generation.current;
+    const token = await getToken();
+    const result = token ? await removeFollower({ baseUrl: BASE_URL, token }, userId) : { ok: false as const, code: 'UNAUTHORIZED' };
     if (current !== generation.current) return;
     setBusy(false);
     if (result.ok || result.code === 'NOT_FOUND') {
@@ -136,6 +164,6 @@ function Scoped({ discoverable }: { discoverable: boolean }) {
 
   return <TeenConnections copy={copy} reportCopy={strings.report} locale={locale} dark={isDark} discoverable={discoverable} requests={requests} followers={followers} loading={loading}
     failed={failed} busy={busy} notice={notice} hasMore={nextOffset !== null} closedRequestId={closedRequestId}
-    onDecide={(id, decision) => void decide(id, decision)} onReport={report} onBlock={block} onRemove={(username) => void remove(username)}
+    onDecide={(id, decision) => void decide(id, decision)} onReport={report} onBlock={block} onRemove={(userId) => void remove(userId)} onReportFollower={reportFollower} onBlockFollower={blockFollower}
     onRetry={() => { setClosedRequestId(null); void load(0); }} onMore={() => { if (nextOffset !== null) void load(nextOffset); }} />;
 }
