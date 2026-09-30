@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { isRefusal, rpc, UNAVAILABLE } from './familyLifecycle.js';
+import { MENTOR_QUALITY_THRESHOLDS } from './pedagogy/mentorQuality.js';
 
 /*
  * S07.7 — D.19: the first milestone of the older-teen graduation initiative
@@ -54,17 +55,52 @@ export function markBridge(holderId: string, milestone: BridgeMilestone, step: n
 
 const Int = z.union([z.number(), z.string().regex(/^-?\d+$/)]).transform((v) => Number(v)).pipe(z.number().int().nonnegative());
 
-/** Appendix H Part 1.1: Real-World Bridge Engagement Rate (Diagnostic). */
-export async function readBridgeEngagement() {
-  const rows = await rpc('money_bridge_engagement', {}, z.array(z.object({
-    milestone: z.enum(['all', ...BRIDGE_MILESTONES]), eligible: Int, engaged: Int, arrived: Int, completed: Int,
-  }).strict()).length(4));
-  if (rows === UNAVAILABLE || isRefusal(rows)) return null;
+/** The B.13 half of learning_narrative_metrics (the other fields are other metrics' and are not read here). */
+const NarrativeBridge = z.object({ bridge_prompts_offered: Int, bridge_prompts_converted_7d: Int, bridge_self_commitments: Int });
+
+/**
+ * Appendix H Part 1.1: Real-World Bridge Engagement Rate (Diagnostic), read
+ * TOGETHER with Appendix C's Real-World Bridge Conversion Rate (B.13), as
+ * Appendix H requires ("reviewed together, not independently"; GAP-FIX-R8).
+ *
+ * `conversion` is the same reading the Mentor-quality dashboard shows as
+ * `learning.bridge_conversion` (services/pedagogy/mentorQuality.ts): the
+ * learning_narrative_metrics RPC over that dashboard's window
+ * (MENTOR_QUALITY_THRESHOLDS.windowDays), prompts offered and converted
+ * within 7 days, with its minimum sample. Engagement is cumulative (every
+ * currently eligible holder), which the card says. Either read failing is
+ * null (a 502): one half alone is the independent review Appendix H rules
+ * out, and an unread conversion is never a calm zero.
+ */
+export async function readBridgeEngagement(now: Date = new Date()) {
+  const windowDays = MENTOR_QUALITY_THRESHOLDS.windowDays;
+  const [rows, narrative] = await Promise.all([
+    rpc('money_bridge_engagement', {}, z.array(z.object({
+      milestone: z.enum(['all', ...BRIDGE_MILESTONES]), eligible: Int, engaged: Int, arrived: Int, completed: Int,
+    }).strict()).length(4)),
+    rpc('learning_narrative_metrics', {
+      p_since: new Date(now.getTime() - windowDays * 86_400_000).toISOString(), p_until: now.toISOString(),
+    }, NarrativeBridge),
+  ]);
+  if (rows === UNAVAILABLE || isRefusal(rows) || narrative === UNAVAILABLE || isRefusal(narrative)) return null;
+  const offered = narrative.bridge_prompts_offered;
+  const converted = narrative.bridge_prompts_converted_7d;
   return {
     minAge: MONEY_BRIDGE_MIN_AGE,
     moments: rows.map((r) => ({
       milestone: r.milestone, eligible: r.eligible, engaged: r.engaged, arrived: r.arrived, completed: r.completed,
       engagementRate: r.eligible > 0 ? r.engaged / r.eligible : null,
     })),
+    conversion: {
+      requirement: 'B.13' as const,
+      metric: 'learning.bridge_conversion' as const,
+      windowDays,
+      offered,
+      converted,
+      selfCommitments: narrative.bridge_self_commitments,
+      conversionRate: offered > 0 ? converted / offered : null,
+      minSample: MENTOR_QUALITY_THRESHOLDS.narrativeMinSample,
+      sufficient: offered >= MENTOR_QUALITY_THRESHOLDS.narrativeMinSample,
+    },
   };
 }

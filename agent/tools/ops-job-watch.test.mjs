@@ -16,7 +16,8 @@ const deletions = (stuck = 0) => ({ stuck, afterHours: 24 });
 const alerts = (undelivered = 0, list = []) => ({ undelivered, windowHours: 36, alerts: list });
 const extras = { tutorRetention: retention(), contentRetroChecks: checks(), accessReviews: reviews(), accountDeletionFailures: deletions(), alerts: alerts() };
 // GAP-FIX-R6: the family-data jobs, fresh; the tests below that build their own jobs list keep them.
-const FAMILY_JOBS = ['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune'];
+// GAP-FIX-R8: the legacy badge-image purge (F.2 under OD-20) is one of them.
+const FAMILY_JOBS = ['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune', 'badge_link_retirement'];
 const familyJobs = () => FAMILY_JOBS.map((name) => job(name, false));
 const healthy = { data: { jobs: [job('vault_backup', false), job('pulse_backup', false), job('vault_drift', false), ...familyJobs()], anyStale: false, ...extras }, error: null };
 
@@ -161,4 +162,17 @@ test('E.6 (GAP-FIX-R6): an erasure stalled past a day fails the watch; a reply w
   for (const stuck of [-1, 0.5, '1', null]) {
     assert.deepEqual(evaluateOpsStatus({ data: { ...healthy.data, accountDeletionFailures: { stuck, afterHours: 24 } } }).errors, ["account_deletion_failures: the reply carries no 'stuck' count"]);
   }
+});
+
+test('GAP-FIX-R8 (F.2 under OD-20): a legacy badge-image purge that keeps failing fails the watch and is named; a reply without it is refused', () => {
+  const jobs = healthy.data.jobs.map((entry) => (entry.job === 'badge_link_retirement'
+    ? job('badge_link_retirement', true, { lastAttemptAt: '2026-09-29T03:30:00Z', lastAttemptOk: false })
+    : entry));
+  const result = run({ data: { ...healthy.data, jobs, anyStale: true } });
+  assert.equal(result.code, 1);
+  assert.match(result.notice, /\*\*badge_link_retirement\*\*: last successful run 50 h ago \(window 36 h\); last attempt 2026-09-29T03:30:00Z \(failed\)/);
+  assert.match(result.notice, /legacy badge-image purge/);
+  const missing = evaluateOpsStatus({ data: { ...healthy.data, jobs: healthy.data.jobs.filter((entry) => entry.job !== 'badge_link_retirement') } });
+  assert.equal(missing.ok, false);
+  assert.deepEqual(missing.errors, ['badge_link_retirement: missing from the reply']);
 });

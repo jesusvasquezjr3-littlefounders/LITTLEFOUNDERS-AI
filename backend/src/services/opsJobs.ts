@@ -4,6 +4,7 @@ import { getOverdueRetroChecks, RETRO_CHECK_DAYS } from './contentRelease.js';
 import { getTutorRetentionStatus, RETENTION_STALE_HOURS, type TutorRetentionStatus } from './tutorData.js';
 import { ACCESS_REVIEW_CADENCE_DAYS, getAccessReviewCounts } from './adminData.js';
 import { ACCOUNT_DELETION_SWEEP_AUDIT_ACTION } from '../routes/account.js';
+import { BADGE_IMAGE_SWEEP_AUDIT_ACTION } from '../routes/badgePublic.js';
 import { getUndeliveredAlerts, type UndeliveredAlertsStatus } from './warehouseAlerts.js';
 
 /*
@@ -67,6 +68,19 @@ import { getUndeliveredAlerts, type UndeliveredAlertsStatus } from './warehouseA
  *     social_retention    social-retention.yml (E.11): `social_retention.sweep_ran`,
  *                         written by the database in the sweep's own transaction
  *
+ * GAP-FIX-R8 (H.4, F.2 under OD-20, owner answer D-08): the daily legacy
+ * badge-image purge is a family-data job too (the pictures of children's
+ * achievements behind expired or revoked legacy links must stop resolving).
+ *   trail job:
+ *     badge_link_retirement  badge-link-retirement.yml 03:30: Core's sweep
+ *                         route (routes/badgePublic.ts) writes
+ *                         `badge_links.images_swept` on every page it sweeps,
+ *                         with scanned/purged/failed counts; a page with
+ *                         `failed > 0` is a failed attempt (the image still
+ *                         resolves), so a sweep that keeps failing goes stale
+ *                         exactly like one that stopped. It stays watched
+ *                         until the dated removal of the workflow.
+ *
  * An erasure that stalls is watched as well: a request still `processing` with
  * an `account.deletion_step_failed` row older than DELETION_STEP_FAILURE_HOURS
  * (no later completion) is `accountDeletionFailures.stuck`, a notify condition.
@@ -76,14 +90,14 @@ import { getUndeliveredAlerts, type UndeliveredAlertsStatus } from './warehouseA
 export const HEARTBEAT_JOBS = ['vault_backup', 'pulse_backup', 'vault_drift', 'learning_retention', 'insights_prune'] as const;
 export type HeartbeatJob = (typeof HEARTBEAT_JOBS)[number];
 /** Jobs whose own durable trail is read directly. */
-export const TRAIL_JOBS = ['account_deletions', 'family_retention', 'social_retention'] as const;
+export const TRAIL_JOBS = ['account_deletions', 'family_retention', 'social_retention', 'badge_link_retirement'] as const;
 export type TrailJob = (typeof TRAIL_JOBS)[number];
 export const OPS_JOBS = [...HEARTBEAT_JOBS, ...TRAIL_JOBS] as const;
 export type OpsJob = (typeof OPS_JOBS)[number];
 
 /**
  * Every watched job runs once a day (family retention 03:15, account deletion
- * 03:45, social retention 04:15, learning retention 04:30, vault-drift and the
+ * 03:45, legacy badge-image purge 03:30, social retention 04:15, learning retention 04:30, vault-drift and the
  * insights prune 07:30, vault-backup 08:00, pulse-backup 08:30 UTC). 36 hours
  * is a day plus half a day of slack for an ordinary late or retried run,
  * without hiding a genuinely missed day.
@@ -97,6 +111,7 @@ export const OPS_JOB_STALE_HOURS: Record<OpsJob, number> = {
   account_deletions: 36,
   family_retention: 36,
   social_retention: 36,
+  badge_link_retirement: 36,
 };
 
 /** A step failure older than this with the request still processing is a stalled erasure (the sweep retries daily). */
@@ -154,6 +169,8 @@ export function runSucceeded(job: OpsJob, detail: Record<string, unknown> | null
   if ((HEARTBEAT_JOBS as readonly string[]).includes(job)) return detail?.ok === true;
   // The sweep audits every run; one that could not read the paused children did not keep A.1's promise.
   if (job === 'account_deletions') return detail !== null && detail.suspensionsUnreadable !== true;
+  // A badge sweep page whose images could not all be purged left a dead link's picture resolving (F.2).
+  if (job === 'badge_link_retirement') return detail !== null && detail.failed === 0;
   // The social sweep's row and a family run row exist only for a run that completed.
   return true;
 }
@@ -242,7 +259,9 @@ async function readTrail(job: OpsJob): Promise<{ ok: TrailRow | undefined; attem
     ? [auditPath(ACCOUNT_DELETION_SWEEP_AUDIT_ACTION, '&detail->>suspensionsUnreadable=is.null'), auditPath(ACCOUNT_DELETION_SWEEP_AUDIT_ACTION)]
     : job === 'social_retention'
       ? [auditPath(SOCIAL_RETENTION_SWEEP_AUDIT_ACTION), auditPath(SOCIAL_RETENTION_SWEEP_AUDIT_ACTION)]
-      : [auditPath(opsJobAction(job), '&detail->>ok=eq.true'), auditPath(opsJobAction(job))];
+      : job === 'badge_link_retirement'
+        ? [auditPath(BADGE_IMAGE_SWEEP_AUDIT_ACTION, '&detail->>failed=eq.0'), auditPath(BADGE_IMAGE_SWEEP_AUDIT_ACTION)]
+        : [auditPath(opsJobAction(job), '&detail->>ok=eq.true'), auditPath(opsJobAction(job))];
   const [okRows, attemptRows] = await Promise.all([serviceRest<unknown>(okPath), serviceRest<unknown>(attemptPath)]);
   const ok = Rows.safeParse(okRows);
   const attempt = Rows.safeParse(attemptRows);
