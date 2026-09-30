@@ -120,5 +120,6 @@ rejected(f"SET ROLE authenticated; SET request.jwt.claim.sub='{second}'; INSERT 
 assert sql('SELECT count(*) FROM audit_logs',database)=='11'
 report={'database':database,'passed':True,'checks':['follow/unfollow/block/unblock audited','JWT actor and fixed participant fields','service actor remains unknown','retarget emits removal and addition','no-op emits no event','RLS-denied mutation emits no event','browser cannot forge or delete audit','audit failure rolls back mutation','transaction rollback removes both','migration replay emits no synthetic history','kid events audited and unapproved inbound follow still refused'],'limitations':['minimal native PostgreSQL fixtures, not full Supabase','guardian/staff read plane and one-release-cycle completeness metric remain pending','approval decisions and block/follow concurrency remain separate work']}
 output=ROOT/'audit-results/s02-social-audit-postgres.json'
+output.parent.mkdir(parents=True, exist_ok=True)
 output.write_bytes((json.dumps(report,indent=2)+'\n').encode('utf-8'))
 print(json.dumps(report,indent=2))

@@ -91,6 +91,7 @@ CREATE TRIGGER reject_revocation_audit BEFORE INSERT ON audit_logs FOR EACH ROW 
     checks.append('failed revocation audit rolls back block, cleanup and request changes')
 report = {'database': database, 'candidateApplied': '--candidate' in sys.argv, 'migrationApplied': '0098' if '--candidate' not in sys.argv and '--baseline97' not in sys.argv else None, 'checks': checks, 'blockCommitted': blocked == '1', 'remainingEdges': int(edges), 'requestStatus': status, 'passed': blocked == '1' and edges == '0', 'provenance': 'Real PostgreSQL transactions with the actual decision migrations; single block write mirrors current Core; --baseline97 includes historical separate cleanup. Minimal schema fixtures.'}
 output = context['ROOT'] / 'audit-results/s02-social-block-race.json'
+output.parent.mkdir(parents=True, exist_ok=True)
 output.write_bytes((json.dumps(report, indent=2) + '\n').encode('utf-8'))
 print(json.dumps(report, indent=2))
 assert report['passed'], 'Release blocker: an approval committed after a block leaves an active edge'

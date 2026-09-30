@@ -122,5 +122,6 @@ assert sql('SELECT count(*) FROM social_connection_requests',database)=='2'
 assert sql('SELECT count(*) FROM follows',database)=='0'
 report={'database':database,'passed':True,'checks':['pending only with no follow or visibility','idempotent receipt and one audit','browser cannot read, invoke or approve','service cannot directly approve','direct follow still refused','eight concurrent retries produce one request','blocked and revoked-link admission refused','self/non-kid refused','audit failure rolls back pending request','migration replay preserves receipts'],'limitations':['minimal native PostgreSQL fixtures, not full Supabase','Core admission and guardian decision/UI not implemented','concurrent block/link/role transitions and abuse controls remain pending']}
 output=ROOT/'audit-results/s02-social-requests-postgres.json'
+output.parent.mkdir(parents=True, exist_ok=True)
 output.write_bytes((json.dumps(report,indent=2)+'\n').encode('utf-8'))
 print(json.dumps(report,indent=2))

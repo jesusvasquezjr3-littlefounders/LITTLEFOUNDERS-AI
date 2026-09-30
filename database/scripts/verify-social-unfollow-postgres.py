@@ -59,5 +59,7 @@ assert sql(withdraw(who), database) == 't'
 state(who, request_id)
 checks.append('migration replay preserves withdrawal')
 report = {'passed': True, 'database': database, 'migrationApplied': '0099', 'checks': checks, 'provenance': 'Actual migrations on fresh owned native PostgreSQL with minimal schemas; real lock waits, not full Supabase integration.'}
-(c['ROOT'] / 'audit-results/s02-social-unfollow-postgres.json').write_bytes((json.dumps(report, indent=2)+'\n').encode('utf-8'))
+output = c['ROOT'] / 'audit-results/s02-social-unfollow-postgres.json'
+output.parent.mkdir(parents=True, exist_ok=True)
+output.write_bytes((json.dumps(report, indent=2)+'\n').encode('utf-8'))
 print(json.dumps(report, indent=2))

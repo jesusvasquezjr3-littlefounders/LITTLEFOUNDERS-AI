@@ -66,5 +66,7 @@ sql((c['ROOT'] / source).read_text(encoding='utf-8'), database)
 assert not visible(who)
 checks.append('migration replay preserves revocation')
 report = {'passed': True, 'database': database, 'source': source, 'checks': checks, 'provenance': 'Actual SQL on fresh native PostgreSQL minimal fixtures; full Supabase and Core/UI activation remain separate gates.'}
-(c['ROOT'] / 'audit-results/s02-social-discovery-postgres.json').write_bytes((json.dumps(report, indent=2)+'\n').encode('utf-8'))
+output = c['ROOT'] / 'audit-results/s02-social-discovery-postgres.json'
+output.parent.mkdir(parents=True, exist_ok=True)
+output.write_bytes((json.dumps(report, indent=2)+'\n').encode('utf-8'))
 print(json.dumps(report, indent=2))

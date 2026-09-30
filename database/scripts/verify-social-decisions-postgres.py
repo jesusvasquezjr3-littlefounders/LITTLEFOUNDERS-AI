@@ -183,5 +183,6 @@ assert sql(f"SELECT status FROM social_connection_requests WHERE id='{race_id}'"
 assert service(f"SELECT social_guardian_is_current('{second}','{first}');")=='f'
 report={'database':database,'passed':True,'checks':['verified adult guardian only','latest revocation defeats historical verification','no edge before approval','approval creates edge and audit atomically','browser cannot insert a kid follow even with an approved receipt','denial creates no edge','same decision idempotent and opposite decision conflicts','audit failure rolls back decision and follow','eight concurrent approvals create one decision event','blocked approval refused but denial allowed','migration replay preserves outcome','revoked guardian cannot retry decisions','observed locks in both guardian-link revocation orderings'],'limitations':['minimal native PostgreSQL fixtures, not full Supabase','Core decision route/UI not enabled','approved discovery and unfollow/block revocation lifecycle still pending','block races and role/verification transition coverage remain pending']}
 output=ROOT/'audit-results/s02-social-decisions-postgres.json'
+output.parent.mkdir(parents=True, exist_ok=True)
 output.write_bytes((json.dumps(report,indent=2)+'\n').encode('utf-8'))
 print(json.dumps(report,indent=2))

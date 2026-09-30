@@ -47,5 +47,7 @@ sql(f"UPDATE guardian_links SET verification_status='revoked' WHERE parent_user_
 assert c['service'](f"SELECT has_current_social_approval('{who}','{kid}')") == 'f'
 checks.append('visibility follows the actual deciding guardian, not another linked guardian')
 report={'passed':True,'database':database,'checks':checks,'provenance':'Actual migrations through 0100 on fresh native PostgreSQL; observed conflicting-decision lock waits and concurrent same-outcome calls. Does not prove arbitrary multi-operation deadlock freedom.'}
-(c['ROOT']/'audit-results/s02-social-multi-guardian-postgres.json').write_bytes((json.dumps(report,indent=2)+'\n').encode('utf-8'))
+output=c['ROOT']/'audit-results/s02-social-multi-guardian-postgres.json'
+output.parent.mkdir(parents=True, exist_ok=True)
+output.write_bytes((json.dumps(report,indent=2)+'\n').encode('utf-8'))
 print(json.dumps(report,indent=2))
