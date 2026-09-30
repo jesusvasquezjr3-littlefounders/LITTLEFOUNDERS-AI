@@ -128,7 +128,10 @@
       "unknown": "Edad desconocida",
       "skill": "{kc}",
       "baseline": "Comparado con la versión {release}",
-      "noBaseline": "Aún no hay versión registrada. Este periodo fija la base."
+      "noBaseline": "Aún no hay versión registrada. Este periodo fija la base.",
+      "journalCoverage": "Decisiones registradas",
+      "journalResurfacing": "Decisiones registradas retomadas",
+      "journalBaseline": "Línea base de la versión 1. Aún sin meta."
     },
     "signal": {
       "mastery": {
@@ -209,7 +212,7 @@
         "transfer_success": "Aciertos en contextos nuevos",
         "judgment_quality": "Criterio más allá del acierto",
         "bridge_conversion": "Lecciones convertidas en tareas reales",
-        "decision_journal": "Decisiones pasadas retomadas"
+        "decision_journal": "Decisiones guardadas y retomadas"
       },
       "engagement": {
         "session_efficiency": "Tiempo dedicado a practicar",

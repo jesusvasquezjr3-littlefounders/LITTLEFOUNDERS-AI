@@ -114,6 +114,14 @@ const BREAKDOWNS: Record<string, { rows: SignalReading['breakdown']; detail?: Si
       { key: 'kc:entrepreneurship.pricing-a-product/days:30', value: 0.77, sample: 38, status: 'ok' },
     ],
   },
+  // GAP-FIX-R7 (Appendix C 1.1, B.9): coverage next to the resurfacing rate, release-1 baseline.
+  'learning.decision_journal': {
+    detail: { decisionsMade: 176, decisionsJournaled: 158, coverage: 0.8977, coverageBaseline: 'release-1' },
+    rows: [
+      { key: 'journal:coverage', value: 0.8977, sample: 176, status: 'diagnostic' },
+      { key: 'journal:resurfacing', value: 0.46, sample: 140, status: 'diagnostic' },
+    ],
+  },
   'learning.time_to_mastery': {
     rows: [
       { key: 'band:6-9', value: 6, sample: 44, status: 'diagnostic' },

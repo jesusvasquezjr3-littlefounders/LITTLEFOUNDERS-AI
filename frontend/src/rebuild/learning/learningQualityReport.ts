@@ -75,6 +75,17 @@ export const learningQualityReportSchema = z.object({
       correct_rejections: count, dPrime: z.number() })),
   }).nullable().optional(),
   /*
+   * GAP-FIX-R7 (Appendix C 1.1, B.9): Decision Journal Coverage & Resurfacing
+   * Rate. Coverage = story choices journaled / story choices made (the
+   * best-effort journal's lost writes made visible); learners without the
+   * journal's consent are reported apart. Null until the coverage migration
+   * is applied; absent from an older Core.
+   */
+  decisionJournal: z.object({
+    decisionsMade: count, decisionsJournaled: count, withoutConsent: count, coverage: z.number().min(0).max(1).nullable(),
+    recorded: count, resurfaced: count, resurfacingRate: z.number().min(0).max(1).nullable(), baseline: z.literal('release-1'),
+  }).nullable().optional(),
+  /*
    * GAP-FIX-R2 (Appendix P Part 8; Appendix C 1.3): scorer parity, d′ by
    * phase, cue hits, representation A/B, CPA entry stages, B.1/B.2/B.4 and
    * defect escapes, and the committed coverage snapshot. Null until 0216 and

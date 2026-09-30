@@ -128,7 +128,10 @@
       "unknown": "Age not known",
       "skill": "{kc}",
       "baseline": "Compared with release {release}",
-      "noBaseline": "No release recorded yet. This period sets the baseline."
+      "noBaseline": "No release recorded yet. This period sets the baseline.",
+      "journalCoverage": "Story choices recorded",
+      "journalResurfacing": "Recorded choices brought back",
+      "journalBaseline": "Release 1 baseline. No target yet."
     },
     "signal": {
       "mastery": {
@@ -209,7 +212,7 @@
         "transfer_success": "Success in new contexts",
         "judgment_quality": "Judgment beyond right answers",
         "bridge_conversion": "Lessons turned into real tasks",
-        "decision_journal": "Past choices brought back"
+        "decision_journal": "Story choices kept and brought back"
       },
       "engagement": {
         "session_efficiency": "Time spent practicing",

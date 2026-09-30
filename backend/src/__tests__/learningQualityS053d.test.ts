@@ -385,6 +385,27 @@ describe('B.19 staff calibration routes', () => {
     expect(JSON.stringify(res.body)).not.toContain(userId);
   });
 
+  it('GAP-FIX-R7 (Appendix C 1.1, B.9): reports decision-journal coverage next to the resurfacing rate, null before its migration', async () => {
+    grantStaff(['manage_content']);
+    scriptReads();
+    const pending = await auth(request(createApp()).get('/api/v1/admin/content/learning-quality?days=28'), staff);
+    expect(pending.status).toBe(200);
+    expect(pending.body.data.decisionJournal).toBeNull();
+    // An older database answers without the denominator: still null, never a coverage computed from nothing.
+    db.__rpc!.push({ name: 'learning_narrative_metrics', body: { journal_entries_recorded: 5, journal_entries_resurfaced: 1, bridge_prompts_offered: 0 } });
+    expect((await auth(request(createApp()).get('/api/v1/admin/content/learning-quality?days=28'), staff)).body.data.decisionJournal).toBeNull();
+    db.__rpc = db.__rpc!.filter((r) => r.name !== 'learning_narrative_metrics');
+    db.__rpc.push({ name: 'learning_narrative_metrics', body: {
+      journal_entries_recorded: 5, journal_entries_resurfaced: 1, story_decisions_made: 6, story_decisions_journaled: 5,
+      story_decisions_without_consent: 1, bridge_prompts_offered: 0, bridge_prompts_converted_7d: 0, bridge_self_commitments: 0 } });
+    const res = await auth(request(createApp()).get('/api/v1/admin/content/learning-quality?days=28'), staff);
+    expect(res.body.data.decisionJournal).toEqual({
+      decisionsMade: 6, decisionsJournaled: 5, withoutConsent: 1, coverage: 5 / 6,
+      recorded: 5, resurfaced: 1, resurfacingRate: 0.2, baseline: 'release-1',
+    });
+    expect(JSON.stringify(res.body)).not.toContain(userId);
+  });
+
   it('refuses every non-content population: learner, parent, analytics-only staff, guest', async () => {
     scriptReads();
     db.user_roles = [{ user_id: userId, role: 'kid' }];

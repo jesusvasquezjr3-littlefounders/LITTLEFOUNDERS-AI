@@ -101,6 +101,27 @@ describe('S05.3d staff learning-quality panel', () => {
     }
   });
 
+  it('GAP-FIX-R7 (Appendix C 1.1, B.9): shows decision-journal coverage next to the resurfacing rate as a release-1 baseline', () => {
+    const { unmount } = render(<LearningQualityPanel state={{ status: 'ready', report: learningQualityFixture() }} locale="en-US" dark={false}
+      onRetry={() => {}} onSync={async () => true} onResolve={async () => 'resolved'} />);
+    expect(screen.getByRole('heading', { name: 'Story choice journal' })).toBeTruthy();
+    expect(screen.getByText('The journal kept 42 of 48 story choices (88%).')).toBeTruthy();
+    expect(screen.getByText('14 of 40 kept choices came back in a later lesson.')).toBeTruthy();
+    expect(screen.getByText('3 choices from learners without journal consent are not counted.')).toBeTruthy();
+    expect(screen.getByText('Release 1 baseline. No target yet.')).toBeTruthy();
+    unmount();
+    const empty = { ...learningQualityFixture(), decisionJournal: { decisionsMade: 0, decisionsJournaled: 0, withoutConsent: 0, coverage: null,
+      recorded: 0, resurfaced: 0, resurfacingRate: null, baseline: 'release-1' } };
+    const second = render(<LearningQualityPanel state={{ status: 'ready', report: empty }} locale="en-US" dark={false}
+      onRetry={() => {}} onSync={async () => true} onResolve={async () => 'resolved'} />);
+    expect(screen.getByText('No story choices in this window.')).toBeTruthy();
+    expect(screen.queryByText(/without journal consent/)).toBeNull();
+    second.unmount();
+    render(<LearningQualityPanel state={{ status: 'ready', report: { ...learningQualityFixture(), decisionJournal: null } }} locale="en-US" dark={false}
+      onRetry={() => {}} onSync={async () => true} onResolve={async () => 'resolved'} />);
+    expect(screen.getByText('Available once the journal coverage migration is applied.')).toBeTruthy();
+  });
+
   it('S05.3e: shows rest-day utilization and the three autonomy levers, and says when the migration is pending', () => {
     const { unmount } = render(<LearningQualityPanel state={{ status: 'ready', report: learningQualityFixture() }} locale="en-US" dark={false}
       onRetry={() => {}} onSync={async () => true} onResolve={async () => 'resolved'} />);

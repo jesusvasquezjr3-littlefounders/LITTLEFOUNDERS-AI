@@ -267,6 +267,8 @@ export async function collectLearningSignals(now: Date): Promise<LearningSignalS
     rpcRows('learning_narrative_metrics', window, z.object({
       journal_entries_recorded: count, journal_entries_resurfaced: count, bridge_prompts_offered: count,
       bridge_prompts_converted_7d: count, bridge_self_commitments: count,
+      // GAP-FIX-R7 (Appendix C 1.1, B.9): the coverage denominator; absent before its migration, so optional.
+      story_decisions_made: count.optional(), story_decisions_journaled: count.optional(), story_decisions_without_consent: count.optional(),
     })),
     rpcRows('learning_session_efficiency', weekly, z.array(z.object({ week_start: z.string(), learners: count, efficiency_ratio: ratio }))),
     rpcRows('mentor_resolution_efficiency', weekly, z.array(z.object({

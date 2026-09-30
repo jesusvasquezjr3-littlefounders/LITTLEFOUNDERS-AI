@@ -266,7 +266,7 @@ export const SIGNALS: readonly SignalDefinition[] = [
   // Appendix C: "the two signals should meaningfully diverge" — a floor on the divergent share (learningQuality.ts).
   { id: 'learning.judgment_quality', category: 'learning_outcome', requirement: 'B.12', owner: 'pedagogical_lead', threshold: { kind: 'floor', value: JUDGMENT_DIVERGENCE_FLOOR }, minSample: JUDGMENT_MIN_ATTEMPTS, source: 'learning_judgment_differentiation (0129)', instrumented: 'yes' },
   { id: 'learning.bridge_conversion', category: 'learning_outcome', requirement: 'B.13', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.narrativeMinSample, source: 'learning_narrative_metrics (0127): prompts converted within 7 days', instrumented: 'yes' },
-  { id: 'learning.decision_journal', category: 'learning_outcome', requirement: 'B.9', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.narrativeMinSample, source: 'learning_narrative_metrics (0127): entries recorded and resurfaced', instrumented: 'yes' },
+  { id: 'learning.decision_journal', category: 'learning_outcome', requirement: 'B.9', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.narrativeMinSample, source: 'learning_narrative_metrics: story decisions made and journaled (coverage), entries recorded and resurfaced', instrumented: 'yes' },
   // ── Appendix C §1.2 engagement health ──
   { id: 'engagement.session_efficiency', category: 'engagement_health', requirement: 'B.28', owner: 'pedagogical_lead', threshold: { kind: 'trend', value: T.engagementTrendTolerance }, minSample: T.engagementTrendMinWeeklySample, source: 'learning_session_efficiency (0136), weekly; higher is better', instrumented: 'yes' },
   { id: 'engagement.mentor_resolution', category: 'engagement_health', requirement: 'B.28', owner: 'pedagogical_lead', threshold: { kind: 'trend', value: T.engagementTrendTolerance }, minSample: T.engagementTrendMinWeeklySample, source: 'mentor_resolution_efficiency (0136), weekly median turns; lower is better', instrumented: 'yes' },
@@ -411,6 +411,8 @@ export interface LearningSignalSources {
   narrative: {
     journal_entries_recorded: number; journal_entries_resurfaced: number;
     bridge_prompts_offered: number; bridge_prompts_converted_7d: number; bridge_self_commitments: number;
+    /** GAP-FIX-R7 (Appendix C 1.1): the coverage denominator; undefined before its migration. */
+    story_decisions_made?: number | undefined; story_decisions_journaled?: number | undefined; story_decisions_without_consent?: number | undefined;
   } | null;
   sessionEfficiency: { week_start: string; learners: number; efficiency_ratio: number | null }[] | null;
   mentorResolution: { week_start: string; intent: string; resolved_sessions: number; median_turns: number | null }[] | null;
@@ -1142,12 +1144,7 @@ function learningReading(def: SignalDefinition, l: LearningSignalSources, anomal
     }
     case 'learning.decision_journal': {
       if (l.narrative === null) return unavailable(def);
-      const n = l.narrative;
-      const value = rate(n.journal_entries_resurfaced, n.journal_entries_recorded);
-      return reading(def.id, {
-        status: value === null || n.journal_entries_recorded < def.minSample ? 'insufficient_data' : 'diagnostic', value, sample: n.journal_entries_recorded,
-        detail: { recorded: n.journal_entries_recorded, resurfaced: n.journal_entries_resurfaced },
-      });
+      return decisionJournalReading(def, l.narrative);
     }
     case 'engagement.rest_day_use': {
       if (l.restDays === null) return unavailable(def);
@@ -1169,6 +1166,42 @@ function learningReading(def: SignalDefinition, l: LearningSignalSources, anomal
       });
     }
   }
+}
+
+/** Appendix C 1.1: the first release window of the coverage is its baseline (diagnostic, no fixed target yet). */
+export const DECISION_JOURNAL_BASELINE = 'release-1';
+
+/**
+ * Appendix C 1.1 "Decision Journal Coverage & Resurfacing Rate" (B.9): the %
+ * of meaningful in-story choices the journal recorded, and of those, the %
+ * later resurfaced. The value stays the resurfacing rate; the coverage
+ * (journaled / made) sits next to it in the breakdown and the detail. The
+ * journal write is best-effort, so a coverage below 100% is the lost entries
+ * made visible. Decisions of a learner without the journal's consent (OD-9)
+ * are reported apart, never as lost. Before the coverage migration the
+ * denominator is absent and only the resurfacing half reads.
+ */
+export function decisionJournalReading(def: SignalDefinition, n: NonNullable<LearningSignalSources['narrative']>): SignalReading {
+  const rate = (num: number, den: number) => (den === 0 ? null : num / den);
+  const resurfacing = rate(n.journal_entries_resurfaced, n.journal_entries_recorded);
+  const measured = n.story_decisions_made !== undefined && n.story_decisions_journaled !== undefined;
+  const made = n.story_decisions_made ?? 0;
+  const journaled = Math.min(n.story_decisions_journaled ?? 0, made);
+  const coverage = measured ? rate(journaled, made) : null;
+  const enough = (resurfacing !== null && n.journal_entries_recorded >= def.minSample) || (coverage !== null && made >= def.minSample);
+  const breakdown: Breakdown[] = [
+    ...(measured ? [{ key: 'journal:coverage', value: coverage, sample: made, status: 'diagnostic' as const }] : []),
+    { key: 'journal:resurfacing', value: resurfacing, sample: n.journal_entries_recorded, status: 'diagnostic' },
+  ];
+  return reading(def.id, {
+    status: enough ? 'diagnostic' : 'insufficient_data', value: resurfacing, sample: n.journal_entries_recorded, breakdown,
+    detail: {
+      recorded: n.journal_entries_recorded, resurfaced: n.journal_entries_resurfaced,
+      decisionsMade: measured ? made : null, decisionsJournaled: measured ? journaled : null,
+      decisionsWithoutConsent: n.story_decisions_without_consent ?? null,
+      coverage, coverageBaseline: measured ? DECISION_JOURNAL_BASELINE : null,
+    },
+  });
 }
 
 /**

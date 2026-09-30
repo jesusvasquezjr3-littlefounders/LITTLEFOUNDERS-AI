@@ -93,11 +93,18 @@ export interface MentorQualityCopy {
     skill: string;
     baseline: string;
     noBaseline: string;
+    /** GAP-FIX-R7 (Appendix C 1.1, B.9): the two halves of the decision-journal metric and its release-1 baseline. */
+    journalCoverage: string;
+    journalResurfacing: string;
+    journalBaseline: string;
   };
 }
 
-/** Signals whose breakdown the dashboard lists (Appendix C 1.1: per KC and window, per KC and age band). */
-export const BREAKDOWN_SIGNALS: readonly string[] = ['learning.delayed_retention', 'learning.time_to_mastery'];
+/**
+ * Signals whose breakdown the dashboard lists (Appendix C 1.1: per KC and window, per KC and age band; the
+ * decision journal's coverage next to its resurfacing rate).
+ */
+export const BREAKDOWN_SIGNALS: readonly string[] = ['learning.delayed_retention', 'learning.time_to_mastery', 'learning.decision_journal'];
 
 export type FlagActionResult = 'done' | 'not_owner' | 'changed' | 'failed';
 export type ReviewActionResult = 'done' | 'already' | 'not_owner' | 'failed';
@@ -213,8 +220,10 @@ export function MentorQualityFlags({ copy, locale, dark, data, onAcknowledge, on
   </Panel>;
 }
 
-/** A breakdown key in words: `kc:<key>/days:<n>`, `kc:<key>`, `band:<band>`. The KC key is catalog data. */
+/** A breakdown key in words: `kc:<key>/days:<n>`, `kc:<key>`, `band:<band>`, `journal:<half>`. The KC key is catalog data. */
 export function breakdownLabel(copy: MentorQualityCopy, key: string): string {
+  if (key === 'journal:coverage') return copy.breakdown.journalCoverage;
+  if (key === 'journal:resurfacing') return copy.breakdown.journalResurfacing;
   const parts = Object.fromEntries(key.split('/').map((p) => [p.slice(0, p.indexOf(':')), p.slice(p.indexOf(':') + 1)]));
   if (parts.band) return parts.band === 'adult' ? copy.breakdown.adult : parts.band === 'unknown' ? copy.breakdown.unknown : fill(copy.breakdown.band, { band: parts.band });
   if (parts.kc && parts.days) return fill(copy.breakdown.window, { kc: parts.kc, days: parts.days });
@@ -233,6 +242,8 @@ function SignalBreakdown({ copy, locale, signal }: { copy: MentorQualityCopy; lo
     <div id={id} hidden={!open}>
       {signal.id === 'learning.delayed_retention'
         ? <p data-copy-role="body" className="lf-quality-muted">{typeof baseline === 'string' ? fill(copy.breakdown.baseline, { release: baseline }) : copy.breakdown.noBaseline}</p> : null}
+      {signal.id === 'learning.decision_journal' && typeof signal.reading?.detail?.coverageBaseline === 'string'
+        ? <p data-copy-role="body" className="lf-quality-muted">{copy.breakdown.journalBaseline}</p> : null}
       <ul className="lf-quality-breakdown-list">
         {rows.map((row) => <li key={row.key} data-key={row.key} data-status={row.status}>
           <span data-copy-role="body">{breakdownLabel(copy, row.key)}</span>
