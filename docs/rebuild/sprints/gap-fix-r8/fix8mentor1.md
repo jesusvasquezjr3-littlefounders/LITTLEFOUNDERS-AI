@@ -23,6 +23,7 @@ Branch `codex/spec-fix8mentor1`. Status: **implemented and unit-verified; not ac
 - `src/rebuild/mentor/__tests__/MentorStage.test.tsx`: a state change plays the sequence once and ends on the pose's still; idle never plays one; reduced motion never plays one; data saver asks only for a cached copy and settles on the still; a late sequence settles on the still. The existing fallback tests still pass (25/25).
 - `src/rebuild/mentor/__tests__/stageStills.test.ts`: every registered sequence resolves and ends on its still; idle never has one.
 - `npm run type-check` and `npm run lint` (frontend); the 26 mentor test files (373 tests); `check-rebuild-assets` (431 class B assets, the 52 sequences included); root `npm run spec:check` and `npm run secrets:check`.
+- After merging `codex/spec-migration-s02` (clean, no conflicts): the frontend type-check, `check-rebuild-assets` and the 26 mentor test files pass again.
 - One sequence was inspected frame by frame (Rho, `teach.explain`, light): it shows the real model raising its arm into the point and ending on the still. It has 10 frames over 380 ms, then the still, with a loop count of 1.
 
 **Open.**
