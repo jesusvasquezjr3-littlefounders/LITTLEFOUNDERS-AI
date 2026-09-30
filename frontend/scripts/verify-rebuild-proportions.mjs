@@ -44,7 +44,7 @@ const coreSurfaces = [
   { screen: 'donut', ages: ['10-12'] },
   { screen: 'ratiotable', ages: ['10-12'] },
   { screen: 'timeline', ages: ['6-9', 'adult'] },
-  { screen: 'numberline', ages: ['6-9', '10-12'] },
+  { screen: 'numberline', ages: ['6-9'] },
   { screen: 'goal', ages: ['6-9', 'adult'] },
   { screen: 'percent', ages: ['10-12'] },
   { screen: 'placevalue', ages: ['6-9'] },

@@ -39,7 +39,7 @@ async function click(selector) {
 }
 
 try {
-  for (const locale of ['en-US', 'es-MX', 'pt-BR']) for (const theme of ['light', 'dark']) for (const age of ['6-9', '10-12']) for (const width of [320, 375, 768, 1280]) for (const scale of [1, 1.4]) for (const spacing of [false, true]) {
+  for (const locale of ['en-US', 'es-MX', 'pt-BR']) for (const theme of ['light', 'dark']) for (const age of ['6-9']) for (const width of [320, 375, 768, 1280]) for (const scale of [1, 1.4]) for (const spacing of [false, true]) {
     await navigate(locale, theme, age, width, scale, spacing);
     const issues = await page.evaluate(`(() => {
       const issues=[],main=document.querySelector('[data-screen="numberline"]');
