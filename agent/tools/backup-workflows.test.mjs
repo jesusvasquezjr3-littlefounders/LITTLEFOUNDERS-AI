@@ -9,7 +9,8 @@ import { fileURLToPath } from 'node:url';
  * backup is a Critical-priority gap, so this lint pins, for each workflow
  * that writes to /data/backups (found by grepping every workflow, never a
  * fixed list: the daily Vault and Pulse backups and the pre-migration restore
- * points of database-cd.yml and tutor-deploy.yml today):
+ * points of database-cd.yml and tutor-deploy.yml, and the cutover backup of
+ * cutover.yml, today):
  *
  *   - every file written to /data/backups is an `.lfbk` ciphertext or its
  *     manifest (`.lfbk.manifest.json`), never the plaintext dump;
@@ -63,6 +64,7 @@ const WORKFLOWS = backupWorkflows();
 test('every workflow that writes to /data/backups is found, with its dump prefix', () => {
   const found = Object.fromEntries(WORKFLOWS.map((w) => [w.path, w.prefix]));
   assert.deepEqual(found, {
+    '.github/workflows/cutover.yml': 'cutover',
     '.github/workflows/database-cd.yml': 'pre-migration',
     '.github/workflows/pulse-backup.yml': 'pulse',
     '.github/workflows/tutor-deploy.yml': 'pre-migration',
