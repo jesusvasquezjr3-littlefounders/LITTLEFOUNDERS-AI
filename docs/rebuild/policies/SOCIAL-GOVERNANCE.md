@@ -97,6 +97,7 @@ A table, view, column, function or route whose name carries a messaging word, an
 | `text:guardian_invites.token` | Single-use invite secret |
 | `text:learner_memory_proposals.expected_before` | Mentor memory note under guardian review (C.4) |
 | `text:learner_memory_proposals.proposed` | Mentor memory note under guardian review (C.4) |
+| `text:lesson_pedagogical_reviews.checks` | A staff reviewer's finding on each of the ten Stage 3 pedagogical review items of a lesson's content (Appendix C Part 3 Stage 3); written only by the service role behind Core's manage_content routes, never shown to a learner or family |
 | `text:mentor_quality_flag.dedup_key` | A staff dashboard flag's system-built de-duplication key (C.24) |
 | `text:mentor_quality_flag.resolution_note` | A staff lead's note on resolving a Mentor-quality flag (C.24); never shown to a learner or family |
 | `text:redemptions.child_note` | The child's own stated reason on their reward request, read by their own verified Tutor at decision time (D.18); 140 characters, inside the family |
@@ -112,7 +113,7 @@ A table, view, column, function or route whose name carries a messaging word, an
 | `text:tutor_voice_consent.scope` | The consent's scope |
 | `text:wallet_guardian_actions.reason` | A verified Tutor's reason for correcting their own child's coins (D.5), inside the family |
 
-Adding a row here is a Stage 3 decision. The ten rows for `family_*`, `mentor_quality_flag`, `redemptions.child_note`, `share_*`, `tasks.child_note` and `wallet_guardian_actions` were added at the S07 merge (migration `s07_merge_reconciliation`), when the live scan first saw the S06 and S07 schemas; their Stage 3 review is open with the rest of this list. The `data_practice_consents.practice_key` row was added at the S10 merge (migration `od9_merge_reconciliation`) on the same terms. A row that is a real person-to-person channel also needs its `messaging-features.json` entry (§2.1).
+Adding a row here is a Stage 3 decision. The ten rows for `family_*`, `mentor_quality_flag`, `redemptions.child_note`, `share_*`, `tasks.child_note` and `wallet_guardian_actions` were added at the S07 merge (migration `s07_merge_reconciliation`), when the live scan first saw the S06 and S07 schemas; their Stage 3 review is open with the rest of this list. The `data_practice_consents.practice_key` row was added at the S10 merge (migration `od9_merge_reconciliation`) on the same terms. The `lesson_pedagogical_reviews.checks` row was added with the production release (migration `lesson_pedagogical_review_messaging_register`), when the scan first saw the Stage 3 review record, on the same terms. A row that is a real person-to-person channel also needs its `messaging-features.json` entry (§2.1).
 
 ### 2.3 Enforcement
 
