@@ -69,6 +69,10 @@ function spawnGate(extra: Record<string, string>, dir: string, args: string[], o
     child.on('close', (status) => done({ status, output: `${stdout}${stderr}` }));
   });
 }
+// OD-29 (2026-09-30): the owner approved every class B asset, so the real manifest has no draft left. The cases about
+// the release refusal put drafts back in their copy of the tree, the way the render scripts register a new asset.
+const asDraft = (row: Row): Row => (row.class === 'B' && row.reviewStatus === 'approved' ? { ...row, reviewStatus: 'draft', approvedBy: null } : row);
+const draftAll = (dir: string) => writeManifest(dir, readManifest(dir).map(asDraft));
 async function mutate(change: (dir: string) => void) {
   const dir = tree();
   change(dir);
@@ -85,6 +89,11 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     expect(ok.output).toContain('Rebuild asset integrity OK');
     expect(ok.output).toMatch(/[1-9]\d* raster\(s\) free of text by OCR/);
     expect(ok.status).toBe(0);
+    // Every asset is approved (OD-29), so the real manifest passes the release build as it is.
+    const approved = await run(dir, '--release');
+    expect(approved.output).toContain('Rebuild asset integrity OK');
+    expect(approved.status).toBe(0);
+    draftAll(dir);
     const release = await run(dir, '--release');
     expect(release.status).toBe(1);
     expect(release.output).toContain('Unapproved asset blocks the build');
@@ -94,6 +103,7 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
 
   it('lets only a local build ship drafts (LF_LOCAL_DRAFT_ASSETS), never on CI or a hosting builder, never past another rule', async () => {
     const dir = tree();
+    draftAll(dir);
     const local = await runWith({ LF_LOCAL_DRAFT_ASSETS: '1' }, dir, '--release');
     expect(local.status).toBe(0);
     expect(local.output).toContain('LOCAL DRAFT BUILD');
@@ -354,7 +364,7 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     const drift = await attempt(() => writeFileSync(join(dir, 'public/sounds/edu/not_yet.wav'), tone(0.3, 0.2, 22_050)));
     expect(drift.output).toContain('Asset does not match its generator scripts/synthesize-not-yet-sound.mjs');
     expect(drift.output).not.toContain('Sound cue');
-    const approvedWithoutReviewer = await attempt(() => patchRow({ reviewStatus: 'approved' }));
+    const approvedWithoutReviewer = await attempt(() => patchRow({ reviewStatus: 'approved', approvedBy: null }));
     expect(approvedWithoutReviewer.output).toContain(`approvedBy must be set exactly when approved: ${soundId}`);
     // The exemption is for a draft with a planned call site only: approved and unplayed, or a draft without one, fails.
     // The W2 learner lane already plays the cue (sfx.ts, lessonCue.ts): unwire both call sites for these two cases.
@@ -364,7 +374,7 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     const rewire = () => callSites.forEach((file, i) => writeFileSync(file, played[i]!));
     const approvedUnwired = await attempt(() => { unwire(); patchRow({ reviewStatus: 'approved', approvedBy: 'owner' }); });
     expect(approvedUnwired.output).toContain(`Registered asset is referenced nowhere: ${soundId}`);
-    const draftWithoutWiring = await attempt(() => { unwire(); writeManifest(dir, rows.map((row) => (row.id === soundId ? { ...row, wiring: undefined } : row))); });
+    const draftWithoutWiring = await attempt(() => { unwire(); writeManifest(dir, rows.map((row) => (row.id === soundId ? { ...asDraft(row), wiring: undefined } : row))); });
     expect(draftWithoutWiring.output).toContain(`Registered asset is referenced nowhere: ${soundId}`);
     rewire();
     const informative = await attempt(() => patchRow({ altKey: 'lesson.feedback.notYet', modes: 'light' }));
@@ -372,7 +382,7 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     const unregistered = await attempt(() => writeFileSync(extra, "export const cue = '/sounds/edu/unregistered.wav';\n"));
     expect(unregistered.output).toContain('src/rebuild/family/Sound.tsx references an unregistered or retired sound: /sounds/edu/unregistered.wav');
     for (const result of [drift, approvedWithoutReviewer, approvedUnwired, draftWithoutWiring, informative, unregistered]) expect(result.status).toBe(1);
-    // Restored, the tree passes again: a draft that plays is still a draft (--release refuses it).
+    // Restored, the tree passes again (the cue is approved under OD-29 and played by sfx.ts and lessonCue.ts).
     const restored = await run(dir);
     expect(restored.output).toContain('Rebuild asset integrity OK');
     expect(restored.status).toBe(0);

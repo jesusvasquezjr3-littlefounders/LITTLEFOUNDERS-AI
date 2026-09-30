@@ -14,7 +14,7 @@ const frontend = resolve(__dirname, '../../..');
 describe('the coin asset and CoinAmount (07 §1, 02 §9.5)', () => {
   it('is a registered, in-house, text-free class B SVG in the coins family, in both modes, under 6 KB', () => {
     const asset = resolveManifestAsset(COIN_ASSET_ID);
-    expect(asset).toMatchObject({ class: 'B', type: 'svg', slot: 'money.coin', modes: 'both', reviewFamily: 'coins', reviewStatus: 'draft', altKey: 'decorative' });
+    expect(asset).toMatchObject({ class: 'B', type: 'svg', slot: 'money.coin', modes: 'both', reviewFamily: 'coins', reviewStatus: 'approved', altKey: 'decorative' });
     const svg = readFileSync(resolve(frontend, `public${asset!.path}`), 'utf8');
     expect(svg.length).toBeLessThan(6 * 1024);
     expect(svg).not.toMatch(/<text|<image|gradient|filter/i);
