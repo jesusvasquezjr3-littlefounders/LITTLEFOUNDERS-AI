@@ -195,7 +195,9 @@ for (const [file, text] of sources) {
 }
 
 /* -------------------------------------------------- class B: own assets */
-const TYPES = new Set(['svg', 'webp', 'png', 'lottie', 'render', 'wav']);
+// Gap-fix round 8 (Bible 08 §7, 07 §4, §5): `sequence` is a rendered Mentor sequence, an animated WebP of the real model
+// moving into a catalogue pose; it plays once and ends on its `endFrame`, a registered `mentor.stageStill`.
+const TYPES = new Set(['svg', 'webp', 'png', 'lottie', 'render', 'wav', 'sequence']);
 const MODES = new Set(['both', 'light', 'dark']);
 const REVIEW = new Set(['draft', 'approved', 'retired']);
 // 07 §7 item 2: the families whose first asset needs the owner's style approval. `sounds` is ours, not 07's (below).
@@ -204,7 +206,24 @@ const REVIEW = new Set(['draft', 'approved', 'retired']);
 // Gap-fix round 2: the OD-20 achievement image's marks are a family of their own (`achievement-share`), drawn by Depot.
 // Gap-fix round 3 (02 section 7 rule 9, 07 section 1): the class B navigation marks of the shells (`navigation`, slot `nav.icon`).
 const FAMILIES = new Set(['character-renders', 'badges', 'course-icons', 'pockets', 'empty-states', 'scenes', 'task-categories', 'coins', 'celebration-motion', 'avatar-parts', 'profile-covers', 'sounds', 'brand', 'achievement-share', 'navigation']);
-const BUDGET_KB = { svg: 6, webp: 120, png: 120, lottie: 150, render: 150, wav: 32 };
+const BUDGET_KB = { svg: 6, webp: 120, png: 120, lottie: 150, render: 150, wav: 32, sequence: 150 };
+const SEQUENCE_SLOT = 'mentor.stageSequence';
+const SEQUENCE_MAX_MS = 3000; // 07 §3.2 and §5: a motion asset is at most 3 s and plays once
+
+/** Minimal animated-WebP reader: the animation flag, the loop count and each frame's duration. */
+function readAnimatedWebp(bytes) {
+  if (bytes.length < 30 || bytes.toString('ascii', 0, 4) !== 'RIFF' || bytes.toString('ascii', 8, 12) !== 'WEBP') return null;
+  let animated = false, loops = null;
+  const durations = [];
+  for (let offset = 12; offset + 8 <= bytes.length;) {
+    const type = bytes.toString('ascii', offset, offset + 4), length = bytes.readUInt32LE(offset + 4), data = offset + 8;
+    if (type === 'VP8X') animated = (bytes[data] & 0x02) !== 0;
+    else if (type === 'ANIM') loops = bytes.readUInt16LE(data + 4);
+    else if (type === 'ANMF') durations.push(bytes.readUIntLE(data + 12, 3));
+    offset = data + length + (length & 1);
+  }
+  return { animated, loops, durations };
+}
 const RASTER = new Set(['png', 'render', 'webp']);
 let ocrRead = 0;
 const rasters = []; // live raster art, read by OCR after the per-row checks (07 §7)
@@ -382,7 +401,7 @@ for (const asset of classB) {
     if (typeof text !== 'string' || !text.trim()) fail(`Accessible name ${asset.altKey} missing in ${locale}: ${where}`);
     else if (words(text) > Math.ceil(12 * (locale === 'en-US' ? 1 : 1.25))) fail(`Accessible name over 12 words in ${locale}: ${where}`);
   }
-  if (asset.type === 'render') {
+  if (asset.type === 'render' || asset.type === 'sequence') {
     if (!MENTORS.includes(asset.character)) fail(`Render of an unknown character: ${where}`);
     if (asset.sourceModel !== `/scenes/${asset.character}.glb`) fail(`Render not from the character's own model: ${where}`);
     if (!poseCatalogue.has(asset.poseId)) fail(`Render pose is not in the pose catalogue: ${where}`);
@@ -475,6 +494,23 @@ for (const asset of classB) {
     if (!asset.motionTokens.length || asset.motionTokens.some((token) => !motionTokenNames.has(token))) fail(`A motion asset maps to the motion tokens (07 §5): ${where}`);
     const frame = classB.find((entry) => entry.path === asset.staticFrame);
     if (!frame || frame.type !== 'svg' || frame.reviewStatus === 'retired' || frame.slot !== asset.slot) fail(`A Lottie's static frame is a registered, live SVG of the same slot (07 §5): ${where}`);
+  } else if (asset.type === 'sequence') {
+    // 08 §7, 07 §5: a sequence of the real model into a catalogue pose, played once, ending on that pose's still.
+    const webp = readAnimatedWebp(bytes);
+    const total = webp ? webp.durations.reduce((sum, ms) => sum + ms, 0) : 0;
+    if (!webp || !webp.animated || webp.durations.length < 2) fail(`A rendered sequence is an animated WebP: ${asset.path}`);
+    else {
+      if (webp.loops !== 1) fail(`A rendered sequence plays once and never loops (07 §5): ${asset.path}`);
+      if (total > SEQUENCE_MAX_MS) fail(`Rendered sequence longer than 3 s (07 §3.2, §5): ${asset.path}`);
+      if (asset.durationMs !== total - webp.durations[webp.durations.length - 1]) fail(`durationMs must equal the sequence's moving frames (${total - webp.durations[webp.durations.length - 1]} ms): ${where}`);
+    }
+    if (asset.slot !== SEQUENCE_SLOT || asset.poseId === 'ambient.idle') fail(`A rendered sequence fills ${SEQUENCE_SLOT}, never for idle (08 §7: idle is a still): ${where}`);
+    if (!asset.motionTokens.length || asset.motionTokens.some((token) => !motionTokenNames.has(token))) fail(`A motion asset maps to the motion tokens (07 §5): ${where}`);
+    const end = classB.find((entry) => entry.id === asset.endFrame);
+    if (!end || end.type !== 'render' || end.slot !== 'mentor.stageStill' || end.reviewStatus === 'retired' || end.character !== asset.character
+      || end.poseId !== asset.poseId || end.modes !== asset.modes) {
+      fail(`Every rendered sequence has a still (07 §5): endFrame must be the live mentor.stageStill of the same character, pose and mode: ${where}`);
+    }
   } else if (sound) {
     const wav = readWav(bytes);
     if (!wav || wav.encoding !== 1 || wav.channels !== 1 || wav.bits !== 16 || !wav.samples?.length || wav.sampleRate < 8000 || wav.sampleRate > 48000) {

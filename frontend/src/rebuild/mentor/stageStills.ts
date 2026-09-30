@@ -22,12 +22,15 @@ import { MENTOR_CHARACTERS, type MentorCharacter } from '../design/assets';
 interface StillRow {
   id: string; class: string; type: string; path: string; slot: string; aspect?: string; modes: string;
   character?: string; poseId?: string; sourceModel?: string; reviewStatus: string;
+  /** Sequences only: the still the sequence ends on, and its length. */
+  endFrame?: string; durationMs?: number;
 }
 
 export const STAGE_STILL_SLOT = 'mentor.stageStill';
 export const LESSON_STILL_SLOT = 'lesson.compactMentorStill';
 export const AVATAR_SLOT = 'mentor.avatar';
 export const CHOOSER_STILL_SLOT = 'mentor.chooserStill';
+export const STAGE_SEQUENCE_SLOT = 'mentor.stageSequence';
 
 export interface StageStill {
   id: string;
@@ -138,4 +141,38 @@ export function findChooserStill(character: MentorCharacter, theme: 'light' | 'd
   if (!MENTOR_CHARACTERS.includes(character)) return null;
   const row = pick(CHOOSER_STILL_SLOT, character, theme, (entry) => entry.id === `mentor.${character}.chooser.${theme}`);
   return row ? still(row, 'cover') : null;
+}
+
+
+/*
+ * The full stage's rendered sequences (Frontend Bible 08 §7, 07 §4, §5; gap-fix round 8): in the fallback, a state
+ * change plays one short sequence of the same character's real model moving into the pose, once, and settles on
+ * that pose's still. Each sequence is registered in `mentor.stageSequence` (scripts/render-mentor-stage-sequences.mjs)
+ * and names its end frame, the `mentor.stageStill` of the same character, pose and colour mode (07 §5: every rendered
+ * sequence has a still). A sequence whose still is missing is never offered: the stage would not settle on the pose.
+ */
+export interface StageSequence {
+  id: string;
+  path: string;
+  poseId: string;
+  /** How long the sequence plays once, in ms (its motion token, 07 §5). */
+  durationMs: number;
+  /** The manifest id of the still it ends on. */
+  endFrame: string;
+}
+
+const sequenceRows = (manifest as readonly StillRow[]).filter((row) => row.class === 'B' && row.type === 'sequence' && row.reviewStatus !== 'retired');
+
+/** The manifest id of a full-stage sequence: one per character, catalogue pose (idle excluded) and colour mode. */
+export const stageSequenceId = (character: MentorCharacter, pose: string, theme: 'light' | 'dark') => `mentor.${character}.sequence.${pose}.${theme}`;
+
+/** The sequence into one pose of one character, in one colour mode, or null when none is registered (the stage then fades). */
+export function findStageSequence(character: MentorCharacter, poseId: string, theme: 'light' | 'dark'): StageSequence | null {
+  if (!MENTOR_CHARACTERS.includes(character) || poseId === 'ambient.idle') return null;
+  const row = sequenceRows.find((entry) => entry.slot === STAGE_SEQUENCE_SLOT && entry.id === stageSequenceId(character, poseId, theme)
+    && isRealRender(entry, character) && entry.poseId === poseId && entry.modes === theme);
+  if (!row || typeof row.durationMs !== 'number' || row.durationMs <= 0) return null;
+  const end = pick(STAGE_STILL_SLOT, character, theme, (entry) => entry.id === row.endFrame && entry.id === stageStillId(character, poseId, theme) && entry.poseId === poseId);
+  if (!end) return null;
+  return { id: row.id, path: row.path, poseId, durationMs: row.durationMs, endFrame: end.id };
 }
