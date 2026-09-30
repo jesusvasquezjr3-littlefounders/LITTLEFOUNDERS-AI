@@ -1,8 +1,8 @@
 # SPEC migration: local completion report
 
-For the project leader. First recorded 28 September 2026; updated 29 September 2026 on branch `codex/spec-migration-s02` (tip `5ce7dd8f` plus this documentation commit), after seven rounds of the SPEC gap audit. Nothing in the final push has been pushed or deployed, and no paid provider was called (OD-23).
+For the project leader. First recorded 28 September 2026; updated 30 September 2026 on branch `codex/spec-migration-s02` (tip `cf48ffaf` plus this documentation commit), after eight rounds of the SPEC gap audit. Nothing in the final push has been pushed or deployed, and no paid provider was called (OD-23).
 
-**Bottom line.** Every requirement in the SPEC is implemented and locally verified. None is accepted or released. Seven gap-audit rounds, each with eight auditors over the whole SPEC, found 58, 32, 26, 27, 21, 16 and 9 gaps; every one was fixed and merged. In round 7, four of the eight areas were clean (the Mentor, Family and Wallet, the owner decisions, the Frontend Bible). A round 8 audit is running; its result is added at close. What remains needs people, production or owner-approved spend, and cannot be closed by writing code. It is listed in order in [section 9](#9-remaining-steps-before-production-in-order). The per-requirement ledger is [REQUIREMENTS.md](REQUIREMENTS.md), and the sprint history, lanes, merges and integration defects are in [SPRINTS.md](SPRINTS.md).
+**Bottom line.** Every requirement in the SPEC is implemented and locally verified. None is accepted or released. Eight gap-audit rounds, each with eight auditors over the whole SPEC, found 58, 32, 26, 27, 21, 16, 9 and 11 gaps; every one was fixed and merged locally. In round 7, four of the eight areas were clean (the Mentor, Family and Wallet, the owner decisions, the Frontend Bible); in round 8, learning was clean. The final gates on the merged tree are green after one fix commit (`cf48ffaf`). UI audit on the final tree: running - result recorded when it completes. See [State at close](#10-state-at-close). What remains needs people, production or owner-approved spend, and cannot be closed by writing code. It is listed in order in [section 9](#9-remaining-steps-before-production-in-order). The per-requirement ledger is [REQUIREMENTS.md](REQUIREMENTS.md), and the sprint history, lanes, merges and integration defects are in [SPRINTS.md](SPRINTS.md).
 
 ## 1. What the SPEC required
 
@@ -50,7 +50,7 @@ Status of every block: **implemented and locally verified; not accepted, not rel
 
 ## 3. What is implemented, per screen family
 
-Every screen below is rebuilt on the shared controls and shells, in en-US, es-MX and pt-BR, light and dark, within the Copy Budget, and with no legacy component. Status of every screen family: **implemented and locally verified; not accepted, not released.** Acceptance of each needs the human design and copy review, native-language review, device and assistive-technology testing and the owner's asset approval (section 9). The full UI audit of the round 7 tree (about 530 states × 3 locales × 2 themes) is running; its result is added at close.
+Every screen below is rebuilt on the shared controls and shells, in en-US, es-MX and pt-BR, light and dark, within the Copy Budget, and with no legacy component. Status of every screen family: **implemented and locally verified; not accepted, not released.** Acceptance of each needs the human design and copy review, native-language review, device and assistive-technology testing and the owner's asset approval (section 9). UI audit on the final tree: running - result recorded when it completes (540 states × 3 locales × 2 themes, 3,240 jobs).
 
 | Family | Screens | Record |
 |---|---|---|
@@ -149,12 +149,13 @@ README.md has every command, the conditional gate for each area, and each browse
 ## 6. Evidence
 
 - **Per requirement:** each row of [REQUIREMENTS.md](REQUIREMENTS.md) links its checkpoint records, with commands, counts and limitations.
-- **Final tree:** see "Gate evidence after rounds 6 and 7" in [SPRINTS.md](SPRINTS.md#gate-evidence-after-rounds-6-and-7-29-september-2026). In short:
+- **Final tree:** see "Final gate evidence after round 8" in [SPRINTS.md](SPRINTS.md#final-gate-evidence-after-round-8-30-september-2026), and "Gate evidence after rounds 6 and 7" before it. In short:
   - After round 6 (tip `0b5386d8`), every root gate was green: `typecheck:all`, `lint:all`, `test:all` (frontend 298 files / 3,476 tests; backend 162 files / 3,731 tests, green on a quiet rerun after a vitest-worker RPC timeout under load in the 443 s `placement.postgres` E2E; Oracle 68 files / 1,789 tests; every other service green), `spec:check`, `secrets:check`, i18n, `tools:test` 575/575, and the database package 80/80 plus all 12 `railway-migrate` scenarios. Five real failures were fixed in `0b5386d8`.
   - After round 7 (fix `5ce7dd8f`): `typecheck:all`, `lint:all`, `spec:check`, `secrets:check`, `tools:test` 604/604, i18n and the database suite with the `railway-migrate` harness (94 minutes on this host) are green.
-  - Running; result added at close: the backend, coursegen and frontend unit suites on the round 7 tree, and the full UI audit (about 530 states × 3 locales × 2 themes).
+  - After round 8 (from tip `ec54cf4f`, fix `cf48ffaf`): `typecheck:all` and `lint:all` pass for all services; `spec:check`, `secrets:check`, `tools:test` 621/621, `check-i18n.sh` (3/3), `check-migrations` and `check-migration-phase` (254 files: 187 expand, 67 contract) and `cutover-freeze.test.mjs` 4/4 pass. Backend 3,774/3,774 tests, coursegen 861/861 and dataintel 252/252 pass. The first full frontend run passed 3,576 of 3,578 tests; the 2 real failures (an undefined `lf-mentor-stage-sequence` class and an es-MX staff line one word over the adult limit) are fixed in `cf48ffaf`, and the failing and related files were rerun green (4/4 files, 59/59 tests). The full frontend suite was not rerun after the fix, and the database `railway-migrate` harness was not run on this tree.
+  - UI audit on the final tree: running - result recorded when it completes. It covers 540 states × 3 locales × 2 themes (3,240 jobs). A first run under full machine load could not finish (setup stops that did not reproduce when rerun alone; the 48-job overlays group rerun was clean on all three audits), and it was restarted on the otherwise idle machine.
   - The chain is 254 migrations. The 28 September evidence after round 2 (tip `08a70f06`) stays in the same file as history.
-- **Per round:** [GAP-FIX-R1](sprints/GAP-FIX-R1.md) to [GAP-FIX-R5](sprints/GAP-FIX-R5.md), and the lane indexes [GAP-FIX-R6](sprints/GAP-FIX-R6.md) and [GAP-FIX-R7](sprints/GAP-FIX-R7.md).
+- **Per round:** [GAP-FIX-R1](sprints/GAP-FIX-R1.md) to [GAP-FIX-R5](sprints/GAP-FIX-R5.md), and the lane indexes [GAP-FIX-R6](sprints/GAP-FIX-R6.md), [GAP-FIX-R7](sprints/GAP-FIX-R7.md) and [GAP-FIX-R8](sprints/GAP-FIX-R8.md).
 - **Integration defects** found and fixed at merge are listed in the same section. Each one is also in its merge commit and in the lane record.
 
 ## 7. The SPEC gap audit
@@ -170,18 +171,20 @@ After the rebuild, eight auditors per round compared the merged tree with the wh
 | 5 | 21 | 8 | [GAP-FIX-R5](sprints/GAP-FIX-R5.md) |
 | 6 | 16 | 10 | [GAP-FIX-R6](sprints/GAP-FIX-R6.md) |
 | 7 | 9 (four of eight areas clean) | 6 | [GAP-FIX-R7](sprints/GAP-FIX-R7.md) |
-| 8 | running; result added at close | | |
+| 8 | 11 (learning clean) | 8 | [GAP-FIX-R8](sprints/GAP-FIX-R8.md) |
 
-Every gap of rounds 1 to 7 is fixed and merged. The merge commits and the integration defects found at each merge are in [SPRINTS.md](SPRINTS.md#integration-defects-found-at-merge).
+The trend is 58, 32, 26, 27, 21, 16, 9 and 11: 200 gaps in all. Every gap of rounds 1 to 8 is fixed and merged locally, and no round 8 lane added a migration. The machine rebooted twice during round 8; three lanes were finished after it. The merge commits and the integration defects found at each merge are in [SPRINTS.md](SPRINTS.md#integration-defects-found-at-merge).
 
 ## 8. Owner questions with defaults implemented
 
-Each question below was raised by a round 6 or round 7 lane. The conservative default is implemented and runs until the owner answers. Earlier rounds' questions are in their GAP-FIX records. Grouped by block, one line each; the lane record has the detail.
+Each question below was raised by a round 6, 7 or 8 lane. The conservative default is implemented and runs until the owner answers. Earlier rounds' questions are in their GAP-FIX records. Grouped by block, one line each; the lane record has the detail.
 
 **A. Identity**
 - Revocation is permanent on every API path; only a database superuser can undo it. Should there be an audited reinstatement path, and who decides? ([fix6identi7](sprints/gap-fix-r6/fix6identi7.md))
 - A revoked Tutor's unaccepted invites are withdrawn at revocation, including when the revocation is for fraud. Confirm the stricter rule. ([fix6identi7](sprints/gap-fix-r6/fix6identi7.md))
 - Flagged-session events are counted from the flag's own timestamp, so events admitted before the flag are not reported as unconsented. Confirm this matches Appendix M 1.1. ([fix7identi0](sprints/gap-fix-r7/fix7identi0.md))
+- OD-3 section 2 lists a child under 13 who arrives alone as guest mode only, while A.2 and A.3 keep that child's protected account (guest upgrade, Google). The code was kept and the FAQ corrected. Take the stricter reading and refuse the upgrade instead? ([fix8identi0](sprints/gap-fix-r8/fix8identi0.md))
+- Should the Bible 06 refusal title "A parent creates your account." be reworded, since it reads as absolute next to the upgrade path? ([fix8identi0](sprints/gap-fix-r8/fix8identi0.md))
 
 **B. Learning**
 - After four quarterly reviews, the Block B threshold review falls back to a yearly ceiling, because release readiness cannot tell a major release from a minor one. Confirm, or name the major-release marker. ([fix6learni1](sprints/gap-fix-r6/fix6learni1.md))
@@ -198,22 +201,28 @@ Each question below was raised by a round 6 or round 7 lane. The conservative de
 
 **C. Mentor**
 - The first Block C threshold review is due 2026-12-23, one quarter after the log was created, because the Mentor is already live. Confirm, or tie it to the release date. ([fix6mentor8](sprints/gap-fix-r6/fix6mentor8.md))
+- Should the compact lesson band also play rendered sequences? Default: no; only the full stage plays them. ([fix8mentor1](sprints/gap-fix-r8/fix8mentor1.md))
+- Should the v1 player's full-crop fallback use transparent full-body stills? Default: the registered idle avatar render. ([fix8learni6](sprints/gap-fix-r8/fix8learni6.md))
 - The teen and adult controlling-language gate stays on under the `TUTOR_DIALOGUE_CALIBRATION=off` kill switch, as a Tier 1 style constraint. Confirm. ([fix6mentor8](sprints/gap-fix-r6/fix6mentor8.md))
 - The equity-drift audit uses the adult moderation posture, binary-gender name sets and origin groups proposed by engineering. Approve, or name the groups the Safety/Trust Lead should use. ([fix6mentor8](sprints/gap-fix-r6/fix6mentor8.md))
 
-**D. Family and wallet:** none raised in rounds 6 and 7.
+**D. Family and wallet**
+- The production-integrity window starts at the last `v*` or `release-*` tag, else 30 days; the repository has no release tags today. How are releases marked? ([fix8family2](sprints/gap-fix-r8/fix8family2.md))
+- `family-integrity-watch` is frozen during the OD-9 cutover and re-enabled 24 hours after the freeze lifts. The alternative is to leave it enabled and annotate the migration's rows on its issue. ([fix8datapl5](sprints/gap-fix-r8/fix8datapl5.md))
 
 **E. Profiles and social**
 - The brand position says a discoverable 16- or 17-year-old can be found by "signed-in members", not "anyone". Confirm the wording. ([fix6social4](sprints/gap-fix-r6/fix6social4.md))
 - Social-graph audit entries are kept with no expiry until a decision (D-15 (b)). Approve the proposed 400-day expiry? ([fix7social4](sprints/gap-fix-r7/fix7social4.md))
+- Should every follow and every connection request require the requester to have a @username? Default: only a request to a teen does. ([fix8social4](sprints/gap-fix-r8/fix8social4.md))
 - After the first year, the Block E recalibration follows the Appendix B, D and G cadence, with at most a year between reviews. Confirm. ([fix7social4](sprints/gap-fix-r7/fix7social4.md))
 
-**F. Sharing:** none raised in rounds 6 and 7.
+**F. Sharing:** none raised in rounds 6 to 8.
 
 **G. Staff**
 - The staff lesson preview checks each answer through Core against the real key and records nothing. Is this the reviewer experience you want? ([fix6staffo9](sprints/gap-fix-r6/fix6staffo9.md))
 - The preview shows the catalog default Mentor (Rho) and unfaded worked examples. Should it offer a Mentor or mastery switcher? ([fix6staffo9](sprints/gap-fix-r6/fix6staffo9.md))
 - Blocks G and H share one log with a schedule per block, and a joint "G+H" review counts for both leads. Confirm, and name the Platform Lead and the Data/Privacy Lead. ([fix7staffo5](sprints/gap-fix-r7/fix7staffo5.md))
+- If the Mentor-quality read fails, the Families bridge card shows an error rather than engagement alone (Appendix H 1.1, "reviewed together"). Relax it to a partial card with the conversion shown as unavailable? ([fix8staffo3](sprints/gap-fix-r8/fix8staffo3.md))
 
 **H. Analytics and operations**
 - Alert delivery: 3 attempts in total, 2 s then 8 s apart; retry only on network errors, timeouts, 408, 425, 429 and 5xx; an undelivered-alert window of 36 hours. Confirm or give other values. ([fix6staffo9](sprints/gap-fix-r6/fix6staffo9.md))
@@ -250,7 +259,7 @@ None of these is engineering work. Each unblocks the next.
 6. **Owner release decisions.** The pathway engine switch (OD-22), and the remaining owner questions, which run on their defaults until answered.
 7. **Ops-owner preparation.**
    - Production alert channels (H.3).
-   - Watchdog schedules and a drill against the deployed Core (H.4).
+   - Watchdog schedules and a drill against the deployed Core (H.4), including the round 8 additions: the `badge_link_retirement` and `warehouse_retention` watched jobs and the daily `family-integrity-watch`.
    - Confirmation that daily backups are encrypted (H.5, release-blocking).
    - Branch protection on `main`.
    - The first CI runs on GitHub of every new job and workflow: the jobs added to `repo-gates.yml`, `database-ci.yml`, `backend-ci.yml` and `frontend-ci.yml` (the Bible audits and the Mentor-stage verifier), and the new scheduled workflows (the quarterly review issues for Blocks B, C, D, E, A, G and H, the monthly equity audit, the retention sweeps and the extended watchdog). None has run on GitHub from this branch, because the final push was not pushed; scheduled workflows run only from `main`.
@@ -263,10 +272,14 @@ None of these is engineering work. Each unblocks the next.
    - Apply the contract migrations by hand, in their stated order and around their Core releases: the 56 contract migrations pending release that `node database/scripts/check-migration-phase.mjs` lists with their order (254 migrations: 187 expand, 67 contract). `database-cd.yml` auto-applies only additive migrations.
    - Run the OD-9 toolkit, then reconcile.
    - Get the §4.5 row-count and per-family sign-off from a person, and Legal's sign-off.
-   - Switch. Deploy in the documented order: Depot before Core, and Core before Oracle for wire changes.
+   - Switch. Deploy in the documented order: Depot before Core, dataintel before Core (the round 8 warehouse watch reads a dataintel route), and Core before Oracle for wire changes.
    - Run the post-release checks.
 9. **After release.**
    - Retire the legacy catalog once the new one is live (`od9 retire-catalog`, runbook step 10).
    - The dated legacy badge-link removal (24 October 2026).
    - One release cycle of production metrics per requirement.
    - Only then can a requirement be marked Accepted.
+
+## 10. State at close
+
+Every gap the eight SPEC audit rounds found (58, 32, 26, 27, 21, 16, 9 and 11; 200 in all) is implemented and merged locally on `codex/spec-migration-s02` (tip `cf48ffaf` plus this documentation commit); nothing is pushed or deployed. Nothing is Accepted or Released: every requirement is implemented and locally verified, and its acceptance needs people, production evidence or owner-approved spend. The remaining steps are the owner's and non-engineering, listed in order in [section 9](#9-remaining-steps-before-production-in-order), with the owner questions and their implemented defaults in [section 8](#8-owner-questions-with-defaults-implemented); each lane record also names its own open items (for example, the Liruf and Dina stage sequences, 52 of 104 rendered, and posed transparent stills for the v1 player, which keep the registered stills until rendered). The final gates on the merged tree are green after `cf48ffaf`; the full frontend suite was not rerun after that fix, and the database `railway-migrate` harness was not run on this tree. The full UI audit on the final tree is running; its result is recorded when it completes.
