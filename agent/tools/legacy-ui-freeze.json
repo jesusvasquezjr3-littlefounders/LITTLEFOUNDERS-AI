@@ -128,18 +128,36 @@
     {
       "path": "i18n/pt-BR/marketing.json",
       "replacement": "the badgeLanding group of src/i18n/<locale>/rebuild-site.json (S10L.3)"
+    },
+    {
+      "path": "components/characters/DinaCharacter.tsx",
+      "replacement": "a manifest-registered still of the real 3D model (Frontend Bible 02 rule 21, 07 §4, 08 §7): src/tutor-scene/slotStill.ts through CharacterSlot; the live 3D character is CharacterActor3D"
+    },
+    {
+      "path": "components/characters/DrRhoCharacter.tsx",
+      "replacement": "a manifest-registered still of the real 3D model (Frontend Bible 02 rule 21, 07 §4, 08 §7): src/tutor-scene/slotStill.ts through CharacterSlot; the live 3D character is CharacterActor3D"
+    },
+    {
+      "path": "components/characters/LirufCharacter.tsx",
+      "replacement": "a manifest-registered still of the real 3D model (Frontend Bible 02 rule 21, 07 §4, 08 §7): src/tutor-scene/slotStill.ts through CharacterSlot; the live 3D character is CharacterActor3D"
+    },
+    {
+      "path": "components/characters/ZaraVexCharacter.tsx",
+      "replacement": "a manifest-registered still of the real 3D model (Frontend Bible 02 rule 21, 07 §4, 08 §7): src/tutor-scene/slotStill.ts through CharacterSlot; the live 3D character is CharacterActor3D"
+    },
+    {
+      "path": "components/characters/control/CharacterActor.tsx",
+      "replacement": "a manifest-registered still of the real 3D model (Frontend Bible 02 rule 21, 07 §4, 08 §7): src/tutor-scene/slotStill.ts through CharacterSlot; the live 3D character is CharacterActor3D"
+    },
+    {
+      "path": "components/characters/control/rig.css",
+      "replacement": "a manifest-registered still of the real 3D model (Frontend Bible 02 rule 21, 07 §4, 08 §7): src/tutor-scene/slotStill.ts through CharacterSlot; the live 3D character is CharacterActor3D"
     }
   ],
   "files": [
     "frontend/src/components/CookieConsentBanner.tsx",
     "frontend/src/components/RouteErrorBoundary.tsx",
-    "frontend/src/components/characters/DinaCharacter.tsx",
-    "frontend/src/components/characters/DrRhoCharacter.tsx",
-    "frontend/src/components/characters/LirufCharacter.tsx",
-    "frontend/src/components/characters/ZaraVexCharacter.tsx",
-    "frontend/src/components/characters/control/CharacterActor.tsx",
     "frontend/src/components/characters/control/CharacterActor3D.tsx",
-    "frontend/src/components/characters/control/rig.css",
     "frontend/src/components/characters/control/types.ts",
     "frontend/src/components/ui/Badge.tsx",
     "frontend/src/components/ui/Button.tsx",
