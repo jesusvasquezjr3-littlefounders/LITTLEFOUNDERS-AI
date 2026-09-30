@@ -1,4 +1,5 @@
-import { query, withConnection } from '../db/duckdb.js';
+import { withConnection } from '../db/duckdb.js';
+import { getMaintenanceStep, logMaintenanceFailure, logMaintenanceRun, RETENTION_JOB } from './warehouseMaintenance.js';
 
 /*
  * H.2 and Appendix O 1.2 (retention-window reconciliation): the warehouse's
@@ -18,12 +19,15 @@ import { query, withConnection } from '../db/duckdb.js';
  * The daily aggregates (agg_daily_*) hold counts only and are not pruned.
  *
  * Every run writes one warehouse_maintenance_log row per table (rows removed,
- * even when zero), so a prune that stopped running is visible.
+ * even when zero), and a failed run writes one `ok = FALSE` row after its
+ * rollback (GAP-FIX-R8). The log is read by Core's `warehouse_retention`
+ * watched job (services/warehouseMaintenance.ts), so a prune that failed or
+ * stopped running fails ops-job-watch and notifies a human (H.4).
  */
 
 export const RAW_EVENT_RETENTION_DAYS = 400;
 
-export const RETENTION_JOB = 'warehouse_retention';
+export { RETENTION_JOB };
 
 /** The tables under the window and the timestamp each one is aged by. */
 export const RETAINED_TABLES = [
@@ -46,33 +50,37 @@ export function retentionCutoff(now: Date = new Date(), days: number = RAW_EVENT
  */
 export async function applyWarehouseRetention(now: Date = new Date()): Promise<Record<string, number>> {
   const cutoff = retentionCutoff(now);
-  return withConnection(async (connection) => {
-    await connection.exec('BEGIN TRANSACTION');
-    try {
-      const removed: Record<string, number> = {};
-      for (const { table, column } of RETAINED_TABLES) {
-        const rows = await connection.query<{ n: number | bigint }>(
-          `SELECT count(*) AS n FROM ${table} WHERE ${column} < ?::TIMESTAMP`,
-          cutoff,
-        );
-        const n = Number(rows[0]?.n ?? 0);
-        if (n > 0) await connection.execute(`DELETE FROM ${table} WHERE ${column} < ?::TIMESTAMP`, cutoff);
-        await connection.execute(
-          'INSERT INTO warehouse_maintenance_log (job, table_name, retain_days, removed) VALUES (?, ?, ?, ?)',
-          RETENTION_JOB,
-          table,
-          RAW_EVENT_RETENTION_DAYS,
-          n,
-        );
-        removed[table] = n;
+  // The table being pruned when a run fails, named in the logged error: DuckDB's
+  // own message for a prepared statement can arrive garbled, without the table.
+  let current = 'transaction';
+  try {
+    return await withConnection(async (connection) => {
+      await connection.exec('BEGIN TRANSACTION');
+      try {
+        const removed: Record<string, number> = {};
+        for (const { table, column } of RETAINED_TABLES) {
+          current = table;
+          const rows = await connection.query<{ n: number | bigint }>(
+            `SELECT count(*) AS n FROM ${table} WHERE ${column} < ?::TIMESTAMP`,
+            cutoff,
+          );
+          const n = Number(rows[0]?.n ?? 0);
+          if (n > 0) await connection.execute(`DELETE FROM ${table} WHERE ${column} < ?::TIMESTAMP`, cutoff);
+          await logMaintenanceRun(connection, { job: RETENTION_JOB, table, retainDays: RAW_EVENT_RETENTION_DAYS, removed: n, ranAt: now });
+          removed[table] = n;
+        }
+        await connection.exec('COMMIT');
+        return removed;
+      } catch (error) {
+        await connection.exec('ROLLBACK').catch(() => undefined);
+        throw error;
       }
-      await connection.exec('COMMIT');
-      return removed;
-    } catch (error) {
-      await connection.exec('ROLLBACK').catch(() => undefined);
-      throw error;
-    }
-  });
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    await logMaintenanceFailure(RETENTION_JOB, RAW_EVENT_RETENTION_DAYS, new Error(`${current}: ${message}`), now);
+    throw error;
+  }
 }
 
 export interface RetentionRun {
@@ -80,16 +88,9 @@ export interface RetentionRun {
   removed: number;
 }
 
-/** The most recent retention run (rows removed across tables), or null when it has never run. */
+/** The most recent SUCCESSFUL retention run (rows removed across tables), or null when none has succeeded. */
 export async function getLastRetentionRun(): Promise<RetentionRun | null> {
-  const rows = await query<{ ran_at: Date | string | null; removed: number | bigint | null }>(
-    `SELECT max(ran_at) AS ran_at, sum(removed) AS removed FROM warehouse_maintenance_log
-     WHERE job = ? AND ran_at = (SELECT max(ran_at) FROM warehouse_maintenance_log WHERE job = ?)`,
-    RETENTION_JOB,
-    RETENTION_JOB,
-  );
-  const row = rows[0];
-  if (!row?.ran_at) return null;
-  const ranAt = row.ran_at instanceof Date ? row.ran_at.toISOString() : String(row.ran_at);
-  return { ranAt, removed: Number(row.removed ?? 0) };
+  const step = await getMaintenanceStep(RETENTION_JOB);
+  if (step.lastSuccessAt === null) return null;
+  return { ranAt: step.lastSuccessAt, removed: step.lastSuccessRemoved ?? 0 };
 }

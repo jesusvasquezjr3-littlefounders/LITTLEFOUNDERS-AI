@@ -1915,6 +1915,7 @@
         "lastAttempt": "Último intento",
         "alertsUndelivered": "{n} alertas recientes no llegaron a nadie. Revisa los canales de alerta.",
         "alertsUnread": "No se pudieron leer las alertas de datos.",
+        "jobUnread": "No se pudo leer el estado de {job}.",
         "deletionsStuck": "Eliminaciones detenidas por más de {hours} horas: {n}. Revisa el paso fallido."
       },
       "option": {
@@ -1934,7 +1935,8 @@
         "job_insights_prune": "Limpieza de eventos de aprendizaje",
         "job_account_deletions": "Eliminación de cuentas",
         "job_family_retention": "Limpieza de datos familiares",
-        "job_social_retention": "Limpieza de datos de amistades"
+        "job_social_retention": "Limpieza de datos de amistades",
+        "job_warehouse_retention": "Limpieza de datos de analítica"
       },
       "action": {
         "lookUp": "Buscar",

@@ -105,8 +105,12 @@ deliberate (the warehouse's copy of the raw events shares the first one):
   `prune_learning_events(400)` is pinned to by
   `dataintel/src/__tests__/warehouse-retention.test.ts`) and logs every run,
   rows removed per table, in `warehouse_maintenance_log`. An account erasure
-  removes the same tables at once. The daily aggregates (`agg_daily_*`) hold
-  counts only and are kept.
+  removes the same tables at once, and the erasure re-apply that runs after
+  every sync (an erased account's rows never come back) logs there too. A
+  failed run of either writes an `ok = FALSE` row with its error. The log is
+  read by the `warehouse_retention` watched job (section 4), so a prune or
+  re-apply that fails or stops running notifies a human. The daily aggregates
+  (`agg_daily_*`) hold counts only and are kept.
 
 The kid-role consent gate applies to BOTH stores: a kid's events only exist
 to retain because an active guardian consent admitted them at the source.
@@ -142,10 +146,11 @@ to retain because an active guardian consent admitted them at the source.
   job is now impossible; the direct synchronous export surface is the only
   one). The `task_view` and `tutor_open` events, previously catalogued with
   no emitter, now emit from the tasks boards and the Mentor experience.
-- **Watchdog coverage (H.4 and the Block H non-negotiable).** Nine scheduled
+- **Watchdog coverage (H.4 and the Block H non-negotiable).** Ten scheduled
   jobs are watched, each with a watchdog and a notification to a human.
   Appendix O 1.3 names the first three; the Block H standard adds every job
-  whose silent failure would harm family data (GAP-FIX-R6):
+  whose silent failure would harm family data (GAP-FIX-R6, and the warehouse
+  maintenance in GAP-FIX-R8):
 
   | Job (`job`) | Workflow (UTC) | Trail Core reads |
   |---|---|---|
@@ -158,6 +163,7 @@ to retain because an active guardian consent admitted them at the source.
   | `vault_drift` | `vault-drift.yml` 07:30 | heartbeat `ops.vault_drift.completed` |
   | `vault_backup` | `vault-backup.yml` 08:00 | heartbeat `ops.vault_backup.completed` |
   | `pulse_backup` | `pulse-backup.yml` 08:30 | heartbeat `ops.pulse_backup.completed` |
+  | `warehouse_retention` (H.2's 400-day warehouse copy; E.6's erasure re-apply) | dataintel, after every sync (`SYNC_INTERVAL_MS`, 5 minutes) | `warehouse_maintenance_log`, read through dataintel `GET /api/v1/intel/maintenance/status` (internal key) |
 
   - the retention sweep keeps its 36-hour window in `RETENTION_STALE_HOURS`
     (`backend/src/services/tutorData.ts`); Core's job status carries it as
@@ -169,6 +175,16 @@ to retain because an active guardian consent admitted them at the source.
     internal `POST /api/v1/internal/ops/heartbeat`; a heartbeat Core does not
     confirm fails the job. A trail job is never given a heartbeat: the route
     refuses its name, so nothing can fake its record;
+  - `warehouse_retention` covers two steps, the 400-day prune
+    (`warehouseRetention.ts`) and the erasure re-apply (`erasure.ts`). Core
+    (`backend/src/services/warehouseMaintenance.ts`, judged in `opsJobs.ts`)
+    reads the last successful and last attempted run of each. The job is
+    stale when either step has no success inside 36 hours, when either step's
+    last attempt failed (both run every sync, so a failure is a promise not
+    kept right now), or when the warehouse cannot be read. That last case also
+    carries `unreadable: true`, which `ops-job-watch` refuses as an error, and
+    the console names it as unreadable. The notice names each failing step
+    and its error;
   - a stalled erasure is a notify condition too: `accountDeletionFailures.stuck`
     counts requests still `processing` with an `account.deletion_step_failed`
     row older than 24 hours (`DELETION_STEP_FAILURE_HOURS`), which means no
@@ -189,7 +205,7 @@ to retain because an active guardian consent admitted them at the source.
     comments on the same issue when a course's verification fails (G.2, see
     `docs/content/FORGE-V2-RELEASE.md`);
   - the simulated-failure drill (`npm --prefix backend run ops:drill`, also a
-    unit test) proves, for each of the nine jobs, that a stale trail produces
+    unit test) proves, for each of the ten jobs, that a stale trail produces
     `stale: true`, a failed watcher and the notice; it also drills a stalled
     erasure, an overdue retroactive check, a due access review and an
     undelivered warehouse alert (`alerts_undelivered`).

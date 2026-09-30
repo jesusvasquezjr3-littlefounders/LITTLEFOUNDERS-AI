@@ -1915,6 +1915,7 @@
         "lastAttempt": "Last attempt",
         "alertsUndelivered": "{n} recent alerts reached nobody. Check the alert channels.",
         "alertsUnread": "The data alerts could not be read.",
+        "jobUnread": "The status of {job} could not be read.",
         "deletionsStuck": "Deletions stalled over {hours} hours: {n}. Check the failed step."
       },
       "option": {
@@ -1934,7 +1935,8 @@
         "job_insights_prune": "Learning event cleanup",
         "job_account_deletions": "Account deletions",
         "job_family_retention": "Family data cleanup",
-        "job_social_retention": "Friends data cleanup"
+        "job_social_retention": "Friends data cleanup",
+        "job_warehouse_retention": "Analytics data cleanup"
       },
       "action": {
         "lookUp": "Look up",

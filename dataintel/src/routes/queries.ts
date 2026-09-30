@@ -19,6 +19,7 @@ import * as learning from '../services/learning.js';
 import * as staffAudit from '../services/staffAudit.js';
 import * as dataQuality from '../services/dataQuality.js';
 import { eraseSubject } from '../services/erasure.js';
+import { getMaintenanceStatus } from '../services/warehouseMaintenance.js';
 
 // ── Reusable Zod schemas ─────────────────────────────────────────────
 
@@ -823,6 +824,20 @@ export function intelRouter(): Router {
       if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);
       return fail(res, 500, 'INTERNAL', (err as Error).message);
     }
+  });
+
+  /*
+   * H.4 (GAP-FIX-R8): the last successful and last attempted run of each
+   * warehouse maintenance step (the 400-day retention prune and the erasure
+   * re-apply), from warehouse_maintenance_log. Internal key only (the /api/v1
+   * guard in app.ts). Core reads it for GET /internal/ops/job-status
+   * (`warehouse_retention`), which ops-job-watch fails on. A log that cannot be
+   * read is a 502, never an empty "never ran" answer.
+   */
+  router.get('/maintenance/status', async (_req, res) => {
+    const result = await getMaintenanceStatus();
+    if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Warehouse maintenance log unavailable');
+    return ok(res, result);
   });
 
   router.patch('/alerts/:id', async (req, res) => {

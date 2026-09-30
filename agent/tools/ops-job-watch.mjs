@@ -50,6 +50,13 @@
 // services/warehouseAlerts.ts). Any undelivered trigger fails the watch and is
 // named in the notice, so this issue is the alert's escalation channel. A reply
 // without the number (the warehouse could not be read) is refused.
+//
+// GAP-FIX-R8 (H.4; Appendix O 1.2 and 1.3): `warehouse_retention` is the
+// analytics warehouse's 400-day retention prune and its erasure re-apply (E.6),
+// read by Core from dataintel's maintenance log. It is judged like every job
+// (Core's `stale`), and a job marked `unreadable: true` (Core could not read
+// the warehouse) is refused as an error, never counted as a quiet success.
+// The notice names the failing step and its error.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -58,6 +65,7 @@ import { fileURLToPath } from 'node:url';
 export const WATCHED_JOBS = [
   'vault_backup', 'pulse_backup', 'vault_drift', 'tutor_retention',
   'account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune',
+  'warehouse_retention',
 ];
 export const ISSUE_TITLE = 'Operations watchdog: a scheduled job has gone quiet';
 
@@ -80,6 +88,10 @@ export function evaluateOpsStatus(body) {
     const job = byJob.get(name);
     if (!job) {
       errors.push(`${name}: missing from the reply`);
+      continue;
+    }
+    if (job.unreadable === true) {
+      errors.push(`${name}: Core could not read this job's record; refusing to report a health check that did not happen`);
       continue;
     }
     if (typeof job.stale !== 'boolean') {
@@ -140,10 +152,19 @@ export function buildNotification(result, runUrl = '') {
   }
   for (const job of result.stale) {
     lines.push(`- **${job.job}**: last successful run ${hours(job.hoursSinceLastRun)} (window ${job.staleAfterHours ?? '?'} h); last attempt ${job.lastAttemptAt ?? 'never'}${job.lastAttemptOk === false ? ' (failed)' : ''}.`);
+    // GAP-FIX-R8: the warehouse job covers two steps; name each one that failed or never succeeded.
+    const steps = Array.isArray(job.lastRunDetail?.steps) ? job.lastRunDetail.steps : [];
+    for (const step of steps) {
+      if (!step || typeof step !== 'object' || (step.lastAttemptOk !== false && step.lastSuccessAt)) continue;
+      const reason = step.lastError ? `: ${plain(step.lastError, '')}` : '';
+      const name = typeof step.step === 'string' && /^[a-z_]{1,40}$/.test(step.step) ? step.step : 'step';
+      lines.push(`  - ${name}: last success ${plain(step.lastSuccessAt, 'never')}${step.lastAttemptOk === false ? `, last attempt failed${reason}` : ''}`);
+    }
   }
   for (const error of result.errors) lines.push(`- ${error}`);
   lines.push('', "A missed backup means no restore point for that day; a missed drift probe means production schema state is unknown; a missed retention sweep means a child's Mentor conversation may outlive its 90-day window.");
   lines.push("A missed account-deletion sweep means a due deletion, or a child paused for 90 days, is not erased on time; a missed family, social or learning retention sweep or insights prune means family data outlives the period families were promised.");
+  lines.push("A failed or missed warehouse_retention step means learner-keyed usage events outlive their 400-day window in the analytics warehouse, or an erased account's rows come back with a later sync (dataintel logs; GET /api/v1/intel/maintenance/status).");
   lines.push('Runbook: docs/operations/GOVERNANCE.md section 4.');
   if (runUrl) lines.push('', `Run: ${runUrl}`);
   return lines.join('\n');

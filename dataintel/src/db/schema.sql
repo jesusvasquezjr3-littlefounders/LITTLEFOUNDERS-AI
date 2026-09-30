@@ -188,13 +188,18 @@ CREATE TABLE IF NOT EXISTS experiment_exposures (
 
 -- One row per warehouse retention prune and table (services/warehouseRetention.ts),
 -- the warehouse twin of Vault's insights_maintenance_log: rows removed, the
--- window applied and when, so a prune that stopped running is visible.
+-- window applied and when, so a prune that stopped running is visible. The
+-- erasure re-apply (services/erasure.ts) writes one row per run as well, and a
+-- failed run of either writes ok = FALSE with its error. Core's watched job
+-- warehouse_retention reads it (services/warehouseMaintenance.ts, GAP-FIX-R8).
 CREATE TABLE IF NOT EXISTS warehouse_maintenance_log (
   job VARCHAR NOT NULL,
   table_name VARCHAR NOT NULL,
   retain_days INTEGER NOT NULL,
   removed BIGINT NOT NULL,
-  ran_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  ran_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  ok BOOLEAN DEFAULT TRUE,
+  error VARCHAR
 );
 
 -- SCHEMA EVOLUTION — must run BEFORE the indexes below (production incident
@@ -228,6 +233,8 @@ ALTER TABLE dim_lessons ADD COLUMN IF NOT EXISTS course_title_en VARCHAR;
 ALTER TABLE dim_lessons ADD COLUMN IF NOT EXISTS course_title_es VARCHAR;
 ALTER TABLE dim_lessons ADD COLUMN IF NOT EXISTS course_title_pt VARCHAR;
 ALTER TABLE dim_users_raw ADD COLUMN IF NOT EXISTS is_staff BOOLEAN DEFAULT FALSE;
+ALTER TABLE warehouse_maintenance_log ADD COLUMN IF NOT EXISTS ok BOOLEAN DEFAULT TRUE;
+ALTER TABLE warehouse_maintenance_log ADD COLUMN IF NOT EXISTS error VARCHAR;
 
 
 -- ═══ STAFF-FREE VIEWS ═════════════════════════════════════════════════════
