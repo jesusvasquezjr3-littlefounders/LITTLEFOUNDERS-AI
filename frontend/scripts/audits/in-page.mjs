@@ -388,7 +388,10 @@ export function installAudit() {
       if (declared === 'data' || declared === 'legal' || declared === 'brand') continue;
       const band = el.closest('[data-age-band]')?.dataset.ageBand ?? document.documentElement.dataset.ageBand ?? '';
       const site = !!el.closest('[data-shell="site"] main, [data-surface="site"]');
-      const push = (role, text) => { const r = el.getBoundingClientRect(); blocks.push({ role, text, words: words(text), sentences: sentences(text), top: r.top, young: band === '6-9', site }); };
+      // `top` is in page coordinates, as the reference measures it from the app's top: the first view is the first
+      // 740 px of the page (06 §3.1, "without scrolling"). A state reached by a press deep in the page is scrolled
+      // there, and a viewport `top` would count every block scrolled past above it as in the first view.
+      const push = (role, text) => { const r = el.getBoundingClientRect(); blocks.push({ role, text, words: words(text), sentences: sentences(text), top: r.top + window.scrollY, young: band === '6-9', site }); };
       if (el.dataset.copyRole) {
         const t = (el.innerText || '').replace(/\s+/g, ' ').trim();
         el.querySelectorAll('*').forEach((c) => seen.add(c));
