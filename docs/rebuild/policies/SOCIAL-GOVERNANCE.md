@@ -1,6 +1,6 @@
 # Social-layer governance: research foundation, no messaging, social-graph retention and standing guardrails
 
-Status: implemented and locally verified in S08.7 (25 September 2026), including real PostgreSQL 17 evidence of the database half. Not accepted: the Appendix J §2.1(4) reviewer, the Stage 3 Safety/Trust review, counsel's review of section 3, the owner decisions in section 8, the first quarterly recalibration by the Safety/Trust Lead, evidence against the real Supabase stack and production readings of the metric are open. See [the S08 sprint record](../sprints/S08-PROFILES-SOCIAL-AND-SHARING.md#s087-implementation-and-rationale).
+Status: implemented and locally verified in S08.7 (25 September 2026), including real PostgreSQL 17 evidence of the database half. Not accepted: the Appendix J §2.1(4) reviewer, the Stage 3 Safety/Trust review, counsel's review of section 3, the open owner proposals in section 8.2, the first quarterly recalibration by the Safety/Trust Lead, evidence against the real Supabase stack and production readings of the metric are open. See [the S08 sprint record](../sprints/S08-PROFILES-SOCIAL-AND-SHARING.md#s087-implementation-and-rationale).
 
 Binding sources: Product `10` E.7, E.10, E.11 and E.12 and component 5 of the Block E standard ("Standing Guardrails Against Future Regression"); Appendix I (research basis); Appendix J (metrics, Definition of Done, Part 3 pipeline, Part 4 phasing); owner decisions OD-3 (every minor safeguard follows age) and OD-10 (build to the conservative option; Legal validates before launch). `npm run guardrails:check` (part of `spec:check`) keeps this document, the database and the code in step.
 
@@ -21,7 +21,12 @@ The governance boundary in the Block E standard applies to everything written fr
 
 ### 1.2 Threshold Recalibration Log (Block E)
 
-Appendix J Part 1.4 extends the recalibration logs of Appendices C, F and H to this Block. Every Block E threshold is listed here with the date it was last reviewed and the date the next review is due. The cadence is quarterly for the first year, as Appendix J proposes for an actively moving regulatory landscape; after the first year it follows the Appendix B, D and G cadence. The owner of each review is the Safety/Trust Lead. `guardrails:check` fails once a "Next review due" date has passed, so a lapsed review turns the gate red instead of going unnoticed. Recording a review means updating the row, the date and the log in section 1.4.
+Appendix J Part 1.4 extends the recalibration logs of Appendices C, F and H to this Block. Every Block E threshold is listed here with the date it was last reviewed and the date the next review is due. The cadence is quarterly for the first year, as Appendix J proposes for an actively moving regulatory landscape; after the first year it follows the Appendix B, D and G cadence. The owner of each review is the Safety/Trust Lead (Appendix J Part 3 Stage 7). No due date may sit more than a quarter after its last review in the first year (counted from the first section 1.4 record), or more than a year after it. Recording a review means updating the row, the date and the log in section 1.4.
+
+Two triggers keep a review from lapsing silently, as for Blocks A, B, C and D:
+
+- **Per calendar quarter.** On 1 January, April, July and October, `.github/workflows/block-e-reviews-quarterly.yml` runs `agent/tools/block-e-reviews-quarterly.mjs` and opens (or comments on) the quarter's issue, labelled `block-e-review`, for the Safety/Trust Lead: every threshold with its value, where it is enforced, its last review and next due date, and every section 1.3 item to re-check. A malformed log still opens the issue and turns the run red.
+- **Per release.** `agent/tools/release-readiness.sh` runs `node agent/tools/block-e-review-cadence.mjs --strict`, which fails while any row of this table or of section 1.3 is past its due date, or when either table is malformed. The repo gates run the same tool without `--strict` (an overdue row warns there), and `guardrails:check` (part of `spec:check`) independently fails once a "Next review due" date in this table has passed.
 
 | Threshold | Current value | Enforced in | Basis | Last reviewed | Next review due |
 |---|---|---|---|---|---|
@@ -39,13 +44,15 @@ Appendix J Part 1.4 extends the recalibration logs of Appendices C, F and H to t
 
 Appendix I Part 3 names these as moving. Before any legal claim in E.8 to E.12 is treated as settled, the Safety/Trust Lead and counsel re-check each against current primary sources and record the result in section 1.4. This checkpoint did not re-check them: it has no counsel and runs no external research, so each item stays open.
 
-| Item | Why it matters here | Status on 2026-09-25 |
-|---|---|---|
-| FTC COPPA Rule amendments (final rule published 22 April 2025) | Separate consent for third-party disclosure; a written retention and minimization policy (this document is the social-graph half) | Open: counsel to confirm the compliance date and that section 3 meets the written-policy requirement |
-| UK Age Appropriate Design Code | "High privacy by default" for under-18s | Open: counsel to confirm applicability to the markets served |
-| California AB 2273 (Age-Appropriate Design Code Act) | Litigation over enforceability | Open: re-check the litigation status |
-| Maryland Kids Code | Litigation over enforceability | Open: re-check the litigation status |
-| Federal KOSA | Not law when Appendix I was written | Open: re-check whether enacted |
+| Item | Why it matters here | Status | Last re-checked | Next re-check due |
+|---|---|---|---|---|
+| FTC COPPA Rule amendments (final rule published 22 April 2025) | Separate consent for third-party disclosure; a written retention and minimization policy (this document is the social-graph half) | Open: counsel to confirm the compliance date and that section 3 meets the written-policy requirement | not yet | 2026-12-24 |
+| UK Age Appropriate Design Code | "High privacy by default" for under-18s | Open: counsel to confirm applicability to the markets served | not yet | 2026-12-24 |
+| California AB 2273 (Age-Appropriate Design Code Act) | Litigation over enforceability | Open: re-check the litigation status | not yet | 2026-12-24 |
+| Maryland Kids Code | Litigation over enforceability | Open: re-check the litigation status | not yet | 2026-12-24 |
+| Federal KOSA | Not law when Appendix I was written | Open: re-check whether enacted | not yet | 2026-12-24 |
+
+Each item is re-checked on the section 1.2 cadence (quarterly in the first year, then the Appendix B, D and G cadence), with the same two triggers: the quarterly `block-e-review` issue lists every item, and `block-e-review-cadence.mjs --strict` fails release readiness while a "Next re-check due" date has passed. A re-check updates the status, both dates and the section 1.4 log; "not yet" means no re-check has been recorded.
 
 ### 1.4 Recalibration record
 
@@ -64,8 +71,8 @@ Any future feature that lets one person send words, reactions or media to anothe
 1. It is classified **discoverability/safety** at Appendix J Stage 0, so the Stage 2 adversarial suite and the Stage 3 Safety/Trust review are mandatory before it ships. It is reviewed against the whole Block E standard, not as an unrelated new feature.
 2. It defaults **off** for the guardian tier (children) and the teen tier. The closed tier never gets it.
 3. For a child, it turns on only by an affirmative opt-in from a current verified guardian of that child, per child.
-4. For a teen, it turns on only by the teen's own affirmative opt-in, and the teen's linked guardian is notified. Until the owner decides otherwise (section 8), a teen with no linked guardian cannot turn it on, because the notice E.10 requires has nobody to go to.
-5. It is registered in [`messaging-features.json`](messaging-features.json) with those defaults and the dates of its Stage 0 classification and Stage 3 review, and every schema name and route it adds is listed in section 2.2. `guardrails:check` refuses an entry without them.
+4. For a teen, it turns on only by the teen's own affirmative opt-in, and the teen's linked guardian is notified. A teen with no linked guardian can never turn it on, because the notice E.10 requires has nobody to go to (owner answer S-08, `docs/rebuild/OWNER-REVIEW-ANSWERS.md`). The register pins it: every entry declares `activation.teenWithoutGuardian` as `never`.
+5. It is registered in [`messaging-features.json`](messaging-features.json) with those defaults (including rule 4's `teenWithoutGuardian: never`) and the dates of its Stage 0 classification and Stage 3 review, and every schema name and route it adds is listed in section 2.2. `guardrails:check` refuses an entry without them.
 
 ### 2.2 Reviewed names
 
@@ -131,7 +138,7 @@ Follows (`follows`), blocks (`blocks`), a child's connection requests (`social_c
 | `readNoticeDays` | 90 days | A safety notice the guardian read is deleted | The guardian has seen it |
 | `unreadNoticeDays` | 365 days | An unread safety notice is deleted | A guardian who never signs in should not keep one forever |
 
-**The audit trail is not swept.** `audit_logs` is append-only (a README non-negotiable, and the E.2 accountability record a guardian reads in the Family panel), so the sweep never deletes or edits an audit entry; it only adds its own (`social.connection_expired`, `social.retention_removed`, `social_retention.sweep_ran`). Social-graph audit entries therefore have no expiry today. Giving them one (the proposal is 400 days, matching the raw-event window in Product `10` H.2) would relax that invariant for a dated retention prune, so it is an owner decision (section 8), and `guardrails:check` fails if any migration deletes from or updates `audit_logs` before it is taken.
+**The audit trail is not swept.** `audit_logs` is append-only (a README non-negotiable, and the E.2 accountability record a guardian reads in the Family panel), so the sweep never deletes or edits an audit entry; it only adds its own (`social.connection_expired`, `social.retention_removed`, `social_retention.sweep_ran`). Social-graph audit entries therefore have no expiry today. Giving them one (the proposal is 400 days, matching the raw-event window in Product `10` H.2) would relax that invariant for a dated retention prune, so it is an owner decision (section 8.2; D-15 (b) keeps them until then), and `guardrails:check` fails if any migration deletes from or updates `audit_logs` before it is taken.
 
 Live follows and blocks have no expiry. They last while they are in force and go when either side removes them or either account is deleted (S08.5 erasure). An approved or accepted request stays while the edge it admitted may exist.
 
@@ -163,7 +170,7 @@ Deleting an account (S08.5, ACCOUNT-DELETION.md) removes every follow, block and
 
 ### 3.6 Counsel review (open)
 
-Counsel reads this section against the COPPA Rule as amended in 2025 (written retention policy; separate consent for third-party disclosure) before launch (OD-10), and confirms whether the Privacy Notice must state these windows. Until then the windows are an engineering proposal (section 8).
+Counsel reads this section against the COPPA Rule as amended in 2025 (written retention policy; separate consent for third-party disclosure) before launch (OD-10), and confirms whether the Privacy Notice must state these windows. The owner approved the windows (D-15 (a), section 8.1); counsel's confirmation stays open.
 
 ## 4. Cartoon-only avatars, no image upload (E.12)
 
@@ -214,11 +221,18 @@ These are the only places a file can be uploaded. None is a profile, avatar or c
 - Social-graph data follows section 3 and is never disclosed to a third party.
 - Each is changed only through a Stage 3 review recorded in the document that owns it.
 
-## 8. Proposals for the owner (conservative defaults implemented)
+## 8. Owner decisions and proposals (conservative defaults implemented)
 
-1. The retention windows in section 3.2 (30, 30, 90, 365, 365, 90 and 365 days). E.11 sets no numbers; these are engineering proposals pending the owner and counsel.
-2. Social-graph audit entries keep no expiry, because `audit_logs` is append-only. The proposal is to let them expire after 400 days (the H.2 raw-event window), which needs the owner to allow a dated retention prune of the audit log. Until then they are kept, and the policy and FAQ say nothing that promises otherwise.
-3. A teen with no linked guardian cannot turn on a future messaging-adjacent feature, because E.10's guardian notice has nobody to go to (section 2.1 rule 4).
-4. Unanswered requests expire after 30 days instead of waiting forever. The requester may ask again.
-5. A follow whose approving guardian is no longer a current verified guardian of the child is removed, even if another guardian is still linked. That guardian can approve the requester again.
-6. The first-year recalibration cadence is quarterly (Appendix J's proposal), owned by the Safety/Trust Lead.
+### 8.1 Decided
+
+Recorded in `docs/rebuild/OWNER-REVIEW-ANSWERS.md`:
+
+1. **D-15 (a):** the retention windows in section 3.2 (30, 30, 90, 365, 365, 90 and 365 days), enforced by the daily `social-retention.yml` sweep, are approved. E.11 sets no numbers; counsel's review of section 3 (section 3.6) stays open.
+2. **D-15 (a), same answer:** unanswered requests expire after 30 days (`pendingRequestDays`) instead of waiting forever. The requester may ask again.
+3. **D-16:** a follow whose approving guardian is no longer a current verified guardian of the child is removed, even if another guardian is still linked. That guardian can approve the requester again.
+4. **S-08:** a teen with no linked guardian cannot turn on a future messaging-adjacent feature, because E.10's guardian notice has nobody to go to (section 2.1 rule 4; `guardrails:check` requires `activation.teenWithoutGuardian: never` on every register entry).
+
+### 8.2 Proposals for the owner
+
+1. Social-graph audit entries keep no expiry, because `audit_logs` is append-only. The proposal is to let them expire after 400 days (the H.2 raw-event window), which needs the owner to allow a dated retention prune of the audit log. Until then they are kept (owner answer D-15 (b): kept indefinitely until the owner decides), and the policy and FAQ say nothing that promises otherwise.
+2. The first-year recalibration cadence is quarterly (Appendix J's proposal), owned by the Safety/Trust Lead.

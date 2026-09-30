@@ -71,6 +71,13 @@ jobs:
       - name: Block B thresholds agree across the log, Forge, Core and the migrations
         run: node agent/tools/check-block-b-thresholds.mjs
 
+      # Appendix J 1.4 / E.7 (gap-fix round 7): the Block E threshold log and
+      # regulatory watch list in docs/rebuild/policies/SOCIAL-GOVERNANCE.md
+      # are well-formed and within the quarterly first-year cadence; an overdue
+      # row warns here and fails release readiness.
+      - name: Block E recalibration log and regulatory watch list are dated
+        run: node agent/tools/block-e-review-cadence.mjs
+
       # S07.6 (D.7): no control a family sees may imply a guarantee the system
       # does not enforce. docs/operations/block-d-controls.json names each
       # control's enforcing SQL and its adversarial proof; the gate fails when

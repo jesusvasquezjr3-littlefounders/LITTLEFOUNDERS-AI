@@ -70,6 +70,10 @@ node agent/tools/identity-review-cadence.mjs --strict
 # with SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY from this environment (a read),
 # or from --gate-reviews=<export.json>; with neither it warns that it did not run.
 node agent/tools/check-block-b-thresholds.mjs --strict
+# Appendix J 1.4 / Part 3 Stage 7 / E.7 (gap-fix round 7): nor on an overdue
+# quarterly Block E threshold recalibration or regulatory watch-list re-check,
+# each due by docs/rebuild/policies/SOCIAL-GOVERNANCE.md §1.2 and §1.3.
+node agent/tools/block-e-review-cadence.mjs --strict
 # Appendix J 1.3 / DoD 2.1(2): the data-gateway half of the social release
 # gate. Every native-PostgreSQL social verifier (and the teen discoverable,
 # cooperative goals and account-erasure ones) against the full migration

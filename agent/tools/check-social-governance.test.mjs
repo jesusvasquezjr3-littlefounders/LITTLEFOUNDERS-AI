@@ -103,13 +103,18 @@ test('E.10: the register refuses a feature that is on by default, lacks the opt-
   const register = JSON.parse(readFileSync(resolve(repo, 'docs/rebuild/policies/messaging-features.json'), 'utf8'));
   const good = {
     id: 'family-hello', summary: 'a family-only hello', defaultOn: { guardian: false, teen: false, adult: false, closed: false },
-    activation: { guardian: 'guardian_opt_in_per_child', teen: 'teen_opt_in_with_guardian_notice', closed: 'never' },
+    activation: { guardian: 'guardian_opt_in_per_child', teen: 'teen_opt_in_with_guardian_notice', teenWithoutGuardian: 'never', closed: 'never' },
     stage0Classification: 'discoverability/safety', stage0Date: '2026-10-01', stage3ReviewDate: '2026-10-15', surfaces: ['text:tasks.title'],
   };
   const write = (feature) => [['docs/rebuild/policies/messaging-features.json', '"features": []', `"features": [${JSON.stringify(feature)}]`]];
   expectFailure(write({ ...good, defaultOn: { ...good.defaultOn, teen: true } }), /must default off/);
   expectFailure(write({ ...good, activation: { ...good.activation, guardian: 'teen_opt_in' } }), /guardian opt-in per child/);
   expectFailure(write({ ...good, stage3ReviewDate: undefined }), /stage3ReviewDate/);
+  // Owner answer S-08: an entry that lets a teen with no linked guardian turn it on, or says nothing, fails.
+  const { teenWithoutGuardian: _omitted, ...withoutS08 } = good.activation;
+  expectFailure(write({ ...good, activation: withoutS08 }), /teenWithoutGuardian "never".*S-08/);
+  expectFailure(write({ ...good, activation: { ...good.activation, teenWithoutGuardian: 'teen_opt_in' } }), /teenWithoutGuardian "never".*S-08/);
+  expectFailure([['docs/rebuild/policies/messaging-features.json', '"teenWithoutGuardian": "never", ', '']], /requiredShape\.activation must carry teenWithoutGuardian/);
   expectFailure(write({ ...good, stage0Classification: 'presentation-only' }), /discoverability\/safety/);
   expectFailure(write({ ...good, surfaces: ['table:hello_notes'] }), /surface table:hello_notes is not listed/);
   assert.deepEqual(register.features, []);
