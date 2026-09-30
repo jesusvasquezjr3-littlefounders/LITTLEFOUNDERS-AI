@@ -15,10 +15,19 @@ on:
       - 'coursegen/src/contentGates/**'
       - '.github/workflows/frontend-ci.yml'
 
+# A newer push to the same pull request supersedes the run in progress: the old run's result can no longer merge or
+# deploy anything, and a full run is about 4 runner-hours (12 audit shards plus the browser gates). Pushes to main are
+# never cancelled: frontend-cd deploys each green run of main.
+concurrency:
+  group: frontend-ci-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   ci:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Measured at 14m11s to 14m15s on three consecutive runs of 2026-09-30: a 15-minute budget failed a slightly
+    # slower runner with no product cause. The timeout only stops a hung job; every step still has to pass.
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: frontend
@@ -89,26 +98,34 @@ jobs:
   # legacy Tutor lab (/dev/tutor-lab). That lab and the legacy Tutor UI it
   # mounted were removed in S10L.1 (OD-2, Frontend Bible 02 rule 23); the
   # rebuilt Mentor stage is verified by scripts/verify-mentor-stage.mjs (the
-  # last step of this job, headless on the software GL path, Bible 08 §9) and
+  # browser-gates job below, headless on the software GL path, Bible 08 §9) and
   # the rebuilt screens by the Bible audits (the rebuild-audits job below).
   #
-  # Its own job because it takes ~20 minutes or more, and `needs: ci` so a push
-  # that fails type-check does not also pay for it.
-  browser-gates:
+  # Each is its own job, `needs: ci` so a push that fails type-check does not
+  # also pay for them. They run side by side: the Lesson Engine takes about 21
+  # minutes on the runner, and the Mentor-stage verifier renders the live stage
+  # in software GL on 2 vCPUs, split in two halves by family.
+  #
+  # Disk: every browser job first removes toolchains it never uses, samples the
+  # disk while its gate runs and prints where the space went (scripts/ci/). On
+  # 2026-09-30 a full disk ("Free space left: 0 MB") ended the Mentor-stage run
+  # and most audit shards; Chrome keeps its shared memory in files under /tmp
+  # here (--disable-dev-shm-usage, lesson-engine/browser.mjs).
+  lesson-engine:
     needs: ci
     runs-on: ubuntu-latest
-    # ~20 min for lesson-engine, ~8 for tutor-ui, ~10 for a11y on a developer
-    # machine — but the first run that ever reached this job measured
-    # lesson-engine alone at 27 min on the runner, which leaves the other two
-    # racing a 60-minute budget they were never measured against. A timeout
-    # kill reads as a product failure rather than a slow one, so the budget is
-    # generous on purpose: these gates are the backstop, not the bottleneck.
-    timeout-minutes: 90
+    # Measured at 21 minutes on the runner (2026-09-30); generous on purpose:
+    # a timeout kill reads as a product failure rather than a slow one.
+    timeout-minutes: 60
     defaults:
       run:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v4
+      - name: Room on the disk for Chrome (toolchains this job never uses)
+        run: bash scripts/ci/free-runner-disk.sh
+      - name: Sample the disk while the gate runs
+        run: nohup bash scripts/ci/disk-sampler.sh > "$RUNNER_TEMP/disk.log" 2>&1 &
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -131,22 +148,56 @@ jobs:
         env:
           CHROME_PATH: /usr/bin/google-chrome
         run: npm run verify:lesson-engine
-      # Bible 08 §7, §9, §10: the one Mentor stage in real Chrome, rendering
-      # the real models on the real Dioramas (software GL, no GPU) at every
-      # locale, mode and width, every state x character, the reduced-motion,
-      # low-power, no-WebGL and data-saver stills, the compact band on the real
-      # lesson route and the performance fallback. rebuild-audit-gate.mjs starts
-      # its own dev server; every Core request is answered by the synthetic
-      # Core, so nothing leaves the runner.
-      - name: Mentor stage — the one stage, every state, mode and width (08 §9)
+      - name: Where the disk went
+        if: always()
+        run: bash scripts/ci/disk-report.sh
+
+  # Bible 08 §7, §9, §10: the one Mentor stage in real Chrome, rendering the
+  # real models on the real Dioramas (software GL, no GPU) at every locale, mode
+  # and width, every state x character, the reduced-motion, low-power, no-WebGL
+  # and data-saver stills, the compact band on the real lesson route and the
+  # performance fallback. rebuild-audit-gate.mjs starts its own dev server;
+  # every Core request is answered by the synthetic Core, so nothing leaves the
+  # runner. Two halves by family (MENTOR_STAGE_FAMILIES), never a trimmed set:
+  # together they are every family the verifier has.
+  browser-gates:
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        families: ['stage,states,modes', 'lesson,performance']
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - name: Room on the disk for Chrome (toolchains this job never uses)
+        run: bash scripts/ci/free-runner-disk.sh
+      - name: Sample the disk while the gate runs
+        run: nohup bash scripts/ci/disk-sampler.sh > "$RUNNER_TEMP/disk.log" 2>&1 &
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      # The real characters, as in the lesson-engine job above.
+      - run: npm run scenes:fetch
+      - name: Mentor stage — ${{ matrix.families }} (08 §9)
         env:
           CHROME_PATH: /usr/bin/google-chrome
+          MENTOR_STAGE_FAMILIES: ${{ matrix.families }}
         run: node scripts/rebuild-audit-gate.mjs --suite mentor-stage --require-chrome
+      - name: Where the disk went
+        if: always()
+        run: bash scripts/ci/disk-report.sh
       - name: Upload the Mentor-stage evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: mentor-stage
+          name: mentor-stage-${{ strategy.job-index }}
           path: audit-results/mentor-stage/**/report.json
           if-no-files-found: warn
 
@@ -168,9 +219,20 @@ jobs:
   # it runs as 12 parallel round-robin shards of the state list (AUDIT_SHARD),
   # never a trimmed state set: the report job below merges the 12 reports and
   # fails unless every state was measured exactly once over the full matrix.
-  # A shared 4-vCPU runner is a loaded machine by the driver's own definition,
-  # so each shard runs 2 pages and gives a state up to 60 s to become ready
-  # (AUDIT_READY_MS; the measurement itself does not change).
+  # This repository's ubuntu-latest runner has 2 vCPUs, a loaded machine by the
+  # driver's own definition: each shard runs 2 pages (one per vCPU; a shard of
+  # 45 states then takes 13 to 18 minutes) and gives a state up to 60 s to
+  # become ready (AUDIT_READY_MS). A state that is not ready by then is measured
+  # once more from the start on a fresh page, logged as "[retry]"; one that
+  # fails twice fails the shard. The measurement itself never changes.
+  #
+  # Disk: on 2026-09-30 most shards ended with the runner warning "Free space
+  # left: 0 MB", each about a minute before a state "never became ready" or
+  # Chrome went away. Chrome keeps its shared memory in files under /tmp here
+  # (--disable-dev-shm-usage, lesson-engine/browser.mjs), and cannot draw a page
+  # once the disk is full. The job removes toolchains it never uses before it
+  # starts, samples the disk while the audit runs, and prints where the space
+  # went, so a full disk is named in the log instead of read as a broken state.
   rebuild-audits:
     needs: ci
     runs-on: ubuntu-latest
@@ -184,6 +246,10 @@ jobs:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v4
+      - name: Room on the disk for Chrome (toolchains this job never uses)
+        run: bash scripts/ci/free-runner-disk.sh
+      - name: Sample the disk while the audit runs
+        run: nohup bash scripts/ci/disk-sampler.sh > "$RUNNER_TEMP/disk.log" 2>&1 &
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -200,6 +266,9 @@ jobs:
           AUDIT_WORKERS: '2'
           AUDIT_READY_MS: '60000'
         run: node scripts/rebuild-audit-gate.mjs --suite audits --require-chrome
+      - name: Where the disk went
+        if: always()
+        run: bash scripts/ci/disk-report.sh
       - name: Upload the shard's audit reports
         if: always()
         uses: actions/upload-artifact@v4
