@@ -18,7 +18,7 @@ and learning_qa_events):
     a known Forge gate, and content_defect_escape_rate counts it; browser
     roles read nothing;
   - publish_v2_lesson_version reads its required gates from
-    forge_v2_manifest_gates, which lists the carried gates 2, 3, 4, 17 and 18.
+    forge_v2_manifest_gates, which lists the carried gates 2, 3, 4, 17, 18 and 19.
 
 Configuration: LF_PG_PSQL, LF_PG_PORT, LF_PG_USER, LF_PG_KEEP, LF_PG_REPORT
 (see verify-teen-discoverable-postgres.py).
@@ -178,13 +178,13 @@ try:
     check('defect escapes are recorded only through the audited recorder with a known gate; the rate counts them; browsers read nothing')
 
     gates = run("SELECT gate_id FROM forge_v2_manifest_gates ORDER BY gate_id;").splitlines()
-    for gate in ['forge.gate.02.age-vocabulary', 'forge.gate.03.currency-facts', 'forge.gate.04.arithmetic', 'forge.gate.17.reward-mechanics', 'forge.gate.18.wellbeing-language']:
+    for gate in ['forge.gate.02.age-vocabulary', 'forge.gate.03.currency-facts', 'forge.gate.04.arithmetic', 'forge.gate.17.reward-mechanics', 'forge.gate.18.wellbeing-language', 'forge.gate.19.age-register']:
         assert gate in gates, gates
-    assert len(gates) == 13, gates
+    assert len(gates) == 14, gates
     body = run("SELECT pg_get_functiondef('public.publish_v2_lesson_version(uuid, text, text, jsonb, jsonb, jsonb)'::regprocedure);")
     assert 'forge_v2_manifest_gates' in body and 'gate_number IN (1, 11' not in body, 'publish function still lists gates inline'
     rejected("SET ROLE authenticated; SELECT * FROM forge_v2_manifest_gates;", 'permission denied')
-    check('publish_v2_lesson_version requires the forge_v2_manifest_gates rows, which include gates 2, 3, 4, 17 and 18')
+    check('publish_v2_lesson_version requires the forge_v2_manifest_gates rows, which include gates 2, 3, 4, 17, 18 and 19')
 finally:
     if os.environ.get('LF_PG_KEEP') != '1':
         sql(f'DROP DATABASE {database} WITH (FORCE)')
