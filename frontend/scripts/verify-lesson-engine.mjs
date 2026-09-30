@@ -122,16 +122,16 @@ const CONTROLS =
 const STATE =
   '(() => ({' +
   ' head: (document.body.innerText || "").slice(0, 60),' +
-  // A character the layer could not draw falls back to the 2D actor and says so.
+  // A character the layer could not draw falls back to a still of the real model and says so.
   ' flat: [...document.querySelectorAll("[data-render]")].filter((n) => n.dataset.render !== "3d").length,' +
   /*
-   * THE EMPTY BOX, which is the defect the 2D stand-in exists to prevent.
+   * THE EMPTY BOX, which is the defect the still stand-in exists to prevent.
    * A `3d` slot is empty ON PURPOSE — that character is painted on the shared
-   * WebGL canvas. A `2d` slot must contain the flat actor; if it does not, the
+   * WebGL canvas. A `still` slot must contain the real model's still; if it does not, the
    * child is looking at a hole where a character should be, which is exactly
    * what shipped once before the fallback was fixed.
    */
-  ' hollow: [...document.querySelectorAll("[data-render=\\"2d\\"]")].filter((n) => n.childElementCount === 0).length,' +
+  ' hollow: [...document.querySelectorAll("[data-render=\\"still\\"]")].filter((n) => n.childElementCount === 0).length,' +
   ' webgl: [...document.querySelectorAll("canvas")].filter((c) => c.width > 200).length,' +
   ' verdict: Boolean(document.querySelector("[role=status]")),' +
   ' results: /Lesson complete|Good effort/i.test(document.body.innerText || ""),' +
@@ -387,7 +387,7 @@ async function main() {
       process.stdout.write(clean ? '.' : 'X')
     }
 
-    // A 2D character is a GLOBAL failure, counted once. Folding it into the
+    // A still-fallback character is a GLOBAL failure, counted once. Folding it into the
     // per-row filter marked all 57 fixtures as failing over one bad frame,
     // which buries the one row that actually has something to say.
     const failures = rows.filter((r) => !r.reachable || !r.starts || r.errors.length || r.failedRequests.length)
@@ -468,7 +468,7 @@ async function main() {
     const broken = failures.length + (hollowTotal > 0 ? 1 : 0) + (STRICT ? unanswered.length : 0)
     if (hollowTotal > 0) {
       console.log(
-        `\nFAIL — a character slot rendered NOTHING ${hollowTotal} time(s): not 3D, and not the 2D stand-in either.`,
+        `\nFAIL — a character slot rendered NOTHING ${hollowTotal} time(s): not 3D, and not the real-model still either.`,
       )
       console.log('   That is the hole the fallback exists to prevent, and it has shipped once before.')
       // Say where, for the same reason the 2D list does: `failures` is filtered

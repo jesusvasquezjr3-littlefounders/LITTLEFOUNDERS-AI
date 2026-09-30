@@ -50,6 +50,13 @@
 // services/warehouseAlerts.ts). Any undelivered trigger fails the watch and is
 // named in the notice, so this issue is the alert's escalation channel. A reply
 // without the number (the warehouse could not be read) is refused.
+//
+// GAP-FIX-R8 (H.4; F.2 under OD-20; owner answer D-08): badge_link_retirement,
+// the daily purge of the images behind expired or revoked legacy badge links
+// (badge-link-retirement.yml). Core judges it from its own
+// `badge_links.images_swept` trail; a sweep page that could not purge every
+// image is a failed attempt, so a sweep that keeps failing goes stale like one
+// that stopped. Watched until the dated removal of that workflow.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -58,6 +65,7 @@ import { fileURLToPath } from 'node:url';
 export const WATCHED_JOBS = [
   'vault_backup', 'pulse_backup', 'vault_drift', 'tutor_retention',
   'account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune',
+  'badge_link_retirement',
 ];
 export const ISSUE_TITLE = 'Operations watchdog: a scheduled job has gone quiet';
 
@@ -144,6 +152,7 @@ export function buildNotification(result, runUrl = '') {
   for (const error of result.errors) lines.push(`- ${error}`);
   lines.push('', "A missed backup means no restore point for that day; a missed drift probe means production schema state is unknown; a missed retention sweep means a child's Mentor conversation may outlive its 90-day window.");
   lines.push("A missed account-deletion sweep means a due deletion, or a child paused for 90 days, is not erased on time; a missed family, social or learning retention sweep or insights prune means family data outlives the period families were promised.");
+  lines.push("A missed or failing legacy badge-image purge means the picture of a child's achievement behind an expired or revoked link still resolves at its storage URL.");
   lines.push('Runbook: docs/operations/GOVERNANCE.md section 4.');
   if (runUrl) lines.push('', `Run: ${runUrl}`);
   return lines.join('\n');

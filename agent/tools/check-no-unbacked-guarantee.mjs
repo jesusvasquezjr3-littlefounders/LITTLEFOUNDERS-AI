@@ -18,7 +18,9 @@
 //   - a copy key the registry names is missing in any locale;
 //   - a retired claim (a promise the product stopped backing, such as "every
 //     reward waits for your approval" once D.17 pre-approves small ones)
-//     reappears anywhere in its namespace, in any locale;
+//     reappears anywhere in its namespace, in any locale, or the capability
+//     named as the reason it was retired (its `because` evidence) is gone
+//     (gap-fix round 8: "only a Tutor creates an under-13 account");
 //   - two public strings that share one statement (the Families page and the
 //     FAQ answer on under-13 usage data) stop carrying it in any locale;
 //   - any package depends on a payment, card-issuing or bank-linking SDK
@@ -151,6 +153,19 @@ export function checkControls({ registry, readFile, migrations, rebuiltSources, 
   // goal" that no flow ever produced) may not come back in any string of the
   // namespace, in any locale.
   for (const retired of registry.retiredClaims ?? []) {
+    // Gap-fix round 8 (fix8identi0): a claim retired because the product does
+    // something (a flagged under-13 guest saves an account of their own) names
+    // that evidence. When it is gone, the product changed under the copy: the
+    // retirement and the public answer must be reviewed together.
+    for (const evidence of retired.because ?? []) {
+      const label = evidence.fn ? `public.${evidence.fn}` : evidence.file;
+      let found = null;
+      if (evidence.fn) found = latestFunctionBody(migrations, evidence.fn)?.body ?? null;
+      else if (evidence.file) found = readFile(evidence.file);
+      if (found === null || !found.includes(evidence.contains)) {
+        failures.push(`retired claim (${retired.namespace}): ${label} no longer contains "${evidence.contains}", the capability that retired it; review the copy and the retirement together: ${retired.why}`);
+      }
+    }
     for (const locale of LOCALES) {
       const strings = flatStrings(locales(locale, retired.namespace));
       for (const phrase of retired.phrases?.[locale] ?? []) {

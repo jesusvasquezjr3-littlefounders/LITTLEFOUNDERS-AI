@@ -3,6 +3,33 @@ import { resolve } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { render } from '@testing-library/react'
 import { CharacterLayerProvider, CharacterSlot } from '../CharacterLayer'
+import manifest from '@/rebuild/assets/manifest.json'
+import { StaticThemeProvider } from '@/theme/useTheme'
+import { findSlotStill, poseForSlot } from '../slotStill'
+
+interface Row { id: string; path: string; slot: string; type: string; character?: string; sourceModel?: string; background?: string; poseId?: string; modes: string }
+const ROWS = manifest as readonly Row[]
+
+/** The still inside a slot is a manifest-registered, transparent render of THAT character's real model. */
+function expectManifestStill(slot: Element | null, character: string, mode: 'light' | 'dark') {
+  expect(slot).not.toBeNull()
+  expect(slot?.getAttribute('data-render')).toBe('still')
+  // Never an inline SVG character: the legacy look-alikes drew one.
+  expect(slot?.querySelector('svg')).toBeNull()
+  const img = slot?.querySelector('img')
+  expect(img).not.toBeNull()
+  expect(img?.getAttribute('alt')).toBe('')
+  const row = ROWS.find((entry) => entry.path === img?.getAttribute('src'))
+  expect(row, `src ${img?.getAttribute('src')} is not in the asset manifest`).toBeDefined()
+  expect(row?.id).toBe(img?.getAttribute('data-still-id'))
+  expect(row?.type).toBe('render')
+  expect(row?.slot).toBe('mentor.avatar')
+  expect(row?.background).toBe('transparent')
+  expect(row?.character).toBe(character)
+  expect(row?.sourceModel).toBe(`/scenes/${character}.glb`)
+  expect([mode, 'both']).toContain(row?.modes)
+  expect(slot?.getAttribute('data-still-pose')).toBe(row?.poseId)
+}
 
 /*
  * THE DEFECT THIS PINS SHIPPED TO PRODUCTION AND KILLED THE LESSON ENGINE.
@@ -56,10 +83,28 @@ describe('CharacterLayerProvider', () => {
     expect(overlay?.contains(button)).toBe(false)
   })
 
-  it('a slot outside a provider still renders a character', () => {
-    const { container } = render(<CharacterSlot character="zara" />)
-    expect(container.querySelector('[data-character="zara"]')).not.toBeNull()
-    expect(container.querySelector('[data-render="2d"]')).not.toBeNull()
+  it('a slot outside a provider renders a manifest still of the real model, never an SVG look-alike', () => {
+    const { container } = render(<CharacterSlot character="zara" emotion="happy" action="wave" />)
+    expectManifestStill(container.querySelector('[data-character="zara"]'), 'zara', 'light')
+  })
+
+  it('picks the still for the colour mode', () => {
+    const { container } = render(
+      <StaticThemeProvider isDark>
+        <CharacterSlot character="rho" crop="bust" />
+      </StaticThemeProvider>,
+    )
+    const slot = container.querySelector('[data-character="rho"]')
+    expectManifestStill(slot, 'rho', 'dark')
+    expect(slot?.getAttribute('data-crop')).toBe('bust')
+  })
+
+  it('keeps the slot box and stays hidden from assistive technology', () => {
+    const { container } = render(<CharacterSlot character="liruf" className="h-24 w-24" />)
+    const slot = container.querySelector('[data-character="liruf"]')
+    expect(slot?.className).toBe('h-24 w-24')
+    expect(slot?.getAttribute('aria-hidden')).toBe('true')
+    expect(slot?.querySelector('img')?.className).toContain('object-contain')
   })
 
   /*
@@ -88,9 +133,36 @@ describe('CharacterLayerProvider', () => {
     )
 
     const slot = container.querySelector('[data-character="dina"]')
-    expect(slot).not.toBeNull()
-    expect(slot?.getAttribute('data-render')).toBe('2d')
+    expectManifestStill(slot, 'dina', 'light')
     // The thing that actually matters: something is IN the well.
     expect(slot?.childElementCount).toBeGreaterThan(0)
+  })
+})
+
+describe('slot stills', () => {
+  it('map emotion and action to the catalogue pose that expresses them', () => {
+    expect(poseForSlot()).toBe('ambient.idle')
+    expect(poseForSlot('neutral', 'idle')).toBe('ambient.idle')
+    expect(poseForSlot('happy', 'idle')).toBe('ambient.idle.happy')
+    expect(poseForSlot('happy', 'wave')).toBe('greet.hello')
+    expect(poseForSlot('thinking', 'think')).toBe('think.ponder')
+    // No catalogue pose holds this pair: the emotion at rest.
+    expect(poseForSlot('proud', 'shake')).toBe('marketing.proud')
+  })
+
+  it('fall back to the idle avatar render when no transparent render holds the pose, and say which pose they show', () => {
+    const still = findSlotStill({ character: 'zara', emotion: 'proud', action: 'celebrate', theme: 'light' })
+    expect(still?.requestedPoseId).toBe('feedback.correct.proud')
+    expect(still?.id).toBe('mentor.zara.avatar.light')
+    expect(still?.poseId).toBe('ambient.idle')
+  })
+
+  it('never resolve one character to the render of another character', () => {
+    for (const character of ['rho', 'zara', 'liruf', 'dina'] as const) {
+      for (const theme of ['light', 'dark'] as const) {
+        const still = findSlotStill({ character, theme })
+        expect(still?.id.startsWith(`mentor.${character}.`)).toBe(true)
+      }
+    }
   })
 })

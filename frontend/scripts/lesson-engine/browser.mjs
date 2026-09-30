@@ -205,8 +205,8 @@ export async function openPage(browserUrl, { width, height, dark, newWindow = fa
    *
    * A developer machine is not the machine this product runs on, and it is not
    * the machine CI runs on either — a GitHub runner is 2 vCPU with no GPU, and
-   * a child's laptop is worse. The 3D characters carry a 2D stand-in for
-   * exactly that, so "did a character fall back to flat?" is a question whose
+   * a child's laptop is worse. The 3D characters carry a still stand-in for
+   * exactly that, so "did a character fall back to its still?" is a question whose
    * answer depends on how fast the machine is, and a gate tuned on a 16-thread
    * workstation cannot see it.
    *
