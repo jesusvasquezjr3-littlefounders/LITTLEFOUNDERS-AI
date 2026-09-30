@@ -79,7 +79,7 @@ Section 3 of the backup document: decrypt, `pg_restore --list`, restore into a s
    RAILWAY_TOKEN=… RAILWAY_SSH_KEY_PATH=… npm --prefix database run db:railway:migrate -- --dry-run            # must list exactly plan-NNNN.md
    RAILWAY_TOKEN=… RAILWAY_SSH_KEY_PATH=… npm --prefix database run db:railway:migrate -- --confirm-production
    ```
-   Tick each file on `plan-NNNN.md` as its receipt appears. The Railway CLI does not return remote exit codes: read the output.
+   Tick each file on `plan-NNNN.md` as its receipt appears. The Railway CLI does not return remote exit codes: read the output. Then restart `rest` and confirm PostgREST serves the migrated schema (a read of `data_practices`, which 0186 creates, with the service key as Core sends it) before anything is deployed on it; `cutover.yml` (`step=migrate`) does both. Every migration also sends `NOTIFY pgrst, 'reload schema'`, but the production-copy rehearsal of 30 September 2026 saw PostgREST still answer `PGRST205` for a migrated table after all of them, so the restart is part of the step, not a fallback.
 4. `npm run seed:kc` in `backend/` (the KC graph the OD-24 credit maps onto). It writes through PostgREST, so inside the freeze it runs with the window's token as its service key (`cutover.yml`, `step=seed-kc`, does this when production is frozen).
 
 **Decision point B:** a migration failed. Its own transaction rolled back. If only expand migrations have been applied, the legacy platform can be reopened on this schema (roll back the service deploys, lift the freeze). Once any contract migration is in, the legacy code cannot run on the schema: fix forward within the window, or restore (backup document, section 5).
