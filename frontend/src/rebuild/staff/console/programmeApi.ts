@@ -314,21 +314,26 @@ export const isRetentionSweep = (value: unknown): value is RetentionSweep => isR
 export const OPS_JOBS_PATH = '/admin/ops/job-status';
 /**
  * GAP-FIX-R6: the family-data jobs (account deletion, family, social and learning retention, the insights prune) are watched too.
+ * GAP-FIX-R8: so is the analytics warehouse's 400-day prune and erasure re-apply (`warehouse_retention`, read from dataintel).
  * GAP-FIX-R8 (F.2 under OD-20, D-08): so is the daily legacy badge-image purge.
  */
 export const OPS_JOB_NAMES = [
   'vault_backup', 'pulse_backup', 'vault_drift', 'learning_retention', 'insights_prune', 'account_deletions', 'family_retention', 'social_retention',
+  'warehouse_retention',
   'badge_link_retirement',
 ] as const;
 export type OpsJobName = (typeof OPS_JOB_NAMES)[number];
 export interface OpsJob {
   job: OpsJobName; lastRunAt: string | null; hoursSinceLastRun: number | null; lastAttemptAt: string | null;
   lastAttemptOk: boolean | null; staleAfterHours: number; stale: boolean;
+  /** GAP-FIX-R8: Core could not read this job's record (the warehouse was down); always stale. */
+  unreadable?: true;
 }
 const isNullableTime = (value: unknown): value is string | null => value === null || typeof value === 'string';
 const isOpsJob = (value: unknown): value is OpsJob => isRecord(value) && (OPS_JOB_NAMES as readonly unknown[]).includes(value.job)
   && isNullableTime(value.lastRunAt) && (value.hoursSinceLastRun === null || isNumber(value.hoursSinceLastRun)) && isNullableTime(value.lastAttemptAt)
-  && (value.lastAttemptOk === null || typeof value.lastAttemptOk === 'boolean') && isNumber(value.staleAfterHours) && typeof value.stale === 'boolean';
+  && (value.lastAttemptOk === null || typeof value.lastAttemptOk === 'boolean') && isNumber(value.staleAfterHours) && typeof value.stale === 'boolean'
+  && (value.unreadable === undefined || value.unreadable === true);
 /**
  * H.3 (GAP-FIX-R6): warehouse alert triggers in the window that notified
  * nobody (Core's services/warehouseAlerts.ts). `undelivered: null` is a

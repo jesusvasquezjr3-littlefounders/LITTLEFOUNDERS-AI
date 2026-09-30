@@ -1594,7 +1594,6 @@
         "coachingDelivery": "Tutores que podiam receber uma dica, e quem recebeu e abriu.",
         "reflections": "Decisões de Tutores com a pergunta de reflexão antes.",
         "bridge": "Aprendizes elegíveis que participaram de cada momento de dinheiro.",
-        "bridgePaired": "Revise junto com Lições que viram tarefas reais, de Qualidade do Mentor.",
         "research": "Cobertura e completude dos dados de pesquisa de longo prazo.",
         "socialSafety": "Níveis, revisões e consentimento adolescente.",
         "socialGovernance": "Linhas fora do prazo, superfícies de mensagens e envios.",
@@ -1618,7 +1617,8 @@
         "scoreRefused": "Seu acesso não permite avaliar.",
         "scoreGone": "Este motivo saiu da amostra. Atualize.",
         "familiesIntro": "Só contagens, nunca uma pessoa.",
-        "group": "Grupo"
+        "group": "Grupo",
+        "bridgePaired": "Revise junto com Lições que viram tarefas reais, de Qualidade do Mentor."
       },
       "option": {
         "yes": "Sim",
@@ -1732,10 +1732,6 @@
         "minAge": "Idade mínima",
         "engaged": "Participaram",
         "engagementRate": "Participação",
-        "bridgeConversionRate": "Lições que viram tarefas reais",
-        "bridgePromptsOffered": "Sugestões de tarefas reais oferecidas",
-        "bridgePromptsConverted": "Feitas em 7 dias",
-        "bridgeConversionWindow": "Janela em dias",
         "windowMonths": "Meses medidos",
         "minTenureMonths": "Tempo mínimo de conta, meses",
         "longTenure": "Conta antiga",
@@ -1870,7 +1866,11 @@
         "v_later_date": "Mais tarde",
         "v_not_suitable": "Não adequado",
         "v_talk_first": "Conversar antes",
-        "v_practice_more": "Praticar mais"
+        "v_practice_more": "Praticar mais",
+        "bridgeConversionRate": "Lições que viram tarefas reais",
+        "bridgePromptsOffered": "Sugestões de tarefas reais oferecidas",
+        "bridgePromptsConverted": "Feitas em 7 dias",
+        "bridgeConversionWindow": "Janela em dias"
       },
       "action": {
         "actionable": "Acionável",
@@ -1920,6 +1920,7 @@
         "lastAttempt": "Última tentativa",
         "alertsUndelivered": "{n} alertas recentes não chegaram a ninguém. Verifique os canais de alerta.",
         "alertsUnread": "Não foi possível ler os alertas de dados.",
+        "jobUnread": "Não foi possível ler o status de {job}.",
         "deletionsStuck": "Exclusões paradas há mais de {hours} horas: {n}. Verifique a etapa com falha."
       },
       "option": {
@@ -1940,6 +1941,7 @@
         "job_account_deletions": "Exclusão de contas",
         "job_family_retention": "Limpeza de dados da família",
         "job_social_retention": "Limpeza de dados de amizades",
+        "job_warehouse_retention": "Limpeza de dados de análise",
         "job_badge_link_retirement": "Imagens de links antigos de insígnias"
       },
       "action": {

@@ -371,7 +371,8 @@ export function OpsJobsCard({ api }: { api: StaffApi }) {
                   { id: `${job.job}-last`, label: t.body.lastRun, value: format.dateTime(job.lastRunAt, copy.programme.body.never) },
                   { id: `${job.job}-attempt`, label: t.body.lastAttempt, value: format.dateTime(job.lastAttemptAt, copy.programme.body.never) },
                 ]} />
-                {job.stale ? <InlineNotice tone="error">{fill(t.body.jobStaleHelp, { job: name, n: format.number(job.staleAfterHours) })}</InlineNotice> : null}
+                {job.unreadable ? <InlineNotice tone="error">{fill(t.body.jobUnread, { job: name })}</InlineNotice>
+                  : job.stale ? <InlineNotice tone="error">{fill(t.body.jobStaleHelp, { job: name, n: format.number(job.staleAfterHours) })}</InlineNotice> : null}
                 {job.lastAttemptOk === false ? <InlineNotice tone="error">{t.body.lastAttemptFailed}</InlineNotice> : null}
               </li>;
             })}

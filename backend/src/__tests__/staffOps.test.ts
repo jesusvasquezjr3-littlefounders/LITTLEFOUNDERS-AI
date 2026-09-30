@@ -3,7 +3,8 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 import { getConfig } from '../config.js';
 import { buildIdentityReport, type IdentityCounts, type OnboardingDiscoveryCounts } from '../services/identityMetrics.js';
-import { judgeOpsJob, OPS_JOB_STALE_HOURS, runSucceeded } from '../services/opsJobs.js';
+import { judgeOpsJob, judgeWarehouseRetention, OPS_JOB_STALE_HOURS, runSucceeded } from '../services/opsJobs.js';
+import { parseWarehouseMaintenance } from '../services/warehouseMaintenance.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
 /*
@@ -69,7 +70,16 @@ interface World {
   stepFailures?: { created_at: string; detail: Record<string, unknown> }[];
   /** H.3: dataintel's undelivered alert triggers (GET /api/v1/intel/alerts/undelivered). */
   undelivered?: { status: number; body: unknown };
+  /** H.4 (GAP-FIX-R8): dataintel's maintenance status (GET /api/v1/intel/maintenance/status); fresh and ok by default. */
+  maintenance?: { status: number; body: unknown };
 }
+
+/** One warehouse maintenance step as dataintel reports it. */
+const step = (name: string, lastSuccessAt: string | null, lastAttemptOk: boolean | null = true, lastError: string | null = null) => ({
+  step: name, lastSuccessAt, lastSuccessRemoved: lastSuccessAt === null ? null : 0,
+  lastAttemptAt: lastAttemptOk === null ? lastSuccessAt : new Date().toISOString(), lastAttemptOk, lastError,
+});
+const maintenanceBody = (steps: unknown[]) => ({ data: { steps }, error: null });
 
 function stub(world: World = {}) {
   const calls = world.calls ?? [];
@@ -96,6 +106,11 @@ function stub(world: World = {}) {
     }
     if (url.includes('/rest/v1/account_deletion_requests')) {
       return Promise.resolve(jsonResponse(world.processing?.status ?? 200, (world.processing?.ids ?? []).map((id) => ({ id }))));
+    }
+    if (url.includes('/api/v1/intel/maintenance/status')) {
+      const fresh = new Date(Date.now() - 600_000).toISOString();
+      return Promise.resolve(jsonResponse(world.maintenance?.status ?? 200, world.maintenance?.body
+        ?? maintenanceBody([step('warehouse_retention', fresh), step('erasure_reapply', fresh)])));
     }
     if (url.includes('/api/v1/intel/alerts/undelivered')) {
       return Promise.resolve(jsonResponse(world.undelivered?.status ?? 200, world.undelivered?.body ?? { data: { hours: 36, count: 0, alerts: [] }, error: null }));
@@ -294,6 +309,7 @@ describe('H.4 — the operations heartbeat and watchdog', () => {
     expect((res.body.data.jobs as { job: string }[]).map((j) => j.job)).toEqual([
       'vault_backup', 'pulse_backup', 'vault_drift', 'learning_retention', 'insights_prune', 'account_deletions', 'family_retention', 'social_retention',
       'badge_link_retirement',
+      'warehouse_retention',
     ]);
     stub({ audit: { 'tutor.retention.swept': [{ created_at: hoursAgo(5), detail: {} }] } });
     const fresh = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
@@ -335,6 +351,74 @@ describe('H.4 — the operations heartbeat and watchdog', () => {
       expect(down.status).toBe(200);
       expect(down.body.data.alerts).toEqual({ undelivered: null, windowHours: 36, alerts: [] });
     }
+  });
+
+  it('GAP-FIX-R8: judges the warehouse retention prune and erasure re-apply from dataintel', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ calls });
+    const res = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+    expect(res.status).toBe(200);
+    const job = (res.body.data.jobs as { job: string }[]).find((entry) => entry.job === 'warehouse_retention');
+    expect(job).toMatchObject({ stale: false, staleAfterHours: 36, lastAttemptOk: true });
+    expect(job).not.toHaveProperty('unreadable');
+    const read = calls.find((call) => call.url.includes('/api/v1/intel/maintenance/status'))!;
+    expect(read.method).toBe('GET');
+  });
+
+  it('GAP-FIX-R8: a failed prune is stale at once, even with a success inside the window', async () => {
+    const recent = hoursAgo(2);
+    stub({ maintenance: { status: 200, body: maintenanceBody([
+      step('warehouse_retention', recent, false, 'Catalog Error: Table with name experiment_exposures does not exist'),
+      step('erasure_reapply', recent),
+    ]) } });
+    const res = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+    const job = (res.body.data.jobs as { job: string; lastRunDetail: { steps: { step: string; lastError: string | null }[] } }[])
+      .find((entry) => entry.job === 'warehouse_retention')!;
+    expect(job).toMatchObject({ stale: true, lastAttemptOk: false, lastRunAt: recent });
+    expect(job.lastRunDetail.steps[0]).toMatchObject({ step: 'warehouse_retention', lastError: 'Catalog Error: Table with name experiment_exposures does not exist' });
+    expect(res.body.data.anyStale).toBe(true);
+  });
+
+  it('GAP-FIX-R8: a prune or re-apply with no success inside 36 h, or none ever, is stale', async () => {
+    for (const steps of [
+      [step('warehouse_retention', hoursAgo(37), null), step('erasure_reapply', hoursAgo(1))],
+      [step('warehouse_retention', hoursAgo(1)), step('erasure_reapply', hoursAgo(40), null)],
+      [step('warehouse_retention', null, null), step('erasure_reapply', null, null)],
+    ]) {
+      stub({ maintenance: { status: 200, body: maintenanceBody(steps) } });
+      const res = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+      expect(res.status).toBe(200);
+      expect((res.body.data.jobs as { job: string; stale: boolean }[]).find((entry) => entry.job === 'warehouse_retention')?.stale).toBe(true);
+      expect(res.body.data.anyStale).toBe(true);
+    }
+  });
+
+  it('GAP-FIX-R8: an unreadable warehouse is an unreadable, stale job, never a 502 for every job and never healthy', async () => {
+    for (const maintenance of [
+      { status: 502, body: { data: null, error: { code: 'DATA_UNAVAILABLE' } } },
+      { status: 200, body: { data: { steps: [step('warehouse_retention', hoursAgo(1))] }, error: null } },
+      { status: 200, body: { data: { steps: [{ step: 'warehouse_retention', lastSuccessAt: 'yesterday' }] }, error: null } },
+    ]) {
+      stub({ maintenance });
+      const res = await request(createApp()).get('/api/v1/internal/ops/job-status').set('x-internal-api-key', key());
+      expect(res.status).toBe(200);
+      expect((res.body.data.jobs as { job: string }[]).find((entry) => entry.job === 'warehouse_retention'))
+        .toMatchObject({ stale: true, unreadable: true, lastRunAt: null, lastAttemptOk: null });
+      expect(res.body.data.anyStale).toBe(true);
+    }
+  });
+
+  it('GAP-FIX-R8: the verdict binds on the older step and parses only a complete reply', () => {
+    const now = new Date('2026-09-29T12:00:00Z');
+    const steps = parseWarehouseMaintenance(maintenanceBody([
+      { step: 'erasure_reapply', lastSuccessAt: '2026-09-29T11:00:00Z', lastSuccessRemoved: 1, lastAttemptAt: '2026-09-29T11:00:00Z', lastAttemptOk: true, lastError: null },
+      { step: 'warehouse_retention', lastSuccessAt: '2026-09-28T02:00:00Z', lastSuccessRemoved: 0, lastAttemptAt: '2026-09-28T02:00:00Z', lastAttemptOk: true, lastError: null },
+    ]));
+    expect(steps?.map((entry) => entry.step)).toEqual(['warehouse_retention', 'erasure_reapply']);
+    expect(judgeWarehouseRetention(steps, now)).toMatchObject({ lastRunAt: '2026-09-28T02:00:00Z', hoursSinceLastRun: 34, stale: false, lastAttemptOk: true });
+    expect(judgeWarehouseRetention(steps, new Date('2026-09-29T15:00:00Z')).stale).toBe(true);
+    expect(judgeWarehouseRetention(null, now)).toMatchObject({ stale: true, unreadable: true });
+    expect(parseWarehouseMaintenance({ data: null, error: { code: 'X' } })).toBeNull();
   });
 
   it('GAP-FIX-R6: accepts a heartbeat from the learning retention sweep and the insights prune, and none for a trail job', async () => {

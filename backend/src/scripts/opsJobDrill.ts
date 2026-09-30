@@ -42,6 +42,9 @@ import { RETENTION_SWEEP_AUDIT_ACTION, RETENTION_STALE_HOURS } from '../services
  * day ago and never completed).
  * `alerts_undelivered` (H.3, GAP-FIX-R6: a warehouse alert trigger whose
  * delivery failed after its retries, read from dataintel).
+ * `warehouse_retention` (H.4, GAP-FIX-R8, one of OPS_JOBS): the warehouse's
+ * 400-day prune last succeeded outside its window and its latest attempt
+ * failed, read from dataintel's maintenance status.
  */
 
 const TOOL = resolve(dirname(fileURLToPath(import.meta.url)), '../../../agent/tools/ops-job-watch.mjs');
@@ -71,6 +74,18 @@ const undelivered = (count: number) => ({
     hours: 36, count,
     alerts: count === 0 ? [] : [{ alertId: '00000000-0000-4000-8000-0000000000a1', name: 'dau drop', channel: 'webhook',
       triggeredAt: '2026-09-27T08:00:00.000Z', status: 'failed', error: 'HTTP 502', attempts: 3 }],
+  },
+  error: null,
+});
+/** GAP-FIX-R8: dataintel GET /maintenance/status; the prune step is the one simulated failing when `failing`. */
+const maintenance = (failing: boolean, staleAt: string, freshAt: string) => ({
+  data: {
+    steps: [
+      failing
+        ? { step: 'warehouse_retention', lastSuccessAt: staleAt, lastSuccessRemoved: 0, lastAttemptAt: freshAt, lastAttemptOk: false, lastError: 'Catalog Error: Table with name experiment_exposures does not exist' }
+        : { step: 'warehouse_retention', lastSuccessAt: freshAt, lastSuccessRemoved: 0, lastAttemptAt: freshAt, lastAttemptOk: true, lastError: null },
+      { step: 'erasure_reapply', lastSuccessAt: freshAt, lastSuccessRemoved: 0, lastAttemptAt: freshAt, lastAttemptOk: true, lastError: null },
+    ],
   },
   error: null,
 });
@@ -115,6 +130,8 @@ export async function runOpsJobDrill(job: DrillTarget, now: Date = new Date()): 
     if (url.includes('/account_deletion_requests')) return json(job === 'account_deletion_failures' ? [{ id: DRILL_REQUEST }] : []);
     // H.3: a warehouse alert whose delivery failed after its retries.
     if (url.includes('/api/v1/intel/alerts/undelivered')) return json(undelivered(job === 'alerts_undelivered' ? 1 : 0));
+    // H.4 (GAP-FIX-R8): the warehouse prune failed and has not succeeded inside its window.
+    if (url.includes('/api/v1/intel/maintenance/status')) return json(maintenance(job === 'warehouse_retention', staleAt, freshAt));
     const action = /action=eq\.([^&]+)/.exec(url)?.[1] ?? '';
     if (action === DELETION_STEP_FAILED_AUDIT_ACTION) {
       return json(job === 'account_deletion_failures' ? [{ detail: { request_id: DRILL_REQUEST, step: 'depot', reason: 'unreachable' } }] : []);

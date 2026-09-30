@@ -16,8 +16,8 @@ const deletions = (stuck = 0) => ({ stuck, afterHours: 24 });
 const alerts = (undelivered = 0, list = []) => ({ undelivered, windowHours: 36, alerts: list });
 const extras = { tutorRetention: retention(), contentRetroChecks: checks(), accessReviews: reviews(), accountDeletionFailures: deletions(), alerts: alerts() };
 // GAP-FIX-R6: the family-data jobs, fresh; the tests below that build their own jobs list keep them.
-// GAP-FIX-R8: the legacy badge-image purge (F.2 under OD-20) is one of them.
-const FAMILY_JOBS = ['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune', 'badge_link_retirement'];
+// GAP-FIX-R8: warehouse_retention (the warehouse's 400-day prune and erasure re-apply) and the legacy badge-image purge (F.2 under OD-20) are two of them.
+const FAMILY_JOBS = ['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune', 'warehouse_retention', 'badge_link_retirement'];
 const familyJobs = () => FAMILY_JOBS.map((name) => job(name, false));
 const healthy = { data: { jobs: [job('vault_backup', false), job('pulse_backup', false), job('vault_drift', false), ...familyJobs()], anyStale: false, ...extras }, error: null };
 
@@ -162,6 +162,38 @@ test('E.6 (GAP-FIX-R6): an erasure stalled past a day fails the watch; a reply w
   for (const stuck of [-1, 0.5, '1', null]) {
     assert.deepEqual(evaluateOpsStatus({ data: { ...healthy.data, accountDeletionFailures: { stuck, afterHours: 24 } } }).errors, ["account_deletion_failures: the reply carries no 'stuck' count"]);
   }
+});
+
+test('GAP-FIX-R8: a failed warehouse retention prune fails the watch and the notice names the step and its error', () => {
+  const failed = job('warehouse_retention', true, {
+    hoursSinceLastRun: 40, lastAttemptAt: '2026-09-29T10:00:00.000Z', lastAttemptOk: false,
+    lastRunDetail: { steps: [
+      { step: 'warehouse_retention', lastSuccessAt: '2026-09-27T18:00:00.000Z', removed: 0, lastAttemptOk: false, lastError: 'Catalog Error: Table with name experiment_exposures does not exist' },
+      { step: 'erasure_reapply', lastSuccessAt: '2026-09-29T10:00:00.000Z', removed: 0, lastAttemptOk: true, lastError: null },
+    ] },
+  });
+  const body = { data: { ...healthy.data, jobs: [...healthy.data.jobs.filter((entry) => entry.job !== 'warehouse_retention'), failed], anyStale: true } };
+  const result = run(body);
+  assert.equal(result.code, 1);
+  assert.match(result.notice, /\*\*warehouse_retention\*\*: last successful run 40 h ago \(window 36 h\); last attempt 2026-09-29T10:00:00.000Z \(failed\)/);
+  assert.match(result.notice, /  - warehouse_retention: last success 2026-09-27T18:00:00.000Z, last attempt failed: Catalog Error: Table with name experiment exposures does not exist/);
+  assert.doesNotMatch(result.notice, /  - erasure_reapply/);
+  assert.match(result.notice, /outlive their 400-day window in the analytics warehouse/);
+});
+
+test('GAP-FIX-R8: a warehouse Core could not read is refused, never counted healthy', () => {
+  const unreadable = { job: 'warehouse_retention', stale: true, unreadable: true, lastRunAt: null, hoursSinceLastRun: null, staleAfterHours: 36, lastAttemptAt: null, lastAttemptOk: null, lastRunDetail: null };
+  const body = { data: { ...healthy.data, jobs: [...healthy.data.jobs.filter((entry) => entry.job !== 'warehouse_retention'), unreadable], anyStale: true } };
+  const verdict = evaluateOpsStatus(body);
+  assert.equal(verdict.ok, false);
+  assert.deepEqual(verdict.stale, []);
+  assert.deepEqual(verdict.errors, ["warehouse_retention: Core could not read this job's record; refusing to report a health check that did not happen"]);
+  const result = run(body);
+  assert.equal(result.code, 1);
+  assert.match(result.notice, /warehouse_retention: Core could not read/);
+  // A reply that lost the job entirely is refused too.
+  const missing = evaluateOpsStatus({ data: { ...healthy.data, jobs: healthy.data.jobs.filter((entry) => entry.job !== 'warehouse_retention') } });
+  assert.deepEqual(missing.errors, ['warehouse_retention: missing from the reply']);
 });
 
 test('GAP-FIX-R8 (F.2 under OD-20): a legacy badge-image purge that keeps failing fails the watch and is named; a reply without it is refused', () => {

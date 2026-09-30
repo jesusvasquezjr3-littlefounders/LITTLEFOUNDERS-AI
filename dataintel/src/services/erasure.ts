@@ -1,4 +1,5 @@
 import { withConnection, type DuckConnection } from '../db/duckdb.js';
+import { ALL_TABLES, ERASURE_REAPPLY_JOB, ERASURE_TOMBSTONE_DAYS, logMaintenanceFailure, logMaintenanceRun } from './warehouseMaintenance.js';
 
 /*
  * Product 10 E.6 — the warehouse step of an account erasure.
@@ -15,6 +16,13 @@ import { withConnection, type DuckConnection } from '../db/duckdb.js';
  * each sync, closing the one window a deletion alone cannot: a sync batch
  * read from Vault moments before the account was erased and written moments
  * after.
+ *
+ * GAP-FIX-R8 (H.4): every re-apply writes one `erasure_reapply` row to
+ * warehouse_maintenance_log, in its own transaction when it succeeds and after
+ * the rollback when it fails, and Core's `warehouse_retention` watched job
+ * reads it (services/warehouseMaintenance.ts). A re-apply that fails or stops
+ * running therefore fails ops-job-watch instead of letting an erased child's
+ * rows come back unnoticed.
  */
 
 /*
@@ -79,27 +87,33 @@ export async function eraseSubject(userId: string, anonIds: string[]): Promise<R
 }
 
 /** Re-applies every erasure (after a sync) and forgets tombstones older than 30 days. Returns rows removed. */
-export async function applyErasureTombstones(): Promise<number> {
-  return withConnection(async (connection) => {
-    await connection.exec('BEGIN TRANSACTION');
-    try {
-      let removed = 0;
-      for (const { table, byUser, byAnon, textUser } of TABLES) {
-        const parts: string[] = [];
-        if (byUser && textUser) parts.push("lower(user_id) IN (SELECT subject_id::VARCHAR FROM erased_subjects WHERE kind = 'user')");
-        else if (byUser) parts.push("user_id IN (SELECT subject_id FROM erased_subjects WHERE kind = 'user')");
-        if (byAnon) parts.push("anon_id IN (SELECT subject_id FROM erased_subjects WHERE kind = 'anon')");
-        const clause = parts.join(' OR ');
-        const rows = await connection.query<{ n: number | bigint }>(`SELECT count(*) AS n FROM ${table} WHERE ${clause}`);
-        removed += Number(rows[0]?.n ?? 0);
-        await connection.exec(`DELETE FROM ${table} WHERE ${clause}`);
+export async function applyErasureTombstones(now: Date = new Date()): Promise<number> {
+  try {
+    return await withConnection(async (connection) => {
+      await connection.exec('BEGIN TRANSACTION');
+      try {
+        let removed = 0;
+        for (const { table, byUser, byAnon, textUser } of TABLES) {
+          const parts: string[] = [];
+          if (byUser && textUser) parts.push("lower(user_id) IN (SELECT subject_id::VARCHAR FROM erased_subjects WHERE kind = 'user')");
+          else if (byUser) parts.push("user_id IN (SELECT subject_id FROM erased_subjects WHERE kind = 'user')");
+          if (byAnon) parts.push("anon_id IN (SELECT subject_id FROM erased_subjects WHERE kind = 'anon')");
+          const clause = parts.join(' OR ');
+          const rows = await connection.query<{ n: number | bigint }>(`SELECT count(*) AS n FROM ${table} WHERE ${clause}`);
+          removed += Number(rows[0]?.n ?? 0);
+          await connection.exec(`DELETE FROM ${table} WHERE ${clause}`);
+        }
+        await connection.exec(`DELETE FROM erased_subjects WHERE erased_at < CURRENT_TIMESTAMP - INTERVAL ${ERASURE_TOMBSTONE_DAYS} DAY`);
+        await logMaintenanceRun(connection, { job: ERASURE_REAPPLY_JOB, table: ALL_TABLES, retainDays: ERASURE_TOMBSTONE_DAYS, removed, ranAt: now });
+        await connection.exec('COMMIT');
+        return removed;
+      } catch (error) {
+        await connection.exec('ROLLBACK').catch(() => undefined);
+        throw error;
       }
-      await connection.exec("DELETE FROM erased_subjects WHERE erased_at < CURRENT_TIMESTAMP - INTERVAL 30 DAY");
-      await connection.exec('COMMIT');
-      return removed;
-    } catch (error) {
-      await connection.exec('ROLLBACK').catch(() => undefined);
-      throw error;
-    }
-  });
+    });
+  } catch (error) {
+    await logMaintenanceFailure(ERASURE_REAPPLY_JOB, ERASURE_TOMBSTONE_DAYS, error, now);
+    throw error;
+  }
 }

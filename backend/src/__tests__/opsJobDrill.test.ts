@@ -70,6 +70,16 @@ describe('the simulated job-failure drill', () => {
     expect(result.passed).toBe(true);
   }, 30_000);
 
+  it('H.4 (GAP-FIX-R8): a failed warehouse retention prune notifies a human and the notice names the failing step', async () => {
+    const result = await runOpsJobDrill('warehouse_retention', new Date('2026-09-27T12:00:00Z'));
+    expect(result.stale).toBe(true);
+    expect(result.watcherExit).toBe(1);
+    expect(result.notice).toContain('**warehouse_retention**: last successful run 48 h ago (window 36 h)');
+    expect(result.notice).toContain('  - warehouse_retention: last success 2026-09-25T12:00:00.000Z, last attempt failed');
+    expect(result.notice).not.toContain('  - erasure_reapply');
+    expect(result.passed).toBe(true);
+  }, 30_000);
+
   it('F.2 under OD-20 (GAP-FIX-R8, owner answer D-08): a badge sweep that runs but keeps failing to purge goes stale and notifies a human', async () => {
     const result = await runOpsJobDrill('badge_link_retirement', new Date('2026-09-27T12:00:00Z'));
     expect(result.stale).toBe(true);
@@ -81,7 +91,7 @@ describe('the simulated job-failure drill', () => {
   }, 30_000);
 
   it('the drill covers the three Appendix O 1.3 jobs, the family-data jobs and every other watched condition', () => {
-    expect(OPS_JOBS).toEqual(expect.arrayContaining(['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune', 'badge_link_retirement']));
+    expect(OPS_JOBS).toEqual(expect.arrayContaining(['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune', 'warehouse_retention', 'badge_link_retirement']));
     expect(DRILL_TARGETS).toEqual(expect.arrayContaining([...OPS_JOBS, 'tutor_retention', 'content_retro_checks', 'access_reviews', 'account_deletion_failures', 'alerts_undelivered']));
   });
 });

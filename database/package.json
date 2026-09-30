@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "engines": { "node": "24.x" },
   "scripts": {
-    "test": "node scripts/check-migrations.mjs && node scripts/check-migration-phase.mjs && node scripts/check-family-lifecycle.mjs && node scripts/check-learning-event-practices.mjs && node --test scripts/check-migration-phase.test.mjs scripts/check-learning-event-practices.test.mjs scripts/gate-auto-apply.test.mjs scripts/publish-course.test.mjs scripts/check-family-lifecycle.test.mjs migration-od9/od9.test.mjs migration-od9/backup-crypto.test.mjs scripts/social-db-verify.test.mjs scripts/family-db-verify.test.mjs scripts/identity-db-verify.test.mjs scripts/staff-analytics-db-verify.test.mjs scripts/learning-db-verify.test.mjs && node scripts/railway-migrate.test.mjs",
+    "test": "node scripts/check-migrations.mjs && node scripts/check-migration-phase.mjs && node scripts/check-family-lifecycle.mjs && node scripts/check-learning-event-practices.mjs && node --test scripts/check-migration-phase.test.mjs scripts/check-learning-event-practices.test.mjs scripts/gate-auto-apply.test.mjs scripts/publish-course.test.mjs scripts/check-family-lifecycle.test.mjs migration-od9/od9.test.mjs migration-od9/cutover-freeze.test.mjs migration-od9/backup-crypto.test.mjs scripts/social-db-verify.test.mjs scripts/family-db-verify.test.mjs scripts/identity-db-verify.test.mjs scripts/staff-analytics-db-verify.test.mjs scripts/learning-db-verify.test.mjs && node scripts/railway-migrate.test.mjs",
     "db:sync": "bash scripts/sync-supabase.sh",
     "db:up": "bash scripts/local-stack.sh up",
     "db:down": "bash scripts/local-stack.sh down",

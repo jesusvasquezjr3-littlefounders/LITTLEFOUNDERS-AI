@@ -1594,7 +1594,6 @@
         "coachingDelivery": "Tutors eligible for a tip, and who got and opened one.",
         "reflections": "Tutor decisions where the reflective prompt came first.",
         "bridge": "Eligible learners who engaged with each money moment.",
-        "bridgePaired": "Review together with Lessons turned into real tasks, from Mentor quality.",
         "research": "Coverage and completeness of long-term research data.",
         "socialSafety": "Tiers and teen consent.",
         "socialGovernance": "Rows past their window, messaging surfaces and uploads.",
@@ -1618,7 +1617,8 @@
         "scoreRefused": "Your access does not allow scoring.",
         "scoreGone": "This reason left the sample. Refresh.",
         "familiesIntro": "Counts only, never a person.",
-        "group": "Group"
+        "group": "Group",
+        "bridgePaired": "Review together with Lessons turned into real tasks, from Mentor quality."
       },
       "option": {
         "yes": "Yes",
@@ -1732,10 +1732,6 @@
         "minAge": "Minimum age",
         "engaged": "Engaged",
         "engagementRate": "Engagement",
-        "bridgeConversionRate": "Lessons turned into real tasks",
-        "bridgePromptsOffered": "Real-task prompts offered",
-        "bridgePromptsConverted": "Done within 7 days",
-        "bridgeConversionWindow": "Window in days",
         "windowMonths": "Months measured",
         "minTenureMonths": "Minimum tenure, months",
         "longTenure": "Long tenure",
@@ -1870,7 +1866,11 @@
         "v_later_date": "Later",
         "v_not_suitable": "Not suitable",
         "v_talk_first": "Talk first",
-        "v_practice_more": "Practice more"
+        "v_practice_more": "Practice more",
+        "bridgeConversionRate": "Lessons turned into real tasks",
+        "bridgePromptsOffered": "Real-task prompts offered",
+        "bridgePromptsConverted": "Done within 7 days",
+        "bridgeConversionWindow": "Window in days"
       },
       "action": {
         "actionable": "Actionable",
@@ -1920,6 +1920,7 @@
         "lastAttempt": "Last attempt",
         "alertsUndelivered": "{n} recent alerts reached nobody. Check the alert channels.",
         "alertsUnread": "The data alerts could not be read.",
+        "jobUnread": "The status of {job} could not be read.",
         "deletionsStuck": "Deletions stalled over {hours} hours: {n}. Check the failed step."
       },
       "option": {
@@ -1940,6 +1941,7 @@
         "job_account_deletions": "Account deletions",
         "job_family_retention": "Family data cleanup",
         "job_social_retention": "Friends data cleanup",
+        "job_warehouse_retention": "Analytics data cleanup",
         "job_badge_link_retirement": "Old badge link images"
       },
       "action": {

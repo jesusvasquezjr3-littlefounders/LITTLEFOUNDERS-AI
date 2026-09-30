@@ -6,6 +6,7 @@ import { ACCESS_REVIEW_CADENCE_DAYS, getAccessReviewCounts } from './adminData.j
 import { ACCOUNT_DELETION_SWEEP_AUDIT_ACTION } from '../routes/account.js';
 import { BADGE_IMAGE_SWEEP_AUDIT_ACTION } from '../routes/badgePublic.js';
 import { getUndeliveredAlerts, type UndeliveredAlertsStatus } from './warehouseAlerts.js';
+import { getWarehouseMaintenance, type WarehouseMaintenanceStepStatus } from './warehouseMaintenance.js';
 
 /*
  * H.4 and Appendix O 1.3 / 2.3: the watchdog-plus-notification pattern the
@@ -86,21 +87,42 @@ import { getUndeliveredAlerts, type UndeliveredAlertsStatus } from './warehouseA
  * (no later completion) is `accountDeletionFailures.stuck`, a notify condition.
  */
 
+/*
+ * GAP-FIX-R8 (H.4, Appendix O 1.2 and 1.3; the Block H non-negotiables): the
+ * analytics warehouse's 400-day retention prune and its erasure re-apply keep
+ * promises made to families on every sync, and they are watched as one job, `warehouse_retention`, read from dataintel
+ * (services/warehouseMaintenance.ts), never through a heartbeat a job could
+ * fake. It is stale when either step has no successful run inside its window
+ * OR its last attempt failed (both run every sync, so a failed attempt is a
+ * promise not kept right now), and when the warehouse cannot be read: that
+ * case also carries `unreadable: true`, which the watcher refuses outright.
+ */
+
 /** Jobs that record themselves through the heartbeat route (scripts/ops-heartbeat.sh). */
 export const HEARTBEAT_JOBS = ['vault_backup', 'pulse_backup', 'vault_drift', 'learning_retention', 'insights_prune'] as const;
 export type HeartbeatJob = (typeof HEARTBEAT_JOBS)[number];
 /** Jobs whose own durable trail is read directly. */
 export const TRAIL_JOBS = ['account_deletions', 'family_retention', 'social_retention', 'badge_link_retirement'] as const;
 export type TrailJob = (typeof TRAIL_JOBS)[number];
-export const OPS_JOBS = [...HEARTBEAT_JOBS, ...TRAIL_JOBS] as const;
+/** Jobs read from the analytics warehouse's own maintenance log (dataintel). */
+export const WAREHOUSE_JOBS = ['warehouse_retention'] as const;
+export type WarehouseJob = (typeof WAREHOUSE_JOBS)[number];
+export const OPS_JOBS = [...HEARTBEAT_JOBS, ...TRAIL_JOBS, ...WAREHOUSE_JOBS] as const;
 export type OpsJob = (typeof OPS_JOBS)[number];
 
 /**
- * Every watched job runs once a day (family retention 03:15, account deletion
- * 03:45, legacy badge-image purge 03:30, social retention 04:15, learning retention 04:30, vault-drift and the
- * insights prune 07:30, vault-backup 08:00, pulse-backup 08:30 UTC). 36 hours
- * is a day plus half a day of slack for an ordinary late or retried run,
- * without hiding a genuinely missed day.
+ * Every scheduled watched job runs once a day (family retention 03:15, legacy
+ * badge-image purge 03:30, account deletion 03:45, social retention 04:15,
+ * learning retention 04:30, vault-drift and the insights prune 07:30,
+ * vault-backup 08:00, pulse-backup 08:30 UTC). 36 hours is a day plus half a
+ * day of slack for an ordinary late or retried run, without hiding a
+ * genuinely missed day.
+ *
+ * warehouse_retention runs after every warehouse sync (every 5 minutes by
+ * default). It keeps the same 36 hours (one calibration value,
+ * h4.ops_job_stale_hours in docs/operations/STAFF-OPS-RECALIBRATION-LOG.md):
+ * a FAILED run is stale at once (judgeWarehouseRetention), so the window only
+ * decides how long a sync worker that stopped altogether goes unnamed.
  */
 export const OPS_JOB_STALE_HOURS: Record<OpsJob, number> = {
   vault_backup: 36,
@@ -111,6 +133,7 @@ export const OPS_JOB_STALE_HOURS: Record<OpsJob, number> = {
   account_deletions: 36,
   family_retention: 36,
   social_retention: 36,
+  warehouse_retention: 36,
   badge_link_retirement: 36,
 };
 
@@ -151,6 +174,8 @@ export interface OpsJobStatus {
   /** No successful run within the window, or none ever: the same verdict (a promise not currently kept). */
   stale: boolean;
   lastRunDetail: Record<string, unknown> | null;
+  /** GAP-FIX-R8: the job's record could not be read (the warehouse was down). Always stale; the watcher refuses it. */
+  unreadable?: true;
 }
 
 const Rows = z.array(z.object({ created_at: z.string(), detail: z.record(z.string(), z.unknown()).nullable() }));
@@ -163,6 +188,46 @@ const FamilyRuns = z.array(z.object({
   evidence_cleared: z.number().int().nullable(),
   evidence_failed: z.number().int().nullable(),
 }));
+
+/**
+ * Pure (GAP-FIX-R8): the verdict for `warehouse_retention` from dataintel's
+ * maintenance steps. The job's last successful run is the OLDER of the steps'
+ * last successes (the promise kept least recently binds), its last attempt the
+ * older of their last attempts, and `lastAttemptOk` is false when either
+ * step's last attempt failed. Null steps (the warehouse was not read) are an
+ * unreadable, stale job.
+ */
+export function judgeWarehouseRetention(steps: WarehouseMaintenanceStepStatus[] | null, now: Date): OpsJobStatus {
+  const staleAfterHours = OPS_JOB_STALE_HOURS.warehouse_retention;
+  if (steps === null || steps.length === 0) {
+    return {
+      job: 'warehouse_retention', lastRunAt: null, hoursSinceLastRun: null, lastAttemptAt: null, lastAttemptOk: null,
+      staleAfterHours, stale: true, lastRunDetail: null, unreadable: true,
+    };
+  }
+  const oldest = (values: (string | null)[]): string | null =>
+    values.some((value) => value === null) ? null : values.reduce((a, b) => (Date.parse(a!) <= Date.parse(b!) ? a : b));
+  const lastRunAt = oldest(steps.map((step) => step.lastSuccessAt));
+  const lastAttemptAt = oldest(steps.map((step) => step.lastAttemptAt));
+  const lastAttemptOk = steps.some((step) => step.lastAttemptOk === false) ? false
+    : steps.every((step) => step.lastAttemptOk === true) ? true : null;
+  const hours = lastRunAt === null ? null : (now.getTime() - Date.parse(lastRunAt)) / 3_600_000;
+  return {
+    job: 'warehouse_retention',
+    lastRunAt,
+    hoursSinceLastRun: hours,
+    lastAttemptAt,
+    lastAttemptOk,
+    staleAfterHours,
+    stale: hours === null || hours > staleAfterHours || lastAttemptOk === false,
+    lastRunDetail: {
+      steps: steps.map((step) => ({
+        step: step.step, lastSuccessAt: step.lastSuccessAt, removed: step.lastSuccessRemoved,
+        lastAttemptOk: step.lastAttemptOk, lastError: step.lastError,
+      })),
+    },
+  };
+}
 
 /** Pure: whether one trail row records a successful run of that job. */
 export function runSucceeded(job: OpsJob, detail: Record<string, unknown> | null): boolean {
@@ -246,8 +311,12 @@ export interface OpsStatus {
 const auditPath = (action: string, extra = '') =>
   `/audit_logs?action=eq.${encodeURIComponent(action)}${extra}&select=created_at,detail&order=created_at.desc&limit=1`;
 
+/** The jobs Core reads from its own database (audit_logs and family_retention_runs). */
+const DATABASE_JOBS = [...HEARTBEAT_JOBS, ...TRAIL_JOBS] as const;
+type DatabaseJob = (typeof DATABASE_JOBS)[number];
+
 /** The latest successful and latest attempted row of one job, or null when a read failed. */
-async function readTrail(job: OpsJob): Promise<{ ok: TrailRow | undefined; attempt: TrailRow | undefined } | null> {
+async function readTrail(job: DatabaseJob): Promise<{ ok: TrailRow | undefined; attempt: TrailRow | undefined } | null> {
   if (job === 'family_retention') {
     const parsed = FamilyRuns.safeParse(await serviceRest<unknown>('/family_retention_runs?select=ran_at,removed,evidence_cleared,evidence_failed&order=ran_at.desc&limit=1'));
     if (!parsed.success) return null;
@@ -306,10 +375,15 @@ export async function getOpsJobStatus(now: Date = new Date()): Promise<OpsStatus
   const accessCounts = getAccessReviewCounts(ACCESS_REVIEW_CADENCE_DAYS);
   const stuckDeletions = getStuckAccountDeletions(now);
   const undeliveredAlerts = getUndeliveredAlerts();
-  const trails = await Promise.all(OPS_JOBS.map((job) => readTrail(job)));
+  const warehouseMaintenance = getWarehouseMaintenance();
+  const trails = await Promise.all(DATABASE_JOBS.map((job) => readTrail(job)));
   if (trails.some((trail) => trail === null)) return null;
-  const jobs = OPS_JOBS.map((job, index) => judgeOpsJob(job, trails[index]!.ok, trails[index]!.attempt, now));
-  const [overdueChecks, retentionStatus, access, stuck, alerts] = await Promise.all([overdue, retention, accessCounts, stuckDeletions, undeliveredAlerts]);
+  const jobs = DATABASE_JOBS.map((job, index) => judgeOpsJob(job, trails[index]!.ok, trails[index]!.attempt, now));
+  const [overdueChecks, retentionStatus, access, stuck, alerts, warehouseSteps] = await Promise.all([
+    overdue, retention, accessCounts, stuckDeletions, undeliveredAlerts, warehouseMaintenance,
+  ]);
+  // GAP-FIX-R8: an unreadable warehouse is an unreadable, stale job, never a 502 for every job.
+  jobs.push(judgeWarehouseRetention(warehouseSteps, now));
   if (overdueChecks === null || retentionStatus === null || access === null || stuck === null) return null;
   const tutorRetention = retentionAsJob(retentionStatus);
   return {

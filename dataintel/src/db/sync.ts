@@ -679,9 +679,12 @@ export async function syncAll(): Promise<{
 
   // E.6: a batch read from Vault just before an account was erased must not
   // bring its rows back (services/erasure.ts).
+  // A failure is recorded in warehouse_maintenance_log (ok = FALSE) by the
+  // step itself and fails Core's `warehouse_retention` watched job (H.4).
   try {
     tables.erasure_reapplied = await applyErasureTombstones();
-  } catch {
+  } catch (err) {
+    console.error('[dataintel] erasure re-apply failed:', err);
     tables.erasure_reapplied = -1;
   }
 
@@ -692,7 +695,8 @@ export async function syncAll(): Promise<{
   try {
     const removed = await applyWarehouseRetention();
     tables.retention_pruned = Object.values(removed).reduce((sum, n) => sum + n, 0);
-  } catch {
+  } catch (err) {
+    console.error('[dataintel] warehouse retention prune failed:', err);
     tables.retention_pruned = -1;
   }
 

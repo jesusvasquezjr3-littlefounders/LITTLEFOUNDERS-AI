@@ -271,11 +271,23 @@ describe('Reports → Support tools (manage_support)', () => {
     const { api } = fakeApi();
     render(<Frame><StaffReports api={api} initialView="support" /></Frame>);
     const jobs = await waitFor(() => { const el = document.querySelector<HTMLElement>('[data-tool="ops-jobs"]'); if (!el) throw new Error('no card'); return el; });
-    for (const name of ['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune', 'badge_link_retirement'] as const) {
+    for (const name of ['account_deletions', 'family_retention', 'social_retention', 'learning_retention', 'insights_prune', 'warehouse_retention', 'badge_link_retirement'] as const) {
       await within(jobs).findByText(s.option[`job_${name}`]);
       expect(jobs.querySelector(`[data-job="${name}"]`)!.getAttribute('data-stale')).toBe('false');
     }
     expect(within(jobs).getByText(s.body.deletionsStuck.replace('{hours}', '24').replace('{n}', '1'))).toBeTruthy();
+  });
+
+  it('names a warehouse job Core could not read, instead of a quiet "not running" (H.4, GAP-FIX-R8)', async () => {
+    const status = programme.routes['/admin/ops/job-status'] as { jobs: { job: string }[] };
+    const unreadable = { job: 'warehouse_retention', lastRunAt: null, hoursSinceLastRun: null, lastAttemptAt: null, lastAttemptOk: null, staleAfterHours: 36, stale: true, lastRunDetail: null, unreadable: true };
+    const { api } = fakeApi((path) => (path === '/admin/ops/job-status'
+      ? { ok: true, data: { ...status, jobs: [...status.jobs.filter((job) => job.job !== 'warehouse_retention'), unreadable] } } : undefined));
+    render(<Frame><StaffReports api={api} initialView="support" /></Frame>);
+    const item = await waitFor(() => { const el = document.querySelector<HTMLElement>('[data-tool="ops-jobs"] [data-job="warehouse_retention"]'); if (!el) throw new Error('no warehouse item'); return el; });
+    expect(item.getAttribute('data-stale')).toBe('true');
+    expect(item).toHaveTextContent(s.body.jobUnread.replace('{job}', s.option.job_warehouse_retention));
+    expect(item).not.toHaveTextContent(s.body.jobStaleHelp.split('{n}')[1]!.trim());
   });
 
   it('a reply without the stalled-erasure count is an error state (E.6, GAP-FIX-R6)', async () => {
