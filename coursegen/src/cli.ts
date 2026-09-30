@@ -17,7 +17,7 @@ import { runGeneration } from './pipeline/run.js';
 import { REGISTERS, isRegister, type Register } from './pipeline/register.js';
 import { LESSON_LOCALES, type LessonLocale } from './contract/core/types.js';
 import { spendCeilingRefusal } from './pipeline/spendGuard.js';
-import { GateSubmissionLog, firstSubmissionPassRates } from './pipeline/gateSubmissionLog.js';
+import { GateSubmissionLog, formatFirstSubmissionPassRates } from './pipeline/gateSubmissionLog.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = path.resolve(__dirname, '..');
@@ -184,10 +184,8 @@ async function main(): Promise<void> {
   if (summary.alreadyDone.length > 0) console.log(`  already done before this run: ${summary.alreadyDone.length}`);
   if (summary.dryRun.length > 0) console.log(`  dry-run validated (nothing written, nothing paid): ${summary.dryRun.length}`);
   // Appendix C 1.3: Forge Gate Pass Rate per gate, on first submission (runs/<run-id>/gate-submissions.jsonl).
-  const rates = firstSubmissionPassRates(await GateSubmissionLog.read(path.join(PACKAGE_ROOT, 'runs', summary.runId))).filter((r) => r.evaluated > 0);
-  if (rates.length > 0) {
-    console.log(`  first-submission gate pass rate: ${rates.map((r) => `g${r.gate} ${r.passed}/${r.evaluated}`).join(' · ')}`);
-  }
+  // GAP-FIX-R7: v1 drafts and v2:author drafts (`--run-id` into the same runs/ root) are reported apart, per gate.
+  for (const line of formatFirstSubmissionPassRates(await GateSubmissionLog.read(path.join(PACKAGE_ROOT, 'runs', summary.runId)))) console.log(`  ${line}`);
   if (summary.skipped.length > 0) {
     console.log(`  skipped: ${summary.skipped.length}`);
     for (const s of summary.skipped) console.log(`    - ${s.slotId}: ${s.reason}`);

@@ -1,9 +1,11 @@
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { authorV2Plan, fixtureResponder, mergeAuthoredCopy, skeletonOf } from '../v2/author.js';
+import { authorV2Plan, firstSubmissionOf, fixtureResponder, mergeAuthoredCopy, skeletonOf, type V2Responder } from '../v2/author.js';
+import { GateSubmissionLog, firstSubmissionPassRates } from '../pipeline/gateSubmissionLog.js';
+import { author as v2AuthorCli, v2AuthorRunDir } from '../v2/releaseCli.js';
 import { emitV2Lesson } from '../v2/emit.js';
 import { loadV2Plans, type V2LessonPlan } from '../v2/plan.js';
 import { narrationWithoutAudio, releaseV2Lessons, stage3ItemsFor, V2_MANIFEST_GATES } from '../v2/release.js';
@@ -47,6 +49,75 @@ describe('v2 plan authoring', () => {
     expect(seen[1]).toMatch(/blocked by the content gates/);
     expect(mergeAuthoredCopy(skeleton, '{"title": {"en-US": "x", "es-MX": "x", "pt-BR": "x"}, "copy": {}}').errors[0]).toMatch(/copy missing/);
     expect(mergeAuthoredCopy(skeleton, 'not json').errors[0]).toMatch(/did not return JSON/);
+  });
+});
+
+/** Replies in order: each entry is a plan to answer from, or raw text (an unparseable reply). */
+function sequenced(replies: Array<V2LessonPlan | string>): V2Responder {
+  let call = 0;
+  return async (request, options) => {
+    const reply = replies[Math.min(call++, replies.length - 1)]!;
+    return typeof reply === 'string' ? { content: reply, promptTokens: 0, completionTokens: 0 } as Awaited<ReturnType<V2Responder>> : fixtureResponder(reply)(request, options);
+  };
+}
+
+describe('v2 first-submission gate log (Appendix C Part 1.3, GAP-FIX-R7)', () => {
+  it('keeps the first round gates per market after a corrective round fixes the draft', async () => {
+    const reference = planOf('v2-goal-bullet');
+    const bad = structuredClone(reference);
+    bad.title['en-US'] = 'Hurry! Last chance to buy now!';
+    const blockedGates = [...new Set(emitV2Lesson(bad, { versionId: 'forge-test' }).problems.map((problem) => problem.gate))];
+    expect(blockedGates.length).toBeGreaterThan(0);
+    const result = await authorV2Plan(skeletonOf(reference), sequenced([bad, reference]), { operation: 'v2-author' });
+    expect(result).toMatchObject({ ok: true, attempts: 2, problems: [] });
+    expect(result.firstSubmission.map((entry) => entry.locale)).toEqual(['en-US', 'es-MX', 'pt-BR']);
+    const english = result.firstSubmission.find((entry) => entry.locale === 'en-US')!;
+    expect(english).toMatchObject({ evaluated: true, unparseable: false });
+    expect(english.failedGates.length).toBeGreaterThan(0);
+    for (const gate of english.failedGates) expect(blockedGates).toContain(gate);
+    // A clean first draft records every market as evaluated with no failed gate.
+    const clean = await authorV2Plan(skeletonOf(reference), fixtureResponder(reference), { operation: 'v2-author' });
+    expect(clean.firstSubmission.every((entry) => entry.evaluated && entry.failedGates.length === 0)).toBe(true);
+  });
+
+  it('counts an unparseable first reply as not evaluated (gate 1), never as a pass of the later gates', async () => {
+    const reference = planOf('v2-goal-bullet');
+    const result = await authorV2Plan(skeletonOf(reference), sequenced(['not json', reference]), { operation: 'v2-author' });
+    expect(result).toMatchObject({ ok: true, attempts: 2 });
+    expect(result.firstSubmission).toEqual(['en-US', 'es-MX', 'pt-BR'].map((locale) => ({ locale, evaluated: false, unparseable: true, failedGates: [1] })));
+    // A problem without a market counts against every market; a market's own problem only against it.
+    expect(firstSubmissionOf({ unparseable: false, problems: [{ gate: 13 }, { gate: 11, locale: 'pt-BR' }] }).map((entry) => entry.failedGates))
+      .toEqual([[13], [13], [11, 13]]);
+  });
+
+  it('v2:author --dry-run logs a blocked-then-fixed draft first-round gates in the run directory, at zero spend', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => { throw new Error('no network in the dry run'); }));
+    const dir = tmp();
+    const reference = planOf('v2-goal-bullet');
+    const bad = structuredClone(reference);
+    bad.title['en-US'] = 'Hurry! Last chance to buy now!';
+    writeFileSync(path.join(dir, 'skeleton.json'), JSON.stringify(reference));
+    const args = { skeleton: path.join(dir, 'skeleton.json'), out: path.join(dir, 'authored.json'), 'dry-run': true as const };
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect(await v2AuthorCli(args, sequenced([bad, reference]))).toBe(0);
+    expect(v2AuthorRunDir(args)).toBe(dir);
+    const entries = await GateSubmissionLog.read(dir);
+    expect(entries.map((entry) => [entry.pipeline, entry.slotId, entry.locale, entry.evaluated])).toEqual(
+      ['en-US', 'es-MX', 'pt-BR'].map((locale) => ['v2', reference.lesson_id, locale, true]));
+    const failed = entries.find((entry) => entry.locale === 'en-US')!.failedGates;
+    expect(failed.length).toBeGreaterThan(0);
+    // The per-gate rate reads the v2 lines and the report prints them.
+    const rates = firstSubmissionPassRates(entries, 'v2');
+    expect(rates.find((rate) => rate.gate === failed[0])).toMatchObject({ evaluated: 3, passed: 3 - entries.filter((entry) => entry.failedGates.includes(failed[0]!)).length });
+    expect(log.mock.calls.some(([line]) => String(line).startsWith('v2:author: first-submission gate pass rate (v2): '))).toBe(true);
+    // A draft still blocked after every round is not written, but its first submission is still logged.
+    expect(await v2AuthorCli({ ...args, out: path.join(dir, 'blocked', 'authored.json') }, sequenced([bad]))).toBe(1);
+    expect((await GateSubmissionLog.read(path.join(dir, 'blocked'))).map((entry) => entry.locale)).toEqual(['en-US', 'es-MX', 'pt-BR']);
+    // --run-id shares runs/<id>/ across a batch.
+    expect(v2AuthorRunDir({ ...args, 'run-id': 'batch-1' }, '/forge')).toBe(path.join('/forge', 'runs', 'batch-1'));
+    log.mockRestore();
+    error.mockRestore();
   });
 });
 

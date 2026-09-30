@@ -25,8 +25,11 @@ import type { CompleteOptions } from '../providers/deepseek.js';
 import { V2_LOCALES, type V2Locale } from './contract.js';
 import { emitV2Lesson } from './emit.js';
 import { v2LessonPlanSchema, type V2LessonPlan } from './plan.js';
+import type { GateNumber } from '../pipeline/gates.js';
 
 export type V2Responder = (request: ChatCompleteRequest, options: CompleteOptions) => Promise<ChatCompleteResult>;
+
+export const AUTHOR_LOCALES: readonly V2Locale[] = V2_LOCALES;
 
 /** A Stage 0 skeleton: a plan whose copy strings are empty placeholders ("") in the exact shape each segment needs. */
 export type V2Skeleton = V2LessonPlan;
@@ -103,7 +106,24 @@ export function fixtureResponder(reference: V2LessonPlan): V2Responder {
   } as ChatCompleteResult);
 }
 
-export interface V2AuthorResult { plan?: V2LessonPlan; ok: boolean; attempts: number; problems: string[] }
+/**
+ * Appendix C Part 1.3 (Forge Gate Pass Rate per gate, on FIRST submission;
+ * GAP-FIX-R7): what the first draft of a lesson got right, per market, before
+ * any corrective round told the model what to fix. `evaluated` is false when
+ * the reply failed the plan schema (unparseable): the gates never ran, so the
+ * draft counts as a gate 1 (contract) failure and never as a pass of 2-19.
+ */
+export interface V2FirstSubmission { locale: V2Locale; evaluated: boolean; unparseable: boolean; failedGates: GateNumber[] }
+
+export interface V2AuthorResult { plan?: V2LessonPlan; ok: boolean; attempts: number; problems: string[]; firstSubmission: V2FirstSubmission[] }
+
+/** The first round's gate outcome per market: a problem without a locale counts against every market. */
+export function firstSubmissionOf(outcome: { unparseable: true } | { unparseable: false; problems: ReadonlyArray<{ gate: GateNumber; locale?: V2Locale }> }): V2FirstSubmission[] {
+  return AUTHOR_LOCALES.map((locale) => outcome.unparseable
+    ? { locale, evaluated: false, unparseable: true, failedGates: [1] }
+    : { locale, evaluated: true, unparseable: false,
+      failedGates: [...new Set(outcome.problems.filter((problem) => problem.locale === undefined || problem.locale === locale).map((problem) => problem.gate))].sort((a, b) => a - b) });
+}
 
 /**
  * Stage 1 for one skeleton: prompt, merge, emit, gate; up to two corrective
@@ -114,15 +134,20 @@ export interface V2AuthorResult { plan?: V2LessonPlan; ok: boolean; attempts: nu
 export async function authorV2Plan(skeleton: V2Skeleton, responder: V2Responder, options: CompleteOptions & { maxRounds?: number }): Promise<V2AuthorResult> {
   const rounds = options.maxRounds ?? 3;
   let problems: string[] = [];
+  // Recorded once, from round 1 only: a corrective round is not a first submission.
+  let firstSubmission: V2FirstSubmission[] = [];
   for (let attempt = 1; attempt <= rounds; attempt += 1) {
     const reply = await responder({ messages: authoringMessages(skeleton, problems), temperature: 0.4, jsonMode: true }, { operation: 'v2-author', ledger: options.ledger });
     const merged = mergeAuthoredCopy(skeleton, reply.content);
-    if (!merged.plan) { problems = merged.errors; continue; }
+    if (!merged.plan) {
+      if (attempt === 1) firstSubmission = firstSubmissionOf({ unparseable: true });
+      problems = merged.errors;
+      continue;
+    }
     const emitted = emitV2Lesson(merged.plan, { versionId: 'forge-author-check' });
-    if (emitted.ok) return { plan: merged.plan, ok: true, attempts: attempt, problems: [] };
+    if (attempt === 1) firstSubmission = firstSubmissionOf({ unparseable: false, problems: emitted.problems });
+    if (emitted.ok) return { plan: merged.plan, ok: true, attempts: attempt, problems: [], firstSubmission };
     problems = emitted.problems.map((problem) => `[gate ${problem.gate}] ${problem.segmentId ?? ''} ${problem.locale ?? ''} ${problem.message}`.trim());
   }
-  return { ok: false, attempts: rounds, problems };
+  return { ok: false, attempts: rounds, problems, firstSubmission };
 }
-
-export const AUTHOR_LOCALES: readonly V2Locale[] = V2_LOCALES;
