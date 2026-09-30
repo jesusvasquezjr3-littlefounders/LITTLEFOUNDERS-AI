@@ -8,6 +8,7 @@ import {
   SOCIAL_RETENTION_SWEEP_AUDIT_ACTION, type HeartbeatJob, type OpsJob,
 } from '../services/opsJobs.js';
 import { ACCOUNT_DELETION_SWEEP_AUDIT_ACTION } from '../routes/account.js';
+import { BADGE_IMAGE_SWEEP_AUDIT_ACTION } from '../routes/badgePublic.js';
 import { RETENTION_SWEEP_AUDIT_ACTION, RETENTION_STALE_HOURS } from '../services/tutorData.js';
 
 /*
@@ -29,7 +30,10 @@ import { RETENTION_SWEEP_AUDIT_ACTION, RETENTION_STALE_HOURS } from '../services
  * Targets: every watched job in services/opsJobs.ts OPS_JOBS (the backups,
  * the drift probe, and since GAP-FIX-R6 the learning retention sweep, the
  * insights prune, the account-deletion sweep, the family retention sweep and
- * the social retention sweep, each with its own trail simulated stale);
+ * the social retention sweep, each with its own trail simulated stale, and
+ * since GAP-FIX-R8 the legacy badge-image purge, drilled in its realistic
+ * failure: the sweep still runs every day but a page keeps failing to purge,
+ * so its latest attempt is fresh and failed while its last clean run is stale);
  * `tutor_retention`, the Mentor 90-day retention sweep (its
  * `tutor.retention.swept` trail simulated stale, Appendix O 2.3(b) names it);
  * `content_retro_checks` (G.2, an overdue retroactive release check);
@@ -77,6 +81,7 @@ function staleAction(job: DrillTarget): string | null {
   if (job === 'tutor_retention') return RETENTION_SWEEP_AUDIT_ACTION;
   if (job === 'account_deletions') return ACCOUNT_DELETION_SWEEP_AUDIT_ACTION;
   if (job === 'social_retention') return SOCIAL_RETENTION_SWEEP_AUDIT_ACTION;
+  if (job === 'badge_link_retirement') return BADGE_IMAGE_SWEEP_AUDIT_ACTION;
   if ((HEARTBEAT_JOBS as readonly string[]).includes(job)) return opsJobAction(job as HeartbeatJob);
   // family_retention is read from family_retention_runs; the conditions are not scheduled jobs.
   return null;
@@ -113,6 +118,14 @@ export async function runOpsJobDrill(job: DrillTarget, now: Date = new Date()): 
     const action = /action=eq\.([^&]+)/.exec(url)?.[1] ?? '';
     if (action === DELETION_STEP_FAILED_AUDIT_ACTION) {
       return json(job === 'account_deletion_failures' ? [{ detail: { request_id: DRILL_REQUEST, step: 'depot', reason: 'unreachable' } }] : []);
+    }
+    // F.2 (GAP-FIX-R8): the badge sweep records counts; a clean page has failed = 0.
+    if (action === BADGE_IMAGE_SWEEP_AUDIT_ACTION) {
+      if (job !== 'badge_link_retirement') return json([{ created_at: freshAt, detail: { scanned: 3, purged: 3, stillReferenced: 0, failed: 0 } }]);
+      // The drilled failure: the last clean page is stale, the latest page ran today and could not purge two images.
+      return url.includes('detail->>failed=eq.0')
+        ? json([{ created_at: staleAt, detail: { scanned: 3, purged: 3, stillReferenced: 0, failed: 0 } }])
+        : json([{ created_at: freshAt, detail: { scanned: 2, purged: 0, stillReferenced: 0, failed: 2 } }]);
     }
     return json([{ created_at: target !== null && action === target ? staleAt : freshAt, detail: { ok: true } }]);
   }) as typeof fetch;

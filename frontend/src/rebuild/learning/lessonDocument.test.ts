@@ -92,6 +92,12 @@ describe('answerless versioned lesson client document', () => {
     expect(loadLessonClientDocument({ ...line, segments: [{ ...line.segments[0], payload: { ...line.segments[0].payload, initial: 11 } }] }).status).toBe('invalid');
   });
 
+  it('keeps the whole-number line inside its Appendix P age scope (M2: ages 6-9)', () => {
+    const line = numberLinePilotDocument('en-US') as Record<string, unknown>;
+    expect(loadLessonClientDocument(line).status).toBe('ready');
+    expect(loadLessonClientDocument({ ...line, age_band: '10-12', pathway_id: 'financial-10-12', eligibility: { minimum_age: 10, maximum_age: 12 } }).status).toBe('invalid');
+  });
+
   it('accepts a client-safe bullet chart and refuses unreachable goal ranges', () => {
     const goal = goalBulletPilotDocument('es-MX', '6-9') as { required_capabilities: string[]; segments: [{ payload: { target: number } }] };
     expect(loadLessonClientDocument(goal).status).toBe('ready');

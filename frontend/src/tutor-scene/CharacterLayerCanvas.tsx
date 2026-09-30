@@ -61,7 +61,7 @@ interface Live {
 
 /**
  * How long the layer waits, with no frame having drawn a character, before it
- * puts the 2D stand-ins back. See the note on `drawing` below.
+ * puts the real-model stills back. See the note on `drawing` below.
  */
 const STALE_MS = 1000;
 
@@ -90,9 +90,9 @@ export function CharacterLayerCanvas({
    * It was `Boolean(stageSettings)` — true the moment SceneCanvas reported a
    * quality tier, which happens on the canvas's very first commit: before a
    * .glb has downloaded, before a slot has been measured, before this layer has
-   * rendered anything. CharacterSlot drops its 2D stand-in on that flag, so
+   * rendered anything. CharacterSlot drops its still stand-in on that flag, so
    * ANY failure after it presented to a child as an empty box rather than as
-   * the flat character the fallback exists to be.
+   * the still of the real model the fallback exists to be.
    *
    * Now the frame loop reports the frames it actually drew, and a watchdog
    * turns the flag back off when they stop — which is what a lost WebGL

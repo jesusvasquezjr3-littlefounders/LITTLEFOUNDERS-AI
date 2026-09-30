@@ -148,7 +148,7 @@
       },
       "ages": {
         "question": "¿Para qué edades es?",
-        "answer": "Niños y adolescentes, de 6 a 17 años más o menos. Antes de los 13, un Tutor crea la cuenta; los adolescentes también pueden registrarse solos."
+        "answer": "Niños y adolescentes, de unos 6 a 17 años. Un Tutor puede crear la cuenta de un niño; los menores de 13 también pueden registrarse, con las protecciones más estrictas."
       },
       "whatIsTutor": {
         "question": "¿Qué es una cuenta Tutor?",
@@ -365,7 +365,7 @@
     "whyTitle": "Aprender como invitado",
     "whyNoEmail": "Un invitado no necesita correo ni contraseña.",
     "whySafety": "El micrófono sigue apagado. El Mentor sigue las reglas de seguridad más estrictas.",
-    "whyParent": "Un adulto puede crear tu propia cuenta después.",
+    "whyParent": "Puedes guardar tu progreso después, con estas mismas protecciones.",
     "close": "Cerrar"
   },
   "authForgot": {

@@ -32,19 +32,20 @@ const copy: Record<Locale, Labels> = {
     undoHop: 'Desfazer salto', hops: 'Saltos', countOn: 'Conte a partir de', items: 'Coloque cada um', placeAll: 'Mova cada um para o seu lugar.' },
 };
 
-export function numberLinePilotDocument(locale: Locale, ageBand: '6-9' | '10-12'): unknown {
-  const young = ageBand === '6-9';
-  const title = young ? { 'en-US': 'Find your place', 'es-MX': 'Encuentra tu lugar', 'pt-BR': 'Encontre seu lugar' }
-    : { 'en-US': 'Estimate a place', 'es-MX': 'Estima un lugar', 'pt-BR': 'Estime um lugar' };
-  const prompt = young ? { 'en-US': 'Place 7 on the line.', 'es-MX': 'Coloca el 7 en la recta.', 'pt-BR': 'Coloque o 7 na reta.' }
-    : { 'en-US': 'Place 37 on the line.', 'es-MX': 'Coloca el 37 en la recta.', 'pt-BR': 'Coloque o 37 na reta.' };
+/**
+ * The M2 pilot. Appendix P scopes the whole-number line to ages 6-9 (V2_AGE_SCOPE), so there is no 10-12 pilot:
+ * a 10-12 document of this kind is refused as invalid, exactly as Core refuses it.
+ */
+export function numberLinePilotDocument(locale: Locale, ageBand: '6-9' = '6-9'): unknown {
+  const title = { 'en-US': 'Find your place', 'es-MX': 'Encuentra tu lugar', 'pt-BR': 'Encontre seu lugar' };
+  const prompt = { 'en-US': 'Place 7 on the line.', 'es-MX': 'Coloca el 7 en la recta.', 'pt-BR': 'Coloque o 7 na reta.' };
   return {
     schema_version: 2, course_id: 'financial-education', pathway_id: `financial-${ageBand}`, chapter_id: 'counting-on',
     lesson_id: `pilot-number-line-${ageBand}`, version_id: 'rev-1', locale, age_band: ageBand, eligibility: ageEligibilityForBand(ageBand),
     knowledge_component_ids: ['kc-number-magnitude'], adventure_scene_id: 'diorama-a', title: title[locale],
     required_capabilities: ['visual.number-line.v1', 'operation.place-point.v1'],
     segments: [{ id: 'place-01', type: 'math.number-line.whole.v2', prompt: prompt[locale], grading: 'server',
-      visual: { type: 'number-line' }, payload: { minimum: 0, maximum: young ? 10 : 100, step: 1, initial: 0 } }],
+      visual: { type: 'number-line' }, payload: { minimum: 0, maximum: 10, step: 1, initial: 0 } }],
   };
 }
 

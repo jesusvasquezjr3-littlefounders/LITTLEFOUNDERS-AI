@@ -148,14 +148,14 @@ describe('story family renderers hand their character to a host with no characte
   it('story_dialogue: draws its own character exactly as before when no host cue is listening', () => {
     // The course player never passes `onCharacterCue` — this is its
     // unmodified path, proven unmodified. `CharacterLayerProvider` (course
-    // player) is not mounted in this isolated render either, so the SAME 2D
+    // player) is not mounted in this isolated render either, so the SAME still
     // fallback `CharacterLayer.test.tsx` already pins for that caller is the
     // right thing to see here too — the point of this test is that adding
     // `onCharacterCue` to `ExerciseProps` changed nothing for a caller that
     // does not pass it.
     const { container } = render(<StoryDialogue {...dialogueProps(undefined)} />)
     expect(container.querySelector('[data-character="rho"]')).not.toBeNull()
-    expect(container.querySelector('[data-render="2d"]')).not.toBeNull()
+    expect(container.querySelector('[data-render="still"]')).not.toBeNull()
   })
 
   it('story_scene: cues the host once for its single character and suppresses its own', () => {

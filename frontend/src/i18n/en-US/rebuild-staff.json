@@ -1594,6 +1594,7 @@
         "coachingDelivery": "Tutors eligible for a tip, and who got and opened one.",
         "reflections": "Tutor decisions where the reflective prompt came first.",
         "bridge": "Eligible learners who engaged with each money moment.",
+        "bridgePaired": "Review together with Lessons turned into real tasks, from Mentor quality.",
         "research": "Coverage and completeness of long-term research data.",
         "socialSafety": "Tiers and teen consent.",
         "socialGovernance": "Rows past their window, messaging surfaces and uploads.",
@@ -1731,6 +1732,10 @@
         "minAge": "Minimum age",
         "engaged": "Engaged",
         "engagementRate": "Engagement",
+        "bridgeConversionRate": "Lessons turned into real tasks",
+        "bridgePromptsOffered": "Real-task prompts offered",
+        "bridgePromptsConverted": "Done within 7 days",
+        "bridgeConversionWindow": "Window in days",
         "windowMonths": "Months measured",
         "minTenureMonths": "Minimum tenure, months",
         "longTenure": "Long tenure",
@@ -1934,7 +1939,8 @@
         "job_insights_prune": "Learning event cleanup",
         "job_account_deletions": "Account deletions",
         "job_family_retention": "Family data cleanup",
-        "job_social_retention": "Friends data cleanup"
+        "job_social_retention": "Friends data cleanup",
+        "job_badge_link_retirement": "Old badge link images"
       },
       "action": {
         "lookUp": "Look up",

@@ -22,6 +22,16 @@ const TEEN_REQUEST_REPORT = '[data-social-audit="teen-connections"] [data-reques
 const TEEN_REQUEST_BLOCK = '[data-social-audit="teen-connections"] [data-request-actions] > .lf-button--danger';
 const AGE_CORRECTION_OPEN = '[data-setting="age-record"] button[aria-expanded="false"]';
 const DISCOVERABLE_SWITCH = '[data-setting="discoverable"] [role="switch"][aria-checked="false"]';
+/*
+ * GAP-FIX-R8 (owner review H-25, D.22, OD-9 section 4.2): the research card in an adult's own Settings. It renders only when Core
+ * reports the Tutor's yes lapsed at 18 (the ask, Yes or No) or the adult's own yes (the stop, asked once). Exported for the unit
+ * test that pins these selectors to the rendered markup.
+ */
+export const RESEARCH_CARD = {
+  ask: '[data-governance="adult-research"][data-research-state="lapsed"] [data-research="ask"] button',
+  stop: '[data-governance="adult-research"][data-research-state="self"] .lf-family-hub-actions > button',
+  confirm: '[data-governance="adult-research"][data-research-state="self"] [data-research="confirm"] button',
+};
 
 export const states = [
   // P1 /profile
@@ -67,6 +77,14 @@ export const states = [
     { open: [DISCOVERABLE_SWITCH], firstView: false }),
   app('/profile/settings@teen-discoverable-on', '/profile/settings', 'settings-teen-discoverable-on',
     '[data-setting="discoverable"] [role="switch"][aria-checked="true"]', { readyAlso: ['[data-screen="settings"] .lf-settings-form'] }),
+  // GAP-FIX-R8 (H-25): the young adult asked again after the Tutor's yes lapsed at 18, and the adult's own yes with its stop
+  // confirmation opened by a real press (and the same card before the press).
+  app('/profile/settings@research-lapsed', '/profile/settings', 'settings-research-lapsed', RESEARCH_CARD.ask,
+    { readyAlso: ['[data-screen="settings"] .lf-settings-form'] }),
+  app('/profile/settings@research-self-closed', '/profile/settings', 'settings-research-self', RESEARCH_CARD.stop,
+    { readyAlso: ['[data-screen="settings"] .lf-settings-form'] }),
+  app('/profile/settings@research-self', '/profile/settings', 'settings-research-self', RESEARCH_CARD.stop,
+    { open: [RESEARCH_CARD.stop], openReady: RESEARCH_CARD.confirm, firstView: false }),
   app('/profile/settings@kid-6-9', '/profile/settings', 'profile-kid', '[data-screen="settings"][data-age-band="6-9"] [data-field="username"]',
     { readyAlso: ['.lf-disposition dl', '.lf-account-deletion'] }),
   app('/profile/settings@guest', '/profile/settings', 'profile-guest', '[data-screen="settings"] .lf-card--primary', { readyAlso: ['.lf-account-deletion'] }),
@@ -155,6 +173,11 @@ export const scenarios = {
   'settings-teen-consent': { population: 'migrated teen 16-17, Tutor consent to the discoverable profile missing (OD-9 4.2)', guest: false, ageBand: '13-17',
     profile: profile({ displayName: 'Rio Montes', username: 'rio_montes', birthDate: '2009-06-02',
       social: { tier: 'teen', privateProfile: true, discoverable: { canChoose: false, enabled: false, reason: 'DATA_PRACTICE_CONSENT_REQUIRED' } } }), deletion: 'grace' },
+  // GAP-FIX-R8 (H-25, D.22): a young adult (18) whose Tutor's research yes lapsed, and an adult taking part on their own yes.
+  'settings-research-lapsed': { population: 'young adult 18, the Tutor\'s research yes lapsed (H-25)', guest: false, ageBand: 'adult',
+    profile: profile({ displayName: 'Rio Montes', username: 'rio_montes', birthDate: null }), deletion: 'grace', research: 'lapsed' },
+  'settings-research-self': { population: 'adult taking part in research on their own yes (H-25)', guest: false, ageBand: 'adult',
+    profile: profile({ displayName: 'Rio Montes', username: 'rio_montes', birthDate: null }), deletion: 'grace', research: 'self' },
   'profile-adult': { population: 'adult', guest: false, ageBand: 'adult', mentor: 'liruf', profile: profile({ birthDate: null }), blocked: BLOCKED, deletion: 'grace' },
   'profile-tutor': { population: 'verified parent (Tutor)', guest: false, ageBand: 'adult', roles: ['parent'], profile: profile({ displayName: 'Jesús Vásquez', isTutor: true }), deletion: 'grace' },
   'profile-teen': { population: 'independent teen 13-17, E.13-flagged handle', guest: false, ageBand: '13-17', mentor: 'dina', teenRequests: true,
@@ -194,6 +217,17 @@ const SUBJECTS = {
 };
 
 const MEMORY_NOTE = { 'en-US': 'Saving for a bike.', 'es-MX': 'Ahorra para una bici.', 'pt-BR': 'Poupa para uma bicicleta.' };
+/*
+ * GET /family-hub/research/me as Core answers it (routes/familyGovernance.ts, family_research_state): `lapsed` is the Tutor's yes
+ * that ended at 18 (still recorded as the Tutor's grant, recording stopped); `self` is the adult's own yes.
+ */
+const RESEARCH_ME = {
+  lapsed: { research: { participating: true, recording: false, grantor: 'tutor', since: '2025-03-01T10:00:00Z', disclosureVersion: 1, adult: true, months: 14, lapsed: true },
+    currentVersion: 1 },
+  self: { research: { participating: true, recording: true, grantor: 'self', since: '2026-08-02T10:00:00Z', disclosureVersion: 1, adult: true, months: 2, lapsed: false },
+    currentVersion: 1 },
+};
+
 const refuse = (status, code) => ({ status, body: { data: null, error: { code, message: 'Synthetic refusal' } } });
 
 /** Core's own view of an account's latest correction request (backend services/ageCorrection.ts, OwnCorrection). */
@@ -220,6 +254,8 @@ export function respond({ spec, locale, path, request, ok }) {
     if (!spec.memory) return refuse(403, 'FORBIDDEN');
     return ok({ proposals: [{ id: '55555555-5555-4555-8555-555555555555', store: 'learner', proposed: MEMORY_NOTE[locale], expectedBefore: null, sessionId: null, createdAt: '2026-09-20T10:00:00Z' }], current: { learner: null, pedagogy: null } });
   }
+  // GAP-FIX-R8 (H-25): the research card's read, for a scenario that declares `research`.
+  if (path === '/family-hub/research/me' && request.method === 'GET' && spec.research) return ok(RESEARCH_ME[spec.research]);
   if (path === '/tutor/disposition' && request.method === 'GET') return ok({ exists: true, current: true, sessionsObserved: 6, helpStyle: 'independent', persistence: 'persists',
     explanation: 'unknown', persistentlyDeclined: ['less_text'], typicalReplySeconds: 12, personas: [], effects: [], updatedAt: '2026-09-20T10:00:00Z' });
   // Every Settings page composes the deletion panel: a scenario without its own answer gets its population's.

@@ -43,6 +43,11 @@ export const scenarios = {
   'family-coop': tutor({ kids: 'coopTeen', coop: 'on' }),
   'family-coop-off': tutor({ kids: 'coopTeen', coop: 'off' }),
   'family-coop-young': tutor({ kids: 'coopYoung' }),
+  // GAP-FIX-R8 (OD-9 section 4.2, S10.3): KID_A is a migrated child (legacy consent covered only what the legacy platform did), so
+  // the Tutor answers each practice the rebuild introduced; some are answered, some are not. `dataPractices` makes this lane answer
+  // the data-practice reads (core.mjs keeps its not-migrated default for every other scenario). In '-refused' Core refuses the answer.
+  'family-practices': { ...tutor({ kids: 'two' }), dataPractices: 'migrated' },
+  'family-practices-refused': { ...tutor({ kids: 'two' }), dataPractices: 'refused' },
   // W2F.2: Tasks (F4) and coins (F5) for the Tutor, the child boards and the teen wallet (verify-family-money-screens.mjs).
   'money-tutor': tutor({ kids: 'two', money: 'full' }),
   'money-tutor-new': tutor({ kids: 'two', money: 'new' }),
@@ -60,6 +65,12 @@ export const scenarios = {
   'money-tutor-frozen': tutor({ kids: 'two', money: 'full', frozen: 'child' }),
   // GAP-FIX-R5 (D.17): a child at level 2, who may step down on their own.
   'money-child-level2': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], family: { money: 'full', register: 'young', autonomy: 'level2' } },
+  // GAP-FIX-R8 (OD-9 section 4.2): the account's own panel, for a migrated child (a child's own no counts) on the Coins page, and for a
+  // migrated self-registered teen with no Tutor (the usage counts are the only practices the database lets a teen answer alone).
+  'money-child-practices': { population: 'migrated parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], family: { money: 'full', register: 'young' },
+    dataPractices: 'child' },
+  'money-teen-practices': { population: 'migrated self-registered teen 13-17 with no Tutor', guest: false, ageBand: '13-17', roles: ['universal'],
+    wallet: { holder: 'teen', familyChild: false }, family: { money: 'full', register: 'teen' }, dataPractices: 'teen' },
   'money-teen-offline': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', roles: ['universal'], wallet: { holder: 'teen', familyChild: false },
     family: { money: 'offline', register: 'teen' } },
   // Everyone else meets the parent gate (RequireRole): the console never renders for them (verify-family-console.mjs).
@@ -143,6 +154,20 @@ const COINS = {
 };
 const opensAfter = (settled, selector, open = [selector]) => [selector, { open, firstView: false, readyAlso: settled }];
 
+/*
+ * GAP-FIX-R8 (OD-9 section 4.2, S10.3c; Bible 02 section 7 item 10, 03 section 5, 06 section 7): the consent surfaces render only for a
+ * migrated child. The Tutor's panel opens one group at a time (each group is its own state, so every practice label is measured);
+ * the account's own panel opens with one press. Exported for the unit test that pins these selectors to the rendered markup.
+ */
+export const PRACTICES = {
+  toggle: '[data-governance="data-practices"] .lf-governance-head > button[aria-expanded]',
+  group: (group) => `[data-governance="data-practices"] [data-practice-group="${group}"] > button[aria-expanded]`,
+  missing: '[data-governance="data-practices"] [data-practice-group="analytics_event_class"] [data-consented="false"] [role="switch"]',
+  refused: '[data-governance="data-practices"] .lf-notice--error',
+  own: '[data-governance="my-data-practices"] .lf-governance-head > button[aria-expanded]',
+};
+export const PRACTICE_STATES = [['', 'analytics_event_class'], ['-mentor', 'mentor_memory_type'], ['-story', 'learner_record'], ['-shared', 'sharing_surface']];
+
 export const states = [
   app('/family@two-children', `/family?child=${KID_A}`, 'family-two', ready.console, { readyAlso: '[data-console-part="picker"]' }),
   app('/family@teen-selected', `/family?child=${KID_B}`, 'family-two', `[data-console-control="manage-child"][data-self-managed="true"]`),
@@ -192,6 +217,12 @@ export const states = [
     ...opensSettled(PANEL.tutors, [PANEL.tutors, '[data-family-hub="co-guardians"] button[data-guardian-control="leave"]'])),
   app('/family@research-consent', `/family?child=${KID_A}`, 'family-two', ...opensSettled(PANEL.research)),
   app('/family@data-policy', `/family?child=${KID_A}`, 'family-two', ...opensSettled(PANEL.policy)),
+  // GAP-FIX-R8 (OD-9 section 4.2): the migrated child's consent panel on arrival, each group opened, and Core's refusal of an answer.
+  app('/family@data-practices-closed', `/family?child=${KID_A}`, 'family-practices', PRACTICES.toggle, { readyAlso: [ready.console, SOCIAL.settled] }),
+  ...PRACTICE_STATES.map(([suffix, group]) => app(`/family@data-practices${suffix}`, `/family?child=${KID_A}`, 'family-practices',
+    ...opensSettled(PRACTICES.toggle, [PRACTICES.toggle, PRACTICES.group(group)]))),
+  app('/family@data-practices-refused', `/family?child=${KID_A}`, 'family-practices-refused', PRACTICES.toggle, { readyAlso: SOCIAL.settled, firstView: false,
+    open: [PRACTICES.toggle, PRACTICES.group('analytics_event_class'), PRACTICES.missing], openReady: PRACTICES.refused }),
   app('/family@coop-goals-consent', '/family', 'family-coop', '[data-console-part="coop-goals"] [data-coop-part="goals"] [data-coop-goal]'),
   app('/family@coop-goals-off', '/family', 'family-coop-off', '[data-console-part="coop-goals"] [role="switch"]'),
   app('/family@coop-goals-not-teen', '/family', 'family-coop-young', '[data-console-part="coop-goals"] p[data-copy-role="body"]'),
@@ -236,6 +267,12 @@ export const states = [
   app('/family-wallet@teen-linked', '/family-wallet', 'money-teen-linked', ready.childCoins),
   app('/wallet@teen', '/wallet', 'money-teen', '[data-teen-wallet="root"] [data-pocket="save"]'),
   app('/wallet@teen-offline', '/wallet', 'money-teen-offline', '[data-teen-wallet="root"] .lf-state--error'),
+  // GAP-FIX-R8 (OD-9 section 4.2): the account's own data choices, on arrival and opened, for a migrated child and a migrated teen with no Tutor.
+  app('/family-wallet@child-practices', '/family-wallet', 'money-child-practices', PRACTICES.own, { readyAlso: [ready.childCoins, '[data-family-part="payouts"]'] }),
+  app('/family-wallet@child-practices-open', '/family-wallet', 'money-child-practices', PRACTICES.own, { readyAlso: ready.childCoins, open: [PRACTICES.own], firstView: false }),
+  app('/wallet@teen-practices', '/wallet', 'money-teen-practices', PRACTICES.own, { readyAlso: '[data-teen-wallet="root"] [data-pocket="save"]' }),
+  app('/wallet@teen-practices-open', '/wallet', 'money-teen-practices', PRACTICES.own, { readyAlso: '[data-teen-wallet="root"] [data-pocket="save"]',
+    open: [PRACTICES.own], firstView: false }),
 ];
 
 const kid = (over) => ({ userId: KID_A, displayName: 'Sofía', username: 'sofia_2016', analyticsConsent: false, pendingApprovalCount: 2, walletTotal: 34,
@@ -334,6 +371,8 @@ export function respond({ core, spec, locale, path, request, ok }) {
   const family = spec.family;
   if (!family) return undefined;
   const get = request.method === 'GET';
+  const practices = dataPracticeAnswer({ spec, path, request, ok });
+  if (practices !== undefined) return practices;
   if (family.money) {
     const answer = money({ spec, family, locale, path, request, ok });
     if (answer !== undefined) return answer;
@@ -591,6 +630,62 @@ const AUTONOMY = { inFamily: true, level: 1, storedLevel: 1, levelSince: null, p
     daysAtLevel: { value: 30, min: 0, ok: true }, windowDays: 60 }, request: null };
 const STREAK = { status: 'alive', current: 4, best: 9, totalDays: 30, restDaysLeftThisWeek: 1, restDaysPerWeek: 2, pausedUntil: null, today: '2026-09-26' };
 const RESEARCH = { research: { participating: false, recording: false, grantor: null, since: null, disclosureVersion: 0, adult: false, months: 0 }, currentVersion: 1 };
+
+/*
+ * GAP-FIX-R8 (OD-9 section 4.2): Core's data-practice view (services/dataPractices.ts, toWireDataPractices over the database's
+ * data_practice_state, ORDER BY kind, key), for the practices the rebuild introduced. For a migrated child a practice applies only
+ * with a specific consent; a self-registered teen with no Tutor may answer the usage counts alone (self_grantable); research is
+ * answered in its own flow (ownFlow).
+ */
+const PRACTICE_ROWS = [
+  ['analytics.achievement_share_initiations', 'analytics_event_class', 'F.1'], ['analytics.engagement_heartbeats', 'analytics_event_class', 'B.28'],
+  ['analytics.family_money_events', 'analytics_event_class', 'D.13'], ['analytics.learning_quality_events', 'analytics_event_class', 'B.5'],
+  ['analytics.mentor_behavioral_telemetry', 'analytics_event_class', 'C.9'], ['analytics.mentor_integrity_evidence', 'analytics_event_class', 'C.10'],
+  ['analytics.motivation_events', 'analytics_event_class', 'B.21'], ['learning.decision_journal', 'learner_record', 'B.9'],
+  ['mentor.alliance_record', 'mentor_memory_type', 'C.15'], ['mentor.dialogue_calibration', 'mentor_memory_type', 'C.17'],
+  ['mentor.disposition_profile', 'mentor_memory_type', 'C.7'], ['research.family_longitudinal', 'research', 'D.22'],
+  ['sharing.cooperative_goals', 'sharing_surface', 'B.23/OD-27'], ['sharing.discoverable_profile', 'sharing_surface', 'E.8/OD-27'],
+  ['sharing.learning_family_bridge', 'sharing_surface', 'B.13'], ['sharing.social_connections', 'sharing_surface', 'E.8'],
+];
+/** What the Tutor already said yes to for the migrated child (the rest is not answered yet). */
+const CHILD_CONSENTS = ['analytics.learning_quality_events', 'analytics.motivation_events', 'mentor.disposition_profile', 'sharing.social_connections'];
+/** What the teen said yes to on their own. */
+const TEEN_CONSENTS = ['analytics.learning_quality_events', 'analytics.motivation_events'];
+
+function practiceView({ migrated, hasTutor, consents, grantor, selfGrantable }) {
+  return { migrated, hasTutor, practices: PRACTICE_ROWS.map(([key, kind, requirement]) => {
+    const ownFlow = kind === 'research';
+    const consented = !ownFlow && consents.includes(key);
+    return { key, kind, requirement, disclosureVersion: 1, ownFlow, consented, applies: !migrated || consented,
+      grantor: consented ? grantor : null, since: consented ? T : null, selfGrantable: selfGrantable && kind === 'analytics_event_class' };
+  }) };
+}
+
+/** The data-practice reads and answers of a scenario that declares `dataPractices` (every other scenario gets core.mjs's default). */
+function dataPracticeAnswer({ spec, path, request, ok }) {
+  const mode = spec.dataPractices;
+  if (!mode) return undefined;
+  const tutorRead = path.match(/^\/family-hub\/kids\/([^/]+)\/data-practices(?:\/([^/]+))?$/);
+  const ownRead = path.match(/^\/family-hub\/data-practices\/me(?:\/([^/]+))?$/);
+  if (!tutorRead && !ownRead) return undefined;
+  const key = tutorRead ? tutorRead[2] : ownRead[1];
+  const view = tutorRead
+    // Only KID_A is a migrated child; any other child's consent was taken at sign-up.
+    ? (tutorRead[1] === KID_A ? practiceView({ migrated: true, hasTutor: true, consents: CHILD_CONSENTS, grantor: 'tutor', selfGrantable: false })
+      : practiceView({ migrated: false, hasTutor: true, consents: [], grantor: 'tutor', selfGrantable: false }))
+    : mode === 'teen' ? practiceView({ migrated: true, hasTutor: false, consents: TEEN_CONSENTS, grantor: 'self', selfGrantable: true })
+      : practiceView({ migrated: true, hasTutor: true, consents: CHILD_CONSENTS, grantor: 'tutor', selfGrantable: false });
+  if (request.method === 'GET' && !key) return ok(view);
+  if (request.method !== 'PUT' || !key) return undefined;
+  // DATA_PRACTICE_NOT_ALLOWED: the database refuses this answer (Core maps it to 403).
+  if (mode === 'refused') return refuse(403, 'DATA_PRACTICE_NOT_ALLOWED');
+  const sent = request.postData ? JSON.parse(request.postData) : {};
+  const grant = sent.grant === true;
+  const answered = decodeURIComponent(key);
+  return ok({ ...view, practices: view.practices.map((p) => p.key !== answered || p.ownFlow ? p
+    : { ...p, consented: grant, applies: !view.migrated || grant, grantor: grant ? (ownRead ? 'self' : 'tutor') : null, since: grant ? T : null }) });
+}
+
 const SPLIT = { usual: { save: 50, spend: 40, share: 10 }, custom: false, recommended: { save: 50, spend: 40, share: 10 } };
 
 /** GAP-FIX-R6: a child's coin lines as Core serves them to a Tutor, newest first; a linked teen's own entries (no approval step) among them. */
