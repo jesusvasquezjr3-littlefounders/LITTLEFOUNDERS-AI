@@ -173,7 +173,7 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     expect(pose.output).toContain('Render pose is not in the pose catalogue');
     const incomplete = await mutate((dir) => writeManifest(dir, readManifest(dir).filter((row) => row.id !== 'mentor.liruf.avatar.dark')));
     expect(incomplete.output).toContain('No dark avatar render for liruf');
-    const approvedWithoutReviewer = await mutate((dir) => writeManifest(dir, readManifest(dir).map((row) => (row.id === 'mentor.dina.avatar.dark' ? { ...row, reviewStatus: 'approved' } : row))));
+    const approvedWithoutReviewer = await mutate((dir) => writeManifest(dir, readManifest(dir).map((row) => (row.id === 'mentor.dina.avatar.dark' ? { ...row, reviewStatus: 'approved', approvedBy: null } : row))));
     expect(approvedWithoutReviewer.output).toContain('approvedBy must be set exactly when approved');
     for (const result of [opaque, lookalike, pose, incomplete, approvedWithoutReviewer]) expect(result.status).toBe(1);
   });
