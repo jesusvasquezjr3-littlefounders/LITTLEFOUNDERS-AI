@@ -64,7 +64,7 @@ npm run production:preflight            # read-only Railway check, operator-only
 
 Single-service work: `cd <service> && npm run type-check && npm run lint && npm run test`. **The hyphen is load-bearing:** services name it `type-check`, and only the root aggregate drops the hyphen (`typecheck:all`), so `npm run typecheck` inside a service is `Missing script` every time. `database/` is the exception to the whole line — it defines `test` and the `db:*` scripts only, so `run-all.sh` skips it for type-check, lint and build; its CI is `npm test` plus the secrets scan.
 
-Per-service `package.json` also carries service-specific scripts: `verify:tutor`, `verify:pedagogy`, `gym:pedagogy` in `oracle/`; `verify:lesson-engine`, `verify:tutor-ui`, `verify:tutor-a11y`, `verify:rig`, `verify:placement` in `frontend/`; `seed:kc` and the tutor audit scripts in `backend/`.
+Per-service `package.json` also carries service-specific scripts: `verify:tutor`, `verify:pedagogy`, `gym:pedagogy` in `oracle/`; `verify:lesson-engine`, `verify:rig`, `verify:placement` and the Mentor-stage gate `audit:gate -- --suite mentor-stage` (it runs `scripts/verify-mentor-stage.mjs`, which has no npm alias; `--suite all` adds the text-fit, proportion and Copy Budget audits) in `frontend/`; `seed:kc` and the tutor audit scripts in `backend/`.
 
 ## Architecture — what requires reading multiple files
 
