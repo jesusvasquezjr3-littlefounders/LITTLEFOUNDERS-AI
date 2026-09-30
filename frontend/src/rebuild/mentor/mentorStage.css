@@ -15,7 +15,7 @@
 .lf-mentor-stage--full { block-size: 100%; min-block-size: 0; }
 .lf-mentor-stage--compact { block-size: var(--lf-mentor-band-size, 96px); background: var(--primary); }
 
-.lf-mentor-stage-scene { position: absolute; inset: 0; }
+.lf-mentor-stage-scene { position: absolute; inset: 0; isolation: isolate; }
 /* GAP-FIX-R3 (08 §11): the lesson's adventure scene as the band's own backdrop, under the scene layer. */
 .lf-mentor-stage-backdrop { position: absolute; inset: 0; }
 .lf-mentor-stage-backdrop .lf-art { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; max-inline-size: none; object-fit: cover; }
@@ -28,6 +28,8 @@
 /* A transparent avatar render stands on the scene colour, feet toward the floor of the stage. */
 .lf-mentor-stage-still--contain { object-fit: contain; object-position: center bottom; }
 .lf-mentor-stage-still[data-leaving='true'] { opacity: 0; }
+/* A rendered Mentor sequence (08 §7) plays over the pose still it starts from; the scene isolates the stacking. */
+.lf-mentor-stage-sequence { z-index: 1; }
 
 /*
  * The board (08 §2 layer 4, §6): on a stage narrower than the desktop split it

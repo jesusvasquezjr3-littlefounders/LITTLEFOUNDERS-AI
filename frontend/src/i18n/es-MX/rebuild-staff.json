@@ -1915,7 +1915,7 @@
         "hoursSince": "Desde la última ejecución",
         "staleHelp": "La limpieza no corre desde hace 36 horas. Revisa el flujo.",
         "jobsIntro": "Tareas diarias. Si una se detiene, avisa al equipo.",
-        "jobStaleHelp": "{job} no se ejecuta desde hace {n} horas. Revisa su flujo.",
+        "jobStaleHelp": "{job} lleva {n} horas sin ejecutarse. Revisa su flujo.",
         "lastAttemptFailed": "El último intento falló.",
         "lastAttempt": "Último intento",
         "alertsUndelivered": "{n} alertas recientes no llegaron a nadie. Revisa los canales de alerta.",
