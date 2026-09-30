@@ -1,4 +1,5 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, statfsSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.mjs';
 import { installAudit } from './audits/in-page.mjs';
@@ -44,6 +45,9 @@ import { installSyntheticCore, loadLessonFixtures, SCENARIOS, sessionStorageScri
  *   AUDIT_THEMES, AUDIT_WIDTHS, AUDIT_ROUTES=/some/route (extra real-app routes),
  *   AUDIT_WORKERS (parallel pages, default 3), AUDIT_READY_MS (how long a state may take to become ready,
  *   default 15000; raise it only on a saturated shared machine, and say so in the evidence).
+ * A state that does not become ready (or whose last press opens nothing) is measured once more, from the start, on a
+ * fresh page, and the retry is logged; if the second attempt fails too the run stops with a setup error. A browser
+ * that went away is never retried: the error says so, with the free disk space Chrome had.
  * Split run (the full set, never a trimmed one): AUDIT_SHARD=k/n measures the k-th of n round-robin shards
  * of the state list; `node scripts/audits/merge-shards.mjs <dir>` merges the n reports and fails unless
  * every state was measured exactly once over the full locale, theme and width matrix.
@@ -79,6 +83,25 @@ let fixtures = null;
 let exitCode = 0;
 const profile = mkdtempSync(join(output, 'chrome-'));
 const browser = await launchBrowser(profile);
+let chromeExit = null;
+browser.child.on('exit', (code, signal) => { chromeExit = signal ? `signal ${signal}` : `code ${code}`; });
+
+/** Free space where Chrome writes (its profile, next to the reports, and the temp directory), for a setup error. */
+function freeDisk() {
+  const at = (path) => {
+    try { const fs = statfsSync(path); return `${Math.round((Number(fs.bavail) * Number(fs.bsize)) / 2 ** 20)} MB free at ${path}`; } catch { return null; }
+  };
+  return [...new Set([at(output), at(tmpdir())].filter(Boolean))].join(', ');
+}
+
+/** A page of the pool: its own window and storage, every Core request answered by the synthetic Core. */
+async function workerPage() {
+  // Each worker has its own window (a hidden page gets no frames) and its own storage (it signs in as someone else).
+  const page = await openPage(browser.browser, { width: 375, height: FOLD, dark: false, newWindow: true, isolated: true });
+  page.core = null;
+  await installSyntheticCore(page, origin, { unknownRequests });
+  return page;
+}
 
 async function onOrigin(page) {
   if (await page.evaluate('location.origin').catch(() => '') === origin) return;
@@ -116,7 +139,7 @@ async function load(page, state, locale, theme, width) {
   // AUDIT_READY_MS: how long a state may take to become ready (default 15 s). A loaded machine needs longer;
   // waiting longer never changes what is measured once the state is ready.
   for (let n = 0; n < readyTries && !ok; n++) { await wait(50); ok = await page.evaluate(`!!(${ready})`).catch(() => false); }
-  if (!ok) throw new Error(`${state.id} ${locale} ${theme}: never became ready at ${url}`);
+  if (!ok) throw new Error(`${state.id} ${locale} ${theme}: never became ready at ${url}${page.crashed ? ' (its renderer crashed)' : ''}`);
   // A hidden page gets no animation frames: every measurement after this would be of a frozen page.
   if (await page.evaluate('document.visibilityState') !== 'visible') throw new Error(`${state.id}: the audit page is hidden`);
   await page.evaluate('document.fonts.ready');
@@ -142,7 +165,7 @@ async function load(page, state, locale, theme, width) {
   if (state.openReady) {
     let opened = false;
     for (let n = 0; n < readyTries && !opened; n++) { await wait(50); opened = await page.evaluate(`!!document.querySelector(${JSON.stringify(state.openReady)})`).catch(() => false); }
-    if (!opened) throw new Error(`${state.id} ${locale} ${theme}: ${state.openReady} never appeared after the presses`);
+    if (!opened) throw new Error(`${state.id} ${locale} ${theme}: ${state.openReady} never appeared after the presses${page.crashed ? ' (its renderer crashed)' : ''}`);
   }
   await page.evaluate(`Promise.all([...document.images].map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; })))`);
   await page.evaluate(`(${installAudit})()`);
@@ -206,15 +229,14 @@ try {
   await warm.send('Page.close').catch(() => {});
   let next = 0;
   await Promise.all(Array.from({ length: workers }, async () => {
-    // Each worker has its own window (a hidden page gets no frames) and its own storage (it signs in as someone else).
-    const page = await openPage(browser.browser, { width: 375, height: FOLD, dark: false, newWindow: true, isolated: true });
-    page.core = null;
-    await installSyntheticCore(page, origin, { unknownRequests });
+    let page = await workerPage();
     while (next < jobs.length) {
       const { state, locale, theme } = jobs[next++];
       const stateWidths = widths.filter((w) => !state.widths || state.widths.includes(w));
       // One retry, with nothing from the failed attempt kept: a dev server that hot-reloads
-      // mid-measurement (a file saved during a run) navigates the page under the driver.
+      // mid-measurement (a file saved during a run) navigates the page under the driver, and on a
+      // loaded machine a renderer can die or stall before the state is ready. A state that fails
+      // twice is a setup error: the run stops, nothing is marked measured.
       for (let attempt = 1; ; attempt++) {
         const sink = { rows: { 'text-fit': [], proportion: [], 'copy-budget': [] }, configurations: { 'text-fit': 0, proportion: 0, 'copy-budget': 0 } };
         page.errors.length = 0;
@@ -226,9 +248,12 @@ try {
             for (const [index, width] of stateWidths.entries()) await measure(page, state, locale, theme, width, index === 0, sink);
           }
         } catch (error) {
-          if (attempt >= 2 || /identical markup|asked for|never became ready|fonts did not load/.test(error.message)) throw error;
+          if (attempt >= 2 || page.closed || /identical markup|asked for|fonts did not load/.test(error.message)) throw error;
+          // Not ready: the second attempt starts over on a fresh page (a new renderer), never on the one that stalled.
+          const fresh = /never became ready|never appeared after the presses/.test(error.message);
           console.log(`
-  [retry] ${state.id} ${locale} ${theme}: ${error.message}`);
+  [retry] ${state.id} ${locale} ${theme}, attempt 2 of 2${fresh ? ' on a fresh page' : ''}: ${error.message}`);
+          if (fresh) { await page.close(); page = await workerPage(); }
           continue;
         }
         for (const audit of AUDITS) { rows[audit].push(...sink.rows[audit]); configurations[audit] += sink.configurations[audit]; }
@@ -265,6 +290,9 @@ try {
   console.log(`Reports: ${output}`);
 } catch (error) {
   console.error(`\nSetup error: ${error.message}`);
+  // What the machine looked like when the run stopped: a full disk or a Chrome that exited reads as a state that
+  // "never became ready", so both are said here rather than left to be guessed.
+  console.error(`  Chrome: ${chromeExit ? `exited (${chromeExit})` : 'running'}; disk: ${freeDisk() || 'unknown'}`);
   exitCode = 2;
 } finally {
   browser.child.kill();

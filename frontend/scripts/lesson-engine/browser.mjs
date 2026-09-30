@@ -105,6 +105,30 @@ class Page {
     this.pending = new Map()
     this.errors = []
     this.failedRequests = []
+    /** Why the DevTools connection ended (Chrome exited or crashed), or null while it is open. */
+    this.closed = null
+    /** Set when this page's renderer crashed (Inspector.targetCrashed): the page will never answer again. */
+    this.crashed = false
+    /** Set by openPage: the target and the isolated browser context (if any) that close() disposes of. */
+    this.targetId = null
+    this.contextId = null
+
+    /*
+     * A call Chrome will never answer must not wait forever. When the socket
+     * closes (Chrome exited, crashed, or was killed by the machine), every
+     * pending call is rejected and every later call fails at once. Without
+     * this, a gate awaiting a call on a dead browser is left with nothing on
+     * the event loop and Node ends it as "unsettled top-level await" (exit 13),
+     * with no word about the browser that went away.
+     */
+    const end = (reason) => {
+      if (this.closed) return
+      this.closed = reason
+      for (const waiter of this.pending.values()) waiter.reject(new Error(reason))
+      this.pending.clear()
+    }
+    socket.addEventListener('close', (event) => end(`Chrome closed the DevTools connection (code ${event.code})`))
+    socket.addEventListener('error', () => end('the DevTools connection to Chrome failed'))
 
     socket.addEventListener('message', (event) => {
       const message = JSON.parse(event.data)
@@ -115,6 +139,7 @@ class Page {
         else waiter.resolve(message.result)
         return
       }
+      if (message.method === 'Inspector.targetCrashed') this.crashed = true
       if (message.method === 'Runtime.consoleAPICalled' && message.params.type === 'error') {
         this.errors.push((message.params.args ?? []).map((a) => a.value ?? a.description ?? '').join(' '))
       }
@@ -132,11 +157,31 @@ class Page {
   }
 
   send(method, params = {}) {
+    return this.call(method, params, this.sessionId)
+  }
+
+  /** One DevTools call: to this page's session, or to the browser itself when `sessionId` is undefined (Target.*). */
+  call(method, params, sessionId) {
+    if (this.closed) return Promise.reject(new Error(this.closed))
     const id = this.nextId++
     return new Promise((resolve, reject) => {
       this.pending.set(id, { resolve, reject })
-      this.ws.send(JSON.stringify({ id, method, params, sessionId: this.sessionId }))
+      try {
+        this.ws.send(JSON.stringify({ id, method, params, ...(sessionId ? { sessionId } : {}) }))
+      } catch (error) {
+        this.pending.delete(id)
+        reject(error)
+      }
     })
+  }
+
+  /** Closes the page's target and its isolated context (when it has one), then its DevTools connection. */
+  async close() {
+    if (!this.closed) {
+      if (this.targetId) await this.call('Target.closeTarget', { targetId: this.targetId }).catch(() => {})
+      if (this.contextId) await this.call('Target.disposeBrowserContext', { browserContextId: this.contextId }).catch(() => {})
+    }
+    try { this.ws.close() } catch { /* already closed */ }
   }
 
   async evaluate(expression) {
@@ -187,6 +232,10 @@ export async function openPage(browserUrl, { width, height, dark, newWindow = fa
   const { sessionId } = await attach('Target.attachToTarget', { targetId, flatten: true })
 
   const page = new Page(socket, sessionId)
+  page.targetId = targetId
+  page.contextId = context?.browserContextId ?? null
+  // Inspector reports a crashed renderer (Inspector.targetCrashed), so a page that never becomes ready can say why.
+  await page.send('Inspector.enable').catch(() => {})
   await page.send('Page.enable')
   await page.send('Runtime.enable')
   await page.send('Network.enable')

@@ -48,10 +48,18 @@ const STATES = ['idle', 'listening', 'thinking', 'speaking', 'demonstrating', 'e
 const copy = Object.fromEntries(LOCALES.map((locale) => [locale, JSON.parse(readFileSync(resolve(`src/i18n/${locale}/rebuild-mentor.json`), 'utf8')).mentorStage]));
 const axeSource = readFileSync(resolve('node_modules/axe-core/axe.min.js'), 'utf8');
 
-/* Device conditions, applied before any page script by query flag (the renderer's probe runs once per load). */
+/*
+ * Device conditions, applied before any page script by query flag (the renderer's probe runs once per load).
+ * Every load reports one device, whatever machine runs the gate: a low-power one under ?lowPower=1, otherwise the
+ * mid-range phone the budgets are written for (08 §7: 8 cores, 4 GB, the renderer's medium tier). Left to the real
+ * machine, the probe read a 2-vCPU CI runner as a low-power device (quality.ts: 2 cores or fewer is the low tier),
+ * so every stage correctly took its low-power still there and no live-stage state was ever reached.
+ */
 const DEVICE = `(() => {
   const q = location.search;
-  if (q.includes('lowPower=1')) { Object.defineProperty(navigator, 'deviceMemory', { get: () => 2 }); Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 2 }); }
+  const low = q.includes('lowPower=1');
+  Object.defineProperty(navigator, 'deviceMemory', { get: () => (low ? 2 : 4) });
+  Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => (low ? 2 : 8) });
   if (q.includes('saveData=1')) Object.defineProperty(navigator, 'connection', { get: () => ({ saveData: true }) });
   if (q.includes('noWebgl=1')) { const get = HTMLCanvasElement.prototype.getContext; HTMLCanvasElement.prototype.getContext = function (kind, ...rest) { return /webgl/.test(kind) ? null : get.call(this, kind, ...rest); }; }
   window.__stageErrors = [];
@@ -136,7 +144,10 @@ async function check(family, where, body) {
     error = new Error(`${error.message ?? error} | stage: ${JSON.stringify(stage)}`);
     failures.push({ family, where, error: String(error.message ?? error) });
     results.push({ family, where, ok: false, error: String(error.message ?? error) });
-    process.stdout.write('F');
+    // Said as it happens, not only in the summary: a run stopped by a job timeout still leaves its reasons in the log.
+    process.stdout.write(`F\n  FAIL ${family} ${where}: ${String(error.message ?? error).slice(0, 400)}\n`);
+    // A browser that went away answers nothing again: the remaining checks are not run, and the run fails.
+    if (page.closed) throw new Error(`Chrome went away during ${family} ${where}: ${page.closed}`);
   }
 }
 
@@ -282,10 +293,17 @@ try {
         await page.evaluate(sessionStorageScript({ guest: spec.guest, locale, theme }));
         await page.send('Page.navigate', { url: `${origin}/learn/lesson/verify-stage?lng=${locale}` });
         await waitFor(`document.documentElement.lang === ${JSON.stringify(locale)} && ${ON_SCREEN('.lf-mentor-band')}`, `${where}: compact stage on screen`, 1200);
+        // When a segment opens the Mentor introduces the question: the band speaks for LESSON_STAGE_INTRO_MS (2 s,
+        // lessonStage.tsx; 08 §11). With the models already cached the band is on screen inside that hold, so its
+        // at-rest state is read once the hold is over (up to 5 s); a band that never stops speaking fails below.
+        await waitFor("document.querySelector('.lf-mentor-band')?.dataset.mentorState !== 'speaking'", `${where}: the introduction ends`, 100).catch(() => {});
         const s = await page.evaluate(`(() => {
           const band = document.querySelector('.lf-mentor-band'), b = band.getBoundingClientRect();
           const question = document.querySelector('.lf-learning-intro')?.getBoundingClientRect();
-          const control = document.querySelector('.lf-learning-control')?.getBoundingClientRect();
+          // The first answer control: the first pressable control of the board's answer group. Since the Money row
+          // (Bible 05 §7) the allocation board's answers are the Wallet's pocket rows, which no longer carry the
+          // per-row .lf-learning-control class this selector was written against.
+          const control = document.querySelector('.lf-learning-controls :is(button, input, [role="slider"])')?.getBoundingClientRect();
           return { data: { ...band.dataset }, hidden: band.getAttribute('aria-hidden'), role: band.getAttribute('role'), canvas: !!band.querySelector('canvas'),
             band: { x: b.x, y: b.y, width: b.width, height: b.height }, question: question && { x: question.x, y: question.y },
             control: control && { y: control.y, bottom: control.bottom }, overflow: document.documentElement.scrollWidth - innerWidth,
@@ -355,6 +373,11 @@ try {
       });
     }
   }
+} catch (error) {
+  // The run could not go on (the dev server never mounted, or Chrome went away): recorded as a failure, and the
+  // report below is still written, so the evidence says what happened instead of the process ending mid-run.
+  failures.push({ family: 'setup', where: 'run', error: String(error.message ?? error) });
+  console.log(`\nSetup error: ${error.message ?? error}`);
 } finally {
   await page?.send('Browser.close').catch(() => {});
   browser.child.kill();
