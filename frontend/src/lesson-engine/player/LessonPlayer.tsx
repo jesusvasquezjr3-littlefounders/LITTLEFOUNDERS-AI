@@ -1126,7 +1126,7 @@ export function ResultsScreen({
    */
   return (
     <div className="mx-auto flex w-full max-w-[46rem] flex-1 flex-col justify-center gap-6 px-5 py-10 md:px-0">
-      {/* THE CAST, IN 3D. Never the flat actors — see DESIGN.md §Characters. */}
+      {/* THE CAST, IN 3D, or stills of the same models (Bible 02 rule 21). Never a look-alike. */}
       <div className="flex items-end justify-center gap-1 sm:gap-2">
         {doc.meta.cast.map((c) => (
           <CharacterActor3D

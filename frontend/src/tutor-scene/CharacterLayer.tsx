@@ -12,8 +12,9 @@ import {
   type ReactNode,
 } from 'react';
 import { cn } from '@/lib/utils';
-import CharacterActor from '@/components/characters/control/CharacterActor';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
+import { useIsDarkTheme } from '@/theme/useTheme';
+import { findSlotStill } from './slotStill';
 import './sceneCanvas.css';
 
 /*
@@ -39,9 +40,11 @@ import './sceneCanvas.css';
  * opening a lesson does not pull the renderer into the lesson's own chunk
  * before it is needed (TUTOR_3D.md §6: `three` only ever behind a lazy import).
  *
- * WHILE THE CANVAS IS LOADING, THE 2D CHARACTER STANDS IN. A lesson never shows
- * a hole where a character should be, and the 2D control surface stays a live,
- * exercised path rather than a set of files nobody renders.
+ * WHILE THE CANVAS IS NOT DRAWING, A STILL OF THE REAL MODEL STANDS IN. A
+ * lesson never shows a hole where a character should be, and the stand-in is a
+ * manifest-registered render of the same character's real 3D model in the
+ * catalogue pose closest to what the slot asked for (`slotStill.ts`; Frontend
+ * Bible 02 rule 21, 07 §4, 08 §7). It is never a hand-drawn look-alike.
  */
 
 export interface CharacterSlotSpec {
@@ -186,23 +189,35 @@ export function CharacterSlot({
   }, [registry, key, character, emotion, action, actionKey, fill, stageHeightM, crop, speaking]);
 
   /*
-   * Outside a provider, or before the canvas is drawing, this IS the 2D
-   * character. Rendering nothing would leave a hole in a lesson every time the
-   * chunk was cold, and a hole reads as a broken build rather than as a slow
-   * one.
+   * Outside a provider, or while the canvas is not drawing (the chunk is cold,
+   * the model is loading, WebGL is missing or its context was lost, the tab is
+   * in the background), this is a still of the real model. Rendering nothing
+   * would leave a hole in a lesson, and a hole reads as a broken build rather
+   * than as a slow one.
    */
-  const stillFlat = !registry || !registry.drawing;
+  const still = !registry || !registry.drawing;
+  const dark = useIsDarkTheme();
+  const render = still ? findSlotStill({ character, emotion, action, theme: dark ? 'dark' : 'light' }) : null;
 
   return (
-    <div ref={ref} className={className} data-character={character} data-render={stillFlat ? '2d' : '3d'} aria-hidden="true">
-      {stillFlat ? (
-        <CharacterActor
-          character={character}
-          emotion={emotion}
-          action={action}
-          actionKey={actionKey}
-          speaking={speaking}
-          size="fill"
+    <div
+      ref={ref}
+      className={className}
+      data-character={character}
+      data-render={still ? 'still' : '3d'}
+      data-crop={crop ?? 'full'}
+      data-still-pose={render?.poseId}
+      aria-hidden="true"
+    >
+      {render ? (
+        <img
+          src={render.path}
+          alt=""
+          draggable={false}
+          decoding="async"
+          data-still-id={render.id}
+          className="pointer-events-none h-full w-full select-none object-contain"
+          style={{ objectPosition: crop === 'bust' ? 'center top' : 'center bottom' }}
         />
       ) : null}
     </div>

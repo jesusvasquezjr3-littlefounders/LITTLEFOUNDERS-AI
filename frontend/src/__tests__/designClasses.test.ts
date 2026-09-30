@@ -247,23 +247,16 @@ describe('design classes', () => {
     expect(offenders.size, `radius outside the closed scale: ${report.join(' | ')}`).toBe(0);
   });
 
-  it('renders the flat cast in exactly one place', () => {
+  it('renders no flat cast anywhere', () => {
     /*
-     * /DESIGN.md §Characters, owner rule 2026-09-07: the 3D cast everywhere,
-     * the flat characters ONLY in the Tutor's chat bubble. Two renderings of
-     * one character is two products sharing a login, and the failure is
-     * silent — a screen that quietly kept the flat actor looks finished.
-     *
-     * The allow-list is the bubble's own rendering (`TutorFace`), the
-     * component that OWNS the exception (`CharacterActor3D`, which hands back
-     * the flat character only when `bubble` is asked for), the flat
-     * components themselves, and the layer that holds them for the bubble.
+     * Frontend Bible 02 rule 21 and D12, 07 §4, 08 §7: a Mentor character is
+     * only ever a render of its real 3D model, and the fallback is a
+     * pre-rendered still of the same model. The hand-drawn 2D characters and
+     * the actor that drew them were look-alikes; gap-fix round 8 deleted them
+     * and `CharacterSlot` shows a manifest still instead. Nothing may bring an
+     * import of them back.
      */
-    const ALLOWED = [
-      'tutor/TutorFace.tsx',
-      'components/characters/',
-      'tutor-scene/CharacterLayer.tsx',
-    ];
+    const FLAT = /components\/characters\/(?:DinaCharacter|DrRhoCharacter|LirufCharacter|ZaraVexCharacter)['"]|control\/CharacterActor['"]|['"]\.\/CharacterActor['"]|\/rig\.css['"]/;
     const offenders: string[] = [];
 
     for (const { file, text } of SOURCES) {
@@ -272,13 +265,11 @@ describe('design classes', () => {
       // times, once into a BACKSPACE character and once into an unterminated
       // regex. `fromCharCode(92)` cannot be corrupted in transit.
       const rel = file.slice(SRC.length + 1).split(String.fromCharCode(92)).join('/');
-      if (ALLOWED.some((a) => rel.includes(a))) continue;
-      // The 3D wrapper's name contains the 2D one, so match the import rather
-      // than the bare identifier.
-      if (text.includes("control/CharacterActor'")) offenders.push(rel);
+      if (rel === '__tests__/designClasses.test.ts') continue;
+      if (FLAT.test(text)) offenders.push(rel);
     }
 
-    expect(offenders, `renders the flat cast outside the chat bubble: ${offenders.join(', ')}`).toEqual([]);
+    expect(offenders, `imports a flat look-alike character: ${offenders.join(', ')}`).toEqual([]);
   });
 
   it('keeps the type scale closed', () => {

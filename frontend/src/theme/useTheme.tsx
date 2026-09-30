@@ -113,3 +113,14 @@ export function useTheme(): ThemeContextValue {
   if (!ctx) throw new Error('useTheme must be used within a ThemeProvider');
   return ctx;
 }
+
+/**
+ * Whether the current visual theme is dark, without requiring a provider: the
+ * provider's value when one is mounted, else the `dark` class the inline boot
+ * script puts on <html>. For renderers that may mount outside the app root.
+ */
+export function useIsDarkTheme(): boolean {
+  const ctx = useContext(ThemeContext);
+  if (ctx) return ctx.isDark;
+  return typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+}

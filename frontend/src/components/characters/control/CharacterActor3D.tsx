@@ -1,22 +1,36 @@
 import { cn } from '@/lib/utils'
 import { CharacterSlot } from '@/tutor-scene/CharacterLayer'
-import CharacterActor, { type CharacterActorProps } from './CharacterActor'
+import type { CharacterAction, CharacterEmotion, CharacterId } from './types'
+
+export interface CharacterActorProps {
+  character: CharacterId
+  emotion?: CharacterEmotion
+  /** One-shot action; the 3D layer returns to idle on its own. */
+  action?: CharacterAction
+  /**
+   * Accepted for callers; the 3D layer decides looping from its own table
+   * (`LOOPING_ACTIONS`/`LOOPING_CLIPS`), and the pose catalogue pins the two.
+   */
+  loop?: boolean
+  speaking?: boolean
+  size?: 'sm' | 'md' | 'lg' | 'fill'
+  className?: string
+  /** Bump this to replay the same action (e.g. two "correct" in a row). */
+  actionKey?: number
+}
 
 /*
- * THE SAME CONTROL SURFACE, DRAWN IN 3D.
- *
- * Identical props to `CharacterActor`, so switching a surface is a one-line
- * change and every caller keeps working. The 2D component is not replaced,
- * deprecated at the file level, or moved — it is still the only thing that
- * draws a speech bubble, it is still what stands in while the 3D layer loads,
- * and it is still what every surface outside the Lesson Engine uses.
+ * THE LESSON ENGINE'S CHARACTER, DRAWN IN 3D.
  *
  * THIS DOES NOT OWN A CANVAS. It renders a placeholder that registers with the
  * `CharacterLayerProvider` above it, and one shared canvas draws every
  * character on the screen into its own rectangle. Ten avatars in a dialogue
  * transcript are ten draws in one WebGL context, not ten contexts. Outside a
- * provider the placeholder simply renders the 2D character, so a caller that
- * forgets the provider gets a working character rather than an empty box.
+ * provider, or while the layer is not drawing, the placeholder shows a
+ * manifest-registered still of the same character's real model
+ * (`tutor-scene/slotStill.ts`; Frontend Bible 02 rule 21, 07 §4, 08 §7). The
+ * legacy hand-drawn 2D characters, their bubble and their mouse-tracking
+ * pupils were look-alikes and are gone (gap-fix round 8).
  *
  * `speaking` IS expressed, as ARTICULATION rather than lip-sync. Neither rig
  * has a jaw bone, and the viseme card is fitted for only two of the four
@@ -25,18 +39,6 @@ import CharacterActor, { type CharacterActorProps } from './CharacterActor'
  * 80 px avatar where a moving mouth would be four pixels. `applySpeaking` in
  * `characterActions.ts` carries the reasoning; real lip-sync stays the Tutor's
  * viseme path, where the geometry for it exists.
- *
- * ONE PROP IS NOT EXPRESSED IN 3D, and it is not dropped silently:
- *
- *   bubble   — falls back to the 2D actor entirely. The bubble is drawn inside
- *              each character's own SVG, with its own tail and type ramp; a
- *              hand-rolled DOM copy floating over a canvas would be a different
- *              component wearing the same name.
- *
- * `enableMouseTracking` is 2D-only by nature — the SVG pupils follow a cursor,
- * and the 3D characters never had it. `loop` is honoured by the 3D layer's own
- * table (`LOOPING_ACTIONS`/`LOOPING_CLIPS`) rather than by this prop; for every
- * action the Lesson Engine passes, the two agree, and a test pins that.
  */
 
 /*
@@ -91,8 +93,7 @@ const SIZE_CLASSES: Record<NonNullable<CharacterActorProps['size']>, string> = {
  *
  * Smaller boxes get a TIGHTER crop, because a 96 px full-body figure is a
  * smudge: at that size the face is the whole point and the feet are four
- * pixels. The 2D characters achieve the same thing by being drawn differently
- * per size; this does it with the camera.
+ * pixels. The camera does it here.
  */
 const SIZE_FILL: Record<NonNullable<CharacterActorProps['size']>, number> = {
   sm: 0.94,
@@ -113,12 +114,8 @@ export const CAST_STAGE_HEIGHT_M = 1.9 / 0.86
 export function CharacterActor3D(
   props: CharacterActorProps & { presence?: CharacterPresence; stageHeightM?: number },
 ) {
-  const { character, emotion, action, bubble, size = 'md', className, actionKey, presence, speaking } = props
+  const { character, emotion, action, size = 'md', className, actionKey, presence, speaking } = props
   const spec = presence ? PRESENCE[presence] : null
-
-  // A bubble is a 2D affordance. Asking for one gets the 2D character, whole,
-  // rather than a canvas with an approximation of one bolted beside it.
-  if (bubble) return <CharacterActor {...props} />
 
   return (
     <CharacterSlot

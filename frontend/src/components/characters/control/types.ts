@@ -1,6 +1,7 @@
-// Character Control — unified emotion/action vocabulary over the four canonical
-// characters (LESSON_ENGINE.md §9). Appearance is NON-NEGOTIABLE: this layer only
-// maps to each character's existing prop surface and adds wrapper/rig animation.
+// Character Control — the emotion/action vocabulary the 3D character layer and
+// the pose catalogue speak for the four Mentor characters (LESSON_ENGINE.md §9).
+// A character is only ever drawn from its real 3D model or a registered still of
+// it (Frontend Bible 02 rule 21); the legacy 2D rig this file once mapped to is gone.
 
 export const CHARACTER_IDS = ['dina', 'liruf', 'rho', 'zara'] as const
 export type CharacterId = (typeof CHARACTER_IDS)[number]
@@ -32,61 +33,8 @@ export const CHARACTER_ACTIONS = [
 ] as const
 export type CharacterAction = (typeof CHARACTER_ACTIONS)[number]
 
-/** Native prop mapping. Each character keeps its own union — we translate. */
-export const EMOTION_TO_NATIVE = {
-  dina: {
-    neutral: 'neutral',
-    happy: 'happy',
-    excited: 'happy',
-    thinking: 'neutral',
-    surprised: 'surprised',
-    encouraging: 'wink',
-    proud: 'happy',
-  },
-  liruf: {
-    neutral: 'happy',
-    happy: 'happy',
-    excited: 'excited',
-    thinking: 'thinking',
-    surprised: 'shocked',
-    encouraging: 'happy',
-    proud: 'excited',
-  },
-  rho: {
-    neutral: 'neutral',
-    happy: 'wise',
-    excited: 'explaining',
-    thinking: 'mysterious',
-    surprised: 'surprised',
-    encouraging: 'explaining',
-    proud: 'wise',
-  },
-  zara: {
-    neutral: 'neutral',
-    happy: 'happy',
-    excited: 'excited',
-    thinking: 'curious',
-    surprised: 'curious',
-    encouraging: 'happy',
-    proud: 'flirty',
-  },
-} as const satisfies Record<CharacterId, Record<CharacterEmotion, string>>
-
-/** One-shot action durations (ms) — the actor auto-returns to idle after these. */
-export const ACTION_DURATION_MS: Record<CharacterAction, number> = {
-  idle: 0,
-  jump: 700,
-  hop: 500,
-  wave: 900,
-  point: 800,
-  celebrate: 1100,
-  nod: 600,
-  shake: 600,
-  think: 1000,
-  dance: 1200,
-  peek: 900,
-  bow: 900,
-}
-
-/** Actions that may loop while a celebration overlay is up. */
+/**
+ * Actions a catalogue pose may loop (`poseLibrary.ts` `loop`): the actions every
+ * renderer and capture path loops, pinned against the 3D layer's own table.
+ */
 export const LOOPABLE_ACTIONS: ReadonlySet<CharacterAction> = new Set(['celebrate', 'dance'])
