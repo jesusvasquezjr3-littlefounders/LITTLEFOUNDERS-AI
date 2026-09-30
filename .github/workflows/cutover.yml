@@ -132,6 +132,15 @@ jobs:
           set -euo pipefail
           # H.5: no key, no dump. Every dump and report is encrypted with it
           # before it is stored anywhere.
+          if [ "$STEP" = rehearse ]; then
+            # The rehearsal stores nothing beyond this job: its dumps are
+            # encrypted with a throwaway key generated here, which never leaves
+            # the runner and is deleted with them at the end. It needs no
+            # BACKUP_ENCRYPTION_KEY; every production step below still does.
+            node database/migration-od9/backup-crypto.mjs keygen --key-file "$RUNNER_TEMP/rehearsal.key" >/dev/null
+            test -s "$RUNNER_TEMP/rehearsal.key"
+            exit 0
+          fi
           printf '%s' "${{ secrets.BACKUP_ENCRYPTION_KEY }}" > "$RUNNER_TEMP/backup.key"
           chmod 600 "$RUNNER_TEMP/backup.key"
           test -s "$RUNNER_TEMP/backup.key"
@@ -482,7 +491,7 @@ jobs:
           test -s "$DUMP" || die "the dump is empty: the remote pg_dump failed"
           head -c 5 "$DUMP" | grep -q PGDMP || die "the pulled file is not a pg_dump custom archive"
           echo "Dump pulled: $(wc -c < "$DUMP") bytes"
-          node database/migration-od9/backup-crypto.mjs encrypt --in "$DUMP" --out "$LF/rehearsal.dump.lfbk" --key-file "$RUNNER_TEMP/backup.key" >/dev/null
+          node database/migration-od9/backup-crypto.mjs encrypt --in "$DUMP" --out "$LF/rehearsal.dump.lfbk" --key-file "$RUNNER_TEMP/rehearsal.key" >/dev/null
           test ! -e "$DUMP"
           test -s "$LF/rehearsal.dump.lfbk"
           printf 'read_production\tPASS\t%s\n' "$(( $(date +%s) - start ))" > "$LF/timings.tsv"
@@ -531,7 +540,7 @@ jobs:
             [ "${v_copy:0:2}" = "${v_prod:0:2}" ] || { echo "major version differs"; return 1; }
           }
           p_restore() {
-            node database/migration-od9/backup-crypto.mjs decrypt --in "$LF/rehearsal.dump.lfbk" --out "$LF/rehearsal.dump" --key-file "$RUNNER_TEMP/backup.key" >/dev/null
+            node database/migration-od9/backup-crypto.mjs decrypt --in "$LF/rehearsal.dump.lfbk" --out "$LF/rehearsal.dump" --key-file "$RUNNER_TEMP/rehearsal.key" >/dev/null
             copy_restore "$LF/rehearsal.dump" rehearsal
           }
           p_rest_up() {
@@ -565,9 +574,9 @@ jobs:
             docker cp "$COPY_DB:/tmp/window.dump" "$LF/window.dump" >/dev/null
             docker exec "$COPY_DB" rm -f /tmp/window.dump
             test -s "$LF/window.dump"
-            node database/migration-od9/backup-crypto.mjs encrypt --in "$LF/window.dump" --out "$LF/window.dump.lfbk" --key-file "$RUNNER_TEMP/backup.key" >/dev/null
+            node database/migration-od9/backup-crypto.mjs encrypt --in "$LF/window.dump" --out "$LF/window.dump.lfbk" --key-file "$RUNNER_TEMP/rehearsal.key" >/dev/null
             test ! -e "$LF/window.dump"
-            node database/migration-od9/backup-crypto.mjs decrypt --in "$LF/window.dump.lfbk" --out "$LF/verify.dump" --key-file "$RUNNER_TEMP/backup.key" >/dev/null
+            node database/migration-od9/backup-crypto.mjs decrypt --in "$LF/window.dump.lfbk" --out "$LF/verify.dump" --key-file "$RUNNER_TEMP/rehearsal.key" >/dev/null
             copy_restore "$LF/verify.dump" backup_check
             od9_copy inventory --label backup_check --db backup_check >/dev/null
             od9_copy compare --before before --after backup_check --db backup_check | grep -E '"(ok|failures|families)"'
@@ -658,7 +667,7 @@ jobs:
           # Backup document section 4: the window backup restores to the state
           # the before inventory describes.
           p_restore_rehearsal() {
-            node database/migration-od9/backup-crypto.mjs decrypt --in "$LF/window.dump.lfbk" --out "$LF/restored.dump" --key-file "$RUNNER_TEMP/backup.key" >/dev/null
+            node database/migration-od9/backup-crypto.mjs decrypt --in "$LF/window.dump.lfbk" --out "$LF/restored.dump" --key-file "$RUNNER_TEMP/rehearsal.key" >/dev/null
             copy_restore "$LF/restored.dump" restored
             od9_copy inventory --label restored --db restored >/dev/null
             od9_copy compare --before before --after restored --db restored | grep -E '"(ok|failures|families)"'
@@ -1008,4 +1017,4 @@ jobs:
       # the disposable copy leave the runner on every outcome.
       - name: Remove the backup key, every dump, report and copy
         if: always()
-        run: rm -f "$RUNNER_TEMP/backup.key" ./*.dump ./*.dump.lfbk ./*.dump.lfbk.manifest.json; docker rm -f lf-cutover-rest lf-cutover-db >/dev/null 2>&1; docker network rm lf-cutover-internal >/dev/null 2>&1; kill "$(cat "$RUNNER_TEMP/lf/proxy.pid" 2>/dev/null)" 2>/dev/null; rm -rf "$RUNNER_TEMP/lf" audit-results/od9 ~/.ssh/railway_key; true
+        run: rm -f "$RUNNER_TEMP/backup.key" "$RUNNER_TEMP/rehearsal.key" ./*.dump ./*.dump.lfbk ./*.dump.lfbk.manifest.json; docker rm -f lf-cutover-rest lf-cutover-db >/dev/null 2>&1; docker network rm lf-cutover-internal >/dev/null 2>&1; kill "$(cat "$RUNNER_TEMP/lf/proxy.pid" 2>/dev/null)" 2>/dev/null; rm -rf "$RUNNER_TEMP/lf" audit-results/od9 ~/.ssh/railway_key; true
