@@ -66,6 +66,8 @@ Verified first:
   copy-budget, glossary and gallery contracts.
 - `npm run type-check` and `npm run lint` in backend and frontend;
   `bash agent/tools/check-i18n.sh`; `npm run secrets:check`; `npm run spec:check`.
+- After merging `codex/spec-migration-s02` (clean, no conflicts):
+  `npm run type-check` green in backend and frontend.
 - Not run here (orchestrator's final gate): browser audits (text fit,
   proportion, copy budget) of the new P4/P5 row actions and teen follower rows.
 
