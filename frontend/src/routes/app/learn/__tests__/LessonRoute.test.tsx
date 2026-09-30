@@ -444,7 +444,7 @@ describe('LessonRoute', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save 4 coins' }));
     fireEvent.click(screen.getByRole('button', { name: 'I just picked one' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    expect(await screen.findByText('That choice works.')).toBeInTheDocument();
+    expect(await screen.findByText('Your choice and your reason both point to the goal.')).toBeInTheDocument();
     // The retry used the renewed one-use token, never the consumed one.
     expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({
       body: expect.objectContaining({ attempt_token: 'decide-retry-token', answer: { choice: 'save-first', reason: 'reason-lucky' } }),
@@ -684,7 +684,7 @@ describe('LessonRoute', () => {
     expect(await screen.findByRole('heading', { name: 'Write it' })).toBeInTheDocument();
     fireEvent.change(screen.getByRole('textbox', { name: 'Your answer' }), { target: { value: '6' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    expect(await screen.findByText('Try counting again.')).toBeInTheDocument();
+    expect(await screen.findByText('Not yet. Count the first group, then keep counting the second.')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Finish lesson' })).toBeNull();
     fireEvent.change(screen.getByRole('textbox', { name: 'Your answer' }), { target: { value: '7' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
@@ -710,7 +710,7 @@ describe('LessonRoute', () => {
     fireEvent.change(await screen.findByRole('textbox', { name: 'Your answer' }), { target: { value: '7' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     expect(await screen.findByText('We could not check that. Try again.')).toBeInTheDocument();
-    expect(screen.queryByText('Try counting again.')).toBeNull();
+    expect(screen.queryByText('Not yet. Count the first group, then keep counting the second.')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(mockedApi).toHaveBeenLastCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: expect.objectContaining({
       segment_id: 'cpa-concrete-01', attempt_token: 'concrete-token', answer: { value: '7' },

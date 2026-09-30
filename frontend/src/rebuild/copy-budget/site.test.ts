@@ -29,6 +29,8 @@ const SITE_GROUPS: Record<string, Rule> = {
   badgeLanding: (key) => ['title', 'expiredTitle'].includes(key) ? 'heading' : key === 'howItWorks' ? 'action' : 'body',
   cookies: (key) => ['title', 'sheetTitle'].includes(key) || (key.endsWith('Title')) ? 'heading'
     : ['accept', 'reject', 'preferences', 'privacyLink', 'close'].includes(key) ? 'action' : 'body',
+  // The hero scenes' accessible names (GAP-FIX-R5, 07 §8): read aloud as the page's image, on the site body budget.
+  siteHeroArt: () => 'body',
 };
 
 /*
@@ -47,6 +49,8 @@ const ACTIONS: Record<string, readonly string[]> = {
   authUpgrade: ['submit', 'submitting', 'later', 'login'],
   authVerify: ['retry', 'retrying', 'home', 'openFamily', 'openSettings', 'ready', 'notNow', 'choosePhoto', 'changePhoto', 'submit', 'submitting', 'writeToUs'],
   onboardingFlow: ['back', 'continue', 'skip', 'saving', 'start', 'create', 'later'],
+  // `checking` is also the pending label of "Use another account", so it takes the action budget.
+  authJoin: ['create', 'login', 'verify', 'otherAccount', 'home', 'checking'],
 };
 const IDENTITY_HEADINGS = new Set(['title', 'identity', 'document']);
 const identityRole = (group: string, key: string): CopyRole => {
@@ -63,7 +67,8 @@ describe('rebuild-site copy budget', () => {
     it(`fits its budgets in ${locale}`, () => {
       expectBudgetedGroups(strings, ['ageScreen', 'kidSuspended', ...Object.keys(SITE_GROUPS), 'routeError', ...Object.keys(ACTIONS)]);
       for (const group of Object.keys(ACTIONS)) {
-        const band = group === 'onboardingFlow' ? '6-9' : 'adult';
+        // The invite landing (/join/TOKEN, GAP-FIX-R5) needs no role, and its `child` state is read by a child's account.
+        const band = group === 'onboardingFlow' || group === 'authJoin' ? '6-9' : 'adult';
         for (const [key, text] of flatten(strings[group]!)) {
           expectFits(text.replace('{current}', '2').replace('{total}', '5'), identityRole(group, key), locale, band, `${group}.${key}`);
         }

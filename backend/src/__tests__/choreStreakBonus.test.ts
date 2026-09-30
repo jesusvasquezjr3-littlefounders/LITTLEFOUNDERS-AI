@@ -391,13 +391,24 @@ describe('S07.3 staff metrics (Appendix H, Diagnostic, counts only)', () => {
   });
 
   it('serves the rest-day utilization from the model over recorded days', async () => {
-    const t = today();
-    // Practised four days ending five days ago: two rest days, then the run ended.
-    stub({ staffGrants: ['view_analytics'], days: [8, 7, 6, 5].map((n) => ({ kid: KID, day: shift(t, -n) })) });
-    const res = await app().get('/api/v1/admin/family/chore-streak-rest-days?days=30').set('Authorization', as(STAFF));
-    expect(res.status).toBe(200);
-    expect(res.body.data).toMatchObject({ children: 1, restDayCovered: 2, runsEnded: 1 });
-    expect(res.body.data.coveredShare).toBeCloseTo(2 / 3);
+    // Rest days are two per ISO week (habitStreak.ts), so the outcome depends on
+    // where the missed days fall in the week: on a Wednesday the gap below
+    // crosses a Monday and the new week's fresh rest days cover every miss.
+    // Only Date is faked, so request and fetch timers run normally.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-09-29T12:00:00Z')); // a Tuesday
+    try {
+      const t = today();
+      // Practised four days ending five days ago (Mon 21 to Thu 24 September):
+      // Fri 25 and Sat 26 use the week's two rest days, and Sun 27 ends the run.
+      stub({ staffGrants: ['view_analytics'], days: [8, 7, 6, 5].map((n) => ({ kid: KID, day: shift(t, -n) })) });
+      const res = await app().get('/api/v1/admin/family/chore-streak-rest-days?days=30').set('Authorization', as(STAFF));
+      expect(res.status).toBe(200);
+      expect(res.body.data).toMatchObject({ children: 1, restDayCovered: 2, runsEnded: 1 });
+      expect(res.body.data.coveredShare).toBeCloseTo(2 / 3);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('serves the Age-Tier Bonus Comprehension Proxy, with a null rate for an empty population', async () => {

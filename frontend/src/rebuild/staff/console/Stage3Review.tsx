@@ -60,7 +60,7 @@ function Stage3Form({ api, state, onSaved }: { api: StaffApi; state: Stage3State
     const value = draft.checks[entry.id];
     const options = (entry.allowsNotApplicable ? ['pass', 'fail', 'not_applicable'] as const : ['pass', 'fail'] as const)
       .map((option) => ({ value: option, label: t.option[option] }));
-    return <div key={entry.id} className="lf-staff-stack lf-staff-stage3-item" data-stage3-item={entry.id}>
+    return <div key={entry.id} className="lf-staff-stack" data-stage3-item={entry.id}>
       <SegmentedControl<Stage3Result> legend={t.body[`q_${entry.id}`]} name={`${name}-${entry.id}`} value={value?.result ?? null}
         options={options} onValueChange={(result) => setCheck(entry.id, { result })} />
       <TextAreaField label={t.body.finding} help={t.body.findingHelp} value={value?.finding ?? ''} maxLength={600}
@@ -80,7 +80,7 @@ function Stage3Form({ api, state, onSaved }: { api: StaffApi; state: Stage3State
     {STAGE3_ITEMS.filter((entry) => entry.group === 'question').map(item)}
     {state.openItems.length > 0 ? <>
       <h4 data-copy-role="heading" className="lf-staff-subheading">{t.heading.forgeItems}</h4>
-      {state.openItems.map((flag) => <div key={flag.id} className="lf-staff-stack lf-staff-stage3-item" data-stage3-flag={flag.id}>
+      {state.openItems.map((flag) => <div key={flag.id} className="lf-staff-stack" data-stage3-flag={flag.id}>
         <p data-copy-role="body" className="lf-staff-muted">{fill(t.body.gate, { n: flag.gate })}{flag.locale ? ` · ${flag.locale}` : ''}</p>
         <p data-copy-role="data" className="ugc">{flag.message}</p>
         <SegmentedControl<Stage3Resolution> legend={fill(t.body.gate, { n: flag.gate })} legendHidden name={`${name}-${flag.id}`}

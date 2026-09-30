@@ -39,7 +39,7 @@ export function ApproachChoiceBoard({ document, onBack, sequence, onChoose }: {
         <Button variant="accent" disabled={choice === null} pending={pending} onClick={() => { void start(); }}>{t.approachStart}</Button>
       </div>
     </footer>}>
-    <section className="lf-learning-board lf-family-board lf-approach-board">
+    <section className="lf-learning-board lf-family-board">
       <div className="lf-story-options" role="group" aria-label={t.approachPrompt}>
         {document.approaches.options.map((option) => <AnswerChoice key={option.id} label={option.label} selected={choice === option.id} disabled={pending}
           onSelect={() => { setFailed(false); setChoice(option.id); }} />)}
