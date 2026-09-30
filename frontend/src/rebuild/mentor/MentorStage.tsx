@@ -8,7 +8,7 @@ import { REGISTERS, registerForCopyBand } from '../design/learnerRegisterPolicy.
 import { StaticThemeProvider } from '../../theme/useTheme';
 import { getDeviceProbe, pickInitialTier } from '../../tutor-scene/quality';
 import { resolveMentorPose, type MentorClosingScript, type MentorStageState } from './stageStates';
-import { findStageStills } from './stageStills';
+import { findStageSequence, findStageStills, type StageSequence } from './stageStills';
 import {
   decideStageMode, FIRST_RENDER_BUDGET_MS, FRAME_RATE_STRIKES, frameRateStrikes,
   type MentorStageFailure, type MentorStageFallback, type MentorStageMode, type StageEnvironment,
@@ -48,6 +48,29 @@ import './mentorStage.css';
 
 /** The reduced-motion cross-fade's fade-down (--dur-micro, 150 ms): the held pose changes while the scene is faded. */
 const HELD_SWITCH_MS = 150;
+/**
+ * How long the still fallback waits for a state change's sequence before it settles on the still instead (08 §7): a
+ * sequence that arrived later would replay a gesture after the learner has already seen the pose.
+ */
+export const SEQUENCE_WAIT_MS = 600;
+
+/**
+ * The bytes of one rendered sequence, or null when it cannot play now. With data saver on only a copy the
+ * browser already holds is used (`only-if-cached`): the fallback never downloads motion the learner asked it
+ * to spare (08 §7), and the still carries the state instead.
+ */
+async function loadSequence(sequence: StageSequence, saveData: boolean): Promise<Blob | null> {
+  if (typeof fetch !== 'function' || typeof URL === 'undefined' || typeof URL.createObjectURL !== 'function') return null;
+  try {
+    const response = await fetch(sequence.path, saveData ? { cache: 'only-if-cached', mode: 'same-origin' } : undefined);
+    return response.ok ? await response.blob() : null;
+  } catch {
+    return null;
+  }
+}
+
+/** A sequence on screen: its own object URL per play, so the animation always starts from its first frame. */
+interface PlayingSequence { id: string; url: string; durationMs: number }
 
 const TutorStage = lazy(() => import('../../tutor-scene/TutorStage').then((module) => ({ default: module.TutorStage })));
 
@@ -151,6 +174,11 @@ export interface MentorStageProps {
   onSpeechBlocked?: (blocked: boolean) => void;
   onReady?: (event: MentorStageReady) => void;
   onError?: (event: MentorStageError) => void;
+  /**
+   * Device conditions the host already knows, over the browser's own probe (08 §7): the future mobile wrapper
+   * (OD-12) knows the device's power and data mode, and the preview shows each fallback without emulating one.
+   */
+  environment?: Partial<StageEnvironment>;
   className?: string;
   /**
    * B.8 / Bible 08 §11 (GAP-FIX-R3): a decorative backdrop drawn inside the
@@ -160,7 +188,7 @@ export interface MentorStageProps {
   backdrop?: ReactNode;
 }
 
-function readEnvironment(): StageEnvironment {
+function readEnvironment(override?: Partial<StageEnvironment>): StageEnvironment {
   const probe = getDeviceProbe();
   const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
   return {
@@ -173,6 +201,7 @@ function readEnvironment(): StageEnvironment {
      * would claim a mode it is not in. A changed preference applies on reload.
      */
     reducedMotion: probe.prefersReducedMotion,
+    ...override,
   };
 }
 
@@ -187,8 +216,9 @@ class RendererBoundary extends Component<{ onFailure: () => void; children: Reac
 export function MentorStage({
   character, state, board = false, ageBand, size = 'full', theme, scene = 'diorama-a', light = 'auto', companion = null, companionPose = null,
   milestone = null, closing = null, beat = 0, shot, copy, speechUrl = null, audioKey = 0, onSpeechEnd, onSpeechBlocked, onReady, onError, className, backdrop = null,
+  environment: environmentOverride,
 }: MentorStageProps) {
-  const [environment] = useState<StageEnvironment>(readEnvironment);
+  const [environment] = useState<StageEnvironment>(() => readEnvironment(environmentOverride));
   const [failure, setFailure] = useState<MentorStageFailure | null>(null);
   const [liveReady, setLiveReady] = useState(false);
   const [stillGone, setStillGone] = useState(false);
@@ -207,20 +237,61 @@ export function MentorStage({
    * Reduced motion: a pose change is a short cross-fade, not a movement (08 §7).
    * The scene fades down, the held pose switches while it is faded, and the
    * scene fades back up. A repeated state (a second miss) fades the same way.
-   * The still fallback changes state the same way (W3M.1): the next pose's
-   * still comes in under a fade and settles, once per state change (08 §7).
+   * The still fallback changes state the same way (W3M.1), and plays motion
+   * where it may (gap-fix round 8, 08 §7: "sequences play once per state
+   * change and settle"): under the fade the pose's rendered sequence of the
+   * real model comes in, plays once, and ends on that pose's still, which
+   * stays. Idle is a still and never plays one; reduced motion keeps the fade
+   * alone (07 §5: every sequence has a still); with data saver on only a
+   * sequence the browser already holds plays. A missing or late sequence
+   * settles on the still, as before.
    */
   const swaps = mode === 'held' || mode === 'still';
   const [heldPose, setHeldPose] = useState(pose);
   const [swapping, setSwapping] = useState(false);
+  const [playing, setPlaying] = useState<PlayingSequence | null>(null);
+  const [sequenceStarted, setSequenceStarted] = useState<string | null>(null);
   const firstPose = useRef(true);
+  const sequence = mode === 'still' && !environment.reducedMotion && shown !== 'idle' && size === 'full'
+    ? findStageSequence(character, pose.id, theme) : null;
   useEffect(() => {
+    setPlaying(null);
     if (firstPose.current || !swaps) { firstPose.current = false; setHeldPose(pose); setSwapping(false); return undefined; }
     setSwapping(true);
-    const timer = window.setTimeout(() => { setHeldPose(pose); setSwapping(false); }, HELD_SWITCH_MS);
+    if (!sequence) {
+      // No sequence to play (idle, reduced motion, none registered): the still comes in under the fade, as before.
+      const timer = window.setTimeout(() => { setHeldPose(pose); setSwapping(false); }, HELD_SWITCH_MS);
+      return () => window.clearTimeout(timer);
+    }
+    let current = true;
+    let url: string | null = null;
+    const timers: number[] = [];
+    const faded = new Promise<void>((done) => { timers.push(window.setTimeout(done, HELD_SWITCH_MS)); });
+    const late = new Promise<null>((done) => { timers.push(window.setTimeout(() => done(null), SEQUENCE_WAIT_MS)); });
+    const loaded = Promise.race([loadSequence(sequence, environment.saveData), late]);
+    void Promise.all([loaded, faded]).then(([blob]) => {
+      if (!current) return;
+      setHeldPose(pose);
+      if (blob) {
+        url = URL.createObjectURL(blob);
+        setPlaying({ id: sequence.id, url, durationMs: sequence.durationMs });
+      }
+      setSwapping(false);
+    });
+    return () => {
+      current = false;
+      for (const timer of timers) window.clearTimeout(timer);
+      if (url) URL.revokeObjectURL(url);
+    };
+    // `pose` is a constant row of the catalogue table, so its id is its identity; `sequence` follows pose, character and mode.
+  }, [swaps, pose.id, beat, sequence?.id]);
+
+  // The sequence plays once from the moment it is decoded, then leaves the pose's still on screen (it never loops).
+  useEffect(() => {
+    if (!playing || sequenceStarted !== playing.url) return undefined;
+    const timer = window.setTimeout(() => setPlaying((now) => (now === playing ? null : now)), playing.durationMs);
     return () => window.clearTimeout(timer);
-    // `pose` is a constant row of the catalogue table, so its id is its identity.
-  }, [swaps, pose.id, beat]);
+  }, [playing, sequenceStarted]);
   const played = swaps ? heldPose : pose;
   // The still of the pose on screen: in the fallback the one the fade settled on; while the live model loads, the requested one.
   const stills = findStageStills({ character, poseId: played.id, theme, size, band });
@@ -302,7 +373,8 @@ export function MentorStage({
     data-board={board ? 'open' : 'closed'} data-idle-motion={idle ? 'hero' : undefined}
     data-ready={(mode === 'still' ? firstRenderMs !== null : liveReady) ? 'true' : 'false'}
     data-first-render-ms={firstRenderMs ?? undefined}
-    data-still-pose={stillVisible ? stills?.base.poseId : undefined} data-backdrop={backdrop ? 'true' : undefined}>
+    data-still-pose={stillVisible ? stills?.base.poseId : undefined} data-still-sequence={playing?.id}
+    data-backdrop={backdrop ? 'true' : undefined}>
     {backdrop ? <div className="lf-mentor-stage-backdrop" aria-hidden="true">{backdrop}</div> : null}
     <div className="lf-mentor-stage-scene" data-swap={swapping ? 'out' : undefined}>
       {showStill && stills ? <picture key={`${stills.base.id}:${mode}`}>
@@ -311,6 +383,8 @@ export function MentorStage({
           src={stills.base.path} alt="" data-leaving={mode !== 'still' && liveReady ? 'true' : undefined}
           onLoad={() => { if (mode === 'still') report('still'); }} />
       </picture> : null}
+      {playing && mode === 'still' ? <img key={playing.url} className="lf-mentor-stage-still lf-mentor-stage-still--cover lf-mentor-stage-sequence"
+        src={playing.url} alt="" onLoad={() => setSequenceStarted(playing.url)} onError={() => setPlaying(null)} /> : null}
       {rendered3d ? <div className="lf-mentor-stage-live" data-visible={liveReady ? 'true' : 'false'}>
         <RendererBoundary key={`${character}:${scene}:${mode}`} onFailure={() => fail('render-error')}>
           <StaticThemeProvider isDark={theme === 'dark'}>

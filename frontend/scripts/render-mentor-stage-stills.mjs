@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, mkdtempSync, statSync, writeFileSync } from 'nod
 import { join, resolve } from 'node:path';
 import sharp from 'sharp';
 import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.mjs';
+import { STAGE_STILL_POSES } from './lib/mentorStagePoses.mjs';
 
 /*
  * The Mentor stage's per-state stills (Frontend Bible 08 §3, §7; 07 §4), locally
@@ -44,24 +45,8 @@ const origin = process.env.REBUILD_URL ?? 'http://localhost:5540';
 const CHARACTERS = process.env.STILL_CHARACTERS?.split(',') ?? ['rho', 'zara', 'liruf', 'dina'];
 const MODES = process.env.STILL_MODES?.split(',') ?? ['light', 'dark'];
 
-/** One request to the preview per catalogue pose the full stage can play (`stageStates.ts`). */
-export const STAGE_STILL_POSES = [
-  { pose: 'ambient.idle', query: 'state=idle&age=6-9' },
-  { pose: 'ambient.listen', query: 'state=listening&age=6-9' },
-  { pose: 'think.ponder', query: 'state=thinking&age=6-9' },
-  { pose: 'teach.aside', query: 'state=thinking&age=13-17' },
-  { pose: 'ambient.idle.happy', query: 'state=speaking&age=6-9' },
-  { pose: 'teach.explain', query: 'state=demonstrating&age=6-9' },
-  { pose: 'feedback.retry.gentle', query: 'state=encouraging&age=6-9' },
-  { pose: 'celebrate.with', query: 'state=celebrating&milestone=lesson-complete&age=6-9' },
-  { pose: 'celebrate.applaud', query: 'state=celebrating&milestone=lesson-complete&age=13-17' },
-  { pose: 'transition.close.warm', query: 'state=closing&closing=completed&age=6-9' },
-  { pose: 'transition.exit', query: 'state=closing&closing=learner_left&age=6-9' },
-  { pose: 'transition.pause', query: 'state=closing&closing=safety_stop&age=6-9' },
-  // GAP-FIX-R2: the `acknowledging` state (08 §11, a met answer): the quiet happy pose and the calm register's nod.
-  { pose: 'feedback.correct.quiet', query: 'state=acknowledging&age=6-9' },
-  { pose: 'greet.nod', query: 'state=acknowledging&age=13-17' },
-];
+/** One request to the preview per catalogue pose the full stage can play (`stageStates.ts`): scripts/lib/mentorStagePoses.mjs. */
+export { STAGE_STILL_POSES };
 const POSES = process.env.STILL_POSES ? STAGE_STILL_POSES.filter((row) => process.env.STILL_POSES.split(',').includes(row.pose)) : STAGE_STILL_POSES;
 
 const SCENE = 'diorama-a';

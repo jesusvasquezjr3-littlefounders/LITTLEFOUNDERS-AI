@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import manifest from '../../assets/manifest.json';
 import { MENTOR_CHARACTERS } from '../../design/assets';
-import { findStageStills, STAGE_STILL_SLOT, stageStillId } from '../stageStills';
+import { findStageSequence, findStageStills, STAGE_SEQUENCE_SLOT, STAGE_STILL_SLOT, stageStillId } from '../stageStills';
 import { CLOSING_SCRIPTS, MENTOR_STAGE_STATES, resolveMentorPose } from '../stageStates';
 
 /** The catalogue poses the full stage can play (`stageStates.ts`), each with its own still (render-mentor-stage-stills.mjs). */
@@ -124,6 +124,27 @@ describe('findStageStills: the full stage acknowledging state (08 §11)', () => 
           expect(set?.base.poseId, `${character} ${theme} ${band} ${state}`).toBe(pose.id);
         }
       }
+    }
+  });
+});
+
+describe('stage sequences (gap-fix round 8, 08 §7, 07 §5)', () => {
+  const rows = (manifest as { id: string; slot: string; type: string; character?: string; poseId?: string; modes: string; endFrame?: string }[])
+    .filter((row) => row.slot === STAGE_SEQUENCE_SLOT);
+
+  it('offers every registered sequence, each ending on the still of the same character, pose and mode', () => {
+    for (const row of rows) {
+      const theme = row.modes as 'light' | 'dark';
+      const sequence = findStageSequence(row.character as (typeof MENTOR_CHARACTERS)[number], row.poseId!, theme);
+      expect(sequence?.id, row.id).toBe(row.id);
+      expect(sequence?.endFrame).toBe(stageStillId(row.character as (typeof MENTOR_CHARACTERS)[number], row.poseId!, theme));
+      expect(row.type).toBe('sequence');
+    }
+  });
+
+  it('never offers a sequence into idle: idle is a still', () => {
+    for (const character of MENTOR_CHARACTERS) for (const theme of ['light', 'dark'] as const) {
+      expect(findStageSequence(character, 'ambient.idle', theme)).toBeNull();
     }
   });
 });

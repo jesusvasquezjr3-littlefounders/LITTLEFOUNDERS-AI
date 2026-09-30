@@ -18,12 +18,24 @@ const harness = vi.hoisted(() => ({
   tier: 'medium',
   crash: false,
   last: null as null | StageProps,
+  /** Gap-fix round 8: a rendered sequence to offer in place of the manifest's (undefined keeps the real lookup). */
+  sequence: undefined as undefined | null | { id: string; path: string; poseId: string; durationMs: number; endFrame: string },
 }));
 
 vi.mock('../../../tutor-scene/quality', () => ({
   getDeviceProbe: () => harness.probe,
   pickInitialTier: () => harness.tier,
 }));
+vi.mock('../stageStills', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../stageStills')>();
+  return {
+    ...actual,
+    findStageSequence: (...args: Parameters<typeof actual.findStageSequence>) => {
+      if (harness.sequence === undefined) return actual.findStageSequence(...args);
+      return harness.sequence && args[1] === harness.sequence.poseId && args[1] !== 'ambient.idle' ? harness.sequence : null;
+    },
+  };
+});
 vi.mock('../../../tutor-scene/TutorStage', () => ({
   TutorStage: (props: StageProps) => {
     if (harness.crash) throw new Error('WebGL context lost');
@@ -39,6 +51,7 @@ beforeEach(() => {
   harness.tier = 'medium';
   harness.crash = false;
   harness.last = null;
+  harness.sequence = null;
 });
 afterEach(() => vi.useRealTimers());
 
@@ -289,5 +302,88 @@ describe('MentorStage: interface and accessibility', () => {
     rerender(<CompactMentorStage ageBand="6-9" theme="light" verdict="met" character="zara" scene="diorama-a" />);
     expect(stage().dataset.mentorState).toBe('acknowledging');
     expect(harness.last?.action).not.toBe('celebrate');
+  });
+});
+
+describe('MentorStage: rendered sequences in the fallback (gap-fix round 8, 08 §7, 07 §5)', () => {
+  const SEQUENCE = { id: 'mentor.zara.sequence.think.ponder.light', path: '/rebuild/mentor-sequence/zara-think-ponder-light.webp', poseId: 'think.ponder', durationMs: 380, endFrame: 'mentor.zara.stage.think.ponder.light' };
+  let requests: { url: string; init?: RequestInit }[] = [];
+  beforeEach(() => {
+    harness.probe = { ...harness.probe, webgl: 'none' };
+    harness.sequence = SEQUENCE;
+    requests = [];
+    vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
+      requests.push({ url, init });
+      return { ok: true, blob: async () => new Blob(['webp']) } as unknown as Response;
+    }));
+    let n = 0;
+    Object.assign(URL, { createObjectURL: () => `blob:seq-${++n}`, revokeObjectURL: () => undefined });
+    vi.useFakeTimers();
+  });
+  afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); });
+
+  const sequenceImage = () => document.querySelector<HTMLImageElement>('.lf-mentor-stage-sequence');
+
+  it('plays the pose sequence once on a state change and settles on that pose still', async () => {
+    const { rerender } = render(<MentorStage character="zara" state="idle" ageBand="6-9" theme="light" />);
+    expect(sequenceImage()).toBeNull();
+    rerender(<MentorStage character="zara" state="thinking" ageBand="6-9" theme="light" />);
+    await act(async () => { await vi.advanceTimersByTimeAsync(150); });
+    expect(requests.map((r) => r.url)).toEqual([SEQUENCE.path]);
+    expect(stage().dataset.stillSequence).toBe(SEQUENCE.id);
+    expect(stage().dataset.stillPose).toBe('think.ponder');
+    // The still under it is already the pose's own end frame.
+    expect(document.querySelector('.lf-mentor-stage-still:not(.lf-mentor-stage-sequence)')?.getAttribute('src')).toBe('/rebuild/mentor-stage/zara-think-ponder-light.png');
+    fireEvent.load(sequenceImage()!);
+    await act(async () => { await vi.advanceTimersByTimeAsync(SEQUENCE.durationMs); });
+    // Played once: gone, and the still stays.
+    expect(sequenceImage()).toBeNull();
+    expect(stage().dataset.stillSequence).toBeUndefined();
+    expect(document.querySelector('.lf-mentor-stage-still')?.getAttribute('src')).toBe('/rebuild/mentor-stage/zara-think-ponder-light.png');
+    await act(async () => { await vi.advanceTimersByTimeAsync(5000); });
+    expect(requests).toHaveLength(1);
+  });
+
+  it('never plays a sequence into idle: idle is a still', async () => {
+    const { rerender } = render(<MentorStage character="zara" state="thinking" ageBand="6-9" theme="light" />);
+    rerender(<MentorStage character="zara" state="idle" ageBand="6-9" theme="light" />);
+    await act(async () => { await vi.advanceTimersByTimeAsync(700); });
+    expect(requests).toHaveLength(0);
+    expect(sequenceImage()).toBeNull();
+    expect(stage().dataset.stillPose).toBe('ambient.idle');
+  });
+
+  it('never plays a sequence under reduced motion: the still comes in under the fade', async () => {
+    harness.probe = { ...harness.probe, prefersReducedMotion: true };
+    const { rerender } = render(<MentorStage character="zara" state="idle" ageBand="6-9" theme="light" />);
+    rerender(<MentorStage character="zara" state="thinking" ageBand="6-9" theme="light" />);
+    await act(async () => { await vi.advanceTimersByTimeAsync(700); });
+    expect(requests).toHaveLength(0);
+    expect(sequenceImage()).toBeNull();
+    expect(stage().dataset.stillPose).toBe('think.ponder');
+  });
+
+  it('with data saver on, asks only for a copy the browser already holds, and settles on the still without one', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
+      requests.push({ url, init });
+      throw new TypeError('not cached');
+    }));
+    harness.probe = { ...harness.probe, webgl: 'webgl2' };
+    const { rerender } = render(<MentorStage character="zara" state="idle" ageBand="6-9" theme="light" environment={{ saveData: true }} />);
+    expect(stage().dataset.fallback).toBe('data-saver');
+    rerender(<MentorStage character="zara" state="thinking" ageBand="6-9" theme="light" environment={{ saveData: true }} />);
+    await act(async () => { await vi.advanceTimersByTimeAsync(150); });
+    expect(requests[0]?.init).toMatchObject({ cache: 'only-if-cached' });
+    expect(sequenceImage()).toBeNull();
+    expect(stage().dataset.stillPose).toBe('think.ponder');
+  });
+
+  it('settles on the still when the sequence is late', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>(() => undefined)));
+    const { rerender } = render(<MentorStage character="zara" state="idle" ageBand="6-9" theme="light" />);
+    rerender(<MentorStage character="zara" state="thinking" ageBand="6-9" theme="light" />);
+    await act(async () => { await vi.advanceTimersByTimeAsync(600); });
+    expect(sequenceImage()).toBeNull();
+    expect(stage().dataset.stillPose).toBe('think.ponder');
   });
 });
