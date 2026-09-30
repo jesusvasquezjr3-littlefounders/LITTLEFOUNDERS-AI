@@ -568,6 +568,26 @@ jobs:
           process.stdout.write(`${unsigned}.${createHmac('sha256', secret).update(unsigned).digest('base64url')}`);
           JS
 
+          # REHEARSAL ONLY, preloaded into seed:kc on the copy: Core's REST
+          # helper turns every PostgREST error into null, so a failed write
+          # would say only "upsert failed". This prints, per failed request,
+          # the method, the path without its query, the status and PostgREST's
+          # error code, message and details. The seed writes catalog rows
+          # (KCs, topic links), never family data.
+          cat > "$LF/fetch-log.mjs" <<'JS'
+          const upstream = globalThis.fetch;
+          globalThis.fetch = async (input, init) => {
+            const res = await upstream(input, init);
+            if (!res.ok) {
+              let why = '';
+              try { const j = await res.clone().json(); why = [j.code, j.message, j.details, j.hint].filter(Boolean).join(' | '); } catch {}
+              const url = new URL(typeof input === 'string' ? input : input.url);
+              console.error(`[rest] ${init?.method ?? 'GET'} ${url.pathname} -> ${res.status} ${why}`.slice(0, 500));
+            }
+            return res;
+          };
+          JS
+
           chmod +x "$LF/pgbin-prod/psql" "$LF/pgbin-copy/psql" "$LF/shim/railway"
 
       # ── REHEARSE — production is only read ───────────────────────────────
@@ -658,7 +678,7 @@ jobs:
           p_rest_up() {
             docker run -d --name "$COPY_REST" -p "127.0.0.1:$REST_PORT:3000" \
               -e PGRST_DB_URI="postgres://authenticator:$(cat "$LF/copy.pw")@$COPY_DB:5432/rehearsal" \
-              -e PGRST_DB_SCHEMAS=public -e PGRST_DB_ANON_ROLE=anon -e PGRST_JWT_SECRET="$(cat "$LF/copy.jwt")" \
+              -e PGRST_DB_SCHEMAS=public -e PGRST_DB_ANON_ROLE=anon -e PGRST_JWT_SECRET="$(cat "$LF/copy.jwt")" -e PGRST_LOG_LEVEL=info \
               postgrest/postgrest:v14.12 >/dev/null
             docker network connect "$COPY_NET" "$COPY_REST"
             nohup node "$LF/rest-proxy.mjs" "$PROXY_PORT" "$REST_PORT" > /dev/null 2>&1 &
@@ -727,6 +747,27 @@ jobs:
             bash database/scripts/railway-migrate.sh --confirm-production | grep -Ev '^skip '
             bash database/scripts/railway-migrate.sh --dry-run > "$LF/copy-after.txt"
             ! grep -q '^pending ' "$LF/copy-after.txt"
+            schema_cache_current
+          }
+          # Every migration ends with NOTIFY pgrst 'reload schema': PostgREST
+          # must serve the migrated schema (data_practices arrives in 0186)
+          # without a restart, or Core's first request after the deploy fails.
+          cache_read() {
+            curl -s -o "$LF/probe.json" -w '%{http_code}' "http://127.0.0.1:$PROXY_PORT/rest/v1/data_practices?select=key&limit=1" \
+              -H "apikey: $(anon_jwt)" -H "Authorization: Bearer $(service_jwt)"
+          }
+          schema_cache_current() {
+            local i code=""
+            for i in $(seq 1 30); do code="$(cache_read)"; [ "$code" = 200 ] && break; sleep 2; done
+            echo "PostgREST read of a migrated table 60 s after the last migration: HTTP $code $( [ "$code" = 200 ] || probe_detail)"
+            [ "$code" = 200 ] && return 0
+            echo "PostgREST log (last 40 lines):"
+            docker logs --tail 40 "$COPY_REST" 2>&1 | cut -c1-300 | sed 's/^/  /'
+            echo "NOTIFY pgrst, 'reload schema';" | copy_admin rehearsal
+            for i in $(seq 1 15); do code="$(cache_read)"; [ "$code" = 200 ] && break; sleep 2; done
+            echo "after an explicit NOTIFY: HTTP $code $( [ "$code" = 200 ] || probe_detail)"
+            docker logs --tail 10 "$COPY_REST" 2>&1 | cut -c1-300 | sed 's/^/  /'
+            return 1
           }
           # Step 5.4 under the freeze, as the runbook orders it.
           # Under the freeze, with the window's token, as the seed-kc step runs
@@ -734,10 +775,12 @@ jobs:
           p_seed() {
             npm ci --prefix backend --no-audit --no-fund >/dev/null
             rc=0
+            NODE_OPTIONS="--import=file://$LF/fetch-log.mjs" \
             SUPABASE_URL="http://127.0.0.1:$PROXY_PORT" SUPABASE_ANON_KEY="$(anon_jwt)" SUPABASE_SERVICE_ROLE_KEY="$(window_jwt)" \
               SUPABASE_JWT_SECRET="$(cat "$LF/copy.jwt")" INTERNAL_API_KEY="$(openssl rand -hex 16)" TUTOR_SESSION_SECRET="$(openssl rand -hex 24)" \
               npm run --prefix backend seed:kc > "$LF/seed.log" 2>&1 || rc=$?
-            tail -n 15 "$LF/seed.log" | cut -c1-300
+            grep -F '[rest]' "$LF/seed.log" | head -n 20 | cut -c1-500 || true
+            grep -Fv '[rest]' "$LF/seed.log" | tail -n 15 | cut -c1-300
             [ "$rc" = 0 ] || { echo "seed:kc failed (exit $rc)"; return 1; }
             probe_frozen
           }
