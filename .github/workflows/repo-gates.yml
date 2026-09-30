@@ -22,7 +22,9 @@ jobs:
   gates:
     name: secrets + i18n parity + marketing paths + provider parity
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # The frontend install, the OCR read of every raster and the tool
+    # self-tests run here; 10 minutes left no margin on a 2-vCPU runner.
+    timeout-minutes: 20
     steps:
       # check-secrets.sh uses `git grep` over tracked files, so it needs the
       # working tree — a blobless/partial checkout would silently scan nothing.
@@ -30,6 +32,20 @@ jobs:
 
       - name: No credential patterns in tracked files
         run: bash agent/tools/check-secrets.sh
+
+      # spec:check runs frontend/scripts/check-rebuild-assets.mjs, whose 07 §7
+      # no-text check reads every live raster by OCR with sharp and
+      # tesseract.js (frontend/scripts/ocr/rasterText.mjs). Those are frontend
+      # dependencies, so this job installs them; the check refuses rather than
+      # skips when they are missing, and it must not be switched off here.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Frontend dependencies for the OCR no-text check
+        working-directory: frontend
+        run: npm ci
 
       - name: Binding product specification and rebuild boundary
         run: npm run spec:check
