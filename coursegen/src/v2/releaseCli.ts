@@ -1,7 +1,7 @@
 // v2:author and v2:publish — the owner-run v2 authoring and publication
 // commands (GAP-FIX-R1 learning; OD-17, OD-23, OD-24).
 //
-//   npm run v2:author -- --skeleton <plan.json> --out <plan.json> --dry-run [--reference <plan.json>]
+//   npm run v2:author -- --skeleton <plan.json> --out <plan.json> --dry-run [--reference <plan.json>] [--run-id <id>]
 //   npm run v2:author -- --skeleton <plan.json> --out <plan.json> --max-usd <n>       (paid, owner-run)
 //   npm run v2:publish -- --plans <dir> --course <slug> --run-id <id> --out <dir> --dry-run
 //   npm run v2:publish -- --plans <dir> --course <slug> --run-id <id> --out <dir>     (writes to Vault)
@@ -12,6 +12,10 @@
 // (spendCeilingRefusal) and runs under the usage ledger. v2:publish never
 // spends; without --dry-run it runs verify:course and calls Vault's reviewed
 // publication transaction (publish_v2_lesson_version) per market.
+// Appendix C Part 1.3 (GAP-FIX-R7): every v2:author run, dry run included,
+// appends its first draft's failed gates per market to gate-submissions.jsonl
+// in the run directory (`--run-id <id>` -> runs/<id>/, else the directory of
+// --out) and prints the per-gate first-submission pass rate of that directory.
 // Runbook: docs/content/FORGE-V2-RELEASE.md.
 
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -21,12 +25,13 @@ import { completeDeepSeek } from '../providers/deepseek.js';
 import { UsageLedger } from '../providers/usage.js';
 import { spendCeilingRefusal } from '../pipeline/spendGuard.js';
 import { getConfig } from '../env.js';
-import { authorV2Plan, fixtureResponder, skeletonOf } from './author.js';
+import { GateSubmissionLog, formatFirstSubmissionPassRates } from '../pipeline/gateSubmissionLog.js';
+import { authorV2Plan, fixtureResponder, skeletonOf, type V2FirstSubmission, type V2Responder } from './author.js';
 import { loadV2Plans, v2LessonPlanSchema } from './plan.js';
 import { releaseV2Lessons } from './release.js';
 
-type Args = Record<string, string | true>;
-function parse(argv: string[]): Args {
+export type Args = Record<string, string | true>;
+export function parse(argv: string[]): Args {
   const out: Args = {};
   for (let i = 0; i < argv.length; i += 1) {
     const flag = argv[i]!;
@@ -38,7 +43,25 @@ function parse(argv: string[]): Args {
   return out;
 }
 
-async function author(args: Args): Promise<number> {
+const PACKAGE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+
+/**
+ * Appendix C Part 1.3 (GAP-FIX-R7): the run directory `v2:author` logs its
+ * first-submission gate results into. `--run-id <id>` shares `runs/<id>/`
+ * with other drafts of the same authoring batch (and with a v1 run of that
+ * id); without it, the directory of `--out`, where the usage ledger lives.
+ */
+export function v2AuthorRunDir(args: Args, packageRoot = PACKAGE_ROOT): string {
+  return typeof args['run-id'] === 'string' ? path.join(packageRoot, 'runs', args['run-id']) : path.dirname(path.resolve(args.out as string));
+}
+
+/** One gate-submissions.jsonl line per market of the lesson's first draft (pipeline 'v2', slotId = lesson_id). Zero spend. */
+export async function recordV2FirstSubmission(runDir: string, lessonId: string, first: readonly V2FirstSubmission[]): Promise<void> {
+  const log = new GateSubmissionLog(runDir);
+  for (const entry of first) await log.record({ slotId: lessonId, locale: entry.locale, evaluated: entry.evaluated, failedGates: entry.failedGates, pipeline: 'v2' });
+}
+
+export async function author(args: Args, responderOverride?: V2Responder): Promise<number> {
   const dryRun = args['dry-run'] === true;
   const maxUsd = typeof args['max-usd'] === 'string' ? Number(args['max-usd']) : undefined;
   const refusal = spendCeilingRefusal({ command: 'generate', flag: '--max-usd', dryRun, ceilingUsd: maxUsd });
@@ -53,7 +76,15 @@ async function author(args: Args): Promise<number> {
     const config = getConfig();
     await ledger.hydrate({ maxTokens: config.FORGE_MAX_TOKENS_PER_RUN, maxUsd: Math.min(config.FORGE_MAX_USD_PER_RUN, maxUsd!) });
   }
-  const result = await authorV2Plan(skeleton, dryRun ? fixtureResponder(reference) : completeDeepSeek, { operation: 'v2-author', ledger });
+  const result = await authorV2Plan(skeleton, responderOverride ?? (dryRun ? fixtureResponder(reference) : completeDeepSeek), { operation: 'v2-author', ledger });
+  // Appendix C Part 1.3 (GAP-FIX-R7): the first draft's gates, per market, blocked or not, dry run included. A log failure never fails the stage.
+  const runDir = v2AuthorRunDir(args);
+  try {
+    await recordV2FirstSubmission(runDir, source.lesson_id, result.firstSubmission);
+    for (const line of formatFirstSubmissionPassRates(await GateSubmissionLog.read(runDir))) console.log(`v2:author: ${line}`);
+  } catch (error) {
+    console.warn(`v2:author: the first-submission gate log was not written (${error instanceof Error ? error.message : String(error)})`);
+  }
   if (!result.ok || !result.plan) {
     console.error(`v2:author: blocked after ${result.attempts} round(s):\n  ${result.problems.join('\n  ')}`);
     return 1;

@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { Button, SegmentedControl, TextField } from '../design/controls';
+import { Button, SegmentedControl } from '../design/controls';
 import { LessonFeedback } from './LessonFeedback';
 import { type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
 import { type LessonSequenceControl } from './lessonSequence';
@@ -9,7 +9,7 @@ import { SCHEMA_KINDS, SCHEMA_SLOTS, type SchemaKind } from './v2SegmentFamilies
 import { SchemaSlotsVisual } from './pizarron';
 import './learning.css';
 import { LessonStageSlot } from './lessonStage';
-import { SegmentPrompt, verdictBannerText } from './segmentKit';
+import { NumberAnswer, readNumberAnswer, SegmentPrompt, verdictBannerText } from './segmentKit';
 import { namedFeedback } from './namedFeedback';
 
 type Segment = Extract<LessonClientSegment, { type: 'math.schema-diagram.structure.v2' | 'math.schema-diagram.slots.v2' | 'math.schema-diagram.answer.v2' }>;
@@ -73,9 +73,14 @@ export function SchemaDiagramBoard({ document, segment, onBack, onGrade, sequenc
   const phaseTitle = phase === 'structure' ? t.choose : phase === 'slots' ? t.fill : t.solve;
   const slotNames = schema ? SCHEMA_SLOTS[schema] as readonly SlotName[] : [];
   const slotsComplete = schema !== null && slotNames.every((slot) => typeof slots[slot] === 'string');
+  // Bible 05 §5 / Appendix P Part 5 (GAP-FIX-R7): the answer is read for the lesson's locale and sent as its canonical whole
+  // number, within the canonical scorer's bound for two story quantities (a times b, plus a, plus b).
+  const [a, b] = [p.quantities[0]?.value ?? 0, p.quantities[1]?.value ?? 0];
+  const domain = { whole: true, max: a * b + a + b };
+  const typed = readNumberAnswer(answer, document.locale, domain).canonical;
   const response = phase === 'structure' ? schema === null ? null : { schema }
     : phase === 'slots' ? slotsComplete ? { schema, slots: Object.fromEntries(slotNames.map((slot) => [slot, slots[slot]])) } : null
-      : /^(0|[1-9]\d*)$/.test(answer) ? { value: answer } : null;
+      : typed !== null ? { value: typed } : null;
   // Bible 05 §3: Reset restores the authored start (no schema chosen, empty slots and answer) and clears the verdict.
   const pristine = schema === null && Object.keys(slots).length === 0 && answer === '' && verdict === null;
   const reset = () => { setSchema(null); setSlots({}); setAnswer(''); setVerdict(null); };
@@ -96,7 +101,7 @@ export function SchemaDiagramBoard({ document, segment, onBack, onGrade, sequenc
       <section className="lf-learning-board"><h2 data-copy-role="heading">{phaseTitle}</h2>
         <dl className="lf-schema-story" aria-label={t.story}>
           {p.quantities.map((item) => <div key={item.id}><dt data-copy-role="label">{item.label}</dt><dd data-copy-role="data">{item.value}</dd></div>)}
-          <div><dt data-copy-role="label">{p.unknownLabel}</dt><dd data-copy-role="data">{phase === 'answer' && answer ? answer : t.unknown}</dd></div>
+          <div><dt data-copy-role="label">{p.unknownLabel}</dt><dd data-copy-role="data">{phase === 'answer' && typed !== null ? new Intl.NumberFormat(document.locale).format(Number(typed)) : t.unknown}</dd></div>
         </dl>
         {phase !== 'answer' ? diagram : null}
       </section>
@@ -107,8 +112,8 @@ export function SchemaDiagramBoard({ document, segment, onBack, onGrade, sequenc
         {phase === 'slots' && schema ? slotNames.map((slot) => <SegmentedControl key={`${schema}-${slot}`} legend={t.slots[slot]} name={`${name}-${slot}`} disabled={pending}
           value={slots[slot] ?? null} onValueChange={(value) => change(() => setSlots((current) => ({ ...current, [slot]: value })))}
           options={[...p.quantities.map((item) => ({ value: item.id, label: `${item.label} ${item.value}` })), { value: 'unknown', label: p.unknownLabel }]} />) : null}
-        {phase === 'answer' ? <TextField label={t.answer} inputMode="numeric" pattern="[0-9]*" autoComplete="off" disabled={pending} value={answer}
-          onChange={(event) => change(() => setAnswer(event.target.value))} /> : null}
+        {phase === 'answer' ? <NumberAnswer label={t.answer} locale={document.locale} {...domain} disabled={pending} value={answer}
+          onTextChange={(text) => change(() => setAnswer(text))} /> : null}
       </div>
       <footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === null ? null : verdictBannerText(document.locale, verdict, namedFeedback(document.locale, phase === 'structure' ? 'schema-structure' : phase === 'slots' ? 'schema-slots' : 'schema-answer'), segment.feedback)}</LessonFeedback>
         <div className="lf-learning-actions"><Button variant="accent" onClick={submit} disabled={pending || (verdict !== 'met' && response === null)}>{verdict === 'met' ? t.continue : t.check}</Button></div></footer>

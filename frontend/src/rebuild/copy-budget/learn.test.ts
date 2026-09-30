@@ -14,7 +14,7 @@ const flat: Record<string, CopyRole> = { lessonInvalid: 'heading', back: 'action
  */
 const player: Record<string, CopyRole> = {
   listen: 'action', stopListening: 'action',
-  asks: 'body', help: 'action', moreHelp: 'action', closeHelp: 'action', readsAs: 'body', notNumber: 'body', check: 'action', continue: 'action',
+  asks: 'body', help: 'action', moreHelp: 'action', closeHelp: 'action', readsAs: 'body', notNumber: 'body', wholeNumber: 'body', tooSmall: 'body', tooBig: 'body', check: 'action', continue: 'action',
   unavailable: 'body', step: 'data', progress: 'body',
   viewFailed: 'body', updateTitle: 'heading', updateBody: 'body', reload: 'action', moveTo: 'action', mentorHeading: 'heading',
   // GAP-FIX-R4 (Bible 05 §3, §4): the board control strip (Reset, Show as table) and the drag-or-tap hint.
