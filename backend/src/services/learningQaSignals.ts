@@ -15,6 +15,8 @@ import { TEACHING_VISUAL_COVERAGE } from './teachingVisualCoverage.generated.js'
  *   CPA entry stages       0216 learning_cpa_entry_stage_distribution (diagnostic)
  *   B.1 / B.2 / B.4        0218 learning_qa_rates
  *   defect escape rate     0218 content_defect_escape_rate
+ *   gate-effectiveness     the gate_effectiveness_reviews migration (gap-fix round 7):
+ *   reviews                every escape opens an owned review; the open ones and their age
  *   tap / locale coverage  the committed teaching-visual coverage snapshot
  *                          (agent/tools/teaching-visual-coverage.mjs writes
  *                          teachingVisualCoverage.generated.ts)
@@ -32,6 +34,25 @@ const VariantRow = z.object({ kc: z.string(), variant: z.string(), first_attempt
 const EntryRow = z.object({ entry_stage: z.enum(['concrete', 'pictorial', 'abstract']), runs: count });
 const QaRow = z.object({ event: z.string(), detail: z.string(), events: count });
 const EscapeRow = z.object({ gate_id: z.string().nullable(), escapes: count, published_versions: count });
+const GateReviewRow = z.object({
+  review_id: z.string().uuid(), escape_id: z.string().uuid(), lesson_id: z.string().uuid(), gate_id: z.string(), gate_description: z.string(),
+  owner_role: z.enum(['pedagogical_lead', 'content_engineering']), defect_kind: z.string(), opened_at: z.string(), age_days: count,
+});
+
+/**
+ * Appendix C 1.3 / Stage 6 (gap-fix round 7): a gate-effectiveness review
+ * open longer than the Block B recalibration cadence is overdue. The same
+ * value is logged as `gate_effectiveness.review_max_open_days` in
+ * docs/operations/BLOCK-B-THRESHOLD-LOG.md and applied by the release
+ * readiness check (agent/tools/block-b-review-cadence.mjs).
+ */
+export const GATE_REVIEW_MAX_OPEN_DAYS = 90;
+export const GATE_REVIEW_OUTCOMES = ['gate_changed', 'lexicon_extended', 'accepted_limitation'] as const;
+export type GateReviewOutcome = (typeof GATE_REVIEW_OUTCOMES)[number];
+export interface OpenGateReview {
+  reviewId: string; escapeId: string; lessonId: string; gateId: string; gateDescription: string;
+  ownerRole: 'pedagogical_lead' | 'content_engineering'; defectKind: string; openedAt: string; ageDays: number; overdue: boolean;
+}
 
 const CoverageReport = z.object({
   generated_at: z.string(),
@@ -50,6 +71,8 @@ export interface LearningQaSignals {
   prerequisiteGate: { refused: number; passed: number; target: 1 };
   forcedUpdate: { blocked: number; target: 1 };
   defectEscapes: { escapes: number; publishedVersions: number; byGate: Array<{ gateId: string; escapes: number }>; target: 0 };
+  /** Null until the gate_effectiveness_reviews migration is applied; the rest of the report never depends on it. */
+  gateReviews: { open: OpenGateReview[]; overdue: number; maxOpenDays: typeof GATE_REVIEW_MAX_OPEN_DAYS } | null;
   coverage: TeachingVisualCoverage | null;
 }
 
@@ -69,7 +92,12 @@ export function loadTeachingVisualCoverage(raw: unknown = TEACHING_VISUAL_COVERA
 export function assembleLearningQaSignals(input: {
   parity: z.infer<typeof ParityRow>; phases: z.infer<typeof PhaseRow>[]; cues: z.infer<typeof CueRow>; variants: z.infer<typeof VariantRow>[];
   entries: z.infer<typeof EntryRow>[]; qa: z.infer<typeof QaRow>[]; escapes: z.infer<typeof EscapeRow>[]; coverage: TeachingVisualCoverage | null;
+  gateReviews?: z.infer<typeof GateReviewRow>[] | null;
 }): LearningQaSignals {
+  const open = input.gateReviews ? input.gateReviews.map((row): OpenGateReview => ({
+    reviewId: row.review_id, escapeId: row.escape_id, lessonId: row.lesson_id, gateId: row.gate_id, gateDescription: row.gate_description,
+    ownerRole: row.owner_role, defectKind: row.defect_kind, openedAt: row.opened_at, ageDays: row.age_days, overdue: row.age_days > GATE_REVIEW_MAX_OPEN_DAYS,
+  })) : null;
   const sum = (event: string) => input.qa.filter((row) => row.event === event).reduce((total, row) => total + row.events, 0);
   const ok = sum('placement_commit_ok'); const failed = sum('placement_commit_failed');
   return {
@@ -88,13 +116,14 @@ export function assembleLearningQaSignals(input: {
       byGate: input.escapes.filter((row) => row.gate_id !== null && row.escapes > 0).map((row) => ({ gateId: row.gate_id!, escapes: row.escapes })),
       target: 0,
     },
+    gateReviews: open ? { open, overdue: open.filter((row) => row.overdue).length, maxOpenDays: GATE_REVIEW_MAX_OPEN_DAYS } : null,
     coverage: input.coverage,
   };
 }
 
 /** Null until 0216 and 0218 are applied. */
 export async function loadLearningQaSignals(window: { p_since: string; p_until: string }): Promise<LearningQaSignals | null> {
-  const [parity, phases, cues, variants, entries, qa, escapes] = await Promise.all([
+  const [parity, phases, cues, variants, entries, qa, escapes, gateReviews] = await Promise.all([
     rpc('learning_scorer_parity', window, z.array(ParityRow)),
     rpc('learning_detection_cells_by_phase', window, z.array(PhaseRow)),
     rpc('learning_cue_hits', window, z.array(CueRow)),
@@ -102,11 +131,14 @@ export async function loadLearningQaSignals(window: { p_since: string; p_until: 
     rpc('learning_cpa_entry_stage_distribution', window, z.array(EntryRow)),
     rpc('learning_qa_rates', window, z.array(QaRow)),
     rpc('content_defect_escape_rate', window, z.array(EscapeRow)),
+    // Aged at the database clock: an open review's age never depends on the report window.
+    rpc('gate_effectiveness_reviews_open', {}, z.array(GateReviewRow)),
   ]);
   if (!parity || !phases || !cues || !variants || !entries || !qa || !escapes) return null;
   return assembleLearningQaSignals({
     parity: parity[0] ?? { graded: 0, reported: 0, agreed: 0, agreement_share: null }, phases,
     cues: cues[0] ?? { responses: 0, hits: 0, missed: 0, false_ticks: 0 }, variants, entries, qa, escapes, coverage: loadTeachingVisualCoverage(),
+    gateReviews,
   });
 }
 
@@ -119,4 +151,28 @@ export async function recordContentDefectEscape(input: { lessonId: string; gateI
   }) });
   const parsed = z.string().uuid().safeParse(result);
   return parsed.success ? parsed.data : null;
+}
+
+export type GateReviewResolution = 'resolved' | 'forbidden' | 'not_found' | 'already_resolved' | 'invalid' | 'unavailable';
+
+/**
+ * Appendix C 1.3 / Stage 6 (gap-fix round 7): closes a gate-effectiveness
+ * review with its outcome. The SQL writer re-checks the actor (manage_content),
+ * requires the outcome, the note and, for a changed gate only, its commit or
+ * version, and audits in the same transaction.
+ */
+export async function resolveGateEffectivenessReview(input: {
+  reviewId: string; actorId: string; outcome: GateReviewOutcome; note: string; gateChangeRef?: string | undefined;
+}): Promise<GateReviewResolution> {
+  const result = await serviceRest<unknown>('/rpc/resolve_gate_effectiveness_review', { method: 'POST', body: JSON.stringify({
+    p_actor: input.actorId, p_review_id: input.reviewId, p_outcome: input.outcome, p_note: input.note, p_gate_change_ref: input.gateChangeRef ?? null,
+  }) });
+  const parsed = z.array(z.object({ ok: z.boolean(), code: z.string() })).min(1).safeParse(result);
+  if (!parsed.success) return 'unavailable';
+  const code = parsed.data[0]!.code;
+  if (code === 'RESOLVED') return 'resolved';
+  if (code === 'FORBIDDEN') return 'forbidden';
+  if (code === 'NOT_FOUND') return 'not_found';
+  if (code === 'ALREADY_RESOLVED') return 'already_resolved';
+  return 'invalid';
 }

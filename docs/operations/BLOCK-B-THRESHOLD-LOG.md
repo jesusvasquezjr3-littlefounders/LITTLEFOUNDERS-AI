@@ -56,6 +56,7 @@ List values are in the order the Source column names. "Not stored" means the val
 | `register.teen_age` | 13 | B.23 | Appendix B §2.9 | `registerForAge` and `GRADUATIONS`, `learnerRegisterPolicy.ts` | Not stored |
 | `register.adult_age` | 18 | B.23 | Legal adulthood | `registerForAge`, `learnerRegisterPolicy.ts` | Not stored |
 | `dark_pattern.release_audit_max_age_days` | 45 | B.25 | The release audit's freshness (docs/rebuild/DARK-PATTERN-AUDIT.md) | `RELEASE_AUDIT_MAX_AGE_DAYS`, `agent/tools/check-dark-patterns.mjs` | Not stored |
+| `gate_effectiveness.review_max_open_days` | 90 | Appendix C 1.3 (Defect Escape Rate), Stage 6 | The log's quarterly cadence: a gate-effectiveness review (opened by every defect escape) open longer than this is overdue | `GATE_REVIEW_MAX_OPEN_DAYS`, `backend/src/services/learningQaSignals.ts` (staff panel `overdue`) and `agent/tools/block-b-review-cadence.mjs` (release readiness, --strict) | Not stored: `gate_effectiveness_reviews_open` reports each review's age |
 
 The Copy Budget's v2 audience mapping (the `6-9` pathway gets the 6-9 limits; working-memory bands `6-9`, `10-12`, `13-17`/`adult` to 13+, unknown to 6-9) is a rule, not a number; it stays recorded in `docs/rebuild/sprints/S05-FORGE-CONTENT-GATES.md` and is reviewed with these rows.
 
@@ -67,6 +68,7 @@ The Copy Budget's v2 audience mapping (the `6-9` pathway gets the 6-9 limits; wo
 | 2026-09-24 | engineering | `practice_band.*`, `mentor.zpd_target`, `judgment.*`, `replay_notice.target` | Initial values recorded with S05.3d (docs/rebuild/PRACTICE-DIFFICULTY-CALIBRATION.md). The 70-85% band is Product B.19's; the guard rails, windows and judgment floor are Engineering proposals pending calibration. | Engineering (S05 lane) |
 | 2026-09-24 | engineering | `guided_review.*`, `engagement.*`, `register.*`, `dark_pattern.release_audit_max_age_days` | Initial values recorded with S05.3f (docs/rebuild/LEARNER-REGISTER-AND-WELLBEING-POLICY.md §6). The 3-miss threshold is B.26's proposal; the register ages follow Appendix B §2.9; the trend window and sample are Engineering proposals. | Engineering (S05 lane) |
 | 2026-09-29 | engineering | All rows | GAP-FIX-R6: the three prose tables consolidated into this machine-checked log with a due date; no value changed. | Engineering (fix6learni1 lane) |
+| 2026-09-29 | engineering | `gate_effectiveness.review_max_open_days` | Gap-fix round 7: every defect escape opens a gate-effectiveness review; 90 days (the log's quarterly cadence) is the Engineering starting point for "overdue". | Engineering (fix7learni2 lane) |
 
 ## Register audit log
 

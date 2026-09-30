@@ -92,6 +92,14 @@ export const learningQualityReportSchema = z.object({
     prerequisiteGate: z.object({ refused: count, passed: count, target: z.literal(1) }),
     forcedUpdate: z.object({ blocked: count, target: z.literal(1) }),
     defectEscapes: z.object({ escapes: count, publishedVersions: count, byGate: z.array(z.object({ gateId: z.string(), escapes: count })), target: z.literal(0) }),
+    /* Gap-fix round 7 (Appendix C 1.3 / Stage 6): every escape opens a gate-effectiveness review; null before its migration, absent from an older Core. */
+    gateReviews: z.object({
+      open: z.array(z.object({
+        reviewId: z.string().uuid(), escapeId: z.string().uuid(), lessonId: z.string().uuid(), gateId: z.string(), gateDescription: z.string(),
+        ownerRole: z.enum(['pedagogical_lead', 'content_engineering']), defectKind: z.string(), openedAt: z.string(), ageDays: count, overdue: z.boolean(),
+      })),
+      overdue: count, maxOpenDays: count,
+    }).nullable().optional(),
     coverage: z.object({
       generated_at: z.string(),
       tap_alternative: z.object({ drag_interactions: count, with_alternative: count, share: z.number().min(0).max(1).nullable(), missing: z.array(z.string()) }),
@@ -102,6 +110,9 @@ export const learningQualityReportSchema = z.object({
 export type LearningQualityReport = z.infer<typeof learningQualityReportSchema>;
 export type ReviewDecision = 'make_harder' | 'make_easier' | 'adjust_band' | 'no_change';
 export type ReviewDecisionBody = { decision: ReviewDecision; note: string; lowerPct?: number; upperPct?: number };
+/** Appendix C 1.3 / Stage 6 (gap-fix round 7): how a gate-effectiveness review closes; only a changed gate names its commit or version. */
+export type GateReviewOutcome = 'gate_changed' | 'lexicon_extended' | 'accepted_limitation';
+export type GateReviewBody = { outcome: GateReviewOutcome; note: string; gateChangeRef?: string };
 
 /** The same guard rails the database CHECK enforces; the form refuses early, Core and SQL refuse for real. */
 export function bandInsideGuardRails(lower: number, upper: number): boolean {

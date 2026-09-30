@@ -116,3 +116,81 @@ export function checkBlockBCadence({ markdown, record, today, strict = false }) 
   }
   return { failures: [...new Set(failures)], warnings, schedules };
 }
+
+/*
+ * Appendix C Part 1.3 "Defect Escape Rate" / Part 3 Stage 6 (gap-fix round 7):
+ * every defect escape opens a gate-effectiveness review in the database
+ * (gate_effectiveness_reviews). One left open longer than the Block B
+ * recalibration cadence warns here and fails under --strict (release
+ * readiness). The value is logged as `gate_effectiveness.review_max_open_days`
+ * and must equal Core's GATE_REVIEW_MAX_OPEN_DAYS (the staff panel's flag).
+ */
+export const GATE_REVIEW_MAX_OPEN_DAYS = 90;
+const OWNER_LABEL = { pedagogical_lead: 'the Pedagogical Lead', content_engineering: 'content engineering' };
+
+/** Whole days from an ISO timestamp to a YYYY-MM-DD day, or null when unparsable. */
+function daysOpen(openedAt, today) {
+  const opened = typeof openedAt === 'string' ? Date.parse(openedAt) : NaN;
+  const now = Date.parse(`${today}T00:00:00Z`);
+  if (!Number.isFinite(opened) || !Number.isFinite(now)) return null;
+  return Math.max(0, Math.floor((now - opened) / 86_400_000));
+}
+
+/**
+ * `reviews`: the rows of gate_effectiveness_reviews_open() (review_id,
+ * gate_id, owner_role, opened_at), or null when they could not be read
+ * (`unread` says why). A malformed row fails; an overdue review warns, and
+ * fails under `strict`; an unread source only warns, since a clean repo gate
+ * has no database to read.
+ */
+export function checkGateEffectivenessReviews({ reviews, unread = null, today, strict = false, maxOpenDays = GATE_REVIEW_MAX_OPEN_DAYS }) {
+  const failures = [];
+  const warnings = [];
+  if (reviews === null || reviews === undefined) {
+    warnings.push(`open gate-effectiveness reviews were not checked (${unread ?? 'no source'}); pass --gate-reviews=<file.json> or set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY`);
+    return { failures, warnings, overdue: [] };
+  }
+  if (!Array.isArray(reviews)) return { failures: ['gate-effectiveness reviews: expected a JSON array of open reviews'], warnings, overdue: [] };
+  const overdue = [];
+  for (const review of reviews) {
+    const age = daysOpen(review?.opened_at, today);
+    if (typeof review?.review_id !== 'string' || typeof review?.gate_id !== 'string' || age === null) {
+      failures.push(`gate-effectiveness reviews: a row has no review id, gate or opening time (${JSON.stringify(review)})`);
+      continue;
+    }
+    if (age > maxOpenDays) {
+      overdue.push(review.review_id);
+      const owner = OWNER_LABEL[review.owner_role] ?? review.owner_role ?? 'its owner';
+      (strict ? failures : warnings).push(`the gate-effectiveness review ${review.review_id} for ${review.gate_id} (Appendix C 1.3 / Stage 6) has been open ${age} days, longer than ${maxOpenDays}; ${owner} must record why the gate missed the defect and what changed`);
+    }
+  }
+  return { failures, warnings, overdue };
+}
+
+/**
+ * Where the open reviews come from: `--gate-reviews=<file>` (an export of
+ * gate_effectiveness_reviews_open()), else the service-role RPC when
+ * SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in this environment (a
+ * read; nothing is written), else unread. `failed` marks a named source that
+ * could not be read.
+ */
+export async function loadOpenGateReviews({ argv = [], env = {}, readFile, fetchImpl = globalThis.fetch }) {
+  const flag = argv.find((arg) => arg.startsWith('--gate-reviews='));
+  if (flag) {
+    const path = flag.slice('--gate-reviews='.length);
+    try { return { reviews: JSON.parse(readFile(path)), source: path }; }
+    catch (error) { return { reviews: null, unread: `${path} is missing or not JSON: ${error.message}`, failed: true }; }
+  }
+  const base = env.SUPABASE_URL?.replace(/\/+$/, '');
+  const key = env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!base || !key) return { reviews: null, unread: 'no --gate-reviews file and no SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY in this environment' };
+  try {
+    const res = await fetchImpl(`${base}/rest/v1/rpc/gate_effectiveness_reviews_open`, {
+      method: 'POST', headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' }, body: '{}',
+    });
+    if (!res.ok) return { reviews: null, unread: `the database answered ${res.status} (is the gate_effectiveness_reviews migration applied?)`, failed: true };
+    return { reviews: await res.json(), source: `${base} (service role)` };
+  } catch (error) {
+    return { reviews: null, unread: `the database could not be reached: ${error.message}`, failed: true };
+  }
+}

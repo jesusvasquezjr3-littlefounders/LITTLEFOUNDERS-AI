@@ -718,7 +718,11 @@ function QualityView({ api }: { api: StaffApi }) {
     onRetry={report.reload}
     onSync={async () => (await api.post('/admin/content/learning-quality/reviews/sync', {})).ok}
     onResolve={resolve}
-    onRecordEscape={async (body) => (await api.post('/admin/content/learning-quality/defect-escapes', body)).ok} />;
+    onRecordEscape={async (body) => (await api.post('/admin/content/learning-quality/defect-escapes', body)).ok}
+    onResolveGateReview={async (reviewId, body) => {
+      const result = await api.post(`/admin/content/learning-quality/gate-reviews/${reviewId}/resolve`, body);
+      return result.ok ? 'resolved' : result.code === 'REVIEW_RESOLVED' ? 'conflict' : 'error';
+    }} />;
 }
 
 /* ------------------------------------------------------------------------- */

@@ -1,7 +1,8 @@
 import { useId, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { Button, InlineNotice, SegmentedControl, TextField } from '../design/controls';
-import type { LearningQualityReport } from './learningQualityReport';
+import { Button, InlineNotice, SegmentedControl, TextAreaField, TextField } from '../design/controls';
+import { pluralUnit } from '../design/plural';
+import type { GateReviewBody, GateReviewOutcome, LearningQualityReport } from './learningQualityReport';
 
 /*
  * GAP-FIX-R2 learning: the Appendix P Part 8 metrics (scorer parity, d′ before
@@ -10,9 +11,16 @@ import type { LearningQualityReport } from './learningQualityReport';
  * forced update, defect escapes) in the staff learning-quality panel, with the
  * defect-escape entry form. Release metrics show their target; diagnostic
  * metrics are labelled as such and carry none. It never shows a learner.
+ *
+ * Gap-fix round 7 (Appendix C 1.3 Defect Escape Rate, Stage 6): each escape
+ * opens a gate-effectiveness review. The open ones are listed with their gate,
+ * owner and age (overdue past the logged cadence), each closed here with what
+ * changed and why the gate missed it; Core and the database refuse the rest.
  */
 
 type Signals = NonNullable<LearningQualityReport['qaSignals']>;
+type OpenGateReview = NonNullable<Signals['gateReviews']>['open'][number];
+export type GateReviewOutcomeResult = 'resolved' | 'conflict' | 'error';
 export type DefectEscapeBody = { lessonId: string; gateId: string; kind: 'pedagogical' | 'psychological' | 'factual' | 'regional' | 'copy' };
 
 type Copy = {
@@ -24,6 +32,9 @@ type Copy = {
   placement: (ok: number, total: number) => string; prerequisite: (refused: number, passed: number) => string; forced: (blocked: number) => string;
   escapes: (escapes: number, published: number) => string; tap: (ok: number, total: number) => string; locale: (ok: number, total: number) => string;
   record: string; lesson: string; gate: string; kind: string; kinds: Record<DefectEscapeBody['kind'], string>; save: string; saved: string; failed: string;
+  reviews: string; reviewsNone: string; reviewsPending: string; day: { one: string; other: string }; open: (gate: string, age: string) => string;
+  owner: Record<OpenGateReview['ownerRole'], string>; overdue: (max: number) => string; outcome: string; outcomes: Record<GateReviewOutcome, string>;
+  ref: string; why: string; whyHint: string; close: string; closing: string; closed: string; conflict: string; retry: string;
 };
 
 const copy: Record<Locale, Copy> = {
@@ -39,6 +50,12 @@ const copy: Record<Locale, Copy> = {
     record: 'Record a defect escape', lesson: 'Lesson id', gate: 'Gate that should have caught it', kind: 'Kind',
     kinds: { pedagogical: 'Pedagogy', psychological: 'Wellbeing', factual: 'Fact', regional: 'Regional', copy: 'Copy' },
     save: 'Record', saved: 'Recorded.', failed: 'Could not record it. Check the ids.',
+    reviews: 'Gate reviews', reviewsNone: 'No open gate reviews.', reviewsPending: 'Available once the gate review migration is applied.',
+    day: { one: 'day', other: 'days' }, open: (g, a) => `${g}: open ${a}`,
+    owner: { pedagogical_lead: 'Owner: Pedagogical Lead', content_engineering: 'Owner: Content engineering' }, overdue: (m) => `Overdue: over ${m} days`,
+    outcome: 'What changed', outcomes: { gate_changed: 'Gate fixed', lexicon_extended: 'Lexicon extended', accepted_limitation: 'Accepted limit' },
+    ref: 'Commit or gate version', why: 'Why the gate missed it', whyHint: 'At least 10 characters. It goes to the audit log.',
+    close: 'Close review', closing: 'Saving', closed: 'Review closed.', conflict: 'Already closed.', retry: 'Could not close it. Try again.',
   },
   'es-MX': {
     title: 'Calidad de visuales y de lanzamiento', pending: 'Disponible cuando se apliquen las migraciones de señales.', target: 'Meta', diagnostic: 'Diagnóstico, sin meta', none: 'Sin datos en este periodo.',
@@ -52,6 +69,12 @@ const copy: Record<Locale, Copy> = {
     record: 'Registrar un defecto escapado', lesson: 'Id de la lección', gate: 'Filtro que debió detectarlo', kind: 'Tipo',
     kinds: { pedagogical: 'Pedagogía', psychological: 'Bienestar', factual: 'Dato', regional: 'Regional', copy: 'Texto' },
     save: 'Registrar', saved: 'Registrado.', failed: 'No se pudo registrar. Revisa los ids.',
+    reviews: 'Revisiones de filtros', reviewsNone: 'Sin revisiones abiertas.', reviewsPending: 'Disponible cuando se aplique la migración de revisiones.',
+    day: { one: 'día', other: 'días' }, open: (g, a) => `${g}: abierta hace ${a}`,
+    owner: { pedagogical_lead: 'Responsable: Líder pedagógico', content_engineering: 'Responsable: Ingeniería de contenido' }, overdue: (m) => `Vencida: más de ${m} días`,
+    outcome: 'Qué cambió', outcomes: { gate_changed: 'Filtro corregido', lexicon_extended: 'Léxico ampliado', accepted_limitation: 'Límite aceptado' },
+    ref: 'Commit o versión del filtro', why: 'Por qué el filtro no lo detectó', whyHint: 'Mínimo 10 caracteres. Queda en la bitácora de auditoría.',
+    close: 'Cerrar revisión', closing: 'Guardando', closed: 'Revisión cerrada.', conflict: 'Ya estaba cerrada.', retry: 'No se pudo cerrar. Intenta otra vez.',
   },
   'pt-BR': {
     title: 'Qualidade de visuais e de lançamento', pending: 'Disponível quando as migrações de sinais forem aplicadas.', target: 'Meta', diagnostic: 'Diagnóstico, sem meta', none: 'Sem dados neste período.',
@@ -65,14 +88,24 @@ const copy: Record<Locale, Copy> = {
     record: 'Registrar um defeito escapado', lesson: 'Id da lição', gate: 'Filtro que deveria ter pegado', kind: 'Tipo',
     kinds: { pedagogical: 'Pedagogia', psychological: 'Bem-estar', factual: 'Fato', regional: 'Regional', copy: 'Texto' },
     save: 'Registrar', saved: 'Registrado.', failed: 'Não foi possível registrar. Confira os ids.',
+    reviews: 'Revisões de filtros', reviewsNone: 'Nenhuma revisão aberta.', reviewsPending: 'Disponível quando a migração de revisões for aplicada.',
+    day: { one: 'dia', other: 'dias' }, open: (g, a) => `${g}: aberta há ${a}`,
+    owner: { pedagogical_lead: 'Responsável: Líder pedagógico', content_engineering: 'Responsável: Engenharia de conteúdo' }, overdue: (m) => `Atrasada: mais de ${m} dias`,
+    outcome: 'O que mudou', outcomes: { gate_changed: 'Filtro corrigido', lexicon_extended: 'Léxico ampliado', accepted_limitation: 'Limite aceito' },
+    ref: 'Commit ou versão do filtro', why: 'Por que o filtro não pegou', whyHint: 'Pelo menos 10 caracteres. Vai para o registro de auditoria.',
+    close: 'Fechar revisão', closing: 'Salvando', closed: 'Revisão fechada.', conflict: 'Já estava fechada.', retry: 'Não foi possível fechar. Tente de novo.',
   },
 };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const GATE = /^forge\.[a-z0-9][a-z0-9.-]{2,80}$/;
+/** Core's and the database's reference shape: a commit hash or a gate version. */
+const CHANGE_REF = /^[A-Za-z0-9][A-Za-z0-9._/@+-]{2,79}$/;
 
-export function LearningQaSignals({ signals, locale, onRecordEscape }: {
+export function LearningQaSignals({ signals, locale, onRecordEscape, onResolveGateReview }: {
   signals: LearningQualityReport['qaSignals']; locale: Locale; onRecordEscape?: (body: DefectEscapeBody) => Promise<boolean>;
+  /** Gap-fix round 7: closes a gate-effectiveness review through Core. */
+  onResolveGateReview?: (reviewId: string, body: GateReviewBody) => Promise<GateReviewOutcomeResult>;
 }) {
   const t = copy[locale];
   const id = useId();
@@ -100,8 +133,57 @@ export function LearningQaSignals({ signals, locale, onRecordEscape }: {
       {s.variantTransfer.rows.map((row) => diagnostic(t.variant(row.kc, row.variant, percent.format(row.success_share), row.first_attempts), `${row.kc}:${row.variant}`))}
       {s.cpaEntryStages.rows.length > 0 ? diagnostic(`${t.entry}: ${s.cpaEntryStages.rows.map((row) => `${t.stage[row.entry_stage]} ${row.runs}`).join(', ')}`, 'entry') : null}
     </ul>
+    <GateReviews t={t} locale={locale} reviews={s.gateReviews ?? null} onResolve={onResolveGateReview} />
     {onRecordEscape ? <EscapeForm t={t} onRecordEscape={onRecordEscape} /> : null}
   </section>;
+}
+
+function GateReviews({ t, locale, reviews, onResolve }: {
+  t: Copy; locale: Locale; reviews: Signals['gateReviews'] | null;
+  onResolve?: (reviewId: string, body: GateReviewBody) => Promise<GateReviewOutcomeResult>;
+}) {
+  const id = useId();
+  const [closed, setClosed] = useState<string[]>([]);
+  const open = reviews ? reviews.open.filter((review) => !closed.includes(review.reviewId)) : [];
+  return <section className="lf-quality-form" aria-labelledby={`${id}-reviews`}>
+    <p id={`${id}-reviews`} className="lf-quality-name" data-copy-role="data">{t.reviews}</p>
+    {!reviews ? <p data-copy-role="body">{t.reviewsPending}</p>
+      : open.length === 0 ? <p data-copy-role="body">{closed.length > 0 ? t.closed : t.reviewsNone}</p>
+        : <ul className="lf-quality-list">{open.map((review) => <li key={review.reviewId} className="lf-quality-review" data-status={review.overdue ? 'overdue' : 'open'}>
+          <p data-copy-role="data">{t.open(review.gateId, `${review.ageDays} ${pluralUnit(locale, review.ageDays, t.day)}`)}</p>
+          <p data-copy-role="data">{t.owner[review.ownerRole]}</p>
+          {review.overdue ? <p data-copy-role="data">{t.overdue(reviews.maxOpenDays)}</p> : null}
+          {onResolve ? <GateReviewForm t={t} review={review} onResolve={onResolve} onClosed={() => setClosed((ids) => [...ids, review.reviewId])} /> : null}
+        </li>)}</ul>}
+  </section>;
+}
+
+function GateReviewForm({ t, review, onResolve, onClosed }: {
+  t: Copy; review: OpenGateReview; onResolve: (reviewId: string, body: GateReviewBody) => Promise<GateReviewOutcomeResult>; onClosed: () => void;
+}) {
+  const id = useId();
+  const [outcome, setOutcome] = useState<GateReviewOutcome | null>(null);
+  const [note, setNote] = useState('');
+  const [ref, setRef] = useState('');
+  const [status, setStatus] = useState<'idle' | 'saving' | 'conflict' | 'error'>('idle');
+  const changed = outcome === 'gate_changed';
+  const ready = outcome !== null && note.trim().length >= 10 && note.trim().length <= 600 && (!changed || CHANGE_REF.test(ref.trim()));
+  const submit = async () => {
+    if (!ready || outcome === null) return;
+    setStatus('saving');
+    const result = await onResolve(review.reviewId, { outcome, note: note.trim(), ...(changed ? { gateChangeRef: ref.trim() } : {}) });
+    if (result === 'resolved') { onClosed(); return; }
+    setStatus(result);
+  };
+  return <form className="lf-quality-form" aria-labelledby={`${id}-gate`} onSubmit={(event) => { event.preventDefault(); void submit(); }}>
+    <p id={`${id}-gate`} data-copy-role="body">{review.gateDescription}</p>
+    <SegmentedControl legend={t.outcome} name={`${id}-outcome`} value={outcome} onValueChange={(value) => { setOutcome(value); setStatus('idle'); }}
+      options={(['gate_changed', 'lexicon_extended', 'accepted_limitation'] as const).map((value) => ({ value, label: t.outcomes[value] }))} />
+    {changed ? <TextField label={t.ref} value={ref} autoComplete="off" maxLength={80} onChange={(event) => { setRef(event.target.value); setStatus('idle'); }} /> : null}
+    <TextAreaField label={t.why} help={t.whyHint} value={note} maxLength={600} onChange={(event) => { setNote(event.target.value); setStatus('idle'); }} />
+    {status === 'conflict' || status === 'error' ? <InlineNotice tone="error" live>{status === 'conflict' ? t.conflict : t.retry}</InlineNotice> : null}
+    <div className="lf-actions"><Button type="submit" variant="accent" disabled={!ready || status === 'saving'}>{status === 'saving' ? t.closing : t.close}</Button></div>
+  </form>;
 }
 
 function EscapeForm({ t, onRecordEscape }: { t: Copy; onRecordEscape: (body: DefectEscapeBody) => Promise<boolean> }) {

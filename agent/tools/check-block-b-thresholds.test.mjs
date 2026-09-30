@@ -1,11 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { checkThresholds, fill, liveInputs, readLog, RULES } from './check-block-b-thresholds.mjs';
 import {
-  blockBSchedule, checkBlockBCadence, DARK_PATTERN_RECORD, LOG, REGISTER_AUDIT_ITEM, registerAuditDates, REVIEWS,
+  blockBSchedule, checkBlockBCadence, checkGateEffectivenessReviews, DARK_PATTERN_RECORD, GATE_REVIEW_MAX_OPEN_DAYS, LOG, loadOpenGateReviews,
+  REGISTER_AUDIT_ITEM, registerAuditDates, REVIEWS,
 } from './block-b-review-cadence.mjs';
 
 /*
@@ -172,4 +175,69 @@ test('release readiness passes --strict, the repo gates run it, and it runs clea
   assert.match(readFileSync(`${repo}.github/workflows/repo-gates.yml`, 'utf8'), /run: node agent\/tools\/check-block-b-thresholds\.mjs\n/);
   const out = execFileSync(process.execPath, [`${repo}agent/tools/check-block-b-thresholds.mjs`], { encoding: 'utf8' });
   assert.match(out, /next human review due \d{4}-\d{2}-\d{2}, next register audit due \d{4}-\d{2}-\d{2}/);
+});
+
+/* Appendix C 1.3 "Defect Escape Rate" / Stage 6 (gap-fix round 7): the open gate-effectiveness reviews. */
+const openReview = (id, openedAt, gate = 'forge.gate.12.tone', owner = 'pedagogical_lead') => ({ review_id: id, gate_id: gate, owner_role: owner, opened_at: openedAt });
+
+test('a gate-effectiveness review open longer than the cadence warns in the repo gates and fails under --strict', () => {
+  assert.equal(GATE_REVIEW_MAX_OPEN_DAYS, 90);
+  const reviews = [openReview('r-late', '2026-06-29T12:00:00Z'), openReview('r-fresh', '2026-09-01T00:00:00Z', 'forge.release.locales-complete', 'content_engineering')];
+  const warned = checkGateEffectivenessReviews({ reviews, today: '2026-09-29' });
+  assert.deepEqual(warned.failures, []);
+  assert.deepEqual(warned.overdue, ['r-late']);
+  assert.match(warned.warnings[0], /r-late for forge\.gate\.12\.tone .* open 91 days, longer than/);
+  const strict = checkGateEffectivenessReviews({ reviews, today: '2026-09-30', strict: true });
+  assert.equal(strict.warnings.length, 0);
+  assert.equal(strict.failures.length, 1);
+  assert.match(strict.failures[0], /r-late for forge\.gate\.12\.tone .* open 92 days, longer than 90; the Pedagogical Lead must record why the gate missed/);
+  // Exactly the cadence is not yet overdue.
+  assert.deepEqual(checkGateEffectivenessReviews({ reviews: [openReview('r-edge', '2026-07-01T00:00:00Z')], today: '2026-09-29', strict: true }).failures, []);
+  assert.deepEqual(checkGateEffectivenessReviews({ reviews: [], today: '2026-09-29', strict: true }), { failures: [], warnings: [], overdue: [] });
+});
+
+test('a malformed review list fails; an unread source warns and says how to read it', () => {
+  assert.match(checkGateEffectivenessReviews({ reviews: {}, today: '2026-09-29' }).failures[0], /expected a JSON array/);
+  assert.match(checkGateEffectivenessReviews({ reviews: [{ gate_id: 'forge.gate.12.tone' }], today: '2026-09-29' }).failures[0], /no review id, gate or opening time/);
+  assert.match(checkGateEffectivenessReviews({ reviews: [openReview('r', 'soon')], today: '2026-09-29' }).failures[0], /no review id, gate or opening time/);
+  const unread = checkGateEffectivenessReviews({ reviews: null, unread: 'no source here', today: '2026-09-29', strict: true });
+  assert.deepEqual(unread.failures, []);
+  assert.match(unread.warnings[0], /not checked \(no source here\); pass --gate-reviews/);
+});
+
+test('the open reviews load from a file, from the service-role RPC, or not at all', async () => {
+  const fromFile = await loadOpenGateReviews({ argv: ['--strict', '--gate-reviews=reviews.json'], env: {}, readFile: () => JSON.stringify([openReview('r', '2026-09-01T00:00:00Z')]) });
+  assert.equal(fromFile.reviews.length, 1);
+  const badFile = await loadOpenGateReviews({ argv: ['--gate-reviews=missing.json'], env: {}, readFile: () => { throw new Error('ENOENT'); } });
+  assert.equal(badFile.reviews, null);
+  assert.equal(badFile.failed, true);
+  const none = await loadOpenGateReviews({ argv: [], env: {}, readFile: () => '' });
+  assert.equal(none.reviews, null);
+  assert.equal(none.failed, undefined);
+  const seen = [];
+  const fetchImpl = async (url, init) => { seen.push({ url, init }); return { ok: true, json: async () => [openReview('r', '2026-09-01T00:00:00Z')] }; };
+  const fromDb = await loadOpenGateReviews({ argv: [], env: { SUPABASE_URL: 'http://localhost:54321/', SUPABASE_SERVICE_ROLE_KEY: 'test-service-key' }, readFile: () => '', fetchImpl });
+  assert.equal(fromDb.reviews.length, 1);
+  assert.equal(seen[0].url, 'http://localhost:54321/rest/v1/rpc/gate_effectiveness_reviews_open');
+  assert.equal(seen[0].init.method, 'POST');
+  const down = await loadOpenGateReviews({ argv: [], env: { SUPABASE_URL: 'http://localhost:54321', SUPABASE_SERVICE_ROLE_KEY: 'test-service-key' }, readFile: () => '',
+    fetchImpl: async () => ({ ok: false, status: 404 }) });
+  assert.equal(down.failed, true);
+  assert.match(down.unread, /answered 404/);
+});
+
+test('--strict fails the CLI on an overdue review read from a file', () => {
+  const file = join(mkdtempSync(join(tmpdir(), 'lf-gate-reviews-')), 'open.json');
+  writeFileSync(file, JSON.stringify([openReview('r-old', '2020-01-01T00:00:00Z')]));
+  try {
+    let failed = null;
+    try { execFileSync(process.execPath, ['agent/tools/check-block-b-thresholds.mjs', '--strict', `--gate-reviews=${file}`], { cwd: repo, stdio: 'pipe' }); }
+    catch (error) { failed = String(error.stderr); }
+    assert.ok(failed, 'expected --strict to fail');
+    assert.match(failed, /FAIL: the gate-effectiveness review r-old/);
+    const warned = execFileSync(process.execPath, ['agent/tools/check-block-b-thresholds.mjs', `--gate-reviews=${file}`], { cwd: repo, stdio: 'pipe' });
+    assert.match(String(warned), /block-b-thresholds OK/);
+  } finally {
+    rmSync(file, { force: true });
+  }
 });

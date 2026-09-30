@@ -15,6 +15,9 @@
 .lf-quality-flag { padding: var(--spacing-2) var(--spacing-3); border-radius: var(--rounded-md); background: var(--accent-soft); color: var(--content); font-weight: 700; }
 .lf-quality-review { padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); }
 .lf-quality-form { display: grid; gap: var(--spacing-3); }
+/* Gap-fix round 7: an open gate-effectiveness review; overdue past the logged cadence takes the accent edge. */
+.lf-quality-review { display: grid; gap: var(--spacing-2); padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); border-inline-start: 4px solid var(--edge); }
+.lf-quality-review[data-status="overdue"] { border-inline-start-color: var(--accent-strong); }
 /* The decisions are the shared SegmentedControl; the band limits are shared TextFields, side by side when they fit; the note is the shared TextAreaField. */
 .lf-quality-decisions { min-inline-size: 0; }
 .lf-quality-band { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: var(--spacing-3); }

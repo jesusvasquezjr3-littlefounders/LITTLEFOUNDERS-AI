@@ -36,6 +36,8 @@ export const LEARNING = [
   'verify-course-publish-postgres.py',
   // GAP-FIX-R6: Appendix C Part 3 Stage 3, the pedagogical review record and its release gate.
   'verify-stage3-review-postgres.py',
+  // Gap-fix round 7: Appendix C 1.3 / Stage 6, every defect escape opens an owned gate-effectiveness review.
+  'verify-gate-effectiveness-reviews-postgres.py',
 ];
 
 /**

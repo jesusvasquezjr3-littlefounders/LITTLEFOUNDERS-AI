@@ -3,9 +3,9 @@ import type { Locale } from '../design/copyBudget';
 import { Button, ErrorState, InlineNotice, LoadingState, SegmentedControl, TextAreaField, TextField } from '../design/controls';
 import {
   bandInsideGuardRails, decisionsFor, learningQualityReportSchema,
-  type LearningQualityReport, type ReviewDecision, type ReviewDecisionBody,
+  type GateReviewBody, type LearningQualityReport, type ReviewDecision, type ReviewDecisionBody,
 } from './learningQualityReport';
-import { LearningQaSignals, type DefectEscapeBody } from './LearningQaSignals';
+import { LearningQaSignals, type DefectEscapeBody, type GateReviewOutcomeResult } from './LearningQaSignals';
 import './learningQuality.css';
 
 /*
@@ -136,13 +136,15 @@ function evidencePct(evidence: Record<string, unknown>, key: 'current' | 'previo
   return typeof value === 'number' || typeof value === 'string' ? String(value) : '-';
 }
 
-export function LearningQualityPanel({ state, locale, dark, onRetry, onSync, onResolve, onRecordEscape, fixture = false }: {
+export function LearningQualityPanel({ state, locale, dark, onRetry, onSync, onResolve, onRecordEscape, onResolveGateReview, fixture = false }: {
   state: LearningQualityState; locale: Locale; dark: boolean;
   onRetry: () => void;
   onSync: () => Promise<boolean>;
   onResolve: (reviewId: string, body: ReviewDecisionBody) => Promise<DecisionOutcome>;
   /** GAP-FIX-R2 (Appendix C 1.3): records a defect escape through Core. */
   onRecordEscape?: (body: DefectEscapeBody) => Promise<boolean>;
+  /** Gap-fix round 7 (Appendix C 1.3 / Stage 6): closes the gate-effectiveness review an escape opened. */
+  onResolveGateReview?: (reviewId: string, body: GateReviewBody) => Promise<GateReviewOutcomeResult>;
   fixture?: boolean;
 }) {
   const t = copy[locale];
@@ -226,7 +228,8 @@ export function LearningQualityPanel({ state, locale, dark, onRetry, onSync, onR
     </section>
 
     {/* GAP-FIX-R2: Appendix P Part 8 parity, d′ pre/post, A/B and coverage; Appendix C 1.3 B.1, B.2, B.4 and defect escapes. */}
-    <LearningQaSignals signals={report.qaSignals ?? null} locale={locale} {...(onRecordEscape ? { onRecordEscape } : {})} />
+    <LearningQaSignals signals={report.qaSignals ?? null} locale={locale} {...(onRecordEscape ? { onRecordEscape } : {})}
+      {...(onResolveGateReview ? { onResolveGateReview } : {})} />
   </section>;
 }
 

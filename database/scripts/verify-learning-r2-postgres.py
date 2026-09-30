@@ -163,12 +163,15 @@ try:
     check('learning_events accepts the six QA events, refuses others, and learning_qa_rates counts them')
 
     lesson = str(uuid.uuid4())
-    escape = scalar(f"SET ROLE service_role; SELECT record_content_defect_escape('{lesson}', 'forge.gate.18.wellbeing-language', 'psychological', '{user}');")
+    # Gap-fix round 7: the recorder re-checks the actor (content_release_actor_allowed), so a staff account records it.
+    staff = str(uuid.uuid4())
+    run(f"INSERT INTO auth.users (id, email) VALUES ('{staff}', 'staff@littlefounders.ai'); INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{staff}', 'superadmin', NULL);")
+    escape = scalar(f"SET ROLE service_role; SELECT record_content_defect_escape('{lesson}', 'forge.gate.18.wellbeing-language', 'psychological', '{staff}');")
     assert len(escape) == 36, escape
     audited = scalar(f"SELECT count(*) FROM audit_logs WHERE action = 'admin.content.defect_escape' AND subject = '{lesson}';")
     assert audited == '1', audited
-    rejected(f"SET ROLE service_role; SELECT record_content_defect_escape('{lesson}', 'forge.gate.99.nothing', 'copy', '{user}');", 'Invalid defect escape')
-    rejected(f"SET ROLE service_role; SELECT record_content_defect_escape('{lesson}', 'forge.gate.12.tone', 'rumour', '{user}');", 'content_defect_escapes_defect_kind_check')
+    rejected(f"SET ROLE service_role; SELECT record_content_defect_escape('{lesson}', 'forge.gate.99.nothing', 'copy', '{staff}');", 'Invalid defect escape')
+    rejected(f"SET ROLE service_role; SELECT record_content_defect_escape('{lesson}', 'forge.gate.12.tone', 'rumour', '{staff}');", 'content_defect_escapes_defect_kind_check')
     rate = scalar(f"SET ROLE service_role; SELECT gate_id || ':' || escapes FROM content_defect_escape_rate({window});")
     assert rate == 'forge.gate.18.wellbeing-language:1', rate
     rejected("SET ROLE authenticated; SELECT * FROM content_defect_escapes;", 'permission denied')
