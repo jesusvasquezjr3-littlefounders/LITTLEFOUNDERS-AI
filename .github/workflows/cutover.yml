@@ -24,8 +24,11 @@ name: Cutover (operator)
 #              checks, the switch, and a restore of the window backup. Prints
 #              PASS/FAIL per phase with timings.
 #   freeze     Step 1: checks the step 1.1 workflows are disabled, makes the
-#              three Supabase login roles read-only, restarts rest/auth/storage
-#              and proves a service-key write through PostgREST is refused.
+#              three Supabase login roles read-only and gives PostgREST a
+#              pre-request function that makes every request read-only except
+#              the window's own token (freeze_sql below says why), restarts
+#              rest/auth/storage, and proves a service-key write through
+#              PostgREST is refused while the cutover token still writes.
 #   backup     Steps 2-4: od9 install, before inventory and spot check, the
 #              encrypted cutover backup on /data/backups, and its verification
 #              (decrypt, restore into a disposable copy, compare with before).
@@ -37,8 +40,9 @@ name: Cutover (operator)
 #              with od9_apply=true each dry run is followed by its --apply.
 #   reconcile  Step 7: after inventory, compare, spot check (exit 1 on a loss).
 #   smoke      Step 8: reads only.
-#   unfreeze   Step 9.1: resets the three roles, restarts the services and
-#              proves a write goes through again.
+#   unfreeze   Step 9.1: resets the three roles and the pre-request, restarts
+#              the services, proves a write goes through again, then drops
+#              the pre-request function.
 #   status     Read-only: freeze state, markers, ledger, od9 labels, backups.
 #
 # ZERO SPEND (OD-23): no step calls a paid model, image or voice provider.
@@ -165,7 +169,6 @@ jobs:
           COPY_REST=lf-cutover-rest
           REST_PORT=54330
           PROXY_PORT=54321
-          FROZEN_ROLES="authenticator supabase_auth_admin supabase_storage_admin"
 
           die() { echo "::error::$*"; exit 1; }
 
@@ -198,23 +201,95 @@ jobs:
             printf '%s\n' "$out" | clean_output
           }
 
-          # "authenticator=on supabase_auth_admin=on ..." for the three login roles.
-          freeze_state() {
-            prod_sql <<'SQL' | tr '\n' ' '
+          # THE FREEZE (runbook step 1.2), one text for production and the copy.
+          # The three Supabase login roles become read-only: GoTrue and Storage
+          # open plain transactions, so that stops them. PostgREST does not: it
+          # opens every write as an explicit READ WRITE transaction, which
+          # overrides the role default, and the rehearsal of 30 September 2026
+          # watched a service-key write go through (HTTP 204). So PostgREST also
+          # gets a pre-request function (in-database config, applied by NOTIFY
+          # and by the restart) that makes each request's transaction read-only,
+          # whatever key it carries, except a service_role JWT with the claim
+          # lf_cutover=window: the token cutover_token mints for the window's own
+          # seed:kc, signed with the JWT secret, so only a holder of that secret
+          # can make one. The migrations, OD-9, reconcile and the smoke checks
+          # connect as supabase_admin through psql and are not affected.
+          freeze_sql() {
+            cat <<'SQL'
+          CREATE SCHEMA IF NOT EXISTS lf_cutover;
+          REVOKE ALL ON SCHEMA lf_cutover FROM PUBLIC;
+          CREATE OR REPLACE FUNCTION lf_cutover.freeze_request() RETURNS void
+            LANGUAGE plpgsql SET search_path = '' AS $fn$
+          DECLARE
+            claims jsonb := coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb;
+          BEGIN
+            IF claims ->> 'role' = 'service_role' AND claims ->> 'lf_cutover' = 'window' THEN
+              RETURN;
+            END IF;
+            PERFORM pg_catalog.set_config('transaction_read_only', 'on', true);
+          END
+          $fn$;
+          REVOKE ALL ON FUNCTION lf_cutover.freeze_request() FROM PUBLIC;
+          GRANT USAGE ON SCHEMA lf_cutover TO anon, authenticated, service_role;
+          GRANT EXECUTE ON FUNCTION lf_cutover.freeze_request() TO anon, authenticated, service_role;
+          ALTER ROLE authenticator SET pgrst.db_pre_request = 'lf_cutover.freeze_request';
+          ALTER ROLE authenticator SET default_transaction_read_only = on;
+          ALTER ROLE supabase_auth_admin SET default_transaction_read_only = on;
+          ALTER ROLE supabase_storage_admin SET default_transaction_read_only = on;
+          NOTIFY pgrst, 'reload config';
+          SQL
+          }
+          # Step 9.1: the exact reverse of freeze_sql's settings. The function
+          # is dropped only after a write went through again (drop_freeze_sql).
+          unfreeze_sql() {
+            cat <<'SQL'
+          ALTER ROLE authenticator RESET pgrst.db_pre_request;
+          ALTER ROLE authenticator RESET default_transaction_read_only;
+          ALTER ROLE supabase_auth_admin RESET default_transaction_read_only;
+          ALTER ROLE supabase_storage_admin RESET default_transaction_read_only;
+          NOTIFY pgrst, 'reload config';
+          SQL
+          }
+          drop_freeze_sql() {
+            cat <<'SQL'
+          DROP FUNCTION IF EXISTS lf_cutover.freeze_request();
+          DROP SCHEMA IF EXISTS lf_cutover;
+          SQL
+          }
+          # "authenticator=on pre_request=on supabase_auth_admin=on ..."
+          freeze_state_sql() {
+            cat <<'SQL'
           SELECT r.rolname || '=' || CASE WHEN EXISTS (
                    SELECT 1 FROM pg_db_role_setting s
                    WHERE s.setrole = r.oid AND s.setdatabase = 0
                      AND 'default_transaction_read_only=on' = ANY (s.setconfig)) THEN 'on' ELSE 'off' END
           FROM pg_roles r
           WHERE r.rolname IN ('authenticator', 'supabase_auth_admin', 'supabase_storage_admin')
+          UNION ALL
+          SELECT 'pre_request=' || CASE WHEN EXISTS (
+                   SELECT 1 FROM pg_db_role_setting s JOIN pg_roles r ON r.oid = s.setrole
+                   WHERE r.rolname = 'authenticator' AND s.setdatabase = 0
+                     AND 'pgrst.db_pre_request=lf_cutover.freeze_request' = ANY (s.setconfig)) THEN 'on' ELSE 'off' END
           ORDER BY 1;
           SQL
           }
+          freeze_state() { freeze_state_sql | prod_sql | tr '\n' ' '; }
+          # Frozen = all four on; a partial state is neither frozen nor lifted.
+          state_is_frozen() { [ "$(printf '%s' "$1" | grep -o '=on' | wc -l)" -eq 4 ]; }
           is_frozen() {
             local state
             state="$(freeze_state)" || return 2
             echo "Freeze state: $state"
-            [ "$(printf '%s' "$state" | grep -o '=on' | wc -l)" -eq 3 ]
+            state_is_frozen "$state"
+          }
+          # A service_role JWT carrying lf_cutover=window, which the freeze lets
+          # write (seed:kc, and the freeze's second verification write). $1 is
+          # the JWT secret. Masked before anything can print it.
+          cutover_token() {
+            local t
+            t="$(node "$LF/jwt.mjs" "$1" service_role cutover)"
+            echo "::add-mask::$t"
+            printf '%s' "$t"
           }
 
           # Depot (filebase) volume: the cutover markers live in /data/cutover.
@@ -318,7 +393,9 @@ jobs:
             rm -f "$dump"
             docker exec "$COPY_DB" pg_restore --list /tmp/restore.dump > /dev/null \
               || { docker exec "$COPY_DB" rm -f /tmp/restore.dump; echo "pg_restore --list cannot read the archive"; return 1; }
-            docker exec "$COPY_DB" pg_restore -U supabase_admin -d "$db" /tmp/restore.dump 2> "$err" || rc=$?
+            # --verbose: pg_restore names a failed entry ("from TOC entry ...")
+            # at info level, which it prints only in verbose mode.
+            docker exec "$COPY_DB" pg_restore --verbose -U supabase_admin -d "$db" /tmp/restore.dump 2> "$err" || rc=$?
             docker exec "$COPY_DB" rm -f /tmp/restore.dump
             toc="$(grep -E '^pg_restore: from TOC entry' "$err" | sed -E 's/^pg_restore: from TOC entry //' || true)"
             n="$(grep -Eo 'errors ignored on restore: [0-9]+' "$err" | grep -Eo '[0-9]+$' || echo 0)"
@@ -457,10 +534,11 @@ jobs:
           # HS256 keys for the copy's PostgREST (its own random secret).
           cat > "$LF/jwt.mjs" <<'JS'
           import { createHmac } from 'node:crypto';
-          const [secret, role] = process.argv.slice(2);
+          const [secret, role, cutover] = process.argv.slice(2);
           const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
           const now = Math.floor(Date.now() / 1000);
-          const unsigned = `${b64({ alg: 'HS256', typ: 'JWT' })}.${b64({ role, iss: 'supabase', iat: now, exp: now + 6 * 3600 })}`;
+          const claims = { role, iss: 'supabase', iat: now, exp: now + 6 * 3600, ...(cutover === 'cutover' ? { lf_cutover: 'window' } : {}) };
+          const unsigned = `${b64({ alg: 'HS256', typ: 'JWT' })}.${b64(claims)}`;
           process.stdout.write(`${unsigned}.${createHmac('sha256', secret).update(unsigned).digest('base64url')}`);
           JS
 
@@ -511,7 +589,12 @@ jobs:
             if [ "$BLOCKED" = 1 ]; then printf '%s\tSKIP\t0\n' "$name" >> "$LF/timings.tsv"; echo "== $name: SKIP"; return 0; fi
             echo "::group::$name"
             t0=$(date +%s)
+            # errexit off around the subshell (the step runs bash -e, which
+            # would end the step at a failing phase), on inside it; `|| rc=$?`
+            # would instead switch errexit off inside the phase body too.
+            set +e
             ( set -eo pipefail; "$fn" ); rc=$?
+            set -e
             echo "::endgroup::"
             if [ "$rc" = 0 ]; then printf '%s\tPASS\t%s\n' "$name" "$(( $(date +%s) - t0 ))" >> "$LF/timings.tsv"; echo "== $name: PASS"
             else
@@ -521,6 +604,8 @@ jobs:
             return 0
           }
           service_jwt() { node "$LF/jwt.mjs" "$(cat "$LF/copy.jwt")" service_role; }
+          window_jwt() { cutover_token "$(cat "$LF/copy.jwt")"; }
+          copy_freeze_state() { freeze_state_sql | copy_admin postgres | tr '\n' ' '; }
           anon_jwt() { node "$LF/jwt.mjs" "$(cat "$LF/copy.jwt")" anon; }
           rest_restart() {
             docker restart "$COPY_REST" >/dev/null
@@ -556,11 +641,21 @@ jobs:
           # Step 1: freeze the copy exactly as production is frozen, then the
           # verification write that must fail.
           p_freeze() {
-            for r in $FROZEN_ROLES; do echo "ALTER ROLE $r SET default_transaction_read_only = on;"; done | copy_admin postgres
+            freeze_sql | copy_admin rehearsal
+            state="$(copy_freeze_state)"; echo "freeze state: $state"
+            state_is_frozen "$state"
             rest_restart
+            probe_frozen
+          }
+          # Step 1.3 (both verification writes): the service key is refused,
+          # the window's own token still writes.
+          probe_frozen() {
             code="$(probe_write "http://127.0.0.1:$PROXY_PORT/rest/v1" "$(service_jwt)")"
-            echo "verification write: HTTP $code $(probe_detail)"
-            grep -q 'read-only transaction' "$LF/probe.json" || { echo "FREEZE DID NOT TAKE: a service-key write through PostgREST was not refused (runbook step 1.3 would stop here)"; return 1; }
+            echo "service-key write: HTTP $code $(probe_detail)"
+            grep -q 'read-only transaction' "$LF/probe.json" || { echo "FREEZE DID NOT TAKE: a service-key write through PostgREST was not refused (runbook step 1.3 stops here)"; return 1; }
+            code="$(probe_write "http://127.0.0.1:$PROXY_PORT/rest/v1" "$(window_jwt)")"
+            echo "cutover-token write: HTTP $code $(probe_detail)"
+            case "$code" in 2??) ;; *) echo "the freeze also refuses the cutover's own token"; return 1 ;; esac
           }
           p_before() {
             od9_copy install
@@ -607,24 +702,17 @@ jobs:
             ! grep -q '^pending ' "$LF/copy-after.txt"
           }
           # Step 5.4 under the freeze, as the runbook orders it.
+          # Under the freeze, with the window's token, as the seed-kc step runs
+          # it in production; the freeze is proven still on afterwards.
           p_seed() {
             npm ci --prefix backend --no-audit --no-fund >/dev/null
-            SUPABASE_URL="http://127.0.0.1:$PROXY_PORT" SUPABASE_ANON_KEY="$(anon_jwt)" SUPABASE_SERVICE_ROLE_KEY="$(service_jwt)" \
+            rc=0
+            SUPABASE_URL="http://127.0.0.1:$PROXY_PORT" SUPABASE_ANON_KEY="$(anon_jwt)" SUPABASE_SERVICE_ROLE_KEY="$(window_jwt)" \
               SUPABASE_JWT_SECRET="$(cat "$LF/copy.jwt")" INTERNAL_API_KEY="$(openssl rand -hex 16)" TUTOR_SESSION_SECRET="$(openssl rand -hex 24)" \
-              npm run --prefix backend seed:kc > "$LF/seed.log" 2>&1 && { tail -n 5 "$LF/seed.log"; return 0; }
+              npm run --prefix backend seed:kc > "$LF/seed.log" 2>&1 || rc=$?
             tail -n 15 "$LF/seed.log" | cut -c1-300
-            if grep -q 'read-only transaction' "$LF/seed.log"; then
-              echo "RUNBOOK CONFLICT: seed:kc writes through PostgREST, which the step 1 freeze refuses (step 5.4 runs inside the freeze)."
-              echo "Proving the seed itself on the copy with the freeze lifted, then freezing again."
-              for r in $FROZEN_ROLES; do echo "ALTER ROLE $r RESET default_transaction_read_only;"; done | copy_admin postgres
-              rest_restart
-              SUPABASE_URL="http://127.0.0.1:$PROXY_PORT" SUPABASE_ANON_KEY="$(anon_jwt)" SUPABASE_SERVICE_ROLE_KEY="$(service_jwt)" \
-                SUPABASE_JWT_SECRET="$(cat "$LF/copy.jwt")" INTERNAL_API_KEY="$(openssl rand -hex 16)" TUTOR_SESSION_SECRET="$(openssl rand -hex 24)" \
-                npm run --prefix backend seed:kc > "$LF/seed2.log" 2>&1 && echo "seed:kc succeeds once the freeze is lifted" || { tail -n 15 "$LF/seed2.log" | cut -c1-300; }
-              for r in $FROZEN_ROLES; do echo "ALTER ROLE $r SET default_transaction_read_only = on;"; done | copy_admin postgres
-              rest_restart
-            fi
-            return 1
+            [ "$rc" = 0 ] || { echo "seed:kc failed (exit $rc)"; return 1; }
+            probe_frozen
           }
           p_od9() {
             od9_copy install
@@ -658,11 +746,15 @@ jobs:
           }
           # Step 9.1 on the copy.
           p_switch() {
-            for r in $FROZEN_ROLES; do echo "ALTER ROLE $r RESET default_transaction_read_only;"; done | copy_admin postgres
+            unfreeze_sql | copy_admin rehearsal
+            state="$(copy_freeze_state)"; echo "freeze state: $state"
+            ! printf '%s' "$state" | grep -q '=on'
             rest_restart
             code="$(probe_write "http://127.0.0.1:$PROXY_PORT/rest/v1" "$(service_jwt)")"
-            echo "write after the switch: HTTP $code $(probe_detail)"
+            echo "service-key write after the switch: HTTP $code $(probe_detail)"
             case "$code" in 2??) ;; *) return 1 ;; esac
+            drop_freeze_sql | copy_admin rehearsal
+            [ "$(echo "SELECT count(*) FROM pg_namespace WHERE nspname = 'lf_cutover';" | copy_admin rehearsal)" = 0 ]
           }
           # Backup document section 4: the window backup restores to the state
           # the before inventory describes.
@@ -677,6 +769,7 @@ jobs:
           }
 
           date -u +%Y-%m-%dT%H:%M:%SZ > "$LF/freeze-at"
+          grep -Eo "^ *phase '[^']+'" "$GITHUB_WORKSPACE/.github/workflows/cutover.yml" | sed -E "s/^ *phase '//; s/'\$//" > "$LF/phases.expected"
           phase 'start the copy (same image as production db)' hard p_copy_up
           phase 'restore the production dump'                  hard p_restore
           phase 'PostgREST on the copy'                        hard p_rest_up
@@ -698,6 +791,15 @@ jobs:
         run: |
           LF="$RUNNER_TEMP/lf"
           [ -s "$LF/timings.tsv" ] || { echo "::error::no phase ran"; exit 1; }
+          # A phase that never recorded a result (the replay step ended early)
+          # is a failure, never a silent pass.
+          if [ -s "$LF/phases.expected" ]; then
+            while IFS= read -r name; do
+              cut -f1 "$LF/timings.tsv" | grep -Fxq "$name" || printf '%s\tNOT RUN\t0\n' "$name" >> "$LF/timings.tsv"
+            done < "$LF/phases.expected"
+          else
+            printf 'replay on the copy\tNOT RUN\t0\n' >> "$LF/timings.tsv"
+          fi
           {
             echo "### Cutover rehearsal on a restored copy of production"
             echo ""
@@ -706,9 +808,9 @@ jobs:
             awk -F'\t' '{ printf "| %s | %s | %s |\n", $1, $2, $3 }' "$LF/timings.tsv"
             echo ""
             total=$(awk -F'\t' '{ s += $3 } END { print s }' "$LF/timings.tsv")
-            if grep -qP '\t(FAIL|SKIP)\t' "$LF/timings.tsv"; then echo "**REHEARSAL: FAIL** (${total}s)"; else echo "**REHEARSAL: PASS** (${total}s)"; fi
+            if grep -qP '\t(FAIL|SKIP|NOT RUN)\t' "$LF/timings.tsv"; then echo "**REHEARSAL: FAIL** (${total}s)"; else echo "**REHEARSAL: PASS** (${total}s)"; fi
           } | tee -a "$GITHUB_STEP_SUMMARY"
-          ! grep -qP '\t(FAIL|SKIP)\t' "$LF/timings.tsv"
+          ! grep -qP '\t(FAIL|SKIP|NOT RUN)\t' "$LF/timings.tsv"
 
       # ── FREEZE (runbook step 1) ──────────────────────────────────────────
       - name: 'Freeze: the step 1.1 workflows are disabled'
@@ -739,22 +841,21 @@ jobs:
           . "$RUNNER_TEMP/lf/lib.sh"
           set -e
           at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          prod_sql <<'SQL' >/dev/null
-          ALTER ROLE authenticator SET default_transaction_read_only = on;
-          ALTER ROLE supabase_auth_admin SET default_transaction_read_only = on;
-          ALTER ROLE supabase_storage_admin SET default_transaction_read_only = on;
-          SQL
-          is_frozen || die "the role settings did not take"
+          freeze_sql | prod_sql >/dev/null
+          is_frozen || die "the freeze settings did not take"
           restart_services
-          url="$(backend_var SUPABASE_URL)"; key="$(backend_var SUPABASE_SERVICE_ROLE_KEY)"
-          [ -n "$url" ] && [ -n "$key" ] || die "could not read Core's SUPABASE_URL / service key"
+          url="$(backend_var SUPABASE_URL)"; key="$(backend_var SUPABASE_SERVICE_ROLE_KEY)"; secret="$(backend_var SUPABASE_JWT_SECRET)"
+          [ -n "$url" ] && [ -n "$key" ] && [ -n "$secret" ] || die "could not read Core's SUPABASE_URL / service key / JWT secret"
           code="$(probe_write "$url/rest/v1" "$key")"
-          echo "Verification write: HTTP $code $(probe_detail)"
+          echo "Verification write with the service key: HTTP $code $(probe_detail)"
           if ! grep -q 'read-only transaction' "$LF/probe.json"; then
             rm -f "$LF/probe.json"
-            die "THE FREEZE DID NOT TAKE (runbook step 1.3): stop here. Dispatch step=unfreeze to reset the roles."
+            die "THE FREEZE DID NOT TAKE (runbook step 1.3): stop here. Dispatch step=unfreeze to lift it."
           fi
+          code="$(probe_write "$url/rest/v1" "$(cutover_token "$secret")")"
+          echo "Verification write with the cutover token: HTTP $code $(probe_detail)"
           rm -f "$LF/probe.json"
+          case "$code" in 2??) ;; *) die "the freeze also refuses the cutover's own token, so seed:kc could not run (runbook step 1.3): dispatch step=unfreeze" ;; esac
           printf '%s\n' "$at" | filebase_write freeze-at
           {
             echo "### Frozen at $at"
@@ -878,11 +979,17 @@ jobs:
         run: |
           . "$RUNNER_TEMP/lf/lib.sh"
           set -e
-          is_frozen && echo "note: production is frozen; seed:kc writes through PostgREST (see the rehearsal's step 5.4 result)" || true
           export SUPABASE_URL="$(backend_var SUPABASE_URL)"
           export SUPABASE_ANON_KEY="$(backend_var SUPABASE_ANON_KEY)"
           export SUPABASE_SERVICE_ROLE_KEY="$(backend_var SUPABASE_SERVICE_ROLE_KEY)"
           export SUPABASE_JWT_SECRET="$(backend_var SUPABASE_JWT_SECRET)"
+          # Inside the freeze the service key is refused; the seed writes with
+          # the window's token (the rehearsal's step 5.4 proves exactly this).
+          if is_frozen; then
+            [ -n "$SUPABASE_JWT_SECRET" ] || die "backend variable SUPABASE_JWT_SECRET is empty"
+            SUPABASE_SERVICE_ROLE_KEY="$(cutover_token "$SUPABASE_JWT_SECRET")"
+            echo "Production is frozen: seeding with the cutover token"
+          fi
           export INTERNAL_API_KEY="$(backend_var INTERNAL_API_KEY)"
           export TUTOR_SESSION_SECRET="$(backend_var TUTOR_SESSION_SECRET)"
           for v in SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY SUPABASE_JWT_SECRET INTERNAL_API_KEY TUTOR_SESSION_SECRET; do
@@ -975,19 +1082,17 @@ jobs:
         run: |
           . "$RUNNER_TEMP/lf/lib.sh"
           set -e
-          prod_sql <<'SQL' >/dev/null
-          ALTER ROLE authenticator RESET default_transaction_read_only;
-          ALTER ROLE supabase_auth_admin RESET default_transaction_read_only;
-          ALTER ROLE supabase_storage_admin RESET default_transaction_read_only;
-          SQL
+          unfreeze_sql | prod_sql >/dev/null
           state="$(freeze_state)"; echo "Freeze state: $state"
-          printf '%s' "$state" | grep -q '=on' && die "a role is still read-only"
+          printf '%s' "$state" | grep -q '=on' && die "a freeze setting is still on"
           restart_services
           url="$(backend_var SUPABASE_URL)"; key="$(backend_var SUPABASE_SERVICE_ROLE_KEY)"
           code="$(probe_write "$url/rest/v1" "$key")"
           echo "Write after lifting the freeze: HTTP $code $(probe_detail)"
           rm -f "$LF/probe.json"
           case "$code" in 2??) ;; *) die "writes still fail after lifting the freeze" ;; esac
+          drop_freeze_sql | prod_sql >/dev/null
+          echo "The freeze's pre-request function is removed."
           lifted="$(date -u +%Y%m%d-%H%M%S)"
           filebase_cmd mv /data/cutover/freeze-at "/data/cutover/freeze-at.lifted-$lifted" >/dev/null || true
           {
