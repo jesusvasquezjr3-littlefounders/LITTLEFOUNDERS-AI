@@ -230,6 +230,7 @@ export function checkSocialGovernance(root, { today = new Date() } = {}) {
   let register = null;
   try { register = JSON.parse(read(root, REGISTER)); } catch { failures.push(`${REGISTER}: the E.10 register of messaging-adjacent features is missing or not JSON`); }
   if (register) {
+    if (register.requiredShape?.activation?.teenWithoutGuardian !== 'never') failures.push(`${REGISTER}: requiredShape.activation must carry teenWithoutGuardian "never" (E.10, owner answer S-08)`);
     if (!Array.isArray(register.features)) failures.push(`${REGISTER}: "features" must be an array`);
     for (const feature of register.features ?? []) {
       const id = feature?.id ?? '(no id)';
@@ -237,6 +238,8 @@ export function checkSocialGovernance(root, { today = new Date() } = {}) {
       const a = feature?.activation ?? {};
       if (d.guardian !== false || d.teen !== false || d.closed !== false) failures.push(`${REGISTER}: ${id} must default off for the guardian, teen and closed tiers (E.10)`);
       if (a.guardian !== 'guardian_opt_in_per_child' || a.teen !== 'teen_opt_in_with_guardian_notice' || a.closed !== 'never') failures.push(`${REGISTER}: ${id} must require a guardian opt-in per child, a teen opt-in with guardian notice, and never for the closed tier (E.10)`);
+      // Owner answer S-08: the teen's guardian notice has nobody to go to, so a teen with no linked guardian can never turn it on.
+      if (a.teenWithoutGuardian !== 'never') failures.push(`${REGISTER}: ${id} must declare activation.teenWithoutGuardian "never": a teen with no linked guardian cannot turn it on (E.10, owner answer S-08)`);
       if (feature?.stage0Classification !== 'discoverability/safety') failures.push(`${REGISTER}: ${id} must be classified discoverability/safety at Stage 0 (Appendix J Part 3)`);
       for (const key of ['stage0Date', 'stage3ReviewDate']) if (!/^\d{4}-\d{2}-\d{2}$/.test(feature?.[key] ?? '')) failures.push(`${REGISTER}: ${id} needs ${key} (Stage 3 review before shipping)`);
       if (!Array.isArray(feature?.surfaces) || feature.surfaces.length === 0) failures.push(`${REGISTER}: ${id} must list its surfaces`);
@@ -265,7 +268,7 @@ export function checkSocialGovernance(root, { today = new Date() } = {}) {
   }
   // public.audit_logs is append-only (README non-negotiables): no migration deletes or updates it.
   for (const file of migrationFiles(root)) {
-    if (/(DELETE\s+FROM|UPDATE)\s+public\.audit_logs\b/i.test(read(root, `database/migrations/${file}`).replace(/--[^\n]*/g, ''))) failures.push(`database/migrations/${file}: deletes or updates public.audit_logs, which is append-only; an audit expiry is an owner decision (${POLICY} §8)`);
+    if (/(DELETE\s+FROM|UPDATE)\s+public\.audit_logs\b/i.test(read(root, `database/migrations/${file}`).replace(/--[^\n]*/g, ''))) failures.push(`database/migrations/${file}: deletes or updates public.audit_logs, which is append-only; an audit expiry is an owner decision (${POLICY} §8.2)`);
   }
   const consent = latestDefinition(root, 'social_edge_consented');
   if (!consent || !consent.body.includes('social_guardian_is_current') || !consent.body.includes('social_child_account')) failures.push(`${consent?.file ?? 'database/migrations'}: the E.11 consent rule must require a CURRENT guardian's approval for every child edge`);
