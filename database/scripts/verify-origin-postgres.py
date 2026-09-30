@@ -33,7 +33,14 @@ enforcing boundary, against the LATEST definition of each function:
     it and is refused (the choice locks the account row; the mark is
     serialized by its foreign key's KEY SHARE lock on that row), and a revocation or mark racing an
     already-admitted event waits for that event to commit first, so no
-    optional event ever commits after the "no" or the flag is acknowledged.
+    optional event ever commits after the "no" or the flag is acknowledged;
+  - Appendix M 1.1 measured (GAP-FIX-R7 fix7identi0): identity_metrics'
+    unconsentedFlagged count reads the event log filtered by the origin flag.
+    It is zero while the guards hold; an event admitted BEFORE a later flag is
+    not counted; a row that bypasses the admission trigger (the trigger
+    disabled in a mutation run, then a service-role insert on learning_events
+    or an owner insert on family_money_events) makes it non-zero, and only
+    inside the window.
 
 Cluster selection (never the shared Docker stack):
   LF_PG_PSQL   path to psql (default: LF_PG_BIN/psql, else <repo>/.codex/audit-db/pgsql/bin)
@@ -410,6 +417,41 @@ try:
     assert run(f"SELECT effective_age_band('{grown}')") == 'adult'
     assert not admitted(grown), 'a teen who turned adult by birth month lost an earlier opt-out'
     check('a teen who reached adult by birth month keeps an earlier analytics opt-out')
+
+    # ── Appendix M 1.1 measured: the flagged-session count in identity_metrics ──
+    def unconsented(window="now() - interval '1 day', now() + interval '1 minute'"):
+        return json.loads(service(f"SELECT identity_metrics({window}) -> 'unconsentedFlagged'"))
+
+    baseline = unconsented()
+    assert baseline['events'] == 0 and baseline['learningEvents'] == 0 and baseline['familyMoneyEvents'] == 0, baseline
+    assert baseline['accountsWithEvents'] == 0 and baseline['flaggedActive'] > 0 and baseline['flagged'] >= baseline['flaggedActive'], baseline
+    # flagged_later and flag_later each hold one event admitted before their flag.
+    assert events(flagged_later) == 1 and events(flag_later) == 1
+    check(f"identity_metrics counts zero unconsented events across {baseline['flaggedActive']} flagged accounts active in the window; "
+          'the two events admitted before a later flag are not counted')
+
+    leaked = population('adult', flagged=True)
+    run('ALTER TABLE public.learning_events DISABLE TRIGGER optional_learning_event_admission')
+    try:
+        assert service(f"INSERT INTO learning_events (user_id, role, event) VALUES ('{leaked}', 'universal', 'nav_view') RETURNING id") != ''
+    finally:
+        run('ALTER TABLE public.learning_events ENABLE TRIGGER optional_learning_event_admission')
+    run('ALTER TABLE public.family_money_events DISABLE TRIGGER family_money_event_admission')
+    try:
+        run(f"INSERT INTO family_money_events (user_id, event, goal_id) VALUES ('{leaked}', 'goal_reached', gen_random_uuid())")
+    finally:
+        run('ALTER TABLE public.family_money_events ENABLE TRIGGER family_money_event_admission')
+    after = unconsented()
+    assert after['events'] == 2 and after['learningEvents'] == 1 and after['familyMoneyEvents'] == 1, after
+    assert after['accountsWithEvents'] == 1 and after['flaggedActive'] >= baseline['flaggedActive'] + 1, after
+    earlier = unconsented("now() - interval '2 days', now() - interval '1 day'")
+    assert earlier['events'] == 0, earlier
+    assert not admitted(leaked), 'the admission trigger was not re-enabled'
+    run(f"DELETE FROM learning_events WHERE user_id = '{leaked}'; DELETE FROM family_money_events WHERE user_id = '{leaked}'")
+    assert unconsented()['events'] == 0
+    denials = sum(denied(role, "SELECT identity_metrics(now() - interval '1 day', now())", sub=leaked) for role in ('anon', 'authenticated'))
+    check('a flagged-account row that bypasses the admission trigger (learning_events via the service role, family_money_events via the owner) '
+          f'makes identity_metrics.unconsentedFlagged non-zero, only inside its window; {denials} browser calls are denied')
 
     # ── A.2: account deletion removes the origin ────────────────────────────
     gone = account(anonymous=True)

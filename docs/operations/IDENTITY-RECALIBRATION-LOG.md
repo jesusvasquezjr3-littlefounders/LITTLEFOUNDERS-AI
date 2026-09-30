@@ -22,6 +22,7 @@ Owner of the review: the Trust/Identity Lead (Appendix M Part 3 Stage 6), a dist
 |---|---|---|---|---|---|
 | `guest_origin_flag_coverage` | 1.1 | A.2 | release gate | 100% | `identity_metrics` guestOrigin, `services/identityMetrics.ts` |
 | `onboarding_discovery_unconsented` | 1.1 | A.2 | release gate | 100% admitted (zero unconsented) | `onboarding_discovery_metrics`, `services/identityMetrics.ts` |
+| `flagged_session_unconsented_events` | 1.1 | A.2 | release gate | zero stored events after the flag | `identity_metrics` unconsentedFlagged (learning_events, family_money_events) |
 | `flag_persistence_through_upgrade` | 1.1 | A.2 | release gate | 100% | `identity_metrics` flagPersistence |
 | `post_callback_age_screen_completion` | 1.1 | A.3 | release gate | 100% | `identity_metrics` googleAgeScreen |
 | `under13_google_reclassification` | 1.1 | A.3 | release gate | 100% | `identity_metrics` googleUnder13 |

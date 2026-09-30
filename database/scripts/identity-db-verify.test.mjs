@@ -42,6 +42,7 @@ const GUARDS = [
   { fn: 'guard_parent_verification_age', clause: 'A.5', verifier: 'verify-staff-ops-postgres.py', proof: 'AGE_RECORD_MINOR' },
   { fn: 'list_minor_record_tutors', clause: 'A.5', verifier: 'verify-staff-ops-postgres.py', proof: 'list_minor_record_tutors' },
   { fn: 'identity_metrics', clause: 'Appendix M Part 1', verifier: 'verify-staff-ops-postgres.py', proof: 'identity_metrics' },
+  { fn: 'identity_metrics', clause: 'Appendix M 1.1 (flagged sessions, measured)', verifier: 'verify-origin-postgres.py', proof: 'unconsentedFlagged' },
   { fn: 'decide_age_correction', clause: 'E.4 / A.4', verifier: 'verify-age-correction-postgres.py', proof: 'decide_age_correction' },
   { fn: 'promote_age_declaration', clause: 'OD-28', verifier: 'verify-age-birth-month-postgres.py', proof: 'promote_age_declaration' },
   { fn: 'guardian_rename_flagged_child', clause: 'S-06', verifier: 'verify-kid-username-change-postgres.py', proof: 'guardian_rename_flagged_child' },

@@ -36,6 +36,7 @@ const COUNTS: IdentityCounts = {
   staffGrantJustification: { staffGranted: 1, justified: 1, justificationsInWindow: 1 },
   revocation: { revokedRows: 1, revokedInWindow: 1, auditedRevocations: 1 },
   kidEmail: { kids: 3, restricted: 3, refusalsInWindow: 2 },
+  unconsentedFlagged: { flagged: 6, flaggedActive: 4, accountsWithEvents: 0, events: 0, learningEvents: 0, familyMoneyEvents: 0 },
   faqCapabilities: { secondGuardian: true, cancellationCascade: true, reportTool: true },
   schemaFields: {
     originFlag: { produced: 6, consumed: true },
@@ -130,13 +131,18 @@ describe('Appendix M Part 1 — GET /api/v1/admin/analytics/identity', () => {
     expect(res.status).toBe(200);
     const byId = Object.fromEntries((res.body.data.metrics as { id: string }[]).map((m) => [m.id, m]));
     expect(Object.keys(byId)).toEqual([
-      'guest_origin_flag_coverage', 'onboarding_discovery_unconsented', 'flag_persistence_through_upgrade', 'post_callback_age_screen_completion',
+      'guest_origin_flag_coverage', 'onboarding_discovery_unconsented', 'flagged_session_unconsented_events',
+      'flag_persistence_through_upgrade', 'post_callback_age_screen_completion',
       'under13_google_reclassification', 'entry_path_age_capture', 'undated_account_backlog',
       'verification_status_differentiation', 'tutor_adult_age_record', 'staff_grant_justification_completeness', 'revocation_path_utilization',
       'kid_email_change_restriction', 'faq_claim_parity', 'schema_field_utilization',
     ]);
     expect(byId.guest_origin_flag_coverage).toMatchObject({ kind: 'release_gate', target: 1, value: 1, status: 'met' });
     expect(byId.onboarding_discovery_unconsented).toMatchObject({ kind: 'release_gate', part: '1.1', requirement: 'A.2', value: 1, status: 'met', detail: { unconsented: 0 } });
+    expect(byId.flagged_session_unconsented_events).toMatchObject({
+      kind: 'release_gate', part: '1.1', requirement: 'A.2', target: 1, numerator: 4, denominator: 4, value: 1, status: 'met',
+      detail: { events: 0, flaggedActive: 4 },
+    });
     expect(byId.post_callback_age_screen_completion).toMatchObject({ kind: 'release_gate', value: 0.9, status: 'missed' });
     expect(byId.undated_account_backlog).toMatchObject({ kind: 'diagnostic', target: null, value: 0.3, status: 'diagnostic' });
     expect(byId.revocation_path_utilization).toMatchObject({ kind: 'diagnostic', detail: { pathExercised: true } });
@@ -174,7 +180,7 @@ describe('Appendix M Part 1 — GET /api/v1/admin/analytics/identity', () => {
   it('computes rates from counts and marks an empty population as no data', () => {
     const report = buildIdentityReport({ ...COUNTS, guestOrigin: { requested: 0, flagged: 0, flaggedGuestsCreated: 0 } }, 30, DISCOVERY);
     expect(report.metrics.find((m) => m.id === 'guest_origin_flag_coverage')).toMatchObject({ value: null, status: 'no_data' });
-    expect(report.releaseGate).toMatchObject({ total: 12, noData: 1 });
+    expect(report.releaseGate).toMatchObject({ total: 13, noData: 1 });
   });
 
   it('A.2/A.5: misses the Tutor age-record gate while a Tutor holds a minor age record, and names no account', async () => {
@@ -193,6 +199,33 @@ describe('Appendix M Part 1 — GET /api/v1/admin/analytics/identity', () => {
     stub({ minorRecord: { status: 500, body: null } });
     expect((await request(createApp()).get('/api/v1/admin/analytics/identity').set('Authorization', auth())).status).toBe(502);
     stub({ minorRecord: { status: 200, body: [{ user_id: 'not-a-uuid' }] } });
+    expect((await request(createApp()).get('/api/v1/admin/analytics/identity').set('Authorization', auth())).status).toBe(502);
+  });
+
+  it('Appendix M 1.1: misses the flagged-session gate on any stored event after the flag, and reads no data with no active flagged account', () => {
+    const one = buildIdentityReport({ ...COUNTS, unconsentedFlagged: {
+      flagged: 6, flaggedActive: 4, accountsWithEvents: 1, events: 1, learningEvents: 0, familyMoneyEvents: 1 } }, 30, DISCOVERY);
+    expect(one.metrics.find((m) => m.id === 'flagged_session_unconsented_events')).toMatchObject({
+      numerator: 3, denominator: 4, status: 'missed', detail: { events: 1, familyMoneyEvents: 1, accountsWithEvents: 1 },
+    });
+    expect(one.releaseGate.missed).toBeGreaterThan(buildIdentityReport(COUNTS, 30, DISCOVERY).releaseGate.missed);
+    // An inconsistent answer (events with no active account) still misses, never reads "no data".
+    const orphan = buildIdentityReport({ ...COUNTS, unconsentedFlagged: {
+      flagged: 1, flaggedActive: 0, accountsWithEvents: 0, events: 2, learningEvents: 2, familyMoneyEvents: 0 } }, 30, DISCOVERY);
+    expect(orphan.metrics.find((m) => m.id === 'flagged_session_unconsented_events')).toMatchObject({ status: 'missed' });
+    const idle = buildIdentityReport({ ...COUNTS, unconsentedFlagged: {
+      flagged: 6, flaggedActive: 0, accountsWithEvents: 0, events: 0, learningEvents: 0, familyMoneyEvents: 0 } }, 30, DISCOVERY);
+    expect(idle.metrics.find((m) => m.id === 'flagged_session_unconsented_events')).toMatchObject({ value: null, status: 'no_data' });
+    // The guard's own proof stays listed as an adversarial suite.
+    expect(one.adversarial.map((a) => a.id)).toContain('flagged_session_unconsented_analytics');
+  });
+
+  it('Appendix M 1.1: answers 502, never zeros, when the database omits or garbles the flagged-session count', async () => {
+    const withoutFlagged: Partial<IdentityCounts> = { ...COUNTS };
+    delete withoutFlagged.unconsentedFlagged;
+    stub({ identity: { status: 200, body: withoutFlagged } });
+    expect((await request(createApp()).get('/api/v1/admin/analytics/identity').set('Authorization', auth())).status).toBe(502);
+    stub({ identity: { status: 200, body: { ...COUNTS, unconsentedFlagged: { ...COUNTS.unconsentedFlagged, events: -1 } } } });
     expect((await request(createApp()).get('/api/v1/admin/analytics/identity').set('Authorization', auth())).status).toBe(502);
   });
 
