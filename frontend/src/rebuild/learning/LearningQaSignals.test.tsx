@@ -62,3 +62,66 @@ describe('learning QA signals (GAP-FIX-R2)', () => {
     expect(screen.getByText('Disponível quando as migrações de sinais forem aplicadas.')).toBeTruthy();
   });
 });
+
+/* Gap-fix round 7 (Appendix C 1.3 Defect Escape Rate, Stage 6): the open gate-effectiveness reviews and how one closes. */
+const REVIEW = 'cccccccc-0000-4000-8000-000000000001';
+const openReview = (overrides: Partial<{ reviewId: string; ageDays: number; overdue: boolean; ownerRole: 'pedagogical_lead' | 'content_engineering' }> = {}) => ({
+  reviewId: REVIEW, escapeId: 'eeeeeeee-0000-4000-8000-000000000001', lessonId: '11111111-2222-4333-8444-555555555555', gateId: 'forge.gate.12.tone',
+  gateDescription: 'Gate 12: Law 2 tone', ownerRole: 'pedagogical_lead' as const, defectKind: 'pedagogical', openedAt: '2026-06-01T00:00:00Z',
+  ageDays: 120, overdue: true, ...overrides,
+});
+const withReviews = (open: ReturnType<typeof openReview>[]) => ({ ...signals, gateReviews: { open, overdue: open.filter((r) => r.overdue).length, maxOpenDays: 90 } });
+
+describe('gate-effectiveness reviews (gap-fix round 7)', () => {
+  it('lists each open review with its gate, owner and age, and marks the overdue one', () => {
+    render(<LearningQaSignals signals={withReviews([openReview(), openReview({ reviewId: 'cccccccc-0000-4000-8000-000000000002', ageDays: 1, overdue: false, ownerRole: 'content_engineering' })])} locale="en-US" />);
+    expect(screen.getByText('Gate reviews')).toBeTruthy();
+    expect(screen.getByText('forge.gate.12.tone: open 120 days')).toBeTruthy();
+    expect(screen.getByText('forge.gate.12.tone: open 1 day')).toBeTruthy();
+    expect(screen.getByText('Owner: Pedagogical Lead')).toBeTruthy();
+    expect(screen.getByText('Owner: Content engineering')).toBeTruthy();
+    expect(screen.getAllByText('Overdue: over 90 days')).toHaveLength(1);
+    expect(document.querySelector('[data-status="overdue"]')).toBeTruthy();
+    // Read-only without the writer.
+    expect(screen.queryByRole('button', { name: 'Close review' })).toBeNull();
+  });
+
+  it('says when nothing is open, and when the migration is missing', () => {
+    const { rerender } = render(<LearningQaSignals signals={withReviews([])} locale="es-MX" />);
+    expect(screen.getByText('Sin revisiones abiertas.')).toBeTruthy();
+    rerender(<LearningQaSignals signals={{ ...signals, gateReviews: null }} locale="pt-BR" />);
+    expect(screen.getByText('Disponível quando a migração de revisões for aplicada.')).toBeTruthy();
+  });
+
+  it('never closes a review without an outcome and a note, and a fixed gate names its commit or version', async () => {
+    const onResolve = vi.fn(async () => 'resolved' as const);
+    render(<LearningQaSignals signals={withReviews([openReview()])} locale="en-US" onResolveGateReview={onResolve} />);
+    const close = screen.getByRole('button', { name: 'Close review' });
+    expect(close).toBeDisabled();
+    fireEvent.change(screen.getByLabelText(/Why the gate missed it/), { target: { value: 'The tone lexicon had no entry for this idiom.' } });
+    expect(close).toBeDisabled();
+    fireEvent.click(screen.getByRole('radio', { name: 'Gate fixed' }));
+    expect(close).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('Commit or gate version'), { target: { value: '-bad' } });
+    expect(close).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('Commit or gate version'), { target: { value: 'a1b2c3d4' } });
+    expect(close).toBeEnabled();
+    fireEvent.click(close);
+    await waitFor(() => expect(onResolve).toHaveBeenCalledWith(REVIEW, { outcome: 'gate_changed', note: 'The tone lexicon had no entry for this idiom.', gateChangeRef: 'a1b2c3d4' }));
+    expect(await screen.findByText('Review closed.')).toBeTruthy();
+    expect(screen.queryByText('forge.gate.12.tone: open 120 days')).toBeNull();
+  });
+
+  it('sends no reference for the other outcomes and reports a conflict', async () => {
+    const onResolve = vi.fn(async () => 'conflict' as const);
+    render(<LearningQaSignals signals={withReviews([openReview()])} locale="pt-BR" onResolveGateReview={onResolve} />);
+    fireEvent.click(screen.getByRole('radio', { name: 'Filtro corrigido' }));
+    fireEvent.change(screen.getByLabelText('Commit ou versão do filtro'), { target: { value: 'a1b2c3d4' } });
+    fireEvent.click(screen.getByRole('radio', { name: 'Limite aceito' }));
+    expect(screen.queryByLabelText('Commit ou versão do filtro')).toBeNull();
+    fireEvent.change(screen.getByLabelText(/Por que o filtro não pegou/), { target: { value: 'Nenhum filtro lê o subtexto da imagem.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar revisão' }));
+    await waitFor(() => expect(onResolve).toHaveBeenCalledWith(REVIEW, { outcome: 'accepted_limitation', note: 'Nenhum filtro lê o subtexto da imagem.' }));
+    expect(await screen.findByText('Já estava fechada.')).toBeTruthy();
+  });
+});

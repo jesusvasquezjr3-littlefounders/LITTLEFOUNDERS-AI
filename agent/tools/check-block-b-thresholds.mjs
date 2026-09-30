@@ -19,13 +19,21 @@
 // (block-b-review-cadence.mjs). An overdue review warns here and fails with
 // --strict, which release readiness passes.
 //
+// Appendix C 1.3 "Defect Escape Rate" / Stage 6 (gap-fix round 7): so does a
+// gate-effectiveness review (opened by every defect escape) left open longer
+// than `gate_effectiveness.review_max_open_days`. The open reviews are read
+// from --gate-reviews=<file.json> or, with SUPABASE_URL and
+// SUPABASE_SERVICE_ROLE_KEY set, from gate_effectiveness_reviews_open(); with
+// neither, the check says it did not run. Under --strict a source that was
+// named but could not be read fails.
+//
 // Snippets: `{v}` is the logged value; `{0}`, `{1}`, … are the parts of a
 // comma-separated list value, in the order the log's Source column names.
 
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { checkBlockBCadence, DARK_PATTERN_RECORD, LOG } from './block-b-review-cadence.mjs';
+import { checkBlockBCadence, checkGateEffectivenessReviews, DARK_PATTERN_RECORD, LOG, loadOpenGateReviews } from './block-b-review-cadence.mjs';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 
@@ -46,6 +54,8 @@ const ENGAGEMENT = 'backend/src/services/engagementHealth.ts';
 const SESSION = 'backend/src/services/pedagogy/sessionPlan.ts';
 const DARK = 'agent/tools/check-dark-patterns.mjs';
 const PRACTICE_SQL = '_practice_difficulty_calibration';
+const QA_SIGNALS = 'backend/src/services/learningQaSignals.ts';
+const CADENCE = 'agent/tools/block-b-review-cadence.mjs';
 
 /**
  * The rules: for each log key, the source files that must contain each
@@ -99,6 +109,8 @@ export const RULES = [
   { key: 'register.teen_age', src: [[REGISTER, ["if (age < {v}) return 'transition';", "{ from: 'transition', to: 'teen', atAge: {v} }"]]] },
   { key: 'register.adult_age', src: [[REGISTER, ["if (age < {v}) return 'teen';"]]] },
   { key: 'dark_pattern.release_audit_max_age_days', src: [[DARK, ['export const RELEASE_AUDIT_MAX_AGE_DAYS = {v};']]] },
+  // Appendix C 1.3 / Stage 6 (gap-fix round 7): the staff panel's overdue flag and the release check.
+  { key: 'gate_effectiveness.review_max_open_days', src: [[QA_SIGNALS, ['export const GATE_REVIEW_MAX_OPEN_DAYS = {v};']], [CADENCE, ['export const GATE_REVIEW_MAX_OPEN_DAYS = {v};']]] },
 ];
 
 /** A snippet with `{v}` and `{0}`, `{1}`, … filled from the logged value. */
@@ -158,13 +170,17 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const strict = process.argv.includes('--strict');
   const inputs = liveInputs();
   const failures = checkThresholds(inputs);
-  const cadence = checkBlockBCadence({ markdown: inputs.log, record: inputs.record, today: new Date().toISOString().slice(0, 10), strict });
-  for (const warning of cadence.warnings) console.warn(`WARN: ${warning}`);
-  const all = [...failures, ...cadence.failures];
+  const today = new Date().toISOString().slice(0, 10);
+  const cadence = checkBlockBCadence({ markdown: inputs.log, record: inputs.record, today, strict });
+  const source = await loadOpenGateReviews({ argv: process.argv, env: process.env, readFile: (path) => readFileSync(path, 'utf8') });
+  const gateReviews = checkGateEffectivenessReviews({ reviews: source.reviews, unread: source.unread, today, strict });
+  if (strict && source.failed) gateReviews.failures.push(`open gate-effectiveness reviews could not be read: ${source.unread}`);
+  for (const warning of [...cadence.warnings, ...gateReviews.warnings]) console.warn(`WARN: ${warning}`);
+  const all = [...failures, ...cadence.failures, ...gateReviews.failures];
   if (all.length > 0) {
     for (const failure of all) console.error(`FAIL: ${failure}`);
     process.exit(1);
   }
   const { thresholds, 'register-audit': register } = cadence.schedules;
-  console.log(`block-b-thresholds OK — ${RULES.length} thresholds agree across the log, Forge, Core and the migrations; next human review due ${thresholds.due}, next register audit due ${register.due}${strict ? ' (not overdue)' : ''}`);
+  console.log(`block-b-thresholds OK — ${RULES.length} thresholds agree across the log, Forge, Core and the migrations; next human review due ${thresholds.due}, next register audit due ${register.due}${strict ? ' (not overdue)' : ''}; gate-effectiveness reviews: ${source.reviews ? `${source.reviews.length} open, none overdue (${source.source})` : 'not checked'}`);
 }

@@ -38,6 +38,8 @@ export const LEARNING = [
   'verify-stage3-review-postgres.py',
   // GAP-FIX-R7: Appendix C 1.1 (B.9), the decision-journal coverage denominator.
   'verify-decision-journal-coverage-postgres.py',
+  // Gap-fix round 7: Appendix C 1.3 / Stage 6, every defect escape opens an owned gate-effectiveness review.
+  'verify-gate-effectiveness-reviews-postgres.py',
 ];
 
 /**

@@ -41,5 +41,26 @@ export function learningQualityFixture(): Record<string, unknown> {
         { lever: 'mentor' as const, offered: 80, exercised: 51, adoption_rate: 0.6375 },
       ],
     },
+    // GAP-FIX-R2 QA signals, with the gap-fix round 7 gate-effectiveness reviews (one overdue, one fresh).
+    qaSignals: {
+      scorerParity: { graded: 40, reported: 38, agreed: 38, agreement_share: 1, refusedButClientValid: 0, target: 1 },
+      detectionByPhase: [], cueHits: { responses: 0, hits: 0, missed: 0, false_ticks: 0, diagnostic: true },
+      variantTransfer: { rows: [], diagnostic: true }, cpaEntryStages: { rows: [], diagnostic: true },
+      placementCommit: { ok: 9, failed: 1, successRate: 0.9, byMethod: { adaptive_quiz: 9 }, target: 1 },
+      prerequisiteGate: { refused: 3, passed: 5, target: 1 }, forcedUpdate: { blocked: 0, target: 1 },
+      defectEscapes: { escapes: 2, publishedVersions: 30, byGate: [{ gateId: 'forge.gate.12.tone', escapes: 1 }, { gateId: 'forge.release.locales-complete', escapes: 1 }], target: 0 },
+      gateReviews: {
+        open: [
+          { reviewId: 'cccccccc-0000-4000-8000-000000000001', escapeId: 'eeeeeeee-0000-4000-8000-000000000001', lessonId: 'aaaaaaaa-0000-4000-8000-000000000001',
+            gateId: 'forge.gate.12.tone', gateDescription: 'Gate 12: Law 2 tone', ownerRole: 'pedagogical_lead', defectKind: 'pedagogical',
+            openedAt: '2026-06-10T12:00:00.000Z', ageDays: 106, overdue: true },
+          { reviewId: 'cccccccc-0000-4000-8000-000000000002', escapeId: 'eeeeeeee-0000-4000-8000-000000000002', lessonId: 'aaaaaaaa-0000-4000-8000-000000000002',
+            gateId: 'forge.release.locales-complete', gateDescription: 'Every release-ready lesson has all three locales', ownerRole: 'content_engineering', defectKind: 'copy',
+            openedAt: '2026-09-20T12:00:00.000Z', ageDays: 4, overdue: false },
+        ],
+        overdue: 1, maxOpenDays: 90,
+      },
+      coverage: null,
+    },
   };
 }

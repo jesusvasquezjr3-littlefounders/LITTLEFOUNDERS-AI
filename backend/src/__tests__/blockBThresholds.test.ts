@@ -11,6 +11,7 @@ import {
 } from '../services/learnerRegisterPolicy.js';
 import { ENGAGEMENT_HEALTH_WEEKS, TREND_MIN_WEEKLY_SAMPLE, TREND_TOLERANCE, TREND_WINDOW_WEEKS } from '../services/engagementHealth.js';
 import { ZPD_TARGET } from '../services/pedagogy/sessionPlan.js';
+import { GATE_REVIEW_MAX_OPEN_DAYS } from '../services/learningQaSignals.js';
 
 /*
  * GAP-FIX-R6 (Appendix C Part 1.3, Threshold Recalibration Log; B.19, B.12,
@@ -49,6 +50,7 @@ const CORE_KEYS = [
   'engagement.trend_min_weekly_sample',
   'engagement.trend_tolerance',
   'engagement.trend_window_weeks',
+  'gate_effectiveness.review_max_open_days',
   'guided_review.max_tracked',
   'guided_review.miss_threshold',
   'judgment.divergence_floor',
@@ -88,6 +90,11 @@ describe('Block B threshold log, Core half (Appendix C Part 1.3)', () => {
     expect(num('mentor.zpd_target')).toBe(ZPD_TARGET);
     expect(ZPD_TARGET * 100).toBeGreaterThanOrEqual(lower!);
     expect(ZPD_TARGET * 100).toBeLessThanOrEqual(upper!);
+  });
+
+  it('matches the gate-effectiveness review cadence (Appendix C 1.3 Defect Escape Rate, Stage 6)', () => {
+    expect(num('gate_effectiveness.review_max_open_days')).toBe(GATE_REVIEW_MAX_OPEN_DAYS);
+    expect(GATE_REVIEW_MAX_OPEN_DAYS).toBe(num('practice_band.review_cadence_days'));
   });
 
   it('matches the B.12 judgment floor and the B.5 replay target', () => {

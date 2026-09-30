@@ -122,7 +122,7 @@ import {
   setPracticeBand,
   syncPracticeReviews,
 } from '../services/learningQuality.js';
-import { DEFECT_KINDS, recordContentDefectEscape } from '../services/learningQaSignals.js';
+import { DEFECT_KINDS, GATE_REVIEW_OUTCOMES, recordContentDefectEscape, resolveGateEffectivenessReview } from '../services/learningQaSignals.js';
 import { getStage3State, recordStage3Review, Stage3ReviewBody, STAGE3_RECORD_REFUSALS } from '../services/pedagogicalReview.js';
 import { getFamilyStateIntegrity } from '../services/familyLifecycle.js';
 import { readRetentionCompliance } from '../services/familyRetention.js';
@@ -2029,6 +2029,31 @@ export function adminRouter(): Router {
     const id = await recordContentDefectEscape({ ...body.data, actorId: authedUser(res).id });
     if (!id) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the defect escape');
     ok(res, { id, status: 'recorded' });
+  });
+
+  /*
+   * Appendix C 1.3 / Stage 6 (gap-fix round 7): the escape opened a
+   * gate-effectiveness review; staff close it with what changed. The outcome
+   * and a note are required; only a changed gate names its commit or version.
+   * The SQL writer re-checks manage_content and audits.
+   */
+  const GateReviewBody = z.object({
+    outcome: z.enum(GATE_REVIEW_OUTCOMES),
+    note: z.string().trim().min(10).max(600),
+    gateChangeRef: z.string().trim().regex(/^[A-Za-z0-9][A-Za-z0-9._/@+-]{2,79}$/).optional(),
+  }).strict().refine((body) => (body.outcome === 'gate_changed') === (body.gateChangeRef !== undefined),
+    'A changed gate names its commit or version; the other outcomes name none');
+  router.post('/content/learning-quality/gate-reviews/:reviewId/resolve', async (req, res) => {
+    const reviewId = z.string().uuid().safeParse(req.params.reviewId);
+    const body = GateReviewBody.safeParse(req.body);
+    if (!reviewId.success || !body.success) return fail(res, 400, 'VALIDATION_ERROR', 'Invalid gate review outcome');
+    const outcome = await resolveGateEffectivenessReview({ reviewId: reviewId.data, actorId: authedUser(res).id, ...body.data });
+    if (outcome === 'forbidden') return fail(res, 403, 'FORBIDDEN', 'The database refused this decision');
+    if (outcome === 'not_found') return fail(res, 404, 'NOT_FOUND', 'No such review');
+    if (outcome === 'already_resolved') return fail(res, 409, 'REVIEW_RESOLVED', 'This review is already resolved');
+    if (outcome === 'invalid') return fail(res, 400, 'VALIDATION_ERROR', 'Invalid gate review outcome');
+    if (outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the outcome');
+    ok(res, { id: reviewId.data, status: 'resolved' });
   });
 
   router.post('/content/learning-quality/bands', async (req, res) => {

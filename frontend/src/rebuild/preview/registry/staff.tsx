@@ -90,7 +90,7 @@ export const staffPreviewScreens: PreviewRegistry = {
         : params.get('quality') === 'empty' ? { status: 'ready', report: { ...learningQualityFixture(), lessons: [], reviews: [], judgment: [],
           replayNotice: { below_best: 0, shown: 0, display_rate: null, target: 1, belowTarget: false } } }
         : { status: 'ready', report: learningQualityFixture() }}
-      onRetry={() => {}} onSync={async () => true} onResolve={async () => 'resolved'} />
+      onRetry={() => {}} onSync={async () => true} onResolve={async () => 'resolved'} onResolveGateReview={async () => 'resolved'} />
   </main>),
   'staff-live-content': framed(({ t, locale, theme, params }) => <main className="lf-preview lf-preview--staff-live-content" data-surface="app"
     data-screen="staff-live-content"><div className="lf-preview-content">

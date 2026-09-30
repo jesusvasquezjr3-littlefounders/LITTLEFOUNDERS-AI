@@ -86,10 +86,27 @@ describe('S05.3d staff learning-quality panel', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Could not load learning quality.');
   });
 
+  it('gap-fix round 7: lists the open gate-effectiveness reviews with owner and age, and closes one through the writer', async () => {
+    const onResolveGateReview = vi.fn(async () => 'resolved' as const);
+    render(<LearningQualityPanel state={{ status: 'ready', report: learningQualityFixture() }} locale="en-US" dark={false}
+      onRetry={() => {}} onSync={async () => true} onResolve={async () => 'resolved'} onResolveGateReview={onResolveGateReview} />);
+    expect(screen.getByText('forge.gate.12.tone: open 106 days')).toBeTruthy();
+    expect(screen.getByText('Overdue: over 90 days')).toBeTruthy();
+    expect(screen.getByText('Owner: Content engineering')).toBeTruthy();
+    const [first] = screen.getAllByRole('button', { name: 'Close review' });
+    const form = first!.closest('form')!;
+    fireEvent.click(within(form).getByRole('radio', { name: 'Lexicon extended' }));
+    fireEvent.change(within(form).getByLabelText(/Why the gate missed it/), { target: { value: 'The idiom was not in the tone lexicon.' } });
+    fireEvent.click(first!);
+    await waitFor(() => expect(onResolveGateReview).toHaveBeenCalledWith('cccccccc-0000-4000-8000-000000000001',
+      { outcome: 'lexicon_extended', note: 'The idiom was not in the tone lexicon.' }));
+    await waitFor(() => expect(screen.queryByText('forge.gate.12.tone: open 106 days')).toBeNull());
+  });
+
   it('keeps the staff copy inside the adult Copy Budget in every locale', () => {
     for (const locale of ['en-US', 'es-MX', 'pt-BR'] as const) {
       const { unmount, container } = render(<LearningQualityPanel state={{ status: 'ready', report: learningQualityFixture() }} locale={locale} dark={false}
-        onRetry={() => {}} onSync={async () => true} onResolve={async () => 'resolved'} />);
+        onRetry={() => {}} onSync={async () => true} onResolve={async () => 'resolved'} onResolveGateReview={async () => 'resolved'} />);
       for (const element of container.querySelectorAll<HTMLElement>('[data-copy-role]')) {
         if (element.parentElement?.closest('[data-copy-role]')) continue;
         const role = element.dataset.copyRole as CopyRole;

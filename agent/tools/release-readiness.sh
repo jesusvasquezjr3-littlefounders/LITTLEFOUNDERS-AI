@@ -64,7 +64,11 @@ npm --prefix oracle run equity-audit -- --check
 node agent/tools/identity-review-cadence.mjs --strict
 # Appendix C 1.3 / Stage 6 (GAP-FIX-R6): nor on an overdue Block B threshold
 # review or Age-Band Register Differentiation Audit (MN-03), each due by
-# docs/operations/BLOCK-B-THRESHOLD-LOG.md (block-b-review-cadence.mjs).
+# docs/operations/BLOCK-B-THRESHOLD-LOG.md (block-b-review-cadence.mjs), nor
+# (gap-fix round 7, Appendix C 1.3 Defect Escape Rate) on a gate-effectiveness
+# review left open longer than the logged cadence. The open reviews are read
+# with SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY from this environment (a read),
+# or from --gate-reviews=<export.json>; with neither it warns that it did not run.
 node agent/tools/check-block-b-thresholds.mjs --strict
 # Appendix J 1.3 / DoD 2.1(2): the data-gateway half of the social release
 # gate. Every native-PostgreSQL social verifier (and the teen discoverable,
