@@ -86,8 +86,9 @@ export const states = [
   /* GAP-FIX-R5: the four standalone Mentor preview screens (preview/registry/mentor.tsx), which were in no lane. */
   ...['completed', 'interrupted', 'learner_left', 'safety_stop'].map((script, n) => preview(`mentor-session-end@${script}-${['6-9', '10-12', '13-17', '6-9'][n]}`,
     { screen: 'mentor-session-end', age: ['6-9', '10-12', '13-17', '6-9'][n], script }, { readyAll: [`[data-closing-script="${script}"] h2`] })),
+  // GoalCheckChoice takes no age: one preview state measures it (a second age renders identical markup, which the
+  // driver refuses). Its age variants on the stage are goal-dina-6-9 and goal-rho-13-17 above.
   preview('mentor-goal-check@6-9', { screen: 'mentor-goal-check', age: '6-9' }, { readyAll: ['[data-goal="agree"]'] }),
-  preview('mentor-goal-check@13-17', { screen: 'mentor-goal-check', age: '13-17' }, { readyAll: ['[data-goal="agree"]'] }),
   preview('mentor-alliance-check@completed-10-12', { screen: 'mentor-alliance-check', age: '10-12', script: 'completed' }, { readyAll: ['[data-bond]'] }),
   preview('mentor-alliance-check@safety-stop-6-9', { screen: 'mentor-alliance-check', age: '6-9', script: 'safety_stop' }, { readyAll: ['[data-screen="mentor-alliance-check"]'] }),
   preview('mentor-profile@own-13-17', { screen: 'mentor-profile', age: '13-17', audience: 'own' }, { readyAll: ['[data-screen="mentor-profile"] h2'] }),

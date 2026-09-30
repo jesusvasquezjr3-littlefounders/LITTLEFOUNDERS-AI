@@ -149,7 +149,8 @@ export const learnPreviewScreens: PreviewRegistry = {
   // The preview holds no rubric: a Check answers "not yet" so the board's feedback row is measured too.
   fixture: framed(({ screen, locale, ageBand, params, go }) => <LessonDocumentView key={`${screen}:${locale}:${ageBand}:${params.get('seg')}`}
     raw={previewFixtureSegment(locale, ageBand, params.get('seg'))} locale={locale} ageBand={ageBand} onBack={() => go('home')}
-    onGradeAny={async () => ({ verdict: 'review' as const })} />),
+    // A decide-and-justify step has its own grader (reasoning quality, B.12); without it the view refuses the step.
+    onGradeAny={async () => ({ verdict: 'review' as const })} onGradeReasoning={async () => ({ verdict: 'review' as const })} />),
   opening: transport,
   offline: transport,
   loaderror: transport,
