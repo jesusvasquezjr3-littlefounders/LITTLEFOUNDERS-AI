@@ -134,16 +134,47 @@ export function SegmentProgress({ sequence, locale, finished }: { sequence?: Les
   </>;
 }
 
-/** A typed number with the locale-aware parse echoed before Check. `onChange` receives the canonical string or null. */
-export function NumberAnswer({ label, locale, onChange, disabled }: { label: string; locale: Locale; onChange: (canonical: string | null) => void; disabled?: boolean }) {
+/**
+ * The domain a board's typed answer must fall in before Check (GAP-FIX-R7):
+ * `whole` takes only a non-negative whole number; `min` / `max` are the
+ * board's public bounds, the same ones Core's canonical scorer refuses past.
+ */
+export interface NumberAnswerDomain { whole?: boolean; min?: number; max?: number }
+export type NumberAnswerReading = { canonical: string; problem: null } | { canonical: null; problem: 'empty' | 'notNumber' | 'wholeNumber' | 'tooSmall' | 'tooBig' };
+
+/** A typed answer read for the lesson's locale (Appendix P Part 5): the canonical string it submits, or why Check stays off. */
+export function readNumberAnswer(text: string, locale: Locale, domain: NumberAnswerDomain = {}): NumberAnswerReading {
+  if (!text.trim()) return { canonical: null, problem: 'empty' };
+  const parsed = parseLocaleNumber(text, locale);
+  if (parsed === null) return { canonical: null, problem: 'notNumber' };
+  if (domain.whole && (!/^(0|[1-9]\d*)$/.test(parsed) || !Number.isSafeInteger(Number(parsed)))) return { canonical: null, problem: 'wholeNumber' };
+  if (domain.min !== undefined && Number(parsed) < domain.min) return { canonical: null, problem: 'tooSmall' };
+  if (domain.max !== undefined && Number(parsed) > domain.max) return { canonical: null, problem: 'tooBig' };
+  return { canonical: parsed, problem: null };
+}
+
+/**
+ * A typed number with the locale-aware parse echoed before Check (Bible 05
+ * §5: inputmode="decimal", a locale-aware parser, the parsed value echoed).
+ * `onChange` receives the canonical string, or null while the text is empty
+ * or outside the board's domain; the field then says why (never a silently
+ * disabled Check). Controlled when the board passes `value` (so its Reset can
+ * empty it), uncontrolled otherwise.
+ */
+export function NumberAnswer({ label, locale, onChange, disabled, value, onTextChange, whole, min, max }: NumberAnswerDomain & {
+  label: string; locale: Locale; onChange?: (canonical: string | null) => void; disabled?: boolean;
+  value?: string; onTextChange?: (text: string) => void;
+}) {
   const t = copy[locale];
-  const [text, setText] = useState('');
-  const parsed = text.trim() ? parseLocaleNumber(text, locale) : null;
-  useEffect(() => { onChange(parsed); }, [parsed, onChange]);
-  const echo = parsed === null ? null : new Intl.NumberFormat(locale, { maximumFractionDigits: 12 }).format(Number(parsed));
+  const [own, setOwn] = useState('');
+  const text = value ?? own;
+  const reading = readNumberAnswer(text, locale, { whole, min, max });
+  useEffect(() => { onChange?.(reading.canonical); }, [reading.canonical, onChange]);
+  const echo = reading.canonical === null ? null : new Intl.NumberFormat(locale, { maximumFractionDigits: 12 }).format(Number(reading.canonical));
+  const error = reading.problem === null || reading.problem === 'empty' ? undefined : t[reading.problem];
   return <div className="lf-number-answer">
     <TextField label={label} inputMode="decimal" autoComplete="off" value={text} disabled={disabled}
-      onChange={(event) => setText(event.target.value)} error={text.trim() && parsed === null ? t.notNumber : undefined} />
+      onChange={(event) => { if (value === undefined) setOwn(event.target.value); onTextChange?.(event.target.value); }} error={error} />
     <p className="lf-number-echo" data-copy-role="body" aria-live="polite">{echo ? t.readsAs.replace('{value}', echo) : ' '}</p>
   </div>;
 }

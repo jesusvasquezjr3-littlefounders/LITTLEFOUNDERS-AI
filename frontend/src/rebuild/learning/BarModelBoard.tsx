@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { Button, Menu, TextField } from '../design/controls';
+import { Button, Menu } from '../design/controls';
 import { LessonFeedback } from './LessonFeedback';
 import { lessonVersionKey, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
 import { type LessonSequenceControl } from './lessonSequence';
 import { useSingleActiveGrade } from './useSingleActiveGrade';
 import './learning.css';
 import { LessonStageSlot } from './lessonStage';
-import { SegmentPrompt, verdictBannerText } from './segmentKit';
+import { NumberAnswer, readNumberAnswer, SegmentPrompt, verdictBannerText } from './segmentKit';
 import { namedFeedback } from './namedFeedback';
 import { BarModelVisual, type TapeRow, type TapeSegment } from './pizarron';
 import { solveBarModel } from './v2VisualScorer.generated';
@@ -109,10 +109,15 @@ export function BarModelBoard({ document, segment, onBack, onGrade, sequence }: 
     if (next === undefined) delete slots[slot]; else slots[slot] = next;
     change({ ...build, slots });
   };
-  const complete = structure ? barBuildComplete(build, quantityIds) : /^(0|[1-9]\d*)$/.test(value);
+  // Bible 05 §5 / Appendix P Part 5 (GAP-FIX-R7): the typed answer is read for the lesson's locale and sent as its canonical
+  // whole number; the bound is the canonical scorer's (every unknown a bar model can hold is at most twice the quantities' sum).
+  const domain = { whole: true, max: 2 * p.quantities.reduce((sum, item) => sum + item.value, 0) };
+  const typed = readNumberAnswer(value, document.locale, domain).canonical;
+  const complete = structure ? barBuildComplete(build, quantityIds) : typed !== null;
   const submit = () => {
     if (verdict === 'met') { sequence?.onAdvance(); return; }
-    const answer = structure ? { model: build.model, slots: build.slots } : { value };
+    if (!structure && typed === null) return;
+    const answer = structure ? { model: build.model, slots: build.slots } : { value: typed };
     grade(() => onGrade(answer, segment.id), (result) => {
       setVerdict(result === 'met' ? 'met' : 'review');
       if (structure && result === 'met') builtStructures.set(`${lessonVersionKey(document)}:${segment.id}`, build);
@@ -152,7 +157,7 @@ export function BarModelBoard({ document, segment, onBack, onGrade, sequence }: 
           data-filled={build.slots[slot] ? 'true' : undefined}>{`${t.slot[slot]}: ${describe(build.slots[slot])}`}</Button>} />
       </li>)}</ul>
     </>}
-  </div> : <TextField label={t.input} inputMode="numeric" pattern="[0-9]*" autoComplete="off" disabled={pending} value={value} onChange={(event) => { setValue(event.target.value); setVerdict(null); }} />;
+  </div> : <NumberAnswer label={t.input} locale={document.locale} {...domain} disabled={pending} value={value} onTextChange={(text) => { setValue(text); setVerdict(null); }} />;
   return <main className="lf-learning" data-surface="app" data-screen="bar-model"><div className="lf-learning-inner">
     <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button><span data-copy-role="data">{sequence ? `${sequence.index + 1}/${sequence.total}` : ''}</span></header>
     <LessonStageSlot verdict={verdict} />

@@ -1,13 +1,13 @@
 import { useId, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { Button, SegmentedControl, TextField } from '../design/controls';
+import { Button, SegmentedControl } from '../design/controls';
 import { LessonFeedback } from './LessonFeedback';
 import type { LessonClientDocument, LessonClientSegment } from './lessonDocument';
 import type { LessonSequenceControl } from './lessonSequence';
 import { useSingleActiveGrade } from './useSingleActiveGrade';
 import './learning.css';
 import { LessonStageSlot } from './lessonStage';
-import { SegmentPrompt, verdictBannerText } from './segmentKit';
+import { NumberAnswer, readNumberAnswer, SegmentPrompt, verdictBannerText } from './segmentKit';
 import { namedFeedback } from './namedFeedback';
 import { FunctionMachineVisual, MathExpression } from './pizarron';
 
@@ -33,11 +33,17 @@ export function FunctionMachineBoard({ document, segment, onBack, onGrade, seque
   const { pending, grade } = useSingleActiveGrade();
   const example = segment.payload.examples.find((item) => item.input === selected);
   // A rule follows an observed result: learners cannot skip the public trial step.
-  const valid = ran && /^(0|[1-9]\d*)$/.test(multiplier) && /^(0|[1-9]\d*)$/.test(offset);
+  // Bible 05 §5 / Appendix P Part 5 (GAP-FIX-R7): each part of the rule is read for the lesson's locale and sent as its
+  // canonical whole number, within the payload's public bounds (the canonical scorer refuses past them).
+  const multiplierDomain = { whole: true, min: 1, max: segment.payload.multiplierMaximum };
+  const offsetDomain = { whole: true, max: segment.payload.offsetMaximum };
+  const typedMultiplier = readNumberAnswer(multiplier, document.locale, multiplierDomain).canonical;
+  const typedOffset = readNumberAnswer(offset, document.locale, offsetDomain).canonical;
+  const valid = ran && typedMultiplier !== null && typedOffset !== null;
   // Bible 05 §3: Reset restores the authored start (the first input, not yet run, an empty rule) and clears the verdict.
   const pristine = selected === initialInput && !ran && multiplier === '' && offset === '' && verdict === null;
   const reset = () => { setSelected(initialInput); setRan(false); setMultiplier(''); setOffset(''); setVerdict(null); };
-  const submit = () => { if (verdict === 'met') { sequence?.onAdvance(); return; } if (!valid) return; grade(() => onGrade({ multiplier, offset }, segment.id), (result) => setVerdict(result === 'met' ? 'met' : 'review'), () => setVerdict('unavailable')); };
+  const submit = () => { if (verdict === 'met') { sequence?.onAdvance(); return; } if (!valid || typedMultiplier === null || typedOffset === null) return; grade(() => onGrade({ multiplier: typedMultiplier, offset: typedOffset }, segment.id), (result) => setVerdict(result === 'met' ? 'met' : 'review'), () => setVerdict('unavailable')); };
 
   return <main className="lf-learning" data-surface="app" data-screen="function-machine"><div className="lf-learning-inner">
     <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button><span data-copy-role="data">{t.board}</span></header><LessonStageSlot verdict={verdict} />
@@ -50,10 +56,10 @@ export function FunctionMachineBoard({ document, segment, onBack, onGrade, seque
       <div className="lf-learning-control-strip"><div className="lf-learning-control-bar"><Button size="sm" onClick={reset} disabled={pending || pristine}>{t.reset}</Button></div><div className="lf-function-machine-try"><SegmentedControl size="compact" legend={t.try} legendHidden name={`${tryName}-input`} disabled={pending} value={String(selected)}
           onValueChange={(value) => { setSelected(Number(value)); setRan(false); }} options={segment.payload.examples.map((item) => ({ value: String(item.input), label: String(item.input) }))} />
           <Button variant="accent" disabled={pending} onClick={() => setRan(true)}>{t.run}</Button></div>
-        <div className="lf-function-machine-rule"><h2 data-copy-role="heading">{t.rule}</h2><TextField label={t.multiplier} inputMode="numeric" pattern="[0-9]*" autoComplete="off" disabled={pending} value={multiplier} onChange={(event) => { setMultiplier(event.target.value); setVerdict(null); }} /><TextField label={t.offset} inputMode="numeric" pattern="[0-9]*" autoComplete="off" disabled={pending} value={offset} onChange={(event) => { setOffset(event.target.value); setVerdict(null); }} />
+        <div className="lf-function-machine-rule"><h2 data-copy-role="heading">{t.rule}</h2><NumberAnswer label={t.multiplier} locale={document.locale} {...multiplierDomain} disabled={pending} value={multiplier} onTextChange={(text) => { setMultiplier(text); setVerdict(null); }} /><NumberAnswer label={t.offset} locale={document.locale} {...offsetDomain} disabled={pending} value={offset} onTextChange={(text) => { setOffset(text); setVerdict(null); }} />
           {/* Bible 05 §5 (GAP-FIX-R2): a document that declares notation writes the learner's rule with KaTeX, digits only. */}
-          {segment.payload.notation && /^(0|[1-9]\d*)$/.test(multiplier) && /^(0|[1-9]\d*)$/.test(offset)
-            ? <MathExpression tex={`f(x) = ${multiplier} \\times x + ${offset}`} spokenText={t.spoken(multiplier, offset)} fallback={`f(x) = ${multiplier} × x + ${offset}`} locale={document.locale} block /> : null}</div>
+          {segment.payload.notation && typedMultiplier !== null && typedOffset !== null
+            ? <MathExpression tex={`f(x) = ${typedMultiplier} \\times x + ${typedOffset}`} spokenText={t.spoken(typedMultiplier, typedOffset)} fallback={`f(x) = ${typedMultiplier} × x + ${typedOffset}`} locale={document.locale} block /> : null}</div>
       </div>
       <footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === null ? null : verdictBannerText(document.locale, verdict, namedFeedback(document.locale, 'function-machine'), segment.feedback)}</LessonFeedback><div className="lf-learning-actions"><Button variant="accent" disabled={pending || !valid} onClick={submit}>{verdict === 'met' && sequence ? t.continue : t.check}</Button></div></footer>
     </div>
