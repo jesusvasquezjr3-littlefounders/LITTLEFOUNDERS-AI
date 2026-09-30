@@ -204,6 +204,36 @@ describe('C.24 consolidates the Learning Quality tab (Appendix C 1.1 and 1.2)', 
     expect(readingOf(r, 'engagement.autonomy_adoption')).toMatchObject({ status: 'diagnostic', value: 0.5, sample: 20 });
   });
 
+  it('GAP-FIX-R7 (Appendix C 1.1, B.9): reads decision-journal coverage next to the resurfacing rate, lost entries included', () => {
+    const base = { journal_entries_recorded: 25, journal_entries_resurfaced: 10, bridge_prompts_offered: 0, bridge_prompts_converted_7d: 0, bridge_self_commitments: 0 };
+    const r = evaluateSignals(learning({ narrative: { ...base, story_decisions_made: 40, story_decisions_journaled: 30, story_decisions_without_consent: 3 } }));
+    const journal = readingOf(r, 'learning.decision_journal');
+    expect(journal).toMatchObject({ status: 'diagnostic', value: 0.4, sample: 25 });
+    expect(journal.breakdown).toEqual([
+      { key: 'journal:coverage', value: 0.75, sample: 40, status: 'diagnostic' },
+      { key: 'journal:resurfacing', value: 0.4, sample: 25, status: 'diagnostic' },
+    ]);
+    expect(journal.detail).toMatchObject({ decisionsMade: 40, decisionsJournaled: 30, decisionsWithoutConsent: 3, coverage: 0.75, coverageBaseline: 'release-1' });
+    // Diagnostic: no fixed target, so a low coverage never raises a flag by itself.
+    expect(r.anomalies.some((a) => a.signalId === 'learning.decision_journal')).toBe(false);
+
+    // Every write lost: nothing recorded, yet enough decisions made. The coverage reads 0, not "insufficient data".
+    const lost = readingOf(evaluateSignals(learning({ narrative: { ...base, journal_entries_recorded: 0, journal_entries_resurfaced: 0,
+      story_decisions_made: 30, story_decisions_journaled: 0, story_decisions_without_consent: 0 } })), 'learning.decision_journal');
+    expect(lost).toMatchObject({ status: 'diagnostic', value: null });
+    expect(lost.breakdown[0]).toEqual({ key: 'journal:coverage', value: 0, sample: 30, status: 'diagnostic' });
+
+    // Before the coverage migration: the resurfacing half only, and no coverage invented.
+    const older = readingOf(evaluateSignals(learning({ narrative: base })), 'learning.decision_journal');
+    expect(older.breakdown.map((b) => b.key)).toEqual(['journal:resurfacing']);
+    expect(older.detail).toMatchObject({ decisionsMade: null, coverage: null, coverageBaseline: null });
+
+    // Defensive: a malformed row with more journaled than made is clamped, never above 100%.
+    const clamped = readingOf(evaluateSignals(learning({ narrative: { ...base, story_decisions_made: 4, story_decisions_journaled: 9 } })), 'learning.decision_journal');
+    expect(clamped.detail.coverage).toBe(1);
+    expect(clamped.status).toBe('diagnostic');
+  });
+
   it('flags a declining session efficiency and a rising resolution turn count as regressions', () => {
     const series = (from: number, to: number) => Array.from({ length: 8 }, (_, i) => ({ i, v: i < 4 ? from : to }));
     const r = evaluateSignals(learning({

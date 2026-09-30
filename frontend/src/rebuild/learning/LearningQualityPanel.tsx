@@ -37,6 +37,9 @@ type Copy = {
   selection: string; selectionCode: Record<SelectionCode, string>;
   /** GAP-FIX-R4 (Appendix P L5, L10): the Euler and rule-switch codes by name. */
   reasoningCodes: string; reasoningCode: Record<ReasoningCode, string>;
+  /** GAP-FIX-R7 (Appendix C 1.1, B.9): decision-journal coverage and resurfacing. */
+  journal: string; journalPending: string; journalCoverage: (kept: number, made: number, share: string) => string; journalNone: string;
+  journalResurfaced: (back: number, kept: number) => string; journalResurfacedNone: string; journalConsent: (n: number) => string; journalBaseline: string;
 };
 
 const SELECTION_CODES = ['confirmation_bias', 'p_only_missing_not_q', 'matching', 'not_p_checked', 'all_cards'] as const;
@@ -70,6 +73,10 @@ const copy: Record<Locale, Copy> = {
     selection: 'Rule-card choices', selectionCode: { confirmation_bias: 'Looked for agreeing cards', p_only_missing_not_q: 'Stopped at the first card',
       matching: 'Matched the rule words', not_p_checked: 'Turned a card that cannot break it', all_cards: 'Turned every card' },
     reasoningCodes: 'Diagram and sorting choices', reasoningCode: { occupancy: 'Marked the wrong parts', conclusion: 'Drew the wrong conclusion', rule_switch: 'Kept the old rule' },
+    journal: 'Story choice journal', journalPending: 'Available once the journal coverage migration is applied.',
+    journalCoverage: (k, m, share) => `The journal kept ${k} of ${m} story choices (${share}).`, journalNone: 'No story choices in this window.',
+    journalResurfaced: (b, k) => `${b} of ${k} kept choices came back in a later lesson.`, journalResurfacedNone: 'No choices kept in this window.',
+    journalConsent: (n) => `${n} choices from learners without journal consent are not counted.`, journalBaseline: 'Release 1 baseline. No target yet.',
   },
   'es-MX': {
     title: 'Calidad del aprendizaje', intro: (l, u) => `La práctica debe lograr ${l}-${u}% de aciertos al primer intento por lección.`,
@@ -94,6 +101,10 @@ const copy: Record<Locale, Copy> = {
     selection: 'Elecciones con tarjetas de regla', selectionCode: { confirmation_bias: 'Buscó tarjetas que coinciden', p_only_missing_not_q: 'Se quedó en la primera tarjeta',
       matching: 'Eligió las palabras de la regla', not_p_checked: 'Volteó una que no la rompe', all_cards: 'Volteó todas las tarjetas' },
     reasoningCodes: 'Elecciones en diagramas y clasificación', reasoningCode: { occupancy: 'Marcó partes equivocadas', conclusion: 'Sacó una conclusión equivocada', rule_switch: 'Siguió con la regla anterior' },
+    journal: 'Diario de decisiones', journalPending: 'Disponible cuando se aplique la migración de cobertura del diario.',
+    journalCoverage: (k, m, share) => `El diario guardó ${k} de ${m} decisiones en historias (${share}).`, journalNone: 'No hay decisiones en historias en este periodo.',
+    journalResurfaced: (b, k) => `${b} de ${k} decisiones guardadas volvieron en una lección posterior.`, journalResurfacedNone: 'No se guardaron decisiones en este periodo.',
+    journalConsent: (n) => `${n} decisiones de estudiantes sin consentimiento del diario no se cuentan.`, journalBaseline: 'Línea base de la versión 1. Aún sin meta.',
     restDays: (k, n) => `Los días de descanso mantuvieron ${k} de ${n} rachas con un día sin práctica.`, restDaysNone: 'No hubo días sin práctica en este periodo.',
     lever: { path: 'Elección de ruta', approach: 'Elección de estrategia', enrichment: 'Explorar más', mentor: 'Elección de Mentor', pace: 'Elección de ritmo' }, adoption: (e, o) => `${e} de ${o} lo eligieron por su cuenta.`, adoptionNone: 'Sin datos en este periodo.',
   },
@@ -120,6 +131,10 @@ const copy: Record<Locale, Copy> = {
     selection: 'Escolhas nas cartas de regra', selectionCode: { confirmation_bias: 'Procurou cartas que concordam', p_only_missing_not_q: 'Parou na primeira carta',
       matching: 'Escolheu as palavras da regra', not_p_checked: 'Virou uma que não a quebra', all_cards: 'Virou todas as cartas' },
     reasoningCodes: 'Escolhas em diagramas e separação', reasoningCode: { occupancy: 'Marcou partes erradas', conclusion: 'Tirou a conclusão errada', rule_switch: 'Manteve a regra antiga' },
+    journal: 'Diário de escolhas', journalPending: 'Disponível quando a migração de cobertura do diário for aplicada.',
+    journalCoverage: (k, m, share) => `O diário guardou ${k} de ${m} escolhas nas histórias (${share}).`, journalNone: 'Nenhuma escolha nas histórias neste período.',
+    journalResurfaced: (b, k) => `${b} de ${k} escolhas guardadas voltaram em uma lição posterior.`, journalResurfacedNone: 'Nenhuma escolha guardada neste período.',
+    journalConsent: (n) => `${n} escolhas de alunos sem consentimento do diário não são contadas.`, journalBaseline: 'Linha de base da versão 1. Ainda sem meta.',
     restDays: (k, n) => `Os dias de descanso mantiveram ${k} de ${n} sequências com um dia sem prática.`, restDaysNone: 'Nenhum dia sem prática neste período.',
     lever: { path: 'Escolha de trilha', approach: 'Escolha de estratégia', enrichment: 'Explorar mais', mentor: 'Escolha de Mentor', pace: 'Escolha de ritmo' }, adoption: (e, o) => `${e} de ${o} escolheram por conta própria.`, adoptionNone: 'Sem dados neste período.',
   },
@@ -204,6 +219,19 @@ export function LearningQualityPanel({ state, locale, dark, onRetry, onSync, onR
       <h3 id={`${headingId}-replay`} data-copy-role="heading">{t.replay}</h3>
       <p data-copy-role="body">{report.replayNotice.below_best === 0 ? t.replayNone : t.replayRate(report.replayNotice.shown, report.replayNotice.below_best)}</p>
       {report.replayNotice.belowTarget ? <p className="lf-quality-flag" data-copy-role="body">{t.replayLow}</p> : null}
+    </section>
+
+    {/* GAP-FIX-R7: Appendix C 1.1 Decision Journal Coverage & Resurfacing Rate (B.9), diagnostic; the first release window is the baseline. */}
+    <section className="lf-quality-block" aria-labelledby={`${headingId}-journal`} data-metric="decision-journal">
+      <h3 id={`${headingId}-journal`} data-copy-role="heading">{t.journal}</h3>
+      {!report.decisionJournal ? <p data-copy-role="body">{t.journalPending}</p> : <>
+        <p data-copy-role="body">{report.decisionJournal.coverage === null ? t.journalNone
+          : t.journalCoverage(report.decisionJournal.decisionsJournaled, report.decisionJournal.decisionsMade, percent.format(report.decisionJournal.coverage))}</p>
+        <p data-copy-role="body">{report.decisionJournal.recorded === 0 ? t.journalResurfacedNone
+          : t.journalResurfaced(report.decisionJournal.resurfaced, report.decisionJournal.recorded)}</p>
+        {report.decisionJournal.withoutConsent > 0 ? <p data-copy-role="body">{t.journalConsent(report.decisionJournal.withoutConsent)}</p> : null}
+        <p className="lf-quality-chip" data-copy-role="data">{t.journalBaseline}</p>
+      </>}
     </section>
 
     {/* S05.3e: Appendix C's rest-day utilization (B.21) and autonomy adoption (B.24), diagnostic. */}

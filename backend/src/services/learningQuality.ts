@@ -10,7 +10,8 @@ import { loadEngagementHealth, type EngagementHealthReport } from './engagementH
  *   B.19  practice success band per lesson (70-85% default hypothesis), the
  *         calibration reviews it opens and the Threshold Recalibration Log;
  *   B.12  Judgment-Quality Signal Differentiation (Appendix C);
- *   B.5   Replay Non-Regression Messaging Display Rate (Appendix C).
+ *   B.5   Replay Non-Regression Messaging Display Rate (Appendix C);
+ *   B.9   Decision Journal Coverage & Resurfacing Rate (Appendix C 1.1).
  *
  * Every call is service-role and reaches Core only behind requireRole(admin)
  * plus requireAdminPermission('manage_content'); the SQL functions re-check
@@ -126,6 +127,33 @@ const AutonomyRow = z.object({
   lever: z.enum(['path', 'approach', 'enrichment', 'mentor', 'pace']), offered: count, exercised: count,
   adoption_rate: z.coerce.number().min(0).max(1).nullable(),
 });
+// GAP-FIX-R7 (Appendix C 1.1, B.9): Decision Journal Coverage & Resurfacing Rate.
+const NarrativeRow = z.object({
+  journal_entries_recorded: count, journal_entries_resurfaced: count,
+  story_decisions_made: count, story_decisions_journaled: count, story_decisions_without_consent: count,
+});
+/** Diagnostic: the first release window is the baseline (Appendix C "no fixed target"). */
+export const DECISION_JOURNAL_BASELINE = 'release-1' as const;
+export interface DecisionJournalCoverage {
+  decisionsMade: number; decisionsJournaled: number; withoutConsent: number; coverage: number | null;
+  recorded: number; resurfaced: number; resurfacingRate: number | null; baseline: typeof DECISION_JOURNAL_BASELINE;
+}
+
+/** The two halves of the B.9 metric from one learning_narrative_metrics row; null before the coverage migration. */
+export function decisionJournalCoverage(row: unknown): DecisionJournalCoverage | null {
+  const parsed = NarrativeRow.safeParse(row);
+  if (!parsed.success) return null;
+  const n = parsed.data;
+  const journaled = Math.min(n.story_decisions_journaled, n.story_decisions_made);
+  return {
+    decisionsMade: n.story_decisions_made, decisionsJournaled: journaled, withoutConsent: n.story_decisions_without_consent,
+    coverage: n.story_decisions_made === 0 ? null : journaled / n.story_decisions_made,
+    recorded: n.journal_entries_recorded, resurfaced: n.journal_entries_resurfaced,
+    resurfacingRate: n.journal_entries_recorded === 0 ? null : n.journal_entries_resurfaced / n.journal_entries_recorded,
+    baseline: DECISION_JOURNAL_BASELINE,
+  };
+}
+
 export type MotivationMetrics = { restDays: z.infer<typeof RestDayRow>; autonomy: z.infer<typeof AutonomyRow>[] };
 
 // GAP-FIX-R1 (Appendix C 1.1, Appendix P Parts 4.5 and 8): the v2 receipt signals (0207).
@@ -189,6 +217,8 @@ export interface LearningQualityReport {
   v2Signals: V2LearningSignals | null;
   /** GAP-FIX-R2: Appendix P Part 8 parity, d′ pre/post, A/B and coverage; Appendix C 1.3 B.1/B.2/B.4 and defect escapes. Null until 0216 and 0218. */
   qaSignals: LearningQaSignals | null;
+  /** GAP-FIX-R7: Appendix C 1.1 decision-journal coverage and resurfacing (B.9). Null until the coverage migration is applied. */
+  decisionJournal: DecisionJournalCoverage | null;
   thresholds: {
     judgmentDivergenceFloor: number; judgmentMinAttempts: number; replayNoticeTarget: number; bandReviewCadenceDays: number;
   };
@@ -199,7 +229,7 @@ export async function loadLearningQualityReport(days: number, now = new Date()):
   const until = now.toISOString();
   const since = new Date(now.getTime() - days * 86_400_000).toISOString();
   const window = { p_since: since, p_until: until };
-  const [lessons, reviews, bands, log, judgment, replay, restDays, autonomy, engagementHealth, v2Signals, qaSignals] = await Promise.all([
+  const [lessons, reviews, bands, log, judgment, replay, restDays, autonomy, engagementHealth, v2Signals, qaSignals, narrative] = await Promise.all([
     rpc('practice_success_band_metrics', window, z.array(MetricRow)),
     serviceRest<unknown>('/practice_difficulty_reviews?select=id,lesson_id,direction,window_days,evidence,status,decision,decision_note,opened_at,resolved_at&order=opened_at.desc&limit=100')
       .then((rows) => { const parsed = z.array(ReviewRow).safeParse(rows); return parsed.success ? parsed.data : null; }),
@@ -214,6 +244,7 @@ export async function loadLearningQualityReport(days: number, now = new Date()):
     loadEngagementHealth(now),
     loadV2LearningSignals(window),
     loadLearningQaSignals(window),
+    serviceRest<unknown>('/rpc/learning_narrative_metrics', { method: 'POST', body: JSON.stringify(window) }),
   ]);
   if (!lessons || !reviews || !bands || !log || !judgment || !replay) return null;
   const band = bands[0];
@@ -234,6 +265,7 @@ export async function loadLearningQualityReport(days: number, now = new Date()):
     engagementHealth,
     v2Signals,
     qaSignals,
+    decisionJournal: decisionJournalCoverage(narrative),
     thresholds: {
       judgmentDivergenceFloor: JUDGMENT_DIVERGENCE_FLOOR, judgmentMinAttempts: JUDGMENT_MIN_ATTEMPTS,
       replayNoticeTarget: REPLAY_NOTICE_TARGET, bandReviewCadenceDays: BAND_REVIEW_CADENCE_DAYS,

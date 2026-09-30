@@ -27,6 +27,8 @@ export function learningQualityFixture(): Record<string, unknown> {
     ],
     replayNotice: { below_best: 10, shown: 9, display_rate: 0.9, target: 1, belowTarget: true },
     thresholds: { judgmentDivergenceFloor: 0.1, judgmentMinAttempts: 30, replayNoticeTarget: 1, bandReviewCadenceDays: 90 },
+    // GAP-FIX-R7: Appendix C 1.1 decision-journal coverage (B.9), one lost write in eight.
+    decisionJournal: { decisionsMade: 48, decisionsJournaled: 42, withoutConsent: 3, coverage: 0.875, recorded: 40, resurfaced: 14, resurfacingRate: 0.35, baseline: 'release-1' as const },
     // S05.3e: rest-day utilization (B.21) and autonomy adoption (B.24).
     motivation: {
       restDays: { learners_with_lapse: 40, kept_by_rest_days: 31, restarted: 12, utilization_rate: 0.775, rest_days_used: 52 },

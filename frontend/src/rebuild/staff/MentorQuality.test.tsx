@@ -147,6 +147,17 @@ describe('MentorQualityDashboard', () => {
     expect(container.querySelector('[data-signal="learning.practice_success_band"] button')).toBeNull();
   });
 
+  it('GAP-FIX-R7 (Appendix C 1.1, B.9): lists decision-journal coverage next to its resurfacing rate as a release-1 baseline', () => {
+    const { container } = renderDashboard();
+    const journal = container.querySelector('[data-signal="learning.decision_journal"]')!;
+    expect(journal.textContent).toContain('Story choices kept and brought back');
+    fireEvent.click(journal.querySelector('button')!);
+    expect(journal.querySelector('[data-key="journal:coverage"]')!.textContent).toContain('Story choices recorded');
+    expect(journal.querySelector('[data-key="journal:coverage"]')!.textContent).toContain('89.8%');
+    expect(journal.querySelector('[data-key="journal:resurfacing"]')!.textContent).toContain('Recorded choices brought back');
+    expect(journal.textContent).toContain('Release 1 baseline. No target yet.');
+  });
+
   it('signs the weekly review for a role the reader owns, and says when it was already signed', async () => {
     const onReview = vi.fn(async () => 'already' as const);
     renderDashboard({ onReview });
