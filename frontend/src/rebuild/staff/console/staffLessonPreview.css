@@ -2,6 +2,8 @@
    lesson layer fills it and scrolls inside it, under a staff bar that stays in view. Tokens only, logical
    properties only, no motion of its own (the lesson's own motion follows the reduced-motion rules). */
 
+/* While the preview is open the console under it is hidden (StaffLessonPreview.tsx): every body child but the layer hosts. */
+body[data-lf-covered='lesson-preview'] > :not(.lf-layer-root) { visibility: hidden; }
 .lf-rebuild .lf-staff-lesson-preview { overflow-y: auto; overscroll-behavior: contain; background: var(--surface); }
 .lf-rebuild .lf-staff-lesson-preview-frame { display: grid; grid-template-rows: auto 1fr; min-block-size: 100%; }
 .lf-rebuild .lf-staff-lesson-preview-bar {

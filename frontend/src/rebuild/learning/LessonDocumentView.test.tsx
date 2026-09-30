@@ -38,7 +38,7 @@ const noop = () => {};
 
 /** GAP-FIX-R3 (M7): builds the pilot's bars the way a learner does, slot by slot ("Ana has 12 more than Leo; together 50"). */
 async function buildPilotBars() {
-  fireEvent.click(screen.getByRole('button', { name: 'Two bars to compare' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Compare two bars' }));
   fireEvent.click(screen.getByRole('button', { name: 'Add the total' }));
   const pick = async (slot: string, item: string) => {
     fireEvent.click(screen.getByRole('button', { name: new RegExp(`^${slot}:`) }));
@@ -639,7 +639,7 @@ describe('versioned pilot document renderer', () => {
     expect(screen.queryByRole('radio')).toBeNull();
     expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
     expect(screen.queryByLabelText('Your answer')).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: 'Two bars to compare' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Compare two bars' }));
     expect(document.querySelectorAll('.lf-bar-model-row')).toHaveLength(2);
     expect(document.querySelectorAll('.lf-pz-seg--empty').length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
@@ -678,7 +678,7 @@ describe('versioned pilot document renderer', () => {
     const payload = { quantities: [{ id: 'saved-may', value: 18, label: 'May' }, { id: 'saved-june', value: 25, label: 'June' }, { id: 'saved-july', value: 7, label: 'July' }], unknownLabel: 'In all', spokenText: 'three months' };
     const lesson = { ...raw, segments: raw.segments.map((segment) => ({ ...segment, payload })) };
     render(<LessonDocumentView raw={lesson} locale="en-US" ageBand="10-12" onBack={noop} onGradeBarModel={onGradeBarModel} />);
-    fireEvent.click(screen.getByRole('button', { name: 'One bar in parts' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Split a bar' }));
     fireEvent.click(screen.getByRole('button', { name: 'Add a part' }));
     const pick = async (slot: string, item: string) => {
       const trigger = screen.getByRole('button', { name: new RegExp(`^${slot}:`) });

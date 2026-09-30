@@ -96,8 +96,10 @@ export function SessionClosing({ copy, locale, dark, script, effort, topic, onBa
     data-screen="mentor-session-closing" data-closing-script={script} aria-labelledby={titleId}>
     <h2 id={titleId} data-copy-role="heading">{line.title}</h2>
     <Copy role="body">{line.body}</Copy>
-    {line.topic !== null && <p className="lf-session-closing-topic">
-      <span data-copy-role="body">{copy.nextLabel}</span>{' '}
+    {/* The line is one body block (its label and the lesson name, which is data): declared on the paragraph, so the
+        label is not counted a second time on its own (06 §3.1). */}
+    {line.topic !== null && <p className="lf-session-closing-topic" data-copy-role="body">
+      {copy.nextLabel}{' '}
       <strong data-copy-role="data">{line.topic}</strong>
     </p>}
     <Button variant="accent" onClick={onBack}>{copy.backToPath}</Button>

@@ -44,7 +44,7 @@ export interface DispositionSummaryCopy {
   resetFailed: string;
 }
 
-export function DispositionSummary({ copy, locale, dark, audience, phase, data, canReset, resetState = 'idle', onReset }: {
+export function DispositionSummary({ copy, locale, dark, audience, phase, data, canReset, resetState = 'idle', onReset, headingLevel = 2 }: {
   copy: DispositionSummaryCopy;
   locale: string;
   dark: boolean;
@@ -55,7 +55,10 @@ export function DispositionSummary({ copy, locale, dark, audience, phase, data, 
   canReset: boolean;
   resetState?: 'idle' | 'resetting' | 'done' | 'failed';
   onReset?: () => void;
+  /** 2 under a host page's <h1> (Settings, the child's Mentor talks); 1 where the panel is the whole page (the preview). */
+  headingLevel?: 1 | 2;
 }) {
+  const Heading = headingLevel === 1 ? 'h1' : 'h2';
   const rows: [string, string][] =
     data && data.exists
       ? [
@@ -72,7 +75,7 @@ export function DispositionSummary({ copy, locale, dark, audience, phase, data, 
       : [];
   return <section className="lf-rebuild lf-alliance-panel lf-disposition" lang={locale} data-theme={dark ? 'dark' : 'light'}
     data-screen="mentor-profile" aria-busy={phase === 'loading'}>
-    <h2 data-copy-role="heading">{audience === 'own' ? copy.titleOwn : copy.titleChild}</h2>
+    <Heading data-copy-role="heading">{audience === 'own' ? copy.titleOwn : copy.titleChild}</Heading>
     <Copy role="body">{copy.intro}</Copy>
     {phase === 'loading' ? <LoadingState label={copy.loading} lines={2} />
       : phase === 'failed' ? <Banner tone="error">{copy.loadFailed}</Banner>

@@ -81,6 +81,14 @@ describe('the staff v2 lesson preview', () => {
     expect(document.title).toBe('Content · LittleFounders');
   });
 
+  it('hides the console it covers while it is open, and shows it again on close (one visible h1: the lesson)', async () => {
+    const view = mount(request());
+    await screen.findByRole('dialog', { name: 'Lesson preview' });
+    expect(document.body.dataset.lfCovered).toBe('lesson-preview');
+    view.unmount();
+    expect(document.body.dataset.lfCovered).toBeUndefined();
+  });
+
   it('the preview entry and the audit fixtures are documents the learner renderer accepts', () => {
     for (const row of [...sections.lessonDocumentsV2, sections.versionDocument]) {
       expect(loadLessonClientDocument(row.document).status, row.locale).toBe('ready');

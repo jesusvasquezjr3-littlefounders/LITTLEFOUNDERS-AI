@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Button, useRebuildEnvironment } from '../../design/controls';
 import { useFocusTrap, useLayer, useLayerHost, useScrollLock } from '../../design/layers';
@@ -28,8 +28,8 @@ import './staffLessonPreview.css';
  *   - an approach choice (B.24) stays local to the preview.
  *
  * It opens as a full-viewport modal layer over the console (the page behind
- * is inert, scroll is locked, focus is trapped, Escape closes), under a staff
- * bar in the console's language that says nothing is saved.
+ * is hidden and inert, scroll is locked, focus is trapped, Escape closes),
+ * under a staff bar in the console's language that says nothing is saved.
  */
 export default function StaffLessonPreview({ request }: { request: LessonPreviewRequest }) {
   const environment = useRebuildEnvironment();
@@ -39,6 +39,14 @@ export default function StaffLessonPreview({ request }: { request: LessonPreview
   // Escape closes the preview through the shared layer stack (DP-03), like every other overlay.
   const onClose = request.onExit;
   useLayer(ready, host, true, onClose);
+  // The layer is opaque and fills the viewport, so nothing of the console behind it can be seen: while it is open the
+  // console is hidden, not only inert, and the page's one visible <h1> is the lesson's, as on the learner's own route
+  // (03 §3.2). Declared before the focus trap, so the console is shown again before focus goes back to its opener.
+  useLayoutEffect(() => {
+    if (!ready) return;
+    document.body.dataset.lfCovered = 'lesson-preview';
+    return () => { delete document.body.dataset.lfCovered; };
+  }, [ready]);
   useScrollLock(ready);
   useFocusTrap(ready, panel);
   // The lesson layer names the document after the lesson and in its language; the console gets both back on close.

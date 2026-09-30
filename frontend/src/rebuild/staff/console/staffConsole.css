@@ -44,7 +44,7 @@
 .lf-rebuild .lf-staff-section { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
 .lf-rebuild .lf-staff-sheet { display: grid; gap: var(--spacing-5); min-inline-size: 0; }
 /* A notice or a bar list keeps a readable measure on a wide page too (03 §3: at most 75 characters a line). */
-.lf-rebuild .lf-staff-sheet > .lf-notice, .lf-rebuild .lf-staff-page .lf-notice, .lf-rebuild .lf-staff-page .lf-viz-bars { max-inline-size: 34rem; }
+.lf-rebuild .lf-staff-sheet .lf-notice, .lf-rebuild .lf-staff-page .lf-notice, .lf-rebuild .lf-staff-page .lf-viz-bars { max-inline-size: 34rem; }
 /* A wide table scrolls inside its own box under the WCAG 1.4.12 spacing overrides, never the page. */
 .lf-rebuild .lf-staff-page .lf-table-wrap { overflow-x: auto; }
 .lf-rebuild .lf-staff-subheading { margin: 0; font: var(--type-label); }

@@ -13,7 +13,7 @@
   },
   "groups": {
     "analytics_event_class": { "heading": "Usage counts", "body": "They help us improve lessons. Nobody else sees them." },
-    "mentor_memory_type": { "heading": "What the Mentor keeps", "body": "Notes the Mentor uses to plan the next session." },
+    "mentor_memory_type": { "heading": "Mentor notes", "body": "Kept so the Mentor can plan the next session." },
     "learner_record": { "heading": "Story choices", "body": "Kept so later lessons can recall them." },
     "sharing_surface": { "heading": "Shared with others", "body": "Only with people and places you approve." }
   },

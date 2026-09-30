@@ -92,8 +92,8 @@ export const states = [
   preview('mentor-alliance-check@completed-10-12', { screen: 'mentor-alliance-check', age: '10-12', script: 'completed' }, { readyAll: ['[data-bond]'] }),
   // After a safety stop the question is never asked: AllianceCheck renders nothing (pinned by Alliance.test.tsx),
   // so there is no text or layout to measure. What the learner sees then is mentor-session-end@safety_stop-6-9.
-  preview('mentor-profile@own-13-17', { screen: 'mentor-profile', age: '13-17', audience: 'own' }, { readyAll: ['[data-screen="mentor-profile"] h2'] }),
-  preview('mentor-profile@child-adult', { screen: 'mentor-profile', age: 'adult', audience: 'child' }, { readyAll: ['[data-screen="mentor-profile"] h2'] }),
+  preview('mentor-profile@own-13-17', { screen: 'mentor-profile', age: '13-17', audience: 'own' }, { readyAll: ['[data-screen="mentor-profile"] h1'] }),
+  preview('mentor-profile@child-adult', { screen: 'mentor-profile', age: 'adult', audience: 'child' }, { readyAll: ['[data-screen="mentor-profile"] h1'] }),
   /* The real route, signed in: a child in a family, an independent teen and an adult, answered by the synthetic Core. */
   app('/tutor@mentor-screen-child', '/tutor', 'mentor-screen-child', '.lf-mentor-screen[data-phase="openings"]'),
   app('/tutor@mentor-screen-teen', '/tutor', 'mentor-screen-teen', '.lf-mentor-screen[data-phase="openings"]'),

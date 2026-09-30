@@ -93,7 +93,7 @@ export function ShareDestinations({ copy, kidName, locale, dark, open, view, usu
 
         <section aria-label={copy.waitingHeading}>
           <h3 data-copy-role="heading">{copy.waitingHeading}</h3>
-          {waiting.length === 0 ? <Copy role="body">{copy.noneWaiting}</Copy> : <ul>{waiting.map((g) => <li key={g.id} data-gift-status="pledged">
+          {waiting.length === 0 ? <Copy role="body">{copy.noneWaiting}</Copy> : <ul className="lf-money-habits-gifts">{waiting.map((g) => <li key={g.id} data-gift-status="pledged">
             <span className="ugc" data-copy-role="data">{fill(copy.waiting, { count: g.amount, place: byId.get(g.destinationId)?.title ?? '' })}</span>
             <time data-copy-role="data" className="lf-family-hub-muted" dateTime={g.pledgedAt}>{date.format(new Date(g.pledgedAt))}</time>
             {settling?.giftId === g.id ? <form onSubmit={(event) => settle(event, g)} noValidate>
@@ -129,7 +129,7 @@ export function ShareDestinations({ copy, kidName, locale, dark, open, view, usu
           <div className="lf-family-hub-actions"><Button type="submit" variant="accent" disabled={busy}>{copy.add}</Button></div>
         </form>
 
-        {settled.length > 0 && <ul>{settled.map((g) => <li key={g.id} data-gift-status={g.status}>
+        {settled.length > 0 && <ul className="lf-money-habits-gifts">{settled.map((g) => <li key={g.id} data-gift-status={g.status}>
           <span className="ugc" data-copy-role="data">{fill(g.status === 'given' ? copy.doneLine : copy.returnedLine, { count: g.amount, place: byId.get(g.destinationId)?.title ?? '' })}</span>
           {g.note && <span className="ugc lf-family-hub-muted" data-copy-role="data">{g.note}</span>}
         </li>)}</ul>}

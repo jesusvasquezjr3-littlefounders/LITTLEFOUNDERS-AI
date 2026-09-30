@@ -34,7 +34,7 @@ async function moveTo(item: string, target: string) {
 
 /** GAP-FIX-R3 (M7): builds the pilot's bars the way a learner does, slot by slot ("Ana has 12 more than Leo; together 50"). */
 async function buildPilotBars() {
-  fireEvent.click(screen.getByRole('button', { name: 'Two bars to compare' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Compare two bars' }));
   fireEvent.click(screen.getByRole('button', { name: 'Add the total' }));
   const pick = async (slot: string, item: string) => {
     fireEvent.click(screen.getByRole('button', { name: new RegExp(`^${slot}:`) }));
@@ -54,7 +54,7 @@ describe('Reset on every manipulable board (Bible 05 §3)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     expect(await screen.findByText('Not yet. Decide which bar is longer, then add the parts.')).toBeTruthy();
     fireEvent.click(reset());
-    expect(screen.getByRole('button', { name: 'Two bars to compare' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Compare two bars' })).toBeTruthy();
     expect(screen.queryByText('Not yet. Decide which bar is longer, then add the parts.')).toBeNull();
     expect(reset()).toBeDisabled();
   });

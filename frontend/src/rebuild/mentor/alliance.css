@@ -46,7 +46,7 @@
 .lf-alliance-status { display: grid; gap: var(--spacing-2); justify-items: start; }
 
 /* The disposition profile: label / value rows that wrap on a narrow screen. */
-.lf-disposition h2 { margin: 0; }
+.lf-disposition :is(h1, h2) { margin: 0; }
 .lf-disposition-list { display: grid; gap: var(--spacing-2); margin: 0; }
 .lf-disposition-row {
   display: grid;

@@ -2497,7 +2497,7 @@
           {
             "id": "allocate-01",
             "type": "money.allocation.v2",
-            "prompt": "You have 12 coins and must save at least 4. Where will they go?",
+            "prompt": "Save at least 4 of your 12 coins. Where will they go?",
             "grading": "server",
             "visual": {
               "type": "stacked-bar"

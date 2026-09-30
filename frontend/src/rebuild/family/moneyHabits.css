@@ -35,6 +35,8 @@
 .lf-money-habits-available { font: 700 1.5rem/1.2 Fredoka, sans-serif; }
 /* A secondary control on a list row gets its own fill, so it never reads as plain text in dark mode. */
 .lf-money-habits li .lf-button--secondary { background: var(--sunken); }
+/* A gift line (the place, the amount and the family's note) keeps the 75-character measure on a wide panel (03 §3). */
+.lf-money-habits-gifts { max-inline-size: 34rem; }
 .lf-money-habits-next { display: grid; gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--reward-soft); color: var(--content); }
 .lf-money-habits-next .lf-family-money-milestone { background: var(--surface); }
 .lf-money-habits-next .lf-input { background: var(--surface); }

@@ -13,7 +13,7 @@
   },
   "groups": {
     "analytics_event_class": { "heading": "Conteos de uso", "body": "Nos ayudan a mejorar las lecciones. Nadie más los ve." },
-    "mentor_memory_type": { "heading": "Lo que guarda el Mentor", "body": "Notas que el Mentor usa para planear la siguiente sesión." },
+    "mentor_memory_type": { "heading": "Notas del Mentor", "body": "Se guardan para que el Mentor planee la siguiente sesión." },
     "learner_record": { "heading": "Decisiones en historias", "body": "Se guardan para que lecciones futuras las recuerden." },
     "sharing_surface": { "heading": "Compartido con otros", "body": "Solo con personas y lugares que tú apruebes." }
   },

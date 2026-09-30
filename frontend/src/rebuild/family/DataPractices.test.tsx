@@ -137,6 +137,8 @@ describe('Data practice copy (S10.3)', () => {
     ? flat(v as Record<string, unknown>, `${p}${k}.`) : [[`${p}${k}`, String(v)] as [string, string]]);
   const role = (key: string): CopyRole => {
     if (key.startsWith('practices.') || key.endsWith('.body') || /^(tutor|self)\.(lead|bodyOff|bodyChoose|saved|failed|loadFailed|loading)$/.test(key)) return 'body';
+    // A group's heading is the label of the disclosure button that opens the group, so it is budgeted as an action.
+    if (/^groups\.[^.]+\.heading$/.test(key)) return 'action';
     if (key.endsWith('.heading')) return 'heading';
     if (/\.(open|close)$/.test(key)) return 'action';
     return 'option';

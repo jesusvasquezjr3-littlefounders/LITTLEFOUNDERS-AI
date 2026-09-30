@@ -103,7 +103,7 @@ afterEach(() => vi.unstubAllGlobals());
 
 /** GAP-FIX-R3 (M7): builds the pilot's bars the way a learner does, slot by slot ("Ana has 12 more than Leo; together 50"). */
 async function buildPilotBars() {
-  fireEvent.click(screen.getByRole('button', { name: 'Two bars to compare' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Compare two bars' }));
   fireEvent.click(screen.getByRole('button', { name: 'Add the total' }));
   const pick = async (slot: string, item: string) => {
     fireEvent.click(screen.getByRole('button', { name: new RegExp(`^${slot}:`) }));
@@ -503,7 +503,7 @@ describe('LessonRoute', () => {
       .mockResolvedValueOnce({ data: { score: 100, passed: true }, error: null });
 
     renderLessonRoute(['/learn/lesson/lesson-1']);
-    await screen.findByRole('button', { name: 'Two bars to compare' });
+    await screen.findByRole('button', { name: 'Compare two bars' });
     await buildPilotBars();
     fireEvent.click(await screen.findByRole('button', { name: 'Check' }));
     await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: { client_verdict: 'valid', time_spent_seconds: expect.any(Number),

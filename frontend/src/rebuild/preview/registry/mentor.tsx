@@ -6,6 +6,7 @@ import { DispositionSummary } from '../../mentor/DispositionSummary';
 import type { DispositionSummaryData } from '../../mentor/allianceApi';
 import { MentorStagePreview } from '../../mentor/MentorStagePreview';
 import { MentorScreenPreview } from '../../mentor/screen/MentorScreenPreview';
+import { MENTOR_CHARACTERS, MENTOR_NAMES, type MentorCharacter } from '../../design/assets';
 import { framed, standalone, type PreviewRegistry } from './types';
 
 /*
@@ -30,6 +31,17 @@ const PREVIEW_PROFILE: DispositionSummaryData = {
 
 const SCRIPTS = ['completed', 'interrupted', 'learner_left', 'safety_stop'];
 
+/*
+ * One <h1> per page (03 §3.2). The session parts are mounted on the Mentor screen, under the top bar that names the
+ * Mentor, so each fixture shows that <h1> (data, as MentorScreen.tsx renders it; ?character=, default Dina). The
+ * profile is the whole page here, so its own title is the page's <h1> (an <h2> under Settings or Mentor talks).
+ */
+const mentorOf = (params: URLSearchParams): MentorCharacter => {
+  const asked = params.get('character');
+  return MENTOR_CHARACTERS.find((character) => character === asked) ?? 'dina';
+};
+const MentorScreenTitle = ({ params }: { params: URLSearchParams }) => <h1 data-copy-role="data">{MENTOR_NAMES[mentorOf(params)]}</h1>;
+
 export const mentorPreviewScreens: PreviewRegistry = {
   /* W2M.1: the one Mentor stage at full size, in the Mentor screen's stage region (08 §6, §7); see MentorStagePreview. */
   'mentor-stage': standalone(({ locale, theme, ageBand, params }) => <MentorStagePreview locale={locale} theme={theme} ageBand={ageBand} params={params} />),
@@ -37,6 +49,7 @@ export const mentorPreviewScreens: PreviewRegistry = {
   'mentor-screen': standalone(({ locale, theme, ageBand, params }) => <MentorScreenPreview locale={locale} theme={theme} ageBand={ageBand} params={params} />),
   'mentor-session-end': framed(({ t, locale, theme, params, go }) => <main className="lf-preview lf-preview--mentor-session-end" data-surface="app"
     data-screen="mentor-session-end"><div className="lf-preview-content">
+    <MentorScreenTitle params={params} />
     {/* C.8/C.12 + C.16 fixtures: the stop-or-continue choice and the closing state for ?script=&effort=. */}
     <SessionEndChoice copy={t.mentorSessionEnd} locale={locale} dark={theme === 'dark'} onChoose={() => undefined} />
     <SessionClosing copy={t.mentorSessionEnd} locale={locale} dark={theme === 'dark'}
@@ -44,18 +57,21 @@ export const mentorPreviewScreens: PreviewRegistry = {
       effort={(params.get('effort') ?? 'recovered') as EffortAct}
       topic={params.get('topic') === 'none' ? null : t.mentorSessionEnd.previewTopic} onBack={() => go('home')} />
   </div></main>),
-  'mentor-check-in': framed(({ t, locale, theme }) => <main className="lf-preview lf-preview--mentor-check-in" data-surface="app"
+  'mentor-check-in': framed(({ t, locale, theme, params }) => <main className="lf-preview lf-preview--mentor-check-in" data-surface="app"
     data-screen="mentor-check-in"><div className="lf-preview-content">
+    <MentorScreenTitle params={params} />
     {/* C.19 fixture: the two reply chips the stage shows under the Mentor's check-in turn. */}
     <CheckInChoice copy={t.mentorCheckIn} locale={locale} dark={theme === 'dark'} onAnswer={() => undefined} />
   </div></main>),
-  'mentor-goal-check': framed(({ t, locale, theme }) => <main className="lf-preview lf-preview--mentor-goal-check" data-surface="app"
+  'mentor-goal-check': framed(({ t, locale, theme, params }) => <main className="lf-preview lf-preview--mentor-goal-check" data-surface="app"
     data-screen="mentor-goal-check"><div className="lf-preview-content">
+    <MentorScreenTitle params={params} />
     {/* C.15 fixture: the two chips under the Mentor's goal restatement. */}
     <GoalCheckChoice copy={t.mentorGoalCheck} locale={locale} dark={theme === 'dark'} onAnswer={() => undefined} />
   </div></main>),
   'mentor-alliance-check': framed(({ t, locale, theme, params }) => <main className="lf-preview lf-preview--mentor-alliance-check" data-surface="app"
     data-screen="mentor-alliance-check"><div className="lf-preview-content">
+    <MentorScreenTitle params={params} />
     {/* C.15 fixture: the end-of-session bond proxy for ?script=; ?result=failed shows the retry. */}
     <AllianceCheck copy={t.mentorAllianceCheck} locale={locale} dark={theme === 'dark'}
       script={(SCRIPTS.includes(params.get('script') ?? '')
@@ -69,6 +85,6 @@ export const mentorPreviewScreens: PreviewRegistry = {
       audience={params.get('audience') === 'own' ? 'own' : 'child'}
       phase={params.get('state') === 'loading' ? 'loading' : params.get('state') === 'failed' ? 'failed' : 'ready'}
       data={params.get('state') === 'empty' ? { ...PREVIEW_PROFILE, exists: false } : PREVIEW_PROFILE}
-      canReset onReset={() => undefined} />
+      canReset onReset={() => undefined} headingLevel={1} />
   </div></main>),
 };
