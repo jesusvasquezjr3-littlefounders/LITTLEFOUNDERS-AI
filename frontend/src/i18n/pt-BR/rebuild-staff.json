@@ -1989,6 +1989,7 @@
         "no_data": "Ainda sem dados",
         "guest_origin_flag_coverage": "Sessões de convidado marcadas após recusa por idade",
         "onboarding_discovery_unconsented": "Respostas da pesquisa só com consentimento",
+        "flagged_session_unconsented_events": "Contas marcadas sem eventos de analytics",
         "flag_persistence_through_upgrade": "Marca mantida ao criar a conta",
         "post_callback_age_screen_completion": "Cadastros com Google que passaram pela idade",
         "under13_google_reclassification": "Contas Google menores de 13 protegidas",

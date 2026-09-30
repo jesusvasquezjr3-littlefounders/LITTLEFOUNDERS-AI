@@ -180,6 +180,10 @@ describe('Analytics & Health → Trust (view_analytics)', () => {
     const gate = within(card).getByText(i.option.post_callback_age_screen_completion).closest('tr')!;
     expect(within(gate).getByText(i.option.release_gate)).toBeTruthy();
     expect(within(gate).getByText(i.option.missed)).toBeTruthy();
+    // Appendix M 1.1: the flagged-session analytics count is a measured release gate, labelled on the Trust view.
+    const flagged = within(card).getByText(i.option.flagged_session_unconsented_events).closest('tr')!;
+    expect(within(flagged).getByText(i.option.release_gate)).toBeTruthy();
+    expect(within(flagged).getByText(i.option.met)).toBeTruthy();
     expect(within(card).getByText(i.option.adv_age_screen_bypass)).toBeTruthy();
   });
 

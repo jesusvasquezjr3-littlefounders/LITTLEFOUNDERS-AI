@@ -12,9 +12,19 @@ import { listMinorRecordTutors } from './tutorAgeRecord.js';
  * and a trend, no fixed target), exactly as Appendix M's Target column says.
  *
  * The adversarial metrics of the same tables (Flagged-Session Microphone
- * Suppression, AI Mentor Fail-Closed, Unconsented Analytics, Age-Screen
- * Bypass, Unauthorized Kid Email Change) are test suites, not data: they are
- * listed with the suite that proves them, never given a fabricated rate.
+ * Suppression, AI Mentor Fail-Closed, Age-Screen Bypass, Unauthorized Kid
+ * Email Change, and the guard behind Unconsented Analytics) are test suites,
+ * not data: they are listed with the suite that proves them, never given a
+ * fabricated rate.
+ *
+ * Unconsented Analytics Event Rate (flagged sessions) is ALSO measured
+ * (GAP-FIX-R7 fix7identi0): Appendix M 1.1 names its data source, the
+ * analytics event log filtered by the origin flag, with a target of zero, and
+ * Part 2.2(d) holds A.2 open until it reports zero for a release cycle. So
+ * identity_metrics counts the learning_events and family_money_events rows
+ * stored for a flagged account at or after its flag, and the release gate
+ * flagged_session_unconsented_events is met only at zero such rows. The
+ * adversarial entry stays: it proves the guard, this proves the log.
  * The database halves run every release through `npm run identity:db-verify`
  * (database CI, the repo gates and release readiness; GAP-FIX-R4), and
  * database/scripts/identity-db-verify.test.mjs pins these entries to it.
@@ -69,6 +79,9 @@ const Counts = z.object({
   staffGrantJustification: z.object({ staffGranted: n, justified: n, justificationsInWindow: n }),
   revocation: z.object({ revokedRows: n, revokedInWindow: n, auditedRevocations: n }),
   kidEmail: z.object({ kids: n, restricted: n, refusalsInWindow: n }),
+  unconsentedFlagged: z.object({
+    flagged: n, flaggedActive: n, accountsWithEvents: n, events: n, learningEvents: n, familyMoneyEvents: n,
+  }),
   faqCapabilities: z.object({ secondGuardian: z.boolean(), cancellationCascade: z.boolean(), reportTool: z.boolean() }),
   schemaFields: z.object({
     originFlag: z.object({ produced: n, consumed: z.boolean() }),
@@ -88,7 +101,7 @@ export type OnboardingDiscoveryCounts = z.infer<typeof DiscoveryCounts>;
 export const IDENTITY_ADVERSARIAL = [
   { id: 'flagged_session_microphone', requirement: 'A.2', suite: 'backend/src/__tests__/tutor.test.ts (flagged-origin session: microphone POLICY_BLOCKED)' },
   { id: 'flagged_session_fail_closed', requirement: 'A.2', suite: 'backend/src/__tests__/tutor.test.ts (flagged-origin session treated as a minor in every Oracle preflight)' },
-  { id: 'flagged_session_unconsented_analytics', requirement: 'A.2', suite: 'backend/src/__tests__/ageUpgradeChain.test.ts; npm run identity:db-verify (database/scripts/verify-origin-postgres.py: guard_optional_learning_event over the whole migration chain)' },
+  { id: 'flagged_session_unconsented_analytics', requirement: 'A.2', suite: 'backend/src/__tests__/ageUpgradeChain.test.ts; npm run identity:db-verify (database/scripts/verify-origin-postgres.py: guard_optional_learning_event over the whole migration chain, and the flagged_session_unconsented_events count it feeds)' },
   { id: 'age_screen_bypass', requirement: 'A.3', suite: 'backend/src/__tests__/ageScreen.test.ts' },
   { id: 'kid_email_change_unauthorized', requirement: 'A.6', suite: 'backend/src/__tests__/verificationAdmin.test.ts (KID_EMAIL_FORBIDDEN); npm run identity:db-verify (database/scripts/verify-kid-email-guard-postgres.py: guard_kid_email on auth.users, the path GoTrue takes through Kong)' },
 ] as const;
@@ -106,6 +119,23 @@ function metric(
   const target = kind === 'release_gate' ? 1 : null;
   const status: MetricStatus = kind === 'diagnostic' ? 'diagnostic' : value === null ? 'no_data' : value >= 1 ? 'met' : 'missed';
   return { id, part, requirement, kind, target, numerator, denominator, value, status, detail };
+}
+
+/**
+ * Appendix M 1.1, A.2: a target-zero count, expressed like the other gates as
+ * the share of flagged accounts active in the window that stored no
+ * optional-analytics row after their flag. Any stored row misses the gate,
+ * whatever the denominator says; no active flagged account reads no_data.
+ */
+function flaggedUnconsentedMetric(u: IdentityCounts['unconsentedFlagged']): IdentityMetric {
+  const denominator = Math.max(u.flaggedActive, u.accountsWithEvents);
+  const base = metric('flagged_session_unconsented_events', '1.1', 'A.2', 'release_gate',
+    Math.max(0, denominator - u.accountsWithEvents), denominator, {
+      events: u.events, learningEvents: u.learningEvents, familyMoneyEvents: u.familyMoneyEvents,
+      accountsWithEvents: u.accountsWithEvents, flaggedActive: u.flaggedActive, flagged: u.flagged,
+    });
+  const status: MetricStatus = u.events > 0 ? 'missed' : denominator === 0 ? 'no_data' : 'met';
+  return { ...base, status };
 }
 
 /** Pure: the report for one set of counts. */
@@ -142,6 +172,7 @@ export function buildIdentityReport(
         unconsented: discovery.unconsented, flaggedOrigin: discovery.flaggedOrigin, kid: discovery.kid,
         under13Declared: discovery.under13Declared, teenWithoutOptIn: discovery.teenWithoutOptIn,
       }),
+    flaggedUnconsentedMetric(c.unconsentedFlagged),
     metric('flag_persistence_through_upgrade', '1.1', 'A.2', 'release_gate', c.flagPersistence.safeguarded, c.flagPersistence.upgraded),
     metric('post_callback_age_screen_completion', '1.1', 'A.3', 'release_gate', c.googleAgeScreen.screened, c.googleAgeScreen.firstTime),
     metric('under13_google_reclassification', '1.1', 'A.3', 'release_gate', c.googleUnder13.reclassified, c.googleUnder13.declaredUnder13),
