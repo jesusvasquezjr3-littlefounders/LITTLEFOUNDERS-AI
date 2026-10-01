@@ -72,12 +72,12 @@ const rows = [], profile = mkdtempSync(join(tmpdir(), 'lf-v2-lesson-'));
 let dev, browser, setupError = null;
 try {
   dev = await startServer(); browser = await launchBrowser(profile);
-  const page = await openPage(browser.browser, {width,height,dark,isolated:true});
   console.log('v2 lesson-engine: ' + fixtures.length + '/' + all.length + ' localized segments, ' + new Set(fixtures.map(f=>f.segment.type)).size + ' types' + (only?' FILTERED':''));
   for (const fixture of fixtures) {
     const row = {lesson:fixture.lesson,segment:fixture.segment.id,type:fixture.segment.type,locale:fixture.locale,mounted:false,controls:[],helpPressed:false,failures:[]};
-    const errors = page.errors.length, requests = page.failedRequests.length;
+    let page;
     try {
+      page = await openPage(browser.browser, {width,height,dark,isolated:true});
       const query = new URLSearchParams({screen:'fixture',seg:fixture.lesson+':'+fixture.segment.id,age:fixture.age,locale:fixture.locale,theme:dark?'dark':'light'});
       await page.send('Page.navigate',{url:dev.url+'/rebuild.html?'+query});
       await waitFor(page, `(() => { const r=document.querySelector('.lf-rebuild'),m=document.querySelector('main.lf-learning'); return r?.getAttribute('lang')===${JSON.stringify(fixture.locale)} && m?.querySelector('h1') && !['lesson-unavailable','lesson-update','lesson-preview-end'].includes(m.dataset.screen); })()`, fixture.lesson+'/'+fixture.segment.id, rows.length?30000:90000);
@@ -96,11 +96,13 @@ try {
         for(const c of await page.evaluate(scan))if(!c.reachable)row.failures.push('After help occluded: '+c.label);
       }
     } catch(error) {row.failures.push(error.message);}
-    row.failures.push(...page.errors.slice(errors).map(e=>'JavaScript: '+e),...page.failedRequests.slice(requests).map(e=>'Request: '+e));
+    finally {
+      try { await page?.close(); }
+      catch(error) { row.failures.push('Browser cleanup: '+error.message); }
+    }
+    row.failures.push(...(page?.errors ?? []).map(e=>'JavaScript: '+e),...(page?.failedRequests ?? []).map(e=>'Request: '+e));
     rows.push(row); console.log((row.failures.length?'FAIL ':'PASS ')+row.type+' '+row.segment+' '+row.locale+' ('+row.controls.length+' controls)'+(row.failures.length?' '+row.failures.join('; '):''));
-    if(page.closed||page.crashed)break;
   }
-  await page.close();
 } catch(error) {setupError=error.message;}
 finally {
   browser?.child.kill(); dev?.stop();

@@ -38,6 +38,8 @@ const CHROME_CANDIDATES = [
   '/usr/bin/chromium-browser',
 ].filter(Boolean)
 
+const DEFAULT_CDP_TIMEOUT_MS = 30_000
+
 /** The first Chrome or Chromium on this machine (CHROME_PATH first), or null when there is none. */
 export function findChrome() {
   return CHROME_CANDIDATES.find((path) => existsSync(path)) ?? null
@@ -99,10 +101,11 @@ export async function launchBrowser(userDataDir, { gpuMode = 'software' } = {}) 
 }
 
 /** One page, with its console and its failed requests recorded as they happen. */
-class Page {
-  constructor(socket, sessionId) {
+export class Page {
+  constructor(socket, sessionId, { commandTimeoutMs = DEFAULT_CDP_TIMEOUT_MS } = {}) {
     this.ws = socket
     this.sessionId = sessionId
+    this.commandTimeoutMs = commandTimeoutMs
     this.nextId = 1
     this.pending = new Map()
     this.errors = []
@@ -126,7 +129,10 @@ class Page {
     const end = (reason) => {
       if (this.closed) return
       this.closed = reason
-      for (const waiter of this.pending.values()) waiter.reject(new Error(reason))
+      for (const waiter of this.pending.values()) {
+        clearTimeout(waiter.timer)
+        waiter.reject(new Error(reason))
+      }
       this.pending.clear()
     }
     socket.addEventListener('close', (event) => end(`Chrome closed the DevTools connection (code ${event.code})`))
@@ -137,6 +143,7 @@ class Page {
       if (message.id && this.pending.has(message.id)) {
         const waiter = this.pending.get(message.id)
         this.pending.delete(message.id)
+        clearTimeout(waiter.timer)
         if (message.error) waiter.reject(new Error(message.error.message))
         else waiter.resolve(message.result)
         return
@@ -167,11 +174,16 @@ class Page {
     if (this.closed) return Promise.reject(new Error(this.closed))
     const id = this.nextId++
     return new Promise((resolve, reject) => {
-      this.pending.set(id, { resolve, reject })
+      const timer = setTimeout(() => {
+        if (!this.pending.delete(id)) return
+        reject(new Error(`DevTools command ${method} timed out after ${this.commandTimeoutMs}ms`))
+      }, this.commandTimeoutMs)
+      this.pending.set(id, { resolve, reject, timer })
       try {
         this.ws.send(JSON.stringify({ id, method, params, ...(sessionId ? { sessionId } : {}) }))
       } catch (error) {
         this.pending.delete(id)
+        clearTimeout(timer)
         reject(error)
       }
     })
@@ -179,11 +191,13 @@ class Page {
 
   /** Closes the page's target and its isolated context (when it has one), then its DevTools connection. */
   async close() {
+    let failure = null
     if (!this.closed) {
-      if (this.targetId) await this.call('Target.closeTarget', { targetId: this.targetId }).catch(() => {})
-      if (this.contextId) await this.call('Target.disposeBrowserContext', { browserContextId: this.contextId }).catch(() => {})
+      if (this.targetId) await this.call('Target.closeTarget', { targetId: this.targetId }).catch((error) => { failure ??= error })
+      if (this.contextId) await this.call('Target.disposeBrowserContext', { browserContextId: this.contextId }).catch((error) => { failure ??= error })
     }
     try { this.ws.close() } catch { /* already closed */ }
+    if (failure) throw failure
   }
 
   async evaluate(expression) {
@@ -206,50 +220,43 @@ class Page {
  */
 export async function openPage(browserUrl, { width, height, dark, newWindow = false, isolated = false }) {
   const socket = new WebSocket(browserUrl)
-  await new Promise((ok, fail) => {
-    socket.addEventListener('open', ok, { once: true })
-    socket.addEventListener('error', () => fail(new Error('CDP socket failed to open')), { once: true })
-  })
-
-  const attach = (method, params) =>
-    new Promise((resolve) => {
-      const id = Math.floor(Math.random() * 1e6) + 1
-      const onMessage = (event) => {
-        const message = JSON.parse(event.data)
-        if (message.id === id) {
-          socket.removeEventListener('message', onMessage)
-          resolve(message.result)
-        }
-      }
-      socket.addEventListener('message', onMessage)
-      socket.send(JSON.stringify({ id, method, params }))
+  const page = new Page(socket)
+  try {
+    await new Promise((ok, fail) => {
+      const timer = setTimeout(() => fail(new Error(`CDP socket open timed out after ${DEFAULT_CDP_TIMEOUT_MS}ms`)), DEFAULT_CDP_TIMEOUT_MS)
+      socket.addEventListener('open', () => { clearTimeout(timer); ok() }, { once: true })
+      socket.addEventListener('error', () => { clearTimeout(timer); fail(new Error('CDP socket failed to open')) }, { once: true })
     })
 
-  const context = isolated ? await attach('Target.createBrowserContext', {}) : null
-  const { targetId } = await attach('Target.createTarget', {
-    url: 'about:blank',
-    ...(newWindow ? { newWindow: true } : {}),
-    ...(context?.browserContextId ? { browserContextId: context.browserContextId } : {}),
-  })
-  const { sessionId } = await attach('Target.attachToTarget', { targetId, flatten: true })
+    const context = isolated ? await page.call('Target.createBrowserContext', {}) : null
+    page.contextId = context?.browserContextId ?? null
+    const { targetId } = await page.call('Target.createTarget', {
+      url: 'about:blank',
+      ...(newWindow ? { newWindow: true } : {}),
+      ...(page.contextId ? { browserContextId: page.contextId } : {}),
+    })
+    page.targetId = targetId
+    const attached = await page.call('Target.attachToTarget', { targetId, flatten: true })
+    page.sessionId = attached.sessionId
 
-  const page = new Page(socket, sessionId)
-  page.targetId = targetId
-  page.contextId = context?.browserContextId ?? null
-  // Inspector reports a crashed renderer (Inspector.targetCrashed), so a page that never becomes ready can say why.
-  await page.send('Inspector.enable').catch(() => {})
-  await page.send('Page.enable')
-  await page.send('Runtime.enable')
-  await page.send('Network.enable')
-  await page.send('Emulation.setDeviceMetricsOverride', {
-    width,
-    height,
-    deviceScaleFactor: 1,
-    mobile: width < 768,
-  })
-  await page.send('Emulation.setEmulatedMedia', {
-    features: [{ name: 'prefers-color-scheme', value: dark ? 'dark' : 'light' }],
-  })
+    // Inspector reports a crashed renderer (Inspector.targetCrashed), so a page that never becomes ready can say why.
+    await page.send('Inspector.enable').catch(() => {})
+    await page.send('Page.enable')
+    await page.send('Runtime.enable')
+    await page.send('Network.enable')
+    await page.send('Emulation.setDeviceMetricsOverride', {
+      width,
+      height,
+      deviceScaleFactor: 1,
+      mobile: width < 768,
+    })
+    await page.send('Emulation.setEmulatedMedia', {
+      features: [{ name: 'prefers-color-scheme', value: dark ? 'dark' : 'light' }],
+    })
+  } catch (error) {
+    await page.close().catch(() => {})
+    throw error
+  }
 
   /*
    * SLOW THE MACHINE DOWN ON PURPOSE: `LESSON_LAB_CPU_THROTTLE=4`.
