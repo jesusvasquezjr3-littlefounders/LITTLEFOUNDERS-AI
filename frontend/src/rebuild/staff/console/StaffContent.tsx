@@ -50,10 +50,9 @@ import { fill, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
 
 /**
  * The learner's own lesson renderer, handed in by the route host (the rebuilt
- * console never imports a player itself). GAP-FIX-R6 (02 rule 23, D13, OD-24):
- * the host follows the learner route's split. A v2 document (schema 2) plays in
- * the rebuilt lesson view; only a v1 document (schema 1) plays in the legacy
- * v1 player, the one sanctioned island. Any other schema has no preview.
+ * console never imports a player itself). OD-31 retires the legacy player:
+ * only a v2 document plays in the rebuilt lesson view. Other schemas have no
+ * preview, matching the learner route's refusal.
  */
 export interface LessonPreviewRequest {
   lessonId: string; locale: string; schemaVersion: number; document: Record<string, unknown>; audio: Record<string, unknown>;
@@ -64,8 +63,8 @@ export interface LessonPreviewRequest {
   labels: { start: string; next: string; loading: string; dialog: string; bar: string; close: string }; onExit: () => void;
 }
 export type LessonPreviewRenderer = (request: LessonPreviewRequest) => ReactNode;
-/** The schemas a lesson preview exists for: 1 (the legacy island, OD-24) and 2 (the rebuilt view). */
-export const PREVIEW_SCHEMAS: readonly number[] = [1, 2];
+/** Only the current rebuilt document format has a preview. */
+export const PREVIEW_SCHEMAS: readonly number[] = [2];
 
 /** GAP-FIX-R6: the preview's grader, bound to one document (the named version, or the served document in its locale). */
 function previewGrader(api: StaffApi, lessonId: string, row: Pick<LessonDocumentRow, 'locale' | 'documentVersionId'>) {
@@ -96,7 +95,7 @@ function PreviewPanel({ row, available, onOpen }: { row: LessonDocumentRow; avai
   const t = copy.content;
   const canPreview = available && PREVIEW_SCHEMAS.includes(row.schemaVersion);
   return <div className="lf-staff-stack" data-inspect="preview" data-schema={row.schemaVersion}>
-    <p data-copy-role="body">{!canPreview ? t.body.previewUnavailable : row.schemaVersion === 2 ? t.body.previewHelpV2 : t.body.previewHelp}</p>
+    <p data-copy-role="body">{!canPreview ? t.body.previewUnavailable : t.body.previewHelpV2}</p>
     {row.schemaVersion === 2 && row.playable === false ? <InlineNotice tone="error">{t.body.notPlayable}</InlineNotice> : null}
     {canPreview ? <div><Button variant="brand" onClick={onOpen}>{t.action.openPlayer}</Button></div> : null}
   </div>;
@@ -276,7 +275,7 @@ function Part({ part, index, audio }: { part: Record<string, unknown>; index: nu
   const [open, setOpen] = useState(false);
   const id = useId();
   const type = typeof part.type === 'string' ? part.type : t.body.unknownType;
-  const audioUnit = typeof part.audio_segment_id === 'string' ? part.audio_segment_id : null;
+  const audioUnit = typeof part.id === 'string' ? part.id : null;
   const audioUrl = audioUnit ? audio.get(audioUnit) : undefined;
   return <li className="lf-staff-part" data-part={index + 1}>
     <div className="lf-staff-part-head">
@@ -313,7 +312,7 @@ function LessonSheet({ api, lessonId, onClose, onDecided, renderLessonPreview }:
   const row = data ? data.documents.find((entry) => entry.locale === documentLocale)
     ?? data.documents.find((entry) => entry.locale === locale) ?? data.documents[0] ?? null : null;
   const parts = row ? lessonParts(row.document) : [];
-  const audio = row ? audioAssets(row.audio) : [];
+  const audio = row ? audioAssets(row.narrationAudio) : [];
   const images = row ? imageAssets(row.document) : [];
   const audioByUnit = new Map(audio.map((asset) => [asset.label, asset.url]));
   const decide = async (status: 'published' | 'draft') => {
@@ -763,4 +762,3 @@ export function StaffContent({ api, initialView = 'courses', renderLessonPreview
           : <QualityView api={api} />}
   </StaffPage>;
 }
-

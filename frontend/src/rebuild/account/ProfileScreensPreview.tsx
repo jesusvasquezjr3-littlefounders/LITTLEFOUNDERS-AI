@@ -166,7 +166,7 @@ export function AccountSettingsPreview({ locale, theme, state }: { locale: Local
         {guest ? null : <DispositionSummary copy={MENTOR[locale].mentorProfile} locale={locale} dark={dark} audience="own" phase="ready" canReset={!kid}
           data={{ exists: true, current: true, sessionsObserved: 5, helpStyle: 'independent', persistence: 'persists', explanation: 'unknown', persistentlyDeclined: ['less_text'],
             typicalReplySeconds: 12, personas: [], effects: [], updatedAt: '2026-09-20T10:00:00Z' }} />}
-        <SessionPreferences copy={core} locale={locale} dark={dark} choice="auto" onChoice={noop} onSignOut={noop} signingOut={false} />
+        <SessionPreferences copy={core} locale={locale} dark={dark} onChoice={noop} onSignOut={noop} signingOut={false} />
         <AccountDeletion copy={t.accountDeletion} locale={locale} dark={dark}
           view={kid ? { kind: 'blocked', reason: 'kid' } : { kind: 'ready', step: 'intro', immediate: guest, graceDays: guest ? 0 : 14, reauth: guest ? 'none' : 'password', pausedChildren: 0, submitting: false, error: null }}
           onStart={noop} onBack={noop} onConfirm={noop} onKeep={noop} onRetry={noop} onSignIn={noop} />

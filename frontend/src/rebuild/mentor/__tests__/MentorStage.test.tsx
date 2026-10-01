@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { defaultStageShot, MentorStage } from '../MentorStage';
 import { CompactMentorStage } from '../../learning/CompactMentorStage';
@@ -55,10 +55,85 @@ beforeEach(() => {
 });
 afterEach(() => vi.useRealTimers());
 
+async function paintStill(image = document.querySelector<HTMLImageElement>('.lf-mentor-stage-still')!) {
+  Object.defineProperties(image, { complete: { configurable: true, value: true }, naturalWidth: { configurable: true, value: 375 } });
+  fireEvent.load(image);
+  if (vi.isFakeTimers()) await act(async () => { await vi.advanceTimersByTimeAsync(48); });
+  else await waitFor(() => expect(stage().dataset.visualReady).toBe('true'));
+}
+async function rendererAfterStill() {
+  await paintStill();
+  return screen.findByTestId('tutor-stage');
+}
+
 describe('MentorStage: live 3D', () => {
+  it('recovers a broken progressive still with a live renderer without inventing visual readiness', async () => {
+    const onReady = vi.fn();
+    render(<MentorStage character="rho" state="idle" ageBand="6-9" theme="light" onReady={onReady} />);
+    fireEvent.error(document.querySelector('.lf-mentor-stage-still')!);
+    await screen.findByTestId('tutor-stage');
+    expect(stage().dataset.visualReady).toBe('false');
+    expect(stage().dataset.firstRenderMs).toBeUndefined();
+    expect(onReady).not.toHaveBeenCalled();
+    act(() => harness.last!.onReady!());
+    expect(stage().dataset.visualReady).toBe('true');
+    expect(stage().dataset.ready).toBe('true');
+    expect(onReady).toHaveBeenLastCalledWith(expect.objectContaining({ mode: 'live' }));
+  });
+
+  it('paints the decoded approved still before constructing 3D, then keeps first visual and live readiness distinct', async () => {
+    vi.useFakeTimers();
+    const onReady = vi.fn();
+    render(<MentorStage character="rho" state="idle" ageBand="10-12" theme="dark" onReady={onReady} />);
+    expect(screen.queryByTestId('tutor-stage')).toBeNull();
+    expect(stage().dataset.visualReady).toBe('false');
+    const image = document.querySelector<HTMLImageElement>('.lf-mentor-stage-still')!;
+    Object.defineProperties(image, { complete: { configurable: true, value: true }, naturalWidth: { configurable: true, value: 375 } });
+    fireEvent.load(image);
+    await act(async () => { await vi.advanceTimersByTimeAsync(16); });
+    expect(screen.queryByTestId('tutor-stage')).toBeNull();
+    expect(onReady).not.toHaveBeenCalled();
+    await act(async () => { await vi.advanceTimersByTimeAsync(32); });
+    expect(screen.getByTestId('tutor-stage')).toBeInTheDocument();
+    expect(stage().dataset.visualReady).toBe('true');
+    expect(stage().dataset.ready).toBe('false');
+    expect(onReady).toHaveBeenLastCalledWith(expect.objectContaining({ mode: 'still', fallback: null, withinBudget: true }));
+    const firstVisual = stage().dataset.firstRenderMs;
+    await act(async () => { await vi.advanceTimersByTimeAsync(3000); harness.last!.onReady!(); });
+    expect(stage().dataset.ready).toBe('true');
+    expect(stage().dataset.firstRenderMs).toBe(firstVisual);
+    expect(Number(stage().dataset.liveReadyMs)).toBeGreaterThan(2500);
+  });
+
+  it('ignores a stale still paint and requires a new decoded still after a character or scene change', async () => {
+    vi.useFakeTimers();
+    const onReady = vi.fn();
+    const { rerender } = render(<MentorStage character="rho" state="idle" ageBand="6-9" theme="light" onReady={onReady} />);
+    const oldImage = document.querySelector<HTMLImageElement>('.lf-mentor-stage-still')!;
+    Object.defineProperties(oldImage, { complete: { configurable: true, value: true }, naturalWidth: { configurable: true, value: 375 } });
+    fireEvent.load(oldImage);
+    rerender(<MentorStage character="zara" state="idle" ageBand="6-9" theme="light" onReady={onReady} />);
+    await act(async () => { await vi.advanceTimersByTimeAsync(48); });
+    expect(onReady).not.toHaveBeenCalled();
+    expect(stage().dataset.visualReady).toBe('false');
+    expect(screen.queryByTestId('tutor-stage')).toBeNull();
+    await paintStill();
+    expect(screen.getByTestId('tutor-stage')).toBeInTheDocument();
+    act(() => harness.last!.onReady!());
+    rerender(<MentorStage character="zara" scene="diorama-b" state="idle" ageBand="6-9" theme="light" onReady={onReady} />);
+    expect(stage().dataset.ready).toBe('false');
+    expect(stage().dataset.visualReady).toBe('false');
+    expect(stage().dataset.firstRenderMs).toBeUndefined();
+    expect(stage().dataset.liveReadyMs).toBeUndefined();
+    expect(screen.queryByTestId('tutor-stage')).toBeNull();
+    await paintStill();
+    expect(screen.getByTestId('tutor-stage')).toBeInTheDocument();
+    expect(harness.last?.scene).toBe('diorama-b');
+  });
+
   it('asks the real renderer for the catalogue pose of the requested state, alone on its Diorama', async () => {
     render(<MentorStage character="zara" state="thinking" ageBand="6-9" theme="light" scene="diorama-b" />);
-    const renderer = await screen.findByTestId('tutor-stage');
+    const renderer = await rendererAfterStill();
     expect(renderer.dataset.character).toBe('zara');
     expect(harness.last).toMatchObject({ scene: 'diorama-b', emotion: 'thinking', action: 'think', companion: null, shot: 'closeup' });
     expect(stage().dataset.renderMode).toBe('live');
@@ -75,14 +150,14 @@ describe('MentorStage: live 3D', () => {
     }
     expect(defaultStageShot('dina', 'diorama-b', 'compact')).toBe('closeup-wide');
     render(<MentorStage character="dina" state="idle" ageBand="6-9" theme="light" scene="diorama-a" />);
-    await screen.findByTestId('tutor-stage');
+    await rendererAfterStill();
     expect(harness.last?.shot).toBe('closeup-wide');
   });
 
   it('shows the character still until the model is ready, then reports ready inside the budget', async () => {
     const onReady = vi.fn();
     render(<MentorStage character="rho" state="idle" ageBand="10-12" theme="dark" onReady={onReady} />);
-    await screen.findByTestId('tutor-stage');
+    await rendererAfterStill();
     // W3M.1: the still of the same character AND pose covers the wait (08 §7).
     expect(document.querySelector('.lf-mentor-stage-still')?.getAttribute('src')).toBe('/rebuild/mentor-stage/rho-ambient-idle-dark.png');
     expect(stage().dataset.ready).toBe('false');
@@ -94,7 +169,7 @@ describe('MentorStage: live 3D', () => {
 
   it('drives the speaking animation only while speaking, and forwards the voice clip', async () => {
     const { rerender } = render(<MentorStage character="dina" state="listening" ageBand="6-9" theme="light" />);
-    await screen.findByTestId('tutor-stage');
+    await rendererAfterStill();
     expect(harness.last?.characterSpeaking).toBe(false);
     rerender(<MentorStage character="dina" state="speaking" ageBand="6-9" theme="light" speechUrl="https://depot.example/turn.mp3" />);
     expect(harness.last).toMatchObject({ characterSpeaking: true, speechUrl: 'https://depot.example/turn.mp3' });
@@ -102,14 +177,14 @@ describe('MentorStage: live 3D', () => {
 
   it('replays a gesture for a new beat of the same state', async () => {
     const { rerender } = render(<MentorStage character="liruf" state="encouraging" ageBand="6-9" theme="light" beat={1} />);
-    await screen.findByTestId('tutor-stage');
+    await rendererAfterStill();
     rerender(<MentorStage character="liruf" state="encouraging" ageBand="6-9" theme="light" beat={2} />);
     expect(harness.last?.actionKey).toBe(2);
   });
 
   it('refuses a celebration without a D7 milestone and shows idle instead (OD-7)', async () => {
     render(<MentorStage character="zara" state="celebrating" ageBand="6-9" theme="light" />);
-    await screen.findByTestId('tutor-stage');
+    await rendererAfterStill();
     expect(stage().dataset.mentorState).toBe('idle');
     expect(stage().dataset.mentorRequestedState).toBe('celebrating');
     expect(harness.last?.action).not.toBe('celebrate');
@@ -117,26 +192,26 @@ describe('MentorStage: live 3D', () => {
 
   it('celebrates a milestone the session reached', async () => {
     render(<MentorStage character="zara" state="celebrating" milestone="lesson-complete" ageBand="6-9" theme="light" />);
-    await screen.findByTestId('tutor-stage');
+    await rendererAfterStill();
     expect(stage().dataset.mentorState).toBe('celebrating');
     expect(harness.last?.action).toBe('celebrate');
   });
 
   it('claims the hero idle slot while live, and only then (02 §9.4)', async () => {
     render(<MentorStage character="zara" state="idle" ageBand="6-9" theme="light" />);
-    await screen.findByTestId('tutor-stage');
+    await rendererAfterStill();
     expect(stage().dataset.idleMotion).toBe('hero');
   });
 
   it('falls back to its still at the lowest tier when the device stays under 30 fps', async () => {
     const onReady = vi.fn();
     render(<MentorStage character="zara" state="idle" ageBand="6-9" theme="light" onReady={onReady} />);
-    await screen.findByTestId('tutor-stage');
+    await rendererAfterStill();
     act(() => { for (let i = 0; i < 3; i++) harness.last!.onStats!({ fps: 22, tier: 'low' }); });
     expect(stage().dataset.renderMode).toBe('still');
     expect(stage().dataset.fallback).toBe('frame-rate');
     expect(screen.queryByTestId('tutor-stage')).toBeNull();
-    fireEvent.load(document.querySelector('.lf-mentor-stage-still')!);
+    await paintStill();
     expect(onReady).toHaveBeenLastCalledWith(expect.objectContaining({ mode: 'still', fallback: 'frame-rate' }));
   });
 
@@ -145,6 +220,7 @@ describe('MentorStage: live 3D', () => {
     const onError = vi.fn();
     const quiet = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     render(<MentorStage character="rho" state="idle" ageBand="adult" theme="light" onError={onError} />);
+    await paintStill();
     await vi.waitFor(() => expect(onError).toHaveBeenCalledWith({ reason: 'render-error' }));
     quiet.mockRestore();
     expect(stage().dataset.renderMode).toBe('still');
@@ -159,6 +235,7 @@ describe('MentorStage: reduced motion holds poses (08 §7)', () => {
   it('renders the same 3D with poses held, no idle loop, and switches poses behind a short fade', async () => {
     vi.useFakeTimers();
     const { rerender } = render(<MentorStage character="dina" state="idle" ageBand="6-9" theme="light" />);
+    await paintStill();
     await act(async () => { await vi.runOnlyPendingTimersAsync(); });
     expect(stage().dataset.renderMode).toBe('held');
     expect(stage().dataset.idleMotion).toBeUndefined();
@@ -174,7 +251,19 @@ describe('MentorStage: reduced motion holds poses (08 §7)', () => {
 });
 
 describe('MentorStage: stills fallback (08 §7)', () => {
-  it('shows a still of the same character without WebGL, and never loads the renderer', () => {
+  it('reports a broken permanent still without falsely reporting a visible stage', () => {
+    harness.probe = { ...harness.probe, webgl: 'none' };
+    const onReady = vi.fn(), onError = vi.fn();
+    render(<MentorStage character="rho" state="idle" ageBand="6-9" theme="light" onReady={onReady} onError={onError} />);
+    fireEvent.error(document.querySelector('.lf-mentor-stage-still')!);
+    expect(onError).toHaveBeenCalledWith({ reason: 'no-still' });
+    expect(onReady).not.toHaveBeenCalled();
+    expect(stage().dataset.ready).toBe('false');
+    expect(stage().dataset.visualReady).toBe('false');
+    expect(screen.queryByTestId('tutor-stage')).toBeNull();
+  });
+
+  it('shows a still of the same character without WebGL, and never loads the renderer', async () => {
     harness.probe = { ...harness.probe, webgl: 'none' };
     const onReady = vi.fn();
     render(<MentorStage character="liruf" state="listening" ageBand="10-12" theme="dark" onReady={onReady} />);
@@ -186,7 +275,7 @@ describe('MentorStage: stills fallback (08 §7)', () => {
     expect(still.getAttribute('src')).toBe('/rebuild/mentor-stage/liruf-ambient-listen-dark.png');
     expect(still.getAttribute('alt')).toBe('');
     expect(stage().dataset.stillPose).toBe('ambient.listen');
-    fireEvent.load(still);
+    await paintStill(still);
     expect(onReady).toHaveBeenCalledWith(expect.objectContaining({ mode: 'still', fallback: 'no-webgl' }));
     expect(stage().dataset.ready).toBe('true');
   });
@@ -270,7 +359,7 @@ describe('MentorStage: interface and accessibility', () => {
     render(<MentorStage character="dina" state="listening" ageBand="6-9" theme="light" />);
     expect(stage().getAttribute('aria-hidden')).toBe('true');
     expect(stage().getAttribute('role')).toBeNull();
-    await screen.findByTestId('tutor-stage');
+    await rendererAfterStill();
   });
 
   it('tells the layout when the board is open', async () => {
@@ -278,7 +367,7 @@ describe('MentorStage: interface and accessibility', () => {
     expect(stage().dataset.board).toBe('closed');
     rerender(<MentorStage character="rho" state="demonstrating" ageBand="10-12" theme="light" board />);
     expect(stage().dataset.board).toBe('open');
-    await screen.findByTestId('tutor-stage');
+    await rendererAfterStill();
   });
 
   it('is the lesson compact stage too: the same component, band height from the register (08 §11, B.23)', async () => {
@@ -288,7 +377,7 @@ describe('MentorStage: interface and accessibility', () => {
       expect(stage().classList.contains('lf-mentor-stage--compact')).toBe(true);
       expect(stage().classList.contains('lf-mentor-band')).toBe(true);
       heights.push(stage().style.getPropertyValue('--lf-mentor-band-size'));
-      await screen.findByTestId('tutor-stage');
+      await rendererAfterStill();
       unmount();
     }
     expect(heights).toEqual(['110px', '96px', '80px']);
@@ -296,7 +385,7 @@ describe('MentorStage: interface and accessibility', () => {
 
   it('reacts to lesson verdicts through the stage states: encouraging for a miss, a quiet acknowledgment for a met answer', async () => {
     const { rerender } = render(<CompactMentorStage ageBand="6-9" theme="light" verdict="review" character="zara" scene="diorama-a" />);
-    await screen.findByTestId('tutor-stage');
+    await rendererAfterStill();
     expect(stage().dataset.mentorState).toBe('encouraging');
     expect(harness.last).toMatchObject({ emotion: 'encouraging', action: 'nod' });
     rerender(<CompactMentorStage ageBand="6-9" theme="light" verdict="met" character="zara" scene="diorama-a" />);

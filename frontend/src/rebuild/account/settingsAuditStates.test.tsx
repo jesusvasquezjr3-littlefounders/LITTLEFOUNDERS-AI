@@ -35,7 +35,7 @@ describe('account-settings preview focus states', () => {
     const { container } = render(<AccountSettingsPreview locale="es-MX" theme="dark" state="ageForm" />);
     const open = lane.states.find((state) => state.id === 'account-settings@ageForm')!.open![0]!;
     fireEvent.click(container.querySelector(open)!);
-    expect(container.querySelector('[data-setting="age-record"] [data-correction-form] input[type="date"]')).not.toBeNull();
+    expect(container.querySelector('[data-setting="age-record"] [data-correction-form] [data-date-control]')).not.toBeNull();
     // A pending request offers no second request.
     cleanup();
     const pending = render(<AccountSettingsPreview locale="pt-BR" theme="light" state="agePending" />);

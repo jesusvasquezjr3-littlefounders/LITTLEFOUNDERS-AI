@@ -25,10 +25,12 @@ import { ZPD_TARGET } from '../services/pedagogy/sessionPlan.js';
 let db: FakeDb;
 let userId: string;
 let token: string;
+const runIds = new Map<string, string>();
 beforeEach(() => {
   userId = '11111111-1111-4111-8111-111111111111';
   token = mintToken({ sub: userId });
   db = makeDb(userId);
+  runIds.clear();
   vi.stubGlobal('fetch', createFakeFetch(db));
 });
 afterEach(() => vi.unstubAllGlobals());
@@ -201,10 +203,26 @@ describe('B.12 reasoning through the signed v2 attempt route', () => {
 });
 
 describe('B.5 authenticated replay receipt and XP policy', () => {
-  async function legacyRun(app: ReturnType<typeof createApp>, runId: string, option: 'a' | 'b') {
-    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1', answer: { option_id: option }, attempt_number: 1, run_id: runId,
+  async function v2Run(app: ReturnType<typeof createApp>, fixtureRunId: string, option: 'a' | 'b') {
+    if (!(db.lesson_document_versions?.length)) activateReasoning();
+    const started = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
+    expect(started.status).toBe(200);
+    const runId = started.body.data.run_id;
+    runIds.set(fixtureRunId, runId);
+    let attemptToken = started.body.data.attempt_tokens['decide-01'];
+    if (option === 'b') {
+      const review = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+        segment_id: 'decide-01', answer: { choice: 'spend-all', reason: 'reason-goal' }, attempt_token: attemptToken, run_id: runId,
+      });
+      expect(review.status).toBe(200);
+      expect(review.body.data.verdict.correct).toBe(false);
+      attemptToken = review.body.data.retry_attempt_token;
+    }
+    const met = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: 'decide-01', answer: { choice: 'save-first', reason: 'reason-goal' }, attempt_token: attemptToken, run_id: runId,
     });
+    expect(met.status).toBe(200);
+    expect(met.body.data.verdict.correct).toBe(true);
     return auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ seconds_spent: 60, run_id: runId, local_date: '2026-09-24' });
   }
 
@@ -221,10 +239,10 @@ describe('B.5 authenticated replay receipt and XP policy', () => {
     db.user_roles = [{ user_id: userId, role: 'universal' }];
     db.teen_analytics_preferences = [{ user_id: userId, enabled: true, disclosure_version: 1 }];
     const app = createApp();
-    const first = await legacyRun(app, 'aaaaaaaa-0000-4000-8000-000000000001', 'a');
+    const first = await v2Run(app, 'aaaaaaaa-0000-4000-8000-000000000001', 'a');
     expect(first.body.data).toMatchObject({ score: 100, xp_delta: 20, replay: { kind: 'first', notice: 'none', previous_best_score: null, xp_policy: 'improvement_only' } });
 
-    const lower = await legacyRun(app, 'aaaaaaaa-0000-4000-8000-000000000002', 'b');
+    const lower = await v2Run(app, 'aaaaaaaa-0000-4000-8000-000000000002', 'b');
     expect(lower.body.data).toMatchObject({
       score: 0, best_score: 100, xp_delta: 0, xp_earned: 20,
       replay: { kind: 'replay', notice: 'best_kept', previous_best_score: 100, best_score_kept: true, xp_policy: 'improvement_only' },
@@ -237,7 +255,7 @@ describe('B.5 authenticated replay receipt and XP policy', () => {
     expect(denominator[0]).toMatchObject({ lesson_id: LESSON_1_ID, route_class: 'learn' });
 
     // A lost response replays the stored receipt; it neither pays again nor double-counts the denominator.
-    const again = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ seconds_spent: 60, run_id: 'aaaaaaaa-0000-4000-8000-000000000002', local_date: '2026-09-24' });
+    const again = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ seconds_spent: 60, run_id: runIds.get('aaaaaaaa-0000-4000-8000-000000000002'), local_date: '2026-09-24' });
     expect(again.body.data).toMatchObject({ xp_delta: 0, replay: { notice: 'best_kept' } });
     await new Promise((done) => setTimeout(done, 50));
     expect((db.learning_events ?? []).filter((row) => row.event === 'replay_below_best')).toHaveLength(1);
@@ -246,15 +264,15 @@ describe('B.5 authenticated replay receipt and XP policy', () => {
   it('never records the denominator for a kid without guardian consent, or a teen who opted out', async () => {
     db.user_roles = [{ user_id: userId, role: 'kid' }];
     const app = createApp();
-    await legacyRun(app, 'aaaaaaaa-0000-4000-8000-000000000011', 'a');
-    const lower = await legacyRun(app, 'aaaaaaaa-0000-4000-8000-000000000012', 'b');
+    await v2Run(app, 'aaaaaaaa-0000-4000-8000-000000000011', 'a');
+    const lower = await v2Run(app, 'aaaaaaaa-0000-4000-8000-000000000012', 'b');
     expect(lower.body.data.replay.notice).toBe('best_kept');
     await new Promise((done) => setTimeout(done, 50));
     expect((db.learning_events ?? []).filter((row) => row.event === 'replay_below_best')).toHaveLength(0);
 
     db.user_roles = [{ user_id: userId, role: 'universal' }];
     db.teen_analytics_preferences = [{ user_id: userId, enabled: false, disclosure_version: 1 }];
-    await legacyRun(app, 'aaaaaaaa-0000-4000-8000-000000000013', 'b');
+    await v2Run(app, 'aaaaaaaa-0000-4000-8000-000000000013', 'b');
     await new Promise((done) => setTimeout(done, 50));
     expect((db.learning_events ?? []).filter((row) => row.event === 'replay_below_best')).toHaveLength(0);
   });

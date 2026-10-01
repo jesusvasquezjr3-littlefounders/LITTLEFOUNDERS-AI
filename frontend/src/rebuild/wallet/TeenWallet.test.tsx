@@ -1,3 +1,4 @@
+import { selectOption } from '../test/selectOption';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { TeenWallet } from './TeenWallet';
@@ -110,7 +111,7 @@ describe('TeenWallet', () => {
     fireEvent.change(screen.getByLabelText(en.page.spend), { target: { value: '4' } });
     fireEvent.change(screen.getByLabelText(en.page.share), { target: { value: '2' } });
     expect(screen.getByText(en.income.done)).toBeVisible();
-    fireEvent.change(screen.getByLabelText(en.income.toGoal), { target: { value: GOAL } });
+    selectOption(screen.getByLabelText(en.income.toGoal), 'Headphones');
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: en.income.submit })); });
     const posts = calls.filter((c) => c.method === 'POST');
     expect(posts).toEqual([{ path: '/wallet/income', method: 'POST', body: { source: 'gift', save: 6, spend: 4, share: 2, goalId: GOAL } }]);
@@ -176,7 +177,7 @@ describe('TeenWallet', () => {
     fireEvent.change(screen.getByLabelText(en.page.save), { target: { value: '10' } });
     fireEvent.change(screen.getByLabelText(en.page.spend), { target: { value: '0' } });
     fireEvent.change(screen.getByLabelText(en.page.share), { target: { value: '0' } });
-    fireEvent.change(screen.getByLabelText(en.income.toGoal), { target: { value: GOAL } });
+    selectOption(screen.getByLabelText(en.income.toGoal), 'Headphones');
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: en.income.submit })); });
     expect(await screen.findByRole('status')).toHaveTextContent('Goal reached: Headphones.');
     expect(view.container.querySelector('[data-celebration], canvas')).toBeNull();

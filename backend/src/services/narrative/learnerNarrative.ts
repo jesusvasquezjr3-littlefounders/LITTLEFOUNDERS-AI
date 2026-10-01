@@ -2,9 +2,8 @@ import type { AuthedUser } from '../../middleware/auth.js';
 import type { AgeScreenState } from '../ageScreen.js';
 import type { CourseTree, TopicNode } from '../courseTree.js';
 import { getRolesForGate } from '../insights.js';
-import type { GradingSegment } from '../lessonDocument.js';
 import { getVerifiedGuardiansOfKid } from '../supabaseRest.js';
-import { extractDecisions, extractV2Decisions, pickRecall, type RecallRelevance } from './decisionJournal.js';
+import { extractV2Decisions, pickRecall, type RecallRelevance } from './decisionJournal.js';
 import { BRIDGE_COOLDOWN_DAYS, BRIDGE_TTL_DAYS, bridgeAudience, bridgeCandidates, topicNewlyCompleted, type BridgeAction } from './familyBridge.js';
 import { journalCandidates, offerBridgePrompt, recordDecisions, recordResurfacing, topicTeaches } from './narrativeData.js';
 import { dataPracticeApplies } from '../dataPractices.js';
@@ -35,25 +34,6 @@ function lessonTitleIn(tree: CourseTree, lessonId: string): Json | null {
     if (lesson) return lesson.title;
   }
   return null;
-}
-
-/** Moment 1 (B.9): after a v1 answer is graded and recorded, file its story decisions. */
-export async function recordGradedDecisions(input: {
-  userId: string; courseId: string; topicId: string; lessonId: string; locale: string;
-  segment: GradingSegment; answer: unknown; document: Json;
-}): Promise<void> {
-  try {
-    const raw = Array.isArray(input.document.segments)
-      ? (input.document.segments as unknown[]).find((s) => s && typeof s === 'object' && (s as Json).id === input.segment.id) as Json | undefined
-      : undefined;
-    const title = raw && typeof raw.title === 'string' ? raw.title : null;
-    const decisions = extractDecisions(input.segment, input.answer, title);
-    if (decisions.length === 0) return;
-    const ok = await recordDecisions({ ...input, decisions });
-    if (!ok) console.error('[narrative] decision journal write failed', { lessonId: input.lessonId, segmentId: input.segment.id });
-  } catch (error) {
-    console.error('[narrative] decision journal write threw', error);
-  }
 }
 
 export interface NarrativeRecall {

@@ -11,9 +11,8 @@
       the bundle, which would otherwise start both downloads late. `crossorigin`
       is required even same-origin: fonts are fetched in CORS mode, and
       without it the preload is discarded and fetched a second time. The
-      legacy icon face (Material Symbols) loads only with the OD-24 lesson
-      island's own sheet (src/index.css), which sets Fredoka and Nunito too:
-      no route requests a third-party font.
+      all UI glyphs are authored SVGs from the approved asset manifest.
+      No route loads an external icon font.
     -->
     <link rel="preload" as="font" type="font/woff2" href="/fonts/fredoka-latin-v1.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/nunito-latin-v1.woff2" crossorigin />

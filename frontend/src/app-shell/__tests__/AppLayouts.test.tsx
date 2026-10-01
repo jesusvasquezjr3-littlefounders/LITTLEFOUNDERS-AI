@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from '@/theme/useTheme';
 import { AppShellLayout, StaffShellLayout } from '../AppLayouts';
@@ -65,6 +65,24 @@ function renderApp(path: string, layout: 'app' | 'staff' = 'app') {
 const navLinks = () => within(screen.getAllByRole('navigation')[0]!).getAllByRole('link');
 
 describe('the learner app shell', () => {
+  it('integrates the approved graphic, language dropdown and icon-only mode control in the header', async () => {
+    const { container } = renderApp('/learn');
+    await screen.findAllByRole('link', { name: 'Dina' });
+    const header = container.querySelector('.lf-appbar')!;
+    expect(header.querySelector('img[data-asset-id="brand.mark"]')).toHaveAttribute('src', '/rebuild/brand/mark.svg');
+    const language = within(header as HTMLElement).getByRole('combobox', { name: 'Language' });
+    expect(language).toHaveTextContent('EN');
+    expect(language).toHaveAccessibleDescription('English');
+    fireEvent.click(language);
+    expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual(['English', 'Español', 'Português']);
+    fireEvent.keyDown(language, { key: 'Escape' });
+    const mode = within(header as HTMLElement).getAllByRole('button').find((button) => button.getAttribute('aria-label') === 'Dark' || button.getAttribute('aria-label') === 'Light')!;
+    expect(mode.textContent).toBe('');
+    const before = document.documentElement.classList.contains('dark');
+    fireEvent.click(mode);
+    expect(document.documentElement.classList.contains('dark')).toBe(!before);
+  });
+
   it('names the Mentor tab after the chosen character, with a render of the real model, never "Tutor"', async () => {
     renderApp('/learn');
     const mentor = await screen.findAllByRole('link', { name: 'Dina' });

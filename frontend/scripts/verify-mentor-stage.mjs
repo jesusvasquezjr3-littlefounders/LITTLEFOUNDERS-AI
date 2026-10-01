@@ -67,7 +67,9 @@ const DEVICE = `(() => {
   addEventListener('unhandledrejection', (e) => window.__stageErrors.push(String(e.reason?.stack || e.reason)));
 })();`;
 
-const browser = await launchBrowser(mkdtempSync(join(out, 'chrome-')));
+const gpuMode = process.env.MENTOR_STAGE_GPU_MODE ?? 'software';
+const browser = await launchBrowser(mkdtempSync(join(out, 'chrome-')), { gpuMode });
+const performanceObservations = [];
 const results = [];
 const failures = [];
 const unknownRequests = new Set();
@@ -338,10 +340,12 @@ try {
 
   if (FAMILIES.includes('performance')) {
     /*
-     * The budgets are for a mid-range phone (08 §7). This harness renders with Chrome's software GL on a
+     * The budgets are for a mid-range phone (08 §7). This harness defaults to Chrome's software GL on a
      * shared CPU, which is not that device, so the numbers are recorded as observations; the behaviour is
      * asserted: a stage that cannot hold 30 fps at the renderer's lowest tier falls back to its still.
      * MENTOR_STAGE_STRICT_BUDGET=1 also asserts the 2.5 s first render (for a quiet, capable machine).
+     * MENTOR_STAGE_GPU_MODE=hardware uses the measured physical GPU and records its actual GL renderer;
+     * all profiles and budgets stay identical, and an unexpected software renderer fails the check.
      */
     /*
      * W2M.3 (08 §10 evidence): each character is measured in three profiles on this machine: `warm` (the
@@ -360,6 +364,12 @@ try {
           await openStage({ age: '6-9', character, state: 'idle' }, { locale: 'en-US', theme: 'light' });
           const firstRenderMs = Number(await page.evaluate("document.querySelector('.lf-mentor-stage').dataset.firstRenderMs"));
           const liveFirst = await page.evaluate("document.querySelector('.lf-mentor-stage').dataset.renderMode");
+          const gpu = await page.evaluate(`(() => {
+            const canvas = document.querySelector('.lf-mentor-stage canvas');
+            const gl = canvas?.getContext('webgl2');
+            const debug = gl?.getExtension('WEBGL_debug_renderer_info');
+            return debug ? { vendor: gl.getParameter(debug.UNMASKED_VENDOR_WEBGL), renderer: gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) } : null;
+          })()`);
           await sleep(1500);
           const fps = await page.evaluate('new Promise((done) => { let frames = 0; const start = performance.now(); const tick = (now) => { frames++; if (now - start < 3000) requestAnimationFrame(tick); else done(Math.round(frames * 1000 / (now - start))); }; requestAnimationFrame(tick); })');
           if (fps < 30) await waitFor("document.querySelector('.lf-mentor-stage')?.dataset.renderMode === 'still' && document.querySelector('.lf-mentor-stage-still')?.naturalWidth > 0", `${character}: ${fps} fps, the stage never fell back to its still`, 600);
@@ -367,9 +377,12 @@ try {
           // that image is still downloading when first read. Read again until the still shown has loaded (up to 10 s).
           let after = await stageState();
           for (let n = 0; n < 20 && after.data.renderMode === 'still' && !after.still?.loaded; n++) { await sleep(500); after = await stageState(); }
+          const observation = { profile, firstRenderMs, withinBudget: firstRenderMs <= 2500, firstMode: liveFirst, fps, mode: after.data.renderMode, fallback: after.data.fallback ?? null, gpuMode, gpu };
+          performanceObservations.push({ character, ...observation });
+          if (gpuMode === 'hardware') assert.ok(gpu?.renderer && !/swiftshader|software|llvmpipe/i.test(gpu.renderer), `hardware renderer unavailable: ${JSON.stringify(gpu)}`);
           if (process.env.MENTOR_STAGE_STRICT_BUDGET === '1') assert.ok(firstRenderMs <= 2500, `first render ${firstRenderMs} ms over the 2.5 s budget`);
           assert.ok(fps >= 30 || (after.data.renderMode === 'still' && after.data.fallback === 'frame-rate' && after.still?.loaded), `${fps} fps and ${after.data.renderMode}`);
-          return { profile, firstRenderMs, withinBudget: firstRenderMs <= 2500, firstMode: liveFirst, fps, mode: after.data.renderMode, fallback: after.data.fallback ?? null };
+          return observation;
         } finally {
           await page.send('Emulation.setCPUThrottlingRate', { rate: 1 }).catch(() => {});
           await page.send('Network.setCacheDisabled', { cacheDisabled: false }).catch(() => {});
@@ -390,7 +403,7 @@ try {
 const summary = Object.fromEntries(FAMILIES.map((family) => [family, {
   configurations: results.filter((r) => r.family === family).length, failures: failures.filter((f) => f.family === family).length,
 }]));
-writeFileSync(join(out, 'report.json'), JSON.stringify({ origin, summary, failures, unknownRequests: [...unknownRequests], results }, null, 2));
+writeFileSync(join(out, 'report.json'), JSON.stringify({ origin, gpuMode, strictBudget: process.env.MENTOR_STAGE_STRICT_BUDGET === '1', thresholds: { firstRenderMs: 2500, fps: 30 }, summary, failures, performanceObservations, unknownRequests: [...unknownRequests], results }, null, 2));
 console.log(`\n${JSON.stringify(summary)}`);
 for (const failure of failures) console.log(`FAIL ${failure.family} ${failure.where}: ${failure.error}`);
 for (const row of results.filter((r) => r.family === 'performance' && r.detail)) console.log(`performance ${row.where}: ${JSON.stringify(row.detail)}`);

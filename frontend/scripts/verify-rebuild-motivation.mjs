@@ -32,10 +32,20 @@ const findings = [];
 let configurations = 0;
 
 /** A parent types a 23-day range and presses Pause: the form must refuse it before sending. */
-const invalidRange = `(() => { const inputs = document.querySelectorAll('.lf-streak-pause input[type=date]');
-  const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-  setter.call(inputs[1], '2026-10-16'); inputs[1].dispatchEvent(new Event('input', { bubbles: true }));
-  setTimeout(() => document.querySelector('.lf-streak-pause .lf-button--accent')?.click(), 40); })()`;
+async function invalidRange() {
+  for (const [part, value] of [['day', '16'], ['month', '10'], ['year', '2026']]) {
+    // Locate the second date group independently of surrounding wrapper types.
+    const point = await page.evaluate(`(() => { const groups=document.querySelectorAll('.lf-streak-pause [data-date-control]'); const el=groups[1]?.querySelector('input[data-date-part="${part}"]'); if(!el) throw Error('Missing date part'); el.scrollIntoView({block:'center'}); const r=el.getBoundingClientRect(); const x=r.x+r.width/2,y=r.y+r.height/2; if(document.elementFromPoint(x,y)!==el) throw Error('Date part obstructed'); return {x,y}; })()`);
+    await page.send('Input.dispatchMouseEvent', {type:'mousePressed', ...point, button:'left', clickCount:1});
+    await page.send('Input.dispatchMouseEvent', {type:'mouseReleased', ...point, button:'left', clickCount:1});
+    await page.send('Input.dispatchKeyEvent', {type:'keyDown', key:'a', code:'KeyA', modifiers:2, windowsVirtualKeyCode:65});
+    await page.send('Input.dispatchKeyEvent', {type:'keyUp', key:'a', code:'KeyA', modifiers:2, windowsVirtualKeyCode:65});
+    await page.send('Input.insertText', {text:value});
+  }
+  const point = await page.evaluate(`(() => { const el=document.querySelector('.lf-streak-pause .lf-button--accent'); if(!el) throw Error('Missing pause action'); el.scrollIntoView({block:'center'}); const r=el.getBoundingClientRect();const x=r.x+r.width/2,y=r.y+r.height/2;if(!el.contains(document.elementFromPoint(x,y)))throw Error('Pause action obstructed');return {x,y};})()`);
+  await page.send('Input.dispatchMouseEvent', {type:'mousePressed', ...point, button:'left', clickCount:1});
+  await page.send('Input.dispatchMouseEvent', {type:'mouseReleased', ...point, button:'left', clickCount:1});
+}
 
 /** Each state: its preview query, the Copy Budget band it is written for, its root, and whether it is a full screen. */
 const STATES = {
@@ -85,11 +95,18 @@ async function navigate({ state, locale, theme, width, scale, spacing, reduced =
     style.textContent=${JSON.stringify(spacing ? '.lf-rebuild * { letter-spacing:.12em !important; word-spacing:.16em !important; line-height:1.5 !important; }' : '')};
   })()`);
   if (spec.expand) await page.evaluate(`document.querySelectorAll(${JSON.stringify(spec.expand)}).forEach((e) => e.click())`);
-  if (spec.act) { await page.evaluate(spec.act); await new Promise((done) => setTimeout(done, 150)); }
+  if (spec.act) { if (typeof spec.act === 'function') await spec.act(); else await page.evaluate(spec.act); await new Promise((done) => setTimeout(done, 150)); }
   // The act may resolve an async save before it renders; give it up to 2 s on a loaded machine, never less state.
   for (let n = 0; spec.expect && n < 20 && !(await page.evaluate(spec.expect)); n++) await new Promise((done) => setTimeout(done, 100));
   if (spec.expect && !(await page.evaluate(spec.expect))) throw new Error(`${state}: the interaction did not reach its state`);
-  await page.evaluate('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
+  // Measure settled controls: the finite proprietary press ring briefly clips its own ripple.
+  await page.evaluate(`(async () => { const deadline=performance.now()+2000;
+    while(document.querySelector('.lf-press-ring')) {
+      if(performance.now()>deadline) throw Error('Finite press feedback did not finish');
+      await new Promise(resolve=>requestAnimationFrame(resolve));
+    }
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  })()`);
 }
 
 const audit = ({ state, locale, width, scale, spacing }) => {
@@ -123,10 +140,23 @@ const audit = ({ state, locale, width, scale, spacing }) => {
   const walker=document.createTreeWalker(main,NodeFilter.SHOW_TEXT);
   for(let n=walker.nextNode();n;n=walker.nextNode()){ const p=n.parentElement; if(n.textContent.trim()&&!p.closest('[data-copy-role]')&&p.tagName!=='OPTION') issues.push('no-copy-role:'+n.textContent.trim()); }
   if(/\\bTutor\\b|\\bbot\\b|\\blives?\\b|\\bvidas?\\b/.test(main.textContent)) issues.push('glossary');
-  // The shared Celebration (S03.7) is the milestone's own motion: allowed only on the milestone screen.
-  if(/confetti|lf-burst/i.test(main.innerHTML)||(!${spec.celebrate === true}&&/lf-celebrat/i.test(main.innerHTML))) issues.push('celebration');
-  if(!${spec.celebrate === true}&&main.querySelector('[data-celebrate]')) issues.push('celebration-outside-milestone');
-  if(${spec.celebrate === true}&&[...main.querySelectorAll('[data-celebrate]')].map(e=>e.dataset.celebrate).join(',')!=='lesson-complete,streak-7') issues.push('milestone-not-celebrated');
+  // OD-28: only the lesson-complete moment may mount our manifest-registered confetti.
+  const markers=[...main.querySelectorAll('[data-celebrate]')];
+  const moments=[...new Set(markers.map(e=>e.dataset.celebrate))].sort();
+  if(!${spec.celebrate === true}&&(markers.length||/lf-celebrat|confetti|lf-burst/i.test(main.innerHTML))) issues.push('celebration-outside-milestone');
+  if(${spec.celebrate === true}) {
+    if(moments.join(',')!=='lesson-complete,streak-7') issues.push('milestone-not-celebrated');
+    const confetti=[...main.querySelectorAll('.lf-result-confetti')];
+    if(confetti.length!==1) issues.push('lesson-confetti-count');
+    for(const node of confetti) {
+      if(node.dataset.celebrate!=='lesson-complete'||node.getAttribute('aria-hidden')!=='true'||!node.closest('[data-milestone="lesson-complete"]')||node.textContent.trim()) issues.push('confetti-outside-approved-moment');
+      const assets=node.querySelectorAll('[data-asset-id]');
+      if(assets.length!==1||assets[0].dataset.assetId!=='celebration.lesson-complete.confetti') issues.push('unapproved-confetti-asset');
+      const still=node.querySelector('img[data-motion-frame="static"]');
+      if(still&&still.getAttribute('src')!=='/rebuild/motion/lesson-confetti-still.svg') issues.push('unapproved-confetti-frame');
+    }
+    if(main.querySelector('.lf-burst')) issues.push('unapproved-celebration-burst');
+  }
   if(/freeze|congel|\\blost\\b|perdiste|perdeu|\\bbroke\\b/i.test(main.textContent)) issues.push('loss-or-freeze-copy');
   return issues;
 })()`;
@@ -192,14 +222,30 @@ try {
     if (!(await page.evaluate("!!document.querySelector('.lf-rhythm-notice')"))) findings.push({ interaction: 'pace-not-saved-by-keyboard' });
   }
 
-  // Keyboard: the parent reaches both dates and the Pause button.
+  // Keyboard: all three authored date parts in both groups, then the Pause action.
   await navigate({ state: 'pause-ready', locale: 'en-US', theme: 'dark', width: 1280, scale: 1, spacing: false });
-  if (!(await tab(6, "document.activeElement?.type === 'date'"))) findings.push({ interaction: 'pause-date-unreachable' });
+  for (let group=0;group<2;group++) for(const part of ['day','month','year']) {
+    const predicate=`document.activeElement===document.querySelectorAll('.lf-streak-pause [data-date-control]')[${group}]?.querySelector('[data-date-part="${part}"]')`;
+    if(!(await tab(8,predicate))) findings.push({interaction:'pause-date-part-unreachable',group,part});
+    else if(!(await page.evaluate(focusVisible))) findings.push({interaction:'pause-date-part-focus-not-visible',group,part});
+  }
+  if (!(await tab(8, "document.activeElement?.classList.contains('lf-button--accent') === true"))) findings.push({ interaction: 'pause-button-unreachable' });
+  else if (!(await page.evaluate(focusVisible))) findings.push({ interaction: 'pause-button-focus-not-visible' });
+
+  // The same proprietary SelectField used by application preference controls.
+  await page.send('Page.navigate', {url:origin+'/rebuild.html?screen=system&locale=en-US&theme=light'});
+  for(let n=0;n<100&&!(await page.evaluate('!!document.querySelector("[role=combobox]")').catch(()=>false));n++) await new Promise(resolve=>setTimeout(resolve,50));
+  if(!(await tab(80, "document.activeElement?.getAttribute('role')==='combobox'"))) findings.push({interaction:'select-unreachable'});
   else {
-    if (!(await page.evaluate(focusVisible))) findings.push({ interaction: 'pause-date-focus-not-visible' });
-    // A date field is several tab stops in Chrome (day, month, year), so allow for two of them.
-    if (!(await tab(12, "document.activeElement?.classList.contains('lf-button--accent') === true"))) findings.push({ interaction: 'pause-button-unreachable' });
-    else if (!(await page.evaluate(focusVisible))) findings.push({ interaction: 'pause-button-focus-not-visible' });
+    if(!(await page.evaluate(focusVisible))) findings.push({interaction:'select-focus-not-visible'});
+    const before=await page.evaluate('document.activeElement.textContent.trim()');
+    await enter();
+    if(!(await page.evaluate('document.activeElement?.getAttribute("aria-expanded")==="true"&&!!document.querySelector("[role=listbox]")'))) findings.push({interaction:'select-did-not-open-by-keyboard'});
+    await page.send('Input.dispatchKeyEvent',{type:'keyDown',key:'ArrowDown',code:'ArrowDown',windowsVirtualKeyCode:40});
+    await page.send('Input.dispatchKeyEvent',{type:'keyUp',key:'ArrowDown',code:'ArrowDown',windowsVirtualKeyCode:40});
+    const choice=await page.evaluate('document.getElementById(document.activeElement?.getAttribute("aria-activedescendant"))?.textContent.trim()');
+    await enter();
+    if(!(await page.evaluate(`document.activeElement?.getAttribute('aria-expanded')==='false'&&document.activeElement.textContent.trim()===${JSON.stringify(choice)}&&document.activeElement.textContent.trim()!==${JSON.stringify(before)}&&!document.querySelector('[role=listbox]')`))) findings.push({interaction:'select-did-not-choose-by-keyboard'});
   }
 
   // Reduced motion: no transition on controls, and the milestone medal does not pop.

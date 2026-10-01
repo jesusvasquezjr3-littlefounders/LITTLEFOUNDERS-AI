@@ -141,7 +141,7 @@ try {
     // A shell's <main> carries no data-screen; its root names the shell instead.
     // Fixtures that share a screen name also wait for this URL's own render.
     const ready = shell ? `document.querySelector('main') && document.querySelector('.lf-shell')?.dataset.shell === ${JSON.stringify(shell === 'teen' ? 'learner' : shell === 'staff-limited' ? 'staff' : shell === 'single' ? 'single-state' : shell === 'table' ? 'tutor' : shell)}`
-      : `${path || extra ? `location.search === ${JSON.stringify('?' + query)} && ` : ''}document.querySelector('main')?.dataset.screen === ${JSON.stringify(want)}`;
+      : `${path || extra ? `location.search === ${JSON.stringify('?' + query)} && ` : ''}!!document.querySelector(${JSON.stringify(`main[data-screen="${want}"], main [data-screen="${want}"]`)})`;
     await page.send('Page.navigate', { url: `${origin}/rebuild.html?${query}` });
     for (let n = 0; n < 100; n++) {
       if (await page.evaluate(`!!(${ready})`)) break;

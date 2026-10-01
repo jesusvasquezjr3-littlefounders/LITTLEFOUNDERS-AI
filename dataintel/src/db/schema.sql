@@ -166,6 +166,19 @@ CREATE TABLE IF NOT EXISTS dataintel_sync_state (
   last_error VARCHAR
 );
 
+-- One fixed, resumable content-reset maintenance lease. Startup reads this
+-- before enabling warehouse writers so a restart cannot strand stale facts.
+CREATE TABLE IF NOT EXISTS content_retirement_state (
+  operation VARCHAR PRIMARY KEY,
+  lease_id UUID NOT NULL,
+  phase VARCHAR NOT NULL,
+  course_ids JSON NOT NULL,
+  lesson_ids JSON NOT NULL,
+  inventory JSON NOT NULL,
+  started_at VARCHAR NOT NULL,
+  backup_sha256 VARCHAR
+);
+
 -- H.2 / Appendix O 1.2: the experiment tables are keyed by a learner and are
 -- inside the warehouse's 400-day retention window and the E.6 erasure, so both
 -- jobs need them to exist from the first boot, not only after the first

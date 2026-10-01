@@ -57,7 +57,17 @@ export function signedOutStorageScript({ locale, theme }) {
  * The pilot lesson documents, built inside a page on the dev server by the
  * product's own modules (Vite compiles them), for every locale audited.
  */
-export async function loadLessonFixtures(page, locales) {
+export async function loadLessonFixtures(page, locales, { compiled = false, origin } = {}) {
+  if (compiled) {
+    if (!origin) throw new Error('Compiled fixture loading requires the audited origin');
+    await page.send('Page.navigate', { url: origin.replace(/\/$/, '') + '/audit-fixtures.html' });
+    const deadline = Date.now() + 60000;
+    while (!await page.evaluate('typeof window.__lfAuditLessonFixtures === "function"').catch(() => false)) {
+      if (Date.now() >= deadline) throw new Error('Compiled lesson fixture entry did not load');
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    return page.evaluate(`window.__lfAuditLessonFixtures(${JSON.stringify(locales)})`);
+  }
   return page.evaluate(`(async () => {
     const goal = await import('/src/rebuild/learning/GoalBulletBoard.tsx');
     const allocation = await import('/src/rebuild/learning/AllocationBoard.tsx');
@@ -94,7 +104,7 @@ export const SCENARIOS = LANE_SCENARIOS;
  * ({ scenario, locale, theme, fixtures }); `page.core = null` lets requests
  * through untouched (the preview entry and session-less routes).
  */
-export async function installSyntheticCore(page, origin, { unknownRequests }) {
+export async function installSyntheticCore(page, origin, { unknownRequests, answerRequest }) {
   await page.send('Fetch.enable', { patterns: [{ urlPattern: '*/api/v1/*' }] });
   page.ws.addEventListener('message', async ({ data }) => {
     const message = JSON.parse(data);
@@ -109,7 +119,8 @@ export async function installSyntheticCore(page, origin, { unknownRequests }) {
         { name: 'Access-Control-Allow-Headers', value: '*' }, { name: 'Access-Control-Allow-Methods', value: '*' },
       ], body: Buffer.from(JSON.stringify(body)).toString('base64') });
       if (request.method === 'OPTIONS') return void await reply(204, {});
-      const answer = respond(core, url.pathname.replace(/^.*\/api\/v1/, ''), request, unknownRequests);
+      const path = url.pathname.replace(/^.*\/api\/v1/, '');
+      const answer = answerRequest?.(core, path, request) ?? respond(core, path, request, unknownRequests);
       if (answer === 'hold') return; // the request stays pending: the route shows its opening state
       if (answer.fail) return void await page.send('Fetch.failRequest', { requestId, errorReason: answer.fail });
       await reply(answer.status, answer.body);

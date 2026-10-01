@@ -2,11 +2,8 @@ import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { ThemeProvider } from '@/theme/useTheme';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import type { ComponentProps } from 'react';
 import i18n from '@/i18n';
 import { api } from '@/lib/api';
-import type { LessonDocument } from '@/lesson-engine/core/types';
-import type LessonPlayerType from '@/lesson-engine/player/LessonPlayer';
 import { LessonRoute } from '../LessonRoute';
 import { goalBulletPilotDocument } from '@/rebuild/learning/GoalBulletBoard';
 import { allocationPilotDocument } from '@/rebuild/learning/AllocationBoard';
@@ -20,6 +17,7 @@ import { schemaDiagramPilotDocument } from '@/rebuild/learning/SchemaDiagramBoar
 import { cpaFadingPilotDocument } from '@/rebuild/learning/CpaFadingBoard';
 import { decideJustifyPilotDocument } from '@/rebuild/learning/DecisionReasonsBoard';
 import { trackInsight } from '@/lib/insights';
+import { paintApprovedStill } from '@/rebuild/mentor/__tests__/paintApprovedStill';
 
 const mockNavigate = vi.fn();
 const { mockGetToken } = vi.hoisted(() => ({ mockGetToken: vi.fn<() => Promise<string | null>>() }));
@@ -48,18 +46,6 @@ vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
   return { ...actual, useNavigate: () => mockNavigate };
 });
-vi.mock('@/lesson-engine/player/LessonPlayer', () => ({
-  default: ({ onComplete, onExit, register }: ComponentProps<typeof LessonPlayerType>) => (
-    <div data-testid="live-player" data-register={register}>
-      <button type="button" onClick={() => onComplete?.({ score: 100, passed: true, xp: 10, seconds_spent: 42 })}>
-        mock-complete
-      </button>
-      <button type="button" onClick={onExit}>
-        mock-exit
-      </button>
-    </div>
-  ),
-}));
 /* The Mentor stage renders its live 3D only where the renderer's device probe finds WebGL (Bible 08 §7). */
 vi.mock('@/tutor-scene/quality', () => ({
   getDeviceProbe: () => ({ cores: 8, memoryGb: 8, coarsePointer: false, devicePixelRatio: 1, webgl: 'webgl2', maxTextureSize: 8192, prefersReducedMotion: false }),
@@ -72,13 +58,6 @@ vi.mock('@/tutor-scene/TutorStage', () => ({
 }));
 
 const mockedApi = vi.mocked((api as unknown as { __mock: typeof api }).__mock);
-
-const fixtureDocument: LessonDocument = {
-  schema_version: 1,
-  meta: { slug: 'l1', title: 'Lesson One', locale: 'en-US', subject: 'money', estimated_minutes: 5, objectives: [], cast: ['dina'] },
-  scoring: { pass_threshold: 70, hint_penalty_pct: 10, max_attempts: 2, hearts: null },
-  segments: [],
-};
 
 function renderLessonRoute(initialEntries: Parameters<typeof MemoryRouter>[0]['initialEntries']) {
   return render(
@@ -116,70 +95,13 @@ async function buildPilotBars() {
 const PILOT_BUILD = { model: 'comparison', slots: { smaller: 'unknown', larger: null, difference: 'ana-more', total: 'together' } };
 
 describe('LessonRoute', () => {
-  it('retains the completion run and payload after a failed save and route remount', async () => {
-    const lesson = { data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null };
-    mockedApi.mockResolvedValueOnce(lesson).mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL', message: 'offline' } });
-    const first = renderLessonRoute(['/learn/lesson/lesson-1']);
-    fireEvent.click(await screen.findByText('mock-complete'));
-    await waitFor(() => expect(mockedApi).toHaveBeenCalledTimes(2));
-    const initialBody = mockedApi.mock.calls[1]?.[1]?.body;
-    first.unmount();
-    mockedApi.mockResolvedValueOnce(lesson).mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL', message: 'offline' } });
+  it('refuses a retired schema without starting a run or mounting a legacy player', async () => {
+    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: { schema_version: 1, segments: [] } }, error: null });
     renderLessonRoute(['/learn/lesson/lesson-1']);
-    fireEvent.click(await screen.findByText('mock-complete'));
-    await waitFor(() => expect(mockedApi).toHaveBeenCalledTimes(4));
-    expect(mockedApi.mock.calls[3]?.[1]?.body).toEqual(initialBody);
-  });
-  it('fetches the lesson document and renders the player', async () => {
-    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
-    renderLessonRoute([{ pathname: '/learn/lesson/lesson-1', state: { courseSlug: 'money-basics' } }]);
-
-    expect(await screen.findByText('mock-complete')).toBeInTheDocument();
-    expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1', { token: 'token-123' });
-  });
-
-  it('B.9: shows the resurfaced decision once, before the lesson, and ignores a malformed recall', async () => {
-    const recall = {
-      entry_id: 'entry-1', lesson_title: { 'en-US': 'The lemonade stand' }, situation: 'What price brings me closer to the guitar?',
-      choice: '10 coins, double the price', first_choice: '5 coins, the usual', outcome: 'Two neighbors buy.', relevance: 'same-arc', recorded_at: '2026-09-20T10:00:00.000Z',
-    };
-    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument, narrative_recall: recall }, error: null });
-    const first = renderLessonRoute(['/learn/lesson/lesson-1']);
-    expect(await screen.findByRole('heading', { name: 'Remember this?' })).toBeInTheDocument();
-    expect(screen.getByText('10 coins, double the price')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'What happened' }));
-    expect(screen.getByText('5 coins, the usual')).toBeInTheDocument();
-    expect(screen.queryByText('mock-complete')).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
-    expect(await screen.findByText('mock-complete')).toBeInTheDocument();
-    first.unmount();
-    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument, narrative_recall: { ...recall, situation: '' } }, error: null });
-    renderLessonRoute(['/learn/lesson/lesson-1']);
-    expect(await screen.findByText('mock-complete')).toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'Remember this?' })).toBeNull();
-  });
-
-  it('shows the rebuilt offline state and retries the lesson request', async () => {
-    mockedApi
-      .mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL', message: 'offline' } })
-      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
-    renderLessonRoute(['/learn/lesson/lesson-1']);
-
-    expect(await screen.findByRole('heading', { name: 'Connection lost' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    expect(await screen.findByText('mock-complete')).toBeInTheDocument();
-    expect(mockedApi).toHaveBeenCalledTimes(2);
-  });
-
-  it('uses the rebuilt load-error state for a non-network lesson failure', async () => {
-    mockedApi
-      .mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL', message: 'unexpected response' } })
-      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
-    renderLessonRoute(['/learn/lesson/lesson-1']);
-
-    expect(await screen.findByRole('heading', { name: 'Lesson unavailable' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    expect(await screen.findByText('mock-complete')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'This lesson cannot open.' })).toBeInTheDocument();
+    expect(mockedApi).toHaveBeenCalledTimes(1);
+    expect(window.document.querySelector('[data-shell="lesson"]')).not.toBeNull();
+    expect(window.document.querySelector('style[data-legacy-island]')).toBeNull();
   });
 
   it('routes a delivered v2 document into the rebuilt lesson renderer without passing age evidence', async () => {
@@ -264,6 +186,7 @@ describe('LessonRoute', () => {
 
     await screen.findByRole('button', { name: 'Save: Add' });
     expect(document.querySelector('.lf-mentor-band')?.getAttribute('data-mentor-character')).toBe('zara');
+    await paintApprovedStill();
     expect(await screen.findByTestId('tutor-stage')).toHaveAttribute('data-scene', 'diorama-a');
   });
 
@@ -738,7 +661,7 @@ describe('LessonRoute', () => {
     expect(mockedApi.mock.calls[3]).toEqual(['/learn/lessons/lesson-1/v2-runs', {
       method: 'POST', token: 'token-123', body: { run_id: run.run_id },
     }]);
-    expect(sessionStorage.getItem('lf.lesson.checkpoint.v1:audit-learner:lesson-1')).not.toContain('opaque-signed-token');
+    expect(sessionStorage.getItem('lf.lesson.checkpoint.v2:audit-learner:lesson-1')).not.toContain('opaque-signed-token');
   });
 
   it('uses the replacement token after review so the learner can correct an answer', async () => {
@@ -811,76 +734,6 @@ describe('LessonRoute', () => {
 
     expect(await screen.findByRole('heading', { name: 'Update the app' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Check' })).toBeNull();
-  });
-
-  it('posts the measured seconds_spent on complete WITHOUT navigating away (the Results screen must stay up until the kid exits)', async () => {
-    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
-    mockedApi.mockResolvedValueOnce({ data: { score: 100, passed: true, xp_earned: 10, xp_delta: 10, streak_days: 1, streak_extended: true, first_today: true, minutes_learned: 1, lessons_completed: 1, progress: { passed: 1, total: 1, pct: 100 }, next_lesson_id: null }, error: null });
-
-    renderLessonRoute([{ pathname: '/learn/lesson/lesson-1', state: { courseSlug: 'money-basics' } }]);
-    await screen.findByText('mock-complete');
-
-    fireEvent.click(screen.getByText('mock-complete'));
-
-    await waitFor(() => {
-      expect(mockedApi).toHaveBeenCalledWith(
-        '/learn/lessons/lesson-1/complete',
-        expect.objectContaining({
-          method: 'POST',
-          token: 'token-123',
-          body: { seconds_spent: 42, run_id: expect.any(String), local_date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/) },
-        }),
-      );
-    });
-    expect(mockNavigate).not.toHaveBeenCalled();
-  });
-
-  it('does not send a pending completion after the learner leaves the route', async () => {
-    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
-    const view = renderLessonRoute(['/learn/lesson/lesson-1']);
-    await screen.findByText('mock-complete');
-    let resolveToken!: (token: string) => void;
-    mockGetToken.mockImplementationOnce(() => new Promise(resolve => { resolveToken = resolve }));
-    fireEvent.click(screen.getByText('mock-complete'));
-    view.unmount();
-    resolveToken('another-learner-token');
-    await new Promise(resolve => setTimeout(resolve, 0));
-    expect(mockedApi).toHaveBeenCalledTimes(1);
-  });
-
-  it('navigates back to the course page on exit, using the courseSlug passed via location state', async () => {
-    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
-    renderLessonRoute([{ pathname: '/learn/lesson/lesson-1', state: { courseSlug: 'money-basics' } }]);
-    await screen.findByText('mock-exit');
-
-    fireEvent.click(screen.getByText('mock-exit'));
-
-    expect(mockNavigate).toHaveBeenCalledWith('/learn/money-basics');
-  });
-
-  it('falls back to /learn on exit when no courseSlug was passed', async () => {
-    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
-    renderLessonRoute(['/learn/lesson/lesson-1']);
-    await screen.findByText('mock-exit');
-
-    fireEvent.click(screen.getByText('mock-exit'));
-
-    expect(mockNavigate).toHaveBeenCalledWith('/learn');
-  });
-
-  it('W2L.4: a deep-linked lesson finds its way back through the course Core names, and ignores a malformed one', async () => {
-    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1', course_slug: 'investing' }, locale: 'en-US', document: fixtureDocument }, error: null });
-    const { unmount } = renderLessonRoute(['/learn/lesson/lesson-1']);
-    await screen.findByText('mock-exit');
-    fireEvent.click(screen.getByText('mock-exit'));
-    expect(mockNavigate).toHaveBeenCalledWith('/learn/investing');
-    unmount();
-    mockNavigate.mockClear();
-    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1', course_slug: '../admin' }, locale: 'en-US', document: fixtureDocument }, error: null });
-    renderLessonRoute(['/learn/lesson/lesson-1']);
-    await screen.findByText('mock-exit');
-    fireEvent.click(screen.getByText('mock-exit'));
-    expect(mockNavigate).toHaveBeenCalledWith('/learn');
   });
 
   it('shows the rebuilt load-error state with a way back when the lesson fetch fails', async () => {
@@ -995,7 +848,7 @@ describe('LessonRoute', () => {
   });
 });
 
-describe('LessonRoute: the lesson layer and the legacy island (W2L.3)', () => {
+describe('LessonRoute: the rebuilt lesson layer', () => {
   const numberLineRun = (document: { version_id: string }) => ({ data: {
     run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
     expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'place-01': 'line-attempt-token' },
@@ -1036,16 +889,8 @@ describe('LessonRoute: the lesson layer and the legacy island (W2L.3)', () => {
     await screen.findByRole('slider', { name: 'Place the point' });
     const band = window.document.querySelector('.lf-learning-inner > .lf-mentor-band');
     expect(band).toHaveAttribute('data-mentor-character', 'liruf');
+    await paintApprovedStill();
     expect(await screen.findByTestId('tutor-stage')).toHaveAttribute('data-scene', 'diorama-b');
-  });
-
-  it('OD-24: plays a v1 lesson in the legacy island, outside the rebuilt layer', async () => {
-    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
-    renderLessonRoute(['/learn/lesson/lesson-1']);
-    const player = await screen.findByTestId('live-player');
-    // No design-system root (the element carrying the mode) around the legacy player.
-    expect(player.closest('div[data-theme]')).toBeNull();
-    expect(window.document.querySelector('[data-shell="lesson"]')).toBeNull();
   });
 
   it('OD-7: shows the badge Core named on the result, with the course it was earned in', async () => {
@@ -1071,29 +916,5 @@ describe('LessonRoute: the lesson layer and the legacy island (W2L.3)', () => {
     expect(badge.querySelector('[data-asset-id="course.investing.icon"]')).not.toBeNull();
     expect(window.document.title).toBe('Your result · LittleFounders');
     await waitFor(() => expect(window.document.activeElement).toBe(screen.getByRole('heading', { level: 1, name: 'Lesson complete!' })));
-  });
-});
-
-describe("LessonRoute: the live player reads the learner's register (B.23, S05.3g)", () => {
-  const lesson = () => ({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
-
-  it("hands the live player the register Core resolved, so a teen's cast is calm and a teen result carries no milestone motion", async () => {
-    registerReply.current = { data: { register: 'teen', copy_band: '13-17', policy_version: '2026-09-24.1', graduation: null }, error: null };
-    mockedApi.mockResolvedValueOnce(lesson());
-    renderLessonRoute(['/learn/lesson/lesson-1']);
-    await waitFor(() => expect(screen.getByTestId('live-player').getAttribute('data-register')).toBe('teen'));
-  });
-
-  it('reads as the youngest register while Core is unavailable, never guessing upward', async () => {
-    mockedApi.mockResolvedValueOnce(lesson());
-    renderLessonRoute(['/learn/lesson/lesson-1']);
-    await waitFor(() => expect(screen.getByTestId('live-player').getAttribute('data-register')).toBe('young'));
-  });
-
-  it('refuses a register payload whose band disagrees with the register (a malformed answer is the youngest register)', async () => {
-    registerReply.current = { data: { register: 'adult', copy_band: '6-9', policy_version: '2026-09-24.1', graduation: null }, error: null };
-    mockedApi.mockResolvedValueOnce(lesson());
-    renderLessonRoute(['/learn/lesson/lesson-1']);
-    await waitFor(() => expect(screen.getByTestId('live-player').getAttribute('data-register')).toBe('young'));
   });
 });

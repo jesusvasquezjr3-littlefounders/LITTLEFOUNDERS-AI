@@ -8,6 +8,7 @@ import { streakPauseCopy } from '../family/StreakPauseControl';
 import { StreakPauseControl } from '../family/StreakPauseControl';
 import { endKidStreakPause, fetchKidStreak, pauseRangeValid, setKidStreakPause, type StreakPauseTransport } from '../family/streakPause';
 import { streak as streakFixture, streakPausePreviewStates } from './motivationFixtures';
+import { enterDate } from '../test/dateParts';
 
 /*
  * S05.3e (B.21, B.24): the learner's rhythm and the guardian's holiday pause.
@@ -174,11 +175,11 @@ describe('B.21 guardian holiday pause control', () => {
       streak: streakFixture({ status: 'paused', pause: { startsOn, endsOn } }) }));
     render(<StreakPauseControl state={streakPausePreviewStates.ready!} locale="en-US" dark={false} today="2026-09-24"
       onPause={onPause} onEnd={async () => ({ status: 'failed' })} onRetry={noop} />);
-    fireEvent.change(screen.getByLabelText('Last day'), { target: { value: '2026-10-20' } });
+    enterDate('Last day', '2026-10-20');
     fireEvent.click(screen.getByRole('button', { name: 'Pause streak' }));
     expect(screen.getByText('Pick up to 21 days, starting within the last week.')).toBeTruthy();
     expect(onPause).not.toHaveBeenCalled();
-    fireEvent.change(screen.getByLabelText('Last day'), { target: { value: '2026-09-30' } });
+    enterDate('Last day', '2026-09-30');
     fireEvent.click(screen.getByRole('button', { name: 'Pause streak' }));
     await waitFor(() => expect(screen.getByText('Pause saved.')).toBeTruthy());
     expect(onPause).toHaveBeenCalledWith('2026-09-24', '2026-09-30');

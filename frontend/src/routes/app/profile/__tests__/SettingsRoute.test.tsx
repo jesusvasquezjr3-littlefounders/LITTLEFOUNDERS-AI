@@ -193,7 +193,10 @@ describe('Settings (P3)', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Reset profile' }));
     expect(await screen.findByText('Nothing yet. It builds after a few sessions.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument();
-    expect(screen.getAllByRole('radio').length).toBeGreaterThanOrEqual(3);
+    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+    const mode = screen.getByRole('button', { name: 'Dark' });
+    expect(mode.querySelector('svg')).not.toBeNull();
+    expect(mode).toHaveTextContent(/^$/);
   });
 });
 

@@ -469,13 +469,12 @@ describe('GET /api/v1/learn/lessons/:id', () => {
     expect(res.body.error.code).toBe('LESSON_LOCKED');
   });
 
-  it('serves the client-safe document with answers stripped from every segment', async () => {
+  it('refuses retired schema 1 without exposing the document or answer keys', async () => {
     const res = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
-    expect(res.status).toBe(200);
-    for (const segment of res.body.data.document.segments) {
-      expect(segment).not.toHaveProperty('answer');
-    }
-    expect(res.body.data.lesson).toMatchObject({ id: LESSON_1_ID, slug: 'lesson-1', xp_total: 20 });
+    expect(res.status).toBe(422);
+    expect(res.body.error.code).toBe('UNSUPPORTED_LESSON');
+    expect(res.body.data).toBeNull();
+    expect(JSON.stringify(res.body)).not.toContain('quiz-1');
   });
 
   it('prefers an explicitly activated immutable v2 version over the legacy row', async () => {
@@ -488,11 +487,12 @@ describe('GET /api/v1/learn/lessons/:id', () => {
     expect(res.body.data.document.segments[0]).not.toHaveProperty('answer');
   });
 
-  it('falls back to es-MX (authoring locale) when the caller locale has no document row', async () => {
-    db.profiles[0]!.locale = 'pt-BR'; // no pt-BR lesson_documents row in the fixture
+  it('falls back to the available authoring locale when the caller locale has no document row', async () => {
+    activateImmutableV2Allocation();
+    db.profiles[0]!.locale = 'pt-BR'; // no pt-BR lesson document in the fixture
     const res = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
     expect(res.status).toBe(200);
-    expect(res.body.data.locale).toBe('es-MX');
+    expect(res.body.data.locale).toBe('en-US');
   });
 
   it('enforces a v2 lesson’s exact server-side age range without returning the birth date', async () => {
@@ -693,7 +693,7 @@ describe('POST /api/v1/learn/lessons/:id/v2-runs', () => {
 
   it('refuses a legacy row or a mutable v2 row as an attempt source', async () => {
     const legacy = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
-    expect(legacy.status).toBe(409);
+    expect(legacy.status).toBe(422);
     expect(legacy.body.error.code).toBe('UNSUPPORTED_LESSON');
 
     db.lesson_documents[0]!.schema_version = 2;
@@ -718,21 +718,22 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
     const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_2_ID}/grade`)).send({
       segment_id: 'quiz-1',
       answer: { option_id: 'a' },
-      attempt_number: 1,
+      run_id: '22222222-2222-4222-8222-222222222222', attempt_token: 'invalid-but-well-shaped',
     });
     expect(res.status).toBe(403);
   });
 
   it('enforces v2 age eligibility before direct grade or completion mutations', async () => {
-    const document = db.lesson_documents[0]!.document as Record<string, unknown>;
-    db.lesson_documents[0]!.schema_version = 2;
-    db.lesson_documents[0]!.document = { ...document, schema_version: 2, eligibility: { minimum_age: 8, maximum_age: 10 } };
+    activateImmutableV2Allocation();
+    const app = createApp();
+    const started = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
+    expect(started.status).toBe(200);
     db.profiles[0]!.birth_date = '2019-09-23';
-
-    const grade = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1', answer: { option_id: 'a' }, attempt_number: 1,
+    const grade = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: 'allocate-01', answer: { amounts: [10, 10, 10] }, run_id: started.body.data.run_id,
+      attempt_token: started.body.data.attempt_tokens['allocate-01'],
     });
-    const complete = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ seconds_spent: 60 });
+    const complete = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ seconds_spent: 60, run_id: started.body.data.run_id });
 
     expect(grade.status).toBe(403);
     expect(grade.body.error.code).toBe('LESSON_AGE_RESTRICTED');
@@ -974,226 +975,15 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
     expect(db.lesson_v2_grade_receipts ?? []).toHaveLength(0);
   });
 
-  it('grades a correct quiz_mcq as a perfect score with reveal (score 100 always reveals)', async () => {
-    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1',
-      answer: { option_id: 'a' },
-      attempt_number: 1,
-    });
-    expect(res.status).toBe(200);
-    expect(res.body.data.verdict).toMatchObject({ correct: true, score: 100, tier: 'perfect', allowRetry: false });
-    expect(res.body.data.verdict.reveal).toEqual({ correct_option_id: 'a' });
-  });
-
-  it('grades a wrong quiz_mcq with per-distractor rationale feedback, no reveal on a non-final attempt', async () => {
-    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1',
-      answer: { option_id: 'b' },
-      attempt_number: 1,
-    });
-    expect(res.status).toBe(200);
-    expect(res.body.data.verdict).toMatchObject({ correct: false, score: 0, tier: 'tryAgain', allowRetry: true });
-    expect(res.body.data.verdict.feedback_md).toBe('because that is wrong');
-    expect(res.body.data.verdict.reveal).toBeUndefined();
-  });
-
-  it('reveal gating: reveals + disallows retry on the final permitted attempt (max_attempts = 2)', async () => {
-    const app = createApp();
-    const first = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1',
-      answer: { option_id: 'b' },
-      attempt_number: 1,
-    });
-    expect(first.body.data.verdict.reveal).toBeUndefined();
-    expect(first.body.data.verdict.allowRetry).toBe(true);
-
-    const second = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1',
-      answer: { option_id: 'b' },
-      attempt_number: 2,
-    });
-    expect(second.status).toBe(200);
-    expect(second.body.data.verdict.reveal).toEqual({ correct_option_id: 'a' });
-    expect(second.body.data.verdict.allowRetry).toBe(false);
-  });
-
-  it('409s ATTEMPTS_EXHAUSTED once max_attempts is reached, and does not record a third attempt', async () => {
-    const app = createApp();
-    for (let i = 0; i < 2; i++) {
-      await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-        segment_id: 'quiz-1',
-        answer: { option_id: 'b' },
-        attempt_number: i + 1,
-      });
-    }
-    const third = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1',
-      answer: { option_id: 'a' },
-      attempt_number: 3,
-    });
-    expect(third.status).toBe(409);
-    expect(third.body.error.code).toBe('ATTEMPTS_EXHAUSTED');
-    expect(db.lesson_segment_attempts).toHaveLength(2);
-  });
-
-  it('applies the hint penalty server-side to the recorded score (hint_penalty_pct 10)', async () => {
-    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1',
-      answer: { option_id: 'a' }, // correct → raw 100
-      attempt_number: 1,
-      hints_used: 1, // 100 × 0.9 = 90
-    });
-    expect(res.status).toBe(200);
-    expect(res.body.data.verdict.score).toBe(90);
-    expect(res.body.data.verdict.tier).toBe('great'); // penalized below 100 → not "perfect"
-    const row = db.lesson_segment_attempts.find((r) => r.segment_id === 'quiz-1');
-    expect(row?.score).toBe(90);
-    expect(row?.hints_used).toBe(1);
-  });
-
-  it('records grade timing and closed pedagogical context for intelligence processing', async () => {
-    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1',
-      answer: { option_id: 'b' },
-      attempt_number: 1,
-      time_spent_seconds: 42,
-    });
-    expect(res.status).toBe(200);
-    const row = db.lesson_segment_attempts.find((attempt) => attempt.segment_id === 'quiz-1');
-    expect(row).toMatchObject({
-      time_spent_seconds: 42,
-      course_id: COURSE_ID,
-      skill_key: 'financial-education/topic-1',
-      diagnostic_code: 'initial_incorrect',
-    });
-    expect(row?.document_updated_at).toBeDefined();
-  });
-
-  it('run-scopes the attempt cap: a fresh run_id starts every segment over', async () => {
-    const app = createApp();
-    const RUN_A = '11111111-1111-4111-8111-111111111111';
-    const RUN_B = '22222222-2222-4222-8222-222222222222';
-    for (let i = 0; i < 2; i++) {
-      await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-        segment_id: 'quiz-1', answer: { option_id: 'b' }, attempt_number: i + 1, run_id: RUN_A,
-      });
-    }
-    const exhausted = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1', answer: { option_id: 'a' }, attempt_number: 3, run_id: RUN_A,
-    });
-    expect(exhausted.status).toBe(409); // run A is spent
-    const freshRun = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1', answer: { option_id: 'a' }, attempt_number: 1, run_id: RUN_B,
-    });
-    expect(freshRun.status).toBe(200); // a new play-through starts fresh
-    expect(freshRun.body.data.verdict.score).toBe(100);
-  });
-
-  it('fails closed when the atomic grading service is unavailable', async () => {
-    const fake = createFakeFetch(db);
-    vi.stubGlobal('fetch', (input: RequestInfo | URL, init?: RequestInit) => {
-      const url = new URL(String(input));
-      if (url.pathname.endsWith('/rpc/record_lesson_grade')) {
-        return Promise.resolve(new Response('{}', { status: 503 }));
-      }
-      return fake(input, init);
-    });
+  it('rejects the retired unsigned grading body without recording attempts or rewards', async () => {
     const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
       segment_id: 'quiz-1', answer: { option_id: 'a' }, attempt_number: 1,
     });
-    expect(res.status).toBe(502);
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
     expect(db.lesson_segment_attempts).toHaveLength(0);
-  });
-
-  it('does not exceed the attempt cap when three requests observe the same count', async () => {
-    const fake = createFakeFetch(db);
-    let readers = 0;
-    let release!: () => void;
-    const barrier = new Promise<void>(resolve => { release = resolve; });
-    vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
-      const url = new URL(String(input));
-      const response = await fake(input, init);
-      if (url.pathname.endsWith('/lesson_segment_attempts') && url.searchParams.get('select') === 'segment_id') {
-        readers += 1;
-        if (readers === 3) release();
-        await barrier;
-      }
-      return response;
-    });
-    const app = createApp();
-    const replies = await Promise.all([1, 2, 3].map(attempt_number => auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1', answer: { option_id: 'b' }, attempt_number,
-      run_id: '33333333-3333-4333-8333-333333333333',
-    })));
-    expect(replies.map(reply => reply.status).sort()).toEqual([200, 200, 409]);
-    expect(db.lesson_segment_attempts).toHaveLength(2);
-  });
-
-  it('returns the original verdict after a lost grade response without consuming another attempt', async () => {
-    const fake = createFakeFetch(db);
-    let loseResponse = true;
-    vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
-      const response = await fake(input, init);
-      if (String(input).endsWith('/rpc/record_lesson_grade') && loseResponse) {
-        loseResponse = false;
-        throw new Error('Injected lost response after commit');
-      }
-      return response;
-    });
-    const app = createApp();
-    const body = { segment_id: 'quiz-1', answer: { option_id: 'b' }, attempt_number: 1, run_id: '33333333-3333-4333-8333-333333333333' };
-    expect((await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send(body)).status).toBe(502);
-    const retry = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({ ...body, answer: { option_id: 'a' } });
-    expect(retry.status).toBe(200);
-    expect(retry.body.data.verdict).toMatchObject({ score: 0, allowRetry: true });
-    expect(retry.body.data.verdict.reveal).toBeUndefined();
-    expect(db.lesson_segment_attempts).toHaveLength(1);
-  });
-
-  it('422s UNSUPPORTED_SEGMENT for an ungraded (story) segment', async () => {
-    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'story-1',
-      answer: {},
-      attempt_number: 1,
-    });
-    expect(res.status).toBe(422);
-    expect(res.body.error.code).toBe('UNSUPPORTED_SEGMENT');
-  });
-
-  it('grades a keyless memory_flip segment (no answer key) instead of 422', async () => {
-    for (const row of db.lesson_documents) {
-      if (row.lesson_id !== LESSON_1_ID) continue;
-      const document = row.document as { segments: Record<string, unknown>[] };
-      document.segments.push({ id: 'memory-1', type: 'memory_flip', prompt_md: 'Find the pairs', difficulty: 1, xp: 10,
-        payload: { pairs: [{ id: 'p1' }, { id: 'p2' }, { id: 'p3' }] } });
-    }
-    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'memory-1',
-      answer: { flips: 6, pairs: 3 },
-      attempt_number: 1,
-    });
-    expect(res.status).toBe(200);
-    // Completing the board is the win — memory_flip floors at 40.
-    expect(res.body.data.verdict.score).toBeGreaterThanOrEqual(40);
-  });
-
-  it('404s for a segment id that does not exist in the document', async () => {
-    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'nope',
-      answer: {},
-      attempt_number: 1,
-    });
-    expect(res.status).toBe(404);
-  });
-
-  it('scores a malformed answer as 0 rather than throwing', async () => {
-    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1',
-      answer: { not_an_option_id: true },
-      attempt_number: 1,
-    });
-    expect(res.status).toBe(200);
-    expect(res.body.data.verdict.score).toBe(0);
+    expect(db.lesson_v2_grade_receipts ?? []).toHaveLength(0);
+    expect(db.lesson_progress).toHaveLength(0);
   });
 });
 
@@ -1465,234 +1255,76 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
     expect(complete.body.data).toMatchObject({ score: 100, passed: true, xp_earned: 20 });
   });
 
-  it('preserves earned XP and completion totals when retrying after a failed stats write', async () => {
+  it('recovers a failed completion write and a lost response without duplicating rewards', async () => {
+    activateImmutableV2WholeNumberLine();
     const app = createApp();
-    const runId = '22222222-2222-4222-8222-222222222222';
-    const completion = { seconds_spent: 300, run_id: runId };
-    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1', answer: { option_id: 'a' }, attempt_number: 1, run_id: runId,
+    const started = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({});
+    expect(started.status).toBe(200);
+    const runId = started.body.data.run_id;
+    const grade = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: 'place-01', run_id: runId, attempt_token: started.body.data.attempt_tokens['place-01'], answer: { value: '7' },
     });
+    expect(grade.status).toBe(200);
     const realFetch = createFakeFetch(db);
-    let failStats = true;
-    vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      if (failStats && String(input).includes('/rpc/complete_lesson') && init?.method === 'POST') {
-        return new Response('{"message":"temporary failure"}', { status: 503 });
+    let failure: 'before' | 'after' | null = 'before';
+    vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
+      if (String(input).includes('/rpc/complete_v2_mixed_lesson') && init?.method === 'POST') {
+        if (failure === 'before') return new Response('{"message":"temporary failure"}', { status: 503 });
+        const result = await realFetch(input, init);
+        if (failure === 'after') { failure = null; throw new Error('Connection lost after commit'); }
+        return result;
       }
       return realFetch(input, init);
-    }));
-    const first = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send(completion);
-    expect(first.status).toBe(502);
-    expect(db.lesson_progress).toHaveLength(0);
-    failStats = false;
-    const retried = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send(completion);
-    expect(retried.status).toBe(200);
-    expect(db.learning_stats.find((row) => row.user_id === userId)).toMatchObject({
-      xp_points: 20, lessons_completed: 1,
-    });
-  });
-
-  it('retries a lost response without duplicating minutes, attempts, or rewards', async () => {
-    const app = createApp();
-    const runId = '22222222-2222-4222-8222-222222222222';
-    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1', answer: { option_id: 'a' }, attempt_number: 1, run_id: runId,
-    });
-    const realFetch = createFakeFetch(db);
-    let loseResponse = true;
-    vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
-      const result = await realFetch(input, init);
-      if (String(input).includes('/rpc/complete_lesson') && loseResponse) {
-        loseResponse = false;
-        throw new Error('Connection lost after commit');
-      }
-      return result;
     });
     const complete = () => auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`))
-      .send({ seconds_spent: 300, run_id: runId });
-    expect((await complete()).status).toBe(502);
-    expect((await complete()).body.data).toMatchObject({ xp_delta: 20, minutes_learned: 5, lessons_completed: 1 });
+      .send({ seconds_spent: 300, run_id: runId, local_date: '2026-09-22' });
+    expect((await complete()).status).toBe(409);
+    expect(db.lesson_progress).toHaveLength(0);
+    failure = 'after';
+    expect((await complete()).status).toBe(409);
+    const recovered = await complete();
+    expect(recovered.status).toBe(200);
+    expect(recovered.body.data.replayed).toBe(true);
     expect(db.lesson_progress[0]).toMatchObject({ attempts: 1, xp_earned: 20 });
-    expect(db.learning_stats[0]).toMatchObject({ xp_points: 20, minutes_learned: 5, lessons_completed: 1 });
+    expect(db.learning_stats.find((row) => row.user_id === userId)).toMatchObject({ xp_points: 20, minutes_learned: 5, lessons_completed: 1 });
   });
 
-  it('400s on an out-of-range minutes_spent', async () => {
-    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ minutes_spent: 999 });
-    expect(res.status).toBe(400);
-  });
-
-  it('recomputes the score server-side from recorded attempts (never trusts a client-reported score) and awards XP/streak', async () => {
-    const app = createApp();
-    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1',
-      answer: { option_id: 'a' },
-      attempt_number: 1,
-    });
-
-    const res = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ minutes_spent: 5 });
-    expect(res.status).toBe(200);
-    expect(res.body.data).toMatchObject({
-      score: 100,
-      passed: true,
-      xp_earned: 20,
-      xp_delta: 20,
-      next_lesson_id: LESSON_2_ID,
-    });
-    expect(res.body.data.progress).toEqual({ passed: 1, total: 2, pct: 50 });
-
-    const stats = db.learning_stats.find((s) => s.user_id === userId);
-    expect(stats).toMatchObject({ xp_points: 20, lessons_completed: 1, minutes_learned: 5, streak_days: 1 });
-
-    const progressRow = db.lesson_progress.find((p) => p.lesson_id === LESSON_1_ID);
-    expect(progressRow).toMatchObject({ best_score: 100, passed: true, xp_earned: 20 });
-  });
-
-  it('ignores a client-supplied score entirely — score is 0 with zero recorded attempts', async () => {
-    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ minutes_spent: 2 });
-    expect(res.status).toBe(200);
-    expect(res.body.data).toMatchObject({ score: 0, passed: false, xp_earned: 0, xp_delta: 0 });
-  });
-
-  it('is idempotent on xp_delta / lessons_completed once already passed', async () => {
-    const app = createApp();
-    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1',
-      answer: { option_id: 'a' },
-      attempt_number: 1,
-    });
-    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ minutes_spent: 5 });
-
-    const second = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ minutes_spent: 3 });
-    expect(second.status).toBe(200);
-    expect(second.body.data).toMatchObject({ xp_delta: 0, passed: true });
-
-    const stats = db.learning_stats.find((s) => s.user_id === userId);
-    // minutes still accrue even when nothing was "newly passed"; xp/lessons_completed do not.
-    expect(stats).toMatchObject({ xp_points: 20, lessons_completed: 1, minutes_learned: 8 });
-  });
-
-  it('403s LESSON_LOCKED for a locked lesson', async () => {
-    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_2_ID}/complete`)).send({ minutes_spent: 1 });
-    expect(res.status).toBe(403);
-  });
-
-  /*
-   * Regression: completion is a read-modify-write over learning_stats. When the
-   * READ failed transiently, supabaseRest collapsed the failure into a zeroed
-   * row and the following PATCH wrote deltas-from-zero straight back — silently
-   * erasing a learner's XP, minutes, lessons and BOTH streak columns behind a
-   * 200 response. minutes_learned and the streaks exist nowhere else, so the
-   * loss was permanent. The read must now be distinguishable from "no progress".
-   */
-  it('never overwrites accumulated stats when the completion transaction fails transiently', async () => {
-    const app = createApp();
-    // A learner with real history.
-    const existing = {
-      user_id: userId, xp_points: 5000, minutes_learned: 300, lessons_completed: 40,
-      streak_days: 12, longest_streak: 30, last_active_date: '2020-01-01', updated_at: '2020-01-01T00:00:00.000Z',
-    };
-    db.learning_stats = [{ ...existing }];
-
-    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1',
-      answer: { option_id: 'a' },
-      attempt_number: 1,
-    });
-
-    // A failed atomic operation must leave the existing totals untouched.
-    const realFetch = createFakeFetch(db);
-    vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      const url = String(input);
-      const method = (init?.method ?? 'GET').toUpperCase();
-      if (url.includes('/rpc/complete_lesson') && method === 'POST') {
-        return new Response('{"message":"no more connections allowed"}', { status: 503 });
-      }
-      return realFetch(input, init);
-    }));
-
-    const res = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ minutes_spent: 5 });
-
-    // Refuse rather than compute from assumed zeros.
-    expect(res.status).toBe(502);
-    // And crucially: the row is untouched.
-    expect(db.learning_stats[0]).toMatchObject(existing);
-  });
-
-  it('a story-only lesson (no graded segments) scores 100 and PASSES on completion', async () => {
-    const app = createApp();
-    // Pass lesson-1 first to unlock the story-only lesson-2.
-    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1',
-      answer: { option_id: 'a' },
-      attempt_number: 1,
-    });
-    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ seconds_spent: 60 });
-
-    const res = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_2_ID}/complete`)).send({ seconds_spent: 25 });
-    expect(res.status).toBe(200);
-    expect(res.body.data).toMatchObject({ score: 100, passed: true });
-
-    const progressRow = db.lesson_progress.find((p) => p.lesson_id === LESSON_2_ID);
-    expect(progressRow).toMatchObject({ best_score: 100, passed: true });
-    const stats = db.learning_stats.find((s) => s.user_id === userId);
-    expect(stats?.lessons_completed).toBe(2);
-  });
-
-  it('refuses completion when an unknown exercise would otherwise pass as story-only', async () => {
-    const app = createApp();
-    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1', answer: { option_id: 'a' }, attempt_number: 1,
-    });
-    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ seconds_spent: 60 });
-    const row = db.lesson_documents.find((item) => item.lesson_id === LESSON_2_ID)!;
-    (row.document as { segments: Array<Record<string, unknown>> }).segments.push({
-      id: 'future-1', type: 'future_chart', prompt_md: 'Unsupported visual', xp: 10, payload: {},
-    });
-
-    const res = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_2_ID}/complete`)).send({ seconds_spent: 25 });
-    expect(res.status).toBe(409);
+  it('refuses retired schema 1 completion without attempts, progress, or rewards', async () => {
+    const beforeStats = structuredClone(db.learning_stats);
+    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ seconds_spent: 300 });
+    expect(res.status).toBe(422);
     expect(res.body.error.code).toBe('UNSUPPORTED_LESSON');
-    expect(db.lesson_progress.some((item) => item.lesson_id === LESSON_2_ID)).toBe(false);
+    expect(db.lesson_segment_attempts).toHaveLength(0);
+    expect(db.lesson_progress).toHaveLength(0);
+    expect(db.learning_stats).toEqual(beforeStats);
+    expect(db.lesson_v2_runs ?? []).toHaveLength(0);
   });
 
-  it('accepts seconds_spent and floors the accrued time at 1 minute per completion', async () => {
-    const app = createApp();
-    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1',
-      answer: { option_id: 'a' },
-      attempt_number: 1,
-    });
-    const res = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ seconds_spent: 20 });
-    expect(res.status).toBe(200);
-    const stats = db.learning_stats.find((s) => s.user_id === userId);
-    expect(stats?.minutes_learned).toBe(1); // 20s rounds to 0 — the floor keeps a finished lesson from counting as no learning time
+  it('keeps locked lesson admission ahead of document availability', async () => {
+    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_2_ID}/complete`)).send({ seconds_spent: 60 });
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('LESSON_LOCKED');
+    expect(db.lesson_progress).toHaveLength(0);
   });
 
-  it('returns day-streak facts (streak_days / streak_extended / first_today) for the celebration screen', async () => {
-    const app = createApp();
-    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
-      segment_id: 'quiz-1',
-      answer: { option_id: 'a' },
-      attempt_number: 1,
-    });
-    const res = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ seconds_spent: 90 });
-    expect(res.status).toBe(200);
-    // Fixture stats were last touched in 2020 → this pass starts a fresh streak today.
-    expect(res.body.data).toMatchObject({ streak_days: 1, streak_extended: true, first_today: true });
-  });
-
-  it('400s when neither seconds_spent nor minutes_spent is provided', async () => {
-    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({});
-    expect(res.status).toBe(400);
+  it('rejects invalid or missing completion time', async () => {
+    for (const body of [{ minutes_spent: 999 }, {}]) {
+      const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send(body);
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe('VALIDATION_ERROR');
+    }
   });
 });
 
 describe('GET /api/v1/learn/lessons/:id (audio manifest)', () => {
   it('includes Echo\'s narration manifest alongside the client-safe document', async () => {
+    activateImmutableV2Allocation();
+    db.lesson_document_versions![0]!.audio = { version: 1, units: { 'allocate-01.prompt': { url: 'http://filebase.test/files/abc' } } };
     const res = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
     expect(res.status).toBe(200);
     expect(res.body.data.audio).toMatchObject({
       version: 1,
-      units: { 'story-1.prompt': { url: 'http://filebase.test/files/abc' } },
+      units: { 'allocate-01.prompt': { url: 'http://filebase.test/files/abc' } },
     });
   });
 });

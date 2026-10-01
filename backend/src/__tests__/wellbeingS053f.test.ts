@@ -1,3 +1,4 @@
+import { activateChoiceFixture } from './v2RuntimeFixtures.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
@@ -40,15 +41,6 @@ const TUTOR = uid(206);
 const LEARNERS = [KID7, KID11, GUEST, TEEN15, ADULT, TUTOR];
 const COURSE = uid(1);
 
-const quizDoc = (slug: string) => ({
-  schema_version: 1,
-  meta: { slug, title: slug, locale: 'en-US', subject: 'money', estimated_minutes: 5, objectives: ['x'], cast: ['dina'] },
-  scoring: { pass_threshold: 70, hint_penalty_pct: 10, max_attempts: 2, hearts: null },
-  segments: ['q1', 'q2', 'q3', 'q4'].map((id) => ({
-    id, type: 'quiz_mcq', prompt_md: 'Which pocket is for later?', difficulty: 1, xp: 5,
-    payload: { options: [{ id: 'a', text_md: 'Save' }, { id: 'b', text_md: 'Spend' }] },
-  })),
-});
 
 interface Built { db: FakeDb; lesson: Record<string, string> }
 
@@ -71,7 +63,7 @@ function build(): Built {
       { user_id: KID11, display_name: 'Kid', locale: 'en-US', birth_date: yearsAgo(11) },
       { user_id: GUEST, display_name: 'Guest', locale: 'en-US', birth_date: null },
       { user_id: TEEN15, display_name: 'Teen', locale: 'en-US', birth_date: yearsAgo(15) },
-      { user_id: ADULT, display_name: 'Adult', locale: 'en-US', birth_date: null },
+      { user_id: ADULT, display_name: 'Adult', locale: 'en-US', birth_date: yearsAgo(30) },
       { user_id: TUTOR, display_name: 'Tutor', locale: 'en-US', birth_date: '1985-05-05' },
     ],
     mentor_age_calibrations: [],
@@ -106,8 +98,7 @@ function build(): Built {
       const lessonId = uid(++n);
       lesson[key] = lessonId;
       db.lessons!.push({ id: lessonId, topic_id: topicId, position: li + 1, slug: key, title: { 'en-US': `Lesson ${key}` }, difficulty: 1, xp_total: 20, estimated_minutes: 5, status: 'published' });
-      db.lesson_documents!.push({ lesson_id: lessonId, locale: 'en-US', schema_version: 1, updated_at: '2026-09-01T00:00:00.000Z', document: quizDoc(key),
-        answer_keys: Object.fromEntries(['q1', 'q2', 'q3', 'q4'].map((id) => [id, { correct_option_id: 'a' }])), audio: {} });
+      activateChoiceFixture(db, lessonId, ['q1', 'q2', 'q3', 'q4'], uid(++n));
     });
   });
   // Every lesson open, so the tests measure the offer, not unlock rules.
@@ -150,13 +141,28 @@ let built: Built;
 const as = (user: string) => (req: request.Test) => req.set('Authorization', `Bearer ${mintToken({ sub: user, ...(user === GUEST ? { is_anonymous: true } : {}) })}`);
 const get = (user: string, path: string) => as(user)(request(createApp()).get(`/api/v1${path}`));
 const post = (user: string, path: string, body: object = {}) => as(user)(request(createApp()).post(`/api/v1${path}`).send(body));
-const grade = (user: string, key: string, segment: string, attempt: number, optionId: 'a' | 'b', runId = uid(900)) =>
-  post(user, `/learn/lessons/${built.lesson[key]}/grade`, { segment_id: segment, answer: { option_id: optionId }, attempt_number: attempt, run_id: runId });
+const runs = new Map<string, { id: string; tokens: Record<string, string> }>();
+const grade = async (user: string, key: string, segment: string, _attempt: number, optionId: 'a' | 'b', runId = uid(900)) => {
+  segment = segment.length < 3 ? `step-${segment}` : segment;
+  const path = `/learn/lessons/${built.lesson[key]}`;
+  const identity = `${user}:${key}:${runId}`;
+  let run = runs.get(identity);
+  if (!run) {
+    const started = await post(user, `${path}/v2-runs`);
+    if (started.status !== 200) return started;
+    run = { id: started.body.data.run_id, tokens: started.body.data.attempt_tokens };
+    runs.set(identity, run);
+  }
+  const graded = await post(user, `${path}/grade`, { segment_id: segment, answer: { choice: optionId === 'a' ? 'save' : 'spend' }, attempt_token: run.tokens[segment], run_id: run.id });
+  if (graded.body.data?.retry_attempt_token) run.tokens[segment] = graded.body.data.retry_attempt_token;
+  return graded;
+};
 const stats = (user: string): FakeRow => built.db.learning_stats!.find((row) => row.user_id === user)!;
 
 beforeEach(() => {
   resetConfigForTests();
   built = build();
+  runs.clear();
   vi.stubGlobal('fetch', registerRpcs(built.db, createFakeFetch(built.db)));
 });
 
@@ -268,14 +274,14 @@ describe('B.26 and OD-1: a miss costs nothing, consecutive misses earn a guided 
     await grade(ADULT, 'save1', 'q1', 1, 'b');
     await grade(ADULT, 'save1', 'q1', 2, 'b');
     // Another learner's misses and another skill's misses do not add up.
-    await grade(GUEST, 'save1', 'q2', 1, 'b');
+    expect((await grade(GUEST, 'save1', 'q2', 1, 'b')).status).toBe(403);
     await grade(ADULT, 'work1', 'q1', 1, 'b', uid(902));
     expect((await grade(ADULT, 'work1', 'q1', 2, 'b', uid(902))).body.data.guided_review).toBeUndefined();
     expect((await grade(ADULT, 'save1', 'q2', 1, 'b')).body.data.guided_review).toMatchObject({ skill_key: 'money/save', misses: 3 });
   });
 
   it('spends nothing: XP, streak and lessons are untouched by misses, for every learner population', async () => {
-    for (const user of [KID7, KID11, GUEST, TEEN15, ADULT, TUTOR]) {
+    for (const user of [KID7, KID11, TEEN15, ADULT, TUTOR]) {
       const before = { ...stats(user) };
       for (let attempt = 1; attempt <= 2; attempt += 1) {
         const res = await grade(user, 'save1', 'q1', attempt, 'b');

@@ -1,3 +1,13 @@
 /* The lesson layer (LessonLayer.tsx): its skip link reads on the full-bleed hue, and a focused heading is a reading position. */
 .lf-rebuild .lf-lesson-layer .lf-skip-link { background: var(--surface); color: var(--content); }
 .lf-rebuild .lf-lesson-layer [tabindex='-1']:focus { outline: none; }
+
+/* At 320px, the global controls add 72px before the lesson. Reclaim 52px of
+   spacing, preserving the register's stage, copy and complete touch targets. */
+@media (width < 360px) {
+  .lf-rebuild .lf-lesson-layer > .lf-standalone-header { padding-block: 0; }
+  .lf-rebuild .lf-lesson-layer .lf-learning { padding-block-start: var(--spacing-2); }
+  .lf-rebuild .lf-lesson-layer .lf-learning-content { margin-block-start: var(--spacing-2); row-gap: var(--spacing-2); }
+  .lf-rebuild .lf-lesson-layer .lf-learning-intro { row-gap: var(--spacing-2); }
+  .lf-rebuild .lf-lesson-layer .lf-learning-control-strip { padding-block-start: var(--spacing-1); }
+}

@@ -64,15 +64,10 @@ const EFFECTS: Array<{ name: string; pattern: RegExp }> = [
  * own component to the listed files.
  */
 const CONSUMERS: Record<string, { gate: RegExp; reason: string }> = {
-  'lesson-engine/player/LessonPlayer.tsx': {
-    gate: /streakCelebrationFor\(server\)[\s\S]*mayCelebrate\(server\?\.celebrations, 'lesson-complete'\)/,
-    reason: 'the streak takeover for a streak milestone Core named; the fanfare and the cast\'s celebrate action for the lesson-complete milestone Core named (S05.3g)',
-  },
   'tutor-scene/Character3D.tsx': {
-    gate: /if \(action === 'celebrate'\) playSfx\('celebration'\)/,
+    gate: /if \(action === 'celebrate'\) playCelebrationSound\(\)/,
     reason: 'the sound of the celebrate action, played only when a caller names it: the lesson director never does per answer (director.test.ts) and the live results cast only for Core\'s lesson-complete. The live Mentor\'s turn schema is an open S06 item.',
   },
-  'lesson-engine/player/StreakCelebration.tsx': { gate: /export function StreakCelebration/, reason: 'the takeover itself; mounted only by LessonPlayer' },
   'rebuild/learning/LessonResultView.tsx': { gate: /mayCelebrate\(|celebrationsFrom\(/, reason: 'the lesson-complete and streak milestone moments on the result screen' },
   'rebuild/learning/result.css': { gate: /\[data-celebrate/, reason: 'milestone motion bound to [data-celebrate], which only the gate sets' },
   'rebuild/design/motion.css': {
@@ -88,7 +83,6 @@ const CONSUMERS: Record<string, { gate: RegExp; reason: string }> = {
  * characters are 3D renders only), and nothing new may join this list.
  */
 const DEFINITIONS: Record<string, string> = {
-  'index.css': 'legacy keyframes and the --lf-ease-tactile token (definitions only; .lf-land has no consumer)',
   'rebuild/design/system.css': 'the --ease-spring and --dur-celebration tokens (definitions only)',
   'rebuild/design/tokens.css': 'the generated Bible 02 token sheet: the --ease-spring and --dur-celebration tokens (definitions only)',
 };
@@ -96,8 +90,8 @@ const DEFINITIONS: Record<string, string> = {
 const MOUNTS: Record<string, string[]> = {
   // The component itself also refuses to show anything outside a closed-list Celebration (MotionAsset.test.tsx).
   // GAP-FIX-R4 (OD-28): the v1 player's results screen mounts the same lesson-complete confetti, gated by Core's milestone.
-  MotionAsset: ['lesson-engine/player/LessonPlayer.tsx', 'rebuild/learning/LessonResultView.tsx'],
-  StreakCelebration: ['lesson-engine/player/LessonPlayer.tsx'],
+  MotionAsset: ['rebuild/learning/LessonResultView.tsx'],
+  StreakCelebration: [],
   // The legacy Mentor streak pill left with the legacy Tutor UI (S10L.1): nothing may mount it again.
   GamificationCelebration: [],
 };
@@ -107,7 +101,7 @@ const files = walk(src).map((file) => ({ file: rel(file), text: readFileSync(fil
 describe('B.20 celebration budget: static scan of every celebration effect', () => {
   it('finds the effects it is meant to find (the scan is live, not vacuous)', () => {
     const hits = files.filter(({ text }) => EFFECTS.some(({ pattern }) => pattern.test(code(text))));
-    expect(hits.map((h) => h.file)).toEqual(expect.arrayContaining(['lesson-engine/player/LessonPlayer.tsx', 'rebuild/design/motion.css']));
+    expect(hits.map((h) => h.file)).toEqual(expect.arrayContaining(['rebuild/learning/LessonResultView.tsx', 'rebuild/design/motion.css']));
   });
 
   it('every file that uses a celebration effect is a registered, gated consumer or a closed-list definition', () => {
@@ -131,15 +125,16 @@ describe('B.20 celebration budget: static scan of every celebration effect', () 
   });
 
   it('the live results screen celebrates only Core\'s lesson-complete, never the client\'s own pass (S05.3g)', () => {
-    const player = code(files.find(({ file }) => file === 'lesson-engine/player/LessonPlayer.tsx')!.text);
-    expect(player).not.toMatch(/if \(passed\) playSfx\('celebration'\)/);
-    expect(player).not.toMatch(/action=\{passed \? 'celebrate'/);
-    expect(player).toMatch(/action=\{lessonCelebrates \? 'celebrate'/);
+    const result = code(files.find(({ file }) => file === 'rebuild/learning/LessonResultView.tsx')!.text);
+    expect(result).toMatch(/mayCelebrate\(receipt\.celebrations, 'lesson-complete'\)/);
+    expect(result).toMatch(/celebrateLesson \? <Celebration milestone="lesson-complete"/);
+    expect(result).not.toMatch(/passed\s*\?\s*<Celebration/);
   });
 
   it('the lesson burst is gone (the legacy Mentor pill left with the legacy Tutor UI, S10L.1)', () => {
-    const player = files.find(({ file }) => file === 'lesson-engine/player/LessonPlayer.tsx')!.text;
-    expect(code(player)).not.toMatch(/lf-burst|<CountUp/);
+    expect(files.some(({ file }) => file.startsWith('lesson-engine/'))).toBe(false);
+    const route = files.find(({ file }) => file === 'routes/app/learn/LessonRoute.tsx')!.text;
+    expect(code(route)).not.toMatch(/lf-burst|<CountUp/);
   });
 
   it('rebuilt surfaces never use the spring or celebration tokens outside the shared milestone celebration', () => {
@@ -161,7 +156,7 @@ describe('B.20 celebration budget: static scan of every celebration effect', () 
 
   it('the definitions list is closed', () => {
     expect(Object.keys(DEFINITIONS).sort()).toEqual([
-      'index.css', 'rebuild/design/system.css', 'rebuild/design/tokens.css',
+      'rebuild/design/system.css', 'rebuild/design/tokens.css',
     ]);
   });
 });

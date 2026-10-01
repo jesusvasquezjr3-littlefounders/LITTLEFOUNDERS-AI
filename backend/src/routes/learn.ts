@@ -11,10 +11,8 @@ import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { getConfig } from '../config.js';
 import { authedUser, requireAuth, type AuthedUser } from '../middleware/auth.js';
-import { GRADERS, KEYLESS_GRADERS } from '../lesson-contract/registry.js';
-import { verdictFrom } from '../lesson-contract/core/types.js';
 import { assembleCourseTree, findLessonNode, summarizeCourseTree, type CourseTree } from '../services/courseTree.js';
-import { completableSegmentIds, findGradingSegment, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
+import { pickLessonLocale, stripAnswers } from '../services/lessonDocument.js';
 import { isCalendarDate } from '../services/streak.js';
 import { lessonEligibilityForBirthDate } from '../services/lessonEligibility.js';
 import { getTutorPreferences } from '../services/tutorData.js';
@@ -40,8 +38,8 @@ import { gradeV2Visual, v2ApproachIds, v2ApproachRefusal, projectAdventureTheme,
 import { mintLessonAttemptToken, reissueLessonAttemptToken, verifyLessonAttemptToken } from '../services/lessonAttemptToken.js';
 import { getOwnLearnerIntelligence, recordExperimentExposure } from '../services/learningIntel.js';
 import { learnRegisterRouter } from './learnRegister.js';
-import { guidedReviewFor, localizedTitle, recentSkillOutcomes, recentV2Outcomes, withLearnerMentor, type GuidedReviewOffer } from '../services/guidedReview.js';
-import { offerBridgeAfterCompletion, recordGradedDecisions, recordV2GradedDecisions, resurfaceForLesson } from '../services/narrative/learnerNarrative.js';
+import { guidedReviewFor, localizedTitle, recentV2Outcomes, withLearnerMentor, type GuidedReviewOffer } from '../services/guidedReview.js';
+import { offerBridgeAfterCompletion, recordV2GradedDecisions, resurfaceForLesson } from '../services/narrative/learnerNarrative.js';
 import { learnNarrativeRouter } from './learnNarrative.js';
 import { learnMotivationRouter } from './learnMotivation.js';
 import { badgeEarnedNow, completionCelebrations, courseCompletedNow, type CelebrationMilestone } from '../services/celebrationBudget.js';
@@ -50,7 +48,6 @@ import { topicTeaches } from '../services/narrative/narrativeData.js';
 import { buildV2CompletionReceipt, replayNoticeRequired } from '../services/lessonCompletionReceipt.js';
 import { applyMasteryFade, courseReceiptKey, cpaEntryFor, recordCourseLessonEvidence } from '../services/pedagogy/courseLessonEvidence.js';
 import {
-  completeLesson,
   completeV2MixedLesson,
   getV2SegmentViewsForRecovery,
   recordV2SegmentView,
@@ -61,7 +58,6 @@ import {
   getV2LessonRunForRecovery,
   pinV2RunApproach,
   getV2MetSegmentReceiptsForRecovery,
-  recordLessonGrade,
   recordV2CpaGrade,
   recordV2LessonGrade,
   recordV2FirstUnaidedStage,
@@ -85,7 +81,6 @@ import {
   recordCourseAssemblyIncident,
   getSagaById,
   getSagasByAdventureIds,
-  getSegmentAttempts,
   getTopicById,
   getTopicsBySagaIds,
   type CourseHierarchyRow,
@@ -583,8 +578,9 @@ async function completionMotivation(input: {
   };
 }
 
-async function v2GuidedReview(userId: string, documentVersionId: string, ctx: LessonContext, locale: string): Promise<GuidedReviewOffer | null> {
-  const outcomes = await recentV2Outcomes(userId, documentVersionId);
+async function v2GuidedReview(userId: string, ctx: LessonContext, locale: string): Promise<GuidedReviewOffer | null> {
+  const topic = ctx.tree.adventures.flatMap(adventure => adventure.sagas.flatMap(saga => saga.topics)).find(topic => topic.id === ctx.topic.id);
+  const outcomes = await recentV2Outcomes(userId, topic?.lessons.map(lesson => lesson.id) ?? []);
   if (!outcomes) return null;
   return withLearnerMentor(guidedReviewFor({
     outcomesNewestFirst: outcomes,
@@ -916,6 +912,7 @@ export function learnRouter(): Router {
     const profiles = await getFullOwnProfile(user.accessToken, user.id);
     const picked = pickLessonLocale(docs, profiles?.[0]?.locale ?? null);
     if (!picked) return fail(res, 404, NOT_FOUND, 'No such lesson');
+    if (picked.schema_version !== 2) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson format is no longer available');
 
     const safeDocument = stripAnswers(picked.document) as { meta?: { cast?: unknown }; scoring?: unknown };
     if (!hasV2LessonEligibility(res, picked.schema_version, picked.document, profiles?.[0]?.birth_date)) return;
@@ -923,10 +920,8 @@ export function learnRouter(): Router {
     // the public document and its private rubric relationship before exposing a
     // v2 lesson. This prevents a malformed publication from reaching an older
     // renderer or from later becoming gradeable through a loose answer key.
-    const document = picked.schema_version === 2
-      ? validateV2LessonForGrading(safeDocument, picked.answer_keys, { lessonId, locale: picked.locale })
-      : null;
-    if (picked.schema_version === 2 && !document) {
+    const document = validateV2LessonForGrading(safeDocument, picked.answer_keys, { lessonId, locale: picked.locale });
+    if (!document) {
       return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
     }
     /*
@@ -940,13 +935,13 @@ export function learnRouter(): Router {
      * B.8 (GAP-FIX-R3): the preferences are read for EVERY v2 document, so the
      * Mentor is present whether or not the author declared a stage.
      */
-    const prefs = document ? await getTutorPreferences(user.id).catch(() => null) : null;
-    const mentorStage = document ? projectV2MentorStage(document, prefs?.character) : null;
+    const prefs = await getTutorPreferences(user.id).catch(() => null);
+    const mentorStage = projectV2MentorStage(document, prefs?.character);
     // B.18 (GAP-FIX-R3): the v2 narration channel, resolved against Echo's manifest; prompt audio only.
-    const narrationAudio = document ? v2NarrationAudio(document, picked.audio) : {};
-    const stripped = (document ? stripV2MentorStage(safeDocument) : safeDocument) as { meta?: { cast?: unknown }; scoring?: unknown; segments?: unknown };
+    const narrationAudio = v2NarrationAudio(document, picked.audio);
+    const stripped = stripV2MentorStage(safeDocument) as { meta?: { cast?: unknown }; scoring?: unknown; segments?: unknown };
     // M9–M10 (GAP-FIX-R1): worked examples fade by the learner's mastery, chosen here on Core.
-    const deliveredDocument = document ? await applyMasteryFade(stripped, user.id, ctx.topic.id) : stripped;
+    const deliveredDocument = await applyMasteryFade(stripped, user.id, ctx.topic.id);
     // B.9 (S05.3c): one earlier, relevant story decision from this course,
     // resurfaced as the lesson opens. Best-effort: never blocks the lesson.
     const narrativeRecall = await resurfaceForLesson({ userId: user.id, tree: ctx.tree, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId });
@@ -1019,7 +1014,8 @@ export function learnRouter(): Router {
     const profiles = await getFullOwnProfile(user.accessToken, user.id);
     const picked = pickLessonLocale(docs, profiles?.[0]?.locale ?? null);
     if (!picked) return fail(res, 404, NOT_FOUND, 'No such lesson');
-    if (picked.schema_version !== 2 || !picked.document_version_id) {
+    if (picked.schema_version !== 2) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson format is no longer available');
+    if (!picked.document_version_id) {
       return fail(res, 409, 'UNSUPPORTED_LESSON', 'This lesson does not support v2 attempts');
     }
     if (!hasV2LessonEligibility(res, picked.schema_version, picked.document, profiles?.[0]?.birth_date)) return;
@@ -1147,7 +1143,7 @@ export function learnRouter(): Router {
     if (!run || run.completed_at) return fail(res, 409, 'UNSUPPORTED_LESSON', 'This lesson run is not available');
     const version = await getV2LessonDocumentVersion(run.document_version_id);
     if (version === undefined) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
-    if (!version || version.lesson_id !== lessonId) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
+    if (!version || version.schema_version !== 2 || version.lesson_id !== lessonId) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
     const profiles = await getFullOwnProfile(user.accessToken, user.id);
     if (!hasV2LessonEligibility(res, version.schema_version, version.document, profiles?.[0]?.birth_date)) return;
     const document = validateV2LessonForGrading(stripAnswers(version.document), version.answer_keys, { lessonId, locale: version.locale });
@@ -1186,7 +1182,7 @@ export function learnRouter(): Router {
     if (!run || run.completed_at) return fail(res, 409, 'UNSUPPORTED_LESSON', 'This lesson run is not available');
     const version = await getV2LessonDocumentVersion(run.document_version_id);
     if (version === undefined) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
-    if (!version || version.lesson_id !== lessonId) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
+    if (!version || version.schema_version !== 2 || version.lesson_id !== lessonId) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
     const profiles = await getFullOwnProfile(user.accessToken, user.id);
     if (!hasV2LessonEligibility(res, version.schema_version, version.document, profiles?.[0]?.birth_date)) return;
     const document = validateV2LessonForGrading(stripAnswers(version.document), version.answer_keys, { lessonId, locale: version.locale });
@@ -1205,19 +1201,6 @@ export function learnRouter(): Router {
   });
 
   // 5. POST /lessons/:id/grade — server-authoritative single-segment grading.
-  const LegacyGradeBody = z.object({
-    segment_id: z.string().min(1),
-    answer: z.unknown(),
-    attempt_number: z.number().int().min(1).max(2147483647),
-    // Per-lesson-entry id: the attempt cap counts only rows from this run so
-    // replays start fresh (0012). Optional for legacy clients (lifetime count).
-    run_id: z.string().uuid().optional(),
-    // Hints the kid revealed before submitting — the server applies the penalty
-    // (authoritative), so a hint actually lowers the score and a reload can't
-    // launder it (0012). Optional; defaults to 0.
-    hints_used: z.number().int().min(0).max(10).optional(),
-    time_spent_seconds: z.number().int().min(0).max(7200).optional(),
-  });
   const V2GradeBody = z.object({
     segment_id: z.string().min(1),
     answer: z.unknown(),
@@ -1232,7 +1215,7 @@ export function learnRouter(): Router {
     // idle capped by the browser. Stored beside the receipt for analytics; never a grading input.
     time_spent_seconds: TimeOnTask.optional(),
   }).strict();
-  const GradeBody = z.union([LegacyGradeBody, V2GradeBody]);
+  const GradeBody = V2GradeBody;
 
   router.post('/lessons/:id/grade', async (req, res) => {
     const parsed = GradeBody.safeParse(req.body);
@@ -1247,7 +1230,7 @@ export function learnRouter(): Router {
     if (refusal) return fail(res, 403, refusal.code, refusal.message);
 
     const { segment_id: segmentId, answer } = parsed.data;
-    if ('attempt_token' in parsed.data) {
+    {
       const secret = lessonAttemptSecret();
       if (!secret) return fail(res, 503, 'LESSON_ATTEMPT_UNAVAILABLE', 'This lesson attempt is not ready');
       // Authenticate the immutable version ID first, without consulting the
@@ -1259,7 +1242,7 @@ export function learnRouter(): Router {
       if (preliminary.status !== 'valid') return fail(res, 403, 'INVALID_ATTEMPT_TOKEN', 'This lesson attempt is no longer valid');
       const picked = await getV2LessonDocumentVersion(preliminary.payload.vid);
       if (picked === undefined) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
-      if (!picked || picked.lesson_id !== lessonId || !picked.document_version_id) {
+      if (!picked || picked.schema_version !== 2 || picked.lesson_id !== lessonId || !picked.document_version_id) {
         return fail(res, 403, 'INVALID_ATTEMPT_TOKEN', 'This lesson attempt is no longer valid');
       }
       const profiles = await getFullOwnProfile(user.accessToken, user.id);
@@ -1355,7 +1338,7 @@ export function learnRouter(): Router {
       }
       const retryAttemptToken = !receipt.replayed && !receipt.verdict.correct && receipt.retry_jti === next.payload.jti ? next.token : undefined;
       // B.26 / OD-1 (S05.3f): a miss costs nothing; a run of misses on this lesson earns an offer, never a lock.
-      const guidedReview = receipt.verdict.correct ? null : await v2GuidedReview(user.id, picked.document_version_id, ctx, document.locale);
+      const guidedReview = receipt.verdict.correct ? null : await v2GuidedReview(user.id, ctx, document.locale);
       return ok(res, {
         // The client projection: score, correctness, the B.12 judgment and the diagnostic code (never hint counts or detection cells).
         verdict: { correct: receipt.verdict.correct, score: receipt.verdict.score, ...(receipt.verdict.judgment ? { judgment: receipt.verdict.judgment } : {}),
@@ -1366,77 +1349,6 @@ export function learnRouter(): Router {
       });
     }
 
-    const docs = await getEffectiveLessonDocumentLocales(lessonId);
-    if (!docs) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
-    const profiles = await getFullOwnProfile(user.accessToken, user.id);
-    const picked = pickLessonLocale(docs, profiles?.[0]?.locale ?? null);
-    if (!picked) return fail(res, 404, NOT_FOUND, 'No such lesson');
-    if (!hasV2LessonEligibility(res, picked.schema_version, picked.document, profiles?.[0]?.birth_date)) return;
-    if (picked.schema_version === 2) {
-      if (!picked.document_version_id) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson must use an immutable version');
-      return fail(res, 400, 'VALIDATION_ERROR', 'A v2 attempt token is required');
-    }
-
-    // A v2-shaped body must never fall through to the legacy grade writer,
-    // even if content changes between the initial selection and this request.
-    if (!('attempt_number' in parsed.data)) return fail(res, 400, 'VALIDATION_ERROR', 'A legacy attempt number is required');
-    const legacyAttempt = parsed.data;
-
-    const segment = findGradingSegment(picked.document, picked.answer_keys, segmentId);
-    if (!segment) return fail(res, 404, NOT_FOUND, 'No such segment');
-
-    const grader = GRADERS[segment.type];
-    // Keyless graders (memory_flip) score from the submitted board alone and
-    // have no answer key — the answer-key requirement would 422 them forever.
-    if (!grader || (segment.answer === undefined && !KEYLESS_GRADERS.has(segment.type))) {
-      return fail(res, 422, 'UNSUPPORTED_SEGMENT', 'This segment cannot be graded');
-    }
-
-    const scoring = (picked.document as { scoring?: { pass_threshold?: number; max_attempts?: number; hint_penalty_pct?: number } }).scoring ?? {};
-    const passThreshold = typeof scoring.pass_threshold === 'number' ? scoring.pass_threshold : 70;
-    const maxAttempts = typeof scoring.max_attempts === 'number' ? scoring.max_attempts : 2;
-    const hintPenaltyPct = typeof scoring.hint_penalty_pct === 'number' ? scoring.hint_penalty_pct : 0;
-    const runId = legacyAttempt.run_id;
-    const hintsUsed = legacyAttempt.hints_used ?? 0;
-
-    const outcome = grader(segment, answer);
-    // Apply the hint penalty server-side (0012): each revealed hint compounds a
-    // (1 - hint_penalty_pct/100) factor. This is the ONLY place the penalty is
-    // applied — the recorded score, the verdict, and /complete's recompute all
-    // flow from it, so a hint truly lowers the score/XP and a reload can't
-    // launder it.
-    const penaltyFactor = Math.pow(1 - hintPenaltyPct / 100, hintsUsed);
-    const penalizedScore = Math.max(0, Math.min(100, Math.round(outcome.score * penaltyFactor)));
-    const verdict = verdictFrom(penalizedScore, passThreshold, outcome.feedback_md);
-    verdict.reveal = outcome.reveal;
-    const recorded = await recordLessonGrade({
-      p_user_id: user.id, p_lesson_id: lessonId, p_run_id: runId ?? null,
-      p_segment_id: segmentId, p_client_attempt: legacyAttempt.attempt_number,
-      p_max_attempts: maxAttempts, p_hints_used: hintsUsed, p_verdict: verdict,
-      p_context: {
-        timeSpentSeconds: legacyAttempt.time_spent_seconds,
-        courseId: ctx.course.id, topicId: ctx.topic.id,
-        skillKey: `${ctx.course.slug}/${ctx.topic.slug}`.toLowerCase(),
-        documentUpdatedAt: picked.updated_at,
-      },
-    });
-    if (!recorded) return fail(res, 502, 'INTERNAL', 'Could not record the attempt');
-    if (recorded.exhausted) return fail(res, 409, 'ATTEMPTS_EXHAUSTED', 'No attempts remain for this segment');
-
-    // B.9 (S05.3c): the story decisions inside the answer Core just graded go
-    // to the learner's decision journal. Best-effort, after the grade is stored.
-    await recordGradedDecisions({
-      userId: user.id, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId, locale: picked.locale,
-      segment, answer, document: picked.document as Record<string, unknown>,
-    });
-
-    // B.26 / OD-1 (S05.3f): after consecutive misses on this skill, the Mentor offers a guided review.
-    const skillKey = `${ctx.course.slug}/${ctx.topic.slug}`.toLowerCase();
-    const outcomes = recorded.verdict.correct ? null : await recentSkillOutcomes(user.id, skillKey, passThreshold);
-    const guidedReview = outcomes
-      ? await withLearnerMentor(guidedReviewFor({ outcomesNewestFirst: outcomes, skillKey, skill: localizedTitle(ctx.topic.title, picked.locale) }), user.id)
-      : null;
-    return ok(res, { verdict: recorded.verdict, ...(guidedReview ? { guided_review: guidedReview } : {}) });
   });
 
   // 5. POST /lessons/:id/complete — server recomputes the lesson score from
@@ -1481,15 +1393,16 @@ export function learnRouter(): Router {
     const profiles = await getFullOwnProfile(user.accessToken, user.id);
     const picked = pickLessonLocale(docs, profiles?.[0]?.locale ?? null);
     if (!picked) return fail(res, 404, NOT_FOUND, 'No such lesson');
+    if (picked.schema_version !== 2) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson format is no longer available');
     if (!hasV2LessonEligibility(res, picked.schema_version, picked.document, profiles?.[0]?.birth_date)) return;
-    if (picked.schema_version === 2) {
+    {
       if (!parsed.data.run_id) return fail(res, 400, 'VALIDATION_ERROR', 'A v2 run is required');
       const run = await getV2LessonRunForRecovery(user.id, lessonId, parsed.data.run_id);
       if (run === undefined) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
       if (!run) return fail(res, 409, 'UNSUPPORTED_LESSON', 'This lesson run is not available');
       const version = await getV2LessonDocumentVersion(run.document_version_id);
       if (version === undefined) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
-      if (!version || version.lesson_id !== lessonId || version.locale !== run.locale) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
+      if (!version || version.schema_version !== 2 || version.lesson_id !== lessonId || version.locale !== run.locale) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
       if (!hasV2LessonEligibility(res, version.schema_version, version.document, profiles?.[0]?.birth_date)) return;
       const document = validateV2LessonForGrading(stripAnswers(version.document), version.answer_keys, { lessonId, locale: version.locale });
       if (!document) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
@@ -1527,158 +1440,7 @@ export function learnRouter(): Router {
       return ok(res, { ...completion, ...motivation, ...(receipt ? { receipt } : {}), ...(selfBridge ? { self_bridge: selfBridge } : {}) });
     }
 
-    const scoring = (picked.document as { scoring?: { pass_threshold?: number } }).scoring ?? {};
-    const passThreshold = typeof scoring.pass_threshold === 'number' ? scoring.pass_threshold : 70;
 
-    const gradedIds = completableSegmentIds(picked.document, picked.answer_keys, new Set(Object.keys(GRADERS)), KEYLESS_GRADERS);
-    if (!gradedIds) {
-      // Appendix C 1.3 (B.4): the forced-update trigger fired instead of an unearned pass.
-      recordServerLearnEvent(user, 'lesson_update_required', lessonId, { segmentId: 'completion' });
-      return fail(res, 409, 'UNSUPPORTED_LESSON', 'This lesson format needs an update before it can be completed');
-    }
-    const xpMap = xpBySegmentId(picked.document);
-
-    // Score THIS run (0012): scoped to the run_id so a replay reflects the
-    // play-through the kid just did, not a lifetime best. Progress below still
-    // keeps the all-time best.
-    const attempts = await getSegmentAttempts(user.accessToken, user.id, lessonId, parsed.data.run_id);
-    if (!attempts) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
-
-    // Recorded scores already include server-side hint penalties.
-    const bestBySegment = new Map<string, number>();
-    for (const a of attempts) {
-      if (a.score > (bestBySegment.get(a.segment_id) ?? 0)) bestBySegment.set(a.segment_id, a.score);
-    }
-
-    let weightedSum = 0;
-    let totalXp = 0;
-    for (const segId of gradedIds) {
-      const xp = xpMap.get(segId) ?? 0;
-      const best = bestBySegment.get(segId) ?? 0; // ungraded segment counts 0, per spec
-      totalXp += xp;
-      weightedSum += (best / 100) * xp;
-    }
-    // No graded weight (story-only lessons) → completing IS passing, score 100.
-    // Mirrors the client's lessonScore() and LESSON_ENGINE.md §5.1 (content
-    // types auto-complete). The old `? 0` made story lessons unpassable: the
-    // player showed 100 while the server recorded 0/failed, so the map never
-    // advanced — first real course play-through caught it (2026-07-13).
-    const lessonScore = totalXp === 0 ? 100 : Math.round((weightedSum / totalXp) * 100);
-    const xpEarnedThisRun = Math.round(weightedSum);
-    const passedNow = lessonScore >= passThreshold;
-
-    const completion = await completeLesson({
-      p_user_id: user.id,
-      p_lesson_id: lessonId,
-      p_run_id: parsed.data.run_id ?? null,
-      p_score: lessonScore,
-      p_passed: passedNow,
-      p_xp: xpEarnedThisRun,
-      p_minutes: parsed.data.seconds_spent !== undefined
-        ? Math.max(1, Math.round(parsed.data.seconds_spent / 60))
-        : Math.round(parsed.data.minutes_spent ?? 0),
-      p_local_date: parsed.data.local_date ?? new Date().toISOString().slice(0, 10),
-    });
-    if (!completion) return fail(res, 502, 'INTERNAL', 'Could not save lesson completion; retry this run');
-    // P-09 (GAP-FIX-R1): a graded v1 completion is evidence on the topic's primary KC, once per run.
-    if (gradedIds.length > 0 && !completion.replayed) {
-      await recordCourseLessonEvidence({ userId: user.id, topicId: ctx.topic.id, score: lessonScore,
-        receiptKey: courseReceiptKey('v1', parsed.data.run_id ?? `${lessonId}:${parsed.data.local_date ?? new Date().toISOString().slice(0, 10)}`) });
-    }
-
-    /*
-     * Retention signal, recorded SERVER-side because only the server knows
-     * whether the streak genuinely extended (it owns last_active_date and the
-     * date maths). value = the new streak length, so "how far do streaks
-     * actually get" is answerable without touching learning_stats.
-     * Fire-and-forget and consent-gated like every other kid event.
-     */
-    // Server-authoritative lesson_complete (0072), alongside the client's own
-    // emission in LessonPlayer.tsx. The client beacon can be lost (tab closed
-    // before flush, a blocked request) or, in principle, spoofed — this is
-    // the NSM's primary input, so it gets a server-side source that cannot
-    // silently under-count. Same semantics as the client: fires on EVERY
-    // passing run, not just the first (passedNow, not newlyPassed) — a
-    // repeat pass is still a completion the funnel should count.
-    if (completion.passed && !completion.replayed) {
-      void (async () => {
-        const roles = await getRolesForGate(user.id);
-        if (!roles || roles.length === 0) return;
-        if (roles.includes('kid') && (await hasActiveAnalyticsConsent(user.id)) !== true) return;
-        await insertLearningEvents([{
-          user_id: user.id, role: stampRole(roles), event: 'lesson_complete',
-          route_class: 'learn', lesson_id: lessonId, value: lessonScore,
-        }]);
-      })();
-    }
-
-    // Activation milestone: the FIRST lesson this learner ever passed. Only
-    // the server can assert it (it sees lessons_completed before the update),
-    // and it is the single most predictive early-retention event there is.
-    if (completion.first_completion && !completion.replayed) {
-      void (async () => {
-        const roles = await getRolesForGate(user.id);
-        if (!roles || roles.length === 0) return;
-        if (roles.includes('kid') && (await hasActiveAnalyticsConsent(user.id)) !== true) return;
-        await insertLearningEvents([{
-          user_id: user.id, role: stampRole(roles), event: 'first_lesson_complete',
-          route_class: 'learn', lesson_id: lessonId,
-        }]);
-      })();
-    }
-
-    // B.5: the denominator of the replay-notice display rate (see 0131's function).
-    if (replayNoticeRequired(completion) && !completion.replayed) recordServerLearnEvent(user, 'replay_below_best', lessonId);
-    // B.21 (S05.3e): rest-day utilization inputs.
-    recordStreakOutcome(user, completion);
-
-    if (completion.streak_extended && !completion.replayed) {
-      void (async () => {
-        const roles = await getRolesForGate(user.id);
-        if (!roles || roles.length === 0) return;
-        if (roles.includes('kid') && (await hasActiveAnalyticsConsent(user.id)) !== true) return;
-        await insertLearningEvents([{
-          user_id: user.id, role: stampRole(roles), event: 'streak_extend',
-          route_class: 'learn', value: completion.streak_days,
-        }]);
-      })();
-    }
-
-    // Re-fetch the tree so `progress`/`next_lesson_id` reflect the write above.
-    // Pathway mode: a completion can finish the pathway, so settle its badge (B4) here too.
-    const refreshed = await loadLearnerCourse(user.accessToken, user.id, ctx.course, res.locals.ageScreen as AgeScreenState);
-    if (refreshed) await settleCourseBadges(user.id, ctx.course, refreshed);
-    const refreshedTree = refreshed?.tree ?? null;
-    // B.13 (S05.3c): a passing completion that finishes a bridge topic offers a family prompt.
-    const selfBridge = completion.passed && !completion.replayed ? await offerBridgeAfterCompletion({
-      user, ageScreen: res.locals.ageScreen as AgeScreenState | undefined, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId,
-      before: ctx.tree, after: refreshedTree,
-    }) : null;
-    // B.20 / B.24 (S05.3e): the closed celebration list, what was figured out, and today's pace.
-    const motivation = await completionMotivation({
-      user, completion, before: ctx.tree, after: refreshedTree, topicId: ctx.topic.id, locale: picked.locale,
-    });
-
-    return ok(res, {
-      score: completion.score,
-      passed: completion.passed,
-      best_score: completion.best_score,
-      xp_earned: completion.xp_earned,
-      xp_delta: completion.xp_delta,
-      streak_days: completion.streak_days,
-      longest_streak: completion.longest_streak,
-      streak_extended: completion.streak_extended,
-      first_today: completion.first_today,
-      minutes_learned: completion.minutes_learned,
-      lessons_completed: completion.lessons_completed,
-      progress: refreshedTree?.course.progress ?? ctx.tree.course.progress,
-      next_lesson_id: refreshedTree?.nextLessonId ?? ctx.tree.nextLessonId,
-      // B.5: server-authored replay facts; the result screen states the kept best from these.
-      ...(completion.replay ? { replay: completion.replay } : {}),
-      ...(completion.streak ? { streak: completion.streak } : {}),
-      ...motivation,
-      ...(selfBridge ? { self_bridge: selfBridge } : {}),
-    });
   });
 
   return router;

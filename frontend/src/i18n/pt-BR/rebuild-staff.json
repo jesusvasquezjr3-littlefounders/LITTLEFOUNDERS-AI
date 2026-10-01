@@ -1350,7 +1350,7 @@
         "view": "Visão",
         "period": "Período",
         "show": "Mostrar",
-        "staffExcluded": "Equipe fora: {n} eventos ({share}).",
+        "staffExcluded": "Eventos da equipe excluídos: {n} ({share}).",
         "dau": "Usuários diários",
         "wau": "Usuários semanais",
         "mau": "Usuários mensais",
@@ -1416,8 +1416,8 @@
         "namesNeedGrant": "Os nomes aparecem só com a permissão de gestão de usuários.",
         "weekN": "Semana {n}",
         "week": "Semana",
-        "cohortChart": "As três coortes mais novas, por semana",
-        "cohortSummary": "Uma linha por coorte.",
+        "cohortChart": "Retenção",
+        "cohortSummary": "As linhas representam coortes.",
         "cohortOf": "Coorte de {date}",
         "cohort": "Coorte",
         "cohortSize": "Pessoas",
@@ -1887,7 +1887,7 @@
       },
       "body": {
         "autonomyIntro": "Só quando a família pedir.",
-        "childId": "ID da conta da criança",
+        "childId": "ID da conta infantil",
         "idInvalid": "Digite o ID completo da conta.",
         "notInFamily": "Nenhuma criança em uma família tem este ID.",
         "level": "Nível atual",
@@ -1978,13 +1978,13 @@
     },
     "identity": {
       "heading": {
-        "title": "Identidade e proteção por idade",
+        "title": "Identidade e idade protegidas",
         "adversarial": "Comprovado por testes"
       },
       "body": {
         "intro": "As metas de lançamento devem chegar a 100%.",
         "gatesMet": "{met}/{total} metas de lançamento cumpridas.",
-        "gatesMissed": "{n} metas de lançamento estão abaixo.",
+        "gatesMissed": "{n} metas abaixo do esperado.",
         "ratio": "{num} de {den}",
         "metric": "Métrica",
         "kind": "Tipo",

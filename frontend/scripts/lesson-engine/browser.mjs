@@ -6,13 +6,15 @@
  * DevToolsActivePort handshake follow `scripts/seo/render-cards.mjs` so the
  * repo has one convention rather than two.
  *
- * Two flags here are not optional and are worth the words:
+ * The default software path uses two required flags:
  *
  *   --use-angle=swiftshader   without the software GL path, a headless Chrome
  *   --enable-unsafe-swiftshader   on a machine with no display hands the page a
  *                             context that never draws. The character layer
  *                             then renders nothing, which reads exactly like a
  *                             bug in the scene rather than a bug in the harness.
+ * A measured Windows GPU can instead use the explicit hardware path for
+ * isolated performance checks; behavioural gates retain the software default.
  *
  * Everything is driven with Input.dispatchMouseEvent and never element.click().
  * A synthetic click dispatches straight at the node; a real one asks the browser
@@ -52,7 +54,8 @@ function chromeBinary() {
 }
 
 /** Launch headless Chrome and wait for it to publish the port it chose. */
-export async function launchBrowser(userDataDir) {
+export async function launchBrowser(userDataDir, { gpuMode = 'software' } = {}) {
+  if (!['software', 'hardware'].includes(gpuMode)) throw new Error(`Unsupported GPU mode: ${gpuMode}`)
   mkdirSync(userDataDir, { recursive: true })
   const child = spawn(
     chromeBinary(),
@@ -62,8 +65,7 @@ export async function launchBrowser(userDataDir) {
       '--no-default-browser-check',
       '--hide-scrollbars',
       '--mute-audio',
-      '--use-angle=swiftshader',
-      '--enable-unsafe-swiftshader',
+      ...(gpuMode === 'hardware' ? (process.platform === 'win32' ? ['--use-angle=d3d11'] : []) : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader']),
       '--force-device-scale-factor=1',
       /*
        * CI runners are the one place Chrome's sandbox cannot always start

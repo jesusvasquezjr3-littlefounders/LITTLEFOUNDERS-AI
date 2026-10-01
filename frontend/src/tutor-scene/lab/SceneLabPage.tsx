@@ -25,8 +25,12 @@ import { VISEMES } from '../mouthAtlas';
 import { useLipSync } from '../useLipSync';
 import { CHARACTER_ASSETS, SCENE_ASSETS } from '../assets';
 import { Vector3, type PerspectiveCamera } from 'three';
-// Development lab: it renders with the legacy global sheet, which the product entry no longer loads.
-import '@/index.css';
+import { ShellRoot } from '@/app-shell/ShellRoot';
+import { BrandMark, Button } from '@/rebuild/design/controls';
+import { ShellPreferences } from '@/app-shell/ShellPreferences';
+import '@/rebuild/design/tokens.css';
+import '@/rebuild/design/system.css';
+import './authoringLab.css';
 
 /** Every shipped asset, so the lab can inspect them without a file picker. */
 const PRESETS = [
@@ -131,7 +135,7 @@ function AnchorDot({ slot }: { slot: AnchorId }) {
     <div
       ref={ref}
       data-anchor={slot}
-      className="lf-caption pointer-events-none z-50 whitespace-nowrap rounded-sm border border-primary bg-surface px-1.5 py-0.5 font-semibold text-content"
+      className="lf-authoring-block"
     >
       {slot}
     </div>
@@ -140,15 +144,15 @@ function AnchorDot({ slot }: { slot: AnchorId }) {
 
 function Row({ label, value, tone }: { label: string; value: string; tone?: 'ok' | 'over' }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 border-b border-outline py-1.5">
-      <span className="lf-caption text-content-muted">{label}</span>
+    <div className="lf-authoring-row">
+      <span className="lf-authoring-block">{label}</span>
       <span
         className={
           tone === 'over'
-            ? 'lf-caption font-semibold tabular-nums text-error-strong'
+            ? 'lf-authoring-caption font-semibold tabular-nums text-error-strong'
             : tone === 'ok'
-              ? 'lf-caption font-semibold tabular-nums text-success-strong'
-              : 'lf-caption font-semibold tabular-nums text-content'
+              ? 'lf-authoring-caption font-semibold tabular-nums text-success-strong'
+              : 'lf-authoring-caption font-semibold tabular-nums text-content'
         }
       >
         {value}
@@ -157,7 +161,7 @@ function Row({ label, value, tone }: { label: string; value: string; tone?: 'ok'
   );
 }
 
-export default function SceneLabPage() {
+function SceneLabPageContent() {
   const { t, i18n } = useTranslation();
   const probe = useMemo(() => getDeviceProbe(), []);
   const [modelUrl, setModelUrl] = useState<string | null>(null);
@@ -278,11 +282,11 @@ export default function SceneLabPage() {
      * would be invisible to them.
      */
     <AnchorProvider>
-    <div className="min-h-screen bg-base py-6 md:py-10">
-      <div className="mx-auto max-w-container px-5 md:px-8">
-        <header className="mb-6">
-          <h1 className="lf-display-lg text-content">{t('tutor.lab.title')}</h1>
-          <p className="lf-body text-content-muted">{t('tutor.lab.subtitle')}</p>
+    <div className="lf-authoring-page">
+      <div className="lf-authoring-page">
+        <header className="lf-authoring-block">
+          <h1 className="lf-authoring-block">{t('tutor.lab.title')}</h1>
+          <p className="lf-authoring-block">{t('tutor.lab.subtitle')}</p>
         </header>
 
         {/* Stand-in for a TTS response. Muted attribute deliberately absent:
@@ -297,14 +301,14 @@ export default function SceneLabPage() {
         />
 
         {/* Desktop uses the freed width for a viewport + inspector split; mobile stacks (§1.11). */}
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+        <div className="lf-authoring-grid">
           {/* min-w-0: the desktop template already says minmax(0,1fr), but at
               mobile this is a single-column grid whose item still defaults to
               min-width:auto — and the canvas inside it has an intrinsic size. */}
-          <div className="min-w-0">
+          <div className="lf-authoring-block">
             {composed ? (
               <TutorScene
-                className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-surface-sunken lg:aspect-video"
+                className="lf-authoring-stage"
                 onStats={setStats}
                 scene={stage}
                 action={action}
@@ -319,7 +323,7 @@ export default function SceneLabPage() {
                 props={activeProps}
               />
             ) : (
-            <SceneCanvas className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-surface-sunken lg:aspect-video" onStats={setStats} onSettings={setSettings}>
+            <SceneCanvas className="lf-authoring-stage" onStats={setStats} onSettings={setSettings}>
               <SceneLighting settings={settings} />
               <Controls target={target} />
               <Suspense fallback={null}>
@@ -332,10 +336,10 @@ export default function SceneLabPage() {
             </SceneCanvas>
             )}
 
-            <div className="mt-4 flex flex-wrap items-center gap-3">
+            <div className="lf-authoring-row">
               {composed
                 ? CHARACTER_ACTIONS.map((name) => (
-                    <button
+                    <Button
                       key={name}
                       type="button"
                       data-action={name}
@@ -345,23 +349,23 @@ export default function SceneLabPage() {
                       }}
                       className={
                         name === action
-                          ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
-                          : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                          ? 'lf-authoring-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                          : 'lf-authoring-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
                       }
                     >
                       {name}
-                    </button>
+                    </Button>
                   ))
                 : null}
-              <button
+              <Button
                 type="button"
                 onClick={() => setComposed((v) => !v)}
-                className="lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content"
+                className="lf-authoring-block"
               >
                 {composed ? 'inspect asset' : 'composed scene'}
-              </button>
+              </Button>
               {composed ? (
-                <button
+                <Button
                   type="button"
                   data-speaking={speaking ? 'yes' : 'no'}
                   onClick={() => {
@@ -377,207 +381,207 @@ export default function SceneLabPage() {
                     setSpeaking(true);
                     void el.play();
                   }}
-                  className="lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content"
+                  className="lf-authoring-block"
                 >
                   {speaking ? 'stop' : 'speak'}
-                </button>
+                </Button>
               ) : null}
               {composed
                 ? SHOT_IDS.map((id) => (
-                    <button
+                    <Button
                       key={`shot-${id}`}
                       type="button"
                       data-shot={id}
                       onClick={() => setShot(id)}
                       className={
                         id === shot
-                          ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
-                          : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                          ? 'lf-authoring-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                          : 'lf-authoring-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
                       }
                     >
                       {id}
-                    </button>
+                    </Button>
                   ))
                 : null}
               {composed
                 ? SCENE_BACKDROP_IDS.map((id) => (
-                    <button
+                    <Button
                       key={`backdrop-${id}`}
                       type="button"
                       data-backdrop={id}
                       onClick={() => setBackdrop(id)}
                       className={
                         id === backdrop
-                          ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
-                          : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                          ? 'lf-authoring-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                          : 'lf-authoring-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
                       }
                     >
                       {t(`tutor.backdrop.${id}`, { defaultValue: id })}
-                    </button>
+                    </Button>
                   ))
                 : null}
               {composed ? (
-                <button
+                <Button
                   type="button"
                   data-anchors={showAnchors ? 'on' : 'off'}
                   onClick={() => setShowAnchors((v) => !v)}
                   className={
                     showAnchors
-                      ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
-                      : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                      ? 'lf-authoring-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                      : 'lf-authoring-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
                   }
                 >
                   anchors
-                </button>
+                </Button>
               ) : null}
               {composed ? (
-                <button
+                <Button
                   type="button"
                   data-solo={solo ? 'yes' : 'no'}
                   onClick={() => setSolo((v) => !v)}
                   className={
                     solo
-                      ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
-                      : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                      ? 'lf-authoring-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                      : 'lf-authoring-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
                   }
                 >
                   {solo ? 'cast: 1' : 'cast: 2'}
-                </button>
+                </Button>
               ) : null}
               {composed ? (
-                <button
+                <Button
                   type="button"
                   data-audition={audition ? 'on' : 'off'}
                   onClick={() => setAudition((v) => !v)}
                   className={
                     audition
-                      ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
-                      : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                      ? 'lf-authoring-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                      : 'lf-authoring-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
                   }
                 >
                   audition: all {CHARACTER_IDS.length}
-                </button>
+                </Button>
               ) : null}
               {composed ? (
-                <button
+                <Button
                   type="button"
                   data-show-stall={showStall ? 'on' : 'off'}
                   onClick={() => setShowStall((v) => !v)}
                   className={
                     showStall
-                      ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
-                      : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                      ? 'lf-authoring-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                      : 'lf-authoring-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
                   }
                 >
                   stall: {showStall ? 'on' : 'off'}
-                </button>
+                </Button>
               ) : null}
               {composed ? (
-                <button
+                <Button
                   type="button"
                   data-show-crate={showCrate ? 'on' : 'off'}
                   onClick={() => setShowCrate((v) => !v)}
                   className={
                     showCrate
-                      ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
-                      : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                      ? 'lf-authoring-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                      : 'lf-authoring-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
                   }
                 >
                   crate: {showCrate ? 'on' : 'off'}
-                </button>
+                </Button>
               ) : null}
               {composed
                 ? (Object.keys(CHARACTER_ASSETS) as CharacterId[]).map((id) => (
-                    <button
+                    <Button
                       key={`lead-${id}`}
                       type="button"
                       data-lead={id}
                       onClick={() => setLead(id)}
                       className={
                         id === lead
-                          ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
-                          : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                          ? 'lf-authoring-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                          : 'lf-authoring-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
                       }
                     >
                       lead: {id}
-                    </button>
+                    </Button>
                   ))
                 : null}
               {composed
                 ? (Object.keys(SCENE_ASSETS) as Array<keyof typeof SCENE_ASSETS>).map((id) => (
-                    <button
+                    <Button
                       key={`stage-${id}`}
                       type="button"
                       data-stage={id}
                       onClick={() => setStage(id)}
                       className={
                         id === stage
-                          ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
-                          : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                          ? 'lf-authoring-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                          : 'lf-authoring-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
                       }
                     >
                       stage: {id}
-                    </button>
+                    </Button>
                   ))
                 : null}
               {composed
                 ? CHARACTER_EMOTIONS.map((name) => (
-                    <button
+                    <Button
                       key={`emotion-${name}`}
                       type="button"
                       data-emotion={name}
                       onClick={() => setEmotion(name)}
                       className={
                         name === emotion
-                          ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
-                          : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                          ? 'lf-authoring-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                          : 'lf-authoring-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
                       }
                     >
                       {name}
-                    </button>
+                    </Button>
                   ))
                 : null}
               {composed
                 ? VISEMES.map((name, index) => (
-                    <button
+                    <Button
                       key={`viseme-${name}`}
                       type="button"
                       data-viseme={name}
                       onClick={() => setViseme(index)}
                       className={
                         index === viseme
-                          ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
-                          : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                          ? 'lf-authoring-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                          : 'lf-authoring-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
                       }
                     >
                       {name}
-                    </button>
+                    </Button>
                   ))
                 : null}
-              <label className="lf-caption inline-flex cursor-pointer items-center gap-2 rounded-md bg-accent px-4 py-2 font-semibold text-on-accent">
-                <input type="file" accept=".glb,model/gltf-binary" className="hidden" onChange={onPick} />
+              <label className="lf-authoring-row">
+                <input type="file" accept=".glb,model/gltf-binary" className="lf-authoring-file" onChange={onPick} />
                 {t('tutor.lab.loadModel')}
               </label>
               {PRESETS.map((preset) => (
-                <button
+                <Button
                   key={preset.id}
                   type="button"
                   onClick={() => {
                     setFileBytes(undefined);
                     setModelUrl(preset.url);
                   }}
-                  className="lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content"
+                  className="lf-authoring-block"
                 >
                   {preset.id}
-                </button>
+                </Button>
               ))}
-              {!modelUrl ? <p className="lf-caption text-content-muted">{t('tutor.lab.noModel')}</p> : null}
+              {!modelUrl ? <p className="lf-authoring-block">{t('tutor.lab.noModel')}</p> : null}
             </div>
           </div>
 
-          <aside className="space-y-6">
+          <aside className="lf-authoring-block">
             <section>
-              <h2 className="lf-title mb-2 text-content">{t('tutor.lab.runtime')}</h2>
+              <h2 className="lf-authoring-block">{t('tutor.lab.runtime')}</h2>
               <Row label={t('tutor.lab.tier')} value={stats?.tier ?? unknown} />
               <Row label={t('tutor.lab.fps')} value={stats ? nf.format(stats.fps) : unknown} />
               <Row label={t('tutor.lab.pixelRatio')} value={stats ? stats.pixelRatio.toFixed(2) : unknown} />
@@ -588,11 +592,11 @@ export default function SceneLabPage() {
                 label="viseme"
                 value={`${VISEMES[speaking ? spokenViseme : viseme] ?? '—'}${speaking ? ' (speaking)' : ''}`}
               />
-              {stats?.locked ? <p className="lf-caption mt-2 text-warning-strong">{t('tutor.lab.locked')}</p> : null}
+              {stats?.locked ? <p className="lf-authoring-block">{t('tutor.lab.locked')}</p> : null}
             </section>
 
             <section>
-              <h2 className="lf-title mb-2 text-content">{t('tutor.lab.budget')}</h2>
+              <h2 className="lf-authoring-block">{t('tutor.lab.budget')}</h2>
               {readings.map((reading) => (
                 <Row
                   key={reading.line}
@@ -606,17 +610,17 @@ export default function SceneLabPage() {
                 />
               ))}
               {readings.length > 0 ? (
-                <p className={readings.some((r) => r.over) ? 'lf-caption mt-2 text-error-strong' : 'lf-caption mt-2 text-success-strong'}>
+                <p className={readings.some((r) => r.over) ? 'lf-authoring-caption mt-2 text-error-strong' : 'lf-authoring-caption mt-2 text-success-strong'}>
                   {readings.some((r) => r.over) ? t('tutor.lab.budgetOver') : t('tutor.lab.budgetOk')}
                 </p>
               ) : null}
-              <p className="lf-caption mt-2 text-content-muted">
+              <p className="lf-authoring-block">
                 {t('tutor.lab.maxTexture')}: {nf.format(TUTOR_ASSET_BUDGET.maxTextureSize)}
               </p>
             </section>
 
             <section>
-              <h2 className="lf-title mb-2 text-content">{t('tutor.lab.device')}</h2>
+              <h2 className="lf-authoring-block">{t('tutor.lab.device')}</h2>
               <Row label={t('tutor.lab.webgl')} value={probe.webgl} />
               <Row label={t('tutor.lab.cores')} value={probe.cores === null ? unknown : nf.format(probe.cores)} />
               <Row
@@ -651,3 +655,9 @@ export default function SceneLabPage() {
     </AnchorProvider>
   );
 }
+
+export function SceneLabPage() {
+  return <ShellRoot ageBand="adult"><div className="lf-authoring-lab"><header className="lf-authoring-row"><BrandMark name="LittleFounders" href="/" /><ShellPreferences /></header><SceneLabPageContent /></div></ShellRoot>;
+}
+
+export default SceneLabPage;

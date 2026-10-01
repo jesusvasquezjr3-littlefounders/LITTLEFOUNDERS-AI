@@ -1,508 +1,115 @@
 /*
- * THE LESSON ENGINE, VERIFIED THE WAY A PERSON USES IT.
- *
- *   npm run verify:lesson-engine              1280x900 dark
- *   npm run verify:lesson-engine -- --mobile  375x812
- *   npm run verify:lesson-engine -- --light   light theme
- *   npm run verify:lesson-engine -- --only quiz_mcq,fill_blank
- *   npm run verify:lesson-engine -- --strict  also require every graded type to
- *                                             produce a verdict (see below)
- *
- * Every one of the segment-type fixtures in /dev/lesson-lab is opened and played
- * with REAL pointer and keyboard events, and every visible control is hit-tested
- * with `elementFromPoint` — retried after scrolling it into view, because the
- * lesson shell scrolls and so does a person, and only then does "unreachable"
- * mean it.
- *
- * WHAT THIS GATES, and why it is exactly this:
- *
- *   every control reachable   the regression this exists for. R3F writes
- *                             `pointer-events: auto` INLINE on its container,
- *                             beating an inherited `pointer-events: none`, and
- *                             the character layer became the topmost element
- *                             over the whole product. 57 fixtures, 1,305 unit
- *                             tests and four screenshot passes stayed green
- *                             because they all drove the app with
- *                             `element.click()`, which does no hit-testing.
- *   "Start lesson" advances   the symptom the owner reported.
- *   no console error          a thrown render is not visible in a screenshot.
- *   no failed request         a missing asset degrades silently.
- *   characters all 3D         2D is deprecated in the Lesson Engine.
- *   one WebGL context         the layer is one canvas for a screenful of
- *                             characters; a second context is a leak.
- *
- * WHAT THIS DELIBERATELY DOES NOT GATE: the count of segments driven to a
- * verdict. That number measures THE DRIVER, not the engine — reordering the
- * answer models moved it from 41 to 39 while swapping which types passed, and
- * an audit that reported 33 of 57 types as ungradeable turned out to be nine
- * harness defects and zero engine defects (/AGENTS.md §1.14). It is reported,
- * never asserted, unless --strict is passed for a deliberate deep run.
- *
- * Grading itself is covered where it belongs: `registry.test.tsx` asserts every
- * graded type has a grader, that graders never throw and clamp scores, and that
- * every fixture round-trips through its own grader.
+ * Complete current v2 Forge fixture catalogue, through actual LessonDocumentView
+ * boards. Real pointer hit-testing, 48px controls, help activation, loaded media
+ * and JavaScript/network failures are gated. Fixture preview enters a board
+ * directly: this does not claim authenticated grading/completion/resume.
+ * --mobile and --light change the viewport; --only TYPE,TYPE is a labelled
+ * debugging subset. REBUILD_URL/LESSON_LAB_URL reuse an existing server.
  */
-import { spawn } from 'node:child_process'
-import { rmSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
-import { setTimeout as sleep } from 'node:timers/promises'
+import { spawn } from 'node:child_process';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { setTimeout as sleep } from 'node:timers/promises';
+import { launchBrowser, openPage } from './lesson-engine/browser.mjs';
+import { click } from './lesson-engine/answer-models.mjs';
 
-import { fileURLToPath } from 'node:url'
+const frontend = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const args = process.argv.slice(2);
+const mobile = args.includes('--mobile'), dark = !args.includes('--light');
+const onlyIndex = args.indexOf('--only'), only = onlyIndex < 0 ? null : args[onlyIndex + 1]?.split(',');
+if (onlyIndex >= 0 && !only?.length) throw new Error('--only needs a segment type list');
+const width = mobile ? 375 : 1280, height = mobile ? 812 : 900;
+const docs = JSON.parse(readFileSync(join(frontend, 'src/rebuild/preview/fixtures/v2FixtureDocuments.generated.json'), 'utf8'));
+const all = Object.entries(docs).flatMap(([lesson, locales]) => Object.entries(locales).flatMap(([locale, doc]) =>
+  doc.segments.map((segment) => ({ lesson, locale, age: doc.age_band, segment }))));
+const fixtures = all.filter(({ segment }) => !only || only.includes(segment.type));
+if (!fixtures.length) throw new Error('No current v2 fixtures selected');
 
-import { launchBrowser, openPage } from './lesson-engine/browser.mjs'
-import { answer, click, coords, submitOwnControl, GATE, FOOTER, MAIN } from './lesson-engine/answer-models.mjs'
-
-const HERE = fileURLToPath(new URL('.', import.meta.url))
-const VITE_BIN = join(HERE, '..', 'node_modules', 'vite', 'bin', 'vite.js')
-
-const args = process.argv.slice(2)
-const flag = (name) => args.includes(`--${name}`)
-const value = (name) => {
-  const at = args.indexOf(`--${name}`)
-  return at === -1 ? null : args[at + 1]
-}
-
-const MOBILE = flag('mobile')
-const WIDTH = MOBILE ? 375 : 1280
-const HEIGHT = MOBILE ? 812 : 900
-const DARK = !flag('light')
-const STRICT = flag('strict')
-const ONLY = value('only')?.split(',').map((s) => s.trim()) ?? null
-const TAP_TARGET_FLOOR = 44
-
-/*
- * Every visible control, hit-tested the way a finger reaches one.
- *
- * `height` is the HIT height, not the box height, and the difference is the
- * difference between a real finding and three permanent false alarms. A
- * glossary term set inline in running prose cannot be padded to 44px without
- * pushing the sentence's lines apart, so it carries an invisible
- * pseudo-element that extends its hit area instead
- * (lesson-engine/families/story/components.tsx). getBoundingClientRect knows
- * nothing about that — it reported 27px for a target a thumb gets 47px of, and
- * the run named the same three chips every time. Noise that never goes away is
- * noise a reader learns to skip, and the next genuinely small control would
- * have hidden in it.
- *
- * So measure it the way this file measures everything else: probe outward from
- * the box with elementFromPoint until the point stops belonging to the control.
- * A pseudo-element hit area answers with its originating element, so this sees
- * exactly what the finger would.
- */
-const CONTROLS =
-  '(() => { const out = [];' +
-  ' for (const b of document.querySelectorAll("button:not([disabled]),a[href]")) {' +
-  '   let r = b.getBoundingClientRect();' +
-  '   if (r.width < 4 || r.height < 4) continue;' +
-  '   if (r.right < 0 || r.left > innerWidth) continue;' +
-  '   const owns = (t) => t === b || b.contains(t) || (t && t.closest("button,a") === b);' +
-  '   const test = () => { const x = r.left + r.width / 2, y = r.top + r.height / 2;' +
-  '     if (y < 0 || y > innerHeight) return null;' +
-  '     const t = document.elementFromPoint(x, y);' +
-  '     return { x: Math.round(x), y: Math.round(y), ok: owns(t),' +
-  '       topmost: t ? t.tagName : "null" } };' +
-  '   let hit = test();' +
-  '   if (!hit || !hit.ok) { b.scrollIntoView({ block: "center", behavior: "instant" });' +
-  '     r = b.getBoundingClientRect(); hit = test(); }' +
-  '   if (!hit) continue;' +
-  // Walk out from each edge, at most one floor's worth — past that the target
-  // already passes and the extra probing buys nothing.
-  '   let top = r.top, bottom = r.bottom;' +
-  '   if (hit.ok) { const cx = r.left + r.width / 2;' +
-  '     for (let k = 1; k <= 44; k += 1) { const y = r.top - k;' +
-  '       if (y < 0 || !owns(document.elementFromPoint(cx, y))) break; top = y; }' +
-  '     for (let k = 1; k <= 44; k += 1) { const y = r.bottom + k;' +
-  '       if (y > innerHeight || !owns(document.elementFromPoint(cx, y))) break; bottom = y; } }' +
-  '   out.push({ label: (b.textContent || "").trim().slice(0, 30),' +
-  '     height: Math.round(bottom - top), inkHeight: Math.round(r.height),' +
-  '     reaches: hit.ok, topmost: hit.topmost }); }' +
-  ' return out })()'
-
-const STATE =
-  '(() => ({' +
-  ' head: (document.body.innerText || "").slice(0, 60),' +
-  // A character the layer could not draw falls back to a still of the real model and says so.
-  ' flat: [...document.querySelectorAll("[data-render]")].filter((n) => n.dataset.render !== "3d").length,' +
-  /*
-   * THE EMPTY BOX, which is the defect the still stand-in exists to prevent.
-   * A `3d` slot is empty ON PURPOSE — that character is painted on the shared
-   * WebGL canvas. A `still` slot must contain the real model's still; if it does not, the
-   * child is looking at a hole where a character should be, which is exactly
-   * what shipped once before the fallback was fixed.
-   */
-  ' hollow: [...document.querySelectorAll("[data-render=\\"still\\"]")].filter((n) => n.childElementCount === 0).length,' +
-  ' webgl: [...document.querySelectorAll("canvas")].filter((c) => c.width > 200).length,' +
-  ' verdict: Boolean(document.querySelector("[role=status]")),' +
-  ' results: /Lesson complete|Good effort/i.test(document.body.innerText || ""),' +
-  '}))()'
-
-/** Start Vite and wait for the port it prints — the lab is a DEV-only route. */
-async function startDevServer() {
-  if (process.env.LESSON_LAB_URL) return { url: process.env.LESSON_LAB_URL, stop: () => {} }
-
-  // Vite is invoked directly rather than through `npm run dev`: a shell is then
-  // never needed, which keeps this identical on Windows and CI.
-  const child = spawn(process.execPath, [VITE_BIN, '--host', '127.0.0.1'], {
-    stdio: ['ignore', 'pipe', 'pipe'],
-  })
-  const url = await new Promise((resolve, reject) => {
-    let output = ''
-    const timer = setTimeout(() => reject(new Error(`Vite never printed a URL:\n${output}`)), 90_000)
-    const read = (chunk) => {
-      // Vite colours its banner, and the escape sequences land BETWEEN the
-      // colon and the port (`127.0.0.1:\x1b[1m5173`), so the URL has to be
-      // matched on the stripped text or it is never found at all.
-      output += String(chunk).replace(/\[[0-9;]*m/g, '')
-      const found = output.match(/http:\/\/127\.0\.0\.1:(\d+)/)
-      if (found) {
-        clearTimeout(timer)
-        resolve(found[0])
-      }
-    }
-    child.stdout.on('data', read)
-    child.stderr.on('data', read)
-    child.on('exit', (code) => reject(new Error(`Vite exited with ${code} before serving:\n${output}`)))
-  })
-  return { url, stop: () => child.kill() }
-}
-
-async function main() {
-  const profile = join(tmpdir(), `lf-lesson-engine-${process.pid}`)
-  const dev = await startDevServer()
-  const lab = `${dev.url}/dev/lesson-lab`
-  const { child, browser } = await launchBrowser(profile)
-
-  const rows = []
-  const smallTargets = new Map()
-  let flatTotal = 0
-  let hollowTotal = 0
-  let maxWebgl = 0
-
+async function startServer() {
+  const existing = process.env.REBUILD_URL ?? process.env.LESSON_LAB_URL;
+  if (existing) return { url: existing.replace(/\/$/, ''), stop() {} };
+  const child = spawn(process.execPath, [join(frontend, 'node_modules/vite/bin/vite.js'), '--host', '127.0.0.1'], { cwd: frontend, stdio: ['ignore','pipe','pipe'] });
   try {
-    const page = await openPage(browser, { width: WIDTH, height: HEIGHT, dark: DARK })
-
-    /*
-     * WARM THE DEV SERVER ON THE ROOT ROUTE FIRST, then go to the lab.
-     *
-     * Navigating a cold Vite straight to a lazy route made this gate
-     * unrunnable: the app never mounted, `#root` stayed empty and
-     * `document.readyState` sat at "interactive" for the whole 60-second poll
-     * below, with ZERO console errors and ZERO failed requests to say why —
-     * so the harness reported "No fixtures found in /dev/lesson-lab" and the
-     * only browser-driven gate the Lesson Engine has could not be run at all
-     * on a Windows checkout. (Verified against a clean tree: the failure is
-     * the harness's, not the app's. The same page renders all 57 fixtures in
-     * the same headless browser once Vite is warm.)
-     *
-     * The root route pays for dependency optimisation on a page with nothing
-     * lazy to race, and the lab then loads from a warm server. Cheap, and it
-     * removes a start-up race instead of widening a timeout around it.
-     */
-    const MOUNTED = '(document.getElementById("root") || {innerHTML: ""}).innerHTML.length > 0'
-    await page.send('Page.navigate', { url: `${dev.url}/` })
-    for (let tries = 0; tries < 60; tries += 1) {
-      await sleep(1000)
-      if (await page.evaluate(MOUNTED)) break
-    }
-
-    await page.send('Page.navigate', { url: lab })
-
-    /*
-     * POLL for the fixture list rather than sleeping a guess. The lab is a lazy
-     * route, and on a dev server that has just started the FIRST page load also
-     * pays for Vite's dependency optimisation — a fixed eleven-second wait
-     * found nothing and reported "no fixtures", which is the harness measuring
-     * a moment rather than an interaction. The same mistake one level down
-     * missed forty-three cards and would have called them broken segments.
-     */
-    const LIST =
-      '[...document.querySelectorAll("button")].map((b) => b.textContent.trim())' +
-      '.filter((t) => t.indexOf("play_circle") !== -1).map((t) => t.replace("play_circle", "").trim())'
-    let all = []
-    for (let tries = 0; tries < 60 && !all.length; tries += 1) {
-      await sleep(1000)
-      all = await page.evaluate(LIST)
-    }
-    const fixtures = ONLY ? all.filter((f) => ONLY.some((name) => f.startsWith(name))) : all
-    if (!fixtures.length) throw new Error('No fixtures found in /dev/lesson-lab.')
-
-    console.log(`lesson-engine  ${WIDTH}x${HEIGHT}  ${DARK ? 'dark' : 'light'}  fixtures: ${fixtures.length}`)
-
-    for (const fixture of fixtures) {
-      const label = fixture.split(/XP |D\d/)[0].slice(0, 24).trim()
-      /*
-       * `errors` and `failedRequests` are initialised HERE, not only on the
-       * happy path below. The early `continue` for "lab card never appeared"
-       * pushed a row without them, and the summary's
-       * `rows.reduce((n, r) => n + r.errors.length, 0)` then threw
-       * `Cannot read properties of undefined` — so the moment a single card
-       * was slow, the gate crashed instead of printing its report or setting
-       * an exit code. A gate that cannot report its own result is not a gate.
-       */
-      const row = {
-        label,
-        reachable: true,
-        starts: false,
-        verdict: false,
-        finishes: false,
-        blocked: [],
-        flatScreens: [],
-        errors: [],
-        failedRequests: [],
-      }
-      const errorsBefore = page.errors.length
-      const requestsBefore = page.failedRequests.length
-
-      await page.send('Page.navigate', { url: lab })
-      let card = null
-      for (let tries = 0; tries < 18 && !card; tries += 1) {
-        await sleep(500)
-        /*
-         * Match the card the SAME WAY the list was built.
-         *
-         * The list above strips the "play_circle" ligature out of each
-         * button's text before recording the fixture name; this finder used to
-         * compare the RAW `textContent`, which still begins with that
-         * ligature, so `startsWith(<clean name>)` was false for every card
-         * whose icon renders before its label — 32 of 57 in the last run. They
-         * were reported as "lab card never appeared", i.e. the harness failing
-         * to find a control that was on the page the whole time, which is
-         * exactly the class of false negative /AGENTS.md §1.14 is about.
-         */
-        card = await coords(
-          page,
-          '[...document.querySelectorAll("button")]' +
-            '.find((n) => n.textContent.replace("play_circle", "").trim()' +
-            `.startsWith(${JSON.stringify(fixture.slice(0, 22))}))`,
-        )
-      }
-      if (!card) {
-        row.blocked.push('lab card never appeared')
-        rows.push(row)
-        process.stdout.write('?')
-        continue
-      }
-      await sleep(300)
-      await click(page, card.x, card.y)
-      await sleep(2500)
-
-      const scan = async (where) => {
-        for (const control of await page.evaluate(CONTROLS)) {
-          if (!control.reaches) {
-            row.reachable = false
-            row.blocked.push(`${where}: "${control.label}" is under ${control.topmost}`)
-          }
-          if (control.height < TAP_TARGET_FLOOR) {
-            // Both numbers: the hit height is the verdict, the ink height says
-            // whether the fix is padding or a hit extender.
-            smallTargets.set(control.label, { hit: control.height, ink: control.inkHeight ?? control.height })
-          }
-        }
-      }
-      await scan('intro')
-
-      const start = await coords(
-        page,
-        '[...document.querySelectorAll("button")].find((n) => /Start lesson|Empezar/i.test(n.textContent))',
-      )
-      if (start) {
-        const before = await page.evaluate(STATE)
-        await click(page, start.x, start.y)
-        /*
-         * WAIT FOR THE THING, DO NOT SLEEP AT IT.
-         *
-         * This was a flat `sleep(2800)` and then one reading, which makes the
-         * assertion "the lesson started within 2.8 seconds on whatever machine
-         * happens to be running this" — a statement about the host, not about
-         * the product. It produced two false reds in one session on a developer
-         * machine that was also hosting the app's own dev stack: `pattern_complete`
-         * on one run, then `match_pairs` AND `pattern_complete` on the next, a
-         * different set each time. Both fixtures pass 2/2 in isolation, every
-         * screen, to a verdict and a results page.
-         *
-         * Polling is strictly better in both directions: it returns the moment
-         * the head changes, so the common case gets FASTER than the old fixed
-         * wait, and a slow machine gets patience instead of a false accusation.
-         * The deadline is still finite — a lesson that genuinely never advances
-         * has to fail, which is the whole point of the check.
-         */
-        const deadline = Date.now() + 9000
-        while (Date.now() < deadline) {
-          if ((await page.evaluate(STATE)).head !== before.head) {
-            row.starts = true
-            break
-          }
-          await sleep(150)
-        }
-      }
-
-      for (let screen = 0; screen < 12; screen += 1) {
-        const state = await page.evaluate(STATE)
-        flatTotal += state.flat
-        hollowTotal += state.hollow
-        maxWebgl = Math.max(maxWebgl, state.webgl)
-        if (state.flat > 0) row.flatScreens.push(screen)
-        if (state.hollow > 0) row.blocked.push(`screen ${screen}: a character slot rendered NOTHING`)
-        if (state.verdict) row.verdict = true
-        if (state.results) {
-          row.finishes = true
-          break
-        }
-        await scan(`screen ${screen}`)
-
-        if (!state.verdict) await answer(page)
-        if ((await page.evaluate(GATE)).verdict) row.verdict = true
-        await submitOwnControl(page)
-
-        const advance = await coords(page, `${FOOTER}.filter((b) => !b.disabled).slice(-1)[0]`)
-        if (!advance) {
-          /*
-           * No control to press does not mean the segment is stuck: a dialogue
-           * has no footer button at all and advances as its speech card is
-           * tapped. Try the screen itself, and stop only when nothing changes.
-           */
-          const body = await page.evaluate('(document.body.innerText || "").slice(0, 400)')
-          const tap = await coords(page, `${MAIN}[0]`)
-          if (!tap) break
-          await click(page, tap.x, tap.y)
-          await sleep(800)
-          if ((await page.evaluate('(document.body.innerText || "").slice(0, 400)')) === body) break
-          continue
-        }
-        await click(page, advance.x, advance.y)
-        await sleep(1100)
-        const after = await page.evaluate(GATE)
-        if (after.verdict) row.verdict = true
-        if (after.results) {
-          row.finishes = true
-          break
-        }
-      }
-
-      row.errors = page.errors.slice(errorsBefore)
-      row.failedRequests = page.failedRequests.slice(requestsBefore)
-      rows.push(row)
-      const clean = row.reachable && row.starts && !row.errors.length && !row.failedRequests.length
-      process.stdout.write(clean ? '.' : 'X')
-    }
-
-    // A still-fallback character is a GLOBAL failure, counted once. Folding it into the
-    // per-row filter marked all 57 fixtures as failing over one bad frame,
-    // which buries the one row that actually has something to say.
-    const failures = rows.filter((r) => !r.reachable || !r.starts || r.errors.length || r.failedRequests.length)
-    const unanswered = rows.filter((r) => !r.verdict && !r.finishes)
-
-    console.log('\n')
-    console.log(`fixtures played:             ${rows.length}`)
-    console.log(`  every control reachable:   ${rows.filter((r) => r.reachable).length}/${rows.length}`)
-    console.log(`  "Start lesson" advances:   ${rows.filter((r) => r.starts).length}/${rows.length}`)
-    console.log(`  answered to a verdict:     ${rows.filter((r) => r.verdict).length}/${rows.length}   (reported, not gated)`)
-    console.log(`  reached the results screen:${rows.filter((r) => r.finishes).length}/${rows.length}   (reported, not gated)`)
-    console.log(`characters rendered in 2D:   ${flatTotal}   (reported, not gated)`)
-    console.log(`character slots rendering nothing: ${hollowTotal}`)
-    console.log(`most WebGL contexts at once: ${maxWebgl}`)
-    console.log(`console errors:              ${rows.reduce((n, r) => n + r.errors.length, 0)}`)
-    console.log(`failed requests:             ${rows.reduce((n, r) => n + r.failedRequests.length, 0)}`)
-
-    if (smallTargets.size) {
-      console.log(`\ntap targets under ${TAP_TARGET_FLOOR}px (reported, not gated):`)
-      for (const [label, size] of smallTargets) {
-        const ink = size.ink !== size.hit ? `, ${size.ink}px of ink` : ''
-        console.log(`   ${label} (${size.hit}px${ink})`)
-      }
-    }
-
-    for (const row of failures) {
-      console.log(`\nFAIL ${row.label}`)
-      if (!row.starts) console.log('   "Start lesson" did not advance')
-      for (const reason of row.blocked.slice(0, 4)) console.log(`   ${reason}`)
-      for (const error of row.errors.slice(0, 3)) console.log(`   console: ${error}`)
-      for (const failed of row.failedRequests.slice(0, 3)) console.log(`   request: ${failed}`)
-    }
-
-    if (STRICT && unanswered.length) {
-      console.log(`\n--strict: ${unanswered.length} fixture(s) produced no verdict and no results screen:`)
-      for (const row of unanswered) console.log(`   ${row.label}`)
-      console.log('   Before calling these product defects, read /AGENTS.md §1.14: every')
-      console.log('   one of the 33 originally reported was the harness, and six of the 57')
-      console.log('   types are ungraded CONTENT segments that cannot produce a verdict.')
-    }
-
-    /*
-     * THE 2D COUNT IS REPORTED, NOT GATED, AND THAT IS A DELIBERATE CLIMBDOWN.
-     *
-     * It used to fail the gate on a single observation, under the banner "the
-     * Lesson Engine is 3D-only". Measured on three machines, that assertion
-     * turned out to be about the machine rather than about the product:
-     *
-     *   57 fixtures, 16-thread workstation with a GPU ....  0
-     *   57 fixtures, GitHub runner (2 vCPU, no GPU) .....  11
-     *   57 fixtures, same workstation, CPU throttled 4x .  17, then 6
-     *   whichever fixtures it hit, run ALONE throttled ..   0
-     *
-     * Two rows settle it. The fixtures it lands on CHANGE between runs
-     * (group_sets/read_chart once, price_compare the next), and in isolation
-     * they are clean — so it is neither the lesson nor the throttle by itself.
-     * What is left is the long single-page session: 57 lessons without a
-     * reload, which is also how a child moves through them, where frames
-     * occasionally stop for longer than the layer's STALE_MS (1s) and the 2D
-     * stand-in takes over. `handleDrew` puts 3D back the moment a frame lands,
-     * so it is transient by construction.
-     *
-     * The stand-in is the DESIGNED behaviour for a machine that cannot keep up,
-     * and it was fixed on purpose so a struggling character reads as a flat
-     * character instead of a hole. Failing the gate whenever it works asserts
-     * that the runner never stutters for one second, which no CI runner can
-     * promise and no child's laptop will.
-     *
-     * What stays gated is the hole itself — see `hollow`.
-     */
-    if (flatTotal > 0) {
-      console.log(`\ncharacters that fell back to 2D (reported, not gated):`)
-      for (const row of rows.filter((r) => r.flatScreens.length)) {
-        console.log(`   ${row.label} — screen(s) ${row.flatScreens.join(', ')}`)
-      }
-    }
-
-    const broken = failures.length + (hollowTotal > 0 ? 1 : 0) + (STRICT ? unanswered.length : 0)
-    if (hollowTotal > 0) {
-      console.log(
-        `\nFAIL — a character slot rendered NOTHING ${hollowTotal} time(s): not 3D, and not the real-model still either.`,
-      )
-      console.log('   That is the hole the fallback exists to prevent, and it has shipped once before.')
-      // Say where, for the same reason the 2D list does: `failures` is filtered
-      // on reachability/start/errors, so a fixture whose only problem is a
-      // hollow slot would otherwise report a count and no location.
-      for (const row of rows.filter((r) => r.blocked.some((b) => b.includes('rendered NOTHING')))) {
-        const screens = row.blocked
-          .filter((b) => b.includes('rendered NOTHING'))
-          .map((b) => b.replace(/^screen (\d+).*$/, '$1'))
-        console.log(`   ${row.label} — screen(s) ${screens.join(', ')}`)
-      }
-    }
-    if (broken) {
-      console.log(`\nverify:lesson-engine FAILED — ${broken} problem(s)`)
-      process.exitCode = 1
-    } else {
-      console.log(
-        '\nverify:lesson-engine OK — every control reachable, every lesson starts, no empty character slots, no errors',
-      )
-    }
-  } finally {
-    child.kill()
-    dev.stop()
-    /*
-     * Best effort, and it MUST NOT throw: Windows holds the profile directory
-     * open for a moment after Chrome exits, and a `finally` that throws
-     * replaces whatever real failure this run was about to report.
-     */
-    try {
-      rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 })
-    } catch {
-      /* a temp directory left behind is not worth losing a verdict over */
-    }
-  }
+    const url = await new Promise((ok, fail) => {
+      let output = '';
+      const timer = setTimeout(() => fail(Error('Vite did not start: ' + output)), 90000);
+      const read = (chunk) => {
+        output += String(chunk).replace(/\x1b\[[0-9;]*m/g, '');
+        const found = output.match(/http:\/\/127\.0\.0\.1:\d+/);
+        if (found) { clearTimeout(timer); ok(found[0]); }
+      };
+      child.stdout.on('data', read); child.stderr.on('data', read);
+      child.once('error', (error) => { clearTimeout(timer); fail(error); });
+      child.once('exit', (code) => { clearTimeout(timer); fail(Error('Vite exited ' + code)); });
+    });
+    return { url, stop: () => child.kill() };
+  } catch (error) { child.kill(); throw error; }
 }
-
-await main()
+async function waitFor(page, expression, label, ms = 30000) {
+  const deadline = Date.now() + ms;
+  while (Date.now() < deadline) {
+    if (page.closed || page.crashed) throw Error(label + ': browser unavailable');
+    if (await page.evaluate(expression)) return;
+    await sleep(100);
+  }
+  throw Error(label + ': readiness deadline exceeded');
+}
+const scan = `(() => {
+  const nodes = [...document.querySelectorAll('main.lf-learning button:not([disabled]),main.lf-learning input:not([disabled]),main.lf-learning textarea:not([disabled]),main.lf-learning [role="slider"],main.lf-learning [role="combobox"],main.lf-learning a[href]')];
+  const targets = [...new Set(nodes.map(node => node.matches('input[type=radio],input[type=checkbox]') ? node.closest('label') ?? node.labels?.[0] ?? node : node))];
+  return targets.flatMap((node) => {
+    let r = node.getBoundingClientRect();
+    if (r.width < 1 || r.height < 1 || getComputedStyle(node).visibility === 'hidden') return [];
+    node.scrollIntoView({block:'center',behavior:'instant'}); r = node.getBoundingClientRect();
+    const top = document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
+    return [{label:(node.getAttribute('aria-label')||node.textContent||node.tagName).trim().slice(0,80),
+      reachable:!!top&&(top===node||node.contains(top)),width:r.width,height:r.height}];
+  });
+})()`;
+const rows = [], profile = mkdtempSync(join(tmpdir(), 'lf-v2-lesson-'));
+let dev, browser, setupError = null;
+try {
+  dev = await startServer(); browser = await launchBrowser(profile);
+  const page = await openPage(browser.browser, {width,height,dark,isolated:true});
+  console.log('v2 lesson-engine: ' + fixtures.length + '/' + all.length + ' localized segments, ' + new Set(fixtures.map(f=>f.segment.type)).size + ' types' + (only?' FILTERED':''));
+  for (const fixture of fixtures) {
+    const row = {lesson:fixture.lesson,segment:fixture.segment.id,type:fixture.segment.type,locale:fixture.locale,mounted:false,controls:[],helpPressed:false,failures:[]};
+    const errors = page.errors.length, requests = page.failedRequests.length;
+    try {
+      const query = new URLSearchParams({screen:'fixture',seg:fixture.lesson+':'+fixture.segment.id,age:fixture.age,locale:fixture.locale,theme:dark?'dark':'light'});
+      await page.send('Page.navigate',{url:dev.url+'/rebuild.html?'+query});
+      await waitFor(page, `(() => { const r=document.querySelector('.lf-rebuild'),m=document.querySelector('main.lf-learning'); return r?.getAttribute('lang')===${JSON.stringify(fixture.locale)} && m?.querySelector('h1') && !['lesson-unavailable','lesson-update','lesson-preview-end'].includes(m.dataset.screen); })()`, fixture.lesson+'/'+fixture.segment.id, rows.length?30000:90000);
+      await waitFor(page, `document.querySelector('main.lf-learning [data-copy-role="prompt"]')?.textContent===${JSON.stringify(fixture.segment.prompt)}`, 'requested prompt');
+      await waitFor(page, '[...document.querySelectorAll("main.lf-learning img")].every(i=>i.complete&&i.naturalWidth>0)', 'board media');
+      await sleep(150); row.mounted=true; row.controls=await page.evaluate(scan);
+      for (const c of row.controls) {
+        if (!c.reachable) row.failures.push('Control occluded: '+c.label);
+        if (c.width+.5<48||c.height+.5<48) row.failures.push('Target below48px: '+c.label+' ('+c.width.toFixed(1)+' x '+c.height.toFixed(1)+')');
+      }
+      const help = await page.evaluate(`(() => {const b=document.querySelector('main.lf-learning .lf-segment-help button[aria-expanded="false"]');if(!b)return null;b.scrollIntoView({block:'center',behavior:'instant'});const r=b.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2,t=document.elementFromPoint(x,y);if(!t||!(t===b||b.contains(t)))throw Error('Help occluded');return{x,y};})()`);
+      if(help) {
+        await click(page,help.x,help.y);
+        await waitFor(page,'!!document.querySelector("main.lf-learning .lf-segment-help [data-copy-role=mentor]")','pointer help');
+        row.helpPressed=true;
+        for(const c of await page.evaluate(scan))if(!c.reachable)row.failures.push('After help occluded: '+c.label);
+      }
+    } catch(error) {row.failures.push(error.message);}
+    row.failures.push(...page.errors.slice(errors).map(e=>'JavaScript: '+e),...page.failedRequests.slice(requests).map(e=>'Request: '+e));
+    rows.push(row); console.log((row.failures.length?'FAIL ':'PASS ')+row.type+' '+row.segment+' '+row.locale+' ('+row.controls.length+' controls)'+(row.failures.length?' '+row.failures.join('; '):''));
+    if(page.closed||page.crashed)break;
+  }
+  await page.close();
+} catch(error) {setupError=error.message;}
+finally {
+  browser?.child.kill(); dev?.stop();
+  try{rmSync(profile,{recursive:true,force:true,maxRetries:5,retryDelay:200});}catch{/* Preserve the actual result if Chrome holds a Windows profile lock. */}
+}
+const output=resolve(frontend,'../audit-results/lesson-engine-v2',width+'-'+(dark?'dark':'light')+(only?'-filtered':''));
+mkdirSync(output,{recursive:true});
+const failed=rows.filter(r=>r.failures.length);
+writeFileSync(join(output,'report.json'),JSON.stringify({schemaVersion:2,filtered:!!only,width,height,theme:dark?'dark':'light',expected:fixtures.length,measured:rows.length,setupError,fixtures:rows,failures:failed.length},null,2));
+if(setupError){console.error('Setup error: '+setupError);process.exitCode=2;}
+else if(failed.length||rows.length!==fixtures.length){for(const r of failed)console.error(r.lesson+'/'+r.segment+'/'+r.locale+': '+r.failures.join('; '));process.exitCode=1;}
+else console.log('verify:lesson-engine OK: v2 board entry, reachable controls, media and JavaScript; report '+output);

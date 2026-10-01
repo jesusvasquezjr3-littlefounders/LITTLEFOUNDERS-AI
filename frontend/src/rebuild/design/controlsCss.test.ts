@@ -113,16 +113,22 @@ describe('shared control stylesheet contract', () => {
     for (const size of ['md', 'lg']) expect(controls).toContain(`.lf-avatar--${size}`);
   });
 
-  // Reads the whole legacy source tree; generous timeout because other test files run in parallel.
-  it('shares no class name with the legacy application, whose global CSS would otherwise restyle a shared control', { timeout: 30_000 }, () => {
+  // Rebuilt route consumers may use shared classes; only stylesheet selectors can override them.
+  it('has no shared control selectors overridden by CSS outside the rebuilt design system', { timeout: 30_000 }, () => {
     const classes = [...new Set([...withoutComments(shared).matchAll(/\.(lf-[a-z0-9-]+)/g)].map((match) => match[1]))];
     const src = local('../..');
-    const legacy = readdirSync(src, { recursive: true, encoding: 'utf8' })
-      // Tests ship no CSS and restyle nothing (bootVeil.test.ts reads the token sheet by its root class).
-      .filter((file) => /\.(?:tsx?|css)$/.test(file) && !/\.test\.tsx?$/.test(file) && !file.replace(/\\/g, '/').startsWith('rebuild/'))
-      .map((file) => readFileSync(join(src, file), 'utf8')).join('\n');
+    const externalSelectors = readdirSync(src, { recursive: true, encoding: 'utf8' })
+      .filter((file) => file.endsWith('.css') && !file.replace(/\\/g, '/').startsWith('rebuild/'))
+      .flatMap((file) => rules(readFileSync(join(src, file), 'utf8')).map(({ selector }) => ({ file, selector })));
     expect(classes.length).toBeGreaterThan(50);
-    expect(classes.filter((name) => new RegExp(`(?<![\\w-])${name}(?![\\w-])`).test(legacy))).toEqual([]);
+    const overrides = externalSelectors.flatMap(({ file, selector }) => {
+      const selectorClasses = [...selector.matchAll(/\.(lf-[a-z0-9-]+)/g)].map((match) => match[1]!);
+      // The root is a scope for the new authoring lab, not a legacy selector override.
+      const hasLocalScope = selectorClasses.some((name) => !classes.includes(name));
+      return selectorClasses.filter((name) => classes.includes(name) && !(name === 'lf-rebuild' && hasLocalScope))
+        .map((name) => `${file}: ${selector} (${name})`);
+    });
+    expect(overrides).toEqual([]);
   });
 
   it('ripples a soft ring in the control\'s own colour from the touch point, only with motion allowed (02 §9.1)', () => {

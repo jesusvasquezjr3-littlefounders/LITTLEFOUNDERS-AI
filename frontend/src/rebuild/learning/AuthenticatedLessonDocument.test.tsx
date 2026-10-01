@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { allocationPilotDocument } from './AllocationBoard';
 import { goalBulletPilotDocument } from './GoalBulletBoard';
 import { AuthenticatedLessonDocument } from './AuthenticatedLessonDocument';
+import { paintApprovedStill } from '../mentor/__tests__/paintApprovedStill';
 
 /* The Mentor stage renders its live 3D only where the renderer's device probe finds WebGL (Bible 08 §7). */
 vi.mock('../../tutor-scene/quality', () => ({
@@ -36,6 +37,7 @@ describe('authenticated v2 lesson delivery', () => {
       render(<AuthenticatedLessonDocument raw={allocationPilotDocument('en-US', '6-9')} responseLocale="en-US"
         mentorStage={{ character: 'zara', scene: 'diorama-a' }} onBack={vi.fn()} onGrade={vi.fn()} />);
       expect(document.querySelector('.lf-mentor-band')?.getAttribute('data-mentor-character')).toBe('zara');
+      await paintApprovedStill();
       expect(await screen.findByTestId('tutor-stage')).toHaveAttribute('data-scene', 'diorama-a');
       expect(screen.getByRole('heading', { name: 'Split your money' })).toBeTruthy();
     });

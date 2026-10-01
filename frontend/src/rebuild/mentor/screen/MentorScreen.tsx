@@ -1,4 +1,4 @@
-import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { copyLimit, wordCount, type AgeBand, type Locale } from '../../design/copyBudget';
 import {
   Banner, Button, ConfirmDialog, IconButton, InlineNotice, Menu, MENTOR_NAMES, ReplyChip, RewardChip, Sheet, TextField,
@@ -207,6 +207,7 @@ export interface MentorScreenSession {
 }
 
 export interface MentorScreenProps {
+  header?: ReactNode;
   session: MentorScreenSession;
   copy: MentorCopy;
   locale: Locale;
@@ -391,7 +392,7 @@ function ReplayControls({ copy, clock, total, sound, name, onTalk }: {
   </div>;
 }
 
-export function MentorScreen({ session, copy: all, locale, theme, guardianLink, onLeave, onPath, initialSheet = null, initialReplay = null, roleplayFrozen = false, initialConfirmRestart = false }: MentorScreenProps) {
+export function MentorScreen({ header, session, copy: all, locale, theme, guardianLink, onLeave, onPath, initialSheet = null, initialReplay = null, roleplayFrozen = false, initialConfirmRestart = false }: MentorScreenProps) {
   const copy = all.mentorScreen;
   const dark = theme === 'dark';
   const root = useRef<HTMLDivElement>(null);
@@ -762,16 +763,19 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
       : line.kind === 'note' ? all.mentorReplay.note : all.mentorReplay.activity, text: line.kind === 'activity' ? line.prompt : line.text, tutor: line.kind === 'mentor', index }))
     : session.history.map((line, index) => ({ key: `${line.seq}-${index}`, speaker: line.speaker === 'tutor' ? name : copy.you, text: line.text, tutor: line.speaker === 'tutor', index }));
 
-  return <div ref={root} className="lf-mentor-screen" data-shell="mentor" data-phase={session.phase} data-age-band={session.ageBand}
+  // The route's global header is its banner; the stage controls are a contextual row.
+  const TopBar = header ? 'div' : 'header';
+  return <div ref={root} className="lf-mentor-screen" data-shell="mentor" data-global-header={header ? 'true' : undefined} data-phase={session.phase} data-age-band={session.ageBand}
     data-layout={split ? 'split' : 'stacked'} data-board={boardShown ? 'open' : 'closed'} data-replay={replayOn ? 'on' : undefined}
     data-roleplay={roleplay ? roleplay.scene : undefined}>
-    <header className="lf-mentor-top">
+    {header}
+    <TopBar className="lf-mentor-top">
       <IconButton glyph="close" label={copy.close} onClick={close} disabled={session.ending} />
       <h1 id={titleId} className="lf-mentor-title" data-copy-role="data">{title}</h1>
       <Menu label={copy.menuLabel} items={menuItems}
         trigger={(props) => <IconButton glyph="menu" label={copy.menu} {...props} />} />
-    </header>
-    <main className="lf-mentor-main" aria-labelledby={titleId}>
+    </TopBar>
+    <main id={header ? "lf-mentor-route-main" : undefined} tabIndex={header ? -1 : undefined} className="lf-mentor-main" aria-labelledby={titleId}>
       <div className="lf-mentor-stage-region">
         {session.known || replayOn ? <MentorStage character={character} state={state} board={boardShown && !split} ageBand={session.ageBand}
           theme={theme} scene={stageScene} light={replayOn ? 'auto' : session.light} companion={stageCompanion} companionPose={companionPose}

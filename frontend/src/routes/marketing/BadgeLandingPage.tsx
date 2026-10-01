@@ -1,3 +1,4 @@
+import { ConnectedStandaloneHeader } from '@/app-shell/StandaloneHeader';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '@/lib/api';
@@ -47,7 +48,7 @@ export function BadgeLandingPage() {
   }, [token]);
 
   return <ShellRoot>
-    <BadgeLanding locale={locale} state={state} start={start} onNavigate={onNavigate} />
+    <BadgeLanding header={<ConnectedStandaloneHeader />} locale={locale} state={state} start={start} onNavigate={onNavigate} />
   </ShellRoot>;
 }
 

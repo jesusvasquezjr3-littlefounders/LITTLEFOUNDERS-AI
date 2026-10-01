@@ -1,6 +1,7 @@
+import { selectOption, optionLabels } from '../test/selectOption';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import en from '../../i18n/en-US/moneyHabits.json';
 import { GoalNextStep } from './GoalNextStep';
@@ -87,8 +88,8 @@ describe('SplitChooser (D.13)', () => {
     const onSubmit = vi.fn();
     render(<SplitChooser copy={splitCopy} locale="en-US" dark={false} amount={10} usual={USUAL} goals={[goal(), goal({ id: DEST, status: 'reached', title: 'Old' })]} busy={false} notice={null} onSubmit={onSubmit} />);
     const select = screen.getByLabelText(splitCopy.toGoal);
-    expect(within(select).queryByText('Old')).toBeNull();
-    fireEvent.change(select, { target: { value: GOAL } });
+    expect(optionLabels(select)).not.toContain('Old');
+    selectOption(select, 'Bike');
     fireEvent.click(screen.getByRole('button', { name: splitCopy.use }));
     expect(onSubmit).toHaveBeenCalledWith({ save: 5, spend: 4, share: 1 }, GOAL);
   });

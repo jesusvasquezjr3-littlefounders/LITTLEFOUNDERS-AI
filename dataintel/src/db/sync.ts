@@ -117,7 +117,7 @@ export async function getSyncHealth(): Promise<SyncHealth> {
 
 // ── Vault API ──
 
-async function fetchFromVault<T = Record<string, unknown>>(
+export async function fetchFromVault<T = Record<string, unknown>>(
   path: string,
   params?: Record<string, string>,
 ): Promise<T[]> {
@@ -471,7 +471,9 @@ async function syncDimTable(
   let totalRows = 0;
   let hasMore = true;
   let offset = 0;
-  const limit = 5000;
+  // Match PostgREST's default row cap so a capped full page is not mistaken
+  // for the end of the catalog. The next offset must advance by this page size.
+  const limit = 1000;
 
   while (hasMore) {
     // Explicit ORDER BY is required for stable LIMIT/OFFSET pagination —

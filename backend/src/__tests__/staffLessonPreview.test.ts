@@ -7,8 +7,8 @@ import { jsonResponse, mintToken } from './helpers.js';
 
 /*
  * GAP-FIX-R6 (staff-ops): the human review plays the lesson a child will be
- * served. Bible 02 rule 23 / D13, OD-24 (the v1 player only for the v1
- * catalog), Appendix C Part 3 Stage 3, Product 10 G.2.
+ * served. Bible 02 rule 23 / D13, current v2-only runtime policy,
+ * Appendix C Part 3 Stage 3, Product 10 G.2.
  *
  *   - the review and the Live updates preview get the v2 document as a
  *     learner is served it: answerless, the Mentor stage projected, and
@@ -184,6 +184,19 @@ describe('POST /admin/content/lessons/:lessonId/preview-grade', () => {
     const invalid = await request(createApp()).post(gradePath).set('Authorization', auth())
       .send({ locale: 'en-US', document_version_id: VERSION, segment_id: 'allocate-01', answer: { save: 'all' } });
     expect(invalid.status).toBe(400);
+  });
+
+  it('never grades schema-1 rows presented as named versions and records no preview evidence', async () => {
+    const calls = stub({ version: { status: 200, body: [versionRow({ schema_version: 1, document: { schema_version: 1, segments: [{ id: 'legacy-step', type: 'mcq', answer: 0 }] }, answer_keys: { 'legacy-step': { answer: 0 } } })] } });
+    const res = await request(createApp()).post(gradePath).set('Authorization', auth())
+      .send({ locale: 'en-US', document_version_id: VERSION, segment_id: 'legacy-step', answer: 0 });
+    // Immutable-version loading itself rejects schema-1 rows as absent.
+    expect(res.status).toBe(404);
+    expect(res.body.error.code).toBe('NOT_FOUND');
+    expect(res.body).not.toHaveProperty('data.verdict');
+    expect(JSON.stringify(res.body)).not.toContain('answer_keys');
+    expect(calls.every((call) => call.method === 'GET')).toBe(true);
+    expect(calls.some((call) => /v2_runs|lesson_grades|audit_logs|\/rpc\//.test(call.url))).toBe(false);
   });
 
   it('refuses a malformed body with no document read, and a read failure is a 502', async () => {

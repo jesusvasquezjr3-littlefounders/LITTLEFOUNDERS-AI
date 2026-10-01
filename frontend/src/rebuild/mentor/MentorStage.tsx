@@ -224,6 +224,10 @@ export function MentorStage({
   const [stillGone, setStillGone] = useState(false);
   const mountedAt = useRef(typeof performance === 'undefined' ? 0 : performance.now());
   const [firstRenderMs, setFirstRenderMs] = useState<number | null>(null);
+  const firstVisibleAt = useRef<number | null>(null);
+  const [paintedStillKey, setPaintedStillKey] = useState<string | null>(null);
+  const [unavailableStillKey, setUnavailableStillKey] = useState<string | null>(null);
+  const [liveReadyMs, setLiveReadyMs] = useState<number | null>(null);
   const strikes = useRef(0);
   const reported = useRef<string | null>(null);
 
@@ -231,7 +235,9 @@ export function MentorStage({
   const { state: shown, pose } = resolveMentorPose({ state, ageBand, milestone, closing });
   const mentor = REGISTERS[registerForCopyBand(ageBand)].mentor;
   const band = ageBand === '13-17' || ageBand === 'adult' ? 'teen' : 'young';
-  const rendered3d = mode !== 'still';
+  const loadingKey = `${character}:${scene}:${mode}`;
+  const currentLoadingKey = useRef(loadingKey);
+  currentLoadingKey.current = loadingKey;
 
   /*
    * Reduced motion: a pose change is a short cross-fade, not a movement (08 §7).
@@ -301,7 +307,12 @@ export function MentorStage({
   useEffect(() => {
     const key = `${character}:${scene}:${mode}`;
     // The first render is timed from mount; a later change is timed from the change.
-    if (loaded.current !== null && loaded.current !== key) mountedAt.current = typeof performance === 'undefined' ? 0 : performance.now();
+    if (loaded.current !== null && loaded.current !== key) {
+      mountedAt.current = typeof performance === 'undefined' ? 0 : performance.now();
+      firstVisibleAt.current = null;
+      reported.current = null;
+      setFirstRenderMs(null); setLiveReadyMs(null); setPaintedStillKey(null); setUnavailableStillKey(null);
+    }
     loaded.current = key;
     setLiveReady(false); setStillGone(false); strikes.current = 0;
   }, [character, scene, mode]);
@@ -316,8 +327,9 @@ export function MentorStage({
     if (reported.current === key) return;
     reported.current = key;
     const elapsed = Math.round((typeof performance === 'undefined' ? 0 : performance.now()) - mountedAt.current);
-    setFirstRenderMs((current) => current ?? elapsed);
-    onReady?.({ mode: ready, fallback, firstRenderMs: elapsed, withinBudget: elapsed <= FIRST_RENDER_BUDGET_MS });
+    firstVisibleAt.current ??= elapsed;
+    setFirstRenderMs(firstVisibleAt.current);
+    onReady?.({ mode: ready, fallback, firstRenderMs: firstVisibleAt.current, withinBudget: firstVisibleAt.current <= FIRST_RENDER_BUDGET_MS });
   }, [character, scene, fallback, onReady]);
 
   const stillMissing = stills === null;
@@ -356,8 +368,15 @@ export function MentorStage({
     return () => { current = false; audio.pause(); audio.removeAttribute('src'); };
   }, [mode, speechUrl, audioKey]);
 
-  const showStill = !!stills && (mode === 'still' || !stillGone);
-  const stillVisible = showStill && (mode === 'still' || !liveReady);
+  const sameLoad = loaded.current === loadingKey;
+  const liveVisible = sameLoad && liveReady;
+  const visualReadyMs = sameLoad ? firstRenderMs : null;
+  const showStill = !!stills && (mode === 'still' || !stillGone || !sameLoad);
+  const stillVisible = showStill && (mode === 'still' || !liveVisible);
+  // Bible 08 section 7: paint the approved catalogue still before constructing
+  // the CPU-heavy live renderer. Loading a model must never delay the first
+  // genuine character visual. The live-ready signal remains separate.
+  const rendered3d = mode !== 'still' && (paintedStillKey === loadingKey || unavailableStillKey === loadingKey || !stills);
   const compact = size === 'compact';
   const style = compact ? ({ '--lf-mentor-band-size': `${mentor.stageBandPx}px` } as CSSProperties) : undefined;
   const classes = ['lf-mentor-stage', `lf-mentor-stage--${size}`, compact ? `lf-mentor-band lf-mentor-band--${ageBand}` : '', className ?? '']
@@ -371,21 +390,38 @@ export function MentorStage({
     data-mentor-character={character} data-mentor-scene={scene} data-mentor-light={light}
     data-mentor-companion={companion && companion !== character ? companion : undefined} data-mentor-presence={mentor.presence}
     data-board={board ? 'open' : 'closed'} data-idle-motion={idle ? 'hero' : undefined}
-    data-ready={(mode === 'still' ? firstRenderMs !== null : liveReady) ? 'true' : 'false'}
-    data-first-render-ms={firstRenderMs ?? undefined}
+    data-ready={(mode === 'still' ? visualReadyMs !== null : liveVisible) ? 'true' : 'false'}
+    data-visual-ready={visualReadyMs !== null ? 'true' : 'false'}
+    data-first-render-ms={visualReadyMs ?? undefined}
+    data-live-ready-ms={sameLoad ? liveReadyMs ?? undefined : undefined}
     data-still-pose={stillVisible ? stills?.base.poseId : undefined} data-still-sequence={playing?.id}
     data-backdrop={backdrop ? 'true' : undefined}>
     {backdrop ? <div className="lf-mentor-stage-backdrop" aria-hidden="true">{backdrop}</div> : null}
     <div className="lf-mentor-stage-scene" data-swap={swapping ? 'out' : undefined}>
-      {showStill && stills ? <picture key={`${stills.base.id}:${mode}`}>
+      {showStill && stills ? <picture key={`${stills.base.id}:${loadingKey}`}>
         {stills.square ? <source media="(min-width: 640px)" srcSet={stills.square.path} /> : null}
         <img className={`lf-mentor-stage-still lf-mentor-stage-still--${stills.base.fit}`}
-          src={stills.base.path} alt="" data-leaving={mode !== 'still' && liveReady ? 'true' : undefined}
-          onLoad={() => { if (mode === 'still') report('still'); }} />
+          src={stills.base.path} alt="" data-leaving={mode !== 'still' && liveVisible ? 'true' : undefined}
+          onLoad={(event) => {
+            const image = event.currentTarget;
+            if (!image.complete || image.naturalWidth === 0) return;
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              if (!image.isConnected || !image.complete || image.naturalWidth === 0 || currentLoadingKey.current !== loadingKey) return;
+              report('still');
+              setPaintedStillKey(loadingKey);
+            }));
+          }}
+          onError={() => {
+            if (currentLoadingKey.current !== loadingKey) return;
+            // A failed preview must not strand a capable device. Only a real
+            // live frame may report readiness when the still could not load.
+            if (mode === 'still') onError?.({ reason: 'no-still' });
+            else setUnavailableStillKey(loadingKey);
+          }} />
       </picture> : null}
       {playing && mode === 'still' ? <img key={playing.url} className="lf-mentor-stage-still lf-mentor-stage-still--cover lf-mentor-stage-sequence"
         src={playing.url} alt="" onLoad={() => setSequenceStarted(playing.url)} onError={() => setPlaying(null)} /> : null}
-      {rendered3d ? <div className="lf-mentor-stage-live" data-visible={liveReady ? 'true' : 'false'}>
+      {rendered3d ? <div className="lf-mentor-stage-live" data-visible={liveVisible ? 'true' : 'false'}>
         <RendererBoundary key={`${character}:${scene}:${mode}`} onFailure={() => fail('render-error')}>
           <StaticThemeProvider isDark={theme === 'dark'}>
             <Suspense fallback={null}>
@@ -396,7 +432,11 @@ export function MentorStage({
                 shot={shot ?? defaultStageShot(character, scene, size)} emotion={played.emotion} action={played.action} actionKey={beat}
                 characterSpeaking={shown === 'speaking'} speechUrl={speechUrl} audioKey={audioKey}
                 onSpeechEnd={onSpeechEnd} onSpeechBlocked={onSpeechBlocked}
-                onReady={() => { setLiveReady(true); report(mode); }}
+                onReady={() => {
+                  if (currentLoadingKey.current !== loadingKey) return;
+                  setLiveReadyMs(Math.round((typeof performance === 'undefined' ? 0 : performance.now()) - mountedAt.current));
+                  setLiveReady(true); report(mode);
+                }}
                 onStats={(stats) => {
                   strikes.current = frameRateStrikes(strikes.current, stats);
                   if (strikes.current >= FRAME_RATE_STRIKES) fail('frame-rate');

@@ -1,4 +1,5 @@
-import { useLayoutEffect, useRef, useState, type FormEvent } from 'react';
+import { StandaloneHeader } from '@/rebuild/design/StandaloneHeader';
+import { useLayoutEffect, useRef, useState, type ReactNode, type FormEvent } from 'react';
 import { Button, Copy, InlineNotice, LoadingState, SingleStateScreen, TextField } from '../design/controls';
 import type { Locale } from '../design/copyBudget';
 import { rebuildNamespaceCopy } from '../../i18n/rebuild';
@@ -35,7 +36,7 @@ export interface AgeScreenCopy {
 }
 
 type AgeScreenProps = {
-  copy: AgeScreenCopy; locale: string; dark: boolean;
+  copy: AgeScreenCopy; locale: string; dark: boolean; header?: ReactNode;
   /** 'askTutor': a parent-created child with no age on record; only the Tutor can give it (A.4). */
   state: 'loading' | 'error' | 'form' | 'saving' | 'askTutor'; error?: 'invalid' | 'unavailable';
   /** `birthMonth` (`YYYY-MM`) only for a date that reads 13 to 17, after the screen said what it is kept for. */
@@ -85,7 +86,7 @@ function AgeQuestion({ copy, state, error, onSubmit, onRetry, onExit }: Omit<Age
   </div>;
 }
 
-export function AgeScreen({ locale, dark, ...question }: AgeScreenProps) {
+export function AgeScreen({ locale, dark, header, ...question }: AgeScreenProps) {
   const probe = useRef<HTMLDivElement>(null);
   const [frame, setFrame] = useState<'embedded' | 'standalone' | null>(null);
   useLayoutEffect(() => { setFrame(probe.current?.parentElement?.closest('[data-shell] main') ? 'embedded' : 'standalone'); }, []);
@@ -93,7 +94,7 @@ export function AgeScreen({ locale, dark, ...question }: AgeScreenProps) {
   return <div ref={probe} className={`lf-rebuild${frame === 'embedded' ? ' lf-age-root--embedded' : ''}`} data-theme={dark ? 'dark' : 'light'} lang={locale}>
     {frame === 'embedded' ? <AgeQuestion {...question} /> : frame === 'standalone'
       ? <SingleStateScreen appName="LittleFounders" pageTitle={question.state === 'askTutor' ? question.copy.askTutorTitle : question.copy.title} routeKey="age-screen" locale={shellLocale} hue="primary"
-        labels={{ skip: rebuildNamespaceCopy[shellLocale].core.appShell.skip }}>
+        labels={{ skip: rebuildNamespaceCopy[shellLocale].core.appShell.skip }} bar={header ?? <StandaloneHeader locale={shellLocale} theme={dark ? 'dark' : 'light'} />}>
         <div className="lf-age-panel"><AgeQuestion {...question} /></div>
       </SingleStateScreen> : null}
   </div>;

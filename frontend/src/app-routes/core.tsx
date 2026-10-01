@@ -19,15 +19,12 @@ import { DevRoute } from './LazyRoute';
  * with the lab's local grader) as dead files (S10L.2). Inside the branch the
  * production build folds `false ? … : null` away and no chunk is emitted.
  *
- * - lesson-lab / lesson-view: the Lesson Engine QA surface (LESSON_ENGINE.md
- *   §10), used by verify:lesson-engine.
+ * Lesson Engine QA uses the rebuilt fixture gallery and real v2 route.
  * - scene-lab / pose-lab: the Tutor 3D layer's authoring surfaces (measure a
  *   real .glb against tutor-scene/budget.ts; review the pose library by
  *   LOOKING at it). `three` must never reach an entry bundle by a stray import.
  */
 const devLabs = import.meta.env.DEV ? {
-  LessonLabPage: lazy(() => import('@/lesson-engine/lab/LessonLabPage')),
-  LessonViewPage: lazy(() => import('@/lesson-engine/lab/LessonViewPage')),
   SceneLabPage: lazy(() => import('@/tutor-scene/lab/SceneLabPage')),
   PoseLabPage: lazy(() => import('@/tutor-scene/lab/PoseLabPage')),
 } : null;
@@ -39,8 +36,6 @@ const devLabs = import.meta.env.DEV ? {
 /** DEV-only harnesses; an empty fragment in a production build. */
 export const devRoutes = devLabs ? (
   <>
-    <Route path="dev/lesson-lab" element={<DevRoute><devLabs.LessonLabPage /></DevRoute>} />
-    <Route path="dev/lesson-view" element={<DevRoute><devLabs.LessonViewPage /></DevRoute>} />
     <Route path="dev/scene-lab" element={<DevRoute><devLabs.SceneLabPage /></DevRoute>} />
     <Route path="dev/pose-lab" element={<DevRoute><devLabs.PoseLabPage /></DevRoute>} />
   </>

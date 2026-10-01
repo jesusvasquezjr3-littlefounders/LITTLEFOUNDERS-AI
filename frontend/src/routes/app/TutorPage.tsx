@@ -4,11 +4,12 @@ import { useAuth } from '@/auth/AuthContext';
 import { useTheme } from '@/theme/useTheme';
 import { trackInsight } from '@/lib/insights';
 import { APP_HOME } from '@/app-shell/home';
-import { ShellRoot, useShellLocale } from '@/app-shell/ShellRoot';
+import { ShellRoot, useShellCopy, useShellLocale } from '@/app-shell/ShellRoot';
 import { StandaloneState } from '@/app-shell/StandaloneState';
 import { useWalletAccess } from '@/routes/app/wallet/useWalletAccess';
 import { guidedReviewSkillFrom } from '@/routes/app/learn/paths';
-import { ButtonLink } from '@/rebuild/design/controls';
+import { ButtonLink, SkipLink } from '@/rebuild/design/controls';
+import { ConnectedStandaloneHeader } from '@/app-shell/StandaloneHeader';
 import { MentorRoute, mentorCopy } from '@/rebuild/mentor/screen/MentorRoute';
 
 /*
@@ -67,9 +68,10 @@ export default function TutorPage() {
   }, []);
   const leave = useCallback(() => navigate(APP_HOME), [navigate]);
   const path = useCallback(() => navigate('/learn'), [navigate]);
+  const shellCopy = useShellCopy().appShell;
   return <MentorBoundary fallback={<MentorFailure />}>
     <ShellRoot>
-      <MentorRoute getToken={getToken} userId={session?.user?.id ?? null} locale={locale} theme={isDark ? 'dark' : 'light'}
+      <MentorRoute header={<><SkipLink label={shellCopy.skip} target="lf-mentor-route-main" /><ConnectedStandaloneHeader /></>} getToken={getToken} userId={session?.user?.id ?? null} locale={locale} theme={isDark ? 'dark' : 'light'}
         guardianLink={wallet.familyChild} reviewSkill={reviewSkill} onLeave={leave} onPath={path} initialSheet={initialSheet} />
     </ShellRoot>
   </MentorBoundary>;

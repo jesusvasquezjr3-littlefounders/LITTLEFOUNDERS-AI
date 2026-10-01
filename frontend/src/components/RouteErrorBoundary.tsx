@@ -1,3 +1,4 @@
+import { ConnectedStandaloneHeader } from '@/app-shell/StandaloneHeader';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { useTheme } from '@/theme/useTheme';
 import { useShellLocale } from '@/app-shell/ShellRoot';
@@ -59,7 +60,7 @@ function Fallback({ error, home }: { error: Error; home: string }) {
   const locale = useShellLocale();
   const dark = useDarkMode();
   // A full reload, not a router navigation: a stale chunk is fixed only by fetching the new index and its new hashes.
-  return <RouteErrorFrame theme={dark ? 'dark' : 'light'} locale={locale} stale={isStaleChunk(error)} home={home === '/' ? 'home' : 'learn'}
+  return <RouteErrorFrame header={<ConnectedStandaloneHeader />} theme={dark ? 'dark' : 'light'} locale={locale} stale={isStaleChunk(error)} home={home === '/' ? 'home' : 'learn'}
     onReload={() => window.location.reload()} onHome={() => window.location.assign(home)} />;
 }
 

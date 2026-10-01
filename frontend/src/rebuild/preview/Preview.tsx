@@ -1,3 +1,6 @@
+import { SelectField } from '../design/fields';
+import { IconButton } from '../design/controls';
+import { RebuildRoot } from '../design/root';
 import { useEffect, useState } from 'react';
 import { rebuildCopy } from '../../i18n/rebuild';
 import type { AgeBand, Locale } from '../design/copyBudget';
@@ -36,28 +39,12 @@ export function Preview() {
   const context: PreviewContext = { locale, theme, ageBand, register, params, t, go, screen };
   const entry = PREVIEW_SCREENS[screen];
   if (entry?.frame === 'standalone') return <>{entry.render(context)}</>;
-  return <div className="lf-rebuild" data-theme={theme} data-age-band={ageBand} lang={locale}>
+  return <RebuildRoot theme={theme} ageBand={ageBand} locale={locale}>
     {entry ? entry.render(context) : renderPreviewFallback(context)}
     <aside className="lf-preview-settings" aria-label={t.preview}>
-      <label data-copy-role="body">{t.language}
-        <select value={locale} onChange={(event) => setLocale(event.target.value as Locale)}>
-          {Object.keys(translations).map((value) => <option key={value} value={value} data-copy-role="data">{value}</option>)}
-        </select>
-      </label>
-      <label data-copy-role="body">{t.theme}
-        <select value={theme} onChange={(event) => setTheme(event.target.value === 'dark' ? 'dark' : 'light')}>
-          <option value="light" data-copy-role="option">{t.light}</option>
-          <option value="dark" data-copy-role="option">{t.dark}</option>
-        </select>
-      </label>
-      <label data-copy-role="body">{t.age}
-        <select value={ageBand} onChange={(event) => setAgeBand(event.target.value as AgeBand)}>
-          <option value="6-9" data-copy-role="data">6–9</option>
-          <option value="10-12" data-copy-role="data">10–12</option>
-          <option value="13-17" data-copy-role="data">13–17</option>
-          <option value="adult" data-copy-role="option">{t.adult}</option>
-        </select>
-      </label>
+      <SelectField label={t.language} value={locale} onChange={(event) => setLocale(event.target.value as Locale)} options={Object.keys(translations).map((value) => ({ value, label: value, role: 'data' }))} />
+      <IconButton glyph={theme === 'dark' ? 'sun' : 'moon'} label={theme === 'dark' ? t.light : t.dark} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
+      <SelectField label={t.age} value={ageBand} onChange={(event) => setAgeBand(event.target.value as AgeBand)} options={[{ value: '6-9', label: '6–9', role: 'data' }, { value: '10-12', label: '10–12', role: 'data' }, { value: '13-17', label: '13–17', role: 'data' }, { value: 'adult', label: t.adult }]} />
     </aside>
-  </div>;
+  </RebuildRoot>;
 }

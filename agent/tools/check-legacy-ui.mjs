@@ -20,9 +20,8 @@
  *   4. The i18next bundle (src/i18n/index.ts) loads only the legacy
  *      namespaces that survived; rebuilt copy lives in rebuild-<ns>.json.
  *
- * The one sanctioned legacy island is the v1 lesson player (OD-24), reached
- * through its named adapter (src/routes/app/learn/LegacyLessonIsland.tsx); it
- * retires with the legacy lesson content.
+ * OD-31 retires the v1 lesson player and its adapters globally. No legacy
+ * lesson island remains sanctioned.
  *
  * Usage: node agent/tools/check-legacy-ui.mjs [root]
  */

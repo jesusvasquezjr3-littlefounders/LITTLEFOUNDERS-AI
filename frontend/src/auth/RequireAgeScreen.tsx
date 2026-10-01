@@ -1,3 +1,4 @@
+import { ConnectedStandaloneHeader } from '@/app-shell/StandaloneHeader';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -47,7 +48,7 @@ export function RequireAgeScreen({ children }: { children: ReactNode }) {
   const current = result?.identity === identity ? result : null;
   if (current && validState(current.state) && !current.state.required) return <>{children}</>;
   const locale = i18n.resolvedLanguage === 'es-MX' ? 'es-MX' : i18n.resolvedLanguage === 'pt-BR' ? 'pt-BR' : 'en-US';
-  return <AgeScreen key={identity} locale={locale} dark={isDark} copy={({'en-US': en, 'es-MX': es, 'pt-BR': pt})[locale].ageScreen}
+  return <AgeScreen header={<ConnectedStandaloneHeader />} key={identity} locale={locale} dark={isDark} copy={({'en-US': en, 'es-MX': es, 'pt-BR': pt})[locale].ageScreen}
     state={!current ? 'loading' : !validState(current.state) ? 'error' : kid ? 'askTutor' : saving ? 'saving' : 'form'} error={error}
     onRetry={() => setAttempt(n => n + 1)} onExit={() => void logout()}
     onSubmit={(birthDate, birthMonth) => {

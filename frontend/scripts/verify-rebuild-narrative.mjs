@@ -141,6 +141,18 @@ async function enter() {
   await new Promise((done) => setTimeout(done, 200));
 }
 
+async function press(selector, index = 0) {
+  const point = await page.evaluate(`(() => {
+    const element = document.querySelectorAll(${JSON.stringify(selector)})[${index}];
+    if (!element) throw Error('Missing narrative control');
+    element.scrollIntoView({block:'center',behavior:'instant'});
+    const r=element.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2,top=document.elementFromPoint(x,y);
+    if (!r.width || !r.height || !element.contains(top)) throw Error('Narrative control is occluded');
+    return {x,y};
+  })()`);
+  for (const type of ['mousePressed','mouseReleased']) await page.send('Input.dispatchMouseEvent', {type,...point,button:'left',clickCount:1});
+}
+
 try {
   for (const state of Object.keys(STATES)) for (const locale of ['en-US', 'es-MX', 'pt-BR']) for (const theme of ['light', 'dark'])
     for (const width of [320, 375, 768, 1280]) for (const scale of [1, 1.4]) for (const spacing of width === 375 ? [false, true] : [false]) {
@@ -178,6 +190,13 @@ try {
   else {
     if (!(await page.evaluate(focusVisible))) findings.push({ interaction: 'teen-bridge-focus-not-visible' });
     await enter();
+    // A savings bridge now offers a real goal or the existing plan-only action.
+    if (!(await page.evaluate("!!document.querySelector('.lf-bridge-self-goal')"))) findings.push({ interaction: 'teen-goal-form-did-not-open' });
+    else if (!(await tab(12, "document.activeElement?.closest('.lf-bridge-self-goal') !== null && document.activeElement?.tagName === 'BUTTON' && document.activeElement?.textContent === 'Just a plan'"))) findings.push({ interaction: 'teen-plan-only-unreachable' });
+    else {
+      if (!(await page.evaluate(focusVisible))) findings.push({ interaction: 'teen-plan-only-focus-not-visible' });
+      await enter();
+    }
     if (!(await page.evaluate("document.querySelector('.lf-bridge-self [role=status]')?.textContent === 'Saved as your plan.'"))) findings.push({ interaction: 'teen-bridge-not-answered' });
   }
 
@@ -195,7 +214,7 @@ try {
 
   // Reduced motion: no transition on the pressable segments (the shared SegmentedControl) or buttons.
   await navigate({ state: 'family', locale: 'en-US', theme: 'light', width: 375, scale: 1, spacing: false, reduced: true });
-  await page.evaluate("document.querySelectorAll('.lf-family-bridge .lf-button--accent')[1]?.click()");
+  await press('.lf-family-bridge .lf-button--accent', 1);
   await page.evaluate('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
   const motion = await page.evaluate("[...document.querySelectorAll('.lf-segmented-option, .lf-button')].map(e => getComputedStyle(e).transitionDuration).filter(d => d.split(',').some(p => parseFloat(p) > 0))");
   if (motion.length) findings.push({ interaction: 'motion-under-reduced-motion', motion });

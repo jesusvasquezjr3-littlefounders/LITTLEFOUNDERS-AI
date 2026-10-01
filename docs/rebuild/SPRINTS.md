@@ -1,5 +1,11 @@
 # Migration sprints and acceptance register
 
+## Global UI polish and content reset checkpoint
+
+Global branding, custom dropdowns, icon-only theme controls, proprietary iconography, all standalone/loading/error layouts and v2-only lesson runtime are implemented and locally verified. The complete service aggregate passes (frontend 3,204 tests; Oracle 1,789; all other packages), all 647 repository-tool tests pass, and current route, fallback, lifecycle, narrative, progressive Mentor, sequence and strict hardware checks pass. Three pixel-only approved-asset corrections have independent current build/browser evidence; the full aggregate runs again before push. The three interface audits pass with explicit composite provenance for 540 states, supplemented by final changed-state and age-band checks.
+
+The [active checkpoint](sprints/UI-POLISH-LESSON-RETIREMENT.md) records exact evidence, original failures, limitations and the authorized local-backed-up reset under OD-30/OD-31. Implementation and local verification are complete for this bounded change. Human acceptance and new content generation are excluded; production deployment/reset remain pending. No parent SPEC requirement is marked Accepted. Final consistent analytics backup requires the deployed writer pause before deletion; existing database/media/audio/Forge recovery sets are authenticated locally. This supersedes historical legacy-player adapter allowances. Affected requirements: A.1, B.7, B.8, B.9, B.20, B.23, B.26, G.1, H.1 and H.5.
+
 The binding authority is [the LittleFounders SPEC](../littlefounders-spec/README.md). Sprints sequence its requirements; they do not reduce scope or replace acceptance criteria. All documentation and evidence are in English. The owner requested point-by-point implementation with product and frontend verification on 21 September 2026.
 
 ## Status contract

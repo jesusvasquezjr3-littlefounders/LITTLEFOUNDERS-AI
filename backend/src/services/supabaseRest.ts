@@ -1261,47 +1261,6 @@ export async function recordV2FirstUnaidedStage(payload: {
   return result !== null;
 }
 
-// ── Lesson segment attempts (0007) — SERVICE ROLE writes, self-read RLS ────
-
-export interface SegmentAttemptRow {
-  segment_id: string;
-  attempt_number: number;
-  score: number;
-}
-
-const GradeReceipt = z.discriminatedUnion('exhausted', [
-  z.object({ exhausted: z.literal(true) }),
-  z.object({ exhausted: z.literal(false), verdict: z.object({
-    correct: z.boolean(), score: z.number().min(0).max(100),
-    tier: z.enum(['perfect', 'great', 'almost', 'tryAgain']),
-    feedback_md: z.string().optional(), reveal: z.unknown().optional(), allowRetry: z.boolean(),
-  }) }),
-]);
-
-/** Only the database transaction may allocate an attempt number or reveal the final answer. */
-export async function recordLessonGrade(payload: {
-  p_user_id: string; p_lesson_id: string; p_run_id: string | null; p_segment_id: string;
-  p_client_attempt: number; p_max_attempts: number; p_hints_used: number;
-  p_verdict: unknown; p_context: Record<string, unknown>;
-}): Promise<z.infer<typeof GradeReceipt> | null> {
-  const result = await rest<unknown>('/rpc/record_lesson_grade', serviceToken(), { method: 'POST', body: JSON.stringify(payload) });
-  const parsed = GradeReceipt.safeParse(result);
-  return parsed.success ? parsed.data : null;
-}
-
-/**
- * Self-read (RLS `user_id = auth.uid() OR verified guardian`) — the user's own
- * token is enough. When `runId` is given, only THIS run's attempts are returned
- * so /complete scores the run the kid just played, not a lifetime best (0012).
- */
-export function getSegmentAttempts(accessToken: string, userId: string, lessonId: string, runId?: string): Promise<SegmentAttemptRow[] | null> {
-  const runFilter = runId ? `&run_id=eq.${eu(runId)}` : '';
-  return rest<SegmentAttemptRow[]>(
-    `/lesson_segment_attempts?user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}${runFilter}&select=segment_id,attempt_number,score`,
-    accessToken,
-  );
-}
-
 /** No client INSERT/UPDATE policy (0007) — Core (service role) is the only writer. Upsert by (user_id, lesson_id). */
 export async function upsertLessonProgress(
   userId: string,
@@ -2574,18 +2533,6 @@ const LessonCompletionResult = z.object({
   pace: z.object({ lessons_passed_today: z.number().int().nonnegative() }).optional(),
 });
 export type LessonCompletionResult = z.infer<typeof LessonCompletionResult>;
-
-/** Server-graded values only; the service-only RPC commits all rewards atomically. */
-export async function completeLesson(input: {
-  p_user_id: string; p_lesson_id: string; p_run_id: string | null;
-  p_score: number; p_passed: boolean; p_xp: number; p_minutes: number; p_local_date: string;
-}): Promise<z.infer<typeof LessonCompletionResult> | null> {
-  const result = await rest<unknown>('/rpc/complete_lesson', serviceToken(), {
-    method: 'POST', body: JSON.stringify(input),
-  });
-  const parsed = LessonCompletionResult.safeParse(result);
-  return parsed.success ? parsed.data : null;
-}
 
 /**
  * GAP-FIX-R1 (OD-17, B.7): version-pinned completion of a mixed v2 document.

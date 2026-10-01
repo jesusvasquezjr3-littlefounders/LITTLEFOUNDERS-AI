@@ -1,3 +1,4 @@
+import { selectOption } from '../../../rebuild/test/selectOption';
 import { describe, expect, it, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -19,7 +20,7 @@ beforeEach(async () => {
 });
 
 describe('Auth pages (login/signup) — clean trust surface, no marketing chrome', () => {
-  it('/login shows only the welcome text, the form card, and the utility row — no marketing nav or footer', () => {
+  it('/login shows only the welcome text, the form card, and the utility row — no marketing nav', () => {
     renderApp('/login');
 
     expect(screen.getByRole('heading', { level: 1, name: 'Welcome back' })).toBeInTheDocument();
@@ -31,12 +32,12 @@ describe('Auth pages (login/signup) — clean trust surface, no marketing chrome
     for (const name of ['How it works', 'Families', 'FAQ']) {
       expect(screen.queryByRole('link', { name })).not.toBeInTheDocument();
     }
-    expect(screen.queryByRole('link', { name: 'Terms & Conditions' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Privacy Notice' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'informame@littlefounders.ai' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Terms & Conditions' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Privacy Notice' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'informame@littlefounders.ai' })).toBeInTheDocument();
   });
 
-  it('/signup shows only the welcome text, the form card, and the utility row — no marketing nav or footer', () => {
+  it('/signup shows only the welcome text, the form card, and the utility row — no marketing nav', () => {
     renderApp('/signup');
 
     expect(screen.getByRole('heading', { level: 1, name: 'Create your account' })).toBeInTheDocument();
@@ -46,7 +47,7 @@ describe('Auth pages (login/signup) — clean trust surface, no marketing chrome
     for (const name of ['How it works', 'Families', 'FAQ']) {
       expect(screen.queryByRole('link', { name })).not.toBeInTheDocument();
     }
-    expect(screen.queryByRole('link', { name: 'Terms & Conditions' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Terms & Conditions' })).toBeInTheDocument();
   });
 
   it('has a way back to home (the wordmark and the Home link go to /)', () => {
@@ -55,10 +56,10 @@ describe('Auth pages (login/signup) — clean trust surface, no marketing chrome
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
   });
 
-  it('offers the language switcher in the sign-in shell footer and switches locale', async () => {
+  it('offers the language switcher in the sign-in shell header and switches locale', async () => {
     renderApp('/login');
 
-    fireEvent.change(screen.getByRole('combobox', { name: 'Language' }), { target: { value: 'es-MX' } });
+    selectOption(screen.getByRole('combobox', { name: 'Language' }), 'Español');
 
     expect(await screen.findByRole('heading', { level: 1, name: 'Qué bueno verte de nuevo' })).toBeInTheDocument();
   });
@@ -68,7 +69,7 @@ describe('Auth pages (login/signup) — clean trust surface, no marketing chrome
     renderApp('/login');
 
     expect(document.documentElement.classList.contains('dark')).toBe(true);
-    fireEvent.click(screen.getByRole('radio', { name: 'Light' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Light' }));
     expect(document.documentElement.classList.contains('dark')).toBe(false);
   });
 });

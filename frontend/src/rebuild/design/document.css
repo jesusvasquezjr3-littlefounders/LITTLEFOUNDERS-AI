@@ -1,9 +1,7 @@
 /*
  * The document ground (Frontend Bible 02 D3, D4; S10 design-system gap fix).
- * The legacy global sheet (src/index.css: Tailwind, the legacy palette, the
- * legacy type scale) loads only with the OD-24 lesson island, the staff lesson preview
- * and the development labs, so the page itself takes the design system's
- * ground, ink and typeface from here. The values are the generated tokens'
+ * The page itself takes the design system's ground, ink and typeface from
+ * here. The values are the generated tokens'
  * `--base` and `--content` (rebuild/design/tokens.css), duplicated because the
  * body sits outside every `.lf-rebuild` root; documentGround.test.ts pins the
  * copies together. The theme class is the one ThemeProvider and the boot

@@ -1,3 +1,4 @@
+import { enterDate } from '../test/dateParts';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ChoreComposer } from './ChoreComposer';
@@ -181,13 +182,13 @@ describe('StreakPauses (D.2, Bible 02 §9.6 rule 3)', () => {
     expect(p.onEnd).toHaveBeenCalledWith(p.pauses[0]);
     const upcoming = container.querySelector('[data-pause-state="upcoming"]') as HTMLElement;
     expect(within(upcoming).getByRole('button', { name: en.streakPauses.cancel })).toBeVisible();
-    fireEvent.change(screen.getByLabelText(en.streakPauses.from), { target: { value: '2026-09-10' } });
-    fireEvent.change(screen.getByLabelText(en.streakPauses.to), { target: { value: '2026-09-12' } });
+    enterDate(en.streakPauses.from, '2026-09-10');
+    enterDate(en.streakPauses.to, '2026-09-12');
     fireEvent.click(screen.getByRole('button', { name: en.streakPauses.submit }));
     expect(screen.getByRole('alert')).toHaveTextContent(en.streakPauses.invalid);
     expect(p.onPause).not.toHaveBeenCalled();
-    fireEvent.change(screen.getByLabelText(en.streakPauses.from), { target: { value: '2026-10-01' } });
-    fireEvent.change(screen.getByLabelText(en.streakPauses.to), { target: { value: '2026-10-05' } });
+    enterDate(en.streakPauses.from, '2026-10-01');
+    enterDate(en.streakPauses.to, '2026-10-05');
     fireEvent.click(screen.getByRole('button', { name: en.streakPauses.submit }));
     expect(p.onPause).toHaveBeenCalledWith({ startsOn: '2026-10-01', endsOn: '2026-10-05' });
     everyTextHasARole(container);

@@ -15,7 +15,7 @@ import { useShellCopy, useShellLocale } from './ShellRoot';
 export function SessionPreferencesSetting() {
   const copy = useShellCopy().sessionPreferences;
   const locale = useShellLocale();
-  const { choice, setChoice, isDark } = useTheme();
+  const { setChoice, isDark } = useTheme();
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [signingOut, setSigningOut] = useState(false);
@@ -26,6 +26,6 @@ export function SessionPreferencesSetting() {
     await logout();
     navigate('/', { replace: true });
   };
-  return <SessionPreferences copy={copy} locale={locale} dark={isDark} choice={choice} onChoice={setChoice}
+  return <SessionPreferences copy={copy} locale={locale} dark={isDark} onChoice={setChoice}
     onSignOut={() => void signOut()} signingOut={signingOut} />;
 }

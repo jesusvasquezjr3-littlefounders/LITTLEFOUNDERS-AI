@@ -66,10 +66,11 @@ describe('Sign-in recipe (A1–A7)', () => {
     // The legacy row shipped `hidden sm:inline-flex`, so a phone lost the only theme control: nothing may hide it by width.
     const layout = read('app-shell', 'PublicLayouts.tsx');
     const authLayout = layout.slice(layout.indexOf('export function AuthLayout'));
-    expect(authLayout).toMatch(/footer=\{<Preferences \/>\}/);
-    const preferences = layout.slice(layout.indexOf('function Preferences'), layout.indexOf('function SiteFooter'));
-    expect(preferences).toMatch(/<SegmentedControl<ThemeChoice>/);
-    expect(preferences).not.toMatch(/hidden/);
+    expect(authLayout).toMatch(/utilities=\{<ShellPreferences \/>\}/);
+    const preferences = read('app-shell', 'ShellPreferences.tsx');
+    expect(preferences).toMatch(/<IconButton glyph=\{isDark \? 'sun' : 'moon'\}/);
+    expect(preferences).toMatch(/label=\{isDark \? copy.themeLight : copy.themeDark\}/);
+    expect(preferences).not.toMatch(/(?:hidden\s+sm:|sm:.*hidden|matchMedia|innerWidth)/);
     expect(layout).not.toMatch(/auth-bg/);
   });
 });

@@ -1,5 +1,7 @@
+import { ThemeProvider } from '@/theme/useTheme';
+import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render as renderPage, screen } from '@testing-library/react';
 import i18n from '@/i18n';
 import { RouteErrorBoundary } from '@/components/RouteErrorBoundary';
 import en from '@/i18n/en-US/rebuild-site.json';
@@ -12,6 +14,8 @@ import es from '@/i18n/es-MX/rebuild-site.json';
  * produced no error anywhere. Lazy routes add a second, ROUTINE way in: a tab
  * open across a deploy asks for a chunk hash that no longer exists.
  */
+
+const render = (node: ReactNode) => renderPage(<ThemeProvider>{node}</ThemeProvider>);
 
 function Boom({ error }: { error: Error }): never {
   throw error;

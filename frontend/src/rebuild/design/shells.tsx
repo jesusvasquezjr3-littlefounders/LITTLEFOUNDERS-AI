@@ -43,6 +43,7 @@ export interface ShellCommonProps {
   onNavigate?: (href: string) => void;
   /** The page. It carries exactly one <h1>. */
   children: ReactNode;
+  utilities?: ReactNode;
 }
 
 /** Document title and language follow the page (WCAG 2.4.2, 3.1.1). */
@@ -99,9 +100,11 @@ export function SkipLink({ label, target }: { label: string; target: string }) {
 
 /** The wordmark. It is the approved brand name, so it is `brand` copy and never budgeted or translated. */
 export function BrandMark({ name, href, onNavigate }: { name: string; href?: string; onNavigate?: (href: string) => void }) {
+  const asset = resolveManifestAsset('brand.mark');
+  const content = <>{asset ? <img className="lf-brand-graphic" src={asset.path} alt="" aria-hidden="true" data-asset-id={asset.id} /> : null}<span>{name}</span></>;
   return href
-    ? <a className="lf-brand-mark" href={href} data-copy-role="brand" onClick={linkHandler(href, onNavigate)}>{name}</a>
-    : <span className="lf-brand-mark" data-copy-role="brand">{name}</span>;
+    ? <a className="lf-brand-mark" href={href} data-copy-role="brand" onClick={linkHandler(href, onNavigate)}>{content}</a>
+    : <span className="lf-brand-mark" data-copy-role="brand">{content}</span>;
 }
 
 function NavIcon({ asset }: { asset: NonNullable<ReturnType<typeof resolveManifestAsset>> }) {
@@ -187,7 +190,7 @@ export interface LearnerShellProps extends ShellCommonProps {
  * has no picture (02 rule 21), so it keeps its word too. Without icons the
  * labels wrap instead of shrinking.
  */
-export function LearnerShell({ items, mentor, mentorIndex = 1, current, labels, onNavigate, children, ...frame }: LearnerShellProps) {
+export function LearnerShell({ items, mentor, mentorIndex = 1, current, labels, onNavigate, children, utilities, ...frame }: LearnerShellProps) {
   const { mainId, main } = useShellFrame(frame);
   const { theme } = useRebuildEnvironment();
   const avatarId = mentor.character ? findMentorAvatar(mentor.character, theme) : null;
@@ -199,9 +202,9 @@ export function LearnerShell({ items, mentor, mentorIndex = 1, current, labels, 
   entries.splice(Math.min(Math.max(mentorIndex, 0), entries.length), 0, mentorEntry);
   return <div className="lf-shell lf-shell--learner" data-shell="learner" lang={frame.locale}>
     <SkipLink label={labels.skip} target={mainId} />
+    <header className="lf-appbar"><BrandMark name={frame.appName} />{utilities}</header>
     <div className="lf-shell-frame">
       <nav className="lf-shell-rail" aria-label={labels.navigation}>
-        <BrandMark name={frame.appName} />
         <NavLinks items={entries} current={current} variant="rail" onNavigate={onNavigate} />
       </nav>
       <main ref={main} id={mainId} tabIndex={-1} className="lf-shell-main">{children}</main>
@@ -229,7 +232,7 @@ export interface ConsoleShellProps extends ShellCommonProps {
 export const CONSOLE_TAB_LIMIT = 5;
 
 /** A console: an app bar with the brand and role on phones, a side rail from 840 px. */
-export function ConsoleShell({ kind, roleLabel, items, current, labels, onNavigate, children, ...frame }: ConsoleShellProps) {
+export function ConsoleShell({ kind, roleLabel, items, current, labels, onNavigate, children, utilities, ...frame }: ConsoleShellProps) {
   const { mainId, main } = useShellFrame(frame);
   const [menuOpen, setMenuOpen] = useState(false);
   const entries = withIcons(items);
@@ -239,13 +242,12 @@ export function ConsoleShell({ kind, roleLabel, items, current, labels, onNaviga
     <header className="lf-appbar">
       <BrandMark name={frame.appName} />
       <Pill tone="primary">{roleLabel}</Pill>
+      {utilities}
       {!tabs ? <IconButton glyph="menu" label={labels.menu} aria-expanded={menuOpen} aria-haspopup="dialog" className="lf-appbar-menu"
         onClick={() => setMenuOpen(true)} /> : null}
     </header>
     <div className="lf-shell-frame">
       <nav className="lf-shell-rail" aria-label={labels.navigation}>
-        <BrandMark name={frame.appName} />
-        <Pill tone="primary">{roleLabel}</Pill>
         <NavLinks items={entries} current={current} variant="rail" onNavigate={onNavigate} />
       </nav>
       <main ref={main} id={mainId} tabIndex={-1} className="lf-shell-main">{children}</main>
@@ -321,7 +323,7 @@ export interface SiteShellProps extends ShellCommonProps {
  * container (02 §11 item 8), a menu sheet below it (z 50); the call to action
  * inline from 640 px and in the menu below it.
  */
-export function SiteShell({ homeHref, links, current = '', secondaryAction, primaryAction, stickyAction, footer, labels, onNavigate, children, ...frame }: SiteShellProps) {
+export function SiteShell({ homeHref, links, current = '', secondaryAction, primaryAction, stickyAction, footer, labels, onNavigate, children, utilities, ...frame }: SiteShellProps) {
   const { mainId, main } = useShellFrame(frame);
   const [menuOpen, setMenuOpen] = useState(false);
   const [docked, setDocked] = useState(false);
@@ -338,6 +340,7 @@ export function SiteShell({ homeHref, links, current = '', secondaryAction, prim
     <header className="lf-site-header">
       <BrandMark name={frame.appName} href={homeHref} onNavigate={onNavigate} />
       <nav className="lf-site-links" aria-label={labels.navigation}><NavLinks items={links} current={current} variant="rail" onNavigate={onNavigate} /></nav>
+      {utilities}
       <div className="lf-site-actions">
         {secondaryAction ? <ButtonLink size="sm" href={secondaryAction.href} onClick={follow(secondaryAction.href)}>{secondaryAction.label}</ButtonLink> : null}
         {primaryAction ? <ButtonLink size="sm" variant="accent" href={primaryAction.href} onClick={follow(primaryAction.href)}>{primaryAction.label}</ButtonLink> : null}
@@ -363,7 +366,7 @@ export function SiteShell({ homeHref, links, current = '', secondaryAction, prim
 }
 
 /** Sign-up, log-in and recovery: the brand, one optional way back, one column. */
-export function AuthShell({ homeHref, back, footer, labels, onNavigate, children, ...frame }: Omit<ShellCommonProps, 'labels'> & {
+export function AuthShell({ homeHref, back, footer, labels, onNavigate, children, utilities, ...frame }: Omit<ShellCommonProps, 'labels'> & {
   homeHref: string; back?: ShellLinkAction; footer?: ReactNode; labels: { skip: string };
 }) {
   const { mainId, main } = useShellFrame(frame);
@@ -371,6 +374,7 @@ export function AuthShell({ homeHref, back, footer, labels, onNavigate, children
     <SkipLink label={labels.skip} target={mainId} />
     <header className="lf-auth-header">
       <BrandMark name={frame.appName} href={homeHref} onNavigate={onNavigate} />
+      {utilities}
       {back ? <ButtonLink size="sm" href={back.href} onClick={linkHandler(back.href, onNavigate)}>{back.label}</ButtonLink> : null}
     </header>
     <main ref={main} id={mainId} tabIndex={-1} className="lf-shell-main lf-auth-main"><div className="lf-auth-column">{children}</div></main>

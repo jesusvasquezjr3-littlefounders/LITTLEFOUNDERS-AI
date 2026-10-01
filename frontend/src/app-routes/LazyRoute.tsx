@@ -1,9 +1,10 @@
-import { Suspense, type ReactNode } from 'react';
+import { Suspense, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { ConnectedStandaloneHeader } from '@/app-shell/StandaloneHeader';
 import { RouteErrorBoundary } from '@/components/RouteErrorBoundary';
 import { rebuildNamespaceCopy } from '@/i18n/rebuild';
 import { useShellLocale } from '@/app-shell/ShellRoot';
 import { useTheme } from '@/theme/useTheme';
-import { LoadingState, RebuildRoot } from '@/rebuild/design/controls';
+import { LoadingState, RebuildRoot, SkipLink } from '@/rebuild/design/controls';
 import './lazyRoute.css';
 
 /*
@@ -35,9 +36,21 @@ export function LazyRoute({ children, home }: { children: ReactNode; home?: stri
 export function TutorChunkFallback() {
   const locale = useShellLocale();
   const { isDark } = useTheme();
+  const mainId = useId();
+  const probe = useRef<HTMLDivElement>(null);
+  const [standalone, setStandalone] = useState(false);
+  useLayoutEffect(() => { setStandalone(!probe.current?.closest('[data-shell] main')); }, []);
   return <RebuildRoot theme={isDark ? 'dark' : 'light'} locale={locale}>
-    <div className="lf-route-loading">
-      <LoadingState label={rebuildNamespaceCopy[locale].core.appShell.loading} lines={2} />
+    <div ref={probe}>
+      {standalone ? <>
+        <SkipLink label={rebuildNamespaceCopy[locale].core.appShell.skip} target={mainId} />
+        <ConnectedStandaloneHeader />
+        <main id={mainId} tabIndex={-1} className="lf-route-loading">
+          <LoadingState label={rebuildNamespaceCopy[locale].core.appShell.loading} lines={2} />
+        </main>
+      </> : <div className="lf-route-loading">
+        <LoadingState label={rebuildNamespaceCopy[locale].core.appShell.loading} lines={2} />
+      </div>}
     </div>
   </RebuildRoot>;
 }

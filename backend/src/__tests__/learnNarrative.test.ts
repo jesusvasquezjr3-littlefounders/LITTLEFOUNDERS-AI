@@ -6,6 +6,7 @@ import { globalRateLimiter } from '../middleware/rateLimit.js';
 import { resetConfigForTests } from '../config.js';
 import { mintToken } from './helpers.js';
 import type { FakeDb } from './fakePostgrest.js';
+import { v2PublicLessonSchema } from '../services/v2LessonDocument.js';
 import { createNarrativeFakeFetch } from './narrativeFakeRpc.js';
 
 /*
@@ -25,7 +26,7 @@ import { createNarrativeFakeFetch } from './narrativeFakeRpc.js';
  * each story decision, and every teen's journal stays private.
  *
  * Catalog, linear engine (the default until the owner accepts B.6):
- *   money / chapter 1 / arc A   story  (a story_branch lesson, kc.story)
+ *   money / chapter 1 / arc A   story  (a signed v2 story choice, kc.story)
  *                               save   (two story lessons, biz.saving-goal)
  *                               work   (one story lesson, biz.value-of-work)
  *   money / chapter 1 / arc B   later  (one story lesson, kc.story)
@@ -61,32 +62,18 @@ const LEARNERS = [KID7, GUEST, TEEN15, TEEN_B, LINKED_TEEN, ADULT, TUTOR];
 const COURSE = { money: uid(1), other: uid(2) };
 
 const storyDoc = (slug: string) => ({
-  schema_version: 1,
-  meta: { slug, title: slug, locale: 'en-US', subject: 'money', estimated_minutes: 5, objectives: ['x'], cast: ['dina'] },
-  scoring: { pass_threshold: 70, hint_penalty_pct: 10, max_attempts: 2, hearts: null },
-  segments: [{ id: 'story', type: 'story_scene', prompt_md: 'Story', difficulty: 1, xp: 0, payload: { backdrop: 'band', body_md: 'The end.' } }],
+  schema_version: 2, title: slug, required_capabilities: ['visual.speech-plate.v1'],
+  segments: [{ id: 'story', type: 'voice.mentor-turn.v2', grading: 'none', prompt: 'Story', visual: { type: 'speech-plate' }, payload: { role: 'intro', line: 'The end.' } }],
 });
 
 const branchDoc = {
-  schema_version: 1,
-  meta: { slug: 'story', title: 'Lemonade', locale: 'en-US', subject: 'money', estimated_minutes: 5, objectives: ['x'], cast: ['liruf'] },
-  scoring: { pass_threshold: 70, hint_penalty_pct: 10, max_attempts: 2, hearts: null },
-  segments: [{
-    id: 'price', type: 'story_branch', title: 'How much to charge?', prompt_md: 'Choose a price', difficulty: 2, xp: 10,
-    payload: {
-      start_node: 'decision',
-      nodes: [
-        { id: 'decision', text_md: 'Each glass costs 2 coins to make. What price brings me closer to the guitar?', character: 'liruf', choices: [
-          { id: 'p5', text_md: '5 coins, the usual', next: 'o5' },
-          { id: 'p10', text_md: '10 coins, double the price', next: 'o10' },
-        ] },
-        { id: 'o5', text_md: 'The 6 neighbors buy. Liruf earns 18 coins.', choices: [{ id: 'fin5', text_md: 'Continue', next: null }] },
-        { id: 'o10', text_md: 'Two neighbors buy. Liruf earns 16 coins.', choices: [{ id: 'fin10', text_md: 'Continue', next: null }] },
-      ],
-    },
-  }],
+  schema_version: 2, title: 'Lemonade', required_capabilities: ['visual.story-scene.v1', 'operation.choose-option.v1'],
+  segments: [{ id: 'price', type: 'story.branch.v2', grading: 'server', prompt: 'Choose a price', visual: { type: 'story-scene' },
+    payload: { scene: 'Each glass costs 2 coins to make. What price brings me closer to the guitar?', options: [
+      { id: 'p05', label: '5 coins, the usual' }, { id: 'p10', label: '10 coins, double the price' },
+    ] } }],
 };
-const branchKeys = { price: { qualities: [{ node_id: 'decision', choice_id: 'p5', score: 100 }, { node_id: 'decision', choice_id: 'p10', score: 80 }, { node_id: 'o5', choice_id: 'fin5', score: 100 }, { node_id: 'o10', choice_id: 'fin10', score: 100 }] } };
+const branchKeys = { price: { acceptable_choice_ids: ['p05', 'p10'] } };
 
 interface Built { db: FakeDb; lesson: Record<string, string>; topic: Record<string, string> }
 
@@ -107,13 +94,14 @@ function build(): Built {
       { user_id: UNVERIFIED_PARENT, declared_age_band: 'adult' },
     ],
     account_safety_origins: [{ user_id: GUEST, under13_origin: true }],
+    // V2 admission needs a birth date; the sharing tests erase age evidence explicitly.
     profiles: [
       { user_id: KID7, display_name: 'Kid', locale: 'en-US', birth_date: yearsAgo(7) },
-      { user_id: GUEST, display_name: 'Guest', locale: 'en-US', birth_date: null },
+      { user_id: GUEST, display_name: 'Guest', locale: 'en-US', birth_date: yearsAgo(7) },
       { user_id: TEEN15, display_name: 'Teen', locale: 'en-US', birth_date: yearsAgo(15) },
-      { user_id: TEEN_B, display_name: 'Teen B', locale: 'es-MX', birth_date: null },
+      { user_id: TEEN_B, display_name: 'Teen B', locale: 'es-MX', birth_date: yearsAgo(15) },
       { user_id: LINKED_TEEN, display_name: 'Linked', locale: 'en-US', birth_date: yearsAgo(14) },
-      { user_id: ADULT, display_name: 'Adult', locale: 'en-US', birth_date: null },
+      { user_id: ADULT, display_name: 'Adult', locale: 'en-US', birth_date: yearsAgo(30) },
       { user_id: TUTOR, display_name: 'Tutor', locale: 'pt-BR', birth_date: '1985-05-05' },
       { user_id: OTHER_PARENT, display_name: 'Other', locale: 'en-US', birth_date: '1985-05-05' },
       { user_id: UNVERIFIED_PARENT, display_name: 'Unverified', locale: 'en-US', birth_date: '1985-05-05' },
@@ -155,7 +143,12 @@ function build(): Built {
           const lessonId = uid(++n);
           lesson[l.key] = lessonId;
           db.lessons!.push({ id: lessonId, topic_id: topicId, position: li + 1, slug: l.key, title: { 'en-US': `Lesson ${l.key}`, 'pt-BR': `Lição ${l.key}` }, difficulty: 1, xp_total: l.xp ?? 0, estimated_minutes: 5, status: 'published' });
-          db.lesson_documents!.push({ lesson_id: lessonId, locale: 'en-US', schema_version: 1, updated_at: '2026-09-01T00:00:00.000Z', document: l.doc ?? storyDoc(l.key), answer_keys: l.keys ?? {}, audio: {} });
+          const versionId = uid(++n);
+          (db.lesson_document_versions ??= []).push({ id: versionId, lesson_id: lessonId, locale: 'en-US', schema_version: 2, version_id: 'revision-001', created_at: '2026-09-01T00:00:00.000Z',
+            document: { ...l.doc ?? storyDoc(l.key), course_id: COURSE[course], pathway_id: 'test-pathway', chapter_id: adventureId,
+              lesson_id: lessonId, version_id: 'revision-001', locale: 'en-US', age_band: 'adult', eligibility: { minimum_age: 6, maximum_age: 119 },
+              knowledge_component_ids: [t.kc], adventure_scene_id: 'diorama-a' }, answer_keys: l.keys ?? {}, audio: {} });
+          (db.lesson_document_version_current ??= []).push({ lesson_id: lessonId, locale: 'en-US', document_version_id: versionId });
         });
       });
     });
@@ -178,10 +171,33 @@ const as = (user: string, guest = false) => (req: request.Test) => req.set('Auth
 const get = (user: string, path: string) => as(user, user === GUEST)(request(createApp()).get(`/api/v1${path}`));
 const post = (user: string, path: string, body: object = {}) => as(user, user === GUEST)(request(createApp()).post(`/api/v1${path}`).send(body));
 const del = (user: string, path: string) => as(user, user === GUEST)(request(createApp()).delete(`/api/v1${path}`));
-const grade = (user: string, choice: 'p5' | 'p10', attempt = 1) => post(user, `/learn/lessons/${built.lesson.story}/grade`, {
-  segment_id: 'price', attempt_number: attempt, answer: { path: [{ node_id: 'decision', choice_id: choice }, { node_id: choice === 'p5' ? 'o5' : 'o10', choice_id: choice === 'p5' ? 'fin5' : 'fin10' }] },
-});
-const complete = (user: string, key: string) => post(user, `/learn/lessons/${built.lesson[key]}/complete`, { seconds_spent: 60 });
+const runs = new Map<string, { runId: string; retryToken?: string }>();
+const grade = async (user: string, choice: string, attempt = 1) => {
+  const path = `/learn/lessons/${built.lesson.story}`;
+  let run = attempt > 1 ? runs.get(user) : undefined;
+  let attemptToken = run?.retryToken;
+  if (!run || !attemptToken) {
+    const started = await post(user, `${path}/v2-runs`);
+    expect(started.status, JSON.stringify(started.body)).toBe(200);
+    run = { runId: started.body.data.run_id as string };
+    attemptToken = started.body.data.attempt_tokens.price as string;
+  }
+  const result = await post(user, `${path}/grade`, { segment_id: 'price', run_id: run.runId, attempt_token: attemptToken, answer: { choice } });
+  runs.set(user, { runId: run.runId, retryToken: result.body.data?.retry_attempt_token as string | undefined });
+  return result;
+};
+const complete = async (user: string, key: string) => {
+  const path = `/learn/lessons/${built.lesson[key]}`;
+  let runId = key === 'story' ? runs.get(user)?.runId : undefined;
+  if (!runId) {
+    const started = await post(user, `${path}/v2-runs`);
+    if (started.status !== 200) return started;
+    runId = started.body.data.run_id as string;
+    const viewed = await post(user, `${path}/v2-runs/${runId}/views`, { segment_id: 'story' });
+    if (viewed.status !== 200) return viewed;
+  }
+  return post(user, `${path}/complete`, { run_id: runId, seconds_spent: 60 });
+};
 async function walk(user: string, keys: string[]) {
   for (const key of keys) {
     const res = await complete(user, key);
@@ -195,6 +211,11 @@ beforeEach(() => {
   globalRateLimiter.resetKey('127.0.0.1');
   resetConfigForTests();
   built = build();
+  runs.clear();
+  for (const row of built.db.lesson_document_versions ?? []) {
+    const parsed = v2PublicLessonSchema.safeParse(row.document);
+    expect(parsed.success, JSON.stringify(parsed.success ? null : parsed.error.issues)).toBe(true);
+  }
   vi.stubGlobal('fetch', createNarrativeFakeFetch(built.db));
 });
 
@@ -205,24 +226,26 @@ afterEach(() => {
 });
 
 describe('B.9 — the decision journal records choices Core graded, never a client claim', () => {
-  it('files the story decision with its question, the choice and the outcome the story showed', async () => {
+  it('files the graded v2 story choice with its authored question and no invented outcome', async () => {
     const res = await grade(KID7, 'p10');
     expect(res.status, JSON.stringify(res.body)).toBe(200);
     expect(built.db.learner_decision_journal).toEqual([expect.objectContaining({
-      user_id: KID7, course_id: COURSE.money, topic_id: built.topic.story, lesson_id: built.lesson.story, segment_id: 'price', decision_point: 'decision',
+      user_id: KID7, course_id: COURSE.money, topic_id: built.topic.story, lesson_id: built.lesson.story, segment_id: 'price', decision_point: 'choice',
       segment_type: 'story_branch', situation_text: 'What price brings me closer to the guitar?', choice_id: 'p10', choice_text: '10 coins, double the price',
-      outcome_text: 'Two neighbors buy. Liruf earns 16 coins.', first_choice_id: 'p10', times_decided: 1,
+      outcome_text: null, first_choice_id: 'p10', times_decided: 1,
     })]);
-    // The one-choice "Continue" node is not a decision; nothing numeric is stored.
+    // V2 records the offered choice only; nothing numeric or inferred is stored.
     expect(JSON.stringify(built.db.learner_decision_journal)).not.toMatch(/"score"|quality/);
   });
 
   it('keeps the first choice when a replay changes it, and records nothing for a choice the lesson does not offer', async () => {
     await grade(KID7, 'p10');
-    await grade(KID7, 'p5', 2);
-    expect(built.db.learner_decision_journal).toEqual([expect.objectContaining({ first_choice_id: 'p10', choice_id: 'p5', times_decided: 2 })]);
-    const forged = await post(TEEN15, `/learn/lessons/${built.lesson.story}/grade`, { segment_id: 'price', attempt_number: 1, answer: { path: [{ node_id: 'decision', choice_id: 'p99' }] } });
-    expect(forged.status).toBe(200);
+    await grade(KID7, 'p05', 2);
+    expect(built.db.learner_decision_journal).toEqual([expect.objectContaining({ first_choice_id: 'p10', choice_id: 'p05', times_decided: 2 })]);
+    const forged = await grade(TEEN15, 'p99');
+    expect(forged.status).toBe(400);
+    expect(forged.body.error.code).toBe('VALIDATION_ERROR');
+    expect(built.db.lesson_v2_grade_receipts!.filter((r) => r.user_id === TEEN15)).toEqual([]);
     expect(built.db.learner_decision_journal!.filter((r) => r.user_id === TEEN15)).toEqual([]);
   });
 
@@ -232,7 +255,7 @@ describe('B.9 — the decision journal records choices Core graded, never a clie
     const save1 = await get(KID7, `/learn/lessons/${built.lesson.save1}`);
     expect(save1.status).toBe(200);
     expect(save1.body.data.narrative_recall).toMatchObject({
-      situation: 'What price brings me closer to the guitar?', choice: '10 coins, double the price', outcome: 'Two neighbors buy. Liruf earns 16 coins.',
+      situation: 'What price brings me closer to the guitar?', choice: '10 coins, double the price', outcome: null,
       first_choice: null, relevance: 'same-arc', lesson_title: { 'en-US': 'Lesson story' },
     });
     const again = await get(KID7, `/learn/lessons/${built.lesson.save1}`);
@@ -252,7 +275,7 @@ describe('B.9 — the decision journal records choices Core graded, never a clie
 
   it('a learner reads and clears only their own journal; progress is untouched', async () => {
     await grade(KID7, 'p10');
-    await grade(TEEN15, 'p5');
+    await grade(TEEN15, 'p05');
     const kid = await get(KID7, '/learn/journal');
     expect(kid.status).toBe(200);
     expect(kid.body.data.entries).toEqual([expect.objectContaining({
@@ -262,7 +285,7 @@ describe('B.9 — the decision journal records choices Core graded, never a clie
     expect(JSON.stringify(kid.body)).not.toContain('5 coins, the usual');
     expect((await del(TEEN15, '/learn/journal')).status).toBe(200);
     expect(built.db.learner_decision_journal!.map((r) => r.user_id)).toEqual([KID7]);
-    expect(built.db.lesson_segment_attempts!.some((r) => r.user_id === TEEN15)).toBe(true);
+    expect(built.db.lesson_v2_grade_receipts!.some((r) => r.user_id === TEEN15)).toBe(true);
     expect((await get(KID7, '/learn/journal?limit=0')).status).toBe(400);
   });
 
@@ -281,7 +304,7 @@ describe('B.9 — the decision journal records choices Core graded, never a clie
 
 describe('B.13 — a finished bridge topic prompts the right audience, and only that audience', () => {
   it('parent-created child: the guardian gets the prompt in the Family Hub; the child sees none and cannot act on it', async () => {
-    await grade(KID7, 'p5');
+    await grade(KID7, 'p05');
     await walk(KID7, ['story', 'save1']);
     expect(built.db.learning_bridge_prompts ?? []).toEqual([]);
     const done = await complete(KID7, 'save2');
@@ -299,7 +322,7 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
   });
 
   it('the verified Tutor creates a REAL savings goal in one step; a replay creates nothing more; strangers get 404', async () => {
-    await grade(KID7, 'p5');
+    await grade(KID7, 'p05');
     await walk(KID7, ['story', 'save1', 'save2']);
     const promptId = String(built.db.learning_bridge_prompts![0]!.id);
     const path = `/family/learning/kids/${KID7}/bridges/${promptId}/act`;
@@ -321,7 +344,7 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
   });
 
   it('a task prompt creates a real task for the child; a dismissed prompt stays closed and never returns', async () => {
-    await grade(KID7, 'p5');
+    await grade(KID7, 'p05');
     await walk(KID7, ['story', 'save1', 'save2', 'work1']);
     const byAction = (a: string) => built.db.learning_bridge_prompts!.find((p) => p.action === a)!;
     const task = byAction('earning_task');
@@ -338,7 +361,7 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
   });
 
   it('independent teen: "I will try" alone is a commitment that creates no task and no wallet record', async () => {
-    await grade(TEEN15, 'p5');
+    await grade(TEEN15, 'p05');
     await walk(TEEN15, ['story', 'save1']);
     const done = await complete(TEEN15, 'save2');
     expect(done.body.data.self_bridge).toEqual({ action: 'savings_goal' });
@@ -361,7 +384,7 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
   });
 
   it('OD-28 (L-12): an independent teen names a goal and it is created in their own wallet, once; a task prompt still takes no details', async () => {
-    await grade(TEEN15, 'p5');
+    await grade(TEEN15, 'p05');
     await walk(TEEN15, ['story', 'save1', 'save2', 'work1']);
     const byAction = (a: string) => built.db.learning_bridge_prompts!.find((p) => p.action === a)!;
     const goalPrompt = byAction('savings_goal');
@@ -388,7 +411,7 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
   });
 
   it('OD-28 (L-12): no wallet, no goal: the holder check at the moment of acting refuses and writes nothing', async () => {
-    await grade(TEEN15, 'p5');
+    await grade(TEEN15, 'p05');
     await walk(TEEN15, ['story', 'save1', 'save2']);
     const prompt = built.db.learning_bridge_prompts![0]!;
     // Still a self audience for Core (no kid role, no guardian), but public.teen_wallet_holder() refuses a parent account.
@@ -401,7 +424,7 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
   });
 
   it('the database double refuses a task from a self prompt even if Core sent one', async () => {
-    await grade(TEEN15, 'p5');
+    await grade(TEEN15, 'p05');
     await walk(TEEN15, ['story', 'save1', 'save2', 'work1']);
     const task = built.db.learning_bridge_prompts!.find((p) => p.action === 'earning_task')!;
     expect(task.audience).toBe('self');
@@ -413,7 +436,7 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
   });
 
   it.each([['adult learning for themselves', ADULT], ['verified-parent Tutor learning for themselves', TUTOR], ['refusal-path guest', GUEST]])('%s: no prompt is stored', async (_label, user) => {
-    await grade(user, 'p5');
+    await grade(user, 'p05');
     await walk(user, ['story', 'save1', 'save2', 'work1']);
     expect(built.db.learning_bridge_prompts ?? []).toEqual([]);
     expect((await get(user, '/learn/bridges')).body.data.prompts).toEqual([]);
@@ -425,7 +448,7 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
     try {
       built.db.course_pathway_placements = [{ user_id: KID7, course_id: COURSE.money, pathway_stage: 'child', method: 'learner_chose_start', start_topic_id: null, credited_topics: 0 }];
       built.db.kc_edge = []; built.db.learner_kc_mastery = []; built.db.memory_card = []; built.db.course_pathway_badges = [];
-      await grade(KID7, 'p5');
+      await grade(KID7, 'p05');
       await walk(KID7, ['story', 'save1', 'save2']);
       expect(built.db.learning_bridge_prompts).toEqual([expect.objectContaining({ learner_id: KID7, action: 'savings_goal', audience: 'guardian' })]);
       expect(built.db.learner_decision_journal).toHaveLength(1);
@@ -438,7 +461,7 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
   it('OD-9 4.2: a migrated child is offered no bridge until the Tutor gives that specific consent', async () => {
     built.db.legacy_consent_subjects = [{ user_id: KID7, age_class: 'under_13', released_at: null }];
     built.db.data_practice_consents = [{ subject_user_id: KID7, practice_key: 'analytics.motivation_events', revoked_at: null }];
-    await grade(KID7, 'p5');
+    await grade(KID7, 'p05');
     await walk(KID7, ['story', 'save1', 'save2']);
     expect(built.db.learning_bridge_prompts ?? []).toEqual([]);
     // The learning itself is untouched: the topic still completes and the journal still records (its own practice aside).
@@ -448,13 +471,13 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
   it('OD-9 4.2: with the specific consent, a migrated child is offered the bridge as before', async () => {
     built.db.legacy_consent_subjects = [{ user_id: KID7, age_class: 'under_13', released_at: null }];
     built.db.data_practice_consents = [{ subject_user_id: KID7, practice_key: 'sharing.learning_family_bridge', revoked_at: null }];
-    await grade(KID7, 'p5');
+    await grade(KID7, 'p05');
     await walk(KID7, ['story', 'save1', 'save2']);
     expect(built.db.learning_bridge_prompts).toEqual([expect.objectContaining({ learner_id: KID7, action: 'savings_goal', audience: 'guardian' })]);
   });
 
   it('one prompt per component and one open prompt per action: replaying a finished topic never prompts again', async () => {
-    await grade(KID7, 'p5');
+    await grade(KID7, 'p05');
     await walk(KID7, ['story', 'save1', 'save2']);
     await walk(KID7, ['save1', 'save2']);
     expect(built.db.learning_bridge_prompts).toHaveLength(1);
@@ -487,7 +510,7 @@ describe('B.10 — the guardian narrative, through the verified-parent boundary'
 
   it('L-13: after a changed replay the Tutor sees the latest option only, never the first one', async () => {
     await grade(KID7, 'p10');
-    await grade(KID7, 'p5', 2);
+    await grade(KID7, 'p05', 2);
     await walk(KID7, ['story']);
     const res = await get(TUTOR, `/family/learning/kids/${KID7}/narrative`);
     expect(res.body.data.choices).toEqual([expect.objectContaining({ choice: '5 coins, the usual' })]);
@@ -559,9 +582,9 @@ describe('B.10 — the guardian narrative, through the verified-parent boundary'
   });
 
   it('reports a mistake worked through from the graded attempts', async () => {
-    built.db.lesson_documents!.find((d) => d.lesson_id === built.lesson.story)!.answer_keys = { price: { qualities: [{ node_id: 'decision', choice_id: 'p5', score: 100 }, { node_id: 'decision', choice_id: 'p10', score: 10 }] } };
+    built.db.lesson_document_versions!.find((d) => d.lesson_id === built.lesson.story)!.answer_keys = { price: { acceptable_choice_ids: ['p05'] } };
     await grade(KID7, 'p10');
-    await grade(KID7, 'p5', 2);
+    await grade(KID7, 'p05', 2);
     await walk(KID7, ['story']);
     const res = await get(TUTOR, `/family/learning/kids/${KID7}/narrative`);
     expect(res.body.data.entries[0]).toMatchObject({ struggle: 'resolved', decisions: 1 });
@@ -581,7 +604,7 @@ describe('B.10 — the guardian narrative, through the verified-parent boundary'
   });
 
   it('pages through completions and refuses a malformed page', async () => {
-    await grade(KID7, 'p5');
+    await grade(KID7, 'p05');
     await walk(KID7, ['story', 'save1', 'save2']);
     const first = await get(TUTOR, `/family/learning/kids/${KID7}/narrative?limit=2`);
     expect(first.body.data.entries).toHaveLength(2);

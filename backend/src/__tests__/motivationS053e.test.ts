@@ -1,3 +1,4 @@
+import { activateChoiceFixture } from './v2RuntimeFixtures.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
@@ -46,11 +47,12 @@ const COURSE = uid(1);
 // 2026-09-21 is a Monday.
 const TODAY = '2026-09-24';
 
-const storyDoc = (slug: string) => ({
-  schema_version: 1,
-  meta: { slug, title: slug, locale: 'en-US', subject: 'money', estimated_minutes: 5, objectives: ['x'], cast: ['dina'] },
-  scoring: { pass_threshold: 70, hint_penalty_pct: 10, max_attempts: 2, hearts: null },
-  segments: [{ id: 'story', type: 'story_scene', prompt_md: 'Story', difficulty: 1, xp: 0, payload: { backdrop: 'band', body_md: 'The end.' } }],
+const storyDoc = (slug: string, lessonId: string) => ({
+  schema_version: 2, course_id: COURSE, pathway_id: 'test-pathway', chapter_id: 'test-chapter',
+  lesson_id: lessonId, version_id: 'revision-001', locale: 'en-US', age_band: 'adult',
+  eligibility: { minimum_age: 6, maximum_age: 119 }, knowledge_component_ids: ['test-skill'], adventure_scene_id: 'diorama-a', title: slug,
+  required_capabilities: ['visual.speech-plate.v1'],
+  segments: [{ id: 'story', type: 'voice.mentor-turn.v2', grading: 'none', prompt: 'Story', visual: { type: 'speech-plate' }, payload: { role: 'intro', line: 'The end.' } }],
 });
 
 interface Built { db: FakeDb; lesson: Record<string, string> }
@@ -75,7 +77,7 @@ function build(): Built {
       { user_id: KID7, display_name: 'Kid', locale: 'en-US', birth_date: yearsAgo(7) },
       { user_id: GUEST, display_name: 'Guest', locale: 'en-US', birth_date: null },
       { user_id: TEEN15, display_name: 'Teen', locale: 'en-US', birth_date: yearsAgo(15) },
-      { user_id: ADULT, display_name: 'Adult', locale: 'en-US', birth_date: null },
+      { user_id: ADULT, display_name: 'Adult', locale: 'en-US', birth_date: yearsAgo(30) },
       { user_id: TUTOR, display_name: 'Tutor', locale: 'en-US', birth_date: '1985-05-05' },
       { user_id: OTHER_PARENT, display_name: 'Other', locale: 'en-US', birth_date: '1985-05-05' },
       { user_id: UNVERIFIED_PARENT, display_name: 'Unverified', locale: 'en-US', birth_date: '1985-05-05' },
@@ -108,7 +110,9 @@ function build(): Built {
       const lessonId = uid(++n);
       lesson[key] = lessonId;
       db.lessons!.push({ id: lessonId, topic_id: topicId, position: li + 1, slug: key, title: { 'en-US': `Lesson ${key}` }, difficulty: 1, xp_total: 0, estimated_minutes: 5, status: 'published' });
-      db.lesson_documents!.push({ lesson_id: lessonId, locale: 'en-US', schema_version: 1, updated_at: '2026-09-01T00:00:00.000Z', document: storyDoc(key), answer_keys: {}, audio: {} });
+      const versionId = uid(++n);
+      (db.lesson_document_versions ??= []).push({ id: versionId, lesson_id: lessonId, locale: 'en-US', schema_version: 2, version_id: 'revision-001', document: storyDoc(key, lessonId), answer_keys: {}, audio: {} });
+      (db.lesson_document_version_current ??= []).push({ lesson_id: lessonId, locale: 'en-US', document_version_id: versionId });
     });
   });
   return { db, lesson };
@@ -120,7 +124,14 @@ const get = (user: string, path: string) => as(user)(request(createApp()).get(`/
 const put = (user: string, path: string, body: object) => as(user)(request(createApp()).put(`/api/v1${path}`).send(body));
 const post = (user: string, path: string, body: object = {}) => as(user)(request(createApp()).post(`/api/v1${path}`).send(body));
 const del = (user: string, path: string) => as(user)(request(createApp()).delete(`/api/v1${path}`));
-const complete = (user: string, key: string, localDate = TODAY) => post(user, `/learn/lessons/${built.lesson[key]}/complete`, { seconds_spent: 60, local_date: localDate });
+const complete = async (user: string, key: string, localDate = TODAY) => {
+  const path = `/learn/lessons/${built.lesson[key]}`;
+  const started = await post(user, `${path}/v2-runs`);
+  if (started.status !== 200) return started;
+  const view = await post(user, `${path}/v2-runs/${started.body.data.run_id}/views`, { segment_id: 'story' });
+  if (view.status !== 200) return view;
+  return post(user, `${path}/complete`, { seconds_spent: 60, local_date: localDate, run_id: started.body.data.run_id });
+};
 const stats = (user: string): FakeRow => built.db.learning_stats!.find((row) => row.user_id === user)!;
 const seedStreak = (user: string, row: Partial<FakeRow>) => Object.assign(stats(user), row);
 async function events(name: string, wait = 50): Promise<FakeRow[]> {
@@ -203,8 +214,9 @@ describe('B.21 — the habit streak: rest days, a resting run, and the permanent
     seedStreak(GUEST, { streak_days: 4, longest_streak: 4, last_active_date: '2026-09-22' });
     expect((await complete(KID7, 'save1')).body.data.streak.outcome).toBe('bridged');
     const guest = await complete(GUEST, 'save1');
-    expect(guest.status).toBe(200);
-    expect(guest.body.data.streak.outcome).toBe('bridged');
+    expect(guest.status).toBe(403);
+    expect(guest.body.error.code).toBe('LESSON_AGE_ELIGIBILITY_REQUIRED');
+    expect(guest.body.data).toBeNull();
     await new Promise((done) => setTimeout(done, 60));
     expect((built.db.learning_events ?? []).filter((row) => row.event === 'streak_rest_day')).toEqual([]);
   });
@@ -406,6 +418,8 @@ describe('B.22 — no reward path consumes randomness', () => {
   const token = mintToken({ sub: user });
   beforeEach(() => {
     db = makeDb(user);
+    activateChoiceFixture(db, LESSON_1_ID);
+    db.profiles![0]!.birth_date = '2018-09-22';
     db.user_roles = [{ user_id: user, role: 'universal' }];
     vi.stubGlobal('fetch', createFakeFetch(db));
   });
@@ -413,22 +427,33 @@ describe('B.22 — no reward path consumes randomness', () => {
   it('a completion, its XP, streak and celebrations are identical with Math.random disabled', async () => {
     const random = vi.spyOn(Math, 'random').mockImplementation(() => { throw new Error('B.22: a reward path asked for a random number'); });
     const app = createApp();
-    await request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`).set('Authorization', `Bearer ${token}`)
-      .send({ segment_id: 'quiz-1', answer: { option_id: 'a' }, attempt_number: 1, run_id: 'aaaaaaaa-0000-4000-8000-00000000b221' });
+    const started = await request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`).set('Authorization', `Bearer ${token}`).send({});
+    expect(started.status).toBe(200);
+    const graded = await request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`).set('Authorization', `Bearer ${token}`)
+      .send({ segment_id: 'quiz-1', answer: { choice: 'save' }, attempt_token: started.body.data.attempt_tokens['quiz-1'], run_id: started.body.data.run_id });
+    expect(graded.status).toBe(200);
     const res = await request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`).set('Authorization', `Bearer ${token}`)
-      .send({ seconds_spent: 60, run_id: 'aaaaaaaa-0000-4000-8000-00000000b221', local_date: TODAY });
+      .send({ seconds_spent: 60, run_id: started.body.data.run_id, local_date: TODAY });
     expect(res.status, JSON.stringify(res.body)).toBe(200);
     expect(res.body.data).toMatchObject({ passed: true, xp_delta: 20, celebrations: ['lesson-complete'], streak: { outcome: 'first' } });
     expect(random).not.toHaveBeenCalled();
   });
 
-  it('a failed run pays nothing new and celebrates nothing', async () => {
+  it('a pending current-engine run pays nothing and emits no celebrations', async () => {
     const app = createApp();
-    await request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`).set('Authorization', `Bearer ${token}`)
-      .send({ segment_id: 'quiz-1', answer: { option_id: 'b' }, attempt_number: 1, run_id: 'aaaaaaaa-0000-4000-8000-00000000b222' });
+    const started = await request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`).set('Authorization', `Bearer ${token}`).send({});
+    expect(started.status).toBe(200);
+    const before = structuredClone(db.learning_stats);
+    const graded = await request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`).set('Authorization', `Bearer ${token}`)
+      .send({ segment_id: 'quiz-1', answer: { choice: 'spend' }, attempt_token: started.body.data.attempt_tokens['quiz-1'], run_id: started.body.data.run_id });
+    expect(graded.status).toBe(200);
+    expect(graded.body.data.verdict.correct).toBe(false);
     const res = await request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`).set('Authorization', `Bearer ${token}`)
-      .send({ seconds_spent: 60, run_id: 'aaaaaaaa-0000-4000-8000-00000000b222', local_date: TODAY });
-    expect(res.body.data).toMatchObject({ passed: false, celebrations: [], streak: { outcome: 'not_practised' } });
-    expect(res.body.data.recognition).toBeUndefined();
+      .send({ seconds_spent: 60, run_id: started.body.data.run_id, local_date: TODAY });
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('UNSUPPORTED_LESSON');
+    expect(res.body.data).toBeNull();
+    expect(db.lesson_progress).toHaveLength(0);
+    expect(db.learning_stats).toEqual(before);
   });
 });

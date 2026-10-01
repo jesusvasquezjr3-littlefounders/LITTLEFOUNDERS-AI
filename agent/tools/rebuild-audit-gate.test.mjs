@@ -45,6 +45,17 @@ const shard = (index, states, extra = {}) => ({
 });
 const problemsOf = (reports) => mergeAuditReports('text-fit', reports, EXPECTED).problems.join('\n');
 
+test('merge-shards preserves scene transport failures from every shard', () => {
+  const first = { state: 'a', error: 'net::ERR_ABORTED /scenes/rho.glb' };
+  const second = { state: 'b', error: '404 /scenes/diorama-a.glb' };
+  const { merged, problems } = mergeAuditReports('text-fit', [
+    shard(1, ['a', 'c', 'e'], { mediaErrors: [first] }),
+    shard(2, ['b', 'd'], { mediaErrors: [second] }),
+  ], EXPECTED);
+  assert.deepEqual(problems, []);
+  assert.deepEqual(merged.mediaErrors, [first, second]);
+});
+
 test('merge-shards merges a complete split run: configurations and findings summed, groups combined by key', () => {
   const { merged, problems } = mergeAuditReports('copy-budget', [
     shard(1, ['a', 'c', 'e'], { findings: 2, groups: [{ key: 'over-budget | x', count: 2, example: {} }] }),

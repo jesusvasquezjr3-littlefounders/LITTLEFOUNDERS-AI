@@ -1,3 +1,4 @@
+import { enterDate, readDate } from '../../../../rebuild/test/dateParts';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { StreakPausePanel } from '../LearningPanels';
@@ -24,9 +25,8 @@ it('reads the child\'s streak, then pauses it through Core with the session toke
   render(<StreakPausePanel kidUserId="kid-1" token="session" />);
   expect(await screen.findByText('Streak: 4 days. Best: 12.')).toBeVisible();
   expect(mockApi.mock.calls[0]![0]).toMatch(/^\/family\/learning\/kids\/kid-1\/streak\?local_date=\d{4}-\d{2}-\d{2}$/);
-  const [from, to] = [screen.getByLabelText('First day'), screen.getByLabelText('Last day')] as HTMLInputElement[];
-  const today = from!.value;
-  fireEvent.change(to!, { target: { value: today } });
+  const today = readDate('First day');
+  enterDate('Last day', today);
   fireEvent.click(screen.getByRole('button', { name: 'Pause streak' }));
   expect(await screen.findByText('Pause saved.')).toBeVisible();
   expect(mockApi.mock.calls[1]).toEqual(['/family/learning/kids/kid-1/streak-pause', {

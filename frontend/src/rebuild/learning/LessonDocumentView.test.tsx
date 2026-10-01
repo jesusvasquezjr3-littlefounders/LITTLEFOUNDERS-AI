@@ -20,6 +20,7 @@ import { workedExamplePilotDocument } from './WorkedExampleBoard';
 import { functionMachinePilotDocument } from './FunctionMachineBoard';
 import { cpaFadingPilotDocument } from './CpaFadingBoard';
 import { PREVIEW_MENTOR_STAGE } from '../preview/Preview';
+import { paintApprovedStill } from '../mentor/__tests__/paintApprovedStill';
 
 /* The Mentor stage renders its live 3D only where the renderer's device probe finds WebGL (Bible 08 §7). */
 vi.mock('../../tutor-scene/quality', () => ({
@@ -742,6 +743,7 @@ describe('compact Mentor stage projection', () => {
     expect(band!.getAttribute('aria-hidden')).toBe('true');
     expect(band!.getAttribute('data-mentor-character')).toBe('zara');
     expect(band!.getAttribute('data-mentor-scene')).toBe('diorama-b');
+    await paintApprovedStill();
     expect(await screen.findByTestId('tutor-stage')).toHaveAttribute('data-character', 'zara');
     expect(screen.getByTestId('tutor-stage')).toHaveAttribute('data-scene', 'diorama-b');
     expect(screen.getByRole('heading', { name: 'Split your money' })).toBeTruthy();

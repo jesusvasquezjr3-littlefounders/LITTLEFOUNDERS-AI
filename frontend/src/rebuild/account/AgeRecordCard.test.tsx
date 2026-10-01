@@ -1,3 +1,4 @@
+import { enterDate } from '../test/dateParts';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import en from '../../i18n/en-US/rebuild-profile.json';
@@ -60,7 +61,7 @@ describe('the staff-reviewed correction (E.4, OD-3)', () => {
     const { rerender } = render(<AgeRecordCard copy={en.ageRecord} kind="adult" correction={{ eligible: true, status: null }} onRequest={onRequest} />);
     fireEvent.click(screen.getByRole('button', { name: en.ageRecord.request }));
     expect(screen.getByText(en.ageRecord.requestHelp)).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText(en.ageRecord.birthDate), { target: { value: '2011-05-17' } });
+    enterDate(en.ageRecord.birthDate, '2011-05-17');
     fireEvent.click(screen.getByRole('button', { name: en.ageRecord.send }));
     await waitFor(() => expect(onRequest).toHaveBeenCalledWith('2011-05-17'));
     rerender(<AgeRecordCard copy={en.ageRecord} kind="adult" correction={{ eligible: true, status: 'pending' }} onRequest={onRequest} />);
@@ -73,7 +74,7 @@ describe('the staff-reviewed correction (E.4, OD-3)', () => {
     render(<AgeRecordCard copy={en.ageRecord} kind="teenBand" correction={{ eligible: true, status: 'rejected' }} onRequest={onRequest} />);
     expect(screen.getByText(en.ageRecord.rejected)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: en.ageRecord.request }));
-    fireEvent.change(screen.getByLabelText(en.ageRecord.birthDate), { target: { value: '2011-05-17' } });
+    enterDate(en.ageRecord.birthDate, '2011-05-17');
     fireEvent.click(screen.getByRole('button', { name: en.ageRecord.send }));
     expect(await screen.findByRole('alert')).toHaveTextContent(en.ageRecord.unchanged);
     expect(screen.getByRole('button', { name: en.ageRecord.send })).toBeInTheDocument();
