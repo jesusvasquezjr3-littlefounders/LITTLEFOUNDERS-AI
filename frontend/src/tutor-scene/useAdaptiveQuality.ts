@@ -46,13 +46,24 @@ export function useAdaptiveQuality(): AdaptiveQuality {
 
   const elapsedMs = useRef(0);
   const frames = useRef(0);
+  const longFrames = useRef(0);
 
   const onFrame = useCallback((deltaSeconds: number) => {
+    if (!Number.isFinite(deltaSeconds) || deltaSeconds <= 0) return;
     // R3F emits a large delta on the first frame and again whenever a
-    // backgrounded tab resumes. Measuring those would fake a ~1fps window and
-    // demote a perfectly capable device, so implausible frames are dropped
-    // rather than counted.
-    if (!Number.isFinite(deltaSeconds) || deltaSeconds <= 0 || deltaSeconds > 0.5) return;
+    // backgrounded tab resumes: ONE long frame, then normal ones. Measuring it
+    // would fake a ~1fps window and demote a perfectly capable device, so a
+    // lone long frame is dropped. A device that is simply this slow draws long
+    // frame after long frame, and from the second in a row they are counted:
+    // dropping them all left a stage under 2 fps unmeasured, never stepped down
+    // and never falling back to its still (Bible 08 §7), which is what software
+    // GL on a 2-vCPU machine showed.
+    if (deltaSeconds > 0.5) {
+      longFrames.current += 1;
+      if (longFrames.current < 2) return;
+    } else {
+      longFrames.current = 0;
+    }
 
     elapsedMs.current += deltaSeconds * 1000;
     frames.current += 1;

@@ -12,7 +12,7 @@
 import { chmodSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname, delimiter } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { spawnSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 
@@ -135,7 +135,7 @@ const checksums = Object.fromEntries(
 );
 
 let scenarioIndex = 0;
-function run(args, envOverrides = {}) {
+async function run(args, envOverrides = {}) {
   scenarioIndex += 1;
   const callsLog = join(fixtureRoot, `psql-calls-${scenarioIndex}.log`);
   const argsLog = join(fixtureRoot, `railway-args-${scenarioIndex}.log`);
@@ -143,20 +143,28 @@ function run(args, envOverrides = {}) {
   // child cannot resolve WSL's bash instead of the intended Git Bash/fakes.
   const inheritedPath = Object.entries(process.env).find(([key]) => key.toUpperCase() === 'PATH')?.[1] ?? '';
   const inheritedEnv = Object.fromEntries(Object.entries(process.env).filter(([key]) => key.toUpperCase() !== 'PATH'));
-  const result = spawnSync('bash', [runner, ...args], {
-    cwd: dbDir,
-    env: {
-      ...inheritedEnv,
-      PATH: `${binDir}${delimiter}${inheritedPath}`,
-      RAILWAY_TOKEN: 'test-railway-token',
-      RAILWAY_SSH_KEY_PATH: keyPath,
-      RAILWAY_SSH_ATTEMPTS: '1',
-      RAILWAY_SSH_RETRY_SECONDS: '0',
-      RAILWAY_FAKE_CALLS: callsLog,
-      RAILWAY_FAKE_ARGS: argsLog,
-      ...envOverrides,
-    },
-    encoding: 'utf8',
+  const result = await new Promise((resolve, reject) => {
+    const child = spawn('bash', [runner, ...args], {
+      cwd: dbDir,
+      env: {
+        ...inheritedEnv,
+        PATH: `${binDir}${delimiter}${inheritedPath}`,
+        RAILWAY_TOKEN: 'test-railway-token',
+        RAILWAY_SSH_KEY_PATH: keyPath,
+        RAILWAY_SSH_ATTEMPTS: '1',
+        RAILWAY_SSH_RETRY_SECONDS: '0',
+        RAILWAY_FAKE_CALLS: callsLog,
+        RAILWAY_FAKE_ARGS: argsLog,
+        ...envOverrides,
+      },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    let stdout = '';
+    let stderr = '';
+    child.stdout.setEncoding('utf8').on('data', (chunk) => { stdout += chunk; });
+    child.stderr.setEncoding('utf8').on('data', (chunk) => { stderr += chunk; });
+    child.once('error', reject);
+    child.once('close', (status, signal) => resolve({ status, signal, stdout, stderr }));
   });
   const calls = existsSync(callsLog) ? readFileSync(callsLog, 'utf8') : '';
   const railwayArgs = existsSync(argsLog) ? readFileSync(argsLog, 'utf8') : '';
@@ -169,6 +177,8 @@ function assert(condition, scenario, message, result) {
     `${scenario}: ${message}\n--- status ---\n${result.status}\n--- stdout ---\n${result.stdout}\n--- stderr ---\n${result.stderr}`,
   );
 }
+
+const scenarios = [];
 
 try {
   // 0. Static DDL cross-check. The fake psql answers signature probes from an
@@ -203,8 +213,8 @@ try {
 
   // 1. Dry-run against the verified production shape: absent ledger, baseline
   //    0022. Must pass the signature probe and enumerate exactly 0023–0033.
-  {
-    const r = run(['--dry-run', '--baseline', '0022']);
+  scenarios.push(async () => {
+    const r = await run(['--dry-run', '--baseline', '0022']);
     assert(r.status === 0, 'dry-run-0022', 'runner should exit 0', r);
     assert(r.stdout.includes('signature probe passed'), 'dry-run-0022', 'baseline signature probe did not pass', r);
     assert(r.stdout.includes('DRY RUN — no ledger or migration SQL will be written.'), 'dry-run-0022', 'dry-run guard output missing', r);
@@ -219,12 +229,12 @@ try {
     }
     assert(r.calls.includes("to_regclass('public.schema_migrations')"), 'dry-run-0022', 'preflight SQL did not reach fake psql', r);
     assert(r.calls.includes("pg_publication_tables"), 'dry-run-0022', 'signature probe SQL did not reach fake psql', r);
-  }
+  });
 
   // 2. Confirm-production apply: transaction wrapping, per-file receipt, and
   //    a sentinel terminating every payload so success is output-verified.
-  {
-    const r = run(['--confirm-production', '--baseline', '0022'], { RAILWAY_FAKE_COUNT: '33' });
+  scenarios.push(async () => {
+    const r = await run(['--confirm-production', '--baseline', '0022'], { RAILWAY_FAKE_COUNT: '33' });
     assert(r.status === 0, 'confirm-apply', 'runner should exit 0', r);
     assert(r.stdout.includes('Recorded immutable baseline through 0022.'), 'confirm-apply', 'baseline receipts were not recorded', r);
     assert(r.stdout.includes('applied 0023_') && r.stdout.includes('applied 0033_'), 'confirm-apply', 'apply range 0023–0033 missing', r);
@@ -240,22 +250,22 @@ try {
     assert(applyPayload.startsWith('BEGIN;') && applyPayload.includes('COMMIT;'), 'confirm-apply', 'apply payload must be one wrapped transaction', r);
     assert(applyPayload.includes(`'${checksums['0023_learning_insights.sql']}'`), 'confirm-apply', 'apply receipt must carry the real checksum', r);
     assert(applyPayload.trimEnd().endsWith('\\echo LF_MIGRATION_OK'), 'confirm-apply', 'every payload must end with the success sentinel', r);
-  }
+  });
 
   // 3. Sentinel-missing refusal: fake psql exits 0 but prints nothing — the
   //    exact lie the production transport told. Must hard-refuse.
-  {
-    const r = run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_PSQL_MODE: 'silent' });
+  scenarios.push(async () => {
+    const r = await run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_PSQL_MODE: 'silent' });
     assert(r.status !== 0, 'sentinel-missing', 'runner must refuse a sentinel-free success', r);
     assert(r.stderr.includes('success sentinel missing'), 'sentinel-missing', 'refusal must name the missing sentinel', r);
-  }
+  });
 
   // 4. ERROR-printing psql (transport still exits 0): must hard-refuse.
-  {
-    const r = run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_PSQL_MODE: 'error' });
+  scenarios.push(async () => {
+    const r = await run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_PSQL_MODE: 'error' });
     assert(r.status !== 0, 'psql-error', 'runner must refuse on psql ERROR output', r);
     assert(r.stderr.includes('remote psql reported an error'), 'psql-error', 'refusal must name the psql error', r);
-  }
+  });
 
   // 4b. NOTICE-after-sentinel must pass: success judgment is order-independent
   //     because psql NOTICEs (stderr, unbuffered) can be forwarded after the
@@ -263,8 +273,8 @@ try {
   //     COMMITTED apply must not turn into a spurious refusal, and captured
   //     query results (signature probe, postflight count) must survive the
   //     NOTICE noise unparsed-into.
-  {
-    const r = run(['--confirm-production', '--baseline', '0022'], {
+  scenarios.push(async () => {
+    const r = await run(['--confirm-production', '--baseline', '0022'], {
       RAILWAY_FAKE_PSQL_MODE: 'notice-after-sentinel',
       RAILWAY_FAKE_COUNT: '33',
     });
@@ -272,65 +282,87 @@ try {
     assert(r.stdout.includes('signature probe passed'), 'notice-after-sentinel', 'signature probe result must survive NOTICE interleaving', r);
     assert(r.stdout.includes('applied 0023_') && r.stdout.includes('applied 0033_'), 'notice-after-sentinel', 'apply range must complete despite trailing NOTICEs', r);
     assert(r.stdout.includes('OK: production migration ledger is current (33 receipt(s))'), 'notice-after-sentinel', 'postflight count must survive NOTICE filtering', r);
-  }
+  });
 
   // 4c. ERROR co-present with the sentinel must still refuse — the sentinel
   //     never outvotes an ERROR line, whatever order they arrive in.
-  {
-    const r = run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_PSQL_MODE: 'error-after-sentinel' });
+  scenarios.push(async () => {
+    const r = await run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_PSQL_MODE: 'error-after-sentinel' });
     assert(r.status !== 0, 'error-with-sentinel', 'ERROR output must refuse even when the sentinel printed', r);
     assert(r.stderr.includes('remote psql reported an error'), 'error-with-sentinel', 'refusal must name the psql error', r);
-  }
+  });
 
   // 5. Checksum drift: a recorded receipt that no longer matches the local
   //    file refuses before anything else happens to that file.
-  {
+  scenarios.push(async () => {
     const receipts = { ...checksums, '0023_learning_insights.sql': 'deadbeef' };
-    const r = run(['--dry-run'], {
+    const r = await run(['--dry-run'], {
       RAILWAY_FAKE_LEDGER: 'present|33|present',
       RAILWAY_FAKE_RECEIPTS: JSON.stringify(receipts),
     });
     assert(r.status !== 0, 'checksum-drift', 'runner must refuse checksum drift', r);
     assert(r.stderr.includes('migration drift detected for 0023_learning_insights.sql'), 'checksum-drift', 'drift refusal must name the file', r);
-  }
+  });
 
   // 6. Ledger present with matching receipts: every file skips, nothing pends.
-  {
-    const r = run(['--dry-run'], {
+  scenarios.push(async () => {
+    const r = await run(['--dry-run'], {
       RAILWAY_FAKE_LEDGER: 'present|33|present',
       RAILWAY_FAKE_RECEIPTS: JSON.stringify(checksums),
     });
     assert(r.status === 0, 'ledger-skip', 'runner should exit 0', r);
     assert(r.stdout.includes('skip 0001_identity.sql (recorded)') && r.stdout.includes('skip 0033_retire_unused_game_schema.sql (recorded)'), 'ledger-skip', 'recorded files must skip', r);
     assert(!r.stdout.includes('pending '), 'ledger-skip', 'no file may be pending with full receipts', r);
-  }
+  });
 
   // 7. Baseline guards.
-  {
-    const r = run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_LEDGER: 'present|11|present' });
+  scenarios.push(async () => {
+    const r = await run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_LEDGER: 'present|11|present' });
     assert(r.status !== 0 && r.stderr.includes('do not baseline a non-empty ledger'), 'baseline-nonempty-ledger', 'must refuse baselining an existing ledger', r);
-  }
-  {
-    const r = run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_LEDGER: 'absent|-1|absent' });
+  });
+  scenarios.push(async () => {
+    const r = await run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_LEDGER: 'absent|-1|absent' });
     assert(r.status !== 0 && r.stderr.includes('only valid for an existing application schema'), 'baseline-missing-schema', 'must refuse baselining a schemaless database', r);
-  }
-  {
-    const r = run(['--dry-run', '--baseline', '9999']);
+  });
+  scenarios.push(async () => {
+    const r = await run(['--dry-run', '--baseline', '9999']);
     assert(r.status !== 0 && r.stderr.includes('newer than the latest local migration'), 'baseline-too-new', 'must refuse a baseline newer than local files', r);
-  }
+  });
 
   // 8. Baseline signature probe: refuse a mismatched database and refuse a
   //    baseline the signature map does not know.
-  {
-    const r = run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_SIGNATURE: 'found-later-objects' });
+  scenarios.push(async () => {
+    const r = await run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_SIGNATURE: 'found-later-objects' });
     assert(r.status !== 0 && r.stderr.includes('signature probe refused: found-later-objects'), 'signature-refuse', 'must refuse a failed signature probe', r);
-  }
-  {
-    const r = run(['--dry-run', '--baseline', '0015']);
+  });
+  scenarios.push(async () => {
+    const r = await run(['--dry-run', '--baseline', '0015']);
     assert(r.status !== 0 && r.stderr.includes('has no signature-object map'), 'signature-unmapped', 'must refuse an unmapped baseline', r);
-  }
+  });
 
-  console.log('railway-migrate integration OK — 12 transport scenarios + static probe-map/DEPLOYMENT.md DDL cross-checks: transport shape, order-independent sentinel verification, apply receipts, drift/skip, baseline guards, signature probe');
+  // Every scenario still executes the real transport runner over all migrations.
+  // Only independent fake transports overlap; each has separate argument/SQL logs
+  // and child environments. Bound process fan-out on Windows rather than spending
+  // an hour serially starting thousands of short-lived Git Bash/Node processes.
+  const workerCount = Math.min(3, scenarios.length);
+  let nextScenario = 0;
+  const failures = [];
+  await Promise.all(Array.from({ length: workerCount }, async () => {
+    while (nextScenario < scenarios.length) {
+      const index = nextScenario++;
+      try {
+        await scenarios[index]();
+        console.log(`railway-migrate scenario ${index + 1}/${scenarios.length} OK`);
+      } catch (error) {
+        failures.push(error);
+      }
+    }
+  }));
+  // Wait for every child before cleaning the shared fixture directory, even
+  // when one scenario fails; otherwise cleanup can hide the original failure.
+  if (failures.length) throw new AggregateError(failures, 'railway-migrate scenarios failed');
+
+  console.log('railway-migrate integration OK — 13 transport scenarios + static probe-map/DEPLOYMENT.md DDL cross-checks: transport shape, order-independent sentinel verification, apply receipts, drift/skip, baseline guards, signature probe');
 } finally {
   rmSync(fixtureRoot, { recursive: true, force: true });
 }

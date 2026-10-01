@@ -709,6 +709,10 @@ jobs:
             od9_copy install
             od9_copy inventory --label before >/dev/null
             inventory_ok before
+            source_findings="$(echo 'SELECT count(*) FROM od9.findings;' | copy_admin rehearsal)"
+            [[ "$source_findings" =~ ^[0-9]+$ ]] || { echo "could not count source OD-9 findings"; return 1; }
+            printf '%s\n' "$source_findings" > "$LF/source.findings"
+            echo "od9.findings in the source copy: $source_findings"
             od9_copy spot-check --label before --families 10 | grep -E '"(ok|families|accounts)"'
           }
           # Steps 3-4 on the copy: the window backup, encrypted, then verified.
@@ -847,9 +851,11 @@ jobs:
             copy_restore "$LF/restored.dump" restored
             od9_copy inventory --label restored --db restored >/dev/null
             od9_copy compare --before before --after restored --db restored | grep -E '"(ok|failures|families)"'
-            n="$(echo 'SELECT count(*) FROM od9.findings;' | copy_admin restored)"
-            echo "od9.findings in the restored copy: $n"
-            [ "$n" = 0 ]
+            source_findings="$(cat "$LF/source.findings")"
+            restored_findings="$(echo 'SELECT count(*) FROM od9.findings;' | copy_admin restored)"
+            [[ "$source_findings" =~ ^[0-9]+$ && "$restored_findings" =~ ^[0-9]+$ ]] || return 1
+            echo "od9.findings in the restored copy: $restored_findings (source: $source_findings)"
+            [ "$restored_findings" = "$source_findings" ]
           }
 
           date -u +%Y-%m-%dT%H:%M:%SZ > "$LF/freeze-at"

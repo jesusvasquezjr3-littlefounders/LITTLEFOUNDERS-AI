@@ -18,7 +18,7 @@
     "assets:mouth": "node scripts/generate-mouth-atlas.mjs",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run",
+    "test": "vitest run --maxWorkers=2 --fileParallelism=false",
     "test:watch": "vitest",
     "map:gen": "node scripts/generate-world-map.mjs",
     "map:gen:regions": "node scripts/generate-region-maps.mjs",
