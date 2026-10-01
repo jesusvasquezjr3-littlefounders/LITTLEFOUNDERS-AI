@@ -110,3 +110,15 @@ test('the pre-migration restore points are encrypted in both migrating workflows
     assert.ok(yaml.includes("find /data/backups -name 'pre-migration-*.dump' -delete"), `${name} never removes the old plaintext restore points`);
   }
 });
+
+test('cutover rehearsal checks restored findings against the source backup', () => {
+  const yaml = readFileSync(`${workflowsDir}cutover.yml`, 'utf8');
+  const before = yaml.slice(yaml.indexOf('          p_before() {'), yaml.indexOf('          p_backup() {'));
+  const restore = yaml.slice(yaml.indexOf('          p_restore_rehearsal() {'), yaml.indexOf("          phase 'start the copy"));
+  assert.match(before, /copy_admin rehearsal\).*\n\s+\[\[ "\$source_findings" =~ \^\[0-9\]\+\$ \]\]/);
+  assert.match(before, /"\$source_findings" > "\$LF\/source\.findings"/);
+  assert.match(restore, /source_findings="\$\(cat "\$LF\/source\.findings"\)"/);
+  assert.match(restore, /copy_admin restored/);
+  assert.match(restore, /\[ "\$restored_findings" = "\$source_findings" \]/);
+  assert.doesNotMatch(restore, /\[ "\$restored_findings" = 0 \]/);
+});

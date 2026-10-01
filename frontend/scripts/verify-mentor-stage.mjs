@@ -292,7 +292,8 @@ try {
         page.core = { scenario, locale, theme, fixtures: { [locale]: { allocation: documents[`${locale}:${spec.ageBand}`] } } };
         await page.evaluate(sessionStorageScript({ guest: spec.guest, locale, theme }));
         await page.send('Page.navigate', { url: `${origin}/learn/lesson/verify-stage?lng=${locale}` });
-        await waitFor(`document.documentElement.lang === ${JSON.stringify(locale)} && ${ON_SCREEN('.lf-mentor-band')}`, `${where}: compact stage on screen`, 1200);
+        // documentElement is null for an instant while the navigation swaps documents (read that way on CI).
+        await waitFor(`document.documentElement?.lang === ${JSON.stringify(locale)} && ${ON_SCREEN('.lf-mentor-band')}`, `${where}: compact stage on screen`, 1200);
         // When a segment opens the Mentor introduces the question: the band speaks for LESSON_STAGE_INTRO_MS (2 s,
         // lessonStage.tsx; 08 §11). With the models already cached the band is on screen inside that hold, so its
         // at-rest state is read once the hold is over (up to 5 s); a band that never stops speaking fails below.
@@ -362,7 +363,10 @@ try {
           await sleep(1500);
           const fps = await page.evaluate('new Promise((done) => { let frames = 0; const start = performance.now(); const tick = (now) => { frames++; if (now - start < 3000) requestAnimationFrame(tick); else done(Math.round(frames * 1000 / (now - start))); }; requestAnimationFrame(tick); })');
           if (fps < 30) await waitFor("document.querySelector('.lf-mentor-stage')?.dataset.renderMode === 'still' && document.querySelector('.lf-mentor-stage-still')?.naturalWidth > 0", `${character}: ${fps} fps, the stage never fell back to its still`, 600);
-          const after = await stageState();
+          // The stage may swap its still for the pose's own image right after falling back; with the cache off (cold)
+          // that image is still downloading when first read. Read again until the still shown has loaded (up to 10 s).
+          let after = await stageState();
+          for (let n = 0; n < 20 && after.data.renderMode === 'still' && !after.still?.loaded; n++) { await sleep(500); after = await stageState(); }
           if (process.env.MENTOR_STAGE_STRICT_BUDGET === '1') assert.ok(firstRenderMs <= 2500, `first render ${firstRenderMs} ms over the 2.5 s budget`);
           assert.ok(fps >= 30 || (after.data.renderMode === 'still' && after.data.fallback === 'frame-rate' && after.still?.loaded), `${fps} fps and ${after.data.renderMode}`);
           return { profile, firstRenderMs, withinBudget: firstRenderMs <= 2500, firstMode: liveFirst, fps, mode: after.data.renderMode, fallback: after.data.fallback ?? null };

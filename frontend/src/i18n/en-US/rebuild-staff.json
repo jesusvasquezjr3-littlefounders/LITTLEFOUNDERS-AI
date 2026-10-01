@@ -918,7 +918,7 @@
         "critical": "Critical",
         "warning": "Warning",
         "alertLiveCost": "Projected cost: {cost}.",
-        "alertLiveCostDetail": "Spent {spent} at {progress} done.",
+        "alertLiveCostDetail": "Spent {spent}; {progress} complete.",
         "alertLowCache": "Cache hits low: {share}.",
         "alertLowCacheDetail": "The prompt prefix may have drifted.",
         "alertHighFail": "{share} of lessons failed.",

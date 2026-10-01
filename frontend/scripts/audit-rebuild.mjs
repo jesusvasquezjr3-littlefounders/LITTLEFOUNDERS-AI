@@ -148,14 +148,26 @@ async function load(page, state, locale, theme, width) {
   const applied = await page.evaluate(`(() => { const r = document.querySelector('.lf-rebuild'); return { lang: r.getAttribute('lang') || document.documentElement.lang, theme: r.dataset.theme || (document.documentElement.classList.contains('dark') ? 'dark' : 'light') }; })()`);
   if (applied.lang !== locale || applied.theme !== theme) throw new Error(`${state.id}: asked for ${locale}/${theme}, the page shows ${applied.lang}/${applied.theme}`);
   for (const selector of state.open ?? []) {
-    const point = await page.evaluate(`(() => {
+    const aim = `(() => {
       const e = document.querySelector(${JSON.stringify(selector)});
       if (!e) throw new Error('Missing ' + ${JSON.stringify(selector)});
       e.scrollIntoView({ block: 'center' });
       const r = e.getBoundingClientRect(), x = r.x + r.width / 2, y = r.y + r.height / 2, top = document.elementFromPoint(x, y);
       if (!(e.contains(top) || top?.contains(e))) throw new Error('Occluded: ' + ${JSON.stringify(selector)});
-      return { x, y };
-    })()`);
+      return { x, y, page: document.documentElement.scrollHeight };
+    })()`;
+    // Pressed only once the target has stopped moving, as a person taps what has settled: panels above it that are
+    // still loading grow the page, and a press aimed before such a shift lands on whatever moved under the pointer
+    // (on a loaded CI runner the /family panel toggles were missed that way and the closed page was measured).
+    let point = await page.evaluate(aim);
+    for (let n = 0; n < 40; n++) {
+      await wait(150);
+      const again = await page.evaluate(aim);
+      const still = Math.abs(again.x - point.x) < 1 && Math.abs(again.y - point.y) < 1 && again.page === point.page;
+      point = again;
+      if (still) break;
+    }
+    point = { x: point.x, y: point.y };
     await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
     await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', ...point, button: 'left', clickCount: 1 });
     await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...point, button: 'left', clickCount: 1 });

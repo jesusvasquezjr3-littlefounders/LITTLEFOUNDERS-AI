@@ -121,7 +121,16 @@ const SOCIAL = {
   // is lost with the old mount). The goals-together card's answered paragraph proves the remount happened; its failed state is a notice.
   settled: '[data-console-part="coop-goals"] p[data-copy-role="body"]:not(.lf-notice)',
 };
-const opensSettled = (selector, open = [selector]) => [selector, { open, firstView: false, readyAlso: SOCIAL.settled }];
+/*
+ * A press lost to a late remount leaves its panel closed, and the state then measures the page without it (the shard merge
+ * found data-policy's markup identical to two-children's on CI). When the last press is a disclosure toggle, the state is
+ * measured only once that toggle reads aria-expanded="true"; one that never opens is retried once on a fresh page, then fails.
+ */
+const expandedProof = (open) => {
+  const last = open[open.length - 1];
+  return last.endsWith('[aria-expanded]') ? { openReady: `${last.slice(0, -'[aria-expanded]'.length)}[aria-expanded="true"]` } : {};
+};
+const opensSettled = (selector, open = [selector]) => [selector, { open, firstView: false, readyAlso: SOCIAL.settled, ...expandedProof(open) }];
 
 /*
  * GAP-FIX-R5 (Bible 02 §7 item 10, 03 §5, 06 §7; Appendix H Part 3 Stage 4): the Block D panels that render only after a press.
@@ -152,7 +161,7 @@ const COINS = {
   month: '[data-family-part="child-coins"] [data-coins-toggle="month"] .lf-disclosure-summary',
   history: '[data-family-part="child-coins"] [data-coins-toggle="history"] .lf-disclosure-summary',
 };
-const opensAfter = (settled, selector, open = [selector]) => [selector, { open, firstView: false, readyAlso: settled }];
+const opensAfter = (settled, selector, open = [selector]) => [selector, { open, firstView: false, readyAlso: settled, ...expandedProof(open) }];
 
 /*
  * GAP-FIX-R8 (OD-9 section 4.2, S10.3c; Bible 02 section 7 item 10, 03 section 5, 06 section 7): the consent surfaces render only for a

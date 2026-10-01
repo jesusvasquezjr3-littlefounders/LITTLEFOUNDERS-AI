@@ -1,6 +1,6 @@
 # Branch protection for the governed Mentor code
 
-**Status:** prepared by Engineering on 27 September 2026 for owner decision OD-28 (owner review O-01, Product 10 C.22). Nothing here is applied: repository configuration is the owner's, and no agent calls the GitHub API to change it. The owner applies it with the command in §3.
+**Status:** applied on 30 September 2026 under the owner's explicit operational authorization in the readiness session. Ruleset `24277465` is active; GitHub reports `pull_request` and `required_status_checks` on `main`. The prepared policy remains OD-28 (owner review O-01, Product 10 C.22). Future repository-policy changes remain owner-controlled. Section 3 documents application; inspect existing rules before creating another ruleset.
 
 ## 1. What it enforces
 
