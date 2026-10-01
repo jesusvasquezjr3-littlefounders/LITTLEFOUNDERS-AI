@@ -29,19 +29,30 @@ These gates are not optional, not skippable under time pressure, and not satisfi
    ```
    Plus available RAM/CPU and how many dev servers/containers are already running. Do not start multiple heavy watchers, headless browser sessions, or DB resets in parallel without knowing the machine can take it — a swapping machine fails as flaky timing tests, not as a loud error.
 
-3. **Before every commit, and again before every push, run the local tests and gates — no exceptions.**
-   ```bash
-   npm run typecheck:all && npm run lint:all && npm run test:all
-   npm run secrets:check
-   npm run tools:test
-   ```
-   Plus whichever conditional gate applies to the area touched (README's "Mandatory testing" table — i18n, SEO, provider parity, tutor context/pedagogy, lesson-engine, tutor UI, migrations, etc.). Note the table changes directory halfway down: the parity gates are root scripts, the `verify:*` gates only exist inside their service.
+3. **Work first, then verify, in three tiers — the full gates run once per push, and a push is never made without them.** A commit is local and reversible; a push is a deploy. So the full battery guards the push, and everything before it runs only what the change can actually break. Never run a gate before the change it would judge exists, and never re-run a gate whose result is still valid.
 
-   **What a push to `main` actually does.** Not a fan-out across all 11 services — every `*-ci.yml` is `paths:`-filtered, so CI runs for the services you touched plus the unfiltered `repo-gates.yml`. What makes a push consequential is that **CD is chained to CI**: each touched service whose CI goes green deploys itself, and `database-cd.yml` goes further — it auto-applies *additive* migrations to production (`gate-auto-apply.mjs` refuses anything that removes or narrows). So a push is a deploy, and a push touching `database/migrations/` is a production migration. Passing these gates locally is required before every commit; do not commit or push on the assumption that CI will catch it.
+   | Tier | When | What runs |
+   |---|---|---|
+   | **Build loop** | While implementing | Do the work first. Then one targeted check: `cd <service> && npm run type-check` plus the focused test file (`npm run test -- <path>`; for `agent/tools`, `node --test <file>`). No aggregates, no browser gates, no lint of the world. |
+   | **Commit gate** | Before `git commit` | Only the service(s) the commit touches: `npm run type-check && npm run lint && npm run test`. A docs-only commit (only `*.md` / `docs/`, no code, no migrations) runs `npm run secrets:check` and `npm run spec:check` and nothing else. |
+   | **Push gate** | Once, on the final tree, before `git push` | `npm run typecheck:all && npm run lint:all && npm run test:all`, `npm run secrets:check`, `npm run tools:test`, `npm run build` in each touched service, plus every conditional gate for the area touched (README's "Mandatory testing" table). No exceptions: a push that skipped this gate is a defect. |
+
+   Result-driven, not ritual: a green result stays valid until a file in its scope changes. Services are independent packages, so a green for one service survives edits to another; a cross-service parity gate re-runs when any of its copies changes. When a gate fails, fix the cause and re-run only that gate (plus any whose scope the fix touched) — never restart the whole battery. Note the conditional table changes directory halfway down: the parity gates are root scripts, the `verify:*` gates only exist inside their service.
+
+   **What a push to `main` actually does.** Not a fan-out across all 11 services — every `*-ci.yml` is `paths:`-filtered, so CI runs for the services you touched plus the unfiltered `repo-gates.yml`. What makes a push consequential is that **CD is chained to CI**: each touched service whose CI goes green deploys itself, and `database-cd.yml` goes further — it auto-applies *additive* migrations to production (`gate-auto-apply.mjs` refuses anything that removes or narrows). So a push is a deploy, and a push touching `database/migrations/` is a production migration. Passing the push gate locally is required before every push; do not push on the assumption that CI will catch it. Commit freely and locally, batch the commits, run the push gate once, push once.
 
 4. **Commits are attributed to the developer only — never to Claude.** Do not append `Co-Authored-By: Claude …` or a `Claude-Session:` trailer (or any similar AI-attribution line) to commit messages or PR descriptions in this repo, even if a default instruction elsewhere says to. This overrides that default here.
 
 5. **All documentation added to this project must be written in English**, regardless of the language the user is conversing in. This includes `README.md`, `CLAUDE.md`/`AGENTS.md`, code comments, commit messages, PR descriptions, and any other doc file added to the repo — translate before writing, don't write in the conversation's language and leave it.
+
+6. **Development tempo is a requirement, not a preference: minimize time to a verified result.** The owner measured past sessions (Aug–Oct 2026): sessions ran for hours and days, ~7.5 gate runs per commit, about one in four of them a re-run after a failure, and 12 hours were spent waiting on questions. These rules exist to remove that waste without weakening what the push gate proves:
+   - **Do the work, then test, then adjust to the result.** Objective and direct: implement the change as a whole, run the tier that applies (rule 3), read the result, fix what it names. Don't test between every small edit.
+   - **Run slow gates in the background and keep working.** Measured costs: `test:all` ≈ 10 min, `tools:test` ≈ 10 min, `verify:tutor-ui` ≈ 5 min, `verify:lesson-engine` ≈ 4 min, `database` `npm test` 5–10 min. The default 2-minute tool timeout kills them: use `run_in_background` or a 10-minute timeout, and spend the wait on the next task. Never run `test:all` or a browser gate while a subagent fleet or another browser gate is live — a measurement taken under load is not evidence either way.
+   - **Subagents and workflows implement; the coordinator verifies.** Agents run targeted checks only. The push gate runs once, by the coordinator, after the agents finish. Use a workflow only when the work is truly parallel and independent, never to run the same gates in many places.
+   - **Decide, don't ask.** Use `AskUserQuestion` only for a decision that is genuinely the owner's (product, money, production, irreversible). When a sensible default exists, take it, record the assumption in the commit or sprint record, and continue; the owner will redirect. Questions have averaged 16 minutes of wall-clock each.
+   - **One coherent block per session.** Land a pushable checkpoint, then start fresh. A session that runs for days with dozens of workflows has outgrown its scope.
+   - **Paperwork is batched.** `docs/rebuild/SPRINTS.md`, `REQUIREMENTS.md` and the sprint record are updated once per work block, at the push gate, not at every commit. `REQUIREMENTS.md` has single rows of up to 19 KB: edit a row with a targeted search (`Grep` for its id, then `Edit`), never read the whole file.
+   - **Never trade the push gate for speed.** A defect that reaches production costs more than any gate. The tiers cut repetition, not coverage.
 
 ## What this is
 
@@ -53,14 +64,14 @@ LittleFounders: a gamified financial-literacy and entrepreneurship platform for 
 npm run setup                                          # from-zero provisioning (all 11 packages + DB + seeds)
 DEV_PROFILE=core DEV_DB=1 npm run dev                   # frontend + Core + Supabase containers
 
-npm run typecheck:all && npm run lint:all && npm run test:all   # before every commit
-npm run secrets:check && npm run tools:test
+npm run typecheck:all && npm run lint:all && npm run test:all   # push gate: once per push, not per commit
+npm run secrets:check && npm run tools:test                      # push gate (secrets:check also on docs-only commits)
 
 npm run release:readiness -- <course>   # before production: all gates + zero-spend dry-runs
 npm run production:preflight            # read-only Railway check, operator-only, never CI
 ```
 
-`README.md`'s "Mandatory testing" table lists which conditional gate to run for the area you touched (i18n, SEO, provider parity, whiteboard/demonstrate-step parity, tutor context/pedagogy, lesson-engine, tutor UI, migrations). Run the gate for your area — CI enforces the repo-wide set but is the backstop, not the gate.
+`README.md`'s "Mandatory testing" table lists which conditional gate to run for the area you touched (i18n, SEO, provider parity, whiteboard/demonstrate-step parity, tutor context/pedagogy, lesson-engine, tutor UI, migrations). Run the gate for your area at the push gate — CI enforces the repo-wide set but is the backstop, not the gate.
 
 Single-service work: `cd <service> && npm run type-check && npm run lint && npm run test`. **The hyphen is load-bearing:** services name it `type-check`, and only the root aggregate drops the hyphen (`typecheck:all`), so `npm run typecheck` inside a service is `Missing script` every time. `database/` is the exception to the whole line — it defines `test` and the `db:*` scripts only, so `run-all.sh` skips it for type-check, lint and build; its CI is `npm test` plus the secrets scan.
 
@@ -113,4 +124,4 @@ Before merging UI changes, run the text-fit, proportion and copy-budget audits (
 
 The owner resolved OD-12 on 21 September 2026: web first, with a future mobile wrapper sharing the web frontend. Keep tokens platform-neutral and the Mentor stage isolated. See `docs/rebuild/BASELINE.md` for implementation evidence; it is a tracking document, never a competing specification.
 
-Track this migration point by point in `docs/rebuild/SPRINTS.md` and `docs/rebuild/REQUIREMENTS.md`. Every checkpoint records product and frontend verification against the SPEC, evidence and remaining limitations. Implementation, local verification, acceptance and release are separate statuses; never close a requirement on implementation alone. Update the sprint record and affected requirement rows together.
+Track this migration point by point in `docs/rebuild/SPRINTS.md` and `docs/rebuild/REQUIREMENTS.md`. Every checkpoint (a pushable work block, not each commit) records product and frontend verification against the SPEC, evidence and remaining limitations. Implementation, local verification, acceptance and release are separate statuses; never close a requirement on implementation alone. Update the sprint record and affected requirement rows together.

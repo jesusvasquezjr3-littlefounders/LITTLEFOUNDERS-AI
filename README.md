@@ -193,11 +193,31 @@ Most of the migration's commands appear in the tables below, each beside the are
 
 The local completion state, the evidence and the order of the remaining non-engineering steps are in `docs/rebuild/COMPLETION-REPORT.md`.
 
-## Mandatory testing — before every commit
+## Mandatory testing — tiered: build fast, gate once at the push
 
-**NON-NEGOTIABLE:** CD is chained to CI, so a push to `main` deploys every service it touched — a red push can ship a broken deploy, and one touching `database/migrations/` applies those migrations to production (see "Production database" below). Run these locally first, before every commit and again before every push — they are the same checks CI runs, and passing locally is required, not optional on the assumption CI will catch it.
+**NON-NEGOTIABLE:** CD is chained to CI, so a push to `main` deploys every service it touched — a red push can ship a broken deploy, and one touching `database/migrations/` applies those migrations to production (see "Production database" below). The full battery below is the **push gate**: it runs locally, once, on the final tree, before every push — they are the same checks CI runs, and passing locally is required, not optional on the assumption CI will catch it. A commit is local and reversible, so it gets a lighter tier. Time to a verified result is also non-negotiable: the tiers remove repetition, never coverage.
 
-**Always (any change):**
+| Tier | When | What runs |
+|---|---|---|
+| Build loop | While implementing | Do the work first, then one targeted check: in the service, `npm run type-check` plus the focused test file (`npm run test -- <path>`; for `agent/tools`, `node --test <file>`). No aggregates, no browser gates. |
+| Commit gate | Before `git commit` | Only the touched service(s): `npm run type-check && npm run lint && npm run test`. A docs-only commit (only `*.md` / `docs/`, no code or migrations) runs `npm run secrets:check` and `npm run spec:check` only. |
+| Push gate | Once, on the final tree, before `git push` | Everything in the next two sections: the full battery, the build of each touched service, and every conditional gate for the area touched. |
+
+A green result stays valid until a file in its scope changes. Services are independent packages, so a green for one service survives edits to another; a cross-service parity gate re-runs when any of its copies changes. When a gate fails, fix the cause and re-run only that gate (plus any whose scope the fix touched); do not restart the battery. Batch commits, run the push gate once, push once.
+
+**Measured gate cost** (from the Aug–Oct 2026 session transcripts; approximate, one 32 GB / 16-thread Windows machine). The default 2-minute tool timeout kills the slow ones: run them with `run_in_background` or a 10-minute timeout and keep working while they run — and never alongside a subagent fleet or another browser gate, since a measurement taken under load is not evidence.
+
+| Gate | Typical wall-clock |
+|---|---|
+| `npm run test:all` | ≈ 10 min |
+| `npm run tools:test` | ≈ 10 min (has hit the 10-minute cap) |
+| `database/` `npm test` | 5–10 min |
+| `frontend/` `npm run verify:tutor-ui` | ≈ 5 min |
+| `frontend/` `npm run verify:lesson-engine` | ≈ 4 min |
+| `npm run typecheck:all && npm run lint:all` | ≈ 5 min |
+| `npm run spec:check` | ≈ 1.7 min |
+
+**Push gate — full battery (any change that is not docs-only):**
 
 ```bash
 npm run typecheck:all && npm run lint:all && npm run test:all
