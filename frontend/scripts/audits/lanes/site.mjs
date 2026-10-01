@@ -1,6 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { renderBadgeFixture } from '../badge-fixture.mjs';
 import { app, preview } from './helpers.mjs';
 
 /*
@@ -20,11 +19,7 @@ export const lane = 'site';
 // independent of whether its originating course remains in the catalogue.
 // Render the synthetic image with today's compositor and approved house art;
 // never reference retired static course badges or restore them for an audit.
-const badgeImage = execFileSync(process.execPath, [
-  fileURLToPath(new URL('../../../../filebase/node_modules/tsx/dist/cli.mjs', import.meta.url)),
-  '--eval',
-  "import {renderBadgePng} from './src/lib/badge.ts'; renderBadgePng({kind:'course_badge',label:'Money basics',firstName:'Sofía',locale:'en-US'}).then(p=>process.stdout.write('data:image/png;base64,'+p.toString('base64')))",
-], { cwd: fileURLToPath(new URL('../../../../filebase/', import.meta.url)), encoding: 'utf8', maxBuffer: 1024 * 1024 }).trim();
+const badgeImage = 'data:image/png;base64,' + (await renderBadgeFixture()).toString('base64');
 
 // The route retires on this date (routes/marketing/BadgeLandingPage.tsx); after it every link reads as expired.
 const BADGE_ROUTE_RETIRES_AT = Date.parse(readFileSync(new URL('../../../src/routes/marketing/BadgeLandingPage.tsx', import.meta.url), 'utf8')
