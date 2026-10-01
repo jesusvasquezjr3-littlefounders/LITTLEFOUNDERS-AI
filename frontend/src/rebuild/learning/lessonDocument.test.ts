@@ -36,6 +36,7 @@ describe('answerless versioned lesson client document', () => {
   });
 
   it('refuses unsupported formats rather than skipping them and granting completion', () => {
+    expect(loadLessonClientDocument({ ...pilot, schema_version: 1 }).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...pilot, schema_version: 3 }).status).toBe('upgrade-required');
     expect(loadLessonClientDocument({ ...pilot, segments: [{ ...pilot.segments[0], type: 'unknown.v3' }] }).status).toBe('upgrade-required');
     expect(loadLessonClientDocument(pilot, ['visual.stacked-bar.v1']).status).toBe('upgrade-required');

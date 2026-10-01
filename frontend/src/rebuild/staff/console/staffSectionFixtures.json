@@ -147,64 +147,50 @@
     "documents": [
       {
         "locale": "en-US",
-        "schemaVersion": 1,
-        "audio": {
-          "units": {
-            "story-1.prompt": {
-              "url": "https://media.example.test/lesson-audio/en-US/story-1.mp3",
-              "duration_ms": 2400,
-              "voice": "Dina"
-            }
-          }
+        "schemaVersion": 2,
+        "documentVersionId": "7c1d2e3f-0000-4000-8000-000000000041",
+        "playable": true,
+        "mentorStage": {
+          "character": "rho",
+          "scene": "diorama-a"
         },
+        "narrationAudio": {},
+        "audio": {},
         "document": {
-          "schema_version": 1,
-          "meta": {
-            "slug": "needs-and-wants",
-            "title": "Needs and Wants",
-            "locale": "en-US",
-            "subject": "money",
-            "estimated_minutes": 8,
-            "objectives": [],
-            "cast": []
+          "schema_version": 2,
+          "course_id": "financial-education",
+          "pathway_id": "financial-6-9",
+          "chapter_id": "money-plans",
+          "lesson_id": "needs-and-wants",
+          "version_id": "review-v2",
+          "locale": "en-US",
+          "age_band": "6-9",
+          "eligibility": {
+            "minimum_age": 6,
+            "maximum_age": 9
           },
-          "scoring": {
-            "pass_threshold": 70,
-            "hint_penalty_pct": 0,
-            "max_attempts": 3
-          },
+          "knowledge_component_ids": [
+            "kc-saving-allocation"
+          ],
+          "adventure_scene_id": "diorama-a",
+          "title": "Split your money",
+          "required_capabilities": [
+            "visual.stacked-bar.v1",
+            "operation.reallocate.v1"
+          ],
           "segments": [
             {
-              "id": "story-1",
-              "type": "story_scene",
-              "prompt_md": "Think about the things you need each day.",
-              "difficulty": 1,
-              "xp": 0,
-              "audio_segment_id": "story-1.prompt",
+              "id": "allocate-01",
+              "type": "money.allocation.v2",
+              "prompt": "Save at least 4 of your 12 coins. Where will they go?",
+              "grading": "server",
+              "visual": {
+                "type": "stacked-bar"
+              },
               "payload": {
-                "body_md": "Food and a home are needs.",
-                "art": {
-                  "image_url": "/course-badges/financial-education.png"
-                }
-              }
-            },
-            {
-              "id": "quiz-1",
-              "type": "quiz_mcq",
-              "prompt_md": "Which one is a need?",
-              "difficulty": 2,
-              "xp": 10,
-              "payload": {
-                "options": [
-                  {
-                    "id": "a",
-                    "label_md": "Food"
-                  },
-                  {
-                    "id": "b",
-                    "label_md": "A new game"
-                  }
-                ]
+                "total": 12,
+                "step": 1,
+                "currency": "coins"
               }
             }
           ]
@@ -212,64 +198,50 @@
       },
       {
         "locale": "es-MX",
-        "schemaVersion": 1,
-        "audio": {
-          "units": {
-            "story-1.prompt": {
-              "url": "https://media.example.test/lesson-audio/es-MX/story-1.mp3",
-              "duration_ms": 2400,
-              "voice": "Dina"
-            }
-          }
+        "schemaVersion": 2,
+        "documentVersionId": "7c1d2e3f-0000-4000-8000-000000000042",
+        "playable": true,
+        "mentorStage": {
+          "character": "rho",
+          "scene": "diorama-a"
         },
+        "narrationAudio": {},
+        "audio": {},
         "document": {
-          "schema_version": 1,
-          "meta": {
-            "slug": "needs-and-wants",
-            "title": "Needs and Wants",
-            "locale": "es-MX",
-            "subject": "money",
-            "estimated_minutes": 8,
-            "objectives": [],
-            "cast": []
+          "schema_version": 2,
+          "course_id": "financial-education",
+          "pathway_id": "financial-6-9",
+          "chapter_id": "money-plans",
+          "lesson_id": "needs-and-wants",
+          "version_id": "review-v2",
+          "locale": "es-MX",
+          "age_band": "6-9",
+          "eligibility": {
+            "minimum_age": 6,
+            "maximum_age": 9
           },
-          "scoring": {
-            "pass_threshold": 70,
-            "hint_penalty_pct": 0,
-            "max_attempts": 3
-          },
+          "knowledge_component_ids": [
+            "kc-saving-allocation"
+          ],
+          "adventure_scene_id": "diorama-a",
+          "title": "Divide tu dinero",
+          "required_capabilities": [
+            "visual.stacked-bar.v1",
+            "operation.reallocate.v1"
+          ],
           "segments": [
             {
-              "id": "story-1",
-              "type": "story_scene",
-              "prompt_md": "Piensa en lo que necesitas cada día.",
-              "difficulty": 1,
-              "xp": 0,
-              "audio_segment_id": "story-1.prompt",
+              "id": "allocate-01",
+              "type": "money.allocation.v2",
+              "prompt": "Tienes 12 monedas y debes guardar al menos 4. ¿Dónde irán?",
+              "grading": "server",
+              "visual": {
+                "type": "stacked-bar"
+              },
               "payload": {
-                "body_md": "La comida y un hogar son necesidades.",
-                "art": {
-                  "image_url": "/course-badges/financial-education.png"
-                }
-              }
-            },
-            {
-              "id": "quiz-1",
-              "type": "quiz_mcq",
-              "prompt_md": "Which one is a need?",
-              "difficulty": 2,
-              "xp": 10,
-              "payload": {
-                "options": [
-                  {
-                    "id": "a",
-                    "label_md": "Food"
-                  },
-                  {
-                    "id": "b",
-                    "label_md": "A new game"
-                  }
-                ]
+                "total": 12,
+                "step": 1,
+                "currency": "coins"
               }
             }
           ]
@@ -277,64 +249,50 @@
       },
       {
         "locale": "pt-BR",
-        "schemaVersion": 1,
-        "audio": {
-          "units": {
-            "story-1.prompt": {
-              "url": "https://media.example.test/lesson-audio/pt-BR/story-1.mp3",
-              "duration_ms": 2400,
-              "voice": "Dina"
-            }
-          }
+        "schemaVersion": 2,
+        "documentVersionId": "7c1d2e3f-0000-4000-8000-000000000043",
+        "playable": true,
+        "mentorStage": {
+          "character": "rho",
+          "scene": "diorama-a"
         },
+        "narrationAudio": {},
+        "audio": {},
         "document": {
-          "schema_version": 1,
-          "meta": {
-            "slug": "needs-and-wants",
-            "title": "Needs and Wants",
-            "locale": "pt-BR",
-            "subject": "money",
-            "estimated_minutes": 8,
-            "objectives": [],
-            "cast": []
+          "schema_version": 2,
+          "course_id": "financial-education",
+          "pathway_id": "financial-6-9",
+          "chapter_id": "money-plans",
+          "lesson_id": "needs-and-wants",
+          "version_id": "review-v2",
+          "locale": "pt-BR",
+          "age_band": "6-9",
+          "eligibility": {
+            "minimum_age": 6,
+            "maximum_age": 9
           },
-          "scoring": {
-            "pass_threshold": 70,
-            "hint_penalty_pct": 0,
-            "max_attempts": 3
-          },
+          "knowledge_component_ids": [
+            "kc-saving-allocation"
+          ],
+          "adventure_scene_id": "diorama-a",
+          "title": "Divida suas moedas",
+          "required_capabilities": [
+            "visual.stacked-bar.v1",
+            "operation.reallocate.v1"
+          ],
           "segments": [
             {
-              "id": "story-1",
-              "type": "story_scene",
-              "prompt_md": "Pense no que você precisa todo dia.",
-              "difficulty": 1,
-              "xp": 0,
-              "audio_segment_id": "story-1.prompt",
+              "id": "allocate-01",
+              "type": "money.allocation.v2",
+              "prompt": "Guarde pelo menos 4 das 12 moedas.",
+              "grading": "server",
+              "visual": {
+                "type": "stacked-bar"
+              },
               "payload": {
-                "body_md": "Comida e uma casa são necessidades.",
-                "art": {
-                  "image_url": "/course-badges/financial-education.png"
-                }
-              }
-            },
-            {
-              "id": "quiz-1",
-              "type": "quiz_mcq",
-              "prompt_md": "Which one is a need?",
-              "difficulty": 2,
-              "xp": 10,
-              "payload": {
-                "options": [
-                  {
-                    "id": "a",
-                    "label_md": "Food"
-                  },
-                  {
-                    "id": "b",
-                    "label_md": "A new game"
-                  }
-                ]
+                "total": 12,
+                "step": 1,
+                "currency": "coins"
               }
             }
           ]
@@ -1319,15 +1277,25 @@
       "proposedActions": [
         {
           "tag": "judge:kid_safety",
-          "params": { "dimension": "kid_safety", "mean": 3.2, "min": 2, "n": 9 }
+          "params": {
+            "dimension": "kid_safety",
+            "mean": 3.2,
+            "min": 2,
+            "n": 9
+          }
         },
         {
           "tag": "cost:cache",
-          "params": { "cacheHitPct": 22.4, "wastedUsd": 11.3 }
+          "params": {
+            "cacheHitPct": 22.4,
+            "wastedUsd": 11.3
+          }
         },
         {
           "tag": "future:unknown",
-          "params": { "anything": 1 }
+          "params": {
+            "anything": 1
+          }
         }
       ]
     }

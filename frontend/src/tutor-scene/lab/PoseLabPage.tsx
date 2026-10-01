@@ -4,8 +4,12 @@ import { CHARACTER_IDS, type CharacterId } from '@/components/characters/control
 import { CharacterStage } from '../CharacterStage';
 import { POSES, distinctPoseCount, posesByCategory, type Pose, type PoseCategory } from '../poseLibrary';
 import type { SceneStats } from '../SceneCanvas';
-// Development lab: it renders with the legacy global sheet, which the product entry no longer loads.
-import '@/index.css';
+import { ShellRoot } from '@/app-shell/ShellRoot';
+import { BrandMark, Button } from '@/rebuild/design/controls';
+import { ShellPreferences } from '@/app-shell/ShellPreferences';
+import '@/rebuild/design/tokens.css';
+import '@/rebuild/design/system.css';
+import './authoringLab.css';
 
 /*
  * THE POSE LAB — every pose, on every character, looked at.
@@ -53,7 +57,7 @@ function readParams(params: URLSearchParams): { character: CharacterId; poseId: 
   return { character, poseId };
 }
 
-export function PoseLabPage() {
+function PoseLabPageContent() {
   const [params, setParams] = useSearchParams();
   // Read ONCE, through the lazy initialiser: the URL seeds the lab, and after
   // that the lab owns the state and writes back to the URL. Reading it on every
@@ -82,18 +86,18 @@ export function PoseLabPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-container flex-col gap-5 px-4 py-6 md:px-6">
+    <div className="lf-authoring-row">
       <header>
-        <h1 className="lf-display-lg text-content">Pose lab</h1>
-        <p className="lf-body text-content-muted">
+        <h1 className="lf-authoring-block">Pose lab</h1>
+        <p className="lf-authoring-block">
           {POSES.length} poses · {distinctPoseCount()} distinct renders · {CHARACTER_IDS.length} characters ·
           every entry playable by every one of them
         </p>
       </header>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="lf-authoring-row">
         {CHARACTER_IDS.map((id) => (
-          <button
+          <Button
             key={id}
             type="button"
             onClick={() => {
@@ -105,11 +109,11 @@ export function PoseLabPage() {
             }`}
           >
             {id}
-          </button>
+          </Button>
         ))}
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
+      <div className="lf-authoring-grid">
         <div>
           <CharacterStage
             key={`${character}-${pose.id}-${replay}`}
@@ -119,33 +123,33 @@ export function PoseLabPage() {
             actionKey={replay}
             rotation={pose.rotation ?? 0}
             fill={0.72}
-            className="aspect-[4/5] w-full overflow-hidden rounded-lg bg-surface-sunken sm:aspect-square"
+            className="lf-authoring-stage"
             onStats={setStats}
           />
 
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <button type="button" onClick={() => step(-1)} className="lf-label min-h-11 rounded-full bg-surface-sunken px-4 text-content hover:bg-surface">
+          <div className="lf-authoring-row">
+            <Button type="button" onClick={() => step(-1)} className="lf-authoring-block">
               ← prev
-            </button>
-            <button type="button" onClick={() => setReplay((r) => r + 1)} className="lf-label min-h-11 rounded-full bg-primary px-4 text-on-accent">
+            </Button>
+            <Button type="button" onClick={() => setReplay((r) => r + 1)} className="lf-authoring-block">
               replay
-            </button>
-            <button type="button" onClick={() => step(1)} className="lf-label min-h-11 rounded-full bg-surface-sunken px-4 text-content hover:bg-surface">
+            </Button>
+            <Button type="button" onClick={() => step(1)} className="lf-authoring-block">
               next →
-            </button>
+            </Button>
             {/* The budget is code (`budget.ts`); this is the number a reviewer
                 actually needs while judging whether a pose is affordable. */}
             {stats && (
-              <span data-scene-stats className="lf-caption text-content-muted">
+              <span data-scene-stats className="lf-authoring-block">
                 {stats.triangles.toLocaleString()} tris · {stats.drawCalls} draw call{stats.drawCalls === 1 ? '' : 's'} · {Math.round(stats.fps)} fps · {stats.tier}
               </span>
             )}
           </div>
 
-          <div className="mt-4 rounded-lg border border-outline/60 bg-surface p-4">
-            <p className="lf-label text-content">{pose.id}</p>
-            <p className="lf-body mt-1 text-content-muted">{pose.use}</p>
-            <p className="lf-caption mt-2 text-content-faint">
+          <div className="lf-authoring-block">
+            <p className="lf-authoring-block">{pose.id}</p>
+            <p className="lf-authoring-block">{pose.use}</p>
+            <p className="lf-authoring-block">
               {pose.emotion} · {pose.action}
               {pose.loop ? ' · loops' : ''}
               {pose.rotation ? ` · rotated ${pose.rotation.toFixed(2)} rad` : ''}
@@ -153,18 +157,18 @@ export function PoseLabPage() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="lf-authoring-row">
           {CATEGORY_ORDER.map((category) => {
             const poses = grouped.get(category) ?? [];
             return (
               <section key={category}>
-                <h2 className="lf-label text-content-muted">
+                <h2 className="lf-authoring-block">
                   {category} · {poses.length}
                 </h2>
-                <ul className="mt-2 flex flex-col gap-1">
+                <ul className="lf-authoring-row">
                   {poses.map((p: Pose) => (
                     <li key={p.id}>
-                      <button
+                      <Button
                         type="button"
                         onClick={() => {
                           setPoseId(p.id);
@@ -175,7 +179,7 @@ export function PoseLabPage() {
                         }`}
                       >
                         {p.id}
-                      </button>
+                      </Button>
                     </li>
                   ))}
                 </ul>
@@ -189,3 +193,7 @@ export function PoseLabPage() {
 }
 
 export default PoseLabPage;
+
+export function PoseLabPage() {
+  return <ShellRoot ageBand="adult"><div className="lf-authoring-lab"><header className="lf-authoring-row"><BrandMark name="LittleFounders" href="/" /><ShellPreferences /></header><PoseLabPageContent /></div></ShellRoot>;
+}

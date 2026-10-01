@@ -1,10 +1,11 @@
+import { ConnectedStandaloneHeader } from '@/app-shell/StandaloneHeader';
 import { lazy, Suspense } from 'react';
 import { Route } from 'react-router-dom';
 import { RequireAuth } from '@/auth/RequireAuth';
 import { RequireOnboarded } from '@/auth/RequireOnboarded';
-import { useShellLocale } from '@/app-shell/ShellRoot';
+import { useShellCopy, useShellLocale } from '@/app-shell/ShellRoot';
 import { useTheme } from '@/theme/useTheme';
-import { LoadingState, RebuildRoot } from '@/rebuild/design/controls';
+import { LoadingState, RebuildRoot, SkipLink } from '@/rebuild/design/controls';
 import en from '@/i18n/en-US/rebuild-mentor.json';
 import es from '@/i18n/es-MX/rebuild-mentor.json';
 import pt from '@/i18n/pt-BR/rebuild-mentor.json';
@@ -31,12 +32,15 @@ const TutorPage = lazy(() => import('@/routes/app/TutorPage'));
  */
 function MentorChunkLoading() {
   const locale = useShellLocale();
+  const shellCopy = useShellCopy().appShell;
   const { isDark } = useTheme();
   const copy = (locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en).mentorScreen;
   return <RebuildRoot theme={isDark ? 'dark' : 'light'} locale={locale}>
-    <div className="lf-mentor-route-loading">
+    <SkipLink label={shellCopy.skip} target="lf-mentor-loading-main" />
+    <ConnectedStandaloneHeader />
+    <main id="lf-mentor-loading-main" tabIndex={-1} className="lf-mentor-route-loading">
       <LoadingState label={copy.loading} lines={2} />
-    </div>
+    </main>
   </RebuildRoot>;
 }
 

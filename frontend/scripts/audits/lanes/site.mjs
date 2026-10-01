@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { renderBadgeFixture } from '../badge-fixture.mjs';
 import { app, preview } from './helpers.mjs';
 
 /*
@@ -13,6 +14,12 @@ import { app, preview } from './helpers.mjs';
  * ready selectors hold on load; its `open` presses come after them.
  */
 export const lane = 'site';
+
+// An active pre-cutover link carries a stored Depot-rendered share image,
+// independent of whether its originating course remains in the catalogue.
+// Render the synthetic image with today's compositor and approved house art;
+// never reference retired static course badges or restore them for an audit.
+const badgeImage = 'data:image/png;base64,' + (await renderBadgeFixture()).toString('base64');
 
 // The route retires on this date (routes/marketing/BadgeLandingPage.tsx); after it every link reads as expired.
 const BADGE_ROUTE_RETIRES_AT = Date.parse(readFileSync(new URL('../../../src/routes/marketing/BadgeLandingPage.tsx', import.meta.url), 'utf8')
@@ -126,7 +133,7 @@ export function respond({ spec, path, request, ok }) {
   if (path === '/auth/oauth/providers') return ok({ providers: [] });
   // M7: a link issued before the OD-20 cutover; Core answers only the share image and the first name.
   if (path === '/badges/audit-ready') return ok({ firstName: 'Sofía', achievementKind: 'course_badge', achievementLabel: 'Money basics',
-    imageUrl: '/course-badges/financial-education.png' });
+    imageUrl: badgeImage });
   if (path.startsWith('/badges/')) return { status: 404, body: { data: null, error: { code: 'NOT_FOUND', message: 'Synthetic: expired link' } } };
   if (path === '/tutor/preferences' && request.method === 'PUT') return ok({ character: 'rho', companion: null, diorama: 'diorama-a', backdrop: 'day', nickname: null, adaptations: [] });
   return undefined;

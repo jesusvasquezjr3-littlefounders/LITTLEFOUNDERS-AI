@@ -5,6 +5,11 @@ import { isReady } from '../db/duckdb.js';
 
 let timer: ReturnType<typeof setInterval> | null = null;
 let running = false;
+let paused = false;
+
+export function pauseSyncWorker(): void { paused = true; }
+export function resumeSyncWorker(): void { paused = false; }
+export function isSyncWorkerIdle(): boolean { return !running; }
 
 export function startSyncWorker(): void {
   const config = getConfig();
@@ -23,6 +28,7 @@ export function stopSyncWorker(): void {
 
 async function runSync(): Promise<void> {
   if (!isReady()) return;
+  if (paused) return;
   if (running) return;
 
   try {

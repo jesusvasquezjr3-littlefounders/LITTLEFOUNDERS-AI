@@ -168,7 +168,7 @@ const GUTTER = 16;
  * size limits (never wider or taller than the viewport minus the gutters)
  * are in overlays.css.
  */
-function useAnchoredPosition(open: boolean, triggerId: string, floating: React.RefObject<HTMLElement>, host: HTMLElement | null, align: 'start' | 'center' = 'start') {
+export function useAnchoredPosition(open: boolean, triggerId: string, floating: React.RefObject<HTMLElement>, host: HTMLElement | null, align: 'start' | 'center' = 'start') {
   const [style, setStyle] = useState<CSSProperties>({ visibility: 'hidden', insetBlockStart: 0, insetInlineStart: 0 });
   useLayoutEffect(() => {
     if (!open || !host) return;

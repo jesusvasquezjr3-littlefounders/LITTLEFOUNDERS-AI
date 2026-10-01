@@ -559,6 +559,7 @@ export function segmentCapabilities(value: LessonClientSegment): readonly string
 export function loadLessonClientDocument(raw: unknown, capabilities: readonly string[] = LESSON_CLIENT_CAPABILITIES): LessonLoadResult {
   if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return { status: 'invalid', reason: 'Document is not an object' };
   const candidate = raw as Record<string, unknown>;
+  if (candidate.schema_version === 1) return { status: 'invalid', reason: 'Retired document version' };
   if (candidate.schema_version !== 2) return { status: 'upgrade-required', reason: 'Unsupported document version' };
   if (Array.isArray(candidate.segments) && candidate.segments.some((value) => typeof value === 'object' && value !== null
     && !knownTypes.has(String((value as Record<string, unknown>).type)))) return { status: 'upgrade-required', reason: 'Unsupported segment type' };

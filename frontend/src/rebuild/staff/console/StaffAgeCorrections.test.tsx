@@ -6,6 +6,7 @@ import en from '@/i18n/en-US/rebuild-staff.json';
 import enCore from '@/i18n/en-US/rebuild-core.json';
 import type { StaffApi, StaffResult } from './staffConsoleApi';
 import { correctionsPath, isCorrections, StaffAgeCorrections, type AgeCorrection } from './StaffAgeCorrections';
+import { selectOption } from '../../test/selectOption';
 
 /*
  * E.4 (OD-3): the staff-reviewed age correction queue at the component
@@ -62,9 +63,9 @@ describe('E.4 age corrections (manage_users)', () => {
     expect(within(sheet).getByText('2011-05')).toBeTruthy();
     const approve = within(sheet).getByRole('button', { name: c.action.approve });
     expect(approve).toHaveProperty('disabled', true);
-    fireEvent.change(within(sheet).getByLabelText(c.body.reason), { target: { value: 'not_credible' } });
+    selectOption(within(sheet).getByLabelText(c.body.reason), c.option.not_credible);
     expect(approve).toHaveProperty('disabled', true);
-    fireEvent.change(within(sheet).getByLabelText(c.body.reason), { target: { value: 'evidence_verified' } });
+    selectOption(within(sheet).getByLabelText(c.body.reason), c.option.evidence_verified);
     fireEvent.click(approve);
     const confirm = await screen.findByRole('alertdialog');
     expect(within(confirm).getByText(c.body.approveConsequence)).toBeTruthy();
@@ -78,7 +79,7 @@ describe('E.4 age corrections (manage_users)', () => {
     render(<Frame><StaffAgeCorrections api={api} /></Frame>);
     fireEvent.click(await screen.findByRole('button', { name: common.action.open }));
     const sheet = await screen.findByRole('dialog');
-    fireEvent.change(within(sheet).getByLabelText(c.body.reason), { target: { value: 'evidence_missing' } });
+    selectOption(within(sheet).getByLabelText(c.body.reason), c.option.evidence_missing);
     fireEvent.click(within(sheet).getByRole('button', { name: c.action.reject }));
     const confirm = await screen.findByRole('alertdialog');
     fireEvent.click(within(confirm).getByRole('button', { name: c.action.reject }));

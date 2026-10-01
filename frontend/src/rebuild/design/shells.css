@@ -207,12 +207,12 @@
   .lf-rebuild .lf-shell-frame { grid-template-columns: calc(var(--spacing-32) * 2) minmax(0, 1fr); }
   .lf-rebuild .lf-shell-rail {
     position: sticky;
-    inset-block-start: 0;
+    inset-block-start: calc(var(--target-base) + var(--spacing-4));
     display: flex;
     flex-direction: column;
     align-self: start;
     gap: var(--spacing-3);
-    block-size: 100dvh;
+    block-size: calc(100dvh - var(--target-base) - var(--spacing-4));
     overflow-y: auto;
     padding-block: max(var(--spacing-5), env(safe-area-inset-top)) var(--spacing-5);
     padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) var(--spacing-4);
@@ -221,7 +221,7 @@
   }
   .lf-rebuild .lf-shell-rail > .lf-brand-mark { padding-inline: var(--spacing-4); }
   .lf-rebuild .lf-shell-rail > .lf-pill { align-self: flex-start; margin-inline-start: var(--spacing-4); }
-  .lf-rebuild .lf-shell--learner .lf-tabbar, .lf-rebuild .lf-shell--console :is(.lf-tabbar, .lf-appbar) { display: none; }
+  .lf-rebuild .lf-shell--learner .lf-tabbar, .lf-rebuild .lf-shell--console .lf-tabbar { display: none; }
   .lf-rebuild .lf-shell-main { gap: var(--spacing-8); padding-block: var(--spacing-8) var(--spacing-10); }
 }
 
@@ -420,3 +420,16 @@
 
 /* User-generated tokens wrap anywhere; kept last so no shell rule overrides it (02 §7 rule 8). */
 .lf-rebuild .lf-shell .ugc { overflow-wrap: anywhere; hyphens: none; min-inline-size: 0; }
+
+.lf-rebuild .lf-brand-mark { gap: var(--spacing-2); min-inline-size: var(--target-min); min-block-size: var(--target-min); justify-content: center; }
+.lf-rebuild .lf-brand-graphic { inline-size: var(--spacing-10); block-size: var(--spacing-10); flex: none; }
+.lf-rebuild .lf-shell-preferences[data-shell-preferences] { display: flex; flex-wrap: nowrap; align-items: center; gap: var(--spacing-2); margin-inline-start: auto; }
+.lf-rebuild .lf-shell-preferences .lf-input-field { min-inline-size: 0; max-inline-size: calc(var(--spacing-32) + var(--spacing-4)); }
+.lf-rebuild .lf-site-footer [data-shell-footer-links], .lf-rebuild .lf-auth-footer [data-shell-footer-links] { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-2) var(--spacing-5); }
+.lf-rebuild .lf-site-footer, .lf-rebuild .lf-auth-footer { text-align: center; gap: var(--spacing-2); }
+.lf-rebuild .lf-auth-footer { flex-direction: column; }
+@container app (max-width: 479px) {
+  .lf-rebuild :is(.lf-appbar, .lf-site-header, .lf-auth-header) > .lf-brand-mark span { position: absolute; inline-size: var(--spacing-1); block-size: var(--spacing-1); overflow: hidden; clip-path: inset(50%); }
+}
+
+.lf-rebuild :is(.lf-site-footer, .lf-auth-footer) > p { text-align: center; margin: 0; max-inline-size: none; }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { completableSegmentIds, findGradingSegment, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
+import { pickLessonLocale, stripAnswers } from '../services/lessonDocument.js';
 import { v2PublicLessonSchema, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
 
 const rows = [
@@ -48,53 +48,6 @@ describe('stripAnswers', () => {
   it('is a no-op on a document with no segments array', () => {
     const doc = { meta: { slug: 'x' } };
     expect(stripAnswers(doc)).toBe(doc);
-  });
-});
-
-describe('findGradingSegment', () => {
-  const document = {
-    segments: [{ id: 'quiz-1', type: 'quiz_mcq', prompt_md: 'Pick one', difficulty: 2, xp: 10, payload: { options: [] } }],
-  };
-  const answerKeys = { 'quiz-1': { correct_option_id: 'a' } };
-
-  it('merges the document segment with its server-only answer key', () => {
-    const seg = findGradingSegment(document, answerKeys, 'quiz-1');
-    expect(seg).toMatchObject({ id: 'quiz-1', type: 'quiz_mcq', xp: 10, answer: { correct_option_id: 'a' } });
-  });
-
-  it('returns a segment with answer=undefined when no key exists (caller maps this to 422)', () => {
-    const seg = findGradingSegment(document, {}, 'quiz-1');
-    expect(seg?.answer).toBeUndefined();
-  });
-
-  it('returns null when the segment id does not exist in the document', () => {
-    expect(findGradingSegment(document, answerKeys, 'nope')).toBeNull();
-  });
-});
-
-describe('xpBySegmentId', () => {
-  it('maps xp per segment id', () => {
-    const document = {
-      segments: [
-        { id: 'story-1', type: 'story_scene', xp: 0 },
-        { id: 'quiz-1', type: 'quiz_mcq', xp: 10 },
-      ],
-    };
-    expect(xpBySegmentId(document)).toEqual(new Map([['story-1', 0], ['quiz-1', 10]]));
-  });
-});
-
-describe('completableSegmentIds', () => {
-  const graders = new Set(['quiz_mcq', 'memory_flip']);
-  const keyless = new Set(['memory_flip']);
-  it('permits genuine story-only content and includes keyless graded weight', () => {
-    expect(completableSegmentIds({ schema_version: 1, segments: [{ id: 'story', type: 'story_scene', xp: 0 }] }, {}, graders, keyless)).toEqual([]);
-    expect(completableSegmentIds({ schema_version: 1, segments: [{ id: 'memory', type: 'memory_flip', xp: 10 }] }, {}, graders, keyless)).toEqual(['memory']);
-  });
-  it('refuses an unknown exercise or missing answer key before completion', () => {
-    expect(completableSegmentIds({ schema_version: 1, segments: [{ id: 'future', type: 'future_chart', xp: 20 }] }, {}, graders, keyless)).toBeNull();
-    expect(completableSegmentIds({ schema_version: 1, segments: [{ id: 'quiz', type: 'quiz_mcq', xp: 20 }] }, {}, graders, keyless)).toBeNull();
-    expect(completableSegmentIds({ schema_version: 1, segments: [{ id: 'quiz', type: 'quiz_mcq', xp: 0 }] }, { quiz: {} }, graders, keyless)).toBeNull();
   });
 });
 

@@ -21,12 +21,10 @@ declare global {
 /**
  * How long the reveal will wait for webfonts before going anyway.
  *
- * It waits at all because Material Symbols is `font-display: block` — every
- * icon in the product is INVISIBLE until it resolves, so revealing first shows
- * a chrome full of holes that fills in afterwards. It waits only briefly
- * because a font request can still be slow on a poor connection, and a
- * blocked or slow font request must never be able to hold the product behind a
- * veil: past this cap the app arrives and the text swaps in when it can.
+ * It waits briefly for the approved text typefaces so the first rendered
+ * layout uses their final metrics. A blocked or slow font request never holds
+ * the product behind the veil: past this cap the app arrives and text swaps
+ * in when the font becomes available. SVG glyphs need no font download.
  */
 const FONT_WAIT_MS = 1200;
 

@@ -1,3 +1,4 @@
+import { ShellPreferences } from './ShellPreferences';
 import { Fragment, useEffect, type ReactNode } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -77,7 +78,7 @@ export function AppShellLayout() {
   const current = onMentor ? 'mentor' : currentSlot(pathname, slots);
   const common = {
     appName: APP_NAME, pageTitle: pageTitleFor(pathname, items, current, copy.nav.profile), routeKey: pathname, locale,
-    onNavigate: navigate, current, items,
+    onNavigate: navigate, current, items, utilities: <ShellPreferences />,
   };
   // Every page is rebuilt (02 rule 23, D13): the shell's <main> owns the content box and the route entrance.
   // The key keeps a page's own state from surviving a move to another address on the same route.
@@ -121,7 +122,7 @@ export function StaffShellLayout() {
   // The staff console serves staff, adults only (Bible 06 §7: the root carries the band).
   return <ShellRoot ageBand="adult">
     <StaffShell appName={APP_NAME} pageTitle={items.find((item) => item.id === current)?.label ?? copy.staffRole} routeKey={pathname}
-      locale={locale} onNavigate={navigate} current={current} items={items} grants={staffGrants(roles, adminPermissions)}
+      utilities={<ShellPreferences />} locale={locale} onNavigate={navigate} current={current} items={items} grants={staffGrants(roles, adminPermissions)}
       roleLabel={copy.staffRole} labels={{ skip: copy.skip, navigation: copy.navigation, menu: copy.menu, close: copy.close }}>
       <Outlet />
     </StaffShell>

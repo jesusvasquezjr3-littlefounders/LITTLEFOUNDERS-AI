@@ -1,3 +1,4 @@
+import { StandaloneHeader } from '@/rebuild/design/StandaloneHeader';
 import type { ReactNode } from 'react';
 import { AuthShell, RebuildRoot, type MentorCharacter } from '../../design/controls';
 import type { Locale } from '../../design/copyBudget';
@@ -84,7 +85,7 @@ function onboardingScreen({ locale, theme, params, t }: PreviewContext) {
   const saving = (params.get('saving') as MentorCharacter | null) || null;
   const failed = params.get('failed') === '1';
   return <RebuildRoot theme={theme} locale={locale as Locale}>
-    <OnboardingFlow locale={locale} skipLabel={t.appShell.skip} initialStep={step} initialName="Alessandro" askDiscovery={params.get('discovery') !== '0'}
+    <OnboardingFlow header={<StandaloneHeader locale={locale} theme={theme} />} locale={locale} skipLabel={t.appShell.skip} initialStep={step} initialName="Alessandro" askDiscovery={params.get('discovery') !== '0'}
       mentor={{ chosen, saving, failed: failed && step === 'mentor', onChoose: noop }} completing={null} failed={failed && step === 'account'} onComplete={noop} />
   </RebuildRoot>;
 }
@@ -96,7 +97,7 @@ function ageScreen({ locale, theme, params, t }: PreviewContext) {
 
 export const sitePreviewScreens: PreviewRegistry = {
   'route-error': standalone(({ locale, theme, params }) => <div className="lf-rebuild" data-theme={theme} lang={locale}>
-    <RouteErrorScreen locale={locale} stale={params.get('stale') === '1'} home="learn" frame="standalone" onReload={() => {}} onHome={() => {}} />
+    <RouteErrorScreen header={<StandaloneHeader locale={locale} theme={theme} />} locale={locale} stale={params.get('stale') === '1'} home="learn" frame="standalone" onReload={() => {}} onHome={() => {}} />
   </div>),
   identity: standalone(identityScreen),
   'age-screen': standalone(ageScreen),

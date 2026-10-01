@@ -25,7 +25,7 @@ import {
 } from './characterActions';
 import { useClipLibrary } from './useClipLibrary';
 import type { PointBearing } from './pointTarget';
-import { playSfx } from '@/lesson-engine/player/sfx';
+import { playCelebrationSound } from './celebrationSound';
 import {
   additiveClip,
   baseClipName,
@@ -442,7 +442,7 @@ export function Character3D({
          * held across several frames — or replayed via a bumped `actionKey`
          * — plays the cue exactly once per occurrence, never once per frame.
          */
-        if (action === 'celebrate') playSfx('celebration');
+        if (action === 'celebrate') playCelebrationSound();
       }
 
       const duration = ACTION_SECONDS[action];

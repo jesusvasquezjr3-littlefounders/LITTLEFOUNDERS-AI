@@ -1,12 +1,11 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
-// The resume checkpoint is a storage record (no UI); the legacy player itself stays behind its island.
-import { checkpointKey, newCheckpoint, readCheckpoint, writeCheckpoint, type LessonCheckpoint } from '@/lesson-engine/player/checkpoint';
-import type { LessonDocument } from '@/lesson-engine/core/types';
+import { checkpointKey, newCheckpoint, readCheckpoint, writeCheckpoint } from '@/lib/lessonRunCheckpoint';
+import { ConnectedStandaloneHeader } from '@/app-shell/StandaloneHeader';
 import { useTheme } from '@/theme/useTheme';
 import { AuthenticatedLessonDocument, lessonDocumentFrame } from '@/rebuild/learning/AuthenticatedLessonDocument';
 import type { OnChooseApproach, OnGrade, OnGradeAny, OnGradeBarModel, OnGradeFractionArea, OnGradeNumberLine, OnGradeReasoning, OnGradeSchemaDiagram, OnGradeWorkedExample, OnView } from '@/rebuild/learning/LessonDocumentView';
@@ -29,33 +28,6 @@ import { clearCoursesCache } from './coursesCache';
 import { coursePath, guidedReviewPath, placementPath } from './paths';
 
 /*
- * The route's decisions about a v1 document (W2L.3, OD-24), made here so the
- * route never loads the legacy player or its stylesheet to make them.
- */
-/** A delivered document the legacy engine plays: the v1 schema. */
-export function isLegacyLessonDocument(document: unknown): document is LessonDocument {
-  return typeof document === 'object' && document !== null && !Array.isArray(document)
-    && (document as { schema_version?: unknown }).schema_version === 1;
-}
-
-/**
- * Never restore segment indices or verdicts into a revised or translated
- * document: the checkpoint remembers the document it was taken on.
- */
-export function reconcileLegacyCheckpoint(checkpoint: LessonCheckpoint, document: LessonDocument): LessonCheckpoint {
-  const signature = JSON.stringify(document);
-  const snapshot = checkpoint.state;
-  const segmentIds = new Set(document.segments.map((segment) => segment.id));
-  const invalidSnapshot = snapshot && (snapshot.index >= document.segments.length || Object.keys(snapshot.seg).some((id) => !segmentIds.has(id)));
-  const next = invalidSnapshot || (checkpoint.document && checkpoint.document !== signature) ? newCheckpoint() : checkpoint;
-  next.document = signature;
-  return next;
-}
-
-/* OD-24: the v1 island and the legacy sheet it carries load only when a v1 document is delivered. */
-const LegacyLessonIsland = lazy(() => import('./LegacyLessonIsland').then((module) => ({ default: module.LegacyLessonIsland })));
-
-/*
  * /learn/lesson/:lessonId — the learner's lesson route (COURSE_ENGINE.md §2,
  * LESSON_ENGINE.md §7), a full-screen layer of its own outside the app shell:
  * no navigation ever renders behind a lesson.
@@ -68,11 +40,8 @@ const LegacyLessonIsland = lazy(() => import('./LegacyLessonIsland').then((modul
  * across them, so the document title follows the screen and focus moves to
  * each new screen's heading.
  *
- * A published v1 document still plays in the legacy Lesson Player, the one
- * sanctioned legacy island (OD-24), mounted through its single adapter
- * (`LegacyLessonIsland.tsx`) outside the rebuilt layer. Completion
- * persistence and navigation stay separate there: the player keeps its
- * results screen up after `onComplete`, and only `onExit` navigates.
+ * Only validated v2 documents are playable. Retired or unsupported documents
+ * use the rebuilt unavailable state and never load a legacy renderer.
  */
 
 interface LessonResponse {
@@ -80,8 +49,6 @@ interface LessonResponse {
   lesson: { id: string; slug: string; course_slug?: unknown };
   locale: string;
   document: unknown;
-  /** Echo's narration manifest for a v1 lesson; the legacy island reads it. */
-  audio?: unknown;
   /** B.18 (GAP-FIX-R3): a v2 lesson's resolved narration, segment id -> public URL (Core resolves `audio_ref` against the manifest). */
   narration_audio?: unknown;
   mentor_stage?: unknown;
@@ -94,7 +61,7 @@ interface LessonResponse {
 type LoadState =
   | { status: 'loading' }
   | { status: 'error'; code: string; offline: boolean }
-  | { status: 'ready'; document: unknown; locale: string; audio: unknown; narrationAudio: unknown; mentorStage: unknown; adventureTheme: unknown; v2Attempt: V2Attempt | null; recall: NarrativeRecall | null; courseSlug: string | null };
+  | { status: 'ready'; document: unknown; locale: string; narrationAudio: unknown; mentorStage: unknown; adventureTheme: unknown; v2Attempt: V2Attempt | null; recall: NarrativeRecall | null; courseSlug: string | null };
 
 interface V2RunResponse {
   run_id: string;
@@ -164,7 +131,7 @@ function LessonRouteSession() {
   // B.5 (S05.3d): Core's authenticated completion receipt for a v2 lesson.
   const [v2Receipt, setV2Receipt] = useState<unknown>(null);
   // B.9: the recall shows once, before the lesson, and never over a lesson resumed mid-way.
-  const [recallDone, setRecallDone] = useState(() => (initialCheckpoint.state?.index ?? 0) > 0);
+  const [recallDone, setRecallDone] = useState(() => initialCheckpoint.runId !== null);
 
   // The link that opened the lesson names its course; a deep link falls back to the course Core names (W2L.4).
   const courseSlug = (location.state as LocationState | null)?.courseSlug ?? (state.status === 'ready' ? state.courseSlug : null);
@@ -183,7 +150,6 @@ function LessonRouteSession() {
       }
     };
   }, [lessonId]);
-  const reachedResults = useCallback(() => { completedRef.current = true; }, []);
   // B.26 / OD-1 (S05.3f): a miss costs nothing; consecutive misses on one
   // skill bring the learner's Mentor's offer to review it (never a lock).
   const [guidedReview, setGuidedReview] = useState<GuidedReviewOfferValue | null>(null);
@@ -220,13 +186,8 @@ function LessonRouteSession() {
         return;
       }
       const servedSlug = typeof data.lesson?.course_slug === 'string' && /^[a-z0-9][a-z0-9-]{0,79}$/.test(data.lesson.course_slug) ? data.lesson.course_slug : null;
-      const ready = { document: data.document, locale: data.locale, audio: data.audio ?? {}, narrationAudio: data.narration_audio, mentorStage: data.mentor_stage, adventureTheme: data.adventure_theme,
+      const ready = { document: data.document, locale: data.locale, narrationAudio: data.narration_audio, mentorStage: data.mentor_stage, adventureTheme: data.adventure_theme,
         recall: parseNarrativeRecall(data.narrative_recall), courseSlug: servedSlug };
-      if (isLegacyLessonDocument(data.document)) {
-        checkpoint.current = reconcileLegacyCheckpoint(checkpoint.current, data.document);
-        setState({ status: 'ready', ...ready, v2Attempt: null });
-        return;
-      }
       const clientDocument = loadLessonClientDocument(data.document);
       // GAP-FIX-R1 (OD-17): every playable v2 lesson pins a run, graded or not;
       // non-scored steps complete through Core's view receipts.
@@ -374,7 +335,7 @@ function LessonRouteSession() {
   // opening, recall and refusal screens read in the learner's register (the youngest until Core answers).
   const learnerBand = REGISTERS[registerOf(register)].copyBand;
   const layer = (screen: string, view: JSX.Element, frame: { locale?: Locale; ageBand?: AgeBand; pageTitle?: string } = {}) =>
-    <LessonLayer theme={theme} locale={frame.locale ?? appLocale} ageBand={frame.ageBand ?? learnerBand} screen={screen}
+    <LessonLayer header={<ConnectedStandaloneHeader />} theme={theme} locale={frame.locale ?? appLocale} ageBand={frame.ageBand ?? learnerBand} screen={screen}
       pageTitle={frame.pageTitle ?? learnCopy[frame.locale ?? appLocale].lesson.pageTitle}>{view}{offer}</LessonLayer>;
 
   if (state.status === 'loading') {
@@ -415,7 +376,7 @@ function LessonRouteSession() {
     { locale: receiptLocale, ageBand: REGISTERS[resultRegister].copyBand, pageTitle: learnCopy[receiptLocale].lesson.resultTitle });
   }
 
-  if (!isLegacyLessonDocument(state.document)) {
+  {
     const frame = lessonDocumentFrame(state.document, state.locale);
     return layer('lesson', <AuthenticatedLessonDocument raw={state.document} responseLocale={state.locale} mentorStage={state.mentorStage} adventureTheme={state.adventureTheme} narrationAudio={state.narrationAudio} theme={theme} onBack={goBack}
       onGrade={state.v2Attempt ? gradeV2 : undefined} onGradeNumberLine={state.v2Attempt ? gradeV2NumberLine : undefined}
@@ -429,14 +390,6 @@ function LessonRouteSession() {
     { locale: frame.locale, ageBand: frame.ageBand, pageTitle: frame.title ?? lessonTitle });
   }
 
-  // OD-24: the published v1 catalog, in its one legacy island, outside the rebuilt layer.
-  return <>
-    <Suspense fallback={null}>
-      <LegacyLessonIsland lessonId={lessonId} document={state.document} audio={state.audio} checkpoint={checkpoint} storageKey={storageKey}
-        register={registerOf(register)} onGuidedReview={setGuidedReview} onReachedResults={reachedResults} onExit={goBack} />
-    </Suspense>
-    {offer}
-  </>;
 }
 
 /** Reject malformed/mismatched run data before opaque browser tokens reach a visual. */

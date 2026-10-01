@@ -143,16 +143,16 @@ export function lessonParts(document: Record<string, unknown>): Record<string, u
 }
 
 export function partTitle(part: Record<string, unknown>, index: number): string {
-  return text(part.title) ?? text(part.prompt_md) ?? text(part.id) ?? String(index + 1);
+  return text(part.title) ?? text(part.prompt) ?? text(part.id) ?? String(index + 1);
 }
 
-export function audioAssets(audio: Record<string, unknown> | null | undefined): MediaAsset[] {
-  const units = audio && isRecord(audio.units) ? audio.units : null;
-  if (!units) return [];
-  return Object.entries(units).flatMap(([unitId, unit]) => {
-    const url = isRecord(unit) ? text(unit.url) : null;
-    if (!url || !isRecord(unit)) return [];
-    return [{ id: `audio:${unitId}`, kind: 'audio' as const, label: unitId, url, ...(isNumber(unit.duration_ms) ? { durationMs: unit.duration_ms } : {}) }];
+/** Current public narration is keyed by segment id, as Core delivers it to the learner. */
+export function audioAssets(audio: unknown): MediaAsset[] {
+  if (!isRecord(audio)) return [];
+  return Object.entries(audio).flatMap(([segmentId, value]) => {
+    const url = text(value);
+    if (!/^[a-z0-9][a-z0-9._:-]{2,100}$/.test(segmentId) || !url || !/^(https:\/\/[^\s"'<>]+|\/(?!\/)[^\s"'<>]*)$/.test(url)) return [];
+    return [{ id: `audio:${segmentId}`, kind: 'audio' as const, label: segmentId, url }];
   });
 }
 

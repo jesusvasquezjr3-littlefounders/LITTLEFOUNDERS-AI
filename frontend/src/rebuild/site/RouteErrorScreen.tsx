@@ -1,4 +1,5 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { StandaloneHeader } from '@/rebuild/design/StandaloneHeader';
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { Button, ButtonGroup, InlineNotice, SingleStateScreen } from '../design/controls';
 import type { Locale } from '../design/copyBudget';
 import { rebuildNamespaceCopy } from '../../i18n/rebuild';
@@ -18,10 +19,10 @@ import { siteCopy } from './blocks';
  * failed): the content only, so the shell keeps the one <main> and its
  * navigation, and the person can still go elsewhere.
  */
-export function RouteErrorScreen({ locale, stale, home, onReload, onHome, frame }: {
+export function RouteErrorScreen({ locale, stale, home, onReload, onHome, frame, header }: {
   locale: Locale; stale: boolean; home: 'learn' | 'home';
   onReload: () => void; onHome: () => void;
-  frame: 'standalone' | 'embedded';
+  frame: 'standalone' | 'embedded'; header?: ReactNode;
 }) {
   const copy = siteCopy(locale).routeError;
   const title = stale ? copy.staleTitle : copy.title;
@@ -39,7 +40,7 @@ export function RouteErrorScreen({ locale, stale, home, onReload, onHome, frame 
     {actions}
   </section>;
   return <SingleStateScreen appName="LittleFounders" pageTitle={title} routeKey="route-error" locale={locale} hue="primary"
-    labels={{ skip: rebuildNamespaceCopy[locale].core.appShell.skip }} actions={actions}>
+    labels={{ skip: rebuildNamespaceCopy[locale].core.appShell.skip }} bar={header ?? <StandaloneHeader locale={locale} theme="light" />} actions={actions}>
     <div className="lf-route-error" data-screen="route-error" data-stale={stale}>{content}</div>
   </SingleStateScreen>;
 }

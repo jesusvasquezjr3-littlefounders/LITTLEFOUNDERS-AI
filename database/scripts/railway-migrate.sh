@@ -121,6 +121,25 @@ done < <(find "$MIGRATIONS_DIR" -maxdepth 1 -type f -name '[0-9][0-9][0-9][0-9]_
 # plus the absence of an ERROR line is airtight.
 SENTINEL="LF_MIGRATION_OK"
 
+# Match the original grep pipelines without starting several MSYS processes
+# for each remote receipt. Regexes intentionally retain their exact anchors.
+filter_remote_output() {
+  local output="$1" line
+  local notice_pattern='^(psql:[^ ]* )?(NOTICE|WARNING|DETAIL|HINT|CONTEXT):'
+  local host_pattern='^Warning: Permanently added .* to the list of known hosts\.$'
+  while IFS= read -r line; do
+    [[ "$line" == "$SENTINEL" ]] && continue
+    [[ "$line" =~ $notice_pattern ]] && continue
+    [[ "$line" =~ $host_pattern ]] && continue
+    printf '%s\n' "$line"
+  done <<< "$output"
+}
+
+strip_remote_whitespace() {
+  local value="$1" whitespace=$' \t\r\n\v\f'
+  printf '%s' "${value//[$whitespace]/}"
+}
+
 remote_sql() {
   local sql="$1" label="${2:-query}" b64 output status attempt
   sql="$sql
@@ -145,11 +164,11 @@ remote_sql() {
       sleep "$RETRY_SECONDS"
       continue
     fi
-    if printf '%s\n' "$output" | grep -q 'ERROR:'; then
+    if [[ "$output" == *'ERROR:'* ]]; then
       echo "$output" >&2
       fail "$label: remote psql reported an error"
     fi
-    if ! printf '%s\n' "$output" | grep -Fq "$SENTINEL"; then
+    if [[ "$output" != *"$SENTINEL"* ]]; then
       # Exit 0 with no sentinel is exactly how a dropped or lying transport
       # presents. Retrying could re-run SQL whose fate is unknown, so refuse.
       # Presence ANYWHERE (not "last line") is deliberate: a psql NOTICE can
@@ -176,11 +195,7 @@ remote_sql() {
     #
     # — with the real answer sitting right there in the failure message.
     # Matched in FULL rather than by prefix, so it can never eat a real row.
-    printf '%s\n' "$output" \
-      | grep -Fvx "$SENTINEL" \
-      | grep -Ev '^(psql:[^ ]* )?(NOTICE|WARNING|DETAIL|HINT|CONTEXT):' \
-      | grep -Ev '^Warning: Permanently added .* to the list of known hosts\.$' \
-      || true
+    filter_remote_output "$output"
     return 0
   done
 }
@@ -246,11 +261,12 @@ checksum_for() {
 }
 
 number_for() {
-  basename "$1" | cut -d_ -f1
+  local filename="${1##*/}"
+  printf '%s\n' "${filename%%_*}"
 }
 
 filename_for() {
-  basename "$1"
+  printf '%s\n' "${1##*/}"
 }
 
 if [[ -n "$BASELINE" ]]; then
@@ -279,7 +295,8 @@ if [[ "$ledger_state" == "absent" ]]; then
   [[ "$BASELINE" != "0000" ]] || fail "baseline must identify an applied migration"
   signature_sql="$(baseline_signature_sql "$BASELINE")" \
     || fail "--baseline $BASELINE has no signature-object map; add an independently verified probe to baseline_signature_sql before using it"
-  signature_state="$(remote_sql "$signature_sql" "baseline signature $BASELINE" | tr -d '[:space:]')"
+  signature_state="$(remote_sql "$signature_sql" "baseline signature $BASELINE")"
+  signature_state="$(strip_remote_whitespace "$signature_state")"
   [[ "$signature_state" == "baseline-ok" ]] \
     || fail "baseline $BASELINE signature probe refused: ${signature_state:-no-output} (production does not match the requested high-water mark)"
   echo "Remote ledger is absent; requested baseline: $BASELINE (course schema present, signature probe passed)."
@@ -347,7 +364,8 @@ for migration in "${MIGRATION_FILES[@]}"; do
     echo "pending $filename"
     continue
   fi
-  recorded="$(remote_sql "SELECT checksum FROM public.schema_migrations WHERE filename = '$filename';" "receipt $filename" | tr -d '[:space:]')"
+  recorded="$(remote_sql "SELECT checksum FROM public.schema_migrations WHERE filename = '$filename';" "receipt $filename")"
+  recorded="$(strip_remote_whitespace "$recorded")"
   if [[ -n "$recorded" ]]; then
     [[ "$recorded" == "$checksum" ]] || fail "migration drift detected for $filename"
     echo "skip $filename (recorded)"
@@ -378,6 +396,7 @@ done
 if [[ "$DRY_RUN" == true ]]; then
   echo "OK: dry-run complete"
 else
-  final_count="$(remote_sql "SELECT count(*) FROM public.schema_migrations;" 'postflight' | tr -d '[:space:]')"
+  final_count="$(remote_sql "SELECT count(*) FROM public.schema_migrations;" 'postflight')"
+  final_count="$(strip_remote_whitespace "$final_count")"
   echo "OK: production migration ledger is current ($final_count receipt(s))"
 fi

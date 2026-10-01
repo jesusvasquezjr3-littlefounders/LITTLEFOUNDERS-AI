@@ -199,7 +199,36 @@ try {
     await click('.lf-celebration[data-milestone=\"badge-earned\"] .lf-button');
     await expectSoon('milestone-celebrates', `document.querySelector('.lf-celebration[data-milestone=\"badge-earned\"]').dataset.milestone === 'badge-earned' && window.__lfMotion.includes('lf-celebration-pop') && window.__lfMotion.includes('lf-celebration-rise')`);
     // 02 §9.1: a real press ripples a ring from the touch point inside the control, then the ring is gone.
-    await expectSoon('press-ring', `window.__lfMotion.includes('lf-press-ring')`);
+    // Hold a stable catalogue button: rerendering controls can remove their ring before animationstart.
+    const pressPoint = await page.evaluate(`(() => {
+      const button = document.querySelector('section[aria-labelledby="system-buttons"] .lf-button');
+      button.scrollIntoView({ block: 'center' });
+      const box = button.getBoundingClientRect(), x = box.x + box.width / 2, y = box.y + box.height / 2;
+      if (button.disabled || !button.contains(document.elementFromPoint(x, y))) throw Error('Press proof button unavailable');
+      window.__lfPressProof = null;
+      button.addEventListener('animationstart', (event) => {
+        if (event.animationName !== 'lf-press-ring') return;
+        const ring = event.target, style = getComputedStyle(ring), rect = button.getBoundingClientRect();
+        window.__lfPressProof = {
+          owned: button.contains(ring), decorative: ring.getAttribute('aria-hidden') === 'true',
+          x: parseFloat(style.getPropertyValue('--lf-press-x')), y: parseFloat(style.getPropertyValue('--lf-press-y')),
+          size: parseFloat(style.getPropertyValue('--lf-press-size')), width: rect.width, height: rect.height,
+          finite: ring.getAnimations().some(a => a.animationName === 'lf-press-ring' && Number.isFinite(a.effect.getTiming().iterations)),
+        };
+      }, { capture: true });
+      return { x, y };
+    })()`);
+    await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', ...pressPoint, button: 'left', clickCount: 1 });
+    try {
+      await expectSoon('press-ring', `(() => {
+        const p = window.__lfPressProof;
+        return !!p && p.owned && p.decorative && p.finite && window.__lfMotion.includes('lf-press-ring')
+          && Math.abs(p.x - p.width / 2) <= 1 && Math.abs(p.y - p.height / 2) <= 1
+          && p.size >= Math.hypot(p.width, p.height) && p.size <= Math.ceil(Math.hypot(p.width, p.height)) + 1;
+      })()`);
+    } finally {
+      await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...pressPoint, button: 'left', clickCount: 1 });
+    }
     await expectSoon('press-ring-clears', `!document.querySelector('.lf-press-ring')`);
     await new Promise((done) => setTimeout(done, 1400));
     await expectTrue('celebration-settles', `document.querySelector('.lf-celebration[data-milestone=\"badge-earned\"]').dataset.celebration === 'settled' && document.querySelector('.lf-celebration[data-milestone=\"badge-earned\"] .lf-count-up').textContent === '+40'`);

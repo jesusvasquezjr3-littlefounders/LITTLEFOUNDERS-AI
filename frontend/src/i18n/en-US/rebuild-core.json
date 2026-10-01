@@ -1,4 +1,12 @@
 {
+  "dateParts": {
+    "day": "Day",
+    "month": "Month",
+    "year": "Year",
+    "invalid": "Enter a valid date.",
+    "min": "Choose {date} or later.",
+    "max": "Choose {date} or earlier."
+  },
   "preview": "Preview",
   "heading": "Small choices, big futures",
   "intro": "Build money skills, one choice at a time.",

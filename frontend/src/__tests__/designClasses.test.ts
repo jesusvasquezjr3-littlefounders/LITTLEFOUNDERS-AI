@@ -111,6 +111,8 @@ const NOT_CLASSES = new Set([
   'lf-aid',
   'lf-boot',
   'lf-allocation', // local checkpoint contract identifier, not a CSS class
+  'lf-mentor-loading-main', // standalone loading main id and SkipLink target, not a class
+  'lf-mentor-route-main', // standalone Mentor main id and SkipLink target, not a class
   // Keyframe names of the orchestrated motion patterns (rebuild/design/motion.tsx ORCHESTRATED_MOTION), not classes.
   'lf-route-enter',
   'lf-sequence-in',
@@ -130,7 +132,9 @@ describe('design classes', () => {
     const missing = new Map<string, string[]>();
 
     for (const { file, text: source } of SOURCES) {
-      for (const m of source.matchAll(/(['"`])((?:[^'"`\\]|\\.)*)\1/g)) {
+      const rel = file.slice(SRC.length + 1).replaceAll('\\', '/');
+      const withoutComments = source.replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, '');
+      for (const m of withoutComments.matchAll(/(['"`])((?:[^'"`\\]|\\.)*)\1/g)) {
         const text = m[2] ?? '';
         for (const t of text.matchAll(/\blf-[a-z0-9-]+\b/g)) {
           const cls = t[0];
@@ -151,7 +155,6 @@ describe('design classes', () => {
           if (defined.has(cls)) continue;
           if (NOT_CLASSES.has(cls)) continue;
           if (ASSEMBLED.some((p) => cls.startsWith(p))) continue;
-          const rel = file.slice(SRC.length + 1);
           const where = missing.get(cls) ?? [];
           if (!where.includes(rel)) where.push(rel);
           missing.set(cls, where);
@@ -180,24 +183,13 @@ describe('design classes', () => {
     expect(orphans, `defined but never rendered: ${orphans.join(', ')}`).toEqual([]);
   });
 
-  it('defines the gamified surface the design study needs', () => {
+  it('defines the rebuilt surfaces the app renders', () => {
     for (const cls of [
-      'lf-ambient',
-      'lf-panel',
-      'lf-panel-head',
-      'lf-chip',
-      'lf-term',
-      'lf-track',
-      'lf-coin',
-      'lf-slot',
-      'lf-summary',
-      'lf-eyebrow',
-      // lf-stage-pill, lf-live-emerald and lf-orb-ring left with the legacy
-      // Tutor HUD that rendered them (S10L.1); the rebuilt Mentor stage has its own.
-      'lf-tactile',
-      'lf-press',
+      'lf-rebuild', 'lf-button', 'lf-choice', 'lf-feedback',
+      'lf-coin-card', 'lf-coin-freeze', 'lf-family-hub',
     ]) {
       expect(defined.has(cls), `${cls} is not defined`).toBe(true);
+      expect(SOURCES.some(({ text }) => text.includes(cls)), `${cls} is never rendered`).toBe(true);
     }
   });
 
@@ -272,24 +264,16 @@ describe('design classes', () => {
     expect(offenders, `imports a flat look-alike character: ${offenders.join(', ')}`).toEqual([]);
   });
 
-  it('keeps the type scale closed', () => {
-    /*
-     * DESIGN.md §Typography: the scale is the ONLY way to set type, and it is
-     * CLOSED. `lf-body-sm`, `lf-display-sm` and `lf-display` were used in
-     * thirty-eight places and existed in none — which is not widening the
-     * scale, it is opting out of it by accident.
-     */
-    const scale = [...defined]
-      .filter((c) => /^lf-(display|headline|title|body|caption|label)(-|$)/.test(c))
-      .sort();
-    expect(scale).toEqual([
-      'lf-body',
-      'lf-body-lg',
-      'lf-caption',
-      'lf-display-lg',
-      'lf-headline',
-      'lf-label',
-      'lf-title',
-    ]);
+  it('keeps the rebuilt typography token scale closed', () => {
+    const tokens = readFileSync(resolve(SRC, 'rebuild/design/tokens.css'), 'utf8');
+    const scale = [...tokens.matchAll(/--type-([a-z0-9-]+):/g)]
+      .map((match) => match[1]!)
+      .filter((name) => !name.endsWith('-tracking'));
+    expect(new Set(scale)).toEqual(new Set([
+      'display-2xl', 'display-xl', 'display-lg', 'headline', 'title',
+      'button', 'button-lg', 'question', 'answer', 'body-lg', 'body',
+      'label', 'caption', 'chip', 'numeral-xl', 'numeral',
+    ]));
+    expect(scale.length).toBeGreaterThan(16); // responsive overrides share the same scale
   });
 });

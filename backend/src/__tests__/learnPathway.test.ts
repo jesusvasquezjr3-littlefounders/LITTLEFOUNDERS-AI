@@ -40,12 +40,15 @@ const COURSE = { money: uid(1), fe: uid(2), entre: uid(3), investing: uid(4) };
 
 interface Built { db: FakeDb; lesson: Record<string, string>; topic: Record<string, string> }
 
-function storyDocument(slug: string) {
+function storyDocument(slug: string, lessonId: string, courseId: string, chapterId: string) {
   return {
-    schema_version: 1,
-    meta: { slug, title: slug, locale: 'en-US', subject: 'money', estimated_minutes: 5, objectives: ['x'], cast: ['dina'] },
-    scoring: { pass_threshold: 70, hint_penalty_pct: 10, max_attempts: 2, hearts: null },
-    segments: [{ id: 'story', type: 'story_scene', prompt_md: 'Story', difficulty: 1, xp: 0, payload: { backdrop: 'band', body_md: 'The end.' } }],
+    schema_version: 2, course_id: courseId, pathway_id: 'test-pathway', chapter_id: chapterId,
+    lesson_id: lessonId, version_id: 'revision-001', locale: 'en-US', age_band: 'adult',
+    eligibility: { minimum_age: 6, maximum_age: 119 }, knowledge_component_ids: ['test-skill'],
+    adventure_scene_id: 'diorama-a', title: slug,
+    required_capabilities: ['visual.speech-plate.v1'],
+    segments: [{ id: 'story', type: 'voice.mentor-turn.v2', grading: 'none', prompt: 'Story',
+      visual: { type: 'speech-plate' }, payload: { role: 'intro', line: 'The end.' } }],
   };
 }
 
@@ -68,7 +71,7 @@ function build(): Built {
       { user_id: GUEST, display_name: 'Guest', locale: 'en-US', birth_date: null },
       { user_id: TEEN15, display_name: 'Teen', locale: 'en-US', birth_date: yearsAgo(15) },
       { user_id: AGE12, display_name: 'Twelve', locale: 'en-US', birth_date: yearsAgo(12) },
-      { user_id: ADULT, display_name: 'Adult', locale: 'en-US', birth_date: null },
+      { user_id: ADULT, display_name: 'Adult', locale: 'en-US', birth_date: yearsAgo(30) },
       { user_id: TUTOR, display_name: 'Tutor', locale: 'en-US', birth_date: '1985-05-05' },
     ],
     learning_stats: [KID7, GUEST, TEEN15, AGE12, ADULT, TUTOR].map((user_id) => ({
@@ -102,7 +105,10 @@ function build(): Built {
         const lessonId = uid(++n);
         lesson[key] = lessonId;
         db.lessons!.push({ id: lessonId, topic_id: topicId, position: 1, slug: key, title: { 'en-US': key }, difficulty: 1, xp_total: 10, estimated_minutes: 5, status: 'published' });
-        db.lesson_documents!.push({ lesson_id: lessonId, locale: 'en-US', schema_version: 1, updated_at: '2026-09-01T00:00:00.000Z', document: storyDocument(key), answer_keys: {}, audio: {} });
+        const versionId = uid(++n);
+        (db.lesson_document_versions ??= []).push({ id: versionId, lesson_id: lessonId, locale: 'en-US', version_id: 'revision-001', schema_version: 2,
+          document: storyDocument(key, lessonId, COURSE[slug], adventureId), answer_keys: {}, audio: {}, created_at: '2026-09-01T00:00:00.000Z' });
+        (db.lesson_document_version_current ??= []).push({ lesson_id: lessonId, locale: 'en-US', document_version_id: versionId });
       });
     });
   };
@@ -122,7 +128,18 @@ const place = (user: string, course: keyof typeof COURSE, stage: string) =>
   built.db.course_pathway_placements!.push({ user_id: user, course_id: COURSE[course], pathway_stage: stage, method: 'learner_chose_start', start_topic_id: null, credited_topics: 0 });
 const as = (user: string) => (req: request.Test) => req.set('Authorization', `Bearer ${mintToken({ sub: user })}`);
 const get = (user: string, path: string) => as(user)(request(createApp()).get(`/api/v1${path}`));
-const post = (user: string, path: string, body: object = {}) => as(user)(request(createApp()).post(`/api/v1${path}`).send(body));
+const rawPost = (user: string, path: string, body: object = {}) => as(user)(request(createApp()).post(`/api/v1${path}`).send(body));
+const post = async (user: string, path: string, body: object = {}) => {
+  if (path.endsWith('/complete')) {
+    const lessonPath = path.slice(0, -'/complete'.length);
+    const started = await rawPost(user, `${lessonPath}/v2-runs`);
+    if (started.status !== 200) return started;
+    const viewed = await rawPost(user, `${lessonPath}/v2-runs/${started.body.data.run_id}/views`, { segment_id: 'story' });
+    if (viewed.status !== 200) return viewed;
+    return rawPost(user, path, { ...body, run_id: started.body.data.run_id });
+  }
+  return rawPost(user, path, body);
+};
 const stateOf = (tree: { adventures: Array<{ sagas: Array<{ topics: Array<{ lessons: Array<{ id: string; state: string }> }> }> }> }, lessonId: string) =>
   tree.adventures.flatMap((a) => a.sagas.flatMap((s) => s.topics.flatMap((t) => t.lessons))).find((l) => l.id === lessonId)?.state;
 

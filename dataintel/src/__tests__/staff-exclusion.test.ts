@@ -184,10 +184,12 @@ describe('no analytical query reaches around the views', () => {
    * erasure (services/erasure.ts) is a writer too: it must DELETE from the
    * physical tables, since a view would leave rows behind. The H.2 warehouse
    * retention (services/warehouseRetention.ts) deletes from them for the same reason.
+   * The fixed one-time content retirement also deletes from the physical
+   * tables; its inventory includes staff rows so no retired facts survive.
    * Anything else reading a *_raw table is a metric quietly counting the
    * platform team.
    */
-  const ALLOWED = new Set(['db/sync.ts', 'db/duckdb.ts', 'services/staffAudit.ts', 'services/erasure.ts', 'services/warehouseRetention.ts']);
+  const ALLOWED = new Set(['db/sync.ts', 'db/duckdb.ts', 'services/staffAudit.ts', 'services/erasure.ts', 'services/warehouseRetention.ts', 'services/contentRetirement.ts']);
 
   function sourceFiles(dir: string, prefix = ''): string[] {
     return readdirSync(dir).flatMap((entry) => {

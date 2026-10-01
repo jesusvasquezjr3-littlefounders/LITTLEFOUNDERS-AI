@@ -1,3 +1,4 @@
+import { selectOption, optionLabels } from '../../test/selectOption';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -313,14 +314,14 @@ describe('Reports → Support tools (manage_support)', () => {
     fireEvent.change(await screen.findByLabelText(s.body.childId), { target: { value: KID } });
     fireEvent.click(screen.getByRole('button', { name: s.action.lookUp }));
     expect(await screen.findByText(s.body.levelN.replace('{n}', '3'))).toBeTruthy();
-    const select = screen.getByLabelText(s.body.newLevel) as HTMLSelectElement;
-    expect([...select.options].map((option) => option.value)).toEqual(['1', '2']);
+    const select = screen.getByLabelText(s.body.newLevel);
+    expect(optionLabels(select)).toEqual([s.body.levelN.replace('{n}', '1'), s.body.levelN.replace('{n}', '2')]);
     fireEvent.change(screen.getByLabelText(s.body.reason), { target: { value: 'not now' } });
     fireEvent.click(screen.getByRole('button', { name: s.action.lower }));
     expect(await screen.findByText(s.body.reasonWeak)).toBeTruthy();
     expect(posts).toHaveLength(0);
     fireEvent.change(screen.getByLabelText(s.body.reason), { target: { value: 'Practice two weeks of self-logged chores with a parent first' } });
-    fireEvent.change(select, { target: { value: '1' } });
+    selectOption(select, s.body.levelN.replace('{n}', '1'));
     fireEvent.click(screen.getByRole('button', { name: s.action.lower }));
     const dialog = await screen.findByRole('alertdialog');
     expect(document.activeElement).toBe(within(dialog).getByRole('button', { name: s.action.keep }));
@@ -368,11 +369,11 @@ describe('Mentor quality → named owners (C.24, manage_users)', () => {
     const { api, posts, gets } = fakeApi();
     render(<Frame><StaffMentorQuality api={api} viewer={ANALYST_USERS} /></Frame>);
     const card = (await screen.findByRole('heading', { name: o.heading.owners })).closest('section')!;
-    const person = await within(card).findByLabelText(o.body.person) as HTMLSelectElement;
+    const person = await within(card).findByLabelText(o.body.person);
     // Only staff accounts are offered (Core refuses anyone else).
-    expect([...person.options].map((option) => option.text)).toEqual([o.option.choose, 'Staff Lima']);
-    fireEvent.change(within(card).getByLabelText(o.body.role), { target: { value: 'engineering_lead' } });
-    fireEvent.change(person, { target: { value: '66666666-6666-4666-8666-666666666666' } });
+    expect(optionLabels(person)).toEqual([o.option.choose, 'Staff Lima']);
+    selectOption(within(card).getByLabelText(o.body.role), en.staffMentorQuality.ownerRole.engineering_lead);
+    selectOption(person, 'Staff Lima');
     fireEvent.click(within(card).getByRole('button', { name: o.action.add }));
     expect(await within(card).findByText(o.body.added)).toBeTruthy();
     expect(posts[0]).toEqual({ path: '/admin/mentor-quality/owners', body: { role: 'engineering_lead', userId: '66666666-6666-4666-8666-666666666666', action: 'add' } });
@@ -387,7 +388,7 @@ describe('Mentor quality → named owners (C.24, manage_users)', () => {
     const { api } = fakeApi((path) => (path === '/admin/mentor-quality/owners' ? { ok: false, code: 'NOT_ELIGIBLE_OWNER' } : undefined));
     render(<Frame><StaffMentorQuality api={api} viewer={ANALYST_USERS} /></Frame>);
     const card = (await screen.findByRole('heading', { name: o.heading.owners })).closest('section')!;
-    fireEvent.change(await within(card).findByLabelText(o.body.person), { target: { value: '66666666-6666-4666-8666-666666666666' } });
+    selectOption(await within(card).findByLabelText(o.body.person), 'Staff Lima');
     fireEvent.click(within(card).getByRole('button', { name: o.action.add }));
     expect(await within(card).findByText(o.body.notEligible)).toBeTruthy();
   });

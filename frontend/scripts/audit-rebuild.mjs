@@ -1,3 +1,4 @@
+import { trackAuditedAssets, waitForAuditedAssets } from './audits/media.mjs';
 import { mkdirSync, mkdtempSync, rmSync, statfsSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -38,13 +39,16 @@ import { installSyntheticCore, loadLessonFixtures, SCENARIOS, sessionStorageScri
  * as 06 §3.1 defines it. One page load per state, locale and theme (a state
  * reached by pressing controls is reloaded per width).
  *
- * Needs a Vite dev server (the preview entry is development-only):
+ * Needs a Vite dev server or the isolated compiled audit preview:
  *   REBUILD_URL=http://localhost:5310 npm run audit:rebuild
+ *   node scripts/audits/compiled-preview.mjs --port 5181
+ *   REBUILD_URL=http://127.0.0.1:5181 AUDIT_COMPILED=1 npm run audit:rebuild
+ * Compiled mode changes transport only; states, widths, fixture functions and assertions are identical.
  * Env filters for a debugging run (recorded evidence always uses the full set):
  *   AUDIT_STATES=system,lesson@6-9 (ids or id prefixes ending in *), AUDIT_LOCALES,
  *   AUDIT_THEMES, AUDIT_WIDTHS, AUDIT_ROUTES=/some/route (extra real-app routes),
  *   AUDIT_WORKERS (parallel pages, default 3), AUDIT_READY_MS (how long a state may take to become ready,
- *   default 15000; raise it only on a saturated shared machine, and say so in the evidence).
+ *   default 15000; raise it only on a saturated shared machine, and say so in the evidence), AUDIT_REPORT_DIR.
  * A state that does not become ready (or whose last press opens nothing) is measured once more, from the start, on a
  * fresh page, and the retry is logged; if the second attempt fails too the run stops with a setup error. A browser
  * that went away is never retried: the error says so, with the free disk space Chrome had.
@@ -68,7 +72,7 @@ try {
 } catch (error) { console.error(error.message); process.exit(2); }
 if (!states.length) { console.error('No state matches AUDIT_STATES and AUDIT_SHARD'); process.exit(2); }
 const shard = process.env.AUDIT_SHARD?.trim() || null;
-const output = resolve('../audit-results/rebuild-audits');
+const output = resolve(process.env.AUDIT_REPORT_DIR ?? '../audit-results/rebuild-audits');
 mkdirSync(output, { recursive: true });
 
 const wait = (ms) => new Promise((done) => setTimeout(done, ms));
@@ -77,6 +81,7 @@ const readyTries = process.env.AUDIT_READY_TRIES ? Number(process.env.AUDIT_READ
 const rows = { 'text-fit': [], proportion: [], 'copy-budget': [] };
 const configurations = { 'text-fit': 0, proportion: 0, 'copy-budget': 0 };
 const jsErrors = [];
+const mediaErrors = [];
 const signatures = new Map();
 const unknownRequests = new Set();
 let fixtures = null;
@@ -99,24 +104,33 @@ async function workerPage() {
   // Each worker has its own window (a hidden page gets no frames) and its own storage (it signs in as someone else).
   const page = await openPage(browser.browser, { width: 375, height: FOLD, dark: false, newWindow: true, isolated: true });
   page.core = null;
+  trackAuditedAssets(page, origin);
   await installSyntheticCore(page, origin, { unknownRequests });
   return page;
 }
 
 async function onOrigin(page) {
-  if (await page.evaluate('location.origin').catch(() => '') === origin) return;
+  // Stop the previous app before replacing its session and locale. Its effects and
+  // in-flight requests must not write into the next state's storage or Core fixture.
+  await waitForAuditedAssets(page, { timeoutMs: readyTries * 50, label: 'before neutral navigation' });
+  await page.send('Page.stopLoading');
   await page.send('Page.navigate', { url: `${origin}/favicon.ico` });
-  for (let n = 0; n < 200 && await page.evaluate('location.origin').catch(() => '') !== origin; n++) await wait(50);
+  const neutral = `location.origin === ${JSON.stringify(origin)} && location.pathname === '/favicon.ico' && document.readyState === 'complete'`;
+  for (let n = 0; n < readyTries; n++) {
+    if (await page.evaluate(neutral).catch(() => false)) return;
+    await wait(50);
+  }
+  throw new Error('The neutral storage document did not finish loading');
 }
 
 async function load(page, state, locale, theme, width) {
+  await onOrigin(page);
   await page.send('Emulation.setDeviceMetricsOverride', { width, height: FOLD, deviceScaleFactor: 1, mobile: width < 768 });
   await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: theme }, { name: 'prefers-reduced-motion', value: 'reduce' }] });
   const url = stateUrl(origin, state, locale, theme);
   if (state.entry === 'app') {
     // The real app reads its session, language and mode from storage: a synthetic session for an
     // authenticated state, none for a session-less route. Core is answered by the synthetic Core.
-    await onOrigin(page);
     const spec = state.scenario ? SCENARIOS[state.scenario] : null;
     // A `signedOut` scenario answers Core for a visitor with no session (a public page that reads Core).
     await page.evaluate(spec && !spec.signedOut ? sessionStorageScript({ guest: spec.guest, locale, theme }) : signedOutStorageScript({ locale, theme }));
@@ -139,7 +153,10 @@ async function load(page, state, locale, theme, width) {
   // AUDIT_READY_MS: how long a state may take to become ready (default 15 s). A loaded machine needs longer;
   // waiting longer never changes what is measured once the state is ready.
   for (let n = 0; n < readyTries && !ok; n++) { await wait(50); ok = await page.evaluate(`!!(${ready})`).catch(() => false); }
-  if (!ok) throw new Error(`${state.id} ${locale} ${theme}: never became ready at ${url}${page.crashed ? ' (its renderer crashed)' : ''}`);
+  if (!ok) {
+    const observed = await page.evaluate(`({ readyState: document.readyState, language: document.documentElement.lang, root: !!document.querySelector('.lf-rebuild'), selectors: ${JSON.stringify(state.readyAll ?? [])}.map(selector => ({ selector, present: !!document.querySelector(selector) })) })`).catch(() => null);
+    throw new Error(`${state.id} ${locale} ${theme}: never became ready at ${url}${page.crashed ? ' (its renderer crashed)' : ''}; observed ${JSON.stringify(observed)}`);
+  }
   // A hidden page gets no animation frames: every measurement after this would be of a frozen page.
   if (await page.evaluate('document.visibilityState') !== 'visible') throw new Error(`${state.id}: the audit page is hidden`);
   await page.evaluate('document.fonts.ready');
@@ -179,7 +196,7 @@ async function load(page, state, locale, theme, width) {
     for (let n = 0; n < readyTries && !opened; n++) { await wait(50); opened = await page.evaluate(`!!document.querySelector(${JSON.stringify(state.openReady)})`).catch(() => false); }
     if (!opened) throw new Error(`${state.id} ${locale} ${theme}: ${state.openReady} never appeared after the presses${page.crashed ? ' (its renderer crashed)' : ''}`);
   }
-  await page.evaluate(`Promise.all([...document.images].map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; })))`);
+  await waitForAuditedAssets(page, { timeoutMs: readyTries * 50, label: `${state.id} ${locale} ${theme}` });
   await page.evaluate(`(${installAudit})()`);
   // A milestone celebration measures on its settled frame (it settles within 1.2 s by contract; 07 §5).
   for (let n = 0; n < 60 && await page.evaluate("!!document.querySelector('[data-celebration=\"playing\"]')"); n++) await wait(50);
@@ -187,7 +204,7 @@ async function load(page, state, locale, theme, width) {
 }
 
 async function settle(page) {
-  await page.evaluate('new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))');
+  await waitForAuditedAssets(page, { timeoutMs: readyTries * 50 });
 }
 
 async function measure(page, state, locale, theme, width, first, sink) {
@@ -206,6 +223,7 @@ async function measure(page, state, locale, theme, width, first, sink) {
     await settle(page);
     const found = await page.evaluate('window.__lfAudit.textFit()');
     await page.evaluate('window.__lfAudit.stress(false); window.__lfAudit.spacing(false)');
+    await settle(page);
     sink.configurations['text-fit']++;
     for (const [type, detail] of found) sink.rows['text-fit'].push({ type, detail, ...where, stress, spacing });
   }
@@ -216,9 +234,10 @@ async function measure(page, state, locale, theme, width, first, sink) {
     res.board = await page.evaluate('window.__lfAudit.boards()');
     // 02 §9.4 / D7 motion budget: read with motion allowed, then back to reduced motion for everything else.
     await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: theme }, { name: 'prefers-reduced-motion', value: 'no-preference' }] });
-    await page.evaluate('new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))');
+    await settle(page);
     Object.assign(res, await page.evaluate('window.__lfAudit.motion()'));
     await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: theme }, { name: 'prefers-reduced-motion', value: 'reduce' }] });
+    await settle(page);
     sink.configurations.proportion++;
     for (const [type, detail] of proportionFindings(res, state, width)) sink.rows.proportion.push({ type, detail, ...where });
   }
@@ -237,7 +256,7 @@ try {
   const workers = Math.max(1, Math.min(Number(process.env.AUDIT_WORKERS ?? 3), jobs.length));
   const warm = await openPage(browser.browser, { width: 375, height: FOLD, dark: false });
   if (!await warmDevServer(warm, origin)) throw new Error(`The dev server at ${origin} never mounted the app`);
-  if (states.some((state) => state.scenario)) fixtures = await loadLessonFixtures(warm, locales);
+  if (states.some((state) => state.scenario)) fixtures = await loadLessonFixtures(warm, locales, { compiled: process.env.AUDIT_COMPILED === '1', origin });
   await warm.send('Page.close').catch(() => {});
   let next = 0;
   await Promise.all(Array.from({ length: workers }, async () => {
@@ -252,6 +271,7 @@ try {
       for (let attempt = 1; ; attempt++) {
         const sink = { rows: { 'text-fit': [], proportion: [], 'copy-budget': [] }, configurations: { 'text-fit': 0, proportion: 0, 'copy-budget': 0 } };
         page.errors.length = 0;
+        page.assetFailures.length = 0;
         try {
           if (state.open) {
             for (const [index, width] of stateWidths.entries()) { await load(page, state, locale, theme, width); await measure(page, state, locale, theme, width, index === 0, sink); }
@@ -271,17 +291,21 @@ try {
         for (const audit of AUDITS) { rows[audit].push(...sink.rows[audit]); configurations[audit] += sink.configurations[audit]; }
         break;
       }
+      await settle(page);
       for (const error of page.errors) jsErrors.push({ state: state.id, locale, theme, error });
+      for (const error of page.assetFailures) mediaErrors.push({ state: state.id, locale, theme, error });
       process.stdout.write('.');
     }
+    await settle(page);
+    await page.close();
   }));
 
   process.stdout.write('\n');
   for (const audit of active) {
     const groups = aggregate(rows[audit]);
     writeFileSync(join(output, `${audit}.json`), JSON.stringify({
-      audit, origin, date: new Date().toISOString(), shard, filtered: Boolean(filters), states: states.map((s) => s.id), locales, themes, widths,
-      configurations: configurations[audit], findings: rows[audit].length, groups, jsErrors,
+      audit, origin, runtime: process.env.AUDIT_COMPILED === '1' ? 'compiled' : 'dev', date: new Date().toISOString(), shard, filtered: Boolean(filters), states: states.map((s) => s.id), locales, themes, widths,
+      configurations: configurations[audit], findings: rows[audit].length, findingsRows: rows[audit], groups, jsErrors, mediaErrors,
       authenticated: states.filter((s) => s.scenario).map((s) => ({ state: s.id, population: SCENARIOS[s.scenario].population })),
       unansweredCoreRequests: [...unknownRequests].sort(),
       // [signature, state] per measured page: merge-shards.mjs repeats the identical-markup check across shards.
@@ -298,6 +322,8 @@ try {
   }
   console.log(`\nJS errors: ${jsErrors.length ? JSON.stringify(jsErrors.slice(0, 5)) : 'none'}`);
   if (jsErrors.length) exitCode = 1;
+  console.log(`Media errors: ${mediaErrors.length ? JSON.stringify(mediaErrors.slice(0, 5)) : 'none'}`);
+  if (mediaErrors.length) exitCode = 1;
   if (unknownRequests.size) console.log(`Synthetic Core answered with an empty envelope: ${[...unknownRequests].sort().join('; ')}`);
   console.log(`Reports: ${output}`);
 } catch (error) {

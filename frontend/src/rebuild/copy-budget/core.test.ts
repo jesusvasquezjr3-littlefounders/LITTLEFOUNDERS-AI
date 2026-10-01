@@ -51,7 +51,12 @@ const designGalleryRoles: Record<string, CopyRole> = {
 describe('rebuild-core copy budget', () => {
   for (const [locale, strings] of namespaceCopy('core')) {
     it(`fits the youngest copy budget in ${locale}`, () => {
-      expectBudgetedGroups(strings, [...Object.keys(flat), 'designSystem', 'designGallery', 'appShell', 'siteShell', 'notFound', 'sessionPreferences']);
+      expectBudgetedGroups(strings, [...Object.keys(flat), 'dateParts', 'designSystem', 'designGallery', 'appShell', 'siteShell', 'notFound', 'sessionPreferences']);
+      const dates = strings.dateParts as Record<string, string>;
+      expectBudgetedGroups(dates, ['day', 'month', 'year', 'invalid', 'min', 'max']);
+      for (const [key, text] of Object.entries(dates)) {
+        expectFits(text.replace('{date}', '2026-09-24'), 'body', locale, '6-9', `dateParts.${key}`);
+      }
       for (const [key, role] of Object.entries(flat)) expectFits(strings[key] as string, role, locale, '6-9', key);
       for (const [key, text] of Object.entries(strings.designSystem as Record<string, string>)) {
         expectFits(text.replace('{n}', '40'), designSystemRole(key), locale, '6-9', `designSystem.${key}`);

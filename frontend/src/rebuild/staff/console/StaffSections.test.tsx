@@ -30,6 +30,14 @@ const nav = enCore.appShell.staff;
 const COURSE_DRAFT = sections.content.courses[1]!;
 const LESSON = sections.lessonDetail;
 
+
+function chooseOption(trigger: HTMLElement, index: number) {
+  fireEvent.click(trigger);
+  fireEvent.keyDown(trigger, { key: 'Home' });
+  for (let i=0; i<index; i+=1) fireEvent.keyDown(trigger, { key: 'ArrowDown' });
+  fireEvent.keyDown(trigger, { key: 'Enter' });
+}
+
 type Handler = (path: string, body?: unknown) => StaffResult<unknown> | undefined;
 function fakeApi(handler: Handler = () => undefined) {
   const gets: string[] = [];
@@ -213,7 +221,7 @@ describe('S2 Content: courses, the B.3 incident counter and the G.2 release pref
     render(<Frame><StaffContent api={api} /></Frame>);
     const table = await screen.findByRole('table', { name: c.content.heading.courses });
     expect(within(table).getAllByRole('row')).toHaveLength(4);
-    fireEvent.change(screen.getByLabelText(c.content.body.status), { target: { value: 'archived' } });
+    chooseOption(screen.getByRole('combobox', { name: c.content.body.status }), 4);
     expect(within(screen.getByRole('table', { name: c.content.heading.courses })).getAllByRole('row')).toHaveLength(2);
     fireEvent.click(screen.getByRole('button', { name: c.common.action.clearFilters }));
     fireEvent.change(screen.getByLabelText(c.content.body.search), { target: { value: 'lemonade' } });
@@ -308,7 +316,7 @@ describe('S2 Content: the lesson review queue', () => {
     const request = preview.mock.calls.at(-1)![0];
     expect(request.locale).toBe('es-MX');
     expect(request.document).toEqual(LESSON.documents[1]!.document);
-    expect(request.schemaVersion).toBe(1);
+    expect(request.schemaVersion).toBe(2);
     expect(request.labels).toEqual({ start: c.content.action.startPreview, next: c.content.action.nextPreview, loading: c.content.body.previewLoading,
       dialog: c.content.heading.preview, bar: c.content.body.previewBar, close: c.content.action.closePreview });
     expect(screen.queryByRole('dialog')).toBeNull();
@@ -370,17 +378,41 @@ describe('S2 Content: the lesson review queue', () => {
   it('inspects parts (with their linked audio), media and the client-safe document, read-only', async () => {
     const { details } = await openLesson();
     fireEvent.click(within(details).getByRole('radio', { name: c.content.option.parts }));
-    expect(details).toHaveTextContent('1. Think about the things you need each day.');
+    expect(details).toHaveTextContent(`1. ${LESSON.documents[0]!.document.segments[0]!.prompt}`);
     const show = within(details).getAllByRole('button', { name: c.content.action.showPart })[0]!;
     fireEvent.click(show);
     expect(show).toHaveAttribute('aria-expanded', 'true');
-    expect(details.querySelector('.lf-staff-part audio')?.getAttribute('src')).toContain('/en-US/story-1.mp3');
+    expect(details.querySelector('.lf-staff-part audio')).toBeNull();
     fireEvent.click(within(details).getByRole('radio', { name: c.content.option.media }));
-    expect(details.querySelectorAll('.lf-staff-media audio')).toHaveLength(1);
-    expect(within(details).getByRole('img')).toHaveAttribute('src', '/course-badges/financial-education.png');
+    expect(details.querySelectorAll('.lf-staff-media audio')).toHaveLength(0);
+    expect(within(details).queryByRole('img')).toBeNull();
     fireEvent.click(within(details).getByRole('radio', { name: c.content.option.data }));
     expect(details).toHaveTextContent(c.content.body.documentNote);
     expect(details.querySelector('.lf-staff-code')?.textContent).toContain('"segments"');
+  });
+
+  it('inspects current segment narration while refusing private manifests and unsafe URLs', async () => {
+    const narrationUrl = 'https://media.littlefounders.ai/lesson-audio/intro.mp3';
+    const intro = { id: 'intro-01', type: 'voice.mentor-turn.v2', grading: 'none', prompt: 'Meet your goal.',
+      visual: { type: 'speech-plate' }, payload: { role: 'intro', line: 'Let us save for a kite together.' } };
+    const { details } = await openLesson(undefined, (path) => path === `/admin/moderation/${LESSON.id}` ? ok({
+      ...LESSON, documents: LESSON.documents.map((row) => ({ ...row,
+        document: { ...row.document, segments: [intro] },
+        narrationAudio: { 'intro-01': narrationUrl, 'unsafe-01': 'javascript:alert(1)', 'unsafe-02': '//other.example/audio.mp3' },
+        audio: { units: [{ key: 'private-key', url: 'https://private.example/private.mp3' }] },
+      })),
+    }) : undefined);
+    fireEvent.click(within(details).getByRole('radio', { name: c.content.option.parts }));
+    expect(details).toHaveTextContent('1. Meet your goal.');
+    fireEvent.click(within(details).getByRole('button', { name: c.content.action.showPart }));
+    expect(details.querySelector('.lf-staff-part audio')).toHaveAttribute('src', narrationUrl);
+    fireEvent.click(within(details).getByRole('radio', { name: c.content.option.media }));
+    const audio = details.querySelectorAll('.lf-staff-media audio');
+    expect(audio).toHaveLength(1);
+    expect(audio[0]).toHaveAttribute('src', narrationUrl);
+    expect(details.innerHTML).not.toContain('private.example');
+    expect(details.innerHTML).not.toContain('javascript:');
+    expect(details.innerHTML).not.toContain('other.example');
   });
 
   it('approving is a release (G.2): a refusal names the reason; sending back returns the lesson to draft; the queue re-reads on close', async () => {
@@ -576,11 +608,11 @@ describe('S7 Generation: run history, trends and the coach', () => {
     render(<Frame><StaffGeneration api={api} initialView="history" pollMs={60_000} /></Frame>);
     const compare = await screen.findByRole('region', { name: c.generation.heading.compare });
     const [a, b] = sections.generation.overview.runs.map((run) => run.runId);
-    fireEvent.change(within(compare).getByLabelText(c.generation.body.runA), { target: { value: b } });
-    fireEvent.change(within(compare).getByLabelText(c.generation.body.runB), { target: { value: b } });
+    chooseOption(within(compare).getByRole('combobox', { name: c.generation.body.runA }), 2);
+    chooseOption(within(compare).getByRole('combobox', { name: c.generation.body.runB }), 2);
     expect(within(compare).getByText(c.generation.body.chooseTwo, { selector: '.lf-notice *, .lf-notice' })).toBeInTheDocument();
     expect(gets.some((path) => path.startsWith('/admin/generation/compare'))).toBe(false);
-    fireEvent.change(within(compare).getByLabelText(c.generation.body.runB), { target: { value: a } });
+    chooseOption(within(compare).getByRole('combobox', { name: c.generation.body.runB }), 1);
     expect(await within(compare).findByRole('table', { name: c.generation.heading.judgeCompare })).toBeInTheDocument();
     expect(gets).toContain(`/admin/generation/compare?runA=${encodeURIComponent(b!)}&runB=${encodeURIComponent(a!)}`);
   });
@@ -652,8 +684,11 @@ describe('C.24 Mentor quality on its real route', () => {
     expect(list).toHaveTextContent(c.mentorQuality.option.dark_pattern);
     expect(list).toHaveTextContent(c.mentorQuality.body.notRecorded);
     expect(list).toHaveTextContent(c.mentorQuality.body.findingsValue.replace('{n}', '2'));
-    const kinds = within(card).getByLabelText(c.mentorQuality.body.auditKind) as HTMLSelectElement;
-    expect([...kinds.options].map((o) => o.value)).toEqual(['dark_pattern', 'variable_ratio', 'reward_framing']);
+    const kinds = within(card).getByRole('combobox', { name: c.mentorQuality.body.auditKind });
+    fireEvent.keyDown(kinds, { key: 'Home' });
+    const optionList = await screen.findByRole('listbox', { name: c.mentorQuality.body.auditKind });
+    expect(within(optionList).getAllByRole('option').map(option => option.textContent)).toEqual(['dark_pattern', 'variable_ratio', 'reward_framing'].map(key => c.mentorQuality.option[key as keyof typeof c.mentorQuality.option]));
+    fireEvent.keyDown(kinds, { key: 'Escape' });
     fireEvent.change(within(card).getByLabelText(c.mentorQuality.body.release), { target: { value: 'release-2026.10' } });
     fireEvent.click(within(card).getByRole('radio', { name: c.mentorQuality.option.fail }));
     fireEvent.change(within(card).getByLabelText(c.mentorQuality.body.findings), { target: { value: '3' } });

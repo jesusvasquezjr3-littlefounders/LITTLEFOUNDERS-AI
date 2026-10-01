@@ -3,15 +3,11 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { App } from '@/App';
 import '@/i18n';
-// The document ground only: the legacy global sheet (index.css) loads with the
-// OD-24 lesson island, the staff lesson preview and the dev labs, never here.
+// The global ground follows the same tokens as every rebuilt surface.
 import '@/rebuild/design/document.css';
 import { captureLandingContext } from '@/lib/visitor';
 
-// The dotlottie player's WebAssembly URL is set where the player mounts
-// (components/ui/LottieIcon.tsx), not here: an import at the entry put the
-// whole player (about 330 kB) in every route's entry chunk, though only the
-// OD-24 lesson island plays a Lottie (S10L.2).
+// Motion assets load their player only when their surface needs it.
 
 // Snapshot UTM + referrer BEFORE React mounts and the SPA can navigate —
 // they exist only on the landing URL (/INSIGHTS.md §7). Transmits nothing.

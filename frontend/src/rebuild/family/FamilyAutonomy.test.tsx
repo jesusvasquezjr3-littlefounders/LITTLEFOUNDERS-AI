@@ -1,3 +1,4 @@
+import { enterDate } from '../test/dateParts';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fireEvent, render, screen, within } from '@testing-library/react';
@@ -143,7 +144,7 @@ describe('NotYetForm (D.18)', () => {
     expect(onSubmit).not.toHaveBeenCalled();
     const day = new Date(Date.now() + 5 * 86_400_000);
     const iso = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
-    fireEvent.change(screen.getByLabelText(en.notYet.revisit), { target: { value: iso } });
+    enterDate(en.notYet.revisit, iso);
     fireEvent.click(screen.getByRole('button', { name: en.notYet.send }));
     expect(onSubmit).toHaveBeenCalledWith({ reasonCode: 'later_date', reason: 'Let us wait until after your test on Friday.', revisitOn: iso });
     everyTextHasARole(container);

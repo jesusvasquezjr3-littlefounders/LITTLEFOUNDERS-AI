@@ -62,27 +62,21 @@ export async function withLearnerMentor(offer: GuidedReviewOffer | null, userId:
 }
 
 const WINDOW = GUIDED_REVIEW_MAX_TRACKED + 1;
-const ScoreRows = z.array(z.object({ score: z.number().int().min(0).max(100) }));
 const VerdictRows = z.array(z.object({ verdict: z.object({ correct: z.boolean() }).passthrough() }));
 
-/** v1: the learner's latest graded attempts on one skill key, newest first. Null when unreadable. */
-export async function recentSkillOutcomes(userId: string, skillKey: string, passThreshold: number): Promise<boolean[] | null> {
-  if (!z.uuid().safeParse(userId).success || !/^[a-z0-9-]+\/[a-z0-9-]+$/.test(skillKey)) return null;
-  const rows = ScoreRows.safeParse(await serviceRest<unknown>(
-    `/lesson_segment_attempts?user_id=eq.${encodeURIComponent(userId)}&skill_key=eq.${encodeURIComponent(skillKey)}`
-    + `&select=score&order=created_at.desc&limit=${WINDOW}`,
+/** The learner's latest v2 receipts across versions of the lessons teaching this topic. */
+export async function recentV2Outcomes(userId: string, lessonIds: readonly string[]): Promise<boolean[] | null> {
+  if (!z.uuid().safeParse(userId).success || lessonIds.length === 0 || lessonIds.some(id => !z.uuid().safeParse(id).success)) return null;
+  const versions = z.array(z.object({ id: z.uuid() })).safeParse(await serviceRest<unknown>(
+    `/lesson_document_versions?lesson_id=in.(${lessonIds.map(encodeURIComponent).join(',')})&schema_version=eq.2&select=id`,
   ));
-  return rows.success ? rows.data.map((row) => row.score >= passThreshold) : null;
-}
-
-/** v2: the learner's latest graded receipts on one lesson version, newest first. Null when unreadable. */
-export async function recentV2Outcomes(userId: string, documentVersionId: string): Promise<boolean[] | null> {
-  if (!z.uuid().safeParse(userId).success || !z.uuid().safeParse(documentVersionId).success) return null;
+  if (!versions.success) return null;
+  if (versions.data.length === 0) return [];
   const rows = VerdictRows.safeParse(await serviceRest<unknown>(
-    `/lesson_v2_grade_receipts?user_id=eq.${encodeURIComponent(userId)}&document_version_id=eq.${encodeURIComponent(documentVersionId)}`
+    `/lesson_v2_grade_receipts?user_id=eq.${encodeURIComponent(userId)}&document_version_id=in.(${versions.data.map(row => row.id).join(',')})`
     + `&select=verdict&order=created_at.desc&limit=${WINDOW}`,
   ));
-  return rows.success ? rows.data.map((row) => row.verdict.correct) : null;
+  return rows.success ? rows.data.map(row => row.verdict.correct) : null;
 }
 
 /** The topic's title for the lesson's locale, falling back like the rest of Core. */

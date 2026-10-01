@@ -70,6 +70,18 @@ function show(value: MentorScreenSession, props: { guardianLink?: boolean; onLea
 afterEach(() => { stageProps.length = 0; vi.useRealTimers(); });
 
 describe('the screen is the stage (08 §2, D13)', () => {
+  it('keeps one banner when the actual route supplies its global header', () => {
+    const value = session();
+    const { rerender } = show(value);
+    expect(screen.getAllByRole('banner')).toHaveLength(1);
+    rerender(<MentorScreen session={value} copy={copy} locale="en-US" theme="light" guardianLink={false}
+      onLeave={noop} onPath={noop} header={<header aria-label="LittleFounders">Global controls</header>} />);
+    expect(screen.getAllByRole('banner')).toHaveLength(1);
+    expect(screen.getByRole('banner')).toHaveAccessibleName('LittleFounders');
+    expect(document.querySelector('.lf-mentor-top')?.tagName).toBe('DIV');
+    expect(screen.getByRole('main')).toHaveAccessibleName('Dina');
+  });
+
   it('names the character as the only heading and puts it on its Diorama', () => {
     show(session());
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Dina');

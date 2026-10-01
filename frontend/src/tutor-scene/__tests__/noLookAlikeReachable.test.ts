@@ -50,11 +50,15 @@ function reachable(entry: string): Set<string> {
 const REACHED = [...reachable(ENTRY)].map((file) => relative(SRC, file).split('\\').join('/'))
 
 describe('no look-alike Mentor character is reachable from the app entry', () => {
-  it('walks the real graph, down to the character layer and its stills', () => {
+  it('walks the current stage graph down to its real model and registered stills', () => {
     // A walk that reached nothing would pass by looking at nothing.
     expect(REACHED.length).toBeGreaterThan(200)
-    expect(REACHED).toContain('tutor-scene/CharacterLayer.tsx')
-    expect(REACHED).toContain('tutor-scene/slotStill.ts')
+    expect(REACHED).toContain('rebuild/mentor/MentorStage.tsx')
+    expect(REACHED).toContain('tutor-scene/TutorStage.tsx')
+    expect(REACHED).toContain('tutor-scene/Character3D.tsx')
+    expect(REACHED).toContain('tutor-scene/Diorama.tsx')
+    expect(REACHED).toContain('rebuild/mentor/stageStills.ts')
+    expect(REACHED).toContain('rebuild/assets/manifest.json')
   })
 
   it('reaches no hand-drawn character, no 2D actor and no rig sheet', () => {

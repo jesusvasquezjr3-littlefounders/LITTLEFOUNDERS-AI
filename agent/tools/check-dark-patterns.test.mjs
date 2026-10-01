@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
-  AUDIT_RECORD, CHECKLIST, CHECKLIST_VERSION, RELEASE_AUDIT_MAX_AGE_DAYS,
+  AUDIT_RECORD, LIVE_PLAYER_CHECKS, CHECKLIST, CHECKLIST_VERSION, RELEASE_AUDIT_MAX_AGE_DAYS,
   auditScore, run, scanText, stringLiterals, structuralFindings, validateAuditRecord,
 } from './check-dark-patterns.mjs';
 
@@ -114,4 +114,11 @@ test('the recorded pre-audit is not a release audit (the release gate refuses to
   const current = JSON.parse(readFileSync(`${repo}${AUDIT_RECORD}`, 'utf8'));
   assert.deepEqual(validateAuditRecord(current, { release: false }), []);
   assert.ok(validateAuditRecord(current, { release: true }).length > 0);
+});
+
+test('current v2 runtime checks cover penalties and review signals without retired-path exceptions', () => {
+  assert.equal(LIVE_PLAYER_CHECKS.length, 4);
+  assert.ok(LIVE_PLAYER_CHECKS.every(check => !check.file.includes('lesson-engine/')));
+  const samples = ['const value = state.hearts;', "const tone = {review: 'error'};", "const cues = {review: '/sounds/error.mp3'};", 'const body = { attempt_number: 1 };'];
+  LIVE_PLAYER_CHECKS.forEach((check, index) => assert.ok(check.forbid.some(pattern => pattern.test(samples[index])), check.file));
 });

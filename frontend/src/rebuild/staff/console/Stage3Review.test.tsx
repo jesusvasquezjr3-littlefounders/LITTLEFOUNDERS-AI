@@ -1,3 +1,4 @@
+import { selectOption } from '../../test/selectOption';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -87,7 +88,7 @@ describe('Stage 3 review panel', () => {
     expect(save).toBeDisabled(); // flags and author still missing
     resolveFlags();
     expect(save).toBeDisabled();
-    fireEvent.change(screen.getByLabelText(t.body.author), { target: { value: STATE.authors[1]!.userId } });
+    selectOption(screen.getByLabelText(t.body.author), STATE.authors[1]!.displayName);
     expect(save).toBeEnabled();
     fireEvent.click(save);
     expect(await screen.findByText(t.body.recordedPass)).toBeInTheDocument();
@@ -127,7 +128,7 @@ describe('Stage 3 review panel', () => {
     const save = await openForm();
     answerAll('fail');
     resolveFlags();
-    fireEvent.change(screen.getByLabelText(t.body.author), { target: { value: STATE.authors[0]!.userId } });
+    selectOption(screen.getByLabelText(t.body.author), STATE.authors[0]!.displayName);
     fireEvent.click(save);
     expect(await screen.findByText(t.body.selfReview)).toBeInTheDocument();
   });

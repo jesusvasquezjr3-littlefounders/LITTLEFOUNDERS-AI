@@ -49,60 +49,29 @@ export function checkRepository(root) {
   return { failures, requirementHeadings: ids.length };
 }
 
-/*
- * GAP-FIX-R6 (02 rule 23, D13; OD-24): the legacy v1 LessonPlayer is the one
- * sanctioned legacy island, and ONLY for the v1 catalog it plays. It is
- * reachable through exactly two adapters, each behind a schema-1 decision:
- *
- *   - routes/app/learn/LegacyLessonIsland.tsx, mounted only by the learner
- *     route (LessonRoute.tsx) when isLegacyLessonDocument() holds
- *     (schema_version === 1);
- *   - app-routes/ScopedLessonPlayer.tsx, mounted only by the staff console's
- *     lesson preview host (app-routes/staffConsole.tsx) inside its
- *     `request.schemaVersion === 1` branch; a v2 document previews in the
- *     rebuilt lesson view.
- *
- * The lesson engine itself (src/lesson-engine/, its lab pages included) may
- * import its own player. Anything else importing the player or either adapter,
- * or an adapter host that loses its schema-1 guard, fails the check.
- */
+/** Retired lesson UI has no sanctioned importers or runtime adapters. */
 export const LEGACY_PLAYER = 'frontend/src/lesson-engine/player/LessonPlayer';
-export const LEGACY_PLAYER_ADAPTERS = {
-  'frontend/src/routes/app/learn/LegacyLessonIsland': {
-    host: 'frontend/src/routes/app/learn/LessonRoute.tsx',
-    guard: (source) => /schema_version\s*===\s*1/.test(source) && /isLegacyLessonDocument\(state\.document\)/.test(source),
-  },
-  'frontend/src/app-routes/ScopedLessonPlayer': {
-    host: 'frontend/src/app-routes/staffConsole.tsx',
-    guard: (source) => {
-      // Every mount of the adapter sits inside the schema-1 branch, which ends at the renderer's `return null;`.
-      const branch = source.indexOf('if (request.schemaVersion === 1) {');
-      const close = branch === -1 ? -1 : source.indexOf('return null;', branch);
-      const uses = [...source.matchAll(/<LegacyLessonPlayer\b/g)].map((match) => match.index);
-      return branch !== -1 && close !== -1 && uses.length > 0 && uses.every((index) => index > branch && index < close);
-    },
-  },
-};
-
-const withoutExtension = (path) => path.replace(/\.(tsx?|mjs|js)$/, '');
-
-/** The legacy player and its adapters, imported only where the schema-1 decision is made. `sources`: [{ file, source }]. */
+export const LEGACY_PLAYER_ADAPTERS = {};
+const RETIRED_LESSON_MODULES = [
+  'frontend/src/lesson-engine/',
+  'frontend/src/components/ui/',
+  'frontend/src/app-routes/ScopedLessonPlayer',
+  'frontend/src/app-routes/legacySheet',
+  'frontend/src/routes/app/learn/LegacyLessonIsland',
+];
+const withoutExtension = (file) => file.replace(/\.(tsx?|mjs|js)$/, '');
 export function legacyPlayerFailures(root, sources) {
   const failures = [];
   const rel = (file) => relative(root, file).split(sep).join('/');
+  const retired = (file) => RETIRED_LESSON_MODULES.some((module) => module.endsWith('/') ? file.startsWith(module) : withoutExtension(file) === module);
   for (const { file, source } of sources) {
     const from = rel(file);
+    if (retired(from)) failures.push('Retired legacy lesson UI exists: ' + from);
     for (const match of source.matchAll(/(?:from\s*|import\s*(?:\(\s*)?)['"]([^'"]+)['"]/g)) {
       const name = match[1];
       if (!name.startsWith('.') && !name.startsWith('@/')) continue;
-      const target = withoutExtension(rel(name.startsWith('@/') ? resolve(root, 'frontend/src', name.slice(2)) : resolve(dirname(file), name)));
-      if (target === LEGACY_PLAYER) {
-        const allowed = from.startsWith('frontend/src/lesson-engine/') || Object.keys(LEGACY_PLAYER_ADAPTERS).includes(withoutExtension(from));
-        if (!allowed) failures.push(`Legacy v1 player reached outside its schema-1 adapters: ${from} -> ${name}`);
-      }
-      const adapter = LEGACY_PLAYER_ADAPTERS[target];
-      if (adapter && from !== adapter.host) failures.push(`Legacy v1 player adapter mounted outside its host: ${from} -> ${name}`);
-      if (adapter && from === adapter.host && !adapter.guard(source)) failures.push(`Legacy v1 player adapter mounted without its schema-1 guard: ${from} -> ${name}`);
+      const target = rel(name.startsWith('@/') ? resolve(root, 'frontend/src', name.slice(2)) : resolve(dirname(file), name));
+      if (retired(target)) failures.push('Retired legacy lesson dependency: ' + from + ' -> ' + name);
     }
   }
   return failures;

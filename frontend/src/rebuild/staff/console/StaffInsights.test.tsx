@@ -1,3 +1,5 @@
+import { enterDate } from '../../test/dateParts';
+import { selectOption } from '../../test/selectOption';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -143,7 +145,7 @@ describe('Analytics & Health S5 (W2T.3)', () => {
     render(<Frame><StaffAnalytics api={api} viewer={ANALYST} /></Frame>);
     await screen.findByText(a.body.band_registered, { selector: 'dt' });
     gets.length = 0;
-    fireEvent.change(screen.getByLabelText(a.body.period), { target: { value: '7d' } });
+    selectOption(screen.getByLabelText(a.body.period), a.option.period_7d);
     await waitFor(() => expect(gets.some((path) => path.startsWith('/admin/insights/audience?days=7'))).toBe(true));
     fireEvent.click(screen.getByRole('radio', { name: a.option.view_web }));
     await waitFor(() => expect(gets.some((path) => path.startsWith('/admin/analytics/overview?period=7d'))).toBe(true));
@@ -153,13 +155,13 @@ describe('Analytics & Health S5 (W2T.3)', () => {
     const { api, gets } = fakeApi();
     render(<Frame><StaffAnalytics api={api} viewer={ANALYST} initialView="web" /></Frame>);
     await screen.findAllByText(a.body.visitTime, { selector: 'dt' });
-    fireEvent.change(screen.getByLabelText(a.body.period), { target: { value: 'custom' } });
+    selectOption(screen.getByLabelText(a.body.period), a.option.period_custom);
     const sheet = await screen.findByRole('dialog', { name: common.heading.range });
-    fireEvent.change(within(sheet).getByLabelText(common.body.rangeFrom), { target: { value: '2026-09-10' } });
-    fireEvent.change(within(sheet).getByLabelText(common.body.rangeTo), { target: { value: '2026-09-01' } });
+    enterDate(common.body.rangeFrom, '2026-09-10');
+    enterDate(common.body.rangeTo, '2026-09-01');
     fireEvent.click(within(sheet).getByRole('button', { name: common.action.apply }));
     expect(await within(sheet).findByText(common.body.rangeReversed)).toBeInTheDocument();
-    fireEvent.change(within(sheet).getByLabelText(common.body.rangeTo), { target: { value: '2026-09-12' } });
+    enterDate(common.body.rangeTo, '2026-09-12');
     fireEvent.click(within(sheet).getByRole('button', { name: common.action.apply }));
     await waitFor(() => expect(gets.some((path) => path.startsWith('/admin/analytics/overview?period=custom&from=2026-09-10&to=2026-09-12'))).toBe(true));
   });
@@ -193,7 +195,7 @@ describe('Analytics & Health S5 (W2T.3)', () => {
     const { api, gets } = fakeApi();
     render(<Frame><StaffAnalytics api={api} viewer={ANALYST} initialView="web" /></Frame>);
     await screen.findAllByText(a.body.visitTime, { selector: 'dt' });
-    fireEvent.change(screen.getByLabelText(a.body.filterBy), { target: { value: 'device' } });
+    selectOption(screen.getByLabelText(a.body.filterBy), a.option.dimension_device);
     fireEvent.change(screen.getByLabelText(a.body.filterValue), { target: { value: 'Mobile' } });
     fireEvent.click(screen.getByRole('button', { name: a.action.addFilter }));
     await waitFor(() => expect(gets.filter((path) => route(path) === '/admin/analytics/overview').at(-1)).toContain(filtersToQuery([{ dimension: 'device', value: 'Mobile' }])));
@@ -241,7 +243,7 @@ describe('Analytics & Health S5 (W2T.3)', () => {
     expect(await screen.findByText(a.body.behaviorScope)).toBeInTheDocument();
     expect(await screen.findByText('36 views of staff pages from before a tracker fix are included.')).toBeInTheDocument();
     expect(await screen.findByText(a.body.notRecorded)).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText(a.body.breakdownBy), { target: { value: 'city' } });
+    selectOption(screen.getByLabelText(a.body.breakdownBy), a.option.behavior_city);
     await waitFor(() => expect(gets.some((path) => path.includes('behavior/breakdown') && params(path).get('dimension') === 'city')).toBe(true));
   });
 
@@ -262,8 +264,8 @@ describe('Analytics & Health S5 (W2T.3)', () => {
     const { api, downloads } = fakeApi();
     render(<Frame><StaffAnalytics api={api} viewer={ANALYST} initialView="tools" /></Frame>);
     fireEvent.click(await screen.findByRole('radio', { name: a.option.format_xlsx }));
-    fireEvent.change(screen.getByLabelText(a.body.reportAudience), { target: { value: 'sales' } });
-    fireEvent.change(screen.getByLabelText(a.body.reportRows), { target: { value: '50' } });
+    selectOption(screen.getByLabelText(a.body.reportAudience), a.option.audience_sales);
+    selectOption(screen.getByLabelText(a.body.reportRows), a.option.rows.replace('{n}', '50'));
     fireEvent.click(screen.getByRole('button', { name: a.action.download }));
     expect(await screen.findByText(a.body.downloaded)).toBeInTheDocument();
     expect(downloads).toEqual(['/admin/analytics/report.xlsx?period=30d&audience=sales&rows=50&locale=en-US']);
@@ -319,7 +321,7 @@ describe('Learning intel S6 with Insights S8 (W2T.3)', () => {
     render(<Frame><StaffIntel api={api} viewer={ANALYST} /></Frame>);
     expect(screen.getAllByRole('heading', { level: 1 }).map((h) => h.textContent)).toEqual([nav.intel]);
     expect(await screen.findByText('219 of 341')).toBeInTheDocument();
-    expect(await screen.findByText('Staff left out: 61,230 events (56%).')).toBeInTheDocument();
+    expect(await screen.findByText('Excluded staff events: 61,230 (56%).')).toBeInTheDocument();
     const anomalies = await screen.findByRole('table', { name: n.heading.anomalies });
     expect(within(anomalies).getAllByRole('row')).toHaveLength(2);
     expect(within(anomalies).getByText('+3.2 standard deviations')).toBeInTheDocument();
@@ -341,7 +343,7 @@ describe('Learning intel S6 with Insights S8 (W2T.3)', () => {
     const { api, gets, downloads } = fakeApi();
     render(<Frame><StaffIntel api={api} viewer={ANALYST} /></Frame>);
     await screen.findByText('219 of 341');
-    fireEvent.change(screen.getByLabelText(n.body.period), { target: { value: '365' } });
+    selectOption(screen.getByLabelText(n.body.period), n.option.lastDays.replace('{n}', '365'));
     await waitFor(() => expect(gets).toContain('/admin/intel/funnels/activation?days=365'));
     expect(gets).toContain('/admin/intel/metrics/summary?days=365');
     fireEvent.click(screen.getByRole('button', { name: n.action.export_csv }));
@@ -380,8 +382,8 @@ describe('Learning intel S6 with Insights S8 (W2T.3)', () => {
     const { api, downloads } = fakeApi(undefined, { ok: true, data: { blob: new Blob(['x']), headers: { truncated: 'true', 'next-offset': '10000', token } } });
     render(<Frame><StaffIntel api={api} viewer={ANALYST} initialView="insights" /></Frame>);
     const card = (await screen.findByRole('heading', { name: n.heading.rawExport })).closest('section')!;
-    fireEvent.change(within(card).getByLabelText(n.body.role), { target: { value: 'kid' } });
-    fireEvent.change(within(card).getByLabelText(n.body.event), { target: { value: 'lesson_start' } });
+    selectOption(within(card).getByLabelText(n.body.role), en.staffConsole.roleNames.option.kid);
+    selectOption(within(card).getByLabelText(n.body.event), 'lesson_start');
     fireEvent.click(within(card).getByRole('button', { name: en.staffConsole.analytics.action.download }));
     expect(await within(card).findByText('This file stops early. Download part 2 next.')).toBeInTheDocument();
     fireEvent.click(within(card).getByRole('button', { name: n.action.nextPart }));
@@ -450,7 +452,7 @@ describe('Learning intel S6 with Insights S8 (W2T.3)', () => {
     expect(within(card).getByText('98.3% · target 100%')).toBeInTheDocument();
     expect(within(card).getByText(n.option.status_missed)).toBeInTheDocument();
     expect(gets).toContain('/admin/analytics/consent-coverage?days=30');
-    fireEvent.change(screen.getByLabelText(n.body.period), { target: { value: '90' } });
+    selectOption(screen.getByLabelText(n.body.period), n.option.lastDays.replace('{n}', '90'));
     await waitFor(() => expect(gets).toContain('/admin/analytics/consent-coverage?days=90'));
   });
 

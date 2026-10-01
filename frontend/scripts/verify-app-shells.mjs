@@ -3,6 +3,8 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { join, resolve } from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.mjs';
+import { trackAuditedAssets, waitForAuditedAssets } from './audits/media.mjs';
+import { STATES } from './audits/states.mjs';
 import { installSyntheticCore, SCENARIOS, sessionStorageScript, signedOutStorageScript } from './audits/synthetic-core.mjs';
 
 /*
@@ -27,7 +29,7 @@ import { installSyntheticCore, SCENARIOS, sessionStorageScript, signedOutStorage
  *     assistant (OD-6); the Tutor console shows the Tutor pill and no Mentor slot;
  *   - the staff items are exactly what the grant opens;
  *   - the first Tab reaches the skip link and Enter moves focus to <main>;
- *   - Settings carries sign-out and the mode (moved there from the legacy sidebar);
+ *   - Settings carries sign-out; every route carries the shared language and icon-only mode controls;
  *   - following a navigation link changes the route, scrolls to the top,
  *     moves focus to the new page's heading (or <main>) and retitles the document;
  *   - no horizontal overflow, and no axe violation in the shell (the legacy
@@ -36,7 +38,7 @@ import { installSyntheticCore, SCENARIOS, sessionStorageScript, signedOutStorage
  * Reports and screenshots: audit-results/app-shells/.
  */
 const origin = process.env.REBUILD_URL ?? process.env.AGE_AUDIT_URL ?? 'http://localhost:5395';
-const out = resolve('../audit-results/app-shells');
+const out = resolve(process.env.REPORT_DIR ?? '../audit-results/app-shells');
 mkdirSync(out, { recursive: true });
 const LOCALES = (process.env.SHELL_LOCALES ?? 'en-US,es-MX,pt-BR').split(',');
 const THEMES = (process.env.SHELL_THEMES ?? 'light,dark').split(',');
@@ -63,6 +65,23 @@ const CASES = [
   { id: 'not-found', shell: 'single-state', path: '/no/such/page', scenario: null, navigate: null, expect: [] },
 ];
 
+// Every additional actual-route wrapper uses its catalogue's exact fixture and path.
+for (const [stateId, shell] of [
+  ['app:/account-suspended', 'single-state'],
+  ['app:/account-deletion@scheduled', 'single-state'],
+  ['app:/learn@age-ask-tutor', 'single-state'],
+  ['app:/onboarding@onboarding-welcome', 'single-state'],
+  ['app:/badge/:token@expired', 'single-state'],
+  ['app:/badge/:token@ready', 'single-state'],
+  ['app:/learn/:course/placement@welcome-child', 'single-state'],
+  ['app:/learn/lesson@opening', 'lesson'],
+  ['app:/tutor@mentor-screen-child', 'mentor'],
+]) {
+  const fixture = STATES.find(state => state.id === stateId);
+  if (!fixture) throw new Error(`Missing actual-route fixture ${stateId}`);
+  CASES.push({ id: stateId, shell, path: fixture.path, scenario: fixture.scenario ?? null, ready: fixture.readyAll ?? [], navigate: null, expect: [] });
+}
+
 const filter = process.env.SHELL_CASES?.split(',');
 const cases = CASES.filter((entry) => !filter || filter.includes(entry.id));
 const profile = mkdtempSync(join(out, 'chrome-'));
@@ -70,6 +89,7 @@ const browser = await launchBrowser(profile);
 const evidence = [];
 const failures = [];
 const unknownRequests = new Set();
+let auditedPage;
 
 async function waitFor(page, expression, what, tries = 300) {
   for (let n = 0; n < tries; n++) {
@@ -96,35 +116,47 @@ async function press(page, selector) {
 }
 
 async function key(page, name, code, keyCode) {
-  await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key: name, code, windowsVirtualKeyCode: keyCode });
+  // Native Enter activation includes a trusted keypress; React key handlers alone do not need it.
+  await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key: name, code, windowsVirtualKeyCode: keyCode,
+    ...(name === 'Enter' ? { text: '\r', unmodifiedText: '\r' } : {}) });
   await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key: name, code, windowsVirtualKeyCode: keyCode });
 }
 
 try {
   const warm = await openPage(browser.browser, { width: 375, height: 800, dark: false });
+  trackAuditedAssets(warm, origin);
   if (!await warmDevServer(warm, origin)) throw new Error(`The dev server at ${origin} never mounted the app`);
+  await waitForAuditedAssets(warm, {timeoutMs:60000,label:'warm assets'});
+  assert.deepEqual(warm.assetFailures, [], 'warm media errors');
   await warm.send('Page.close').catch(() => {});
   const page = await openPage(browser.browser, { width: 375, height: 800, dark: false, newWindow: true, isolated: true });
+  auditedPage = page;
+  trackAuditedAssets(page, origin);
   page.core = null;
   await installSyntheticCore(page, origin, { unknownRequests });
   const axeSource = readFileSync(resolve('node_modules/axe-core/axe.min.js'), 'utf8');
 
   for (const entry of cases) for (const locale of LOCALES) for (const theme of THEMES) for (const width of WIDTHS) {
     const where = `${entry.id} ${locale} ${theme} ${width}px`;
+    const screenshotId = entry.id.replace(/[^a-zA-Z0-9_.-]/g, '_');
     page.errors.length = 0;
     try {
+      await waitForAuditedAssets(page, {timeoutMs:60000,label:`${where}: before navigation`});
+      assert.deepEqual(page.assetFailures, [], 'previous route media errors');
+      // Drain and leave the previous app before resizing or changing identity.
+      await page.send('Page.navigate', { url: `${origin}/favicon.ico` });
+      await waitFor(page, `location.origin === ${JSON.stringify(origin)} && !document.querySelector('.lf-rebuild')`, 'neutral origin');
+      await waitForAuditedAssets(page, {timeoutMs:60000,label:'neutral assets'});
       await page.send('Emulation.setDeviceMetricsOverride', { width, height: 800, deviceScaleFactor: 1, mobile: width < 768 });
       await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: theme }, { name: 'prefers-reduced-motion', value: 'reduce' }] });
-      if (await page.evaluate('location.origin').catch(() => '') !== origin) {
-        await page.send('Page.navigate', { url: `${origin}/favicon.ico` });
-        await waitFor(page, `location.origin === ${JSON.stringify(origin)}`, 'origin');
-      }
       const spec = entry.scenario ? SCENARIOS[entry.scenario] : null;
       page.core = spec ? { scenario: entry.scenario, locale, theme, fixtures: {} } : null;
       await page.evaluate(spec ? sessionStorageScript({ guest: spec.guest, locale, theme }) : signedOutStorageScript({ locale, theme }));
       const url = new URL(entry.path, origin); url.searchParams.set('lng', locale);
       await page.send('Page.navigate', { url: url.toString() });
       await waitFor(page, `document.querySelector('[data-shell=${JSON.stringify(entry.shell)}]') && document.documentElement.lang === ${JSON.stringify(locale)}`, `${where}: shell`);
+      for (const selector of entry.ready ?? []) await waitFor(page, `document.querySelector(${JSON.stringify(selector)})`, `${where}: actual state`);
+      await waitFor(page, "[...document.querySelectorAll('[data-mentor-stage]')].every(stage => stage.dataset.ready === 'true')", `${where}: stage resources settled`, 1200);
       if (entry.shell === 'learner') await waitFor(page, `(() => { const l = document.querySelector('.lf-shell-rail [data-nav-id="mentor"]'); return l && l.textContent.trim() !== ${JSON.stringify(copy[locale].appShell.mentor)} && l.querySelector('img')?.complete; })()`, `${where}: Mentor tab`);
       if (entry.expect.length) await waitFor(page, `[...document.querySelectorAll('[data-shell] .lf-shell-rail [data-nav-id], [data-shell] .lf-site-links [data-nav-id]')].length === ${entry.expect.length}`, `${where}: navigation`);
       await page.evaluate('document.fonts.ready');
@@ -132,6 +164,8 @@ try {
       await waitFor(page, "!document.documentElement.classList.contains('theme-transitioning')", `${where}: theme settled`);
       await sleep(150);
 
+      await waitFor(page, "(() => { const img = document.querySelector('img[data-asset-id=\"brand.mark\"]'); return !!img?.complete && img.naturalWidth > 0; })()", `${where}: official brand loaded`);
+      await waitForAuditedAssets(page, {timeoutMs:60000,label:`${where}: initial assets`});
       const state = await page.evaluate(`(() => {
         const root = document.querySelector('.lf-rebuild');
         const shell = document.querySelector('[data-shell]');
@@ -147,7 +181,9 @@ try {
           pill: [...shell.querySelectorAll('.lf-pill')].map((p) => p.textContent.trim()),
           overflow: document.documentElement.scrollWidth - innerWidth, title: document.title,
           skip: !!shell.querySelector('.lf-skip-link'),
-          sessionControls: !!document.querySelector('.lf-session-preferences button') && document.querySelectorAll('.lf-session-preferences [type=radio]').length === 3,
+          sessionControls: !!document.querySelector('.lf-session-preferences button'),
+          brand: (() => { const img = document.querySelector('img[data-asset-id="brand.mark"]'); const rect = img?.getBoundingClientRect(); return !!img?.complete && img.naturalWidth > 0 && rect.width > 0 && rect.height > 0 && getComputedStyle(img).visibility === 'visible'; })(),
+          preferences: document.querySelectorAll('[data-shell-preferences]').length,
         };
       })()`);
       assert.equal(state.lang, locale, 'shell language');
@@ -166,8 +202,8 @@ try {
         for (const text of state.navText) assert.doesNotMatch(text, /\b(tutor ia|ai tutor|bot|assistant|asistente|assistente)\b/i, `OD-6 wording: ${text}`);
         if (entry.shell === 'learner') for (const text of state.navText) assert.doesNotMatch(text, /tutor/i, `the learner's navigation never says Tutor: ${text}`);
       }
-      // Settings carries the mode and sign-out the legacy sidebar used to (the teen's case starts on Settings).
-      if (entry.path === '/profile/settings') assert.ok(state.sessionControls, 'sign-out and mode in Settings');
+      // Settings retains sign-out; mode and locale live in every route header.
+      if (entry.path === '/profile/settings') assert.ok(state.sessionControls, 'sign-out in Settings');
       if (entry.shell === 'tutor') { assert.ok(state.pill.includes('Tutor'), 'Tutor pill'); assert.ok(!state.nav.includes('mentor'), 'no Mentor slot'); }
       if (entry.shell === 'staff') assert.ok(state.pill.includes(copy[locale].appShell.staffRole), 'staff role pill');
 
@@ -179,17 +215,53 @@ try {
       await key(page, 'Enter', 'Enter', 13);
       await waitFor(page, "document.activeElement?.tagName === 'MAIN'", `${where}: skip link moves focus to <main>`, 40);
 
+      assert.ok(state.brand, 'approved graphical brand');
+      assert.equal(state.preferences, 1, 'exactly one shared header preference group');
+      const language = '[data-shell-preferences] [role=combobox]';
+      await press(page, language);
+      await waitFor(page, "document.querySelectorAll('[role=option]').length === 3", `${where}: three language options`);
+      await key(page, 'Escape', 'Escape', 27);
+      assert.ok(await page.evaluate("document.activeElement?.matches('[data-shell-preferences] [role=combobox]')"), 'Escape restores language trigger focus');
+      const alternateLocale = locale === 'en-US' ? 'es-MX' : 'en-US';
+      await waitForAuditedAssets(page, {timeoutMs:60000,label:`${where}: before locale`});
+      if (page.core) page.core.locale = alternateLocale;
+      await key(page, 'Enter', 'Enter', 13);
+      await key(page, 'Home', 'Home', 36);
+      if (alternateLocale === 'es-MX') await key(page, 'ArrowDown', 'ArrowDown', 40);
+      await key(page, 'Enter', 'Enter', 13);
+      await waitFor(page, `document.querySelector('.lf-rebuild').lang === ${JSON.stringify(alternateLocale)}`, `${where}: keyboard changes language`);
+      await waitForAuditedAssets(page, {timeoutMs:60000,label:`${where}: alternate locale assets`});
+      if (page.core) page.core.locale = locale;
+      await press(page, language);
+      await key(page, 'Home', 'Home', 36);
+      for (let index = 0; index < ['en-US', 'es-MX', 'pt-BR'].indexOf(locale); index++) await key(page, 'ArrowDown', 'ArrowDown', 40);
+      await key(page, 'Enter', 'Enter', 13);
+      await waitFor(page, `document.querySelector('.lf-rebuild').lang === ${JSON.stringify(locale)}`, `${where}: restores language`);
+      await waitForAuditedAssets(page, {timeoutMs:60000,label:`${where}: restored locale assets`});
+      const themeButton = '[data-shell-preferences] .lf-icon-button';
+      assert.ok(await page.evaluate("(() => { const b = document.querySelector('[data-shell-preferences] .lf-icon-button'); return !!b?.getAttribute('aria-label') && !b.textContent.trim() && !!b.querySelector('svg'); })()"), 'icon-only theme has accessible name and own glyph');
+      await key(page, 'Tab', 'Tab', 9);
+      assert.ok(await page.evaluate("document.activeElement?.matches('[data-shell-preferences] .lf-icon-button')"), 'theme follows language in keyboard order');
+      await key(page, 'Enter', 'Enter', 13);
+      await waitFor(page, `document.querySelector('.lf-rebuild').dataset.theme === ${JSON.stringify(theme === 'dark' ? 'light' : 'dark')}`, `${where}: keyboard toggles mode`);
+      await waitForAuditedAssets(page, {timeoutMs:60000,label:`${where}: alternate theme assets`});
+      await press(page, themeButton);
+      await waitFor(page, `document.querySelector('.lf-rebuild').dataset.theme === ${JSON.stringify(theme)}`, `${where}: pointer restores mode`);
+      await waitFor(page, "!document.documentElement.classList.contains('theme-transitioning')", `${where}: restored theme settles`);
+
+      await waitForAuditedAssets(page, {timeoutMs:60000,label:`${where}: restored theme assets`});
       // Scoped axe: the shell, not the legacy page body inside it.
       await page.evaluate(axeSource);
       const axe = await page.evaluate("axe.run({ include: [['[data-shell]']], exclude: [['[data-legacy-body]']] }, { resultTypes: ['violations'] })");
       assert.deepEqual(axe.violations.map((v) => `${v.id}: ${v.nodes.map((n) => `${n.target.join(' ')} (${n.any?.[0]?.message ?? ''})`).join(', ')}`), [], 'axe violations');
 
       const shot = await page.send('Page.captureScreenshot', { format: 'png' });
-      writeFileSync(join(out, `${entry.id}-${locale}-${theme}-${width}.png`), Buffer.from(shot.data, 'base64'));
+      writeFileSync(join(out, `${screenshotId}-${locale}-${theme}-${width}.png`), Buffer.from(shot.data, 'base64'));
 
       // Route change: a real press on the visible link; the page scrolls to the top and focus lands on the new heading.
       let routeFocus = null;
       if (entry.navigate) {
+        await waitForAuditedAssets(page, {timeoutMs:60000,label:`${where}: before route press`});
         const before = state.title;
         await page.evaluate('window.scrollTo(0, document.documentElement.scrollHeight)');
         const menu = await page.evaluate(`(() => { const b = document.querySelector('.lf-appbar-menu, .lf-site-menu'); return !!b && b.getBoundingClientRect().width > 0 && getComputedStyle(b).display !== 'none'; })()`);
@@ -203,17 +275,22 @@ try {
         assert.notEqual(after.title, before, 'route change retitles the document');
         routeFocus = after.focus;
       }
-      assert.deepEqual(page.errors.filter((error) => !/Failed to load resource|net::ERR|synthetic core/i.test(error)), [], 'JS errors');
+      await waitForAuditedAssets(page, {timeoutMs:60000,label:`${where}: final assets`});
+      assert.deepEqual(page.assetFailures, [], 'structured media errors');
+      assert.deepEqual(page.errors, [], 'JS errors');
       evidence.push({ case: entry.id, population: spec?.population ?? 'signed out', locale, theme, width, nav: state.nav, mentor: state.mentorName, pill: state.pill,
-        overflow: state.overflow, skipLink: 'ok', routeFocus, axe: 0 });
+        overflow: state.overflow, skipLink: 'ok', routeFocus, axe: 0, mediaErrors: [] });
       process.stdout.write('.');
     } catch (error) {
+      console.log(`\nFAIL ${where}: ${error.message}`);
       failures.push(`${where}: ${error.message}${page.errors.length ? ` [page errors: ${page.errors.slice(0, 3).join(" | ").slice(0, 600)}]` : ""}`);
       const shot = await page.send('Page.captureScreenshot', { format: 'png' }).catch(() => null);
-      if (shot) writeFileSync(join(out, `FAIL-${entry.id}-${locale}-${theme}-${width}.png`), Buffer.from(shot.data, 'base64'));
+      if (shot) writeFileSync(join(out, `FAIL-${screenshotId}-${locale}-${theme}-${width}.png`), Buffer.from(shot.data, 'base64'));
       process.stdout.write('F');
     }
   }
+  await waitForAuditedAssets(page, {timeoutMs:60000,label:'before close'});
+  assert.deepEqual(page.assetFailures, [], 'final media errors');
   await page.send('Page.close').catch(() => {});
 } catch (error) {
   failures.push(`setup: ${error.message}`);
@@ -222,6 +299,7 @@ try {
     provenance: 'Real routes on a local Vite server in headless Chrome, real pointer and keyboard input; synthetic Core; not full-stack',
     origin, date: new Date().toISOString(), configurations: evidence.length + failures.length, passed: evidence.length, failures, evidence,
     unansweredCoreRequests: [...unknownRequests].sort(),
+    mediaErrors: auditedPage?.assetFailures ?? [],
   }, null, 1));
   browser.child.kill();
   await sleep(500);

@@ -187,12 +187,12 @@ export function structuralFindings(path, text) {
   return findings;
 }
 
-/** The live lesson player is live product: it may have no lives either (OD-1). */
+/** Current v2 runtime checks: a retired source path cannot silently satisfy a live-product guard. */
 export const LIVE_PLAYER_CHECKS = [
-  { file: 'frontend/src/lesson-engine/core/session.ts', forbid: [/hearts\s*-\s*1/, /hearts\s*===\s*0/, /doc\.scoring\.hearts/], item: 'DP-07', message: 'the session spends or reads lives' },
-  { file: 'frontend/src/lesson-engine/player/LessonPlayer.tsx', forbid: [/state\.hearts/, /chips\.hearts/], item: 'DP-07', message: 'the player renders a lives counter' },
-  { file: 'frontend/src/lesson-engine/lab/LessonLabPage.tsx', forbid: [/setHearts/, /heartsOn/], item: 'DP-07', message: 'the lesson lab offers lives' },
-  { file: 'frontend/src/lesson-engine/player/sfx.ts', forbid: [/tryagain:\s*'[^']*(error|fail|buzz|wrong)[^']*'/], item: 'SH-02', message: 'a miss plays an error sound' },
+  { file: 'frontend/src/rebuild/learning/LessonDocumentView.tsx', forbid: [/state\.hearts/, /chips\.hearts/, /hearts\s*-\s*1/], item: 'DP-07', message: 'the current lesson spends or renders lives' },
+  { file: 'frontend/src/rebuild/learning/LessonFeedback.tsx', forbid: [/review:\s*['"]error['"]/, /shown\s*===\s*['"]review['"][^;]*play[^;]*(error|wrong|fail)/s], item: 'SH-02', message: 'a review uses the error tone or cue' },
+  { file: 'frontend/src/rebuild/learning/lessonCue.ts', forbid: [/review:\s*['"][^'"]*(error|fail|buzz|wrong)[^'"]*['"]/], item: 'SH-02', message: 'a miss plays an error sound' },
+  { file: 'frontend/src/routes/app/learn/LessonRoute.tsx', forbid: [/state\.hearts/, /attempt_number\s*:/, /LegacyLesson/], item: 'DP-07', message: 'the authenticated lesson uses retired penalty or playback state' },
 ];
 
 function scanStructure(findings) {
@@ -212,15 +212,16 @@ function scanStructure(findings) {
   }
   for (const check of LIVE_PLAYER_CHECKS) {
     let text;
-    try { text = stripComments(readFileSync(join(repo, check.file), 'utf8')); } catch { continue; }
+    try { text = stripComments(readFileSync(join(repo, check.file), 'utf8')); } catch { findings.push({ item: check.item, where: check.file, message: 'required current-runtime check source is missing' }); continue; }
     files += 1;
     if (check.forbid.some((pattern) => pattern.test(text))) findings.push({ item: check.item, where: check.file, message: check.message });
   }
-  for (const locale of LOCALES) {
-    const lesson = JSON.parse(readFileSync(join(repo, 'frontend/src/i18n', locale, 'lesson.json'), 'utf8'));
-    if (lesson.chips && Object.keys(lesson.chips).some((key) => key.startsWith('hearts'))) {
-      findings.push({ item: 'DP-07', where: `frontend/src/i18n/${locale}/lesson.json`, message: 'a lives counter string exists' });
-    }
+  // Every current namespace is checked; retiring a namespace cannot erase this guard.
+  for (const locale of LOCALES) for (const file of walk(join(repo, 'frontend/src/i18n', locale))) {
+    if (!file.endsWith('.json')) continue;
+    jsonStrings(JSON.parse(readFileSync(file, 'utf8')), (_text, path) => {
+      if (/\b(?:chips|counter|lives)\.(?:hearts|lives)/i.test(path)) findings.push({ item: 'DP-07', where: `${rel(file)} ${path}`, message: 'a lives counter string exists' });
+    });
   }
   return files;
 }

@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   AnswerChoice, Art, Banner, Button, ButtonGroup, Card, Checkbox, Chip, ChipGroup, ChoiceChip, EmptyState, ErrorState, Glyph, GLYPH_BUDGET,
   GLYPH_FAMILIES, IconButton, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, RadioGroup, RewardChip,
-  ReplyChip, SegmentedControl, SelectField, Slider, StatusMark, Stepper, Switch, SYSTEM_GLYPHS, TextAreaField, TextField,
+  RebuildRoot, ReplyChip, SegmentedControl, SelectField, Slider, StatusMark, Stepper, Switch, SYSTEM_GLYPHS, TextAreaField, TextField,
 } from './controls';
 import { findMentorAvatar, MENTOR_CHARACTERS, resolveMentorRender } from './assets';
 
@@ -124,11 +124,70 @@ describe('fields', () => {
     expectCopyRoles(container);
   });
 
-  it('supports number and date inputs natively and no error state when valid', () => {
+  it('supports numeric amounts and application-owned date parts without a native calendar', () => {
     render(<><TextField type="number" label="Coins" value="4" onChange={() => undefined} /><TextField type="date" label="Start" value="2026-09-24" onChange={() => undefined} /></>);
     expect(screen.getByLabelText('Coins')).toHaveAttribute('type', 'number');
     expect(screen.getByLabelText('Coins')).not.toHaveAttribute('aria-invalid');
-    expect(screen.getByLabelText('Start')).toHaveAttribute('type', 'date');
+    expect(screen.getByRole('group', { name: 'Start' })).toBeTruthy();
+    expect(screen.getByLabelText('Start: Day')).toHaveValue('24');
+    expect(screen.getByLabelText('Start: Month')).toHaveValue('09');
+    expect(screen.getByLabelText('Start: Year')).toHaveValue('2026');
+    expect(document.querySelector('input[type="date"]')).toBeNull();
+  });
+
+  it('keeps ISO form data, rejects impossible dates and clears stale values while retaining partial parts', () => {
+    const onChange = vi.fn();
+    const { container, rerender } = render(<form><TextField type="date" label="Birthday" name="birthday" value="2024-02-29" required onChange={onChange} /></form>);
+    const form = () => container.querySelector('form')!;
+    expect(new FormData(form()).get('birthday')).toBe('2024-02-29');
+    fireEvent.change(screen.getByLabelText('Birthday: Year'), { target: { value: '2023' } });
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ target: expect.objectContaining({ value: '' }) }));
+    expect(new FormData(form()).get('birthday')).toBe('');
+    expect(form().checkValidity()).toBe(false);
+    rerender(<form><TextField type="date" label="Birthday" name="birthday" value="" required onChange={onChange} /></form>);
+    expect(screen.getByLabelText('Birthday: Day')).toHaveValue('29');
+    expect(screen.getByLabelText('Birthday: Year')).toHaveValue('2023');
+    fireEvent.change(screen.getByLabelText('Birthday: Day'), { target: { value: '28' } });
+    expect(new FormData(form()).get('birthday')).toBe('2023-02-28');
+    expect(form().checkValidity()).toBe(true);
+    fireEvent.change(screen.getByLabelText('Birthday: Month'), { target: { value: '' } });
+    expect(new FormData(form()).get('birthday')).toBe('');
+    expect(screen.getByLabelText('Birthday: Day')).toHaveValue('28');
+    expect(form().checkValidity()).toBe(false);
+  });
+
+  it('honors date bounds, external controlled updates and disabled form omission', () => {
+    const onChange = vi.fn();
+    const { container, rerender } = render(<form><TextField type="date" label="Window" name="window" value="2026-09-10" min="2026-09-01" max="2026-09-30" onChange={onChange} /></form>);
+    fireEvent.change(screen.getByLabelText('Window: Day'), { target: { value: '31' } });
+    expect(new FormData(container.querySelector('form')!).get('window')).toBe('');
+    fireEvent.change(screen.getByLabelText('Window: Day'), { target: { value: '30' } });
+    expect(new FormData(container.querySelector('form')!).get('window')).toBe('2026-09-30');
+    rerender(<form><TextField type="date" label="Window" name="window" value="2026-10-01" min="2026-09-01" max="2026-09-30" onChange={onChange} /></form>);
+    expect(screen.getByLabelText('Window: Month')).toHaveValue('10');
+    expect(new FormData(container.querySelector('form')!).get('window')).toBe('');
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ target: expect.objectContaining({ value: '' }) }));
+    rerender(<form><TextField type="date" label="Window" name="window" value="2026-09-15" disabled onChange={onChange} /></form>);
+    expect(screen.getByLabelText('Window: Day')).toBeDisabled();
+    expect(new FormData(container.querySelector('form')!).has('window')).toBe(false);
+  });
+
+  it('clears a previously valid ISO value when the minimum moves past it', () => {
+    const onChange = vi.fn();
+    const { rerender, container } = render(<form><TextField type="date" label="Window" name="window" value="2026-09-15" min="2026-09-01" onChange={onChange} /></form>);
+    rerender(<form><TextField type="date" label="Window" name="window" value="2026-09-15" min="2026-09-16" onChange={onChange} /></form>);
+    expect(new FormData(container.querySelector('form')!).get('window')).toBe('');
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ target: expect.objectContaining({ value: '' }) }));
+    expect(screen.getByLabelText('Window: Day')).toHaveValue('15');
+  });
+
+  it.each([
+    ['en-US', 'Day', 'Month', 'Year'], ['es-MX', 'Día', 'Mes', 'Año'], ['pt-BR', 'Dia', 'Mês', 'Ano'],
+  ] as const)('names every date part in %s', (locale, day, month, year) => {
+    render(<RebuildRoot locale={locale} theme="dark"><TextField type="date" label="Date" value="2024-02-29" onChange={() => undefined} /></RebuildRoot>);
+    expect(screen.getByLabelText(`Date: ${day}`)).toHaveValue('29');
+    expect(screen.getByLabelText(`Date: ${month}`)).toHaveValue('02');
+    expect(screen.getByLabelText(`Date: ${year}`)).toHaveValue('2024');
   });
 
   it('reveals and hides a password with a named toggle that controls the input', () => {
@@ -143,13 +202,50 @@ describe('fields', () => {
     expect(input).toHaveAttribute('type', 'password');
   });
 
-  it('renders a labelled native select with its options', () => {
+  it('selects an app-rendered option using the keyboard', () => {
     const onChange = vi.fn();
     render(<SelectField label="Pocket" value="save" onChange={onChange} options={[{ value: 'save', label: 'Save' }, { value: 'spend', label: 'Spend' }]} />);
+    expect(screen.getByRole('combobox', { name: 'Pocket' })).toHaveAttribute('data-copy-role', 'option');
     const select = screen.getByLabelText('Pocket');
-    fireEvent.change(select, { target: { value: 'spend' } });
-    expect(onChange).toHaveBeenCalledOnce();
+    fireEvent.keyDown(select, { key: 'ArrowDown' });
     expect(screen.getAllByRole('option')).toHaveLength(2);
+    fireEvent.keyDown(select, { key: 'ArrowDown' });
+    fireEvent.keyDown(select, { key: 'Enter' });
+    expect(onChange).toHaveBeenCalledOnce();
+    expect(onChange).toHaveBeenCalledWith({ target: { value: 'spend' } });
+    expect(select).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('opens at the first or last option with Home or End from a middle selection', () => {
+    const onChange = vi.fn();
+    render(<SelectField label="Position" value="middle" onChange={onChange}
+      options={[{ value: 'first', label: 'First' }, { value: 'middle', label: 'Middle' }, { value: 'last', label: 'Last' }]} />);
+    const trigger = screen.getByRole('combobox', { name: 'Position' });
+    fireEvent.keyDown(trigger, { key: 'Home' });
+    fireEvent.keyDown(trigger, { key: 'Enter' });
+    expect(onChange).toHaveBeenLastCalledWith({ target: { value: 'first' } });
+    fireEvent.keyDown(trigger, { key: 'End' });
+    fireEvent.keyDown(trigger, { key: 'Enter' });
+    expect(onChange).toHaveBeenLastCalledWith({ target: { value: 'last' } });
+  });
+
+  it('keeps dropdown form data, pointer selection and dismissal accessible', () => {
+    const onChange = vi.fn();
+    const { container } = render(<form><SelectField label="Pocket" name="pocket" value="save" onChange={onChange}
+      options={[{ value: 'save', label: 'Save' }, { value: 'spend', label: 'Spend' }]} /><button type="button">Next</button></form>);
+    const trigger = screen.getByRole('combobox', { name: 'Pocket' });
+    expect(container.querySelector('select')).toBeNull();
+    expect(new FormData(container.querySelector('form')!).get('pocket')).toBe('save');
+    fireEvent.click(trigger);
+    fireEvent.click(screen.getByRole('option', { name: 'Spend' }));
+    expect(onChange).toHaveBeenCalledWith({ target: { value: 'spend' } });
+    expect(trigger).toHaveFocus();
+    fireEvent.click(trigger);
+    fireEvent.keyDown(trigger, { key: 'Escape' });
+    expect(screen.queryByRole('listbox')).toBeNull();
+    fireEvent.click(trigger);
+    fireEvent.pointerDown(screen.getByRole('button', { name: 'Next' }));
+    expect(screen.queryByRole('listbox')).toBeNull();
   });
 
   it('keeps the checkbox a native, labelled input with an error description', () => {

@@ -1,3 +1,4 @@
+import { StandaloneHeader } from '@/rebuild/design/StandaloneHeader';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   Button, IconButton, InlineNotice, ProgressBar, RadioGroup, SingleStateScreen, TextField, type MentorCharacter,
@@ -57,8 +58,8 @@ export interface MentorChoiceState {
 
 export interface OnboardingValues { displayName: string; discoveryChannel: DiscoveryChannel | null; choice: AccountChoice }
 
-export function OnboardingFlow({ locale, skipLabel, mentor, askDiscovery, completing, failed, onComplete, initialStep = 'welcome', initialName = '' }: {
-  locale: Locale; skipLabel: string; mentor: MentorChoiceState;
+export function OnboardingFlow({ locale, skipLabel, mentor, askDiscovery, completing, failed, onComplete, initialStep = 'welcome', initialName = '', header }: {
+  locale: Locale; skipLabel: string; mentor: MentorChoiceState; header?: ReactNode;
   /** Core's /auth/me `discoverySurvey`: show the optional discovery step (A.2). */
   askDiscovery: boolean;
   /** The account choice whose completion request is in flight. */
@@ -156,7 +157,7 @@ export function OnboardingFlow({ locale, skipLabel, mentor, askDiscovery, comple
 
   return <div data-age-band="6-9" data-screen="onboarding" data-step={step} data-surface="app">
     <SingleStateScreen appName="LittleFounders" pageTitle={copy.title} routeKey="onboarding" locale={locale} hue="primary"
-      labels={{ skip: skipLabel }} bar={bar} actions={actions}>
+      labels={{ skip: skipLabel }} bar={<>{header ?? <StandaloneHeader locale={locale} theme="light" />}{bar}</>} actions={actions}>
       <div className="lf-onboarding-panel">{content}</div>
     </SingleStateScreen>
   </div>;

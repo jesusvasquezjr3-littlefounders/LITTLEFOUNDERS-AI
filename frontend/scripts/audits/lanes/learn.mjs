@@ -444,7 +444,7 @@ export function respond({ spec, scenario, locale, fixtures, path, request, ok })
     const document = fixtures[locale][spec.lesson];
     return ok({ lesson: { id: lesson[1], slug: lesson[1] }, locale, document, audio: {}, ...(spec.mentorStage ? { mentor_stage: spec.mentorStage } : {}) });
   }
-  if (lesson && lesson[2] && request.method === 'POST' && spec.graded) {
+  if (lesson && lesson[2] && request.method === 'POST' && spec.lesson) {
     const document = fixtures[locale][spec.lesson];
     const tokens = Object.fromEntries(document.segments.filter((segment) => segment.grading === 'server').map((segment) => [segment.id, `synthetic-${segment.id}`]));
     return ok({ run_id: RUN_ID, version_id: document.version_id, expires_at: new Date(Date.now() + 3_600_000).toISOString(),

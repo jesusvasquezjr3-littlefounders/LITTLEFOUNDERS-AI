@@ -3,6 +3,8 @@ import express from 'express';
 import { getConfig } from './env.js';
 import { globalRateLimiter } from './middleware/rateLimit.js';
 import { intelRouter } from './routes/queries.js';
+import { contentRetirementRouter } from './routes/contentRetirement.js';
+import { contentRetirementGate } from './services/contentRetirement.js';
 import { isReady } from './db/duckdb.js';
 import { getSyncHealth } from './db/sync.js';
 import { cacheClient } from './middleware/cache.js';
@@ -55,6 +57,8 @@ export function createApp(): express.Express {
     next();
   });
 
+  app.use('/api/v1/intel', contentRetirementGate);
+  app.use('/api/v1/intel', contentRetirementRouter());
   app.use('/api/v1/intel', intelRouter());
 
   app.use((_req, res) => {

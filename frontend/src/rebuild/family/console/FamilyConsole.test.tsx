@@ -5,6 +5,7 @@ import { FamilyConsole } from './FamilyConsole';
 import { childWire, FAMILY, fakeTransport, KID_A, KID_B, micWire, ok, refuse, type Answer } from './consoleFixtures';
 import type { ConsoleLocale } from './consoleParts';
 import type { Child } from './consoleApi';
+import { enterDate } from '../../test/dateParts';
 
 /*
  * W2F.1 F1: the rebuilt Family console. Server truth only (a switch never
@@ -205,7 +206,7 @@ describe('Adding a child', () => {
     await openForm();
     const form = screen.getByRole('heading', { name: en.familyChildAccount.addTitle }).closest('section')!;
     const fields = [...form.querySelectorAll('input')].map((input) => input.type);
-    expect(fields).toEqual(['text', 'text', 'password', 'radio', 'radio', 'date']);
+    expect(fields).toEqual(['text', 'text', 'password', 'radio', 'radio', 'text', 'text', 'text']);
     expect(form.querySelector('input[type=email], input[autocomplete=email]')).toBeNull();
     expect(screen.queryByRole('heading', { name: en.familyConsole.emptyTitle })).toBeNull();
   });
@@ -243,7 +244,7 @@ describe('Adding a child', () => {
     fillIn(en.familyChildAccount.name, 'Ana');
     fillIn(en.familyChildAccount.username, 'ana_2016');
     fillIn(en.familyChildAccount.passphrase, 'a long secret');
-    fillIn(en.familyChildAccount.birthDate, '2016-04-09');
+    enterDate(en.familyChildAccount.birthDate, '2016-04-09');
     fireEvent.click(screen.getByRole('button', { name: en.familyChildAccount.create }));
     expect(await screen.findByRole('alert')).toHaveTextContent(en.familyChildAccount.usernameTaken);
     expect(onSelect).not.toHaveBeenCalled();

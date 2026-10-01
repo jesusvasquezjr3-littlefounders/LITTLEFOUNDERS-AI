@@ -14,7 +14,6 @@ COURSE="${1:-financial-education}"
 cd "$ROOT_DIR"
 RUN_SUFFIX="$(date +%Y%m%d%H%M%S)-$$"
 RUN_ID="release-check-${COURSE}-${RUN_SUFFIX}"
-TRACK_ID="release-track-${COURSE}-${RUN_SUFFIX}"
 
 echo "== LittleFounders zero-spend release readiness: $COURSE =="
 npm run git:diff-check
@@ -132,11 +131,14 @@ npm --prefix coursegen run content:gates -- --course "$COURSE"
 # zero-spend v2 emitter's output passes Core's strict v2 contract.
 npm run forge:release-gates:check
 npm run forge:v2:dry-run
-npm --prefix coursegen run generate -- --course "$COURSE" --run-id "$RUN_ID" --require-images --dry-run
-npm --prefix coursegen run generate:track -- --course "$COURSE" --track-id "$TRACK_ID" --require-images --dry-run
+# The v1 generation/track entry points are retired. Rehearse the supported
+# author -> emit/contract/gates -> reviewed-publication chain without RPC calls.
+mkdir -p "coursegen/runs/$RUN_ID/authored"
+npm --prefix coursegen run v2:author -- --skeleton src/v2/fixtures/plans/22-v2-first-release-mixed.json --out "runs/$RUN_ID/authored/lesson.json" --run-id "$RUN_ID" --dry-run
+npm --prefix coursegen run v2:publish -- --plans "runs/$RUN_ID/authored" --course "$COURSE" --run-id "$RUN_ID" --out "runs/$RUN_ID/release" --dry-run
 npm --prefix audiogen run narrate:all -- --course "$COURSE" --dry-run
 
 echo ""
 echo "release-readiness OK — no deployment, migration, publication, or paid API call was performed"
-echo "dry-run evidence: coursegen/runs/$RUN_ID and coursegen/runs/$TRACK_ID"
+echo "dry-run evidence: coursegen/runs/$RUN_ID"
 echo "fracture-closure audit: coursegen/runs/fracture-closure-${RUN_SUFFIX}.json"

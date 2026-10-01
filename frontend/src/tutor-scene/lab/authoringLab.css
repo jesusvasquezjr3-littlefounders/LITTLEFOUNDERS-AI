@@ -1,0 +1,15 @@
+.lf-rebuild .lf-authoring-lab { padding: var(--spacing-5); color: var(--content); background: var(--base); }
+.lf-rebuild .lf-authoring-caption { font: var(--type-caption); color: var(--content); }
+.lf-rebuild .lf-authoring-page { max-inline-size: 1440px; margin-inline: auto; }
+.lf-rebuild .lf-authoring-lab :is(header, section, aside) { margin-block-end: var(--spacing-5); }
+.lf-rebuild .lf-authoring-lab h1 { font: var(--type-display-lg); }
+.lf-rebuild .lf-authoring-lab h2 { font: var(--type-title); }
+.lf-rebuild .lf-authoring-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); margin-block: var(--spacing-3); }
+.lf-rebuild .lf-authoring-grid { display: grid; gap: var(--spacing-5); }
+.lf-rebuild .lf-authoring-stage { inline-size: 100%; aspect-ratio: 4 / 3; min-inline-size: 0; overflow: hidden; border-radius: var(--rounded-lg); background: var(--sunken); }
+.lf-rebuild .lf-authoring-block { margin-block: var(--spacing-2); overflow-wrap: anywhere; }
+.lf-rebuild .lf-authoring-file { max-inline-size: 100%; }
+.lf-rebuild .lf-authoring-lab ul { padding-inline-start: var(--spacing-5); }
+@container app (min-width: 840px) {
+  .lf-rebuild .lf-authoring-grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+}

@@ -5,8 +5,11 @@ import { rateLimitClient } from './middleware/rateLimit.js';
 import { initDb, closeDb } from './db/duckdb.js';
 import { startSyncWorker, stopSyncWorker } from './workers/sync.js';
 import { startAlertWorker, stopAlertWorker } from './workers/alerts.js';
+import { holdContentRetirementUntilInitialized, restoreContentRetirementLease } from './services/contentRetirement.js';
 
 const config = getConfig();
+
+holdContentRetirementUntilInitialized();
 
 const server = createApp().listen(config.PORT, () => {
   console.log(`[${SERVICE}] listening on :${config.PORT}`);
@@ -26,7 +29,8 @@ Promise.all([
 
 // Initialise DuckDB then start sync worker — non-blocking, listener opens first.
 initDb()
-  .then(() => {
+  .then(async () => {
+    await restoreContentRetirementLease();
     console.log(`[${SERVICE}] duckdb initialised`);
     startSyncWorker();
     startAlertWorker();

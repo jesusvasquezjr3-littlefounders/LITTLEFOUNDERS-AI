@@ -121,6 +121,13 @@ if (mode === 'error-after-sentinel') {
 }
 `,
 );
+const referenceBin = join(fixtureRoot, 'reference-bin');
+mkdirSync(referenceBin);
+for (const executable of ['railway', 'psql']) {
+  writeFileSync(join(referenceBin, executable), readFileSync(join(binDir, executable)));
+  chmodSync(join(referenceBin, executable), 0o755);
+  writeFileSync(join(binDir, executable), readFileSync(join(scriptsDir, 'fixtures', executable + '-fake.sh')));
+}
 chmodSync(join(binDir, 'railway'), 0o755);
 chmodSync(join(binDir, 'psql'), 0o755);
 
@@ -134,11 +141,63 @@ const checksums = Object.fromEntries(
   ]),
 );
 
+// Differential proof keeps the original Node transport as the reference.
+async function verifyFakeParity() {
+  const sqls = [
+    ['ok', 'SELECT 1;'],
+    ['ok', String.raw`SELECT 1 AS has_ledger; \if :has_ledger`],
+    ['ok', "SELECT 'baseline-ok';"],
+    ['ok', "SELECT checksum FROM public.schema_migrations WHERE filename = '0023_learning_insights.sql';"],
+    ['ok', 'SELECT count(*) FROM public.schema_migrations;'],
+    ['silent', 'SELECT 1;'], ['error', 'SELECT 1;'],
+    ['notice-after-sentinel', 'SELECT 1;'], ['error-after-sentinel', 'SELECT 1;'],
+    // A real 22 KB migration pins the script-file fix above the 8191-byte boundary.
+    ['ok', readFileSync(join(dbDir, 'migrations', '0025_insights_scale.sql'), 'utf8')],
+  ];
+  for (const [index, [mode, sql]] of sqls.entries()) {
+    const results = [];
+    for (const [kind, directory] of [['node', referenceBin], ['bash', binDir]]) {
+      const callsLog = join(fixtureRoot, `parity-${index}-${kind}.sql`);
+      const argsLog = join(fixtureRoot, `parity-${index}-${kind}.jsonl`);
+      const receiptsFile = join(fixtureRoot, `parity-${index}-${kind}.tsv`);
+      const receipts = { '0023_learning_insights.sql': 'deadbeef' };
+      writeFileSync(receiptsFile, '0023_learning_insights.sql\tdeadbeef\n');
+      const inheritedPath = Object.entries(process.env).find(([key]) => key.toUpperCase() === 'PATH')?.[1] ?? '';
+      const inheritedEnv = Object.fromEntries(Object.entries(process.env).filter(([key]) => key.toUpperCase() !== 'PATH'));
+      const command = `echo ${Buffer.from(sql).toString('base64')} | base64 -d | psql -U supabase_admin -d postgres -t -A -v ON_ERROR_STOP=1 -f -`;
+      const argv = ['ssh', '--service', 'db', '-i', keyPath, command];
+      // Native Node -> MSYS Bash also truncates long argv; launch Bash from
+      // a short script FILE, then its own shell passes the real positional argv.
+      const launcher = join(fixtureRoot, `parity-${index}-launch.sh`);
+      const shellQuote = (value) => "'" + value.replaceAll("'", "'\\''") + "'";
+      if (kind === 'bash') writeFileSync(launcher, 'exec ' + [join(directory, 'railway'), ...argv].map(shellQuote).join(' ') + '\n');
+      const result = await new Promise((resolve, reject) => {
+        const child = spawn(kind === 'node' ? process.execPath : 'bash', kind === 'node' ? [join(directory, 'railway'), ...argv] : [launcher], {
+          env: { ...inheritedEnv, PATH: `${directory}${delimiter}${inheritedPath}`,
+            RAILWAY_FAKE_CALLS: callsLog, RAILWAY_FAKE_ARGS: argsLog,
+            RAILWAY_FAKE_PSQL_MODE: mode, RAILWAY_FAKE_RECEIPTS: JSON.stringify(receipts),
+            RAILWAY_FAKE_RECEIPTS_FILE: receiptsFile }, stdio: ['ignore', 'pipe', 'pipe'],
+        });
+        let stdout = '', stderr = '';
+        child.stdout.setEncoding('utf8').on('data', (chunk) => { stdout += chunk; });
+        child.stderr.setEncoding('utf8').on('data', (chunk) => { stderr += chunk; });
+        child.once('error', reject);
+        child.once('close', (status) => resolve({ status, stdout, stderr }));
+      });
+      results.push({ ...result, sql: readFileSync(callsLog, 'utf8'), args: readFileSync(argsLog, 'utf8') });
+    }
+    assert(JSON.stringify(results[0]) === JSON.stringify(results[1]), `fake-parity-${index}`, 'Bash and Node fake transport behavior differs', { ...results[1], stdout: JSON.stringify(results.map(({ status, stdout, stderr }) => ({ status, stdout, stderr }))) });
+  }
+  console.log(`railway fake differential parity OK — ${sqls.length} payloads, stdout/stderr/status/raw SQL/JSON argv, plus the full ${migrationFiles.length}-migration scenario suite below`);
+}
+
 let scenarioIndex = 0;
 async function run(args, envOverrides = {}) {
   scenarioIndex += 1;
   const callsLog = join(fixtureRoot, `psql-calls-${scenarioIndex}.log`);
   const argsLog = join(fixtureRoot, `railway-args-${scenarioIndex}.log`);
+  const receiptsFile = join(fixtureRoot, `receipts-${scenarioIndex}.tsv`);
+  writeFileSync(receiptsFile, Object.entries(JSON.parse(envOverrides.RAILWAY_FAKE_RECEIPTS ?? '{}')).map(([file, checksum]) => `${file}\t${checksum}\n`).join(''));
   // Windows may expose both Path and PATH. Keep one canonical key so the
   // child cannot resolve WSL's bash instead of the intended Git Bash/fakes.
   const inheritedPath = Object.entries(process.env).find(([key]) => key.toUpperCase() === 'PATH')?.[1] ?? '';
@@ -155,6 +214,7 @@ async function run(args, envOverrides = {}) {
         RAILWAY_SSH_RETRY_SECONDS: '0',
         RAILWAY_FAKE_CALLS: callsLog,
         RAILWAY_FAKE_ARGS: argsLog,
+        RAILWAY_FAKE_RECEIPTS_FILE: receiptsFile,
         ...envOverrides,
       },
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -181,6 +241,15 @@ function assert(condition, scenario, message, result) {
 const scenarios = [];
 
 try {
+  await new Promise((resolve, reject) => {
+    const child = spawn('bash', [join(scriptsDir, 'fixtures', 'runner-output-parity.sh'), runner, fixtureRoot], { stdio: ['ignore', 'pipe', 'pipe'] });
+    let output = '';
+    child.stdout.setEncoding('utf8').on('data', (chunk) => { output += chunk; });
+    child.stderr.setEncoding('utf8').on('data', (chunk) => { output += chunk; });
+    child.once('error', reject);
+    child.once('close', (status) => { if (status === 0) { console.log(output.trim()); resolve(); } else reject(new Error(`runner builtin parity failed (${status}): ${output}`)); });
+  });
+  await verifyFakeParity();
   // 0. Static DDL cross-check. The fake psql answers signature probes from an
   //    env knob without ever executing the SQL — exactly the blind spot that
   //    let a probe naming a table NO migration creates ship green

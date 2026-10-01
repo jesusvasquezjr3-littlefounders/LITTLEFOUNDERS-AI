@@ -1,3 +1,4 @@
+import { selectOption, optionLabels } from '../rebuild/test/selectOption';
 import { describe, expect, it, beforeEach } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -160,14 +161,16 @@ describe('Marketing site', () => {
     expect(screen.queryByText('Courses are coming soon!')).not.toBeInTheDocument();
   });
 
-  it('theme choice offers auto/light/dark and switches to dark, on the page and on the rebuilt shell', () => {
+  it('the icon-only theme choice switches both the page and the rebuilt shell', () => {
     renderApp();
     expect(document.documentElement.classList.contains('dark')).toBe(false);
-    fireEvent.click(screen.getByRole('radio', { name: 'Dark' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Dark' }));
     expect(document.documentElement.classList.contains('dark')).toBe(true);
     expect(document.querySelector('[data-shell="site"]')?.closest('[data-theme]')).toHaveAttribute('data-theme', 'dark');
-    expect(screen.getByRole('radio', { name: 'Match system' })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: 'Light' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Light' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Light' }));
+    expect(document.documentElement.classList.contains('dark')).toBe(false);
+    expect(document.querySelector('[data-shell="site"]')?.closest('[data-theme]')).toHaveAttribute('data-theme', 'light');
   });
 
   /*
@@ -252,8 +255,8 @@ describe('Marketing site', () => {
   it('the language choice names each language in itself and switches locale', async () => {
     renderApp();
     const language = screen.getByRole('combobox', { name: 'Language' });
-    expect(within(language).getAllByRole('option').map((option) => option.textContent)).toEqual(['English', 'Español', 'Português']);
-    fireEvent.change(language, { target: { value: 'es-MX' } });
+    expect(optionLabels(language)).toEqual(['English', 'Español', 'Português']);
+    selectOption(language, 'Español');
 
     // Again the bundle rather than a literal: what this test is for is that the
     // switch actually re-renders in the chosen locale, not what the Spanish

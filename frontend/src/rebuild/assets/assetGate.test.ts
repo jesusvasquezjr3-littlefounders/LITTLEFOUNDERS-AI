@@ -1,9 +1,9 @@
 import { spawn } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import sharp from 'sharp';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 /*
  * Mutation tests for the asset gate (scripts/check-rebuild-assets.mjs,
@@ -14,11 +14,23 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 const frontend = resolve(__dirname, '../../..');
 const gate = join(frontend, 'scripts/check-rebuild-assets.mjs');
 let base: string;
+const activeTrees = new Set<string>();
+function removeTree(dir: string) {
+  const target = resolve(dir);
+  const scoped = relative(resolve(base), target);
+  if (!scoped || scoped === '..' || scoped.startsWith('..\\') || scoped.startsWith('../') || isAbsolute(scoped)) {
+    throw new Error('Refusing asset fixture cleanup outside generated base');
+  }
+  if (!activeTrees.has(target)) throw new Error('Refusing cleanup of an unregistered asset fixture');
+  rmSync(target, { recursive: true, force: true });
+  activeTrees.delete(target);
+}
 
 type Row = Record<string, unknown> & { id: string; class: string; names?: Record<string, string[]> };
 
 function tree() {
   const dir = mkdtempSync(join(base, 'case-'));
+  activeTrees.add(resolve(dir));
   cpSync(join(frontend, 'src/rebuild'), join(dir, 'src/rebuild'), { recursive: true });
   cpSync(join(frontend, 'public/rebuild'), join(dir, 'public/rebuild'), { recursive: true });
   // An asset used outside the app names its consumer script (the brand mark: scripts/seo/render-icons.mjs).
@@ -75,12 +87,27 @@ const asDraft = (row: Row): Row => (row.class === 'B' && row.reviewStatus === 'a
 const draftAll = (dir: string) => writeManifest(dir, readManifest(dir).map(asDraft));
 async function mutate(change: (dir: string) => void) {
   const dir = tree();
-  change(dir);
-  return run(dir);
+  try {
+    change(dir);
+    return await run(dir);
+  } finally {
+    // The child's close event resolved run(): no gate still reads this tree.
+    removeTree(dir);
+  }
 }
 
 beforeAll(() => { base = mkdtempSync(join(tmpdir(), 'lf-asset-gate-')); });
-afterAll(() => rmSync(base, { recursive: true, force: true }));
+// Reused trees survive every assertion in their test, then disappear before
+// the next test: the final hook never inherits dozens of copied asset trees.
+afterEach(() => { for (const dir of activeTrees) removeTree(dir); });
+afterAll(() => {
+  const target = resolve(base);
+  if (dirname(target) !== resolve(tmpdir()) || !target.startsWith(join(resolve(tmpdir()), 'lf-asset-gate-'))) {
+    throw new Error('Refusing cleanup outside generated asset temporary base');
+  }
+  if (activeTrees.size) throw new Error('Asset fixture cleanup is incomplete');
+  rmSync(target, { recursive: true, force: true });
+});
 
 describe('rebuild asset gate', { timeout: 90_000 }, () => {
   it('passes the real manifest and refuses every draft in a release build', async () => {
@@ -134,7 +161,8 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
   it('caps the glyph set at 24 families from one source, drawn to the live area', async () => {
     const extra = await mutate((dir) => {
       const rows = readManifest(dir);
-      const glyphs = Array.from({ length: 6 }, (_, i) => ({ id: `glyph.extra${'abcdef'[i]}`, class: 'A', type: 'glyph', source: 'littlefounders-in-house', slot: 'system.glyph', modes: 'both', altKey: 'decorative', reason: 'test', names: { [`extra${'abcdef'[i]}`]: ['M6 12h12'] } }));
+      const extraCount = 25 - rows.filter((row) => row.class === 'A').length;
+      const glyphs = Array.from({ length: extraCount }, (_, i) => ({ id: `glyph.extra${'abcdef'[i]}`, class: 'A', type: 'glyph', source: 'littlefounders-in-house', slot: 'system.glyph', modes: 'both', altKey: 'decorative', reason: 'test', names: { [`extra${'abcdef'[i]}`]: ['M6 12h12'] } }));
       writeManifest(dir, [...glyphs, ...rows]);
     });
     expect(extra.output).toContain('Glyph budget exceeded: 25 families');
@@ -331,22 +359,9 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     expect(fast.output).toContain('Lottie frame rate must be at most 60 fps');
     const untimed = await mutate((dir) => patch(dir, { motionTokens: ['--dur-slow'] }));
     expect(untimed.output).toContain(`A motion asset maps to the motion tokens (07 §5): ${id}`);
-    // GAP-FIX-R4 (OD-28): the asset plays on both result screens, v2 and the live v1 player; both references must go.
-    const player = 'src/lesson-engine/player/LessonPlayer.tsx';
-    const bothScreens = (dir: string) => {
-      mkdirSync(dirname(join(dir, player)), { recursive: true });
-      cpSync(join(frontend, player), join(dir, player));
-    };
-    // With either screen still naming it, the asset counts as played.
-    const onlyV1 = await mutate((dir) => {
-      bothScreens(dir);
-      const view = join(dir, 'src/rebuild/learning/LessonResultView.tsx');
-      writeFileSync(view, readFileSync(view, 'utf8').split(id).join('celebration.lesson-complete.other'));
-    });
-    expect(onlyV1.output).not.toContain(`Registered asset is referenced nowhere: ${id}`);
+    // The rebuilt result is the only lesson result screen after v1 retirement.
     const unplayed = await mutate((dir) => {
-      bothScreens(dir);
-      for (const file of ['src/rebuild/learning/LessonResultView.tsx', player]) {
+      for (const file of ['src/rebuild/learning/LessonResultView.tsx']) {
         const view = join(dir, file);
         writeFileSync(view, readFileSync(view, 'utf8').split(id).join('celebration.lesson-complete.other'));
       }
@@ -368,7 +383,7 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     expect(approvedWithoutReviewer.output).toContain(`approvedBy must be set exactly when approved: ${soundId}`);
     // The exemption is for a draft with a planned call site only: approved and unplayed, or a draft without one, fails.
     // The W2 learner lane already plays the cue (sfx.ts, lessonCue.ts): unwire both call sites for these two cases.
-    const callSites = ['src/lesson-engine/player/sfx.ts', 'src/rebuild/learning/lessonCue.ts'].map((file) => join(dir, file)).filter((file) => existsSync(file));
+    const callSites = ['src/rebuild/learning/lessonCue.ts'].map((file) => join(dir, file)).filter((file) => existsSync(file));
     const played = callSites.map((file) => readFileSync(file, 'utf8'));
     const unwire = () => callSites.forEach((file, i) => writeFileSync(file, played[i]!.split('/sounds/edu/not_yet.wav').join('')));
     const rewire = () => callSites.forEach((file, i) => writeFileSync(file, played[i]!));

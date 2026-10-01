@@ -5,6 +5,7 @@ import { LearningBridges, learningBridgesCopy } from './LearningBridges';
 import { LearningNarrative, learningNarrativeCopy } from './LearningNarrative';
 import { actOnKidBridge, dismissKidBridge, fetchKidBridges, fetchKidNarrative, narrativeEntrySchema, type BridgeResult, type FamilyLearningTransport } from './familyLearning';
 import { bridgesFixture, narrativeChoicesFixture, narrativeFixture, narrativePreviewStates } from './familyLearningFixtures';
+import { selectOption } from '../test/selectOption';
 
 const locales: Locale[] = ['en-US', 'es-MX', 'pt-BR'];
 const FORBIDDEN = /\bbot\b|assistant|asistente|assistente|\blives?\b|\bvidas?\b|\bmoney\b|\bdinero\b|\bdinheiro\b|\bjob\b|streak freeze|\baccept/i;
@@ -182,7 +183,7 @@ describe('the guardian bridge prompts', () => {
     expect(within(goal).getByLabelText('Goal name').getAttribute('aria-invalid')).toBe('true');
     fireEvent.change(within(goal).getByLabelText('Goal name'), { target: { value: '  New bike ' } });
     fireEvent.change(within(goal).getByLabelText('Coins to save'), { target: { value: '12a0' } });
-    fireEvent.change(within(goal).getByLabelText('Picture'), { target: { value: 'bike' } });
+    selectOption(within(goal).getByLabelText('Picture'), 'Bike');
     fireEvent.click(within(goal).getByRole('button', { name: 'Create goal' }));
     await screen.findByText('Goal created. It is in their wallet.');
     expect(onAct).toHaveBeenCalledWith('p1', { action: 'savings_goal', title: 'New bike', target: 120, icon: 'bike' });

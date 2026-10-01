@@ -1350,7 +1350,7 @@
         "view": "View",
         "period": "Period",
         "show": "Show",
-        "staffExcluded": "Staff left out: {n} events ({share}).",
+        "staffExcluded": "Excluded staff events: {n} ({share}).",
         "dau": "Daily users",
         "wau": "Weekly users",
         "mau": "Monthly users",
@@ -1416,8 +1416,8 @@
         "namesNeedGrant": "Names show only with the user management grant.",
         "weekN": "Week {n}",
         "week": "Week",
-        "cohortChart": "Newest cohorts",
-        "cohortSummary": "One line per cohort.",
+        "cohortChart": "Retention",
+        "cohortSummary": "Lines represent cohorts.",
         "cohortOf": "Cohort of {date}",
         "cohort": "Cohort",
         "cohortSize": "People",
@@ -1978,13 +1978,13 @@
     },
     "identity": {
       "heading": {
-        "title": "Identity and age safeguards",
+        "title": "Identity & age safeguards",
         "adversarial": "Proven by tests"
       },
       "body": {
         "intro": "Release gates need 100%.",
         "gatesMet": "{met}/{total} release gates met.",
-        "gatesMissed": "{n} release gates are below target.",
+        "gatesMissed": "{n} gates below target.",
         "ratio": "{num} of {den}",
         "metric": "Metric",
         "kind": "Kind",

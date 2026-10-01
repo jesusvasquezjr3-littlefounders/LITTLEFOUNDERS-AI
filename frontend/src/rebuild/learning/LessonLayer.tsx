@@ -24,7 +24,8 @@ const skipLabel: Record<Locale, string> = { 'en-US': enCore.appShell.skip, 'es-M
  * Each screen renders exactly one `<main>` of its own (the boards own their
  * full-bleed hue); the layer finds it and points the skip link at it.
  */
-export function LessonLayer({ theme, locale, ageBand, pageTitle, screen, children }: {
+export function LessonLayer({ header, theme, locale, ageBand, pageTitle, screen, children }: {
+  header?: ReactNode;
   theme: 'light' | 'dark'; locale: Locale; ageBand?: AgeBand;
   /** The document title for this screen; "{pageTitle} · LittleFounders". */
   pageTitle: string;
@@ -58,6 +59,7 @@ export function LessonLayer({ theme, locale, ageBand, pageTitle, screen, childre
   return <RebuildRoot theme={theme} locale={locale} ageBand={ageBand}>
     <div ref={layer} className="lf-lesson-layer" data-shell="lesson" data-lesson-screen={screen} lang={locale}>
       <SkipLink label={skipLabel[locale]} target={mainId} />
+      {header}
       {/* GAP-FIX-R5: one stage-request store above the lesson and the guided-review offer beside it (08 §3, §11). */}
       <LessonStageRequestHost>{children}</LessonStageRequestHost>
     </div>

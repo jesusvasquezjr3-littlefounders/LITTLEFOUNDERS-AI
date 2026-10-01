@@ -18,7 +18,7 @@ import manifest from '../assets/manifest.json';
  */
 export const GLYPH_NAMES = [
   'close', 'back', 'menu', 'chevron', 'check', 'cross', 'plus', 'minus', 'show', 'hide',
-  'search', 'settings', 'info', 'warning', 'external', 'microphone', 'send', 'play', 'pause', 'refresh',
+  'search', 'settings', 'info', 'warning', 'external', 'microphone', 'send', 'play', 'pause', 'refresh', 'sun', 'moon',
 ] as const;
 
 export type GlyphName = typeof GLYPH_NAMES[number];

@@ -1,4 +1,12 @@
 {
+  "dateParts": {
+    "day": "Dia",
+    "month": "Mês",
+    "year": "Ano",
+    "invalid": "Digite uma data válida.",
+    "min": "Escolha {date} ou depois.",
+    "max": "Escolha {date} ou antes."
+  },
   "preview": "Prévia do design",
   "heading": "Pequenas escolhas, grandes futuros",
   "intro": "Aprenda sobre dinheiro, uma escolha por vez.",

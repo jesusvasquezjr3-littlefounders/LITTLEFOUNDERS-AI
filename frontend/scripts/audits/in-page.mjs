@@ -404,7 +404,7 @@ export function installAudit() {
       if (pressable && !act) continue;
       if (!act && !isBlock(el)) continue;
       if (!act && hasBlockChild(el)) continue;
-      if (el.closest('td,th,table') || el.querySelector('select')) continue;
+      if (el.closest('td,th,table') || el.querySelector('[role="combobox"]')) continue;
       const text = (el.innerText || '').replace(/\s+/g, ' ').trim(); if (!text || !words(text)) continue;
       if (act) el.querySelectorAll('*').forEach((c) => seen.add(c));
       const fs = parseFloat(getComputedStyle(el).fontSize);

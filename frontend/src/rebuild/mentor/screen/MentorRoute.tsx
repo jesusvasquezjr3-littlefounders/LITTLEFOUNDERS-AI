@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import type { Locale } from '../../design/copyBudget';
 import { MENTOR_NAMES } from '../../design/controls';
 import en from '../../../i18n/en-US/rebuild-mentor.json';
@@ -18,7 +18,8 @@ export function mentorCopy(locale: Locale): MentorCopy {
  * signed-in account, its language and mode, whether a guardian link exists,
  * the guided-review link, navigation) so nothing here reaches the legacy app.
  */
-export function MentorRoute({ getToken, userId, locale, theme, guardianLink, reviewSkill, onLeave, onPath, initialSheet = null }: {
+export function MentorRoute({ header, getToken, userId, locale, theme, guardianLink, reviewSkill, onLeave, onPath, initialSheet = null }: {
+  header?: ReactNode;
   getToken: () => Promise<string | null>;
   userId: string | null;
   locale: Locale;
@@ -35,6 +36,6 @@ export function MentorRoute({ getToken, userId, locale, theme, guardianLink, rev
   // The title is the character's name once Core has said which one (08 §2); "Mentor" before that.
   const title = session.known ? MENTOR_NAMES[session.character] : copy.mentorScreen.documentTitle;
   useEffect(() => { document.title = `${title} · LittleFounders`; }, [title]);
-  return <MentorScreen session={session} copy={copy} locale={locale} theme={theme} guardianLink={guardianLink} onLeave={onLeave} onPath={onPath} initialSheet={initialSheet} />;
+  return <MentorScreen header={header} session={session} copy={copy} locale={locale} theme={theme} guardianLink={guardianLink} onLeave={onLeave} onPath={onPath} initialSheet={initialSheet} />;
 }
 

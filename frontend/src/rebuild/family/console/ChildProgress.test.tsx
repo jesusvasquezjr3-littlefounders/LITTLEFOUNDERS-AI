@@ -4,6 +4,7 @@ import { rebuildNamespaceCopy } from '@/i18n/rebuild';
 import { ChildProgress } from './ChildProgress';
 import { FAMILY, fakeTransport, KID_A, ok, refuse, territoryWire, type Answer } from './consoleFixtures';
 import type { AchievementShareOutcome } from '../achievementImage';
+import { selectOption } from '../../test/selectOption';
 
 /*
  * W2F.1 F2: a child's progress through the Tutor's eyes. The child's own
@@ -106,7 +107,7 @@ describe('ChildProgress (F2)', () => {
       'GET /learn/courses': ok({ courses: [...COURSES.courses, { slug: 'enterprise', title: { 'en-US': 'Enterprise' } }] }),
       [`GET /family/kids/${KID_A}/courses/enterprise/territory`]: ok(territoryWire()),
     });
-    fireEvent.change(await screen.findByLabelText(copy.course), { target: { value: 'enterprise' } });
+    selectOption(await screen.findByLabelText(copy.course), 'Enterprise');
     await waitFor(() => expect(transport.calls.some((call) => call.path.endsWith('/courses/enterprise/territory'))).toBe(true));
   });
 });

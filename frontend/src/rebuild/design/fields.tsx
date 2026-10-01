@@ -1,4 +1,10 @@
-import { useId, useState, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
+import { useEffect, useId, useRef, useState, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
+import { createPortal } from 'react-dom';
+import { useLayer, useLayerHost, useOutsidePress, useRebuildEnvironment } from './layers';
+import coreEn from '@/i18n/en-US/rebuild-core.json';
+import coreEs from '@/i18n/es-MX/rebuild-core.json';
+import corePt from '@/i18n/pt-BR/rebuild-core.json';
+import { useAnchoredPosition } from './overlays';
 import { Glyph } from './glyphs';
 import { withPressFeedback } from './motion';
 
@@ -41,6 +47,7 @@ export function TextField({ label, help, error, errorLive = false, type = 'text'
   const id = useId();
   const [revealed, setRevealed] = useState(false);
   const helpId = `${id}-help`, errorId = `${id}-error`;
+  if (type === 'date') return <DatePartsField label={label} help={help} error={error} errorLive={errorLive} {...props} />;
   return <div className="lf-input-field">
     <label htmlFor={id} className="lf-input-label" data-copy-role="body">{label}</label>
     <FieldMessages helpId={helpId} help={help} errorId={errorId} />
@@ -54,6 +61,81 @@ export function TextField({ label, help, error, errorLive = false, type = 'text'
     </div>
     <FieldMessages helpId={helpId} errorId={errorId} error={error} errorLive={errorLive} />
   </div>;
+}
+
+type DateParts = { day: string; month: string; year: string };
+function splitDate(value: string): DateParts {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  return match ? { year: match[1]!, month: match[2]!, day: match[3]! } : { day: '', month: '', year: '' };
+}
+function dateIso(parts: DateParts): string {
+  if (!/^\d{4}$/.test(parts.year) || !/^\d{1,2}$/.test(parts.month) || !/^\d{1,2}$/.test(parts.day)) return '';
+  const year = Number(parts.year), month = Number(parts.month), day = Number(parts.day);
+  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (year < 1 || month < 1 || month > 12 || day < 1 || day > days[month - 1]!) return '';
+  return `${parts.year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
+/** Explicit date parts keep calendar validity and ISO wire values without a browser-owned popup. */
+function DatePartsField({ label, help, error, errorLive, value, defaultValue, onChange, name, disabled, required, min, max,
+  ...props }: InputBase) {
+  const id = useId(), { locale } = useRebuildEnvironment();
+  const copy = ({ 'en-US': coreEn, 'es-MX': coreEs, 'pt-BR': corePt })[locale].dateParts;
+  const initial = String(value ?? defaultValue ?? '');
+  const [parts, setParts] = useState(() => splitDate(initial));
+  const [touched, setTouched] = useState(false);
+  const emitted = useRef(initial);
+  const inputs = useRef<Partial<Record<keyof DateParts, HTMLInputElement>>>({});
+  const rawIso = dateIso(parts);
+  const lower = typeof min === 'string' ? min : undefined, upper = typeof max === 'string' ? max : undefined;
+  const boundError = rawIso && lower && rawIso < lower ? copy.min.replace('{date}', lower)
+    : rawIso && upper && rawIso > upper ? copy.max.replace('{date}', upper) : undefined;
+  const iso = boundError ? '' : rawIso;
+  const partial = Object.values(parts).some(Boolean);
+  const invalid = boundError || (partial && !rawIso ? copy.invalid : undefined);
+  const visibleError = error || (touched ? invalid : undefined);
+  const helpId = `${id}-help`, errorId = `${id}-error`;
+  useEffect(() => {
+    if (value !== undefined && String(value) !== emitted.current) {
+      emitted.current = String(value); setParts(splitDate(String(value))); setTouched(false);
+    }
+  }, [value]);
+  useEffect(() => {
+    for (const input of Object.values(inputs.current)) input?.setCustomValidity(disabled ? '' : invalid || '');
+  }, [invalid, disabled]);
+  // A changed bound also invalidates the wire value; button-driven flows must never retain a stale date.
+  useEffect(() => {
+    if (boundError && emitted.current) {
+      emitted.current = '';
+      onChange?.({ target: { value: '' } } as unknown as React.ChangeEvent<HTMLInputElement>);
+    }
+  }, [boundError, onChange]);
+  return <fieldset className="lf-input-field lf-date-field" data-date-control>
+    <legend className="lf-input-label" data-copy-role="body">{label}</legend>
+    <FieldMessages helpId={helpId} help={help} errorId={errorId} />
+    {name ? <input type="hidden" name={name} value={iso} disabled={disabled} /> : null}
+    <div className="lf-date-parts">
+      {(['day', 'month', 'year'] as const).map(part => <div className="lf-input-field" key={part}>
+        <label htmlFor={`${id}-${part}`} className="lf-input-label" data-copy-role="body">{copy[part]}</label>
+        <input {...props} ref={element => { if (element) inputs.current[part] = element; }} id={`${id}-${part}`} type="text"
+          className="lf-input" data-date-part={part} inputMode="numeric" pattern={part === 'year' ? '[0-9]{4}' : '[0-9]{1,2}'}
+          maxLength={part === 'year' ? 4 : 2} autoComplete="off" aria-label={`${label}: ${copy[part]}`}
+          value={parts[part]} disabled={disabled} required={required || partial} aria-required={required || undefined}
+          aria-invalid={visibleError ? true : undefined} aria-describedby={describedBy(help && helpId, visibleError && errorId, props['aria-describedby'])}
+          onBlur={event => { setTouched(true); props.onBlur?.(event); }}
+          onChange={event => {
+            const next = { ...parts, [part]: event.target.value };
+            setParts(next);
+            const candidate = dateIso(next);
+            const nextIso = candidate && (!lower || candidate >= lower) && (!upper || candidate <= upper) ? candidate : '';
+            emitted.current = nextIso;
+            onChange?.({ ...event, target: { ...event.target, value: nextIso } } as unknown as React.ChangeEvent<HTMLInputElement>);
+          }} />
+      </div>)}
+    </div>
+    <FieldMessages helpId={helpId} errorId={errorId} error={visibleError} errorLive={errorLive} />
+  </fieldset>;
 }
 
 /**
@@ -77,21 +159,70 @@ export function TextAreaField({ label, help, error, rows = 3, ...props }: Omit<T
 
 export interface SelectOption { value: string; label: string; role?: 'option' | 'data' }
 
-export function SelectField({ label, help, error, options, ...props }: Omit<SelectHTMLAttributes<HTMLSelectElement>, 'id' | 'className' | 'children'> & {
-  label: string; help?: string; error?: string; options: readonly SelectOption[];
+export function SelectField({ label, help, error, options, value, defaultValue, onChange, disabled, required, name, labelHidden = false, selectedLabel, ...props }: Omit<SelectHTMLAttributes<HTMLSelectElement>, 'id' | 'className' | 'children' | 'onChange'> & {
+  label: string; help?: string; error?: string; options: readonly SelectOption[]; labelHidden?: boolean; selectedLabel?: string;
+  onChange?: (event: { target: { value: string } }) => void;
 }) {
   const id = useId();
-  const helpId = `${id}-help`, errorId = `${id}-error`;
-  return <div className="lf-input-field">
-    <label htmlFor={id} className="lf-input-label" data-copy-role="body">{label}</label>
+  const helpId = `${id}-help`, errorId = `${id}-error`, listId = `${id}-list`;
+  const [internal, setInternal] = useState(String(defaultValue ?? options[0]?.value ?? ''));
+  const selected = String(value ?? internal);
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
+  const panel = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const host = useLayerHost(open);
+  const ready = open && host !== null && host.isConnected;
+  useLayer(ready, host, false, () => setOpen(false));
+  useOutsidePress(ready, [panel], () => setOpen(false), () => [trigger.current]);
+  const { style, placed } = useAnchoredPosition(ready, id, panel, host);
+  useEffect(() => { if (ready && placed) document.getElementById(`${listId}-${active}`)?.scrollIntoView?.({ block: 'nearest' }); }, [ready, placed, active, listId]);
+  const show = () => { setActive(Math.max(0, options.findIndex((option) => option.value === selected))); setOpen(true); };
+  const choose = (index: number) => {
+    const option = options[index];
+    if (!option) return;
+    setInternal(option.value); onChange?.({ target: { value: option.value } }); setOpen(false); trigger.current?.focus();
+  };
+  return <div className="lf-input-field" data-compact={labelHidden || undefined}>
+    <label htmlFor={id} className={labelHidden ? 'lf-visually-hidden' : 'lf-input-label'} data-copy-role="body">{label}</label>
     <FieldMessages helpId={helpId} help={help} errorId={errorId} />
+    {name ? <input type="hidden" name={name} value={selected} disabled={disabled} /> : null}
     <div className="lf-input-box">
-      <select {...props} id={id} className="lf-input lf-select" aria-invalid={error ? true : undefined}
-        aria-describedby={describedBy(help && helpId, error && errorId, props['aria-describedby'])}>
-        {options.map((option) => <option key={option.value} value={option.value} data-copy-role={option.role ?? 'option'}>{option.label}</option>)}
-      </select>
+      <button ref={trigger} type="button" id={id} className="lf-input lf-select" role="combobox" disabled={disabled}
+        data-copy-role={options.find((option) => option.value === selected)?.role ?? 'option'}
+        aria-label={props['aria-label']} aria-required={required || undefined} aria-expanded={open} aria-haspopup="listbox" aria-controls={listId}
+        aria-activedescendant={open ? `${listId}-${active}` : undefined} aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy(help && helpId, error && errorId, props['aria-describedby'])}
+        onBlur={() => setOpen(false)} onClick={() => open ? setOpen(false) : show()} onKeyDown={(event) => {
+          if (event.key === 'Tab') { setOpen(false); return; }
+          if (event.key === 'Escape') { event.preventDefault(); setOpen(false); return; }
+          if (options.length === 0) return;
+          if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+            event.preventDefault();
+            if (!open) {
+              show();
+              if (event.key === 'Home') setActive(0);
+              if (event.key === 'End') setActive(options.length - 1);
+              return;
+            }
+            setActive((current) => event.key === 'Home' ? 0 : event.key === 'End' ? options.length - 1 : (current + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length);
+          } else if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault(); if (open) choose(active); else show();
+          } else if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+            event.preventDefault();
+            const start = open ? active : Math.max(0, options.findIndex((option) => option.value === selected));
+            const match = options.map((_, offset) => (start + offset + 1) % options.length).find((index) => options[index]?.label.toLocaleLowerCase().startsWith(event.key.toLocaleLowerCase()));
+            if (match !== undefined) { setActive(match); setOpen(true); }
+          }
+        }}><span data-copy-role={options.find((option) => option.value === selected)?.role ?? 'option'}>{selectedLabel ?? options.find((option) => option.value === selected)?.label ?? selected}</span></button>
       <Glyph name="chevron" className="lf-system-glyph lf-select-chevron" />
     </div>
+    {ready && host ? createPortal(<div ref={panel} id={listId} className="lf-select-list" role="listbox" aria-label={label} style={style}
+      onPointerDown={(event) => event.preventDefault()}>
+      {options.map((option, index) => <div key={option.value} id={`${listId}-${index}`} role="option" aria-selected={selected === option.value}
+        className="lf-select-option" data-active={index === active || undefined} data-copy-role={option.role ?? 'option'}
+        onPointerMove={() => setActive(index)} onClick={() => choose(index)}>{option.label}{selected === option.value ? <Glyph name="check" /> : null}</div>)}
+    </div>, host) : null}
     <FieldMessages helpId={helpId} errorId={errorId} error={error} />
   </div>;
 }

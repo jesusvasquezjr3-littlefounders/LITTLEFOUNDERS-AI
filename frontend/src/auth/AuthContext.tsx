@@ -13,7 +13,7 @@ import {
 import { ACCOUNT_SUSPENDED_EVENT, api, type ApiError } from '@/lib/api';
 import { getAnonId } from '@/lib/visitor';
 import { clearCoursesCache } from '@/routes/app/learn/coursesCache';
-import { clearLessonCheckpoints } from '@/lesson-engine/player/checkpoint';
+import { clearLessonCheckpoints } from '@/lib/lessonRunCheckpoint';
 import { forgetInvite } from './pendingInvite';
 
 /*

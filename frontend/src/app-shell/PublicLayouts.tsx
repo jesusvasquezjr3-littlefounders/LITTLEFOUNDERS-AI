@@ -1,12 +1,10 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
-import { useTheme, type ThemeChoice } from '@/theme/useTheme';
 import { openCookiePreferences } from '@/components/CookieConsentBanner';
-import { AuthShell, Button, SegmentedControl, SelectField, SiteShell, type ShellNavItem } from '@/rebuild/design/controls';
-import type { Locale } from '@/rebuild/design/copyBudget';
+import { AuthShell, Button, SiteShell, type ShellNavItem } from '@/rebuild/design/controls';
 import { APP_HOME } from './navigation';
 import { ShellRoot, useShellCopy, useShellLocale, useShellNavigate } from './ShellRoot';
+import { ShellPreferences } from './ShellPreferences';
 import { sitePageTitle } from './siteTitles';
 
 /*
@@ -14,32 +12,13 @@ import { sitePageTitle } from './siteTitles';
  * the legacy MarketingLayout and AuthLayout. The site header carries the
  * three public pages, "Log in" and one accent call to action (03 §3.4: it
  * docks at the bottom on phones after the first screen of the landing and
- * family pages). Both footers carry what the legacy headers used to: the
- * language and the theme, and the site footer the legal links, the cookie
- * settings and the contact address.
+ * family pages). Shared header controls carry language and theme; the footer carries legal
+ * links, cookie settings, contact and copyright.
  */
 
 const APP_NAME = 'LittleFounders';
 const CONTACT_EMAIL = 'informame@littlefounders.ai';
-const LOCALES: readonly Locale[] = ['en-US', 'es-MX', 'pt-BR'];
-/** Each language named in itself: a reader who cannot read the current language still finds their own. */
-const LANGUAGE_NAMES: Record<Locale, string> = { 'en-US': 'English', 'es-MX': 'Español', 'pt-BR': 'Português' };
-/** 03 §3.4: the docked call to action belongs to the landing and family pages only. */
 const DOCKED_CTA = new Set(['/', '/families']);
-
-/** Language and mode: a visitor's two settings, on every public and sign-in page. */
-function Preferences() {
-  const copy = useShellCopy().siteShell;
-  const locale = useShellLocale();
-  const { i18n } = useTranslation();
-  const { choice, setChoice } = useTheme();
-  return <div data-shell-preferences>
-    <SelectField label={copy.language} value={locale} onChange={(event) => void i18n.changeLanguage(event.target.value)}
-      options={LOCALES.map((value) => ({ value, label: LANGUAGE_NAMES[value], role: 'data' as const }))} />
-    <SegmentedControl<ThemeChoice> legend={copy.theme} name="theme-choice" value={choice} onValueChange={setChoice}
-      options={[{ value: 'auto', label: copy.themeAuto }, { value: 'light', label: copy.themeLight }, { value: 'dark', label: copy.themeDark }]} />
-  </div>;
-}
 
 function SiteFooter() {
   const copy = useShellCopy().siteShell;
@@ -56,8 +35,7 @@ function SiteFooter() {
       <Button size="sm" onClick={openCookiePreferences}>{copy.cookies}</Button>
       <a href={`mailto:${CONTACT_EMAIL}`} data-copy-role="data" className="ugc">{CONTACT_EMAIL}</a>
     </nav>
-    <Preferences />
-    <p data-copy-role="body">© {new Date().getFullYear()} {APP_NAME}. {copy.rights}</p>
+    <p data-copy-role="legal">© {new Date().getFullYear()} {APP_NAME}. {copy.rights}</p>
   </>;
 }
 
@@ -77,7 +55,7 @@ export function SiteLayout() {
   const primary = session ? { label: copy.openApp, href: APP_HOME } : { label: copy.signup, href: '/signup' };
   return <ShellRoot>
     <SiteShell appName={APP_NAME} pageTitle={sitePageTitle(pathname, locale)} routeKey={pathname} locale={locale} onNavigate={navigate}
-      homeHref="/" links={links} current={links.find((link) => link.href === pathname)?.id ?? ''}
+      utilities={<ShellPreferences />} homeHref="/" links={links} current={links.find((link) => link.href === pathname)?.id ?? ''}
       secondaryAction={session ? undefined : { label: copy.login, href: '/login' }} primaryAction={primary}
       stickyAction={DOCKED_CTA.has(pathname) ? primary : undefined}
       labels={{ skip: shell.skip, navigation: shell.navigation, menu: shell.menu, close: shell.close }} footer={<SiteFooter />}>
@@ -102,8 +80,8 @@ export function AuthLayout() {
   // GAP-FIX-R5: /join/:token, a Tutor invite's landing.
   const title = copy.pageTitle[pathname.startsWith('/join/') ? 'joinInvite' : AUTH_TITLES[pathname] ?? 'login'];
   return <ShellRoot>
-    <AuthShell appName={APP_NAME} pageTitle={title} routeKey={pathname} locale={locale} onNavigate={navigate} homeHref="/"
-      back={session ? { label: copy.openApp, href: APP_HOME } : { label: copy.home, href: '/' }} labels={{ skip: shell.skip }} footer={<Preferences />}>
+    <AuthShell appName={APP_NAME} pageTitle={title} routeKey={pathname} locale={locale} onNavigate={navigate} homeHref="/" utilities={<ShellPreferences />}
+      back={session ? { label: copy.openApp, href: APP_HOME } : { label: copy.home, href: '/' }} labels={{ skip: shell.skip }} footer={<SiteFooter />}>
       {/* The sign-in screens are rebuilt (W2 Lane 1, W2S.2): no legacy body wrapper. */}
       <Outlet />
     </AuthShell>

@@ -1,3 +1,4 @@
+import { ConnectedStandaloneHeader } from '@/app-shell/StandaloneHeader';
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
@@ -74,7 +75,7 @@ export function OnboardingPage() {
   }
 
   return <ShellRoot>
-    <OnboardingFlow locale={locale} skipLabel={skip} completing={completing} failed={failed} askDiscovery={discoverySurvey === true}
+    <OnboardingFlow header={<ConnectedStandaloneHeader />} locale={locale} skipLabel={skip} completing={completing} failed={failed} askDiscovery={discoverySurvey === true}
       mentor={{ chosen, saving, failed: mentorFailed, onChoose: (character) => void choose(character) }}
       onComplete={(values) => void complete(values)} />
   </ShellRoot>;

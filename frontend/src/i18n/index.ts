@@ -7,7 +7,6 @@ import LanguageDetector from 'i18next-browser-languagedetector';
  * <locale>/common.json    — spread at the root: the not-found fallback, the
  *                           theme labels, the legacy 2D characters' greeting
  *                           and the family.badge share copy
- * <locale>/lesson.json   — the v1 lesson player (the OD-24 legacy island)
  * <locale>/tutor.json    — the Mentor stage's scene and microphone strings
  * The legacy namespaces no screen reads any more (errors, auth, dashboard,
  * profile, learn, admin, onboarding, placement) left with the legacy UI in
@@ -21,13 +20,10 @@ import LanguageDetector from 'i18next-browser-languagedetector';
  * missing from its namespace is then a type error, never a raw key on screen.
  */
 import enCommon from './en-US/common.json';
-import enLesson from './en-US/lesson.json';
 import enTutor from './en-US/tutor.json';
 import esCommon from './es-MX/common.json';
-import esLesson from './es-MX/lesson.json';
 import esTutor from './es-MX/tutor.json';
 import ptCommon from './pt-BR/common.json';
-import ptLesson from './pt-BR/lesson.json';
 import ptTutor from './pt-BR/tutor.json';
 
 export const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
@@ -39,9 +35,9 @@ export function isLocale(value: string): value is Locale {
 }
 
 const resources = {
-  'en-US': { translation: { ...enCommon, lesson: enLesson, tutor: enTutor } },
-  'es-MX': { translation: { ...esCommon, lesson: esLesson, tutor: esTutor } },
-  'pt-BR': { translation: { ...ptCommon, lesson: ptLesson, tutor: ptTutor } },
+  'en-US': { translation: { ...enCommon, tutor: enTutor } },
+  'es-MX': { translation: { ...esCommon, tutor: esTutor } },
+  'pt-BR': { translation: { ...ptCommon, tutor: ptTutor } },
 };
 
 /**

@@ -58,8 +58,6 @@
     "scenes:fetch": "node scripts/fetch-scenes.mjs"
   },
   "dependencies": {
-    "@dicebear/collection": "^9.4.2",
-    "@dicebear/core": "^9.4.3",
     "@lottiefiles/dotlottie-react": "^0.19.9",
     "@lottiefiles/dotlottie-web": "^0.77.1",
     "@react-three/fiber": "^8.18.0",

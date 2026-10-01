@@ -83,6 +83,7 @@ export function mergeAuditReports(audit, reports, expectedStates = [...STATES.ma
     findings: reports.reduce((sum, report) => sum + (report.findings ?? 0), 0),
     groups: [...groups.values()].sort((a, b) => b.count - a.count),
     jsErrors: reports.flatMap((report) => report.jsErrors ?? []),
+    mediaErrors: reports.flatMap((report) => report.mediaErrors ?? []),
     authenticated: reports.flatMap((report) => report.authenticated ?? []),
     unansweredCoreRequests: [...new Set(reports.flatMap((report) => report.unansweredCoreRequests ?? []))].sort(),
     problems,
@@ -126,7 +127,8 @@ function main() {
       console.log(`${String(group.count).padStart(5)}x  ${group.key}\n         e.g. ${e.state} ${e.locale} ${e.theme} ${e.width}px`);
     }
     console.log(`JS errors: ${merged.jsErrors.length ? JSON.stringify(merged.jsErrors.slice(0, 5)) : 'none'}`);
-    if ((merged.groups.length || merged.jsErrors.length) && exitCode === 0) exitCode = 1;
+    console.log(`Media errors: ${merged.mediaErrors.length ? JSON.stringify(merged.mediaErrors.slice(0, 5)) : 'none'}`);
+    if ((merged.groups.length || merged.jsErrors.length || merged.mediaErrors.length) && exitCode === 0) exitCode = 1;
   }
   console.log(`\nMerged reports: ${out}`);
   process.exit(exitCode);

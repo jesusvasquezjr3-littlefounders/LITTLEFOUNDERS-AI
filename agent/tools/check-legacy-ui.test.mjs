@@ -68,9 +68,9 @@ test('RED: a legacy i18n namespace comes back', () => {
   assert.ok(failures.some((f) => f.includes('loads the namespace "auth"')), failures.join('\n'));
 });
 
-test('GREEN: a new test file beside a legacy adapter, and imports of the surviving island', () => {
+test('GREEN: new route tests use rebuilt controls and the current Mentor API', () => {
   assert.deepEqual(fixture(({ write }) => {
-    write('frontend/src/routes/app/learn/__tests__/Extra.test.tsx', "import { Button } from '@/components/ui';\n");
+    write('frontend/src/routes/app/learn/__tests__/Extra.test.tsx', "import { Button } from '@/rebuild/design/controls';\n");
     write('frontend/src/rebuild/x/E.tsx', "import { api } from '@/rebuild/mentor/session/tutorApi';\n");
   }), []);
 });
@@ -81,6 +81,6 @@ test('the resolver maps alias, relative and preview-entry specifiers', () => {
   assert.equal(resolveSpecifier('frontend/scripts/a.mjs', '/src/tutor/x.ts'), 'frontend/src/tutor/x.ts');
   assert.equal(resolveSpecifier('frontend/src/a.ts', 'react'), null);
   assert.ok(isRemoved('frontend/src/components/ui/Table', freeze.removed));
-  assert.ok(!isRemoved('frontend/src/components/ui/Button', freeze.removed));
+  assert.ok(isRemoved('frontend/src/components/ui/Button', freeze.removed));
   assert.ok(!isRemoved('frontend/src/tutor-scene/CharacterLayer', freeze.removed));
 });

@@ -435,7 +435,7 @@ describe('PLACEMENT_REQUIRED gates the 3 lesson-access endpoints in learn.ts', (
     expect(getRes.body.error.code).toBe('PLACEMENT_REQUIRED');
 
     const gradeRes = await auth(request(app).post(`/api/v1/learn/lessons/${L1}/grade`)).send({
-      segment_id: 'x', answer: {}, attempt_number: 1,
+      segment_id: 'x', answer: {}, run_id: 'aaaaaaaa-0000-4000-8000-000000000001', attempt_token: 'invalid-token',
     });
     expect(gradeRes.status).toBe(403);
     expect(gradeRes.body.error.code).toBe('PLACEMENT_REQUIRED');

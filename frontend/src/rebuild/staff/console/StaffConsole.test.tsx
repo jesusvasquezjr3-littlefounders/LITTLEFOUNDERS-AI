@@ -1,3 +1,5 @@
+import { enterDate } from '../../test/dateParts';
+import { selectOption } from '../../test/selectOption';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { StrictMode, type ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -204,7 +206,7 @@ describe('S3 Users (A.5)', () => {
     fireEvent.change(screen.getByLabelText(c.users.body.search), { target: { value: 'does-not-exist' } });
     expect(screen.getByText(c.common.body.noMatch)).toBeTruthy();
     fireEvent.click(screen.getByText(c.common.action.clearFilters));
-    fireEvent.change(screen.getByLabelText(c.users.body.role), { target: { value: 'kid' } });
+    selectOption(screen.getByLabelText(c.users.body.role), c.roleNames.option.kid);
     expect(screen.getByText('1 of 3 accounts')).toBeTruthy();
   });
 
@@ -315,7 +317,7 @@ describe('S10 Roles & Access (A.5, G.1, G.4)', () => {
     render(<Frame><StaffAccess api={api} onNavigate={vi.fn()} /></Frame>);
     await screen.findByText(c.access.heading.grant);
     fireEvent.change(screen.getByLabelText(c.access.body.userId), { target: { value: OTHER } });
-    fireEvent.change(screen.getAllByLabelText(c.access.body.role)[0]!, { target: { value: 'parent' } });
+    selectOption(screen.getAllByLabelText(c.access.body.role)[0]!, c.roleNames.option.parent);
     const grant = screen.getByRole('button', { name: c.access.action.grant }) as HTMLButtonElement;
     expect(grant.disabled).toBe(true);
     fireEvent.change(screen.getByLabelText(c.access.body.justification), { target: { value: 'Verified in person' } });
@@ -331,7 +333,7 @@ describe('S10 Roles & Access (A.5, G.1, G.4)', () => {
     render(<Frame><StaffAccess api={api} onNavigate={onNavigate} /></Frame>);
     await screen.findByText(c.access.heading.grant);
     fireEvent.change(screen.getByLabelText(c.access.body.userId), { target: { value: OTHER } });
-    fireEvent.change(screen.getAllByLabelText(c.access.body.role)[0]!, { target: { value: 'parent' } });
+    selectOption(screen.getAllByLabelText(c.access.body.role)[0]!, c.roleNames.option.parent);
     fireEvent.change(screen.getByLabelText(c.access.body.justification), { target: { value: 'Verified in person' } });
     fireEvent.click(screen.getByRole('button', { name: c.access.action.grant }));
     await screen.findByText(c.access.body.ageRecordMinor);
@@ -429,11 +431,11 @@ describe('S9 Audit log', () => {
     fireEvent.click(screen.getByRole('button', { name: c.audit.action.apply }));
     expect(screen.getByText(c.audit.body.actorInvalid)).toBeTruthy();
     fireEvent.change(screen.getByLabelText(c.audit.body.actor), { target: { value: USER } });
-    fireEvent.change(screen.getByLabelText(c.audit.body.from), { target: { value: '2026-09-02' } });
-    fireEvent.change(screen.getByLabelText(c.audit.body.to), { target: { value: '2026-09-01' } });
+    enterDate(c.audit.body.from, '2026-09-02');
+    enterDate(c.audit.body.to, '2026-09-01');
     fireEvent.click(screen.getByRole('button', { name: c.audit.action.apply }));
     expect(screen.getByText(c.audit.body.dateInvalid)).toBeTruthy();
-    fireEvent.change(screen.getByLabelText(c.audit.body.to), { target: { value: '2026-09-03' } });
+    enterDate(c.audit.body.to, '2026-09-03');
     fireEvent.click(screen.getByRole('button', { name: c.audit.action.apply }));
     await waitFor(() => expect(gets.at(-1)).toBe(auditPath({ action: '', actorId: USER, subject: '', from: '2026-09-02', to: '2026-09-03' }, 0)));
     expect(gets.at(-1)).toContain(`actorId=${USER}`);
@@ -501,7 +503,7 @@ describe('S4 Emails', () => {
     expect(gets).toContain('/admin/emails/logs?limit=25&offset=0');
     expect(gets).toContain('/admin/emails/summary?days=365');
     expect(screen.getByText('80%')).toBeTruthy();
-    fireEvent.change(screen.getByLabelText(c.emails.body.status), { target: { value: 'failed' } });
+    selectOption(screen.getByLabelText(c.emails.body.status), c.emails.option.failed);
     await waitFor(() => expect(gets.at(-1)).toContain('status=failed'));
   });
 
