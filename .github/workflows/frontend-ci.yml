@@ -294,6 +294,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      # Importing the state catalogue prepares the actual Depot badge fixture.
+      # Its compositor dependencies are owned by frontend, also in this job.
+      - run: npm ci
       - uses: actions/download-artifact@v4
         with:
           pattern: rebuild-audits-shard-*
