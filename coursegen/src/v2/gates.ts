@@ -50,6 +50,11 @@ import { countWords, tokens } from '../contentGates/text.js';
 import { isNonCopyKey, V2_MENTOR_VOICE_TYPES, type V2AgeBand } from './contract.js';
 import type { V2LessonPlan } from './plan.js';
 import { runV2CarriedGates } from './carriedGates.js';
+import './solvabilityPacks.js';
+import { runSolvabilityGate } from './solvability.js';
+
+// F0.4: solvability findings ride gate 1 (structure). A dedicated gate number needs a DB migration; see docs/rebuild/sprints/horizonte/F0.4-solvability.md.
+export const SOLVABILITY_GATE: GateNumber = 1;
 
 export interface V2DocumentLike {
   locale?: unknown;
@@ -203,6 +208,11 @@ export function runV2DocumentGates(
   const carried = runV2CarriedGates(document as Record<string, unknown>, answerKeys);
   problems.push(...carried.problems);
   review.push(...carried.review);
+
+  for (const finding of runSolvabilityGate(document, answerKeys)) {
+    if (finding.severity === 'block') problems.push({ gate: SOLVABILITY_GATE, segmentId: finding.segmentId, message: finding.message });
+    else review.push({ gate: SOLVABILITY_GATE, severity: 'review', segmentId: finding.segmentId, message: finding.message });
+  }
 
   return { problems, review, notApplicable: [] };
 }
