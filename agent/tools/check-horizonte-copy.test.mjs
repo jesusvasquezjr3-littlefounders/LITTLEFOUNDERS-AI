@@ -1,0 +1,40 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { checkPackCopy, packCopyDirs } from './check-horizonte-copy.mjs';
+
+const root = fileURLToPath(new URL('../../', import.meta.url));
+const budget = await import(pathToFileURL(`${root}frontend/src/rebuild/design/copyBudget.ts`).href);
+
+const good = { show: { role: 'action', 'en-US': 'Show as table', 'es-MX': 'Mostrar como tabla', 'pt-BR': 'Mostrar como tabela' } };
+
+test('accepts a three-locale string inside its budget', () => {
+  assert.deepEqual(checkPackCopy('golden', good, budget), []);
+});
+
+test('reports a missing locale, an unknown role, an over-budget string and an untranslated one', () => {
+  const problems = checkPackCopy('golden', {
+    missing: { role: 'action', 'en-US': 'Check', 'es-MX': 'Revisar' },
+    role: { role: 'shout', 'en-US': 'Check', 'es-MX': 'Revisar', 'pt-BR': 'Verificar' },
+    long: { role: 'option', 'en-US': 'One two three four five six', 'es-MX': 'Uno dos tres cuatro cinco seis', 'pt-BR': 'Um dois tres quatro cinco seis' },
+    same: { role: 'body', 'en-US': 'Fill the frame', 'es-MX': 'Fill the frame', 'pt-BR': 'Preencha o quadro' },
+    dash: { role: 'body', 'en-US': 'Fill — then check', 'es-MX': 'Llena y revisa', 'pt-BR': 'Preencha e confira' },
+  }, budget);
+  assert.ok(problems.includes('golden.missing: no pt-BR text'));
+  assert.ok(problems.includes('golden.role: missing or unknown data-copy-role'));
+  assert.ok(problems.some((problem) => problem.startsWith('golden.long (en-US): word-budget')));
+  assert.ok(problems.includes('golden.same (es-MX): identical to en-US, not a native translation'));
+  assert.ok(problems.some((problem) => problem.startsWith('golden.dash (en-US): em-dash')));
+});
+
+test('a longer budget applies when the entry declares an older band', () => {
+  const entry = { role: 'option', 'en-US': 'One two three four five six', 'es-MX': 'Uno dos tres cuatro cinco seis', 'pt-BR': 'Um dois tres quatro cinco seis' };
+  assert.deepEqual(checkPackCopy('x', { a: { ...entry, band: '10-12' } }, budget), []);
+});
+
+test('enumerates every pack copy module by directory scan', () => {
+  const packs = packCopyDirs();
+  assert.ok(packs.includes('golden') && packs.includes('space2') && packs.length >= 18);
+});
+
+console.log('check-horizonte-copy OK');
