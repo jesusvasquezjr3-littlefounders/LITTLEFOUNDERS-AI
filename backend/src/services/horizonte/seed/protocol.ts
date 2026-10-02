@@ -1,0 +1,26 @@
+/*
+ * The seeded run protocol (F3.0). Core mints an attempt token and derives one 256 bit seed from the verified token
+ * (HMAC-SHA256, server secret, lesson, segment, learner, nonce and issue time). The seed travels beside the token, the
+ * browser simulates with it, and the server replays the same simulation with the seed it derives itself to grade. The
+ * seed never appears in a lesson document, an answer key or any response before the attempt is issued.
+ */
+export const SEEDED_RUN_CAPABILITY = 'operation.seeded-run.v1';
+export const ATTEMPT_SEED_PATTERN = /^[0-9a-f]{64}$/;
+
+/** What a seeded scorer receives from Core: the seed derived from the verified attempt token. */
+export type HorizonteAttempt = { readonly seed: string };
+
+/** The fixed attempt the publish-time key check and the contract harness grade a sample response under. */
+export const SAMPLE_ATTEMPT: HorizonteAttempt = { seed: '0'.repeat(64) };
+
+export const isAttemptSeed = (value: unknown): value is string => typeof value === 'string' && ATTEMPT_SEED_PATTERN.test(value);
+
+/** Constant-time comparison of two seeds: the time depends on the length only, never on where they differ. */
+export function seedsEqual(left: unknown, right: unknown): boolean {
+  if (!isAttemptSeed(left) || !isAttemptSeed(right)) return false;
+  let difference = 0;
+  for (let index = 0; index < left.length; index += 1) difference |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  return difference === 0;
+}
+
+export const isSeededCapabilitySet = (capabilities: readonly string[]): boolean => capabilities.includes(SEEDED_RUN_CAPABILITY);

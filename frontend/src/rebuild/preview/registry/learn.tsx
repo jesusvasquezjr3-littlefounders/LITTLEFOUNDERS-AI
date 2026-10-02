@@ -5,7 +5,7 @@ import { learningFixtures } from '../../learning/allocationFixtures';
 import { scoreV2Judgment, scoreV2Visual } from '../../learning/v2VisualScorer.generated';
 import { LessonDocumentView } from '../../learning/LessonDocumentView';
 import { loadAdventureThemeProjection } from '../../learning/lessonDocument';
-import { horizonteFixtureDocument } from '../../learning/horizonte/previewDocument';
+import { horizonteFixtureDocument, horizonteFixtureSeeds } from '../../learning/horizonte/previewDocument';
 import { numberLinePilotDocument } from '../../learning/NumberLineBoard';
 import { sequencePilotDocument } from '../../learning/sequencePilotDocument';
 import { LessonResultView } from '../../learning/LessonResultView';
@@ -148,10 +148,18 @@ export function previewFixtureSegment(locale: string, ageBand: string, seg: stri
   return { ...doc, segments: [segment], required_capabilities: [...new Set(segmentCapabilities(segment as unknown as LessonClientSegment))] };
 }
 
+/** A seeded Horizonte fixture is staged with its own seed, as Core would issue one with the attempt. */
+function previewFixtureSeeds(locale: string, seg: string | null): Readonly<Record<string, string>> | undefined {
+  if (!seg?.startsWith('hz:')) return undefined;
+  const [, pack = '', id = ''] = seg.split(':');
+  return horizonteFixtureSeeds(pack, id, locale as 'en-US');
+}
+
 export const learnPreviewScreens: PreviewRegistry = {
   // The preview holds no rubric: a Check answers "not yet" so the board's feedback row is measured too.
   fixture: framed(({ screen, locale, ageBand, params, go }) => <LessonDocumentView key={`${screen}:${locale}:${ageBand}:${params.get('seg')}`}
     raw={previewFixtureSegment(locale, ageBand, params.get('seg'))} locale={locale} ageBand={ageBand} onBack={() => go('home')}
+    attemptSeeds={previewFixtureSeeds(locale, params.get('seg'))}
     // A decide-and-justify step has its own grader (reasoning quality, B.12); without it the view refuses the step.
     onGradeAny={async () => ({ verdict: 'review' as const })} onGradeReasoning={async () => ({ verdict: 'review' as const })} />),
   opening: transport,
