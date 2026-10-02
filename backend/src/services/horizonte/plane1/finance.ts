@@ -1,0 +1,67 @@
+import { broken, hasOnly, inRange, solved, type Solved } from './model.js';
+
+export const FIXED_MAX = 1000;
+export const UNITS_MIN = 4;
+export const UNITS_MAX = 60;
+export const PRICE_MAX = 100;
+export const AVERAGE_MAX = 200;
+export const VARIABLE_MAX = 50;
+export const COST_MAX = 100;
+export const SHELF_MAX = 400;
+export const BASES = ['markup', 'margin'] as const;
+export type Basis = (typeof BASES)[number];
+export const PERCENT_MIN = 5;
+export const PERCENT_MAX: Readonly<Record<Basis, number>> = { markup: 300, margin: 90 };
+
+export type BreakEven = { fixed: number; price: number; unit: number; maxUnits: number; start: number };
+
+/** N08, N09: a fixed cost, a price and a cost per unit; the learner finds the units where revenue meets cost. The answer is the whole unit count. */
+export function solveBreakEven(payload: unknown): Solved<number> {
+  if (!hasOnly(payload, ['fixed', 'price', 'unit', 'maxUnits', 'start'])) return broken('', 'The payload is a fixed cost, a price, a cost per unit, a unit limit and a start');
+  const { fixed, price, unit, maxUnits, start } = payload;
+  if (!inRange(fixed, 1, FIXED_MAX)) return broken('fixed', 'The fixed cost is a whole number from 1 to 1000');
+  if (!inRange(price, 2, PRICE_MAX) || !inRange(unit, 1, PRICE_MAX - 1) || unit >= price) return broken('unit', 'The price is 2 to 100 and the cost per unit is a whole number below it');
+  if (!inRange(maxUnits, UNITS_MIN, UNITS_MAX)) return broken('maxUnits', 'The unit limit is 4 to 60');
+  if (fixed % (price - unit) !== 0) return broken('fixed', 'The fixed cost divides by the profit per unit, so the break-even is a whole number');
+  const units = fixed / (price - unit);
+  if (!inRange(units, 1, maxUnits)) return broken('maxUnits', 'The break-even is within the unit limit');
+  if (!inRange(start, 0, maxUnits)) return broken('start', 'The units start on the axis');
+  return start === units ? broken('start', 'The units start away from the answer') : solved(units);
+}
+
+export type CostStructure = { fixed: number; variable: number; maxUnits: number; goal: { average: number }; start: number };
+
+/** N28: total cost is fixed plus variable per unit; the learner finds the units where the average cost per unit falls to the goal. */
+export function solveCostStructure(payload: unknown): Solved<number> {
+  if (!hasOnly(payload, ['fixed', 'variable', 'maxUnits', 'goal', 'start'])) return broken('', 'The payload is a fixed cost, a variable cost, a unit limit, a goal and a start');
+  const { fixed, variable, maxUnits, goal, start } = payload;
+  if (!inRange(fixed, 1, FIXED_MAX)) return broken('fixed', 'The fixed cost is a whole number from 1 to 1000');
+  if (!inRange(variable, 1, VARIABLE_MAX)) return broken('variable', 'The variable cost per unit is 1 to 50');
+  if (!inRange(maxUnits, UNITS_MIN, UNITS_MAX)) return broken('maxUnits', 'The unit limit is 4 to 60');
+  if (!hasOnly(goal, ['average']) || !inRange(goal.average, variable + 1, AVERAGE_MAX)) return broken('goal', 'The goal is an average cost above the variable cost, up to 200');
+  const extra = goal.average - variable;
+  if (fixed % extra !== 0) return broken('goal', 'The fixed cost divides by the gap to the average, so the units are a whole number');
+  const units = fixed / extra;
+  if (!inRange(units, 1, maxUnits)) return broken('goal', 'The units that reach the goal are within the unit limit');
+  if (!inRange(start, 1, maxUnits)) return broken('start', 'The units start on the axis, at 1 or more');
+  return start === units ? broken('start', 'The units start away from the answer') : solved(units);
+}
+
+export type MarginMarkup = { cost: number; basis: Basis; percent: number; maxPrice: number; start: number };
+
+/** N10: a cost and a markup or margin percent; the learner sets the price. Markup is on cost, margin is on price. The answer is the whole price. */
+export function solveMarginMarkup(payload: unknown): Solved<number> {
+  if (!hasOnly(payload, ['cost', 'basis', 'percent', 'maxPrice', 'start'])) return broken('', 'The payload is a cost, a basis, a percent, a price limit and a start');
+  const { cost, basis, percent, maxPrice, start } = payload;
+  if (!inRange(cost, 1, COST_MAX)) return broken('cost', 'The cost is a whole number from 1 to 100');
+  if (basis !== 'markup' && basis !== 'margin') return broken('basis', 'The basis is markup or margin');
+  if (!inRange(percent, PERCENT_MIN, PERCENT_MAX[basis])) return broken('percent', `The ${basis} is a whole percent from ${PERCENT_MIN} to ${PERCENT_MAX[basis]}`);
+  if (!inRange(maxPrice, 10, SHELF_MAX)) return broken('maxPrice', 'The price limit is 10 to 400');
+  const top = basis === 'markup' ? cost * (100 + percent) : cost * 100;
+  const bottom = basis === 'markup' ? 100 : 100 - percent;
+  if (top % bottom !== 0) return broken('percent', 'The percent gives a whole price');
+  const price = top / bottom;
+  if (!inRange(price, cost + 1, maxPrice)) return broken('maxPrice', 'The price is above the cost and within the price limit');
+  if (!inRange(start, 0, maxPrice)) return broken('start', 'The price starts on the axis');
+  return start === price ? broken('start', 'The price starts away from the answer') : solved(price);
+}
