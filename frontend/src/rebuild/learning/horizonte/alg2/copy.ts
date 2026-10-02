@@ -1,3 +1,69 @@
 import type { HorizonteCopy } from '../boardTypes';
 
-export const ALG2_COPY = {} as const satisfies HorizonteCopy;
+/*
+ * Horizonte alg2 (F2.4, F2.5, F2.6): every word the three boards own. Equations, coordinates and the learner's own lines
+ * are data, not copy. Slots in braces are filled by the board.
+ */
+export const ALG2_COPY = {
+  less: { role: 'action', 'en-US': 'Less', 'es-MX': 'Menos', 'pt-BR': 'Menos' },
+  more: { role: 'action', 'en-US': 'More', 'es-MX': 'Más', 'pt-BR': 'Mais' },
+
+  graphName: { role: 'heading', 'en-US': 'Graph and dots', 'es-MX': 'Gráfica y puntos', 'pt-BR': 'Gráfico e pontos' },
+  curveName: { role: 'data', 'en-US': 'Curve', 'es-MX': 'Curva', 'pt-BR': 'Curva' },
+  slidersName: { role: 'body', 'en-US': 'Curve sliders', 'es-MX': 'Deslizadores de la curva', 'pt-BR': 'Controles da curva' },
+  dotsOnCurve: { role: 'data', 'en-US': 'Dots on the curve: {n} of {m}', 'es-MX': 'Puntos en la curva: {n} de {m}', 'pt-BR': 'Pontos na curva: {n} de {m}' },
+  nameSlope: { role: 'body', 'en-US': 'Slope (m)', 'es-MX': 'Pendiente (m)', 'pt-BR': 'Inclinação (m)' },
+  nameLineB: { role: 'body', 'en-US': 'Start height (b)', 'es-MX': 'Altura inicial (b)', 'pt-BR': 'Altura inicial (b)' },
+  nameOpening: { role: 'body', 'en-US': 'Opening (a)', 'es-MX': 'Apertura (a)', 'pt-BR': 'Abertura (a)' },
+  nameLinearTerm: { role: 'body', 'en-US': 'Linear term (b)', 'es-MX': 'Término lineal (b)', 'pt-BR': 'Termo linear (b)' },
+  nameConstant: { role: 'body', 'en-US': 'Constant (c)', 'es-MX': 'Constante (c)', 'pt-BR': 'Constante (c)' },
+  nameVertexX: { role: 'body', 'en-US': 'Vertex x (h)', 'es-MX': 'Vértice x (h)', 'pt-BR': 'Vértice x (h)' },
+  nameVertexY: { role: 'body', 'en-US': 'Vertex y (k)', 'es-MX': 'Vértice y (k)', 'pt-BR': 'Vértice y (k)' },
+  nameStart: { role: 'body', 'en-US': 'Start value (a)', 'es-MX': 'Valor inicial (a)', 'pt-BR': 'Valor inicial (a)' },
+  nameBase: { role: 'body', 'en-US': 'Growth base (b)', 'es-MX': 'Base de crecimiento (b)', 'pt-BR': 'Base de crescimento (b)' },
+  metGraph: { role: 'body', 'en-US': 'The curve goes through every dot.', 'es-MX': 'La curva pasa por todos los puntos.', 'pt-BR': 'A curva passa por todos os pontos.' },
+  hintGraph: { role: 'body', 'en-US': 'Not yet. Slide until the curve hits each dot.', 'es-MX': 'Aún no. Desliza hasta que la curva toque cada punto.', 'pt-BR': 'Ainda não. Deslize até a curva tocar cada ponto.' },
+
+  systemName: { role: 'heading', 'en-US': 'Lines and markers', 'es-MX': 'Rectas y marcas', 'pt-BR': 'Retas e marcas' },
+  markerName: { role: 'option', 'en-US': 'Marker {n}', 'es-MX': 'Marca {n}', 'pt-BR': 'Marca {n}' },
+  markersLegend: { role: 'body', 'en-US': 'Marker to move', 'es-MX': 'Marca por mover', 'pt-BR': 'Marca para mover' },
+  across: { role: 'body', 'en-US': 'Across (x)', 'es-MX': 'Horizontal (x)', 'pt-BR': 'Horizontal (x)' },
+  up: { role: 'body', 'en-US': 'Up (y)', 'es-MX': 'Vertical (y)', 'pt-BR': 'Vertical (y)' },
+  markerReadout: { role: 'data', 'en-US': 'Marker {n}: x {x}; y {y}. On {k} of {m} lines.', 'es-MX': 'Marca {n}: x {x}; y {y}. En {k} de {m} rectas.', 'pt-BR': 'Marca {n}: x {x}; y {y}. Em {k} de {m} retas.' },
+  occupied: { role: 'body', 'en-US': 'That spot has a marker already.', 'es-MX': 'Ese lugar ya tiene una marca.', 'pt-BR': 'Esse lugar já tem uma marca.' },
+  metSystem: { role: 'body', 'en-US': 'Every marker sits on a crossing.', 'es-MX': 'Cada marca está en un cruce.', 'pt-BR': 'Cada marca está em um cruzamento.' },
+  hintSystem: { role: 'body', 'en-US': 'Not yet. A crossing is where two lines meet.', 'es-MX': 'Aún no. Un cruce es donde dos rectas se encuentran.', 'pt-BR': 'Ainda não. Um cruzamento é onde duas retas se encontram.' },
+
+  stepsName: { role: 'heading', 'en-US': 'Your steps', 'es-MX': 'Tus pasos', 'pt-BR': 'Seus passos' },
+  startLine: { role: 'data', 'en-US': 'Start', 'es-MX': 'Inicio', 'pt-BR': 'Início' },
+  lineName: { role: 'body', 'en-US': 'Line {n}', 'es-MX': 'Línea {n}', 'pt-BR': 'Linha {n}' },
+  goalExpanded: { role: 'body', 'en-US': 'Goal: no brackets, like terms joined.', 'es-MX': 'Meta: sin paréntesis y con términos semejantes juntos.', 'pt-BR': 'Meta: sem parênteses e com termos semelhantes juntos.' },
+  goalFactored: { role: 'body', 'en-US': 'Goal: a product of brackets.', 'es-MX': 'Meta: un producto de paréntesis.', 'pt-BR': 'Meta: um produto de parênteses.' },
+  goalIsolated: { role: 'body', 'en-US': 'Goal: {v} alone on one side.', 'es-MX': 'Meta: {v} sola de un lado.', 'pt-BR': 'Meta: {v} sozinha de um lado.' },
+  goalSeparated: { role: 'body', 'en-US': 'Goal: the {v} terms on one side, numbers on the other.', 'es-MX': 'Meta: los términos con {v} de un lado, números del otro.', 'pt-BR': 'Meta: os termos com {v} de um lado, números do outro.' },
+  addLine: { role: 'action', 'en-US': 'Add line', 'es-MX': 'Agregar línea', 'pt-BR': 'Adicionar linha' },
+  removeLine: { role: 'action', 'en-US': 'Remove line', 'es-MX': 'Quitar línea', 'pt-BR': 'Remover linha' },
+  stepSame: { role: 'body', 'en-US': 'Same value as the line above.', 'es-MX': 'Mismo valor que la línea de arriba.', 'pt-BR': 'Mesmo valor da linha de cima.' },
+  stepDiffers: { role: 'body', 'en-US': 'Not the same as the line above.', 'es-MX': 'Distinta de la línea de arriba.', 'pt-BR': 'Diferente da linha de cima.' },
+  stepUnreadable: { role: 'body', 'en-US': 'This line cannot be read.', 'es-MX': 'No se puede leer esta línea.', 'pt-BR': 'Não dá para ler esta linha.' },
+  stepBrackets: { role: 'body', 'en-US': 'The brackets do not match.', 'es-MX': 'Los paréntesis no coinciden.', 'pt-BR': 'Os parênteses não combinam.' },
+  stepPower: { role: 'body', 'en-US': 'Use a whole power from 0 to 6, like x^2.', 'es-MX': 'Usa una potencia entera de 0 a 6, como x^2.', 'pt-BR': 'Use uma potência inteira de 0 a 6, como x^2.' },
+  stepSymbols: { role: 'body', 'en-US': 'Use numbers, the letter {v} and signs like + and ^.', 'es-MX': 'Usa números, la letra {v} y signos como + y ^.', 'pt-BR': 'Use números, a letra {v} e sinais como + e ^.' },
+  stepNumber: { role: 'body', 'en-US': 'Write decimals with a point, like 0.5.', 'es-MX': 'Escribe los decimales con punto, como 0.5.', 'pt-BR': 'Escreva os decimais com ponto, como 0.5.' },
+  stepTwoEquals: { role: 'body', 'en-US': 'Use only one equals sign.', 'es-MX': 'Usa solo un signo igual.', 'pt-BR': 'Use só um sinal de igual.' },
+  stepNeedsEquation: { role: 'body', 'en-US': 'Write an equation here, with an equals sign.', 'es-MX': 'Escribe aquí una ecuación, con signo igual.', 'pt-BR': 'Escreva aqui uma equação, com sinal de igual.' },
+  stepNeedsExpression: { role: 'body', 'en-US': 'Write an expression here, with no equals sign.', 'es-MX': 'Escribe aquí una expresión, sin signo igual.', 'pt-BR': 'Escreva aqui uma expressão, sem sinal de igual.' },
+  stepTooComplex: { role: 'body', 'en-US': 'This line is too long to check.', 'es-MX': 'Esta línea es demasiado larga para revisarla.', 'pt-BR': 'Esta linha é longa demais para conferir.' },
+  metExpression: { role: 'body', 'en-US': 'Every line follows, and you reached the goal.', 'es-MX': 'Cada línea sigue a la anterior y llegaste a la meta.', 'pt-BR': 'Cada linha segue a anterior e você chegou à meta.' },
+  hintExpression: { role: 'body', 'en-US': 'Not yet. Check each line against the one above.', 'es-MX': 'Aún no. Compara cada línea con la de arriba.', 'pt-BR': 'Ainda não. Compare cada linha com a de cima.' },
+
+  spokenPlus: { role: 'data', 'en-US': 'plus', 'es-MX': 'más', 'pt-BR': 'mais' },
+  spokenMinus: { role: 'data', 'en-US': 'minus', 'es-MX': 'menos', 'pt-BR': 'menos' },
+  spokenTimes: { role: 'data', 'en-US': 'times', 'es-MX': 'por', 'pt-BR': 'vezes' },
+  spokenOver: { role: 'data', 'en-US': 'over', 'es-MX': 'entre', 'pt-BR': 'sobre' },
+  spokenPower: { role: 'data', 'en-US': 'to the power of', 'es-MX': 'elevado a', 'pt-BR': 'elevado a' },
+  spokenEquals: { role: 'data', 'en-US': 'equals', 'es-MX': 'es igual a', 'pt-BR': 'é igual a' },
+  spokenOpen: { role: 'data', 'en-US': 'open bracket', 'es-MX': 'abre paréntesis', 'pt-BR': 'abre parênteses' },
+  spokenClose: { role: 'data', 'en-US': 'close bracket', 'es-MX': 'cierra paréntesis', 'pt-BR': 'fecha parênteses' },
+  spokenNegative: { role: 'data', 'en-US': 'negative', 'es-MX': 'negativo', 'pt-BR': 'negativo' },
+} as const satisfies HorizonteCopy;
