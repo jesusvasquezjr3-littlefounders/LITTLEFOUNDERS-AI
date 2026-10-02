@@ -5,7 +5,7 @@ import { assertBoardContract } from '../harness/boardContract';
 import { horizonteFixture, horizonteFixtureDocument, horizonteFixtureSeeds } from '../previewDocument';
 import { SIM1_COPY } from './copy';
 import { bootstrapEdges, coveredCount, resampleSums, sampleHits } from './interval.generated';
-import { chanceHits, galtonHits } from './model.generated';
+import { chanceHits, galtonHits, type Fraction, type Machine } from './model.generated';
 
 vi.mock('../../../../tutor-scene/quality', () => ({
   getDeviceProbe: () => ({ cores: 8, memoryGb: 8, coarsePointer: false, devicePixelRatio: 1, webgl: 'webgl2', maxTextureSize: 8192, prefersReducedMotion: false }),
@@ -17,7 +17,8 @@ type Locale = 'en-US' | 'es-MX' | 'pt-BR';
 const CSS = ['sim1/sim1.css'];
 
 const seedOf = (fixture: string) => horizonteFixture('sim1', fixture)!.seed as string;
-const payloadOf = (fixture: string) => horizonteFixture('sim1', fixture)!.segment('en-US').payload as Record<string, any>;
+type Payload = { machine: Machine; event: number[]; truth: Fraction; data: number[]; level: number };
+const payloadOf = (fixture: string) => horizonteFixture('sim1', fixture)!.segment('en-US').payload as Payload;
 const percent = (locale: Locale, share: number) => `${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(share * 100)}%`;
 
 const show = (fixture: string, verdict: 'met' | 'review' = 'review', locale: Locale = 'en-US') => {
