@@ -1,0 +1,126 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "horizonte-space1",
+  "lesson_id": "v2-hz-space1-6-9-7-9",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 7,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-hz-space1"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Liruf coloca piezas en el espacio y las mira desde varios lados.",
+  "title": {
+    "en-US": "A basket for $2.50",
+    "es-MX": "Una canasta de $2.50",
+    "pt-BR": "Uma cesta de R$ 2,50"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "stall-exact-basket",
+      "type": "money.market-stall.v2",
+      "grading": "server",
+      "visual": {
+        "type": "market-stall"
+      },
+      "payload": {
+        "items": [
+          {
+            "id": "apple",
+            "price": 50,
+            "stock": 5
+          },
+          {
+            "id": "bread",
+            "price": 120,
+            "stock": 3
+          },
+          {
+            "id": "juice",
+            "price": 80,
+            "stock": 4
+          }
+        ],
+        "goal": {
+          "kind": "exact",
+          "total": 250
+        }
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "bread": [
+              "item"
+            ],
+            "apple": [
+              "item"
+            ],
+            "juice": [
+              "item"
+            ]
+          },
+          {
+            "apple": [
+              "item",
+              "item",
+              "item",
+              "item",
+              "item"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fill the basket so it costs exactly $2.50."
+        },
+        "es-MX": {
+          "prompt": "Llena la canasta para que cueste justo $2.50."
+        },
+        "pt-BR": {
+          "prompt": "Encha a cesta para que custe exatamente R$ 2,50."
+        }
+      }
+    },
+    {
+      "id": "coins-as-tall-as-a-phone",
+      "type": "money.coin-stack.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-stack"
+      },
+      "payload": {
+        "piece": "coin",
+        "value": 100,
+        "goal": {
+          "kind": "height",
+          "mm": 8
+        },
+        "step": 1,
+        "max": 10
+      },
+      "rubric": {
+        "target": "4"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Stack coins until they are as tall as the phone."
+        },
+        "es-MX": {
+          "prompt": "Apila monedas hasta que lleguen a la altura del celular."
+        },
+        "pt-BR": {
+          "prompt": "Empilhe moedas até ficarem da altura do celular."
+        }
+      }
+    }
+  ]
+}

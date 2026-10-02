@@ -1,0 +1,97 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "horizonte-fin1",
+  "lesson_id": "v2-hz-fin1-10-12-10-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-hz-fin1"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Liruf sigue las monedas durante varios periodos para ver cómo crecen o se reparten.",
+  "title": {
+    "en-US": "Grow a deposit",
+    "es-MX": "Haz crecer un depósito",
+    "pt-BR": "Faça um depósito crescer"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "compound-thirty",
+      "type": "money.compound-interest.v2",
+      "grading": "server",
+      "visual": {
+        "type": "compound-interest"
+      },
+      "payload": {
+        "principalCents": 100000,
+        "scenario": {
+          "rate": 7,
+          "years": 30
+        },
+        "options": [
+          {
+            "id": "opt-a",
+            "cents": 310000
+          },
+          {
+            "id": "opt-b",
+            "cents": 500000
+          },
+          {
+            "id": "opt-c",
+            "cents": 760000
+          },
+          {
+            "id": "opt-d",
+            "cents": 1200000
+          }
+        ],
+        "challenge": {
+          "minimumCents": 200000,
+          "maximumYears": 12
+        },
+        "explain": [
+          "same-each-year",
+          "interest-on-interest",
+          "deposit-grows"
+        ]
+      },
+      "rubric": {
+        "predictOption": "opt-c",
+        "explainId": "interest-on-interest"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Predict what $1,000 grows to in 30 years at 7%. Then test it with the sliders.",
+          "feedback": {
+            "met": "You followed the coins through time correctly.",
+            "not_yet": "Check each period again, one at a time."
+          }
+        },
+        "es-MX": {
+          "prompt": "Predice en qué se convierten $1,000 en 30 años al 7%. Luego pruébalo con los controles.",
+          "feedback": {
+            "met": "Seguiste las monedas a través del tiempo correctamente.",
+            "not_yet": "Revisa cada periodo otra vez, uno por uno."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Preveja quanto R$ 1.000 viram em 30 anos a 7%. Depois teste com os controles.",
+          "feedback": {
+            "met": "Você acompanhou as moedas ao longo do tempo corretamente.",
+            "not_yet": "Confira cada período de novo, um por um."
+          }
+        }
+      }
+    }
+  ]
+}

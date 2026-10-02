@@ -87,9 +87,11 @@ function ratioKind(payload: unknown): 'double-number-line' | 'ratio-tape' | null
   return between(total, boxes, 999) && total % boxes === 0 && total / boxes <= 99 ? 'ratio-tape' : null;
 }
 
+type RatioPayload = { given: { line: 'top' | 'bottom'; value: number }; base: [number, number]; whole: number; parts: [number, number]; ask: 'a' | 'b' };
+
 function ratioAnswer(payload: unknown): number | null {
   const kind = ratioKind(payload);
-  const value = payload as Record<string, any>;
+  const value = payload as RatioPayload;
   if (kind === 'double-number-line') {
     const top = value.given.line === 'top';
     return (value.given.value / value.base[top ? 0 : 1]) * value.base[top ? 1 : 0];
@@ -123,7 +125,7 @@ function fractionOp(payload: unknown): Operation | null {
 function fractionAnswer(payload: unknown): { n: number; d: number } | null {
   const op = fractionOp(payload);
   if (op === null) return null;
-  const value = payload as Record<string, any>;
+  const value = payload as { fraction: Fraction; denominator: number; left: Fraction; right: Fraction };
   if (op === 'equivalent') return { n: (value.fraction[0] * value.denominator) / value.fraction[1], d: value.denominator };
   const [a, b] = value.left as Fraction;
   const [c, d] = value.right as Fraction;

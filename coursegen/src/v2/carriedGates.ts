@@ -45,7 +45,7 @@ import { runRewardMechanicGate } from '../pipeline/rewardMechanicGate.js';
 import { runAgeRegisterGate, runWellbeingLanguageGate } from '../pipeline/wellbeingGates.js';
 import { v2FeedbackProblems } from './v2SegmentFamilies.generated.js';
 import { factsFileSchema, taxonomyFileSchema, type FactsFile, type TaxonomyFile } from '../catalog/schema.js';
-import { isNonCopyKey } from './contract.js';
+import { hasNeutralPayload, isNonCopyKey } from './contract.js';
 
 type Json = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 export interface V2Finding { gate: 2 | 3 | 4 | 17 | 18 | 19; severity: 'block' | 'review'; segmentId?: string; message: string }
@@ -86,7 +86,13 @@ function visible(document: Json): Array<{ segmentId?: string; path: string; text
     for (const [key, value] of Object.entries(node)) if (!V2_SKIP_KEYS.has(key) && !isNonCopyKey(key)) walk(value, where ? `${where}.${key}` : key, segmentId);
   };
   if (typeof document.title === 'string') out.push({ path: 'title', text: document.title });
-  (Array.isArray(document.segments) ? document.segments : []).forEach((segment: Json, index: number) => walk(segment, `segments[${index}]`, typeof segment?.id === 'string' ? segment.id : undefined));
+  (Array.isArray(document.segments) ? document.segments : []).forEach((segment: Json, index: number) => {
+    const segmentId = typeof segment?.id === 'string' ? segment.id : undefined;
+    if (typeof segment?.type !== 'string' || !hasNeutralPayload(segment.type)) { walk(segment, `segments[${index}]`, segmentId); return; }
+    // A Horizonte kind's payload is ids, enums and numbers: only its prompt, help, feedback and label names are read.
+    for (const key of ['prompt', 'help', 'feedback']) walk(segment[key], `segments[${index}].${key}`, segmentId);
+    for (const [labelId, text] of Object.entries(segment.labels ?? {})) walk(text, `segments[${index}].labels.${labelId}`, segmentId);
+  });
   return out;
 }
 

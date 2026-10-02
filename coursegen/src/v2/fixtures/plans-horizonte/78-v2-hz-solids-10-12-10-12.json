@@ -1,0 +1,110 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "horizonte-solids",
+  "lesson_id": "v2-hz-solids-10-12-10-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-hz-solids"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Dina gira cuerpos geométricos para contar caras, aristas y vértices.",
+  "title": {
+    "en-US": "Build the staircase",
+    "es-MX": "Construye la escalera",
+    "pt-BR": "Construa a escada"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "cube-stack-staircase",
+      "type": "geometry.cube-stack.v2",
+      "grading": "server",
+      "visual": {
+        "type": "cube-stack"
+      },
+      "payload": {
+        "size": 3,
+        "start": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ]
+        ],
+        "goal": {
+          "front": [
+            3,
+            2,
+            1
+          ],
+          "side": [
+            3,
+            2,
+            1
+          ]
+        },
+        "fewest": true
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "c2r0": [
+              "cube"
+            ],
+            "c1r1": [
+              "cube",
+              "cube"
+            ],
+            "c0r2": [
+              "cube",
+              "cube",
+              "cube"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Use the fewest cubes so the front and side views both read 3, 2, 1.",
+          "feedback": {
+            "met": "You pictured the solid from every side.",
+            "not_yet": "Turn the solid around in your mind and look again."
+          }
+        },
+        "es-MX": {
+          "prompt": "Usa la menor cantidad de cubos para que las vistas frontal y lateral muestren 3, 2, 1.",
+          "feedback": {
+            "met": "Imaginaste el sólido desde todos los lados.",
+            "not_yet": "Gira el sólido en tu mente y vuelve a mirar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Use o menor número de cubos para que as vistas frontal e lateral mostrem 3, 2, 1.",
+          "feedback": {
+            "met": "Você imaginou o sólido por todos os lados.",
+            "not_yet": "Gire o sólido na sua mente e olhe de novo."
+          }
+        }
+      }
+    }
+  ]
+}

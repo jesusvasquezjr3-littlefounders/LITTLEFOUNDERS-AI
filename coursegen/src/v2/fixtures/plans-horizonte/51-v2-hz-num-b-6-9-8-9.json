@@ -1,0 +1,85 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "horizonte-num-b",
+  "lesson_id": "v2-hz-num-b-6-9-8-9",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 8,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-hz-num-b"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Rho compara dos líneas para ver qué razón o fracción se mantiene igual.",
+  "title": {
+    "en-US": "Rows and columns",
+    "es-MX": "Filas y columnas",
+    "pt-BR": "Linhas e colunas"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "array-rows-columns",
+      "type": "math.array-area.v2",
+      "grading": "server",
+      "visual": {
+        "type": "array"
+      },
+      "payload": {
+        "rows": 3,
+        "columns": 4
+      },
+      "rubric": {
+        "value": 12
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "How many dots are in 3 rows of 4?"
+        },
+        "es-MX": {
+          "prompt": "¿Cuántos puntos hay en 3 filas de 4?"
+        },
+        "pt-BR": {
+          "prompt": "Quantos pontos há em 3 fileiras de 4?"
+        }
+      }
+    },
+    {
+      "id": "wall-equivalent",
+      "type": "math.fraction-wall.v2",
+      "grading": "server",
+      "visual": {
+        "type": "fraction-wall"
+      },
+      "payload": {
+        "op": "equivalent",
+        "fraction": [
+          1,
+          2
+        ],
+        "denominator": 6
+      },
+      "rubric": {
+        "n": 3,
+        "d": 6
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Shade the sixths that match one half."
+        },
+        "es-MX": {
+          "prompt": "Sombrea los sextos que igualan un medio."
+        },
+        "pt-BR": {
+          "prompt": "Pinte os sextos que igualam um meio."
+        }
+      }
+    }
+  ]
+}

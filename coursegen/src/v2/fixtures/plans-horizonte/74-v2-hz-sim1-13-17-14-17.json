@@ -1,0 +1,80 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-sim1",
+  "lesson_id": "v2-hz-sim1-13-17-14-17",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 14,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-hz-sim1"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Rho deja correr una simulación pequeña para ver qué patrón aparece con el azar.",
+  "title": {
+    "en-US": "Drop balls on the board",
+    "es-MX": "Suelta bolas en el tablero",
+    "pt-BR": "Solte bolas no tabuleiro"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "galton-board",
+      "type": "math.galton-sim.v2",
+      "grading": "server",
+      "visual": {
+        "type": "galton-sim"
+      },
+      "payload": {
+        "view": "board",
+        "rows": 6,
+        "rightPct": 50,
+        "bin": 3,
+        "stops": [
+          20,
+          100,
+          500,
+          1500,
+          3000
+        ],
+        "tolerance": 5,
+        "minBalls": 1500
+      },
+      "rubric": {
+        "target": {
+          "num": 5,
+          "den": 16
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Drop at least 1500 balls. Stop when the share in bin 3 is within 5 points of its chance.",
+          "feedback": {
+            "met": "You let the simulation run and read it well.",
+            "not_yet": "Run it again and watch the pattern."
+          }
+        },
+        "es-MX": {
+          "prompt": "Suelta al menos 1500 bolas. Detente cuando la proporción en el casillero 3 esté a 5 puntos o menos de su probabilidad.",
+          "feedback": {
+            "met": "Dejaste correr la simulación y la leíste bien.",
+            "not_yet": "Córrela otra vez y observa el patrón."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Solte pelo menos 1500 bolas. Pare quando a proporção na caixa 3 estiver a até 5 pontos da chance.",
+          "feedback": {
+            "met": "Você deixou a simulação rodar e a leu bem.",
+            "not_yet": "Rode de novo e observe o padrão."
+          }
+        }
+      }
+    }
+  ]
+}

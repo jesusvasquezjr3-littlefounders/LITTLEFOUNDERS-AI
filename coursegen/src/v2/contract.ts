@@ -77,6 +77,11 @@ export const V2_MENTOR_VOICE_TYPES = ['voice.mentor-turn.v2', 'voice.mentor-epis
 export const V2_STORY_TYPES = ['story.branch.v2', 'story.dialogue-choice.v2', 'story.would-you-rather.v2'] as const;
 
 export type V2SegmentType = keyof typeof V2_SEGMENT_CAPABILITIES;
+
+/** Horizonte kinds keep only ids, enums and numbers in the payload; their learner text is the prompt, help, feedback, labels and notation. */
+export function hasNeutralPayload(type: string): boolean {
+  return Object.hasOwn(HORIZONTE_FORGE_CAPABILITIES, type);
+}
 export const V2_SEGMENT_TYPES = Object.keys(V2_SEGMENT_CAPABILITIES) as V2SegmentType[];
 
 export const V2_LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
@@ -104,6 +109,10 @@ export interface V2Segment {
   item_phase?: 'pre' | 'post';
   variant?: string;
   knowledge_component_id?: string;
+  /** Horizonte kinds: localized names for the ids their payload holds. */
+  labels?: Record<string, string>;
+  /** Horizonte algebra boards: the TeX is neutral, `spokenText` is the accessible name in the lesson language. */
+  notation?: { tex: string; spokenText: string };
 }
 
 /** The answerless public document (Core's `v2PublicLessonSchema`). */

@@ -1,0 +1,86 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "horizonte-sim1",
+  "lesson_id": "v2-hz-sim1-10-12-10-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-hz-sim1"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Rho deja correr una simulación pequeña para ver qué patrón aparece con el azar.",
+  "title": {
+    "en-US": "Flip a coin",
+    "es-MX": "Lanza una moneda",
+    "pt-BR": "Lance uma moeda"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "chance-coin-heads",
+      "type": "math.chance-sim.v2",
+      "grading": "server",
+      "visual": {
+        "type": "chance-sim"
+      },
+      "payload": {
+        "machine": {
+          "kind": "coin",
+          "weights": [
+            1,
+            1
+          ]
+        },
+        "event": [
+          0
+        ],
+        "stops": [
+          10,
+          50,
+          200,
+          1000,
+          5000
+        ],
+        "tolerance": 4,
+        "minTrials": 1000
+      },
+      "rubric": {
+        "target": {
+          "num": 1,
+          "den": 2
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Flip at least 1000 times. Stop when the share of heads is within 4 points of its chance.",
+          "feedback": {
+            "met": "You let the simulation run and read it well.",
+            "not_yet": "Run it again and watch the pattern."
+          }
+        },
+        "es-MX": {
+          "prompt": "Lanza al menos 1000 veces. Detente cuando la proporción de caras esté a 4 puntos o menos de su probabilidad.",
+          "feedback": {
+            "met": "Dejaste correr la simulación y la leíste bien.",
+            "not_yet": "Córrela otra vez y observa el patrón."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Lance pelo menos 1000 vezes. Pare quando a proporção de caras estiver a até 4 pontos da chance.",
+          "feedback": {
+            "met": "Você deixou a simulação rodar e a leu bem.",
+            "not_yet": "Rode de novo e observe o padrão."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-prob",
+  "lesson_id": "v2-hz-prob-13-17-13-17",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-hz-prob"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Zara reparte los casos posibles en un árbol para comparar las probabilidades.",
+  "title": {
+    "en-US": "Grow a screening tree",
+    "es-MX": "Haz crecer un árbol de detección",
+    "pt-BR": "Cultive uma árvore de triagem"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "tree-screening",
+      "type": "prob.tree.v2",
+      "grading": "server",
+      "visual": {
+        "type": "prob-tree"
+      },
+      "payload": {
+        "population": 1000,
+        "prior": {
+          "part": 1,
+          "whole": 100
+        },
+        "hit": {
+          "part": 9,
+          "whole": 10
+        },
+        "alarm": {
+          "part": 1,
+          "whole": 10
+        },
+        "chips": [
+          1,
+          9,
+          10,
+          99,
+          100,
+          891,
+          900,
+          990
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "has": [
+              "n-10"
+            ],
+            "lacks": [
+              "n-990"
+            ],
+            "has-pos": [
+              "n-9"
+            ],
+            "has-neg": [
+              "n-1"
+            ],
+            "lacks-pos": [
+              "n-99"
+            ],
+            "lacks-neg": [
+              "n-891"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Build the tree for these people. Drag each count to its branch.",
+          "feedback": {
+            "met": "You weighed the chances the right way.",
+            "not_yet": "Split the cases again and count each one."
+          }
+        },
+        "es-MX": {
+          "prompt": "Arma el árbol de estas personas. Arrastra cada cantidad a su rama.",
+          "feedback": {
+            "met": "Pesaste las probabilidades de la forma correcta.",
+            "not_yet": "Separa los casos otra vez y cuenta cada uno."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Monte a árvore dessas pessoas. Arraste cada quantidade para o seu ramo.",
+          "feedback": {
+            "met": "Você pesou as chances do jeito certo.",
+            "not_yet": "Separe os casos de novo e conte cada um."
+          }
+        }
+      }
+    },
+    {
+      "id": "bayes-screening",
+      "type": "prob.bayes.v2",
+      "grading": "server",
+      "visual": {
+        "type": "natural-frequencies"
+      },
+      "payload": {
+        "population": 1000,
+        "prior": {
+          "part": 1,
+          "whole": 100
+        },
+        "hit": {
+          "part": 9,
+          "whole": 10
+        },
+        "alarm": {
+          "part": 1,
+          "whole": 10
+        },
+        "ask": "positive"
+      },
+      "rubric": {
+        "target": "1/12",
+        "tolerance": {
+          "absolute": "0.005"
+        },
+        "review": {
+          "absolute": "0.02"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "One person tests positive. What is the chance they have it?",
+          "feedback": {
+            "met": "You weighed the chances the right way.",
+            "not_yet": "Split the cases again and count each one."
+          }
+        },
+        "es-MX": {
+          "prompt": "Una persona da positivo. ¿Cuál es la probabilidad de que lo tenga?",
+          "feedback": {
+            "met": "Pesaste las probabilidades de la forma correcta.",
+            "not_yet": "Separa los casos otra vez y cuenta cada uno."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Uma pessoa testa positivo. Qual é a chance de ela ter?",
+          "feedback": {
+            "met": "Você pesou as chances do jeito certo.",
+            "not_yet": "Separe os casos de novo e conte cada um."
+          }
+        }
+      }
+    }
+  ]
+}

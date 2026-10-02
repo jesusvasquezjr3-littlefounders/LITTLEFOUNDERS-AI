@@ -47,7 +47,7 @@ import type { MarketScenario } from '../catalog/schema.js';
 import { captionLimit } from '../contentGates/budgets.js';
 import { SCRIPT_REPEAT_THRESHOLD, REDUNDANCY_THRESHOLD, verbatimCoverage } from '../contentGates/redundancy.js';
 import { countWords, tokens } from '../contentGates/text.js';
-import { isNonCopyKey, V2_MENTOR_VOICE_TYPES, type V2AgeBand } from './contract.js';
+import { hasNeutralPayload, isNonCopyKey, V2_MENTOR_VOICE_TYPES, type V2AgeBand } from './contract.js';
 import type { V2LessonPlan } from './plan.js';
 import { runV2CarriedGates } from './carriedGates.js';
 import { horizontePieceGates } from './horizonte/index.js';
@@ -149,10 +149,15 @@ export function v2TextBlocks(document: V2DocumentLike): V2TextBlock[] {
       if (typeof feedback[key] === 'string') blocks.push({ segmentId, path: `feedback.${key}`, role: 'body', text: feedback[key] as string });
     }
     const strings: Array<{ path: string; key: string; text: string }> = [];
+    // A Horizonte kind's payload is ids, enums and numbers; its names are the labels.
+    const neutral = typeof segment.type === 'string' && hasNeutralPayload(segment.type);
+    if (neutral && segment.labels && typeof segment.labels === 'object') {
+      for (const [labelId, text] of Object.entries(segment.labels as Record<string, unknown>)) if (typeof text === 'string') strings.push({ path: `labels.${labelId}`, key: 'label', text });
+    }
     // A narration script is heard, never shown: the redundancy gate reads it, the Copy Budget does not.
     const payload = segment.payload && typeof segment.payload === 'object' ? { ...(segment.payload as Record<string, unknown>) } : segment.payload;
     if (payload && typeof payload === 'object') delete (payload as Record<string, unknown>).narration;
-    payloadStrings(payload, 'payload', '', strings);
+    if (!neutral) payloadStrings(payload, 'payload', '', strings);
     // Ids and enum values (currency: "coins", mode: "discount") are contract
     // vocabulary, not copy (isNonCopyKey): only fields the author writes count.
     for (const item of strings) {

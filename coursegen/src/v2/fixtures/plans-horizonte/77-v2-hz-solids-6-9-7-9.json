@@ -1,0 +1,146 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "horizonte-solids",
+  "lesson_id": "v2-hz-solids-6-9-7-9",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 7,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-hz-solids"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Dina gira cuerpos geométricos para contar caras, aristas y vértices.",
+  "title": {
+    "en-US": "Which solid has no vertices?",
+    "es-MX": "¿Qué cuerpo no tiene vértices?",
+    "pt-BR": "Qual sólido não tem vértices?"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "solid-viewer-no-vertices",
+      "type": "geometry.solid-viewer.v2",
+      "grading": "server",
+      "visual": {
+        "type": "solid-viewer"
+      },
+      "payload": {
+        "solids": [
+          "cube",
+          "cylinder",
+          "pyramid"
+        ],
+        "find": {
+          "kind": "vertices",
+          "count": 0
+        },
+        "report": "faces"
+      },
+      "rubric": {
+        "solid": "cylinder",
+        "count": "3"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Find the solid with no vertices. Then count its faces."
+        },
+        "es-MX": {
+          "prompt": "Encuentra el cuerpo sin vértices. Luego cuenta sus caras."
+        },
+        "pt-BR": {
+          "prompt": "Encontre o sólido sem vértices. Depois conte as faces dele."
+        }
+      }
+    },
+    {
+      "id": "cube-net-name-faces",
+      "type": "geometry.cube-net.v2",
+      "grading": "server",
+      "visual": {
+        "type": "cube-net"
+      },
+      "payload": {
+        "mode": "label",
+        "cells": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "fixed": [
+          {
+            "cell": 2,
+            "name": "front"
+          },
+          {
+            "cell": 3,
+            "name": "right"
+          }
+        ],
+        "edge": 2
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "cell0": [
+              "top"
+            ],
+            "cell1": [
+              "left"
+            ],
+            "cell2": [
+              "front"
+            ],
+            "cell3": [
+              "right"
+            ],
+            "cell4": [
+              "back"
+            ],
+            "cell5": [
+              "bottom"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "This net folds into a cube. Name the four blank faces."
+        },
+        "es-MX": {
+          "prompt": "Esta plantilla forma un cubo. Nombra las cuatro caras vacías."
+        },
+        "pt-BR": {
+          "prompt": "Esta planificação forma um cubo. Nomeie as quatro faces vazias."
+        }
+      }
+    }
+  ]
+}

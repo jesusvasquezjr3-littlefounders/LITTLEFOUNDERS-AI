@@ -1,0 +1,150 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-sim1",
+  "lesson_id": "v2-hz-sim1-13-17-16-17",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 16,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-hz-sim1"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Rho deja correr una simulación pequeña para ver qué patrón aparece con el azar.",
+  "title": {
+    "en-US": "Catch the true share",
+    "es-MX": "Atrapa la proporción real",
+    "pt-BR": "Capture a proporção real"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "coverage-three-fifths",
+      "type": "stats.coverage-sim.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coverage-sim"
+      },
+      "payload": {
+        "truth": {
+          "num": 3,
+          "den": 5
+        },
+        "levels": [
+          80,
+          90,
+          95,
+          99
+        ],
+        "sizes": [
+          20,
+          50,
+          100,
+          200
+        ],
+        "start": {
+          "level": 80,
+          "size": 20
+        },
+        "goal": {
+          "covered": 92
+        }
+      },
+      "rubric": {
+        "target": {
+          "level": 99
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Where 3 in 5 say yes, pick a level and size so at least 92 intervals cover the truth.",
+          "feedback": {
+            "met": "You let the simulation run and read it well.",
+            "not_yet": "Run it again and watch the pattern."
+          }
+        },
+        "es-MX": {
+          "prompt": "Donde 3 de cada 5 dicen que sí, elige un nivel y un tamaño para que al menos 92 intervalos cubran la verdad.",
+          "feedback": {
+            "met": "Dejaste correr la simulación y la leíste bien.",
+            "not_yet": "Córrela otra vez y observa el patrón."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Onde 3 em cada 5 dizem sim, escolha um nível e um tamanho para que pelo menos 92 intervalos cubram a verdade.",
+          "feedback": {
+            "met": "Você deixou a simulação rodar e a leu bem.",
+            "not_yet": "Rode de novo e observe o padrão."
+          }
+        }
+      }
+    },
+    {
+      "id": "bootstrap-six-values",
+      "type": "stats.bootstrap-sim.v2",
+      "grading": "server",
+      "visual": {
+        "type": "bootstrap-sim"
+      },
+      "payload": {
+        "axis": {
+          "min": 0,
+          "max": 10
+        },
+        "data": [
+          2,
+          3,
+          3,
+          5,
+          6,
+          8
+        ],
+        "level": 90,
+        "stops": [
+          50,
+          200,
+          500,
+          1000,
+          3000
+        ],
+        "tolerance": 1,
+        "minResamples": 500
+      },
+      "rubric": {
+        "target": {
+          "low": 19,
+          "high": 36
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Resample the six values with replacement. Run at least 500 resamples so the middle 90% of the totals settles.",
+          "feedback": {
+            "met": "You let the simulation run and read it well.",
+            "not_yet": "Run it again and watch the pattern."
+          }
+        },
+        "es-MX": {
+          "prompt": "Remuestrea los seis valores con reemplazo. Haz al menos 500 remuestreos para que el 90% central de los totales se asiente.",
+          "feedback": {
+            "met": "Dejaste correr la simulación y la leíste bien.",
+            "not_yet": "Córrela otra vez y observa el patrón."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Reamostre os seis valores com reposição. Faça pelo menos 500 reamostragens para que os 90% centrais dos totais se estabilizem.",
+          "feedback": {
+            "met": "Você deixou a simulação rodar e a leu bem.",
+            "not_yet": "Rode de novo e observe o padrão."
+          }
+        }
+      }
+    }
+  ]
+}

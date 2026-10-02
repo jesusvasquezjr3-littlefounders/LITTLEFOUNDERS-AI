@@ -1,0 +1,96 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "horizonte-space2",
+  "lesson_id": "v2-hz-space2-10-12-12-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 12,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-hz-space2"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Rho lee vistas y cortes de un cuerpo para saber qué hay dentro.",
+  "title": {
+    "en-US": "The nearest route",
+    "es-MX": "La ruta más cercana",
+    "pt-BR": "A rota mais próxima"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "globe-nearest-route",
+      "type": "geography.globe-route.v2",
+      "grading": "server",
+      "visual": {
+        "type": "globe-route"
+      },
+      "payload": {
+        "routes": [
+          {
+            "id": "a",
+            "from": "mexico-city",
+            "to": "madrid",
+            "feeBps": 300,
+            "flatCents": 500
+          },
+          {
+            "id": "b",
+            "from": "mexico-city",
+            "to": "houston",
+            "feeBps": 400,
+            "flatCents": 300
+          },
+          {
+            "id": "c",
+            "from": "mexico-city",
+            "to": "tokyo",
+            "feeBps": 250,
+            "flatCents": 600
+          },
+          {
+            "id": "d",
+            "from": "mexico-city",
+            "to": "new-york",
+            "feeBps": 350,
+            "flatCents": 400
+          }
+        ],
+        "ask": "shortest",
+        "sendCents": 20000
+      },
+      "rubric": {
+        "choice": "b"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Four parcels leave Mexico City. Which route is the shortest?",
+          "feedback": {
+            "met": "You placed the pieces in space correctly.",
+            "not_yet": "Look from another side and try again."
+          }
+        },
+        "es-MX": {
+          "prompt": "Cuatro paquetes salen de Ciudad de México. ¿Qué ruta es la más corta?",
+          "feedback": {
+            "met": "Colocaste las piezas en el espacio correctamente.",
+            "not_yet": "Mira desde otro lado y prueba otra vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quatro pacotes saem da Cidade do México. Qual rota é a mais curta?",
+          "feedback": {
+            "met": "Você colocou as peças no espaço corretamente.",
+            "not_yet": "Olhe de outro lado e tente de novo."
+          }
+        }
+      }
+    }
+  ]
+}

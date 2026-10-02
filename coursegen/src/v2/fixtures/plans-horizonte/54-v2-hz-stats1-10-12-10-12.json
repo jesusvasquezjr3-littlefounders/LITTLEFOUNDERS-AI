@@ -1,0 +1,128 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "horizonte-stats1",
+  "lesson_id": "v2-hz-stats1-10-12-10-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-hz-stats1"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Zara pone datos en un tablero para elegir el centro que mejor los resume.",
+  "title": {
+    "en-US": "Move the median",
+    "es-MX": "Mueve la mediana",
+    "pt-BR": "Mova a mediana"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "dot-plot-median",
+      "type": "stats.dot-plot.v2",
+      "grading": "server",
+      "visual": {
+        "type": "dot-plot"
+      },
+      "payload": {
+        "axis": {
+          "min": 0,
+          "max": 10
+        },
+        "dots": [
+          2,
+          3,
+          4,
+          4,
+          5,
+          7,
+          9
+        ],
+        "measure": "median",
+        "moves": 2
+      },
+      "rubric": {
+        "target": 6
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Move up to two dots so the median is 6.",
+          "feedback": {
+            "met": "You read the data and chose the center that fits it.",
+            "not_yet": "Look at the shape of the data again before you decide."
+          }
+        },
+        "es-MX": {
+          "prompt": "Mueve hasta dos puntos para que la mediana sea 6.",
+          "feedback": {
+            "met": "Leíste los datos y elegiste el centro que les queda.",
+            "not_yet": "Mira la forma de los datos otra vez antes de decidir."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Mova até dois pontos para que a mediana seja 6.",
+          "feedback": {
+            "met": "Você leu os dados e escolheu o centro que combina com eles.",
+            "not_yet": "Olhe o formato dos dados de novo antes de decidir."
+          }
+        }
+      }
+    },
+    {
+      "id": "balance-level",
+      "type": "stats.balance-point.v2",
+      "grading": "server",
+      "visual": {
+        "type": "balance-point"
+      },
+      "payload": {
+        "axis": {
+          "min": 0,
+          "max": 12
+        },
+        "dots": [
+          1,
+          2,
+          2,
+          5,
+          8,
+          12
+        ],
+        "pivot": 3
+      },
+      "rubric": {
+        "target": 5
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Slide the pivot until the beam balances.",
+          "feedback": {
+            "met": "You read the data and chose the center that fits it.",
+            "not_yet": "Look at the shape of the data again before you decide."
+          }
+        },
+        "es-MX": {
+          "prompt": "Desliza el pivote hasta equilibrar la barra.",
+          "feedback": {
+            "met": "Leíste los datos y elegiste el centro que les queda.",
+            "not_yet": "Mira la forma de los datos otra vez antes de decidir."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Deslize o pivô até equilibrar a barra.",
+          "feedback": {
+            "met": "Você leu os dados e escolheu o centro que combina com eles.",
+            "not_yet": "Olhe o formato dos dados de novo antes de decidir."
+          }
+        }
+      }
+    }
+  ]
+}

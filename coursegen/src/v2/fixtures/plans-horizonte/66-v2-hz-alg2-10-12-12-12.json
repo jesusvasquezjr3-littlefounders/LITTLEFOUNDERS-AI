@@ -1,0 +1,101 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "horizonte-alg2",
+  "lesson_id": "v2-hz-alg2-10-12-12-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 12,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-hz-alg2"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Rho conecta una gráfica con su regla para descubrir qué dice cada una.",
+  "title": {
+    "en-US": "Fit the line",
+    "es-MX": "Ajusta la recta",
+    "pt-BR": "Ajuste a reta"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "graph-line-two-dots",
+      "type": "math.function-graph.v2",
+      "grading": "server",
+      "visual": {
+        "type": "function-graph"
+      },
+      "payload": {
+        "curve": "line",
+        "start": {
+          "m": "1",
+          "b": "0"
+        },
+        "sliders": {
+          "m": {
+            "min": "-5",
+            "max": "5",
+            "step": "1"
+          },
+          "b": {
+            "min": "-6",
+            "max": "6",
+            "step": "1"
+          }
+        },
+        "window": {
+          "xMin": -6,
+          "xMax": 6,
+          "yMin": -8,
+          "yMax": 8
+        },
+        "marks": [
+          {
+            "x": 0,
+            "y": -3
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
+      },
+      "rubric": {
+        "family": "line",
+        "target": {
+          "m": "2",
+          "b": "-3"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Slide m and b until the line goes through both dots.",
+          "feedback": {
+            "met": "You connected the graph with its rule.",
+            "not_yet": "Check the rule against the picture again."
+          }
+        },
+        "es-MX": {
+          "prompt": "Desliza m y b hasta que la recta pase por ambos puntos.",
+          "feedback": {
+            "met": "Conectaste la gráfica con su regla.",
+            "not_yet": "Revisa la regla contra la imagen otra vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Deslize m e b até que a reta passe pelos dois pontos.",
+          "feedback": {
+            "met": "Você conectou o gráfico com a sua regra.",
+            "not_yet": "Confira a regra com a imagem de novo."
+          }
+        }
+      }
+    }
+  ]
+}

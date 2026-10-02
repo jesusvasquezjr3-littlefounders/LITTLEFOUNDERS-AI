@@ -1,0 +1,99 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-alg1",
+  "lesson_id": "v2-hz-alg1-13-17-13-15",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 15
+  },
+  "knowledge_component_ids": [
+    "kc-hz-alg1"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Zara reescribe un tablero de fichas y tarjetas sin romper la igualdad.",
+  "title": {
+    "en-US": "Distribute with an area",
+    "es-MX": "Distribuye con un área",
+    "pt-BR": "Distribua com uma área"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "area-distribute",
+      "type": "math.area-model.v2",
+      "grading": "server",
+      "visual": {
+        "type": "area-distribute"
+      },
+      "payload": {
+        "fill": "cells",
+        "rows": [
+          "0:3"
+        ],
+        "cols": [
+          "1:1",
+          "0:4"
+        ],
+        "pool": [
+          "0:12",
+          "1:3",
+          "1:12",
+          "0:7"
+        ]
+      },
+      "notation": {
+        "tex": "3(x+4)"
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "cell-0-0": [
+              "1:3"
+            ],
+            "cell-0-1": [
+              "0:12"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fill each cell with its product. Then read the expansion.",
+          "feedback": {
+            "met": "You kept the board true while you rewrote it.",
+            "not_yet": "Look at the pieces again and match them in pairs."
+          },
+          "notation": {
+            "spokenText": "three times the sum of x and four"
+          }
+        },
+        "es-MX": {
+          "prompt": "Llena cada celda con su producto. Luego lee el desarrollo.",
+          "feedback": {
+            "met": "Mantuviste el tablero correcto mientras lo reescribías.",
+            "not_yet": "Mira las piezas otra vez y júntalas en parejas."
+          },
+          "notation": {
+            "spokenText": "tres por la suma de x y cuatro"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Preencha cada célula com seu produto. Depois leia o desenvolvimento.",
+          "feedback": {
+            "met": "Você manteve o quadro correto enquanto o reescrevia.",
+            "not_yet": "Olhe as peças de novo e junte-as em pares."
+          },
+          "notation": {
+            "spokenText": "três vezes a soma de x e quatro"
+          }
+        }
+      }
+    }
+  ]
+}

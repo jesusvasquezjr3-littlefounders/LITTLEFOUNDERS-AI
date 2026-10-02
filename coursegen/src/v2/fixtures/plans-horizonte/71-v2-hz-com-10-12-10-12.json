@@ -1,0 +1,196 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "horizonte-com",
+  "lesson_id": "v2-hz-com-10-12-10-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-hz-com"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Liruf recorre conexiones y compuertas para ver cómo viaja la información.",
+  "title": {
+    "en-US": "The seven bridges",
+    "es-MX": "Los siete puentes",
+    "pt-BR": "As sete pontes"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "konigsberg",
+      "type": "math.network-count.v2",
+      "grading": "server",
+      "visual": {
+        "type": "graph"
+      },
+      "payload": {
+        "task": "odd",
+        "nodes": [
+          {
+            "id": "island",
+            "x": 50,
+            "y": 50
+          },
+          {
+            "id": "north",
+            "x": 50,
+            "y": 12
+          },
+          {
+            "id": "south",
+            "x": 50,
+            "y": 88
+          },
+          {
+            "id": "east",
+            "x": 90,
+            "y": 50
+          }
+        ],
+        "edges": [
+          {
+            "id": "bridge-1",
+            "from": "island",
+            "to": "north"
+          },
+          {
+            "id": "bridge-2",
+            "from": "island",
+            "to": "north"
+          },
+          {
+            "id": "bridge-3",
+            "from": "island",
+            "to": "south"
+          },
+          {
+            "id": "bridge-4",
+            "from": "island",
+            "to": "south"
+          },
+          {
+            "id": "bridge-5",
+            "from": "island",
+            "to": "east"
+          },
+          {
+            "id": "bridge-6",
+            "from": "north",
+            "to": "east"
+          },
+          {
+            "id": "bridge-7",
+            "from": "south",
+            "to": "east"
+          }
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "odd": [
+              "island",
+              "north",
+              "south",
+              "east"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Count the bridges at each land area. Mark every area with an odd number of bridges.",
+          "feedback": {
+            "met": "You followed the connections the right way.",
+            "not_yet": "Trace each link again, one by one."
+          },
+          "labels": {
+            "island": "Island",
+            "north": "North bank",
+            "south": "South bank",
+            "east": "East bank"
+          }
+        },
+        "es-MX": {
+          "prompt": "Cuenta los puentes de cada zona. Marca cada zona con un número impar de puentes.",
+          "feedback": {
+            "met": "Seguiste las conexiones de la forma correcta.",
+            "not_yet": "Recorre cada enlace otra vez, uno por uno."
+          },
+          "labels": {
+            "island": "Isla",
+            "north": "Orilla norte",
+            "south": "Orilla sur",
+            "east": "Orilla este"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Conte as pontes de cada área. Marque cada área com um número ímpar de pontes.",
+          "feedback": {
+            "met": "Você seguiu as conexões do jeito certo.",
+            "not_yet": "Percorra cada ligação de novo, uma por uma."
+          },
+          "labels": {
+            "island": "Ilha",
+            "north": "Margem norte",
+            "south": "Margem sul",
+            "east": "Margem leste"
+          }
+        }
+      }
+    },
+    {
+      "id": "bits-ten",
+      "type": "computing.bits-gates.v2",
+      "grading": "server",
+      "visual": {
+        "type": "bits"
+      },
+      "payload": {
+        "bits": 4,
+        "target": 10
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "bits-on": [
+              "bit-8",
+              "bit-2"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Switch the bits on to make 10. Each bit is worth double the one to its right.",
+          "feedback": {
+            "met": "You followed the connections the right way.",
+            "not_yet": "Trace each link again, one by one."
+          }
+        },
+        "es-MX": {
+          "prompt": "Enciende los bits para formar 10. Cada bit vale el doble del que está a su derecha.",
+          "feedback": {
+            "met": "Seguiste las conexiones de la forma correcta.",
+            "not_yet": "Recorre cada enlace otra vez, uno por uno."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ligue os bits para formar 10. Cada bit vale o dobro do que está à sua direita.",
+          "feedback": {
+            "met": "Você seguiu as conexões do jeito certo.",
+            "not_yet": "Percorra cada ligação de novo, uma por uma."
+          }
+        }
+      }
+    }
+  ]
+}

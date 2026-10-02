@@ -1,0 +1,210 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "horizonte-num-a",
+  "lesson_id": "v2-hz-num-a-6-9-6-9",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-hz-num-a"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Liruf se acerca a una escala para leer decimales y fracciones con calma.",
+  "title": {
+    "en-US": "Show seven",
+    "es-MX": "Muestra siete",
+    "pt-BR": "Mostre sete"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "rekenrek-seven",
+      "type": "math.rekenrek.v2",
+      "grading": "server",
+      "visual": {
+        "type": "rekenrek"
+      },
+      "payload": {
+        "start": [
+          0,
+          0
+        ]
+      },
+      "rubric": {
+        "target": [
+          5,
+          2
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Slide 5 beads on top and 2 below."
+        },
+        "es-MX": {
+          "prompt": "Desliza 5 cuentas arriba y 2 abajo."
+        },
+        "pt-BR": {
+          "prompt": "Deslize 5 contas em cima e 2 embaixo."
+        }
+      }
+    },
+    {
+      "id": "abacus-forty-seven",
+      "type": "math.abacus.v2",
+      "grading": "server",
+      "visual": {
+        "type": "abacus"
+      },
+      "payload": {
+        "start": [
+          0,
+          0
+        ]
+      },
+      "rubric": {
+        "target": [
+          4,
+          7
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Show 47 on the abacus."
+        },
+        "es-MX": {
+          "prompt": "Muestra 47 en el ábaco."
+        },
+        "pt-BR": {
+          "prompt": "Mostre 47 no ábaco."
+        }
+      }
+    },
+    {
+      "id": "jump-up",
+      "type": "math.number-line.empty.v2",
+      "grading": "server",
+      "visual": {
+        "type": "empty-number-line"
+      },
+      "payload": {
+        "start": 47,
+        "sizes": [
+          1,
+          5,
+          10,
+          20
+        ],
+        "max": 6
+      },
+      "rubric": {
+        "target": 73
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Jump from 47 to 73."
+        },
+        "es-MX": {
+          "prompt": "Salta de 47 a 73."
+        },
+        "pt-BR": {
+          "prompt": "Pule de 47 a 73."
+        }
+      }
+    },
+    {
+      "id": "clock-half-past",
+      "type": "math.clock.v2",
+      "grading": "server",
+      "visual": {
+        "type": "analog-clock"
+      },
+      "payload": {
+        "start": 0,
+        "step": 15
+      },
+      "rubric": {
+        "target": 210
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Show half past three."
+        },
+        "es-MX": {
+          "prompt": "Muestra las tres y media."
+        },
+        "pt-BR": {
+          "prompt": "Mostre três e meia."
+        }
+      }
+    },
+    {
+      "id": "ruler-six",
+      "type": "math.ruler.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ruler"
+      },
+      "payload": {
+        "unit": "cm",
+        "from": 2,
+        "start": 3,
+        "max": 10
+      },
+      "rubric": {
+        "target": 8
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Make the bar 6 cm long."
+        },
+        "es-MX": {
+          "prompt": "Haz la barra de 6 cm."
+        },
+        "pt-BR": {
+          "prompt": "Faça a barra com 6 cm."
+        }
+      }
+    },
+    {
+      "id": "balance-it",
+      "type": "math.pan-balance.v2",
+      "grading": "server",
+      "visual": {
+        "type": "pan-balance"
+      },
+      "payload": {
+        "left": [
+          5
+        ],
+        "right": [],
+        "weights": [
+          1,
+          2,
+          2,
+          3
+        ]
+      },
+      "rubric": {
+        "target": 0
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Make both pans balance."
+        },
+        "es-MX": {
+          "prompt": "Equilibra los dos platillos."
+        },
+        "pt-BR": {
+          "prompt": "Equilibre os dois pratos."
+        }
+      }
+    }
+  ]
+}
