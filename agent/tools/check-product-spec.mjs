@@ -95,6 +95,15 @@ export const STAGE_BRIDGES = [
   'frontend/src/rebuild/learning/CompactMentorStage.tsx',
   'frontend/src/rebuild/mentor/MentorStage.tsx',
 ];
+/*
+ * OD-32: the Horizonte Visual's one lazy 3D solids viewer reuses the same
+ * renderer targets. Only these folders (the solids pack and the default-off,
+ * consent-gated AR pilot) may import them, never the rest of horizonte/.
+ */
+export const SOLIDS_BRIDGE_PREFIXES = [
+  'frontend/src/rebuild/learning/horizonte/solids/',
+  'frontend/src/rebuild/learning/horizonte/space2/ar/',
+];
 export const STAGE_BRIDGE_TARGETS = [
   'frontend/src/tutor-scene/TutorStage',
   'frontend/src/tutor-scene/quality',
@@ -104,7 +113,8 @@ export const STAGE_BRIDGE_TARGETS = [
 /** Imports of one rebuilt file that reach outside src/rebuild and src/i18n, except a stage bridge's named targets. */
 export function boundaryFailures(root, file, source) {
   const failures = [];
-  const bridge = STAGE_BRIDGES.some((path) => resolve(root, path) === resolve(file));
+  const bridge = STAGE_BRIDGES.some((path) => resolve(root, path) === resolve(file))
+    || SOLIDS_BRIDGE_PREFIXES.some((prefix) => resolve(file).startsWith(resolve(root, prefix) + sep));
   const targets = new Set(STAGE_BRIDGE_TARGETS.map((path) => resolve(root, path)));
   for (const match of source.matchAll(/(?:from\s*|import\s*(?:\(\s*)?)['"]([^'"]+)['"]/g)) {
     const name = match[1];
