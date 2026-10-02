@@ -6,7 +6,7 @@ import { checkCopy, type AgeBand, type CopyRole, type Locale } from '../../../de
 import { LessonDocumentView } from '../../LessonDocumentView';
 import type { HorizonteCopy, IcapLevel } from '../boardTypes';
 import { HORIZONTE_BOARDS } from '../registry';
-import { horizonteFixture, horizonteFixtureDocument } from '../previewDocument';
+import { horizonteFixture, horizonteFixtureDocument, horizonteFixtureSeeds } from '../previewDocument';
 
 export const HZ_LOCALES: readonly Locale[] = ['en-US', 'es-MX', 'pt-BR'];
 export const HZ_MIN_HIT_PX = 64;
@@ -112,7 +112,7 @@ export async function assertBoardContract(options: BoardContractOptions): Promis
     const raw = horizonteFixtureDocument(options.pack, options.fixtureId, locale);
     const ageBand = fixture!.ageBand as AgeBand;
     const { container } = render(<LessonDocumentView raw={raw} locale={locale} ageBand={ageBand} onBack={() => {}}
-      onGradeAny={() => ({ verdict: options.grade?.() ?? 'review' })} />);
+      attemptSeeds={horizonteFixtureSeeds(options.pack, options.fixtureId, locale)} onGradeAny={() => ({ verdict: options.grade?.() ?? 'review' })} />);
     await waitFor(() => expect(container.querySelector('.lf-learning-board'), `${type} (${locale}): the board renders`).not.toBeNull(), { timeout: 5000 });
     const at = `${type} (${locale})`;
 

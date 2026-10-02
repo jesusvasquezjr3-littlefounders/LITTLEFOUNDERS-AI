@@ -1,0 +1,8 @@
+[
+  { "fixture": "which-has-no-vertices", "age": "6-9" },
+  { "fixture": "nine-edges", "age": "10-12" },
+  { "fixture": "name-the-faces", "age": "6-9" },
+  { "fixture": "finish-the-net", "age": "10-12" },
+  { "fixture": "staircase", "age": "10-12" },
+  { "fixture": "two-by-two", "age": "6-9" }
+]

@@ -1,0 +1,14 @@
+[
+  { "fixture": "geoboard-area-six", "age": "6-9" },
+  { "fixture": "geoboard-right-triangle", "age": "10-12" },
+  { "fixture": "area-l-shape", "age": "6-9" },
+  { "fixture": "area-staircase", "age": "10-12" },
+  { "fixture": "reflect-triangle", "age": "6-9" },
+  { "fixture": "translate-parallelogram", "age": "6-9" },
+  { "fixture": "rotate-quarter", "age": "10-12" },
+  { "fixture": "mirror-half", "age": "10-12" },
+  { "fixture": "dilate-center", "age": "13-17" },
+  { "fixture": "tile-domino", "age": "6-9" },
+  { "fixture": "tile-l", "age": "10-12" },
+  { "fixture": "tile-bump", "age": "13-17" }
+]

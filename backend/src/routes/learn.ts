@@ -36,6 +36,8 @@ import { chapterPolicy, coursePrerequisiteDecision, resolvePathway } from '../se
 import { v2ApproachOf } from '../services/v2SegmentFamilies.js';
 import { gradeV2Visual, v2ApproachIds, v2ApproachRefusal, projectAdventureTheme, projectV2MentorStage, v2NarrationAudio, v2ViewedSegmentIds, stripV2MentorStage, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, v2CpaSkippedSegmentIds, v2FirstUnaidedStage, v2GradePrerequisiteSegmentId, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
 import { mintLessonAttemptToken, reissueLessonAttemptToken, verifyLessonAttemptToken } from '../services/lessonAttemptToken.js';
+import { deriveAttemptSeed } from '../services/horizonteAttemptSeed.js';
+import { isSeededHorizonteType } from '../services/horizonte/index.js';
 import { getOwnLearnerIntelligence, recordExperimentExposure } from '../services/learningIntel.js';
 import { learnRegisterRouter } from './learnRegister.js';
 import { guidedReviewFor, localizedTitle, recentV2Outcomes, withLearnerMentor, type GuidedReviewOffer } from '../services/guidedReview.js';
@@ -113,6 +115,17 @@ function hasV2LessonEligibility(res: Response, schemaVersion: number, document: 
 /** v2 is off until a deployment explicitly provisions its independent signer. */
 function lessonAttemptSecret(): string | null {
   return getConfig().LESSON_ATTEMPT_SECRET ?? null;
+}
+
+/** F3.0: the seed of every seeded segment, derived from the token just issued (or re-signed), beside `attempt_tokens`. */
+function attemptSeedsField(
+  segments: ReadonlyArray<{ id: string; type: string }>,
+  attempts: ReadonlyArray<{ sid: string; lid: string; uid: string; jti: string; exp: number }>,
+  secret: string,
+): { attempt_seeds?: Record<string, string> } {
+  const seeded = new Set(segments.filter((segment) => isSeededHorizonteType(segment.type)).map((segment) => segment.id));
+  const entries = attempts.filter((attempt) => seeded.has(attempt.sid)).map((attempt) => [attempt.sid, deriveAttemptSeed(attempt, secret)] as const);
+  return entries.length > 0 ? { attempt_seeds: Object.fromEntries(entries) } : {};
 }
 
 /** A learner's course tree: the linear tree, or the pathway tree with its `pathway` view (COURSE_PATHWAY_ENGINE). */
@@ -1068,6 +1081,10 @@ export function learnRouter(): Router {
             attempted_segment_ids: attemptedSegmentIds,
             viewed_segment_ids: viewedSegmentIds,
             attempt_tokens: Object.fromEntries(serverSegmentIds.map((segmentId, index) => [segmentId, reissued[index]!.token])),
+            ...attemptSeedsField(document.segments, serverSegmentIds.map((segmentId) => {
+              const nonce = nonceBySegment.get(segmentId)!;
+              return { sid: segmentId, lid: lessonId, uid: user.id, jti: nonce.jti, exp: Math.floor(Date.parse(nonce.expires_at) / 1000) };
+            }), secret),
           });
         }
       }
@@ -1113,6 +1130,7 @@ export function learnRouter(): Router {
       viewed_segment_ids: [],
       ...(cpaEntryStage ? { cpa_entry_stage: cpaEntryStage } : {}),
       attempt_tokens: Object.fromEntries(issued.map((item) => [item.segmentId, item.token])),
+      ...attemptSeedsField(document.segments, issued.map((item) => item.payload), secret),
     });
   });
 
@@ -1260,7 +1278,7 @@ export function learnRouter(): Router {
         const approachRefusal = v2ApproachRefusal(document, segmentId, pinnedRun?.approach_id);
         if (approachRefusal) return fail(res, 409, approachRefusal, approachRefusal === 'APPROACH_REQUIRED' ? 'Choose how to practise first' : 'This step belongs to another approach');
       }
-      const graded = gradeV2Visual(document, picked.answer_keys as Record<string, unknown>, segmentId, answer);
+      const graded = gradeV2Visual(document, picked.answer_keys as Record<string, unknown>, segmentId, answer, { seed: deriveAttemptSeed(verified.payload, secret) });
       if (!graded) {
         // Part 8: a browser that read the refused answer as valid disagreed with Core; the miss is counted.
         if (parsed.data.client_verdict === 'valid') recordServerLearnEvent(user, 'scorer_parity_miss', lessonId, { segmentId });
@@ -1345,6 +1363,7 @@ export function learnRouter(): Router {
           ...(receipt.verdict.diagnostic && receipt.verdict.diagnostic !== 'none' ? { diagnostic: receipt.verdict.diagnostic } : {}) },
         replayed: receipt.replayed,
         ...(retryAttemptToken ? { retry_attempt_token: retryAttemptToken } : {}),
+        ...(retryAttemptToken && isSeededHorizonteType(gradedSegment.type) ? { retry_attempt_seed: deriveAttemptSeed(next.payload, secret) } : {}),
         ...(guidedReview ? { guided_review: guidedReview } : {}),
       });
     }
