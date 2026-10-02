@@ -142,7 +142,8 @@ describe('alg1 pack: F2.1 tiles, F2.2 cards, F2.3 area model (D02, B27, D06, D09
       expect(v2PublicLessonSchema.safeParse(lesson(picture)).success).toBe(true);
       const mixed = lesson(fixture('box-mixed'));
       expect(v2PublicLessonSchema.safeParse(mixed).success).toBe(true);
-      const { notation: _dropped, ...bare } = mixed.segments[0] as Record<string, unknown> & { notation: unknown };
+      const bare: Record<string, unknown> = { ...(mixed.segments[0] as Record<string, unknown>) };
+      delete bare.notation;
       expect(v2PublicLessonSchema.safeParse({ ...mixed, segments: [bare] }).success).toBe(false);
       const lying = { ...mixed, segments: [{ ...mixed.segments[0], notation: { tex: 'x+2=7', spokenText: 'x plus two equals seven' } }] };
       expect(v2PublicLessonSchema.safeParse(lying).success).toBe(false);
