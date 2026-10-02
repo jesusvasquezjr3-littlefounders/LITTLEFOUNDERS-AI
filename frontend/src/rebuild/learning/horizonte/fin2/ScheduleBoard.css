@@ -1,0 +1,18 @@
+/* F2.15 schedule board: task rows by period or step, arrows for what must come first, and kanban columns. Tokens only. */
+.lf-sched-chart { inline-size: 100%; max-inline-size: 28rem; block-size: auto; }
+.lf-sched-chart text { fill: var(--content); font-size: 11px; }
+.lf-sched-chart .lf-sched-note { fill: var(--content-muted); }
+.lf-sched-grid { stroke: var(--outline); stroke-width: 1; }
+.lf-sched-bar { fill: var(--sky-strong); }
+.lf-sched-bar--broken { fill: var(--sunken); stroke: var(--berry-strong); stroke-width: 2; stroke-dasharray: 3 2; }
+.lf-sched-due { stroke: var(--content); stroke-width: 2; stroke-dasharray: 4 3; }
+.lf-sched-arrow path { stroke: var(--content); stroke-width: 1.5; }
+.lf-sched-arrow polygon { fill: var(--content); }
+.lf-sched-arrow--broken path { stroke: var(--berry-strong); stroke-dasharray: 3 2; }
+.lf-sched-arrow--broken polygon { fill: var(--berry-strong); }
+.lf-sched-over { fill: none; stroke: var(--berry-strong); stroke-width: 2; stroke-dasharray: 3 2; }
+.lf-sched-column { fill: var(--sunken); stroke: var(--outline); stroke-width: 1; }
+.lf-sched-card { fill: var(--surface); stroke: var(--content-muted); stroke-width: 1; }
+.lf-sched-card--full { fill: var(--sky-strong); stroke: var(--sky-strong); }
+.lf-sched-done { display: flex; flex-wrap: wrap; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-sched-done li { padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-md); background: var(--surface); }
