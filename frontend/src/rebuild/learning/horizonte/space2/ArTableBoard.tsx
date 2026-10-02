@@ -5,7 +5,7 @@ import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { DEFAULT_VIEW, SCENE_SIZE, projectPoint, type SolidView } from '../solids/projection.generated';
 import { AR_OBJECTS, arPilotGate, arVolumeMl, arWire, readArPayload, type ArObjectId, type ArPayload } from './ar.generated';
-import { useArPilot, type ArSessionHandle } from './arPilot';
+import { useArPilot, type ArSessionHandle } from './ar/arPilot';
 import { count, fill, objectLabel, spaceText } from './spaceText';
 import { TurnStage } from './TurnStage';
 import '../horizonte.css';
@@ -38,7 +38,7 @@ function ArTableBoardView({ document, segment, payload, onBack, sequence }: Omit
   const { locale } = document;
   const t = spaceText(locale);
   const env = useArPilot();
-  const open = arPilotGate({ flag: env.flag, age: document.eligibility.minimum_age, consent: env.consent }) === 'open';
+  const open = arPilotGate({ flag: env.flag, age: env.age ?? document.eligibility.minimum_age, consent: env.consent }) === 'open';
   const [view, setView] = useState<SolidView>(DEFAULT_VIEW);
   const [engaged, setEngaged] = useState(false);
   const [supported, setSupported] = useState<boolean | null>(null);

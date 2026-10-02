@@ -1,5 +1,5 @@
 import { BoxGeometry, Color, CylinderGeometry, DirectionalLight, HemisphereLight, Matrix4, Mesh, MeshStandardMaterial, PerspectiveCamera, RingGeometry, Scene, WebGLRenderer, type BufferGeometry } from 'three';
-import { AR_OBJECTS, type ArObjectId } from './ar.generated';
+import { AR_OBJECTS, type ArObjectId } from '../ar.generated';
 import { arSessionInit, type ArSessionHandle, type ArStartInput } from './arPilot';
 
 /*

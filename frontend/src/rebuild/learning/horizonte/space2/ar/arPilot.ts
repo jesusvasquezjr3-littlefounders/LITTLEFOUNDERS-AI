@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import type { ArConsent, ArObjectId } from './ar.generated';
+import type { ArConsent, ArObjectId } from '../ar.generated';
 
 /*
  * F4.9: what the AR pilot depends on, injected so a test (and, later, the app) can supply it. The default is closed on every
@@ -36,6 +36,8 @@ export interface ArPilotEnvironment {
   flag: boolean;
   /** Recorded consent, or null when none is recorded (always null until guardian consent is wired in). */
   consent: ArConsent | null;
+  /** The learner's age in whole years when the app knows it; absent, the board uses the lesson's age floor, which is never above it. */
+  age?: number | null;
   /** The browser's WebXR system, or null where there is none. Read lazily, only when the gate is open. */
   xr: () => ArXrSystem | null;
   /** Starts a session. The default loads the three.js session module on demand. */
@@ -51,6 +53,7 @@ export const arSessionInit = (): { requiredFeatures: string[]; optionalFeatures:
 export const defaultArPilot: ArPilotEnvironment = {
   flag: import.meta.env.VITE_HORIZONTE_AR_PILOT === 'true',
   consent: null,
+  age: null,
   xr: () => (typeof navigator === 'undefined' ? null : (navigator as unknown as { xr?: ArXrSystem }).xr ?? null),
   start: (input) => import('./arSession').then((module) => module.startArSession(input)),
 };

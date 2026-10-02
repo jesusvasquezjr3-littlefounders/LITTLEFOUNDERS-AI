@@ -37,10 +37,15 @@ missing flag reveals nothing about the learner. A test proves each branch: defau
 everything else on, learner consent alone is closed for a 13 year old, an adult needs no guardian, and a non-integer or missing age is
 closed (`space2.test.ts` in the backend and `space2.test.tsx` in the browser).
 
-Safeguards built into the board (`ArTableBoard.tsx`, `arPilot.ts`, `arSession.ts`):
+Safeguards built into the board (`ArTableBoard.tsx`, `ar/arPilot.ts`, `ar/arSession.ts`). The two files under `space2/ar/` are the
+only ones in the pack allowed to import the 3D renderer (OD-32 names `horizonte/space2/ar/` in `SOLIDS_BRIDGE_PREFIXES`), and a test pins
+that no other file in the pack imports `three`:
 
-- Default environment: flag from the build variable, consent `null`. **Nothing records consent yet**, so a production build cannot open
-  the gate even with the flag on. Consent is injected through `ArPilotContext` (`ArPilotEnvironment.consent`).
+- Default environment: flag from the build variable, consent `null`, age `null`. **Nothing records consent yet**, so a production build
+  cannot open the gate even with the flag on. Consent and the learner's age are injected through `ArPilotContext`
+  (`ArPilotEnvironment.consent` and `.age`). When no age is supplied the board gates on the lesson's age floor
+  (`eligibility.minimum_age`, 13 or more for this step), which is never above the learner's real age: that can only keep the gate closed
+  (a minor needs guardian consent, so an adult with only their own consent stays closed until the app supplies the age).
 - The browser's camera permission is asked only after an explicit in-app consent panel ("See on table", then a panel with "Allow camera"
   and a decline). Before that no `navigator.xr.requestSession` call is made; a test fails the board if `start` or `requestSession` runs
   before the learner allows it.
@@ -49,7 +54,7 @@ Safeguards built into the board (`ArTableBoard.tsx`, `arPilot.ts`, `arSession.ts
   `local-floor`, and for nothing that exposes pixels (no `camera-access` feature, no raw camera buffer). The browser draws the device's view
   itself; the pilot draws only the object and a reticle over it. A source scan test forbids `camera-access`, `getUserMedia`, `fetch`,
   `XMLHttpRequest`, `sendBeacon`, `WebSocket`, `localStorage`, `sessionStorage`, `indexedDB` and canvas read-back (`toDataURL`, `toBlob`,
-  `getImageData`, `readPixels`) in `ArTableBoard.tsx`, `arPilot.ts`, `arSession.ts` and `ar.generated.ts`.
+  `getImageData`, `readPixels`) in `ArTableBoard.tsx`, `ar/arPilot.ts`, `ar/arSession.ts` and `ar.generated.ts`.
 - No third-party AR SDK: native WebXR where the device has it (`navigator.xr`), otherwise the non-AR fallback. The only dependency
   used is `three`, already in the app for the Mentor stage and the solids viewer.
 - The fallback is always on screen and is the full feature: a turnable wireframe drawn on the solids projection (arrow keys or four
@@ -131,7 +136,7 @@ a pure reader (`surface.ts`, `globe.ts`, `ar.ts`) and checked by a rule, so a qu
 |---|---|---|
 | Backend | `backend/src/services/horizonte/space2/` | `surface`, `globe`, `ar` (pure models and the pilot gate), `scorer`, `contract` (segments, rubrics, age scope), `fixtures` (5), `capabilities`, `index` |
 | Backend tests | `backend/src/__tests__/horizonte/space2.test.ts` | models, scorer ladders, contract refusals, fixture ladders, age scope, the AR gate |
-| Browser | `frontend/src/rebuild/learning/horizonte/space2/` | generated copies (`surface`, `globe`, `ar`, `scorer`, `contract`, `fixtures`), `capabilities.ts`, `boards.tsx`, `SurfaceBoard`, `GlobeBoard`, `ArTableBoard`, `TurnStage`, `arPilot`, `arSession`, `landLoader`, `geoModules.d.ts`, `copy.ts`, `spaceText.ts`, `space2.css`, `audit.json`, tests |
+| Browser | `frontend/src/rebuild/learning/horizonte/space2/` | generated copies (`surface`, `globe`, `ar`, `scorer`, `contract`, `fixtures`), `capabilities.ts`, `boards.tsx`, `SurfaceBoard`, `GlobeBoard`, `ArTableBoard`, `TurnStage`, `ar/arPilot`, `ar/arSession`, `landLoader`, `geoModules.d.ts`, `copy.ts`, `spaceText.ts`, `space2.css`, `audit.json`, tests |
 | Browser tests | `space2.test.tsx` (38), `landLoader.test.ts` (1, real coastlines) | the contract harness for all five fixtures, copy in three locales, every keyboard path, the AR gate and flow with an injected environment, the forbidden-API source scan |
 | Forge | `coursegen/src/v2/horizonte/space2.ts`, `space2Geometry.ts`, `coursegen/src/__tests__/horizonte/space2.test.ts` | guidance, gate 4, two solvability checkers, the Forge's own pure model copy |
 | Shared (one line) | `coursegen/src/v2/solvabilityPacks.ts` | `import './horizonte/space2.js';` so the checkers register |
@@ -201,7 +206,7 @@ NOT verified, NOT accepted, NOT released:
 - No browser or visual audit was run (no Playwright, no dev server, by the lane rules): the boards have never been looked at in a real
   browser. A person must look at the three boards at 360 px, 768 px and 1280 px, in light and dark, with reduced motion on and off, before
   acceptance. The globe in particular (land, arcs, near-side labels) was only checked in jsdom.
-- `arSession.ts` (the real WebXR session with three.js) is type-checked and source-scanned but **never run**: jsdom has no WebGL and no
+- `ar/arSession.ts` (the real WebXR session with three.js) is type-checked and source-scanned but **never run**: jsdom has no WebGL and no
   `navigator.xr`. It needs a test on a real AR-capable phone (hit-test, placement, leaving AR, resource release) before the pilot is
   considered at all.
 - The declared chunk budgets (18, 40, 14 KB) are declarations; no production build measured them.
@@ -223,7 +228,7 @@ NOT verified, NOT accepted, NOT released:
    deployed environment until this is signed off.
 2. Wire verified-guardian consent into `ArPilotEnvironment.consent` (provide it through `ArPilotContext` from the family and consent
    records). Until then the gate cannot open. Decide where consent is recorded and how it is withdrawn; this pack records nothing.
-3. Test `arSession.ts` on a real AR-capable phone with a browser that implements `immersive-ar` (browsers without `navigator.xr` get the
+3. Test `ar/arSession.ts` on a real AR-capable phone with a browser that implements `immersive-ar` (browsers without `navigator.xr` get the
    fallback, by design), including ending the session and checking that the camera indicator goes off.
 4. Run the visual audit for the three boards (see NOT verified above), then measure the chunk budgets with a build.
 5. Review the es-MX and pt-BR strings with a native reader.

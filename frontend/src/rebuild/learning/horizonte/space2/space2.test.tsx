@@ -6,7 +6,7 @@ import { LessonDocumentView } from '../../LessonDocumentView';
 import { assertBoardContract } from '../harness/boardContract';
 import { horizonteFixtureDocument } from '../previewDocument';
 import { AR_PILOT_MIN_AGE, arPilotGate, arVolumeMl, isArPilotEnabled } from './ar.generated';
-import { ArPilotContext, arSessionInit, defaultArPilot, type ArPilotEnvironment, type ArStartInput, type ArXrSystem } from './arPilot';
+import { ArPilotContext, arSessionInit, defaultArPilot, type ArPilotEnvironment, type ArStartInput, type ArXrSystem } from './ar/arPilot';
 import { SPACE2_COPY } from './copy';
 import { distanceKm, feeCents, routeCenter } from './globe.generated';
 import { money } from './spaceText';
@@ -316,11 +316,18 @@ describe('F4.9 AR table pilot gate', () => {
 
   it('keeps every AR module free of anything that could read, keep or send a frame', () => {
     const forbidden = ['getUserMedia', 'fetch(', 'sendBeacon', 'toDataURL', 'toBlob', 'localStorage', 'sessionStorage', 'indexedDB', 'MediaRecorder', 'XMLHttpRequest', 'WebSocket', 'captureStream', 'readPixels', 'camera-access', 'getImageData', 'ImageCapture'];
-    for (const file of ['./ArTableBoard.tsx', './arPilot.ts', './arSession.ts', './ar.generated.ts']) {
+    for (const file of ['./ArTableBoard.tsx', './ar/arPilot.ts', './ar/arSession.ts', './ar.generated.ts']) {
       const source = here(file);
       for (const word of forbidden) expect(source, `${file} must not use ${word}`).not.toContain(word);
     }
-    expect(here('./arSession.ts')).not.toMatch(/from '(?!three'|\.\/)/);
+    expect(here('./ar/arSession.ts')).not.toMatch(/from '(?!three'|\.\.?\/)/);
+  });
+
+  it('keeps the 3D renderer import inside the reserved ar folder and nowhere else in the pack', () => {
+    for (const file of ['./ArTableBoard.tsx', './SurfaceBoard.tsx', './GlobeBoard.tsx', './TurnStage.tsx', './boards.tsx', './ar.generated.ts', './ar/arPilot.ts']) {
+      expect(here(file), `${file} must not import three`).not.toMatch(/from 'three'|import\('three'\)/);
+    }
+    expect(here('./ar/arSession.ts')).toMatch(/from 'three'/);
   });
 });
 
@@ -365,6 +372,28 @@ describe('F4.9 AR table pilot board', () => {
     await screen.findByRole('group', { name: 'One litre box' });
     expect(seeOnTable()).toBeNull();
     expect(isSessionSupported).not.toHaveBeenCalled();
+  });
+
+  it('uses the learner age the app supplies, and the lesson age floor when it supplies none', async () => {
+    const adultOnly = { learner: true, guardian: false };
+    const young = arEnv({ age: 12 });
+    show('object-on-the-table', undefined, 'en-US', young.env);
+    await screen.findByRole('group', { name: 'One litre box' });
+    expect(seeOnTable()).toBeNull();
+    expect(young.isSessionSupported).not.toHaveBeenCalled();
+    cleanup();
+
+    const floor = arEnv({ consent: adultOnly });
+    show('object-on-the-table', undefined, 'en-US', floor.env);
+    await screen.findByRole('group', { name: 'One litre box' });
+    expect(seeOnTable()).toBeNull();
+    expect(floor.isSessionSupported).not.toHaveBeenCalled();
+    cleanup();
+
+    const adult = arEnv({ consent: adultOnly, age: 30 });
+    show('object-on-the-table', undefined, 'en-US', adult.env);
+    expect(await screen.findByRole('button', { name: 'See on table' })).toBeTruthy();
+    expect(adult.start).not.toHaveBeenCalled();
   });
 
   it('falls back to the drawing with a plain message where there is no WebXR', async () => {
