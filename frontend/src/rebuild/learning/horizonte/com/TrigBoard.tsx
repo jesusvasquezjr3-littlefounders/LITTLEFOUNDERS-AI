@@ -5,7 +5,7 @@ import { copyText } from '../copyText';
 import { COM_COPY } from './copy';
 import { Ask, ExPlano, ExplorerShell, choices, sampled, useExplorer, useMoved, type KeyMove } from './explorerKit';
 import { fill, fmt, word, type Words } from './format';
-import { trigEquation } from './notation';
+import { fnName, trigEquation } from './notation';
 import {
   QUADRANT_OPTIONS, TIMES_OPTIONS, levelValue, quadrantOf, trigAt, trigSlope, type CircleWavePayload, type UnitCirclePayload,
 } from './trig.generated';
@@ -100,7 +100,7 @@ function CircleWave({ document, segment, onBack, sequence, onGrade, t }: Inner) 
           points: [{ id: 'now', x: here.x, y: here.y, series: 1 }],
         }} />
       <ExPlano locale={locale} label={t.figureWave} summary={t.summaryWave}
-        domain={{ xMin: 0, xMax: 360, yMin: -1.3, yMax: 1.3 }} size={{ width: 720, height: 300 }} xLabel="θ°" yLabel={payload.fn} tickStep={{ x: 90, y: 0.5 }}
+        domain={{ xMin: 0, xMax: 360, yMin: -1.3, yMax: 1.3 }} size={{ width: 720, height: 300 }} xLabel="θ°" yLabel={fnName(t, payload.fn)} tickStep={{ x: 90, y: 0.5 }}
         snap={{ x: payload.step, y: 0 }} placeOnTap
         layers={{
           curves: [{ id: 'wave', fn: (x) => trigAt(payload.fn, x), from: 0, to: 360, samples: 120, series: 1 }],
@@ -109,9 +109,9 @@ function CircleWave({ document, segment, onBack, sequence, onGrade, t }: Inner) 
         }}
         onHandleChange={(_, point) => moved.set(Math.min(top, Math.max(0, Math.round(point.x / payload.step) * payload.step)))} />
     </div>}
-    status={fill(t.statusWave, { angle, fn: payload.fn, value: fmt(locale, value), direction: word(t, `dir:${direction}`) })}
+    status={fill(t.statusWave, { angle, fn: fnName(t, payload.fn), value: fmt(locale, value), direction: word(t, `dir:${direction}`) })}
     table={{
-      caption: t.tableWave, head: [t.colWhat, t.colAngle, payload.fn === 'cos' ? t.colCos : t.colSin],
+      caption: t.tableWave, head: [t.colWhat, t.colAngle, fnName(t, payload.fn)],
       rows: [[t.rowNow, `${angle}°`, fmt(locale, value)], [t.rowGoal, t.unknown, fmt(locale, goal)]],
     }}
     controls={<Slider label={t.sliderAngle} valueText={`${angle}°`} min={0} max={top} step={payload.step} value={angle}

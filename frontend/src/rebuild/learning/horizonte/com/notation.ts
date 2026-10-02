@@ -11,13 +11,17 @@ export interface Notation { tex: string; plain: string; spoken: string }
 const LEVEL_TEX: Readonly<Record<Level, string>> = { zero: '0', half: '\\frac{1}{2}', root2: '\\frac{\\sqrt{2}}{2}', root3: '\\frac{\\sqrt{3}}{2}', one: '1' };
 const LEVEL_PLAIN: Readonly<Record<Level, string>> = { zero: '0', half: '1/2', root2: '√2/2', root3: '√3/2', one: '1' };
 
+/** The name of a trigonometric function as the locale writes it (sin is sen in Spanish and Portuguese). */
+export const fnName = (t: Words, fn: 'cos' | 'sin'): string => (fn === 'cos' ? t.colCos : t.colSin);
+
 /** `cos θ = -√2/2`: the value a trigonometric function must reach. */
 export function trigEquation(t: Words, fn: 'cos' | 'sin', level: Level, sign: 1 | -1): Notation {
   const minus = sign < 0 && level !== 'zero';
   const spokenLevel = (t as Readonly<Record<string, string>>)[`sayLevel:${level}`] ?? level;
+  const name = fnName(t, fn);
   return {
-    tex: `\\${fn}\\,\\theta = ${minus ? '-' : ''}${LEVEL_TEX[level]}`,
-    plain: `${fn} θ = ${minus ? '-' : ''}${LEVEL_PLAIN[level]}`,
+    tex: `\\operatorname{${name}}\\,\\theta = ${minus ? '-' : ''}${LEVEL_TEX[level]}`,
+    plain: `${name} θ = ${minus ? '-' : ''}${LEVEL_PLAIN[level]}`,
     spoken: fill(t.sayTrig, { fn: fn === 'cos' ? t.sayCos : t.saySin, value: minus ? `${t.sayMinus} ${spokenLevel}` : spokenLevel }),
   };
 }

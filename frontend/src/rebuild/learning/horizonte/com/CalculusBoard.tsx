@@ -170,8 +170,8 @@ function Riemann({ document, segment, onBack, sequence, onGrade, t }: Inner) {
       state: fill(within ? t.within : t.outside, { tol: fmt(locale, p.tolerance) }),
     })}
     table={{
-      caption: t.tableRiemann, head: [t.colWhat, t.colN, t.colEstimate, t.colGap],
-      rows: [[t.rowNow, String(n), fmt(locale, estimate), fmt(locale, gap)], [t.rowExact, t.none, fmt(locale, area), '0']],
+      caption: t.tableRiemann, head: [t.colWhat, t.colN, t.colEstimate, t.colError],
+      rows: [[t.rowNow, String(n), fmt(locale, estimate), fmt(locale, gap)], [t.rowExact, '-', fmt(locale, area), '0']],
     }}
     controls={<Slider label={t.sliderN} valueText={String(n)} min={1} max={RIEMANN_N_MAX} step={1} value={n} onValueChange={moved.set}
       stepLabels={{ decrease: t.less, increase: t.more }} disabled={explorer.locked} />} />;

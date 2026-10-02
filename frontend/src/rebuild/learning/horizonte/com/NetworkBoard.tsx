@@ -118,7 +118,7 @@ function RouteSteps({ route, t, locale, labels }: { route: PathPayload; t: Words
   const name = (id: string) => labels[id] ?? id;
   const table: TableSpec = {
     caption: t.tableSteps, head: [t.colPlace, t.colCost, t.colThrough],
-    rows: route.nodes.map((node) => [name(node.id), step.distance[node.id] === null ? t.unreached : fmt(locale, step.distance[node.id]!), step.via[node.id] ? name(step.via[node.id]!) : t.none]),
+    rows: route.nodes.map((node) => [name(node.id), step.distance[node.id] === null ? t.unreached : fmt(locale, step.distance[node.id]!), step.via[node.id] ? name(step.via[node.id]!) : '-']),
   };
   return <div className="lf-net-steps">
     <h3 data-copy-role="heading">{t.stepsHeading}</h3>

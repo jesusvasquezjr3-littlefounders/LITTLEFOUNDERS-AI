@@ -54,7 +54,7 @@ export function derivativeLinkProblem(payload: unknown): string | null {
   if (!exactKeys(payload, ['lead', 'roots', 'base', 'ask'])) return 'A linked graphs payload holds a lead, two roots, a base and what to find';
   if (payload.lead !== 1 && payload.lead !== -1) return 'The lead is 1 or -1';
   const roots = payload.roots;
-  if (!Array.isArray(roots) || roots.length !== 2 || !roots.every((r) => isWhole(r, -ROOT_MAX, ROOT_MAX)) || roots[1] - roots[0] < 2) return `The two roots are whole numbers within ${ROOT_MAX}, at least 2 apart`;
+  if (!Array.isArray(roots) || roots.length !== 2 || !roots.every((r) => isWhole(r, -ROOT_MAX, ROOT_MAX)) || (roots[1] as number) - (roots[0] as number) < 2) return `The two roots are whole numbers within ${ROOT_MAX}, at least 2 apart`;
   if (!isWhole(payload.base, -5, 5)) return 'The base is a whole number from -5 to 5';
   if (payload.ask !== 'max' && payload.ask !== 'min') return 'The task asks for the max or the min';
   return null;
