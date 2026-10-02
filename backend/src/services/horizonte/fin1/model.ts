@@ -1,0 +1,443 @@
+/*
+ * The fin1 pack's pure finance model (F1.10 compound interest, F2.11 time value of money, F2.12 effective rate,
+ * credit card, NPV and IRR). Money is integer cents, a rate is a whole number of basis points (or a whole percent
+ * where a slider moves it), and every rounding is half up (a tie goes toward +infinity) at the step named beside the
+ * function. BigInt keeps every intermediate exact, so no float comparison decides a verdict. No I/O, no clock.
+ */
+
+export const BPS = 10_000n;
+
+export type Slots = Record<string, string[]>;
+
+export const isWhole = (value: unknown): value is number => typeof value === 'number' && Number.isSafeInteger(value);
+export const wholeBetween = (value: unknown, minimum: number, maximum: number): value is number => isWhole(value) && value >= minimum && value <= maximum;
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
+
+/** floor(n / d) for d > 0 (BigInt division truncates toward zero). */
+function floorDiv(n: bigint, d: bigint): bigint {
+  const q = n / d;
+  return n % d !== 0n && n < 0n ? q - 1n : q;
+}
+
+/** n / d rounded to the nearest whole number, a tie going up (toward +infinity). d must be positive. */
+export function divRound(n: bigint, d: bigint): bigint {
+  return floorDiv(2n * n + d, 2n * d);
+}
+
+const toNumber = (value: bigint): number | null => (value >= BigInt(Number.MIN_SAFE_INTEGER) && value <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(value) : null);
+
+/** Whole cents as the plain decimal text the answer shapes read: 267301 -> "2673.01", -5 -> "-0.05". */
+export function centsText(cents: number): string {
+  const negative = cents < 0;
+  const abs = Math.abs(cents);
+  return `${negative ? '-' : ''}${Math.floor(abs / 100)}.${String(abs % 100).padStart(2, '0')}`;
+}
+
+/** Whole basis points as percent text with two decimals: 2682 -> "26.82". */
+export const bpsPercentText = (bps: number): string => centsText(bps);
+
+/** Drops a decimal's trailing zeros so two spellings of one number compare equal: "26.80" -> "26.8", "5.00" -> "5". */
+export function normalizeDecimal(text: string): string {
+  return /^-?\d+(\.\d+)?$/.test(text) ? text.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '') : text;
+}
+
+/* ───────────────────────────── F1.10 compound interest ───────────────────────────── */
+
+export const COMPOUND_RATE = { min: 1, max: 12 } as const;
+export const COMPOUND_YEARS = { min: 1, max: 40 } as const;
+export const COMPOUND_PRINCIPAL = { min: 100, max: 10_000_000 } as const;
+export const COMPOUND_EXPLANATIONS = ['interest-on-interest', 'same-each-year', 'rate-grows', 'deposit-grows'] as const;
+export type CompoundExplanation = (typeof COMPOUND_EXPLANATIONS)[number];
+
+export interface GrowthRow { year: number; compoundCents: number; simpleCents: number }
+export interface PredictOption { id: string; cents: number }
+export interface CompoundChallenge { minimumCents: number; maximumYears: number }
+
+/**
+ * One row per year, 0..years. Compound: P * (1 + r)^year, computed exactly and rounded half up once, to the cent, in
+ * each row (so a row is the textbook figure, never a running total of rounded postings). Simple: P + P * r * year,
+ * rounded the same way. The rate is a whole percent.
+ */
+export function growthRows(principalCents: number, ratePercent: number, years: number): GrowthRow[] | null {
+  if (!wholeBetween(principalCents, COMPOUND_PRINCIPAL.min, COMPOUND_PRINCIPAL.max) || !wholeBetween(ratePercent, COMPOUND_RATE.min, COMPOUND_RATE.max)
+    || !wholeBetween(years, COMPOUND_YEARS.min, COMPOUND_YEARS.max)) return null;
+  const principal = BigInt(principalCents);
+  const rate = BigInt(ratePercent * 100);
+  const rows: GrowthRow[] = [{ year: 0, compoundCents: principalCents, simpleCents: principalCents }];
+  let numerator = principal;
+  let denominator = 1n;
+  for (let year = 1; year <= years; year += 1) {
+    numerator *= BPS + rate;
+    denominator *= BPS;
+    const simple = principal + divRound(principal * rate * BigInt(year), BPS);
+    const c = toNumber(divRound(numerator, denominator));
+    const s = toNumber(simple);
+    if (c === null || s === null) return null;
+    rows.push({ year, compoundCents: c, simpleCents: s });
+  }
+  return rows;
+}
+
+export const compoundCents = (principalCents: number, ratePercent: number, years: number): number | null => growthRows(principalCents, ratePercent, years)?.at(-1)?.compoundCents ?? null;
+export const simpleCents = (principalCents: number, ratePercent: number, years: number): number | null => growthRows(principalCents, ratePercent, years)?.at(-1)?.simpleCents ?? null;
+
+/** The rule of 72 in tenths of a year: 72 / rate, rounded half up. 7 percent gives 103 (10.3 years). */
+export const doublingYearsTenths = (ratePercent: number): number => Number(divRound(720n, BigInt(ratePercent)));
+
+/** The years the table shows: every 2 up to 10, every 5 up to 20, every 10 beyond, always 0 and the last year. */
+export function tableYears(years: number): number[] {
+  const step = years <= 10 ? 2 : years <= 20 ? 5 : 10;
+  const shown = [0];
+  for (let year = step; year < years; year += step) shown.push(year);
+  shown.push(years);
+  return shown;
+}
+
+/** The one option nearest the true value, or null when two options tie for nearest (no single key). */
+export function nearestOption(options: readonly PredictOption[], truthCents: number): string | null {
+  let best: PredictOption | null = null;
+  let tie = false;
+  for (const option of options) {
+    const gap = Math.abs(option.cents - truthCents);
+    if (!best || gap < Math.abs(best.cents - truthCents)) { best = option; tie = false; } else if (gap === Math.abs(best.cents - truthCents)) tie = true;
+  }
+  return best && !tie ? best.id : null;
+}
+
+export type PredictionHint = 'right' | 'simple' | 'short' | 'over';
+
+/** What the reveal says about a prediction: it is the key, it is the simple-interest figure, or it fell short or over. */
+export function predictionHint(options: readonly PredictOption[], chosenId: string, truthCents: number, simpleValueCents: number): PredictionHint {
+  const chosen = options.find((option) => option.id === chosenId);
+  if (!chosen) return 'short';
+  if (nearestOption(options, truthCents) === chosenId) return 'right';
+  if (Math.abs(chosen.cents - simpleValueCents) * 20 <= simpleValueCents) return 'simple';
+  return chosen.cents < truthCents ? 'short' : 'over';
+}
+
+export const meetsChallenge = (principalCents: number, challenge: CompoundChallenge, ratePercent: number, years: number): boolean => {
+  if (years > challenge.maximumYears) return false;
+  const value = compoundCents(principalCents, ratePercent, years);
+  return value !== null && value >= challenge.minimumCents;
+};
+
+/** The challenge can be met by some slider position: compound growth only rises with the rate and the years. */
+export const challengeReachable = (principalCents: number, challenge: CompoundChallenge): boolean =>
+  meetsChallenge(principalCents, challenge, COMPOUND_RATE.max, Math.min(challenge.maximumYears, COMPOUND_YEARS.max));
+
+/* ───────────────────────────── F2.11 time value and annuities ───────────────────────────── */
+
+export const TV_RATE = { min: 100, max: 2000 } as const;
+export const TV_PAYMENTS = { min: 2, max: 5 } as const;
+export const TV_AMOUNT = { min: 100, max: 5_000_000 } as const;
+export const TV_VALUE_LIMIT = { minimum: '0', maximum: '1000000' } as const;
+export const TV_ANNUITY_PIECE = 'payment';
+
+export type TimeValueTask =
+  | { kind: 'order'; side: 'receive' | 'pay'; amountsCents: number[] }
+  | { kind: 'annuity'; timing: 'end' | 'start'; amountCents: number; count: number };
+export interface TimeValuePayload { rateBps: number; ask: 'present' | 'future'; task: TimeValueTask }
+export interface Flow { year: number; cents: number }
+
+export const yearSlot = (year: number): string => `year-${year}`;
+export const slotYear = (slot: string): number | null => (/^year-(0|[1-9]\d?)$/.test(slot) ? Number(slot.slice('year-'.length)) : null);
+
+export function isTimeValuePayload(value: unknown): value is TimeValuePayload {
+  if (!isRecord(value) || Object.keys(value).sort().join() !== 'ask,rateBps,task') return false;
+  if (!wholeBetween(value.rateBps, TV_RATE.min, TV_RATE.max) || (value.ask !== 'present' && value.ask !== 'future') || !isRecord(value.task)) return false;
+  const task = value.task;
+  if (task.kind === 'order') {
+    const amounts = task.amountsCents;
+    return Object.keys(task).sort().join() === 'amountsCents,kind,side' && (task.side === 'receive' || task.side === 'pay')
+      && Array.isArray(amounts) && amounts.length >= TV_PAYMENTS.min && amounts.length <= TV_PAYMENTS.max
+      && amounts.every((amount) => wholeBetween(amount, TV_AMOUNT.min, TV_AMOUNT.max)) && new Set(amounts).size === amounts.length;
+  }
+  if (task.kind === 'annuity') {
+    return Object.keys(task).sort().join() === 'amountCents,count,kind,timing' && (task.timing === 'end' || task.timing === 'start')
+      && wholeBetween(task.amountCents, TV_AMOUNT.min, TV_AMOUNT.max) && wholeBetween(task.count, TV_PAYMENTS.min, TV_PAYMENTS.max);
+  }
+  return false;
+}
+
+export interface TimeValueFrame {
+  /** The last year on the timeline: the order task spans years 1..n, the annuity task years 0..n. */
+  horizon: number;
+  slotIds: string[];
+  pieceIds: string[];
+  repeatable: boolean;
+  amounts: ReadonlyMap<string, number>;
+  /** The arrangement the board opens with (the order task starts in the listed order; the annuity starts empty). */
+  start: Slots;
+}
+
+export function timeValueFrame(payload: TimeValuePayload): TimeValueFrame {
+  const task = payload.task;
+  if (task.kind === 'order') {
+    const pieceIds = task.amountsCents.map((_, index) => `pay-${index + 1}`);
+    const slotIds = task.amountsCents.map((_, index) => yearSlot(index + 1));
+    return {
+      horizon: task.amountsCents.length, slotIds, pieceIds, repeatable: false,
+      amounts: new Map(pieceIds.map((id, index) => [id, task.amountsCents[index]!])),
+      start: Object.fromEntries(slotIds.map((slot, index) => [slot, [pieceIds[index]!]])),
+    };
+  }
+  return {
+    horizon: task.count, slotIds: Array.from({ length: task.count + 1 }, (_, year) => yearSlot(year)), pieceIds: [TV_ANNUITY_PIECE], repeatable: true,
+    amounts: new Map([[TV_ANNUITY_PIECE, task.amountCents]]), start: {},
+  };
+}
+
+/** The payments an arrangement puts on the timeline. A response outside the frame yields null. */
+export function flowsOf(frame: TimeValueFrame, slots: Slots): Flow[] | null {
+  const flows: Flow[] = [];
+  for (const slot of Object.keys(slots)) {
+    const year = slotYear(slot);
+    if (year === null || !frame.slotIds.includes(slot)) return null;
+    for (const piece of slots[slot]!) {
+      const cents = frame.amounts.get(piece);
+      if (cents === undefined) return null;
+      flows.push({ year, cents });
+    }
+  }
+  return flows.sort((a, b) => a.year - b.year);
+}
+
+/** Present value at year 0: sum of cents / (1 + r)^year, computed exactly and rounded half up once, at the end. */
+export function presentValueCents(flows: readonly Flow[], rateBps: number): number | null {
+  const growth = BPS + BigInt(rateBps);
+  const last = flows.reduce((year, flow) => Math.max(year, flow.year), 0);
+  let numerator = 0n;
+  for (const flow of flows) numerator += BigInt(flow.cents) * BPS ** BigInt(flow.year) * growth ** BigInt(last - flow.year);
+  return toNumber(divRound(numerator, growth ** BigInt(last)));
+}
+
+/** Future value at `horizon`: sum of cents * (1 + r)^(horizon - year), exact, rounded half up once, at the end. */
+export function futureValueCents(flows: readonly Flow[], rateBps: number, horizon: number): number | null {
+  const growth = BPS + BigInt(rateBps);
+  let numerator = 0n;
+  for (const flow of flows) {
+    if (flow.year > horizon) return null;
+    numerator += BigInt(flow.cents) * growth ** BigInt(horizon - flow.year) * BPS ** BigInt(flow.year);
+  }
+  return toNumber(divRound(numerator, BPS ** BigInt(horizon)));
+}
+
+/** Closed form of an annuity of `count` equal payments: PMT * (1 - (1 + r)^-n) / r, times (1 + r) when paid at the start. */
+export function annuityPresentCents(amountCents: number, rateBps: number, count: number, timing: 'end' | 'start'): number | null {
+  const growth = BPS + BigInt(rateBps);
+  const n = BigInt(count);
+  const numerator = BigInt(amountCents) * (growth ** n - BPS ** n) * (timing === 'start' ? growth : BPS);
+  return toNumber(divRound(numerator, BigInt(rateBps) * growth ** n));
+}
+
+/** The value a response is asked for: the present or future value of the arrangement it built. */
+export function timeValueTarget(payload: TimeValuePayload, slots: Slots): string | null {
+  const frame = timeValueFrame(payload);
+  const flows = flowsOf(frame, slots);
+  if (!flows) return null;
+  const cents = payload.ask === 'present' ? presentValueCents(flows, payload.rateBps) : futureValueCents(flows, payload.rateBps, frame.horizon);
+  return cents === null ? null : centsText(cents);
+}
+
+/** The cents of one payment seen from the other side: its worth today, or its worth at the end of the timeline. */
+export function paymentWorth(flow: Flow, rateBps: number, horizon: number, measure: 'present' | 'future'): number {
+  return (measure === 'present' ? presentValueCents([flow], rateBps) : futureValueCents([flow], rateBps, horizon)) ?? 0;
+}
+
+/** The best arrangement of an order task: receive the biggest amount first, pay the biggest amount last. */
+export function bestOrder(payload: TimeValuePayload): Slots | null {
+  const task = payload.task;
+  if (task.kind !== 'order') return null;
+  const frame = timeValueFrame(payload);
+  const direction = task.side === 'receive' ? -1 : 1;
+  const sorted = [...frame.pieceIds].sort((a, b) => direction * (frame.amounts.get(a)! - frame.amounts.get(b)!));
+  return Object.fromEntries(frame.slotIds.map((slot, index) => [slot, [sorted[index]!]]));
+}
+
+/** An answer key is sound when every solution is the best order (order task) or the exact annuity timing (annuity task). */
+export function keySolutionSound(payload: TimeValuePayload, solution: Slots): boolean {
+  const frame = timeValueFrame(payload);
+  const flows = flowsOf(frame, solution);
+  if (!flows) return false;
+  if (payload.task.kind === 'order') {
+    const best = bestOrder(payload);
+    const bestFlows = best ? flowsOf(frame, best) : null;
+    const placed = Object.values(solution).flat();
+    if (!bestFlows || placed.length !== frame.pieceIds.length || new Set(placed).size !== placed.length) return false;
+    return presentValueCents(flows, payload.rateBps) === presentValueCents(bestFlows, payload.rateBps)
+      && frame.slotIds.every((slot) => (solution[slot] ?? []).length === 1);
+  }
+  const first = payload.task.timing === 'end' ? 1 : 0;
+  const wanted = Array.from({ length: payload.task.count }, (_, index) => yearSlot(first + index));
+  return flows.length === wanted.length && wanted.every((slot) => (solution[slot] ?? []).length === 1);
+}
+
+/* ───────────────────────────── F2.12 effective rate, card, NPV, IRR ───────────────────────────── */
+
+export const COMPOUNDINGS = [1, 2, 4, 12, 52, 365] as const;
+export const EFFECTIVE_NOMINAL = { min: 100, max: 6000 } as const;
+export const CARD_LIMITS = { balance: { min: 10_000, max: 2_000_000 }, apr: { min: 500, max: 3600 }, pct: { min: 100, max: 500 }, floor: { min: 1000, max: 5000 }, maxMonths: 600 } as const;
+export const CASH = { rate: { min: 100, max: 3000 }, amount: { min: 100, max: 5_000_000 }, flows: { min: 2, max: 5 } } as const;
+/** An IRR above 100 percent is outside the lesson: the board's rate dial ends there. */
+export const IRR_MAX_BPS = 10_000;
+
+export type EffectiveRatePayload = { kind: 'effective'; nominalBps: number; periodsPerYear: number };
+export type CardPayload = { kind: 'card'; ask: 'months' | 'interest'; balanceCents: number; aprBps: number; minimumPctBps: number; floorCents: number };
+export type NpvPayload = { kind: 'npv'; rateBps: number; outlayCents: number; flowsCents: number[] };
+export type IrrPayload = { kind: 'irr'; outlayCents: number; flowsCents: number[] };
+export type RatePayload = EffectiveRatePayload | CardPayload | NpvPayload | IrrPayload;
+export type RateKind = RatePayload['kind'];
+
+/** (1 + nominal / m)^m - 1 in whole basis points, rounded half up once. 24 percent nominal, monthly: 2682 (26.82 percent). */
+export function effectiveAnnualBps(nominalBps: number, periodsPerYear: number): number | null {
+  if (!wholeBetween(nominalBps, EFFECTIVE_NOMINAL.min, EFFECTIVE_NOMINAL.max) || !(COMPOUNDINGS as readonly number[]).includes(periodsPerYear)) return null;
+  const m = BigInt(periodsPerYear);
+  const top = BPS * m + BigInt(nominalBps);
+  const bottom = BPS * m;
+  return toNumber(divRound((top ** m - bottom ** m) * BPS, bottom ** m));
+}
+
+/** The balance of `startCents` after `period` of the year's `periodsPerYear` equal periods: start * (1 + nominal / m)^period, exact, rounded half up once. */
+export function periodBalanceCents(startCents: number, nominalBps: number, periodsPerYear: number, period: number): number | null {
+  if (!wholeBetween(startCents, 1, CASH.amount.max) || !wholeBetween(nominalBps, EFFECTIVE_NOMINAL.min, EFFECTIVE_NOMINAL.max)
+    || !(COMPOUNDINGS as readonly number[]).includes(periodsPerYear) || !wholeBetween(period, 0, periodsPerYear)) return null;
+  const m = BigInt(periodsPerYear);
+  const top = BPS * m + BigInt(nominalBps);
+  const bottom = BPS * m;
+  return toNumber(divRound(BigInt(startCents) * top ** BigInt(period), bottom ** BigInt(period)));
+}
+
+export interface CardSchedule { months: number; interestCents: number; paidCents: number }
+/** The state at the end of one month of minimum payments: what was owed, the running interest and the running total paid. */
+export interface CardRow { month: number; balanceCents: number; interestPaidCents: number; paidCents: number }
+
+/**
+ * Paying only the minimum. Each month: interest = balance * APR / 12, rounded half up to the cent; the minimum payment is
+ * the interest plus `minimumPctBps` of the balance (rounded half up), never below the floor and never more than the whole
+ * balance plus interest. One row per month until the balance is zero (row 0 is the start); null when it would take more
+ * than 600 months.
+ */
+export function cardRows(card: Pick<CardPayload, 'balanceCents' | 'aprBps' | 'minimumPctBps' | 'floorCents'>): CardRow[] | null {
+  if (!wholeBetween(card.balanceCents, CARD_LIMITS.balance.min, CARD_LIMITS.balance.max) || !wholeBetween(card.aprBps, CARD_LIMITS.apr.min, CARD_LIMITS.apr.max)
+    || !wholeBetween(card.minimumPctBps, CARD_LIMITS.pct.min, CARD_LIMITS.pct.max) || !wholeBetween(card.floorCents, CARD_LIMITS.floor.min, CARD_LIMITS.floor.max)) return null;
+  let balance = BigInt(card.balanceCents);
+  let interestTotal = 0n;
+  let paidTotal = 0n;
+  const floor = BigInt(card.floorCents);
+  const rows: CardRow[] = [{ month: 0, balanceCents: card.balanceCents, interestPaidCents: 0, paidCents: 0 }];
+  for (let month = 1; month <= CARD_LIMITS.maxMonths; month += 1) {
+    const interest = divRound(balance * BigInt(card.aprBps), 12n * BPS);
+    const wanted = interest + divRound(balance * BigInt(card.minimumPctBps), BPS);
+    const owed = balance + interest;
+    const payment = owed < (wanted > floor ? wanted : floor) ? owed : (wanted > floor ? wanted : floor);
+    balance = owed - payment;
+    interestTotal += interest;
+    paidTotal += payment;
+    const left = toNumber(balance);
+    const interestPaidCents = toNumber(interestTotal);
+    const paidCents = toNumber(paidTotal);
+    if (left === null || interestPaidCents === null || paidCents === null) return null;
+    rows.push({ month, balanceCents: left, interestPaidCents, paidCents });
+    if (balance === 0n) return rows;
+  }
+  return null;
+}
+
+export function cardSchedule(card: Pick<CardPayload, 'balanceCents' | 'aprBps' | 'minimumPctBps' | 'floorCents'>): CardSchedule | null {
+  const last = cardRows(card)?.at(-1);
+  return last ? { months: last.month, interestCents: last.interestPaidCents, paidCents: last.paidCents } : null;
+}
+
+/** NPV = -outlay + sum of flow_t / (1 + r)^t for t = 1..n at any rate from 0 to the IRR ceiling, exact, rounded half up once to the cent. */
+export function npvAtBps(rateBps: number, outlayCents: number, flowsCents: readonly number[]): number | null {
+  if (!wholeBetween(rateBps, 0, IRR_MAX_BPS) || !wholeBetween(outlayCents, CASH.amount.min, CASH.amount.max)) return null;
+  const growth = BPS + BigInt(rateBps);
+  const n = flowsCents.length;
+  let numerator = -BigInt(outlayCents) * growth ** BigInt(n);
+  flowsCents.forEach((cents, index) => { numerator += BigInt(cents) * BPS ** BigInt(index + 1) * growth ** BigInt(n - index - 1); });
+  return toNumber(divRound(numerator, growth ** BigInt(n)));
+}
+
+/** The NPV of a task: the same sum at the task's own rate, which sits in the 1 to 30 percent band. */
+export const npvCents = (rateBps: number, outlayCents: number, flowsCents: readonly number[]): number | null =>
+  wholeBetween(rateBps, CASH.rate.min, CASH.rate.max) ? npvAtBps(rateBps, outlayCents, flowsCents) : null;
+
+/** One flow seen from today: flow / (1 + r)^t, rounded half up to the cent. */
+export function discountedCents(rateBps: number, year: number, cents: number): number | null {
+  if (!wholeBetween(rateBps, 0, IRR_MAX_BPS) || !wholeBetween(year, 1, 40) || !wholeBetween(cents, 0, CASH.amount.max)) return null;
+  return toNumber(divRound(BigInt(cents) * BPS ** BigInt(year), (BPS + BigInt(rateBps)) ** BigInt(year)));
+}
+
+/** Sign of the NPV at the rate h / 20000 (half basis points), exact: -1, 0 or 1. */
+function npvSignAtHalfBps(outlayCents: number, flowsCents: readonly number[], half: number): number {
+  const base = 2n * BPS;
+  const growth = base + BigInt(half);
+  const n = flowsCents.length;
+  let numerator = -BigInt(outlayCents) * growth ** BigInt(n);
+  flowsCents.forEach((cents, index) => { numerator += BigInt(cents) * base ** BigInt(index + 1) * growth ** BigInt(n - index - 1); });
+  return numerator > 0n ? 1 : numerator < 0n ? -1 : 0;
+}
+
+/**
+ * The internal rate of return in whole basis points: the rate at which the NPV is zero, rounded half up to the basis
+ * point. Found by exact bisection on the sign of the NPV, so it needs a conventional flow (one outlay, then inflows)
+ * whose total beats the outlay; null otherwise or above 100 percent.
+ */
+export function irrBps(outlayCents: number, flowsCents: readonly number[]): number | null {
+  if (!conventionalFlows(outlayCents, flowsCents)) return null;
+  let low = 0;
+  let high = 2 * IRR_MAX_BPS;
+  if (npvSignAtHalfBps(outlayCents, flowsCents, high) >= 0) return null;
+  while (high - low > 1) {
+    const middle = Math.floor((low + high) / 2);
+    if (npvSignAtHalfBps(outlayCents, flowsCents, middle) >= 0) low = middle; else high = middle;
+  }
+  return Math.floor((low + 1) / 2);
+}
+
+export function conventionalFlows(outlayCents: number, flowsCents: readonly number[]): boolean {
+  return wholeBetween(outlayCents, CASH.amount.min, CASH.amount.max) && flowsCents.length >= CASH.flows.min && flowsCents.length <= CASH.flows.max
+    && flowsCents.every((cents) => wholeBetween(cents, 0, CASH.amount.max)) && flowsCents.reduce((sum, cents) => sum + cents, 0) > outlayCents;
+}
+
+const exactKeys = (value: Record<string, unknown>, keys: string): boolean => Object.keys(value).sort().join() === keys;
+
+export function isRatePayload(value: unknown): value is RatePayload {
+  if (!isRecord(value)) return false;
+  switch (value.kind) {
+    case 'effective': return exactKeys(value, 'kind,nominalBps,periodsPerYear') && effectiveAnnualBps(value.nominalBps as number, value.periodsPerYear as number) !== null;
+    case 'card': return exactKeys(value, 'aprBps,ask,balanceCents,floorCents,kind,minimumPctBps') && (value.ask === 'months' || value.ask === 'interest')
+      && cardSchedule(value as unknown as CardPayload) !== null;
+    case 'npv': return exactKeys(value, 'flowsCents,kind,outlayCents,rateBps') && Array.isArray(value.flowsCents) && value.flowsCents.length >= CASH.flows.min
+      && value.flowsCents.length <= CASH.flows.max && value.flowsCents.every((cents) => wholeBetween(cents, 0, CASH.amount.max))
+      && npvCents(value.rateBps as number, value.outlayCents as number, value.flowsCents as number[]) !== null;
+    case 'irr': return exactKeys(value, 'flowsCents,kind,outlayCents') && Array.isArray(value.flowsCents) && irrBps(value.outlayCents as number, value.flowsCents as number[]) !== null;
+    default: return false;
+  }
+}
+
+/** The answer a rate payload asks for, as the plain decimal text the number shape reads (percent, dollars or months). */
+export function rateTarget(payload: RatePayload): string | null {
+  switch (payload.kind) {
+    case 'effective': { const bps = effectiveAnnualBps(payload.nominalBps, payload.periodsPerYear); return bps === null ? null : bpsPercentText(bps); }
+    case 'card': { const schedule = cardSchedule(payload); return schedule === null ? null : payload.ask === 'months' ? String(schedule.months) : centsText(schedule.interestCents); }
+    case 'npv': { const cents = npvCents(payload.rateBps, payload.outlayCents, payload.flowsCents); return cents === null ? null : centsText(cents); }
+    case 'irr': { const bps = irrBps(payload.outlayCents, payload.flowsCents); return bps === null ? null : bpsPercentText(bps); }
+  }
+}
+
+/** The dial or axis range of the answer, per kind and ask: a response outside it is invalid. */
+export function rateRange(payload: RatePayload): { minimum: string; maximum: string } {
+  switch (payload.kind) {
+    case 'effective': return { minimum: '0', maximum: '1000' };
+    case 'irr': return { minimum: '0', maximum: '100' };
+    case 'card': return payload.ask === 'months' ? { minimum: '0', maximum: String(CARD_LIMITS.maxMonths) } : { minimum: '0', maximum: '1000000' };
+    case 'npv': return { minimum: '-100000', maximum: '1000000' };
+  }
+}
+
+export type RateUnit = 'percent' | 'dollars' | 'months';
+export function rateUnit(payload: RatePayload): RateUnit {
+  if (payload.kind === 'card') return payload.ask === 'months' ? 'months' : 'dollars';
+  return payload.kind === 'npv' ? 'dollars' : 'percent';
+}
