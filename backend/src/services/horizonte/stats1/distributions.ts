@@ -1,0 +1,148 @@
+import { hasOnly, inRange, type Axis } from './model.js';
+
+export const CURVE_AXIS_LIMIT = 200;
+export const CURVE_SPAN_MIN = 10;
+export const NORMAL_RULES = [1, 2, 3] as const;
+export type NormalRule = (typeof NORMAL_RULES)[number];
+export const NORMAL_SD_LIMIT = 30;
+export const BINOMIAL_N_LIMIT = 40;
+export const BINOMIAL_PCT_MIN = 5;
+export const BINOMIAL_PCT_MAX = 95;
+export const BINOMIAL_PCT_STEP = 5;
+export const CLT_WEIGHTS_MIN = 3;
+export const CLT_WEIGHTS_MAX = 8;
+export const CLT_WEIGHT_LIMIT = 20;
+export const CLT_N_LIMIT = 25;
+export const CLT_SHRINK_MAX = 5;
+
+/** The error function by its non-alternating series, exact to about 1e-15 for |x| up to 6 and 1 beyond. */
+export function erf(x: number): number {
+  if (Number.isNaN(x)) return Number.NaN;
+  const a = Math.abs(x);
+  if (a > 6) return Math.sign(x);
+  let term = a;
+  let sum = a;
+  for (let n = 1; n < 400; n += 1) {
+    term *= (2 * a * a) / (2 * n + 1);
+    sum += term;
+    if (term < 1e-17 * sum) break;
+  }
+  return Math.sign(x) * (2 / Math.sqrt(Math.PI)) * Math.exp(-a * a) * sum;
+}
+
+export const normalPdf = (x: number, mean: number, sd: number): number => Math.exp(-0.5 * ((x - mean) / sd) ** 2) / (sd * Math.sqrt(2 * Math.PI));
+export const normalCdf = (x: number, mean: number, sd: number): number => 0.5 * (1 + erf((x - mean) / (sd * Math.SQRT2)));
+/** The share of a normal curve between two values. */
+export const normalBetween = (low: number, high: number, mean: number, sd: number): number => normalCdf(high, mean, sd) - normalCdf(low, mean, sd);
+/** The 68-95-99.7 rule: the share within `k` standard deviations of the mean, for any k. */
+export const normalWithin = (k: number): number => erf(k / Math.SQRT2);
+
+export type NormalBand = { readonly rule: NormalRule; readonly low: number; readonly high: number };
+export type NormalSetup = { axis: Axis; start: { mean: number; sd: number }; sdMax: number; band: NormalBand };
+export type NormalAnswer = { mean: number; sd: number };
+
+/** A whole-number axis for a curve: from 0 to 200 and at least 10 steps wide. */
+export const isCurveAxis = (value: unknown): value is Axis =>
+  hasOnly(value, ['min', 'max']) && inRange(value.min, 0, CURVE_AXIS_LIMIT) && inRange(value.max, 0, CURVE_AXIS_LIMIT) && value.max - value.min >= CURVE_SPAN_MIN;
+
+export const isNormalRule =(value: unknown): value is NormalRule => NORMAL_RULES.some((rule) => rule === value);
+export const isNormalAnswer = (value: unknown, axis: Axis, sdMax: number): value is NormalAnswer =>
+  hasOnly(value, ['mean', 'sd']) && inRange(value.mean, axis.min, axis.max) && inRange(value.sd, 1, sdMax);
+
+/**
+ * The one curve whose mean plus and minus `rule` standard deviations is the band: the middle of the band and a whole
+ * number of standard deviations, or null when the band does not sit on the grid that way.
+ */
+export function solveNormal(axis: Axis, band: NormalBand, sdMax: number): NormalAnswer | null {
+  if (!isNormalRule(band.rule) || !inRange(band.low, axis.min, axis.max) || !inRange(band.high, axis.min, axis.max) || band.high <= band.low) return null;
+  const width = band.high - band.low;
+  if ((band.low + band.high) % 2 !== 0 || width % (2 * band.rule) !== 0) return null;
+  const answer = { mean: (band.low + band.high) / 2, sd: width / (2 * band.rule) };
+  return isNormalAnswer(answer, axis, sdMax) ? answer : null;
+}
+
+export type BinomialGoal = { readonly mean: number; readonly variance: number };
+export type BinomialAnswer = { n: number; pct: number };
+
+export const onPctGrid = (pct: unknown): pct is number => inRange(pct, BINOMIAL_PCT_MIN, BINOMIAL_PCT_MAX) && (pct - BINOMIAL_PCT_MIN) % BINOMIAL_PCT_STEP === 0;
+export const isBinomialAnswer = (value: unknown, nMax: number): value is BinomialAnswer => hasOnly(value, ['n', 'pct']) && inRange(value.n, 1, nMax) && onPctGrid(value.pct);
+
+/** Mean times 100 and variance times 10000, as whole numbers: n times pct, and n times pct times (100 - pct). */
+export const binomialMeanHundredths = (answer: BinomialAnswer): number => answer.n * answer.pct;
+export const binomialVarianceTenThousandths = (answer: BinomialAnswer): number => answer.n * answer.pct * (100 - answer.pct);
+
+/**
+ * The one pair on the grid with that mean and variance: pct is 100 minus 100 variance over mean, n is 100 mean over pct,
+ * every step exact in whole numbers; null when the goal has no such pair.
+ */
+export function solveBinomial(goal: BinomialGoal, nMax: number): BinomialAnswer | null {
+  if (!inRange(goal.mean, 1, BINOMIAL_N_LIMIT) || !inRange(goal.variance, 1, BINOMIAL_N_LIMIT) || goal.variance >= goal.mean) return null;
+  if ((100 * goal.variance) % goal.mean !== 0) return null;
+  const pct = 100 - (100 * goal.variance) / goal.mean;
+  if (!onPctGrid(pct) || (100 * goal.mean) % pct !== 0) return null;
+  const answer = { n: (100 * goal.mean) / pct, pct };
+  return isBinomialAnswer(answer, nMax) && binomialMeanHundredths(answer) === 100 * goal.mean && binomialVarianceTenThousandths(answer) === 10000 * goal.variance ? answer : null;
+}
+
+/** P(X = k) for k from 0 to n, built up from P(0) = (1 - p)^n so no factorial ever overflows. */
+export function binomialPmf(n: number, pct: number): number[] {
+  const p = pct / 100;
+  const pmf = [Math.pow(1 - p, n)];
+  for (let k = 0; k < n; k += 1) pmf.push((pmf[k]! * (n - k) * p) / ((k + 1) * (1 - p)));
+  return pmf;
+}
+
+/** The exact share of the counts that sit within `k` standard deviations of the mean. */
+export function binomialShareWithin(n: number, pct: number, k: number): number {
+  const mean = (n * pct) / 100;
+  const sd = Math.sqrt((n * pct * (100 - pct)) / 10000);
+  return binomialPmf(n, pct).reduce((sum, p, count) => (Math.abs(count - mean) <= k * sd + 1e-9 ? sum + p : sum), 0);
+}
+
+export type CltGoal = { readonly shrink: number };
+export type CltAnswer = { n: number };
+
+export const isWeights = (value: unknown): value is readonly number[] =>
+  Array.isArray(value) && value.length >= CLT_WEIGHTS_MIN && value.length <= CLT_WEIGHTS_MAX && value.every((weight) => inRange(weight, 0, CLT_WEIGHT_LIMIT)) && value.some((weight) => weight > 0);
+export const isCltAnswer = (value: unknown, nMax: number): value is CltAnswer => hasOnly(value, ['n']) && inRange(value.n, 1, nMax);
+
+/** The spread of the mean of n draws is the spread of one draw over the square root of n, so shrinking it k times takes n = k squared. */
+export function solveClt(goal: CltGoal, nMax: number): CltAnswer | null {
+  if (!inRange(goal.shrink, 2, CLT_SHRINK_MAX)) return null;
+  const answer = { n: goal.shrink * goal.shrink };
+  return isCltAnswer(answer, nMax) ? answer : null;
+}
+
+/** One draw takes the value i + 1 with probability weights[i] over their total. */
+export function populationPmf(weights: readonly number[]): number[] {
+  const total = weights.reduce((sum, weight) => sum + weight, 0);
+  return weights.map((weight) => weight / total);
+}
+
+export function populationMoments(weights: readonly number[]): { mean: number; sd: number } {
+  const pmf = populationPmf(weights);
+  const mean = pmf.reduce((sum, p, index) => sum + p * (index + 1), 0);
+  const variance = pmf.reduce((sum, p, index) => sum + p * (index + 1 - mean) ** 2, 0);
+  return { mean, sd: Math.sqrt(variance) };
+}
+
+/** The exact distribution of the sum of n draws, by repeated convolution: entry i is P(sum = n + i). */
+export function sumPmf(weights: readonly number[], n: number): number[] {
+  const draw = populationPmf(weights);
+  let sums = [1];
+  for (let step = 0; step < n; step += 1) {
+    const next = new Array<number>(sums.length + draw.length - 1).fill(0);
+    sums.forEach((p, i) => draw.forEach((q, j) => { next[i + j] = (next[i + j] ?? 0) + p * q; }));
+    sums = next;
+  }
+  return sums;
+}
+
+/** The exact distribution of the mean of n draws as (mean, probability) pairs, left to right. */
+export function meanPmf(weights: readonly number[], n: number): Array<{ mean: number; p: number }> {
+  return sumPmf(weights, n).map((p, index) => ({ mean: (n + index) / n, p }));
+}
+
+/** The spread of the mean of n draws. */
+export const meanSpread = (weights: readonly number[], n: number): number => populationMoments(weights).sd / Math.sqrt(n);
+

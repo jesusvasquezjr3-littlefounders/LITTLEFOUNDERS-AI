@@ -1,0 +1,460 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-13-17",
+  "chapter_id": "reading-charts-business",
+  "lesson_id": "v2-reading-charts-business",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-reading-charts-business"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Rho reads how shoppers drop out, how sales vary and which stand wins.",
+  "title": {
+    "en-US": "Read business measures",
+    "es-MX": "Lee medidas de negocio",
+    "pt-BR": "Leia medidas de negócio"
+  },
+  "new_concepts": [
+    "kc-reading-charts-business"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "funnel-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "visual": {
+        "type": "funnel"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "step-visit"
+            },
+            {
+              "id": "step-look"
+            },
+            {
+              "id": "step-cart"
+            },
+            {
+              "id": "step-buy"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-shoppers",
+              "values": [
+                100,
+                60,
+                30,
+                12
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-thirty"
+            },
+            {
+              "id": "ans-sixty"
+            },
+            {
+              "id": "ans-twelve"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read each step from top to bottom.",
+          "feedback": {
+            "met": "You read the bar for the cart step.",
+            "not_yet": "Not yet. Look at the bar called Cart."
+          },
+          "title": "Shoppers at the stand",
+          "data": {
+            "categories": [
+              {
+                "label": "Visit"
+              },
+              {
+                "label": "Look"
+              },
+              {
+                "label": "Cart"
+              },
+              {
+                "label": "Buy"
+              }
+            ],
+            "series": [
+              {
+                "label": "Shoppers"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "How many shoppers reach the cart?",
+            "options": [
+              {
+                "label": "30"
+              },
+              {
+                "label": "60"
+              },
+              {
+                "label": "12"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Lee cada paso de arriba hacia abajo.",
+          "feedback": {
+            "met": "Leíste la barra del paso del carrito.",
+            "not_yet": "Todavía no. Mira la barra llamada Carrito."
+          },
+          "title": "Clientes en el puesto",
+          "data": {
+            "categories": [
+              {
+                "label": "Visita"
+              },
+              {
+                "label": "Mira"
+              },
+              {
+                "label": "Carrito"
+              },
+              {
+                "label": "Compra"
+              }
+            ],
+            "series": [
+              {
+                "label": "Clientes"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuántos clientes llegan al carrito?",
+            "options": [
+              {
+                "label": "30"
+              },
+              {
+                "label": "60"
+              },
+              {
+                "label": "12"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Leia cada etapa de cima para baixo.",
+          "feedback": {
+            "met": "Você leu a barra da etapa do carrinho.",
+            "not_yet": "Ainda não. Veja a barra chamada Carrinho."
+          },
+          "title": "Clientes na barraca",
+          "data": {
+            "categories": [
+              {
+                "label": "Visita"
+              },
+              {
+                "label": "Olha"
+              },
+              {
+                "label": "Carrinho"
+              },
+              {
+                "label": "Compra"
+              }
+            ],
+            "series": [
+              {
+                "label": "Clientes"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Quantos clientes chegam ao carrinho?",
+            "options": [
+              {
+                "label": "30"
+              },
+              {
+                "label": "60"
+              },
+              {
+                "label": "12"
+              }
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-thirty"
+        ]
+      }
+    },
+    {
+      "id": "err-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "error-bars"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "wk-one"
+            },
+            {
+              "id": "wk-two"
+            },
+            {
+              "id": "wk-three"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-cups",
+              "values": [
+                20,
+                26,
+                31
+              ],
+              "error": [
+                3,
+                5,
+                2
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The line shows how much sales can vary.",
+          "title": "Cups sold per day",
+          "data": {
+            "categories": [
+              {
+                "label": "Week 1"
+              },
+              {
+                "label": "Week 2"
+              },
+              {
+                "label": "Week 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Cups sold"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "La línea muestra cuánto pueden variar las ventas.",
+          "title": "Vasos vendidos por día",
+          "data": {
+            "categories": [
+              {
+                "label": "Semana 1"
+              },
+              {
+                "label": "Semana 2"
+              },
+              {
+                "label": "Semana 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Vasos vendidos"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "A linha mostra quanto as vendas podem variar.",
+          "title": "Copos vendidos por dia",
+          "data": {
+            "categories": [
+              {
+                "label": "Semana 1"
+              },
+              {
+                "label": "Semana 2"
+              },
+              {
+                "label": "Semana 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Copos vendidos"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "par-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "parallel-coordinates"
+      },
+      "payload": {
+        "data": {
+          "unit": "points",
+          "categories": [
+            {
+              "id": "axis-price"
+            },
+            {
+              "id": "axis-quality"
+            },
+            {
+              "id": "axis-speed"
+            }
+          ],
+          "records": [
+            {
+              "id": "rec-a",
+              "values": [
+                8,
+                6,
+                4
+              ]
+            },
+            {
+              "id": "rec-b",
+              "values": [
+                4,
+                9,
+                7
+              ]
+            },
+            {
+              "id": "rec-c",
+              "values": [
+                6,
+                5,
+                9
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow each line across the three measures.",
+          "title": "Compare three stands",
+          "data": {
+            "categories": [
+              {
+                "label": "Price"
+              },
+              {
+                "label": "Quality"
+              },
+              {
+                "label": "Speed"
+              }
+            ],
+            "records": [
+              {
+                "label": "Stand A"
+              },
+              {
+                "label": "Stand B"
+              },
+              {
+                "label": "Stand C"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Sigue cada línea por las tres medidas.",
+          "title": "Compara tres puestos",
+          "data": {
+            "categories": [
+              {
+                "label": "Precio"
+              },
+              {
+                "label": "Calidad"
+              },
+              {
+                "label": "Rapidez"
+              }
+            ],
+            "records": [
+              {
+                "label": "Puesto A"
+              },
+              {
+                "label": "Puesto B"
+              },
+              {
+                "label": "Puesto C"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Siga cada linha pelas três medidas.",
+          "title": "Compare três barracas",
+          "data": {
+            "categories": [
+              {
+                "label": "Preço"
+              },
+              {
+                "label": "Qualidade"
+              },
+              {
+                "label": "Rapidez"
+              }
+            ],
+            "records": [
+              {
+                "label": "Barraca A"
+              },
+              {
+                "label": "Barraca B"
+              },
+              {
+                "label": "Barraca C"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
