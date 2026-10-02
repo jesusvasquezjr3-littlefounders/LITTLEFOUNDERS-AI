@@ -8,10 +8,11 @@
 .lf-net-name { font-size: 6px; }
 .lf-net-name--on { fill: var(--primary-strong); font-weight: 800; }
 .lf-net-tag { font-size: 5px; fill: var(--content-muted); }
+.lf-net-name, .lf-net-tag { paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
 .lf-net-badge { font-size: 6px; font-weight: 800; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
 .lf-net-order { font-size: 6px; font-weight: 800; fill: var(--on-primary); }
-.lf-net-tree { max-inline-size: 28rem; }
-.lf-net-tree .lf-net-name { font-size: 9px; }
+.lf-net-tree { max-inline-size: 40rem; }
+.lf-net-tree .lf-net-name { font-size: 11px; }
 
 .lf-net-steps { display: grid; gap: var(--spacing-2); justify-items: start; max-inline-size: 42rem; }
 .lf-net-steps-nav { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }

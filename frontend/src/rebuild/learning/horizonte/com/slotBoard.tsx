@@ -97,13 +97,13 @@ export function SlotBoardShell({ screen, document, segment, onBack, sequence, bo
       {aside}
       {open ? <SpecTable table={table} /> : null}
     </section>
-    <section className="lf-learning-control-strip" aria-label={heading}>
+    {tray || move ? <section className="lf-learning-control-strip" aria-label={heading}>
       <h2 data-copy-role="heading">{heading}</h2>
       {tray ? <div className="lf-slotboard-tray" role="group" aria-label={t.tray} {...board.drag.target(TRAY)}>
         {board.tray.length > 0 ? board.tray.map((piece) => <Piece key={piece} board={board} id={piece} />) : <p data-copy-role="body">{t.trayEmpty}</p>}
       </div> : null}
       {move ? <MoveToChoice locale={document.locale} item={board.moveItem} options={board.moveOptions} disabled={board.locked} onChange={board.moveTo} /> : null}
-    </section>
+    </section> : null}
   </BoardShell>;
 }
 

@@ -7,7 +7,7 @@ export type Words = { readonly [K in keyof typeof COM_COPY]: string };
 /** A copy string whose key is built at run time, such as a slot, a gate or an option name. */
 export const word = (t: Words, key: string): string => (t as Readonly<Record<string, string>>)[key] ?? key;
 
-/** A number in the learner's own notation (a decimal comma in es-MX and pt-BR), never negative zero. */
+/** A number in the learner's own notation (a decimal point in en-US and es-MX, a decimal comma in pt-BR), never negative zero. */
 export const fmt = (locale: Locale, value: number, digits = 2): string => {
   const rounded = Number(value.toFixed(digits));
   return new Intl.NumberFormat(locale, { maximumFractionDigits: digits }).format(rounded === 0 ? 0 : rounded);

@@ -23,7 +23,7 @@
 .lf-circuit-name, .lf-circuit-gate { font: var(--type-caption); font-size: 6.5px; fill: var(--content); }
 .lf-circuit-gate { font-size: 6px; font-weight: 800; fill: var(--content-muted); }
 .lf-circuit-box--set + .lf-circuit-gate { fill: var(--on-primary); }
-.lf-slotboard .lf-hz-table { max-inline-size: 42rem; }
+.lf-slotboard .lf-hz-table-scroll { max-inline-size: 42rem; }
 @media (prefers-reduced-motion: no-preference) {
   .lf-bit { transition: background-color var(--dur-component) var(--ease-standard), border-color var(--dur-component) var(--ease-standard); }
 }

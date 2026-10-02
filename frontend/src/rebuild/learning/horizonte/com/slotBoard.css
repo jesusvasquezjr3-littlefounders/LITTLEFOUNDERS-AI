@@ -1,5 +1,5 @@
 /* F2.16 and F2.18: zones that take pieces, the piece tray and the text lines, the same as fin2 so a pack owns its own css. Tokens only. */
-.lf-slotboard { display: grid; gap: var(--spacing-4); justify-items: start; }
+.lf-slotboard { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-4); justify-items: start; }
 .lf-slotzones { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: var(--spacing-3); inline-size: 100%; }
 .lf-slotzone { display: grid; align-content: start; gap: var(--spacing-1); min-inline-size: 0; min-block-size: calc(var(--hz-hit) + var(--spacing-8)); padding: var(--spacing-3); border: 1px solid var(--outline); border-radius: var(--rounded-md); background: var(--surface); outline: 2px solid transparent; }
 .lf-slotzone h3 { font-size: 1rem; }

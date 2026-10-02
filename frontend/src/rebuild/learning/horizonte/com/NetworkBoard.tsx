@@ -165,12 +165,15 @@ function RouteBoard({ document, segment, onBack, sequence, onGrade, t, locale, l
 
 /* ── choice tree: every outcome is a leaf; the learner keeps the ones the task asks for ── */
 
-const TREE = { width: 320, top: 14, row: 17, left: 30, right: 36 };
+const TREE = { width: 320, top: 14, row: 17, left: 30, right: 36, glyph: 6.4, shown: 18 };
 
 function Tree({ tree, labels, kept, aria }: { tree: TreePayload; labels: Labels; kept: ReadonlySet<string>; aria: string }) {
   const leaves = treeLeaves(tree);
   const name = (id: string) => labels[id] ?? id;
-  const step = (TREE.width - TREE.left - TREE.right) / tree.pick;
+  /* The last column keeps room for the longest name (up to TREE.shown characters); the chips and the table carry every name whole. */
+  const longest = Math.min(TREE.shown, Math.max(...leaves.flat().map((id) => name(id).length)));
+  const right = Math.max(TREE.right, 10 + longest * TREE.glyph);
+  const step = (TREE.width - TREE.left - right) / tree.pick;
   const x = (level: number) => TREE.left + level * step;
   const y = (index: number) => TREE.top + index * TREE.row;
   const height = TREE.top * 2 + (leaves.length - 1) * TREE.row;
