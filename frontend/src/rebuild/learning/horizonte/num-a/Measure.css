@@ -1,0 +1,38 @@
+/* A14 clock, A15 ruler and A16 pan balance: SVG faces and scales in the sky, mint and berry series hues. Tokens only. */
+.lf-clock { display: block; inline-size: 100%; min-inline-size: 14rem; max-inline-size: 20rem; }
+.lf-clock-face { fill: var(--surface); stroke: var(--content-muted); stroke-width: 4; }
+.lf-clock-mark { stroke: var(--outline); stroke-width: 2; }
+.lf-clock-mark--hour { stroke: var(--content-muted); stroke-width: 4; }
+.lf-clock-number { font: var(--type-label); fill: var(--content); }
+.lf-clock-hand { stroke-linecap: round; }
+.lf-clock-hand--hour { stroke: var(--sky-strong); stroke-width: 9; }
+.lf-clock-hand--minute { stroke: var(--mint-strong); stroke-width: 6; }
+.lf-clock-pin { fill: var(--berry-strong); }
+.lf-clock-tap { fill: transparent; cursor: pointer; }
+.lf-clock-set { display: grid; gap: var(--spacing-3); inline-size: 100%; max-inline-size: 28rem; }
+
+.lf-ruler { display: block; inline-size: 100%; min-inline-size: 26rem; max-inline-size: 44rem; }
+.lf-ruler-bar { fill: var(--sky-soft); stroke: var(--sky-strong); stroke-width: 3; }
+.lf-ruler-guide { stroke: var(--sky-strong); stroke-width: 3; stroke-dasharray: 5 4; }
+.lf-ruler-body { fill: var(--sunken); stroke: var(--outline); stroke-width: 2; }
+.lf-ruler-tick { stroke: var(--content-muted); stroke-width: 3; }
+.lf-ruler-number { font: var(--type-label); fill: var(--content); }
+.lf-ruler-strip { fill: transparent; cursor: pointer; }
+
+.lf-pan { display: block; inline-size: 100%; min-inline-size: 26rem; max-inline-size: 36rem; }
+.lf-pan-fulcrum { fill: var(--sunken); stroke: var(--outline); stroke-width: 3; stroke-linejoin: round; }
+.lf-pan-beam { stroke: var(--content-muted); stroke-width: 8; stroke-linecap: round; }
+.lf-pan-pivot { fill: var(--berry-strong); }
+.lf-pan-string { stroke: var(--outline); stroke-width: 2; }
+.lf-pan-bowl { fill: var(--sunken); stroke: var(--content-muted); stroke-width: 3; stroke-linejoin: round; }
+.lf-pan-weight rect { fill: var(--sky-soft); stroke: var(--sky-strong); stroke-width: 2; }
+.lf-pan-side--mint .lf-pan-weight rect { fill: var(--mint-soft); stroke: var(--mint-strong); }
+.lf-pan-weight--fixed rect { fill: var(--surface); }
+.lf-pan-weight text { font: var(--type-label); fill: var(--content); }
+.lf-pan-regions { display: grid; gap: var(--spacing-3); grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
+.lf-pan-region { display: grid; align-content: start; gap: var(--spacing-2); min-inline-size: 0; min-block-size: 8rem; padding: var(--spacing-3); border: 2px solid var(--outline); border-radius: var(--rounded-lg); background: var(--sunken); }
+.lf-pan-region[data-drop-armed='true'] { border-color: var(--primary-strong); border-style: dashed; }
+.lf-pan-region[data-drop-selected='true'] { border-color: var(--primary-strong); border-style: solid; }
+.lf-pan-region h3 { font: var(--type-label); }
+.lf-pan-fixed { display: flex; flex-wrap: wrap; gap: var(--spacing-1); margin: 0; padding: 0; list-style: none; }
+.lf-pan-fixed li { display: grid; place-items: center; min-inline-size: var(--spacing-8); min-block-size: var(--spacing-8); padding-inline: var(--spacing-2); border: 2px solid var(--outline); border-radius: var(--rounded-md); background: var(--surface); font-weight: 800; }

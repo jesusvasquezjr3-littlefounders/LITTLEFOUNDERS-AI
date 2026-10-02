@@ -69,7 +69,8 @@ export function handleRuleProblems(css: string): string[] {
 function accessibleName(element: Element): string {
   const labelled = element.getAttribute('aria-labelledby');
   const byId = labelled ? labelled.split(/\s+/).map((id) => element.ownerDocument.getElementById(id)?.textContent ?? '').join(' ') : '';
-  return (element.getAttribute('aria-label') ?? byId ?? '').trim() || (element.textContent ?? '').trim() || (element.getAttribute('title') ?? '').trim();
+  const native = [...((element as HTMLInputElement).labels ?? [])].map((label) => label.textContent ?? '').join(' ');
+  return (element.getAttribute('aria-label') ?? byId ?? '').trim() || native.trim() || (element.textContent ?? '').trim() || (element.getAttribute('title') ?? '').trim();
 }
 
 const ownText = (element: Element) => [...element.childNodes].filter((node) => node.nodeType === 3).map((node) => node.textContent ?? '').join('').trim();

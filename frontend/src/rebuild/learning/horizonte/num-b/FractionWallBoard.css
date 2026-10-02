@@ -1,0 +1,34 @@
+/* F1.6 fraction wall, bars, product grid and measuring tiles: equal parts in rows. Tokens only. */
+.lf-wall-scroll { max-inline-size: 100%; overflow-x: auto; }
+.lf-wall { display: grid; gap: var(--spacing-2); inline-size: min(100%, 36rem); min-inline-size: calc(var(--cells, 0) * 2.75rem); }
+.lf-wall-row { display: grid; grid-template-columns: repeat(var(--row-cells), minmax(0, 1fr)); gap: 2px; }
+.lf-fcell { display: block; min-block-size: 2.75rem; padding: 0; border: 1px solid var(--outline); border-radius: var(--rounded-sm); background: var(--surface); }
+.lf-wall-row[data-dense='true'] .lf-fcell { min-block-size: 1.5rem; }
+.lf-fcell[data-on='true'][data-hue='sky'] { border-color: var(--sky-strong); background: var(--sky-strong); }
+.lf-fcell[data-on='true'][data-hue='mint'] { border-color: var(--mint-strong); background: var(--mint-strong); }
+.lf-wall-cell { display: flex; border-radius: var(--rounded-sm); outline: 2px solid transparent; }
+.lf-wall-cell[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
+.lf-wall-cell[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }
+.lf-fcell--button { flex: 1; min-inline-size: 2.75rem; cursor: pointer; }
+.lf-fcell--button:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
+.lf-fcell--button:disabled { cursor: default; }
+.lf-grid { display: grid; gap: 2px; justify-items: start; max-inline-size: 100%; overflow-x: auto; }
+.lf-grid-line { display: grid; grid-template-columns: 2.75rem repeat(var(--cols), 2.75rem); gap: 2px; }
+.lf-grid-strip { min-inline-size: 2.75rem; min-block-size: 2.75rem; padding: 0; border: 1px solid var(--outline); border-radius: var(--rounded-sm); background: var(--surface); color: var(--ink); font-weight: 800; cursor: pointer; }
+.lf-grid-strip[data-hue='sky'][aria-pressed='true'] { border-color: var(--sky-strong); background: var(--sky-soft); }
+.lf-grid-strip[data-hue='mint'][aria-pressed='true'] { border-color: var(--mint-strong); background: var(--mint-soft); }
+.lf-grid-strip:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
+.lf-grid-strip:disabled { cursor: default; }
+.lf-grid-cell { min-inline-size: 2.75rem; min-block-size: 2.75rem; border: 1px solid var(--outline); border-radius: var(--rounded-sm); background: var(--surface); }
+.lf-grid-cell[data-shade='col'] { background: var(--sky-soft); }
+.lf-grid-cell[data-shade='row'] { background: var(--mint-soft); }
+.lf-grid-cell[data-shade='both'] { border-color: var(--berry-strong); background: var(--berry-soft); }
+.lf-measure-svg { inline-size: min(100%, 28rem); block-size: auto; overflow: visible; }
+.lf-measure-unit { fill: var(--sunken); stroke: var(--outline); stroke-width: 2; }
+.lf-measure-length { fill: var(--mint-soft); stroke: var(--mint-strong); stroke-width: 2; }
+.lf-measure-tile { fill: var(--sky-soft); stroke: var(--sky-strong); stroke-width: 2; }
+.lf-measure-over { fill: none; stroke: var(--sky-strong); stroke-width: 2; stroke-dasharray: 4 3; }
+.lf-measure-svg text { fill: var(--ink); font-size: 14px; font-weight: 800; }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-fcell, .lf-grid-strip, .lf-grid-cell { transition: background-color var(--dur-component) var(--ease-standard); }
+}

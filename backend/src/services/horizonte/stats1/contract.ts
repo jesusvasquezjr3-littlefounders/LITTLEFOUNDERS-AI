@@ -1,5 +1,106 @@
+import { z } from 'zod';
+import { hzBase, hzServer, hzVisual } from '../shared.js';
 import type { HorizonteAgeScope } from '../types.js';
+import {
+  BINOMIAL_N_LIMIT, CLT_N_LIMIT, CLT_SHRINK_MAX, CLT_WEIGHTS_MAX, CLT_WEIGHTS_MIN, CLT_WEIGHT_LIMIT, CURVE_AXIS_LIMIT, NORMAL_RULES, NORMAL_SD_LIMIT,
+  isBinomialAnswer, isCltAnswer, isCurveAxis, isNormalAnswer, isWeights, solveBinomial, solveClt, solveNormal,
+} from './distributions.js';
+import { AXIS_LIMIT, DOT_COUNT_MAX, DOT_COUNT_MIN, DOT_MEASURES, DOT_MOVES_MAX, balancePoint, inRange, isAxis, isDots } from './model.js';
 
-export const STATS1_SEGMENTS = [] as const;
-export const STATS1_RUBRICS = {} as const;
-export const STATS1_AGE_SCOPE: Readonly<Record<string, HorizonteAgeScope>> = {};
+const position = z.number().int().min(0).max(AXIS_LIMIT);
+const dotAxis = z.object({ min: position, max: position }).strict();
+const dotList = z.array(position).min(DOT_COUNT_MIN).max(DOT_COUNT_MAX);
+const curveValue = z.number().int().min(0).max(CURVE_AXIS_LIMIT);
+const curveAxis = z.object({ min: curveValue, max: curveValue }).strict();
+const small = (max: number) => z.number().int().min(1).max(max);
+
+/** C06, H03, H07: a stacked dot plot, a measure to reach and the dots that may move. The target stays in the rubric. */
+export const dotPlotPayload = z.object({ axis: dotAxis, dots: dotList, measure: z.enum(DOT_MEASURES), moves: small(DOT_MOVES_MAX) }).strict();
+
+/** H06: dots on a beam and a pivot that starts off balance; the answer is the pivot position. */
+export const balancePayload = z.object({ axis: dotAxis, dots: dotList, pivot: position }).strict();
+
+/** H22: a normal curve and a band of values; the band is a whole number of standard deviations either side of the mean. */
+export const normalPayload = z.object({
+  axis: curveAxis, start: z.object({ mean: curveValue, sd: small(NORMAL_SD_LIMIT) }).strict(), sdMax: small(NORMAL_SD_LIMIT),
+  band: z.object({ rule: z.union([z.literal(NORMAL_RULES[0]), z.literal(NORMAL_RULES[1]), z.literal(NORMAL_RULES[2])]), low: curveValue, high: curveValue }).strict(),
+}).strict();
+
+/** H23: the count n and the chance pct (a whole percent on a 5 step grid) that give a mean and a variance. */
+export const binomialPayload = z.object({
+  nMax: small(BINOMIAL_N_LIMIT), start: z.object({ n: small(BINOMIAL_N_LIMIT), pct: z.number().int().min(1).max(99) }).strict(),
+  goal: z.object({ mean: small(BINOMIAL_N_LIMIT), variance: small(BINOMIAL_N_LIMIT) }).strict(),
+}).strict();
+
+/** H25: a population that is not a bell (weights of the values 1, 2, 3 and so on) and how many times smaller the mean's spread must be. */
+export const cltPayload = z.object({
+  weights: z.array(z.number().int().min(0).max(CLT_WEIGHT_LIMIT)).min(CLT_WEIGHTS_MIN).max(CLT_WEIGHTS_MAX), nMax: small(CLT_N_LIMIT),
+  start: z.object({ n: small(CLT_N_LIMIT) }).strict(), goal: z.object({ shrink: z.number().int().min(2).max(CLT_SHRINK_MAX) }).strict(),
+}).strict();
+
+type Issue = (path: string, message: string) => void;
+
+function dotPlotProblems(payload: z.infer<typeof dotPlotPayload>, issue: Issue): void {
+  if (!isAxis(payload.axis)) return issue('axis', 'The axis runs from 0 to 100 and is 4 to 20 steps wide');
+  if (!isDots(payload.dots, payload.axis)) issue('dots', 'Every dot sits on the axis');
+}
+
+function balanceProblems(payload: z.infer<typeof balancePayload>, issue: Issue): void {
+  if (!isAxis(payload.axis)) return issue('axis', 'The axis runs from 0 to 100 and is 4 to 20 steps wide');
+  if (!isDots(payload.dots, payload.axis)) return issue('dots', 'Every dot sits on the axis');
+  const point = balancePoint(payload.dots);
+  if (point === null || !inRange(point, payload.axis.min, payload.axis.max)) return issue('dots', 'The dots balance on a whole position of the axis');
+  if (!inRange(payload.pivot, payload.axis.min, payload.axis.max) || payload.pivot === point) issue('pivot', 'The pivot starts on the axis and away from the balance point');
+}
+
+function normalProblems(payload: z.infer<typeof normalPayload>, issue: Issue): void {
+  if (!isCurveAxis(payload.axis)) return issue('axis', 'The axis runs from 0 to 200 and is at least 10 steps wide');
+  if (!isNormalAnswer(payload.start, payload.axis, payload.sdMax)) return issue('start', 'The start mean sits on the axis and the start spread is between 1 and the maximum');
+  const answer = solveNormal(payload.axis, payload.band, payload.sdMax);
+  if (!answer) return issue('band', 'The band is centred on a whole mean and is a whole number of spreads wide');
+  if (answer.mean === payload.start.mean && answer.sd === payload.start.sd) issue('start', 'The curve starts away from the answer');
+}
+
+function binomialProblems(payload: z.infer<typeof binomialPayload>, issue: Issue): void {
+  if (!isBinomialAnswer(payload.start, payload.nMax)) return issue('start', 'The start is a count up to the maximum and a percent on the 5 step grid');
+  const answer = solveBinomial(payload.goal, payload.nMax);
+  if (!answer) return issue('goal', 'The mean and variance have exactly one count and percent on the grid');
+  if (answer.n === payload.start.n && answer.pct === payload.start.pct) issue('start', 'The start is away from the answer');
+}
+
+function cltProblems(payload: z.infer<typeof cltPayload>, issue: Issue): void {
+  if (!isWeights(payload.weights)) return issue('weights', 'The weights are 3 to 8 whole numbers and at least one is above zero');
+  if (!isCltAnswer(payload.start, payload.nMax)) return issue('start', 'The start sample size is between 1 and the maximum');
+  const answer = solveClt(payload.goal, payload.nMax);
+  if (!answer) return issue('goal', 'The shrink factor squared is a sample size within the maximum');
+  if (answer.n === payload.start.n) issue('start', 'The sample size starts away from the answer');
+}
+
+const refine = <P>(check: (payload: P, issue: Issue) => void) => (value: { payload: P }, ctx: z.RefinementCtx) =>
+  check(value.payload, (path, message) => ctx.addIssue({ code: 'custom', path: ['payload', path], message }));
+
+export const STATS1_SEGMENTS = [
+  z.object({ ...hzBase, type: z.literal('stats.dot-plot.v2'), grading: hzServer, visual: hzVisual('dot-plot'), payload: dotPlotPayload }).strict().superRefine(refine(dotPlotProblems)),
+  z.object({ ...hzBase, type: z.literal('stats.balance-point.v2'), grading: hzServer, visual: hzVisual('balance-point'), payload: balancePayload }).strict().superRefine(refine(balanceProblems)),
+  z.object({ ...hzBase, type: z.literal('stats.normal.v2'), grading: hzServer, visual: hzVisual('normal-curve'), payload: normalPayload }).strict().superRefine(refine(normalProblems)),
+  z.object({ ...hzBase, type: z.literal('stats.binomial.v2'), grading: hzServer, visual: hzVisual('binomial-bars'), payload: binomialPayload }).strict().superRefine(refine(binomialProblems)),
+  z.object({ ...hzBase, type: z.literal('stats.clt.v2'), grading: hzServer, visual: hzVisual('sampling-mean'), payload: cltPayload }).strict().superRefine(refine(cltProblems)),
+] as const;
+
+const target = <T extends z.ZodType>(shape: T) => z.object({ target: shape }).strict();
+
+export const STATS1_RUBRICS = {
+  'stats.dot-plot.v2': target(position),
+  'stats.balance-point.v2': target(position),
+  'stats.normal.v2': target(z.object({ mean: curveValue, sd: small(NORMAL_SD_LIMIT) }).strict()),
+  'stats.binomial.v2': target(z.object({ n: small(BINOMIAL_N_LIMIT), pct: z.number().int().min(1).max(99) }).strict()),
+  'stats.clt.v2': target(z.object({ n: small(CLT_N_LIMIT) }).strict()),
+} as const;
+
+export const STATS1_AGE_SCOPE: Readonly<Record<string, HorizonteAgeScope>> = {
+  'stats.dot-plot.v2': { ages: [10, 14], adult: false },
+  'stats.balance-point.v2': { ages: [10, 14], adult: false },
+  'stats.normal.v2': { ages: [14, 17], adult: true },
+  'stats.binomial.v2': { ages: [14, 17], adult: true },
+  'stats.clt.v2': { ages: [14, 17], adult: true },
+};
