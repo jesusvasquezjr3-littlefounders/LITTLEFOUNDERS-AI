@@ -1,0 +1,10 @@
+[
+  { "fixture": "dot-plot-median", "age": "10-12" },
+  { "fixture": "dot-plot-mode", "age": "10-12" },
+  { "fixture": "dot-plot-mean", "age": "13-17" },
+  { "fixture": "balance-level", "age": "10-12" },
+  { "fixture": "normal-95", "age": "13-17" },
+  { "fixture": "normal-68", "age": "13-17" },
+  { "fixture": "binomial-fair", "age": "13-17" },
+  { "fixture": "clt-shrink", "age": "13-17" }
+]
