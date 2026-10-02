@@ -1,0 +1,10 @@
+/* F2.13 statement board: flow and holding bars, and a dashed line at the expenses total. Tokens only. */
+.lf-stmt-chart { inline-size: 100%; max-inline-size: 28rem; block-size: auto; }
+.lf-stmt-chart text { fill: var(--content); font-size: 12px; }
+.lf-stmt-track { fill: var(--sunken); }
+.lf-stmt-bar--earned { fill: var(--sky-strong); }
+.lf-stmt-bar--passive { fill: var(--mint-strong); }
+.lf-stmt-bar--expenses { fill: var(--berry-strong); }
+.lf-stmt-bar--assets { fill: var(--sky); }
+.lf-stmt-bar--liabilities { fill: var(--berry); }
+.lf-stmt-goal { stroke: var(--content); stroke-width: 2; stroke-dasharray: 4 3; }
