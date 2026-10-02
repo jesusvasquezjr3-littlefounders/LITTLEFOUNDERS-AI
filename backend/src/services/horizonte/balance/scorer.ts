@@ -1,3 +1,80 @@
+import type { V2Grade } from '../../v2VisualScorer.js';
 import type { HorizonteScorer } from '../types.js';
+import { BALANCE_MAX_ANSWER, BALANCE_MAX_STEPS, holdsAt, isOfferedOps, isRouteOp, isStartScale, replay, solveRoute, solvedValue, type StartScale } from './model.js';
+import { canonicalRational, ratio, sameRational } from './numeric.js';
+import { isProofChoice, isProofVisual, proofKey, proofPayloadProblem, sameProofValue, type ProofChoice } from './proof.js';
 
-export const BALANCE_SCORERS: Readonly<Record<string, HorizonteScorer>> = {};
+const INVALID: V2Grade = { verdict: 'invalid', diagnostic: 'none' };
+const VALID: V2Grade = { verdict: 'valid', diagnostic: 'none' };
+const MET: V2Grade = { verdict: 'met', diagnostic: 'none' };
+const REVIEW: V2Grade = { verdict: 'review', diagnostic: 'value' };
+
+const plain = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
+const keysOf = (value: Record<string, unknown>): string => Object.keys(value).sort().join();
+
+/* ---------- F1.8 equation balance ---------- */
+
+type BalanceSegment = { payload: { start: StartScale; ops: readonly string[] } };
+type BalanceRubric = { x: number };
+
+/**
+ * invalid: malformed, an operation the piece does not offer or cannot do in turn, a slip in a route, or (with a rubric)
+ * a key the equation does not hold at or that no offered route solves. valid: nothing to grade yet (no typed answer) and
+ * every well-formed response without a rubric. review: an answer or a route that is not the key. met: the route isolates
+ * x and the typed value is the key.
+ */
+function gradeBalance(segment: BalanceSegment, response: unknown, rubric: BalanceRubric | undefined): V2Grade {
+  const start = segment?.payload?.start;
+  const ops = segment?.payload?.ops;
+  if (!isStartScale(start) || !isOfferedOps(ops)) return INVALID;
+  if (!plain(response) || keysOf(response) !== 'answer,steps') return INVALID;
+  const { steps, answer } = response as { steps: unknown; answer: unknown };
+  if (!Array.isArray(steps) || steps.length > BALANCE_MAX_STEPS || !steps.every((step) => isRouteOp(step) && ops.includes(step))) return INVALID;
+  if (typeof answer !== 'string') return INVALID;
+  const typed = answer === '' ? null : canonicalRational(answer);
+  if (answer !== '' && typed === null) return INVALID;
+  const end = replay(start, steps);
+  if (end === null) return INVALID;
+  if (rubric === undefined) return VALID;
+  const x = plain(rubric) && keysOf(rubric) === 'x' ? rubric.x : undefined;
+  if (typeof x !== 'number' || !Number.isInteger(x) || x < 0 || x > BALANCE_MAX_ANSWER || !holdsAt(start, x) || solveRoute(start, ops.filter(isRouteOp)) === null) return INVALID;
+  if (typed === null) return VALID;
+  return solvedValue(end) === x && sameRational(typed, ratio(x)) ? MET : REVIEW;
+}
+
+/* ---------- F1.15 visual proofs ---------- */
+
+type ProofSegment = { visual: { type: string }; payload: Record<string, unknown> & { choices: readonly string[] } };
+type ProofRubric = { choice: ProofChoice; value: string };
+
+/**
+ * invalid: malformed, a choice the piece does not offer, untyped-number text, or (with a rubric) a key that does not
+ * match the geometry it names. valid: no prediction or no number yet, and every well-formed response without a rubric.
+ * review: a complete prediction that is not the key. met: the right formula and the right value.
+ */
+function gradeProof(segment: ProofSegment, response: unknown, rubric: ProofRubric | undefined): V2Grade {
+  const visual = segment?.visual?.type;
+  const payload = segment?.payload;
+  if (!isProofVisual(visual) || !plain(payload) || proofPayloadProblem(visual, payload) !== null) return INVALID;
+  if (!plain(response) || keysOf(response) !== 'choice,value') return INVALID;
+  const { choice, value } = response as { choice: unknown; value: unknown };
+  const offered = payload.choices as readonly unknown[];
+  if (typeof choice !== 'string' || (choice !== '' && !(isProofChoice(choice) && offered.includes(choice)))) return INVALID;
+  if (typeof value !== 'string' || (value !== '' && canonicalRational(value) === null)) return INVALID;
+  if (rubric === undefined) return VALID;
+  const key = proofKey(visual, payload);
+  if (key === null || !plain(rubric) || keysOf(rubric) !== 'choice,value' || rubric.choice !== key.choice || !sameProofValue(rubric.value, key.value)) return INVALID;
+  if (choice === '' || value === '') return VALID;
+  return choice === key.choice && sameProofValue(value, key.value) ? MET : REVIEW;
+}
+
+export const BALANCE_SCORERS: Readonly<Record<string, HorizonteScorer>> = {
+  'math.equation-balance.v2': {
+    grade: gradeBalance as HorizonteScorer['grade'],
+    sample: (() => ({ steps: [], answer: '' })) as HorizonteScorer['sample'],
+  },
+  'math.visual-proof.v2': {
+    grade: gradeProof as HorizonteScorer['grade'],
+    sample: (() => ({ choice: '', value: '' })) as HorizonteScorer['sample'],
+  },
+};
