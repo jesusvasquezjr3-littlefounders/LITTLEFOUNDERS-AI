@@ -13,9 +13,9 @@ export const SOLIDS_FIXTURES: readonly HorizonteFixture[] = [
     segment: (locale) => ({
       id: 'solid-viewer-no-vertices', type: 'geometry.solid-viewer.v2', grading: 'server', visual: { type: 'solid-viewer' },
       prompt: text(
-        'Turn the solids and find the one with no vertices. Then count its faces.',
-        'Gira los cuerpos y encuentra el que no tiene vértices. Luego cuenta sus caras.',
-        'Gire os sólidos e encontre o que não tem vértices. Depois conte as faces dele.',
+        'Find the solid with no vertices. Then count its faces.',
+        'Encuentra el cuerpo sin vértices. Luego cuenta sus caras.',
+        'Encontre o sólido sem vértices. Depois conte as faces dele.',
       )[locale],
       payload: { solids: ['cube', 'cylinder', 'pyramid'], find: { kind: 'vertices', count: 0 }, report: 'faces' },
     }),
@@ -47,9 +47,9 @@ export const SOLIDS_FIXTURES: readonly HorizonteFixture[] = [
     segment: (locale) => ({
       id: 'cube-net-name-faces', type: 'geometry.cube-net.v2', grading: 'server', visual: { type: 'cube-net' },
       prompt: text(
-        'This net folds into a cube. Two faces are named. Name the other four.',
-        'Esta plantilla se dobla y forma un cubo. Dos caras ya tienen nombre. Nombra las otras cuatro.',
-        'Esta planificação dobra e forma um cubo. Duas faces já têm nome. Nomeie as outras quatro.',
+        'This net folds into a cube. Name the four blank faces.',
+        'Esta plantilla forma un cubo. Nombra las cuatro caras vacías.',
+        'Esta planificação forma um cubo. Nomeie as quatro faces vazias.',
       )[locale],
       payload: {
         mode: 'label',
@@ -94,9 +94,9 @@ export const SOLIDS_FIXTURES: readonly HorizonteFixture[] = [
     segment: (locale) => ({
       id: 'cube-stack-staircase', type: 'geometry.cube-stack.v2', grading: 'server', visual: { type: 'cube-stack' },
       prompt: text(
-        'Build with the fewest cubes so the front view reads 3, 2, 1 and the side view reads 3, 2, 1.',
-        'Construye con la menor cantidad de cubos para que la vista frontal sea 3, 2, 1 y la vista lateral sea 3, 2, 1.',
-        'Construa com o menor número de cubos para que a vista frontal seja 3, 2, 1 e a vista lateral seja 3, 2, 1.',
+        'Use the fewest cubes so the front and side views both read 3, 2, 1.',
+        'Usa la menor cantidad de cubos para que las vistas frontal y lateral muestren 3, 2, 1.',
+        'Use o menor número de cubos para que as vistas frontal e lateral mostrem 3, 2, 1.',
       )[locale],
       payload: { size: 3, start: [[0, 0, 0], [0, 0, 0], [1, 0, 0]], goal: { front: [3, 2, 1], side: [3, 2, 1] }, fewest: true },
     }),
@@ -115,9 +115,9 @@ export const SOLIDS_FIXTURES: readonly HorizonteFixture[] = [
     segment: (locale) => ({
       id: 'cube-stack-two-by-two', type: 'geometry.cube-stack.v2', grading: 'server', visual: { type: 'cube-stack' },
       prompt: text(
-        'Build a stack that matches the front view, the side view and the view from above.',
-        'Construye una pila que coincida con la vista frontal, la vista lateral y la vista desde arriba.',
-        'Construa uma pilha que combine com a vista frontal, a vista lateral e a vista de cima.',
+        'Build a stack that fits all three views.',
+        'Construye una pila que cumpla las tres vistas.',
+        'Construa uma pilha que combine com as três vistas.',
       )[locale],
       payload: { size: 2, start: [[1, 0], [0, 0]], goal: { front: [2, 2], side: [2, 2], plan: [[1, 0], [0, 1]] }, fewest: false },
     }),
