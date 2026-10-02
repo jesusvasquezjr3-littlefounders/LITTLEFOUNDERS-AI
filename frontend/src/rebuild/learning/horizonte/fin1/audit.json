@@ -1,0 +1,12 @@
+[
+  { "fixture": "compound-thirty", "age": "10-12" },
+  { "fixture": "receive-three", "age": "13-17" },
+  { "fixture": "pay-four", "age": "13-17" },
+  { "fixture": "annuity-end", "age": "13-17" },
+  { "fixture": "annuity-start", "age": "13-17" },
+  { "fixture": "effective-monthly", "age": "13-17" },
+  { "fixture": "card-months", "age": "13-17" },
+  { "fixture": "card-interest", "age": "13-17" },
+  { "fixture": "npv-project", "age": "13-17" },
+  { "fixture": "irr-project", "age": "13-17" }
+]

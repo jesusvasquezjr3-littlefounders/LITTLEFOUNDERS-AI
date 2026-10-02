@@ -1,0 +1,21 @@
+/* F1.15 visual proofs: neutral figure. Sky and mint pieces, berry for the one thing to look at; the frame is plain ink. Tokens only. */
+.lf-proof { display: grid; gap: var(--spacing-3); justify-items: start; }
+.lf-proof-stage { inline-size: 100%; max-inline-size: 28rem; padding: var(--spacing-2); border-radius: var(--rounded-sm); background: var(--sunken); outline: 2px solid transparent; }
+.lf-proof-stage[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
+.lf-proof-stage[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }
+.lf-proof-svg { display: block; inline-size: 100%; block-size: auto; overflow: visible; }
+.lf-proof-shape, .lf-proof-piece { stroke: var(--content); stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; fill: var(--surface); }
+.lf-proof-shape--sky { fill: var(--sky-soft); stroke: var(--sky-strong); }
+.lf-proof-shape--mint { fill: var(--mint-soft); stroke: var(--mint-strong); }
+.lf-proof-shape--berry { fill: var(--berry-soft); stroke: var(--berry-strong); }
+.lf-proof-shape--neutral { fill: var(--outline); stroke: var(--content-muted); }
+.lf-proof-shape--frame { fill: none; stroke: var(--content-muted); stroke-dasharray: 6 4; }
+.lf-proof-piece { fill-opacity: 0.9; }
+.lf-proof-measure line { stroke: var(--berry-strong); stroke-width: 3; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+.lf-proof-label { fill: var(--content); font-size: 14px; font-weight: 800; }
+.lf-proof-status { font-weight: 800; }
+.lf-proof-hint { color: var(--content-muted); }
+.lf-proof-choices, .lf-proof-tray, .lf-proof-slices { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-proof-piece { transition: transform var(--dur-component) var(--ease-standard); }
+}

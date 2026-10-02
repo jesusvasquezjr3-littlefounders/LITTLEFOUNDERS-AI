@@ -1,0 +1,22 @@
+/* F1.8 equation balance: a neutral scale. x blocks are sky, unit counters are mint, the frame is plain ink. Tokens only. */
+.lf-balance { display: grid; gap: var(--spacing-3); justify-items: start; }
+.lf-balance-equation { min-block-size: 3.5rem; display: grid; align-items: center; font-size: 1.5rem; font-weight: 800; color: var(--content); }
+.lf-balance-equation p { font-size: 1rem; font-weight: 600; color: var(--content-muted); }
+.lf-balance-stage { inline-size: 100%; max-inline-size: 28rem; border-radius: var(--rounded-sm); background: var(--sunken); outline: 2px solid transparent; }
+.lf-balance-stage[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
+.lf-balance-stage[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }
+.lf-balance-svg { display: block; inline-size: 100%; block-size: auto; }
+.lf-balance-post, .lf-balance-beam line { stroke: var(--content); stroke-width: 5; stroke-linecap: round; }
+.lf-balance-base { fill: var(--content); }
+.lf-balance-pivot { fill: var(--surface); stroke: var(--content); stroke-width: 3; }
+.lf-balance-string { stroke: var(--content-muted); stroke-width: 2; }
+.lf-balance-plate { fill: var(--content-muted); }
+.lf-balance-block rect { fill: var(--sky-soft); stroke: var(--sky-strong); stroke-width: 2; }
+.lf-balance-block text { fill: var(--sky-strong); font-size: 14px; font-weight: 800; }
+.lf-balance-unit { fill: var(--mint-soft); stroke: var(--mint-strong); stroke-width: 2; }
+.lf-balance-tray { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-balance-status { font-weight: 800; }
+.lf-balance-hint { color: var(--content-muted); }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-balance-beam, .lf-balance-pan { transition: transform var(--dur-component) var(--ease-standard); }
+}
