@@ -1,0 +1,112 @@
+export const LINE_MAX = 1000;
+export const JUMP_SIZES: readonly number[] = [1, 2, 5, 10, 20, 50, 100];
+export const MAX_JUMPS = 8;
+export const MIN_SIZES = 2;
+export const MAX_SIZES = 6;
+export const ZOOM_MAX_SPAN = 20;
+export const ZOOM_MAX_DEPTH = 2;
+
+const whole = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value);
+const record = (value: unknown): Record<string, unknown> | undefined => (typeof value === 'object' && value !== null && !Array.isArray(value) ? value as Record<string, unknown> : undefined);
+
+export interface JumpSetup { start: number; sizes: readonly number[]; max: number }
+
+/** The public setup of an empty number line: a start on the line, two to six allowed jump sizes, and a cap on the jumps. */
+export function jumpSetup(payload: unknown): JumpSetup | undefined {
+  const value = record(payload);
+  if (!value || !whole(value.start) || value.start < 0 || value.start > LINE_MAX || !whole(value.max) || value.max < 1 || value.max > MAX_JUMPS) return undefined;
+  const sizes = value.sizes;
+  if (!Array.isArray(sizes) || sizes.length < MIN_SIZES || sizes.length > MAX_SIZES || new Set(sizes).size !== sizes.length || !sizes.every((size) => JUMP_SIZES.includes(size as number))) return undefined;
+  return { start: value.start, sizes: sizes as number[], max: value.max };
+}
+
+/** A jump list: at most `max` signed jumps, each plus or minus an allowed size, and every landing stays on the line. */
+export function isJumpList(setup: JumpSetup, jumps: unknown): jumps is number[] {
+  if (!Array.isArray(jumps) || jumps.length > setup.max) return false;
+  let at = setup.start;
+  for (const jump of jumps) {
+    if (!whole(jump) || !setup.sizes.includes(Math.abs(jump))) return false;
+    at += jump;
+    if (at < 0 || at > LINE_MAX) return false;
+  }
+  return true;
+}
+
+export const landing = (start: number, jumps: readonly number[]): number => jumps.reduce((at, jump) => at + jump, start);
+
+/** Every number the line can be left on within `max` jumps (including the start). */
+export function reachableLandings(setup: JumpSetup): ReadonlySet<number> {
+  const seen = new Set<number>([setup.start]);
+  let frontier = [setup.start];
+  for (let step = 0; step < setup.max; step += 1) {
+    const next: number[] = [];
+    for (const at of frontier) for (const size of setup.sizes) for (const to of [at - size, at + size]) {
+      if (to >= 0 && to <= LINE_MAX && !seen.has(to)) { seen.add(to); next.push(to); }
+    }
+    frontier = next;
+  }
+  return seen;
+}
+
+/** A target is solvable when it is a different number the jumps can reach. */
+export const jumpTargetReachable = (setup: JumpSetup, target: unknown): target is number => whole(target) && target !== setup.start && reachableLandings(setup).has(target);
+
+export interface ZoomSetup { low: number; high: number; depth: number; start: number }
+
+/** The public setup of a zoom number line: a window of at most 20 whole numbers, one or two zoom levels, and a whole-number start. */
+export function zoomSetup(payload: unknown): ZoomSetup | undefined {
+  const value = record(payload);
+  if (!value || !whole(value.low) || !whole(value.high) || !whole(value.depth) || !whole(value.start)) return undefined;
+  if (value.low < 0 || value.high > LINE_MAX || value.high <= value.low || value.high - value.low > ZOOM_MAX_SPAN) return undefined;
+  if (value.depth < 1 || value.depth > ZOOM_MAX_DEPTH || value.start < value.low || value.start > value.high) return undefined;
+  return { low: value.low, high: value.high, depth: value.depth, start: value.start };
+}
+
+/** Marker positions are whole numbers of the finest grid: tenths at depth 1, hundredths at depth 2. */
+export const zoomScale = (depth: number): number => 10 ** depth;
+export const zoomBounds = (setup: ZoomSetup): { min: number; max: number } => ({ min: setup.low * zoomScale(setup.depth), max: setup.high * zoomScale(setup.depth) });
+export const isZoomUnits = (setup: ZoomSetup, value: unknown): value is number => whole(value) && value >= zoomBounds(setup).min && value <= zoomBounds(setup).max;
+export const zoomStartUnits = (setup: ZoomSetup): number => setup.start * zoomScale(setup.depth);
+export const zoomTargetReachable = (setup: ZoomSetup, target: unknown): target is number => isZoomUnits(setup, target) && target !== zoomStartUnits(setup);
+
+/** Level 0 ticks whole numbers; each level below ticks a tenth of the one above. The result is in grid units. */
+export const zoomStep = (depth: number, level: number): number => 10 ** (depth - level);
+
+export interface ZoomState { level: number; units: number; /** The window centre of each zoomed level, level 1 first. */ anchors: readonly number[] }
+
+export const zoomInitial = (setup: ZoomSetup): ZoomState => ({ level: 0, units: zoomStartUnits(setup), anchors: [] });
+
+/** Level 0 shows the whole line; a deeper level shows one step of the level above on each side of where the marker was when it zoomed in. */
+export function zoomWindow(setup: ZoomSetup, state: ZoomState): { from: number; to: number } {
+  const { min, max } = zoomBounds(setup);
+  if (state.level === 0) return { from: min, to: max };
+  const parent = zoomStep(setup.depth, state.level - 1);
+  const centre = state.anchors[state.level - 1] ?? state.units;
+  return { from: Math.max(min, centre - parent), to: Math.min(max, centre + parent) };
+}
+
+/** Snap a position to the tick grid of the current level and keep it inside the window. */
+export function zoomSnap(setup: ZoomSetup, state: ZoomState, units: number): number {
+  const step = zoomStep(setup.depth, state.level);
+  const { from, to } = zoomWindow(setup, state);
+  const first = Math.ceil(from / step) * step;
+  const last = Math.floor(to / step) * step;
+  return Math.min(last, Math.max(first, Math.round(units / step) * step));
+}
+
+export const zoomMove = (setup: ZoomSetup, state: ZoomState, units: number): ZoomState => ({ ...state, units: zoomSnap(setup, state, units) });
+export const zoomCanIn = (setup: ZoomSetup, state: ZoomState): boolean => state.level < setup.depth;
+export const zoomCanOut = (state: ZoomState): boolean => state.level > 0;
+
+export function zoomIn(setup: ZoomSetup, state: ZoomState): ZoomState {
+  if (!zoomCanIn(setup, state)) return state;
+  return { level: state.level + 1, units: state.units, anchors: [...state.anchors.slice(0, state.level), state.units] };
+}
+
+/** Zooming out puts the marker back on the coarser grid. */
+export function zoomOut(setup: ZoomSetup, state: ZoomState): ZoomState {
+  if (!zoomCanOut(state)) return state;
+  const level = state.level - 1;
+  const step = zoomStep(setup.depth, level);
+  return { level, units: Math.round(state.units / step) * step, anchors: state.anchors.slice(0, level) };
+}
