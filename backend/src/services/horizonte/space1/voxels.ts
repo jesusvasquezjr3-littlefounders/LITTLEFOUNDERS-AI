@@ -1,0 +1,142 @@
+export const BOX = 3;
+export const FIGURE_LIMITS = { min: 3, max: 10 } as const;
+export const TARGET_LIMITS = { min: 1, max: 3 } as const;
+export const TARGET_IDS = ['a', 'b', 'c'] as const;
+export type TargetId = (typeof TARGET_IDS)[number];
+
+export type Cell = readonly [number, number, number];
+export const ROTATION_AXES = ['up', 'side', 'depth'] as const;
+export type RotationAxis = (typeof ROTATION_AXES)[number];
+export const ANGLES = [0, 90, 180, 270] as const;
+export type Angle = (typeof ANGLES)[number];
+export const TURN_ANGLES = [90, 180, 270] as const;
+
+export const isRotationAxis = (value: unknown): value is RotationAxis => typeof value === 'string' && (ROTATION_AXES as readonly string[]).includes(value);
+export const isAngle = (value: unknown): value is Angle => typeof value === 'number' && (ANGLES as readonly number[]).includes(value);
+export const isTargetId = (value: unknown): value is TargetId => typeof value === 'string' && (TARGET_IDS as readonly string[]).includes(value);
+
+const whole = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value) && value >= 0 && value < BOX;
+
+export const isCell = (value: unknown): value is Cell => Array.isArray(value) && value.length === 3 && value.every(whole);
+
+export const cellKey = (cell: Cell): string => `${cell[0]},${cell[1]},${cell[2]}`;
+
+/** A list of distinct cells of the 3 by 3 by 3 box, between `min` and `max` of them. */
+export function isCellList(value: unknown, min: number, max: number): value is Cell[] {
+  return Array.isArray(value) && value.length >= min && value.length <= max && value.every(isCell) && new Set(value.map((cell) => cellKey(cell as Cell))).size === value.length;
+}
+
+/** x runs left to right, y bottom to top, z back to front (z grows toward the viewer). Turns are about the centre of the box. */
+const QUARTER: Readonly<Record<RotationAxis, (cell: Cell) => Cell>> = {
+  up: ([x, y, z]) => [BOX - 1 - z, y, x],
+  side: ([x, y, z]) => [x, z, BOX - 1 - y],
+  depth: ([x, y, z]) => [y, BOX - 1 - x, z],
+};
+
+/** `quarters` clockwise quarter turns: seen from above (up), from the right (side) or from the front (depth). */
+export function turnFigure(cells: readonly Cell[], axis: RotationAxis, quarters: number): Cell[] {
+  let turned: Cell[] = cells.map((cell) => [cell[0], cell[1], cell[2]]);
+  for (let step = 0; step < ((quarters % 4) + 4) % 4; step += 1) turned = turned.map(QUARTER[axis]);
+  return turned;
+}
+
+export const mirrorFigure = (cells: readonly Cell[]): Cell[] => cells.map(([x, y, z]) => [BOX - 1 - x, y, z] as Cell);
+
+/** The cells moved to the corner of the box and sorted: two figures are the same shape when these are equal. */
+export function normalise(cells: readonly Cell[]): string {
+  const low: [number, number, number] = [Infinity, Infinity, Infinity];
+  for (const cell of cells) for (let axis = 0; axis < 3; axis += 1) low[axis] = Math.min(low[axis]!, cell[axis]!);
+  return cells.map((cell) => cellKey([cell[0] - low[0], cell[1] - low[1], cell[2] - low[2]])).sort().join('|');
+}
+
+export const sameShape = (a: readonly Cell[], b: readonly Cell[]): boolean => a.length === b.length && normalise(a) === normalise(b);
+
+/** Face-connected: every cell touches another by a whole face. */
+export function isConnected(cells: readonly Cell[]): boolean {
+  if (cells.length === 0) return false;
+  const present = new Set(cells.map(cellKey));
+  const seen = new Set<string>([cellKey(cells[0]!)]);
+  const queue: Cell[] = [cells[0]!];
+  while (queue.length > 0) {
+    const [x, y, z] = queue.pop()!;
+    for (const [dx, dy, dz] of [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]] as const) {
+      const next: Cell = [x + dx, y + dy, z + dz];
+      const key = cellKey(next);
+      if (present.has(key) && !seen.has(key)) { seen.add(key); queue.push(next); }
+    }
+  }
+  return seen.size === cells.length;
+}
+
+type Matrix = readonly (readonly number[])[];
+const MULTIPLY = (a: Matrix, b: Matrix): Matrix => a.map((row) => [0, 1, 2].map((col) => row.reduce((sum, value, k) => sum + value * b[k]![col]!, 0)));
+const UP: Matrix = [[0, 0, -1], [0, 1, 0], [1, 0, 0]];
+const SIDE: Matrix = [[1, 0, 0], [0, 0, 1], [0, -1, 0]];
+const IDENTITY: Matrix = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+
+/** The 24 turns that map a cube onto itself, as matrices about the centre, found by closing the two generating quarter turns. */
+function rotationGroup(): Matrix[] {
+  const found = new Map<string, Matrix>([[JSON.stringify(IDENTITY), IDENTITY]]);
+  const queue: Matrix[] = [IDENTITY];
+  while (queue.length > 0) {
+    const current = queue.pop()!;
+    for (const generator of [UP, SIDE]) {
+      const next = MULTIPLY(generator, current);
+      const key = JSON.stringify(next);
+      if (!found.has(key)) { found.set(key, next); queue.push(next); }
+    }
+  }
+  return [...found.values()];
+}
+
+const GROUP = rotationGroup();
+
+const applyMatrix = (matrix: Matrix, [x, y, z]: Cell): Cell => {
+  const relative = [x - 1, y - 1, z - 1];
+  const turned = matrix.map((row) => row.reduce((sum, value, k) => sum + value * relative[k]!, 0));
+  return [turned[0]! + 1, turned[1]! + 1, turned[2]! + 1];
+};
+
+export const ROTATION_COUNT = GROUP.length;
+
+/** True when some turn of the cube (any axis, any amount) carries the figure onto the other, up to a move. */
+export const congruentByTurning = (a: readonly Cell[], b: readonly Cell[]): boolean => a.length === b.length && GROUP.some((matrix) => sameShape(a.map((cell) => applyMatrix(matrix, cell)), b));
+
+/** The turns about one axis (in degrees, never 0) after which the figure has the shape of the target. */
+export function matchingAngles(figure: readonly Cell[], target: readonly Cell[], axis: RotationAxis): number[] {
+  return TURN_ANGLES.filter((angle) => sameShape(turnFigure(figure, axis, angle / 90), target));
+}
+
+export type Point = readonly [number, number];
+export interface VoxelFace { cell: Cell; top: readonly Point[]; front: readonly Point[]; side: readonly Point[] }
+export interface VoxelScene { width: number; height: number; floor: readonly Point[]; cubes: VoxelFace[] }
+
+const UNIT = 26;
+const HALF_WIDTH = UNIT * Math.cos(Math.PI / 6);
+const MARGIN = 6;
+const round = (value: number): number => Math.round(value * 100) / 100;
+
+/**
+ * The isometric drawing of a figure in its box, pure SVG data: the viewer stands at the front right, so the top, front and
+ * right faces show. Cubes are drawn back to front, bottom to top (x + z grows toward the viewer).
+ */
+export function composeVoxelScene(cells: readonly Cell[]): VoxelScene {
+  const originX = BOX * HALF_WIDTH + MARGIN;
+  const originY = BOX * UNIT + MARGIN;
+  const at = (x: number, y: number, z: number): Point => [round(originX + (x - z) * HALF_WIDTH), round(originY + ((x + z) * UNIT) / 2 - y * UNIT)];
+  const cubes: VoxelFace[] = [...cells].sort((a, b) => (a[0] + a[2]) - (b[0] + b[2]) || a[1] - b[1] || a[0] - b[0]).map((cell) => {
+    const [x, y, z] = cell;
+    return {
+      cell,
+      top: [at(x, y + 1, z), at(x + 1, y + 1, z), at(x + 1, y + 1, z + 1), at(x, y + 1, z + 1)],
+      front: [at(x, y + 1, z + 1), at(x + 1, y + 1, z + 1), at(x + 1, y, z + 1), at(x, y, z + 1)],
+      side: [at(x + 1, y + 1, z), at(x + 1, y + 1, z + 1), at(x + 1, y, z + 1), at(x + 1, y, z)],
+    };
+  });
+  return {
+    width: round(2 * BOX * HALF_WIDTH + 2 * MARGIN),
+    height: 2 * BOX * UNIT + 2 * MARGIN,
+    floor: [at(0, 0, 0), at(BOX, 0, 0), at(BOX, 0, BOX), at(0, 0, BOX)],
+    cubes,
+  };
+}
