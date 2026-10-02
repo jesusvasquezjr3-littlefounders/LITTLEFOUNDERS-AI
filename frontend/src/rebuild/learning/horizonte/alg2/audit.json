@@ -1,0 +1,13 @@
+[
+  { "fixture": "graph-line-two-dots", "age": "10-12" },
+  { "fixture": "graph-parabola-vertex", "age": "13-17" },
+  { "fixture": "graph-parabola-standard", "age": "13-17" },
+  { "fixture": "graph-growth-curve", "age": "13-17" },
+  { "fixture": "system-cross-two-lines", "age": "13-17" },
+  { "fixture": "system-half-grid", "age": "13-17" },
+  { "fixture": "system-triangle", "age": "13-17" },
+  { "fixture": "expression-expand-product", "age": "13-17" },
+  { "fixture": "expression-factor-trinomial", "age": "13-17" },
+  { "fixture": "expression-solve-isolate", "age": "13-17" },
+  { "fixture": "expression-solve-separate", "age": "13-17" }
+]
