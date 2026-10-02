@@ -1,0 +1,542 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "reading-charts-spread",
+  "lesson_id": "v2-reading-charts-spread",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-reading-charts-spread"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Dina reads how coins are shared, how forecasts widen and what shapes samples take.",
+  "title": {
+    "en-US": "Read spread and shape",
+    "es-MX": "Lee dispersión y forma",
+    "pt-BR": "Leia dispersão e forma"
+  },
+  "new_concepts": [
+    "kc-reading-charts-spread"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "lorenz-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "visual": {
+        "type": "lorenz-curve"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "grp-a"
+            },
+            {
+              "id": "grp-b"
+            },
+            {
+              "id": "grp-c"
+            },
+            {
+              "id": "grp-d"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-coins",
+              "values": [
+                60,
+                25,
+                10,
+                5
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-five"
+            },
+            {
+              "id": "ans-quarter"
+            },
+            {
+              "id": "ans-sixty"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Find where the curve bends from the line.",
+          "feedback": {
+            "met": "You read the first point on the curve.",
+            "not_yet": "Not yet. Read the point for the first group."
+          },
+          "title": "How coins are shared",
+          "data": {
+            "categories": [
+              {
+                "label": "Group A"
+              },
+              {
+                "label": "Group B"
+              },
+              {
+                "label": "Group C"
+              },
+              {
+                "label": "Group D"
+              }
+            ],
+            "series": [
+              {
+                "label": "Coins"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "What share has the group with the fewest coins?",
+            "options": [
+              {
+                "label": "5%"
+              },
+              {
+                "label": "25%"
+              },
+              {
+                "label": "60%"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Busca dónde la curva se separa de la línea.",
+          "feedback": {
+            "met": "Leíste el primer punto de la curva.",
+            "not_yet": "Todavía no. Lee el punto del primer grupo."
+          },
+          "title": "Cómo se reparten las monedas",
+          "data": {
+            "categories": [
+              {
+                "label": "Grupo A"
+              },
+              {
+                "label": "Grupo B"
+              },
+              {
+                "label": "Grupo C"
+              },
+              {
+                "label": "Grupo D"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué parte tiene el grupo con menos monedas?",
+            "options": [
+              {
+                "label": "5%"
+              },
+              {
+                "label": "25%"
+              },
+              {
+                "label": "60%"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Veja onde a curva se afasta da linha.",
+          "feedback": {
+            "met": "Você leu o primeiro ponto da curva.",
+            "not_yet": "Ainda não. Leia o ponto do primeiro grupo."
+          },
+          "title": "Como as moedas são divididas",
+          "data": {
+            "categories": [
+              {
+                "label": "Grupo A"
+              },
+              {
+                "label": "Grupo B"
+              },
+              {
+                "label": "Grupo C"
+              },
+              {
+                "label": "Grupo D"
+              }
+            ],
+            "series": [
+              {
+                "label": "Moedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Que parte tem o grupo com menos moedas?",
+            "options": [
+              {
+                "label": "5%"
+              },
+              {
+                "label": "25%"
+              },
+              {
+                "label": "60%"
+              }
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-five"
+        ]
+      }
+    },
+    {
+      "id": "fan-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "fan-chart"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "yr-one"
+            },
+            {
+              "id": "yr-two"
+            },
+            {
+              "id": "yr-three"
+            },
+            {
+              "id": "yr-four"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-guess",
+              "values": [
+                100,
+                110,
+                120,
+                135
+              ]
+            }
+          ],
+          "ranges": [
+            {
+              "level": 80,
+              "low": [
+                100,
+                104,
+                108,
+                118
+              ],
+              "high": [
+                100,
+                116,
+                132,
+                152
+              ]
+            },
+            {
+              "level": 95,
+              "low": [
+                100,
+                100,
+                100,
+                108
+              ],
+              "high": [
+                100,
+                120,
+                140,
+                166
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Wider bands mean we are less sure.",
+          "title": "Savings forecast",
+          "data": {
+            "categories": [
+              {
+                "label": "Year 1"
+              },
+              {
+                "label": "Year 2"
+              },
+              {
+                "label": "Year 3"
+              },
+              {
+                "label": "Year 4"
+              }
+            ],
+            "series": [
+              {
+                "label": "Best guess"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Las bandas anchas indican menos certeza.",
+          "title": "Pronóstico de ahorros",
+          "data": {
+            "categories": [
+              {
+                "label": "Año 1"
+              },
+              {
+                "label": "Año 2"
+              },
+              {
+                "label": "Año 3"
+              },
+              {
+                "label": "Año 4"
+              }
+            ],
+            "series": [
+              {
+                "label": "Mejor estimación"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Faixas largas indicam menos certeza.",
+          "title": "Previsão de poupança",
+          "data": {
+            "categories": [
+              {
+                "label": "Ano 1"
+              },
+              {
+                "label": "Ano 2"
+              },
+              {
+                "label": "Ano 3"
+              },
+              {
+                "label": "Ano 4"
+              }
+            ],
+            "series": [
+              {
+                "label": "Melhor estimativa"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "dens-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "density-plot"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "samples": [
+            {
+              "id": "grp-a",
+              "values": [
+                12,
+                15,
+                15,
+                18,
+                18,
+                18,
+                21,
+                21,
+                24,
+                40
+              ]
+            },
+            {
+              "id": "grp-b",
+              "values": [
+                18,
+                20,
+                24,
+                24,
+                27,
+                27,
+                30,
+                33,
+                36,
+                38
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A taller curve means more values there.",
+          "title": "Coins saved by class",
+          "data": {
+            "samples": [
+              {
+                "label": "Class A"
+              },
+              {
+                "label": "Class B"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Una curva más alta indica más valores ahí.",
+          "title": "Monedas ahorradas por grupo",
+          "data": {
+            "samples": [
+              {
+                "label": "Grupo A"
+              },
+              {
+                "label": "Grupo B"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Uma curva mais alta indica mais valores ali.",
+          "title": "Moedas poupadas por turma",
+          "data": {
+            "samples": [
+              {
+                "label": "Turma A"
+              },
+              {
+                "label": "Turma B"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "violin-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "violin-plot"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "samples": [
+            {
+              "id": "team-a",
+              "values": [
+                5,
+                8,
+                8,
+                10,
+                10,
+                10,
+                12,
+                12,
+                15,
+                30
+              ]
+            },
+            {
+              "id": "team-b",
+              "values": [
+                10,
+                12,
+                14,
+                14,
+                16,
+                16,
+                18,
+                20,
+                22,
+                24
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Wider parts hold more values.",
+          "title": "Savings by team",
+          "data": {
+            "samples": [
+              {
+                "label": "Team A"
+              },
+              {
+                "label": "Team B"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Las partes anchas tienen más valores.",
+          "title": "Ahorros por equipo",
+          "data": {
+            "samples": [
+              {
+                "label": "Equipo A"
+              },
+              {
+                "label": "Equipo B"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "As partes largas têm mais valores.",
+          "title": "Poupança por equipe",
+          "data": {
+            "samples": [
+              {
+                "label": "Equipe A"
+              },
+              {
+                "label": "Equipe B"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

@@ -19,6 +19,7 @@ export const PREVIEW_FIXTURE_LESSONS = [
   'v2-decide-justify', 'v2-first-release-mixed', 'v2-first-release-logic', 'v2-first-release-young-money', 'v2-logic-syllogism',
   'v2-unit-price', 'v2-flowchart-build', 'v2-scam-cues', 'v2-concept-boards',
   'v2-teaching-charts', 'v2-charts-investing', 'v2-charts-entrepreneurship', 'v2-charts-tween',
+  'v2-reading-charts-tween', 'v2-reading-charts-business', 'v2-reading-charts-spread',
 ];
 
 export function previewFixtures(emitted) {

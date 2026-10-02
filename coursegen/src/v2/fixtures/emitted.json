@@ -17875,5 +17875,2600 @@
         "target": 14
       }
     }
+  },
+  {
+    "lesson_id": "v2-reading-charts-tween",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-education-10-12",
+      "chapter_id": "reading-charts-compare",
+      "lesson_id": "v2-reading-charts-tween",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts-compare"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Compare with dots and lines",
+      "required_capabilities": [
+        "visual.dot-plot.v1",
+        "operation.show-table.v1",
+        "operation.choose-option.v1",
+        "visual.dumbbell.v1",
+        "visual.xy-heatmap.v1",
+        "visual.timeline.v1",
+        "visual.scatter-regression.v1"
+      ],
+      "segments": [
+        {
+          "id": "dot-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Find the row with the most coins.",
+          "visual": {
+            "type": "dot-plot"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "cat-save",
+                  "label": "Save"
+                },
+                {
+                  "id": "cat-spend",
+                  "label": "Spend"
+                },
+                {
+                  "id": "cat-share",
+                  "label": "Share"
+                },
+                {
+                  "id": "cat-gifts",
+                  "label": "Gifts"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-week",
+                  "values": [
+                    20,
+                    45,
+                    25,
+                    10
+                  ],
+                  "label": "This week"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "ans-save",
+                  "label": "Save"
+                },
+                {
+                  "id": "ans-spend",
+                  "label": "Spend"
+                },
+                {
+                  "id": "ans-share",
+                  "label": "Share"
+                }
+              ],
+              "prompt": "Which row has the most coins?"
+            },
+            "title": "Coins this week"
+          },
+          "feedback": {
+            "met": "You compared the dots along one scale.",
+            "not_yet": "Not yet. The dot farthest right is the biggest."
+          }
+        },
+        {
+          "id": "dumb-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Each line joins before and after.",
+          "visual": {
+            "type": "dumbbell"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "cat-save",
+                  "label": "Save"
+                },
+                {
+                  "id": "cat-spend",
+                  "label": "Spend"
+                },
+                {
+                  "id": "cat-share",
+                  "label": "Share"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-before",
+                  "values": [
+                    10,
+                    40,
+                    20
+                  ],
+                  "label": "Before"
+                },
+                {
+                  "id": "series-after",
+                  "values": [
+                    25,
+                    30,
+                    20
+                  ],
+                  "label": "After"
+                }
+              ]
+            },
+            "title": "Before and after"
+          }
+        },
+        {
+          "id": "heat-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Darker squares mean bigger numbers.",
+          "visual": {
+            "type": "xy-heatmap"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "day-mon",
+                  "label": "Mon"
+                },
+                {
+                  "id": "day-tue",
+                  "label": "Tue"
+                },
+                {
+                  "id": "day-wed",
+                  "label": "Wed"
+                },
+                {
+                  "id": "day-thu",
+                  "label": "Thu"
+                },
+                {
+                  "id": "day-fri",
+                  "label": "Fri"
+                }
+              ],
+              "rows": [
+                {
+                  "id": "row-save",
+                  "label": "Save"
+                },
+                {
+                  "id": "row-spend",
+                  "label": "Spend"
+                },
+                {
+                  "id": "row-share",
+                  "label": "Share"
+                }
+              ],
+              "cells": [
+                {
+                  "col": "day-mon",
+                  "row": "row-save",
+                  "value": 3
+                },
+                {
+                  "col": "day-tue",
+                  "row": "row-save",
+                  "value": 1
+                },
+                {
+                  "col": "day-wed",
+                  "row": "row-save",
+                  "value": 4
+                },
+                {
+                  "col": "day-thu",
+                  "row": "row-save",
+                  "value": 2
+                },
+                {
+                  "col": "day-fri",
+                  "row": "row-save",
+                  "value": 5
+                },
+                {
+                  "col": "day-mon",
+                  "row": "row-spend",
+                  "value": 2
+                },
+                {
+                  "col": "day-tue",
+                  "row": "row-spend",
+                  "value": 5
+                },
+                {
+                  "col": "day-wed",
+                  "row": "row-spend",
+                  "value": 1
+                },
+                {
+                  "col": "day-thu",
+                  "row": "row-spend",
+                  "value": 3
+                },
+                {
+                  "col": "day-fri",
+                  "row": "row-spend",
+                  "value": 4
+                },
+                {
+                  "col": "day-mon",
+                  "row": "row-share",
+                  "value": 0
+                },
+                {
+                  "col": "day-tue",
+                  "row": "row-share",
+                  "value": 1
+                },
+                {
+                  "col": "day-wed",
+                  "row": "row-share",
+                  "value": 2
+                },
+                {
+                  "col": "day-thu",
+                  "row": "row-share",
+                  "value": 1
+                },
+                {
+                  "col": "day-fri",
+                  "row": "row-share",
+                  "value": 3
+                }
+              ]
+            },
+            "title": "Coin moves this week"
+          }
+        },
+        {
+          "id": "time-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Follow the plan from start to finish.",
+          "visual": {
+            "type": "timeline"
+          },
+          "payload": {
+            "data": {
+              "unit": "days",
+              "events": [
+                {
+                  "id": "ev-plan",
+                  "date": "2026-09-07",
+                  "label": "Plan"
+                },
+                {
+                  "id": "ev-save",
+                  "date": "2026-09-14",
+                  "end": "2026-10-05",
+                  "label": "Saving"
+                },
+                {
+                  "id": "ev-buy",
+                  "date": "2026-10-12",
+                  "label": "Bike"
+                }
+              ]
+            },
+            "title": "Saving for a bike"
+          }
+        },
+        {
+          "id": "line-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "The line shows where the dots are heading.",
+          "visual": {
+            "type": "scatter-regression"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "points": [
+                {
+                  "id": "pt-w1",
+                  "x": 1,
+                  "y": 5,
+                  "label": "Week 1"
+                },
+                {
+                  "id": "pt-w2",
+                  "x": 2,
+                  "y": 9,
+                  "label": "Week 2"
+                },
+                {
+                  "id": "pt-w3",
+                  "x": 3,
+                  "y": 12,
+                  "label": "Week 3"
+                },
+                {
+                  "id": "pt-w4",
+                  "x": 4,
+                  "y": 18,
+                  "label": "Week 4"
+                },
+                {
+                  "id": "pt-w5",
+                  "x": 5,
+                  "y": 20,
+                  "label": "Week 5"
+                },
+                {
+                  "id": "pt-w6",
+                  "x": 6,
+                  "y": 26,
+                  "label": "Week 6"
+                }
+              ]
+            },
+            "title": "Coins saved by week"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "dot-01": {
+        "acceptable_choice_ids": [
+          "ans-spend"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-reading-charts-tween",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-education-10-12",
+      "chapter_id": "reading-charts-compare",
+      "lesson_id": "v2-reading-charts-tween",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts-compare"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Compara con puntos y líneas",
+      "required_capabilities": [
+        "visual.dot-plot.v1",
+        "operation.show-table.v1",
+        "operation.choose-option.v1",
+        "visual.dumbbell.v1",
+        "visual.xy-heatmap.v1",
+        "visual.timeline.v1",
+        "visual.scatter-regression.v1"
+      ],
+      "segments": [
+        {
+          "id": "dot-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Busca la fila con más monedas.",
+          "visual": {
+            "type": "dot-plot"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "cat-save",
+                  "label": "Ahorrar"
+                },
+                {
+                  "id": "cat-spend",
+                  "label": "Gastar"
+                },
+                {
+                  "id": "cat-share",
+                  "label": "Compartir"
+                },
+                {
+                  "id": "cat-gifts",
+                  "label": "Regalar"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-week",
+                  "values": [
+                    20,
+                    45,
+                    25,
+                    10
+                  ],
+                  "label": "Esta semana"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "ans-save",
+                  "label": "Ahorrar"
+                },
+                {
+                  "id": "ans-spend",
+                  "label": "Gastar"
+                },
+                {
+                  "id": "ans-share",
+                  "label": "Compartir"
+                }
+              ],
+              "prompt": "¿Qué fila tiene más monedas?"
+            },
+            "title": "Monedas esta semana"
+          },
+          "feedback": {
+            "met": "Comparaste los puntos en una sola escala.",
+            "not_yet": "Todavía no. El punto más a la derecha es el mayor."
+          }
+        },
+        {
+          "id": "dumb-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Cada línea une el antes y el después.",
+          "visual": {
+            "type": "dumbbell"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "cat-save",
+                  "label": "Ahorrar"
+                },
+                {
+                  "id": "cat-spend",
+                  "label": "Gastar"
+                },
+                {
+                  "id": "cat-share",
+                  "label": "Compartir"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-before",
+                  "values": [
+                    10,
+                    40,
+                    20
+                  ],
+                  "label": "Antes"
+                },
+                {
+                  "id": "series-after",
+                  "values": [
+                    25,
+                    30,
+                    20
+                  ],
+                  "label": "Después"
+                }
+              ]
+            },
+            "title": "Antes y después"
+          }
+        },
+        {
+          "id": "heat-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Los cuadros oscuros son números mayores.",
+          "visual": {
+            "type": "xy-heatmap"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "day-mon",
+                  "label": "Lun"
+                },
+                {
+                  "id": "day-tue",
+                  "label": "Mar"
+                },
+                {
+                  "id": "day-wed",
+                  "label": "Mié"
+                },
+                {
+                  "id": "day-thu",
+                  "label": "Jue"
+                },
+                {
+                  "id": "day-fri",
+                  "label": "Vie"
+                }
+              ],
+              "rows": [
+                {
+                  "id": "row-save",
+                  "label": "Ahorrar"
+                },
+                {
+                  "id": "row-spend",
+                  "label": "Gastar"
+                },
+                {
+                  "id": "row-share",
+                  "label": "Donar"
+                }
+              ],
+              "cells": [
+                {
+                  "col": "day-mon",
+                  "row": "row-save",
+                  "value": 3
+                },
+                {
+                  "col": "day-tue",
+                  "row": "row-save",
+                  "value": 1
+                },
+                {
+                  "col": "day-wed",
+                  "row": "row-save",
+                  "value": 4
+                },
+                {
+                  "col": "day-thu",
+                  "row": "row-save",
+                  "value": 2
+                },
+                {
+                  "col": "day-fri",
+                  "row": "row-save",
+                  "value": 5
+                },
+                {
+                  "col": "day-mon",
+                  "row": "row-spend",
+                  "value": 2
+                },
+                {
+                  "col": "day-tue",
+                  "row": "row-spend",
+                  "value": 5
+                },
+                {
+                  "col": "day-wed",
+                  "row": "row-spend",
+                  "value": 1
+                },
+                {
+                  "col": "day-thu",
+                  "row": "row-spend",
+                  "value": 3
+                },
+                {
+                  "col": "day-fri",
+                  "row": "row-spend",
+                  "value": 4
+                },
+                {
+                  "col": "day-mon",
+                  "row": "row-share",
+                  "value": 0
+                },
+                {
+                  "col": "day-tue",
+                  "row": "row-share",
+                  "value": 1
+                },
+                {
+                  "col": "day-wed",
+                  "row": "row-share",
+                  "value": 2
+                },
+                {
+                  "col": "day-thu",
+                  "row": "row-share",
+                  "value": 1
+                },
+                {
+                  "col": "day-fri",
+                  "row": "row-share",
+                  "value": 3
+                }
+              ]
+            },
+            "title": "Movimientos de la semana"
+          }
+        },
+        {
+          "id": "time-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Sigue el plan de principio a fin.",
+          "visual": {
+            "type": "timeline"
+          },
+          "payload": {
+            "data": {
+              "unit": "days",
+              "events": [
+                {
+                  "id": "ev-plan",
+                  "date": "2026-09-07",
+                  "label": "Plan"
+                },
+                {
+                  "id": "ev-save",
+                  "date": "2026-09-14",
+                  "end": "2026-10-05",
+                  "label": "Ahorro"
+                },
+                {
+                  "id": "ev-buy",
+                  "date": "2026-10-12",
+                  "label": "Bici"
+                }
+              ]
+            },
+            "title": "Ahorrar para una bici"
+          }
+        },
+        {
+          "id": "line-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "La línea muestra hacia dónde van los puntos.",
+          "visual": {
+            "type": "scatter-regression"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "points": [
+                {
+                  "id": "pt-w1",
+                  "x": 1,
+                  "y": 5,
+                  "label": "Semana 1"
+                },
+                {
+                  "id": "pt-w2",
+                  "x": 2,
+                  "y": 9,
+                  "label": "Semana 2"
+                },
+                {
+                  "id": "pt-w3",
+                  "x": 3,
+                  "y": 12,
+                  "label": "Semana 3"
+                },
+                {
+                  "id": "pt-w4",
+                  "x": 4,
+                  "y": 18,
+                  "label": "Semana 4"
+                },
+                {
+                  "id": "pt-w5",
+                  "x": 5,
+                  "y": 20,
+                  "label": "Semana 5"
+                },
+                {
+                  "id": "pt-w6",
+                  "x": 6,
+                  "y": 26,
+                  "label": "Semana 6"
+                }
+              ]
+            },
+            "title": "Monedas ahorradas por semana"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "dot-01": {
+        "acceptable_choice_ids": [
+          "ans-spend"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-reading-charts-tween",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-education-10-12",
+      "chapter_id": "reading-charts-compare",
+      "lesson_id": "v2-reading-charts-tween",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts-compare"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Compare com pontos e linhas",
+      "required_capabilities": [
+        "visual.dot-plot.v1",
+        "operation.show-table.v1",
+        "operation.choose-option.v1",
+        "visual.dumbbell.v1",
+        "visual.xy-heatmap.v1",
+        "visual.timeline.v1",
+        "visual.scatter-regression.v1"
+      ],
+      "segments": [
+        {
+          "id": "dot-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Encontre a linha com mais moedas.",
+          "visual": {
+            "type": "dot-plot"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "cat-save",
+                  "label": "Poupar"
+                },
+                {
+                  "id": "cat-spend",
+                  "label": "Gastar"
+                },
+                {
+                  "id": "cat-share",
+                  "label": "Dividir"
+                },
+                {
+                  "id": "cat-gifts",
+                  "label": "Presentear"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-week",
+                  "values": [
+                    20,
+                    45,
+                    25,
+                    10
+                  ],
+                  "label": "Esta semana"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "ans-save",
+                  "label": "Poupar"
+                },
+                {
+                  "id": "ans-spend",
+                  "label": "Gastar"
+                },
+                {
+                  "id": "ans-share",
+                  "label": "Dividir"
+                }
+              ],
+              "prompt": "Qual linha tem mais moedas?"
+            },
+            "title": "Moedas nesta semana"
+          },
+          "feedback": {
+            "met": "Você comparou os pontos em uma só escala.",
+            "not_yet": "Ainda não. O ponto mais à direita é o maior."
+          }
+        },
+        {
+          "id": "dumb-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Cada linha liga o antes e o depois.",
+          "visual": {
+            "type": "dumbbell"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "cat-save",
+                  "label": "Poupar"
+                },
+                {
+                  "id": "cat-spend",
+                  "label": "Gastar"
+                },
+                {
+                  "id": "cat-share",
+                  "label": "Dividir"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-before",
+                  "values": [
+                    10,
+                    40,
+                    20
+                  ],
+                  "label": "Antes"
+                },
+                {
+                  "id": "series-after",
+                  "values": [
+                    25,
+                    30,
+                    20
+                  ],
+                  "label": "Depois"
+                }
+              ]
+            },
+            "title": "Antes e depois"
+          }
+        },
+        {
+          "id": "heat-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Quadrados escuros são números maiores.",
+          "visual": {
+            "type": "xy-heatmap"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "day-mon",
+                  "label": "Seg"
+                },
+                {
+                  "id": "day-tue",
+                  "label": "Ter"
+                },
+                {
+                  "id": "day-wed",
+                  "label": "Qua"
+                },
+                {
+                  "id": "day-thu",
+                  "label": "Qui"
+                },
+                {
+                  "id": "day-fri",
+                  "label": "Sex"
+                }
+              ],
+              "rows": [
+                {
+                  "id": "row-save",
+                  "label": "Poupar"
+                },
+                {
+                  "id": "row-spend",
+                  "label": "Gastar"
+                },
+                {
+                  "id": "row-share",
+                  "label": "Doar"
+                }
+              ],
+              "cells": [
+                {
+                  "col": "day-mon",
+                  "row": "row-save",
+                  "value": 3
+                },
+                {
+                  "col": "day-tue",
+                  "row": "row-save",
+                  "value": 1
+                },
+                {
+                  "col": "day-wed",
+                  "row": "row-save",
+                  "value": 4
+                },
+                {
+                  "col": "day-thu",
+                  "row": "row-save",
+                  "value": 2
+                },
+                {
+                  "col": "day-fri",
+                  "row": "row-save",
+                  "value": 5
+                },
+                {
+                  "col": "day-mon",
+                  "row": "row-spend",
+                  "value": 2
+                },
+                {
+                  "col": "day-tue",
+                  "row": "row-spend",
+                  "value": 5
+                },
+                {
+                  "col": "day-wed",
+                  "row": "row-spend",
+                  "value": 1
+                },
+                {
+                  "col": "day-thu",
+                  "row": "row-spend",
+                  "value": 3
+                },
+                {
+                  "col": "day-fri",
+                  "row": "row-spend",
+                  "value": 4
+                },
+                {
+                  "col": "day-mon",
+                  "row": "row-share",
+                  "value": 0
+                },
+                {
+                  "col": "day-tue",
+                  "row": "row-share",
+                  "value": 1
+                },
+                {
+                  "col": "day-wed",
+                  "row": "row-share",
+                  "value": 2
+                },
+                {
+                  "col": "day-thu",
+                  "row": "row-share",
+                  "value": 1
+                },
+                {
+                  "col": "day-fri",
+                  "row": "row-share",
+                  "value": 3
+                }
+              ]
+            },
+            "title": "Movimentos da semana"
+          }
+        },
+        {
+          "id": "time-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Siga o plano do início ao fim.",
+          "visual": {
+            "type": "timeline"
+          },
+          "payload": {
+            "data": {
+              "unit": "days",
+              "events": [
+                {
+                  "id": "ev-plan",
+                  "date": "2026-09-07",
+                  "label": "Plano"
+                },
+                {
+                  "id": "ev-save",
+                  "date": "2026-09-14",
+                  "end": "2026-10-05",
+                  "label": "Poupar"
+                },
+                {
+                  "id": "ev-buy",
+                  "date": "2026-10-12",
+                  "label": "Bicicleta"
+                }
+              ]
+            },
+            "title": "Poupar para uma bicicleta"
+          }
+        },
+        {
+          "id": "line-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "A linha mostra para onde vão os pontos.",
+          "visual": {
+            "type": "scatter-regression"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "points": [
+                {
+                  "id": "pt-w1",
+                  "x": 1,
+                  "y": 5,
+                  "label": "Semana 1"
+                },
+                {
+                  "id": "pt-w2",
+                  "x": 2,
+                  "y": 9,
+                  "label": "Semana 2"
+                },
+                {
+                  "id": "pt-w3",
+                  "x": 3,
+                  "y": 12,
+                  "label": "Semana 3"
+                },
+                {
+                  "id": "pt-w4",
+                  "x": 4,
+                  "y": 18,
+                  "label": "Semana 4"
+                },
+                {
+                  "id": "pt-w5",
+                  "x": 5,
+                  "y": 20,
+                  "label": "Semana 5"
+                },
+                {
+                  "id": "pt-w6",
+                  "x": 6,
+                  "y": 26,
+                  "label": "Semana 6"
+                }
+              ]
+            },
+            "title": "Moedas poupadas por semana"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "dot-01": {
+        "acceptable_choice_ids": [
+          "ans-spend"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-reading-charts-business",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "entrepreneurship",
+      "pathway_id": "entrepreneurship-13-17",
+      "chapter_id": "reading-charts-business",
+      "lesson_id": "v2-reading-charts-business",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts-business"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Read business measures",
+      "required_capabilities": [
+        "visual.funnel.v1",
+        "operation.show-table.v1",
+        "operation.choose-option.v1",
+        "visual.error-bars.v1",
+        "visual.parallel-coordinates.v1"
+      ],
+      "segments": [
+        {
+          "id": "funnel-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Read each step from top to bottom.",
+          "visual": {
+            "type": "funnel"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "step-visit",
+                  "label": "Visit"
+                },
+                {
+                  "id": "step-look",
+                  "label": "Look"
+                },
+                {
+                  "id": "step-cart",
+                  "label": "Cart"
+                },
+                {
+                  "id": "step-buy",
+                  "label": "Buy"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-shoppers",
+                  "values": [
+                    100,
+                    60,
+                    30,
+                    12
+                  ],
+                  "label": "Shoppers"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "ans-thirty",
+                  "label": "30"
+                },
+                {
+                  "id": "ans-sixty",
+                  "label": "60"
+                },
+                {
+                  "id": "ans-twelve",
+                  "label": "12"
+                }
+              ],
+              "prompt": "How many shoppers reach the cart?"
+            },
+            "title": "Shoppers at the stand"
+          },
+          "feedback": {
+            "met": "You read the bar for the cart step.",
+            "not_yet": "Not yet. Look at the bar called Cart."
+          }
+        },
+        {
+          "id": "err-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "The line shows how much sales can vary.",
+          "visual": {
+            "type": "error-bars"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "wk-one",
+                  "label": "Week 1"
+                },
+                {
+                  "id": "wk-two",
+                  "label": "Week 2"
+                },
+                {
+                  "id": "wk-three",
+                  "label": "Week 3"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-cups",
+                  "values": [
+                    20,
+                    26,
+                    31
+                  ],
+                  "error": [
+                    3,
+                    5,
+                    2
+                  ],
+                  "label": "Cups sold"
+                }
+              ]
+            },
+            "title": "Cups sold per day"
+          }
+        },
+        {
+          "id": "par-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Follow each line across the three measures.",
+          "visual": {
+            "type": "parallel-coordinates"
+          },
+          "payload": {
+            "data": {
+              "unit": "points",
+              "categories": [
+                {
+                  "id": "axis-price",
+                  "label": "Price"
+                },
+                {
+                  "id": "axis-quality",
+                  "label": "Quality"
+                },
+                {
+                  "id": "axis-speed",
+                  "label": "Speed"
+                }
+              ],
+              "records": [
+                {
+                  "id": "rec-a",
+                  "values": [
+                    8,
+                    6,
+                    4
+                  ],
+                  "label": "Stand A"
+                },
+                {
+                  "id": "rec-b",
+                  "values": [
+                    4,
+                    9,
+                    7
+                  ],
+                  "label": "Stand B"
+                },
+                {
+                  "id": "rec-c",
+                  "values": [
+                    6,
+                    5,
+                    9
+                  ],
+                  "label": "Stand C"
+                }
+              ]
+            },
+            "title": "Compare three stands"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "funnel-01": {
+        "acceptable_choice_ids": [
+          "ans-thirty"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-reading-charts-business",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "entrepreneurship",
+      "pathway_id": "entrepreneurship-13-17",
+      "chapter_id": "reading-charts-business",
+      "lesson_id": "v2-reading-charts-business",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts-business"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Lee medidas de negocio",
+      "required_capabilities": [
+        "visual.funnel.v1",
+        "operation.show-table.v1",
+        "operation.choose-option.v1",
+        "visual.error-bars.v1",
+        "visual.parallel-coordinates.v1"
+      ],
+      "segments": [
+        {
+          "id": "funnel-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Lee cada paso de arriba hacia abajo.",
+          "visual": {
+            "type": "funnel"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "step-visit",
+                  "label": "Visita"
+                },
+                {
+                  "id": "step-look",
+                  "label": "Mira"
+                },
+                {
+                  "id": "step-cart",
+                  "label": "Carrito"
+                },
+                {
+                  "id": "step-buy",
+                  "label": "Compra"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-shoppers",
+                  "values": [
+                    100,
+                    60,
+                    30,
+                    12
+                  ],
+                  "label": "Clientes"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "ans-thirty",
+                  "label": "30"
+                },
+                {
+                  "id": "ans-sixty",
+                  "label": "60"
+                },
+                {
+                  "id": "ans-twelve",
+                  "label": "12"
+                }
+              ],
+              "prompt": "¿Cuántos clientes llegan al carrito?"
+            },
+            "title": "Clientes en el puesto"
+          },
+          "feedback": {
+            "met": "Leíste la barra del paso del carrito.",
+            "not_yet": "Todavía no. Mira la barra llamada Carrito."
+          }
+        },
+        {
+          "id": "err-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "La línea muestra cuánto pueden variar las ventas.",
+          "visual": {
+            "type": "error-bars"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "wk-one",
+                  "label": "Semana 1"
+                },
+                {
+                  "id": "wk-two",
+                  "label": "Semana 2"
+                },
+                {
+                  "id": "wk-three",
+                  "label": "Semana 3"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-cups",
+                  "values": [
+                    20,
+                    26,
+                    31
+                  ],
+                  "error": [
+                    3,
+                    5,
+                    2
+                  ],
+                  "label": "Vasos vendidos"
+                }
+              ]
+            },
+            "title": "Vasos vendidos por día"
+          }
+        },
+        {
+          "id": "par-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Sigue cada línea por las tres medidas.",
+          "visual": {
+            "type": "parallel-coordinates"
+          },
+          "payload": {
+            "data": {
+              "unit": "points",
+              "categories": [
+                {
+                  "id": "axis-price",
+                  "label": "Precio"
+                },
+                {
+                  "id": "axis-quality",
+                  "label": "Calidad"
+                },
+                {
+                  "id": "axis-speed",
+                  "label": "Rapidez"
+                }
+              ],
+              "records": [
+                {
+                  "id": "rec-a",
+                  "values": [
+                    8,
+                    6,
+                    4
+                  ],
+                  "label": "Puesto A"
+                },
+                {
+                  "id": "rec-b",
+                  "values": [
+                    4,
+                    9,
+                    7
+                  ],
+                  "label": "Puesto B"
+                },
+                {
+                  "id": "rec-c",
+                  "values": [
+                    6,
+                    5,
+                    9
+                  ],
+                  "label": "Puesto C"
+                }
+              ]
+            },
+            "title": "Compara tres puestos"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "funnel-01": {
+        "acceptable_choice_ids": [
+          "ans-thirty"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-reading-charts-business",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "entrepreneurship",
+      "pathway_id": "entrepreneurship-13-17",
+      "chapter_id": "reading-charts-business",
+      "lesson_id": "v2-reading-charts-business",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts-business"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Leia medidas de negócio",
+      "required_capabilities": [
+        "visual.funnel.v1",
+        "operation.show-table.v1",
+        "operation.choose-option.v1",
+        "visual.error-bars.v1",
+        "visual.parallel-coordinates.v1"
+      ],
+      "segments": [
+        {
+          "id": "funnel-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Leia cada etapa de cima para baixo.",
+          "visual": {
+            "type": "funnel"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "step-visit",
+                  "label": "Visita"
+                },
+                {
+                  "id": "step-look",
+                  "label": "Olha"
+                },
+                {
+                  "id": "step-cart",
+                  "label": "Carrinho"
+                },
+                {
+                  "id": "step-buy",
+                  "label": "Compra"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-shoppers",
+                  "values": [
+                    100,
+                    60,
+                    30,
+                    12
+                  ],
+                  "label": "Clientes"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "ans-thirty",
+                  "label": "30"
+                },
+                {
+                  "id": "ans-sixty",
+                  "label": "60"
+                },
+                {
+                  "id": "ans-twelve",
+                  "label": "12"
+                }
+              ],
+              "prompt": "Quantos clientes chegam ao carrinho?"
+            },
+            "title": "Clientes na barraca"
+          },
+          "feedback": {
+            "met": "Você leu a barra da etapa do carrinho.",
+            "not_yet": "Ainda não. Veja a barra chamada Carrinho."
+          }
+        },
+        {
+          "id": "err-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "A linha mostra quanto as vendas podem variar.",
+          "visual": {
+            "type": "error-bars"
+          },
+          "payload": {
+            "data": {
+              "unit": "count",
+              "categories": [
+                {
+                  "id": "wk-one",
+                  "label": "Semana 1"
+                },
+                {
+                  "id": "wk-two",
+                  "label": "Semana 2"
+                },
+                {
+                  "id": "wk-three",
+                  "label": "Semana 3"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-cups",
+                  "values": [
+                    20,
+                    26,
+                    31
+                  ],
+                  "error": [
+                    3,
+                    5,
+                    2
+                  ],
+                  "label": "Copos vendidos"
+                }
+              ]
+            },
+            "title": "Copos vendidos por dia"
+          }
+        },
+        {
+          "id": "par-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Siga cada linha pelas três medidas.",
+          "visual": {
+            "type": "parallel-coordinates"
+          },
+          "payload": {
+            "data": {
+              "unit": "points",
+              "categories": [
+                {
+                  "id": "axis-price",
+                  "label": "Preço"
+                },
+                {
+                  "id": "axis-quality",
+                  "label": "Qualidade"
+                },
+                {
+                  "id": "axis-speed",
+                  "label": "Rapidez"
+                }
+              ],
+              "records": [
+                {
+                  "id": "rec-a",
+                  "values": [
+                    8,
+                    6,
+                    4
+                  ],
+                  "label": "Barraca A"
+                },
+                {
+                  "id": "rec-b",
+                  "values": [
+                    4,
+                    9,
+                    7
+                  ],
+                  "label": "Barraca B"
+                },
+                {
+                  "id": "rec-c",
+                  "values": [
+                    6,
+                    5,
+                    9
+                  ],
+                  "label": "Barraca C"
+                }
+              ]
+            },
+            "title": "Compare três barracas"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "funnel-01": {
+        "acceptable_choice_ids": [
+          "ans-thirty"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-reading-charts-spread",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "reading-charts-spread",
+      "lesson_id": "v2-reading-charts-spread",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts-spread"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Read spread and shape",
+      "required_capabilities": [
+        "visual.lorenz-curve.v1",
+        "operation.show-table.v1",
+        "operation.choose-option.v1",
+        "visual.fan-chart.v1",
+        "visual.density-plot.v1",
+        "visual.violin-plot.v1"
+      ],
+      "segments": [
+        {
+          "id": "lorenz-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Find where the curve bends from the line.",
+          "visual": {
+            "type": "lorenz-curve"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "grp-a",
+                  "label": "Group A"
+                },
+                {
+                  "id": "grp-b",
+                  "label": "Group B"
+                },
+                {
+                  "id": "grp-c",
+                  "label": "Group C"
+                },
+                {
+                  "id": "grp-d",
+                  "label": "Group D"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-coins",
+                  "values": [
+                    60,
+                    25,
+                    10,
+                    5
+                  ],
+                  "label": "Coins"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "ans-five",
+                  "label": "5%"
+                },
+                {
+                  "id": "ans-quarter",
+                  "label": "25%"
+                },
+                {
+                  "id": "ans-sixty",
+                  "label": "60%"
+                }
+              ],
+              "prompt": "What share has the group with the fewest coins?"
+            },
+            "title": "How coins are shared"
+          },
+          "feedback": {
+            "met": "You read the first point on the curve.",
+            "not_yet": "Not yet. Read the point for the first group."
+          }
+        },
+        {
+          "id": "fan-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Wider bands mean we are less sure.",
+          "visual": {
+            "type": "fan-chart"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "yr-one",
+                  "label": "Year 1"
+                },
+                {
+                  "id": "yr-two",
+                  "label": "Year 2"
+                },
+                {
+                  "id": "yr-three",
+                  "label": "Year 3"
+                },
+                {
+                  "id": "yr-four",
+                  "label": "Year 4"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-guess",
+                  "values": [
+                    100,
+                    110,
+                    120,
+                    135
+                  ],
+                  "label": "Best guess"
+                }
+              ],
+              "ranges": [
+                {
+                  "level": 80,
+                  "low": [
+                    100,
+                    104,
+                    108,
+                    118
+                  ],
+                  "high": [
+                    100,
+                    116,
+                    132,
+                    152
+                  ]
+                },
+                {
+                  "level": 95,
+                  "low": [
+                    100,
+                    100,
+                    100,
+                    108
+                  ],
+                  "high": [
+                    100,
+                    120,
+                    140,
+                    166
+                  ]
+                }
+              ]
+            },
+            "title": "Savings forecast"
+          }
+        },
+        {
+          "id": "dens-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "A taller curve means more values there.",
+          "visual": {
+            "type": "density-plot"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "samples": [
+                {
+                  "id": "grp-a",
+                  "values": [
+                    12,
+                    15,
+                    15,
+                    18,
+                    18,
+                    18,
+                    21,
+                    21,
+                    24,
+                    40
+                  ],
+                  "label": "Class A"
+                },
+                {
+                  "id": "grp-b",
+                  "values": [
+                    18,
+                    20,
+                    24,
+                    24,
+                    27,
+                    27,
+                    30,
+                    33,
+                    36,
+                    38
+                  ],
+                  "label": "Class B"
+                }
+              ]
+            },
+            "title": "Coins saved by class"
+          }
+        },
+        {
+          "id": "violin-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Wider parts hold more values.",
+          "visual": {
+            "type": "violin-plot"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "samples": [
+                {
+                  "id": "team-a",
+                  "values": [
+                    5,
+                    8,
+                    8,
+                    10,
+                    10,
+                    10,
+                    12,
+                    12,
+                    15,
+                    30
+                  ],
+                  "label": "Team A"
+                },
+                {
+                  "id": "team-b",
+                  "values": [
+                    10,
+                    12,
+                    14,
+                    14,
+                    16,
+                    16,
+                    18,
+                    20,
+                    22,
+                    24
+                  ],
+                  "label": "Team B"
+                }
+              ]
+            },
+            "title": "Savings by team"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "lorenz-01": {
+        "acceptable_choice_ids": [
+          "ans-five"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-reading-charts-spread",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "reading-charts-spread",
+      "lesson_id": "v2-reading-charts-spread",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts-spread"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Lee dispersión y forma",
+      "required_capabilities": [
+        "visual.lorenz-curve.v1",
+        "operation.show-table.v1",
+        "operation.choose-option.v1",
+        "visual.fan-chart.v1",
+        "visual.density-plot.v1",
+        "visual.violin-plot.v1"
+      ],
+      "segments": [
+        {
+          "id": "lorenz-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Busca dónde la curva se separa de la línea.",
+          "visual": {
+            "type": "lorenz-curve"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "grp-a",
+                  "label": "Grupo A"
+                },
+                {
+                  "id": "grp-b",
+                  "label": "Grupo B"
+                },
+                {
+                  "id": "grp-c",
+                  "label": "Grupo C"
+                },
+                {
+                  "id": "grp-d",
+                  "label": "Grupo D"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-coins",
+                  "values": [
+                    60,
+                    25,
+                    10,
+                    5
+                  ],
+                  "label": "Monedas"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "ans-five",
+                  "label": "5%"
+                },
+                {
+                  "id": "ans-quarter",
+                  "label": "25%"
+                },
+                {
+                  "id": "ans-sixty",
+                  "label": "60%"
+                }
+              ],
+              "prompt": "¿Qué parte tiene el grupo con menos monedas?"
+            },
+            "title": "Cómo se reparten las monedas"
+          },
+          "feedback": {
+            "met": "Leíste el primer punto de la curva.",
+            "not_yet": "Todavía no. Lee el punto del primer grupo."
+          }
+        },
+        {
+          "id": "fan-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Las bandas anchas indican menos certeza.",
+          "visual": {
+            "type": "fan-chart"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "yr-one",
+                  "label": "Año 1"
+                },
+                {
+                  "id": "yr-two",
+                  "label": "Año 2"
+                },
+                {
+                  "id": "yr-three",
+                  "label": "Año 3"
+                },
+                {
+                  "id": "yr-four",
+                  "label": "Año 4"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-guess",
+                  "values": [
+                    100,
+                    110,
+                    120,
+                    135
+                  ],
+                  "label": "Mejor estimación"
+                }
+              ],
+              "ranges": [
+                {
+                  "level": 80,
+                  "low": [
+                    100,
+                    104,
+                    108,
+                    118
+                  ],
+                  "high": [
+                    100,
+                    116,
+                    132,
+                    152
+                  ]
+                },
+                {
+                  "level": 95,
+                  "low": [
+                    100,
+                    100,
+                    100,
+                    108
+                  ],
+                  "high": [
+                    100,
+                    120,
+                    140,
+                    166
+                  ]
+                }
+              ]
+            },
+            "title": "Pronóstico de ahorros"
+          }
+        },
+        {
+          "id": "dens-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Una curva más alta indica más valores ahí.",
+          "visual": {
+            "type": "density-plot"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "samples": [
+                {
+                  "id": "grp-a",
+                  "values": [
+                    12,
+                    15,
+                    15,
+                    18,
+                    18,
+                    18,
+                    21,
+                    21,
+                    24,
+                    40
+                  ],
+                  "label": "Grupo A"
+                },
+                {
+                  "id": "grp-b",
+                  "values": [
+                    18,
+                    20,
+                    24,
+                    24,
+                    27,
+                    27,
+                    30,
+                    33,
+                    36,
+                    38
+                  ],
+                  "label": "Grupo B"
+                }
+              ]
+            },
+            "title": "Monedas ahorradas por grupo"
+          }
+        },
+        {
+          "id": "violin-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Las partes anchas tienen más valores.",
+          "visual": {
+            "type": "violin-plot"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "samples": [
+                {
+                  "id": "team-a",
+                  "values": [
+                    5,
+                    8,
+                    8,
+                    10,
+                    10,
+                    10,
+                    12,
+                    12,
+                    15,
+                    30
+                  ],
+                  "label": "Equipo A"
+                },
+                {
+                  "id": "team-b",
+                  "values": [
+                    10,
+                    12,
+                    14,
+                    14,
+                    16,
+                    16,
+                    18,
+                    20,
+                    22,
+                    24
+                  ],
+                  "label": "Equipo B"
+                }
+              ]
+            },
+            "title": "Ahorros por equipo"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "lorenz-01": {
+        "acceptable_choice_ids": [
+          "ans-five"
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-reading-charts-spread",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "reading-charts-spread",
+      "lesson_id": "v2-reading-charts-spread",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-reading-charts-spread"
+      ],
+      "adventure_scene_id": "diorama-b",
+      "title": "Leia dispersão e forma",
+      "required_capabilities": [
+        "visual.lorenz-curve.v1",
+        "operation.show-table.v1",
+        "operation.choose-option.v1",
+        "visual.fan-chart.v1",
+        "visual.density-plot.v1",
+        "visual.violin-plot.v1"
+      ],
+      "segments": [
+        {
+          "id": "lorenz-01",
+          "type": "visual.chart.v2",
+          "grading": "server",
+          "prompt": "Veja onde a curva se afasta da linha.",
+          "visual": {
+            "type": "lorenz-curve"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "grp-a",
+                  "label": "Grupo A"
+                },
+                {
+                  "id": "grp-b",
+                  "label": "Grupo B"
+                },
+                {
+                  "id": "grp-c",
+                  "label": "Grupo C"
+                },
+                {
+                  "id": "grp-d",
+                  "label": "Grupo D"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-coins",
+                  "values": [
+                    60,
+                    25,
+                    10,
+                    5
+                  ],
+                  "label": "Moedas"
+                }
+              ]
+            },
+            "question": {
+              "options": [
+                {
+                  "id": "ans-five",
+                  "label": "5%"
+                },
+                {
+                  "id": "ans-quarter",
+                  "label": "25%"
+                },
+                {
+                  "id": "ans-sixty",
+                  "label": "60%"
+                }
+              ],
+              "prompt": "Que parte tem o grupo com menos moedas?"
+            },
+            "title": "Como as moedas são divididas"
+          },
+          "feedback": {
+            "met": "Você leu o primeiro ponto da curva.",
+            "not_yet": "Ainda não. Leia o ponto do primeiro grupo."
+          }
+        },
+        {
+          "id": "fan-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Faixas largas indicam menos certeza.",
+          "visual": {
+            "type": "fan-chart"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "categories": [
+                {
+                  "id": "yr-one",
+                  "label": "Ano 1"
+                },
+                {
+                  "id": "yr-two",
+                  "label": "Ano 2"
+                },
+                {
+                  "id": "yr-three",
+                  "label": "Ano 3"
+                },
+                {
+                  "id": "yr-four",
+                  "label": "Ano 4"
+                }
+              ],
+              "series": [
+                {
+                  "id": "series-guess",
+                  "values": [
+                    100,
+                    110,
+                    120,
+                    135
+                  ],
+                  "label": "Melhor estimativa"
+                }
+              ],
+              "ranges": [
+                {
+                  "level": 80,
+                  "low": [
+                    100,
+                    104,
+                    108,
+                    118
+                  ],
+                  "high": [
+                    100,
+                    116,
+                    132,
+                    152
+                  ]
+                },
+                {
+                  "level": 95,
+                  "low": [
+                    100,
+                    100,
+                    100,
+                    108
+                  ],
+                  "high": [
+                    100,
+                    120,
+                    140,
+                    166
+                  ]
+                }
+              ]
+            },
+            "title": "Previsão de poupança"
+          }
+        },
+        {
+          "id": "dens-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "Uma curva mais alta indica mais valores ali.",
+          "visual": {
+            "type": "density-plot"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "samples": [
+                {
+                  "id": "grp-a",
+                  "values": [
+                    12,
+                    15,
+                    15,
+                    18,
+                    18,
+                    18,
+                    21,
+                    21,
+                    24,
+                    40
+                  ],
+                  "label": "Turma A"
+                },
+                {
+                  "id": "grp-b",
+                  "values": [
+                    18,
+                    20,
+                    24,
+                    24,
+                    27,
+                    27,
+                    30,
+                    33,
+                    36,
+                    38
+                  ],
+                  "label": "Turma B"
+                }
+              ]
+            },
+            "title": "Moedas poupadas por turma"
+          }
+        },
+        {
+          "id": "violin-01",
+          "type": "visual.chart.v2",
+          "grading": "none",
+          "prompt": "As partes largas têm mais valores.",
+          "visual": {
+            "type": "violin-plot"
+          },
+          "payload": {
+            "data": {
+              "unit": "coins",
+              "samples": [
+                {
+                  "id": "team-a",
+                  "values": [
+                    5,
+                    8,
+                    8,
+                    10,
+                    10,
+                    10,
+                    12,
+                    12,
+                    15,
+                    30
+                  ],
+                  "label": "Equipe A"
+                },
+                {
+                  "id": "team-b",
+                  "values": [
+                    10,
+                    12,
+                    14,
+                    14,
+                    16,
+                    16,
+                    18,
+                    20,
+                    22,
+                    24
+                  ],
+                  "label": "Equipe B"
+                }
+              ]
+            },
+            "title": "Poupança por equipe"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "lorenz-01": {
+        "acceptable_choice_ids": [
+          "ans-five"
+        ]
+      }
+    }
   }
 ]

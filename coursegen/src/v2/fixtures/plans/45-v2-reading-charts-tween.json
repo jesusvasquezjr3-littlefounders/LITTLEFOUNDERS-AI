@@ -1,0 +1,764 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "reading-charts-compare",
+  "lesson_id": "v2-reading-charts-tween",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-reading-charts-compare"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Rho and Dina compare values with dots, lines, squares and trends.",
+  "title": {
+    "en-US": "Compare with dots and lines",
+    "es-MX": "Compara con puntos y líneas",
+    "pt-BR": "Compare com pontos e linhas"
+  },
+  "new_concepts": [
+    "kc-reading-charts-compare"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "dot-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "visual": {
+        "type": "dot-plot"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "cat-save"
+            },
+            {
+              "id": "cat-spend"
+            },
+            {
+              "id": "cat-share"
+            },
+            {
+              "id": "cat-gifts"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-week",
+              "values": [
+                20,
+                45,
+                25,
+                10
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-save"
+            },
+            {
+              "id": "ans-spend"
+            },
+            {
+              "id": "ans-share"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Find the row with the most coins.",
+          "feedback": {
+            "met": "You compared the dots along one scale.",
+            "not_yet": "Not yet. The dot farthest right is the biggest."
+          },
+          "title": "Coins this week",
+          "data": {
+            "categories": [
+              {
+                "label": "Save"
+              },
+              {
+                "label": "Spend"
+              },
+              {
+                "label": "Share"
+              },
+              {
+                "label": "Gifts"
+              }
+            ],
+            "series": [
+              {
+                "label": "This week"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which row has the most coins?",
+            "options": [
+              {
+                "label": "Save"
+              },
+              {
+                "label": "Spend"
+              },
+              {
+                "label": "Share"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Busca la fila con más monedas.",
+          "feedback": {
+            "met": "Comparaste los puntos en una sola escala.",
+            "not_yet": "Todavía no. El punto más a la derecha es el mayor."
+          },
+          "title": "Monedas esta semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Ahorrar"
+              },
+              {
+                "label": "Gastar"
+              },
+              {
+                "label": "Compartir"
+              },
+              {
+                "label": "Regalar"
+              }
+            ],
+            "series": [
+              {
+                "label": "Esta semana"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué fila tiene más monedas?",
+            "options": [
+              {
+                "label": "Ahorrar"
+              },
+              {
+                "label": "Gastar"
+              },
+              {
+                "label": "Compartir"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Encontre a linha com mais moedas.",
+          "feedback": {
+            "met": "Você comparou os pontos em uma só escala.",
+            "not_yet": "Ainda não. O ponto mais à direita é o maior."
+          },
+          "title": "Moedas nesta semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Poupar"
+              },
+              {
+                "label": "Gastar"
+              },
+              {
+                "label": "Dividir"
+              },
+              {
+                "label": "Presentear"
+              }
+            ],
+            "series": [
+              {
+                "label": "Esta semana"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual linha tem mais moedas?",
+            "options": [
+              {
+                "label": "Poupar"
+              },
+              {
+                "label": "Gastar"
+              },
+              {
+                "label": "Dividir"
+              }
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-spend"
+        ]
+      }
+    },
+    {
+      "id": "dumb-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "dumbbell"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "cat-save"
+            },
+            {
+              "id": "cat-spend"
+            },
+            {
+              "id": "cat-share"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-before",
+              "values": [
+                10,
+                40,
+                20
+              ]
+            },
+            {
+              "id": "series-after",
+              "values": [
+                25,
+                30,
+                20
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Each line joins before and after.",
+          "title": "Before and after",
+          "data": {
+            "categories": [
+              {
+                "label": "Save"
+              },
+              {
+                "label": "Spend"
+              },
+              {
+                "label": "Share"
+              }
+            ],
+            "series": [
+              {
+                "label": "Before"
+              },
+              {
+                "label": "After"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Cada línea une el antes y el después.",
+          "title": "Antes y después",
+          "data": {
+            "categories": [
+              {
+                "label": "Ahorrar"
+              },
+              {
+                "label": "Gastar"
+              },
+              {
+                "label": "Compartir"
+              }
+            ],
+            "series": [
+              {
+                "label": "Antes"
+              },
+              {
+                "label": "Después"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Cada linha liga o antes e o depois.",
+          "title": "Antes e depois",
+          "data": {
+            "categories": [
+              {
+                "label": "Poupar"
+              },
+              {
+                "label": "Gastar"
+              },
+              {
+                "label": "Dividir"
+              }
+            ],
+            "series": [
+              {
+                "label": "Antes"
+              },
+              {
+                "label": "Depois"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "heat-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "xy-heatmap"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "day-mon"
+            },
+            {
+              "id": "day-tue"
+            },
+            {
+              "id": "day-wed"
+            },
+            {
+              "id": "day-thu"
+            },
+            {
+              "id": "day-fri"
+            }
+          ],
+          "rows": [
+            {
+              "id": "row-save"
+            },
+            {
+              "id": "row-spend"
+            },
+            {
+              "id": "row-share"
+            }
+          ],
+          "cells": [
+            {
+              "col": "day-mon",
+              "row": "row-save",
+              "value": 3
+            },
+            {
+              "col": "day-tue",
+              "row": "row-save",
+              "value": 1
+            },
+            {
+              "col": "day-wed",
+              "row": "row-save",
+              "value": 4
+            },
+            {
+              "col": "day-thu",
+              "row": "row-save",
+              "value": 2
+            },
+            {
+              "col": "day-fri",
+              "row": "row-save",
+              "value": 5
+            },
+            {
+              "col": "day-mon",
+              "row": "row-spend",
+              "value": 2
+            },
+            {
+              "col": "day-tue",
+              "row": "row-spend",
+              "value": 5
+            },
+            {
+              "col": "day-wed",
+              "row": "row-spend",
+              "value": 1
+            },
+            {
+              "col": "day-thu",
+              "row": "row-spend",
+              "value": 3
+            },
+            {
+              "col": "day-fri",
+              "row": "row-spend",
+              "value": 4
+            },
+            {
+              "col": "day-mon",
+              "row": "row-share",
+              "value": 0
+            },
+            {
+              "col": "day-tue",
+              "row": "row-share",
+              "value": 1
+            },
+            {
+              "col": "day-wed",
+              "row": "row-share",
+              "value": 2
+            },
+            {
+              "col": "day-thu",
+              "row": "row-share",
+              "value": 1
+            },
+            {
+              "col": "day-fri",
+              "row": "row-share",
+              "value": 3
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Darker squares mean bigger numbers.",
+          "title": "Coin moves this week",
+          "data": {
+            "categories": [
+              {
+                "label": "Mon"
+              },
+              {
+                "label": "Tue"
+              },
+              {
+                "label": "Wed"
+              },
+              {
+                "label": "Thu"
+              },
+              {
+                "label": "Fri"
+              }
+            ],
+            "rows": [
+              {
+                "label": "Save"
+              },
+              {
+                "label": "Spend"
+              },
+              {
+                "label": "Share"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Los cuadros oscuros son números mayores.",
+          "title": "Movimientos de la semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Lun"
+              },
+              {
+                "label": "Mar"
+              },
+              {
+                "label": "Mié"
+              },
+              {
+                "label": "Jue"
+              },
+              {
+                "label": "Vie"
+              }
+            ],
+            "rows": [
+              {
+                "label": "Ahorrar"
+              },
+              {
+                "label": "Gastar"
+              },
+              {
+                "label": "Donar"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quadrados escuros são números maiores.",
+          "title": "Movimentos da semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Seg"
+              },
+              {
+                "label": "Ter"
+              },
+              {
+                "label": "Qua"
+              },
+              {
+                "label": "Qui"
+              },
+              {
+                "label": "Sex"
+              }
+            ],
+            "rows": [
+              {
+                "label": "Poupar"
+              },
+              {
+                "label": "Gastar"
+              },
+              {
+                "label": "Doar"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "time-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "timeline"
+      },
+      "payload": {
+        "data": {
+          "unit": "days",
+          "events": [
+            {
+              "id": "ev-plan",
+              "date": "2026-09-07"
+            },
+            {
+              "id": "ev-save",
+              "date": "2026-09-14",
+              "end": "2026-10-05"
+            },
+            {
+              "id": "ev-buy",
+              "date": "2026-10-12"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the plan from start to finish.",
+          "title": "Saving for a bike",
+          "data": {
+            "events": [
+              {
+                "label": "Plan"
+              },
+              {
+                "label": "Saving"
+              },
+              {
+                "label": "Bike"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Sigue el plan de principio a fin.",
+          "title": "Ahorrar para una bici",
+          "data": {
+            "events": [
+              {
+                "label": "Plan"
+              },
+              {
+                "label": "Ahorro"
+              },
+              {
+                "label": "Bici"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Siga o plano do início ao fim.",
+          "title": "Poupar para uma bicicleta",
+          "data": {
+            "events": [
+              {
+                "label": "Plano"
+              },
+              {
+                "label": "Poupar"
+              },
+              {
+                "label": "Bicicleta"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "line-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "scatter-regression"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "points": [
+            {
+              "id": "pt-w1",
+              "x": 1,
+              "y": 5
+            },
+            {
+              "id": "pt-w2",
+              "x": 2,
+              "y": 9
+            },
+            {
+              "id": "pt-w3",
+              "x": 3,
+              "y": 12
+            },
+            {
+              "id": "pt-w4",
+              "x": 4,
+              "y": 18
+            },
+            {
+              "id": "pt-w5",
+              "x": 5,
+              "y": 20
+            },
+            {
+              "id": "pt-w6",
+              "x": 6,
+              "y": 26
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The line shows where the dots are heading.",
+          "title": "Coins saved by week",
+          "data": {
+            "points": [
+              {
+                "label": "Week 1"
+              },
+              {
+                "label": "Week 2"
+              },
+              {
+                "label": "Week 3"
+              },
+              {
+                "label": "Week 4"
+              },
+              {
+                "label": "Week 5"
+              },
+              {
+                "label": "Week 6"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "La línea muestra hacia dónde van los puntos.",
+          "title": "Monedas ahorradas por semana",
+          "data": {
+            "points": [
+              {
+                "label": "Semana 1"
+              },
+              {
+                "label": "Semana 2"
+              },
+              {
+                "label": "Semana 3"
+              },
+              {
+                "label": "Semana 4"
+              },
+              {
+                "label": "Semana 5"
+              },
+              {
+                "label": "Semana 6"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "A linha mostra para onde vão os pontos.",
+          "title": "Moedas poupadas por semana",
+          "data": {
+            "points": [
+              {
+                "label": "Semana 1"
+              },
+              {
+                "label": "Semana 2"
+              },
+              {
+                "label": "Semana 3"
+              },
+              {
+                "label": "Semana 4"
+              },
+              {
+                "label": "Semana 5"
+              },
+              {
+                "label": "Semana 6"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
