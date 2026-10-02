@@ -1,0 +1,11 @@
+[
+  { "fixture": "tree-screening", "age": "13-17" },
+  { "fixture": "tree-filter", "age": "13-17" },
+  { "fixture": "tree-survey", "age": "13-17" },
+  { "fixture": "bayes-screening", "age": "13-17" },
+  { "fixture": "bayes-filter", "age": "13-17" },
+  { "fixture": "bayes-checkup", "age": "13-17" },
+  { "fixture": "regression-climb", "age": "13-17" },
+  { "fixture": "regression-gentle", "age": "13-17" },
+  { "fixture": "regression-fall", "age": "13-17" }
+]

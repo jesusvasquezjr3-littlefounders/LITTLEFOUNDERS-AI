@@ -19,3 +19,9 @@ export function horizonteFixtureDocument(pack: string, id: string, locale: Horiz
     required_capabilities: [...capabilities], segments: [segment],
   };
 }
+
+/** The attempt seed a seeded fixture is staged with, keyed by its segment id; none for a fixture without one. */
+export function horizonteFixtureSeeds(pack: string, id: string, locale: HorizonteLocale): Readonly<Record<string, string>> | undefined {
+  const fixture = horizonteFixture(pack, id);
+  return fixture?.seed ? { [String(fixture.segment(locale).id)]: fixture.seed } : undefined;
+}
