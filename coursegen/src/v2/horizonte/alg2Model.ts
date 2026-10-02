@@ -1,0 +1,432 @@
+/**
+ * Horizonte F2.4 and F2.5: the pure models behind the function graph and the line system. Exact rational arithmetic
+ * (BigInt), no float comparison decides a verdict. Import-free, so the synced browser copy is byte-identical.
+ */
+
+export type Dec = { readonly n: bigint; readonly d: bigint };
+
+const abs = (value: bigint): bigint => (value < 0n ? -value : value);
+function gcd(a: bigint, b: bigint): bigint {
+  let x = abs(a);
+  let y = abs(b);
+  while (y !== 0n) { const rest = x % y; x = y; y = rest; }
+  return x;
+}
+function dec(n: bigint, d: bigint): Dec {
+  const g = gcd(n, d) || 1n;
+  const sign = d < 0n ? -1n : 1n;
+  return { n: sign * (n / g), d: sign * (d / g) };
+}
+
+const ZERO: Dec = { n: 0n, d: 1n };
+const addD = (a: Dec, b: Dec): Dec => dec(a.n * b.d + b.n * a.d, a.d * b.d);
+const subD = (a: Dec, b: Dec): Dec => dec(a.n * b.d - b.n * a.d, a.d * b.d);
+const mulD = (a: Dec, b: Dec): Dec => dec(a.n * b.n, a.d * b.d);
+const divD = (a: Dec, b: Dec): Dec | null => (b.n === 0n ? null : dec(a.n * b.d, a.d * b.n));
+const cmpD = (a: Dec, b: Dec): number => { const left = a.n * b.d; const right = b.n * a.d; return left < right ? -1 : left > right ? 1 : 0; };
+const isWhole = (a: Dec): boolean => a.d === 1n;
+
+const SLIDER_NUMBER = /^-?(0|[1-9]\d{0,5})(\.\d{1,3})?$/;
+const EXACT_DECIMAL = /^-?(0|[1-9]\d{0,14})(\.\d{1,12})?$/;
+const EXACT_FRACTION = /^-?(0|[1-9]\d{0,14})\/[1-9]\d{0,14}$/;
+
+function fromDecimalText(value: string): Dec {
+  const negative = value.startsWith('-');
+  const [whole, fraction = ''] = (negative ? value.slice(1) : value).split('.');
+  return dec(BigInt(`${whole}${fraction}`) * (negative ? -1n : 1n), 10n ** BigInt(fraction.length));
+}
+
+/** A slider number: at most six whole digits and three decimals. */
+export function parseSliderNumber(value: unknown): Dec | null {
+  return typeof value === 'string' && value.length <= 12 && SLIDER_NUMBER.test(value) ? fromDecimalText(value) : null;
+}
+
+/** An answer-shape number: decimal or fraction text, as the `curve.parameters` shape reads it. */
+export function parseExactNumber(value: unknown): Dec | null {
+  if (typeof value !== 'string' || value.length > 32) return null;
+  if (EXACT_DECIMAL.test(value)) return fromDecimalText(value);
+  if (!EXACT_FRACTION.test(value)) return null;
+  const negative = value.startsWith('-');
+  const [top, bottom] = (negative ? value.slice(1) : value).split('/');
+  return dec(BigInt(top!) * (negative ? -1n : 1n), BigInt(bottom!));
+}
+
+/** Exact decimal text (at most 12 decimals, at most 32 characters), or null when the value is not a finite decimal. */
+export function formatDecimal(value: Dec): string | null {
+  let rest = value.d;
+  let twos = 0;
+  let fives = 0;
+  while (rest % 2n === 0n) { rest /= 2n; twos += 1; }
+  while (rest % 5n === 0n) { rest /= 5n; fives += 1; }
+  if (rest !== 1n) return null;
+  const places = Math.max(twos, fives);
+  if (places > 12) return null;
+  const scaled = (value.n * 10n ** BigInt(places)) / value.d;
+  const negative = scaled < 0n;
+  const digits = abs(scaled).toString().padStart(places + 1, '0');
+  const whole = digits.slice(0, digits.length - places);
+  const fraction = digits.slice(digits.length - places);
+  const text = `${negative ? '-' : ''}${whole}${places > 0 ? `.${fraction}` : ''}`;
+  return text.length <= 32 ? text : null;
+}
+
+/** Float value of an exact number, for drawing only. Never used to decide a verdict. */
+export const toNumber = (value: Dec): number => Number(value.n) / Number(value.d);
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
+
+function exactKeys(value: unknown, required: readonly string[], optional: readonly string[] = []): value is Record<string, unknown> {
+  if (!isRecord(value)) return false;
+  const keys = Object.keys(value);
+  return required.every((key) => keys.includes(key)) && keys.every((key) => required.includes(key) || optional.includes(key));
+}
+
+const isInt = (value: unknown, low: number, high: number): value is number => typeof value === 'number' && Number.isInteger(value) && value >= low && value <= high;
+
+/* ── F2.4: the function graph ─────────────────────────────────────────────── */
+
+export const GRAPH_FAMILIES = ['line', 'quadratic', 'exponential'] as const;
+export type GraphFamily = (typeof GRAPH_FAMILIES)[number];
+export type GraphForm = 'standard' | 'vertex';
+
+export interface SliderSpec { min: string; max: string; step: string }
+export interface GraphWindow { xMin: number; xMax: number; yMin: number; yMax: number }
+export interface GraphMark { x: number; y: number }
+export interface GraphPayload {
+  curve: GraphFamily;
+  form?: GraphForm;
+  start: Record<string, string>;
+  sliders: Record<string, SliderSpec>;
+  window: GraphWindow;
+  marks?: GraphMark[];
+}
+
+export const GRAPH_LIMITS = { sliderSteps: 400, windowMagnitude: 100, windowMinSpan: 2, windowMaxSpan: 100, maxMarks: 4 } as const;
+
+/** The slider names of a family: `m b`, `a b c`, vertex `a h k`, `a b` (y = a * b^x). */
+export function sliderNames(curve: GraphFamily, form: GraphForm = 'standard'): readonly string[] {
+  if (curve === 'line') return ['m', 'b'];
+  if (curve === 'quadratic') return form === 'vertex' ? ['a', 'h', 'k'] : ['a', 'b', 'c'];
+  return ['a', 'b'];
+}
+
+/** The names the response (and the answer shape) use, whatever the sliders are called. */
+export const responseNames = (curve: GraphFamily): readonly string[] => sliderNames(curve, 'standard');
+
+export interface Slider { min: Dec; max: Dec; step: Dec }
+
+function readSlider(value: unknown): Slider | null {
+  if (!exactKeys(value, ['min', 'max', 'step'])) return null;
+  const min = parseSliderNumber(value.min);
+  const max = parseSliderNumber(value.max);
+  const step = parseSliderNumber(value.step);
+  if (!min || !max || !step || cmpD(min, max) >= 0 || cmpD(step, ZERO) <= 0) return null;
+  const steps = divD(subD(max, min), step);
+  if (!steps || !isWhole(steps) || steps.n > BigInt(GRAPH_LIMITS.sliderSteps)) return null;
+  return { min, max, step };
+}
+
+function onSlider(value: Dec, slider: Slider): boolean {
+  if (cmpD(value, slider.min) < 0 || cmpD(value, slider.max) > 0) return false;
+  const steps = divD(subD(value, slider.min), slider.step);
+  return steps !== null && isWhole(steps);
+}
+
+function readWindow(value: unknown): GraphWindow | null {
+  if (!exactKeys(value, ['xMin', 'xMax', 'yMin', 'yMax'])) return null;
+  const { xMin, xMax, yMin, yMax } = value;
+  const m = GRAPH_LIMITS.windowMagnitude;
+  if (!isInt(xMin, -m, m) || !isInt(xMax, -m, m) || !isInt(yMin, -m, m) || !isInt(yMax, -m, m)) return null;
+  const spans = [xMax - xMin, yMax - yMin];
+  if (spans.some((span) => span < GRAPH_LIMITS.windowMinSpan || span > GRAPH_LIMITS.windowMaxSpan)) return null;
+  return { xMin, xMax, yMin, yMax };
+}
+
+function readMarks(value: unknown, window: GraphWindow): GraphMark[] | null {
+  if (!Array.isArray(value) || value.length > GRAPH_LIMITS.maxMarks) return null;
+  const marks: GraphMark[] = [];
+  for (const item of value) {
+    if (!exactKeys(item, ['x', 'y']) || !isInt(item.x, window.xMin, window.xMax) || !isInt(item.y, window.yMin, window.yMax)) return null;
+    if (marks.some((mark) => mark.x === item.x && mark.y === item.y)) return null;
+    marks.push({ x: item.x, y: item.y });
+  }
+  return marks;
+}
+
+export interface ReadGraph {
+  curve: GraphFamily; form: GraphForm; window: GraphWindow; marks: GraphMark[];
+  sliders: Map<string, Slider>; start: Map<string, Dec>;
+}
+
+/** Reads and checks a public graph payload; a string is the reason it cannot be played. */
+export function readGraphPayload(payload: unknown): ReadGraph | string {
+  if (!exactKeys(payload, ['curve', 'start', 'sliders', 'window'], ['form', 'marks'])) return 'The payload keys are curve, start, sliders, window, and optionally form and marks';
+  const curve = payload.curve;
+  if (typeof curve !== 'string' || !(GRAPH_FAMILIES as readonly string[]).includes(curve)) return 'The curve is line, quadratic or exponential';
+  const form = payload.form ?? 'standard';
+  if (form !== 'standard' && form !== 'vertex') return 'The form is standard or vertex';
+  if (form === 'vertex' && curve !== 'quadratic') return 'Only a quadratic has a vertex form';
+  const names = sliderNames(curve as GraphFamily, form);
+  if (!exactKeys(payload.start, names) || !exactKeys(payload.sliders, names)) return `The start and the sliders name exactly ${names.join(', ')}`;
+  const sliders = new Map<string, Slider>();
+  const start = new Map<string, Dec>();
+  for (const name of names) {
+    const slider = readSlider((payload.sliders as Record<string, unknown>)[name]);
+    if (!slider) return `The ${name} slider needs a min below its max and a step that divides the range into at most ${GRAPH_LIMITS.sliderSteps} steps`;
+    const value = parseSliderNumber((payload.start as Record<string, unknown>)[name]);
+    if (!value || !onSlider(value, slider)) return `The ${name} start must sit on its slider`;
+    sliders.set(name, slider);
+    start.set(name, value);
+  }
+  if (curve === 'exponential' && cmpD(sliders.get('b')!.min, ZERO) <= 0) return 'The base slider of an exponential stays above zero';
+  // A vertex form with a = 0 has no vertex: the standard parameters would lose h, so the a slider must skip zero.
+  if (form === 'vertex' && onSlider(ZERO, sliders.get('a')!)) return 'The a slider of a vertex form skips zero';
+  const window = readWindow(payload.window);
+  if (!window) return 'The window is whole numbers, at least 2 and at most 100 wide, within 100 of zero';
+  const marks = payload.marks === undefined ? [] : readMarks(payload.marks, window);
+  if (!marks) return `The marks are at most ${GRAPH_LIMITS.maxMarks} distinct whole points inside the window`;
+  // Marks must pin the curve down: a curve is a function (one mark per x), and enough marks leave one curve of the family.
+  const needed = curve === 'quadratic' ? 3 : 2;
+  if (marks.length > 0 && (new Set(marks.map((mark) => mark.x)).size !== marks.length || marks.length < needed)) return `The marks sit at different x and there are at least ${needed} of them, or none`;
+  return { curve: curve as GraphFamily, form, window, marks, sliders, start };
+}
+
+export const graphPayloadProblem = (payload: unknown): string | null => {
+  const read = readGraphPayload(payload);
+  return typeof read === 'string' ? read : null;
+};
+
+/** Slider values to the standard parameters the answer shape reads; a vertex form is expanded: b = -2ah, c = ah^2 + k. */
+export function toStandard(graph: Pick<ReadGraph, 'curve' | 'form'>, values: ReadonlyMap<string, Dec>): Map<string, Dec> | null {
+  const get = (name: string) => values.get(name);
+  const out = new Map<string, Dec>();
+  if (graph.curve === 'quadratic' && graph.form === 'vertex') {
+    const a = get('a'); const h = get('h'); const k = get('k');
+    if (!a || !h || !k) return null;
+    out.set('a', a);
+    out.set('b', mulD(mulD({ n: -2n, d: 1n }, a), h));
+    out.set('c', addD(mulD(a, mulD(h, h)), k));
+    return out;
+  }
+  for (const name of responseNames(graph.curve)) {
+    const value = get(name);
+    if (!value) return null;
+    out.set(name, value);
+  }
+  return out;
+}
+
+/** The reverse: standard parameters to slider values (a vertex form recovers h = -b / 2a, k = c - b^2 / 4a); null when it does not exist. */
+export function fromStandard(graph: Pick<ReadGraph, 'curve' | 'form'>, standard: ReadonlyMap<string, Dec>): Map<string, Dec> | null {
+  if (graph.curve === 'quadratic' && graph.form === 'vertex') {
+    const a = standard.get('a'); const b = standard.get('b'); const c = standard.get('c');
+    if (!a || !b || !c) return null;
+    const h = divD(mulD({ n: -1n, d: 1n }, b), mulD({ n: 2n, d: 1n }, a));
+    if (!h) return null;
+    const k = subD(c, mulD(a, mulD(h, h)));
+    return new Map([['a', a], ['h', h], ['k', k]]);
+  }
+  return new Map(standard);
+}
+
+/** Does a standard-parameter set sit on the payload's sliders (inside each range and on each step)? */
+export function onSliders(graph: ReadGraph, standard: ReadonlyMap<string, Dec>): boolean {
+  const values = fromStandard(graph, standard);
+  if (!values) return false;
+  for (const [name, slider] of graph.sliders) {
+    const value = values.get(name);
+    if (!value || !onSlider(value, slider)) return false;
+  }
+  return true;
+}
+
+/** Parses a response's `params` against the family's parameter names. */
+export function readStandard(curve: GraphFamily, params: unknown): Map<string, Dec> | null {
+  const names = responseNames(curve);
+  if (!exactKeys(params, names)) return null;
+  const out = new Map<string, Dec>();
+  for (const name of names) {
+    const value = parseExactNumber(params[name]);
+    if (!value) return null;
+    out.set(name, value);
+  }
+  return out;
+}
+
+export const sameStandard = (a: ReadonlyMap<string, Dec>, b: ReadonlyMap<string, Dec>): boolean =>
+  a.size === b.size && [...a].every(([name, value]) => { const other = b.get(name); return other !== undefined && cmpD(value, other) === 0; });
+
+/** The start of a graph as the standard parameters of a response (decimal text). */
+export function startResponse(graph: ReadGraph): { family: GraphFamily; params: Record<string, string> } | null {
+  const standard = toStandard(graph, graph.start);
+  if (!standard) return null;
+  const params: Record<string, string> = {};
+  for (const name of responseNames(graph.curve)) {
+    const text = formatDecimal(standard.get(name)!);
+    if (text === null) return null;
+    params[name] = text;
+  }
+  return { family: graph.curve, params };
+}
+
+/** The context the `curve.parameters` shape needs: one family, and a range for every parameter the slider sets directly. */
+export function graphContext(graph: ReadGraph): { families: GraphFamily[]; ranges: Record<string, { minimum: string; maximum: string }> } {
+  const ranges: Record<string, { minimum: string; maximum: string }> = {};
+  for (const [name, slider] of graph.sliders) {
+    if (graph.form === 'vertex' && name !== 'a') continue;
+    ranges[name] = { minimum: formatDecimal(slider.min)!, maximum: formatDecimal(slider.max)! };
+  }
+  return { families: [graph.curve], ranges };
+}
+
+/** The exact y of a curve at a whole x, or null when it is not a finite number (an exponential this far out is not drawn). */
+export function curveAt(curve: GraphFamily, standard: ReadonlyMap<string, Dec>, x: number): Dec | null {
+  if (!Number.isInteger(x) || Math.abs(x) > GRAPH_LIMITS.windowMagnitude) return null;
+  const at: Dec = { n: BigInt(x), d: 1n };
+  if (curve === 'line') return addD(mulD(standard.get('m')!, at), standard.get('b')!);
+  if (curve === 'quadratic') return addD(addD(mulD(standard.get('a')!, mulD(at, at)), mulD(standard.get('b')!, at)), standard.get('c')!);
+  let power: Dec = { n: 1n, d: 1n };
+  const base = standard.get('b')!;
+  for (let step = 0; step < Math.abs(x); step += 1) power = mulD(power, base);
+  const scaled = x < 0 ? divD({ n: 1n, d: 1n }, power) : power;
+  return scaled === null ? null : mulD(standard.get('a')!, scaled);
+}
+
+/** Every mark lies exactly on the curve. */
+export function passesThrough(curve: GraphFamily, standard: ReadonlyMap<string, Dec>, marks: readonly GraphMark[]): boolean {
+  return marks.every((mark) => {
+    const y = curveAt(curve, standard, mark.x);
+    return y !== null && cmpD(y, { n: BigInt(mark.y), d: 1n }) === 0;
+  });
+}
+
+/** A drawable function for a response's parameters (floats, for drawing only); null when a parameter is unreadable. */
+export function curveFunction(curve: GraphFamily, params: Readonly<Record<string, string>>): ((x: number) => number) | null {
+  const read = (name: string): number | null => { const value = parseExactNumber(params[name]); return value ? toNumber(value) : null; };
+  if (curve === 'line') {
+    const m = read('m'); const b = read('b');
+    return m === null || b === null ? null : (x) => m * x + b;
+  }
+  if (curve === 'quadratic') {
+    const a = read('a'); const b = read('b'); const c = read('c');
+    return a === null || b === null || c === null ? null : (x) => a * x * x + b * x + c;
+  }
+  const a = read('a'); const base = read('b');
+  return a === null || base === null || base <= 0 ? null : (x) => a * base ** x;
+}
+
+/* ── F2.5: the line system ────────────────────────────────────────────────── */
+
+export interface PlaneLine { a: number; b: number; c: number }
+export interface PlanePoint { x: number; y: number }
+export interface SystemPayload { lines: PlaneLine[]; window: GraphWindow; grid: number; start: PlanePoint[] }
+
+export const SYSTEM_LIMITS = { coefficient: 20, constant: 200, minLines: 2, maxLines: 3, grids: [0.5, 1, 2] as readonly number[], windowMagnitude: 40, windowMinSpan: 4, windowMaxSpan: 40 } as const;
+
+const MICRO = 1_000_000;
+const micro = (value: number): bigint => BigInt(Math.round(value * MICRO));
+const onGridValue = (value: number, anchor: number, step: number): boolean => {
+  const steps = (value - anchor) / step;
+  return Math.abs(steps - Math.round(steps)) < 1e-9;
+};
+
+export interface ReadSystem { lines: PlaneLine[]; window: GraphWindow; grid: number; start: PlanePoint[] }
+
+/** Reads and checks a public system payload; a string is the reason it cannot be played. */
+export function readSystemPayload(payload: unknown): ReadSystem | string {
+  if (!exactKeys(payload, ['lines', 'window', 'grid', 'start'])) return 'The payload keys are lines, window, grid and start';
+  const rawLines = payload.lines;
+  if (!Array.isArray(rawLines) || rawLines.length < SYSTEM_LIMITS.minLines || rawLines.length > SYSTEM_LIMITS.maxLines) return 'A system has 2 or 3 lines';
+  const lines: PlaneLine[] = [];
+  for (const item of rawLines) {
+    if (!exactKeys(item, ['a', 'b', 'c'])) return 'A line is a x + b y = c with whole a, b and c';
+    const { a, b, c } = item;
+    if (!isInt(a, -SYSTEM_LIMITS.coefficient, SYSTEM_LIMITS.coefficient) || !isInt(b, -SYSTEM_LIMITS.coefficient, SYSTEM_LIMITS.coefficient) || !isInt(c, -SYSTEM_LIMITS.constant, SYSTEM_LIMITS.constant)) return 'A line has whole a and b within 20 and a whole c within 200';
+    if (a === 0 && b === 0) return 'A line needs a nonzero a or b';
+    lines.push({ a, b, c });
+  }
+  for (let left = 0; left < lines.length; left += 1) {
+    for (let right = left + 1; right < lines.length; right += 1) {
+      const p = lines[left]!; const q = lines[right]!;
+      if (p.a * q.b === q.a * p.b && p.a * q.c === q.a * p.c && p.b * q.c === q.b * p.c) return 'Two lines of the system must differ';
+    }
+  }
+  const grid = payload.grid;
+  if (typeof grid !== 'number' || !SYSTEM_LIMITS.grids.includes(grid)) return 'The grid is 0.5, 1 or 2';
+  const window = exactKeys(payload.window, ['xMin', 'xMax', 'yMin', 'yMax']) ? payload.window : null;
+  if (!window) return 'The window is xMin, xMax, yMin and yMax';
+  const m = SYSTEM_LIMITS.windowMagnitude;
+  const { xMin, xMax, yMin, yMax } = window;
+  if (!isInt(xMin, -m, m) || !isInt(xMax, -m, m) || !isInt(yMin, -m, m) || !isInt(yMax, -m, m)) return 'The window is whole numbers within 40 of zero';
+  if ([xMax - xMin, yMax - yMin].some((span) => span < SYSTEM_LIMITS.windowMinSpan || span > SYSTEM_LIMITS.windowMaxSpan)) return 'The window is 4 to 40 wide each way';
+  // The grid is anchored at zero, like the plane the browser draws it on: every window edge sits on a grid line.
+  if ([xMin, xMax, yMin, yMax].some((edge) => edge % grid !== 0)) return 'Every window edge sits on a grid line';
+  const rawStart = payload.start;
+  if (!Array.isArray(rawStart) || rawStart.length < 1 || rawStart.length > SYSTEM_LIMITS.maxLines) return 'There are 1 to 3 markers';
+  const start: PlanePoint[] = [];
+  for (const item of rawStart) {
+    if (!exactKeys(item, ['x', 'y']) || typeof item.x !== 'number' || typeof item.y !== 'number') return 'A marker is {x, y}';
+    if (!Number.isFinite(item.x) || !Number.isFinite(item.y) || item.x < xMin || item.x > xMax || item.y < yMin || item.y > yMax) return 'A marker starts inside the window';
+    if (!onGridValue(item.x, xMin, grid) || !onGridValue(item.y, yMin, grid)) return 'A marker starts on the grid';
+    if (start.some((other) => other.x === item.x && other.y === item.y)) return 'Markers start on different spots';
+    start.push({ x: item.x, y: item.y });
+  }
+  const crossings = new Map<string, { x: Dec; y: Dec }>();
+  for (let left = 0; left < lines.length; left += 1) {
+    for (let right = left + 1; right < lines.length; right += 1) {
+      const at = crossingOf(lines[left]!, lines[right]!);
+      if (at) crossings.set(`${at.x.n}/${at.x.d},${at.y.n}/${at.y.d}`, at);
+    }
+  }
+  if (crossings.size !== start.length) return 'There is one marker for each crossing of the lines';
+  const doubled = BigInt(Math.round(grid * 2));
+  const reachable = (value: Dec, min: number, max: number): boolean =>
+    cmpD(value, { n: BigInt(min), d: 1n }) >= 0 && cmpD(value, { n: BigInt(max), d: 1n }) <= 0
+    && isWhole(mulD(subD(value, { n: BigInt(min), d: 1n }), { n: 2n, d: doubled }));
+  for (const at of crossings.values()) {
+    if (!reachable(at.x, xMin, xMax) || !reachable(at.y, yMin, yMax)) return 'Every crossing lies in the window, on the grid';
+  }
+  return { lines, window: { xMin, xMax, yMin, yMax }, grid, start };
+}
+
+export const systemPayloadProblem = (payload: unknown): string | null => {
+  const read = readSystemPayload(payload);
+  return typeof read === 'string' ? read : null;
+};
+
+/** Does the point lie exactly on the line a x + b y = c? */
+export function liesOn(line: PlaneLine, point: PlanePoint): boolean {
+  if (!Number.isFinite(point.x) || !Number.isFinite(point.y)) return false;
+  return BigInt(line.a) * micro(point.x) + BigInt(line.b) * micro(point.y) === BigInt(line.c) * BigInt(MICRO);
+}
+
+/** A crossing is a point on at least two of the lines. */
+export const isCrossing = (lines: readonly PlaneLine[], point: PlanePoint): boolean => lines.filter((line) => liesOn(line, point)).length >= 2;
+
+/** The exact crossing of two lines as decimal-or-fraction text, or null when they are parallel. */
+export function crossingOf(p: PlaneLine, q: PlaneLine): { x: Dec; y: Dec } | null {
+  const det = p.a * q.b - q.a * p.b;
+  if (det === 0) return null;
+  return { x: dec(BigInt(p.c * q.b - q.c * p.b), BigInt(det)), y: dec(BigInt(p.a * q.c - q.a * p.c), BigInt(det)) };
+}
+
+export const pointKey = (point: PlanePoint): string => `${micro(point.x)},${micro(point.y)}`;
+
+/** The same set of spots, whatever the order. */
+export function sameSpots(a: readonly PlanePoint[], b: readonly PlanePoint[]): boolean {
+  if (a.length !== b.length) return false;
+  const keys = new Set(a.map(pointKey));
+  return b.every((point) => keys.has(pointKey(point)));
+}
+
+/** A line as readable text: `2x + y = 5`. Digits and letters only; the board shows it as data. */
+export function lineText(line: PlaneLine): string {
+  const term = (coefficient: number, name: string, first: boolean): string => {
+    if (coefficient === 0) return '';
+    const size = Math.abs(coefficient) === 1 ? '' : String(Math.abs(coefficient));
+    const sign = coefficient < 0 ? (first ? '-' : ' - ') : (first ? '' : ' + ');
+    return `${sign}${size}${name}`;
+  };
+  const left = line.a !== 0 ? `${term(line.a, 'x', true)}${term(line.b, 'y', false)}` : term(line.b, 'y', true);
+  return `${left} = ${line.c}`;
+}

@@ -41,6 +41,8 @@ export interface PlanoProps {
   size?: PlanoSize;
   /** A tap or click on the plane moves the selected handle there (within its limits). */
   placeOnTap?: boolean;
+  /** Show Plano's own Show as table button. A board that lists its own rows turns it off. Default true. */
+  tableToggle?: boolean;
   /** Asked for the new point of a handle, after the model has clamped, axis-locked and snapped it. */
   onHandleChange?: (id: string, point: PlanoPoint) => void;
   /** Called with the tapped value, clamped and snapped to the domain, for boards that add a point per tap. */
@@ -63,7 +65,7 @@ interface LegendEntry { key: string; text: string; series: PlanoSeries; region: 
 
 export function Plano({
   label, summary, domain, layers = NONE, xLabel, yLabel, snap, tickStep, keyStep, digits = 2, size = PLANO_VIEWBOX,
-  placeOnTap = false, onHandleChange, onPlaneTap, onActiveChange, copy, className,
+  placeOnTap = false, tableToggle = true, onHandleChange, onPlaneTap, onActiveChange, copy, className,
 }: PlanoProps) {
   const { locale } = useRebuildEnvironment();
   const words: PlanoCopy = { ...planoWords(locale), ...copy };
@@ -190,7 +192,7 @@ export function Plano({
         <span id={`${uid}-name`} className="lf-plano-name" data-copy-role="heading">{label}</span>
         {summary ? <span id={`${uid}-summary`} className="lf-plano-summary" data-copy-role="body">{summary}</span> : null}
       </figcaption>
-      {hasContent ? <Button size="sm" onClick={() => setTable((value) => !value)}>{table ? words.chart : words.table}</Button> : null}
+      {hasContent && tableToggle ? <Button size="sm" onClick={() => setTable((value) => !value)}>{table ? words.chart : words.table}</Button> : null}
     </div>
 
     {table ? <DataTable caption={label} columns={columns} rows={rows} rowKey={(row) => row.id} /> : <>
@@ -256,7 +258,7 @@ export function Plano({
               const bounds = effectiveBounds(frame.domain, handle.bounds);
               const vertical = handle.axis === 'y';
               const isActive = handle.id === activeId;
-              return <div key={handle.id} role="slider" tabIndex={isActive ? 0 : -1}
+              return <div key={handle.id} role="slider" tabIndex={isActive ? 0 : -1} data-hz-roving=""
                 ref={(node) => { if (node) handleRefs.current.set(handle.id, node); else handleRefs.current.delete(handle.id); }}
                 className={`lf-plano-handle${handle.series ? ` lf-plano-series-${handle.series}` : ''}`} data-shape={SHAPE[handle.series ?? 1]}
                 data-active={enabled.length > 1 && isActive ? 'true' : undefined} data-dragging={dragging === handle.id ? 'true' : undefined}

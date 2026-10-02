@@ -5,6 +5,7 @@ import { conceptAllowed, conceptSampleResponse, gradeConcept, V2_CONCEPT_RUBRICS
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './v2ChartModel.js';
 import { v2ScorerPayload } from './v2ScorerPayload.js';
 import * as hz from './horizonte/index.js';
+import type { HorizonteAttempt } from './horizonte/seed/protocol.js';
 import { autonomyOfferForBand } from './learnerRegisterPolicy.js';
 import { BAR_MODEL_RUBRICS, barModelPayload, longArithmeticSchema, mathNotation, NOTATION_CAPABILITY, placeValuePayload, SCHEMA_DIAGRAM_RUBRICS, schemaDiagramPayload, V2_FAMILY_RUBRICS, v2AgeScopeProblem, v2FamilySampleResponse, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras, v2ApproachesProblem, v2ApproachesSchema, v2ApproachOf, v2SegmentsForApproach, type V2FamilySegment } from './v2SegmentFamilies.js';
 
@@ -561,13 +562,13 @@ function v2SampleResponse(item: ServerSegment): unknown {
 }
 
 /** Server-only semantic scoring. A malformed response never becomes a score. */
-export function gradeV2Visual(document: V2PublicLesson, answerKeys: Record<string, unknown>, segmentId: string, response: unknown): V2GradeResult | null {
+export function gradeV2Visual(document: V2PublicLesson, answerKeys: Record<string, unknown>, segmentId: string, response: unknown, attempt?: HorizonteAttempt): V2GradeResult | null {
   const segment = document.segments.find((item) => item.id === segmentId);
   if (!segment || segment.grading !== 'server' || !Object.hasOwn(answerKeys, segmentId)) return null;
   const rubric = rubricByKind[segment.type as keyof typeof rubricByKind].safeParse(answerKeys[segmentId]);
   if (!rubric.success) return null;
   if (hz.isHorizonteType(segment.type)) {
-    const pack = hz.horizonteGrade(segment, response, rubric.data);
+    const pack = hz.horizonteGrade(segment, response, rubric.data, attempt);
     return pack ? { ...pack, document, segmentId } : null;
   }
   if (isConcept(segment)) {

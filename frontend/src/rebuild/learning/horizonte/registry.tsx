@@ -3,7 +3,8 @@ import type { LessonClientDocument } from '../lessonDocument';
 import type { LessonSequenceControl } from '../lessonSequence';
 import type { OnGradeSegment } from '../segmentKit';
 import type { HorizonteBoardEntry, HorizonteBoards } from './boardTypes';
-import { isHorizonteSegment, type HorizonteSegment } from './contract';
+import { useAttemptSeed } from './attemptSeed';
+import { isHorizonteSegment, isSeededHorizonteType, type HorizonteSegment } from './contract';
 import { GOLDEN_BOARDS } from './golden/boards';
 import './horizonte.css';
 import { NUM_A_BOARDS } from './num-a/boards';
@@ -58,8 +59,9 @@ export function HorizonteSegmentView({ document, segment, onBack, sequence, onGr
   document: LessonClientDocument; segment: HorizonteSegment; onBack: () => void; sequence?: LessonSequenceControl; onGrade?: OnGradeSegment;
   unavailable: () => React.ReactNode;
 }) {
+  const seed = useAttemptSeed(segment.id);
   const entry: HorizonteBoardEntry | undefined = Object.hasOwn(HORIZONTE_BOARDS, segment.type) ? HORIZONTE_BOARDS[segment.type] : undefined;
-  if (!entry || (segment.grading === 'server' && !onGrade)) return <>{unavailable()}</>;
+  if (!entry || (segment.grading === 'server' && !onGrade) || (isSeededHorizonteType(segment.type) && seed === null)) return <>{unavailable()}</>;
   const Board = entry.board;
   return <Suspense fallback={<div className="lf-hz-loading" aria-busy="true" />}>
     <Board document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={onGrade} />

@@ -1,4 +1,5 @@
 import type { V2Grade, V2VisualVerdict } from '../v2VisualScorer.js';
+import { SAMPLE_ATTEMPT, isSeededCapabilitySet, type HorizonteAttempt } from './seed/protocol.js';
 import { horizonteAgeScopeProblem } from './shared.js';
 import type { HorizonteAgeScope, HorizonteScorer } from './types.js';
 import { golden } from './golden/index.js';
@@ -70,27 +71,35 @@ const TYPES: ReadonlySet<string> = new Set(Object.keys(HORIZONTE_CAPABILITIES));
 
 export function isHorizonteType(type: string): boolean { return TYPES.has(type); }
 
+/** A kind whose capabilities declare the seeded run: Core issues it a seed beside the attempt token. */
+export function isSeededHorizonteType(type: string): boolean {
+  return TYPES.has(type) && isSeededCapabilitySet((HORIZONTE_CAPABILITIES as Record<string, readonly string[]>)[type] ?? []);
+}
+
 /** Why a Horizonte kind is not open to this document, or null; an undeclared scope is itself a problem. */
 export function horizonteScopeProblem(segment: { type: string }, document: { age_band: string; eligibility: { minimum_age: number; maximum_age: number } }): string | null {
   return isHorizonteType(segment.type) ? horizonteAgeScopeProblem(AGE_SCOPE[segment.type], document) : null;
 }
 
-type Scorer = (segment: unknown, response: unknown, rubric: unknown) => V2Grade;
+type Scorer = (segment: unknown, response: unknown, rubric: unknown, attempt?: HorizonteAttempt) => V2Grade;
 type Sampler = (segment: unknown, rubric: unknown) => unknown;
 
 /** The pack scorer's verdict on a well-formed sample response (publish-time key check); 'invalid' when no scorer is registered. */
 export function horizonteSampleVerdict(segment: { type: string }, rubric: unknown): V2VisualVerdict {
   const scorer = SCORERS[segment.type];
   if (!scorer) return 'invalid';
-  return (scorer.grade as Scorer)(segment, (scorer.sample as Sampler)(segment, rubric), rubric).verdict;
+  return (scorer.grade as Scorer)(segment, (scorer.sample as Sampler)(segment, rubric), rubric, SAMPLE_ATTEMPT).verdict;
 }
 
-/** Server grading for a pack kind: only review and met are scores; invalid and valid are null, as for every other kind. */
-export function horizonteGrade(segment: { type: string }, response: unknown, rubric: unknown):
+/**
+ * Server grading for a pack kind: only review and met are scores; invalid and valid are null, as for every other kind.
+ * `attempt` carries the seed Core derived from the verified token; a seeded kind graded without one is never a score.
+ */
+export function horizonteGrade(segment: { type: string }, response: unknown, rubric: unknown, attempt?: HorizonteAttempt):
   { score: 0 | 100; correct: boolean; diagnostic: V2Grade['diagnostic']; detection?: V2Grade['detection']; cues?: V2Grade['cues']; pae?: number } | null {
   const scorer = SCORERS[segment.type];
   if (!scorer) return null;
-  const graded = (scorer.grade as Scorer)(segment, response, rubric);
+  const graded = (scorer.grade as Scorer)(segment, response, rubric, attempt);
   if (graded.verdict === 'invalid' || graded.verdict === 'valid') return null;
   return { score: graded.verdict === 'met' ? 100 : 0, correct: graded.verdict === 'met', diagnostic: graded.diagnostic,
     ...(graded.detection ? { detection: graded.detection } : {}), ...(graded.cues ? { cues: graded.cues } : {}), ...(graded.pae !== undefined ? { pae: graded.pae } : {}) };
