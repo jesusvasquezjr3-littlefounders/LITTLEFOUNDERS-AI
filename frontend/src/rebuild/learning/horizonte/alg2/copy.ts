@@ -49,6 +49,7 @@ export const ALG2_COPY = {
   stepBrackets: { role: 'body', 'en-US': 'The brackets do not match.', 'es-MX': 'Los paréntesis no coinciden.', 'pt-BR': 'Os parênteses não combinam.' },
   stepPower: { role: 'body', 'en-US': 'Use a whole power from 0 to 6, like x^2.', 'es-MX': 'Usa una potencia entera de 0 a 6, como x^2.', 'pt-BR': 'Use uma potência inteira de 0 a 6, como x^2.' },
   stepSymbols: { role: 'body', 'en-US': 'Use numbers, the letter {v} and signs like + and ^.', 'es-MX': 'Usa números, la letra {v} y signos como + y ^.', 'pt-BR': 'Use números, a letra {v} e sinais como + e ^.' },
+  stepNumber: { role: 'body', 'en-US': 'Write decimals with a point, like 0.5.', 'es-MX': 'Escribe los decimales con punto, como 0.5.', 'pt-BR': 'Escreva os decimais com ponto, como 0.5.' },
   stepTwoEquals: { role: 'body', 'en-US': 'Use only one equals sign.', 'es-MX': 'Usa solo un signo igual.', 'pt-BR': 'Use só um sinal de igual.' },
   stepNeedsEquation: { role: 'body', 'en-US': 'Write an equation here, with an equals sign.', 'es-MX': 'Escribe aquí una ecuación, con signo igual.', 'pt-BR': 'Escreva aqui uma equação, com sinal de igual.' },
   stepNeedsExpression: { role: 'body', 'en-US': 'Write an expression here, with no equals sign.', 'es-MX': 'Escribe aquí una expresión, sin signo igual.', 'pt-BR': 'Escreva aqui uma expressão, sem sinal de igual.' },
