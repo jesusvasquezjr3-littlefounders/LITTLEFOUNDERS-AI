@@ -12,6 +12,8 @@
 // the dry-run emitter's output is validated by Core itself
 // (`npm --prefix backend run forge-v2:check`), never by a Forge re-implementation.
 
+import { HORIZONTE_FORGE_CAPABILITIES } from './horizonte/index.js';
+
 export const V2_SEGMENT_CAPABILITIES = {
   'money.allocation.v2': ['visual.stacked-bar.v1', 'operation.reallocate.v1'],
   'visual.savings-line.v2': ['visual.line.v1', 'operation.parameter-slider.v1'],
@@ -66,6 +68,7 @@ export const V2_SEGMENT_CAPABILITIES = {
   'money.debt-payoff.v2': ['visual.debt-race.v1', 'operation.what-if-branch.v1', 'operation.ghost-trace.v1'],
   'money.diversification.v2': ['visual.portfolio.v1', 'operation.reallocate.v1', 'operation.linked-representations.v1'],
   'money.lemonade-stand.v2': ['visual.waterfall.v1', 'operation.guided-sandbox.v1', 'operation.running-ledger.v1'],
+  ...HORIZONTE_FORGE_CAPABILITIES,
 } as const;
 
 /** The Mentor-voiced kinds (B.8, B.11): the only v2 segments that carry a narration channel. */

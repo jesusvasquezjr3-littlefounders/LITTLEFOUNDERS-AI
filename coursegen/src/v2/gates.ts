@@ -50,6 +50,7 @@ import { countWords, tokens } from '../contentGates/text.js';
 import { isNonCopyKey, V2_MENTOR_VOICE_TYPES, type V2AgeBand } from './contract.js';
 import type { V2LessonPlan } from './plan.js';
 import { runV2CarriedGates } from './carriedGates.js';
+import { horizontePieceGates } from './horizonte/index.js';
 
 export interface V2DocumentLike {
   locale?: unknown;
@@ -203,6 +204,8 @@ export function runV2DocumentGates(
   const carried = runV2CarriedGates(document as Record<string, unknown>, answerKeys);
   problems.push(...carried.problems);
   review.push(...carried.review);
+
+  problems.push(...horizontePieceGates(document, answerKeys));
 
   return { problems, review, notApplicable: [] };
 }
