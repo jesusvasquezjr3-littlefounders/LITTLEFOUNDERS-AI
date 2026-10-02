@@ -1,0 +1,12 @@
+[
+  { "fixture": "chance-coin-heads", "age": "10-12" },
+  { "fixture": "chance-die-six", "age": "10-12" },
+  { "fixture": "chance-spinner-event", "age": "10-12" },
+  { "fixture": "galton-board", "age": "13-17" },
+  { "fixture": "galton-walk", "age": "13-17" },
+  { "fixture": "galton-biased", "age": "13-17" },
+  { "fixture": "coverage-three-fifths", "age": "13-17" },
+  { "fixture": "coverage-one-half", "age": "13-17" },
+  { "fixture": "bootstrap-six-values", "age": "13-17" },
+  { "fixture": "bootstrap-eight-values", "age": "13-17" }
+]

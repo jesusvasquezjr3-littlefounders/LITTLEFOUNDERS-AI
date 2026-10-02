@@ -1,11 +1,16 @@
 import type { z } from 'zod';
 import type { V2Grade } from '../v2VisualScorer.js';
+import type { HorizonteAttempt } from './seed/protocol.js';
 
 export type HorizonteAgeScope = { ages: readonly [number, number]; adult: boolean };
 
-/** `rubric` is undefined in the browser, which never holds one: the scorer then reports only invalid or valid. */
+/**
+ * `rubric` is undefined in the browser, which never holds one: the scorer then reports only invalid or valid.
+ * `attempt` is the seed Core derived from the verified attempt token; a seeded scorer replays its simulation under it and
+ * treats a rubric without an attempt as invalid. Every other scorer ignores it.
+ */
 export type HorizonteScorer<Segment = never, Rubric = never> = {
-  grade: (segment: Segment, response: unknown, rubric: Rubric | undefined) => V2Grade;
+  grade: (segment: Segment, response: unknown, rubric: Rubric | undefined, attempt?: HorizonteAttempt) => V2Grade;
   /** A well-formed response that proves the key is scorable, never that it is met. */
   sample: (segment: Segment, rubric: Rubric) => unknown;
 };
@@ -31,6 +36,8 @@ export interface HorizonteFixture {
   eligibility: { minimum_age: number; maximum_age: number };
   segment: (locale: HorizonteLocale) => Record<string, unknown>;
   rubric: Record<string, unknown>;
+  /** A seeded piece: the attempt seed its ladder responses were simulated under (64 lowercase hex characters). */
+  seed?: string;
   /** One response per rung of the ladder; `valid` is the untouched state, `met` the answer. */
   ladder: { invalid: unknown; valid: unknown; met: unknown };
 }

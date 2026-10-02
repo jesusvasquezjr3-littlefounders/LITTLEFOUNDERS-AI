@@ -1,0 +1,164 @@
+export const STACK_SIZES = [2, 3] as const;
+export const STACK_MAX_HEIGHT = 3;
+export const STACK_PIECE = 'cube';
+
+/** Cube counts of a square grid: `heights[row][col]`, row 0 at the back and the last row at the front, column 0 at the left. */
+export type Heights = readonly (readonly number[])[];
+export type StackViewId = 'plan' | 'front' | 'side';
+export const STACK_VIEW_IDS: readonly StackViewId[] = ['plan', 'front', 'side'];
+
+/** The public goal: the views the learner must match. `plan` is the footprint (1 where a column stands, 0 where it does not). */
+export interface StackGoal { front?: readonly number[]; side?: readonly number[]; plan?: readonly (readonly number[])[] }
+
+const whole = (value: unknown, minimum: number, maximum: number): value is number => typeof value === 'number' && Number.isInteger(value) && value >= minimum && value <= maximum;
+
+export const isStackSize = (value: unknown): value is (typeof STACK_SIZES)[number] => (STACK_SIZES as readonly unknown[]).includes(value);
+
+export function isHeights(value: unknown, size?: number, maxHeight: number = STACK_MAX_HEIGHT): value is Heights {
+  if (!Array.isArray(value) || !isStackSize(value.length) || (size !== undefined && value.length !== size)) return false;
+  return value.every((row) => Array.isArray(row) && row.length === value.length && row.every((cell) => whole(cell, 0, maxHeight)));
+}
+
+export const emptyHeights = (size: number): Heights => Array.from({ length: size }, () => Array.from({ length: size }, () => 0));
+export const stackTotal = (heights: Heights): number => heights.reduce((sum, row) => sum + row.reduce((inner, cell) => inner + cell, 0), 0);
+export const sameHeights = (a: Heights, b: Heights): boolean => a.length === b.length && a.every((row, r) => row.every((cell, c) => cell === b[r]![c]));
+
+/** Looking at the front: the tallest column of cubes in each grid column, left to right. */
+export const frontView = (heights: Heights): number[] => heights[0]!.map((_, col) => Math.max(...heights.map((row) => row[col]!)));
+/** Looking from the right: the tallest row in each depth, left to right is front to back. */
+export const sideView = (heights: Heights): number[] => [...heights].reverse().map((row) => Math.max(...row));
+/** Looking from above: 1 where at least one cube stands. */
+export const planView = (heights: Heights): number[][] => heights.map((row) => row.map((cell) => (cell > 0 ? 1 : 0)));
+
+export const viewsOf = (heights: Heights): { front: number[]; side: number[]; plan: number[][] } => ({ front: frontView(heights), side: sideView(heights), plan: planView(heights) });
+
+const sameList = (a: readonly number[], b: readonly number[]): boolean => a.length === b.length && a.every((value, index) => value === b[index]);
+
+export function isStackGoal(value: unknown, size: number, maxHeight: number = STACK_MAX_HEIGHT): value is StackGoal {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
+  const goal = value as Record<string, unknown>;
+  const keys = Object.keys(goal);
+  if (keys.length < 1 || keys.some((key) => key !== 'front' && key !== 'side' && key !== 'plan')) return false;
+  const heightsList = (entry: unknown) => Array.isArray(entry) && entry.length === size && entry.every((cell) => whole(cell, 0, maxHeight));
+  if (goal.front !== undefined && !heightsList(goal.front)) return false;
+  if (goal.side !== undefined && !heightsList(goal.side)) return false;
+  if (goal.plan !== undefined && !(Array.isArray(goal.plan) && goal.plan.length === size && goal.plan.every((row) => Array.isArray(row) && row.length === size && row.every((cell) => whole(cell, 0, 1))))) return false;
+  return true;
+}
+
+export function matchesGoal(heights: Heights, goal: StackGoal): boolean {
+  return (goal.front === undefined || sameList(frontView(heights), goal.front))
+    && (goal.side === undefined || sameList(sideView(heights), goal.side))
+    && (goal.plan === undefined || planView(heights).every((row, r) => sameList(row, goal.plan![r]!)));
+}
+
+export interface StackSolutions {
+  /** Every stack of the grid that matches the goal. */
+  count: number;
+  minimum: number | null;
+  maximum: number | null;
+  /** The matching stacks with the fewest cubes, up to the limit. */
+  fewest: Heights[];
+}
+
+function cellRange(goal: StackGoal, size: number, maxHeight: number, row: number, col: number): [number, number] {
+  let high = maxHeight;
+  if (goal.front) high = Math.min(high, goal.front[col]!);
+  if (goal.side) high = Math.min(high, goal.side[size - 1 - row]!);
+  let low = 0;
+  if (goal.plan) {
+    if (goal.plan[row]![col] === 0) high = 0;
+    else low = 1;
+  }
+  return [low, high];
+}
+
+/** Exhaustive over the grid, which is at most 3 by 3 with at most 3 cubes a cell (4^9 stacks): exact, never a heuristic. */
+export function solveStack(goal: StackGoal, size: number, maxHeight: number = STACK_MAX_HEIGHT, limit = 16): StackSolutions {
+  const ranges = Array.from({ length: size * size }, (_, index) => cellRange(goal, size, maxHeight, Math.floor(index / size), index % size));
+  const result: StackSolutions = { count: 0, minimum: null, maximum: null, fewest: [] };
+  const cells = new Array<number>(size * size).fill(0);
+  const visit = (index: number) => {
+    if (index === cells.length) {
+      const heights: number[][] = Array.from({ length: size }, (_, row) => cells.slice(row * size, row * size + size));
+      if (!matchesGoal(heights, goal)) return;
+      const total = cells.reduce((sum, cell) => sum + cell, 0);
+      result.count += 1;
+      result.maximum = result.maximum === null ? total : Math.max(result.maximum, total);
+      if (result.minimum === null || total < result.minimum) { result.minimum = total; result.fewest = []; }
+      if (total === result.minimum && result.fewest.length < limit) result.fewest.push(heights);
+      return;
+    }
+    const [low, high] = ranges[index]!;
+    for (let value = low; value <= high; value += 1) { cells[index] = value; visit(index + 1); }
+    cells[index] = 0;
+  };
+  if (ranges.every(([low, high]) => low <= high)) visit(0);
+  return result;
+}
+
+export const stackSlotId = (col: number, row: number): string => `c${col}r${row}`;
+export const stackSlotIds = (size: number): string[] => Array.from({ length: size * size }, (_, index) => stackSlotId(index % size, Math.floor(index / size)));
+
+/** The F0.3 arrangement context of a stack: one repeatable cube piece, a slot per cell holding up to `maxHeight` cubes. */
+export function stackContext(size: number, maxHeight: number = STACK_MAX_HEIGHT): { pieceIds: string[]; slotIds: string[]; capacities: Record<string, number>; repeatable: true } {
+  const slotIds = stackSlotIds(size);
+  return { pieceIds: [STACK_PIECE], slotIds, capacities: Object.fromEntries(slotIds.map((slot) => [slot, maxHeight])), repeatable: true };
+}
+
+export function stackToSlots(heights: Heights): Record<string, string[]> {
+  const slots: Record<string, string[]> = {};
+  heights.forEach((row, r) => row.forEach((cell, c) => { if (cell > 0) slots[stackSlotId(c, r)] = Array.from({ length: cell }, () => STACK_PIECE); }));
+  return slots;
+}
+
+/** The heights a slot map describes; null when it names a slot outside the grid or anything but cubes. */
+export function slotsToStack(slots: unknown, size: number): Heights | null {
+  if (typeof slots !== 'object' || slots === null || Array.isArray(slots)) return null;
+  const heights: number[][] = Array.from({ length: size }, () => Array.from({ length: size }, () => 0));
+  const known = new Set(stackSlotIds(size));
+  for (const [slot, pieces] of Object.entries(slots)) {
+    if (!known.has(slot) || !Array.isArray(pieces) || pieces.some((piece) => piece !== STACK_PIECE)) return null;
+    const col = Number(slot[1]);
+    const row = Number(slot[3]);
+    heights[row]![col] = pieces.length;
+  }
+  return heights;
+}
+
+export type Point = readonly [number, number];
+export interface StackCube { col: number; row: number; level: number; top: readonly Point[]; front: readonly Point[]; side: readonly Point[] }
+export interface StackScene { width: number; height: number; ground: readonly Point[]; cubes: StackCube[] }
+
+const UNIT = 36;
+const HALF_WIDTH = UNIT * Math.cos(Math.PI / 6);
+const MARGIN = 8;
+
+/**
+ * The isometric drawing of a stack, pure SVG data with no WebGL: the viewer stands at the front right, so the front faces
+ * (light) and the right faces (dark) show. Cubes are drawn back to front, bottom to top.
+ */
+export function composeStackScene(heights: Heights, maxHeight: number = STACK_MAX_HEIGHT): StackScene {
+  const size = heights.length;
+  const originX = size * HALF_WIDTH + MARGIN;
+  const originY = maxHeight * UNIT + MARGIN;
+  const at = (col: number, row: number, level: number): Point => [Math.round((originX + (col - row) * HALF_WIDTH) * 100) / 100, Math.round((originY + ((col + row) * UNIT) / 2 - level * UNIT) * 100) / 100];
+  const cubes: StackCube[] = [];
+  heights.forEach((line, row) => line.forEach((count, col) => {
+    for (let level = 0; level < count; level += 1) {
+      cubes.push({
+        col, row, level,
+        top: [at(col, row, level + 1), at(col + 1, row, level + 1), at(col + 1, row + 1, level + 1), at(col, row + 1, level + 1)],
+        front: [at(col, row + 1, level + 1), at(col + 1, row + 1, level + 1), at(col + 1, row + 1, level), at(col, row + 1, level)],
+        side: [at(col + 1, row, level + 1), at(col + 1, row + 1, level + 1), at(col + 1, row + 1, level), at(col + 1, row, level)],
+      });
+    }
+  }));
+  cubes.sort((a, b) => (a.col + a.row) - (b.col + b.row) || a.level - b.level);
+  return {
+    width: Math.round((2 * size * HALF_WIDTH + 2 * MARGIN) * 100) / 100,
+    height: (maxHeight + size) * UNIT + 2 * MARGIN,
+    ground: [at(0, 0, 0), at(size, 0, 0), at(size, size, 0), at(0, size, 0)],
+    cubes,
+  };
+}

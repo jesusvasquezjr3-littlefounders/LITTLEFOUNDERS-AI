@@ -1,0 +1,141 @@
+export const SOLID_IDS = ['cube', 'prism', 'pyramid', 'cylinder'] as const;
+export type SolidId = (typeof SOLID_IDS)[number];
+export const COUNT_KINDS = ['faces', 'edges', 'vertices'] as const;
+export type CountKind = (typeof COUNT_KINDS)[number];
+export type Vec3 = readonly [number, number, number];
+
+export interface SolidCounts { faces: number; edges: number; vertices: number }
+
+/** The teaching counts. `prism` is the triangular prism and `pyramid` the square pyramid, so no two solids share a count. */
+export const SOLID_COUNTS: Readonly<Record<SolidId, SolidCounts>> = {
+  cube: { faces: 6, edges: 12, vertices: 8 },
+  prism: { faces: 5, edges: 9, vertices: 6 },
+  pyramid: { faces: 5, edges: 8, vertices: 5 },
+  cylinder: { faces: 3, edges: 2, vertices: 0 },
+};
+
+export const isSolidId = (value: unknown): value is SolidId => typeof value === 'string' && (SOLID_IDS as readonly string[]).includes(value);
+export const isCountKind = (value: unknown): value is CountKind => typeof value === 'string' && (COUNT_KINDS as readonly string[]).includes(value);
+export const countOf = (solid: SolidId, kind: CountKind): number => SOLID_COUNTS[solid][kind];
+
+/** The solids that have exactly `count` of `kind`; the viewer question "which solid has N edges" has one answer when this has one entry. */
+export const solidsWithCount = (kind: CountKind, count: number, among: readonly SolidId[] = SOLID_IDS): SolidId[] => among.filter((solid) => countOf(solid, kind) === count);
+
+export const CYLINDER_SEGMENTS = 24;
+
+export type FaceKind = 'flat' | 'curved';
+export interface SolidFace { corners: readonly number[]; kind: FaceKind; key: string }
+export type EdgeKind = 'straight' | 'curve' | 'smooth';
+/** `smooth` is a tessellation line of a curved face: drawn only where it is a silhouette, never counted. */
+export interface SolidEdge { a: number; b: number; faces: readonly [number, number]; kind: EdgeKind }
+export interface SolidMesh {
+  id: SolidId;
+  vertices: readonly Vec3[];
+  /** Indices of the vertices that are real corners; a cylinder has none. */
+  corners: readonly number[];
+  faces: readonly SolidFace[];
+  edges: readonly SolidEdge[];
+}
+
+const flat = (key: string, corners: number[]): SolidFace => ({ corners, kind: 'flat', key });
+
+function polyhedron(id: SolidId, vertices: Vec3[], faces: SolidFace[]): SolidMesh {
+  return { id, vertices, corners: vertices.map((_, index) => index), faces, edges: deriveEdges(faces) };
+}
+
+function deriveEdges(faces: readonly SolidFace[]): SolidEdge[] {
+  const seen = new Map<string, { a: number; b: number; faces: number[] }>();
+  faces.forEach((face, index) => {
+    face.corners.forEach((from, at) => {
+      const to = face.corners[(at + 1) % face.corners.length]!;
+      const key = from < to ? `${from}:${to}` : `${to}:${from}`;
+      const entry = seen.get(key) ?? { a: Math.min(from, to), b: Math.max(from, to), faces: [] };
+      entry.faces.push(index);
+      seen.set(key, entry);
+    });
+  });
+  return [...seen.values()].map((entry) => {
+    const [first, second] = entry.faces as [number, number];
+    const bothCurved = faces[first]!.kind === 'curved' && faces[second]!.kind === 'curved';
+    const eitherCurved = faces[first]!.kind === 'curved' || faces[second]!.kind === 'curved';
+    return { a: entry.a, b: entry.b, faces: [first, second] as const, kind: bothCurved ? 'smooth' : eitherCurved ? 'curve' : 'straight' };
+  });
+}
+
+function cubeMesh(): SolidMesh {
+  const h = 0.5;
+  return polyhedron('cube', [[-h, -h, h], [h, -h, h], [h, h, h], [-h, h, h], [-h, -h, -h], [h, -h, -h], [h, h, -h], [-h, h, -h]], [
+    flat('front', [0, 1, 2, 3]), flat('back', [5, 4, 7, 6]), flat('right', [1, 5, 6, 2]),
+    flat('left', [4, 0, 3, 7]), flat('top', [3, 2, 6, 7]), flat('bottom', [4, 5, 1, 0]),
+  ]);
+}
+
+function prismMesh(): SolidMesh {
+  return polyhedron('prism', [[-0.6, -0.5, 0.6], [0.6, -0.5, 0.6], [0, 0.5, 0.6], [-0.6, -0.5, -0.6], [0.6, -0.5, -0.6], [0, 0.5, -0.6]], [
+    flat('front', [0, 1, 2]), flat('back', [3, 5, 4]), flat('bottom', [0, 3, 4, 1]), flat('right', [1, 4, 5, 2]), flat('left', [0, 2, 5, 3]),
+  ]);
+}
+
+function pyramidMesh(): SolidMesh {
+  return polyhedron('pyramid', [[-0.6, -0.5, 0.6], [0.6, -0.5, 0.6], [0.6, -0.5, -0.6], [-0.6, -0.5, -0.6], [0, 0.6, 0]], [
+    flat('bottom', [0, 3, 2, 1]), flat('front', [0, 1, 4]), flat('right', [1, 2, 4]), flat('back', [2, 3, 4]), flat('left', [3, 0, 4]),
+  ]);
+}
+
+function cylinderMesh(): SolidMesh {
+  const n = CYLINDER_SEGMENTS;
+  const vertices: Vec3[] = [];
+  for (const y of [-0.5, 0.5]) for (let i = 0; i < n; i += 1) vertices.push([0.5 * Math.cos((2 * Math.PI * i) / n), y, -0.5 * Math.sin((2 * Math.PI * i) / n)]);
+  const ring = (offset: number) => Array.from({ length: n }, (_, i) => offset + i);
+  const faces: SolidFace[] = [flat('top', ring(n)), flat('bottom', ring(0).reverse())];
+  for (let i = 0; i < n; i += 1) faces.push({ corners: [i, (i + 1) % n, n + ((i + 1) % n), n + i], kind: 'curved', key: 'side' });
+  return { id: 'cylinder', vertices, corners: [], faces, edges: deriveEdges(faces) };
+}
+
+const MESHES: Readonly<Record<SolidId, () => SolidMesh>> = { cube: cubeMesh, prism: prismMesh, pyramid: pyramidMesh, cylinder: cylinderMesh };
+
+export function solidMesh(id: SolidId): SolidMesh {
+  return MESHES[id]();
+}
+
+/** The counts a mesh actually has: flat faces plus one for the curved surface, straight edges plus one per circular rim, real corners. */
+export function meshCounts(mesh: SolidMesh): SolidCounts {
+  const rims = new Set<number>();
+  for (const edge of mesh.edges) if (edge.kind === 'curve') rims.add(mesh.faces[edge.faces[0]]!.kind === 'flat' ? edge.faces[0] : edge.faces[1]);
+  return {
+    faces: mesh.faces.filter((face) => face.kind === 'flat').length + (mesh.faces.some((face) => face.kind === 'curved') ? 1 : 0),
+    edges: mesh.edges.filter((edge) => edge.kind === 'straight').length + rims.size,
+    vertices: mesh.corners.length,
+  };
+}
+
+export const faceCentroid = (mesh: SolidMesh, face: SolidFace): Vec3 => {
+  const sum = face.corners.reduce<[number, number, number]>((total, index) => {
+    const point = mesh.vertices[index]!;
+    return [total[0] + point[0], total[1] + point[1], total[2] + point[2]];
+  }, [0, 0, 0]);
+  return [sum[0] / face.corners.length, sum[1] / face.corners.length, sum[2] / face.corners.length];
+};
+
+/** Outward unit normal from the counter-clockwise winding (Newell's method, exact for any planar polygon). */
+export function faceNormal(mesh: SolidMesh, face: SolidFace): Vec3 {
+  let x = 0; let y = 0; let z = 0;
+  face.corners.forEach((from, at) => {
+    const a = mesh.vertices[from]!;
+    const b = mesh.vertices[face.corners[(at + 1) % face.corners.length]!]!;
+    x += (a[1] - b[1]) * (a[2] + b[2]);
+    y += (a[2] - b[2]) * (a[0] + b[0]);
+    z += (a[0] - b[0]) * (a[1] + b[1]);
+  });
+  const length = Math.hypot(x, y, z) || 1;
+  return [x / length, y / length, z / length];
+}
+
+export type SolidDescription = SolidCounts & { flatFaces: number; curvedFaces: number; straightEdges: number; curvedEdges: number };
+
+/** The facts behind the show-as-table view of a solid. */
+export function describeSolid(id: SolidId): SolidDescription {
+  const counts = SOLID_COUNTS[id];
+  const curved = id === 'cylinder';
+  return { ...counts, flatFaces: curved ? 2 : counts.faces, curvedFaces: curved ? 1 : 0, straightEdges: curved ? 0 : counts.edges, curvedEdges: curved ? 2 : 0 };
+}
