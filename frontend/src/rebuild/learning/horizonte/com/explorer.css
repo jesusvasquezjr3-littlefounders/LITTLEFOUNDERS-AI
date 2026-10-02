@@ -1,0 +1,18 @@
+/* F2.17 explorers: a prediction, a figure to explore and one number to find. A neutral board: a surface and quiet lines, one ink for the learner's own mark (V2, V3). Tokens only. */
+.lf-ex { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-3); justify-items: start; min-inline-size: 0; }
+.lf-ex-ask { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-1) var(--spacing-2); margin: 0; max-inline-size: 60ch; }
+/* A fraction or an integral is taller than its line, and the shared .lf-math scrolls on overflow: room above and below keeps a scrollbar from showing beside the math. */
+.lf-ex-ask .lf-math { font-size: 1.25rem; padding-block: 0.3em; overflow-y: hidden; }
+.lf-ex-figure { inline-size: 100%; max-inline-size: 42rem; min-inline-size: 0; }
+.lf-ex-figure--circle { max-inline-size: 26rem; }
+.lf-ex-figures { display: grid; gap: var(--spacing-4); inline-size: 100%; min-inline-size: 0; }
+.lf-ex-figures > .lf-ex-figure { max-inline-size: none; }
+.lf-ex-status { font-weight: 800; max-inline-size: 60ch; margin: 0; }
+.lf-ex-controls { display: grid; gap: var(--spacing-3); justify-items: start; }
+.lf-ex-controls .lf-slider, .lf-ex-controls .lf-number-answer { inline-size: 100%; max-inline-size: 28rem; }
+.lf-ex-hint { color: var(--content-muted); margin: 0; }
+.lf-ex .lf-hz-table-scroll { max-inline-size: 42rem; }
+@media (min-width: 52rem) {
+  .lf-ex-figures--circle-wave { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); align-items: start; }
+  .lf-ex-figures--stack { grid-template-columns: 1fr; }
+}
