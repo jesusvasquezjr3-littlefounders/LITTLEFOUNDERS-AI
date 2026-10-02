@@ -15,6 +15,7 @@ const checks = [
   ['sync-v2-growth-comparison.mjs', '--check'],
   ['sync-v2-tax-bracket.mjs', '--check'],
   ['sync-v2-segment-families.mjs', '--check'],
+  ['sync-v2-answer-shapes.mjs', '--check'],
   ['sync-v2-scorer-payload.mjs', '--check'],
   ['sync-v2-chart-model.mjs', '--check'],
   ['sync-v2-concept-boards.mjs', '--check'],

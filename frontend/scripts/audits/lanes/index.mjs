@@ -1,5 +1,6 @@
 import * as core from './core.mjs';
 import * as family from './family.mjs';
+import * as horizonte from './horizonte.mjs';
 import * as learn from './learn.mjs';
 import * as mentor from './mentor.mjs';
 import * as profile from './profile.mjs';
@@ -11,7 +12,7 @@ import * as staff from './staff.mjs';
  * only its own file). A state id and a scenario name are unique across lanes:
  * two lanes claiming one would make the report ambiguous, so it refuses to load.
  */
-export const LANES = [core, site, learn, mentor, family, profile, staff];
+export const LANES = [core, site, learn, mentor, family, profile, staff, horizonte];
 
 function unique(kind, entries) {
   const owner = new Map();
