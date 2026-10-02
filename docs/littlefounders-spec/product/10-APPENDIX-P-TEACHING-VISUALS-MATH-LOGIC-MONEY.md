@@ -138,6 +138,8 @@ Verified with the platform-standard `Intl` APIs (Node 22 / ICU) and sources cite
 
 ## Part 6 — Technology and licensing constraints
 
+> **OD-32 amendment:** F4 adds one lazy 3D solids viewer (tutor-scene canvas, adaptive quality, Mentor budget) with SVG isometric alternates; the SVG-by-default rows below hold everywhere else. See `13-OWNER-DECISION-LOG.md`, OD-32.
+
 | Question | Finding | Consequence |
 |---|---|---|
 | Embed third-party simulations? | **PhET** HTML simulations released from 29 March 2026 are **CC BY-NC** (earlier versions stay CC BY); **GeoGebra** is free only for non-commercial use (sponsorship or advertising revenue counts as commercial); **Highcharts** requires a paid licence for public apps; **Desmos API** terms could not be verified. LittleFounders is operated by a company, so each of these needs Legal sign-off. | Do not build the core library on any of them. Borrowing their published design patterns is fine. |
