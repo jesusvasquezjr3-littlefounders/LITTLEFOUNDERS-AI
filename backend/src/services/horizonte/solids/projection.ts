@@ -1,0 +1,239 @@
+import { faceCentroid, faceNormal, solidMesh, type EdgeKind, type SolidId, type SolidMesh, type Vec3 } from './model.js';
+
+export type ViewYaw = 0 | 1 | 2 | 3;
+export type ViewPitch = 0 | 1 | 2;
+/** A fixed view: `yaw` quarter turns of the camera round the solid from the front, `pitch` 0 level, 1 isometric corner, 2 from above. */
+export interface SolidView { yaw: ViewYaw; pitch: ViewPitch }
+
+export const PITCH_NAMES = ['level', 'corner', 'top'] as const;
+export type ViewKey = `${(typeof PITCH_NAMES)[number]}-${ViewYaw}`;
+export const DEFAULT_VIEW: SolidView = { yaw: 0, pitch: 1 };
+export const VIEW_KEYS: readonly ViewKey[] = PITCH_NAMES.flatMap((name) => ([0, 1, 2, 3] as const).map((yaw) => `${name}-${yaw}` as ViewKey));
+export const ISO_ELEVATION_DEG = (Math.atan(1 / Math.SQRT2) * 180) / Math.PI;
+
+export const viewKey = (view: SolidView): ViewKey => `${PITCH_NAMES[view.pitch]}-${view.yaw}`;
+
+export function parseViewKey(key: unknown): SolidView | null {
+  if (typeof key !== 'string' || !(VIEW_KEYS as readonly string[]).includes(key)) return null;
+  const [name, yaw] = key.split('-') as [string, string];
+  return { yaw: Number(yaw) as ViewYaw, pitch: PITCH_NAMES.indexOf(name as (typeof PITCH_NAMES)[number]) as ViewPitch };
+}
+
+export const isSolidView = (value: unknown): value is SolidView => typeof value === 'object' && value !== null
+  && Number.isInteger((value as SolidView).yaw) && (value as SolidView).yaw >= 0 && (value as SolidView).yaw <= 3
+  && Number.isInteger((value as SolidView).pitch) && (value as SolidView).pitch >= 0 && (value as SolidView).pitch <= 2;
+
+export type ViewStep = 'left' | 'right' | 'up' | 'down';
+
+/** One arrow key is one snap: left and right turn the camera a quarter turn (wrapping), up and down change the pitch (clamped, no wrap). */
+export function stepView(view: SolidView, step: ViewStep): SolidView {
+  if (step === 'left') return { yaw: ((view.yaw + 3) % 4) as ViewYaw, pitch: view.pitch };
+  if (step === 'right') return { yaw: ((view.yaw + 1) % 4) as ViewYaw, pitch: view.pitch };
+  return { yaw: view.yaw, pitch: Math.max(0, Math.min(2, view.pitch + (step === 'up' ? 1 : -1))) as ViewPitch };
+}
+
+export const ARROW_STEPS: Readonly<Record<string, ViewStep>> = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down' };
+
+export interface ViewBasis { right: Vec3; up: Vec3; toward: Vec3 }
+
+const azimuthOf = (view: SolidView): number => ((view.yaw * 90 + (view.pitch === 1 ? 45 : 0)) * Math.PI) / 180;
+const elevationOf = (view: SolidView): number => (view.pitch === 0 ? 0 : view.pitch === 1 ? (ISO_ELEVATION_DEG * Math.PI) / 180 : Math.PI / 2);
+
+/** Screen axes in world space: x to the right of the screen, y up the screen, z toward the camera (right x up = toward). */
+export function viewBasis(view: SolidView): ViewBasis {
+  const a = azimuthOf(view);
+  const e = elevationOf(view);
+  return {
+    right: [Math.cos(a), 0, -Math.sin(a)],
+    up: [-Math.sin(e) * Math.sin(a), Math.cos(e), -Math.sin(e) * Math.cos(a)],
+    toward: [Math.cos(e) * Math.sin(a), Math.sin(e), Math.cos(e) * Math.cos(a)],
+  };
+}
+
+const dot = (a: Vec3, b: Vec3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+
+export type Lens =
+  | { mode: 'orthographic'; scale: number }
+  | { mode: 'perspective'; distance: number; fovDeg: number };
+
+export const SCENE_SIZE = 240;
+export const SCENE_CENTER = SCENE_SIZE / 2;
+export const ORTHOGRAPHIC_LENS: Lens = { mode: 'orthographic', scale: 90 };
+export const CAMERA_DISTANCE = 6;
+export const PERSPECTIVE_LENS: Lens = { mode: 'perspective', distance: CAMERA_DISTANCE, fovDeg: 24 };
+
+export interface ProjectedPoint { x: number; y: number; depth: number }
+
+/** A world point to scene coordinates (a 240 square, y down); the perspective lens is the three.js camera at `distance` looking at the origin. */
+export function projectPoint(point: Vec3, view: SolidView, lens: Lens = ORTHOGRAPHIC_LENS): ProjectedPoint {
+  const basis = viewBasis(view);
+  const sx = dot(point, basis.right);
+  const sy = dot(point, basis.up);
+  const depth = dot(point, basis.toward);
+  if (lens.mode === 'orthographic') return { x: SCENE_CENTER + sx * lens.scale, y: SCENE_CENTER - sy * lens.scale, depth };
+  const ahead = lens.distance - depth;
+  const focal = SCENE_CENTER / Math.tan((lens.fovDeg * Math.PI) / 360);
+  return { x: SCENE_CENTER + (sx / ahead) * focal, y: SCENE_CENTER - (sy / ahead) * focal, depth };
+}
+
+/** Where the 3D camera stands for a view: the world position and the up vector, a cut and never a tween. */
+export function cameraPose(view: SolidView, distance: number = CAMERA_DISTANCE): { position: Vec3; up: Vec3 } {
+  const basis = viewBasis(view);
+  return { position: [basis.toward[0] * distance, basis.toward[1] * distance, basis.toward[2] * distance], up: basis.up };
+}
+
+export type LabelMode = 'none' | 'faces' | 'edges' | 'vertices';
+export const LABEL_MODES: readonly LabelMode[] = ['none', 'faces', 'edges', 'vertices'];
+
+export interface ScenePolygon { face: number; key: string; curved: boolean; points: ReadonlyArray<readonly [number, number]>; shade: 0 | 1 | 2 | 3 }
+export interface SceneEdge { edge: number; from: readonly [number, number]; to: readonly [number, number]; hidden: boolean; kind: EdgeKind }
+export interface SceneLabel { id: string; text: string; x: number; y: number; hidden: boolean }
+export interface SolidScene { solid: SolidId; view: SolidView; lens: Lens; polygons: ScenePolygon[]; edges: SceneEdge[]; labels: SceneLabel[] }
+
+const FACING = 1e-6;
+const LABEL_GAP = 11;
+const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+interface Frame { mesh: SolidMesh; view: SolidView; lens: Lens; facing: boolean[]; projected: ProjectedPoint[] }
+
+function frameOf(mesh: SolidMesh, view: SolidView, lens: Lens): Frame {
+  const basis = viewBasis(view);
+  const eye: Vec3 | null = lens.mode === 'perspective' ? [basis.toward[0] * lens.distance, basis.toward[1] * lens.distance, basis.toward[2] * lens.distance] : null;
+  const facing = mesh.faces.map((face) => {
+    const normal = faceNormal(mesh, face);
+    if (!eye) return dot(normal, basis.toward) > FACING;
+    const centre = faceCentroid(mesh, face);
+    return dot(normal, [eye[0] - centre[0], eye[1] - centre[1], eye[2] - centre[2]]) > FACING;
+  });
+  return { mesh, view, lens, facing, projected: mesh.vertices.map((vertex) => projectPoint(vertex, view, lens)) };
+}
+
+const round = (value: number): number => Math.round(value * 100) / 100;
+
+function shadeOf(normal: Vec3, view: SolidView): 0 | 1 | 2 | 3 {
+  const basis = viewBasis(view);
+  const light: Vec3 = [0.3 * basis.right[0] + 0.55 * basis.up[0] + 0.78 * basis.toward[0], 0.3 * basis.right[1] + 0.55 * basis.up[1] + 0.78 * basis.toward[1], 0.3 * basis.right[2] + 0.55 * basis.up[2] + 0.78 * basis.toward[2]];
+  const length = Math.hypot(light[0], light[1], light[2]);
+  const lit = dot(normal, [light[0] / length, light[1] / length, light[2] / length]);
+  return lit > 0.8 ? 0 : lit > 0.55 ? 1 : lit > 0.3 ? 2 : 3;
+}
+
+interface LabelTarget { id: string; anchor: (frame: Frame) => { x: number; y: number; hidden: boolean } | null }
+
+const centreOf = (frame: Frame, indices: readonly number[]): { x: number; y: number } => {
+  const points = indices.map((index) => frame.projected[index]!);
+  return { x: points.reduce((sum, point) => sum + point.x, 0) / points.length, y: points.reduce((sum, point) => sum + point.y, 0) / points.length };
+};
+
+/** The things a learner counts, in a stable order: the labels' numbers and letters do not move between views. */
+function labelTargets(mesh: SolidMesh, mode: Exclude<LabelMode, 'none'>): LabelTarget[] {
+  if (mode === 'faces') {
+    const targets: LabelTarget[] = [];
+    mesh.faces.forEach((face, index) => {
+      if (face.kind === 'flat') targets.push({ id: `face-${index}`, anchor: (frame) => (frame.facing[index] ? { ...centreOf(frame, face.corners), hidden: false } : null) });
+    });
+    const curved = mesh.faces.flatMap((face, index) => (face.kind === 'curved' ? [index] : []));
+    if (curved.length > 0) {
+      targets.push({
+        id: 'face-curved',
+        anchor: (frame) => {
+          const seen = curved.filter((index) => frame.facing[index]);
+          if (seen.length === 0) return null;
+          const centres = seen.map((index) => centreOf(frame, mesh.faces[index]!.corners));
+          return { x: centres.reduce((sum, c) => sum + c.x, 0) / centres.length, y: centres.reduce((sum, c) => sum + c.y, 0) / centres.length, hidden: false };
+        },
+      });
+    }
+    return targets;
+  }
+  if (mode === 'vertices') {
+    return mesh.corners.map((vertex) => ({
+      id: `vertex-${vertex}`,
+      anchor: (frame) => ({ x: frame.projected[vertex]!.x, y: frame.projected[vertex]!.y, hidden: !mesh.faces.some((face, index) => frame.facing[index] && face.corners.includes(vertex)) }),
+    }));
+  }
+  const targets: LabelTarget[] = [];
+  const rims = new Map<number, number[]>();
+  mesh.edges.forEach((edge, index) => {
+    if (edge.kind === 'straight') {
+      targets.push({
+        id: `edge-${index}`,
+        anchor: (frame) => ({ ...centreOf(frame, [edge.a, edge.b]), hidden: !frame.facing[edge.faces[0]] && !frame.facing[edge.faces[1]] }),
+      });
+    } else if (edge.kind === 'curve') {
+      const cap = mesh.faces[edge.faces[0]]!.kind === 'flat' ? edge.faces[0] : edge.faces[1];
+      rims.set(cap, [...(rims.get(cap) ?? []), index]);
+    }
+  });
+  for (const [cap, members] of rims) {
+    targets.push({
+      id: `rim-${cap}`,
+      anchor: (frame) => {
+        let best = { x: Number.NEGATIVE_INFINITY, y: 0, hidden: true };
+        for (const index of members) {
+          const edge = mesh.edges[index]!;
+          const spot = centreOf(frame, [edge.a, edge.b]);
+          const hidden = !frame.facing[edge.faces[0]] && !frame.facing[edge.faces[1]];
+          if (spot.x > best.x) best = { x: spot.x, y: spot.y, hidden };
+        }
+        return best;
+      },
+    });
+  }
+  return targets;
+}
+
+const textOf = (mode: Exclude<LabelMode, 'none'>, index: number): string => (mode === 'vertices' ? LETTERS[index % LETTERS.length]! : String(index + 1));
+
+function composeLabels(frame: Frame, mode: LabelMode): SceneLabel[] {
+  if (mode === 'none') return [];
+  const placed = labelTargets(frame.mesh, mode).flatMap((target, index) => {
+    const spot = target.anchor(frame);
+    return spot ? [{ id: target.id, text: textOf(mode, index), x: round(spot.x), y: round(spot.y), hidden: spot.hidden }] : [];
+  });
+  const kept: SceneLabel[] = [];
+  for (const label of [...placed.filter((entry) => !entry.hidden), ...placed.filter((entry) => entry.hidden)]) {
+    if (kept.every((other) => Math.hypot(other.x - label.x, other.y - label.y) >= LABEL_GAP)) kept.push(label);
+  }
+  return placed.filter((label) => kept.includes(label));
+}
+
+const sameSegment = (a: SceneEdge, b: SceneEdge): boolean => {
+  const near = (p: readonly [number, number], q: readonly [number, number]) => Math.hypot(p[0] - q[0], p[1] - q[1]) < 0.5;
+  return (near(a.from, b.from) && near(a.to, b.to)) || (near(a.from, b.to) && near(a.to, b.from));
+};
+
+/**
+ * One solid in one fixed view as flat drawing data: the front-facing faces (a convex solid needs no depth sort), the visible
+ * and hidden edges, and the labels. The SVG fallback paints it directly and the 3D chunk overlays the same labels.
+ */
+export function composeScene(solid: SolidId, view: SolidView, options: { lens?: Lens; labels?: LabelMode } = {}): SolidScene {
+  const lens = options.lens ?? ORTHOGRAPHIC_LENS;
+  const mesh = solidMesh(solid);
+  const frame = frameOf(mesh, view, lens);
+  const polygons: ScenePolygon[] = [];
+  mesh.faces.forEach((face, index) => {
+    if (!frame.facing[index]) return;
+    polygons.push({
+      face: index, key: face.key, curved: face.kind === 'curved', shade: shadeOf(faceNormal(mesh, face), view),
+      points: face.corners.map((corner) => [round(frame.projected[corner]!.x), round(frame.projected[corner]!.y)] as const),
+    });
+  });
+  const visible: SceneEdge[] = [];
+  const hidden: SceneEdge[] = [];
+  mesh.edges.forEach((edge, index) => {
+    const seen = [frame.facing[edge.faces[0]], frame.facing[edge.faces[1]]].filter(Boolean).length;
+    if (edge.kind === 'smooth' && seen !== 1) return;
+    const from = frame.projected[edge.a]!;
+    const to = frame.projected[edge.b]!;
+    const drawn: SceneEdge = { edge: index, from: [round(from.x), round(from.y)], to: [round(to.x), round(to.y)], hidden: seen === 0, kind: edge.kind };
+    (drawn.hidden ? hidden : visible).push(drawn);
+  });
+  const edges = [...hidden.filter((edge) => !visible.some((other) => sameSegment(edge, other))), ...visible];
+  return { solid, view, lens, polygons, edges, labels: composeLabels(frame, options.labels ?? 'none') };
+}
+
+/** The label lists of a solid, in the order the numbers and letters are given: what the show-as-table view reads out. */
+export function labelNames(solid: SolidId, mode: Exclude<LabelMode, 'none'>): string[] {
+  return labelTargets(solidMesh(solid), mode).map((_, index) => textOf(mode, index));
+}
