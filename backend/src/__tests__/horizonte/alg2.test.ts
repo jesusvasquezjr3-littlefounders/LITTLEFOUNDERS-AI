@@ -538,7 +538,7 @@ describe('alg2 pack: F2.4, F2.5, F2.6', () => {
       expect(horizonteSampleVerdict(entry.segment('en-US') as { type: string }, entry.rubric), entry.id).toBe('valid');
     }
     const line = lesson(fixture('graph-line-two-dots'));
-    const lineId = (line.segments[0] as { id: string }).id;
+    const lineId = (line.segments[0] as unknown as { id: string }).id;
     const parsed = v2PublicLessonSchema.parse(line);
     expect(gradeV2Visual(parsed, { [lineId]: fixture('graph-line-two-dots').rubric }, lineId, { family: 'line', params: { m: '2', b: '-2' } })).toMatchObject({ score: 0, correct: false });
     expect(horizonteGrade(line.segments[0] as { type: string }, { family: 'line', params: { m: '2', b: '-3' } }, fixture('graph-line-two-dots').rubric)).toMatchObject({ score: 100, correct: true });
@@ -548,7 +548,7 @@ describe('alg2 pack: F2.4, F2.5, F2.6', () => {
 
   it('refuses a payload that leaks the answer, a wrong visual and an out-of-scope document', () => {
     const base = lesson(fixture('graph-line-two-dots'));
-    const segment = base.segments[0] as Record<string, unknown> & { payload: Record<string, unknown> };
+    const segment = base.segments[0] as unknown as Record<string, unknown> & { payload: Record<string, unknown> };
     const parse = (patch: Record<string, unknown>) => v2PublicLessonSchema.safeParse({ ...base, segments: [{ ...segment, ...patch }] }).success;
     expect(parse({})).toBe(true);
     expect(parse({ visual: { type: 'line-system' } })).toBe(false);
@@ -557,14 +557,14 @@ describe('alg2 pack: F2.4, F2.5, F2.6', () => {
     expect(parse({ payload: { ...segment.payload, marks: [{ x: 0, y: 1 }] } })).toBe(false);
     expect(v2PublicLessonSchema.safeParse({ ...base, age_band: '6-9', eligibility: { minimum_age: 6, maximum_age: 9 } }).success).toBe(false);
     const editor = lesson(fixture('expression-expand-product'));
-    const editorSegment = editor.segments[0] as Record<string, unknown> & { payload: Record<string, unknown> };
+    const editorSegment = editor.segments[0] as unknown as Record<string, unknown> & { payload: Record<string, unknown> };
     const editorParse = (payload: Record<string, unknown>) => v2PublicLessonSchema.safeParse({ ...editor, segments: [{ ...editorSegment, payload }] }).success;
     expect(editorParse(editorSegment.payload)).toBe(true);
     expect(editorParse({ ...editorSegment.payload, reference: 'x^2+5x+6' })).toBe(false);
     expect(editorParse({ ...editorSegment.payload, given: 'x'.repeat(65) })).toBe(false);
     expect(editorParse({ ...editorSegment.payload, given: '(x+2' })).toBe(false);
     const system = lesson(fixture('system-cross-two-lines'));
-    const systemSegment = system.segments[0] as Record<string, unknown> & { payload: Record<string, unknown> };
+    const systemSegment = system.segments[0] as unknown as Record<string, unknown> & { payload: Record<string, unknown> };
     expect(v2PublicLessonSchema.safeParse({ ...system, segments: [{ ...systemSegment, payload: { ...systemSegment.payload, required: [{ x: 3, y: 2 }] } }] }).success).toBe(false);
   });
 });

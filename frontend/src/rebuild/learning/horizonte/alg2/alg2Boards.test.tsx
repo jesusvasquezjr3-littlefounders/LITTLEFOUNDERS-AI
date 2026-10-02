@@ -285,7 +285,7 @@ describe('alg2 boards (F2.4, F2.5, F2.6)', () => {
       };
       for (const [type, answer] of cases) {
         const segment = horizonteFixture('alg2', fixtures[type]!)!.segment('en-US');
-        expect(ALG2_SCORERS[type]!.grade(segment as never, answer, rubrics[type])).toEqual({ verdict: 'met', diagnostic: 'none' });
+        expect(ALG2_SCORERS[type]!.grade(segment as never, answer, rubrics[type] as never)).toEqual({ verdict: 'met', diagnostic: 'none' });
       }
     });
   });
