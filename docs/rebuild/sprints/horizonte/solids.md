@@ -256,9 +256,12 @@ NOT verified, NOT accepted, NOT released:
 ## Owner follow-ups
 
 1. Base-tip issue outside this lane: `frontend/src/rebuild/learning/horizonte/harness/fixtureCoverage.test.tsx` fails 3 of 4 tests at the
-   `feat/horizonte-visual` tip because a `plano` folder exists there but `fixtures.ts` does not register `plano` ("plano: fixtures.ts
-   registers plano"), after which `HORIZONTE_FIXTURES[pack]` is undefined for it. The solids pack is registered in `fixtures.ts` and has
-   `audit.json` in step with its fixtures; the harness will check it once the plano owner registers that pack.
+   `feat/horizonte-visual` tip (checked again after merging plane1). It treats every folder under `horizonte/` that has an `index.ts` as a
+   pack, and `plano/` (the shared Plano primitive, F0.2, with its own `index.ts`) is not a pack: "plano: fixtures.ts registers plano", then
+   `HORIZONTE_FIXTURES[pack]` is undefined for it in the other two tests. The owner of the harness should skip non-pack folders (for
+   example by requiring a `contract` export or an `audit.json`) or register an empty list for `plano`. Not touched here: the file is shared
+   and every lane sees the same failure. The solids pack is registered in `fixtures.ts`, has `audit.json` in step with its six fixtures,
+   and the other 48 tests in the harness and solids folders pass.
 2. Run the visual audit for the three boards and the 3D chunk (see NOT verified above), then measure the chunk budgets with a build.
 3. Review the es-MX and pt-BR strings with a native reader.
 4. After acceptance, update the sprint record and the requirement rows (not touched here).
