@@ -1,0 +1,16 @@
+[
+  { "fixture": "turn-the-l", "age": "6-9" },
+  { "fixture": "pick-the-turned", "age": "10-12" },
+  { "fixture": "turn-the-corner", "age": "13-17" },
+  { "fixture": "cube-hexagon", "age": "10-12" },
+  { "fixture": "tetrahedron-square", "age": "13-17" },
+  { "fixture": "cube-edges", "age": "10-12" },
+  { "fixture": "dodecahedron-faces", "age": "13-17" },
+  { "fixture": "pyramid-third", "age": "10-12" },
+  { "fixture": "exact-basket", "age": "6-9" },
+  { "fixture": "make-the-change", "age": "10-12" },
+  { "fixture": "most-for-three", "age": "10-12" },
+  { "fixture": "coins-as-tall-as-a-phone", "age": "6-9" },
+  { "fixture": "coins-worth-fifteen", "age": "10-12" },
+  { "fixture": "a-million-in-bills", "age": "13-17" }
+]

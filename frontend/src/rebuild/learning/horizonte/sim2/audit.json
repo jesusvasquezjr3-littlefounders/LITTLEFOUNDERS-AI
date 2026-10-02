@@ -1,0 +1,6 @@
+[
+  { "fixture": "life-portfolio-risk", "age": "13-17" },
+  { "fixture": "life-retirement-spend", "age": "13-17" },
+  { "fixture": "life-insurance-cover", "age": "13-17" },
+  { "fixture": "life-debt-or-save", "age": "13-17" }
+]
