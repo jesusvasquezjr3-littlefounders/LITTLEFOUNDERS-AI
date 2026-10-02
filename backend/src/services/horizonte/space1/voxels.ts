@@ -116,14 +116,13 @@ const HALF_WIDTH = UNIT * Math.cos(Math.PI / 6);
 const MARGIN = 6;
 const round = (value: number): number => Math.round(value * 100) / 100;
 
+const at = (x: number, y: number, z: number): Point => [round(BOX * HALF_WIDTH + MARGIN + (x - z) * HALF_WIDTH), round(BOX * UNIT + MARGIN + ((x + z) * UNIT) / 2 - y * UNIT)];
+
 /**
  * The isometric drawing of a figure in its box, pure SVG data: the viewer stands at the front right, so the top, front and
  * right faces show. Cubes are drawn back to front, bottom to top (x + z grows toward the viewer).
  */
 export function composeVoxelScene(cells: readonly Cell[]): VoxelScene {
-  const originX = BOX * HALF_WIDTH + MARGIN;
-  const originY = BOX * UNIT + MARGIN;
-  const at = (x: number, y: number, z: number): Point => [round(originX + (x - z) * HALF_WIDTH), round(originY + ((x + z) * UNIT) / 2 - y * UNIT)];
   const cubes: VoxelFace[] = [...cells].sort((a, b) => (a[0] + a[2]) - (b[0] + b[2]) || a[1] - b[1] || a[0] - b[0]).map((cell) => {
     const [x, y, z] = cell;
     return {
@@ -139,4 +138,14 @@ export function composeVoxelScene(cells: readonly Cell[]): VoxelScene {
     floor: [at(0, 0, 0), at(BOX, 0, 0), at(BOX, 0, BOX), at(0, 0, BOX)],
     cubes,
   };
+}
+
+/** The axis of a turn as a segment through the centre of the box, a little longer than the box, in scene coordinates. */
+export function voxelAxis(axis: RotationAxis): { from: Point; to: Point } {
+  const mid = BOX / 2;
+  const near = -0.4;
+  const far = BOX + 0.4;
+  if (axis === 'up') return { from: at(mid, near, mid), to: at(mid, far, mid) };
+  if (axis === 'side') return { from: at(near, mid, mid), to: at(far, mid, mid) };
+  return { from: at(mid, mid, near), to: at(mid, mid, far) };
 }
