@@ -1,0 +1,11 @@
+[
+  { "fixture": "signed-zero-pairs", "age": "10-12" },
+  { "fixture": "simplify-tiles", "age": "13-17" },
+  { "fixture": "box-picture", "age": "10-12" },
+  { "fixture": "box-mixed", "age": "10-12" },
+  { "fixture": "box-notation", "age": "13-17" },
+  { "fixture": "distribute", "age": "13-17" },
+  { "fixture": "expand", "age": "13-17" },
+  { "fixture": "factor", "age": "13-17" },
+  { "fixture": "complete-square", "age": "13-17" }
+]

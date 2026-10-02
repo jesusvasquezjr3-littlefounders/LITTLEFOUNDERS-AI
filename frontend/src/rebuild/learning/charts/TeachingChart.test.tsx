@@ -47,17 +47,31 @@ function sample(kind: ChartKind) {
     case 'ishikawa': return { ...base, nodes: [{ id: 'node-eff', label: 'Low sales' }, { id: 'node-price', label: 'Price' }, { id: 'node-place', label: 'Place' },
       { id: 'node-high', label: 'Too high' }, { id: 'node-hidden', label: 'Hidden stand' }],
       links: [{ from: 'node-eff', to: 'node-price' }, { from: 'node-eff', to: 'node-place' }, { from: 'node-price', to: 'node-high' }, { from: 'node-place', to: 'node-hidden' }] };
+    // Horizonte F1.0: the twelve reading charts.
+    case 'dot-plot': return { ...base, categories, series: [two[0]!] };
+    case 'dumbbell': return { ...base, categories: categories.slice(0, 3), series: [{ ...two[0]!, values: [30, 50, 20] }, { ...two[1]!, values: [20, 40, 30] }] };
+    case 'xy-heatmap': return { ...base, categories: categories.slice(0, 3), rows: [{ id: 'row-a', label: 'Mon' }, { id: 'row-b', label: 'Tue' }],
+      cells: ['row-a', 'row-b'].flatMap((row, r) => categories.slice(0, 3).map((cat, c) => ({ row, col: cat.id, value: (r + 1) * (c + 2) }))) };
+    case 'error-bars': return { ...base, categories: categories.slice(0, 3), series: [{ ...two[0]!, values: [30, 50, 20], error: [4, 6, 3] }] };
+    case 'funnel': return { ...base, categories, series: [{ ...two[0]!, values: [100, 60, 30, 12] }] };
+    case 'lorenz-curve': return { ...base, categories, series: [{ ...two[0]!, values: [60, 25, 10, 5] }] };
+    case 'fan-chart': return { ...base, categories, series: [{ ...two[0]!, values: [100, 110, 120, 135] }],
+      ranges: [{ level: 80, low: [100, 104, 108, 118], high: [100, 116, 132, 152] }, { level: 95, low: [100, 100, 100, 108], high: [100, 120, 140, 166] }] };
+    case 'density-plot': case 'violin-plot': return { ...base, samples: [{ id: 'grp-100', label: 'Class A', values: [1, 2, 2, 3, 3, 3, 4, 4, 5, 9] }, { id: 'grp-200', label: 'Class B', values: [3, 4, 5, 5, 6, 6, 7, 8, 9, 10] }] };
+    case 'timeline': return { ...base, events: [{ id: 'ev-100', label: 'Start', date: '2026-09-07' }, { id: 'ev-200', label: 'Saving', date: '2026-09-14', end: '2026-10-05' }, { id: 'ev-300', label: 'Buy', date: '2026-10-12' }] };
+    case 'scatter-regression': return { ...base, points: [[1, 2], [2, 4], [3, 5], [4, 4], [5, 6]].map(([x, y], i) => ({ id: `pt-${i}00`, label: `Week ${i + 1}`, x: x!, y: y! })) };
+    case 'parallel-coordinates': return { ...base, categories: categories.slice(0, 3), records: [{ id: 'rec-100', label: 'Plan A', values: [10, 7, 5] }, { id: 'rec-200', label: 'Plan B', values: [4, 9, 8] }, { id: 'rec-300', label: 'Plan C', values: [7, 5, 9] }] };
     default: return { ...base, categories, series: [two[0]!] };
   }
 }
 
 describe('teaching charts', () => {
   for (const kind of CHART_KINDS) {
-    it(`draws ${kind} as a named image with a description, and as a table`, () => {
+    it(`draws ${kind} as a named image with a description, and as a table`, async () => {
       const data = chartDataSchema.parse(sample(kind));
       expect(chartProblem(kind, data), kind).toBeNull();
       const { container } = render(<TeachingChart kind={kind} data={data} title={`Chart ${kind}`} locale="en-US" />);
-      const image = screen.getByRole('img', { name: `Chart ${kind}` });
+      const image = await screen.findByRole('img', { name: `Chart ${kind}` });
       expect(image.getAttribute('aria-describedby')).toBeTruthy();
       expect(container.querySelector('svg')?.childElementCount).toBeGreaterThan(1);
       fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
@@ -76,9 +90,10 @@ describe('teaching charts', () => {
     expect(screen.getByText('A very long category name')).toBeTruthy();
   });
 
-  it('GAP-FIX-R3: no kind draws a word as SVG text or ends a label in an ellipsis; words are HTML tags over the drawing', () => {
+  it('GAP-FIX-R3: no kind draws a word as SVG text or ends a label in an ellipsis; words are HTML tags over the drawing', async () => {
     for (const kind of CHART_KINDS) {
       const { container, unmount } = render(<TeachingChart kind={kind} data={chartDataSchema.parse(sample(kind))} title={`Chart ${kind}`} locale="en-US" />);
+      await screen.findByRole('img', { name: `Chart ${kind}` });
       for (const text of container.querySelectorAll('svg text')) expect(text.textContent, `${kind}: "${text.textContent}"`).not.toMatch(/\p{L}/u);
       expect(container.textContent, kind).not.toContain('…');
       for (const tag of container.querySelectorAll<HTMLElement>('.lf-chart-tag')) {

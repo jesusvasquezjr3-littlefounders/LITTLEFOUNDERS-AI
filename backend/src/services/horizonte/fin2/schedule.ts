@@ -1,0 +1,191 @@
+import { exactKeys, idList, isId, isRecord, isWhole, placedPieces, sameKeys, slotNumber, type Frame, type SlotMap } from './slots.js';
+
+export const SCHEDULE_VISUALS = ['gantt', 'kanban', 'timeline'] as const;
+export type ScheduleVisual = (typeof SCHEDULE_VISUALS)[number];
+
+export const PERIOD_PREFIX = 'period-';
+export const STEP_PREFIX = 'step-';
+export const KANBAN_SLOTS = ['todo', 'doing'] as const;
+export const SCHEDULE_MIN_TASKS = 3;
+export const SCHEDULE_MAX_TASKS = 10;
+export const MAX_DURATION = 4;
+export const MAX_PERIODS = 10;
+export const MAX_WORKERS = 3;
+export const MAX_LIMIT = 4;
+
+export interface ScheduleTask { id: string; after: string[]; duration?: number; due?: number }
+export interface SchedulePayload { tasks: ScheduleTask[]; periods?: number; workers?: number; done?: string[]; limit?: number }
+
+export const isScheduleVisual = (value: unknown): value is ScheduleVisual => typeof value === 'string' && (SCHEDULE_VISUALS as readonly string[]).includes(value);
+export const periodSlot = (period: number): string => `${PERIOD_PREFIX}${period}`;
+export const stepSlot = (step: number): string => `${STEP_PREFIX}${step}`;
+
+function acyclic(tasks: readonly ScheduleTask[]): boolean {
+  const left = new Map(tasks.map((task) => [task.id, task.after.length]));
+  const ready = tasks.filter((task) => task.after.length === 0).map((task) => task.id);
+  let cleared = 0;
+  while (ready.length > 0) {
+    const id = ready.pop()!;
+    cleared += 1;
+    for (const task of tasks) if (task.after.includes(id)) { left.set(task.id, left.get(task.id)! - 1); if (left.get(task.id) === 0) ready.push(task.id); }
+  }
+  return cleared === tasks.length;
+}
+
+/** Earliest finish period of every task when nothing else limits it; the deadline can never be below the largest. */
+export function earliestFinish(tasks: readonly ScheduleTask[]): Map<string, number> {
+  const finish = new Map<string, number>();
+  const visit = (task: ScheduleTask): number => {
+    const known = finish.get(task.id);
+    if (known !== undefined) return known;
+    const start = 1 + Math.max(0, ...task.after.map((id) => visit(tasks.find((other) => other.id === id)!)));
+    const end = start + (task.duration ?? 1) - 1;
+    finish.set(task.id, end);
+    return end;
+  };
+  tasks.forEach(visit);
+  return finish;
+}
+
+export const readyTasks = (payload: SchedulePayload): string[] => payload.tasks
+  .filter((task) => !payload.done!.includes(task.id) && task.after.every((id) => payload.done!.includes(id))).map((task) => task.id);
+
+/** Returns the first rule the payload breaks, or null. Total on any input. */
+export function scheduleProblem(visual: unknown, payload: unknown): string | null {
+  if (!isScheduleVisual(visual)) return 'Unknown schedule visual';
+  if (!exactKeys(payload, ['tasks'], ['periods', 'workers', 'done', 'limit']) || !Array.isArray(payload.tasks)) return 'A schedule payload carries its tasks';
+  const raw = payload.tasks as unknown[];
+  if (raw.length < SCHEDULE_MIN_TASKS || raw.length > SCHEDULE_MAX_TASKS) return `A schedule has ${SCHEDULE_MIN_TASKS} to ${SCHEDULE_MAX_TASKS} tasks`;
+  for (const task of raw) {
+    if (!exactKeys(task, ['id', 'after'], ['duration', 'due']) || !isId(task.id) || !idList(task.after, 0, 3)) return 'Each task has an id and up to 3 prerequisites';
+    if (task.duration !== undefined && !isWhole(task.duration, 1, MAX_DURATION)) return `A duration is a whole number of periods from 1 to ${MAX_DURATION}`;
+    if (task.due !== undefined && !isWhole(task.due, 1, SCHEDULE_MAX_TASKS)) return 'A due step is a whole number from 1 to 10';
+  }
+  const tasks = raw as ScheduleTask[];
+  const ids = new Set(tasks.map((task) => task.id));
+  if (ids.size !== tasks.length) return 'Task ids are unique';
+  if (tasks.some((task) => task.after.some((id) => !ids.has(id) || id === task.id))) return 'Prerequisites name other tasks of this schedule';
+  if (!acyclic(tasks)) return 'Prerequisites form a cycle';
+  const has = (key: string) => payload[key] !== undefined;
+  if (visual === 'gantt') {
+    if (['done', 'limit'].some(has) || tasks.some((task) => task.duration === undefined || task.due !== undefined)) return 'A Gantt has durations and a deadline in periods, never due steps, done or a limit';
+    if (!isWhole(payload.periods, SCHEDULE_MIN_TASKS, MAX_PERIODS) || (has('workers') && !isWhole(payload.workers, 1, MAX_WORKERS))) return 'A Gantt has 3 to 10 periods and optionally 1 to 3 workers';
+    return Math.max(...earliestFinish(tasks).values()) <= (payload.periods as number) ? null : 'The longest chain of tasks does not fit the deadline';
+  }
+  if (['periods', 'workers'].some(has) || tasks.some((task) => task.duration !== undefined)) return `A ${visual} has no durations, periods or workers`;
+  if (visual === 'timeline') {
+    if (['done', 'limit'].some(has)) return 'A timeline has no done list or limit';
+    return tasks.every((task) => task.due === undefined || task.due <= tasks.length) ? null : 'A due step is within the number of tasks';
+  }
+  if (has('done') === false || !isWhole(payload.limit, 1, MAX_LIMIT) || !idList(payload.done, 1, tasks.length - 2) || tasks.some((task) => task.due !== undefined)) return 'A kanban lists what is done and a work-in-progress limit';
+  const done = payload.done as string[];
+  if (done.some((id) => !ids.has(id) || tasks.find((task) => task.id === id)!.after.some((before) => !done.includes(before)))) return 'Done tasks name tasks of this board and only need done tasks';
+  const ready = readyTasks({ tasks, done });
+  const blocked = tasks.length - done.length - ready.length;
+  if (ready.length < 1 || blocked < 1) return 'A kanban has tasks that can start now and tasks still blocked';
+  return ready.length <= (payload.limit as number) ? null : 'The limit holds every task that can start now';
+}
+
+export const scheduleOf = (visual: unknown, payload: unknown): SchedulePayload | null => (scheduleProblem(visual, payload) === null ? (payload as SchedulePayload) : null);
+
+export function scheduleFrame(visual: unknown, payload: unknown): Frame | null {
+  const schedule = scheduleOf(visual, payload);
+  if (!schedule) return null;
+  const count = schedule.tasks.length;
+  if (visual === 'gantt') {
+    const slotIds = Array.from({ length: schedule.periods! }, (_, index) => periodSlot(index + 1));
+    return { pieceIds: schedule.tasks.map((task) => task.id), slotIds, capacities: Object.fromEntries(slotIds.map((slot) => [slot, count])) };
+  }
+  if (visual === 'timeline') {
+    const slotIds = Array.from({ length: count }, (_, index) => stepSlot(index + 1));
+    return { pieceIds: schedule.tasks.map((task) => task.id), slotIds, capacities: Object.fromEntries(slotIds.map((slot) => [slot, 1])) };
+  }
+  const movable = schedule.tasks.map((task) => task.id).filter((id) => !schedule.done!.includes(id));
+  return { pieceIds: movable, slotIds: [...KANBAN_SLOTS], capacities: { todo: movable.length, doing: schedule.limit! } };
+}
+
+/** The one correct board of a kanban: what can start now is in Doing, the rest waits in To do. */
+export function kanbanExpected(schedule: SchedulePayload): SlotMap {
+  const ready = readyTasks(schedule);
+  const waiting = schedule.tasks.map((task) => task.id).filter((id) => !schedule.done!.includes(id) && !ready.includes(id));
+  return { doing: ready, todo: waiting };
+}
+
+function startsOf(slots: SlotMap, prefix: string): Map<string, number> {
+  const starts = new Map<string, number>();
+  for (const [slot, pieces] of Object.entries(slots)) for (const id of pieces) starts.set(id, slotNumber(slot, prefix));
+  return starts;
+}
+
+/** Gantt: every task starts after its prerequisites end, ends within the deadline, and no more than `workers` run at once. */
+export function ganttMet(schedule: SchedulePayload, slots: SlotMap): boolean {
+  const start = startsOf(slots, PERIOD_PREFIX);
+  if (start.size !== schedule.tasks.length) return false;
+  const end = (task: ScheduleTask) => start.get(task.id)! + task.duration! - 1;
+  const byId = new Map(schedule.tasks.map((task) => [task.id, task]));
+  for (const task of schedule.tasks) {
+    if (end(task) > schedule.periods!) return false;
+    if (task.after.some((id) => start.get(task.id)! <= end(byId.get(id)!))) return false;
+  }
+  if (schedule.workers === undefined) return true;
+  for (let period = 1; period <= schedule.periods!; period += 1) {
+    if (schedule.tasks.filter((task) => start.get(task.id)! <= period && period <= end(task)).length > schedule.workers) return false;
+  }
+  return true;
+}
+
+/** Timeline: prerequisites come earlier and every due step is kept. */
+export function timelineMet(schedule: SchedulePayload, slots: SlotMap): boolean {
+  const step = startsOf(slots, STEP_PREFIX);
+  if (step.size !== schedule.tasks.length) return false;
+  return schedule.tasks.every((task) => (task.due === undefined || step.get(task.id)! <= task.due) && task.after.every((id) => step.get(id)! < step.get(task.id)!));
+}
+
+/** Placed tasks that break a rule of the current Gantt or timeline: before a prerequisite ends, past the deadline or due step, or in a period with more tasks than workers. */
+export function scheduleConflicts(visual: unknown, payload: unknown, slots: SlotMap): string[] {
+  const schedule = scheduleOf(visual, payload);
+  if (!schedule || !isRecord(slots) || (visual !== 'gantt' && visual !== 'timeline')) return [];
+  const gantt = visual === 'gantt';
+  const start = startsOf(slots, gantt ? PERIOD_PREFIX : STEP_PREFIX);
+  const end = (task: ScheduleTask) => start.get(task.id)! + (gantt ? task.duration! : 1) - 1;
+  const byId = new Map(schedule.tasks.map((task) => [task.id, task]));
+  const broken = new Set<string>();
+  for (const task of schedule.tasks) {
+    if (!start.has(task.id)) continue;
+    const over = gantt ? end(task) > schedule.periods! : task.due !== undefined && start.get(task.id)! > task.due;
+    if (over || task.after.some((id) => start.has(id) && start.get(task.id)! <= end(byId.get(id)!))) broken.add(task.id);
+  }
+  if (gantt && schedule.workers !== undefined) {
+    for (let period = 1; period <= schedule.periods!; period += 1) {
+      const running = schedule.tasks.filter((task) => start.has(task.id) && start.get(task.id)! <= period && period <= end(task));
+      if (running.length > schedule.workers) running.forEach((task) => broken.add(task.id));
+    }
+  }
+  return schedule.tasks.map((task) => task.id).filter((id) => broken.has(id));
+}
+
+export function scheduleMet(visual: unknown, payload: unknown, slots: SlotMap): boolean {
+  const schedule = scheduleOf(visual, payload);
+  if (!schedule || !isRecord(slots)) return false;
+  if (visual === 'gantt') return ganttMet(schedule, slots);
+  if (visual === 'timeline') return timelineMet(schedule, slots);
+  return false;
+}
+
+export function scheduleLabelsProblem(visual: unknown, payload: unknown, labels: unknown): string | null {
+  const schedule = scheduleOf(visual, payload);
+  return schedule && isRecord(labels) && sameKeys(labels, schedule.tasks.map((task) => task.id)) ? null : 'Labels name every task, and nothing else';
+}
+
+/** A gantt or timeline key is a set of valid schedules; a kanban key is its single computed board. */
+export function scheduleKeyProblem(visual: unknown, payload: unknown, solutions: readonly SlotMap[]): string | null {
+  const schedule = scheduleOf(visual, payload);
+  if (!schedule) return 'The schedule payload is malformed';
+  if (visual === 'kanban') {
+    const expected = kanbanExpected(schedule);
+    const same = (a: SlotMap, b: SlotMap) => ['todo', 'doing'].every((slot) => [...(a[slot] ?? [])].sort().join() === [...(b[slot] ?? [])].sort().join());
+    return solutions.every((solution) => same(solution, expected)) ? null : 'A kanban has one solution: the key must equal it';
+  }
+  const wanted = schedule.tasks.length;
+  return solutions.every((solution) => placedPieces(solution).length === wanted && scheduleMet(visual, payload, solution)) ? null : 'Every key solution is a complete schedule that meets the rules';
+}

@@ -1,0 +1,12 @@
+[
+  { "fixture": "cash-flow-short", "age": "13-17" },
+  { "fixture": "cash-flow-met", "age": "13-17" },
+  { "fixture": "grid-swot-stand", "age": "13-17" },
+  { "fixture": "grid-eisenhower-week", "age": "10-12" },
+  { "fixture": "grid-two-by-two-ideas", "age": "13-17" },
+  { "fixture": "grid-decision-spot", "age": "13-17" },
+  { "fixture": "grid-canvas-lemonade", "age": "13-17" },
+  { "fixture": "plan-gantt-opening", "age": "13-17" },
+  { "fixture": "plan-kanban-opening", "age": "13-17" },
+  { "fixture": "plan-timeline-opening", "age": "10-12" }
+]

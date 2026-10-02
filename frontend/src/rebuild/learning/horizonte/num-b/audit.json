@@ -1,0 +1,12 @@
+[
+  { "fixture": "array-rows-columns", "age": "6-9" },
+  { "fixture": "area-box", "age": "10-12" },
+  { "fixture": "area-division", "age": "10-12" },
+  { "fixture": "double-line-scale", "age": "10-12" },
+  { "fixture": "tape-share", "age": "10-12" },
+  { "fixture": "wall-equivalent", "age": "6-9" },
+  { "fixture": "bars-add", "age": "10-12" },
+  { "fixture": "bars-subtract", "age": "10-12" },
+  { "fixture": "product-grid", "age": "10-12" },
+  { "fixture": "measure-fit", "age": "10-12" }
+]

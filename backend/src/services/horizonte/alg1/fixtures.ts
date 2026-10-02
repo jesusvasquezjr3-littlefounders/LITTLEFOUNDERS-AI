@@ -1,3 +1,186 @@
-import type { HorizonteFixture } from '../types.js';
+import type { HorizonteFixture, HorizonteLocale } from '../types.js';
 
-export const ALG1_FIXTURES: readonly HorizonteFixture[] = [];
+const text = (en: string, es: string, pt: string): Record<HorizonteLocale, string> => ({ 'en-US': en, 'es-MX': es, 'pt-BR': pt });
+const ids = (prefix: string, count: number): string[] => Array.from({ length: count }, (_, index) => `${prefix}-${index + 1}`);
+const placed = (slots: Record<string, string[]>): { slots: Record<string, string[]> } => ({ slots });
+
+const SIGNED_TILES = ['unit-pos-1', 'unit-pos-2', 'unit-pos-3', 'unit-pos-4', 'unit-pos-5', 'unit-neg-1', 'unit-neg-2', 'unit-neg-3'];
+const SIMPLIFY_TILES = [...ids('sq-pos', 2), ...ids('sq-neg', 1), ...ids('bar-pos', 3), ...ids('bar-neg', 4), ...ids('unit-pos', 2), ...ids('unit-neg', 2)];
+const SIMPLIFY_ZERO = ['sq-pos-1', 'sq-neg-1', 'bar-pos-1', 'bar-pos-2', 'bar-pos-3', 'bar-neg-1', 'bar-neg-2', 'bar-neg-3', 'unit-pos-1', 'unit-pos-2', 'unit-neg-1', 'unit-neg-2'];
+
+const GET_ALONE = text(
+  'Get the unknown alone on one side. Keep both sides equal.',
+  'Deja la incógnita sola en un lado. Mantén iguales los dos lados.',
+  'Deixe a incógnita sozinha de um lado. Mantenha os dois lados iguais.',
+);
+
+export const ALG1_FIXTURES: readonly HorizonteFixture[] = [
+  {
+    id: 'signed-zero-pairs',
+    title: text('Signed tiles', 'Fichas con signo', 'Peças com sinal'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 11, maximum_age: 12 },
+    segment: (locale) => ({
+      id: 'tiles-signed-zero-pairs', type: 'math.algebra-tiles.v2', grading: 'server', visual: { type: 'signed-tiles' },
+      prompt: text('Make zero pairs with the tiles. What is left on the mat?', 'Forma pares cero con las fichas. ¿Qué queda en el tablero?', 'Forme pares zero com as peças. O que sobra na mesa?')[locale],
+      notation: { tex: '5-3', spokenText: text('five positive tiles and three negative tiles', 'cinco fichas positivas y tres fichas negativas', 'cinco peças positivas e três peças negativas')[locale] },
+      payload: { counts: { 'sq-pos': 0, 'sq-neg': 0, 'bar-pos': 0, 'bar-neg': 0, 'unit-pos': 5, 'unit-neg': 3 } },
+    }),
+    rubric: { solutions: [{ mat: ['unit-pos', 'unit-pos'], zero: ['unit-pos', 'unit-pos', 'unit-pos', 'unit-neg', 'unit-neg', 'unit-neg'] }] },
+    ladder: {
+      invalid: placed({ mat: SIGNED_TILES.slice(1), zero: ['unit-pos-1'] }),
+      valid: placed({ mat: SIGNED_TILES }),
+      met: placed({ mat: ['unit-pos-4', 'unit-pos-5'], zero: ['unit-pos-1', 'unit-pos-2', 'unit-pos-3', 'unit-neg-1', 'unit-neg-2', 'unit-neg-3'] }),
+    },
+  },
+  {
+    id: 'simplify-tiles',
+    title: text('Simplify with tiles', 'Simplifica con fichas', 'Simplifique com peças'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 13, maximum_age: 15 },
+    segment: (locale) => ({
+      id: 'tiles-simplify', type: 'math.algebra-tiles.v2', grading: 'server', visual: { type: 'algebra-tiles' },
+      prompt: text('Set aside every zero pair. Which tiles stay on the mat?', 'Aparta cada par cero. ¿Qué fichas quedan en el tablero?', 'Separe cada par zero. Que peças ficam na mesa?')[locale],
+      notation: {
+        tex: '2x^2-x^2+3x-4x+2-2',
+        spokenText: text(
+          'two x squared, minus x squared, plus three x, minus four x, plus two, minus two',
+          'dos x al cuadrado, menos x al cuadrado, más tres x, menos cuatro x, más dos, menos dos',
+          'dois x ao quadrado, menos x ao quadrado, mais três x, menos quatro x, mais dois, menos dois',
+        )[locale],
+      },
+      payload: { counts: { 'sq-pos': 2, 'sq-neg': 1, 'bar-pos': 3, 'bar-neg': 4, 'unit-pos': 2, 'unit-neg': 2 } },
+    }),
+    rubric: { solutions: [{ mat: ['bar-neg', 'sq-pos'], zero: ['sq-pos', 'sq-neg', 'bar-pos', 'bar-pos', 'bar-pos', 'bar-neg', 'bar-neg', 'bar-neg', 'unit-pos', 'unit-pos', 'unit-neg', 'unit-neg'] }] },
+    ladder: {
+      invalid: placed({ mat: SIMPLIFY_TILES.filter((tile) => tile !== 'sq-pos-1'), zero: ['sq-pos-1'] }),
+      valid: placed({ mat: SIMPLIFY_TILES }),
+      met: placed({ mat: ['sq-pos-2', 'bar-neg-4'], zero: SIMPLIFY_ZERO }),
+    },
+  },
+  {
+    id: 'box-picture',
+    title: text('The box, in pictures', 'La caja, en dibujos', 'A caixa, em desenhos'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 10, maximum_age: 12 },
+    segment: (locale) => ({
+      id: 'cards-box-picture', type: 'math.algebra-cards.v2', grading: 'server', visual: { type: 'algebra-cards' },
+      prompt: text('Get the box alone on one side. Keep both sides equal.', 'Deja la caja sola en un lado. Mantén iguales los dos lados.', 'Deixe a caixa sozinha de um lado. Mantenha os dois lados iguais.')[locale],
+      payload: { disguise: 'picture', left: ['unk', 'pos-3'], right: ['pos-7'], supply: ['neg-3'] },
+    }),
+    rubric: { solutions: [{ left: ['unk'], right: ['neg-3', 'pos-7'] }] },
+    ladder: {
+      invalid: placed({ left: ['left-1'], right: ['right-1'], bin: ['left-2'], tray: ['supply-1-a', 'supply-1-b'] }),
+      valid: placed({ left: ['left-1', 'left-2'], right: ['right-1'], tray: ['supply-1-a', 'supply-1-b'] }),
+      met: placed({ left: ['left-1'], right: ['right-1', 'supply-1-b'], bin: ['left-2', 'supply-1-a'] }),
+    },
+  },
+  {
+    id: 'box-mixed',
+    title: text('The box and its numbers', 'La caja y sus números', 'A caixa e seus números'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 10, maximum_age: 12 },
+    segment: (locale) => ({
+      id: 'cards-box-mixed', type: 'math.algebra-cards.v2', grading: 'server', visual: { type: 'algebra-cards' },
+      prompt: GET_ALONE[locale],
+      notation: { tex: '7=x+2', spokenText: text('seven equals x plus two', 'siete es igual a x más dos', 'sete é igual a x mais dois')[locale] },
+      payload: { disguise: 'mixed', left: ['pos-7'], right: ['unk', 'pos-2'], supply: ['neg-2'] },
+    }),
+    rubric: { solutions: [{ left: ['neg-2', 'pos-7'], right: ['unk'] }] },
+    ladder: {
+      invalid: placed({ left: ['left-1'], right: ['right-1'], bin: ['right-2'], tray: ['supply-1-a', 'supply-1-b'] }),
+      valid: placed({ left: ['left-1'], right: ['right-1', 'right-2'], tray: ['supply-1-a', 'supply-1-b'] }),
+      met: placed({ left: ['left-1', 'supply-1-a'], right: ['right-1'], bin: ['right-2', 'supply-1-b'] }),
+    },
+  },
+  {
+    id: 'box-notation',
+    title: text('Solve with cards', 'Resuelve con cartas', 'Resolva com cartas'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 13, maximum_age: 14 },
+    segment: (locale) => ({
+      id: 'cards-box-notation', type: 'math.algebra-cards.v2', grading: 'server', visual: { type: 'algebra-cards' },
+      prompt: text('Isolate x. Whatever you add, add to both sides.', 'Aísla x. Lo que agregues, agrégalo a los dos lados.', 'Isole x. O que você somar, some nos dois lados.')[locale],
+      notation: { tex: '3+x=x+x', spokenText: text('three plus x equals x plus x', 'tres más x es igual a x más x', 'três mais x é igual a x mais x')[locale] },
+      payload: { disguise: 'notation', left: ['pos-3', 'unk'], right: ['unk', 'unk'], supply: ['unk-neg'] },
+    }),
+    rubric: { solutions: [{ left: ['pos-3'], right: ['unk'] }] },
+    ladder: {
+      invalid: placed({ left: ['left-1'], right: ['right-1', 'right-2'], bin: ['left-2'], tray: ['supply-1-a', 'supply-1-b'] }),
+      valid: placed({ left: ['left-1', 'left-2'], right: ['right-1', 'right-2'], tray: ['supply-1-a', 'supply-1-b'] }),
+      met: placed({ left: ['left-1'], right: ['right-1'], bin: ['left-2', 'supply-1-a', 'right-2', 'supply-1-b'] }),
+    },
+  },
+  {
+    id: 'distribute',
+    title: text('Distribute with an area', 'Distribuye con un área', 'Distribua com uma área'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 13, maximum_age: 15 },
+    segment: (locale) => ({
+      id: 'area-distribute', type: 'math.area-model.v2', grading: 'server', visual: { type: 'area-distribute' },
+      prompt: text('Fill each cell with its product. Then read the expansion.', 'Llena cada celda con su producto. Luego lee el desarrollo.', 'Preencha cada célula com seu produto. Depois leia o desenvolvimento.')[locale],
+      notation: { tex: '3(x+4)', spokenText: text('three times the sum of x and four', 'tres por la suma de x y cuatro', 'três vezes a soma de x e quatro')[locale] },
+      payload: { fill: 'cells', rows: ['0:3'], cols: ['1:1', '0:4'], pool: ['0:12', '1:3', '1:12', '0:7'] },
+    }),
+    rubric: { solutions: [{ 'cell-0-0': ['1:3'], 'cell-0-1': ['0:12'] }] },
+    ladder: {
+      invalid: placed({ 'cell-0-0': ['piece-1', 'piece-2'], tray: ['piece-3', 'piece-4'] }),
+      valid: placed({ tray: ['piece-1', 'piece-2', 'piece-3', 'piece-4'] }),
+      met: placed({ 'cell-0-0': ['piece-2'], 'cell-0-1': ['piece-1'], tray: ['piece-3', 'piece-4'] }),
+    },
+  },
+  {
+    id: 'expand',
+    title: text('Expand two binomials', 'Desarrolla dos binomios', 'Desenvolva dois binômios'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 13, maximum_age: 17 },
+    segment: (locale) => ({
+      id: 'area-expand', type: 'math.area-model.v2', grading: 'server', visual: { type: 'area-binomial' },
+      prompt: text('Place the four products. Together they make the expansion.', 'Coloca los cuatro productos. Juntos forman el desarrollo.', 'Coloque os quatro produtos. Juntos formam o desenvolvimento.')[locale],
+      notation: { tex: '(x+2)(x+3)', spokenText: text('the product of x plus two and x plus three', 'el producto de x más dos por x más tres', 'o produto de x mais dois por x mais três')[locale] },
+      payload: { fill: 'cells', rows: ['1:1', '0:2'], cols: ['1:1', '0:3'], pool: ['2:1', '1:3', '1:2', '0:6', '1:5', '0:5'] },
+    }),
+    rubric: { solutions: [{ 'cell-0-0': ['2:1'], 'cell-0-1': ['1:3'], 'cell-1-0': ['1:2'], 'cell-1-1': ['0:6'] }] },
+    ladder: {
+      invalid: placed({ 'cell-0-0': ['piece-1', 'piece-2'], tray: ['piece-3', 'piece-4', 'piece-5', 'piece-6'] }),
+      valid: placed({ tray: ids('piece', 6) }),
+      met: placed({ 'cell-0-0': ['piece-1'], 'cell-0-1': ['piece-2'], 'cell-1-0': ['piece-3'], 'cell-1-1': ['piece-4'], tray: ['piece-5', 'piece-6'] }),
+    },
+  },
+  {
+    id: 'factor',
+    title: text('Factor with an area', 'Factoriza con un área', 'Fatore com uma área'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 13, maximum_age: 17 },
+    segment: (locale) => ({
+      id: 'area-factor', type: 'math.area-model.v2', grading: 'server', visual: { type: 'area-binomial' },
+      prompt: text('Place the factors on the edges so the products match the cells.', 'Coloca los factores en los bordes para que los productos coincidan con las celdas.', 'Coloque os fatores nas bordas para os produtos coincidirem com as células.')[locale],
+      notation: { tex: 'x^2+5x+6', spokenText: text('x squared plus five x plus six', 'x al cuadrado más cinco x más seis', 'x ao quadrado mais cinco x mais seis')[locale] },
+      payload: { fill: 'edges', cells: ['2:1', '1:3', '1:2', '0:6'], pool: ['1:1', '1:1', '0:2', '0:3', '0:5', '0:6'] },
+    }),
+    rubric: { solutions: [{ 'row-0': ['1:1'], 'row-1': ['0:2'], 'col-0': ['1:1'], 'col-1': ['0:3'] }] },
+    ladder: {
+      invalid: placed({ 'row-0': ['piece-1', 'piece-2'], tray: ['piece-3', 'piece-4', 'piece-5', 'piece-6'] }),
+      valid: placed({ tray: ids('piece', 6) }),
+      met: placed({ 'row-0': ['piece-1'], 'row-1': ['piece-3'], 'col-0': ['piece-2'], 'col-1': ['piece-4'], tray: ['piece-5', 'piece-6'] }),
+    },
+  },
+  {
+    id: 'complete-square',
+    title: text('Complete the square', 'Completa el cuadrado', 'Complete o quadrado'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 13, maximum_age: 17 },
+    segment: (locale) => ({
+      id: 'area-square', type: 'math.area-model.v2', grading: 'server', visual: { type: 'area-square' },
+      prompt: text('Complete the square: place the corner and the constant.', 'Completa el cuadrado: coloca la esquina y la constante.', 'Complete o quadrado: coloque o canto e a constante.')[locale],
+      notation: { tex: 'x^2+6x+5', spokenText: text('x squared plus six x plus five', 'x al cuadrado más seis x más cinco', 'x ao quadrado mais seis x mais cinco')[locale] },
+      payload: { fill: 'square', b: 6, c: 5, pool: ['0:9', '0:-4', '0:3', '0:4', '0:14'] },
+    }),
+    rubric: { solutions: [{ corner: ['0:9'], constant: ['0:-4'] }] },
+    ladder: {
+      invalid: placed({ corner: ['piece-1', 'piece-3'], tray: ['piece-2', 'piece-4', 'piece-5'] }),
+      valid: placed({ tray: ids('piece', 5) }),
+      met: placed({ corner: ['piece-1'], constant: ['piece-2'], tray: ['piece-3', 'piece-4', 'piece-5'] }),
+    },
+  },
+];
