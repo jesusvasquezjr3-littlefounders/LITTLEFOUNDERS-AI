@@ -34,6 +34,7 @@ import { RuleBuilderBoard, UnitPriceBoard } from './buildBoards';
 import { ChartBoard, CoinTrayBoard, EulerBoard, FlowchartBoard, MentorEpisodeBoard, MentorTurnBoard, MessageListBoard, RuleCardsBoard, SortBinsBoard, StoryChoiceBoard } from './familyBoards';
 import { LessonPlayerProvider, playerCopy, type SegmentGrade } from './segmentKit';
 import { ApproachChoiceBoard } from './ApproachChoiceBoard';
+import { canRenderHorizonte, HorizonteSegmentView, isHorizonteSegment } from './horizonte/registry';
 import { v2ApproachOf, v2SegmentsForApproach } from './v2SegmentFamilies.generated';
 
 export type CheckResult = 'invalid' | 'incomplete' | 'review' | 'met';
@@ -61,6 +62,7 @@ const FAMILY_TYPES = new Set(['logic.rule-checker.v2', 'logic.euler.v2', 'logic.
   'money.unit-price.v2', 'logic.rule-builder.v2']);
 
 function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumberLine?: OnGradeNumberLine, onGradeFractionArea?: OnGradeFractionArea, onGradeBarModel?: OnGradeBarModel, onGradeSchemaDiagram?: OnGradeSchemaDiagram, onGradeWorkedExample?: OnGradeWorkedExample, onGradeReasoning?: OnGradeReasoning, onGradeAny?: OnGradeAny): boolean {
+  if (isHorizonteSegment(segment)) return canRenderHorizonte(segment, !!onGradeAny);
   // A formerly presentation-only visual that the document now grades needs the generic grader (Appendix P Part 7).
   if (segment.grading === 'server' && (FAMILY_TYPES.has(segment.type) || (V2_CONCEPT_TYPES as readonly string[]).includes(segment.type) || ['visual.chart.v2', 'visual.goal-bullet.v2', 'visual.percent-grid.v2', 'math.place-value.v2', 'logic.savings-rule.v2',
     'money.running-ledger.v2', 'visual.growth-comparison.v2', 'visual.tax-bracket.v2', 'math.ratio-table.v2'].includes(segment.type))) return !!onGradeAny;
@@ -217,6 +219,7 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
   // B.7 part 3 / Appendix P Parts 1-3 / OD-16 (gap-fix round 7): who may see a kind is decided once, by the shared
   // V2_AGE_SCOPE that loadLessonClientDocument (and Core) already ran. The player never adds a stricter band guard.
   const any = onGradeAny ? (answer: unknown, id: string) => onGradeAny(answer, id, document) : undefined;
+  if (isHorizonteSegment(segment)) return <HorizonteSegmentView key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} unavailable={() => unavailable(document.locale, onBack)} />;
   switch (segment.type) {
     case 'money.unit-price.v2': return <UnitPriceBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
     case 'logic.rule-builder.v2': return <RuleBuilderBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;

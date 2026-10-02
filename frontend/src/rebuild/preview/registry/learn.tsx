@@ -5,6 +5,7 @@ import { learningFixtures } from '../../learning/allocationFixtures';
 import { scoreV2Judgment, scoreV2Visual } from '../../learning/v2VisualScorer.generated';
 import { LessonDocumentView } from '../../learning/LessonDocumentView';
 import { loadAdventureThemeProjection } from '../../learning/lessonDocument';
+import { horizonteFixtureDocument } from '../../learning/horizonte/previewDocument';
 import { numberLinePilotDocument } from '../../learning/NumberLineBoard';
 import { sequencePilotDocument } from '../../learning/sequencePilotDocument';
 import { LessonResultView } from '../../learning/LessonResultView';
@@ -137,6 +138,8 @@ const board = (build: (context: PreviewContext) => unknown) => framed((context) 
  */
 type FixtureDocument = Record<string, unknown> & { age_band: string; segments: Array<{ id: string }> };
 export function previewFixtureSegment(locale: string, ageBand: string, seg: string | null): unknown {
+  // `hz:<pack>:<fixture id>` stages a Horizonte pack fixture (learning/horizonte/<pack>/fixtures).
+  if (seg?.startsWith('hz:')) { const [, pack = '', id = ''] = seg.split(':'); const doc = horizonteFixtureDocument(pack, id, locale as 'en-US'); return doc && doc.age_band === ageBand ? doc : null; }
   const [lesson, segmentId] = (seg ?? '').split(':');
   const doc = (v2FixtureDocuments as unknown as Record<string, Record<string, FixtureDocument>>)[lesson ?? '']?.[locale];
   if (!doc || doc.age_band !== ageBand) return null;

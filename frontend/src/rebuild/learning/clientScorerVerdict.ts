@@ -1,4 +1,5 @@
 import type { LessonClientDocument } from './lessonDocument';
+import { horizonteClientVerdict, isHorizonteType } from './horizonte/contract';
 import { v2ScorerPayload } from './v2ScorerPayload.generated';
 import { scoreV2Visual, type V2VisualKind } from './v2VisualScorer.generated';
 
@@ -12,6 +13,7 @@ import { scoreV2Visual, type V2VisualKind } from './v2VisualScorer.generated';
 export function clientScorerVerdict(document: LessonClientDocument, segmentId: string, answer: unknown): 'valid' | 'invalid' | undefined {
   const segment = document.segments.find((item) => item.id === segmentId);
   if (!segment) return undefined;
+  if (isHorizonteType(segment.type)) return horizonteClientVerdict(segment, answer);
   const payload = v2ScorerPayload(segment as unknown as { type: string; payload: Record<string, unknown> });
   if (!payload) return undefined;
   try {

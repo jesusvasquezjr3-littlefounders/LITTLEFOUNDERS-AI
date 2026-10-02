@@ -1,0 +1,21 @@
+/* A03/A04 ten frames: the frame is a 5 by 2 grid of 64 px cells, each a button holding an SVG counter. Tokens only. */
+.lf-tenframe { display: grid; gap: var(--spacing-4); justify-items: start; }
+.lf-tenframe-frames { display: flex; flex-wrap: wrap; gap: var(--spacing-4); }
+.lf-tenframe-frame { display: grid; gap: var(--spacing-1); }
+.lf-tenframe-frame h3 { font-size: 1rem; }
+.lf-tenframe-grid { display: grid; grid-template-columns: repeat(5, minmax(0, var(--hz-hit))); border-radius: var(--rounded-sm); background: var(--sunken); outline: 2px solid transparent; }
+.lf-tenframe-grid[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
+.lf-tenframe-grid[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }
+.lf-tenframe-cell { display: grid; place-items: center; inline-size: 100%; aspect-ratio: 1; min-inline-size: 0; min-block-size: 0; padding: 0; border: 1px solid var(--outline); border-radius: 0; background: transparent; color: var(--sky-strong); cursor: pointer; }
+.lf-tenframe-frame--mint .lf-tenframe-cell { color: var(--mint-strong); }
+.lf-tenframe-cell:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: -3px; }
+.lf-tenframe-cell[aria-disabled='true'] { cursor: default; }
+.lf-tenframe-cell svg { inline-size: 100%; block-size: 100%; }
+.lf-tenframe-added { fill: none; stroke: currentColor; stroke-width: 3; }
+.lf-tenframe-tray { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-tenframe-status { font-weight: 800; }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-tenframe-cell { transition: background-color var(--dur-component) var(--ease-standard); }
+  .lf-tenframe-cell:hover:not([aria-disabled='true']) { background-color: var(--sky-soft); }
+  .lf-tenframe-frame--mint .lf-tenframe-cell:hover:not([aria-disabled='true']) { background-color: var(--mint-soft); }
+}
