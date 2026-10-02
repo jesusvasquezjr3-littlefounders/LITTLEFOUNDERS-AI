@@ -48,3 +48,34 @@
 .lf-chart-spine { stroke: var(--content); stroke-width: 3; }
 .lf-chart-bubble { stroke: var(--outline); stroke-width: 1; }
 .lf-chart-stat--small { font-size: 14px; }
+
+/* Horizonte F1.0: the twelve reading charts (readingCharts.tsx). Tap a mark or step through the marks to read its numbers. */
+.lf-chart-guide { stroke: var(--outline); stroke-width: 1; stroke-opacity: .55; }
+.lf-chart-link { stroke: var(--content-muted); stroke-width: 3; }
+.lf-chart-equal { fill: none; stroke: var(--content-muted); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.lf-chart-drop { fill: var(--sunken); }
+.lf-chart-tick { stroke-width: 1.5; }
+.lf-chart-inner { fill: var(--content); }
+.lf-chart-median { fill: var(--surface); stroke: var(--content); stroke-width: 1.5; }
+.lf-chart-residual { stroke: var(--content-muted); stroke-width: 1.5; stroke-dasharray: 3 2; }
+.lf-chart-halo { paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+.lf-chart-stat--mid { font-size: 24px; }
+.lf-chart-hit { fill: transparent; stroke: none; cursor: pointer; pointer-events: all; }
+.lf-chart-hit--line { fill: none; stroke: transparent; stroke-width: 14px; stroke-linejoin: round; pointer-events: stroke; }
+.lf-chart-pick { fill: none; }
+.lf-chart-pick[data-on='yes'] { fill: var(--sky-soft); }
+.lf-chart-ring { fill: none; stroke: var(--content); stroke-width: 2; opacity: 0; }
+.lf-chart-ring[data-on='yes'] { opacity: 1; }
+.lf-chart-emph[data-on='yes'] .lf-chart-line, .lf-chart-emph[data-on='yes'] .lf-chart-link { stroke-width: 4; }
+.lf-chart-emph[data-dim='yes'] { opacity: .35; }
+.lf-chart-reader { display: grid; gap: var(--spacing-2); padding: var(--spacing-3); border: 1px solid var(--outline); border-radius: var(--rounded-md); background: var(--surface); }
+.lf-chart-readout { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-1) var(--spacing-3); min-block-size: 3.5rem; font-size: 1rem; }
+.lf-chart-readout strong { font-weight: 800; }
+.lf-chart-steps { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-2); }
+.lf-chart-position { font-size: .875rem; font-weight: 700; color: var(--content-muted); }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-chart-pick { transition: fill var(--dur-component) var(--ease-standard); }
+  .lf-chart-ring { transition: opacity var(--dur-component) var(--ease-standard); }
+  .lf-chart-emph { transition: opacity var(--dur-component) var(--ease-standard); }
+  .lf-chart-line { transition: stroke-width var(--dur-component) var(--ease-standard); }
+}
