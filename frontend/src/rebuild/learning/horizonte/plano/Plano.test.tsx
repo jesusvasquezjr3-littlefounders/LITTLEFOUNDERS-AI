@@ -5,7 +5,7 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { RebuildRoot } from '../../../design/controls';
 import { checkCopy, type AgeBand, type Locale } from '../../../design/copyBudget';
-import { planoCopy } from './copy';
+import { planoWords } from './copy';
 import { Plano, type PlanoProps } from './Plano';
 import type { PlanoHandleLayer, PlanoPoint } from './model';
 
@@ -347,10 +347,10 @@ describe('Plano as a table', () => {
 describe('Plano copy', () => {
   it('fits the Copy Budget of its roles in every locale and age band', () => {
     const issues: string[] = [];
-    for (const locale of Object.keys(planoCopy) as Locale[]) {
+    for (const locale of (['en-US', 'es-MX', 'pt-BR'] as Locale[])) {
       for (const ageBand of ['6-9', '10-12', '13-17', 'adult'] as AgeBand[]) {
         const context = { locale, ageBand, surface: 'app' } as const;
-        const words = planoCopy[locale];
+        const words = planoWords(locale);
         for (const [role, text] of [['action', words.table], ['action', words.chart], ['body', words.keys], ['body', words.switchKeys], ['body', words.tap]] as const) {
           for (const issue of checkCopy(text, role, context)) issues.push(`${locale} ${ageBand} ${text}: ${issue}`);
         }

@@ -1,0 +1,53 @@
+/* fin1 boards: F1.10 compound interest, F2.11 time value, F2.12 rate and return. A neutral surface with line style as well as colour; tokens only. */
+.lf-fin { display: grid; gap: var(--spacing-3); justify-items: start; min-inline-size: 0; }
+.lf-fin > * { max-inline-size: 100%; }
+.lf-fin-chart { inline-size: 100%; max-inline-size: 30rem; block-size: auto; border-radius: var(--rounded-sm); background: var(--sunken); }
+.lf-fin-axis { stroke: var(--outline); stroke-width: 1; fill: none; }
+.lf-fin-goal { stroke: var(--reward-strong); stroke-width: 1.5; stroke-dasharray: 2 4; fill: none; }
+.lf-fin-line { fill: none; stroke-linejoin: round; stroke-linecap: round; stroke-width: 3; }
+.lf-fin-line--main { stroke: var(--sky-strong); }
+.lf-fin-line--second { stroke: var(--content-muted); stroke-width: 2.5; stroke-dasharray: 6 4; }
+.lf-fin-line--interest { stroke: var(--berry-strong); stroke-width: 2.5; stroke-dasharray: 6 4; }
+.lf-fin-marker { fill: var(--primary-strong); stroke: var(--surface); stroke-width: 2; }
+.lf-fin-bar--cash { fill: var(--outline); }
+.lf-fin-bar--worth { fill: var(--mint-strong); }
+.lf-fin-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-1) var(--spacing-4); }
+.lf-fin-legend span { display: inline-flex; align-items: center; gap: var(--spacing-2); }
+.lf-fin-swatch { display: inline-block; inline-size: 1.75rem; block-size: 0; border-block-start: 4px solid var(--sky-strong); }
+.lf-fin-swatch--second { border-block-start: 4px dashed var(--content-muted); }
+.lf-fin-swatch--interest { border-block-start: 4px dashed var(--berry-strong); }
+.lf-fin-swatch--cash { border-block-start: 4px solid var(--outline); }
+.lf-fin-swatch--worth { border-block-start: 4px solid var(--mint-strong); }
+.lf-fin-status { font-weight: 800; }
+.lf-fin-challenge { display: flex; flex-wrap: wrap; gap: var(--spacing-1) var(--spacing-3); align-items: baseline; }
+.lf-fin-challenge[data-met='true'] > p:last-child { color: var(--success-strong); font-weight: 800; }
+.lf-fin-reveal { display: grid; gap: var(--spacing-1); padding: var(--spacing-3); border: 1px solid var(--outline); border-radius: var(--rounded-sm); background: var(--sunken); }
+.lf-fin-reveal > p { margin: 0; }
+.lf-fin-chips { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-fin-sliders { display: grid; gap: var(--spacing-3); }
+.lf-fin-info { display: grid; gap: var(--spacing-1); }
+.lf-fin-info > p { margin: 0; }
+.lf-fin-strip-help { margin: 0; }
+
+/* F2.11 timeline: one cell per year, each a drop zone that holds one 64 px payment handle. */
+.lf-fin-timeline { display: flex; flex-wrap: wrap; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-fin-year { display: grid; gap: var(--spacing-1); align-content: start; justify-items: center; inline-size: 7.5rem; min-block-size: 12rem; padding: var(--spacing-2); border: 2px solid var(--outline); border-radius: var(--rounded-sm); background: var(--sunken); outline: 2px solid transparent; text-align: center; }
+.lf-fin-year[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
+.lf-fin-year[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }
+.lf-fin-year h3 { font-size: 1rem; }
+.lf-fin-year p { margin: 0; overflow-wrap: anywhere; }
+.lf-fin-worth { font-weight: 800; color: var(--mint-strong); }
+.lf-fin-year-bars { inline-size: 3rem; block-size: 3.5rem; }
+.lf-fin-empty { display: block; inline-size: var(--hz-hit); block-size: var(--hz-hit); border: 2px dashed var(--outline); border-radius: var(--rounded-sm); }
+.lf-fin-tray { display: flex; flex-wrap: wrap; gap: var(--spacing-2); min-block-size: var(--hz-hit); padding: var(--spacing-1); border-radius: var(--rounded-sm); outline: 2px solid transparent; }
+.lf-fin-tray[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
+.lf-fin-tray[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }
+.lf-fin-answer { display: grid; gap: var(--spacing-1); }
+.lf-fin-table-wrap { inline-size: 100%; overflow-x: auto; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .lf-fin-year { transition: border-color var(--dur-component) var(--ease-standard); }
+  .lf-fin-year[data-drop-armed='true']:hover { border-color: var(--primary-strong); }
+  .lf-fin-reveal { animation: lf-fin-appear var(--dur-component) var(--ease-standard); }
+}
+@keyframes lf-fin-appear { from { opacity: 0; } to { opacity: 1; } }

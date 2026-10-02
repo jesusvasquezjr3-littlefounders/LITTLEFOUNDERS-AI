@@ -1,6 +1,6 @@
 import { useId, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react';
 import { Button, DataTable, useRebuildEnvironment, type TableColumn } from '../../../design/controls';
-import { planoCopy, type PlanoCopy } from './copy';
+import { planoWords, type PlanoCopy } from './copy';
 import {
   PLANO_VIEWBOX, assignSeries, buildTableRows, clamp, createFrame, decimalsOf, describePoint, effectiveBounds, formatPlanoValue,
   interpretKey, niceTicks, pathFromPoints, pathFromRuns, pointerToValue, regionPolygon, resolveKeyStep, resolvePoint, sampleCurve, stepFor,
@@ -66,7 +66,7 @@ export function Plano({
   placeOnTap = false, onHandleChange, onPlaneTap, onActiveChange, copy, className,
 }: PlanoProps) {
   const { locale } = useRebuildEnvironment();
-  const words: PlanoCopy = { ...planoCopy[locale], ...copy };
+  const words: PlanoCopy = { ...planoWords(locale), ...copy };
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const { xMin, xMax, yMin, yMax } = domain;
   const { width, height } = size;
