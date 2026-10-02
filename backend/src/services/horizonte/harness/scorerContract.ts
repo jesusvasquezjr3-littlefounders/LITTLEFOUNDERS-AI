@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import type { V2Grade, V2VisualVerdict } from '../../v2VisualScorer.js';
+import { SAMPLE_ATTEMPT, isAttemptSeed, isSeededCapabilitySet } from '../seed/protocol.js';
 import { horizonteAgeScopeProblem } from '../shared.js';
 import type { HorizonteFixture, HorizonteLocale, HorizontePack } from '../types.js';
 
 const LOCALES: readonly HorizonteLocale[] = ['en-US', 'es-MX', 'pt-BR'];
 const GARBAGE: readonly unknown[] = [undefined, null, 0, 'x', [], {}, { counts: 'x' }, { unknownField: 1 }];
 
-type Grade = (segment: unknown, response: unknown, rubric: unknown) => V2Grade;
+type Grade = (segment: unknown, response: unknown, rubric: unknown, attempt?: { seed: string }) => V2Grade;
 type Sample = (segment: unknown, rubric: unknown) => unknown;
 
 function deepFreeze<T>(value: T): T {
@@ -66,7 +67,8 @@ export function assertScorerContract(pack: HorizontePack, fixtures: readonly Hor
       const rubric = deepFreeze(clone(fixture.rubric));
       const grade = scorer.grade as unknown as Grade;
       const sample = scorer.sample as unknown as Sample;
-      const run = (response: unknown, withRubric = true) => grade(segment, deepFreeze(clone(response)), withRubric ? rubric : undefined);
+      const attempt = Object.freeze({ seed: fixture.seed ?? SAMPLE_ATTEMPT.seed });
+      const run = (response: unknown, withRubric = true) => grade(segment, deepFreeze(clone(response)), withRubric ? rubric : undefined, attempt);
 
       for (const rung of ['invalid', 'valid', 'met'] as const) {
         const first = verdictOf(() => run(fixture.ladder[rung]), `${at} ladder.${rung}`);
@@ -75,16 +77,22 @@ export function assertScorerContract(pack: HorizontePack, fixtures: readonly Hor
       }
       assert.equal(run(fixture.ladder.met).diagnostic, 'none', `${at}: a met answer carries no diagnostic`);
 
+      if (isSeededCapabilitySet(pack.capabilities[type]!)) {
+        assert.ok(isAttemptSeed(fixture.seed), `${at}: a seeded piece fixture carries the seed its ladder was simulated under`);
+        assert.equal(verdictOf(() => grade(segment, clone(fixture.ladder.met), rubric), `${at} no attempt`), 'invalid', `${at}: a seeded kind graded with a key but no attempt must fail closed`);
+        assert.equal(verdictOf(() => grade(segment, clone(fixture.ladder.met), rubric, { seed: 'f'.repeat(64) }), `${at} other seed`), 'invalid', `${at}: an answer simulated under another seed must be refused`);
+      }
+
       const advisoryMet = verdictOf(() => run(fixture.ladder.met, false), `${at} advisory met`);
       assert.ok(advisoryMet === 'valid', `${at}: without a rubric the scorer may say only valid or invalid, got ${advisoryMet}`);
       assert.equal(verdictOf(() => run(fixture.ladder.invalid, false), `${at} advisory invalid`), 'invalid', `${at}: the advisory scorer still refuses a rule-breaking response`);
 
       const sampled = sample(segment, rubric);
       assert.deepEqual(sample(segment, rubric), sampled, `${at}: the sample response is not deterministic`);
-      assert.notEqual(verdictOf(() => run(sampled), `${at} sample`), 'invalid', `${at}: the sample response must be scorable (never invalid)`);
+      assert.notEqual(verdictOf(() => grade(segment, deepFreeze(clone(sampled)), rubric, SAMPLE_ATTEMPT), `${at} sample`), 'invalid', `${at}: the sample response must be scorable (never invalid)`);
 
       for (const garbage of GARBAGE) assert.equal(verdictOf(() => run(garbage), `${at} garbage ${JSON.stringify(garbage)}`), 'invalid', `${at}: a malformed response must score invalid`);
-      assert.equal(verdictOf(() => grade(segment, fixture.ladder.met, { target: 'nonsense' }), `${at} bad rubric`), 'invalid', `${at}: a malformed rubric must score invalid, never met`);
+      assert.equal(verdictOf(() => grade(segment, fixture.ladder.met, { target: 'nonsense' }, attempt), `${at} bad rubric`), 'invalid', `${at}: a malformed rubric must score invalid, never met`);
     }
   }
 }

@@ -1,4 +1,5 @@
 import type { V2VisualVerdict } from '../v2VisualScorer.generated';
+import { isSeededCapabilitySet } from './seed/protocol.generated';
 import { horizonteAgeScopeProblem } from './shared.generated';
 import type { HorizonteAgeScope, HorizonteScorer } from './types.generated';
 import { golden } from './golden/index';
@@ -51,6 +52,10 @@ const TYPES: ReadonlySet<string> = new Set(Object.keys(HORIZONTE_CAPABILITIES));
 
 export function isHorizonteType(type: string): boolean { return TYPES.has(type); }
 export function isHorizonteSegment(segment: { type: string }): segment is HorizonteSegment { return TYPES.has(segment.type); }
+/** A seeded type simulates from a seed Core issues with the attempt; it never runs without one. */
+export function isSeededHorizonteType(type: string): boolean {
+  return TYPES.has(type) && isSeededCapabilitySet((HORIZONTE_CAPABILITIES as Record<string, readonly string[]>)[type] ?? []);
+}
 
 export function horizonteScopeProblem(segment: { type: string }, document: { age_band: string; eligibility: { minimum_age: number; maximum_age: number } }): string | null {
   return isHorizonteType(segment.type) ? horizonteAgeScopeProblem(AGE_SCOPE[segment.type], document) : null;

@@ -34,6 +34,7 @@ import { RuleBuilderBoard, UnitPriceBoard } from './buildBoards';
 import { ChartBoard, CoinTrayBoard, EulerBoard, FlowchartBoard, MentorEpisodeBoard, MentorTurnBoard, MessageListBoard, RuleCardsBoard, SortBinsBoard, StoryChoiceBoard } from './familyBoards';
 import { LessonPlayerProvider, playerCopy, type SegmentGrade } from './segmentKit';
 import { ApproachChoiceBoard } from './ApproachChoiceBoard';
+import { AttemptSeedProvider } from './horizonte/attemptSeed';
 import { canRenderHorizonte, HorizonteSegmentView, isHorizonteSegment } from './horizonte/registry';
 import { v2ApproachOf, v2SegmentsForApproach } from './v2SegmentFamilies.generated';
 
@@ -115,7 +116,7 @@ function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumbe
  * (Core validates them). A segment this build cannot render, or a document it
  * cannot parse because it is newer, is the B.4 update-required screen.
  */
-export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onHelpUsed, onComplete, metSegmentIds = [], attemptedSegmentIds = [], viewedSegmentIds = [], mentorStage = null, adventureTheme = null, theme = 'light', previewSequence = false, narrationAudio, approachId = null, onChooseApproach }: {
+export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onHelpUsed, onComplete, metSegmentIds = [], attemptedSegmentIds = [], viewedSegmentIds = [], mentorStage = null, adventureTheme = null, theme = 'light', previewSequence = false, narrationAudio, approachId = null, onChooseApproach, attemptSeeds }: {
   raw: unknown; locale: Locale; ageBand: AgeBand; onBack: () => void; onGrade?: OnGrade; onGradeNumberLine?: OnGradeNumberLine; onGradeFractionArea?: OnGradeFractionArea; onGradeBarModel?: OnGradeBarModel; onGradeSchemaDiagram?: OnGradeSchemaDiagram; onGradeWorkedExample?: OnGradeWorkedExample; onGradeReasoning?: OnGradeReasoning;
   onGradeAny?: OnGradeAny; onView?: OnView; onHelpUsed?: (segmentId: string, steps: number) => void;
   metSegmentIds?: string[];
@@ -128,6 +129,8 @@ export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGr
   /** GAP-FIX-R5 (B.24): the approach Core pinned on this run (null before choosing), and how to pin one. */
   approachId?: string | null;
   onChooseApproach?: OnChooseApproach;
+  /** F3.0: the seeds Core issued with this run's attempts, segment id to seed; a seeded Horizonte board never runs without its own. */
+  attemptSeeds?: Readonly<Record<string, string>>;
 }) {
   const loaded = loadLessonClientDocument(raw);
   if (loaded.status !== 'ready') return loaded.status === 'upgrade-required' ? <UpdateRequired locale={locale} onBack={onBack} /> : unavailable(locale, onBack, 'invalid');
@@ -137,10 +140,12 @@ export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGr
   // W2L.3 (B.8): every board's stage slot reads Core's projection from here; the allocation pilot keeps its own prop.
   return <LessonStageProvider stage={mentorStage} ageBand={loaded.document.age_band} theme={theme} adventureTheme={adventureTheme}>
     <LessonPlayerProvider stage={mentorStage} theme={theme} onHelpUsed={onHelpUsed} narrationAudio={narrationAudio}>
-      <ValidatedLessonView key={lessonVersionKey(loaded.document)} document={loaded.document} onBack={onBack} onGrade={onGrade}
-        onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning}
-        onGradeAny={onGradeAny} onView={onView} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} viewedSegmentIds={viewedSegmentIds}
-        mentorStage={mentorStage} theme={theme} previewSequence={previewSequence} approachId={approachId} onChooseApproach={onChooseApproach} />
+      <AttemptSeedProvider seeds={attemptSeeds}>
+        <ValidatedLessonView key={lessonVersionKey(loaded.document)} document={loaded.document} onBack={onBack} onGrade={onGrade}
+          onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning}
+          onGradeAny={onGradeAny} onView={onView} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} viewedSegmentIds={viewedSegmentIds}
+          mentorStage={mentorStage} theme={theme} previewSequence={previewSequence} approachId={approachId} onChooseApproach={onChooseApproach} />
+      </AttemptSeedProvider>
     </LessonPlayerProvider>
   </LessonStageProvider>;
 }
