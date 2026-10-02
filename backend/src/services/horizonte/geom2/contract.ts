@@ -1,5 +1,67 @@
+import { z } from 'zod';
+import { hzBase, hzServer, hzVisual } from '../shared.js';
 import type { HorizonteAgeScope } from '../types.js';
+import { isAreaSquaresPayload, AREA_MAX_CELLS, AREA_MAX_SIDE, AREA_MIN_SIDE } from './areaModel.js';
+import { GEOBOARD_MAX_SIZE, GEOBOARD_MIN_SIZE, maxArea2 } from './geoboardModel.js';
+import { FIGURE_SHAPES, GEOM2_COORDINATE_LIMIT } from './geometry.js';
+import { isMirrorSetup, isTransformPayload, MIRROR_LINES, TRANSFORM_MAX_EXTENT, TRANSFORM_MAX_VERTICES, TRANSFORM_MIN_EXTENT } from './transformModel.js';
+import { isTessellationPayload, TESSELLATION_MAX_COPIES, TESSELLATION_MAX_TILE, TESSELLATION_MIN_TILE } from './tessellationModel.js';
 
-export const GEOM2_SEGMENTS = [] as const;
-export const GEOM2_RUBRICS = {} as const;
-export const GEOM2_AGE_SCOPE: Readonly<Record<string, HorizonteAgeScope>> = {};
+const lattice = z.object({ x: z.number().int().min(-GEOM2_COORDINATE_LIMIT).max(GEOM2_COORDINATE_LIMIT), y: z.number().int().min(-GEOM2_COORDINATE_LIMIT).max(GEOM2_COORDINATE_LIMIT) }).strict();
+const latticeList = (minimum: number, maximum: number) => z.array(lattice).min(minimum).max(maximum);
+
+/** F2.7 geoboard: a square board of pegs; the learner stretches a band around pegs. The key (area, figure) is private. */
+export const geoboardPayload = z.object({ size: z.number().int().min(GEOBOARD_MIN_SIZE).max(GEOBOARD_MAX_SIZE) }).strict();
+
+/** F2.7 area by squares: a grid with an outline on its lines; the learner shades the squares inside. */
+export const areaSquaresPayload = z.object({
+  columns: z.number().int().min(AREA_MIN_SIDE).max(AREA_MAX_SIDE), rows: z.number().int().min(AREA_MIN_SIDE).max(AREA_MAX_SIDE), outline: latticeList(4, 16),
+}).strict().superRefine((value, ctx) => {
+  if (!isAreaSquaresPayload(value)) ctx.addIssue({ code: 'custom', message: 'The outline is a simple closed band of corners along the grid lines, on the grid, covering 1 to 32 squares' });
+});
+
+const move = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('translate'), dx: z.number().int().min(-20).max(20), dy: z.number().int().min(-20).max(20) }).strict(),
+  z.object({ kind: z.literal('reflect'), across: z.enum(MIRROR_LINES), at: z.number().int().min(-10).max(10) }).strict(),
+  z.object({ kind: z.literal('rotate'), degrees: z.union([z.literal(90), z.literal(180), z.literal(270)]), about: lattice }).strict(),
+  z.object({ kind: z.literal('dilate'), num: z.number().int().min(1).max(4), den: z.number().int().min(1).max(4), about: lattice }).strict(),
+]);
+
+/** F2.8: a figure on the plane and the move to carry out (public); the learner places the image. */
+export const transformPayload = z.object({
+  extent: z.number().int().min(TRANSFORM_MIN_EXTENT).max(TRANSFORM_MAX_EXTENT), figure: latticeList(3, TRANSFORM_MAX_VERTICES), move,
+}).strict();
+
+/** F2.8: a floor of cells and one tile that is only slid; the learner places copies until the floor is covered. */
+export const tessellationPayload = z.object({
+  floor: latticeList(TESSELLATION_MIN_TILE, TESSELLATION_MAX_TILE * TESSELLATION_MAX_COPIES), tile: latticeList(TESSELLATION_MIN_TILE, TESSELLATION_MAX_TILE),
+}).strict().superRefine((value, ctx) => {
+  if (!isTessellationPayload(value)) ctx.addIssue({ code: 'custom', message: 'The tile is a connected set of 2 to 6 cells starting at the origin, and the floor is whole copies of it, at most 24, within a 12 by 12 grid' });
+});
+
+export const GEOM2_SEGMENTS = [
+  z.object({ ...hzBase, type: z.literal('math.geoboard.v2'), grading: hzServer, visual: hzVisual('geoboard'), payload: geoboardPayload }).strict(),
+  z.object({ ...hzBase, type: z.literal('math.area-squares.v2'), grading: hzServer, visual: hzVisual('area-squares'), payload: areaSquaresPayload }).strict(),
+  z.object({
+    ...hzBase, type: z.literal('math.transform.v2'), grading: hzServer,
+    visual: z.union([hzVisual('transform-plane'), hzVisual('symmetry-mirror')]), payload: transformPayload,
+  }).strict().superRefine((value, ctx) => {
+    if (!isTransformPayload(value.payload)) ctx.addIssue({ code: 'custom', path: ['payload'], message: 'The figure is a simple polygon on the plane, and its image lies on pegs inside the plane and differs from it' });
+    else if (value.visual.type === 'symmetry-mirror' && !isMirrorSetup(value.payload)) ctx.addIssue({ code: 'custom', path: ['visual'], message: 'A symmetry mirror reflects over a vertical or horizontal line with the figure on one side of it' });
+  }),
+  z.object({ ...hzBase, type: z.literal('math.tessellation.v2'), grading: hzServer, visual: hzVisual('tessellation'), payload: tessellationPayload }).strict(),
+] as const;
+
+export const GEOM2_RUBRICS = {
+  'math.geoboard.v2': z.object({ area2: z.number().int().min(1).max(maxArea2(GEOBOARD_MAX_SIZE)), shape: z.enum(FIGURE_SHAPES).optional() }).strict(),
+  'math.area-squares.v2': z.object({ required: latticeList(1, AREA_MAX_CELLS) }).strict(),
+  'math.transform.v2': z.object({ required: latticeList(3, TRANSFORM_MAX_VERTICES) }).strict(),
+  'math.tessellation.v2': z.object({ copies: z.number().int().min(1).max(TESSELLATION_MAX_COPIES) }).strict(),
+} as const;
+
+export const GEOM2_AGE_SCOPE: Readonly<Record<string, HorizonteAgeScope>> = {
+  'math.geoboard.v2': { ages: [8, 12], adult: false },
+  'math.area-squares.v2': { ages: [8, 12], adult: false },
+  'math.transform.v2': { ages: [8, 15], adult: false },
+  'math.tessellation.v2': { ages: [8, 15], adult: false },
+};
