@@ -109,7 +109,8 @@ Fixtures (nine): `signed-zero-pairs`, `simplify-tiles`, `box-picture`, `box-mixe
 
 - **Implemented.** The three pieces across Core, browser and Forge as above.
 - **Verified locally (focused only).** Backend `alg1.test.ts`, frontend `Alg1Boards.test.tsx`, Forge `alg1.test.ts` and
-  `v2Solvability.test.ts`; `sync-v2-horizonte.mjs --check`; `check-v2-lesson-capability-parity.mjs`; one `type-check` per touched service.
+  `v2Solvability.test.ts`; `sync-v2-horizonte.mjs --check`; `check-v2-lesson-capability-parity.mjs`; `check-horizonte-copy.mjs`; one
+  `type-check` per touched service (backend, frontend, coursegen), after merging `feat/horizonte-visual`.
 - **Not verified.** No real-browser run: 64 px hit size, drag on touch, text fit, reduced motion and the lazy chunk size (declared 30 KB
   each) are not measured, because jsdom cannot measure layout. No screen-reader pass of the `spokenText` or the table equivalents. No
   `test:all`, `tools:test`, `verify:*`, `audit:*` or `spec:check` run (the coordinator owns the push gate).
@@ -127,5 +128,7 @@ Fixtures (nine): `signed-zero-pairs`, `simplify-tiles`, `box-picture`, `box-mixe
 
 ## Observation at the time of writing
 
-`harness/fixtureCoverage.test.tsx` and `check-horizonte-copy.mjs` fail on the `plano` pack, whose copy and fixtures were not yet
-registered in the shared base when this lane started. The alg1 audit file and fixtures are consistent with the coverage test.
+After merging `feat/horizonte-visual`, `check-horizonte-copy.mjs` passes (19 packs, 3 locales), but
+`harness/fixtureCoverage.test.tsx` still fails three tests because the `plano` pack is not registered in
+`frontend/src/rebuild/learning/horizonte/fixtures.ts`. That belongs to the plano lane and was not touched here. The alg1 audit file
+and fixtures list the same nine ids, so the coverage test has nothing to say about this pack.

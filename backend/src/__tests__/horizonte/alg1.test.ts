@@ -14,7 +14,7 @@ type Locale = 'en-US' | 'es-MX' | 'pt-BR';
 const LOCALES: readonly Locale[] = ['en-US', 'es-MX', 'pt-BR'];
 const TYPES = ['math.algebra-tiles.v2', 'math.algebra-cards.v2', 'math.area-model.v2'] as const;
 const fixture = (id: string) => ALG1_FIXTURES.find((item) => item.id === id)!;
-const grade = (type: string, segment: unknown, response: unknown, rubric: unknown) => (alg1.scorers[type]!.grade as unknown as Grade)(segment, response, rubric);
+const grade = (type: unknown, segment: unknown, response: unknown, rubric: unknown) => (alg1.scorers[type as string]!.grade as unknown as Grade)(segment, response, rubric);
 const payloadOf = (id: string) => fixture(id).segment('en-US').payload;
 
 function lesson(item = ALG1_FIXTURES[0]!, locale: Locale = 'en-US') {
@@ -66,7 +66,7 @@ describe('alg1 pack: F2.1 tiles, F2.2 cards, F2.3 area model (D02, B27, D06, D09
       expect(grade(type, segment, partial, item.rubric).verdict).toBe('review');
       expect(grade(type, segment, { slots: { mat: ['sq-pos-1'], zero: [] } }, item.rubric).verdict).toBe('invalid');
       expect(grade(type, segment, { slots: { mat: ['sq-pos-1', 'sq-pos-2'], zero: ['sq-neg-1'] } }, item.rubric).verdict).toBe('invalid');
-      expect(grade(type, segment, { ...item.ladder.met, extra: 1 }, item.rubric).verdict).toBe('invalid');
+      expect(grade(type, segment, { ...(item.ladder.met as object), extra: 1 }, item.rubric).verdict).toBe('invalid');
     });
 
     it('is symmetric in the pieces of one kind and refuses a wrong key', () => {
@@ -248,7 +248,7 @@ describe('alg1 pack: F2.1 tiles, F2.2 cards, F2.3 area model (D02, B27, D06, D09
       const parsed = v2PublicLessonSchema.parse(document);
       expect(gradeV2Visual(parsed, { [id]: item.rubric }, id, item.ladder.met), item.id).toMatchObject({ score: 100, correct: true });
       expect(gradeV2Visual(parsed, { [id]: item.rubric }, id, item.ladder.valid), item.id).toBeNull();
-      expect(horizonteGrade({ type: item.segment('en-US').type }, item.ladder.met, item.rubric), item.id).toBeNull();
+      expect(horizonteGrade({ type: item.segment('en-US').type as string },item.ladder.met, item.rubric), item.id).toBeNull();
       expect(horizonteSampleVerdict(item.segment('en-US') as { type: string }, item.rubric), item.id).toBe('valid');
     }
   });
