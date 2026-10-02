@@ -147,7 +147,8 @@ audit lane.
 
 Implementation: complete in all layers (Core pack and protocol, route wiring, browser copies, four boards, seed plumbing in the lesson view,
 Forge, lane doc). Local verification: backend seed (14), sim1 (20) and route (4) tests; frontend board tests (29) and board contract for every
-fixture; Forge test (17) with the existing horizonte tests (33 in all); the capability parity gate and the sync check. Acceptance and
+fixture; Forge test (17, with 137 horizonte tests passing in coursegen and 225 in backend after merging the integration branch); one type-check each
+for backend, frontend and coursegen; the capability parity gate, the copy gate and the sync check (all after the merge). Acceptance and
 release: not done; they belong to the owner and the coordinator's audit pass.
 
 Not verified: no real browser, no screenshot, no layout measurement. Nothing below was looked at; it was reasoned from the code and jsdom.
@@ -166,6 +167,10 @@ Not verified: no real browser, no screenshot, no layout measurement. Nothing bel
   contract version.
 - **Axis and data bounds.** Bootstrap axes are 0 to 100, 4 to 20 steps wide, data 4 to 10 whole values with at least 3 different; coverage
   truths are shares from 1/5 to 4/5 with a denominator up to 20, sizes 10 to 400.
+- **`fixtureCoverage.test.tsx` fails on the integration branch for a reason outside this lane.** After merging `feat/horizonte-visual`, the
+  harness treats the `plano` folder (the Plano primitive, which has an `index.ts` but is not a pack and has no fixtures) as a pack, so three
+  of its tests throw on `HORIZONTE_FIXTURES.plano`. The loop stops there, before it reaches `sim1`, so a run restricted to `sim1` was used to
+  confirm that its audit file and its fixture documents (all three locales) are in step. The audit lane module test, which covers every pack, passes.
 - **Not covered by this lane.** The law of large numbers is the chance board over a long run; there is no separate running-average chart.
   A "show many runs at once" overlay for the walk is not built.
 
