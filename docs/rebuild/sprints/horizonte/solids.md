@@ -120,11 +120,145 @@ interface SolidViewerProps {
   devices, and the WebGL path adds only shading and depth.
 - No decoration: a neutral board, flat tokens, no celebration. The solid is drawn in a single hue per face shade from the tokens.
 
+## Pieces and catalogue rows
+
+| Piece | Catalogue rows | What it is |
+|---|---|---|
+| F4.1 SOLIDS ENGINE | [3:1] | The pure solids model, the twelve fixed views, the SVG orthographic projection and the lazy 3D viewer with the SVG fallback. The segment `geometry.solid-viewer.v2` asks the learner to pick the solid that has a stated count of faces, edges or vertices and then to count one of the other kinds on it. |
+| F4.2 FOLDABLE CUBE NETS | [3:2], [m:E29], [m:E30] | `geometry.cube-net.v2`, two modes. `label` names the squares of a given net (the folded cube in the same board shows what a name means). `complete` finishes a partial net so it folds into a cube. The surface-area readout (`6 x edge x edge`) sits next to the net. |
+| F4.3 STACKED CUBES | [3:3], [3:6], [3:23], [m:E31], [m:E37] | `geometry.cube-stack.v2`: build a stack on a 2 by 2 or 3 by 3 grid so the front, side and plan views match, counting the cubes; `fewest` asks for the smallest number that shows the views. A pure SVG isometric drawing, no WebGL at all. |
+
 ## Segment contracts
 
-Filled in per piece below as each lands. Capability literals live in each pack's `capabilities.ts` and in
-`coursegen/src/v2/horizonte/solids.ts`, in parity.
+Capability literals (identical in `solids/capabilities.ts` on the backend and the browser and in `coursegen/src/v2/horizonte/solids.ts`;
+`node agent/tools/check-v2-lesson-capability-parity.mjs` pins them):
+
+| Segment type | Capabilities | Ages | Adult |
+|---|---|---|---|
+| `geometry.solid-viewer.v2` | `visual.solid-viewer.v1`, `operation.fixed-views.v1`, `operation.choose-and-count.v1` | 7 to 12 | refused |
+| `geometry.cube-net.v2` | `visual.cube-net.v1`, `operation.place-faces.v1`, `operation.fold-net.v1` | 7 to 12 | refused |
+| `geometry.cube-stack.v2` | `visual.cube-stack.v1`, `operation.stack-cubes.v1`, `operation.linked-views.v1` | 6 to 12 | refused |
+
+All three are `grading: 'server'`; the visual descriptor is `{ type: 'solid-viewer' | 'cube-net' | 'cube-stack' }`. Payloads are strict
+(`contract.ts`), and every payload is also checked by a rule (`rules.ts`) so a key that no learner could meet is refused at authoring time.
+
+### F4.1 `geometry.solid-viewer.v2`
+
+- Payload: `{ solids: SolidId[] (2 to 4, each once), find: { kind, count }, report: kind }`. `find.kind` and `report` differ.
+  "Which solid has `find.count` of `find.kind`" must have exactly one answer among `solids`; the learner then counts `report` on it.
+- Response: `{ solid: string, count: string }` (a choice plus a numeric text). Rubric: `{ solid, count }`, which must equal the
+  answer the payload implies (a drifting key is `invalid`, never accepted).
+- Ladder: `invalid` (malformed, a solid that is not listed, a count that is not a number), `valid` (blank fields, or any well-formed
+  answer without a rubric), `met` (both right), `review` with `partial` (one of the two) or `value` (neither).
+- Sample: the blank response. Age scope above.
+
+### F4.2 `geometry.cube-net.v2`
+
+- Payload `label`: `{ mode: 'label', cells: [col,row] x6, fixed: [{ cell, name }] (1 to 3), edge }`. The net must be one of the eleven.
+  The fixed names must leave exactly one naming of the other squares (two fixed neighbours always do), which `labelSolutions` checks.
+- Payload `complete`: `{ mode: 'complete', grid: { cols, rows }, fixed: [col,row] (2 to 5), edge }` on a grid of at most 5 by 4. At least one
+  completion must exist; several are allowed and every one is a valid key.
+- Response and rubric: the F0.3 arrangement shape. `label`: slots `cell0..cell5`, one face name each (`top`, `bottom`, `front`, `back`,
+  `left`, `right`). `complete`: slots `g{col}x{row}` holding the repeatable piece `square`. Rubric `{ solutions: [slots...] }`.
+- Ladder: `invalid` (malformed, a given square or name moved, a name used twice, a square off the grid); `valid` (only the given squares,
+  or no rubric); `met` (a correct naming, or six squares that fold into a cube, judged on the geometry and not on the key);
+  `review` with `partial`, `miss` (right so far, not finished), `value`, `false_alarm` (more than six squares) or `structure` (six
+  squares that do not fold).
+- The surface-area readout is a derived display (`surfaceArea(edge)`), not a graded field in this release.
+
+### F4.3 `geometry.cube-stack.v2`
+
+- Payload: `{ size: 2 | 3, start: heights (rows of columns, at most 3 cubes a cell), goal: { front?, side?, plan? }, fewest }`. Heights are
+  `heights[row][col]`, row 0 at the back. The goal needs at least one view; `solveStack` must find a solution; with `fewest` the key is
+  the minimum.
+- Response and rubric: the F0.3 arrangement shape on slots `c{col}r{row}`, each holding up to three of the repeatable piece `cube`.
+- Ladder: `invalid` (malformed, a slot off the grid, a cell above three cubes); `valid` (the start untouched, or no rubric); `met` (every
+  goal view matches, with the fewest cubes when asked); `review` with `partial` (some views), `value` (none) or `false_alarm`
+  (the views match but there are more cubes than the minimum).
+- The linked views (front, side, plan) are drawn next to the isometric stack and update as cubes are added; the table view lists the
+  same numbers in text.
+
+## Files per layer
+
+| Layer | Path | Content |
+|---|---|---|
+| Backend | `backend/src/services/horizonte/solids/` | `model`, `projection`, `stack`, `net` (engine), `rules` (payload readers and authoring checks), `scorer`, `contract` (segments, rubrics, age scope), `fixtures` (6), `capabilities`, `index` |
+| Backend tests | `backend/src/__tests__/horizonte/solids.test.ts`, `solidsEngine.test.ts` | engine geometry, scorer ladders, contract refusals, fixture ladders, age scope |
+| Browser | `frontend/src/rebuild/learning/horizonte/solids/` | generated copies (`model`, `projection`, `stack`, `net`, `rules`, `scorer`, `contract`, `fixtures`), `capabilities.ts`, `boards.tsx`, the viewer (`SolidViewer`, `SolidViewerBoard`, `SolidScene3D`, `SolidSvg`, `renderMode`), the net boards (`CubeNetBoard`, `NetLabelBoard`, `NetCompleteBoard`, `NetArea`, `FoldedCube`, `netFold`), the stack board (`CubeStackBoard`, `StackViews`), `copy.ts`, `solidsText.ts`, `solids.css`, `audit.json`, tests |
+| Forge | `coursegen/src/v2/horizonte/solids.ts`, `solidsGeometry.ts`, `coursegen/src/__tests__/horizonte/solids.test.ts` | guidance, gate 4, three solvability checkers, the Forge's own pure geometry copy |
+| Shared (one line) | `coursegen/src/v2/solvabilityPacks.ts` | `import './horizonte/solids.js';` so the checkers register |
+| Shared (earlier in this lane) | `agent/tools/check-product-spec.mjs` and its test | the scene-canvas ban now allows `solids/**`, the only place OD-32 permits it |
+
+### Board behaviour (all three)
+
+- Lazy boards: `boards.tsx` registers one lazy entry per type (budgets declared: viewer 16 KB, net 18 KB, stack 14 KB gzip; ICAP
+  active, constructive, constructive). The 3D chunk is a second lazy import behind the viewer and loads only in `webgl` mode.
+- Keyboard alternative on every interaction: arrow keys step the viewer (four direction buttons do the same by tap); every net and stack
+  cell is a button (a tap toggles a square, names a square from the tray, or cycles a stack cell through 0 to 3 cubes), and the pieces
+  can also be moved by the shared F0.3 drag helper. Grid cells and drag handles are 64 px (`--hz-hit`, `data-hz-hit="64"`). Show-as-table
+  is a real table (counts, names, heights, views) with the same numbers as the drawing.
+- Reduced motion: the viewer draws the SVG and never tweens (a view change is a cut); the only transitions are colour fades inside
+  `prefers-reduced-motion: no-preference`.
+- Tokens only (`solids.css`), a neutral board, no celebration; copy in en-US, es-MX and pt-BR with `data-copy-role` on every string
+  (`copy.ts`, `solidsText.ts`).
+
+## Forge pack
+
+- Guidance: three line-sets (one per type): the ages, the count table, the key shapes, the "exactly one match" rule, the eleven nets, the
+  two net modes, the stack views and the `fewest` rule.
+- Gate 4: visual descriptor type, prompt of at most 24 words, payload read errors named in plain words, and the structural checks below.
+- Solvability checkers (registered through `registerSolvabilityChecker`):
+  - viewer: 0 matches is `no-solution`, more than 1 is `ambiguous-solution`; the key `{solid, count}` is compared to the derived answer.
+  - net: the cells are one of the eleven nets and fit the grid, `label` has exactly one naming, `complete` has at least one completion,
+    every key solution contains the fixed squares and folds (a key that does not is `rubric-accepts-invalid`).
+  - stack: the goal has a solution, the start is not already the answer, with `fewest` the key equals the minimum.
+- The Forge keeps its own geometry copy because it cannot import across services; a test pins it to the backend's counts (216 cube-net
+  placements on a 5 by 4 grid, the same as the backend test).
+
+## Decisions made without asking (assumptions)
+
+1. Cylinder faces count as 3 (two flat, one curved), edges as 2 (the rims), vertices as 0: the teaching count. Its 24 side quads are a tessellation only.
+2. "Prism" is the triangular prism and "pyramid" the square-based pyramid. The four solids give distinct counts for the searched kinds
+   often enough to write unambiguous questions, and the Forge checker refuses any question that has zero or several matching solids.
+3. Views are twelve fixed snaps, never a free orbit: it is keyboard-operable, stable under reduced motion and the same on the SVG and the 3D chunk.
+4. Net grid at most 5 by 4, edge 1 to 20 (`NET_EDGE_LIMIT` in `rules.ts`); eleven nets and 24 namings, searched exhaustively, so every answer is exact.
+5. Stack grid 2 by 2 or 3 by 3 and at most 3 cubes a cell: at most 4^9 stacks, so the solver is exact (no heuristic) and runs in the browser.
+6. The stack drawing is isometric SVG with no WebGL (the brief for F4.3); only the viewer may load the 3D chunk (OD-32).
+7. AR and camera for minors stay default-off; nothing in this pack reaches the Oracle context (the `.strict()` 14-field context is untouched).
 
 ## Status
 
-Engine API committed (this document). Boards, scorers, fixtures, copy and Forge checks follow in the same lane.
+Implemented (all three pieces): the pure engine and its tests, the three segment types with strict payloads, rubrics and age scope, the
+three scorers with their ladders, six fixtures with ladders, the generated browser copies, the lazy boards with keyboard alternative,
+table view and reduced motion, copy in three locales, the Forge guidance, gate 4 and solvability checkers, the audit manifest.
+
+Checks run on the final tree (focused only): the backend solids tests, the coursegen solids tests, the frontend solids tests, the
+generated-copy check, the capability parity check, one type-check each for backend, coursegen and frontend. Counts are in the hand-off.
+
+NOT verified, NOT accepted, NOT released:
+
+- No browser or visual audit was run (no Playwright, no dev server, by the lane rules): the boards have never been looked at in a real
+  browser, and the 3D chunk has not been loaded in a real WebGL context. A person must look at the three boards at 360 px, 768 px and
+  1280 px, in light and dark, with reduced motion on and off, before acceptance.
+- The declared chunk budgets (16, 18, 14 KB) are declarations; no production build measured them.
+- No text-fit, proportion or copy-budget audit was run on the new strings; copy parity across the three locales is pinned by a test only.
+- Native-speaker review of es-MX and pt-BR is pending (copy is neutral and short; solid and face names follow school usage).
+- Nothing is accepted against the SPEC and nothing is released. Requirement rows and `SPRINTS.md` are not touched by this lane.
+
+## Known limits
+
+- Four solids only; no truncated solids, no compound solids, no curved-surface area.
+- The viewer chooses a solid and counts one kind on it; it does not ask for volume or area (space1 and space2 build on the engine for that).
+- The surface-area line is a display. A graded surface-area answer needs a numeric segment around the net board and belongs to a later lane.
+- Labels in the 3D chunk are HTML over the canvas computed with the same camera maths as the SVG; a label that would sit within 11 units of
+  a visible one is dropped in both renderers, and the table view lists all of them.
+
+## Owner follow-ups
+
+1. Base-tip issue outside this lane: `frontend/src/rebuild/learning/horizonte/harness/fixtureCoverage.test.tsx` fails 3 of 4 tests at the
+   `feat/horizonte-visual` tip because a `plano` folder exists there but `fixtures.ts` does not register `plano` ("plano: fixtures.ts
+   registers plano"), after which `HORIZONTE_FIXTURES[pack]` is undefined for it. The solids pack is registered in `fixtures.ts` and has
+   `audit.json` in step with its fixtures; the harness will check it once the plano owner registers that pack.
+2. Run the visual audit for the three boards and the 3D chunk (see NOT verified above), then measure the chunk budgets with a build.
+3. Review the es-MX and pt-BR strings with a native reader.
+4. After acceptance, update the sprint record and the requirement rows (not touched here).
