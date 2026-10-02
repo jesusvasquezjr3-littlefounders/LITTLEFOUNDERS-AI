@@ -88,9 +88,9 @@ export const FIN1_FIXTURES: readonly HorizonteFixture[] = [
     segment: (locale) => ({
       id: 'annuity-end', type: TIME_VALUE_TYPE, ...BASE, visual: { type: 'time-value' },
       prompt: text(
-        'A plan puts in $1,000 at the end of each of 3 years. Place the payments, then type their worth today.',
-        'Un plan deposita $1,000 al final de cada uno de 3 años. Coloca los pagos y escribe su valor hoy.',
-        'Um plano deposita $1.000 no fim de cada um de 3 anos. Posicione os pagamentos e digite o valor hoje.',
+        'Save $1,000 at each year end for 3 years. Place the payments, then type their worth today.',
+        'Ahorra $1,000 al final de cada año durante 3 años. Coloca los pagos y escribe su valor hoy.',
+        'Poupe $1.000 no fim de cada ano durante 3 anos. Posicione os pagamentos e digite o valor hoje.',
       )[locale],
       payload: { rateBps: 600, ask: 'present', task: { kind: 'annuity', timing: 'end', amountCents: 100_000, count: 3 } },
     }),
@@ -109,9 +109,9 @@ export const FIN1_FIXTURES: readonly HorizonteFixture[] = [
     segment: (locale) => ({
       id: 'annuity-start', type: TIME_VALUE_TYPE, ...BASE, visual: { type: 'time-value' },
       prompt: text(
-        'A plan pays $1,000 at the start of each of 3 years. Place the payments, then type their worth at the end.',
-        'Un plan paga $1,000 al inicio de cada uno de 3 años. Coloca los pagos y escribe su valor al final.',
-        'Um plano paga $1.000 no início de cada um de 3 anos. Posicione os pagamentos e digite o valor no fim.',
+        'Pay $1,000 at each year start for 3 years. Place them, then type the worth at year 3.',
+        'Paga $1,000 al inicio de cada año durante 3 años. Colócalos y escribe su valor en el año 3.',
+        'Pague $1.000 no início de cada ano durante 3 anos. Posicione-os e digite o valor no ano 3.',
       )[locale],
       payload: { rateBps: 600, ask: 'future', task: { kind: 'annuity', timing: 'start', amountCents: 100_000, count: 3 } },
     }),
@@ -183,9 +183,9 @@ export const FIN1_FIXTURES: readonly HorizonteFixture[] = [
     segment: (locale) => ({
       id: 'npv-project', type: RATE_RETURN_TYPE, ...BASE, visual: rate('cash-flow'),
       prompt: text(
-        'A $10,000 project pays $4,000, $5,000 and $6,000 in years 1 to 3. At 10%, type its net value today.',
-        'Un proyecto de $10,000 paga $4,000, $5,000 y $6,000 en los años 1 a 3. Al 10%, escribe su valor neto hoy.',
-        'Um projeto de $10.000 paga $4.000, $5.000 e $6.000 nos anos 1 a 3. A 10%, digite seu valor líquido hoje.',
+        'A $10,000 project returns money over 3 years. At 10%, type its net value today.',
+        'Un proyecto de $10,000 devuelve dinero en 3 años. Al 10%, escribe su valor neto hoy.',
+        'Um projeto de $10.000 devolve dinheiro em 3 anos. A 10%, digite o valor líquido hoje.',
       )[locale],
       payload: { kind: 'npv', rateBps: 1000, outlayCents: 1_000_000, flowsCents: [400_000, 500_000, 600_000] },
     }),
@@ -200,9 +200,9 @@ export const FIN1_FIXTURES: readonly HorizonteFixture[] = [
     segment: (locale) => ({
       id: 'irr-project', type: RATE_RETURN_TYPE, ...BASE, visual: rate('cash-flow'),
       prompt: text(
-        'A $10,000 project pays $4,000, $5,000 and $6,000 over 3 years. Find the rate that makes its value zero.',
-        'Un proyecto de $10,000 paga $4,000, $5,000 y $6,000 en 3 años. Halla la tasa que deja su valor en cero.',
-        'Um projeto de $10.000 paga $4.000, $5.000 e $6.000 em 3 anos. Ache a taxa que zera o valor dele.',
+        'A $10,000 project returns money over 3 years. Find the rate that makes its value zero.',
+        'Un proyecto de $10,000 devuelve dinero en 3 años. Halla la tasa que deja su valor en cero.',
+        'Um projeto de $10.000 devolve dinheiro em 3 anos. Ache a taxa que zera o valor dele.',
       )[locale],
       payload: { kind: 'irr', outlayCents: 1_000_000, flowsCents: [400_000, 500_000, 600_000] },
     }),

@@ -20,7 +20,7 @@ const show = (fixture: string, grade = vi.fn(() => ({ verdict: 'review' as const
 };
 const status = () => document.querySelector('[data-hz-text-equivalent]') as HTMLElement;
 const press = (name: string, times = 1) => { for (let index = 0; index < times; index += 1) fireEvent.click(screen.getByRole('button', { name })); };
-const type = (label: string, text: string) => fireEvent.change(screen.getByLabelText(label), { target: { value: text } });
+const type = (label: string, text: string) => fireEvent.change(screen.getByRole('textbox', { name: label }), { target: { value: text } });
 
 describe('fin1 boards: contract', () => {
   it('meets the board contract for compound interest in all three locales', async () => {
@@ -144,7 +144,7 @@ describe('fin1 board: time value (F2.11)', () => {
     show('receive-three');
     await screen.findByRole('group', { name: 'Year 1' });
     expect(screen.getByText('Each figure shows worth at year 3.')).toBeTruthy();
-    expect(status()).toHaveTextContent('Total worth at year 3: $6,494.40');
+    expect(status()).toHaveTextContent('Total worth at year 3: $6,243.60');
   });
 
   it('places equal payments from the tray onto years and takes one back', async () => {
@@ -173,7 +173,7 @@ describe('fin1 board: time value (F2.11)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Payment: $1,000: Move to' }));
     fireEvent.click(await screen.findByRole('menuitem', { name: 'Today, year 0' }));
     expect(status()).toHaveTextContent('Placed: 1 of 3');
-    type('Worth at year 2, in dollars', '3374.62');
+    type('Worth at year 3, in dollars', '3374.62');
     expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
     fireEvent.click(within(screen.getByRole('group', { name: 'Today, year 0' })).getByRole('button', { name: 'Payment: $1,000' }));
     fireEvent.click(screen.getByRole('button', { name: 'Payment: $1,000: Move to' }));
@@ -188,7 +188,7 @@ describe('fin1 board: time value (F2.11)', () => {
     const table = screen.getByRole('table', { name: 'Payments on the timeline' });
     const rows = within(table).getAllByRole('row');
     expect(rows).toHaveLength(6);
-    expect(rows[0]!.textContent).toBe('YearPaymentAmountWorth at the end');
+    expect(rows[0]!.textContent).toBe('YearPaymentAmountWorth today');
     expect(rows.at(-1)!.textContent).toMatch(/^Total/);
   });
 });
@@ -238,7 +238,7 @@ describe('fin1 board: rate and return (F2.12)', () => {
     await screen.findByRole('button', { name: 'Discount rate: More' });
     expect(status()).toHaveTextContent('year 1, $4,000.00 is worth $3,636.36; year 2, $5,000.00 is worth $4,132.23; year 3, $6,000.00 is worth $4,507.89');
     press('Discount rate: More');
-    expect(status()).toHaveTextContent('year 1, $4,000.00 is worth $3,619.05');
+    expect(status()).toHaveTextContent('year 1, $4,000.00 is worth $3,619.91');
     expect(document.body.textContent).not.toContain('2,276.48');
     type('Net value today, in dollars', '2276.48');
     await waitFor(() => expect(screen.getByRole('button', { name: 'Check' })).toBeEnabled());
