@@ -1,0 +1,98 @@
+import type { Vec3 } from '../solids/model.js';
+
+/*
+ * F4.9: the "see it on your table" pilot. A real object is shown at its true size, either through the device's own WebXR
+ * (the learner points the phone at a table) or, everywhere else, as a flat turnable drawing with the same measurements.
+ * The step is not scored. The pilot is closed unless a flag is on, the learner is at least 13 and consent is recorded
+ * (a guardian's consent for a minor). Nothing here reads, stores or sends a camera frame.
+ *
+ * It must not be turned on before the legal and pediatric review recorded in docs/rebuild/sprints/horizonte/space2.md.
+ */
+
+export type ArShape = 'box' | 'cylinder';
+
+/** The fixed catalogue: the true size in whole centimetres as width, height and depth (a cylinder's width and depth are its diameter). */
+export const AR_OBJECTS = {
+  'litre-box': { shape: 'box', size: [10, 10, 10] },
+  'cereal-box': { shape: 'box', size: [20, 30, 7] },
+  'soup-can': { shape: 'cylinder', size: [7, 10, 7] },
+  shoebox: { shape: 'box', size: [31, 12, 19] },
+} as const satisfies Record<string, { shape: ArShape; size: readonly [number, number, number] }>;
+
+export type ArObjectId = keyof typeof AR_OBJECTS;
+export const AR_OBJECT_IDS = Object.keys(AR_OBJECTS) as ArObjectId[];
+export const isArObjectId = (value: unknown): value is ArObjectId => typeof value === 'string' && Object.hasOwn(AR_OBJECTS, value);
+
+export interface ArPayload { object: ArObjectId }
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
+const exactKeys = (value: Record<string, unknown>, keys: readonly string[]): boolean => Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
+
+export function readArPayload(value: unknown): ArPayload | null {
+  return isRecord(value) && exactKeys(value, ['object']) && isArObjectId(value.object) ? { object: value.object } : null;
+}
+
+/** The volume in whole millilitres (one cubic centimetre each): a box is width x height x depth, a cylinder is pi r squared x height. */
+export function arVolumeMl(object: ArObjectId): number {
+  const { shape, size } = AR_OBJECTS[object];
+  const [width, height, depth] = size;
+  return shape === 'box' ? width * height * depth : Math.round(Math.PI * (width / 2) * (depth / 2) * height);
+}
+
+export const AR_RING_POINTS = 16;
+const FIT = 0.8;
+
+export interface ArWire { vertices: Vec3[]; edges: Array<readonly [number, number]> }
+
+/** The object as a wireframe for the flat drawing, scaled so its longest side spans the same length for every object (the table lists the true size). */
+export function arWire(object: ArObjectId): ArWire {
+  const { shape, size } = AR_OBJECTS[object];
+  const longest = Math.max(...size);
+  const [halfWidth, halfHeight, halfDepth] = size.map((side) => (FIT * side) / longest);
+  if (shape === 'box') {
+    const vertices: Vec3[] = [];
+    for (const y of [-halfHeight!, halfHeight!]) for (const z of [-halfDepth!, halfDepth!]) for (const x of [-halfWidth!, halfWidth!]) vertices.push([x, y, z]);
+    const edges: Array<readonly [number, number]> = [];
+    for (let from = 0; from < 8; from += 1) for (const bit of [1, 2, 4]) if ((from & bit) === 0) edges.push([from, from | bit]);
+    return { vertices, edges };
+  }
+  const ring = (y: number): Vec3[] => Array.from({ length: AR_RING_POINTS }, (_, step): Vec3 => {
+    const angle = (2 * Math.PI * step) / AR_RING_POINTS;
+    return [halfWidth! * Math.cos(angle), y, halfDepth! * Math.sin(angle)];
+  });
+  const vertices = [...ring(-halfHeight!), ...ring(halfHeight!)];
+  const edges: Array<readonly [number, number]> = [];
+  for (let step = 0; step < AR_RING_POINTS; step += 1) {
+    edges.push([step, (step + 1) % AR_RING_POINTS], [AR_RING_POINTS + step, AR_RING_POINTS + ((step + 1) % AR_RING_POINTS)]);
+  }
+  for (let step = 0; step < AR_RING_POINTS; step += AR_RING_POINTS / 4) edges.push([step, AR_RING_POINTS + step]);
+  return { vertices, edges };
+}
+
+/** The youngest age the pilot is offered to. */
+export const AR_PILOT_MIN_AGE = 13;
+/** From this age the learner's own consent is enough; below it a guardian's consent is needed too. */
+export const AR_ADULT_AGE = 18;
+
+/** Consent as recorded: the learner's own and, for a minor, a verified guardian's. Nothing else is ever stored about the pilot. */
+export interface ArConsent { learner: boolean; guardian: boolean }
+
+export function readArConsent(value: unknown): ArConsent | null {
+  return isRecord(value) && exactKeys(value, ['learner', 'guardian']) && typeof value.learner === 'boolean' && typeof value.guardian === 'boolean'
+    ? { learner: value.learner, guardian: value.guardian } : null;
+}
+
+export interface ArPilotInput { flag?: boolean; age?: number | null; consent?: ArConsent | null }
+/** Why the pilot is closed, or 'open'. The first closed reason wins, so a missing flag never reveals anything about the learner. */
+export type ArGate = 'off' | 'age' | 'consent' | 'guardian' | 'open';
+
+export function arPilotGate(input: ArPilotInput = {}): ArGate {
+  if (input.flag !== true) return 'off';
+  const age = input.age;
+  if (typeof age !== 'number' || !Number.isInteger(age) || age < AR_PILOT_MIN_AGE) return 'age';
+  if (!input.consent || input.consent.learner !== true) return 'consent';
+  return age >= AR_ADULT_AGE || input.consent.guardian === true ? 'open' : 'guardian';
+}
+
+/** Closed unless the flag is on, the learner is 13 or older and consent is recorded (a guardian's for a minor). Called with nothing, it is false. */
+export const isArPilotEnabled = (input: ArPilotInput = {}): boolean => arPilotGate(input) === 'open';

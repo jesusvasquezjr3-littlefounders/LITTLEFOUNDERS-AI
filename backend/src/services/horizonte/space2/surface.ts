@@ -1,0 +1,170 @@
+import type { Vec3 } from '../solids/model.js';
+
+/*
+ * F4.7: a surface is a third real variable. Two inputs make a grid of outputs: a rate and a term give an amount (compound
+ * interest), a price and a quantity give a profit. The grid is the whole truth: the browser draws it as a mesh on the
+ * solids projection engine, slices it into a 2D curve under a slider, and lists it in a table. Every value is whole cents
+ * computed with integers (a year of interest is rounded half up to the cent), so Core and the browser agree to the cent.
+ */
+
+export const SURFACE_KINDS = ['compound', 'profit'] as const;
+export type SurfaceKind = (typeof SURFACE_KINDS)[number];
+export const SURFACE_ASKS = ['highest', 'lowest', 'reach'] as const;
+export type SurfaceAskKind = (typeof SURFACE_ASKS)[number];
+export const SURFACE_OPTION_IDS = ['a', 'b', 'c', 'd'] as const;
+export type SurfaceOptionId = (typeof SURFACE_OPTION_IDS)[number];
+
+export const SURFACE_LIMITS = {
+  xCount: { min: 3, max: 6 },
+  yCount: { min: 3, max: 7 },
+  options: { min: 2, max: 4 },
+  rateBps: 1500,
+  termYears: 40,
+  principalCents: { min: 100, max: 1_000_000 },
+  priceCents: 100_000,
+  units: 1000,
+  unitCostCents: 50_000,
+  fixedCents: 1_000_000,
+  targetCents: 1_000_000_000,
+} as const;
+
+export interface CompoundSurface { kind: 'compound'; principalCents: number; ratesBps: number[]; terms: number[] }
+export interface ProfitSurface { kind: 'profit'; unitCostCents: number; fixedCents: number; prices: number[]; units: number[] }
+export type SurfaceSpec = CompoundSurface | ProfitSurface;
+export type SurfaceAsk = { kind: 'highest' } | { kind: 'lowest' } | { kind: 'reach'; targetCents: number };
+export interface SurfaceOption { id: SurfaceOptionId; x: number; y: number }
+export interface SurfacePayload { surface: SurfaceSpec; ask: SurfaceAsk; options: SurfaceOption[] }
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
+const whole = (value: unknown, minimum: number, maximum: number): value is number => typeof value === 'number' && Number.isInteger(value) && value >= minimum && value <= maximum;
+const exactKeys = (value: Record<string, unknown>, keys: readonly string[]): boolean => Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
+
+/** One year of interest on whole cents, rounded half up: floor(amount x (10000 + bps) / 10000 + 1/2) in exact integers. */
+export const nextYearCents = (amountCents: number, rateBps: number): number => Math.floor((amountCents * (10000 + rateBps) * 2 + 10000) / 20000);
+
+export function compoundCents(principalCents: number, rateBps: number, years: number): number {
+  let amount = principalCents;
+  for (let year = 0; year < years; year += 1) amount = nextYearCents(amount, rateBps);
+  return amount;
+}
+
+export const profitCents = (unitCostCents: number, fixedCents: number, priceCents: number, units: number): number => units * (priceCents - unitCostCents) - fixedCents;
+
+export const xAxis = (spec: SurfaceSpec): number[] => (spec.kind === 'compound' ? spec.ratesBps : spec.prices);
+export const yAxis = (spec: SurfaceSpec): number[] => (spec.kind === 'compound' ? spec.terms : spec.units);
+
+/** The output at grid position (xi, yi), in whole cents. */
+export function surfaceCents(spec: SurfaceSpec, xi: number, yi: number): number {
+  return spec.kind === 'compound'
+    ? compoundCents(spec.principalCents, spec.ratesBps[xi]!, spec.terms[yi]!)
+    : profitCents(spec.unitCostCents, spec.fixedCents, spec.prices[xi]!, spec.units[yi]!);
+}
+
+/** Every output, one row per y value and one column per x value. */
+export function surfaceGrid(spec: SurfaceSpec): number[][] {
+  return yAxis(spec).map((_, yi) => xAxis(spec).map((__, xi) => surfaceCents(spec, xi, yi)));
+}
+
+export interface SurfaceSlice { fixed: 'x' | 'y'; index: number; along: number[]; values: number[] }
+
+/** The 2D curve left when one input is held still: `fixed: 'x'` keeps the x value at `index` and runs along y, and the reverse. */
+export function surfaceSlice(spec: SurfaceSpec, fixed: 'x' | 'y', index: number): SurfaceSlice | null {
+  const along = fixed === 'x' ? yAxis(spec) : xAxis(spec);
+  const held = fixed === 'x' ? xAxis(spec) : yAxis(spec);
+  if (!Number.isInteger(index) || index < 0 || index >= held.length) return null;
+  return { fixed, index, along: [...along], values: along.map((_, step) => (fixed === 'x' ? surfaceCents(spec, index, step) : surfaceCents(spec, step, index))) };
+}
+
+export const MESH_HALF_WIDTH = 0.7;
+export const MESH_HALF_HEIGHT = 0.5;
+
+export interface SurfaceMesh { points: Vec3[][]; minCents: number; maxCents: number; zero: number | null }
+
+const span = (values: readonly number[]): number => values[values.length - 1]! - values[0]!;
+
+/** The grid as world points for the solids projection: x runs left to right, y runs front to back, the output runs up (zero is a level plane when the surface crosses it). */
+export function surfaceMesh(spec: SurfaceSpec): SurfaceMesh {
+  const xs = xAxis(spec);
+  const ys = yAxis(spec);
+  const grid = surfaceGrid(spec);
+  const flat = grid.flat();
+  const minCents = Math.min(...flat);
+  const maxCents = Math.max(...flat);
+  const rise = maxCents - minCents;
+  const height = (cents: number): number => (rise === 0 ? 0 : -MESH_HALF_HEIGHT + (2 * MESH_HALF_HEIGHT * (cents - minCents)) / rise);
+  const points = ys.map((y, yi) => xs.map((x, xi): Vec3 => [
+    -MESH_HALF_WIDTH + (2 * MESH_HALF_WIDTH * (x - xs[0]!)) / span(xs),
+    height(grid[yi]![xi]!),
+    MESH_HALF_WIDTH - (2 * MESH_HALF_WIDTH * (y - ys[0]!)) / span(ys),
+  ]));
+  return { points, minCents, maxCents, zero: minCents < 0 && maxCents > 0 ? height(0) : null };
+}
+
+function ascending(value: unknown, count: { min: number; max: number }, low: number, high: number): number[] | null {
+  if (!Array.isArray(value) || value.length < count.min || value.length > count.max || !value.every((entry) => whole(entry, low, high))) return null;
+  return value.every((entry, index) => index === 0 || entry > value[index - 1]!) ? [...value] : null;
+}
+
+export function readSurfaceSpec(value: unknown): SurfaceSpec | null {
+  if (!isRecord(value)) return null;
+  if (value.kind === 'compound') {
+    if (!exactKeys(value, ['kind', 'principalCents', 'ratesBps', 'terms']) || !whole(value.principalCents, SURFACE_LIMITS.principalCents.min, SURFACE_LIMITS.principalCents.max)) return null;
+    const ratesBps = ascending(value.ratesBps, SURFACE_LIMITS.xCount, 0, SURFACE_LIMITS.rateBps);
+    const terms = ascending(value.terms, SURFACE_LIMITS.yCount, 0, SURFACE_LIMITS.termYears);
+    return ratesBps && terms ? { kind: 'compound', principalCents: value.principalCents, ratesBps, terms } : null;
+  }
+  if (value.kind === 'profit') {
+    if (!exactKeys(value, ['kind', 'unitCostCents', 'fixedCents', 'prices', 'units']) || !whole(value.unitCostCents, 1, SURFACE_LIMITS.unitCostCents) || !whole(value.fixedCents, 0, SURFACE_LIMITS.fixedCents)) return null;
+    const prices = ascending(value.prices, SURFACE_LIMITS.xCount, 1, SURFACE_LIMITS.priceCents);
+    const units = ascending(value.units, SURFACE_LIMITS.yCount, 0, SURFACE_LIMITS.units);
+    return prices && units ? { kind: 'profit', unitCostCents: value.unitCostCents, fixedCents: value.fixedCents, prices, units } : null;
+  }
+  return null;
+}
+
+function readAsk(value: unknown): SurfaceAsk | null {
+  if (!isRecord(value)) return null;
+  if ((value.kind === 'highest' || value.kind === 'lowest') && exactKeys(value, ['kind'])) return { kind: value.kind };
+  if (value.kind === 'reach' && exactKeys(value, ['kind', 'targetCents']) && whole(value.targetCents, -SURFACE_LIMITS.targetCents, SURFACE_LIMITS.targetCents)) return { kind: 'reach', targetCents: value.targetCents };
+  return null;
+}
+
+function readOptions(value: unknown, spec: SurfaceSpec): SurfaceOption[] | null {
+  if (!Array.isArray(value) || value.length < SURFACE_LIMITS.options.min || value.length > SURFACE_LIMITS.options.max) return null;
+  const options: SurfaceOption[] = [];
+  for (const [index, entry] of value.entries()) {
+    if (!isRecord(entry) || !exactKeys(entry, ['id', 'x', 'y']) || entry.id !== SURFACE_OPTION_IDS[index]) return null;
+    if (!whole(entry.x, 0, xAxis(spec).length - 1) || !whole(entry.y, 0, yAxis(spec).length - 1)) return null;
+    options.push({ id: SURFACE_OPTION_IDS[index]!, x: entry.x, y: entry.y });
+  }
+  return new Set(options.map((option) => `${option.x},${option.y}`)).size === options.length ? options : null;
+}
+
+export function readSurfacePayload(value: unknown): SurfacePayload | null {
+  if (!isRecord(value) || !exactKeys(value, ['surface', 'ask', 'options'])) return null;
+  const surface = readSurfaceSpec(value.surface);
+  const ask = readAsk(value.ask);
+  const options = surface ? readOptions(value.options, surface) : null;
+  return surface && ask && options ? { surface, ask, options } : null;
+}
+
+/** The output at each option, in whole cents, in option order. */
+export const optionCents = (payload: SurfacePayload): number[] => payload.options.map((option) => surfaceCents(payload.surface, option.x, option.y));
+
+/** The one option the question asks for, or null when none or several qualify (the question must have exactly one answer). */
+export function surfaceKey(payload: SurfacePayload): SurfaceOptionId | null {
+  const values = optionCents(payload);
+  const { ask } = payload;
+  const hits = ask.kind === 'reach'
+    ? values.flatMap((cents, index) => (cents >= ask.targetCents ? [index] : []))
+    : values.flatMap((cents, index) => (cents === (ask.kind === 'highest' ? Math.max(...values) : Math.min(...values)) ? [index] : []));
+  return hits.length === 1 ? payload.options[hits[0]!]!.id : null;
+}
+
+/** The authoring rules a surface payload must meet: the surface rises or falls somewhere, and the question has exactly one answer. */
+export function surfaceProblem(payload: SurfacePayload): string | null {
+  const flat = surfaceGrid(payload.surface).flat();
+  if (Math.min(...flat) === Math.max(...flat)) return 'The surface must not be flat';
+  if (surfaceKey(payload) !== null) return null;
+  return payload.ask.kind === 'reach' ? 'Exactly one option must reach the target' : `Exactly one option must be the ${payload.ask.kind}`;
+}
