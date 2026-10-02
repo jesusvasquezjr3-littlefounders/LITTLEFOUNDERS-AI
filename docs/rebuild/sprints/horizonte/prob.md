@@ -1,0 +1,141 @@
+# Lane doc: prob (F2.9 probability tree and Bayes, F2.10 regression with squares)
+
+Three Probability boards on the Horizonte Visual, one pack, all grading on the server against a private key. Procedure:
+[RECIPE.md](./RECIPE.md). Pattern copied from [golden.md](./golden.md) and [stats1.md](./stats1.md).
+
+| Item | Value |
+|---|---|
+| Catalogue rows | H14 (probability tree), H29 (Bayes with natural frequencies), H11 (regression and residuals) |
+| Pieces | F2.9 (tree, Bayes), F2.10 (regression) |
+| Segment types | `prob.tree.v2`, `prob.bayes.v2` (F2.9); `prob.regression.v2` (F2.10) |
+| Visuals | `prob-tree`, `natural-frequencies`, `regression-residuals` |
+| Ages | tree and Bayes `{ ages: [13, 17], adult: true }`; regression `{ ages: [14, 17], adult: true }` |
+| ICAP level | Constructive, all three |
+| Answer shapes | tree: an arrangement of counts on branches; Bayes: numeric text; regression: curve parameters |
+| Rendering | in-house SVG, native range inputs, a text field, KaTeX for the equation through the shared `MathExpression`; no chart library, no randomness |
+| Chunk budgets | tree 18 KB, Bayes 16 KB, regression 18 KB (gzipped, declared) |
+
+## Behaviour and answer shapes
+
+Every payload is public and carries no answer. The key lives only in Core.
+
+| Type | Payload | The learner | Answer sent | Key (private) |
+|---|---|---|---|---|
+| `prob.tree.v2` | `{ population, prior, hit, alarm, chips }` | places each head count on its branch of the tree | `{ slots: { <branch>: [chipId] } }` | `{ solutions: [{ has, lacks, has-pos, has-neg, lacks-pos, lacks-neg }] }`, one chip id `n-<count>` per branch |
+| `prob.bayes.v2` | `{ population, prior, hit, alarm, ask }` | reads, from the four head counts, the chance that a person with one result truly has it | `{ value }`, locale-free number text | `{ target, tolerance: { absolute }, review? }` |
+| `prob.regression.v2` | `{ size, points, start: { slope, intercept } }` | moves a line until the squares on the points are as small as possible | `{ family: 'line', params: { m, b } }` | `{ family, target: { m, b }, parameter_tolerance: { absolute }, parameter_review? }` |
+
+Shares are written as `{ part, whole }` ("9 in 10"). The line is counted in tenths in the payload (`start`); the answer is text (`"0.8"`).
+
+- **Tree.** The three shares are written as facts above the tree. Six branches (have it, do not have it, and each of those split by a
+  positive or negative result) are drop targets; the tray holds the six head counts and one to four tempting extras. A count moves three
+  ways: drag its chip onto a branch, tap a chip then a branch, or the Move to menu (the keyboard path, which lists every other branch and
+  "Back to the tray" when the chip is placed). A branch holds one chip and a chip sits on one branch; placing a chip on a taken branch
+  returns the old one to the tray. Placed chips stay in the tray as labelled handles ("10 people on Have it"), so the handle is always
+  there to pick up again. The status line writes "Placed: n of 6" and the table lists branch, share and count.
+- **Bayes.** The same population drawn person by person in a grid of four groups (have it or not, positive or not), with the four head
+  counts written in a legend and the people who got the asked result outlined (outline and legend text, never colour alone). The learner
+  types the chance as a percent, a decimal or a fraction; the field echoes how Core will read it ("Reads as 0.25") before Check, and says
+  why when the text is not a chance. The table lists the four counts and has no totals, because a total would hand over the denominator.
+- **Regression.** A square scatter plot, a line, and a square on each point whose side is the point's vertical distance to the line (it
+  turns inward at the right edge; a point on the line has no square). Two sliders move the slope and the intercept in steps of a tenth,
+  each with Less and More buttons. The status line writes the slope, the intercept and the sum of the squares, the equation is written
+  with KaTeX and spoken in words (`y equals minus 0.7 x plus 1.5`), and the table lists each point with its place on the line, residual and
+  square, and the total.
+
+## Scorer ladder (same for all three)
+
+| Verdict | When |
+|---|---|
+| `invalid` | malformed response or extra fields, a chip that is not in the tray, a chip used twice or two chips on one branch, a chance that is not a number from 0 to 1, a slope or intercept outside the sliders, or (with a rubric) a key that is not the one answer of its payload |
+| `valid` | nothing placed, the field left empty, or the line left where it started; and, without a rubric as in the browser, any well-formed response |
+| `review` | answered, but not the key; diagnostic `value` |
+| `met` | tree: every head count on its own branch; Bayes: within the allowance of the exact share; regression: within a twentieth of the best slope and of the best intercept; score 100, diagnostic `none` |
+
+Scorers are pure, total and deterministic and work in exact arithmetic: a rational type on `BigInt` (`rational.ts`) holds shares, chances and
+the least squares fit, so a float never decides a verdict. The tree is grown in whole people (every share must land on whole people and the six
+counts must differ, which is what lets chips be told apart by value). Solvability is checked twice: in the contract (a payload with no single
+answer does not parse) and in the scorer (a key that is not the one answer is `invalid`). The browser has no rubric, so its generated scorer can say
+only `valid` or `invalid`.
+
+Solvers: the tree key is the grown tree; the Bayes key is the head count of those who have it and got the asked result over everyone with that
+result, which must lie between 1 in 20 and 19 in 20; the regression key is the exact least squares line, which must have both numbers on the tenths
+grid inside the slider ranges (`-3` to `3`, `-5` to `15`), with the points not all on one line and the start away from the best line. A typed chance
+is read as a percent, a decimal (point or comma) or a fraction and reduced to a locale-free text by `readChance`.
+
+## Files
+
+Backend `backend/src/services/horizonte/prob/`: `rational.ts` (exact fractions), `model.ts` (tree, shares, chance reading), `regression.ts` (points,
+line in tenths, least squares), `contract.ts`, `scorer.ts`, `fixtures.ts`, `capabilities.ts`, `index.ts`. Test: `backend/src/__tests__/horizonte/prob.test.ts`.
+
+Browser `frontend/src/rebuild/learning/horizonte/prob/`: generated `contract|rational|model|regression|scorer|fixtures.generated.ts` (never hand-edited),
+`capabilities.ts`, `copy.ts`, `boards.tsx`, `shared.tsx`, `TreeBoard.tsx`, `BayesBoard.tsx`, `RegressionBoard.tsx`, `prob.css`, `audit.json`,
+`probBoards.test.tsx`.
+
+Forge `coursegen/src/v2/horizonte/prob.ts` (capabilities, authoring guidance, gate-4 solvability checks hand-mirrored from Core); test
+`coursegen/src/__tests__/horizonte/prob.test.ts`.
+
+Fixtures (9, all ages 13-17): `tree-screening`, `tree-filter`, `tree-survey`, `bayes-screening`, `bayes-filter`, `bayes-checkup` (asks about the negative
+result), `regression-climb`, `regression-gentle`, `regression-fall`. Preview: `?screen=fixture&seg=hz:prob:<fixture>&age=13-17`.
+
+## Decisions
+
+- **Exact numbers.** Shares, counts, chances and the fit are rationals; the only floats are drawing aids. The regression keeps the line in tenths
+  and compares in whole numbers (`10y - slope * x - intercept`, squared).
+- **Pictures do not leak.** The tree shows only the shares; the Bayes legend writes the four counts but no total and the table has none; the
+  regression shows the sum of the squares of the current line, never the best line.
+- **Prompts carry no answer.** The tree prompt never writes a head count, the Bayes prompt never writes the number of people or the chance, and the
+  regression prompt never writes the slope or the intercept. The Forge gate checks the payloads and keys, and the guidance says so.
+- **Tree chips are told apart by value.** The six counts must all differ, so a chip id is `n-<count>` and the key needs no chip identity beyond that.
+- **Placed chips stay in the tray.** A chip that sits on a branch is relabelled in place ("10 people on Have it") instead of vanishing, so there is
+  always one handle per count, with a name that says where it is, and the keyboard path never has to look for a chip inside the SVG.
+- **Chance reading is shared.** `readChance` lives in the pure model and is the one reader for the browser echo and the server scorer, so what the
+  learner is shown is what Core compares. It accepts `25%`, `0.25`, `0,25` and `1/4`, rejects anything over 1, and answers a locale-free text.
+- **Regression has no drag handles.** The sliders and their step buttons are the pointer, touch and keyboard path at once (V4), so the board has
+  no `data-hz-handle` and no Move to menu. The 64 px rule applies to the sliders and buttons through the design system.
+- **KaTeX through the shared component.** The equation uses `MathExpression` with author-written spoken text built from the locale's own words
+  ("is equal to", "plus", "minus"); pt-BR gets its decimal comma from the component, and the plain fallback shows until KaTeX loads. The segment
+  declares `visual.math-notation.v1`.
+- **Hues.** Berry marks the people who have it and sky the people who do not; strong and soft variants separate positive from negative, and the
+  asked people carry a heavy outline. No other hue is used, and nothing depends on colour alone (labels, legend and outline all say it).
+- **Copy.** Every string carries a `data-copy-role` and is written natively in en-US, es-MX and pt-BR (not translated from one another); numbers and
+  statuses use the `data` role. Counts of people use the locale's plural rules through `pluralUnit`. The copy gate and the board harness check the budget.
+- **Motion.** Fill and stroke transitions on branches and squares under `prefers-reduced-motion: no-preference`, using the duration and easing tokens.
+
+## Status
+
+Implementation: complete in all five layers (Core pack, browser copies, boards, Forge, lane doc). Local verification: Core pack test (18), frontend board
+contract and interaction tests (28, including all three locales and the board contract for every fixture), Forge test (15), the capability parity
+gate, the copy gate and the sync check. Acceptance and release: not done; they belong to the owner and the coordinator's audit pass.
+
+Not verified: no real browser, no screenshot, no layout measurement. Everything below was reasoned from the code and jsdom, not looked at.
+
+## Known issues and limits
+
+- **No visual verification.** The tree layout, label collisions on the edges at narrow widths, the waffle at 2000 people (about 9 units of 640 per cell), the
+  residual squares at the plot edge, the 64 px hit size and the contrast of the chosen tokens have not been seen in a browser. jsdom cannot measure layout.
+- **Tree labels shrink with the viewport.** The SVG scales down, so the edge labels and the counts inside branches get small on a phone; the status
+  line, the tray and the table carry the same numbers.
+- **Large populations.** The Bayes grid fills column by column in a fixed 2 to 1 shape. Past about 6700 people a cell is under 5 units of the 640 wide
+  drawing and the cell lines are dropped (the group blocks and the legend remain); a population of 10000 gives cells near 4 units. Populations up to
+  10000 are valid in the contract.
+- **Whole people only.** A share that would split a person does not parse, so authors pick populations that divide cleanly and need six different counts.
+- **One tree.** There is no second answer for the tree (for example swapping the two result branches of one side); the arrangement is unique by construction.
+- **Regression range.** Slope is -3 to 3 and intercept -5 to 15 in steps of a tenth; points sit on a grid of at most 20 by 20 with 4 to 12 points. A line
+  that needs a slope outside the sliders has no valid payload. The intercept slider is 200 steps long, so the keyboard path is long for a far intercept.
+- **Squares are clipped to the plot.** A square larger than the plot (a line far from the points) is cut at the frame, so its side is read from the table
+  and the status line, not only from the drawing.
+- **No fit statistics.** The board never shows the best line, R squared or a correlation; it asks only for the line that minimises the squares.
+- **A pre-existing harness failure outside this lane.** `horizonte/harness/fixtureCoverage.test.tsx` treats the `plano` folder (the Plano primitive, which has
+  an `index.ts` but is not a pack) as a pack and fails three tests on `HORIZONTE_FIXTURES.plano`. It is the same failure recorded in the sim1 lane doc and is
+  not caused by this lane; the prob audit and fixture entries are checked by `probBoards.test.tsx` and the sync check instead.
+- **Act warnings in tests.** `MathExpression` loads KaTeX asynchronously, so the regression tests print React `act` warnings. They do not fail a test.
+
+## Owner follow-ups
+
+- Look at all nine fixtures in a real browser at phone, tablet and desktop widths, in all three locales and with reduced motion on and off, and read the
+  Bayes grid at 1000 and 2000 people.
+- Review the es-MX and pt-BR strings with a native speaker (they are native-written, not machine copies, but not reviewed), in particular "Lo tienen"
+  and "Têm" as the name of the branch of people who have it.
+- Decide whether `plano` should be excluded from the fixtureCoverage pack scan (a harness fix outside this lane).
+- Accept and release the two pieces (F2.9, F2.10) in the sprint record.
