@@ -14,7 +14,8 @@ vi.mock('../../../../tutor-scene/TutorStage', () => ({ TutorStage: () => <div da
 type Locale = 'en-US' | 'es-MX' | 'pt-BR';
 const CSS = ['stats1/stats1.css'];
 
-const show = (fixture: string, grade = vi.fn(() => ({ verdict: 'review' as const })), locale: Locale = 'en-US') => {
+const show = (fixture: string, verdict: 'met' | 'review' = 'review', locale: Locale = 'en-US') => {
+  const grade = vi.fn(() => ({ verdict }));
   render(<LessonDocumentView raw={horizonteFixtureDocument('stats1', fixture, locale)} locale={locale} ageBand={horizonteFixture('stats1', fixture)!.ageBand} onBack={() => {}} onGradeAny={grade} />);
   return grade;
 };
@@ -124,7 +125,7 @@ describe('stats1 boards (F1.13, F1.14)', () => {
     });
 
     it('locks the pivot once the beam is accepted', async () => {
-      show('balance-level', vi.fn(() => ({ verdict: 'met' as const })));
+      show('balance-level', 'met');
       await screen.findByRole('img', { name: 'Beam with dots' });
       setSlider('Pivot position', 5);
       fireEvent.click(screen.getByRole('button', { name: 'Check' }));
@@ -239,7 +240,7 @@ describe('stats1 boards (F1.13, F1.14)', () => {
 
   describe('Spanish and Portuguese', () => {
     it('speaks the dot plot in Spanish', async () => {
-      show('dot-plot-median', undefined, 'es-MX');
+      show('dot-plot-median', 'review', 'es-MX');
       expect(await screen.findByRole('img', { name: 'Diagrama de puntos' })).toBeTruthy();
       expect(screen.getByRole('button', { name: 'Mostrar como tabla' })).toBeTruthy();
       expect(status()).toHaveTextContent('Mediana: 4. Movimientos usados: 0 de 2');
@@ -247,7 +248,7 @@ describe('stats1 boards (F1.13, F1.14)', () => {
     });
 
     it('writes decimals the Brazilian way', async () => {
-      show('binomial-fair', undefined, 'pt-BR');
+      show('binomial-fair', 'review', 'pt-BR');
       expect(await screen.findByRole('img', { name: 'Barras binomiais' })).toBeTruthy();
       expect(status()).toHaveTextContent('Média: 3. Variância: 2,1');
       expect(screen.getByRole('button', { name: 'Mostrar como tabela' })).toBeTruthy();
