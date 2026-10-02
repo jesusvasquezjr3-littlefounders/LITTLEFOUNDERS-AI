@@ -1,0 +1,21 @@
+[
+  { "fixture": "konigsberg", "age": "10-12" },
+  { "fixture": "bridge-walk", "age": "10-12" },
+  { "fixture": "cheapest-route", "age": "10-12" },
+  { "fixture": "cheapest-tie", "age": "10-12" },
+  { "fixture": "team-picks", "age": "10-12" },
+  { "fixture": "podium", "age": "10-12" },
+  { "fixture": "pascal-evens", "age": "10-12" },
+  { "fixture": "pascal-threes", "age": "10-12" },
+  { "fixture": "unit-circle-cos", "age": "13-17" },
+  { "fixture": "unit-circle-sin", "age": "13-17" },
+  { "fixture": "circle-wave", "age": "13-17" },
+  { "fixture": "secant-slope", "age": "13-17" },
+  { "fixture": "linked-graphs", "age": "13-17" },
+  { "fixture": "riemann-sums", "age": "13-17" },
+  { "fixture": "area-so-far", "age": "13-17" },
+  { "fixture": "bits-ten", "age": "10-12" },
+  { "fixture": "bits-byte", "age": "10-12" },
+  { "fixture": "gates-xor", "age": "10-12" },
+  { "fixture": "gates-alarm", "age": "10-12" }
+]
