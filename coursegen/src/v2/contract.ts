@@ -164,7 +164,9 @@ export function isNonCopyKey(key: string): boolean {
     // GAP-FIX-R1: structural ids and enums of the new families (flowchart edges, Euler relation, node kind, Mentor role, audio reference).
     || key === 'start' || key === 'yes' || key === 'no' || key === 'relation' || key === 'kind' || key === 'role' || key === 'audio_ref'
     // Chart data: link endpoints and calendar dates are identifiers, not copy.
-    || key === 'from' || key === 'to' || key === 'date'
+    || key === 'from' || key === 'to' || key === 'date' || key === 'end'
+    // Horizonte F1.0: a heatmap cell names its column and row by id.
+    || key === 'col' || key === 'row'
     // GAP-FIX-R2: a rule builder's level and a flowchart's build mode are contract vocabulary.
     || key === 'level'
     // GAP-FIX-R4: an L1 rule's kind is contract vocabulary.

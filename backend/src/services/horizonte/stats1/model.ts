@@ -1,0 +1,136 @@
+export const DOT_COUNT_MIN = 3;
+export const DOT_COUNT_MAX = 12;
+export const DOT_MOVES_MAX = 2;
+export const AXIS_LIMIT = 100;
+export const AXIS_SPAN_MIN = 4;
+export const AXIS_SPAN_MAX = 20;
+
+export const DOT_MEASURES = ['mean', 'median', 'mode'] as const;
+export type DotMeasure = (typeof DOT_MEASURES)[number];
+export type Axis = { readonly min: number; readonly max: number };
+export type Dots = readonly number[];
+
+export const whole = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value);
+export const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
+/** A plain object whose own keys are exactly `keys`: a response or rubric with an extra or missing field is malformed. */
+export const hasOnly = (value: unknown, keys: readonly string[]): value is Record<string, unknown> =>
+  isRecord(value) && Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
+export const inRange = (value: unknown, low: number, high: number): value is number => whole(value) && value >= low && value <= high;
+
+/** A whole-number axis for dots or a curve: from 0 to 100 and from 4 to 20 steps wide. */
+export function isAxis(value: unknown): value is Axis {
+  if (!hasOnly(value, ['min', 'max'])) return false;
+  const { min, max } = value;
+  return inRange(min, 0, AXIS_LIMIT) && inRange(max, 0, AXIS_LIMIT) && max - min >= AXIS_SPAN_MIN && max - min <= AXIS_SPAN_MAX;
+}
+
+/** Between 3 and 12 dots, each a whole value on the axis. */
+export function isDots(value: unknown, axis: Axis): value is Dots {
+  return Array.isArray(value) && value.length >= DOT_COUNT_MIN && value.length <= DOT_COUNT_MAX && value.every((dot) => inRange(dot, axis.min, axis.max));
+}
+
+export const sortedDots = (dots: Dots): number[] => [...dots].sort((a, b) => a - b);
+export function sameDots(a: Dots, b: Dots): boolean {
+  const other = sortedDots(b);
+  return a.length === b.length && sortedDots(a).every((dot, index) => dot === other[index]);
+}
+export const dotSum = (dots: Dots): number => dots.reduce((sum, dot) => sum + dot, 0);
+
+/** Twice the median, so an even count never needs a fraction. */
+export function dotMedianTwice(dots: Dots): number {
+  const sorted = sortedDots(dots);
+  const middle = sorted.length >> 1;
+  return sorted.length % 2 === 1 ? 2 * sorted[middle]! : sorted[middle - 1]! + sorted[middle]!;
+}
+
+/** The one most frequent value, or null when two or more values tie (a plot with no single mode). */
+export function dotMode(dots: Dots): number | null {
+  const counts = new Map<number, number>();
+  for (const dot of dots) counts.set(dot, (counts.get(dot) ?? 0) + 1);
+  let best = 0;
+  let value: number | null = null;
+  for (const [dot, count] of counts) {
+    if (count > best) { best = count; value = dot; } else if (count === best) value = null;
+  }
+  return value;
+}
+
+/** The measure as a number to show: the mean and median may be fractions, the mode may not exist. */
+export function dotMeasureValue(measure: DotMeasure, dots: Dots): number | null {
+  if (measure === 'mean') return dotSum(dots) / dots.length;
+  return measure === 'median' ? dotMedianTwice(dots) / 2 : dotMode(dots);
+}
+
+/** Exact, with whole numbers only: the mean times the count, twice the median, the single mode. */
+export function dotMeasureMet(measure: DotMeasure, dots: Dots, target: number): boolean {
+  if (measure === 'mean') return dotSum(dots) === target * dots.length;
+  return measure === 'median' ? dotMedianTwice(dots) === 2 * target : dotMode(dots) === target;
+}
+
+/** How many dots sit somewhere other than where they started: the fewest single-dot moves that turn one plot into the other. */
+export function dotsMoved(start: Dots, dots: Dots): number {
+  const pool = new Map<number, number>();
+  for (const dot of start) pool.set(dot, (pool.get(dot) ?? 0) + 1);
+  let kept = 0;
+  for (const dot of dots) {
+    const left = pool.get(dot) ?? 0;
+    if (left > 0) { pool.set(dot, left - 1); kept += 1; }
+  }
+  return start.length - kept;
+}
+
+/** The rule a response keeps whatever the target: the same dots in number, all on the axis, no more than `moves` of them moved. */
+export const respectsDotRule = (start: Dots, dots: unknown, axis: Axis, moves: number): dots is Dots =>
+  isDots(dots, axis) && dots.length === start.length && dotsMoved(start, dots) <= moves;
+
+/** The same plot as a count per axis step, in axis order. */
+export function dotCounts(dots: Dots, axis: Axis): number[] {
+  const counts = new Array<number>(axis.max - axis.min + 1).fill(0);
+  for (const dot of dots) counts[dot - axis.min] = (counts[dot - axis.min] ?? 0) + 1;
+  return counts;
+}
+
+export function dotsFromCounts(counts: readonly number[], axis: Axis): number[] {
+  return counts.flatMap((count, index) => new Array<number>(count).fill(axis.min + index));
+}
+
+/**
+ * Solvability: some plot at most `moves` single-dot moves from the start has the measure on the target, and the start
+ * does not already have it. Breadth-first over count vectors; 12 dots on 21 steps with 2 moves stays under ten thousand states.
+ */
+export function dotTargetReachable(start: Dots, axis: Axis, measure: DotMeasure, moves: number, target: number): boolean {
+  if (!inRange(target, axis.min, axis.max) || dotMeasureMet(measure, start, target)) return false;
+  const first = dotCounts(start, axis);
+  const seen = new Set<string>([first.join(',')]);
+  let frontier = [first];
+  for (let step = 0; step < moves; step += 1) {
+    const next: number[][] = [];
+    for (const counts of frontier) {
+      for (let from = 0; from < counts.length; from += 1) {
+        if (counts[from]! < 1) continue;
+        for (let to = 0; to < counts.length; to += 1) {
+          if (to === from) continue;
+          const moved = counts.slice();
+          moved[from] = counts[from]! - 1;
+          moved[to] = counts[to]! + 1;
+          const key = moved.join(',');
+          if (seen.has(key)) continue;
+          seen.add(key);
+          if (dotMeasureMet(measure, dotsFromCounts(moved, axis), target)) return true;
+          next.push(moved);
+        }
+      }
+    }
+    frontier = next;
+  }
+  return false;
+}
+
+/** Total signed distance of the dots from a pivot: zero when the beam is level, positive when the right side is heavier. */
+export const balanceMoment = (dots: Dots, pivot: number): number => dotSum(dots) - pivot * dots.length;
+
+/** The pivot where the beam is level, when it is a whole position on the grid. */
+export function balancePoint(dots: Dots): number | null {
+  const sum = dotSum(dots);
+  return sum % dots.length === 0 ? sum / dots.length : null;
+}
