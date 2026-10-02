@@ -1,0 +1,24 @@
+/* F2.4 function graph, F2.5 line system, F2.6 equation editor. Neutral board: lines and markers are told apart by shape, dash and label, never colour alone. Tokens only. */
+.lf-alg2 { display: grid; gap: var(--spacing-3); justify-items: start; }
+.lf-alg2 > .lf-plano { inline-size: 100%; max-inline-size: 42rem; }
+.lf-alg2-status { margin: 0; font-weight: 800; }
+.lf-alg2-note { margin: 0; min-block-size: 1.5rem; }
+.lf-alg2-sliders, .lf-alg2-markers { max-inline-size: 42rem; }
+.lf-alg2-readout { display: grid; gap: var(--spacing-1); margin: 0; padding: 0; list-style: none; color: var(--ink); }
+.lf-alg2-readout li { font-weight: 800; }
+
+.lf-alg2-editor { display: grid; gap: var(--spacing-3); inline-size: 100%; max-inline-size: 42rem; }
+.lf-alg2-goal { margin: 0; font-weight: 800; }
+.lf-alg2-lines { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-alg2-line { display: grid; gap: var(--spacing-2); padding: var(--spacing-3); border-radius: var(--rounded-sm); background: var(--sunken); outline: 2px solid transparent; }
+.lf-alg2-line--start { border: 1px dashed var(--outline); }
+.lf-alg2-line[data-line-state='same'] { outline-color: var(--outline); outline-style: solid; }
+.lf-alg2-line[data-line-state='differs'] { outline-color: var(--ink); outline-style: dashed; }
+.lf-alg2-line-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-2); }
+.lf-alg2-line-name { font-weight: 800; }
+.lf-alg2-math { min-block-size: 2rem; font-size: 1.25rem; overflow-x: auto; overflow-y: hidden; }
+.lf-alg2-verdict { margin: 0; font-weight: 800; }
+.lf-alg2-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-alg2-line { transition: outline-color var(--dur-component) var(--ease-standard); }
+}
