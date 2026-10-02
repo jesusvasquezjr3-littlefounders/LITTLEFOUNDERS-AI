@@ -1,5 +1,54 @@
+import { z } from 'zod';
+import { hzBase, hzServer, hzVisual } from '../shared.js';
 import type { HorizonteAgeScope } from '../types.js';
+import { BALANCE_MAX_ANSWER, BALANCE_MAX_UNITS, BALANCE_MAX_X, BALANCE_OPS, isOfferedOps, isStartScale } from './model.js';
+import { PROOF_CHOICES, proofPayloadProblem } from './proof.js';
 
-export const BALANCE_SEGMENTS = [] as const;
-export const BALANCE_RUBRICS = {} as const;
-export const BALANCE_AGE_SCOPE: Readonly<Record<string, HorizonteAgeScope>> = {};
+const pan = z.object({ x: z.number().int().min(0).max(BALANCE_MAX_X), u: z.number().int().min(0).max(BALANCE_MAX_UNITS) }).strict();
+
+/** F1.8: the scale that holds `a x + b = c x + d` and the operations offered; the answer (x) never ships in the payload. */
+export const balancePayload = z.object({
+  start: z.object({ l: pan, r: pan }).strict().refine(isStartScale, 'The equation needs x on at least one pan'),
+  ops: z.array(z.enum(BALANCE_OPS)).min(1).max(BALANCE_OPS.length).refine(isOfferedOps, 'Offer distinct operations, at least one that moves the route'),
+}).strict();
+
+const int = (min: number, max: number) => z.number().int().min(min).max(max);
+const choices = z.array(z.enum(PROOF_CHOICES)).min(3).max(5);
+
+/** F1.15: one payload shape per visual; `choices` are the formulas offered for the prediction, never marked. */
+export const proofPayload = z.union([
+  z.object({ base: int(2, 20), height: int(1, 20), slant: int(1, 19), choices }).strict(),
+  z.object({ base: int(1, 20), height: int(1, 20), apex: int(0, 20), choices }).strict(),
+  z.object({ top: int(1, 19), bottom: int(2, 20), height: int(1, 20), offset: int(0, 19), choices }).strict(),
+  z.object({ radius: int(1, 12), sectors: z.array(int(4, 48)).min(2).max(5), choices }).strict(),
+  z.object({ diameter: int(1, 20), choices }).strict(),
+  z.object({ a: int(3, 20), b: int(3, 20), choices }).strict(),
+  z.object({ n: int(3, 7), choices }).strict(),
+]);
+
+export const BALANCE_SEGMENTS = [
+  z.object({
+    ...hzBase, type: z.literal('math.equation-balance.v2'), grading: hzServer, visual: hzVisual('equation-balance'), payload: balancePayload,
+  }).strict(),
+  z.object({
+    ...hzBase, type: z.literal('math.visual-proof.v2'), grading: hzServer,
+    visual: z.union([
+      hzVisual('parallelogram-area'), hzVisual('triangle-area'), hzVisual('trapezoid-area'), hzVisual('circle-area'),
+      hzVisual('circumference-unroll'), hzVisual('pythagoras-proof'), hzVisual('odd-sum-proof'),
+    ]),
+    payload: proofPayload,
+  }).strict().superRefine((value, ctx) => {
+    const problem = proofPayloadProblem(value.visual.type, value.payload);
+    if (problem) ctx.addIssue({ code: 'custom', path: ['payload'], message: problem });
+  }),
+] as const;
+
+export const BALANCE_RUBRICS = {
+  'math.equation-balance.v2': z.object({ x: z.number().int().min(0).max(BALANCE_MAX_ANSWER) }).strict(),
+  'math.visual-proof.v2': z.object({ choice: z.enum(PROOF_CHOICES), value: z.string().regex(/^(0|[1-9]\d{0,11})(\.\d{0,8}[1-9])?$/) }).strict(),
+} as const;
+
+export const BALANCE_AGE_SCOPE: Readonly<Record<string, HorizonteAgeScope>> = {
+  'math.equation-balance.v2': { ages: [10, 14], adult: false },
+  'math.visual-proof.v2': { ages: [10, 15], adult: false },
+};
