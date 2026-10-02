@@ -267,7 +267,7 @@ describe('num-a pack: F1.2 rekenrek and abacus, F1.3 number lines, F1.7 clock, r
   });
 
   it('refuses a payload that breaks a rule of its piece', () => {
-    const bad = (id: string, payload: unknown) => grade(segmentOf(id).type as string)({ ...segmentOf(id), payload }, numA.scorers[segmentOf(id).type as string]!.sample(segmentOf(id), fixture(id).rubric), fixture(id).rubric).verdict;
+    const bad = (id: string, payload: unknown) => grade(segmentOf(id).type as string)({ ...segmentOf(id), payload }, (numA.scorers[segmentOf(id).type as string]!.sample as unknown as (segment: unknown, rubric: unknown) => unknown)(segmentOf(id), fixture(id).rubric), fixture(id).rubric).verdict;
     expect(bad('rekenrek-seven', { start: [3] })).toBe('invalid');
     expect(bad('abacus-forty-seven', { start: [] })).toBe('invalid');
     expect(bad('jump-up', { start: 47, sizes: [3, 5], max: 6 })).toBe('invalid');

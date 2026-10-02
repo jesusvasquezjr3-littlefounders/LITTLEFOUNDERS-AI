@@ -11,7 +11,7 @@ vi.mock('../../../../tutor-scene/quality', () => ({
 }));
 vi.mock('../../../../tutor-scene/TutorStage', () => ({ TutorStage: () => <div data-testid="tutor-stage" /> }));
 
-const show = (fixture: string, grade = vi.fn(() => ({ verdict: 'review' as const })), locale: 'en-US' | 'es-MX' | 'pt-BR' = 'en-US') => {
+const show = (fixture: string, grade = vi.fn((): { verdict: 'met' | 'review' } => ({ verdict: 'review' })), locale: 'en-US' | 'es-MX' | 'pt-BR' = 'en-US') => {
   render(<LessonDocumentView raw={horizonteFixtureDocument('num-a', fixture, locale)} locale={locale} ageBand="6-9" onBack={() => {}} onGradeAny={grade} />);
   return grade;
 };
@@ -91,7 +91,7 @@ describe('num-a board: rekenrek (A05)', () => {
   });
 
   it('resets to the authored start and locks the beads once the answer is met', async () => {
-    const grade = show('rekenrek-ten', vi.fn(() => ({ verdict: 'met' as const })));
+    const grade = show('rekenrek-ten', vi.fn((): { verdict: 'met' | 'review' } => ({ verdict: 'met' })));
     await screen.findByRole('group', { name: 'Rekenrek' });
     expect(screen.getByRole('button', { name: 'Reset' })).toBeDisabled();
     fireEvent.click(bead(1, 7, 'not counted'));

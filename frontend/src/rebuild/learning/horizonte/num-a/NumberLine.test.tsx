@@ -12,7 +12,7 @@ vi.mock('../../../../tutor-scene/quality', () => ({
 vi.mock('../../../../tutor-scene/TutorStage', () => ({ TutorStage: () => <div data-testid="tutor-stage" /> }));
 
 type Locale = 'en-US' | 'es-MX' | 'pt-BR';
-const show = (fixture: string, grade = vi.fn(() => ({ verdict: 'review' as const })), locale: Locale = 'en-US', ageBand: '6-9' | '10-12' = '6-9') => {
+const show = (fixture: string, grade = vi.fn((): { verdict: 'met' | 'review' } => ({ verdict: 'review' })), locale: Locale = 'en-US', ageBand: '6-9' | '10-12' = '6-9') => {
   render(<LessonDocumentView raw={horizonteFixtureDocument('num-a', fixture, locale)} locale={locale} ageBand={ageBand} onBack={() => {}} onGradeAny={grade} />);
   return grade;
 };
