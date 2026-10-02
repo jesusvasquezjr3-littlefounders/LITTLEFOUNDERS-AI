@@ -1,0 +1,6 @@
+/* F1.9, F1.11 and F1.12 plane boards: slope triangle, rate of change, linked views, break-even, cost structure, markup, market shift and elasticity. Tokens only. */
+.lf-p1 { display: grid; gap: var(--spacing-3); justify-items: start; }
+.lf-p1-figure { inline-size: 100%; max-inline-size: 42rem; }
+.lf-p1-status { font-weight: 800; }
+.lf-p1-facts { display: grid; gap: var(--spacing-1); margin: 0; color: var(--ink); }
+.lf-p1 .lf-hz-table { max-inline-size: 42rem; }

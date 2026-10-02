@@ -1,0 +1,14 @@
+[
+  { "fixture": "slope-triangle-run", "age": "13-17" },
+  { "fixture": "slope-triangle-gentle", "age": "13-17" },
+  { "fixture": "rate-of-change-steps", "age": "13-17" },
+  { "fixture": "linked-views-line", "age": "10-12" },
+  { "fixture": "break-even-stand", "age": "10-12" },
+  { "fixture": "cost-structure-average", "age": "13-17" },
+  { "fixture": "markup-price", "age": "10-12" },
+  { "fixture": "margin-price", "age": "13-17" },
+  { "fixture": "market-shift-demand", "age": "13-17" },
+  { "fixture": "market-shift-supply", "age": "13-17" },
+  { "fixture": "elasticity-unit", "age": "13-17" },
+  { "fixture": "elasticity-half", "age": "13-17" }
+]

@@ -63,7 +63,7 @@ export const PLANE1_FIXTURES: readonly HorizonteFixture[] = [
     eligibility: { minimum_age: 12, maximum_age: 12 },
     segment: (locale) => ({
       id: 'break-even-stand', type: 'fin.break-even.v2', grading: 'server', visual: { type: 'break-even' },
-      prompt: text('Setup costs 60. A cup costs 2 to make and sells for 5. Find the cups where sales equal costs.', 'La preparación cuesta 60. Un vaso cuesta 2 y se vende en 5. Halla los vasos donde las ventas igualan los costos.', 'A preparação custa 60. Um copo custa 2 e vende por 5. Ache os copos em que as vendas igualam os custos.')[locale],
+      prompt: text('Setup costs 60, and a cup costs 2 and sells for 5. Find the cups where sales equal costs.', 'La preparación cuesta 60, y un vaso cuesta 2 y se vende en 5. Halla los vasos donde las ventas igualan los costos.', 'A preparação custa 60, e um copo custa 2 e vende por 5. Ache os copos em que as vendas igualam os custos.')[locale],
       payload: { fixed: 60, price: 5, unit: 2, maxUnits: 40, start: 5 },
     }),
     rubric: { target: 20 },
@@ -76,7 +76,7 @@ export const PLANE1_FIXTURES: readonly HorizonteFixture[] = [
     eligibility: { minimum_age: 13, maximum_age: 14 },
     segment: (locale) => ({
       id: 'cost-structure-average', type: 'fin.cost-structure.v2', grading: 'server', visual: { type: 'cost-structure' },
-      prompt: text('Setup costs 120 and each unit costs 5 to make. Find the units where the average cost per unit falls to 8.', 'La preparación cuesta 120 y cada unidad cuesta 5. Halla las unidades donde el costo promedio por unidad baja a 8.', 'A preparação custa 120 e cada unidade custa 5. Ache as unidades em que o custo médio por unidade cai para 8.')[locale],
+      prompt: text('Setup costs 120 and each unit costs 5. Find the units where the average cost falls to 8.', 'La preparación cuesta 120 y cada unidad cuesta 5. Halla las unidades donde el costo promedio baja a 8.', 'A preparação custa 120 e cada unidade custa 5. Ache as unidades em que o custo médio cai para 8.')[locale],
       payload: { fixed: 120, variable: 5, maxUnits: 50, goal: { average: 8 }, start: 10 },
     }),
     rubric: { target: 40 },
@@ -115,7 +115,7 @@ export const PLANE1_FIXTURES: readonly HorizonteFixture[] = [
     eligibility: { minimum_age: 13, maximum_age: 14 },
     segment: (locale) => ({
       id: 'market-shift-demand', type: 'econ.market-shift.v2', grading: 'server', visual: { type: 'market-shift' },
-      prompt: text('A heat wave adds 12 units of demand at every price. Does the price go up or down? Set the new price.', 'Una ola de calor suma 12 unidades de demanda en cada precio. ¿El precio sube o baja? Fija el precio nuevo.', 'Uma onda de calor soma 12 unidades de demanda em cada preço. O preço sobe ou desce? Defina o novo preço.')[locale],
+      prompt: text('A heat wave adds 12 units of demand at each price. Choose the direction, then set the new price.', 'Una ola de calor suma 12 unidades de demanda en cada precio. Elige la dirección y fija el precio nuevo.', 'Uma onda de calor soma 12 unidades de demanda em cada preço. Escolha a direção e defina o novo preço.')[locale],
       payload: { pMax: 16, qMax: 80, demand: { a: 60, b: 4 }, supply: { c: 0, d: 2 }, shift: { curve: 'demand', by: 12 }, start: 10 },
     }),
     rubric: { target: { direction: 'up', price: 12 } },
@@ -128,7 +128,7 @@ export const PLANE1_FIXTURES: readonly HorizonteFixture[] = [
     eligibility: { minimum_age: 15, maximum_age: 17 },
     segment: (locale) => ({
       id: 'market-shift-supply', type: 'econ.market-shift.v2', grading: 'server', visual: { type: 'market-shift' },
-      prompt: text('A new farm adds 25 units of supply at every price. Does the price go up or down? Set the new price.', 'Una granja nueva suma 25 unidades de oferta en cada precio. ¿El precio sube o baja? Fija el precio nuevo.', 'Uma fazenda nova soma 25 unidades de oferta em cada preço. O preço sobe ou desce? Defina o novo preço.')[locale],
+      prompt: text('A new farm adds 25 units of supply at each price. Choose the direction, then set the new price.', 'Una granja nueva suma 25 unidades de oferta en cada precio. Elige la dirección y fija el precio nuevo.', 'Uma fazenda nova soma 25 unidades de oferta em cada preço. Escolha a direção e defina o novo preço.')[locale],
       payload: { pMax: 24, qMax: 120, demand: { a: 90, b: 3 }, supply: { c: 10, d: 2 }, shift: { curve: 'supply', by: 25 }, start: 16 },
     }),
     rubric: { target: { direction: 'down', price: 11 } },
