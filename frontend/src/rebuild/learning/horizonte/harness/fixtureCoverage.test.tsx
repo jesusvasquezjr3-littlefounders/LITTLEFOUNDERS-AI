@@ -8,7 +8,8 @@ import { horizonteFixtureDocument } from '../previewDocument';
 import { HZ_LOCALES } from './boardContract';
 
 const horizonteDir = resolve(__dirname, '..');
-const packs = readdirSync(horizonteDir, { withFileTypes: true }).filter((entry) => entry.isDirectory() && existsSync(resolve(horizonteDir, entry.name, 'index.ts'))).map((entry) => entry.name);
+// A pack ships a generated contract; shared primitives such as plano do not.
+const packs = readdirSync(horizonteDir, { withFileTypes: true }).filter((entry) => entry.isDirectory() && existsSync(resolve(horizonteDir, entry.name, 'contract.generated.ts'))).map((entry) => entry.name);
 const auditOf = (pack: string): Array<{ fixture: string; age: string }> => {
   const file = resolve(horizonteDir, pack, 'audit.json');
   return existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : [];
