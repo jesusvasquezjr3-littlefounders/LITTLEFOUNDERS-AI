@@ -207,13 +207,12 @@ describe('fin1 pack in the Forge (F1.10, F2.11, F2.12)', () => {
   });
 
   describe('solvability (F0.4)', () => {
-    it('registers a checker for the two puzzle pieces and none for the typed-number piece', () => {
-      expect(registeredSolvabilityTypes()).toEqual(expect.arrayContaining([COMPOUND, TIME_VALUE]));
-      expect(registeredSolvabilityTypes()).not.toContain(RATE_RETURN);
+    it('registers a checker for the two puzzle pieces and for the typed-number piece', () => {
+      expect(registeredSolvabilityTypes()).toEqual(expect.arrayContaining([COMPOUND, TIME_VALUE, RATE_RETURN]));
     });
     const run = (item: Case, change?: (segment: Record<string, unknown>) => void, key: unknown = item.key) => runSolvabilityGate(documentOf(item, change), { [item.id]: key });
     it('passes the fixtures with their keys and without them', () => {
-      for (const item of CASES.filter((candidate) => candidate.type !== RATE_RETURN)) {
+      for (const item of CASES) {
         expect(run(item), item.id).toEqual([]);
         expect(runSolvabilityGate(documentOf(item)), item.id).toEqual([]);
       }

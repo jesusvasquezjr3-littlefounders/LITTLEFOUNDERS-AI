@@ -39,6 +39,7 @@ export interface SolvabilitySegment {
   id: string;
   type: string;
   grading?: string;
+  prompt?: string;
   payload: Record<string, unknown>;
 }
 
@@ -695,7 +696,13 @@ export function runSolvabilityGate(
     const checker = CHECKERS.get(entry.type);
     if (!checker) continue;
     const id = typeof entry.id === 'string' ? entry.id : '(segment)';
-    const segment: SolvabilitySegment = { id, type: entry.type, ...(typeof entry.grading === 'string' ? { grading: entry.grading } : {}), payload: asRecord(entry.payload) ?? {} };
+    const segment: SolvabilitySegment = {
+      id,
+      type: entry.type,
+      ...(typeof entry.grading === 'string' ? { grading: entry.grading } : {}),
+      ...(typeof entry.prompt === 'string' ? { prompt: entry.prompt } : {}),
+      payload: asRecord(entry.payload) ?? {},
+    };
     const context: SolvabilityContext = {
       answerKey: answerKeys && Object.hasOwn(answerKeys, id) ? answerKeys[id] : undefined,
       ageBand: typeof document.age_band === 'string' ? document.age_band : undefined,
