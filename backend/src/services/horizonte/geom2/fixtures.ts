@@ -2,7 +2,7 @@ import type { HorizonteFixture, HorizonteLocale } from '../types.js';
 import { areaCells } from './areaModel.js';
 import type { Lattice } from './geometry.js';
 import { imageOf, type TransformMove } from './transformModel.js';
-import { floorFrom } from './tessellationModel.js';
+import { floorFromCopies, type TileCopy, type TileMotion } from './tessellationModel.js';
 
 const text = (en: string, es: string, pt: string): Record<HorizonteLocale, string> => ({ 'en-US': en, 'es-MX': es, 'pt-BR': pt });
 const at = (x: number, y: number): Lattice => ({ x, y });
@@ -21,11 +21,11 @@ const area = (id: string, title: Record<HorizonteLocale, string>, band: '6-9' | 
 };
 
 const move = (
-  id: string, title: Record<HorizonteLocale, string>, band: '6-9' | '10-12' | '13-17', prompt: Record<HorizonteLocale, string>,
+  id: string, title: Record<HorizonteLocale, string>, band: '6-9' | '10-12', prompt: Record<HorizonteLocale, string>,
   extent: number, figure: Lattice[], step: TransformMove, visual: 'transform-plane' | 'symmetry-mirror' = 'transform-plane',
 ): HorizonteFixture => {
   const image = imageOf(step, figure) ?? [];
-  const eligibility = band === '6-9' ? { minimum_age: 8, maximum_age: 9 } : band === '10-12' ? { minimum_age: 10, maximum_age: 12 } : { minimum_age: 13, maximum_age: 15 };
+  const eligibility = band === '6-9' ? { minimum_age: 8, maximum_age: 9 } : { minimum_age: 10, maximum_age: 12 };
   return {
     id, title, ageBand: band, eligibility,
     segment: (locale) => ({ id, type: 'math.transform.v2', grading: 'server', visual: { type: visual }, prompt: prompt[locale], payload: { extent, figure, move: step } }),
@@ -34,17 +34,22 @@ const move = (
   };
 };
 
+const slides = (...anchors: Lattice[]): TileCopy[] => anchors.map((anchor): TileCopy => ({ anchor, motion: 'slide' }));
+const copy = (x: number, y: number, motion: TileMotion): TileCopy => ({ anchor: at(x, y), motion });
+
 const tiling = (
-  id: string, title: Record<HorizonteLocale, string>, band: '6-9' | '10-12' | '13-17', prompt: Record<HorizonteLocale, string>,
-  tile: Lattice[], anchors: Lattice[], overlapping: Lattice[],
+  id: string, title: Record<HorizonteLocale, string>, band: '6-9' | '10-12', prompt: Record<HorizonteLocale, string>,
+  tile: Lattice[], copies: TileCopy[], overlapping: Lattice[], moves?: TileMotion[],
 ): HorizonteFixture => {
-  const eligibility = band === '6-9' ? { minimum_age: 8, maximum_age: 9 } : band === '10-12' ? { minimum_age: 10, maximum_age: 12 } : { minimum_age: 13, maximum_age: 15 };
-  const floor = floorFrom(tile, anchors);
+  const eligibility = band === '6-9' ? { minimum_age: 8, maximum_age: 9 } : { minimum_age: 10, maximum_age: 12 };
+  const floor = floorFromCopies(tile, copies);
+  const anchors = copies.map((entry) => entry.anchor);
+  const met = moves ? { points: anchors, motions: copies.map((entry) => entry.motion) } : { points: anchors };
   return {
     id, title, ageBand: band, eligibility,
-    segment: (locale) => ({ id, type: 'math.tessellation.v2', grading: 'server', visual: { type: 'tessellation' }, prompt: prompt[locale], payload: { floor, tile } }),
-    rubric: { copies: anchors.length },
-    ladder: { invalid: { points: overlapping }, valid: untouched, met: { points: anchors } },
+    segment: (locale) => ({ id, type: 'math.tessellation.v2', grading: 'server', visual: { type: 'tessellation' }, prompt: prompt[locale], payload: moves ? { floor, tile, moves } : { floor, tile } }),
+    rubric: { copies: copies.length },
+    ladder: { invalid: { points: overlapping }, valid: untouched, met },
   };
 };
 
@@ -114,23 +119,33 @@ export const GEOM2_FIXTURES: readonly HorizonteFixture[] = [
     5, shape([0, -2], [-3, -1], [-2, 2], [0, 3]), { kind: 'reflect', across: 'vertical', at: 0 }, 'symmetry-mirror',
   ),
   move(
-    'dilate-center', text('Enlarge a triangle', 'Amplía un triángulo', 'Amplie um triângulo'), '13-17',
+    'dilate-center', text('Enlarge a triangle', 'Amplía un triángulo', 'Amplie um triângulo'), '10-12',
     text('Enlarge the triangle by a scale factor of 2 from the center of dilation.', 'Amplía el triángulo con razón 2 desde el centro de la homotecia.', 'Amplie o triângulo com razão 2 a partir do centro da homotetia.'),
     6, shape([2, 1], [3, 1], [2, 3]), { kind: 'dilate', num: 2, den: 1, about: at(1, 1) },
   ),
   tiling(
     'tile-domino', text('Cover with dominoes', 'Cubre con dominós', 'Cubra com dominós'), '6-9',
     text('Cover the floor with the tile. Slide it, never turn it.', 'Cubre el piso con la baldosa. Deslízala, no la gires.', 'Cubra o piso com o ladrilho. Deslize-o, sem girar.'),
-    shape([0, 0], [1, 0]), shape([0, 0], [2, 0], [0, 1], [2, 1], [0, 2], [2, 2]), shape([0, 0], [1, 0]),
+    shape([0, 0], [1, 0]), slides(at(0, 0), at(2, 0), at(0, 1), at(2, 1), at(0, 2), at(2, 2)), shape([0, 0], [1, 0]),
   ),
   tiling(
     'tile-l', text('Cover with L tiles', 'Cubre con baldosas en L', 'Cubra com ladrilhos em L'), '10-12',
     text('Cover the floor with the L-shaped tile, with no gaps and no overlaps.', 'Cubre el piso con la baldosa en forma de L, sin huecos ni encimados.', 'Cubra o piso com o ladrilho em forma de L, sem lacunas nem sobreposições.'),
-    shape([0, 0], [0, 1], [0, 2], [1, 0]), shape([0, 0], [1, 1], [2, 2], [3, 3]), shape([0, 0], [0, 1]),
+    shape([0, 0], [0, 1], [0, 2], [1, 0]), slides(at(0, 0), at(1, 1), at(2, 2), at(3, 3)), shape([0, 0], [0, 1]),
   ),
   tiling(
-    'tile-bump', text('Fit the bump', 'Encaja el saliente', 'Encaixe a saliência'), '13-17',
+    'tile-bump', text('Fit the bump', 'Encaja el saliente', 'Encaixe a saliência'), '10-12',
     text('Fit the bumped tile into the notches until the floor is covered.', 'Encaja la baldosa con saliente en las hendiduras hasta cubrir el piso.', 'Encaixe o ladrilho com saliência nos recortes até cobrir o piso.'),
-    shape([0, 0], [1, 0], [2, 0], [1, 1]), shape([0, 0], [4, 0], [2, 1], [6, 1]), shape([0, 0], [1, 0]),
+    shape([0, 0], [1, 0], [2, 0], [1, 1]), slides(at(0, 0), at(4, 0), at(2, 1), at(6, 1)), shape([0, 0], [1, 0]),
+  ),
+  tiling(
+    'tile-turn', text('Turn to fit', 'Gira para encajar', 'Gire para encaixar'), '10-12',
+    text('Cover the floor. You may turn the tile half a turn.', 'Cubre el piso. Puedes girar la baldosa media vuelta.', 'Cubra o piso. Você pode girar o ladrilho meia volta.'),
+    shape([0, 0], [1, 0], [0, 1]), [copy(0, 0, 'slide'), copy(0, 1, 'turn'), copy(2, 0, 'slide'), copy(2, 1, 'turn')], shape([0, 0], [0, 0]), ['slide', 'turn'],
+  ),
+  tiling(
+    'tile-flip', text('Flip to fit', 'Voltea para encajar', 'Vire para encaixar'), '10-12',
+    text('Cover the floor. You may flip the tile over.', 'Cubre el piso. Puedes voltear la baldosa.', 'Cubra o piso. Você pode virar o ladrilho.'),
+    shape([1, 0], [2, 0], [0, 1], [1, 1]), [copy(0, 0, 'slide'), copy(2, 0, 'slide'), copy(5, 0, 'flip')], shape([0, 0], [1, 0]), ['slide', 'flip'],
   ),
 ];
