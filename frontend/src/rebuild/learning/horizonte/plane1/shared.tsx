@@ -53,26 +53,35 @@ export function Fraction({ n, d, over }: { n: number | string; d: number | strin
 }
 
 /**
- * The shared plane of the board. Plano keeps one handle in the tab order and the rest reachable with Page Up and Page
- * Down; each of those is marked as a roving stop so the board harness can tell them from a handle nobody can reach.
+ * The shared plane of the board. A point label sits on the right of its mark; past the middle of the plane it is marked
+ * to sit on the left instead, so no label runs off the edge of a narrow figure. Plano renders its marks itself, so the
+ * mark is set from outside and kept when Plano swaps the figure for its table and back.
  */
 export function PlaneFigure({ locale, copy, ...props }: PlanoProps & { locale: Locale }) {
   const ref = useRef<HTMLDivElement>(null);
+  const { xMin, xMax } = props.domain;
+  const flips = (props.layers?.points ?? []).map((point) => ((point.x - xMin) / (xMax - xMin) > 0.5 ? '1' : '0')).join('');
   useLayoutEffect(() => {
-    ref.current?.querySelectorAll('.lf-plano-handle').forEach((handle) => handle.setAttribute('data-hz-roving', ''));
-  });
+    const root = ref.current;
+    if (!root) return undefined;
+    const apply = () => root.querySelectorAll('.lf-plano-point').forEach((mark, index) => mark.toggleAttribute('data-flip', flips[index] === '1'));
+    apply();
+    const watch = new MutationObserver(apply);
+    watch.observe(root, { childList: true, subtree: true });
+    return () => watch.disconnect();
+  }, [flips]);
   return <div ref={ref} className="lf-p1-figure"><Plano {...props} copy={{ ...planoWords(locale), ...copy }} /></div>;
 }
 
 /** A small table the learner can read beside the graph: the first column heads each row. */
 export function ValueTable({ caption, columns, rows }: { caption: string; columns: readonly string[]; rows: readonly (readonly ReactNode[])[] }) {
-  return <table className="lf-hz-table" data-hz-table="">
+  return <div className="lf-p1-scroll"><table className="lf-hz-table" data-hz-table="">
     <caption data-copy-role="heading">{caption}</caption>
     <thead><tr>{columns.map((column) => <th key={column} scope="col" data-copy-role="data">{column}</th>)}</tr></thead>
     <tbody>{rows.map((row, index) => <tr key={index}>{row.map((cell, at) => at === 0
       ? <th key={at} scope="row" data-copy-role="data">{cell}</th>
       : <td key={at} data-copy-role="data">{cell}</td>)}</tr>)}</tbody>
-  </table>;
+  </table></div>;
 }
 
 /** The grade of a board: whether the answer is locked, and a change that clears the last verdict first. */

@@ -2,9 +2,9 @@ import { z } from 'zod';
 import { hzBase, hzServer, hzVisual } from '../shared.js';
 import type { HorizonteAgeScope } from '../types.js';
 import { COIN_LIMITS, COIN_PIECES, coinProblem, readCoinPayload } from './coins.js';
-import { COUNT_NAMES, PLANE_LIMITS, PLATONIC_IDS, SECTION_SOLIDS, SHAPES } from './polyhedra.js';
+import { COUNT_NAMES, EULER_SOLIDS, PLANE_LIMITS, SECTION_SOLIDS, SHAPES } from './polyhedra.js';
 import { readRotationPayload, rotationProblem } from './rotationRules.js';
-import { OPTION_LIMITS, VOLUME_LIMITS, readSolidSectionPayload, solidSectionProblem } from './sectionRules.js';
+import { CONE_LIMITS, OPTION_LIMITS, VOLUME_LIMITS, readSolidSectionPayload, solidSectionProblem } from './sectionRules.js';
 import { STALL_IDS, STALL_LIMITS, STALL_PIECE, readStallPayload, stallProblem } from './stall.js';
 import { BOX, FIGURE_LIMITS, ROTATION_AXES, TARGET_IDS, TARGET_LIMITS } from './voxels.js';
 
@@ -20,7 +20,7 @@ export const rotationPayload = z.object({
 
 const planePart = z.number().int().min(-PLANE_LIMITS.normal).max(PLANE_LIMITS.normal);
 
-/** F4.5: `section` names the shape a plane cuts from a solid, `euler` types the hidden count from V - E + F = 2, `volume` types a pyramid's volume. */
+/** F4.5: `section` names the shape a plane cuts from a solid, `slide` moves the plane until it cuts a given shape, `euler` types the hidden count from V - E + F = 2, `volume` and `cone` type a pyramid's volume and a cone's volume in pi. */
 export const solidSectionPayload = z.discriminatedUnion('mode', [
   z.object({
     mode: z.literal('section'),
@@ -28,11 +28,23 @@ export const solidSectionPayload = z.discriminatedUnion('mode', [
     plane: z.object({ normal: z.tuple([planePart, planePart, planePart]), offset: z.number().int().min(-PLANE_LIMITS.offset).max(PLANE_LIMITS.offset) }).strict(),
     options: z.array(z.enum(SHAPES)).min(OPTION_LIMITS.min).max(OPTION_LIMITS.max).refine((list) => new Set(list).size === list.length, 'Each shape is listed once'),
   }).strict(),
-  z.object({ mode: z.literal('euler'), solid: z.enum(PLATONIC_IDS), hide: z.enum(COUNT_NAMES) }).strict(),
+  z.object({ mode: z.literal('euler'), solid: z.enum(EULER_SOLIDS), hide: z.enum(COUNT_NAMES) }).strict(),
   z.object({
     mode: z.literal('volume'),
     side: z.number().int().min(VOLUME_LIMITS.side.min).max(VOLUME_LIMITS.side.max),
     height: z.number().int().min(VOLUME_LIMITS.height.min).max(VOLUME_LIMITS.height.max),
+  }).strict(),
+  z.object({
+    mode: z.literal('cone'),
+    radius: z.number().int().min(CONE_LIMITS.radius.min).max(CONE_LIMITS.radius.max),
+    height: z.number().int().min(CONE_LIMITS.height.min).max(CONE_LIMITS.height.max),
+  }).strict(),
+  z.object({
+    mode: z.literal('slide'),
+    solid: z.enum(SECTION_SOLIDS),
+    normal: z.tuple([planePart, planePart, planePart]),
+    start: z.number().int().min(-PLANE_LIMITS.offset).max(PLANE_LIMITS.offset),
+    target: z.enum(SHAPES),
   }).strict(),
 ]);
 

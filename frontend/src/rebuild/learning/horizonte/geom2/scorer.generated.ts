@@ -5,7 +5,7 @@ import type { HorizonteScorer } from '../types.generated';
 import { areaPointContext, isAreaSquaresPayload, isAreaSquaresRubric, type AreaSquaresPayload, type AreaSquaresRubric } from './areaModel.generated';
 import { checkBand, findBand, isGeoboardRubric, isGeoboardSize, readBand, type GeoboardPayload, type GeoboardRubric } from './geoboardModel.generated';
 import { sameSet, type Lattice } from './geometry.generated';
-import { isTessellationPayload, isTessellationRubric, placeTiles, solveTiling, tessellationPointContext, type TessellationPayload, type TessellationRubric } from './tessellationModel.generated';
+import { isTessellationPayload, isTessellationRubric, offeredMotions, placeCopies, readCopies, solveCover, type TessellationPayload, type TessellationRubric } from './tessellationModel.generated';
 import { isTransformPayload, isTransformRubric, transformPointContext, type TransformPayload, type TransformRubric } from './transformModel.generated';
 
 const INVALID: V2Grade = { verdict: 'invalid', diagnostic: 'none' };
@@ -70,18 +70,19 @@ function gradeTransform(segment: { payload: TransformPayload }, response: unknow
 }
 
 /**
- * invalid: a copy leaves the floor or lands on another copy, or a malformed key. valid: no copy placed, and every legal
- * placement when there is no rubric. review (partial): legal copies that leave part of the floor open. met: the floor covered.
+ * invalid: a copy leaves the floor, lands on another copy or uses a motion the floor does not offer, or a malformed key.
+ * valid: no copy placed, and every legal placement when there is no rubric. review (partial): legal copies that leave part of
+ * the floor open. met: the floor covered. The response is `points` (the anchors) and, when the floor offers a turn or a flip,
+ * `motions` (one per anchor).
  */
 function gradeTessellation(segment: { payload: TessellationPayload }, response: unknown, rubric: TessellationRubric | undefined): V2Grade {
   const payload = segment?.payload;
   if (!isTessellationPayload(payload)) return INVALID;
-  const points = pointsOf(response);
-  if (!points) return INVALID;
+  const copies = readCopies(payload, response);
+  if (!copies) return INVALID;
   if (rubric !== undefined && !isTessellationRubric(rubric, payload)) return INVALID;
-  if (points.length === 0) return VALID;
-  if (gradePointSet(response, undefined, tessellationPointContext(payload)).verdict === 'invalid') return INVALID;
-  const placement = placeTiles(payload, points as Lattice[]);
+  if (copies.length === 0) return VALID;
+  const placement = placeCopies(payload, copies);
   if (placement.kind === 'broken') return INVALID;
   if (rubric === undefined) return VALID;
   return placement.covered === payload.floor.length ? MET : review('partial');
@@ -110,8 +111,10 @@ export const GEOM2_SCORERS: Readonly<Record<string, HorizonteScorer>> = {
   'math.tessellation.v2': {
     grade: gradeTessellation as HorizonteScorer['grade'],
     sample: ((segment: { payload: TessellationPayload }) => {
-      const solution = isTessellationPayload(segment?.payload) ? solveTiling(segment.payload) : null;
-      return solution ? { points: solution } : {};
+      const solution = isTessellationPayload(segment?.payload) ? solveCover(segment.payload) : null;
+      if (!solution) return {};
+      const points = solution.map((copy) => copy.anchor);
+      return offeredMotions(segment.payload).length > 1 ? { points, motions: solution.map((copy) => copy.motion) } : { points };
     }) as HorizonteScorer['sample'],
   },
 };

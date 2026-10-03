@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { AgeBand } from '../../../design/copyBudget';
 import { LessonDocumentView } from '../../LessonDocumentView';
@@ -12,9 +12,12 @@ vi.mock('../../../../tutor-scene/quality', () => ({
 }));
 vi.mock('../../../../tutor-scene/TutorStage', () => ({ TutorStage: () => <div data-testid="tutor-stage" /> }));
 
-const CSS = ['num-b/numB.css', 'num-b/ArrayAreaBoard.css', 'num-b/RatioLineBoard.css', 'num-b/FractionWallBoard.css'];
-const BANDS: Record<string, AgeBand> = { 'array-rows-columns': '6-9', 'wall-equivalent': '6-9' };
-const FIXTURES = ['array-rows-columns', 'area-box', 'area-division', 'double-line-scale', 'tape-share', 'wall-equivalent', 'bars-add', 'bars-subtract', 'product-grid', 'measure-fit'];
+const CSS = ['num-b/numB.css', 'num-b/ArrayAreaBoard.css', 'num-b/RatioLineBoard.css', 'num-b/FractionWallBoard.css', 'num-b/FractionCirclesBoard.css'];
+const BANDS: Record<string, AgeBand> = { 'array-rows-columns': '6-9', 'wall-equivalent': '6-9', 'circles-show': '6-9', 'circles-compare': '6-9' };
+const FIXTURES = [
+  'array-rows-columns', 'area-box', 'area-division', 'double-line-scale', 'tape-share', 'wall-equivalent', 'bars-add', 'bars-subtract', 'product-grid', 'measure-fit',
+  'circles-show', 'circles-compare', 'circles-add', 'circles-subtract',
+];
 
 const show = (fixture: string, locale: 'en-US' | 'es-MX' | 'pt-BR' = 'en-US', grade = vi.fn(() => ({ verdict: 'review' as const }))) => {
   render(<LessonDocumentView raw={horizonteFixtureDocument('num-b', fixture, locale)} locale={locale} ageBand={BANDS[fixture] ?? '10-12'} onBack={() => {}} onGradeAny={grade} />);
@@ -324,7 +327,168 @@ describe('fraction measure (F1.6 divide)', () => {
   });
 });
 
+describe('fraction circles (F1.6 show)', () => {
+  it('cuts the circle, shades parts by tapping and submits the fraction on the circle', async () => {
+    const grade = show('circles-show');
+    await screen.findByRole('img', { name: 'Whole circle, not cut' });
+    expect(status()).toHaveTextContent('Show three quarters. The circle is not cut yet.');
+    expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Shade one more' })).toBeDisabled();
+    click('Cut in 4');
+    expect(status()).toHaveTextContent('Show three quarters. Cut in 4 parts. Shaded: 0 of 4.');
+    expect(screen.getByRole('group', { name: 'Circle in 4 parts, 0 shaded' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
+    click('Your circle: part 3 of 4');
+    expect(status()).toHaveTextContent('Shaded: 3 of 4.');
+    expect(screen.getByRole('button', { name: 'Your circle: part 2 of 4' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Your circle: part 4 of 4' })).toHaveAttribute('aria-pressed', 'false');
+    check();
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ n: 3, d: 4 }, 'circles-show', expect.anything()));
+  });
+
+  it('takes the last shaded part back and clears the shading when the cut changes', async () => {
+    show('circles-show');
+    await screen.findByRole('img', { name: 'Whole circle, not cut' });
+    click('Cut in 8');
+    click('Your circle: part 5 of 8');
+    click('Your circle: part 5 of 8');
+    expect(status()).toHaveTextContent('Shaded: 4 of 8.');
+    click('Cut in 4');
+    expect(status()).toHaveTextContent('Cut in 4 parts. Shaded: 0 of 4.');
+    expect(screen.getByRole('button', { name: 'Cut in 4' })).toHaveAttribute('aria-pressed', 'true');
+    click('Reset');
+    expect(status()).toHaveTextContent('The circle is not cut yet.');
+  });
+
+  it('shades with the keyboard: Enter or Space on a part, and the one more and one less buttons', async () => {
+    const grade = show('circles-show');
+    await screen.findByRole('img', { name: 'Whole circle, not cut' });
+    click('Cut in 6');
+    fireEvent.keyDown(screen.getByRole('button', { name: 'Your circle: part 2 of 6' }), { key: 'Enter' });
+    expect(status()).toHaveTextContent('Shaded: 2 of 6.');
+    fireEvent.keyDown(screen.getByRole('button', { name: 'Your circle: part 4 of 6' }), { key: ' ' });
+    expect(status()).toHaveTextContent('Shaded: 4 of 6.');
+    fireEvent.keyDown(screen.getByRole('button', { name: 'Your circle: part 5 of 6' }), { key: 'a' });
+    expect(status()).toHaveTextContent('Shaded: 4 of 6.');
+    click('Shade one more');
+    expect(status()).toHaveTextContent('Shaded: 5 of 6.');
+    click('Shade one less');
+    click('Shade one less');
+    expect(status()).toHaveTextContent('Shaded: 3 of 6.');
+    expect(grade).not.toHaveBeenCalled();
+  });
+
+  it('lists the parts and the shaded parts as a table', async () => {
+    show('circles-show');
+    await screen.findByRole('img', { name: 'Whole circle, not cut' });
+    click('Cut in 4');
+    click('Shade one more');
+    click('Shade one more');
+    click('Show as table');
+    const table = screen.getByRole('table', { name: 'Circles and their parts' });
+    expect(within(table).getAllByRole('row').map((row) => row.textContent)).toEqual(['ItemPartsShaded', 'Your circle42']);
+  });
+});
+
+describe('fraction circles (F1.6 compare)', () => {
+  it('shades both circles, picks the one with more and submits its fraction', async () => {
+    const grade = show('circles-compare');
+    expect(await screen.findAllByRole('group', { name: 'Circle in 8 parts, 0 shaded' })).toHaveLength(2);
+    expect(status()).toHaveTextContent('Circles cut in 8 parts. First: 0 shaded. Second: 0 shaded.');
+    click('First is more');
+    expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
+    click('First is more');
+    click('First circle: part 3 of 8');
+    click('Second circle: part 5 of 8');
+    expect(status()).toHaveTextContent('First: 3 shaded. Second: 5 shaded.');
+    expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
+    click('Second is more');
+    expect(status()).toHaveTextContent('More: second circle.');
+    check();
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ n: 5, d: 8 }, 'circles-compare', expect.anything()));
+  });
+
+  it('submits what the chosen circle holds and shows both circles in the table', async () => {
+    const grade = show('circles-compare');
+    await screen.findByRole('button', { name: 'First circle: part 3 of 8' });
+    click('First circle: part 3 of 8');
+    click('First is more');
+    click('Show as table');
+    const table = screen.getByRole('table', { name: 'Circles and their parts' });
+    expect(within(table).getAllByRole('row').map((row) => row.textContent)).toEqual(['ItemPartsShaded', 'First circle83', 'Second circle80']);
+    check();
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ n: 3, d: 8 }, 'circles-compare', expect.anything()));
+  });
+
+  it('names each circle by its fraction and resets everything', async () => {
+    show('circles-compare');
+    await screen.findByRole('button', { name: 'First circle: part 2 of 8' });
+    expect(screen.getByText('First circle: three eighths')).toBeTruthy();
+    expect(screen.getByText('Second circle: five eighths')).toBeTruthy();
+    click('First circle: part 2 of 8');
+    click('Second is more');
+    click('Reset');
+    expect(status()).toHaveTextContent('First: 0 shaded. Second: 0 shaded.');
+    expect(status().textContent).not.toMatch(/More:/);
+    expect(screen.getByRole('button', { name: 'Second is more' })).toHaveAttribute('aria-pressed', 'false');
+  });
+});
+
+describe('fraction circles (F1.6 add and subtract)', () => {
+  it('shades the join in the work circle and submits the typed sum', async () => {
+    const grade = show('circles-add');
+    await screen.findByRole('group', { name: 'Circle in 8 parts, 0 shaded' });
+    expect(status()).toHaveTextContent('Add one eighth and three eighths. Work circle: 0 of 8 shaded.');
+    expect(screen.getByRole('img', { name: 'Circle in 8 parts, 1 shaded' })).toBeTruthy();
+    expect(screen.getByRole('img', { name: 'Circle in 8 parts, 3 shaded' })).toBeTruthy();
+    click('Work circle: part 4 of 8');
+    expect(status()).toHaveTextContent('Work circle: 4 of 8 shaded.');
+    type('Top number', '1');
+    expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
+    type('Bottom number', '2');
+    check();
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ n: 1, d: 2 }, 'circles-add', expect.anything()));
+  });
+
+  it('starts the work circle with the whole amount for a subtraction and takes parts away', async () => {
+    const grade = show('circles-subtract');
+    await screen.findByRole('group', { name: 'Circle in 10 parts, 7 shaded' });
+    expect(status()).toHaveTextContent('Take three tenths from seven tenths. Work circle: 7 of 10 shaded.');
+    click('Shade one less');
+    click('Shade one less');
+    click('Work circle: part 4 of 10');
+    expect(status()).toHaveTextContent('Work circle: 4 of 10 shaded.');
+    type('Top number', '2');
+    type('Bottom number', '5');
+    check();
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ n: 2, d: 5 }, 'circles-subtract', expect.anything()));
+    click('Reset');
+    expect(status()).toHaveTextContent('Work circle: 7 of 10 shaded.');
+    expect(screen.getByRole('textbox', { name: 'Top number' })).toHaveValue('');
+  });
+
+  it('lists the given circles and the work circle in a table', async () => {
+    show('circles-add');
+    await screen.findByRole('group', { name: 'Circle in 8 parts, 0 shaded' });
+    click('Shade one more');
+    click('Show as table');
+    const table = screen.getByRole('table', { name: 'Circles and their parts' });
+    expect(within(table).getAllByRole('row').map((row) => row.textContent)).toEqual(['ItemPartsShaded', 'First circle81', 'Second circle83', 'Work circle81']);
+  });
+});
+
 describe('locales', () => {
+  it('speaks the circle boards in Spanish and Portuguese', async () => {
+    show('circles-show', 'es-MX');
+    expect(await screen.findByRole('img', { name: 'Círculo entero, sin cortar' })).toBeTruthy();
+    click('Corta en 4');
+    expect(status()).toHaveTextContent('Muestra tres cuartos. Cortado en 4 partes. Sombreadas: 0 de 4.');
+    cleanup();
+    show('circles-add', 'pt-BR');
+    expect(await screen.findByRole('button', { name: 'Círculo de trabalho: parte 1 de 8' })).toBeTruthy();
+    expect(status()).toHaveTextContent('Some um oitavo e três oitavos. Círculo de trabalho: 0 de 8 pintadas.');
+  });
+
   it('speaks the boards in Spanish and Portuguese', async () => {
     show('area-box', 'es-MX');
     expect(await screen.findByRole('img', { name: 'Caja de multiplicar' })).toBeTruthy();

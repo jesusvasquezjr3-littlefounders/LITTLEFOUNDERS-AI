@@ -59,7 +59,7 @@ test('the shipped tree covers every Horizonte segment type, chart kind and drag 
   assert.equal(report.chart_kinds.reading, 12);
   assert.deepEqual(report.chart_kinds.reading_missing, []);
   assert.equal(report.horizonte.packs, 18);
-  assert.equal(report.horizonte.segment_types, 64);
+  assert.equal(report.horizonte.segment_types, 68);
   assert.deepEqual(report.horizonte.missing, []);
   assert.deepEqual(report.tap_alternative.missing, []);
   assert.equal(report.tap_alternative.share, 1);

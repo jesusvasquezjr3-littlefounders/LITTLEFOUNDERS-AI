@@ -7,6 +7,7 @@ import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { PLACES, globePlaces, readGlobePayload, routeCenter, routeDistances, routeFees, type GlobePayload, type GlobeRoute, type PlaceId } from './globe.generated';
 import { loadLand } from './landLoader';
+import { ScrollRegion } from './ScrollRegion';
 import { count, degrees, fill, money, percent, placeLabel, spaceText, type SpaceText } from './spaceText';
 import '../horizonte.css';
 import './space2.css';
@@ -138,7 +139,7 @@ function GlobeBoardView({ document, segment, payload, onBack, sequence, onGrade 
           <Button size="sm" disabled={center.lat <= -MAX_LAT} onClick={() => go('south')}>{t.tiltSouth}</Button>
         </div>
       </div>
-      {table ? <table className="lf-hz-table" data-hz-table="">
+      {table ? <ScrollRegion label={t.tableRoutes}><table className="lf-hz-table" data-hz-table="">
         <caption data-copy-role="heading">{t.tableRoutes}</caption>
         <thead><tr>
           <th scope="col" data-copy-role="data">{t.colRoute}</th>
@@ -154,7 +155,7 @@ function GlobeBoardView({ document, segment, payload, onBack, sequence, onGrade 
           <td data-copy-role="data">{fill(t.distanceKm, { n: count(distances[index]!, locale) })}</td>
           <td data-copy-role="data">{money(fees[index]!, locale)}</td>
         </tr>)}</tbody>
-      </table> : null}
+      </table></ScrollRegion> : null}
     </section>
     <section className="lf-learning-control-strip lf-s2-strip" aria-label={t.routesHeading}>
       <h2 data-copy-role="heading">{t.routesHeading}</h2>

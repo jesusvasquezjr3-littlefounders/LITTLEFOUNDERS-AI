@@ -193,7 +193,11 @@
         "operation.set-hands.v1",
         "visual.ruler.v1",
         "operation.stretch-bar.v1",
-        "visual.pan-balance.v1"
+        "visual.pan-balance.v1",
+        "visual.order-number-line.v1",
+        "operation.place-numbers.v1",
+        "visual.ruler-measure.v1",
+        "operation.read-length.v1"
       ],
       "segments": [
         {
@@ -293,6 +297,43 @@
               3
             ]
           }
+        },
+        {
+          "id": "order-tens",
+          "type": "math.number-line.order.v2",
+          "grading": "server",
+          "prompt": "Put each number on the line.",
+          "visual": {
+            "type": "order-number-line"
+          },
+          "payload": {
+            "scale": 0,
+            "low": 0,
+            "step": 10,
+            "count": 10,
+            "values": [
+              70,
+              30,
+              90,
+              50
+            ]
+          }
+        },
+        {
+          "id": "measure-pencil",
+          "type": "math.ruler.measure.v2",
+          "grading": "server",
+          "prompt": "How long is the pencil in cm?",
+          "visual": {
+            "type": "ruler-measure"
+          },
+          "payload": {
+            "unit": "cm",
+            "object": "pencil",
+            "from": 0,
+            "to": 7,
+            "max": 10
+          }
         }
       ]
     },
@@ -320,6 +361,27 @@
       },
       "balance-it": {
         "target": 0
+      },
+      "order-tens": {
+        "solutions": [
+          {
+            "m-7": [
+              "n-70"
+            ],
+            "m-3": [
+              "n-30"
+            ],
+            "m-9": [
+              "n-90"
+            ],
+            "m-5": [
+              "n-50"
+            ]
+          }
+        ]
+      },
+      "measure-pencil": {
+        "target": "7"
       }
     }
   },
@@ -358,7 +420,11 @@
         "operation.set-hands.v1",
         "visual.ruler.v1",
         "operation.stretch-bar.v1",
-        "visual.pan-balance.v1"
+        "visual.pan-balance.v1",
+        "visual.order-number-line.v1",
+        "operation.place-numbers.v1",
+        "visual.ruler-measure.v1",
+        "operation.read-length.v1"
       ],
       "segments": [
         {
@@ -458,6 +524,43 @@
               3
             ]
           }
+        },
+        {
+          "id": "order-tens",
+          "type": "math.number-line.order.v2",
+          "grading": "server",
+          "prompt": "Pon cada número en la recta.",
+          "visual": {
+            "type": "order-number-line"
+          },
+          "payload": {
+            "scale": 0,
+            "low": 0,
+            "step": 10,
+            "count": 10,
+            "values": [
+              70,
+              30,
+              90,
+              50
+            ]
+          }
+        },
+        {
+          "id": "measure-pencil",
+          "type": "math.ruler.measure.v2",
+          "grading": "server",
+          "prompt": "¿Cuánto mide el lápiz en cm?",
+          "visual": {
+            "type": "ruler-measure"
+          },
+          "payload": {
+            "unit": "cm",
+            "object": "pencil",
+            "from": 0,
+            "to": 7,
+            "max": 10
+          }
         }
       ]
     },
@@ -485,6 +588,27 @@
       },
       "balance-it": {
         "target": 0
+      },
+      "order-tens": {
+        "solutions": [
+          {
+            "m-7": [
+              "n-70"
+            ],
+            "m-3": [
+              "n-30"
+            ],
+            "m-9": [
+              "n-90"
+            ],
+            "m-5": [
+              "n-50"
+            ]
+          }
+        ]
+      },
+      "measure-pencil": {
+        "target": "7"
       }
     }
   },
@@ -523,7 +647,11 @@
         "operation.set-hands.v1",
         "visual.ruler.v1",
         "operation.stretch-bar.v1",
-        "visual.pan-balance.v1"
+        "visual.pan-balance.v1",
+        "visual.order-number-line.v1",
+        "operation.place-numbers.v1",
+        "visual.ruler-measure.v1",
+        "operation.read-length.v1"
       ],
       "segments": [
         {
@@ -623,6 +751,43 @@
               3
             ]
           }
+        },
+        {
+          "id": "order-tens",
+          "type": "math.number-line.order.v2",
+          "grading": "server",
+          "prompt": "Coloque cada número na reta.",
+          "visual": {
+            "type": "order-number-line"
+          },
+          "payload": {
+            "scale": 0,
+            "low": 0,
+            "step": 10,
+            "count": 10,
+            "values": [
+              70,
+              30,
+              90,
+              50
+            ]
+          }
+        },
+        {
+          "id": "measure-pencil",
+          "type": "math.ruler.measure.v2",
+          "grading": "server",
+          "prompt": "Quanto mede o lápis em cm?",
+          "visual": {
+            "type": "ruler-measure"
+          },
+          "payload": {
+            "unit": "cm",
+            "object": "pencil",
+            "from": 0,
+            "to": 7,
+            "max": 10
+          }
         }
       ]
     },
@@ -650,6 +815,27 @@
       },
       "balance-it": {
         "target": 0
+      },
+      "order-tens": {
+        "solutions": [
+          {
+            "m-7": [
+              "n-70"
+            ],
+            "m-3": [
+              "n-30"
+            ],
+            "m-9": [
+              "n-90"
+            ],
+            "m-5": [
+              "n-50"
+            ]
+          }
+        ]
+      },
+      "measure-pencil": {
+        "target": "7"
       }
     }
   },
@@ -679,7 +865,13 @@
       "required_capabilities": [
         "visual.zoom-number-line.v1",
         "operation.zoom-in.v1",
-        "operation.place-point.v1"
+        "operation.place-point.v1",
+        "visual.order-number-line.v1",
+        "operation.place-numbers.v1",
+        "operation.drag-chips.v1",
+        "operation.move-menu.v1",
+        "visual.ruler-measure.v1",
+        "operation.read-length.v1"
       ],
       "segments": [
         {
@@ -700,12 +892,74 @@
             "met": "You read the scale and put it where it belongs.",
             "not_yet": "Zoom in on the scale again and check its marks."
           }
+        },
+        {
+          "id": "order-tenths",
+          "type": "math.number-line.order.v2",
+          "grading": "server",
+          "prompt": "Put each decimal where it belongs on the line.",
+          "visual": {
+            "type": "order-number-line"
+          },
+          "payload": {
+            "scale": 1,
+            "low": 0,
+            "step": 1,
+            "count": 10,
+            "values": [
+              7,
+              2,
+              5
+            ]
+          },
+          "feedback": {
+            "met": "Every decimal sits where it belongs.",
+            "not_yet": "Read the numbered ends again and count the steps."
+          }
+        },
+        {
+          "id": "measure-strip",
+          "type": "math.ruler.measure.v2",
+          "grading": "server",
+          "prompt": "How long is the paper strip in inches?",
+          "visual": {
+            "type": "ruler-measure"
+          },
+          "payload": {
+            "unit": "in",
+            "object": "strip",
+            "from": 2,
+            "to": 8,
+            "max": 11
+          },
+          "feedback": {
+            "met": "You read the length of the strip.",
+            "not_yet": "Check where the strip starts before you read its end."
+          }
         }
       ]
     },
     "answer_keys": {
       "zoom-tenths": {
         "target": 34
+      },
+      "order-tenths": {
+        "solutions": [
+          {
+            "m-7": [
+              "n-7"
+            ],
+            "m-2": [
+              "n-2"
+            ],
+            "m-5": [
+              "n-5"
+            ]
+          }
+        ]
+      },
+      "measure-strip": {
+        "target": "6"
       }
     }
   },
@@ -735,7 +989,13 @@
       "required_capabilities": [
         "visual.zoom-number-line.v1",
         "operation.zoom-in.v1",
-        "operation.place-point.v1"
+        "operation.place-point.v1",
+        "visual.order-number-line.v1",
+        "operation.place-numbers.v1",
+        "operation.drag-chips.v1",
+        "operation.move-menu.v1",
+        "visual.ruler-measure.v1",
+        "operation.read-length.v1"
       ],
       "segments": [
         {
@@ -756,12 +1016,74 @@
             "met": "Leíste la escala y lo pusiste donde corresponde.",
             "not_yet": "Acércate a la escala otra vez y revisa sus marcas."
           }
+        },
+        {
+          "id": "order-tenths",
+          "type": "math.number-line.order.v2",
+          "grading": "server",
+          "prompt": "Pon cada decimal donde le toca en la recta.",
+          "visual": {
+            "type": "order-number-line"
+          },
+          "payload": {
+            "scale": 1,
+            "low": 0,
+            "step": 1,
+            "count": 10,
+            "values": [
+              7,
+              2,
+              5
+            ]
+          },
+          "feedback": {
+            "met": "Cada decimal está donde le toca.",
+            "not_yet": "Lee de nuevo los extremos con número y cuenta los pasos."
+          }
+        },
+        {
+          "id": "measure-strip",
+          "type": "math.ruler.measure.v2",
+          "grading": "server",
+          "prompt": "¿Cuántas pulgadas mide la tira de papel?",
+          "visual": {
+            "type": "ruler-measure"
+          },
+          "payload": {
+            "unit": "in",
+            "object": "strip",
+            "from": 2,
+            "to": 8,
+            "max": 11
+          },
+          "feedback": {
+            "met": "Leíste la longitud de la tira.",
+            "not_yet": "Mira dónde empieza la tira antes de leer su final."
+          }
         }
       ]
     },
     "answer_keys": {
       "zoom-tenths": {
         "target": 34
+      },
+      "order-tenths": {
+        "solutions": [
+          {
+            "m-7": [
+              "n-7"
+            ],
+            "m-2": [
+              "n-2"
+            ],
+            "m-5": [
+              "n-5"
+            ]
+          }
+        ]
+      },
+      "measure-strip": {
+        "target": "6"
       }
     }
   },
@@ -791,7 +1113,13 @@
       "required_capabilities": [
         "visual.zoom-number-line.v1",
         "operation.zoom-in.v1",
-        "operation.place-point.v1"
+        "operation.place-point.v1",
+        "visual.order-number-line.v1",
+        "operation.place-numbers.v1",
+        "operation.drag-chips.v1",
+        "operation.move-menu.v1",
+        "visual.ruler-measure.v1",
+        "operation.read-length.v1"
       ],
       "segments": [
         {
@@ -812,12 +1140,74 @@
             "met": "Você leu a escala e colocou no lugar certo.",
             "not_yet": "Aproxime a escala de novo e confira as marcas."
           }
+        },
+        {
+          "id": "order-tenths",
+          "type": "math.number-line.order.v2",
+          "grading": "server",
+          "prompt": "Coloque cada decimal no lugar certo da reta.",
+          "visual": {
+            "type": "order-number-line"
+          },
+          "payload": {
+            "scale": 1,
+            "low": 0,
+            "step": 1,
+            "count": 10,
+            "values": [
+              7,
+              2,
+              5
+            ]
+          },
+          "feedback": {
+            "met": "Cada decimal está no lugar certo.",
+            "not_yet": "Leia de novo as pontas com número e conte os passos."
+          }
+        },
+        {
+          "id": "measure-strip",
+          "type": "math.ruler.measure.v2",
+          "grading": "server",
+          "prompt": "Quantas polegadas mede a tira de papel?",
+          "visual": {
+            "type": "ruler-measure"
+          },
+          "payload": {
+            "unit": "in",
+            "object": "strip",
+            "from": 2,
+            "to": 8,
+            "max": 11
+          },
+          "feedback": {
+            "met": "Você leu o comprimento da tira.",
+            "not_yet": "Veja onde a tira começa antes de ler o fim dela."
+          }
         }
       ]
     },
     "answer_keys": {
       "zoom-tenths": {
         "target": 34
+      },
+      "order-tenths": {
+        "solutions": [
+          {
+            "m-7": [
+              "n-7"
+            ],
+            "m-2": [
+              "n-2"
+            ],
+            "m-5": [
+              "n-5"
+            ]
+          }
+        ]
+      },
+      "measure-strip": {
+        "target": "6"
       }
     }
   },
@@ -849,7 +1239,8 @@
         "operation.tap-cells.v1",
         "operation.drag-chips.v1",
         "operation.number-input.v1",
-        "visual.fraction-wall.v1"
+        "visual.fraction-wall.v1",
+        "visual.fraction-circles.v1"
       ],
       "segments": [
         {
@@ -881,6 +1272,42 @@
             ],
             "denominator": 6
           }
+        },
+        {
+          "id": "circles-show",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Cut the circle to show three quarters.",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "show",
+            "fraction": [
+              3,
+              4
+            ]
+          }
+        },
+        {
+          "id": "circles-compare",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Shade both circles. Which is more, three eighths or five eighths?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "compare",
+            "left": [
+              3,
+              8
+            ],
+            "right": [
+              5,
+              8
+            ]
+          }
         }
       ]
     },
@@ -891,6 +1318,14 @@
       "wall-equivalent": {
         "n": 3,
         "d": 6
+      },
+      "circles-show": {
+        "n": 3,
+        "d": 4
+      },
+      "circles-compare": {
+        "n": 5,
+        "d": 8
       }
     }
   },
@@ -922,7 +1357,8 @@
         "operation.tap-cells.v1",
         "operation.drag-chips.v1",
         "operation.number-input.v1",
-        "visual.fraction-wall.v1"
+        "visual.fraction-wall.v1",
+        "visual.fraction-circles.v1"
       ],
       "segments": [
         {
@@ -954,6 +1390,42 @@
             ],
             "denominator": 6
           }
+        },
+        {
+          "id": "circles-show",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Corta el círculo para mostrar tres cuartos.",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "show",
+            "fraction": [
+              3,
+              4
+            ]
+          }
+        },
+        {
+          "id": "circles-compare",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Sombrea los dos círculos. ¿Qué es más, tres octavos o cinco octavos?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "compare",
+            "left": [
+              3,
+              8
+            ],
+            "right": [
+              5,
+              8
+            ]
+          }
         }
       ]
     },
@@ -964,6 +1436,14 @@
       "wall-equivalent": {
         "n": 3,
         "d": 6
+      },
+      "circles-show": {
+        "n": 3,
+        "d": 4
+      },
+      "circles-compare": {
+        "n": 5,
+        "d": 8
       }
     }
   },
@@ -995,7 +1475,8 @@
         "operation.tap-cells.v1",
         "operation.drag-chips.v1",
         "operation.number-input.v1",
-        "visual.fraction-wall.v1"
+        "visual.fraction-wall.v1",
+        "visual.fraction-circles.v1"
       ],
       "segments": [
         {
@@ -1027,6 +1508,42 @@
             ],
             "denominator": 6
           }
+        },
+        {
+          "id": "circles-show",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Corte o círculo para mostrar três quartos.",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "show",
+            "fraction": [
+              3,
+              4
+            ]
+          }
+        },
+        {
+          "id": "circles-compare",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Pinte os dois círculos. O que é mais, três oitavos ou cinco oitavos?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "compare",
+            "left": [
+              3,
+              8
+            ],
+            "right": [
+              5,
+              8
+            ]
+          }
         }
       ]
     },
@@ -1037,6 +1554,14 @@
       "wall-equivalent": {
         "n": 3,
         "d": 6
+      },
+      "circles-show": {
+        "n": 3,
+        "d": 4
+      },
+      "circles-compare": {
+        "n": 5,
+        "d": 8
       }
     }
   },
@@ -1066,7 +1591,9 @@
       "required_capabilities": [
         "visual.ratio-line.v1",
         "operation.drag-chips.v1",
-        "operation.number-input.v1"
+        "operation.number-input.v1",
+        "visual.fraction-circles.v1",
+        "operation.tap-cells.v1"
       ],
       "segments": [
         {
@@ -1095,12 +1622,68 @@
             "met": "You kept both lines in the same proportion.",
             "not_yet": "Compare the two lines again, one step at a time."
           }
+        },
+        {
+          "id": "circles-add",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Join one eighth and three eighths in one circle. What is the sum?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "add",
+            "left": [
+              1,
+              8
+            ],
+            "right": [
+              3,
+              8
+            ]
+          },
+          "feedback": {
+            "met": "You joined parts of the same size.",
+            "not_yet": "Count the shaded parts of the work circle again."
+          }
+        },
+        {
+          "id": "circles-subtract",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Take three tenths from seven tenths. What is left?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "subtract",
+            "left": [
+              7,
+              10
+            ],
+            "right": [
+              3,
+              10
+            ]
+          },
+          "feedback": {
+            "met": "You took away parts of the same size.",
+            "not_yet": "Count the parts left in the work circle again."
+          }
         }
       ]
     },
     "answer_keys": {
       "double-line-scale": {
         "value": 24
+      },
+      "circles-add": {
+        "n": 1,
+        "d": 2
+      },
+      "circles-subtract": {
+        "n": 2,
+        "d": 5
       }
     }
   },
@@ -1130,7 +1713,9 @@
       "required_capabilities": [
         "visual.ratio-line.v1",
         "operation.drag-chips.v1",
-        "operation.number-input.v1"
+        "operation.number-input.v1",
+        "visual.fraction-circles.v1",
+        "operation.tap-cells.v1"
       ],
       "segments": [
         {
@@ -1159,12 +1744,68 @@
             "met": "Mantuviste las dos líneas en la misma proporción.",
             "not_yet": "Compara las dos líneas otra vez, un paso a la vez."
           }
+        },
+        {
+          "id": "circles-add",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Junta un octavo y tres octavos en un círculo. ¿Cuál es la suma?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "add",
+            "left": [
+              1,
+              8
+            ],
+            "right": [
+              3,
+              8
+            ]
+          },
+          "feedback": {
+            "met": "Juntaste partes del mismo tamaño.",
+            "not_yet": "Cuenta otra vez las partes sombreadas del círculo de trabajo."
+          }
+        },
+        {
+          "id": "circles-subtract",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Quita tres décimos de siete décimos. ¿Cuánto queda?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "subtract",
+            "left": [
+              7,
+              10
+            ],
+            "right": [
+              3,
+              10
+            ]
+          },
+          "feedback": {
+            "met": "Quitaste partes del mismo tamaño.",
+            "not_yet": "Cuenta otra vez las partes que quedan en el círculo de trabajo."
+          }
         }
       ]
     },
     "answer_keys": {
       "double-line-scale": {
         "value": 24
+      },
+      "circles-add": {
+        "n": 1,
+        "d": 2
+      },
+      "circles-subtract": {
+        "n": 2,
+        "d": 5
       }
     }
   },
@@ -1194,7 +1835,9 @@
       "required_capabilities": [
         "visual.ratio-line.v1",
         "operation.drag-chips.v1",
-        "operation.number-input.v1"
+        "operation.number-input.v1",
+        "visual.fraction-circles.v1",
+        "operation.tap-cells.v1"
       ],
       "segments": [
         {
@@ -1223,12 +1866,68 @@
             "met": "Você manteve as duas linhas na mesma proporção.",
             "not_yet": "Compare as duas linhas de novo, um passo de cada vez."
           }
+        },
+        {
+          "id": "circles-add",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Junte um oitavo e três oitavos em um círculo. Qual é a soma?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "add",
+            "left": [
+              1,
+              8
+            ],
+            "right": [
+              3,
+              8
+            ]
+          },
+          "feedback": {
+            "met": "Você juntou partes do mesmo tamanho.",
+            "not_yet": "Conte de novo as partes pintadas do círculo de trabalho."
+          }
+        },
+        {
+          "id": "circles-subtract",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Tire três décimos de sete décimos. Quanto sobra?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "subtract",
+            "left": [
+              7,
+              10
+            ],
+            "right": [
+              3,
+              10
+            ]
+          },
+          "feedback": {
+            "met": "Você tirou partes do mesmo tamanho.",
+            "not_yet": "Conte de novo as partes que sobram no círculo de trabalho."
+          }
         }
       ]
     },
     "answer_keys": {
       "double-line-scale": {
         "value": 24
+      },
+      "circles-add": {
+        "n": 1,
+        "d": 2
+      },
+      "circles-subtract": {
+        "n": 2,
+        "d": 5
       }
     }
   },
@@ -10303,7 +11002,8 @@
       "required_capabilities": [
         "visual.solid-section.v1",
         "operation.turn-solid.v1",
-        "operation.choose-and-type.v1"
+        "operation.choose-and-type.v1",
+        "operation.slide-plane.v1"
       ],
       "segments": [
         {
@@ -10370,7 +11070,8 @@
       "required_capabilities": [
         "visual.solid-section.v1",
         "operation.turn-solid.v1",
-        "operation.choose-and-type.v1"
+        "operation.choose-and-type.v1",
+        "operation.slide-plane.v1"
       ],
       "segments": [
         {
@@ -10437,7 +11138,8 @@
       "required_capabilities": [
         "visual.solid-section.v1",
         "operation.turn-solid.v1",
-        "operation.choose-and-type.v1"
+        "operation.choose-and-type.v1",
+        "operation.slide-plane.v1"
       ],
       "segments": [
         {
@@ -11488,5 +12190,569 @@
       ]
     },
     "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-hz-space2-13-17-15-17-formula",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "horizonte-space2",
+      "lesson_id": "v2-hz-space2-13-17-15-17-formula",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 15,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-hz-space2"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Slopes from a formula",
+      "required_capabilities": [
+        "visual.surface-formula.v1",
+        "operation.read-partials.v1",
+        "operation.walk-gradient.v1"
+      ],
+      "segments": [
+        {
+          "id": "formula-slope",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Stand on the dot and face along x. How steep is the surface there?",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "slope",
+              "expression": "x^2+2xy",
+              "axis": "x",
+              "at": {
+                "x": 1,
+                "y": 2
+              }
+            }
+          },
+          "feedback": {
+            "met": "You worked it out from the formula.",
+            "not_yet": "Read the formula again and try once more."
+          }
+        },
+        {
+          "id": "formula-gradient",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Find both slopes at the dot: the x slope first, then the y slope.",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "gradient",
+              "expression": "x^2+3y-xy",
+              "at": {
+                "x": 2,
+                "y": 1
+              }
+            }
+          },
+          "feedback": {
+            "met": "You worked it out from the formula.",
+            "not_yet": "Read the formula again and try once more."
+          }
+        },
+        {
+          "id": "formula-walk",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Walk downhill a tenth of the slope each step. How many steps until the height is 3 or lower?",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "walk",
+              "expression": "x^2+y^2",
+              "at": {
+                "x": 3,
+                "y": 2
+              },
+              "rate": {
+                "n": 1,
+                "d": 10
+              },
+              "below": 3,
+              "maxSteps": 8
+            }
+          },
+          "feedback": {
+            "met": "You worked it out from the formula.",
+            "not_yet": "Read the formula again and try once more."
+          }
+        },
+        {
+          "id": "formula-build",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Type a formula for z whose surface passes through all three dots.",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -2,
+              "xMax": 2,
+              "yMin": -2,
+              "yMax": 2
+            },
+            "task": {
+              "kind": "build",
+              "through": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                },
+                {
+                  "x": 1,
+                  "y": 0,
+                  "z": 3
+                },
+                {
+                  "x": 0,
+                  "y": 1,
+                  "z": 0
+                }
+              ]
+            }
+          },
+          "feedback": {
+            "met": "You worked it out from the formula.",
+            "not_yet": "Read the formula again and try once more."
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "formula-slope": {
+        "key": [
+          "6"
+        ]
+      },
+      "formula-gradient": {
+        "key": [
+          "3",
+          "1"
+        ]
+      },
+      "formula-walk": {
+        "key": [
+          "4"
+        ]
+      },
+      "formula-build": {
+        "reference": "1+2x-y"
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-hz-space2-13-17-15-17-formula",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "horizonte-space2",
+      "lesson_id": "v2-hz-space2-13-17-15-17-formula",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 15,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-hz-space2"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Pendientes desde una fórmula",
+      "required_capabilities": [
+        "visual.surface-formula.v1",
+        "operation.read-partials.v1",
+        "operation.walk-gradient.v1"
+      ],
+      "segments": [
+        {
+          "id": "formula-slope",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Párate en el punto y mira a lo largo de x. ¿Qué tan empinada es la superficie ahí?",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "slope",
+              "expression": "x^2+2xy",
+              "axis": "x",
+              "at": {
+                "x": 1,
+                "y": 2
+              }
+            }
+          },
+          "feedback": {
+            "met": "Lo resolviste a partir de la fórmula.",
+            "not_yet": "Lee la fórmula otra vez y prueba de nuevo."
+          }
+        },
+        {
+          "id": "formula-gradient",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Halla las dos pendientes en el punto: primero la de x y luego la de y.",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "gradient",
+              "expression": "x^2+3y-xy",
+              "at": {
+                "x": 2,
+                "y": 1
+              }
+            }
+          },
+          "feedback": {
+            "met": "Lo resolviste a partir de la fórmula.",
+            "not_yet": "Lee la fórmula otra vez y prueba de nuevo."
+          }
+        },
+        {
+          "id": "formula-walk",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Baja desde el punto, un décimo de la pendiente en cada paso. ¿Cuántos pasos hasta que la altura sea 3 o menos?",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "walk",
+              "expression": "x^2+y^2",
+              "at": {
+                "x": 3,
+                "y": 2
+              },
+              "rate": {
+                "n": 1,
+                "d": 10
+              },
+              "below": 3,
+              "maxSteps": 8
+            }
+          },
+          "feedback": {
+            "met": "Lo resolviste a partir de la fórmula.",
+            "not_yet": "Lee la fórmula otra vez y prueba de nuevo."
+          }
+        },
+        {
+          "id": "formula-build",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Escribe una fórmula para z cuya superficie pase por los tres puntos.",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -2,
+              "xMax": 2,
+              "yMin": -2,
+              "yMax": 2
+            },
+            "task": {
+              "kind": "build",
+              "through": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                },
+                {
+                  "x": 1,
+                  "y": 0,
+                  "z": 3
+                },
+                {
+                  "x": 0,
+                  "y": 1,
+                  "z": 0
+                }
+              ]
+            }
+          },
+          "feedback": {
+            "met": "Lo resolviste a partir de la fórmula.",
+            "not_yet": "Lee la fórmula otra vez y prueba de nuevo."
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "formula-slope": {
+        "key": [
+          "6"
+        ]
+      },
+      "formula-gradient": {
+        "key": [
+          "3",
+          "1"
+        ]
+      },
+      "formula-walk": {
+        "key": [
+          "4"
+        ]
+      },
+      "formula-build": {
+        "reference": "1+2x-y"
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-hz-space2-13-17-15-17-formula",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "horizonte-space2",
+      "lesson_id": "v2-hz-space2-13-17-15-17-formula",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 15,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-hz-space2"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Inclinações a partir de uma fórmula",
+      "required_capabilities": [
+        "visual.surface-formula.v1",
+        "operation.read-partials.v1",
+        "operation.walk-gradient.v1"
+      ],
+      "segments": [
+        {
+          "id": "formula-slope",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Fique no ponto e olhe ao longo de x. Qual é a inclinação da superfície ali?",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "slope",
+              "expression": "x^2+2xy",
+              "axis": "x",
+              "at": {
+                "x": 1,
+                "y": 2
+              }
+            }
+          },
+          "feedback": {
+            "met": "Você resolveu a partir da fórmula.",
+            "not_yet": "Leia a fórmula de novo e tente outra vez."
+          }
+        },
+        {
+          "id": "formula-gradient",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Ache as duas inclinações no ponto: primeiro a de x, depois a de y.",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "gradient",
+              "expression": "x^2+3y-xy",
+              "at": {
+                "x": 2,
+                "y": 1
+              }
+            }
+          },
+          "feedback": {
+            "met": "Você resolveu a partir da fórmula.",
+            "not_yet": "Leia a fórmula de novo e tente outra vez."
+          }
+        },
+        {
+          "id": "formula-walk",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Desça a partir do ponto, um décimo da inclinação a cada passo. Quantos passos até a altura ser 3 ou menos?",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "walk",
+              "expression": "x^2+y^2",
+              "at": {
+                "x": 3,
+                "y": 2
+              },
+              "rate": {
+                "n": 1,
+                "d": 10
+              },
+              "below": 3,
+              "maxSteps": 8
+            }
+          },
+          "feedback": {
+            "met": "Você resolveu a partir da fórmula.",
+            "not_yet": "Leia a fórmula de novo e tente outra vez."
+          }
+        },
+        {
+          "id": "formula-build",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Digite uma fórmula para z cuja superfície passe pelos três pontos.",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -2,
+              "xMax": 2,
+              "yMin": -2,
+              "yMax": 2
+            },
+            "task": {
+              "kind": "build",
+              "through": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                },
+                {
+                  "x": 1,
+                  "y": 0,
+                  "z": 3
+                },
+                {
+                  "x": 0,
+                  "y": 1,
+                  "z": 0
+                }
+              ]
+            }
+          },
+          "feedback": {
+            "met": "Você resolveu a partir da fórmula.",
+            "not_yet": "Leia a fórmula de novo e tente outra vez."
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "formula-slope": {
+        "key": [
+          "6"
+        ]
+      },
+      "formula-gradient": {
+        "key": [
+          "3",
+          "1"
+        ]
+      },
+      "formula-walk": {
+        "key": [
+          "4"
+        ]
+      },
+      "formula-build": {
+        "reference": "1+2x-y"
+      }
+    }
   }
 ]

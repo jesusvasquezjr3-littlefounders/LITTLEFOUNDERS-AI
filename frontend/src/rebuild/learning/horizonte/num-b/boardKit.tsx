@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { Locale } from '../../../design/copyBudget';
 import { Button, ChoiceChip, TextField } from '../../../design/controls';
 import type { LessonClientDocument } from '../../lessonDocument';
@@ -7,6 +7,7 @@ import { BoardShell, GradedFoot, playerCopy, readNumberAnswer, type useDragPlace
 import type { HorizonteSegment } from '../contract';
 import { copyText } from '../copyText';
 import { NUM_B_COPY } from './copy';
+import { FRACTION_PART_MAX } from './fractionWallModel.generated';
 import '../horizonte.css';
 import './numB.css';
 
@@ -35,6 +36,31 @@ export function NumField({ label, locale, value, onText, disabled, min = 0, max 
       onChange={(event) => onText(event.target.value)} />
     <p className="lf-number-echo" data-copy-role="body" aria-live="polite">{echo ? t.readsAs.replace('{value}', echo) : ' '}</p>
   </div>;
+}
+
+/** The typed fraction several operations end in: a top and a bottom number, submitted as integers. */
+export function useFractionText(locale: Locale, grading: Grading) {
+  const [top, setTop] = useState('');
+  const [bottom, setBottom] = useState('');
+  const n = typedNumber(top, locale, FRACTION_PART_MAX, 1);
+  const d = typedNumber(bottom, locale, FRACTION_PART_MAX, 1);
+  return {
+    top, bottom, typed: top !== '' || bottom !== '', ready: n !== null && d !== null,
+    answer: { n: n === null ? 0 : Number(n), d: d === null ? 0 : Number(d) },
+    onTop: (text: string) => { grading.reset(); setTop(text); },
+    onBottom: (text: string) => { grading.reset(); setBottom(text); },
+    clear: () => { setTop(''); setBottom(''); },
+  };
+}
+
+export function FractionFields({ id, t, locale, fraction, locked }: { id: string; t: Copy; locale: Locale; fraction: ReturnType<typeof useFractionText>; locked: boolean }) {
+  return <section className="lf-learning-control-strip" aria-labelledby={`${id}-answer`}>
+    <h2 id={`${id}-answer`} data-copy-role="heading">{t.fractionHeading}</h2>
+    <div className="lf-numb-fields">
+      <NumField label={t.numerator} locale={locale} value={fraction.top} onText={fraction.onTop} disabled={locked} min={1} max={FRACTION_PART_MAX} />
+      <NumField label={t.denominator} locale={locale} value={fraction.bottom} onText={fraction.onBottom} disabled={locked} min={1} max={FRACTION_PART_MAX} />
+    </div>
+  </section>;
 }
 
 /** A carried chip on a 64 px handle; the Move to menu beside it is its keyboard path. */

@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { LessonDocumentView } from '../../LessonDocumentView';
@@ -256,6 +258,15 @@ describe('stats1 boards (F1.13, F1.14)', () => {
 
     it('keeps every string in three locales', () => {
       for (const [key, entry] of Object.entries(STATS1_COPY)) for (const locale of ['en-US', 'es-MX', 'pt-BR'] as const) expect(entry[locale].length, `${key} ${locale}`).toBeGreaterThan(0);
+    });
+  });
+
+  describe('theme', () => {
+    it('colours text, markers and bars with the theme foreground, never the constant ink', () => {
+      const css = readFileSync(resolve(__dirname, 'stats1.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      expect(css).not.toMatch(/var\(--ink\)/);
+      expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b|rgba?\(|\b(?:white|black)\b/);
+      expect(css).toMatch(/\.lf-stats-chart\s*\{[^}]*color:\s*var\(--content\)/);
     });
   });
 });

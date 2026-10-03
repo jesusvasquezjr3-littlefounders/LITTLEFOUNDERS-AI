@@ -1,4 +1,7 @@
-/* Horizonte space pack: mental rotation, solid sections, the market stall and the coin stack. Tokens only, neutral board. */
+/* Horizonte space pack: mental rotation, solid sections (cuts, the sliding plane, counts, volumes), the market stall and the coin stack. Tokens only, neutral board. */
+.lf-sp-scroll { inline-size: 100%; min-inline-size: 0; overflow-x: auto; }
+.lf-sp-scroll:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
+.lf-rot, .lf-sec, .lf-eul, .lf-vol, .lf-stl, .lf-coin, .lf-slide { grid-template-columns: minmax(0, 1fr); }
 .lf-sp-sr { position: absolute; inline-size: 1px; block-size: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 .lf-hz-handle > [role='slider'] { flex: 1; min-inline-size: var(--hz-hit); min-block-size: var(--hz-hit); border-radius: 50%; }
 [role='slider']:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
@@ -9,7 +12,7 @@
 .lf-vox-top { fill: color-mix(in srgb, var(--sky) 18%, var(--surface)); }
 .lf-vox-front { fill: color-mix(in srgb, var(--sky) 40%, var(--surface)); }
 .lf-vox-side { fill: color-mix(in srgb, var(--sky) 62%, var(--surface)); }
-.lf-vox-line { stroke: var(--ink); stroke-width: 1.2; stroke-linejoin: round; }
+.lf-vox-line { stroke: var(--content); stroke-width: 1.2; stroke-linejoin: round; }
 .lf-vox-axis { stroke: var(--berry); stroke-width: 2; stroke-dasharray: 5 4; stroke-linecap: round; fill: none; }
 
 .lf-rot { display: grid; gap: var(--spacing-4); justify-items: start; }
@@ -19,7 +22,7 @@
 .lf-rot-ring { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; }
 .lf-rot-track { fill: none; stroke: var(--outline); stroke-width: 2; }
 .lf-rot-stop { fill: var(--surface); stroke: var(--outline); stroke-width: 1.5; }
-.lf-rot-stop[data-on='true'] { fill: var(--sky); stroke: var(--ink); }
+.lf-rot-stop[data-on='true'] { fill: var(--sky); stroke: var(--content); }
 .lf-rot-handle { position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -50%); }
 .lf-rot-knob { display: block; background: var(--surface); border: 3px solid var(--primary-strong); cursor: grab; }
 .lf-rot-value { position: absolute; inset: 0; display: grid; place-items: center; font-size: 1.5rem; font-weight: 800; pointer-events: none; }
@@ -34,12 +37,14 @@
 .lf-poly-keys { color: var(--content-muted); }
 .lf-poly-readout { font-weight: 800; }
 .lf-poly-pad { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
-.lf-poly-face { fill: color-mix(in srgb, var(--sky) 22%, var(--surface)); stroke: none; }
-.lf-poly-face[data-shade='1'] { fill: color-mix(in srgb, var(--sky) 38%, var(--surface)); }
-.lf-poly-face[data-shade='2'] { fill: color-mix(in srgb, var(--sky) 54%, var(--surface)); }
-.lf-poly-face[data-shade='3'] { fill: color-mix(in srgb, var(--sky) 70%, var(--surface)); }
-.lf-poly-face[data-tone='ghost'] { fill-opacity: 0.55; }
-.lf-poly-edge { stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; }
+.lf-poly-face { --face: color-mix(in srgb, var(--sky) 22%, var(--surface)); fill: var(--face); stroke: none; }
+.lf-poly-face[data-shade='1'] { --face: color-mix(in srgb, var(--sky) 38%, var(--surface)); }
+.lf-poly-face[data-shade='2'] { --face: color-mix(in srgb, var(--sky) 54%, var(--surface)); }
+.lf-poly-face[data-shade='3'] { --face: color-mix(in srgb, var(--sky) 70%, var(--surface)); }
+.lf-poly-face[data-curved='true'] { stroke: var(--face); stroke-width: 0.6; stroke-linejoin: round; }
+.lf-poly-face[data-tone='ghost'] { fill-opacity: 0.55; stroke-opacity: 0.55; }
+.lf-poly-sheet { fill: none; stroke: var(--primary-strong); stroke-width: 1.6; stroke-dasharray: 6 4; stroke-linejoin: round; }
+.lf-poly-edge { stroke: var(--content); stroke-width: 1.6; stroke-linecap: round; }
 .lf-poly-edge[data-tone='frame'] { stroke: var(--mint-strong); stroke-width: 1.4; }
 .lf-poly-edge[data-hidden='true'] { stroke: var(--content-muted); stroke-width: 1.2; stroke-dasharray: 4 4; }
 .lf-poly-cut-fill { fill: color-mix(in srgb, var(--berry) 38%, transparent); stroke: none; }
@@ -48,7 +53,8 @@
 
 .lf-sec, .lf-eul, .lf-vol { display: grid; gap: var(--spacing-4); justify-items: start; }
 .lf-sec-options { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
-.lf-sec-status, .lf-eul-status, .lf-vol-status { font-weight: 800; }
+.lf-sec-status, .lf-eul-status, .lf-vol-status, .lf-slide-status { font-weight: 800; }
+.lf-slide-pad { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
 .lf-eul-counts { display: flex; flex-wrap: wrap; gap: var(--spacing-4); margin: 0; padding: 0; list-style: none; }
 .lf-eul-counts li { display: grid; gap: var(--spacing-1); min-inline-size: 5rem; padding: var(--spacing-2) var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
 .lf-eul-counts li[data-hidden='true'] { outline: 2px dashed var(--primary-strong); outline-offset: -2px; }
@@ -60,8 +66,8 @@
 .lf-stl-fill { fill: var(--sky); }
 .lf-stl-fill[data-over='true'] { fill: var(--berry); }
 .lf-stl-change { fill: var(--mint-soft); }
-.lf-stl-mark { stroke: var(--ink); stroke-width: 2; }
-.lf-stl-mark-label { font-size: 11px; font-weight: 800; fill: var(--ink); }
+.lf-stl-mark { stroke: var(--content); stroke-width: 2; }
+.lf-stl-mark-label { font-size: 11px; font-weight: 800; fill: var(--content); }
 .lf-stl-status { font-weight: 800; }
 .lf-stl-basket, .lf-stl-shelf { display: flex; flex-wrap: wrap; gap: var(--spacing-2); align-items: start; inline-size: 100%; padding: var(--spacing-2); border-radius: var(--rounded-md); background: var(--sunken); outline: 2px solid transparent; outline-offset: -2px; }
 .lf-stl-basket { display: grid; }
@@ -76,23 +82,29 @@
 .lf-coin { display: grid; gap: var(--spacing-4); justify-items: start; }
 .lf-coin-scene { display: block; inline-size: 100%; max-inline-size: 22rem; block-size: auto; border-radius: var(--rounded-lg); background: var(--sunken); }
 .lf-coin-base { stroke: var(--outline); stroke-width: 1.5; }
-.lf-coin-piece { fill: color-mix(in srgb, var(--sky) 45%, var(--surface)); stroke: var(--ink); stroke-width: 0.8; }
+.lf-coin-piece { fill: color-mix(in srgb, var(--sky) 45%, var(--surface)); stroke: var(--content); stroke-width: 0.8; }
 .lf-coin-piece[data-odd='true'] { fill: color-mix(in srgb, var(--sky) 65%, var(--surface)); }
 .lf-coin-goal line { stroke: var(--berry); stroke-width: 2; stroke-dasharray: 5 4; }
-.lf-coin-goal text { font-size: 11px; font-weight: 800; fill: var(--ink); }
-.lf-coin-ref line { stroke: var(--ink); stroke-width: 1.2; }
+.lf-coin-goal text { font-size: 11px; font-weight: 800; fill: var(--content); }
+.lf-coin-ref line { stroke: var(--content); stroke-width: 1.2; }
 .lf-coin-ref .lf-coin-lead { stroke: var(--content-muted); stroke-width: 0.8; }
-.lf-coin-ref text { font-size: 11px; font-weight: 600; fill: var(--ink); }
+.lf-coin-ref text { font-size: 11px; font-weight: 600; fill: var(--content); }
 .lf-coin-status { font-weight: 800; }
-.lf-coin-track { position: relative; inline-size: calc(100% - var(--hz-hit)); max-inline-size: 22rem; margin-inline: calc(var(--hz-hit) / 2); block-size: var(--hz-hit); touch-action: none; user-select: none; }
-.lf-coin-rail { position: absolute; inset-inline: 0; inset-block-start: calc(50% - 0.5rem); inline-size: 100%; block-size: 1rem; }
-.lf-coin-rail-line { stroke: var(--outline); stroke-width: 2; vector-effect: non-scaling-stroke; }
-.lf-coin-rail-stop { stroke: var(--content-muted); stroke-width: 1; vector-effect: non-scaling-stroke; }
-.lf-coin-handle { position: absolute; top: 50%; transform: translate(-50%, -50%); }
-.lf-coin-knob { display: block; background: var(--surface); border: 3px solid var(--primary-strong); cursor: grab; }
+.lf-coin-track, .lf-slide-track { position: relative; inline-size: calc(100% - var(--hz-hit)); max-inline-size: 22rem; margin-inline: calc(var(--hz-hit) / 2); block-size: var(--hz-hit); touch-action: none; user-select: none; }
+.lf-coin-rail, .lf-slide-rail { position: absolute; inset-inline: 0; inset-block-start: calc(50% - 0.5rem); inline-size: 100%; block-size: 1rem; }
+.lf-coin-rail-line, .lf-slide-rail-line { stroke: var(--outline); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.lf-coin-rail-stop, .lf-slide-rail-stop { stroke: var(--content-muted); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.lf-coin-handle, .lf-slide-handle { position: absolute; top: 50%; transform: translate(-50%, -50%); }
+.lf-coin-knob, .lf-slide-knob { display: block; background: var(--surface); border: 3px solid var(--primary-strong); cursor: grab; }
+
+@media (max-width: 30rem) {
+  .lf-sp-scroll .lf-hz-table th, .lf-sp-scroll .lf-hz-table td { padding-inline: var(--spacing-1); }
+  .lf-eul-counts { gap: var(--spacing-2); }
+  .lf-eul-counts li { min-inline-size: 0; flex: 1 1 4rem; padding-inline: var(--spacing-2); }
+}
 
 @media (prefers-reduced-motion: no-preference) {
-  .lf-rot-knob, .lf-coin-knob { transition: background-color var(--dur-component) var(--ease-standard); }
-  .lf-rot-knob:hover, .lf-coin-knob:hover { background-color: var(--sky-soft); }
+  .lf-rot-knob, .lf-coin-knob, .lf-slide-knob { transition: background-color var(--dur-component) var(--ease-standard); }
+  .lf-rot-knob:hover, .lf-coin-knob:hover, .lf-slide-knob:hover { background-color: var(--sky-soft); }
   .lf-stl-fill, .lf-stl-change { transition: width var(--dur-component) var(--ease-standard); }
 }

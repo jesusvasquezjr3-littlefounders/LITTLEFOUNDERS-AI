@@ -95,13 +95,15 @@ export function SlotBoardShell({ screen, document, segment, onBack, sequence, bo
     <section className="lf-learning-board lf-slotboard" aria-label={document.title}>
       {children}
       <p className="lf-slotboard-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{status}</p>
-      {open ? <table className="lf-hz-table" data-hz-table="">
-        <caption data-copy-role="heading">{table.caption}</caption>
-        <thead><tr>{table.head.map((cell, index) => <th key={index} scope="col" data-copy-role="data">{cell}</th>)}</tr></thead>
-        <tbody>{table.rows.map((row, index) => <tr key={index}>{row.map((cell, column) => column === 0
-          ? <th key={column} scope="row" data-copy-role="data">{cell}</th>
-          : <td key={column} data-copy-role="data">{cell}</td>)}</tr>)}</tbody>
-      </table> : null}
+      {open ? <div className="lf-slotboard-tablewrap" role="region" aria-label={table.caption} tabIndex={0}>
+        <table className="lf-hz-table" data-hz-table="">
+          <caption data-copy-role="heading">{table.caption}</caption>
+          <thead><tr>{table.head.map((cell, index) => <th key={index} scope="col" data-copy-role="data">{cell}</th>)}</tr></thead>
+          <tbody>{table.rows.map((row, index) => <tr key={index}>{row.map((cell, column) => column === 0
+            ? <th key={column} scope="row" data-copy-role="data">{cell}</th>
+            : <td key={column} data-copy-role="data">{cell}</td>)}</tr>)}</tbody>
+        </table>
+      </div> : null}
     </section>
     <section className="lf-learning-control-strip" aria-label={heading}>
       <h2 data-copy-role="heading">{heading}</h2>

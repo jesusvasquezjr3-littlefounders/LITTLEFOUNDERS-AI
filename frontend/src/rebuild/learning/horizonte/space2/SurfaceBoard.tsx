@@ -7,6 +7,7 @@ import type { HorizonteSegment } from '../contract';
 import { DEFAULT_VIEW, SCENE_SIZE, projectPoint, type SolidView } from '../solids/projection.generated';
 import { MESH_HALF_WIDTH, readSurfacePayload, surfaceGrid, surfaceMesh, surfaceSlice, xAxis, yAxis, type SurfaceMesh, type SurfaceOption, type SurfacePayload, type SurfaceSlice } from './surface.generated';
 import { axisName, axisValue, fill, holdName, money, outputName, spaceText, type SpaceText } from './spaceText';
+import { ScrollRegion } from './ScrollRegion';
 import { TurnStage } from './TurnStage';
 import '../horizonte.css';
 import './space2.css';
@@ -107,7 +108,7 @@ function SurfaceBoardView({ document, segment, payload, onBack, sequence, onGrad
       <TurnStage view={view} onViewChange={setView} name={t.surfaceName} keys={t.surfaceKeys} controls={t.surfaceControls} locale={locale}>
         <SurfaceSvg mesh={mesh} view={view} held={{ fixed, index: slots[fixed] }} options={payload.options} chosen={chosen} name={t.surfaceName} />
       </TurnStage>
-      {table ? <table className="lf-hz-table" data-hz-table="">
+      {table ? <ScrollRegion label={spec.kind === 'compound' ? t.tableAmount : t.tableProfit}><table className="lf-hz-table" data-hz-table="">
         <caption data-copy-role="heading">{spec.kind === 'compound' ? t.tableAmount : t.tableProfit}</caption>
         <thead><tr>
           <th scope="col" data-copy-role="data">{fill(t.tableCorner, { y: axisName(t, spec, 'y'), x: axisName(t, spec, 'x') })}</th>
@@ -117,7 +118,7 @@ function SurfaceBoardView({ document, segment, payload, onBack, sequence, onGrad
           <th scope="row" data-copy-role="data">{axisValue(t, spec, 'y', yi, locale)}</th>
           {xs.map((__, xi) => <td key={xi} data-copy-role="data">{money(grid[yi]![xi]!, locale)}{pinsAt(xi, yi) ? ` (${pinsAt(xi, yi)})` : ''}</td>)}
         </tr>)}</tbody>
-      </table> : null}
+      </table></ScrollRegion> : null}
     </section>
     <section className="lf-learning-control-strip lf-s2-strip" aria-label={t.sliceHeading}>
       <h2 data-copy-role="heading">{t.sliceHeading}</h2>

@@ -39,8 +39,9 @@ const GEOM2_GUIDANCE: readonly ForgeGuidance[] = [
   {
     type: TESSELLATION,
     lines: [
-      `${TESSELLATION}: ages 8-15 only. The prompt asks to cover the floor with copies of the tile and says the tile is slid, never turned.`,
-      `${TESSELLATION}: build the floor by sliding the tile to anchors you chose, so a cover exists. The tile is 2 to 6 connected cells starting at the origin; the floor is whole copies of it, at most 24, inside a 12 by 12 grid. The private key is the number of copies.`,
+      `${TESSELLATION}: ages 8-15 only. The prompt asks to cover the floor with copies of the tile and names what may be done to it: slid only, or also turned half a turn or flipped over when the payload lists moves.`,
+      `${TESSELLATION}: build the floor from copies of the tile you chose, so a cover exists. The tile is 2 to 6 connected cells starting at the origin; the floor is whole copies of it, at most 24, inside a 12 by 12 grid. The private key is the number of copies.`,
+      `${TESSELLATION}: add moves (slide first, then turn, flip or both, each once) only when the floor really needs them. A turn is half a turn about the middle of the tile and a flip is a left-to-right mirror image; the learner may use any listed move on any copy, so a cover must exist with the moves you list. Leave moves out for a slide-only floor.`,
     ],
   },
 ];
@@ -184,22 +185,36 @@ function floorProblem(floor: unknown, tile: readonly Point[]): string | null {
   const span = bounds(floor);
   return span.minX >= 0 && span.minY >= 0 && span.maxX <= 11 && span.maxY <= 11 ? null : 'The floor stays inside a 12 by 12 grid of cells';
 }
-function solvable(floor: readonly Point[], tile: readonly Point[]) {
+const MOTIONS = ['slide', 'turn', 'flip'];
+function movesProblem(moves: unknown): string | null {
+  const order = Array.isArray(moves) ? moves.map((move) => MOTIONS.indexOf(move as string)) : [];
+  const ok = order.length >= 2 && order.length <= 3 && order[0] === 0 && order.every((position, index) => position >= 0 && (index === 0 || position > order[index - 1]!));
+  return ok ? null : 'The moves are slide first and then turn, flip or both, each once';
+}
+function oriented(tile: readonly Point[], motion: string): Point[] {
+  const span = bounds(tile);
+  const cells = tile.map((cell) => (motion === 'turn' ? { x: span.minX + span.maxX - cell.x, y: span.minY + span.maxY - cell.y } : motion === 'flip' ? { x: span.minX + span.maxX - cell.x, y: cell.y } : { x: cell.x, y: cell.y }));
+  return cells.sort((a, b) => a.x - b.x || a.y - b.y);
+}
+function solvable(floor: readonly Point[], tile: readonly Point[], motions: readonly string[]) {
   const order = (a: Point, b: Point) => a.x - b.x || a.y - b.y;
-  const cells = [...floor].sort(order); const shape = [...tile].sort(order);
+  const cells = [...floor].sort(order);
+  const shapes = [...new Map(motions.map((motion) => oriented(tile, motion)).map((shape) => [shape.map(key).join(';'), shape])).values()];
   const open = new Set(cells.map(key)); let budget = BUDGET;
   const search = (from: number): boolean => {
     let index = from;
     while (index < cells.length && !open.has(key(cells[index]!))) index += 1;
     if (index === cells.length) return true;
-    if (budget <= 0) return false;
-    budget -= 1;
-    const dx = cells[index]!.x - shape[0]!.x; const dy = cells[index]!.y - shape[0]!.y;
-    const used = shape.map((c) => key({ x: c.x + dx, y: c.y + dy }));
-    if (!used.every((k) => open.has(k))) return false;
-    for (const k of used) open.delete(k);
-    if (search(index + 1)) return true;
-    for (const k of used) open.add(k);
+    for (const shape of shapes) {
+      if (budget <= 0) return false;
+      budget -= 1;
+      const dx = cells[index]!.x - shape[0]!.x; const dy = cells[index]!.y - shape[0]!.y;
+      const used = shape.map((c) => key({ x: c.x + dx, y: c.y + dy }));
+      if (!used.every((k) => open.has(k))) continue;
+      for (const k of used) open.delete(k);
+      if (search(index + 1)) return true;
+      for (const k of used) open.add(k);
+    }
     return false;
   };
   return search(0);
@@ -261,14 +276,19 @@ function transformGate(segment: Record<string, unknown>, add: Add, keyOf: KeyOf)
 
 function tessellationGate(segment: Record<string, unknown>, add: Add, keyOf: KeyOf) {
   const payload = segment.payload;
-  if (!record(payload) || !keysAre(payload, ['floor', 'tile'])) return add('The tessellation payload is the floor and the tile, as lists of cells');
+  if (!record(payload) || !keysAre(payload, ['floor', 'tile'], ['moves'])) return add('The tessellation payload is the floor and the tile, as lists of cells, and optionally the moves');
+  if (Object.hasOwn(payload, 'moves')) {
+    const movesIssue = movesProblem(payload.moves);
+    if (movesIssue) return add(movesIssue);
+  }
   const tile = payload.tile;
   const tileIssue = tileProblem(tile);
   if (tileIssue) return add(tileIssue);
   const floorIssue = floorProblem(payload.floor, tile as Point[]);
   if (floorIssue) return add(floorIssue);
   const floor = payload.floor as Point[];
-  if (!solvable(floor, tile as Point[])) return add('The tile cannot cover the floor by sliding alone; build the floor from copies of the tile');
+  const motions = Array.isArray(payload.moves) ? (payload.moves as string[]) : ['slide'];
+  if (!solvable(floor, tile as Point[], motions)) return add(`The tile cannot cover the floor by ${motions.length > 1 ? 'the moves listed' : 'sliding alone'}; build the floor from copies of the tile`);
   const secret = keyOf();
   if (secret === undefined) return;
   if (!record(secret) || !keysAre(secret, ['copies']) || secret.copies !== floor.length / (tile as Point[]).length) add('The tessellation key is the number of copies an exact cover takes');

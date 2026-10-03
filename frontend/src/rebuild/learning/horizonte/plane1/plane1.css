@@ -1,6 +1,16 @@
 /* F1.9, F1.11 and F1.12 plane boards: slope triangle, rate of change, linked views, break-even, cost structure, markup, market shift and elasticity. Tokens only. */
-.lf-p1 { display: grid; gap: var(--spacing-3); justify-items: start; }
+.lf-p1 { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-3); justify-items: start; min-inline-size: 0; }
+.lf-p1 > * { min-inline-size: 0; max-inline-size: 100%; }
 .lf-p1-figure { inline-size: 100%; max-inline-size: 42rem; }
-.lf-p1-status { font-weight: 800; }
-.lf-p1-facts { display: grid; gap: var(--spacing-1); margin: 0; color: var(--ink); }
+.lf-p1-status { font-weight: 800; overflow-wrap: anywhere; }
+.lf-p1-facts { display: grid; gap: var(--spacing-1); margin: 0; color: var(--content); overflow-wrap: anywhere; }
+.lf-p1-scroll { inline-size: 100%; max-inline-size: 42rem; overflow-x: auto; }
 .lf-p1 .lf-hz-table { max-inline-size: 42rem; }
+
+/* A point label never runs off the plane: past the middle it sits on the left of its mark, and in a narrow figure it wraps. */
+.lf-rebuild .lf-p1 .lf-plano-point-label { white-space: normal; inline-size: max-content; }
+.lf-rebuild .lf-p1 .lf-plano-point[data-flip] .lf-plano-point-label { inset-inline-start: auto; inset-inline-end: calc(100% + var(--spacing-1)); text-align: end; }
+@container lf-plano (inline-size < 36rem) {
+  .lf-rebuild .lf-p1 .lf-plano-frame { padding-inline-end: var(--spacing-8); }
+  .lf-rebuild .lf-p1 .lf-plano-point-label { max-inline-size: 9em; }
+}

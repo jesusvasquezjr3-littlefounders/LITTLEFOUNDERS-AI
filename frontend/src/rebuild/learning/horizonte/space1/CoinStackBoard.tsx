@@ -5,6 +5,7 @@ import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { REFERENCE_MARKS, THICKNESS_TENTHS, coinPositions, readCoinPayload, stackCents, stackTenths, type CoinPayload } from './coins.generated';
 import { fill, lengthText, money, pieceName, piecesName, referenceName, space1Text, spokenLength, spokenMoney } from './space1Text';
+import { TableScroll } from './TableScroll';
 import '../horizonte.css';
 import './space1.css';
 
@@ -100,7 +101,7 @@ function CoinStack({ document, segment, payload, onBack, sequence, onGrade }: Om
       </svg>
       <p className="lf-coin-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{status}</p>
       {table ? <>
-        <table className="lf-hz-table" data-hz-table="">
+        <TableScroll label={t.coinTableCaption}><table className="lf-hz-table" data-hz-table="">
           <caption data-copy-role="heading">{t.coinTableCaption}</caption>
           <thead><tr>
             <th scope="col" data-copy-role="data">{t.coinColPieces}</th><th scope="col" data-copy-role="data">{t.coinColWorth}</th><th scope="col" data-copy-role="data">{t.coinColHeight}</th>
@@ -109,14 +110,14 @@ function CoinStack({ document, segment, payload, onBack, sequence, onGrade }: Om
             <th scope="row" data-copy-role="data">{new Intl.NumberFormat(locale).format(at)}</th>
             <td data-copy-role="data">{money(stackCents(payload, at), locale, true)}</td><td data-copy-role="data">{lengthText(stackTenths(piece, at) / 10, locale)}</td>
           </tr>)}</tbody>
-        </table>
-        <table className="lf-hz-table" data-hz-table="">
+        </table></TableScroll>
+        <TableScroll label={t.coinRefCaption}><table className="lf-hz-table" data-hz-table="">
           <caption data-copy-role="heading">{t.coinRefCaption}</caption>
           <thead><tr><th scope="col" data-copy-role="data">{t.coinColThing}</th><th scope="col" data-copy-role="data">{t.coinColHeight}</th></tr></thead>
           <tbody>{REFERENCE_MARKS.map((mark) => <tr key={mark.id}>
             <th scope="row" data-copy-role="data">{referenceName(t, mark.id)}</th><td data-copy-role="data">{lengthText(mark.mm, locale)}</td>
           </tr>)}</tbody>
-        </table>
+        </table></TableScroll>
       </> : null}
     </section>
     <section className="lf-learning-control-strip" aria-label={t.coinHeading}>

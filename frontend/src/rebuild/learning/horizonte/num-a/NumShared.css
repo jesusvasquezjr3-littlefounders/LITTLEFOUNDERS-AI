@@ -1,0 +1,5 @@
+/* Layout every num-a board shares: the board grid, the horizontal scroll that keeps a wide drawing at a tappable size on a phone, the status line and the tray. Tokens only. */
+.lf-num-board { display: grid; gap: var(--spacing-4); justify-items: start; min-inline-size: 0; }
+.lf-num-scroll { inline-size: 100%; overflow-x: auto; }
+.lf-num-status { font-weight: 800; }
+.lf-num-tray { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
