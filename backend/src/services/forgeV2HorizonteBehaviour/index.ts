@@ -1,4 +1,5 @@
 import { ALG1_BEHAVIOUR } from './alg1.js';
+import { ALG2_BEHAVIOUR } from './alg2.js';
 import { BALANCE_BEHAVIOUR } from './balance.js';
 import { FIN_BEHAVIOUR } from './fin.js';
 import { FIN2_BEHAVIOUR } from './fin2.js';
@@ -11,6 +12,7 @@ import { STATS_BEHAVIOUR } from './stats.js';
 const BUILDERS: Readonly<Record<string, HzBuilder>> = {
   ...NUMBER_BEHAVIOUR,
   ...ALG1_BEHAVIOUR,
+  ...ALG2_BEHAVIOUR,
   ...BALANCE_BEHAVIOUR,
   ...STATS_BEHAVIOUR,
   ...PLANE_BEHAVIOUR,
