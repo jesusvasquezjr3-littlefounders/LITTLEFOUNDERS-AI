@@ -6,13 +6,14 @@ import { NUM_B_CAPABILITIES, numB } from '../../v2/horizonte/num-b.js';
 const ARRAY = 'math.array-area.v2';
 const RATIO = 'math.ratio-line.v2';
 const WALL = 'math.fraction-wall.v2';
+const CIRCLES = 'math.fraction-circles.v2';
 
 const doc = (type: string, visual: string, payload: unknown, band = '10-12') => ({ age_band: band, segments: [{ id: 'seg', type, visual: { type: visual }, payload }] });
 const gate = (document: ReturnType<typeof doc>, key?: unknown) => horizontePieceGates(document, key === undefined ? undefined : { seg: key });
 
 describe('num-b pack in the Forge (F1.4 arrays and area, F1.5 ratio, F1.6 fractions)', () => {
   it('declares the capability literal and the emitter map spreads it', () => {
-    for (const type of [ARRAY, RATIO, WALL]) {
+    for (const type of [ARRAY, RATIO, WALL, CIRCLES]) {
       expect(HORIZONTE_FORGE_CAPABILITIES[type as keyof typeof HORIZONTE_FORGE_CAPABILITIES]).toEqual(NUM_B_CAPABILITIES[type as keyof typeof NUM_B_CAPABILITIES]);
       expect((V2_SEGMENT_CAPABILITIES as Record<string, readonly string[]>)[type]).toEqual(NUM_B_CAPABILITIES[type as keyof typeof NUM_B_CAPABILITIES]);
     }
@@ -23,6 +24,8 @@ describe('num-b pack in the Forge (F1.4 arrays and area, F1.5 ratio, F1.6 fracti
     expect(horizonteGuidanceFor([ARRAY]).join('\n')).toMatch(/area-division/);
     expect(horizonteGuidanceFor([RATIO]).join('\n')).toMatch(/ages 10-12 only/);
     expect(horizonteGuidanceFor([WALL]).join('\n')).toMatch(/"equivalent"/);
+    expect(horizonteGuidanceFor([CIRCLES]).join('\n')).toMatch(/"compare"/);
+    expect(horizonteGuidanceFor([CIRCLES]).join('\n')).not.toMatch(/fraction-bars/);
     expect(horizonteGuidanceFor([ARRAY]).join('\n')).not.toMatch(/ratio-tape/);
     expect(horizonteGuidanceFor(['money.allocation.v2'])).toEqual([]);
   });
@@ -103,6 +106,40 @@ describe('num-b pack in the Forge (F1.4 arrays and area, F1.5 ratio, F1.6 fracti
       expect(gate(doc(WALL, 'fraction-bars', { op: 'add', left: [1, 3], right: [1, 4] }), { value: 7 })[0]?.message).toMatch(/\{n, d\}/);
       expect(gate(doc(WALL, 'fraction-bars', { op: 'add', left: [1, 3], right: [1, 4] }), { n: 0, d: 12 })[0]?.message).toMatch(/\{n, d\}/);
       expect(gate(doc(WALL, 'fraction-bars', { op: 'add', left: [1, 3], right: [1, 4] }, '6-9'))[0]?.message).toMatch(/age band 10-12/);
+    });
+  });
+
+  describe('fraction circles', () => {
+    it('accepts every operation with a reachable key', () => {
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'show', fraction: [3, 4] }, '6-9'), { n: 3, d: 4 })).toEqual([]);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'compare', left: [3, 8], right: [5, 8] }, '6-9'), { n: 5, d: 8 })).toEqual([]);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'add', left: [1, 8], right: [3, 8] }), { n: 1, d: 2 })).toEqual([]);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'subtract', left: [7, 10], right: [3, 10] }), { n: 2, d: 5 })).toEqual([]);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'add', left: [2, 6], right: [4, 6] }))).toEqual([]);
+    });
+
+    it('takes the exact form for show and any equal form for the other operations', () => {
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'show', fraction: [3, 4] }, '6-9'), { n: 6, d: 8 })[0]?.message).toMatch(/not the result/);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'add', left: [1, 8], right: [3, 8] }), { n: 4, d: 8 })).toEqual([]);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'compare', left: [3, 8], right: [5, 8] }, '6-9'), { n: 10, d: 16 })).toEqual([]);
+    });
+
+    it('refuses an unsolvable payload, a wrong visual, a wrong key and the young band for add and subtract', () => {
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'show', fraction: [4, 4] }, '6-9'))).toHaveLength(1);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'show', fraction: [1, 7] }, '6-9'))).toHaveLength(1);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'compare', left: [3, 8], right: [3, 8] }, '6-9'))).toHaveLength(1);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'compare', left: [3, 8], right: [1, 4] }, '6-9'))).toHaveLength(1);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'add', left: [5, 8], right: [5, 8] }))).toHaveLength(1);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'subtract', left: [3, 10], right: [7, 10] }))).toHaveLength(1);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'multiply', left: [1, 2], right: [1, 2] }))).toHaveLength(1);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'add', left: [1, 8] }))).toHaveLength(1);
+      expect(gate(doc(CIRCLES, 'fraction-wall', { op: 'show', fraction: [3, 4] }, '6-9'))[0]?.message).toMatch(/visual type must be fraction-circles/);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'show', fraction: [3, 4] }, '6-9'), { n: 3, d: 5 })[0]?.message).toMatch(/not the result/);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'show', fraction: [3, 4] }, '6-9'), { value: 3 })[0]?.message).toMatch(/\{n, d\}/);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'show', fraction: [3, 4] }, '6-9'), { n: 0, d: 4 })[0]?.message).toMatch(/\{n, d\}/);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'add', left: [1, 8], right: [3, 8] }, '6-9'))[0]?.message).toMatch(/age band 10-12/);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'subtract', left: [7, 10], right: [3, 10] }, '6-9'))[0]?.message).toMatch(/age band 10-12/);
+      expect(gate(doc(CIRCLES, 'fraction-circles', { op: 'show', fraction: [3, 4] }, '13-17'))[0]?.message).toMatch(/6-9 and 10-12/);
     });
   });
 

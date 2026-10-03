@@ -71,6 +71,98 @@
           }
         }
       }
+    },
+    {
+      "id": "circles-add",
+      "type": "math.fraction-circles.v2",
+      "grading": "server",
+      "visual": {
+        "type": "fraction-circles"
+      },
+      "payload": {
+        "op": "add",
+        "left": [
+          1,
+          8
+        ],
+        "right": [
+          3,
+          8
+        ]
+      },
+      "rubric": {
+        "n": 1,
+        "d": 2
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Join one eighth and three eighths in one circle. What is the sum?",
+          "feedback": {
+            "met": "You joined parts of the same size.",
+            "not_yet": "Count the shaded parts of the work circle again."
+          }
+        },
+        "es-MX": {
+          "prompt": "Junta un octavo y tres octavos en un círculo. ¿Cuál es la suma?",
+          "feedback": {
+            "met": "Juntaste partes del mismo tamaño.",
+            "not_yet": "Cuenta otra vez las partes sombreadas del círculo de trabajo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Junte um oitavo e três oitavos em um círculo. Qual é a soma?",
+          "feedback": {
+            "met": "Você juntou partes do mesmo tamanho.",
+            "not_yet": "Conte de novo as partes pintadas do círculo de trabalho."
+          }
+        }
+      }
+    },
+    {
+      "id": "circles-subtract",
+      "type": "math.fraction-circles.v2",
+      "grading": "server",
+      "visual": {
+        "type": "fraction-circles"
+      },
+      "payload": {
+        "op": "subtract",
+        "left": [
+          7,
+          10
+        ],
+        "right": [
+          3,
+          10
+        ]
+      },
+      "rubric": {
+        "n": 2,
+        "d": 5
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Take three tenths from seven tenths. What is left?",
+          "feedback": {
+            "met": "You took away parts of the same size.",
+            "not_yet": "Count the parts left in the work circle again."
+          }
+        },
+        "es-MX": {
+          "prompt": "Quita tres décimos de siete décimos. ¿Cuánto queda?",
+          "feedback": {
+            "met": "Quitaste partes del mismo tamaño.",
+            "not_yet": "Cuenta otra vez las partes que quedan en el círculo de trabajo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Tire três décimos de sete décimos. Quanto sobra?",
+          "feedback": {
+            "met": "Você tirou partes do mesmo tamanho.",
+            "not_yet": "Conte de novo as partes que sobram no círculo de trabalho."
+          }
+        }
+      }
     }
   ]
 }

@@ -16,10 +16,10 @@ const VISUAL_OF: Readonly<Record<FractionOp, FractionVisual>> = {
   equivalent: 'fraction-wall', add: 'fraction-bars', subtract: 'fraction-bars', multiply: 'fraction-product', divide: 'fraction-measure',
 };
 
-const whole = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value);
-const between = (value: unknown, low: number, high: number): value is number => whole(value) && value >= low && value <= high;
-const record = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
-const keysAre = (value: Record<string, unknown>, ...keys: string[]): boolean => Object.keys(value).sort().join() === [...keys].sort().join();
+export const whole = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value);
+export const between = (value: unknown, low: number, high: number): value is number => whole(value) && value >= low && value <= high;
+export const record = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
+export const keysAre = (value: Record<string, unknown>, ...keys: string[]): boolean => Object.keys(value).sort().join() === [...keys].sort().join();
 const wallDenominator = (value: unknown): value is number => whole(value) && (WALL_DENOMINATORS as readonly number[]).includes(value);
 
 export const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
