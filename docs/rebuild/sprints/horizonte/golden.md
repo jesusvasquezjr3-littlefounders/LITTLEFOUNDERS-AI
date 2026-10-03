@@ -72,3 +72,24 @@ Preview: `?screen=fixture&seg=hz:golden:make-ten&age=6-9`.
 - Hit size is declared and enforced in CSS but jsdom cannot measure layout; a real-browser check of the 64 px handles belongs to the
   coordinator's audit pass.
 - `cat-math.md` is the owner's catalogue and is not in this repository; the rows are cited by id.
+
+## Solvability round
+
+The F0.4 solvability checker for the ten frame is registered in `coursegen/src/v2/horizonte/solvability-num.ts` (shared with the num-a and
+num-b pieces) and imported from `coursegen/src/v2/solvabilityPacks.ts`. It reads the public payload alone for everything the payload fixes and
+compares with the private key only when `context.answerKey` is present. It reuses the pack by import: `golden.ts` now exports `frameCounts`
+and `total` (export-only; `goldenGates` accepts and refuses exactly what it did). Tests:
+`coursegen/src/__tests__/horizonte/solvability-num.test.ts`.
+
+| Type | Proven from the payload alone | Proven against the key | Not proven, and why |
+|---|---|---|---|
+| `math.ten-frame.v2` | **Malformed:** a start that is not one or two whole counts from 0 to 10 is `impossible-state`, never a throw. **Reach, not already solved:** with no key, a search over the learner's own moves (one frame: add a counter, or take back one the learner added, never below the start; two frames: move one counter to the other frame, each frame at most 10) must find a board that differs from the start, else `no-solution`. **Budget:** the search spends `context.nodeBudget` and returns `budgetIssue(...)` when it runs out. | **Solvable:** the key `{ target }` must be one whole count per frame and the same search must reach it (`no-solution`). **Not already solved:** a target equal to the start is `impossible-state`. **No dead end:** the whole reachable graph is built and every board must still reach the target (`dead-end`), so no move strands the learner. **Unique:** not applicable, the grader takes one final board (the key target), so ambiguity cannot arise. | The frame count against the visual type and the "total unchanged" rule stay with `goldenGates` (gate 4), which already refuses them. The prompt-to-target correspondence ("make ten" against a target of 10) is not proven; a reviewer reads it. Dragging chips and tapping cells reach the same boards, so one move set is modelled, not both input paths. |
+
+Assumptions:
+
+- The move rule is re-derived from the pack gate and the board, not shared code (the packages share none), so a later change to the
+  board's rule is not caught here.
+- Taking back a learner-added counter on a single frame is modelled as a move down to the start only; Reset and Undo are not separate moves.
+- With a tiny budget the checker answers `budget-exceeded`; the default budget (200,000, capped at 2,000,000) proves the largest frame
+  instance in a few dozen nodes.
+- Still limited, not verified: the checker proves the payload and the key, not the rendering; no browser was opened in this round.

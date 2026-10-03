@@ -223,3 +223,39 @@ audit. Branch `hz/fx-numa`; everything is local.
 - The three locales' text is written natively but has not been read by a native speaker.
 - Not accepted by the owner or a learner test; not released. `SPRINTS.md`, `REQUIREMENTS.md` and `COVERAGE.md` are left to the
   checkpoint.
+
+## Solvability round
+
+F0.4 solvability checkers for the nine num-a pieces, registered in `coursegen/src/v2/horizonte/solvability-num.ts` (shared with the golden and
+num-b pieces) and imported from `coursegen/src/v2/solvabilityPacks.ts`. Each one reads the public payload alone for everything the payload
+fixes and compares with the private key only when `context.answerKey` is present. The checkers reuse the pack by import: `num-a.ts` now
+exports `inRange`, `LINE_MAX`, `reachableLandings`, `reachableDifferences`, `sum`, `orderParts`, `Check` and `CHECKS` (export-only; `numAGates`
+accepts and refuses exactly what it did), and every payload is first read with the pack's own `CHECKS[type].payload`, so a malformed payload is
+an `impossible-state` finding and never a throw. Common to every row: **budget** (the search spends `context.nodeBudget` and returns
+`budgetIssue(...)`), and **solvable, not already solved, no dead end** come from one search over the learner's own moves, built once from the
+payload; with no key the search only proves the board can leave its start, with the key it must reach the key target and the whole reachable graph
+must still reach it (`no-solution`, `dead-end`). A target equal to the start is `impossible-state`. Tests:
+`coursegen/src/__tests__/horizonte/solvability-num.test.ts`.
+
+| Type | The learner's moves that are searched | Uniqueness | Not proven, and why |
+|---|---|---|---|
+| `math.rekenrek.v2` | Slide either row to any count from 0 to 10 (every move is reversible, so there is no dead end). | Not applicable: graded by one final state, the two row counts of the key target. | Which of the equivalent bead states "show seven" means (5 and 2, or 7 and 0) is not proven; the key picks one and the checker proves it is reachable and not the start. The prompt-to-target correspondence is not proven. |
+| `math.abacus.v2` | Per rod, the heaven bead toggles by 5 and the earth beads set the ones of the same half (0 to 4), so all ten digits connect. Rods move independently, so each target digit is proved on its own ten-digit graph and the node budget is shared across the rods. | Not applicable: one final state, one digit per rod. | The reading of the prompt as a number, and the rod count against it, are not proven. The bead rule is re-derived, not shared with the board. |
+| `math.number-line.empty.v2` | State is the landing spot and the jumps used: any listed size, either direction, inside 0 to 1000, at most `max` jumps; a Reset returns to the start. `reachableLandings` gives a first `no-solution` when no list of at most `max` jumps lands on the target. | Not applicable: graded by the landing spot alone, so any jump list that ends there counts, by design. | Whether the prompt asks for a particular jump list (for example "jump 3 then 4") is not proven; the grader would also accept another list. A full jump cap is a dead end only without Reset, and Reset is modelled as always available. |
+| `math.number-line.zoom.v2` | State is the zoom level, the marker (in units of the finest grid) and the anchors of the levels above. Moves: step one tick of the current level inside the window, zoom in (the window narrows to one tick of the level above around the marker) and zoom out (snapped to the coarser grid). A sweep test proves every grid point of every committed shape is reachable. | Not applicable: graded by the marker's position alone, at any zoom level. | Only the stepper and zoom buttons are modelled; dragging the marker is the same set of positions at the finest level, but it is not searched. The decimal reading of the finest grid against the prompt is not proven. |
+| `math.number-line.order.v2` | The numbers and the window force one arrangement (each number sits on its own mark, from `orderParts`). The search follows direct placements; a placement on a number's own mark only ever displaces a wrong piece, so every board can still finish. The board starts empty, so it is never solved at the start. | **Unique:** the key must list exactly one solution and it must equal the arrangement the numbers force. More than one is `ambiguous-solution`; a key that names a different arrangement is `rubric-gap` plus `rubric-accepts-invalid`; a key that is not `{ solutions: [slotMap] }` is `impossible-state`. | **No dead end** is argued, not enumerated: the search does not branch over every drag to a wrong mark; each direct placement strictly raises the number of correct pieces, so every board finishes. The tray order (not ascending) and the age band for decimal lines stay with `numAGates`, which already refuses them. |
+| `math.clock.v2` | The hour stepper (1 to 12) and the minute stepper in the payload's `step`; the time shown is `(hour mod 12) * 60 + minute` minutes. | Not applicable: graded by the time shown, one value from 0 to 719 (the key's minute part must be a multiple of the step). | Dragging the hands and tapping the face are not modelled (the steppers reach every time the face does). The prompt time against the key is not proven. |
+| `math.ruler.v2` | The end stepper, one mark at a time, from the bar's start mark to the ruler's last mark. | Not applicable: graded by the mark the bar ends on. | The prompt-to-target correspondence ("stretch to 7") is not proven. |
+| `math.ruler.measure.v2` | The answer comes from the payload alone, the far mark minus the near mark (at least 1, so the untouched reading 0 never solves it). The reading stepper must reach it from 0 and back. | **Unique:** with a key, the key text must be exactly that length; any other text is `rubric-gap` plus `rubric-accepts-invalid`, and a key that is not `{ target }` text is `impossible-state`. | That the drawn pencil or strip really sits on those marks is a rendering fact and is not proven. Whole units only. |
+| `math.pan-balance.v2` | Each loose weight sits in the tray, on the left pan or on the right pan; the graded value is the left total minus the right total, with the fixed weights as the base. `reachableDifferences` gives a first `no-solution` when no placement makes the key difference. | Several placements are accepted by design (any with that difference). The accepted set is the set of placements whose difference equals the key target, by construction, and the checker proves it is non-empty and does not contain the all-in-tray start. | Which difference the prompt asks for ("make both sides equal" means 0) is not proven. The key must be one whole number; a fractional or non-number key is `impossible-state`. |
+
+Assumptions:
+
+- The move models are re-derived from the payload readers and the boards, not shared code (the packages share none), so a later change to a
+  board's rule is not caught here. Reset is modelled as always available on the empty line, and Undo is not a separate move.
+- The default budget is 200,000 nodes (cap 2,000,000). Every committed fixture row proves well inside it, including the largest empty-line shape;
+  at a budget of a few nodes each type answers `budget-exceeded` and never hangs.
+- A num-a key with extra fields is tolerated, as the pack gate tolerates it; only a key that lacks its field or has the wrong type is
+  `impossible-state`. A missing payload gives a blocking finding, never a `checker-error`.
+- `space.ar-table.v2` is exempt and is not registered.
+- Still limited, not verified: the checkers prove the payload and the key, not the rendering; no browser was opened in this round.
