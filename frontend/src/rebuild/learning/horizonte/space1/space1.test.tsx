@@ -16,6 +16,9 @@ type Band = '6-9' | '10-12' | '13-17';
 const BANDS: Record<string, Band> = {
   'turn-the-l': '6-9', 'pick-the-turned': '10-12', 'turn-the-corner': '13-17',
   'cube-hexagon': '10-12', 'tetrahedron-square': '13-17', 'cube-edges': '10-12', 'dodecahedron-faces': '13-17', 'pyramid-third': '10-12',
+  'cone-third': '13-17', 'cylinder-circle': '10-12', 'cylinder-rectangle': '13-17', 'cylinder-ellipse': '13-17',
+  'truncated-icosahedron-faces': '13-17', 'cuboctahedron-edges': '13-17',
+  'slide-cube-hexagon': '10-12', 'slide-tetrahedron-square': '13-17', 'slide-cylinder-ellipse': '13-17',
   'exact-basket': '6-9', 'make-the-change': '10-12', 'most-for-three': '10-12',
   'coins-as-tall-as-a-phone': '6-9', 'coins-worth-fifteen': '10-12', 'a-million-in-bills': '13-17',
 };
@@ -46,6 +49,21 @@ describe('space1 board contract', () => {
     await assertBoardContract({ pack: 'space1', fixtureId: 'cube-edges', copy: SPACE1_COPY, css });
     await assertBoardContract({ pack: 'space1', fixtureId: 'dodecahedron-faces', copy: SPACE1_COPY, css, locales: ['en-US'] });
     await assertBoardContract({ pack: 'space1', fixtureId: 'pyramid-third', copy: SPACE1_COPY, css });
+  }, 60_000);
+
+  it('meets the board contract for the cone, the cylinder and the Archimedean solids', async () => {
+    await assertBoardContract({ pack: 'space1', fixtureId: 'cone-third', copy: SPACE1_COPY, css });
+    await assertBoardContract({ pack: 'space1', fixtureId: 'cylinder-circle', copy: SPACE1_COPY, css, locales: ['en-US'] });
+    await assertBoardContract({ pack: 'space1', fixtureId: 'cylinder-rectangle', copy: SPACE1_COPY, css, locales: ['en-US'] });
+    await assertBoardContract({ pack: 'space1', fixtureId: 'cylinder-ellipse', copy: SPACE1_COPY, css, locales: ['en-US'] });
+    await assertBoardContract({ pack: 'space1', fixtureId: 'truncated-icosahedron-faces', copy: SPACE1_COPY, css });
+    await assertBoardContract({ pack: 'space1', fixtureId: 'cuboctahedron-edges', copy: SPACE1_COPY, css, locales: ['en-US'] });
+  }, 60_000);
+
+  it('meets the board contract for the sliding plane', async () => {
+    await assertBoardContract({ pack: 'space1', fixtureId: 'slide-cube-hexagon', copy: SPACE1_COPY, css });
+    await assertBoardContract({ pack: 'space1', fixtureId: 'slide-tetrahedron-square', copy: SPACE1_COPY, css, locales: ['en-US'] });
+    await assertBoardContract({ pack: 'space1', fixtureId: 'slide-cylinder-ellipse', copy: SPACE1_COPY, css, locales: ['en-US'] });
   }, 60_000);
 
   it('meets the board contract for the stall board', async () => {
@@ -206,6 +224,210 @@ describe('F4.5 sections, Euler and volume', () => {
     fireEvent.click(button('Reset'));
     expect(readout()).toHaveTextContent('Chosen: none');
     expect(button('Reset')).toBeDisabled();
+  });
+});
+
+describe('F4.5 completion: the cone, the cylinder and the Archimedean solids', () => {
+  it('draws the cone inside its cylinder and asks for the volume in pi', async () => {
+    const grade = show('cone-third');
+    await screen.findByRole('group', { name: 'Cone inside a cylinder' });
+    expect(readout()).toHaveTextContent('Radius 3, height 4. Cylinder: 36 pi cubic units.');
+    expect(readout().textContent).not.toContain('12');
+    expect(document.querySelectorAll('.lf-poly-edge[data-tone="frame"]').length).toBeGreaterThan(0);
+    expect(document.querySelector('.lf-poly-face')).toHaveAttribute('data-curved', 'true');
+    fireEvent.click(button('Show as table'));
+    expect(rowTexts(screen.getByRole('table', { name: 'The two solids' }))).toEqual(['FactValue', 'Radius3', 'Height4', 'Volume of the cylinder, in pi36']);
+    expect(button('Check')).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('Volume of the cone, as a number of pi cubic units'), { target: { value: '12' } });
+    fireEvent.click(button('Check'));
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ value: '12' }, 'volume-cone-third', expect.anything()));
+    expect(screen.queryByText('You found the volume of the cone.')).toBeNull();
+  });
+
+  it('describes a cylinder cut by its direction, not by its shape', async () => {
+    const grade = show('cylinder-circle');
+    await screen.findByRole('group', { name: 'Cylinder' });
+    expect(readout()).toHaveTextContent('The plane lies across the cylinder, level with its flat ends. Chosen: none');
+    expect(readout().textContent).not.toMatch(/circle/i);
+    expect(document.querySelector('.lf-poly-face')).toHaveAttribute('data-curved', 'true');
+    fireEvent.click(button('Show as table'));
+    expect(rowTexts(screen.getByRole('table', { name: 'What the plane crosses' }))).toEqual([
+      'FactValue', 'Radius, height1, 3', 'Plane direction (x, y, z)0, 1, 0', 'Plane position1',
+    ]);
+    fireEvent.click(button('Circle'));
+    fireEvent.click(button('Check'));
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ pick: 'circle' }, 'section-cylinder-circle', expect.anything()));
+  });
+
+  it('reads a cut along the axis of the cylinder', async () => {
+    show('cylinder-rectangle');
+    await screen.findByRole('group', { name: 'Cylinder' });
+    expect(readout()).toHaveTextContent('The plane runs along the cylinder’s axis.');
+    expect(readout().textContent).not.toMatch(/rectangle/i);
+  });
+
+  it('reads a slanted cut of the cylinder', async () => {
+    show('cylinder-ellipse');
+    await screen.findByRole('group', { name: 'Cylinder' });
+    expect(readout()).toHaveTextContent('The plane is slanted across the cylinder.');
+    expect(readout().textContent).not.toMatch(/ellipse/i);
+  });
+
+  it('hides the faces of a truncated icosahedron everywhere and accepts the count up to 90', async () => {
+    const grade = show('truncated-icosahedron-faces');
+    await screen.findByRole('group', { name: 'Truncated icosahedron' });
+    expect(readout()).toHaveTextContent('Truncated icosahedron. Vertices: 60. Edges: 90. Faces: ?.');
+    expect(document.body.textContent).not.toMatch(/Faces:\s*32/);
+    fireEvent.click(button('Show as table'));
+    expect(rowTexts(screen.getByRole('table', { name: 'Counts of the solid' }))).toEqual(['FactCount', 'Vertices60', 'Edges90', 'Faces?', 'V - E + F2']);
+    fireEvent.change(screen.getByLabelText('Number of faces'), { target: { value: '91' } });
+    expect(button('Check')).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('Number of faces'), { target: { value: '32' } });
+    fireEvent.click(button('Check'));
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ value: '32' }, 'euler-truncated-icosahedron-faces', expect.anything()));
+  });
+
+  it('keeps the Platonic solids at 30', async () => {
+    show('cube-edges');
+    await screen.findByRole('group', { name: 'Cube' });
+    fireEvent.change(screen.getByLabelText('Number of edges'), { target: { value: '31' } });
+    expect(button('Check')).toBeDisabled();
+  });
+
+  it('counts the edges of the cuboctahedron', async () => {
+    const grade = show('cuboctahedron-edges');
+    await screen.findByRole('group', { name: 'Cuboctahedron' });
+    expect(readout()).toHaveTextContent('Cuboctahedron. Vertices: 12. Edges: ?. Faces: 14.');
+    fireEvent.change(screen.getByLabelText('Number of edges'), { target: { value: '24' } });
+    fireEvent.click(button('Check'));
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ value: '24' }, 'euler-cuboctahedron-edges', expect.anything()));
+  });
+});
+
+describe('F4.5 completion: the plane the learner slides', () => {
+  const position = () => slider('Position of the plane');
+  const press = (key: string) => fireEvent.keyDown(position(), { key });
+
+  it('moves the plane with the arrow keys, by pages, to the ends, and never past them', async () => {
+    show('slide-cube-hexagon');
+    await screen.findByRole('slider', { name: 'Position of the plane' });
+    expect(position()).toHaveAttribute('aria-valuenow', '10');
+    const min = Number(position().getAttribute('aria-valuemin'));
+    const max = Number(position().getAttribute('aria-valuemax'));
+    expect(min).toBeLessThan(0);
+    expect(max).toBeGreaterThan(11);
+    press('ArrowLeft');
+    expect(position()).toHaveAttribute('aria-valuenow', '9');
+    press('ArrowRight');
+    press('ArrowRight');
+    expect(position()).toHaveAttribute('aria-valuenow', '11');
+    press('PageDown');
+    expect(position()).toHaveAttribute('aria-valuenow', '7');
+    press('PageUp');
+    expect(position()).toHaveAttribute('aria-valuenow', '11');
+    press('End');
+    expect(position()).toHaveAttribute('aria-valuenow', String(max));
+    press('ArrowRight');
+    press('PageUp');
+    expect(position()).toHaveAttribute('aria-valuenow', String(max));
+    press('Home');
+    expect(position()).toHaveAttribute('aria-valuenow', String(min));
+    press('ArrowLeft');
+    expect(position()).toHaveAttribute('aria-valuenow', String(min));
+  });
+
+  it('reads the cut back at every position and never names the shape', async () => {
+    show('slide-cube-hexagon');
+    await screen.findByRole('slider', { name: 'Position of the plane' });
+    expect(screen.getByText('Slide the plane to make this cut: Hexagon.')).toBeTruthy();
+    expect(readout()).toHaveTextContent('Plane at position 10. The cut has 3 sides.');
+    await moveTo('Position of the plane: Move to', 'Position 0');
+    expect(position()).toHaveAttribute('aria-valuenow', '0');
+    expect(readout()).toHaveTextContent('Plane at position 0. The cut has 6 sides.');
+    expect(readout().textContent).not.toMatch(/hexagon/i);
+    press('End');
+    expect(readout()).toHaveTextContent('The plane does not cut through the solid.');
+    expect(document.querySelector('.lf-poly-sheet')).toBeTruthy();
+  });
+
+  it('moves the plane with the back and forward buttons', async () => {
+    show('slide-cube-hexagon');
+    await screen.findByRole('slider', { name: 'Position of the plane' });
+    fireEvent.click(button('Plane back'));
+    expect(position()).toHaveAttribute('aria-valuenow', '9');
+    fireEvent.click(button('Plane forward'));
+    fireEvent.click(button('Plane forward'));
+    expect(position()).toHaveAttribute('aria-valuenow', '11');
+  });
+
+  it('lists every position and the cut it makes in a table', async () => {
+    show('slide-cube-hexagon');
+    await screen.findByRole('slider', { name: 'Position of the plane' });
+    fireEvent.click(button('Show as table'));
+    const table = screen.getByRole('table', { name: 'Where the plane can sit' });
+    const rows = rowTexts(table);
+    const span = Number(position().getAttribute('aria-valuemax')) - Number(position().getAttribute('aria-valuemin')) + 1;
+    expect(rows).toHaveLength(1 + span);
+    expect(rows[0]).toBe('PositionThe cut');
+    expect(rows).toContain('Position 0The cut has 6 sides.');
+    expect(table.textContent).not.toMatch(/hexagon/i);
+    expect(within(table).getByRole('row', { name: /Position 10/ })).toHaveAttribute('aria-current', 'true');
+  });
+
+  it('needs the plane moved off its start, submits the position, and never says met itself', async () => {
+    const grade = show('slide-cube-hexagon');
+    await screen.findByRole('slider', { name: 'Position of the plane' });
+    expect(button('Check')).toBeDisabled();
+    press('ArrowLeft');
+    expect(button('Check')).toBeEnabled();
+    press('ArrowRight');
+    expect(button('Check')).toBeDisabled();
+    await moveTo('Position of the plane: Move to', 'Position 0');
+    fireEvent.click(button('Check'));
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ offset: 0 }, 'slide-cube-hexagon', expect.anything()));
+    expect(screen.queryByText('You slid the plane to the right cut.')).toBeNull();
+  });
+
+  it('puts the plane back at its start on reset', async () => {
+    show('slide-cube-hexagon');
+    await screen.findByRole('slider', { name: 'Position of the plane' });
+    expect(button('Reset')).toBeDisabled();
+    press('PageDown');
+    expect(button('Reset')).toBeEnabled();
+    fireEvent.click(button('Reset'));
+    expect(position()).toHaveAttribute('aria-valuenow', '10');
+    expect(button('Reset')).toBeDisabled();
+  });
+
+  it('says how the four sides of a cut relate, so a square and a rectangle read differently', async () => {
+    const grade = show('slide-tetrahedron-square');
+    await screen.findByRole('slider', { name: 'Position of the plane' });
+    expect(position()).toHaveAttribute('aria-valuenow', '3');
+    expect(readout()).toHaveTextContent('Plane at position 3. The cut has 4 sides. Pairs of parallel sides: 2. All sides equal: no. All angles right: yes.');
+    await moveTo('Position of the plane: Move to', 'Position 0');
+    expect(readout()).toHaveTextContent('Plane at position 0. The cut has 4 sides. Pairs of parallel sides: 2. All sides equal: yes. All angles right: yes.');
+    expect(readout().textContent).not.toMatch(/square/i);
+    fireEvent.click(button('Check'));
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ offset: 0 }, 'slide-tetrahedron-square', expect.anything()));
+  });
+
+  it('slides a plane through the cylinder and describes the cut by its direction', async () => {
+    const grade = show('slide-cylinder-ellipse');
+    await screen.findByRole('slider', { name: 'Position of the plane' });
+    expect(readout()).toHaveTextContent('Plane at position 14. The cut runs into a flat end.');
+    await moveTo('Position of the plane: Move to', 'Position 0');
+    expect(readout()).toHaveTextContent('Plane at position 0. The plane is slanted across the cylinder.');
+    expect(readout().textContent).not.toMatch(/ellipse/i);
+    expect(document.querySelector('.lf-poly-face')).toHaveAttribute('data-curved', 'true');
+    fireEvent.click(button('Check'));
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ offset: 0 }, 'slide-cylinder-ellipse', expect.anything()));
+  });
+
+  it('speaks in Spanish and Portuguese', async () => {
+    show('slide-cube-hexagon', undefined, 'es-MX');
+    expect(await screen.findByRole('slider', { name: 'Posición del plano' })).toBeTruthy();
+    expect(button('Mostrar como tabla')).toBeTruthy();
+    expect(readout()).toHaveTextContent('Plano en la posición 10. El corte tiene 3 lados.');
   });
 });
 

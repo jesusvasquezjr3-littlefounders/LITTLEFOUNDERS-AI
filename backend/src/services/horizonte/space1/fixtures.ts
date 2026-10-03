@@ -245,9 +245,9 @@ export const SPACE1_FIXTURES: readonly HorizonteFixture[] = [
     segment: (locale) => ({
       id: 'euler-truncated-icosahedron-faces', ...BASE, ...SECTION,
       prompt: text(
-        'This solid has its corners cut off. V − E + F = 2 still holds. Find the missing count.',
-        'Este sólido tiene las esquinas cortadas. V − A + C = 2 sigue valiendo. Halla la cantidad que falta.',
-        'Este sólido tem os cantos cortados. V − A + F = 2 continua valendo. Ache a quantidade que falta.',
+        'This solid has its corners cut off. Use V − E + F = 2 to find the missing count.',
+        'Este sólido tiene las esquinas cortadas. Usa V − A + C = 2 para hallar la cantidad que falta.',
+        'Este sólido tem os cantos cortados. Use V − A + F = 2 para achar a quantidade que falta.',
       )[locale],
       payload: { mode: 'euler', solid: 'truncated-icosahedron', hide: 'faces' },
     }),

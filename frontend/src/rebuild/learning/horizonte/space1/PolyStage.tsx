@@ -11,13 +11,18 @@ const points = (list: ReadonlyArray<readonly [number, number]>): string => list.
 
 /** The lit faces of a solid, shaded from the light in the scene; the faces facing away are not drawn. */
 export function PolyFaces({ scene, tone = 'solid' }: { scene: PolyScene; tone?: 'solid' | 'ghost' }) {
-  return <>{scene.polygons.map((polygon) => <polygon key={polygon.face} className="lf-poly-face" data-shade={polygon.shade} data-tone={tone} points={points(polygon.points)} />)}</>;
+  return <>{scene.polygons.map((polygon) => <polygon key={polygon.face} className="lf-poly-face" data-shade={polygon.shade} data-tone={tone} data-curved={scene.curved ? 'true' : 'false'} points={points(polygon.points)} />)}</>;
 }
 
 /** Every edge, the ones behind the solid dashed. `frame` draws a solid that is only an outline. */
 export function PolyEdges({ scene, tone = 'solid' }: { scene: PolyScene; tone?: 'solid' | 'frame' }) {
   return <>{scene.edges.map((edge, index) => <line key={index} className="lf-poly-edge" data-hidden={edge.hidden ? 'true' : 'false'} data-tone={tone}
     x1={edge.from[0]} y1={edge.from[1]} x2={edge.to[0]} y2={edge.to[1]} />)}</>;
+}
+
+/** The cutting plane as a dashed square about the solid, so a plane that has slid clear of the solid can still be seen. */
+export function PolySheet({ scene }: { scene: PolyScene }) {
+  return scene.sheet ? <polygon className="lf-poly-sheet" points={points(scene.sheet)} /> : null;
 }
 
 /** The plane's cut on top of the solid: a filled polygon whose sides on faces turned away from the viewer are dashed. */
