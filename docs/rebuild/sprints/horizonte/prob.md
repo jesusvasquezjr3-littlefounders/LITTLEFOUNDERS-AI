@@ -175,3 +175,29 @@ Still limited, not verified:
 - At 10000 people a group of a few dozen people is a column of cells four units wide; it is outlined and listed in the legend and the table, but
   it is small. The counts, not the drawing, are what the learner reads the chance from.
 - The disabled Reset and Check buttons (2.3 in light, 2.7 in dark) are a shared control matter, not this pack.
+
+## Solvability round
+
+F0.4 solvability checkers for the three prob pieces, registered in `coursegen/src/v2/horizonte/solvability-stats.ts` (shared with the stats1 pieces)
+and imported from `coursegen/src/v2/solvabilityPacks.ts`. Each one reads the public payload alone for everything the payload fixes and compares
+with the answer key only when `context.answerKey` is present. The checkers reuse the pack's pure functions by import. `prob.ts` now exports
+`inRange`, `hasOnly`, `Frac`, `frac`, `compare`, `readNumber`, `ZERO`, `Ratio`, `Basis`, `Counts`, `valuesOf`, `SLOTS` and `Point`, and gains
+`growthOf` (the shared population, shares and head counts, which `growable` now wraps), `plotOf` (the points and grid, which `pointsOf` wraps),
+`exactFit`, `asTenths`, `SLOPE_TENTHS` and `INTERCEPT_TENTHS` (`fitTenths` is rebuilt on them with the same behaviour). The pack gates did not
+change; what they accept is the same, except where the table marks a tightening.
+
+| Type | Proven from the payload alone | Proven against the key | Not proven, and why |
+|---|---|---|---|
+| `prob.tree.v2` | The population, shares and tray are valid (`impossible-state`, `out-of-bounds`); every share gives whole head counts (`no-solution`); two chips with the same count are refused (`ambiguous-solution`, their ids would collide). A placement search over the tray, checking the tree's own relations as each branch fills (population splits by the prior, each side by its share), finds exactly one tree, else `no-solution` (a head count is missing from the tray) or `ambiguous-solution`; it must equal the head counts the pack's shares give. The tray starts empty, so the start is never solved. | The rubric is `{ solutions }` with at most 64 trees, each naming the six branches with one `n-<count>` chip. `checkRubricCoverage` proves the accepted set equals the set of valid placements: a missing tree is `rubric-gap`, a wrong one `rubric-accepts-invalid`. | Dead ends: a chip can be dragged back off a branch, so no placement is stuck. |
+| `prob.bayes.v2` | The same population and shares must grow whole head counts. The chance asked for (positive or negative) is computed from those counts as a fraction and must sit inside 1 in 20 to 19 in 20 (`out-of-bounds`). | The rubric carries only `target`, `tolerance` and `review`; the target equals the exact fraction, the tolerance is at most 0.01, the review band is wider than the tolerance and at most 0.1. **Distractor rule:** no mix-up of the grid cells (the share of those who have it that test the same way, the share of those who lack it that do, the chance they lack it, the share who have it before any test) that differs from the answer may sit inside the tolerance. | Uniqueness and dead ends: there is one number to type and no start state or move, so there is nothing to be stuck in. **No budget use:** the chance is one division of whole counts, so the work is fixed and a budget of 1 changes nothing; a test pins that. |
+| `prob.regression.v2` | The payload carries only the grid size, the points and the start line; the points are valid, in range and not all one x (`no-solution`). The best line is found in closed form by the pack (`exactFit`) and by trying every line the sliders offer (squares in hundredths, whole numbers): the closed form must be on a slider position (tenths, `no-solution` otherwise), inside the sliders (`out-of-bounds`), not an exact fit (`impossible-state`, no squares to shrink), and the one minimum (`ambiguous-solution` on a tie); the two encodings must agree. The start line is not the best line. | The rubric is `{ family: "line", target: { m, b }, parameter_tolerance, parameter_review? }`; the target equals the best line, the tolerance is at most 0.05, the review band is wider than the tolerance and at most 0.5, the tolerance admits exactly one slider line, and the start line is not already inside the tolerance. | Dead ends: both sliders move in tenths with no cap. Ties: the squares are strictly convex with at least three distinct x, so a tie cannot occur on valid input; the search proves it for every plot it sees. |
+
+**Tightening (Bayes distractor rule).** The key must not accept a distractor, which the pack gate does not check. It uses only the tolerance (met) band,
+not the review band, because a near-miss is by design a "review", not a "right". The committed fixtures pass.
+
+Budget: the tree search spends `context.nodeBudget` per candidate and the regression search per slider line (61 by 201 positions), each reporting
+`budgetIssue(...)` on overflow; both return the budget finding in well under a second at a small budget. The tests are in
+`coursegen/src/__tests__/horizonte/solvability-stats.test.ts`: the committed fixtures through `runSolvabilityGate` with and without the key, at least
+three adversarial mutations per type refused with the right code, a budget path (for Bayes, the fixed-work test), and the registry check.
+
+Still limited, not verified: the checkers prove the payload and the key, not the rendering; no browser was opened in this round.

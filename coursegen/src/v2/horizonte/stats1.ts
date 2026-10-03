@@ -55,11 +55,11 @@ const STATS1_GUIDANCE: readonly ForgeGuidance[] = [
 ];
 
 const whole = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value);
-const inRange = (value: unknown, low: number, high: number): value is number => whole(value) && value >= low && value <= high;
+export const inRange = (value: unknown, low: number, high: number): value is number => whole(value) && value >= low && value <= high;
 const record = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
-const sum = (values: readonly number[]) => values.reduce((total, value) => total + value, 0);
+export const sum = (values: readonly number[]) => values.reduce((total, value) => total + value, 0);
 
-type Axis = { min: number; max: number };
+export type Axis = { min: number; max: number };
 
 function axisOf(value: unknown, limit: number, spanMin: number, spanMax: number): Axis | null {
   if (!record(value) || !inRange(value.min, 0, limit) || !inRange(value.max, 0, limit)) return null;
@@ -67,11 +67,14 @@ function axisOf(value: unknown, limit: number, spanMin: number, spanMax: number)
   return span >= spanMin && span <= spanMax ? { min: value.min, max: value.max } : null;
 }
 
-const dotAxis = (value: unknown) => axisOf(value, 100, 4, 20);
-const curveAxis = (value: unknown) => axisOf(value, 200, 10, 200);
+export const dotAxis = (value: unknown) => axisOf(value, 100, 4, 20);
+export const curveAxis = (value: unknown) => axisOf(value, 200, 10, 200);
 
-function dotsOf(value: unknown, axis: Axis): number[] | null {
-  return Array.isArray(value) && value.length >= 3 && value.length <= 12 && value.every((dot) => inRange(dot, axis.min, axis.max)) ? (value as number[]) : null;
+/** A plot holds 3 to 12 dots. */
+export const DOT_COUNT = { min: 3, max: 12 } as const;
+
+export function dotsOf(value: unknown, axis: Axis): number[] | null {
+  return Array.isArray(value) && value.length >= DOT_COUNT.min && value.length <= DOT_COUNT.max && value.every((dot) => inRange(dot, axis.min, axis.max)) ? (value as number[]) : null;
 }
 
 function medianTwice(dots: readonly number[]): number {
@@ -91,13 +94,20 @@ function singleMode(dots: readonly number[]): number | null {
   return mode;
 }
 
-function measureMet(measure: string, dots: readonly number[], target: number): boolean {
+export function measureMet(measure: string, dots: readonly number[], target: number): boolean {
   if (measure === 'mean') return sum(dots) === target * dots.length;
   return measure === 'median' ? medianTwice(dots) === 2 * target : singleMode(dots) === target;
 }
 
+/** The whole value a measure takes on these dots, or null when it is no whole number (a mean or a median can fall between two steps, a tie has no mode). A whole target is met exactly when it equals this value. */
+export function measureValue(measure: string, dots: readonly number[]): number | null {
+  if (measure === 'mean') return sum(dots) % dots.length === 0 ? sum(dots) / dots.length : null;
+  if (measure === 'median') return medianTwice(dots) % 2 === 0 ? medianTwice(dots) / 2 : null;
+  return measure === 'mode' ? singleMode(dots) : null;
+}
+
 /** Breadth-first over count vectors: can at most `moves` single-dot moves bring the measure to the target, from a start that does not have it? */
-function reachable(start: readonly number[], axis: Axis, measure: string, moves: number, target: number): boolean {
+export function reachable(start: readonly number[], axis: Axis, measure: string, moves: number, target: number): boolean {
   if (!inRange(target, axis.min, axis.max) || measureMet(measure, start, target)) return false;
   const width = axis.max - axis.min + 1;
   const first = new Array<number>(width).fill(0);
@@ -128,7 +138,7 @@ function reachable(start: readonly number[], axis: Axis, measure: string, moves:
   return false;
 }
 
-function solveNormal(axis: Axis, band: Record<string, unknown>, sdMax: number): { mean: number; sd: number } | null {
+export function solveNormal(axis: Axis, band: Record<string, unknown>, sdMax: number): { mean: number; sd: number } | null {
   const { rule, low, high } = band;
   if (!inRange(rule, 1, 3) || !inRange(low, axis.min, axis.max) || !inRange(high, axis.min, axis.max) || high <= low) return null;
   const width = high - low;
@@ -137,9 +147,9 @@ function solveNormal(axis: Axis, band: Record<string, unknown>, sdMax: number): 
   return inRange(answer.mean, axis.min, axis.max) && inRange(answer.sd, 1, sdMax) ? answer : null;
 }
 
-const onGrid = (pct: unknown): pct is number => inRange(pct, 5, 95) && (pct - 5) % 5 === 0;
+export const onGrid = (pct: unknown): pct is number => inRange(pct, 5, 95) && (pct - 5) % 5 === 0;
 
-function solveBinomial(goal: Record<string, unknown>, nMax: number): { n: number; pct: number } | null {
+export function solveBinomial(goal: Record<string, unknown>, nMax: number): { n: number; pct: number } | null {
   const { mean, variance } = goal;
   if (!inRange(mean, 1, 40) || !inRange(variance, 1, 40) || variance >= mean || (100 * variance) % mean !== 0) return null;
   const pct = 100 - (100 * variance) / mean;
