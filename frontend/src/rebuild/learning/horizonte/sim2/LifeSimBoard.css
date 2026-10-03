@@ -9,7 +9,7 @@
 .lf-life-path--yes { stroke: var(--mint-strong); stroke-opacity: 0.8; }
 .lf-life-path--no { stroke: var(--berry-strong); stroke-opacity: 0.8; stroke-dasharray: 5 3; }
 .lf-life-mark { stroke-width: 3; }
-.lf-life-mark--finish { stroke: var(--accent-strong); stroke-dasharray: 8 6; }
+.lf-life-mark--finish { stroke: var(--content); stroke-dasharray: 8 6; }
 .lf-life-mark--floor { stroke: var(--content); stroke-dasharray: 2 6; }
 .lf-life-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
 .lf-life-legend li { display: flex; align-items: center; gap: var(--spacing-1); }

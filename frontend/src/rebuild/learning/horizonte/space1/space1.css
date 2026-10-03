@@ -82,9 +82,9 @@
 .lf-coin { display: grid; gap: var(--spacing-4); justify-items: start; }
 .lf-coin-scene { display: block; inline-size: 100%; max-inline-size: 22rem; block-size: auto; border-radius: var(--rounded-lg); background: var(--sunken); }
 .lf-coin-base { stroke: var(--outline); stroke-width: 1.5; }
-.lf-coin-piece { fill: color-mix(in srgb, var(--sky) 45%, var(--surface)); stroke: var(--content); stroke-width: 0.8; }
-.lf-coin-piece[data-odd='true'] { fill: color-mix(in srgb, var(--sky) 65%, var(--surface)); }
-.lf-coin-goal line { stroke: var(--berry); stroke-width: 2; stroke-dasharray: 5 4; }
+.lf-coin-piece { fill: var(--reward); stroke: var(--reward-ridge); stroke-width: 1; }
+.lf-coin-piece[data-odd='true'] { fill: color-mix(in srgb, var(--reward) 78%, var(--reward-ridge)); }
+.lf-coin-goal line { stroke: var(--content); stroke-width: 2; stroke-dasharray: 5 4; }
 .lf-coin-goal text { font-size: 11px; font-weight: 800; fill: var(--content); }
 .lf-coin-ref line { stroke: var(--content); stroke-width: 1.2; }
 .lf-coin-ref .lf-coin-lead { stroke: var(--content-muted); stroke-width: 0.8; }

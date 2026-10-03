@@ -34,16 +34,16 @@
 .lf-s2-pin[data-chosen='true'] circle { fill: var(--mint-soft); stroke: var(--primary-strong); stroke-width: 3; }
 .lf-s2-pin text { font-size: 11px; font-weight: 800; fill: var(--content); }
 .lf-s2-chart { display: block; inline-size: 100%; max-inline-size: 24rem; border-radius: var(--rounded-md); background: var(--sunken); }
-.lf-s2-curve { stroke: var(--primary-strong); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-.lf-s2-dot { fill: var(--surface); stroke: var(--primary-strong); stroke-width: 2; }
+.lf-s2-curve { stroke: var(--sky-strong); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.lf-s2-dot { fill: var(--surface); stroke: var(--sky-strong); stroke-width: 2; }
 .lf-s2-zero-line { stroke: var(--content-muted); stroke-width: 1; stroke-dasharray: 4 4; }
 .lf-s2-pin-label { font-size: 11px; font-weight: 800; fill: var(--content); stroke: var(--surface); stroke-width: 3px; paint-order: stroke; }
 
 /* Formula surface */
 .lf-s2-floor { fill: color-mix(in srgb, var(--sunken) 70%, var(--surface)); stroke: var(--content-muted); stroke-width: 1; stroke-dasharray: 4 4; }
 .lf-s2-dot-at { fill: var(--berry-strong); stroke: var(--surface); stroke-width: 2; }
-.lf-s2-walk-line { stroke: var(--primary-strong); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-.lf-s2-walk-dot { fill: var(--surface); stroke: var(--primary-strong); stroke-width: 2; }
+.lf-s2-walk-line { stroke: var(--sky-strong); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.lf-s2-walk-dot { fill: var(--surface); stroke: var(--sky-strong); stroke-width: 2; }
 .lf-s2-walk-dot[data-current='true'] { fill: var(--mint-soft); stroke-width: 3; }
 .lf-s2-formula { margin: 0; max-inline-size: 100%; font-size: 1.15rem; overflow-wrap: anywhere; }
 .lf-s2-dots { display: grid; gap: var(--spacing-1); margin: 0; padding-inline-start: 1.5rem; font-weight: 700; }

@@ -3,12 +3,12 @@
 .lf-fin > * { max-inline-size: 100%; }
 .lf-fin-chart { inline-size: 100%; max-inline-size: 30rem; block-size: auto; border-radius: var(--rounded-sm); background: var(--sunken); }
 .lf-fin-axis { stroke: var(--outline); stroke-width: 1; fill: none; }
-.lf-fin-goal { stroke: var(--reward-strong); stroke-width: 1.5; stroke-dasharray: 2 4; fill: none; }
+.lf-fin-goal { stroke: var(--content); stroke-width: 1.5; stroke-dasharray: 2 4; fill: none; }
 .lf-fin-line { fill: none; stroke-linejoin: round; stroke-linecap: round; stroke-width: 3; }
 .lf-fin-line--main { stroke: var(--sky-strong); }
 .lf-fin-line--second { stroke: var(--content-muted); stroke-width: 2.5; stroke-dasharray: 6 4; }
 .lf-fin-line--interest { stroke: var(--berry-strong); stroke-width: 2.5; stroke-dasharray: 6 4; }
-.lf-fin-marker { fill: var(--primary-strong); stroke: var(--surface); stroke-width: 2; }
+.lf-fin-marker { fill: var(--content); stroke: var(--surface); stroke-width: 2; }
 .lf-fin-bar--cash { fill: var(--outline); }
 .lf-fin-bar--worth { fill: var(--mint-strong); }
 .lf-fin-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-1) var(--spacing-4); }

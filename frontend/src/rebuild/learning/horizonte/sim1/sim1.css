@@ -6,7 +6,7 @@
 .lf-sim-ticks line, .lf-sim-axis { stroke: var(--edge); stroke-width: 2; }
 .lf-sim-grid { stroke: var(--outline); stroke-width: 1; stroke-opacity: 0.6; }
 .lf-sim-band { fill: var(--mint-soft); pointer-events: none; }
-.lf-sim-chance { stroke: var(--accent-strong); stroke-width: 3; stroke-dasharray: 8 6; }
+.lf-sim-chance { stroke: var(--content); stroke-width: 3; stroke-dasharray: 8 6; }
 .lf-sim-floor { stroke: var(--content); stroke-width: 2; stroke-dasharray: 2 6; }
 .lf-sim-line { fill: none; stroke: var(--sky-strong); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
 .lf-sim-now { fill: var(--sky-strong); stroke: var(--content); stroke-width: 2; }
