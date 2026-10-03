@@ -24,6 +24,8 @@ let loaded: Row[] | null = null;
 const rows = (): Row[] => (loaded ??= JSON.parse(readFileSync(file, 'utf8')) as Row[]);
 let checked: string[] | null = null;
 const problems = (): string[] => (checked ??= checkForgeV2Rows(rows()));
+let measured: ReturnType<typeof forgeV2BehaviourPassRate> | null = null;
+const passRate = () => (measured ??= forgeV2BehaviourPassRate(rows()));
 const rowWith = (type: string): Row => structuredClone(rows().find((row) => row.locale === 'en-US' && row.document.segments.some((segment: { type: string }) => segment.type === type))!);
 
 const parseRow = (row: Row) => validateV2LessonForGrading(row.document, row.answer_keys, { lessonId: row.lesson_id, locale: row.locale });
@@ -32,8 +34,8 @@ const GATE = 'interactive-behaviour gate';
 const SEEDED = ['math.chance-sim.v2', 'math.galton-sim.v2', 'money.life-sim.v2', 'stats.bootstrap-sim.v2', 'stats.coverage-sim.v2'];
 
 describe.skipIf(!present)('the Horizonte rows Forge emitted, under Core\'s validator', () => {
-  // The whole gate runs once, here: about 3 s alone, more than the default 5 s once the rest of the suite shares the CPU.
-  beforeAll(() => { problems(); }, 60_000);
+  // Each pass over the gate takes 2 to 3 s alone, more than the default 5 s once the rest of the suite shares the CPU: run both once, here.
+  beforeAll(() => { problems(); passRate(); }, 60_000);
 
   it('holds every lesson in all three locales', () => {
     expect(rows().length).toBeGreaterThan(100);
@@ -61,7 +63,7 @@ describe.skipIf(!present)('the Horizonte rows Forge emitted, under Core\'s valid
   });
 
   it('reports a pass rate of 100% over the graded segments', () => {
-    const rate = forgeV2BehaviourPassRate(rows());
+    const rate = passRate();
     expect(rate.segments).toBeGreaterThan(200);
     expect(rate.passed).toBe(rate.segments);
     expect(rate.passRate).toBe(1);
