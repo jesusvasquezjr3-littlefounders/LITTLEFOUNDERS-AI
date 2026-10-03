@@ -87,6 +87,216 @@ export const SOLIDS_FIXTURES: readonly HorizonteFixture[] = [
     },
   },
   {
+    id: 'area-of-the-cube',
+    title: text('Area of the cube', 'Área del cubo', 'Área do cubo'),
+    ageBand: '6-9',
+    eligibility: { minimum_age: 7, maximum_age: 9 },
+    segment: (locale) => ({
+      id: 'cube-net-area', type: 'geometry.cube-net.v2', grading: 'server', visual: { type: 'cube-net' },
+      prompt: text(
+        'Each square has an edge of 3. What is the surface area?',
+        'Cada cuadrado tiene arista 3. ¿Cuál es el área total del cubo?',
+        'Cada quadrado tem aresta 3. Qual é a área total do cubo?',
+      )[locale],
+      payload: { mode: 'area', cells: [[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]], edge: 3 },
+    }),
+    rubric: { target: '54' },
+    ladder: { invalid: { value: 'abc' }, valid: { value: '' }, met: { value: '54' } },
+  },
+  {
+    id: 'name-the-box',
+    title: text('Name the faces of the box', 'Nombra las caras de la caja', 'Nomeie as faces da caixa'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 10, maximum_age: 12 },
+    segment: (locale) => ({
+      id: 'solid-net-name-box', type: 'geometry.solid-net.v2', grading: 'server', visual: { type: 'solid-net' },
+      prompt: text(
+        'This box net has two named faces. Name the other four.',
+        'Esta plantilla de caja tiene dos caras con nombre. Nombra las otras cuatro.',
+        'Esta planificação de caixa tem duas faces com nome. Nomeie as outras quatro.',
+      )[locale],
+      payload: {
+        mode: 'label', solid: { kind: 'rect-prism', dims: [4, 3, 2] }, net: 'cross',
+        fixed: [{ panel: 1, name: 'front' }, { panel: 4, name: 'left' }],
+      },
+    }),
+    rubric: { solutions: [{ panel0: ['top'], panel1: ['front'], panel2: ['back'], panel3: ['right'], panel4: ['left'], panel5: ['bottom'] }] },
+    ladder: {
+      invalid: { slots: { panel1: ['top'], panel4: ['left'] } },
+      valid: { slots: { panel1: ['front'], panel4: ['left'] } },
+      met: { slots: { panel0: ['top'], panel1: ['front'], panel2: ['back'], panel3: ['right'], panel4: ['left'], panel5: ['bottom'] } },
+    },
+  },
+  {
+    id: 'name-the-prism',
+    title: text('Name the faces of the prism', 'Nombra las caras del prisma', 'Nomeie as faces do prisma'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 10, maximum_age: 12 },
+    segment: (locale) => ({
+      id: 'solid-net-name-prism', type: 'geometry.solid-net.v2', grading: 'server', visual: { type: 'solid-net' },
+      prompt: text(
+        'One face is the slope. Name the other four.',
+        'Una cara es la rampa. Nombra las otras cuatro.',
+        'Uma face é a rampa. Nomeie as outras quatro.',
+      )[locale],
+      payload: { mode: 'label', solid: { kind: 'tri-prism', dims: [3, 4, 5] }, net: 'fan', fixed: [{ panel: 2, name: 'slope' }] },
+    }),
+    rubric: { solutions: [{ panel0: ['back'], panel1: ['bottom'], panel2: ['slope'], panel3: ['left'], panel4: ['right'] }] },
+    ladder: {
+      invalid: { slots: { panel2: ['bottom'] } },
+      valid: { slots: { panel2: ['slope'] } },
+      met: { slots: { panel0: ['back'], panel1: ['bottom'], panel2: ['slope'], panel3: ['left'], panel4: ['right'] } },
+    },
+  },
+  {
+    id: 'name-the-pyramid',
+    title: text('Name the faces of the pyramid', 'Nombra las caras de la pirámide', 'Nomeie as faces da pirâmide'),
+    ageBand: '6-9',
+    eligibility: { minimum_age: 7, maximum_age: 9 },
+    segment: (locale) => ({
+      id: 'solid-net-name-pyramid', type: 'geometry.solid-net.v2', grading: 'server', visual: { type: 'solid-net' },
+      prompt: text(
+        'Two faces are named. Name the other three.',
+        'Dos caras tienen nombre. Nombra las otras tres.',
+        'Duas faces têm nome. Nomeie as outras três.',
+      )[locale],
+      payload: {
+        mode: 'label', solid: { kind: 'sq-pyramid', dims: [6, 5] }, net: 'chain',
+        fixed: [{ panel: 0, name: 'bottom' }, { panel: 1, name: 'front' }],
+      },
+    }),
+    rubric: { solutions: [{ panel0: ['bottom'], panel1: ['front'], panel2: ['right'], panel3: ['back'], panel4: ['left'] }] },
+    ladder: {
+      invalid: { slots: { panel0: ['front'], panel1: ['front'] } },
+      valid: { slots: { panel0: ['bottom'], panel1: ['front'] } },
+      met: { slots: { panel0: ['bottom'], panel1: ['front'], panel2: ['right'], panel3: ['back'], panel4: ['left'] } },
+    },
+  },
+  {
+    id: 'finish-the-box-net',
+    title: text('Finish the box net', 'Completa la plantilla de la caja', 'Complete a planificação da caixa'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 10, maximum_age: 12 },
+    segment: (locale) => ({
+      id: 'solid-net-finish-box', type: 'geometry.solid-net.v2', grading: 'server', visual: { type: 'solid-net' },
+      prompt: text(
+        'Three sides are folded out of the bottom. Attach the back and the top so the net fits the sheet.',
+        'Tres lados salen del fondo. Une la cara de atrás y la tapa para que la plantilla quepa en la hoja.',
+        'Três lados saem do fundo. Una a face de trás e a tampa para que a planificação caiba na folha.',
+      )[locale],
+      payload: {
+        mode: 'complete', solid: { kind: 'rect-prism', dims: [4, 3, 2] }, root: 'bottom',
+        fixed: [{ parent: 'bottom', child: 'front' }, { parent: 'bottom', child: 'left' }, { parent: 'bottom', child: 'right' }],
+        sheet: { width: 9, height: 11 },
+      },
+    }),
+    rubric: { solutions: [{ 'bottom-back': ['back'], 'bottom-right': ['right'], 'bottom-front': ['front'], 'bottom-left': ['left'], 'top-front': ['top'] }] },
+    ladder: {
+      invalid: { slots: { 'bottom-front': ['front'], 'bottom-left': ['left'] } },
+      valid: { slots: { 'bottom-front': ['front'], 'bottom-left': ['left'], 'bottom-right': ['right'] } },
+      met: { slots: { 'bottom-back': ['back'], 'bottom-right': ['right'], 'bottom-front': ['front'], 'bottom-left': ['left'], 'top-front': ['top'] } },
+    },
+  },
+  {
+    id: 'finish-the-prism-net',
+    title: text('Finish the prism net', 'Completa la plantilla del prisma', 'Complete a planificação do prisma'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 10, maximum_age: 12 },
+    segment: (locale) => ({
+      id: 'solid-net-finish-prism', type: 'geometry.solid-net.v2', grading: 'server', visual: { type: 'solid-net' },
+      prompt: text(
+        'The back face hangs from the bottom. Attach the other three faces so the net fits the sheet.',
+        'La cara de atrás sale del fondo. Une las otras tres caras para que la plantilla quepa en la hoja.',
+        'A face de trás sai do fundo. Una as outras três faces para que a planificação caiba na folha.',
+      )[locale],
+      payload: {
+        mode: 'complete', solid: { kind: 'tri-prism', dims: [3, 4, 5] }, root: 'bottom',
+        fixed: [{ parent: 'bottom', child: 'back' }], sheet: { width: 13, height: 14 },
+      },
+    }),
+    rubric: { solutions: [{ 'bottom-right': ['right'], 'bottom-slope': ['slope'], 'bottom-left': ['left'], 'bottom-back': ['back'] }] },
+    ladder: {
+      invalid: { slots: { 'bottom-slope': ['slope'] } },
+      valid: { slots: { 'bottom-back': ['back'] } },
+      met: { slots: { 'bottom-right': ['right'], 'bottom-slope': ['slope'], 'bottom-left': ['left'], 'bottom-back': ['back'] } },
+    },
+  },
+  {
+    id: 'finish-the-pyramid-net',
+    title: text('Finish the pyramid net', 'Completa la plantilla de la pirámide', 'Complete a planificação da pirâmide'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 10, maximum_age: 12 },
+    segment: (locale) => ({
+      id: 'solid-net-finish-pyramid', type: 'geometry.solid-net.v2', grading: 'server', visual: { type: 'solid-net' },
+      prompt: text(
+        'Two triangles hang from the base. Attach the other two so the net fits the sheet.',
+        'Dos triángulos salen de la base. Une los otros dos para que la plantilla quepa en la hoja.',
+        'Dois triângulos saem da base. Una os outros dois para que a planificação caiba na folha.',
+      )[locale],
+      payload: {
+        mode: 'complete', solid: { kind: 'sq-pyramid', dims: [6, 5] }, root: 'bottom',
+        fixed: [{ parent: 'bottom', child: 'front' }, { parent: 'bottom', child: 'left' }], sheet: { width: 18, height: 15 },
+      },
+    }),
+    rubric: { solutions: [{ 'bottom-right': ['right'], 'bottom-front': ['front'], 'bottom-left': ['left'], 'back-right': ['back'] }] },
+    ladder: {
+      invalid: { slots: { 'bottom-front': ['front'] } },
+      valid: { slots: { 'bottom-front': ['front'], 'bottom-left': ['left'] } },
+      met: { slots: { 'bottom-right': ['right'], 'bottom-front': ['front'], 'bottom-left': ['left'], 'back-right': ['back'] } },
+    },
+  },
+  {
+    id: 'area-of-the-box',
+    title: text('Area of the box', 'Área de la caja', 'Área da caixa'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 10, maximum_age: 12 },
+    segment: (locale) => ({
+      id: 'solid-net-area-box', type: 'geometry.solid-net.v2', grading: 'server', visual: { type: 'solid-net' },
+      prompt: text(
+        'Find the area of each panel and add them all. How many square units does the net cover?',
+        'Halla el área de cada panel y súmalas todas. ¿Cuántas unidades cuadradas cubre la plantilla?',
+        'Ache a área de cada painel e some todas. Quantas unidades quadradas a planificação cobre?',
+      )[locale],
+      payload: { mode: 'area', solid: { kind: 'rect-prism', dims: [4, 3, 2] }, net: 'cross' },
+    }),
+    rubric: { target: '52' },
+    ladder: { invalid: { value: 'abc' }, valid: { value: '' }, met: { value: '52' } },
+  },
+  {
+    id: 'area-of-the-prism',
+    title: text('Area of the prism', 'Área del prisma', 'Área do prisma'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 10, maximum_age: 12 },
+    segment: (locale) => ({
+      id: 'solid-net-area-prism', type: 'geometry.solid-net.v2', grading: 'server', visual: { type: 'solid-net' },
+      prompt: text(
+        'The net has three rectangles and two triangles. What is the surface area of the prism?',
+        'La plantilla tiene tres rectángulos y dos triángulos. ¿Cuál es el área total del prisma?',
+        'A planificação tem três retângulos e dois triângulos. Qual é a área total do prisma?',
+      )[locale],
+      payload: { mode: 'area', solid: { kind: 'tri-prism', dims: [3, 4, 5] }, net: 'row' },
+    }),
+    rubric: { target: '72' },
+    ladder: { invalid: { value: '-1' }, valid: { value: '' }, met: { value: '72' } },
+  },
+  {
+    id: 'area-of-the-pyramid',
+    title: text('Area of the pyramid', 'Área de la pirámide', 'Área da pirâmide'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 10, maximum_age: 12 },
+    segment: (locale) => ({
+      id: 'solid-net-area-pyramid', type: 'geometry.solid-net.v2', grading: 'server', visual: { type: 'solid-net' },
+      prompt: text(
+        'The net has a square base and four triangles. What is the surface area of the pyramid?',
+        'La plantilla tiene una base cuadrada y cuatro triángulos. ¿Cuál es el área total de la pirámide?',
+        'A planificação tem uma base quadrada e quatro triângulos. Qual é a área total da pirâmide?',
+      )[locale],
+      payload: { mode: 'area', solid: { kind: 'sq-pyramid', dims: [6, 5] }, net: 'star' },
+    }),
+    rubric: { target: '96' },
+    ladder: { invalid: { value: 'x' }, valid: { value: '' }, met: { value: '96' } },
+  },
+  {
     id: 'staircase',
     title: text('Build the staircase', 'Construye la escalera', 'Construa a escada'),
     ageBand: '10-12',

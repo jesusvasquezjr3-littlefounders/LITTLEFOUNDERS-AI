@@ -15,6 +15,9 @@ vi.mock('../../../../tutor-scene/TutorStage', () => ({ TutorStage: () => <div da
 type Locale = 'en-US' | 'es-MX' | 'pt-BR';
 const BANDS: Record<string, '6-9' | '10-12'> = {
   'which-has-no-vertices': '6-9', 'nine-edges': '10-12', 'name-the-faces': '6-9', 'finish-the-net': '10-12', staircase: '10-12', 'two-by-two': '6-9',
+  'area-of-the-cube': '6-9', 'name-the-box': '10-12', 'name-the-prism': '10-12', 'name-the-pyramid': '6-9',
+  'finish-the-box-net': '10-12', 'finish-the-prism-net': '10-12', 'finish-the-pyramid-net': '10-12',
+  'area-of-the-box': '10-12', 'area-of-the-prism': '10-12', 'area-of-the-pyramid': '10-12',
 };
 const show = (fixture: string, grade = vi.fn(() => ({ verdict: 'review' as const })), locale: Locale = 'en-US') => {
   render(<LessonDocumentView raw={horizonteFixtureDocument('solids', fixture, locale)} locale={locale} ageBand={BANDS[fixture]!} onBack={() => {}} onGradeAny={grade} />);
@@ -33,6 +36,13 @@ describe('solids board contract', () => {
     await assertBoardContract({ pack: 'solids', fixtureId: 'finish-the-net', copy: SOLIDS_COPY, css });
     await assertBoardContract({ pack: 'solids', fixtureId: 'staircase', copy: SOLIDS_COPY, css });
     await assertBoardContract({ pack: 'solids', fixtureId: 'two-by-two', copy: SOLIDS_COPY, css });
+  }, 60_000);
+
+  it.each([
+    'area-of-the-cube', 'name-the-box', 'name-the-prism', 'name-the-pyramid', 'finish-the-box-net', 'finish-the-prism-net', 'finish-the-pyramid-net',
+    'area-of-the-box', 'area-of-the-prism', 'area-of-the-pyramid',
+  ])('meets the board contract for %s in three locales', async (fixtureId) => {
+    await assertBoardContract({ pack: 'solids', fixtureId, copy: SOLIDS_COPY, css });
   }, 60_000);
 
   it('keeps every string in three locales', () => {
@@ -168,7 +178,8 @@ describe('F4.2 cube net: naming the faces', () => {
     expect(square(1, 'no name')).toBeTruthy();
     expect(readout()).toHaveTextContent('Named: 2 of 6');
     expect(button('Check')).toBeDisabled();
-    expect(screen.getByRole('img', { name: '6 times 2 times 2 equals 24' })).toBeTruthy();
+    expect(screen.queryByRole('img', { name: /equals/ })).toBeNull();
+    expect(document.body.textContent).not.toMatch(/\b24\b/);
   });
 
   it('names squares by tapping a name, then a square, and submits every name', async () => {

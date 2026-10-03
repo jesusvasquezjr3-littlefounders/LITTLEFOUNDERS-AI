@@ -3,20 +3,26 @@ import {
   asRecord, checkRubricCoverage, issue, registerSolvabilityChecker, result, type SolvabilityChecker, type SolvabilityIssue,
 } from '../solvability.js';
 import {
-  completions, FACE_NAMES, foldNormals, isCubeNet, labelSolutions, matchesGoal, NET_GRID, NET_PIECE, readNet, readStack, readViewer,
-  SOLID_COUNTS, STACK_MAX_HEIGHT, stackSolutions, stackTotal, viewerMatches,
+  completions, CUBE_EDGE_MIN, FACE_NAMES, foldNormals, isCubeNet, labelSolutions, matchesGoal, NET_GRID, NET_PIECE, readNet, readStack, readViewer,
+  SOLID_COUNTS, STACK_MAX_HEIGHT, stackSolutions, stackTotal, surfaceArea, viewerMatches,
   type Cell, type Heights, type NetPayload, type StackPayload, type ViewerPayload,
 } from './solidsGeometry.js';
+import {
+  keyCompletes, keyLabelling, labelAnswers, readSolidNet, solidArea, solidNetFindings, type SolidNetPayload,
+} from './solidsNetRules.js';
+import { buildNet, buildSolid } from './solidsPolynet.js';
 import type { ForgeGuidance, ForgeHorizontePack } from './types.js';
 
 export const SOLIDS_CAPABILITIES = {
   'geometry.solid-viewer.v2': ['visual.solid-viewer.v1', 'operation.fixed-views.v1', 'operation.choose-and-count.v1'],
-  'geometry.cube-net.v2': ['visual.cube-net.v1', 'operation.place-faces.v1', 'operation.fold-net.v1'],
+  'geometry.cube-net.v2': ['visual.cube-net.v1', 'operation.place-faces.v1', 'operation.fold-net.v1', 'operation.compute-area.v1'],
+  'geometry.solid-net.v2': ['visual.solid-net.v1', 'operation.place-faces.v1', 'operation.fold-net.v1', 'operation.compute-area.v1'],
   'geometry.cube-stack.v2': ['visual.cube-stack.v1', 'operation.stack-cubes.v1', 'operation.linked-views.v1'],
 } as const;
 
 const VIEWER = 'geometry.solid-viewer.v2';
 const NET = 'geometry.cube-net.v2';
+const SOLID_NET = 'geometry.solid-net.v2';
 const STACK = 'geometry.cube-stack.v2';
 const MAX_ANSWERS = 8;
 const PROMPT_WORDS = 24;
@@ -33,9 +39,19 @@ const SOLIDS_GUIDANCE: readonly ForgeGuidance[] = [
   {
     type: NET,
     lines: [
-      `${NET}: ages 7-12 only. Two modes. label gives the six squares of a cube net as [column, row] cells (a grid of at most 5 by 4) and one to three squares already named; the learner names the rest as top, bottom, front, back, left or right. The given names must leave exactly one way to name the others, so name two squares that touch, or name squares until only one labelling fits.`,
+      `${NET}: ages 7-12 only. Three modes: label, complete and area. label gives the six squares of a cube net as [column, row] cells (a grid of at most 5 by 4) and one to three squares already named; the learner names the rest as top, bottom, front, back, left or right. The given names must leave exactly one way to name the others, so name two squares that touch, or name squares until only one labelling fits.`,
       `${NET}: complete gives a grid (3 to 5 columns, 3 to 4 rows) and two to five placed squares; the learner adds the rest so the net folds into a cube. Any set of six squares that folds without overlap is right, so choose placed squares that some cube net contains. The key lists one to eight valid completions as g{column}x{row} slots holding square.`,
-      `${NET}: only the eleven cube nets fold. A row of four squares with one above and one below is a net; six squares in a line or a 2 by 3 block are not. The edge is a whole number of units from 1 to 20 and the board shows the surface area 6 x edge x edge, so the prompt never gives it. The prompt is at most two imperative sentences and never names the answer.`,
+      `${NET}: area gives the six squares of a cube net as cells and the edge; the board prints the edge on every square and the learner works out the surface area of the whole cube and types the number. The key is { target } with the area as digits in a string, 6 x edge x edge. The board never shows the formula or the total, so the prompt never gives them.`,
+      `${NET}: only the eleven cube nets fold. A row of four squares with one above and one below is a net; six squares in a line or a 2 by 3 block are not. The edge is a whole number of units from ${CUBE_EDGE_MIN} to 20 (an edge of 1 is too small for the names to fit on a square). The prompt is at most two imperative sentences and never names the answer.`,
+    ],
+  },
+  {
+    type: SOLID_NET,
+    lines: [
+      `${SOLID_NET}: ages 7-12. Nets of a rectangular prism (solid: { kind: "rect-prism", dims: [length, width, height] }), a triangular prism ({ kind: "tri-prism", dims: [leg, leg, length] } with a whole hypotenuse, so 3-4-5 or 5-12-13) and a square pyramid ({ kind: "sq-pyramid", dims: [base, slant height] } with the slant above half the base). Every length is a whole number up to 20 (slant up to 30). Start with the pyramid at 7 to 9; the box, the prism, completing and the area are for 10 to 12. Three modes: label, complete and area.`,
+      `${SOLID_NET}: label names the panels of a catalogue net: net is one of cross, column, strip, flag (box), row, fan, split (prism) or star, chain, pair (pyramid), and fixed names one or two panels as { panel, name } with panel counted from 0 in the order the net lists its faces. The given names must leave exactly one way to name the rest; the checker counts the ways. The key is { solutions: [{ panel0: [name], panel1: [name], ... }] } with every panel named once, from top, bottom, front, back, left, right and slope.`,
+      `${SOLID_NET}: complete gives a root face, the hinges already folded out as fixed: [{ parent, child }] and a sheet { width, height } the net must fit on. The learner hangs the other faces from the edges of the solid so the net fits the sheet. Choose the sheet so some net fits and at least one net does not, and keep every side at least one unit away from the size of any net it could hold; the checker flags a tie. The key slot of a hinge is the two face names joined by a hyphen, the face that comes first in the solid face order first (box: bottom, top, front, back, left, right; prism: bottom, back, slope, left, right; pyramid: bottom, back, right, front, left), and it holds the face that hangs from it, for example "bottom-front": ["front"]. The key lists one to eight sound nets, each with a slot for every face but the root.`,
+      `${SOLID_NET}: area gives the solid and a net id; the board draws the panels with their lengths and the learner adds the areas of all faces and types the number. The key is { target } with the surface area as digits in a string (box 2(lw + lh + wh), prism two triangles plus three rectangles, pyramid base squared plus four triangles). The board never shows the total or a formula, so the prompt never gives them. The prompt is at most two imperative sentences and never names the answer.`,
     ],
   },
   {
@@ -150,11 +166,57 @@ function completeIssues(subject: string, payload: Extract<NetPayload, { mode: 'c
   return unsound.length === 0 ? [] : [issue('rubric-accepts-invalid', `${subject}: ${unsound.length} rubric solution(s) do not fold into a cube with the placed squares, so a wrong answer would be graded right`)];
 }
 
+/** The area key is { target } with the number as digits in a string; the one right answer is computed here, never taken from the key. */
+function targetIssues(subject: string, expected: number, answerKey: unknown): SolvabilityIssue[] {
+  const record = asRecord(answerKey);
+  if (!record || objectKeys(record).join() !== 'target' || typeof record.target !== 'string') return [issue('impossible-state', `${subject}: the rubric must be { target } with the area as digits in a string`)];
+  const wanted = String(expected);
+  return checkRubricCoverage([wanted], new Set([record.target]), { subject, isSolution: (key) => key === wanted });
+}
+
+function areaIssues(subject: string, payload: Extract<NetPayload, { mode: 'area' }>, answerKey: unknown): SolvabilityIssue[] {
+  if (!isCubeNet(payload.cells)) return [issue('impossible-state', `${subject}: the six squares do not fold into a cube`)];
+  const spread = (axis: 0 | 1): number => Math.max(...payload.cells.map((cell) => cell[axis])) - Math.min(...payload.cells.map((cell) => cell[axis])) + 1;
+  if (spread(0) > NET_GRID.maxCols || spread(1) > NET_GRID.maxRows) return [issue('out-of-bounds', `${subject}: the net must fit on a grid of ${NET_GRID.maxCols} by ${NET_GRID.maxRows}`)];
+  return answerKey === undefined ? [] : targetIssues(subject, surfaceArea(payload.edge), answerKey);
+}
+
 const netChecker: SolvabilityChecker = (segment, context) => {
   const subject = `cube net ${segment.id}`;
   const payload = readNet(segment.payload);
   if (typeof payload === 'string') return result([issue('impossible-state', `${subject}: ${payload}`)]);
-  return result(payload.mode === 'label' ? labelIssues(subject, payload, context.answerKey) : completeIssues(subject, payload, context.answerKey));
+  const small = payload.edge < CUBE_EDGE_MIN ? [issue('impossible-state', `${subject}: the edge is at least ${CUBE_EDGE_MIN}, or the names do not fit on a square of the board`)] : [];
+  if (payload.mode === 'area') return result([...small, ...areaIssues(subject, payload, context.answerKey)]);
+  return result([...small, ...(payload.mode === 'label' ? labelIssues(subject, payload, context.answerKey) : completeIssues(subject, payload, context.answerKey))]);
+};
+
+const panelCount = (payload: Extract<SolidNetPayload, { mode: 'label' }>): number => {
+  const solid = buildSolid(payload.solid);
+  return (solid ? buildNet(solid, payload.net)?.faces.length : undefined) ?? 0;
+};
+
+function solidKeyIssues(subject: string, payload: SolidNetPayload, answerKey: unknown): SolvabilityIssue[] {
+  const solid = buildSolid(payload.solid)!;
+  if (payload.mode === 'area') return targetIssues(subject, solidArea(solid) ?? 0, answerKey);
+  const read = readSolutions(subject, answerKey);
+  if (isIssue(read)) return [read];
+  if (payload.mode === 'complete') {
+    const unsound = read.slots.filter((slots) => !keyCompletes(payload, solid, slots));
+    return unsound.length === 0 ? [] : [issue('rubric-accepts-invalid', `${subject}: ${unsound.length} rubric solution(s) are not a net that keeps the given hinges, covers every face and fits the sheet, so a wrong answer would be graded right`)];
+  }
+  const answers = labelAnswers(payload, solid) ?? [];
+  const accepted = read.slots.map((slots) => keyLabelling(slots, panelCount(payload)));
+  if (accepted.some((entry) => entry === null)) return [issue('impossible-state', `${subject}: each solution names every panel as panel0, panel1 and so on, one face name each`)];
+  return checkRubricCoverage(answers, new Set(accepted as string[]), { subject, isSolution: (key) => answers.includes(key) });
+}
+
+const solidNetChecker: SolvabilityChecker = (segment, context) => {
+  const subject = `solid net ${segment.id}`;
+  const payload = readSolidNet(segment.payload);
+  if (typeof payload === 'string') return result([issue('impossible-state', `${subject}: ${payload}`)]);
+  const findings = solidNetFindings(payload);
+  if (findings.length > 0) return result(findings.map((finding) => issue(finding.code, `${subject}: ${finding.message}`)));
+  return result(context.answerKey === undefined ? [] : solidKeyIssues(subject, payload, context.answerKey));
 };
 
 function slotsToHeights(slots: SlotMap, size: number): Heights | null {
@@ -203,10 +265,11 @@ const stackChecker: SolvabilityChecker = (segment, context) => {
 
 registerSolvabilityChecker(VIEWER, viewerChecker);
 registerSolvabilityChecker(NET, netChecker);
+registerSolvabilityChecker(SOLID_NET, solidNetChecker);
 registerSolvabilityChecker(STACK, stackChecker);
 
 const wordCount = (text: string): number => text.trim().split(/\s+/).filter(Boolean).length;
-const VISUALS: Readonly<Record<string, string>> = { [VIEWER]: 'solid-viewer', [NET]: 'cube-net', [STACK]: 'cube-stack' };
+const VISUALS: Readonly<Record<string, string>> = { [VIEWER]: 'solid-viewer', [NET]: 'cube-net', [SOLID_NET]: 'solid-net', [STACK]: 'cube-stack' };
 
 /** Gate 4: each board is well formed and its visual says what it holds; a cube net really folds and a stack goal can be built. The private key is judged by the solvability checkers above. */
 function solidsGates(document: { segments?: unknown }): GateProblem[] {
@@ -227,11 +290,18 @@ function solidsGates(document: { segments?: unknown }): GateProblem[] {
     } else if (type === NET) {
       const payload = readNet(segment.payload);
       if (typeof payload === 'string') { problem(`The cube net: ${payload}`); continue; }
+      if (payload.edge < CUBE_EDGE_MIN) problem(`The edge is at least ${CUBE_EDGE_MIN}, or the names do not fit on a square of the board`);
       if (payload.mode === 'label') {
         if (foldNormals(payload.cells) === null) problem('The six squares of a label net must fold into a cube');
         else if (hasDuplicates(payload)) problem('A square is named once and a face name is given once');
         else if (labelSolutions(payload.cells, payload.fixed).length !== 1) problem('The given names must leave exactly one way to name the rest');
+      } else if (payload.mode === 'area') {
+        if (!isCubeNet(payload.cells)) problem('The six squares of an area net must fold into a cube');
       } else if (completions(payload.fixed, payload.grid, 1).count === 0) problem('The placed squares must be part of some cube net');
+    } else if (type === SOLID_NET) {
+      const payload = readSolidNet(segment.payload);
+      if (typeof payload === 'string') { problem(`The solid net: ${payload}`); continue; }
+      for (const finding of solidNetFindings(payload)) problem(`The solid net: ${finding.message}`);
     } else {
       const payload = readStack(segment.payload);
       if (typeof payload === 'string') { problem(`The cube stack: ${payload}`); continue; }

@@ -4,12 +4,17 @@ import type { V2Grade } from '../../v2VisualScorer.generated';
 import type { HorizonteScorer } from '../types.generated';
 import type { SolidId } from './model.generated';
 import {
-  completions, FACE_NAMES, gridSlotId, isCubeNet, labelSolutions, netSlotId, NET_PIECE, NET_SQUARES, slotsToCells, slotsToLabelling,
+  completions, FACE_NAMES, gridSlotId, isCubeNet, labelSolutions, netSlotId, NET_PIECE, NET_SQUARES, slotsToCells, slotsToLabelling, surfaceArea,
   type NetCell,
 } from './net.generated';
 import {
-  fixedNames, readNetPayload, readStackPayload, readViewerPayload, stackMinimum, VIEWER_COUNT_LIMIT, viewerAnswer,
-  type CompleteNet, type LabelNet, type StackPayload,
+  amountOf, areaDiagnosis, attach, buildNet, buildSolid, completionsOf, faceAreas2, fitsSheet, hingesToSlots, hingeSlots, panelSlot,
+  polyLabelSolutions, POLY_FACES, POLY_LIMITS, slotsToHinges, slotsToPanelNames, surfaceAreaOf, unfold,
+  type PolySolid,
+} from './polynet.generated';
+import {
+  fixedNames, givenHinges, readNetPayload, readSolidNetPayload, readStackPayload, readViewerPayload, stackMinimum, VIEWER_COUNT_LIMIT, viewerAnswer,
+  type CompleteNet, type LabelNet, type SolidComplete, type SolidLabel, type StackPayload,
 } from './rules.generated';
 import { matchesGoal, sameHeights, slotsToStack, stackContext, stackToSlots, stackTotal, type StackGoal } from './stack.generated';
 
@@ -104,14 +109,115 @@ function completeGrade(payload: CompleteNet, response: unknown, rubric: unknown)
   return review(completions(cells, payload.grid, NET_SQUARES - cells.length, 1).count > 0 ? 'miss' : 'value');
 }
 
+const AREA_BOUNDS = { minimum: '1', maximum: String(POLY_LIMITS.areaMaximum) };
+
+/**
+ * invalid: not a number, or outside 1 to 9999. valid: a blank field, and every number when there is no rubric. met: the surface
+ * area. review: the sum of some faces but not all (miss), the whole area plus one more face (false_alarm), or another number (value).
+ * The key must be the area of the solid the payload describes, or the key is refused.
+ */
+function areaGrade(response: unknown, rubric: unknown, target: number, areas2: readonly number[]): V2Grade {
+  if (!isRecord(response) || !hasKeys(response, ['value']) || typeof response.value !== 'string') return INVALID;
+  const text = response.value;
+  if (text !== '' && gradeNumberTolerance({ value: text }, undefined, AREA_BOUNDS).verdict === 'invalid') return INVALID;
+  if (rubric === undefined) return VALID;
+  if (!isRecord(rubric) || !hasKeys(rubric, ['target']) || rubric.target !== String(target)) return INVALID;
+  if (text === '') return VALID;
+  if (gradeNumberTolerance({ value: text }, { target: rubric.target }, AREA_BOUNDS).verdict === 'met') return MET;
+  const amount = amountOf(text);
+  return review(amount === null ? 'value' : areaDiagnosis(areas2, amount));
+}
+
 /**
  * invalid: malformed, a fixed square or name moved, a name used twice, or a square off the grid. valid: only the given
- * squares placed. met: a complete naming (label) or six squares that fold into a cube (complete), checked on the geometry.
+ * squares placed. met: a complete naming (label), six squares that fold into a cube (complete) or the surface area (area),
+ * checked on the geometry.
  */
 function netGrade(segment: Segment, response: unknown, rubric: unknown): V2Grade {
   const payload = readNetPayload(segment?.payload);
   if (!payload) return INVALID;
+  if (payload.mode === 'area') {
+    const faces = Array.from({ length: NET_SQUARES }, () => 2 * payload.edge * payload.edge);
+    return isCubeNet(payload.cells) ? areaGrade(response, rubric, surfaceArea(payload.edge), faces) : INVALID;
+  }
   return payload.mode === 'label' ? labelGrade(payload, response, rubric) : completeGrade(payload, response, rubric);
+}
+
+function solidLabelGrade(payload: SolidLabel, solid: PolySolid, response: unknown, rubric: unknown): V2Grade {
+  const net = buildNet(solid, payload.net);
+  if (!net) return INVALID;
+  const panels = net.faces.length;
+  const context: ArrangementContext = { pieceIds: [...POLY_FACES[solid.kind]], slotIds: Array.from({ length: panels }, (_, index) => panelSlot(index)) };
+  if (gradeArrangement(response, undefined, context).verdict === 'invalid') return INVALID;
+  const slots = slotsOf(response);
+  for (const { panel, name } of payload.fixed) {
+    const held = slots[panelSlot(panel)];
+    if (!held || held.length !== 1 || held[0] !== name) return INVALID;
+  }
+  if (rubric === undefined) return VALID;
+  const fixed = Object.fromEntries(payload.fixed.map((entry) => [entry.panel, entry.name]));
+  const answers = polyLabelSolutions(net, fixed);
+  if (answers.length === 0 || sampleArrangement(rubric, context) === null) return INVALID;
+  const known = new Set(answers.map((answer) => answer.join()));
+  const sound = solutionsOf(rubric).every((solution) => {
+    const names = slotsToPanelNames(solution, panels);
+    return names !== null && known.has(names.join());
+  });
+  if (!sound) return INVALID;
+  const free = Array.from({ length: panels }, (_, index) => index).filter((index) => fixed[index] === undefined);
+  const placed = free.filter((index) => slots[panelSlot(index)]?.length === 1);
+  if (placed.length === 0) return VALID;
+  const best = Math.max(...answers.map((answer) => placed.filter((index) => slots[panelSlot(index)]![0] === answer[index]).length));
+  if (placed.length === free.length && best === free.length) return MET;
+  if (best === placed.length) return review('miss');
+  return review(best > 0 ? 'partial' : 'value');
+}
+
+/** The pieces of a complete question are the faces that hang from something, and its slots are the edges they can hang from. */
+const completeContext = (solid: PolySolid, root: number): ArrangementContext => ({
+  pieceIds: solid.faces.filter((_, index) => index !== root).map((face) => face.name),
+  slotIds: hingeSlots(solid),
+});
+
+const hasHinges = (have: readonly { parent: number; child: number }[], wanted: readonly { parent: number; child: number }[]): boolean =>
+  wanted.every((hinge) => have.some((entry) => entry.parent === hinge.parent && entry.child === hinge.child));
+
+function solidCompleteGrade(payload: SolidComplete, solid: PolySolid, response: unknown, rubric: unknown): V2Grade {
+  const given = givenHinges(payload);
+  if (!given) return INVALID;
+  const { root } = given;
+  const context = completeContext(solid, root);
+  if (gradeArrangement(response, undefined, context).verdict === 'invalid') return INVALID;
+  const hinges = slotsToHinges(solid, slotsOf(response));
+  if (!hinges || !hasHinges(hinges, given.hinges)) return INVALID;
+  if (rubric === undefined) return VALID;
+  if (sampleArrangement(rubric, context) === null) return INVALID;
+  const fits = (list: ReturnType<typeof attach>) => {
+    const layout = list.orphans.length === 0 ? unfold(solid, root, list.ordered) : null;
+    return layout !== null && layout.overlaps.length === 0 && fitsSheet(layout, payload.sheet);
+  };
+  const sound = solutionsOf(rubric).every((solution) => {
+    const wanted = slotsToHinges(solid, solution);
+    return wanted !== null && wanted.length === solid.faces.length - 1 && hasHinges(wanted, given.hinges) && fits(attach(root, wanted));
+  });
+  if (!sound) return INVALID;
+  if (hinges.length === given.hinges.length) return VALID;
+  if (hinges.length === solid.faces.length - 1) return fits(attach(root, hinges)) ? MET : review('structure');
+  return completionsOf(solid, root, hinges, payload.sheet, 0).count > 0 ? review('miss') : review('value');
+}
+
+/**
+ * invalid: malformed, a solid or net this piece cannot build, a given name or hinge moved, or a face on an edge it does not touch.
+ * valid: only the given names or hinges placed. met: every panel named so the net folds into the solid (label), every face hung
+ * so the net fits the sheet (complete), or the surface area (area). All of it is checked on the geometry of the solid.
+ */
+function solidNetGrade(segment: Segment, response: unknown, rubric: unknown): V2Grade {
+  const payload = readSolidNetPayload(segment?.payload);
+  const solid = payload ? buildSolid(payload.solid) : null;
+  if (!payload || !solid) return INVALID;
+  if (payload.mode === 'complete') return solidCompleteGrade(payload, solid, response, rubric);
+  if (payload.mode === 'label') return solidLabelGrade(payload, solid, response, rubric);
+  return buildNet(solid, payload.net) ? areaGrade(response, rubric, surfaceAreaOf(solid), faceAreas2(solid)) : INVALID;
 }
 
 function stackKeyIsSound(rubric: unknown, payload: StackPayload, minimum: number): boolean {
@@ -142,11 +248,24 @@ function stackGrade(segment: Segment, response: unknown, rubric: unknown): V2Gra
   return review(hit > 0 ? 'partial' : 'value');
 }
 
-function netStart(segment: Segment): { slots: Record<string, string[]> } {
+type Start = { slots: Record<string, string[]> } | { value: string };
+
+function netStart(segment: Segment): Start {
   const payload = readNetPayload(segment.payload);
   if (!payload) return { slots: {} };
+  if (payload.mode === 'area') return { value: '' };
   if (payload.mode === 'label') return { slots: Object.fromEntries(payload.fixed.map((entry) => [netSlotId(entry.cell), [entry.name]])) };
   return { slots: Object.fromEntries(payload.fixed.map((cell) => [gridSlotId(cell[0], cell[1]), [NET_PIECE]])) };
+}
+
+function solidNetStart(segment: Segment): Start {
+  const payload = readSolidNetPayload(segment.payload);
+  const solid = payload ? buildSolid(payload.solid) : null;
+  if (!payload || !solid) return { slots: {} };
+  if (payload.mode === 'area') return { value: '' };
+  if (payload.mode === 'label') return { slots: Object.fromEntries(payload.fixed.map((entry) => [panelSlot(entry.panel), [entry.name]])) };
+  const given = givenHinges(payload);
+  return { slots: given ? hingesToSlots(solid, given.hinges) : {} };
 }
 
 export const SOLIDS_SCORERS: Readonly<Record<string, HorizonteScorer>> = {
@@ -157,6 +276,10 @@ export const SOLIDS_SCORERS: Readonly<Record<string, HorizonteScorer>> = {
   'geometry.cube-net.v2': {
     grade: netGrade as HorizonteScorer['grade'],
     sample: netStart as HorizonteScorer['sample'],
+  },
+  'geometry.solid-net.v2': {
+    grade: solidNetGrade as HorizonteScorer['grade'],
+    sample: solidNetStart as HorizonteScorer['sample'],
   },
   'geometry.cube-stack.v2': {
     grade: stackGrade as HorizonteScorer['grade'],
