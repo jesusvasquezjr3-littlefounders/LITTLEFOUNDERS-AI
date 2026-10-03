@@ -21,26 +21,26 @@ const SIM2_GUIDANCE: readonly ForgeGuidance[] = [
 ];
 
 const whole = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value);
-const inRange = (value: unknown, low: number, high: number): value is number => whole(value) && value >= low && value <= high;
+export const inRange = (value: unknown, low: number, high: number): value is number => whole(value) && value >= low && value <= high;
 const record = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
-const hasOnly = (value: unknown, keys: readonly string[]): value is Record<string, unknown> =>
+export const hasOnly = (value: unknown, keys: readonly string[]): value is Record<string, unknown> =>
   record(value) && Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
 
 /* Mirrored from backend/src/services/horizonte/sim2/model.ts. */
-type Scenario = 'portfolio' | 'retirement' | 'insurance' | 'life';
+export type Scenario = 'portfolio' | 'retirement' | 'insurance' | 'life';
 const SCENARIOS: readonly Scenario[] = ['portfolio', 'retirement', 'insurance', 'life'];
 const MONEY_MAX = 1_000_000;
 const TARGET_MAX = 10_000_000;
-const FUTURES = 100;
-const OUTCOMES = 8;
+export const FUTURES = 100;
+export const OUTCOMES = 8;
 const PERIODS_MIN = 2;
 const PERIODS_MAX = 5;
 const CHOICES_MIN = 3;
 const CHOICES_MAX = 8;
 const GOAL_MIN = 50;
 const GOAL_MAX = 99;
-const SOLVE_TAIL = 1e-5;
-const MISS_TAIL = 1e-4;
+export const SOLVE_TAIL = 1e-5;
+export const MISS_TAIL = 1e-4;
 const BOND_PCT = 10;
 const PREMIUM_PER_POINT = 20;
 const DEBT_PCT = 25;
@@ -51,10 +51,10 @@ const OUTCOME_TABLE: Readonly<Record<Scenario, readonly number[]>> = {
   insurance: [0, 0, 0, 0, 400, 1000, 3000, 9000],
   life: [0, 0, 0, 0, 300, 700, 1500, 3500],
 };
-const ANSWER_RULE: Readonly<Record<Scenario, 'all' | 'highest' | 'lowest'>> = { portfolio: 'highest', retirement: 'highest', insurance: 'lowest', life: 'all' };
+export const ANSWER_RULE: Readonly<Record<Scenario, 'all' | 'highest' | 'lowest'>> = { portfolio: 'highest', retirement: 'highest', insurance: 'lowest', life: 'all' };
 const PAYLOAD_KEYS = ['scenario', 'periods', 'cash', 'debt', 'flow', 'finish', 'floor', 'goal', 'choices', 'start'] as const;
 
-type Payload = { scenario: Scenario; periods: number; cash: number; debt: number; flow: number; finish: number; floor: number; goal: number; choices: number[]; start: number };
+export type Payload = { scenario: Scenario; periods: number; cash: number; debt: number; flow: number; finish: number; floor: number; goal: number; choices: number[]; start: number };
 type Books = readonly [cash: number, debt: number];
 
 const pct = (amount: number, percent: number): number => Math.trunc((amount * percent) / 100);
@@ -84,7 +84,7 @@ const worth = (books: Books): number => books[0] - books[1];
 const cushion = (scenario: Scenario, books: Books): number => (scenario === 'life' ? books[0] : worth(books));
 const succeeded = (payload: Payload, final: number, lowest: number): boolean => final >= payload.finish && lowest >= payload.floor;
 
-function waysOf(payload: Payload, choice: number): number {
+export function waysOf(payload: Payload, choice: number): number {
   const visitHistory = (books: Books, lowest: number, period: number): number => {
     if (period === payload.periods) return succeeded(payload, worth(books), lowest) ? 1 : 0;
     let total = 0;
@@ -97,7 +97,7 @@ function waysOf(payload: Payload, choice: number): number {
   return visitHistory([payload.cash, payload.debt], Number.POSITIVE_INFINITY, 0);
 }
 
-function reachChance(ways: number, total: number, goal: number): number {
+export function reachChance(ways: number, total: number, goal: number): number {
   const q = ways / total;
   const mass = new Array<number>(FUTURES + 1).fill(0);
   mass[0] = 1;
@@ -109,13 +109,18 @@ function reachChance(ways: number, total: number, goal: number): number {
   return Math.min(1, tail);
 }
 
-function analyse(payload: Payload): { answers: number[]; problem: string | null } {
+export function analyseChoices(payload: Payload): { reach: number[]; reliable: number[]; answers: number[]; borderline: number | undefined } {
   const total = OUTCOMES ** payload.periods;
   const reach = payload.choices.map((choice) => reachChance(waysOf(payload, choice), total, payload.goal));
   const reliable = payload.choices.filter((_, index) => (reach[index] as number) >= 1 - SOLVE_TAIL);
   const rule = ANSWER_RULE[payload.scenario];
   const answers = rule === 'highest' ? reliable.slice(-1) : rule === 'lowest' ? reliable.slice(0, 1) : reliable;
   const borderline = payload.choices.find((_, index) => (reach[index] as number) > MISS_TAIL && (reach[index] as number) < 1 - SOLVE_TAIL);
+  return { reach, reliable, answers, borderline };
+}
+
+export function analyse(payload: Payload): { answers: number[]; problem: string | null } {
+  const { answers, borderline } = analyseChoices(payload);
   if (answers.length === 0) return { answers, problem: 'No choice reaches the goal reliably' };
   if (borderline !== undefined) return { answers, problem: `The choice ${borderline} reaches the goal by luck, so it is neither an answer nor a clear miss` };
   if (answers.includes(payload.start)) return { answers, problem: 'The start choice already solves the piece' };
@@ -128,7 +133,7 @@ function isChoices(scenario: Scenario, value: unknown): value is number[] {
   return value.every((choice, index) => inRange(choice, 0, high) && (index === 0 || choice > (value[index - 1] as number)));
 }
 
-function payloadProblem(value: unknown): string | null {
+export function payloadProblem(value: unknown): string | null {
   if (!hasOnly(value, PAYLOAD_KEYS)) return 'The payload has exactly the fields scenario, periods, cash, debt, flow, finish, floor, goal, choices and start';
   const scenario = value.scenario as Scenario;
   if (!SCENARIOS.includes(scenario)) return 'The scenario is portfolio, retirement, insurance or life';

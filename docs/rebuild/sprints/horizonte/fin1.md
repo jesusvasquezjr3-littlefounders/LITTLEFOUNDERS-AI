@@ -119,7 +119,8 @@ Fixtures (10): `compound-thirty`, `receive-three`, `pay-four`, `annuity-end`, `a
 - **NPV and IRR prompts do not list the flows**; the board shows them, which keeps every prompt within the Copy Budget.
 - **Type ids** are `money.compound-interest.v2`, `money.time-value.v2`, `money.rate-return.v2` and are registered through the pack stubs in
   Core, the browser and the Forge; the three capability literals are identical in all three copies (parity gate).
-- **Solvability registration** is for F1.10 and F2.11 only; F2.12 is a typed number and its soundness is the gate-4 model check.
+- **Solvability registration** covers F1.10, F2.11 and, since the solvability round (below), F2.12 as well. F2.12 is a typed number, so its
+  checker proves the figure and its band, not a scan of controls.
 - **Copy.** Every string carries `data-copy-role`; es-MX and pt-BR are written natively (pt-BR groups thousands with a point, so `$1.000`), and prompts stay
   under the band's word limit (20 words en-US, 25 es-MX and pt-BR outside bands 6-9).
 - **Accessibility text.** Amounts and rates in aria labels are spoken forms ("7,612 dollars and 26 cents", "26.82 percent"), never symbols.
@@ -130,3 +131,32 @@ Fixtures (10): `compound-thirty`, `receive-three`, `pay-four`, `annuity-end`, `a
   coordinator's audit pass.
 - The finance pieces teach the standard formulas with a generic `$`; they are not financial advice and name no product, bank or real card.
 - Chunk budgets (14, 16, 18 KB gzipped) are declared, not measured here: no build was run in this lane.
+
+## Solvability round
+
+`money.rate-return.v2` now has a Forge solvability checker (`coursegen/src/v2/horizonte/solvability-plane.ts`, registered from
+`solvabilityPacks.ts`). `money.compound-interest.v2` and `money.time-value.v2` were already covered and are unchanged. The `fin1.test.ts`
+registered-types assertion now expects the rate case, and the rate cases also go through `runSolvabilityGate` with and without a key.
+Tests: `solvability-plane.test.ts` (43, shared with the other two packs).
+
+| Type | Proven | Stays unproven |
+|---|---|---|
+| `money.rate-return.v2`, effective | the payload reads; the compounding moves the rate by at least a basis point after rounding (else `impossible-state`); the model answer is inside its answer box; the key target equals the model answer; no shortcut lands inside the band | prompt wording and locale; the period dial layout; the nominal-rate decoy is a heuristic at the guidance band |
+| `money.rate-return.v2`, card (months or interest) | the card clears (else `no-solution`); months is a whole number and a months tolerance below 1 (a tolerance of 1 or more is `rubric-accepts-invalid`); the interest key equals the model figure; flat interest on the starting balance is not inside the band | the 600-month limit is defensive: across every valid payload the slowest card takes 483 months (balance 2,000,000, APR 3600, 100 percent, floor 1000), so the limit is never reached and is not tested with a payload |
+| `money.rate-return.v2`, NPV | the net present value is a figure the answer box holds; the key equals it; the undiscounted total less the outlay is not inside the band | the answer-box overflow is defensive: flows and an outlay are bounded by the reader, so no valid payload reaches it |
+| `money.rate-return.v2`, IRR | a rate below 100 percent exists (else `out-of-bounds` when the flows exceed the outlay, `no-solution` when they do not); the key equals it; the simple average return is not inside the band; with a key, some dial position (tenths of a percent) is within the tolerance (else `dead-end`) | the dial step of one tenth is taken from the board source (`RateBoard.tsx`, `bps = dial * 10`), not from a test of the board, so a change to the dial step would need this check updated |
+
+**What a key check covers.** A key is `{ target, tolerance?, review? }` with the target as decimal text. A target that is not the model answer is
+`rubric-accepts-invalid`; a malformed key, a malformed band, or a review band that is not strictly wider than the tolerance is `rubric-gap`; a
+tolerance as wide as the answer box is `vacuous-rubric`. Without a key the same shortcut findings are `review`, tested at the guidance default
+(0.05, 0 for months, 0.1 for the IRR); with a key they block. The budget is the card's 600 months (1,200 for the interest ask), 40 for the IRR,
+2 for NPV and 1 for effective, spent from the context budget.
+
+**What this does not prove.**
+- The decoys are the four wrong figures a learner is most likely to type (nominal rate, flat interest, undiscounted gain, simple average return).
+  The list is a heuristic; a different wrong figure inside the band is not found.
+- Not the prompt wording, the locale text, the number format a learner types, the layout of the boards or timing. No browser was started.
+- Not whether the case teaches anything: a case whose answer is the same under two readings of the prompt is not detected unless one of the four
+  decoys is that reading.
+- The `prompt` field of a segment is optional in the engine, and the rate checker does not read it; a prompt that names the wrong case is not caught.
+- The Oracle context schema is unchanged and the checker reads nothing about the child.

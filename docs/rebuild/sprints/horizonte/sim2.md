@@ -160,3 +160,41 @@ Dark-mode contrast fix for the F3.3 life-simulation board. The seeded protocol, 
 
 Still limited: checked by contrast arithmetic from `tokens.css`, not yet re-run through the Atlas audit or looked at in a browser. The Reset and Check
 buttons at 2.3:1 in the light audit come from the shared button styles, not from this pack.
+
+## Behaviour round
+
+Core's interactive-behaviour gate now has a behaviour space for `money.life-sim.v2`, the last sim2 kind that reported "no behaviour space defined for this kind". The
+model, the scorer, the fixtures and the copy are unchanged. The space lives in `backend/src/services/forgeV2HorizonteBehaviour/seeded.ts` (`lifeSim`).
+
+- **Attempt.** The gate grades under its own fixed synthetic attempt (`GATE_ATTEMPT` in `forgeV2Behaviour.ts`), passed through `gradeV2Visual`'s existing optional
+  last argument. It is not derived from `LESSON_ATTEMPT_SECRET` and never reaches a response or a stored value. Every state carries that seed.
+- **Permitted states.** Every offered choice except the untouched `start`. The key must equal `analyse(payload).answers` and the payload must analyse without a
+  problem, or no space is built. A choice is met iff it is one of the answers and its replayed futures reach `goal` successes; any other choice is a review state.
+  Under the gate seed the emitted `life-portfolio-risk` board has 1 met choice and 4 review choices.
+- **Refused states.** The start (nothing set), a choice off the slider (neighbours of the start, below and above the list, negative, fractional, a string, `NaN`,
+  `Infinity`), a wrong or malformed seed, a missing or extra field, and `{ seed, choice: undefined }`.
+- **Hostile states.** The same set as sim1: scalars, arrays, a null-prototype object, a `__proto__` key, an oversized seed, and each field dropped, nulled or retyped.
+  Never met, never a throw.
+- **All-met rule and fail-closed kept.** A space with every choice met fails the gate. Graded without an attempt, the kind is still `invalid`; the gate asserts it on
+  the first met response and `horizonteBehaviourSpace` builds nothing without an attempt.
+- **Replays.** All four authored `life-*` fixtures pass the gate in the three locales, and each fixture's ladder replays under the seed it was simulated under.
+
+Result on `emitted-horizonte.json`: `forge-v2:check` reports 240 of 240 graded segments passing, 64,341 states scored.
+
+Still limited: the gate seed was chosen once, and that the emitted board is met under it was measured, not proved. No page ran.
+
+## Solvability round
+
+Forge now registers a real F0.4 checker for `money.life-sim.v2` (`coursegen/src/v2/horizonte/solvability-sims.ts`, imported by `solvabilityPacks.ts`; tests in
+`coursegen/src/__tests__/horizonte/solvability-sims.test.ts`). It reuses the pack's pure functions: `sim2.ts` only gained `export` keywords, and `analyse` was split
+into an exported `analyseChoices` plus the same `analyse` (same behaviour, same problem order), so the gate, the seed protocol and the scorer are untouched. The
+public payload alone fixes everything but the key, which is compared only when `answerKey` is present. Core grades against a seeded run the gate never has, so the
+checker proves what the payload and the exact model determine, never the learner's run. Findings ride gate 1 as `solvability/<code>:`.
+
+| Type | Solvable | Unique | Not already solved | No dead end | Budget | Stays unproven |
+| --- | --- | --- | --- | --- | --- | --- |
+| `money.life-sim.v2` | Every history of every choice is enumerated (8 outcomes per chapter, 8^chapters histories) and the 100 futures are summed exactly; at least one choice must reach the goal with probability of at least 1 - 1e-5 under the scenario rule (highest, lowest or all), else `no-solution`. | A choice that reaches the goal with probability between 1e-4 and 1 - 1e-5 is neither an answer nor a clear miss, `ambiguous-solution`. The key must be exactly the answer list in the order of the choices: a wrong set is `rubric-gap` and `rubric-accepts-invalid`, a wrong order or shape `impossible-state`. | The start choice must not be an answer, else `impossible-state`. | The slider is reversible and every chapter is replayed from the same start, so there is no state to get stuck in. | One unit per chapter state expanded into its 8 outcomes: per choice the sum of 8^k for k below the chapters, so the largest board (8 choices, 5 chapters) costs 37,448 units; a smaller `nodeBudget` is `budget-exceeded`. | The learner's seeded 100 futures (the replay decides `met` or `review`), whether the money model is realistic, the prompt writing the goal in digits (pack gate), and the spacing of the choices. |
+
+Decisions: an unreadable payload is reported as `impossible-state` with the pack's own sentence, and the key is skipped whenever the payload already has a blocking
+problem. The tests compare the checker with the pack gate over a grid of 64 boards and assert it agrees exactly, and the four authored boards plus the three emitted
+life segments pass with and without their keys.
