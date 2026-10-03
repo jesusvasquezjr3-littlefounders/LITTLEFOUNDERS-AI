@@ -197,4 +197,60 @@ export const NUM_B_COPY = {
   tilesItem: { role: 'data', 'en-US': 'Tiles laid', 'es-MX': 'Piezas puestas', 'pt-BR': 'Peças colocadas' },
   metMeasure: { role: 'body', 'en-US': 'You measured with equal tiles.', 'es-MX': 'Mediste con piezas iguales.', 'pt-BR': 'Você mediu com peças iguais.' },
   hintMeasure: { role: 'body', 'en-US': 'Not yet. Count tiles, then the part left.', 'es-MX': 'Aún no. Cuenta las piezas y la parte que sobra.', 'pt-BR': 'Ainda não. Conte as peças e a parte que sobra.' },
+
+  circlesLabel: { role: 'data', 'en-US': 'Fraction circles', 'es-MX': 'Círculos de fracciones', 'pt-BR': 'Círculos de frações' },
+  circleWhole: { role: 'data', 'en-US': 'Whole circle, not cut', 'es-MX': 'Círculo entero, sin cortar', 'pt-BR': 'Círculo inteiro, sem cortes' },
+  circleName: {
+    role: 'data', 'en-US': 'Circle in {d} parts, {k} shaded', 'es-MX': 'Círculo en {d} partes, {k} sombreadas', 'pt-BR': 'Círculo em {d} partes, {k} pintadas',
+  },
+  circlePartOf: { role: 'data', 'en-US': '{circle}: part {n} of {d}', 'es-MX': '{circle}: parte {n} de {d}', 'pt-BR': '{circle}: parte {n} de {d}' },
+  circleFirst: { role: 'data', 'en-US': 'First circle', 'es-MX': 'Primer círculo', 'pt-BR': 'Primeiro círculo' },
+  circleSecond: { role: 'data', 'en-US': 'Second circle', 'es-MX': 'Segundo círculo', 'pt-BR': 'Segundo círculo' },
+  circleWork: { role: 'data', 'en-US': 'Work circle', 'es-MX': 'Círculo de trabajo', 'pt-BR': 'Círculo de trabalho' },
+  circleYours: { role: 'data', 'en-US': 'Your circle', 'es-MX': 'Tu círculo', 'pt-BR': 'Seu círculo' },
+  circleLegend: { role: 'data', 'en-US': '{which}: {name}', 'es-MX': '{which}: {name}', 'pt-BR': '{which}: {name}' },
+  circleCutHeading: { role: 'heading', 'en-US': 'Cut the circle', 'es-MX': 'Corta el círculo', 'pt-BR': 'Corte o círculo' },
+  circleShadeHeading: { role: 'heading', 'en-US': 'Shade the circle', 'es-MX': 'Sombrea el círculo', 'pt-BR': 'Pinte o círculo' },
+  circleMoreHeading: { role: 'heading', 'en-US': 'Which is more?', 'es-MX': '¿Cuál es más?', 'pt-BR': 'Qual é mais?' },
+  cutInto: { role: 'action', 'en-US': 'Cut in {n}', 'es-MX': 'Corta en {n}', 'pt-BR': 'Corte em {n}' },
+  shadeMore: { role: 'action', 'en-US': 'Shade one more', 'es-MX': 'Sombrea una más', 'pt-BR': 'Pinte mais uma' },
+  shadeFewer: { role: 'action', 'en-US': 'Shade one less', 'es-MX': 'Sombrea una menos', 'pt-BR': 'Pinte uma a menos' },
+  moreFirst: { role: 'action', 'en-US': 'First is more', 'es-MX': 'El primero es más', 'pt-BR': 'O primeiro é mais' },
+  moreSecond: { role: 'action', 'en-US': 'Second is more', 'es-MX': 'El segundo es más', 'pt-BR': 'O segundo é mais' },
+  circleShowFresh: {
+    role: 'data', 'en-US': 'Show {name}. The circle is not cut yet.', 'es-MX': 'Muestra {name}. El círculo aún no está cortado.', 'pt-BR': 'Mostre {name}. O círculo ainda não foi cortado.',
+  },
+  circleShowFacts: {
+    role: 'data', 'en-US': 'Show {name}. Cut in {d} parts. Shaded: {k} of {d}.',
+    'es-MX': 'Muestra {name}. Cortado en {d} partes. Sombreadas: {k} de {d}.', 'pt-BR': 'Mostre {name}. Cortado em {d} partes. Pintadas: {k} de {d}.',
+  },
+  circleCompareFacts: {
+    role: 'data', 'en-US': 'Circles cut in {d} parts. First: {a} shaded. Second: {b} shaded.',
+    'es-MX': 'Círculos cortados en {d} partes. Primero: {a} sombreadas. Segundo: {b} sombreadas.',
+    'pt-BR': 'Círculos cortados em {d} partes. Primeiro: {a} pintadas. Segundo: {b} pintadas.',
+  },
+  pickedFirst: { role: 'data', 'en-US': 'More: first circle.', 'es-MX': 'Más: primer círculo.', 'pt-BR': 'Mais: primeiro círculo.' },
+  pickedSecond: { role: 'data', 'en-US': 'More: second circle.', 'es-MX': 'Más: segundo círculo.', 'pt-BR': 'Mais: segundo círculo.' },
+  circleWorkFacts: {
+    role: 'data', 'en-US': 'Work circle: {k} of {d} shaded.', 'es-MX': 'Círculo de trabajo: {k} de {d} sombreadas.', 'pt-BR': 'Círculo de trabalho: {k} de {d} pintadas.',
+  },
+  circlesCaption: { role: 'heading', 'en-US': 'Circles and their parts', 'es-MX': 'Círculos y sus partes', 'pt-BR': 'Círculos e suas partes' },
+  metCircleShow: { role: 'body', 'en-US': 'You cut and shaded the circle.', 'es-MX': 'Cortaste y sombreaste el círculo.', 'pt-BR': 'Você cortou e pintou o círculo.' },
+  hintCircleShow: {
+    role: 'body', 'en-US': 'Not yet. Match the name: parts, then shaded.', 'es-MX': 'Aún no. Iguala el nombre: partes y sombreadas.', 'pt-BR': 'Ainda não. Iguale o nome: partes e pintadas.',
+  },
+  metCircleCompare: { role: 'body', 'en-US': 'You compared parts of the same size.', 'es-MX': 'Comparaste partes del mismo tamaño.', 'pt-BR': 'Você comparou partes do mesmo tamanho.' },
+  hintCircleCompare: {
+    role: 'body', 'en-US': 'Not yet. Look at which circle has more shaded.', 'es-MX': 'Aún no. Mira qué círculo tiene más sombreado.', 'pt-BR': 'Ainda não. Veja qual círculo tem mais pintado.',
+  },
+  metCircleAdd: { role: 'body', 'en-US': 'You joined parts of the same size.', 'es-MX': 'Juntaste partes del mismo tamaño.', 'pt-BR': 'Você juntou partes do mesmo tamanho.' },
+  hintCircleAdd: {
+    role: 'body', 'en-US': 'Not yet. Count the shaded parts in the work circle.', 'es-MX': 'Aún no. Cuenta las partes sombreadas del círculo de trabajo.',
+    'pt-BR': 'Ainda não. Conte as partes pintadas do círculo de trabalho.',
+  },
+  metCircleSubtract: { role: 'body', 'en-US': 'You took away parts of the same size.', 'es-MX': 'Quitaste partes del mismo tamaño.', 'pt-BR': 'Você tirou partes do mesmo tamanho.' },
+  hintCircleSubtract: {
+    role: 'body', 'en-US': 'Not yet. Count the parts left in the work circle.', 'es-MX': 'Aún no. Cuenta las partes que quedan en el círculo de trabajo.',
+    'pt-BR': 'Ainda não. Conte as partes que sobram no círculo de trabalho.',
+  },
 } as const satisfies HorizonteCopy;

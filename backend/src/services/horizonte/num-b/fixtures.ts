@@ -153,7 +153,7 @@ export const NUM_B_FIXTURES: readonly HorizonteFixture[] = [
     eligibility: { minimum_age: 8, maximum_age: 9 },
     segment: (locale) => ({
       id: 'circles-show', type: CIRCLES, grading: 'server', visual: { type: 'fraction-circles' },
-      prompt: text('Cut the circle to show three fourths.', 'Corta el círculo para mostrar tres cuartos.', 'Corte o círculo para mostrar três quartos.')[locale],
+      prompt: text('Cut the circle to show three quarters.', 'Corta el círculo para mostrar tres cuartos.', 'Corte o círculo para mostrar três quartos.')[locale],
       payload: { op: 'show', fraction: [3, 4] },
     }),
     rubric: { n: 3, d: 4 },
