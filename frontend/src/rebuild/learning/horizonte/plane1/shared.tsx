@@ -32,8 +32,9 @@ type Words = { readonly [K in 'sayEquals' | 'sayPlus' | 'sayMinus']: string };
 /** The line y = mx + b as it is written and as it is spoken, both without a zero term or a one in front of x. */
 export function equation(words: Words, m: number, b: number): { text: string; spoken: string } {
   const say = (value: number) => (value < 0 ? `${words.sayMinus} ${-value}` : String(value));
-  const written = m === 0 ? '' : m === 1 ? 'x' : m === -1 ? '-x' : `${m}x`;
-  const spoken = m === 0 ? '' : m === 1 ? 'x' : m === -1 ? `${words.sayMinus} x` : `${say(m)} x`;
+  const unit = Math.abs(m) === 1;
+  const written = m === 0 ? '' : unit ? `${m < 0 ? '-' : ''}x` : `${m}x`;
+  const spoken = m === 0 ? '' : unit ? `${m < 0 ? `${words.sayMinus} ` : ''}x` : `${say(m)} x`;
   const lead = `y ${words.sayEquals}`;
   if (!written) return { text: `y = ${b}`, spoken: `${lead} ${say(b)}` };
   if (b === 0) return { text: `y = ${written}`, spoken: `${lead} ${spoken}` };

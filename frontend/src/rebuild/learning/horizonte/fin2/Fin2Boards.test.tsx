@@ -301,6 +301,13 @@ describe('schedule board (F2.15)', () => {
     expect(rows[1]).toBe('Design the menunothing yet2Period 2');
   });
 
+  it('writes how long a task takes by the locale plural rule', async () => {
+    show('plan-gantt-opening', 'pt-BR');
+    await screen.findByRole('group', { name: 'Período 1' });
+    expect(screen.getAllByText(/Leva 1 período(?!s)/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Leva 2 períodos/).length).toBeGreaterThan(0);
+  });
+
   it('speaks the schedule board in Portuguese', async () => {
     show('plan-kanban-opening', 'pt-BR');
     expect(await screen.findByRole('group', { name: 'Em andamento' })).toBeTruthy();

@@ -1,4 +1,5 @@
 import type { Locale } from '../../../design/copyBudget';
+import { pluralUnit } from '../../../design/plural';
 
 /*
  * Display and speech helpers shared by the three fin1 boards. Every figure the boards print comes from the pure model in
@@ -23,6 +24,9 @@ export const tenths = (count: number, locale: Locale): string => decimals(locale
 
 /** Replaces each `{name}` in a copy string. */
 export const fill = (text: string, values: Readonly<Record<string, string | number>>): string => text.replace(/\{(\w+)\}/g, (_, name: string) => String(values[name] ?? ''));
+
+/** "1 year" / "0 years"; pt-BR counts 0 as singular ("0 ano"). */
+export const yearsText = (words: { yearOne: string; yearMany: string }, n: number, locale: Locale): string => fill(pluralUnit(locale, n, { one: words.yearOne, other: words.yearMany }), { n });
 
 const WORDS = {
   'en-US': { dollar: ['dollar', 'dollars'], cent: ['cent', 'cents'], and: 'and', minus: 'minus', percent: 'percent' },

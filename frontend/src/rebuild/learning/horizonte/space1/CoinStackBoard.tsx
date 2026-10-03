@@ -86,7 +86,7 @@ function CoinStack({ document, segment, payload, onBack, sequence, onGrade }: Om
       <svg className="lf-coin-scene" viewBox={`0 0 ${SCENE.width} ${SCENE.height}`} role="img" aria-label={spoken} focusable="false" data-copy-role="data">
         <line className="lf-coin-base" x1="8" y1={SCENE.base} x2={SCENE.width - 8} y2={SCENE.base} />
         {count === 0 ? null : separate
-          ? Array.from({ length: count }, (_, at) => <rect key={at} className="lf-coin-piece" data-odd={at % 2 === 1 ? 'true' : 'false'}
+          ? Array.from({ length: count }, (_, at) => <rect key={at} className="lf-coin-piece" data-odd={String(at % 2 === 1)}
             x={SCENE.left} y={SCENE.base - (at + 1) * pieceH} width={SCENE.stack} height={pieceH} />)
           : <rect className="lf-coin-piece" data-odd="false" x={SCENE.left} y={SCENE.base - Math.max(mm * scale, 1)} width={SCENE.stack} height={Math.max(mm * scale, 1)} />}
         {goal.kind === 'height' ? <g className="lf-coin-goal">

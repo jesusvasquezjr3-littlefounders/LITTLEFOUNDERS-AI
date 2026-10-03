@@ -12,6 +12,8 @@ import './AlgebraBoards.css';
 
 type AreaSegment = Extract<HorizonteSegment, { type: 'math.area-model.v2' }>;
 
+const DEGREE_CELL = ['lf-area-cell--d0', 'lf-area-cell--d1', 'lf-area-cell--d2'] as const;
+
 const HINT = { cells: ['metCells', 'hintCells'], edges: ['metEdges', 'hintEdges'], square: ['metSquare', 'hintSquare'] } as const;
 
 function Backdrop() {
@@ -57,12 +59,12 @@ function Area({ document, segment, area, onBack, sequence, onGrade }: Omit<Horiz
 
   const spot = (slot: string): ReactNode => {
     const piece = occupant(slot);
-    return <div key={slot} className="lf-area-cell lf-area-cell--target" role="group" aria-label={label(slot)} {...drag.target(slot)}>
+    return <div key={slot} className="lf-area-cell" role="group" aria-label={label(slot)} {...drag.target(slot)}>
       <Backdrop />
       {piece ? <Handle chip={drag.chip(piece.id)} disabled={locked}>{termText(piece.cls)}</Handle> : null}
     </div>;
   };
-  const fixed = (text: string, degree: number, key: string): ReactNode => <div key={key} className={`lf-area-cell lf-area-cell--d${degree}`} data-copy-role="data"><Backdrop />{text}</div>;
+  const fixed = (text: string, degree: number, key: string): ReactNode => <div key={key} className={`lf-area-cell ${DEGREE_CELL[degree] ?? ''}`} data-copy-role="data"><Backdrop />{text}</div>;
   const head = (text: string, key: string): ReactNode => <div key={key} className="lf-area-head" data-copy-role="data">{text}</div>;
 
   const { rows, cols } = areaGrid(area);

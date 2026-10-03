@@ -65,7 +65,7 @@ function Abacus({ document, segment, onBack, sequence, onGrade }: Omit<Horizonte
       named={{ met: t.metAbacus, hint: t.hintAbacus }} onCheck={() => grading.check({ digits })} />}>
     <section className="lf-learning-board lf-num-board" aria-label={t.abacus}>
       <div className="lf-num-scroll">
-        <svg className="lf-aba lf-hz-hit-sized" style={hitSpan(width, ONE_PITCH)} viewBox={`0 0 ${width} ${HEIGHT}`} role="group" aria-label={t.abacus} focusable="false">
+        <svg className="lf-hz-hit-sized" data-hz="abacus" style={hitSpan(width, ONE_PITCH)} viewBox={`0 0 ${width} ${HEIGHT}`} role="group" aria-label={t.abacus} focusable="false">
           <rect className="lf-aba-frame" x={2} y={2} width={width - 4} height={HEIGHT - 36} rx={12} />
           <line className="lf-aba-beam" x1={PAD / 2} x2={width - PAD / 2} y1={BEAM} y2={BEAM} />
           {digits.map((digit, rod) => {

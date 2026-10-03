@@ -1,6 +1,6 @@
 /* F1.5 double number line and ratio tape: step columns that scale together, and a tape of equal boxes. Tokens only. */
 .lf-line-scroll { max-inline-size: 100%; overflow-x: auto; }
-.lf-line { display: grid; grid-template-columns: auto repeat(var(--steps), minmax(var(--target-base), 4rem)); align-items: stretch; gap: var(--spacing-1); }
+.lf-line { --steps: 1; display: grid; grid-template-columns: auto repeat(var(--steps), minmax(var(--target-base), 4rem)); align-items: stretch; gap: var(--spacing-1); }
 .lf-line-names { display: grid; align-content: space-between; padding-block: var(--spacing-1); font-weight: 800; }
 .lf-line-col { display: grid; border-radius: var(--rounded-sm); outline: 2px solid transparent; }
 .lf-line-col[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }

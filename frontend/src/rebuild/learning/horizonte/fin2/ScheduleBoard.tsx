@@ -1,3 +1,4 @@
+import { pluralUnit } from '../../../design/plural';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText, fillSlot } from '../copyText';
@@ -116,7 +117,7 @@ function Plan({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBo
   const taskName = (id: string) => labels[id] ?? id;
   const name = (slot: string) => (kanban ? word(t, `slot:${slot}`) : gantt ? fillSlot(t.period, slot.slice(PERIOD_PREFIX.length)) : fillSlot(t.step, slot.slice(STEP_PREFIX.length)));
   const afterOf = (task: ScheduleTask) => (task.after.length > 0 ? fillSlot(t.after, task.after.map(taskName).join(', ')) : null);
-  const takes = (task: ScheduleTask) => (task.duration === 1 ? t.takes1 : fillSlot(t.takesN, task.duration!));
+  const takes = (task: ScheduleTask) => fillSlot(pluralUnit(document.locale, task.duration!, { one: t.takes1, other: t.takesN }), task.duration!);
   const detail = (task: ScheduleTask): string | null => {
     const parts = [gantt ? takes(task) : null, afterOf(task), task.due !== undefined ? fillSlot(t.dueStep, task.due) : null].filter((part): part is string => part !== null);
     return parts.length > 0 ? parts.join('. ') : null;

@@ -69,7 +69,7 @@ function Galton({ document, segment, onBack, sequence, onGrade, seed }: Omit<Hor
       return <g key={place}>
         <rect className={place === bin ? 'lf-sim-bar lf-sim-bar--target' : 'lf-sim-bar'} x={binX(place) - dx / 2 + 3} y={base - height} width={dx - 6} height={height} />
         {balls > 0 ? <text className="lf-sim-count" x={binX(place)} y={base - height - 6} textAnchor="middle">{fmt(locale, balls, 0)}</text> : null}
-        <text className={place === bin ? 'lf-sim-face lf-sim-face--event' : 'lf-sim-face'} x={binX(place)} y={base + 28} textAnchor="middle">{place}</text>
+        <text className={place === bin ? 'lf-sim-face--event' : undefined} x={binX(place)} y={base + 28} textAnchor="middle">{place}</text>
         {place === bin ? <line className="lf-sim-event-mark" x1={binX(place) - dx / 2 + 3} x2={binX(place) + dx / 2 - 3} y1={base + 42} y2={base + 42} /> : null}
       </g>;
     })}

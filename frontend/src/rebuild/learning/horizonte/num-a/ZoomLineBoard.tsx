@@ -58,12 +58,12 @@ function ZoomLine({ document, segment, onBack, sequence, onGrade }: Omit<Horizon
           {ticks.map((tick) => {
             const long = tick % parent === 0;
             const half = tick % (step * 5) === 0;
-            return <g key={tick} className={`lf-line-point${long ? ' lf-line-point--long' : ''}`}>
+            return <g key={tick} className={long ? 'lf-line-point--long' : undefined}>
               <line className="lf-line-tick" x1={x(tick)} x2={x(tick)} y1={AXIS - (long ? 22 : half ? 16 : 10)} y2={AXIS + (long ? 22 : half ? 16 : 10)} />
               {(tick / step) % labelEvery === 0 || long ? <text className="lf-line-number" x={x(tick)} y={AXIS + 48} textAnchor="middle" data-copy-role="data">{written(tick)}</text> : null}
             </g>;
           })}
-          <g className="lf-zoom-marker">
+          <g>
             <line className="lf-zoom-pin" x1={x(state.units)} x2={x(state.units)} y1={AXIS - 40} y2={AXIS} />
             <circle className="lf-zoom-dot" cx={x(state.units)} cy={AXIS - 46} r={10} />
           </g>

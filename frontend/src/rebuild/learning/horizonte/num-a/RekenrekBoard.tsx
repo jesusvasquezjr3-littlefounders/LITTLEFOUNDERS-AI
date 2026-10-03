@@ -62,7 +62,7 @@ function Rekenrek({ document, segment, onBack, sequence, onGrade }: Omit<Horizon
       named={{ met: t.metRekenrek, hint: t.hintRekenrek }} onCheck={() => grading.check({ beads: counts })} />}>
     <section className="lf-learning-board lf-num-board" aria-label={t.rekenrek}>
       <div className="lf-num-scroll">
-        <svg className="lf-rek lf-hz-hit-sized" style={hitSpan(WIDTH, SLOT)} viewBox={`0 0 ${WIDTH} 136`} role="group" aria-label={t.rekenrek} focusable="false">
+        <svg className="lf-hz-hit-sized" data-hz="rekenrek" style={hitSpan(WIDTH, SLOT)} viewBox={`0 0 ${WIDTH} 136`} role="group" aria-label={t.rekenrek} focusable="false">
           {counts.map((count, row) => <g key={row} className={`lf-rek-row lf-rek-row--${row === 0 ? 'sky' : 'mint'}`} {...drag.target(`row-${row}`)}>
             <rect className="lf-rek-lane" x={0} y={ROW_Y[row]! - 30} width={WIDTH} height={60} rx={10} />
             <line className="lf-rek-wire" x1={PAD} x2={WIDTH - PAD} y1={ROW_Y[row]} y2={ROW_Y[row]} />

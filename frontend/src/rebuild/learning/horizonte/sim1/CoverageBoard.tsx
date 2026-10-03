@@ -64,7 +64,7 @@ function Coverage({ document, segment, onBack, sequence, onGrade, seed }: Omit<H
         {rows.map((row, sample) => {
           const y = TOP + sample * ROW + ROW / 2;
           return row.high - row.low < 0.002
-            ? <circle key={sample} className={row.covered ? 'lf-sim-dot lf-sim-dot--cover' : 'lf-sim-dot lf-sim-dot--miss'} cx={x(row.low)} cy={y} r={2} />
+            ? <circle key={sample} className={row.covered ? 'lf-sim-dot--cover' : 'lf-sim-dot--miss'} cx={x(row.low)} cy={y} r={2} />
             : <line key={sample} className={row.covered ? 'lf-sim-interval lf-sim-interval--cover' : 'lf-sim-interval lf-sim-interval--miss'} x1={x(row.low)} x2={x(row.high)} y1={y} y2={y} />;
         })}
         <line className="lf-sim-truth" x1={x(share)} x2={x(share)} y1={TOP - 8} y2={base} />

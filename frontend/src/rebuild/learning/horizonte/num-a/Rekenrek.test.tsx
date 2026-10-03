@@ -33,7 +33,7 @@ describe('num-a board: rekenrek (A05)', () => {
     for (const fixture of ['rekenrek-seven', 'rekenrek-ten']) {
       show(fixture);
       await screen.findByRole('group', { name: 'Rekenrek' });
-      expect(svgHitProblems(sizedSvg('svg.lf-rek'))).toEqual([]);
+      expect(svgHitProblems(sizedSvg('svg[data-hz="rekenrek"]'))).toEqual([]);
       cleanup();
     }
   });
@@ -151,7 +151,7 @@ describe('num-a board: abacus (A06)', () => {
     for (const fixture of ['abacus-forty-seven', 'abacus-add-twenty']) {
       show(fixture);
       await screen.findByRole('group', { name: 'Abacus' });
-      expect(svgHitProblems(sizedSvg('svg.lf-aba'))).toEqual([]);
+      expect(svgHitProblems(sizedSvg('svg[data-hz="abacus"]'))).toEqual([]);
       cleanup();
     }
   });

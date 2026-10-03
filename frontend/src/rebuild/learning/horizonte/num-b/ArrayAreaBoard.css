@@ -4,7 +4,7 @@
 .lf-arr-row[aria-pressed='true'] { border-color: var(--sky-strong); background: var(--sky-soft); }
 .lf-arr-row:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
 .lf-arr-row:disabled { cursor: default; }
-.lf-arr-dots { inline-size: calc(var(--cols) * 1.5rem); max-inline-size: 100%; block-size: 1.5rem; }
+.lf-arr-dots { --cols: 1; inline-size: calc(var(--cols) * 1.5rem); max-inline-size: 100%; block-size: 1.5rem; }
 .lf-arr-dot { fill: none; stroke: currentColor; stroke-width: 2.5; }
 .lf-arr-dot--on { fill: currentColor; }
 .lf-area-svg { inline-size: min(100%, 28rem); block-size: auto; overflow: visible; }

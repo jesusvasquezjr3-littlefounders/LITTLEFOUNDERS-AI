@@ -29,7 +29,7 @@ export function PolySheet({ scene }: { scene: PolyScene }) {
 export function PolyCut({ scene }: { scene: PolyScene }) {
   const cut = scene.cut;
   if (!cut) return null;
-  return <g className="lf-poly-cut">
+  return <g>
     <polygon className="lf-poly-cut-fill" points={points(cut.points)} />
     {cut.points.map((from, index) => {
       const to = cut.points[(index + 1) % cut.points.length]!;

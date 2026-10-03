@@ -59,7 +59,7 @@ function RulerMeasure({ document, segment, onBack, sequence, onGrade }: Omit<Hor
           <line className="lf-ruler-guide" x1={near} x2={near} y1={OBJECT_Y + OBJECT_H} y2={EDGE_Y} />
           <line className="lf-ruler-guide" x1={far} x2={far} y1={OBJECT_Y + OBJECT_H} y2={EDGE_Y} />
           <rect className="lf-ruler-body" x={PAD / 2} y={EDGE_Y} width={WIDTH - PAD} height={58} rx={6} />
-          {Array.from({ length: max + 1 }, (_, mark) => <g key={mark} className="lf-ruler-mark">
+          {Array.from({ length: max + 1 }, (_, mark) => <g key={mark}>
             <line className="lf-ruler-tick" x1={x(mark)} x2={x(mark)} y1={EDGE_Y} y2={EDGE_Y + 22} />
             <text className="lf-ruler-number" x={x(mark)} y={EDGE_Y + 46} textAnchor="middle" data-copy-role="data">{mark}</text>
           </g>)}

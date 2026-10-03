@@ -67,7 +67,7 @@ function EmptyLine({ document, segment, onBack, sequence, onGrade }: Omit<Horizo
               <text className="lf-line-sign" x={mid} y={AXIS - 40} textAnchor="middle" data-copy-role="data">{signed(jump)}</text>
             </g>;
           })}
-          {points.map((point, index) => <g key={index} className="lf-line-point">
+          {points.map((point, index) => <g key={index}>
             <line className="lf-line-tick" x1={x(index)} x2={x(index)} y1={AXIS - 10} y2={AXIS + 10} />
             <text className="lf-line-number" x={x(index)} y={AXIS + 34} textAnchor="middle" data-copy-role="data">{point}</text>
           </g>)}

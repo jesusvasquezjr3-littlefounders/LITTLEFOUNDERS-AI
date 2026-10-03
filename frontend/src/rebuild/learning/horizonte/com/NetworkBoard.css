@@ -1,18 +1,18 @@
 /* F2.16 networks and counting: the map, the choice tree and Pascal's triangle. A neutral board: a surface, quiet lines, one ink for what the learner chose (V2, V3). Tokens only. */
-.lf-net { display: block; inline-size: 100%; max-inline-size: 36rem; block-size: auto; padding: var(--spacing-2); background: var(--surface); border-radius: var(--rounded-md); outline: 2px solid var(--outline); }
+svg.lf-net { display: block; inline-size: 100%; max-inline-size: 36rem; block-size: auto; padding: var(--spacing-2); background: var(--surface); border-radius: var(--rounded-md); outline: 2px solid var(--outline); }
 .lf-net-edge { stroke: var(--edge); stroke-width: 2.5; stroke-linecap: round; }
 .lf-net-edge--used { stroke: var(--primary-strong); stroke-width: 4; }
 .lf-net-node { fill: var(--surface); stroke: var(--edge); stroke-width: 2.5; }
 .lf-net-node--on { fill: var(--primary-strong); stroke: var(--primary-strong); }
-.lf-net-name, .lf-net-tag, .lf-net-badge, .lf-net-order { font: var(--type-caption); fill: var(--content); }
-.lf-net-name { font-size: 6px; }
-.lf-net-name--on { fill: var(--primary-strong); font-weight: 800; }
-.lf-net-tag { font-size: 5px; fill: var(--content-muted); }
-.lf-net-name, .lf-net-tag { paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
-.lf-net-badge { font-size: 6px; font-weight: 800; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
-.lf-net-order { font-size: 6px; font-weight: 800; fill: var(--on-primary); }
-.lf-net-tree { max-inline-size: 40rem; }
-.lf-net-tree .lf-net-name { font-size: 11px; }
+/* SVG text in viewBox units, scoped to svg so the HTML net squares in solids.css never inherit it. */
+svg .lf-net-name { font: var(--type-caption); font-size: 6px; fill: var(--content); }
+svg .lf-net-tag { font: var(--type-caption); font-size: 5px; fill: var(--content-muted); }
+svg .lf-net-badge { font: var(--type-caption); font-size: 6px; font-weight: 800; fill: var(--content); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+svg .lf-net-order { font: var(--type-caption); font-size: 6px; font-weight: 800; fill: var(--on-primary); }
+svg .lf-net-name, svg .lf-net-tag { paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+svg.lf-net-tree { max-inline-size: 40rem; }
+svg.lf-net-tree .lf-net-name { font-size: 11px; fill: var(--content); }
+svg .lf-net-name.lf-net-name--on { fill: var(--primary-strong); font-weight: 800; }
 
 .lf-net-steps { display: grid; gap: var(--spacing-2); justify-items: start; max-inline-size: 42rem; }
 .lf-net-steps-nav { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }

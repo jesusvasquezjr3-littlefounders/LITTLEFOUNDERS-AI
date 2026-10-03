@@ -86,7 +86,7 @@ function Bootstrap({ document, segment, onBack, sequence, onGrade, seed }: Omit<
             <text x={xData(tick)} y={dataBase + 30} textAnchor="middle">{fmt(locale, tick, 0)}</text>
           </g>)}
         </g>
-        {stacked.map((dot, place) => <circle key={place} className="lf-sim-dot lf-sim-dot--data" cx={xData(dot.value)} cy={dataBase - DOT - 1 - dot.layer * (2 * DOT + 2)} r={DOT} />)}
+        {stacked.map((dot, place) => <circle key={place} className="lf-sim-dot--data" cx={xData(dot.value)} cy={dataBase - DOT - 1 - dot.layer * (2 * DOT + 2)} r={DOT} />)}
       </Chart>
       <Chart label={t.sumsName} height={histBase + 40}>
         {edges ? <rect className="lf-sim-band" x={xSum(low)} width={Math.max(1, xSum(high) - xSum(low))} y={HIST_TOP} height={HIST_H} /> : null}

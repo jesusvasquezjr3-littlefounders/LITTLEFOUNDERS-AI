@@ -9,7 +9,7 @@ import { AR_PILOT_MIN_AGE, arPilotGate, arVolumeMl, isArPilotEnabled } from './a
 import { ArPilotContext, arSessionInit, defaultArPilot, type ArPilotEnvironment, type ArStartInput, type ArXrSystem } from './ar/arPilot';
 import { SPACE2_COPY } from './copy';
 import { distanceKm, feeCents, routeCenter } from './globe.generated';
-import { money } from './spaceText';
+import { money, spaceText, unitsText, yearsText } from './spaceText';
 import { surfaceSlice } from './surface.generated';
 
 vi.mock('../../../../tutor-scene/quality', () => ({
@@ -55,6 +55,19 @@ describe('space2 board contract', () => {
 
   it('keeps every string in three locales', () => {
     for (const [key, entry] of Object.entries(SPACE2_COPY)) for (const locale of ['en-US', 'es-MX', 'pt-BR'] as const) expect(entry[locale].length, `${key} ${locale}`).toBeGreaterThan(0);
+  });
+});
+
+describe('space2 plural units', () => {
+  it('chooses years and units by the locale plural rule: pt-BR counts 0 as singular', () => {
+    expect(yearsText(spaceText('pt-BR'), 0, 'pt-BR')).toBe('0 ano');
+    expect(yearsText(spaceText('en-US'), 0, 'en-US')).toBe('0 years');
+    expect(yearsText(spaceText('es-MX'), 0, 'es-MX')).toBe('0 años');
+    expect(unitsText(spaceText('pt-BR'), 0, 'pt-BR')).toBe('0 unidade');
+    expect(unitsText(spaceText('en-US'), 0, 'en-US')).toBe('0 units');
+    expect(unitsText(spaceText('es-MX'), 0, 'es-MX')).toBe('0 unidades');
+    expect(yearsText(spaceText('pt-BR'), 1, 'pt-BR')).toBe('1 ano');
+    expect(unitsText(spaceText('en-US'), 1, 'en-US')).toBe('1 unit');
   });
 });
 

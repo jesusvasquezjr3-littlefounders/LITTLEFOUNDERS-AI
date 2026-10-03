@@ -31,9 +31,9 @@ const POWERS = [3, 2, 1, 0] as const;
 /** A polynomial c0 + c1 x + c2 x^2 + c3 x^3 without zero terms or a one in front of x. */
 export function polynomial(t: Words, c: readonly number[], name: 'f' | 'g' = 'f'): Notation {
   const terms = POWERS.map((power) => ({ power, value: c[power] ?? 0 })).filter((term) => term.value !== 0);
-  const say = (power: number) => (power === 0 ? '' : power === 1 ? t.sayX : power === 2 ? t.sayXSquared : t.sayXCubed);
-  const plainX = (power: number) => (power === 0 ? '' : power === 1 ? 'x' : power === 2 ? 'x²' : 'x³');
-  const texX = (power: number) => (power === 0 ? '' : power === 1 ? 'x' : `x^{${power}}`);
+  const say = (power: number) => (power === 0 ? '' : power === 2 ? t.sayXSquared : power === 3 ? t.sayXCubed : t.sayX);
+  const plainX = (power: number) => (power === 0 ? '' : power === 2 ? 'x²' : power === 3 ? 'x³' : 'x');
+  const texX = (power: number) => (power === 0 ? '' : power > 1 ? `x^{${power}}` : 'x');
   const part = (value: number, power: number, how: 'plain' | 'tex' | 'spoken') => {
     const size = Math.abs(value);
     const bare = size === 1 && power > 0;

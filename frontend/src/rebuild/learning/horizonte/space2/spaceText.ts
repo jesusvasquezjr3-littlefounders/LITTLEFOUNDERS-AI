@@ -1,4 +1,5 @@
 import type { Locale } from '../../../design/copyBudget';
+import { pluralUnit } from '../../../design/plural';
 import { copyText } from '../copyText';
 import { PITCH_NAMES, type SolidView } from '../solids/projection.generated';
 import type { ArObjectId } from './ar.generated';
@@ -28,8 +29,8 @@ export const count = (value: number, locale: Locale): string => new Intl.NumberF
 /** Basis points as a percent: 450 is 4.5%. */
 export const percent = (bps: number, locale: Locale): string => new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 2 }).format(bps / 10000);
 
-export const yearsText = (t: SpaceText, n: number): string => fill(n === 1 ? t.yearOne : t.yearMany, { n });
-export const unitsText = (t: SpaceText, n: number, locale: Locale): string => fill(n === 1 ? t.unitOne : t.unitMany, { n: count(n, locale) });
+export const yearsText = (t: SpaceText, n: number, locale: Locale): string => fill(pluralUnit(locale, n, { one: t.yearOne, other: t.yearMany }), { n });
+export const unitsText = (t: SpaceText, n: number, locale: Locale): string => fill(pluralUnit(locale, n, { one: t.unitOne, other: t.unitMany }), { n: count(n, locale) });
 
 /** What the input on each axis of a surface is called. */
 export const axisName = (t: SpaceText, spec: SurfaceSpec, axis: 'x' | 'y'): string =>
@@ -44,7 +45,7 @@ export const outputName = (t: SpaceText, spec: SurfaceSpec): string => (spec.kin
 /** One input value on an axis, written the way the learner reads it: 4%, 10 years, $3, 100 units. */
 export function axisValue(t: SpaceText, spec: SurfaceSpec, axis: 'x' | 'y', index: number, locale: Locale): string {
   const value = (axis === 'x' ? xAxis(spec) : yAxis(spec))[index]!;
-  if (spec.kind === 'compound') return axis === 'x' ? percent(value, locale) : yearsText(t, value);
+  if (spec.kind === 'compound') return axis === 'x' ? percent(value, locale) : yearsText(t, value, locale);
   return axis === 'x' ? money(value, locale) : unitsText(t, value, locale);
 }
 

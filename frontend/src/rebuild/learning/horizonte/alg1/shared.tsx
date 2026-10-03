@@ -27,7 +27,7 @@ export function termText(face: string): string {
   const sign = term.k < 0 ? '−' : '';
   const magnitude = Math.abs(term.k);
   if (term.d === 0) return `${sign}${magnitude}`;
-  return `${sign}${magnitude === 1 ? '' : magnitude}${term.d === 1 ? 'x' : 'x²'}`;
+  return `${sign}${magnitude === 1 ? '' : magnitude}${term.d !== 1 ? 'x²' : 'x'}`;
 }
 
 /** The slots a placement fills, as the arrangement answer: a list of piece ids per slot, empty slots left out. */

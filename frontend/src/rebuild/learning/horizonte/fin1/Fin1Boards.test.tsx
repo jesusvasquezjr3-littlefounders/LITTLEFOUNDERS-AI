@@ -4,7 +4,7 @@ import { LessonDocumentView } from '../../LessonDocumentView';
 import { assertBoardContract } from '../harness/boardContract';
 import { horizonteFixtureDocument } from '../previewDocument';
 import { FIN1_COPY } from './copy';
-import { money, percent, spokenMoney, spokenPercent, tenths, thin } from './format';
+import { money, percent, spokenMoney, spokenPercent, tenths, thin, yearsText } from './format';
 
 vi.mock('../../../../tutor-scene/quality', () => ({
   getDeviceProbe: () => ({ cores: 8, memoryGb: 8, coarsePointer: false, devicePixelRatio: 1, webgl: 'webgl2', maxTextureSize: 8192, prefersReducedMotion: false }),
@@ -64,6 +64,16 @@ describe('fin1 boards: format helpers', () => {
     expect(out[0]).toBe(0);
     expect(out.at(-1)).toBe(360);
     expect(thin([1, 2, 3], 60)).toEqual([1, 2, 3]);
+  });
+
+  it('chooses the year word by the locale plural rule: pt-BR counts 0 as singular', () => {
+    const words = (locale: Locale) => ({ yearOne: FIN1_COPY.yearOne[locale], yearMany: FIN1_COPY.yearMany[locale] });
+    expect(yearsText(words('pt-BR'), 0, 'pt-BR')).toBe('0 ano');
+    expect(yearsText(words('en-US'), 0, 'en-US')).toBe('0 years');
+    expect(yearsText(words('es-MX'), 0, 'es-MX')).toBe('0 años');
+    expect(yearsText(words('pt-BR'), 1, 'pt-BR')).toBe('1 ano');
+    expect(yearsText(words('pt-BR'), 2, 'pt-BR')).toBe('2 anos');
+    expect(yearsText(words('en-US'), 1, 'en-US')).toBe('1 year');
   });
 });
 

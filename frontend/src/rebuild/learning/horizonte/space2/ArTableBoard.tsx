@@ -103,8 +103,8 @@ function ArTableBoardView({ document, segment, payload, onBack, sequence }: Omit
       <h2 data-copy-role="heading">{t.arName}</h2>
       {supported === false ? <p data-copy-role="body">{t.arUnsupported}</p> : null}
       {supported === true && phase === 'idle' ? <Button size="sm" onClick={() => setPhase('asking')}>{t.arStart}</Button> : null}
-      {supported === true && phase === 'asking' ? <div className="lf-s2-panel" role="group" aria-labelledby="lf-s2-consent">
-        <h2 id="lf-s2-consent" data-copy-role="heading">{t.arConsentHeading}</h2>
+      {supported === true && phase === 'asking' ? <div className="lf-s2-panel" role="group" aria-labelledby="hz-s2-consent">
+        <h2 id="hz-s2-consent" data-copy-role="heading">{t.arConsentHeading}</h2>
         <p data-copy-role="body">{t.arConsentBody}</p>
         <div className="lf-s2-actions">
           <Button size="sm" variant="accent" onClick={allow}>{t.arAllow}</Button>

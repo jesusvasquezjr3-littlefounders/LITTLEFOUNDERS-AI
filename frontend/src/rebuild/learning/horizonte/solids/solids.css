@@ -33,8 +33,8 @@
 .lf-solid-status { font-weight: 800; }
 .lf-solid-answer { display: grid; gap: var(--spacing-2); justify-items: start; }
 
-.lf-net { display: grid; gap: var(--spacing-4); justify-items: start; }
-.lf-net-grid { display: grid; grid-template-columns: repeat(var(--cols), var(--hz-hit)); grid-auto-rows: var(--hz-hit); border-radius: var(--rounded-sm); background: var(--sunken); }
+section.lf-net { display: grid; gap: var(--spacing-4); justify-items: start; }
+.lf-net-grid { --cols: 1; display: grid; grid-template-columns: repeat(var(--cols), var(--hz-hit)); grid-auto-rows: var(--hz-hit); border-radius: var(--rounded-sm); background: var(--sunken); }
 .lf-net-cell { display: grid; outline: 2px solid transparent; outline-offset: -2px; }
 .lf-net-cell[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
 .lf-net-cell[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }
@@ -46,8 +46,8 @@
 .lf-net-square[data-pair='tb'] { background: var(--berry-soft); }
 .lf-net-square:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: -3px; }
 .lf-net-square[aria-disabled='true'] { cursor: default; }
-.lf-net-name { font-size: 0.85rem; line-height: 1.1; text-align: center; overflow-wrap: anywhere; }
-.lf-net-tag { display: block; font-size: 0.7rem; font-weight: 600; color: var(--content-muted); }
+.lf-net-square .lf-net-name { font-size: 0.875rem; font-weight: 700; line-height: 1.15; text-align: center; overflow-wrap: anywhere; }
+.lf-net-square .lf-net-tag { display: block; font-size: 0.875rem; font-weight: 600; line-height: 1.1; color: var(--content-muted); }
 .lf-net-tray { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
 .lf-net-previews { display: grid; gap: var(--spacing-2); }
 .lf-net-fold { display: flex; flex-wrap: wrap; gap: var(--spacing-4); align-items: start; }
@@ -102,7 +102,7 @@
 .lf-stack-scene { display: flex; flex-wrap: wrap; gap: var(--spacing-4); align-items: start; }
 .lf-stack-iso { inline-size: 100%; max-inline-size: 18rem; }
 .lf-stack-iso svg { display: block; inline-size: 100%; block-size: auto; border-radius: var(--rounded-md); background: var(--sunken); }
-.lf-stack-grid { display: grid; grid-template-columns: repeat(var(--size), var(--hz-hit)); grid-auto-rows: var(--hz-hit); border-radius: var(--rounded-sm); background: var(--sunken); }
+.lf-stack-grid { --size: 1; display: grid; grid-template-columns: repeat(var(--size), var(--hz-hit)); grid-auto-rows: var(--hz-hit); border-radius: var(--rounded-sm); background: var(--sunken); }
 .lf-stack-cell { display: grid; outline: 2px solid transparent; outline-offset: -2px; }
 .lf-stack-cell[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
 .lf-stack-cell[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }

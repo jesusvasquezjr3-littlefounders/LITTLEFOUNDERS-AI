@@ -51,8 +51,8 @@
 .lf-s2-walk { display: grid; gap: var(--spacing-2); inline-size: 100%; max-inline-size: 24rem; box-sizing: border-box; padding: var(--spacing-3); border: 1px solid var(--outline); border-radius: var(--rounded-lg); }
 .lf-s2-walk:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
 .lf-s2-walk-pad { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
-/* The step buttons and the turn buttons are the keyboard and touch way to move: give them the 64 px handle. */
-.lf-s2-walk-pad .lf-button, .lf-s2-pad .lf-button { min-inline-size: var(--hz-hit); min-block-size: var(--hz-hit); }
+/* Touch way to move: 64 px tall; the width is the word label plus the button's own inline padding. */
+.lf-s2-walk-pad .lf-button, .lf-s2-pad .lf-button { min-block-size: var(--hz-hit); }
 
 /* Globe */
 .lf-s2-sea { fill: color-mix(in srgb, var(--sky) 16%, var(--surface)); stroke: var(--outline); stroke-width: 1; }

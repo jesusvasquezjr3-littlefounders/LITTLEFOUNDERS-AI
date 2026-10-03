@@ -1,5 +1,5 @@
 import { useState, type KeyboardEvent, type ReactNode } from 'react';
-import { Button } from '../../../design/controls';
+import { Button, ChoiceChip } from '../../../design/controls';
 import { fractionName } from '../../fractionName';
 import { useSegmentGrade } from '../../segmentKit';
 import type { HorizonteBoardProps } from '../boardTypes';
@@ -86,8 +86,7 @@ function ShowBoard({ document, segment, onBack, sequence, onGrade, payload }: Pr
     <section className="lf-learning-control-strip" aria-labelledby={`${segment.id}-cut`}>
       <h2 id={`${segment.id}-cut`} data-copy-role="heading">{t.circleCutHeading}</h2>
       <div className="lf-numb-row">
-        {WALL_DENOMINATORS.map((parts) => <Button key={parts} size="sm" variant={cut === parts ? 'sky' : 'secondary'} className="lf-circle-choice" aria-pressed={cut === parts}
-          disabled={locked} onClick={() => cutInto(parts)}>{fill(t.cutInto, { n: parts })}</Button>)}
+        {WALL_DENOMINATORS.map((parts) => <ChoiceChip key={parts} selected={cut === parts} disabled={locked} onToggle={() => cutInto(parts)}>{fill(t.cutInto, { n: parts })}</ChoiceChip>)}
       </div>
     </section>
     <Stepper t={t} heading={t.circleShadeHeading} id={segment.id} locked={locked}
@@ -132,8 +131,8 @@ function CompareBoard({ document, segment, onBack, sequence, onGrade, payload }:
     <section className="lf-learning-control-strip" aria-labelledby={`${segment.id}-more`}>
       <h2 id={`${segment.id}-more`} data-copy-role="heading">{t.circleMoreHeading}</h2>
       <div className="lf-numb-row">
-        <Button size="sm" variant={picked === 'first' ? 'sky' : 'secondary'} className="lf-circle-choice" aria-pressed={picked === 'first'} disabled={locked} onClick={() => pick('first')}>{t.moreFirst}</Button>
-        <Button size="sm" variant={picked === 'second' ? 'mint' : 'secondary'} className="lf-circle-choice" aria-pressed={picked === 'second'} disabled={locked} onClick={() => pick('second')}>{t.moreSecond}</Button>
+        <ChoiceChip selected={picked === 'first'} disabled={locked} onToggle={() => pick('first')}>{t.moreFirst}</ChoiceChip>
+        <ChoiceChip selected={picked === 'second'} disabled={locked} onToggle={() => pick('second')}>{t.moreSecond}</ChoiceChip>
       </div>
     </section>
   </NumBFrame>;

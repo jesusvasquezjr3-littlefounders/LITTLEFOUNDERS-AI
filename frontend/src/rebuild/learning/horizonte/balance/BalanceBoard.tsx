@@ -74,7 +74,7 @@ function ScaleDrawing({ scale }: { scale: Scale }) {
 /** One pan as words: "3 x plus 2", "x", "8". Spoken text for math lives in copy because the payload is the same in every locale. */
 function spokenPan(pan: Pan, t: Copy): string {
   const parts: string[] = [];
-  if (pan.x > 0) parts.push(pan.x === 1 ? t.wordX : `${pan.x} ${t.wordX}`);
+  if (pan.x > 0) parts.push(pan.x !== 1 ? `${pan.x} ${t.wordX}` : t.wordX);
   if (pan.u > 0 || pan.x === 0) parts.push(String(pan.u));
   return parts.join(` ${t.wordPlus} `);
 }

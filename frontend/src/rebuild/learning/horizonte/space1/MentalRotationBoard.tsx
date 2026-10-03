@@ -79,7 +79,7 @@ function MentalRotation({ document, segment, payload, onBack, sequence, onGrade 
       named={{ met: t.metRotation, hint: t.hintRotation }} onCheck={() => grading.check({ pick, angle })} />}>
     <section className="lf-learning-board lf-rot" aria-label={t.rotHeading}>
       <div className="lf-rot-stage">
-        <VoxelFigure cells={turned} axis={axis} className="lf-vox lf-rot-figure" label={fill(t.rotFigureLabel, { angle, n: turned.length })} />
+        <VoxelFigure cells={turned} axis={axis} className="lf-vox" label={fill(t.rotFigureLabel, { angle, n: turned.length })} />
       </div>
       <p data-copy-role="body">{axisNote(t, axis)}</p>
       <p className="lf-rot-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{fill(t.rotStatus, { angle, picked })}</p>

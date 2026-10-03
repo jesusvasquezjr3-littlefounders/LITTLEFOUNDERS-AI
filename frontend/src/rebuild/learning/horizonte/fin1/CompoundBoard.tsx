@@ -5,7 +5,7 @@ import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText } from '../copyText';
 import { FIN1_COPY } from './copy';
-import { CHART, fill, money, percent, plot, polyline, spokenMoney, spokenPercent, tenths, thin } from './format';
+import { CHART, fill, money, percent, plot, polyline, spokenMoney, spokenPercent, tenths, thin, yearsText as yearsOf } from './format';
 import {
   COMPOUND_RATE, COMPOUND_YEARS, compoundCents, doublingYearsTenths, growthRows, meetsChallenge, predictionHint, simpleCents, tableYears,
   type CompoundExplanation,
@@ -37,7 +37,7 @@ function Compound({ document, segment, onBack, sequence, onGrade }: Omit<Horizon
 
   const rows = useMemo(() => growthRows(p.principalCents, rate, years) ?? [], [p.principalCents, rate, years]);
   const end = rows.at(-1) ?? { year: 0, compoundCents: p.principalCents, simpleCents: p.principalCents };
-  const yearsText = (n: number) => fill(n === 1 ? t.yearOne : t.yearMany, { n });
+  const yearsText = (n: number) => yearsOf(t, n, locale);
   const met = meetsChallenge(p.principalCents, p.challenge, rate, years);
 
   const truth = compoundCents(p.principalCents, p.scenario.rate, p.scenario.years) ?? 0;

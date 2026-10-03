@@ -74,7 +74,7 @@ function Chance({ document, segment, onBack, sequence, onGrade, seed }: Omit<Hor
           return <g key={face}>
             <rect className={marked ? 'lf-sim-bar lf-sim-bar--event' : 'lf-sim-bar'} x={left + gap / 2} y={base - height} width={bw - gap} height={height} />
             {times > 0 ? <text className="lf-sim-count" x={left + bw / 2} y={base - height - 6} textAnchor="middle">{fmt(locale, times, 0)}</text> : null}
-            <text className={marked ? 'lf-sim-face lf-sim-face--event' : 'lf-sim-face'} x={left + bw / 2} y={base + 28} textAnchor="middle">{faceName(face)}</text>
+            <text className={marked ? 'lf-sim-face--event' : undefined} x={left + bw / 2} y={base + 28} textAnchor="middle">{faceName(face)}</text>
             {marked ? <line className="lf-sim-event-mark" x1={left + gap / 2} x2={left + bw - gap / 2} y1={base + 42} y2={base + 42} /> : null}
           </g>;
         })}

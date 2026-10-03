@@ -25,7 +25,7 @@ function Chart({ t, locale, totals, holdings }: { t: Words; locale: Locale; tota
       <text x="0" y={y + 12}>{word(t, `slot:${line}`)}</text>
       <text x={WIDTH} y={y + 12} textAnchor="end">{shown}</text>
       <rect className="lf-stmt-track" x="0" y={y + 17} width={WIDTH} height="8" rx="4" />
-      <rect className={`lf-stmt-bar lf-stmt-bar--${line}`} x="0" y={y + 17} width={wide(value, max)} height="8" rx="4" />
+      <rect className={`lf-stmt-bar--${line}`} x="0" y={y + 17} width={wide(value, max)} height="8" rx="4" />
     </g>;
   };
   return <svg className="lf-stmt-chart" viewBox={`0 0 ${WIDTH} ${ROW * 5 + 12}`} role="img" aria-label={t.chartStatement} data-copy-role="data" focusable="false">
@@ -68,7 +68,7 @@ function Statement({ document, segment, onBack, sequence, onGrade }: Omit<Horizo
       ],
     }}>
     <Chart t={t} locale={locale} totals={totals} holdings={holdings} />
-    <div className="lf-slotzones lf-slotzones--statement">
+    <div className="lf-slotzones">
       {frame.slotIds.map((slot) => <Zone key={slot} board={board} id={slot} name={name(slot)} note={slot === STATEMENT_GOAL_SLOT ? null : subtotal(slot as (typeof STATEMENT_LINES)[number])} />)}
     </div>
   </SlotBoardShell>;

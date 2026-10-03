@@ -1,5 +1,5 @@
 /* F1.3 ordering line: equal marks on one axis with the given numbers placed on them. Flipping tokens only, no motion. */
-.lf-order-line { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(var(--hz-hit), 1fr); inline-size: 100%; min-inline-size: calc(var(--marks) * var(--hz-hit)); margin: 0; padding: 0; list-style: none; }
+.lf-order-line { --marks: 1; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(var(--hz-hit), 1fr); inline-size: 100%; min-inline-size: calc(var(--marks) * var(--hz-hit)); margin: 0; padding: 0; list-style: none; }
 .lf-order-mark { display: grid; grid-template-rows: minmax(var(--hz-hit), auto) var(--spacing-6) auto; justify-items: center; min-inline-size: 0; border-radius: var(--rounded-md); }
 .lf-order-mark[data-drop-armed='true'] { background: var(--sunken); }
 .lf-order-mark[data-drop-selected='true'] { background: var(--sunken); outline: 2px solid var(--primary-strong); }
