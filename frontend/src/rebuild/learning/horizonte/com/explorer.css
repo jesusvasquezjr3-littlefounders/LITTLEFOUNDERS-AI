@@ -2,7 +2,8 @@
 .lf-ex { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-3); justify-items: start; min-inline-size: 0; container: lf-ex / inline-size; }
 .lf-ex-ask { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-1) var(--spacing-2); margin: 0; max-inline-size: 60ch; }
 /* A fraction or an integral is taller than its line, and the shared .lf-math scrolls on overflow: room above and below keeps a scrollbar from showing beside the math. */
-.lf-ex-ask .lf-math { font-size: 1.25rem; padding-block: 0.3em; overflow-y: hidden; }
+.lf-ex-ask .lf-math { padding-block: var(--spacing-2); overflow-y: hidden; }
+.lf-ex-ask .lf-math .katex { font-size: 1.5rem; }
 .lf-ex-figure { inline-size: 100%; max-inline-size: 42rem; min-inline-size: 0; }
 .lf-ex-figure--circle { max-inline-size: 26rem; }
 .lf-ex-figures { display: grid; gap: var(--spacing-4); inline-size: 100%; min-inline-size: 0; }

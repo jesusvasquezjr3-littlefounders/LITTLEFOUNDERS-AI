@@ -12,7 +12,7 @@ export const GEOM2_COPY = {
   geoLabel: { role: 'data', 'en-US': 'Geoboard', 'es-MX': 'Geoplano', 'pt-BR': 'Geoplano' },
   geoCursor: { role: 'data', 'en-US': 'Peg cursor', 'es-MX': 'Cursor de clavija', 'pt-BR': 'Cursor do pino' },
   placePeg: { role: 'action', 'en-US': 'Place peg', 'es-MX': 'Poner clavija', 'pt-BR': 'Colocar pino' },
-  geoHint: { role: 'body', 'en-US': 'Arrow keys move the cursor. Enter places a peg.', 'es-MX': 'Las flechas mueven el cursor. Enter pone una clavija.', 'pt-BR': 'As setas movem o cursor. Enter coloca um pino.' },
+  geoHint: { role: 'body', 'en-US': 'Arrows move. Enter places.', 'es-MX': 'Flechas para mover. Enter para poner.', 'pt-BR': 'Setas para mover. Enter para colocar.' },
   geoFacts: {
     role: 'data', 'en-US': 'Geoboard {size} by {size}. Band: {count} pegs. Cursor: {x}, {y}.',
     'es-MX': 'Geoplano de {size} por {size}. Liga: {count} clavijas. Cursor: {x}, {y}.',
@@ -29,7 +29,7 @@ export const GEOM2_COPY = {
   areaLabel: { role: 'data', 'en-US': 'Grid of squares', 'es-MX': 'Cuadrícula de cuadritos', 'pt-BR': 'Grade de quadradinhos' },
   areaCursor: { role: 'data', 'en-US': 'Square cursor', 'es-MX': 'Cursor de cuadrito', 'pt-BR': 'Cursor de quadradinho' },
   shadeSquare: { role: 'action', 'en-US': 'Shade square', 'es-MX': 'Sombrear cuadrito', 'pt-BR': 'Pintar quadradinho' },
-  areaHint: { role: 'body', 'en-US': 'Arrow keys move the cursor. Enter shades a square.', 'es-MX': 'Las flechas mueven el cursor. Enter sombrea un cuadrito.', 'pt-BR': 'As setas movem o cursor. Enter pinta um quadradinho.' },
+  areaHint: { role: 'body', 'en-US': 'Arrows move. Enter shades.', 'es-MX': 'Flechas para mover. Enter para sombrear.', 'pt-BR': 'Setas para mover. Enter para pintar.' },
   areaFacts: {
     role: 'data', 'en-US': 'Grid {columns} by {rows}. Shaded squares: {count}. Cursor: {x}, {y}.',
     'es-MX': 'Cuadrícula de {columns} por {rows}. Cuadritos sombreados: {count}. Cursor: {x}, {y}.',
@@ -65,8 +65,7 @@ export const GEOM2_COPY = {
   tsLabel: { role: 'data', 'en-US': 'Floor', 'es-MX': 'Piso', 'pt-BR': 'Piso' },
   tsCursor: { role: 'data', 'en-US': 'Tile cursor', 'es-MX': 'Cursor de baldosa', 'pt-BR': 'Cursor do ladrilho' },
   placeTile: { role: 'action', 'en-US': 'Place tile', 'es-MX': 'Poner baldosa', 'pt-BR': 'Colocar ladrilho' },
-  removeLast: { role: 'action', 'en-US': 'Remove last', 'es-MX': 'Quitar última', 'pt-BR': 'Remover última' },
-  tsHint: { role: 'body', 'en-US': 'Arrow keys move the cursor. Enter places the tile.', 'es-MX': 'Las flechas mueven el cursor. Enter pone la baldosa.', 'pt-BR': 'As setas movem o cursor. Enter coloca o ladrilho.' },
+  tsHint: { role: 'body', 'en-US': 'Arrows move. Enter places.', 'es-MX': 'Flechas para mover. Enter para poner.', 'pt-BR': 'Setas para mover. Enter para colocar.' },
   tsFacts: {
     role: 'data', 'en-US': 'Floor {columns} by {rows}. Tiles placed: {count}. Squares left: {left}. Cursor: {x}, {y}.',
     'es-MX': 'Piso de {columns} por {rows}. Baldosas puestas: {count}. Cuadritos libres: {left}. Cursor: {x}, {y}.',
@@ -83,6 +82,6 @@ export const GEOM2_COPY = {
   moveTurn: { role: 'option', 'en-US': 'Half turn', 'es-MX': 'Media vuelta', 'pt-BR': 'Meia volta' },
   moveFlip: { role: 'option', 'en-US': 'Flip', 'es-MX': 'Voltear', 'pt-BR': 'Virar' },
   tsMove: { role: 'data', 'en-US': 'Move: {move}.', 'es-MX': 'Movimiento: {move}.', 'pt-BR': 'Movimento: {move}.' },
-  tsHintMoves: { role: 'body', 'en-US': 'Arrows move the cursor. Pick a move, then Enter.', 'es-MX': 'Las flechas mueven el cursor. Elige un movimiento y pulsa Enter.', 'pt-BR': 'As setas movem o cursor. Escolha um movimento e tecle Enter.' },
+  tsHintMoves: { role: 'body', 'en-US': 'Arrows move. Pick a move, then Enter.', 'es-MX': 'Flechas para mover. Elige un movimiento y pulsa Enter.', 'pt-BR': 'Setas para mover. Escolha um movimento e tecle Enter.' },
   hintTiles: { role: 'body', 'en-US': 'Not yet. Fill every gap with no overlaps.', 'es-MX': 'Aún no. Llena cada hueco sin encimar.', 'pt-BR': 'Ainda não. Preencha cada lacuna sem sobrepor.' },
 } as const satisfies HorizonteCopy;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { centroidOf, frameOf, lengthsOf, measureMarks, pathOf, shapeOf } from './netFrame';
+import { centroidOf, frameOf, lengthsOf, measureMarks, nameFits, pathOf, shapeOf } from './netFrame';
 import { buildNet, buildSolid } from './polynet.generated';
 
 describe('net frame', () => {
@@ -39,5 +39,29 @@ describe('net frame', () => {
         expect(at[1]).toBeLessThanOrEqual(Math.max(...ys) + 1e-9);
       }
     });
+  });
+});
+
+describe('a name on a panel', () => {
+  const rect = [[0, 0], [4, 0], [4, 3], [0, 3]] as const;
+  const triangle = [[0, 0], [4, 0], [0, 3]] as const;
+  const word = { width: 40, height: 16 };
+  const digit = { width: 8, height: 13 };
+
+  it('stays when the panel has room around it', () => expect(nameFits(rect, [], word, digit, 20)).toBe(true));
+
+  it('gives way to the panel number when it is wider than the panel', () => {
+    expect(nameFits(rect, [], { width: 90, height: 16 }, digit, 20)).toBe(false);
+    expect(nameFits(rect, [], word, digit, 8)).toBe(false);
+  });
+
+  it('gives way to a length written where it would sit, and stays when the length is clear of it', () => {
+    expect(nameFits(rect, [[2, 1.5]], word, digit, 20)).toBe(false);
+    expect(nameFits(rect, [[2, 0.3]], word, digit, 20)).toBe(true);
+  });
+
+  it('keeps inside a slanted side', () => {
+    expect(nameFits(triangle, [], word, digit, 20)).toBe(false);
+    expect(nameFits(triangle, [], { width: 16, height: 16 }, digit, 20)).toBe(true);
   });
 });

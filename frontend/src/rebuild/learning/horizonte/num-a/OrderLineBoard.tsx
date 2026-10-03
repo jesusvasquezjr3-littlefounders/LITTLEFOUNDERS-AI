@@ -60,7 +60,7 @@ function OrderLine({ document, segment, onBack, sequence, onGrade }: Omit<Horizo
       },
     };
   };
-  const chip = (units: number) => <span className="lf-hz-handle" data-hz-handle="" data-hz-hit="64" data-order-chip={orderPieceId(units)}>
+  const chip = (units: number) => <span key={units} className="lf-hz-handle" data-hz-handle="" data-hz-hit="64" data-order-chip={orderPieceId(units)}>
     <ChoiceChip {...drag.chip(orderPieceId(units))} disabled={locked}>{written(units)}</ChoiceChip>
   </span>;
 
@@ -96,7 +96,7 @@ function OrderLine({ document, segment, onBack, sequence, onGrade }: Omit<Horizo
     <section className="lf-learning-control-strip" aria-label={t.orderTray}>
       <h2 data-copy-role="heading">{t.orderTray}</h2>
       <div className="lf-order-tray" {...landing(TRAY)}>
-        {waiting.map((units) => <span key={units}>{chip(units)}</span>)}
+        {waiting.map(chip)}
       </div>
       <MoveToChoice locale={document.locale} item={drag.carried === null ? null : { label: written(unitsOf(drag.carried)) }} options={options} disabled={locked}
         onChange={(value) => { if (drag.carried) { place(drag.carried, value); drag.clear(); } }} />

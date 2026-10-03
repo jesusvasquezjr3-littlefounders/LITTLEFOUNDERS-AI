@@ -373,7 +373,7 @@ describe('reading charts: layout', () => {
     bars.unmount();
   });
 
-  it('measures how far the shown labels hang past the drawing and gives that room to the canvas', async () => {
+  it('measures how far the shown labels hang past the drawing and gives that room to the canvas, rounded up to the 4 px grid', async () => {
     const rect = (left: number, top: number, width: number, height: number) => ({ left, top, width, height, right: left + width, bottom: top + height, x: left, y: top, toJSON: () => ({}) }) as DOMRect;
     vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
       if (this.classList.contains('lf-chart-canvas')) return rect(0, 0, 320, 100);
@@ -385,7 +385,7 @@ describe('reading charts: layout', () => {
     });
     const { container } = await open('dot-plot');
     const canvas = canvasOf(container);
-    expect(canvas.style.getPropertyValue('--lf-chart-over-bottom')).toBe('11px');
+    expect(canvas.style.getPropertyValue('--lf-chart-over-bottom')).toBe('12px');
     expect(canvas.style.getPropertyValue('--lf-chart-over-top')).toBe('8px');
     expect(canvas.dataset.labelsDropped).toBe('0');
   });

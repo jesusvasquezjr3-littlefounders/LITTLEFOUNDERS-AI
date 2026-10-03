@@ -29,15 +29,17 @@
 .lf-alg-art--neg rect, .lf-alg-art--neg circle { fill: var(--berry-soft); stroke: var(--berry-strong); stroke-dasharray: 4 3; }
 .lf-alg-caption { font-weight: 800; }
 .lf-area-grid { display: grid; gap: var(--spacing-1); inline-size: 100%; max-inline-size: 36rem; }
-.lf-area-cell, .lf-area-head { position: relative; display: grid; place-items: center; min-block-size: var(--hz-hit); min-inline-size: 0; padding: var(--spacing-1); border-radius: var(--rounded-sm); font-weight: 800; outline: 2px solid transparent; }
+.lf-area-cell, .lf-area-head { position: relative; isolation: isolate; display: grid; place-items: center; min-block-size: var(--hz-hit); min-inline-size: 0; padding: var(--spacing-1); border-radius: var(--rounded-sm); font-weight: 800; outline: 2px solid transparent; }
 .lf-area-head { background: var(--sunken); }
-.lf-area-back { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; pointer-events: none; }
-.lf-area-back rect { fill: var(--sunken); stroke: var(--outline); stroke-width: 0.2; }
+/* A bare text node cannot be lifted above a positioned child, so the backdrop goes under it. */
+.lf-area-back { position: absolute; inset: 0; z-index: -1; inline-size: 100%; block-size: 100%; pointer-events: none; overflow: visible; }
+.lf-area-back rect { fill: var(--sunken); stroke: var(--edge); stroke-width: 2; vector-effect: non-scaling-stroke; }
 .lf-area-cell--d2 .lf-area-back rect { fill: var(--sky-soft); }
 .lf-area-cell--d1 .lf-area-back rect { fill: var(--sunken); }
 .lf-area-cell--d0 .lf-area-back rect { fill: var(--surface); }
 .lf-area-cell > :not(.lf-area-back) { position: relative; }
 .lf-area-constant { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2); font-weight: 800; }
+.lf-area-constant .lf-area-cell { min-inline-size: var(--hz-hit); }
 .lf-area-tray { min-block-size: var(--hz-hit); padding: var(--spacing-2); border-radius: var(--rounded-sm); background: var(--sunken); outline: 2px solid transparent; inline-size: 100%; }
 @media (prefers-reduced-motion: no-preference) {
   .lf-alg-zone, .lf-alg-equation, .lf-area-cell, .lf-area-tray { transition: outline-color var(--dur-component) var(--ease-standard); }

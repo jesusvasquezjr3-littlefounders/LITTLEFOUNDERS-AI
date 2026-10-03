@@ -79,7 +79,7 @@ describe('num-a board: empty number line (A12)', () => {
     await screen.findByRole('button', { name: 'Jump forward 20' });
     fireEvent.click(jump('Jump forward 20'));
     fireEvent.click(jump('Jump forward 5'));
-    fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Table' }));
     const table = screen.getByRole('table', { name: 'Jumps on the line' });
     expect(within(table).getAllByRole('row').map((row) => row.textContent)).toEqual(['StepJumpLands on', 'Start47', '1+2067', '2+572']);
   });
@@ -87,7 +87,7 @@ describe('num-a board: empty number line (A12)', () => {
   it('speaks the same piece in Spanish and Portuguese', async () => {
     show('jump-up', undefined, 'es-MX');
     expect(await screen.findByRole('button', { name: 'Salta hacia adelante 20' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Mostrar como tabla' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Tabla' })).toBeTruthy();
     expect(status()).toHaveTextContent('Inicio: 47. Ahora en: 47. Saltos restantes: 6');
   });
 
@@ -156,7 +156,7 @@ describe('num-a board: zoomable number line (A13)', () => {
     press('Marker: One tick right', 4);
     fireEvent.click(screen.getByRole('button', { name: 'Zoom in' }));
     press('Marker: One tick right', 7);
-    fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Table' }));
     const table = screen.getByRole('table', { name: 'Zoom levels' });
     expect(within(table).getAllByRole('row').map((row) => row.textContent)).toEqual(['ZoomFromToTick', '0051', '12.04.00.1', '23.303.500.01', 'Marker at3.47']);
   });
@@ -275,7 +275,7 @@ describe('num-a board: order the numbers on a line (F1.3)', () => {
     show('order-tens');
     await screen.findByRole('button', { name: '70' });
     put('70', 7);
-    fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Table' }));
     const table = screen.getByRole('table', { name: 'Numbers on the line' });
     expect(within(table).getAllByRole('row').map((row) => row.textContent)).toEqual(['NumberMark', '707', '30Not placed', '90Not placed', '50Not placed']);
   });
@@ -306,7 +306,7 @@ describe('num-a board: order the numbers on a line (F1.3)', () => {
     fireEvent.click(chip('70'));
     fireEvent.click(mark(7, 'Marca'));
     expect(status()).toHaveTextContent('Colocados: 70 en la marca 7.');
-    expect(screen.getByRole('heading', { name: 'Números por colocar' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Números' })).toBeTruthy();
   });
 
   it('writes decimals with a comma in Portuguese', async () => {

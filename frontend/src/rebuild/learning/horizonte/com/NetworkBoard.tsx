@@ -1,4 +1,4 @@
-import { useRef, useState, type KeyboardEvent } from 'react';
+import { useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { Button } from '../../../design/controls';
 import type { Locale } from '../../../design/copyBudget';
 import type { HorizonteBoardProps } from '../boardTypes';
@@ -10,10 +10,12 @@ import { COM_COPY } from './copy';
 import { fill, fmt, list, type Words } from './format';
 import {
   KEEP_SLOT, ODD_SLOT, ROUTE_SLOT, WALK_SLOT, dijkstraSteps, isTrail, leafId, networkFrame, pascalAccepts, pascalCellId, pascalSlotId, pascalValues,
-  pathWeight, treeLeaves, type GraphPayload, type NetEdge, type NetNode, type PascalPayload, type PathPayload, type TreePayload,
+  pathWeight, treeLeaves, type GraphPayload, type NetEdge, type PascalPayload, type PathPayload, type TreePayload,
 } from './network.generated';
+import { MapFigure } from './NetworkMap';
 import { SlotBoardShell, Zone, useSlotBoard, type SlotBoard } from './slotBoard';
 import { SpecTable, type TableSpec } from './specTable';
+import { TreeFigure } from './TreeFigure';
 import './NetworkBoard.css';
 
 type NetworkSegment = Extract<HorizonteSegment, { type: 'math.network-count.v2' }>;
@@ -24,62 +26,6 @@ interface Inner extends Props { t: Words; locale: Locale; labels: Labels }
 const NOTHING: Frame = { pieceIds: [], slotIds: [], capacities: {} };
 const frameOf = (segment: NetworkSegment): Frame => networkFrame(segment.visual.type, segment.payload) ?? NOTHING;
 const placed = (board: SlotBoard, slot: string): string[] => board.slots[slot] ?? [];
-
-/* ── the map: nodes and the roads or bridges between them ── */
-
-interface Geometry { edge: NetEdge; d: string; mid: { x: number; y: number } }
-
-/** Parallel edges between the same two nodes fan out as curves, so every bridge stays visible and none hides another. */
-function geometryOf(nodes: readonly NetNode[], edges: readonly NetEdge[]): Geometry[] {
-  const at = new Map(nodes.map((node) => [node.id, node]));
-  const pairOf = (edge: NetEdge) => [edge.from, edge.to].sort().join('|');
-  const group = new Map<string, NetEdge[]>();
-  for (const edge of edges) group.set(pairOf(edge), [...(group.get(pairOf(edge)) ?? []), edge]);
-  return edges.map((edge) => {
-    const same = group.get(pairOf(edge))!;
-    const [first, second] = [edge.from, edge.to].sort();
-    const a = at.get(first!)!;
-    const b = at.get(second!)!;
-    const length = Math.hypot(b.x - a.x, b.y - a.y) || 1;
-    const offset = (same.indexOf(edge) - (same.length - 1) / 2) * 16;
-    const nx = (-(b.y - a.y) / length) * offset;
-    const ny = ((b.x - a.x) / length) * offset;
-    const mid = { x: (a.x + b.x) / 2 + nx, y: (a.y + b.y) / 2 + ny };
-    return { edge, mid, d: same.length === 1 ? `M${a.x} ${a.y} L${b.x} ${b.y}` : `M${a.x} ${a.y} Q${mid.x + nx} ${mid.y + ny} ${b.x} ${b.y}` };
-  });
-}
-
-interface FigureProps {
-  aria: string; nodes: readonly NetNode[]; edges: readonly NetEdge[]; labels: Labels;
-  /** The text on an edge (a bridge number, a cost); null leaves it bare. */
-  badge: (edge: NetEdge, index: number) => string | null;
-  used: ReadonlySet<string>; marked: ReadonlySet<string>;
-  /** 1-based place of a node in the learner's route. */
-  order?: ReadonlyMap<string, number>;
-  tags?: Readonly<Record<string, string>>;
-}
-
-function Figure({ aria, nodes, edges, labels, badge, used, marked, order, tags }: FigureProps) {
-  return <svg className="lf-net" viewBox="-18 -8 136 120" role="img" aria-label={aria} data-copy-role="data" focusable="false">
-    {geometryOf(nodes, edges).map(({ edge, d, mid }, index) => {
-      const text = badge(edge, index);
-      return <g key={edge.id}>
-        <path className={used.has(edge.id) ? 'lf-net-edge lf-net-edge--used' : 'lf-net-edge'} d={d} fill="none" />
-        {text === null ? null : <text className="lf-net-badge" x={mid.x} y={mid.y} textAnchor="middle" dominantBaseline="central">{text}</text>}
-      </g>;
-    })}
-    {nodes.map((node) => {
-      const below = node.y >= 50;
-      const step = order?.get(node.id);
-      return <g key={node.id}>
-        <circle className={marked.has(node.id) ? 'lf-net-node lf-net-node--on' : 'lf-net-node'} cx={node.x} cy={node.y} r="5.5" />
-        {step === undefined ? null : <text className="lf-net-order" x={node.x} y={node.y} textAnchor="middle" dominantBaseline="central">{step}</text>}
-        <text className="lf-net-name" x={node.x} y={node.y + (below ? 12 : -8)} textAnchor="middle">{labels[node.id] ?? node.id}</text>
-        {tags?.[node.id] ? <text className="lf-net-tag" x={node.x} y={node.y + (below ? 18 : -14)} textAnchor="middle">{tags[node.id]}</text> : null}
-      </g>;
-    })}
-  </svg>;
-}
 
 /* ── graph: the odd places, or a walk over every bridge ── */
 
@@ -104,7 +50,7 @@ function GraphBoard({ document, segment, onBack, sequence, onGrade, t, labels }:
   const table: TableSpec = { caption: t.tableBridges, head: [t.colBridge, t.colFrom, t.colTo], rows: graph.edges.map((edge) => [bridgeName(edge), name(edge.from), name(edge.to)]) };
   return <SlotBoardShell screen={trail ? 'network-walk' : 'network-odd'} document={document} segment={segment} onBack={onBack} sequence={sequence} board={board} t={t}
     named={trail ? { met: t.metWalk, hint: t.hintWalk } : { met: t.metOdd, hint: t.hintOdd }} status={status} table={table} tray heading={trail ? t.headingBridges : t.headingPlaces}>
-    <Figure aria={fill(t.chartGraph, { places: graph.nodes.length, bridges: graph.edges.length })} nodes={graph.nodes} edges={graph.edges} labels={labels}
+    <MapFigure aria={fill(t.chartGraph, { places: graph.nodes.length, bridges: graph.edges.length })} nodes={graph.nodes} edges={graph.edges} labels={labels}
       badge={(edge, index) => (trail ? String(index + 1) : null)} used={new Set(trail ? chosen : [])} marked={new Set(trail ? [] : chosen)} />
     <div className="lf-slotzones"><Zone board={board} id={slot} name={trail ? t.zoneWalk : t.zoneOdd} numbered={trail ? (position) => fill(t.stepN, { n: position }) : undefined} /></div>
   </SlotBoardShell>;
@@ -157,7 +103,7 @@ function RouteBoard({ document, segment, onBack, sequence, onGrade, t, locale, l
       <Button size="sm" variant="secondary" aria-expanded={help} onClick={() => setHelp((shown) => !shown)}>{help ? t.hideSteps : t.showSteps}</Button>
       {help ? <RouteSteps route={route} t={t} locale={locale} labels={labels} /> : null}
     </> : undefined}>
-    <Figure aria={fill(t.chartRoute, { places: route.nodes.length, roads: route.edges.length })} nodes={route.nodes} edges={route.edges} labels={labels}
+    <MapFigure aria={fill(t.chartRoute, { places: route.nodes.length, roads: route.edges.length })} nodes={route.nodes} edges={route.edges} labels={labels}
       badge={(edge) => fmt(locale, edge.weight ?? 0)} used={roads} marked={new Set(chosen)} order={new Map(chosen.map((id, index) => [id, index + 1]))}
       tags={{ [route.start]: t.tagStart, [route.goal]: t.tagGoal }} />
     <div className="lf-slotzones"><Zone board={board} id={ROUTE_SLOT} name={t.zoneRoute} note={fill(t.routeFromTo, { a: name(route.start), b: name(route.goal) })} numbered={(position) => fill(t.stopN, { n: position })} /></div>
@@ -165,42 +111,6 @@ function RouteBoard({ document, segment, onBack, sequence, onGrade, t, locale, l
 }
 
 /* ── choice tree: every outcome is a leaf; the learner keeps the ones the task asks for ── */
-
-const TREE = { width: 320, top: 14, row: 17, left: 30, right: 36, glyph: 6.4, shown: 18 };
-
-function Tree({ tree, labels, kept, aria }: { tree: TreePayload; labels: Labels; kept: ReadonlySet<string>; aria: string }) {
-  const leaves = treeLeaves(tree);
-  const name = (id: string) => labels[id] ?? id;
-  /* The last column keeps room for the longest name (up to TREE.shown characters); the chips and the table carry every name whole. */
-  const longest = Math.min(TREE.shown, Math.max(...leaves.flat().map((id) => name(id).length)));
-  const right = Math.max(TREE.right, 10 + longest * TREE.glyph);
-  const step = (TREE.width - TREE.left - right) / tree.pick;
-  const x = (level: number) => TREE.left + level * step;
-  const y = (index: number) => TREE.top + index * TREE.row;
-  const height = TREE.top * 2 + (leaves.length - 1) * TREE.row;
-  /* One node per distinct prefix; its height is the middle of the leaves beneath it. */
-  const nodes = new Map<string, { level: number; item: string; y: number; parent: string | null; leaf: boolean }>();
-  const span = new Map<string, number[]>();
-  leaves.forEach((leaf, index) => {
-    for (let level = 1; level <= leaf.length; level += 1) {
-      const key = leaf.slice(0, level).join('.');
-      span.set(key, [...(span.get(key) ?? []), index]);
-      if (!nodes.has(key)) nodes.set(key, { level, item: leaf[level - 1]!, y: 0, parent: level === 1 ? null : leaf.slice(0, level - 1).join('.'), leaf: level === leaf.length });
-    }
-  });
-  for (const [key, node] of nodes) { const rows = span.get(key)!; node.y = y((rows[0]! + rows[rows.length - 1]!) / 2); }
-  const mid = y((leaves.length - 1) / 2);
-  const onPath = new Set<string>();
-  for (const leaf of leaves) if (kept.has(leafId(leaf))) for (let level = 1; level <= leaf.length; level += 1) onPath.add(leaf.slice(0, level).join('.'));
-  return <svg className="lf-net lf-net-tree" viewBox={`0 0 ${TREE.width} ${height}`} role="img" aria-label={aria} data-copy-role="data" focusable="false">
-    {[...nodes.entries()].map(([key, node]) => {
-      const from = node.parent === null ? { x: x(0), y: mid } : { x: x(node.level - 1), y: nodes.get(node.parent)!.y };
-      return <path key={key} className={onPath.has(key) ? 'lf-net-edge lf-net-edge--used' : 'lf-net-edge'} d={`M${from.x} ${from.y} L${x(node.level)} ${node.y}`} fill="none" />;
-    })}
-    <circle className="lf-net-node" cx={x(0)} cy={mid} r="4" />
-    {[...nodes.entries()].map(([key, node]) => <text key={key} className={node.leaf && kept.has(key) ? 'lf-net-name lf-net-name--on' : 'lf-net-name'} x={x(node.level) + 5} y={node.y} dominantBaseline="central">{name(node.item)}</text>)}
-  </svg>;
-}
 
 function TreeBoard({ document, segment, onBack, sequence, onGrade, t, labels }: Inner) {
   const tree = segment.payload as TreePayload;
@@ -213,7 +123,7 @@ function TreeBoard({ document, segment, onBack, sequence, onGrade, t, labels }: 
   const table: TableSpec = { caption: t.tableOutcomes, head: [t.colOutcome, t.colKept], rows: leaves.map((id) => [leafName(id), kept.includes(id) ? t.yes : t.no]) };
   return <SlotBoardShell screen="network-tree" document={document} segment={segment} onBack={onBack} sequence={sequence} board={board} t={t}
     named={{ met: t.metTree, hint: order ? t.hintTreeOrder : t.hintTreeGroup }} status={fill(t.keepStatus, { count: kept.length, total: leaves.length })} table={table} tray heading={t.headingOutcomes}>
-    <Tree tree={tree} labels={labels} kept={new Set(kept)} aria={fill(t.chartTree, { pick: tree.pick, total: leaves.length })} />
+    <TreeFigure tree={tree} labels={labels} kept={new Set(kept)} aria={fill(t.chartTree, { pick: tree.pick, total: leaves.length })} />
     <div className="lf-slotzones"><Zone board={board} id={KEEP_SLOT} name={t.zoneKeep} /></div>
   </SlotBoardShell>;
 }
@@ -230,6 +140,9 @@ function PascalBoard({ document, segment, onBack, sequence, onGrade, t, locale }
   const marked = new Set(Object.values(board.slots).flat());
   const [focus, setFocus] = useState(pascalCellId(0, 0));
   const refs = useRef(new Map<string, HTMLButtonElement>());
+  const scroller = useRef<HTMLDivElement>(null);
+  /* The triangle opens centred, so the apex and both slopes show on a narrow phone. */
+  useLayoutEffect(() => { const node = scroller.current; if (node) node.scrollLeft = (node.scrollWidth - node.clientWidth) / 2; }, []);
   const total = values.reduce((sum, line) => sum + line.length, 0);
   const go = (event: KeyboardEvent<HTMLElement>, row: number, col: number) => {
     const target: [number, number] | null = event.key === 'ArrowRight' ? [row, col + 1] : event.key === 'ArrowLeft' ? [row, col - 1]
@@ -250,7 +163,7 @@ function PascalBoard({ document, segment, onBack, sequence, onGrade, t, locale }
   };
   return <SlotBoardShell screen="network-pascal" document={document} segment={segment} onBack={onBack} sequence={sequence} board={board} t={t}
     named={{ met: t.metPascal, hint: t.hintPascal }} status={fill(t.pascalStatus, { count: marked.size, total, multiple: pascal.multiple })} table={table} tray={false} move={false} heading={t.headingTriangle}>
-    <div className="lf-pascal-scroll">
+    <div className="lf-pascal-scroll" ref={scroller}>
       <div className="lf-pascal" role="group" aria-label={t.chartPascal}>
         {values.map((line, row) => <div key={row} className="lf-pascal-row" role="group" aria-label={fill(t.pascalRow, { row: row + 1 })}>
           {line.map((value, col) => {

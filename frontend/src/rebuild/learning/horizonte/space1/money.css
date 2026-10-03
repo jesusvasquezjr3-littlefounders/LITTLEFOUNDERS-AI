@@ -1,0 +1,13 @@
+/* Horizonte space pack, money boards: the stall cost bar and the coin stack. Tokens only. */
+
+/* A drawing host takes the cap its SVG had, so a word placed in drawing units stays on the mark it names. */
+.lf-rebuild .lf-stl-drawing { max-inline-size: 24rem; }
+.lf-rebuild .lf-coin-drawing { max-inline-size: 22rem; }
+
+.lf-stl-goal, .lf-coin-goal-line { font-weight: 800; }
+
+/* The basket keeps a drop-sized height empty or full, so a tap never moves the stall under the learner's finger. */
+.lf-stl-basket { min-block-size: 6rem; align-content: start; }
+
+/* The next step has a line of its own that is always there, so the shelf does not jump when an item is picked up. */
+.lf-stl-hint { min-block-size: 1lh; }

@@ -115,12 +115,12 @@ function heatmap(c: Ctx): Plot {
     const value = heatValue(data, col.id, row.id); const id = `${row.id}:${col.id}`;
     const x0 = L + k * cw; const y0 = T + r * ch; const text = c.plain(value);
     s.front.push(<g key={id}><rect className="lf-chart-cell" x={x0 + 1} y={y0 + 1} width={cw - 2} height={ch - 2} rx="3" />
-      <rect x={x0 + 1} y={y0 + 1} width={cw - 2} height={ch - 2} rx="3" fill={HUES[0]} fillOpacity={heatShade(value, extent)} />
+      <rect className="lf-chart-heat" x={x0 + 1} y={y0 + 1} width={cw - 2} height={ch - 2} rx="3" fill={HUES[0]} fillOpacity={heatShade(value, extent)} />
       {text.length * 6.6 <= cw - 4 && ch >= 15 ? <text x={x0 + cw / 2} y={y0 + ch / 2} textAnchor="middle" dominantBaseline="middle" className="lf-chart-label">{text}</text> : null}
       <rect className="lf-chart-ring" data-on={s.on(id)} x={x0 + 1} y={y0 + 1} width={cw - 2} height={ch - 2} rx="3" /></g>);
     s.hits.push(<rect key={`hit:${id}`} {...s.tap(id)} x={x0} y={y0} width={cw} height={ch} />);
   }));
-  const shade = (value: number) => <rect width="12" height="12" rx="2" fill={HUES[0]} fillOpacity={heatShade(value, extent)} />;
+  const shade = (value: number) => <rect className="lf-chart-heat" width="12" height="12" rx="2" fill={HUES[0]} fillOpacity={heatShade(value, extent)} />;
   return { node: s.node(), height: T + rows.length * ch + 4, legend: <Legend items={[{ key: 'low', text: c.fmt(extent[0]), swatch: shade(extent[0]) }, { key: 'high', text: c.fmt(extent[1]), swatch: shade(extent[1]) }]} /> };
 }
 

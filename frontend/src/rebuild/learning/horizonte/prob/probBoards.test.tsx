@@ -54,6 +54,17 @@ describe('probability boards (F2.9, F2.10)', () => {
         ['1 in 100 have it.', 'Of those, 9 in 10 test positive.', 'Of the rest, 1 in 10 test positive.']);
     });
 
+    it('writes every share and branch name as HTML words, never as SVG text', async () => {
+      show('tree-screening');
+      const tree = (await screen.findByRole('img', { name: 'Probability tree' })) as unknown as Element;
+      expect(tree.querySelector('svg')).toBeNull();
+      expect([...tree.querySelectorAll('.lf-prob-tag')].map((tag) => tag.textContent)).toEqual(
+        ['1 in 100', '9 in 10', 'the rest', 'the rest', '1 in 10', 'the rest']);
+      expect([...tree.querySelectorAll('.lf-prob-slot .lf-prob-node-label')].map((label) => label.textContent)).toEqual(
+        ['Have it', 'Positive', 'Negative', 'Do not have it', 'Positive', 'Negative']);
+      expect(tree.querySelector('.lf-prob-root')).toHaveTextContent('1,000 people');
+    });
+
     it('places a count by tapping its chip and then a branch', async () => {
       show('tree-screening');
       await screen.findByRole('img', { name: 'Probability tree' });

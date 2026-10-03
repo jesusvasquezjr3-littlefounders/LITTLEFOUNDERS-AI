@@ -2,20 +2,22 @@ import { useMemo, useState } from 'react';
 import { Slider } from '../../../design/controls';
 import { BoardShell, GradedFoot, useSegmentGrade } from '../../segmentKit';
 import { useAttemptSeed } from '../attemptSeed';
+import { BoardLabel } from '../BoardLabel';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText } from '../copyText';
 import { SIM1_COPY } from './copy';
 import { covers, sampleHits, waldInterval } from './interval.generated';
-import { Chart, PAD, TableToggle, VIEW_W, chanceText, fmt, percent, slots } from './shared';
+import { Chart, TableToggle, VIEW_W, chanceText, fmt, percent, slots } from './shared';
 import '../horizonte.css';
 import './sim1.css';
 
 type CoverageSegment = Extract<HorizonteSegment, { type: 'stats.coverage-sim.v2' }>;
 
-const TOP = 20;
+const TOP = 52;
 const ROW = 5;
 const SAMPLES = 100;
+const INSET = 36;
 const TICKS = [0, 0.25, 0.5, 0.75, 1] as const;
 
 /*
@@ -43,8 +45,10 @@ function Coverage({ document, segment, onBack, sequence, onGrade, seed }: Omit<H
   const rows = useMemo(() => hits.map((count) => ({ ...waldInterval(count, size, level), covered: covers(count, size, truth, level) })), [hits, size, level, truth]);
   const covering = rows.filter((row) => row.covered).length;
   const share = truth.num / truth.den;
-  const x = (value: number) => PAD + value * (VIEW_W - 2 * PAD);
+  const x = (value: number) => INSET + value * (VIEW_W - 2 * INSET);
   const base = TOP + SAMPLES * ROW;
+  const chartH = base + 40;
+  const box = { width: VIEW_W, height: chartH };
   const status = slots(t.coverageStatus, { l: level, n: fmt(locale, size, 0), c: covering, g: goal.covered });
 
   return <BoardShell screen="coverage-sim" locale={locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
@@ -54,7 +58,8 @@ function Coverage({ document, segment, onBack, sequence, onGrade, seed }: Omit<H
     foot={<GradedFoot locale={locale} grading={grading} canCheck={!untouched && !locked} sequence={sequence} feedback={segment.feedback}
       named={{ met: t.metCoverage, hint: t.hintCoverage }} onCheck={() => grading.check({ seed, level, size })} />}>
     <section className="lf-learning-board lf-sim" aria-label={t.intervalsName}>
-      <Chart label={t.intervalsName} height={base + 40}>
+      <Chart label={t.intervalsName} height={chartH}
+        labels={<BoardLabel box={box} x={x(share)} y={TOP - 12} align={share < 0.25 ? 'start' : share > 0.75 ? 'end' : 'middle'} valign="bottom" room={300}>{t.truthMark}</BoardLabel>}>
         <g className="lf-sim-ticks">
           {TICKS.map((tick) => <g key={tick}>
             <line className="lf-sim-grid" x1={x(tick)} x2={x(tick)} y1={TOP} y2={base} />
@@ -68,7 +73,6 @@ function Coverage({ document, segment, onBack, sequence, onGrade, seed }: Omit<H
             : <line key={sample} className={row.covered ? 'lf-sim-interval lf-sim-interval--cover' : 'lf-sim-interval lf-sim-interval--miss'} x1={x(row.low)} x2={x(row.high)} y1={y} y2={y} />;
         })}
         <line className="lf-sim-truth" x1={x(share)} x2={x(share)} y1={TOP - 8} y2={base} />
-        <text className="lf-sim-count" x={x(share)} y={TOP - 12} textAnchor="middle">{t.truthMark}</text>
       </Chart>
       <ul className="lf-sim-legend">
         <li>

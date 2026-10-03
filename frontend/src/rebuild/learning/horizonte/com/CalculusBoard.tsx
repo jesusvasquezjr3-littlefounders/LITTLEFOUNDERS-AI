@@ -159,7 +159,7 @@ function Riemann({ document, segment, onBack, sequence, onGrade, t }: Inner) {
     named={{ met: t.metRiemann, hint: t.hintRiemann }} heading={t.headingExplore}
     onReset={() => { explorer.clear(); moved.reset(); }} onCheck={() => explorer.grading.check({ predict: explorer.predict, value: n })}
     ask={<Ask locale={locale} lead={fill(t.askRiemann, { tol: fmt(locale, p.tolerance) })} math={integral(t, p.from, p.to)} tail={word(t, `method:${p.method}`)} />}
-    figure={<ExPlano locale={locale} label={t.figureRiemann} summary={t.summaryRiemann} domain={{ xMin: p.from - 1, xMax: p.to + 1, yMin, yMax }} size={{ width: 720, height: 380 }}
+    figure={<ExPlano locale={locale} label={t.figureRiemann} domain={{ xMin: p.from - 1, xMax: p.to + 1, yMin, yMax }} size={{ width: 720, height: 380 }}
       xLabel="x" yLabel="f"
       layers={{
         regions: slicesOf(p, n).map((points, i) => ({ id: `slice-${i}`, points, series: 2 as const })),

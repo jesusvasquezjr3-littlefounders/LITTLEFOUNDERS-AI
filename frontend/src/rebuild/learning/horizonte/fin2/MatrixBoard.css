@@ -1,13 +1,40 @@
-/* F2.14 decision grid: box map, 2x2 plot and score bars in neutral fills. Tokens only. */
-.lf-grid-chart { inline-size: 100%; max-inline-size: 28rem; block-size: auto; }
-.lf-grid-chart text { fill: var(--content); font-size: 11px; }
-.lf-grid-box { fill: var(--sunken); stroke: var(--outline); stroke-width: 1; }
-.lf-grid-box--filled { fill: var(--surface); stroke: var(--content-muted); }
-.lf-grid-dot { fill: var(--content); }
+/* F2.14 decision grid: box map, 2x2 plot and score matrix. Every word is HTML; the plot's SVG keeps only its dots and their numerals. Tokens only. */
+.lf-grid-name, .lf-grid-option, .lf-grid-legend-name, .lf-grid-weight, .lf-grid-xend, .lf-grid-xname, .lf-grid-turn { font-size: 0.875rem; font-weight: 700; line-height: 1.15; overflow-wrap: anywhere; }
+.lf-grid-weight { color: var(--content-muted); font-weight: 600; }
+
+.lf-grid-map, .lf-grid-plot, .lf-grid-scores { inline-size: 100%; max-inline-size: 28rem; }
+.lf-grid-map { --map-row: 2.75rem; display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); grid-auto-rows: minmax(var(--map-row), auto); gap: var(--spacing-1); }
+.lf-grid-map--named { --map-row: 4rem; gap: var(--spacing-2); }
+.lf-grid-box { grid-column: var(--zc) / span var(--zw); grid-row: var(--zr) / span var(--zh); display: flex; flex-direction: column; justify-content: space-between; gap: var(--spacing-2); min-inline-size: 0; padding: var(--spacing-2); border: 1px solid var(--content-muted); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-grid-box--filled { border-color: var(--content); background: var(--surface); }
+.lf-grid-dots { display: flex; flex-wrap: wrap; gap: var(--spacing-1); margin-block-start: auto; }
+.lf-grid-dot { inline-size: var(--spacing-2); block-size: var(--spacing-2); border-radius: var(--rounded-full); background: var(--content); }
+
+/* Rotated text runs along its box, so the audit's word-against-width measure does not apply to it. */
+.lf-grid-plot { display: grid; grid-template-columns: auto auto minmax(0, 1fr); column-gap: var(--spacing-2); row-gap: var(--spacing-1); max-inline-size: 24rem; }
+.lf-grid-plot > svg { grid-column: 3; grid-row: 1; display: block; inline-size: 100%; block-size: auto; }
+.lf-grid-turn { writing-mode: vertical-rl; transform: rotate(180deg); grid-row: 1; }
+.lf-grid-yname { grid-column: 1; align-self: center; }
+.lf-grid-yend { grid-column: 2; }
+.lf-grid-yend--high { align-self: start; }
+.lf-grid-yend--low { align-self: end; }
+.lf-grid-xends { grid-column: 3; grid-row: 2; display: flex; justify-content: space-between; gap: var(--spacing-2); }
+.lf-grid-xend--high { text-align: end; }
+.lf-grid-xname { grid-column: 3; grid-row: 3; text-align: center; }
+.lf-grid-field { fill: var(--sunken); stroke: var(--content-muted); stroke-width: 1; }
 .lf-grid-middle { stroke: var(--outline); stroke-width: 1; stroke-dasharray: 4 3; }
 .lf-grid-point { fill: var(--surface); stroke: var(--content); stroke-width: 2; }
 .lf-grid-point--placed { fill: var(--sky-strong); }
-.lf-grid-chart .lf-grid-point-number { font-weight: 800; }
+.lf-grid-plot .lf-grid-point-number { fill: var(--content); font-size: 13px; font-weight: 800; }
 .lf-grid-point--placed + .lf-grid-point-number { fill: var(--surface); }
-.lf-grid-score { fill: var(--sky-strong); }
-.lf-grid-chart .lf-grid-weight { fill: var(--content-muted); }
+
+.lf-grid-scores { --criteria: 1; display: grid; gap: var(--spacing-4); }
+.lf-grid-legend { display: grid; gap: var(--spacing-2); }
+.lf-grid-legend-item { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--spacing-2); }
+.lf-grid-badge { display: grid; place-items: center; inline-size: var(--spacing-6); block-size: var(--spacing-6); border: 1px solid var(--content-muted); border-radius: var(--rounded-full); font-size: 0.875rem; font-weight: 800; line-height: 1; }
+.lf-grid-matrix { display: grid; grid-template-columns: minmax(0, 2fr) repeat(var(--criteria), minmax(0, 1fr)); align-items: center; justify-items: center; gap: var(--spacing-3) var(--spacing-2); }
+.lf-grid-option { justify-self: start; }
+.lf-grid-cell { display: grid; justify-items: center; gap: var(--spacing-1); inline-size: 100%; }
+.lf-grid-num { font-size: 0.875rem; font-weight: 800; line-height: 1; }
+.lf-grid-track { display: block; inline-size: 100%; block-size: var(--spacing-2); border-radius: var(--rounded-full); background: var(--sunken); }
+.lf-grid-score { display: block; block-size: 100%; border-radius: inherit; background: var(--sky-strong); }

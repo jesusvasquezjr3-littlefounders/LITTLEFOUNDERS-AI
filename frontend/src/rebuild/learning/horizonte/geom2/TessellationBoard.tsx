@@ -90,7 +90,7 @@ function Tessellation({ document, segment, onBack, sequence, onGrade }: Omit<Hor
         {offered.map((name) => <ChoiceChip key={name} selected={motion === name} disabled={locked} onToggle={() => pick(name)}>{t[MOTION_NAME[name]]}</ChoiceChip>)}
       </div> : null}
       <Button size="sm" disabled={locked} onClick={() => place(cursor)}>{t.placeTile}</Button>
-      <Button size="sm" disabled={locked || copies.length === 0} onClick={() => change(copies.slice(0, -1))}>{t.removeLast}</Button>
+      <Button size="sm" disabled={locked || copies.length === 0} onClick={() => change(copies.slice(0, -1))}>{t.undo}</Button>
     </>}
     tableNode={<DataTable caption={t.tsCaption} head={choosing ? [t.colTile, t.colMove, t.colX, t.colY] : [t.colTile, t.colX, t.colY]}
       rows={copies.map((copy, index) => [fill(t.tileName, { n: index + 1 }), ...(choosing ? [t[MOTION_NAME[copy.motion]]] : []), String(copy.anchor.x), String(copy.anchor.y)])} />} />;

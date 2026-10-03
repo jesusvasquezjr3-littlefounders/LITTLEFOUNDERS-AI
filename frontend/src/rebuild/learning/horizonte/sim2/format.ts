@@ -21,8 +21,16 @@ export const fill = (text: string, values: Readonly<Record<string, string | numb
 /** Whole money as an amount: 12500 -> "$12,500", -300 -> "-$300". */
 export const money = (locale: Locale, value: number): string => `${value < 0 ? '-' : ''}$${count(locale, Math.abs(value))}`;
 
-/** The same on a chart axis, short: 12500 -> "$12.5K". */
-export const compactMoney = (locale: Locale, value: number): string => `${value < 0 ? '-' : ''}$${numberFormat(locale, { notation: 'compact', maximumFractionDigits: 1 }).format(Math.abs(value))}`;
+/** How a locale writes thousands and millions on an axis, with a `{v}` slot: "{v}K", "{v} mil". */
+export interface MoneyShorts { readonly thousand: string; readonly million: string }
+
+/** The same on a chart axis, short: 12500 -> "$12.5K". The suffixes are copy, so the browser's ICU data never changes them. */
+export function compactMoney(locale: Locale, value: number, shorts: MoneyShorts): string {
+  const abs = Math.abs(value);
+  const [scale, template] = abs >= 1_000_000 ? [1_000_000, shorts.million] : abs >= 1_000 ? [1_000, shorts.thousand] : [1, '{v}'];
+  const figure = numberFormat(locale, { maximumFractionDigits: 1 }).format(abs / scale);
+  return `${value < 0 ? '-' : ''}$${fill(template, { v: figure })}`;
+}
 
 /** A return in percent with its sign: 6 -> "+6%", -30 -> "-30%", 0 -> "0%". */
 export const signedPercent = (locale: Locale, value: number): string => `${numberFormat(locale, { signDisplay: 'exceptZero', maximumFractionDigits: 0 }).format(value)}%`;

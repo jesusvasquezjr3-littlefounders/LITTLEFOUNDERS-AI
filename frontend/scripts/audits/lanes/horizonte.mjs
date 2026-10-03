@@ -24,3 +24,6 @@ export const states = horizonteAuditEntries().map(({ pack, fixture, age }) =>
   preview(`fixture-hz-${pack}-${fixture}@${age}`, { screen: 'fixture', age, seg: `hz:${pack}:${fixture}` }));
 
 export const scenarios = {};
+
+/* The synthetic Core calls every lane's `respond`; this lane answers nothing of its own, so it declines. */
+export function respond() { return undefined; }

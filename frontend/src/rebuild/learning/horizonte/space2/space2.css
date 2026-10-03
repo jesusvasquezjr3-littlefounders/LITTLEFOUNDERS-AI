@@ -24,7 +24,8 @@
 .lf-s2-strip .lf-stepper-button { min-inline-size: var(--hz-hit); min-block-size: var(--hz-hit); }
 
 /* Surface */
-.lf-s2-cell { fill: color-mix(in srgb, var(--sky) 22%, var(--surface)); stroke: var(--outline); stroke-width: 1; stroke-linejoin: round; }
+/* A cell's outline is the mesh the learner reads the surface by, so it is the edge tone (3:1 on the board), not the hairline tone. */
+.lf-s2-cell { fill: color-mix(in srgb, var(--sky) 22%, var(--surface)); stroke: var(--edge); stroke-width: 1; stroke-linejoin: round; }
 .lf-s2-cell[data-shade='1'] { fill: color-mix(in srgb, var(--sky) 38%, var(--surface)); }
 .lf-s2-cell[data-shade='2'] { fill: color-mix(in srgb, var(--sky) 54%, var(--surface)); }
 .lf-s2-cell[data-shade='3'] { fill: color-mix(in srgb, var(--sky) 70%, var(--surface)); }
@@ -45,7 +46,7 @@
 .lf-s2-walk-line { stroke: var(--sky-strong); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 .lf-s2-walk-dot { fill: var(--surface); stroke: var(--sky-strong); stroke-width: 2; }
 .lf-s2-walk-dot[data-current='true'] { fill: var(--mint-soft); stroke-width: 3; }
-.lf-s2-formula { margin: 0; max-inline-size: 100%; font-size: 1.15rem; overflow-wrap: anywhere; }
+.lf-s2-formula { margin: 0; max-inline-size: 100%; font-size: 1.125rem; overflow-wrap: anywhere; }
 .lf-s2-dots { display: grid; gap: var(--spacing-1); margin: 0; padding-inline-start: 1.5rem; font-weight: 700; }
 .lf-s2-strip .lf-number-answer { inline-size: 100%; max-inline-size: 24rem; }
 .lf-s2-walk { display: grid; gap: var(--spacing-2); inline-size: 100%; max-inline-size: 24rem; box-sizing: border-box; padding: var(--spacing-3); border: 1px solid var(--outline); border-radius: var(--rounded-lg); }
@@ -55,13 +56,14 @@
 .lf-s2-walk-pad .lf-button, .lf-s2-pad .lf-button { min-block-size: var(--hz-hit); }
 
 /* Globe */
-.lf-s2-sea { fill: color-mix(in srgb, var(--sky) 16%, var(--surface)); stroke: var(--outline); stroke-width: 1; }
+.lf-s2-sea { fill: color-mix(in srgb, var(--sky) 16%, var(--surface)); stroke: var(--edge); stroke-width: 1; }
 .lf-s2-grat { fill: none; stroke: color-mix(in srgb, var(--sky) 30%, var(--surface)); stroke-width: 0.6; }
 .lf-s2-land { fill: color-mix(in srgb, var(--mint) 40%, var(--surface)); stroke: var(--content-muted); stroke-width: 0.5; }
 .lf-s2-arc { fill: none; stroke: var(--berry-strong); stroke-width: 2; stroke-linecap: round; }
 .lf-s2-arc[data-chosen='true'] { stroke: var(--primary-strong); stroke-width: 4; }
 .lf-s2-place { fill: var(--content); stroke: var(--surface); stroke-width: 1.5; }
-.lf-s2-place-label { font-size: 10px; font-weight: 800; fill: var(--content); stroke: var(--surface); stroke-width: 3px; paint-order: stroke; }
+/* The place names are BoardLabel HTML over the globe: a halo in the board ground keeps them readable over a route line or the coast. */
+.lf-s2-stage .lf-hz-label { text-shadow: 0 0 2px var(--surface), 0 0 3px var(--surface), 0 0 3px var(--surface); }
 .lf-s2-route-tag circle { fill: var(--surface); stroke: var(--berry-strong); stroke-width: 1.6; }
 .lf-s2-route-tag[data-chosen='true'] circle { fill: var(--mint-soft); stroke: var(--primary-strong); stroke-width: 3; }
 .lf-s2-route-tag text { font-size: 11px; font-weight: 800; fill: var(--content); }

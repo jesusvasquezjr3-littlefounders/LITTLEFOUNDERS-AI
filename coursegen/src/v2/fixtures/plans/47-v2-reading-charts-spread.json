@@ -78,7 +78,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Find where the curve bends from the line.",
+          "prompt": "Find where the curve bends.",
           "feedback": {
             "met": "You read the first point on the curve.",
             "not_yet": "Not yet. Read the point for the first group."
@@ -121,7 +121,7 @@
           }
         },
         "es-MX": {
-          "prompt": "Busca dónde la curva se separa de la línea.",
+          "prompt": "Busca dónde se curva la línea.",
           "feedback": {
             "met": "Leíste el primer punto de la curva.",
             "not_yet": "Todavía no. Lee el punto del primer grupo."
@@ -164,7 +164,7 @@
           }
         },
         "pt-BR": {
-          "prompt": "Veja onde a curva se afasta da linha.",
+          "prompt": "Veja onde a curva se afasta.",
           "feedback": {
             "met": "Você leu o primeiro ponto da curva.",
             "not_yet": "Ainda não. Leia o ponto do primeiro grupo."

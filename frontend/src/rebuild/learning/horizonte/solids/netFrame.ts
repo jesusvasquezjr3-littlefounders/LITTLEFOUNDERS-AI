@@ -57,6 +57,31 @@ export function measureMarks(points: readonly Pt[], measures: readonly Measure[]
   return marks;
 }
 
+/** A box of text in px. */
+export interface TextBox { width: number; height: number }
+
+const inside = (point: Pt, polygon: readonly Pt[]): boolean => {
+  let crossings = false;
+  for (let at = 0, back = polygon.length - 1; at < polygon.length; back = at++) {
+    const [a, b] = [polygon[at]!, polygon[back]!];
+    if ((a[1] > point[1]) !== (b[1] > point[1]) && point[0] < ((b[0] - a[0]) * (point[1] - a[1])) / (b[1] - a[1]) + a[0]) crossings = !crossings;
+  }
+  return crossings;
+};
+
+/**
+ * Whether a word set at the middle of a panel stays inside the panel and clear of the lengths written on it. `scale` is the px one unit
+ * of the net takes on screen; `marks` are the points the lengths are centred on. A word that does not fit gives way to the panel number.
+ */
+export function nameFits(points: readonly Pt[], marks: readonly Pt[], name: TextBox, mark: TextBox, scale: number, gap = 2): boolean {
+  const [cx, cy] = centroidOf(points).map((value) => value * scale) as [number, number];
+  const [halfWide, halfHigh] = [name.width / 2 + gap, name.height / 2 + gap];
+  const outline = points.map(([x, y]): Pt => [x * scale, y * scale]);
+  const corners: Pt[] = [[cx - halfWide, cy - halfHigh], [cx + halfWide, cy - halfHigh], [cx + halfWide, cy + halfHigh], [cx - halfWide, cy + halfHigh]];
+  if (!corners.every((corner) => inside(corner, outline))) return false;
+  return marks.every(([x, y]) => Math.abs(x * scale - cx) >= halfWide + mark.width / 2 || Math.abs(y * scale - cy) >= halfHigh + mark.height / 2);
+}
+
 export type PanelShape = 'rect' | 'right' | 'triangle';
 
 /** What a face looks like flat: a rectangle, a right triangle (two legs) or a triangle given by a base and a height. */

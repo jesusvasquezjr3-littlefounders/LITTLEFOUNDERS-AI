@@ -116,8 +116,8 @@ function SectionView({ payload, view, onView, pick, onPick, locked, table, local
     <section className="lf-learning-board lf-sec" aria-label={solidName(t, payload.solid)}>
       <PolyStage name={solidName(t, payload.solid)} description={`${facts}. ${crossed}`} view={view} onViewChange={onView} locale={locale}>
         <PolyFaces scene={scene} tone="ghost" />
-        <PolyEdges scene={scene} />
         <PolyCut scene={scene} />
+        <PolyEdges scene={scene} />
       </PolyStage>
       <p data-copy-role="body">{t.secCutNote}</p>
       <p className="lf-sec-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{round ? <Prose>{crossed}</Prose> : crossed} {chosen}</p>
@@ -174,9 +174,9 @@ function SlideView({ payload, view, onView, offset, onOffset, locked, table, loc
       <p data-copy-role="body">{fill(t.slideGoal, { shape: shapeName(t, payload.target) })}</p>
       <PolyStage name={label} description={status} view={view} onViewChange={onView} locale={locale}>
         <PolyFaces scene={scene} tone="ghost" />
+        <PolyCut scene={scene} />
         <PolyEdges scene={scene} />
         <PolySheet scene={scene} />
-        <PolyCut scene={scene} />
       </PolyStage>
       <p data-copy-role="body">{t.slideNote}</p>
       <p className="lf-slide-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{position} {cut.kind === 'sides' ? state : <Prose>{state}</Prose>}</p>

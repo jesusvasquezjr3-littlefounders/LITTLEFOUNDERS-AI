@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { Button } from '../../../design/controls';
 import { BoardShell, GradedFoot, MoveToChoice, useSegmentGrade } from '../../segmentKit';
+import { BoardLabel, LabelledDrawing } from '../BoardLabel';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { REFERENCE_MARKS, THICKNESS_TENTHS, coinPositions, readCoinPayload, stackCents, stackTenths, type CoinPayload } from './coins.generated';
@@ -8,10 +9,13 @@ import { fill, lengthText, money, pieceName, piecesName, referenceName, space1Te
 import { TableScroll } from './TableScroll';
 import '../horizonte.css';
 import './space1.css';
+import './money.css';
 
 type CoinSegment = Extract<HorizonteSegment, { type: 'money.coin-stack.v2' }>;
 
-const SCENE = { width: 260, height: 240, base: 220, top: 20, left: 24, stack: 96, tick: 128, label: 154 } as const;
+const SCENE = { width: 260, height: 240, base: 220, top: 20, left: 16, stack: 80, tick: 104, label: 126 } as const;
+/** Drawing units between two reference words: one 14 px line at the smallest scene, so words never overlap. */
+const LABEL_GAP = 18;
 const MANY = 40;
 const LEAST_PIECE_PX = 3;
 
@@ -63,14 +67,14 @@ function CoinStack({ document, segment, payload, onBack, sequence, onGrade }: Om
   const status = fill(t.coinStatus, { n: new Intl.NumberFormat(locale).format(count), pieces, amount: worth, height: lengthText(mm, locale) });
   const spoken = `${t.coinStackLabel}. ${fill(t.coinStatus, { n: new Intl.NumberFormat(locale).format(count), pieces, amount: spokenMoney(stackCents(payload, count), locale), height: spokenLength(mm, locale) })}`;
   const goalLine = goal.kind === 'amount'
-    ? fill(t.coinGoalAmount, { pieces, amount: money(goal.total, locale, true) })
-    : fill(t.coinGoalHeight, { pieces, height: lengthText(goal.mm, locale) });
+    ? fill(t.coinGoalAmount, { amount: money(goal.total, locale, true) })
+    : fill(t.coinGoalHeight, { height: lengthText(goal.mm, locale) });
 
   const maxMm = Math.max(stackTenths(piece, payload.max) / 10, goal.kind === 'height' ? goal.mm : 0);
   const scale = (SCENE.base - SCENE.top) / maxMm;
   const yOf = (heightMm: number) => SCENE.base - heightMm * scale;
   const marks = REFERENCE_MARKS.filter((mark) => mark.mm <= maxMm).map((mark) => ({ ...mark, y: yOf(mark.mm), label: 0 }));
-  marks.forEach((mark, at) => { mark.label = Math.max(Math.min(mark.y, at === 0 ? Infinity : marks[at - 1]!.label - 13), 12); });
+  marks.forEach((mark, at) => { mark.label = Math.max(Math.min(mark.y, at === 0 ? Infinity : marks[at - 1]!.label - LABEL_GAP), 12); });
   const pieceH = thickMm * scale;
   const separate = count <= MANY && pieceH >= LEAST_PIECE_PX;
 
@@ -81,24 +85,28 @@ function CoinStack({ document, segment, payload, onBack, sequence, onGrade }: Om
     foot={<GradedFoot locale={locale} grading={grading} canCheck={count > 0 && !locked} sequence={sequence} feedback={segment.feedback}
       named={{ met: t.metCoin, hint: t.hintCoin }} onCheck={() => grading.check({ value: String(count) })} />}>
     <section className="lf-learning-board lf-coin" aria-label={t.coinHeading}>
-      <p data-copy-role="body">{goalLine}</p>
+      <p className="lf-coin-goal-line" data-copy-role="data">{goalLine}</p>
       <p data-copy-role="data">{fill(t.coinEach, { piece: pieceName(t, piece), amount: money(payload.value, locale, true), thick: lengthText(thickMm, locale) })}</p>
-      <svg className="lf-coin-scene" viewBox={`0 0 ${SCENE.width} ${SCENE.height}`} role="img" aria-label={spoken} focusable="false" data-copy-role="data">
-        <line className="lf-coin-base" x1="8" y1={SCENE.base} x2={SCENE.width - 8} y2={SCENE.base} />
-        {count === 0 ? null : separate
-          ? Array.from({ length: count }, (_, at) => <rect key={at} className="lf-coin-piece" data-odd={String(at % 2 === 1)}
-            x={SCENE.left} y={SCENE.base - (at + 1) * pieceH} width={SCENE.stack} height={pieceH} />)
-          : <rect className="lf-coin-piece" data-odd="false" x={SCENE.left} y={SCENE.base - Math.max(mm * scale, 1)} width={SCENE.stack} height={Math.max(mm * scale, 1)} />}
-        {goal.kind === 'height' ? <g className="lf-coin-goal">
-          <line x1={SCENE.left - 10} y1={yOf(goal.mm)} x2={SCENE.left + SCENE.stack + 10} y2={yOf(goal.mm)} />
-          <text x={SCENE.left} y={yOf(goal.mm) - 5}>{t.coinMarkGoal}</text>
-        </g> : null}
-        {marks.map((mark) => <g key={mark.id} className="lf-coin-ref">
-          <line x1={SCENE.tick} y1={mark.y} x2={SCENE.tick + 14} y2={mark.y} />
-          <line className="lf-coin-lead" x1={SCENE.tick + 14} y1={mark.y} x2={SCENE.label - 4} y2={mark.label} />
-          <text x={SCENE.label} y={mark.label + 4}>{referenceName(t, mark.id)} {lengthText(mark.mm, locale)}</text>
-        </g>)}
-      </svg>
+      <LabelledDrawing className="lf-coin-drawing">
+        <svg className="lf-coin-scene" viewBox={`0 0 ${SCENE.width} ${SCENE.height}`} role="img" aria-label={spoken} focusable="false" data-copy-role="data">
+          <line className="lf-coin-base" x1="8" y1={SCENE.base} x2={SCENE.width - 8} y2={SCENE.base} />
+          {count === 0 ? null : separate
+            ? Array.from({ length: count }, (_, at) => <rect key={at} className="lf-coin-piece" data-odd={String(at % 2 === 1)}
+              x={SCENE.left} y={SCENE.base - (at + 1) * pieceH} width={SCENE.stack} height={pieceH} />)
+            : <rect className="lf-coin-piece" data-odd="false" x={SCENE.left} y={SCENE.base - Math.max(mm * scale, 1)} width={SCENE.stack} height={Math.max(mm * scale, 1)} />}
+          {goal.kind === 'height' ? <g className="lf-coin-goal">
+            <line x1={SCENE.left - 10} y1={yOf(goal.mm)} x2={SCENE.left + SCENE.stack + 10} y2={yOf(goal.mm)} />
+          </g> : null}
+          {marks.map((mark) => <g key={mark.id} className="lf-coin-ref">
+            <line x1={SCENE.tick} y1={mark.y} x2={SCENE.tick + 14} y2={mark.y} />
+            <line className="lf-coin-lead" x1={SCENE.tick + 14} y1={mark.y} x2={SCENE.label - 4} y2={mark.label} />
+          </g>)}
+        </svg>
+        {goal.kind === 'height' ? <BoardLabel box={SCENE} x={SCENE.left} y={yOf(goal.mm) - 4} align="start" valign="bottom">{t.coinMarkGoal}</BoardLabel> : null}
+        {marks.map((mark) => <BoardLabel key={mark.id} box={SCENE} x={SCENE.label} y={mark.label} align="start" room={SCENE.width - SCENE.label - 4}>
+          {referenceName(t, mark.id)} {lengthText(mark.mm, locale)}
+        </BoardLabel>)}
+      </LabelledDrawing>
       <p className="lf-coin-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{status}</p>
       {table ? <>
         <TableScroll label={t.coinTableCaption}><table className="lf-hz-table" data-hz-table="">

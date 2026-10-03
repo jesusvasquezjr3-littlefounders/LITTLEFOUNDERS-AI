@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { horizonteBehaviourKinds } from '../services/forgeV2HorizonteBehaviour/index.js';
 import { checkForgeV2Rows, forgeV2BehaviourPassRate } from '../services/forgeV2Rows.js';
 import { isSeededHorizonteType } from '../services/horizonte/index.js';
@@ -32,6 +32,9 @@ const GATE = 'interactive-behaviour gate';
 const SEEDED = ['math.chance-sim.v2', 'math.galton-sim.v2', 'money.life-sim.v2', 'stats.bootstrap-sim.v2', 'stats.coverage-sim.v2'];
 
 describe.skipIf(!present)('the Horizonte rows Forge emitted, under Core\'s validator', () => {
+  // The whole gate runs once, here: about 3 s alone, more than the default 5 s once the rest of the suite shares the CPU.
+  beforeAll(() => { problems(); }, 60_000);
+
   it('holds every lesson in all three locales', () => {
     expect(rows().length).toBeGreaterThan(100);
     const locales = new Map<string, string[]>();

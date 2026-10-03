@@ -1,10 +1,10 @@
-import type { CSSProperties } from 'react';
+import { Fragment, type CSSProperties } from 'react';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText, fillSlot } from '../copyText';
 import { FIN2_COPY } from './copy';
 import { gridFrame } from './matrix.generated';
-import { SlotBoardShell, Zone, describeZones, useSlotBoard, word, wrapLines, type Cell, type Words } from './slotBoard';
+import { SlotBoardShell, Zone, describeZones, useSlotBoard, word, type Cell, type Words } from './slotBoard';
 import './MatrixBoard.css';
 
 type GridSegment = Extract<HorizonteSegment, { type: 'reasoning.decision-grid.v2' }>;
@@ -21,87 +21,70 @@ const LAYOUT: Readonly<Record<string, Readonly<Record<string, Cell>>>> = {
   },
 };
 const COLUMNS: Readonly<Record<string, number>> = { swot: 2, eisenhower: 2, 'two-by-two': 2, 'business-canvas': 5 };
-const ROWS: Readonly<Record<string, number>> = { swot: 2, eisenhower: 2, 'two-by-two': 2, 'business-canvas': 3 };
 const NOTED = new Set(['swot', 'eisenhower']);
-const WIDTH = 320;
 
 function BoxMap({ t, visual, slots, name }: { t: Words; visual: string; slots: Slots; name: (slot: string) => string }) {
-  const layout = LAYOUT[visual]!;
-  const cols = COLUMNS[visual]!;
-  const rows = ROWS[visual]!;
-  const gap = 6;
-  const cellWidth = (WIDTH - gap * (cols - 1)) / cols;
-  const rowHeight = cols === 5 ? 44 : 64;
-  const named = cols === 2;
-  return <svg className="lf-grid-chart" viewBox={`0 0 ${WIDTH} ${rows * rowHeight + gap * (rows - 1)}`} role="img" aria-label={t.chartMap} data-copy-role="data" focusable="false">
-    {Object.entries(layout).map(([slot, [column, row, across, down]]) => {
-      const x = (column - 1) * (cellWidth + gap);
-      const y = (row - 1) * (rowHeight + gap);
-      const width = across * cellWidth + (across - 1) * gap;
-      const height = down * rowHeight + (down - 1) * gap;
+  const named = COLUMNS[visual] === 2;
+  return <div className={named ? 'lf-grid-map lf-grid-map--named' : 'lf-grid-map'} role="img" aria-label={t.chartMap} style={{ '--cols': COLUMNS[visual] } as CSSProperties}>
+    {Object.entries(LAYOUT[visual]!).map(([slot, [column, row, across, down]]) => {
       const count = slots[slot]?.length ?? 0;
-      const perRow = Math.max(1, Math.floor((width - 8) / 12));
-      return <g key={slot}>
-        <rect className={count > 0 ? 'lf-grid-box lf-grid-box--filled' : 'lf-grid-box'} x={x} y={y} width={width} height={height} rx="6" />
-        {named ? wrapLines(name(slot), 20).map((line, index) => <text key={index} x={x + 8} y={y + 18 + index * 14}>{line}</text>) : null}
-        {Array.from({ length: count }, (_, index) => <circle key={index} className="lf-grid-dot" r="4" cx={x + 12 + (index % perRow) * 12} cy={y + height - 10 - Math.floor(index / perRow) * 12} />)}
-      </g>;
+      return <div key={slot} className={count > 0 ? 'lf-grid-box lf-grid-box--filled' : 'lf-grid-box'} style={{ '--zc': column, '--zr': row, '--zw': across, '--zh': down } as CSSProperties}>
+        {named ? <span className="lf-grid-name" data-copy-role="data">{name(slot)}</span> : null}
+        {count > 0 ? <span className="lf-grid-dots">{Array.from({ length: count }, (_, index) => <span key={index} className="lf-grid-dot" />)}</span> : null}
+      </div>;
     })}
-  </svg>;
+  </div>;
 }
 
-const PLOT = { left: 52, right: 312, top: 8, bottom: 208 };
+const PLOT = { width: 240, height: 250 };
 
 function Plot({ t, labels, pieces, points, slots }: { t: Words; labels: Labels; pieces: readonly string[]; points: ReadonlyArray<readonly number[]>; slots: Slots }) {
   const placed = new Set(Object.values(slots).flat());
-  const px = (value: number) => PLOT.left + ((value - 0.5) / 9) * (PLOT.right - PLOT.left);
-  const py = (value: number) => PLOT.bottom - ((value - 0.5) / 9) * (PLOT.bottom - PLOT.top);
-  const middleX = px(5);
-  const middleY = py(5);
-  const middle = (PLOT.top + PLOT.bottom) / 2;
-  return <svg className="lf-grid-chart" viewBox="0 0 320 250" role="img" aria-label={t.chartPlot} data-copy-role="data" focusable="false">
-    <rect className="lf-grid-box" x={PLOT.left} y={PLOT.top} width={PLOT.right - PLOT.left} height={PLOT.bottom - PLOT.top} />
-    <line className="lf-grid-middle" x1={middleX} x2={middleX} y1={PLOT.top} y2={PLOT.bottom} />
-    <line className="lf-grid-middle" x1={PLOT.left} x2={PLOT.right} y1={middleY} y2={middleY} />
-    <text x={PLOT.left} y="226">{labels['x-low']}</text>
-    <text x={PLOT.right} y="226" textAnchor="end">{labels['x-high']}</text>
-    <text x={(PLOT.left + PLOT.right) / 2} y="244" textAnchor="middle">{labels['x-name']}</text>
-    <text x="24" y={PLOT.top} textAnchor="end" transform={`rotate(-90 24 ${PLOT.top})`}>{labels['y-high']}</text>
-    <text x="24" y={PLOT.bottom} transform={`rotate(-90 24 ${PLOT.bottom})`}>{labels['y-low']}</text>
-    <text x="10" y={middle} textAnchor="middle" transform={`rotate(-90 10 ${middle})`}>{labels['y-name']}</text>
-    {pieces.map((piece, index) => <g key={piece}>
-      <circle className={placed.has(piece) ? 'lf-grid-point lf-grid-point--placed' : 'lf-grid-point'} cx={px(points[index]![0]!)} cy={py(points[index]![1]!)} r="10" />
-      <text className="lf-grid-point-number" x={px(points[index]![0]!)} y={py(points[index]![1]!) + 4} textAnchor="middle">{index + 1}</text>
-    </g>)}
-  </svg>;
+  const px = (value: number) => 1 + ((value - 0.5) / 9) * (PLOT.width - 2);
+  const py = (value: number) => PLOT.height - 1 - ((value - 0.5) / 9) * (PLOT.height - 2);
+  return <div className="lf-grid-plot" role="img" aria-label={t.chartPlot}>
+    <span className="lf-grid-turn lf-grid-yname" data-copy-role="data">{labels['y-name']}</span>
+    <span className="lf-grid-turn lf-grid-yend lf-grid-yend--high" data-copy-role="data">{labels['y-high']}</span>
+    <span className="lf-grid-turn lf-grid-yend lf-grid-yend--low" data-copy-role="data">{labels['y-low']}</span>
+    <svg viewBox={`0 0 ${PLOT.width} ${PLOT.height}`} data-copy-role="data" focusable="false">
+      <rect className="lf-grid-field" x="1" y="1" width={PLOT.width - 2} height={PLOT.height - 2} />
+      <line className="lf-grid-middle" x1={px(5)} x2={px(5)} y1="1" y2={PLOT.height - 1} />
+      <line className="lf-grid-middle" x1="1" x2={PLOT.width - 1} y1={py(5)} y2={py(5)} />
+      {pieces.map((piece, index) => <g key={piece}>
+        <circle className={placed.has(piece) ? 'lf-grid-point lf-grid-point--placed' : 'lf-grid-point'} cx={px(points[index]![0]!)} cy={py(points[index]![1]!)} r="10" />
+        <text className="lf-grid-point-number" x={px(points[index]![0]!)} y={py(points[index]![1]!) + 4.5} textAnchor="middle">{index + 1}</text>
+      </g>)}
+    </svg>
+    <span className="lf-grid-xends">
+      <span className="lf-grid-xend" data-copy-role="data">{labels['x-low']}</span>
+      <span className="lf-grid-xend lf-grid-xend--high" data-copy-role="data">{labels['x-high']}</span>
+    </span>
+    <span className="lf-grid-xname" data-copy-role="data">{labels['x-name']}</span>
+  </div>;
 }
 
+/** Criteria are numbered once in a legend and the columns carry the numbers, so a long criterion name never has to fit a narrow column. */
 function Scores({ t, labels, pieces, criteria, scores }: { t: Words; labels: Labels; pieces: readonly string[]; criteria: ReadonlyArray<{ id: string; weight: number }>; scores: ReadonlyArray<readonly number[]> }) {
-  const first = 96;
-  const column = (WIDTH - first) / criteria.length;
-  const headerLines = criteria.map((criterion) => wrapLines(labels[criterion.id] ?? criterion.id, Math.max(6, Math.floor(column / 6.5))));
-  const header = 12 * (Math.max(...headerLines.map((lines) => lines.length)) + 1) + 6;
-  const rowHeight = 32;
-  return <svg className="lf-grid-chart" viewBox={`0 0 ${WIDTH} ${header + pieces.length * rowHeight}`} role="img" aria-label={t.chartScores} data-copy-role="data" focusable="false">
-    {criteria.map((criterion, index) => <g key={criterion.id}>
-      {headerLines[index]!.map((line, at) => <text key={at} x={first + index * column + 2} y={12 + at * 12}>{line}</text>)}
-      <text className="lf-grid-weight" x={first + index * column + 2} y={12 + headerLines[index]!.length * 12}>{fillSlot(t.weight, criterion.weight)}</text>
-    </g>)}
-    {pieces.map((piece, row) => {
-      const y = header + row * rowHeight;
-      return <g key={piece}>
-        {wrapLines(labels[piece] ?? piece, 14).slice(0, 2).map((line, at) => <text key={at} x="0" y={y + 14 + at * 12}>{line}</text>)}
-        {criteria.map((criterion, index) => {
-          const score = scores[row]![index]!;
-          const room = column - 22;
-          return <g key={criterion.id}>
-            <rect className="lf-grid-score" x={first + index * column + 2} y={y + 6} width={(score / 5) * room} height="12" rx="3" />
-            <text x={first + index * column + 6 + (score / 5) * room} y={y + 16}>{score}</text>
-          </g>;
-        })}
-      </g>;
-    })}
-  </svg>;
+  return <div className="lf-grid-scores" role="img" aria-label={t.chartScores} style={{ '--criteria': criteria.length } as CSSProperties}>
+    <div className="lf-grid-legend">
+      {criteria.map((criterion, index) => <div key={criterion.id} className="lf-grid-legend-item">
+        <span className="lf-grid-badge" data-copy-role="data">{index + 1}</span>
+        <span className="lf-grid-legend-name" data-copy-role="data">{labels[criterion.id] ?? criterion.id}</span>
+        <span className="lf-grid-weight" data-copy-role="data">{fillSlot(t.weight, criterion.weight)}</span>
+      </div>)}
+    </div>
+    <div className="lf-grid-matrix">
+      <span />
+      {criteria.map((criterion, index) => <span key={criterion.id} className="lf-grid-badge" data-copy-role="data">{index + 1}</span>)}
+      {pieces.map((piece, row) => <Fragment key={piece}>
+        <span className="lf-grid-option" data-copy-role="data">{labels[piece] ?? piece}</span>
+        {criteria.map((criterion, index) => <span key={criterion.id} className="lf-grid-cell">
+          <span className="lf-grid-num" data-copy-role="data">{scores[row]![index]}</span>
+          <span className="lf-grid-track"><span className="lf-grid-score" style={{ inlineSize: `${(scores[row]![index]! / 5) * 100}%` }} /></span>
+        </span>)}
+      </Fragment>)}
+    </div>
+  </div>;
 }
 
 function Grid({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: GridSegment }) {

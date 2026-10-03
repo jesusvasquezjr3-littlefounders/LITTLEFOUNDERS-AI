@@ -269,9 +269,9 @@ describe('geom2 boards (F2.7 geoboard and area, F2.8 transformations and tessell
       expect(status()).toHaveTextContent('Tiles placed: 1. Squares left: 10. Cursor: 2, 0.');
       fireEvent.click(button('Place tile'));
       expect(status()).toHaveTextContent('The tile does not fit here.');
-      fireEvent.click(button('Remove last'));
+      fireEvent.click(button('Undo'));
       expect(status()).toHaveTextContent('Tiles placed: 0.');
-      expect(button('Remove last')).toBeDisabled();
+      expect(button('Undo')).toBeDisabled();
     });
 
     it('offers a move only when the floor offers one, and starts on a slide', async () => {

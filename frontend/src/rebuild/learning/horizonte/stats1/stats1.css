@@ -6,9 +6,9 @@
 .lf-stats-ticks line { stroke: var(--outline); stroke-width: 2; }
 .lf-stats-ticks text { fill: currentColor; font-size: 22px; font-weight: 700; }
 .lf-stats-drop { fill: transparent; }
-.lf-stats-drop[data-drop-armed='true'] { fill: var(--sky-soft); }
-.lf-stats-drop[data-drop-selected='true'] { fill: var(--sky); fill-opacity: 0.45; }
-.lf-stats-mode { fill: var(--outline); pointer-events: none; }
+.lf-stats-drop[data-drop-armed='true'] { fill: var(--sky-soft); stroke: var(--sky-strong); stroke-width: 2; stroke-dasharray: 6 4; }
+.lf-stats-drop[data-drop-selected='true'] { fill: var(--sky); fill-opacity: 0.45; stroke-dasharray: none; stroke-width: 3; }
+.lf-stats-mode { fill: var(--outline); stroke: var(--content-muted); stroke-width: 3; pointer-events: none; }
 .lf-stats-marker { stroke: var(--content); stroke-width: 3; stroke-dasharray: 8 6; pointer-events: none; }
 .lf-stats-dot { fill: var(--sky-strong); pointer-events: none; }
 .lf-stats-dot--moved { stroke: var(--content); stroke-width: 3; }
@@ -18,7 +18,7 @@
 .lf-stats-pivot { fill: var(--edge); }
 .lf-stats-bar { fill: var(--sky-strong); }
 .lf-stats-band { fill: var(--mint-soft); pointer-events: none; }
-.lf-stats-area { fill: var(--mint); fill-opacity: 0.55; }
+.lf-stats-area { fill: var(--mint); fill-opacity: 0.55; stroke: var(--mint-strong); stroke-width: 3; stroke-linejoin: round; }
 .lf-stats-curve { fill: none; stroke: var(--berry-strong); stroke-width: 4; stroke-linejoin: round; }
 .lf-stats-edge { stroke: var(--mint-strong); stroke-width: 3; }
 .lf-stats-edge-label { fill: currentColor; font-size: 22px; font-weight: 800; }

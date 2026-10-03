@@ -1,0 +1,15 @@
+/* The map of places: the frame carries the surface so the labels, positioned in the drawing's own box, line up with the SVG. Tokens only. */
+.lf-map-frame { box-sizing: border-box; inline-size: fit-content; max-inline-size: 100%; margin-inline: auto; padding: var(--spacing-2); background: var(--surface); border-radius: var(--rounded-md); outline: 2px solid var(--outline); }
+/* The room is measured here; the frame wraps the drawing, which is laid out in CSS pixels to fit it. */
+.lf-map-room { inline-size: 100%; }
+.lf-map-sized { max-inline-size: 100%; margin-inline: auto; }
+/* A name that crosses a road still reads: a halo in the surface colour. */
+.lf-map-frame .lf-hz-label { text-shadow: 0 0 3px var(--surface), 0 0 3px var(--surface), 0 0 3px var(--surface); }
+.lf-map-frame .lf-map-tag { display: block; font-weight: 600; color: var(--content-muted); }
+/* The drawing is 1:1 with CSS pixels, so a numeral is 14 px. */
+svg .lf-map-badge { font: var(--type-caption); font-size: 14px; font-weight: 800; fill: var(--content); paint-order: stroke; stroke: var(--surface); stroke-width: 6px; stroke-linejoin: round; }
+svg .lf-map-order { font: var(--type-caption); font-size: 14px; font-weight: 800; fill: var(--on-primary); }
+.lf-map-frame .lf-net-edge { stroke-width: 4; }
+.lf-map-frame .lf-net-edge--used { stroke-width: 6; }
+.lf-map-frame .lf-net-node { stroke-width: 3.5; }
+.lf-map-frame .lf-map-name { display: block; }

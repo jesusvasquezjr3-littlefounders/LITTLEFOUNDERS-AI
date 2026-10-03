@@ -62,7 +62,7 @@ function DotPlot({ document, segment, onBack, sequence, onGrade }: Omit<Horizont
     <section className="lf-learning-board lf-stats" aria-label={t.dotPlotName}>
       <Chart label={t.dotPlotName} height={base + 44}>
         {allColumns.map((column, index) => <rect key={column} className="lf-stats-drop" x={PAD + index * cw} y={0} width={cw} height={base} {...drag.target(`col-${column}`)} />)}
-        {measure === 'mode' && value !== null ? <rect className="lf-stats-mode" x={PAD + (value - axis.min) * cw} y={0} width={cw} height={base} /> : null}
+        {measure === 'mode' && value !== null ? <rect className="lf-stats-mode" x={PAD + (value - axis.min) * cw + 1.5} y={1.5} width={cw - 3} height={base - 3} rx={6} /> : null}
         {measure !== 'mode' && value !== null ? <line className="lf-stats-marker" x1={x(value)} x2={x(value)} y1={4} y2={base} /> : null}
         {counts.flatMap((count, index) => Array.from({ length: count }, (_, row) => <circle key={`${index}-${row}`} cx={x(axis.min + index)} cy={base - (row + 0.5) * step} r={radius}
           className={row >= startCounts[index]! ? 'lf-stats-dot lf-stats-dot--moved' : 'lf-stats-dot'} />))}
@@ -84,7 +84,7 @@ function DotPlot({ document, segment, onBack, sequence, onGrade }: Omit<Horizont
           <ChoiceChip {...drag.chip(`from-${column}`)} disabled={locked}>{slots(t.takeDot, { n: column })}</ChoiceChip>
         </span>)}
       </div>
-      <MoveToChoice locale={document.locale} item={carriedValue === null ? null : { label: slots(t.takeDot, { n: carriedValue }) }}
+      <MoveToChoice locale={document.locale} item={carriedValue === null ? null : { label: slots(t.takeDotName, { n: carriedValue }) }}
         options={targets.map((column) => ({ value: `col-${column}`, label: slots(t.valueAt, { n: column }) }))} disabled={locked}
         onChange={(target) => { if (drag.carried) { place(drag.carried, target); drag.clear(); } }} />
     </section>

@@ -94,10 +94,14 @@ describe('Bayes grid keeps its cell outlines at every population', () => {
     stroked('.lf-prob-gridline', 'stroke-width');
     stroked('.lf-prob-square', 'stroke-width');
     stroked('.lf-prob-frame', 'stroke-width');
-    stroked('.lf-prob-edge', 'stroke-width');
-    expect(number(rule('.lf-prob-slot'), 'stroke-width')).toBeGreaterThan(0);
-    expect(rule('.lf-prob-slot--has')).toMatch(/stroke:\s*var\(--berry-strong\)/);
-    expect(rule('.lf-prob-slot--lacks')).toMatch(/stroke:\s*var\(--sky-strong\)/);
+    // A block outline stays at full opacity in the muted content tone, so it holds 3:1 on the board (Bible 05 section 6).
+    expect(rule('.lf-prob-block')).toMatch(/stroke:\s*var\(--content-muted\)/);
+    expect(rule('.lf-prob-block')).not.toMatch(/stroke-opacity/);
+    // The tree is HTML: its nodes are bordered boxes and its connectors are bars in the same muted tone.
+    expect(rule('.lf-prob-slot')).toMatch(/border:\s*3px dashed var\(--lf-prob-tone\)/);
+    expect(rule('.lf-prob-slot--has')).toMatch(/--lf-prob-tone:\s*var\(--berry-strong\)/);
+    expect(rule('.lf-prob-slot--lacks')).toMatch(/--lf-prob-tone:\s*var\(--sky-strong\)/);
+    expect(rule('.lf-prob-tag::before, .lf-prob-tag::after')).toMatch(/background:\s*var\(--content-muted\)/);
   });
 
   it('never hides the cell layer', () => {

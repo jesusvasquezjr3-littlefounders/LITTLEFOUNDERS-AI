@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Slider } from '../../../design/controls';
 import { BoardShell, GradedFoot, useSegmentGrade } from '../../segmentKit';
 import { useAttemptSeed } from '../attemptSeed';
+import { BoardLabel } from '../BoardLabel';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText } from '../copyText';
@@ -54,6 +55,9 @@ function Chance({ document, segment, onBack, sequence, onGrade, seed }: Omit<Hor
   const bw = (VIEW_W - 2 * PAD) / tally.length;
   const gap = bw > 24 ? 8 : 3;
   const base = TOP + PLOT_H;
+  const chartH = base + 56;
+  const box = { width: VIEW_W, height: chartH };
+  const words = machine.kind === 'coin';
   const tallest = Math.max(1, ...tally);
   const shown = stops.slice(0, index);
 
@@ -65,7 +69,8 @@ function Chance({ document, segment, onBack, sequence, onGrade, seed }: Omit<Hor
       named={{ met: t.metRun, hint: t.hintRun }} onCheck={() => grading.check({ seed, trials: count })} />}>
     <section className="lf-learning-board lf-sim" aria-label={t.shareName}>
       <ShareChart label={t.shareName} locale={locale} hits={hits} count={count} chance={chance} tolerance={tolerance} floor={minTrials} stops={stops} />
-      <Chart label={t.tallyName} height={base + 56}>
+      <Chart label={t.tallyName} height={chartH}
+        labels={words ? tally.map((_, face) => <BoardLabel key={face} box={box} x={PAD + face * bw + bw / 2} y={base + 16} align="middle" valign="top" room={bw - gap}>{faceName(face)}</BoardLabel>) : null}>
         <line className="lf-sim-axis" x1={PAD} x2={VIEW_W - PAD} y1={base} y2={base} />
         {tally.map((times, face) => {
           const height = (times / tallest) * PLOT_H;
@@ -74,8 +79,8 @@ function Chance({ document, segment, onBack, sequence, onGrade, seed }: Omit<Hor
           return <g key={face}>
             <rect className={marked ? 'lf-sim-bar lf-sim-bar--event' : 'lf-sim-bar'} x={left + gap / 2} y={base - height} width={bw - gap} height={height} />
             {times > 0 ? <text className="lf-sim-count" x={left + bw / 2} y={base - height - 6} textAnchor="middle">{fmt(locale, times, 0)}</text> : null}
-            <text className={marked ? 'lf-sim-face--event' : undefined} x={left + bw / 2} y={base + 28} textAnchor="middle">{faceName(face)}</text>
-            {marked ? <line className="lf-sim-event-mark" x1={left + gap / 2} x2={left + bw - gap / 2} y1={base + 42} y2={base + 42} /> : null}
+            {words ? null : <text className={marked ? 'lf-sim-face--event' : undefined} x={left + bw / 2} y={base + 36} textAnchor="middle">{faceName(face)}</text>}
+            {marked ? <line className="lf-sim-event-mark" x1={left + gap / 2} x2={left + bw - gap / 2} y1={base + 8} y2={base + 8} /> : null}
           </g>;
         })}
       </Chart>

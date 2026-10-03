@@ -6,6 +6,7 @@ import { LessonDocumentView } from '../../LessonDocumentView';
 import { assertBoardContract } from '../harness/boardContract';
 import { horizonteFixture, horizonteFixtureDocument, horizonteFixtureSeeds } from '../previewDocument';
 import { SIM2_COPY } from './copy';
+import { compactMoney } from './format';
 import { futuresOf, type Payload } from './model.generated';
 
 vi.mock('../../../../tutor-scene/quality', () => ({
@@ -35,8 +36,8 @@ const show = (fixture: string, verdict: 'met' | 'review' = 'review', locale: Loc
 const status = () => document.querySelector('[data-hz-text-equivalent]') as HTMLElement;
 const setSlider = (name: string, value: number) => fireEvent.change(screen.getByRole('slider', { name }), { target: { value: String(value) } });
 const rowsOf = (name: string) => within(screen.getByRole('table', { name })).getAllByRole('row').map((row) => row.textContent);
-const charts = () => [...document.querySelectorAll('.lf-life-chart')] as SVGElement[];
-const axisText = (chart: SVGElement) => [...chart.querySelectorAll('.lf-life-ticks text')].map((node) => node.textContent);
+const charts = () => [...document.querySelectorAll('.lf-life-chart')] as HTMLElement[];
+const axisText = (chart: HTMLElement) => [...chart.querySelectorAll('.lf-life-label')].map((node) => node.textContent);
 
 describe('sim2 board (F3.3)', () => {
   it('meets the board contract for every fixture', async () => {
@@ -140,6 +141,37 @@ describe('sim2 board (F3.3)', () => {
       setSlider('Share in stocks', 2);
       fireEvent.click(screen.getByRole('button', { name: 'Check' }));
       await waitFor(() => expect(screen.getByRole('slider', { name: 'Share in stocks' })).toBeDisabled());
+    });
+  });
+
+  describe('axes', () => {
+    it('write every figure and word of the axes as HTML beside the plot, never as SVG text', async () => {
+      show(LIFE);
+      await screen.findByRole('img', { name: /^Your money minus debt/ });
+      expect(document.querySelectorAll('.lf-life-chart svg text')).toHaveLength(0);
+      const [worth, cash] = charts().map((chart) => axisText(chart));
+      expect(worth).toEqual(['$15K', '$10K', '$5K', '$0', '-$5K', '-$10K', '0', '2', '4', '6', '8', '10', 'Years']);
+      expect(cash).toEqual(['$20K', '$15K', '$10K', '$5K', '$0', '0', '2', '4', '6', '8', '10', 'Years']);
+      expect(charts()[0]!.querySelectorAll('.lf-life-yaxis .lf-life-label')).toHaveLength(6);
+      expect(charts()[0]!.querySelectorAll('.lf-life-grid')).toHaveLength(6);
+    });
+
+    it('abbreviate thousands and millions with the locale own words, not the browser ICU data', () => {
+      const shorts = { thousand: SIM2_COPY.axisThousand['es-MX'], million: SIM2_COPY.axisMillion['es-MX'] };
+      expect(compactMoney('es-MX', 15000, shorts)).toBe('$15 mil');
+      expect(compactMoney('es-MX', -10000, shorts)).toBe('-$10 mil');
+      expect(compactMoney('es-MX', 2500, shorts)).toBe('$2.5 mil');
+      expect(compactMoney('es-MX', 1500000, shorts)).toBe('$1.5 M');
+      expect(compactMoney('es-MX', 500, shorts)).toBe('$500');
+      expect(compactMoney('pt-BR', 2500, { thousand: SIM2_COPY.axisThousand['pt-BR'], million: SIM2_COPY.axisMillion['pt-BR'] })).toBe('$2,5 mil');
+    });
+
+    it('write the axes in Spanish', async () => {
+      show(RETIREMENT, 'review', 'es-MX');
+      await screen.findByRole('img', { name: /^Tu dinero en 100 futuros/ });
+      const labels = axisText(charts()[0]!);
+      expect(labels.filter((label) => label?.endsWith('mil')).length).toBeGreaterThan(0);
+      expect(labels).toContain('Años');
     });
   });
 

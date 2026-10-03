@@ -55,8 +55,8 @@ export function SolidViewer({ solid, view, onViewChange, labels, name, descripti
         </SceneBoundary>
         : flat}
     </div>
-    <p id={`${id}-description`} className="lf-solid-sr" data-copy-role="data">{description}</p>
     <p id={`${id}-keys`} className="lf-solid-keys" data-copy-role="body">{t.viewerKeys}</p>
+    <p id={`${id}-description`} className="lf-solid-sr" data-copy-role="data">{description}</p>
     <p className="lf-solid-readout" role="status" data-copy-role="data" data-hz-text-equivalent="">{name}. {viewState(t, view)}</p>
     <div className="lf-solid-pad" role="group" aria-label={t.viewerControls}>
       <Button size="sm" onClick={() => go('left')}>{t.turnLeft}</Button>

@@ -46,7 +46,10 @@ export function installAudit() {
     const cls = typeof el.className === 'string' && el.className.trim() ? '.' + el.className.trim().split(/\s+/).slice(0, 3).join('.') : el.tagName.toLowerCase();
     return `${cls} "${(el.textContent || '').trim().slice(0, 32)}"`;
   };
-  const ownText = (el) => [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+  // A text node of only whitespace and zero-width characters (KaTeX's strut spans carry U+200B) draws nothing, so it is not text.
+  const ownText = (el) => [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.replace(/[\s\u200B-\u200D\u2060\uFEFF]/g, ''));
+  // KaTeX lays its glyphs out in em units of the .katex root; the root's size and the .lf-math box are measured, the typesetter's internals are not.
+  const insideKatex = (el) => !!el.parentElement?.closest('.katex');
   const all = () => ROOTS().flatMap((root) => [root, ...root.querySelectorAll('*')]).filter((el) => (!el.closest('svg') || el.tagName.toLowerCase() === 'svg'));
   const words = (t) => (t.trim().match(/[\p{L}\p{N}][\p{L}\p{N}'’.,%$-]*/gu) || []).length;
   const sentences = (t) => t.replace(/\b(Dr|Mr|Mrs|Ms|Sr|Sra|Srta|St)\./g, '$1').trim()
@@ -163,8 +166,8 @@ export function installAudit() {
     const autoSides = declaredAutoMargins();
     const tag = (e) => e.tagName.toLowerCase() + (typeof e.className === 'string' && e.className.trim() ? '.' + e.className.trim().split(/\s+/).slice(0, 2).join('.') : '');
     for (const e of els) {
-      const cs = getComputedStyle(e);
-      for (const p of ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'rowGap', 'columnGap']) {
+      const cs = getComputedStyle(e), typeset = insideKatex(e);
+      for (const p of typeset ? [] : ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'rowGap', 'columnGap']) {
         if (cs[p] === 'auto' || cs[p] === 'normal') continue;
         // A margin the stylesheet declares `auto` resolves to whatever space is left (the reference's autoM check).
         if (p.startsWith('margin') && autoSides(e).has(p.slice(6).toLowerCase())) continue;
@@ -175,7 +178,7 @@ export function installAudit() {
         if ((p === 'marginTop' || p === 'marginBottom') && Math.abs(parseFloat(cs.marginTop) - parseFloat(cs.marginBottom)) < 1 && v > 0) continue;
         if (offGrid(v)) { const k = `${tag(e)} ${p}=${+v.toFixed(1)}`; out.spacing.set(k, (out.spacing.get(k) || 0) + 1); }
       }
-      if (ownText(e)) {
+      if (ownText(e) && !typeset) {
         const size = parseFloat(cs.fontSize);
         out.sizes.add(Math.round(size * 10) / 10);
         if (!SCALE.includes(Math.round(size * 100) / 100) && !SCALE.includes(Math.round(size))) { const k = `${tag(e)} ${+size.toFixed(2)}px`; out.font.set(k, (out.font.get(k) || 0) + 1); }

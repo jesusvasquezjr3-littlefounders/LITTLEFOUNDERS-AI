@@ -140,13 +140,14 @@ export function SolidCompleteBoard({ document, segment, payload, solid, onBack, 
       {table ? <table className="lf-hz-table" data-hz-table="">
         <caption data-copy-role="heading">{t.joinCaption}</caption>
         <thead><tr>
-          <th scope="col" data-copy-role="data">{t.colFace}</th><th scope="col" data-copy-role="data">{t.colJoined}</th><th scope="col" data-copy-role="data">{t.colLengths}</th>
+          <th scope="col" data-copy-role="data">{t.colFace}</th><th scope="col" data-copy-role="data">{t.colPanel}</th><th scope="col" data-copy-role="data">{t.colJoined}</th><th scope="col" data-copy-role="data">{t.colLengths}</th>
         </tr></thead>
         <tbody>{solid.faces.map((face, index) => {
           const panel = layout.panels.find((entry) => entry.face === index);
           const parent = panel && panel.parent !== null ? layout.panels[panel.parent]!.face : null;
           return <tr key={face.name}>
             <th scope="row" data-copy-role="data">{faceLabel(t, face.name)}{givenFaces.has(index) ? ` (${t.given})` : ''}</th>
+            <td data-copy-role="data">{panel ? layout.panels.indexOf(panel) + 1 : '-'}</td>
             <td data-copy-role="data">{!panel ? t.notJoined : parent === null ? t.firstFace : name(parent)}</td>
             <td data-copy-role="data">{lengthsLabel(t, face)}</td>
           </tr>;

@@ -72,17 +72,19 @@ function Clock({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteB
         <circle className="lf-clock-pin" cx={C} cy={C} r={7} />
         <circle className="lf-clock-tap" role="presentation" cx={C} cy={C} r={FACE} onClick={tapFace} />
       </svg>
-      <div className="lf-clock-set">
-        <Stepper label={t.hour} value={time.hour} min={1} max={12} onValueChange={(hour) => change({ ...time, hour })} labels={{ decrease: t.less, increase: t.more }} disabled={locked} />
-        <Stepper label={t.minutes} valueText={twoDigits(time.minute)} min={0} max={60 - step} step={step} value={time.minute} disabled={locked}
-          labels={{ decrease: t.less, increase: t.more }} onValueChange={(minute) => change({ ...time, minute })} />
-      </div>
       <p className="lf-num-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{t.time}: {shown}</p>
       {table ? <table className="lf-hz-table" data-hz-table="">
         <caption data-copy-role="heading">{t.clockCaption}</caption>
         <thead><tr><th scope="col" data-copy-role="data">{t.hour}</th><th scope="col" data-copy-role="data">{t.minutes}</th><th scope="col" data-copy-role="data">{t.time}</th></tr></thead>
         <tbody><tr><td data-copy-role="data">{time.hour}</td><td data-copy-role="data">{twoDigits(time.minute)}</td><td data-copy-role="data">{shown}</td></tr></tbody>
       </table> : null}
+    </section>
+    <section className="lf-learning-control-strip" aria-label={t.time}>
+      <div className="lf-clock-set">
+        <Stepper label={t.hour} value={time.hour} min={1} max={12} onValueChange={(hour) => change({ ...time, hour })} labels={{ decrease: t.less, increase: t.more }} disabled={locked} />
+        <Stepper label={t.minutes} valueText={twoDigits(time.minute)} min={0} max={60 - step} step={step} value={time.minute} disabled={locked}
+          labels={{ decrease: t.less, increase: t.more }} onValueChange={(minute) => change({ ...time, minute })} />
+      </div>
     </section>
   </BoardShell>;
 }

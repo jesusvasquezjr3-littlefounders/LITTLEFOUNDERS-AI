@@ -26,8 +26,9 @@ function Panel({ label, bars, step, values, mean, spread }: { label: string; bar
   return <div className="lf-stats-panel">
     <h3 data-copy-role="data">{label}</h3>
     <Chart label={label} height={base + 44}>
-      <rect className="lf-stats-band" x={x(mean - spread)} y={TOP - 6} width={x(mean + spread) - x(mean - spread)} height={PLOT_H + 6} />
+      <rect className="lf-stats-band" data-board-decoration="" x={x(mean - spread)} y={TOP - 6} width={x(mean + spread) - x(mean - spread)} height={PLOT_H + 6} />
       {bars.map((bar) => <rect key={bar.value} className="lf-stats-bar" x={x(bar.value) - width / 2} y={base - (bar.p / tallest) * PLOT_H} width={width} height={(bar.p / tallest) * PLOT_H} />)}
+      {[mean - spread, mean + spread].map((edge, index) => <line key={index} className="lf-stats-edge" x1={x(edge)} x2={x(edge)} y1={TOP - 6} y2={base} />)}
       <line className="lf-stats-marker" x1={x(mean)} x2={x(mean)} y1={TOP - 6} y2={base} />
       <AxisTicks ticks={Array.from({ length: values }, (_, index) => index + 1)} x={x} y={base} />
     </Chart>

@@ -14,17 +14,12 @@ type TreeSegment = Extract<HorizonteSegment, { type: 'prob.tree.v2' }>;
 type Placed = Partial<Record<TreeSlot, string>>;
 type Words = { readonly [K in keyof typeof PROB_COPY]: string };
 
-const VIEW_W = 640;
-const VIEW_H = 340;
-const ROOT = { cx: 320, y: 10, w: 160, h: 44 };
-const NODES: Readonly<Record<TreeSlot, { cx: number; y: number; w: number; h: number; side: 'has' | 'lacks'; parent: TreeSlot | null }>> = {
-  has: { cx: 160, y: 116, w: 200, h: 70, side: 'has', parent: null },
-  lacks: { cx: 480, y: 116, w: 200, h: 70, side: 'lacks', parent: null },
-  'has-pos': { cx: 80, y: 252, w: 148, h: 70, side: 'has', parent: 'has' },
-  'has-neg': { cx: 240, y: 252, w: 148, h: 70, side: 'has', parent: 'has' },
-  'lacks-pos': { cx: 400, y: 252, w: 148, h: 70, side: 'lacks', parent: 'lacks' },
-  'lacks-neg': { cx: 560, y: 252, w: 148, h: 70, side: 'lacks', parent: 'lacks' },
-};
+/** The tree's two branches, left to right, each with its two outcomes: the words are HTML, so they wrap and grow in translation. */
+const BRANCHES: readonly { head: TreeSlot; leaves: readonly TreeSlot[] }[] = [
+  { head: 'has', leaves: ['has-pos', 'has-neg'] },
+  { head: 'lacks', leaves: ['lacks-pos', 'lacks-neg'] },
+];
+const sideOf = (slot: TreeSlot): 'has' | 'lacks' => (slot.startsWith('lacks') ? 'lacks' : 'has');
 const SLOT_NAME = { has: 'slotHas', lacks: 'slotLacks', 'has-pos': 'slotHasPos', 'has-neg': 'slotHasNeg', 'lacks-pos': 'slotLacksPos', 'lacks-neg': 'slotLacksNeg' } as const satisfies Record<TreeSlot, keyof typeof PROB_COPY>;
 const isSlot = (value: string): value is TreeSlot => (TREE_SLOTS as readonly string[]).includes(value);
 
@@ -74,6 +69,14 @@ function Tree({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBo
     ...(carriedSlot === undefined ? [] : [{ value: 'tray', label: t.moveBack }]),
   ];
   const tray = [...chips].sort((a, b) => a - b);
+  const slotNode = (slot: TreeSlot) => {
+    const shown = value(slot);
+    const caption = slot === 'has' || slot === 'lacks' ? name(slot) : slot.endsWith('pos') ? t.resultPos : t.resultNeg;
+    return <div className={`lf-prob-slot lf-prob-slot--${sideOf(slot)}${shown === null ? '' : ' lf-prob-slot--filled'}`} {...drag.target(slot)}>
+      <span className="lf-prob-node-label">{caption}</span>
+      <span className={shown === null ? 'lf-prob-node-value lf-prob-node-value--empty' : 'lf-prob-node-value'}>{shown ?? '?'}</span>
+    </div>;
+  };
 
   return <BoardShell screen="prob-tree" locale={locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
@@ -88,28 +91,21 @@ function Tree({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBo
         <li data-copy-role="body">{fact(t.factHit, hit)}</li>
         <li data-copy-role="body">{fact(t.factAlarm, alarm)}</li>
       </ul>
-      <svg className="lf-prob-chart" viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} role="img" aria-label={t.treeName} focusable="false" data-copy-role="data">
-        {TREE_SLOTS.map((slot) => {
-          const node = NODES[slot];
-          const parent = node.parent === null ? { cx: ROOT.cx, bottom: ROOT.y + ROOT.h } : { cx: NODES[node.parent].cx, bottom: NODES[node.parent].y + NODES[node.parent].h };
-          return <g key={slot}>
-            <line className="lf-prob-edge" x1={parent.cx} y1={parent.bottom} x2={node.cx} y2={node.y} />
-            <text className="lf-prob-edge-label" x={(parent.cx + node.cx) / 2} y={(parent.bottom + node.y) / 2 + 6} textAnchor="middle">{share[slot]}</text>
-          </g>;
-        })}
-        <rect className="lf-prob-root" x={ROOT.cx - ROOT.w / 2} y={ROOT.y} width={ROOT.w} height={ROOT.h} rx={10} />
-        <text className="lf-prob-root-label" x={ROOT.cx} y={ROOT.y + 30} textAnchor="middle">{people(locale, population, t)}</text>
-        {TREE_SLOTS.map((slot) => {
-          const node = NODES[slot];
-          const shown = value(slot);
-          const caption = node.parent === null ? name(slot) : slot.endsWith('pos') ? t.resultPos : t.resultNeg;
-          return <g key={slot}>
-            <rect className={`lf-prob-slot lf-prob-slot--${node.side}${shown === null ? '' : ' lf-prob-slot--filled'}`} x={node.cx - node.w / 2} y={node.y} width={node.w} height={node.h} rx={10} {...drag.target(slot)} />
-            <text className="lf-prob-node-label" x={node.cx} y={node.y + 24} textAnchor="middle">{caption}</text>
-            <text className={shown === null ? 'lf-prob-node-value lf-prob-node-value--empty' : 'lf-prob-node-value'} x={node.cx} y={node.y + 56} textAnchor="middle">{shown ?? '?'}</text>
-          </g>;
-        })}
-      </svg>
+      <div className="lf-prob-tree" role="img" aria-label={t.treeName} data-copy-role="data">
+        <div className="lf-prob-root">{people(locale, population, t)}</div>
+        <div className="lf-prob-branches">
+          {BRANCHES.map(({ head, leaves }) => <div key={head} className="lf-prob-branch">
+            <span className="lf-prob-tag">{share[head]}</span>
+            {slotNode(head)}
+            <div className="lf-prob-leaves">
+              {leaves.map((leaf) => <div key={leaf} className="lf-prob-leaf">
+                <span className="lf-prob-tag">{share[leaf]}</span>
+                {slotNode(leaf)}
+              </div>)}
+            </div>
+          </div>)}
+        </div>
+      </div>
       <p className="lf-prob-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{slots(t.placedCount, { n: count })}</p>
       {table ? <table className="lf-hz-table" data-hz-table="">
         <caption data-copy-role="heading">{t.tableCaptionTree}</caption>

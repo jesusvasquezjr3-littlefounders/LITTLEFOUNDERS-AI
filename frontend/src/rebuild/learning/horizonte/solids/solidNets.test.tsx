@@ -37,15 +37,18 @@ function rowArea(lengths: string): number {
 
 describe('F4.2 solid nets: naming the faces', () => {
   const net = () => screen.findByRole('group', { name: /^Net: / });
-  const panel = (n: number) => button(new RegExp(`^Panel ${n}: `));
+  /** A panel is a button only while it can be pressed (named, or a name is carried); otherwise it is a labelled picture. */
+  const panel = (n: number) => screen.getByLabelText(new RegExp(`^Panel ${n}: `));
+  /** A given panel is a labelled picture, not a control: nothing to press, so it is not a button. */
+  const given = (n: number) => screen.getByRole('img', { name: new RegExp(`^Panel ${n}: `) });
   const tap = (name: string, n: number) => { fireEvent.click(button(name)); fireEvent.click(panel(n)); };
 
   it('starts with the given names locked and the rest empty', async () => {
     show('name-the-box');
     await net();
-    expect(panel(2)).toHaveAttribute('aria-label', 'Panel 2: Front, 4 by 2, given');
-    expect(panel(2)).toHaveAttribute('aria-disabled', 'true');
-    expect(panel(5)).toHaveAttribute('aria-label', 'Panel 5: Left, 3 by 2, given');
+    expect(given(2)).toHaveAttribute('aria-label', 'Panel 2: Front, 4 by 2, given');
+    expect(screen.queryByRole('button', { name: /^Panel 2: / })).toBeNull();
+    expect(given(5)).toHaveAttribute('aria-label', 'Panel 5: Left, 3 by 2, given');
     expect(panel(1)).toHaveAttribute('aria-label', 'Panel 1: no name, 4 by 3');
     expect(readout()).toHaveTextContent('Named: 2 of 6');
     expect(button('Check')).toBeDisabled();
@@ -87,8 +90,8 @@ describe('F4.2 solid nets: naming the faces', () => {
     fireEvent.click(panel(6));
     expect(panel(6)).toHaveAttribute('aria-label', 'Panel 6: no name, 4 by 3');
     expect(button('Top')).toBeTruthy();
-    fireEvent.click(panel(2));
-    expect(panel(2)).toHaveAttribute('aria-label', 'Panel 2: Front, 4 by 2, given');
+    fireEvent.click(given(2));
+    expect(given(2)).toHaveAttribute('aria-label', 'Panel 2: Front, 4 by 2, given');
   });
 
   it('takes a name by the keyboard: Enter on a panel does what a tap does', async () => {
@@ -119,7 +122,7 @@ describe('F4.2 solid nets: naming the faces', () => {
     const grade = show('name-the-prism');
     await net();
     expect(readout()).toHaveTextContent('Named: 1 of 5');
-    expect(panel(3)).toHaveAttribute('aria-label', 'Panel 3: Slope, 5 by 5, given');
+    expect(given(3)).toHaveAttribute('aria-label', 'Panel 3: Slope, 5 by 5, given');
     expect(panel(4)).toHaveAttribute('aria-label', 'Panel 4: no name, legs 3 and 4');
     tap('Back', 1);
     tap('Bottom', 2);
@@ -156,7 +159,8 @@ describe('F4.2 solid nets: finishing the net', () => {
     show('finish-the-box-net');
     await net();
     expect(readout()).toHaveTextContent('Faces joined: 4 of 6. Your net: 8 by 5. Sheet: 9 by 11. The net fits the sheet.');
-    expect(button('Front, 4 by 2, given')).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('img', { name: 'Front, 4 by 2, given' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Front, 4 by 2, given' })).toBeNull();
     expect(button('Check')).toBeDisabled();
     expect(button('Top: 4 by 3')).toBeTruthy();
     expect(button('Back: 4 by 2')).toBeTruthy();
@@ -225,8 +229,8 @@ describe('F4.2 solid nets: finishing the net', () => {
     join('Top', 'Front');
     fireEvent.click(button('Show as table'));
     expect(rowTexts(screen.getByRole('table', { name: 'Faces of the net' }))).toEqual([
-      'FaceJoined toLengths', 'Bottom (given)first face4 by 3', 'TopFront4 by 3', 'Front (given)Bottom4 by 2', 'Backnot joined4 by 2',
-      'Left (given)Bottom3 by 2', 'Right (given)Bottom3 by 2',
+      'FacePanelJoined toLengths', 'Bottom (given)1first face4 by 3', 'Top5Front4 by 3', 'Front (given)2Bottom4 by 2', 'Back-not joined4 by 2',
+      'Left (given)3Bottom3 by 2', 'Right (given)4Bottom3 by 2',
     ]);
     fireEvent.click(button('Reset'));
     expect(readout()).toHaveTextContent('Faces joined: 4 of 6');

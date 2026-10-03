@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Stepper } from '../../../design/fields';
 import { BoardShell, GradedFoot, useSegmentGrade } from '../../segmentKit';
+import { BoardLabel, LabelledDrawing } from '../BoardLabel';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText } from '../copyText';
@@ -17,6 +18,7 @@ const WIDTH = 560;
 const PAD = 28;
 const BAR_Y = 18;
 const EDGE_Y = 66;
+const HEIGHT = 130;
 
 /*
  * A15: a ruler with a bar that starts on a mark. The learner stretches the end of the bar to a whole mark by tapping the ruler or
@@ -44,20 +46,17 @@ function Ruler({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteB
     foot={<GradedFoot locale={document.locale} grading={grading} canCheck={end !== start && !locked} sequence={sequence} feedback={segment.feedback}
       named={{ met: t.metRuler, hint: t.hintRuler }} onCheck={() => grading.check({ end })} />}>
     <section className="lf-learning-board lf-num-board" aria-label={t.ruler}>
-      <div className="lf-num-scroll">
-        <svg className="lf-ruler" viewBox={`0 0 ${WIDTH} 130`} role="img" aria-label={`${t.ruler}: ${fillSlots(t.fromTo, from, end)} ${unitWord}`} focusable="false">
+      <div className="lf-num-scroll"><LabelledDrawing className="lf-num-drawing">
+        <svg className="lf-ruler" viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label={`${t.ruler}: ${fillSlots(t.fromTo, from, end)} ${unitWord}`} focusable="false">
           <rect className="lf-ruler-bar" x={x(from)} y={BAR_Y} width={x(end) - x(from)} height={32} rx={6} />
           <line className="lf-ruler-guide" x1={x(end)} x2={x(end)} y1={BAR_Y + 32} y2={EDGE_Y} />
           <rect className="lf-ruler-body" x={PAD / 2} y={EDGE_Y} width={WIDTH - PAD} height={58} rx={6} />
-          {Array.from({ length: max + 1 }, (_, mark) => <g key={mark}>
-            <line className="lf-ruler-tick" x1={x(mark)} x2={x(mark)} y1={EDGE_Y} y2={EDGE_Y + 22} />
-            <text className="lf-ruler-number" x={x(mark)} y={EDGE_Y + 46} textAnchor="middle" data-copy-role="data">{mark}</text>
-          </g>)}
+          {Array.from({ length: max + 1 }, (_, mark) => <line key={mark} className="lf-ruler-tick" x1={x(mark)} x2={x(mark)} y1={EDGE_Y} y2={EDGE_Y + 22} />)}
           <rect className="lf-ruler-strip" role="presentation" x={PAD} y={BAR_Y} width={WIDTH - PAD * 2} height={EDGE_Y - BAR_Y + 58}
             onClick={(event) => move(fractionAcross(event) * max)} />
         </svg>
-      </div>
-      <Stepper label={t.barEnd} min={from} max={max} value={end} disabled={locked} labels={{ decrease: t.less, increase: t.more }} onValueChange={move} />
+        {Array.from({ length: max + 1 }, (_, mark) => <BoardLabel key={mark} box={{ width: WIDTH, height: HEIGHT }} x={x(mark)} y={EDGE_Y + 40}>{mark}</BoardLabel>)}
+      </LabelledDrawing></div>
       <p className="lf-num-status" role="status" data-copy-role="data" data-hz-text-equivalent="">
         {fillSlots(t.fromTo, from, end)}. {t.length}: {length} {unitWord}
       </p>
@@ -66,6 +65,9 @@ function Ruler({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteB
         <thead><tr><th scope="col" data-copy-role="data">{t.colFrom}</th><th scope="col" data-copy-role="data">{t.colTo}</th><th scope="col" data-copy-role="data">{t.length}</th></tr></thead>
         <tbody><tr><td data-copy-role="data">{from}</td><td data-copy-role="data">{end}</td><td data-copy-role="data">{length} {unitWord}</td></tr></tbody>
       </table> : null}
+    </section>
+    <section className="lf-learning-control-strip" aria-label={t.barEnd}>
+      <Stepper label={t.barEnd} min={from} max={max} value={end} disabled={locked} labels={{ decrease: t.less, increase: t.more }} onValueChange={move} />
     </section>
   </BoardShell>;
 }

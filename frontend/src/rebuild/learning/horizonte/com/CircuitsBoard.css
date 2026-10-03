@@ -14,15 +14,6 @@
 .lf-bit:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }
 .lf-bits-total { font: var(--type-label); font-size: 1.5rem; font-variant-numeric: tabular-nums; }
 
-.lf-circuit { display: block; inline-size: 100%; max-inline-size: 40rem; block-size: auto; padding: var(--spacing-2); background: var(--surface); border-radius: var(--rounded-md); outline: 2px solid var(--outline); }
-.lf-circuit-wire { stroke: var(--edge); stroke-width: 2; stroke-linecap: round; }
-.lf-circuit-pin { fill: var(--surface); stroke: var(--edge); stroke-width: 2.5; }
-.lf-circuit-lamp { fill: var(--sunken); stroke: var(--edge); stroke-width: 2.5; }
-.lf-circuit-box { fill: var(--sunken); stroke: var(--edge); stroke-width: 2; stroke-dasharray: 3 2; }
-.lf-circuit-box--set { fill: var(--primary-strong); stroke: var(--primary-strong); stroke-dasharray: none; }
-.lf-circuit-name, .lf-circuit-gate { font: var(--type-caption); font-size: 6.5px; fill: var(--content); }
-.lf-circuit-gate { font-size: 6px; font-weight: 800; fill: var(--content-muted); }
-.lf-circuit-box--set + .lf-circuit-gate { fill: var(--on-primary); }
 .lf-slotboard .lf-hz-table-scroll { max-inline-size: 42rem; }
 @media (prefers-reduced-motion: no-preference) {
   .lf-bit { transition: background-color var(--dur-component) var(--ease-standard), border-color var(--dur-component) var(--ease-standard); }

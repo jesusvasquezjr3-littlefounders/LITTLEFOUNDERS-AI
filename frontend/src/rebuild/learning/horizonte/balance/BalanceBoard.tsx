@@ -147,7 +147,7 @@ function Balance({ document, segment, onBack, sequence, onGrade }: Omit<Horizont
           ? <MathExpression tex={equationTex(scale)} spokenText={spoken} fallback={equationTex(scale)} locale={locale} block />
           : <p data-copy-role="body">{t.tipHint}</p>}
       </div>
-      <div className="lf-balance-stage" {...drag.target('scale')}><ScaleDrawing scale={scale} /></div>
+      <div className="lf-balance-stage" data-copy-role="data" {...drag.target('scale')}><ScaleDrawing scale={scale} /></div>
       <p className="lf-balance-status" role="status" data-copy-role="data" data-hz-text-equivalent="">
         {t.panLeft}: {spokenPan(scale.l, t)}. {t.panRight}: {spokenPan(scale.r, t)}. <Prose>{state}</Prose> {fillSlot(t.moves, steps.length)}
       </p>

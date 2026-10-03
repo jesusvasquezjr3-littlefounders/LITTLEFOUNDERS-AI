@@ -22,6 +22,8 @@ export const SIM2_COPY = {
   chartNet: { role: 'data', 'en-US': 'Your money minus debt in 100 futures. Target {finish}.', 'es-MX': 'Tu dinero menos la deuda en 100 futuros. Meta {finish}.', 'pt-BR': 'Seu dinheiro menos a dívida em 100 futuros. Meta {finish}.' },
   chartCash: { role: 'data', 'en-US': 'Your cash in 100 futures. Floor {floor}.', 'es-MX': 'Tu efectivo en 100 futuros. Mínimo {floor}.', 'pt-BR': 'Seu dinheiro em caixa em 100 futuros. Mínimo {floor}.' },
   axisYears: { role: 'data', 'en-US': 'Years', 'es-MX': 'Años', 'pt-BR': 'Anos' },
+  axisThousand: { role: 'data', 'en-US': '{v}K', 'es-MX': '{v} mil', 'pt-BR': '{v} mil' },
+  axisMillion: { role: 'data', 'en-US': '{v}M', 'es-MX': '{v} M', 'pt-BR': '{v} mi' },
   legendYes: { role: 'data', 'en-US': 'Future succeeds', 'es-MX': 'El futuro lo logra', 'pt-BR': 'O futuro consegue' },
   legendNo: { role: 'data', 'en-US': 'Future fails', 'es-MX': 'El futuro falla', 'pt-BR': 'O futuro falha' },
   legendFinish: { role: 'data', 'en-US': 'Target', 'es-MX': 'Meta', 'pt-BR': 'Meta' },

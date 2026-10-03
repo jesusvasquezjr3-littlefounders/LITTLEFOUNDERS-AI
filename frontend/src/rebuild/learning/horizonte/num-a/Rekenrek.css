@@ -2,7 +2,7 @@
 .lf-rek-lane { fill: var(--sunken); stroke: transparent; stroke-width: 2; }
 .lf-rek-row[data-drop-armed='true'] .lf-rek-lane { stroke: var(--primary-strong); stroke-dasharray: 6 4; }
 .lf-rek-row[data-drop-selected='true'] .lf-rek-lane { stroke: var(--primary-strong); stroke-dasharray: none; }
-.lf-rek-wire { stroke: var(--outline); stroke-width: 3; }
+.lf-rek-wire { stroke: var(--edge); stroke-width: 3; }
 .lf-rek-hit { fill: transparent; stroke: transparent; }
 .lf-rek-bead { cursor: pointer; outline: none; }
 .lf-rek-bead[aria-disabled='true'] { cursor: default; }
@@ -15,12 +15,12 @@
 .lf-rek-bead--b.lf-rek-bead--slid .lf-rek-disc { fill: var(--sky-soft); }
 .lf-rek-row--mint .lf-rek-bead--b.lf-rek-bead--slid .lf-rek-disc { fill: var(--mint-soft); }
 
-.lf-aba-frame { fill: var(--surface); stroke: var(--outline); stroke-width: 3; }
+.lf-aba-frame { fill: var(--surface); stroke: var(--edge); stroke-width: 3; }
 .lf-aba-beam { stroke: var(--content-muted); stroke-width: 5; }
 .lf-aba-lane { fill: transparent; stroke: transparent; stroke-width: 2; }
 .lf-aba-rod[data-drop-armed='true'] .lf-aba-lane { stroke: var(--primary-strong); stroke-dasharray: 6 4; }
 .lf-aba-rod[data-drop-selected='true'] .lf-aba-lane { stroke: var(--primary-strong); stroke-dasharray: none; }
-.lf-aba-wire { stroke: var(--outline); stroke-width: 3; }
+.lf-aba-wire { stroke: var(--edge); stroke-width: 3; }
 .lf-aba-hit { fill: transparent; stroke: transparent; }
 .lf-aba-bead { cursor: pointer; outline: none; }
 .lf-aba-bead[aria-disabled='true'] { cursor: default; }
@@ -32,7 +32,6 @@
 .lf-aba-rod--mint .lf-aba-bead--on .lf-aba-disc { fill: var(--mint-strong); }
 .lf-aba-bead--five.lf-aba-bead--on .lf-aba-disc { fill: var(--sky-soft); }
 .lf-aba-rod--mint .lf-aba-bead--five.lf-aba-bead--on .lf-aba-disc { fill: var(--mint-soft); }
-.lf-aba-place { font: var(--type-label); fill: var(--content); }
 @media (prefers-reduced-motion: no-preference) {
   .lf-rek-disc, .lf-aba-disc { transition: fill var(--dur-component) var(--ease-standard); }
 }

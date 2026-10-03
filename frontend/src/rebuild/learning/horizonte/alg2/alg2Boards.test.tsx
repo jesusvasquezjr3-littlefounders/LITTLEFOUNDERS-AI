@@ -325,7 +325,7 @@ describe('alg2 boards (F2.4, F2.5, F2.6)', () => {
     it('reads in Portuguese', async () => {
       show('expression-solve-separate', 'review', 'pt-BR');
       await readyLine('Linha 1');
-      expect(screen.getByText('Meta: os termos com x de um lado, números do outro.')).toBeTruthy();
+      expect(screen.getByText('Meta: termos com x de um lado, números do outro.')).toBeTruthy();
     });
   });
 

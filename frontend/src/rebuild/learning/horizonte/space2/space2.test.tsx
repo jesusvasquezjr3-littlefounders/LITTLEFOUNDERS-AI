@@ -430,7 +430,7 @@ describe('F4.8 globe with routes', () => {
   it('labels only the places on the near side of the globe', async () => {
     show('nearest-route');
     await screen.findByRole('group', { name: 'Globe with routes' });
-    const labels = () => [...document.querySelectorAll('.lf-s2-place-label')].map((label) => label.textContent);
+    const labels = () => [...document.querySelectorAll('.lf-s2-stage .lf-hz-label')].map((label) => label.textContent);
     expect(labels()).toContain('Mexico City');
     expect(labels()).toContain('Houston');
     expect(labels()).not.toContain('Tokyo');
@@ -438,6 +438,15 @@ describe('F4.8 globe with routes', () => {
     expect(readout()).toHaveTextContent('141° E');
     expect(labels()).toContain('Tokyo');
     expect(labels()).not.toContain('Houston');
+  });
+
+  it('writes the place names as HTML over the globe, never as SVG text', async () => {
+    show('nearest-route');
+    await screen.findByRole('group', { name: 'Globe with routes' });
+    expect(document.querySelectorAll('.lf-s2-svg text')).toHaveLength(4);
+    expect([...document.querySelectorAll('.lf-s2-svg text')].every((tag) => /^[A-D]$/.test(tag.textContent ?? ''))).toBe(true);
+    expect(document.querySelector('.lf-s2-stage .lf-hz-drawing')).not.toBeNull();
+    expect(document.querySelector('.lf-s2-grat')).toHaveAttribute('data-board-decoration');
   });
 
   it('turns the globe to a route when its chip is picked', async () => {
@@ -455,8 +464,8 @@ describe('F4.8 globe with routes', () => {
   it('states the amount and each fee, and puts the numbers in a table', async () => {
     show('nearest-route');
     await screen.findByRole('group', { name: 'Globe with routes' });
-    expect(screen.getByText('Amount to send: $200')).toBeTruthy();
-    expect(button(/^B: Mexico City to Houston fee 4% \+ \$3$/)).toBeTruthy();
+    expect(screen.getByText('Amount to send: $200. Fee: rate + flat.')).toBeTruthy();
+    expect(button(/^B: Mexico City to Houston 4% \+ \$3$/)).toBeTruthy();
     fireEvent.click(button('Show as table'));
     const table = screen.getByRole('table', { name: 'Routes in numbers' });
     expect(within(table).getAllByRole('row')).toHaveLength(5);

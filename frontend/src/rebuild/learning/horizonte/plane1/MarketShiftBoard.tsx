@@ -39,7 +39,7 @@ function MarketShift({ document, segment, onBack, sequence, onGrade }: Omit<Hori
     changed={choice !== 'unset' || price !== first} canCheck={choice !== 'unset'} named={{ met: t.metMarket, hint: t.hintMarket }} label={t.marketName}
     onReset={() => change(() => { setPrice(first); setChoice('unset'); })}
     onCheck={() => { if (choice !== 'unset') grading.check({ direction: choice, price }); }}
-    figure={<PlaneFigure locale={locale} label={t.marketName} summary={t.marketSummary} domain={{ xMin: 0, xMax: qMax, yMin: 0, yMax: pMax }}
+    figure={<PlaneFigure locale={locale} awayFrom={clampTo(wanted, 0, qMax)} label={t.marketName} summary={t.marketSummary} domain={{ xMin: 0, xMax: qMax, yMin: 0, yMax: pMax }}
       xLabel={t.quantity} yLabel={t.price}
       layers={{
         curves: [

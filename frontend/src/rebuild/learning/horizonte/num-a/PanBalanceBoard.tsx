@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ChoiceChip } from '../../../design/controls';
 import { BoardShell, GradedFoot, MoveToChoice, useDragPlace, useSegmentGrade } from '../../segmentKit';
+import { BoardLabel, LabelledDrawing } from '../BoardLabel';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText, fillSlot } from '../copyText';
@@ -13,6 +14,7 @@ import './Measure.css';
 
 type BalanceSegment = Extract<HorizonteSegment, { type: 'math.pan-balance.v2' }>;
 
+const BOX = { width: 560, height: 250 };
 const PIVOT = { x: 280, y: 56 };
 const HALF = 190;
 const HANG = 96;
@@ -56,18 +58,21 @@ function PanBalance({ document, segment, onBack, sequence, onGrade }: Omit<Horiz
   const tilt = Math.max(-MAX_TILT, Math.min(MAX_TILT, difference * 3));
   const radians = (tilt * Math.PI) / 180;
   const end = (side: -1 | 1) => ({ x: PIVOT.x + side * HALF * Math.cos(radians), y: PIVOT.y - side * HALF * Math.sin(radians) });
-  const drawPan = (side: -1 | 1, region: number) => {
+  const panAt = (side: -1 | 1, region: number) => {
     const hook = end(side);
     const cy = hook.y + HANG;
     const blocks = [...fixed(region).map((weight) => ({ weight, loose: false })), ...loose(region).map(({ weight }) => ({ weight, loose: true }))];
+    const cell = (index: number) => ({ x: hook.x - (PER_ROW * CELL) / 2 + (index % PER_ROW) * CELL, y: cy - 4 - (Math.floor(index / PER_ROW) + 1) * 30 });
+    return { side, region, hook, cy, blocks, cell };
+  };
+  const sides = [panAt(-1, PAN_LEFT), panAt(1, PAN_RIGHT)];
+  const drawPan = ({ side, region, hook, cy, blocks, cell }: (typeof sides)[number]) => {
     return <g key={region} className={`lf-pan-side lf-pan-side--${side < 0 ? 'sky' : 'mint'}`}>
       <line className="lf-pan-string" x1={hook.x} y1={hook.y} x2={hook.x - BOWL} y2={cy} />
       <line className="lf-pan-string" x1={hook.x} y1={hook.y} x2={hook.x + BOWL} y2={cy} />
       <path className="lf-pan-bowl" d={`M ${hook.x - BOWL} ${cy} Q ${hook.x} ${cy + 40} ${hook.x + BOWL} ${cy} Z`} />
       {blocks.map((block, index) => <g key={index} className={`lf-pan-weight${block.loose ? '' : ' lf-pan-weight--fixed'}`}>
-        <rect x={hook.x - (PER_ROW * CELL) / 2 + (index % PER_ROW) * CELL + 2} y={cy - 4 - (Math.floor(index / PER_ROW) + 1) * 30} width={CELL - 4} height={26} rx={5} />
-        <text x={hook.x - (PER_ROW * CELL) / 2 + (index % PER_ROW) * CELL + CELL / 2} y={cy - 4 - (Math.floor(index / PER_ROW) + 1) * 30 + 13}
-          textAnchor="middle" dominantBaseline="central" data-copy-role="data">{block.weight}</text>
+        <rect x={cell(index).x + 2} y={cell(index).y} width={CELL - 4} height={26} rx={5} />
       </g>)}
     </g>;
   };
@@ -79,15 +84,15 @@ function PanBalance({ document, segment, onBack, sequence, onGrade }: Omit<Horiz
     foot={<GradedFoot locale={document.locale} grading={grading} canCheck={changed && !locked} sequence={sequence} feedback={segment.feedback}
       named={{ met: t.metPan, hint: t.hintPan }} onCheck={() => grading.check({ pans })} />}>
     <section className="lf-learning-board lf-num-board" aria-label={t.panBalance}>
-      <div className="lf-num-scroll">
-        <svg className="lf-pan" viewBox="0 0 560 250" role="img" aria-label={`${t.panBalance}: ${summary}`} focusable="false">
+      <div className="lf-num-scroll"><LabelledDrawing className="lf-num-drawing lf-num-drawing--pan">
+        <svg className="lf-pan" viewBox={`0 0 ${BOX.width} ${BOX.height}`} role="img" aria-label={`${t.panBalance}: ${summary}`} focusable="false">
           <polygon className="lf-pan-fulcrum" points={`${PIVOT.x},${PIVOT.y} ${PIVOT.x - 34},232 ${PIVOT.x + 34},232`} />
           <line className="lf-pan-beam" x1={end(-1).x} y1={end(-1).y} x2={end(1).x} y2={end(1).y} />
-          {drawPan(-1, PAN_LEFT)}
-          {drawPan(1, PAN_RIGHT)}
+          {sides.map(drawPan)}
           <circle className="lf-pan-pivot" cx={PIVOT.x} cy={PIVOT.y} r={9} />
         </svg>
-      </div>
+        {sides.flatMap(({ region, blocks, cell }) => blocks.map((block, index) => <BoardLabel key={`${region}-${index}`} box={BOX} x={cell(index).x + CELL / 2} y={cell(index).y + 13} room={CELL - 4}>{block.weight}</BoardLabel>))}
+      </LabelledDrawing></div>
       <p className="lf-num-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{summary}</p>
       {table ? <table className="lf-hz-table" data-hz-table="">
         <caption data-copy-role="heading">{t.panCaption}</caption>

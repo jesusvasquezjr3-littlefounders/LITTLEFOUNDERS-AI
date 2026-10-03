@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText, fillSlot } from '../copyText';
@@ -9,30 +10,29 @@ import './StatementBoard.css';
 
 type StatementSegment = Extract<HorizonteSegment, { type: 'money.cash-flow.v2' }>;
 
-const WIDTH = 320;
-const ROW = 30;
 const FLOWS = ['earned', 'passive', 'expenses'] as const;
 const HOLDINGS = ['assets', 'liabilities'] as const;
+type Line = (typeof FLOWS)[number] | (typeof HOLDINGS)[number];
+
+/** Named bars on one scale; `goal` is the level the tick marks on every track of the group. */
+function Bars({ t, lines, values, shown, goal }: { t: Words; lines: readonly Line[]; values: Readonly<Record<string, number>>; shown: (line: Line) => string; goal: number }) {
+  const max = Math.max(1, ...lines.map((line) => values[line]!));
+  return <div className="lf-stmt-group" style={goal > 0 ? ({ '--goal': `${(goal / max) * 100}%` } as CSSProperties) : undefined}>
+    {lines.map((line) => <div key={line} className="lf-stmt-row">
+      <span className="lf-stmt-name" data-copy-role="data">{word(t, `slot:${line}`)}</span>
+      <span className="lf-stmt-amount" data-copy-role="data">{shown(line)}</span>
+      <span className="lf-stmt-track" data-goal={goal > 0 ? '' : undefined}>
+        {values[line]! > 0 ? <span className={`lf-stmt-bar lf-stmt-bar--${line}`} style={{ inlineSize: `${(values[line]! / max) * 100}%` }} /> : null}
+      </span>
+    </div>)}
+  </div>;
+}
 
 function Chart({ t, locale, totals, holdings }: { t: Words; locale: Locale; totals: Record<(typeof FLOWS)[number], number>; holdings: Record<(typeof HOLDINGS)[number], number> }) {
-  const flowMax = Math.max(1, ...FLOWS.map((line) => totals[line]));
-  const holdMax = Math.max(1, ...HOLDINGS.map((line) => holdings[line]));
-  const wide = (value: number, max: number) => (value <= 0 ? 0 : Math.max(2, (value / max) * WIDTH));
-  const goalX = (totals.expenses / flowMax) * WIDTH;
-  const row = (line: (typeof FLOWS)[number] | (typeof HOLDINGS)[number], index: number, value: number, max: number, shown: string) => {
-    const y = index * ROW + (index >= FLOWS.length ? 12 : 0);
-    return <g key={line}>
-      <text x="0" y={y + 12}>{word(t, `slot:${line}`)}</text>
-      <text x={WIDTH} y={y + 12} textAnchor="end">{shown}</text>
-      <rect className="lf-stmt-track" x="0" y={y + 17} width={WIDTH} height="8" rx="4" />
-      <rect className={`lf-stmt-bar--${line}`} x="0" y={y + 17} width={wide(value, max)} height="8" rx="4" />
-    </g>;
-  };
-  return <svg className="lf-stmt-chart" viewBox={`0 0 ${WIDTH} ${ROW * 5 + 12}`} role="img" aria-label={t.chartStatement} data-copy-role="data" focusable="false">
-    {FLOWS.map((line, index) => row(line, index, totals[line], flowMax, fillSlot(t.perMonth, money(locale, totals[line]))))}
-    {HOLDINGS.map((line, index) => row(line, FLOWS.length + index, holdings[line], holdMax, money(locale, holdings[line])))}
-    {totals.expenses > 0 ? <line className="lf-stmt-goal" x1={goalX} x2={goalX} y1={ROW + 12} y2={ROW * 3 + 12} /> : null}
-  </svg>;
+  return <div className="lf-stmt-chart" role="img" aria-label={t.chartStatement}>
+    <Bars t={t} lines={FLOWS} values={totals} goal={totals.expenses} shown={(line) => fillSlot(t.perMonth, money(locale, totals[line as (typeof FLOWS)[number]]))} />
+    <Bars t={t} lines={HOLDINGS} values={holdings} goal={0} shown={(line) => money(locale, holdings[line as (typeof HOLDINGS)[number]])} />
+  </div>;
 }
 
 function Statement({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: StatementSegment }) {

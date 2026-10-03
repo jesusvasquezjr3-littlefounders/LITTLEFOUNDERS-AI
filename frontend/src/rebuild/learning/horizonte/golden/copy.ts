@@ -8,7 +8,7 @@ export const GOLDEN_COPY = {
   total: { role: 'data', 'en-US': 'Total', 'es-MX': 'Total', 'pt-BR': 'Total' },
   emptyCells: { role: 'data', 'en-US': 'Empty cells', 'es-MX': 'Celdas vacías', 'pt-BR': 'Células vazias' },
   tray: { role: 'heading', 'en-US': 'Counters', 'es-MX': 'Fichas', 'pt-BR': 'Fichas' },
-  addCounter: { role: 'option', 'en-US': 'Add a counter', 'es-MX': 'Agrega una ficha', 'pt-BR': 'Adicione uma ficha' },
+  addCounter: { role: 'option', 'en-US': 'Add counter', 'es-MX': 'Agrega ficha', 'pt-BR': 'Adicione ficha' },
   moveFrom: { role: 'option', 'en-US': 'Move one from frame {n}', 'es-MX': 'Mueve una del cuadro {n}', 'pt-BR': 'Mova uma do quadro {n}' },
   showTable: { role: 'action', 'en-US': 'Show as table', 'es-MX': 'Mostrar como tabla', 'pt-BR': 'Mostrar como tabela' },
   hideTable: { role: 'action', 'en-US': 'Hide table', 'es-MX': 'Ocultar tabla', 'pt-BR': 'Ocultar tabela' },

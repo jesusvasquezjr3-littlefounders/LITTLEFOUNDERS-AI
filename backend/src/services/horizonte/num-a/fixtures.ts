@@ -159,7 +159,7 @@ export const NUM_A_FIXTURES: readonly HorizonteFixture[] = [
     id: 'order-teens', title: text('Where do they go?', '¿Dónde van?', 'Onde ficam?'), ...young,
     segment: (locale) => ({
       id: 'order-teens', type: 'math.number-line.order.v2', grading: 'server', visual: { type: 'order-number-line' },
-      prompt: text('Put 14, 7 and 19 on the line from 0 to 20.', 'Pon 14, 7 y 19 en la recta del 0 al 20.', 'Ponha 14, 7 e 19 na reta de 0 a 20.')[locale],
+      prompt: text('Put 14, 7 and 19 on the line.', 'Pon 14, 7 y 19 en la recta.', 'Ponha 14, 7 e 19 na reta.')[locale],
       payload: { scale: 0, low: 0, step: 1, count: 20, values: [14, 7, 19] },
     }),
     rubric: { solutions: [{ 'm-7': ['n-7'], 'm-14': ['n-14'], 'm-19': ['n-19'] }] },

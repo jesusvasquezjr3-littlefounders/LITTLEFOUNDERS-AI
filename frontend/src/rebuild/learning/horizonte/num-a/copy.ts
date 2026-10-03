@@ -1,7 +1,7 @@
 import type { HorizonteCopy } from '../boardTypes';
 
 export const NUM_A_COPY = {
-  showTable: { role: 'action', 'en-US': 'Show as table', 'es-MX': 'Mostrar como tabla', 'pt-BR': 'Mostrar como tabela' },
+  showTable: { role: 'action', 'en-US': 'Table', 'es-MX': 'Tabla', 'pt-BR': 'Tabela' },
   hideTable: { role: 'action', 'en-US': 'Hide table', 'es-MX': 'Ocultar tabla', 'pt-BR': 'Ocultar tabela' },
   undo: { role: 'action', 'en-US': 'Undo', 'es-MX': 'Deshacer', 'pt-BR': 'Desfazer' },
   total: { role: 'data', 'en-US': 'Total', 'es-MX': 'Total', 'pt-BR': 'Total' },
@@ -13,10 +13,10 @@ export const NUM_A_COPY = {
   rekenrek: { role: 'data', 'en-US': 'Rekenrek', 'es-MX': 'Marco de cuentas', 'pt-BR': 'Rekenrek' },
   row: { role: 'data', 'en-US': 'Row {n}', 'es-MX': 'Fila {n}', 'pt-BR': 'Fileira {n}' },
   bead: { role: 'data', 'en-US': 'bead {n}', 'es-MX': 'cuenta {n}', 'pt-BR': 'conta {n}' },
-  slideOne: { role: 'option', 'en-US': 'Slide one bead', 'es-MX': 'Desliza una cuenta', 'pt-BR': 'Deslize uma conta' },
-  slideFive: { role: 'option', 'en-US': 'Slide a block of five', 'es-MX': 'Desliza un bloque de cinco', 'pt-BR': 'Deslize um bloco de cinco' },
-  backOne: { role: 'option', 'en-US': 'Slide one back', 'es-MX': 'Regresa una cuenta', 'pt-BR': 'Volte uma conta' },
-  backFive: { role: 'option', 'en-US': 'Slide five back', 'es-MX': 'Regresa un bloque de cinco', 'pt-BR': 'Volte um bloco de cinco' },
+  slideOne: { role: 'option', 'en-US': 'Slide one', 'es-MX': 'Desliza una', 'pt-BR': 'Deslize uma' },
+  slideFive: { role: 'option', 'en-US': 'Slide five', 'es-MX': 'Desliza cinco', 'pt-BR': 'Deslize cinco' },
+  backOne: { role: 'option', 'en-US': 'Back one', 'es-MX': 'Regresa una', 'pt-BR': 'Volte uma' },
+  backFive: { role: 'option', 'en-US': 'Back five', 'es-MX': 'Regresa cinco', 'pt-BR': 'Volte cinco' },
   rekenrekTray: { role: 'heading', 'en-US': 'Slide beads', 'es-MX': 'Desliza cuentas', 'pt-BR': 'Deslize contas' },
   rekenrekCaption: { role: 'heading', 'en-US': 'Beads in each row', 'es-MX': 'Cuentas en cada fila', 'pt-BR': 'Contas em cada fileira' },
   colRow: { role: 'data', 'en-US': 'Row', 'es-MX': 'Fila', 'pt-BR': 'Fileira' },
@@ -112,7 +112,7 @@ export const NUM_A_COPY = {
   metPan: { role: 'body', 'en-US': 'You placed the weights to match the goal.', 'es-MX': 'Colocaste las pesas para lograr la meta.', 'pt-BR': 'Você colocou os pesos para chegar à meta.' },
   hintPan: { role: 'body', 'en-US': 'Not yet. Add up the weights on each pan.', 'es-MX': 'Aún no. Suma las pesas de cada platillo.', 'pt-BR': 'Ainda não. Some os pesos de cada prato.' },
   orderLine: { role: 'data', 'en-US': 'Number line', 'es-MX': 'Recta numérica', 'pt-BR': 'Reta numérica' },
-  orderTray: { role: 'heading', 'en-US': 'Numbers to place', 'es-MX': 'Números por colocar', 'pt-BR': 'Números para colocar' },
+  orderTray: { role: 'heading', 'en-US': 'Numbers', 'es-MX': 'Números', 'pt-BR': 'Números' },
   markName: { role: 'option', 'en-US': 'Mark {n}', 'es-MX': 'Marca {n}', 'pt-BR': 'Marca {n}' },
   orderRange: { role: 'data', 'en-US': 'From {n} to {n}. Each step is {n}', 'es-MX': 'Desde {n} hasta {n}. Cada paso es {n}', 'pt-BR': 'De {n} até {n}. Cada passo é {n}' },
   numberOnMark: { role: 'data', 'en-US': '{n} on mark {n}', 'es-MX': '{n} en la marca {n}', 'pt-BR': '{n} na marca {n}' },

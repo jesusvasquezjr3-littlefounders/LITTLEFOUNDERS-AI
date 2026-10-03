@@ -89,7 +89,7 @@ function CircleWave({ document, segment, onBack, sequence, onGrade, t }: Inner) 
     onReset={() => { explorer.clear(); moved.reset(); }} onCheck={() => explorer.grading.check({ predict: explorer.predict, value: angle })}
     ask={<Ask locale={locale} lead={t.findAngle} math={equation} tail={payload.slope ? word(t, `slope:${payload.slope}`) : null} />}
     figure={<div className="lf-ex-figures lf-ex-figures--circle-wave">
-      <ExPlano locale={locale} className="lf-ex-figure--circle" label={t.figureCircle} summary={t.summaryCircleOnly}
+      <ExPlano locale={locale} className="lf-ex-figure--circle" label={t.figureRing}
         domain={{ xMin: -1.4, xMax: 1.4, yMin: -1.4, yMax: 1.4 }} size={{ width: 420, height: 420 }} xLabel="x" yLabel="y" tickStep={0.5}
         layers={{
           polylines: [

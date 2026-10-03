@@ -128,7 +128,7 @@ function Proof({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteB
     foot={<GradedFoot locale={locale} grading={grading} canCheck={predicted && everyMoved && value !== null && !locked} sequence={sequence} feedback={segment.feedback}
       named={{ met: t.metProof, hint: t.hintProof }} onCheck={() => { if (choice !== null && value !== null) grading.check({ choice, value }); }} />}>
     <section className="lf-learning-board lf-proof" aria-label={t[FIGURE_NAME[visual]]}>
-      <div className="lf-proof-stage" {...drag.target('fit')}>
+      <div className="lf-proof-stage" data-copy-role="data" {...drag.target('fit')}>
         {figure ? <ProofDrawing figure={figure} placed={placedSet} label={t[FIGURE_NAME[visual]]} /> : null}
       </div>
       <p className="lf-proof-status" role="status" data-copy-role="data" data-hz-text-equivalent="">

@@ -153,7 +153,7 @@ describe('fin1 board: time value (F2.11)', () => {
   it('shows the worth from the other side than the one asked for, and a total', async () => {
     show('receive-three');
     await screen.findByRole('group', { name: 'Year 1' });
-    expect(screen.getByText('Each figure shows worth at year 3.')).toBeTruthy();
+    expect(screen.getByText('Worth at year 3')).toBeTruthy();
     expect(status()).toHaveTextContent('Total worth at year 3: $6,243.60');
   });
 

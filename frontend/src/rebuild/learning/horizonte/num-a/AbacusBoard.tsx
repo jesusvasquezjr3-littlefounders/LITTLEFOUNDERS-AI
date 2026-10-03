@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ChoiceChip } from '../../../design/controls';
 import { BoardShell, GradedFoot, MoveToChoice, useDragPlace, useSegmentGrade } from '../../segmentKit';
+import { BoardLabel, LabelledDrawing } from '../BoardLabel';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText, fillSlot } from '../copyText';
@@ -65,6 +66,7 @@ function Abacus({ document, segment, onBack, sequence, onGrade }: Omit<Horizonte
       named={{ met: t.metAbacus, hint: t.hintAbacus }} onCheck={() => grading.check({ digits })} />}>
     <section className="lf-learning-board lf-num-board" aria-label={t.abacus}>
       <div className="lf-num-scroll">
+        <div className="lf-hz-hit-sized" style={hitSpan(width, ONE_PITCH)}><LabelledDrawing>
         <svg className="lf-hz-hit-sized" data-hz="abacus" style={hitSpan(width, ONE_PITCH)} viewBox={`0 0 ${width} ${HEIGHT}`} role="group" aria-label={t.abacus} focusable="false">
           <rect className="lf-aba-frame" x={2} y={2} width={width - 4} height={HEIGHT - 36} rx={12} />
           <line className="lf-aba-beam" x1={PAD / 2} x2={width - PAD / 2} y1={BEAM} y2={BEAM} />
@@ -87,10 +89,11 @@ function Abacus({ document, segment, onBack, sequence, onGrade }: Omit<Horizonte
                   <ellipse className="lf-aba-disc" cx={cx} cy={oneY(index, on)} rx={26} ry={15} />
                 </g>;
               })}
-              <text className="lf-aba-place" x={cx} y={HEIGHT - 10} textAnchor="middle" data-copy-role="data">{placeName(rod)}</text>
             </g>;
           })}
         </svg>
+        {digits.map((_, rod) => <BoardLabel key={rod} box={{ width, height: HEIGHT }} x={PAD + ROD_W / 2 + rod * ROD_W} y={HEIGHT - 10} valign="bottom" room={ROD_W - 8}>{placeName(rod)}</BoardLabel>)}
+        </LabelledDrawing></div>
       </div>
       <p className="lf-num-status" role="status" data-copy-role="data" data-hz-text-equivalent="">
         {digits.map((digit, rod) => `${placeName(rod)}: ${digit}`).join('. ')}. {t.number}: {abacusValue(digits)}

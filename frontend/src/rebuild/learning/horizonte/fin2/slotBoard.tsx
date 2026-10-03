@@ -115,17 +115,6 @@ export function SlotBoardShell({ screen, document, segment, onBack, sequence, bo
   </BoardShell>;
 }
 
-/** Greedy word wrap for SVG text, which has none of its own. */
-export function wrapLines(text: string, max: number): string[] {
-  const lines: string[] = [];
-  for (const part of text.split(/\s+/)) {
-    const last = lines[lines.length - 1];
-    if (last !== undefined && last.length + 1 + part.length <= max) lines[lines.length - 1] = `${last} ${part}`;
-    else lines.push(part);
-  }
-  return lines;
-}
-
 export const joinNames = (ids: readonly string[], labels: Readonly<Record<string, string>>, none: string): string => (ids.length > 0 ? ids.map((id) => labels[id] ?? id).join(', ') : none);
 
 /** One sentence per zone: the same placement the chart draws, said in words. */

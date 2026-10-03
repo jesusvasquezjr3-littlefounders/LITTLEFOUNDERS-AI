@@ -40,7 +40,7 @@ export const ALG2_COPY = {
   goalExpanded: { role: 'body', 'en-US': 'Goal: no brackets, like terms joined.', 'es-MX': 'Meta: sin paréntesis y con términos semejantes juntos.', 'pt-BR': 'Meta: sem parênteses e com termos semelhantes juntos.' },
   goalFactored: { role: 'body', 'en-US': 'Goal: a product of brackets.', 'es-MX': 'Meta: un producto de paréntesis.', 'pt-BR': 'Meta: um produto de parênteses.' },
   goalIsolated: { role: 'body', 'en-US': 'Goal: {v} alone on one side.', 'es-MX': 'Meta: {v} sola de un lado.', 'pt-BR': 'Meta: {v} sozinha de um lado.' },
-  goalSeparated: { role: 'body', 'en-US': 'Goal: the {v} terms on one side, numbers on the other.', 'es-MX': 'Meta: los términos con {v} de un lado, números del otro.', 'pt-BR': 'Meta: os termos com {v} de um lado, números do outro.' },
+  goalSeparated: { role: 'body', 'en-US': 'Goal: {v} terms on one side, numbers on the other.', 'es-MX': 'Meta: términos con {v} de un lado, números del otro.', 'pt-BR': 'Meta: termos com {v} de um lado, números do outro.' },
   addLine: { role: 'action', 'en-US': 'Add line', 'es-MX': 'Agregar línea', 'pt-BR': 'Adicionar linha' },
   removeLine: { role: 'action', 'en-US': 'Remove line', 'es-MX': 'Quitar línea', 'pt-BR': 'Remover linha' },
   stepSame: { role: 'body', 'en-US': 'Same value as the line above.', 'es-MX': 'Mismo valor que la línea de arriba.', 'pt-BR': 'Mesmo valor da linha de cima.' },

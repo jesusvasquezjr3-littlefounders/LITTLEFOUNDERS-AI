@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, ChoiceChip } from '../../../design/controls';
 import type { Locale } from '../../../design/copyBudget';
 import { BoardShell, GradedFoot, MoveToChoice, useDragPlace, useSegmentGrade } from '../../segmentKit';
+import { BoardLabel, LabelledDrawing } from '../BoardLabel';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { basketCost, basketCount, basketToSlots, readStallPayload, type Basket, type StallGoal, type StallId, type StallPayload } from './stall.generated';
@@ -9,11 +10,13 @@ import { TableScroll } from './TableScroll';
 import { fill, itemName, money, space1Text, spokenMoney, type Space1Text } from './space1Text';
 import '../horizonte.css';
 import './space1.css';
+import './money.css';
 
 type StallSegment = Extract<HorizonteSegment, { type: 'money.market-stall.v2' }>;
 type Region = 'shelf' | 'basket';
 
-const BAR = { width: 300, height: 64, y: 32, thick: 14, edge: 34 } as const;
+/** `edge` is the room a centred mark word needs on each side; a mark nearer an end hangs its word inward. */
+const BAR = { width: 300, height: 64, y: 36, thick: 14, edge: 56 } as const;
 
 /** The marker a goal draws on the cost bar. A change goal marks only what the buyer pays: the cost to reach is never drawn. */
 function marker(goal: StallGoal, t: Space1Text): { at: number; label: string } {
@@ -62,6 +65,7 @@ function MarketStall({ document, segment, payload, onBack, sequence, onGrade }: 
   const moveOptions: { value: Region; label: string }[] = carried === null ? []
     : carriedFrom === 'shelf' ? [{ value: 'basket', label: t.stlBasketHeading }] : [{ value: 'shelf', label: t.stlShelfHeading }];
 
+  const hint = carried === null ? '' : carriedFrom === 'shelf' ? t.stlTapBasket : t.stlTapShelf;
   const bought = items.filter((item) => (basket[item.id] ?? 0) > 0);
   const limit = goal.kind === 'exact' ? goal.total : goal.kind === 'most' ? goal.budget : goal.paid;
   const left = goal.kind === 'change' ? goal.paid - cost : null;
@@ -74,7 +78,7 @@ function MarketStall({ document, segment, payload, onBack, sequence, onGrade }: 
   const scale = Math.max(goal.kind === 'change' ? goal.paid : Math.ceil(limit * 1.25), cost);
   const at = (cents: number) => Math.min((BAR.width * cents) / scale, BAR.width);
   const markAt = at(mark.at);
-  const labelAt = Math.min(Math.max(markAt, BAR.edge), BAR.width - BAR.edge);
+  const markAlign = markAt < BAR.edge ? 'start' : markAt > BAR.width - BAR.edge ? 'end' : 'middle';
   const named = goal.kind === 'most' ? { met: t.metStallMost, hint: t.hintStallMost } : { met: t.metStall, hint: t.hintStall };
 
   return <BoardShell screen="market-stall" locale={locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
@@ -84,18 +88,20 @@ function MarketStall({ document, segment, payload, onBack, sequence, onGrade }: 
     foot={<GradedFoot locale={locale} grading={grading} canCheck={count > 0 && !locked} sequence={sequence} feedback={segment.feedback}
       named={named} onCheck={() => grading.check({ slots: basketToSlots(basket) })} />}>
     <section className="lf-learning-board lf-stl" aria-label={document.title}>
-      <p data-copy-role="body">{goalText(goal, t, locale)}</p>
-      <svg className="lf-stl-bar" viewBox={`0 0 ${BAR.width} ${BAR.height}`} role="img" aria-label={spoken} focusable="false" data-copy-role="data">
-        <rect className="lf-stl-track" x="0" y={BAR.y} width={BAR.width} height={BAR.thick} rx="7" />
-        {left !== null && left > 0 ? <rect className="lf-stl-change" x={at(cost)} y={BAR.y} width={BAR.width - at(cost)} height={BAR.thick} /> : null}
-        <rect className="lf-stl-fill" data-over={over > 0 ? 'true' : 'false'} x="0" y={BAR.y} width={at(cost)} height={BAR.thick} rx="7" />
-        <line className="lf-stl-mark" x1={markAt} y1={BAR.y - 8} x2={markAt} y2={BAR.y + BAR.thick + 8} />
-        <text className="lf-stl-mark-label" x={labelAt} y={BAR.y - 14} textAnchor="middle">{mark.label}</text>
-      </svg>
+      <p className="lf-stl-goal" data-copy-role="data">{goalText(goal, t, locale)}</p>
+      <LabelledDrawing className="lf-stl-drawing">
+        <svg className="lf-stl-bar" viewBox={`0 0 ${BAR.width} ${BAR.height}`} role="img" aria-label={spoken} focusable="false" data-copy-role="data">
+          <rect className="lf-stl-track" x="0" y={BAR.y} width={BAR.width} height={BAR.thick} rx="7" />
+          {left !== null && left > 0 ? <rect className="lf-stl-change" x={at(cost)} y={BAR.y} width={BAR.width - at(cost)} height={BAR.thick} /> : null}
+          <rect className="lf-stl-fill" data-over={over > 0 ? 'true' : 'false'} x="0" y={BAR.y} width={at(cost)} height={BAR.thick} rx="7" />
+          <line className="lf-stl-mark" x1={markAt} y1={BAR.y - 8} x2={markAt} y2={BAR.y + BAR.thick + 8} />
+        </svg>
+        <BoardLabel box={BAR} x={markAt} y={BAR.y - 10} align={markAlign} valign="bottom" room={BAR.width / 2}>{mark.label}</BoardLabel>
+      </LabelledDrawing>
       <p className="lf-stl-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{status}</p>
       <div className="lf-stl-basket" role="group" aria-label={t.stlBasketHeading} {...drag.target('basket')}>
         <h2 data-copy-role="heading">{t.stlBasketHeading}</h2>
-        {bought.length === 0 ? <p data-copy-role="body">{t.stlEmpty}</p> : <ul className="lf-stl-rows">
+        {bought.length === 0 ? null : <ul className="lf-stl-rows">
           {bought.map((item) => <li key={item.id}>
             <span className="lf-hz-handle" data-hz-handle="" data-hz-hit="64">
               <ChoiceChip {...drag.chip(`basket:${item.id}`)} disabled={locked}>{itemName(t, item.id)} {fill(t.stlInBasket, { n: basket[item.id] ?? 0 })}</ChoiceChip>
@@ -122,7 +128,7 @@ function MarketStall({ document, segment, payload, onBack, sequence, onGrade }: 
     </section>
     <section className="lf-learning-control-strip" aria-label={t.stlShelfHeading}>
       <h2 data-copy-role="heading">{t.stlShelfHeading}</h2>
-      <p data-copy-role="body">{t.stlHelp}</p>
+      <p className="lf-stl-hint" role="status" data-copy-role="body">{hint}</p>
       <div className="lf-stl-shelf" role="group" aria-label={t.stlShelfHeading} {...drag.target('shelf')}>
         {items.map((item) => {
           const remaining = item.stock - (basket[item.id] ?? 0);

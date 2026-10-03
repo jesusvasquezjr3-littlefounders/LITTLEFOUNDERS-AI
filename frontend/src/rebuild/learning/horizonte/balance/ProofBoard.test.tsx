@@ -48,7 +48,7 @@ describe('visual proof board (F1.15)', () => {
     expect(screen.getByRole('button', { name: 'Copy of the shape: at start' })).toBeDisabled();
     expect(screen.getByRole('textbox', { name: 'Type the area' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
-    expect(document.querySelector('.lf-proof-hint')).toHaveTextContent('Predict first, then move the pieces.');
+    expect(document.querySelector('.lf-proof-hint')).toHaveTextContent('Predict to unlock.');
     fireEvent.click(screen.getByRole('button', { name: 'Half of base × height' }));
     expect(screen.getByRole('button', { name: 'Copy of the shape: at start' })).toBeEnabled();
     expect(document.querySelector('.lf-proof-hint')).toHaveTextContent('Move every piece, then type the answer.');
@@ -100,7 +100,7 @@ describe('visual proof board (F1.15)', () => {
     expect(screen.getByRole('button', { name: '16 fatias' })).toBeEnabled();
     fireEvent.click(screen.getByRole('button', { name: '16 fatias' }));
     expect(status()).toHaveTextContent('Fatias: 16');
-    tap('Todas as fatias: no início');
+    tap('As fatias: no início');
     expect(status()).toHaveTextContent('Quase um retângulo: meia circunferência de largura e um raio de altura.');
     expect(status()).not.toHaveTextContent('3.14159');
     fireEvent.change(screen.getByRole('textbox', { name: 'Digite a área' }), { target: { value: '78,5' } });

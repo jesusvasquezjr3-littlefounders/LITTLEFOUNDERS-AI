@@ -32,8 +32,8 @@ Every scope is `adult: false`; any other band or the adult pathway is refused by
 ## Behaviour
 
 - **Rekenrek (A05).** Two rows of ten beads in blocks of five (5 and 10 read as blocks). Payload `{ start: [a, b] }`. Tap a bead to slide
-  it and every bead before it; tap a slid bead to slide it and the beads after it back. Chips "Slide one bead", "Slide a block of
-  five", "Slide one back", "Slide five back" drag onto a row (or tap the chip, then the row). Keyboard path: pick a chip, then "Move to"
+  it and every bead before it; tap a slid bead to slide it and the beads after it back. Chips "Slide one", "Slide five", "Back one",
+  "Back five" drag onto a row (or tap the chip, then the row). Keyboard path: pick a chip, then "Move to"
   and choose the row. A chip that cannot move anywhere is disabled; counts stay between 0 and 10.
 - **Abacus (A06).** One to four rods, a five bead and four one beads each, place names from the rod count (ones, tens, hundreds,
   thousands). Payload `{ start: [digits] }`. Tap a bead to set the rod; chips "Add one", "Take one", "Add five", "Take five" drag onto a
@@ -56,15 +56,15 @@ Every scope is `adult: false`; any other band or the adult pathway is refused by
   20) of `step` units from `low`, two to six distinct given numbers that each sit on a mark. `scale` 0 is whole numbers, 1 tenths, 2
   hundredths, and every number is whole units of that grid (0.45 is 45 at scale 2), so nothing is compared as a float. Only the two
   ends and the middle mark are labelled. Tap a number and then a mark, drag it, or pick it and use "Move to" with `Tray` or any `Mark
-  n`. Check opens only when every number is placed; Reset puts them all back. A status line and "Show as table" state each number's
+  n`. Check opens only when every number is placed; Reset puts them all back. A status line and "Table" state each number's
   mark, in the learner's language (pt-BR writes 0,45). The scorer checks every position.
 - **Measure a given object (F1.7).** Payload `{ unit, object, from, to, max }`: a pencil or a paper strip drawn from a near mark to a far
   mark of a ruler (at most 12 marks, cm or in). The learner reads its length with a stepper that starts at 0 and checks. The answer
   is the reported length, whole units; Core holds the key (`to` minus `from`). The object may start on any mark, so reading the far
-  mark is a likely wrong answer; the board submits what is read and Core marks it `review`, with no special feedback. A status line and "Show as table" give the same drawing
+  mark is a likely wrong answer; the board submits what is read and Core marks it `review`, with no special feedback. A status line and "Table" give the same drawing
   in words.
 - **Equivalent on every board.** A live status line writes the state in words and numbers ("Row 1: 7 (5 + 2). Row 2: 2. Total: 9"), and
-  "Show as table" opens a table with the same state. Both are spoken text for the instruction's state, in the learner's language.
+  "Table" opens a table with the same state. Both are spoken text for the instruction's state, in the learner's language.
 
 ## Scorer ladder
 

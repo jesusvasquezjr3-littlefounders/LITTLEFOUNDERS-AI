@@ -87,7 +87,7 @@ function TimeValue({ document, segment, onBack, sequence, onGrade }: Omit<Horizo
   const scale = Math.max(1, ...frame.slotIds.flatMap((slot) => (slots[slot] ?? []).flatMap((piece) => [amountOf(piece), worthOf(piece, slotYear(slot) ?? 0)])));
   const bar = (cents: number) => Math.max(1, Math.round((cents / scale) * 48));
 
-  const figures = measure === 'present' ? t.tvFiguresToday : fill(t.tvFiguresEnd, { n: frame.horizon });
+  const worthLegend = measure === 'present' ? t.npLegendWorth : fill(t.tvLegendWorthEnd, { n: frame.horizon });
   const total = measure === 'present' ? fill(t.tvTotalToday, { amount: money(totalCents, locale) }) : fill(t.tvTotalEnd, { n: frame.horizon, amount: money(totalCents, locale) });
   const answerLabel = p.ask === 'present' ? t.tvAnswerToday : fill(t.tvAnswerEnd, { n: frame.horizon });
   const placedYears = frame.slotIds.filter((slot) => (slots[slot]?.length ?? 0) > 0);
@@ -102,7 +102,10 @@ function TimeValue({ document, segment, onBack, sequence, onGrade }: Omit<Horizo
     <section className="lf-learning-board lf-fin" aria-labelledby={`${segment.id}-timeline`}>
       <h2 id={`${segment.id}-timeline`} data-copy-role="heading">{t.tvTimeline}</h2>
       <p data-copy-role="data">{fill(t.tvRate, { rate: percent(p.rateBps, locale) })}</p>
-      <p data-copy-role={measure === 'present' ? 'body' : 'data'}>{figures}</p>
+      <div className="lf-fin-legend" data-copy-role="data">
+        <span><i className="lf-fin-swatch lf-fin-swatch--cash" aria-hidden="true" />{t.npLegendCash}</span>
+        <span><i className="lf-fin-swatch lf-fin-swatch--worth" aria-hidden="true" />{worthLegend}</span>
+      </div>
       <ol className="lf-fin-timeline">
         {frame.slotIds.map((slot) => {
           const year = slotYear(slot) ?? 0;

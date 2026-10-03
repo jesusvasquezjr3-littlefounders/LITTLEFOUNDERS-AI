@@ -19658,7 +19658,7 @@
           "id": "lorenz-01",
           "type": "visual.chart.v2",
           "grading": "server",
-          "prompt": "Find where the curve bends from the line.",
+          "prompt": "Find where the curve bends.",
           "visual": {
             "type": "lorenz-curve"
           },
@@ -19941,7 +19941,7 @@
           "id": "lorenz-01",
           "type": "visual.chart.v2",
           "grading": "server",
-          "prompt": "Busca dónde la curva se separa de la línea.",
+          "prompt": "Busca dónde se curva la línea.",
           "visual": {
             "type": "lorenz-curve"
           },
@@ -20224,7 +20224,7 @@
           "id": "lorenz-01",
           "type": "visual.chart.v2",
           "grading": "server",
-          "prompt": "Veja onde a curva se afasta da linha.",
+          "prompt": "Veja onde a curva se afasta.",
           "visual": {
             "type": "lorenz-curve"
           },

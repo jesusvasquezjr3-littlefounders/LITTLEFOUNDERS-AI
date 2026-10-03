@@ -41,7 +41,7 @@ function WallBoard({ document, segment, onBack, sequence, onGrade, payload }: Pr
     canCheck={shaded >= 1} answer={{ n: shaded, d: parts }} named={{ met: t.metWall, hint: t.hintWall }} changed={shaded > 0}
     onReset={reset} table={{ open, toggle: () => setOpen((now) => !now) }} label={t.wallLabel}
     status={fill(t.wallFacts, { name, d: parts, k: shaded })}
-    board={<div className="lf-wall-scroll"><div className="lf-wall" style={{ '--cells': parts } as CSSProperties}>
+    board={<div className="lf-wall-scroll"><div className="lf-wall" data-tap="true" style={{ '--cells': parts } as CSSProperties}>
       <p className="lf-numb-legend" data-copy-role="data">{fill(t.givenRow, { name })}</p>
       <Bar cells={d} shaded={n} hue="mint" />
       <p className="lf-numb-legend" data-copy-role="data">{fill(t.targetRow, { n: parts })}</p>

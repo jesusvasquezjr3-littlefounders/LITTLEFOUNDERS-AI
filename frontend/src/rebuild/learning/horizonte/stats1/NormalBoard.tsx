@@ -54,7 +54,7 @@ function Normal({ document, segment, onBack, sequence, onGrade }: Omit<Horizonte
       named={{ met: t.metNormal, hint: t.hintNormal }} onCheck={() => grading.check({ mean, sd })} />}>
     <section className="lf-learning-board lf-stats" aria-label={t.curveName}>
       <Chart label={t.curveName} height={base + 44}>
-        <rect className="lf-stats-band" x={x(band.low)} y={TOP - 8} width={x(band.high) - x(band.low)} height={PLOT_H + 8} />
+        <rect className="lf-stats-band" data-board-decoration="" x={x(band.low)} y={TOP - 8} width={x(band.high) - x(band.low)} height={PLOT_H + 8} />
         <path className="lf-stats-area" d={`M${x(band.low).toFixed(1)} ${base} ${linePath(inside.map((value) => [x(value), y(value)] as const)).replace('M', 'L')} L${x(band.high).toFixed(1)} ${base} Z`} />
         <path className="lf-stats-curve" d={linePath(curve.map((value) => [x(value), y(value)] as const))} />
         {[band.low, band.high].map((edge) => <g key={edge}>

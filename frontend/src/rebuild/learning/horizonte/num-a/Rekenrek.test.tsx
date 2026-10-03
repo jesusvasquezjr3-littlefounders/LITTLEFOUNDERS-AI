@@ -73,8 +73,8 @@ describe('num-a board: rekenrek (A05)', () => {
     await screen.findByRole('group', { name: 'Rekenrek' });
     const moveTo = screen.getByRole('button', { name: 'Move to' });
     expect(moveTo).toBeDisabled();
-    fireEvent.click(screen.getByRole('button', { name: 'Slide a block of five' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Slide a block of five: Move to' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Slide five' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Slide five: Move to' }));
     fireEvent.click(await screen.findByRole('menuitem', { name: 'Row 1' }));
     expect(status()).toHaveTextContent('Row 1: 5 (5 + 0). Row 2: 0. Total: 5');
     expect(grade).not.toHaveBeenCalled();
@@ -84,10 +84,10 @@ describe('num-a board: rekenrek (A05)', () => {
     show('rekenrek-ten');
     await screen.findByRole('group', { name: 'Rekenrek' });
     expect(status()).toHaveTextContent('Row 1: 6 (5 + 1)');
-    fireEvent.click(screen.getByRole('button', { name: 'Slide one bead' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Slide one' }));
     fireEvent.click(document.querySelector('[data-drop-target="row-1"]')!);
     expect(status()).toHaveTextContent('Row 2: 1. Total: 7');
-    fireEvent.click(screen.getByRole('button', { name: 'Slide one back' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Back one' }));
     fireEvent.click(document.querySelector('[data-drop-target="row-0"]')!);
     expect(status()).toHaveTextContent('Row 1: 5 (5 + 0). Row 2: 1');
   });
@@ -97,7 +97,7 @@ describe('num-a board: rekenrek (A05)', () => {
     await screen.findByRole('group', { name: 'Rekenrek' });
     fireEvent.click(bead(1, 10, 'not counted'));
     expect(status()).toHaveTextContent('Row 1: 10 (10 + 0)');
-    fireEvent.click(screen.getByRole('button', { name: 'Slide one bead' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Slide one' }));
     fireEvent.click(document.querySelector('[data-drop-target="row-0"]')!);
     expect(status()).toHaveTextContent('Row 1: 10');
     expect(status()).not.toHaveTextContent('Row 1: 11');
@@ -119,7 +119,7 @@ describe('num-a board: rekenrek (A05)', () => {
   it('shows the same state as a table', async () => {
     show('rekenrek-ten');
     await screen.findByRole('group', { name: 'Rekenrek' });
-    fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Table' }));
     const table = screen.getByRole('table', { name: 'Beads in each row' });
     expect(within(table).getAllByRole('row').map((row) => row.textContent)).toEqual(['RowBeadsFivesOnes', '1611', '2000', 'Total611']);
     fireEvent.click(screen.getByRole('button', { name: 'Hide table' }));
@@ -130,14 +130,14 @@ describe('num-a board: rekenrek (A05)', () => {
     show('rekenrek-seven', undefined, 'es-MX');
     expect(await screen.findByRole('group', { name: 'Marco de cuentas' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Fila 1, cuenta 3: sin contar' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Mostrar como tabla' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Tabla' })).toBeTruthy();
     expect(status()).toHaveTextContent('Fila 1: 0. Fila 2: 0. Total: 0');
   });
 
   it('speaks it in Portuguese too', async () => {
     show('rekenrek-seven', undefined, 'pt-BR');
     expect(await screen.findByRole('button', { name: 'Fileira 2, conta 4: não contada' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Mostrar como tabela' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Tabela' })).toBeTruthy();
   });
 });
 
@@ -209,7 +209,7 @@ describe('num-a board: abacus (A06)', () => {
   it('shows the same state as a table and resets to the start', async () => {
     show('abacus-add-twenty');
     await screen.findByRole('group', { name: 'Abacus' });
-    fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Table' }));
     const table = screen.getByRole('table', { name: 'Beads on each rod' });
     expect(within(table).getAllByRole('row').map((row) => row.textContent)).toEqual(['PlaceFive beadOne beadsDigit', 'Tens033', 'Ones105', 'Number35']);
     fireEvent.click(oneBead('Tens', 4, 'not counted'));

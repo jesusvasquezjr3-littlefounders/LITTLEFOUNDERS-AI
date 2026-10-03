@@ -38,7 +38,9 @@ const DIRECT_MANIPULATION: Record<string, RegExp> = {
   'rebuild/learning/horizonte/com/NetworkBoard.tsx': /<button key=\{id\} type="button" className="lf-pascal-cell"/g,
   'rebuild/learning/horizonte/golden/TenFrameBoard.tsx': /<button key=\{index\} type="button" className="lf-tenframe-cell"/g,
   'rebuild/learning/horizonte/num-b/ArrayAreaBoard.tsx': /<button key=\{index\} type="button" className="lf-arr-row"|<button type="button" aria-pressed=\{split === at\}/g,
-  'rebuild/learning/horizonte/num-b/FractionWallBoard.tsx': /<button type="button" className="lf-fcell lf-fcell--button"|<button key=\{index\} type="button" className="lf-grid-strip"|<button type="button" className="lf-grid-strip"/g,
+  // The numbered shading row of the circles: the tap alternative to the drawn slices. ChoiceChip and Button are bound to counted copy roles, so they would count the digits as words.
+  'rebuild/learning/horizonte/num-b/FractionCirclesBoard.tsx': /<button key=\{item\.value\} type="button" className="lf-numb-numeral"/g,
+  'rebuild/learning/horizonte/num-b/FractionWallBoard.tsx':/<button type="button" className="lf-fcell lf-fcell--button"|<button key=\{index\} type="button" className="lf-grid-strip"|<button type="button" className="lf-grid-strip"/g,
   'rebuild/learning/horizonte/num-b/RatioLineBoard.tsx': /<button type="button" className="lf-line-step"/g,
   'rebuild/learning/horizonte/solids/CubeStackBoard.tsx': /<button type="button" className="lf-stack-height"/g,
   'rebuild/learning/horizonte/solids/NetCompleteBoard.tsx': /<button type="button" className="lf-net-square"/g,

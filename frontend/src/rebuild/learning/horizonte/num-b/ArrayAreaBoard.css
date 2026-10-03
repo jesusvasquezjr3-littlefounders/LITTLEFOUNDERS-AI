@@ -1,5 +1,5 @@
 /* F1.4 arrays and area models: rows of dots to count, a box to cut, a rectangle to take apart. Tokens only. */
-.lf-arr-rows { display: grid; gap: var(--spacing-1); justify-items: start; }
+.lf-arr-rows { display: grid; gap: var(--spacing-2); justify-items: start; }
 .lf-arr-row { display: inline-flex; align-items: center; min-block-size: var(--target-base); padding: var(--spacing-1) var(--spacing-3); border: 1px solid var(--outline); border-radius: var(--rounded-sm); background: var(--surface); color: var(--sky-strong); cursor: pointer; }
 .lf-arr-row[aria-pressed='true'] { border-color: var(--sky-strong); background: var(--sky-soft); }
 .lf-arr-row:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
@@ -8,7 +8,7 @@
 .lf-arr-dot { fill: none; stroke: currentColor; stroke-width: 2.5; }
 .lf-arr-dot--on { fill: currentColor; }
 .lf-area-svg { inline-size: min(100%, 28rem); block-size: auto; overflow: visible; }
-.lf-area-rect { fill: var(--sunken); stroke: var(--outline); stroke-width: 2; }
+.lf-area-rect { fill: var(--sunken); stroke: var(--edge); stroke-width: 2; }
 .lf-area-rect--sky { fill: var(--sky-soft); stroke: var(--sky-strong); }
 .lf-area-rect--mint { fill: var(--mint-soft); stroke: var(--mint-strong); }
 .lf-area-svg text { fill: var(--content); font-size: 14px; font-weight: 800; }

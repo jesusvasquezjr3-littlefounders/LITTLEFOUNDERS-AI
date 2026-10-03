@@ -443,7 +443,7 @@ describe('F4.6 market stall', () => {
   it('fills the basket with tap then tap, and shows the cost bar and the table', async () => {
     show('exact-basket');
     await screen.findByRole('group', { name: 'Your basket' });
-    expect(screen.getByText('Spend exactly $2.50.')).toBeTruthy();
+    expect(screen.getByText('Goal: $2.50')).toBeTruthy();
     expect(readout()).toHaveTextContent('Items: 0. Cost: $0.00');
     fireEvent.click(shelfChip('Apple'));
     fireEvent.click(screen.getByRole('group', { name: 'Your basket' }));
@@ -462,7 +462,7 @@ describe('F4.6 market stall', () => {
     expect(readout()).toHaveTextContent('Items: 1. Cost: $1.20');
     fireEvent.click(button('Remove one: Bread'));
     expect(readout()).toHaveTextContent('Items: 0. Cost: $0.00');
-    expect(screen.getByText('Nothing in the basket yet.')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Remove one: Bread' })).toBeNull();
   });
 
   it('stops at the stock of an item', async () => {
@@ -493,8 +493,8 @@ describe('F4.6 market stall', () => {
   it('marks only what is paid on a change goal and reads the change', async () => {
     show('make-the-change');
     await screen.findByRole('group', { name: 'Your basket' });
-    expect(screen.getByText('You pay $10. You want $2 back.')).toBeTruthy();
-    expect(document.querySelector('.lf-stl-mark-label')).toHaveTextContent('You pay');
+    expect(screen.getByText('You pay: $10. Change wanted: $2')).toBeTruthy();
+    expect(document.querySelector('.lf-stl-drawing .lf-hz-label')).toHaveTextContent('You pay');
     fireEvent.click(shelfChip('Pen'));
     fireEvent.click(screen.getByRole('group', { name: 'Your basket' }));
     expect(readout()).toHaveTextContent('Items: 1. Cost: $1.50. Change: $8.50');
@@ -510,6 +510,18 @@ describe('F4.6 market stall', () => {
     }
     expect(readout()).toHaveTextContent('Items: 2. Cost: $5.00. Over by $2.00');
     expect(document.querySelector('.lf-stl-fill')).toHaveAttribute('data-over', 'true');
+  });
+
+  it('names the next step only while an item is picked up, and writes no word in the bar', async () => {
+    show('exact-basket');
+    await screen.findByRole('group', { name: 'Your basket' });
+    expect(screen.queryByText('Now tap the basket.')).toBeNull();
+    fireEvent.click(shelfChip('Apple'));
+    expect(screen.getByText('Now tap the basket.')).toBeTruthy();
+    fireEvent.click(screen.getByRole('group', { name: 'Your basket' }));
+    expect(screen.queryByText('Now tap the basket.')).toBeNull();
+    expect(document.querySelector('.lf-stl-bar text')).toBeNull();
+    expect(document.querySelector('.lf-stl-drawing .lf-hz-label')).toHaveTextContent('Goal');
   });
 
   it('clears the basket on reset', async () => {
@@ -551,7 +563,9 @@ describe('F4.6 coin stack', () => {
     const handle = await screen.findByRole('slider', { name: 'Number of coins' });
     for (let press = 0; press < 3; press++) fireEvent.keyDown(handle, { key: 'ArrowRight' });
     expect(document.querySelectorAll('.lf-coin-piece')).toHaveLength(3);
-    expect(document.querySelector('.lf-coin-goal')).toHaveTextContent('Goal');
+    expect(document.querySelector('.lf-coin-goal line')).not.toBeNull();
+    expect(document.querySelector('.lf-coin-drawing')).toHaveTextContent('Goal');
+    expect(document.querySelector('.lf-coin-drawing')).toHaveTextContent('Phone 8 mm');
   });
 
   it('sets the count from the Move to menu', async () => {
@@ -570,6 +584,14 @@ describe('F4.6 coin stack', () => {
     fireEvent.click(button('Check'));
     await waitFor(() => expect(grade).toHaveBeenCalledWith({ value: '4' }, 'coins-as-tall-as-a-phone', expect.anything()));
     expect(screen.queryByText('You built the right stack.')).toBeNull();
+  });
+
+  it('writes the reference heights as words over the drawing, not in the SVG', async () => {
+    show('coins-worth-fifteen');
+    await screen.findByRole('slider', { name: 'Number of coins' });
+    expect(document.querySelector('.lf-coin-scene text')).toBeNull();
+    const words = [...document.querySelectorAll('.lf-coin-drawing .lf-hz-label')].map((label) => label.textContent);
+    expect(words).toEqual(['Phone 8 mm', 'Book 30 mm']);
   });
 
   it('lists the stacks you can build and the heights to compare', async () => {

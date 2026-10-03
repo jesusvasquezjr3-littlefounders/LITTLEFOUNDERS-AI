@@ -25,6 +25,8 @@ declare module 'd3-geo' {
   export function geoGraticule10(): GeoMultiLineString;
   /** The angle in radians between two [longitude, latitude] points. */
   export function geoDistance(a: GeoPoint, b: GeoPoint): number;
+  /** The great-circle point at fraction t (0 to 1) between two [longitude, latitude] points. */
+  export function geoInterpolate(a: GeoPoint, b: GeoPoint): (t: number) => [number, number];
 }
 
 declare module 'topojson-client' {

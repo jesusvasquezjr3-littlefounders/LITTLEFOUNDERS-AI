@@ -1,4 +1,5 @@
 import { pluralUnit } from '../../../design/plural';
+import { BoardLabel, LabelledDrawing } from '../BoardLabel';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText, fillSlot } from '../copyText';
@@ -7,16 +8,19 @@ import { FIN2_COPY } from './copy';
 import { startSlots } from './placement.generated';
 import { PERIOD_PREFIX, STEP_PREFIX, scheduleConflicts, scheduleFrame, scheduleOf, type SchedulePayload, type ScheduleTask } from './schedule.generated';
 import type { SlotMap } from './slots.generated';
-import { SlotBoardShell, Zone, describeZones, useSlotBoard, word, wrapLines, type Words } from './slotBoard';
+import { SlotBoardShell, Zone, describeZones, useSlotBoard, word, type Words } from './slotBoard';
 import './ScheduleBoard.css';
 
 type ScheduleSegment = Extract<HorizonteSegment, { type: 'plan.schedule-board.v2' }>;
 type Labels = Readonly<Record<string, string>>;
 
-const LEFT = 96;
-const GRID = 224;
-const HEAD = 18;
-const ROW = 26;
+const WIDTH = 320;
+const LEFT = 136;
+const GRID = WIDTH - LEFT;
+const HEAD = 28;
+const ROW = 44;
+const BAR = 20;
+const FOOT = 28;
 
 function startsOf(slots: SlotMap, prefix: string): Map<string, number> {
   const starts = new Map<string, number>();
@@ -33,75 +37,73 @@ function Rows({ t, gantt, schedule, labels, slots, broken }: RowsProps) {
   const span = (task: ScheduleTask) => (gantt ? task.duration! : 1);
   const x = (at: number) => LEFT + (at - 1) * column;
   const y = (row: number) => HEAD + row * ROW;
+  const middle = (row: number) => y(row) + ROW / 2;
   const count = schedule.tasks.length;
   const loaded = gantt && schedule.workers !== undefined;
   const bodyEnd = y(count) + (loaded ? ROW : 0);
-  const height = bodyEnd + (gantt ? 16 : 4);
+  const height = bodyEnd + (gantt ? FOOT : 4);
+  const box = { width: WIDTH, height };
   const index = new Map(schedule.tasks.map((task, row) => [task.id, row]));
   const busy = (period: number) => schedule.tasks.filter((task) => start.has(task.id) && start.get(task.id)! <= period && period <= start.get(task.id)! + span(task) - 1).length;
-  return <svg className="lf-sched-chart" viewBox={`0 0 320 ${height}`} role="img" aria-label={gantt ? t.chartGantt : t.chartTimeline} data-copy-role="data" focusable="false">
-    {Array.from({ length: columns }, (_, at) => <g key={at}>
-      <text x={x(at + 1) + column / 2} y="12" textAnchor="middle">{at + 1}</text>
-      <line className="lf-sched-grid" x1={x(at + 1)} x2={x(at + 1)} y1={HEAD} y2={bodyEnd} />
-    </g>)}
-    <line className="lf-sched-grid" x1={LEFT + GRID} x2={LEFT + GRID} y1={HEAD} y2={bodyEnd} />
-    {schedule.tasks.map((task, row) => <g key={task.id}>
-      <line className="lf-sched-grid" x1="0" x2={LEFT + GRID} y1={y(row)} y2={y(row)} />
-      {wrapLines(labels[task.id] ?? task.id, 15).slice(0, 2).map((line, at, lines) => <text key={at} x="0" y={y(row) + (lines.length === 1 ? 16 : 11 + at * 11)}>{line}</text>)}
-      {start.has(task.id) ? <rect className={broken.has(task.id) ? 'lf-sched-bar lf-sched-bar--broken' : 'lf-sched-bar'} x={x(start.get(task.id)!) + 1}
-        y={y(row) + 6} width={Math.max(4, Math.min(span(task) * column - 2, LEFT + GRID - x(start.get(task.id)!) - 1))} height="14" rx="3" /> : null}
-      {!gantt && task.due !== undefined ? <line className="lf-sched-due" x1={x(task.due + 1)} x2={x(task.due + 1)} y1={y(row) + 3} y2={y(row) + ROW - 3} /> : null}
-    </g>)}
-    <line className="lf-sched-grid" x1="0" x2={LEFT + GRID} y1={y(count)} y2={y(count)} />
-    {schedule.tasks.flatMap((task) => task.after.map((before) => {
-      const from = schedule.tasks.find((other) => other.id === before)!;
-      if (!start.has(task.id) || !start.has(before)) return null;
-      const x1 = x(start.get(before)! + span(from)) - 1;
-      const y1 = y(index.get(before)!) + 13;
-      const x2 = x(start.get(task.id)!) + 1;
-      const y2 = y(index.get(task.id)!) + 13;
-      const bent = x2 - x1 >= 6;
-      return <g key={`${before}>${task.id}`} className={broken.has(task.id) ? 'lf-sched-arrow lf-sched-arrow--broken' : 'lf-sched-arrow'}>
-        <path d={bent ? `M${x1} ${y1} H${x1 + 3} V${y2} H${x2}` : `M${x1} ${y1} L${x2} ${y2}`} fill="none" />
-        <polygon points={`${x2},${y2} ${x2 - 4},${y2 - 3} ${x2 - 4},${y2 + 3}`} />
-      </g>;
-    }))}
-    {loaded ? <g>
-      <text x="0" y={y(count) + 16}>{t.busy}</text>
+  return <LabelledDrawing className="lf-sched-drawing">
+    <svg className="lf-sched-chart" viewBox={`0 0 ${WIDTH} ${height}`} role="img" aria-label={gantt ? t.chartGantt : t.chartTimeline} data-copy-role="data" focusable="false">
       {Array.from({ length: columns }, (_, at) => <g key={at}>
-        {busy(at + 1) > schedule.workers! ? <rect className="lf-sched-over" x={x(at + 1) + 1} y={y(count) + 3} width={column - 2} height={ROW - 6} rx="3" /> : null}
-        <text x={x(at + 1) + column / 2} y={y(count) + 17} textAnchor="middle">{busy(at + 1)}</text>
+        <text x={x(at + 1) + column / 2} y={HEAD - 8} textAnchor="middle">{at + 1}</text>
+        <line className="lf-sched-grid" x1={x(at + 1)} x2={x(at + 1)} y1={HEAD} y2={bodyEnd} />
       </g>)}
-    </g> : null}
-    {gantt ? <g>
-      <line className="lf-sched-due" x1={LEFT + GRID} x2={LEFT + GRID} y1={HEAD} y2={bodyEnd} />
-      <text x={LEFT + GRID} y={height - 3} textAnchor="end">{t.deadline}</text>
-    </g> : null}
-  </svg>;
+      <line className="lf-sched-grid" x1={WIDTH} x2={WIDTH} y1={HEAD} y2={bodyEnd} />
+      {schedule.tasks.map((task, row) => <g key={task.id}>
+        <line className="lf-sched-grid" x1="0" x2={WIDTH} y1={y(row)} y2={y(row)} />
+        {start.has(task.id) ? <rect className={broken.has(task.id) ? 'lf-sched-bar lf-sched-bar--broken' : 'lf-sched-bar'} x={x(start.get(task.id)!) + 1}
+          y={middle(row) - BAR / 2} width={Math.max(6, Math.min(span(task) * column - 2, WIDTH - x(start.get(task.id)!) - 1))} height={BAR} rx="4" /> : null}
+        {!gantt && task.due !== undefined ? <line className="lf-sched-due" x1={x(task.due + 1)} x2={x(task.due + 1)} y1={y(row) + 6} y2={y(row) + ROW - 6} /> : null}
+      </g>)}
+      <line className="lf-sched-grid" x1="0" x2={WIDTH} y1={y(count)} y2={y(count)} />
+      {schedule.tasks.flatMap((task) => task.after.map((before) => {
+        const from = schedule.tasks.find((other) => other.id === before)!;
+        if (!start.has(task.id) || !start.has(before)) return null;
+        const x1 = x(start.get(before)! + span(from)) - 1;
+        const y1 = middle(index.get(before)!);
+        const x2 = x(start.get(task.id)!) + 1;
+        const y2 = middle(index.get(task.id)!);
+        const bent = x2 - x1 >= 8;
+        return <g key={`${before}>${task.id}`} className={broken.has(task.id) ? 'lf-sched-arrow lf-sched-arrow--broken' : 'lf-sched-arrow'}>
+          <path d={bent ? `M${x1} ${y1} H${x1 + 4} V${y2} H${x2}` : `M${x1} ${y1} L${x2} ${y2}`} fill="none" />
+          <polygon points={`${x2},${y2} ${x2 - 6},${y2 - 4} ${x2 - 6},${y2 + 4}`} />
+        </g>;
+      }))}
+      {loaded ? <g>
+        {Array.from({ length: columns }, (_, at) => <g key={at}>
+          {busy(at + 1) > schedule.workers! ? <rect className="lf-sched-over" x={x(at + 1) + 1} y={y(count) + 4} width={column - 2} height={ROW - 8} rx="4" /> : null}
+          <text x={x(at + 1) + column / 2} y={y(count) + ROW / 2 + 6} textAnchor="middle">{busy(at + 1)}</text>
+        </g>)}
+      </g> : null}
+      {gantt ? <line className="lf-sched-due" x1={WIDTH} x2={WIDTH} y1={HEAD} y2={bodyEnd} /> : null}
+    </svg>
+    {schedule.tasks.map((task, row) => <BoardLabel key={task.id} x={0} y={middle(row)} box={box} align="start" valign="middle" room={LEFT - 8}>{labels[task.id] ?? task.id}</BoardLabel>)}
+    {loaded ? <BoardLabel x={0} y={middle(count)} box={box} align="start" valign="middle" room={LEFT - 8}>{t.busy}</BoardLabel> : null}
+    {gantt ? <BoardLabel x={WIDTH} y={bodyEnd + 4} box={box} align="end" valign="top" room={GRID}>{t.deadline}</BoardLabel> : null}
+  </LabelledDrawing>;
 }
 
 interface ColumnsProps { t: Words; slots: SlotMap; limit: number; movable: number; done: number }
 
+/** Three bordered columns in HTML, so a column name wraps by locale; the border carries the 3:1 mark contrast. */
 function Columns({ t, slots, limit, movable, done }: ColumnsProps) {
   const columns = [
     { name: word(t, 'slot:todo'), filled: slots.todo?.length ?? 0, capacity: movable, note: null as string | null },
     { name: word(t, 'slot:doing'), filled: slots.doing?.length ?? 0, capacity: limit, note: fillSlot(t.limit, limit) },
     { name: t.doneColumn, filled: done, capacity: done, note: null },
   ];
-  const perRow = 5;
-  const rows = Math.max(...columns.map((column) => Math.ceil(column.capacity / perRow)));
-  return <svg className="lf-sched-chart" viewBox={`0 0 320 ${38 + rows * 20}`} role="img" aria-label={t.chartKanban} data-copy-role="data" focusable="false">
-    {columns.map((column, at) => {
-      const left = at * 108;
-      return <g key={at}>
-        <rect className="lf-sched-column" x={left} y="0" width="104" height={38 + rows * 20 - 2} rx="6" />
-        <text x={left + 8} y="15">{column.name}</text>
-        {column.note ? <text className="lf-sched-note" x={left + 8} y="29">{column.note}</text> : null}
-        {Array.from({ length: column.capacity }, (_, card) => <rect key={card} className={card < column.filled ? 'lf-sched-card lf-sched-card--full' : 'lf-sched-card'}
-          x={left + 8 + (card % perRow) * 18} y={36 + Math.floor(card / perRow) * 20} width="14" height="14" rx="3" />)}
-      </g>;
-    })}
-  </svg>;
+  return <div className="lf-sched-kanban" role="img" aria-label={t.chartKanban}>
+    {columns.map((column, at) => <div key={at} className="lf-sched-column">
+      <span className="lf-sched-column-name" data-copy-role="data">{column.name}</span>
+      {column.note ? <span className="lf-sched-note" data-copy-role="data">{column.note}</span> : null}
+      <span className="lf-sched-cards">
+        {Array.from({ length: column.capacity }, (_, card) => <span key={card} className={card < column.filled ? 'lf-sched-card lf-sched-card--full' : 'lf-sched-card'} />)}
+      </span>
+    </div>)}
+  </div>;
 }
 
 function Plan({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: ScheduleSegment }) {

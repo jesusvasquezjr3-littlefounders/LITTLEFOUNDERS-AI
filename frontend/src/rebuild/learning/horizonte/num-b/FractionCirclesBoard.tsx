@@ -1,4 +1,4 @@
-import { useState, type KeyboardEvent, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Button, ChoiceChip } from '../../../design/controls';
 import { fractionName } from '../../fractionName';
 import { useSegmentGrade } from '../../segmentKit';
@@ -19,25 +19,33 @@ const RADIUS = 48;
 const point = (turn: number) => `${(RADIUS * Math.sin(turn * 2 * Math.PI)).toFixed(3)} ${(-RADIUS * Math.cos(turn * 2 * Math.PI)).toFixed(3)}`;
 const wedge = (index: number, slices: number) => `M 0 0 L ${point(index / slices)} A ${RADIUS} ${RADIUS} 0 0 1 ${point((index + 1) / slices)} Z`;
 
-/* A circle cut into equal slices, the first `shaded` filled. With onSlice every slice is a focusable button; without it the circle is a picture the spoken line and the table describe. */
+interface NumeralItem { value: number; name: string; pressed: boolean; press: () => void }
+
+/** A row of numbered buttons, each a 48 px target 8 px from the next: the tap-first path for a drawing whose own parts are too small to press. */
+function NumeralRow({ label, items, hue = 'sky', disabled }: { label: string; items: readonly NumeralItem[]; hue?: 'sky' | 'mint' | 'berry'; disabled?: boolean }) {
+  return <div className="lf-numb-numerals" role="group" aria-label={label} data-copy-role="data">
+    {items.map((item) => <button key={item.value} type="button" className="lf-numb-numeral" data-hue={hue} aria-pressed={item.pressed} aria-label={item.name} disabled={disabled}
+      onClick={item.press}>{item.value}</button>)}
+  </div>;
+}
+
+/* A circle cut into equal slices, the first `shaded` filled. With onSlice the learner shades it from a row of numbered buttons under it:
+   the slices are too small to be 48 px targets 8 px apart, so a tap on a slice is only a pointer shortcut. Without onSlice the circle is a picture the spoken line and the table describe. */
 function Circle({ slices, shaded, hue, name, sliceName, onSlice, disabled }: {
   slices: number; shaded: number; hue: Hue; name: string; sliceName?: (part: number) => string; onSlice?: (part: number) => void; disabled?: boolean;
 }) {
   const live = onSlice !== undefined && sliceName !== undefined && slices > 1;
-  const press = (part: number) => { if (!disabled) onSlice?.(part); };
-  const key = (part: number) => (event: KeyboardEvent<SVGPathElement>) => {
-    if (event.key !== 'Enter' && event.key !== ' ') return;
-    event.preventDefault();
-    press(part);
-  };
-  return <svg className="lf-circle" viewBox="-52 -52 104 104" role={live ? 'group' : 'img'} aria-label={name}>
-    {slices <= 1
-      ? <circle className="lf-circle-slice" r={RADIUS} data-on="false" data-hue={hue} />
-      : Array.from({ length: slices }, (_, index) => live
-        ? <path key={index} className="lf-circle-slice" d={wedge(index, slices)} data-on={index < shaded} data-hue={hue} role="button" aria-label={sliceName(index + 1)}
-          aria-pressed={index < shaded} aria-disabled={disabled ? true : undefined} tabIndex={disabled ? undefined : 0} onClick={() => press(index + 1)} onKeyDown={key(index + 1)} />
-        : <path key={index} className="lf-circle-slice" d={wedge(index, slices)} data-on={index < shaded} data-hue={hue} />)}
-  </svg>;
+  const pointer = live && !disabled;
+  return <>
+    <svg className="lf-circle" viewBox="-52 -52 104 104" role="img" aria-label={name} data-pointer={pointer ? 'true' : undefined}>
+      {slices <= 1
+        ? <circle className="lf-circle-slice" r={RADIUS} data-on="false" data-hue={hue} />
+        : Array.from({ length: slices }, (_, index) => <path key={index} className="lf-circle-slice" d={wedge(index, slices)} data-on={index < shaded} data-hue={hue}
+          onClick={pointer ? () => onSlice(index + 1) : undefined} />)}
+    </svg>
+    {live ? <NumeralRow label={name} hue={hue} disabled={disabled}
+      items={Array.from({ length: slices }, (_, index) => ({ value: index + 1, name: sliceName(index + 1), pressed: index < shaded, press: () => onSlice(index + 1) }))} /> : null}
+  </>;
 }
 
 function CircleFigure({ legend, children }: { legend: string; children: ReactNode }) {
@@ -85,9 +93,8 @@ function ShowBoard({ document, segment, onBack, sequence, onGrade, payload }: Pr
     tableNode={<DataTable caption={t.circlesCaption} head={[t.colItem, t.colParts, t.colShaded]} rows={[[t.circleYours, String(Math.max(cut, 1)), String(shaded)]]} />}>
     <section className="lf-learning-control-strip" aria-labelledby={`${segment.id}-cut`}>
       <h2 id={`${segment.id}-cut`} data-copy-role="heading">{t.circleCutHeading}</h2>
-      <div className="lf-numb-row">
-        {WALL_DENOMINATORS.map((parts) => <ChoiceChip key={parts} selected={cut === parts} disabled={locked} onToggle={() => cutInto(parts)}>{fill(t.cutInto, { n: parts })}</ChoiceChip>)}
-      </div>
+      <NumeralRow label={t.circleCutHeading} disabled={locked}
+        items={WALL_DENOMINATORS.map((parts) => ({ value: parts, name: fill(t.cutInto, { n: parts }), pressed: cut === parts, press: () => cutInto(parts) }))} />
     </section>
     <Stepper t={t} heading={t.circleShadeHeading} id={segment.id} locked={locked}
       more={{ disabled: cut === 0 || shaded >= cut, press: () => shade(shaded + 1) }} fewer={{ disabled: shaded <= 0, press: () => shade(shaded - 1) }} />

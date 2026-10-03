@@ -7,19 +7,16 @@ import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText } from '../copyText';
 import { SIM2_COPY } from './copy';
-import { axisOf, compactMoney, count, fill, money, percentile, signedPercent, spokenMoney, type Axis } from './format';
+import { axisOf, compactMoney, count, fill, money, percentile, signedPercent, spokenMoney, type Axis, type MoneyShorts } from './format';
 import { CHAPTER_YEARS, OUTCOME_TABLE, futuresOf, type Future, type Payload } from './model.generated';
 import '../horizonte.css';
 import './LifeSimBoard.css';
 
 type LifeSegment = Extract<HorizonteSegment, { type: 'money.life-sim.v2' }>;
 
-const VIEW_W = 640;
-const LEFT = 100;
-const RIGHT = 20;
-const TOP = 16;
-const PLOT_H = 220;
-const BASE = TOP + PLOT_H;
+const PLOT_W = 480;
+const PLOT_H = 260;
+const TICK = 6;
 
 const SLIDER = { portfolio: 'sliderPortfolio', retirement: 'sliderRetirement', insurance: 'sliderInsurance', life: 'sliderLife' } as const;
 const VALUE = { portfolio: 'valuePortfolio', retirement: 'valueRetirement', insurance: 'valueInsurance', life: 'valueLife' } as const;
@@ -40,32 +37,37 @@ function marksOf(finish: number, floor: number, life: boolean): { worth: Mark[];
   return { worth: life ? finishMark : [...finishMark, floorMark], cash: [floorMark] };
 }
 
-function FuturesChart({ label, locale, futures, series, axis, periods, yearsEach, marks, yearsLabel }: {
+/*
+ * The drawing is the plot alone. Every word and figure of the axes is HTML beside it (Bible 05 section 5): the y labels are zero-height
+ * rows spread over the plot's height, which is where the evenly spaced ticks of `axisOf` fall, and the x labels are zero-width columns.
+ */
+function FuturesChart({ label, locale, futures, series, axis, periods, yearsEach, marks, yearsLabel, shorts }: {
   label: string; locale: Locale; futures: readonly Future[]; series: 'path' | 'cushions'; axis: Axis; periods: number; yearsEach: number;
-  marks: readonly Mark[]; yearsLabel: string;
+  marks: readonly Mark[]; yearsLabel: string; shorts: MoneyShorts;
 }) {
-  const right = VIEW_W - RIGHT;
-  const x = (chapter: number) => LEFT + (chapter / periods) * (right - LEFT);
-  const y = (value: number) => TOP + (1 - (Math.min(axis.high, Math.max(axis.low, value)) - axis.low) / (axis.high - axis.low)) * PLOT_H;
+  const x = (chapter: number) => (chapter / periods) * PLOT_W;
+  const y = (value: number) => (1 - (Math.min(axis.high, Math.max(axis.low, value)) - axis.low) / (axis.high - axis.low)) * PLOT_H;
   const chapters = Array.from({ length: periods + 1 }, (_, chapter) => chapter);
   const line = (future: Future) => future[series].map((value, chapter) => `${chapter === 0 ? 'M' : 'L'}${x(chapter).toFixed(1)} ${y(value).toFixed(1)}`).join(' ');
-  return <svg className="lf-life-chart" viewBox={`0 0 ${VIEW_W} ${BASE + 68}`} role="img" aria-label={label} focusable="false" data-copy-role="data">
-    <g className="lf-life-ticks">
-      {axis.ticks.map((tick) => <g key={tick}>
-        <line className="lf-life-grid" x1={LEFT} x2={right} y1={y(tick)} y2={y(tick)} />
-        <text x={LEFT - 10} y={y(tick) + 7} textAnchor="end">{compactMoney(locale, tick)}</text>
-      </g>)}
-      <line x1={LEFT} x2={right} y1={BASE} y2={BASE} />
-      {chapters.map((chapter) => <g key={chapter}>
-        <line x1={x(chapter)} x2={x(chapter)} y1={BASE} y2={BASE + 8} />
-        <text x={x(chapter)} y={BASE + 34} textAnchor="middle">{count(locale, chapter * yearsEach)}</text>
-      </g>)}
-      <text className="lf-life-axis" x={(LEFT + right) / 2} y={BASE + 62} textAnchor="middle">{yearsLabel}</text>
-    </g>
-    {futures.map((future, index) => !future.ok ? <path key={index} className="lf-life-path lf-life-path--no" d={line(future)} /> : null)}
-    {futures.map((future, index) => future.ok ? <path key={index} className="lf-life-path lf-life-path--yes" d={line(future)} /> : null)}
-    {marks.map((mark) => <line key={mark.kind} className={`lf-life-mark lf-life-mark--${mark.kind}`} x1={LEFT} x2={right} y1={y(mark.value)} y2={y(mark.value)} />)}
-  </svg>;
+  return <div className="lf-life-chart" role="img" aria-label={label} data-copy-role="data">
+    <div className="lf-life-yaxis">
+      {[...axis.ticks].reverse().map((tick) => <span key={tick} className="lf-life-tick"><span className="lf-life-label">{compactMoney(locale, tick, shorts)}</span></span>)}
+    </div>
+    <svg className="lf-life-plot" viewBox={`0 0 ${PLOT_W} ${PLOT_H}`} focusable="false">
+      <g className="lf-life-ticks">
+        {axis.ticks.map((tick) => <line key={tick} className="lf-life-grid" x1={0} x2={PLOT_W} y1={y(tick)} y2={y(tick)} />)}
+        <line x1={0} x2={PLOT_W} y1={PLOT_H} y2={PLOT_H} />
+        {chapters.map((chapter) => <line key={chapter} x1={x(chapter)} x2={x(chapter)} y1={PLOT_H} y2={PLOT_H + TICK} />)}
+      </g>
+      {futures.map((future, index) => !future.ok ? <path key={index} className="lf-life-path lf-life-path--no" d={line(future)} /> : null)}
+      {futures.map((future, index) => future.ok ? <path key={index} className="lf-life-path lf-life-path--yes" d={line(future)} /> : null)}
+      {marks.map((mark) => <line key={mark.kind} className={`lf-life-mark lf-life-mark--${mark.kind}`} x1={0} x2={PLOT_W} y1={y(mark.value)} y2={y(mark.value)} />)}
+    </svg>
+    <div className="lf-life-xaxis">
+      {chapters.map((chapter) => <span key={chapter} className="lf-life-tick"><span className="lf-life-label">{count(locale, chapter * yearsEach)}</span></span>)}
+    </div>
+    <span className="lf-life-label lf-life-years">{yearsLabel}</span>
+  </div>;
 }
 
 function Swatch({ kind }: { kind: string }) {
@@ -115,6 +117,7 @@ function LifeSim({ document, segment, onBack, sequence, onGrade, seed }: Omit<Ho
   const worthName = life ? fill(t.chartNet, spoken) : fill(showFinish ? t.chartMoney : t.chartMoneyFloor, spoken);
   const valueText = (value: number) => fill(t[VALUE[scenario]], { v: scenario === 'retirement' ? money(locale, value) : count(locale, value) });
   const untouched = index === startIndex;
+  const shorts: MoneyShorts = { thousand: t.axisThousand, million: t.axisMillion };
   const status = fill(t.status, { c: valueText(choice), n: wins, g: goal });
   const legend = [
     { kind: 'lf-life-path lf-life-path--yes', text: t.legendYes }, { kind: 'lf-life-path lf-life-path--no', text: t.legendNo },
@@ -141,9 +144,9 @@ function LifeSim({ document, segment, onBack, sequence, onGrade, seed }: Omit<Ho
     foot={<GradedFoot locale={locale} grading={grading} canCheck={!untouched && !locked} sequence={sequence} feedback={segment.feedback}
       named={{ met: t.metLife, hint: t.hintLife }} onCheck={() => grading.check({ seed, choice })} />}>
     <section className="lf-learning-board lf-life" aria-label={worthName}>
-      <FuturesChart label={worthName} locale={locale} futures={futures} series="path" axis={axes.worth} periods={periods} yearsEach={yearsEach} marks={marks.worth} yearsLabel={t.axisYears} />
+      <FuturesChart label={worthName} locale={locale} futures={futures} series="path" axis={axes.worth} periods={periods} yearsEach={yearsEach} marks={marks.worth} yearsLabel={t.axisYears} shorts={shorts} />
       {axes.cash ? <FuturesChart label={fill(t.chartCash, spoken)} locale={locale} futures={futures} series="cushions" axis={axes.cash} periods={periods} yearsEach={yearsEach}
-        marks={marks.cash} yearsLabel={t.axisYears} /> : null}
+        marks={marks.cash} yearsLabel={t.axisYears} shorts={shorts} /> : null}
       <Legend items={legend} />
       <p className="lf-life-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{status}</p>
       {table ? <>

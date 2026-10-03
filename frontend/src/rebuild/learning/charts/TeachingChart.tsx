@@ -156,8 +156,8 @@ export function useFittedTags(canvas: React.RefObject<HTMLDivElement>) {
       }
       host.dataset.labelsDropped = String(dropped);
       if (host.classList.contains('lf-chart-canvas--fit')) {
-        host.style.setProperty('--lf-chart-over-top', `${Math.ceil(above)}px`);
-        host.style.setProperty('--lf-chart-over-bottom', `${Math.ceil(below)}px`);
+        host.style.setProperty('--lf-chart-over-top', `${Math.ceil(above / 4) * 4}px`);
+        host.style.setProperty('--lf-chart-over-bottom', `${Math.ceil(below / 4) * 4}px`);
       }
     };
     fit();

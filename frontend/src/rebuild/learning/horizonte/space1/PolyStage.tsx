@@ -25,7 +25,7 @@ export function PolySheet({ scene }: { scene: PolyScene }) {
   return scene.sheet ? <polygon className="lf-poly-sheet" points={points(scene.sheet)} /> : null;
 }
 
-/** The plane's cut on top of the solid: a filled polygon whose sides on faces turned away from the viewer are dashed. */
+/** The plane's cut over the faces and under the edges: a filled polygon whose sides on faces turned away from the viewer are dashed. */
 export function PolyCut({ scene }: { scene: PolyScene }) {
   const cut = scene.cut;
   if (!cut) return null;

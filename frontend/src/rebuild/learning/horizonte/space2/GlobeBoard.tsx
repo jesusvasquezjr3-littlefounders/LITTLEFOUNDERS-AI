@@ -1,11 +1,13 @@
 import { useEffect, useId, useMemo, useState, type KeyboardEvent } from 'react';
-import { geoDistance, geoGraticule10, geoOrthographic, geoPath, type GeoLineString, type GeoObject, type GeoSphere } from 'd3-geo';
+import { geoDistance, geoGraticule10, geoInterpolate, geoOrthographic, geoPath, type GeoLineString, type GeoObject, type GeoSphere } from 'd3-geo';
 import { Button, ChoiceChip } from '../../../design/controls';
 import type { Locale } from '../../../design/copyBudget';
 import { BoardShell, GradedFoot, useSegmentGrade } from '../../segmentKit';
+import { BoardLabel, LabelledDrawing } from '../BoardLabel';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { PLACES, globePlaces, readGlobePayload, routeCenter, routeDistances, routeFees, type GlobePayload, type GlobeRoute, type PlaceId } from './globe.generated';
+import { layoutLabels, placeTags } from './globeLabels';
 import { loadLand } from './landLoader';
 import { ScrollRegion } from './ScrollRegion';
 import { count, degrees, fill, money, percent, placeLabel, spaceText, type SpaceText } from './spaceText';
@@ -17,7 +19,9 @@ type Turn = 'west' | 'east' | 'north' | 'south';
 interface Center { lon: number; lat: number }
 
 const SIZE = 240;
+const BOX = { width: SIZE, height: SIZE } as const;
 const RADIUS = 104;
+const ARC_SAMPLES = 24;
 const STEP_LON = 30;
 const STEP_LAT = 20;
 const MAX_LAT = 80;
@@ -36,7 +40,7 @@ function turned(center: Center, turn: Turn): Center {
 const placeCenter = (place: PlaceId): Center => ({ lon: Math.round(PLACES[place].lon), lat: Math.round(PLACES[place].lat) });
 
 /** The globe: an orthographic view with the land, a graticule, the route arcs along great circles, and the places on the near side. */
-function GlobeSvg({ payload, center, chosen, land, t, name }: { payload: GlobePayload; center: Center; chosen: string | null; land: GeoObject | null; t: SpaceText; name: string }) {
+function GlobeDrawing({ payload, center, chosen, land, t, name }: { payload: GlobePayload; center: Center; chosen: string | null; land: GeoObject | null; t: SpaceText; name: string }) {
   const scene = useMemo(() => {
     const projection = geoOrthographic().translate([SIZE / 2, SIZE / 2]).scale(RADIUS).clipAngle(90).rotate([-center.lon, -center.lat]).precision(0.5);
     const path = geoPath(projection);
@@ -45,33 +49,45 @@ function GlobeSvg({ payload, center, chosen, land, t, name }: { payload: GlobePa
       const line: GeoLineString = { type: 'LineString', coordinates: [[PLACES[route.from].lon, PLACES[route.from].lat], [PLACES[route.to].lon, PLACES[route.to].lat]] };
       return { id: route.id, d: path(line) };
     });
+    // Points along each route, so a place name can be set clear of the lines.
+    const marks = payload.routes.flatMap((route) => {
+      const along = geoInterpolate([PLACES[route.from].lon, PLACES[route.from].lat], [PLACES[route.to].lon, PLACES[route.to].lat]);
+      return Array.from({ length: ARC_SAMPLES + 1 }, (_, step) => along(step / ARC_SAMPLES)).flatMap(([lon, lat]) => {
+        const at = near(lon, lat) ? projection([lon, lat]) : null;
+        return at ? [{ x: at[0], y: at[1] }] : [];
+      });
+    });
     const places = globePlaces(payload).flatMap((place) => {
       const { lon, lat } = PLACES[place];
       const at = near(lon, lat) ? projection([lon, lat]) : null;
       return at ? [{ id: place, x: at[0], y: at[1] }] : [];
     });
-    const tags = payload.routes.flatMap((route) => {
-      const middle = routeCenter(route.from, route.to);
-      const at = near(middle.lon, middle.lat) ? projection([middle.lon, middle.lat]) : null;
-      return at ? [{ id: route.id, x: at[0], y: at[1] }] : [];
-    });
-    return { sea: path(SPHERE), grid: path(geoGraticule10()), land: land ? path(land) : null, arcs, places, tags };
+    const tags = placeTags(SIZE, RADIUS, payload.routes.map((route) => {
+      const along = geoInterpolate([PLACES[route.from].lon, PLACES[route.from].lat], [PLACES[route.to].lon, PLACES[route.to].lat]);
+      return { id: route.id, at: (t: number) => {
+        const [lon, lat] = along(t);
+        const at = near(lon, lat) ? projection([lon, lat]) : null;
+        return at ? { x: at[0], y: at[1] } : null;
+      } };
+    }), places);
+    return { sea: path(SPHERE), grid: path(geoGraticule10()), land: land ? path(land) : null, arcs, marks, places, tags };
   }, [payload, center.lon, center.lat, land]);
   const drawn = [...scene.arcs].sort((left, right) => Number(left.id === chosen) - Number(right.id === chosen));
-  return <svg className="lf-s2-svg" viewBox={`0 0 ${SIZE} ${SIZE}`} role="img" aria-label={name} focusable="false" data-copy-role="data">
-    {scene.sea ? <path className="lf-s2-sea" d={scene.sea} /> : null}
-    {scene.grid ? <path className="lf-s2-grat" d={scene.grid} /> : null}
-    {scene.land ? <path className="lf-s2-land" d={scene.land} /> : null}
-    {drawn.map((arc) => arc.d ? <path key={arc.id} className="lf-s2-arc" data-chosen={chosen === arc.id ? 'true' : 'false'} d={arc.d} /> : null)}
-    {scene.places.map((place) => <g key={place.id}>
-      <circle className="lf-s2-place" cx={place.x} cy={place.y} r="3.5" />
-      <text className="lf-s2-place-label" x={place.x + 6} y={place.y - 5}>{placeLabel(t, place.id)}</text>
-    </g>)}
-    {scene.tags.map((tag) => <g key={tag.id} className="lf-s2-route-tag" data-chosen={chosen === tag.id ? 'true' : 'false'}>
-      <circle cx={tag.x} cy={tag.y} r="9" />
-      <text x={tag.x} y={tag.y} textAnchor="middle" dominantBaseline="central">{tag.id.toUpperCase()}</text>
-    </g>)}
-  </svg>;
+  const labels = layoutLabels(SIZE, scene.places.map((place) => ({ id: place.id, text: placeLabel(t, place.id), x: place.x, y: place.y })), scene.tags, scene.marks);
+  return <LabelledDrawing>
+    <svg className="lf-s2-svg" viewBox={`0 0 ${SIZE} ${SIZE}`} role="img" aria-label={name} focusable="false" data-copy-role="data">
+      {scene.sea ? <path className="lf-s2-sea" d={scene.sea} /> : null}
+      {scene.grid ? <path className="lf-s2-grat" d={scene.grid} data-board-decoration="" /> : null}
+      {scene.land ? <path className="lf-s2-land" d={scene.land} /> : null}
+      {drawn.map((arc) => arc.d ? <path key={arc.id} className="lf-s2-arc" data-chosen={chosen === arc.id ? 'true' : 'false'} d={arc.d} /> : null)}
+      {scene.places.map((place) => <circle key={place.id} className="lf-s2-place" cx={place.x} cy={place.y} r="3.5" />)}
+      {scene.tags.map((tag) => <g key={tag.id} className="lf-s2-route-tag" data-chosen={chosen === tag.id ? 'true' : 'false'}>
+        <circle cx={tag.x} cy={tag.y} r="9" />
+        <text x={tag.x} y={tag.y} textAnchor="middle" dominantBaseline="central">{tag.id.toUpperCase()}</text>
+      </g>)}
+    </svg>
+    {labels.map((label) => <BoardLabel key={label.id} box={BOX} x={label.x} y={label.y} align={label.align} valign={label.valign} room={label.room}>{label.text}</BoardLabel>)}
+  </LabelledDrawing>;
 }
 
 function feeTerms(t: SpaceText, locale: Locale, route: GlobeRoute): string {
@@ -128,7 +144,7 @@ function GlobeBoardView({ document, segment, payload, onBack, sequence, onGrade 
     <section className="lf-learning-board lf-s2-board">
       <div className="lf-s2-turn">
         <div className="lf-s2-stage" role="group" tabIndex={0} aria-label={t.globeName} aria-describedby={`${id}-keys`} onKeyDown={onKeyDown}>
-          <GlobeSvg payload={payload} center={center} chosen={chosen} land={land} t={t} name={t.globeName} />
+          <GlobeDrawing payload={payload} center={center} chosen={chosen} land={land} t={t} name={t.globeName} />
         </div>
         <p id={`${id}-keys`} className="lf-s2-keys" data-copy-role="body">{t.globeKeys}</p>
         <p className="lf-s2-readout" role="status" data-copy-role="data" data-hz-text-equivalent="">{fill(t.facing, { lat: degrees(t, center.lat, 'lat'), lon: degrees(t, center.lon, 'lon') })}</p>

@@ -53,7 +53,7 @@ describe('array board (F1.4)', () => {
     click('Row 1, 4 dots');
     click('Row 2, 4 dots');
     expect(status()).toHaveTextContent('3 rows of 4 dots. Counted rows: 2. Dots so far: 8.');
-    type('How many dots in all?', '12');
+    type('Dots in all', '12');
     expect(screen.getByText('Reads as 12')).toBeTruthy();
     check();
     await waitFor(() => expect(grade).toHaveBeenCalledWith({ value: '12' }, 'array-rows-columns', expect.anything()));
@@ -64,10 +64,10 @@ describe('array board (F1.4)', () => {
     await screen.findByRole('group', { name: 'Rows of dots' });
     expect(screen.getByRole('button', { name: 'Reset' })).toBeDisabled();
     click('Row 1, 4 dots');
-    type('How many dots in all?', '9');
+    type('Dots in all', '9');
     click('Reset');
     expect(status()).toHaveTextContent('Counted rows: 0');
-    expect(screen.getByRole('textbox', { name: 'How many dots in all?' })).toHaveValue('');
+    expect(screen.getByRole('textbox', { name: 'Dots in all' })).toHaveValue('');
   });
 
   it('shows the counted rows as a table and never the answer', async () => {
@@ -346,6 +346,7 @@ describe('fraction circles (F1.6 show)', () => {
     expect(screen.getByRole('button', { name: 'Shade one more' })).toBeDisabled();
     click('Cut in 4');
     expect(status()).toHaveTextContent('Show three quarters. Cut in 4 parts. Shaded: 0 of 4.');
+    expect(screen.getByRole('img', { name: 'Circle in 4 parts, 0 shaded' })).toBeTruthy();
     expect(screen.getByRole('group', { name: 'Circle in 4 parts, 0 shaded' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
     click('Your circle: part 3 of 4');
@@ -370,15 +371,15 @@ describe('fraction circles (F1.6 show)', () => {
     expect(status()).toHaveTextContent('The circle is not cut yet.');
   });
 
-  it('shades with the keyboard: Enter or Space on a part, and the one more and one less buttons', async () => {
+  it('shades from the numbered buttons, each a real button, and with the one more and one less buttons', async () => {
     const grade = show('circles-show');
     await screen.findByRole('img', { name: 'Whole circle, not cut' });
     click('Cut in 6');
-    fireEvent.keyDown(screen.getByRole('button', { name: 'Your circle: part 2 of 6' }), { key: 'Enter' });
+    const numerals = within(screen.getByRole('group', { name: 'Circle in 6 parts, 0 shaded' })).getAllByRole('button');
+    expect(numerals.map((button) => button.textContent)).toEqual(['1', '2', '3', '4', '5', '6']);
+    click('Your circle: part 2 of 6');
     expect(status()).toHaveTextContent('Shaded: 2 of 6.');
-    fireEvent.keyDown(screen.getByRole('button', { name: 'Your circle: part 4 of 6' }), { key: ' ' });
-    expect(status()).toHaveTextContent('Shaded: 4 of 6.');
-    fireEvent.keyDown(screen.getByRole('button', { name: 'Your circle: part 5 of 6' }), { key: 'a' });
+    click('Your circle: part 4 of 6');
     expect(status()).toHaveTextContent('Shaded: 4 of 6.');
     click('Shade one more');
     expect(status()).toHaveTextContent('Shaded: 5 of 6.');
@@ -386,6 +387,18 @@ describe('fraction circles (F1.6 show)', () => {
     click('Shade one less');
     expect(status()).toHaveTextContent('Shaded: 3 of 6.');
     expect(grade).not.toHaveBeenCalled();
+  });
+
+  it('keeps a tap on a slice as a pointer shortcut that shades the same parts', async () => {
+    show('circles-show');
+    await screen.findByRole('img', { name: 'Whole circle, not cut' });
+    click('Cut in 4');
+    const slices = document.querySelectorAll('.lf-circle-slice');
+    expect(slices).toHaveLength(4);
+    expect([...slices].some((slice) => slice.getAttribute('role') !== null || slice.getAttribute('tabindex') !== null)).toBe(false);
+    fireEvent.click(slices[2]!);
+    expect(status()).toHaveTextContent('Shaded: 3 of 4.');
+    expect(screen.getByRole('button', { name: 'Your circle: part 3 of 4' })).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('lists the parts and the shaded parts as a table', async () => {
@@ -403,7 +416,7 @@ describe('fraction circles (F1.6 show)', () => {
 describe('fraction circles (F1.6 compare)', () => {
   it('shades both circles, picks the one with more and submits its fraction', async () => {
     const grade = show('circles-compare');
-    expect(await screen.findAllByRole('group', { name: 'Circle in 8 parts, 0 shaded' })).toHaveLength(2);
+    expect(await screen.findAllByRole('img', { name: 'Circle in 8 parts, 0 shaded' })).toHaveLength(2);
     expect(status()).toHaveTextContent('Circles cut in 8 parts. First: 0 shaded. Second: 0 shaded.');
     click('First is more');
     expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
@@ -447,7 +460,7 @@ describe('fraction circles (F1.6 compare)', () => {
 describe('fraction circles (F1.6 add and subtract)', () => {
   it('shades the join in the work circle and submits the typed sum', async () => {
     const grade = show('circles-add');
-    await screen.findByRole('group', { name: 'Circle in 8 parts, 0 shaded' });
+    await screen.findByRole('img', { name: 'Circle in 8 parts, 0 shaded' });
     expect(status()).toHaveTextContent('Add one eighth and three eighths. Work circle: 0 of 8 shaded.');
     expect(screen.getByRole('img', { name: 'Circle in 8 parts, 1 shaded' })).toBeTruthy();
     expect(screen.getByRole('img', { name: 'Circle in 8 parts, 3 shaded' })).toBeTruthy();
@@ -479,7 +492,7 @@ describe('fraction circles (F1.6 add and subtract)', () => {
 
   it('lists the given circles and the work circle in a table', async () => {
     show('circles-add');
-    await screen.findByRole('group', { name: 'Circle in 8 parts, 0 shaded' });
+    await screen.findByRole('img', { name: 'Circle in 8 parts, 0 shaded' });
     click('Shade one more');
     click('Show as table');
     const table = screen.getByRole('table', { name: 'Circles and their parts' });

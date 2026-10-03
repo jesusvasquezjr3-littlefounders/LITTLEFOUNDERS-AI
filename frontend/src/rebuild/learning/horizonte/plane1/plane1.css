@@ -8,7 +8,7 @@
 .lf-p1 .lf-hz-table { max-inline-size: 42rem; }
 
 /* A point label never runs off the plane: past the middle it sits on the left of its mark, and in a narrow figure it wraps. */
-.lf-rebuild .lf-p1 .lf-plano-point-label { white-space: normal; inline-size: max-content; }
+.lf-rebuild .lf-p1 .lf-plano-point-label { white-space: normal; inline-size: max-content; text-shadow: 0 0 var(--spacing-1) var(--surface), 0 0 var(--spacing-1) var(--surface); }
 .lf-rebuild .lf-p1 .lf-plano-point[data-flip] .lf-plano-point-label { inset-inline-start: auto; inset-inline-end: calc(100% + var(--spacing-1)); text-align: end; }
 @container lf-plano (inline-size < 36rem) {
   .lf-rebuild .lf-p1 .lf-plano-frame { padding-inline-end: var(--spacing-8); }

@@ -53,24 +53,43 @@ export function Fraction({ n, d, over }: { n: number | string; d: number | strin
   return <Spoken text={`${n}/${d}`} spoken={slots(over, { n, d })} />;
 }
 
+/** The gap between a mark and its label (spacing-1) and the narrowest a label may wrap to, in px. */
+const LABEL_GAP = 4;
+const LABEL_FLOOR = 56;
+
 /**
  * The shared plane of the board. A point label sits on the right of its mark; past the middle of the plane it is marked
  * to sit on the left instead, so no label runs off the edge of a narrow figure. Plano renders its marks itself, so the
- * mark is set from outside and kept when Plano swaps the figure for its table and back.
+ * mark is set from outside and kept when Plano swaps the figure for its table and back. With `awayFrom` (the x of a handle that
+ * shares the mark's row) a label sits on the side of its mark that points away from that handle, wrapped to the room it has.
  */
-export function PlaneFigure({ locale, copy, ...props }: PlanoProps & { locale: Locale }) {
+export function PlaneFigure({ locale, copy, awayFrom, ...props }: PlanoProps & { locale: Locale; awayFrom?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const { xMin, xMax } = props.domain;
-  const flips = (props.layers?.points ?? []).map((point) => ((point.x - xMin) / (xMax - xMin) > 0.5 ? '1' : '0')).join('');
+  const points = props.layers?.points ?? [];
+  const flips = points.map((point) => ((awayFrom === undefined ? (point.x - xMin) / (xMax - xMin) > 0.5 : point.x < awayFrom) ? '1' : '0')).join('');
+  const places = awayFrom === undefined ? '' : points.map((point) => point.x).join(',');
   useLayoutEffect(() => {
     const root = ref.current;
     if (!root) return undefined;
-    const apply = () => root.querySelectorAll('.lf-plano-point').forEach((mark, index) => mark.toggleAttribute('data-flip', flips[index] === '1'));
+    const apply = () => {
+      const plot = root.querySelector('.lf-plano-plot')?.getBoundingClientRect();
+      root.querySelectorAll<HTMLElement>('.lf-plano-point').forEach((mark, index) => {
+        mark.toggleAttribute('data-flip', flips[index] === '1');
+        const label = mark.querySelector<HTMLElement>('.lf-plano-point-label');
+        if (!label || !plot || awayFrom === undefined) return;
+        const at = mark.getBoundingClientRect();
+        const room = (flips[index] === '1' ? at.left - plot.left : plot.right - at.right) - LABEL_GAP;
+        label.style.maxInlineSize = `${Math.max(room, LABEL_FLOOR)}px`;
+      });
+    };
     apply();
     const watch = new MutationObserver(apply);
     watch.observe(root, { childList: true, subtree: true });
-    return () => watch.disconnect();
-  }, [flips]);
+    const resize = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(apply);
+    resize?.observe(root);
+    return () => { watch.disconnect(); resize?.disconnect(); };
+  }, [flips, places, awayFrom]);
   return <div ref={ref} className="lf-p1-figure"><Plano {...props} copy={{ ...planoWords(locale), ...copy }} /></div>;
 }
 

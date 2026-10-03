@@ -9,30 +9,54 @@
 .lf-prob-tray { display: flex; flex-wrap: wrap; gap: var(--spacing-2); padding: var(--spacing-2); border: 2px dashed transparent; border-radius: var(--rounded-sm); }
 .lf-prob-tray[data-drop-armed='true'] { border-color: var(--sky-strong); background: var(--sky-soft); }
 
-.lf-prob-edge { stroke: var(--outline); stroke-width: 3; }
-.lf-prob-edge-label { font-size: 18px; font-weight: 800; paint-order: stroke; stroke: var(--sunken); stroke-width: 6; stroke-linejoin: round; }
-.lf-prob-root { fill: var(--surface); stroke: var(--content); stroke-width: 3; }
-.lf-prob-root-label { font-size: 24px; font-weight: 800; }
-.lf-prob-slot { fill: var(--sunken); stroke-width: 3; stroke-dasharray: 8 6; }
-.lf-prob-slot--has { stroke: var(--berry-strong); }
-.lf-prob-slot--lacks { stroke: var(--sky-strong); }
-.lf-prob-slot--filled { stroke-dasharray: none; }
-.lf-prob-slot--filled.lf-prob-slot--has { fill: var(--berry-soft); }
-.lf-prob-slot--filled.lf-prob-slot--lacks { fill: var(--sky-soft); }
-.lf-prob-slot[data-drop-armed='true'] { stroke-width: 5; stroke-dasharray: none; }
-.lf-prob-slot[data-drop-selected='true'] { fill: var(--sky); fill-opacity: 0.45; }
-.lf-prob-node-label { font-size: 20px; font-weight: 700; }
-.lf-prob-node-value { font-size: 28px; font-weight: 800; }
-.lf-prob-node-value--empty { opacity: 0.5; }
+/* The tree is HTML (Bible 05 section 5): its words wrap and grow in translation. Lines are the muted content tone, 3:1 on the board. */
+.lf-prob-tree { container: probtree / inline-size; display: grid; gap: var(--spacing-2); inline-size: 100%; max-inline-size: 42rem; padding: var(--spacing-3); border-radius: var(--rounded-sm); background: var(--sunken); color: var(--content); }
+.lf-prob-root { position: relative; justify-self: center; padding: var(--spacing-2) var(--spacing-4); border: 3px solid var(--content); border-radius: var(--rounded-sm); background: var(--surface); font-size: 1.5rem; font-weight: 800; line-height: 1.2; text-align: center; }
+.lf-prob-root::after, .lf-prob-leaves::after { content: ''; position: absolute; inset-inline: 0; margin-inline: auto; inline-size: 3px; block-size: var(--spacing-2); background: var(--content-muted); }
+.lf-prob-root::after { inset-block-start: calc(100% + 3px); }
+.lf-prob-branches { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-2); }
+.lf-prob-branches::before, .lf-prob-leaves::before { content: ''; position: absolute; inset-block-start: 0; inset-inline: calc((100% - var(--spacing-2)) / 4); block-size: 3px; background: var(--content-muted); }
+.lf-prob-branch { display: grid; align-content: start; }
+.lf-prob-leaf { position: relative; display: grid; }
+.lf-prob-tag { display: flex; flex-direction: column; align-items: center; font-size: 1.125rem; font-weight: 800; line-height: 1.5rem; text-align: center; }
+.lf-prob-tag::before, .lf-prob-tag::after { content: ''; inline-size: 3px; block-size: var(--spacing-2); background: var(--content-muted); }
+.lf-prob-slot { --lf-prob-tone: var(--content-muted); display: grid; justify-items: center; align-content: center; gap: var(--spacing-1); min-block-size: 4rem; padding: var(--spacing-2) var(--spacing-1); border: 3px dashed var(--lf-prob-tone); border-radius: var(--rounded-sm); background: var(--sunken); text-align: center; }
+.lf-prob-slot--has { --lf-prob-tone: var(--berry-strong); }
+.lf-prob-slot--lacks { --lf-prob-tone: var(--sky-strong); }
+.lf-prob-slot--filled { border-style: solid; }
+.lf-prob-slot--filled.lf-prob-slot--has { background: var(--berry-soft); }
+.lf-prob-slot--filled.lf-prob-slot--lacks { background: var(--sky-soft); }
+.lf-prob-slot[data-drop-armed='true'] { border-style: solid; box-shadow: inset 0 0 0 2px var(--lf-prob-tone); }
+.lf-prob-slot[data-drop-selected='true'] { background: var(--sky-soft); }
+.lf-prob-node-label { font-size: .875rem; font-weight: 700; line-height: 1.2; }
+.lf-prob-node-value { font-size: 1.5rem; font-weight: 800; line-height: 1.2; }
+.lf-prob-node-value--empty { color: var(--content-muted); }
+/* Narrow: each outcome list hangs off its branch like an outline, so four words fit a 320 px screen at 14 px. */
+@container probtree (max-width: 559px) {
+  .lf-prob-leaves { display: grid; margin-inline-start: var(--spacing-2); padding-inline-start: var(--spacing-3); }
+  .lf-prob-leaves::before, .lf-prob-leaves::after { content: none; }
+  .lf-prob-leaf:not(:last-child) { padding-block-end: var(--spacing-2); }
+  .lf-prob-leaf::before { content: ''; position: absolute; inset-block-start: 0; inset-inline-start: calc(-1 * var(--spacing-3)); inline-size: 3px; block-size: 100%; background: var(--content-muted); }
+  .lf-prob-leaf:last-child::before { block-size: calc(var(--spacing-3) + 1.5px); }
+  .lf-prob-leaf::after { content: ''; position: absolute; inset-block-start: calc(var(--spacing-3) - 1.5px); inset-inline-start: calc(-1 * var(--spacing-3)); inline-size: var(--spacing-3); block-size: 3px; background: var(--content-muted); }
+  .lf-prob-leaf > .lf-prob-tag { align-items: flex-start; padding-inline-start: var(--spacing-1); text-align: start; }
+  .lf-prob-leaf > .lf-prob-tag::before, .lf-prob-leaf > .lf-prob-tag::after { content: none; }
+}
+/* Wide: the two outcomes sit side by side under a bar that joins their stems. */
+@container probtree (min-width: 560px) {
+  .lf-prob-leaves { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-2); margin-block-start: var(--spacing-2); }
+  .lf-prob-leaves::after { inset-block-start: calc(-1 * var(--spacing-2)); }
+  .lf-prob-node-label { font-size: 1rem; }
+}
 
-.lf-prob-block { stroke: var(--content); stroke-opacity: 0.35; stroke-width: 1.5; stroke-linejoin: round; }
+.lf-prob-block { stroke: var(--content-muted); stroke-width: 1.5; stroke-linejoin: round; }
 .lf-prob-cells { pointer-events: none; stroke: none; }
 .lf-prob-gridline { fill: none; stroke: var(--content); stroke-opacity: 0.18; stroke-width: 1; }
 .lf-prob-group--hasPos .lf-prob-block { fill: var(--berry-strong); }
 .lf-prob-group--hasNeg .lf-prob-block { fill: var(--berry-soft); }
 .lf-prob-group--lacksPos .lf-prob-block { fill: var(--sky-strong); }
 .lf-prob-group--lacksNeg .lf-prob-block { fill: var(--sky-soft); }
-.lf-prob-group--asked .lf-prob-block { stroke-opacity: 1; stroke-width: var(--lf-prob-heavy, 5px); }
+.lf-prob-group--asked .lf-prob-block { stroke: var(--content); stroke-width: var(--lf-prob-heavy, 5px); }
 .lf-prob-legend { display: grid; gap: var(--spacing-1); margin: 0; padding: 0; list-style: none; }
 .lf-prob-legend-item { display: flex; align-items: center; gap: var(--spacing-2); }
 .lf-prob-legend-item--asked { font-weight: 800; }
@@ -52,6 +76,6 @@
 .lf-prob-equation { display: block; font-weight: 800; }
 
 @media (prefers-reduced-motion: no-preference) {
-  .lf-prob-slot, .lf-prob-tray { transition: fill var(--dur-component) var(--ease-standard), stroke var(--dur-component) var(--ease-standard); }
+  .lf-prob-slot, .lf-prob-tray { transition: background-color var(--dur-component) var(--ease-standard), border-color var(--dur-component) var(--ease-standard); }
   .lf-prob-square { transition: fill var(--dur-component) var(--ease-standard); }
 }

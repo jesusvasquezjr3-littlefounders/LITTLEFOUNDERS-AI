@@ -24,7 +24,7 @@ const show = (fixture: string, verdict: 'met' | 'review' = 'review', locale: Loc
 const status = () => document.querySelector('[data-hz-text-equivalent]') as HTMLElement;
 const setSlider = (name: string, value: number) => fireEvent.change(screen.getByRole('slider', { name }), { target: { value: String(value) } });
 const moveDot = async (from: number, to: number) => {
-  fireEvent.click(screen.getByRole('button', { name: `Take a dot from ${from}` }));
+  fireEvent.click(screen.getByRole('button', { name: `From ${from}` }));
   fireEvent.click(screen.getByRole('button', { name: `Take a dot from ${from}: Move to` }));
   fireEvent.click(await screen.findByRole('menuitem', { name: `Value ${to}` }));
 };
@@ -59,7 +59,7 @@ describe('stats1 boards (F1.13, F1.14)', () => {
     it('places a dot by tapping its chip and then a column', async () => {
       show('dot-plot-median');
       await screen.findByRole('img', { name: 'Dot plot' });
-      fireEvent.click(screen.getByRole('button', { name: 'Take a dot from 4' }));
+      fireEvent.click(screen.getByRole('button', { name: 'From 4' }));
       fireEvent.click(document.querySelector('[data-drop-target="col-9"]')!);
       expect(status()).toHaveTextContent('Median: 5. Moves used: 1 of 2');
     });
@@ -69,10 +69,10 @@ describe('stats1 boards (F1.13, F1.14)', () => {
       await screen.findByRole('img', { name: 'Dot plot' });
       await moveDot(2, 7);
       await moveDot(3, 6);
-      fireEvent.click(screen.getByRole('button', { name: 'Take a dot from 9' }));
+      fireEvent.click(screen.getByRole('button', { name: 'From 9' }));
       fireEvent.click(document.querySelector('[data-drop-target="col-1"]')!);
       expect(status()).toHaveTextContent('Median: 6. Moves used: 2 of 2');
-      fireEvent.click(screen.getByRole('button', { name: 'Take a dot from 9' }));
+      fireEvent.click(screen.getByRole('button', { name: 'From 9' }));
       fireEvent.click(screen.getByRole('button', { name: 'Take a dot from 9: Move to' }));
       expect((await screen.findAllByRole('menuitem')).map((item) => item.textContent)).toEqual(['Value 2', 'Value 3']);
       fireEvent.keyDown(document.activeElement ?? document.body, { key: 'Escape' });
@@ -246,7 +246,7 @@ describe('stats1 boards (F1.13, F1.14)', () => {
       expect(await screen.findByRole('img', { name: 'Diagrama de puntos' })).toBeTruthy();
       expect(screen.getByRole('button', { name: 'Mostrar como tabla' })).toBeTruthy();
       expect(status()).toHaveTextContent('Mediana: 4. Movimientos usados: 0 de 2');
-      expect(screen.getByRole('button', { name: 'Toma un punto del 2' })).toBeTruthy();
+      expect(screen.getByRole('button', { name: 'Del 2' })).toBeTruthy();
     });
 
     it('writes decimals the Brazilian way', async () => {

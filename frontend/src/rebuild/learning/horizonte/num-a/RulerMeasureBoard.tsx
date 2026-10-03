@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Stepper } from '../../../design/fields';
 import { BoardShell, GradedFoot, useSegmentGrade } from '../../segmentKit';
+import { BoardLabel, LabelledDrawing } from '../BoardLabel';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText } from '../copyText';
@@ -18,6 +19,7 @@ const PAD = 28;
 const OBJECT_Y = 14;
 const OBJECT_H = 34;
 const EDGE_Y = 72;
+const HEIGHT = 134;
 
 /*
  * F1.7: an object (a pencil or a paper strip) drawn against a ruler, with its near end on a mark that is not always 0. The learner reads
@@ -49,8 +51,8 @@ function RulerMeasure({ document, segment, onBack, sequence, onGrade }: Omit<Hor
     foot={<GradedFoot locale={document.locale} grading={grading} canCheck={length !== 0 && !locked} sequence={sequence} feedback={segment.feedback}
       named={{ met: t.metRead, hint: t.hintRead }} onCheck={() => grading.check(readResponse(length))} />}>
     <section className="lf-learning-board lf-num-board" aria-label={t.measureRuler}>
-      <div className="lf-num-scroll">
-        <svg className="lf-ruler" viewBox={`0 0 ${WIDTH} 134`} role="img" aria-label={`${t.measureRuler}: ${drawn}`} focusable="false">
+      <div className="lf-num-scroll"><LabelledDrawing className="lf-num-drawing">
+        <svg className="lf-ruler" viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label={`${t.measureRuler}: ${drawn}`} focusable="false">
           {object === 'pencil' ? <g>
             <rect className="lf-read-body" x={near} y={OBJECT_Y} width={far - near - tip} height={OBJECT_H} />
             <rect className="lf-read-eraser" x={near} y={OBJECT_Y} width={eraser} height={OBJECT_H} />
@@ -59,14 +61,10 @@ function RulerMeasure({ document, segment, onBack, sequence, onGrade }: Omit<Hor
           <line className="lf-ruler-guide" x1={near} x2={near} y1={OBJECT_Y + OBJECT_H} y2={EDGE_Y} />
           <line className="lf-ruler-guide" x1={far} x2={far} y1={OBJECT_Y + OBJECT_H} y2={EDGE_Y} />
           <rect className="lf-ruler-body" x={PAD / 2} y={EDGE_Y} width={WIDTH - PAD} height={58} rx={6} />
-          {Array.from({ length: max + 1 }, (_, mark) => <g key={mark}>
-            <line className="lf-ruler-tick" x1={x(mark)} x2={x(mark)} y1={EDGE_Y} y2={EDGE_Y + 22} />
-            <text className="lf-ruler-number" x={x(mark)} y={EDGE_Y + 46} textAnchor="middle" data-copy-role="data">{mark}</text>
-          </g>)}
+          {Array.from({ length: max + 1 }, (_, mark) => <line key={mark} className="lf-ruler-tick" x1={x(mark)} x2={x(mark)} y1={EDGE_Y} y2={EDGE_Y + 22} />)}
         </svg>
-      </div>
-      <Stepper label={t.howLong} min={0} max={max} value={length} valueText={`${length} ${unitWord}`} disabled={locked}
-        labels={{ decrease: t.less, increase: t.more }} onValueChange={change} />
+        {Array.from({ length: max + 1 }, (_, mark) => <BoardLabel key={mark} box={{ width: WIDTH, height: HEIGHT }} x={x(mark)} y={EDGE_Y + 40}>{mark}</BoardLabel>)}
+      </LabelledDrawing></div>
       <p className="lf-num-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{drawn}. {t.yourReading}: {length} {unitWord}.</p>
       {table ? <table className="lf-hz-table" data-hz-table="">
         <caption data-copy-role="heading">{t.readCaption}</caption>
@@ -79,6 +77,10 @@ function RulerMeasure({ document, segment, onBack, sequence, onGrade }: Omit<Hor
           <td data-copy-role="data">{length} {unitWord}</td>
         </tr></tbody>
       </table> : null}
+    </section>
+    <section className="lf-learning-control-strip" aria-label={t.howLong}>
+      <Stepper label={t.howLong} min={0} max={max} value={length} valueText={`${length} ${unitWord}`} disabled={locked}
+        labels={{ decrease: t.less, increase: t.more }} onValueChange={change} />
     </section>
   </BoardShell>;
 }

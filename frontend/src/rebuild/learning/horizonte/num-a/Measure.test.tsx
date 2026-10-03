@@ -68,7 +68,7 @@ describe('num-a board: clock (A14)', () => {
   it('shows the same time as a table and resets to the start', async () => {
     show('clock-later');
     await screen.findByRole('img', { name: 'Clock showing 3:15' });
-    fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Table' }));
     const table = screen.getByRole('table', { name: 'The time on the clock' });
     expect(within(table).getAllByRole('row').map((row) => row.textContent)).toEqual(['HourMinutesTime', '3153:15']);
     fireEvent.click(screen.getByRole('button', { name: 'Minutes: More' }));
@@ -134,7 +134,7 @@ describe('num-a board: ruler (A15)', () => {
     show('ruler-six');
     await screen.findByRole('img', { name: /^Ruler:/ });
     press('End of the bar: More', 2);
-    fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Table' }));
     const table = screen.getByRole('table', { name: 'The bar on the ruler' });
     expect(within(table).getAllByRole('row').map((row) => row.textContent)).toEqual(['FromToLength', '253 centimeters']);
     fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
@@ -220,7 +220,7 @@ describe('num-a board: pan balance (A16)', () => {
     await screen.findByRole('button', { name: 'Weight 3' });
     fireEvent.click(screen.getByRole('button', { name: 'Weight 3' }));
     fireEvent.click(region('Right pan'));
-    fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Table' }));
     const table = screen.getByRole('table', { name: 'Weights on each pan' });
     expect(within(table).getAllByRole('row').map((row) => row.textContent)).toEqual(['PanWeightsTotal', 'Left pan55', 'Tray1, 2, 2', 'Right pan33']);
   });
@@ -302,7 +302,7 @@ describe('num-a board: measure an object against a ruler (F1.7)', () => {
     show('measure-strip', undefined, 'en-US', '10-12');
     await screen.findByRole('img', { name: /^Ruler and object:/ });
     press('How long is it?: More', 6);
-    fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Table' }));
     const table = screen.getByRole('table', { name: 'The object on the ruler' });
     expect(within(table).getAllByRole('row').map((row) => row.textContent)).toEqual(['ObjectFromToYour reading', 'Paper strip286 inches']);
   });

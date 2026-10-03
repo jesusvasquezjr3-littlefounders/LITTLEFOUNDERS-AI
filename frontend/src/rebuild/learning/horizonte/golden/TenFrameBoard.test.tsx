@@ -51,8 +51,8 @@ describe('golden board: ten frame (A03) and double ten frame (A04)', () => {
     await screen.findByRole('group', { name: 'Frame 1' });
     const moveTo = screen.getByRole('button', { name: 'Move to' });
     expect(moveTo).toBeDisabled();
-    fireEvent.click(screen.getAllByRole('button', { name: 'Add a counter' })[0]!);
-    fireEvent.click(screen.getByRole('button', { name: 'Add a counter: Move to' }));
+    fireEvent.click(screen.getAllByRole('button', { name: 'Add counter' })[0]!);
+    fireEvent.click(screen.getByRole('button', { name: 'Add counter: Move to' }));
     fireEvent.click(await screen.findByRole('menuitem', { name: 'Frame 1' }));
     expect(status()).toHaveTextContent('Total: 7');
     expect(grade).not.toHaveBeenCalled();

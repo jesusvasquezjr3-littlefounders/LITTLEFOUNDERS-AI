@@ -91,7 +91,7 @@ describe('plane1 boards (F1.9, F1.11, F1.12)', () => {
       show('slope-triangle-run');
       await ready('Top of the triangle');
       fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
-      const table = screen.getByRole('table', { name: 'Line with a slope triangle' });
+      const table = screen.getByRole('table', { name: 'Slope triangle' });
       expect(within(table).getByText('Top of the triangle')).toBeTruthy();
     });
   });
@@ -378,19 +378,27 @@ describe('plane1 boards (F1.9, F1.11, F1.12)', () => {
     const mark = () => document.querySelector('.lf-plano-point') as HTMLElement;
 
     it('puts a point label on the left once its mark is past the middle of the plane', async () => {
-      show('market-shift-supply');
-      await ready('Price marker');
-      expect(mark()).toHaveAttribute('data-flip');
+      show('break-even-stand');
+      await ready('Units marker');
+      expect(mark()).not.toHaveAttribute('data-flip');
+      setSlider('Units sold', 30);
+      await waitFor(() => expect(mark()).toHaveAttribute('data-flip'));
     });
 
-    it('keeps a label on the right while its mark is in the left half', async () => {
-      show('market-shift-demand');
+    it('puts the market label on the side of its mark that points away from the price marker', async () => {
+      show('market-shift-supply');
       await ready('Price marker');
       expect(mark()).not.toHaveAttribute('data-flip');
     });
 
+    it('moves the market label to the left when the price marker is on its right', async () => {
+      show('market-shift-demand');
+      await ready('Price marker');
+      expect(mark()).toHaveAttribute('data-flip');
+    });
+
     it('keeps the flip when the plane is shown as a table and back', async () => {
-      show('market-shift-supply');
+      show('market-shift-demand');
       await ready('Price marker');
       fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
       expect(mark()).toBeNull();

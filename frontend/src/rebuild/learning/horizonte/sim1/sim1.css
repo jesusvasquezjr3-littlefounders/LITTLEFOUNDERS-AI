@@ -1,11 +1,12 @@
 /* F3.1 and F3.2 simulation boards: chance, Galton board and walk, coverage of intervals, bootstrap. Tokens only. */
 .lf-sim { display: grid; gap: var(--spacing-3); justify-items: start; }
+.lf-sim-drawing { max-inline-size: 42rem; }
 .lf-sim-chart { display: block; inline-size: 100%; max-inline-size: 42rem; block-size: auto; border-radius: var(--rounded-sm); background: var(--sunken); color: var(--content); }
 .lf-sim-chart text { fill: currentColor; font-size: 22px; font-weight: 700; }
 .lf-sim-chart .lf-sim-count { font-size: 18px; font-weight: 800; }
 .lf-sim-ticks line, .lf-sim-axis { stroke: var(--edge); stroke-width: 2; }
 .lf-sim-grid { stroke: var(--outline); stroke-width: 1; stroke-opacity: 0.6; }
-.lf-sim-band { fill: var(--mint-soft); pointer-events: none; }
+.lf-sim-band { fill: var(--mint-soft); stroke: var(--mint-strong); stroke-width: 2; pointer-events: none; }
 .lf-sim-chance { stroke: var(--content); stroke-width: 3; stroke-dasharray: 8 6; }
 .lf-sim-floor { stroke: var(--content); stroke-width: 2; stroke-dasharray: 2 6; }
 .lf-sim-line { fill: none; stroke: var(--sky-strong); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }

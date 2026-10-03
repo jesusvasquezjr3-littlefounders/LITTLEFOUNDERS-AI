@@ -3,6 +3,7 @@ import { MoveToChoice, useDragPlace, useSegmentGrade } from '../../segmentKit';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText } from '../copyText';
+import { BoardLabel, LabelledDrawing } from '../BoardLabel';
 import { Prose } from '../Prose';
 import { DataTable, Handle, MAX_TYPED, NumBFrame, NumField, fill, typedNumber } from './boardKit';
 import { NUM_B_COPY } from './copy';
@@ -95,6 +96,7 @@ function RatioTapeBoard({ document, segment, onBack, sequence, onGrade, payload 
   const boxValue = typedNumber(check, locale, MAX_TYPED, 1);
   const asked = payload.ask === 'a' ? 0 : 1;
   const width = 360;
+  const height = 116;
   const each = width / boxes;
   const spans = [{ from: 0, count: a, key: 'a' }, { from: a, count: b, key: 'b' }];
   const reset = () => { grading.reset(); setCheck(''); setText(''); };
@@ -104,16 +106,19 @@ function RatioTapeBoard({ document, segment, onBack, sequence, onGrade, payload 
     canCheck={value !== null} answer={{ value: value ?? '' }} named={{ met: t.metTape, hint: t.hintTape }} changed={check !== '' || text !== ''}
     onReset={reset} table={{ open, toggle: () => setOpen((now) => !now) }} label={t.tapeLabel}
     status={fill(t.tapeFacts, { whole: payload.whole, unit, boxes, a, b })}
-    board={<svg className="lf-tape-svg" viewBox={`0 0 ${width} 116`} role="img" aria-label={t.tapeLabel}>
+    board={<LabelledDrawing className="lf-tape-drawing"><svg className="lf-tape-svg" viewBox={`0 0 ${width} ${height}`} role="img" aria-label={t.tapeLabel}>
       <text data-copy-role="data" x={width / 2} y={16} textAnchor="middle">{payload.whole}</text>
       <line className="lf-tape-whole" x1={0} y1={26} x2={width} y2={26} />
       {spans.map((span, index) => <g key={span.key}>
         {Array.from({ length: span.count }, (_, at) => <rect key={at} className={`lf-tape-box lf-tape-box--${index === 0 ? 'sky' : 'mint'}`}
           x={(span.from + at) * each} y={44} width={each} height={36} />)}
         {index === asked ? <text data-copy-role="data" x={(span.from + span.count / 2) * each} y={38} textAnchor="middle">?</text> : null}
-        <text data-copy-role="data" x={(span.from + span.count / 2) * each} y={102} textAnchor="middle">{index === 0 ? t.partA : t.partB}</text>
       </g>)}
-    </svg>}
+    </svg>
+    {spans.map((span, index) => <BoardLabel key={span.key} x={(span.from + span.count / 2) * each} y={88} box={{ width, height }} valign="top" room={Math.max(span.count * each, 64)}>
+      {index === 0 ? t.partA : t.partB}
+    </BoardLabel>)}
+    </LabelledDrawing>}
     tableNode={<DataTable caption={t.tapeCaption} head={[t.colPart, t.colBoxes, t.colValue]}
       rows={[[t.partA, String(a), '?'], [t.partB, String(b), '?']]} foot={[t.wholeName, String(boxes), String(payload.whole)]} />}>
     <section className="lf-learning-control-strip" aria-labelledby={`${segment.id}-check`}>

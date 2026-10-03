@@ -1,15 +1,25 @@
-/* F1.6 fraction circles: circles cut into equal slices, shaded by tapping. Tokens only; text stays on --content. */
+/* F1.6 fraction circles: circles cut into equal slices, shaded from a numbered row (a tap on a slice is a shortcut). Tokens only; text stays on --content. */
 .lf-circles { display: flex; flex-wrap: wrap; gap: var(--spacing-6); align-items: start; inline-size: 100%; max-inline-size: 100%; container: lf-circles / inline-size; }
 .lf-circle-figure { display: grid; gap: var(--spacing-2); justify-items: center; margin: 0; }
 .lf-circle { inline-size: min(40cqi, 10rem); block-size: auto; aspect-ratio: 1; overflow: visible; }
-.lf-circle-slice { fill: var(--surface); stroke: var(--outline); stroke-width: 1.5; stroke-linejoin: round; }
+.lf-circle-slice { fill: var(--surface); stroke: var(--edge); stroke-width: 1.5; stroke-linejoin: round; }
 .lf-circle-slice[data-on='true'][data-hue='sky'] { fill: var(--sky-strong); }
 .lf-circle-slice[data-on='true'][data-hue='mint'] { fill: var(--mint-strong); }
 .lf-circle-slice[data-on='true'][data-hue='berry'] { fill: var(--berry-strong); }
-.lf-circle-slice[role='button'] { cursor: pointer; }
-.lf-circle-slice[role='button'][data-on='false']:hover { fill: var(--sunken); }
-.lf-circle-slice[role='button']:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; stroke: var(--primary-strong); stroke-width: 3; }
-.lf-circle-slice[aria-disabled='true'] { cursor: default; }
+.lf-circle[data-pointer='true'] .lf-circle-slice { cursor: pointer; }
+.lf-circle[data-pointer='true'] .lf-circle-slice[data-on='false']:hover { fill: var(--sunken); }
 @media (prefers-reduced-motion: no-preference) {
   .lf-circle-slice { transition: fill var(--dur-component) var(--ease-standard); }
 }
+/* The numbered buttons under a circle: the tap-first way to shade it, each a 48 px target 8 px from the next. */
+.lf-numb-numerals { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-numb-numeral { min-inline-size: var(--target-min); min-block-size: var(--target-min); padding: 0 var(--spacing-2); border: 1px solid var(--edge); border-radius: var(--rounded-sm); background: var(--surface); color: var(--content); font-weight: 800; cursor: pointer; }
+.lf-numb-numeral[aria-pressed='true'][data-hue='sky'] { border-color: var(--sky-strong); background: var(--sky-soft); box-shadow: inset 0 0 0 1px var(--sky-strong); }
+.lf-numb-numeral[aria-pressed='true'][data-hue='mint'] { border-color: var(--mint-strong); background: var(--mint-soft); box-shadow: inset 0 0 0 1px var(--mint-strong); }
+.lf-numb-numeral[aria-pressed='true'][data-hue='berry'] { border-color: var(--berry-strong); background: var(--berry-soft); box-shadow: inset 0 0 0 1px var(--berry-strong); }
+.lf-numb-numeral:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
+.lf-numb-numeral:disabled { cursor: default; }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-numb-numeral { transition: background-color var(--dur-component) var(--ease-standard); }
+}
+.lf-circle-figure .lf-numb-numerals { justify-content: center; }

@@ -10,7 +10,8 @@ export const STATS1_COPY = {
   mean: { role: 'data', 'en-US': 'Mean', 'es-MX': 'Media', 'pt-BR': 'Média' },
 
   dotPlotName: { role: 'data', 'en-US': 'Dot plot', 'es-MX': 'Diagrama de puntos', 'pt-BR': 'Gráfico de pontos' },
-  takeDot: { role: 'option', 'en-US': 'Take a dot from {n}', 'es-MX': 'Toma un punto del {n}', 'pt-BR': 'Pegue um ponto do {n}' },
+  takeDot: { role: 'option', 'en-US': 'From {n}', 'es-MX': 'Del {n}', 'pt-BR': 'Do {n}' },
+  takeDotName: { role: 'option', 'en-US': 'Take a dot from {n}', 'es-MX': 'Toma un punto del {n}', 'pt-BR': 'Pegue um ponto do {n}' },
   valueAt: { role: 'option', 'en-US': 'Value {n}', 'es-MX': 'Valor {n}', 'pt-BR': 'Valor {n}' },
   moveHeading: { role: 'heading', 'en-US': 'Move the dots', 'es-MX': 'Mueve los puntos', 'pt-BR': 'Mova os pontos' },
   median: { role: 'data', 'en-US': 'Median', 'es-MX': 'Mediana', 'pt-BR': 'Mediana' },

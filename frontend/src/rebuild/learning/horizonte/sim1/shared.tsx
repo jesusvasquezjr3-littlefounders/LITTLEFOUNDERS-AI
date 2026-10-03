@@ -41,15 +41,19 @@ export function traceIndices(count: number, points = 120): number[] {
   return [...picked].sort((a, b) => a - b);
 }
 
-export function Chart({ label, height, children }: { label: string; height: number; children: ReactNode }) {
-  return <svg className="lf-sim-chart" viewBox={`0 0 ${VIEW_W} ${height}`} role="img" aria-label={label} focusable="false" data-copy-role="data">{children}</svg>;
+/** The host carries the role itself, or the audit counts the SVG numerals as body words. */
+export function Chart({ label, height, children, labels }: { label: string; height: number; children: ReactNode; labels?: ReactNode }) {
+  return <div className="lf-hz-drawing lf-sim-drawing" data-copy-role="data">
+    <svg className="lf-sim-chart" viewBox={`0 0 ${VIEW_W} ${height}`} role="img" aria-label={label} focusable="false" data-copy-role="data">{children}</svg>
+    {labels}
+  </div>;
 }
 
 export function TableToggle({ open, onToggle, show, hide }: { open: boolean; onToggle: () => void; show: string; hide: string }) {
   return <Button size="sm" aria-expanded={open} onClick={onToggle} data-hz-table-toggle="">{open ? hide : show}</Button>;
 }
 
-const SHARE_LEFT = 64;
+const SHARE_LEFT = 76;
 const SHARE_TOP = 16;
 const SHARE_H = 170;
 
@@ -60,7 +64,7 @@ const SHARE_H = 170;
 export function ShareChart({ label, locale, hits, count, chance, tolerance, floor, stops }: {
   label: string; locale: Locale; hits: ArrayLike<number>; count: number; chance: Fraction; tolerance: number; floor: number; stops: readonly number[];
 }) {
-  const right = VIEW_W - PAD;
+  const right = VIEW_W - 36;
   const base = SHARE_TOP + SHARE_H;
   const span = Math.log(stops[stops.length - 1] as number);
   const x = (trials: number) => SHARE_LEFT + (Math.log(Math.max(1, trials)) / span) * (right - SHARE_LEFT);

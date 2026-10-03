@@ -1,10 +1,14 @@
-/* F2.13 statement board: flow and holding bars, and a dashed line at the expenses total. Tokens only. */
-.lf-stmt-chart { inline-size: 100%; max-inline-size: 28rem; block-size: auto; }
-.lf-stmt-chart text { fill: var(--content); font-size: 12px; }
-.lf-stmt-track { fill: var(--sunken); }
-.lf-stmt-bar--earned { fill: var(--sky-strong); }
-.lf-stmt-bar--passive { fill: var(--mint-strong); }
-.lf-stmt-bar--expenses { fill: var(--berry-strong); }
-.lf-stmt-bar--assets { fill: var(--sky-strong); }
-.lf-stmt-bar--liabilities { fill: var(--berry); }
-.lf-stmt-goal { stroke: var(--content); stroke-width: 2; stroke-dasharray: 4 3; }
+/* F2.13 statement board: named flow and holding bars in HTML, and a tick at the expenses total. Tokens only. */
+.lf-stmt-chart { display: grid; gap: var(--spacing-6); inline-size: 100%; max-inline-size: 28rem; }
+.lf-stmt-group { --goal: 0%; display: grid; gap: var(--spacing-3); }
+.lf-stmt-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; column-gap: var(--spacing-3); row-gap: var(--spacing-2); }
+.lf-stmt-name, .lf-stmt-amount { font-size: 0.875rem; font-weight: 700; line-height: 1.15; overflow-wrap: anywhere; }
+.lf-stmt-amount { text-align: end; }
+.lf-stmt-track { position: relative; grid-column: 1 / -1; display: block; block-size: var(--spacing-2); border-radius: var(--rounded-full); background: var(--sunken); }
+.lf-stmt-bar { display: block; block-size: 100%; min-inline-size: 2px; border-radius: inherit; }
+.lf-stmt-track[data-goal]::after { content: ''; position: absolute; inset-inline-start: var(--goal); inset-block: calc(var(--spacing-1) * -1); inline-size: 2px; background: var(--content); }
+.lf-stmt-bar--earned { background: var(--sky-strong); }
+.lf-stmt-bar--passive { background: var(--mint-strong); }
+.lf-stmt-bar--expenses { background: var(--berry-strong); }
+.lf-stmt-bar--assets { background: var(--sky-strong); }
+.lf-stmt-bar--liabilities { background: var(--berry); }

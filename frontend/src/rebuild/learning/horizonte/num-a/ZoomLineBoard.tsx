@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Button } from '../../../design/controls';
 import { Stepper } from '../../../design/fields';
 import { BoardShell, GradedFoot, useSegmentGrade } from '../../segmentKit';
+import { BoardLabel, LabelledDrawing } from '../BoardLabel';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText, fillSlot } from '../copyText';
@@ -17,6 +18,7 @@ type ZoomSegment = Extract<HorizonteSegment, { type: 'math.number-line.zoom.v2' 
 const WIDTH = 560;
 const PAD = 28;
 const AXIS = 76;
+const HEIGHT = 140;
 
 /*
  * A13: a number line that zooms from whole numbers into tenths and then hundredths. The marker moves by tapping the line or by the
@@ -52,15 +54,14 @@ function ZoomLine({ document, segment, onBack, sequence, onGrade }: Omit<Horizon
     foot={<GradedFoot locale={document.locale} grading={grading} canCheck={state.units !== zoomStartUnits(setup) && !locked} sequence={sequence} feedback={segment.feedback}
       named={{ met: t.metZoom, hint: t.hintZoom }} onCheck={() => grading.check({ units: state.units })} />}>
     <section className="lf-learning-board lf-num-board" aria-label={t.zoomLine}>
-      <div className="lf-num-scroll">
-        <svg className="lf-line" viewBox={`0 0 ${WIDTH} 140`} role="img" aria-label={`${t.zoomLine}: ${fillSlot(t.zoomLevel, state.level)}, ${t.markerAt} ${written(state.units)}`} focusable="false">
+      <div className="lf-num-scroll"><LabelledDrawing className="lf-num-drawing">
+        <svg className="lf-line" viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label={`${t.zoomLine}: ${fillSlot(t.zoomLevel, state.level)}, ${t.markerAt} ${written(state.units)}`} focusable="false">
           <line className="lf-line-axis" x1={PAD / 2} x2={WIDTH - PAD / 2} y1={AXIS} y2={AXIS} />
           {ticks.map((tick) => {
             const long = tick % parent === 0;
             const half = tick % (step * 5) === 0;
             return <g key={tick} className={long ? 'lf-line-point--long' : undefined}>
               <line className="lf-line-tick" x1={x(tick)} x2={x(tick)} y1={AXIS - (long ? 22 : half ? 16 : 10)} y2={AXIS + (long ? 22 : half ? 16 : 10)} />
-              {(tick / step) % labelEvery === 0 || long ? <text className="lf-line-number" x={x(tick)} y={AXIS + 48} textAnchor="middle" data-copy-role="data">{written(tick)}</text> : null}
             </g>;
           })}
           <g>
@@ -69,9 +70,8 @@ function ZoomLine({ document, segment, onBack, sequence, onGrade }: Omit<Horizon
           </g>
           <rect className="lf-zoom-strip" role="presentation" x={PAD} y={AXIS - 60} width={WIDTH - PAD * 2} height={120} onClick={(event) => move(from + fractionAcross(event) * (to - from))} />
         </svg>
-      </div>
-      <Stepper label={t.marker} valueText={written(state.units)} min={from} max={to} step={step} value={state.units} disabled={locked}
-        labels={{ decrease: t.tickLeft, increase: t.tickRight }} onValueChange={move} />
+        {ticks.filter((tick) => (tick / step) % labelEvery === 0 || tick % parent === 0).map((tick) => <BoardLabel key={tick} box={{ width: WIDTH, height: HEIGHT }} x={x(tick)} y={AXIS + 42}>{written(tick)}</BoardLabel>)}
+      </LabelledDrawing></div>
       <p className="lf-num-status" role="status" data-copy-role="data" data-hz-text-equivalent="">
         {fillSlot(t.zoomLevel, state.level)}. {t.markerAt}: {written(state.units)}. {t.colFrom}: {written(from)}, {t.colTo}: {written(to)}, {t.colTick}: {written(step)}
       </p>
@@ -83,6 +83,8 @@ function ZoomLine({ document, segment, onBack, sequence, onGrade }: Omit<Horizon
       </table> : null}
     </section>
     <section className="lf-learning-control-strip" aria-label={t.zoomLine}>
+      <Stepper label={t.marker} valueText={written(state.units)} min={from} max={to} step={step} value={state.units} disabled={locked}
+        labels={{ decrease: t.tickLeft, increase: t.tickRight }} onValueChange={move} />
       <div className="lf-num-tray">
         <Button size="lg" variant="sky" disabled={locked || !zoomCanIn(setup, state)} onClick={() => change(zoomIn(setup, state))}>{t.zoomIn}</Button>
         <Button size="lg" variant="mint" disabled={locked || !zoomCanOut(state)} onClick={() => { const out = zoomOut(setup, state); change(zoomMove(setup, out, out.units)); }}>{t.zoomOut}</Button>
