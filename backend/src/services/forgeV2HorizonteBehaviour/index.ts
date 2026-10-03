@@ -10,6 +10,7 @@ import { PLANE_BEHAVIOUR } from './plane.js';
 import { PROB_BEHAVIOUR } from './prob.js';
 import { SOLIDS_BEHAVIOUR } from './solids.js';
 import { SPACE_LIMIT, type HzBuilder, type HzSpace, type Json } from './shared.js';
+import { SPACE1_BEHAVIOUR } from './space1.js';
 import { STATS_BEHAVIOUR } from './stats.js';
 
 /** The seeded simulations (sim1, sim2) are graded against an attempt the gate never has, so they stay fail-closed here. */
@@ -26,6 +27,7 @@ const BUILDERS: Readonly<Record<string, HzBuilder>> = {
   ...PROB_BEHAVIOUR,
   ...COM_BEHAVIOUR,
   ...SOLIDS_BEHAVIOUR,
+  ...SPACE1_BEHAVIOUR,
 };
 
 export const horizonteBehaviourKinds = (): string[] => Object.keys(BUILDERS).sort();
