@@ -23,7 +23,7 @@
 .lf-pascal-row { display: flex; gap: var(--spacing-1); }
 .lf-pascal-cell {
   box-sizing: border-box; min-inline-size: var(--hz-hit); min-block-size: var(--hz-hit); padding: var(--spacing-1);
-  border: 2px solid var(--outline); border-radius: var(--rounded-md); background: var(--surface); color: var(--ink);
+  border: 2px solid var(--outline); border-radius: var(--rounded-md); background: var(--surface); color: var(--content);
   font: var(--type-label); font-variant-numeric: tabular-nums; cursor: pointer;
 }
 .lf-pascal-cell[aria-pressed='true'] { border-color: var(--primary-strong); background: var(--primary-strong); color: var(--on-primary); }

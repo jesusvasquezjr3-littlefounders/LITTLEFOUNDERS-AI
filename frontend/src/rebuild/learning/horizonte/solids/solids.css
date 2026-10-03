@@ -130,3 +130,6 @@
   .lf-stack-height { transition: background-color var(--dur-component) var(--ease-standard); }
   .lf-stack-height:hover:not([aria-disabled='true']) { background-color: var(--sky-soft); }
 }
+
+/* A table with many columns narrows to the board (a cell may break inside a word) instead of widening it past a 311 px slot. */
+.lf-net .lf-hz-table th, .lf-net .lf-hz-table td, .lf-stack .lf-hz-table th, .lf-stack .lf-hz-table td, .lf-solid-board .lf-hz-table th, .lf-solid-board .lf-hz-table td { overflow-wrap: anywhere; padding-inline: var(--spacing-1); }

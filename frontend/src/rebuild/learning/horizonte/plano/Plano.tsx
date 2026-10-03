@@ -192,7 +192,7 @@ export function Plano({
         <span id={`${uid}-name`} className="lf-plano-name" data-copy-role="heading">{label}</span>
         {summary ? <span id={`${uid}-summary`} className="lf-plano-summary" data-copy-role="body">{summary}</span> : null}
       </figcaption>
-      {hasContent && tableToggle ? <Button size="sm" onClick={() => setTable((value) => !value)}>{table ? words.chart : words.table}</Button> : null}
+      {hasContent && tableToggle ? <Button size="sm" aria-expanded={table} data-hz-table-toggle="" onClick={() => setTable((value) => !value)}>{table ? words.chart : words.table}</Button> : null}
     </div>
 
     {table ? <DataTable caption={label} columns={columns} rows={rows} rowKey={(row) => row.id} /> : <>

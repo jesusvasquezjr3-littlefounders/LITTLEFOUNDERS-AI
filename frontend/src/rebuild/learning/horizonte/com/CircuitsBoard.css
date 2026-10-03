@@ -4,7 +4,7 @@
 .lf-bit {
   box-sizing: border-box; display: grid; align-content: center; justify-items: center; gap: var(--spacing-1);
   min-inline-size: var(--hz-hit); min-block-size: calc(var(--hz-hit) + var(--spacing-6)); padding: var(--spacing-2);
-  border: 2px solid var(--outline); border-radius: var(--rounded-md); background: var(--surface); color: var(--ink); cursor: pointer;
+  border: 2px solid var(--outline); border-radius: var(--rounded-md); background: var(--surface); color: var(--content); cursor: pointer;
 }
 .lf-bit-weight { font: var(--type-caption); color: var(--content-muted); font-variant-numeric: tabular-nums; }
 .lf-bit-digit { font: var(--type-label); font-size: 1.5rem; font-variant-numeric: tabular-nums; }
