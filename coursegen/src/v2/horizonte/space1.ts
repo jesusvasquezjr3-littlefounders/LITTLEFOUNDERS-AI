@@ -5,7 +5,7 @@ import {
 import {
   ALSO_TRUE, EULER_COUNTS, TARGET_IDS, VOLUME_BOUNDS, basketMeets, coinAnswer, coinProblem, coneVolume, cutShape, eulerBounds, eulerSum,
   hiddenCount, matchingAngles, mostItems, pyramidVolume, readCoinPayload, readRotationPayload, readSolidSectionPayload,
-  readStallPayload, reachableTotals, rotationAnswer, rotationProblem, sectionCut, slotsToBasket, solidSectionProblem, stallAnswer,
+  readStallPayload, reachableTotals, rotationAnswer, rotationProblem, slotsToBasket, solidSectionProblem, stallAnswer,
   stallProblem,
   type CoinPayload, type RotationPayload, type SolidSectionPayload, type StallPayload,
 } from './space1Geometry.js';
