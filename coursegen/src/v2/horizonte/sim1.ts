@@ -49,44 +49,44 @@ const SIM1_GUIDANCE: readonly ForgeGuidance[] = [
 ];
 
 const whole = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value);
-const inRange = (value: unknown, low: number, high: number): value is number => whole(value) && value >= low && value <= high;
+export const inRange = (value: unknown, low: number, high: number): value is number => whole(value) && value >= low && value <= high;
 const record = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
-const hasOnly = (value: unknown, keys: readonly string[]): value is Record<string, unknown> =>
+export const hasOnly = (value: unknown, keys: readonly string[]): value is Record<string, unknown> =>
   record(value) && Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
 
-type Fraction = { num: number; den: number };
+export type Fraction = { num: number; den: number };
 
 const gcd = (a: bigint, b: bigint): bigint => { let x = a; let y = b; while (y > 0n) { [x, y] = [y, x % y]; } return x; };
-function reduceFraction(num: bigint, den: bigint): Fraction {
+export function reduceFraction(num: bigint, den: bigint): Fraction {
   const divisor = gcd(num, den) || 1n;
   return { num: Number(num / divisor), den: Number(den / divisor) };
 }
 
 /* Chance and Galton: mirrored from backend/src/services/horizonte/sim1/model.ts. */
-const STOPS_MIN = 3;
-const STOPS_MAX = 8;
-const CHANCE_TRIALS_LIMIT = 5000;
-const GALTON_BALLS_LIMIT = 3000;
-const FLOOR_MIN = 20;
+export const STOPS_MIN = 3;
+export const STOPS_MAX = 8;
+export const CHANCE_TRIALS_LIMIT = 5000;
+export const GALTON_BALLS_LIMIT = 3000;
+export const FLOOR_MIN = 20;
 const SOLVE_SIGMAS = 5;
 const WEIGHT_MAX = 12;
 const SPINNER_MIN = 3;
 const SPINNER_MAX = 8;
 
-function isStops(value: unknown, limit: number): value is number[] {
+export function isStops(value: unknown, limit: number): value is number[] {
   return Array.isArray(value) && value.length >= STOPS_MIN && value.length <= STOPS_MAX
     && value.every((stop, index) => inRange(stop, 1, limit) && (index === 0 || stop > (value[index - 1] as number)));
 }
 
-const isFloor = (floor: unknown, stops: readonly number[]): floor is number => whole(floor) && floor >= FLOOR_MIN && stops.indexOf(floor) > 0;
+export const isFloor = (floor: unknown, stops: readonly number[]): floor is number => whole(floor) && floor >= FLOOR_MIN && stops.indexOf(floor) > 0;
 
-function chanceInBand(chance: Fraction): boolean {
+export function chanceInBand(chance: Fraction): boolean {
   const num = BigInt(chance.num);
   const den = BigInt(chance.den);
   return num * 20n >= den && num * 20n <= den * 19n;
 }
 
-function solvableAt(chance: Fraction, trials: number, tolerance: number): boolean {
+export function solvableAt(chance: Fraction, trials: number, tolerance: number): boolean {
   const num = BigInt(chance.num);
   const den = BigInt(chance.den);
   return BigInt(SOLVE_SIGMAS * SOLVE_SIGMAS) * 10000n * num * (den - num) <= BigInt(tolerance * tolerance) * BigInt(trials) * den * den;
@@ -101,7 +101,7 @@ function runProblem(chance: Fraction, runs: unknown, minimum: unknown, tolerance
   return null;
 }
 
-function machineOf(value: unknown): { kind: string; weights: number[] } | null {
+export function machineOf(value: unknown): { kind: string; weights: number[] } | null {
   if (!hasOnly(value, ['kind', 'weights'])) return null;
   const { kind, weights } = value;
   if (!Array.isArray(weights) || !weights.every((weight) => inRange(weight, 1, WEIGHT_MAX))) return null;
@@ -109,23 +109,23 @@ function machineOf(value: unknown): { kind: string; weights: number[] } | null {
   return sized ? { kind: kind as string, weights: weights as number[] } : null;
 }
 
-function eventOf(value: unknown, faces: number): number[] | null {
+export function eventOf(value: unknown, faces: number): number[] | null {
   return Array.isArray(value) && value.length >= 1 && value.length < faces
     && value.every((face, index) => inRange(face, 0, faces - 1) && (index === 0 || face > (value[index - 1] as number))) ? (value as number[]) : null;
 }
 
-function binChance(rows: number, rightPct: number, bin: number): Fraction {
+export function binChance(rows: number, rightPct: number, bin: number): Fraction {
   let choose = 1n;
   for (let step = 1; step <= bin; step += 1) choose = (choose * BigInt(rows - bin + step)) / BigInt(step);
   return reduceFraction(choose * BigInt(rightPct / 10) ** BigInt(bin) * BigInt(10 - rightPct / 10) ** BigInt(rows - bin), 10n ** BigInt(rows));
 }
 
 /* Coverage and bootstrap: mirrored from backend/src/services/horizonte/sim1/interval.ts. */
-const LEVELS = [50, 80, 90, 95, 99];
+export const LEVELS = [50, 80, 90, 95, 99];
 const Z_THOUSANDTHS: Record<number, number> = { 50: 674, 80: 1282, 90: 1645, 95: 1960, 99: 2576 };
-const SAMPLES = 100;
-const SOLVE_TAIL = 1e-5;
-const BOOTSTRAP_LEVELS = [80, 90, 95];
+export const SAMPLES = 100;
+export const SOLVE_TAIL = 1e-5;
+export const BOOTSTRAP_LEVELS = [80, 90, 95];
 
 function covers(hits: number, size: number, truth: Fraction, level: number): boolean {
   const z = BigInt(Z_THOUSANDTHS[level] ?? 0);
@@ -134,7 +134,7 @@ function covers(hits: number, size: number, truth: Fraction, level: number): boo
   return gap * gap * BigInt(size) * 1_000_000n <= z * z * BigInt(hits) * BigInt(size - hits) * BigInt(truth.den) * BigInt(truth.den);
 }
 
-function binomialPmf(trials: number, p: number): number[] {
+export function binomialPmf(trials: number, p: number): number[] {
   const logFactorial = new Array<number>(trials + 1).fill(0);
   for (let index = 1; index <= trials; index += 1) logFactorial[index] = (logFactorial[index - 1] as number) + Math.log(index);
   const logP = Math.log(p);
@@ -143,32 +143,32 @@ function binomialPmf(trials: number, p: number): number[] {
     Math.exp((logFactorial[trials] as number) - (logFactorial[hits] as number) - (logFactorial[trials - hits] as number) + hits * logP + (trials - hits) * logQ));
 }
 
-function binomialAtLeast(trials: number, p: number, k: number): number {
+export function binomialAtLeast(trials: number, p: number, k: number): number {
   if (k <= 0) return 1;
   if (k > trials || p <= 0) return 0;
   if (p >= 1) return 1;
   return Math.min(1, binomialPmf(trials, p).reduce((total, mass, hits) => (hits >= k ? total + mass : total), 0));
 }
 
-function coverageChance(truth: Fraction, level: number, size: number): number {
+export function coverageChance(truth: Fraction, level: number, size: number): number {
   const pmf = binomialPmf(size, truth.num / truth.den);
   return Math.min(1, pmf.reduce((total, mass, hits) => (covers(hits, size, truth, level) ? total + mass : total), 0));
 }
 
-function solveCoverage(truth: Fraction, levels: readonly number[], sizes: readonly number[], covered: number): number | null {
+export function solveCoverage(truth: Fraction, levels: readonly number[], sizes: readonly number[], covered: number): number | null {
   for (const level of levels) {
     if (sizes.some((size) => binomialAtLeast(SAMPLES, coverageChance(truth, level, size), covered) >= 1 - SOLVE_TAIL)) return level;
   }
   return null;
 }
 
-const isLevels = (value: unknown): value is number[] =>
+export const isLevels = (value: unknown): value is number[] =>
   Array.isArray(value) && value.length >= 2 && value.length <= 5 && value.every((level, index) => LEVELS.includes(level as number) && (index === 0 || level > (value[index - 1] as number)));
 
-const isSizes = (value: unknown): value is number[] =>
+export const isSizes = (value: unknown): value is number[] =>
   Array.isArray(value) && value.length >= 2 && value.length <= 5 && value.every((size, index) => inRange(size, 10, 400) && (index === 0 || size > (value[index - 1] as number)));
 
-function truthOf(value: unknown): Fraction | null {
+export function truthOf(value: unknown): Fraction | null {
   if (!hasOnly(value, ['num', 'den']) || !inRange(value.den, 2, 20) || !inRange(value.num, 1, value.den - 1)) return null;
   return 5 * value.num >= value.den && 5 * value.num <= 4 * value.den ? { num: value.num, den: value.den } : null;
 }
@@ -189,7 +189,7 @@ function exactSumCounts(data: readonly number[]): bigint[] {
   return counts;
 }
 
-function exactEdges(data: readonly number[], level: number): { low: number; high: number } {
+export function exactEdges(data: readonly number[], level: number): { low: number; high: number } {
   const counts = exactSumCounts(data);
   const total = BigInt(data.length) ** BigInt(data.length);
   const tail = BigInt(100 - level);
@@ -217,7 +217,7 @@ function edgeReach(counts: readonly bigint[], total: bigint, resamples: number, 
   return Math.max(0, upper - lower);
 }
 
-function bootstrapSolvable(data: readonly number[], level: number, resamples: number, tolerance: number): boolean {
+export function bootstrapSolvable(data: readonly number[], level: number, resamples: number, tolerance: number): boolean {
   const counts = exactSumCounts(data);
   const total = BigInt(data.length) ** BigInt(data.length);
   const exact = exactEdges(data, level);
