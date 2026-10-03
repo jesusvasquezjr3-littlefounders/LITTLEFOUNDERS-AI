@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { checkV2Behaviour } from '../services/forgeV2Behaviour.js';
+import { readFileSync } from 'node:fs';
+import { behaviourSpace, checkV2Behaviour } from '../services/forgeV2Behaviour.js';
 import { horizonteBehaviourKinds, horizonteBehaviourSpace } from '../services/forgeV2HorizonteBehaviour/index.js';
 import { HORIZONTE_PACKS, isSeededHorizonteType } from '../services/horizonte/index.js';
+import { SAMPLE_ATTEMPT } from '../services/horizonte/seed/protocol.js';
 import { ALG1_FIXTURES } from '../services/horizonte/alg1/fixtures.js';
 import { ALG2_FIXTURES } from '../services/horizonte/alg2/fixtures.js';
 import { BALANCE_FIXTURES } from '../services/horizonte/balance/fixtures.js';
@@ -25,9 +27,9 @@ import { gradeV2Visual, validateV2LessonForGrading } from '../services/v2LessonD
 
 /*
  * Core's interactive-behaviour gate fails closed on a kind it has no behaviour space for. These tests hold the Horizonte
- * spaces to the gate itself: every authored fixture of every modelled kind passes it in all three locales, the ladder each
- * fixture carries replays through Core's grader, and a key that disagrees with its board is caught. The seeded
- * simulations (sim1, sim2) are graded against an attempt the gate never has, so they stay fail-closed on purpose.
+ * spaces to the gate itself: every authored fixture of every kind passes it in all three locales, the ladder each
+ * fixture carries replays through Core's grader, and a key that disagrees with its board is caught. The five seeded
+ * simulations are graded under an attempt the gate supplies itself; without one, they are still refused.
  */
 
 const FIXTURES: HorizonteFixture[] = [
@@ -53,6 +55,8 @@ function lessonOf(fixture: HorizonteFixture, locale: HorizonteLocale = 'en-US', 
   return { segment, keys, parsed: validateV2LessonForGrading(document, keys, { lessonId: document.lesson_id, locale }) };
 }
 
+const SEEDED_KINDS = ['math.chance-sim.v2', 'math.galton-sim.v2', 'money.life-sim.v2', 'stats.bootstrap-sim.v2', 'stats.coverage-sim.v2'];
+const RUN_FIELD: Record<string, string> = { 'math.chance-sim.v2': 'trials', 'math.galton-sim.v2': 'balls', 'stats.bootstrap-sim.v2': 'resamples' };
 const graded = FIXTURES.filter((fixture) => segmentOf(fixture).grading === 'server');
 const seeded = graded.filter((fixture) => isSeededHorizonteType(segmentOf(fixture).type));
 const modelled = graded.filter((fixture) => !isSeededHorizonteType(segmentOf(fixture).type));
@@ -60,15 +64,13 @@ const named = (fixture: HorizonteFixture) => `${segmentOf(fixture).type} ${fixtu
 const fixtureById = (id: string) => FIXTURES.find((fixture) => fixture.id === id)!;
 
 describe('the Horizonte behaviour spaces under Core\'s gate', () => {
-  it('covers every fixture of the build, with the seeded simulations as the only graded kinds left out', () => {
+  it('covers every graded fixture of the build, the five seeded simulations included', () => {
     expect(FIXTURES.length).toBeGreaterThan(170);
     const left = [...new Set(graded.map((fixture) => segmentOf(fixture).type).filter((type) => !horizonteBehaviourKinds().includes(type)))].sort();
-    expect(left).toEqual(['math.chance-sim.v2', 'math.galton-sim.v2', 'money.life-sim.v2', 'stats.bootstrap-sim.v2', 'stats.coverage-sim.v2']);
-    for (const type of left) expect(isSeededHorizonteType(type)).toBe(true);
-    for (const kind of horizonteBehaviourKinds()) {
-      expect(CAPABILITIES.has(kind), kind).toBe(true);
-      expect(isSeededHorizonteType(kind), kind).toBe(false);
-    }
+    expect(left).toEqual([]);
+    expect([...new Set(seeded.map((fixture) => segmentOf(fixture).type))].sort()).toEqual(SEEDED_KINDS);
+    for (const kind of horizonteBehaviourKinds()) expect(CAPABILITIES.has(kind), kind).toBe(true);
+    for (const kind of SEEDED_KINDS) expect(isSeededHorizonteType(kind), kind).toBe(true);
   });
 
   it.each(modelled.map((fixture) => [named(fixture), fixture] as const))('passes the gate in every locale: %s', (_name, fixture) => {
@@ -104,15 +106,6 @@ describe('the Horizonte behaviour spaces under Core\'s gate', () => {
     const inside = new Set(first.inRange.map((state) => JSON.stringify(state)));
     for (const state of first.invalid) expect(inside.has(JSON.stringify(state)), JSON.stringify(state)).toBe(false);
     if (first.initial !== undefined) expect(inside.has(JSON.stringify(first.initial))).toBe(false);
-  });
-
-  it.each(seeded.map((fixture) => [named(fixture), fixture] as const))('keeps the seeded kind fail-closed: %s', (_name, fixture) => {
-    const { parsed, keys, segment } = lessonOf(fixture);
-    expect(horizonteBehaviourSpace(segment as never, fixture.rubric as never)).toBeNull();
-    expect(parsed).not.toBeNull();
-    const [report] = checkV2Behaviour(parsed!, keys);
-    expect(report!.ok).toBe(false);
-    expect(report!.problems.join(' ')).toMatch(/no behaviour space defined/);
   });
 
   it('returns nothing for a kind, a payload or a rubric it does not model', () => {
@@ -444,5 +437,195 @@ describe('the solid nets the second merge added to the behaviour space', () => {
 
     const cube = fixtureById('area-of-the-cube');
     for (const edge of [0, 41, 1.5, '3']) expect(spaceOf(cube, (segment) => { segment.payload.edge = edge; }), String(edge)).toBeNull();
+  });
+});
+
+const seededNames = seeded.map((fixture) => [named(fixture), fixture] as const);
+/** A coverage board whose goal every offered choice reaches: the gate rightly calls it trivially met. */
+const EASY_BOARDS = ['coverage-one-half'];
+const hardNames = seededNames.filter(([, fixture]) => !EASY_BOARDS.includes(fixture.id));
+const otherSeed = (seed: string) => (seed.startsWith('a') ? 'b' : 'a') + seed.slice(1);
+
+/** One seeded fixture graded under the attempt its ladder was simulated under, the way Core grades a real run. */
+function seededRun(fixture: HorizonteFixture, locale: HorizonteLocale = 'en-US') {
+  const { parsed, keys, segment } = lessonOf(fixture, locale);
+  expect(parsed, 'Core must accept the lesson').not.toBeNull();
+  const attempt = { seed: fixture.seed! };
+  const grade = (response: unknown, given: { seed: string } | undefined = attempt) => gradeV2Visual(parsed!, keys, segment.id, response as never, given);
+  const space = horizonteBehaviourSpace(segment as never, fixture.rubric as never, attempt)!;
+  expect(space, 'the space must exist under an attempt').not.toBeNull();
+  return { parsed: parsed!, keys, segment, attempt, grade, space };
+}
+
+describe('the five seeded simulations under Core\'s gate', () => {
+  it('has fixtures of every one of the five kinds', () => {
+    for (const kind of SEEDED_KINDS) expect(seeded.filter((fixture) => segmentOf(fixture).type === kind).length, kind).toBeGreaterThan(1);
+  });
+
+  it.each(hardNames)('passes the gate in every locale under the gate\'s own attempt: %s', (_name, fixture) => {
+    for (const locale of LOCALES) {
+      const { parsed, keys } = lessonOf(fixture, locale);
+      const [report, ...rest] = checkV2Behaviour(parsed!, keys);
+      expect(rest).toEqual([]);
+      expect(report!.problems, locale).toEqual([]);
+      expect(report!.ok).toBe(true);
+      expect(report!.states).toBeGreaterThan(1);
+    }
+  });
+
+  it('supplies its own attempt: synthetic, not the publish sample, not a fixture seed, and the source never reaches the secret', () => {
+    const fixture = seeded[0]!;
+    const { segment } = lessonOf(fixture);
+    const space = behaviourSpace(segment as never, fixture.rubric as never)!;
+    expect(space.attempt!.seed).toMatch(/^[0-9a-f]{64}$/);
+    expect(space.attempt!.seed).not.toBe(SAMPLE_ATTEMPT.seed);
+    expect(seeded.map((entry) => entry.seed)).not.toContain(space.attempt!.seed);
+    const source = readFileSync(new URL('../services/forgeV2Behaviour.ts', import.meta.url), 'utf8');
+    expect(source).not.toMatch(/horizonteAttemptSeed|deriveAttemptSeed|process\.env/);
+  });
+
+  it.each(seededNames)('replays the ladder under the seed it was simulated under: %s', (_name, fixture) => {
+    const { grade, space } = seededRun(fixture);
+    expect(grade(fixture.ladder.met)?.correct).toBe(true);
+    expect(space.expectMet!(fixture.ladder.met as never)).toBe(true);
+    expect(grade(fixture.ladder.valid)).toBeNull();
+    expect(grade(fixture.ladder.invalid)).toBeNull();
+  });
+
+  it('fails a coverage board that every offered choice satisfies, and still scores it as Core does', () => {
+    const fixture = fixtureById('coverage-one-half');
+    const { parsed, keys } = lessonOf(fixture);
+    const [report] = checkV2Behaviour(parsed!, keys);
+    expect(report!.ok).toBe(false);
+    expect(report!.problems.join(' ')).toMatch(/trivially met/);
+    expect(report!.problems.filter((problem) => !/trivially met/.test(problem))).toEqual([]);
+    const { grade, space } = seededRun(fixture);
+    expect(space.inRange.every((state) => space.expectMet!(state as never))).toBe(true);
+    for (const state of space.inRange) expect(grade(state)?.correct, JSON.stringify(state)).toBe(true);
+  });
+
+  it.each(hardNames)('has a met state and a state short of it, and Core agrees on both: %s', (_name, fixture) => {
+    const { grade, space } = seededRun(fixture);
+    const met = space.inRange.filter((state) => space.expectMet!(state as never));
+    const short = space.inRange.filter((state) => !space.expectMet!(state as never));
+    expect(met.length).toBeGreaterThan(0);
+    expect(short.length).toBeGreaterThan(0);
+    for (const state of met) expect(grade(state)?.correct, JSON.stringify(state)).toBe(true);
+    for (const state of short) {
+      const result = grade(state);
+      expect(result, JSON.stringify(state)).not.toBeNull();
+      expect(result!.correct, JSON.stringify(state)).toBe(false);
+      expect(result!.score, JSON.stringify(state)).toBeLessThan(100);
+    }
+  });
+
+  it.each(seededNames)('refuses a wrong seed, a malformed seed and an off-grid parameter: %s', (_name, fixture) => {
+    const { grade, space } = seededRun(fixture);
+    const met = fixture.ladder.met as Record<string, unknown>;
+    const reversed = [...fixture.seed!].reverse().join('');
+    for (const seed of [otherSeed(fixture.seed!), reversed, SAMPLE_ATTEMPT.seed, fixture.seed!.toUpperCase(), fixture.seed!.slice(1), `${fixture.seed!}0`, '']) {
+      expect(grade({ ...met, seed }), seed.slice(0, 8)).toBeNull();
+    }
+    expect(grade({ ...met, seed: undefined })).toBeNull();
+    expect(space.invalid.length).toBeGreaterThan(6);
+    for (const state of space.invalid) expect(grade(state), JSON.stringify(state)).toBeNull();
+    const inside = new Set(space.inRange.map((state) => JSON.stringify(state)));
+    for (const state of space.invalid) expect(inside.has(JSON.stringify(state))).toBe(false);
+  });
+
+  it.each(seededNames)('contains a hostile response without a throw and never grades it met: %s', (_name, fixture) => {
+    const { grade, space } = seededRun(fixture);
+    expect(space.hostile!.length).toBeGreaterThan(30);
+    for (const response of space.hostile!) {
+      let result: ReturnType<typeof grade> | 'threw';
+      try { result = grade(response); } catch { result = 'threw'; }
+      const shown = JSON.stringify(response)?.slice(0, 80);
+      expect(result, shown).not.toBe('threw');
+      if (result !== 'threw' && result !== null) expect(result.correct, shown).toBe(false);
+    }
+  });
+
+  it.each(seededNames)('stays fail-closed without an attempt: %s', (_name, fixture) => {
+    const { parsed, keys, segment } = lessonOf(fixture);
+    expect(horizonteBehaviourSpace(segment as never, fixture.rubric as never)).toBeNull();
+    expect(horizonteBehaviourSpace(segment as never, fixture.rubric as never, undefined)).toBeNull();
+    expect(gradeV2Visual(parsed!, keys, segment.id, fixture.ladder.met as never)).toBeNull();
+    expect(gradeV2Visual(parsed!, keys, segment.id, fixture.ladder.met as never, undefined)).toBeNull();
+  });
+
+  it.each(seededNames.filter(([, fixture]) => RUN_FIELD[segmentOf(fixture).type]))('walks the run-length slider: too short, not started, off the stops: %s', (_name, fixture) => {
+    const { segment, grade, space } = seededRun(fixture);
+    const field = RUN_FIELD[segment.type]!;
+    const stops = segment.payload.stops as number[];
+    const floor = (segment.payload.minTrials ?? segment.payload.minBalls ?? segment.payload.minResamples) as number;
+    const at = (runs: unknown) => ({ seed: fixture.seed, [field]: runs });
+    expect(space.inRange).toHaveLength(stops.length);
+    expect(stops[0]).toBeLessThan(floor);
+    expect(grade(at(stops[0]))?.correct).toBe(false);
+    expect(grade(at(stops[stops.length - 1]))?.correct).toBe(true);
+    expect(grade(at(0))).toBeNull();
+    for (const runs of [stops[0]! + 1, stops[stops.length - 1]! + 1, -1, 1.5, '5', Number.NaN, Number.POSITIVE_INFINITY]) {
+      expect(stops.includes(runs as number)).toBe(false);
+      expect(grade(at(runs)), String(runs)).toBeNull();
+    }
+    for (const runs of stops.filter((value) => value < floor)) expect(grade(at(runs))?.correct, String(runs)).toBe(false);
+  });
+
+  it.each(seededNames.filter(([, fixture]) => segmentOf(fixture).type === 'stats.coverage-sim.v2'))('walks the level and size sliders, and refuses the start and off-grid choices: %s', (_name, fixture) => {
+    const { segment, grade, space } = seededRun(fixture);
+    const { levels, sizes, start } = segment.payload as { levels: number[]; sizes: number[]; start: { level: number; size: number } };
+    expect(space.inRange).toHaveLength(levels.length * sizes.length - 1);
+    const at = (level: unknown, size: unknown) => ({ seed: fixture.seed, level, size });
+    expect(grade(at(start.level, start.size))).toBeNull();
+    expect(space.initial).toEqual(at(start.level, start.size));
+    expect(grade(at(Math.max(...levels), Math.max(...sizes)))?.correct).toBe(true);
+    expect(space.inRange.some((state) => space.expectMet!(state as never))).toBe(true);
+    expect(levels.includes(7)).toBe(false);
+    expect(sizes.includes(7)).toBe(false);
+    for (const [level, size] of [[7, sizes[0]], [levels[0], 7], [Math.max(...levels) + 1, sizes[0]], [levels[0], Math.max(...sizes) + 1], ['95', sizes[0]], [levels[0], 1.5]]) {
+      expect(grade(at(level, size)), JSON.stringify([level, size])).toBeNull();
+    }
+  });
+
+  it.each(seededNames.filter(([, fixture]) => segmentOf(fixture).type === 'money.life-sim.v2'))('walks the choice slider: every answer is met, the rest are not: %s', (_name, fixture) => {
+    const { segment, grade, space } = seededRun(fixture);
+    const { choices, start } = segment.payload as { choices: number[]; start: number };
+    const answers = (fixture.rubric as { target: { answers: number[] } }).target.answers;
+    expect(space.inRange).toHaveLength(choices.length - 1);
+    expect(space.initial).toEqual({ seed: fixture.seed, choice: start });
+    expect(grade({ seed: fixture.seed, choice: start })).toBeNull();
+    for (const choice of choices.filter((value) => value !== start)) {
+      expect(grade({ seed: fixture.seed, choice })?.correct, String(choice)).toBe(answers.includes(choice));
+    }
+    expect(choices.includes(7)).toBe(false);
+    for (const choice of [7, -1, 1.5, '25', Number.NaN, Math.max(...choices) + 1]) expect(grade({ seed: fixture.seed, choice }), String(choice)).toBeNull();
+  });
+
+  it('is caught by the gate when the key disagrees with what the board derives', () => {
+    const wrong: Record<string, unknown> = {
+      'math.chance-sim.v2': { target: { num: 1, den: 3 } },
+      'math.galton-sim.v2': { target: { num: 1, den: 3 } },
+      'stats.coverage-sim.v2': { target: { level: 80 } },
+      'stats.bootstrap-sim.v2': { target: { low: 1, high: 2 } },
+      'money.life-sim.v2': { target: { answers: [-12345] } },
+    };
+    for (const kind of SEEDED_KINDS) {
+      const fixture = seeded.find((entry) => segmentOf(entry).type === kind)!;
+      expect(refusalsOf(fixture, fixture.rubric), kind).toEqual([]);
+      expect(refusalsOf(fixture, wrong[kind]).length, kind).toBeGreaterThan(0);
+    }
+  });
+
+  it('returns nothing for a seeded payload it cannot model, and never throws on a hostile one', () => {
+    for (const fixture of seeded) {
+      const { segment } = lessonOf(fixture);
+      const attempt = { seed: fixture.seed! };
+      for (const payload of [null, {}, { ...segment.payload, stops: 'x' }, { ...segment.payload, truth: null }, { ...segment.payload, choices: [] }, { ...segment.payload, machine: null }]) {
+        expect(() => horizonteBehaviourSpace({ ...segment, payload } as never, fixture.rubric as never, attempt), segment.type).not.toThrow();
+      }
+      expect(horizonteBehaviourSpace(segment as never, null as never, attempt), segment.type).toBeNull();
+      expect(horizonteBehaviourSpace(segment as never, 'x' as never, attempt), segment.type).toBeNull();
+      expect(horizonteBehaviourSpace(segment as never, { target: null } as never, attempt), segment.type).toBeNull();
+    }
   });
 });
