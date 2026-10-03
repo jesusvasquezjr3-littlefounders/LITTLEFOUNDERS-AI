@@ -8,6 +8,7 @@ import { TableToggle, fillSlots, fractionAcross } from './boardKit';
 import { rulerSetup } from './measure-model.generated';
 import { NUM_A_COPY } from './copy';
 import '../horizonte.css';
+import './NumShared.css';
 import './Measure.css';
 
 type RulerSegment = Extract<HorizonteSegment, { type: 'math.ruler.v2' }>;

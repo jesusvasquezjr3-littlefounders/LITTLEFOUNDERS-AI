@@ -14,7 +14,7 @@
 .lf-fcell--button:disabled { cursor: default; }
 .lf-grid { display: grid; gap: 2px; justify-items: start; max-inline-size: 100%; overflow-x: auto; }
 .lf-grid-line { display: grid; grid-template-columns: 2.75rem repeat(var(--cols), 2.75rem); gap: 2px; }
-.lf-grid-strip { min-inline-size: 2.75rem; min-block-size: 2.75rem; padding: 0; border: 1px solid var(--outline); border-radius: var(--rounded-sm); background: var(--surface); color: var(--ink); font-weight: 800; cursor: pointer; }
+.lf-grid-strip { min-inline-size: 2.75rem; min-block-size: 2.75rem; padding: 0; border: 1px solid var(--outline); border-radius: var(--rounded-sm); background: var(--surface); color: var(--content); font-weight: 800; cursor: pointer; }
 .lf-grid-strip[data-hue='sky'][aria-pressed='true'] { border-color: var(--sky-strong); background: var(--sky-soft); }
 .lf-grid-strip[data-hue='mint'][aria-pressed='true'] { border-color: var(--mint-strong); background: var(--mint-soft); }
 .lf-grid-strip:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
@@ -28,7 +28,7 @@
 .lf-measure-length { fill: var(--mint-soft); stroke: var(--mint-strong); stroke-width: 2; }
 .lf-measure-tile { fill: var(--sky-soft); stroke: var(--sky-strong); stroke-width: 2; }
 .lf-measure-over { fill: none; stroke: var(--sky-strong); stroke-width: 2; stroke-dasharray: 4 3; }
-.lf-measure-svg text { fill: var(--ink); font-size: 14px; font-weight: 800; }
+.lf-measure-svg text { fill: var(--content); font-size: 14px; font-weight: 800; }
 @media (prefers-reduced-motion: no-preference) {
   .lf-fcell, .lf-grid-strip, .lf-grid-cell { transition: background-color var(--dur-component) var(--ease-standard); }
 }

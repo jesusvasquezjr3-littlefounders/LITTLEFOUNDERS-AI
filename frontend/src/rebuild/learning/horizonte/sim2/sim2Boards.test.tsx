@@ -1,4 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { LessonDocumentView } from '../../LessonDocumentView';
 import { assertBoardContract } from '../harness/boardContract';
@@ -221,5 +223,13 @@ describe('sim2 board (F3.3)', () => {
       await screen.findByRole('img', { name: /^Seu dinheiro menos a dívida/ });
       expect(status()).toHaveTextContent(`100% do pagamento para a dívida. ${winsOf(LIFE, 100)} de 100 futuros conseguem. Necessários: 60 de 100.`);
     });
+  });
+});
+
+describe('sim2 theme tokens', () => {
+  it('never paints a board with the constant ink token or a literal colour, so dark mode keeps its contrast', () => {
+    const css = readFileSync(resolve(__dirname, 'LifeSimBoard.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    expect(css).not.toMatch(/var\(--ink\)/);
+    expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(|\b(?:white|black)\b/);
   });
 });

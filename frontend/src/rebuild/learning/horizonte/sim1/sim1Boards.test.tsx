@@ -1,4 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { LessonDocumentView } from '../../LessonDocumentView';
 import { assertBoardContract } from '../harness/boardContract';
@@ -312,5 +314,13 @@ describe('sim1 boards (F3.1, F3.2)', () => {
     it('keeps every string in three locales', () => {
       for (const [key, entry] of Object.entries(SIM1_COPY)) for (const locale of ['en-US', 'es-MX', 'pt-BR'] as const) expect(entry[locale].length, `${key} ${locale}`).toBeGreaterThan(0);
     });
+  });
+});
+
+describe('sim1 theme tokens', () => {
+  it('never paints a board with the constant ink token or a literal colour, so dark mode keeps its contrast', () => {
+    const css = readFileSync(resolve(__dirname, 'sim1.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    expect(css).not.toMatch(/var\(--ink\)/);
+    expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(|\b(?:white|black)\b/);
   });
 });

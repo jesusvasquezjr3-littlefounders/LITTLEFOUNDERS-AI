@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { LessonDocumentView } from '../../LessonDocumentView';
 import { assertBoardContract } from '../harness/boardContract';
@@ -12,8 +12,8 @@ vi.mock('../../../../tutor-scene/quality', () => ({
 vi.mock('../../../../tutor-scene/TutorStage', () => ({ TutorStage: () => <div data-testid="tutor-stage" /> }));
 
 type Locale = 'en-US' | 'es-MX' | 'pt-BR';
-const show = (fixture: string, grade = vi.fn((): { verdict: 'met' | 'review' } => ({ verdict: 'review' })), locale: Locale = 'en-US') => {
-  render(<LessonDocumentView raw={horizonteFixtureDocument('num-a', fixture, locale)} locale={locale} ageBand="6-9" onBack={() => {}} onGradeAny={grade} />);
+const show = (fixture: string, grade = vi.fn((): { verdict: 'met' | 'review' } => ({ verdict: 'review' })), locale: Locale = 'en-US', ageBand: '6-9' | '10-12' = '6-9') => {
+  render(<LessonDocumentView raw={horizonteFixtureDocument('num-a', fixture, locale)} locale={locale} ageBand={ageBand} onBack={() => {}} onGradeAny={grade} />);
   return grade;
 };
 const status = () => document.querySelector('[data-hz-text-equivalent]') as HTMLElement;
@@ -235,5 +235,87 @@ describe('num-a board: pan balance (A16)', () => {
     show('balance-it', undefined, 'pt-BR');
     expect(await screen.findByRole('button', { name: 'Peso 3' })).toBeTruthy();
     expect(status()).toHaveTextContent('Prato esquerdo: 5. Prato direito: 0. O prato esquerdo pesa 5 a mais');
+  });
+});
+
+describe('num-a board: measure an object against a ruler (F1.7)', () => {
+  const css = ['num-a/NumShared.css', 'num-a/Measure.css'];
+  const x = (mark: number, max: number) => 28 + (mark * (560 - 56)) / max;
+
+  it('meets the board contract for the pencil and the strip', async () => {
+    await assertBoardContract({ pack: 'num-a', fixtureId: 'measure-pencil', copy: NUM_A_COPY, css });
+    await assertBoardContract({ pack: 'num-a', fixtureId: 'measure-strip', copy: NUM_A_COPY, css, locales: ['en-US', 'pt-BR'] });
+  });
+
+  it('opens on a reading of 0 and submits the length that is read', async () => {
+    const grade = show('measure-pencil');
+    await screen.findByRole('img', { name: 'Ruler and object: Pencil from 0 to 7 centimeters' });
+    expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Reset' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'How long is it?: Less' })).toBeDisabled();
+    expect(status()).toHaveTextContent('Pencil from 0 to 7 centimeters. Your reading: 0 centimeters.');
+    press('How long is it?: More', 7);
+    expect(status()).toHaveTextContent('Your reading: 7 centimeters.');
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ value: '7' }, 'measure-pencil', expect.anything()));
+  });
+
+  it('submits what the learner reads even when it is the far mark, and Core decides', async () => {
+    const grade = show('measure-strip', undefined, 'en-US', '10-12');
+    await screen.findByRole('img', { name: 'Ruler and object: Paper strip from 2 to 8 inches' });
+    press('How long is it?: More', 8);
+    expect(status()).toHaveTextContent('Your reading: 8 inches.');
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ value: '8' }, 'measure-strip', expect.anything()));
+    press('How long is it?: Less', 2);
+    expect(status()).toHaveTextContent('Your reading: 6 inches.');
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(grade).toHaveBeenLastCalledWith({ value: '6' }, 'measure-strip', expect.anything()));
+  });
+
+  it('stops the reading at the end of the ruler and goes back to the start state on Reset', async () => {
+    show('measure-strip', undefined, 'en-US', '10-12');
+    await screen.findByRole('img', { name: /^Ruler and object:/ });
+    press('How long is it?: More', 14);
+    expect(status()).toHaveTextContent('Your reading: 11 inches.');
+    expect(screen.getByRole('button', { name: 'How long is it?: More' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+    expect(status()).toHaveTextContent('Your reading: 0 inches.');
+    expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
+  });
+
+  it('draws the pencil with its point on the far mark and the strip between its two marks', async () => {
+    show('measure-pencil');
+    await screen.findByRole('img', { name: /^Ruler and object:/ });
+    const points = document.querySelector('.lf-read-tip')!.getAttribute('points')!.split(' ').map((pair) => Number(pair.split(',')[0]));
+    expect(Math.max(...points)).toBeCloseTo(x(7, 10), 5);
+    expect(Number(document.querySelector('.lf-read-body')!.getAttribute('x'))).toBeCloseTo(x(0, 10), 5);
+    cleanup();
+    show('measure-strip', undefined, 'en-US', '10-12');
+    await screen.findByRole('img', { name: /^Ruler and object:/ });
+    const strip = document.querySelector('.lf-read-strip')!;
+    expect(Number(strip.getAttribute('x'))).toBeCloseTo(x(2, 11), 5);
+    expect(Number(strip.getAttribute('x')) + Number(strip.getAttribute('width'))).toBeCloseTo(x(8, 11), 5);
+  });
+
+  it('shows the same drawing as a table', async () => {
+    show('measure-strip', undefined, 'en-US', '10-12');
+    await screen.findByRole('img', { name: /^Ruler and object:/ });
+    press('How long is it?: More', 6);
+    fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
+    const table = screen.getByRole('table', { name: 'The object on the ruler' });
+    expect(within(table).getAllByRole('row').map((row) => row.textContent)).toEqual(['ObjectFromToYour reading', 'Paper strip286 inches']);
+  });
+
+  it('speaks the same piece in Spanish and Portuguese', async () => {
+    show('measure-pencil', undefined, 'es-MX');
+    expect(await screen.findByRole('img', { name: 'Regla y objeto: Lápiz de 0 a 7 centímetros' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: '¿Cuánto mide?: Más' })).toBeTruthy();
+    expect(status()).toHaveTextContent('Tu lectura: 0 centímetros.');
+    cleanup();
+    show('measure-pencil', undefined, 'pt-BR');
+    expect(await screen.findByRole('img', { name: 'Régua e objeto: Lápis de 0 a 7 centímetros' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Quanto mede?: Mais' })).toBeTruthy();
+    expect(status()).toHaveTextContent('Sua leitura: 0 centímetros.');
   });
 });
