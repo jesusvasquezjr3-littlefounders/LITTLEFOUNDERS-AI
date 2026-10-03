@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { useThree } from '@react-three/fiber';
 import { BufferGeometry, Float32BufferAttribute, Color, type LineSegments } from 'three';
 import { SceneCanvas } from '../../../../tutor-scene/SceneCanvas';
@@ -11,12 +11,41 @@ import { PERSPECTIVE_LENS, SCENE_SIZE, cameraPose, composeScene, viewBasis, type
  * a cut between the fixed views (never a tween), HTML labels laid out by composeScene with the matching perspective lens.
  * It rides the shared tutor-scene canvas and its adaptive governor; it never touches the Mentor stage.
  */
-const token = (name: string): string => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#808080';
+/*
+ * The design tokens live on the `.lf-rebuild` host, never on <html>: reading them from documentElement returned an empty
+ * string and painted every solid in the fallback grey in both themes. The palette is read from the canvas host (which sits
+ * inside `.lf-rebuild`), the edge pass uses --content (the token that flips with the theme, not the constant --ink), and it is
+ * read again when the host's data-theme changes. When a token is missing (a host outside `.lf-rebuild`), the host's own
+ * computed text colour stands in, so no colour literal lives in this file.
+ */
+interface Palette { flat: string; curved: string; edge: string; muted: string }
+function readPalette(host: Element): Palette {
+  const styles = getComputedStyle(host);
+  const own = styles.color;
+  const token = (name: string): string => styles.getPropertyValue(name).trim() || own;
+  return { flat: token('--sky'), curved: token('--mint'), edge: token('--content'), muted: token('--content-muted') };
+}
 
-function bodyGeometry(solid: SolidId): BufferGeometry {
+function usePalette(host: RefObject<HTMLElement | null>): Palette | null {
+  const [palette, setPalette] = useState<Palette | null>(null);
+  useLayoutEffect(() => {
+    const node = host.current;
+    if (!node) return undefined;
+    const read = () => setPalette(readPalette(node));
+    read();
+    const themed = node.closest('.lf-rebuild');
+    if (!themed || typeof MutationObserver === 'undefined') return undefined;
+    const observer = new MutationObserver(read);
+    observer.observe(themed, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+    return () => observer.disconnect();
+  }, [host]);
+  return palette;
+}
+
+function bodyGeometry(solid: SolidId, palette: Palette): BufferGeometry {
   const mesh = solidMesh(solid);
-  const flat = new Color(token('--sky'));
-  const curved = new Color(token('--mint'));
+  const flat = new Color(palette.flat);
+  const curved = new Color(palette.curved);
   const positions: number[] = [];
   const normals: number[] = [];
   const colors: number[] = [];
@@ -75,21 +104,21 @@ function Lights({ view }: { view: SolidView }) {
   </>;
 }
 
-function SolidBody({ solid }: { solid: SolidId }) {
-  const body = useMemo(() => bodyGeometry(solid), [solid]);
+function SolidBody({ solid, palette }: { solid: SolidId; palette: Palette }) {
+  const body = useMemo(() => bodyGeometry(solid, palette), [solid, palette]);
   const edges = useMemo(() => edgeGeometry(solid), [solid]);
-  const lines = useMemo(() => ({ ink: token('--ink'), muted: token('--content-muted') }), []);
-  useEffect(() => () => { body.dispose(); edges.dispose(); }, [body, edges]);
+  useEffect(() => () => { body.dispose(); }, [body]);
+  useEffect(() => () => { edges.dispose(); }, [edges]);
   const dashed = (line: LineSegments) => { line.computeLineDistances(); };
   return <>
     <mesh geometry={body}>
       <meshLambertMaterial vertexColors polygonOffset polygonOffsetFactor={1} polygonOffsetUnits={1} />
     </mesh>
     <lineSegments geometry={edges} onUpdate={dashed} renderOrder={1}>
-      <lineDashedMaterial color={lines.muted} dashSize={0.07} gapSize={0.06} depthTest={false} />
+      <lineDashedMaterial color={palette.muted} dashSize={0.07} gapSize={0.06} depthTest={false} />
     </lineSegments>
     <lineSegments geometry={edges} renderOrder={2}>
-      <lineBasicMaterial color={lines.ink} />
+      <lineBasicMaterial color={palette.edge} />
     </lineSegments>
   </>;
 }
@@ -99,13 +128,15 @@ export interface SolidScene3DProps { solid: SolidId; view: SolidView; labels: La
 export default function SolidScene3D({ solid, view, labels, name, onYield }: SolidScene3DProps) {
   const [camera] = useState(() => ({ position: [...cameraPose(view).position] as [number, number, number], fov: PERSPECTIVE_LENS.mode === 'perspective' ? PERSPECTIVE_LENS.fovDeg : 24 }));
   const settled = useCallback((quality: QualitySettings) => { if (quality.tier === 'low') onYield(); }, [onYield]);
+  const host = useRef<HTMLDivElement>(null);
+  const palette = usePalette(host);
   const overlay = useMemo(() => composeScene(solid, view, { lens: PERSPECTIVE_LENS, labels }).labels, [solid, view, labels]);
-  return <div className="lf-solid-canvas" role="img" aria-label={name}>
-    <SceneCanvas camera={camera} interactive={false} onSettings={settled}>
+  return <div ref={host} className="lf-solid-canvas" role="img" aria-label={name}>
+    {palette ? <SceneCanvas camera={camera} interactive={false} onSettings={settled}>
       <CameraCut view={view} />
       <Lights view={view} />
-      <SolidBody solid={solid} />
-    </SceneCanvas>
+      <SolidBody solid={solid} palette={palette} />
+    </SceneCanvas> : null}
     {overlay.length > 0 ? <div className="lf-solid-labels" aria-hidden="true" data-copy-role="data">
       {overlay.map((label) => <span key={label.id} data-hidden={label.hidden ? 'true' : 'false'}
         style={{ left: `${(label.x / SCENE_SIZE) * 100}%`, top: `${(label.y / SCENE_SIZE) * 100}%` }}>{label.text}</span>)}

@@ -10012,7 +10012,9 @@
         "operation.choose-and-count.v1",
         "visual.cube-net.v1",
         "operation.place-faces.v1",
-        "operation.fold-net.v1"
+        "operation.fold-net.v1",
+        "operation.compute-area.v1",
+        "visual.solid-net.v1"
       ],
       "segments": [
         {
@@ -10084,6 +10086,75 @@
             ],
             "edge": 2
           }
+        },
+        {
+          "id": "cube-net-area",
+          "type": "geometry.cube-net.v2",
+          "grading": "server",
+          "prompt": "Each square has an edge of 3. What is the surface area?",
+          "visual": {
+            "type": "cube-net"
+          },
+          "payload": {
+            "mode": "area",
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "edge": 3
+          }
+        },
+        {
+          "id": "solid-net-name-pyramid",
+          "type": "geometry.solid-net.v2",
+          "grading": "server",
+          "prompt": "Two faces are named. Name the other three.",
+          "visual": {
+            "type": "solid-net"
+          },
+          "payload": {
+            "mode": "label",
+            "solid": {
+              "kind": "sq-pyramid",
+              "dims": [
+                6,
+                5
+              ]
+            },
+            "net": "chain",
+            "fixed": [
+              {
+                "panel": 0,
+                "name": "bottom"
+              },
+              {
+                "panel": 1,
+                "name": "front"
+              }
+            ]
+          }
         }
       ]
     },
@@ -10112,6 +10183,30 @@
             ],
             "cell5": [
               "bottom"
+            ]
+          }
+        ]
+      },
+      "cube-net-area": {
+        "target": "54"
+      },
+      "solid-net-name-pyramid": {
+        "solutions": [
+          {
+            "panel0": [
+              "bottom"
+            ],
+            "panel1": [
+              "front"
+            ],
+            "panel2": [
+              "right"
+            ],
+            "panel3": [
+              "back"
+            ],
+            "panel4": [
+              "left"
             ]
           }
         ]
@@ -10147,7 +10242,9 @@
         "operation.choose-and-count.v1",
         "visual.cube-net.v1",
         "operation.place-faces.v1",
-        "operation.fold-net.v1"
+        "operation.fold-net.v1",
+        "operation.compute-area.v1",
+        "visual.solid-net.v1"
       ],
       "segments": [
         {
@@ -10219,6 +10316,75 @@
             ],
             "edge": 2
           }
+        },
+        {
+          "id": "cube-net-area",
+          "type": "geometry.cube-net.v2",
+          "grading": "server",
+          "prompt": "Cada cuadrado tiene arista 3. ¿Cuál es el área total del cubo?",
+          "visual": {
+            "type": "cube-net"
+          },
+          "payload": {
+            "mode": "area",
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "edge": 3
+          }
+        },
+        {
+          "id": "solid-net-name-pyramid",
+          "type": "geometry.solid-net.v2",
+          "grading": "server",
+          "prompt": "Dos caras tienen nombre. Nombra las otras tres.",
+          "visual": {
+            "type": "solid-net"
+          },
+          "payload": {
+            "mode": "label",
+            "solid": {
+              "kind": "sq-pyramid",
+              "dims": [
+                6,
+                5
+              ]
+            },
+            "net": "chain",
+            "fixed": [
+              {
+                "panel": 0,
+                "name": "bottom"
+              },
+              {
+                "panel": 1,
+                "name": "front"
+              }
+            ]
+          }
         }
       ]
     },
@@ -10247,6 +10413,30 @@
             ],
             "cell5": [
               "bottom"
+            ]
+          }
+        ]
+      },
+      "cube-net-area": {
+        "target": "54"
+      },
+      "solid-net-name-pyramid": {
+        "solutions": [
+          {
+            "panel0": [
+              "bottom"
+            ],
+            "panel1": [
+              "front"
+            ],
+            "panel2": [
+              "right"
+            ],
+            "panel3": [
+              "back"
+            ],
+            "panel4": [
+              "left"
             ]
           }
         ]
@@ -10282,7 +10472,9 @@
         "operation.choose-and-count.v1",
         "visual.cube-net.v1",
         "operation.place-faces.v1",
-        "operation.fold-net.v1"
+        "operation.fold-net.v1",
+        "operation.compute-area.v1",
+        "visual.solid-net.v1"
       ],
       "segments": [
         {
@@ -10354,6 +10546,75 @@
             ],
             "edge": 2
           }
+        },
+        {
+          "id": "cube-net-area",
+          "type": "geometry.cube-net.v2",
+          "grading": "server",
+          "prompt": "Cada quadrado tem aresta 3. Qual é a área total do cubo?",
+          "visual": {
+            "type": "cube-net"
+          },
+          "payload": {
+            "mode": "area",
+            "cells": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "edge": 3
+          }
+        },
+        {
+          "id": "solid-net-name-pyramid",
+          "type": "geometry.solid-net.v2",
+          "grading": "server",
+          "prompt": "Duas faces têm nome. Nomeie as outras três.",
+          "visual": {
+            "type": "solid-net"
+          },
+          "payload": {
+            "mode": "label",
+            "solid": {
+              "kind": "sq-pyramid",
+              "dims": [
+                6,
+                5
+              ]
+            },
+            "net": "chain",
+            "fixed": [
+              {
+                "panel": 0,
+                "name": "bottom"
+              },
+              {
+                "panel": 1,
+                "name": "front"
+              }
+            ]
+          }
         }
       ]
     },
@@ -10382,6 +10643,30 @@
             ],
             "cell5": [
               "bottom"
+            ]
+          }
+        ]
+      },
+      "cube-net-area": {
+        "target": "54"
+      },
+      "solid-net-name-pyramid": {
+        "solutions": [
+          {
+            "panel0": [
+              "bottom"
+            ],
+            "panel1": [
+              "front"
+            ],
+            "panel2": [
+              "right"
+            ],
+            "panel3": [
+              "back"
+            ],
+            "panel4": [
+              "left"
             ]
           }
         ]
@@ -10414,7 +10699,11 @@
       "required_capabilities": [
         "visual.cube-stack.v1",
         "operation.stack-cubes.v1",
-        "operation.linked-views.v1"
+        "operation.linked-views.v1",
+        "visual.solid-net.v1",
+        "operation.place-faces.v1",
+        "operation.fold-net.v1",
+        "operation.compute-area.v1"
       ],
       "segments": [
         {
@@ -10462,6 +10751,109 @@
             "met": "You pictured the solid from every side.",
             "not_yet": "Turn the solid around in your mind and look again."
           }
+        },
+        {
+          "id": "solid-net-name-box",
+          "type": "geometry.solid-net.v2",
+          "grading": "server",
+          "prompt": "This box net has two named faces. Name the other four.",
+          "visual": {
+            "type": "solid-net"
+          },
+          "payload": {
+            "mode": "label",
+            "solid": {
+              "kind": "rect-prism",
+              "dims": [
+                4,
+                3,
+                2
+              ]
+            },
+            "net": "cross",
+            "fixed": [
+              {
+                "panel": 1,
+                "name": "front"
+              },
+              {
+                "panel": 4,
+                "name": "left"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "You matched every face to its place in the fold.",
+            "not_yet": "Fold the net in your mind and see which faces touch."
+          }
+        },
+        {
+          "id": "solid-net-finish-box",
+          "type": "geometry.solid-net.v2",
+          "grading": "server",
+          "prompt": "Three sides are folded out of the bottom. Attach the back and the top so the net fits the sheet.",
+          "visual": {
+            "type": "solid-net"
+          },
+          "payload": {
+            "mode": "complete",
+            "solid": {
+              "kind": "rect-prism",
+              "dims": [
+                4,
+                3,
+                2
+              ]
+            },
+            "root": "bottom",
+            "fixed": [
+              {
+                "parent": "bottom",
+                "child": "front"
+              },
+              {
+                "parent": "bottom",
+                "child": "left"
+              },
+              {
+                "parent": "bottom",
+                "child": "right"
+              }
+            ],
+            "sheet": {
+              "width": 9,
+              "height": 11
+            }
+          },
+          "feedback": {
+            "met": "You joined every face and the net fits the sheet.",
+            "not_yet": "Check which edges touch, and keep the net inside the sheet."
+          }
+        },
+        {
+          "id": "solid-net-area-prism",
+          "type": "geometry.solid-net.v2",
+          "grading": "server",
+          "prompt": "The net has three rectangles and two triangles. What is the surface area of the prism?",
+          "visual": {
+            "type": "solid-net"
+          },
+          "payload": {
+            "mode": "area",
+            "solid": {
+              "kind": "tri-prism",
+              "dims": [
+                3,
+                4,
+                5
+              ]
+            },
+            "net": "row"
+          },
+          "feedback": {
+            "met": "You added every panel to find the whole surface.",
+            "not_yet": "Find the area of each panel first, then add them."
+          }
         }
       ]
     },
@@ -10483,6 +10875,54 @@
             ]
           }
         ]
+      },
+      "solid-net-name-box": {
+        "solutions": [
+          {
+            "panel0": [
+              "top"
+            ],
+            "panel1": [
+              "front"
+            ],
+            "panel2": [
+              "back"
+            ],
+            "panel3": [
+              "right"
+            ],
+            "panel4": [
+              "left"
+            ],
+            "panel5": [
+              "bottom"
+            ]
+          }
+        ]
+      },
+      "solid-net-finish-box": {
+        "solutions": [
+          {
+            "bottom-back": [
+              "back"
+            ],
+            "bottom-right": [
+              "right"
+            ],
+            "bottom-front": [
+              "front"
+            ],
+            "bottom-left": [
+              "left"
+            ],
+            "top-front": [
+              "top"
+            ]
+          }
+        ]
+      },
+      "solid-net-area-prism": {
+        "target": "72"
       }
     }
   },
@@ -10512,7 +10952,11 @@
       "required_capabilities": [
         "visual.cube-stack.v1",
         "operation.stack-cubes.v1",
-        "operation.linked-views.v1"
+        "operation.linked-views.v1",
+        "visual.solid-net.v1",
+        "operation.place-faces.v1",
+        "operation.fold-net.v1",
+        "operation.compute-area.v1"
       ],
       "segments": [
         {
@@ -10560,6 +11004,109 @@
             "met": "Imaginaste el sólido desde todos los lados.",
             "not_yet": "Gira el sólido en tu mente y vuelve a mirar."
           }
+        },
+        {
+          "id": "solid-net-name-box",
+          "type": "geometry.solid-net.v2",
+          "grading": "server",
+          "prompt": "Esta plantilla de caja tiene dos caras con nombre. Nombra las otras cuatro.",
+          "visual": {
+            "type": "solid-net"
+          },
+          "payload": {
+            "mode": "label",
+            "solid": {
+              "kind": "rect-prism",
+              "dims": [
+                4,
+                3,
+                2
+              ]
+            },
+            "net": "cross",
+            "fixed": [
+              {
+                "panel": 1,
+                "name": "front"
+              },
+              {
+                "panel": 4,
+                "name": "left"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Ubicaste cada cara en su lugar del doblez.",
+            "not_yet": "Dobla la plantilla en tu mente y mira qué caras se tocan."
+          }
+        },
+        {
+          "id": "solid-net-finish-box",
+          "type": "geometry.solid-net.v2",
+          "grading": "server",
+          "prompt": "Tres lados salen del fondo. Une la cara de atrás y la tapa para que la plantilla quepa en la hoja.",
+          "visual": {
+            "type": "solid-net"
+          },
+          "payload": {
+            "mode": "complete",
+            "solid": {
+              "kind": "rect-prism",
+              "dims": [
+                4,
+                3,
+                2
+              ]
+            },
+            "root": "bottom",
+            "fixed": [
+              {
+                "parent": "bottom",
+                "child": "front"
+              },
+              {
+                "parent": "bottom",
+                "child": "left"
+              },
+              {
+                "parent": "bottom",
+                "child": "right"
+              }
+            ],
+            "sheet": {
+              "width": 9,
+              "height": 11
+            }
+          },
+          "feedback": {
+            "met": "Uniste cada cara y la plantilla cabe en la hoja.",
+            "not_yet": "Mira qué aristas se tocan y deja la plantilla dentro de la hoja."
+          }
+        },
+        {
+          "id": "solid-net-area-prism",
+          "type": "geometry.solid-net.v2",
+          "grading": "server",
+          "prompt": "La plantilla tiene tres rectángulos y dos triángulos. ¿Cuál es el área total del prisma?",
+          "visual": {
+            "type": "solid-net"
+          },
+          "payload": {
+            "mode": "area",
+            "solid": {
+              "kind": "tri-prism",
+              "dims": [
+                3,
+                4,
+                5
+              ]
+            },
+            "net": "row"
+          },
+          "feedback": {
+            "met": "Sumaste cada panel y hallaste toda la superficie.",
+            "not_yet": "Halla primero el área de cada panel y luego súmalas."
+          }
         }
       ]
     },
@@ -10581,6 +11128,54 @@
             ]
           }
         ]
+      },
+      "solid-net-name-box": {
+        "solutions": [
+          {
+            "panel0": [
+              "top"
+            ],
+            "panel1": [
+              "front"
+            ],
+            "panel2": [
+              "back"
+            ],
+            "panel3": [
+              "right"
+            ],
+            "panel4": [
+              "left"
+            ],
+            "panel5": [
+              "bottom"
+            ]
+          }
+        ]
+      },
+      "solid-net-finish-box": {
+        "solutions": [
+          {
+            "bottom-back": [
+              "back"
+            ],
+            "bottom-right": [
+              "right"
+            ],
+            "bottom-front": [
+              "front"
+            ],
+            "bottom-left": [
+              "left"
+            ],
+            "top-front": [
+              "top"
+            ]
+          }
+        ]
+      },
+      "solid-net-area-prism": {
+        "target": "72"
       }
     }
   },
@@ -10610,7 +11205,11 @@
       "required_capabilities": [
         "visual.cube-stack.v1",
         "operation.stack-cubes.v1",
-        "operation.linked-views.v1"
+        "operation.linked-views.v1",
+        "visual.solid-net.v1",
+        "operation.place-faces.v1",
+        "operation.fold-net.v1",
+        "operation.compute-area.v1"
       ],
       "segments": [
         {
@@ -10658,6 +11257,109 @@
             "met": "Você imaginou o sólido por todos os lados.",
             "not_yet": "Gire o sólido na sua mente e olhe de novo."
           }
+        },
+        {
+          "id": "solid-net-name-box",
+          "type": "geometry.solid-net.v2",
+          "grading": "server",
+          "prompt": "Esta planificação de caixa tem duas faces com nome. Nomeie as outras quatro.",
+          "visual": {
+            "type": "solid-net"
+          },
+          "payload": {
+            "mode": "label",
+            "solid": {
+              "kind": "rect-prism",
+              "dims": [
+                4,
+                3,
+                2
+              ]
+            },
+            "net": "cross",
+            "fixed": [
+              {
+                "panel": 1,
+                "name": "front"
+              },
+              {
+                "panel": 4,
+                "name": "left"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Você pôs cada face no lugar dela na dobra.",
+            "not_yet": "Dobre a planificação na mente e veja quais faces se tocam."
+          }
+        },
+        {
+          "id": "solid-net-finish-box",
+          "type": "geometry.solid-net.v2",
+          "grading": "server",
+          "prompt": "Três lados saem do fundo. Una a face de trás e a tampa para que a planificação caiba na folha.",
+          "visual": {
+            "type": "solid-net"
+          },
+          "payload": {
+            "mode": "complete",
+            "solid": {
+              "kind": "rect-prism",
+              "dims": [
+                4,
+                3,
+                2
+              ]
+            },
+            "root": "bottom",
+            "fixed": [
+              {
+                "parent": "bottom",
+                "child": "front"
+              },
+              {
+                "parent": "bottom",
+                "child": "left"
+              },
+              {
+                "parent": "bottom",
+                "child": "right"
+              }
+            ],
+            "sheet": {
+              "width": 9,
+              "height": 11
+            }
+          },
+          "feedback": {
+            "met": "Você uniu cada face e a planificação cabe na folha.",
+            "not_yet": "Veja quais arestas se tocam e mantenha a planificação dentro da folha."
+          }
+        },
+        {
+          "id": "solid-net-area-prism",
+          "type": "geometry.solid-net.v2",
+          "grading": "server",
+          "prompt": "A planificação tem três retângulos e dois triângulos. Qual é a área total do prisma?",
+          "visual": {
+            "type": "solid-net"
+          },
+          "payload": {
+            "mode": "area",
+            "solid": {
+              "kind": "tri-prism",
+              "dims": [
+                3,
+                4,
+                5
+              ]
+            },
+            "net": "row"
+          },
+          "feedback": {
+            "met": "Você somou cada painel e achou a superfície toda.",
+            "not_yet": "Ache primeiro a área de cada painel e depois some."
+          }
         }
       ]
     },
@@ -10679,6 +11381,54 @@
             ]
           }
         ]
+      },
+      "solid-net-name-box": {
+        "solutions": [
+          {
+            "panel0": [
+              "top"
+            ],
+            "panel1": [
+              "front"
+            ],
+            "panel2": [
+              "back"
+            ],
+            "panel3": [
+              "right"
+            ],
+            "panel4": [
+              "left"
+            ],
+            "panel5": [
+              "bottom"
+            ]
+          }
+        ]
+      },
+      "solid-net-finish-box": {
+        "solutions": [
+          {
+            "bottom-back": [
+              "back"
+            ],
+            "bottom-right": [
+              "right"
+            ],
+            "bottom-front": [
+              "front"
+            ],
+            "bottom-left": [
+              "left"
+            ],
+            "top-front": [
+              "top"
+            ]
+          }
+        ]
+      },
+      "solid-net-area-prism": {
+        "target": "72"
       }
     }
   },

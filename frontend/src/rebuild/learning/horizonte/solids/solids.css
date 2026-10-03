@@ -8,7 +8,7 @@
 .lf-solid-canvas { position: absolute; inset: 0; }
 .lf-solid-canvas canvas { display: block; inline-size: 100%; block-size: 100%; }
 .lf-solid-labels { position: absolute; inset: 0; pointer-events: none; }
-.lf-solid-labels span { position: absolute; transform: translate(-50%, -50%); font-size: 0.9rem; font-weight: 800; line-height: 1; color: var(--ink); text-shadow: 0 0 3px var(--surface), 0 0 3px var(--surface); }
+.lf-solid-labels span { position: absolute; transform: translate(-50%, -50%); font-size: 0.9rem; font-weight: 800; line-height: 1; color: var(--content); text-shadow: 0 0 3px var(--surface), 0 0 3px var(--surface); }
 .lf-solid-labels span[data-hidden='true'] { color: var(--content-muted); }
 .lf-solid-readout { font-weight: 800; }
 .lf-solid-keys { color: var(--content-muted); }
@@ -22,9 +22,9 @@
 .lf-solid-face[data-curved='true'][data-shade='1'] { fill: color-mix(in srgb, var(--mint) 38%, var(--surface)); }
 .lf-solid-face[data-curved='true'][data-shade='2'] { fill: color-mix(in srgb, var(--mint) 54%, var(--surface)); }
 .lf-solid-face[data-curved='true'][data-shade='3'] { fill: color-mix(in srgb, var(--mint) 70%, var(--surface)); }
-.lf-solid-edge { stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; }
+.lf-solid-edge { stroke: var(--content); stroke-width: 1.6; stroke-linecap: round; }
 .lf-solid-edge[data-hidden='true'] { stroke: var(--content-muted); stroke-width: 1.2; stroke-dasharray: 4 4; }
-.lf-solid-label { font-size: 13px; font-weight: 800; fill: var(--ink); stroke: var(--surface); stroke-width: 3px; paint-order: stroke; }
+.lf-solid-label { font-size: 13px; font-weight: 800; fill: var(--content); stroke: var(--surface); stroke-width: 3px; paint-order: stroke; }
 .lf-solid-label[data-hidden='true'] { fill: var(--content-muted); }
 
 .lf-solid-board { display: grid; gap: var(--spacing-4); justify-items: start; }
@@ -38,7 +38,7 @@
 .lf-net-cell { display: grid; outline: 2px solid transparent; outline-offset: -2px; }
 .lf-net-cell[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
 .lf-net-cell[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }
-.lf-net-square { display: grid; place-items: center; min-inline-size: 0; min-block-size: 0; padding: 0; border: 1px solid var(--outline); border-radius: 0; background: transparent; color: var(--ink); font-weight: 800; cursor: pointer; overflow: hidden; }
+.lf-net-square { display: grid; place-items: center; min-inline-size: 0; min-block-size: 0; padding: 0; border: 1px solid var(--outline); border-radius: 0; background: transparent; color: var(--content); font-weight: 800; cursor: pointer; overflow: hidden; }
 .lf-net-square[data-state='square'], .lf-net-square[data-state='given'] { background: var(--surface); border-color: var(--primary-strong); }
 .lf-net-square[data-state='given'] { background: var(--sky-soft); cursor: default; }
 .lf-net-square[data-pair='fb'] { background: var(--sky-soft); }
@@ -49,16 +49,51 @@
 .lf-net-name { font-size: 0.85rem; line-height: 1.1; text-align: center; overflow-wrap: anywhere; }
 .lf-net-tag { display: block; font-size: 0.7rem; font-weight: 600; color: var(--content-muted); }
 .lf-net-tray { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
-.lf-net-area { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-2); font-weight: 800; }
 .lf-net-previews { display: grid; gap: var(--spacing-2); }
 .lf-net-fold { display: flex; flex-wrap: wrap; gap: var(--spacing-4); align-items: start; }
 .lf-net-folded { display: grid; gap: var(--spacing-1); inline-size: 11rem; }
 .lf-net-folded svg { display: block; inline-size: 100%; aspect-ratio: 1; border-radius: var(--rounded-md); background: var(--sunken); }
 .lf-net-face { fill: transparent; stroke: var(--outline); stroke-width: 1; stroke-dasharray: 3 3; }
-.lf-net-face[data-covered='true'] { stroke: var(--ink); stroke-width: 1.6; stroke-dasharray: none; }
+.lf-net-face[data-covered='true'] { stroke: var(--content); stroke-width: 1.6; stroke-dasharray: none; }
 .lf-net-face[data-covered='true'][data-pair='fb'] { fill: color-mix(in srgb, var(--sky) 45%, var(--surface)); }
 .lf-net-face[data-covered='true'][data-pair='lr'] { fill: color-mix(in srgb, var(--mint) 45%, var(--surface)); }
 .lf-net-face[data-covered='true'][data-pair='tb'] { fill: color-mix(in srgb, var(--berry) 45%, var(--surface)); }
+
+/* The flat nets of the box, the prism and the pyramid (and the cube net when its area is asked): panels drawn from the model, text in net units. */
+/* letter-spacing is reset: an inherited spacing in px would be read in net units and spread a name across its panel. */
+.lf-poly-svg { display: block; max-inline-size: 100%; border-radius: var(--rounded-md); background: var(--sunken); letter-spacing: 0; }
+.lf-poly-face { fill: var(--surface); stroke: var(--content); stroke-width: 1.5; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.lf-poly-face[data-state='named'], .lf-poly-face[data-state='added'], .lf-poly-face[data-state='plain'] { fill: var(--sky-soft); }
+.lf-poly-face[data-state='given'] { fill: var(--mint-soft); }
+.lf-poly-guide { stroke: var(--content-muted); stroke-width: 1; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; pointer-events: none; }
+.lf-poly-len { fill: var(--content-muted); font-weight: 700; pointer-events: none; }
+.lf-poly-name { fill: var(--content); font-weight: 800; stroke: var(--surface); stroke-width: 0.18em; paint-order: stroke; stroke-linejoin: round; pointer-events: none; }
+.lf-poly-sheet { fill: none; stroke: var(--primary-strong); stroke-width: 1.5; stroke-dasharray: 7 5; vector-effect: non-scaling-stroke; pointer-events: none; }
+.lf-poly-button { cursor: pointer; outline: none; }
+.lf-poly-button[aria-disabled='true'] { cursor: default; }
+.lf-poly-button:focus-visible .lf-poly-face { stroke: var(--primary-strong); stroke-width: 3.5; }
+.lf-poly[data-drop-armed='true'] .lf-poly-face { stroke: var(--primary-strong); stroke-width: 2.5; stroke-dasharray: 6 4; }
+.lf-poly[data-drop-selected='true'] .lf-poly-face { stroke: var(--primary-strong); stroke-width: 3.5; }
+.lf-poly-hinge { cursor: pointer; outline: none; }
+.lf-poly-hinge-hit { stroke: transparent; stroke-linecap: round; }
+.lf-poly-hinge-line { stroke: var(--primary-strong); stroke-linecap: round; }
+.lf-poly-hinge:focus-visible .lf-poly-hinge-hit, .lf-poly-hinge[data-drop-armed='true'] .lf-poly-hinge-hit { stroke: var(--sky-soft); }
+
+/* The fold preview: the net hinged up into its solid, drawn in a fixed corner view, shaded by how a panel faces the light. */
+.lf-fold { max-inline-size: 24rem; }
+.lf-fold h3 { font-size: 1rem; }
+.lf-fold-svg { display: block; inline-size: 100%; border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-fold-panel { stroke: var(--content); stroke-width: 1.2; stroke-linejoin: round; vector-effect: non-scaling-stroke; fill: color-mix(in srgb, var(--sky) 22%, var(--surface)); }
+.lf-fold-panel[data-shade='1'] { fill: color-mix(in srgb, var(--sky) 38%, var(--surface)); }
+.lf-fold-panel[data-shade='2'] { fill: color-mix(in srgb, var(--sky) 54%, var(--surface)); }
+.lf-fold-panel[data-shade='3'] { fill: color-mix(in srgb, var(--sky) 70%, var(--surface)); }
+.lf-fold-panel[data-outside='false'] { fill: color-mix(in srgb, var(--mint) 22%, var(--surface)); }
+.lf-fold-panel[data-outside='false'][data-shade='1'] { fill: color-mix(in srgb, var(--mint) 38%, var(--surface)); }
+.lf-fold-panel[data-outside='false'][data-shade='2'] { fill: color-mix(in srgb, var(--mint) 54%, var(--surface)); }
+.lf-fold-panel[data-outside='false'][data-shade='3'] { fill: color-mix(in srgb, var(--mint) 70%, var(--surface)); }
+.lf-fold-tag { fill: var(--content); font-weight: 800; pointer-events: none; }
+.lf-fold-controls { display: grid; gap: var(--spacing-2); justify-items: start; }
+.lf-fold-scrub { inline-size: 100%; max-inline-size: 18rem; }
 
 .lf-stack { display: grid; gap: var(--spacing-4); justify-items: start; }
 .lf-stack-scene { display: flex; flex-wrap: wrap; gap: var(--spacing-4); align-items: start; }
@@ -68,7 +103,7 @@
 .lf-stack-cell { display: grid; outline: 2px solid transparent; outline-offset: -2px; }
 .lf-stack-cell[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
 .lf-stack-cell[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }
-.lf-stack-height { display: grid; place-items: center; min-inline-size: 0; min-block-size: 0; padding: 0; border: 1px solid var(--outline); border-radius: 0; background: transparent; color: var(--ink); font-size: 1.25rem; font-weight: 800; cursor: pointer; }
+.lf-stack-height { display: grid; place-items: center; min-inline-size: 0; min-block-size: 0; padding: 0; border: 1px solid var(--outline); border-radius: 0; background: transparent; color: var(--content); font-size: 1.25rem; font-weight: 800; cursor: pointer; }
 .lf-stack-height[data-height='1'] { background: var(--sky-soft); }
 .lf-stack-height[data-height='2'] { background: var(--mint-soft); }
 .lf-stack-height[data-height='3'] { background: var(--berry-soft); }
@@ -77,13 +112,13 @@
 .lf-stack-cube-top { fill: color-mix(in srgb, var(--sky) 18%, var(--surface)); }
 .lf-stack-cube-front { fill: color-mix(in srgb, var(--sky) 40%, var(--surface)); }
 .lf-stack-cube-side { fill: color-mix(in srgb, var(--sky) 62%, var(--surface)); }
-.lf-stack-cube-line { stroke: var(--ink); stroke-width: 1.4; stroke-linejoin: round; }
+.lf-stack-cube-line { stroke: var(--content); stroke-width: 1.4; stroke-linejoin: round; }
 .lf-stack-ground { fill: none; stroke: var(--outline); stroke-width: 1; stroke-dasharray: 3 3; }
 .lf-stack-views { display: grid; gap: var(--spacing-2); }
 .lf-stack-view { display: flex; flex-wrap: wrap; gap: var(--spacing-4); align-items: center; }
 .lf-stack-diagram { display: grid; gap: var(--spacing-1); justify-items: start; }
 .lf-stack-diagram svg { display: block; inline-size: 5.5rem; block-size: 5.5rem; border-radius: var(--rounded-sm); background: var(--sunken); }
-.lf-stack-unit { fill: color-mix(in srgb, var(--sky) 45%, var(--surface)); stroke: var(--ink); stroke-width: 1.2; }
+.lf-stack-unit { fill: color-mix(in srgb, var(--sky) 45%, var(--surface)); stroke: var(--content); stroke-width: 1.2; }
 .lf-stack-unit[data-who='goal'] { fill: color-mix(in srgb, var(--mint) 45%, var(--surface)); }
 .lf-stack-unit[data-empty='true'] { fill: transparent; stroke: var(--outline); stroke-dasharray: 3 3; }
 .lf-stack-line { font-weight: 800; }

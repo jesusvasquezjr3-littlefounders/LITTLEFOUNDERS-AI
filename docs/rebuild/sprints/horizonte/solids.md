@@ -265,3 +265,118 @@ NOT verified, NOT accepted, NOT released:
 2. Run the visual audit for the three boards and the 3D chunk (see NOT verified above), then measure the chunk budgets with a build.
 3. Review the es-MX and pt-BR strings with a native reader.
 4. After acceptance, update the sprint record and the requirement rows (not touched here).
+
+## Fix round (unit fx-solids)
+
+Branch `hz/fx-solids`, cut from `feat/horizonte-visual` after the first merge of this pack. This section supersedes the Status, Known
+limits and fixture counts above where they disagree (the text above is the first round and is left as written). Two things were done:
+F4.2 was completed, and the pack's frontend was fixed for dark mode.
+
+### What changed
+
+**Surface area is now a graded answer.** The learner computes it from the net. Core grades it with the same ladder as the other
+numeric answers (`invalid`, `valid`, `review`, `met`; the key `{ target: "<n>" }` never rides in the public payload). Cube nets take
+`mode: 'area'` (cells plus an edge; fixture `area-of-the-cube`, edge 3, key 54). The old worked line `6 x edge x edge = N` under the cube
+net (`NetArea.tsx`) was deleted: it printed the graded answer. The area board draws the net with the lengths on its panels and
+offers a table of panel, shape and lengths (never the area of a panel or the total); the answer is typed into one numeric field. A
+fraction below 1 is `invalid`, and a value that is a sum of some of the face areas is reported as `miss` (a diagnostic for the
+feedback, never shown as the answer).
+
+**New segment type `geometry.solid-net.v2`** (scope ages 7 to 12, adult refused, ICAP Constructive; the fixtures put the pyramid
+labelling in band 6-9 and the rest in band 10-12) for nets of a rectangular prism, a triangular prism and a square pyramid, in three modes next to the cube net:
+
+| Mode | The learner | Answer and key shape |
+|---|---|---|
+| `label` | names the panels of a catalogue net | `{ slots: { panel0: [name], ... } }`; the key lists every panel |
+| `complete` | hangs the missing faces on the given hinges so the net fits a sheet | `{ slots: { "bottom-front": ["front"], ... } }`; a slot is one hinge `"<faceA>-<faceB>"` (lower face index first) and the piece in it is the child face |
+| `area` | computes the surface area from a net | `{ value }`, key `{ target }` |
+
+The engine is `polynet.ts` (pure, no DOM, no randomness): a net is a spanning tree of hinges over the faces of a polyhedron, `unfold`
+lays it flat and `convexOverlap` checks it. Catalogue nets: box `cross`, `column`, `strip`, `flag`; triangular prism `row`, `fan`,
+`split`; pyramid `star`, `chain`, `pair`. Face order: box bottom, top, front, back, left, right; triangular prism bottom, back, slope,
+left, right; pyramid bottom, back, right, front, left. Label mode needs exactly one labelling that keeps the given names. Complete
+mode accepts every completion that fits the sheet (any spanning tree whose layout fits and does not overlap), not one fixed answer.
+Authoring rules live in `rules.ts` (`readSolidNetPayload`, `solidNetProblem`); the scorer is `solidNetGrade` in `scorer.ts`.
+
+**Tap and keyboard alternatives.** In label mode a name is dragged onto a panel, or tapped and then the panel tapped, or placed with
+Move to; in complete mode a face is dragged, or tapped and then a hinge tapped, or placed with Move to. The whole answer can therefore
+be made with no dragging and with the keyboard alone. The handles (64 px), the table toggle and the accessible names are held by
+`assertBoardContract` in the board tests.
+
+**Fold animation.** `FoldPlayer` folds the net into its solid. A button runs the fold as a 250 ms tween only under
+`(prefers-reduced-motion: no-preference)`; with reduced motion, or with no `matchMedia`, it jumps to the end. A slider scrubs the fold in
+steps (the keyboard path and the unhurried one), and a status line says flat, part way or closed. The fold is a preview and is never
+graded. Every net board (cube net and solid net, in all modes) uses the same player.
+
+**The 3D renderer import stays confined and lazy.** `SolidScene3D.tsx` is still the only importer of three.js in `horizonte/solids`, and
+it is reached only through the lazy viewer board. The nets are SVG.
+
+**Dark mode.** The pack's CSS and the 3D scene used the constant `--ink` (and a few literal colours) for text, lines and fills, so in
+dark mode ink sat on a dark ground. They now use the theme-flipping `--content`, `--content-muted`, `--surface`, `--sunken` and
+`--outline`. `darkMode.test.ts` scans every CSS and TSX file of the pack for `var(--ink)`, hex, rgb and similar colour functions, white,
+black and `currentColor` fills, and checks that the 3D scene reads its palette from the themed host and follows a theme change.
+`tokens.css` was not edited and no new token was needed.
+
+**Forge.** Guidance for the cube net now covers the three modes (edge at least 2) and a new entry covers the solid net. Gate 4 checks
+the solid-net payload and reports each finding. Two solvability checkers prove the question before it ships: the cube net (with the area
+mode) and `geometry.solid-net.v2` (label: exactly one labelling; complete: the given hinges can be finished on the sheet, the sheet
+rules at least one net out and no net is within 0.3 of a sheet side; area: the net exists and the area is a whole number up to the
+limit; the key is judged against all of that). The Forge keeps pinned copies of the geometry (`solidsGeometry.ts`, `solidsPolynet.ts`,
+`solidsNetRules.ts`); a test pins `solidsPolynet.ts` equal to the Core `polynet.ts` apart from its first two lines. Plans 77 (band
+6-9: cube-net area, pyramid labelling) and 78 (band 10-12: box labelling, box completion, prism area) now exercise the new surface and
+the emitted fixture was regenerated.
+
+**Fixtures.** 16 now, up from 6: viewer 2 (`which-has-no-vertices`, `nine-edges`); cube nets 3 (`name-the-faces`, `finish-the-net`,
+`area-of-the-cube`); solid nets 9 (`name-the-box`, `name-the-prism`, `name-the-pyramid`, `finish-the-box-net`, `finish-the-prism-net`,
+`finish-the-pyramid-net`, `area-of-the-box`, `area-of-the-prism`, `area-of-the-pyramid`); stacks 2 (`staircase`, `two-by-two`). Each has a
+ladder (`invalid`, `valid`, `met`) and an `audit.json` entry. Fixture prompts were shortened to meet the Copy Budget.
+
+**Capabilities.** `geometry.cube-net.v2` and `geometry.solid-net.v2` both carry `operation.compute-area.v1`; the three services are in
+parity (`check-v2-lesson-capability-parity.mjs`). The browser scorer copies were regenerated with `sync-v2-horizonte.mjs` and its
+`--check` is clean.
+
+### Still limited
+
+- The net catalogue and the face order ship in the browser bundle (the boards need them to draw), so a label key or a completion is
+  derivable by reading the code. The rubric itself never rides in the public payload and grading stays on the server. This is the same
+  trade as the cube net had in the first round.
+- Panel and hinge targets drawn inside the SVG can be under 64 px on a phone. The chips, the fold slider and Move to are the accessible
+  path and they meet 64 px.
+- The fold preview does not orient the solid to a reference pose: it shows the panels rising and closing, with the panel number on each.
+  In complete mode the fold of a partial net is a partial fold. Fold tags show panel numbers while label-mode panels show the learner's
+  names once named; the table maps number to name.
+- Tri-prism labelling has exactly one answer per net, so the given names are only anchors, and its complete mode is a weak constraint:
+  22 of 30 candidate nets fit the sheet (box 3 of 15, pyramid 4 of 8). Authors should read that ratio before shipping a prism sheet.
+- Overlap never happens through valid paths for these solids. The `structure` diagnostic is reached by a loop of faces not connected to
+  the root or by going off the sheet; the overlap check itself is tested directly on `convexOverlap`.
+- The sheet comparison is float based with a tolerance of 1e-6. The fixture sheets keep a margin of at least 0.3 from every net extent
+  (measured at least 0.88), and the Forge flags a sheet closer than that as `out-of-bounds`.
+- `areaDiagnosis` calls any subset sum of the face areas `miss`, so a lucky near answer is not told apart from a partial sum.
+- A face name drawn inside a panel falls back to its number when it does not fit. Cube edges of 1 make labels overlap, so Core still
+  accepts an edge of 1 but the Forge guidance and gate require at least 2.
+- Area boards have no `data-hz-text-equivalent` status line; the table toggle plus the table is the equivalent. A cube area row says
+  "Square" for each cell.
+- The disabled `Button` of the shared design layer fails contrast in every pack's audit (about 2.3 to 1 in light, 2.7 to 1 in dark).
+  It is a shared token issue and was not touched here.
+
+### Not verified
+
+- Only a spot check in a headless browser (seven captures with `capture-learn-preview.mjs`: `name-the-box` at 375 px in light and dark,
+  `finish-the-box-net` at 375 px light and 1280 px dark, `area-of-the-prism`, `name-the-pyramid` and `area-of-the-cube` at 375 px). It
+  showed the panels, the fold preview, the chips and the buttons flipping with the theme, and it found one defect that is fixed: the
+  page's inherited `letter-spacing` was read in net units and spread a face name across its panel, so it collided with the lengths
+  (`.lf-poly-svg` now resets it). The fix was re-captured for `finish-the-box-net` and `name-the-pyramid` only. Tests run in jsdom, so
+  64 px hit areas, text fit and contrast are unmeasured. The 768 px width, the reduced-motion states, the `finish-the-prism-net`,
+  `finish-the-pyramid-net` and area-of-the-box boards in the browser, and the 3D viewer were not looked at. A person must look at all of
+  them at 360 px, 768 px and 1280 px, in light and dark, with reduced motion on and off.
+- The first-view word budget and the browser text-fit, proportion and Copy Budget audits were not run. Copy parity and the Copy Budget
+  of the strings were checked by `check-horizonte-copy.mjs` only.
+- Chunk sizes were measured once with `vite build` on the merged tree (own chunk, gzipped, as RECIPE.md defines the budget): solid net
+  board 3.7 KB, cube net board 3.6 KB, viewer board 3.0 KB, stack board 2.6 KB. A net board also pulls the pack's shared chunks (the
+  area and fold code 4.1 KB and the engine chunk 5.9 KB gzipped), about 13.7 KB for the solid net in all. `chunkBudgetKb` for the two net
+  boards was lowered from the declared 26 and 30 to 12 (the recipe default); the viewer and the stack keep their first-round
+  declarations. The three.js chunk (734 KB, 190 KB gzipped) loads only from the viewer board. Nothing enforces these budgets
+  automatically; they were read from the build output by hand.
+- Native-speaker review of the new es-MX and pt-BR strings (net, panel, hinge, fold, area) is pending.
+- Nothing here is accepted against the SPEC or released. `COVERAGE.md`, the requirement rows and `SPRINTS.md` are not edited by this
+  unit; the coverage snapshot was regenerated and its segment-type pin moved by one.

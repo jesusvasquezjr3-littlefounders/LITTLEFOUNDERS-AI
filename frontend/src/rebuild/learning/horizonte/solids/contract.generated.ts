@@ -4,9 +4,10 @@ import { hzBase, hzServer, hzVisual } from '../shared.generated';
 import type { HorizonteAgeScope } from '../types.generated';
 import { COUNT_KINDS, SOLID_IDS } from './model.generated';
 import { FACE_NAMES, NET_GRID_LIMITS, NET_PIECE } from './net.generated';
+import { POLY_FACE_NAMES, POLY_KINDS, POLY_LABEL_FIXED, POLY_LIMITS, SHEET_LIMITS } from './polynet.generated';
 import {
   COMPLETE_FIXED_LIMITS, LABEL_FIXED_LIMITS, NET_EDGE_LIMIT, VIEWER_COUNT_LIMIT, VIEWER_MIN_SOLIDS,
-  netProblem, readNetPayload, readStackPayload, readViewerPayload, stackProblem, viewerProblem,
+  netProblem, readNetPayload, readSolidNetPayload, readStackPayload, readViewerPayload, solidNetProblem, stackProblem, viewerProblem,
 } from './rules.generated';
 import { STACK_MAX_HEIGHT, STACK_PIECE } from './stack.generated';
 
@@ -23,7 +24,7 @@ export const viewerPayload = z.object({
 const netCell = z.tuple([z.number().int().min(0).max(7), z.number().int().min(0).max(7)]);
 const netEdge = z.number().int().min(1).max(NET_EDGE_LIMIT);
 
-/** F4.2: `label` names the squares of a given cube net; `complete` finishes a partial net so it folds into a cube. */
+/** F4.2: `label` names the squares of a given cube net; `complete` finishes a partial net so it folds into a cube; `area` asks for its surface area. */
 export const netPayload = z.discriminatedUnion('mode', [
   z.object({
     mode: z.literal('label'),
@@ -37,6 +38,33 @@ export const netPayload = z.discriminatedUnion('mode', [
     fixed: z.array(netCell).min(COMPLETE_FIXED_LIMITS.min).max(COMPLETE_FIXED_LIMITS.max),
     edge: netEdge,
   }).strict(),
+  z.object({ mode: z.literal('area'), cells: z.array(netCell).length(6), edge: netEdge }).strict(),
+]);
+
+const polyFace = z.enum(POLY_FACE_NAMES);
+const polyLength = z.number().int().min(1).max(POLY_LIMITS.slant);
+const solidSpec = z.object({ kind: z.enum(POLY_KINDS), dims: z.array(polyLength).min(2).max(3) }).strict();
+const sheetSide = z.number().int().min(SHEET_LIMITS.min).max(SHEET_LIMITS.max);
+
+/**
+ * F4.2 for a rectangular prism, a triangular prism and a square pyramid. `label` names the panels of a named net, `complete`
+ * hangs the loose faces from the right hinges so the net fits a sheet, and `area` asks for the surface area from the net.
+ */
+export const solidNetPayload = z.discriminatedUnion('mode', [
+  z.object({
+    mode: z.literal('label'),
+    solid: solidSpec,
+    net: z.string().regex(/^[a-z]{3,12}$/),
+    fixed: z.array(z.object({ panel: z.number().int().min(0).max(5), name: polyFace }).strict()).min(POLY_LABEL_FIXED.min).max(POLY_LABEL_FIXED.max),
+  }).strict(),
+  z.object({
+    mode: z.literal('complete'),
+    solid: solidSpec,
+    root: polyFace,
+    fixed: z.array(z.object({ parent: polyFace, child: polyFace }).strict()).min(1).max(3),
+    sheet: z.object({ width: sheetSide, height: sheetSide }).strict(),
+  }).strict(),
+  z.object({ mode: z.literal('area'), solid: solidSpec, net: z.string().regex(/^[a-z]{3,12}$/) }).strict(),
 ]);
 
 const heightList = z.array(z.number().int().min(0).max(STACK_MAX_HEIGHT)).min(2).max(3);
@@ -71,6 +99,13 @@ export const SOLIDS_SEGMENTS = [
     if (problem) complain(ctx, problem);
   }),
   z.object({
+    ...hzBase, type: z.literal('geometry.solid-net.v2'), grading: hzServer, visual: hzVisual('solid-net'), payload: solidNetPayload,
+  }).strict().superRefine((value, ctx) => {
+    const payload = readSolidNetPayload(value.payload);
+    const problem = payload ? solidNetProblem(payload) : 'The solid net payload is malformed';
+    if (problem) complain(ctx, problem);
+  }),
+  z.object({
     ...hzBase, type: z.literal('geometry.cube-stack.v2'), grading: hzServer, visual: hzVisual('cube-stack'), payload: stackPayload,
   }).strict().superRefine((value, ctx) => {
     const payload = readStackPayload(value.payload);
@@ -80,17 +115,25 @@ export const SOLIDS_SEGMENTS = [
 ] as const;
 
 const netSlots = z.record(z.string().regex(/^(cell[0-5]|g[0-4]x[0-3])$/), z.array(z.enum([...FACE_NAMES, NET_PIECE] as const)).max(1));
+const solidSlots = z.record(
+  z.string().regex(/^(panel[0-5]|(top|bottom|front|back|left|right|slope)-(top|bottom|front|back|left|right|slope))$/),
+  z.array(polyFace).max(1),
+);
+/** The key of an area question is the number itself; the rubric of every other mode is a list of solutions. */
+const areaKey = z.object({ target: z.string().regex(/^[1-9]\d{0,3}$/) }).strict();
 const stackSlots = z.record(z.string().regex(/^c[0-2]r[0-2]$/), z.array(z.literal(STACK_PIECE)).max(STACK_MAX_HEIGHT));
 const arrangement = <T extends z.ZodType>(slots: T) => z.object({ solutions: z.array(slots).min(1).max(8), ordered: z.boolean().optional() }).strict();
 
 export const SOLIDS_RUBRICS = {
   'geometry.solid-viewer.v2': z.object({ solid: solidId, count: z.string().regex(/^(0|[1-9]\d?)$/) }).strict(),
-  'geometry.cube-net.v2': arrangement(netSlots),
+  'geometry.cube-net.v2': z.union([arrangement(netSlots), areaKey]),
+  'geometry.solid-net.v2': z.union([arrangement(solidSlots), areaKey]),
   'geometry.cube-stack.v2': arrangement(stackSlots),
 } as const;
 
 export const SOLIDS_AGE_SCOPE: Readonly<Record<string, HorizonteAgeScope>> = {
   'geometry.solid-viewer.v2': { ages: [7, 12], adult: false },
   'geometry.cube-net.v2': { ages: [7, 12], adult: false },
+  'geometry.solid-net.v2': { ages: [7, 12], adult: false },
   'geometry.cube-stack.v2': { ages: [6, 12], adult: false },
 };
