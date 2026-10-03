@@ -10,7 +10,7 @@ import {
   analyseLines, EXPRESSION_LIMITS, expressionTaskProblem, isExpressionTask, parseExpression, toLatex, toSpoken,
   type ExpressionTask, type LineReport, type Parsed, type SpokenWords,
 } from './expression.generated';
-import { slots } from './shared';
+import { decimalMarkOf, slots } from './shared';
 import '../horizonte.css';
 import './alg2.css';
 
@@ -44,7 +44,8 @@ function goalText(t: Copy, task: ExpressionTask): string {
 
 function Notation({ parsed, variable, words, fallback, locale }: { parsed: Parsed; variable: string; words: SpokenWords; fallback: string; locale: HorizonteBoardProps['document']['locale'] }) {
   if (!parsed.ok) return null;
-  return <p className="lf-alg2-math"><MathExpression tex={toLatex(parsed, variable)} spokenText={toSpoken(parsed, variable, words)} fallback={fallback} locale={locale} /></p>;
+  const mark = decimalMarkOf(locale);
+  return <p className="lf-alg2-math"><MathExpression tex={toLatex(parsed, variable, mark)} spokenText={toSpoken(parsed, variable, words, mark)} fallback={fallback} locale={locale} /></p>;
 }
 
 /*

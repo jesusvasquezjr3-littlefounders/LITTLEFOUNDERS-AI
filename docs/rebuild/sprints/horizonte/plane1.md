@@ -137,3 +137,25 @@ looked at.
 - Decide whether the rate board needs authored axis names.
 - Review the es-MX and pt-BR strings with a native speaker (they are native-written, not machine copies, but not reviewed).
 - Accept and release the three pieces (F1.9, F1.11, F1.12) in the sprint record.
+
+## Fix round
+
+Found by the Atlas audit (375 px and 1280 px, light and dark). Fixed from the code, not yet looked at in a browser.
+
+- **Narrow screen (market-shift-supply, 30 px over a 311 px slot).** Cause: the label of the supply mark ("Supply at this price") is
+  `white-space: nowrap` and sits to the right of its mark; with the mark at 56% of the plane it ran about 30 px past the slot. Fixes, all in
+  `plane1.css` and `PlaneFigure` (no change to Plano): a point label whose mark is past the middle of the plane gets `data-flip` and sits on the
+  left of the mark (set from outside, and re-set by a `MutationObserver` when Plano swaps the figure for its table and back); in a figure
+  narrower than 36 rem a label wraps at 9 em and the frame keeps 32 px at its end, so a 64 px handle at the edge of the plane stays inside the
+  slot; the board grid is `minmax(0, 1fr)` so no child can widen the column; the status line and the facts break long words; the value
+  tables sit in their own `overflow-x: auto` container. Desktop is unchanged except that a label past the middle now sits on the left.
+- **Dark mode.** Cause: `.lf-p1-facts` used `var(--ink)`, a constant (`#11132a`) that does not flip under `data-theme="dark"`. It now uses
+  `var(--content)`, which flips; no other literal, `--ink` or fixed colour is left in `plane1.css` or the board files (a test pins that for
+  `plane1.css`). Affects the facts line of break-even, cost structure, margin and markup, market shift and elasticity.
+- **Stale note.** The `data-hz-roving` marker is set by Plano itself now; `PlaneFigure` no longer sets it.
+- **Tests.** Four tests in `plane1Boards.test.tsx`: label flip past the middle, none in the left half, flip kept across the table toggle, and
+  no `--ink`, hex, rgb or white and black keyword in `plane1.css`.
+
+Still limited: no real browser, screenshot or contrast measurement has seen this. The audit's remaining low-contrast hits on these boards are
+the disabled Reset and Check buttons of the shared board shell (2.3 in light, 2.7 in dark), which are not part of this pack.
+
