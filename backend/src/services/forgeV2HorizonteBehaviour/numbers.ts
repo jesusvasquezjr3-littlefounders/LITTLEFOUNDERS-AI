@@ -118,7 +118,7 @@ const panBalance: HzBuilder = (p, r) => {
 const text = (value: unknown) => String(value);
 const typedInvalid = (extra: Json[] = []): unknown[] => [{ value: '01' }, { value: '-1' }, { value: '1.5' }, { value: 'x' }, { value: '12345678' }, { value: 12 }, { value: '1', other: '1' }, ...extra];
 
-const arrayArea: HzBuilder = (p, r) => {
+const arrayArea: HzBuilder = (p) => {
   if (typeof p.rows === 'number') {
     const answer = p.rows * p.columns;
     return { inRange: texts(answer).map((value) => ({ value })), invalid: typedInvalid(), initial: { value: '' }, expectMet: (response) => response.value === text(answer) };
