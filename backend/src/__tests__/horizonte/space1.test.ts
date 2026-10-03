@@ -3,9 +3,11 @@ import { assertScorerContract } from '../../services/horizonte/harness/scorerCon
 import { space1 } from '../../services/horizonte/space1/index.js';
 import { SPACE1_FIXTURES } from '../../services/horizonte/space1/fixtures.js';
 import { ANGLES, ROTATION_COUNT, congruentByTurning, matchingAngles, mirrorFigure, turnFigure, type Cell } from '../../services/horizonte/space1/voxels.js';
-import { PLATONIC_COUNTS, PLATONIC_IDS, eulerSum, platonicMesh, polyCounts, prismVolume, pyramidVolume, sectionShape } from '../../services/horizonte/space1/polyhedra.js';
+import {
+  ARCHIMEDEAN_IDS, EULER_COUNTS, PLATONIC_COUNTS, PLATONIC_IDS, SECTION_SOLIDS, coneVolume, cylinderVolume, eulerMesh, faceNormalOf, eulerSum, platonicMesh, polyCounts, prismVolume, pyramidVolume, sectionCut, sectionShape, sectionSolidMesh, slideRange, slideShapes,
+} from '../../services/horizonte/space1/polyhedra.js';
 import { readRotationPayload, rotationAnswer, rotationProblem } from '../../services/horizonte/space1/rotationRules.js';
-import { readSolidSectionPayload, solidSectionAnswer, solidSectionProblem } from '../../services/horizonte/space1/sectionRules.js';
+import { CONE_LIMITS, eulerBounds, readSolidSectionPayload, slideCut, slideSolutions, solidSectionAnswer, solidSectionProblem } from '../../services/horizonte/space1/sectionRules.js';
 import { basketMeets, mostItems, readStallPayload, reachableTotals, slotsToBasket, stallAnswer, stallProblem } from '../../services/horizonte/space1/stall.js';
 import { coinAnswer, coinPositions, coinProblem, readCoinPayload, stackCents, stackTenths } from '../../services/horizonte/space1/coins.js';
 import { horizonteGrade, horizonteSampleVerdict, horizonteScopeProblem } from '../../services/horizonte/index.js';
@@ -170,6 +172,184 @@ describe('F4.5 solids: sections, Euler and a pyramid', () => {
     expect(readSolidSectionPayload({ ...section, options: ['hexagon'] })).toBeNull();
     expect(readSolidSectionPayload({ ...section, options: ['hexagon', 'hexagon'] })).toBeNull();
     expect(readSolidSectionPayload({ ...section, solid: 'sphere' })).toBeNull();
+  });
+});
+
+describe('F4.5 fix round: Archimedean solids, the cylinder, the cone and the sliding plane', () => {
+  type Normal = [number, number, number];
+  const cut = (solid: (typeof SECTION_SOLIDS)[number], normal: Normal, offset: number) => sectionCut(solid, { normal, offset });
+  const dotWith = (normal: readonly number[], point: readonly number[]) => normal[0]! * point[0]! + normal[1]! * point[1]! + normal[2]! * point[2]!;
+
+  it('builds the five Archimedean solids with the right counts, planar faces and equal edges', () => {
+    for (const id of ARCHIMEDEAN_IDS) {
+      const mesh = eulerMesh(id);
+      const counts = polyCounts(mesh);
+      expect(counts, id).toEqual(EULER_COUNTS[id]);
+      expect(eulerSum(counts), id).toBe(2);
+      const lengths = mesh.edges.map(([a, b]) => Math.hypot(...mesh.vertices[a]!.map((value, axis) => value - mesh.vertices[b]![axis]!)));
+      expect(Math.max(...lengths) - Math.min(...lengths), id).toBeLessThan(1e-9);
+      for (const face of mesh.faces) {
+        const normal = faceNormalOf(mesh, face);
+        const at = dotWith(normal, mesh.vertices[face[0]!]!);
+        for (const vertex of mesh.vertices) expect(dotWith(normal, vertex), id).toBeLessThan(at + 1e-9);
+        for (const index of face) expect(Math.abs(dotWith(normal, mesh.vertices[index]!) - at), id).toBeLessThan(1e-9);
+      }
+      const owners = new Map<string, number>();
+      for (const face of mesh.faces) face.forEach((from, place) => { const key = [from, face[(place + 1) % face.length]!].sort().join('-'); owners.set(key, (owners.get(key) ?? 0) + 1); });
+      expect([...owners.values()].every((count) => count === 2), id).toBe(true);
+    }
+    expect(EULER_COUNTS['truncated-icosahedron']).toEqual({ vertices: 60, edges: 90, faces: 32 });
+    expect(EULER_COUNTS.cuboctahedron).toEqual({ vertices: 12, edges: 24, faces: 14 });
+  });
+
+  it('grades the hidden count of an Archimedean solid inside its own bounds', () => {
+    expect(eulerBounds('cube')).toEqual({ minimum: '0', maximum: '30' });
+    expect(eulerBounds('truncated-icosahedron')).toEqual({ minimum: '0', maximum: '90' });
+    expect(run('truncated-icosahedron-faces', { value: '32' })).toEqual({ verdict: 'met', diagnostic: 'none' });
+    expect(run('truncated-icosahedron-faces', { value: '60' })).toEqual({ verdict: 'review', diagnostic: 'value' });
+    expect(run('truncated-icosahedron-faces', { value: '90' })).toEqual({ verdict: 'review', diagnostic: 'value' });
+    expect(run('truncated-icosahedron-faces', { value: '91' }).verdict).toBe('invalid');
+    expect(run('truncated-icosahedron-faces', { value: '' }).verdict).toBe('valid');
+    expect(run('truncated-icosahedron-faces', { value: '32' }, { target: '20' }).verdict).toBe('invalid');
+    expect(run('cuboctahedron-edges', { value: '24' }).verdict).toBe('met');
+    expect(run('cuboctahedron-edges', { value: '12' })).toEqual({ verdict: 'review', diagnostic: 'value' });
+    expect(run('cube-edges', { value: '31' }).verdict).toBe('invalid');
+  });
+
+  it('cuts the cylinder into a circle, a rectangle or an ellipse and flags a cut that runs into an end cap', () => {
+    expect(cut('cylinder', [0, 1, 0], 0)).toEqual({ shape: 'circle', clipped: false });
+    expect(cut('cylinder', [0, 1, 0], 4).shape).toBe('circle');
+    expect(cut('cylinder', [0, 1, 0], 6).shape).toBeNull();
+    expect(cut('cylinder', [0, 1, 0], 8).shape).toBeNull();
+    expect(cut('cylinder', [1, 0, 0], 0).shape).toBe('rectangle');
+    expect(cut('cylinder', [0, 0, 2], 3).shape).toBe('rectangle');
+    expect(cut('cylinder', [1, 0, 0], 4).shape).toBeNull();
+    expect(cut('cylinder', [1, 0, 0], 8).shape).toBeNull();
+    expect(cut('cylinder', [1, 2, 0], 0).shape).toBe('ellipse');
+    expect(cut('cylinder', [1, 2, 0], 7).shape).toBe('ellipse');
+    expect(cut('cylinder', [1, 2, 0], 8)).toEqual({ shape: null, clipped: true });
+    expect(cut('cylinder', [1, 2, 0], 14)).toEqual({ shape: null, clipped: true });
+    expect(cut('cylinder', [3, 1, 0], 0)).toEqual({ shape: null, clipped: true });
+    expect(sectionSolidMesh('cylinder').curved).toBe(true);
+    expect(sectionSolidMesh('cube').curved).toBeUndefined();
+  });
+
+  it('keeps the section of the polyhedra exactly as it was', () => {
+    expect(cut('cube', [1, 1, 1], 0)).toEqual({ shape: 'hexagon', clipped: false });
+    expect(cut('cube', [0, 0, 1], 16)).toEqual({ shape: null, clipped: false });
+    expect(cut('octahedron', [0, 0, 1], 0).shape).toBe('square');
+  });
+
+  it('finds the cone as a third of the cylinder with the same base and height', () => {
+    expect(cylinderVolume(3, 4)).toBe(36);
+    expect(coneVolume(3, 4)).toBe(12);
+    expect(coneVolume(2, 3)).toBe(4);
+    expect(coneVolume(2, 1)).toBeNull();
+    expect(solidSectionAnswer({ mode: 'cone', radius: 3, height: 4 })).toEqual({ target: '12' });
+    expect(solidSectionProblem({ mode: 'cone', radius: 2, height: 1 })).not.toBeNull();
+    expect(CONE_LIMITS).toEqual({ radius: { min: 1, max: 12 }, height: { min: 1, max: 12 } });
+    expect(readSolidSectionPayload({ mode: 'cone', radius: 13, height: 3 })).toBeNull();
+    expect(readSolidSectionPayload({ mode: 'cone', radius: 3, height: 0 })).toBeNull();
+    expect(readSolidSectionPayload({ mode: 'cone', radius: 3, height: 4, extra: 1 })).toBeNull();
+    expect(readSolidSectionPayload({ mode: 'cone', radius: 1.5, height: 4 })).toBeNull();
+  });
+
+  it('grades the cone volume and names the cylinder trap', () => {
+    expect(run('cone-third', { value: '12' })).toEqual({ verdict: 'met', diagnostic: 'none' });
+    expect(run('cone-third', { value: '36' })).toEqual({ verdict: 'review', diagnostic: 'structure' });
+    expect(run('cone-third', { value: '24' })).toEqual({ verdict: 'review', diagnostic: 'value' });
+    expect(run('cone-third', { value: '' }).verdict).toBe('valid');
+    expect(run('cone-third', { value: '1729' }).verdict).toBe('invalid');
+    expect(run('cone-third', { value: '12' }, { target: '36' }).verdict).toBe('invalid');
+    expect(bare('cone-third', { value: '12' }).verdict).toBe('valid');
+  });
+
+  it('grades a cylinder section pick', () => {
+    expect(run('cylinder-circle', { pick: 'circle' })).toEqual({ verdict: 'met', diagnostic: 'none' });
+    expect(run('cylinder-circle', { pick: 'rectangle' })).toEqual({ verdict: 'review', diagnostic: 'value' });
+    expect(run('cylinder-rectangle', { pick: 'rectangle' }).verdict).toBe('met');
+    expect(run('cylinder-ellipse', { pick: 'ellipse' }).verdict).toBe('met');
+    expect(run('cylinder-ellipse', { pick: 'circle' })).toEqual({ verdict: 'review', diagnostic: 'value' });
+    expect(run('cylinder-ellipse', { pick: 'ellipse' }, { pick: 'circle' }).verdict).toBe('invalid');
+  });
+
+  it('refuses a cylinder cut that clips the end cap and an option that is also true', () => {
+    const base = segmentOf('cylinder-ellipse').payload as Record<string, unknown>;
+    expect(solidSectionProblem(readSolidSectionPayload({ ...base, plane: { normal: [1, 2, 0], offset: 14 } })!)).toMatch(/end caps/);
+    const circle = segmentOf('cylinder-circle').payload as Record<string, unknown>;
+    expect(solidSectionProblem(readSolidSectionPayload({ ...circle, options: ['circle', 'ellipse'] })!)).not.toBeNull();
+  });
+
+  it('slides a plane through a solid and reads the shape at every position', () => {
+    expect(slideRange('cube', [1, 1, 1])).toEqual({ min: -13, max: 13 });
+    const cube = slideShapes('cube', [1, 1, 1]);
+    expect(cube.get(0)).toBe('hexagon');
+    expect(cube.get(10)).toBe('triangle');
+    expect(cube.get(12)).toBeNull();
+    expect(cube.get(13)).toBeNull();
+    const cylinder = slideShapes('cylinder', [0, 1, 0]);
+    expect(cylinder.get(0)).toBe('circle');
+    expect(cylinder.get(7)).toBeNull();
+    expect(cylinder.get(10)).toBeUndefined();
+    for (const solid of SECTION_SOLIDS) {
+      for (const normal of [[1, 0, 0], [0, 1, 0], [1, 1, 1], [1, 2, 0], [3, 1, 2]] as Normal[]) {
+        const { min, max } = slideRange(solid, normal);
+        expect(min, `${solid} ${normal}`).toBeGreaterThanOrEqual(-16);
+        expect(max, `${solid} ${normal}`).toBeLessThanOrEqual(16);
+        const shapes = slideShapes(solid, normal);
+        expect(shapes.size, `${solid} ${normal}`).toBe(max - min + 1);
+        if (min > -16) expect(shapes.get(min) ?? null, `${solid} ${normal} low end`).toBeNull();
+        if (max < 16) expect(shapes.get(max) ?? null, `${solid} ${normal} high end`).toBeNull();
+      }
+    }
+  });
+
+  it('knows which positions of the plane make the shape asked for', () => {
+    const payload = readSolidSectionPayload(segmentOf('slide-cube-hexagon').payload)!;
+    if (payload.mode !== 'slide') throw new Error('not a slide');
+    expect(slideSolutions(payload)).toContain(0);
+    expect(slideSolutions(payload)).not.toContain(10);
+    expect(slideCut(payload, 0)).toBe('hexagon');
+    expect(slideCut(payload, 10)).toBe('triangle');
+    expect(solidSectionAnswer(payload)).toEqual({ pick: 'hexagon' });
+  });
+
+  it('grades the position the learner leaves the plane at and never says met on the start', () => {
+    expect(run('slide-cube-hexagon', { offset: 0 })).toEqual({ verdict: 'met', diagnostic: 'none' });
+    expect(run('slide-cube-hexagon', { offset: 2 }).verdict).toBe('met');
+    expect(run('slide-cube-hexagon', { offset: 10 }).verdict).toBe('valid');
+    expect(run('slide-cube-hexagon', { offset: 6 })).toEqual({ verdict: 'review', diagnostic: 'value' });
+    expect(run('slide-cube-hexagon', { offset: 12 })).toEqual({ verdict: 'review', diagnostic: 'miss' });
+    expect(run('slide-cube-hexagon', { offset: 99 }).verdict).toBe('invalid');
+    expect(run('slide-cube-hexagon', { offset: -14 }).verdict).toBe('invalid');
+    expect(run('slide-cube-hexagon', { offset: 1.5 }).verdict).toBe('invalid');
+    expect(run('slide-cube-hexagon', { offset: '0' }).verdict).toBe('invalid');
+    expect(run('slide-cube-hexagon', { offset: 0, extra: 1 }).verdict).toBe('invalid');
+    expect(run('slide-cube-hexagon', { pick: 'hexagon' }).verdict).toBe('invalid');
+    expect(run('slide-cube-hexagon', { offset: 0 }, { pick: 'square' }).verdict).toBe('invalid');
+    expect(run('slide-cube-hexagon', { offset: 0 }, { pick: 'hexagon', extra: 1 }).verdict).toBe('invalid');
+    expect(bare('slide-cube-hexagon', { offset: 0 }).verdict).toBe('valid');
+    expect(run('slide-tetrahedron-square', { offset: 0 }).verdict).toBe('met');
+    expect(run('slide-tetrahedron-square', { offset: 1 })).toEqual({ verdict: 'review', diagnostic: 'value' });
+    expect(run('slide-cylinder-ellipse', { offset: 0 }).verdict).toBe('met');
+    expect(run('slide-cylinder-ellipse', { offset: 12 })).toEqual({ verdict: 'review', diagnostic: 'miss' });
+    expect(run('slide-cylinder-ellipse', { offset: 14 }).verdict).toBe('valid');
+  });
+
+  it('refuses a slide that has no answer, starts on the answer, or would grade one position two ways', () => {
+    const cube = segmentOf('slide-cube-hexagon').payload as Record<string, unknown>;
+    const problem = (patch: Record<string, unknown>) => solidSectionProblem(readSolidSectionPayload({ ...cube, ...patch })!);
+    expect(problem({})).toBeNull();
+    expect(problem({ start: 0 })).toMatch(/must not start/);
+    expect(problem({ target: 'circle' })).toMatch(/No position/);
+    expect(problem({ solid: 'tetrahedron', normal: [1, 0, 0], start: 0, target: 'rectangle' })).toMatch(/also make/);
+    expect(readSolidSectionPayload({ ...cube, start: 17 })).toBeNull();
+    expect(readSolidSectionPayload({ ...cube, normal: [0, 0, 0] })).toBeNull();
+    expect(readSolidSectionPayload({ ...cube, normal: [4, 0, 0] })).toBeNull();
+    expect(readSolidSectionPayload({ ...cube, solid: 'dodecahedron' })).toBeNull();
+    expect(readSolidSectionPayload({ ...cube, target: 'sphere' })).toBeNull();
+    expect(readSolidSectionPayload({ ...cube, extra: 1 })).toBeNull();
+    expect(readSolidSectionPayload({ mode: 'slide', solid: 'cube', normal: [1, 1, 1], start: 10 })).toBeNull();
   });
 });
 
