@@ -443,9 +443,6 @@ describe('the solid nets the second merge added to the behaviour space', () => {
 });
 
 const seededNames = seeded.map((fixture) => [named(fixture), fixture] as const);
-/** A coverage board whose goal every offered choice reaches: the gate rightly calls it trivially met. */
-const EASY_BOARDS = ['coverage-one-half'];
-const hardNames = seededNames.filter(([, fixture]) => !EASY_BOARDS.includes(fixture.id));
 const otherSeed = (seed: string) => (seed.startsWith('a') ? 'b' : 'a') + seed.slice(1);
 
 /** One seeded fixture graded under the attempt its ladder was simulated under, the way Core grades a real run. */
@@ -464,7 +461,7 @@ describe('the five seeded simulations under Core\'s gate', () => {
     for (const kind of SEEDED_KINDS) expect(seeded.filter((fixture) => segmentOf(fixture).type === kind).length, kind).toBeGreaterThan(1);
   });
 
-  it.each(hardNames)('passes the gate in every locale under the gate\'s own attempt: %s', (_name, fixture) => {
+  it.each(seededNames)('passes the gate in every locale under the gate\'s own attempt: %s', (_name, fixture) => {
     for (const locale of LOCALES) {
       const { parsed, keys } = lessonOf(fixture, locale);
       const [report, ...rest] = checkV2Behaviour(parsed!, keys);
@@ -494,19 +491,20 @@ describe('the five seeded simulations under Core\'s gate', () => {
     expect(grade(fixture.ladder.invalid)).toBeNull();
   });
 
-  it('fails a coverage board that every offered choice satisfies, and still scores it as Core does', () => {
+  it('fails a coverage goal that every offered choice satisfies, and passes the shipped goal that a lower level misses', () => {
     const fixture = fixtureById('coverage-one-half');
-    const { parsed, keys } = lessonOf(fixture);
-    const [report] = checkV2Behaviour(parsed!, keys);
+    const easy = lessonOf(fixture, 'en-US', { target: { level: 95 } }, (segment) => { segment.payload.goal.covered = 85; });
+    const [report] = checkV2Behaviour(easy.parsed!, easy.keys);
     expect(report!.ok).toBe(false);
     expect(report!.problems.join(' ')).toMatch(/trivially met/);
     expect(report!.problems.filter((problem) => !/trivially met/.test(problem))).toEqual([]);
-    const { grade, space } = seededRun(fixture);
-    expect(space.inRange.every((state) => space.expectMet!(state as never))).toBe(true);
-    for (const state of space.inRange) expect(grade(state)?.correct, JSON.stringify(state)).toBe(true);
+    const shipped = lessonOf(fixture);
+    const [passing] = checkV2Behaviour(shipped.parsed!, shipped.keys);
+    expect(passing!.problems).toEqual([]);
+    expect(passing!.ok).toBe(true);
   });
 
-  it.each(hardNames)('has a met state and a state short of it, and Core agrees on both: %s', (_name, fixture) => {
+  it.each(seededNames)('has a met state and a state short of it, and Core agrees on both: %s', (_name, fixture) => {
     const { grade, space } = seededRun(fixture);
     const met = space.inRange.filter((state) => space.expectMet!(state as never));
     const short = space.inRange.filter((state) => !space.expectMet!(state as never));

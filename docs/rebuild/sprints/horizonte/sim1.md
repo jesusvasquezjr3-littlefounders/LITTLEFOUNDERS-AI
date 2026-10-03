@@ -97,7 +97,7 @@ A key is solvable when the learner can reach it with a run the server will accep
 - chance and Galton: the run at the last stop lands inside the tolerance at 5 standard deviations (`SOLVE_SIGMAS`), the floor is at least 20
   and not the first stop, and the stops are 3 to 8 rising counts;
 - coverage: `solveCoverage` finds the lowest level with a size that reaches the goal with chance `1 - 1e-5` (the exact binomial tail over the
-  exact per-sample cover chance); the key must be that level and above the start, so a lucky run at a lower level never counts as met;
+  exact per-sample cover chance); the key must be that level and above the start. Grading itself counts any cell whose seeded 100 intervals reach the goal, so a lucky run at a lower level is still met (by design); a fixture therefore sets a goal that a lower level misses on most seeds;
 - bootstrap: `bootstrapSolvable` checks the tail at `1e-5` for both edges at the last stop; the key must equal the exact edges.
 
 The same checks run in three places: the contract (a payload that cannot be solved does not parse), the scorer (a key that is not the one
@@ -227,10 +227,10 @@ the scorer, the fixtures and the copy are unchanged. The spaces live in `backend
   (coverage) and 3 of 5 (bootstrap).
 - **Fail-closed unchanged.** A seeded kind graded without an attempt is still `invalid` (the staff preview, a caller that holds no token). The gate asserts this
   itself on the first met response of every seeded space, and `horizonteBehaviourSpace` returns nothing when it is given no attempt.
-- **Finding, not fixed.** `coverage-one-half` is trivially met: its lowest offered level (90) covers the truth about 90 times in 100, so a goal of 85 is reached at
-  every offered choice under the gate seed and under the fixture's own seed. The gate reports it as "the rubric is trivially met", which is correct, and a
-  test pins that. It is not in `emitted-horizonte.json`, so the 240 of 240 result is unaffected, but Forge cannot emit it as authored. The fix is content: a
-  higher goal or a lower first level. That changes `fixtures.ts` and the generated frontend copy, so it is left to the sim1 owner.
+- **Finding, since fixed (`pedagogy-fixes.md`).** `coverage-one-half` was trivially met: its lowest offered level (90) covers the truth about 90 times in 100, so a goal of 85 was reached at
+  every offered choice under the gate seed and under the fixture's own seed. The gate reported it as "the rubric is trivially met", which was correct. The fixture now
+  asks for at least 93 of 100 with key level 99 (level 90 reaches 93 on 22% to 33% of seeds, level 95 on 79% to 93%), and a test pins that a start-level size reaches the goal on
+  under 40% of seeds. It is still not in `emitted-horizonte.json`.
 
 Result on `emitted-horizonte.json`: `forge-v2:check` reports 240 of 240 graded segments passing, 64,341 states scored.
 

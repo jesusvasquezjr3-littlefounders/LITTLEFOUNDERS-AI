@@ -61,11 +61,11 @@ covered count, the success count) is shared with the scorer, because the PRNG re
 - Focused tests (`forgeV2*`, `v2VisualScorer`, `horizonte/seed`, `horizonte/sim1`, `horizonte/sim2`): 800 pass.
 - Per emitted board under the gate seed: chance 5 states (2 met), Galton 5 (2), coverage 15 (9), bootstrap 5 (3), life-sim 5 (1).
 
-## Finding: `coverage-one-half` is trivially met
+## Finding: `coverage-one-half` is trivially met (since fixed)
 
-`coverage-one-half` (goal 85 of 100, levels 90, 95, 99) is met at every offered choice, under the gate seed and under its own fixture seed: the lowest offered level already
-covers the truth about 90 times in 100. The gate rightly reports "the rubric is trivially met". It is not in `emitted-horizonte.json`, so it does not affect the 240 of 240,
-and a test pins the failure. Forge could not emit it as authored.
+`coverage-one-half` (goal 85 of 100, levels 90, 95, 99) was met at every offered choice, under the gate seed and under its own fixture seed: the lowest offered level already
+covers the truth about 90 times in 100. The gate rightly reported "the rubric is trivially met". It is not in `emitted-horizonte.json`, so it did not affect the 240 of 240.
+The pedagogy lane raised the goal to 93 with key level 99 (`pedagogy-fixes.md`); the board now passes the gate, and a test still pins the failure for the old goal of 85.
 
 ## What is NOT verified
 
@@ -85,8 +85,7 @@ and a test pins the failure. Forge could not emit it as authored.
 
 ## Owner follow-ups
 
-- `coverage-one-half`: raise `goal.covered` or lower the first level so a low choice fails. That edits `sim1/fixtures.ts` and its generated frontend copy
-  (`fixtures.generated.ts`, `audit.json`), so it belongs to the sim1 owner.
+- `coverage-one-half`: done in the pedagogy lane (goal 93, key level 99).
 - Promote the Horizonte plans into the shared Forge fixture now that the gate passes them; `forge-integration.md` still describes the five kinds as fail-closed and the
   225 of 240 count.
 - If Forge starts to emit a new seeded board, run `forge-v2:check` on it before review; a "trivially met" or "no behaviour space" message there is a content defect.

@@ -35,7 +35,7 @@ const SIM1_GUIDANCE: readonly ForgeGuidance[] = [
     lines: [
       `${COVERAGE}: ages 16-17 and the adult pathway only. The true share is a fraction from 1/5 to 4/5 with a denominator up to 20; levels are 2 to 5 rising picks from 50, 80, 90, 95 and 99, and sizes 2 to 5 rising counts from 10 to 400.`,
       `${COVERAGE}: the start is one of the choices, and the goal is how many of 100 intervals must cover the truth (50 to 99), written in digits in the prompt. The key is the lowest level that reaches the goal reliably at some size; it must sit above the start level.`,
-      `${COVERAGE}: pick a goal one level of the board reaches and a lower level misses. The payload never carries the key, and the prompt never names the level.`,
+      `${COVERAGE}: pick a goal that the key level reaches and a lower level misses on most seeds (a lucky run at a lower level is still met). The payload never carries the key, and the prompt never names the level.`,
     ],
   },
   {

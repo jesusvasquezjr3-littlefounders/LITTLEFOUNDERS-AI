@@ -97,7 +97,8 @@ export const reachChance = (truth: Fraction, choice: Choice, covered: number): n
 
 /**
  * The lowest level of `levels` that has a size reaching the goal with chance 1 - SOLVE_TAIL, or null when none does.
- * Met needs that level or a higher one, so a lucky run at a lower level never counts.
+ * Grading counts any cell whose seeded 100 intervals reach the goal, so a lower level can still be met on a lucky run; this is only
+ * the lowest level that reaches it reliably, and a fixture sets a goal that a lower level misses on most seeds.
  */
 export function solveCoverage(truth: Fraction, levels: readonly number[], sizes: readonly number[], covered: number): number | null {
   for (const level of levels) if (sizes.some((size) => reachChance(truth, { level, size }, covered) >= 1 - SOLVE_TAIL)) return level;

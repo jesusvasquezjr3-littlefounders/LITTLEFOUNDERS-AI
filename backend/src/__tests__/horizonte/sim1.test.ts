@@ -178,6 +178,8 @@ describe('sim1 pack: F3.1 simulated chance, F3.2 intervals and resampling', () =
     expect(solveCoverage(truth, [80, 90, 95, 99], [20, 50, 100, 200], 92)).toBe(99);
     expect(solveCoverage(truth, [80, 90, 95, 99], [20, 50, 100, 200], 94)).toBeNull();
     expect(solveCoverage({ num: 1, den: 2 }, [90, 95, 99], [30, 100, 300], 85)).toBe(95);
+    expect(solveCoverage({ num: 1, den: 2 }, [90, 95, 99], [30, 100, 300], 93)).toBe(99);
+    expect(solveCoverage({ num: 1, den: 2 }, [90, 95, 99], [30, 100, 300], 94)).toBeNull();
     expect(coverageChance(truth, { level: 99, size: 100 })).toBeGreaterThan(0.97);
     expect(coverageChance(truth, { level: 80, size: 50 })).toBeLessThan(0.9);
     expect(reachChance(truth, { level: 99, size: 100 }, 92)).toBeGreaterThan(0.999);
@@ -253,6 +255,22 @@ describe('sim1 pack: F3.1 simulated chance, F3.2 intervals and resampling', () =
     expect(verdictOf('coverage-three-fifths', { seed, level: 99, size: 100 }, { target: { level: 80 } })).toBe('invalid');
     expect(verdictOf('coverage-one-half', { seed: seedOf('coverage-one-half'), level: 99, size: 300 })).toBe('met');
     expect(verdictOf('coverage-one-half', { seed: seedOf('coverage-one-half'), level: 90, size: 30 })).toBe('valid');
+  });
+
+  it('keeps coverage-one-half a board where a lower level misses: every start-level size reaches the goal on well under half the seeds', () => {
+    const { payload } = segmentOf('coverage-one-half') as { payload: { truth: { num: number; den: number }; levels: number[]; sizes: number[]; start: { level: number; size: number }; goal: { covered: number } } };
+    const key = (fixture('coverage-one-half').rubric as { target: { level: number } }).target.level;
+    expect(solveCoverage(payload.truth, payload.levels, payload.sizes, payload.goal.covered)).toBe(key);
+    expect(key).toBeGreaterThan(payload.start.level);
+    for (const size of payload.sizes) {
+      expect(reachChance(payload.truth, { level: payload.start.level, size }, payload.goal.covered), `level ${payload.start.level} size ${size}`).toBeLessThan(0.4);
+    }
+    const seed = seedOf('coverage-one-half');
+    for (const size of payload.sizes) {
+      const verdict = verdictOf('coverage-one-half', { seed, level: payload.start.level, size });
+      expect(verdict, `level ${payload.start.level} size ${size}`).toBe(size === payload.start.size ? 'valid' : 'review');
+    }
+    expect(verdictOf('coverage-one-half', { seed, level: key, size: payload.sizes.at(-1) })).toBe('met');
   });
 
   it('grades the bootstrap by the replay of the resamples', () => {

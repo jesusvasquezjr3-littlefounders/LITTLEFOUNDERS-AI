@@ -63,8 +63,8 @@ shared fixture that Core's own tests read (see Owner follow-ups).
 
 The five seeded kinds are graded by Core against the learner's own attempt, which the gate never has. The space therefore grades them with one
 fixed synthetic seed, `GATE_ATTEMPT`, used only inside the gate's own grading calls; a seeded kind graded without an attempt is still `invalid`
-(it fails closed), so the seed cannot leak into a learner's grade. One fixture note from that round: the `coverage-one-half` fixture is trivially
-met, but it is not in `emitted-horizonte.json`, so it affects none of the 240 segments.
+(it fails closed), so the seed cannot leak into a learner's grade. One fixture note from that round: the `coverage-one-half` fixture was trivially
+met (since fixed: goal 93, key level 99), and it is not in `emitted-horizonte.json`, so it affects none of the 240 segments.
 
 ## Solvability (F0.4, riding gate 1)
 
@@ -236,7 +236,7 @@ notation without its spoken text, and stray copy in a neutral kind.
 
 - Decide whether to promote the Horizonte plans into the shared `fixtures/plans/` and `emitted.json`. The behaviour gate no longer blocks it (the
   five seeded simulations have a space, 240 of 240 graded segments pass), but the move changes the fixture that Core's own backend suites read.
-  The `coverage-one-half` fixture is trivially met; it belongs to the sim1 owner and is not in the emitted file.
+  The `coverage-one-half` fixture was trivially met (since fixed in the pedagogy lane); it is not in the emitted file.
 - Run `forge:v2:dry-run` and `forge:release-gates:check` once, at the push gate, on the final tree.
 - Have the pack lanes replace fixture copy with authored lessons, and have a native reader review es-MX and pt-BR.
 - Decide whether findings should keep riding gate 1 with the `solvability/<code>:` prefix or get a dedicated gate. A dedicated gate (gate 20)
@@ -306,7 +306,7 @@ kind has a space. The earlier statements that the five kinds are left fail-close
 A seeded kind graded without an attempt is still `invalid`. See `behav.md`.
 
 From the behaviour round (`behav.md`; not re-run in this pass): `emitted-horizonte.json` is 114 rows and 240 graded segments, 240 of 240 pass the behaviour gate (64,341 states), and
-all 114 rows pass Core's strict contract (225 of 240 before). The fixture note from `behav.md` applies: the `coverage-one-half` fixture is trivially met, but it is not in the emitted file.
+all 114 rows pass Core's strict contract (225 of 240 before). The fixture note from `behav.md` applies: the `coverage-one-half` fixture was trivially met (since fixed), and it is not in the emitted file.
 
 ## Solvability round (supersedes the 26 and 43 counts above)
 

@@ -23,8 +23,8 @@ const biased = doc(GALTON, 'galton-sim', 'Each peg sends 7 of 10 balls right. Dr
   { view: 'board', rows: 4, rightPct: 70, bin: 3, stops: [20, 100, 500, 1500, 3000], tolerance: 5, minBalls: 1500 });
 const coverage = doc(COVERAGE, 'coverage-sim', 'Where 3 in 5 say yes, pick a level and size so at least 92 intervals cover the truth.',
   { truth: { num: 3, den: 5 }, levels: [80, 90, 95, 99], sizes: [20, 50, 100, 200], start: { level: 80, size: 20 }, goal: { covered: 92 } });
-const half = doc(COVERAGE, 'coverage-sim', 'Where half say yes, pick a level and size so at least 85 intervals cover the truth.',
-  { truth: { num: 1, den: 2 }, levels: [90, 95, 99], sizes: [30, 100, 300], start: { level: 90, size: 30 }, goal: { covered: 85 } });
+const half = doc(COVERAGE, 'coverage-sim', 'Where half say yes, pick a level and size so at least 93 intervals cover the truth.',
+  { truth: { num: 1, den: 2 }, levels: [90, 95, 99], sizes: [30, 100, 300], start: { level: 90, size: 30 }, goal: { covered: 93 } });
 const bootstrap = doc(BOOTSTRAP, 'bootstrap-sim', 'Resample the six values with replacement. Run at least 500 resamples so the middle 90% of the totals settles.',
   { axis: { min: 0, max: 10 }, data: [2, 3, 3, 5, 6, 8], level: 90, stops: [50, 200, 500, 1000, 3000], tolerance: 1, minResamples: 500 });
 const eight = doc(BOOTSTRAP, 'bootstrap-sim', 'Resample the eight values with replacement. Run at least 1000 resamples so the middle 80% of the totals settles.',
@@ -57,7 +57,7 @@ describe('sim1 pack in the Forge (F3.1, F3.2)', () => {
     const keyed: Array<[Doc, unknown]> = [
       [die, { target: { num: 1, den: 6 } }], [spinner, { target: { num: 2, den: 3 } }],
       [board, { target: { num: 5, den: 16 } }], [biased, { target: { num: 1029, den: 2500 } }],
-      [coverage, { target: { level: 99 } }], [half, { target: { level: 95 } }],
+      [coverage, { target: { level: 99 } }], [half, { target: { level: 99 } }],
       [bootstrap, { target: { low: 19, high: 36 } }], [eight, { target: { low: 140, high: 180 } }],
     ];
     for (const [document, key] of keyed) {
@@ -127,13 +127,13 @@ describe('sim1 pack in the Forge (F3.1, F3.2)', () => {
   describe('coverage', () => {
     it('refuses a key that is not the lowest level that reaches the goal', () => {
       expect(messages(coverage, { target: { level: 95 } })[0]).toMatch(/must be level 99/);
-      expect(messages(half, { target: { level: 99 } })[0]).toMatch(/must be level 95/);
-      expect(messages(half, { target: { level: 90 } })[0]).toMatch(/must be level 95/);
+      expect(messages(half, { target: { level: 95 } })[0]).toMatch(/must be level 99/);
+      expect(messages(half, { target: { level: 90 } })[0]).toMatch(/must be level 99/);
     });
 
     it('refuses a goal no choice reaches and a goal the start already has', () => {
       expect(messages(withPayload(coverage, { levels: [80, 90], sizes: [20, 50], goal: { covered: 99 }, start: { level: 80, size: 20 } }))[0]).toMatch(/No level and size reach 99/);
-      expect(messages(withPayload(half, { start: { level: 95, size: 30 } }))[0]).toMatch(/already reached at the start level/);
+      expect(messages(withPayload(half, { start: { level: 99, size: 30 } }))[0]).toMatch(/already reached at the start level/);
     });
 
     it('refuses a truth, levels, sizes, start and goal the Core contract refuses', () => {
@@ -148,7 +148,7 @@ describe('sim1 pack in the Forge (F3.1, F3.2)', () => {
 
     it('refuses a prompt that hides the goal number', () => {
       expect(messages(withPrompt(half, 'Where half say yes, pick a level and size so most intervals cover the truth.'))[0]).toMatch(/goal number of intervals in digits/);
-      expect(messages(withPrompt(half, 'Where half say yes, pick a level and size so at least 185 intervals cover the truth.'))[0]).toMatch(/goal number of intervals in digits/);
+      expect(messages(withPrompt(half, 'Where half say yes, pick a level and size so at least 193 intervals cover the truth.'))[0]).toMatch(/goal number of intervals in digits/);
     });
   });
 

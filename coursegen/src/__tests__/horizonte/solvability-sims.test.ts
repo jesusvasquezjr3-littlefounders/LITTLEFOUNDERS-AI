@@ -25,7 +25,7 @@ const spinner: Payloads = { machine: { kind: 'spinner', weights: [2, 1, 1, 2] },
 const board: Payloads = { view: 'board', rows: 6, rightPct: 50, bin: 3, stops: [20, 100, 500, 1500, 3000], tolerance: 5, minBalls: 1500 };
 const biased: Payloads = { view: 'board', rows: 4, rightPct: 70, bin: 3, stops: [20, 100, 500, 1500, 3000], tolerance: 5, minBalls: 1500 };
 const coverage: Payloads = { truth: { num: 3, den: 5 }, levels: [80, 90, 95, 99], sizes: [20, 50, 100, 200], start: { level: 80, size: 20 }, goal: { covered: 92 } };
-const half: Payloads = { truth: { num: 1, den: 2 }, levels: [90, 95, 99], sizes: [30, 100, 300], start: { level: 90, size: 30 }, goal: { covered: 85 } };
+const half: Payloads = { truth: { num: 1, den: 2 }, levels: [90, 95, 99], sizes: [30, 100, 300], start: { level: 90, size: 30 }, goal: { covered: 93 } };
 const wide: Payloads = { truth: { num: 1, den: 2 }, levels: [50, 80, 90, 95, 99], sizes: [20, 50, 100, 200], start: { level: 50, size: 20 }, goal: { covered: 70 } };
 const bootstrap: Payloads = { axis: { min: 0, max: 10 }, data: [2, 3, 3, 5, 6, 8], level: 90, stops: [50, 200, 500, 1000, 3000], tolerance: 1, minResamples: 500 };
 const eight: Payloads = { axis: { min: 10, max: 30 }, data: [12, 15, 15, 18, 22, 25, 25, 28], level: 80, stops: [100, 300, 1000, 2000, 3000], tolerance: 3, minResamples: 1000 };
@@ -37,7 +37,7 @@ const life: Payloads = { scenario: 'life', periods: 5, cash: 1000, debt: 5000, f
 const authored: Array<[string, string, Payloads, unknown]> = [
   ['die', CHANCE, die, { target: { num: 1, den: 6 } }], ['spinner', CHANCE, spinner, { target: { num: 2, den: 3 } }],
   ['board', GALTON, board, { target: { num: 5, den: 16 } }], ['biased', GALTON, biased, { target: { num: 1029, den: 2500 } }],
-  ['coverage', COVERAGE, coverage, { target: { level: 99 } }], ['half', COVERAGE, half, { target: { level: 95 } }],
+  ['coverage', COVERAGE, coverage, { target: { level: 99 } }], ['half', COVERAGE, half, { target: { level: 99 } }],
   ['bootstrap', BOOTSTRAP, bootstrap, { target: { low: 19, high: 36 } }], ['eight', BOOTSTRAP, eight, { target: { low: 140, high: 180 } }],
   ['portfolio', LIFE, portfolio, { target: { answers: [25] } }], ['retirement', LIFE, retirement, { target: { answers: [15000] } }],
   ['insurance', LIFE, insurance, { target: { answers: [85] } }], ['life', LIFE, life, { target: { answers: [30, 40, 50] } }],
@@ -172,7 +172,7 @@ describe('seeded simulations F0.4 checkers', () => {
 
     it('checks the key against the lowest reliable level', () => {
       expect(codes(COVERAGE, coverage, { target: { level: 95 } })).toEqual(['rubric-accepts-invalid', 'rubric-gap']);
-      expect(codes(COVERAGE, half, { target: { level: 99 } })).toEqual(['rubric-accepts-invalid', 'rubric-gap']);
+      expect(codes(COVERAGE, half, { target: { level: 95 } })).toEqual(['rubric-accepts-invalid', 'rubric-gap']);
       expect(codes(COVERAGE, coverage, { target: { level: '99' } })).toEqual(['impossible-state']);
       expect(codes(COVERAGE, coverage, { target: { level: 99, size: 200 } })).toEqual(['impossible-state']);
     });
