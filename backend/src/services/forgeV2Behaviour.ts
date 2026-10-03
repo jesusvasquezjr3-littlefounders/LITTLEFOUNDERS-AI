@@ -22,6 +22,7 @@
 import { gradeV2Visual, type V2PublicLesson } from './v2LessonDocument.js';
 import { selectionDiagnostic } from './v2VisualScorer.js';
 import { amortizationSchedule } from './v2ConceptBoards.js';
+import { horizonteBehaviourSpace } from './forgeV2HorizonteBehaviour/index.js';
 import { longArithmeticSteps, placeValueScorerPayload, SCHEMA_KINDS, SCHEMA_SLOTS, type PlaceValuePayload } from './v2SegmentFamilies.js';
 
 type Json = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -550,7 +551,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
       return { inRange: product([range(0, p.max_price_minor, p.price_step_minor), range(0, p.max_cups)]).map(([price, cups]) => ({ price, cups })),
         invalid: [{ price: p.max_price_minor + p.price_step_minor, cups: 0 }, { price: 0, cups: p.max_cups + 1 }], initial: { price: 0, cups: 0 } };
     default:
-      return null;
+      return horizonteBehaviourSpace(segment, rubric);
   }
 }
 
