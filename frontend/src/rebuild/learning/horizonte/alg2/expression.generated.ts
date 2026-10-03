@@ -91,6 +91,9 @@ type Token =
   | { readonly t: '(' | ')' | '='; readonly at: number };
 
 const isDigit = (code: number): boolean => code >= 48 && code <= 57;
+/* A decimal separator is a point or a comma written between two digit runs, once per number: `0,5` reads as 0.5, `1,5,2` does not read. */
+const POINT = 46;
+const COMMA = 44;
 
 function canonicalNumber(raw: string): string {
   const dot = raw.indexOf('.');
@@ -118,14 +121,18 @@ function tokenize(text: string, variable: string): Token[] {
       let whole = i;
       while (whole < text.length && isDigit(text.charCodeAt(whole))) whole += 1;
       let end = whole;
-      if (text.charCodeAt(whole) === 46) {
+      const mark = text.charCodeAt(whole);
+      if (mark === POINT || mark === COMMA) {
         end = whole + 1;
         while (end < text.length && isDigit(text.charCodeAt(end))) end += 1;
         if (end === whole + 1) throw new ParseFail('bad-number', i);
       }
+      const after = text.charCodeAt(end);
+      if (after === POINT || after === COMMA) throw new ParseFail('bad-number', end);
       const digits = (whole - i) + (end > whole ? end - whole - 1 : 0);
       if (digits > EXPRESSION_LIMITS.maxDigits) throw new ParseFail('bad-number', i);
-      tokens.push({ t: 'num', text: canonicalNumber(text.slice(i, end)), at: i });
+      const written = end > whole ? `${text.slice(i, whole)}.${text.slice(whole + 1, end)}` : text.slice(i, end);
+      tokens.push({ t: 'num', text: canonicalNumber(written), at: i });
       i = end;
       continue;
     }
@@ -145,7 +152,7 @@ function tokenize(text: string, variable: string): Token[] {
       case 40: tokens.push({ t: '(', at: i }); break;
       case 41: tokens.push({ t: ')', at: i }); break;
       case 61: tokens.push({ t: '=', at: i }); break;
-      case 44: throw new ParseFail('bad-number', i);
+      case POINT: case COMMA: throw new ParseFail('bad-number', i);
       default: throw new ParseFail('bad-char', i);
     }
     i += 1;
@@ -638,67 +645,71 @@ export function analyseLines(task: ExpressionTask, lines: readonly unknown[]): L
 
 const PREC = { add: 1, mul: 2, neg: 3, pow: 4, atom: 5 } as const;
 
-function texOf(node: Node, variable: string): { s: string; p: number } {
+function texOf(node: Node, variable: string, point: string): { s: string; p: number } {
   switch (node.k) {
-    case 'num': return { s: node.text, p: PREC.atom };
+    case 'num': return { s: node.text.replace('.', point), p: PREC.atom };
     case 'var': return { s: variable, p: PREC.atom };
     case 'neg': {
-      const inner = texOf(node.a, variable);
+      const inner = texOf(node.a, variable, point);
       return { s: `-${inner.p < PREC.neg ? `(${inner.s})` : inner.s}`, p: PREC.neg };
     }
     case 'add': case 'sub': {
-      const left = texOf(node.a, variable);
-      const right = texOf(node.b, variable);
+      const left = texOf(node.a, variable, point);
+      const right = texOf(node.b, variable, point);
       const wrap = node.k === 'sub' ? right.p <= PREC.add || node.b.k === 'neg' : node.b.k === 'neg';
       return { s: `${left.s}${node.k === 'add' ? '+' : '-'}${wrap ? `(${right.s})` : right.s}`, p: PREC.add };
     }
     case 'mul': {
-      const left = texOf(node.a, variable);
-      const right = texOf(node.b, variable);
+      const left = texOf(node.a, variable, point);
+      const right = texOf(node.b, variable, point);
       const leftText = left.p < PREC.mul ? `(${left.s})` : left.s;
       const wrapRight = right.p < PREC.mul || node.b.k === 'neg';
       const rightText = wrapRight ? `(${right.s})` : right.s;
       const explicit = !wrapRight && (node.b.k === 'num' || (node.a.k === 'num' && node.b.k === 'pow' && node.b.a.k === 'num'));
       return { s: explicit ? `${leftText}\\cdot ${rightText}` : `${leftText}${rightText}`, p: PREC.mul };
     }
-    case 'div': return { s: `\\frac{${texOf(node.a, variable).s}}{${texOf(node.b, variable).s}}`, p: PREC.atom };
+    case 'div': return { s: `\\frac{${texOf(node.a, variable, point).s}}{${texOf(node.b, variable, point).s}}`, p: PREC.atom };
     case 'pow': {
-      const base = texOf(node.a, variable);
+      const base = texOf(node.a, variable, point);
       return { s: `${base.p < PREC.atom ? `(${base.s})` : base.s}^{${node.e}}`, p: PREC.pow };
     }
   }
 }
 
-/** KaTeX source for a parsed line. Built only from the tree (digits, the variable letter and fixed commands), never from learner text. */
-export function toLatex(parsed: Parsed, variable: string): string {
+export type DecimalMark = '.' | ',';
+
+/** KaTeX source for a parsed line, with the locale's decimal mark. Built only from the tree (digits, the variable letter and fixed commands), never from learner text. */
+export function toLatex(parsed: Parsed, variable: string, decimal: DecimalMark = '.'): string {
   if (!parsed.ok) return '';
-  return parsed.kind === 'expression' ? texOf(parsed.expr, variable).s : `${texOf(parsed.left, variable).s}=${texOf(parsed.right, variable).s}`;
+  const point = decimal === ',' ? '{,}' : '.';
+  return parsed.kind === 'expression' ? texOf(parsed.expr, variable, point).s : `${texOf(parsed.left, variable, point).s}=${texOf(parsed.right, variable, point).s}`;
 }
 
 export interface SpokenWords { plus: string; minus: string; times: string; over: string; power: string; equals: string; open: string; close: string; negative: string }
 
-function spokenOf(node: Node, variable: string, words: SpokenWords): { s: string; p: number } {
+function spokenOf(node: Node, variable: string, words: SpokenWords, point: string): { s: string; p: number } {
   const group = (inner: { s: string; p: number }, below: number) => (inner.p < below ? `${words.open} ${inner.s} ${words.close}` : inner.s);
   switch (node.k) {
-    case 'num': return { s: node.text, p: PREC.atom };
+    case 'num': return { s: node.text.replace('.', point), p: PREC.atom };
     case 'var': return { s: variable, p: PREC.atom };
-    case 'neg': return { s: `${words.negative} ${group(spokenOf(node.a, variable, words), PREC.neg)}`, p: PREC.neg };
+    case 'neg': return { s: `${words.negative} ${group(spokenOf(node.a, variable, words, point), PREC.neg)}`, p: PREC.neg };
     case 'add': case 'sub': {
-      const right = spokenOf(node.b, variable, words);
+      const right = spokenOf(node.b, variable, words, point);
       const wrap = node.k === 'sub' ? right.p <= PREC.add || node.b.k === 'neg' : node.b.k === 'neg';
-      return { s: `${spokenOf(node.a, variable, words).s} ${node.k === 'add' ? words.plus : words.minus} ${wrap ? `${words.open} ${right.s} ${words.close}` : right.s}`, p: PREC.add };
+      return { s: `${spokenOf(node.a, variable, words, point).s} ${node.k === 'add' ? words.plus : words.minus} ${wrap ? `${words.open} ${right.s} ${words.close}` : right.s}`, p: PREC.add };
     }
     case 'mul': {
-      const right = spokenOf(node.b, variable, words);
-      return { s: `${group(spokenOf(node.a, variable, words), PREC.mul)} ${words.times} ${right.p < PREC.mul || node.b.k === 'neg' ? `${words.open} ${right.s} ${words.close}` : right.s}`, p: PREC.mul };
+      const right = spokenOf(node.b, variable, words, point);
+      return { s: `${group(spokenOf(node.a, variable, words, point), PREC.mul)} ${words.times} ${right.p < PREC.mul || node.b.k === 'neg' ? `${words.open} ${right.s} ${words.close}` : right.s}`, p: PREC.mul };
     }
-    case 'div': return { s: `${group(spokenOf(node.a, variable, words), PREC.mul)} ${words.over} ${group(spokenOf(node.b, variable, words), PREC.atom)}`, p: PREC.mul };
-    case 'pow': return { s: `${group(spokenOf(node.a, variable, words), PREC.atom)} ${words.power} ${node.e}`, p: PREC.pow };
+    case 'div': return { s: `${group(spokenOf(node.a, variable, words, point), PREC.mul)} ${words.over} ${group(spokenOf(node.b, variable, words, point), PREC.atom)}`, p: PREC.mul };
+    case 'pow': return { s: `${group(spokenOf(node.a, variable, words, point), PREC.atom)} ${words.power} ${node.e}`, p: PREC.pow };
   }
 }
 
 /** A spoken reading of a parsed line, for assistive technology; the words come from the caller's locale. */
-export function toSpoken(parsed: Parsed, variable: string, words: SpokenWords): string {
+export function toSpoken(parsed: Parsed, variable: string, words: SpokenWords, decimal: DecimalMark = '.'): string {
   if (!parsed.ok) return '';
-  return parsed.kind === 'expression' ? spokenOf(parsed.expr, variable, words).s : `${spokenOf(parsed.left, variable, words).s} ${words.equals} ${spokenOf(parsed.right, variable, words).s}`;
+  const point = decimal === ',' ? ',' : '.';
+  return parsed.kind === 'expression' ? spokenOf(parsed.expr, variable, words, point).s : `${spokenOf(parsed.left, variable, words, point).s} ${words.equals} ${spokenOf(parsed.right, variable, words, point).s}`;
 }

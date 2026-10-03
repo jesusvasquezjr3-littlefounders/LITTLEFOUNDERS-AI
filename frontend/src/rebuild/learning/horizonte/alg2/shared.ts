@@ -1,8 +1,17 @@
 import type { Locale } from '../../../design/copyBudget';
 import type { PlanoPoint } from '../plano';
+import type { DecimalMark } from './expression.generated';
 import type { Dec, GraphFamily, GraphForm, GraphWindow, PlaneLine, Slider } from './model.generated';
 
 export const fmt = (locale: Locale, value: number, digits = 2): string => new Intl.NumberFormat(locale, { maximumFractionDigits: digits }).format(Object.is(value, -0) ? 0 : value);
+
+/** The decimal mark of a locale: a comma in pt-BR, a point in en-US and es-MX (Intl, so it follows the platform's CLDR data). */
+export function decimalMarkOf(locale: Locale): DecimalMark {
+  return new Intl.NumberFormat(locale).formatToParts(1.5).find((part) => part.type === 'decimal')?.value === ',' ? ',' : '.';
+}
+
+/** A point as `(x, y)`; where the decimal mark is a comma the pair is split by a semicolon so `(0,5; 1,5)` still reads as two numbers. */
+export const pairText = (locale: Locale, x: number, y: number): string => `(${fmt(locale, x)}${decimalMarkOf(locale) === ',' ? '; ' : ', '}${fmt(locale, y)})`;
 
 export const slots = (text: string, values: Readonly<Record<string, string | number>>): string => text.replace(/\{(\w+)\}/g, (whole, key: string) => String(values[key] ?? whole));
 
