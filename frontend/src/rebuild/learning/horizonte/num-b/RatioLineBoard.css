@@ -9,12 +9,12 @@
 .lf-line-step[aria-pressed='true'] { border-color: var(--sky-strong); background: var(--sky-soft); }
 .lf-line-step:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
 .lf-line-step:disabled { cursor: default; }
-.lf-line-val { color: var(--ink); font-weight: 800; }
+.lf-line-val { color: var(--content); font-weight: 800; }
 .lf-line-tick { inline-size: 1.5rem; block-size: 3rem; }
 .lf-line-tick line { stroke: currentColor; stroke-width: 2.5; }
 .lf-line-tick circle { fill: currentColor; }
 .lf-tape-svg { inline-size: min(100%, 30rem); block-size: auto; overflow: visible; }
-.lf-tape-svg text { fill: var(--ink); font-size: 14px; font-weight: 800; }
+.lf-tape-svg text { fill: var(--content); font-size: 14px; font-weight: 800; }
 .lf-tape-whole { stroke: var(--outline); stroke-width: 3; }
 .lf-tape-box { stroke: var(--outline); stroke-width: 2; }
 .lf-tape-box--sky { fill: var(--sky-soft); stroke: var(--sky-strong); }

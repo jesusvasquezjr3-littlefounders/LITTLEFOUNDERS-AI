@@ -80,6 +80,70 @@
           "prompt": "Pinte os sextos que igualam um meio."
         }
       }
+    },
+    {
+      "id": "circles-show",
+      "type": "math.fraction-circles.v2",
+      "grading": "server",
+      "visual": {
+        "type": "fraction-circles"
+      },
+      "payload": {
+        "op": "show",
+        "fraction": [
+          3,
+          4
+        ]
+      },
+      "rubric": {
+        "n": 3,
+        "d": 4
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Cut the circle to show three quarters."
+        },
+        "es-MX": {
+          "prompt": "Corta el círculo para mostrar tres cuartos."
+        },
+        "pt-BR": {
+          "prompt": "Corte o círculo para mostrar três quartos."
+        }
+      }
+    },
+    {
+      "id": "circles-compare",
+      "type": "math.fraction-circles.v2",
+      "grading": "server",
+      "visual": {
+        "type": "fraction-circles"
+      },
+      "payload": {
+        "op": "compare",
+        "left": [
+          3,
+          8
+        ],
+        "right": [
+          5,
+          8
+        ]
+      },
+      "rubric": {
+        "n": 5,
+        "d": 8
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Shade both circles. Which is more, three eighths or five eighths?"
+        },
+        "es-MX": {
+          "prompt": "Sombrea los dos círculos. ¿Qué es más, tres octavos o cinco octavos?"
+        },
+        "pt-BR": {
+          "prompt": "Pinte os dois círculos. O que é mais, três oitavos ou cinco oitavos?"
+        }
+      }
     }
   ]
 }

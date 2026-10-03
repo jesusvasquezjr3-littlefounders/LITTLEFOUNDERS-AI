@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { hzBase, hzServer, hzVisual } from '../shared.generated';
 import type { HorizonteAgeScope } from '../types.generated';
 import { ARRAY_MAX_SIDE, AREA_SIDE_MAX, DIVISOR_MAX, payloadProblem } from './arrayAreaModel.generated';
+import { CIRCLE_VISUAL, circlePayloadProblem } from './fractionCirclesModel.generated';
 import { FRACTION_PART_MAX, fractionPayloadProblem } from './fractionWallModel.generated';
 import { RATIO_UNITS, RATIO_VALUE_MAX, ratioPayloadProblem } from './ratioLineModel.generated';
 
@@ -29,6 +30,14 @@ export const fractionWallPayload = z.union([
   z.object({ op: z.enum(['add', 'subtract', 'multiply', 'divide']), left: fraction, right: fraction }).strict(),
 ]);
 
+/** F1.6 circles: build a fraction by cutting and shading one circle, or compare, add or subtract two circles cut into the same parts. */
+export const fractionCirclesPayload = z.union([
+  z.object({ op: z.literal('show'), fraction }).strict(),
+  z.object({ op: z.enum(['compare', 'add', 'subtract']), left: fraction, right: fraction }).strict(),
+]);
+
+const fractionKey = z.object({ n: z.number().int().min(1).max(FRACTION_PART_MAX), d: z.number().int().min(1).max(FRACTION_PART_MAX) }).strict();
+
 export const NUM_B_SEGMENTS = [
   z.object({
     ...hzBase, type: z.literal('math.array-area.v2'), grading: hzServer,
@@ -51,16 +60,24 @@ export const NUM_B_SEGMENTS = [
     const problem = fractionPayloadProblem(value.visual.type, value.payload);
     if (problem) ctx.addIssue({ code: 'custom', path: ['visual'], message: problem });
   }),
+  z.object({
+    ...hzBase, type: z.literal('math.fraction-circles.v2'), grading: hzServer, visual: hzVisual(CIRCLE_VISUAL), payload: fractionCirclesPayload,
+  }).strict().superRefine((value, ctx) => {
+    const problem = circlePayloadProblem(value.payload);
+    if (problem) ctx.addIssue({ code: 'custom', path: ['payload'], message: problem });
+  }),
 ] as const;
 
 export const NUM_B_RUBRICS = {
   'math.array-area.v2': z.object({ value: z.number().int().min(1).max(AREA_SIDE_MAX * AREA_SIDE_MAX) }).strict(),
   'math.ratio-line.v2': z.object({ value: z.number().int().min(1).max(RATIO_VALUE_MAX) }).strict(),
-  'math.fraction-wall.v2': z.object({ n: z.number().int().min(1).max(FRACTION_PART_MAX), d: z.number().int().min(1).max(FRACTION_PART_MAX) }).strict(),
+  'math.fraction-wall.v2': fractionKey,
+  'math.fraction-circles.v2': fractionKey,
 } as const;
 
 export const NUM_B_AGE_SCOPE: Readonly<Record<string, HorizonteAgeScope>> = {
   'math.array-area.v2': { ages: [8, 12], adult: false },
   'math.ratio-line.v2': { ages: [10, 12], adult: false },
   'math.fraction-wall.v2': { ages: [8, 12], adult: false },
+  'math.fraction-circles.v2': { ages: [8, 12], adult: false },
 };

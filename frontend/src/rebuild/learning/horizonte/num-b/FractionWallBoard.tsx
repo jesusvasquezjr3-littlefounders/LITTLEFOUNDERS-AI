@@ -1,45 +1,19 @@
 import { useState, type CSSProperties } from 'react';
 import { Button } from '../../../design/controls';
-import type { Locale } from '../../../design/copyBudget';
 import { fractionName } from '../../fractionName';
 import { MoveToChoice, useDragPlace, useSegmentGrade } from '../../segmentKit';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText } from '../copyText';
-import { DataTable, Handle, NumBFrame, NumField, fill, typedNumber, type Copy, type Grading } from './boardKit';
+import { DataTable, FractionFields, Handle, NumBFrame, fill, useFractionText } from './boardKit';
 import { NUM_B_COPY } from './copy';
-import { FRACTION_PART_MAX, gcd, isFractionPayload, type EquivalentPayload, type PairPayload } from './fractionWallModel.generated';
+import { gcd, isFractionPayload, type EquivalentPayload, type PairPayload } from './fractionWallModel.generated';
 import './FractionWallBoard.css';
 
 type WallSegment = Extract<HorizonteSegment, { type: 'math.fraction-wall.v2' }>;
 type Props<P> = Omit<HorizonteBoardProps, 'segment'> & { segment: WallSegment; payload: P };
 
 const lcm = (a: number, b: number) => (a / gcd(a, b)) * b;
-
-/* The typed fraction every operation ends in: a top and a bottom number, submitted as integers. */
-function useFractionText(locale: Locale, grading: Grading) {
-  const [top, setTop] = useState('');
-  const [bottom, setBottom] = useState('');
-  const n = typedNumber(top, locale, FRACTION_PART_MAX, 1);
-  const d = typedNumber(bottom, locale, FRACTION_PART_MAX, 1);
-  return {
-    top, bottom, typed: top !== '' || bottom !== '', ready: n !== null && d !== null,
-    answer: { n: n === null ? 0 : Number(n), d: d === null ? 0 : Number(d) },
-    onTop: (text: string) => { grading.reset(); setTop(text); },
-    onBottom: (text: string) => { grading.reset(); setBottom(text); },
-    clear: () => { setTop(''); setBottom(''); },
-  };
-}
-
-function FractionFields({ id, t, locale, fraction, locked }: { id: string; t: Copy; locale: Locale; fraction: ReturnType<typeof useFractionText>; locked: boolean }) {
-  return <section className="lf-learning-control-strip" aria-labelledby={`${id}-answer`}>
-    <h2 id={`${id}-answer`} data-copy-role="heading">{t.fractionHeading}</h2>
-    <div className="lf-numb-fields">
-      <NumField label={t.numerator} locale={locale} value={fraction.top} onText={fraction.onTop} disabled={locked} min={1} max={FRACTION_PART_MAX} />
-      <NumField label={t.denominator} locale={locale} value={fraction.bottom} onText={fraction.onBottom} disabled={locked} min={1} max={FRACTION_PART_MAX} />
-    </div>
-  </section>;
-}
 
 /* A row of equal parts, the first `shaded` of them filled; decoration only, so the spoken line and the table carry the state. */
 function Bar({ cells, shaded, hue }: { cells: number; shaded: number; hue: 'sky' | 'mint' }) {
