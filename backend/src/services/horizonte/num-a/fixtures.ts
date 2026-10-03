@@ -9,7 +9,7 @@ export const NUM_A_FIXTURES: readonly HorizonteFixture[] = [
     id: 'rekenrek-seven', title: text('Show seven', 'Muestra siete', 'Mostre sete'), ...young,
     segment: (locale) => ({
       id: 'rekenrek-seven', type: 'math.rekenrek.v2', grading: 'server', visual: { type: 'rekenrek' },
-      prompt: text('Slide 5 beads on top and 2 below.', 'Desliza 5 cuentas arriba y 2 abajo.', 'Deslize 5 contas em cima e 2 embaixo.')[locale],
+      prompt: text('Show seven with five on the top row.', 'Muestra siete con cinco en la fila de arriba.', 'Mostre sete com cinco na fileira de cima.')[locale],
       payload: { start: [0, 0] },
     }),
     rubric: { target: [5, 2] },

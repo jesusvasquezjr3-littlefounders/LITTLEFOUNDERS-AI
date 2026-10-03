@@ -193,6 +193,16 @@ describe('num-a pack: F1.2 rekenrek and abacus, F1.3 number lines, F1.7 clock, r
     expect(beamLean(0)).toBe(0);
   });
 
+  it('keeps a rekenrek prompt from writing the keyed bead state, in every market', () => {
+    for (const id of ['rekenrek-seven', 'rekenrek-ten']) {
+      const counts = (fixture(id).rubric as { target: number[] }).target.filter((count) => count !== 0).map(String);
+      for (const locale of ['en-US', 'es-MX', 'pt-BR'] as const) {
+        const written = new Set(String(fixture(id).segment(locale).prompt).match(/\d+/g) ?? []);
+        expect(counts.every((count) => written.has(count)), `${id} ${locale}`).toBe(false);
+      }
+    }
+  });
+
   it('grades the rekenrek and the abacus against the private target', () => {
     expect(verdict('rekenrek-seven', { beads: [5, 2] })).toBe('met');
     expect(grade('math.rekenrek.v2')(segmentOf('rekenrek-seven'), { beads: [2, 5] }, fixture('rekenrek-seven').rubric)).toEqual({ verdict: 'review', diagnostic: 'value' });

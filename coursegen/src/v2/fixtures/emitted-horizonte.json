@@ -204,7 +204,7 @@
           "id": "rekenrek-seven",
           "type": "math.rekenrek.v2",
           "grading": "server",
-          "prompt": "Slide 5 beads on top and 2 below.",
+          "prompt": "Show seven with five on the top row.",
           "visual": {
             "type": "rekenrek"
           },
@@ -431,7 +431,7 @@
           "id": "rekenrek-seven",
           "type": "math.rekenrek.v2",
           "grading": "server",
-          "prompt": "Desliza 5 cuentas arriba y 2 abajo.",
+          "prompt": "Muestra siete con cinco en la fila de arriba.",
           "visual": {
             "type": "rekenrek"
           },
@@ -658,7 +658,7 @@
           "id": "rekenrek-seven",
           "type": "math.rekenrek.v2",
           "grading": "server",
-          "prompt": "Deslize 5 contas em cima e 2 embaixo.",
+          "prompt": "Mostre sete com cinco na fileira de cima.",
           "visual": {
             "type": "rekenrek"
           },
