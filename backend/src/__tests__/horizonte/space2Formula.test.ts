@@ -3,7 +3,7 @@ import { horizonteGrade, horizonteSampleVerdict, horizonteScopeProblem } from '.
 import {
   FORMULA_LIMITS, answerCount, evaluate, formulaGrid, formulaKey, formulaLatex, formulaMesh, formulaProblem, formulaSpoken, inWindow, isTypable, newMeter, parseFormula,
   partialsAt, ratCompare, ratDecimal, ratEquals, ratFromInt, ratText, ratToNumber, readFormulaPayload, readNumber, throughCount, walkPath, walkReach, worldPoint,
-  type FormulaPayload, type Node, type Rat, type SpokenWords,
+  type FormulaPayload, type Node, type SpokenWords,
 } from '../../services/horizonte/space2/field.js';
 import { SPACE2_FIXTURES } from '../../services/horizonte/space2/fixtures.js';
 import { space2 } from '../../services/horizonte/space2/index.js';
