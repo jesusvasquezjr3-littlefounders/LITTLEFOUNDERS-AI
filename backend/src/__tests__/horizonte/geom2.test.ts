@@ -396,7 +396,7 @@ describe('geom2 pack: F2.7 geoboard and area by squares, F2.8 transformations an
         expect(horizonteSampleVerdict(fixture(id).segment('en-US') as { type: string }, fixture(id).rubric), id).toBe('met');
       }
       const slidOnly = { ...fixture('tile-turn').segment('en-US'), payload: { floor: turnFloor.floor, tile: turnFloor.tile } };
-      expect(horizonteSampleVerdict(slidOnly as { type: string }, { copies: 4 })).toBe('invalid');
+      expect(horizonteSampleVerdict(slidOnly as unknown as { type: string }, { copies: 4 })).toBe('invalid');
     });
 
     it('carries the offered motions in the public payload and parses them in every locale', () => {
