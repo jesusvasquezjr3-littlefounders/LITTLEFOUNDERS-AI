@@ -19,7 +19,7 @@
 .lf-alg-handle { max-inline-size: 100%; }
 .lf-alg-equation { display: flex; flex-wrap: wrap; align-items: stretch; gap: var(--spacing-3); inline-size: 100%; padding: var(--spacing-2); border-radius: var(--rounded-sm); outline: 2px solid transparent; }
 .lf-alg-side { flex: 1 1 12rem; min-inline-size: 0; }
-.lf-alg-equals { inline-size: 1.5rem; block-size: 1.5rem; align-self: center; fill: var(--content); }
+.lf-alg-equals { inline-size: 1.5rem; block-size: 0.75rem; align-self: center; border-block: 3px solid var(--content); border-radius: 1px; }
 .lf-alg-cards { display: flex; flex-wrap: wrap; gap: var(--spacing-2); min-block-size: var(--hz-hit); }
 .lf-alg-card { display: inline-flex; }
 .lf-alg-bin-list { display: flex; flex-wrap: wrap; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }

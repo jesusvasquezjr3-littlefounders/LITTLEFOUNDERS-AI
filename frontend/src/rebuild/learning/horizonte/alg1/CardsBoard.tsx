@@ -109,7 +109,7 @@ function Cards({ document, segment, cards, onBack, sequence, onGrade }: Omit<Hor
       {segment.notation ? <Notation notation={segment.notation} locale={document.locale} /> : null}
       <div className="lf-alg-equation" {...drag.target('equation')}>
         {side('left')}
-        <svg className="lf-alg-equals" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="7" width="18" height="3" rx="1" /><rect x="3" y="14" width="18" height="3" rx="1" /></svg>
+        <span className="lf-alg-equals" aria-hidden="true" />
         {side('right')}
       </div>
       <p className="lf-alg-status" role="status" data-copy-role="data" data-hz-text-equivalent="">

@@ -1,4 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { LessonDocumentView } from '../../LessonDocumentView';
 import { assertBoardContract } from '../harness/boardContract';
@@ -151,6 +153,17 @@ describe('algebra cards (D06)', () => {
     show('box-picture');
     await screen.findByRole('group', { name: 'Left side' });
     expect(document.querySelectorAll('.lf-alg-art').length).toBeGreaterThan(0);
+  });
+
+  it('draws the equals sign as a CSS shape: no inline 24-grid glyph outside glyphs.tsx (02 rule 17, D12)', async () => {
+    show('box-picture');
+    await screen.findByRole('group', { name: 'Left side' });
+    const equals = document.querySelector('.lf-alg-equals');
+    expect(equals).not.toBeNull();
+    expect(equals!.tagName).toBe('SPAN');
+    expect(equals!.getAttribute('aria-hidden')).toBe('true');
+    expect(equals!.children).toHaveLength(0);
+    expect(readFileSync(resolve(__dirname, 'CardsBoard.tsx'), 'utf8')).not.toMatch(/viewBox=["']0 0 24 24["']/);
   });
 
   it('writes plain notation with no picture in the last disguise', async () => {
