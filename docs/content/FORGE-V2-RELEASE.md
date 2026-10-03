@@ -27,7 +27,11 @@ cd coursegen
 npm run v2:publish -- --plans <dir> --course <course-slug> --run-id <run-id> --out <dir> --dry-run
 # Owner-run: the same, then verify:course and Vault's reviewed publication transaction per market.
 npm run v2:publish -- --plans <dir> --course <course-slug> --run-id <run-id> --out <dir>
+# Owner-run, when a document holds a Horizonte segment type (see below).
+npm run v2:publish -- --plans <dir> --course <course-slug> --run-id <run-id> --out <dir> --core-has-horizonte
 ```
+
+**Deploy order: Core first, then Forge.** The Core check in step 2 runs the Core source in this checkout, so it passes for a segment type the deployed Core does not know yet. An older Core answers 422 `UNSUPPORTED_LESSON` for a version that holds such a type: a new lesson stays unreachable, and a pending version that staff later release breaks a lesson that is already live. Every Horizonte type is new, so a Vault write (not a dry run) of a document that holds one stops at the Core check unless `--core-has-horizonte` confirms that the Core deploy is live. Deploy Core, then the browser, then publish.
 
 The chain stops at the first failing stage:
 
