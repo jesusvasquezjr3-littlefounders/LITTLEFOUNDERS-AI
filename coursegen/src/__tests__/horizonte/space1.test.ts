@@ -2,15 +2,18 @@ import { describe, expect, it } from 'vitest';
 import { SPACE1_FIXTURES } from '../../../../backend/src/services/horizonte/space1/fixtures.js';
 import * as coreCoins from '../../../../backend/src/services/horizonte/space1/coins.js';
 import * as corePolyhedra from '../../../../backend/src/services/horizonte/space1/polyhedra.js';
+import * as coreRules from '../../../../backend/src/services/horizonte/space1/sectionRules.js';
 import * as coreStall from '../../../../backend/src/services/horizonte/space1/stall.js';
 import * as coreVoxels from '../../../../backend/src/services/horizonte/space1/voxels.js';
 import { V2_SEGMENT_CAPABILITIES } from '../../v2/contract.js';
 import { HORIZONTE_FORGE_CAPABILITIES, HORIZONTE_FORGE_PACKS, horizonteGuidanceFor, horizontePieceGates } from '../../v2/horizonte/index.js';
 import { space1, SPACE1_CAPABILITIES } from '../../v2/horizonte/space1.js';
 import {
-  PLATONIC_COUNTS, PLATONIC_IDS, SECTION_SOLIDS, coinAnswer, coinPositions, congruentByTurning, matchingAngles, mirrorFigure, platonicMesh,
-  polyCounts, eulerSum, readCoinPayload, readRotationPayload, readSolidSectionPayload, readStallPayload, rotationAnswer, sameShape, sectionShape,
-  solidSectionAnswer, stallAnswer, stallProblem, turnFigure, basketMeets, mostItems, reachableTotals, ROTATION_AXES,
+  ARCHIMEDEAN_IDS, EULER_COUNTS, EULER_SOLIDS, PLATONIC_COUNTS, PLATONIC_IDS, SECTION_SOLIDS, coinAnswer, coinPositions, congruentByTurning,
+  coneVolume, cylinderVolume, eulerBounds, matchingAngles, mirrorFigure, platonicMesh, polyCounts, eulerSum, readCoinPayload,
+  readRotationPayload, readSolidSectionPayload, readStallPayload, rotationAnswer, sameShape, sectionCut, sectionShape, slideRange,
+  slideShapes, slideSolutions, solidSectionAnswer, solidSectionProblem, stallAnswer, stallProblem, turnFigure, basketMeets, mostItems,
+  reachableTotals, ROTATION_AXES,
   type Cell, type Plane, type SectionSolid,
 } from '../../v2/horizonte/space1Geometry.js';
 import '../../v2/solvabilityPacks.js';
@@ -39,7 +42,7 @@ const STALL_ITEMS = [{ id: 'apple', price: 50, stock: 5 }, { id: 'bread', price:
 describe('space1 pack in the Forge (F4.4 rotation, F4.5 sections, F4.6 stall and coins)', () => {
   it('declares the capability literals and the emitter map spreads them', () => {
     expect(SPACE1_CAPABILITIES[ROTATION]).toEqual(['visual.mental-rotation.v1', 'operation.turn-figure.v1', 'operation.pick-match.v1']);
-    expect(SPACE1_CAPABILITIES[SECTION]).toEqual(['visual.solid-section.v1', 'operation.turn-solid.v1', 'operation.choose-and-type.v1']);
+    expect(SPACE1_CAPABILITIES[SECTION]).toEqual(['visual.solid-section.v1', 'operation.turn-solid.v1', 'operation.choose-and-type.v1', 'operation.slide-plane.v1']);
     expect(SPACE1_CAPABILITIES[STALL]).toEqual(['visual.market-stall.v1', 'operation.buy-items.v1', 'operation.tap-place.v1']);
     expect(SPACE1_CAPABILITIES[COIN]).toEqual(['visual.coin-stack.v1', 'operation.set-count.v1', 'operation.read-scale.v1']);
     for (const type of TYPES) {
@@ -138,7 +141,82 @@ describe('space1 pack in the Forge (F4.4 rotation, F4.5 sections, F4.6 stall and
           }
         }
       }
-      expect(checked).toBe(3 * 342 * 9);
+      expect(checked).toBe(SECTION_SOLIDS.length * 342 * 9);
+    });
+
+    it('slides every solid along a few normals to the same shapes and range as Core', () => {
+      const normals: Plane['normal'][] = [[0, 1, 0], [1, 0, 0], [1, 1, 1], [1, 2, 0], [2, -1, 3], [0, 0, -3]];
+      for (const solid of SECTION_SOLIDS) {
+        for (const normal of normals) {
+          expect(slideRange(solid, normal)).toEqual(corePolyhedra.slideRange(solid, normal));
+          expect([...slideShapes(solid, normal)]).toEqual([...corePolyhedra.slideShapes(solid, normal)]);
+        }
+      }
+    });
+
+    it('cuts the cylinder to a circle, a rectangle or an ellipse and refuses a cut that runs into an end', () => {
+      expect(sectionShape('cylinder', { normal: [0, 1, 0], offset: 4 })).toBe('circle');
+      expect(sectionShape('cylinder', { normal: [1, 0, 0], offset: 0 })).toBe('rectangle');
+      expect(sectionShape('cylinder', { normal: [1, 2, 0], offset: 0 })).toBe('ellipse');
+      expect(sectionShape('cylinder', { normal: [1, 2, 0], offset: 8 })).toBeNull();
+      expect(sectionCut('cylinder', { normal: [1, 2, 0], offset: 8 })).toEqual(corePolyhedra.sectionCut('cylinder', { normal: [1, 2, 0], offset: 8 }));
+    });
+
+    it('counts the Archimedean solids like Core, and Euler holds for each', () => {
+      expect(ARCHIMEDEAN_IDS).toEqual(corePolyhedra.ARCHIMEDEAN_IDS);
+      expect(EULER_SOLIDS).toEqual(corePolyhedra.EULER_SOLIDS);
+      for (const id of EULER_SOLIDS) {
+        expect(EULER_COUNTS[id]).toEqual(corePolyhedra.EULER_COUNTS[id]);
+        expect(eulerSum(EULER_COUNTS[id])).toBe(2);
+        expect(polyCounts(corePolyhedra.eulerMesh(id))).toEqual(EULER_COUNTS[id]);
+        expect(eulerBounds(id)).toEqual(coreRules.eulerBounds(id));
+      }
+    });
+
+    it('finds the cone as a third of the cylinder like Core', () => {
+      expect(coneVolume(3, 4)).toBe(12);
+      expect(coneVolume(2, 2)).toBeNull();
+      for (const radius of [1, 2, 3, 5, 12]) {
+        for (const height of [1, 3, 4, 12]) {
+          expect(coneVolume(radius, height)).toBe(corePolyhedra.coneVolume(radius, height));
+          expect(cylinderVolume(radius, height)).toBe(corePolyhedra.cylinderVolume(radius, height));
+        }
+      }
+    });
+
+    it('reads, answers and judges every payload as Core does, fixtures and near misses alike', () => {
+      const payloads: unknown[] = [
+        { mode: 'cone', radius: 3, height: 4 },
+        { mode: 'cone', radius: 2, height: 2 },
+        { mode: 'cone', radius: 13, height: 3 },
+        { mode: 'cone', radius: 3 },
+        { mode: 'euler', solid: 'cuboctahedron', hide: 'edges' },
+        { mode: 'euler', solid: 'sphere', hide: 'edges' },
+        { mode: 'section', solid: 'cylinder', plane: { normal: [0, 1, 0], offset: 4 }, options: ['circle', 'rectangle'] },
+        { mode: 'section', solid: 'cylinder', plane: { normal: [1, 2, 0], offset: 8 }, options: ['circle', 'ellipse'] },
+        { mode: 'section', solid: 'cylinder', plane: { normal: [0, 1, 0], offset: 4 }, options: ['circle', 'ellipse'] },
+        { mode: 'slide', solid: 'cube', normal: [1, 1, 1], start: 10, target: 'hexagon' },
+        { mode: 'slide', solid: 'cube', normal: [1, 1, 1], start: 0, target: 'hexagon' },
+        { mode: 'slide', solid: 'cube', normal: [1, 1, 1], start: 10, target: 'square' },
+        { mode: 'slide', solid: 'tetrahedron', normal: [1, 0, 0], start: 0, target: 'rectangle' },
+        { mode: 'slide', solid: 'cylinder', normal: [1, 2, 0], start: 14, target: 'ellipse' },
+        { mode: 'slide', solid: 'cylinder', normal: [0, 1, 0], start: 14, target: 'circle' },
+        { mode: 'slide', solid: 'cube', normal: [0, 0, 0], start: 10, target: 'hexagon' },
+        { mode: 'slide', solid: 'cube', normal: [1, 1, 1], start: 99, target: 'hexagon' },
+      ];
+      for (const fixture of SPACE1_FIXTURES) {
+        const segment = fixture.segment('en-US') as { type: string; payload: unknown };
+        if (segment.type === SECTION) payloads.push(segment.payload);
+      }
+      for (const value of payloads) {
+        const forge = readSolidSectionPayload(value);
+        const core = coreRules.readSolidSectionPayload(value);
+        expect(forge).toEqual(core);
+        if (!forge || !core) continue;
+        expect(solidSectionProblem(forge)).toBe(coreRules.solidSectionProblem(core));
+        expect(solidSectionAnswer(forge)).toEqual(coreRules.solidSectionAnswer(core));
+        if (forge.mode === 'slide' && core.mode === 'slide') expect(slideSolutions(forge)).toEqual(coreRules.slideSolutions(core));
+      }
     });
 
     it('turns and compares figures like Core on every fixture figure and axis', () => {
@@ -211,6 +289,18 @@ describe('space1 pack in the Forge (F4.4 rotation, F4.5 sections, F4.6 stall and
       expect(gates(section({ mode: 'cone', side: 5 }))[0]?.message).toMatch(/solid section payload/);
     });
 
+    it('refuse a cone that is not a whole third, a cut into a cylinder end, and a slide that starts on or doubles its answer', () => {
+      expect(gates(section({ mode: 'cone', radius: 2, height: 2 }))[0]?.message).toMatch(/divide by 3/);
+      expect(gates(section({ mode: 'cone', radius: 3, height: 4 }))).toEqual([]);
+      expect(gates(section({ mode: 'section', solid: 'cylinder', plane: { normal: [1, 2, 0], offset: 8 }, options: ['circle', 'rectangle'] }))[0]?.message).toMatch(/end caps/);
+      expect(gates(section({ mode: 'section', solid: 'cylinder', plane: { normal: [0, 1, 0], offset: 4 }, options: ['circle', 'ellipse'] }))[0]?.message).toMatch(/two answers/);
+      expect(gates(section({ mode: 'slide', solid: 'cube', normal: [1, 1, 1], start: 10, target: 'hexagon' }))).toEqual([]);
+      expect(gates(section({ mode: 'slide', solid: 'cube', normal: [1, 1, 1], start: 0, target: 'hexagon' }))[0]?.message).toMatch(/must not start/);
+      expect(gates(section({ mode: 'slide', solid: 'cube', normal: [1, 1, 1], start: 10, target: 'square' }))[0]?.message).toMatch(/No position/);
+      expect(gates(section({ mode: 'slide', solid: 'tetrahedron', normal: [1, 0, 0], start: 0, target: 'rectangle' }))[0]?.message).toMatch(/graded two ways/);
+      expect(gates(section({ mode: 'slide', solid: 'cube', normal: [1, 1, 1], start: 99, target: 'hexagon' }))[0]?.message).toMatch(/solid section payload/);
+    });
+
     it('refuse a stall nobody can fill and a coin goal off the whole pieces', () => {
       expect(gates(stall({ items: STALL_ITEMS, goal: { kind: 'exact', total: 251 } }))[0]?.message).toMatch(/No basket/);
       expect(gates(stall({ items: STALL_ITEMS, goal: { kind: 'exact', total: 5000 } }))[0]?.message).toMatch(/does not hold enough/);
@@ -252,6 +342,25 @@ describe('space1 pack in the Forge (F4.4 rotation, F4.5 sections, F4.6 stall and
       expect(findings(volume, { target: '60' })).toEqual([]);
       expect(codes(volume, { target: '180' })).toEqual(['rubric-accepts-invalid', 'rubric-gap']);
       expect(codes(section({ mode: 'volume', side: 5, height: 4 }))).toEqual(['no-solution']);
+    });
+
+    it('prove a cone, an Archimedean count and a slide have one answer and judge the key', () => {
+      const cone = section({ mode: 'cone', radius: 3, height: 4 });
+      expect(findings(cone, { target: '12' })).toEqual([]);
+      expect(codes(cone, { target: '36' })).toEqual(['rubric-accepts-invalid', 'rubric-gap']);
+      expect(codes(section({ mode: 'cone', radius: 2, height: 2 }))).toEqual(['impossible-state']);
+      const faces = section({ mode: 'euler', solid: 'truncated-icosahedron', hide: 'faces' });
+      expect(findings(faces, { target: '32' })).toEqual([]);
+      expect(codes(faces, { target: '60' })).toEqual(['rubric-accepts-invalid', 'rubric-gap']);
+      const slide = section({ mode: 'slide', solid: 'cube', normal: [1, 1, 1], start: 10, target: 'hexagon' });
+      expect(findings(slide, { pick: 'hexagon' })).toEqual([]);
+      expect(codes(slide, { pick: 'triangle' })).toEqual(['rubric-accepts-invalid', 'rubric-gap']);
+      expect(codes(slide, { target: '0' })).toEqual(['impossible-state']);
+      expect(codes(section({ mode: 'slide', solid: 'cube', normal: [1, 1, 1], start: 10, target: 'square' }))).toEqual(['no-solution']);
+      expect(codes(section({ mode: 'slide', solid: 'cube', normal: [1, 1, 1], start: 0, target: 'hexagon' }))).toEqual(['impossible-state']);
+      expect(codes(section({ mode: 'slide', solid: 'tetrahedron', normal: [1, 0, 0], start: 0, target: 'rectangle' }))).toEqual(['ambiguous-solution']);
+      expect(codes(section({ mode: 'section', solid: 'cylinder', plane: { normal: [0, 1, 0], offset: 4 }, options: ['circle', 'ellipse'] }))).toEqual(['ambiguous-solution']);
+      expect(codes(section({ mode: 'section', solid: 'cylinder', plane: { normal: [1, 2, 0], offset: 8 }, options: ['circle', 'rectangle'] }))).toEqual(['no-solution']);
     });
 
     it('prove a stall can be filled and judge each key basket against the rule', () => {
