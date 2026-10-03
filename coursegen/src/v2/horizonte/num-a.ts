@@ -83,11 +83,11 @@ const NUM_A_GUIDANCE: readonly ForgeGuidance[] = [
 
 const whole = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value);
 const record = (value: unknown): Record<string, unknown> | undefined => (typeof value === 'object' && value !== null && !Array.isArray(value) ? value as Record<string, unknown> : undefined);
-const inRange = (value: unknown, min: number, max: number): value is number => whole(value) && value >= min && value <= max;
+export const inRange = (value: unknown, min: number, max: number): value is number => whole(value) && value >= min && value <= max;
 const counts = (value: unknown, length: number | undefined, min: number, max: number): value is number[] =>
   Array.isArray(value) && (length === undefined ? value.length >= 1 && value.length <= 4 : value.length === length) && value.every((entry) => inRange(entry, min, max));
 
-const LINE_MAX = 1000;
+export const LINE_MAX = 1000;
 const JUMP_SIZES = [1, 2, 5, 10, 20, 50, 100];
 const CLOCK_STEPS = [1, 5, 15, 30];
 const RULER_MAX = 12;
@@ -96,7 +96,7 @@ const ORDER_MAX_UNITS = 100000;
 const READ_OBJECTS = ['pencil', 'strip'];
 
 /** Every number a jump list within the cap can end on, by breadth-first search over the allowed sizes. */
-function reachableLandings(start: number, sizes: readonly number[], max: number): Set<number> {
+export function reachableLandings(start: number, sizes: readonly number[], max: number): Set<number> {
   const seen = new Set<number>([start]);
   let frontier = [start];
   for (let step = 0; step < max; step += 1) {
@@ -110,7 +110,7 @@ function reachableLandings(start: number, sizes: readonly number[], max: number)
 }
 
 /** Every left-minus-right difference the loose weights can make: each one stays in the tray or goes on either pan. */
-function reachableDifferences(base: number, weights: readonly number[]): Set<number> {
+export function reachableDifferences(base: number, weights: readonly number[]): Set<number> {
   let seen = new Set<number>([base]);
   for (const weight of weights) {
     const next = new Set<number>();
@@ -120,11 +120,11 @@ function reachableDifferences(base: number, weights: readonly number[]): Set<num
   return seen;
 }
 
-const sum = (list: readonly number[]): number => list.reduce((total, weight) => total + weight, 0);
+export const sum = (list: readonly number[]): number => list.reduce((total, weight) => total + weight, 0);
 const weightList = (value: unknown, min: number, max: number): value is number[] => Array.isArray(value) && value.length >= min && value.length <= max && value.every((weight) => inRange(weight, 1, MAX_WEIGHT));
 
 /** The marks and numbers of an ordering line when the payload is sound: every number sits on a mark of the window. */
-function orderParts(payload: Record<string, unknown> | undefined): { scale: number; low: number; step: number; count: number; values: number[] } | undefined {
+export function orderParts(payload: Record<string, unknown> | undefined): { scale: number; low: number; step: number; count: number; values: number[] } | undefined {
   if (!payload || !inRange(payload.scale, 0, 2) || !inRange(payload.low, 0, ORDER_MAX_UNITS) || !inRange(payload.step, 1, ORDER_MAX_UNITS) || !inRange(payload.count, 4, 20) || !Array.isArray(payload.values)) return undefined;
   const { scale, low, step, count } = payload as { scale: number; low: number; step: number; count: number };
   const values = payload.values as unknown[];
@@ -133,7 +133,7 @@ function orderParts(payload: Record<string, unknown> | undefined): { scale: numb
   return { scale, low, step, count, values: values as number[] };
 }
 
-interface Check {
+export interface Check {
   visual: string;
   /** A message when the public payload breaks a rule of the piece; `band` is the document's age band when it names one. */
   payload: (payload: Record<string, unknown> | undefined, band: string | null) => string | undefined;
@@ -141,7 +141,7 @@ interface Check {
   target: (payload: Record<string, unknown>, target: unknown, key: unknown) => string | undefined;
 }
 
-const CHECKS: Readonly<Record<string, Check>> = {
+export const CHECKS: Readonly<Record<string, Check>> = {
   'math.rekenrek.v2': {
     visual: 'rekenrek',
     payload: (payload) => (counts(payload?.start, 2, 0, 10) ? undefined : 'The rekenrek start is two bead counts, each a whole number from 0 to 10'),
