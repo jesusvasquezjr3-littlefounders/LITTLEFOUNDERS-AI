@@ -117,7 +117,7 @@ function rivalMoves(move: Move): Move[] {
   }
   if (move.kind === 'translate') return [{ ...move, dx: -move.dx, dy: -move.dy }, { ...move, dx: move.dy, dy: move.dx }, { ...move, dy: 0 }, { ...move, dx: 0 }];
   if (move.kind === 'rotate') {
-    return [90, 180, 270].filter((degrees) => degrees !== move.degrees).map((degrees) => ({ ...move, degrees })).concat([{ ...move, about: at(0, 0) }]);
+    return [90, 180, 270].filter((degrees) => degrees !== move.degrees).map((degrees): Move => ({ ...move, degrees })).concat([{ ...move, about: at(0, 0) }]);
   }
   return [{ ...move, num: move.den, den: move.num }, { ...move, about: at(0, 0) }, { ...move, num: move.num + 1 }];
 }
