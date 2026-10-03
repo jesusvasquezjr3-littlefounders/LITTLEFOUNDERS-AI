@@ -129,7 +129,7 @@ Fixtures: geoboard `geoboard-area-six`, `geoboard-right-triangle`; area `area-l-
 - **`symmetry-mirror`.** The capability is used for the reflections; a mirror line is drawn for vertical and horizontal lines and for the two
   diagonals, and the line equation is also written in the status line.
 - **Solvability sits in the pack gate.** The Forge `gates` hook recomputes each key from its payload (the band exists, the cells are inside the
-  outline, the image follows the move, an exact cover exists), so `solvabilityPacks.ts` stays untouched.
+  outline, the image follows the move, an exact cover exists), so `solvabilityPacks.ts` stayed untouched in the first round. The F0.4 checkers for all four types came in the Solvability round below.
 - **Payload identical in every locale.** Labels, rules and prompts live in board copy and the fixture's locale map, never in the segment.
 - **Shared file.** `plano/Plano.tsx` gained an optional `tableToggle` prop (default `true`) and `data-hz-roving` on handle sliders. Both are
   backward compatible and every Plano test still passes.
@@ -222,3 +222,30 @@ translate. Both are fixed on this branch.
   picks one move for each copy.
 - The Atlas audit showed low-contrast samples (about 2.3 light and 2.7 dark) on Undo, Reset and Check. That is outside this unit and is left
   to the audit pass.
+
+## Solvability round
+
+The four geom2 types now register a real F0.4 checker in `coursegen/src/v2/horizonte/solvability-geom.ts` (imported from
+`coursegen/src/v2/solvabilityPacks.ts`). Every checker reads the public payload alone for everything the payload fixes, so the release-time
+run with no key still proves the board; the key is compared only when `context.answerKey` is present. The lattice, move, cover and shape
+functions are the pack's own, exported from `geom2.ts` and imported (not copied), so a checker and its gate 4 cannot drift. What the pack
+gates accept and refuse is unchanged: the only code edit in `geom2.ts` is that `solvable` is now `coverSearch(...).covered` at the same
+60,000-step budget, and `coverSearch` also reports whether it ran out of steps. Tests:
+`coursegen/src/__tests__/horizonte/solvability-geom.test.ts` (41 tests, shared with the visual-proof row in `balance.md`).
+
+| Type | Solvable (learner's controls alone) | Unique, start, dead end | Codes | Not provable |
+|---|---|---|---|---|
+| `math.geoboard.v2` | The payload is exactly `{ size }`, 3 to 8. Without a key the checker proves every area from 1 to the full board `2(size-1)^2` has a simple band (a constructed column strip, checked with the pack's `simple` and `area2`) and enumerates every triangle and parallelogram that fits (each vector pair, judged by the pack's `isShape`). With a key: `area2` is in range and the named figure exists at that area. | Not unique by design: the key grades an area and optionally a figure, so many bands are accepted; the proof is that the accepted set is non-empty. Start: the learner holds no band and an untouched board grades `valid`. Dead end: pegs can always be retapped. A wide name (triangle, rectangle, parallelogram) on a board whose only band at that area is the stricter figure is a REVIEW `ambiguous-solution`. | `impossible-state`, `out-of-bounds`, `no-solution`, `ambiguous-solution` (review), `budget-exceeded` | Whether the prompt's wording of the figure matches the key. A key reachable only by a tilted band passes here, but gate 4 and Core's sample (an axis-anchored search) still refuse it. |
+| `math.area-squares.v2` | The payload is exactly `{ columns, rows, outline }`; grid 2 to 8; 4 to 16 distinct whole corners inside the grid, every edge on a grid line, every listed point a real corner, outline simple. The squares inside are the pack's `cellsInside`; none is `no-solution`, more than 32 is `too-large`. | Unique: the squares inside an outline are one set, cross-checked against the shoelace area (a mismatch is `ambiguous-solution`). Key `{ required }` is compared as a set, point by point: a missing square is `rubric-gap`, an extra one `rubric-accepts-invalid`. Start: nothing is shaded. Dead end: shading toggles. | `impossible-state`, `out-of-bounds`, `too-large`, `no-solution`, `ambiguous-solution`, `rubric-gap`, `rubric-accepts-invalid`, `vacuous-rubric`, `duplicate-id` | Nothing about the board beyond the prompt text. |
+| `math.transform.v2` | The payload is exactly `{ extent, figure, move }`; extent 3 to 10; the figure is 3 to 6 distinct, simple, in-plane corners; the move passes the pack's `moveProblem`. The image is the pack's `imageOf`: a corner between pegs is `no-solution`, one off the plane `out-of-bounds`. | Unique: the image is a function of the public move, and the grader compares an unordered set, so corner order is never a second answer. Injectivity is still checked (`ambiguous-solution`, defensive: every move the pack allows is injective). Start: an image equal to the figure is refused as already solved. Dead end: a dragged point can be dragged again. Key `{ required }` is checked per point against the image. | `impossible-state`, `out-of-bounds`, `no-solution`, `ambiguous-solution`, `rubric-gap`, `rubric-accepts-invalid`, `vacuous-rubric`, `duplicate-id` | The `symmetry-mirror` rule (whole figure on one side of a vertical or horizontal line) needs the segment's visual, which a checker never sees; the pack gate keeps it. |
+| `math.tessellation.v2` | The payload is `{ floor, tile }` plus optional `moves` (pack `movesProblem` and `tileProblem`); the floor is 1 to 24 copies of cells inside 12 by 12, no cell twice (`overlap`). A floor that is not whole copies of the tile is `no-solution`. Otherwise the pack's exact-cover search runs on `context.nodeBudget` (default 200,000) with the listed moves: no cover is `no-solution`, and running out of steps is `budget-exceeded`, never `no-solution`. | The cover is not unique by design (any listed move on any copy) but the copy count is: every exact cover uses floor cells / tile cells copies, and a disagreement would be `ambiguous-solution` (defensive: no well-formed payload can produce one). Key `{ copies }` is checked with `checkRubricCoverage`. Start: the learner holds no copy; an empty floor is refused as already tiled. Dead end: a placed copy can be lifted. | `impossible-state`, `out-of-bounds`, `overlap`, `too-large`, `no-solution`, `ambiguous-solution`, `budget-exceeded`, `rubric-gap`, `rubric-accepts-invalid` | Which moves the learner will think to try. The checker's budget is larger than the pack's fixed 60,000, so it can prove a cover the pack refuses as out of steps (the "Known limits after this round" item on `solveCover`); the pack itself is unchanged. |
+
+### Decisions in the Solvability round
+
+- **The checker is truthful, so it can be more complete than the pack.** The geoboard reach is exhaustive; the pack's `bandExists` is an
+  axis-anchored search. A test pins that the checker never reports `no-solution` for a key the pack accepts, and a brute force over every
+  peg of the 3 to 6 peg boards pins each named figure and area.
+- **One REVIEW, no new block, for the figure names.** A rectangle key on a board that only holds a square at that area grades the same
+  bands as a square key, so it is flagged for review and not blocked: the fixture key `{ area2: 12 }` with no shape must stay clean.
+- **Hostile payloads return findings, never throw.** Every field is read through the pack's own validators before any search; a floor of
+  5,000 cells, a `NaN` size or a nested array is a blocking issue, never a `checker-error`.

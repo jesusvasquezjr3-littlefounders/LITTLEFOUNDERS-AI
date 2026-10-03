@@ -90,8 +90,8 @@ Fixtures: F1.8 `two-sides`, `x-on-right`, `divide-last`; F1.15 `parallelogram`, 
 - **Pack-local number field.** `numberField.tsx` reuses the shared locale-aware reading (`readNumberAnswer`) but names the input with
   `aria-label` because the board contract does not count `<label for>` as an accessible name, and so Reset can empty the field.
 - **Solvability sits in the pack gate.** The Forge `gates` hook runs an inline breadth-first route search for F1.8 and recomputes the
-  F1.15 value from the figure's own measures, so `solvabilityPacks.ts` stays untouched. Registering an F0.4 checker is an optional
-  follow-up that needs a one-line shared edit.
+  F1.15 value from the figure's own measures, so `solvabilityPacks.ts` stayed untouched in the first round. The F0.4 checker for F1.15 came in the Solvability round below (the
+  F1.8 checker is `solvability-balance.ts`, from an earlier unit).
 - **Payload identical in every locale.** Labels, figure names, formula names and the spoken text of the equation live in board copy
   keyed by id, never in the segment.
 - **Copy.** All entries carry `band: '10-12'`, which has the same limits as 13 to 17; es-MX and pt-BR are native text. The status
@@ -108,3 +108,22 @@ Fixtures: F1.8 `two-sides`, `x-on-right`, `divide-last`; F1.15 `parallelogram`, 
 - The chunk budgets (14 KB and 18 KB gzipped) are declared, not measured; `npm --prefix frontend run build` gives the real sizes.
 - `cat-math.md` is the owner's catalogue and is not in this repository; the rows are cited by id.
 - The Pythagoras visual is a dissection into two squares, not a rotation proof of the general case; it is offered at 13 to 15 only.
+
+## Solvability round
+
+`math.visual-proof.v2` now registers a real F0.4 checker in `coursegen/src/v2/horizonte/solvability-geom.ts` (the file that holds the geom2
+checkers; imported from `coursegen/src/v2/solvabilityPacks.ts`). It reads the public payload alone, so the release-time run with no key
+proves everything the figure fixes, and it compares the key only when `context.answerKey` is present. The pack's own formula table, payload
+rules and value text (`PROOF_FORMULAS`, `proofPayloadFault`, `proofValueText`) are exported from `balance.ts` and imported; the gate-4
+behaviour of the pack is unchanged. The F1.8 equation-balance checker is `solvability-balance.ts` from an earlier unit and is not part of
+this row. Tests: `coursegen/src/__tests__/horizonte/solvability-geom.test.ts` (41 tests, shared with the four geom2 types).
+
+| Type | Solvable (learner's controls alone) | Unique, start, dead end | Codes | Not provable |
+|---|---|---|---|---|
+| `math.visual-proof.v2` | The figure is read from the payload's own key set (a checker never sees the visual): one of the seven. The choices are 3 to 5 distinct formula ids from that figure's pool and the right formula is among them (else `no-solution`). The measures pass the pack's `proofPayloadFault` (`out-of-bounds` when they are finite numbers outside the figure's range, `impossible-state` otherwise). With a key: `{ choice, value }` must be the right formula and the figure's value as plain decimal text. | Unique: one formula id is graded, and a distractor that gives the same number as the right formula on this figure (for example a parallelogram 2 by 2, a triangle 4 by 4, a circle of radius 1 or 2, a circumference of diameter 4) is a blocking `ambiguous-solution`, because a learner who picks it and types the right value is graded wrong. The pack gate accepts those figures; this is new. The value text is read as a number, like the grader, so `24.0` is the same key as `24`. Start: the payload holds only measures and unmarked choices, and the learner starts with no choice and no value, which grades `valid`, never `met`. Dead end: a choice and a number can be changed freely. | `impossible-state`, `out-of-bounds`, `no-solution`, `ambiguous-solution`, `duplicate-id`, `rubric-gap`, `rubric-accepts-invalid` | Whether the visual named on the segment matches the payload's figure (a checker never sees the visual; the pack gate checks it). The Pythagoras value is the long side `c`, while coincidence is judged on `a^2 + b^2`. |
+
+### Decisions in the Solvability round
+
+- **Coincident distractors block.** A choice that gives the right number is a real defect of the item, not a style point, and no existing
+  fixture has one. If the owner prefers a review severity, the one-line change is in `proofChecker`.
+- **No search, so no node budget issue.** The proof has at most five choices and seven figures; the stats report the choice count.
